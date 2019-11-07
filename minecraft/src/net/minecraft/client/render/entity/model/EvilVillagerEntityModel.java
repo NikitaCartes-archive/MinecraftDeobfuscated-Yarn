@@ -66,7 +66,7 @@ public class EvilVillagerEntityModel<T extends IllagerEntity> extends CompositeE
 		return ImmutableList.<ModelPart>of(this.field_3422, this.field_3425, this.field_3420, this.field_3418, this.field_3423, this.field_3426, this.field_3417);
 	}
 
-	public void method_17094(T illagerEntity, float f, float g, float h, float i, float j, float k) {
+	public void method_17094(T illagerEntity, float f, float g, float h, float i, float j) {
 		this.field_3422.yaw = i * (float) (Math.PI / 180.0);
 		this.field_3422.pitch = j * (float) (Math.PI / 180.0);
 		this.field_3423.pivotY = 3.0F;
@@ -102,8 +102,8 @@ public class EvilVillagerEntityModel<T extends IllagerEntity> extends CompositeE
 
 		IllagerEntity.State state = illagerEntity.getState();
 		if (state == IllagerEntity.State.ATTACKING) {
-			float l = MathHelper.sin(this.handSwingProgress * (float) Math.PI);
-			float m = MathHelper.sin((1.0F - (1.0F - this.handSwingProgress) * (1.0F - this.handSwingProgress)) * (float) Math.PI);
+			float k = MathHelper.sin(this.handSwingProgress * (float) Math.PI);
+			float l = MathHelper.sin((1.0F - (1.0F - this.handSwingProgress) * (1.0F - this.handSwingProgress)) * (float) Math.PI);
 			this.field_3426.roll = 0.0F;
 			this.field_3417.roll = 0.0F;
 			this.field_3426.yaw = (float) (Math.PI / 20);
@@ -111,13 +111,13 @@ public class EvilVillagerEntityModel<T extends IllagerEntity> extends CompositeE
 			if (illagerEntity.getMainArm() == Arm.RIGHT) {
 				this.field_3426.pitch = -1.8849558F + MathHelper.cos(h * 0.09F) * 0.15F;
 				this.field_3417.pitch = -0.0F + MathHelper.cos(h * 0.19F) * 0.5F;
-				this.field_3426.pitch += l * 2.2F - m * 0.4F;
-				this.field_3417.pitch += l * 1.2F - m * 0.4F;
+				this.field_3426.pitch += k * 2.2F - l * 0.4F;
+				this.field_3417.pitch += k * 1.2F - l * 0.4F;
 			} else {
 				this.field_3426.pitch = -0.0F + MathHelper.cos(h * 0.19F) * 0.5F;
 				this.field_3417.pitch = -1.8849558F + MathHelper.cos(h * 0.09F) * 0.15F;
-				this.field_3426.pitch += l * 1.2F - m * 0.4F;
-				this.field_3417.pitch += l * 2.2F - m * 0.4F;
+				this.field_3426.pitch += k * 1.2F - l * 0.4F;
+				this.field_3417.pitch += k * 2.2F - l * 0.4F;
 			}
 
 			this.field_3426.roll = this.field_3426.roll + MathHelper.cos(h * 0.09F) * 0.05F + 0.05F;
@@ -150,9 +150,9 @@ public class EvilVillagerEntityModel<T extends IllagerEntity> extends CompositeE
 			this.field_3426.yaw = -0.8F;
 			this.field_3426.pitch = -0.97079635F;
 			this.field_3417.pitch = -0.97079635F;
-			float l = MathHelper.clamp(this.field_3424, 0.0F, 25.0F);
-			this.field_3417.yaw = MathHelper.lerp(l / 25.0F, 0.4F, 0.85F);
-			this.field_3417.pitch = MathHelper.lerp(l / 25.0F, this.field_3417.pitch, (float) (-Math.PI / 2));
+			float k = MathHelper.clamp(this.field_3424, 0.0F, 25.0F);
+			this.field_3417.yaw = MathHelper.lerp(k / 25.0F, 0.4F, 0.85F);
+			this.field_3417.pitch = MathHelper.lerp(k / 25.0F, this.field_3417.pitch, (float) (-Math.PI / 2));
 		} else if (state == IllagerEntity.State.CELEBRATING) {
 			this.field_3426.pivotZ = 0.0F;
 			this.field_3426.pivotX = -5.0F;
@@ -191,7 +191,7 @@ public class EvilVillagerEntityModel<T extends IllagerEntity> extends CompositeE
 	}
 
 	@Override
-	public void setArmAngle(float angle, Arm arm, MatrixStack matrixStack) {
-		this.method_2813(arm).rotate(matrixStack, 0.0625F);
+	public void setArmAngle(Arm arm, MatrixStack matrixStack) {
+		this.method_2813(arm).rotate(matrixStack);
 	}
 }

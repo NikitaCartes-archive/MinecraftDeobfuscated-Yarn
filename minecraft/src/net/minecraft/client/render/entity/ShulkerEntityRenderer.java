@@ -26,19 +26,19 @@ public class ShulkerEntityRenderer extends MobEntityRenderer<ShulkerEntity, Shul
 		this.addFeature(new ShulkerSomethingFeatureRenderer(this));
 	}
 
-	public Vec3d method_23189(ShulkerEntity shulkerEntity, double d, double e, double f, float g) {
+	public Vec3d method_23189(ShulkerEntity shulkerEntity, float f) {
 		int i = shulkerEntity.method_7113();
 		if (i > 0 && shulkerEntity.method_7117()) {
 			BlockPos blockPos = shulkerEntity.getAttachedBlock();
 			BlockPos blockPos2 = shulkerEntity.method_7120();
-			double h = (double)((float)i - g) / 6.0;
-			h *= h;
-			double j = (double)(blockPos.getX() - blockPos2.getX()) * h;
-			double k = (double)(blockPos.getY() - blockPos2.getY()) * h;
-			double l = (double)(blockPos.getZ() - blockPos2.getZ()) * h;
-			return new Vec3d(-j, -k, -l);
+			double d = (double)((float)i - f) / 6.0;
+			d *= d;
+			double e = (double)(blockPos.getX() - blockPos2.getX()) * d;
+			double g = (double)(blockPos.getY() - blockPos2.getY()) * d;
+			double h = (double)(blockPos.getZ() - blockPos2.getZ()) * d;
+			return new Vec3d(-e, -g, -h);
 		} else {
-			return super.getPositionOffset(shulkerEntity, d, e, f, g);
+			return super.getPositionOffset(shulkerEntity, f);
 		}
 	}
 

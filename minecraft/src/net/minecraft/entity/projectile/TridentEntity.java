@@ -27,6 +27,7 @@ import net.minecraft.world.World;
 
 public class TridentEntity extends ProjectileEntity {
 	private static final TrackedData<Byte> LOYALTY = DataTracker.registerData(TridentEntity.class, TrackedDataHandlerRegistry.BYTE);
+	private static final TrackedData<Boolean> field_21514 = DataTracker.registerData(TridentEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private ItemStack tridentStack = new ItemStack(Items.TRIDENT);
 	private boolean dealtDamage;
 	public int returnTimer;
@@ -39,6 +40,7 @@ public class TridentEntity extends ProjectileEntity {
 		super(EntityType.TRIDENT, owner, world);
 		this.tridentStack = item.copy();
 		this.dataTracker.set(LOYALTY, (byte)EnchantmentHelper.getLoyalty(item));
+		this.dataTracker.set(field_21514, item.hasEnchantmentGlint());
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -50,6 +52,7 @@ public class TridentEntity extends ProjectileEntity {
 	protected void initDataTracker() {
 		super.initDataTracker();
 		this.dataTracker.startTracking(LOYALTY, (byte)0);
+		this.dataTracker.startTracking(field_21514, false);
 	}
 
 	@Override
@@ -96,6 +99,11 @@ public class TridentEntity extends ProjectileEntity {
 	@Override
 	protected ItemStack asItemStack() {
 		return this.tridentStack.copy();
+	}
+
+	@Environment(EnvType.CLIENT)
+	public boolean method_23751() {
+		return this.dataTracker.get(field_21514);
 	}
 
 	@Nullable
@@ -177,7 +185,7 @@ public class TridentEntity extends ProjectileEntity {
 	}
 
 	@Override
-	protected void age() {
+	public void age() {
 		int i = this.dataTracker.get(LOYALTY);
 		if (this.pickupType != ProjectileEntity.PickupPermission.ALLOWED || i <= 0) {
 			super.age();

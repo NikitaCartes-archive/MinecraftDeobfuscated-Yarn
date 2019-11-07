@@ -20,17 +20,24 @@ public class BufferBuilderStorage {
 			object2ObjectLinkedOpenHashMap.put(
 				RenderLayer.getEntityTranslucent(SpriteAtlasTexture.BLOCK_ATLAS_TEX), this.blockBuilders.get(RenderLayer.getTranslucent())
 			);
-			object2ObjectLinkedOpenHashMap.put(
-				RenderLayer.getTranslucentNoCrumbling(), new BufferBuilder(RenderLayer.getTranslucentNoCrumbling().getExpectedBufferSize())
-			);
-			object2ObjectLinkedOpenHashMap.put(RenderLayer.getGlint(), new BufferBuilder(RenderLayer.getGlint().getExpectedBufferSize()));
-			object2ObjectLinkedOpenHashMap.put(RenderLayer.getEntityGlint(), new BufferBuilder(RenderLayer.getEntityGlint().getExpectedBufferSize()));
-			object2ObjectLinkedOpenHashMap.put(RenderLayer.getWaterMask(), new BufferBuilder(RenderLayer.getWaterMask().getExpectedBufferSize()));
+			method_23798(object2ObjectLinkedOpenHashMap, RenderLayer.getTranslucentNoCrumbling());
+			method_23798(object2ObjectLinkedOpenHashMap, RenderLayer.getGlint());
+			method_23798(object2ObjectLinkedOpenHashMap, RenderLayer.getEntityGlint());
+			method_23798(object2ObjectLinkedOpenHashMap, RenderLayer.getWaterMask());
+
+			for (int i = 0; i < 10; i++) {
+				RenderLayer renderLayer = RenderLayer.getBlockBreaking(i);
+				method_23798(object2ObjectLinkedOpenHashMap, renderLayer);
+			}
 		}
 	);
 	private final VertexConsumerProvider.Immediate entityVertexConsumers = VertexConsumerProvider.immediate(this.entityBuilders, new BufferBuilder(256));
 	private final VertexConsumerProvider.Immediate effectVertexConsumers = VertexConsumerProvider.immediate(new BufferBuilder(256));
 	private final OutlineVertexConsumerProvider outlineVertexConsumers = new OutlineVertexConsumerProvider(this.entityVertexConsumers);
+
+	private static void method_23798(Object2ObjectLinkedOpenHashMap<RenderLayer, BufferBuilder> object2ObjectLinkedOpenHashMap, RenderLayer renderLayer) {
+		object2ObjectLinkedOpenHashMap.put(renderLayer, new BufferBuilder(renderLayer.getExpectedBufferSize()));
+	}
 
 	public BlockBufferBuilderStorage getBlockBufferBuilders() {
 		return this.blockBuilders;

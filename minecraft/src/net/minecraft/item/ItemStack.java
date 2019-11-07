@@ -689,7 +689,6 @@ public final class ItemStack {
 		return Lists.<Text>newArrayList(new LiteralText("missingno").formatted(Formatting.DARK_GRAY));
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean hasEnchantmentGlint() {
 		return this.getItem().hasEnchantmentGlint(this);
 	}

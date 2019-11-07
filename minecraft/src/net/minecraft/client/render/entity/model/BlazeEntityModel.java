@@ -36,7 +36,7 @@ public class BlazeEntityModel<T extends Entity> extends CompositeEntityModel<T> 
 	}
 
 	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch, float scale) {
+	public void setAngles(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch) {
 		float f = age * (float) Math.PI * -0.1F;
 
 		for (int i = 0; i < 4; i++) {

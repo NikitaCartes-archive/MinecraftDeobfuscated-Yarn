@@ -1088,26 +1088,32 @@ public abstract class LivingEntity extends Entity {
 			this.getDamageTracker().update();
 			if (!this.world.isClient) {
 				this.drop(source);
-				boolean bl = false;
-				if (livingEntity instanceof WitherEntity) {
-					if (this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
-						BlockPos blockPos = new BlockPos(this);
-						BlockState blockState = Blocks.WITHER_ROSE.getDefaultState();
-						if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {
-							this.world.setBlockState(blockPos, blockState, 3);
-							bl = true;
-						}
-					}
-
-					if (!bl) {
-						ItemEntity itemEntity = new ItemEntity(this.world, this.getX(), this.getY(), this.getZ(), new ItemStack(Items.WITHER_ROSE));
-						this.world.spawnEntity(itemEntity);
-					}
-				}
+				this.method_23733(livingEntity);
 			}
 
 			this.world.sendEntityStatus(this, (byte)3);
 			this.setPose(EntityPose.DYING);
+		}
+	}
+
+	protected void method_23733(@Nullable LivingEntity livingEntity) {
+		if (!this.world.isClient) {
+			boolean bl = false;
+			if (livingEntity instanceof WitherEntity) {
+				if (this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
+					BlockPos blockPos = new BlockPos(this);
+					BlockState blockState = Blocks.WITHER_ROSE.getDefaultState();
+					if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {
+						this.world.setBlockState(blockPos, blockState, 3);
+						bl = true;
+					}
+				}
+
+				if (!bl) {
+					ItemEntity itemEntity = new ItemEntity(this.world, this.getX(), this.getY(), this.getZ(), new ItemStack(Items.WITHER_ROSE));
+					this.world.spawnEntity(itemEntity);
+				}
+			}
 		}
 	}
 
@@ -1448,8 +1454,10 @@ public abstract class LivingEntity extends Entity {
 					this.playSound(soundEvent2, this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 				}
 
-				this.setHealth(0.0F);
-				this.onDeath(DamageSource.GENERIC);
+				if (!(this instanceof PlayerEntity)) {
+					this.setHealth(0.0F);
+					this.onDeath(DamageSource.GENERIC);
+				}
 				break;
 			case 4:
 			case 5:
@@ -2823,7 +2831,7 @@ public abstract class LivingEntity extends Entity {
 				1.0F + (world.random.nextFloat() - world.random.nextFloat()) * 0.4F
 			);
 			this.applyFoodEffects(stack, world, this);
-			if (this instanceof PlayerEntity && !((PlayerEntity)this).abilities.creativeMode) {
+			if (!(this instanceof PlayerEntity) || !((PlayerEntity)this).abilities.creativeMode) {
 				stack.decrement(1);
 			}
 		}

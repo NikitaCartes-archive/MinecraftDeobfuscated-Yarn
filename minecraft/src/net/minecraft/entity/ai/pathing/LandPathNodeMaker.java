@@ -414,24 +414,26 @@ public class LandPathNodeMaker extends PathNodeMaker {
 			}
 		}
 
-		return method_59(blockView, i, j, k, pathNodeType);
+		if (pathNodeType == PathNodeType.WALKABLE) {
+			pathNodeType = method_59(blockView, i, j, k, pathNodeType);
+		}
+
+		return pathNodeType;
 	}
 
 	public static PathNodeType method_59(BlockView blockView, int i, int j, int k, PathNodeType pathNodeType) {
-		if (pathNodeType == PathNodeType.WALKABLE) {
-			try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
-				for (int l = -1; l <= 1; l++) {
-					for (int m = -1; m <= 1; m++) {
-						for (int n = -1; n <= 1; n++) {
-							if (l != 0 || n != 0) {
-								Block block = blockView.getBlockState(pooledMutable.method_10113(l + i, m + j, n + k)).getBlock();
-								if (block == Blocks.CACTUS) {
-									pathNodeType = PathNodeType.DANGER_CACTUS;
-								} else if (block == Blocks.FIRE || block == Blocks.LAVA) {
-									pathNodeType = PathNodeType.DANGER_FIRE;
-								} else if (block == Blocks.SWEET_BERRY_BUSH) {
-									pathNodeType = PathNodeType.DANGER_OTHER;
-								}
+		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
+			for (int l = -1; l <= 1; l++) {
+				for (int m = -1; m <= 1; m++) {
+					for (int n = -1; n <= 1; n++) {
+						if (l != 0 || n != 0) {
+							Block block = blockView.getBlockState(pooledMutable.method_10113(l + i, m + j, n + k)).getBlock();
+							if (block == Blocks.CACTUS) {
+								pathNodeType = PathNodeType.DANGER_CACTUS;
+							} else if (block == Blocks.FIRE || block == Blocks.LAVA) {
+								pathNodeType = PathNodeType.DANGER_FIRE;
+							} else if (block == Blocks.SWEET_BERRY_BUSH) {
+								pathNodeType = PathNodeType.DANGER_OTHER;
 							}
 						}
 					}
@@ -459,6 +461,8 @@ public class LandPathNodeMaker extends PathNodeMaker {
 			return PathNodeType.DAMAGE_OTHER;
 		} else if (block == Blocks.HONEY_BLOCK) {
 			return PathNodeType.STICKY_HONEY;
+		} else if (block == Blocks.COCOA) {
+			return PathNodeType.COCOA;
 		} else if (block instanceof DoorBlock && material == Material.WOOD && !(Boolean)blockState.get(DoorBlock.OPEN)) {
 			return PathNodeType.DOOR_WOOD_CLOSED;
 		} else if (block instanceof DoorBlock && material == Material.METAL && !(Boolean)blockState.get(DoorBlock.OPEN)) {

@@ -128,6 +128,14 @@ public final class Quaternion {
 		this.components[2] = -this.components[2];
 	}
 
+	@Environment(EnvType.CLIENT)
+	public void method_23758(float f, float g, float h, float i) {
+		this.components[0] = f;
+		this.components[1] = g;
+		this.components[2] = h;
+		this.components[3] = i;
+	}
+
 	private static float cos(float value) {
 		return (float)Math.cos((double)value);
 	}

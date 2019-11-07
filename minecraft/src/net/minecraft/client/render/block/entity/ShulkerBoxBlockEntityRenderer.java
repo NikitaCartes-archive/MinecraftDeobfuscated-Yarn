@@ -28,15 +28,7 @@ public class ShulkerBoxBlockEntityRenderer extends BlockEntityRenderer<ShulkerBo
 	}
 
 	public void method_3574(
-		ShulkerBoxBlockEntity shulkerBoxBlockEntity,
-		double d,
-		double e,
-		double f,
-		float g,
-		MatrixStack matrixStack,
-		VertexConsumerProvider vertexConsumerProvider,
-		int i,
-		int j
+		ShulkerBoxBlockEntity shulkerBoxBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j
 	) {
 		Direction direction = Direction.UP;
 		if (shulkerBoxBlockEntity.hasWorld()) {
@@ -57,16 +49,16 @@ public class ShulkerBoxBlockEntityRenderer extends BlockEntityRenderer<ShulkerBo
 		Sprite sprite = this.getSprite(identifier);
 		matrixStack.push();
 		matrixStack.translate(0.5, 0.5, 0.5);
-		float h = 0.9995F;
+		float g = 0.9995F;
 		matrixStack.scale(0.9995F, 0.9995F, 0.9995F);
 		matrixStack.multiply(direction.getRotationQuaternion());
 		matrixStack.scale(1.0F, -1.0F, -1.0F);
 		matrixStack.translate(0.0, -1.0, 0.0);
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
-		this.model.getBottomShell().render(matrixStack, vertexConsumer, 0.0625F, i, j, sprite);
-		matrixStack.translate(0.0, (double)(-shulkerBoxBlockEntity.getAnimationProgress(g) * 0.5F), 0.0);
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(270.0F * shulkerBoxBlockEntity.getAnimationProgress(g)));
-		this.model.getTopShell().render(matrixStack, vertexConsumer, 0.0625F, i, j, sprite);
+		this.model.getBottomShell().render(matrixStack, vertexConsumer, i, j, sprite);
+		matrixStack.translate(0.0, (double)(-shulkerBoxBlockEntity.getAnimationProgress(f) * 0.5F), 0.0);
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(270.0F * shulkerBoxBlockEntity.getAnimationProgress(f)));
+		this.model.getTopShell().render(matrixStack, vertexConsumer, i, j, sprite);
 		matrixStack.pop();
 	}
 }

@@ -45,8 +45,8 @@ public class WitchEntityModel<T extends Entity> extends VillagerResemblingModel<
 	}
 
 	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch, float scale) {
-		super.setAngles(entity, limbAngle, limbDistance, age, headYaw, headPitch, scale);
+	public void setAngles(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch) {
+		super.setAngles(entity, limbAngle, limbDistance, age, headYaw, headPitch);
 		this.nose.setPivot(0.0F, -2.0F, 0.0F);
 		float f = 0.01F * (float)(entity.getEntityId() % 10);
 		this.nose.pitch = MathHelper.sin((float)entity.age * f) * 4.5F * (float) (Math.PI / 180.0);

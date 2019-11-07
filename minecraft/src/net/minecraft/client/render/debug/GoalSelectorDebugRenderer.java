@@ -8,6 +8,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockPos;
 
 @Environment(EnvType.CLIENT)
@@ -29,7 +31,7 @@ public class GoalSelectorDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	@Override
-	public void render(long limitTime) {
+	public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f, long l) {
 		Camera camera = this.client.gameRenderer.getCamera();
 		RenderSystem.pushMatrix();
 		RenderSystem.enableBlend();
@@ -40,11 +42,11 @@ public class GoalSelectorDebugRenderer implements DebugRenderer.Renderer {
 			for (int i = 0; i < list.size(); i++) {
 				GoalSelectorDebugRenderer.GoalSelector goalSelector = (GoalSelectorDebugRenderer.GoalSelector)list.get(i);
 				if (blockPos.isWithinDistance(goalSelector.pos, 160.0)) {
-					double d = (double)goalSelector.pos.getX() + 0.5;
-					double e = (double)goalSelector.pos.getY() + 2.0 + (double)i * 0.25;
-					double f = (double)goalSelector.pos.getZ() + 0.5;
+					double dx = (double)goalSelector.pos.getX() + 0.5;
+					double ex = (double)goalSelector.pos.getY() + 2.0 + (double)i * 0.25;
+					double fx = (double)goalSelector.pos.getZ() + 0.5;
 					int j = goalSelector.field_18785 ? -16711936 : -3355444;
-					DebugRenderer.drawString(goalSelector.name, d, e, f, j);
+					DebugRenderer.drawString(goalSelector.name, dx, ex, fx, j);
 				}
 			}
 		});

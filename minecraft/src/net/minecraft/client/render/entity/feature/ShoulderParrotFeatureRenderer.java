@@ -22,31 +22,21 @@ public class ShoulderParrotFeatureRenderer<T extends PlayerEntity> extends Featu
 	}
 
 	public void method_4185(
-		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T playerEntity, float f, float g, float h, float j, float k, float l, float m
+		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T playerEntity, float f, float g, float h, float j, float k, float l
 	) {
-		this.renderShoulderParrot(matrixStack, vertexConsumerProvider, i, playerEntity, f, g, h, k, l, m, true);
-		this.renderShoulderParrot(matrixStack, vertexConsumerProvider, i, playerEntity, f, g, h, k, l, m, false);
+		this.renderShoulderParrot(matrixStack, vertexConsumerProvider, i, playerEntity, f, g, k, l, true);
+		this.renderShoulderParrot(matrixStack, vertexConsumerProvider, i, playerEntity, f, g, k, l, false);
 	}
 
 	private void renderShoulderParrot(
-		MatrixStack matrixStack,
-		VertexConsumerProvider vertexConsumerProvider,
-		int i,
-		T playerEntity,
-		float f,
-		float g,
-		float h,
-		float j,
-		float k,
-		float l,
-		boolean bl
+		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T playerEntity, float f, float g, float h, float j, boolean bl
 	) {
 		CompoundTag compoundTag = bl ? playerEntity.getShoulderEntityLeft() : playerEntity.getShoulderEntityRight();
 		EntityType.get(compoundTag.getString("id")).filter(entityType -> entityType == EntityType.PARROT).ifPresent(entityType -> {
 			matrixStack.push();
 			matrixStack.translate(bl ? 0.4F : -0.4F, playerEntity.isInSneakingPose() ? -1.3F : -1.5, 0.0);
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(ParrotEntityRenderer.SKINS[compoundTag.getInt("Variant")]));
-			this.model.method_17106(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, f, g, j, k, l, playerEntity.age);
+			this.model.method_17106(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, f, g, h, j, playerEntity.age);
 			matrixStack.pop();
 		});
 	}

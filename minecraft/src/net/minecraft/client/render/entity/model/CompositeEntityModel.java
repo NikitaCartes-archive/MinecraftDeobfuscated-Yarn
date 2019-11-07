@@ -11,7 +11,7 @@ import net.minecraft.entity.Entity;
 public abstract class CompositeEntityModel<E extends Entity> extends EntityModel<E> {
 	@Override
 	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float r, float g, float b) {
-		this.getParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, r, g, b));
+		this.getParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, null, r, g, b));
 	}
 
 	public abstract Iterable<ModelPart> getParts();

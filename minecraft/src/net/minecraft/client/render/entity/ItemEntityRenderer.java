@@ -44,33 +44,31 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 		return i;
 	}
 
-	public void method_3996(
-		ItemEntity itemEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider
-	) {
+	public void method_3996(ItemEntity itemEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
 		ItemStack itemStack = itemEntity.getStack();
-		int i = itemStack.isEmpty() ? 187 : Item.getRawId(itemStack.getItem()) + itemStack.getDamage();
-		this.random.setSeed((long)i);
+		int j = itemStack.isEmpty() ? 187 : Item.getRawId(itemStack.getItem()) + itemStack.getDamage();
+		this.random.setSeed((long)j);
 		BakedModel bakedModel = this.itemRenderer.getHeldItemModel(itemStack, itemEntity.world, null);
 		boolean bl = bakedModel.hasDepthInGui();
-		int j = this.getRenderedAmount(itemStack);
-		float k = 0.25F;
-		float l = MathHelper.sin(((float)itemEntity.getAge() + h) / 10.0F + itemEntity.hoverHeight) * 0.1F + 0.1F;
+		int k = this.getRenderedAmount(itemStack);
+		float h = 0.25F;
+		float l = MathHelper.sin(((float)itemEntity.getAge() + g) / 10.0F + itemEntity.hoverHeight) * 0.1F + 0.1F;
 		float m = bakedModel.getTransformation().getTransformation(ModelTransformation.Type.GROUND).scale.getY();
 		matrixStack.translate(0.0, (double)(l + 0.25F * m), 0.0);
-		float n = ((float)itemEntity.getAge() + h) / 20.0F + itemEntity.hoverHeight;
+		float n = ((float)itemEntity.getAge() + g) / 20.0F + itemEntity.hoverHeight;
 		matrixStack.multiply(Vector3f.POSITIVE_Y.method_23626(n));
 		float o = bakedModel.getTransformation().ground.scale.getX();
 		float p = bakedModel.getTransformation().ground.scale.getY();
 		float q = bakedModel.getTransformation().ground.scale.getZ();
 		if (!bl) {
-			float r = -0.0F * (float)(j - 1) * 0.5F * o;
-			float s = -0.0F * (float)(j - 1) * 0.5F * p;
-			float t = -0.09375F * (float)(j - 1) * 0.5F * q;
+			float r = -0.0F * (float)(k - 1) * 0.5F * o;
+			float s = -0.0F * (float)(k - 1) * 0.5F * p;
+			float t = -0.09375F * (float)(k - 1) * 0.5F * q;
 			matrixStack.translate((double)r, (double)s, (double)t);
 		}
 
-		for (int u = 0; u < j; u++) {
+		for (int u = 0; u < k; u++) {
 			matrixStack.push();
 			if (u > 0) {
 				if (bl) {
@@ -86,16 +84,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 			}
 
 			this.itemRenderer
-				.method_23179(
-					itemStack,
-					ModelTransformation.Type.GROUND,
-					false,
-					matrixStack,
-					vertexConsumerProvider,
-					itemEntity.getLightmapCoordinates(),
-					OverlayTexture.DEFAULT_UV,
-					bakedModel
-				);
+				.method_23179(itemStack, ModelTransformation.Type.GROUND, false, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV, bakedModel);
 			matrixStack.pop();
 			if (!bl) {
 				matrixStack.translate((double)(0.0F * o), (double)(0.0F * p), (double)(0.09375F * q));
@@ -103,7 +92,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 		}
 
 		matrixStack.pop();
-		super.render(itemEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
+		super.render(itemEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
 	public Identifier method_3999(ItemEntity itemEntity) {

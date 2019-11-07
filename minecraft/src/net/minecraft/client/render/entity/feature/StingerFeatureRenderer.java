@@ -8,6 +8,7 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
+import net.minecraft.client.util.math.Matrix3f;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
@@ -30,41 +31,44 @@ public class StingerFeatureRenderer<T extends LivingEntity, M extends PlayerEnti
 	}
 
 	@Override
-	protected void renderThing(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, Entity entity, float z, float tickDelta, float f, float g) {
-		float h = MathHelper.sqrt(z * z + f * f);
-		float i = (float)(Math.atan2((double)z, (double)f) * 180.0F / (float)Math.PI);
-		float j = (float)(Math.atan2((double)tickDelta, (double)h) * 180.0F / (float)Math.PI);
+	protected void renderThing(
+		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, Entity entity, float tickDelta, float f, float g, float h
+	) {
+		float j = MathHelper.sqrt(tickDelta * tickDelta + g * g);
+		float k = (float)(Math.atan2((double)tickDelta, (double)g) * 180.0F / (float)Math.PI);
+		float l = (float)(Math.atan2((double)f, (double)j) * 180.0F / (float)Math.PI);
 		matrixStack.translate(0.0, 0.0, 0.0);
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(i - 90.0F));
-		matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(j));
-		float k = 0.0F;
-		float l = 0.125F;
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(k - 90.0F));
+		matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(l));
 		float m = 0.0F;
-		float n = 0.0625F;
-		float o = 0.03125F;
+		float n = 0.125F;
+		float o = 0.0F;
+		float p = 0.0625F;
+		float q = 0.03125F;
 		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(45.0F));
 		matrixStack.scale(0.03125F, 0.03125F, 0.03125F);
 		matrixStack.translate(2.5, 0.0, 0.0);
-		int p = entity.getLightmapCoordinates();
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(field_20529));
 
-		for (int q = 0; q < 4; q++) {
+		for (int r = 0; r < 4; r++) {
 			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0F));
-			Matrix4f matrix4f = matrixStack.peekModel();
-			method_23295(vertexConsumer, matrix4f, -4.5F, -1, 0.0F, 0.0F, p);
-			method_23295(vertexConsumer, matrix4f, 4.5F, -1, 0.125F, 0.0F, p);
-			method_23295(vertexConsumer, matrix4f, 4.5F, 1, 0.125F, 0.0625F, p);
-			method_23295(vertexConsumer, matrix4f, -4.5F, 1, 0.0F, 0.0625F, p);
+			MatrixStack.Entry entry = matrixStack.method_23760();
+			Matrix4f matrix4f = entry.method_23761();
+			Matrix3f matrix3f = entry.method_23762();
+			method_23295(vertexConsumer, matrix4f, matrix3f, -4.5F, -1, 0.0F, 0.0F, i);
+			method_23295(vertexConsumer, matrix4f, matrix3f, 4.5F, -1, 0.125F, 0.0F, i);
+			method_23295(vertexConsumer, matrix4f, matrix3f, 4.5F, 1, 0.125F, 0.0625F, i);
+			method_23295(vertexConsumer, matrix4f, matrix3f, -4.5F, 1, 0.0F, 0.0625F, i);
 		}
 	}
 
-	private static void method_23295(VertexConsumer vertexConsumer, Matrix4f matrix4f, float f, int i, float g, float h, int j) {
+	private static void method_23295(VertexConsumer vertexConsumer, Matrix4f matrix4f, Matrix3f matrix3f, float f, int i, float g, float h, int j) {
 		vertexConsumer.vertex(matrix4f, f, (float)i, 0.0F)
 			.color(255, 255, 255, 255)
 			.texture(g, h)
 			.overlay(OverlayTexture.DEFAULT_UV)
 			.light(j)
-			.normal(0.0F, 1.0F, 0.0F)
+			.method_23763(matrix3f, 0.0F, 1.0F, 0.0F)
 			.next();
 	}
 }

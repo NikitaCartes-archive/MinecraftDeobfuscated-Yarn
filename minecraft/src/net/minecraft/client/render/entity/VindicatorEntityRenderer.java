@@ -28,11 +28,10 @@ public class VindicatorEntityRenderer extends IllagerEntityRenderer<VindicatorEn
 					float h,
 					float j,
 					float k,
-					float l,
-					float m
+					float l
 				) {
 					if (vindicatorEntity.isAttacking()) {
-						super.method_17162(matrixStack, vertexConsumerProvider, i, vindicatorEntity, f, g, h, j, k, l, m);
+						super.method_17162(matrixStack, vertexConsumerProvider, i, vindicatorEntity, f, g, h, j, k, l);
 					}
 				}
 			}

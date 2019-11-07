@@ -18,36 +18,27 @@ public class MobSpawnerBlockEntityRenderer extends BlockEntityRenderer<MobSpawne
 	}
 
 	public void method_3589(
-		MobSpawnerBlockEntity mobSpawnerBlockEntity,
-		double d,
-		double e,
-		double f,
-		float g,
-		MatrixStack matrixStack,
-		VertexConsumerProvider vertexConsumerProvider,
-		int i,
-		int j
+		MobSpawnerBlockEntity mobSpawnerBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j
 	) {
 		matrixStack.push();
 		matrixStack.translate(0.5, 0.0, 0.5);
 		MobSpawnerLogic mobSpawnerLogic = mobSpawnerBlockEntity.getLogic();
 		Entity entity = mobSpawnerLogic.getRenderedEntity();
 		if (entity != null) {
-			float h = 0.53125F;
-			float k = Math.max(entity.getWidth(), entity.getHeight());
-			if ((double)k > 1.0) {
-				h /= k;
+			float g = 0.53125F;
+			float h = Math.max(entity.getWidth(), entity.getHeight());
+			if ((double)h > 1.0) {
+				g /= h;
 			}
 
 			matrixStack.translate(0.0, 0.4F, 0.0);
 			matrixStack.multiply(
-				Vector3f.POSITIVE_Y.getRotationQuaternion((float)MathHelper.lerp((double)g, mobSpawnerLogic.method_8279(), mobSpawnerLogic.method_8278()) * 10.0F)
+				Vector3f.POSITIVE_Y.getRotationQuaternion((float)MathHelper.lerp((double)f, mobSpawnerLogic.method_8279(), mobSpawnerLogic.method_8278()) * 10.0F)
 			);
 			matrixStack.translate(0.0, -0.2F, 0.0);
 			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-30.0F));
-			matrixStack.scale(h, h, h);
-			entity.setPositionAndAngles(d, e, f, 0.0F, 0.0F);
-			MinecraftClient.getInstance().getEntityRenderManager().render(entity, 0.0, 0.0, 0.0, 0.0F, g, matrixStack, vertexConsumerProvider);
+			matrixStack.scale(g, g, g);
+			MinecraftClient.getInstance().getEntityRenderManager().render(entity, 0.0, 0.0, 0.0, 0.0F, f, matrixStack, vertexConsumerProvider, i);
 		}
 
 		matrixStack.pop();

@@ -7,8 +7,8 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.block.BeeHiveBlock;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.FireBlock;
+import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.BeeEntity;
@@ -23,7 +23,6 @@ import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
 
 public class BeeHiveBlockEntity extends BlockEntity implements Tickable {
 	private final List<BeeHiveBlockEntity.Bee> bees = Lists.<BeeHiveBlockEntity.Bee>newArrayList();
@@ -71,7 +70,7 @@ public class BeeHiveBlockEntity extends BlockEntity implements Tickable {
 				if (entity instanceof BeeEntity) {
 					BeeEntity beeEntity = (BeeEntity)entity;
 					if (playerEntity.getPos().squaredDistanceTo(entity.getPos()) <= 16.0) {
-						if (!this.isBeingSmoked(this.world, this.getPos())) {
+						if (!BeeHiveBlock.method_23755(this.world, this.getPos())) {
 							beeEntity.setBeeAttacker(playerEntity);
 						} else {
 							beeEntity.setCannotEnterHiveTicks(400);
@@ -82,17 +81,6 @@ public class BeeHiveBlockEntity extends BlockEntity implements Tickable {
 		}
 	}
 
-	private boolean isBeingSmoked(World world, BlockPos blockPos) {
-		for (int i = 1; i <= 5; i++) {
-			BlockState blockState = world.getBlockState(blockPos.down(i));
-			if (!blockState.isAir()) {
-				return blockState.getBlock() == Blocks.CAMPFIRE;
-			}
-		}
-
-		return false;
-	}
-
 	private List<Entity> tryReleaseBee(BlockState blockState, BeeHiveBlockEntity.BeeState beeState) {
 		List<Entity> list = Lists.<Entity>newArrayList();
 		this.bees.removeIf(bee -> this.releaseBee(blockState, bee.entityData, list, beeState));
@@ -101,6 +89,10 @@ public class BeeHiveBlockEntity extends BlockEntity implements Tickable {
 
 	public void tryEnterHive(Entity entity, boolean hasNectar) {
 		this.tryEnterHive(entity, hasNectar, 0);
+	}
+
+	protected void method_23757() {
+		DebugRendererInfoManager.method_23856(this);
 	}
 
 	public void tryEnterHive(Entity entity, boolean hasNectar, int ticksInHive) {
@@ -250,6 +242,8 @@ public class BeeHiveBlockEntity extends BlockEntity implements Tickable {
 				double f = (double)blockPos.getZ() + 0.5;
 				this.world.playSound(null, d, e, f, SoundEvents.BLOCK_BEEHIVE_WORK, SoundCategory.BLOCKS, 1.0F, 1.0F);
 			}
+
+			this.method_23757();
 		}
 	}
 

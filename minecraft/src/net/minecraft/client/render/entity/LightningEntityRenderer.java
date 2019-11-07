@@ -18,24 +18,22 @@ public class LightningEntityRenderer extends EntityRenderer<LightningEntity> {
 		super(entityRenderDispatcher);
 	}
 
-	public void method_4034(
-		LightningEntity lightningEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider
-	) {
+	public void method_4034(LightningEntity lightningEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		float[] fs = new float[8];
 		float[] gs = new float[8];
-		float i = 0.0F;
+		float h = 0.0F;
 		float j = 0.0F;
 		Random random = new Random(lightningEntity.seed);
 
 		for (int k = 7; k >= 0; k--) {
-			fs[k] = i;
+			fs[k] = h;
 			gs[k] = j;
-			i += (float)(random.nextInt(11) - 5);
+			h += (float)(random.nextInt(11) - 5);
 			j += (float)(random.nextInt(11) - 5);
 		}
 
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getLightning());
-		Matrix4f matrix4f = matrixStack.peekModel();
+		Matrix4f matrix4f = matrixStack.method_23760().method_23761();
 
 		for (int l = 0; l < 4; l++) {
 			Random random2 = new Random(lightningEntity.seed);
@@ -51,7 +49,7 @@ public class LightningEntityRenderer extends EntityRenderer<LightningEntity> {
 					o = n - 2;
 				}
 
-				float p = fs[n] - i;
+				float p = fs[n] - h;
 				float q = gs[n] - j;
 
 				for (int r = n; r >= o; r--) {

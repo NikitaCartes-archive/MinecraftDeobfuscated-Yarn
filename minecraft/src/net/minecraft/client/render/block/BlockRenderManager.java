@@ -13,7 +13,6 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.BuiltinModelItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resource.ResourceManager;
@@ -87,29 +86,21 @@ public class BlockRenderManager implements SynchronousResourceReloadListener {
 		return this.models.getModel(state);
 	}
 
-	public void renderBlockAsEntity(BlockState state, MatrixStack matrix, VertexConsumerProvider vertexConsumer, int light, int overlay) {
+	public void renderBlockAsEntity(BlockState state, MatrixStack matrixStack, VertexConsumerProvider vertexConsumer, int light, int overlay) {
 		BlockRenderType blockRenderType = state.getRenderType();
 		if (blockRenderType != BlockRenderType.INVISIBLE) {
 			switch (blockRenderType) {
 				case MODEL:
 					BakedModel bakedModel = this.getModel(state);
-					matrix.push();
-					matrix.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(90.0F));
 					int i = this.blockColors.getColor(state, null, null, 0);
 					float f = (float)(i >> 16 & 0xFF) / 255.0F;
 					float g = (float)(i >> 8 & 0xFF) / 255.0F;
 					float h = (float)(i & 0xFF) / 255.0F;
 					this.blockModelRenderer
-						.render(
-							matrix.peekModel(), matrix.peekNormal(), vertexConsumer.getBuffer(RenderLayers.getEntityBlockLayer(state)), state, bakedModel, f, g, h, light, overlay
-						);
-					matrix.pop();
+						.render(matrixStack.method_23760(), vertexConsumer.getBuffer(RenderLayers.getEntityBlockLayer(state)), state, bakedModel, f, g, h, light, overlay);
 					break;
 				case ENTITYBLOCK_ANIMATED:
-					matrix.push();
-					matrix.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(90.0F));
-					BuiltinModelItemRenderer.INSTANCE.render(new ItemStack(state.getBlock()), matrix, vertexConsumer, light, overlay);
-					matrix.pop();
+					BuiltinModelItemRenderer.INSTANCE.render(new ItemStack(state.getBlock()), matrixStack, vertexConsumer, light, overlay);
 			}
 		}
 	}

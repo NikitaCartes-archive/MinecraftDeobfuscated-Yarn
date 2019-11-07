@@ -22,13 +22,14 @@ import net.minecraft.util.math.Vec3d;
 
 public abstract class CommandBlockExecutor implements CommandOutput {
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm:ss");
+	private static final Text field_21515 = new LiteralText("@");
 	private long lastExecution = -1L;
 	private boolean updateLastExecution = true;
 	private int successCount;
 	private boolean trackOutput = true;
 	private Text lastOutput;
 	private String command = "";
-	private Text customName = new LiteralText("@");
+	private Text customName = field_21515;
 
 	public int getSuccessCount() {
 		return this.successCount;
@@ -63,7 +64,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		this.command = compoundTag.getString("Command");
 		this.successCount = compoundTag.getInt("SuccessCount");
 		if (compoundTag.contains("CustomName", 8)) {
-			this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
+			this.setCustomName(Text.Serializer.fromJson(compoundTag.getString("CustomName")));
 		}
 
 		if (compoundTag.contains("TrackOutput", 1)) {
@@ -142,8 +143,12 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		return this.customName;
 	}
 
-	public void setCustomName(Text customName) {
-		this.customName = customName;
+	public void setCustomName(@Nullable Text text) {
+		if (text != null) {
+			this.customName = text;
+		} else {
+			this.customName = field_21515;
+		}
 	}
 
 	@Override

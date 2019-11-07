@@ -25,25 +25,25 @@ public class FlintAndSteelItem extends Item {
 		PlayerEntity playerEntity = context.getPlayer();
 		IWorld iWorld = context.getWorld();
 		BlockPos blockPos = context.getBlockPos();
-		BlockPos blockPos2 = blockPos.offset(context.getSide());
-		if (canIgnite(iWorld.getBlockState(blockPos2), iWorld, blockPos2)) {
-			iWorld.playSound(playerEntity, blockPos2, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, RANDOM.nextFloat() * 0.4F + 0.8F);
-			BlockState blockState = ((FireBlock)Blocks.FIRE).getStateForPosition(iWorld, blockPos2);
-			iWorld.setBlockState(blockPos2, blockState, 11);
-			ItemStack itemStack = context.getStack();
-			if (playerEntity instanceof ServerPlayerEntity) {
-				Criterions.PLACED_BLOCK.trigger((ServerPlayerEntity)playerEntity, blockPos2, itemStack);
-				itemStack.damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
+		BlockState blockState = iWorld.getBlockState(blockPos);
+		if (isIgnitable(blockState)) {
+			iWorld.playSound(playerEntity, blockPos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, RANDOM.nextFloat() * 0.4F + 0.8F);
+			iWorld.setBlockState(blockPos, blockState.with(Properties.LIT, Boolean.valueOf(true)), 11);
+			if (playerEntity != null) {
+				context.getStack().damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
 			}
 
 			return ActionResult.SUCCESS;
 		} else {
-			BlockState blockState = iWorld.getBlockState(blockPos);
-			if (isIgnitable(blockState)) {
-				iWorld.playSound(playerEntity, blockPos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, RANDOM.nextFloat() * 0.4F + 0.8F);
-				iWorld.setBlockState(blockPos, blockState.with(Properties.LIT, Boolean.valueOf(true)), 11);
-				if (playerEntity != null) {
-					context.getStack().damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
+			BlockPos blockPos2 = blockPos.offset(context.getSide());
+			if (canIgnite(iWorld.getBlockState(blockPos2), iWorld, blockPos2)) {
+				iWorld.playSound(playerEntity, blockPos2, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, RANDOM.nextFloat() * 0.4F + 0.8F);
+				BlockState blockState2 = ((FireBlock)Blocks.FIRE).getStateForPosition(iWorld, blockPos2);
+				iWorld.setBlockState(blockPos2, blockState2, 11);
+				ItemStack itemStack = context.getStack();
+				if (playerEntity instanceof ServerPlayerEntity) {
+					Criterions.PLACED_BLOCK.trigger((ServerPlayerEntity)playerEntity, blockPos2, itemStack);
+					itemStack.damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
 				}
 
 				return ActionResult.SUCCESS;

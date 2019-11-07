@@ -46,28 +46,28 @@ public class PolarBearEntityModel<T extends PolarBearEntity> extends QuadrupedEn
 		this.leg4.pivotZ--;
 	}
 
-	public void method_17114(T polarBearEntity, float f, float g, float h, float i, float j, float k) {
-		super.setAngles(polarBearEntity, f, g, h, i, j, k);
-		float l = h - (float)polarBearEntity.age;
-		float m = polarBearEntity.getWarningAnimationProgress(l);
-		m *= m;
-		float n = 1.0F - m;
-		this.body.pitch = (float) (Math.PI / 2) - m * (float) Math.PI * 0.35F;
-		this.body.pivotY = 9.0F * n + 11.0F * m;
-		this.leg3.pivotY = 14.0F * n - 6.0F * m;
-		this.leg3.pivotZ = -8.0F * n - 4.0F * m;
-		this.leg3.pitch -= m * (float) Math.PI * 0.45F;
+	public void method_17114(T polarBearEntity, float f, float g, float h, float i, float j) {
+		super.setAngles(polarBearEntity, f, g, h, i, j);
+		float k = h - (float)polarBearEntity.age;
+		float l = polarBearEntity.getWarningAnimationProgress(k);
+		l *= l;
+		float m = 1.0F - l;
+		this.body.pitch = (float) (Math.PI / 2) - l * (float) Math.PI * 0.35F;
+		this.body.pivotY = 9.0F * m + 11.0F * l;
+		this.leg3.pivotY = 14.0F * m - 6.0F * l;
+		this.leg3.pivotZ = -8.0F * m - 4.0F * l;
+		this.leg3.pitch -= l * (float) Math.PI * 0.45F;
 		this.leg4.pivotY = this.leg3.pivotY;
 		this.leg4.pivotZ = this.leg3.pivotZ;
-		this.leg4.pitch -= m * (float) Math.PI * 0.45F;
+		this.leg4.pitch -= l * (float) Math.PI * 0.45F;
 		if (this.isChild) {
-			this.head.pivotY = 10.0F * n - 9.0F * m;
-			this.head.pivotZ = -16.0F * n - 7.0F * m;
+			this.head.pivotY = 10.0F * m - 9.0F * l;
+			this.head.pivotZ = -16.0F * m - 7.0F * l;
 		} else {
-			this.head.pivotY = 10.0F * n - 14.0F * m;
-			this.head.pivotZ = -16.0F * n - 3.0F * m;
+			this.head.pivotY = 10.0F * m - 14.0F * l;
+			this.head.pivotZ = -16.0F * m - 3.0F * l;
 		}
 
-		this.head.pitch += m * (float) Math.PI * 0.15F;
+		this.head.pitch += l * (float) Math.PI * 0.15F;
 	}
 }

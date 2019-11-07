@@ -435,11 +435,11 @@ public class TurtleEntity extends AnimalEntity {
 				Vec3d vec3d = new Vec3d(blockPos);
 				Vec3d vec3d2 = TargetFinder.findTargetTowards(this.turtle, 16, 3, vec3d, (float) (Math.PI / 10));
 				if (vec3d2 == null) {
-					vec3d2 = TargetFinder.findTargetTowards(this.turtle, 8, 7, vec3d);
+					vec3d2 = TargetFinder.method_23735(this.turtle, 8, 7, vec3d);
 				}
 
 				if (vec3d2 != null && !bl && this.turtle.world.getBlockState(new BlockPos(vec3d2)).getBlock() != Blocks.WATER) {
-					vec3d2 = TargetFinder.findTargetTowards(this.turtle, 16, 5, vec3d);
+					vec3d2 = TargetFinder.method_23735(this.turtle, 16, 5, vec3d);
 				}
 
 				if (vec3d2 == null) {
@@ -579,7 +579,7 @@ public class TurtleEntity extends AnimalEntity {
 				Vec3d vec3d = new Vec3d(this.turtle.getTravelPos());
 				Vec3d vec3d2 = TargetFinder.findTargetTowards(this.turtle, 16, 3, vec3d, (float) (Math.PI / 10));
 				if (vec3d2 == null) {
-					vec3d2 = TargetFinder.findTargetTowards(this.turtle, 8, 7, vec3d);
+					vec3d2 = TargetFinder.method_23735(this.turtle, 8, 7, vec3d);
 				}
 
 				if (vec3d2 != null) {

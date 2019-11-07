@@ -30,42 +30,42 @@ public class ElytraEntityModel<T extends LivingEntity> extends AnimalModel<T> {
 		return ImmutableList.<ModelPart>of(this.field_3365, this.field_3364);
 	}
 
-	public void method_17079(T livingEntity, float f, float g, float h, float i, float j, float k) {
-		float l = (float) (Math.PI / 12);
-		float m = (float) (-Math.PI / 12);
+	public void method_17079(T livingEntity, float f, float g, float h, float i, float j) {
+		float k = (float) (Math.PI / 12);
+		float l = (float) (-Math.PI / 12);
+		float m = 0.0F;
 		float n = 0.0F;
-		float o = 0.0F;
 		if (livingEntity.isFallFlying()) {
-			float p = 1.0F;
+			float o = 1.0F;
 			Vec3d vec3d = livingEntity.getVelocity();
 			if (vec3d.y < 0.0) {
 				Vec3d vec3d2 = vec3d.normalize();
-				p = 1.0F - (float)Math.pow(-vec3d2.y, 1.5);
+				o = 1.0F - (float)Math.pow(-vec3d2.y, 1.5);
 			}
 
-			l = p * (float) (Math.PI / 9) + (1.0F - p) * l;
-			m = p * (float) (-Math.PI / 2) + (1.0F - p) * m;
+			k = o * (float) (Math.PI / 9) + (1.0F - o) * k;
+			l = o * (float) (-Math.PI / 2) + (1.0F - o) * l;
 		} else if (livingEntity.isInSneakingPose()) {
-			l = (float) (Math.PI * 2.0 / 9.0);
-			m = (float) (-Math.PI / 4);
-			n = 3.0F;
-			o = 0.08726646F;
+			k = (float) (Math.PI * 2.0 / 9.0);
+			l = (float) (-Math.PI / 4);
+			m = 3.0F;
+			n = 0.08726646F;
 		}
 
 		this.field_3365.pivotX = 5.0F;
-		this.field_3365.pivotY = n;
+		this.field_3365.pivotY = m;
 		if (livingEntity instanceof AbstractClientPlayerEntity) {
 			AbstractClientPlayerEntity abstractClientPlayerEntity = (AbstractClientPlayerEntity)livingEntity;
-			abstractClientPlayerEntity.elytraPitch = (float)((double)abstractClientPlayerEntity.elytraPitch + (double)(l - abstractClientPlayerEntity.elytraPitch) * 0.1);
-			abstractClientPlayerEntity.elytraYaw = (float)((double)abstractClientPlayerEntity.elytraYaw + (double)(o - abstractClientPlayerEntity.elytraYaw) * 0.1);
-			abstractClientPlayerEntity.elytraRoll = (float)((double)abstractClientPlayerEntity.elytraRoll + (double)(m - abstractClientPlayerEntity.elytraRoll) * 0.1);
+			abstractClientPlayerEntity.elytraPitch = (float)((double)abstractClientPlayerEntity.elytraPitch + (double)(k - abstractClientPlayerEntity.elytraPitch) * 0.1);
+			abstractClientPlayerEntity.elytraYaw = (float)((double)abstractClientPlayerEntity.elytraYaw + (double)(n - abstractClientPlayerEntity.elytraYaw) * 0.1);
+			abstractClientPlayerEntity.elytraRoll = (float)((double)abstractClientPlayerEntity.elytraRoll + (double)(l - abstractClientPlayerEntity.elytraRoll) * 0.1);
 			this.field_3365.pitch = abstractClientPlayerEntity.elytraPitch;
 			this.field_3365.yaw = abstractClientPlayerEntity.elytraYaw;
 			this.field_3365.roll = abstractClientPlayerEntity.elytraRoll;
 		} else {
-			this.field_3365.pitch = l;
-			this.field_3365.roll = m;
-			this.field_3365.yaw = o;
+			this.field_3365.pitch = k;
+			this.field_3365.roll = l;
+			this.field_3365.yaw = n;
 		}
 
 		this.field_3364.pivotX = -this.field_3365.pivotX;

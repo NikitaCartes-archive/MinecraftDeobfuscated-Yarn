@@ -19,13 +19,17 @@ import net.minecraft.block.entity.EnderChestBlockEntity;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.block.entity.TrappedChestBlockEntity;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.block.entity.BannerBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.SkullBlockEntityRenderer;
 import net.minecraft.client.render.entity.model.ShieldEntityModel;
 import net.minecraft.client.render.entity.model.TridentEntityModel;
-import net.minecraft.client.texture.TextureCache;
+import net.minecraft.client.render.model.ModelLoader;
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -35,7 +39,6 @@ import net.minecraft.item.ShieldItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.DyeColor;
-import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.StringUtils;
 
 @Environment(EnvType.CLIENT)
@@ -72,8 +75,8 @@ public class BuiltinModelItemRenderer {
 					if (compoundTag.contains("SkullOwner", 10)) {
 						gameProfile = NbtHelper.toGameProfile(compoundTag.getCompound("SkullOwner"));
 					} else if (compoundTag.contains("SkullOwner", 8) && !StringUtils.isBlank(compoundTag.getString("SkullOwner"))) {
-						GameProfile var13 = new GameProfile(null, compoundTag.getString("SkullOwner"));
-						gameProfile = SkullBlockEntity.loadProperties(var13);
+						GameProfile var14 = new GameProfile(null, compoundTag.getString("SkullOwner"));
+						gameProfile = SkullBlockEntity.loadProperties(var14);
 						compoundTag.remove("SkullOwner");
 						compoundTag.put("SkullOwner", NbtHelper.fromGameProfile(new CompoundTag(), gameProfile));
 					}
@@ -98,20 +101,21 @@ public class BuiltinModelItemRenderer {
 			}
 		} else {
 			if (item == Items.SHIELD) {
-				Identifier identifier;
-				if (stack.getSubTag("BlockEntityTag") != null) {
-					this.renderBanner.readFrom(stack, ShieldItem.getColor(stack));
-					identifier = TextureCache.SHIELD.get(this.renderBanner.getPatternCacheKey(), this.renderBanner.getPatterns(), this.renderBanner.getPatternColors());
-				} else {
-					identifier = TextureCache.DEFAULT_SHIELD;
-				}
-
+				boolean bl = stack.getSubTag("BlockEntityTag") != null;
+				SpriteAtlasTexture spriteAtlasTexture = MinecraftClient.getInstance().getSpriteAtlas();
 				matrix.push();
 				matrix.scale(1.0F, -1.0F, -1.0F);
 				VertexConsumer vertexConsumer = ItemRenderer.getArmorVertexConsumer(
-					vertexConsumerProvider, this.modelShield.getLayer(identifier), false, stack.hasEnchantmentGlint()
+					vertexConsumerProvider, this.modelShield.getLayer(SpriteAtlasTexture.BLOCK_ATLAS_TEX), false, stack.hasEnchantmentGlint()
 				);
-				this.modelShield.render(matrix, vertexConsumer, light, overlay, 1.0F, 1.0F, 1.0F);
+				Sprite sprite = spriteAtlasTexture.getSprite(bl ? ModelLoader.field_21557 : ModelLoader.field_21558);
+				this.modelShield.method_23775().render(matrix, vertexConsumer, light, overlay, sprite, 1.0F, 1.0F, 1.0F);
+				this.modelShield.method_23774().render(matrix, vertexConsumer, light, overlay, sprite, 1.0F, 1.0F, 1.0F);
+				if (bl) {
+					this.renderBanner.readFrom(stack, ShieldItem.getColor(stack));
+					BannerBlockEntityRenderer.method_23802(this.renderBanner, matrix, vertexConsumerProvider, light, overlay, this.modelShield.method_23774(), false);
+				}
+
 				matrix.pop();
 			} else if (item == Items.TRIDENT) {
 				matrix.push();

@@ -560,8 +560,15 @@ public abstract class MobEntity extends LivingEntity {
 		return false;
 	}
 
-	protected void checkDespawn() {
-		if (!this.isPersistent() && !this.cannotDespawn()) {
+	protected boolean method_23734() {
+		return false;
+	}
+
+	@Override
+	public void checkDespawn() {
+		if (this.world.getDifficulty() == Difficulty.PEACEFUL && this.method_23734()) {
+			this.remove();
+		} else if (!this.isPersistent() && !this.cannotDespawn()) {
 			Entity entity = this.world.getClosestPlayer(this, -1.0);
 			if (entity != null) {
 				double d = entity.squaredDistanceTo(this);
@@ -583,9 +590,6 @@ public abstract class MobEntity extends LivingEntity {
 	@Override
 	protected final void tickNewAi() {
 		this.despawnCounter++;
-		this.world.getProfiler().push("checkDespawn");
-		this.checkDespawn();
-		this.world.getProfiler().pop();
 		this.world.getProfiler().push("sensing");
 		this.visibilityCache.clear();
 		this.world.getProfiler().pop();

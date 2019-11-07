@@ -113,7 +113,7 @@ public class HorseEntityModel<T extends HorseBaseEntity> extends AnimalModel<T> 
 		modelPart.addChild(modelPart3);
 	}
 
-	public void method_17085(T horseBaseEntity, float f, float g, float h, float i, float j, float k) {
+	public void method_17085(T horseBaseEntity, float f, float g, float h, float i, float j) {
 		boolean bl = horseBaseEntity.isSaddled();
 		boolean bl2 = horseBaseEntity.hasPassengers();
 

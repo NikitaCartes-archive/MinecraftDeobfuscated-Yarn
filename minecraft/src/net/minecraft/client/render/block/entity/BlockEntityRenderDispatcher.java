@@ -12,6 +12,7 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.entity.model.ShulkerEntityModel;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
@@ -19,7 +20,6 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
@@ -75,51 +75,29 @@ public class BlockEntityRenderDispatcher {
 		this.crosshairTarget = crosshairTarget;
 	}
 
-	public <E extends BlockEntity> void render(
-		E blockEntity, float tickDelta, MatrixStack matrix, VertexConsumerProvider vertexConsumerProvider, double x, double y, double z
-	) {
+	public <E extends BlockEntity> void render(E blockEntity, float tickDelta, MatrixStack matrix, VertexConsumerProvider vertexConsumerProvider) {
 		if (blockEntity.getSquaredDistance(this.camera.getPos().x, this.camera.getPos().y, this.camera.getPos().z) < blockEntity.getSquaredRenderDistance()) {
 			BlockEntityRenderer<E> blockEntityRenderer = this.get(blockEntity);
 			if (blockEntityRenderer != null) {
 				if (blockEntity.hasWorld() && blockEntity.getType().supports(blockEntity.getCachedState().getBlock())) {
-					BlockPos blockPos = blockEntity.getPos();
-					runReported(
-						blockEntity,
-						() -> render(
-								blockEntityRenderer,
-								blockEntity,
-								(double)blockPos.getX() - x,
-								(double)blockPos.getY() - y,
-								(double)blockPos.getZ() - z,
-								tickDelta,
-								matrix,
-								vertexConsumerProvider
-							)
-					);
+					runReported(blockEntity, () -> render(blockEntityRenderer, blockEntity, tickDelta, matrix, vertexConsumerProvider));
 				}
 			}
 		}
 	}
 
 	private static <T extends BlockEntity> void render(
-		BlockEntityRenderer<T> renderer,
-		T blockEntity,
-		double x,
-		double y,
-		double z,
-		float tickDelta,
-		MatrixStack matrix,
-		VertexConsumerProvider vertexConsumerProvider
+		BlockEntityRenderer<T> renderer, T blockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider
 	) {
 		World world = blockEntity.getWorld();
 		int i;
 		if (world != null) {
-			i = world.getLightmapCoordinates(blockEntity.getPos());
+			i = WorldRenderer.method_23794(world, blockEntity.getPos());
 		} else {
 			i = 15728880;
 		}
 
-		renderer.render(blockEntity, x, y, z, tickDelta, matrix, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV);
+		renderer.render(blockEntity, f, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV);
 	}
 
 	@Deprecated
@@ -134,7 +112,7 @@ public class BlockEntityRenderDispatcher {
 		if (blockEntityRenderer == null) {
 			return true;
 		} else {
-			runReported(entity, () -> blockEntityRenderer.render(entity, 0.0, 0.0, 0.0, 0.0F, matrix, vertexConsumerProvider, light, overlay));
+			runReported(entity, () -> blockEntityRenderer.render(entity, 0.0F, matrix, vertexConsumerProvider, light, overlay));
 			return false;
 		}
 	}

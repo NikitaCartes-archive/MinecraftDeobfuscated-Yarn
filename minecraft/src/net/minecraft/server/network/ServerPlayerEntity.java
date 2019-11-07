@@ -56,7 +56,6 @@ import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.EntityDamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -477,24 +476,10 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		if (livingEntity != null) {
 			this.incrementStat(Stats.KILLED_BY.getOrCreateStat(livingEntity.getType()));
 			livingEntity.updateKilledAdvancementCriterion(this, this.scoreAmount, source);
-			if (!this.world.isClient && livingEntity instanceof WitherEntity) {
-				boolean bl2 = false;
-				if (this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
-					BlockPos blockPos = new BlockPos(this);
-					BlockState blockState = Blocks.WITHER_ROSE.getDefaultState();
-					if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {
-						this.world.setBlockState(blockPos, blockState, 3);
-						bl2 = true;
-					}
-				}
-
-				if (!bl2) {
-					ItemEntity itemEntity = new ItemEntity(this.world, this.getX(), this.getY(), this.getZ(), new ItemStack(Items.WITHER_ROSE));
-					this.world.spawnEntity(itemEntity);
-				}
-			}
+			this.method_23733(livingEntity);
 		}
 
+		this.world.sendEntityStatus(this, (byte)3);
 		this.incrementStat(Stats.DEATHS);
 		this.resetStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_DEATH));
 		this.resetStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_REST));

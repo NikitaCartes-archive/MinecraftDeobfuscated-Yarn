@@ -28,16 +28,14 @@ public class TropicalFishEntityRenderer extends MobEntityRenderer<TropicalFishEn
 		return tropicalFishEntity.getShapeId();
 	}
 
-	public void method_4140(
-		TropicalFishEntity tropicalFishEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider
-	) {
+	public void method_4140(TropicalFishEntity tropicalFishEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		TintableCompositeModel<TropicalFishEntity> tintableCompositeModel = (TintableCompositeModel<TropicalFishEntity>)(tropicalFishEntity.getShape() == 0
 			? this.field_4800
 			: this.field_4799);
 		this.model = tintableCompositeModel;
 		float[] fs = tropicalFishEntity.getBaseColorComponents();
 		tintableCompositeModel.setColorMultiplier(fs[0], fs[1], fs[2]);
-		super.method_4072(tropicalFishEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
+		super.method_4072(tropicalFishEntity, f, g, matrixStack, vertexConsumerProvider, i);
 		tintableCompositeModel.setColorMultiplier(1.0F, 1.0F, 1.0F);
 	}
 

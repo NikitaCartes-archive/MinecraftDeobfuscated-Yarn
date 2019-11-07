@@ -19,27 +19,17 @@ public abstract class EnergySwirlOverlayFeatureRenderer<T extends Entity & SkinO
 
 	@Override
 	public void render(
-		MatrixStack matrixStack,
-		VertexConsumerProvider vertexConsumerProvider,
-		int i,
-		T entity,
-		float f,
-		float g,
-		float tickDelta,
-		float h,
-		float j,
-		float k,
-		float l
+		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T entity, float f, float g, float tickDelta, float h, float j, float k
 	) {
 		if (entity.shouldRenderOverlay()) {
-			float m = (float)entity.age + tickDelta;
+			float l = (float)entity.age + tickDelta;
 			EntityModel<T> entityModel = this.getEnergySwirlModel();
 			entityModel.animateModel(entity, f, g, tickDelta);
 			this.getModel().copyStateTo(entityModel);
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(
-				RenderLayer.getEnergySwirl(this.getEnergySwirlTexture(), this.getEnergySwirlX(m), m * 0.01F)
+				RenderLayer.getEnergySwirl(this.getEnergySwirlTexture(), this.getEnergySwirlX(l), l * 0.01F)
 			);
-			entityModel.setAngles(entity, f, g, h, j, k, l);
+			entityModel.setAngles(entity, f, g, h, j, k);
 			entityModel.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 0.5F, 0.5F, 0.5F);
 		}
 	}

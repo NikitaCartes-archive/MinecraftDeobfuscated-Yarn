@@ -452,32 +452,36 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 	}
 
 	public boolean damagePart(EnderDragonPart enderDragonPart, DamageSource damageSource, float f) {
-		f = this.phaseManager.getCurrent().modifyDamageTaken(damageSource, f);
-		if (enderDragonPart != this.partHead) {
-			f = f / 4.0F + Math.min(f, 1.0F);
-		}
-
-		if (f < 0.01F) {
+		if (this.phaseManager.getCurrent().getType() == PhaseType.DYING) {
 			return false;
 		} else {
-			if (damageSource.getAttacker() instanceof PlayerEntity || damageSource.isExplosive()) {
-				float g = this.getHealth();
-				this.method_6819(damageSource, f);
-				if (this.getHealth() <= 0.0F && !this.phaseManager.getCurrent().method_6848()) {
-					this.setHealth(1.0F);
-					this.phaseManager.setPhase(PhaseType.DYING);
-				}
-
-				if (this.phaseManager.getCurrent().method_6848()) {
-					this.field_7029 = (int)((float)this.field_7029 + (g - this.getHealth()));
-					if ((float)this.field_7029 > 0.25F * this.getMaximumHealth()) {
-						this.field_7029 = 0;
-						this.phaseManager.setPhase(PhaseType.TAKEOFF);
-					}
-				}
+			f = this.phaseManager.getCurrent().modifyDamageTaken(damageSource, f);
+			if (enderDragonPart != this.partHead) {
+				f = f / 4.0F + Math.min(f, 1.0F);
 			}
 
-			return true;
+			if (f < 0.01F) {
+				return false;
+			} else {
+				if (damageSource.getAttacker() instanceof PlayerEntity || damageSource.isExplosive()) {
+					float g = this.getHealth();
+					this.method_6819(damageSource, f);
+					if (this.getHealth() <= 0.0F && !this.phaseManager.getCurrent().method_6848()) {
+						this.setHealth(1.0F);
+						this.phaseManager.setPhase(PhaseType.DYING);
+					}
+
+					if (this.phaseManager.getCurrent().method_6848()) {
+						this.field_7029 = (int)((float)this.field_7029 + (g - this.getHealth()));
+						if ((float)this.field_7029 > 0.25F * this.getMaximumHealth()) {
+							this.field_7029 = 0;
+							this.phaseManager.setPhase(PhaseType.TAKEOFF);
+						}
+					}
+				}
+
+				return true;
+			}
 		}
 	}
 
@@ -744,7 +748,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 	}
 
 	@Override
-	protected void checkDespawn() {
+	public void checkDespawn() {
 	}
 
 	public EnderDragonPart[] method_5690() {

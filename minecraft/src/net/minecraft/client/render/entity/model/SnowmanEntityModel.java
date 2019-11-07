@@ -36,7 +36,7 @@ public class SnowmanEntityModel<T extends Entity> extends CompositeEntityModel<T
 	}
 
 	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch, float scale) {
+	public void setAngles(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch) {
 		this.field_3568.yaw = headYaw * (float) (Math.PI / 180.0);
 		this.field_3568.pitch = headPitch * (float) (Math.PI / 180.0);
 		this.field_3567.yaw = headYaw * (float) (Math.PI / 180.0) * 0.25F;

@@ -1417,7 +1417,9 @@ public class Blocks {
 		"purpur_pillar", new PillarBlock(Block.Settings.of(Material.STONE, MaterialColor.MAGENTA).strength(1.5F, 6.0F))
 	);
 	public static final Block PURPUR_STAIRS = register("purpur_stairs", new StairsBlock(PURPUR_BLOCK.getDefaultState(), Block.Settings.copy(PURPUR_BLOCK)));
-	public static final Block END_STONE_BRICKS = register("end_stone_bricks", new Block(Block.Settings.of(Material.STONE, MaterialColor.SAND).strength(0.8F)));
+	public static final Block END_STONE_BRICKS = register(
+		"end_stone_bricks", new Block(Block.Settings.of(Material.STONE, MaterialColor.SAND).strength(3.0F, 9.0F))
+	);
 	public static final Block BEETROOTS = register(
 		"beetroots", new BeetrootsBlock(Block.Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.CROP))
 	);

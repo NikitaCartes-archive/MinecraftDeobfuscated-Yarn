@@ -85,7 +85,7 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 			is[k] = k++;
 		}
 
-		IntArrays.quickSort(is, (ix, j) -> Floats.compare(fs[j], fs[ix]));
+		IntArrays.mergeSort(is, (ix, j) -> Floats.compare(fs[j], fs[ix]));
 		BitSet bitSet = new BitSet();
 		FloatBuffer floatBuffer2 = GlAllocationUtils.allocateFloatBuffer(this.format.getVertexSizeInteger() * 4);
 

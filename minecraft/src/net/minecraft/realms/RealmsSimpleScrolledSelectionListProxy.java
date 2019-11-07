@@ -66,7 +66,6 @@ public class RealmsSimpleScrolledSelectionListProxy extends ListWidget {
 			int i = this.getScrollbarPosition();
 			int j = i + 6;
 			this.capYPosition();
-			RenderSystem.disableFog();
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder bufferBuilder = tessellator.getBuffer();
 			int k = this.left + this.width / 2 - this.getRowWidth() / 2 + 2;

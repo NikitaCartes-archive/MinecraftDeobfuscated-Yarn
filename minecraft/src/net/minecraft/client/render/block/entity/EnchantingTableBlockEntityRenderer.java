@@ -23,38 +23,30 @@ public class EnchantingTableBlockEntityRenderer extends BlockEntityRenderer<Ench
 	}
 
 	public void method_3571(
-		EnchantingTableBlockEntity enchantingTableBlockEntity,
-		double d,
-		double e,
-		double f,
-		float g,
-		MatrixStack matrixStack,
-		VertexConsumerProvider vertexConsumerProvider,
-		int i,
-		int j
+		EnchantingTableBlockEntity enchantingTableBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j
 	) {
 		matrixStack.push();
 		matrixStack.translate(0.5, 0.75, 0.5);
-		float h = (float)enchantingTableBlockEntity.ticks + g;
-		matrixStack.translate(0.0, (double)(0.1F + MathHelper.sin(h * 0.1F) * 0.01F), 0.0);
-		float k = enchantingTableBlockEntity.field_11964 - enchantingTableBlockEntity.field_11963;
+		float g = (float)enchantingTableBlockEntity.ticks + f;
+		matrixStack.translate(0.0, (double)(0.1F + MathHelper.sin(g * 0.1F) * 0.01F), 0.0);
+		float h = enchantingTableBlockEntity.field_11964 - enchantingTableBlockEntity.field_11963;
 
-		while (k >= (float) Math.PI) {
-			k -= (float) (Math.PI * 2);
+		while (h >= (float) Math.PI) {
+			h -= (float) (Math.PI * 2);
 		}
 
-		while (k < (float) -Math.PI) {
-			k += (float) (Math.PI * 2);
+		while (h < (float) -Math.PI) {
+			h += (float) (Math.PI * 2);
 		}
 
-		float l = enchantingTableBlockEntity.field_11963 + k * g;
-		matrixStack.multiply(Vector3f.POSITIVE_Y.method_23626(-l));
+		float k = enchantingTableBlockEntity.field_11963 + h * f;
+		matrixStack.multiply(Vector3f.POSITIVE_Y.method_23626(-k));
 		matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(80.0F));
-		float m = MathHelper.lerp(g, enchantingTableBlockEntity.pageAngle, enchantingTableBlockEntity.nextPageAngle);
-		float n = MathHelper.method_22450(m + 0.25F) * 1.6F - 0.3F;
-		float o = MathHelper.method_22450(m + 0.75F) * 1.6F - 0.3F;
-		float p = MathHelper.lerp(g, enchantingTableBlockEntity.pageTurningSpeed, enchantingTableBlockEntity.nextPageTurningSpeed);
-		this.book.setPageAngles(h, MathHelper.clamp(n, 0.0F, 1.0F), MathHelper.clamp(o, 0.0F, 1.0F), p);
+		float l = MathHelper.lerp(f, enchantingTableBlockEntity.pageAngle, enchantingTableBlockEntity.nextPageAngle);
+		float m = MathHelper.method_22450(l + 0.25F) * 1.6F - 0.3F;
+		float n = MathHelper.method_22450(l + 0.75F) * 1.6F - 0.3F;
+		float o = MathHelper.lerp(f, enchantingTableBlockEntity.pageTurningSpeed, enchantingTableBlockEntity.nextPageTurningSpeed);
+		this.book.setPageAngles(g, MathHelper.clamp(m, 0.0F, 1.0F), MathHelper.clamp(n, 0.0F, 1.0F), o);
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
 		this.book.render(matrixStack, vertexConsumer, i, j, 1.0F, 1.0F, 1.0F, this.getSprite(BOOK_TEX));
 		matrixStack.pop();

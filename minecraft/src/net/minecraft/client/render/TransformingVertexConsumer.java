@@ -4,6 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.util.math.Matrix3f;
 import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.util.math.Direction;
@@ -27,12 +28,12 @@ public class TransformingVertexConsumer extends FixedColorVertexConsumer {
 	private float normalY;
 	private float normalZ;
 
-	public TransformingVertexConsumer(VertexConsumer vertexConsumer, Matrix4f matrix) {
+	public TransformingVertexConsumer(VertexConsumer vertexConsumer, MatrixStack.Entry entry) {
 		this.vertexConsumer = vertexConsumer;
-		this.textureMatrix = matrix.copy();
+		this.textureMatrix = entry.method_23761().copy();
 		this.textureMatrix.invert();
-		this.normalMatrix = new Matrix3f(matrix);
-		this.normalMatrix.transpose();
+		this.normalMatrix = entry.method_23762().copy();
+		this.normalMatrix.method_23732();
 		this.init();
 	}
 
@@ -59,27 +60,15 @@ public class TransformingVertexConsumer extends FixedColorVertexConsumer {
 		Direction direction = Direction.getFacing(vector3f.getX(), vector3f.getY(), vector3f.getZ());
 		Vector4f vector4f = new Vector4f(this.x, this.y, this.z, 1.0F);
 		vector4f.multiply(this.textureMatrix);
-		float f;
-		float g;
-		switch (direction.getAxis()) {
-			case X:
-				f = vector4f.getZ();
-				g = vector4f.getY();
-				break;
-			case Y:
-				f = vector4f.getX();
-				g = vector4f.getZ();
-				break;
-			case Z:
-			default:
-				f = vector4f.getX();
-				g = vector4f.getY();
-		}
-
+		vector4f.method_23852(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F));
+		vector4f.method_23852(Vector3f.POSITIVE_X.getRotationQuaternion(-90.0F));
+		vector4f.method_23852(direction.getRotationQuaternion());
+		float f = -vector4f.getX();
+		float g = -vector4f.getY();
 		this.vertexConsumer
 			.vertex((double)this.x, (double)this.y, (double)this.z)
 			.color(this.red, this.green, this.blue, this.alpha)
-			.texture(f, -g)
+			.texture(f, g)
 			.overlay(this.u1, this.v1)
 			.light(this.light)
 			.normal(this.normalX, this.normalY, this.normalZ)

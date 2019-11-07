@@ -54,7 +54,7 @@ public class BatEntityModel extends CompositeEntityModel<BatEntity> {
 		return ImmutableList.<ModelPart>of(this.head, this.body);
 	}
 
-	public void method_17069(BatEntity batEntity, float f, float g, float h, float i, float j, float k) {
+	public void method_17069(BatEntity batEntity, float f, float g, float h, float i, float j) {
 		if (batEntity.isRoosting()) {
 			this.head.pitch = j * (float) (Math.PI / 180.0);
 			this.head.yaw = (float) Math.PI - i * (float) (Math.PI / 180.0);

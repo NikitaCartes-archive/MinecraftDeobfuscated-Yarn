@@ -6,6 +6,7 @@ import com.google.common.collect.Maps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry;
+import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import java.util.List;
 import java.util.Map;
@@ -15,10 +16,12 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4700;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.particle.FireworksSparkParticle;
@@ -44,6 +47,8 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.RegistryTagManager;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.CuboidBlockIterator;
+import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -51,6 +56,7 @@ import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
@@ -64,6 +70,8 @@ import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.level.ColorResolver;
+import net.minecraft.world.level.LevelGeneratorType;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
 
@@ -78,9 +86,20 @@ public class ClientWorld extends World {
 	private int ticksUntilCaveAmbientSound = this.random.nextInt(12000);
 	private Scoreboard scoreboard = new Scoreboard();
 	private final Map<String, MapState> mapStates = Maps.<String, MapState>newHashMap();
+	private int field_21526;
+	private final Object2ObjectArrayMap<ColorResolver, class_4700> field_21527 = Util.create(new Object2ObjectArrayMap<>(3), object2ObjectArrayMap -> {
+		object2ObjectArrayMap.put(BiomeColors.GRASS_COLOR, new class_4700());
+		object2ObjectArrayMap.put(BiomeColors.FOLIAGE_COLOR, new class_4700());
+		object2ObjectArrayMap.put(BiomeColors.WATER_COLOR, new class_4700());
+	});
 
 	public ClientWorld(
-		ClientPlayNetworkHandler netHandler, LevelInfo levelInfo, DimensionType dimensionType, int chunkLoadDistance, Profiler profiler, WorldRenderer worldRenderer
+		ClientPlayNetworkHandler clientPlayNetworkHandler,
+		LevelInfo levelInfo,
+		DimensionType dimensionType,
+		int chunkLoadDistance,
+		Profiler profiler,
+		WorldRenderer worldRenderer
 	) {
 		super(
 			new LevelProperties(levelInfo, "MpServer"),
@@ -89,7 +108,7 @@ public class ClientWorld extends World {
 			profiler,
 			true
 		);
-		this.netHandler = netHandler;
+		this.netHandler = clientPlayNetworkHandler;
 		this.worldRenderer = worldRenderer;
 		this.setSpawnPos(new BlockPos(8, 64, 8));
 		this.calculateAmbientDarkness();
@@ -218,6 +237,14 @@ public class ClientWorld extends World {
 	public void unloadBlockEntities(WorldChunk chunk) {
 		this.unloadedBlockEntities.addAll(chunk.getBlockEntities().values());
 		this.chunkManager.getLightingProvider().setLightEnabled(chunk.getPos(), false);
+	}
+
+	public void method_23782(int i, int j) {
+		this.field_21527.forEach((colorResolver, arg) -> arg.method_23769(i, j));
+	}
+
+	public void method_23784() {
+		this.field_21527.forEach((colorResolver, arg) -> arg.method_23768());
 	}
 
 	@Override
@@ -594,5 +621,148 @@ public class ClientWorld extends World {
 	@Override
 	public Biome getGeneratorStoredBiome(int biomeX, int biomeY, int biomeZ) {
 		return Biomes.PLAINS;
+	}
+
+	public float method_23783(float f) {
+		float g = this.getSkyAngle(f);
+		float h = 1.0F - (MathHelper.cos(g * (float) (Math.PI * 2)) * 2.0F + 0.2F);
+		h = MathHelper.clamp(h, 0.0F, 1.0F);
+		h = 1.0F - h;
+		h = (float)((double)h * (1.0 - (double)(this.getRainGradient(f) * 5.0F) / 16.0));
+		h = (float)((double)h * (1.0 - (double)(this.getThunderGradient(f) * 5.0F) / 16.0));
+		return h * 0.8F + 0.2F;
+	}
+
+	public Vec3d method_23777(BlockPos blockPos, float f) {
+		float g = this.getSkyAngle(f);
+		float h = MathHelper.cos(g * (float) (Math.PI * 2)) * 2.0F + 0.5F;
+		h = MathHelper.clamp(h, 0.0F, 1.0F);
+		Biome biome = this.method_23753(blockPos);
+		int i = biome.getSkyColor();
+		float j = (float)(i >> 16 & 0xFF) / 255.0F;
+		float k = (float)(i >> 8 & 0xFF) / 255.0F;
+		float l = (float)(i & 0xFF) / 255.0F;
+		j *= h;
+		k *= h;
+		l *= h;
+		float m = this.getRainGradient(f);
+		if (m > 0.0F) {
+			float n = (j * 0.3F + k * 0.59F + l * 0.11F) * 0.6F;
+			float o = 1.0F - m * 0.75F;
+			j = j * o + n * (1.0F - o);
+			k = k * o + n * (1.0F - o);
+			l = l * o + n * (1.0F - o);
+		}
+
+		float n = this.getThunderGradient(f);
+		if (n > 0.0F) {
+			float o = (j * 0.3F + k * 0.59F + l * 0.11F) * 0.2F;
+			float p = 1.0F - n * 0.75F;
+			j = j * p + o * (1.0F - p);
+			k = k * p + o * (1.0F - p);
+			l = l * p + o * (1.0F - p);
+		}
+
+		if (this.field_21526 > 0) {
+			float o = (float)this.field_21526 - f;
+			if (o > 1.0F) {
+				o = 1.0F;
+			}
+
+			o *= 0.45F;
+			j = j * (1.0F - o) + 0.8F * o;
+			k = k * (1.0F - o) + 0.8F * o;
+			l = l * (1.0F - o) + 1.0F * o;
+		}
+
+		return new Vec3d((double)j, (double)k, (double)l);
+	}
+
+	public Vec3d method_23785(float f) {
+		float g = this.getSkyAngle(f);
+		float h = MathHelper.cos(g * (float) (Math.PI * 2)) * 2.0F + 0.5F;
+		h = MathHelper.clamp(h, 0.0F, 1.0F);
+		float i = 1.0F;
+		float j = 1.0F;
+		float k = 1.0F;
+		float l = this.getRainGradient(f);
+		if (l > 0.0F) {
+			float m = (i * 0.3F + j * 0.59F + k * 0.11F) * 0.6F;
+			float n = 1.0F - l * 0.95F;
+			i = i * n + m * (1.0F - n);
+			j = j * n + m * (1.0F - n);
+			k = k * n + m * (1.0F - n);
+		}
+
+		i *= h * 0.9F + 0.1F;
+		j *= h * 0.9F + 0.1F;
+		k *= h * 0.85F + 0.15F;
+		float m = this.getThunderGradient(f);
+		if (m > 0.0F) {
+			float n = (i * 0.3F + j * 0.59F + k * 0.11F) * 0.2F;
+			float o = 1.0F - m * 0.95F;
+			i = i * o + n * (1.0F - o);
+			j = j * o + n * (1.0F - o);
+			k = k * o + n * (1.0F - o);
+		}
+
+		return new Vec3d((double)i, (double)j, (double)k);
+	}
+
+	public Vec3d method_23786(float f) {
+		float g = this.getSkyAngle(f);
+		return this.dimension.getFogColor(g, f);
+	}
+
+	public float method_23787(float f) {
+		float g = this.getSkyAngle(f);
+		float h = 1.0F - (MathHelper.cos(g * (float) (Math.PI * 2)) * 2.0F + 0.25F);
+		h = MathHelper.clamp(h, 0.0F, 1.0F);
+		return h * h * 0.5F;
+	}
+
+	public double method_23788() {
+		return this.properties.getGeneratorType() == LevelGeneratorType.FLAT ? 0.0 : 63.0;
+	}
+
+	public int method_23789() {
+		return this.field_21526;
+	}
+
+	@Override
+	public void setTicksSinceLightning(int ticksSinceLightning) {
+		this.field_21526 = ticksSinceLightning;
+	}
+
+	@Override
+	public int method_23752(BlockPos blockPos, ColorResolver colorResolver) {
+		class_4700 lv = this.field_21527.get(colorResolver);
+		return lv.method_23770(blockPos, () -> this.method_23780(blockPos, colorResolver));
+	}
+
+	public int method_23780(BlockPos blockPos, ColorResolver colorResolver) {
+		int i = MinecraftClient.getInstance().options.biomeBlendRadius;
+		if (i == 0) {
+			return colorResolver.getColor(this.method_23753(blockPos), (double)blockPos.getX(), (double)blockPos.getZ());
+		} else {
+			int j = (i * 2 + 1) * (i * 2 + 1);
+			int k = 0;
+			int l = 0;
+			int m = 0;
+			CuboidBlockIterator cuboidBlockIterator = new CuboidBlockIterator(
+				blockPos.getX() - i, blockPos.getY(), blockPos.getZ() - i, blockPos.getX() + i, blockPos.getY(), blockPos.getZ() + i
+			);
+			BlockPos.Mutable mutable = new BlockPos.Mutable();
+
+			while (cuboidBlockIterator.step()) {
+				mutable.set(cuboidBlockIterator.getX(), cuboidBlockIterator.getY(), cuboidBlockIterator.getZ());
+				int n = colorResolver.getColor(this.method_23753(mutable), (double)mutable.getX(), (double)mutable.getZ());
+				k += (n & 0xFF0000) >> 16;
+				l += (n & 0xFF00) >> 8;
+				m += n & 0xFF;
+			}
+
+			return (k / j & 0xFF) << 16 | (l / j & 0xFF) << 8 | m / j & 0xFF;
+		}
 	}
 }

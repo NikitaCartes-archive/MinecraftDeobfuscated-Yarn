@@ -41,7 +41,7 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 			this.namespaces.add(string);
 			NamespaceResourceManager namespaceResourceManager = (NamespaceResourceManager)this.namespaceManagers.get(string);
 			if (namespaceResourceManager == null) {
-				namespaceResourceManager = new NamespaceResourceManager(this.type);
+				namespaceResourceManager = new NamespaceResourceManager(this.type, string);
 				this.namespaceManagers.put(string, namespaceResourceManager);
 			}
 

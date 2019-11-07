@@ -122,11 +122,12 @@ public class SlimeEntity extends MobEntity implements Monster {
 	}
 
 	@Override
-	public void tick() {
-		if (!this.world.isClient && this.world.getDifficulty() == Difficulty.PEACEFUL && this.getSize() > 0) {
-			this.removed = true;
-		}
+	protected boolean method_23734() {
+		return this.getSize() > 0;
+	}
 
+	@Override
+	public void tick() {
 		this.stretch = this.stretch + (this.targetStretch - this.stretch) * 0.5F;
 		this.lastStretch = this.stretch;
 		super.tick();
@@ -279,7 +280,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 			return false;
 		} else {
 			if (world.getDifficulty() != Difficulty.PEACEFUL) {
-				Biome biome = world.getBiome(pos);
+				Biome biome = world.method_23753(pos);
 				if (biome == Biomes.SWAMP
 					&& pos.getY() > 50
 					&& pos.getY() < 70

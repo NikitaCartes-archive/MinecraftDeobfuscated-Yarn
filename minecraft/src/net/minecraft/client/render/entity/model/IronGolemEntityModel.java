@@ -10,43 +10,35 @@ import net.minecraft.entity.passive.IronGolemEntity;
 public class IronGolemEntityModel<T extends IronGolemEntity> extends CompositeEntityModel<T> {
 	private final ModelPart head;
 	private final ModelPart body;
-	public final ModelPart leftArm;
+	private final ModelPart leftArm;
 	private final ModelPart rightArm;
 	private final ModelPart leftLeg;
 	private final ModelPart rightLeg;
 
 	public IronGolemEntityModel() {
-		this(0.0F);
-	}
-
-	public IronGolemEntityModel(float f) {
-		this(f, -7.0F);
-	}
-
-	public IronGolemEntityModel(float f, float g) {
 		int i = 128;
 		int j = 128;
 		this.head = new ModelPart(this).setTextureSize(128, 128);
-		this.head.setPivot(0.0F, 0.0F + g, -2.0F);
-		this.head.setTextureOffset(0, 0).addCuboid(-4.0F, -12.0F, -5.5F, 8.0F, 10.0F, 8.0F, f);
-		this.head.setTextureOffset(24, 0).addCuboid(-1.0F, -5.0F, -7.5F, 2.0F, 4.0F, 2.0F, f);
+		this.head.setPivot(0.0F, -7.0F, -2.0F);
+		this.head.setTextureOffset(0, 0).addCuboid(-4.0F, -12.0F, -5.5F, 8.0F, 10.0F, 8.0F, 0.0F);
+		this.head.setTextureOffset(24, 0).addCuboid(-1.0F, -5.0F, -7.5F, 2.0F, 4.0F, 2.0F, 0.0F);
 		this.body = new ModelPart(this).setTextureSize(128, 128);
-		this.body.setPivot(0.0F, 0.0F + g, 0.0F);
-		this.body.setTextureOffset(0, 40).addCuboid(-9.0F, -2.0F, -6.0F, 18.0F, 12.0F, 11.0F, f);
-		this.body.setTextureOffset(0, 70).addCuboid(-4.5F, 10.0F, -3.0F, 9.0F, 5.0F, 6.0F, f + 0.5F);
+		this.body.setPivot(0.0F, -7.0F, 0.0F);
+		this.body.setTextureOffset(0, 40).addCuboid(-9.0F, -2.0F, -6.0F, 18.0F, 12.0F, 11.0F, 0.0F);
+		this.body.setTextureOffset(0, 70).addCuboid(-4.5F, 10.0F, -3.0F, 9.0F, 5.0F, 6.0F, 0.5F);
 		this.leftArm = new ModelPart(this).setTextureSize(128, 128);
 		this.leftArm.setPivot(0.0F, -7.0F, 0.0F);
-		this.leftArm.setTextureOffset(60, 21).addCuboid(-13.0F, -2.5F, -3.0F, 4.0F, 30.0F, 6.0F, f);
+		this.leftArm.setTextureOffset(60, 21).addCuboid(-13.0F, -2.5F, -3.0F, 4.0F, 30.0F, 6.0F, 0.0F);
 		this.rightArm = new ModelPart(this).setTextureSize(128, 128);
 		this.rightArm.setPivot(0.0F, -7.0F, 0.0F);
-		this.rightArm.setTextureOffset(60, 58).addCuboid(9.0F, -2.5F, -3.0F, 4.0F, 30.0F, 6.0F, f);
+		this.rightArm.setTextureOffset(60, 58).addCuboid(9.0F, -2.5F, -3.0F, 4.0F, 30.0F, 6.0F, 0.0F);
 		this.leftLeg = new ModelPart(this, 0, 22).setTextureSize(128, 128);
-		this.leftLeg.setPivot(-4.0F, 18.0F + g, 0.0F);
-		this.leftLeg.setTextureOffset(37, 0).addCuboid(-3.5F, -3.0F, -3.0F, 6.0F, 16.0F, 5.0F, f);
+		this.leftLeg.setPivot(-4.0F, 11.0F, 0.0F);
+		this.leftLeg.setTextureOffset(37, 0).addCuboid(-3.5F, -3.0F, -3.0F, 6.0F, 16.0F, 5.0F, 0.0F);
 		this.rightLeg = new ModelPart(this, 0, 22).setTextureSize(128, 128);
 		this.rightLeg.mirror = true;
-		this.rightLeg.setTextureOffset(60, 0).setPivot(5.0F, 18.0F + g, 0.0F);
-		this.rightLeg.addCuboid(-3.5F, -3.0F, -3.0F, 6.0F, 16.0F, 5.0F, f);
+		this.rightLeg.setTextureOffset(60, 0).setPivot(5.0F, 11.0F, 0.0F);
+		this.rightLeg.addCuboid(-3.5F, -3.0F, -3.0F, 6.0F, 16.0F, 5.0F, 0.0F);
 	}
 
 	@Override
@@ -54,7 +46,7 @@ public class IronGolemEntityModel<T extends IronGolemEntity> extends CompositeEn
 		return ImmutableList.<ModelPart>of(this.head, this.body, this.leftLeg, this.rightLeg, this.leftArm, this.rightArm);
 	}
 
-	public void method_17097(T ironGolemEntity, float f, float g, float h, float i, float j, float k) {
+	public void method_17097(T ironGolemEntity, float f, float g, float h, float i, float j) {
 		this.head.yaw = i * (float) (Math.PI / 180.0);
 		this.head.pitch = j * (float) (Math.PI / 180.0);
 		this.leftLeg.pitch = -1.5F * this.method_2810(f, 13.0F) * g;
@@ -85,6 +77,6 @@ public class IronGolemEntityModel<T extends IronGolemEntity> extends CompositeEn
 	}
 
 	public ModelPart getRightArm() {
-		return this.rightArm;
+		return this.leftArm;
 	}
 }

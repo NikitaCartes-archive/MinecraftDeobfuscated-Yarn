@@ -17,6 +17,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.Rotation3;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -89,7 +90,7 @@ public class TextRenderer implements AutoCloseable {
 	}
 
 	private int drawInternal(
-		String str,
+		String string,
 		float x,
 		float y,
 		int color,
@@ -101,7 +102,7 @@ public class TextRenderer implements AutoCloseable {
 		int light
 	) {
 		if (this.rightToLeft) {
-			str = this.mirror(str);
+			string = this.mirror(string);
 		}
 
 		if ((color & -67108864) == 0) {
@@ -109,10 +110,12 @@ public class TextRenderer implements AutoCloseable {
 		}
 
 		if (withShadow) {
-			this.drawLayer(str, x, y, color, true, matrix, vertexConsumerProvider, seeThrough, underlineColor, light);
+			this.drawLayer(string, x, y, color, true, matrix, vertexConsumerProvider, seeThrough, underlineColor, light);
 		}
 
-		x = this.drawLayer(str, x, y, color, false, matrix, vertexConsumerProvider, seeThrough, underlineColor, light);
+		Matrix4f matrix4f = matrix.copy();
+		matrix4f.addToLastColumn(new Vector3f(0.0F, 0.0F, 0.001F));
+		x = this.drawLayer(string, x, y, color, false, matrix4f, vertexConsumerProvider, seeThrough, underlineColor, light);
 		return (int)x + (withShadow ? 1 : 0);
 	}
 

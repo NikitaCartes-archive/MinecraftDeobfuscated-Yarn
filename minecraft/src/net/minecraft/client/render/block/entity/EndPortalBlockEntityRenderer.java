@@ -22,18 +22,16 @@ public class EndPortalBlockEntityRenderer<T extends EndPortalBlockEntity> extend
 		super(blockEntityRenderDispatcher);
 	}
 
-	public void method_3591(
-		T endPortalBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j
-	) {
+	public void method_3591(T endPortalBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
 		RANDOM.setSeed(31100L);
-		double h = d * d + e * e + f * f;
-		int k = this.method_3592(h);
-		float l = this.method_3594();
-		Matrix4f matrix4f = matrixStack.peekModel();
-		this.method_23084(endPortalBlockEntity, l, 0.15F, matrix4f, vertexConsumerProvider.getBuffer(RenderLayer.getEndPortal(1)));
+		double d = endPortalBlockEntity.getPos().getSquaredDistance(this.blockEntityRenderDispatcher.camera.getPos(), true);
+		int k = this.method_3592(d);
+		float g = this.method_3594();
+		Matrix4f matrix4f = matrixStack.method_23760().method_23761();
+		this.method_23084(endPortalBlockEntity, g, 0.15F, matrix4f, vertexConsumerProvider.getBuffer(RenderLayer.getEndPortal(1)));
 
-		for (int m = 1; m < k; m++) {
-			this.method_23084(endPortalBlockEntity, l, 2.0F / (float)(18 - m), matrix4f, vertexConsumerProvider.getBuffer(RenderLayer.getEndPortal(m + 1)));
+		for (int l = 1; l < k; l++) {
+			this.method_23084(endPortalBlockEntity, g, 2.0F / (float)(18 - l), matrix4f, vertexConsumerProvider.getBuffer(RenderLayer.getEndPortal(l + 1)));
 		}
 	}
 

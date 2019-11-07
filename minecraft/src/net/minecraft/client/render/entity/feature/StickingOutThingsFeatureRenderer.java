@@ -21,31 +21,31 @@ public abstract class StickingOutThingsFeatureRenderer<T extends LivingEntity, M
 	protected abstract int getThingCount(T entity);
 
 	protected abstract void renderThing(
-		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, Entity entity, float z, float tickDelta, float f, float g
+		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, Entity entity, float tickDelta, float f, float g, float h
 	);
 
 	public void method_22132(
-		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l, float m
+		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l
 	) {
-		int n = this.getThingCount(livingEntity);
+		int m = this.getThingCount(livingEntity);
 		Random random = new Random((long)livingEntity.getEntityId());
-		if (n > 0) {
-			for (int o = 0; o < n; o++) {
+		if (m > 0) {
+			for (int n = 0; n < m; n++) {
 				matrixStack.push();
 				ModelPart modelPart = this.getModel().getRandomPart(random);
 				ModelPart.Cuboid cuboid = modelPart.getRandomCuboid(random);
-				modelPart.rotate(matrixStack, 0.0625F);
+				modelPart.rotate(matrixStack);
+				float o = random.nextFloat();
 				float p = random.nextFloat();
 				float q = random.nextFloat();
-				float r = random.nextFloat();
-				float s = MathHelper.lerp(p, cuboid.minX, cuboid.maxX) / 16.0F;
-				float t = MathHelper.lerp(q, cuboid.minY, cuboid.maxY) / 16.0F;
-				float u = MathHelper.lerp(r, cuboid.minZ, cuboid.maxZ) / 16.0F;
-				matrixStack.translate((double)s, (double)t, (double)u);
+				float r = MathHelper.lerp(o, cuboid.minX, cuboid.maxX) / 16.0F;
+				float s = MathHelper.lerp(p, cuboid.minY, cuboid.maxY) / 16.0F;
+				float t = MathHelper.lerp(q, cuboid.minZ, cuboid.maxZ) / 16.0F;
+				matrixStack.translate((double)r, (double)s, (double)t);
+				o = -1.0F * (o * 2.0F - 1.0F);
 				p = -1.0F * (p * 2.0F - 1.0F);
 				q = -1.0F * (q * 2.0F - 1.0F);
-				r = -1.0F * (r * 2.0F - 1.0F);
-				this.renderThing(matrixStack, vertexConsumerProvider, livingEntity, p, q, r, h);
+				this.renderThing(matrixStack, vertexConsumerProvider, i, livingEntity, o, p, q, h);
 				matrixStack.pop();
 			}
 		}

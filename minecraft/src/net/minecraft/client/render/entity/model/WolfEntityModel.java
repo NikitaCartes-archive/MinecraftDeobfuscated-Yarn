@@ -80,9 +80,9 @@ public class WolfEntityModel<T extends WolfEntity> extends TintableAnimalModel<T
 			this.field_3623.setPivot(0.0F, 18.0F, 0.0F);
 			this.field_3623.pitch = (float) (Math.PI / 4);
 			this.field_3617.setPivot(-1.0F, 21.0F, 6.0F);
-			this.field_3622.setPivot(-2.5F, 22.0F, 2.0F);
+			this.field_3622.setPivot(-2.5F, 22.7F, 2.0F);
 			this.field_3622.pitch = (float) (Math.PI * 3.0 / 2.0);
-			this.field_3620.setPivot(0.5F, 22.0F, 2.0F);
+			this.field_3620.setPivot(0.5F, 22.7F, 2.0F);
 			this.field_3620.pitch = (float) (Math.PI * 3.0 / 2.0);
 			this.field_3618.pitch = 5.811947F;
 			this.field_3618.setPivot(-2.49F, 17.0F, -4.0F);
@@ -110,7 +110,7 @@ public class WolfEntityModel<T extends WolfEntity> extends TintableAnimalModel<T
 		this.field_20789.roll = wolfEntity.getShakeAnimationProgress(h, -0.2F);
 	}
 
-	public void method_17133(T wolfEntity, float f, float g, float h, float i, float j, float k) {
+	public void method_17133(T wolfEntity, float f, float g, float h, float i, float j) {
 		this.head.pitch = j * (float) (Math.PI / 180.0);
 		this.head.yaw = i * (float) (Math.PI / 180.0);
 		this.field_3617.pitch = h;

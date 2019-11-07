@@ -7,7 +7,10 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookProvider;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.container.PlayerContainer;
 import net.minecraft.container.Slot;
 import net.minecraft.container.SlotActionType;
@@ -99,25 +102,28 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerContainer> im
 
 	public static void drawEntity(int i, int j, int k, float f, float g, LivingEntity entity) {
 		RenderSystem.pushMatrix();
-		RenderSystem.translatef((float)i, (float)j, 50.0F);
-		RenderSystem.scalef((float)(-k), (float)k, (float)k);
-		RenderSystem.rotatef(180.0F, 0.0F, 0.0F, 1.0F);
+		RenderSystem.scalef(-1.0F, 1.0F, 1.0F);
+		MatrixStack matrixStack = new MatrixStack();
+		matrixStack.translate((double)(-i), (double)j, 50.0);
+		matrixStack.scale((float)k, (float)k, (float)k);
+		matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0F));
+		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-((float)Math.atan((double)(g / 40.0F))) * 20.0F));
 		float h = entity.bodyYaw;
 		float l = entity.yaw;
 		float m = entity.pitch;
 		float n = entity.prevHeadYaw;
 		float o = entity.headYaw;
-		RenderSystem.rotatef(-((float)Math.atan((double)(g / 40.0F))) * 20.0F, 1.0F, 0.0F, 0.0F);
 		entity.bodyYaw = (float)Math.atan((double)(f / 40.0F)) * 20.0F;
 		entity.yaw = (float)Math.atan((double)(f / 40.0F)) * 40.0F;
 		entity.pitch = -((float)Math.atan((double)(g / 40.0F))) * 20.0F;
 		entity.headYaw = entity.yaw;
 		entity.prevHeadYaw = entity.yaw;
-		RenderSystem.translatef(0.0F, 0.0F, 0.0F);
 		EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderManager();
 		entityRenderDispatcher.setCameraYaw(180.0F);
 		entityRenderDispatcher.setRenderShadows(false);
-		entityRenderDispatcher.render(entity, 1.0F);
+		VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
+		entityRenderDispatcher.render(entity, 0.0, 0.0, 0.0, 0.0F, 1.0F, matrixStack, immediate, 15728880);
+		immediate.method_23796(-i, j, 1000);
 		entityRenderDispatcher.setRenderShadows(true);
 		entity.bodyYaw = h;
 		entity.yaw = l;
@@ -125,7 +131,6 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerContainer> im
 		entity.prevHeadYaw = n;
 		entity.headYaw = o;
 		RenderSystem.popMatrix();
-		RenderSystem.disableRescaleNormal();
 	}
 
 	@Override

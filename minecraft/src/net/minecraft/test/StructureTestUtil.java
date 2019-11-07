@@ -193,9 +193,9 @@ public class StructureTestUtil {
 				blockState = Blocks.AIR.getDefaultState();
 			}
 		} else if (blockPos.getY() == i - 1) {
-			blockState = serverWorld.getBiome(blockPos).getSurfaceConfig().getTopMaterial();
+			blockState = serverWorld.method_23753(blockPos).getSurfaceConfig().getTopMaterial();
 		} else if (blockPos.getY() < i - 1) {
-			blockState = serverWorld.getBiome(blockPos).getSurfaceConfig().getUnderMaterial();
+			blockState = serverWorld.method_23753(blockPos).getSurfaceConfig().getUnderMaterial();
 		} else {
 			blockState = Blocks.AIR.getDefaultState();
 		}

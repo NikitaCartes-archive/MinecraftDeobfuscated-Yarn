@@ -3,6 +3,7 @@ package net.minecraft.client.util.math;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Quaternion;
 
 @Environment(EnvType.CLIENT)
 public class Vector4f {
@@ -61,10 +62,21 @@ public class Vector4f {
 		return this.z;
 	}
 
+	public float method_23853() {
+		return this.w;
+	}
+
 	public void multiplyXyz(Vector3f other) {
 		this.x = this.x * other.getX();
 		this.y = this.y * other.getY();
 		this.z = this.z * other.getZ();
+	}
+
+	public void method_23851(float f, float g, float h, float i) {
+		this.x = f;
+		this.y = g;
+		this.z = h;
+		this.w = i;
 	}
 
 	public float dotProduct(Vector4f other) {
@@ -98,6 +110,15 @@ public class Vector4f {
 
 	private static float calculateProductRow(int row, Matrix4f matrix, float x, float y, float z, float w) {
 		return matrix.get(row, 0) * x + matrix.get(row, 1) * y + matrix.get(row, 2) * z + matrix.get(row, 3) * w;
+	}
+
+	public void method_23852(Quaternion quaternion) {
+		Quaternion quaternion2 = new Quaternion(quaternion);
+		quaternion2.hamiltonProduct(new Quaternion(this.getX(), this.getY(), this.getZ(), 0.0F));
+		Quaternion quaternion3 = new Quaternion(quaternion);
+		quaternion3.conjugate();
+		quaternion2.hamiltonProduct(quaternion3);
+		this.method_23851(quaternion2.getB(), quaternion2.getC(), quaternion2.getD(), this.method_23853());
 	}
 
 	public void normalizeProjectiveCoordinates() {

@@ -15,7 +15,8 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
@@ -75,12 +76,12 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	@Override
-	public void render(long limitTime) {
+	public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f, long l) {
 		RenderSystem.pushMatrix();
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.disableTexture();
-		this.method_23135();
+		this.method_23135(d, e, f);
 		RenderSystem.enableTexture();
 		RenderSystem.disableBlend();
 		RenderSystem.popMatrix();
@@ -89,8 +90,8 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 		}
 	}
 
-	private void method_23135() {
-		BlockPos blockPos = this.method_23139().getBlockPos();
+	private void method_23135(double d, double e, double f) {
+		BlockPos blockPos = new BlockPos(d, e, f);
 		this.sections.forEach(chunkSectionPos -> {
 			if (blockPos.isWithinDistance(chunkSectionPos.getCenterPos(), 60.0)) {
 				method_23143(chunkSectionPos);
@@ -98,7 +99,7 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 		});
 		this.brains.values().forEach(brain -> {
 			if (this.method_23147(brain)) {
-				this.drawBrain(brain);
+				this.drawBrain(brain, d, e, f);
 			}
 		});
 
@@ -130,11 +131,15 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 
 	private static void method_23138(BlockPos blockPos) {
 		float f = 0.05F;
+		RenderSystem.enableBlend();
+		RenderSystem.defaultBlendFunc();
 		DebugRenderer.drawBox(blockPos, 0.05F, 0.2F, 0.2F, 1.0F, 0.3F);
 	}
 
 	private void drawGhostPointOfInterest(BlockPos blockPos, List<String> list) {
 		float f = 0.05F;
+		RenderSystem.enableBlend();
+		RenderSystem.defaultBlendFunc();
 		DebugRenderer.drawBox(blockPos, 0.05F, 0.2F, 0.2F, 1.0F, 0.3F);
 		drawString("" + list, blockPos, 0, -256);
 		drawString("Ghost POI", blockPos, 1, -65536);
@@ -152,13 +157,13 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 		drawString(pointOfInterest.field_18932, pointOfInterest, ++i, -1);
 	}
 
-	private void drawPath(VillageDebugRenderer.Brain brain) {
+	private void drawPath(VillageDebugRenderer.Brain brain, double d, double e, double f) {
 		if (brain.path != null) {
-			PathfindingDebugRenderer.drawPath(this.method_23139(), brain.path, 0.5F, false, false);
+			PathfindingDebugRenderer.drawPath(brain.path, 0.5F, false, false, d, e, f);
 		}
 	}
 
-	private void drawBrain(VillageDebugRenderer.Brain brain) {
+	private void drawBrain(VillageDebugRenderer.Brain brain, double d, double e, double f) {
 		boolean bl = this.isTargetted(brain);
 		int i = 0;
 		drawString(brain.pos, i, brain.field_19328, -1, 0.03F);
@@ -212,7 +217,7 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 		}
 
 		if (bl) {
-			this.drawPath(brain);
+			this.drawPath(brain, d, e, f);
 		}
 	}
 
@@ -239,10 +244,6 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 		double h = (double)blockPos.getZ() + 0.5;
 		float i = 0.5F;
 		DebugRenderer.drawString(string, f, g, h, color, size, false, 0.5F, true);
-	}
-
-	private Camera method_23139() {
-		return this.client.gameRenderer.getCamera();
 	}
 
 	private Set<String> getVillagerNames(VillageDebugRenderer.PointOfInterest pointOfInterest) {

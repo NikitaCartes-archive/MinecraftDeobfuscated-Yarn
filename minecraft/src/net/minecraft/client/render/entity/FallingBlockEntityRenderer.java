@@ -24,9 +24,7 @@ public class FallingBlockEntityRenderer extends EntityRenderer<FallingBlockEntit
 		this.field_4673 = 0.5F;
 	}
 
-	public void method_3965(
-		FallingBlockEntity fallingBlockEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider
-	) {
+	public void method_3965(FallingBlockEntity fallingBlockEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		BlockState blockState = fallingBlockEntity.getBlockState();
 		if (blockState.getRenderType() == BlockRenderType.MODEL) {
 			World world = fallingBlockEntity.getWorldClient();
@@ -49,7 +47,7 @@ public class FallingBlockEntityRenderer extends EntityRenderer<FallingBlockEntit
 						OverlayTexture.DEFAULT_UV
 					);
 				matrixStack.pop();
-				super.render(fallingBlockEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
+				super.render(fallingBlockEntity, f, g, matrixStack, vertexConsumerProvider, i);
 			}
 		}
 	}

@@ -48,7 +48,7 @@ import net.minecraft.world.level.LevelGeneratorType;
 
 public class OverworldDimension extends Dimension {
 	public OverworldDimension(World world, DimensionType type) {
-		super(world, type);
+		super(world, type, 0.0F);
 	}
 
 	@Override
@@ -180,7 +180,7 @@ public class OverworldDimension extends Dimension {
 	@Override
 	public BlockPos getTopSpawningBlockPosition(int x, int z, boolean checkMobSpawnValidity) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable(x, 0, z);
-		Biome biome = this.world.getBiome(mutable);
+		Biome biome = this.world.method_23753(mutable);
 		BlockState blockState = biome.getSurfaceConfig().getTopMaterial();
 		if (checkMobSpawnValidity && !blockState.getBlock().matches(BlockTags.VALID_SPAWN)) {
 			return null;

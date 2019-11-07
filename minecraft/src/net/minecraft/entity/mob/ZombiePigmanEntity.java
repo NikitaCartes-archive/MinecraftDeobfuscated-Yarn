@@ -157,20 +157,17 @@ public class ZombiePigmanEntity extends ZombieEntity {
 		} else {
 			Entity entity = source.getAttacker();
 			if (entity instanceof PlayerEntity && !((PlayerEntity)entity).isCreative() && this.canSee(entity)) {
-				this.method_20804(entity);
+				this.method_20804((LivingEntity)entity);
 			}
 
 			return super.damage(source, amount);
 		}
 	}
 
-	private boolean method_20804(Entity entity) {
+	private boolean method_20804(LivingEntity livingEntity) {
 		this.anger = this.method_20806();
 		this.angrySoundDelay = this.random.nextInt(40);
-		if (entity instanceof LivingEntity) {
-			this.setAttacker((LivingEntity)entity);
-		}
-
+		this.setAttacker(livingEntity);
 		return true;
 	}
 

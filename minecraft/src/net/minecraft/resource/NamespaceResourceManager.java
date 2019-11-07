@@ -1,5 +1,6 @@
 package net.minecraft.resource;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -22,9 +23,11 @@ public class NamespaceResourceManager implements ResourceManager {
 	private static final Logger LOGGER = LogManager.getLogger();
 	protected final List<ResourcePack> packList = Lists.<ResourcePack>newArrayList();
 	private final ResourceType type;
+	private final String field_21561;
 
-	public NamespaceResourceManager(ResourceType type) {
+	public NamespaceResourceManager(ResourceType type, String string) {
 		this.type = type;
+		this.field_21561 = string;
 	}
 
 	@Override
@@ -35,7 +38,7 @@ public class NamespaceResourceManager implements ResourceManager {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public Set<String> getAllNamespaces() {
-		return Collections.emptySet();
+		return ImmutableSet.of(this.field_21561);
 	}
 
 	@Override
@@ -120,7 +123,7 @@ public class NamespaceResourceManager implements ResourceManager {
 		List<Identifier> list = Lists.<Identifier>newArrayList();
 
 		for (ResourcePack resourcePack : this.packList) {
-			list.addAll(resourcePack.findResources(this.type, resourceType, Integer.MAX_VALUE, pathPredicate));
+			list.addAll(resourcePack.findResources(this.type, this.field_21561, resourceType, Integer.MAX_VALUE, pathPredicate));
 		}
 
 		Collections.sort(list);

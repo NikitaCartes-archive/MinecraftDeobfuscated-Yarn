@@ -811,12 +811,11 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_water_bucket", this.method_10426(Items.WATER_BUCKET))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.COMPOSTER)
-			.input('F', ItemTags.WOODEN_FENCES)
-			.input('#', ItemTags.PLANKS)
-			.pattern("F F")
-			.pattern("F F")
+			.input('#', ItemTags.WOODEN_SLABS)
+			.pattern("# #")
+			.pattern("# #")
 			.pattern("###")
-			.criterion("has_wooden_fences", this.method_10420(ItemTags.WOODEN_FENCES))
+			.criterion("has_wood_slab", this.method_10420(ItemTags.WOODEN_SLABS))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.CHEST)
 			.input('#', ItemTags.PLANKS)

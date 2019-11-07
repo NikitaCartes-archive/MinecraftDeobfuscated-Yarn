@@ -78,7 +78,7 @@ public class BeeEntityModel<T extends BeeEntity> extends AnimalModel<T> {
 		this.stinger.visible = !beeEntity.hasStung();
 	}
 
-	public void method_22112(T beeEntity, float f, float g, float h, float i, float j, float k) {
+	public void method_22112(T beeEntity, float f, float g, float h, float i, float j) {
 		this.leftWing.pitch = 0.0F;
 		this.leftAntenna.pitch = 0.0F;
 		this.rightAntenna.pitch = 0.0F;
@@ -95,9 +95,9 @@ public class BeeEntityModel<T extends BeeEntity> extends AnimalModel<T> {
 			this.midLeg.pitch = 0.0F;
 			this.backLeg.pitch = 0.0F;
 		} else {
-			float l = h * 2.1F;
+			float k = h * 2.1F;
 			this.leftWing.yaw = 0.0F;
-			this.leftWing.roll = MathHelper.cos(l) * (float) Math.PI * 0.15F;
+			this.leftWing.roll = MathHelper.cos(k) * (float) Math.PI * 0.15F;
 			this.rightWing.pitch = this.leftWing.pitch;
 			this.rightWing.yaw = this.leftWing.yaw;
 			this.rightWing.roll = -this.leftWing.roll;
@@ -114,12 +114,12 @@ public class BeeEntityModel<T extends BeeEntity> extends AnimalModel<T> {
 			this.body.yaw = 0.0F;
 			this.body.roll = 0.0F;
 			if (!bl) {
-				float l = MathHelper.cos(h * 0.18F);
-				this.body.pitch = 0.1F + l * (float) Math.PI * 0.025F;
-				this.leftAntenna.pitch = l * (float) Math.PI * 0.03F;
-				this.rightAntenna.pitch = l * (float) Math.PI * 0.03F;
-				this.frontLeg.pitch = -l * (float) Math.PI * 0.1F + (float) (Math.PI / 8);
-				this.backLeg.pitch = -l * (float) Math.PI * 0.05F + (float) (Math.PI / 4);
+				float k = MathHelper.cos(h * 0.18F);
+				this.body.pitch = 0.1F + k * (float) Math.PI * 0.025F;
+				this.leftAntenna.pitch = k * (float) Math.PI * 0.03F;
+				this.rightAntenna.pitch = k * (float) Math.PI * 0.03F;
+				this.frontLeg.pitch = -k * (float) Math.PI * 0.1F + (float) (Math.PI / 8);
+				this.backLeg.pitch = -k * (float) Math.PI * 0.05F + (float) (Math.PI / 4);
 				this.body.pivotY = 19.0F - MathHelper.cos(h * 0.18F) * 0.9F;
 			}
 		}

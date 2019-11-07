@@ -17,17 +17,7 @@ public class WolfCollarFeatureRenderer extends FeatureRenderer<WolfEntity, WolfE
 	}
 
 	public void method_4209(
-		MatrixStack matrixStack,
-		VertexConsumerProvider vertexConsumerProvider,
-		int i,
-		WolfEntity wolfEntity,
-		float f,
-		float g,
-		float h,
-		float j,
-		float k,
-		float l,
-		float m
+		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, WolfEntity wolfEntity, float f, float g, float h, float j, float k, float l
 	) {
 		if (wolfEntity.isTamed() && !wolfEntity.isInvisible()) {
 			float[] fs = wolfEntity.getCollarColor().getColorComponents();

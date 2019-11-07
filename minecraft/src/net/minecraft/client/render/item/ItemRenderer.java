@@ -31,8 +31,6 @@ import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.ModelIdentifier;
-import net.minecraft.client.util.math.Matrix3f;
-import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
@@ -138,8 +136,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 
 	private void method_23180(MatrixStack matrixStack, VertexConsumer vertexConsumer, List<BakedQuad> list, ItemStack itemStack, int i, int j) {
 		boolean bl = !itemStack.isEmpty();
-		Matrix4f matrix4f = matrixStack.peekModel();
-		Matrix3f matrix3f = matrixStack.peekNormal();
+		MatrixStack.Entry entry = matrixStack.method_23760();
 
 		for (BakedQuad bakedQuad : list) {
 			int k = -1;
@@ -150,7 +147,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 			float f = (float)(k >> 16 & 0xFF) / 255.0F;
 			float g = (float)(k >> 8 & 0xFF) / 255.0F;
 			float h = (float)(k & 0xFF) / 255.0F;
-			vertexConsumer.quad(matrix4f, matrix3f, bakedQuad, f, g, h, i, j);
+			vertexConsumer.quad(entry, bakedQuad, f, g, h, i, j);
 		}
 	}
 
@@ -263,7 +260,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 					(float)(y + 6 + 3),
 					16777215,
 					true,
-					matrixStack.peekModel(),
+					matrixStack.method_23760().method_23761(),
 					immediate,
 					false,
 					0,

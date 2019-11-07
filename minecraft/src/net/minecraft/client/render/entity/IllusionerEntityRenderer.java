@@ -30,11 +30,10 @@ public class IllusionerEntityRenderer extends IllagerEntityRenderer<IllusionerEn
 					float h,
 					float j,
 					float k,
-					float l,
-					float m
+					float l
 				) {
 					if (illusionerEntity.isSpellcasting() || illusionerEntity.isAttacking()) {
-						super.method_17162(matrixStack, vertexConsumerProvider, i, illusionerEntity, f, g, h, j, k, l, m);
+						super.method_17162(matrixStack, vertexConsumerProvider, i, illusionerEntity, f, g, h, j, k, l);
 					}
 				}
 			}
@@ -46,25 +45,23 @@ public class IllusionerEntityRenderer extends IllagerEntityRenderer<IllusionerEn
 		return SKIN;
 	}
 
-	public void method_3991(
-		IllusionerEntity illusionerEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider
-	) {
+	public void method_3991(IllusionerEntity illusionerEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		if (illusionerEntity.isInvisible()) {
-			Vec3d[] vec3ds = illusionerEntity.method_7065(h);
-			float i = this.getAge(illusionerEntity, h);
+			Vec3d[] vec3ds = illusionerEntity.method_7065(g);
+			float h = this.getAge(illusionerEntity, g);
 
 			for (int j = 0; j < vec3ds.length; j++) {
 				matrixStack.push();
 				matrixStack.translate(
-					vec3ds[j].x + (double)MathHelper.cos((float)j + i * 0.5F) * 0.025,
-					vec3ds[j].y + (double)MathHelper.cos((float)j + i * 0.75F) * 0.0125,
-					vec3ds[j].z + (double)MathHelper.cos((float)j + i * 0.7F) * 0.025
+					vec3ds[j].x + (double)MathHelper.cos((float)j + h * 0.5F) * 0.025,
+					vec3ds[j].y + (double)MathHelper.cos((float)j + h * 0.75F) * 0.0125,
+					vec3ds[j].z + (double)MathHelper.cos((float)j + h * 0.7F) * 0.025
 				);
-				super.method_4072(illusionerEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
+				super.method_4072(illusionerEntity, f, g, matrixStack, vertexConsumerProvider, i);
 				matrixStack.pop();
 			}
 		} else {
-			super.method_4072(illusionerEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
+			super.method_4072(illusionerEntity, f, g, matrixStack, vertexConsumerProvider, i);
 		}
 	}
 

@@ -101,13 +101,13 @@ public class RabbitEntityModel<T extends RabbitEntity> extends EntityModel<T> {
 			matrixStack.scale(0.56666666F, 0.56666666F, 0.56666666F);
 			matrixStack.translate(0.0, 1.375, 0.125);
 			ImmutableList.of(this.field_3529, this.field_3520, this.field_3523, this.field_3530)
-				.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, r, g, b));
+				.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, null, r, g, b));
 			matrixStack.pop();
 			matrixStack.push();
 			matrixStack.scale(0.4F, 0.4F, 0.4F);
 			matrixStack.translate(0.0, 2.25, 0.0);
 			ImmutableList.of(this.field_3525, this.field_3532, this.field_3526, this.field_3522, this.field_3528, this.field_3527, this.field_3521, this.field_3524)
-				.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, r, g, b));
+				.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, null, r, g, b));
 			matrixStack.pop();
 		} else {
 			matrixStack.push();
@@ -127,13 +127,13 @@ public class RabbitEntityModel<T extends RabbitEntity> extends EntityModel<T> {
 					this.field_3524,
 					this.field_3530
 				)
-				.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, r, g, b));
+				.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, null, r, g, b));
 			matrixStack.pop();
 		}
 	}
 
-	public void method_17117(T rabbitEntity, float f, float g, float h, float i, float j, float k) {
-		float l = h - (float)rabbitEntity.age;
+	public void method_17117(T rabbitEntity, float f, float g, float h, float i, float j) {
+		float k = h - (float)rabbitEntity.age;
 		this.field_3530.pitch = j * (float) (Math.PI / 180.0);
 		this.field_3529.pitch = j * (float) (Math.PI / 180.0);
 		this.field_3523.pitch = j * (float) (Math.PI / 180.0);
@@ -142,7 +142,7 @@ public class RabbitEntityModel<T extends RabbitEntity> extends EntityModel<T> {
 		this.field_3529.yaw = i * (float) (Math.PI / 180.0);
 		this.field_3523.yaw = this.field_3530.yaw - (float) (Math.PI / 12);
 		this.field_3520.yaw = this.field_3530.yaw + (float) (Math.PI / 12);
-		this.field_3531 = MathHelper.sin(rabbitEntity.method_6605(l) * (float) Math.PI);
+		this.field_3531 = MathHelper.sin(rabbitEntity.method_6605(k) * (float) Math.PI);
 		this.field_3526.pitch = (this.field_3531 * 50.0F - 21.0F) * (float) (Math.PI / 180.0);
 		this.field_3522.pitch = (this.field_3531 * 50.0F - 21.0F) * (float) (Math.PI / 180.0);
 		this.field_3525.pitch = this.field_3531 * 50.0F * (float) (Math.PI / 180.0);

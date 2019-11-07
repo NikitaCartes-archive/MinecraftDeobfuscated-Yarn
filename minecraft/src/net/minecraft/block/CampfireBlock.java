@@ -39,6 +39,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
@@ -208,13 +209,26 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 		}
 	}
 
+	@Nullable
+	private Entity method_23756(Entity entity) {
+		if (entity instanceof AbstractFireballEntity) {
+			return ((AbstractFireballEntity)entity).owner;
+		} else {
+			return entity instanceof ProjectileEntity ? ((ProjectileEntity)entity).getOwner() : null;
+		}
+	}
+
 	@Override
 	public void onProjectileHit(World world, BlockState state, BlockHitResult hitResult, Entity entity) {
 		if (!world.isClient) {
 			boolean bl = entity instanceof AbstractFireballEntity || entity instanceof ProjectileEntity && entity.isOnFire();
-			if (bl && !(Boolean)state.get(LIT) && !(Boolean)state.get(WATERLOGGED)) {
-				BlockPos blockPos = hitResult.getBlockPos();
-				world.setBlockState(blockPos, state.with(Properties.LIT, Boolean.valueOf(true)), 11);
+			if (bl) {
+				Entity entity2 = this.method_23756(entity);
+				boolean bl2 = entity2 == null || entity2 instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.MOB_GRIEFING);
+				if (bl2 && !(Boolean)state.get(LIT) && !(Boolean)state.get(WATERLOGGED)) {
+					BlockPos blockPos = hitResult.getBlockPos();
+					world.setBlockState(blockPos, state.with(Properties.LIT, Boolean.valueOf(true)), 11);
+				}
 			}
 		}
 	}

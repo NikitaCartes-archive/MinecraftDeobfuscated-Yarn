@@ -8,24 +8,19 @@ import java.util.Map;
 import java.util.Map.Entry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockPos;
 
 @Environment(EnvType.CLIENT)
 public class CaveDebugRenderer implements DebugRenderer.Renderer {
-	private final MinecraftClient field_4505;
 	private final Map<BlockPos, BlockPos> field_4507 = Maps.<BlockPos, BlockPos>newHashMap();
 	private final Map<BlockPos, Float> field_4508 = Maps.<BlockPos, Float>newHashMap();
 	private final List<BlockPos> field_4506 = Lists.<BlockPos>newArrayList();
-
-	public CaveDebugRenderer(MinecraftClient minecraftClient) {
-		this.field_4505 = minecraftClient;
-	}
 
 	public void method_3704(BlockPos blockPos, List<BlockPos> list, List<Float> list2) {
 		for (int i = 0; i < list.size(); i++) {
@@ -37,16 +32,12 @@ public class CaveDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	@Override
-	public void render(long limitTime) {
-		Camera camera = this.field_4505.gameRenderer.getCamera();
-		double d = camera.getPos().x;
-		double e = camera.getPos().y;
-		double f = camera.getPos().z;
+	public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f, long l) {
 		RenderSystem.pushMatrix();
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.disableTexture();
-		BlockPos blockPos = new BlockPos(camera.getPos().x, 0.0, camera.getPos().z);
+		BlockPos blockPos = new BlockPos(d, 0.0, f);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);

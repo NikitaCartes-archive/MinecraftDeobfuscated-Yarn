@@ -269,7 +269,7 @@ public class TradeOffers {
 							new TradeOffers.Factory[]{
 								new TradeOffers.BuyForOneEmeraldFactory(Items.PAPER, 24, 16, 2),
 								new TradeOffers.EnchantBookFactory(1),
-								new TradeOffers.SellItemFactory(Blocks.BOOKSHELF, 6, 3, 12, 1)
+								new TradeOffers.SellItemFactory(Blocks.BOOKSHELF, 9, 1, 12, 1)
 							}
 						)
 						.put(

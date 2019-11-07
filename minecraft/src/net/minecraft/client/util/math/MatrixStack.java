@@ -35,11 +35,14 @@ public class MatrixStack {
 		matrix4f.set(2, 2, z);
 		entry.modelMatrix.multiply(matrix4f);
 		if (x != y || y != z) {
-			float f = MathHelper.fastInverseCbrt(x * y * z);
+			float f = 1.0F / x;
+			float g = 1.0F / y;
+			float h = 1.0F / z;
+			float i = MathHelper.fastInverseCbrt(f * g * h);
 			Matrix3f matrix3f = new Matrix3f();
-			matrix3f.set(0, 0, f / x);
-			matrix3f.set(1, 1, f / y);
-			matrix3f.set(2, 2, f / z);
+			matrix3f.set(0, 0, i * f);
+			matrix3f.set(1, 1, i * g);
+			matrix3f.set(2, 2, i * h);
 			entry.normalMatrix.multiply(matrix3f);
 		}
 	}
@@ -59,12 +62,8 @@ public class MatrixStack {
 		this.stack.removeLast();
 	}
 
-	public Matrix4f peekModel() {
-		return ((MatrixStack.Entry)this.stack.getLast()).modelMatrix;
-	}
-
-	public Matrix3f peekNormal() {
-		return ((MatrixStack.Entry)this.stack.getLast()).normalMatrix;
+	public MatrixStack.Entry method_23760() {
+		return (MatrixStack.Entry)this.stack.getLast();
 	}
 
 	public boolean isEmpty() {
@@ -72,13 +71,21 @@ public class MatrixStack {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static final class Entry {
+	public static final class Entry {
 		private final Matrix4f modelMatrix;
 		private final Matrix3f normalMatrix;
 
 		private Entry(Matrix4f matrix4f, Matrix3f matrix3f) {
 			this.modelMatrix = matrix4f;
 			this.normalMatrix = matrix3f;
+		}
+
+		public Matrix4f method_23761() {
+			return this.modelMatrix;
+		}
+
+		public Matrix3f method_23762() {
+			return this.normalMatrix;
 		}
 	}
 }

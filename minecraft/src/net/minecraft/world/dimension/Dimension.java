@@ -21,18 +21,14 @@ public abstract class Dimension {
 	protected final float[] lightLevelToBrightness = new float[16];
 	private final float[] backgroundColor = new float[4];
 
-	public Dimension(World world, DimensionType type) {
+	public Dimension(World world, DimensionType type, float f) {
 		this.world = world;
 		this.type = type;
-		this.initializeLightLevelToBrightness();
-	}
-
-	protected void initializeLightLevelToBrightness() {
-		float f = 0.0F;
 
 		for (int i = 0; i <= 15; i++) {
-			float g = 1.0F - (float)i / 15.0F;
-			this.lightLevelToBrightness[i] = (1.0F - g) / (g * 3.0F + 1.0F) * 1.0F + 0.0F;
+			float g = (float)i / 15.0F;
+			float h = g / (4.0F - 3.0F * g);
+			this.lightLevelToBrightness[i] = MathHelper.lerp(f, h, 1.0F);
 		}
 	}
 
@@ -92,8 +88,8 @@ public abstract class Dimension {
 		return this.isNether;
 	}
 
-	public float[] getLightLevelToBrightness() {
-		return this.lightLevelToBrightness;
+	public float method_23759(int i) {
+		return this.lightLevelToBrightness[i];
 	}
 
 	public WorldBorder createWorldBorder() {

@@ -32,7 +32,7 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 	}
 
 	public void method_17159(
-		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l, float m
+		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l
 	) {
 		ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.HEAD);
 		if (!itemStack.isEmpty()) {
@@ -40,16 +40,16 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 			matrixStack.push();
 			boolean bl = livingEntity instanceof VillagerEntity || livingEntity instanceof ZombieVillagerEntity;
 			if (livingEntity.isBaby() && !(livingEntity instanceof VillagerEntity)) {
-				float n = 2.0F;
-				float o = 1.4F;
-				matrixStack.translate(0.0, (double)(0.5F * m), 0.0);
+				float m = 2.0F;
+				float n = 1.4F;
+				matrixStack.translate(0.0, 0.03125, 0.0);
 				matrixStack.scale(0.7F, 0.7F, 0.7F);
-				matrixStack.translate(0.0, (double)(16.0F * m), 0.0);
+				matrixStack.translate(0.0, 1.0, 0.0);
 			}
 
-			this.getModel().getHead().rotate(matrixStack, 0.0625F);
+			this.getModel().getHead().rotate(matrixStack);
 			if (item instanceof BlockItem && ((BlockItem)item).getBlock() instanceof AbstractSkullBlock) {
-				float n = 1.1875F;
+				float m = 1.1875F;
 				matrixStack.scale(1.1875F, -1.1875F, -1.1875F);
 				if (bl) {
 					matrixStack.translate(0.0, 0.0625, 0.0);
@@ -74,7 +74,7 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 					null, 180.0F, ((AbstractSkullBlock)((BlockItem)item).getBlock()).getSkullType(), gameProfile, f, matrixStack, vertexConsumerProvider, i
 				);
 			} else if (!(item instanceof ArmorItem) || ((ArmorItem)item).getSlotType() != EquipmentSlot.HEAD) {
-				float nx = 0.625F;
+				float mx = 0.625F;
 				matrixStack.translate(0.0, -0.25, 0.0);
 				matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F));
 				matrixStack.scale(0.625F, -0.625F, -0.625F);
@@ -84,7 +84,7 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 
 				MinecraftClient.getInstance()
 					.getFirstPersonRenderer()
-					.renderItem(livingEntity, itemStack, ModelTransformation.Type.HEAD, false, matrixStack, vertexConsumerProvider);
+					.renderItem(livingEntity, itemStack, ModelTransformation.Type.HEAD, false, matrixStack, vertexConsumerProvider, i);
 			}
 
 			matrixStack.pop();

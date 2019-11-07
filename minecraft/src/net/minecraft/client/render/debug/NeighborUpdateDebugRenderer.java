@@ -3,7 +3,6 @@ package net.minecraft.client.render.debug;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -11,12 +10,11 @@ import java.util.Map.Entry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 
@@ -45,31 +43,21 @@ public class NeighborUpdateDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	@Override
-	public void render(long limitTime) {
-		long l = this.client.world.getTime();
-		Camera camera = this.client.gameRenderer.getCamera();
-		double d = camera.getPos().x;
-		double e = camera.getPos().y;
-		double f = camera.getPos().z;
-		RenderSystem.enableBlend();
-		RenderSystem.defaultBlendFunc();
-		RenderSystem.lineWidth(2.0F);
-		RenderSystem.disableTexture();
-		RenderSystem.depthMask(false);
+	public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f, long l) {
+		long m = this.client.world.getTime();
 		int i = 200;
 		double g = 0.0025;
 		Set<BlockPos> set = Sets.<BlockPos>newHashSet();
 		Map<BlockPos, Integer> map = Maps.<BlockPos, Integer>newHashMap();
-		VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-		VertexConsumer vertexConsumer = immediate.getBuffer(RenderLayer.getLines());
+		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getLines());
 		Iterator<Entry<Long, Map<BlockPos, Integer>>> iterator = this.neighborUpdates.entrySet().iterator();
 
 		while (iterator.hasNext()) {
 			Entry<Long, Map<BlockPos, Integer>> entry = (Entry<Long, Map<BlockPos, Integer>>)iterator.next();
 			Long long_ = (Long)entry.getKey();
 			Map<BlockPos, Integer> map2 = (Map<BlockPos, Integer>)entry.getValue();
-			long m = l - long_;
-			if (m > 200L) {
+			long n = m - long_;
+			if (n > 200L) {
 				iterator.remove();
 			} else {
 				for (Entry<BlockPos, Integer> entry2 : map2.entrySet()) {
@@ -78,7 +66,7 @@ public class NeighborUpdateDebugRenderer implements DebugRenderer.Renderer {
 					if (set.add(blockPos)) {
 						Box box = new Box(BlockPos.ORIGIN)
 							.expand(0.002)
-							.contract(0.0025 * (double)m)
+							.contract(0.0025 * (double)n)
 							.offset((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ())
 							.offset(-d, -e, -f);
 						WorldRenderer.drawBox(vertexConsumer, box.x1, box.y1, box.z1, box.x2, box.y2, box.z2, 1.0F, 1.0F, 1.0F, 1.0F);
@@ -88,16 +76,10 @@ public class NeighborUpdateDebugRenderer implements DebugRenderer.Renderer {
 			}
 		}
 
-		immediate.draw();
-
 		for (Entry<BlockPos, Integer> entry : map.entrySet()) {
 			BlockPos blockPos2 = (BlockPos)entry.getKey();
 			Integer integer2 = (Integer)entry.getValue();
 			DebugRenderer.drawString(String.valueOf(integer2), blockPos2.getX(), blockPos2.getY(), blockPos2.getZ(), -1);
 		}
-
-		RenderSystem.depthMask(true);
-		RenderSystem.enableTexture();
-		RenderSystem.disableBlend();
 	}
 }

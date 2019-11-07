@@ -28,8 +28,7 @@ public class TropicalFishSomethingFeatureRenderer extends FeatureRenderer<Tropic
 		float h,
 		float j,
 		float k,
-		float l,
-		float m
+		float l
 	) {
 		EntityModel<TropicalFishEntity> entityModel = (EntityModel<TropicalFishEntity>)(tropicalFishEntity.getShape() == 0 ? this.modelA : this.modelB);
 		float[] fs = tropicalFishEntity.getPatternColorComponents();
@@ -46,7 +45,6 @@ public class TropicalFishSomethingFeatureRenderer extends FeatureRenderer<Tropic
 			j,
 			k,
 			l,
-			m,
 			h,
 			fs[0],
 			fs[1],

@@ -212,7 +212,7 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public int getLightmapCoordinates() {
-		return 15728880;
+		return 15;
 	}
 
 	@Override

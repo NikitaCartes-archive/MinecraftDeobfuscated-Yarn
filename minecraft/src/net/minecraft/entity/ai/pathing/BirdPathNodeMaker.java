@@ -265,6 +265,10 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 				pathNodeType = PathNodeType.DAMAGE_CACTUS;
 			} else if (pathNodeType2 == PathNodeType.DAMAGE_OTHER) {
 				pathNodeType = PathNodeType.DAMAGE_OTHER;
+			} else if (pathNodeType2 == PathNodeType.COCOA) {
+				pathNodeType = PathNodeType.COCOA;
+			} else if (pathNodeType2 == PathNodeType.FENCE) {
+				pathNodeType = PathNodeType.FENCE;
 			} else {
 				pathNodeType = pathNodeType2 != PathNodeType.WALKABLE && pathNodeType2 != PathNodeType.OPEN && pathNodeType2 != PathNodeType.WATER
 					? PathNodeType.WALKABLE
@@ -272,7 +276,11 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 			}
 		}
 
-		return method_59(world, x, y, z, pathNodeType);
+		if (pathNodeType == PathNodeType.WALKABLE || pathNodeType == PathNodeType.OPEN) {
+			pathNodeType = method_59(world, x, y, z, pathNodeType);
+		}
+
+		return pathNodeType;
 	}
 
 	private PathNodeType method_10(MobEntity mobEntity, BlockPos blockPos) {

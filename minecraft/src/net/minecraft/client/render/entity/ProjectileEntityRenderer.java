@@ -6,6 +6,7 @@ import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.util.math.Matrix3f;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
@@ -18,14 +19,12 @@ public abstract class ProjectileEntityRenderer<T extends ProjectileEntity> exten
 		super(entityRenderDispatcher);
 	}
 
-	public void method_3875(
-		T projectileEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider
-	) {
+	public void method_3875(T projectileEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(MathHelper.lerp(h, projectileEntity.prevYaw, projectileEntity.yaw) - 90.0F));
-		matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(MathHelper.lerp(h, projectileEntity.prevPitch, projectileEntity.pitch)));
-		int i = 0;
-		float j = 0.0F;
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(MathHelper.lerp(g, projectileEntity.prevYaw, projectileEntity.yaw) - 90.0F));
+		matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(MathHelper.lerp(g, projectileEntity.prevPitch, projectileEntity.pitch)));
+		int j = 0;
+		float h = 0.0F;
 		float k = 0.5F;
 		float l = 0.0F;
 		float m = 0.15625F;
@@ -34,7 +33,7 @@ public abstract class ProjectileEntityRenderer<T extends ProjectileEntity> exten
 		float p = 0.15625F;
 		float q = 0.3125F;
 		float r = 0.05625F;
-		float s = (float)projectileEntity.shake - h;
+		float s = (float)projectileEntity.shake - g;
 		if (s > 0.0F) {
 			float t = -MathHelper.sin(s * 3.0F) * s;
 			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(t));
@@ -43,37 +42,40 @@ public abstract class ProjectileEntityRenderer<T extends ProjectileEntity> exten
 		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(45.0F));
 		matrixStack.scale(0.05625F, 0.05625F, 0.05625F);
 		matrixStack.translate(-4.0, 0.0, 0.0);
-		int u = projectileEntity.getLightmapCoordinates();
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(this.getTexture(projectileEntity)));
-		Matrix4f matrix4f = matrixStack.peekModel();
-		this.method_23153(matrix4f, vertexConsumer, -7, -2, -2, 0.0F, 0.15625F, 1, 0, 0, u);
-		this.method_23153(matrix4f, vertexConsumer, -7, -2, 2, 0.15625F, 0.15625F, 1, 0, 0, u);
-		this.method_23153(matrix4f, vertexConsumer, -7, 2, 2, 0.15625F, 0.3125F, 1, 0, 0, u);
-		this.method_23153(matrix4f, vertexConsumer, -7, 2, -2, 0.0F, 0.3125F, 1, 0, 0, u);
-		this.method_23153(matrix4f, vertexConsumer, -7, 2, -2, 0.0F, 0.15625F, -1, 0, 0, u);
-		this.method_23153(matrix4f, vertexConsumer, -7, 2, 2, 0.15625F, 0.15625F, -1, 0, 0, u);
-		this.method_23153(matrix4f, vertexConsumer, -7, -2, 2, 0.15625F, 0.3125F, -1, 0, 0, u);
-		this.method_23153(matrix4f, vertexConsumer, -7, -2, -2, 0.0F, 0.3125F, -1, 0, 0, u);
+		MatrixStack.Entry entry = matrixStack.method_23760();
+		Matrix4f matrix4f = entry.method_23761();
+		Matrix3f matrix3f = entry.method_23762();
+		this.method_23153(matrix4f, matrix3f, vertexConsumer, -7, -2, -2, 0.0F, 0.15625F, 1, 0, 0, i);
+		this.method_23153(matrix4f, matrix3f, vertexConsumer, -7, -2, 2, 0.15625F, 0.15625F, 1, 0, 0, i);
+		this.method_23153(matrix4f, matrix3f, vertexConsumer, -7, 2, 2, 0.15625F, 0.3125F, 1, 0, 0, i);
+		this.method_23153(matrix4f, matrix3f, vertexConsumer, -7, 2, -2, 0.0F, 0.3125F, 1, 0, 0, i);
+		this.method_23153(matrix4f, matrix3f, vertexConsumer, -7, 2, -2, 0.0F, 0.15625F, -1, 0, 0, i);
+		this.method_23153(matrix4f, matrix3f, vertexConsumer, -7, 2, 2, 0.15625F, 0.15625F, -1, 0, 0, i);
+		this.method_23153(matrix4f, matrix3f, vertexConsumer, -7, -2, 2, 0.15625F, 0.3125F, -1, 0, 0, i);
+		this.method_23153(matrix4f, matrix3f, vertexConsumer, -7, -2, -2, 0.0F, 0.3125F, -1, 0, 0, i);
 
-		for (int v = 0; v < 4; v++) {
+		for (int u = 0; u < 4; u++) {
 			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0F));
-			this.method_23153(matrix4f, vertexConsumer, -8, -2, 0, 0.0F, 0.0F, 0, 1, 0, u);
-			this.method_23153(matrix4f, vertexConsumer, 8, -2, 0, 0.5F, 0.0F, 0, 1, 0, u);
-			this.method_23153(matrix4f, vertexConsumer, 8, 2, 0, 0.5F, 0.15625F, 0, 1, 0, u);
-			this.method_23153(matrix4f, vertexConsumer, -8, 2, 0, 0.0F, 0.15625F, 0, 1, 0, u);
+			this.method_23153(matrix4f, matrix3f, vertexConsumer, -8, -2, 0, 0.0F, 0.0F, 0, 1, 0, i);
+			this.method_23153(matrix4f, matrix3f, vertexConsumer, 8, -2, 0, 0.5F, 0.0F, 0, 1, 0, i);
+			this.method_23153(matrix4f, matrix3f, vertexConsumer, 8, 2, 0, 0.5F, 0.15625F, 0, 1, 0, i);
+			this.method_23153(matrix4f, matrix3f, vertexConsumer, -8, 2, 0, 0.0F, 0.15625F, 0, 1, 0, i);
 		}
 
 		matrixStack.pop();
-		super.render(projectileEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
+		super.render(projectileEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
-	public void method_23153(Matrix4f matrix4f, VertexConsumer vertexConsumer, int i, int j, int k, float f, float g, int l, int m, int n, int o) {
+	public void method_23153(
+		Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer vertexConsumer, int i, int j, int k, float f, float g, int l, int m, int n, int o
+	) {
 		vertexConsumer.vertex(matrix4f, (float)i, (float)j, (float)k)
 			.color(255, 255, 255, 255)
 			.texture(f, g)
 			.overlay(OverlayTexture.DEFAULT_UV)
 			.light(o)
-			.normal((float)l, (float)n, (float)m)
+			.method_23763(matrix3f, (float)l, (float)n, (float)m)
 			.next();
 	}
 }

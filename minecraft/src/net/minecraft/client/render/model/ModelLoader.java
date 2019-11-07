@@ -93,6 +93,8 @@ public class ModelLoader {
 		new Identifier("entity/shulker/shulker_black")
 	);
 	public static final Identifier field_20847 = new Identifier("entity/banner_base");
+	public static final Identifier field_21557 = new Identifier("entity/shield_base");
+	public static final Identifier field_21558 = new Identifier("entity/shield_base_nopattern");
 	public static final Identifier field_21014 = new Identifier("entity/signs/oak");
 	public static final Identifier field_21015 = new Identifier("entity/signs/spruce");
 	public static final Identifier field_21016 = new Identifier("entity/signs/birch");
@@ -133,9 +135,12 @@ public class ModelLoader {
 		hashSet.add(field_20845);
 		hashSet.addAll(field_20846);
 		hashSet.add(field_20847);
+		hashSet.add(field_21557);
+		hashSet.add(field_21558);
 
 		for (BannerPattern bannerPattern : BannerPattern.values()) {
-			hashSet.add(bannerPattern.getSpriteId());
+			hashSet.add(bannerPattern.getSpriteId(true));
+			hashSet.add(bannerPattern.getSpriteId(false));
 		}
 
 		hashSet.add(field_21014);

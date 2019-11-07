@@ -42,7 +42,7 @@ public class BookModel extends Model {
 	}
 
 	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, @Nullable Sprite sprite) {
-		this.parts.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, j, sprite, f, g, h));
+		this.parts.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, sprite, f, g, h));
 	}
 
 	public void setPageAngles(float f, float g, float h, float i) {

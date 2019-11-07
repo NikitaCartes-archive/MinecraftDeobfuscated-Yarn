@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
 import com.google.common.primitives.Doubles;
+import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -600,8 +601,8 @@ public class ChunkBuilder {
 				return false;
 			}
 		};
-		private final Set<RenderLayer> nonEmpty = Sets.<RenderLayer>newHashSet();
-		private final Set<RenderLayer> initialized = Sets.<RenderLayer>newHashSet();
+		private final Set<RenderLayer> nonEmpty = new ObjectArraySet<>();
+		private final Set<RenderLayer> initialized = new ObjectArraySet<>();
 		private boolean empty = true;
 		private final List<BlockEntity> blockEntities = Lists.<BlockEntity>newArrayList();
 		private ChunkOcclusionGraph occlusionGraph = new ChunkOcclusionGraph();

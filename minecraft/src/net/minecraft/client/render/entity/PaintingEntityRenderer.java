@@ -7,9 +7,11 @@ import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.texture.PaintingManager;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.util.math.Matrix3f;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
@@ -26,18 +28,16 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 		super(entityRenderDispatcher);
 	}
 
-	public void method_4075(
-		PaintingEntity paintingEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider
-	) {
+	public void method_4075(PaintingEntity paintingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F - g));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F - f));
 		PaintingMotive paintingMotive = paintingEntity.motive;
-		float i = 0.0625F;
+		float h = 0.0625F;
 		matrixStack.scale(0.0625F, 0.0625F, 0.0625F);
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(this.method_4077(paintingEntity)));
 		PaintingManager paintingManager = MinecraftClient.getInstance().getPaintingManager();
 		this.method_4074(
-			matrixStack.peekModel(),
+			matrixStack,
 			vertexConsumer,
 			paintingEntity,
 			paintingMotive.getWidth(),
@@ -46,14 +46,17 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 			paintingManager.getBackSprite()
 		);
 		matrixStack.pop();
-		super.render(paintingEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
+		super.render(paintingEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
 	public Identifier method_4077(PaintingEntity paintingEntity) {
 		return SpriteAtlasTexture.PAINTING_ATLAS_TEX;
 	}
 
-	private void method_4074(Matrix4f matrix4f, VertexConsumer vertexConsumer, PaintingEntity paintingEntity, int i, int j, Sprite sprite, Sprite sprite2) {
+	private void method_4074(MatrixStack matrixStack, VertexConsumer vertexConsumer, PaintingEntity paintingEntity, int i, int j, Sprite sprite, Sprite sprite2) {
+		MatrixStack.Entry entry = matrixStack.method_23760();
+		Matrix4f matrix4f = entry.method_23761();
+		Matrix3f matrix3f = entry.method_23762();
 		float f = (float)(-i) / 2.0F;
 		float g = (float)(-j) / 2.0F;
 		float h = 0.5F;
@@ -100,46 +103,48 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 					ag = MathHelper.floor(paintingEntity.getZ() + (double)((aa + ab) / 2.0F / 16.0F));
 				}
 
-				int ah = paintingEntity.world.getLightmapCoordinates(new BlockPos(ae, af, ag));
+				int ah = WorldRenderer.method_23794(paintingEntity.world, new BlockPos(ae, af, ag));
 				float ai = sprite.getU(d * (double)(w - y));
 				float aj = sprite.getU(d * (double)(w - (y + 1)));
 				float ak = sprite.getV(e * (double)(x - z));
 				float al = sprite.getV(e * (double)(x - (z + 1)));
-				this.method_23188(matrix4f, vertexConsumer, aa, ad, aj, ak, -0.5F, 0, 0, -1, ah);
-				this.method_23188(matrix4f, vertexConsumer, ab, ad, ai, ak, -0.5F, 0, 0, -1, ah);
-				this.method_23188(matrix4f, vertexConsumer, ab, ac, ai, al, -0.5F, 0, 0, -1, ah);
-				this.method_23188(matrix4f, vertexConsumer, aa, ac, aj, al, -0.5F, 0, 0, -1, ah);
-				this.method_23188(matrix4f, vertexConsumer, aa, ac, k, m, 0.5F, 0, 0, 1, ah);
-				this.method_23188(matrix4f, vertexConsumer, ab, ac, l, m, 0.5F, 0, 0, 1, ah);
-				this.method_23188(matrix4f, vertexConsumer, ab, ad, l, n, 0.5F, 0, 0, 1, ah);
-				this.method_23188(matrix4f, vertexConsumer, aa, ad, k, n, 0.5F, 0, 0, 1, ah);
-				this.method_23188(matrix4f, vertexConsumer, aa, ac, o, q, -0.5F, 0, 1, 0, ah);
-				this.method_23188(matrix4f, vertexConsumer, ab, ac, p, q, -0.5F, 0, 1, 0, ah);
-				this.method_23188(matrix4f, vertexConsumer, ab, ac, p, r, 0.5F, 0, 1, 0, ah);
-				this.method_23188(matrix4f, vertexConsumer, aa, ac, o, r, 0.5F, 0, 1, 0, ah);
-				this.method_23188(matrix4f, vertexConsumer, aa, ad, o, q, 0.5F, 0, -1, 0, ah);
-				this.method_23188(matrix4f, vertexConsumer, ab, ad, p, q, 0.5F, 0, -1, 0, ah);
-				this.method_23188(matrix4f, vertexConsumer, ab, ad, p, r, -0.5F, 0, -1, 0, ah);
-				this.method_23188(matrix4f, vertexConsumer, aa, ad, o, r, -0.5F, 0, -1, 0, ah);
-				this.method_23188(matrix4f, vertexConsumer, aa, ac, t, u, 0.5F, -1, 0, 0, ah);
-				this.method_23188(matrix4f, vertexConsumer, aa, ad, t, v, 0.5F, -1, 0, 0, ah);
-				this.method_23188(matrix4f, vertexConsumer, aa, ad, s, v, -0.5F, -1, 0, 0, ah);
-				this.method_23188(matrix4f, vertexConsumer, aa, ac, s, u, -0.5F, -1, 0, 0, ah);
-				this.method_23188(matrix4f, vertexConsumer, ab, ac, t, u, -0.5F, 1, 0, 0, ah);
-				this.method_23188(matrix4f, vertexConsumer, ab, ad, t, v, -0.5F, 1, 0, 0, ah);
-				this.method_23188(matrix4f, vertexConsumer, ab, ad, s, v, 0.5F, 1, 0, 0, ah);
-				this.method_23188(matrix4f, vertexConsumer, ab, ac, s, u, 0.5F, 1, 0, 0, ah);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, aa, ad, aj, ak, -0.5F, 0, 0, -1, ah);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, ab, ad, ai, ak, -0.5F, 0, 0, -1, ah);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, ab, ac, ai, al, -0.5F, 0, 0, -1, ah);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, aa, ac, aj, al, -0.5F, 0, 0, -1, ah);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, aa, ac, k, m, 0.5F, 0, 0, 1, ah);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, ab, ac, l, m, 0.5F, 0, 0, 1, ah);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, ab, ad, l, n, 0.5F, 0, 0, 1, ah);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, aa, ad, k, n, 0.5F, 0, 0, 1, ah);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, aa, ac, o, q, -0.5F, 0, 1, 0, ah);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, ab, ac, p, q, -0.5F, 0, 1, 0, ah);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, ab, ac, p, r, 0.5F, 0, 1, 0, ah);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, aa, ac, o, r, 0.5F, 0, 1, 0, ah);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, aa, ad, o, q, 0.5F, 0, -1, 0, ah);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, ab, ad, p, q, 0.5F, 0, -1, 0, ah);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, ab, ad, p, r, -0.5F, 0, -1, 0, ah);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, aa, ad, o, r, -0.5F, 0, -1, 0, ah);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, aa, ac, t, u, 0.5F, -1, 0, 0, ah);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, aa, ad, t, v, 0.5F, -1, 0, 0, ah);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, aa, ad, s, v, -0.5F, -1, 0, 0, ah);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, aa, ac, s, u, -0.5F, -1, 0, 0, ah);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, ab, ac, t, u, -0.5F, 1, 0, 0, ah);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, ab, ad, t, v, -0.5F, 1, 0, 0, ah);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, ab, ad, s, v, 0.5F, 1, 0, 0, ah);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, ab, ac, s, u, 0.5F, 1, 0, 0, ah);
 			}
 		}
 	}
 
-	private void method_23188(Matrix4f matrix4f, VertexConsumer vertexConsumer, float f, float g, float h, float i, float j, int k, int l, int m, int n) {
+	private void method_23188(
+		Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer vertexConsumer, float f, float g, float h, float i, float j, int k, int l, int m, int n
+	) {
 		vertexConsumer.vertex(matrix4f, f, g, j)
 			.color(255, 255, 255, 255)
 			.texture(h, i)
 			.overlay(OverlayTexture.DEFAULT_UV)
 			.light(n)
-			.normal((float)k, (float)l, (float)m)
+			.method_23763(matrix3f, (float)k, (float)l, (float)m)
 			.next();
 	}
 }

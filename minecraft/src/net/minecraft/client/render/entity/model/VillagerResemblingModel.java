@@ -69,7 +69,7 @@ public class VillagerResemblingModel<T extends Entity> extends CompositeEntityMo
 	}
 
 	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch, float scale) {
+	public void setAngles(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch) {
 		boolean bl = false;
 		if (entity instanceof AbstractTraderEntity) {
 			bl = ((AbstractTraderEntity)entity).getHeadRollingTimeLeft() > 0;

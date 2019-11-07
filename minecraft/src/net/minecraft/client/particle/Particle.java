@@ -6,6 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.util.ReusableStream;
@@ -45,9 +46,6 @@ public abstract class Particle {
 	protected float colorAlpha = 1.0F;
 	protected float angle;
 	protected float prevAngle;
-	public static double cameraX;
-	public static double cameraY;
-	public static double cameraZ;
 
 	protected Particle(World world, double x, double y, double z) {
 		this.world = world;
@@ -120,7 +118,7 @@ public abstract class Particle {
 		}
 	}
 
-	public abstract void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float tickDelta, float f, float g, float h, float i, float j);
+	public abstract void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float tickDelta);
 
 	public abstract ParticleTextureSheet getType();
 
@@ -213,7 +211,7 @@ public abstract class Particle {
 
 	protected int getColorMultiplier(float tint) {
 		BlockPos blockPos = new BlockPos(this.x, this.y, this.z);
-		return this.world.isChunkLoaded(blockPos) ? this.world.getLightmapCoordinates(blockPos) : 0;
+		return this.world.isChunkLoaded(blockPos) ? WorldRenderer.method_23794(this.world, blockPos) : 0;
 	}
 
 	public boolean isAlive() {

@@ -19,7 +19,7 @@ public class VillagerHeldItemFeatureRenderer<T extends LivingEntity, M extends E
 	}
 
 	public void method_4208(
-		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l, float m
+		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l
 	) {
 		matrixStack.push();
 		matrixStack.translate(0.0, 0.4F, -0.4F);
@@ -27,7 +27,7 @@ public class VillagerHeldItemFeatureRenderer<T extends LivingEntity, M extends E
 		ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.MAINHAND);
 		MinecraftClient.getInstance()
 			.getFirstPersonRenderer()
-			.renderItem(livingEntity, itemStack, ModelTransformation.Type.GROUND, false, matrixStack, vertexConsumerProvider);
+			.renderItem(livingEntity, itemStack, ModelTransformation.Type.GROUND, false, matrixStack, vertexConsumerProvider, i);
 		matrixStack.pop();
 	}
 }

@@ -31,37 +31,34 @@ public class BoatEntityRenderer extends EntityRenderer<BoatEntity> {
 		this.field_4673 = 0.8F;
 	}
 
-	public void method_3888(
-		BoatEntity boatEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider
-	) {
+	public void method_3888(BoatEntity boatEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
 		matrixStack.translate(0.0, 0.375, 0.0);
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F - g));
-		float i = (float)boatEntity.getDamageWobbleTicks() - h;
-		float j = boatEntity.getDamageWobbleStrength() - h;
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F - f));
+		float h = (float)boatEntity.getDamageWobbleTicks() - g;
+		float j = boatEntity.getDamageWobbleStrength() - g;
 		if (j < 0.0F) {
 			j = 0.0F;
 		}
 
-		if (i > 0.0F) {
-			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(MathHelper.sin(i) * i * j / 10.0F * (float)boatEntity.getDamageWobbleSide()));
+		if (h > 0.0F) {
+			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(MathHelper.sin(h) * h * j / 10.0F * (float)boatEntity.getDamageWobbleSide()));
 		}
 
-		float k = boatEntity.interpolateBubbleWobble(h);
+		float k = boatEntity.interpolateBubbleWobble(g);
 		if (!MathHelper.approximatelyEquals(k, 0.0F)) {
-			matrixStack.multiply(new Quaternion(new Vector3f(1.0F, 0.0F, 1.0F), boatEntity.interpolateBubbleWobble(h), true));
+			matrixStack.multiply(new Quaternion(new Vector3f(1.0F, 0.0F, 1.0F), boatEntity.interpolateBubbleWobble(g), true));
 		}
 
 		matrixStack.scale(-1.0F, -1.0F, 1.0F);
-		int l = boatEntity.getLightmapCoordinates();
 		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(90.0F));
-		this.model.method_22952(boatEntity, h, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
+		this.model.method_22952(boatEntity, g, 0.0F, -0.1F, 0.0F, 0.0F);
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(this.method_3891(boatEntity)));
-		this.model.render(matrixStack, vertexConsumer, l, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F);
+		this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F);
 		VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.getWaterMask());
-		this.model.getBottom().render(matrixStack, vertexConsumer2, 0.0625F, l, OverlayTexture.DEFAULT_UV, null);
+		this.model.getBottom().render(matrixStack, vertexConsumer2, i, OverlayTexture.DEFAULT_UV, null);
 		matrixStack.pop();
-		super.render(boatEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
+		super.render(boatEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
 	public Identifier method_3891(BoatEntity boatEntity) {

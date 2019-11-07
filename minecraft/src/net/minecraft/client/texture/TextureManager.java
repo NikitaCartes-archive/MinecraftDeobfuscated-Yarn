@@ -3,6 +3,7 @@ package net.minecraft.client.texture;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.realmsclient.RealmsMainScreen;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
@@ -149,6 +150,7 @@ public class TextureManager implements TextureTickListener, ResourceReloadListen
 			.thenCompose(synchronizer::whenPrepared)
 			.thenAcceptAsync(void_ -> {
 				MissingSprite.getMissingSpriteTexture();
+				RealmsMainScreen.method_23765(this.resourceContainer);
 				Iterator<Entry<Identifier, AbstractTexture>> iterator = this.textures.entrySet().iterator();
 
 				while (iterator.hasNext()) {

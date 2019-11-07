@@ -42,7 +42,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -336,6 +335,7 @@ public class EndermanEntity extends HostileEntity {
 
 	static class ChasePlayerGoal extends Goal {
 		private final EndermanEntity enderman;
+		private LivingEntity field_21513;
 
 		public ChasePlayerGoal(EndermanEntity enderman) {
 			this.enderman = enderman;
@@ -344,18 +344,23 @@ public class EndermanEntity extends HostileEntity {
 
 		@Override
 		public boolean canStart() {
-			LivingEntity livingEntity = this.enderman.getTarget();
-			if (!(livingEntity instanceof PlayerEntity)) {
+			this.field_21513 = this.enderman.getTarget();
+			if (!(this.field_21513 instanceof PlayerEntity)) {
 				return false;
 			} else {
-				double d = livingEntity.squaredDistanceTo(this.enderman);
-				return d > 256.0 ? false : this.enderman.isPlayerStaring((PlayerEntity)livingEntity);
+				double d = this.field_21513.squaredDistanceTo(this.enderman);
+				return d > 256.0 ? false : this.enderman.isPlayerStaring((PlayerEntity)this.field_21513);
 			}
 		}
 
 		@Override
 		public void start() {
 			this.enderman.getNavigation().stop();
+		}
+
+		@Override
+		public void tick() {
+			this.enderman.getLookControl().lookAt(this.field_21513.getX(), this.field_21513.method_23320(), this.field_21513.getZ());
 		}
 	}
 
@@ -388,9 +393,9 @@ public class EndermanEntity extends HostileEntity {
 			Vec3d vec3d = new Vec3d((double)MathHelper.floor(this.enderman.getX()) + 0.5, (double)j + 0.5, (double)MathHelper.floor(this.enderman.getZ()) + 0.5);
 			Vec3d vec3d2 = new Vec3d((double)i + 0.5, (double)j + 0.5, (double)k + 0.5);
 			BlockHitResult blockHitResult = world.rayTrace(
-				new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, this.enderman)
+				new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.OUTLINE, RayTraceContext.FluidHandling.NONE, this.enderman)
 			);
-			boolean bl = blockHitResult.getType() != HitResult.Type.MISS && blockHitResult.getBlockPos().equals(blockPos);
+			boolean bl = blockHitResult.getBlockPos().equals(blockPos);
 			if (block.matches(BlockTags.ENDERMAN_HOLDABLE) && bl) {
 				this.enderman.setCarriedBlock(blockState);
 				world.removeBlock(blockPos, false);

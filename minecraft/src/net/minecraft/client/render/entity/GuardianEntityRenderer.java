@@ -8,6 +8,7 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.GuardianEntityModel;
+import net.minecraft.client.util.math.Matrix3f;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
@@ -55,20 +56,18 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 		return new Vec3d(d, e, f);
 	}
 
-	public void method_3977(
-		GuardianEntity guardianEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider
-	) {
-		super.method_4072(guardianEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
+	public void method_3977(GuardianEntity guardianEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+		super.method_4072(guardianEntity, f, g, matrixStack, vertexConsumerProvider, i);
 		LivingEntity livingEntity = guardianEntity.getBeamTarget();
 		if (livingEntity != null) {
-			float i = guardianEntity.getBeamProgress(h);
-			float j = (float)guardianEntity.world.getTime() + h;
+			float h = guardianEntity.getBeamProgress(g);
+			float j = (float)guardianEntity.world.getTime() + g;
 			float k = j * 0.5F % 1.0F;
 			float l = guardianEntity.getStandingEyeHeight();
 			matrixStack.push();
 			matrixStack.translate(0.0, (double)l, 0.0);
-			Vec3d vec3d = this.fromLerpedPosition(livingEntity, (double)livingEntity.getHeight() * 0.5, h);
-			Vec3d vec3d2 = this.fromLerpedPosition(guardianEntity, (double)l, h);
+			Vec3d vec3d = this.fromLerpedPosition(livingEntity, (double)livingEntity.getHeight() * 0.5, g);
+			Vec3d vec3d2 = this.fromLerpedPosition(guardianEntity, (double)l, g);
 			Vec3d vec3d3 = vec3d.subtract(vec3d2);
 			float m = (float)(vec3d3.length() + 1.0);
 			vec3d3 = vec3d3.normalize();
@@ -78,7 +77,7 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(n * (180.0F / (float)Math.PI)));
 			int p = 1;
 			float q = j * 0.05F * -1.5F;
-			float r = i * i;
+			float r = h * h;
 			int s = 64 + (int)(r * 191.0F);
 			int t = 32 + (int)(r * 191.0F);
 			int u = 128 - (int)(r * 64.0F);
@@ -105,30 +104,40 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 			float aq = -1.0F + k;
 			float ar = m * 2.5F + aq;
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(EXPLOSION_BEAM_TEX));
-			Matrix4f matrix4f = matrixStack.peekModel();
-			method_23173(vertexConsumer, matrix4f, af, m, ag, s, t, u, 0.4999F, ar);
-			method_23173(vertexConsumer, matrix4f, af, 0.0F, ag, s, t, u, 0.4999F, aq);
-			method_23173(vertexConsumer, matrix4f, ah, 0.0F, ai, s, t, u, 0.0F, aq);
-			method_23173(vertexConsumer, matrix4f, ah, m, ai, s, t, u, 0.0F, ar);
-			method_23173(vertexConsumer, matrix4f, aj, m, ak, s, t, u, 0.4999F, ar);
-			method_23173(vertexConsumer, matrix4f, aj, 0.0F, ak, s, t, u, 0.4999F, aq);
-			method_23173(vertexConsumer, matrix4f, al, 0.0F, am, s, t, u, 0.0F, aq);
-			method_23173(vertexConsumer, matrix4f, al, m, am, s, t, u, 0.0F, ar);
+			MatrixStack.Entry entry = matrixStack.method_23760();
+			Matrix4f matrix4f = entry.method_23761();
+			Matrix3f matrix3f = entry.method_23762();
+			method_23173(vertexConsumer, matrix4f, matrix3f, af, m, ag, s, t, u, 0.4999F, ar);
+			method_23173(vertexConsumer, matrix4f, matrix3f, af, 0.0F, ag, s, t, u, 0.4999F, aq);
+			method_23173(vertexConsumer, matrix4f, matrix3f, ah, 0.0F, ai, s, t, u, 0.0F, aq);
+			method_23173(vertexConsumer, matrix4f, matrix3f, ah, m, ai, s, t, u, 0.0F, ar);
+			method_23173(vertexConsumer, matrix4f, matrix3f, aj, m, ak, s, t, u, 0.4999F, ar);
+			method_23173(vertexConsumer, matrix4f, matrix3f, aj, 0.0F, ak, s, t, u, 0.4999F, aq);
+			method_23173(vertexConsumer, matrix4f, matrix3f, al, 0.0F, am, s, t, u, 0.0F, aq);
+			method_23173(vertexConsumer, matrix4f, matrix3f, al, m, am, s, t, u, 0.0F, ar);
 			float as = 0.0F;
 			if (guardianEntity.age % 2 == 0) {
 				as = 0.5F;
 			}
 
-			method_23173(vertexConsumer, matrix4f, x, m, y, s, t, u, 0.5F, as + 0.5F);
-			method_23173(vertexConsumer, matrix4f, z, m, aa, s, t, u, 1.0F, as + 0.5F);
-			method_23173(vertexConsumer, matrix4f, ad, m, ae, s, t, u, 1.0F, as);
-			method_23173(vertexConsumer, matrix4f, ab, m, ac, s, t, u, 0.5F, as);
+			method_23173(vertexConsumer, matrix4f, matrix3f, x, m, y, s, t, u, 0.5F, as + 0.5F);
+			method_23173(vertexConsumer, matrix4f, matrix3f, z, m, aa, s, t, u, 1.0F, as + 0.5F);
+			method_23173(vertexConsumer, matrix4f, matrix3f, ad, m, ae, s, t, u, 1.0F, as);
+			method_23173(vertexConsumer, matrix4f, matrix3f, ab, m, ac, s, t, u, 0.5F, as);
 			matrixStack.pop();
 		}
 	}
 
-	private static void method_23173(VertexConsumer vertexConsumer, Matrix4f matrix4f, float f, float g, float h, int i, int j, int k, float l, float m) {
-		vertexConsumer.vertex(matrix4f, f, g, h).color(i, j, k, 255).texture(l, m).overlay(OverlayTexture.DEFAULT_UV).light(15728880).normal(0.0F, 1.0F, 0.0F).next();
+	private static void method_23173(
+		VertexConsumer vertexConsumer, Matrix4f matrix4f, Matrix3f matrix3f, float f, float g, float h, int i, int j, int k, float l, float m
+	) {
+		vertexConsumer.vertex(matrix4f, f, g, h)
+			.color(i, j, k, 255)
+			.texture(l, m)
+			.overlay(OverlayTexture.DEFAULT_UV)
+			.light(15728880)
+			.method_23763(matrix3f, 0.0F, 1.0F, 0.0F)
+			.next();
 	}
 
 	public Identifier method_3976(GuardianEntity guardianEntity) {

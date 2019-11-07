@@ -29,11 +29,14 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
@@ -184,6 +187,7 @@ public class ParticleManager implements ResourceReloadListener {
 			.thenCompose(synchronizer::whenPrepared)
 			.thenAcceptAsync(
 				data -> {
+					this.particles.clear();
 					applyProfiler.startTick();
 					applyProfiler.push("upload");
 					this.particleAtlasTexture.upload(data);
@@ -354,15 +358,16 @@ public class ParticleManager implements ResourceReloadListener {
 		}
 	}
 
-	public void renderParticles(Camera camera, float tickDelta) {
-		float f = MathHelper.cos(camera.getYaw() * (float) (Math.PI / 180.0));
-		float g = MathHelper.sin(camera.getYaw() * (float) (Math.PI / 180.0));
-		float h = -g * MathHelper.sin(camera.getPitch() * (float) (Math.PI / 180.0));
-		float i = f * MathHelper.sin(camera.getPitch() * (float) (Math.PI / 180.0));
-		float j = MathHelper.cos(camera.getPitch() * (float) (Math.PI / 180.0));
-		Particle.cameraX = camera.getPos().x;
-		Particle.cameraY = camera.getPos().y;
-		Particle.cameraZ = camera.getPos().z;
+	public void renderParticles(
+		MatrixStack matrixStack, VertexConsumerProvider.Immediate immediate, LightmapTextureManager lightmapTextureManager, Camera camera, float f
+	) {
+		lightmapTextureManager.enable();
+		RenderSystem.enableAlphaTest();
+		RenderSystem.defaultAlphaFunc();
+		RenderSystem.enableDepthTest();
+		RenderSystem.enableFog();
+		RenderSystem.pushMatrix();
+		RenderSystem.multMatrix(matrixStack.method_23760().method_23761());
 
 		for (ParticleTextureSheet particleTextureSheet : PARTICLE_TEXTURE_SHEETS) {
 			Iterable<Particle> iterable = (Iterable<Particle>)this.particles.get(particleTextureSheet);
@@ -374,9 +379,9 @@ public class ParticleManager implements ResourceReloadListener {
 
 				for (Particle particle : iterable) {
 					try {
-						particle.buildGeometry(bufferBuilder, camera, tickDelta, f, j, g, h, i);
-					} catch (Throwable var18) {
-						CrashReport crashReport = CrashReport.create(var18, "Rendering Particle");
+						particle.buildGeometry(bufferBuilder, camera, f);
+					} catch (Throwable var16) {
+						CrashReport crashReport = CrashReport.create(var16, "Rendering Particle");
 						CrashReportSection crashReportSection = crashReport.addElement("Particle being rendered");
 						crashReportSection.add("Particle", particle::toString);
 						crashReportSection.add("Particle Type", particleTextureSheet::toString);
@@ -388,9 +393,12 @@ public class ParticleManager implements ResourceReloadListener {
 			}
 		}
 
+		RenderSystem.popMatrix();
 		RenderSystem.depthMask(true);
 		RenderSystem.disableBlend();
 		RenderSystem.defaultAlphaFunc();
+		lightmapTextureManager.disable();
+		RenderSystem.disableFog();
 	}
 
 	public void setWorld(@Nullable World world) {

@@ -19,6 +19,7 @@ public class EntityTypeTagsProvider extends AbstractTagProvider<EntityType<?>> {
 		this.method_10512(EntityTypeTags.RAIDERS)
 			.add(EntityType.EVOKER, EntityType.PILLAGER, EntityType.RAVAGER, EntityType.VINDICATOR, EntityType.ILLUSIONER, EntityType.WITCH);
 		this.method_10512(EntityTypeTags.BEEHIVE_INHABITORS).add(EntityType.BEE);
+		this.method_10512(EntityTypeTags.ARROWS).add(EntityType.ARROW, EntityType.SPECTRAL_ARROW);
 	}
 
 	@Override

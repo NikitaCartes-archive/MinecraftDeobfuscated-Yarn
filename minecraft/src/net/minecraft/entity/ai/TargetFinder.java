@@ -5,6 +5,8 @@ import java.util.function.Predicate;
 import java.util.function.ToDoubleFunction;
 import javax.annotation.Nullable;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
+import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
+import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
@@ -47,15 +49,25 @@ public class TargetFinder {
 	}
 
 	@Nullable
-	public static Vec3d findTargetTowards(MobEntityWithAi mob, int maxHorizontalDistance, int maxVerticalDistance, Vec3d pos) {
+	public static Vec3d findTargetTowards(MobEntityWithAi mob, int maxHorizontalDistance, int maxVerticalDistance, Vec3d pos, boolean bl) {
 		Vec3d vec3d = pos.subtract(mob.getX(), mob.getY(), mob.getZ());
-		return findTarget(mob, maxHorizontalDistance, maxVerticalDistance, vec3d);
+		return method_23737(mob, maxHorizontalDistance, maxVerticalDistance, vec3d, bl);
+	}
+
+	@Nullable
+	public static Vec3d method_23735(MobEntityWithAi mobEntityWithAi, int i, int j, Vec3d vec3d) {
+		return findTargetTowards(mobEntityWithAi, i, j, vec3d, true);
+	}
+
+	@Nullable
+	public static Vec3d method_23736(MobEntityWithAi mobEntityWithAi, int i, int j, Vec3d vec3d, double d, boolean bl) {
+		Vec3d vec3d2 = vec3d.subtract(mobEntityWithAi.getX(), mobEntityWithAi.getY(), mobEntityWithAi.getZ());
+		return method_21758(mobEntityWithAi, i, j, vec3d2, bl, d, mobEntityWithAi::getPathfindingFavor);
 	}
 
 	@Nullable
 	public static Vec3d findTargetTowards(MobEntityWithAi mob, int maxHorizontalDistance, int maxVerticalDistance, Vec3d pos, double maxAngleDifference) {
-		Vec3d vec3d = pos.subtract(mob.getX(), mob.getY(), mob.getZ());
-		return method_21758(mob, maxHorizontalDistance, maxVerticalDistance, vec3d, true, maxAngleDifference, mob::getPathfindingFavor);
+		return method_23736(mob, maxHorizontalDistance, maxVerticalDistance, pos, maxAngleDifference, true);
 	}
 
 	@Nullable
@@ -78,6 +90,11 @@ public class TargetFinder {
 	@Nullable
 	private static Vec3d findTarget(MobEntityWithAi mob, int maxHorizontalDistance, int maxVerticalDistance, @Nullable Vec3d direction) {
 		return method_21758(mob, maxHorizontalDistance, maxVerticalDistance, direction, true, (float) (Math.PI / 2), mob::getPathfindingFavor);
+	}
+
+	@Nullable
+	private static Vec3d method_23737(MobEntityWithAi mobEntityWithAi, int i, int j, @Nullable Vec3d vec3d, boolean bl) {
+		return method_21758(mobEntityWithAi, i, j, vec3d, bl, (float) (Math.PI / 2), mobEntityWithAi::getPathfindingFavor);
 	}
 
 	@Nullable
@@ -146,11 +163,14 @@ public class TargetFinder {
 					}
 
 					if (anywhere || !isWater(blockPos3x, mob)) {
-						double e = favorProvider.applyAsDouble(blockPos3x);
-						if (e > d) {
-							d = e;
-							blockPos = blockPos3x;
-							bl4 = true;
+						PathNodeType pathNodeType = LandPathNodeMaker.method_23476(mob.world, blockPos3x.getX(), blockPos3x.getY(), blockPos3x.getZ());
+						if (mob.getPathfindingPenalty(pathNodeType) == 0.0F) {
+							double e = favorProvider.applyAsDouble(blockPos3x);
+							if (e > d) {
+								d = e;
+								blockPos = blockPos3x;
+								bl4 = true;
+							}
 						}
 					}
 				}

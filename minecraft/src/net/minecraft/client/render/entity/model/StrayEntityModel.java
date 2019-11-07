@@ -53,20 +53,20 @@ public class StrayEntityModel<T extends MobEntity & RangedAttackMob> extends Bip
 		super.method_17086(mobEntity, f, g, h);
 	}
 
-	public void method_19690(T mobEntity, float f, float g, float h, float i, float j, float k) {
-		super.method_17087(mobEntity, f, g, h, i, j, k);
+	public void method_19690(T mobEntity, float f, float g, float h, float i, float j) {
+		super.method_17087(mobEntity, f, g, h, i, j);
 		ItemStack itemStack = mobEntity.getMainHandStack();
 		if (mobEntity.isAttacking() && (itemStack.isEmpty() || itemStack.getItem() != Items.BOW)) {
-			float l = MathHelper.sin(this.handSwingProgress * (float) Math.PI);
-			float m = MathHelper.sin((1.0F - (1.0F - this.handSwingProgress) * (1.0F - this.handSwingProgress)) * (float) Math.PI);
+			float k = MathHelper.sin(this.handSwingProgress * (float) Math.PI);
+			float l = MathHelper.sin((1.0F - (1.0F - this.handSwingProgress) * (1.0F - this.handSwingProgress)) * (float) Math.PI);
 			this.rightArm.roll = 0.0F;
 			this.leftArm.roll = 0.0F;
-			this.rightArm.yaw = -(0.1F - l * 0.6F);
-			this.leftArm.yaw = 0.1F - l * 0.6F;
+			this.rightArm.yaw = -(0.1F - k * 0.6F);
+			this.leftArm.yaw = 0.1F - k * 0.6F;
 			this.rightArm.pitch = (float) (-Math.PI / 2);
 			this.leftArm.pitch = (float) (-Math.PI / 2);
-			this.rightArm.pitch -= l * 1.2F - m * 0.4F;
-			this.leftArm.pitch -= l * 1.2F - m * 0.4F;
+			this.rightArm.pitch -= k * 1.2F - l * 0.4F;
+			this.leftArm.pitch -= k * 1.2F - l * 0.4F;
 			this.rightArm.roll = this.rightArm.roll + MathHelper.cos(h * 0.09F) * 0.05F + 0.05F;
 			this.leftArm.roll = this.leftArm.roll - (MathHelper.cos(h * 0.09F) * 0.05F + 0.05F);
 			this.rightArm.pitch = this.rightArm.pitch + MathHelper.sin(h * 0.067F) * 0.05F;
@@ -75,11 +75,11 @@ public class StrayEntityModel<T extends MobEntity & RangedAttackMob> extends Bip
 	}
 
 	@Override
-	public void setArmAngle(float angle, Arm arm, MatrixStack matrixStack) {
+	public void setArmAngle(Arm arm, MatrixStack matrixStack) {
 		float f = arm == Arm.RIGHT ? 1.0F : -1.0F;
 		ModelPart modelPart = this.getArm(arm);
 		modelPart.pivotX += f;
-		modelPart.rotate(matrixStack, angle);
+		modelPart.rotate(matrixStack);
 		modelPart.pivotX -= f;
 	}
 }

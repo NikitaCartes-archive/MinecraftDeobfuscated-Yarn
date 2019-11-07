@@ -338,7 +338,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 	public static boolean canSpawn(EntityType<DolphinEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
 		return pos.getY() > 45
 			&& pos.getY() < world.getSeaLevel()
-			&& (world.getBiome(pos) != Biomes.OCEAN || world.getBiome(pos) != Biomes.DEEP_OCEAN)
+			&& (world.method_23753(pos) != Biomes.OCEAN || world.method_23753(pos) != Biomes.DEEP_OCEAN)
 			&& world.getFluidState(pos).matches(FluidTags.WATER);
 	}
 
@@ -509,14 +509,14 @@ public class DolphinEntity extends WaterCreatureEntity {
 				Vec3d vec3d = new Vec3d(this.dolphin.getTreasurePos());
 				Vec3d vec3d2 = TargetFinder.findTargetTowards(this.dolphin, 16, 1, vec3d, (float) (Math.PI / 8));
 				if (vec3d2 == null) {
-					vec3d2 = TargetFinder.findTargetTowards(this.dolphin, 8, 4, vec3d);
+					vec3d2 = TargetFinder.method_23735(this.dolphin, 8, 4, vec3d);
 				}
 
 				if (vec3d2 != null) {
 					BlockPos blockPos = new BlockPos(vec3d2);
 					if (!world.getFluidState(blockPos).matches(FluidTags.WATER)
 						|| !world.getBlockState(blockPos).canPlaceAtSide(world, blockPos, BlockPlacementEnvironment.WATER)) {
-						vec3d2 = TargetFinder.findTargetTowards(this.dolphin, 8, 5, vec3d);
+						vec3d2 = TargetFinder.method_23735(this.dolphin, 8, 5, vec3d);
 					}
 				}
 

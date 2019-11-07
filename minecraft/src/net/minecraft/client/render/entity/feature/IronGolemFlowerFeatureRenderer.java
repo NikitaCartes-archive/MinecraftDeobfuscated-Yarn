@@ -4,6 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.IronGolemEntityModel;
@@ -27,19 +28,18 @@ public class IronGolemFlowerFeatureRenderer extends FeatureRenderer<IronGolemEnt
 		float h,
 		float j,
 		float k,
-		float l,
-		float m
+		float l
 	) {
 		if (ironGolemEntity.method_6502() != 0) {
 			matrixStack.push();
-			matrixStack.scale(-1.0F, -1.0F, 1.0F);
-			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(5.0F + 180.0F * this.getModel().getRightArm().pitch / (float) Math.PI));
-			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0F));
-			matrixStack.translate(0.6875, -0.3125, 1.0625);
-			float n = 0.5F;
+			ModelPart modelPart = this.getModel().getRightArm();
+			modelPart.rotate(matrixStack);
+			matrixStack.translate(-1.1875, 1.0625, -0.9375);
+			matrixStack.translate(0.5, 0.5, 0.5);
+			float m = 0.5F;
 			matrixStack.scale(0.5F, 0.5F, 0.5F);
-			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(180.0F));
-			matrixStack.translate(-0.5, -0.5, 0.5);
+			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-90.0F));
+			matrixStack.translate(-0.5, -0.5, -0.5);
 			MinecraftClient.getInstance()
 				.getBlockRenderManager()
 				.renderBlockAsEntity(Blocks.POPPY.getDefaultState(), matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV);

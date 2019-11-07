@@ -64,7 +64,7 @@ public class LlamaEntityModel<T extends AbstractDonkeyEntity> extends EntityMode
 		this.field_20940.pivotZ--;
 	}
 
-	public void method_22962(T abstractDonkeyEntity, float f, float g, float h, float i, float j, float k) {
+	public void method_22962(T abstractDonkeyEntity, float f, float g, float h, float i, float j) {
 		this.field_20935.pitch = j * (float) (Math.PI / 180.0);
 		this.field_20935.yaw = i * (float) (Math.PI / 180.0);
 		this.field_20936.pitch = (float) (Math.PI / 2);
@@ -85,25 +85,25 @@ public class LlamaEntityModel<T extends AbstractDonkeyEntity> extends EntityMode
 			float h = 0.7F;
 			matrixStack.scale(0.71428573F, 0.64935064F, 0.7936508F);
 			matrixStack.translate(0.0, 1.3125, 0.22F);
-			this.field_20935.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, r, g, b);
+			this.field_20935.render(matrixStack, vertexConsumer, i, j, null, r, g, b);
 			matrixStack.pop();
 			matrixStack.push();
 			float k = 1.1F;
 			matrixStack.scale(0.625F, 0.45454544F, 0.45454544F);
 			matrixStack.translate(0.0, 2.0625, 0.0);
-			this.field_20936.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, r, g, b);
+			this.field_20936.render(matrixStack, vertexConsumer, i, j, null, r, g, b);
 			matrixStack.pop();
 			matrixStack.push();
 			matrixStack.scale(0.45454544F, 0.41322312F, 0.45454544F);
 			matrixStack.translate(0.0, 2.0625, 0.0);
 			ImmutableList.of(this.field_20937, this.field_20938, this.field_20939, this.field_20940, this.field_3430, this.field_3429)
-				.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, r, g, b));
+				.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, null, r, g, b));
 			matrixStack.pop();
 		} else {
 			ImmutableList.of(
 					this.field_20935, this.field_20936, this.field_20937, this.field_20938, this.field_20939, this.field_20940, this.field_3430, this.field_3429
 				)
-				.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, r, g, b));
+				.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, null, r, g, b));
 		}
 	}
 }

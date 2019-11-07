@@ -45,10 +45,6 @@ public final class Matrix4f {
 		this.set(1, 2, 2.0F * (n - p));
 	}
 
-	public Matrix4f(Matrix4f matrix) {
-		this(Arrays.copyOf(matrix.components, 16));
-	}
-
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;

@@ -481,14 +481,18 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 	}
 
 	@Override
-	protected void checkDespawn() {
-		this.despawnCounter = 0;
+	public void checkDespawn() {
+		if (this.world.getDifficulty() == Difficulty.PEACEFUL && this.method_23734()) {
+			this.remove();
+		} else {
+			this.despawnCounter = 0;
+		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	public int getLightmapCoordinates() {
-		return 15728880;
+		return 15;
 	}
 
 	@Override

@@ -35,51 +35,47 @@ public class EnderCrystalEntityRenderer extends EntityRenderer<EnderCrystalEntit
 		this.bottom.addCuboid(-6.0F, 0.0F, -6.0F, 12.0F, 4.0F, 12.0F);
 	}
 
-	public void method_3908(
-		EnderCrystalEntity enderCrystalEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider
-	) {
+	public void method_3908(EnderCrystalEntity enderCrystalEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
-		float i = method_23155(enderCrystalEntity, h);
-		float j = 0.0625F;
-		float k = ((float)enderCrystalEntity.field_7034 + h) * 3.0F;
-		int l = enderCrystalEntity.getLightmapCoordinates();
+		float h = method_23155(enderCrystalEntity, g);
+		float j = ((float)enderCrystalEntity.field_7034 + g) * 3.0F;
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(this.method_3909(enderCrystalEntity)));
 		matrixStack.push();
 		matrixStack.scale(2.0F, 2.0F, 2.0F);
 		matrixStack.translate(0.0, -0.5, 0.0);
-		int m = OverlayTexture.DEFAULT_UV;
+		int k = OverlayTexture.DEFAULT_UV;
 		if (enderCrystalEntity.getShowBottom()) {
-			this.bottom.render(matrixStack, vertexConsumer, 0.0625F, l, m, null);
+			this.bottom.render(matrixStack, vertexConsumer, i, k, null);
 		}
 
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(k));
-		matrixStack.translate(0.0, (double)(1.5F + i / 2.0F), 0.0);
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(j));
+		matrixStack.translate(0.0, (double)(1.5F + h / 2.0F), 0.0);
 		matrixStack.multiply(new Quaternion(new Vector3f(field_21002, 0.0F, field_21002), 60.0F, true));
-		this.field_21004.render(matrixStack, vertexConsumer, 0.0625F, l, m, null);
-		float n = 0.875F;
+		this.field_21004.render(matrixStack, vertexConsumer, i, k, null);
+		float l = 0.875F;
 		matrixStack.scale(0.875F, 0.875F, 0.875F);
 		matrixStack.multiply(new Quaternion(new Vector3f(field_21002, 0.0F, field_21002), 60.0F, true));
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(k));
-		this.field_21004.render(matrixStack, vertexConsumer, 0.0625F, l, m, null);
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(j));
+		this.field_21004.render(matrixStack, vertexConsumer, i, k, null);
 		matrixStack.scale(0.875F, 0.875F, 0.875F);
 		matrixStack.multiply(new Quaternion(new Vector3f(field_21002, 0.0F, field_21002), 60.0F, true));
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(k));
-		this.field_21003.render(matrixStack, vertexConsumer, 0.0625F, l, m, null);
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(j));
+		this.field_21003.render(matrixStack, vertexConsumer, i, k, null);
 		matrixStack.pop();
 		matrixStack.pop();
 		BlockPos blockPos = enderCrystalEntity.getBeamTarget();
 		if (blockPos != null) {
-			float o = (float)blockPos.getX() + 0.5F;
-			float p = (float)blockPos.getY() + 0.5F;
-			float q = (float)blockPos.getZ() + 0.5F;
-			float r = (float)((double)o - enderCrystalEntity.getX());
-			float s = (float)((double)p - enderCrystalEntity.getY());
-			float t = (float)((double)q - enderCrystalEntity.getZ());
-			matrixStack.translate((double)r, (double)s, (double)t);
-			EnderDragonEntityRenderer.renderCrystalBeam(-r, -s + i, -t, h, enderCrystalEntity.field_7034, matrixStack, vertexConsumerProvider, l);
+			float m = (float)blockPos.getX() + 0.5F;
+			float n = (float)blockPos.getY() + 0.5F;
+			float o = (float)blockPos.getZ() + 0.5F;
+			float p = (float)((double)m - enderCrystalEntity.getX());
+			float q = (float)((double)n - enderCrystalEntity.getY());
+			float r = (float)((double)o - enderCrystalEntity.getZ());
+			matrixStack.translate((double)p, (double)q, (double)r);
+			EnderDragonEntityRenderer.renderCrystalBeam(-p, -q + h, -r, g, enderCrystalEntity.field_7034, matrixStack, vertexConsumerProvider, i);
 		}
 
-		super.render(enderCrystalEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
+		super.render(enderCrystalEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
 	public static float method_23155(EnderCrystalEntity enderCrystalEntity, float f) {

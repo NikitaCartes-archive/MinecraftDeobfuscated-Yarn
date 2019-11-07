@@ -90,7 +90,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 	}
 
 	public static boolean canSpawn(EntityType<DrownedEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
-		Biome biome = world.getBiome(pos);
+		Biome biome = world.method_23753(pos);
 		boolean bl = world.getDifficulty() != Difficulty.PEACEFUL
 			&& isSpawnDark(world, pos, random)
 			&& (spawnType == SpawnType.SPAWNER || world.getFluidState(pos).matches(FluidTags.WATER));
@@ -369,7 +369,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 		@Override
 		public void tick() {
 			if (this.drowned.getY() < (double)(this.minY - 1) && (this.drowned.getNavigation().isIdle() || this.drowned.hasFinishedCurrentPath())) {
-				Vec3d vec3d = TargetFinder.findTargetTowards(this.drowned, 4, 8, new Vec3d(this.drowned.getX(), (double)(this.minY - 1), this.drowned.getZ()));
+				Vec3d vec3d = TargetFinder.method_23735(this.drowned, 4, 8, new Vec3d(this.drowned.getX(), (double)(this.minY - 1), this.drowned.getZ()));
 				if (vec3d == null) {
 					this.foundTarget = true;
 					return;

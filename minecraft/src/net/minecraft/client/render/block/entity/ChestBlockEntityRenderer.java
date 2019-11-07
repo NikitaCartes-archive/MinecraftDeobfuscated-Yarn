@@ -83,7 +83,7 @@ public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProg
 	}
 
 	@Override
-	public void render(T blockEntity, double x, double y, double z, float tickDelta, MatrixStack matrix, VertexConsumerProvider output, int light, int overlay) {
+	public void render(T blockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
 		BlockState blockState = blockEntity.hasWorld() ? blockEntity.getCachedState() : Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.SOUTH);
 		ChestType chestType = blockState.contains((Property<T>)ChestBlock.CHEST_TYPE) ? blockState.get(ChestBlock.CHEST_TYPE) : ChestType.SINGLE;
 		boolean bl = chestType != ChestType.SINGLE;
@@ -98,28 +98,28 @@ public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProg
 			identifier = this.method_23690(chestType, NORMAL_TEX, field_21477, field_21478);
 		}
 
-		matrix.push();
-		float f = ((Direction)blockState.get(ChestBlock.FACING)).asRotation();
-		matrix.translate(0.5, 0.5, 0.5);
-		matrix.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-f));
-		matrix.translate(-0.5, -0.5, -0.5);
-		float g = blockEntity.getAnimationProgress(tickDelta);
-		g = 1.0F - g;
-		g = 1.0F - g * g * g;
+		matrixStack.push();
+		float g = ((Direction)blockState.get(ChestBlock.FACING)).asRotation();
+		matrixStack.translate(0.5, 0.5, 0.5);
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-g));
+		matrixStack.translate(-0.5, -0.5, -0.5);
+		float h = blockEntity.getAnimationProgress(f);
+		h = 1.0F - h;
+		h = 1.0F - h * h * h;
 		Sprite sprite = this.getSprite(identifier);
 		if (bl) {
-			VertexConsumer vertexConsumer = output.getBuffer(RenderLayer.getEntityCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
 			if (chestType == ChestType.LEFT) {
-				this.method_22749(matrix, vertexConsumer, this.field_21479, this.field_21481, this.field_21480, g, light, overlay, sprite);
+				this.method_22749(matrixStack, vertexConsumer, this.field_21479, this.field_21481, this.field_21480, h, i, j, sprite);
 			} else {
-				this.method_22749(matrix, vertexConsumer, this.field_20820, this.field_20822, this.field_20821, g, light, overlay, sprite);
+				this.method_22749(matrixStack, vertexConsumer, this.field_20820, this.field_20822, this.field_20821, h, i, j, sprite);
 			}
 		} else {
-			VertexConsumer vertexConsumer = output.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
-			this.method_22749(matrix, vertexConsumer, this.field_20817, this.field_20819, this.field_20818, g, light, overlay, sprite);
+			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+			this.method_22749(matrixStack, vertexConsumer, this.field_20817, this.field_20819, this.field_20818, h, i, j, sprite);
 		}
 
-		matrix.pop();
+		matrixStack.pop();
 	}
 
 	private Identifier method_23690(ChestType chestType, Identifier identifier, Identifier identifier2, Identifier identifier3) {
@@ -139,8 +139,8 @@ public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProg
 	) {
 		modelPart.pitch = -(f * (float) (Math.PI / 2));
 		modelPart2.pitch = modelPart.pitch;
-		modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, j, sprite);
-		modelPart2.render(matrixStack, vertexConsumer, 0.0625F, i, j, sprite);
-		modelPart3.render(matrixStack, vertexConsumer, 0.0625F, i, j, sprite);
+		modelPart.render(matrixStack, vertexConsumer, i, j, sprite);
+		modelPart2.render(matrixStack, vertexConsumer, i, j, sprite);
+		modelPart3.render(matrixStack, vertexConsumer, i, j, sprite);
 	}
 }

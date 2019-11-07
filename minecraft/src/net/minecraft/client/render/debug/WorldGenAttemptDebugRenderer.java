@@ -5,27 +5,22 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockPos;
 
 @Environment(EnvType.CLIENT)
 public class WorldGenAttemptDebugRenderer implements DebugRenderer.Renderer {
-	private final MinecraftClient field_4634;
 	private final List<BlockPos> field_4640 = Lists.<BlockPos>newArrayList();
 	private final List<Float> field_4635 = Lists.<Float>newArrayList();
 	private final List<Float> field_4637 = Lists.<Float>newArrayList();
 	private final List<Float> field_4639 = Lists.<Float>newArrayList();
 	private final List<Float> field_4636 = Lists.<Float>newArrayList();
 	private final List<Float> field_4638 = Lists.<Float>newArrayList();
-
-	public WorldGenAttemptDebugRenderer(MinecraftClient minecraftClient) {
-		this.field_4634 = minecraftClient;
-	}
 
 	public void method_3872(BlockPos blockPos, float f, float g, float h, float i, float j) {
 		this.field_4640.add(blockPos);
@@ -37,11 +32,7 @@ public class WorldGenAttemptDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	@Override
-	public void render(long limitTime) {
-		Camera camera = this.field_4634.gameRenderer.getCamera();
-		double d = camera.getPos().x;
-		double e = camera.getPos().y;
-		double f = camera.getPos().z;
+	public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f, long l) {
 		RenderSystem.pushMatrix();
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();

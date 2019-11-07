@@ -56,7 +56,7 @@ public class SilverfishEntityModel<T extends Entity> extends CompositeEntityMode
 	}
 
 	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch, float scale) {
+	public void setAngles(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch) {
 		for (int i = 0; i < this.field_3560.length; i++) {
 			this.field_3560[i].yaw = MathHelper.cos(age * 0.9F + (float)i * 0.15F * (float) Math.PI) * (float) Math.PI * 0.05F * (float)(1 + Math.abs(i - 2));
 			this.field_3560[i].pivotX = MathHelper.sin(age * 0.9F + (float)i * 0.15F * (float) Math.PI) * (float) Math.PI * 0.2F * (float)Math.abs(i - 2);

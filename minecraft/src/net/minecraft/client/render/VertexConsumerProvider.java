@@ -60,24 +60,32 @@ public interface VertexConsumerProvider {
 		}
 
 		public void draw() {
+			this.method_23796(0, 0, 0);
+		}
+
+		public void method_23796(int i, int j, int k) {
 			this.currentLayer.ifPresent(renderLayerx -> {
 				VertexConsumer vertexConsumer = this.getBuffer(renderLayerx);
 				if (vertexConsumer == this.defaultBuilder) {
-					this.draw(renderLayerx);
+					this.method_23797(renderLayerx, i, j, k);
 				}
 			});
 
 			for (RenderLayer renderLayer : this.layerBuilders.keySet()) {
-				this.draw(renderLayer);
+				this.method_23797(renderLayer, i, j, k);
 			}
 		}
 
 		public void draw(RenderLayer layer) {
-			BufferBuilder bufferBuilder = this.getConsumer(layer);
-			boolean bl = Objects.equals(this.currentLayer, Optional.of(layer));
+			this.method_23797(layer, 0, 0, 0);
+		}
+
+		public void method_23797(RenderLayer renderLayer, int i, int j, int k) {
+			BufferBuilder bufferBuilder = this.getConsumer(renderLayer);
+			boolean bl = Objects.equals(this.currentLayer, Optional.of(renderLayer));
 			if (bl || bufferBuilder != this.defaultBuilder) {
 				if (this.activeConsumers.remove(bufferBuilder)) {
-					layer.draw(bufferBuilder);
+					renderLayer.draw(bufferBuilder, i, j, k);
 					if (bl) {
 						this.currentLayer = Optional.empty();
 					}

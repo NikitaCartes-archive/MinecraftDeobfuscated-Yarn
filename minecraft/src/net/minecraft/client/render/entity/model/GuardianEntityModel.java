@@ -61,19 +61,19 @@ public class GuardianEntityModel extends CompositeEntityModel<GuardianEntity> {
 		return ImmutableList.<ModelPart>of(this.field_3379);
 	}
 
-	public void method_17083(GuardianEntity guardianEntity, float f, float g, float h, float i, float j, float k) {
-		float l = h - (float)guardianEntity.age;
+	public void method_17083(GuardianEntity guardianEntity, float f, float g, float h, float i, float j) {
+		float k = h - (float)guardianEntity.age;
 		this.field_3379.yaw = i * (float) (Math.PI / 180.0);
 		this.field_3379.pitch = j * (float) (Math.PI / 180.0);
-		float m = (1.0F - guardianEntity.getTailAngle(l)) * 0.55F;
+		float l = (1.0F - guardianEntity.getTailAngle(k)) * 0.55F;
 
-		for (int n = 0; n < 12; n++) {
-			this.field_3380[n].pitch = (float) Math.PI * field_17131[n];
-			this.field_3380[n].yaw = (float) Math.PI * field_17132[n];
-			this.field_3380[n].roll = (float) Math.PI * field_17133[n];
-			this.field_3380[n].pivotX = field_17134[n] * (1.0F + MathHelper.cos(h * 1.5F + (float)n) * 0.01F - m);
-			this.field_3380[n].pivotY = 16.0F + field_17135[n] * (1.0F + MathHelper.cos(h * 1.5F + (float)n) * 0.01F - m);
-			this.field_3380[n].pivotZ = field_17136[n] * (1.0F + MathHelper.cos(h * 1.5F + (float)n) * 0.01F - m);
+		for (int m = 0; m < 12; m++) {
+			this.field_3380[m].pitch = (float) Math.PI * field_17131[m];
+			this.field_3380[m].yaw = (float) Math.PI * field_17132[m];
+			this.field_3380[m].roll = (float) Math.PI * field_17133[m];
+			this.field_3380[m].pivotX = field_17134[m] * (1.0F + MathHelper.cos(h * 1.5F + (float)m) * 0.01F - l);
+			this.field_3380[m].pivotY = 16.0F + field_17135[m] * (1.0F + MathHelper.cos(h * 1.5F + (float)m) * 0.01F - l);
+			this.field_3380[m].pivotZ = field_17136[m] * (1.0F + MathHelper.cos(h * 1.5F + (float)m) * 0.01F - l);
 		}
 
 		this.field_3381.pivotZ = -8.25F;
@@ -100,13 +100,13 @@ public class GuardianEntityModel extends CompositeEntityModel<GuardianEntity> {
 		}
 
 		this.field_3381.visible = true;
-		float o = guardianEntity.getSpikesExtension(l);
-		this.field_3378[0].yaw = MathHelper.sin(o) * (float) Math.PI * 0.05F;
-		this.field_3378[1].yaw = MathHelper.sin(o) * (float) Math.PI * 0.1F;
+		float n = guardianEntity.getSpikesExtension(k);
+		this.field_3378[0].yaw = MathHelper.sin(n) * (float) Math.PI * 0.05F;
+		this.field_3378[1].yaw = MathHelper.sin(n) * (float) Math.PI * 0.1F;
 		this.field_3378[1].pivotX = -1.5F;
 		this.field_3378[1].pivotY = 0.5F;
 		this.field_3378[1].pivotZ = 14.0F;
-		this.field_3378[2].yaw = MathHelper.sin(o) * (float) Math.PI * 0.15F;
+		this.field_3378[2].yaw = MathHelper.sin(n) * (float) Math.PI * 0.15F;
 		this.field_3378[2].pivotX = 0.5F;
 		this.field_3378[2].pivotY = 0.5F;
 		this.field_3378[2].pivotZ = 6.0F;

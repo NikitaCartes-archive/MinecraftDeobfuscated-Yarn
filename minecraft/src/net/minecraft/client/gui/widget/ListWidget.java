@@ -156,7 +156,6 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 			int i = this.getScrollbarPosition();
 			int j = i + 6;
 			this.capYPosition();
-			RenderSystem.disableFog();
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder bufferBuilder = tessellator.getBuffer();
 			this.minecraft.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);

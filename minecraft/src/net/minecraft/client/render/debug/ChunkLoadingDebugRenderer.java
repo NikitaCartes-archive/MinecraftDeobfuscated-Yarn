@@ -10,7 +10,8 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientChunkManager;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.server.integrated.IntegratedServer;
@@ -34,27 +35,26 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	@Override
-	public void render(long limitTime) {
-		double d = (double)Util.getMeasuringTimeNano();
-		if (d - this.lastUpdateTime > 3.0E9) {
-			this.lastUpdateTime = d;
+	public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f, long l) {
+		double g = (double)Util.getMeasuringTimeNano();
+		if (g - this.lastUpdateTime > 3.0E9) {
+			this.lastUpdateTime = g;
 			IntegratedServer integratedServer = this.client.getServer();
 			if (integratedServer != null) {
-				this.loadingData = new ChunkLoadingDebugRenderer.ChunkLoadingStatus(integratedServer);
+				this.loadingData = new ChunkLoadingDebugRenderer.ChunkLoadingStatus(integratedServer, d, f);
 			} else {
 				this.loadingData = null;
 			}
 		}
 
 		if (this.loadingData != null) {
-			RenderSystem.disableFog();
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
 			RenderSystem.lineWidth(2.0F);
 			RenderSystem.disableTexture();
 			RenderSystem.depthMask(false);
 			Map<ChunkPos, String> map = (Map<ChunkPos, String>)this.loadingData.serverStates.getNow(null);
-			double e = this.client.gameRenderer.getCamera().getPos().y * 0.85;
+			double h = this.client.gameRenderer.getCamera().getPos().y * 0.85;
 
 			for (Entry<ChunkPos, String> entry : this.loadingData.clientStates.entrySet()) {
 				ChunkPos chunkPos = (ChunkPos)entry.getKey();
@@ -67,7 +67,7 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 				int i = 0;
 
 				for (String string2 : strings) {
-					DebugRenderer.drawString(string2, (double)((chunkPos.x << 4) + 8), e + (double)i, (double)((chunkPos.z << 4) + 8), -1, 0.15F);
+					DebugRenderer.drawString(string2, (double)((chunkPos.x << 4) + 8), h + (double)i, (double)((chunkPos.z << 4) + 8), -1, 0.15F);
 					i -= 2;
 				}
 			}
@@ -75,7 +75,6 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 			RenderSystem.depthMask(true);
 			RenderSystem.enableTexture();
 			RenderSystem.disableBlend();
-			RenderSystem.enableFog();
 		}
 	}
 
@@ -84,7 +83,7 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 		private final Map<ChunkPos, String> clientStates;
 		private final CompletableFuture<Map<ChunkPos, String>> serverStates;
 
-		private ChunkLoadingStatus(IntegratedServer integratedServer) {
+		private ChunkLoadingStatus(IntegratedServer integratedServer, double d, double e) {
 			ClientWorld clientWorld = ChunkLoadingDebugRenderer.this.client.world;
 			DimensionType dimensionType = ChunkLoadingDebugRenderer.this.client.world.dimension.getType();
 			ServerWorld serverWorld;
@@ -94,9 +93,8 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 				serverWorld = null;
 			}
 
-			Camera camera = ChunkLoadingDebugRenderer.this.client.gameRenderer.getCamera();
-			int i = (int)camera.getPos().x >> 4;
-			int j = (int)camera.getPos().z >> 4;
+			int i = (int)d >> 4;
+			int j = (int)e >> 4;
 			Builder<ChunkPos, String> builder = ImmutableMap.builder();
 			ClientChunkManager clientChunkManager = clientWorld.method_2935();
 

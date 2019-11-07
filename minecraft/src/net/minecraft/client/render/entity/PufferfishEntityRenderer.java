@@ -29,23 +29,21 @@ public class PufferfishEntityRenderer extends MobEntityRenderer<PufferfishEntity
 		return SKIN;
 	}
 
-	public void method_4094(
-		PufferfishEntity pufferfishEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider
-	) {
-		int i = pufferfishEntity.getPuffState();
-		if (i != this.modelSize) {
-			if (i == 0) {
+	public void method_4094(PufferfishEntity pufferfishEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+		int j = pufferfishEntity.getPuffState();
+		if (j != this.modelSize) {
+			if (j == 0) {
 				this.model = this.smallModel;
-			} else if (i == 1) {
+			} else if (j == 1) {
 				this.model = this.mediumModel;
 			} else {
 				this.model = this.largeModel;
 			}
 		}
 
-		this.modelSize = i;
-		this.field_4673 = 0.1F + 0.1F * (float)i;
-		super.method_4072(pufferfishEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
+		this.modelSize = j;
+		this.field_4673 = 0.1F + 0.1F * (float)j;
+		super.method_4072(pufferfishEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
 	protected void method_4095(PufferfishEntity pufferfishEntity, MatrixStack matrixStack, float f, float g, float h) {

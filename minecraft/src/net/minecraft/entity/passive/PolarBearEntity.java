@@ -86,7 +86,7 @@ public class PolarBearEntity extends AnimalEntity {
 	}
 
 	public static boolean canSpawn(EntityType<PolarBearEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
-		Biome biome = world.getBiome(pos);
+		Biome biome = world.method_23753(pos);
 		return biome != Biomes.FROZEN_OCEAN && biome != Biomes.DEEP_FROZEN_OCEAN
 			? isValidNaturalSpawn(type, world, spawnType, pos, random)
 			: world.getBaseLightLevel(pos, 0) > 8 && world.getBlockState(pos.method_10074()).getBlock() == Blocks.ICE;

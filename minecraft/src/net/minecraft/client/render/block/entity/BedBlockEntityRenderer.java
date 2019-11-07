@@ -54,9 +54,7 @@ public class BedBlockEntityRenderer extends BlockEntityRenderer<BedBlockEntity> 
 		this.field_20815[3].roll = (float) Math.PI;
 	}
 
-	public void method_3557(
-		BedBlockEntity bedBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j
-	) {
+	public void method_3557(BedBlockEntity bedBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
 		Identifier identifier = TEXTURES[bedBlockEntity.getColor().getId()];
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
 		if (bedBlockEntity.hasWorld()) {
@@ -84,12 +82,12 @@ public class BedBlockEntityRenderer extends BlockEntityRenderer<BedBlockEntity> 
 		matrix.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0F + direction.asRotation()));
 		matrix.translate(-0.5, -0.5, -0.5);
 		Sprite sprite2 = this.getSprite(sprite);
-		this.field_20813.render(matrix, vertexConsumer, 0.0625F, light, overlay, sprite2);
-		this.field_20814.render(matrix, vertexConsumer, 0.0625F, light, overlay, sprite2);
-		this.field_20815[0].render(matrix, vertexConsumer, 0.0625F, light, overlay, sprite2);
-		this.field_20815[1].render(matrix, vertexConsumer, 0.0625F, light, overlay, sprite2);
-		this.field_20815[2].render(matrix, vertexConsumer, 0.0625F, light, overlay, sprite2);
-		this.field_20815[3].render(matrix, vertexConsumer, 0.0625F, light, overlay, sprite2);
+		this.field_20813.render(matrix, vertexConsumer, light, overlay, sprite2);
+		this.field_20814.render(matrix, vertexConsumer, light, overlay, sprite2);
+		this.field_20815[0].render(matrix, vertexConsumer, light, overlay, sprite2);
+		this.field_20815[1].render(matrix, vertexConsumer, light, overlay, sprite2);
+		this.field_20815[2].render(matrix, vertexConsumer, light, overlay, sprite2);
+		this.field_20815[3].render(matrix, vertexConsumer, light, overlay, sprite2);
 		matrix.pop();
 	}
 }

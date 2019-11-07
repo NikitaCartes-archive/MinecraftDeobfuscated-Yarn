@@ -19,11 +19,9 @@ public class SlimeEntityRenderer extends MobEntityRenderer<SlimeEntity, SlimeEnt
 		this.addFeature(new SlimeOverlayFeatureRenderer<>(this));
 	}
 
-	public void method_4117(
-		SlimeEntity slimeEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider
-	) {
+	public void method_4117(SlimeEntity slimeEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		this.field_4673 = 0.25F * (float)slimeEntity.getSize();
-		super.method_4072(slimeEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
+		super.method_4072(slimeEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
 	protected void method_4118(SlimeEntity slimeEntity, MatrixStack matrixStack, float f) {

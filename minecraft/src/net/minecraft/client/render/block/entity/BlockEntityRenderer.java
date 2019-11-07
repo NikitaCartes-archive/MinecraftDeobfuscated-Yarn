@@ -17,9 +17,7 @@ public abstract class BlockEntityRenderer<T extends BlockEntity> {
 		this.blockEntityRenderDispatcher = blockEntityRenderDispatcher;
 	}
 
-	public abstract void render(
-		T blockEntity, double x, double y, double z, float tickDelta, MatrixStack matrix, VertexConsumerProvider output, int light, int overlay
-	);
+	public abstract void render(T blockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j);
 
 	protected Sprite getSprite(Identifier id) {
 		return MinecraftClient.getInstance().getSpriteAtlas().getSprite(id);

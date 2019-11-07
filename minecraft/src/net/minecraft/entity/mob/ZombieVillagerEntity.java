@@ -10,9 +10,11 @@ import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.datafixers.NbtOps;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityInteraction;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -186,6 +188,21 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 
 	private void finishConversion(ServerWorld world) {
 		VillagerEntity villagerEntity = EntityType.VILLAGER.create(world);
+
+		for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
+			ItemStack itemStack = this.getEquippedStack(equipmentSlot);
+			if (!itemStack.isEmpty()) {
+				if (EnchantmentHelper.hasBindingCurse(itemStack)) {
+					villagerEntity.equip(equipmentSlot.getEntitySlotId() + 300, itemStack);
+				} else {
+					double d = (double)this.getDropChance(equipmentSlot);
+					if (d > 1.0) {
+						this.dropStack(itemStack);
+					}
+				}
+			}
+		}
+
 		villagerEntity.copyPositionAndRotation(this);
 		villagerEntity.setVillagerData(this.getVillagerData());
 		if (this.field_20299 != null) {
@@ -293,7 +310,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 	@Nullable
 	@Override
 	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-		this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.getBiome(new BlockPos(this)))));
+		this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.method_23753(new BlockPos(this)))));
 		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
 	}
 

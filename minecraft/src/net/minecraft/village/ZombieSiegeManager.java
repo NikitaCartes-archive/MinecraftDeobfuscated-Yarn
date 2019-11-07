@@ -66,7 +66,7 @@ public class ZombieSiegeManager {
 		for (PlayerEntity playerEntity : serverWorld.getPlayers()) {
 			if (!playerEntity.isSpectator()) {
 				BlockPos blockPos = playerEntity.getBlockPos();
-				if (serverWorld.isNearOccupiedPointOfInterest(blockPos) && serverWorld.getBiome(blockPos).getCategory() != Biome.Category.MUSHROOM) {
+				if (serverWorld.isNearOccupiedPointOfInterest(blockPos) && serverWorld.method_23753(blockPos).getCategory() != Biome.Category.MUSHROOM) {
 					for (int i = 0; i < 10; i++) {
 						float f = serverWorld.random.nextFloat() * (float) (Math.PI * 2);
 						this.startX = blockPos.getX() + MathHelper.floor(MathHelper.cos(f) * 32.0F);

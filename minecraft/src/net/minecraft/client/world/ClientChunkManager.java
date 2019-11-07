@@ -15,7 +15,6 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.LightType;
-import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeArray;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkSection;
@@ -83,37 +82,36 @@ public class ClientChunkManager extends ChunkManager {
 	}
 
 	@Nullable
-	public WorldChunk loadChunkFromPacket(
-		World world, int chunkX, int chunkZ, @Nullable BiomeArray biomeArray, PacketByteBuf packetByteBuf, CompoundTag compoundTag, int i
-	) {
-		if (!this.chunks.isInRadius(chunkX, chunkZ)) {
-			LOGGER.warn("Ignoring chunk since it's not in the view range: {}, {}", chunkX, chunkZ);
+	public WorldChunk loadChunkFromPacket(int i, int j, @Nullable BiomeArray biomeArray, PacketByteBuf packetByteBuf, CompoundTag compoundTag, int k) {
+		if (!this.chunks.isInRadius(i, j)) {
+			LOGGER.warn("Ignoring chunk since it's not in the view range: {}, {}", i, j);
 			return null;
 		} else {
-			int j = this.chunks.getIndex(chunkX, chunkZ);
-			WorldChunk worldChunk = (WorldChunk)this.chunks.chunks.get(j);
-			if (!positionEquals(worldChunk, chunkX, chunkZ)) {
+			int l = this.chunks.getIndex(i, j);
+			WorldChunk worldChunk = (WorldChunk)this.chunks.chunks.get(l);
+			if (!positionEquals(worldChunk, i, j)) {
 				if (biomeArray == null) {
-					LOGGER.warn("Ignoring chunk since we don't have complete data: {}, {}", chunkX, chunkZ);
+					LOGGER.warn("Ignoring chunk since we don't have complete data: {}, {}", i, j);
 					return null;
 				}
 
-				worldChunk = new WorldChunk(world, new ChunkPos(chunkX, chunkZ), biomeArray);
-				worldChunk.loadFromPacket(biomeArray, packetByteBuf, compoundTag, i);
-				this.chunks.set(j, worldChunk);
+				worldChunk = new WorldChunk(this.world, new ChunkPos(i, j), biomeArray);
+				worldChunk.loadFromPacket(biomeArray, packetByteBuf, compoundTag, k);
+				this.chunks.set(l, worldChunk);
 			} else {
-				worldChunk.loadFromPacket(biomeArray, packetByteBuf, compoundTag, i);
+				worldChunk.loadFromPacket(biomeArray, packetByteBuf, compoundTag, k);
 			}
 
 			ChunkSection[] chunkSections = worldChunk.getSectionArray();
 			LightingProvider lightingProvider = this.getLightingProvider();
-			lightingProvider.setLightEnabled(new ChunkPos(chunkX, chunkZ), true);
+			lightingProvider.setLightEnabled(new ChunkPos(i, j), true);
 
-			for (int k = 0; k < chunkSections.length; k++) {
-				ChunkSection chunkSection = chunkSections[k];
-				lightingProvider.updateSectionStatus(ChunkSectionPos.from(chunkX, k, chunkZ), ChunkSection.isEmpty(chunkSection));
+			for (int m = 0; m < chunkSections.length; m++) {
+				ChunkSection chunkSection = chunkSections[m];
+				lightingProvider.updateSectionStatus(ChunkSectionPos.from(i, m, j), ChunkSection.isEmpty(chunkSection));
 			}
 
+			this.world.method_23782(i, j);
 			return worldChunk;
 		}
 	}

@@ -49,7 +49,7 @@ public class GrassBlock extends SpreadableBlock implements Fertilizable {
 			if (blockState2.isAir()) {
 				BlockState blockState3;
 				if (random.nextInt(8) == 0) {
-					List<ConfiguredFeature<?, ?>> list = world.getBiome(blockPos2).getFlowerFeatures();
+					List<ConfiguredFeature<?, ?>> list = world.method_23753(blockPos2).getFlowerFeatures();
 					if (list.isEmpty()) {
 						continue;
 					}

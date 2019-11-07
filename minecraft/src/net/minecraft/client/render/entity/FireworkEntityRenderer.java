@@ -21,30 +21,20 @@ public class FireworkEntityRenderer extends EntityRenderer<FireworkEntity> {
 		this.itemRenderer = itemRenderer;
 	}
 
-	public void method_3968(
-		FireworkEntity fireworkEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider
-	) {
+	public void method_3968(FireworkEntity fireworkEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
 		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-this.renderManager.cameraYaw));
-		float i = (float)(this.renderManager.gameOptions.perspective == 2 ? -1 : 1) * this.renderManager.cameraPitch;
-		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(i));
+		float h = (float)(this.renderManager.gameOptions.perspective == 2 ? -1 : 1) * this.renderManager.cameraPitch;
+		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(h));
 		if (fireworkEntity.wasShotAtAngle()) {
 			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0F));
 		} else {
 			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F));
 		}
 
-		this.itemRenderer
-			.method_23178(
-				fireworkEntity.getStack(),
-				ModelTransformation.Type.GROUND,
-				fireworkEntity.getLightmapCoordinates(),
-				OverlayTexture.DEFAULT_UV,
-				matrixStack,
-				vertexConsumerProvider
-			);
+		this.itemRenderer.method_23178(fireworkEntity.getStack(), ModelTransformation.Type.GROUND, i, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider);
 		matrixStack.pop();
-		super.render(fireworkEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
+		super.render(fireworkEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
 	public Identifier method_3969(FireworkEntity fireworkEntity) {

@@ -23,7 +23,7 @@ public class GoToWalkTargetGoal extends Goal {
 		if (this.mob.isInWalkTargetRange()) {
 			return false;
 		} else {
-			Vec3d vec3d = TargetFinder.findTargetTowards(this.mob, 16, 7, new Vec3d(this.mob.getPositionTarget()));
+			Vec3d vec3d = TargetFinder.method_23735(this.mob, 16, 7, new Vec3d(this.mob.getPositionTarget()));
 			if (vec3d == null) {
 				return false;
 			} else {

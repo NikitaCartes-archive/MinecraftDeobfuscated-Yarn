@@ -15,7 +15,6 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
@@ -240,21 +239,6 @@ public class RenderLayers {
 		hashMap.put(Blocks.FROSTED_ICE, renderLayer3);
 		hashMap.put(Blocks.BUBBLE_COLUMN, renderLayer3);
 	});
-	private static final Map<Item, RenderLayer> ITEMS = Util.create(Maps.<Item, RenderLayer>newHashMap(), hashMap -> {
-		RenderLayer renderLayer = RenderLayer.getEntityCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-		hashMap.put(Items.LEVER, renderLayer);
-		hashMap.put(Items.OAK_SIGN, renderLayer);
-		hashMap.put(Items.DARK_OAK_SIGN, renderLayer);
-		hashMap.put(Items.ACACIA_SIGN, renderLayer);
-		hashMap.put(Items.BIRCH_SIGN, renderLayer);
-		hashMap.put(Items.JUNGLE_SIGN, renderLayer);
-		hashMap.put(Items.SPRUCE_SIGN, renderLayer);
-		hashMap.put(Items.CAKE, renderLayer);
-		hashMap.put(Items.CAULDRON, renderLayer);
-		hashMap.put(Items.BELL, renderLayer);
-		hashMap.put(Items.BARRIER, renderLayer);
-		hashMap.put(Items.STRUCTURE_VOID, renderLayer);
-	});
 	private static final Map<Fluid, RenderLayer> FLUIDS = Util.create(Maps.<Fluid, RenderLayer>newHashMap(), hashMap -> {
 		RenderLayer renderLayer = RenderLayer.getTranslucent();
 		hashMap.put(Fluids.FLOWING_WATER, renderLayer);
@@ -274,21 +258,14 @@ public class RenderLayers {
 
 	public static RenderLayer getEntityBlockLayer(BlockState state) {
 		RenderLayer renderLayer = getBlockLayer(state);
-		if (renderLayer == RenderLayer.getTranslucent()) {
-			return RenderLayer.getEntityTranslucent(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-		} else {
-			return renderLayer != RenderLayer.getCutout() && renderLayer != RenderLayer.getCutoutMipped()
-				? RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX)
-				: RenderLayer.getEntityCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-		}
+		return renderLayer == RenderLayer.getTranslucent()
+			? RenderLayer.getEntityTranslucent(SpriteAtlasTexture.BLOCK_ATLAS_TEX)
+			: RenderLayer.getEntityCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 	}
 
 	public static RenderLayer getItemLayer(ItemStack stack) {
 		Item item = stack.getItem();
-		RenderLayer renderLayer = (RenderLayer)ITEMS.get(item);
-		if (renderLayer != null) {
-			return renderLayer;
-		} else if (item instanceof BlockItem) {
+		if (item instanceof BlockItem) {
 			Block block = ((BlockItem)item).getBlock();
 			return getEntityBlockLayer(block.getDefaultState());
 		} else {

@@ -129,7 +129,6 @@ public class WrittenBookItem extends Item {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean hasEnchantmentGlint(ItemStack stack) {
 		return true;

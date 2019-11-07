@@ -92,6 +92,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.Heightmap;
+import net.minecraft.world.LightType;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
@@ -1077,8 +1078,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 
 	@Environment(EnvType.CLIENT)
 	public int getLightmapCoordinates() {
-		BlockPos blockPos = new BlockPos(this.getX(), this.method_23320(), this.getZ());
-		return this.world.isChunkLoaded(blockPos) ? this.world.getLightmapCoordinates(blockPos) : 0;
+		return this.isOnFire() ? 15 : this.world.getLightLevel(LightType.BLOCK, new BlockPos(this.getX(), this.getY(), this.getZ()));
 	}
 
 	public float getBrightnessAtEyes() {
@@ -2720,5 +2720,8 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.x = x;
 		this.y = y;
 		this.z = z;
+	}
+
+	public void checkDespawn() {
 	}
 }

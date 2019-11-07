@@ -47,7 +47,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
@@ -73,7 +72,6 @@ public abstract class World implements IWorld, AutoCloseable {
 	public final List<BlockEntity> tickingBlockEntities = Lists.<BlockEntity>newArrayList();
 	protected final List<BlockEntity> pendingBlockEntities = Lists.<BlockEntity>newArrayList();
 	protected final List<BlockEntity> unloadedBlockEntities = Lists.<BlockEntity>newArrayList();
-	private final long unusedWhite = 16777215L;
 	private final Thread thread;
 	private int ambientDarkness;
 	protected int lcgBlockSeed = new Random().nextInt();
@@ -82,7 +80,6 @@ public abstract class World implements IWorld, AutoCloseable {
 	protected float rainGradient;
 	protected float thunderGradientPrev;
 	protected float thunderGradient;
-	private int ticksSinceLightning;
 	public final Random random = new Random();
 	public final Dimension dimension;
 	protected final ChunkManager chunkManager;
@@ -402,113 +399,9 @@ public abstract class World implements IWorld, AutoCloseable {
 	) {
 	}
 
-	@Environment(EnvType.CLIENT)
-	public float getAmbientLight(float delta) {
-		float f = this.getSkyAngle(delta);
-		float g = 1.0F - (MathHelper.cos(f * (float) (Math.PI * 2)) * 2.0F + 0.2F);
-		g = MathHelper.clamp(g, 0.0F, 1.0F);
-		g = 1.0F - g;
-		g = (float)((double)g * (1.0 - (double)(this.getRainGradient(delta) * 5.0F) / 16.0));
-		g = (float)((double)g * (1.0 - (double)(this.getThunderGradient(delta) * 5.0F) / 16.0));
-		return g * 0.8F + 0.2F;
-	}
-
-	@Environment(EnvType.CLIENT)
-	public Vec3d getSkyColor(BlockPos blockPos, float f) {
-		float g = this.getSkyAngle(f);
-		float h = MathHelper.cos(g * (float) (Math.PI * 2)) * 2.0F + 0.5F;
-		h = MathHelper.clamp(h, 0.0F, 1.0F);
-		Biome biome = this.getBiome(blockPos);
-		float i = biome.getTemperature(blockPos);
-		int j = biome.getSkyColor(i);
-		float k = (float)(j >> 16 & 0xFF) / 255.0F;
-		float l = (float)(j >> 8 & 0xFF) / 255.0F;
-		float m = (float)(j & 0xFF) / 255.0F;
-		k *= h;
-		l *= h;
-		m *= h;
-		float n = this.getRainGradient(f);
-		if (n > 0.0F) {
-			float o = (k * 0.3F + l * 0.59F + m * 0.11F) * 0.6F;
-			float p = 1.0F - n * 0.75F;
-			k = k * p + o * (1.0F - p);
-			l = l * p + o * (1.0F - p);
-			m = m * p + o * (1.0F - p);
-		}
-
-		float o = this.getThunderGradient(f);
-		if (o > 0.0F) {
-			float p = (k * 0.3F + l * 0.59F + m * 0.11F) * 0.2F;
-			float q = 1.0F - o * 0.75F;
-			k = k * q + p * (1.0F - q);
-			l = l * q + p * (1.0F - q);
-			m = m * q + p * (1.0F - q);
-		}
-
-		if (this.ticksSinceLightning > 0) {
-			float p = (float)this.ticksSinceLightning - f;
-			if (p > 1.0F) {
-				p = 1.0F;
-			}
-
-			p *= 0.45F;
-			k = k * (1.0F - p) + 0.8F * p;
-			l = l * (1.0F - p) + 0.8F * p;
-			m = m * (1.0F - p) + 1.0F * p;
-		}
-
-		return new Vec3d((double)k, (double)l, (double)m);
-	}
-
 	public float getSkyAngleRadians(float f) {
 		float g = this.getSkyAngle(f);
 		return g * (float) (Math.PI * 2);
-	}
-
-	@Environment(EnvType.CLIENT)
-	public Vec3d getCloudColor(float f) {
-		float g = this.getSkyAngle(f);
-		float h = MathHelper.cos(g * (float) (Math.PI * 2)) * 2.0F + 0.5F;
-		h = MathHelper.clamp(h, 0.0F, 1.0F);
-		float i = 1.0F;
-		float j = 1.0F;
-		float k = 1.0F;
-		float l = this.getRainGradient(f);
-		if (l > 0.0F) {
-			float m = (i * 0.3F + j * 0.59F + k * 0.11F) * 0.6F;
-			float n = 1.0F - l * 0.95F;
-			i = i * n + m * (1.0F - n);
-			j = j * n + m * (1.0F - n);
-			k = k * n + m * (1.0F - n);
-		}
-
-		i *= h * 0.9F + 0.1F;
-		j *= h * 0.9F + 0.1F;
-		k *= h * 0.85F + 0.15F;
-		float m = this.getThunderGradient(f);
-		if (m > 0.0F) {
-			float n = (i * 0.3F + j * 0.59F + k * 0.11F) * 0.2F;
-			float o = 1.0F - m * 0.95F;
-			i = i * o + n * (1.0F - o);
-			j = j * o + n * (1.0F - o);
-			k = k * o + n * (1.0F - o);
-		}
-
-		return new Vec3d((double)i, (double)j, (double)k);
-	}
-
-	@Environment(EnvType.CLIENT)
-	public Vec3d getFogColor(float f) {
-		float g = this.getSkyAngle(f);
-		return this.dimension.getFogColor(g, f);
-	}
-
-	@Environment(EnvType.CLIENT)
-	public float getStarsBrightness(float f) {
-		float g = this.getSkyAngle(f);
-		float h = 1.0F - (MathHelper.cos(g * (float) (Math.PI * 2)) * 2.0F + 0.25F);
-		h = MathHelper.clamp(h, 0.0F, 1.0F);
-		return h * h * 0.5F;
 	}
 
 	public boolean addBlockEntity(BlockEntity blockEntity) {
@@ -1157,12 +1050,12 @@ public abstract class World implements IWorld, AutoCloseable {
 		} else {
 			return this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, pos).getY() > pos.getY()
 				? false
-				: this.getBiome(pos).getPrecipitation() == Biome.Precipitation.RAIN;
+				: this.method_23753(pos).getPrecipitation() == Biome.Precipitation.RAIN;
 		}
 	}
 
 	public boolean hasHighHumidity(BlockPos blockPos) {
-		Biome biome = this.getBiome(blockPos);
+		Biome biome = this.method_23753(blockPos);
 		return biome.hasHighHumidity();
 	}
 
@@ -1178,11 +1071,6 @@ public abstract class World implements IWorld, AutoCloseable {
 
 	public int getEffectiveHeight() {
 		return this.dimension.isNether() ? 128 : 256;
-	}
-
-	@Environment(EnvType.CLIENT)
-	public double getHorizonHeight() {
-		return this.properties.getGeneratorType() == LevelGeneratorType.FLAT ? 0.0 : 63.0;
 	}
 
 	public CrashReportSection addDetailsToCrashReport(CrashReport report) {
@@ -1243,13 +1131,7 @@ public abstract class World implements IWorld, AutoCloseable {
 		return this.ambientDarkness;
 	}
 
-	@Environment(EnvType.CLIENT)
-	public int getTicksSinceLightning() {
-		return this.ticksSinceLightning;
-	}
-
 	public void setTicksSinceLightning(int ticksSinceLightning) {
-		this.ticksSinceLightning = ticksSinceLightning;
 	}
 
 	@Override

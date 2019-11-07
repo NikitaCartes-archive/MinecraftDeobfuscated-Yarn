@@ -50,27 +50,12 @@ public final class Matrix3f {
 		this.set(1, 2, 2.0F * (n - p));
 	}
 
-	public Matrix3f(Matrix3f matrix, boolean ignoredTransposeMarker) {
-		this(matrix.components, true);
-	}
-
 	public Matrix3f(Matrix4f matrix) {
 		this();
 
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				this.components[j + i * 3] = matrix.get(j, i);
-			}
-		}
-	}
-
-	public Matrix3f(float[] components, boolean transpose) {
-		this(transpose ? new float[9] : Arrays.copyOf(components, components.length));
-		if (transpose) {
-			for (int i = 0; i < 3; i++) {
-				for (int j = 0; j < 3; j++) {
-					this.components[j + i * 3] = components[i + j * 3];
-				}
 			}
 		}
 	}
@@ -189,7 +174,8 @@ public final class Matrix3f {
 	public Triple<Quaternion, Vector3f, Quaternion> method_22853() {
 		Quaternion quaternion = Quaternion.IDENTITY.copy();
 		Quaternion quaternion2 = Quaternion.IDENTITY.copy();
-		Matrix3f matrix3f = new Matrix3f(this, true);
+		Matrix3f matrix3f = this.copy();
+		matrix3f.transpose();
 		matrix3f.multiply(this);
 
 		for (int i = 0; i < 5; i++) {
@@ -306,6 +292,43 @@ public final class Matrix3f {
 		this.components[8] = 1.0F;
 	}
 
+	public float method_23731() {
+		float f = this.method_23730(1, 2, 1, 2);
+		float g = -this.method_23730(1, 2, 0, 2);
+		float h = this.method_23730(1, 2, 0, 1);
+		float i = -this.method_23730(0, 2, 1, 2);
+		float j = this.method_23730(0, 2, 0, 2);
+		float k = -this.method_23730(0, 2, 0, 1);
+		float l = this.method_23730(0, 1, 1, 2);
+		float m = -this.method_23730(0, 1, 0, 2);
+		float n = this.method_23730(0, 1, 0, 1);
+		float o = this.get(0, 0) * f + this.get(0, 1) * g + this.get(0, 2) * h;
+		this.set(0, 0, f);
+		this.set(1, 0, g);
+		this.set(2, 0, h);
+		this.set(0, 1, i);
+		this.set(1, 1, j);
+		this.set(2, 1, k);
+		this.set(0, 2, l);
+		this.set(1, 2, m);
+		this.set(2, 2, n);
+		return o;
+	}
+
+	public boolean method_23732() {
+		float f = this.method_23731();
+		if (Math.abs(f) > 1.0E-6F) {
+			this.method_23729(f);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	private float method_23730(int i, int j, int k, int l) {
+		return this.get(i, k) * this.get(j, l) - this.get(i, l) * this.get(j, k);
+	}
+
 	public float get(int row, int column) {
 		return this.components[3 * column + row];
 	}
@@ -330,6 +353,12 @@ public final class Matrix3f {
 
 	public void multiply(Quaternion quaternion) {
 		this.multiply(new Matrix3f(quaternion));
+	}
+
+	public void method_23729(float f) {
+		for (int i = 0; i < 9; i++) {
+			this.components[i] = this.components[i] * f;
+		}
 	}
 
 	public Matrix3f copy() {

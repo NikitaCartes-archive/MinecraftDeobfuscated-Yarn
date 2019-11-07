@@ -100,7 +100,7 @@ public class WanderAroundTask extends Task<MobEntity> {
 				return true;
 			}
 
-			Vec3d vec3d = TargetFinder.findTargetTowards((MobEntityWithAi)mobEntity, 10, 7, new Vec3d(blockPos));
+			Vec3d vec3d = TargetFinder.method_23735((MobEntityWithAi)mobEntity, 10, 7, new Vec3d(blockPos));
 			if (vec3d != null) {
 				this.field_18369 = mobEntity.getNavigation().findPathTo(vec3d.x, vec3d.y, vec3d.z, 0);
 				return this.field_18369 != null;

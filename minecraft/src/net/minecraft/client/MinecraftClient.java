@@ -80,6 +80,7 @@ import net.minecraft.client.options.HotbarStorage;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.options.Option;
 import net.minecraft.client.particle.ParticleManager;
+import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferBuilderStorage;
 import net.minecraft.client.render.FirstPersonRenderer;
@@ -841,6 +842,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		RenderSystem.pushMatrix();
 		RenderSystem.clear(16640, IS_SYSTEM_MAC);
 		this.framebuffer.beginWrite(true);
+		BackgroundRenderer.method_23792();
 		this.profiler.push("display");
 		RenderSystem.enableTexture();
 		this.profiler.pop();
@@ -1285,8 +1287,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 			this.profiler.swap("level");
 			if (!this.paused) {
-				if (this.world.getTicksSinceLightning() > 0) {
-					this.world.setTicksSinceLightning(this.world.getTicksSinceLightning() - 1);
+				if (this.world.method_23789() > 0) {
+					this.world.setTicksSinceLightning(this.world.method_23789() - 1);
 				}
 
 				this.world.tickEntities();
@@ -1925,7 +1927,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		} else if (this.player.world.dimension instanceof TheEndDimension) {
 			return this.inGameHud.getBossBarHud().shouldPlayDragonMusic() ? MusicTracker.MusicType.END_BOSS : MusicTracker.MusicType.END;
 		} else {
-			Biome.Category category = this.player.world.getBiome(new BlockPos(this.player)).getCategory();
+			Biome.Category category = this.player.world.method_23753(new BlockPos(this.player)).getCategory();
 			if (!this.musicTracker.isPlayingType(MusicTracker.MusicType.UNDER_WATER)
 				&& (
 					!this.player.isInWater()

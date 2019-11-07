@@ -362,7 +362,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 				Vec3d vec3d = new Vec3d(this.home);
 				Vec3d vec3d2 = TargetFinder.findTargetTowards(this.raider, 16, 7, vec3d, (float) (Math.PI / 10));
 				if (vec3d2 == null) {
-					vec3d2 = TargetFinder.findTargetTowards(this.raider, 8, 7, vec3d);
+					vec3d2 = TargetFinder.method_23735(this.raider, 8, 7, vec3d);
 				}
 
 				if (vec3d2 == null) {

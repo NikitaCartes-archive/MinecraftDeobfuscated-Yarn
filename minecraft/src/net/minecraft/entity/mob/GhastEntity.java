@@ -64,11 +64,8 @@ public class GhastEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	public void tick() {
-		super.tick();
-		if (!this.world.isClient && this.world.getDifficulty() == Difficulty.PEACEFUL) {
-			this.remove();
-		}
+	protected boolean method_23734() {
+		return true;
 	}
 
 	@Override

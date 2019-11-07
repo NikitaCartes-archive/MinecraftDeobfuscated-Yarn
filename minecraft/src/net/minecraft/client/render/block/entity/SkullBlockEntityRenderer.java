@@ -54,23 +54,13 @@ public class SkullBlockEntityRenderer extends BlockEntityRenderer<SkullBlockEnti
 		super(blockEntityRenderDispatcher);
 	}
 
-	public void method_3577(
-		SkullBlockEntity skullBlockEntity,
-		double d,
-		double e,
-		double f,
-		float g,
-		MatrixStack matrixStack,
-		VertexConsumerProvider vertexConsumerProvider,
-		int i,
-		int j
-	) {
-		float h = skullBlockEntity.getTicksPowered(g);
+	public void method_3577(SkullBlockEntity skullBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
+		float g = skullBlockEntity.getTicksPowered(f);
 		BlockState blockState = skullBlockEntity.getCachedState();
 		boolean bl = blockState.getBlock() instanceof WallSkullBlock;
 		Direction direction = bl ? blockState.get(WallSkullBlock.FACING) : null;
-		float k = 22.5F * (float)(bl ? (2 + direction.getHorizontal()) * 4 : (Integer)blockState.get(SkullBlock.ROTATION));
-		render(direction, k, ((AbstractSkullBlock)blockState.getBlock()).getSkullType(), skullBlockEntity.getOwner(), h, matrixStack, vertexConsumerProvider, i);
+		float h = 22.5F * (float)(bl ? (2 + direction.getHorizontal()) * 4 : (Integer)blockState.get(SkullBlock.ROTATION));
+		render(direction, h, ((AbstractSkullBlock)blockState.getBlock()).getSkullType(), skullBlockEntity.getOwner(), g, matrixStack, vertexConsumerProvider, i);
 	}
 
 	public static void render(

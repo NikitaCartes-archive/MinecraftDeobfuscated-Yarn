@@ -2,8 +2,6 @@ package net.minecraft.item;
 
 import java.util.Collection;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -27,7 +25,6 @@ public class DebugStickItem extends Item {
 		super(settings);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean hasEnchantmentGlint(ItemStack stack) {
 		return true;

@@ -39,7 +39,7 @@ public class MagmaCubeEntityModel<T extends SlimeEntity> extends CompositeEntity
 		this.field_20934 = builder.build();
 	}
 
-	public void method_22958(T slimeEntity, float f, float g, float h, float i, float j, float k) {
+	public void method_22958(T slimeEntity, float f, float g, float h, float i, float j) {
 	}
 
 	public void method_17098(T slimeEntity, float f, float g, float h) {

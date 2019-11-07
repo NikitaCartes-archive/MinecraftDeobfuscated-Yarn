@@ -41,6 +41,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
@@ -118,20 +119,40 @@ public class BeeHiveBlock extends BlockWithEntity {
 		}
 
 		if (bl) {
-			this.emptyHoney(world, state, pos, player, BeeHiveBlockEntity.BeeState.EMERGENCY);
+			if (!method_23755(world, pos)) {
+				this.emptyHoney(world, state, pos, player, BeeHiveBlockEntity.BeeState.EMERGENCY);
+			} else {
+				this.method_23754(world, state, pos);
+			}
+
 			return ActionResult.SUCCESS;
 		} else {
 			return super.onUse(state, world, pos, player, hand, hit);
 		}
 	}
 
+	public static boolean method_23755(World world, BlockPos blockPos) {
+		for (int i = 1; i <= 5; i++) {
+			BlockState blockState = world.getBlockState(blockPos.down(i));
+			if (!blockState.isAir()) {
+				return blockState.getBlock() == Blocks.CAMPFIRE;
+			}
+		}
+
+		return false;
+	}
+
 	public void emptyHoney(World world, BlockState blockState, BlockPos blockPos, @Nullable PlayerEntity playerEntity, BeeHiveBlockEntity.BeeState beeState) {
-		world.setBlockState(blockPos, blockState.with(HONEY_LEVEL, Integer.valueOf(0)), 3);
+		this.method_23754(world, blockState, blockPos);
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity instanceof BeeHiveBlockEntity) {
 			BeeHiveBlockEntity beeHiveBlockEntity = (BeeHiveBlockEntity)blockEntity;
 			beeHiveBlockEntity.angerBees(playerEntity, blockState, beeState);
 		}
+	}
+
+	public void method_23754(World world, BlockState blockState, BlockPos blockPos) {
+		world.setBlockState(blockPos, blockState.with(HONEY_LEVEL, Integer.valueOf(0)), 3);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -208,7 +229,7 @@ public class BeeHiveBlock extends BlockWithEntity {
 
 	@Override
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-		if (!world.isClient && player.isCreative()) {
+		if (!world.isClient && player.isCreative() && world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof BeeHiveBlockEntity) {
 				ItemStack itemStack = new ItemStack(this);

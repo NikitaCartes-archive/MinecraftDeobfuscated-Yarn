@@ -59,8 +59,8 @@ public class ArmorStandEntityModel extends ArmorStandArmorEntityModel {
 	}
 
 	@Override
-	public void method_17066(ArmorStandEntity armorStandEntity, float f, float g, float h, float i, float j, float k) {
-		super.method_17066(armorStandEntity, f, g, h, i, j, k);
+	public void method_17066(ArmorStandEntity armorStandEntity, float f, float g, float h, float i, float j) {
+		super.method_17066(armorStandEntity, f, g, h, i, j);
 		this.leftArm.visible = armorStandEntity.shouldShowArms();
 		this.rightArm.visible = armorStandEntity.shouldShowArms();
 		this.plate.visible = !armorStandEntity.shouldHideBasePlate();
@@ -86,11 +86,11 @@ public class ArmorStandEntityModel extends ArmorStandArmorEntityModel {
 	}
 
 	@Override
-	public void setArmAngle(float angle, Arm arm, MatrixStack matrixStack) {
+	public void setArmAngle(Arm arm, MatrixStack matrixStack) {
 		ModelPart modelPart = this.getArm(arm);
 		boolean bl = modelPart.visible;
 		modelPart.visible = true;
-		super.setArmAngle(angle, arm, matrixStack);
+		super.setArmAngle(arm, matrixStack);
 		modelPart.visible = bl;
 	}
 }

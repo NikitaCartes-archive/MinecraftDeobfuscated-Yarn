@@ -27,7 +27,7 @@ public class ElytraFeatureRenderer<T extends LivingEntity, M extends EntityModel
 	}
 
 	public void method_17161(
-		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l, float m
+		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l
 	) {
 		ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.CHEST);
 		if (itemStack.getItem() == Items.ELYTRA) {
@@ -50,7 +50,7 @@ public class ElytraFeatureRenderer<T extends LivingEntity, M extends EntityModel
 			matrixStack.push();
 			matrixStack.translate(0.0, 0.0, 0.125);
 			this.getModel().copyStateTo(this.elytra);
-			this.elytra.method_17079(livingEntity, f, g, j, k, l, m);
+			this.elytra.method_17079(livingEntity, f, g, j, k, l);
 			VertexConsumer vertexConsumer = ItemRenderer.getArmorVertexConsumer(
 				vertexConsumerProvider, this.elytra.getLayer(identifier), false, itemStack.hasEnchantmentGlint()
 			);

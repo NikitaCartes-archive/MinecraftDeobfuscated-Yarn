@@ -97,7 +97,6 @@ public class PotionItem extends Item {
 		PotionUtil.buildTooltip(stack, tooltip, 1.0F);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean hasEnchantmentGlint(ItemStack stack) {
 		return super.hasEnchantmentGlint(stack) || !PotionUtil.getPotionEffects(stack).isEmpty();

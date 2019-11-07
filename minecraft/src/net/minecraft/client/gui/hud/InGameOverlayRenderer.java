@@ -20,6 +20,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class InGameOverlayRenderer {
@@ -73,7 +74,7 @@ public class InGameOverlayRenderer {
 		float m = sprite.getMaxU();
 		float n = sprite.getMinV();
 		float o = sprite.getMaxV();
-		Matrix4f matrix4f = matrixStack.peekModel();
+		Matrix4f matrix4f = matrixStack.method_23760().method_23761();
 		bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_TEXTURE);
 		bufferBuilder.vertex(matrix4f, -1.0F, -1.0F, -0.5F).color(0.1F, 0.1F, 0.1F, 1.0F).texture(m, o).next();
 		bufferBuilder.vertex(matrix4f, 1.0F, -1.0F, -0.5F).color(0.1F, 0.1F, 0.1F, 1.0F).texture(l, o).next();
@@ -97,7 +98,7 @@ public class InGameOverlayRenderer {
 		float l = -0.5F;
 		float m = -minecraftClient.player.yaw / 64.0F;
 		float n = minecraftClient.player.pitch / 64.0F;
-		Matrix4f matrix4f = matrixStack.peekModel();
+		Matrix4f matrix4f = matrixStack.method_23760().method_23761();
 		bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_TEXTURE);
 		bufferBuilder.vertex(matrix4f, -1.0F, -1.0F, -0.5F).color(f, f, f, 0.1F).texture(4.0F + m, 4.0F + n).next();
 		bufferBuilder.vertex(matrix4f, 1.0F, -1.0F, -0.5F).color(f, f, f, 0.1F).texture(0.0F + m, 4.0F + n).next();
@@ -114,29 +115,36 @@ public class InGameOverlayRenderer {
 		RenderSystem.depthMask(false);
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
-		float f = 1.0F;
+		Sprite sprite = minecraftClient.getSpriteAtlas().getSprite(ModelLoader.FIRE_1);
+		minecraftClient.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+		float f = sprite.getMinU();
+		float g = sprite.getMaxU();
+		float h = (f + g) / 2.0F;
+		float i = sprite.getMinV();
+		float j = sprite.getMaxV();
+		float k = (i + j) / 2.0F;
+		float l = sprite.method_23842();
+		float m = MathHelper.lerp(l, f, h);
+		float n = MathHelper.lerp(l, g, h);
+		float o = MathHelper.lerp(l, i, k);
+		float p = MathHelper.lerp(l, j, k);
+		float q = 1.0F;
 
-		for (int i = 0; i < 2; i++) {
+		for (int r = 0; r < 2; r++) {
 			matrixStack.push();
-			Sprite sprite = minecraftClient.getSpriteAtlas().getSprite(ModelLoader.FIRE_1);
-			minecraftClient.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-			float g = sprite.getMinU();
-			float h = sprite.getMaxU();
-			float j = sprite.getMinV();
-			float k = sprite.getMaxV();
-			float l = -0.5F;
-			float m = 0.5F;
-			float n = -0.5F;
-			float o = 0.5F;
-			float p = -0.5F;
-			matrixStack.translate((double)((float)(-(i * 2 - 1)) * 0.24F), -0.3F, 0.0);
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion((float)(i * 2 - 1) * 10.0F));
-			Matrix4f matrix4f = matrixStack.peekModel();
+			float s = -0.5F;
+			float t = 0.5F;
+			float u = -0.5F;
+			float v = 0.5F;
+			float w = -0.5F;
+			matrixStack.translate((double)((float)(-(r * 2 - 1)) * 0.24F), -0.3F, 0.0);
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion((float)(r * 2 - 1) * 10.0F));
+			Matrix4f matrix4f = matrixStack.method_23760().method_23761();
 			bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_TEXTURE);
-			bufferBuilder.vertex(matrix4f, -0.5F, -0.5F, -0.5F).color(1.0F, 1.0F, 1.0F, 0.9F).texture(h, k).next();
-			bufferBuilder.vertex(matrix4f, 0.5F, -0.5F, -0.5F).color(1.0F, 1.0F, 1.0F, 0.9F).texture(g, k).next();
-			bufferBuilder.vertex(matrix4f, 0.5F, 0.5F, -0.5F).color(1.0F, 1.0F, 1.0F, 0.9F).texture(g, j).next();
-			bufferBuilder.vertex(matrix4f, -0.5F, 0.5F, -0.5F).color(1.0F, 1.0F, 1.0F, 0.9F).texture(h, j).next();
+			bufferBuilder.vertex(matrix4f, -0.5F, -0.5F, -0.5F).color(1.0F, 1.0F, 1.0F, 0.9F).texture(n, p).next();
+			bufferBuilder.vertex(matrix4f, 0.5F, -0.5F, -0.5F).color(1.0F, 1.0F, 1.0F, 0.9F).texture(m, p).next();
+			bufferBuilder.vertex(matrix4f, 0.5F, 0.5F, -0.5F).color(1.0F, 1.0F, 1.0F, 0.9F).texture(m, o).next();
+			bufferBuilder.vertex(matrix4f, -0.5F, 0.5F, -0.5F).color(1.0F, 1.0F, 1.0F, 0.9F).texture(n, o).next();
 			bufferBuilder.end();
 			BufferRenderer.draw(bufferBuilder);
 			matrixStack.pop();

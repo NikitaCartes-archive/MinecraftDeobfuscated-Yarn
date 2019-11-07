@@ -51,17 +51,7 @@ public class ExperienceOrbEntity extends Entity {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public int getLightmapCoordinates() {
-		float f = 0.5F;
-		f = MathHelper.clamp(f, 0.0F, 1.0F);
-		int i = super.getLightmapCoordinates();
-		int j = i & 0xFF;
-		int k = i >> 16 & 0xFF;
-		j += (int)(f * 15.0F * 16.0F);
-		if (j > 240) {
-			j = 240;
-		}
-
-		return j | k << 16;
+		return MathHelper.clamp(super.getLightmapCoordinates() + 7, 0, 15);
 	}
 
 	@Override

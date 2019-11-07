@@ -1,7 +1,6 @@
 package net.minecraft.client.render.debug;
 
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -10,10 +9,10 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
@@ -31,21 +30,12 @@ public class StructureDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	@Override
-	public void render(long limitTime) {
+	public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f, long l) {
 		Camera camera = this.field_4624.gameRenderer.getCamera();
 		IWorld iWorld = this.field_4624.world;
 		DimensionType dimensionType = iWorld.getDimension().getType();
-		double d = camera.getPos().x;
-		double e = camera.getPos().y;
-		double f = camera.getPos().z;
-		RenderSystem.pushMatrix();
-		RenderSystem.enableBlend();
-		RenderSystem.defaultBlendFunc();
-		RenderSystem.disableTexture();
-		RenderSystem.disableDepthTest();
 		BlockPos blockPos = new BlockPos(camera.getPos().x, 0.0, camera.getPos().z);
-		VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-		VertexConsumer vertexConsumer = immediate.getBuffer(RenderLayer.getLines());
+		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getLines());
 		if (this.field_4626.containsKey(dimensionType)) {
 			for (BlockBox blockBox : ((Map)this.field_4626.get(dimensionType)).values()) {
 				if (blockPos.isWithinDistance(blockBox.method_22874(), 500.0)) {
@@ -104,11 +94,6 @@ public class StructureDebugRenderer implements DebugRenderer.Renderer {
 				}
 			}
 		}
-
-		immediate.draw();
-		RenderSystem.enableDepthTest();
-		RenderSystem.enableTexture();
-		RenderSystem.popMatrix();
 	}
 
 	public void method_3871(BlockBox blockBox, List<BlockBox> list, List<Boolean> list2, DimensionType dimensionType) {

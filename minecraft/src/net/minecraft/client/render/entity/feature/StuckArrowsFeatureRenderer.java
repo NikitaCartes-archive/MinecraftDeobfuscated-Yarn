@@ -28,13 +28,15 @@ public class StuckArrowsFeatureRenderer<T extends LivingEntity, M extends Player
 	}
 
 	@Override
-	protected void renderThing(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, Entity entity, float z, float tickDelta, float f, float g) {
-		float h = MathHelper.sqrt(z * z + f * f);
+	protected void renderThing(
+		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, Entity entity, float tickDelta, float f, float g, float h
+	) {
+		float j = MathHelper.sqrt(tickDelta * tickDelta + g * g);
 		this.field_20528 = new ArrowEntity(entity.world, entity.getX(), entity.getY(), entity.getZ());
-		this.field_20528.yaw = (float)(Math.atan2((double)z, (double)f) * 180.0F / (float)Math.PI);
-		this.field_20528.pitch = (float)(Math.atan2((double)tickDelta, (double)h) * 180.0F / (float)Math.PI);
+		this.field_20528.yaw = (float)(Math.atan2((double)tickDelta, (double)g) * 180.0F / (float)Math.PI);
+		this.field_20528.pitch = (float)(Math.atan2((double)f, (double)j) * 180.0F / (float)Math.PI);
 		this.field_20528.prevYaw = this.field_20528.yaw;
 		this.field_20528.prevPitch = this.field_20528.pitch;
-		this.field_17153.render(this.field_20528, 0.0, 0.0, 0.0, 0.0F, g, matrixStack, vertexConsumerProvider);
+		this.field_17153.render(this.field_20528, 0.0, 0.0, 0.0, 0.0F, h, matrixStack, vertexConsumerProvider, i);
 	}
 }

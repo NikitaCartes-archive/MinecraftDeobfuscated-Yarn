@@ -687,7 +687,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		}
 
 		if (spawnType == SpawnType.COMMAND || spawnType == SpawnType.SPAWN_EGG || spawnType == SpawnType.SPAWNER || spawnType == SpawnType.DISPENSER) {
-			this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.getBiome(new BlockPos(this)))));
+			this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.method_23753(new BlockPos(this)))));
 		}
 
 		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
@@ -697,7 +697,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		double d = this.random.nextDouble();
 		VillagerType villagerType;
 		if (d < 0.5) {
-			villagerType = VillagerType.forBiome(this.world.getBiome(new BlockPos(this)));
+			villagerType = VillagerType.forBiome(this.world.method_23753(new BlockPos(this)));
 		} else if (d < 0.75) {
 			villagerType = this.getVillagerData().getType();
 		} else {

@@ -21,7 +21,8 @@ public enum PathNodeType {
 	DOOR_IRON_CLOSED(-1.0F),
 	BREACH(4.0F),
 	LEAVES(-1.0F),
-	STICKY_HONEY(8.0F);
+	STICKY_HONEY(8.0F),
+	COCOA(0.0F);
 
 	private final float defaultPenalty;
 

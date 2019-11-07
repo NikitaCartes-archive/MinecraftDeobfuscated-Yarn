@@ -19,7 +19,7 @@ public class TheNetherDimension extends Dimension {
 	private static final Vec3d field_21216 = new Vec3d(0.2F, 0.03F, 0.03F);
 
 	public TheNetherDimension(World world, DimensionType type) {
-		super(world, type);
+		super(world, type, 0.1F);
 		this.waterVaporizes = true;
 		this.isNether = true;
 	}
@@ -28,16 +28,6 @@ public class TheNetherDimension extends Dimension {
 	@Override
 	public Vec3d getFogColor(float skyAngle, float tickDelta) {
 		return field_21216;
-	}
-
-	@Override
-	protected void initializeLightLevelToBrightness() {
-		float f = 0.1F;
-
-		for (int i = 0; i <= 15; i++) {
-			float g = 1.0F - (float)i / 15.0F;
-			this.lightLevelToBrightness[i] = (1.0F - g) / (g * 3.0F + 1.0F) * 0.9F + 0.1F;
-		}
 	}
 
 	@Override

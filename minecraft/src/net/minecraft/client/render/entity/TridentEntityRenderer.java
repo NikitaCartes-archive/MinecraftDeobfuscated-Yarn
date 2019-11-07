@@ -6,6 +6,7 @@ import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.TridentEntityModel;
+import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.projectile.TridentEntity;
@@ -21,17 +22,16 @@ public class TridentEntityRenderer extends EntityRenderer<TridentEntity> {
 		super(entityRenderDispatcher);
 	}
 
-	public void method_4133(
-		TridentEntity tridentEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider
-	) {
+	public void method_4133(TridentEntity tridentEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(MathHelper.lerp(h, tridentEntity.prevYaw, tridentEntity.yaw) - 90.0F));
-		matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(MathHelper.lerp(h, tridentEntity.prevPitch, tridentEntity.pitch) + 90.0F));
-		int i = tridentEntity.getLightmapCoordinates();
-		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(this.method_4134(tridentEntity)));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(MathHelper.lerp(g, tridentEntity.prevYaw, tridentEntity.yaw) - 90.0F));
+		matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(MathHelper.lerp(g, tridentEntity.prevPitch, tridentEntity.pitch) + 90.0F));
+		VertexConsumer vertexConsumer = ItemRenderer.getArmorVertexConsumer(
+			vertexConsumerProvider, this.model.getLayer(this.method_4134(tridentEntity)), false, tridentEntity.method_23751()
+		);
 		this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F);
 		matrixStack.pop();
-		super.render(tridentEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
+		super.render(tridentEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
 	public Identifier method_4134(TridentEntity tridentEntity) {

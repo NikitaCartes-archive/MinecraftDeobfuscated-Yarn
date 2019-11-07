@@ -106,21 +106,19 @@ public class ModelPart {
 		this.pivotZ = z;
 	}
 
-	public void render(MatrixStack matrix, VertexConsumer vertexConsumer, float pivotDistance, int light, int i, @Nullable Sprite sprite) {
-		this.render(matrix, vertexConsumer, pivotDistance, light, i, sprite, 1.0F, 1.0F, 1.0F);
+	public void render(MatrixStack matrix, VertexConsumer vertexConsumer, int i, int j, @Nullable Sprite sprite) {
+		this.render(matrix, vertexConsumer, i, j, sprite, 1.0F, 1.0F, 1.0F);
 	}
 
-	public void render(
-		MatrixStack matrix, VertexConsumer vertexConsumer, float pivotDistance, int light, int overlay, @Nullable Sprite sprite, float red, float green, float blue
-	) {
+	public void render(MatrixStack matrix, VertexConsumer vertexConsumer, int i, int j, @Nullable Sprite sprite, float f, float g, float h) {
 		if (this.visible) {
 			if (!this.cuboids.isEmpty() || !this.children.isEmpty()) {
 				matrix.push();
-				this.rotate(matrix, pivotDistance);
-				this.renderCuboids(matrix.peekModel(), vertexConsumer, pivotDistance, light, overlay, sprite, red, green, blue);
+				this.rotate(matrix);
+				this.renderCuboids(matrix.method_23760(), vertexConsumer, i, j, sprite, f, g, h);
 
 				for (ModelPart modelPart : this.children) {
-					modelPart.render(matrix, vertexConsumer, pivotDistance, light, overlay, sprite, red, green, blue);
+					modelPart.render(matrix, vertexConsumer, i, j, sprite, f, g, h);
 				}
 
 				matrix.pop();
@@ -128,8 +126,8 @@ public class ModelPart {
 		}
 	}
 
-	public void rotate(MatrixStack matrix, float pivotDistance) {
-		matrix.translate((double)(this.pivotX * pivotDistance), (double)(this.pivotY * pivotDistance), (double)(this.pivotZ * pivotDistance));
+	public void rotate(MatrixStack matrix) {
+		matrix.translate((double)(this.pivotX / 16.0F), (double)(this.pivotY / 16.0F), (double)(this.pivotZ / 16.0F));
 		if (this.roll != 0.0F) {
 			matrix.multiply(Vector3f.POSITIVE_Z.method_23626(this.roll));
 		}
@@ -143,10 +141,9 @@ public class ModelPart {
 		}
 	}
 
-	private void renderCuboids(
-		Matrix4f matrix, VertexConsumer vertexConsumer, float pivotDistance, int light, int overlay, @Nullable Sprite sprite, float red, float green, float blue
-	) {
-		Matrix3f matrix3f = new Matrix3f(matrix);
+	private void renderCuboids(MatrixStack.Entry entry, VertexConsumer vertexConsumer, int i, int j, @Nullable Sprite sprite, float f, float g, float h) {
+		Matrix4f matrix4f = entry.method_23761();
+		Matrix3f matrix3f = new Matrix3f(matrix4f);
 
 		for (ModelPart.Cuboid cuboid : this.cuboids) {
 			for (ModelPart.Quad quad : cuboid.sides) {
@@ -156,30 +153,33 @@ public class ModelPart {
 				vector3f2.multiply(matrix3f);
 				vector3f2.cross(vector3f);
 				vector3f2.reciprocal();
-				float f = vector3f2.getX();
-				float g = vector3f2.getY();
-				float h = vector3f2.getZ();
+				float k = vector3f2.getX();
+				float l = vector3f2.getY();
+				float m = vector3f2.getZ();
 
-				for (int i = 0; i < 4; i++) {
-					ModelPart.Vertex vertex = quad.vertices[i];
-					Vector4f vector4f = new Vector4f((float)vertex.pos.x * pivotDistance, (float)vertex.pos.y * pivotDistance, (float)vertex.pos.z * pivotDistance, 1.0F);
-					vector4f.multiply(matrix);
-					float j;
-					float k;
+				for (int n = 0; n < 4; n++) {
+					ModelPart.Vertex vertex = quad.vertices[n];
+					float o = (float)vertex.pos.x / 16.0F;
+					float p = (float)vertex.pos.y / 16.0F;
+					float q = (float)vertex.pos.z / 16.0F;
+					Vector4f vector4f = new Vector4f(o, p, q, 1.0F);
+					vector4f.multiply(matrix4f);
+					float r;
+					float s;
 					if (sprite == null) {
-						j = vertex.u;
-						k = vertex.v;
+						r = vertex.u;
+						s = vertex.v;
 					} else {
-						j = sprite.getU((double)(vertex.u * 16.0F));
-						k = sprite.getV((double)(vertex.v * 16.0F));
+						r = sprite.getU((double)(vertex.u * 16.0F));
+						s = sprite.getV((double)(vertex.v * 16.0F));
 					}
 
 					vertexConsumer.vertex((double)vector4f.getX(), (double)vector4f.getY(), (double)vector4f.getZ())
-						.color(red, green, blue, 1.0F)
-						.texture(j, k)
-						.overlay(overlay)
-						.light(light)
-						.normal(f, g, h)
+						.color(f, g, h, 1.0F)
+						.texture(r, s)
+						.overlay(j)
+						.light(i)
+						.normal(k, l, m)
 						.next();
 				}
 			}

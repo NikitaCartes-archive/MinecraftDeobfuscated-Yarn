@@ -32,6 +32,6 @@ public class SkullEntityModel extends Model {
 
 	@Override
 	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float r, float g, float b) {
-		this.skull.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, r, g, b);
+		this.skull.render(matrixStack, vertexConsumer, i, j, null, r, g, b);
 	}
 }
