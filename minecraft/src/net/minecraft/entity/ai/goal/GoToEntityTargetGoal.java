@@ -30,7 +30,7 @@ public class GoToEntityTargetGoal extends Goal {
 		} else if (this.target.squaredDistanceTo(this.mob) > (double)(this.maxDistance * this.maxDistance)) {
 			return false;
 		} else {
-			Vec3d vec3d = TargetFinder.findTargetTowards(this.mob, 16, 7, this.target.getPos());
+			Vec3d vec3d = TargetFinder.method_23735(this.mob, 16, 7, this.target.getPos());
 			if (vec3d == null) {
 				return false;
 			} else {

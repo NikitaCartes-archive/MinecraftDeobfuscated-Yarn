@@ -32,8 +32,7 @@ public class CapeFeatureRenderer extends FeatureRenderer<AbstractClientPlayerEnt
 		float h,
 		float j,
 		float k,
-		float l,
-		float m
+		float l
 	) {
 		if (abstractClientPlayerEntity.canRenderCapeTexture()
 			&& !abstractClientPlayerEntity.isInvisible()
@@ -47,32 +46,32 @@ public class CapeFeatureRenderer extends FeatureRenderer<AbstractClientPlayerEnt
 					- MathHelper.lerp((double)h, abstractClientPlayerEntity.prevX, abstractClientPlayerEntity.getX());
 				double e = MathHelper.lerp((double)h, abstractClientPlayerEntity.field_7502, abstractClientPlayerEntity.field_7521)
 					- MathHelper.lerp((double)h, abstractClientPlayerEntity.prevY, abstractClientPlayerEntity.getY());
-				double n = MathHelper.lerp((double)h, abstractClientPlayerEntity.field_7522, abstractClientPlayerEntity.field_7499)
+				double m = MathHelper.lerp((double)h, abstractClientPlayerEntity.field_7522, abstractClientPlayerEntity.field_7499)
 					- MathHelper.lerp((double)h, abstractClientPlayerEntity.prevZ, abstractClientPlayerEntity.getZ());
-				float o = abstractClientPlayerEntity.prevBodyYaw + (abstractClientPlayerEntity.bodyYaw - abstractClientPlayerEntity.prevBodyYaw);
-				double p = (double)MathHelper.sin(o * (float) (Math.PI / 180.0));
-				double q = (double)(-MathHelper.cos(o * (float) (Math.PI / 180.0)));
-				float r = (float)e * 10.0F;
-				r = MathHelper.clamp(r, -6.0F, 32.0F);
-				float s = (float)(d * p + n * q) * 100.0F;
-				s = MathHelper.clamp(s, 0.0F, 150.0F);
-				float t = (float)(d * q - n * p) * 100.0F;
-				t = MathHelper.clamp(t, -20.0F, 20.0F);
-				if (s < 0.0F) {
-					s = 0.0F;
+				float n = abstractClientPlayerEntity.prevBodyYaw + (abstractClientPlayerEntity.bodyYaw - abstractClientPlayerEntity.prevBodyYaw);
+				double o = (double)MathHelper.sin(n * (float) (Math.PI / 180.0));
+				double p = (double)(-MathHelper.cos(n * (float) (Math.PI / 180.0)));
+				float q = (float)e * 10.0F;
+				q = MathHelper.clamp(q, -6.0F, 32.0F);
+				float r = (float)(d * o + m * p) * 100.0F;
+				r = MathHelper.clamp(r, 0.0F, 150.0F);
+				float s = (float)(d * p - m * o) * 100.0F;
+				s = MathHelper.clamp(s, -20.0F, 20.0F);
+				if (r < 0.0F) {
+					r = 0.0F;
 				}
 
-				float u = MathHelper.lerp(h, abstractClientPlayerEntity.field_7505, abstractClientPlayerEntity.field_7483);
-				r += MathHelper.sin(MathHelper.lerp(h, abstractClientPlayerEntity.prevHorizontalSpeed, abstractClientPlayerEntity.horizontalSpeed) * 6.0F) * 32.0F * u;
+				float t = MathHelper.lerp(h, abstractClientPlayerEntity.field_7505, abstractClientPlayerEntity.field_7483);
+				q += MathHelper.sin(MathHelper.lerp(h, abstractClientPlayerEntity.prevHorizontalSpeed, abstractClientPlayerEntity.horizontalSpeed) * 6.0F) * 32.0F * t;
 				if (abstractClientPlayerEntity.isInSneakingPose()) {
-					r += 25.0F;
+					q += 25.0F;
 				}
 
-				matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(6.0F + s / 2.0F + r));
-				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(t / 2.0F));
-				matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F - t / 2.0F));
+				matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(6.0F + r / 2.0F + q));
+				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(s / 2.0F));
+				matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F - s / 2.0F));
 				VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(abstractClientPlayerEntity.getCapeTexture()));
-				this.getModel().renderCape(matrixStack, vertexConsumer, 0.0625F, i, OverlayTexture.DEFAULT_UV);
+				this.getModel().renderCape(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
 				matrixStack.pop();
 			}
 		}

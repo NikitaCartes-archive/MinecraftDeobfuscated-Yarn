@@ -48,8 +48,8 @@ public class TurtleEntityModel<T extends TurtleEntity> extends QuadrupedEntityMo
 		return Iterables.concat(super.getBodyParts(), ImmutableList.of(this.field_3594));
 	}
 
-	public void method_17125(T turtleEntity, float f, float g, float h, float i, float j, float k) {
-		super.setAngles(turtleEntity, f, g, h, i, j, k);
+	public void method_17125(T turtleEntity, float f, float g, float h, float i, float j) {
+		super.setAngles(turtleEntity, f, g, h, i, j);
 		this.leg1.pitch = MathHelper.cos(f * 0.6662F * 0.6F) * 0.5F * g;
 		this.leg2.pitch = MathHelper.cos(f * 0.6662F * 0.6F + (float) Math.PI) * 0.5F * g;
 		this.leg3.roll = MathHelper.cos(f * 0.6662F * 0.6F + (float) Math.PI) * 0.5F * g;
@@ -62,12 +62,12 @@ public class TurtleEntityModel<T extends TurtleEntity> extends QuadrupedEntityMo
 		this.leg2.yaw = 0.0F;
 		this.field_3594.pitch = (float) (Math.PI / 2);
 		if (!turtleEntity.isInsideWater() && turtleEntity.onGround) {
-			float l = turtleEntity.isDiggingSand() ? 4.0F : 1.0F;
-			float m = turtleEntity.isDiggingSand() ? 2.0F : 1.0F;
-			float n = 5.0F;
-			this.leg3.yaw = MathHelper.cos(l * f * 5.0F + (float) Math.PI) * 8.0F * g * m;
+			float k = turtleEntity.isDiggingSand() ? 4.0F : 1.0F;
+			float l = turtleEntity.isDiggingSand() ? 2.0F : 1.0F;
+			float m = 5.0F;
+			this.leg3.yaw = MathHelper.cos(k * f * 5.0F + (float) Math.PI) * 8.0F * g * l;
 			this.leg3.roll = 0.0F;
-			this.leg4.yaw = MathHelper.cos(l * f * 5.0F) * 8.0F * g * m;
+			this.leg4.yaw = MathHelper.cos(k * f * 5.0F) * 8.0F * g * l;
 			this.leg4.roll = 0.0F;
 			this.leg1.yaw = MathHelper.cos(f * 5.0F + (float) Math.PI) * 3.0F * g;
 			this.leg1.pitch = 0.0F;

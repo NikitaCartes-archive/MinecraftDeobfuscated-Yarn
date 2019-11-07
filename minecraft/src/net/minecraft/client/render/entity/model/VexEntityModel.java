@@ -33,8 +33,8 @@ public class VexEntityModel extends BipedEntityModel<VexEntity> {
 		return Iterables.concat(super.getBodyParts(), ImmutableList.of(this.field_3602, this.field_3601));
 	}
 
-	public void method_17127(VexEntity vexEntity, float f, float g, float h, float i, float j, float k) {
-		super.method_17087(vexEntity, f, g, h, i, j, k);
+	public void method_17127(VexEntity vexEntity, float f, float g, float h, float i, float j) {
+		super.method_17087(vexEntity, f, g, h, i, j);
 		if (vexEntity.isCharging()) {
 			if (vexEntity.getMainArm() == Arm.RIGHT) {
 				this.rightArm.pitch = 3.7699115F;

@@ -24,7 +24,7 @@ public class Frustum {
 	}
 
 	private void init(Matrix4f matrix4f, Matrix4f matrix4f2) {
-		Matrix4f matrix4f3 = new Matrix4f(matrix4f2);
+		Matrix4f matrix4f3 = matrix4f2.copy();
 		matrix4f3.multiply(matrix4f);
 		matrix4f3.transpose();
 		this.transform(matrix4f3, -1, 0, 0, 0);

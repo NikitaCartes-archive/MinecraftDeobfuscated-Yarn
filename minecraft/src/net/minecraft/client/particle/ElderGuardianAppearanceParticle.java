@@ -7,7 +7,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.ElderGuardianEntity;
@@ -41,30 +43,32 @@ public class ElderGuardianAppearanceParticle extends Particle {
 	}
 
 	@Override
-	public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float tickDelta, float f, float g, float h, float i, float j) {
+	public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
 		if (this.guardian != null) {
 			EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderManager();
-			float k = 1.0F / ElderGuardianEntity.field_17492;
-			float l = ((float)this.age + tickDelta) / (float)this.maxAge;
+			float f = 1.0F / ElderGuardianEntity.field_17492;
+			float g = ((float)this.age + tickDelta) / (float)this.maxAge;
 			RenderSystem.depthMask(true);
 			RenderSystem.enableBlend();
 			RenderSystem.enableDepthTest();
 			RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-			float m = 240.0F;
+			float h = 240.0F;
 			RenderSystem.glMultiTexCoord2f(33986, 240.0F, 240.0F);
 			RenderSystem.pushMatrix();
-			float n = 0.05F + 0.5F * MathHelper.sin(l * (float) Math.PI);
-			RenderSystem.color4f(1.0F, 1.0F, 1.0F, n);
+			float i = 0.05F + 0.5F * MathHelper.sin(g * (float) Math.PI);
+			RenderSystem.color4f(1.0F, 1.0F, 1.0F, i);
 			RenderSystem.translatef(0.0F, 1.8F, 0.0F);
 			RenderSystem.rotatef(180.0F - camera.getYaw(), 0.0F, 1.0F, 0.0F);
-			RenderSystem.rotatef(60.0F - 150.0F * l - camera.getPitch(), 1.0F, 0.0F, 0.0F);
+			RenderSystem.rotatef(60.0F - 150.0F * g - camera.getPitch(), 1.0F, 0.0F, 0.0F);
 			RenderSystem.translatef(0.0F, -0.4F, -1.5F);
-			RenderSystem.scalef(k, k, k);
+			RenderSystem.scalef(f, f, f);
 			this.guardian.yaw = 0.0F;
 			this.guardian.headYaw = 0.0F;
 			this.guardian.prevYaw = 0.0F;
 			this.guardian.prevHeadYaw = 0.0F;
-			entityRenderDispatcher.render(this.guardian, tickDelta);
+			VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
+			entityRenderDispatcher.render(this.guardian, 0.0, 0.0, 0.0, 0.0F, tickDelta, new MatrixStack(), immediate, 15728880);
+			immediate.draw();
 			RenderSystem.popMatrix();
 			RenderSystem.enableDepthTest();
 		}

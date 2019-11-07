@@ -36,10 +36,10 @@ public class EndermanEntityModel<T extends LivingEntity> extends BipedEntityMode
 	}
 
 	@Override
-	public void method_17087(T livingEntity, float f, float g, float h, float i, float j, float k) {
-		super.method_17087(livingEntity, f, g, h, i, j, k);
+	public void method_17087(T livingEntity, float f, float g, float h, float i, float j) {
+		super.method_17087(livingEntity, f, g, h, i, j);
 		this.head.visible = true;
-		float l = -14.0F;
+		float k = -14.0F;
 		this.body.pitch = 0.0F;
 		this.body.pivotY = -14.0F;
 		this.body.pivotZ = -0.0F;
@@ -49,7 +49,7 @@ public class EndermanEntityModel<T extends LivingEntity> extends BipedEntityMode
 		this.leftArm.pitch = (float)((double)this.leftArm.pitch * 0.5);
 		this.rightLeg.pitch = (float)((double)this.rightLeg.pitch * 0.5);
 		this.leftLeg.pitch = (float)((double)this.leftLeg.pitch * 0.5);
-		float m = 0.4F;
+		float l = 0.4F;
 		if (this.rightArm.pitch > 0.4F) {
 			this.rightArm.pitch = 0.4F;
 		}
@@ -104,11 +104,11 @@ public class EndermanEntityModel<T extends LivingEntity> extends BipedEntityMode
 		this.headwear.yaw = this.head.yaw;
 		this.headwear.roll = this.head.roll;
 		if (this.angry) {
-			float n = 1.0F;
+			float m = 1.0F;
 			this.head.pivotY -= 5.0F;
 		}
 
-		float n = -14.0F;
+		float m = -14.0F;
 		this.rightArm.setPivot(-5.0F, -12.0F, 0.0F);
 		this.leftArm.setPivot(5.0F, -12.0F, 0.0F);
 	}

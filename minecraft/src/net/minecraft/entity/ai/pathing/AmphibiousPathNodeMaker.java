@@ -262,7 +262,11 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 				}
 			}
 
-			return method_59(world, x, y, z, pathNodeType);
+			if (pathNodeType == PathNodeType.WALKABLE) {
+				pathNodeType = method_59(world, x, y, z, pathNodeType);
+			}
+
+			return pathNodeType;
 		}
 	}
 }

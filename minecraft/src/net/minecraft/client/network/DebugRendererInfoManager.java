@@ -3,11 +3,13 @@ package net.minecraft.client.network;
 import io.netty.buffer.Unpooled;
 import java.util.Collection;
 import javax.annotation.Nullable;
+import net.minecraft.block.entity.BeeHiveBlockEntity;
 import net.minecraft.client.network.packet.CustomPayloadS2CPacket;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.raid.Raid;
 import net.minecraft.network.Packet;
@@ -68,6 +70,12 @@ public class DebugRendererInfoManager {
 	}
 
 	public static void sendVillagerAiDebugData(LivingEntity livingEntity) {
+	}
+
+	public static void method_23855(BeeEntity beeEntity) {
+	}
+
+	public static void method_23856(BeeHiveBlockEntity beeHiveBlockEntity) {
 	}
 
 	private static void method_22319(ServerWorld serverWorld, PacketByteBuf packetByteBuf, Identifier identifier) {

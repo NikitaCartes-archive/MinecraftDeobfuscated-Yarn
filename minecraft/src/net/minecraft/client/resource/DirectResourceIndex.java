@@ -35,32 +35,30 @@ public class DirectResourceIndex extends ResourceIndex {
 	}
 
 	@Override
-	public Collection<String> getFilesRecursively(String namespace, int maxDepth, Predicate<String> filter) {
-		Path path = this.assetDir.toPath().resolve("minecraft/");
+	public Collection<Identifier> getFilesRecursively(String string, String string2, int i, Predicate<String> predicate) {
+		Path path = this.assetDir.toPath().resolve(string2);
 
 		try {
-			Stream<Path> stream = Files.walk(path.resolve(namespace), maxDepth, new FileVisitOption[0]);
-			Throwable var6 = null;
+			Stream<Path> stream = Files.walk(path.resolve(string), i, new FileVisitOption[0]);
+			Throwable var7 = null;
 
-			Collection var7;
+			Collection var8;
 			try {
-				var7 = (Collection)stream.filter(pathx -> Files.isRegularFile(pathx, new LinkOption[0]))
+				var8 = (Collection)stream.filter(pathx -> Files.isRegularFile(pathx, new LinkOption[0]))
 					.filter(pathx -> !pathx.endsWith(".mcmeta"))
-					.map(path::relativize)
-					.map(Object::toString)
-					.map(string -> string.replaceAll("\\\\", "/"))
-					.filter(filter)
+					.filter(pathx -> predicate.test(pathx.getFileName().toString()))
+					.map(path2 -> new Identifier(string2, path.relativize(path2).toString().replaceAll("\\\\", "/")))
 					.collect(Collectors.toList());
-			} catch (Throwable var18) {
-				var6 = var18;
-				throw var18;
+			} catch (Throwable var19) {
+				var7 = var19;
+				throw var19;
 			} finally {
 				if (stream != null) {
-					if (var6 != null) {
+					if (var7 != null) {
 						try {
 							stream.close();
-						} catch (Throwable var17) {
-							var6.addSuppressed(var17);
+						} catch (Throwable var18) {
+							var7.addSuppressed(var18);
 						}
 					} else {
 						stream.close();
@@ -68,10 +66,10 @@ public class DirectResourceIndex extends ResourceIndex {
 				}
 			}
 
-			return var7;
-		} catch (NoSuchFileException var20) {
-		} catch (IOException var21) {
-			LOGGER.warn("Unable to getFiles on {}", namespace, var21);
+			return var8;
+		} catch (NoSuchFileException var21) {
+		} catch (IOException var22) {
+			LOGGER.warn("Unable to getFiles on {}", string, var22);
 		}
 
 		return Collections.emptyList();

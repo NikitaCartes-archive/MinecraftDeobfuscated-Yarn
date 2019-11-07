@@ -6,14 +6,17 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4703;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.util.hit.EntityHitResult;
@@ -23,7 +26,7 @@ import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
 public class DebugRenderer {
-	public final PathfindingDebugRenderer pathfindingDebugRenderer;
+	public final PathfindingDebugRenderer pathfindingDebugRenderer = new PathfindingDebugRenderer();
 	public final DebugRenderer.Renderer waterDebugRenderer;
 	public final DebugRenderer.Renderer chunkBorderDebugRenderer;
 	public final DebugRenderer.Renderer heightmapDebugRenderer;
@@ -36,25 +39,26 @@ public class DebugRenderer {
 	public final DebugRenderer.Renderer blockOutlineDebugRenderer;
 	public final DebugRenderer.Renderer chunkLoadingDebugRenderer;
 	public final VillageDebugRenderer villageDebugRenderer;
+	public final class_4703 field_21547;
 	public final RaidCenterDebugRenderer raidCenterDebugRenderer;
 	public final GoalSelectorDebugRenderer goalSelectorDebugRenderer;
 	public final GameTestDebugRenderer gameTestDebugRenderer;
 	private boolean showChunkBorder;
 
 	public DebugRenderer(MinecraftClient client) {
-		this.pathfindingDebugRenderer = new PathfindingDebugRenderer(client);
 		this.waterDebugRenderer = new WaterDebugRenderer(client);
 		this.chunkBorderDebugRenderer = new ChunkBorderDebugRenderer(client);
 		this.heightmapDebugRenderer = new HeightmapDebugRenderer(client);
 		this.collisionDebugRenderer = new CollisionDebugRenderer(client);
 		this.neighborUpdateDebugRenderer = new NeighborUpdateDebugRenderer(client);
-		this.caveDebugRenderer = new CaveDebugRenderer(client);
+		this.caveDebugRenderer = new CaveDebugRenderer();
 		this.structureDebugRenderer = new StructureDebugRenderer(client);
 		this.skyLightDebugRenderer = new SkyLightDebugRenderer(client);
-		this.worldGenAttemptDebugRenderer = new WorldGenAttemptDebugRenderer(client);
+		this.worldGenAttemptDebugRenderer = new WorldGenAttemptDebugRenderer();
 		this.blockOutlineDebugRenderer = new BlockOutlineDebugRenderer(client);
 		this.chunkLoadingDebugRenderer = new ChunkLoadingDebugRenderer(client);
 		this.villageDebugRenderer = new VillageDebugRenderer(client);
+		this.field_21547 = new class_4703(client);
 		this.raidCenterDebugRenderer = new RaidCenterDebugRenderer(client);
 		this.goalSelectorDebugRenderer = new GoalSelectorDebugRenderer(client);
 		this.gameTestDebugRenderer = new GameTestDebugRenderer();
@@ -74,6 +78,7 @@ public class DebugRenderer {
 		this.blockOutlineDebugRenderer.clear();
 		this.chunkLoadingDebugRenderer.clear();
 		this.villageDebugRenderer.clear();
+		this.field_21547.clear();
 		this.raidCenterDebugRenderer.clear();
 		this.goalSelectorDebugRenderer.clear();
 		this.gameTestDebugRenderer.clear();
@@ -84,12 +89,12 @@ public class DebugRenderer {
 		return this.showChunkBorder;
 	}
 
-	public void render(long limitTime) {
+	public void render(MatrixStack matrixStack, VertexConsumerProvider.Immediate immediate, double d, double e, double f, long l) {
 		if (this.showChunkBorder && !MinecraftClient.getInstance().hasReducedDebugInfo()) {
-			this.chunkBorderDebugRenderer.render(limitTime);
+			this.chunkBorderDebugRenderer.render(matrixStack, immediate, d, e, f, l);
 		}
 
-		this.gameTestDebugRenderer.render(limitTime);
+		this.gameTestDebugRenderer.render(matrixStack, immediate, d, e, f, l);
 	}
 
 	public static Optional<Entity> getTargettedEntity(@Nullable Entity entity, int maxDistance) {
@@ -188,7 +193,7 @@ public class DebugRenderer {
 
 	@Environment(EnvType.CLIENT)
 	public interface Renderer {
-		void render(long limitTime);
+		void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f, long l);
 
 		default void clear() {
 		}

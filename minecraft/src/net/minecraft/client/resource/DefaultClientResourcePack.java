@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -66,9 +65,9 @@ public class DefaultClientResourcePack extends DefaultResourcePack {
 	}
 
 	@Override
-	public Collection<Identifier> findResources(ResourceType type, String namespace, int maxDepth, Predicate<String> pathFilter) {
-		Collection<Identifier> collection = super.findResources(type, namespace, maxDepth, pathFilter);
-		collection.addAll((Collection)this.index.getFilesRecursively(namespace, maxDepth, pathFilter).stream().map(Identifier::new).collect(Collectors.toList()));
+	public Collection<Identifier> findResources(ResourceType type, String namespace, String string, int i, Predicate<String> predicate) {
+		Collection<Identifier> collection = super.findResources(type, namespace, string, i, predicate);
+		collection.addAll(this.index.getFilesRecursively(string, namespace, i, predicate));
 		return collection;
 	}
 }

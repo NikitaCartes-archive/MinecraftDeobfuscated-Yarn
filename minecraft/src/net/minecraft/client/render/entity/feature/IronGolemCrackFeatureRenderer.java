@@ -35,8 +35,7 @@ public class IronGolemCrackFeatureRenderer extends FeatureRenderer<IronGolemEnti
 		float h,
 		float j,
 		float k,
-		float l,
-		float m
+		float l
 	) {
 		IronGolemEntity.Crack crack = ironGolemEntity.getCrack();
 		if (crack != IronGolemEntity.Crack.NONE) {

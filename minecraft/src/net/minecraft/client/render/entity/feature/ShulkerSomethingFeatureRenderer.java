@@ -31,8 +31,7 @@ public class ShulkerSomethingFeatureRenderer extends FeatureRenderer<ShulkerEnti
 		float h,
 		float j,
 		float k,
-		float l,
-		float m
+		float l
 	) {
 		matrixStack.push();
 		matrixStack.translate(0.0, 1.0, 0.0);
@@ -54,7 +53,7 @@ public class ShulkerSomethingFeatureRenderer extends FeatureRenderer<ShulkerEnti
 		}
 
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(identifier));
-		modelPart.render(matrixStack, vertexConsumer, m, i, LivingEntityRenderer.method_23622(shulkerEntity, 0.0F), null);
+		modelPart.render(matrixStack, vertexConsumer, i, LivingEntityRenderer.method_23622(shulkerEntity, 0.0F), null);
 		matrixStack.pop();
 	}
 }

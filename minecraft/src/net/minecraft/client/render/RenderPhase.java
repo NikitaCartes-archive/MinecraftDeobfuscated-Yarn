@@ -70,7 +70,7 @@ public class RenderPhase {
 		RenderSystem.defaultBlendFunc();
 	}, () -> RenderSystem.disableBlend());
 	protected static final RenderPhase.Alpha ZERO_ALPHA = new RenderPhase.Alpha(0.0F);
-	protected static final RenderPhase.Alpha ONE_TENTH_ALPHA = new RenderPhase.Alpha(0.1F);
+	protected static final RenderPhase.Alpha ONE_TENTH_ALPHA = new RenderPhase.Alpha(0.003921569F);
 	protected static final RenderPhase.Alpha HALF_ALPHA = new RenderPhase.Alpha(0.5F);
 	protected static final RenderPhase.ShadeModel SHADE_MODEL = new RenderPhase.ShadeModel(false);
 	protected static final RenderPhase.ShadeModel SMOOTH_SHADE_MODEL = new RenderPhase.ShadeModel(true);
@@ -129,13 +129,20 @@ public class RenderPhase {
 		RenderSystem.popMatrix();
 		RenderSystem.matrixMode(5888);
 	});
-	protected static final RenderPhase.Fog NO_FOG = new RenderPhase.Fog("no_fog", () -> RenderSystem.disableFog(), () -> RenderSystem.enableFog());
-	protected static final RenderPhase.Fog FOG = new RenderPhase.Fog("fog", () -> {
+	protected static final RenderPhase.Fog NO_FOG = new RenderPhase.Fog("no_fog", () -> {
 	}, () -> {
 	});
-	protected static final RenderPhase.Fog BLACK_FOG = new RenderPhase.Fog(
-		"black_fog", () -> BackgroundRenderer.setFogBlack(true), () -> BackgroundRenderer.setFogBlack(false)
-	);
+	protected static final RenderPhase.Fog FOG = new RenderPhase.Fog("fog", () -> {
+		BackgroundRenderer.setFogBlack();
+		RenderSystem.enableFog();
+	}, () -> RenderSystem.disableFog());
+	protected static final RenderPhase.Fog BLACK_FOG = new RenderPhase.Fog("black_fog", () -> {
+		RenderSystem.fog(2918, 0.0F, 0.0F, 0.0F, 1.0F);
+		RenderSystem.enableFog();
+	}, () -> {
+		BackgroundRenderer.setFogBlack();
+		RenderSystem.disableFog();
+	});
 	protected static final RenderPhase.Target MAIN_TARGET = new RenderPhase.Target("main_target", () -> {
 	}, () -> {
 	});

@@ -5,7 +5,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.decorator.DecoratorConfig;
@@ -47,6 +46,7 @@ public final class DarkForestHillsBiome extends Biome {
 							Feature.HUGE_RED_MUSHROOM.configure(DefaultBiomeFeatures.field_21142).method_23387(0.025F),
 							Feature.HUGE_BROWN_MUSHROOM.configure(DefaultBiomeFeatures.field_21143).method_23387(0.05F),
 							Feature.DARK_OAK_TREE.configure(DefaultBiomeFeatures.field_21197).method_23387(0.6666667F),
+							Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.field_21187).method_23387(0.2F),
 							Feature.FANCY_TREE.configure(DefaultBiomeFeatures.field_21190).method_23387(0.1F)
 						),
 						Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.field_21126)
@@ -81,8 +81,8 @@ public final class DarkForestHillsBiome extends Biome {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public int getGrassColorAt(BlockPos blockPos) {
-		int i = super.getGrassColorAt(blockPos);
+	public int getGrassColorAt(double d, double e) {
+		int i = super.getGrassColorAt(d, e);
 		return (i & 16711422) + 2634762 >> 1;
 	}
 }

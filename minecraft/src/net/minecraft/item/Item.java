@@ -255,7 +255,6 @@ public class Item implements ItemConvertible {
 		return new TranslatableText(this.getTranslationKey(stack));
 	}
 
-	@Environment(EnvType.CLIENT)
 	public boolean hasEnchantmentGlint(ItemStack stack) {
 		return stack.hasEnchantments();
 	}

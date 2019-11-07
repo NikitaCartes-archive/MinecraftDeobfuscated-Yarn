@@ -48,7 +48,7 @@ public class OverworldChunkGenerator extends SurfaceChunkGenerator<OverworldChun
 	public void populateEntities(ChunkRegion region) {
 		int i = region.getCenterChunkX();
 		int j = region.getCenterChunkZ();
-		Biome biome = region.getBiome(new ChunkPos(i, j).getCenterBlockPos());
+		Biome biome = region.method_23753(new ChunkPos(i, j).getCenterBlockPos());
 		ChunkRandom chunkRandom = new ChunkRandom();
 		chunkRandom.setSeed(region.getSeed(), i << 4, j << 4);
 		SpawnHelper.populateEntities(region, biome, i, j, chunkRandom);

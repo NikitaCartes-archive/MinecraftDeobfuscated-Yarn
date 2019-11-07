@@ -85,7 +85,7 @@ public class BlazeEntity extends HostileEntity {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public int getLightmapCoordinates() {
-		return 15728880;
+		return 15;
 	}
 
 	@Override

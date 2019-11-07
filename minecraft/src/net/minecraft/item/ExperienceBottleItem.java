@@ -1,7 +1,5 @@
 package net.minecraft.item;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.thrown.ThrownExperienceBottleEntity;
 import net.minecraft.sound.SoundCategory;
@@ -16,7 +14,6 @@ public class ExperienceBottleItem extends Item {
 		super(settings);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean hasEnchantmentGlint(ItemStack stack) {
 		return true;

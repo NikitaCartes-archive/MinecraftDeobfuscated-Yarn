@@ -9,9 +9,9 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockRenderView;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeAccess;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
+import net.minecraft.world.level.ColorResolver;
 
 @Environment(EnvType.CLIENT)
 public class ChunkRendererRegion implements BlockRenderView {
@@ -109,11 +109,6 @@ public class ChunkRendererRegion implements BlockRenderView {
 		return this.world.getLightingProvider();
 	}
 
-	@Override
-	public BiomeAccess getBiomeAccess() {
-		return this.world.getBiomeAccess();
-	}
-
 	@Nullable
 	@Override
 	public BlockEntity getBlockEntity(BlockPos pos) {
@@ -125,5 +120,10 @@ public class ChunkRendererRegion implements BlockRenderView {
 		int i = (blockPos.getX() >> 4) - this.chunkXOffset;
 		int j = (blockPos.getZ() >> 4) - this.chunkZOffset;
 		return this.chunks[i][j].getBlockEntity(blockPos, creationType);
+	}
+
+	@Override
+	public int method_23752(BlockPos blockPos, ColorResolver colorResolver) {
+		return this.world.method_23752(blockPos, colorResolver);
 	}
 }

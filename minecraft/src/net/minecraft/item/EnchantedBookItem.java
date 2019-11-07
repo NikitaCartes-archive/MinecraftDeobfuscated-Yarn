@@ -20,7 +20,6 @@ public class EnchantedBookItem extends Item {
 		super(settings);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean hasEnchantmentGlint(ItemStack stack) {
 		return true;

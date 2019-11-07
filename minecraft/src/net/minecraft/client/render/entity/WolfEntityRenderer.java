@@ -24,15 +24,13 @@ public class WolfEntityRenderer extends MobEntityRenderer<WolfEntity, WolfEntity
 		return wolfEntity.method_6714();
 	}
 
-	public void method_4166(
-		WolfEntity wolfEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider
-	) {
+	public void method_4166(WolfEntity wolfEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		if (wolfEntity.isWet()) {
-			float i = wolfEntity.getBrightnessAtEyes() * wolfEntity.getWetBrightnessMultiplier(h);
-			this.model.setColorMultiplier(i, i, i);
+			float h = wolfEntity.getBrightnessAtEyes() * wolfEntity.getWetBrightnessMultiplier(g);
+			this.model.setColorMultiplier(h, h, h);
 		}
 
-		super.method_4072(wolfEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
+		super.method_4072(wolfEntity, f, g, matrixStack, vertexConsumerProvider, i);
 		if (wolfEntity.isWet()) {
 			this.model.setColorMultiplier(1.0F, 1.0F, 1.0F);
 		}

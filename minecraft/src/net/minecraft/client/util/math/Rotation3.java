@@ -115,12 +115,12 @@ public final class Rotation3 {
 	}
 
 	public Matrix4f getMatrix() {
-		return new Matrix4f(this.matrix);
+		return this.matrix.copy();
 	}
 
 	public Quaternion method_22937() {
 		this.init();
-		return new Quaternion(this.field_20903);
+		return this.field_20903.copy();
 	}
 
 	public boolean equals(Object object) {

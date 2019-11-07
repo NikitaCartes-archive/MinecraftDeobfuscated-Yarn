@@ -370,6 +370,12 @@ public class ServerWorld extends World {
 					entity2.remove();
 				}
 
+				profiler.push("checkDespawn");
+				if (!entity2.removed) {
+					entity2.checkDespawn();
+				}
+
+				profiler.pop();
 				if (entity3 != null) {
 					if (!entity3.removed && entity3.hasPassenger(entity2)) {
 						continue;
@@ -441,7 +447,7 @@ public class ServerWorld extends World {
 		if (this.random.nextInt(16) == 0) {
 			BlockPos blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, this.getRandomPosInChunk(i, 0, j, 15));
 			BlockPos blockPos2 = blockPos.method_10074();
-			Biome biome = this.getBiome(blockPos);
+			Biome biome = this.method_23753(blockPos);
 			if (biome.canSetSnow(this, blockPos2)) {
 				this.setBlockState(blockPos2, Blocks.ICE.getDefaultState());
 			}
@@ -450,7 +456,7 @@ public class ServerWorld extends World {
 				this.setBlockState(blockPos, Blocks.SNOW.getDefaultState());
 			}
 
-			if (bl && this.getBiome(blockPos2).getPrecipitation() == Biome.Precipitation.RAIN) {
+			if (bl && this.method_23753(blockPos2).getPrecipitation() == Biome.Precipitation.RAIN) {
 				this.getBlockState(blockPos2).getBlock().rainTick(this, blockPos2);
 			}
 		}

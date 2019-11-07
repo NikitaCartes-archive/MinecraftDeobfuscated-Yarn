@@ -30,7 +30,7 @@ public class EndMidlandsBiome extends Biome {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public int getSkyColor(float temperature) {
+	public int getSkyColor() {
 		return 0;
 	}
 }

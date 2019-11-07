@@ -80,20 +80,20 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 		);
 	}
 
-	public void renderEars(MatrixStack matrixStack, VertexConsumer vertexConsumer, float f, int i, int j) {
+	public void renderEars(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j) {
 		this.ears.copyPositionAndRotation(this.head);
 		this.ears.pivotX = 0.0F;
 		this.ears.pivotY = 0.0F;
-		this.ears.render(matrixStack, vertexConsumer, f, i, j, null);
+		this.ears.render(matrixStack, vertexConsumer, i, j, null);
 	}
 
-	public void renderCape(MatrixStack matrixStack, VertexConsumer vertexConsumer, float f, int i, int j) {
-		this.cape.render(matrixStack, vertexConsumer, f, i, j, null);
+	public void renderCape(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j) {
+		this.cape.render(matrixStack, vertexConsumer, i, j, null);
 	}
 
 	@Override
-	public void method_17087(T livingEntity, float f, float g, float h, float i, float j, float k) {
-		super.method_17087(livingEntity, f, g, h, i, j, k);
+	public void method_17087(T livingEntity, float f, float g, float h, float i, float j) {
+		super.method_17087(livingEntity, f, g, h, i, j);
 		this.leftLegOverlay.copyPositionAndRotation(this.leftLeg);
 		this.rightLegOverlay.copyPositionAndRotation(this.rightLeg);
 		this.leftArmOverlay.copyPositionAndRotation(this.leftArm);
@@ -119,15 +119,15 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 	}
 
 	@Override
-	public void setArmAngle(float angle, Arm arm, MatrixStack matrixStack) {
+	public void setArmAngle(Arm arm, MatrixStack matrixStack) {
 		ModelPart modelPart = this.getArm(arm);
 		if (this.thinArms) {
 			float f = 0.5F * (float)(arm == Arm.RIGHT ? 1 : -1);
 			modelPart.pivotX += f;
-			modelPart.rotate(matrixStack, angle);
+			modelPart.rotate(matrixStack);
 			modelPart.pivotX -= f;
 		} else {
-			modelPart.rotate(matrixStack, angle);
+			modelPart.rotate(matrixStack);
 		}
 	}
 

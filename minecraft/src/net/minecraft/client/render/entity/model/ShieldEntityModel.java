@@ -23,9 +23,17 @@ public class ShieldEntityModel extends Model {
 		this.field_3551.addCuboid(-1.0F, -3.0F, -1.0F, 2.0F, 6.0F, 6.0F, 0.0F);
 	}
 
+	public ModelPart method_23774() {
+		return this.field_3550;
+	}
+
+	public ModelPart method_23775() {
+		return this.field_3551;
+	}
+
 	@Override
 	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float r, float g, float b) {
-		this.field_3550.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, r, g, b);
-		this.field_3551.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, r, g, b);
+		this.field_3550.render(matrixStack, vertexConsumer, i, j, null, r, g, b);
+		this.field_3551.render(matrixStack, vertexConsumer, i, j, null, r, g, b);
 	}
 }

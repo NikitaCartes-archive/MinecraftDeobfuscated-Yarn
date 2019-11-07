@@ -24,18 +24,18 @@ public class ShulkerEntityModel<T extends ShulkerEntity> extends CompositeEntity
 		this.head.setPivot(0.0F, 12.0F, 0.0F);
 	}
 
-	public void method_17122(T shulkerEntity, float f, float g, float h, float i, float j, float k) {
-		float l = h - (float)shulkerEntity.age;
-		float m = (0.5F + shulkerEntity.method_7116(l)) * (float) Math.PI;
-		float n = -1.0F + MathHelper.sin(m);
-		float o = 0.0F;
-		if (m > (float) Math.PI) {
-			o = MathHelper.sin(h * 0.1F) * 0.7F;
+	public void method_17122(T shulkerEntity, float f, float g, float h, float i, float j) {
+		float k = h - (float)shulkerEntity.age;
+		float l = (0.5F + shulkerEntity.method_7116(k)) * (float) Math.PI;
+		float m = -1.0F + MathHelper.sin(l);
+		float n = 0.0F;
+		if (l > (float) Math.PI) {
+			n = MathHelper.sin(h * 0.1F) * 0.7F;
 		}
 
-		this.topShell.setPivot(0.0F, 16.0F + MathHelper.sin(m) * 8.0F + o, 0.0F);
-		if (shulkerEntity.method_7116(l) > 0.3F) {
-			this.topShell.yaw = n * n * n * n * (float) Math.PI * 0.125F;
+		this.topShell.setPivot(0.0F, 16.0F + MathHelper.sin(l) * 8.0F + n, 0.0F);
+		if (shulkerEntity.method_7116(k) > 0.3F) {
+			this.topShell.yaw = m * m * m * m * (float) Math.PI * 0.125F;
 		} else {
 			this.topShell.yaw = 0.0F;
 		}

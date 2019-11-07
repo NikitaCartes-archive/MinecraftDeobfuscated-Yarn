@@ -131,12 +131,6 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public String getPatternCacheKey() {
-		this.readPattern();
-		return this.patternCacheKey;
-	}
-
-	@Environment(EnvType.CLIENT)
 	private void readPattern() {
 		if (this.patterns == null || this.patternColors == null || this.patternCacheKey == null) {
 			if (!this.patternListTagRead) {

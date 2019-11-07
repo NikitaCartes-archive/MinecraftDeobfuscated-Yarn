@@ -9,6 +9,7 @@ import net.minecraft.block.StainedGlassBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
@@ -262,8 +263,8 @@ public class FluidRenderer {
 	}
 
 	private int getLight(BlockRenderView world, BlockPos pos) {
-		int i = world.getLightmapCoordinates(pos);
-		int j = world.getLightmapCoordinates(pos.up());
+		int i = WorldRenderer.method_23794(world, pos);
+		int j = WorldRenderer.method_23794(world, pos.up());
 		int k = i & 0xFF;
 		int l = j & 0xFF;
 		int m = i >> 16 & 0xFF;

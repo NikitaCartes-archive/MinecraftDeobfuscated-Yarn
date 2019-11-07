@@ -206,7 +206,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public int getLightmapCoordinates() {
-		return 15728880;
+		return 15;
 	}
 
 	@Override

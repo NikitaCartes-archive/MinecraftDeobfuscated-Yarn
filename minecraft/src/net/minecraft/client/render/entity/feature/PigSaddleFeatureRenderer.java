@@ -21,22 +21,12 @@ public class PigSaddleFeatureRenderer extends FeatureRenderer<PigEntity, PigEnti
 	}
 
 	public void method_4196(
-		MatrixStack matrixStack,
-		VertexConsumerProvider vertexConsumerProvider,
-		int i,
-		PigEntity pigEntity,
-		float f,
-		float g,
-		float h,
-		float j,
-		float k,
-		float l,
-		float m
+		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, PigEntity pigEntity, float f, float g, float h, float j, float k, float l
 	) {
 		if (pigEntity.isSaddled()) {
 			this.getModel().copyStateTo(this.model);
 			this.model.animateModel(pigEntity, f, g, h);
-			this.model.setAngles(pigEntity, f, g, j, k, l, m);
+			this.model.setAngles(pigEntity, f, g, j, k, l);
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(SKIN));
 			this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F);
 		}

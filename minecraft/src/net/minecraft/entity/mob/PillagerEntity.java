@@ -131,7 +131,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 		} else if (this.isHolding(Items.CROSSBOW)) {
 			return IllagerEntity.State.CROSSBOW_HOLD;
 		} else {
-			return this.isAttacking() ? IllagerEntity.State.ATTACKING : IllagerEntity.State.CROSSED;
+			return this.isAttacking() ? IllagerEntity.State.ATTACKING : IllagerEntity.State.NEUTRAL;
 		}
 	}
 

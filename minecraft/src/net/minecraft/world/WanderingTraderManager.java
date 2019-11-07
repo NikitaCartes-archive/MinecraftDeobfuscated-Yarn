@@ -76,7 +76,7 @@ public class WanderingTraderManager {
 			BlockPos blockPos2 = (BlockPos)optional.orElse(blockPos);
 			BlockPos blockPos3 = this.method_18017(blockPos2, 48);
 			if (blockPos3 != null && this.method_23279(blockPos3)) {
-				if (this.world.getBiome(blockPos3) == Biomes.THE_VOID) {
+				if (this.world.method_23753(blockPos3) == Biomes.THE_VOID) {
 					return false;
 				}
 

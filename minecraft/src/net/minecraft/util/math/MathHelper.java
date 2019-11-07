@@ -313,20 +313,6 @@ public class MathHelper {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static int multiplyColors(int first, int second) {
-		int i = (first & 0xFF0000) >> 16;
-		int j = (second & 0xFF0000) >> 16;
-		int k = (first & 0xFF00) >> 8;
-		int l = (second & 0xFF00) >> 8;
-		int m = (first & 0xFF) >> 0;
-		int n = (second & 0xFF) >> 0;
-		int o = (int)((float)i * (float)j / 255.0F);
-		int p = (int)((float)k * (float)l / 255.0F);
-		int q = (int)((float)m * (float)n / 255.0F);
-		return first & 0xFF000000 | o << 16 | p << 8 | q;
-	}
-
-	@Environment(EnvType.CLIENT)
 	public static float method_22450(float f) {
 		return f - (float)floor(f);
 	}

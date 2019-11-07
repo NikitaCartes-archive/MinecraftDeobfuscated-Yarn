@@ -19,44 +19,35 @@ public class MooshroomMushroomFeatureRenderer<T extends MooshroomEntity> extends
 	}
 
 	public void method_4195(
-		MatrixStack matrixStack,
-		VertexConsumerProvider vertexConsumerProvider,
-		int i,
-		T mooshroomEntity,
-		float f,
-		float g,
-		float h,
-		float j,
-		float k,
-		float l,
-		float m
+		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T mooshroomEntity, float f, float g, float h, float j, float k, float l
 	) {
 		if (!mooshroomEntity.isBaby() && !mooshroomEntity.isInvisible()) {
 			BlockRenderManager blockRenderManager = MinecraftClient.getInstance().getBlockRenderManager();
 			BlockState blockState = mooshroomEntity.getMooshroomType().getMushroomState();
+			int m = LivingEntityRenderer.method_23622(mooshroomEntity, 0.0F);
 			matrixStack.push();
+			matrixStack.translate(0.2F, -0.35F, 0.5);
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-48.0F));
 			matrixStack.scale(-1.0F, -1.0F, 1.0F);
-			matrixStack.translate(-0.2F, 0.35F, 0.5);
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-42.0F));
-			int n = LivingEntityRenderer.method_23622(mooshroomEntity, 0.0F);
-			matrixStack.push();
-			matrixStack.translate(-0.5, -0.5, 0.5);
-			blockRenderManager.renderBlockAsEntity(blockState, matrixStack, vertexConsumerProvider, i, n);
+			matrixStack.translate(-0.5, -0.5, -0.5);
+			blockRenderManager.renderBlockAsEntity(blockState, matrixStack, vertexConsumerProvider, i, m);
 			matrixStack.pop();
 			matrixStack.push();
-			matrixStack.translate(-0.1F, 0.0, -0.6F);
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-42.0F));
-			matrixStack.translate(-0.5, -0.5, 0.5);
-			blockRenderManager.renderBlockAsEntity(blockState, matrixStack, vertexConsumerProvider, i, n);
-			matrixStack.pop();
-			matrixStack.pop();
-			matrixStack.push();
-			this.getModel().getHead().rotate(matrixStack, 0.0625F);
+			matrixStack.translate(0.2F, -0.35F, 0.5);
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(42.0F));
+			matrixStack.translate(0.1F, 0.0, -0.6F);
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-48.0F));
 			matrixStack.scale(-1.0F, -1.0F, 1.0F);
-			matrixStack.translate(0.0, 0.7F, -0.2F);
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-12.0F));
-			matrixStack.translate(-0.5, -0.5, 0.5);
-			blockRenderManager.renderBlockAsEntity(blockState, matrixStack, vertexConsumerProvider, i, n);
+			matrixStack.translate(-0.5, -0.5, -0.5);
+			blockRenderManager.renderBlockAsEntity(blockState, matrixStack, vertexConsumerProvider, i, m);
+			matrixStack.pop();
+			matrixStack.push();
+			this.getModel().getHead().rotate(matrixStack);
+			matrixStack.translate(0.0, -0.7F, -0.2F);
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-78.0F));
+			matrixStack.scale(-1.0F, -1.0F, 1.0F);
+			matrixStack.translate(-0.5, -0.5, -0.5);
+			blockRenderManager.renderBlockAsEntity(blockState, matrixStack, vertexConsumerProvider, i, m);
 			matrixStack.pop();
 		}
 	}

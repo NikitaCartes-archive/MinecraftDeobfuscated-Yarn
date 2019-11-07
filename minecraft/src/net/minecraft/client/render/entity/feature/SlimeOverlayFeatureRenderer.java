@@ -20,12 +20,12 @@ public class SlimeOverlayFeatureRenderer<T extends LivingEntity> extends Feature
 	}
 
 	public void method_23200(
-		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l, float m
+		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l
 	) {
 		if (!livingEntity.isInvisible()) {
 			this.getModel().copyStateTo(this.model);
 			this.model.animateModel(livingEntity, f, g, h);
-			this.model.setAngles(livingEntity, f, g, j, k, l, m);
+			this.model.setAngles(livingEntity, f, g, j, k, l);
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityTranslucent(this.getTexture(livingEntity)));
 			this.model.render(matrixStack, vertexConsumer, i, LivingEntityRenderer.method_23622(livingEntity, 0.0F), 1.0F, 1.0F, 1.0F);
 		}

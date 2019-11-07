@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 
@@ -24,9 +26,9 @@ public class GameTestDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	@Override
-	public void render(long limitTime) {
-		long l = Util.getMeasuringTimeMs();
-		this.markers.entrySet().removeIf(entry -> l > ((GameTestDebugRenderer.Marker)entry.getValue()).removalTime);
+	public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f, long l) {
+		long m = Util.getMeasuringTimeMs();
+		this.markers.entrySet().removeIf(entry -> m > ((GameTestDebugRenderer.Marker)entry.getValue()).removalTime);
 		this.markers.forEach(this::method_23111);
 	}
 

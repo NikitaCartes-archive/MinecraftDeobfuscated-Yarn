@@ -8,7 +8,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.block.entity.BeaconBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.EndPortalBlockEntityRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.ModelLoader;
@@ -23,7 +22,7 @@ public class RenderLayer extends RenderPhase {
 		2097152,
 		true,
 		false,
-		RenderLayer.MultiPhaseData.builder().shadeModel(SMOOTH_SHADE_MODEL).lightmap(ENABLE_LIGHTMAP).texture(MIPMAP_BLOCK_ATLAS_TEXTURE).build(false)
+		RenderLayer.MultiPhaseData.builder().shadeModel(SMOOTH_SHADE_MODEL).lightmap(ENABLE_LIGHTMAP).texture(MIPMAP_BLOCK_ATLAS_TEXTURE).build(true)
 	);
 	private static final RenderLayer CUTOUT_MIPPED = new RenderLayer.MultiPhase(
 		"cutout_mipped",
@@ -37,7 +36,7 @@ public class RenderLayer extends RenderPhase {
 			.lightmap(ENABLE_LIGHTMAP)
 			.texture(MIPMAP_BLOCK_ATLAS_TEXTURE)
 			.alpha(HALF_ALPHA)
-			.build(false)
+			.build(true)
 	);
 	private static final RenderLayer CUTOUT = new RenderLayer.MultiPhase(
 		"cutout",
@@ -46,7 +45,7 @@ public class RenderLayer extends RenderPhase {
 		131072,
 		true,
 		false,
-		RenderLayer.MultiPhaseData.builder().shadeModel(SMOOTH_SHADE_MODEL).lightmap(ENABLE_LIGHTMAP).texture(BLOCK_ATLAS_TEXTURE).alpha(HALF_ALPHA).build(false)
+		RenderLayer.MultiPhaseData.builder().shadeModel(SMOOTH_SHADE_MODEL).lightmap(ENABLE_LIGHTMAP).texture(BLOCK_ATLAS_TEXTURE).alpha(HALF_ALPHA).build(true)
 	);
 	private static final RenderLayer TRANSLUCENT = new RenderLayer.MultiPhase(
 		"translucent",
@@ -60,7 +59,7 @@ public class RenderLayer extends RenderPhase {
 			.lightmap(ENABLE_LIGHTMAP)
 			.texture(MIPMAP_BLOCK_ATLAS_TEXTURE)
 			.transparency(TRANSLUCENT_TRANSPARENCY)
-			.build(false)
+			.build(true)
 	);
 	private static final RenderLayer TRANSLUCENT_NO_CRUMBLING = new RenderLayer(
 		"translucent_no_crumbling", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, 7, 256, false, true, TRANSLUCENT::startDrawing, TRANSLUCENT::endDrawing
@@ -101,20 +100,6 @@ public class RenderLayer extends RenderPhase {
 			.depthTest(EQUAL_DEPTH_TEST)
 			.transparency(GLINT_TRANSPARENCY)
 			.texturing(ENTITY_GLINT_TEXTURING)
-			.build(false)
-	);
-	private static final RenderLayer BEACON_BEAM = new RenderLayer.MultiPhase(
-		"beacon_beam",
-		VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL,
-		7,
-		256,
-		false,
-		true,
-		RenderLayer.MultiPhaseData.builder()
-			.texture(new RenderPhase.Texture(BeaconBlockEntityRenderer.BEAM_TEX, false, false))
-			.transparency(TRANSLUCENT_TRANSPARENCY)
-			.writeMaskState(COLOR_MASK)
-			.fog(NO_FOG)
 			.build(false)
 	);
 	private static final RenderLayer LIGHTNING = new RenderLayer.MultiPhase(
@@ -237,6 +222,16 @@ public class RenderLayer extends RenderPhase {
 		return new RenderLayer.MultiPhase("entity_smooth_cutout", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, 7, 256, multiPhaseData);
 	}
 
+	public static RenderLayer getBeaconBeam(Identifier identifier, boolean bl) {
+		RenderLayer.MultiPhaseData multiPhaseData = RenderLayer.MultiPhaseData.builder()
+			.texture(new RenderPhase.Texture(identifier, false, false))
+			.transparency(bl ? TRANSLUCENT_TRANSPARENCY : NO_TRANSPARENCY)
+			.writeMaskState(bl ? COLOR_MASK : ALL_MASK)
+			.fog(NO_FOG)
+			.build(false);
+		return new RenderLayer.MultiPhase("beacon_beam", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, 7, 256, false, true, multiPhaseData);
+	}
+
 	public static RenderLayer getEntityDecal(Identifier texture) {
 		RenderLayer.MultiPhaseData multiPhaseData = RenderLayer.MultiPhaseData.builder()
 			.texture(new RenderPhase.Texture(texture, false, false))
@@ -259,6 +254,7 @@ public class RenderLayer extends RenderPhase {
 			.cull(DISABLE_CULLING)
 			.lightmap(ENABLE_LIGHTMAP)
 			.overlay(ENABLE_OVERLAY_COLOR)
+			.writeMaskState(COLOR_MASK)
 			.build(false);
 		return new RenderLayer.MultiPhase("entity_no_outline", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, 7, 256, false, true, multiPhaseData);
 	}
@@ -396,10 +392,6 @@ public class RenderLayer extends RenderPhase {
 		);
 	}
 
-	public static RenderLayer getBeaconBeam() {
-		return BEACON_BEAM;
-	}
-
 	public static RenderLayer getLightning() {
 		return LIGHTNING;
 	}
@@ -456,8 +448,12 @@ public class RenderLayer extends RenderPhase {
 		this.field_21402 = bl2;
 	}
 
-	public void draw(BufferBuilder bufferBuilder) {
+	public void draw(BufferBuilder bufferBuilder, int i, int j, int k) {
 		if (bufferBuilder.isBuilding()) {
+			if (this.field_21402) {
+				bufferBuilder.sortQuads((float)i, (float)j, (float)k);
+			}
+
 			bufferBuilder.end();
 			this.startDrawing();
 			BufferRenderer.draw(bufferBuilder);

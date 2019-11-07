@@ -20,6 +20,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ExplosiveProjectileEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
@@ -305,8 +306,10 @@ public class Explosion {
 			return null;
 		} else if (this.entity instanceof TntEntity) {
 			return ((TntEntity)this.entity).getCausingEntity();
+		} else if (this.entity instanceof LivingEntity) {
+			return (LivingEntity)this.entity;
 		} else {
-			return this.entity instanceof LivingEntity ? (LivingEntity)this.entity : null;
+			return this.entity instanceof ExplosiveProjectileEntity ? ((ExplosiveProjectileEntity)this.entity).owner : null;
 		}
 	}
 

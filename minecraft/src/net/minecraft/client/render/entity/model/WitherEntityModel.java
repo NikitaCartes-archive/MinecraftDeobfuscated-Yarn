@@ -50,11 +50,11 @@ public class WitherEntityModel<T extends WitherEntity> extends CompositeEntityMo
 		return this.field_20943;
 	}
 
-	public void method_17130(T witherEntity, float f, float g, float h, float i, float j, float k) {
-		float l = MathHelper.cos(h * 0.1F);
-		this.field_3613[1].pitch = (0.065F + 0.05F * l) * (float) Math.PI;
+	public void method_17130(T witherEntity, float f, float g, float h, float i, float j) {
+		float k = MathHelper.cos(h * 0.1F);
+		this.field_3613[1].pitch = (0.065F + 0.05F * k) * (float) Math.PI;
 		this.field_3613[2].setPivot(-2.0F, 6.9F + MathHelper.cos(this.field_3613[1].pitch) * 10.0F, -0.5F + MathHelper.sin(this.field_3613[1].pitch) * 10.0F);
-		this.field_3613[2].pitch = (0.265F + 0.1F * l) * (float) Math.PI;
+		this.field_3613[2].pitch = (0.265F + 0.1F * k) * (float) Math.PI;
 		this.field_3612[0].yaw = i * (float) (Math.PI / 180.0);
 		this.field_3612[0].pitch = j * (float) (Math.PI / 180.0);
 	}

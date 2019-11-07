@@ -161,7 +161,6 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		this.renderBackground();
 		int i = this.getScrollbarPosition();
 		int j = i + 6;
-		RenderSystem.disableFog();
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		this.minecraft.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);

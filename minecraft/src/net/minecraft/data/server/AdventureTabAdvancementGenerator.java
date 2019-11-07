@@ -207,7 +207,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 				"shot_arrow",
 				PlayerHurtEntityCriterion.Conditions.create(
 					DamagePredicate.Builder.create()
-						.type(DamageSourcePredicate.Builder.create().projectile(true).directEntity(EntityPredicate.Builder.create().type(EntityType.ARROW)))
+						.type(DamageSourcePredicate.Builder.create().projectile(true).directEntity(EntityPredicate.Builder.create().type(EntityTypeTags.ARROWS)))
 				)
 			)
 			.build(consumer, "adventure/shoot_arrow");

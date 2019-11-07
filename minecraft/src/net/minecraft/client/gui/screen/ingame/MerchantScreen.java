@@ -111,7 +111,7 @@ public class MerchantScreen extends AbstractContainerScreen<MerchantContainer> {
 			if (l >= m && VillagerData.canLevelUp(k)) {
 				int n = 100;
 				float f = (float)(100 / (VillagerData.getUpperLevelExperience(k) - m));
-				int o = MathHelper.floor(f * (float)(l - m));
+				int o = Math.min(MathHelper.floor(f * (float)(l - m)), 100);
 				blit(i + 136, j + 16, this.getBlitOffset(), 0.0F, 191.0F, o + 1, 5, 256, 512);
 				int p = this.container.getTraderRewardedExperience();
 				if (p > 0) {

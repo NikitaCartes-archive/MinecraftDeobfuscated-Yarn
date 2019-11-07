@@ -4,7 +4,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
@@ -20,11 +21,7 @@ public class WaterDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	@Override
-	public void render(long limitTime) {
-		Camera camera = this.client.gameRenderer.getCamera();
-		double d = camera.getPos().x;
-		double e = camera.getPos().y;
-		double f = camera.getPos().z;
+	public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f, long l) {
 		BlockPos blockPos = this.client.player.getBlockPos();
 		WorldView worldView = this.client.player.world;
 		RenderSystem.enableBlend();

@@ -41,7 +41,7 @@ public class MinecartEntityModel<T extends Entity> extends CompositeEntityModel<
 	}
 
 	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch, float scale) {
+	public void setAngles(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch) {
 		this.field_3432[5].pivotY = 4.0F - age;
 	}
 

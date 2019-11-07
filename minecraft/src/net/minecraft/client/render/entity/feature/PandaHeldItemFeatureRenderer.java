@@ -19,32 +19,22 @@ public class PandaHeldItemFeatureRenderer extends FeatureRenderer<PandaEntity, P
 	}
 
 	public void method_4194(
-		MatrixStack matrixStack,
-		VertexConsumerProvider vertexConsumerProvider,
-		int i,
-		PandaEntity pandaEntity,
-		float f,
-		float g,
-		float h,
-		float j,
-		float k,
-		float l,
-		float m
+		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, PandaEntity pandaEntity, float f, float g, float h, float j, float k, float l
 	) {
 		ItemStack itemStack = pandaEntity.getEquippedStack(EquipmentSlot.MAINHAND);
 		if (pandaEntity.isScared() && !pandaEntity.method_6524()) {
-			float n = -0.6F;
-			float o = 1.4F;
+			float m = -0.6F;
+			float n = 1.4F;
 			if (pandaEntity.isEating()) {
-				n -= 0.2F * MathHelper.sin(j * 0.6F) + 0.2F;
-				o -= 0.09F * MathHelper.sin(j * 0.6F);
+				m -= 0.2F * MathHelper.sin(j * 0.6F) + 0.2F;
+				n -= 0.09F * MathHelper.sin(j * 0.6F);
 			}
 
 			matrixStack.push();
-			matrixStack.translate(0.1F, (double)o, (double)n);
+			matrixStack.translate(0.1F, (double)n, (double)m);
 			MinecraftClient.getInstance()
 				.getFirstPersonRenderer()
-				.renderItem(pandaEntity, itemStack, ModelTransformation.Type.GROUND, false, matrixStack, vertexConsumerProvider);
+				.renderItem(pandaEntity, itemStack, ModelTransformation.Type.GROUND, false, matrixStack, vertexConsumerProvider, i);
 			matrixStack.pop();
 		}
 	}

@@ -28,11 +28,10 @@ public class EvokerIllagerEntityRenderer<T extends SpellcastingIllagerEntity> ex
 					float h,
 					float j,
 					float k,
-					float l,
-					float m
+					float l
 				) {
 					if (spellcastingIllagerEntity.isSpellcasting()) {
-						super.method_17162(matrixStack, vertexConsumerProvider, i, spellcastingIllagerEntity, f, g, h, j, k, l, m);
+						super.method_17162(matrixStack, vertexConsumerProvider, i, spellcastingIllagerEntity, f, g, h, j, k, l);
 					}
 				}
 			}

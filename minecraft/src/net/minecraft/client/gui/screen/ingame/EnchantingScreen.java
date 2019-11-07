@@ -91,7 +91,9 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingTableCon
 		RenderSystem.matrixMode(5888);
 		MatrixStack matrixStack = new MatrixStack();
 		matrixStack.push();
-		matrixStack.peekModel().loadIdentity();
+		MatrixStack.Entry entry = matrixStack.method_23760();
+		entry.method_23761().loadIdentity();
+		entry.method_23762().loadIdentity();
 		matrixStack.translate(0.0, 3.3F, 1984.0);
 		float f = 5.0F;
 		matrixStack.scale(5.0F, 5.0F, 5.0F);

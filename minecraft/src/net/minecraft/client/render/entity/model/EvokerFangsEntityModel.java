@@ -25,7 +25,7 @@ public class EvokerFangsEntityModel<T extends Entity> extends CompositeEntityMod
 	}
 
 	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch, float scale) {
+	public void setAngles(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch) {
 		float f = limbAngle * 2.0F;
 		if (f > 1.0F) {
 			f = 1.0F;

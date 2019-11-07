@@ -39,13 +39,13 @@ public abstract class EntityRenderer<T extends Entity> {
 		}
 	}
 
-	public Vec3d getPositionOffset(T entity, double x, double y, double z, float tickDelta) {
+	public Vec3d getPositionOffset(T entity, float f) {
 		return Vec3d.ZERO;
 	}
 
-	public void render(T entity, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrix, VertexConsumerProvider vertexConsumers) {
+	public void render(T entity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		if (this.hasLabel(entity)) {
-			this.renderLabelIfPresent(entity, entity.getDisplayName().asFormattedString(), matrix, vertexConsumers);
+			this.renderLabelIfPresent(entity, entity.getDisplayName().asFormattedString(), matrixStack, vertexConsumerProvider, i);
 		}
 	}
 
@@ -59,14 +59,9 @@ public abstract class EntityRenderer<T extends Entity> {
 		return this.renderManager.getTextRenderer();
 	}
 
-	protected void renderLabelIfPresent(T entity, String string, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
+	protected void renderLabelIfPresent(T entity, String string, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		double d = this.renderManager.getSquaredDistanceToCamera(entity);
 		if (!(d > 4096.0)) {
-			int i = entity.getLightmapCoordinates();
-			if (entity.isOnFire()) {
-				i = 15728880;
-			}
-
 			boolean bl = !entity.method_21751();
 			float f = entity.getHeight() + 0.5F;
 			int j = "deadmau5".equals(string) ? -10 : 0;
@@ -75,7 +70,7 @@ public abstract class EntityRenderer<T extends Entity> {
 			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-this.renderManager.cameraYaw));
 			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(this.renderManager.cameraPitch));
 			matrixStack.scale(-0.025F, -0.025F, 0.025F);
-			Matrix4f matrix4f = matrixStack.peekModel();
+			Matrix4f matrix4f = matrixStack.method_23760().method_23761();
 			float g = MinecraftClient.getInstance().options.getTextBackgroundOpacity(0.25F);
 			int k = (int)(g * 255.0F) << 24;
 			TextRenderer textRenderer = this.getFontRenderer();

@@ -38,8 +38,8 @@ public class SheepWoolEntityModel<T extends SheepEntity> extends QuadrupedEntity
 		this.field_3541 = sheepEntity.method_6641(h);
 	}
 
-	public void method_17119(T sheepEntity, float f, float g, float h, float i, float j, float k) {
-		super.setAngles(sheepEntity, f, g, h, i, j, k);
+	public void method_17119(T sheepEntity, float f, float g, float h, float i, float j) {
+		super.setAngles(sheepEntity, f, g, h, i, j);
 		this.head.pitch = this.field_3541;
 	}
 }

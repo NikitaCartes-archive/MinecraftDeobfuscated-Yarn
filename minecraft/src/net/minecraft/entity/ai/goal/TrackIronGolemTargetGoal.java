@@ -37,7 +37,11 @@ public class TrackIronGolemTargetGoal extends TrackTargetGoal {
 			}
 		}
 
-		return this.target != null;
+		if (this.target == null) {
+			return false;
+		} else {
+			return !(this.target instanceof PlayerEntity) || !this.target.isSpectator() && !((PlayerEntity)this.target).isCreative();
+		}
 	}
 
 	@Override

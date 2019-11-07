@@ -39,8 +39,8 @@ public class DonkeyEntityModel<T extends AbstractDonkeyEntity> extends HorseEnti
 		modelPart.addChild(modelPart3);
 	}
 
-	public void method_17076(T abstractDonkeyEntity, float f, float g, float h, float i, float j, float k) {
-		super.method_17085(abstractDonkeyEntity, f, g, h, i, j, k);
+	public void method_17076(T abstractDonkeyEntity, float f, float g, float h, float i, float j) {
+		super.method_17085(abstractDonkeyEntity, f, g, h, i, j);
 		if (abstractDonkeyEntity.hasChest()) {
 			this.field_3349.visible = true;
 			this.field_3348.visible = true;

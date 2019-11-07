@@ -23,34 +23,25 @@ public class ShulkerBulletEntityRenderer extends EntityRenderer<ShulkerBulletEnt
 	}
 
 	public void method_4103(
-		ShulkerBulletEntity shulkerBulletEntity,
-		double d,
-		double e,
-		double f,
-		float g,
-		float h,
-		MatrixStack matrixStack,
-		VertexConsumerProvider vertexConsumerProvider
+		ShulkerBulletEntity shulkerBulletEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i
 	) {
 		matrixStack.push();
-		float i = MathHelper.method_22859(shulkerBulletEntity.prevYaw, shulkerBulletEntity.yaw, h);
-		float j = MathHelper.lerp(h, shulkerBulletEntity.prevPitch, shulkerBulletEntity.pitch);
-		float k = (float)shulkerBulletEntity.age + h;
+		float h = MathHelper.method_22859(shulkerBulletEntity.prevYaw, shulkerBulletEntity.yaw, g);
+		float j = MathHelper.lerp(g, shulkerBulletEntity.prevPitch, shulkerBulletEntity.pitch);
+		float k = (float)shulkerBulletEntity.age + g;
 		matrixStack.translate(0.0, 0.15F, 0.0);
 		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(MathHelper.sin(k * 0.1F) * 180.0F));
 		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(MathHelper.cos(k * 0.1F) * 180.0F));
 		matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(MathHelper.sin(k * 0.15F) * 360.0F));
-		float l = 0.03125F;
-		matrixStack.scale(-1.0F, -1.0F, 1.0F);
-		int m = shulkerBulletEntity.getLightmapCoordinates();
-		this.model.setAngles(shulkerBulletEntity, 0.0F, 0.0F, 0.0F, i, j, 0.03125F);
+		matrixStack.scale(-0.5F, -0.5F, 0.5F);
+		this.model.setAngles(shulkerBulletEntity, 0.0F, 0.0F, 0.0F, h, j);
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(SKIN));
-		this.model.render(matrixStack, vertexConsumer, m, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F);
+		this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F);
 		matrixStack.scale(1.5F, 1.5F, 1.5F);
 		VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.getEntityForceTranslucent(SKIN));
-		this.model.render(matrixStack, vertexConsumer2, m, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F);
+		this.model.render(matrixStack, vertexConsumer2, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F);
 		matrixStack.pop();
-		super.render(shulkerBulletEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
+		super.render(shulkerBulletEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
 	public Identifier method_4105(ShulkerBulletEntity shulkerBulletEntity) {

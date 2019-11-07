@@ -917,7 +917,7 @@ public class RedirectedResourcePack implements ResourcePack {
 	}
 
 	@Override
-	public Collection<Identifier> findResources(ResourceType type, String namespace, int maxDepth, Predicate<String> pathFilter) {
+	public Collection<Identifier> findResources(ResourceType type, String namespace, String string, int i, Predicate<String> predicate) {
 		return Collections.emptyList();
 	}
 

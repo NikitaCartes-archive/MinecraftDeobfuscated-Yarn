@@ -41,15 +41,13 @@ public class BakedQuadFactory {
 
 		float[] fs = new float[modelElementTexture.uvs.length];
 		System.arraycopy(modelElementTexture.uvs, 0, fs, 0, fs.length);
-		float f = (float)texture.getWidth() / (texture.getMaxU() - texture.getMinU());
-		float g = (float)texture.getHeight() / (texture.getMaxV() - texture.getMinV());
-		float h = 4.0F / Math.max(g, f);
-		float i = (modelElementTexture.uvs[0] + modelElementTexture.uvs[0] + modelElementTexture.uvs[2] + modelElementTexture.uvs[2]) / 4.0F;
-		float j = (modelElementTexture.uvs[1] + modelElementTexture.uvs[1] + modelElementTexture.uvs[3] + modelElementTexture.uvs[3]) / 4.0F;
-		modelElementTexture.uvs[0] = MathHelper.lerp(h, modelElementTexture.uvs[0], i);
-		modelElementTexture.uvs[2] = MathHelper.lerp(h, modelElementTexture.uvs[2], i);
-		modelElementTexture.uvs[1] = MathHelper.lerp(h, modelElementTexture.uvs[1], j);
-		modelElementTexture.uvs[3] = MathHelper.lerp(h, modelElementTexture.uvs[3], j);
+		float f = texture.method_23842();
+		float g = (modelElementTexture.uvs[0] + modelElementTexture.uvs[0] + modelElementTexture.uvs[2] + modelElementTexture.uvs[2]) / 4.0F;
+		float h = (modelElementTexture.uvs[1] + modelElementTexture.uvs[1] + modelElementTexture.uvs[3] + modelElementTexture.uvs[3]) / 4.0F;
+		modelElementTexture.uvs[0] = MathHelper.lerp(f, modelElementTexture.uvs[0], g);
+		modelElementTexture.uvs[2] = MathHelper.lerp(f, modelElementTexture.uvs[2], g);
+		modelElementTexture.uvs[1] = MathHelper.lerp(f, modelElementTexture.uvs[1], h);
+		modelElementTexture.uvs[3] = MathHelper.lerp(f, modelElementTexture.uvs[3], h);
 		int[] is = this.method_3458(modelElementTexture, texture, side, this.method_3459(from, to), settings.getRotation(), rotation, shade);
 		Direction direction = method_3467(is);
 		System.arraycopy(fs, 0, modelElementTexture.uvs, 0, fs.length);
@@ -218,7 +216,7 @@ public class BakedQuadFactory {
 				vector3f3.set(1.0F, 1.0F, 1.0F);
 			}
 
-			this.method_3464(vector3f, new Vector3f(modelRotation.origin), new Matrix4f(quaternion), vector3f3);
+			this.method_3464(vector3f, modelRotation.origin.method_23850(), new Matrix4f(quaternion), vector3f3);
 		}
 	}
 
@@ -239,11 +237,11 @@ public class BakedQuadFactory {
 		Vector3f vector3f = new Vector3f(Float.intBitsToFloat(is[0]), Float.intBitsToFloat(is[1]), Float.intBitsToFloat(is[2]));
 		Vector3f vector3f2 = new Vector3f(Float.intBitsToFloat(is[8]), Float.intBitsToFloat(is[9]), Float.intBitsToFloat(is[10]));
 		Vector3f vector3f3 = new Vector3f(Float.intBitsToFloat(is[16]), Float.intBitsToFloat(is[17]), Float.intBitsToFloat(is[18]));
-		Vector3f vector3f4 = new Vector3f(vector3f);
+		Vector3f vector3f4 = vector3f.method_23850();
 		vector3f4.subtract(vector3f2);
-		Vector3f vector3f5 = new Vector3f(vector3f3);
+		Vector3f vector3f5 = vector3f3.method_23850();
 		vector3f5.subtract(vector3f2);
-		Vector3f vector3f6 = new Vector3f(vector3f5);
+		Vector3f vector3f6 = vector3f5.method_23850();
 		vector3f6.cross(vector3f4);
 		vector3f6.reciprocal();
 		Direction direction = null;

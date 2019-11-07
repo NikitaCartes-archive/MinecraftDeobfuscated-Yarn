@@ -271,9 +271,9 @@ public class RenderSystem {
 		GlStateManager.fogEnd(f);
 	}
 
-	public static void fog(int i, FloatBuffer floatBuffer) {
+	public static void fog(int i, float f, float g, float h, float j) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.fog(i, floatBuffer);
+		GlStateManager.fog(i, new float[]{f, g, h, j});
 	}
 
 	public static void fogi(int i, int j) {

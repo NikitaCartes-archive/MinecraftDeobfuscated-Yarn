@@ -489,4 +489,14 @@ public class Sprite {
 	public void upload() {
 		this.upload(0);
 	}
+
+	private float method_23841() {
+		float f = (float)this.width / (this.uMax - this.uMin);
+		float g = (float)this.height / (this.vMax - this.vMin);
+		return Math.max(g, f);
+	}
+
+	public float method_23842() {
+		return 4.0F / this.method_23841();
+	}
 }

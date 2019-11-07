@@ -20,28 +20,25 @@ public class EvokerFangsEntityRenderer extends EntityRenderer<EvokerFangsEntity>
 		super(entityRenderDispatcher);
 	}
 
-	public void method_3962(
-		EvokerFangsEntity model, double x, double y, double d, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider
-	) {
+	public void method_3962(EvokerFangsEntity model, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		float h = model.getAnimationProgress(g);
 		if (h != 0.0F) {
-			float i = 2.0F;
+			float j = 2.0F;
 			if (h > 0.9F) {
-				i = (float)((double)i * ((1.0 - (double)h) / 0.1F));
+				j = (float)((double)j * ((1.0 - (double)h) / 0.1F));
 			}
 
 			matrixStack.push();
 			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(90.0F - model.yaw));
-			matrixStack.scale(-i, -i, i);
-			float j = 0.03125F;
+			matrixStack.scale(-j, -j, j);
+			float k = 0.03125F;
 			matrixStack.translate(0.0, -0.626F, 0.0);
 			matrixStack.scale(0.5F, 0.5F, 0.5F);
-			int k = model.getLightmapCoordinates();
-			this.model.setAngles(model, h, 0.0F, 0.0F, model.yaw, model.pitch, 0.03125F);
+			this.model.setAngles(model, h, 0.0F, 0.0F, model.yaw, model.pitch);
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(SKIN));
-			this.model.render(matrixStack, vertexConsumer, k, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F);
+			this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F);
 			matrixStack.pop();
-			super.render(model, x, y, d, f, g, matrixStack, vertexConsumerProvider);
+			super.render(model, f, g, matrixStack, vertexConsumerProvider, i);
 		}
 	}
 

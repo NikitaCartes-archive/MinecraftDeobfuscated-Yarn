@@ -36,14 +36,13 @@ public abstract class FeatureRenderer<T extends Entity, M extends EntityModel<T>
 		float l,
 		float m,
 		float n,
-		float o,
-		float p
+		float o
 	) {
 		if (!livingEntity.isInvisible()) {
 			entityModel.copyStateTo(entityModel2);
-			entityModel2.animateModel(livingEntity, f, g, m);
-			entityModel2.setAngles(livingEntity, f, g, h, j, k, l);
-			renderModel(entityModel2, identifier, matrixStack, vertexConsumerProvider, i, livingEntity, n, o, p);
+			entityModel2.animateModel(livingEntity, f, g, l);
+			entityModel2.setAngles(livingEntity, f, g, h, j, k);
+			renderModel(entityModel2, identifier, matrixStack, vertexConsumerProvider, i, livingEntity, m, n, o);
 		}
 	}
 
@@ -71,16 +70,6 @@ public abstract class FeatureRenderer<T extends Entity, M extends EntityModel<T>
 	}
 
 	public abstract void render(
-		MatrixStack matrixStack,
-		VertexConsumerProvider vertexConsumerProvider,
-		int i,
-		T entity,
-		float f,
-		float g,
-		float tickDelta,
-		float h,
-		float j,
-		float k,
-		float l
+		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T entity, float f, float g, float tickDelta, float h, float j, float k
 	);
 }

@@ -7,6 +7,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -89,7 +90,7 @@ public class BlockCrackParticle extends SpriteBillboardParticle {
 		int i = super.getColorMultiplier(tint);
 		int j = 0;
 		if (this.world.isChunkLoaded(this.blockPos)) {
-			j = this.world.getLightmapCoordinates(this.blockPos);
+			j = WorldRenderer.method_23794(this.world, this.blockPos);
 		}
 
 		return i == 0 ? j : i;

@@ -61,17 +61,17 @@ public abstract class AnimalModel<E extends Entity> extends EntityModel<E> {
 			}
 
 			matrixStack.translate(0.0, (double)(this.childHeadYOffset / 16.0F), (double)(this.childHeadZOffset / 16.0F));
-			this.getHeadParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, r, g, b));
+			this.getHeadParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, null, r, g, b));
 			matrixStack.pop();
 			matrixStack.push();
 			float f = 1.0F / this.invertedChildBodyScale;
 			matrixStack.scale(f, f, f);
 			matrixStack.translate(0.0, (double)(this.childBodyYOffset / 16.0F), 0.0);
-			this.getBodyParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, r, g, b));
+			this.getBodyParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, null, r, g, b));
 			matrixStack.pop();
 		} else {
-			this.getHeadParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, r, g, b));
-			this.getBodyParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, r, g, b));
+			this.getHeadParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, null, r, g, b));
+			this.getBodyParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, null, r, g, b));
 		}
 	}
 

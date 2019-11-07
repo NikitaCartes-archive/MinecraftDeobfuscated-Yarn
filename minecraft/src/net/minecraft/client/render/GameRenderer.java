@@ -15,6 +15,7 @@ import net.minecraft.client.gl.ShaderEffect;
 import net.minecraft.client.gui.MapRenderer;
 import net.minecraft.client.gui.hud.InGameOverlayRenderer;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.ScreenshotUtils;
@@ -369,7 +370,9 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 	private void renderHand(MatrixStack matrixStack, Camera camera, float f) {
 		if (!this.renderingPanorama) {
 			this.method_22709(this.method_22973(camera, f, false));
-			matrixStack.peekModel().loadIdentity();
+			MatrixStack.Entry entry = matrixStack.method_23760();
+			entry.method_23761().loadIdentity();
+			entry.method_23762().loadIdentity();
 			matrixStack.push();
 			this.bobViewWhenHurt(matrixStack, f);
 			if (this.client.options.bobView) {
@@ -382,7 +385,8 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 				&& !this.client.options.hudHidden
 				&& this.client.interactionManager.getCurrentGameMode() != GameMode.SPECTATOR) {
 				this.lightmapTextureManager.enable();
-				this.firstPersonRenderer.method_22976(f, matrixStack, this.buffers.getEntityVertexConsumers());
+				this.firstPersonRenderer
+					.method_22976(f, matrixStack, this.buffers.getEntityVertexConsumers(), this.client.player, EntityRenderDispatcher.method_23839(this.client.player));
 				this.lightmapTextureManager.disable();
 			}
 
@@ -407,13 +411,14 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 
 	public Matrix4f method_22973(Camera camera, float f, boolean bl) {
 		MatrixStack matrixStack = new MatrixStack();
-		matrixStack.peekModel().loadIdentity();
+		matrixStack.method_23760().method_23761().loadIdentity();
 		if (this.zoom != 1.0F) {
 			matrixStack.translate((double)this.zoomX, (double)(-this.zoomY), 0.0);
 			matrixStack.scale(this.zoom, this.zoom, 1.0F);
 		}
 
-		matrixStack.peekModel()
+		matrixStack.method_23760()
+			.method_23761()
 			.multiply(
 				Matrix4f.method_4929(
 					this.getFov(camera, f, bl),
@@ -422,7 +427,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 					this.viewDistance * 4.0F
 				)
 			);
-		return matrixStack.peekModel();
+		return matrixStack.method_23760().method_23761();
 	}
 
 	public static float getNightVisionStrength(LivingEntity livingEntity, float f) {
@@ -466,7 +471,6 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 					RenderSystem.disableBlend();
 					RenderSystem.disableDepthTest();
 					RenderSystem.disableAlphaTest();
-					RenderSystem.disableFog();
 					RenderSystem.enableTexture();
 					RenderSystem.matrixMode(5890);
 					RenderSystem.pushMatrix();
@@ -488,7 +492,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			RenderSystem.matrixMode(5888);
 			RenderSystem.loadIdentity();
 			RenderSystem.translatef(0.0F, 0.0F, -2000.0F);
-			GuiLighting.enableForItems(matrixStack.peekModel());
+			GuiLighting.enableForItems(matrixStack.method_23760().method_23761());
 			if (tick && this.client.world != null) {
 				this.client.getProfiler().swap("gui");
 				if (!this.client.options.hudHidden || this.client.currentScreen != null) {

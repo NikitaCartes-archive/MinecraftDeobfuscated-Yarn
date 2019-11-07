@@ -87,9 +87,12 @@ public class PresetsScreen extends Screen {
 	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
 		this.listWidget.render(mouseX, mouseY, delta);
+		RenderSystem.pushMatrix();
+		RenderSystem.translatef(0.0F, 0.0F, 400.0F);
 		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 8, 16777215);
 		this.drawString(this.font, this.shareText, 50, 30, 10526880);
 		this.drawString(this.font, this.listText, 50, 70, 10526880);
+		RenderSystem.popMatrix();
 		this.customPresetField.render(mouseX, mouseY, delta);
 		super.render(mouseX, mouseY, delta);
 	}
