@@ -19,7 +19,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_4700;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
@@ -28,6 +27,7 @@ import net.minecraft.client.particle.FireworksSparkParticle;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.sound.EntityTrackingSoundInstance;
 import net.minecraft.client.sound.PositionedSoundInstance;
+import net.minecraft.client.world.BiomeColorCache;
 import net.minecraft.client.world.ClientChunkManager;
 import net.minecraft.client.world.DummyClientTickScheduler;
 import net.minecraft.entity.Entity;
@@ -90,11 +90,11 @@ extends World {
     private int ticksUntilCaveAmbientSound = this.random.nextInt(12000);
     private Scoreboard scoreboard = new Scoreboard();
     private final Map<String, MapState> mapStates = Maps.newHashMap();
-    private int field_21526;
-    private final Object2ObjectArrayMap<ColorResolver, class_4700> field_21527 = Util.create(new Object2ObjectArrayMap(3), object2ObjectArrayMap -> {
-        object2ObjectArrayMap.put(BiomeColors.GRASS_COLOR, new class_4700());
-        object2ObjectArrayMap.put(BiomeColors.FOLIAGE_COLOR, new class_4700());
-        object2ObjectArrayMap.put(BiomeColors.WATER_COLOR, new class_4700());
+    private int lightningTicksLeft;
+    private final Object2ObjectArrayMap<ColorResolver, BiomeColorCache> colorCache = Util.create(new Object2ObjectArrayMap(3), object2ObjectArrayMap -> {
+        object2ObjectArrayMap.put(BiomeColors.GRASS_COLOR, new BiomeColorCache());
+        object2ObjectArrayMap.put(BiomeColors.FOLIAGE_COLOR, new BiomeColorCache());
+        object2ObjectArrayMap.put(BiomeColors.WATER_COLOR, new BiomeColorCache());
     });
 
     public ClientWorld(ClientPlayNetworkHandler clientPlayNetworkHandler, LevelInfo levelInfo, DimensionType dimensionType, int i, Profiler profiler, WorldRenderer worldRenderer) {
@@ -222,12 +222,12 @@ extends World {
         this.chunkManager.getLightingProvider().setLightEnabled(worldChunk.getPos(), false);
     }
 
-    public void method_23782(int i, int j) {
-        this.field_21527.forEach((colorResolver, arg) -> arg.method_23769(i, j));
+    public void resetChunkColor(int i, int j) {
+        this.colorCache.forEach((colorResolver, biomeColorCache) -> biomeColorCache.reset(i, j));
     }
 
-    public void method_23784() {
-        this.field_21527.forEach((colorResolver, arg) -> arg.method_23768());
+    public void reloadColor() {
+        this.colorCache.forEach((colorResolver, biomeColorCache) -> biomeColorCache.reset());
     }
 
     @Override
@@ -510,8 +510,8 @@ extends World {
     }
 
     @Override
-    public void scheduleBlockRender(BlockPos blockPos, BlockState blockState, BlockState blockState2) {
-        this.worldRenderer.method_21596(blockPos, blockState, blockState2);
+    public void checkBlockRerender(BlockPos blockPos, BlockState blockState, BlockState blockState2) {
+        this.worldRenderer.checkBlockRerender(blockPos, blockState, blockState2);
     }
 
     public void scheduleBlockRenders(int i, int j, int k) {
@@ -611,8 +611,8 @@ extends World {
             k = k * p + o * (1.0f - p);
             l = l * p + o * (1.0f - p);
         }
-        if (this.field_21526 > 0) {
-            o = (float)this.field_21526 - f;
+        if (this.lightningTicksLeft > 0) {
+            o = (float)this.lightningTicksLeft - f;
             if (o > 1.0f) {
                 o = 1.0f;
             }
@@ -673,19 +673,19 @@ extends World {
         return 63.0;
     }
 
-    public int method_23789() {
-        return this.field_21526;
+    public int getLightningTicksLeft() {
+        return this.lightningTicksLeft;
     }
 
     @Override
-    public void setTicksSinceLightning(int i) {
-        this.field_21526 = i;
+    public void setLightningTicksLeft(int i) {
+        this.lightningTicksLeft = i;
     }
 
     @Override
     public int method_23752(BlockPos blockPos, ColorResolver colorResolver) {
-        class_4700 lv = this.field_21527.get(colorResolver);
-        return lv.method_23770(blockPos, () -> this.method_23780(blockPos, colorResolver));
+        BiomeColorCache biomeColorCache = this.colorCache.get(colorResolver);
+        return biomeColorCache.getBiomeColor(blockPos, () -> this.method_23780(blockPos, colorResolver));
     }
 
     public int method_23780(BlockPos blockPos, ColorResolver colorResolver) {

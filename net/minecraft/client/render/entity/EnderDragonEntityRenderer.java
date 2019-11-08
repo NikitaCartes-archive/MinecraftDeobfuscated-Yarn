@@ -82,7 +82,7 @@ extends EntityRenderer<EnderDragonEntity> {
                 matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(random.nextFloat() * 360.0f + l * 90.0f));
                 float o = random.nextFloat() * 20.0f + 5.0f + m * 10.0f;
                 float p = random.nextFloat() * 2.0f + 1.0f + m * 2.0f;
-                Matrix4f matrix4f = matrixStack.method_23760().method_23761();
+                Matrix4f matrix4f = matrixStack.peek().getModel();
                 int q = (int)(255.0f * (1.0f - m));
                 EnderDragonEntityRenderer.method_23157(vertexConsumer4, matrix4f, q);
                 EnderDragonEntityRenderer.method_23156(vertexConsumer4, matrix4f, o, p);
@@ -140,9 +140,9 @@ extends EntityRenderer<EnderDragonEntity> {
         float q = 0.0f;
         float r = 0.75f;
         float s = 0.0f;
-        MatrixStack.Entry entry = matrixStack.method_23760();
-        Matrix4f matrix4f = entry.method_23761();
-        Matrix3f matrix3f = entry.method_23762();
+        MatrixStack.Entry entry = matrixStack.peek();
+        Matrix4f matrix4f = entry.getModel();
+        Matrix3f matrix3f = entry.getNormal();
         for (int t = 1; t <= 8; ++t) {
             float u = MathHelper.sin((float)(t % 8) * ((float)Math.PI * 2) / 8.0f) * 0.75f;
             float v = MathHelper.cos((float)(t % 8) * ((float)Math.PI * 2) / 8.0f) * 0.75f;

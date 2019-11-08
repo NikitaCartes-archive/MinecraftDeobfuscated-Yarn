@@ -120,7 +120,7 @@ implements SynchronousResourceReloadListener {
 
     private void method_23180(MatrixStack matrixStack, VertexConsumer vertexConsumer, List<BakedQuad> list, ItemStack itemStack, int i, int j) {
         boolean bl = !itemStack.isEmpty();
-        MatrixStack.Entry entry = matrixStack.method_23760();
+        MatrixStack.Entry entry = matrixStack.peek();
         for (BakedQuad bakedQuad : list) {
             int k = -1;
             if (bl && bakedQuad.hasColor()) {
@@ -225,7 +225,7 @@ implements SynchronousResourceReloadListener {
             String string2 = string == null ? String.valueOf(itemStack.getCount()) : string;
             matrixStack.translate(0.0, 0.0, this.zOffset + 200.0f);
             VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-            textRenderer.draw(string2, i + 19 - 2 - textRenderer.getStringWidth(string2), j + 6 + 3, 0xFFFFFF, true, matrixStack.method_23760().method_23761(), immediate, false, 0, 0xF000F0);
+            textRenderer.draw(string2, i + 19 - 2 - textRenderer.getStringWidth(string2), j + 6 + 3, 0xFFFFFF, true, matrixStack.peek().getModel(), immediate, false, 0, 0xF000F0);
             immediate.draw();
         }
         if (itemStack.isDamaged()) {

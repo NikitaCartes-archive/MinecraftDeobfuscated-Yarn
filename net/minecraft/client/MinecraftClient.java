@@ -1173,8 +1173,8 @@ WindowEventHandler {
             }
             this.profiler.swap("level");
             if (!this.paused) {
-                if (this.world.method_23789() > 0) {
-                    this.world.setTicksSinceLightning(this.world.method_23789() - 1);
+                if (this.world.getLightningTicksLeft() > 0) {
+                    this.world.setLightningTicksLeft(this.world.getLightningTicksLeft() - 1);
                 }
                 this.world.tickEntities();
             }

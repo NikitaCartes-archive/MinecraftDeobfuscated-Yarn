@@ -114,7 +114,7 @@ extends ChunkManager {
             ChunkSection chunkSection = chunkSections[m];
             lightingProvider.updateSectionStatus(ChunkSectionPos.from(i, m, j), ChunkSection.isEmpty(chunkSection));
         }
-        this.world.method_23782(i, j);
+        this.world.resetChunkColor(i, j);
         return worldChunk;
     }
 

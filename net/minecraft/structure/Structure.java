@@ -260,7 +260,7 @@ public class Structure {
     }
 
     public static void method_20532(IWorld iWorld, int i, VoxelSet voxelSet, int j, int k, int l) {
-        voxelSet.method_1046((direction, m, n, o) -> {
+        voxelSet.forEachDirection((direction, m, n, o) -> {
             BlockState blockState4;
             BlockState blockState2;
             BlockState blockState3;

@@ -99,7 +99,7 @@ extends AbstractRailBlock {
             this.updateNearbyRails(world, blockPos, blockState2, true);
             world.updateNeighborsAlways(blockPos, this);
             world.updateNeighborsAlways(blockPos.method_10074(), this);
-            world.scheduleBlockRender(blockPos, blockState, blockState2);
+            world.checkBlockRerender(blockPos, blockState, blockState2);
         }
         if (!bl2 && bl) {
             blockState2 = (BlockState)blockState.with(POWERED, false);
@@ -107,7 +107,7 @@ extends AbstractRailBlock {
             this.updateNearbyRails(world, blockPos, blockState2, false);
             world.updateNeighborsAlways(blockPos, this);
             world.updateNeighborsAlways(blockPos.method_10074(), this);
-            world.scheduleBlockRender(blockPos, blockState, blockState2);
+            world.checkBlockRerender(blockPos, blockState, blockState2);
         }
         if (bl2) {
             world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world));

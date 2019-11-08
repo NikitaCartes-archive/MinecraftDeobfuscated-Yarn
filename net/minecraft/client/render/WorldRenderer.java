@@ -360,10 +360,10 @@ SynchronousResourceReloadListener {
             BlockState blockState = worldView.getBlockState(blockPos3);
             FluidState fluidState = worldView.getFluidState(blockPos2);
             VoxelShape voxelShape = blockState.getCollisionShape(worldView, blockPos3);
-            double n = voxelShape.method_1102(Direction.Axis.Y, h, m);
+            double n = voxelShape.getEndingCoord(Direction.Axis.Y, h, m);
             if (n >= (o = (double)fluidState.getHeight(worldView, blockPos2))) {
                 p = n;
-                q = voxelShape.method_1093(Direction.Axis.Y, h, m);
+                q = voxelShape.getBeginningCoord(Direction.Axis.Y, h, m);
             } else {
                 p = 0.0;
                 q = 0.0;
@@ -570,7 +570,7 @@ SynchronousResourceReloadListener {
         if (this.world == null) {
             return;
         }
-        this.world.method_23784();
+        this.world.reloadColor();
         if (this.chunkBuilder == null) {
             this.chunkBuilder = new ChunkBuilder(this.world, this, Util.getServerWorkerExecutor(), this.client.is64Bit(), this.bufferBuilders.getBlockBufferBuilders());
         } else {
@@ -800,7 +800,7 @@ SynchronousResourceReloadListener {
         double d = vec3d.getX();
         double e = vec3d.getY();
         double g = vec3d.getZ();
-        Matrix4f matrix4f2 = matrixStack.method_23760().method_23761();
+        Matrix4f matrix4f2 = matrixStack.peek().getModel();
         profiler.swap("culling");
         boolean bl4 = bl2 = this.capturedFrustum != null;
         if (bl2) {
@@ -835,7 +835,7 @@ SynchronousResourceReloadListener {
         this.renderLayer(RenderLayer.getSolid(), matrixStack, d, e, g);
         this.renderLayer(RenderLayer.getCutoutMipped(), matrixStack, d, e, g);
         this.renderLayer(RenderLayer.getCutout(), matrixStack, d, e, g);
-        GuiLighting.enable(matrixStack.method_23760().method_23761());
+        GuiLighting.enable(matrixStack.peek().getModel());
         profiler.swap("entities");
         profiler.push("prepare");
         this.regularEntityCount = 0;
@@ -886,7 +886,7 @@ SynchronousResourceReloadListener {
                 matrixStack.translate((double)blockPos.getX() - d, (double)blockPos.getY() - e, (double)blockPos.getZ() - g);
                 SortedSet sortedSet = (SortedSet)this.blockBreakingProgressions.get(blockPos.asLong());
                 if (sortedSet != null && !sortedSet.isEmpty() && (m = ((BlockBreakingInfo)sortedSet.last()).getStage()) >= 0) {
-                    TransformingVertexConsumer vertexConsumer = new TransformingVertexConsumer(this.bufferBuilders.getEffectVertexConsumers().getBuffer(RenderLayer.getBlockBreaking(m)), matrixStack.method_23760());
+                    TransformingVertexConsumer vertexConsumer = new TransformingVertexConsumer(this.bufferBuilders.getEffectVertexConsumers().getBuffer(RenderLayer.getBlockBreaking(m)), matrixStack.peek());
                     vertexConsumerProvider2 = renderLayer -> {
                         VertexConsumer vertexConsumer2 = immediate.getBuffer(renderLayer);
                         if (renderLayer.method_23037()) {
@@ -929,7 +929,7 @@ SynchronousResourceReloadListener {
             int r = ((BlockBreakingInfo)sortedSet2.last()).getStage();
             matrixStack.push();
             matrixStack.translate((double)blockPos3.getX() - d, (double)blockPos3.getY() - e, (double)blockPos3.getZ() - g);
-            TransformingVertexConsumer vertexConsumer2 = new TransformingVertexConsumer(this.bufferBuilders.getEffectVertexConsumers().getBuffer(RenderLayer.getBlockBreaking(r)), matrixStack.method_23760());
+            TransformingVertexConsumer vertexConsumer2 = new TransformingVertexConsumer(this.bufferBuilders.getEffectVertexConsumers().getBuffer(RenderLayer.getBlockBreaking(r)), matrixStack.peek());
             this.client.getBlockRenderManager().renderDamage(this.world.getBlockState(blockPos3), blockPos3, this.world, matrixStack, vertexConsumer2);
             matrixStack.pop();
         }
@@ -946,7 +946,7 @@ SynchronousResourceReloadListener {
             }
         }
         RenderSystem.pushMatrix();
-        RenderSystem.multMatrix(matrixStack.method_23760().method_23761());
+        RenderSystem.multMatrix(matrixStack.peek().getModel());
         this.client.debugRenderer.render(matrixStack, immediate, d, e, g, l);
         this.renderWorldBorder(camera);
         RenderSystem.popMatrix();
@@ -959,7 +959,7 @@ SynchronousResourceReloadListener {
         profiler.swap("particles");
         this.client.particleManager.renderParticles(matrixStack, immediate, lightmapTextureManager, camera, f);
         RenderSystem.pushMatrix();
-        RenderSystem.multMatrix(matrixStack.method_23760().method_23761());
+        RenderSystem.multMatrix(matrixStack.peek().getModel());
         profiler.swap("cloudsLayers");
         if (this.client.options.getCloudRenderMode() != CloudRenderMode.OFF) {
             profiler.swap("clouds");
@@ -1025,7 +1025,7 @@ SynchronousResourceReloadListener {
             matrixStack.translate((double)blockPos.getX() - d, (double)blockPos.getY() - e, (double)blockPos.getZ() - f);
             vertexBuffer.bind();
             this.field_20791.startDrawing(0L);
-            vertexBuffer.draw(matrixStack.method_23760().method_23761(), 7);
+            vertexBuffer.draw(matrixStack.peek().getModel(), 7);
             matrixStack.pop();
         }
         VertexBuffer.unbind();
@@ -1236,7 +1236,7 @@ SynchronousResourceReloadListener {
             if (i == 5) {
                 matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(-90.0f));
             }
-            Matrix4f matrix4f = matrixStack.method_23760().method_23761();
+            Matrix4f matrix4f = matrixStack.peek().getModel();
             bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
             bufferBuilder.vertex(matrix4f, -100.0f, -100.0f, -100.0f).texture(0.0f, 0.0f).color(40, 40, 40, 255).next();
             bufferBuilder.vertex(matrix4f, -100.0f, -100.0f, 100.0f).texture(0.0f, 16.0f).color(40, 40, 40, 255).next();
@@ -1277,7 +1277,7 @@ SynchronousResourceReloadListener {
         RenderSystem.color3f(g, h, i);
         this.field_4087.bind();
         this.field_4100.startDrawing(0L);
-        this.field_4087.draw(matrixStack.method_23760().method_23761(), 7);
+        this.field_4087.draw(matrixStack.peek().getModel(), 7);
         VertexBuffer.unbind();
         this.field_4100.endDrawing();
         RenderSystem.disableFog();
@@ -1296,7 +1296,7 @@ SynchronousResourceReloadListener {
             float k = fs[0];
             l = fs[1];
             float m = fs[2];
-            Matrix4f matrix4f = matrixStack.method_23760().method_23761();
+            Matrix4f matrix4f = matrixStack.peek().getModel();
             bufferBuilder.begin(6, VertexFormats.POSITION_COLOR);
             bufferBuilder.vertex(matrix4f, 0.0f, 100.0f, 0.0f).color(k, l, m, fs[3]).next();
             n = 16;
@@ -1318,7 +1318,7 @@ SynchronousResourceReloadListener {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, j);
         matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-90.0f));
         matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(this.world.getSkyAngle(f) * 360.0f));
-        Matrix4f matrix4f2 = matrixStack.method_23760().method_23761();
+        Matrix4f matrix4f2 = matrixStack.peek().getModel();
         l = 30.0f;
         this.textureManager.bindTexture(SUN);
         bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
@@ -1350,7 +1350,7 @@ SynchronousResourceReloadListener {
             RenderSystem.color4f(v, v, v, v);
             this.starsBuffer.bind();
             this.field_4100.startDrawing(0L);
-            this.starsBuffer.draw(matrixStack.method_23760().method_23761(), 7);
+            this.starsBuffer.draw(matrixStack.peek().getModel(), 7);
             VertexBuffer.unbind();
             this.field_4100.endDrawing();
         }
@@ -1367,7 +1367,7 @@ SynchronousResourceReloadListener {
             matrixStack.translate(0.0, 12.0, 0.0);
             this.field_4102.bind();
             this.field_4100.startDrawing(0L);
-            this.field_4102.draw(matrixStack.method_23760().method_23761(), 7);
+            this.field_4102.draw(matrixStack.peek().getModel(), 7);
             VertexBuffer.unbind();
             this.field_4100.endDrawing();
             matrixStack.pop();
@@ -1442,7 +1442,7 @@ SynchronousResourceReloadListener {
                 } else {
                     RenderSystem.colorMask(true, true, true, true);
                 }
-                this.cloudsBuffer.draw(matrixStack.method_23760().method_23761(), 7);
+                this.cloudsBuffer.draw(matrixStack.peek().getModel(), 7);
             }
             VertexBuffer.unbind();
             VertexFormats.POSITION_TEXTURE_COLOR_NORMAL.endDrawing();
@@ -1694,7 +1694,7 @@ SynchronousResourceReloadListener {
     }
 
     private static void drawShapeOutline(MatrixStack matrixStack, VertexConsumer vertexConsumer, VoxelShape voxelShape, double d, double e, double f, float g, float h, float i, float j) {
-        Matrix4f matrix4f = matrixStack.method_23760().method_23761();
+        Matrix4f matrix4f = matrixStack.peek().getModel();
         voxelShape.forEachEdge((k, l, m, n, o, p) -> {
             vertexConsumer.vertex(matrix4f, (float)(k + d), (float)(l + e), (float)(m + f)).color(g, h, i, j).next();
             vertexConsumer.vertex(matrix4f, (float)(n + d), (float)(o + e), (float)(p + f)).color(g, h, i, j).next();
@@ -1714,7 +1714,7 @@ SynchronousResourceReloadListener {
     }
 
     public static void drawBox(MatrixStack matrixStack, VertexConsumer vertexConsumer, double d, double e, double f, double g, double h, double i, float j, float k, float l, float m, float n, float o, float p) {
-        Matrix4f matrix4f = matrixStack.method_23760().method_23761();
+        Matrix4f matrix4f = matrixStack.peek().getModel();
         float q = (float)d;
         float r = (float)e;
         float s = (float)f;
@@ -1804,8 +1804,8 @@ SynchronousResourceReloadListener {
         }
     }
 
-    public void method_21596(BlockPos blockPos, BlockState blockState, BlockState blockState2) {
-        if (this.client.getBakedModelManager().method_21611(blockState, blockState2)) {
+    public void checkBlockRerender(BlockPos blockPos, BlockState blockState, BlockState blockState2) {
+        if (this.client.getBakedModelManager().shouldRerender(blockState, blockState2)) {
             this.scheduleBlockRenders(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX(), blockPos.getY(), blockPos.getZ());
         }
     }

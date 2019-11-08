@@ -132,7 +132,7 @@ public class FirstPersonRenderer {
         matrixStack.translate(-0.5, -0.5, 0.0);
         matrixStack.scale(0.0078125f, 0.0078125f, 0.0078125f);
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getText(MapRenderer.field_21056));
-        Matrix4f matrix4f = matrixStack.method_23760().method_23761();
+        Matrix4f matrix4f = matrixStack.peek().getModel();
         vertexConsumer.vertex(matrix4f, -7.0f, 135.0f, 0.0f).color(255, 255, 255, 255).texture(0.0f, 1.0f).light(i).next();
         vertexConsumer.vertex(matrix4f, 135.0f, 135.0f, 0.0f).color(255, 255, 255, 255).texture(1.0f, 1.0f).light(i).next();
         vertexConsumer.vertex(matrix4f, 135.0f, -7.0f, 0.0f).color(255, 255, 255, 255).texture(1.0f, 0.0f).light(i).next();

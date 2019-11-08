@@ -52,9 +52,9 @@ extends EntityRenderer<PaintingEntity> {
     }
 
     private void method_4074(MatrixStack matrixStack, VertexConsumer vertexConsumer, PaintingEntity paintingEntity, int i, int j, Sprite sprite, Sprite sprite2) {
-        MatrixStack.Entry entry = matrixStack.method_23760();
-        Matrix4f matrix4f = entry.method_23761();
-        Matrix3f matrix3f = entry.method_23762();
+        MatrixStack.Entry entry = matrixStack.peek();
+        Matrix4f matrix4f = entry.getModel();
+        Matrix3f matrix3f = entry.getNormal();
         float f = (float)(-i) / 2.0f;
         float g = (float)(-j) / 2.0f;
         float h = 0.5f;

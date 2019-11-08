@@ -94,9 +94,9 @@ extends AbstractContainerScreen<EnchantingTableContainer> {
         RenderSystem.matrixMode(5888);
         MatrixStack matrixStack = new MatrixStack();
         matrixStack.push();
-        MatrixStack.Entry entry = matrixStack.method_23760();
-        entry.method_23761().loadIdentity();
-        entry.method_23762().loadIdentity();
+        MatrixStack.Entry entry = matrixStack.peek();
+        entry.getModel().loadIdentity();
+        entry.getNormal().loadIdentity();
         matrixStack.translate(0.0, 3.3f, 1984.0);
         float g = 5.0f;
         matrixStack.scale(5.0f, 5.0f, 5.0f);

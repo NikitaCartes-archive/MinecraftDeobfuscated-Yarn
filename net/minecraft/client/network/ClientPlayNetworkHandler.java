@@ -666,7 +666,7 @@ implements ClientPlayPacketListener {
         NetworkThreadUtils.forceMainThread(chunkDataS2CPacket, this, this.client);
         int i = chunkDataS2CPacket.getX();
         int j = chunkDataS2CPacket.getZ();
-        WorldChunk worldChunk = this.world.method_2935().loadChunkFromPacket(i, j, chunkDataS2CPacket.method_22422(), chunkDataS2CPacket.getReadBuffer(), chunkDataS2CPacket.getHeightmaps(), chunkDataS2CPacket.getVerticalStripBitmask());
+        WorldChunk worldChunk = this.world.method_2935().loadChunkFromPacket(i, j, chunkDataS2CPacket.getBiomeArray(), chunkDataS2CPacket.getReadBuffer(), chunkDataS2CPacket.getHeightmaps(), chunkDataS2CPacket.getVerticalStripBitmask());
         if (worldChunk != null && chunkDataS2CPacket.isFullChunk()) {
             this.world.addEntitiesToChunk(worldChunk);
         }

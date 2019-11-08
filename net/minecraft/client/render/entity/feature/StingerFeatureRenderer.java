@@ -54,9 +54,9 @@ extends StickingOutThingsFeatureRenderer<T, M> {
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(field_20529));
         for (int s = 0; s < 4; ++s) {
             matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0f));
-            MatrixStack.Entry entry = matrixStack.method_23760();
-            Matrix4f matrix4f = entry.method_23761();
-            Matrix3f matrix3f = entry.method_23762();
+            MatrixStack.Entry entry = matrixStack.peek();
+            Matrix4f matrix4f = entry.getModel();
+            Matrix3f matrix3f = entry.getNormal();
             StingerFeatureRenderer.method_23295(vertexConsumer, matrix4f, matrix3f, -4.5f, -1, 0.0f, 0.0f, i);
             StingerFeatureRenderer.method_23295(vertexConsumer, matrix4f, matrix3f, 4.5f, -1, 0.125f, 0.0f, i);
             StingerFeatureRenderer.method_23295(vertexConsumer, matrix4f, matrix3f, 4.5f, 1, 0.125f, 0.0625f, i);

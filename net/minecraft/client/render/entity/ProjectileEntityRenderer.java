@@ -48,9 +48,9 @@ extends EntityRenderer<T> {
         matrixStack.scale(0.05625f, 0.05625f, 0.05625f);
         matrixStack.translate(-4.0, 0.0, 0.0);
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(this.getTexture(projectileEntity)));
-        MatrixStack.Entry entry = matrixStack.method_23760();
-        Matrix4f matrix4f = entry.method_23761();
-        Matrix3f matrix3f = entry.method_23762();
+        MatrixStack.Entry entry = matrixStack.peek();
+        Matrix4f matrix4f = entry.getModel();
+        Matrix3f matrix3f = entry.getNormal();
         this.method_23153(matrix4f, matrix3f, vertexConsumer, -7, -2, -2, 0.0f, 0.15625f, 1, 0, 0, i);
         this.method_23153(matrix4f, matrix3f, vertexConsumer, -7, -2, 2, 0.15625f, 0.15625f, 1, 0, 0, i);
         this.method_23153(matrix4f, matrix3f, vertexConsumer, -7, 2, 2, 0.15625f, 0.3125f, 1, 0, 0, i);

@@ -5,19 +5,19 @@ package net.minecraft.util.shape;
 
 import it.unimi.dsi.fastutil.doubles.AbstractDoubleList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
-import net.minecraft.util.shape.DoubleListPair;
+import net.minecraft.util.shape.PairList;
 
-public class DisjointDoubleListPair
+public class DisjointPairList
 extends AbstractDoubleList
-implements DoubleListPair {
+implements PairList {
     private final DoubleList first;
     private final DoubleList second;
-    private final boolean field_1380;
+    private final boolean inverted;
 
-    public DisjointDoubleListPair(DoubleList doubleList, DoubleList doubleList2, boolean bl) {
+    public DisjointPairList(DoubleList doubleList, DoubleList doubleList2, boolean bl) {
         this.first = doubleList;
         this.second = doubleList2;
-        this.field_1380 = bl;
+        this.inverted = bl;
     }
 
     @Override
@@ -26,25 +26,25 @@ implements DoubleListPair {
     }
 
     @Override
-    public boolean forAllOverlappingSections(DoubleListPair.SectionPairPredicate sectionPairPredicate) {
-        if (this.field_1380) {
-            return this.method_1067((i, j, k) -> sectionPairPredicate.merge(j, i, k));
+    public boolean forEachPair(PairList.Consumer consumer) {
+        if (this.inverted) {
+            return this.iterateSections((i, j, k) -> consumer.merge(j, i, k));
         }
-        return this.method_1067(sectionPairPredicate);
+        return this.iterateSections(consumer);
     }
 
-    private boolean method_1067(DoubleListPair.SectionPairPredicate sectionPairPredicate) {
+    private boolean iterateSections(PairList.Consumer consumer) {
         int j;
         int i = this.first.size() - 1;
         for (j = 0; j < i; ++j) {
-            if (sectionPairPredicate.merge(j, -1, j)) continue;
+            if (consumer.merge(j, -1, j)) continue;
             return false;
         }
-        if (!sectionPairPredicate.merge(i, -1, i)) {
+        if (!consumer.merge(i, -1, i)) {
             return false;
         }
         for (j = 0; j < this.second.size(); ++j) {
-            if (sectionPairPredicate.merge(i, j, i + 1 + j)) continue;
+            if (consumer.merge(i, j, i + 1 + j)) continue;
             return false;
         }
         return true;
@@ -59,7 +59,7 @@ implements DoubleListPair {
     }
 
     @Override
-    public DoubleList getMergedList() {
+    public DoubleList getPairs() {
         return this;
     }
 }

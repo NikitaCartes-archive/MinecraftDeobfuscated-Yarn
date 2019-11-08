@@ -74,7 +74,7 @@ extends BlockEntityRenderer<SignBlockEntity> {
             });
             if (string == null) continue;
             float n = -textRenderer.getStringWidth(string) / 2;
-            textRenderer.draw(string, n, m * 10 - signBlockEntity.text.length * 5, l, false, matrixStack.method_23760().method_23761(), vertexConsumerProvider, false, 0, i);
+            textRenderer.draw(string, n, m * 10 - signBlockEntity.text.length * 5, l, false, matrixStack.peek().getModel(), vertexConsumerProvider, false, 0, i);
         }
         matrixStack.pop();
     }

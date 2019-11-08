@@ -87,9 +87,9 @@ extends BlockEntityRenderer<BeaconBlockEntity> {
     }
 
     private static void method_22741(MatrixStack matrixStack, VertexConsumer vertexConsumer, float f, float g, float h, float i, int j, int k, float l, float m, float n, float o, float p, float q, float r, float s, float t, float u, float v, float w) {
-        MatrixStack.Entry entry = matrixStack.method_23760();
-        Matrix4f matrix4f = entry.method_23761();
-        Matrix3f matrix3f = entry.method_23762();
+        MatrixStack.Entry entry = matrixStack.peek();
+        Matrix4f matrix4f = entry.getModel();
+        Matrix3f matrix3f = entry.getNormal();
         BeaconBlockEntityRenderer.method_22740(matrix4f, matrix3f, vertexConsumer, f, g, h, i, j, k, l, m, n, o, t, u, v, w);
         BeaconBlockEntityRenderer.method_22740(matrix4f, matrix3f, vertexConsumer, f, g, h, i, j, k, r, s, p, q, t, u, v, w);
         BeaconBlockEntityRenderer.method_22740(matrix4f, matrix3f, vertexConsumer, f, g, h, i, j, k, n, o, r, s, t, u, v, w);

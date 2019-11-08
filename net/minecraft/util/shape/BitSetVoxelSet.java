@@ -6,7 +6,7 @@ package net.minecraft.util.shape;
 import java.util.BitSet;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.shape.DoubleListPair;
+import net.minecraft.util.shape.PairList;
 import net.minecraft.util.shape.VoxelSet;
 
 public final class BitSetVoxelSet
@@ -110,14 +110,14 @@ extends VoxelSet {
         this.storage.set(this.getIndex(k, l, i), this.getIndex(k, l, j), bl);
     }
 
-    static BitSetVoxelSet combine(VoxelSet voxelSet, VoxelSet voxelSet2, DoubleListPair doubleListPair, DoubleListPair doubleListPair2, DoubleListPair doubleListPair3, BooleanBiFunction booleanBiFunction) {
-        BitSetVoxelSet bitSetVoxelSet = new BitSetVoxelSet(doubleListPair.getMergedList().size() - 1, doubleListPair2.getMergedList().size() - 1, doubleListPair3.getMergedList().size() - 1);
+    static BitSetVoxelSet combine(VoxelSet voxelSet, VoxelSet voxelSet2, PairList pairList, PairList pairList2, PairList pairList3, BooleanBiFunction booleanBiFunction) {
+        BitSetVoxelSet bitSetVoxelSet = new BitSetVoxelSet(pairList.getPairs().size() - 1, pairList2.getPairs().size() - 1, pairList3.getPairs().size() - 1);
         int[] is = new int[]{Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE};
-        doubleListPair.forAllOverlappingSections((i, j, k) -> {
+        pairList.forEachPair((i, j, k) -> {
             boolean[] bls = new boolean[]{false};
-            boolean bl = doubleListPair2.forAllOverlappingSections((l, m, n) -> {
+            boolean bl = pairList2.forEachPair((l, m, n) -> {
                 boolean[] bls2 = new boolean[]{false};
-                boolean bl = doubleListPair3.forAllOverlappingSections((o, p, q) -> {
+                boolean bl = pairList3.forEachPair((o, p, q) -> {
                     boolean bl = booleanBiFunction.apply(voxelSet.inBoundsAndContains(i, l, o), voxelSet2.inBoundsAndContains(j, m, p));
                     if (bl) {
                         bitSetVoxelSet.storage.set(bitSetVoxelSet.getIndex(k, n, q));

@@ -354,8 +354,8 @@ implements ItemConvertible {
             if (b != 127) {
                 return b != 0;
             }
-            VoxelShape voxelShape = blockState.getCullingShape(blockView, blockPos, direction);
-            VoxelShape voxelShape2 = blockState2.getCullingShape(blockView, blockPos2, direction.getOpposite());
+            VoxelShape voxelShape = blockState.getCullingFace(blockView, blockPos, direction);
+            VoxelShape voxelShape2 = blockState2.getCullingFace(blockView, blockPos2, direction.getOpposite());
             boolean bl = VoxelShapes.matchesAnywhere(voxelShape, voxelShape2, BooleanBiFunction.ONLY_FIRST);
             if (object2ByteLinkedOpenHashMap.size() == 200) {
                 object2ByteLinkedOpenHashMap.removeLastByte();

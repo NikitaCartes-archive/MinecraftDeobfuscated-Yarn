@@ -102,15 +102,15 @@ implements State<BlockState> {
         return this.getBlock().getOpacity(this, blockView, blockPos);
     }
 
-    public VoxelShape getCullingShape(BlockView blockView, BlockPos blockPos, Direction direction) {
-        if (this.shapeCache != null && this.shapeCache.shapes != null) {
-            return this.shapeCache.shapes[direction.ordinal()];
+    public VoxelShape getCullingFace(BlockView blockView, BlockPos blockPos, Direction direction) {
+        if (this.shapeCache != null && this.shapeCache.extrudedFaces != null) {
+            return this.shapeCache.extrudedFaces[direction.ordinal()];
         }
-        return VoxelShapes.slice(this.getCullingShape(blockView, blockPos), direction);
+        return VoxelShapes.extrudeFace(this.getCullingShape(blockView, blockPos), direction);
     }
 
-    public boolean method_17900() {
-        return this.shapeCache == null || this.shapeCache.field_17651;
+    public boolean exceedsCube() {
+        return this.shapeCache == null || this.shapeCache.exceedsCube;
     }
 
     public boolean hasSidedTransparency() {
@@ -360,7 +360,7 @@ implements State<BlockState> {
 
     public boolean isFullCube(BlockView blockView, BlockPos blockPos) {
         if (this.shapeCache != null) {
-            return this.shapeCache.field_20337;
+            return this.shapeCache.isFullCube;
         }
         return Block.isShapeFullCube(this.getCollisionShape(blockView, blockPos));
     }
@@ -391,11 +391,11 @@ implements State<BlockState> {
         private final boolean fullOpaque;
         private final boolean translucent;
         private final int lightSubtracted;
-        private final VoxelShape[] shapes;
+        private final VoxelShape[] extrudedFaces;
         private final VoxelShape collisionShape;
-        private final boolean field_17651;
+        private final boolean exceedsCube;
         private final boolean[] solidFullSquare;
-        private final boolean field_20337;
+        private final boolean isFullCube;
 
         private ShapeCache(BlockState blockState) {
             Block block = blockState.getBlock();
@@ -404,24 +404,24 @@ implements State<BlockState> {
             this.translucent = block.isTranslucent(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
             this.lightSubtracted = block.getOpacity(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
             if (!blockState.isOpaque()) {
-                this.shapes = null;
+                this.extrudedFaces = null;
             } else {
-                this.shapes = new VoxelShape[DIRECTIONS.length];
+                this.extrudedFaces = new VoxelShape[DIRECTIONS.length];
                 VoxelShape voxelShape = block.getCullingShape(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
                 Direction[] directionArray = DIRECTIONS;
                 int n = directionArray.length;
                 for (int i = 0; i < n; ++i) {
                     Direction direction = directionArray[i];
-                    this.shapes[direction.ordinal()] = VoxelShapes.slice(voxelShape, direction);
+                    this.extrudedFaces[direction.ordinal()] = VoxelShapes.extrudeFace(voxelShape, direction);
                 }
             }
             this.collisionShape = block.getCollisionShape(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, EntityContext.absent());
-            this.field_17651 = Arrays.stream(Direction.Axis.values()).anyMatch(axis -> this.collisionShape.getMinimum((Direction.Axis)axis) < 0.0 || this.collisionShape.getMaximum((Direction.Axis)axis) > 1.0);
+            this.exceedsCube = Arrays.stream(Direction.Axis.values()).anyMatch(axis -> this.collisionShape.getMinimum((Direction.Axis)axis) < 0.0 || this.collisionShape.getMaximum((Direction.Axis)axis) > 1.0);
             this.solidFullSquare = new boolean[6];
             for (Direction direction2 : DIRECTIONS) {
                 this.solidFullSquare[direction2.ordinal()] = Block.isSideSolidFullSquare(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, direction2);
             }
-            this.field_20337 = Block.isShapeFullCube(blockState.getCollisionShape(EmptyBlockView.INSTANCE, BlockPos.ORIGIN));
+            this.isFullCube = Block.isShapeFullCube(blockState.getCollisionShape(EmptyBlockView.INSTANCE, BlockPos.ORIGIN));
         }
     }
 }

@@ -32,7 +32,7 @@ implements Packet<ClientPlayPacketListener> {
     private int verticalStripBitmask;
     private CompoundTag heightmaps;
     @Nullable
-    private BiomeArray field_20664;
+    private BiomeArray biomeArray;
     private byte[] data;
     private List<CompoundTag> blockEntities;
     private boolean isFullChunk;
@@ -51,7 +51,7 @@ implements Packet<ClientPlayPacketListener> {
             this.heightmaps.put(entry.getKey().getName(), new LongArrayTag(entry.getValue().asLongArray()));
         }
         if (this.isFullChunk) {
-            this.field_20664 = worldChunk.getBiomeArray().copy();
+            this.biomeArray = worldChunk.getBiomeArray().copy();
         }
         this.data = new byte[this.getDataSize(worldChunk, i)];
         this.verticalStripBitmask = this.writeData(new PacketByteBuf(this.getWriteBuffer()), worldChunk, i);
@@ -75,7 +75,7 @@ implements Packet<ClientPlayPacketListener> {
         this.verticalStripBitmask = packetByteBuf.readVarInt();
         this.heightmaps = packetByteBuf.readCompoundTag();
         if (this.isFullChunk) {
-            this.field_20664 = new BiomeArray(packetByteBuf);
+            this.biomeArray = new BiomeArray(packetByteBuf);
         }
         if ((i = packetByteBuf.readVarInt()) > 0x200000) {
             throw new RuntimeException("Chunk Packet trying to allocate too much memory on read.");
@@ -96,8 +96,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeBoolean(this.isFullChunk);
         packetByteBuf.writeVarInt(this.verticalStripBitmask);
         packetByteBuf.writeCompoundTag(this.heightmaps);
-        if (this.field_20664 != null) {
-            this.field_20664.toPacket(packetByteBuf);
+        if (this.biomeArray != null) {
+            this.biomeArray.toPacket(packetByteBuf);
         }
         packetByteBuf.writeVarInt(this.data.length);
         packetByteBuf.writeBytes(this.data);
@@ -178,8 +178,8 @@ implements Packet<ClientPlayPacketListener> {
 
     @Nullable
     @Environment(value=EnvType.CLIENT)
-    public BiomeArray method_22422() {
-        return this.field_20664 == null ? null : this.field_20664.copy();
+    public BiomeArray getBiomeArray() {
+        return this.biomeArray == null ? null : this.biomeArray.copy();
     }
 }
 

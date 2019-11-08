@@ -10,14 +10,14 @@ import net.minecraft.util.shape.FractionalDoubleList;
 import net.minecraft.util.shape.VoxelSet;
 import net.minecraft.util.shape.VoxelShape;
 
-public class SliceVoxelShape
+public class SlicedVoxelShape
 extends VoxelShape {
     private final VoxelShape shape;
     private final Direction.Axis axis;
     private static final DoubleList POINTS = new FractionalDoubleList(1);
 
-    public SliceVoxelShape(VoxelShape voxelShape, Direction.Axis axis, int i) {
-        super(SliceVoxelShape.createVoxelSet(voxelShape.voxels, axis, i));
+    public SlicedVoxelShape(VoxelShape voxelShape, Direction.Axis axis, int i) {
+        super(SlicedVoxelShape.createVoxelSet(voxelShape.voxels, axis, i));
         this.shape = voxelShape;
         this.axis = axis;
     }

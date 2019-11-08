@@ -71,7 +71,7 @@ public class InGameOverlayRenderer {
         float m = sprite.getMaxU();
         float n = sprite.getMinV();
         float o = sprite.getMaxV();
-        Matrix4f matrix4f = matrixStack.method_23760().method_23761();
+        Matrix4f matrix4f = matrixStack.peek().getModel();
         bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_TEXTURE);
         bufferBuilder.vertex(matrix4f, -1.0f, -1.0f, -0.5f).color(0.1f, 0.1f, 0.1f, 1.0f).texture(m, o).next();
         bufferBuilder.vertex(matrix4f, 1.0f, -1.0f, -0.5f).color(0.1f, 0.1f, 0.1f, 1.0f).texture(l, o).next();
@@ -95,7 +95,7 @@ public class InGameOverlayRenderer {
         float l = -0.5f;
         float m = -minecraftClient.player.yaw / 64.0f;
         float n = minecraftClient.player.pitch / 64.0f;
-        Matrix4f matrix4f = matrixStack.method_23760().method_23761();
+        Matrix4f matrix4f = matrixStack.peek().getModel();
         bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_TEXTURE);
         bufferBuilder.vertex(matrix4f, -1.0f, -1.0f, -0.5f).color(f, f, f, 0.1f).texture(4.0f + m, 4.0f + n).next();
         bufferBuilder.vertex(matrix4f, 1.0f, -1.0f, -0.5f).color(f, f, f, 0.1f).texture(0.0f + m, 4.0f + n).next();
@@ -135,7 +135,7 @@ public class InGameOverlayRenderer {
             float w = -0.5f;
             matrixStack.translate((float)(-(r * 2 - 1)) * 0.24f, -0.3f, 0.0);
             matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion((float)(r * 2 - 1) * 10.0f));
-            Matrix4f matrix4f = matrixStack.method_23760().method_23761();
+            Matrix4f matrix4f = matrixStack.peek().getModel();
             bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_TEXTURE);
             bufferBuilder.vertex(matrix4f, -0.5f, -0.5f, -0.5f).color(1.0f, 1.0f, 1.0f, 0.9f).texture(n, p).next();
             bufferBuilder.vertex(matrix4f, 0.5f, -0.5f, -0.5f).color(1.0f, 1.0f, 1.0f, 0.9f).texture(m, p).next();

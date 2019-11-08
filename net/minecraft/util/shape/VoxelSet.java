@@ -56,7 +56,7 @@ public abstract class VoxelSet {
     public abstract int getMax(Direction.Axis var1);
 
     @Environment(value=EnvType.CLIENT)
-    public int method_1043(Direction.Axis axis, int i, int j) {
+    public int getBeginningAxisCoord(Direction.Axis axis, int i, int j) {
         int k = this.getSize(axis);
         if (i < 0 || j < 0) {
             return k;
@@ -75,7 +75,7 @@ public abstract class VoxelSet {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public int method_1058(Direction.Axis axis, int i, int j) {
+    public int getEndingAxisCoord(Direction.Axis axis, int i, int j) {
         if (i < 0 || j < 0) {
             return 0;
         }
@@ -110,14 +110,14 @@ public abstract class VoxelSet {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void forEachEdge(VolumeConsumer volumeConsumer, boolean bl) {
-        this.forEachEdge(volumeConsumer, AxisCycleDirection.NONE, bl);
-        this.forEachEdge(volumeConsumer, AxisCycleDirection.FORWARD, bl);
-        this.forEachEdge(volumeConsumer, AxisCycleDirection.BACKWARD, bl);
+    public void forEachEdge(PositionBiConsumer positionBiConsumer, boolean bl) {
+        this.forEachEdge(positionBiConsumer, AxisCycleDirection.NONE, bl);
+        this.forEachEdge(positionBiConsumer, AxisCycleDirection.FORWARD, bl);
+        this.forEachEdge(positionBiConsumer, AxisCycleDirection.BACKWARD, bl);
     }
 
     @Environment(value=EnvType.CLIENT)
-    private void forEachEdge(VolumeConsumer volumeConsumer, AxisCycleDirection axisCycleDirection, boolean bl) {
+    private void forEachEdge(PositionBiConsumer positionBiConsumer, AxisCycleDirection axisCycleDirection, boolean bl) {
         AxisCycleDirection axisCycleDirection2 = axisCycleDirection.opposite();
         int i = this.getSize(axisCycleDirection2.cycle(Direction.Axis.X));
         int j = this.getSize(axisCycleDirection2.cycle(Direction.Axis.Y));
@@ -141,11 +141,11 @@ public abstract class VoxelSet {
                             n = o;
                             continue;
                         }
-                        volumeConsumer.consume(axisCycleDirection2.choose(l, m, o, Direction.Axis.X), axisCycleDirection2.choose(l, m, o, Direction.Axis.Y), axisCycleDirection2.choose(l, m, o, Direction.Axis.Z), axisCycleDirection2.choose(l, m, o + 1, Direction.Axis.X), axisCycleDirection2.choose(l, m, o + 1, Direction.Axis.Y), axisCycleDirection2.choose(l, m, o + 1, Direction.Axis.Z));
+                        positionBiConsumer.consume(axisCycleDirection2.choose(l, m, o, Direction.Axis.X), axisCycleDirection2.choose(l, m, o, Direction.Axis.Y), axisCycleDirection2.choose(l, m, o, Direction.Axis.Z), axisCycleDirection2.choose(l, m, o + 1, Direction.Axis.X), axisCycleDirection2.choose(l, m, o + 1, Direction.Axis.Y), axisCycleDirection2.choose(l, m, o + 1, Direction.Axis.Z));
                         continue;
                     }
                     if (n == -1) continue;
-                    volumeConsumer.consume(axisCycleDirection2.choose(l, m, n, Direction.Axis.X), axisCycleDirection2.choose(l, m, n, Direction.Axis.Y), axisCycleDirection2.choose(l, m, n, Direction.Axis.Z), axisCycleDirection2.choose(l, m, o, Direction.Axis.X), axisCycleDirection2.choose(l, m, o, Direction.Axis.Y), axisCycleDirection2.choose(l, m, o, Direction.Axis.Z));
+                    positionBiConsumer.consume(axisCycleDirection2.choose(l, m, n, Direction.Axis.X), axisCycleDirection2.choose(l, m, n, Direction.Axis.Y), axisCycleDirection2.choose(l, m, n, Direction.Axis.Z), axisCycleDirection2.choose(l, m, o, Direction.Axis.X), axisCycleDirection2.choose(l, m, o, Direction.Axis.Y), axisCycleDirection2.choose(l, m, o, Direction.Axis.Z));
                     n = -1;
                 }
             }
@@ -174,7 +174,7 @@ public abstract class VoxelSet {
         return true;
     }
 
-    public void forEachBox(VolumeConsumer volumeConsumer, boolean bl) {
+    public void forEachBox(PositionBiConsumer positionBiConsumer, boolean bl) {
         BitSetVoxelSet voxelSet = new BitSetVoxelSet(this);
         for (int i = 0; i <= this.xSize; ++i) {
             for (int j = 0; j <= this.ySize; ++j) {
@@ -187,7 +187,7 @@ public abstract class VoxelSet {
                             k = l;
                             continue;
                         }
-                        volumeConsumer.consume(i, j, l, i + 1, j + 1, l + 1);
+                        positionBiConsumer.consume(i, j, l, i + 1, j + 1, l + 1);
                         continue;
                     }
                     if (k == -1) continue;
@@ -216,20 +216,20 @@ public abstract class VoxelSet {
                         }
                         ++p;
                     }
-                    volumeConsumer.consume(m, o, k, n + 1, p + 1, l);
+                    positionBiConsumer.consume(m, o, k, n + 1, p + 1, l);
                     k = -1;
                 }
             }
         }
     }
 
-    public void method_1046(DirectionalPointConsumer directionalPointConsumer) {
-        this.method_1061(directionalPointConsumer, AxisCycleDirection.NONE);
-        this.method_1061(directionalPointConsumer, AxisCycleDirection.FORWARD);
-        this.method_1061(directionalPointConsumer, AxisCycleDirection.BACKWARD);
+    public void forEachDirection(PositionConsumer positionConsumer) {
+        this.forEachDirection(positionConsumer, AxisCycleDirection.NONE);
+        this.forEachDirection(positionConsumer, AxisCycleDirection.FORWARD);
+        this.forEachDirection(positionConsumer, AxisCycleDirection.BACKWARD);
     }
 
-    private void method_1061(DirectionalPointConsumer directionalPointConsumer, AxisCycleDirection axisCycleDirection) {
+    private void forEachDirection(PositionConsumer positionConsumer, AxisCycleDirection axisCycleDirection) {
         AxisCycleDirection axisCycleDirection2 = axisCycleDirection.opposite();
         Direction.Axis axis = axisCycleDirection2.cycle(Direction.Axis.Z);
         int i = this.getSize(axisCycleDirection2.cycle(Direction.Axis.X));
@@ -244,10 +244,10 @@ public abstract class VoxelSet {
                     boolean bl2;
                     boolean bl3 = bl2 = n != k && this.contains(axisCycleDirection2, l, m, n);
                     if (!bl && bl2) {
-                        directionalPointConsumer.consume(direction, axisCycleDirection2.choose(l, m, n, Direction.Axis.X), axisCycleDirection2.choose(l, m, n, Direction.Axis.Y), axisCycleDirection2.choose(l, m, n, Direction.Axis.Z));
+                        positionConsumer.consume(direction, axisCycleDirection2.choose(l, m, n, Direction.Axis.X), axisCycleDirection2.choose(l, m, n, Direction.Axis.Y), axisCycleDirection2.choose(l, m, n, Direction.Axis.Z));
                     }
                     if (bl && !bl2) {
-                        directionalPointConsumer.consume(direction2, axisCycleDirection2.choose(l, m, n - 1, Direction.Axis.X), axisCycleDirection2.choose(l, m, n - 1, Direction.Axis.Y), axisCycleDirection2.choose(l, m, n - 1, Direction.Axis.Z));
+                        positionConsumer.consume(direction2, axisCycleDirection2.choose(l, m, n - 1, Direction.Axis.X), axisCycleDirection2.choose(l, m, n - 1, Direction.Axis.Y), axisCycleDirection2.choose(l, m, n - 1, Direction.Axis.Z));
                     }
                     bl = bl2;
                 }
@@ -255,11 +255,11 @@ public abstract class VoxelSet {
         }
     }
 
-    public static interface DirectionalPointConsumer {
+    public static interface PositionConsumer {
         public void consume(Direction var1, int var2, int var3, int var4);
     }
 
-    public static interface VolumeConsumer {
+    public static interface PositionBiConsumer {
         public void consume(int var1, int var2, int var3, int var4, int var5, int var6);
     }
 }

@@ -34,7 +34,7 @@ extends BlockEntityRenderer<T> {
         double d = ((BlockEntity)endPortalBlockEntity).getPos().getSquaredDistance(this.blockEntityRenderDispatcher.camera.getPos(), true);
         int k = this.method_3592(d);
         float g = this.method_3594();
-        Matrix4f matrix4f = matrixStack.method_23760().method_23761();
+        Matrix4f matrix4f = matrixStack.peek().getModel();
         this.method_23084(endPortalBlockEntity, g, 0.15f, matrix4f, vertexConsumerProvider.getBuffer(RenderLayer.getEndPortal(1)));
         for (int l = 1; l < k; ++l) {
             this.method_23084(endPortalBlockEntity, g, 2.0f / (float)(18 - l), matrix4f, vertexConsumerProvider.getBuffer(RenderLayer.getEndPortal(l + 1)));

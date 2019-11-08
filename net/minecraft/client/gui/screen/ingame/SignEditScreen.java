@@ -152,7 +152,7 @@ extends Screen {
                 return list.isEmpty() ? "" : list.get(0).asFormattedString();
             });
         }
-        Matrix4f matrix4f = matrixStack.method_23760().method_23761();
+        Matrix4f matrix4f = matrixStack.peek().getModel();
         int n = this.selectionManager.getSelectionStart();
         int o = this.selectionManager.getSelectionEnd();
         int p = this.minecraft.textRenderer.isRightToLeft() ? -1 : 1;

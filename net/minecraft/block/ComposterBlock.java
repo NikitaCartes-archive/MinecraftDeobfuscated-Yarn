@@ -144,7 +144,7 @@ implements InventoryProvider {
     public static void playEffects(World world, BlockPos blockPos, boolean bl) {
         BlockState blockState = world.getBlockState(blockPos);
         world.playSound(blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), bl ? SoundEvents.BLOCK_COMPOSTER_FILL_SUCCESS : SoundEvents.BLOCK_COMPOSTER_FILL, SoundCategory.BLOCKS, 1.0f, 1.0f, false);
-        double d = blockState.getOutlineShape(world, blockPos).method_1102(Direction.Axis.Y, 0.5, 0.5) + 0.03125;
+        double d = blockState.getOutlineShape(world, blockPos).getEndingCoord(Direction.Axis.Y, 0.5, 0.5) + 0.03125;
         double e = 0.13125f;
         double f = 0.7375f;
         Random random = world.getRandom();

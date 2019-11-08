@@ -56,7 +56,7 @@ extends SpriteBillboardParticle {
             this.velocityX *= (double)0.7f;
             this.velocityZ *= (double)0.7f;
         }
-        if ((d = Math.max(this.world.getBlockState(blockPos = new BlockPos(this.x, this.y, this.z)).getCollisionShape(this.world, blockPos).method_1102(Direction.Axis.Y, this.x - (double)blockPos.getX(), this.z - (double)blockPos.getZ()), (double)this.world.getFluidState(blockPos).getHeight(this.world, blockPos))) > 0.0 && this.y < (double)blockPos.getY() + d) {
+        if ((d = Math.max(this.world.getBlockState(blockPos = new BlockPos(this.x, this.y, this.z)).getCollisionShape(this.world, blockPos).getEndingCoord(Direction.Axis.Y, this.x - (double)blockPos.getX(), this.z - (double)blockPos.getZ()), (double)this.world.getFluidState(blockPos).getHeight(this.world, blockPos))) > 0.0 && this.y < (double)blockPos.getY() + d) {
             this.markDead();
         }
     }

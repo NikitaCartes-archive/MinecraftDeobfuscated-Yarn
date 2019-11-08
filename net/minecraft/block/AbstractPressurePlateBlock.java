@@ -87,7 +87,7 @@ extends Block {
             BlockState blockState2 = this.setRedstoneOutput(blockState, j);
             world.setBlockState(blockPos, blockState2, 2);
             this.updateNeighbors(world, blockPos);
-            world.scheduleBlockRender(blockPos, blockState, blockState2);
+            world.checkBlockRerender(blockPos, blockState, blockState2);
         }
         if (!bl2 && bl) {
             this.playDepressSound(world, blockPos);

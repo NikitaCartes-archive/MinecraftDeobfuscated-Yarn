@@ -694,21 +694,21 @@ CommandOutput {
         double d = vec3d.x;
         double e = vec3d.y;
         double f = vec3d.z;
-        if (e != 0.0 && (e = VoxelShapes.method_17945(Direction.Axis.Y, box, worldView, e, entityContext, reusableStream.stream())) != 0.0) {
+        if (e != 0.0 && (e = VoxelShapes.calculatePushVelocity(Direction.Axis.Y, box, worldView, e, entityContext, reusableStream.stream())) != 0.0) {
             box = box.offset(0.0, e, 0.0);
         }
         boolean bl2 = bl = Math.abs(d) < Math.abs(f);
-        if (bl && f != 0.0 && (f = VoxelShapes.method_17945(Direction.Axis.Z, box, worldView, f, entityContext, reusableStream.stream())) != 0.0) {
+        if (bl && f != 0.0 && (f = VoxelShapes.calculatePushVelocity(Direction.Axis.Z, box, worldView, f, entityContext, reusableStream.stream())) != 0.0) {
             box = box.offset(0.0, 0.0, f);
         }
         if (d != 0.0) {
-            d = VoxelShapes.method_17945(Direction.Axis.X, box, worldView, d, entityContext, reusableStream.stream());
+            d = VoxelShapes.calculatePushVelocity(Direction.Axis.X, box, worldView, d, entityContext, reusableStream.stream());
             if (!bl && d != 0.0) {
                 box = box.offset(d, 0.0, 0.0);
             }
         }
         if (!bl && f != 0.0) {
-            f = VoxelShapes.method_17945(Direction.Axis.Z, box, worldView, f, entityContext, reusableStream.stream());
+            f = VoxelShapes.calculatePushVelocity(Direction.Axis.Z, box, worldView, f, entityContext, reusableStream.stream());
         }
         return new Vec3d(d, e, f);
     }

@@ -57,7 +57,7 @@ extends EntityRenderer<ItemFrameEntity> {
         ModelIdentifier modelIdentifier = itemFrameEntity.getHeldItemStack().getItem() == Items.FILLED_MAP ? MAP_FRAME : NORMAL_FRAME;
         matrixStack.push();
         matrixStack.translate(-0.5, -0.5, -0.5);
-        blockRenderManager.getModelRenderer().render(matrixStack.method_23760(), vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX)), null, bakedModelManager.getModel(modelIdentifier), 1.0f, 1.0f, 1.0f, i, OverlayTexture.DEFAULT_UV);
+        blockRenderManager.getModelRenderer().render(matrixStack.peek(), vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX)), null, bakedModelManager.getModel(modelIdentifier), 1.0f, 1.0f, 1.0f, i, OverlayTexture.DEFAULT_UV);
         matrixStack.pop();
         ItemStack itemStack = itemFrameEntity.getHeldItemStack();
         if (!itemStack.isEmpty()) {

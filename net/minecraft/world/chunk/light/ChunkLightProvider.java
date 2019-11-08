@@ -102,7 +102,7 @@ implements ChunkLightingView {
     }
 
     protected VoxelShape getOpaqueShape(BlockState blockState, long l, Direction direction) {
-        return blockState.isOpaque() ? blockState.getCullingShape(this.chunkProvider.getWorld(), this.reusableBlockPos.set(l), direction) : VoxelShapes.empty();
+        return blockState.isOpaque() ? blockState.getCullingFace(this.chunkProvider.getWorld(), this.reusableBlockPos.set(l), direction) : VoxelShapes.empty();
     }
 
     public static int getRealisticOpacity(BlockView blockView, BlockState blockState, BlockPos blockPos, BlockState blockState2, BlockPos blockPos2, Direction direction, int i) {

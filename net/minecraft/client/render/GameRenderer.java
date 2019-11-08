@@ -344,9 +344,9 @@ SynchronousResourceReloadListener {
             return;
         }
         this.method_22709(this.method_22973(camera, f, false));
-        MatrixStack.Entry entry = matrixStack.method_23760();
-        entry.method_23761().loadIdentity();
-        entry.method_23762().loadIdentity();
+        MatrixStack.Entry entry = matrixStack.peek();
+        entry.getModel().loadIdentity();
+        entry.getNormal().loadIdentity();
         matrixStack.push();
         this.bobViewWhenHurt(matrixStack, f);
         if (this.client.options.bobView) {
@@ -377,13 +377,13 @@ SynchronousResourceReloadListener {
 
     public Matrix4f method_22973(Camera camera, float f, boolean bl) {
         MatrixStack matrixStack = new MatrixStack();
-        matrixStack.method_23760().method_23761().loadIdentity();
+        matrixStack.peek().getModel().loadIdentity();
         if (this.zoom != 1.0f) {
             matrixStack.translate(this.zoomX, -this.zoomY, 0.0);
             matrixStack.scale(this.zoom, this.zoom, 1.0f);
         }
-        matrixStack.method_23760().method_23761().multiply(Matrix4f.method_4929(this.getFov(camera, f, bl), (float)this.client.getWindow().getFramebufferWidth() / (float)this.client.getWindow().getFramebufferHeight(), 0.05f, this.viewDistance * 4.0f));
-        return matrixStack.method_23760().method_23761();
+        matrixStack.peek().getModel().multiply(Matrix4f.method_4929(this.getFov(camera, f, bl), (float)this.client.getWindow().getFramebufferWidth() / (float)this.client.getWindow().getFramebufferHeight(), 0.05f, this.viewDistance * 4.0f));
+        return matrixStack.peek().getModel();
     }
 
     public static float getNightVisionStrength(LivingEntity livingEntity, float f) {
@@ -443,7 +443,7 @@ SynchronousResourceReloadListener {
         RenderSystem.matrixMode(5888);
         RenderSystem.loadIdentity();
         RenderSystem.translatef(0.0f, 0.0f, -2000.0f);
-        GuiLighting.enableForItems(matrixStack.method_23760().method_23761());
+        GuiLighting.enableForItems(matrixStack.peek().getModel());
         if (bl && this.client.world != null) {
             this.client.getProfiler().swap("gui");
             if (!this.client.options.hudHidden || this.client.currentScreen != null) {

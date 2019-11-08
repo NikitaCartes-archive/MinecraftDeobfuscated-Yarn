@@ -69,7 +69,7 @@ public class MatrixStack {
         this.stack.removeLast();
     }
 
-    public Entry method_23760() {
+    public Entry peek() {
         return this.stack.getLast();
     }
 
@@ -87,11 +87,11 @@ public class MatrixStack {
             this.normalMatrix = matrix3f;
         }
 
-        public Matrix4f method_23761() {
+        public Matrix4f getModel() {
             return this.modelMatrix;
         }
 
-        public Matrix3f method_23762() {
+        public Matrix3f getNormal() {
             return this.normalMatrix;
         }
     }

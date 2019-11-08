@@ -112,7 +112,7 @@ extends BlockView {
                     if (l == 3 || (blockView = CollisionView.this.getExistingChunk(m = i >> 4, n = k >> 4)) == null) continue;
                     mutable.set(i, j, k);
                     BlockState blockState = blockView.getBlockState(mutable);
-                    if (l == 1 && !blockState.method_17900() || l == 2 && blockState.getBlock() != Blocks.MOVING_PISTON || !VoxelShapes.matchesAnywhere(voxelShape, voxelShape3 = (voxelShape2 = blockState.getCollisionShape(CollisionView.this, mutable, entityContext)).offset(i, j, k), BooleanBiFunction.AND)) continue;
+                    if (l == 1 && !blockState.exceedsCube() || l == 2 && blockState.getBlock() != Blocks.MOVING_PISTON || !VoxelShapes.matchesAnywhere(voxelShape, voxelShape3 = (voxelShape2 = blockState.getCollisionShape(CollisionView.this, mutable, entityContext)).offset(i, j, k), BooleanBiFunction.AND)) continue;
                     consumer.accept(voxelShape3);
                     return true;
                 }

@@ -50,9 +50,9 @@ extends EntityRenderer<FishingBobberEntity> {
         matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f - this.renderManager.cameraYaw));
         float h = (float)(this.renderManager.gameOptions.perspective == 2 ? -1 : 1) * -this.renderManager.cameraPitch;
         matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(h));
-        MatrixStack.Entry entry = matrixStack.method_23760();
-        Matrix4f matrix4f = entry.method_23761();
-        Matrix3f matrix3f = entry.method_23762();
+        MatrixStack.Entry entry = matrixStack.peek();
+        Matrix4f matrix4f = entry.getModel();
+        Matrix3f matrix3f = entry.getNormal();
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutout(SKIN));
         FishingBobberEntityRenderer.method_23840(vertexConsumer, matrix4f, matrix3f, i, 0.0f, 0, 0, 1);
         FishingBobberEntityRenderer.method_23840(vertexConsumer, matrix4f, matrix3f, i, 1.0f, 0, 1, 1);
@@ -95,7 +95,7 @@ extends EntityRenderer<FishingBobberEntity> {
         float x = (float)(q - u) + s;
         float y = (float)(r - v);
         VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.getLines());
-        Matrix4f matrix4f2 = matrixStack.method_23760().method_23761();
+        Matrix4f matrix4f2 = matrixStack.peek().getModel();
         int z = 16;
         for (int aa = 0; aa < 16; ++aa) {
             FishingBobberEntityRenderer.method_23172(w, x, y, vertexConsumer2, matrix4f2, aa / 16);
