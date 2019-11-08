@@ -46,13 +46,13 @@ public class FluidRenderer {
 		return fluidState.getFluid().matchesType(state.getFluid());
 	}
 
-	private static boolean isSideCovered(BlockView world, BlockPos pos, Direction side, float height) {
-		BlockPos blockPos = pos.offset(side);
+	private static boolean isSideCovered(BlockView world, BlockPos pos, Direction direction, float maxDeviation) {
+		BlockPos blockPos = pos.offset(direction);
 		BlockState blockState = world.getBlockState(blockPos);
 		if (blockState.isOpaque()) {
-			VoxelShape voxelShape = VoxelShapes.cuboid(0.0, 0.0, 0.0, 1.0, (double)height, 1.0);
+			VoxelShape voxelShape = VoxelShapes.cuboid(0.0, 0.0, 0.0, 1.0, (double)maxDeviation, 1.0);
 			VoxelShape voxelShape2 = blockState.getCullingShape(world, blockPos);
-			return VoxelShapes.isSideCovered(voxelShape, voxelShape2, side);
+			return VoxelShapes.isSideCovered(voxelShape, voxelShape2, direction);
 		} else {
 			return false;
 		}

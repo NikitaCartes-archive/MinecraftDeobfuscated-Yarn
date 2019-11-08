@@ -47,11 +47,11 @@ public class FenceBlock extends HorizontalConnectedBlock {
 		return false;
 	}
 
-	public boolean canConnect(BlockState state, boolean bl, Direction dir) {
+	public boolean canConnect(BlockState state, boolean neighborIsFullSquare, Direction dir) {
 		Block block = state.getBlock();
-		boolean bl2 = block.matches(BlockTags.FENCES) && state.getMaterial() == this.material;
-		boolean bl3 = block instanceof FenceGateBlock && FenceGateBlock.canWallConnect(state, dir);
-		return !canConnect(block) && bl || bl2 || bl3;
+		boolean bl = block.matches(BlockTags.FENCES) && state.getMaterial() == this.material;
+		boolean bl2 = block instanceof FenceGateBlock && FenceGateBlock.canWallConnect(state, dir);
+		return !canConnect(block) && neighborIsFullSquare || bl || bl2;
 	}
 
 	@Override

@@ -29,11 +29,11 @@ public class JungleTempleGenerator extends StructurePieceWithDimensions {
 	private static final JungleTempleGenerator.CobblestoneRandomizer COBBLESTONE_RANDOMIZER = new JungleTempleGenerator.CobblestoneRandomizer();
 
 	public JungleTempleGenerator(Random random, int x, int z) {
-		super(StructurePieceType.TE_J_P, random, x, 64, z, 12, 10, 15);
+		super(StructurePieceType.JUNGLE_TEMPLE, random, x, 64, z, 12, 10, 15);
 	}
 
 	public JungleTempleGenerator(StructureManager manager, CompoundTag tag) {
-		super(StructurePieceType.TE_J_P, tag);
+		super(StructurePieceType.JUNGLE_TEMPLE, tag);
 		this.placedMainChest = tag.getBoolean("placedMainChest");
 		this.placedHiddenChest = tag.getBoolean("placedHiddenChest");
 		this.placedTrap1 = tag.getBoolean("placedTrap1");

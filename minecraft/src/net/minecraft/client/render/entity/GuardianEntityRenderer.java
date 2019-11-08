@@ -104,9 +104,9 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 			float aq = -1.0F + k;
 			float ar = m * 2.5F + aq;
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(EXPLOSION_BEAM_TEX));
-			MatrixStack.Entry entry = matrixStack.method_23760();
-			Matrix4f matrix4f = entry.method_23761();
-			Matrix3f matrix3f = entry.method_23762();
+			MatrixStack.Entry entry = matrixStack.peek();
+			Matrix4f matrix4f = entry.getModel();
+			Matrix3f matrix3f = entry.getNormal();
 			method_23173(vertexConsumer, matrix4f, matrix3f, af, m, ag, s, t, u, 0.4999F, ar);
 			method_23173(vertexConsumer, matrix4f, matrix3f, af, 0.0F, ag, s, t, u, 0.4999F, aq);
 			method_23173(vertexConsumer, matrix4f, matrix3f, ah, 0.0F, ai, s, t, u, 0.0F, aq);

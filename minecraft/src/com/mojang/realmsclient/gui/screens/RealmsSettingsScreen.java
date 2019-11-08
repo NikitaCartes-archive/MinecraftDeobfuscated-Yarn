@@ -62,7 +62,7 @@ public class RealmsSettingsScreen extends RealmsScreen {
 					if (RealmsSettingsScreen.this.serverData.state.equals(RealmsServer.State.OPEN)) {
 						String string = RealmsScreen.getLocalizedString("mco.configure.world.close.question.line1");
 						String string2 = RealmsScreen.getLocalizedString("mco.configure.world.close.question.line2");
-						Realms.setScreen(new RealmsLongConfirmationScreen(RealmsSettingsScreen.this, RealmsLongConfirmationScreen.Type.INFO, string, string2, true, 5));
+						Realms.setScreen(new RealmsLongConfirmationScreen(RealmsSettingsScreen.this, RealmsLongConfirmationScreen.Type.Info, string, string2, true, 5));
 					} else {
 						RealmsSettingsScreen.this.configureWorldScreen.openTheWorld(false, RealmsSettingsScreen.this);
 					}

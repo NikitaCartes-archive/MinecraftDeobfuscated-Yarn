@@ -85,7 +85,7 @@ public class LightningEntity extends Entity {
 
 		if (this.ambientTick >= 0) {
 			if (this.world.isClient) {
-				this.world.setTicksSinceLightning(2);
+				this.world.setLightningTicksLeft(2);
 			} else if (!this.cosmetic) {
 				double d = 3.0;
 				List<Entity> list = this.world

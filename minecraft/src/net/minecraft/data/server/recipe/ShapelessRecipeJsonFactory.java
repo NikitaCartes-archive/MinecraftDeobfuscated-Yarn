@@ -164,7 +164,7 @@ public class ShapelessRecipeJsonFactory {
 
 		@Override
 		public RecipeSerializer<?> getSerializer() {
-			return RecipeSerializer.CRAFTING_SHAPELESS;
+			return RecipeSerializer.SHAPELESS;
 		}
 
 		@Override

@@ -53,7 +53,7 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 		matrixStack.translate(-0.5, -0.5, -0.5);
 		blockRenderManager.getModelRenderer()
 			.render(
-				matrixStack.method_23760(),
+				matrixStack.peek(),
 				vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX)),
 				null,
 				bakedModelManager.getModel(modelIdentifier),

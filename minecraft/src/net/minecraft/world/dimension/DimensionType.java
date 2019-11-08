@@ -31,7 +31,7 @@ public class DimensionType implements DynamicSerializable {
 	private final BiomeAccessType biomeAccessType;
 
 	private static DimensionType register(String id, DimensionType dimension) {
-		return Registry.register(Registry.DIMENSION_TYPE, dimension.id, id, dimension);
+		return Registry.register(Registry.DIMENSION, dimension.id, id, dimension);
 	}
 
 	protected DimensionType(
@@ -51,11 +51,11 @@ public class DimensionType implements DynamicSerializable {
 	}
 
 	public static DimensionType deserialize(Dynamic<?> dynamic) {
-		return Registry.DIMENSION_TYPE.get(new Identifier(dynamic.asString("")));
+		return Registry.DIMENSION.get(new Identifier(dynamic.asString("")));
 	}
 
 	public static Iterable<DimensionType> getAll() {
-		return Registry.DIMENSION_TYPE;
+		return Registry.DIMENSION;
 	}
 
 	public int getRawId() {
@@ -80,17 +80,17 @@ public class DimensionType implements DynamicSerializable {
 
 	@Nullable
 	public static DimensionType byRawId(int i) {
-		return Registry.DIMENSION_TYPE.get(i - -1);
+		return Registry.DIMENSION.get(i - -1);
 	}
 
 	@Nullable
 	public static DimensionType byId(Identifier identifier) {
-		return Registry.DIMENSION_TYPE.get(identifier);
+		return Registry.DIMENSION.get(identifier);
 	}
 
 	@Nullable
 	public static Identifier getId(DimensionType dimensionType) {
-		return Registry.DIMENSION_TYPE.getId(dimensionType);
+		return Registry.DIMENSION.getId(dimensionType);
 	}
 
 	public boolean hasSkyLight() {
@@ -103,6 +103,6 @@ public class DimensionType implements DynamicSerializable {
 
 	@Override
 	public <T> T serialize(DynamicOps<T> ops) {
-		return ops.createString(Registry.DIMENSION_TYPE.getId(this).toString());
+		return ops.createString(Registry.DIMENSION.getId(this).toString());
 	}
 }

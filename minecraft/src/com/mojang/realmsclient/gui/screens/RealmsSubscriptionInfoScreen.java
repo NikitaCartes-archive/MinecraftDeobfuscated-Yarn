@@ -78,7 +78,7 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 				public void onPress() {
 					String string = RealmsScreen.getLocalizedString("mco.configure.world.delete.question.line1");
 					String string2 = RealmsScreen.getLocalizedString("mco.configure.world.delete.question.line2");
-					Realms.setScreen(new RealmsLongConfirmationScreen(RealmsSubscriptionInfoScreen.this, RealmsLongConfirmationScreen.Type.WARNING, string, string2, true, 1));
+					Realms.setScreen(new RealmsLongConfirmationScreen(RealmsSubscriptionInfoScreen.this, RealmsLongConfirmationScreen.Type.Warning, string, string2, true, 1));
 				}
 			});
 		}

@@ -71,7 +71,7 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 			if (string != null) {
 				float n = (float)(-textRenderer.getStringWidth(string) / 2);
 				textRenderer.draw(
-					string, n, (float)(m * 10 - signBlockEntity.text.length * 5), l, false, matrixStack.method_23760().method_23761(), vertexConsumerProvider, false, 0, i
+					string, n, (float)(m * 10 - signBlockEntity.text.length * 5), l, false, matrixStack.peek().getModel(), vertexConsumerProvider, false, 0, i
 				);
 			}
 		}

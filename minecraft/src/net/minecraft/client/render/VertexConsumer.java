@@ -53,8 +53,8 @@ public interface VertexConsumer {
 		int[] js = bakedQuad.getVertexData();
 		Vec3i vec3i = bakedQuad.getFace().getVector();
 		Vector3f vector3f = new Vector3f((float)vec3i.getX(), (float)vec3i.getY(), (float)vec3i.getZ());
-		Matrix4f matrix4f = entry.method_23761();
-		vector3f.multiply(entry.method_23762());
+		Matrix4f matrix4f = entry.getModel();
+		vector3f.multiply(entry.getNormal());
 		int j = 8;
 		int k = js.length / 8;
 

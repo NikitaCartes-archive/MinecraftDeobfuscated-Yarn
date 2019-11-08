@@ -78,7 +78,7 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 			if (!this.checked && this.getContentLength(this.worldDownload.downloadLink) >= 5368709120L) {
 				String string = getLocalizedString("mco.download.confirmation.line1", new Object[]{humanReadableSize(5368709120L)});
 				String string2 = getLocalizedString("mco.download.confirmation.line2");
-				Realms.setScreen(new RealmsLongConfirmationScreen(this, RealmsLongConfirmationScreen.Type.WARNING, string, string2, false, 100));
+				Realms.setScreen(new RealmsLongConfirmationScreen(this, RealmsLongConfirmationScreen.Type.Warning, string, string2, false, 100));
 			} else {
 				this.downloadSave();
 			}

@@ -102,7 +102,7 @@ public interface CollisionView extends BlockView {
 						if (blockView != null) {
 							mutable.set(i, j, k);
 							BlockState blockState = blockView.getBlockState(mutable);
-							if ((l != 1 || blockState.method_17900()) && (l != 2 || blockState.getBlock() == Blocks.MOVING_PISTON)) {
+							if ((l != 1 || blockState.exceedsCube()) && (l != 2 || blockState.getBlock() == Blocks.MOVING_PISTON)) {
 								VoxelShape voxelShape2 = blockState.getCollisionShape(CollisionView.this, mutable, entityContext);
 								VoxelShape voxelShape3 = voxelShape2.offset((double)i, (double)j, (double)k);
 								if (VoxelShapes.matchesAnywhere(voxelShape, voxelShape3, BooleanBiFunction.AND)) {

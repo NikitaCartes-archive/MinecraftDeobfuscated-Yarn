@@ -339,7 +339,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback<WorldTe
 			} else {
 				Realms.setScreen(this);
 			}
-		}, RealmsLongConfirmationScreen.Type.INFO, string, string2, true, 9));
+		}, RealmsLongConfirmationScreen.Type.Info, string, string2, true, 9));
 	}
 
 	private void switchToEmptySlot(int selectedSlot, RealmsServer serverData) {
@@ -365,7 +365,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback<WorldTe
 						Realms.setScreen(this);
 					}
 				},
-				RealmsLongConfirmationScreen.Type.INFO,
+				RealmsLongConfirmationScreen.Type.Info,
 				string,
 				string2,
 				true,

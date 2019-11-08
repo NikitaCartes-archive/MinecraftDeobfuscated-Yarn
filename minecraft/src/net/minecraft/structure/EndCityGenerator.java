@@ -265,7 +265,7 @@ public class EndCityGenerator {
 		private final boolean ignoreAir;
 
 		public Piece(StructureManager manager, String template, BlockPos pos, BlockRotation rotation, boolean ignoreAir) {
-			super(StructurePieceType.ECP, 0);
+			super(StructurePieceType.END_CITY, 0);
 			this.template = template;
 			this.pos = pos;
 			this.rotation = rotation;
@@ -274,7 +274,7 @@ public class EndCityGenerator {
 		}
 
 		public Piece(StructureManager manager, CompoundTag tag) {
-			super(StructurePieceType.ECP, tag);
+			super(StructurePieceType.END_CITY, tag);
 			this.template = tag.getString("Template");
 			this.rotation = BlockRotation.valueOf(tag.getString("Rot"));
 			this.ignoreAir = tag.getBoolean("OW");

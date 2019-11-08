@@ -51,7 +51,7 @@ public class RainSplashParticle extends SpriteBillboardParticle {
 				this.world
 					.getBlockState(blockPos)
 					.getCollisionShape(this.world, blockPos)
-					.method_1102(Direction.Axis.Y, this.x - (double)blockPos.getX(), this.z - (double)blockPos.getZ()),
+					.getEndingCoord(Direction.Axis.Y, this.x - (double)blockPos.getX(), this.z - (double)blockPos.getZ()),
 				(double)this.world.getFluidState(blockPos).getHeight(this.world, blockPos)
 			);
 			if (d > 0.0 && this.y < (double)blockPos.getY() + d) {

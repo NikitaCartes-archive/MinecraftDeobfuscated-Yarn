@@ -150,7 +150,7 @@ public class SignEditScreen extends Screen {
 			});
 		}
 
-		Matrix4f matrix4f = matrixStack.method_23760().method_23761();
+		Matrix4f matrix4f = matrixStack.peek().getModel();
 		int k = this.selectionManager.getSelectionStart();
 		int l = this.selectionManager.getSelectionEnd();
 		int m = this.minecraft.textRenderer.isRightToLeft() ? -1 : 1;

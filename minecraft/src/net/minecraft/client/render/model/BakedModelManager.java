@@ -22,7 +22,7 @@ public class BakedModelManager extends SinglePreparationResourceReloadListener<M
 	private final BlockModels blockStateMaps;
 	private final BlockColors colorMap;
 	private BakedModel missingModel;
-	private Object2IntMap<BlockState> field_20278;
+	private Object2IntMap<BlockState> stateToModelIndex;
 
 	public BakedModelManager(SpriteAtlasTexture spriteAtlas, BlockColors colorMap) {
 		this.spriteAtlas = spriteAtlas;
@@ -54,7 +54,7 @@ public class BakedModelManager extends SinglePreparationResourceReloadListener<M
 		profiler.push("upload");
 		modelLoader.upload(profiler);
 		this.modelMap = modelLoader.getBakedModelMap();
-		this.field_20278 = modelLoader.method_21605();
+		this.stateToModelIndex = modelLoader.getStateToModelIndex();
 		this.missingModel = (BakedModel)this.modelMap.get(ModelLoader.MISSING);
 		profiler.swap("cache");
 		this.blockStateMaps.reload();
@@ -62,16 +62,16 @@ public class BakedModelManager extends SinglePreparationResourceReloadListener<M
 		profiler.endTick();
 	}
 
-	public boolean method_21611(BlockState blockState, BlockState blockState2) {
-		if (blockState == blockState2) {
+	public boolean shouldRerender(BlockState old, BlockState updated) {
+		if (old == updated) {
 			return false;
 		} else {
-			int i = this.field_20278.getInt(blockState);
+			int i = this.stateToModelIndex.getInt(old);
 			if (i != -1) {
-				int j = this.field_20278.getInt(blockState2);
+				int j = this.stateToModelIndex.getInt(updated);
 				if (i == j) {
-					FluidState fluidState = blockState.getFluidState();
-					FluidState fluidState2 = blockState2.getFluidState();
+					FluidState fluidState = old.getFluidState();
+					FluidState fluidState2 = updated.getFluidState();
 					return fluidState != fluidState2;
 				}
 			}

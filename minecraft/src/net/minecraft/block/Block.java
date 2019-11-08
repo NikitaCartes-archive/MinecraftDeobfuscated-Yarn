@@ -345,8 +345,8 @@ public class Block implements ItemConvertible {
 			if (b != 127) {
 				return b != 0;
 			} else {
-				VoxelShape voxelShape = state.getCullingShape(view, pos, facing);
-				VoxelShape voxelShape2 = blockState.getCullingShape(view, blockPos, facing.getOpposite());
+				VoxelShape voxelShape = state.getCullingFace(view, pos, facing);
+				VoxelShape voxelShape2 = blockState.getCullingFace(view, blockPos, facing.getOpposite());
 				boolean bl = VoxelShapes.matchesAnywhere(voxelShape, voxelShape2, BooleanBiFunction.ONLY_FIRST);
 				if (object2ByteLinkedOpenHashMap.size() == 200) {
 					object2ByteLinkedOpenHashMap.removeLastByte();

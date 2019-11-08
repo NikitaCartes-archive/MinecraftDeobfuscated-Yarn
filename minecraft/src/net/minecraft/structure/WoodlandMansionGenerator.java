@@ -979,7 +979,7 @@ public class WoodlandMansionGenerator {
 		}
 
 		public Piece(StructureManager structureManager, String string, BlockPos blockPos, BlockRotation blockRotation, BlockMirror blockMirror) {
-			super(StructurePieceType.WMP, 0);
+			super(StructurePieceType.WOODLAND_MANSION, 0);
 			this.template = string;
 			this.pos = blockPos;
 			this.rotation = blockRotation;
@@ -988,7 +988,7 @@ public class WoodlandMansionGenerator {
 		}
 
 		public Piece(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.WMP, compoundTag);
+			super(StructurePieceType.WOODLAND_MANSION, compoundTag);
 			this.template = compoundTag.getString("Template");
 			this.rotation = BlockRotation.valueOf(compoundTag.getString("Rot"));
 			this.mirror = BlockMirror.valueOf(compoundTag.getString("Mi"));

@@ -32,11 +32,11 @@ public class VillageGenerator {
 		public Piece(
 			StructureManager structureManager, StructurePoolElement structurePoolElement, BlockPos blockPos, int i, BlockRotation blockRotation, BlockBox blockBox
 		) {
-			super(StructurePieceType.NVI, structureManager, structurePoolElement, blockPos, i, blockRotation, blockBox);
+			super(StructurePieceType.VILLAGE, structureManager, structurePoolElement, blockPos, i, blockRotation, blockBox);
 		}
 
 		public Piece(StructureManager structureManager, CompoundTag compoundTag) {
-			super(structureManager, compoundTag, StructurePieceType.NVI);
+			super(structureManager, compoundTag, StructurePieceType.VILLAGE);
 		}
 	}
 }

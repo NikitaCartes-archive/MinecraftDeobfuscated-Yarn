@@ -77,7 +77,7 @@ public abstract class AbstractPressurePlateBlock extends Block {
 			BlockState blockState2 = this.setRedstoneOutput(blockState, i);
 			world.setBlockState(pos, blockState2, 2);
 			this.updateNeighbors(world, pos);
-			world.scheduleBlockRender(pos, blockState, blockState2);
+			world.checkBlockRerender(pos, blockState, blockState2);
 		}
 
 		if (!bl2 && bl) {

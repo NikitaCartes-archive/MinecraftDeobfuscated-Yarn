@@ -594,7 +594,7 @@ public class RealmsMainScreen extends RealmsScreen {
 			this.saveListScrollPosition();
 			String string = getLocalizedString("mco.configure.world.leave.question.line1");
 			String string2 = getLocalizedString("mco.configure.world.leave.question.line2");
-			Realms.setScreen(new RealmsLongConfirmationScreen(this, RealmsLongConfirmationScreen.Type.INFO, string, string2, true, 4));
+			Realms.setScreen(new RealmsLongConfirmationScreen(this, RealmsLongConfirmationScreen.Type.Info, string, string2, true, 4));
 		}
 	}
 

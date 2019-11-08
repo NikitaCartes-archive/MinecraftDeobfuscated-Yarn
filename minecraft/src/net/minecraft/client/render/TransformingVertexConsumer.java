@@ -30,9 +30,9 @@ public class TransformingVertexConsumer extends FixedColorVertexConsumer {
 
 	public TransformingVertexConsumer(VertexConsumer vertexConsumer, MatrixStack.Entry entry) {
 		this.vertexConsumer = vertexConsumer;
-		this.textureMatrix = entry.method_23761().copy();
+		this.textureMatrix = entry.getModel().copy();
 		this.textureMatrix.invert();
-		this.normalMatrix = entry.method_23762().copy();
+		this.normalMatrix = entry.getNormal().copy();
 		this.normalMatrix.method_23732();
 		this.init();
 	}

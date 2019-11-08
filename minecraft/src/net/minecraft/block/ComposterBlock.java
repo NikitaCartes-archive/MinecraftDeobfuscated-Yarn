@@ -150,7 +150,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 			1.0F,
 			false
 		);
-		double d = blockState.getOutlineShape(world, pos).method_1102(Direction.Axis.Y, 0.5, 0.5) + 0.03125;
+		double d = blockState.getOutlineShape(world, pos).getEndingCoord(Direction.Axis.Y, 0.5, 0.5) + 0.03125;
 		double e = 0.13125F;
 		double f = 0.7375F;
 		Random random = world.getRandom();

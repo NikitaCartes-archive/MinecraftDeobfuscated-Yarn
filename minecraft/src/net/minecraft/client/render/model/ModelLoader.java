@@ -193,8 +193,8 @@ public class ModelLoader {
 	private final Map<Identifier, UnbakedModel> modelsToBake = Maps.<Identifier, UnbakedModel>newHashMap();
 	private final Map<Identifier, BakedModel> bakedModels = Maps.<Identifier, BakedModel>newHashMap();
 	private final SpriteAtlasTexture.Data spriteAtlasData;
-	private int field_20273 = 1;
-	private final Object2IntMap<BlockState> field_20274 = Util.create(
+	private int currentModelIndex = 1;
+	private final Object2IntMap<BlockState> stateToModelIndex = Util.create(
 		new Object2IntOpenHashMap<>(), object2IntOpenHashMap -> object2IntOpenHashMap.defaultReturnValue(-1)
 	);
 
@@ -498,12 +498,12 @@ public class ModelLoader {
 							BlockState blockState = (BlockState)iterator.next();
 							if (blockState.getRenderType() != BlockRenderType.MODEL) {
 								iterator.remove();
-								this.field_20274.put(blockState, 0);
+								this.stateToModelIndex.put(blockState, 0);
 							}
 						}
 
 						if (set.size() > 1) {
-							this.method_21603(set);
+							this.groupBlockStates(set);
 						}
 					});
 				}
@@ -522,9 +522,9 @@ public class ModelLoader {
 		this.modelsToBake.put(modelId, unbakedModel);
 	}
 
-	private void method_21603(Iterable<BlockState> iterable) {
-		int i = this.field_20273++;
-		iterable.forEach(blockState -> this.field_20274.put(blockState, i));
+	private void groupBlockStates(Iterable<BlockState> states) {
+		int i = this.currentModelIndex++;
+		states.forEach(blockState -> this.stateToModelIndex.put(blockState, i));
 	}
 
 	@Nullable
@@ -590,8 +590,8 @@ public class ModelLoader {
 		return this.bakedModels;
 	}
 
-	public Object2IntMap<BlockState> method_21605() {
-		return this.field_20274;
+	public Object2IntMap<BlockState> getStateToModelIndex() {
+		return this.stateToModelIndex;
 	}
 
 	@Environment(EnvType.CLIENT)

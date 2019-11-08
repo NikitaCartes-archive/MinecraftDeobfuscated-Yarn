@@ -197,7 +197,7 @@ public class OceanRuinGenerator {
 			OceanRuinFeature.BiomeType biomeType,
 			boolean large
 		) {
-			super(StructurePieceType.ORP, 0);
+			super(StructurePieceType.OCEAN_TEMPLE, 0);
 			this.template = template;
 			this.pos = pos;
 			this.rotation = rotation;
@@ -208,7 +208,7 @@ public class OceanRuinGenerator {
 		}
 
 		public Piece(StructureManager manager, CompoundTag tag) {
-			super(StructurePieceType.ORP, tag);
+			super(StructurePieceType.OCEAN_TEMPLE, tag);
 			this.template = new Identifier(tag.getString("Template"));
 			this.rotation = BlockRotation.valueOf(tag.getString("Rot"));
 			this.integrity = tag.getFloat("Integrity");
