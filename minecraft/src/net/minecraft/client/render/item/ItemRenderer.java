@@ -136,7 +136,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 
 	private void method_23180(MatrixStack matrixStack, VertexConsumer vertexConsumer, List<BakedQuad> list, ItemStack itemStack, int i, int j) {
 		boolean bl = !itemStack.isEmpty();
-		MatrixStack.Entry entry = matrixStack.method_23760();
+		MatrixStack.Entry entry = matrixStack.peek();
 
 		for (BakedQuad bakedQuad : list) {
 			int k = -1;
@@ -260,7 +260,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 					(float)(y + 6 + 3),
 					16777215,
 					true,
-					matrixStack.method_23760().method_23761(),
+					matrixStack.peek().getModel(),
 					immediate,
 					false,
 					0,

@@ -115,7 +115,7 @@ public class ModelPart {
 			if (!this.cuboids.isEmpty() || !this.children.isEmpty()) {
 				matrix.push();
 				this.rotate(matrix);
-				this.renderCuboids(matrix.method_23760(), vertexConsumer, i, j, sprite, f, g, h);
+				this.renderCuboids(matrix.peek(), vertexConsumer, i, j, sprite, f, g, h);
 
 				for (ModelPart modelPart : this.children) {
 					modelPart.render(matrix, vertexConsumer, i, j, sprite, f, g, h);
@@ -142,7 +142,7 @@ public class ModelPart {
 	}
 
 	private void renderCuboids(MatrixStack.Entry entry, VertexConsumer vertexConsumer, int i, int j, @Nullable Sprite sprite, float f, float g, float h) {
-		Matrix4f matrix4f = entry.method_23761();
+		Matrix4f matrix4f = entry.getModel();
 		Matrix3f matrix3f = new Matrix3f(matrix4f);
 
 		for (ModelPart.Cuboid cuboid : this.cuboids) {

@@ -44,7 +44,7 @@ public class Screens {
 		} else {
 			Screens.Provider<T, ?> provider = getProvider(type);
 			if (provider == null) {
-				LOGGER.warn("Failed to create screen for menu type: {}", Registry.MENU.getId(type));
+				LOGGER.warn("Failed to create screen for menu type: {}", Registry.CONTAINER.getId(type));
 			} else {
 				provider.open(name, type, client, id);
 			}
@@ -59,16 +59,16 @@ public class Screens {
 	private static <M extends Container, U extends Screen & ContainerProvider<M>> void register(ContainerType<? extends M> type, Screens.Provider<M, U> provider) {
 		Screens.Provider<?, ?> provider2 = (Screens.Provider<?, ?>)PROVIDERS.put(type, provider);
 		if (provider2 != null) {
-			throw new IllegalStateException("Duplicate registration for " + Registry.MENU.getId(type));
+			throw new IllegalStateException("Duplicate registration for " + Registry.CONTAINER.getId(type));
 		}
 	}
 
 	public static boolean validateScreens() {
 		boolean bl = false;
 
-		for (ContainerType<?> containerType : Registry.MENU) {
+		for (ContainerType<?> containerType : Registry.CONTAINER) {
 			if (!PROVIDERS.containsKey(containerType)) {
-				LOGGER.debug("Menu {} has no matching screen", Registry.MENU.getId(containerType));
+				LOGGER.debug("Menu {} has no matching screen", Registry.CONTAINER.getId(containerType));
 				bl = true;
 			}
 		}

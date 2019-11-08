@@ -320,7 +320,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 		public void onPress() {
 			String string = RealmsScreen.getLocalizedString("mco.configure.world.restore.download.question.line1");
 			String string2 = RealmsScreen.getLocalizedString("mco.configure.world.restore.download.question.line2");
-			Realms.setScreen(new RealmsLongConfirmationScreen(RealmsBrokenWorldScreen.this, RealmsLongConfirmationScreen.Type.INFO, string, string2, true, this.id()));
+			Realms.setScreen(new RealmsLongConfirmationScreen(RealmsBrokenWorldScreen.this, RealmsLongConfirmationScreen.Type.Info, string, string2, true, this.id()));
 		}
 	}
 

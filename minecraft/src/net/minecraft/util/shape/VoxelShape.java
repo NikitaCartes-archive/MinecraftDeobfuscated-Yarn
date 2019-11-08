@@ -115,22 +115,22 @@ public abstract class VoxelShape {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public double method_1093(Direction.Axis axis, double d, double e) {
+	public double getBeginningCoord(Direction.Axis axis, double from, double to) {
 		Direction.Axis axis2 = AxisCycleDirection.FORWARD.cycle(axis);
 		Direction.Axis axis3 = AxisCycleDirection.BACKWARD.cycle(axis);
-		int i = this.getCoordIndex(axis2, d);
-		int j = this.getCoordIndex(axis3, e);
-		int k = this.voxels.method_1043(axis, i, j);
+		int i = this.getCoordIndex(axis2, from);
+		int j = this.getCoordIndex(axis3, to);
+		int k = this.voxels.getBeginningAxisCoord(axis, i, j);
 		return k >= this.voxels.getSize(axis) ? Double.POSITIVE_INFINITY : this.getPointPosition(axis, k);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public double method_1102(Direction.Axis axis, double d, double e) {
+	public double getEndingCoord(Direction.Axis axis, double from, double to) {
 		Direction.Axis axis2 = AxisCycleDirection.FORWARD.cycle(axis);
 		Direction.Axis axis3 = AxisCycleDirection.BACKWARD.cycle(axis);
-		int i = this.getCoordIndex(axis2, d);
-		int j = this.getCoordIndex(axis3, e);
-		int k = this.voxels.method_1058(axis, i, j);
+		int i = this.getCoordIndex(axis2, from);
+		int j = this.getCoordIndex(axis3, to);
+		int k = this.voxels.getEndingAxisCoord(axis, i, j);
 		return k <= 0 ? Double.NEGATIVE_INFINITY : this.getPointPosition(axis, k);
 	}
 
@@ -193,15 +193,15 @@ public abstract class VoxelShape {
 			return this;
 		} else {
 			int i = this.getCoordIndex(axis, axisDirection == Direction.AxisDirection.POSITIVE ? 0.9999999 : 1.0E-7);
-			return new SliceVoxelShape(this, axis, i);
+			return new SlicedVoxelShape(this, axis, i);
 		}
 	}
 
-	public double method_1108(Direction.Axis axis, Box box, double d) {
-		return this.method_1103(AxisCycleDirection.between(axis, Direction.Axis.X), box, d);
+	public double calculateMaxDistance(Direction.Axis axis, Box box, double maxDist) {
+		return this.calculateMaxDistance(AxisCycleDirection.between(axis, Direction.Axis.X), box, maxDist);
 	}
 
-	protected double method_1103(AxisCycleDirection axisCycle, Box box, double maxDist) {
+	protected double calculateMaxDistance(AxisCycleDirection axisCycle, Box box, double maxDist) {
 		if (this.isEmpty()) {
 			return maxDist;
 		} else if (Math.abs(maxDist) < 1.0E-7) {

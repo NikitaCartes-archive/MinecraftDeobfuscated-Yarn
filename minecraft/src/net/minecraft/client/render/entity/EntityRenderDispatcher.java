@@ -330,7 +330,7 @@ public class EntityRenderDispatcher {
 		}
 
 		Vec3d vec3d = entity.getRotationVec(f);
-		Matrix4f matrix4f = matrixStack.method_23760().method_23761();
+		Matrix4f matrix4f = matrixStack.peek().getModel();
 		vertexConsumer.vertex(matrix4f, 0.0F, entity.getStandingEyeHeight(), 0.0F).color(0, 0, 255, 255).next();
 		vertexConsumer.vertex(matrix4f, (float)(vec3d.x * 2.0), (float)((double)entity.getStandingEyeHeight() + vec3d.y * 2.0), (float)(vec3d.z * 2.0))
 			.color(0, 0, 255, 255)
@@ -359,7 +359,7 @@ public class EntityRenderDispatcher {
 		int l = 0;
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
 
-		for (MatrixStack.Entry entry = matrix.method_23760(); i > 0.0F; l++) {
+		for (MatrixStack.Entry entry = matrix.peek(); i > 0.0F; l++) {
 			Sprite sprite3 = l % 2 == 0 ? sprite : sprite2;
 			float m = sprite3.getMinU();
 			float n = sprite3.getMinV();
@@ -385,12 +385,12 @@ public class EntityRenderDispatcher {
 	}
 
 	private static void method_23161(MatrixStack.Entry entry, VertexConsumer vertexConsumer, float f, float g, float h, float i, float j) {
-		vertexConsumer.vertex(entry.method_23761(), f, g, h)
+		vertexConsumer.vertex(entry.getModel(), f, g, h)
 			.color(255, 255, 255, 255)
 			.texture(i, j)
 			.overlay(0, 10)
 			.light(240)
-			.method_23763(entry.method_23762(), 0.0F, 1.0F, 0.0F)
+			.method_23763(entry.getNormal(), 0.0F, 1.0F, 0.0F)
 			.next();
 	}
 
@@ -414,7 +414,7 @@ public class EntityRenderDispatcher {
 		int n = MathHelper.floor(e);
 		int o = MathHelper.floor(j - (double)i);
 		int p = MathHelper.floor(j + (double)i);
-		MatrixStack.Entry entry = matrixStack.method_23760();
+		MatrixStack.Entry entry = matrixStack.peek();
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityNoOutline(field_21009));
 
 		for (BlockPos blockPos : BlockPos.iterate(new BlockPos(k, m, o), new BlockPos(l, n, p))) {
@@ -463,12 +463,12 @@ public class EntityRenderDispatcher {
 	}
 
 	private static void method_23162(MatrixStack.Entry entry, VertexConsumer vertexConsumer, float f, float g, float h, float i, float j, float k) {
-		vertexConsumer.vertex(entry.method_23761(), g, h, i)
+		vertexConsumer.vertex(entry.getModel(), g, h, i)
 			.color(1.0F, 1.0F, 1.0F, f)
 			.texture(j, k)
 			.overlay(OverlayTexture.DEFAULT_UV)
 			.light(15728880)
-			.method_23763(entry.method_23762(), 0.0F, 1.0F, 0.0F)
+			.method_23763(entry.getNormal(), 0.0F, 1.0F, 0.0F)
 			.next();
 	}
 

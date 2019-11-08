@@ -50,12 +50,12 @@ public interface FluidState extends State<FluidState> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	default boolean method_15756(BlockView blockView, BlockPos blockPos) {
+	default boolean method_15756(BlockView view, BlockPos pos) {
 		for (int i = -1; i <= 1; i++) {
 			for (int j = -1; j <= 1; j++) {
-				BlockPos blockPos2 = blockPos.add(i, 0, j);
-				FluidState fluidState = blockView.getFluidState(blockPos2);
-				if (!fluidState.getFluid().matchesType(this.getFluid()) && !blockView.getBlockState(blockPos2).isFullOpaque(blockView, blockPos2)) {
+				BlockPos blockPos = pos.add(i, 0, j);
+				FluidState fluidState = view.getFluidState(blockPos);
+				if (!fluidState.getFluid().matchesType(this.getFluid()) && !view.getBlockState(blockPos).isFullOpaque(view, blockPos)) {
 					return true;
 				}
 			}
@@ -64,21 +64,21 @@ public interface FluidState extends State<FluidState> {
 		return false;
 	}
 
-	default void onScheduledTick(World world, BlockPos blockPos) {
-		this.getFluid().onScheduledTick(world, blockPos, this);
+	default void onScheduledTick(World world, BlockPos pos) {
+		this.getFluid().onScheduledTick(world, pos, this);
 	}
 
 	@Environment(EnvType.CLIENT)
-	default void randomDisplayTick(World world, BlockPos blockPos, Random random) {
-		this.getFluid().randomDisplayTick(world, blockPos, this, random);
+	default void randomDisplayTick(World world, BlockPos pos, Random random) {
+		this.getFluid().randomDisplayTick(world, pos, this, random);
 	}
 
 	default boolean hasRandomTicks() {
 		return this.getFluid().hasRandomTicks();
 	}
 
-	default void onRandomTick(World world, BlockPos blockPos, Random random) {
-		this.getFluid().onRandomTick(world, blockPos, this, random);
+	default void onRandomTick(World world, BlockPos pos, Random random) {
+		this.getFluid().onRandomTick(world, pos, this, random);
 	}
 
 	default Vec3d getVelocity(BlockView world, BlockPos pos) {

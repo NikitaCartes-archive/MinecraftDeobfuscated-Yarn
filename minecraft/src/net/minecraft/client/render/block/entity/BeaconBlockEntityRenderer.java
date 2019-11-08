@@ -151,9 +151,9 @@ public class BeaconBlockEntityRenderer extends BlockEntityRenderer<BeaconBlockEn
 		float v,
 		float w
 	) {
-		MatrixStack.Entry entry = matrixStack.method_23760();
-		Matrix4f matrix4f = entry.method_23761();
-		Matrix3f matrix3f = entry.method_23762();
+		MatrixStack.Entry entry = matrixStack.peek();
+		Matrix4f matrix4f = entry.getModel();
+		Matrix3f matrix3f = entry.getNormal();
 		method_22740(matrix4f, matrix3f, vertexConsumer, f, g, h, i, j, k, l, m, n, o, t, u, v, w);
 		method_22740(matrix4f, matrix3f, vertexConsumer, f, g, h, i, j, k, r, s, p, q, t, u, v, w);
 		method_22740(matrix4f, matrix3f, vertexConsumer, f, g, h, i, j, k, n, o, r, s, t, u, v, w);

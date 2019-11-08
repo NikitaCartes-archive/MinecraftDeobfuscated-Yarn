@@ -148,37 +148,37 @@ public class SheepEntity extends AnimalEntity {
 			switch (this.getColor()) {
 				case WHITE:
 				default:
-					return LootTables.SHEEP_WHITE_ENTITIE;
+					return LootTables.WHITE_SHEEP_ENTITY;
 				case ORANGE:
-					return LootTables.SHEEP_ORANGE_ENTITIE;
+					return LootTables.ORANGE_SHEEP_ENTITY;
 				case MAGENTA:
-					return LootTables.SHEEP_MAGENTA_ENTITIE;
+					return LootTables.MAGENTA_SHEEP_ENTITY;
 				case LIGHT_BLUE:
-					return LootTables.SHEEP_LIGHT_BLUE_ENTITIE;
+					return LootTables.LIGHT_BLUE_SHEEP_ENTITY;
 				case YELLOW:
-					return LootTables.SHEEP_YELLOW_ENTITIE;
+					return LootTables.YELLOW_SHEEP_ENTITY;
 				case LIME:
-					return LootTables.SHEEP_LIME_ENTITIE;
+					return LootTables.LIME_SHEEP_ENTITY;
 				case PINK:
-					return LootTables.SHEEP_PINK_ENTITIE;
+					return LootTables.PINK_SHEEP_ENTITY;
 				case GRAY:
-					return LootTables.SHEEP_GRAY_ENTITIE;
+					return LootTables.GRAY_SHEEP_ENTITY;
 				case LIGHT_GRAY:
-					return LootTables.SHEEP_LIGHT_GRAY_ENTITIE;
+					return LootTables.LIGHT_GRAY_SHEEP_ENTITY;
 				case CYAN:
-					return LootTables.SHEEP_CYAN_ENTITIE;
+					return LootTables.CYAN_SHEEP_ENTITY;
 				case PURPLE:
-					return LootTables.SHEEP_PURPLE_ENTITIE;
+					return LootTables.PURPLE_SHEEP_ENTITY;
 				case BLUE:
-					return LootTables.SHEEP_BLUE_ENTITIE;
+					return LootTables.BLUE_SHEEP_ENTITY;
 				case BROWN:
-					return LootTables.SHEEP_BROWN_ENTITIE;
+					return LootTables.BROWN_SHEEP_ENTITY;
 				case GREEN:
-					return LootTables.SHEEP_GREEN_ENTITIE;
+					return LootTables.GREEN_SHEEP_ENTITY;
 				case RED:
-					return LootTables.SHEEP_RED_ENTITIE;
+					return LootTables.RED_SHEEP_ENTITY;
 				case BLACK:
-					return LootTables.SHEEP_BLACK_ENTITIE;
+					return LootTables.BLACK_SHEEP_ENTITY;
 			}
 		}
 	}

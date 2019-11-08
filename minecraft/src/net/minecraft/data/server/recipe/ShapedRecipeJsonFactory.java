@@ -209,7 +209,7 @@ public class ShapedRecipeJsonFactory {
 
 		@Override
 		public RecipeSerializer<?> getSerializer() {
-			return RecipeSerializer.CRAFTING_SHAPED;
+			return RecipeSerializer.SHAPED;
 		}
 
 		@Override

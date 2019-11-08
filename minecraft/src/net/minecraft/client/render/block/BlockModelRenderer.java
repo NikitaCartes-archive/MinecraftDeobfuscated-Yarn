@@ -156,7 +156,7 @@ public class BlockModelRenderer {
 				state,
 				pos,
 				vertexConsumer,
-				matrix.method_23760(),
+				matrix.peek(),
 				bakedQuad,
 				ambientOcclusionCalculator.brightness[0],
 				ambientOcclusionCalculator.brightness[1],
@@ -289,7 +289,7 @@ public class BlockModelRenderer {
 				light = WorldRenderer.method_23793(world, state, blockPos);
 			}
 
-			this.renderQuad(world, state, pos, vertexConsumer, matrix.method_23760(), bakedQuad, 1.0F, 1.0F, 1.0F, 1.0F, light, light, light, light, overlay);
+			this.renderQuad(world, state, pos, vertexConsumer, matrix.peek(), bakedQuad, 1.0F, 1.0F, 1.0F, 1.0F, light, light, light, light, overlay);
 		}
 	}
 

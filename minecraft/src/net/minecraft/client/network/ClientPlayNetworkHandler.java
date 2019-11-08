@@ -725,7 +725,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		int j = packet.getZ();
 		WorldChunk worldChunk = this.world
 			.method_2935()
-			.loadChunkFromPacket(i, j, packet.method_22422(), packet.getReadBuffer(), packet.getHeightmaps(), packet.getVerticalStripBitmask());
+			.loadChunkFromPacket(i, j, packet.getBiomeArray(), packet.getReadBuffer(), packet.getHeightmaps(), packet.getVerticalStripBitmask());
 		if (worldChunk != null && packet.isFullChunk()) {
 			this.world.addEntitiesToChunk(worldChunk);
 		}

@@ -70,7 +70,7 @@ public abstract class EntityRenderer<T extends Entity> {
 			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-this.renderManager.cameraYaw));
 			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(this.renderManager.cameraPitch));
 			matrixStack.scale(-0.025F, -0.025F, 0.025F);
-			Matrix4f matrix4f = matrixStack.method_23760().method_23761();
+			Matrix4f matrix4f = matrixStack.peek().getModel();
 			float g = MinecraftClient.getInstance().options.getTextBackgroundOpacity(0.25F);
 			int k = (int)(g * 255.0F) << 24;
 			TextRenderer textRenderer = this.getFontRenderer();

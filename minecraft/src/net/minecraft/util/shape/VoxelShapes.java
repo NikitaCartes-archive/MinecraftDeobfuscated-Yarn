@@ -100,8 +100,8 @@ public final class VoxelShapes {
 		}
 	}
 
-	protected static long lcm(int i, int j) {
-		return (long)i * (long)(j / IntMath.gcd(i, j));
+	protected static long lcm(int a, int b) {
+		return (long)a * (long)(b / IntMath.gcd(a, b));
 	}
 
 	public static VoxelShape union(VoxelShape first, VoxelShape second) {
@@ -116,36 +116,34 @@ public final class VoxelShapes {
 		return combine(first, second, function).simplify();
 	}
 
-	public static VoxelShape combine(VoxelShape shape1, VoxelShape shape2, BooleanBiFunction function) {
+	public static VoxelShape combine(VoxelShape one, VoxelShape two, BooleanBiFunction function) {
 		if (function.apply(false, false)) {
 			throw (IllegalArgumentException)Util.throwOrPause(new IllegalArgumentException());
-		} else if (shape1 == shape2) {
-			return function.apply(true, true) ? shape1 : empty();
+		} else if (one == two) {
+			return function.apply(true, true) ? one : empty();
 		} else {
 			boolean bl = function.apply(true, false);
 			boolean bl2 = function.apply(false, true);
-			if (shape1.isEmpty()) {
-				return bl2 ? shape2 : empty();
-			} else if (shape2.isEmpty()) {
-				return bl ? shape1 : empty();
+			if (one.isEmpty()) {
+				return bl2 ? two : empty();
+			} else if (two.isEmpty()) {
+				return bl ? one : empty();
 			} else {
-				DoubleListPair doubleListPair = createListPair(1, shape1.getPointPositions(Direction.Axis.X), shape2.getPointPositions(Direction.Axis.X), bl, bl2);
-				DoubleListPair doubleListPair2 = createListPair(
-					doubleListPair.getMergedList().size() - 1, shape1.getPointPositions(Direction.Axis.Y), shape2.getPointPositions(Direction.Axis.Y), bl, bl2
+				PairList pairList = createListPair(1, one.getPointPositions(Direction.Axis.X), two.getPointPositions(Direction.Axis.X), bl, bl2);
+				PairList pairList2 = createListPair(
+					pairList.getPairs().size() - 1, one.getPointPositions(Direction.Axis.Y), two.getPointPositions(Direction.Axis.Y), bl, bl2
 				);
-				DoubleListPair doubleListPair3 = createListPair(
-					(doubleListPair.getMergedList().size() - 1) * (doubleListPair2.getMergedList().size() - 1),
-					shape1.getPointPositions(Direction.Axis.Z),
-					shape2.getPointPositions(Direction.Axis.Z),
+				PairList pairList3 = createListPair(
+					(pairList.getPairs().size() - 1) * (pairList2.getPairs().size() - 1),
+					one.getPointPositions(Direction.Axis.Z),
+					two.getPointPositions(Direction.Axis.Z),
 					bl,
 					bl2
 				);
-				BitSetVoxelSet bitSetVoxelSet = BitSetVoxelSet.combine(shape1.voxels, shape2.voxels, doubleListPair, doubleListPair2, doubleListPair3, function);
-				return (VoxelShape)(doubleListPair instanceof FractionalDoubleListPair
-						&& doubleListPair2 instanceof FractionalDoubleListPair
-						&& doubleListPair3 instanceof FractionalDoubleListPair
+				BitSetVoxelSet bitSetVoxelSet = BitSetVoxelSet.combine(one.voxels, two.voxels, pairList, pairList2, pairList3, function);
+				return (VoxelShape)(pairList instanceof FractionalPairList && pairList2 instanceof FractionalPairList && pairList3 instanceof FractionalPairList
 					? new SimpleVoxelShape(bitSetVoxelSet)
-					: new ArrayVoxelShape(bitSetVoxelSet, doubleListPair.getMergedList(), doubleListPair2.getMergedList(), doubleListPair3.getMergedList()));
+					: new ArrayVoxelShape(bitSetVoxelSet, pairList.getPairs(), pairList2.getPairs(), pairList3.getPairs()));
 			}
 		}
 	}
@@ -173,71 +171,71 @@ public final class VoxelShapes {
 				}
 			}
 
-			DoubleListPair doubleListPair = createListPair(1, shape1.getPointPositions(Direction.Axis.X), shape2.getPointPositions(Direction.Axis.X), bl, bl2);
-			DoubleListPair doubleListPair2 = createListPair(
-				doubleListPair.getMergedList().size() - 1, shape1.getPointPositions(Direction.Axis.Y), shape2.getPointPositions(Direction.Axis.Y), bl, bl2
+			PairList pairList = createListPair(1, shape1.getPointPositions(Direction.Axis.X), shape2.getPointPositions(Direction.Axis.X), bl, bl2);
+			PairList pairList2 = createListPair(
+				pairList.getPairs().size() - 1, shape1.getPointPositions(Direction.Axis.Y), shape2.getPointPositions(Direction.Axis.Y), bl, bl2
 			);
-			DoubleListPair doubleListPair3 = createListPair(
-				(doubleListPair.getMergedList().size() - 1) * (doubleListPair2.getMergedList().size() - 1),
+			PairList pairList3 = createListPair(
+				(pairList.getPairs().size() - 1) * (pairList2.getPairs().size() - 1),
 				shape1.getPointPositions(Direction.Axis.Z),
 				shape2.getPointPositions(Direction.Axis.Z),
 				bl,
 				bl2
 			);
-			return matchesAnywhere(doubleListPair, doubleListPair2, doubleListPair3, shape1.voxels, shape2.voxels, predicate);
+			return matchesAnywhere(pairList, pairList2, pairList3, shape1.voxels, shape2.voxels, predicate);
 		}
 	}
 
-	private static boolean matchesAnywhere(
-		DoubleListPair mergedX, DoubleListPair mergedY, DoubleListPair mergedZ, VoxelSet shape1, VoxelSet shape2, BooleanBiFunction predicate
-	) {
-		return !mergedX.forAllOverlappingSections(
-			(i, j, k) -> mergedY.forAllOverlappingSections(
-					(kx, l, m) -> mergedZ.forAllOverlappingSections((mx, n, o) -> !predicate.apply(shape1.inBoundsAndContains(i, kx, mx), shape2.inBoundsAndContains(j, l, n)))
+	private static boolean matchesAnywhere(PairList mergedX, PairList mergedY, PairList mergedZ, VoxelSet shape1, VoxelSet shape2, BooleanBiFunction predicate) {
+		return !mergedX.forEachPair(
+			(x1, x2, index1) -> mergedY.forEachPair(
+					(y1, y2, index2) -> mergedZ.forEachPair(
+							(z1, z2, index3) -> !predicate.apply(shape1.inBoundsAndContains(x1, y1, z1), shape2.inBoundsAndContains(x2, y2, z2))
+						)
 				)
 		);
 	}
 
-	public static double calculateMaxOffset(Direction.Axis axis, Box box, Stream<VoxelShape> shapes, double d) {
+	public static double calculateMaxOffset(Direction.Axis axis, Box box, Stream<VoxelShape> shapes, double maxDist) {
 		Iterator<VoxelShape> iterator = shapes.iterator();
 
 		while (iterator.hasNext()) {
-			if (Math.abs(d) < 1.0E-7) {
+			if (Math.abs(maxDist) < 1.0E-7) {
 				return 0.0;
 			}
 
-			d = ((VoxelShape)iterator.next()).method_1108(axis, box, d);
+			maxDist = ((VoxelShape)iterator.next()).calculateMaxDistance(axis, box, maxDist);
 		}
 
-		return d;
+		return maxDist;
 	}
 
-	public static double method_17945(Direction.Axis axis, Box box, WorldView worldView, double d, EntityContext entityContext, Stream<VoxelShape> stream) {
-		return method_17944(box, worldView, d, entityContext, AxisCycleDirection.between(axis, Direction.Axis.Z), stream);
+	public static double calculatePushVelocity(Direction.Axis axis, Box box, WorldView world, double initial, EntityContext context, Stream<VoxelShape> shapes) {
+		return calculatePushVelocity(box, world, initial, context, AxisCycleDirection.between(axis, Direction.Axis.Z), shapes);
 	}
 
-	private static double method_17944(
-		Box box, WorldView worldView, double d, EntityContext entityContext, AxisCycleDirection axisCycleDirection, Stream<VoxelShape> stream
+	private static double calculatePushVelocity(
+		Box box, WorldView world, double initial, EntityContext context, AxisCycleDirection direction, Stream<VoxelShape> shapes
 	) {
 		if (box.getXLength() < 1.0E-6 || box.getYLength() < 1.0E-6 || box.getZLength() < 1.0E-6) {
-			return d;
-		} else if (Math.abs(d) < 1.0E-7) {
+			return initial;
+		} else if (Math.abs(initial) < 1.0E-7) {
 			return 0.0;
 		} else {
-			AxisCycleDirection axisCycleDirection2 = axisCycleDirection.opposite();
-			Direction.Axis axis = axisCycleDirection2.cycle(Direction.Axis.X);
-			Direction.Axis axis2 = axisCycleDirection2.cycle(Direction.Axis.Y);
-			Direction.Axis axis3 = axisCycleDirection2.cycle(Direction.Axis.Z);
+			AxisCycleDirection axisCycleDirection = direction.opposite();
+			Direction.Axis axis = axisCycleDirection.cycle(Direction.Axis.X);
+			Direction.Axis axis2 = axisCycleDirection.cycle(Direction.Axis.Y);
+			Direction.Axis axis3 = axisCycleDirection.cycle(Direction.Axis.Z);
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 			int i = MathHelper.floor(box.getMin(axis) - 1.0E-7) - 1;
 			int j = MathHelper.floor(box.getMax(axis) + 1.0E-7) + 1;
 			int k = MathHelper.floor(box.getMin(axis2) - 1.0E-7) - 1;
 			int l = MathHelper.floor(box.getMax(axis2) + 1.0E-7) + 1;
-			double e = box.getMin(axis3) - 1.0E-7;
-			double f = box.getMax(axis3) + 1.0E-7;
-			boolean bl = d > 0.0;
+			double d = box.getMin(axis3) - 1.0E-7;
+			double e = box.getMax(axis3) + 1.0E-7;
+			boolean bl = initial > 0.0;
 			int m = bl ? MathHelper.floor(box.getMax(axis3) - 1.0E-7) - 1 : MathHelper.floor(box.getMin(axis3) + 1.0E-7) + 1;
-			int n = method_17943(d, e, f);
+			int n = clamp(initial, d, e);
 			int o = bl ? 1 : -1;
 
 			for (int p = m; bl ? p <= n : p >= n; p += o) {
@@ -257,53 +255,53 @@ public final class VoxelShapes {
 						}
 
 						if (s < 3) {
-							mutable.set(axisCycleDirection2, q, r, p);
-							BlockState blockState = worldView.getBlockState(mutable);
-							if ((s != 1 || blockState.method_17900()) && (s != 2 || blockState.getBlock() == Blocks.MOVING_PISTON)) {
-								d = blockState.getCollisionShape(worldView, mutable, entityContext)
-									.method_1108(axis3, box.offset((double)(-mutable.getX()), (double)(-mutable.getY()), (double)(-mutable.getZ())), d);
-								if (Math.abs(d) < 1.0E-7) {
+							mutable.set(axisCycleDirection, q, r, p);
+							BlockState blockState = world.getBlockState(mutable);
+							if ((s != 1 || blockState.exceedsCube()) && (s != 2 || blockState.getBlock() == Blocks.MOVING_PISTON)) {
+								initial = blockState.getCollisionShape(world, mutable, context)
+									.calculateMaxDistance(axis3, box.offset((double)(-mutable.getX()), (double)(-mutable.getY()), (double)(-mutable.getZ())), initial);
+								if (Math.abs(initial) < 1.0E-7) {
 									return 0.0;
 								}
 
-								n = method_17943(d, e, f);
+								n = clamp(initial, d, e);
 							}
 						}
 					}
 				}
 			}
 
-			double[] ds = new double[]{d};
-			stream.forEach(voxelShape -> ds[0] = voxelShape.method_1108(axis3, box, ds[0]));
+			double[] ds = new double[]{initial};
+			shapes.forEach(voxelShape -> ds[0] = voxelShape.calculateMaxDistance(axis3, box, ds[0]));
 			return ds[0];
 		}
 	}
 
-	private static int method_17943(double d, double e, double f) {
-		return d > 0.0 ? MathHelper.floor(f + d) + 1 : MathHelper.floor(e + d) - 1;
+	private static int clamp(double value, double min, double max) {
+		return value > 0.0 ? MathHelper.floor(max + value) + 1 : MathHelper.floor(min + value) - 1;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static boolean isSideCovered(VoxelShape shape, VoxelShape neighbor, Direction side) {
+	public static boolean isSideCovered(VoxelShape shape, VoxelShape neighbor, Direction direction) {
 		if (shape == fullCube() && neighbor == fullCube()) {
 			return true;
 		} else if (neighbor.isEmpty()) {
 			return false;
 		} else {
-			Direction.Axis axis = side.getAxis();
-			Direction.AxisDirection axisDirection = side.getDirection();
+			Direction.Axis axis = direction.getAxis();
+			Direction.AxisDirection axisDirection = direction.getDirection();
 			VoxelShape voxelShape = axisDirection == Direction.AxisDirection.POSITIVE ? shape : neighbor;
 			VoxelShape voxelShape2 = axisDirection == Direction.AxisDirection.POSITIVE ? neighbor : shape;
 			BooleanBiFunction booleanBiFunction = axisDirection == Direction.AxisDirection.POSITIVE ? BooleanBiFunction.ONLY_FIRST : BooleanBiFunction.ONLY_SECOND;
 			return DoubleMath.fuzzyEquals(voxelShape.getMaximum(axis), 1.0, 1.0E-7)
 				&& DoubleMath.fuzzyEquals(voxelShape2.getMinimum(axis), 0.0, 1.0E-7)
 				&& !matchesAnywhere(
-					new SliceVoxelShape(voxelShape, axis, voxelShape.voxels.getSize(axis) - 1), new SliceVoxelShape(voxelShape2, axis, 0), booleanBiFunction
+					new SlicedVoxelShape(voxelShape, axis, voxelShape.voxels.getSize(axis) - 1), new SlicedVoxelShape(voxelShape2, axis, 0), booleanBiFunction
 				);
 		}
 	}
 
-	public static VoxelShape slice(VoxelShape shape, Direction direction) {
+	public static VoxelShape extrudeFace(VoxelShape shape, Direction direction) {
 		if (shape == fullCube()) {
 			return fullCube();
 		} else {
@@ -318,16 +316,16 @@ public final class VoxelShapes {
 				i = 0;
 			}
 
-			return (VoxelShape)(!bl ? empty() : new SliceVoxelShape(shape, axis, i));
+			return (VoxelShape)(!bl ? empty() : new SlicedVoxelShape(shape, axis, i));
 		}
 	}
 
-	public static boolean adjacentSidesCoverSquare(VoxelShape shape1, VoxelShape shape2, Direction direction) {
-		if (shape1 != fullCube() && shape2 != fullCube()) {
+	public static boolean adjacentSidesCoverSquare(VoxelShape one, VoxelShape two, Direction direction) {
+		if (one != fullCube() && two != fullCube()) {
 			Direction.Axis axis = direction.getAxis();
 			Direction.AxisDirection axisDirection = direction.getDirection();
-			VoxelShape voxelShape = axisDirection == Direction.AxisDirection.POSITIVE ? shape1 : shape2;
-			VoxelShape voxelShape2 = axisDirection == Direction.AxisDirection.POSITIVE ? shape2 : shape1;
+			VoxelShape voxelShape = axisDirection == Direction.AxisDirection.POSITIVE ? one : two;
+			VoxelShape voxelShape2 = axisDirection == Direction.AxisDirection.POSITIVE ? two : one;
 			if (!DoubleMath.fuzzyEquals(voxelShape.getMaximum(axis), 1.0, 1.0E-7)) {
 				voxelShape = empty();
 			}
@@ -338,7 +336,7 @@ public final class VoxelShapes {
 
 			return !matchesAnywhere(
 				fullCube(),
-				combine(new SliceVoxelShape(voxelShape, axis, voxelShape.voxels.getSize(axis) - 1), new SliceVoxelShape(voxelShape2, axis, 0), BooleanBiFunction.OR),
+				combine(new SlicedVoxelShape(voxelShape, axis, voxelShape.voxels.getSize(axis) - 1), new SlicedVoxelShape(voxelShape2, axis, 0), BooleanBiFunction.OR),
 				BooleanBiFunction.ONLY_FIRST
 			);
 		} else {
@@ -346,41 +344,39 @@ public final class VoxelShapes {
 		}
 	}
 
-	public static boolean unionCoversFullCube(VoxelShape shape1, VoxelShape shape2) {
-		if (shape1 == fullCube() || shape2 == fullCube()) {
+	public static boolean unionCoversFullCube(VoxelShape one, VoxelShape two) {
+		if (one == fullCube() || two == fullCube()) {
 			return true;
 		} else {
-			return shape1.isEmpty() && shape2.isEmpty()
-				? false
-				: !matchesAnywhere(fullCube(), combine(shape1, shape2, BooleanBiFunction.OR), BooleanBiFunction.ONLY_FIRST);
+			return one.isEmpty() && two.isEmpty() ? false : !matchesAnywhere(fullCube(), combine(one, two, BooleanBiFunction.OR), BooleanBiFunction.ONLY_FIRST);
 		}
 	}
 
 	@VisibleForTesting
-	protected static DoubleListPair createListPair(int size, DoubleList first, DoubleList second, boolean includeFirst, boolean includeSecond) {
+	protected static PairList createListPair(int size, DoubleList first, DoubleList second, boolean includeFirst, boolean includeSecond) {
 		int i = first.size() - 1;
 		int j = second.size() - 1;
 		if (first instanceof FractionalDoubleList && second instanceof FractionalDoubleList) {
 			long l = lcm(i, j);
 			if ((long)size * l <= 256L) {
-				return new FractionalDoubleListPair(i, j);
+				return new FractionalPairList(i, j);
 			}
 		}
 
 		if (first.getDouble(i) < second.getDouble(0) - 1.0E-7) {
-			return new DisjointDoubleListPair(first, second, false);
+			return new DisjointPairList(first, second, false);
 		} else if (second.getDouble(j) < first.getDouble(0) - 1.0E-7) {
-			return new DisjointDoubleListPair(second, first, true);
+			return new DisjointPairList(second, first, true);
 		} else if (i != j || !Objects.equals(first, second)) {
-			return new SimpleDoubleListPair(first, second, includeFirst, includeSecond);
-		} else if (first instanceof IdentityListMerger) {
-			return (DoubleListPair)first;
+			return new SimplePairList(first, second, includeFirst, includeSecond);
+		} else if (first instanceof IdentityPairList) {
+			return (PairList)first;
 		} else {
-			return (DoubleListPair)(second instanceof IdentityListMerger ? (DoubleListPair)second : new IdentityListMerger(first));
+			return (PairList)(second instanceof IdentityPairList ? (PairList)second : new IdentityPairList(first));
 		}
 	}
 
 	public interface BoxConsumer {
-		void consume(double minX, double d, double e, double f, double g, double h);
+		void consume(double minX, double minY, double minZ, double maxX, double maxY, double maxZ);
 	}
 }

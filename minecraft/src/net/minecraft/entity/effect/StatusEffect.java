@@ -29,11 +29,11 @@ public class StatusEffect {
 
 	@Nullable
 	public static StatusEffect byRawId(int rawId) {
-		return Registry.MOB_EFFECT.get(rawId);
+		return Registry.STATUS_EFFECT.get(rawId);
 	}
 
 	public static int getRawId(StatusEffect type) {
-		return Registry.MOB_EFFECT.getRawId(type);
+		return Registry.STATUS_EFFECT.getRawId(type);
 	}
 
 	protected StatusEffect(StatusEffectType statusEffectType, int i) {
@@ -106,7 +106,7 @@ public class StatusEffect {
 
 	protected String loadTranslationKey() {
 		if (this.translationKey == null) {
-			this.translationKey = Util.createTranslationKey("effect", Registry.MOB_EFFECT.getId(this));
+			this.translationKey = Util.createTranslationKey("effect", Registry.STATUS_EFFECT.getId(this));
 		}
 
 		return this.translationKey;

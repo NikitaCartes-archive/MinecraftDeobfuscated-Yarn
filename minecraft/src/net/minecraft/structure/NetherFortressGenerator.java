@@ -78,13 +78,13 @@ public class NetherFortressGenerator {
 
 	public static class Bridge extends NetherFortressGenerator.Piece {
 		public Bridge(int i, Random random, BlockBox blockBox, Direction direction) {
-			super(StructurePieceType.NE_B_S, i);
+			super(StructurePieceType.NETHER_FORTRESS_BRIDGE, i);
 			this.setOrientation(direction);
 			this.boundingBox = blockBox;
 		}
 
 		public Bridge(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.NE_B_S, compoundTag);
+			super(StructurePieceType.NETHER_FORTRESS_BRIDGE, compoundTag);
 		}
 
 		@Override
@@ -137,13 +137,13 @@ public class NetherFortressGenerator {
 
 	public static class BridgeCrossing extends NetherFortressGenerator.Piece {
 		public BridgeCrossing(int i, BlockBox blockBox, Direction direction) {
-			super(StructurePieceType.NE_B_CR, i);
+			super(StructurePieceType.NETHER_FORTRESS_BRIDGE_CROSSING, i);
 			this.setOrientation(direction);
 			this.boundingBox = blockBox;
 		}
 
 		protected BridgeCrossing(Random random, int x, int z) {
-			super(StructurePieceType.NE_B_CR, 0);
+			super(StructurePieceType.NETHER_FORTRESS_BRIDGE_CROSSING, 0);
 			this.setOrientation(Direction.Type.HORIZONTAL.random(random));
 			if (this.getFacing().getAxis() == Direction.Axis.Z) {
 				this.boundingBox = new BlockBox(x, 64, z, x + 19 - 1, 73, z + 19 - 1);
@@ -157,7 +157,7 @@ public class NetherFortressGenerator {
 		}
 
 		public BridgeCrossing(StructureManager structureManager, CompoundTag compoundTag) {
-			this(StructurePieceType.NE_B_CR, compoundTag);
+			this(StructurePieceType.NETHER_FORTRESS_BRIDGE_CROSSING, compoundTag);
 		}
 
 		@Override
@@ -220,14 +220,14 @@ public class NetherFortressGenerator {
 		private final int seed;
 
 		public BridgeEnd(int i, Random random, BlockBox blockBox, Direction direction) {
-			super(StructurePieceType.NE_B_E_F, i);
+			super(StructurePieceType.NETHER_FORTRESS_BRIDGE_END, i);
 			this.setOrientation(direction);
 			this.boundingBox = blockBox;
 			this.seed = random.nextInt();
 		}
 
 		public BridgeEnd(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.NE_B_E_F, compoundTag);
+			super(StructurePieceType.NETHER_FORTRESS_BRIDGE_END, compoundTag);
 			this.seed = compoundTag.getInt("Seed");
 		}
 
@@ -280,13 +280,13 @@ public class NetherFortressGenerator {
 		private boolean hasBlazeSpawner;
 
 		public BridgePlatform(int i, BlockBox blockBox, Direction direction) {
-			super(StructurePieceType.NE_M_T, i);
+			super(StructurePieceType.NETHER_FORTRESS_BRIDGE_PLATFORM, i);
 			this.setOrientation(direction);
 			this.boundingBox = blockBox;
 		}
 
 		public BridgePlatform(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.NE_M_T, compoundTag);
+			super(StructurePieceType.NETHER_FORTRESS_BRIDGE_PLATFORM, compoundTag);
 			this.hasBlazeSpawner = compoundTag.getBoolean("Mob");
 		}
 
@@ -392,13 +392,13 @@ public class NetherFortressGenerator {
 
 	public static class BridgeSmallCrossing extends NetherFortressGenerator.Piece {
 		public BridgeSmallCrossing(int i, BlockBox blockBox, Direction direction) {
-			super(StructurePieceType.NE_R_C, i);
+			super(StructurePieceType.NETHER_FORTRESS_BRIDGE_SMALL_CROSSING, i);
 			this.setOrientation(direction);
 			this.boundingBox = blockBox;
 		}
 
 		public BridgeSmallCrossing(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.NE_R_C, compoundTag);
+			super(StructurePieceType.NETHER_FORTRESS_BRIDGE_SMALL_CROSSING, compoundTag);
 		}
 
 		@Override
@@ -456,13 +456,13 @@ public class NetherFortressGenerator {
 
 	public static class BridgeStairs extends NetherFortressGenerator.Piece {
 		public BridgeStairs(int i, BlockBox blockBox, Direction direction) {
-			super(StructurePieceType.NE_S_R, i);
+			super(StructurePieceType.NETHER_FORTRESS_BRIDGE_STAIRS, i);
 			this.setOrientation(direction);
 			this.boundingBox = blockBox;
 		}
 
 		public BridgeStairs(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.NE_S_R, compoundTag);
+			super(StructurePieceType.NETHER_FORTRESS_BRIDGE_STAIRS, compoundTag);
 		}
 
 		@Override
@@ -519,13 +519,13 @@ public class NetherFortressGenerator {
 
 	public static class CorridorBalcony extends NetherFortressGenerator.Piece {
 		public CorridorBalcony(int i, BlockBox blockBox, Direction direction) {
-			super(StructurePieceType.NE_C_T_B, i);
+			super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_BALCONY, i);
 			this.setOrientation(direction);
 			this.boundingBox = blockBox;
 		}
 
 		public CorridorBalcony(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.NE_C_T_B, compoundTag);
+			super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_BALCONY, compoundTag);
 		}
 
 		@Override
@@ -605,13 +605,13 @@ public class NetherFortressGenerator {
 
 	public static class CorridorCrossing extends NetherFortressGenerator.Piece {
 		public CorridorCrossing(int i, BlockBox blockBox, Direction direction) {
-			super(StructurePieceType.NE_S_C_S_C, i);
+			super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_CROSSING, i);
 			this.setOrientation(direction);
 			this.boundingBox = blockBox;
 		}
 
 		public CorridorCrossing(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.NE_S_C_S_C, compoundTag);
+			super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_CROSSING, compoundTag);
 		}
 
 		@Override
@@ -650,13 +650,13 @@ public class NetherFortressGenerator {
 
 	public static class CorridorExit extends NetherFortressGenerator.Piece {
 		public CorridorExit(int i, Random random, BlockBox blockBox, Direction direction) {
-			super(StructurePieceType.NE_C_E, i);
+			super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_EXIT, i);
 			this.setOrientation(direction);
 			this.boundingBox = blockBox;
 		}
 
 		public CorridorExit(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.NE_C_E, compoundTag);
+			super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_EXIT, compoundTag);
 		}
 
 		@Override
@@ -811,14 +811,14 @@ public class NetherFortressGenerator {
 		private boolean containsChest;
 
 		public CorridorLeftTurn(int i, Random random, BlockBox blockBox, Direction direction) {
-			super(StructurePieceType.NE_S_C_L_T, i);
+			super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_LEFT_TURN, i);
 			this.setOrientation(direction);
 			this.boundingBox = blockBox;
 			this.containsChest = random.nextInt(3) == 0;
 		}
 
 		public CorridorLeftTurn(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.NE_S_C_L_T, compoundTag);
+			super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_LEFT_TURN, compoundTag);
 			this.containsChest = compoundTag.getBoolean("Chest");
 		}
 
@@ -878,13 +878,13 @@ public class NetherFortressGenerator {
 
 	public static class CorridorNetherWartsRoom extends NetherFortressGenerator.Piece {
 		public CorridorNetherWartsRoom(int i, BlockBox blockBox, Direction direction) {
-			super(StructurePieceType.NE_C_S_R, i);
+			super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_NETHER_WARTS_ROOM, i);
 			this.setOrientation(direction);
 			this.boundingBox = blockBox;
 		}
 
 		public CorridorNetherWartsRoom(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.NE_C_S_R, compoundTag);
+			super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_NETHER_WARTS_ROOM, compoundTag);
 		}
 
 		@Override
@@ -1055,14 +1055,14 @@ public class NetherFortressGenerator {
 		private boolean containsChest;
 
 		public CorridorRightTurn(int i, Random random, BlockBox blockBox, Direction direction) {
-			super(StructurePieceType.NE_S_C_R_T, i);
+			super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_RIGHT_TURN, i);
 			this.setOrientation(direction);
 			this.boundingBox = blockBox;
 			this.containsChest = random.nextInt(3) == 0;
 		}
 
 		public CorridorRightTurn(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.NE_S_C_R_T, compoundTag);
+			super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_RIGHT_TURN, compoundTag);
 			this.containsChest = compoundTag.getBoolean("Chest");
 		}
 
@@ -1124,13 +1124,13 @@ public class NetherFortressGenerator {
 
 	public static class CorridorStairs extends NetherFortressGenerator.Piece {
 		public CorridorStairs(int i, BlockBox blockBox, Direction direction) {
-			super(StructurePieceType.NE_C_C_S, i);
+			super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_STAIRS, i);
 			this.setOrientation(direction);
 			this.boundingBox = blockBox;
 		}
 
 		public CorridorStairs(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.NE_C_C_S, compoundTag);
+			super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_STAIRS, compoundTag);
 		}
 
 		@Override
@@ -1362,13 +1362,13 @@ public class NetherFortressGenerator {
 
 	public static class SmallCorridor extends NetherFortressGenerator.Piece {
 		public SmallCorridor(int i, BlockBox blockBox, Direction direction) {
-			super(StructurePieceType.NE_S_C, i);
+			super(StructurePieceType.NETHER_FORTRESS_SMALL_CORRIDOR, i);
 			this.setOrientation(direction);
 			this.boundingBox = blockBox;
 		}
 
 		public SmallCorridor(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.NE_S_C, compoundTag);
+			super(StructurePieceType.NETHER_FORTRESS_SMALL_CORRIDOR, compoundTag);
 		}
 
 		@Override
@@ -1433,7 +1433,7 @@ public class NetherFortressGenerator {
 		}
 
 		public Start(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.NE_START, compoundTag);
+			super(StructurePieceType.NETHER_FORTRESS_START, compoundTag);
 		}
 	}
 

@@ -202,7 +202,7 @@ public class BlockEntityType<T extends BlockEntity> {
 
 	@Nullable
 	public static Identifier getId(BlockEntityType<?> blockEntityType) {
-		return Registry.BLOCK_ENTITY_TYPE.getId(blockEntityType);
+		return Registry.BLOCK_ENTITY.getId(blockEntityType);
 	}
 
 	private static <T extends BlockEntity> BlockEntityType<T> create(String string, BlockEntityType.Builder<T> builder) {
@@ -223,7 +223,7 @@ public class BlockEntityType<T extends BlockEntity> {
 			LOGGER.warn("Block entity type {} requires at least one valid block to be defined!", string);
 		}
 
-		return Registry.register(Registry.BLOCK_ENTITY_TYPE, string, builder.build(type));
+		return Registry.register(Registry.BLOCK_ENTITY, string, builder.build(type));
 	}
 
 	public BlockEntityType(Supplier<? extends T> supplier, Set<Block> blocks, Type<?> type) {

@@ -185,14 +185,14 @@ public class RealmsBackupScreen extends RealmsScreen {
 			String string2 = RealmsUtil.convertToAgePresentation(System.currentTimeMillis() - date.getTime());
 			String string3 = getLocalizedString("mco.configure.world.restore.question.line1", new Object[]{string, string2});
 			String string4 = getLocalizedString("mco.configure.world.restore.question.line2");
-			Realms.setScreen(new RealmsLongConfirmationScreen(this, RealmsLongConfirmationScreen.Type.WARNING, string3, string4, true, 1));
+			Realms.setScreen(new RealmsLongConfirmationScreen(this, RealmsLongConfirmationScreen.Type.Warning, string3, string4, true, 1));
 		}
 	}
 
 	private void downloadClicked() {
 		String string = getLocalizedString("mco.configure.world.restore.download.question.line1");
 		String string2 = getLocalizedString("mco.configure.world.restore.download.question.line2");
-		Realms.setScreen(new RealmsLongConfirmationScreen(this, RealmsLongConfirmationScreen.Type.INFO, string, string2, true, 2));
+		Realms.setScreen(new RealmsLongConfirmationScreen(this, RealmsLongConfirmationScreen.Type.Info, string, string2, true, 2));
 	}
 
 	private void downloadWorldData() {

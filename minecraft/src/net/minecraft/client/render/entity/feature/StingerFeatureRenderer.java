@@ -52,9 +52,9 @@ public class StingerFeatureRenderer<T extends LivingEntity, M extends PlayerEnti
 
 		for (int r = 0; r < 4; r++) {
 			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0F));
-			MatrixStack.Entry entry = matrixStack.method_23760();
-			Matrix4f matrix4f = entry.method_23761();
-			Matrix3f matrix3f = entry.method_23762();
+			MatrixStack.Entry entry = matrixStack.peek();
+			Matrix4f matrix4f = entry.getModel();
+			Matrix3f matrix3f = entry.getNormal();
 			method_23295(vertexConsumer, matrix4f, matrix3f, -4.5F, -1, 0.0F, 0.0F, i);
 			method_23295(vertexConsumer, matrix4f, matrix3f, 4.5F, -1, 0.125F, 0.0F, i);
 			method_23295(vertexConsumer, matrix4f, matrix3f, 4.5F, 1, 0.125F, 0.0625F, i);

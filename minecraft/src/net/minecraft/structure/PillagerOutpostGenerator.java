@@ -86,11 +86,11 @@ public class PillagerOutpostGenerator {
 
 	public static class Piece extends PoolStructurePiece {
 		public Piece(StructureManager manager, StructurePoolElement element, BlockPos pos, int groundLevelDelta, BlockRotation rotation, BlockBox boundingBox) {
-			super(StructurePieceType.PCP, manager, element, pos, groundLevelDelta, rotation, boundingBox);
+			super(StructurePieceType.PILLAGER_OUTPOST, manager, element, pos, groundLevelDelta, rotation, boundingBox);
 		}
 
 		public Piece(StructureManager manager, CompoundTag tag) {
-			super(manager, tag, StructurePieceType.PCP);
+			super(manager, tag, StructurePieceType.PILLAGER_OUTPOST);
 		}
 	}
 }

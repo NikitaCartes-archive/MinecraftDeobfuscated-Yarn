@@ -16,12 +16,12 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 public class BuriedTreasureGenerator {
 	public static class Piece extends StructurePiece {
 		public Piece(BlockPos pos) {
-			super(StructurePieceType.BTP, 0);
+			super(StructurePieceType.BURIED_TREASURE, 0);
 			this.boundingBox = new BlockBox(pos.getX(), pos.getY(), pos.getZ(), pos.getX(), pos.getY(), pos.getZ());
 		}
 
 		public Piece(StructureManager manager, CompoundTag tag) {
-			super(StructurePieceType.BTP, tag);
+			super(StructurePieceType.BURIED_TREASURE, tag);
 		}
 
 		@Override

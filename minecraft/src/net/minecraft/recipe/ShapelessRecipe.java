@@ -33,7 +33,7 @@ public class ShapelessRecipe implements CraftingRecipe {
 
 	@Override
 	public RecipeSerializer<?> getSerializer() {
-		return RecipeSerializer.CRAFTING_SHAPELESS;
+		return RecipeSerializer.SHAPELESS;
 	}
 
 	@Environment(EnvType.CLIENT)

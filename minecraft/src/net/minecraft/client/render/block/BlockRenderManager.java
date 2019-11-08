@@ -97,7 +97,7 @@ public class BlockRenderManager implements SynchronousResourceReloadListener {
 					float g = (float)(i >> 8 & 0xFF) / 255.0F;
 					float h = (float)(i & 0xFF) / 255.0F;
 					this.blockModelRenderer
-						.render(matrixStack.method_23760(), vertexConsumer.getBuffer(RenderLayers.getEntityBlockLayer(state)), state, bakedModel, f, g, h, light, overlay);
+						.render(matrixStack.peek(), vertexConsumer.getBuffer(RenderLayers.getEntityBlockLayer(state)), state, bakedModel, f, g, h, light, overlay);
 					break;
 				case ENTITYBLOCK_ANIMATED:
 					BuiltinModelItemRenderer.INSTANCE.render(new ItemStack(state.getBlock()), matrixStack, vertexConsumer, light, overlay);

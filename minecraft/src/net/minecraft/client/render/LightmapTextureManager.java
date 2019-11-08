@@ -81,7 +81,7 @@ public class LightmapTextureManager implements AutoCloseable {
 			if (clientWorld != null) {
 				float f = clientWorld.method_23783(1.0F);
 				float g;
-				if (clientWorld.method_23789() > 0) {
+				if (clientWorld.getLightningTicksLeft() > 0) {
 					g = 1.0F;
 				} else {
 					g = f * 0.95F + 0.05F;

@@ -78,7 +78,7 @@ public class MineshaftGenerator {
 		private final int length;
 
 		public MineshaftCorridor(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.MSCORRIDOR, compoundTag);
+			super(StructurePieceType.MINESHAFT_CORRIDOR, compoundTag);
 			this.hasRails = compoundTag.getBoolean("hr");
 			this.hasCobwebs = compoundTag.getBoolean("sc");
 			this.hasSpawner = compoundTag.getBoolean("hps");
@@ -95,7 +95,7 @@ public class MineshaftGenerator {
 		}
 
 		public MineshaftCorridor(int i, Random random, BlockBox blockBox, Direction direction, MineshaftFeature.Type type) {
-			super(StructurePieceType.MSCORRIDOR, i, type);
+			super(StructurePieceType.MINESHAFT_CORRIDOR, i, type);
 			this.setOrientation(direction);
 			this.boundingBox = blockBox;
 			this.hasRails = random.nextInt(3) == 0;
@@ -364,7 +364,7 @@ public class MineshaftGenerator {
 		private final boolean twoFloors;
 
 		public MineshaftCrossing(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.MSCROSSING, compoundTag);
+			super(StructurePieceType.MINESHAFT_CROSSING, compoundTag);
 			this.twoFloors = compoundTag.getBoolean("tf");
 			this.direction = Direction.fromHorizontal(compoundTag.getInt("D"));
 		}
@@ -377,7 +377,7 @@ public class MineshaftGenerator {
 		}
 
 		public MineshaftCrossing(int i, BlockBox blockBox, @Nullable Direction direction, MineshaftFeature.Type type) {
-			super(StructurePieceType.MSCROSSING, i, type);
+			super(StructurePieceType.MINESHAFT_CROSSING, i, type);
 			this.direction = direction;
 			this.boundingBox = blockBox;
 			this.twoFloors = blockBox.getBlockCountY() > 3;
@@ -670,13 +670,13 @@ public class MineshaftGenerator {
 		private final List<BlockBox> entrances = Lists.<BlockBox>newLinkedList();
 
 		public MineshaftRoom(int i, Random random, int j, int k, MineshaftFeature.Type type) {
-			super(StructurePieceType.MSROOM, i, type);
+			super(StructurePieceType.MINESHAFT_ROOM, i, type);
 			this.mineshaftType = type;
 			this.boundingBox = new BlockBox(j, 50, k, j + 7 + random.nextInt(6), 54 + random.nextInt(6), k + 7 + random.nextInt(6));
 		}
 
 		public MineshaftRoom(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.MSROOM, compoundTag);
+			super(StructurePieceType.MINESHAFT_ROOM, compoundTag);
 			ListTag listTag = compoundTag.getList("Entrances", 11);
 
 			for (int i = 0; i < listTag.size(); i++) {
@@ -845,13 +845,13 @@ public class MineshaftGenerator {
 
 	public static class MineshaftStairs extends MineshaftGenerator.MineshaftPart {
 		public MineshaftStairs(int i, BlockBox blockBox, Direction direction, MineshaftFeature.Type type) {
-			super(StructurePieceType.MSSTAIRS, i, type);
+			super(StructurePieceType.MINESHAFT_STAIRS, i, type);
 			this.setOrientation(direction);
 			this.boundingBox = blockBox;
 		}
 
 		public MineshaftStairs(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.MSSTAIRS, compoundTag);
+			super(StructurePieceType.MINESHAFT_STAIRS, compoundTag);
 		}
 
 		public static BlockBox method_14720(List<StructurePiece> list, Random random, int i, int j, int k, Direction direction) {

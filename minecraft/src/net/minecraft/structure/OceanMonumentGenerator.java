@@ -27,7 +27,7 @@ public class OceanMonumentGenerator {
 		private final List<OceanMonumentGenerator.Piece> field_14465 = Lists.<OceanMonumentGenerator.Piece>newArrayList();
 
 		public Base(Random random, int i, int j, Direction direction) {
-			super(StructurePieceType.OMB, 0);
+			super(StructurePieceType.OCEAN_MONUMENT_BASE, 0);
 			this.setOrientation(direction);
 			Direction direction2 = this.getFacing();
 			if (direction2.getAxis() == Direction.Axis.Z) {
@@ -99,7 +99,7 @@ public class OceanMonumentGenerator {
 		}
 
 		public Base(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.OMB, compoundTag);
+			super(StructurePieceType.OCEAN_MONUMENT_BASE, compoundTag);
 		}
 
 		private List<OceanMonumentGenerator.class_3388> method_14760(Random random) {
@@ -589,11 +589,11 @@ public class OceanMonumentGenerator {
 
 	public static class CoreRoom extends OceanMonumentGenerator.Piece {
 		public CoreRoom(Direction direction, OceanMonumentGenerator.class_3388 arg) {
-			super(StructurePieceType.OMCR, 1, direction, arg, 2, 2, 2);
+			super(StructurePieceType.OCEAN_MONUMENT_CORE_ROOM, 1, direction, arg, 2, 2, 2);
 		}
 
 		public CoreRoom(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.OMCR, compoundTag);
+			super(StructurePieceType.OCEAN_MONUMENT_CORE_ROOM, compoundTag);
 		}
 
 		@Override
@@ -668,11 +668,11 @@ public class OceanMonumentGenerator {
 
 	public static class DoubleXRoom extends OceanMonumentGenerator.Piece {
 		public DoubleXRoom(Direction direction, OceanMonumentGenerator.class_3388 arg) {
-			super(StructurePieceType.OMDXR, 1, direction, arg, 2, 1, 1);
+			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_X_ROOM, 1, direction, arg, 2, 1, 1);
 		}
 
 		public DoubleXRoom(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.OMDXR, compoundTag);
+			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_X_ROOM, compoundTag);
 		}
 
 		@Override
@@ -739,11 +739,11 @@ public class OceanMonumentGenerator {
 
 	public static class DoubleXYRoom extends OceanMonumentGenerator.Piece {
 		public DoubleXYRoom(Direction direction, OceanMonumentGenerator.class_3388 arg) {
-			super(StructurePieceType.OMDXYR, 1, direction, arg, 2, 2, 1);
+			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_X_Y_ROOM, 1, direction, arg, 2, 2, 1);
 		}
 
 		public DoubleXYRoom(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.OMDXYR, compoundTag);
+			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_X_Y_ROOM, compoundTag);
 		}
 
 		@Override
@@ -854,11 +854,11 @@ public class OceanMonumentGenerator {
 
 	public static class DoubleYRoom extends OceanMonumentGenerator.Piece {
 		public DoubleYRoom(Direction direction, OceanMonumentGenerator.class_3388 arg) {
-			super(StructurePieceType.OMDYR, 1, direction, arg, 1, 2, 1);
+			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Y_ROOM, 1, direction, arg, 1, 2, 1);
 		}
 
 		public DoubleYRoom(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.OMDYR, compoundTag);
+			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Y_ROOM, compoundTag);
 		}
 
 		@Override
@@ -936,11 +936,11 @@ public class OceanMonumentGenerator {
 
 	public static class DoubleYZRoom extends OceanMonumentGenerator.Piece {
 		public DoubleYZRoom(Direction direction, OceanMonumentGenerator.class_3388 arg) {
-			super(StructurePieceType.OMDYZR, 1, direction, arg, 1, 2, 2);
+			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Y_Z_ROOM, 1, direction, arg, 1, 2, 2);
 		}
 
 		public DoubleYZRoom(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.OMDYZR, compoundTag);
+			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Y_Z_ROOM, compoundTag);
 		}
 
 		@Override
@@ -1049,11 +1049,11 @@ public class OceanMonumentGenerator {
 
 	public static class DoubleZRoom extends OceanMonumentGenerator.Piece {
 		public DoubleZRoom(Direction direction, OceanMonumentGenerator.class_3388 arg) {
-			super(StructurePieceType.OMDZR, 1, direction, arg, 1, 1, 2);
+			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Z_ROOM, 1, direction, arg, 1, 1, 2);
 		}
 
 		public DoubleZRoom(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.OMDZR, compoundTag);
+			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Z_ROOM, compoundTag);
 		}
 
 		@Override
@@ -1139,11 +1139,11 @@ public class OceanMonumentGenerator {
 
 	public static class Entry extends OceanMonumentGenerator.Piece {
 		public Entry(Direction direction, OceanMonumentGenerator.class_3388 arg) {
-			super(StructurePieceType.OMENTRY, 1, direction, arg, 1, 1, 1);
+			super(StructurePieceType.OCEAN_MONUMENT_ENTRY_ROOM, 1, direction, arg, 1, 1, 1);
 		}
 
 		public Entry(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.OMENTRY, compoundTag);
+			super(StructurePieceType.OCEAN_MONUMENT_ENTRY_ROOM, compoundTag);
 		}
 
 		@Override
@@ -1175,11 +1175,11 @@ public class OceanMonumentGenerator {
 
 	public static class Penthouse extends OceanMonumentGenerator.Piece {
 		public Penthouse(Direction direction, BlockBox blockBox) {
-			super(StructurePieceType.OMPENTHOUSE, direction, blockBox);
+			super(StructurePieceType.OCEAN_MONUMENT_PENTHOUSE, direction, blockBox);
 		}
 
 		public Penthouse(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.OMPENTHOUSE, compoundTag);
+			super(StructurePieceType.OCEAN_MONUMENT_PENTHOUSE, compoundTag);
 		}
 
 		@Override
@@ -1372,12 +1372,12 @@ public class OceanMonumentGenerator {
 		private int field_14480;
 
 		public SimpleRoom(Direction direction, OceanMonumentGenerator.class_3388 arg, Random random) {
-			super(StructurePieceType.OMSIMPLE, 1, direction, arg, 1, 1, 1);
+			super(StructurePieceType.OCEAN_MONUMENT_SIMPLE_ROOM, 1, direction, arg, 1, 1, 1);
 			this.field_14480 = random.nextInt(3);
 		}
 
 		public SimpleRoom(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.OMSIMPLE, compoundTag);
+			super(StructurePieceType.OCEAN_MONUMENT_SIMPLE_ROOM, compoundTag);
 		}
 
 		@Override
@@ -1541,11 +1541,11 @@ public class OceanMonumentGenerator {
 
 	public static class SimpleRoomTop extends OceanMonumentGenerator.Piece {
 		public SimpleRoomTop(Direction direction, OceanMonumentGenerator.class_3388 arg) {
-			super(StructurePieceType.OMSIMPLE_T, 1, direction, arg, 1, 1, 1);
+			super(StructurePieceType.OCEAN_MONUMENT_SIMPLE_TOP_ROOM, 1, direction, arg, 1, 1, 1);
 		}
 
 		public SimpleRoomTop(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.OMSIMPLE_T, compoundTag);
+			super(StructurePieceType.OCEAN_MONUMENT_SIMPLE_TOP_ROOM, compoundTag);
 		}
 
 		@Override
@@ -1596,12 +1596,12 @@ public class OceanMonumentGenerator {
 		private int field_14481;
 
 		public WingRoom(Direction direction, BlockBox blockBox, int i) {
-			super(StructurePieceType.OMWR, direction, blockBox);
+			super(StructurePieceType.OCEAN_MONUMENT_WING_ROOM, direction, blockBox);
 			this.field_14481 = i & 1;
 		}
 
 		public WingRoom(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.OMWR, compoundTag);
+			super(StructurePieceType.OCEAN_MONUMENT_WING_ROOM, compoundTag);
 		}
 
 		@Override

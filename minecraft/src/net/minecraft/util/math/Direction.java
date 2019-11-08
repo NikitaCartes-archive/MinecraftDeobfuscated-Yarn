@@ -278,8 +278,8 @@ public enum Direction implements StringIdentifiable {
 	public static enum Axis implements StringIdentifiable, Predicate<Direction> {
 		X("x") {
 			@Override
-			public int choose(int i, int j, int k) {
-				return i;
+			public int choose(int x, int y, int z) {
+				return x;
 			}
 
 			@Override
@@ -289,8 +289,8 @@ public enum Direction implements StringIdentifiable {
 		},
 		Y("y") {
 			@Override
-			public int choose(int i, int j, int k) {
-				return j;
+			public int choose(int x, int y, int z) {
+				return y;
 			}
 
 			@Override
@@ -300,8 +300,8 @@ public enum Direction implements StringIdentifiable {
 		},
 		Z("z") {
 			@Override
-			public int choose(int i, int j, int k) {
-				return k;
+			public int choose(int x, int y, int z) {
+				return z;
 			}
 
 			@Override
@@ -365,7 +365,7 @@ public enum Direction implements StringIdentifiable {
 			return this.name;
 		}
 
-		public abstract int choose(int i, int j, int k);
+		public abstract int choose(int x, int y, int z);
 
 		public abstract double choose(double x, double y, double z);
 	}
@@ -377,9 +377,9 @@ public enum Direction implements StringIdentifiable {
 		private final int offset;
 		private final String desc;
 
-		private AxisDirection(int j, String string2) {
-			this.offset = j;
-			this.desc = string2;
+		private AxisDirection(int offset, String description) {
+			this.offset = offset;
+			this.desc = description;
 		}
 
 		public int offset() {

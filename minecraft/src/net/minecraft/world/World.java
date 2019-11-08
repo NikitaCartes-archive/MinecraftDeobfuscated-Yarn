@@ -192,7 +192,7 @@ public abstract class World implements IWorld, AutoCloseable {
 
 				if (blockState2 == state) {
 					if (blockState != blockState2) {
-						this.scheduleBlockRender(pos, blockState, blockState2);
+						this.checkBlockRerender(pos, blockState, blockState2);
 					}
 
 					if ((flags & 2) != 0
@@ -262,7 +262,7 @@ public abstract class World implements IWorld, AutoCloseable {
 		}
 	}
 
-	public void scheduleBlockRender(BlockPos blockPos, BlockState blockState, BlockState blockState2) {
+	public void checkBlockRerender(BlockPos pos, BlockState old, BlockState updated) {
 	}
 
 	public void updateNeighborsAlways(BlockPos pos, Block block) {
@@ -406,7 +406,7 @@ public abstract class World implements IWorld, AutoCloseable {
 
 	public boolean addBlockEntity(BlockEntity blockEntity) {
 		if (this.iteratingTickingBlockEntities) {
-			LOGGER.error("Adding block entity while ticking: {} @ {}", () -> Registry.BLOCK_ENTITY_TYPE.getId(blockEntity.getType()), blockEntity::getPos);
+			LOGGER.error("Adding block entity while ticking: {} @ {}", () -> Registry.BLOCK_ENTITY.getId(blockEntity.getType()), blockEntity::getPos);
 		}
 
 		boolean bl = this.blockEntities.add(blockEntity);
@@ -1131,7 +1131,7 @@ public abstract class World implements IWorld, AutoCloseable {
 		return this.ambientDarkness;
 	}
 
-	public void setTicksSinceLightning(int ticksSinceLightning) {
+	public void setLightningTicksLeft(int lightningTicksLeft) {
 	}
 
 	@Override

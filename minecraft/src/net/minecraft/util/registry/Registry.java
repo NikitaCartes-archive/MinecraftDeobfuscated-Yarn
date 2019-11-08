@@ -76,7 +76,7 @@ public abstract class Registry<T> implements IndexedIterable<T> {
 	public static final MutableRegistry<MutableRegistry<?>> REGISTRIES = new SimpleRegistry<>();
 	public static final Registry<SoundEvent> SOUND_EVENT = create("sound_event", () -> SoundEvents.ENTITY_ITEM_PICKUP);
 	public static final DefaultedRegistry<Fluid> FLUID = create("fluid", "empty", () -> Fluids.EMPTY);
-	public static final Registry<StatusEffect> MOB_EFFECT = create("mob_effect", () -> StatusEffects.LUCK);
+	public static final Registry<StatusEffect> STATUS_EFFECT = create("mob_effect", () -> StatusEffects.LUCK);
 	public static final DefaultedRegistry<Block> BLOCK = create("block", "air", () -> Blocks.AIR);
 	public static final Registry<Enchantment> ENCHANTMENT = create("enchantment", () -> Enchantments.FORTUNE);
 	public static final DefaultedRegistry<EntityType<?>> ENTITY_TYPE = create("entity_type", "pig", () -> EntityType.PIG);
@@ -95,22 +95,22 @@ public abstract class Registry<T> implements IndexedIterable<T> {
 	public static final Registry<TreeDecoratorType<?>> TREE_DECORATOR_TYPE = create("tree_decorator_type", () -> TreeDecoratorType.LEAVE_VINE);
 	public static final Registry<ParticleType<? extends ParticleEffect>> PARTICLE_TYPE = create("particle_type", () -> ParticleTypes.BLOCK);
 	public static final Registry<BiomeSourceType<?, ?>> BIOME_SOURCE_TYPE = create("biome_source_type", () -> BiomeSourceType.VANILLA_LAYERED);
-	public static final Registry<BlockEntityType<?>> BLOCK_ENTITY_TYPE = create("block_entity_type", () -> BlockEntityType.FURNACE);
+	public static final Registry<BlockEntityType<?>> BLOCK_ENTITY = create("block_entity_type", () -> BlockEntityType.FURNACE);
 	public static final Registry<ChunkGeneratorType<?, ?>> CHUNK_GENERATOR_TYPE = create("chunk_generator_type", () -> ChunkGeneratorType.FLAT);
-	public static final Registry<DimensionType> DIMENSION_TYPE = create("dimension_type", () -> DimensionType.OVERWORLD);
+	public static final Registry<DimensionType> DIMENSION = create("dimension_type", () -> DimensionType.OVERWORLD);
 	public static final DefaultedRegistry<PaintingMotive> MOTIVE = create("motive", "kebab", () -> PaintingMotive.KEBAB);
 	public static final Registry<Identifier> CUSTOM_STAT = create("custom_stat", () -> Stats.JUMP);
 	public static final DefaultedRegistry<ChunkStatus> CHUNK_STATUS = create("chunk_status", "empty", () -> ChunkStatus.EMPTY);
 	public static final Registry<StructureFeature<?>> STRUCTURE_FEATURE = create("structure_feature", () -> StructureFeatures.MINESHAFT);
-	public static final Registry<StructurePieceType> STRUCTURE_PIECE = create("structure_piece", () -> StructurePieceType.MSROOM);
+	public static final Registry<StructurePieceType> STRUCTURE_PIECE = create("structure_piece", () -> StructurePieceType.MINESHAFT_ROOM);
 	public static final Registry<RuleTest> RULE_TEST = create("rule_test", () -> RuleTest.ALWAYS_TRUE);
 	public static final Registry<StructureProcessorType> STRUCTURE_PROCESSOR = create("structure_processor", () -> StructureProcessorType.BLOCK_IGNORE);
 	public static final Registry<StructurePoolElementType> STRUCTURE_POOL_ELEMENT = create(
 		"structure_pool_element", () -> StructurePoolElementType.EMPTY_POOL_ELEMENT
 	);
-	public static final Registry<ContainerType<?>> MENU = create("menu", () -> ContainerType.ANVIL);
+	public static final Registry<ContainerType<?>> CONTAINER = create("menu", () -> ContainerType.ANVIL);
 	public static final Registry<RecipeType<?>> RECIPE_TYPE = create("recipe_type", () -> RecipeType.CRAFTING);
-	public static final Registry<RecipeSerializer<?>> RECIPE_SERIALIZER = create("recipe_serializer", () -> RecipeSerializer.CRAFTING_SHAPELESS);
+	public static final Registry<RecipeSerializer<?>> RECIPE_SERIALIZER = create("recipe_serializer", () -> RecipeSerializer.SHAPELESS);
 	public static final Registry<StatType<?>> STAT_TYPE = create("stat_type", () -> Stats.USED);
 	public static final DefaultedRegistry<VillagerType> VILLAGER_TYPE = create("villager_type", "plains", () -> VillagerType.PLAINS);
 	public static final DefaultedRegistry<VillagerProfession> VILLAGER_PROFESSION = create("villager_profession", "none", () -> VillagerProfession.NONE);

@@ -38,7 +38,7 @@ public class BonusChestFeature extends Feature<DefaultFeatureConfig> {
 				BlockPos blockPos2 = blockPos.add(random.nextInt(4) - random.nextInt(4), random.nextInt(3) - random.nextInt(3), random.nextInt(4) - random.nextInt(4));
 				if (iWorld.isAir(blockPos2)) {
 					iWorld.setBlockState(blockPos2, Blocks.CHEST.getDefaultState(), 2);
-					LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos2, LootTables.SPAWN_BONUS_CHEST_CHEST);
+					LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos2, LootTables.SPAWN_BONUS_CHEST);
 					BlockState blockState2 = Blocks.TORCH.getDefaultState();
 
 					for (Direction direction : Direction.Type.HORIZONTAL) {

@@ -22,11 +22,11 @@ public class SwampHutGenerator extends StructurePieceWithDimensions {
 	private boolean hasCat;
 
 	public SwampHutGenerator(Random random, int i, int j) {
-		super(StructurePieceType.TE_S_H, random, i, 64, j, 7, 7, 9);
+		super(StructurePieceType.SWAMP_HUT, random, i, 64, j, 7, 7, 9);
 	}
 
 	public SwampHutGenerator(StructureManager structureManager, CompoundTag compoundTag) {
-		super(StructurePieceType.TE_S_H, compoundTag);
+		super(StructurePieceType.SWAMP_HUT, compoundTag);
 		this.hasWitch = compoundTag.getBoolean("Witch");
 		this.hasCat = compoundTag.getBoolean("Cat");
 	}

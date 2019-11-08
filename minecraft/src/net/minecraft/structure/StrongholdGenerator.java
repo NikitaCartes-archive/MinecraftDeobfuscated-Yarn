@@ -183,14 +183,14 @@ public class StrongholdGenerator {
 		private boolean chestGenerated;
 
 		public ChestCorridor(int i, Random random, BlockBox blockBox, Direction direction) {
-			super(StructurePieceType.SHCC, i);
+			super(StructurePieceType.STRONGHOLD_CHEST_CORRIDOR, i);
 			this.setOrientation(direction);
 			this.entryDoor = this.getRandomEntrance(random);
 			this.boundingBox = blockBox;
 		}
 
 		public ChestCorridor(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.SHCC, compoundTag);
+			super(StructurePieceType.STRONGHOLD_CHEST_CORRIDOR, compoundTag);
 			this.chestGenerated = compoundTag.getBoolean("Chest");
 		}
 
@@ -241,7 +241,7 @@ public class StrongholdGenerator {
 		private final boolean rightExitExixts;
 
 		public Corridor(int i, Random random, BlockBox blockBox, Direction direction) {
-			super(StructurePieceType.SHS, i);
+			super(StructurePieceType.STRONGHOLD_CORRIDOR, i);
 			this.setOrientation(direction);
 			this.entryDoor = this.getRandomEntrance(random);
 			this.boundingBox = blockBox;
@@ -250,7 +250,7 @@ public class StrongholdGenerator {
 		}
 
 		public Corridor(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.SHS, compoundTag);
+			super(StructurePieceType.STRONGHOLD_CORRIDOR, compoundTag);
 			this.leftExitExists = compoundTag.getBoolean("Left");
 			this.rightExitExixts = compoundTag.getBoolean("Right");
 		}
@@ -311,7 +311,7 @@ public class StrongholdGenerator {
 		private final boolean upperRightExists;
 
 		public FiveWayCrossing(int i, Random random, BlockBox blockBox, Direction direction) {
-			super(StructurePieceType.SH5C, i);
+			super(StructurePieceType.STRONGHOLD_FIVE_WAY_CROSSING, i);
 			this.setOrientation(direction);
 			this.entryDoor = this.getRandomEntrance(random);
 			this.boundingBox = blockBox;
@@ -322,7 +322,7 @@ public class StrongholdGenerator {
 		}
 
 		public FiveWayCrossing(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.SH5C, compoundTag);
+			super(StructurePieceType.STRONGHOLD_FIVE_WAY_CROSSING, compoundTag);
 			this.lowerLeftExists = compoundTag.getBoolean("leftLow");
 			this.upperLeftExists = compoundTag.getBoolean("leftHigh");
 			this.lowerRightExists = compoundTag.getBoolean("rightLow");
@@ -426,14 +426,14 @@ public class StrongholdGenerator {
 
 	public static class LeftTurn extends StrongholdGenerator.class_3466 {
 		public LeftTurn(int i, Random random, BlockBox blockBox, Direction direction) {
-			super(StructurePieceType.SHLT, i);
+			super(StructurePieceType.STRONGHOLD_LEFT_TURN, i);
 			this.setOrientation(direction);
 			this.entryDoor = this.getRandomEntrance(random);
 			this.boundingBox = blockBox;
 		}
 
 		public LeftTurn(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.SHLT, compoundTag);
+			super(StructurePieceType.STRONGHOLD_LEFT_TURN, compoundTag);
 		}
 
 		@Override
@@ -472,7 +472,7 @@ public class StrongholdGenerator {
 		private final boolean tall;
 
 		public Library(int i, Random random, BlockBox blockBox, Direction direction) {
-			super(StructurePieceType.SHLI, i);
+			super(StructurePieceType.STRONGHOLD_LIBRARY, i);
 			this.setOrientation(direction);
 			this.entryDoor = this.getRandomEntrance(random);
 			this.boundingBox = blockBox;
@@ -480,7 +480,7 @@ public class StrongholdGenerator {
 		}
 
 		public Library(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.SHLI, compoundTag);
+			super(StructurePieceType.STRONGHOLD_LIBRARY, compoundTag);
 			this.tall = compoundTag.getBoolean("Tall");
 		}
 
@@ -825,13 +825,13 @@ public class StrongholdGenerator {
 		private boolean spawnerPlaced;
 
 		public PortalRoom(int i, BlockBox blockBox, Direction direction) {
-			super(StructurePieceType.SHPR, i);
+			super(StructurePieceType.STRONGHOLD_PORTAL_ROOM, i);
 			this.setOrientation(direction);
 			this.boundingBox = blockBox;
 		}
 
 		public PortalRoom(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.SHPR, compoundTag);
+			super(StructurePieceType.STRONGHOLD_PORTAL_ROOM, compoundTag);
 			this.spawnerPlaced = compoundTag.getBoolean("Mob");
 		}
 
@@ -947,14 +947,14 @@ public class StrongholdGenerator {
 
 	public static class PrisonHall extends StrongholdGenerator.Piece {
 		public PrisonHall(int i, Random random, BlockBox blockBox, Direction direction) {
-			super(StructurePieceType.SHPH, i);
+			super(StructurePieceType.STRONGHOLD_PRISON_HALL, i);
 			this.setOrientation(direction);
 			this.entryDoor = this.getRandomEntrance(random);
 			this.boundingBox = blockBox;
 		}
 
 		public PrisonHall(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.SHPH, compoundTag);
+			super(StructurePieceType.STRONGHOLD_PRISON_HALL, compoundTag);
 		}
 
 		@Override
@@ -1027,14 +1027,14 @@ public class StrongholdGenerator {
 
 	public static class RightTurn extends StrongholdGenerator.class_3466 {
 		public RightTurn(int i, Random random, BlockBox blockBox, Direction direction) {
-			super(StructurePieceType.SHRT, i);
+			super(StructurePieceType.STRONGHOLD_RIGHT_TURN, i);
 			this.setOrientation(direction);
 			this.entryDoor = this.getRandomEntrance(random);
 			this.boundingBox = blockBox;
 		}
 
 		public RightTurn(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.SHRT, compoundTag);
+			super(StructurePieceType.STRONGHOLD_RIGHT_TURN, compoundTag);
 		}
 
 		@Override
@@ -1073,14 +1073,14 @@ public class StrongholdGenerator {
 		private final int length;
 
 		public SmallCorridor(int i, BlockBox blockBox, Direction direction) {
-			super(StructurePieceType.SHFC, i);
+			super(StructurePieceType.STRONGHOLD_SMALL_CORRIDOR, i);
 			this.setOrientation(direction);
 			this.boundingBox = blockBox;
 			this.length = direction != Direction.NORTH && direction != Direction.SOUTH ? blockBox.getBlockCountX() : blockBox.getBlockCountZ();
 		}
 
 		public SmallCorridor(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.SHFC, compoundTag);
+			super(StructurePieceType.STRONGHOLD_SMALL_CORRIDOR, compoundTag);
 			this.length = compoundTag.getInt("Steps");
 		}
 
@@ -1154,7 +1154,7 @@ public class StrongholdGenerator {
 		}
 
 		public SpiralStaircase(int i, Random random, BlockBox blockBox, Direction direction) {
-			super(StructurePieceType.SHSD, i);
+			super(StructurePieceType.STRONGHOLD_SPIRAL_STAIRCASE, i);
 			this.isStructureStart = false;
 			this.setOrientation(direction);
 			this.entryDoor = this.getRandomEntrance(random);
@@ -1167,7 +1167,7 @@ public class StrongholdGenerator {
 		}
 
 		public SpiralStaircase(StructureManager structureManager, CompoundTag compoundTag) {
-			this(StructurePieceType.SHSD, compoundTag);
+			this(StructurePieceType.STRONGHOLD_SPIRAL_STAIRCASE, compoundTag);
 		}
 
 		@Override
@@ -1222,7 +1222,7 @@ public class StrongholdGenerator {
 		protected final int roomType;
 
 		public SquareRoom(int i, Random random, BlockBox blockBox, Direction direction) {
-			super(StructurePieceType.SHRC, i);
+			super(StructurePieceType.STRONGHOLD_SQUARE_ROOM, i);
 			this.setOrientation(direction);
 			this.entryDoor = this.getRandomEntrance(random);
 			this.boundingBox = blockBox;
@@ -1230,7 +1230,7 @@ public class StrongholdGenerator {
 		}
 
 		public SquareRoom(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.SHRC, compoundTag);
+			super(StructurePieceType.STRONGHOLD_SQUARE_ROOM, compoundTag);
 			this.roomType = compoundTag.getInt("Type");
 		}
 
@@ -1347,14 +1347,14 @@ public class StrongholdGenerator {
 
 	public static class Stairs extends StrongholdGenerator.Piece {
 		public Stairs(int i, Random random, BlockBox blockBox, Direction direction) {
-			super(StructurePieceType.SHSSD, i);
+			super(StructurePieceType.STRONGHOLD_STAIRS, i);
 			this.setOrientation(direction);
 			this.entryDoor = this.getRandomEntrance(random);
 			this.boundingBox = blockBox;
 		}
 
 		public Stairs(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.SHSSD, compoundTag);
+			super(StructurePieceType.STRONGHOLD_STAIRS, compoundTag);
 		}
 
 		@Override
@@ -1396,11 +1396,11 @@ public class StrongholdGenerator {
 		public final List<StructurePiece> field_15282 = Lists.<StructurePiece>newArrayList();
 
 		public Start(Random random, int i, int j) {
-			super(StructurePieceType.SHSTART, 0, random, i, j);
+			super(StructurePieceType.STRONGHOLD_START, 0, random, i, j);
 		}
 
 		public Start(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.SHSTART, compoundTag);
+			super(StructurePieceType.STRONGHOLD_START, compoundTag);
 		}
 	}
 

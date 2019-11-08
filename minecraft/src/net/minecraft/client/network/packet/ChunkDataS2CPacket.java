@@ -28,7 +28,7 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 	private int verticalStripBitmask;
 	private CompoundTag heightmaps;
 	@Nullable
-	private BiomeArray field_20664;
+	private BiomeArray biomeArray;
 	private byte[] data;
 	private List<CompoundTag> blockEntities;
 	private boolean isFullChunk;
@@ -50,7 +50,7 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 
 		if (this.isFullChunk) {
-			this.field_20664 = chunk.getBiomeArray().copy();
+			this.biomeArray = chunk.getBiomeArray().copy();
 		}
 
 		this.data = new byte[this.getDataSize(chunk, includedSectionsMask)];
@@ -76,7 +76,7 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.verticalStripBitmask = buf.readVarInt();
 		this.heightmaps = buf.readCompoundTag();
 		if (this.isFullChunk) {
-			this.field_20664 = new BiomeArray(buf);
+			this.biomeArray = new BiomeArray(buf);
 		}
 
 		int i = buf.readVarInt();
@@ -101,8 +101,8 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeBoolean(this.isFullChunk);
 		buf.writeVarInt(this.verticalStripBitmask);
 		buf.writeCompoundTag(this.heightmaps);
-		if (this.field_20664 != null) {
-			this.field_20664.toPacket(buf);
+		if (this.biomeArray != null) {
+			this.biomeArray.toPacket(buf);
 		}
 
 		buf.writeVarInt(this.data.length);
@@ -145,19 +145,19 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 		return i;
 	}
 
-	protected int getDataSize(WorldChunk worldChunk, int i) {
+	protected int getDataSize(WorldChunk chunk, int includedSectionsMark) {
+		int i = 0;
+		ChunkSection[] chunkSections = chunk.getSectionArray();
 		int j = 0;
-		ChunkSection[] chunkSections = worldChunk.getSectionArray();
-		int k = 0;
 
-		for (int l = chunkSections.length; k < l; k++) {
-			ChunkSection chunkSection = chunkSections[k];
-			if (chunkSection != WorldChunk.EMPTY_SECTION && (!this.isFullChunk() || !chunkSection.isEmpty()) && (i & 1 << k) != 0) {
-				j += chunkSection.getPacketSize();
+		for (int k = chunkSections.length; j < k; j++) {
+			ChunkSection chunkSection = chunkSections[j];
+			if (chunkSection != WorldChunk.EMPTY_SECTION && (!this.isFullChunk() || !chunkSection.isEmpty()) && (includedSectionsMark & 1 << j) != 0) {
+				i += chunkSection.getPacketSize();
 			}
 		}
 
-		return j;
+		return i;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -191,7 +191,7 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	public BiomeArray method_22422() {
-		return this.field_20664 == null ? null : this.field_20664.copy();
+	public BiomeArray getBiomeArray() {
+		return this.biomeArray == null ? null : this.biomeArray.copy();
 	}
 }

@@ -75,7 +75,7 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 		float t = (float)(m - q);
 		float u = 0.025F;
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getLeash());
-		Matrix4f matrix4f = matrixStack.method_23760().method_23761();
+		Matrix4f matrix4f = matrixStack.peek().getModel();
 		float v = MathHelper.fastInverseSqrt(r * r + t * t) * 0.025F / 2.0F;
 		float w = t * v;
 		float x = r * v;

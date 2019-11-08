@@ -62,7 +62,7 @@ public class Bootstrap {
 	public static Set<String> getMissingTranslations() {
 		Set<String> set = new TreeSet();
 		collectMissingTranslations(Registry.ENTITY_TYPE, EntityType::getTranslationKey, set);
-		collectMissingTranslations(Registry.MOB_EFFECT, StatusEffect::getTranslationKey, set);
+		collectMissingTranslations(Registry.STATUS_EFFECT, StatusEffect::getTranslationKey, set);
 		collectMissingTranslations(Registry.ITEM, Item::getTranslationKey, set);
 		collectMissingTranslations(Registry.ENCHANTMENT, Enchantment::getTranslationKey, set);
 		collectMissingTranslations(Registry.BIOME, Biome::getTranslationKey, set);

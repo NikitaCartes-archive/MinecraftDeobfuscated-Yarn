@@ -178,7 +178,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 			MatrixStack matrixStack = new MatrixStack();
 			VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
 			matrixStack.translate(0.0, 0.0, (double)this.itemRenderer.zOffset);
-			Matrix4f matrix4f = matrixStack.method_23760().method_23761();
+			Matrix4f matrix4f = matrixStack.peek().getModel();
 
 			for (int q = 0; q < text.size(); q++) {
 				String string2 = (String)text.get(q);

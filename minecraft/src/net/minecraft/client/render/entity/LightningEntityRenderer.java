@@ -33,7 +33,7 @@ public class LightningEntityRenderer extends EntityRenderer<LightningEntity> {
 		}
 
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getLightning());
-		Matrix4f matrix4f = matrixStack.method_23760().method_23761();
+		Matrix4f matrix4f = matrixStack.peek().getModel();
 
 		for (int l = 0; l < 4; l++) {
 			Random random2 = new Random(lightningEntity.seed);

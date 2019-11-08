@@ -105,16 +105,14 @@ public final class BitSetVoxelSet extends VoxelSet {
 		this.storage.set(this.getIndex(x, y, minZ), this.getIndex(x, y, maxZ), included);
 	}
 
-	static BitSetVoxelSet combine(
-		VoxelSet first, VoxelSet second, DoubleListPair xPoints, DoubleListPair yPoints, DoubleListPair zPoints, BooleanBiFunction function
-	) {
-		BitSetVoxelSet bitSetVoxelSet = new BitSetVoxelSet(xPoints.getMergedList().size() - 1, yPoints.getMergedList().size() - 1, zPoints.getMergedList().size() - 1);
+	static BitSetVoxelSet combine(VoxelSet first, VoxelSet second, PairList xPoints, PairList yPoints, PairList zPoints, BooleanBiFunction function) {
+		BitSetVoxelSet bitSetVoxelSet = new BitSetVoxelSet(xPoints.getPairs().size() - 1, yPoints.getPairs().size() - 1, zPoints.getPairs().size() - 1);
 		int[] is = new int[]{Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE};
-		xPoints.forAllOverlappingSections((i, j, k) -> {
+		xPoints.forEachPair((i, j, k) -> {
 			boolean[] bls = new boolean[]{false};
-			boolean bl = yPoints.forAllOverlappingSections((l, m, n) -> {
+			boolean bl = yPoints.forEachPair((l, m, n) -> {
 				boolean[] bls2 = new boolean[]{false};
-				boolean blx = zPoints.forAllOverlappingSections((o, p, q) -> {
+				boolean blx = zPoints.forEachPair((o, p, q) -> {
 					boolean blxx = function.apply(first.inBoundsAndContains(i, l, o), second.inBoundsAndContains(j, m, p));
 					if (blxx) {
 						bitSetVoxelSet.storage.set(bitSetVoxelSet.getIndex(k, n, q));

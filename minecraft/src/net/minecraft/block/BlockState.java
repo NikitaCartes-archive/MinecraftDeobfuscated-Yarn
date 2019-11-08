@@ -87,14 +87,14 @@ public class BlockState extends AbstractState<Block, BlockState> implements Stat
 		return this.shapeCache != null ? this.shapeCache.lightSubtracted : this.getBlock().getOpacity(this, view, pos);
 	}
 
-	public VoxelShape getCullingShape(BlockView view, BlockPos pos, Direction facing) {
-		return this.shapeCache != null && this.shapeCache.shapes != null
-			? this.shapeCache.shapes[facing.ordinal()]
-			: VoxelShapes.slice(this.getCullingShape(view, pos), facing);
+	public VoxelShape getCullingFace(BlockView view, BlockPos pos, Direction facing) {
+		return this.shapeCache != null && this.shapeCache.extrudedFaces != null
+			? this.shapeCache.extrudedFaces[facing.ordinal()]
+			: VoxelShapes.extrudeFace(this.getCullingShape(view, pos), facing);
 	}
 
-	public boolean method_17900() {
-		return this.shapeCache == null || this.shapeCache.field_17651;
+	public boolean exceedsCube() {
+		return this.shapeCache == null || this.shapeCache.exceedsCube;
 	}
 
 	public boolean hasSidedTransparency() {
@@ -188,8 +188,8 @@ public class BlockState extends AbstractState<Block, BlockState> implements Stat
 		return this.getOutlineShape(view, pos, EntityContext.absent());
 	}
 
-	public VoxelShape getOutlineShape(BlockView view, BlockPos pos, EntityContext entityContext) {
-		return this.getBlock().getOutlineShape(this, view, pos, entityContext);
+	public VoxelShape getOutlineShape(BlockView view, BlockPos pos, EntityContext context) {
+		return this.getBlock().getOutlineShape(this, view, pos, context);
 	}
 
 	public VoxelShape getCollisionShape(BlockView blockView, BlockPos blockPos) {
@@ -288,8 +288,8 @@ public class BlockState extends AbstractState<Block, BlockState> implements Stat
 		return this.getBlock().canBucketPlace(this, fluid);
 	}
 
-	public boolean canPlaceAt(WorldView worldView, BlockPos pos) {
-		return this.getBlock().canPlaceAt(this, worldView, pos);
+	public boolean canPlaceAt(WorldView world, BlockPos pos) {
+		return this.getBlock().canPlaceAt(this, world, pos);
 	}
 
 	public boolean shouldPostProcess(BlockView view, BlockPos pos) {
@@ -326,12 +326,12 @@ public class BlockState extends AbstractState<Block, BlockState> implements Stat
 		this.getBlock().onProjectileHit(world, state, hitResult, projectile);
 	}
 
-	public boolean isSideSolidFullSquare(BlockView blockView, BlockPos blockPos, Direction direction) {
-		return this.shapeCache != null ? this.shapeCache.solidFullSquare[direction.ordinal()] : Block.isSideSolidFullSquare(this, blockView, blockPos, direction);
+	public boolean isSideSolidFullSquare(BlockView world, BlockPos pos, Direction direction) {
+		return this.shapeCache != null ? this.shapeCache.solidFullSquare[direction.ordinal()] : Block.isSideSolidFullSquare(this, world, pos, direction);
 	}
 
 	public boolean isFullCube(BlockView world, BlockPos pos) {
-		return this.shapeCache != null ? this.shapeCache.field_20337 : Block.isShapeFullCube(this.getCollisionShape(world, pos));
+		return this.shapeCache != null ? this.shapeCache.isFullCube : Block.isShapeFullCube(this.getCollisionShape(world, pos));
 	}
 
 	public static <T> Dynamic<T> serialize(DynamicOps<T> ops, BlockState state) {
@@ -386,11 +386,11 @@ public class BlockState extends AbstractState<Block, BlockState> implements Stat
 		private final boolean fullOpaque;
 		private final boolean translucent;
 		private final int lightSubtracted;
-		private final VoxelShape[] shapes;
+		private final VoxelShape[] extrudedFaces;
 		private final VoxelShape collisionShape;
-		private final boolean field_17651;
+		private final boolean exceedsCube;
 		private final boolean[] solidFullSquare;
-		private final boolean field_20337;
+		private final boolean isFullCube;
 
 		private ShapeCache(BlockState state) {
 			Block block = state.getBlock();
@@ -399,18 +399,18 @@ public class BlockState extends AbstractState<Block, BlockState> implements Stat
 			this.translucent = block.isTranslucent(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
 			this.lightSubtracted = block.getOpacity(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
 			if (!state.isOpaque()) {
-				this.shapes = null;
+				this.extrudedFaces = null;
 			} else {
-				this.shapes = new VoxelShape[DIRECTIONS.length];
+				this.extrudedFaces = new VoxelShape[DIRECTIONS.length];
 				VoxelShape voxelShape = block.getCullingShape(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
 
 				for (Direction direction : DIRECTIONS) {
-					this.shapes[direction.ordinal()] = VoxelShapes.slice(voxelShape, direction);
+					this.extrudedFaces[direction.ordinal()] = VoxelShapes.extrudeFace(voxelShape, direction);
 				}
 			}
 
 			this.collisionShape = block.getCollisionShape(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, EntityContext.absent());
-			this.field_17651 = Arrays.stream(Direction.Axis.values())
+			this.exceedsCube = Arrays.stream(Direction.Axis.values())
 				.anyMatch(axis -> this.collisionShape.getMinimum(axis) < 0.0 || this.collisionShape.getMaximum(axis) > 1.0);
 			this.solidFullSquare = new boolean[6];
 
@@ -418,7 +418,7 @@ public class BlockState extends AbstractState<Block, BlockState> implements Stat
 				this.solidFullSquare[direction2.ordinal()] = Block.isSideSolidFullSquare(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, direction2);
 			}
 
-			this.field_20337 = Block.isShapeFullCube(state.getCollisionShape(EmptyBlockView.INSTANCE, BlockPos.ORIGIN));
+			this.isFullCube = Block.isShapeFullCube(state.getCollisionShape(EmptyBlockView.INSTANCE, BlockPos.ORIGIN));
 		}
 	}
 }

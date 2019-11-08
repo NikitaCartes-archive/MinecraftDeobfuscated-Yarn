@@ -53,7 +53,7 @@ public class IglooGenerator {
 		private final BlockRotation rotation;
 
 		public Piece(StructureManager manager, Identifier identifier, BlockPos pos, BlockRotation rotation, int yOffset) {
-			super(StructurePieceType.IGLU, 0);
+			super(StructurePieceType.IGLOO, 0);
 			this.template = identifier;
 			BlockPos blockPos = (BlockPos)IglooGenerator.field_14406.get(identifier);
 			this.pos = pos.add(blockPos.getX(), blockPos.getY() - yOffset, blockPos.getZ());
@@ -62,7 +62,7 @@ public class IglooGenerator {
 		}
 
 		public Piece(StructureManager manager, CompoundTag tag) {
-			super(StructurePieceType.IGLU, tag);
+			super(StructurePieceType.IGLOO, tag);
 			this.template = new Identifier(tag.getString("Template"));
 			this.rotation = BlockRotation.valueOf(tag.getString("Rot"));
 			this.initializeStructureData(manager);

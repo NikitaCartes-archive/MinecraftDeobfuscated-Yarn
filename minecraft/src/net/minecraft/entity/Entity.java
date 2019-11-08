@@ -730,7 +730,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		double e = movement.y;
 		double f = movement.z;
 		if (e != 0.0) {
-			e = VoxelShapes.method_17945(Direction.Axis.Y, entityBoundingBox, world, e, context, collisions.stream());
+			e = VoxelShapes.calculatePushVelocity(Direction.Axis.Y, entityBoundingBox, world, e, context, collisions.stream());
 			if (e != 0.0) {
 				entityBoundingBox = entityBoundingBox.offset(0.0, e, 0.0);
 			}
@@ -738,21 +738,21 @@ public abstract class Entity implements Nameable, CommandOutput {
 
 		boolean bl = Math.abs(d) < Math.abs(f);
 		if (bl && f != 0.0) {
-			f = VoxelShapes.method_17945(Direction.Axis.Z, entityBoundingBox, world, f, context, collisions.stream());
+			f = VoxelShapes.calculatePushVelocity(Direction.Axis.Z, entityBoundingBox, world, f, context, collisions.stream());
 			if (f != 0.0) {
 				entityBoundingBox = entityBoundingBox.offset(0.0, 0.0, f);
 			}
 		}
 
 		if (d != 0.0) {
-			d = VoxelShapes.method_17945(Direction.Axis.X, entityBoundingBox, world, d, context, collisions.stream());
+			d = VoxelShapes.calculatePushVelocity(Direction.Axis.X, entityBoundingBox, world, d, context, collisions.stream());
 			if (!bl && d != 0.0) {
 				entityBoundingBox = entityBoundingBox.offset(d, 0.0, 0.0);
 			}
 		}
 
 		if (!bl && f != 0.0) {
-			f = VoxelShapes.method_17945(Direction.Axis.Z, entityBoundingBox, world, f, context, collisions.stream());
+			f = VoxelShapes.calculatePushVelocity(Direction.Axis.Z, entityBoundingBox, world, f, context, collisions.stream());
 		}
 
 		return new Vec3d(d, e, f);

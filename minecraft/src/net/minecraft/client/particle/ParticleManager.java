@@ -367,7 +367,7 @@ public class ParticleManager implements ResourceReloadListener {
 		RenderSystem.enableDepthTest();
 		RenderSystem.enableFog();
 		RenderSystem.pushMatrix();
-		RenderSystem.multMatrix(matrixStack.method_23760().method_23761());
+		RenderSystem.multMatrix(matrixStack.peek().getModel());
 
 		for (ParticleTextureSheet particleTextureSheet : PARTICLE_TEXTURE_SHEETS) {
 			Iterable<Particle> iterable = (Iterable<Particle>)this.particles.get(particleTextureSheet);

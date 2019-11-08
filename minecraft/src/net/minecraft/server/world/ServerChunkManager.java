@@ -510,7 +510,7 @@ public class ServerChunkManager extends ChunkManager {
 
 	final class MainThreadExecutor extends ThreadExecutor<Runnable> {
 		private MainThreadExecutor(World world) {
-			super("Chunk source main thread executor for " + Registry.DIMENSION_TYPE.getId(world.getDimension().getType()));
+			super("Chunk source main thread executor for " + Registry.DIMENSION.getId(world.getDimension().getType()));
 		}
 
 		@Override

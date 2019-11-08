@@ -315,7 +315,7 @@ public class RealmsTasks {
 						Realms.setScreen(
 							new RealmsLongConfirmationScreen(
 								new RealmsResourcePackScreen(this.lastScreen, realmsServerAddress, this.connectLock),
-								RealmsLongConfirmationScreen.Type.INFO,
+								RealmsLongConfirmationScreen.Type.Info,
 								string,
 								string2,
 								true,

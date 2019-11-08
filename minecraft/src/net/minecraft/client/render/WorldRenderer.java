@@ -383,13 +383,13 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 					BlockState blockState = worldView.getBlockState(blockPos3);
 					FluidState fluidState = worldView.getFluidState(blockPos2);
 					VoxelShape voxelShape = blockState.getCollisionShape(worldView, blockPos3);
-					double n = voxelShape.method_1102(Direction.Axis.Y, h, m);
+					double n = voxelShape.getEndingCoord(Direction.Axis.Y, h, m);
 					double o = (double)fluidState.getHeight(worldView, blockPos2);
 					double p;
 					double q;
 					if (n >= o) {
 						p = n;
-						q = voxelShape.method_1093(Direction.Axis.Y, h, m);
+						q = voxelShape.getBeginningCoord(Direction.Axis.Y, h, m);
 					} else {
 						p = 0.0;
 						q = 0.0;
@@ -621,7 +621,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 	public void reload() {
 		if (this.world != null) {
-			this.world.method_23784();
+			this.world.reloadColor();
 			if (this.chunkBuilder == null) {
 				this.chunkBuilder = new ChunkBuilder(this.world, this, Util.getServerWorkerExecutor(), this.client.is64Bit(), this.bufferBuilders.getBlockBufferBuilders());
 			} else {
@@ -899,7 +899,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		double d = vec3d.getX();
 		double e = vec3d.getY();
 		double f = vec3d.getZ();
-		Matrix4f matrix4f2 = matrix.method_23760().method_23761();
+		Matrix4f matrix4f2 = matrix.peek().getModel();
 		profiler.swap("culling");
 		boolean bl = this.capturedFrustum != null;
 		Frustum frustum;
@@ -938,7 +938,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		this.renderLayer(RenderLayer.getSolid(), matrix, d, e, f);
 		this.renderLayer(RenderLayer.getCutoutMipped(), matrix, d, e, f);
 		this.renderLayer(RenderLayer.getCutout(), matrix, d, e, f);
-		GuiLighting.enable(matrix.method_23760().method_23761());
+		GuiLighting.enable(matrix.peek().getModel());
 		profiler.swap("entities");
 		profiler.push("prepare");
 		this.regularEntityCount = 0;
@@ -1005,7 +1005,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 						int l = ((BlockBreakingInfo)sortedSet.last()).getStage();
 						if (l >= 0) {
 							VertexConsumer vertexConsumer = new TransformingVertexConsumer(
-								this.bufferBuilders.getEffectVertexConsumers().getBuffer(RenderLayer.getBlockBreaking(l)), matrix.method_23760()
+								this.bufferBuilders.getEffectVertexConsumers().getBuffer(RenderLayer.getBlockBreaking(l)), matrix.peek()
 							);
 							vertexConsumerProvider2 = renderLayer -> {
 								VertexConsumer vertexConsumer2x = immediate.getBuffer(renderLayer);
@@ -1056,7 +1056,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 					matrix.push();
 					matrix.translate((double)blockPos3.getX() - d, (double)blockPos3.getY() - e, (double)blockPos3.getZ() - f);
 					VertexConsumer vertexConsumer2 = new TransformingVertexConsumer(
-						this.bufferBuilders.getEffectVertexConsumers().getBuffer(RenderLayer.getBlockBreaking(p)), matrix.method_23760()
+						this.bufferBuilders.getEffectVertexConsumers().getBuffer(RenderLayer.getBlockBreaking(p)), matrix.peek()
 					);
 					this.client.getBlockRenderManager().renderDamage(this.world.getBlockState(blockPos3), blockPos3, this.world, matrix, vertexConsumer2);
 					matrix.pop();
@@ -1078,7 +1078,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		}
 
 		RenderSystem.pushMatrix();
-		RenderSystem.multMatrix(matrix.method_23760().method_23761());
+		RenderSystem.multMatrix(matrix.peek().getModel());
 		this.client.debugRenderer.render(matrix, immediate, d, e, f, limitTime);
 		this.renderWorldBorder(camera);
 		RenderSystem.popMatrix();
@@ -1091,7 +1091,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		profiler.swap("particles");
 		this.client.particleManager.renderParticles(matrix, immediate, lightmapTextureManager, camera, tickDelta);
 		RenderSystem.pushMatrix();
-		RenderSystem.multMatrix(matrix.method_23760().method_23761());
+		RenderSystem.multMatrix(matrix.peek().getModel());
 		profiler.swap("cloudsLayers");
 		if (this.client.options.getCloudRenderMode() != CloudRenderMode.OFF) {
 			profiler.swap("clouds");
@@ -1169,7 +1169,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			matrixStack.translate((double)blockPos.getX() - d, (double)blockPos.getY() - e, (double)blockPos.getZ() - f);
 			vertexBuffer.bind();
 			this.field_20791.startDrawing(0L);
-			vertexBuffer.draw(matrixStack.method_23760().method_23761(), 7);
+			vertexBuffer.draw(matrixStack.peek().getModel(), 7);
 			matrixStack.pop();
 		}
 
@@ -1414,7 +1414,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(-90.0F));
 			}
 
-			Matrix4f matrix4f = matrixStack.method_23760().method_23761();
+			Matrix4f matrix4f = matrixStack.peek().getModel();
 			bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
 			bufferBuilder.vertex(matrix4f, -100.0F, -100.0F, -100.0F).texture(0.0F, 0.0F).color(40, 40, 40, 255).next();
 			bufferBuilder.vertex(matrix4f, -100.0F, -100.0F, 100.0F).texture(0.0F, 16.0F).color(40, 40, 40, 255).next();
@@ -1446,7 +1446,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			RenderSystem.color3f(g, h, i);
 			this.field_4087.bind();
 			this.field_4100.startDrawing(0L);
-			this.field_4087.draw(matrixStack.method_23760().method_23761(), 7);
+			this.field_4087.draw(matrixStack.peek().getModel(), 7);
 			VertexBuffer.unbind();
 			this.field_4100.endDrawing();
 			RenderSystem.disableFog();
@@ -1465,7 +1465,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				float k = fs[0];
 				float l = fs[1];
 				float m = fs[2];
-				Matrix4f matrix4f = matrixStack.method_23760().method_23761();
+				Matrix4f matrix4f = matrixStack.peek().getModel();
 				bufferBuilder.begin(6, VertexFormats.POSITION_COLOR);
 				bufferBuilder.vertex(matrix4f, 0.0F, 100.0F, 0.0F).color(k, l, m, fs[3]).next();
 				int n = 16;
@@ -1492,7 +1492,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, j);
 			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-90.0F));
 			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(this.world.getSkyAngle(f) * 360.0F));
-			Matrix4f matrix4f2 = matrixStack.method_23760().method_23761();
+			Matrix4f matrix4f2 = matrixStack.peek().getModel();
 			float l = 30.0F;
 			this.textureManager.bindTexture(SUN);
 			bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
@@ -1524,7 +1524,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				RenderSystem.color4f(v, v, v, v);
 				this.starsBuffer.bind();
 				this.field_4100.startDrawing(0L);
-				this.starsBuffer.draw(matrixStack.method_23760().method_23761(), 7);
+				this.starsBuffer.draw(matrixStack.peek().getModel(), 7);
 				VertexBuffer.unbind();
 				this.field_4100.endDrawing();
 			}
@@ -1542,7 +1542,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				matrixStack.translate(0.0, 12.0, 0.0);
 				this.field_4102.bind();
 				this.field_4100.startDrawing(0L);
-				this.field_4102.draw(matrixStack.method_23760().method_23761(), 7);
+				this.field_4102.draw(matrixStack.peek().getModel(), 7);
 				VertexBuffer.unbind();
 				this.field_4100.endDrawing();
 				matrixStack.pop();
@@ -1627,7 +1627,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 						RenderSystem.colorMask(true, true, true, true);
 					}
 
-					this.cloudsBuffer.draw(matrixStack.method_23760().method_23761(), 7);
+					this.cloudsBuffer.draw(matrixStack.peek().getModel(), 7);
 				}
 
 				VertexBuffer.unbind();
@@ -2021,7 +2021,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	private static void drawShapeOutline(
 		MatrixStack matrixStack, VertexConsumer vertexConsumer, VoxelShape voxelShape, double d, double e, double f, float g, float h, float i, float j
 	) {
-		Matrix4f matrix4f = matrixStack.method_23760().method_23761();
+		Matrix4f matrix4f = matrixStack.peek().getModel();
 		voxelShape.forEachEdge((k, l, m, n, o, p) -> {
 			vertexConsumer.vertex(matrix4f, (float)(k + d), (float)(l + e), (float)(m + f)).color(g, h, i, j).next();
 			vertexConsumer.vertex(matrix4f, (float)(n + d), (float)(o + e), (float)(p + f)).color(g, h, i, j).next();
@@ -2059,7 +2059,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		float green,
 		float blue
 	) {
-		Matrix4f matrix4f = matrix.method_23760().method_23761();
+		Matrix4f matrix4f = matrix.peek().getModel();
 		float i = (float)x1;
 		float j = (float)y1;
 		float k = (float)z1;
@@ -2151,9 +2151,9 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		}
 	}
 
-	public void method_21596(BlockPos blockPos, BlockState blockState, BlockState blockState2) {
-		if (this.client.getBakedModelManager().method_21611(blockState, blockState2)) {
-			this.scheduleBlockRenders(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX(), blockPos.getY(), blockPos.getZ());
+	public void checkBlockRerender(BlockPos pos, BlockState old, BlockState updated) {
+		if (this.client.getBakedModelManager().shouldRerender(old, updated)) {
+			this.scheduleBlockRenders(pos.getX(), pos.getY(), pos.getZ(), pos.getX(), pos.getY(), pos.getZ());
 		}
 	}
 

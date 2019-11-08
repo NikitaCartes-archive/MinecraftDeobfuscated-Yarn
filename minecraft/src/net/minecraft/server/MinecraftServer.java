@@ -814,7 +814,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		for (ServerWorld serverWorld : this.getWorlds()) {
 			if (serverWorld.dimension.getType() == DimensionType.OVERWORLD || this.isNetherAllowed()) {
 				this.profiler
-					.push((Supplier<String>)(() -> serverWorld.getLevelProperties().getLevelName() + " " + Registry.DIMENSION_TYPE.getId(serverWorld.dimension.getType())));
+					.push((Supplier<String>)(() -> serverWorld.getLevelProperties().getLevelName() + " " + Registry.DIMENSION.getId(serverWorld.dimension.getType())));
 				if (this.ticks % 20 == 0) {
 					this.profiler.push("timeSync");
 					this.playerManager

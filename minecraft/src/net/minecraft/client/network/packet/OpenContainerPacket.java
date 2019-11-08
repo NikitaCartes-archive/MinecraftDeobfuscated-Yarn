@@ -21,7 +21,7 @@ public class OpenContainerPacket implements Packet<ClientPlayPacketListener> {
 
 	public OpenContainerPacket(int syncId, ContainerType<?> type, Text name) {
 		this.syncId = syncId;
-		this.containerId = Registry.MENU.getRawId(type);
+		this.containerId = Registry.CONTAINER.getRawId(type);
 		this.name = name;
 	}
 
@@ -51,7 +51,7 @@ public class OpenContainerPacket implements Packet<ClientPlayPacketListener> {
 	@Nullable
 	@Environment(EnvType.CLIENT)
 	public ContainerType<?> getContainerType() {
-		return Registry.MENU.get(this.containerId);
+		return Registry.CONTAINER.get(this.containerId);
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -32,7 +32,7 @@ public class ContainerType<T extends Container> {
 	private final ContainerType.Factory<T> factory;
 
 	private static <T extends Container> ContainerType<T> register(String id, ContainerType.Factory<T> factory) {
-		return Registry.register(Registry.MENU, id, new ContainerType<>(factory));
+		return Registry.register(Registry.CONTAINER, id, new ContainerType<>(factory));
 	}
 
 	private ContainerType(ContainerType.Factory<T> factory) {

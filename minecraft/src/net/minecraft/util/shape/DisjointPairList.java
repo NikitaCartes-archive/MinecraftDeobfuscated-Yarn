@@ -3,15 +3,15 @@ package net.minecraft.util.shape;
 import it.unimi.dsi.fastutil.doubles.AbstractDoubleList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 
-public class DisjointDoubleListPair extends AbstractDoubleList implements DoubleListPair {
+public class DisjointPairList extends AbstractDoubleList implements PairList {
 	private final DoubleList first;
 	private final DoubleList second;
-	private final boolean field_1380;
+	private final boolean inverted;
 
-	public DisjointDoubleListPair(DoubleList first, DoubleList second, boolean bl) {
+	public DisjointPairList(DoubleList first, DoubleList second, boolean inverted) {
 		this.first = first;
 		this.second = second;
-		this.field_1380 = bl;
+		this.inverted = inverted;
 	}
 
 	public int size() {
@@ -19,24 +19,24 @@ public class DisjointDoubleListPair extends AbstractDoubleList implements Double
 	}
 
 	@Override
-	public boolean forAllOverlappingSections(DoubleListPair.SectionPairPredicate predicate) {
-		return this.field_1380 ? this.method_1067((i, j, k) -> predicate.merge(j, i, k)) : this.method_1067(predicate);
+	public boolean forEachPair(PairList.Consumer predicate) {
+		return this.inverted ? this.iterateSections((i, j, k) -> predicate.merge(j, i, k)) : this.iterateSections(predicate);
 	}
 
-	private boolean method_1067(DoubleListPair.SectionPairPredicate sectionPairPredicate) {
+	private boolean iterateSections(PairList.Consumer consumer) {
 		int i = this.first.size() - 1;
 
 		for (int j = 0; j < i; j++) {
-			if (!sectionPairPredicate.merge(j, -1, j)) {
+			if (!consumer.merge(j, -1, j)) {
 				return false;
 			}
 		}
 
-		if (!sectionPairPredicate.merge(i, -1, i)) {
+		if (!consumer.merge(i, -1, i)) {
 			return false;
 		} else {
 			for (int jx = 0; jx < this.second.size(); jx++) {
-				if (!sectionPairPredicate.merge(i, jx, i + 1 + jx)) {
+				if (!consumer.merge(i, jx, i + 1 + jx)) {
 					return false;
 				}
 			}
@@ -51,7 +51,7 @@ public class DisjointDoubleListPair extends AbstractDoubleList implements Double
 	}
 
 	@Override
-	public DoubleList getMergedList() {
+	public DoubleList getPairs() {
 		return this;
 	}
 }

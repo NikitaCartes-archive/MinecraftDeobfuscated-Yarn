@@ -1550,7 +1550,7 @@ public class ServerWorld extends World {
 
 		for (BlockEntity blockEntity : this.blockEntities) {
 			BlockPos blockPos = blockEntity.getPos();
-			csvWriter.printRow(blockPos.getX(), blockPos.getY(), blockPos.getZ(), Registry.BLOCK_ENTITY_TYPE.getId(blockEntity.getType()));
+			csvWriter.printRow(blockPos.getX(), blockPos.getY(), blockPos.getZ(), Registry.BLOCK_ENTITY.getId(blockEntity.getType()));
 		}
 	}
 

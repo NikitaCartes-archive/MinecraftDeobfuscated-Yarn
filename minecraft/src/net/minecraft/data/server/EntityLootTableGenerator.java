@@ -630,22 +630,22 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						)
 				)
 		);
-		this.method_16369(LootTables.SHEEP_BLACK_ENTITIE, method_10401(Blocks.BLACK_WOOL));
-		this.method_16369(LootTables.SHEEP_BLUE_ENTITIE, method_10401(Blocks.BLUE_WOOL));
-		this.method_16369(LootTables.SHEEP_BROWN_ENTITIE, method_10401(Blocks.BROWN_WOOL));
-		this.method_16369(LootTables.SHEEP_CYAN_ENTITIE, method_10401(Blocks.CYAN_WOOL));
-		this.method_16369(LootTables.SHEEP_GRAY_ENTITIE, method_10401(Blocks.GRAY_WOOL));
-		this.method_16369(LootTables.SHEEP_GREEN_ENTITIE, method_10401(Blocks.GREEN_WOOL));
-		this.method_16369(LootTables.SHEEP_LIGHT_BLUE_ENTITIE, method_10401(Blocks.LIGHT_BLUE_WOOL));
-		this.method_16369(LootTables.SHEEP_LIGHT_GRAY_ENTITIE, method_10401(Blocks.LIGHT_GRAY_WOOL));
-		this.method_16369(LootTables.SHEEP_LIME_ENTITIE, method_10401(Blocks.LIME_WOOL));
-		this.method_16369(LootTables.SHEEP_MAGENTA_ENTITIE, method_10401(Blocks.MAGENTA_WOOL));
-		this.method_16369(LootTables.SHEEP_ORANGE_ENTITIE, method_10401(Blocks.ORANGE_WOOL));
-		this.method_16369(LootTables.SHEEP_PINK_ENTITIE, method_10401(Blocks.PINK_WOOL));
-		this.method_16369(LootTables.SHEEP_PURPLE_ENTITIE, method_10401(Blocks.PURPLE_WOOL));
-		this.method_16369(LootTables.SHEEP_RED_ENTITIE, method_10401(Blocks.RED_WOOL));
-		this.method_16369(LootTables.SHEEP_WHITE_ENTITIE, method_10401(Blocks.WHITE_WOOL));
-		this.method_16369(LootTables.SHEEP_YELLOW_ENTITIE, method_10401(Blocks.YELLOW_WOOL));
+		this.method_16369(LootTables.BLACK_SHEEP_ENTITY, method_10401(Blocks.BLACK_WOOL));
+		this.method_16369(LootTables.BLUE_SHEEP_ENTITY, method_10401(Blocks.BLUE_WOOL));
+		this.method_16369(LootTables.BROWN_SHEEP_ENTITY, method_10401(Blocks.BROWN_WOOL));
+		this.method_16369(LootTables.CYAN_SHEEP_ENTITY, method_10401(Blocks.CYAN_WOOL));
+		this.method_16369(LootTables.GRAY_SHEEP_ENTITY, method_10401(Blocks.GRAY_WOOL));
+		this.method_16369(LootTables.GREEN_SHEEP_ENTITY, method_10401(Blocks.GREEN_WOOL));
+		this.method_16369(LootTables.LIGHT_BLUE_SHEEP_ENTITY, method_10401(Blocks.LIGHT_BLUE_WOOL));
+		this.method_16369(LootTables.LIGHT_GRAY_SHEEP_ENTITY, method_10401(Blocks.LIGHT_GRAY_WOOL));
+		this.method_16369(LootTables.LIME_SHEEP_ENTITY, method_10401(Blocks.LIME_WOOL));
+		this.method_16369(LootTables.MAGENTA_SHEEP_ENTITY, method_10401(Blocks.MAGENTA_WOOL));
+		this.method_16369(LootTables.ORANGE_SHEEP_ENTITY, method_10401(Blocks.ORANGE_WOOL));
+		this.method_16369(LootTables.PINK_SHEEP_ENTITY, method_10401(Blocks.PINK_WOOL));
+		this.method_16369(LootTables.PURPLE_SHEEP_ENTITY, method_10401(Blocks.PURPLE_WOOL));
+		this.method_16369(LootTables.RED_SHEEP_ENTITY, method_10401(Blocks.RED_WOOL));
+		this.method_16369(LootTables.WHITE_SHEEP_ENTITY, method_10401(Blocks.WHITE_WOOL));
+		this.method_16369(LootTables.YELLOW_SHEEP_ENTITY, method_10401(Blocks.YELLOW_WOOL));
 		this.method_16368(
 			EntityType.SHULKER,
 			LootTable.builder()

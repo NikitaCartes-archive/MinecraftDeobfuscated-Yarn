@@ -89,7 +89,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 			this.updateNearbyRails(world, pos, blockState, true);
 			world.updateNeighborsAlways(pos, this);
 			world.updateNeighborsAlways(pos.method_10074(), this);
-			world.scheduleBlockRender(pos, state, blockState);
+			world.checkBlockRerender(pos, state, blockState);
 		}
 
 		if (!bl2 && bl) {
@@ -98,7 +98,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 			this.updateNearbyRails(world, pos, blockState, false);
 			world.updateNeighborsAlways(pos, this);
 			world.updateNeighborsAlways(pos.method_10074(), this);
-			world.scheduleBlockRender(pos, state, blockState);
+			world.checkBlockRerender(pos, state, blockState);
 		}
 
 		if (bl2) {

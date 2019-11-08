@@ -109,6 +109,6 @@ public class StatusEffects {
 	public static final StatusEffect HERO_OF_THE_VILLAGE = register(32, "hero_of_the_village", new StatusEffect(StatusEffectType.BENEFICIAL, 4521796));
 
 	private static StatusEffect register(int i, String string, StatusEffect statusEffect) {
-		return Registry.register(Registry.MOB_EFFECT, i, string, statusEffect);
+		return Registry.register(Registry.STATUS_EFFECT, i, string, statusEffect);
 	}
 }
