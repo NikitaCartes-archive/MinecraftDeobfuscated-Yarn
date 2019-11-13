@@ -3,7 +3,6 @@
  */
 package net.minecraft.world.chunk.light;
 
-import java.util.concurrent.atomic.AtomicInteger;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
@@ -17,6 +16,7 @@ import net.minecraft.world.chunk.ChunkNibbleArray;
 import net.minecraft.world.chunk.ChunkProvider;
 import net.minecraft.world.chunk.light.ChunkLightProvider;
 import net.minecraft.world.chunk.light.SkyLightStorage;
+import org.apache.commons.lang3.mutable.MutableInt;
 
 public final class ChunkSkyLightProvider
 extends ChunkLightProvider<SkyLightStorage.Data, SkyLightStorage> {
@@ -44,9 +44,9 @@ extends ChunkLightProvider<SkyLightStorage.Data, SkyLightStorage> {
         if (i >= 15) {
             return i;
         }
-        AtomicInteger atomicInteger = new AtomicInteger();
-        BlockState blockState = this.getStateForLighting(m, atomicInteger);
-        if (atomicInteger.get() >= 15) {
+        MutableInt mutableInt = new MutableInt();
+        BlockState blockState = this.getStateForLighting(m, mutableInt);
+        if (mutableInt.getValue() >= 15) {
             return 15;
         }
         int j = BlockPos.unpackLongX(l);
@@ -83,10 +83,10 @@ extends ChunkLightProvider<SkyLightStorage.Data, SkyLightStorage> {
             }
         }
         boolean bl3 = bl2 = l == Long.MAX_VALUE || bl && k > p;
-        if (bl2 && i == 0 && atomicInteger.get() == 0) {
+        if (bl2 && i == 0 && mutableInt.getValue() == 0) {
             return 0;
         }
-        return i + Math.max(1, atomicInteger.get());
+        return i + Math.max(1, mutableInt.getValue());
     }
 
     @Override

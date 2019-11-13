@@ -28,7 +28,7 @@ extends AbstractCriterion<Conditions> {
     }
 
     public Conditions method_8820(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return new Conditions(ItemPredicate.deserialize(jsonObject.get("item")));
+        return new Conditions(ItemPredicate.fromJson(jsonObject.get("item")));
     }
 
     public void trigger(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack) {
@@ -64,7 +64,7 @@ extends AbstractCriterion<Conditions> {
         @Override
         public JsonElement toJson() {
             JsonObject jsonObject = new JsonObject();
-            jsonObject.add("item", this.item.serialize());
+            jsonObject.add("item", this.item.toJson());
             return jsonObject;
         }
     }

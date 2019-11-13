@@ -133,7 +133,7 @@ implements VillagerDataContainer {
             }
             return true;
         }
-        return false;
+        return super.interactMob(playerEntity, hand);
     }
 
     @Override

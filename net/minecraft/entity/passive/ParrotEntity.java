@@ -265,8 +265,10 @@ implements Flutterer {
             }
             return true;
         }
-        if (!this.world.isClient && !this.isInAir() && this.isTamed() && this.isOwner(playerEntity)) {
-            this.sitGoal.setEnabledWithOwner(!this.isSitting());
+        if (!this.isInAir() && this.isTamed() && this.isOwner(playerEntity)) {
+            if (!this.world.isClient) {
+                this.sitGoal.setEnabledWithOwner(!this.isSitting());
+            }
             return true;
         }
         return super.interactMob(playerEntity, hand);

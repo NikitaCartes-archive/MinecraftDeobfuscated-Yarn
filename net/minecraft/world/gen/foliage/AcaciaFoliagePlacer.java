@@ -24,10 +24,16 @@ extends FoliagePlacer {
 
     @Override
     public void method_23448(ModifiableTestableWorld modifiableTestableWorld, Random random, BranchedTreeFeatureConfig branchedTreeFeatureConfig, int i, int j, int k, BlockPos blockPos, Set<BlockPos> set) {
+        int l;
         branchedTreeFeatureConfig.foliagePlacer.method_23449(modifiableTestableWorld, random, branchedTreeFeatureConfig, i, blockPos, 0, k, set);
         branchedTreeFeatureConfig.foliagePlacer.method_23449(modifiableTestableWorld, random, branchedTreeFeatureConfig, i, blockPos, 1, 1, set);
         BlockPos blockPos2 = blockPos.up();
-        for (int l = 2; l <= k - 1; ++l) {
+        for (l = -1; l <= 1; ++l) {
+            for (int m = -1; m <= 1; ++m) {
+                this.method_23450(modifiableTestableWorld, random, blockPos2.add(l, 0, m), branchedTreeFeatureConfig, set);
+            }
+        }
+        for (l = 2; l <= k - 1; ++l) {
             this.method_23450(modifiableTestableWorld, random, blockPos2.east(l), branchedTreeFeatureConfig, set);
             this.method_23450(modifiableTestableWorld, random, blockPos2.west(l), branchedTreeFeatureConfig, set);
             this.method_23450(modifiableTestableWorld, random, blockPos2.south(l), branchedTreeFeatureConfig, set);

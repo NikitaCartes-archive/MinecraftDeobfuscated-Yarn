@@ -66,7 +66,6 @@ import org.jetbrains.annotations.Nullable;
 
 public class WolfEntity
 extends TameableEntity {
-    private static final TrackedData<Float> WOLF_HEALTH = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final TrackedData<Boolean> BEGGING = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Integer> COLLAR_COLOR = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.INTEGER);
     public static final Predicate<LivingEntity> FOLLOW_TAMED_PREDICATE = livingEntity -> {
@@ -130,14 +129,8 @@ extends TameableEntity {
     }
 
     @Override
-    protected void mobTick() {
-        this.dataTracker.set(WOLF_HEALTH, Float.valueOf(this.getHealth()));
-    }
-
-    @Override
     protected void initDataTracker() {
         super.initDataTracker();
-        this.dataTracker.startTracking(WOLF_HEALTH, Float.valueOf(this.getHealth()));
         this.dataTracker.startTracking(BEGGING, false);
         this.dataTracker.startTracking(COLLAR_COLOR, DyeColor.RED.getId());
     }
@@ -169,7 +162,7 @@ extends TameableEntity {
             return SoundEvents.ENTITY_WOLF_GROWL;
         }
         if (this.random.nextInt(3) == 0) {
-            if (this.isTamed() && this.dataTracker.get(WOLF_HEALTH).floatValue() < 10.0f) {
+            if (this.isTamed() && this.getHealth() < 10.0f) {
                 return SoundEvents.ENTITY_WOLF_WHINE;
             }
             return SoundEvents.ENTITY_WOLF_PANT;
@@ -338,7 +331,7 @@ extends TameableEntity {
             return this.isOwner(playerEntity) || item == Items.BONE && !this.isAngry();
         }
         if (this.isTamed()) {
-            if (item.isFood() && item.getFoodComponent().isMeat() && this.getHealth() < 20.0f) {
+            if (item.isFood() && item.getFoodComponent().isMeat() && this.getHealth() < this.getMaximumHealth()) {
                 if (!playerEntity.abilities.creativeMode) {
                     itemStack.decrement(1);
                 }
@@ -376,7 +369,6 @@ extends TameableEntity {
                 this.navigation.stop();
                 this.setTarget(null);
                 this.sitGoal.setEnabledWithOwner(true);
-                this.setHealth(20.0f);
                 this.world.sendEntityStatus(this, (byte)7);
             } else {
                 this.world.sendEntityStatus(this, (byte)6);
@@ -404,7 +396,7 @@ extends TameableEntity {
             return 1.5393804f;
         }
         if (this.isTamed()) {
-            return (0.55f - (this.getMaximumHealth() - this.dataTracker.get(WOLF_HEALTH).floatValue()) * 0.02f) * (float)Math.PI;
+            return (0.55f - (this.getMaximumHealth() - this.getHealth()) * 0.02f) * (float)Math.PI;
         }
         return 0.62831855f;
     }

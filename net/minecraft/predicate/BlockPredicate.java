@@ -98,5 +98,30 @@ public class BlockPredicate {
         jsonObject.add("state", this.state.toJson());
         return jsonObject;
     }
+
+    public static class Builder {
+        @Nullable
+        private Block block;
+        @Nullable
+        private Tag<Block> tag;
+        private StatePredicate state = StatePredicate.ANY;
+        private NbtPredicate nbt = NbtPredicate.ANY;
+
+        private Builder() {
+        }
+
+        public static Builder create() {
+            return new Builder();
+        }
+
+        public Builder tag(Tag<Block> tag) {
+            this.tag = tag;
+            return this;
+        }
+
+        public BlockPredicate build() {
+            return new BlockPredicate(this.tag, this.block, this.state, this.nbt);
+        }
+    }
 }
 

@@ -16,7 +16,6 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.entity.model.ShulkerEntityModel;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.DyeColor;
@@ -49,7 +48,7 @@ extends BlockEntityRenderer<ShulkerBoxBlockEntity> {
         matrixStack.multiply(direction.getRotationQuaternion());
         matrixStack.scale(1.0f, -1.0f, -1.0f);
         matrixStack.translate(0.0, -1.0, 0.0);
-        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.method_23948());
         this.model.getBottomShell().render(matrixStack, vertexConsumer, i, j, sprite);
         matrixStack.translate(0.0, -shulkerBoxBlockEntity.getAnimationProgress(f) * 0.5f, 0.0);
         matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(270.0f * shulkerBoxBlockEntity.getAnimationProgress(f)));

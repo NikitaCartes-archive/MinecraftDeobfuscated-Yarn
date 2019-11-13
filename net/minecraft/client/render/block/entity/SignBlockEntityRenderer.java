@@ -22,7 +22,6 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.Texts;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
@@ -58,7 +57,7 @@ extends BlockEntityRenderer<SignBlockEntity> {
         Sprite sprite = this.getSprite(SignBlockEntityRenderer.getModelTexture(blockState.getBlock()));
         matrixStack.push();
         matrixStack.scale(0.6666667f, -0.6666667f, -0.6666667f);
-        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.method_23946());
         this.field_21529.field_21530.render(matrixStack, vertexConsumer, i, j, sprite);
         this.field_21529.field_21531.render(matrixStack, vertexConsumer, i, j, sprite);
         matrixStack.pop();

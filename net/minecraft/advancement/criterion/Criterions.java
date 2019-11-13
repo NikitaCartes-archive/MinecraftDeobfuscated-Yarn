@@ -5,6 +5,8 @@ package net.minecraft.advancement.criterion;
 
 import com.google.common.collect.Maps;
 import java.util.Map;
+import net.minecraft.advancement.criterion.BeeNestDestroyedCriterion;
+import net.minecraft.advancement.criterion.BlockUsedCriterion;
 import net.minecraft.advancement.criterion.BredAnimalsCriterion;
 import net.minecraft.advancement.criterion.BrewedPotionCriterion;
 import net.minecraft.advancement.criterion.ChangedDimensionCriterion;
@@ -32,6 +34,7 @@ import net.minecraft.advancement.criterion.PlacedBlockCriterion;
 import net.minecraft.advancement.criterion.PlayerHurtEntityCriterion;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.advancement.criterion.ShotCrossbowCriterion;
+import net.minecraft.advancement.criterion.SlideDownBlockCriterion;
 import net.minecraft.advancement.criterion.SummonedEntityCriterion;
 import net.minecraft.advancement.criterion.TameAnimalCriterion;
 import net.minecraft.advancement.criterion.TickCriterion;
@@ -78,6 +81,9 @@ public class Criterions {
     public static final KilledByCrossbowCriterion KILLED_BY_CROSSBOW = Criterions.register(new KilledByCrossbowCriterion());
     public static final LocationArrivalCriterion HERO_OF_THE_VILLAGE = Criterions.register(new LocationArrivalCriterion(new Identifier("hero_of_the_village")));
     public static final LocationArrivalCriterion VOLUNTARY_EXILE = Criterions.register(new LocationArrivalCriterion(new Identifier("voluntary_exile")));
+    public static final BlockUsedCriterion SAFELY_HARVEST_HONEY = Criterions.register(new BlockUsedCriterion(new Identifier("safely_harvest_honey")));
+    public static final SlideDownBlockCriterion SLIDE_DOWN_BLOCK = Criterions.register(new SlideDownBlockCriterion());
+    public static final BeeNestDestroyedCriterion BEE_NEST_DESTROYED = Criterions.register(new BeeNestDestroyedCriterion());
 
     private static <T extends Criterion<?>> T register(T criterion) {
         if (VALUES.containsKey(criterion.getId())) {

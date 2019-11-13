@@ -33,7 +33,7 @@ import net.minecraft.client.render.debug.StructureDebugRenderer;
 import net.minecraft.client.render.debug.VillageDebugRenderer;
 import net.minecraft.client.render.debug.WaterDebugRenderer;
 import net.minecraft.client.render.debug.WorldGenAttemptDebugRenderer;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ProjectileUtil;
@@ -193,9 +193,8 @@ public class DebugRenderer {
         RenderSystem.translatef((float)(d - j), (float)(e - k) + 0.07f, (float)(f - l));
         RenderSystem.normal3f(0.0f, 1.0f, 0.0f);
         RenderSystem.scalef(g, -g, g);
-        EntityRenderDispatcher entityRenderDispatcher = minecraftClient.getEntityRenderManager();
-        RenderSystem.rotatef(-entityRenderDispatcher.cameraYaw, 0.0f, 1.0f, 0.0f);
-        RenderSystem.rotatef(-entityRenderDispatcher.cameraPitch, 1.0f, 0.0f, 0.0f);
+        RenderSystem.rotatef(180.0f, 0.0f, 1.0f, 0.0f);
+        RenderSystem.multMatrix(new Matrix4f(camera.method_23767()));
         RenderSystem.enableTexture();
         if (bl2) {
             RenderSystem.disableDepthTest();

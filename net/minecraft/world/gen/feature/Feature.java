@@ -87,6 +87,7 @@ import net.minecraft.world.gen.feature.MegaTreeFeatureConfig;
 import net.minecraft.world.gen.feature.MineshaftFeature;
 import net.minecraft.world.gen.feature.MineshaftFeatureConfig;
 import net.minecraft.world.gen.feature.NetherFortressFeature;
+import net.minecraft.world.gen.feature.NoOpFeature;
 import net.minecraft.world.gen.feature.OakTreeFeature;
 import net.minecraft.world.gen.feature.OceanMonumentFeature;
 import net.minecraft.world.gen.feature.OceanRuinFeature;
@@ -139,6 +140,7 @@ public abstract class Feature<FC extends FeatureConfig> {
     public static final StructureFeature<DefaultFeatureConfig> END_CITY = Feature.register("end_city", new EndCityFeature((Function<Dynamic<?>, ? extends DefaultFeatureConfig>)((Function<Dynamic<?>, DefaultFeatureConfig>)DefaultFeatureConfig::deserialize)));
     public static final StructureFeature<BuriedTreasureFeatureConfig> BURIED_TREASURE = Feature.register("buried_treasure", new BuriedTreasureFeature((Function<Dynamic<?>, ? extends BuriedTreasureFeatureConfig>)((Function<Dynamic<?>, BuriedTreasureFeatureConfig>)BuriedTreasureFeatureConfig::deserialize)));
     public static final StructureFeature<VillageFeatureConfig> VILLAGE = Feature.register("village", new VillageFeature((Function<Dynamic<?>, ? extends VillageFeatureConfig>)((Function<Dynamic<?>, VillageFeatureConfig>)VillageFeatureConfig::deserialize)));
+    public static final Feature<DefaultFeatureConfig> NO_OP = Feature.register("no_op", new NoOpFeature((Function<Dynamic<?>, ? extends DefaultFeatureConfig>)((Function<Dynamic<?>, DefaultFeatureConfig>)DefaultFeatureConfig::deserialize)));
     public static final Feature<BranchedTreeFeatureConfig> NORMAL_TREE = Feature.register("normal_tree", new OakTreeFeature((Function<Dynamic<?>, ? extends BranchedTreeFeatureConfig>)((Function<Dynamic<?>, BranchedTreeFeatureConfig>)BranchedTreeFeatureConfig::method_23426)));
     public static final Feature<BranchedTreeFeatureConfig> ACACIA_TREE = Feature.register("acacia_tree", new AcaciaTreeFeature((Function<Dynamic<?>, ? extends BranchedTreeFeatureConfig>)((Function<Dynamic<?>, BranchedTreeFeatureConfig>)BranchedTreeFeatureConfig::method_23426)));
     public static final Feature<BranchedTreeFeatureConfig> FANCY_TREE = Feature.register("fancy_tree", new LargeOakTreeFeature((Function<Dynamic<?>, ? extends BranchedTreeFeatureConfig>)((Function<Dynamic<?>, BranchedTreeFeatureConfig>)BranchedTreeFeatureConfig::method_23426)));

@@ -263,7 +263,7 @@ extends LivingEntity {
             if (!ItemStack.areItemsEqual(this.selectedItem, itemStack)) {
                 this.resetLastAttackedTicks();
             }
-            this.selectedItem = itemStack.isEmpty() ? ItemStack.EMPTY : itemStack.copy();
+            this.selectedItem = itemStack.copy();
         }
         this.updateTurtleHelmet();
         this.itemCooldownManager.update();
@@ -595,7 +595,7 @@ extends LivingEntity {
         if (bl) {
             float f = this.random.nextFloat() * 0.5f;
             float g = this.random.nextFloat() * ((float)Math.PI * 2);
-            this.setVelocity(-MathHelper.sin(g) * f, 0.2f, MathHelper.cos(g) * f);
+            itemEntity.setVelocity(-MathHelper.sin(g) * f, 0.2f, MathHelper.cos(g) * f);
         } else {
             float f = 0.3f;
             float g = MathHelper.sin(this.pitch * ((float)Math.PI / 180));
@@ -861,7 +861,6 @@ extends LivingEntity {
     }
 
     public ActionResult interact(Entity entity, Hand hand) {
-        ItemStack itemStack2;
         if (this.isSpectator()) {
             if (entity instanceof NameableContainerProvider) {
                 this.openContainer((NameableContainerProvider)((Object)entity));
@@ -869,7 +868,7 @@ extends LivingEntity {
             return ActionResult.PASS;
         }
         ItemStack itemStack = this.getStackInHand(hand);
-        ItemStack itemStack3 = itemStack2 = itemStack.isEmpty() ? ItemStack.EMPTY : itemStack.copy();
+        ItemStack itemStack2 = itemStack.copy();
         if (entity.interact(this, hand)) {
             if (this.abilities.creativeMode && itemStack == this.getStackInHand(hand) && itemStack.getCount() < itemStack2.getCount()) {
                 itemStack.setCount(itemStack2.getCount());
@@ -1524,7 +1523,7 @@ extends LivingEntity {
     }
 
     public boolean canConsume(boolean bl) {
-        return !this.abilities.invulnerable && (bl || this.hungerManager.isNotFull());
+        return this.abilities.invulnerable || bl || this.hungerManager.isNotFull();
     }
 
     public boolean canFoodHeal() {

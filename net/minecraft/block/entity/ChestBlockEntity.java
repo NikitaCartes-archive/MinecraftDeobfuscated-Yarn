@@ -5,7 +5,6 @@ package net.minecraft.block.entity;
 
 import java.util.List;
 import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.fabricmc.api.EnvironmentInterface;
 import net.fabricmc.api.EnvironmentInterfaces;
 import net.minecraft.block.Block;
@@ -206,7 +205,6 @@ Tickable {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public float getAnimationProgress(float f) {
         return MathHelper.lerp(f, this.lastAnimationAngle, this.animationAngle);
     }

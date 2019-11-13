@@ -47,7 +47,7 @@ extends EntityRenderer<T> {
         matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(45.0f));
         matrixStack.scale(0.05625f, 0.05625f, 0.05625f);
         matrixStack.translate(-4.0, 0.0, 0.0);
-        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(this.getTexture(projectileEntity)));
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutout(this.getTexture(projectileEntity)));
         MatrixStack.Entry entry = matrixStack.peek();
         Matrix4f matrix4f = entry.getModel();
         Matrix3f matrix3f = entry.getNormal();

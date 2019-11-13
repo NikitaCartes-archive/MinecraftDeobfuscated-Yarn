@@ -4,7 +4,6 @@
 package net.minecraft.world.chunk.light;
 
 import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicInteger;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
@@ -23,6 +22,7 @@ import net.minecraft.world.chunk.ChunkToNibbleArrayMap;
 import net.minecraft.world.chunk.light.ChunkLightingView;
 import net.minecraft.world.chunk.light.LevelPropagator;
 import net.minecraft.world.chunk.light.LightStorage;
+import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class ChunkLightProvider<M extends ChunkToNibbleArrayMap<M>, S extends LightStorage<M>>
@@ -75,28 +75,28 @@ implements ChunkLightingView {
         Arrays.fill(this.cachedChunks, null);
     }
 
-    protected BlockState getStateForLighting(long l, @Nullable AtomicInteger atomicInteger) {
+    protected BlockState getStateForLighting(long l, @Nullable MutableInt mutableInt) {
         boolean bl;
         int j;
         if (l == Long.MAX_VALUE) {
-            if (atomicInteger != null) {
-                atomicInteger.set(0);
+            if (mutableInt != null) {
+                mutableInt.setValue(0);
             }
             return Blocks.AIR.getDefaultState();
         }
         int i = ChunkSectionPos.getSectionCoord(BlockPos.unpackLongX(l));
         BlockView blockView = this.getChunk(i, j = ChunkSectionPos.getSectionCoord(BlockPos.unpackLongZ(l)));
         if (blockView == null) {
-            if (atomicInteger != null) {
-                atomicInteger.set(16);
+            if (mutableInt != null) {
+                mutableInt.setValue(16);
             }
             return Blocks.BEDROCK.getDefaultState();
         }
         this.reusableBlockPos.set(l);
         BlockState blockState = blockView.getBlockState(this.reusableBlockPos);
         boolean bl2 = bl = blockState.isOpaque() && blockState.hasSidedTransparency();
-        if (atomicInteger != null) {
-            atomicInteger.set(blockState.getOpacity(this.chunkProvider.getWorld(), this.reusableBlockPos));
+        if (mutableInt != null) {
+            mutableInt.setValue(blockState.getOpacity(this.chunkProvider.getWorld(), this.reusableBlockPos));
         }
         return bl ? blockState : Blocks.AIR.getDefaultState();
     }

@@ -154,11 +154,7 @@ extends AnimalEntity {
                 }
                 return true;
             }
-            if (itemStack.getItem() == Items.SADDLE) {
-                itemStack.useOnEntity(playerEntity, this, hand);
-                return true;
-            }
-            return false;
+            return itemStack.getItem() == Items.SADDLE && itemStack.useOnEntity(playerEntity, this, hand);
         }
         return true;
     }

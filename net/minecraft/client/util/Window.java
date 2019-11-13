@@ -17,6 +17,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.WindowEventHandler;
 import net.minecraft.client.WindowSettings;
 import net.minecraft.client.texture.TextureUtil;
+import net.minecraft.client.util.GlException;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.Monitor;
 import net.minecraft.client.util.MonitorTracker;
@@ -33,6 +34,7 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
+import org.lwjgl.util.tinyfd.TinyFileDialogs;
 
 @Environment(value=EnvType.CLIENT)
 public final class Window
@@ -195,7 +197,9 @@ implements AutoCloseable {
 
     private static void throwGlError(int i, long l) {
         RenderSystem.assertThread(RenderSystem::isInInitPhase);
-        throw new IllegalStateException("GLFW error " + i + ": " + MemoryUtil.memUTF8(l));
+        String string = "GLFW error " + i + ": " + MemoryUtil.memUTF8(l);
+        TinyFileDialogs.tinyfd_messageBox("Minecraft", string + ".\n\nPlease make sure you have up-to-date drivers (see aka.ms/mcdriver for instructions).", "ok", "error", false);
+        throw new GlErroredException(string);
     }
 
     public void logGlError(int i, long l) {
@@ -422,6 +426,14 @@ implements AutoCloseable {
 
     public void setRawMouseMotion(boolean bl) {
         InputUtil.setRawMouseMotionMode(this.handle, bl);
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public static class GlErroredException
+    extends GlException {
+        private GlErroredException(String string) {
+            super(string);
+        }
     }
 }
 

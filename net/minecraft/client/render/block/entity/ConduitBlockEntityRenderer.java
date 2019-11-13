@@ -14,7 +14,6 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Identifier;
@@ -50,7 +49,7 @@ extends BlockEntityRenderer<ConduitBlockEntity> {
         float g = (float)conduitBlockEntity.ticks + f;
         if (!conduitBlockEntity.isActive()) {
             float h = conduitBlockEntity.getRotation(0.0f);
-            VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+            VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.method_23946());
             matrixStack.push();
             matrixStack.translate(0.5, 0.5, 0.5);
             matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(h));
@@ -58,7 +57,7 @@ extends BlockEntityRenderer<ConduitBlockEntity> {
             matrixStack.pop();
             return;
         }
-        VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+        VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.method_23948());
         float k = conduitBlockEntity.getRotation(f) * 57.295776f;
         float l = MathHelper.sin(g * 0.1f) / 2.0f + 0.5f;
         l = l * l + l;

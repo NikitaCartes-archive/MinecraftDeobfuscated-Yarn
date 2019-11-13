@@ -125,7 +125,7 @@ public abstract class Container {
             ItemStack itemStack = this.slotList.get(i).getStack();
             ItemStack itemStack2 = this.stackList.get(i);
             if (ItemStack.areEqualIgnoreDamage(itemStack2, itemStack)) continue;
-            itemStack2 = itemStack.isEmpty() ? ItemStack.EMPTY : itemStack.copy();
+            itemStack2 = itemStack.copy();
             this.stackList.set(i, itemStack2);
             for (ContainerListener containerListener : this.listeners) {
                 containerListener.onContainerSlotUpdate(this, i, itemStack2);

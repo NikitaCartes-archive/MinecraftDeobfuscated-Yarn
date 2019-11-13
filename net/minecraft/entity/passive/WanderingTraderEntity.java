@@ -73,7 +73,7 @@ extends AbstractTraderEntity {
         this.goalSelector.add(1, new EscapeDangerGoal(this, 0.5));
         this.goalSelector.add(1, new LookAtCustomerGoal(this));
         this.goalSelector.add(2, new WanderToTargetGoal(this, 2.0, 0.35));
-        this.goalSelector.add(4, new GoToWalkTargetGoal(this, 1.0));
+        this.goalSelector.add(4, new GoToWalkTargetGoal(this, 0.35));
         this.goalSelector.add(8, new WanderAroundFarGoal(this, 0.35));
         this.goalSelector.add(9, new GoToEntityGoal(this, PlayerEntity.class, 3.0f, 1.0f));
         this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0f));

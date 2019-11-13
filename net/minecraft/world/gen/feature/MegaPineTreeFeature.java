@@ -31,7 +31,7 @@ extends MegaTreeFeature<MegaTreeFeatureConfig> {
     }
 
     private void makeTopLeaves(ModifiableTestableWorld modifiableTestableWorld, Random random, int i, int j, int k, int l, Set<BlockPos> set, BlockBox blockBox, MegaTreeFeatureConfig megaTreeFeatureConfig) {
-        int m = random.nextInt(5) + megaTreeFeatureConfig.baseHeight;
+        int m = random.nextInt(5) + megaTreeFeatureConfig.field_21591;
         int n = 0;
         for (int o = k - m; o <= k; ++o) {
             int p = k - o;

@@ -40,7 +40,7 @@ Element {
     private boolean focusUnlocked = true;
     private boolean editable = true;
     private boolean selecting;
-    private int firstCharacter;
+    private int firstCharacterIndex;
     private int selectionStart;
     private int selectionEnd;
     private int editableColor = 0xE0E0E0;
@@ -354,8 +354,8 @@ Element {
             if (this.focused) {
                 j -= 4;
             }
-            String string = this.textRenderer.trimToWidth(this.text.substring(this.firstCharacter), this.getInnerWidth());
-            this.setCursor(this.textRenderer.trimToWidth(string, j).length() + this.firstCharacter);
+            String string = this.textRenderer.trimToWidth(this.text.substring(this.firstCharacterIndex), this.getInnerWidth());
+            this.setCursor(this.textRenderer.trimToWidth(string, j).length() + this.firstCharacterIndex);
             return true;
         }
         return false;
@@ -375,9 +375,9 @@ Element {
             TextFieldWidget.fill(this.x, this.y, this.x + this.width, this.y + this.height, -16777216);
         }
         int k = this.editable ? this.editableColor : this.uneditableColor;
-        int l = this.selectionStart - this.firstCharacter;
-        int m = this.selectionEnd - this.firstCharacter;
-        String string = this.textRenderer.trimToWidth(this.text.substring(this.firstCharacter), this.getInnerWidth());
+        int l = this.selectionStart - this.firstCharacterIndex;
+        int m = this.selectionEnd - this.firstCharacterIndex;
+        String string = this.textRenderer.trimToWidth(this.text.substring(this.firstCharacterIndex), this.getInnerWidth());
         boolean bl = l >= 0 && l <= string.length();
         boolean bl2 = this.isFocused() && this.focusedTicks / 6 % 2 == 0 && bl;
         int n = this.focused ? this.x + 4 : this.x;
@@ -388,7 +388,7 @@ Element {
         }
         if (!string.isEmpty()) {
             String string2 = bl ? string.substring(0, l) : string;
-            p = this.textRenderer.drawWithShadow(this.renderTextProvider.apply(string2, this.firstCharacter), p, o, k);
+            p = this.textRenderer.drawWithShadow(this.renderTextProvider.apply(string2, this.firstCharacterIndex), p, o, k);
         }
         boolean bl3 = this.selectionStart < this.text.length() || this.text.length() >= this.getMaxLength();
         int q = p;
@@ -519,21 +519,21 @@ Element {
         int j = this.text.length();
         this.selectionEnd = MathHelper.clamp(i, 0, j);
         if (this.textRenderer != null) {
-            if (this.firstCharacter > j) {
-                this.firstCharacter = j;
+            if (this.firstCharacterIndex > j) {
+                this.firstCharacterIndex = j;
             }
             int k = this.getInnerWidth();
-            String string = this.textRenderer.trimToWidth(this.text.substring(this.firstCharacter), k);
-            int l = string.length() + this.firstCharacter;
-            if (this.selectionEnd == this.firstCharacter) {
-                this.firstCharacter -= this.textRenderer.trimToWidth(this.text, k, true).length();
+            String string = this.textRenderer.trimToWidth(this.text.substring(this.firstCharacterIndex), k);
+            int l = string.length() + this.firstCharacterIndex;
+            if (this.selectionEnd == this.firstCharacterIndex) {
+                this.firstCharacterIndex -= this.textRenderer.trimToWidth(this.text, k, true).length();
             }
             if (this.selectionEnd > l) {
-                this.firstCharacter += this.selectionEnd - l;
-            } else if (this.selectionEnd <= this.firstCharacter) {
-                this.firstCharacter -= this.firstCharacter - this.selectionEnd;
+                this.firstCharacterIndex += this.selectionEnd - l;
+            } else if (this.selectionEnd <= this.firstCharacterIndex) {
+                this.firstCharacterIndex -= this.firstCharacterIndex - this.selectionEnd;
             }
-            this.firstCharacter = MathHelper.clamp(this.firstCharacter, 0, j);
+            this.firstCharacterIndex = MathHelper.clamp(this.firstCharacterIndex, 0, j);
         }
     }
 

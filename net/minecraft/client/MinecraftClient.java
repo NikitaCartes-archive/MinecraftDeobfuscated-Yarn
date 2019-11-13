@@ -814,13 +814,14 @@ WindowEventHandler {
         this.lastMetricsSampleTime = n;
         while (Util.getMeasuringTimeMs() >= this.nextDebugInfoUpdateTime + 1000L) {
             currentFps = this.fpsCounter;
-            Object[] objectArray = new Object[5];
+            Object[] objectArray = new Object[6];
             objectArray[0] = currentFps;
             objectArray[1] = (double)this.options.maxFps == Option.FRAMERATE_LIMIT.getMax() ? "inf" : Integer.valueOf(this.options.maxFps);
             objectArray[2] = this.options.enableVsync ? " vsync" : "";
             Object object = objectArray[3] = this.options.fancyGraphics ? "" : " fast";
             objectArray[4] = this.options.cloudRenderMode == CloudRenderMode.OFF ? "" : (this.options.cloudRenderMode == CloudRenderMode.FAST ? " fast-clouds" : " fancy-clouds");
-            this.fpsDebugString = String.format("%d fps T: %s%s%s%s", objectArray);
+            objectArray[5] = this.options.biomeBlendRadius;
+            this.fpsDebugString = String.format("%d fps T: %s%s%s%s B: %d", objectArray);
             this.nextDebugInfoUpdateTime += 1000L;
             this.fpsCounter = 0;
             this.snooper.update();

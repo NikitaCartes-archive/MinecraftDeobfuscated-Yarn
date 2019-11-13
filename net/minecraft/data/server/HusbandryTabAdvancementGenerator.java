@@ -8,6 +8,8 @@ import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementFrame;
 import net.minecraft.advancement.AdvancementRewards;
 import net.minecraft.advancement.CriteriaMerger;
+import net.minecraft.advancement.criterion.BeeNestDestroyedCriterion;
+import net.minecraft.advancement.criterion.BlockUsedCriterion;
 import net.minecraft.advancement.criterion.BredAnimalsCriterion;
 import net.minecraft.advancement.criterion.ConsumeItemCriterion;
 import net.minecraft.advancement.criterion.FilledBucketCriterion;
@@ -16,13 +18,17 @@ import net.minecraft.advancement.criterion.ItemDurabilityChangedCriterion;
 import net.minecraft.advancement.criterion.PlacedBlockCriterion;
 import net.minecraft.advancement.criterion.TameAnimalCriterion;
 import net.minecraft.block.Blocks;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
+import net.minecraft.predicate.BlockPredicate;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.item.EnchantmentPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -46,6 +52,8 @@ implements Consumer<Consumer<Advancement>> {
         Advancement advancement8 = this.method_10339(Advancement.Task.create()).parent(advancement).criteriaMerger(CriteriaMerger.OR).display(Items.FISHING_ROD, (Text)new TranslatableText("advancements.husbandry.fishy_business.title", new Object[0]), (Text)new TranslatableText("advancements.husbandry.fishy_business.description", new Object[0]), null, AdvancementFrame.TASK, true, true, false).build(consumer, "husbandry/fishy_business");
         Advancement advancement9 = this.method_10340(Advancement.Task.create()).parent(advancement8).criteriaMerger(CriteriaMerger.OR).display(Items.PUFFERFISH_BUCKET, (Text)new TranslatableText("advancements.husbandry.tactical_fishing.title", new Object[0]), (Text)new TranslatableText("advancements.husbandry.tactical_fishing.description", new Object[0]), null, AdvancementFrame.TASK, true, true, false).build(consumer, "husbandry/tactical_fishing");
         Advancement advancement10 = this.method_16118(Advancement.Task.create()).parent(advancement6).display(Items.COD, (Text)new TranslatableText("advancements.husbandry.complete_catalogue.title", new Object[0]), (Text)new TranslatableText("advancements.husbandry.complete_catalogue.description", new Object[0]), null, AdvancementFrame.CHALLENGE, true, true, false).rewards(AdvancementRewards.Builder.experience(50)).build(consumer, "husbandry/complete_catalogue");
+        Advancement advancement11 = Advancement.Task.create().parent(advancement).criterion("safely_harvest_honey", BlockUsedCriterion.Conditions.create(BlockPredicate.Builder.create().tag(BlockTags.BEEHIVES), ItemPredicate.Builder.create().item(Items.GLASS_BOTTLE))).display(Items.HONEY_BOTTLE, (Text)new TranslatableText("advancements.husbandry.safely_harvest_honey.title", new Object[0]), (Text)new TranslatableText("advancements.husbandry.safely_harvest_honey.description", new Object[0]), null, AdvancementFrame.TASK, true, true, false).build(consumer, "husbandry/safely_harvest_honey");
+        Advancement advancement12 = Advancement.Task.create().parent(advancement).criterion("silk_touch_nest", BeeNestDestroyedCriterion.Conditions.create(Blocks.BEE_NEST, ItemPredicate.Builder.create().enchantment(new EnchantmentPredicate(Enchantments.SILK_TOUCH, NumberRange.IntRange.atLeast(1))), NumberRange.IntRange.exactly(3))).display(Blocks.BEE_NEST, (Text)new TranslatableText("advancements.husbandry.silk_touch_nest.title", new Object[0]), (Text)new TranslatableText("advancements.husbandry.silk_touch_nest.description", new Object[0]), null, AdvancementFrame.TASK, true, true, false).build(consumer, "husbandry/silk_touch_nest");
     }
 
     private Advancement.Task method_10341(Advancement.Task task) {

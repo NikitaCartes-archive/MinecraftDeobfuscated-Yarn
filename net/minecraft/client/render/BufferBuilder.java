@@ -19,6 +19,7 @@ import net.minecraft.client.render.FixedColorVertexConsumer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormatElement;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.GlAllocationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -41,6 +42,8 @@ implements BufferVertexConsumer {
     private int currentElementId;
     private int drawMode;
     private VertexFormat format;
+    private boolean field_21594;
+    private boolean field_21595;
     private boolean building;
 
     public BufferBuilder(int i) {
@@ -164,9 +167,10 @@ implements BufferVertexConsumer {
         this.buffer.position(this.buildStart);
         this.buffer.put(state.buffer);
         this.buffer.clear();
-        this.format = state.format;
-        this.vertexCount = i / this.format.getVertexSize();
-        this.elementOffset = this.buildStart + this.vertexCount * this.format.getVertexSize();
+        VertexFormat vertexFormat = state.format;
+        this.method_23918(vertexFormat);
+        this.vertexCount = i / vertexFormat.getVertexSize();
+        this.elementOffset = this.buildStart + this.vertexCount * vertexFormat.getVertexSize();
     }
 
     public void begin(int i, VertexFormat vertexFormat) {
@@ -175,10 +179,21 @@ implements BufferVertexConsumer {
         }
         this.building = true;
         this.drawMode = i;
-        this.format = vertexFormat;
+        this.method_23918(vertexFormat);
         this.currentElement = (VertexFormatElement)vertexFormat.getElements().get(0);
         this.currentElementId = 0;
         this.buffer.clear();
+    }
+
+    private void method_23918(VertexFormat vertexFormat) {
+        if (this.format == vertexFormat) {
+            return;
+        }
+        this.format = vertexFormat;
+        boolean bl = vertexFormat == VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL;
+        boolean bl2 = vertexFormat == VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL;
+        this.field_21594 = bl || bl2;
+        this.field_21595 = bl;
     }
 
     public void end() {
@@ -238,6 +253,41 @@ implements BufferVertexConsumer {
             throw new IllegalStateException();
         }
         return BufferVertexConsumer.super.color(i, j, k, l);
+    }
+
+    @Override
+    public void method_23919(float f, float g, float h, float i, float j, float k, float l, float m, float n, int o, int p, float q, float r, float s) {
+        if (this.colorFixed) {
+            throw new IllegalStateException();
+        }
+        if (this.field_21594) {
+            int t;
+            this.putFloat(0, f);
+            this.putFloat(4, g);
+            this.putFloat(8, h);
+            this.putByte(12, (byte)(i * 255.0f));
+            this.putByte(13, (byte)(j * 255.0f));
+            this.putByte(14, (byte)(k * 255.0f));
+            this.putByte(15, (byte)(l * 255.0f));
+            this.putFloat(16, m);
+            this.putFloat(20, n);
+            if (this.field_21595) {
+                this.putShort(24, (short)(o & 0xFFFF));
+                this.putShort(26, (short)(o >> 16 & 0xFFFF));
+                t = 28;
+            } else {
+                t = 24;
+            }
+            this.putShort(t + 0, (short)(p & 0xFFFF));
+            this.putShort(t + 2, (short)(p >> 16 & 0xFFFF));
+            this.putByte(t + 4, (byte)((int)(q * 127.0f) & 0xFF));
+            this.putByte(t + 5, (byte)((int)(r * 127.0f) & 0xFF));
+            this.putByte(t + 6, (byte)((int)(s * 127.0f) & 0xFF));
+            this.elementOffset += t + 8;
+            this.next();
+            return;
+        }
+        super.method_23919(f, g, h, i, j, k, l, m, n, o, p, q, r, s);
     }
 
     public Pair<DrawArrayParameters, ByteBuffer> popData() {

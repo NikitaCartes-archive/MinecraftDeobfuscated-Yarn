@@ -2518,7 +2518,7 @@ CommandOutput {
     }
 
     public double method_23322(double d) {
-        return this.method_23316((2.0 * this.random.nextDouble() + 1.0) * d);
+        return this.method_23316((2.0 * this.random.nextDouble() - 1.0) * d);
     }
 
     public final double getY() {
@@ -2546,7 +2546,7 @@ CommandOutput {
     }
 
     public double method_23325(double d) {
-        return this.method_23324((2.0 * this.random.nextDouble() + 1.0) * d);
+        return this.method_23324((2.0 * this.random.nextDouble() - 1.0) * d);
     }
 
     public void setPos(double d, double e, double f) {

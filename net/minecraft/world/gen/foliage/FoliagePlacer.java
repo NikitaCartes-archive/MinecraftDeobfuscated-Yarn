@@ -50,7 +50,7 @@ implements DynamicSerializable {
     protected void method_23450(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, BranchedTreeFeatureConfig branchedTreeFeatureConfig, Set<BlockPos> set) {
         if (AbstractTreeFeature.isAirOrLeaves(modifiableTestableWorld, blockPos) || AbstractTreeFeature.isReplaceablePlant(modifiableTestableWorld, blockPos) || AbstractTreeFeature.isWater(modifiableTestableWorld, blockPos)) {
             modifiableTestableWorld.setBlockState(blockPos, branchedTreeFeatureConfig.leavesProvider.getBlockState(random, blockPos), 19);
-            set.add(blockPos);
+            set.add(blockPos.toImmutable());
         }
     }
 

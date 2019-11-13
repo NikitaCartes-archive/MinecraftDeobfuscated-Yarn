@@ -3,7 +3,6 @@
  */
 package net.minecraft.world.chunk.light;
 
-import java.util.concurrent.atomic.AtomicInteger;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -16,6 +15,7 @@ import net.minecraft.world.chunk.ChunkNibbleArray;
 import net.minecraft.world.chunk.ChunkProvider;
 import net.minecraft.world.chunk.light.BlockLightStorage;
 import net.minecraft.world.chunk.light.ChunkLightProvider;
+import org.apache.commons.lang3.mutable.MutableInt;
 
 public final class ChunkBlockLightProvider
 extends ChunkLightProvider<BlockLightStorage.Data, BlockLightStorage> {
@@ -56,9 +56,9 @@ extends ChunkLightProvider<BlockLightStorage.Data, BlockLightStorage> {
         if (direction == null) {
             return 15;
         }
-        AtomicInteger atomicInteger = new AtomicInteger();
-        BlockState blockState = this.getStateForLighting(m, atomicInteger);
-        if (atomicInteger.get() >= 15) {
+        MutableInt mutableInt = new MutableInt();
+        BlockState blockState = this.getStateForLighting(m, mutableInt);
+        if (mutableInt.getValue() >= 15) {
             return 15;
         }
         BlockState blockState2 = this.getStateForLighting(l, null);
@@ -66,7 +66,7 @@ extends ChunkLightProvider<BlockLightStorage.Data, BlockLightStorage> {
         if (VoxelShapes.unionCoversFullCube(voxelShape, voxelShape2 = this.getOpaqueShape(blockState, m, direction.getOpposite()))) {
             return 15;
         }
-        return i + Math.max(1, atomicInteger.get());
+        return i + Math.max(1, mutableInt.getValue());
     }
 
     @Override

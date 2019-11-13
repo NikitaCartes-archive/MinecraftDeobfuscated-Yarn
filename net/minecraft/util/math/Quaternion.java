@@ -3,7 +3,6 @@
  */
 package net.minecraft.util.math;
 
-import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.util.math.Vector3f;
@@ -11,18 +10,16 @@ import net.minecraft.util.math.MathHelper;
 
 public final class Quaternion {
     public static final Quaternion IDENTITY = new Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
-    private final float[] components;
-
-    private Quaternion(float[] fs) {
-        this.components = fs;
-    }
+    private float field_21582;
+    private float field_21583;
+    private float field_21584;
+    private float field_21585;
 
     public Quaternion(float f, float g, float h, float i) {
-        this(new float[4]);
-        this.components[0] = f;
-        this.components[1] = g;
-        this.components[2] = h;
-        this.components[3] = i;
+        this.field_21582 = f;
+        this.field_21583 = g;
+        this.field_21584 = h;
+        this.field_21585 = i;
     }
 
     public Quaternion(Vector3f vector3f, float f, boolean bl) {
@@ -30,11 +27,10 @@ public final class Quaternion {
             f *= (float)Math.PI / 180;
         }
         float g = Quaternion.sin(f / 2.0f);
-        this.components = new float[4];
-        this.components[0] = vector3f.getX() * g;
-        this.components[1] = vector3f.getY() * g;
-        this.components[2] = vector3f.getZ() * g;
-        this.components[3] = Quaternion.cos(f / 2.0f);
+        this.field_21582 = vector3f.getX() * g;
+        this.field_21583 = vector3f.getY() * g;
+        this.field_21584 = vector3f.getZ() * g;
+        this.field_21585 = Quaternion.cos(f / 2.0f);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -50,15 +46,17 @@ public final class Quaternion {
         float l = Quaternion.cos(0.5f * g);
         float m = Quaternion.sin(0.5f * h);
         float n = Quaternion.cos(0.5f * h);
-        this.components = new float[4];
-        this.components[0] = i * l * n + j * k * m;
-        this.components[1] = j * k * n - i * l * m;
-        this.components[2] = i * k * n + j * l * m;
-        this.components[3] = j * l * n - i * k * m;
+        this.field_21582 = i * l * n + j * k * m;
+        this.field_21583 = j * k * n - i * l * m;
+        this.field_21584 = i * k * n + j * l * m;
+        this.field_21585 = j * l * n - i * k * m;
     }
 
     public Quaternion(Quaternion quaternion) {
-        this.components = Arrays.copyOf(quaternion.components, 4);
+        this.field_21582 = quaternion.field_21582;
+        this.field_21583 = quaternion.field_21583;
+        this.field_21584 = quaternion.field_21584;
+        this.field_21585 = quaternion.field_21585;
     }
 
     public boolean equals(Object object) {
@@ -69,11 +67,24 @@ public final class Quaternion {
             return false;
         }
         Quaternion quaternion = (Quaternion)object;
-        return Arrays.equals(this.components, quaternion.components);
+        if (Float.compare(quaternion.field_21582, this.field_21582) != 0) {
+            return false;
+        }
+        if (Float.compare(quaternion.field_21583, this.field_21583) != 0) {
+            return false;
+        }
+        if (Float.compare(quaternion.field_21584, this.field_21584) != 0) {
+            return false;
+        }
+        return Float.compare(quaternion.field_21585, this.field_21585) == 0;
     }
 
     public int hashCode() {
-        return Arrays.hashCode(this.components);
+        int i = Float.floatToIntBits(this.field_21582);
+        i = 31 * i + Float.floatToIntBits(this.field_21583);
+        i = 31 * i + Float.floatToIntBits(this.field_21584);
+        i = 31 * i + Float.floatToIntBits(this.field_21585);
+        return i;
     }
 
     public String toString() {
@@ -86,19 +97,19 @@ public final class Quaternion {
     }
 
     public float getB() {
-        return this.components[0];
+        return this.field_21582;
     }
 
     public float getC() {
-        return this.components[1];
+        return this.field_21583;
     }
 
     public float getD() {
-        return this.components[2];
+        return this.field_21584;
     }
 
     public float getA() {
-        return this.components[3];
+        return this.field_21585;
     }
 
     public void hamiltonProduct(Quaternion quaternion) {
@@ -110,32 +121,32 @@ public final class Quaternion {
         float k = quaternion.getC();
         float l = quaternion.getD();
         float m = quaternion.getA();
-        this.components[0] = i * j + f * m + g * l - h * k;
-        this.components[1] = i * k - f * l + g * m + h * j;
-        this.components[2] = i * l + f * k - g * j + h * m;
-        this.components[3] = i * m - f * j - g * k - h * l;
+        this.field_21582 = i * j + f * m + g * l - h * k;
+        this.field_21583 = i * k - f * l + g * m + h * j;
+        this.field_21584 = i * l + f * k - g * j + h * m;
+        this.field_21585 = i * m - f * j - g * k - h * l;
     }
 
     @Environment(value=EnvType.CLIENT)
     public void scale(float f) {
-        this.components[0] = this.components[0] * f;
-        this.components[1] = this.components[1] * f;
-        this.components[2] = this.components[2] * f;
-        this.components[3] = this.components[3] * f;
+        this.field_21582 *= f;
+        this.field_21583 *= f;
+        this.field_21584 *= f;
+        this.field_21585 *= f;
     }
 
     public void conjugate() {
-        this.components[0] = -this.components[0];
-        this.components[1] = -this.components[1];
-        this.components[2] = -this.components[2];
+        this.field_21582 = -this.field_21582;
+        this.field_21583 = -this.field_21583;
+        this.field_21584 = -this.field_21584;
     }
 
     @Environment(value=EnvType.CLIENT)
     public void method_23758(float f, float g, float h, float i) {
-        this.components[0] = f;
-        this.components[1] = g;
-        this.components[2] = h;
-        this.components[3] = i;
+        this.field_21582 = f;
+        this.field_21583 = g;
+        this.field_21584 = h;
+        this.field_21585 = i;
     }
 
     private static float cos(float f) {
@@ -151,21 +162,21 @@ public final class Quaternion {
         float f = this.getB() * this.getB() + this.getC() * this.getC() + this.getD() * this.getD() + this.getA() * this.getA();
         if (f > 1.0E-6f) {
             float g = MathHelper.fastInverseSqrt(f);
-            this.components[0] = this.components[0] * g;
-            this.components[1] = this.components[1] * g;
-            this.components[2] = this.components[2] * g;
-            this.components[3] = this.components[3] * g;
+            this.field_21582 *= g;
+            this.field_21583 *= g;
+            this.field_21584 *= g;
+            this.field_21585 *= g;
         } else {
-            this.components[0] = 0.0f;
-            this.components[1] = 0.0f;
-            this.components[2] = 0.0f;
-            this.components[3] = 0.0f;
+            this.field_21582 = 0.0f;
+            this.field_21583 = 0.0f;
+            this.field_21584 = 0.0f;
+            this.field_21585 = 0.0f;
         }
     }
 
     @Environment(value=EnvType.CLIENT)
     public Quaternion copy() {
-        return new Quaternion((float[])this.components.clone());
+        return new Quaternion(this);
     }
 }
 

@@ -108,7 +108,7 @@ public class ItemPredicate {
         return this.potion == null || this.potion == potion;
     }
 
-    public static ItemPredicate deserialize(@Nullable JsonElement jsonElement) {
+    public static ItemPredicate fromJson(@Nullable JsonElement jsonElement) {
         if (jsonElement == null || jsonElement.isJsonNull()) {
             return ANY;
         }
@@ -142,7 +142,7 @@ public class ItemPredicate {
         return new ItemPredicate(tag, item, intRange, intRange2, enchantmentPredicates, enchantmentPredicates2, potion, nbtPredicate);
     }
 
-    public JsonElement serialize() {
+    public JsonElement toJson() {
         JsonArray jsonArray;
         if (this == ANY) {
             return JsonNull.INSTANCE;
@@ -184,7 +184,7 @@ public class ItemPredicate {
         JsonArray jsonArray = JsonHelper.asArray(jsonElement, "items");
         ItemPredicate[] itemPredicates = new ItemPredicate[jsonArray.size()];
         for (int i = 0; i < itemPredicates.length; ++i) {
-            itemPredicates[i] = ItemPredicate.deserialize(jsonArray.get(i));
+            itemPredicates[i] = ItemPredicate.fromJson(jsonArray.get(i));
         }
         return itemPredicates;
     }

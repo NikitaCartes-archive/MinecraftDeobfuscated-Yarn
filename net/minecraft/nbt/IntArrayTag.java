@@ -40,7 +40,7 @@ extends AbstractListTag<IntTag> {
 
         @Override
         public String getCommandFeedbackName() {
-            return "TAG_Int";
+            return "TAG_Int_Array";
         }
 
         @Override

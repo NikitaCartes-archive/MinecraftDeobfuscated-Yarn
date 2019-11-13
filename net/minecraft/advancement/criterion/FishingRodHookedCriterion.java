@@ -28,9 +28,9 @@ extends AbstractCriterion<Conditions> {
     }
 
     public Conditions method_8941(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        ItemPredicate itemPredicate = ItemPredicate.deserialize(jsonObject.get("rod"));
+        ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("rod"));
         EntityPredicate entityPredicate = EntityPredicate.fromJson(jsonObject.get("entity"));
-        ItemPredicate itemPredicate2 = ItemPredicate.deserialize(jsonObject.get("item"));
+        ItemPredicate itemPredicate2 = ItemPredicate.fromJson(jsonObject.get("item"));
         return new Conditions(itemPredicate, entityPredicate, itemPredicate2);
     }
 
@@ -88,9 +88,9 @@ extends AbstractCriterion<Conditions> {
         @Override
         public JsonElement toJson() {
             JsonObject jsonObject = new JsonObject();
-            jsonObject.add("rod", this.rod.serialize());
+            jsonObject.add("rod", this.rod.toJson());
             jsonObject.add("entity", this.hookedEntity.serialize());
-            jsonObject.add("item", this.caughtItem.serialize());
+            jsonObject.add("item", this.caughtItem.toJson());
             return jsonObject;
         }
     }

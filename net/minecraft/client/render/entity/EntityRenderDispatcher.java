@@ -131,7 +131,6 @@ import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
@@ -150,10 +149,8 @@ public class EntityRenderDispatcher {
     private final TextRenderer textRenderer;
     public final TextureManager textureManager;
     private World world;
-    private Camera camera;
+    public Camera camera;
     public Entity targetedEntity;
-    public float cameraYaw;
-    public float cameraPitch;
     public final GameOptions gameOptions;
     private boolean renderShadows = true;
     private boolean renderHitboxes;
@@ -301,20 +298,6 @@ public class EntityRenderDispatcher {
         this.world = world;
         this.camera = camera;
         this.targetedEntity = entity;
-        if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).isSleeping()) {
-            Direction direction = ((LivingEntity)camera.getFocusedEntity()).getSleepingDirection();
-            if (direction != null) {
-                this.cameraYaw = direction.getOpposite().asRotation();
-                this.cameraPitch = 0.0f;
-            }
-        } else {
-            this.cameraYaw = camera.getYaw();
-            this.cameraPitch = camera.getPitch();
-        }
-    }
-
-    public void setCameraYaw(float f) {
-        this.cameraYaw = f;
     }
 
     public void setRenderShadows(boolean bl) {
@@ -413,11 +396,11 @@ public class EntityRenderDispatcher {
         float h = 0.0f;
         float i = entity.getHeight() / f;
         float j = 0.0f;
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-this.cameraYaw));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-this.camera.getYaw()));
         matrixStack.translate(0.0, 0.0, -0.3f + (float)((int)i) * 0.02f);
         float k = 0.0f;
         int l = 0;
-        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.method_23947());
         MatrixStack.Entry entry = matrixStack.peek();
         while (i > 0.0f) {
             Sprite sprite3 = l % 2 == 0 ? sprite : sprite2;

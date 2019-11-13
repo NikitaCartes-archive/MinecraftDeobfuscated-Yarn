@@ -146,7 +146,7 @@ implements ItemConvertible {
             ItemStack itemStack = playerEntity.getStackInHand(hand);
             if (playerEntity.canConsume(this.getFoodComponent().isAlwaysEdible())) {
                 playerEntity.setCurrentHand(hand);
-                return TypedActionResult.success(itemStack);
+                return TypedActionResult.consume(itemStack);
             }
             return TypedActionResult.fail(itemStack);
         }

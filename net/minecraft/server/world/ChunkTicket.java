@@ -11,13 +11,12 @@ implements Comparable<ChunkTicket<?>> {
     private final ChunkTicketType<T> type;
     private final int level;
     private final T argument;
-    private final long location;
+    private long location;
 
-    protected ChunkTicket(ChunkTicketType<T> chunkTicketType, int i, T object, long l) {
+    protected ChunkTicket(ChunkTicketType<T> chunkTicketType, int i, T object) {
         this.type = chunkTicketType;
         this.level = i;
         this.argument = object;
-        this.location = l;
     }
 
     public int method_14285(ChunkTicket<?> chunkTicket) {
@@ -59,7 +58,11 @@ implements Comparable<ChunkTicket<?>> {
         return this.level;
     }
 
-    public boolean method_20627(long l) {
+    protected void method_23956(long l) {
+        this.location = l;
+    }
+
+    protected boolean method_20627(long l) {
         long m = this.type.method_20629();
         return m != 0L && l - this.location > m;
     }

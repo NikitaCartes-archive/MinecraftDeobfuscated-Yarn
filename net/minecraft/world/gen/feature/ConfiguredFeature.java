@@ -15,12 +15,16 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.decorator.ConfiguredDecorator;
 import net.minecraft.world.gen.feature.DecoratedFeatureConfig;
+import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.FlowerFeature;
 import net.minecraft.world.gen.feature.RandomFeatureEntry;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ConfiguredFeature<FC extends FeatureConfig, F extends Feature<FC>> {
+    public static final Logger field_21589 = LogManager.getLogger();
     public final F feature;
     public final FC config;
 
@@ -51,8 +55,14 @@ public class ConfiguredFeature<FC extends FeatureConfig, F extends Feature<FC>> 
     }
 
     public static <T> ConfiguredFeature<?, ?> deserialize(Dynamic<T> dynamic) {
-        Feature<?> feature = Registry.FEATURE.get(new Identifier(dynamic.get("name").asString("")));
-        return new ConfiguredFeature(feature, dynamic.get("config").orElseEmptyMap());
+        String string = dynamic.get("name").asString("");
+        Feature<?> feature = Registry.FEATURE.get(new Identifier(string));
+        try {
+            return new ConfiguredFeature(feature, dynamic.get("config").orElseEmptyMap());
+        } catch (RuntimeException runtimeException) {
+            field_21589.warn("Error while deserializing {}", (Object)string);
+            return new ConfiguredFeature<DefaultFeatureConfig, Feature<DefaultFeatureConfig>>(Feature.NO_OP, DefaultFeatureConfig.DEFAULT);
+        }
     }
 }
 

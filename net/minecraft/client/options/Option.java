@@ -33,11 +33,8 @@ public abstract class Option {
     }, (gameOptions, doubleOption) -> {
         double d = doubleOption.get((GameOptions)gameOptions);
         String string = doubleOption.getDisplayPrefix();
-        if (d == 0.0) {
-            return string + I18n.translate("options.off", new Object[0]);
-        }
         int i = (int)d * 2 + 1;
-        return string + i + "x" + i;
+        return string + I18n.translate("options.biomeBlendRadius." + i, new Object[0]);
     });
     public static final DoubleOption CHAT_HEIGHT_FOCUSED = new DoubleOption("options.chat.height.focused", 0.0, 1.0, 0.0f, gameOptions -> gameOptions.chatHeightFocused, (gameOptions, double_) -> {
         gameOptions.chatHeightFocused = double_;

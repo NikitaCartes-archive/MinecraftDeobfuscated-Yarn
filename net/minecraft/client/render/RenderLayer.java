@@ -18,6 +18,7 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.block.entity.EndPortalBlockEntityRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.ModelLoader;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,6 +35,12 @@ extends RenderPhase {
     private static final RenderLayer GLINT = new MultiPhase("glint", VertexFormats.POSITION_TEXTURE, 7, 256, MultiPhaseData.builder().texture(new RenderPhase.Texture(ItemRenderer.field_21010, false, false)).writeMaskState(COLOR_MASK).cull(DISABLE_CULLING).depthTest(EQUAL_DEPTH_TEST).transparency(GLINT_TRANSPARENCY).texturing(GLINT_TEXTURING).build(false));
     private static final RenderLayer ENTITY_GLINT = new MultiPhase("entity_glint", VertexFormats.POSITION_TEXTURE, 7, 256, MultiPhaseData.builder().texture(new RenderPhase.Texture(ItemRenderer.field_21010, false, false)).writeMaskState(COLOR_MASK).cull(DISABLE_CULLING).depthTest(EQUAL_DEPTH_TEST).transparency(GLINT_TRANSPARENCY).texturing(ENTITY_GLINT_TEXTURING).build(false));
     private static final RenderLayer LIGHTNING = new MultiPhase("lightning", VertexFormats.POSITION_COLOR, 7, 256, false, true, MultiPhaseData.builder().writeMaskState(COLOR_MASK).transparency(LIGHTNING_TRANSPARENCY).shadeModel(SMOOTH_SHADE_MODEL).build(false));
+    public static final RenderLayer field_21619 = RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+    public static final RenderLayer field_21620 = RenderLayer.getEntityCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+    public static final RenderLayer field_21621 = RenderLayer.getEntityCutoutNoCull(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+    public static final RenderLayer field_21622 = RenderLayer.getEntityTranslucent(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+    public static final RenderLayer field_21623 = RenderLayer.getEntityTranslucentCull(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+    public static final RenderLayer field_21624 = RenderLayer.getEntityNoOutline(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
     private final VertexFormat vertexFormat;
     private final int drawMode;
     private final int expectedBufferSize;
@@ -176,6 +183,30 @@ extends RenderPhase {
 
     public static RenderLayer getLines() {
         return new MultiPhase("lines", VertexFormats.POSITION_COLOR, 1, 256, MultiPhaseData.builder().lineWidth(new RenderPhase.LineWidth(Math.max(2.5f, (float)MinecraftClient.getInstance().getWindow().getFramebufferWidth() / 1920.0f * 2.5f))).layering(PROJECTION_LAYERING).transparency(TRANSLUCENT_TRANSPARENCY).build(false));
+    }
+
+    public static RenderLayer method_23946() {
+        return field_21619;
+    }
+
+    public static RenderLayer method_23947() {
+        return field_21620;
+    }
+
+    public static RenderLayer method_23948() {
+        return field_21621;
+    }
+
+    public static RenderLayer method_23949() {
+        return field_21622;
+    }
+
+    public static RenderLayer method_23950() {
+        return field_21623;
+    }
+
+    public static RenderLayer method_23951() {
+        return field_21624;
     }
 
     public RenderLayer(String string, VertexFormat vertexFormat, int i, int j, boolean bl, boolean bl2, Runnable runnable, Runnable runnable2) {

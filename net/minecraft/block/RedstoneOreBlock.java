@@ -54,6 +54,7 @@ extends Block {
     @Override
     public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
         if (world.isClient) {
+            RedstoneOreBlock.spawnParticles(world, blockPos);
             return ActionResult.SUCCESS;
         }
         RedstoneOreBlock.light(blockState, world, blockPos);

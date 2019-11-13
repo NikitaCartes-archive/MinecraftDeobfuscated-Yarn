@@ -21,12 +21,17 @@ implements FeatureConfig {
     public final StateProvider leavesProvider;
     public final List<TreeDecorator> decorators;
     public final int baseHeight;
+    public transient boolean field_21593;
 
     protected TreeFeatureConfig(StateProvider stateProvider, StateProvider stateProvider2, List<TreeDecorator> list, int i) {
         this.trunkProvider = stateProvider;
         this.leavesProvider = stateProvider2;
         this.decorators = list;
         this.baseHeight = i;
+    }
+
+    public void method_23916() {
+        this.field_21593 = true;
     }
 
     @Override

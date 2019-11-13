@@ -12,17 +12,16 @@ import net.minecraft.client.render.OutlineVertexConsumerProvider;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.chunk.BlockBufferBuilderStorage;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.util.Util;
 
 @Environment(value=EnvType.CLIENT)
 public class BufferBuilderStorage {
     private final BlockBufferBuilderStorage blockBuilders = new BlockBufferBuilderStorage();
     private final SortedMap<RenderLayer, BufferBuilder> entityBuilders = Util.create(new Object2ObjectLinkedOpenHashMap(), object2ObjectLinkedOpenHashMap -> {
-        object2ObjectLinkedOpenHashMap.put(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX), this.blockBuilders.get(RenderLayer.getSolid()));
-        object2ObjectLinkedOpenHashMap.put(RenderLayer.getEntityCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEX), this.blockBuilders.get(RenderLayer.getCutout()));
-        object2ObjectLinkedOpenHashMap.put(RenderLayer.getEntityNoOutline(SpriteAtlasTexture.BLOCK_ATLAS_TEX), this.blockBuilders.get(RenderLayer.getCutoutMipped()));
-        object2ObjectLinkedOpenHashMap.put(RenderLayer.getEntityTranslucent(SpriteAtlasTexture.BLOCK_ATLAS_TEX), this.blockBuilders.get(RenderLayer.getTranslucent()));
+        object2ObjectLinkedOpenHashMap.put(RenderLayer.method_23946(), this.blockBuilders.get(RenderLayer.getSolid()));
+        object2ObjectLinkedOpenHashMap.put(RenderLayer.method_23947(), this.blockBuilders.get(RenderLayer.getCutout()));
+        object2ObjectLinkedOpenHashMap.put(RenderLayer.method_23951(), this.blockBuilders.get(RenderLayer.getCutoutMipped()));
+        object2ObjectLinkedOpenHashMap.put(RenderLayer.method_23949(), this.blockBuilders.get(RenderLayer.getTranslucent()));
         BufferBuilderStorage.method_23798(object2ObjectLinkedOpenHashMap, RenderLayer.getTranslucentNoCrumbling());
         BufferBuilderStorage.method_23798(object2ObjectLinkedOpenHashMap, RenderLayer.getGlint());
         BufferBuilderStorage.method_23798(object2ObjectLinkedOpenHashMap, RenderLayer.getEntityGlint());

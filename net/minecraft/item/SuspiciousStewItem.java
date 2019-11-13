@@ -6,6 +6,7 @@ package net.minecraft.item;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -31,7 +32,7 @@ extends Item {
 
     @Override
     public ItemStack finishUsing(ItemStack itemStack, World world, LivingEntity livingEntity) {
-        super.finishUsing(itemStack, world, livingEntity);
+        ItemStack itemStack2 = super.finishUsing(itemStack, world, livingEntity);
         CompoundTag compoundTag = itemStack.getTag();
         if (compoundTag != null && compoundTag.contains("Effects", 9)) {
             ListTag listTag = compoundTag.getList("Effects", 10);
@@ -45,6 +46,9 @@ extends Item {
                 if ((statusEffect = StatusEffect.byRawId(compoundTag2.getByte("EffectId"))) == null) continue;
                 livingEntity.addStatusEffect(new StatusEffectInstance(statusEffect, j));
             }
+        }
+        if (livingEntity instanceof PlayerEntity && ((PlayerEntity)livingEntity).abilities.creativeMode) {
+            return itemStack2;
         }
         return new ItemStack(Items.BOWL);
     }

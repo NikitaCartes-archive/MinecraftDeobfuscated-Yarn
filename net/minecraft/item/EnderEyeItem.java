@@ -87,9 +87,10 @@ extends Item {
                 itemStack.decrement(1);
             }
             playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
+            playerEntity.swingHand(hand, true);
             return TypedActionResult.success(itemStack);
         }
-        return TypedActionResult.success(itemStack);
+        return TypedActionResult.consume(itemStack);
     }
 }
 

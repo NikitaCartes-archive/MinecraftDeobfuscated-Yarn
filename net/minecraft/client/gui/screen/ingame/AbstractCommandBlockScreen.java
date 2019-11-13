@@ -3,40 +3,16 @@
  */
 package net.minecraft.client.gui.screen.ingame;
 
-import com.google.common.collect.Lists;
-import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.Message;
-import com.mojang.brigadier.ParseResults;
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.context.CommandContextBuilder;
-import com.mojang.brigadier.context.SuggestionContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.suggestion.Suggestion;
-import com.mojang.brigadier.suggestion.Suggestions;
-import com.mojang.brigadier.tree.CommandNode;
-import com.mojang.brigadier.tree.LiteralCommandNode;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.client.gui.screen.CommandSuggestor;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.client.util.Rect2i;
-import net.minecraft.server.command.CommandSource;
-import net.minecraft.text.Texts;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec2f;
 import net.minecraft.world.CommandBlockExecutor;
-import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class AbstractCommandBlockScreen
@@ -47,13 +23,7 @@ extends Screen {
     protected ButtonWidget cancelButton;
     protected ButtonWidget toggleTrackingOutputButton;
     protected boolean trackingOutput;
-    protected final List<String> exceptions = Lists.newArrayList();
-    protected int suggestionStartX;
-    protected int suggestionWidth;
-    protected ParseResults<CommandSource> parsedCommand;
-    protected CompletableFuture<Suggestions> suggestionsFuture;
-    protected SuggestionWindow suggestionWindow;
-    private boolean completingSuggestion;
+    private CommandSuggestor commandSuggestor;
 
     public AbstractCommandBlockScreen() {
         super(NarratorManager.EMPTY);
@@ -80,7 +50,6 @@ extends Screen {
         }));
         this.consoleCommandTextField = new TextFieldWidget(this.font, this.width / 2 - 150, 50, 300, 20, I18n.translate("advMode.command", new Object[0]));
         this.consoleCommandTextField.setMaxLength(32500);
-        this.consoleCommandTextField.setRenderTextProvider(this::method_2348);
         this.consoleCommandTextField.setChangedListener(this::onCommandChanged);
         this.children.add(this.consoleCommandTextField);
         this.previousOutputTextField = new TextFieldWidget(this.font, this.width / 2 - 150, this.getTrackOutputButtonHeight(), 276, 20, I18n.translate("advMode.previousOutput", new Object[0]));
@@ -90,15 +59,17 @@ extends Screen {
         this.children.add(this.previousOutputTextField);
         this.setInitialFocus(this.consoleCommandTextField);
         this.consoleCommandTextField.setSelected(true);
-        this.updateCommand();
+        this.commandSuggestor = new CommandSuggestor(this.minecraft, this, this.consoleCommandTextField, this.font, false, true, 0, 7, false, Integer.MIN_VALUE);
+        this.commandSuggestor.setWindowActive(true);
+        this.commandSuggestor.refresh();
     }
 
     @Override
     public void resize(MinecraftClient minecraftClient, int i, int j) {
         String string = this.consoleCommandTextField.getText();
         this.init(minecraftClient, i, j);
-        this.setCommand(string);
-        this.updateCommand();
+        this.consoleCommandTextField.setText(string);
+        this.commandSuggestor.refresh();
     }
 
     protected void updateTrackedOutput() {
@@ -134,16 +105,12 @@ extends Screen {
     }
 
     private void onCommandChanged(String string) {
-        this.updateCommand();
+        this.commandSuggestor.refresh();
     }
 
     @Override
     public boolean keyPressed(int i, int j, int k) {
-        if (this.suggestionWindow != null && this.suggestionWindow.keyPressed(i, j, k)) {
-            return true;
-        }
-        if (this.getFocused() == this.consoleCommandTextField && i == 258) {
-            this.showSuggestions();
+        if (this.commandSuggestor.keyPressed(i, j, k)) {
             return true;
         }
         if (super.keyPressed(i, j, k)) {
@@ -153,15 +120,12 @@ extends Screen {
             this.commitAndClose();
             return true;
         }
-        if (i == 258 && this.getFocused() == this.consoleCommandTextField) {
-            this.showSuggestions();
-        }
         return false;
     }
 
     @Override
     public boolean mouseScrolled(double d, double e, double f) {
-        if (this.suggestionWindow != null && this.suggestionWindow.mouseScrolled(MathHelper.clamp(f, -1.0, 1.0))) {
+        if (this.commandSuggestor.mouseScrolled(f)) {
             return true;
         }
         return super.mouseScrolled(d, e, f);
@@ -169,92 +133,10 @@ extends Screen {
 
     @Override
     public boolean mouseClicked(double d, double e, int i) {
-        if (this.suggestionWindow != null && this.suggestionWindow.mouseClicked((int)d, (int)e, i)) {
+        if (this.commandSuggestor.mouseClicked(d, e, i)) {
             return true;
         }
         return super.mouseClicked(d, e, i);
-    }
-
-    protected void updateCommand() {
-        int j;
-        String string = this.consoleCommandTextField.getText();
-        if (this.parsedCommand != null && !this.parsedCommand.getReader().getString().equals(string)) {
-            this.parsedCommand = null;
-        }
-        if (!this.completingSuggestion) {
-            this.consoleCommandTextField.setSuggestion(null);
-            this.suggestionWindow = null;
-        }
-        this.exceptions.clear();
-        CommandDispatcher<CommandSource> commandDispatcher = this.minecraft.player.networkHandler.getCommandDispatcher();
-        StringReader stringReader = new StringReader(string);
-        if (stringReader.canRead() && stringReader.peek() == '/') {
-            stringReader.skip();
-        }
-        int i = stringReader.getCursor();
-        if (this.parsedCommand == null) {
-            this.parsedCommand = commandDispatcher.parse(stringReader, (CommandSource)this.minecraft.player.networkHandler.getCommandSource());
-        }
-        if (!((j = this.consoleCommandTextField.getCursor()) < i || this.suggestionWindow != null && this.completingSuggestion)) {
-            this.suggestionsFuture = commandDispatcher.getCompletionSuggestions(this.parsedCommand, j);
-            this.suggestionsFuture.thenRun(() -> {
-                if (!this.suggestionsFuture.isDone()) {
-                    return;
-                }
-                this.updateCommandFeedback();
-            });
-        }
-    }
-
-    private void updateCommandFeedback() {
-        if (this.suggestionsFuture.join().isEmpty() && !this.parsedCommand.getExceptions().isEmpty() && this.consoleCommandTextField.getCursor() == this.consoleCommandTextField.getText().length()) {
-            int i = 0;
-            for (Map.Entry<CommandNode<CommandSource>, CommandSyntaxException> entry : this.parsedCommand.getExceptions().entrySet()) {
-                CommandSyntaxException commandSyntaxException = entry.getValue();
-                if (commandSyntaxException.getType() == CommandSyntaxException.BUILT_IN_EXCEPTIONS.literalIncorrect()) {
-                    ++i;
-                    continue;
-                }
-                this.exceptions.add(commandSyntaxException.getMessage());
-            }
-            if (i > 0) {
-                this.exceptions.add(CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand().create().getMessage());
-            }
-        }
-        this.suggestionStartX = 0;
-        this.suggestionWidth = this.width;
-        if (this.exceptions.isEmpty()) {
-            this.method_2356(Formatting.GRAY);
-        }
-        this.suggestionWindow = null;
-        if (this.minecraft.options.autoSuggestions) {
-            this.showSuggestions();
-        }
-    }
-
-    private String method_2348(String string, int i) {
-        if (this.parsedCommand != null) {
-            return ChatScreen.getRenderText(this.parsedCommand, string, i);
-        }
-        return string;
-    }
-
-    private void method_2356(Formatting formatting) {
-        CommandContextBuilder<CommandSource> commandContextBuilder = this.parsedCommand.getContext();
-        SuggestionContext<CommandSource> suggestionContext = commandContextBuilder.findSuggestionContext(this.consoleCommandTextField.getCursor());
-        Map<CommandNode<CommandSource>, String> map = this.minecraft.player.networkHandler.getCommandDispatcher().getSmartUsage(suggestionContext.parent, this.minecraft.player.networkHandler.getCommandSource());
-        ArrayList<String> list = Lists.newArrayList();
-        int i = 0;
-        for (Map.Entry<CommandNode<CommandSource>, String> entry : map.entrySet()) {
-            if (entry.getKey() instanceof LiteralCommandNode) continue;
-            list.add((Object)((Object)formatting) + entry.getValue());
-            i = Math.max(i, this.font.getStringWidth(entry.getValue()));
-        }
-        if (!list.isEmpty()) {
-            this.exceptions.addAll(list);
-            this.suggestionStartX = MathHelper.clamp(this.consoleCommandTextField.getCharacterX(suggestionContext.startPos), 0, this.consoleCommandTextField.getCharacterX(0) + this.consoleCommandTextField.getInnerWidth() - i);
-            this.suggestionWidth = i;
-        }
     }
 
     @Override
@@ -269,191 +151,7 @@ extends Screen {
             this.previousOutputTextField.render(i, j, f);
         }
         super.render(i, j, f);
-        if (this.suggestionWindow != null) {
-            this.suggestionWindow.draw(i, j);
-        } else {
-            k = 0;
-            for (String string : this.exceptions) {
-                AbstractCommandBlockScreen.fill(this.suggestionStartX - 1, 72 + 12 * k, this.suggestionStartX + this.suggestionWidth + 1, 84 + 12 * k, Integer.MIN_VALUE);
-                this.font.drawWithShadow(string, this.suggestionStartX, 74 + 12 * k, -1);
-                ++k;
-            }
-        }
-    }
-
-    public void showSuggestions() {
-        Suggestions suggestions;
-        if (this.suggestionsFuture != null && this.suggestionsFuture.isDone() && !(suggestions = this.suggestionsFuture.join()).isEmpty()) {
-            int i = 0;
-            for (Suggestion suggestion : suggestions.getList()) {
-                i = Math.max(i, this.font.getStringWidth(suggestion.getText()));
-            }
-            int j = MathHelper.clamp(this.consoleCommandTextField.getCharacterX(suggestions.getRange().getStart()), 0, this.consoleCommandTextField.getCharacterX(0) + this.consoleCommandTextField.getInnerWidth() - i);
-            this.suggestionWindow = new SuggestionWindow(j, 72, i, suggestions);
-        }
-    }
-
-    protected void setCommand(String string) {
-        this.consoleCommandTextField.setText(string);
-    }
-
-    @Nullable
-    private static String suggestSuffix(String string, String string2) {
-        if (string2.startsWith(string)) {
-            return string2.substring(string.length());
-        }
-        return null;
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    class SuggestionWindow {
-        private final Rect2i area;
-        private final Suggestions suggestions;
-        private final String typedText;
-        private int inWindowIndex;
-        private int selection;
-        private Vec2f mouse = Vec2f.ZERO;
-        private boolean completed;
-
-        private SuggestionWindow(int i, int j, int k, Suggestions suggestions) {
-            this.area = new Rect2i(i - 1, j, k + 1, Math.min(suggestions.getList().size(), 7) * 12);
-            this.suggestions = suggestions;
-            this.typedText = AbstractCommandBlockScreen.this.consoleCommandTextField.getText();
-            this.select(0);
-        }
-
-        public void draw(int i, int j) {
-            Message message;
-            boolean bl4;
-            int k = Math.min(this.suggestions.getList().size(), 7);
-            int l = Integer.MIN_VALUE;
-            int m = -5592406;
-            boolean bl = this.inWindowIndex > 0;
-            boolean bl2 = this.suggestions.getList().size() > this.inWindowIndex + k;
-            boolean bl3 = bl || bl2;
-            boolean bl5 = bl4 = this.mouse.x != (float)i || this.mouse.y != (float)j;
-            if (bl4) {
-                this.mouse = new Vec2f(i, j);
-            }
-            if (bl3) {
-                int n;
-                DrawableHelper.fill(this.area.getX(), this.area.getY() - 1, this.area.getX() + this.area.getWidth(), this.area.getY(), Integer.MIN_VALUE);
-                DrawableHelper.fill(this.area.getX(), this.area.getY() + this.area.getHeight(), this.area.getX() + this.area.getWidth(), this.area.getY() + this.area.getHeight() + 1, Integer.MIN_VALUE);
-                if (bl) {
-                    for (n = 0; n < this.area.getWidth(); ++n) {
-                        if (n % 2 != 0) continue;
-                        DrawableHelper.fill(this.area.getX() + n, this.area.getY() - 1, this.area.getX() + n + 1, this.area.getY(), -1);
-                    }
-                }
-                if (bl2) {
-                    for (n = 0; n < this.area.getWidth(); ++n) {
-                        if (n % 2 != 0) continue;
-                        DrawableHelper.fill(this.area.getX() + n, this.area.getY() + this.area.getHeight(), this.area.getX() + n + 1, this.area.getY() + this.area.getHeight() + 1, -1);
-                    }
-                }
-            }
-            boolean bl52 = false;
-            for (int o = 0; o < k; ++o) {
-                Suggestion suggestion = this.suggestions.getList().get(o + this.inWindowIndex);
-                DrawableHelper.fill(this.area.getX(), this.area.getY() + 12 * o, this.area.getX() + this.area.getWidth(), this.area.getY() + 12 * o + 12, Integer.MIN_VALUE);
-                if (i > this.area.getX() && i < this.area.getX() + this.area.getWidth() && j > this.area.getY() + 12 * o && j < this.area.getY() + 12 * o + 12) {
-                    if (bl4) {
-                        this.select(o + this.inWindowIndex);
-                    }
-                    bl52 = true;
-                }
-                AbstractCommandBlockScreen.this.font.drawWithShadow(suggestion.getText(), this.area.getX() + 1, this.area.getY() + 2 + 12 * o, o + this.inWindowIndex == this.selection ? -256 : -5592406);
-            }
-            if (bl52 && (message = this.suggestions.getList().get(this.selection).getTooltip()) != null) {
-                AbstractCommandBlockScreen.this.renderTooltip(Texts.toText(message).asFormattedString(), i, j);
-            }
-        }
-
-        public boolean mouseClicked(int i, int j, int k) {
-            if (!this.area.contains(i, j)) {
-                return false;
-            }
-            int l = (j - this.area.getY()) / 12 + this.inWindowIndex;
-            if (l >= 0 && l < this.suggestions.getList().size()) {
-                this.select(l);
-                this.complete();
-            }
-            return true;
-        }
-
-        public boolean mouseScrolled(double d) {
-            int j;
-            int i = (int)(((AbstractCommandBlockScreen)AbstractCommandBlockScreen.this).minecraft.mouse.getX() * (double)AbstractCommandBlockScreen.this.minecraft.getWindow().getScaledWidth() / (double)AbstractCommandBlockScreen.this.minecraft.getWindow().getWidth());
-            if (this.area.contains(i, j = (int)(((AbstractCommandBlockScreen)AbstractCommandBlockScreen.this).minecraft.mouse.getY() * (double)AbstractCommandBlockScreen.this.minecraft.getWindow().getScaledHeight() / (double)AbstractCommandBlockScreen.this.minecraft.getWindow().getHeight()))) {
-                this.inWindowIndex = MathHelper.clamp((int)((double)this.inWindowIndex - d), 0, Math.max(this.suggestions.getList().size() - 7, 0));
-                return true;
-            }
-            return false;
-        }
-
-        public boolean keyPressed(int i, int j, int k) {
-            if (i == 265) {
-                this.scroll(-1);
-                this.completed = false;
-                return true;
-            }
-            if (i == 264) {
-                this.scroll(1);
-                this.completed = false;
-                return true;
-            }
-            if (i == 258) {
-                if (this.completed) {
-                    this.scroll(Screen.hasShiftDown() ? -1 : 1);
-                }
-                this.complete();
-                return true;
-            }
-            if (i == 256) {
-                this.discard();
-                return true;
-            }
-            return false;
-        }
-
-        public void scroll(int i) {
-            this.select(this.selection + i);
-            int j = this.inWindowIndex;
-            int k = this.inWindowIndex + 7 - 1;
-            if (this.selection < j) {
-                this.inWindowIndex = MathHelper.clamp(this.selection, 0, Math.max(this.suggestions.getList().size() - 7, 0));
-            } else if (this.selection > k) {
-                this.inWindowIndex = MathHelper.clamp(this.selection - 7, 0, Math.max(this.suggestions.getList().size() - 7, 0));
-            }
-        }
-
-        public void select(int i) {
-            this.selection = i;
-            if (this.selection < 0) {
-                this.selection += this.suggestions.getList().size();
-            }
-            if (this.selection >= this.suggestions.getList().size()) {
-                this.selection -= this.suggestions.getList().size();
-            }
-            Suggestion suggestion = this.suggestions.getList().get(this.selection);
-            AbstractCommandBlockScreen.this.consoleCommandTextField.setSuggestion(AbstractCommandBlockScreen.suggestSuffix(AbstractCommandBlockScreen.this.consoleCommandTextField.getText(), suggestion.apply(this.typedText)));
-        }
-
-        public void complete() {
-            Suggestion suggestion = this.suggestions.getList().get(this.selection);
-            AbstractCommandBlockScreen.this.completingSuggestion = true;
-            AbstractCommandBlockScreen.this.setCommand(suggestion.apply(this.typedText));
-            int i = suggestion.getRange().getStart() + suggestion.getText().length();
-            AbstractCommandBlockScreen.this.consoleCommandTextField.setSelectionStart(i);
-            AbstractCommandBlockScreen.this.consoleCommandTextField.setSelectionEnd(i);
-            this.select(this.selection);
-            AbstractCommandBlockScreen.this.completingSuggestion = false;
-            this.completed = true;
-        }
-
-        public void discard() {
-            AbstractCommandBlockScreen.this.suggestionWindow = null;
-        }
+        this.commandSuggestor.render(i, j);
     }
 }
 

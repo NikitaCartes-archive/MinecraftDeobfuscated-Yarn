@@ -304,7 +304,7 @@ extends LivingEntity {
         if (this.isMarker() || itemStack.getItem() == Items.NAME_TAG) {
             return ActionResult.PASS;
         }
-        if (this.world.isClient || playerEntity.isSpectator()) {
+        if (playerEntity.isSpectator()) {
             return ActionResult.SUCCESS;
         }
         EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
@@ -312,8 +312,8 @@ extends LivingEntity {
             EquipmentSlot equipmentSlot3;
             EquipmentSlot equipmentSlot2 = this.method_6916(vec3d);
             EquipmentSlot equipmentSlot4 = equipmentSlot3 = this.method_6915(equipmentSlot2) ? equipmentSlot : equipmentSlot2;
-            if (this.hasStackEquipped(equipmentSlot3)) {
-                this.method_6904(playerEntity, equipmentSlot3, itemStack, hand);
+            if (this.hasStackEquipped(equipmentSlot3) && this.method_6904(playerEntity, equipmentSlot3, itemStack, hand)) {
+                return ActionResult.SUCCESS;
             }
         } else {
             if (this.method_6915(equipmentSlot)) {
@@ -322,9 +322,11 @@ extends LivingEntity {
             if (equipmentSlot.getType() == EquipmentSlot.Type.HAND && !this.shouldShowArms()) {
                 return ActionResult.FAIL;
             }
-            this.method_6904(playerEntity, equipmentSlot, itemStack, hand);
+            if (this.method_6904(playerEntity, equipmentSlot, itemStack, hand)) {
+                return ActionResult.SUCCESS;
+            }
         }
-        return ActionResult.SUCCESS;
+        return ActionResult.CONSUME;
     }
 
     /*
@@ -367,32 +369,33 @@ extends LivingEntity {
         return (this.disabledSlots & 1 << equipmentSlot.getArmorStandSlotId()) != 0 || equipmentSlot.getType() == EquipmentSlot.Type.HAND && !this.shouldShowArms();
     }
 
-    private void method_6904(PlayerEntity playerEntity, EquipmentSlot equipmentSlot, ItemStack itemStack, Hand hand) {
+    private boolean method_6904(PlayerEntity playerEntity, EquipmentSlot equipmentSlot, ItemStack itemStack, Hand hand) {
         ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
         if (!itemStack2.isEmpty() && (this.disabledSlots & 1 << equipmentSlot.getArmorStandSlotId() + 8) != 0) {
-            return;
+            return false;
         }
         if (itemStack2.isEmpty() && (this.disabledSlots & 1 << equipmentSlot.getArmorStandSlotId() + 16) != 0) {
-            return;
+            return false;
         }
         if (playerEntity.abilities.creativeMode && itemStack2.isEmpty() && !itemStack.isEmpty()) {
             ItemStack itemStack3 = itemStack.copy();
             itemStack3.setCount(1);
             this.equipStack(equipmentSlot, itemStack3);
-            return;
+            return true;
         }
         if (!itemStack.isEmpty() && itemStack.getCount() > 1) {
             if (!itemStack2.isEmpty()) {
-                return;
+                return false;
             }
             ItemStack itemStack3 = itemStack.copy();
             itemStack3.setCount(1);
             this.equipStack(equipmentSlot, itemStack3);
             itemStack.decrement(1);
-            return;
+            return true;
         }
         this.equipStack(equipmentSlot, itemStack);
         playerEntity.setStackInHand(hand, itemStack2);
+        return true;
     }
 
     @Override

@@ -23,10 +23,6 @@ extends FixedColorVertexConsumer {
     private float x;
     private float y;
     private float z;
-    private int red;
-    private int green;
-    private int blue;
-    private int alpha;
     private int u1;
     private int v1;
     private int light;
@@ -47,10 +43,6 @@ extends FixedColorVertexConsumer {
         this.x = 0.0f;
         this.y = 0.0f;
         this.z = 0.0f;
-        this.red = this.fixedRed;
-        this.green = this.fixedGreen;
-        this.blue = this.fixedBlue;
-        this.alpha = this.fixedAlpha;
         this.u1 = 0;
         this.v1 = 10;
         this.light = 0xF000F0;
@@ -71,7 +63,7 @@ extends FixedColorVertexConsumer {
         vector4f.method_23852(direction.getRotationQuaternion());
         float f = -vector4f.getX();
         float g = -vector4f.getY();
-        this.vertexConsumer.vertex(this.x, this.y, this.z).color(this.red, this.green, this.blue, this.alpha).texture(f, g).overlay(this.u1, this.v1).light(this.light).normal(this.normalX, this.normalY, this.normalZ).next();
+        this.vertexConsumer.vertex(this.x, this.y, this.z).color(1.0f, 1.0f, 1.0f, 1.0f).texture(f, g).overlay(this.u1, this.v1).light(this.light).normal(this.normalX, this.normalY, this.normalZ).next();
         this.init();
     }
 
@@ -85,13 +77,6 @@ extends FixedColorVertexConsumer {
 
     @Override
     public VertexConsumer color(int i, int j, int k, int l) {
-        if (this.colorFixed) {
-            throw new IllegalStateException();
-        }
-        this.red = i;
-        this.green = j;
-        this.blue = k;
-        this.alpha = l;
         return this;
     }
 

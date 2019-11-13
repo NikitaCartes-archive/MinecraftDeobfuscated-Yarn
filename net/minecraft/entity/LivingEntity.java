@@ -384,16 +384,8 @@ extends Entity {
     protected void updatePostDeath() {
         ++this.deathTime;
         if (this.deathTime == 20) {
-            int i;
-            if (!this.world.isClient && (this.shouldAlwaysDropXp() || this.playerHitTimer > 0 && this.canDropLootAndXp() && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT))) {
-                int j;
-                for (i = this.getCurrentExperience(this.attackingPlayer); i > 0; i -= j) {
-                    j = ExperienceOrbEntity.roundToOrbSize(i);
-                    this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.getX(), this.getY(), this.getZ(), j));
-                }
-            }
             this.remove();
-            for (i = 0; i < 20; ++i) {
+            for (int i = 0; i < 20; ++i) {
                 double d = this.random.nextGaussian() * 0.02;
                 double e = this.random.nextGaussian() * 0.02;
                 double f = this.random.nextGaussian() * 0.02;
@@ -1010,9 +1002,20 @@ extends Entity {
             this.dropEquipment(damageSource, i, bl);
         }
         this.dropInventory();
+        this.method_23883();
     }
 
     protected void dropInventory() {
+    }
+
+    protected void method_23883() {
+        if (!this.world.isClient && (this.shouldAlwaysDropXp() || this.playerHitTimer > 0 && this.canDropLootAndXp() && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT))) {
+            int j;
+            for (int i = this.getCurrentExperience(this.attackingPlayer); i > 0; i -= j) {
+                j = ExperienceOrbEntity.roundToOrbSize(i);
+                this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.getX(), this.getY(), this.getZ(), j));
+            }
+        }
     }
 
     protected void dropEquipment(DamageSource damageSource, int i, boolean bl) {
@@ -1816,11 +1819,11 @@ extends Entity {
                 }
                 switch (equipmentSlot.getType()) {
                     case HAND: {
-                        this.equippedHand.set(equipmentSlot.getEntitySlotId(), itemStack2.isEmpty() ? ItemStack.EMPTY : itemStack2.copy());
+                        this.equippedHand.set(equipmentSlot.getEntitySlotId(), itemStack2.copy());
                         continue block8;
                     }
                     case ARMOR: {
-                        this.equippedArmor.set(equipmentSlot.getEntitySlotId(), itemStack2.isEmpty() ? ItemStack.EMPTY : itemStack2.copy());
+                        this.equippedArmor.set(equipmentSlot.getEntitySlotId(), itemStack2.copy());
                     }
                 }
             }

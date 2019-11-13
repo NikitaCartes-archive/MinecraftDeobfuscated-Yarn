@@ -3,6 +3,7 @@
  */
 package net.minecraft.block;
 
+import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.TransparentBlock;
@@ -11,6 +12,7 @@ import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -44,6 +46,9 @@ extends TransparentBlock {
         if (this.method_23356(blockPos, entity)) {
             Vec3d vec3d = entity.getVelocity();
             if (vec3d.y < -0.05) {
+                if (entity instanceof ServerPlayerEntity && vec3d.y < -0.127) {
+                    Criterions.SLIDE_DOWN_BLOCK.test((ServerPlayerEntity)entity, world.getBlockState(blockPos));
+                }
                 entity.setVelocity(new Vec3d(vec3d.x, -0.05, vec3d.z));
             }
             entity.fallDistance = 0.0f;

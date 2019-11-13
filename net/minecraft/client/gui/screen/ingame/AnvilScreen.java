@@ -119,9 +119,9 @@ implements ContainerListener {
     public void render(int i, int j, float f) {
         this.renderBackground();
         super.render(i, j, f);
-        this.drawMouseoverTooltip(i, j);
         RenderSystem.disableBlend();
         this.nameField.render(i, j, f);
+        this.drawMouseoverTooltip(i, j);
     }
 
     @Override

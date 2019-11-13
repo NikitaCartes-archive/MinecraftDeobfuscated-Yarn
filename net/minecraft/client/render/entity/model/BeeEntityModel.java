@@ -11,7 +11,6 @@ import net.minecraft.client.model.ModelUtil;
 import net.minecraft.client.render.entity.model.AnimalModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.BeeEntity;
-import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
@@ -81,7 +80,7 @@ extends AnimalModel<T> {
 
     public void method_22111(T beeEntity, float f, float g, float h) {
         super.animateModel(beeEntity, f, g, h);
-        this.bodyPitch = ((PassiveEntity)beeEntity).isBaby() ? 0.0f : ((BeeEntity)beeEntity).getBodyPitch(h);
+        this.bodyPitch = ((BeeEntity)beeEntity).getBodyPitch(h);
         this.stinger.visible = !((BeeEntity)beeEntity).hasStung();
     }
 

@@ -303,19 +303,23 @@ extends AbstractDecorationEntity {
 
     @Override
     public boolean interact(PlayerEntity playerEntity, Hand hand) {
+        boolean bl2;
         ItemStack itemStack = playerEntity.getStackInHand(hand);
-        if (!this.world.isClient) {
-            if (this.getHeldItemStack().isEmpty()) {
-                if (!itemStack.isEmpty()) {
-                    this.setHeldItemStack(itemStack);
-                    if (!playerEntity.abilities.creativeMode) {
-                        itemStack.decrement(1);
-                    }
+        boolean bl = !this.getHeldItemStack().isEmpty();
+        boolean bl3 = bl2 = !itemStack.isEmpty();
+        if (this.world.isClient) {
+            return bl || bl2;
+        }
+        if (!bl) {
+            if (bl2) {
+                this.setHeldItemStack(itemStack);
+                if (!playerEntity.abilities.creativeMode) {
+                    itemStack.decrement(1);
                 }
-            } else {
-                this.playSound(SoundEvents.ENTITY_ITEM_FRAME_ROTATE_ITEM, 1.0f, 1.0f);
-                this.setRotation(this.getRotation() + 1);
             }
+        } else {
+            this.playSound(SoundEvents.ENTITY_ITEM_FRAME_ROTATE_ITEM, 1.0f, 1.0f);
+            this.setRotation(this.getRotation() + 1);
         }
         return true;
     }

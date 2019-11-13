@@ -91,7 +91,7 @@ extends AbstractCriterion<Conditions> {
             if (this.items.length > 0) {
                 JsonArray jsonArray = new JsonArray();
                 for (ItemPredicate itemPredicate : this.items) {
-                    jsonArray.add(itemPredicate.serialize());
+                    jsonArray.add(itemPredicate.toJson());
                 }
                 jsonObject.add("items", jsonArray);
             }

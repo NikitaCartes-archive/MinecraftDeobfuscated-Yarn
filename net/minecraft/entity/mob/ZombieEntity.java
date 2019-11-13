@@ -51,14 +51,17 @@ import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.TurtleEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Difficulty;
@@ -277,6 +280,28 @@ extends HostileEntity {
         zombieEntity.setInvulnerable(this.isInvulnerable());
         this.world.spawnEntity(zombieEntity);
         this.remove();
+    }
+
+    @Override
+    public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
+        ItemStack itemStack = playerEntity.getStackInHand(hand);
+        Item item = itemStack.getItem();
+        if (item instanceof SpawnEggItem && ((SpawnEggItem)item).isOfSameEntityType(itemStack.getTag(), this.getType())) {
+            ZombieEntity zombieEntity;
+            if (!this.world.isClient && (zombieEntity = (ZombieEntity)this.getType().create(this.world)) != null) {
+                zombieEntity.setBaby(true);
+                zombieEntity.setPositionAndAngles(this.getX(), this.getY(), this.getZ(), 0.0f, 0.0f);
+                this.world.spawnEntity(zombieEntity);
+                if (itemStack.hasCustomName()) {
+                    zombieEntity.setCustomName(itemStack.getName());
+                }
+                if (!playerEntity.abilities.creativeMode) {
+                    itemStack.decrement(1);
+                }
+            }
+            return true;
+        }
+        return super.interactMob(playerEntity, hand);
     }
 
     protected boolean burnsInDaylight() {

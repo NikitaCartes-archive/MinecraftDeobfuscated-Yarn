@@ -26,6 +26,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.RunArgs;
 import net.minecraft.client.WindowSettings;
+import net.minecraft.client.util.GlException;
 import net.minecraft.client.util.Session;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.integrated.IntegratedServer;
@@ -143,6 +144,9 @@ public class Main {
             RenderSystem.beginInitialization();
             minecraftClient = new MinecraftClient(runArgs);
             RenderSystem.finishInitialization();
+        } catch (GlException glException) {
+            LOGGER.warn("Failed to create window: ", (Throwable)glException);
+            return;
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Initializing game");
             crashReport.addElement("Initialization");

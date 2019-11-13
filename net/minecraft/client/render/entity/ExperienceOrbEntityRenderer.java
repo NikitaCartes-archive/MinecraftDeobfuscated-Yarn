@@ -46,12 +46,11 @@ extends EntityRenderer<ExperienceOrbEntity> {
         int t = 255;
         int u = (int)((MathHelper.sin(r + 4.1887903f) + 1.0f) * 0.1f * 255.0f);
         matrixStack.translate(0.0, 0.1f, 0.0);
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f - this.renderManager.cameraYaw));
-        float v = (float)(this.renderManager.gameOptions.perspective == 2 ? -1 : 1) * -this.renderManager.cameraPitch;
-        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(v));
-        float w = 0.3f;
+        matrixStack.multiply(this.renderManager.camera.method_23767());
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f));
+        float v = 0.3f;
         matrixStack.scale(0.3f, 0.3f, 0.3f);
-        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutout(SKIN));
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityTranslucent(SKIN));
         MatrixStack.Entry entry = matrixStack.peek();
         Matrix4f matrix4f = entry.getModel();
         Matrix3f matrix3f = entry.getNormal();

@@ -3,8 +3,8 @@
  */
 package net.minecraft.client.model;
 
-import com.google.common.collect.Lists;
-import java.util.List;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectList;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -16,7 +16,7 @@ import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.util.math.Vector4f;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Direction;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -33,8 +33,8 @@ public class ModelPart {
     public float roll;
     public boolean mirror;
     public boolean visible = true;
-    private final List<Cuboid> cuboids = Lists.newArrayList();
-    private final List<ModelPart> children = Lists.newArrayList();
+    private final ObjectList<Cuboid> cuboids = new ObjectArrayList<Cuboid>();
+    private final ObjectList<ModelPart> children = new ObjectArrayList<ModelPart>();
 
     public ModelPart(Model model) {
         model.method_22696(this);
@@ -143,25 +143,21 @@ public class ModelPart {
 
     private void renderCuboids(MatrixStack.Entry entry, VertexConsumer vertexConsumer, int i, int j, @Nullable Sprite sprite, float f, float g, float h) {
         Matrix4f matrix4f = entry.getModel();
-        Matrix3f matrix3f = new Matrix3f(matrix4f);
+        Matrix3f matrix3f = entry.getNormal();
         for (Cuboid cuboid : this.cuboids) {
             for (Quad quad : cuboid.sides) {
-                Vector3f vector3f = new Vector3f(quad.vertices[1].pos.reverseSubtract(quad.vertices[0].pos));
-                Vector3f vector3f2 = new Vector3f(quad.vertices[1].pos.reverseSubtract(quad.vertices[2].pos));
+                Vector3f vector3f = quad.field_21618.method_23850();
                 vector3f.multiply(matrix3f);
-                vector3f2.multiply(matrix3f);
-                vector3f2.cross(vector3f);
-                vector3f2.reciprocal();
-                float k = vector3f2.getX();
-                float l = vector3f2.getY();
-                float m = vector3f2.getZ();
+                float k = vector3f.getX();
+                float l = vector3f.getY();
+                float m = vector3f.getZ();
                 for (int n = 0; n < 4; ++n) {
                     float s;
                     float r;
                     Vertex vertex = quad.vertices[n];
-                    float o = (float)vertex.pos.x / 16.0f;
-                    float p = (float)vertex.pos.y / 16.0f;
-                    float q = (float)vertex.pos.z / 16.0f;
+                    float o = vertex.pos.getX() / 16.0f;
+                    float p = vertex.pos.getY() / 16.0f;
+                    float q = vertex.pos.getZ() / 16.0f;
                     Vector4f vector4f = new Vector4f(o, p, q, 1.0f);
                     vector4f.multiply(matrix4f);
                     if (sprite == null) {
@@ -171,7 +167,7 @@ public class ModelPart {
                         r = sprite.getU(vertex.u * 16.0f);
                         s = sprite.getV(vertex.v * 16.0f);
                     }
-                    vertexConsumer.vertex(vector4f.getX(), vector4f.getY(), vector4f.getZ()).color(f, g, h, 1.0f).texture(r, s).overlay(j).light(i).normal(k, l, m).next();
+                    vertexConsumer.method_23919(vector4f.getX(), vector4f.getY(), vector4f.getZ(), f, g, h, 1.0f, r, s, j, i, k, l, m);
                 }
             }
         }
@@ -184,25 +180,25 @@ public class ModelPart {
     }
 
     public Cuboid getRandomCuboid(Random random) {
-        return this.cuboids.get(random.nextInt(this.cuboids.size()));
+        return (Cuboid)this.cuboids.get(random.nextInt(this.cuboids.size()));
     }
 
     @Environment(value=EnvType.CLIENT)
     static class Vertex {
-        public final Vec3d pos;
+        public final Vector3f pos;
         public final float u;
         public final float v;
 
         public Vertex(float f, float g, float h, float i, float j) {
-            this(new Vec3d(f, g, h), i, j);
+            this(new Vector3f(f, g, h), i, j);
         }
 
         public Vertex remap(float f, float g) {
             return new Vertex(this.pos, f, g);
         }
 
-        public Vertex(Vec3d vec3d, float f, float g) {
-            this.pos = vec3d;
+        public Vertex(Vector3f vector3f, float f, float g) {
+            this.pos = vector3f;
             this.u = f;
             this.v = g;
         }
@@ -210,28 +206,29 @@ public class ModelPart {
 
     @Environment(value=EnvType.CLIENT)
     static class Quad {
-        public Vertex[] vertices;
+        public final Vertex[] vertices;
+        public final Vector3f field_21618;
 
-        public Quad(Vertex[] vertexs) {
+        public Quad(Vertex[] vertexs, float f, float g, float h, float i, float j, float k, boolean bl, Direction direction) {
             this.vertices = vertexs;
-        }
-
-        public Quad(Vertex[] vertexs, float f, float g, float h, float i, float j, float k) {
-            this(vertexs);
             float l = 0.0f / j;
             float m = 0.0f / k;
             vertexs[0] = vertexs[0].remap(h / j - l, g / k + m);
             vertexs[1] = vertexs[1].remap(f / j + l, g / k + m);
             vertexs[2] = vertexs[2].remap(f / j + l, i / k - m);
             vertexs[3] = vertexs[3].remap(h / j - l, i / k - m);
-        }
-
-        public void flip() {
-            Vertex[] vertexs = new Vertex[this.vertices.length];
-            for (int i = 0; i < this.vertices.length; ++i) {
-                vertexs[i] = this.vertices[this.vertices.length - i - 1];
+            if (bl) {
+                int n = vertexs.length;
+                for (int o = 0; o < n / 2; ++o) {
+                    Vertex vertex = vertexs[o];
+                    vertexs[o] = vertexs[n - 1 - o];
+                    vertexs[n - 1 - o] = vertex;
+                }
             }
-            this.vertices = vertexs;
+            this.field_21618 = direction.method_23955();
+            if (bl) {
+                this.field_21618.method_23849(-1.0f, 1.0f, 1.0f);
+            }
         }
     }
 
@@ -284,17 +281,12 @@ public class ModelPart {
             float ac = j;
             float ad = (float)j + m;
             float ae = (float)j + m + l;
-            this.sides[2] = new Quad(new Vertex[]{vertex6, vertex5, vertex, vertex2}, x, ac, y, ad, q, r);
-            this.sides[3] = new Quad(new Vertex[]{vertex3, vertex4, vertex8, vertex7}, y, ad, z, ac, q, r);
-            this.sides[1] = new Quad(new Vertex[]{vertex, vertex5, vertex8, vertex4}, w, ad, x, ae, q, r);
-            this.sides[4] = new Quad(new Vertex[]{vertex2, vertex, vertex4, vertex3}, x, ad, y, ae, q, r);
-            this.sides[0] = new Quad(new Vertex[]{vertex6, vertex2, vertex3, vertex7}, y, ad, aa, ae, q, r);
-            this.sides[5] = new Quad(new Vertex[]{vertex5, vertex6, vertex7, vertex8}, aa, ad, ab, ae, q, r);
-            if (bl) {
-                for (Quad quad : this.sides) {
-                    quad.flip();
-                }
-            }
+            this.sides[2] = new Quad(new Vertex[]{vertex6, vertex5, vertex, vertex2}, x, ac, y, ad, q, r, bl, Direction.DOWN);
+            this.sides[3] = new Quad(new Vertex[]{vertex3, vertex4, vertex8, vertex7}, y, ad, z, ac, q, r, bl, Direction.UP);
+            this.sides[1] = new Quad(new Vertex[]{vertex, vertex5, vertex8, vertex4}, w, ad, x, ae, q, r, bl, Direction.WEST);
+            this.sides[4] = new Quad(new Vertex[]{vertex2, vertex, vertex4, vertex3}, x, ad, y, ae, q, r, bl, Direction.NORTH);
+            this.sides[0] = new Quad(new Vertex[]{vertex6, vertex2, vertex3, vertex7}, y, ad, aa, ae, q, r, bl, Direction.EAST);
+            this.sides[5] = new Quad(new Vertex[]{vertex5, vertex6, vertex7, vertex8}, aa, ad, ab, ae, q, r, bl, Direction.SOUTH);
         }
     }
 }

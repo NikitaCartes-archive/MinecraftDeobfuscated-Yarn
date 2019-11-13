@@ -42,7 +42,7 @@ extends AbstractCriterion<Conditions> {
             });
         }
         LocationPredicate locationPredicate = LocationPredicate.fromJson(jsonObject.get("location"));
-        ItemPredicate itemPredicate = ItemPredicate.deserialize(jsonObject.get("item"));
+        ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
         return new Conditions(block, statePredicate, locationPredicate, itemPredicate);
     }
 
@@ -105,7 +105,7 @@ extends AbstractCriterion<Conditions> {
             }
             jsonObject.add("state", this.state.toJson());
             jsonObject.add("location", this.location.toJson());
-            jsonObject.add("item", this.item.serialize());
+            jsonObject.add("item", this.item.toJson());
             return jsonObject;
         }
     }

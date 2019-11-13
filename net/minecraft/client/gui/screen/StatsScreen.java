@@ -347,7 +347,10 @@ implements StatsListener {
             int l = j - 12;
             int m = StatsScreen.this.font.getStringWidth(string);
             this.fillGradient(k - 3, l - 3, k + m + 3, l + 8 + 3, -1073741824, -1073741824);
+            RenderSystem.pushMatrix();
+            RenderSystem.translatef(0.0f, 0.0f, 400.0f);
             StatsScreen.this.font.drawWithShadow(string, k, l, -1);
+            RenderSystem.popMatrix();
         }
 
         protected Text getText(Item item) {

@@ -55,8 +55,9 @@ extends Item {
                 world.spawnEntity(abstractDecorationEntity);
             }
             itemStack.decrement(1);
+            return ActionResult.SUCCESS;
         }
-        return ActionResult.SUCCESS;
+        return ActionResult.CONSUME;
     }
 
     protected boolean canPlaceOn(PlayerEntity playerEntity, Direction direction, ItemStack itemStack, BlockPos blockPos) {

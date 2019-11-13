@@ -104,7 +104,7 @@ implements SynchronousResourceReloadListener {
             BuiltinModelItemRenderer.INSTANCE.render(itemStack, matrixStack, vertexConsumerProvider, i, j);
         } else {
             RenderLayer renderLayer = RenderLayers.getItemLayer(itemStack);
-            RenderLayer renderLayer2 = bl2 && Objects.equals(renderLayer, RenderLayer.getEntityTranslucent(SpriteAtlasTexture.BLOCK_ATLAS_TEX)) ? RenderLayer.getEntityTranslucentCull(SpriteAtlasTexture.BLOCK_ATLAS_TEX) : renderLayer;
+            RenderLayer renderLayer2 = bl2 && Objects.equals(renderLayer, RenderLayer.method_23949()) ? RenderLayer.method_23950() : renderLayer;
             VertexConsumer vertexConsumer = ItemRenderer.getArmorVertexConsumer(vertexConsumerProvider, renderLayer2, true, itemStack.hasEnchantmentGlint());
             this.method_23182(bakedModel, itemStack, i, j, matrixStack, vertexConsumer);
         }

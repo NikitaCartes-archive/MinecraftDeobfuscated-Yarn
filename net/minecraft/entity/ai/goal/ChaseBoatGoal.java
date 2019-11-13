@@ -4,6 +4,7 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.List;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.ai.goal.ChaseBoatState;
@@ -31,7 +32,8 @@ extends Goal {
         List<BoatEntity> list = this.mob.world.getNonSpectatingEntities(BoatEntity.class, this.mob.getBoundingBox().expand(5.0));
         boolean bl = false;
         for (BoatEntity boatEntity : list) {
-            if (boatEntity.getPrimaryPassenger() == null || !(MathHelper.abs(((LivingEntity)boatEntity.getPrimaryPassenger()).sidewaysSpeed) > 0.0f) && !(MathHelper.abs(((LivingEntity)boatEntity.getPrimaryPassenger()).forwardSpeed) > 0.0f)) continue;
+            Entity entity = boatEntity.getPrimaryPassenger();
+            if (!(entity instanceof LivingEntity) || !(MathHelper.abs(((LivingEntity)entity).sidewaysSpeed) > 0.0f) && !(MathHelper.abs(((LivingEntity)entity).forwardSpeed) > 0.0f)) continue;
             bl = true;
             break;
         }

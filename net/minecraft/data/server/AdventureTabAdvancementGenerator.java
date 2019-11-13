@@ -14,6 +14,7 @@ import net.minecraft.advancement.criterion.LocationArrivalCriterion;
 import net.minecraft.advancement.criterion.OnKilledCriterion;
 import net.minecraft.advancement.criterion.PlayerHurtEntityCriterion;
 import net.minecraft.advancement.criterion.ShotCrossbowCriterion;
+import net.minecraft.advancement.criterion.SlideDownBlockCriterion;
 import net.minecraft.advancement.criterion.SummonedEntityCriterion;
 import net.minecraft.advancement.criterion.UsedTotemCriterion;
 import net.minecraft.advancement.criterion.VillagerTradeCriterion;
@@ -60,6 +61,7 @@ implements Consumer<Consumer<Advancement>> {
         Advancement advancement16 = Advancement.Task.create().parent(advancement13).display(Items.CROSSBOW, (Text)new TranslatableText("advancements.adventure.arbalistic.title", new Object[0]), (Text)new TranslatableText("advancements.adventure.arbalistic.description", new Object[0]), null, AdvancementFrame.CHALLENGE, true, true, true).rewards(AdvancementRewards.Builder.experience(85)).criterion("arbalistic", KilledByCrossbowCriterion.Conditions.create(NumberRange.IntRange.exactly(5))).build(consumer, "adventure/arbalistic");
         Advancement advancement17 = Advancement.Task.create().parent(advancement).display(Raid.getOminousBanner(), (Text)new TranslatableText("advancements.adventure.voluntary_exile.title", new Object[0]), (Text)new TranslatableText("advancements.adventure.voluntary_exile.description", new Object[0]), null, AdvancementFrame.TASK, true, true, true).criterion("voluntary_exile", OnKilledCriterion.Conditions.createPlayerKilledEntity(EntityPredicate.Builder.create().type(EntityTypeTags.RAIDERS).equipment(EntityEquipmentPredicate.field_19240))).build(consumer, "adventure/voluntary_exile");
         Advancement advancement18 = Advancement.Task.create().parent(advancement17).display(Raid.getOminousBanner(), (Text)new TranslatableText("advancements.adventure.hero_of_the_village.title", new Object[0]), (Text)new TranslatableText("advancements.adventure.hero_of_the_village.description", new Object[0]), null, AdvancementFrame.CHALLENGE, true, true, true).rewards(AdvancementRewards.Builder.experience(100)).criterion("hero_of_the_village", LocationArrivalCriterion.Conditions.createHeroOfTheVillage()).build(consumer, "adventure/hero_of_the_village");
+        Advancement advancement19 = Advancement.Task.create().parent(advancement).display(Blocks.HONEY_BLOCK.asItem(), (Text)new TranslatableText("advancements.adventure.honey_block_slide.title", new Object[0]), (Text)new TranslatableText("advancements.adventure.honey_block_slide.description", new Object[0]), null, AdvancementFrame.TASK, true, true, false).criterion("honey_block_slide", SlideDownBlockCriterion.Conditions.create(Blocks.HONEY_BLOCK)).build(consumer, "adventure/honey_block_slide");
     }
 
     private Advancement.Task method_10336(Advancement.Task task) {
