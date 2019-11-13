@@ -20,11 +20,10 @@ public class SaddleItem extends Item {
 				pigEntity.setSaddled(true);
 				pigEntity.world.playSound(user, pigEntity.getX(), pigEntity.getY(), pigEntity.getZ(), SoundEvents.ENTITY_PIG_SADDLE, SoundCategory.NEUTRAL, 0.5F, 1.0F);
 				stack.decrement(1);
+				return true;
 			}
-
-			return true;
-		} else {
-			return false;
 		}
+
+		return false;
 	}
 }

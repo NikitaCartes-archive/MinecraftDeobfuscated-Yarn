@@ -9,7 +9,6 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.BookModel;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.math.Direction;
@@ -32,7 +31,7 @@ public class LecternBlockEntityRenderer extends BlockEntityRenderer<LecternBlock
 			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(67.5F));
 			matrixStack.translate(0.0, -0.125, 0.0);
 			this.book.setPageAngles(0.0F, 0.1F, 0.9F, 1.2F);
-			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.method_23946());
 			this.book.render(matrixStack, vertexConsumer, i, j, 1.0F, 1.0F, 1.0F, this.getSprite(EnchantingTableBlockEntityRenderer.BOOK_TEX));
 			matrixStack.pop();
 		}

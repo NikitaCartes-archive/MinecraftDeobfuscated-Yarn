@@ -21,6 +21,7 @@ public abstract class SaplingGenerator {
 			return false;
 		} else {
 			iWorld.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 4);
+			configuredFeature.config.method_23916();
 			if (configuredFeature.generate(iWorld, (ChunkGenerator<? extends ChunkGeneratorConfig>)chunkGenerator, random, blockPos)) {
 				return true;
 			} else {

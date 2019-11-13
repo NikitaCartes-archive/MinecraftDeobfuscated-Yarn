@@ -2,6 +2,7 @@ package net.minecraft.server.command;
 
 import com.google.common.collect.Maps;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
@@ -12,6 +13,7 @@ import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import java.util.Map;
 import java.util.function.Predicate;
+import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.network.packet.CommandTreeS2CPacket;
 import net.minecraft.command.CommandException;
@@ -129,13 +131,13 @@ public class CommandManager {
 		this.dispatcher.setConsumer((commandContext, bl, i) -> commandContext.getSource().onCommandComplete(commandContext, bl, i));
 	}
 
-	public int execute(ServerCommandSource commandSource, String string) {
-		StringReader stringReader = new StringReader(string);
+	public int execute(ServerCommandSource commandSource, String command) {
+		StringReader stringReader = new StringReader(command);
 		if (stringReader.canRead() && stringReader.peek() == '/') {
 			stringReader.skip();
 		}
 
-		commandSource.getMinecraftServer().getProfiler().push(string);
+		commandSource.getMinecraftServer().getProfiler().push(command);
 
 		byte var20;
 		try {
@@ -147,7 +149,7 @@ public class CommandManager {
 			commandSource.sendError(Texts.toText(var14.getRawMessage()));
 			if (var14.getInput() != null && var14.getCursor() >= 0) {
 				int i = Math.min(var14.getInput().length(), var14.getCursor());
-				Text text = new LiteralText("").formatted(Formatting.GRAY).styled(style -> style.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, string)));
+				Text text = new LiteralText("").formatted(Formatting.GRAY).styled(style -> style.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command)));
 				if (i > 10) {
 					text.append("...");
 				}
@@ -166,7 +168,7 @@ public class CommandManager {
 		} catch (Exception var15) {
 			Text text3 = new LiteralText(var15.getMessage() == null ? var15.getClass().getName() : var15.getMessage());
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.error("Command exception: {}", string, var15);
+				LOGGER.error("Command exception: {}", command, var15);
 				StackTraceElement[] stackTraceElements = var15.getStackTrace();
 
 				for (int j = 0; j < Math.min(stackTraceElements.length, 3); j++) {
@@ -182,7 +184,7 @@ public class CommandManager {
 			commandSource.sendError(new TranslatableText("command.failed").styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text3))));
 			if (SharedConstants.isDevelopment) {
 				commandSource.sendError(new LiteralText(Util.getInnermostMessage(var15)));
-				LOGGER.error("'" + string + "' threw an exception", (Throwable)var15);
+				LOGGER.error("'" + command + "' threw an exception", (Throwable)var15);
 			}
 
 			var20 = 0;
@@ -193,12 +195,12 @@ public class CommandManager {
 		return var20;
 	}
 
-	public void sendCommandTree(ServerPlayerEntity serverPlayerEntity) {
+	public void sendCommandTree(ServerPlayerEntity player) {
 		Map<CommandNode<ServerCommandSource>, CommandNode<CommandSource>> map = Maps.<CommandNode<ServerCommandSource>, CommandNode<CommandSource>>newHashMap();
 		RootCommandNode<CommandSource> rootCommandNode = new RootCommandNode<>();
 		map.put(this.dispatcher.getRoot(), rootCommandNode);
-		this.makeTreeForSource(this.dispatcher.getRoot(), rootCommandNode, serverPlayerEntity.getCommandSource(), map);
-		serverPlayerEntity.networkHandler.sendPacket(new CommandTreeS2CPacket(rootCommandNode));
+		this.makeTreeForSource(this.dispatcher.getRoot(), rootCommandNode, player.getCommandSource(), map);
+		player.networkHandler.sendPacket(new CommandTreeS2CPacket(rootCommandNode));
 	}
 
 	private void makeTreeForSource(
@@ -257,6 +259,19 @@ public class CommandManager {
 
 	public CommandDispatcher<ServerCommandSource> getDispatcher() {
 		return this.dispatcher;
+	}
+
+	@Nullable
+	public static <S> CommandSyntaxException getException(ParseResults<S> parse) {
+		if (!parse.getReader().canRead()) {
+			return null;
+		} else if (parse.getExceptions().size() == 1) {
+			return (CommandSyntaxException)parse.getExceptions().values().iterator().next();
+		} else {
+			return parse.getContext().getRange().isEmpty()
+				? CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand().createWithContext(parse.getReader())
+				: CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument().createWithContext(parse.getReader());
+		}
 	}
 
 	@FunctionalInterface

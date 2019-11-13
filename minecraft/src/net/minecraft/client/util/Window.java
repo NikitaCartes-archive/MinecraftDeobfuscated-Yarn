@@ -27,6 +27,7 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
+import org.lwjgl.util.tinyfd.TinyFileDialogs;
 
 @Environment(EnvType.CLIENT)
 public final class Window implements AutoCloseable {
@@ -200,7 +201,11 @@ public final class Window implements AutoCloseable {
 
 	private static void throwGlError(int error, long description) {
 		RenderSystem.assertThread(RenderSystem::isInInitPhase);
-		throw new IllegalStateException("GLFW error " + error + ": " + MemoryUtil.memUTF8(description));
+		String string = "GLFW error " + error + ": " + MemoryUtil.memUTF8(description);
+		TinyFileDialogs.tinyfd_messageBox(
+			"Minecraft", string + ".\n\nPlease make sure you have up-to-date drivers (see aka.ms/mcdriver for instructions).", "ok", "error", false
+		);
+		throw new Window.GlErroredException(string);
 	}
 
 	public void logGlError(int error, long description) {
@@ -435,5 +440,12 @@ public final class Window implements AutoCloseable {
 
 	public void setRawMouseMotion(boolean rawMouseMotion) {
 		InputUtil.setRawMouseMotionMode(this.handle, rawMouseMotion);
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static class GlErroredException extends GlException {
+		private GlErroredException(String string) {
+			super(string);
+		}
 	}
 }

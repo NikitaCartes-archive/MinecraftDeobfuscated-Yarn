@@ -53,9 +53,10 @@ public class DecorationItem extends Item {
 				}
 
 				itemStack.decrement(1);
+				return ActionResult.SUCCESS;
+			} else {
+				return ActionResult.CONSUME;
 			}
-
-			return ActionResult.SUCCESS;
 		}
 	}
 

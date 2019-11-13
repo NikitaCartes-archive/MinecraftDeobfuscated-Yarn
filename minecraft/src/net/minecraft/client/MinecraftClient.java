@@ -897,12 +897,13 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		while (Util.getMeasuringTimeMs() >= this.nextDebugInfoUpdateTime + 1000L) {
 			currentFps = this.fpsCounter;
 			this.fpsDebugString = String.format(
-				"%d fps T: %s%s%s%s",
+				"%d fps T: %s%s%s%s B: %d",
 				currentFps,
 				(double)this.options.maxFps == Option.FRAMERATE_LIMIT.getMax() ? "inf" : this.options.maxFps,
 				this.options.enableVsync ? " vsync" : "",
 				this.options.fancyGraphics ? "" : " fast",
-				this.options.cloudRenderMode == CloudRenderMode.OFF ? "" : (this.options.cloudRenderMode == CloudRenderMode.FAST ? " fast-clouds" : " fancy-clouds")
+				this.options.cloudRenderMode == CloudRenderMode.OFF ? "" : (this.options.cloudRenderMode == CloudRenderMode.FAST ? " fast-clouds" : " fancy-clouds"),
+				this.options.biomeBlendRadius
 			);
 			this.nextDebugInfoUpdateTime += 1000L;
 			this.fpsCounter = 0;

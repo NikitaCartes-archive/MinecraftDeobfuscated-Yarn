@@ -3,6 +3,7 @@ package net.minecraft.item;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.World;
@@ -24,7 +25,7 @@ public class SuspiciousStewItem extends Item {
 
 	@Override
 	public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
-		super.finishUsing(stack, world, user);
+		ItemStack itemStack = super.finishUsing(stack, world, user);
 		CompoundTag compoundTag = stack.getTag();
 		if (compoundTag != null && compoundTag.contains("Effects", 9)) {
 			ListTag listTag = compoundTag.getList("Effects", 10);
@@ -43,6 +44,6 @@ public class SuspiciousStewItem extends Item {
 			}
 		}
 
-		return new ItemStack(Items.BOWL);
+		return user instanceof PlayerEntity && ((PlayerEntity)user).abilities.creativeMode ? itemStack : new ItemStack(Items.BOWL);
 	}
 }

@@ -157,7 +157,7 @@ public class PlaySoundCommand {
 				);
 			} else {
 				source.sendFeedback(
-					new TranslatableText("commands.playsound.success.single", sound, ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()), true
+					new TranslatableText("commands.playsound.success.multiple", sound, ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()), true
 				);
 			}
 

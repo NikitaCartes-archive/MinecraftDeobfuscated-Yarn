@@ -192,21 +192,28 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 		BiMapPalette<T> biMapPalette = new BiMapPalette<>(
 			this.idList, this.paletteSize, this.noOpPaletteResizeHandler, this.elementDeserializer, this.elementSerializer
 		);
-		biMapPalette.getIndex(this.field_12935);
+		T object = this.field_12935;
+		int i = biMapPalette.getIndex(this.field_12935);
 		int[] is = new int[4096];
 
-		for (int i = 0; i < 4096; i++) {
-			is[i] = biMapPalette.getIndex(this.get(i));
+		for (int j = 0; j < 4096; j++) {
+			T object2 = this.get(j);
+			if (object2 != object) {
+				object = object2;
+				i = biMapPalette.getIndex(object2);
+			}
+
+			is[j] = i;
 		}
 
 		ListTag listTag = new ListTag();
 		biMapPalette.toTag(listTag);
 		compoundTag.put(string, listTag);
-		int j = Math.max(4, MathHelper.log2DeBruijn(listTag.size()));
-		PackedIntegerArray packedIntegerArray = new PackedIntegerArray(j, 4096);
+		int k = Math.max(4, MathHelper.log2DeBruijn(listTag.size()));
+		PackedIntegerArray packedIntegerArray = new PackedIntegerArray(k, 4096);
 
-		for (int k = 0; k < is.length; k++) {
-			packedIntegerArray.set(k, is[k]);
+		for (int l = 0; l < is.length; l++) {
+			packedIntegerArray.set(l, is[l]);
 		}
 
 		compoundTag.putLongArray(string2, packedIntegerArray.getStorage());

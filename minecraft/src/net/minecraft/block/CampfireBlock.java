@@ -32,12 +32,14 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
+import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
@@ -49,6 +51,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	public static final BooleanProperty SIGNAL_FIRE = Properties.SIGNAL_FIRE;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
+	private static final VoxelShape field_21580 = Block.createCuboidShape(6.0, 0.0, 6.0, 10.0, 16.0, 10.0);
 
 	public CampfireBlock(Block.Settings settings) {
 		super(settings);
@@ -257,6 +260,28 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 				0.0
 			);
 		}
+	}
+
+	public static boolean method_23895(World world, BlockPos blockPos, int i) {
+		for (int j = 1; j <= i; j++) {
+			BlockPos blockPos2 = blockPos.down(j);
+			BlockState blockState = world.getBlockState(blockPos2);
+			if (method_23896(blockState)) {
+				return true;
+			}
+
+			boolean bl = VoxelShapes.matchesAnywhere(field_21580, blockState.getCollisionShape(world, blockPos, EntityContext.absent()), BooleanBiFunction.AND);
+			if (bl) {
+				BlockState blockState2 = world.getBlockState(blockPos2.method_10074());
+				return method_23896(blockState2);
+			}
+		}
+
+		return false;
+	}
+
+	private static boolean method_23896(BlockState blockState) {
+		return blockState.getBlock() == Blocks.CAMPFIRE && (Boolean)blockState.get(LIT);
 	}
 
 	@Override

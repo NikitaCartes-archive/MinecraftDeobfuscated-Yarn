@@ -51,16 +51,19 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	@Override
 	public void tick() {
 		super.tick();
-		if (this.fuel > 0) {
-			this.fuel--;
+		if (!this.world.isClient()) {
+			if (this.fuel > 0) {
+				this.fuel--;
+			}
+
+			if (this.fuel <= 0) {
+				this.pushX = 0.0;
+				this.pushZ = 0.0;
+			}
+
+			this.setLit(this.fuel > 0);
 		}
 
-		if (this.fuel <= 0) {
-			this.pushX = 0.0;
-			this.pushZ = 0.0;
-		}
-
-		this.setLit(this.fuel > 0);
 		if (this.isLit() && this.random.nextInt(4) == 0) {
 			this.world.addParticle(ParticleTypes.LARGE_SMOKE, this.getX(), this.getY() + 0.8, this.getZ(), 0.0, 0.0, 0.0);
 		}
@@ -125,8 +128,11 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 			this.fuel += 3600;
 		}
 
-		this.pushX = this.getX() - player.getX();
-		this.pushZ = this.getZ() - player.getZ();
+		if (this.fuel > 0) {
+			this.pushX = this.getX() - player.getX();
+			this.pushZ = this.getZ() - player.getZ();
+		}
+
 		return true;
 	}
 

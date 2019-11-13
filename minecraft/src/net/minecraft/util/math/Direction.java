@@ -182,6 +182,11 @@ public enum Direction implements StringIdentifiable {
 		return this.axis == Direction.Axis.Z ? this.direction.offset() : 0;
 	}
 
+	@Environment(EnvType.CLIENT)
+	public Vector3f method_23955() {
+		return new Vector3f((float)this.getOffsetX(), (float)this.getOffsetY(), (float)this.getOffsetZ());
+	}
+
 	public String getName() {
 		return this.name;
 	}

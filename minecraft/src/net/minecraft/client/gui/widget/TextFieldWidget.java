@@ -33,7 +33,7 @@ public class TextFieldWidget extends AbstractButtonWidget implements Drawable, E
 	private boolean focusUnlocked = true;
 	private boolean editable = true;
 	private boolean selecting;
-	private int firstCharacter;
+	private int firstCharacterIndex;
 	private int selectionStart;
 	private int selectionEnd;
 	private int editableColor = 14737632;
@@ -55,8 +55,8 @@ public class TextFieldWidget extends AbstractButtonWidget implements Drawable, E
 		}
 	}
 
-	public void setChangedListener(Consumer<String> consumer) {
-		this.changedListener = consumer;
+	public void setChangedListener(Consumer<String> changedListener) {
+		this.changedListener = changedListener;
 	}
 
 	public void setRenderTextProvider(BiFunction<String, Integer, String> renderTextProvider) {
@@ -363,8 +363,8 @@ public class TextFieldWidget extends AbstractButtonWidget implements Drawable, E
 					i -= 4;
 				}
 
-				String string = this.textRenderer.trimToWidth(this.text.substring(this.firstCharacter), this.getInnerWidth());
-				this.setCursor(this.textRenderer.trimToWidth(string, i).length() + this.firstCharacter);
+				String string = this.textRenderer.trimToWidth(this.text.substring(this.firstCharacterIndex), this.getInnerWidth());
+				this.setCursor(this.textRenderer.trimToWidth(string, i).length() + this.firstCharacterIndex);
 				return true;
 			} else {
 				return false;
@@ -385,9 +385,9 @@ public class TextFieldWidget extends AbstractButtonWidget implements Drawable, E
 			}
 
 			int i = this.editable ? this.editableColor : this.uneditableColor;
-			int j = this.selectionStart - this.firstCharacter;
-			int k = this.selectionEnd - this.firstCharacter;
-			String string = this.textRenderer.trimToWidth(this.text.substring(this.firstCharacter), this.getInnerWidth());
+			int j = this.selectionStart - this.firstCharacterIndex;
+			int k = this.selectionEnd - this.firstCharacterIndex;
+			String string = this.textRenderer.trimToWidth(this.text.substring(this.firstCharacterIndex), this.getInnerWidth());
 			boolean bl = j >= 0 && j <= string.length();
 			boolean bl2 = this.isFocused() && this.focusedTicks / 6 % 2 == 0 && bl;
 			int l = this.focused ? this.x + 4 : this.x;
@@ -399,7 +399,7 @@ public class TextFieldWidget extends AbstractButtonWidget implements Drawable, E
 
 			if (!string.isEmpty()) {
 				String string2 = bl ? string.substring(0, j) : string;
-				n = this.textRenderer.drawWithShadow((String)this.renderTextProvider.apply(string2, this.firstCharacter), (float)l, (float)m, i);
+				n = this.textRenderer.drawWithShadow((String)this.renderTextProvider.apply(string2, this.firstCharacterIndex), (float)l, (float)m, i);
 			}
 
 			boolean bl3 = this.selectionStart < this.text.length() || this.text.length() >= this.getMaxLength();
@@ -540,24 +540,24 @@ public class TextFieldWidget extends AbstractButtonWidget implements Drawable, E
 		int j = this.text.length();
 		this.selectionEnd = MathHelper.clamp(i, 0, j);
 		if (this.textRenderer != null) {
-			if (this.firstCharacter > j) {
-				this.firstCharacter = j;
+			if (this.firstCharacterIndex > j) {
+				this.firstCharacterIndex = j;
 			}
 
 			int k = this.getInnerWidth();
-			String string = this.textRenderer.trimToWidth(this.text.substring(this.firstCharacter), k);
-			int l = string.length() + this.firstCharacter;
-			if (this.selectionEnd == this.firstCharacter) {
-				this.firstCharacter = this.firstCharacter - this.textRenderer.trimToWidth(this.text, k, true).length();
+			String string = this.textRenderer.trimToWidth(this.text.substring(this.firstCharacterIndex), k);
+			int l = string.length() + this.firstCharacterIndex;
+			if (this.selectionEnd == this.firstCharacterIndex) {
+				this.firstCharacterIndex = this.firstCharacterIndex - this.textRenderer.trimToWidth(this.text, k, true).length();
 			}
 
 			if (this.selectionEnd > l) {
-				this.firstCharacter = this.firstCharacter + (this.selectionEnd - l);
-			} else if (this.selectionEnd <= this.firstCharacter) {
-				this.firstCharacter = this.firstCharacter - (this.firstCharacter - this.selectionEnd);
+				this.firstCharacterIndex = this.firstCharacterIndex + (this.selectionEnd - l);
+			} else if (this.selectionEnd <= this.firstCharacterIndex) {
+				this.firstCharacterIndex = this.firstCharacterIndex - (this.firstCharacterIndex - this.selectionEnd);
 			}
 
-			this.firstCharacter = MathHelper.clamp(this.firstCharacter, 0, j);
+			this.firstCharacterIndex = MathHelper.clamp(this.firstCharacterIndex, 0, j);
 		}
 	}
 

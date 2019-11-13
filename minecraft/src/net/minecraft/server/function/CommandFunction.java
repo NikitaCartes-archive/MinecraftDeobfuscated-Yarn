@@ -8,6 +8,7 @@ import java.util.ArrayDeque;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Identifier;
 
@@ -54,15 +55,7 @@ public class CommandFunction {
 						.getDispatcher()
 						.parse(stringReader, commandFunctionManager.getCommandFunctionSource());
 					if (parseResults.getReader().canRead()) {
-						if (parseResults.getExceptions().size() == 1) {
-							throw (CommandSyntaxException)parseResults.getExceptions().values().iterator().next();
-						}
-
-						if (parseResults.getContext().getRange().isEmpty()) {
-							throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand().createWithContext(parseResults.getReader());
-						}
-
-						throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument().createWithContext(parseResults.getReader());
+						throw CommandManager.getException(parseResults);
 					}
 
 					list.add(new CommandFunction.CommandElement(parseResults));

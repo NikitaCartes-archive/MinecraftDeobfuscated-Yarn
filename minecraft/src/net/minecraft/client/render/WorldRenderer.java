@@ -46,7 +46,6 @@ import net.minecraft.client.render.chunk.ChunkOcclusionGraphBuilder;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundInstance;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
@@ -126,10 +125,14 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	private final Set<BlockEntity> blockEntities = Sets.<BlockEntity>newHashSet();
 	private BuiltChunkStorage renderedChunks;
 	private final VertexFormat field_4100 = VertexFormats.POSITION;
+	@Nullable
 	private VertexBuffer starsBuffer;
+	@Nullable
 	private VertexBuffer field_4087;
+	@Nullable
 	private VertexBuffer field_4102;
 	private boolean cloudsDirty = true;
+	@Nullable
 	private VertexBuffer cloudsBuffer;
 	private int ticks;
 	private final Int2ObjectMap<BlockBreakingInfo> blockBreakingInfos = new Int2ObjectOpenHashMap<>();
@@ -489,7 +492,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		if (this.field_4102 != null) {
-			this.field_4102.delete();
+			this.field_4102.close();
 		}
 
 		this.field_4102 = new VertexBuffer(this.field_4100);
@@ -502,7 +505,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		if (this.field_4087 != null) {
-			this.field_4087.delete();
+			this.field_4087.close();
 		}
 
 		this.field_4087 = new VertexBuffer(this.field_4100);
@@ -537,7 +540,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		if (this.starsBuffer != null) {
-			this.starsBuffer.delete();
+			this.starsBuffer.close();
 		}
 
 		this.starsBuffer = new VertexBuffer(this.field_4100);
@@ -1034,8 +1037,8 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 		this.checkEmpty(matrix);
 		immediate.draw(RenderLayer.getSolid());
-		immediate.draw(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
-		immediate.draw(RenderLayer.getEntityCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+		immediate.draw(RenderLayer.method_23946());
+		immediate.draw(RenderLayer.method_23947());
 		this.bufferBuilders.getOutlineVertexConsumers().draw();
 		if (bl3) {
 			this.entityOutlineShader.render(tickDelta);
@@ -1082,10 +1085,11 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		this.client.debugRenderer.render(matrix, immediate, d, e, f, limitTime);
 		this.renderWorldBorder(camera);
 		RenderSystem.popMatrix();
+		immediate.draw(RenderLayer.getWaterMask());
 		profiler.swap("translucent");
 		this.renderLayer(RenderLayer.getTranslucent(), matrix, d, e, f);
-		immediate.draw(RenderLayer.getEntityTranslucent(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
-		immediate.draw(RenderLayer.getEntityNoOutline(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+		immediate.draw(RenderLayer.method_23949());
+		immediate.draw(RenderLayer.method_23951());
 		immediate.draw();
 		this.bufferBuilders.getEffectVertexConsumers().draw();
 		profiler.swap("particles");
@@ -1602,7 +1606,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				this.cloudsDirty = false;
 				BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
 				if (this.cloudsBuffer != null) {
-					this.cloudsBuffer.delete();
+					this.cloudsBuffer.close();
 				}
 
 				this.cloudsBuffer = new VertexBuffer(VertexFormats.POSITION_TEXTURE_COLOR_NORMAL);

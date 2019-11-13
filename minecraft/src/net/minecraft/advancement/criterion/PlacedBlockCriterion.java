@@ -36,7 +36,7 @@ public class PlacedBlockCriterion extends AbstractCriterion<PlacedBlockCriterion
 		}
 
 		LocationPredicate locationPredicate = LocationPredicate.fromJson(jsonObject.get("location"));
-		ItemPredicate itemPredicate = ItemPredicate.deserialize(jsonObject.get("item"));
+		ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
 		return new PlacedBlockCriterion.Conditions(block, statePredicate, locationPredicate, itemPredicate);
 	}
 
@@ -92,7 +92,7 @@ public class PlacedBlockCriterion extends AbstractCriterion<PlacedBlockCriterion
 
 			jsonObject.add("state", this.state.toJson());
 			jsonObject.add("location", this.location.toJson());
-			jsonObject.add("item", this.item.serialize());
+			jsonObject.add("item", this.item.toJson());
 			return jsonObject;
 		}
 	}

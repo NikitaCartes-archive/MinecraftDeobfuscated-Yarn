@@ -110,8 +110,8 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 			if (!bakedModel.isBuiltin() && (itemStack.getItem() != Items.TRIDENT || bl3)) {
 				RenderLayer renderLayer = RenderLayers.getItemLayer(itemStack);
 				RenderLayer renderLayer2;
-				if (bl2 && Objects.equals(renderLayer, RenderLayer.getEntityTranslucent(SpriteAtlasTexture.BLOCK_ATLAS_TEX))) {
-					renderLayer2 = RenderLayer.getEntityTranslucentCull(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+				if (bl2 && Objects.equals(renderLayer, RenderLayer.method_23949())) {
+					renderLayer2 = RenderLayer.method_23950();
 				} else {
 					renderLayer2 = renderLayer;
 				}

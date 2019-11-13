@@ -31,6 +31,8 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 	private int currentElementId;
 	private int drawMode;
 	private VertexFormat format;
+	private boolean field_21594;
+	private boolean field_21595;
 	private boolean building;
 
 	public BufferBuilder(int initialCapacity) {
@@ -157,9 +159,10 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 		this.buffer.position(this.buildStart);
 		this.buffer.put(state.buffer);
 		this.buffer.clear();
-		this.format = state.format;
-		this.vertexCount = i / this.format.getVertexSize();
-		this.elementOffset = this.buildStart + this.vertexCount * this.format.getVertexSize();
+		VertexFormat vertexFormat = state.format;
+		this.method_23918(vertexFormat);
+		this.vertexCount = i / vertexFormat.getVertexSize();
+		this.elementOffset = this.buildStart + this.vertexCount * vertexFormat.getVertexSize();
 	}
 
 	public void begin(int drawMode, VertexFormat format) {
@@ -168,10 +171,20 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 		} else {
 			this.building = true;
 			this.drawMode = drawMode;
-			this.format = format;
+			this.method_23918(format);
 			this.currentElement = (VertexFormatElement)format.getElements().get(0);
 			this.currentElementId = 0;
 			this.buffer.clear();
+		}
+	}
+
+	private void method_23918(VertexFormat vertexFormat) {
+		if (this.format != vertexFormat) {
+			this.format = vertexFormat;
+			boolean bl = vertexFormat == VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL;
+			boolean bl2 = vertexFormat == VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL;
+			this.field_21594 = bl || bl2;
+			this.field_21595 = bl;
 		}
 	}
 
@@ -235,6 +248,41 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 			throw new IllegalStateException();
 		} else {
 			return BufferVertexConsumer.super.color(red, green, blue, alpha);
+		}
+	}
+
+	@Override
+	public void method_23919(float f, float g, float h, float i, float j, float k, float l, float m, float n, int o, int p, float q, float r, float s) {
+		if (this.colorFixed) {
+			throw new IllegalStateException();
+		} else if (this.field_21594) {
+			this.putFloat(0, f);
+			this.putFloat(4, g);
+			this.putFloat(8, h);
+			this.putByte(12, (byte)((int)(i * 255.0F)));
+			this.putByte(13, (byte)((int)(j * 255.0F)));
+			this.putByte(14, (byte)((int)(k * 255.0F)));
+			this.putByte(15, (byte)((int)(l * 255.0F)));
+			this.putFloat(16, m);
+			this.putFloat(20, n);
+			int t;
+			if (this.field_21595) {
+				this.putShort(24, (short)(o & 65535));
+				this.putShort(26, (short)(o >> 16 & 65535));
+				t = 28;
+			} else {
+				t = 24;
+			}
+
+			this.putShort(t + 0, (short)(p & 65535));
+			this.putShort(t + 2, (short)(p >> 16 & 65535));
+			this.putByte(t + 4, (byte)((int)(q * 127.0F) & 0xFF));
+			this.putByte(t + 5, (byte)((int)(r * 127.0F) & 0xFF));
+			this.putByte(t + 6, (byte)((int)(s * 127.0F) & 0xFF));
+			this.elementOffset += t + 8;
+			this.next();
+		} else {
+			super.method_23919(f, g, h, i, j, k, l, m, n, o, p, q, r, s);
 		}
 	}
 

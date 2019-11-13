@@ -18,7 +18,7 @@ public class UsedTotemCriterion extends AbstractCriterion<UsedTotemCriterion.Con
 	}
 
 	public UsedTotemCriterion.Conditions method_9163(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-		ItemPredicate itemPredicate = ItemPredicate.deserialize(jsonObject.get("item"));
+		ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
 		return new UsedTotemCriterion.Conditions(itemPredicate);
 	}
 
@@ -45,7 +45,7 @@ public class UsedTotemCriterion extends AbstractCriterion<UsedTotemCriterion.Con
 		@Override
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("item", this.item.serialize());
+			jsonObject.add("item", this.item.toJson());
 			return jsonObject;
 		}
 	}

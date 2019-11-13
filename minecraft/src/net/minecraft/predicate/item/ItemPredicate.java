@@ -113,7 +113,7 @@ public class ItemPredicate {
 		}
 	}
 
-	public static ItemPredicate deserialize(@Nullable JsonElement el) {
+	public static ItemPredicate fromJson(@Nullable JsonElement el) {
 		if (el != null && !el.isJsonNull()) {
 			JsonObject jsonObject = JsonHelper.asObject(el, "item");
 			NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("count"));
@@ -152,7 +152,7 @@ public class ItemPredicate {
 		}
 	}
 
-	public JsonElement serialize() {
+	public JsonElement toJson() {
 		if (this == ANY) {
 			return JsonNull.INSTANCE;
 		} else {
@@ -202,7 +202,7 @@ public class ItemPredicate {
 			ItemPredicate[] itemPredicates = new ItemPredicate[jsonArray.size()];
 
 			for (int i = 0; i < itemPredicates.length; i++) {
-				itemPredicates[i] = deserialize(jsonArray.get(i));
+				itemPredicates[i] = fromJson(jsonArray.get(i));
 			}
 
 			return itemPredicates;

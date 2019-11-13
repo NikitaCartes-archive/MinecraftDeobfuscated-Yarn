@@ -706,15 +706,12 @@ public class ServerWorld extends World {
 
 	protected void placeBonusChest() {
 		ConfiguredFeature<?, ?> configuredFeature = Feature.BONUS_CHEST.configure(FeatureConfig.DEFAULT);
-
-		for (int i = 0; i < 10; i++) {
-			int j = this.properties.getSpawnX() + this.random.nextInt(6) - this.random.nextInt(6);
-			int k = this.properties.getSpawnZ() + this.random.nextInt(6) - this.random.nextInt(6);
-			BlockPos blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(j, 0, k)).up();
-			if (configuredFeature.generate(this, (ChunkGenerator<? extends ChunkGeneratorConfig>)this.method_14178().getChunkGenerator(), this.random, blockPos)) {
-				break;
-			}
-		}
+		configuredFeature.generate(
+			this,
+			(ChunkGenerator<? extends ChunkGeneratorConfig>)this.method_14178().getChunkGenerator(),
+			this.random,
+			new BlockPos(this.properties.getSpawnX(), this.properties.getSpawnY(), this.properties.getSpawnZ())
+		);
 	}
 
 	@Nullable

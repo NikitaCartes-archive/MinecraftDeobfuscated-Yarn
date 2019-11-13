@@ -1947,20 +1947,28 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				Position position = new PositionImpl(d, e, g);
 				UUID uUID = packetByteBuf.readUuid();
 				int o = packetByteBuf.readInt();
-				BlockPos blockPos4 = packetByteBuf.readBlockPos();
-				BlockPos blockPos5 = packetByteBuf.readBlockPos();
 				boolean bl4 = packetByteBuf.readBoolean();
-				Path path3;
+				BlockPos blockPos4 = null;
 				if (bl4) {
-					path3 = Path.fromBuffer(packetByteBuf);
-				} else {
-					path3 = null;
+					blockPos4 = packetByteBuf.readBlockPos();
 				}
 
-				class_4703.class_4704 lv = new class_4703.class_4704(uUID, o, position, path3, blockPos4, blockPos5);
+				boolean bl5 = packetByteBuf.readBoolean();
+				BlockPos blockPos5 = null;
+				if (bl5) {
+					blockPos5 = packetByteBuf.readBlockPos();
+				}
+
+				boolean bl2 = packetByteBuf.readBoolean();
+				Path path2 = null;
+				if (bl2) {
+					path2 = Path.fromBuffer(packetByteBuf);
+				}
+
+				class_4703.class_4704 lv = new class_4703.class_4704(uUID, o, position, path2, blockPos4, blockPos5);
 				int w = packetByteBuf.readInt();
 
-				for (int x = 0; x < w; x++) {
+				for (int q = 0; q < w; q++) {
 					String string10 = packetByteBuf.readString();
 					lv.field_21542.add(string10);
 				}
@@ -1970,7 +1978,9 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				BlockPos blockPos2 = packetByteBuf.readBlockPos();
 				String string = packetByteBuf.readString();
 				int m = packetByteBuf.readInt();
-				class_4703.class_4705 lv2 = new class_4703.class_4705(blockPos2, string, m, this.world.getTime());
+				int x = packetByteBuf.readInt();
+				boolean bl6 = packetByteBuf.readBoolean();
+				class_4703.class_4705 lv2 = new class_4703.class_4705(blockPos2, string, m, x, bl6, this.world.getTime());
 				this.client.debugRenderer.field_21547.method_23807(lv2);
 			} else if (CustomPayloadS2CPacket.DEBUG_GAME_TEST_CLEAR.equals(identifier)) {
 				this.client.debugRenderer.gameTestDebugRenderer.clear();
@@ -1978,8 +1988,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				BlockPos blockPos2 = packetByteBuf.readBlockPos();
 				int j = packetByteBuf.readInt();
 				String string11 = packetByteBuf.readString();
-				int y = packetByteBuf.readInt();
-				this.client.debugRenderer.gameTestDebugRenderer.addMarker(blockPos2, j, string11, y);
+				int x = packetByteBuf.readInt();
+				this.client.debugRenderer.gameTestDebugRenderer.addMarker(blockPos2, j, string11, x);
 			} else {
 				LOGGER.warn("Unknown custom packed identifier: {}", identifier);
 			}

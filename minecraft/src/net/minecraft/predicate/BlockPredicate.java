@@ -104,4 +104,29 @@ public class BlockPredicate {
 			return jsonObject;
 		}
 	}
+
+	public static class Builder {
+		@Nullable
+		private Block block;
+		@Nullable
+		private Tag<Block> tag;
+		private StatePredicate state = StatePredicate.ANY;
+		private NbtPredicate nbt = NbtPredicate.ANY;
+
+		private Builder() {
+		}
+
+		public static BlockPredicate.Builder create() {
+			return new BlockPredicate.Builder();
+		}
+
+		public BlockPredicate.Builder tag(Tag<Block> tag) {
+			this.tag = tag;
+			return this;
+		}
+
+		public BlockPredicate build() {
+			return new BlockPredicate(this.tag, this.block, this.state, this.nbt);
+		}
+	}
 }

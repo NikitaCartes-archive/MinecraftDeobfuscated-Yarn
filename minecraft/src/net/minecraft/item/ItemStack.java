@@ -294,13 +294,17 @@ public final class ItemStack {
 	}
 
 	public ItemStack copy() {
-		ItemStack itemStack = new ItemStack(this.getItem(), this.count);
-		itemStack.setCooldown(this.getCooldown());
-		if (this.tag != null) {
-			itemStack.tag = this.tag.method_10553();
-		}
+		if (this.isEmpty()) {
+			return EMPTY;
+		} else {
+			ItemStack itemStack = new ItemStack(this.getItem(), this.count);
+			itemStack.setCooldown(this.getCooldown());
+			if (this.tag != null) {
+				itemStack.tag = this.tag.method_10553();
+			}
 
-		return itemStack;
+			return itemStack;
+		}
 	}
 
 	public static boolean areTagsEqual(ItemStack left, ItemStack right) {

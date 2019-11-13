@@ -273,8 +273,11 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 			}
 
 			return true;
-		} else if (!this.world.isClient && !this.isInAir() && this.isTamed() && this.isOwner(player)) {
-			this.sitGoal.setEnabledWithOwner(!this.isSitting());
+		} else if (!this.isInAir() && this.isTamed() && this.isOwner(player)) {
+			if (!this.world.isClient) {
+				this.sitGoal.setEnabledWithOwner(!this.isSitting());
+			}
+
 			return true;
 		} else {
 			return super.interactMob(player, hand);

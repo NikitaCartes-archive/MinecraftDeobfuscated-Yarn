@@ -400,17 +400,6 @@ public abstract class LivingEntity extends Entity {
 	protected void updatePostDeath() {
 		this.deathTime++;
 		if (this.deathTime == 20) {
-			if (!this.world.isClient
-				&& (this.shouldAlwaysDropXp() || this.playerHitTimer > 0 && this.canDropLootAndXp() && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT))) {
-				int i = this.getCurrentExperience(this.attackingPlayer);
-
-				while (i > 0) {
-					int j = ExperienceOrbEntity.roundToOrbSize(i);
-					i -= j;
-					this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.getX(), this.getY(), this.getZ(), j));
-				}
-			}
-
 			this.remove();
 
 			for (int i = 0; i < 20; i++) {
@@ -1133,9 +1122,23 @@ public abstract class LivingEntity extends Entity {
 		}
 
 		this.dropInventory();
+		this.method_23883();
 	}
 
 	protected void dropInventory() {
+	}
+
+	protected void method_23883() {
+		if (!this.world.isClient
+			&& (this.shouldAlwaysDropXp() || this.playerHitTimer > 0 && this.canDropLootAndXp() && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT))) {
+			int i = this.getCurrentExperience(this.attackingPlayer);
+
+			while (i > 0) {
+				int j = ExperienceOrbEntity.roundToOrbSize(i);
+				i -= j;
+				this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.getX(), this.getY(), this.getZ(), j));
+			}
+		}
 	}
 
 	protected void dropEquipment(DamageSource source, int lootingMultiplier, boolean allowDrops) {
@@ -2039,10 +2042,10 @@ public abstract class LivingEntity extends Entity {
 
 					switch (equipmentSlot.getType()) {
 						case HAND:
-							this.equippedHand.set(equipmentSlot.getEntitySlotId(), itemStack2.isEmpty() ? ItemStack.EMPTY : itemStack2.copy());
+							this.equippedHand.set(equipmentSlot.getEntitySlotId(), itemStack2.copy());
 							break;
 						case ARMOR:
-							this.equippedArmor.set(equipmentSlot.getEntitySlotId(), itemStack2.isEmpty() ? ItemStack.EMPTY : itemStack2.copy());
+							this.equippedArmor.set(equipmentSlot.getEntitySlotId(), itemStack2.copy());
 					}
 				}
 			}

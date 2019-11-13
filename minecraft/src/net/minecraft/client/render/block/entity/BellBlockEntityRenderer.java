@@ -7,7 +7,6 @@ import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
@@ -47,7 +46,7 @@ public class BellBlockEntityRenderer extends BlockEntityRenderer<BellBlockEntity
 
 		this.field_20816.pitch = h;
 		this.field_20816.roll = k;
-		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.method_23946());
 		this.field_20816.render(matrixStack, vertexConsumer, i, j, this.getSprite(BELL_BODY_TEXTURE));
 	}
 }

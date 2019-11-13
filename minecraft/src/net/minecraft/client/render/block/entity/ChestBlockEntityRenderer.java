@@ -16,12 +16,12 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProgress> extends BlockEntityRenderer<T> {
@@ -84,9 +84,11 @@ public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProg
 
 	@Override
 	public void render(T blockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
-		BlockState blockState = blockEntity.hasWorld() ? blockEntity.getCachedState() : Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.SOUTH);
+		World world = blockEntity.getWorld();
+		boolean bl = world != null;
+		BlockState blockState = bl ? blockEntity.getCachedState() : Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.SOUTH);
 		ChestType chestType = blockState.contains((Property<T>)ChestBlock.CHEST_TYPE) ? blockState.get(ChestBlock.CHEST_TYPE) : ChestType.SINGLE;
-		boolean bl = chestType != ChestType.SINGLE;
+		boolean bl2 = chestType != ChestType.SINGLE;
 		Identifier identifier;
 		if (this.isChristmas) {
 			identifier = this.method_23690(chestType, CHRISTMAS_TEX, field_21475, field_21476);
@@ -103,19 +105,25 @@ public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProg
 		matrixStack.translate(0.5, 0.5, 0.5);
 		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-g));
 		matrixStack.translate(-0.5, -0.5, -0.5);
-		float h = blockEntity.getAnimationProgress(f);
+		float h;
+		if (bl) {
+			h = ChestBlock.method_23897(blockEntity, blockState, world, blockEntity.getPos(), f);
+		} else {
+			h = blockEntity.getAnimationProgress(f);
+		}
+
 		h = 1.0F - h;
 		h = 1.0F - h * h * h;
 		Sprite sprite = this.getSprite(identifier);
-		if (bl) {
-			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+		if (bl2) {
+			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.method_23947());
 			if (chestType == ChestType.LEFT) {
 				this.method_22749(matrixStack, vertexConsumer, this.field_21479, this.field_21481, this.field_21480, h, i, j, sprite);
 			} else {
 				this.method_22749(matrixStack, vertexConsumer, this.field_20820, this.field_20822, this.field_20821, h, i, j, sprite);
 			}
 		} else {
-			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.method_23946());
 			this.method_22749(matrixStack, vertexConsumer, this.field_20817, this.field_20819, this.field_20818, h, i, j, sprite);
 		}
 

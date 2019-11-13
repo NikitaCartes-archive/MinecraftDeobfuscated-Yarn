@@ -1,6 +1,7 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.List;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.mob.MobEntityWithAi;
@@ -26,11 +27,9 @@ public class ChaseBoatGoal extends Goal {
 		boolean bl = false;
 
 		for (BoatEntity boatEntity : list) {
-			if (boatEntity.getPrimaryPassenger() != null
-				&& (
-					MathHelper.abs(((LivingEntity)boatEntity.getPrimaryPassenger()).sidewaysSpeed) > 0.0F
-						|| MathHelper.abs(((LivingEntity)boatEntity.getPrimaryPassenger()).forwardSpeed) > 0.0F
-				)) {
+			Entity entity = boatEntity.getPrimaryPassenger();
+			if (entity instanceof LivingEntity
+				&& (MathHelper.abs(((LivingEntity)entity).sidewaysSpeed) > 0.0F || MathHelper.abs(((LivingEntity)entity).forwardSpeed) > 0.0F)) {
 				bl = true;
 				break;
 			}

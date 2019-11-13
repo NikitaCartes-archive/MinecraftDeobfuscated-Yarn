@@ -112,9 +112,9 @@ public class AnvilScreen extends AbstractContainerScreen<AnvilContainer> impleme
 	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
 		super.render(mouseX, mouseY, delta);
-		this.drawMouseoverTooltip(mouseX, mouseY);
 		RenderSystem.disableBlend();
 		this.nameField.render(mouseX, mouseY, delta);
+		this.drawMouseoverTooltip(mouseX, mouseY);
 	}
 
 	@Override

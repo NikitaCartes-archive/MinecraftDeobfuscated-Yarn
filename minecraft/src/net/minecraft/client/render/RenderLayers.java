@@ -8,7 +8,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -258,9 +257,7 @@ public class RenderLayers {
 
 	public static RenderLayer getEntityBlockLayer(BlockState state) {
 		RenderLayer renderLayer = getBlockLayer(state);
-		return renderLayer == RenderLayer.getTranslucent()
-			? RenderLayer.getEntityTranslucent(SpriteAtlasTexture.BLOCK_ATLAS_TEX)
-			: RenderLayer.getEntityCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+		return renderLayer == RenderLayer.getTranslucent() ? RenderLayer.method_23949() : RenderLayer.method_23947();
 	}
 
 	public static RenderLayer getItemLayer(ItemStack stack) {
@@ -269,7 +266,7 @@ public class RenderLayers {
 			Block block = ((BlockItem)item).getBlock();
 			return getEntityBlockLayer(block.getDefaultState());
 		} else {
-			return RenderLayer.getEntityTranslucent(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+			return RenderLayer.method_23949();
 		}
 	}
 

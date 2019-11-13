@@ -286,7 +286,7 @@ public class ChunkBuilder {
 
 		public void delete() {
 			this.clear();
-			this.buffers.values().forEach(VertexBuffer::delete);
+			this.buffers.values().forEach(VertexBuffer::close);
 		}
 
 		public BlockPos getOrigin() {

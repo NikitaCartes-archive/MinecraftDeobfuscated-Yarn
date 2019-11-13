@@ -68,7 +68,7 @@ public class BannerBlockEntityRenderer extends BlockEntityRenderer<BannerBlockEn
 			Sprite sprite = this.getSprite(ModelLoader.field_20847);
 			matrixStack.push();
 			matrixStack.scale(0.6666667F, -0.6666667F, -0.6666667F);
-			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.method_23946());
 			this.verticalBar.render(matrixStack, vertexConsumer, i, j, sprite);
 			this.topBar.render(matrixStack, vertexConsumer, i, j, sprite);
 			if (bannerBlockEntity.isPreview()) {
@@ -93,7 +93,7 @@ public class BannerBlockEntityRenderer extends BlockEntityRenderer<BannerBlockEn
 		List<BannerPattern> list = bannerBlockEntity.getPatterns();
 		List<DyeColor> list2 = bannerBlockEntity.getPatternColors();
 		SpriteAtlasTexture spriteAtlasTexture = MinecraftClient.getInstance().getSpriteAtlas();
-		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityNoOutline(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.method_23951());
 
 		for (int k = 0; k < 17 && k < list.size() && k < list2.size(); k++) {
 			BannerPattern bannerPattern = (BannerPattern)list.get(k);

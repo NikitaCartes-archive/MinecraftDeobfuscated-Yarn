@@ -1,7 +1,7 @@
 package net.minecraft.client.model;
 
-import com.google.common.collect.Lists;
-import java.util.List;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectList;
 import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -13,7 +13,7 @@ import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.util.math.Vector4f;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Direction;
 
 @Environment(EnvType.CLIENT)
 public class ModelPart {
@@ -29,8 +29,8 @@ public class ModelPart {
 	public float roll;
 	public boolean mirror;
 	public boolean visible = true;
-	private final List<ModelPart.Cuboid> cuboids = Lists.<ModelPart.Cuboid>newArrayList();
-	private final List<ModelPart> children = Lists.<ModelPart>newArrayList();
+	private final ObjectList<ModelPart.Cuboid> cuboids = new ObjectArrayList<>();
+	private final ObjectList<ModelPart> children = new ObjectArrayList<>();
 
 	public ModelPart(Model model) {
 		model.method_22696(this);
@@ -143,25 +143,21 @@ public class ModelPart {
 
 	private void renderCuboids(MatrixStack.Entry entry, VertexConsumer vertexConsumer, int i, int j, @Nullable Sprite sprite, float f, float g, float h) {
 		Matrix4f matrix4f = entry.getModel();
-		Matrix3f matrix3f = new Matrix3f(matrix4f);
+		Matrix3f matrix3f = entry.getNormal();
 
 		for (ModelPart.Cuboid cuboid : this.cuboids) {
 			for (ModelPart.Quad quad : cuboid.sides) {
-				Vector3f vector3f = new Vector3f(quad.vertices[1].pos.reverseSubtract(quad.vertices[0].pos));
-				Vector3f vector3f2 = new Vector3f(quad.vertices[1].pos.reverseSubtract(quad.vertices[2].pos));
+				Vector3f vector3f = quad.field_21618.method_23850();
 				vector3f.multiply(matrix3f);
-				vector3f2.multiply(matrix3f);
-				vector3f2.cross(vector3f);
-				vector3f2.reciprocal();
-				float k = vector3f2.getX();
-				float l = vector3f2.getY();
-				float m = vector3f2.getZ();
+				float k = vector3f.getX();
+				float l = vector3f.getY();
+				float m = vector3f.getZ();
 
 				for (int n = 0; n < 4; n++) {
 					ModelPart.Vertex vertex = quad.vertices[n];
-					float o = (float)vertex.pos.x / 16.0F;
-					float p = (float)vertex.pos.y / 16.0F;
-					float q = (float)vertex.pos.z / 16.0F;
+					float o = vertex.pos.getX() / 16.0F;
+					float p = vertex.pos.getY() / 16.0F;
+					float q = vertex.pos.getZ() / 16.0F;
 					Vector4f vector4f = new Vector4f(o, p, q, 1.0F);
 					vector4f.multiply(matrix4f);
 					float r;
@@ -174,13 +170,7 @@ public class ModelPart {
 						s = sprite.getV((double)(vertex.v * 16.0F));
 					}
 
-					vertexConsumer.vertex((double)vector4f.getX(), (double)vector4f.getY(), (double)vector4f.getZ())
-						.color(f, g, h, 1.0F)
-						.texture(r, s)
-						.overlay(j)
-						.light(i)
-						.normal(k, l, m)
-						.next();
+					vertexConsumer.method_23919(vector4f.getX(), vector4f.getY(), vector4f.getZ(), f, g, h, 1.0F, r, s, j, i, k, l, m);
 				}
 			}
 		}
@@ -261,65 +251,71 @@ public class ModelPart {
 			float p = (float)v;
 			float q = (float)v + sizeZ;
 			float r = (float)v + sizeZ + sizeY;
-			this.sides[2] = new ModelPart.Quad(new ModelPart.Vertex[]{vertex6, vertex5, vertex, vertex2}, k, p, l, q, textureWidth, textureHeight);
-			this.sides[3] = new ModelPart.Quad(new ModelPart.Vertex[]{vertex3, vertex4, vertex8, vertex7}, l, q, m, p, textureWidth, textureHeight);
-			this.sides[1] = new ModelPart.Quad(new ModelPart.Vertex[]{vertex, vertex5, vertex8, vertex4}, j, q, k, r, textureWidth, textureHeight);
-			this.sides[4] = new ModelPart.Quad(new ModelPart.Vertex[]{vertex2, vertex, vertex4, vertex3}, k, q, l, r, textureWidth, textureHeight);
-			this.sides[0] = new ModelPart.Quad(new ModelPart.Vertex[]{vertex6, vertex2, vertex3, vertex7}, l, q, n, r, textureWidth, textureHeight);
-			this.sides[5] = new ModelPart.Quad(new ModelPart.Vertex[]{vertex5, vertex6, vertex7, vertex8}, n, q, o, r, textureWidth, textureHeight);
-			if (mirror) {
-				for (ModelPart.Quad quad : this.sides) {
-					quad.flip();
-				}
-			}
+			this.sides[2] = new ModelPart.Quad(
+				new ModelPart.Vertex[]{vertex6, vertex5, vertex, vertex2}, k, p, l, q, textureWidth, textureHeight, mirror, Direction.DOWN
+			);
+			this.sides[3] = new ModelPart.Quad(new ModelPart.Vertex[]{vertex3, vertex4, vertex8, vertex7}, l, q, m, p, textureWidth, textureHeight, mirror, Direction.UP);
+			this.sides[1] = new ModelPart.Quad(
+				new ModelPart.Vertex[]{vertex, vertex5, vertex8, vertex4}, j, q, k, r, textureWidth, textureHeight, mirror, Direction.WEST
+			);
+			this.sides[4] = new ModelPart.Quad(
+				new ModelPart.Vertex[]{vertex2, vertex, vertex4, vertex3}, k, q, l, r, textureWidth, textureHeight, mirror, Direction.NORTH
+			);
+			this.sides[0] = new ModelPart.Quad(
+				new ModelPart.Vertex[]{vertex6, vertex2, vertex3, vertex7}, l, q, n, r, textureWidth, textureHeight, mirror, Direction.EAST
+			);
+			this.sides[5] = new ModelPart.Quad(
+				new ModelPart.Vertex[]{vertex5, vertex6, vertex7, vertex8}, n, q, o, r, textureWidth, textureHeight, mirror, Direction.SOUTH
+			);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	static class Quad {
-		public ModelPart.Vertex[] vertices;
+		public final ModelPart.Vertex[] vertices;
+		public final Vector3f field_21618;
 
-		public Quad(ModelPart.Vertex[] vertices) {
+		public Quad(ModelPart.Vertex[] vertices, float u1, float v1, float u2, float v2, float squishU, float squishV, boolean bl, Direction direction) {
 			this.vertices = vertices;
-		}
-
-		public Quad(ModelPart.Vertex[] vertices, float u1, float v1, float u2, float v2, float squishU, float squishV) {
-			this(vertices);
 			float f = 0.0F / squishU;
 			float g = 0.0F / squishV;
 			vertices[0] = vertices[0].remap(u2 / squishU - f, v1 / squishV + g);
 			vertices[1] = vertices[1].remap(u1 / squishU + f, v1 / squishV + g);
 			vertices[2] = vertices[2].remap(u1 / squishU + f, v2 / squishV - g);
 			vertices[3] = vertices[3].remap(u2 / squishU - f, v2 / squishV - g);
-		}
+			if (bl) {
+				int i = vertices.length;
 
-		public void flip() {
-			ModelPart.Vertex[] vertexs = new ModelPart.Vertex[this.vertices.length];
-
-			for (int i = 0; i < this.vertices.length; i++) {
-				vertexs[i] = this.vertices[this.vertices.length - i - 1];
+				for (int j = 0; j < i / 2; j++) {
+					ModelPart.Vertex vertex = vertices[j];
+					vertices[j] = vertices[i - 1 - j];
+					vertices[i - 1 - j] = vertex;
+				}
 			}
 
-			this.vertices = vertexs;
+			this.field_21618 = direction.method_23955();
+			if (bl) {
+				this.field_21618.method_23849(-1.0F, 1.0F, 1.0F);
+			}
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	static class Vertex {
-		public final Vec3d pos;
+		public final Vector3f pos;
 		public final float u;
 		public final float v;
 
 		public Vertex(float x, float y, float z, float u, float v) {
-			this(new Vec3d((double)x, (double)y, (double)z), u, v);
+			this(new Vector3f(x, y, z), u, v);
 		}
 
 		public ModelPart.Vertex remap(float u, float v) {
 			return new ModelPart.Vertex(this.pos, u, v);
 		}
 
-		public Vertex(Vec3d pos, float u, float v) {
-			this.pos = pos;
+		public Vertex(Vector3f vector3f, float u, float v) {
+			this.pos = vector3f;
 			this.u = u;
 			this.v = v;
 		}

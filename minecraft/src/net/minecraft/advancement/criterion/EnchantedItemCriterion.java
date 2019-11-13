@@ -18,7 +18,7 @@ public class EnchantedItemCriterion extends AbstractCriterion<EnchantedItemCrite
 	}
 
 	public EnchantedItemCriterion.Conditions method_8872(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-		ItemPredicate itemPredicate = ItemPredicate.deserialize(jsonObject.get("item"));
+		ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
 		NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("levels"));
 		return new EnchantedItemCriterion.Conditions(itemPredicate, intRange);
 	}
@@ -48,7 +48,7 @@ public class EnchantedItemCriterion extends AbstractCriterion<EnchantedItemCrite
 		@Override
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("item", this.item.serialize());
+			jsonObject.add("item", this.item.toJson());
 			jsonObject.add("levels", this.levels.toJson());
 			return jsonObject;
 		}

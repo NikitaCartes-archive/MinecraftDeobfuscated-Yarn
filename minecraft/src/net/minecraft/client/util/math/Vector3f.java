@@ -197,4 +197,8 @@ public final class Vector3f {
 		this.y = float2FloatFunction.get(this.y);
 		this.z = float2FloatFunction.get(this.z);
 	}
+
+	public String toString() {
+		return "[" + this.x + ", " + this.y + ", " + this.z + "]";
+	}
 }

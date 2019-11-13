@@ -8,7 +8,6 @@ import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
@@ -67,8 +66,7 @@ public abstract class EntityRenderer<T extends Entity> {
 			int j = "deadmau5".equals(string) ? -10 : 0;
 			matrixStack.push();
 			matrixStack.translate(0.0, (double)f, 0.0);
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-this.renderManager.cameraYaw));
-			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(this.renderManager.cameraPitch));
+			matrixStack.multiply(this.renderManager.camera.method_23767());
 			matrixStack.scale(-0.025F, -0.025F, 0.025F);
 			Matrix4f matrix4f = matrixStack.peek().getModel();
 			float g = MinecraftClient.getInstance().options.getTextBackgroundOpacity(0.25F);

@@ -54,7 +54,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class WolfEntity extends TameableEntity {
-	private static final TrackedData<Float> WOLF_HEALTH = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.FLOAT);
 	private static final TrackedData<Boolean> BEGGING = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Integer> COLLAR_COLOR = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	public static final Predicate<LivingEntity> FOLLOW_TAMED_PREDICATE = livingEntity -> {
@@ -119,14 +118,8 @@ public class WolfEntity extends TameableEntity {
 	}
 
 	@Override
-	protected void mobTick() {
-		this.dataTracker.set(WOLF_HEALTH, this.getHealth());
-	}
-
-	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.dataTracker.startTracking(WOLF_HEALTH, this.getHealth());
 		this.dataTracker.startTracking(BEGGING, false);
 		this.dataTracker.startTracking(COLLAR_COLOR, DyeColor.RED.getId());
 	}
@@ -157,7 +150,7 @@ public class WolfEntity extends TameableEntity {
 		if (this.isAngry()) {
 			return SoundEvents.ENTITY_WOLF_GROWL;
 		} else if (this.random.nextInt(3) == 0) {
-			return this.isTamed() && this.dataTracker.get(WOLF_HEALTH) < 10.0F ? SoundEvents.ENTITY_WOLF_WHINE : SoundEvents.ENTITY_WOLF_PANT;
+			return this.isTamed() && this.getHealth() < 10.0F ? SoundEvents.ENTITY_WOLF_WHINE : SoundEvents.ENTITY_WOLF_PANT;
 		} else {
 			return SoundEvents.ENTITY_WOLF_AMBIENT;
 		}
@@ -334,7 +327,7 @@ public class WolfEntity extends TameableEntity {
 			return this.isOwner(player) || item == Items.BONE && !this.isAngry();
 		} else {
 			if (this.isTamed()) {
-				if (item.isFood() && item.getFoodComponent().isMeat() && this.getHealth() < 20.0F) {
+				if (item.isFood() && item.getFoodComponent().isMeat() && this.getHealth() < this.getMaximumHealth()) {
 					if (!player.abilities.creativeMode) {
 						itemStack.decrement(1);
 					}
@@ -378,7 +371,6 @@ public class WolfEntity extends TameableEntity {
 					this.navigation.stop();
 					this.setTarget(null);
 					this.sitGoal.setEnabledWithOwner(true);
-					this.setHealth(20.0F);
 					this.world.sendEntityStatus(this, (byte)7);
 				} else {
 					this.world.sendEntityStatus(this, (byte)6);
@@ -408,7 +400,7 @@ public class WolfEntity extends TameableEntity {
 		if (this.isAngry()) {
 			return 1.5393804F;
 		} else {
-			return this.isTamed() ? (0.55F - (this.getMaximumHealth() - this.dataTracker.get(WOLF_HEALTH)) * 0.02F) * (float) Math.PI : (float) (Math.PI / 5);
+			return this.isTamed() ? (0.55F - (this.getMaximumHealth() - this.getHealth()) * 0.02F) * (float) Math.PI : (float) (Math.PI / 5);
 		}
 	}
 

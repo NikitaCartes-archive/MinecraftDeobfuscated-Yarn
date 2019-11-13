@@ -60,6 +60,7 @@ public class class_4703 implements DebugRenderer.Renderer {
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.disableTexture();
 		this.method_23819();
+		this.method_23952();
 		this.method_23823();
 		RenderSystem.enableTexture();
 		RenderSystem.disableBlend();
@@ -67,6 +68,10 @@ public class class_4703 implements DebugRenderer.Renderer {
 		if (!this.field_21532.player.isSpectator()) {
 			this.method_23832();
 		}
+	}
+
+	private void method_23952() {
+		this.field_21534.entrySet().removeIf(entry -> this.field_21532.world.getEntityById(((class_4703.class_4704)entry.getValue()).field_21537) == null);
 	}
 
 	private void method_23819() {
@@ -160,7 +165,8 @@ public class class_4703 implements DebugRenderer.Renderer {
 			method_23815("In: " + arg.field_21545 + " bees", arg, i, -256);
 		}
 
-		method_23815(arg.field_21544, arg, ++i, -1);
+		method_23815("Honey: " + arg.field_21625, arg, ++i, -23296);
+		method_23815(arg.field_21544 + (arg.field_21626 ? " (sedated)" : ""), arg, ++i, -1);
 	}
 
 	private void method_23820(class_4703.class_4704 arg) {
@@ -176,14 +182,14 @@ public class class_4703 implements DebugRenderer.Renderer {
 		int i = 0;
 		method_23814(arg.field_21538, i, arg.toString(), -1, 0.03F);
 		i++;
-		if (arg.field_21540.equals(BlockPos.ORIGIN)) {
+		if (arg.field_21540 == null) {
 			method_23814(arg.field_21538, i, "Homeless :(", -98404, 0.02F);
 		} else {
 			method_23814(arg.field_21538, i, "Hive: " + this.method_23806(arg, arg.field_21540), -256, 0.02F);
 		}
 
 		i++;
-		if (arg.field_21541.equals(BlockPos.ORIGIN)) {
+		if (arg.field_21541 == null) {
 			method_23814(arg.field_21538, i, "No flower :(", -98404, 0.02F);
 		} else {
 			method_23814(arg.field_21538, i, "Flower: " + this.method_23806(arg, arg.field_21541), -256, 0.02F);
@@ -289,7 +295,9 @@ public class class_4703 implements DebugRenderer.Renderer {
 		public final Position field_21538;
 		@Nullable
 		public final Path field_21539;
+		@Nullable
 		public final BlockPos field_21540;
+		@Nullable
 		public final BlockPos field_21541;
 		public final List<String> field_21542 = Lists.<String>newArrayList();
 
@@ -319,7 +327,7 @@ public class class_4703 implements DebugRenderer.Renderer {
 		}
 
 		public boolean method_23836() {
-			return this.field_21541 != BlockPos.ORIGIN;
+			return this.field_21541 != null;
 		}
 	}
 
@@ -328,12 +336,16 @@ public class class_4703 implements DebugRenderer.Renderer {
 		public final BlockPos field_21543;
 		public final String field_21544;
 		public final int field_21545;
+		public final int field_21625;
+		public final boolean field_21626;
 		public final long field_21546;
 
-		public class_4705(BlockPos blockPos, String string, int i, long l) {
+		public class_4705(BlockPos blockPos, String string, int i, int j, boolean bl, long l) {
 			this.field_21543 = blockPos;
 			this.field_21544 = string;
 			this.field_21545 = i;
+			this.field_21625 = j;
+			this.field_21626 = bl;
 			this.field_21546 = l;
 		}
 	}

@@ -318,13 +318,15 @@ public class ArmorStandEntity extends LivingEntity {
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (this.isMarker() || itemStack.getItem() == Items.NAME_TAG) {
 			return ActionResult.PASS;
-		} else if (!this.world.isClient && !player.isSpectator()) {
+		} else if (player.isSpectator()) {
+			return ActionResult.SUCCESS;
+		} else {
 			EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
 			if (itemStack.isEmpty()) {
 				EquipmentSlot equipmentSlot2 = this.method_6916(hitPos);
 				EquipmentSlot equipmentSlot3 = this.method_6915(equipmentSlot2) ? equipmentSlot : equipmentSlot2;
-				if (this.hasStackEquipped(equipmentSlot3)) {
-					this.method_6904(player, equipmentSlot3, itemStack, hand);
+				if (this.hasStackEquipped(equipmentSlot3) && this.method_6904(player, equipmentSlot3, itemStack, hand)) {
+					return ActionResult.SUCCESS;
 				}
 			} else {
 				if (this.method_6915(equipmentSlot)) {
@@ -335,12 +337,12 @@ public class ArmorStandEntity extends LivingEntity {
 					return ActionResult.FAIL;
 				}
 
-				this.method_6904(player, equipmentSlot, itemStack, hand);
+				if (this.method_6904(player, equipmentSlot, itemStack, hand)) {
+					return ActionResult.SUCCESS;
+				}
 			}
 
-			return ActionResult.SUCCESS;
-		} else {
-			return ActionResult.SUCCESS;
+			return ActionResult.CONSUME;
 		}
 	}
 
@@ -368,24 +370,29 @@ public class ArmorStandEntity extends LivingEntity {
 		return (this.disabledSlots & 1 << equipmentSlot.getArmorStandSlotId()) != 0 || equipmentSlot.getType() == EquipmentSlot.Type.HAND && !this.shouldShowArms();
 	}
 
-	private void method_6904(PlayerEntity playerEntity, EquipmentSlot equipmentSlot, ItemStack itemStack, Hand hand) {
+	private boolean method_6904(PlayerEntity playerEntity, EquipmentSlot equipmentSlot, ItemStack itemStack, Hand hand) {
 		ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
-		if (itemStack2.isEmpty() || (this.disabledSlots & 1 << equipmentSlot.getArmorStandSlotId() + 8) == 0) {
-			if (!itemStack2.isEmpty() || (this.disabledSlots & 1 << equipmentSlot.getArmorStandSlotId() + 16) == 0) {
-				if (playerEntity.abilities.creativeMode && itemStack2.isEmpty() && !itemStack.isEmpty()) {
-					ItemStack itemStack3 = itemStack.copy();
-					itemStack3.setCount(1);
-					this.equipStack(equipmentSlot, itemStack3);
-				} else if (itemStack.isEmpty() || itemStack.getCount() <= 1) {
-					this.equipStack(equipmentSlot, itemStack);
-					playerEntity.setStackInHand(hand, itemStack2);
-				} else if (itemStack2.isEmpty()) {
-					ItemStack itemStack3 = itemStack.copy();
-					itemStack3.setCount(1);
-					this.equipStack(equipmentSlot, itemStack3);
-					itemStack.decrement(1);
-				}
-			}
+		if (!itemStack2.isEmpty() && (this.disabledSlots & 1 << equipmentSlot.getArmorStandSlotId() + 8) != 0) {
+			return false;
+		} else if (itemStack2.isEmpty() && (this.disabledSlots & 1 << equipmentSlot.getArmorStandSlotId() + 16) != 0) {
+			return false;
+		} else if (playerEntity.abilities.creativeMode && itemStack2.isEmpty() && !itemStack.isEmpty()) {
+			ItemStack itemStack3 = itemStack.copy();
+			itemStack3.setCount(1);
+			this.equipStack(equipmentSlot, itemStack3);
+			return true;
+		} else if (itemStack.isEmpty() || itemStack.getCount() <= 1) {
+			this.equipStack(equipmentSlot, itemStack);
+			playerEntity.setStackInHand(hand, itemStack2);
+			return true;
+		} else if (!itemStack2.isEmpty()) {
+			return false;
+		} else {
+			ItemStack itemStack3 = itemStack.copy();
+			itemStack3.setCount(1);
+			this.equipStack(equipmentSlot, itemStack3);
+			itemStack.decrement(1);
+			return true;
 		}
 	}
 

@@ -272,13 +272,15 @@ public class DefaultBiomeFeatures {
 		)
 		.method_23410(13)
 		.method_23412(15)
+		.method_23915(13)
 		.method_23411(ImmutableList.of(new AlterGroundTreeDecorator(new SimpleStateProvider(PODZOL))))
 		.method_23409();
 	public static final MegaTreeFeatureConfig field_21199 = new MegaTreeFeatureConfig.Builder(
 			new SimpleStateProvider(SPRUCE_LOG), new SimpleStateProvider(SPRUCE_LEAVES)
 		)
-		.method_23410(3)
+		.method_23410(13)
 		.method_23412(15)
+		.method_23915(3)
 		.method_23411(ImmutableList.of(new AlterGroundTreeDecorator(new SimpleStateProvider(PODZOL))))
 		.method_23409();
 	public static final MegaTreeFeatureConfig field_21200 = new MegaTreeFeatureConfig.Builder(
@@ -289,18 +291,18 @@ public class DefaultBiomeFeatures {
 		.method_23411(ImmutableList.of(new TrunkVineTreeDecorator(), new LeaveVineTreeDecorator()))
 		.method_23409();
 	public static final FlowerFeatureConfig field_21201 = new FlowerFeatureConfig.Builder(new SimpleStateProvider(GRASS), new SimpleBlockPlacer())
-		.method_23417(128)
+		.method_23417(32)
 		.method_23424();
 	public static final FlowerFeatureConfig field_21202 = new FlowerFeatureConfig.Builder(
 			new WeightedStateProvider().addState(GRASS, 1).addState(FERN, 4), new SimpleBlockPlacer()
 		)
-		.method_23417(128)
+		.method_23417(32)
 		.method_23424();
 	public static final FlowerFeatureConfig field_21203 = new FlowerFeatureConfig.Builder(
 			new WeightedStateProvider().addState(GRASS, 3).addState(FERN, 1), new SimpleBlockPlacer()
 		)
 		.method_23421(ImmutableSet.of(PODZOL))
-		.method_23417(128)
+		.method_23417(32)
 		.method_23424();
 	public static final FlowerFeatureConfig field_21204 = new FlowerFeatureConfig.Builder(new SimpleStateProvider(LILY_OF_THE_VALLEY), new SimpleBlockPlacer())
 		.method_23417(64)

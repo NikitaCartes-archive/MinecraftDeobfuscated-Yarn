@@ -364,7 +364,11 @@ public abstract class World implements IWorld, AutoCloseable {
 	}
 
 	public boolean isDaylight() {
-		return this.ambientDarkness < 4;
+		return this.dimension.getType() == DimensionType.OVERWORLD && this.ambientDarkness < 4;
+	}
+
+	public boolean method_23886() {
+		return this.dimension.getType() == DimensionType.OVERWORLD && !this.isDaylight();
 	}
 
 	@Override

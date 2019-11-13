@@ -40,7 +40,6 @@ import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
@@ -58,10 +57,8 @@ public class EntityRenderDispatcher {
 	private final TextRenderer textRenderer;
 	public final TextureManager textureManager;
 	private World world;
-	private Camera camera;
+	public Camera camera;
 	public Entity targetedEntity;
-	public float cameraYaw;
-	public float cameraPitch;
 	public final GameOptions gameOptions;
 	private boolean renderShadows = true;
 	private boolean renderHitboxes;
@@ -215,20 +212,6 @@ public class EntityRenderDispatcher {
 		this.world = world;
 		this.camera = camera;
 		this.targetedEntity = entity;
-		if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).isSleeping()) {
-			Direction direction = ((LivingEntity)camera.getFocusedEntity()).getSleepingDirection();
-			if (direction != null) {
-				this.cameraYaw = direction.getOpposite().asRotation();
-				this.cameraPitch = 0.0F;
-			}
-		} else {
-			this.cameraYaw = camera.getYaw();
-			this.cameraPitch = camera.getPitch();
-		}
-	}
-
-	public void setCameraYaw(float f) {
-		this.cameraYaw = f;
 	}
 
 	public void setRenderShadows(boolean value) {
@@ -353,11 +336,11 @@ public class EntityRenderDispatcher {
 		float h = 0.0F;
 		float i = entity.getHeight() / f;
 		float j = 0.0F;
-		matrix.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-this.cameraYaw));
+		matrix.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-this.camera.getYaw()));
 		matrix.translate(0.0, 0.0, (double)(-0.3F + (float)((int)i) * 0.02F));
 		float k = 0.0F;
 		int l = 0;
-		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.method_23947());
 
 		for (MatrixStack.Entry entry = matrix.peek(); i > 0.0F; l++) {
 			Sprite sprite3 = l % 2 == 0 ? sprite : sprite2;

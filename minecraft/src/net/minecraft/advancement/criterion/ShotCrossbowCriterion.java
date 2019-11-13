@@ -18,7 +18,7 @@ public class ShotCrossbowCriterion extends AbstractCriterion<ShotCrossbowCriteri
 	}
 
 	public ShotCrossbowCriterion.Conditions method_9114(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-		ItemPredicate itemPredicate = ItemPredicate.deserialize(jsonObject.get("item"));
+		ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
 		return new ShotCrossbowCriterion.Conditions(itemPredicate);
 	}
 
@@ -45,7 +45,7 @@ public class ShotCrossbowCriterion extends AbstractCriterion<ShotCrossbowCriteri
 		@Override
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("item", this.item.serialize());
+			jsonObject.add("item", this.item.toJson());
 			return jsonObject;
 		}
 	}

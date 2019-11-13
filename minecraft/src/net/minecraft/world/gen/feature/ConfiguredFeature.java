@@ -11,8 +11,11 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.decorator.ConfiguredDecorator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ConfiguredFeature<FC extends FeatureConfig, F extends Feature<FC>> {
+	public static final Logger field_21589 = LogManager.getLogger();
 	public final F feature;
 	public final FC config;
 
@@ -53,7 +56,14 @@ public class ConfiguredFeature<FC extends FeatureConfig, F extends Feature<FC>> 
 	}
 
 	public static <T> ConfiguredFeature<?, ?> deserialize(Dynamic<T> dynamic) {
-		Feature<? extends FeatureConfig> feature = (Feature<? extends FeatureConfig>)Registry.FEATURE.get(new Identifier(dynamic.get("name").asString("")));
-		return new ConfiguredFeature<>(feature, dynamic.get("config").orElseEmptyMap());
+		String string = dynamic.get("name").asString("");
+		Feature<? extends FeatureConfig> feature = (Feature<? extends FeatureConfig>)Registry.FEATURE.get(new Identifier(string));
+
+		try {
+			return new ConfiguredFeature<>(feature, dynamic.get("config").orElseEmptyMap());
+		} catch (RuntimeException var4) {
+			field_21589.warn("Error while deserializing {}", string);
+			return new ConfiguredFeature<>(Feature.NO_OP, DefaultFeatureConfig.DEFAULT);
+		}
 	}
 }

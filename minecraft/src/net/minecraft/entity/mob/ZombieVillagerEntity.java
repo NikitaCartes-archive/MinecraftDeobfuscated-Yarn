@@ -137,7 +137,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 
 			return true;
 		} else {
-			return false;
+			return super.interactMob(player, hand);
 		}
 	}
 

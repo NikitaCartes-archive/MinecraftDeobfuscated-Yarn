@@ -5,6 +5,7 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.entity.BeeHiveBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -25,6 +26,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
@@ -68,21 +70,27 @@ public class BeeHiveBlock extends BlockWithEntity {
 	@Override
 	public void afterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack stack) {
 		super.afterBreak(world, player, pos, state, blockEntity, stack);
-		if (!world.isClient) {
-			if (blockEntity instanceof BeeHiveBlockEntity && EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, stack) == 0) {
-				((BeeHiveBlockEntity)blockEntity).angerBees(player, state, BeeHiveBlockEntity.BeeState.EMERGENCY);
+		if (!world.isClient && blockEntity instanceof BeeHiveBlockEntity) {
+			BeeHiveBlockEntity beeHiveBlockEntity = (BeeHiveBlockEntity)blockEntity;
+			if (EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, stack) == 0) {
+				beeHiveBlockEntity.angerBees(player, state, BeeHiveBlockEntity.BeeState.EMERGENCY);
 				world.updateHorizontalAdjacent(pos, this);
 			}
 
-			List<BeeEntity> list = world.getNonSpectatingEntities(BeeEntity.class, new Box(pos).expand(8.0, 6.0, 8.0));
-			if (!list.isEmpty()) {
-				List<PlayerEntity> list2 = world.getNonSpectatingEntities(PlayerEntity.class, new Box(pos).expand(8.0, 6.0, 8.0));
-				int i = list2.size();
+			this.method_23893(world, pos);
+			Criterions.BEE_NEST_DESTROYED.test((ServerPlayerEntity)player, state.getBlock(), stack, beeHiveBlockEntity.method_23903());
+		}
+	}
 
-				for (BeeEntity beeEntity : list) {
-					if (beeEntity.getTarget() == null) {
-						beeEntity.setBeeAttacker((Entity)list2.get(world.random.nextInt(i)));
-					}
+	private void method_23893(World world, BlockPos blockPos) {
+		List<BeeEntity> list = world.getNonSpectatingEntities(BeeEntity.class, new Box(blockPos).expand(8.0, 6.0, 8.0));
+		if (!list.isEmpty()) {
+			List<PlayerEntity> list2 = world.getNonSpectatingEntities(PlayerEntity.class, new Box(blockPos).expand(8.0, 6.0, 8.0));
+			int i = list2.size();
+
+			for (BeeEntity beeEntity : list) {
+				if (beeEntity.getTarget() == null) {
+					beeEntity.setBeeAttacker((Entity)list2.get(world.random.nextInt(i)));
 				}
 			}
 		}
@@ -119,10 +127,17 @@ public class BeeHiveBlock extends BlockWithEntity {
 		}
 
 		if (bl) {
-			if (!method_23755(world, pos)) {
+			if (!CampfireBlock.method_23895(world, pos, 5)) {
+				if (this.method_23894(world, pos)) {
+					this.method_23893(world, pos);
+				}
+
 				this.emptyHoney(world, state, pos, player, BeeHiveBlockEntity.BeeState.EMERGENCY);
 			} else {
 				this.method_23754(world, state, pos);
+				if (player instanceof ServerPlayerEntity) {
+					Criterions.SAFELY_HARVEST_HONEY.test((ServerPlayerEntity)player, pos, itemStack);
+				}
 			}
 
 			return ActionResult.SUCCESS;
@@ -131,15 +146,14 @@ public class BeeHiveBlock extends BlockWithEntity {
 		}
 	}
 
-	public static boolean method_23755(World world, BlockPos blockPos) {
-		for (int i = 1; i <= 5; i++) {
-			BlockState blockState = world.getBlockState(blockPos.down(i));
-			if (!blockState.isAir()) {
-				return blockState.getBlock() == Blocks.CAMPFIRE;
-			}
+	private boolean method_23894(World world, BlockPos blockPos) {
+		BlockEntity blockEntity = world.getBlockEntity(blockPos);
+		if (blockEntity instanceof BeeHiveBlockEntity) {
+			BeeHiveBlockEntity beeHiveBlockEntity = (BeeHiveBlockEntity)blockEntity;
+			return !beeHiveBlockEntity.hasNoBees();
+		} else {
+			return false;
 		}
-
-		return false;
 	}
 
 	public void emptyHoney(World world, BlockState blockState, BlockPos blockPos, @Nullable PlayerEntity playerEntity, BeeHiveBlockEntity.BeeState beeState) {
@@ -232,16 +246,22 @@ public class BeeHiveBlock extends BlockWithEntity {
 		if (!world.isClient && player.isCreative() && world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof BeeHiveBlockEntity) {
-				ItemStack itemStack = new ItemStack(this);
 				BeeHiveBlockEntity beeHiveBlockEntity = (BeeHiveBlockEntity)blockEntity;
-				if (!beeHiveBlockEntity.hasNoBees()) {
+				ItemStack itemStack = new ItemStack(this);
+				int i = (Integer)state.get(HONEY_LEVEL);
+				boolean bl = !beeHiveBlockEntity.hasNoBees();
+				if (!bl && i == 0) {
+					return;
+				}
+
+				if (bl) {
 					CompoundTag compoundTag = new CompoundTag();
 					compoundTag.put("Bees", beeHiveBlockEntity.getBees());
 					itemStack.putSubTag("BlockEntityTag", compoundTag);
 				}
 
 				CompoundTag compoundTag = new CompoundTag();
-				compoundTag.putInt("honey_level", (Integer)state.get(HONEY_LEVEL));
+				compoundTag.putInt("honey_level", i);
 				itemStack.putSubTag("BlockStateTag", compoundTag);
 				ItemEntity itemEntity = new ItemEntity(world, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), itemStack);
 				itemEntity.setToDefaultPickupDelay();

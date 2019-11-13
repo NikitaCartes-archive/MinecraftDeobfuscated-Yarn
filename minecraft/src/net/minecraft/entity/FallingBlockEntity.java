@@ -133,15 +133,16 @@ public class FallingBlockEntity extends Entity {
 					}
 				}
 
-				if (this.onGround || bl2) {
+				boolean bl3 = this.onGround && !FallingBlock.canFallThrough(this.world.getBlockState(blockPos.method_10074()));
+				if (bl3 || bl2) {
 					BlockState blockState = this.world.getBlockState(blockPos);
 					this.setVelocity(this.getVelocity().multiply(0.7, -0.5, 0.7));
 					if (blockState.getBlock() != Blocks.MOVING_PISTON) {
 						this.remove();
 						if (!this.destroyedOnLanding) {
-							boolean bl3 = blockState.canReplace(new AutomaticItemPlacementContext(this.world, blockPos, Direction.DOWN, ItemStack.EMPTY, Direction.UP));
-							boolean bl4 = this.block.canPlaceAt(this.world, blockPos);
-							if (bl3 && bl4) {
+							boolean bl4 = blockState.canReplace(new AutomaticItemPlacementContext(this.world, blockPos, Direction.DOWN, ItemStack.EMPTY, Direction.UP));
+							boolean bl5 = this.block.canPlaceAt(this.world, blockPos);
+							if (bl4 && bl5) {
 								if (this.block.contains(Properties.WATERLOGGED) && this.world.getFluidState(blockPos).getFluid() == Fluids.WATER) {
 									this.block = this.block.with(Properties.WATERLOGGED, Boolean.valueOf(true));
 								}

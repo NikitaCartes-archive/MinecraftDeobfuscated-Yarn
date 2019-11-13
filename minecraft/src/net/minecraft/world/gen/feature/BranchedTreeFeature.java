@@ -33,24 +33,31 @@ public abstract class BranchedTreeFeature<T extends BranchedTreeFeatureConfig> e
 	public Optional<BlockPos> method_23378(
 		ModifiableTestableWorld modifiableTestableWorld, int i, int j, int k, BlockPos blockPos, BranchedTreeFeatureConfig branchedTreeFeatureConfig
 	) {
-		int l = modifiableTestableWorld.getTopPosition(Heightmap.Type.OCEAN_FLOOR, blockPos).getY();
-		int m = modifiableTestableWorld.getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos).getY();
-		BlockPos blockPos2 = new BlockPos(blockPos.getX(), l, blockPos.getZ());
-		if (m - l > branchedTreeFeatureConfig.field_21268) {
-			return Optional.empty();
-		} else if (blockPos2.getY() >= 1 && blockPos2.getY() + i + 1 <= 256) {
-			for (int n = 0; n <= i + 1; n++) {
-				int o = branchedTreeFeatureConfig.foliagePlacer.method_23447(j, i, k, n);
+		BlockPos blockPos2;
+		if (!branchedTreeFeatureConfig.field_21593) {
+			int l = modifiableTestableWorld.getTopPosition(Heightmap.Type.OCEAN_FLOOR, blockPos).getY();
+			int m = modifiableTestableWorld.getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos).getY();
+			blockPos2 = new BlockPos(blockPos.getX(), l, blockPos.getZ());
+			if (m - l > branchedTreeFeatureConfig.field_21268) {
+				return Optional.empty();
+			}
+		} else {
+			blockPos2 = blockPos;
+		}
+
+		if (blockPos2.getY() >= 1 && blockPos2.getY() + i + 1 <= 256) {
+			for (int l = 0; l <= i + 1; l++) {
+				int m = branchedTreeFeatureConfig.foliagePlacer.method_23447(j, i, k, l);
 				BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-				for (int p = -o; p <= o; p++) {
-					int q = -o;
+				for (int n = -m; n <= m; n++) {
+					int o = -m;
 
-					while (q <= o) {
-						if (n + blockPos2.getY() >= 0 && n + blockPos2.getY() < 256) {
-							mutable.set(p + blockPos2.getX(), n + blockPos2.getY(), q + blockPos2.getZ());
+					while (o <= m) {
+						if (l + blockPos2.getY() >= 0 && l + blockPos2.getY() < 256) {
+							mutable.set(n + blockPos2.getX(), l + blockPos2.getY(), o + blockPos2.getZ());
 							if (canTreeReplace(modifiableTestableWorld, mutable) && (branchedTreeFeatureConfig.field_21269 || !isLeaves(modifiableTestableWorld, mutable))) {
-								q++;
+								o++;
 								continue;
 							}
 

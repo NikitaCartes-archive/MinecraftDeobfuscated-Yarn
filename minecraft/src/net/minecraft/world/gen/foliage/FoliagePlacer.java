@@ -70,7 +70,7 @@ public abstract class FoliagePlacer implements DynamicSerializable {
 			|| AbstractTreeFeature.isReplaceablePlant(modifiableTestableWorld, blockPos)
 			|| AbstractTreeFeature.isWater(modifiableTestableWorld, blockPos)) {
 			modifiableTestableWorld.setBlockState(blockPos, branchedTreeFeatureConfig.leavesProvider.getBlockState(random, blockPos), 19);
-			set.add(blockPos);
+			set.add(blockPos.toImmutable());
 		}
 	}
 

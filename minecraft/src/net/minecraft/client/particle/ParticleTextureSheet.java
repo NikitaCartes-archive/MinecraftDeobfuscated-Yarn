@@ -15,7 +15,8 @@ public interface ParticleTextureSheet {
 	ParticleTextureSheet TERRAIN_SHEET = new ParticleTextureSheet() {
 		@Override
 		public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
-			RenderSystem.disableBlend();
+			RenderSystem.enableBlend();
+			RenderSystem.defaultBlendFunc();
 			RenderSystem.depthMask(true);
 			textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 			bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);

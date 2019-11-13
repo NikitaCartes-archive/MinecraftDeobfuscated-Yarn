@@ -91,7 +91,7 @@ public class InventoryChangedCriterion extends AbstractCriterion<InventoryChange
 				JsonArray jsonArray = new JsonArray();
 
 				for (ItemPredicate itemPredicate : this.items) {
-					jsonArray.add(itemPredicate.serialize());
+					jsonArray.add(itemPredicate.toJson());
 				}
 
 				jsonObject.add("items", jsonArray);

@@ -20,7 +20,7 @@ public class VillagerTradeCriterion extends AbstractCriterion<VillagerTradeCrite
 
 	public VillagerTradeCriterion.Conditions method_9148(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		EntityPredicate entityPredicate = EntityPredicate.fromJson(jsonObject.get("villager"));
-		ItemPredicate itemPredicate = ItemPredicate.deserialize(jsonObject.get("item"));
+		ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
 		return new VillagerTradeCriterion.Conditions(entityPredicate, itemPredicate);
 	}
 
@@ -49,7 +49,7 @@ public class VillagerTradeCriterion extends AbstractCriterion<VillagerTradeCrite
 		@Override
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("item", this.item.serialize());
+			jsonObject.add("item", this.item.toJson());
 			jsonObject.add("villager", this.villager.serialize());
 			return jsonObject;
 		}

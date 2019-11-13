@@ -24,6 +24,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.RunArgs;
 import net.minecraft.client.WindowSettings;
+import net.minecraft.client.util.GlException;
 import net.minecraft.client.util.Session;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.integrated.IntegratedServer;
@@ -78,7 +79,7 @@ public class Main {
 		if (string != null) {
 			try {
 				proxy = new Proxy(Type.SOCKS, new InetSocketAddress(string, getOption(optionSet, optionSpec7)));
-			} catch (Exception var66) {
+			} catch (Exception var68) {
 			}
 		}
 
@@ -140,8 +141,11 @@ public class Main {
 			RenderSystem.beginInitialization();
 			minecraftClient = new MinecraftClient(runArgs);
 			RenderSystem.finishInitialization();
-		} catch (Throwable var65) {
-			CrashReport crashReport = CrashReport.create(var65, "Initializing game");
+		} catch (GlException var66) {
+			LOGGER.warn("Failed to create window: ", (Throwable)var66);
+			return;
+		} catch (Throwable var67) {
+			CrashReport crashReport = CrashReport.create(var67, "Initializing game");
 			crashReport.addElement("Initialization");
 			MinecraftClient.addSystemDetailsToCrashReport(null, runArgs.game.version, null, crashReport);
 			MinecraftClient.printCrashReport(crashReport);
@@ -170,8 +174,8 @@ public class Main {
 			try {
 				RenderSystem.initGameThread(false);
 				minecraftClient.run();
-			} catch (Throwable var64) {
-				LOGGER.error("Unhandled game exception", var64);
+			} catch (Throwable var65) {
+				LOGGER.error("Unhandled game exception", var65);
 			}
 		}
 
@@ -180,8 +184,8 @@ public class Main {
 			if (thread2 != null) {
 				thread2.join();
 			}
-		} catch (InterruptedException var62) {
-			LOGGER.error("Exception during client thread shutdown", (Throwable)var62);
+		} catch (InterruptedException var63) {
+			LOGGER.error("Exception during client thread shutdown", (Throwable)var63);
 		} finally {
 			minecraftClient.stop();
 		}

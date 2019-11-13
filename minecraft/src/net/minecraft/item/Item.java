@@ -143,7 +143,7 @@ public class Item implements ItemConvertible {
 			ItemStack itemStack = user.getStackInHand(hand);
 			if (user.canConsume(this.getFoodComponent().isAlwaysEdible())) {
 				user.setCurrentHand(hand);
-				return TypedActionResult.success(itemStack);
+				return TypedActionResult.consume(itemStack);
 			} else {
 				return TypedActionResult.fail(itemStack);
 			}

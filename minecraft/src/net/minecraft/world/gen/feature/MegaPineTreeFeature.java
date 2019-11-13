@@ -44,7 +44,7 @@ public class MegaPineTreeFeature extends MegaTreeFeature<MegaTreeFeatureConfig> 
 		BlockBox blockBox,
 		MegaTreeFeatureConfig megaTreeFeatureConfig
 	) {
-		int m = random.nextInt(5) + megaTreeFeatureConfig.baseHeight;
+		int m = random.nextInt(5) + megaTreeFeatureConfig.field_21591;
 		int n = 0;
 
 		for (int o = k - m; o <= k; o++) {

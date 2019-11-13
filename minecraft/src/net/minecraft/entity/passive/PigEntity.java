@@ -134,7 +134,9 @@ public class PigEntity extends AnimalEntity {
 
 	@Override
 	public boolean interactMob(PlayerEntity player, Hand hand) {
-		if (!super.interactMob(player, hand)) {
+		if (super.interactMob(player, hand)) {
+			return true;
+		} else {
 			ItemStack itemStack = player.getStackInHand(hand);
 			if (itemStack.getItem() == Items.NAME_TAG) {
 				itemStack.useOnEntity(player, this, hand);
@@ -145,14 +147,9 @@ public class PigEntity extends AnimalEntity {
 				}
 
 				return true;
-			} else if (itemStack.getItem() == Items.SADDLE) {
-				itemStack.useOnEntity(player, this, hand);
-				return true;
 			} else {
-				return false;
+				return itemStack.getItem() == Items.SADDLE && itemStack.useOnEntity(player, this, hand);
 			}
-		} else {
-			return true;
 		}
 	}
 

@@ -29,8 +29,7 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 		Option.FULLSCREEN,
 		Option.PARTICLES,
 		Option.MIPMAP_LEVELS,
-		Option.ENTITY_SHADOWS,
-		Option.BIOME_BLEND_RADIUS
+		Option.ENTITY_SHADOWS
 	};
 	private int mipmapLevels;
 
@@ -43,6 +42,7 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 		this.mipmapLevels = this.field_21336.mipmapLevels;
 		this.list = new ButtonListWidget(this.minecraft, this.width, this.height, 32, this.height - 32, 25);
 		this.list.addSingleOptionEntry(new FullScreenOption(this.minecraft.getWindow()));
+		this.list.addSingleOptionEntry(Option.BIOME_BLEND_RADIUS);
 		this.list.addAll(OPTIONS);
 		this.children.add(this.list);
 		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, I18n.translate("gui.done"), button -> {

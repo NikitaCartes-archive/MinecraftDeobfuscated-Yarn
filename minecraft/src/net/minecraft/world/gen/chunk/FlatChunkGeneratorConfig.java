@@ -400,8 +400,17 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 			} else {
 				flatChunkGeneratorConfig.getLayers().addAll(list);
 				flatChunkGeneratorConfig.updateLayerBlocks();
-				Biome biome = iterator.hasNext() ? Registry.BIOME.get(new Identifier((String)iterator.next())) : null;
-				flatChunkGeneratorConfig.setBiome(biome == null ? Biomes.PLAINS : biome);
+				Biome biome = Biomes.PLAINS;
+				if (iterator.hasNext()) {
+					try {
+						Identifier identifier = new Identifier((String)iterator.next());
+						biome = Registry.BIOME.get(identifier);
+					} catch (Exception var17) {
+						LOGGER.error("Error while parsing flat world string => {}", var17.getMessage());
+					}
+				}
+
+				flatChunkGeneratorConfig.setBiome(biome);
 				if (iterator.hasNext()) {
 					String[] strings = ((String)iterator.next()).toLowerCase(Locale.ROOT).split(",");
 

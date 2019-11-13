@@ -18,7 +18,7 @@ public class ItemDurabilityChangedCriterion extends AbstractCriterion<ItemDurabi
 	}
 
 	public ItemDurabilityChangedCriterion.Conditions method_8962(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-		ItemPredicate itemPredicate = ItemPredicate.deserialize(jsonObject.get("item"));
+		ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
 		NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("durability"));
 		NumberRange.IntRange intRange2 = NumberRange.IntRange.fromJson(jsonObject.get("delta"));
 		return new ItemDurabilityChangedCriterion.Conditions(itemPredicate, intRange, intRange2);
@@ -55,7 +55,7 @@ public class ItemDurabilityChangedCriterion extends AbstractCriterion<ItemDurabi
 		@Override
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("item", this.item.serialize());
+			jsonObject.add("item", this.item.toJson());
 			jsonObject.add("durability", this.durability.toJson());
 			jsonObject.add("delta", this.delta.toJson());
 			return jsonObject;

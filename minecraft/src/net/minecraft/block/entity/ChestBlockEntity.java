@@ -1,7 +1,6 @@
 package net.minecraft.block.entity;
 
 import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.fabricmc.api.EnvironmentInterface;
 import net.fabricmc.api.EnvironmentInterfaces;
 import net.minecraft.block.Block;
@@ -225,7 +224,6 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 		this.inventory = list;
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public float getAnimationProgress(float f) {
 		return MathHelper.lerp(f, this.lastAnimationAngle, this.animationAngle);

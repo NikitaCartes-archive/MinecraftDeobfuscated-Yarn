@@ -39,11 +39,11 @@ public class MatchToolLootCondition implements LootCondition {
 		}
 
 		public void method_948(JsonObject jsonObject, MatchToolLootCondition matchToolLootCondition, JsonSerializationContext jsonSerializationContext) {
-			jsonObject.add("predicate", matchToolLootCondition.predicate.serialize());
+			jsonObject.add("predicate", matchToolLootCondition.predicate.toJson());
 		}
 
 		public MatchToolLootCondition method_949(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-			ItemPredicate itemPredicate = ItemPredicate.deserialize(jsonObject.get("predicate"));
+			ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("predicate"));
 			return new MatchToolLootCondition(itemPredicate);
 		}
 	}
