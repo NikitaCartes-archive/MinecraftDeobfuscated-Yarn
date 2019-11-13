@@ -21,7 +21,7 @@ public class ConsumeItemCriterion extends AbstractCriterion<ConsumeItemCriterion
 	}
 
 	public ConsumeItemCriterion.Conditions method_8820(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-		return new ConsumeItemCriterion.Conditions(ItemPredicate.deserialize(jsonObject.get("item")));
+		return new ConsumeItemCriterion.Conditions(ItemPredicate.fromJson(jsonObject.get("item")));
 	}
 
 	public void trigger(ServerPlayerEntity player, ItemStack stack) {
@@ -62,7 +62,7 @@ public class ConsumeItemCriterion extends AbstractCriterion<ConsumeItemCriterion
 		@Override
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("item", this.item.serialize());
+			jsonObject.add("item", this.item.toJson());
 			return jsonObject;
 		}
 	}

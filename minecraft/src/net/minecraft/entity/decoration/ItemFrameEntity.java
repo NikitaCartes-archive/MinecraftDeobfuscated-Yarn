@@ -314,9 +314,11 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	@Override
 	public boolean interact(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
+		boolean bl = !this.getHeldItemStack().isEmpty();
+		boolean bl2 = !itemStack.isEmpty();
 		if (!this.world.isClient) {
-			if (this.getHeldItemStack().isEmpty()) {
-				if (!itemStack.isEmpty()) {
+			if (!bl) {
+				if (bl2) {
 					this.setHeldItemStack(itemStack);
 					if (!player.abilities.creativeMode) {
 						itemStack.decrement(1);
@@ -326,9 +328,11 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 				this.playSound(SoundEvents.ENTITY_ITEM_FRAME_ROTATE_ITEM, 1.0F, 1.0F);
 				this.setRotation(this.getRotation() + 1);
 			}
-		}
 
-		return true;
+			return true;
+		} else {
+			return bl || bl2;
+		}
 	}
 
 	public int getComparatorPower() {

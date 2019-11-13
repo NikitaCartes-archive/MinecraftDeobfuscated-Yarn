@@ -15,7 +15,7 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.WorldRenderer;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ProjectileUtil;
@@ -170,9 +170,8 @@ public class DebugRenderer {
 			RenderSystem.translatef((float)(x - d), (float)(y - e) + 0.07F, (float)(z - f));
 			RenderSystem.normal3f(0.0F, 1.0F, 0.0F);
 			RenderSystem.scalef(size, -size, size);
-			EntityRenderDispatcher entityRenderDispatcher = minecraftClient.getEntityRenderManager();
-			RenderSystem.rotatef(-entityRenderDispatcher.cameraYaw, 0.0F, 1.0F, 0.0F);
-			RenderSystem.rotatef(-entityRenderDispatcher.cameraPitch, 1.0F, 0.0F, 0.0F);
+			RenderSystem.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
+			RenderSystem.multMatrix(new Matrix4f(camera.method_23767()));
 			RenderSystem.enableTexture();
 			if (visibleThroughObjects) {
 				RenderSystem.disableDepthTest();

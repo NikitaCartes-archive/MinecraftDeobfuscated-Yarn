@@ -17,7 +17,7 @@ public class FilledBucketCriterion extends AbstractCriterion<FilledBucketCriteri
 	}
 
 	public FilledBucketCriterion.Conditions method_8931(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-		ItemPredicate itemPredicate = ItemPredicate.deserialize(jsonObject.get("item"));
+		ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
 		return new FilledBucketCriterion.Conditions(itemPredicate);
 	}
 
@@ -44,7 +44,7 @@ public class FilledBucketCriterion extends AbstractCriterion<FilledBucketCriteri
 		@Override
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("item", this.item.serialize());
+			jsonObject.add("item", this.item.toJson());
 			return jsonObject;
 		}
 	}

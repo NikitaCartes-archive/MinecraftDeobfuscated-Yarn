@@ -11,6 +11,7 @@ import net.minecraft.advancement.criterion.LocationArrivalCriterion;
 import net.minecraft.advancement.criterion.OnKilledCriterion;
 import net.minecraft.advancement.criterion.PlayerHurtEntityCriterion;
 import net.minecraft.advancement.criterion.ShotCrossbowCriterion;
+import net.minecraft.advancement.criterion.SlideDownBlockCriterion;
 import net.minecraft.advancement.criterion.SummonedEntityCriterion;
 import net.minecraft.advancement.criterion.UsedTotemCriterion;
 import net.minecraft.advancement.criterion.VillagerTradeCriterion;
@@ -391,6 +392,20 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.rewards(AdvancementRewards.Builder.experience(100))
 			.criterion("hero_of_the_village", LocationArrivalCriterion.Conditions.createHeroOfTheVillage())
 			.build(consumer, "adventure/hero_of_the_village");
+		Advancement advancement19 = Advancement.Task.create()
+			.parent(advancement)
+			.display(
+				Blocks.HONEY_BLOCK.asItem(),
+				new TranslatableText("advancements.adventure.honey_block_slide.title"),
+				new TranslatableText("advancements.adventure.honey_block_slide.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.criterion("honey_block_slide", SlideDownBlockCriterion.Conditions.create(Blocks.HONEY_BLOCK))
+			.build(consumer, "adventure/honey_block_slide");
 	}
 
 	private Advancement.Task method_10336(Advancement.Task task) {

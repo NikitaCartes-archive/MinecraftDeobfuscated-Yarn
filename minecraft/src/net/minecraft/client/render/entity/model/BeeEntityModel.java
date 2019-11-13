@@ -74,7 +74,7 @@ public class BeeEntityModel<T extends BeeEntity> extends AnimalModel<T> {
 
 	public void method_22111(T beeEntity, float f, float g, float h) {
 		super.animateModel(beeEntity, f, g, h);
-		this.bodyPitch = beeEntity.isBaby() ? 0.0F : beeEntity.getBodyPitch(h);
+		this.bodyPitch = beeEntity.getBodyPitch(h);
 		this.stinger.visible = !beeEntity.hasStung();
 	}
 

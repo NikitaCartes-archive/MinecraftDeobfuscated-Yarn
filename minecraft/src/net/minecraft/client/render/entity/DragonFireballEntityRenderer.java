@@ -26,9 +26,8 @@ public class DragonFireballEntityRenderer extends EntityRenderer<DragonFireballE
 	) {
 		matrixStack.push();
 		matrixStack.scale(2.0F, 2.0F, 2.0F);
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F - this.renderManager.cameraYaw));
-		float h = (float)(this.renderManager.gameOptions.perspective == 2 ? -1 : 1) * -this.renderManager.cameraPitch;
-		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(h));
+		matrixStack.multiply(this.renderManager.camera.method_23767());
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F));
 		MatrixStack.Entry entry = matrixStack.peek();
 		Matrix4f matrix4f = entry.getModel();
 		Matrix3f matrix3f = entry.getNormal();

@@ -33,6 +33,16 @@ public interface VertexConsumer {
 
 	void next();
 
+	default void method_23919(float f, float g, float h, float i, float j, float k, float l, float m, float n, int o, int p, float q, float r, float s) {
+		this.vertex((double)f, (double)g, (double)h);
+		this.color(i, j, k, l);
+		this.texture(m, n);
+		this.overlay(o);
+		this.light(p);
+		this.normal(q, r, s);
+		this.next();
+	}
+
 	default VertexConsumer color(float red, float green, float blue, float alpha) {
 		return this.color((int)(red * 255.0F), (int)(green * 255.0F), (int)(blue * 255.0F), (int)(alpha * 255.0F));
 	}
@@ -68,32 +78,28 @@ public interface VertexConsumer {
 				float m = byteBuffer.getFloat(0);
 				float n = byteBuffer.getFloat(4);
 				float o = byteBuffer.getFloat(8);
-				byte b;
-				byte c;
-				byte d;
+				float s;
+				float t;
+				float u;
 				if (bl) {
-					int p = byteBuffer.get(12) & 255;
-					int q = byteBuffer.get(13) & 255;
-					int r = byteBuffer.get(14) & 255;
-					b = (byte)((int)((float)p * fs[l] * f));
-					c = (byte)((int)((float)q * fs[l] * g));
-					d = (byte)((int)((float)r * fs[l] * h));
+					float p = (float)(byteBuffer.get(12) & 255) / 255.0F;
+					float q = (float)(byteBuffer.get(13) & 255) / 255.0F;
+					float r = (float)(byteBuffer.get(14) & 255) / 255.0F;
+					s = p * fs[l] * f;
+					t = q * fs[l] * g;
+					u = r * fs[l] * h;
 				} else {
-					b = (byte)((int)(255.0F * fs[l] * f));
-					c = (byte)((int)(255.0F * fs[l] * g));
-					d = (byte)((int)(255.0F * fs[l] * h));
+					s = fs[l] * f;
+					t = fs[l] * g;
+					u = fs[l] * h;
 				}
 
-				int p = is[l];
-				float s = byteBuffer.getFloat(16);
-				float t = byteBuffer.getFloat(20);
-				this.vertex(matrix4f, m, n, o);
-				this.color(b, c, d, 255);
-				this.texture(s, t);
-				this.overlay(i);
-				this.light(p);
-				this.normal(vector3f.getX(), vector3f.getY(), vector3f.getZ());
-				this.next();
+				int v = is[l];
+				float q = byteBuffer.getFloat(16);
+				float r = byteBuffer.getFloat(20);
+				Vector4f vector4f = new Vector4f(m, n, o, 1.0F);
+				vector4f.multiply(matrix4f);
+				this.method_23919(vector4f.getX(), vector4f.getY(), vector4f.getZ(), s, t, u, 1.0F, q, r, i, v, vector3f.getX(), vector3f.getY(), vector3f.getZ());
 			}
 		}
 	}

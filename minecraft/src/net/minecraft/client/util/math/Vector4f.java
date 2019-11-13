@@ -129,4 +129,8 @@ public class Vector4f {
 		this.z /= this.w;
 		this.w = 1.0F;
 	}
+
+	public String toString() {
+		return "[" + this.x + ", " + this.y + ", " + this.z + ", " + this.w + "]";
+	}
 }

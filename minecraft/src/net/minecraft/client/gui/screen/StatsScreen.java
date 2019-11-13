@@ -398,7 +398,10 @@ public class StatsScreen extends Screen implements StatsListener {
 				int j = y - 12;
 				int k = StatsScreen.this.font.getStringWidth(string);
 				this.fillGradient(i - 3, j - 3, i + k + 3, j + 8 + 3, -1073741824, -1073741824);
+				RenderSystem.pushMatrix();
+				RenderSystem.translatef(0.0F, 0.0F, 400.0F);
 				StatsScreen.this.font.drawWithShadow(string, (float)i, (float)j, -1);
+				RenderSystem.popMatrix();
 			}
 		}
 

@@ -274,7 +274,7 @@ public abstract class PlayerEntity extends LivingEntity {
 				this.resetLastAttackedTicks();
 			}
 
-			this.selectedItem = itemStack.isEmpty() ? ItemStack.EMPTY : itemStack.copy();
+			this.selectedItem = itemStack.copy();
 		}
 
 		this.updateTurtleHelmet();
@@ -673,7 +673,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			if (bl) {
 				float f = this.random.nextFloat() * 0.5F;
 				float g = this.random.nextFloat() * (float) (Math.PI * 2);
-				this.setVelocity((double)(-MathHelper.sin(g) * f), 0.2F, (double)(MathHelper.cos(g) * f));
+				itemEntity.setVelocity((double)(-MathHelper.sin(g) * f), 0.2F, (double)(MathHelper.cos(g) * f));
 			} else {
 				float f = 0.3F;
 				float g = MathHelper.sin(this.pitch * (float) (Math.PI / 180.0));
@@ -959,7 +959,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			return ActionResult.PASS;
 		} else {
 			ItemStack itemStack = this.getStackInHand(hand);
-			ItemStack itemStack2 = itemStack.isEmpty() ? ItemStack.EMPTY : itemStack.copy();
+			ItemStack itemStack2 = itemStack.copy();
 			if (entity.interact(this, hand)) {
 				if (this.abilities.creativeMode && itemStack == this.getStackInHand(hand) && itemStack.getCount() < itemStack2.getCount()) {
 					itemStack.setCount(itemStack2.getCount());
@@ -1700,7 +1700,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	public boolean canConsume(boolean ignoreHunger) {
-		return !this.abilities.invulnerable && (ignoreHunger || this.hungerManager.isNotFull());
+		return this.abilities.invulnerable || ignoreHunger || this.hungerManager.isNotFull();
 	}
 
 	public boolean canFoodHeal() {

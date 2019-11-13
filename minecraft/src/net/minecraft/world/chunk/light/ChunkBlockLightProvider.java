@@ -1,6 +1,5 @@
 package net.minecraft.world.chunk.light;
 
-import java.util.concurrent.atomic.AtomicInteger;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -11,6 +10,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.LightType;
 import net.minecraft.world.chunk.ChunkNibbleArray;
 import net.minecraft.world.chunk.ChunkProvider;
+import org.apache.commons.lang3.mutable.MutableInt;
 
 public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLightStorage.Data, BlockLightStorage> {
 	private static final Direction[] DIRECTIONS = Direction.values();
@@ -44,15 +44,15 @@ public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLight
 			if (direction == null) {
 				return 15;
 			} else {
-				AtomicInteger atomicInteger = new AtomicInteger();
-				BlockState blockState = this.getStateForLighting(targetId, atomicInteger);
-				if (atomicInteger.get() >= 15) {
+				MutableInt mutableInt = new MutableInt();
+				BlockState blockState = this.getStateForLighting(targetId, mutableInt);
+				if (mutableInt.getValue() >= 15) {
 					return 15;
 				} else {
 					BlockState blockState2 = this.getStateForLighting(sourceId, null);
 					VoxelShape voxelShape = this.getOpaqueShape(blockState2, sourceId, direction);
 					VoxelShape voxelShape2 = this.getOpaqueShape(blockState, targetId, direction.getOpposite());
-					return VoxelShapes.unionCoversFullCube(voxelShape, voxelShape2) ? 15 : level + Math.max(1, atomicInteger.get());
+					return VoxelShapes.unionCoversFullCube(voxelShape, voxelShape2) ? 15 : level + Math.max(1, mutableInt.getValue());
 				}
 			}
 		}

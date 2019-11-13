@@ -1,10 +1,14 @@
 package net.minecraft.block;
 
+import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import java.util.List;
 import javax.annotation.Nullable;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
+import net.minecraft.client.block.ChestAnimationProgress;
 import net.minecraft.container.Container;
 import net.minecraft.container.GenericContainer;
 import net.minecraft.container.NameableContainerProvider;
@@ -90,6 +94,15 @@ public class ChestBlock extends BlockWithEntity implements Waterloggable {
 
 		public NameableContainerProvider method_17462(ChestBlockEntity chestBlockEntity) {
 			return chestBlockEntity;
+		}
+	};
+	private static final ChestBlock.PropertyRetriever<Float2FloatFunction> field_21581 = new ChestBlock.PropertyRetriever<Float2FloatFunction>() {
+		public Float2FloatFunction method_23899(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
+			return f -> Math.max(chestBlockEntity.getAnimationProgress(f), chestBlockEntity2.getAnimationProgress(f));
+		}
+
+		public Float2FloatFunction method_23898(ChestBlockEntity chestBlockEntity) {
+			return chestBlockEntity::getAnimationProgress;
 		}
 	};
 
@@ -274,6 +287,12 @@ public class ChestBlock extends BlockWithEntity implements Waterloggable {
 	@Override
 	public NameableContainerProvider createContainerProvider(BlockState state, World world, BlockPos pos) {
 		return retrieve(state, world, pos, false, NAME_RETRIEVER);
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static float method_23897(ChestAnimationProgress chestAnimationProgress, BlockState blockState, World world, BlockPos blockPos, float f) {
+		Float2FloatFunction float2FloatFunction = retrieve(blockState, world, blockPos, true, field_21581);
+		return float2FloatFunction == null ? chestAnimationProgress.getAnimationProgress(f) : float2FloatFunction.get(f);
 	}
 
 	@Override

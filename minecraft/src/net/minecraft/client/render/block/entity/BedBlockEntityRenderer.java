@@ -13,7 +13,6 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.DyeColor;
@@ -56,7 +55,7 @@ public class BedBlockEntityRenderer extends BlockEntityRenderer<BedBlockEntity> 
 
 	public void method_3557(BedBlockEntity bedBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
 		Identifier identifier = TEXTURES[bedBlockEntity.getColor().getId()];
-		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.method_23946());
 		if (bedBlockEntity.hasWorld()) {
 			BlockState blockState = bedBlockEntity.getCachedState();
 			this.method_3558(matrixStack, vertexConsumer, blockState.get(BedBlock.PART) == BedPart.HEAD, blockState.get(BedBlock.FACING), identifier, i, j, false);

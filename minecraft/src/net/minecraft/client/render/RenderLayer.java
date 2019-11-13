@@ -11,6 +11,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.block.entity.EndPortalBlockEntityRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.ModelLoader;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -111,6 +112,12 @@ public class RenderLayer extends RenderPhase {
 		true,
 		RenderLayer.MultiPhaseData.builder().writeMaskState(COLOR_MASK).transparency(LIGHTNING_TRANSPARENCY).shadeModel(SMOOTH_SHADE_MODEL).build(false)
 	);
+	public static final RenderLayer field_21619 = getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+	public static final RenderLayer field_21620 = getEntityCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+	public static final RenderLayer field_21621 = getEntityCutoutNoCull(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+	public static final RenderLayer field_21622 = getEntityTranslucent(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+	public static final RenderLayer field_21623 = getEntityTranslucentCull(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+	public static final RenderLayer field_21624 = getEntityNoOutline(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 	private final VertexFormat vertexFormat;
 	private final int drawMode;
 	private final int expectedBufferSize;
@@ -435,6 +442,30 @@ public class RenderLayer extends RenderPhase {
 				.transparency(TRANSLUCENT_TRANSPARENCY)
 				.build(false)
 		);
+	}
+
+	public static RenderLayer method_23946() {
+		return field_21619;
+	}
+
+	public static RenderLayer method_23947() {
+		return field_21620;
+	}
+
+	public static RenderLayer method_23948() {
+		return field_21621;
+	}
+
+	public static RenderLayer method_23949() {
+		return field_21622;
+	}
+
+	public static RenderLayer method_23950() {
+		return field_21623;
+	}
+
+	public static RenderLayer method_23951() {
+		return field_21624;
 	}
 
 	public RenderLayer(

@@ -1,6 +1,5 @@
 package net.minecraft.world.chunk.light;
 
-import java.util.concurrent.atomic.AtomicInteger;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
@@ -12,6 +11,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.LightType;
 import net.minecraft.world.chunk.ChunkNibbleArray;
 import net.minecraft.world.chunk.ChunkProvider;
+import org.apache.commons.lang3.mutable.MutableInt;
 
 public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStorage.Data, SkyLightStorage> {
 	private static final Direction[] DIRECTIONS = Direction.values();
@@ -37,9 +37,9 @@ public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStor
 			if (level >= 15) {
 				return level;
 			} else {
-				AtomicInteger atomicInteger = new AtomicInteger();
-				BlockState blockState = this.getStateForLighting(targetId, atomicInteger);
-				if (atomicInteger.get() >= 15) {
+				MutableInt mutableInt = new MutableInt();
+				BlockState blockState = this.getStateForLighting(targetId, mutableInt);
+				if (mutableInt.getValue() >= 15) {
 					return 15;
 				} else {
 					int i = BlockPos.unpackLongX(sourceId);
@@ -85,7 +85,7 @@ public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStor
 					}
 
 					boolean bl2 = sourceId == Long.MAX_VALUE || bl && j > m;
-					return bl2 && level == 0 && atomicInteger.get() == 0 ? 0 : level + Math.max(1, atomicInteger.get());
+					return bl2 && level == 0 && mutableInt.getValue() == 0 ? 0 : level + Math.max(1, mutableInt.getValue());
 				}
 			}
 		}

@@ -5,6 +5,8 @@ import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementFrame;
 import net.minecraft.advancement.AdvancementRewards;
 import net.minecraft.advancement.CriteriaMerger;
+import net.minecraft.advancement.criterion.BeeNestDestroyedCriterion;
+import net.minecraft.advancement.criterion.BlockUsedCriterion;
 import net.minecraft.advancement.criterion.BredAnimalsCriterion;
 import net.minecraft.advancement.criterion.ConsumeItemCriterion;
 import net.minecraft.advancement.criterion.FilledBucketCriterion;
@@ -13,13 +15,17 @@ import net.minecraft.advancement.criterion.ItemDurabilityChangedCriterion;
 import net.minecraft.advancement.criterion.PlacedBlockCriterion;
 import net.minecraft.advancement.criterion.TameAnimalCriterion;
 import net.minecraft.block.Blocks;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
+import net.minecraft.predicate.BlockPredicate;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.item.EnchantmentPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -236,6 +242,44 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.rewards(AdvancementRewards.Builder.experience(50))
 			.build(consumer, "husbandry/complete_catalogue");
+		Advancement advancement11 = Advancement.Task.create()
+			.parent(advancement)
+			.criterion(
+				"safely_harvest_honey",
+				BlockUsedCriterion.Conditions.create(BlockPredicate.Builder.create().tag(BlockTags.BEEHIVES), ItemPredicate.Builder.create().item(Items.GLASS_BOTTLE))
+			)
+			.display(
+				Items.HONEY_BOTTLE,
+				new TranslatableText("advancements.husbandry.safely_harvest_honey.title"),
+				new TranslatableText("advancements.husbandry.safely_harvest_honey.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.build(consumer, "husbandry/safely_harvest_honey");
+		Advancement advancement12 = Advancement.Task.create()
+			.parent(advancement)
+			.criterion(
+				"silk_touch_nest",
+				BeeNestDestroyedCriterion.Conditions.create(
+					Blocks.BEE_NEST,
+					ItemPredicate.Builder.create().enchantment(new EnchantmentPredicate(Enchantments.SILK_TOUCH, NumberRange.IntRange.atLeast(1))),
+					NumberRange.IntRange.exactly(3)
+				)
+			)
+			.display(
+				Blocks.BEE_NEST,
+				new TranslatableText("advancements.husbandry.silk_touch_nest.title"),
+				new TranslatableText("advancements.husbandry.silk_touch_nest.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.build(consumer, "husbandry/silk_touch_nest");
 	}
 
 	private Advancement.Task method_10341(Advancement.Task task) {

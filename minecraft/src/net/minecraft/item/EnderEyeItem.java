@@ -88,11 +88,12 @@ public class EnderEyeItem extends Item {
 					}
 
 					user.incrementStat(Stats.USED.getOrCreateStat(this));
+					user.swingHand(hand, true);
 					return TypedActionResult.success(itemStack);
 				}
 			}
 
-			return TypedActionResult.success(itemStack);
+			return TypedActionResult.consume(itemStack);
 		}
 	}
 }

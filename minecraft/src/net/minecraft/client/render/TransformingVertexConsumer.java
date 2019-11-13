@@ -17,10 +17,6 @@ public class TransformingVertexConsumer extends FixedColorVertexConsumer {
 	private float x;
 	private float y;
 	private float z;
-	private int red;
-	private int green;
-	private int blue;
-	private int alpha;
 	private int u1;
 	private int v1;
 	private int light;
@@ -41,10 +37,6 @@ public class TransformingVertexConsumer extends FixedColorVertexConsumer {
 		this.x = 0.0F;
 		this.y = 0.0F;
 		this.z = 0.0F;
-		this.red = this.fixedRed;
-		this.green = this.fixedGreen;
-		this.blue = this.fixedBlue;
-		this.alpha = this.fixedAlpha;
 		this.u1 = 0;
 		this.v1 = 10;
 		this.light = 15728880;
@@ -67,7 +59,7 @@ public class TransformingVertexConsumer extends FixedColorVertexConsumer {
 		float g = -vector4f.getY();
 		this.vertexConsumer
 			.vertex((double)this.x, (double)this.y, (double)this.z)
-			.color(this.red, this.green, this.blue, this.alpha)
+			.color(1.0F, 1.0F, 1.0F, 1.0F)
 			.texture(f, g)
 			.overlay(this.u1, this.v1)
 			.light(this.light)
@@ -86,15 +78,7 @@ public class TransformingVertexConsumer extends FixedColorVertexConsumer {
 
 	@Override
 	public VertexConsumer color(int red, int green, int blue, int alpha) {
-		if (this.colorFixed) {
-			throw new IllegalStateException();
-		} else {
-			this.red = red;
-			this.green = green;
-			this.blue = blue;
-			this.alpha = alpha;
-			return this;
-		}
+		return this;
 	}
 
 	@Override
