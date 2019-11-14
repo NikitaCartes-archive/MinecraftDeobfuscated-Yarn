@@ -72,10 +72,10 @@ public final class Vector3f {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void method_23849(float f, float g, float h) {
-		this.x *= f;
-		this.y *= g;
-		this.z *= h;
+	public void piecewiseMultiply(float x, float y, float z) {
+		this.x *= x;
+		this.y *= y;
+		this.z *= z;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -99,10 +99,10 @@ public final class Vector3f {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void method_23846(Vector3f vector3f) {
-		this.x = this.x + vector3f.x;
-		this.y = this.y + vector3f.y;
-		this.z = this.z + vector3f.z;
+	public void add(Vector3f vector) {
+		this.x = this.x + vector.x;
+		this.y = this.y + vector.y;
+		this.z = this.z + vector.z;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -145,18 +145,18 @@ public final class Vector3f {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void multiply(Matrix3f matrix3f) {
+	public void multiply(Matrix3f matrix) {
 		float f = this.x;
 		float g = this.y;
 		float h = this.z;
-		this.x = method_23691(0, matrix3f, f, g, h);
-		this.y = method_23691(1, matrix3f, f, g, h);
-		this.z = method_23691(2, matrix3f, f, g, h);
+		this.x = crossMultiplyRow(0, matrix, f, g, h);
+		this.y = crossMultiplyRow(1, matrix, f, g, h);
+		this.z = crossMultiplyRow(2, matrix, f, g, h);
 	}
 
 	@Environment(EnvType.CLIENT)
-	private static float method_23691(int i, Matrix3f matrix3f, float f, float g, float h) {
-		return matrix3f.get(i, 0) * f + matrix3f.get(i, 1) * g + matrix3f.get(i, 2) * h;
+	private static float crossMultiplyRow(int row, Matrix3f matrix, float x, float y, float z) {
+		return matrix.get(row, 0) * x + matrix.get(row, 1) * y + matrix.get(row, 2) * z;
 	}
 
 	public void method_19262(Quaternion quaternion) {
@@ -177,17 +177,17 @@ public final class Vector3f {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Quaternion method_23626(float f) {
-		return new Quaternion(this, f, false);
+	public Quaternion getRadialQuaternion(float angle) {
+		return new Quaternion(this, angle, false);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Quaternion getRotationQuaternion(float f) {
-		return new Quaternion(this, f, true);
+	public Quaternion getDegreesQuaternion(float angle) {
+		return new Quaternion(this, angle, true);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Vector3f method_23850() {
+	public Vector3f copy() {
 		return new Vector3f(this.x, this.y, this.z);
 	}
 

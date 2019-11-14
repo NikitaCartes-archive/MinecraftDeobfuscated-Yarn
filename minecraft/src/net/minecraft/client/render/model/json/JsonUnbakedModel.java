@@ -194,8 +194,8 @@ public class JsonUnbakedModel implements UnbakedModel {
 	}
 
 	@Override
-	public BakedModel bake(ModelLoader loader, Function<Identifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier identifier) {
-		return this.bake(loader, this, textureGetter, rotationContainer, identifier);
+	public BakedModel bake(ModelLoader loader, Function<Identifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
+		return this.bake(loader, this, textureGetter, rotationContainer, modelId);
 	}
 
 	public BakedModel bake(

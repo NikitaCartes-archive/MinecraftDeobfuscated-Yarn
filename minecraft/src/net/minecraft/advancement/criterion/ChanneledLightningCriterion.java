@@ -23,7 +23,7 @@ public class ChanneledLightningCriterion extends AbstractCriterion<ChanneledLigh
 	}
 
 	public void trigger(ServerPlayerEntity player, Collection<? extends Entity> victims) {
-		this.test(player.getAdvancementManager(), conditions -> conditions.matches(player, victims));
+		this.test(player.getAdvancementTracker(), conditions -> conditions.matches(player, victims));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

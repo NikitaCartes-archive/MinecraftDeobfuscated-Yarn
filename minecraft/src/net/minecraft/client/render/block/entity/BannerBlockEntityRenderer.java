@@ -54,18 +54,18 @@ public class BannerBlockEntityRenderer extends BlockEntityRenderer<BannerBlockEn
 				if (blockState.getBlock() instanceof BannerBlock) {
 					matrixStack.translate(0.5, 0.5, 0.5);
 					float h = (float)(-(Integer)blockState.get(BannerBlock.ROTATION) * 360) / 16.0F;
-					matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(h));
+					matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(h));
 					this.verticalBar.visible = true;
 				} else {
 					matrixStack.translate(0.5, -0.16666667F, 0.5);
 					float h = -((Direction)blockState.get(WallBannerBlock.FACING)).asRotation();
-					matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(h));
+					matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(h));
 					matrixStack.translate(0.0, -0.3125, -0.4375);
 					this.verticalBar.visible = false;
 				}
 			}
 
-			Sprite sprite = this.getSprite(ModelLoader.field_20847);
+			Sprite sprite = this.getSprite(ModelLoader.BANNER_BASE);
 			matrixStack.push();
 			matrixStack.scale(0.6666667F, -0.6666667F, -0.6666667F);
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.method_23946());

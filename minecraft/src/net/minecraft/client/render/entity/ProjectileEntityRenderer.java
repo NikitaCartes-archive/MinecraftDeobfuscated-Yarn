@@ -21,8 +21,8 @@ public abstract class ProjectileEntityRenderer<T extends ProjectileEntity> exten
 
 	public void method_3875(T projectileEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(MathHelper.lerp(g, projectileEntity.prevYaw, projectileEntity.yaw) - 90.0F));
-		matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(MathHelper.lerp(g, projectileEntity.prevPitch, projectileEntity.pitch)));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(MathHelper.lerp(g, projectileEntity.prevYaw, projectileEntity.yaw) - 90.0F));
+		matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(MathHelper.lerp(g, projectileEntity.prevPitch, projectileEntity.pitch)));
 		int j = 0;
 		float h = 0.0F;
 		float k = 0.5F;
@@ -36,10 +36,10 @@ public abstract class ProjectileEntityRenderer<T extends ProjectileEntity> exten
 		float s = (float)projectileEntity.shake - g;
 		if (s > 0.0F) {
 			float t = -MathHelper.sin(s * 3.0F) * s;
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(t));
+			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(t));
 		}
 
-		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(45.0F));
+		matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(45.0F));
 		matrixStack.scale(0.05625F, 0.05625F, 0.05625F);
 		matrixStack.translate(-4.0, 0.0, 0.0);
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutout(this.getTexture(projectileEntity)));
@@ -56,7 +56,7 @@ public abstract class ProjectileEntityRenderer<T extends ProjectileEntity> exten
 		this.method_23153(matrix4f, matrix3f, vertexConsumer, -7, -2, -2, 0.0F, 0.3125F, -1, 0, 0, i);
 
 		for (int u = 0; u < 4; u++) {
-			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0F));
+			matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0F));
 			this.method_23153(matrix4f, matrix3f, vertexConsumer, -8, -2, 0, 0.0F, 0.0F, 0, 1, 0, i);
 			this.method_23153(matrix4f, matrix3f, vertexConsumer, 8, -2, 0, 0.5F, 0.0F, 0, 1, 0, i);
 			this.method_23153(matrix4f, matrix3f, vertexConsumer, 8, 2, 0, 0.5F, 0.15625F, 0, 1, 0, i);

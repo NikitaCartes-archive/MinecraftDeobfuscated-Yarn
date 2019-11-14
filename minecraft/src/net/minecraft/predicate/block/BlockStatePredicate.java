@@ -20,7 +20,7 @@ public class BlockStatePredicate implements Predicate<BlockState> {
 	}
 
 	public static BlockStatePredicate forBlock(Block block) {
-		return new BlockStatePredicate(block.getStateFactory());
+		return new BlockStatePredicate(block.getStateManager());
 	}
 
 	public boolean method_11760(@Nullable BlockState blockState) {

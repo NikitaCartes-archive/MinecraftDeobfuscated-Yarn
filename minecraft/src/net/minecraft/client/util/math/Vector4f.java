@@ -22,8 +22,8 @@ public class Vector4f {
 		this.w = w;
 	}
 
-	public Vector4f(Vector3f vector3f) {
-		this(vector3f.getX(), vector3f.getY(), vector3f.getZ(), 1.0F);
+	public Vector4f(Vector3f vector) {
+		this(vector.getX(), vector.getY(), vector.getZ(), 1.0F);
 	}
 
 	public boolean equals(Object o) {
@@ -62,21 +62,21 @@ public class Vector4f {
 		return this.z;
 	}
 
-	public float method_23853() {
+	public float getW() {
 		return this.w;
 	}
 
-	public void multiplyXyz(Vector3f other) {
-		this.x = this.x * other.getX();
-		this.y = this.y * other.getY();
-		this.z = this.z * other.getZ();
+	public void multiplyComponentwise(Vector3f vector) {
+		this.x = this.x * vector.getX();
+		this.y = this.y * vector.getY();
+		this.z = this.z * vector.getZ();
 	}
 
-	public void method_23851(float f, float g, float h, float i) {
-		this.x = f;
-		this.y = g;
-		this.z = h;
-		this.w = i;
+	public void set(float x, float y, float z, float w) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.w = w;
 	}
 
 	public float dotProduct(Vector4f other) {
@@ -112,13 +112,13 @@ public class Vector4f {
 		return matrix.get(row, 0) * x + matrix.get(row, 1) * y + matrix.get(row, 2) * z + matrix.get(row, 3) * w;
 	}
 
-	public void method_23852(Quaternion quaternion) {
-		Quaternion quaternion2 = new Quaternion(quaternion);
-		quaternion2.hamiltonProduct(new Quaternion(this.getX(), this.getY(), this.getZ(), 0.0F));
-		Quaternion quaternion3 = new Quaternion(quaternion);
-		quaternion3.conjugate();
-		quaternion2.hamiltonProduct(quaternion3);
-		this.method_23851(quaternion2.getB(), quaternion2.getC(), quaternion2.getD(), this.method_23853());
+	public void setQuarternion(Quaternion quarternion) {
+		Quaternion quaternion = new Quaternion(quarternion);
+		quaternion.hamiltonProduct(new Quaternion(this.getX(), this.getY(), this.getZ(), 0.0F));
+		Quaternion quaternion2 = new Quaternion(quarternion);
+		quaternion2.conjugate();
+		quaternion.hamiltonProduct(quaternion2);
+		this.set(quaternion.getB(), quaternion.getC(), quaternion.getD(), this.getW());
 	}
 
 	public void normalizeProjectiveCoordinates() {

@@ -48,7 +48,7 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 	protected AbstractButtonBlock(boolean wooden, Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(FACE, WallMountLocation.WALL)
+			this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(FACE, WallMountLocation.WALL)
 		);
 		this.wooden = wooden;
 	}

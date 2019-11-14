@@ -36,7 +36,7 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 	protected StemBlock(GourdBlock gourdBlock, Block.Settings settings) {
 		super(settings);
 		this.gourdBlock = gourdBlock;
-		this.setDefaultState(this.stateFactory.getDefaultState().with(AGE, Integer.valueOf(0)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(AGE, Integer.valueOf(0)));
 	}
 
 	@Override

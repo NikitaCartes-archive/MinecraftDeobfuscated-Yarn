@@ -17,8 +17,8 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> implements ModelWithArms, ModelWithHead {
 	public ModelPart head;
-	public ModelPart headwear;
-	public ModelPart body;
+	public ModelPart helmet;
+	public ModelPart torso;
 	public ModelPart rightArm;
 	public ModelPart leftArm;
 	public ModelPart rightLeg;
@@ -44,12 +44,12 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 		this.head = new ModelPart(this, 0, 0);
 		this.head.addCuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, f);
 		this.head.setPivot(0.0F, 0.0F + g, 0.0F);
-		this.headwear = new ModelPart(this, 32, 0);
-		this.headwear.addCuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, f + 0.5F);
-		this.headwear.setPivot(0.0F, 0.0F + g, 0.0F);
-		this.body = new ModelPart(this, 16, 16);
-		this.body.addCuboid(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, f);
-		this.body.setPivot(0.0F, 0.0F + g, 0.0F);
+		this.helmet = new ModelPart(this, 32, 0);
+		this.helmet.addCuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, f + 0.5F);
+		this.helmet.setPivot(0.0F, 0.0F + g, 0.0F);
+		this.torso = new ModelPart(this, 16, 16);
+		this.torso.addCuboid(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, f);
+		this.torso.setPivot(0.0F, 0.0F + g, 0.0F);
 		this.rightArm = new ModelPart(this, 40, 16);
 		this.rightArm.addCuboid(-3.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, f);
 		this.rightArm.setPivot(-5.0F, 2.0F + g, 0.0F);
@@ -73,7 +73,7 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 
 	@Override
 	protected Iterable<ModelPart> getBodyParts() {
-		return ImmutableList.<ModelPart>of(this.body, this.rightArm, this.leftArm, this.rightLeg, this.leftLeg, this.headwear);
+		return ImmutableList.<ModelPart>of(this.torso, this.rightArm, this.leftArm, this.rightLeg, this.leftLeg, this.helmet);
 	}
 
 	public void method_17086(T livingEntity, float f, float g, float h) {
@@ -98,7 +98,7 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 			this.head.pitch = j * (float) (Math.PI / 180.0);
 		}
 
-		this.body.yaw = 0.0F;
+		this.torso.yaw = 0.0F;
 		this.rightArm.pivotZ = 0.0F;
 		this.rightArm.pivotX = -5.0F;
 		this.leftArm.pivotZ = 0.0F;
@@ -179,18 +179,18 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 			Arm arm = this.getPreferredArm(livingEntity);
 			ModelPart modelPart = this.getArm(arm);
 			float l = this.handSwingProgress;
-			this.body.yaw = MathHelper.sin(MathHelper.sqrt(l) * (float) (Math.PI * 2)) * 0.2F;
+			this.torso.yaw = MathHelper.sin(MathHelper.sqrt(l) * (float) (Math.PI * 2)) * 0.2F;
 			if (arm == Arm.LEFT) {
-				this.body.yaw *= -1.0F;
+				this.torso.yaw *= -1.0F;
 			}
 
-			this.rightArm.pivotZ = MathHelper.sin(this.body.yaw) * 5.0F;
-			this.rightArm.pivotX = -MathHelper.cos(this.body.yaw) * 5.0F;
-			this.leftArm.pivotZ = -MathHelper.sin(this.body.yaw) * 5.0F;
-			this.leftArm.pivotX = MathHelper.cos(this.body.yaw) * 5.0F;
-			this.rightArm.yaw = this.rightArm.yaw + this.body.yaw;
-			this.leftArm.yaw = this.leftArm.yaw + this.body.yaw;
-			this.leftArm.pitch = this.leftArm.pitch + this.body.yaw;
+			this.rightArm.pivotZ = MathHelper.sin(this.torso.yaw) * 5.0F;
+			this.rightArm.pivotX = -MathHelper.cos(this.torso.yaw) * 5.0F;
+			this.leftArm.pivotZ = -MathHelper.sin(this.torso.yaw) * 5.0F;
+			this.leftArm.pivotX = MathHelper.cos(this.torso.yaw) * 5.0F;
+			this.rightArm.yaw = this.rightArm.yaw + this.torso.yaw;
+			this.leftArm.yaw = this.leftArm.yaw + this.torso.yaw;
+			this.leftArm.pitch = this.leftArm.pitch + this.torso.yaw;
 			l = 1.0F - this.handSwingProgress;
 			l *= l;
 			l *= l;
@@ -198,12 +198,12 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 			float m = MathHelper.sin(l * (float) Math.PI);
 			float n = MathHelper.sin(this.handSwingProgress * (float) Math.PI) * -(this.head.pitch - 0.7F) * 0.75F;
 			modelPart.pitch = (float)((double)modelPart.pitch - ((double)m * 1.2 + (double)n));
-			modelPart.yaw = modelPart.yaw + this.body.yaw * 2.0F;
+			modelPart.yaw = modelPart.yaw + this.torso.yaw * 2.0F;
 			modelPart.roll = modelPart.roll + MathHelper.sin(this.handSwingProgress * (float) Math.PI) * -0.4F;
 		}
 
 		if (this.isSneaking) {
-			this.body.pitch = 0.5F;
+			this.torso.pitch = 0.5F;
 			this.rightArm.pitch += 0.4F;
 			this.leftArm.pitch += 0.4F;
 			this.rightLeg.pivotZ = 4.0F;
@@ -211,17 +211,17 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 			this.rightLeg.pivotY = 12.2F;
 			this.leftLeg.pivotY = 12.2F;
 			this.head.pivotY = 4.2F;
-			this.body.pivotY = 3.2F;
+			this.torso.pivotY = 3.2F;
 			this.leftArm.pivotY = 5.2F;
 			this.rightArm.pivotY = 5.2F;
 		} else {
-			this.body.pitch = 0.0F;
+			this.torso.pitch = 0.0F;
 			this.rightLeg.pivotZ = 0.1F;
 			this.leftLeg.pivotZ = 0.1F;
 			this.rightLeg.pivotY = 12.0F;
 			this.leftLeg.pivotY = 12.0F;
 			this.head.pivotY = 0.0F;
-			this.body.pivotY = 0.0F;
+			this.torso.pivotY = 0.0F;
 			this.leftArm.pivotY = 2.0F;
 			this.rightArm.pivotY = 2.0F;
 		}
@@ -307,7 +307,7 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 			this.rightLeg.pitch = MathHelper.lerp(this.field_3396, this.rightLeg.pitch, 0.3F * MathHelper.cos(f * 0.33333334F));
 		}
 
-		this.headwear.copyPositionAndRotation(this.head);
+		this.helmet.copyPositionAndRotation(this.head);
 	}
 
 	protected float lerpAngle(float from, float to, float position) {
@@ -336,8 +336,8 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 
 	public void setVisible(boolean visible) {
 		this.head.visible = visible;
-		this.headwear.visible = visible;
-		this.body.visible = visible;
+		this.helmet.visible = visible;
+		this.torso.visible = visible;
 		this.rightArm.visible = visible;
 		this.leftArm.visible = visible;
 		this.rightLeg.visible = visible;

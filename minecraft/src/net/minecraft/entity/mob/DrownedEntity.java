@@ -230,7 +230,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 	public void attack(LivingEntity target, float f) {
 		TridentEntity tridentEntity = new TridentEntity(this.world, this, new ItemStack(Items.TRIDENT));
 		double d = target.getX() - this.getX();
-		double e = target.getHeightAt(0.3333333333333333) - tridentEntity.getY();
+		double e = target.getBodyY(0.3333333333333333) - tridentEntity.getY();
 		double g = target.getZ() - this.getZ();
 		double h = (double)MathHelper.sqrt(d * d + g * g);
 		tridentEntity.setVelocity(d, e + h * 0.2F, g, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));

@@ -129,15 +129,15 @@ public class ModelPart {
 	public void rotate(MatrixStack matrix) {
 		matrix.translate((double)(this.pivotX / 16.0F), (double)(this.pivotY / 16.0F), (double)(this.pivotZ / 16.0F));
 		if (this.roll != 0.0F) {
-			matrix.multiply(Vector3f.POSITIVE_Z.method_23626(this.roll));
+			matrix.multiply(Vector3f.POSITIVE_Z.getRadialQuaternion(this.roll));
 		}
 
 		if (this.yaw != 0.0F) {
-			matrix.multiply(Vector3f.POSITIVE_Y.method_23626(this.yaw));
+			matrix.multiply(Vector3f.POSITIVE_Y.getRadialQuaternion(this.yaw));
 		}
 
 		if (this.pitch != 0.0F) {
-			matrix.multiply(Vector3f.POSITIVE_X.method_23626(this.pitch));
+			matrix.multiply(Vector3f.POSITIVE_X.getRadialQuaternion(this.pitch));
 		}
 	}
 
@@ -147,7 +147,7 @@ public class ModelPart {
 
 		for (ModelPart.Cuboid cuboid : this.cuboids) {
 			for (ModelPart.Quad quad : cuboid.sides) {
-				Vector3f vector3f = quad.field_21618.method_23850();
+				Vector3f vector3f = quad.direction.copy();
 				vector3f.multiply(matrix3f);
 				float k = vector3f.getX();
 				float l = vector3f.getY();
@@ -166,8 +166,8 @@ public class ModelPart {
 						r = vertex.u;
 						s = vertex.v;
 					} else {
-						r = sprite.getU((double)(vertex.u * 16.0F));
-						s = sprite.getV((double)(vertex.v * 16.0F));
+						r = sprite.getFrameU((double)(vertex.u * 16.0F));
+						s = sprite.getFrameV((double)(vertex.v * 16.0F));
 					}
 
 					vertexConsumer.method_23919(vector4f.getX(), vector4f.getY(), vector4f.getZ(), f, g, h, 1.0F, r, s, j, i, k, l, m);
@@ -273,9 +273,9 @@ public class ModelPart {
 	@Environment(EnvType.CLIENT)
 	static class Quad {
 		public final ModelPart.Vertex[] vertices;
-		public final Vector3f field_21618;
+		public final Vector3f direction;
 
-		public Quad(ModelPart.Vertex[] vertices, float u1, float v1, float u2, float v2, float squishU, float squishV, boolean bl, Direction direction) {
+		public Quad(ModelPart.Vertex[] vertices, float u1, float v1, float u2, float v2, float squishU, float squishV, boolean flip, Direction direction) {
 			this.vertices = vertices;
 			float f = 0.0F / squishU;
 			float g = 0.0F / squishV;
@@ -283,7 +283,7 @@ public class ModelPart {
 			vertices[1] = vertices[1].remap(u1 / squishU + f, v1 / squishV + g);
 			vertices[2] = vertices[2].remap(u1 / squishU + f, v2 / squishV - g);
 			vertices[3] = vertices[3].remap(u2 / squishU - f, v2 / squishV - g);
-			if (bl) {
+			if (flip) {
 				int i = vertices.length;
 
 				for (int j = 0; j < i / 2; j++) {
@@ -293,9 +293,9 @@ public class ModelPart {
 				}
 			}
 
-			this.field_21618 = direction.method_23955();
-			if (bl) {
-				this.field_21618.method_23849(-1.0F, 1.0F, 1.0F);
+			this.direction = direction.getUnitVector();
+			if (flip) {
+				this.direction.piecewiseMultiply(-1.0F, 1.0F, 1.0F);
 			}
 		}
 	}

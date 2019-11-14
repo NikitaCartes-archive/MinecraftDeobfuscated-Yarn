@@ -145,10 +145,10 @@ public class ItemModelGenerator {
 			for (int l = 0; l < j; l++) {
 				for (int m = 0; m < i; m++) {
 					boolean bl = !this.isPixelTransparent(sprite, k, m, l, i, j);
-					this.method_3476(ItemModelGenerator.Side.UP, list, sprite, k, m, l, i, j, bl);
-					this.method_3476(ItemModelGenerator.Side.DOWN, list, sprite, k, m, l, i, j, bl);
-					this.method_3476(ItemModelGenerator.Side.LEFT, list, sprite, k, m, l, i, j, bl);
-					this.method_3476(ItemModelGenerator.Side.RIGHT, list, sprite, k, m, l, i, j, bl);
+					this.buildCube(ItemModelGenerator.Side.UP, list, sprite, k, m, l, i, j, bl);
+					this.buildCube(ItemModelGenerator.Side.DOWN, list, sprite, k, m, l, i, j, bl);
+					this.buildCube(ItemModelGenerator.Side.LEFT, list, sprite, k, m, l, i, j, bl);
+					this.buildCube(ItemModelGenerator.Side.RIGHT, list, sprite, k, m, l, i, j, bl);
 				}
 			}
 		}
@@ -156,17 +156,17 @@ public class ItemModelGenerator {
 		return list;
 	}
 
-	private void method_3476(ItemModelGenerator.Side side, List<ItemModelGenerator.Frame> list, Sprite sprite, int i, int j, int k, int l, int m, boolean bl) {
-		boolean bl2 = this.isPixelTransparent(sprite, i, j + side.getOffsetX(), k + side.getOffsetY(), l, m) && bl;
+	private void buildCube(ItemModelGenerator.Side side, List<ItemModelGenerator.Frame> cubes, Sprite sprite, int frame, int x, int y, int i, int j, boolean bl) {
+		boolean bl2 = this.isPixelTransparent(sprite, frame, x + side.getOffsetX(), y + side.getOffsetY(), i, j) && bl;
 		if (bl2) {
-			this.method_3482(list, side, j, k);
+			this.buildCube(cubes, side, x, y);
 		}
 	}
 
-	private void method_3482(List<ItemModelGenerator.Frame> list, ItemModelGenerator.Side side, int x, int y) {
+	private void buildCube(List<ItemModelGenerator.Frame> cubes, ItemModelGenerator.Side side, int x, int y) {
 		ItemModelGenerator.Frame frame = null;
 
-		for (ItemModelGenerator.Frame frame2 : list) {
+		for (ItemModelGenerator.Frame frame2 : cubes) {
 			if (frame2.getSide() == side) {
 				int i = side.isVertical() ? y : x;
 				if (frame2.getLevel() == i) {
@@ -179,14 +179,14 @@ public class ItemModelGenerator {
 		int j = side.isVertical() ? y : x;
 		int k = side.isVertical() ? x : y;
 		if (frame == null) {
-			list.add(new ItemModelGenerator.Frame(side, k, j));
+			cubes.add(new ItemModelGenerator.Frame(side, k, j));
 		} else {
 			frame.expand(k);
 		}
 	}
 
-	private boolean isPixelTransparent(Sprite sprite, int frame, int x, int y, int sizeX, int sizeY) {
-		return x >= 0 && y >= 0 && x < sizeX && y < sizeY ? sprite.isPixelTransparent(frame, x, y) : true;
+	private boolean isPixelTransparent(Sprite sprite, int frame, int x, int y, int i, int j) {
+		return x >= 0 && y >= 0 && x < i && y < j ? sprite.isPixelTransparent(frame, x, y) : true;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -196,18 +196,18 @@ public class ItemModelGenerator {
 		private int max;
 		private final int level;
 
-		public Frame(ItemModelGenerator.Side side, int i, int j) {
+		public Frame(ItemModelGenerator.Side side, int width, int depth) {
 			this.side = side;
-			this.min = i;
-			this.max = i;
-			this.level = j;
+			this.min = width;
+			this.max = width;
+			this.level = depth;
 		}
 
-		public void expand(int i) {
-			if (i < this.min) {
-				this.min = i;
-			} else if (i > this.max) {
-				this.max = i;
+		public void expand(int newValue) {
+			if (newValue < this.min) {
+				this.min = newValue;
+			} else if (newValue > this.max) {
+				this.max = newValue;
 			}
 		}
 
@@ -239,10 +239,10 @@ public class ItemModelGenerator {
 		private final int offsetX;
 		private final int offsetY;
 
-		private Side(Direction direction, int j, int k) {
+		private Side(Direction direction, int offsetX, int offsetY) {
 			this.direction = direction;
-			this.offsetX = j;
-			this.offsetY = k;
+			this.offsetX = offsetX;
+			this.offsetY = offsetY;
 		}
 
 		public Direction getDirection() {

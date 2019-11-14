@@ -25,7 +25,7 @@ public class VillagerTradeCriterion extends AbstractCriterion<VillagerTradeCrite
 	}
 
 	public void handle(ServerPlayerEntity player, AbstractTraderEntity trader, ItemStack stack) {
-		this.test(player.getAdvancementManager(), conditions -> conditions.matches(player, trader, stack));
+		this.test(player.getAdvancementTracker(), conditions -> conditions.matches(player, trader, stack));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

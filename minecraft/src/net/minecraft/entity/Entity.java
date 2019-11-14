@@ -1040,7 +1040,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		if (this.getVehicle() instanceof BoatEntity) {
 			return false;
 		} else {
-			double d = this.method_23320();
+			double d = this.getEyeY();
 			BlockPos blockPos = new BlockPos(this.getX(), d, this.getZ());
 			if (requireLoadedChunk && !this.world.isChunkLoaded(blockPos.getX() >> 4, blockPos.getZ() >> 4)) {
 				return false;
@@ -1084,7 +1084,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	public float getBrightnessAtEyes() {
 		BlockPos.Mutable mutable = new BlockPos.Mutable(this.getX(), 0.0, this.getZ());
 		if (this.world.isChunkLoaded(mutable)) {
-			mutable.setY(MathHelper.floor(this.method_23320()));
+			mutable.setY(MathHelper.floor(this.getEyeY()));
 			return this.world.getBrightness(mutable);
 		} else {
 			return 0.0F;
@@ -1240,7 +1240,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 
 	public Vec3d getCameraPosVec(float tickDelta) {
 		if (tickDelta == 1.0F) {
-			return new Vec3d(this.getX(), this.method_23320(), this.getZ());
+			return new Vec3d(this.getX(), this.getEyeY(), this.getZ());
 		} else {
 			double d = MathHelper.lerp((double)tickDelta, this.prevX, this.getX());
 			double e = MathHelper.lerp((double)tickDelta, this.prevY, this.getY()) + (double)this.getStandingEyeHeight();
@@ -2680,27 +2680,27 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return this.x;
 	}
 
-	public double method_23316(double d) {
-		return this.x + (double)this.getWidth() * d;
+	public double offsetX(double widthScale) {
+		return this.x + (double)this.getWidth() * widthScale;
 	}
 
-	public double method_23322(double d) {
-		return this.method_23316((2.0 * this.random.nextDouble() - 1.0) * d);
+	public double getParticleX(double widthScale) {
+		return this.offsetX((2.0 * this.random.nextDouble() - 1.0) * widthScale);
 	}
 
 	public final double getY() {
 		return this.y;
 	}
 
-	public double getHeightAt(double heightDelta) {
-		return this.y + (double)this.getHeight() * heightDelta;
+	public double getBodyY(double heightScale) {
+		return this.y + (double)this.getHeight() * heightScale;
 	}
 
-	public double method_23319() {
-		return this.getHeightAt(this.random.nextDouble());
+	public double getRandomBodyY() {
+		return this.getBodyY(this.random.nextDouble());
 	}
 
-	public double method_23320() {
+	public double getEyeY() {
 		return this.y + (double)this.standingEyeHeight;
 	}
 
@@ -2708,12 +2708,12 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return this.z;
 	}
 
-	public double method_23324(double d) {
-		return this.z + (double)this.getWidth() * d;
+	public double offsetZ(double widthScale) {
+		return this.z + (double)this.getWidth() * widthScale;
 	}
 
-	public double method_23325(double d) {
-		return this.method_23324((2.0 * this.random.nextDouble() - 1.0) * d);
+	public double getParticleZ(double widthScale) {
+		return this.offsetZ((2.0 * this.random.nextDouble() - 1.0) * widthScale);
 	}
 
 	public void setPos(double x, double y, double z) {

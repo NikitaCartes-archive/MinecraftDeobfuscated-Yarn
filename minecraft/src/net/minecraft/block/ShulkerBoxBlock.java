@@ -53,7 +53,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	public ShulkerBoxBlock(@Nullable DyeColor color, Block.Settings settings) {
 		super(settings);
 		this.color = color;
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.UP));
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.UP));
 	}
 
 	@Override

@@ -30,10 +30,10 @@ public class PlayerSkinProvider {
 	private final MinecraftSessionService sessionService;
 	private final LoadingCache<GameProfile, Map<Type, MinecraftProfileTexture>> skinCache;
 
-	public PlayerSkinProvider(TextureManager textureManager, File file, MinecraftSessionService minecraftSessionService) {
+	public PlayerSkinProvider(TextureManager textureManager, File skinCacheDir, MinecraftSessionService sessionService) {
 		this.textureManager = textureManager;
-		this.skinCacheDir = file;
-		this.sessionService = minecraftSessionService;
+		this.skinCacheDir = skinCacheDir;
+		this.sessionService = sessionService;
 		this.skinCache = CacheBuilder.newBuilder()
 			.expireAfterAccess(15L, TimeUnit.SECONDS)
 			.build(new CacheLoader<GameProfile, Map<Type, MinecraftProfileTexture>>() {
@@ -106,12 +106,12 @@ public class PlayerSkinProvider {
 		Util.getServerWorkerExecutor().execute(runnable);
 	}
 
-	public Map<Type, MinecraftProfileTexture> getTextures(GameProfile gameProfile) {
-		return this.skinCache.getUnchecked(gameProfile);
+	public Map<Type, MinecraftProfileTexture> getTextures(GameProfile profile) {
+		return this.skinCache.getUnchecked(profile);
 	}
 
 	@Environment(EnvType.CLIENT)
 	public interface SkinTextureAvailableCallback {
-		void onSkinTextureAvailable(Type type, Identifier identifier, MinecraftProfileTexture minecraftProfileTexture);
+		void onSkinTextureAvailable(Type type, Identifier identifier, MinecraftProfileTexture texture);
 	}
 }

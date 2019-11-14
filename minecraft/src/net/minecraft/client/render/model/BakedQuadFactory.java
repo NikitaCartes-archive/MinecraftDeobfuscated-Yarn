@@ -20,8 +20,8 @@ import net.minecraft.util.math.Vec3i;
 
 @Environment(EnvType.CLIENT)
 public class BakedQuadFactory {
-	private static final float field_4260 = 1.0F / (float)Math.cos((float) (Math.PI / 8)) - 1.0F;
-	private static final float field_4259 = 1.0F / (float)Math.cos((float) (Math.PI / 4)) - 1.0F;
+	private static final float MIN_SCALE = 1.0F / (float)Math.cos((float) (Math.PI / 8)) - 1.0F;
+	private static final float MAX_SCALE = 1.0F / (float)Math.cos((float) (Math.PI / 4)) - 1.0F;
 
 	public BakedQuad bake(
 		Vector3f from,
@@ -32,42 +32,42 @@ public class BakedQuadFactory {
 		ModelBakeSettings settings,
 		@Nullable net.minecraft.client.render.model.json.ModelRotation rotation,
 		boolean shade,
-		Identifier identifier
+		Identifier modelId
 	) {
 		ModelElementTexture modelElementTexture = face.textureData;
-		if (settings.isUvLocked()) {
-			modelElementTexture = uvLock(face.textureData, side, settings.getRotation(), identifier);
+		if (settings.isShaded()) {
+			modelElementTexture = uvLock(face.textureData, side, settings.getRotation(), modelId);
 		}
 
 		float[] fs = new float[modelElementTexture.uvs.length];
 		System.arraycopy(modelElementTexture.uvs, 0, fs, 0, fs.length);
-		float f = texture.method_23842();
+		float f = texture.getAnimationFrameDelta();
 		float g = (modelElementTexture.uvs[0] + modelElementTexture.uvs[0] + modelElementTexture.uvs[2] + modelElementTexture.uvs[2]) / 4.0F;
 		float h = (modelElementTexture.uvs[1] + modelElementTexture.uvs[1] + modelElementTexture.uvs[3] + modelElementTexture.uvs[3]) / 4.0F;
 		modelElementTexture.uvs[0] = MathHelper.lerp(f, modelElementTexture.uvs[0], g);
 		modelElementTexture.uvs[2] = MathHelper.lerp(f, modelElementTexture.uvs[2], g);
 		modelElementTexture.uvs[1] = MathHelper.lerp(f, modelElementTexture.uvs[1], h);
 		modelElementTexture.uvs[3] = MathHelper.lerp(f, modelElementTexture.uvs[3], h);
-		int[] is = this.method_3458(modelElementTexture, texture, side, this.method_3459(from, to), settings.getRotation(), rotation, shade);
-		Direction direction = method_3467(is);
+		int[] is = this.packVertexData(modelElementTexture, texture, side, this.getPositionMatrix(from, to), settings.getRotation(), rotation, shade);
+		Direction direction = decodeDirection(is);
 		System.arraycopy(fs, 0, modelElementTexture.uvs, 0, fs.length);
 		if (rotation == null) {
-			this.method_3462(is, direction);
+			this.encodeDirection(is, direction);
 		}
 
 		return new BakedQuad(is, face.tintIndex, direction, texture);
 	}
 
-	public static ModelElementTexture uvLock(ModelElementTexture modelElementTexture, Direction direction, Rotation3 rotation3, Identifier identifier) {
-		Matrix4f matrix4f = Rotation3Helper.uvLock(rotation3, direction, () -> "Unable to resolve UVLock for model: " + identifier).getMatrix();
-		float f = modelElementTexture.getU(modelElementTexture.method_3414(0));
-		float g = modelElementTexture.getV(modelElementTexture.method_3414(0));
+	public static ModelElementTexture uvLock(ModelElementTexture texture, Direction orientation, Rotation3 rotation, Identifier modelId) {
+		Matrix4f matrix4f = Rotation3Helper.uvLock(rotation, orientation, () -> "Unable to resolve UVLock for model: " + modelId).getMatrix();
+		float f = texture.getU(texture.getDirectionIndex(0));
+		float g = texture.getV(texture.getDirectionIndex(0));
 		Vector4f vector4f = new Vector4f(f / 16.0F, g / 16.0F, 0.0F, 1.0F);
 		vector4f.multiply(matrix4f);
 		float h = 16.0F * vector4f.getX();
 		float i = 16.0F * vector4f.getY();
-		float j = modelElementTexture.getU(modelElementTexture.method_3414(2));
-		float k = modelElementTexture.getV(modelElementTexture.method_3414(2));
+		float j = texture.getU(texture.getDirectionIndex(2));
+		float k = texture.getV(texture.getDirectionIndex(2));
 		Vector4f vector4f2 = new Vector4f(j / 16.0F, k / 16.0F, 0.0F, 1.0F);
 		vector4f2.multiply(matrix4f);
 		float l = 16.0F * vector4f2.getX();
@@ -92,7 +92,7 @@ public class BakedQuadFactory {
 			q = i;
 		}
 
-		float r = (float)Math.toRadians((double)modelElementTexture.rotation);
+		float r = (float)Math.toRadians((double)texture.rotation);
 		Vector3f vector3f = new Vector3f(MathHelper.cos(r), MathHelper.sin(r), 0.0F);
 		Matrix3f matrix3f = new Matrix3f(matrix4f);
 		vector3f.multiply(matrix3f);
@@ -100,31 +100,31 @@ public class BakedQuadFactory {
 		return new ModelElementTexture(new float[]{n, p, o, q}, s);
 	}
 
-	private int[] method_3458(
-		ModelElementTexture modelElementTexture,
+	private int[] packVertexData(
+		ModelElementTexture texture,
 		Sprite sprite,
 		Direction direction,
-		float[] fs,
-		Rotation3 rotation3,
-		@Nullable net.minecraft.client.render.model.json.ModelRotation modelRotation,
-		boolean bl
+		float[] positionMatrix,
+		Rotation3 orientation,
+		@Nullable net.minecraft.client.render.model.json.ModelRotation rotation,
+		boolean shaded
 	) {
 		int[] is = new int[32];
 
 		for (int i = 0; i < 4; i++) {
-			this.method_3461(is, i, direction, modelElementTexture, fs, sprite, rotation3, modelRotation, bl);
+			this.packVertexData(is, i, direction, texture, positionMatrix, sprite, orientation, rotation, shaded);
 		}
 
 		return is;
 	}
 
-	private int method_3457(Direction direction) {
-		float f = this.method_3456(direction);
+	private int getLightmapCoordinate(Direction direction) {
+		float f = this.getRelativeDirectionalBrightness(direction);
 		int i = MathHelper.clamp((int)(f * 255.0F), 0, 255);
 		return 0xFF000000 | i << 16 | i << 8 | i;
 	}
 
-	private float method_3456(Direction direction) {
+	private float getRelativeDirectionalBrightness(Direction direction) {
 		switch (direction) {
 			case DOWN:
 				return 0.5F;
@@ -141,107 +141,109 @@ public class BakedQuadFactory {
 		}
 	}
 
-	private float[] method_3459(Vector3f vector3f, Vector3f vector3f2) {
+	private float[] getPositionMatrix(Vector3f from, Vector3f to) {
 		float[] fs = new float[Direction.values().length];
-		fs[CubeFace.DirectionIds.WEST] = vector3f.getX() / 16.0F;
-		fs[CubeFace.DirectionIds.DOWN] = vector3f.getY() / 16.0F;
-		fs[CubeFace.DirectionIds.NORTH] = vector3f.getZ() / 16.0F;
-		fs[CubeFace.DirectionIds.EAST] = vector3f2.getX() / 16.0F;
-		fs[CubeFace.DirectionIds.UP] = vector3f2.getY() / 16.0F;
-		fs[CubeFace.DirectionIds.SOUTH] = vector3f2.getZ() / 16.0F;
+		fs[CubeFace.DirectionIds.WEST] = from.getX() / 16.0F;
+		fs[CubeFace.DirectionIds.DOWN] = from.getY() / 16.0F;
+		fs[CubeFace.DirectionIds.NORTH] = from.getZ() / 16.0F;
+		fs[CubeFace.DirectionIds.EAST] = to.getX() / 16.0F;
+		fs[CubeFace.DirectionIds.UP] = to.getY() / 16.0F;
+		fs[CubeFace.DirectionIds.SOUTH] = to.getZ() / 16.0F;
 		return fs;
 	}
 
-	private void method_3461(
-		int[] is,
-		int i,
+	private void packVertexData(
+		int[] vertices,
+		int cornerIndex,
 		Direction direction,
-		ModelElementTexture modelElementTexture,
-		float[] fs,
+		ModelElementTexture texture,
+		float[] positionMatrix,
 		Sprite sprite,
-		Rotation3 rotation3,
-		@Nullable net.minecraft.client.render.model.json.ModelRotation modelRotation,
-		boolean bl
+		Rotation3 orientation,
+		@Nullable net.minecraft.client.render.model.json.ModelRotation rotation,
+		boolean shaded
 	) {
-		Direction direction2 = Direction.transform(rotation3.getMatrix(), direction);
-		int j = bl ? this.method_3457(direction2) : -1;
-		CubeFace.Corner corner = CubeFace.method_3163(direction).getCorner(i);
-		Vector3f vector3f = new Vector3f(fs[corner.xSide], fs[corner.ySide], fs[corner.zSide]);
-		this.method_3463(vector3f, modelRotation);
-		this.method_3455(vector3f, rotation3);
-		this.method_3460(is, i, vector3f, j, sprite, modelElementTexture);
+		Direction direction2 = Direction.transform(orientation.getMatrix(), direction);
+		int i = shaded ? this.getLightmapCoordinate(direction2) : -1;
+		CubeFace.Corner corner = CubeFace.getFace(direction).getCorner(cornerIndex);
+		Vector3f vector3f = new Vector3f(positionMatrix[corner.xSide], positionMatrix[corner.ySide], positionMatrix[corner.zSide]);
+		this.rotateVertex(vector3f, rotation);
+		this.transformVertex(vector3f, orientation);
+		this.packVertexData(vertices, cornerIndex, vector3f, i, sprite, texture);
 	}
 
-	private void method_3460(int[] is, int i, Vector3f vector3f, int j, Sprite sprite, ModelElementTexture modelElementTexture) {
-		int k = i * 8;
-		is[k] = Float.floatToRawIntBits(vector3f.getX());
-		is[k + 1] = Float.floatToRawIntBits(vector3f.getY());
-		is[k + 2] = Float.floatToRawIntBits(vector3f.getZ());
-		is[k + 3] = j;
-		is[k + 4] = Float.floatToRawIntBits(sprite.getU((double)modelElementTexture.getU(i)));
-		is[k + 4 + 1] = Float.floatToRawIntBits(sprite.getV((double)modelElementTexture.getV(i)));
+	private void packVertexData(int[] vertices, int cornerIndex, Vector3f position, int brightness, Sprite sprite, ModelElementTexture texture) {
+		int i = cornerIndex * 8;
+		vertices[i] = Float.floatToRawIntBits(position.getX());
+		vertices[i + 1] = Float.floatToRawIntBits(position.getY());
+		vertices[i + 2] = Float.floatToRawIntBits(position.getZ());
+		vertices[i + 3] = brightness;
+		vertices[i + 4] = Float.floatToRawIntBits(sprite.getFrameU((double)texture.getU(cornerIndex)));
+		vertices[i + 4 + 1] = Float.floatToRawIntBits(sprite.getFrameV((double)texture.getV(cornerIndex)));
 	}
 
-	private void method_3463(Vector3f vector3f, @Nullable net.minecraft.client.render.model.json.ModelRotation modelRotation) {
-		if (modelRotation != null) {
+	private void rotateVertex(Vector3f vector, @Nullable net.minecraft.client.render.model.json.ModelRotation rotation) {
+		if (rotation != null) {
+			Vector3f vector3f;
 			Vector3f vector3f2;
-			Vector3f vector3f3;
-			switch (modelRotation.axis) {
+			switch (rotation.axis) {
 				case X:
-					vector3f2 = new Vector3f(1.0F, 0.0F, 0.0F);
-					vector3f3 = new Vector3f(0.0F, 1.0F, 1.0F);
+					vector3f = new Vector3f(1.0F, 0.0F, 0.0F);
+					vector3f2 = new Vector3f(0.0F, 1.0F, 1.0F);
 					break;
 				case Y:
-					vector3f2 = new Vector3f(0.0F, 1.0F, 0.0F);
-					vector3f3 = new Vector3f(1.0F, 0.0F, 1.0F);
+					vector3f = new Vector3f(0.0F, 1.0F, 0.0F);
+					vector3f2 = new Vector3f(1.0F, 0.0F, 1.0F);
 					break;
 				case Z:
-					vector3f2 = new Vector3f(0.0F, 0.0F, 1.0F);
-					vector3f3 = new Vector3f(1.0F, 1.0F, 0.0F);
+					vector3f = new Vector3f(0.0F, 0.0F, 1.0F);
+					vector3f2 = new Vector3f(1.0F, 1.0F, 0.0F);
 					break;
 				default:
 					throw new IllegalArgumentException("There are only 3 axes");
 			}
 
-			Quaternion quaternion = new Quaternion(vector3f2, modelRotation.angle, true);
-			if (modelRotation.rescale) {
-				if (Math.abs(modelRotation.angle) == 22.5F) {
-					vector3f3.scale(field_4260);
+			Quaternion quaternion = new Quaternion(vector3f, rotation.angle, true);
+			if (rotation.rescale) {
+				if (Math.abs(rotation.angle) == 22.5F) {
+					vector3f2.scale(MIN_SCALE);
 				} else {
-					vector3f3.scale(field_4259);
+					vector3f2.scale(MAX_SCALE);
 				}
 
-				vector3f3.add(1.0F, 1.0F, 1.0F);
+				vector3f2.add(1.0F, 1.0F, 1.0F);
 			} else {
-				vector3f3.set(1.0F, 1.0F, 1.0F);
+				vector3f2.set(1.0F, 1.0F, 1.0F);
 			}
 
-			this.method_3464(vector3f, modelRotation.origin.method_23850(), new Matrix4f(quaternion), vector3f3);
+			this.transformVertex(vector, rotation.origin.copy(), new Matrix4f(quaternion), vector3f2);
 		}
 	}
 
-	public void method_3455(Vector3f vector3f, Rotation3 rotation3) {
-		if (rotation3 != Rotation3.identity()) {
-			this.method_3464(vector3f, new Vector3f(0.5F, 0.5F, 0.5F), rotation3.getMatrix(), new Vector3f(1.0F, 1.0F, 1.0F));
+	public void transformVertex(Vector3f vertex, Rotation3 transformation) {
+		if (transformation != Rotation3.identity()) {
+			this.transformVertex(vertex, new Vector3f(0.5F, 0.5F, 0.5F), transformation.getMatrix(), new Vector3f(1.0F, 1.0F, 1.0F));
 		}
 	}
 
-	private void method_3464(Vector3f vector3f, Vector3f vector3f2, Matrix4f matrix4f, Vector3f vector3f3) {
-		Vector4f vector4f = new Vector4f(vector3f.getX() - vector3f2.getX(), vector3f.getY() - vector3f2.getY(), vector3f.getZ() - vector3f2.getZ(), 1.0F);
-		vector4f.multiply(matrix4f);
-		vector4f.multiplyXyz(vector3f3);
-		vector3f.set(vector4f.getX() + vector3f2.getX(), vector4f.getY() + vector3f2.getY(), vector4f.getZ() + vector3f2.getZ());
+	private void transformVertex(Vector3f vertex, Vector3f origin, Matrix4f transformationMatrix, Vector3f scale) {
+		Vector4f vector4f = new Vector4f(vertex.getX() - origin.getX(), vertex.getY() - origin.getY(), vertex.getZ() - origin.getZ(), 1.0F);
+		vector4f.multiply(transformationMatrix);
+		vector4f.multiplyComponentwise(scale);
+		vertex.set(vector4f.getX() + origin.getX(), vector4f.getY() + origin.getY(), vector4f.getZ() + origin.getZ());
 	}
 
-	public static Direction method_3467(int[] is) {
-		Vector3f vector3f = new Vector3f(Float.intBitsToFloat(is[0]), Float.intBitsToFloat(is[1]), Float.intBitsToFloat(is[2]));
-		Vector3f vector3f2 = new Vector3f(Float.intBitsToFloat(is[8]), Float.intBitsToFloat(is[9]), Float.intBitsToFloat(is[10]));
-		Vector3f vector3f3 = new Vector3f(Float.intBitsToFloat(is[16]), Float.intBitsToFloat(is[17]), Float.intBitsToFloat(is[18]));
-		Vector3f vector3f4 = vector3f.method_23850();
+	public static Direction decodeDirection(int[] rotationMatrix) {
+		Vector3f vector3f = new Vector3f(Float.intBitsToFloat(rotationMatrix[0]), Float.intBitsToFloat(rotationMatrix[1]), Float.intBitsToFloat(rotationMatrix[2]));
+		Vector3f vector3f2 = new Vector3f(Float.intBitsToFloat(rotationMatrix[8]), Float.intBitsToFloat(rotationMatrix[9]), Float.intBitsToFloat(rotationMatrix[10]));
+		Vector3f vector3f3 = new Vector3f(
+			Float.intBitsToFloat(rotationMatrix[16]), Float.intBitsToFloat(rotationMatrix[17]), Float.intBitsToFloat(rotationMatrix[18])
+		);
+		Vector3f vector3f4 = vector3f.copy();
 		vector3f4.subtract(vector3f2);
-		Vector3f vector3f5 = vector3f3.method_23850();
+		Vector3f vector3f5 = vector3f3.copy();
 		vector3f5.subtract(vector3f2);
-		Vector3f vector3f6 = vector3f5.method_23850();
+		Vector3f vector3f6 = vector3f5.copy();
 		vector3f6.cross(vector3f4);
 		vector3f6.reciprocal();
 		Direction direction = null;
@@ -260,9 +262,9 @@ public class BakedQuadFactory {
 		return direction == null ? Direction.UP : direction;
 	}
 
-	private void method_3462(int[] is, Direction direction) {
-		int[] js = new int[is.length];
-		System.arraycopy(is, 0, js, 0, is.length);
+	private void encodeDirection(int[] rotationMatrix, Direction direction) {
+		int[] is = new int[rotationMatrix.length];
+		System.arraycopy(rotationMatrix, 0, is, 0, rotationMatrix.length);
 		float[] fs = new float[Direction.values().length];
 		fs[CubeFace.DirectionIds.WEST] = 999.0F;
 		fs[CubeFace.DirectionIds.DOWN] = 999.0F;
@@ -273,9 +275,9 @@ public class BakedQuadFactory {
 
 		for (int i = 0; i < 4; i++) {
 			int j = 8 * i;
-			float f = Float.intBitsToFloat(js[j]);
-			float g = Float.intBitsToFloat(js[j + 1]);
-			float h = Float.intBitsToFloat(js[j + 2]);
+			float f = Float.intBitsToFloat(is[j]);
+			float g = Float.intBitsToFloat(is[j + 1]);
+			float h = Float.intBitsToFloat(is[j + 2]);
 			if (f < fs[CubeFace.DirectionIds.WEST]) {
 				fs[CubeFace.DirectionIds.WEST] = f;
 			}
@@ -301,7 +303,7 @@ public class BakedQuadFactory {
 			}
 		}
 
-		CubeFace cubeFace = CubeFace.method_3163(direction);
+		CubeFace cubeFace = CubeFace.getFace(direction);
 
 		for (int jx = 0; jx < 4; jx++) {
 			int k = 8 * jx;
@@ -309,18 +311,18 @@ public class BakedQuadFactory {
 			float hx = fs[corner.xSide];
 			float l = fs[corner.ySide];
 			float m = fs[corner.zSide];
-			is[k] = Float.floatToRawIntBits(hx);
-			is[k + 1] = Float.floatToRawIntBits(l);
-			is[k + 2] = Float.floatToRawIntBits(m);
+			rotationMatrix[k] = Float.floatToRawIntBits(hx);
+			rotationMatrix[k + 1] = Float.floatToRawIntBits(l);
+			rotationMatrix[k + 2] = Float.floatToRawIntBits(m);
 
 			for (int n = 0; n < 4; n++) {
 				int o = 8 * n;
-				float p = Float.intBitsToFloat(js[o]);
-				float q = Float.intBitsToFloat(js[o + 1]);
-				float r = Float.intBitsToFloat(js[o + 2]);
+				float p = Float.intBitsToFloat(is[o]);
+				float q = Float.intBitsToFloat(is[o + 1]);
+				float r = Float.intBitsToFloat(is[o + 2]);
 				if (MathHelper.approximatelyEquals(hx, p) && MathHelper.approximatelyEquals(l, q) && MathHelper.approximatelyEquals(m, r)) {
-					is[k + 4] = js[o + 4];
-					is[k + 4 + 1] = js[o + 4 + 1];
+					rotationMatrix[k + 4] = is[o + 4];
+					rotationMatrix[k + 4 + 1] = is[o + 4 + 1];
 				}
 			}
 		}

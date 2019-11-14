@@ -36,7 +36,7 @@ public enum FontType {
 		}
 	}
 
-	public FontLoader createLoader(JsonObject jsonObject) {
-		return (FontLoader)this.loaderFactory.apply(jsonObject);
+	public FontLoader createLoader(JsonObject json) {
+		return (FontLoader)this.loaderFactory.apply(json);
 	}
 }

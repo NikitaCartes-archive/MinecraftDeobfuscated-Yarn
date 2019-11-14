@@ -115,7 +115,7 @@ public class BlazeEntity extends HostileEntity {
 			}
 
 			for (int i = 0; i < 2; i++) {
-				this.world.addParticle(ParticleTypes.LARGE_SMOKE, this.method_23322(0.5), this.method_23319(), this.method_23325(0.5), 0.0, 0.0, 0.0);
+				this.world.addParticle(ParticleTypes.LARGE_SMOKE, this.getParticleX(0.5), this.getRandomBodyY(), this.getParticleZ(0.5), 0.0, 0.0, 0.0);
 			}
 		}
 
@@ -135,7 +135,7 @@ public class BlazeEntity extends HostileEntity {
 		}
 
 		LivingEntity livingEntity = this.getTarget();
-		if (livingEntity != null && livingEntity.method_23320() > this.method_23320() + (double)this.field_7214 && this.canTarget(livingEntity)) {
+		if (livingEntity != null && livingEntity.getEyeY() > this.getEyeY() + (double)this.field_7214 && this.canTarget(livingEntity)) {
 			Vec3d vec3d = this.getVelocity();
 			this.setVelocity(this.getVelocity().add(0.0, (0.3F - vec3d.y) * 0.3F, 0.0));
 			this.velocityDirty = true;
@@ -223,7 +223,7 @@ public class BlazeEntity extends HostileEntity {
 					this.blaze.getMoveControl().moveTo(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), 1.0);
 				} else if (d < this.method_6995() * this.method_6995() && bl) {
 					double e = livingEntity.getX() - this.blaze.getX();
-					double f = livingEntity.getHeightAt(0.5) - this.blaze.getHeightAt(0.5);
+					double f = livingEntity.getBodyY(0.5) - this.blaze.getBodyY(0.5);
 					double g = livingEntity.getZ() - this.blaze.getZ();
 					if (this.field_7217 <= 0) {
 						this.field_7218++;
@@ -246,7 +246,7 @@ public class BlazeEntity extends HostileEntity {
 								SmallFireballEntity smallFireballEntity = new SmallFireballEntity(
 									this.blaze.world, this.blaze, e + this.blaze.getRandom().nextGaussian() * (double)h, f, g + this.blaze.getRandom().nextGaussian() * (double)h
 								);
-								smallFireballEntity.setPosition(smallFireballEntity.getX(), this.blaze.getHeightAt(0.5) + 0.5, smallFireballEntity.getZ());
+								smallFireballEntity.setPosition(smallFireballEntity.getX(), this.blaze.getBodyY(0.5) + 0.5, smallFireballEntity.getZ());
 								this.blaze.world.spawnEntity(smallFireballEntity);
 							}
 						}

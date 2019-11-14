@@ -1995,7 +1995,7 @@ public class Blocks {
 
 	static {
 		for (Block block : Registry.BLOCK) {
-			for (BlockState blockState : block.getStateFactory().getStates()) {
+			for (BlockState blockState : block.getStateManager().getStates()) {
 				blockState.initShapeCache();
 				Block.STATE_IDS.add(blockState);
 			}

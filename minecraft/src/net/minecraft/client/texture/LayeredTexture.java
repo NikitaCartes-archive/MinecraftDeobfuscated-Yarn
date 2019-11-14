@@ -26,12 +26,12 @@ public class LayeredTexture extends AbstractTexture {
 	}
 
 	@Override
-	public void load(ResourceManager resourceManager) throws IOException {
+	public void load(ResourceManager manager) throws IOException {
 		Iterator<String> iterator = this.locations.iterator();
 		String string = (String)iterator.next();
 
 		try {
-			Resource resource = resourceManager.getResource(new Identifier(string));
+			Resource resource = manager.getResource(new Identifier(string));
 			Throwable var5 = null;
 
 			try {
@@ -40,7 +40,7 @@ public class LayeredTexture extends AbstractTexture {
 				while (iterator.hasNext()) {
 					String string2 = (String)iterator.next();
 					if (string2 != null) {
-						Resource resource2 = resourceManager.getResource(new Identifier(string2));
+						Resource resource2 = manager.getResource(new Identifier(string2));
 						Throwable var9 = null;
 
 						try (NativeImage nativeImage2 = NativeImage.read(resource2.getInputStream())) {

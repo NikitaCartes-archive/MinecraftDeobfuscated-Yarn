@@ -57,11 +57,11 @@ public class StatePredicate {
 	}
 
 	public boolean test(BlockState state) {
-		return this.test(state.getBlock().getStateFactory(), state);
+		return this.test(state.getBlock().getStateManager(), state);
 	}
 
-	public boolean test(FluidState sate) {
-		return this.test(sate.getFluid().getStateFactory(), sate);
+	public boolean test(FluidState state) {
+		return this.test(state.getFluid().getStateManager(), state);
 	}
 
 	public void check(StateManager<?, ?> factory, Consumer<String> reporter) {

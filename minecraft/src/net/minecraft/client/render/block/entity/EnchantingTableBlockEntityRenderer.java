@@ -39,8 +39,8 @@ public class EnchantingTableBlockEntityRenderer extends BlockEntityRenderer<Ench
 		}
 
 		float k = enchantingTableBlockEntity.field_11963 + h * f;
-		matrixStack.multiply(Vector3f.POSITIVE_Y.method_23626(-k));
-		matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(80.0F));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRadialQuaternion(-k));
+		matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(80.0F));
 		float l = MathHelper.lerp(f, enchantingTableBlockEntity.pageAngle, enchantingTableBlockEntity.nextPageAngle);
 		float m = MathHelper.method_22450(l + 0.25F) * 1.6F - 0.3F;
 		float n = MathHelper.method_22450(l + 0.75F) * 1.6F - 0.3F;

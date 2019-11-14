@@ -23,7 +23,7 @@ public class JukeboxBlock extends BlockWithEntity {
 
 	protected JukeboxBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(HAS_RECORD, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(HAS_RECORD, Boolean.valueOf(false)));
 	}
 
 	@Override

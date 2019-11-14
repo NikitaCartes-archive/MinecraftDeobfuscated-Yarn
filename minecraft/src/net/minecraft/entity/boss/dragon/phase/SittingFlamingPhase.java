@@ -25,7 +25,7 @@ public class SittingFlamingPhase extends AbstractSittingPhase {
 			Vec3d vec3d = this.dragon.method_6834(1.0F).normalize();
 			vec3d.rotateY((float) (-Math.PI / 4));
 			double d = this.dragon.partHead.getX();
-			double e = this.dragon.partHead.getHeightAt(0.5);
+			double e = this.dragon.partHead.getBodyY(0.5);
 			double f = this.dragon.partHead.getZ();
 
 			for (int i = 0; i < 8; i++) {
@@ -56,7 +56,7 @@ public class SittingFlamingPhase extends AbstractSittingPhase {
 			float f = 5.0F;
 			double d = this.dragon.partHead.getX() + vec3d.x * 5.0 / 2.0;
 			double e = this.dragon.partHead.getZ() + vec3d.z * 5.0 / 2.0;
-			double g = this.dragon.partHead.getHeightAt(0.5);
+			double g = this.dragon.partHead.getBodyY(0.5);
 			double h = g;
 			BlockPos.Mutable mutable = new BlockPos.Mutable(d, g, e);
 

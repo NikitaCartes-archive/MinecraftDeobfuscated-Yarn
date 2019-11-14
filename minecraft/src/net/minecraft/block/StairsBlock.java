@@ -86,7 +86,7 @@ public class StairsBlock extends Block implements Waterloggable {
 	protected StairsBlock(BlockState baseBlockState, Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateFactory
+			this.stateManager
 				.getDefaultState()
 				.with(FACING, Direction.NORTH)
 				.with(HALF, BlockHalf.BOTTOM)

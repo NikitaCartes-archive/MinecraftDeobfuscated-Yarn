@@ -31,7 +31,7 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 
 	protected SeaPickleBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(PICKLES, Integer.valueOf(1)).with(WATERLOGGED, Boolean.valueOf(true)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(PICKLES, Integer.valueOf(1)).with(WATERLOGGED, Boolean.valueOf(true)));
 	}
 
 	@Override

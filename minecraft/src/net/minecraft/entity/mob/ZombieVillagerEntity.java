@@ -172,7 +172,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 				this.world
 					.playSound(
 						this.getX(),
-						this.method_23320(),
+						this.getEyeY(),
 						this.getZ(),
 						SoundEvents.ENTITY_ZOMBIE_VILLAGER_CURE,
 						this.getSoundCategory(),

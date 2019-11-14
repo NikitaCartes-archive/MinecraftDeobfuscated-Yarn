@@ -26,7 +26,7 @@ public class WallRedstoneTorchBlock extends RedstoneTorchBlock {
 
 	protected WallRedstoneTorchBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(LIT_2, Boolean.valueOf(true)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(LIT_2, Boolean.valueOf(true)));
 	}
 
 	@Override

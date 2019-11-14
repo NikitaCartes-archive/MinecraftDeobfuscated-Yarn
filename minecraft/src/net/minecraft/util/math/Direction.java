@@ -103,23 +103,23 @@ public enum Direction implements StringIdentifiable {
 
 	@Environment(EnvType.CLIENT)
 	public Quaternion getRotationQuaternion() {
-		Quaternion quaternion = Vector3f.POSITIVE_X.getRotationQuaternion(90.0F);
+		Quaternion quaternion = Vector3f.POSITIVE_X.getDegreesQuaternion(90.0F);
 		switch (this) {
 			case DOWN:
-				return Vector3f.POSITIVE_X.getRotationQuaternion(180.0F);
+				return Vector3f.POSITIVE_X.getDegreesQuaternion(180.0F);
 			case UP:
 				return Quaternion.IDENTITY.copy();
 			case NORTH:
-				quaternion.hamiltonProduct(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0F));
+				quaternion.hamiltonProduct(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
 				return quaternion;
 			case SOUTH:
 				return quaternion;
 			case WEST:
-				quaternion.hamiltonProduct(Vector3f.POSITIVE_Z.getRotationQuaternion(90.0F));
+				quaternion.hamiltonProduct(Vector3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
 				return quaternion;
 			case EAST:
 			default:
-				quaternion.hamiltonProduct(Vector3f.POSITIVE_Z.getRotationQuaternion(-90.0F));
+				quaternion.hamiltonProduct(Vector3f.POSITIVE_Z.getDegreesQuaternion(-90.0F));
 				return quaternion;
 		}
 	}
@@ -183,7 +183,7 @@ public enum Direction implements StringIdentifiable {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Vector3f method_23955() {
+	public Vector3f getUnitVector() {
 		return new Vector3f((float)this.getOffsetX(), (float)this.getOffsetY(), (float)this.getOffsetZ());
 	}
 

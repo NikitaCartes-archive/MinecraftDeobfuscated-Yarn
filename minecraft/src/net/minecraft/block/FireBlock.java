@@ -48,7 +48,7 @@ public class FireBlock extends Block {
 	protected FireBlock(Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateFactory
+			this.stateManager
 				.getDefaultState()
 				.with(AGE, Integer.valueOf(0))
 				.with(NORTH, Boolean.valueOf(false))

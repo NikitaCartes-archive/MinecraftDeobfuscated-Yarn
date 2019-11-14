@@ -100,7 +100,7 @@ public class MooshroomEntity extends CowEntity {
 			this.playSound(soundEvent, 1.0F, 1.0F);
 			return true;
 		} else if (itemStack.getItem() == Items.SHEARS && !this.isBaby()) {
-			this.world.addParticle(ParticleTypes.EXPLOSION, this.getX(), this.getHeightAt(0.5), this.getZ(), 0.0, 0.0, 0.0);
+			this.world.addParticle(ParticleTypes.EXPLOSION, this.getX(), this.getBodyY(0.5), this.getZ(), 0.0, 0.0, 0.0);
 			if (!this.world.isClient) {
 				this.remove();
 				CowEntity cowEntity = EntityType.COW.create(this.world);
@@ -121,7 +121,7 @@ public class MooshroomEntity extends CowEntity {
 
 				for (int i = 0; i < 5; i++) {
 					this.world
-						.spawnEntity(new ItemEntity(this.world, this.getX(), this.getHeightAt(1.0), this.getZ(), new ItemStack(this.getMooshroomType().mushroom.getBlock())));
+						.spawnEntity(new ItemEntity(this.world, this.getX(), this.getBodyY(1.0), this.getZ(), new ItemStack(this.getMooshroomType().mushroom.getBlock())));
 				}
 
 				itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
@@ -137,7 +137,7 @@ public class MooshroomEntity extends CowEntity {
 							.addParticle(
 								ParticleTypes.SMOKE,
 								this.getX() + (double)(this.random.nextFloat() / 2.0F),
-								this.getHeightAt(0.5),
+								this.getBodyY(0.5),
 								this.getZ() + (double)(this.random.nextFloat() / 2.0F),
 								0.0,
 								(double)(this.random.nextFloat() / 5.0F),
@@ -155,7 +155,7 @@ public class MooshroomEntity extends CowEntity {
 							.addParticle(
 								ParticleTypes.EFFECT,
 								this.getX() + (double)(this.random.nextFloat() / 2.0F),
-								this.getHeightAt(0.5),
+								this.getBodyY(0.5),
 								this.getZ() + (double)(this.random.nextFloat() / 2.0F),
 								0.0,
 								(double)(this.random.nextFloat() / 5.0F),

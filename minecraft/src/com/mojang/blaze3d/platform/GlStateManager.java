@@ -665,8 +665,8 @@ public class GlStateManager {
 	public static void method_22617(Matrix4f matrix4f) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		Matrix4f matrix4f2 = matrix4f.copy();
-		matrix4f2.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-22.5F));
-		matrix4f2.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(135.0F));
+		matrix4f2.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-22.5F));
+		matrix4f2.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(135.0F));
 		method_22616(matrix4f2);
 	}
 

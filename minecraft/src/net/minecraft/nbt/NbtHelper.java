@@ -189,7 +189,7 @@ public final class NbtHelper {
 			BlockState blockState = block.getDefaultState();
 			if (tag.contains("Properties", 10)) {
 				CompoundTag compoundTag = tag.getCompound("Properties");
-				StateManager<Block, BlockState> stateManager = block.getStateFactory();
+				StateManager<Block, BlockState> stateManager = block.getStateManager();
 
 				for (String string : compoundTag.getKeys()) {
 					Property<?> property = stateManager.getProperty(string);

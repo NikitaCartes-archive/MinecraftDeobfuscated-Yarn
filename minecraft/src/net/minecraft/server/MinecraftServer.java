@@ -210,7 +210,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private final BossBarManager bossBarManager = new BossBarManager(this);
 	private final LootConditionManager predicateManager = new LootConditionManager();
 	private final LootManager lootManager = new LootManager(this.predicateManager);
-	private final ServerAdvancementLoader advancementManager = new ServerAdvancementLoader();
+	private final ServerAdvancementLoader advancementLoader = new ServerAdvancementLoader();
 	private final CommandFunctionManager commandFunctionManager = new CommandFunctionManager(this);
 	private final MetricsData metricsData = new MetricsData();
 	private boolean whitelistEnabled;
@@ -250,7 +250,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.dataManager.registerListener(this.recipeManager);
 		this.dataManager.registerListener(this.lootManager);
 		this.dataManager.registerListener(this.commandFunctionManager);
-		this.dataManager.registerListener(this.advancementManager);
+		this.dataManager.registerListener(this.advancementLoader);
 		this.workerExecutor = Util.getServerWorkerExecutor();
 		this.levelName = levelName;
 	}
@@ -1403,8 +1403,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return world != null ? world.getGameRules().getInt(GameRules.SPAWN_RADIUS) : 10;
 	}
 
-	public ServerAdvancementLoader getAdvancementManager() {
-		return this.advancementManager;
+	public ServerAdvancementLoader getAdvancementLoader() {
+		return this.advancementLoader;
 	}
 
 	public CommandFunctionManager getCommandFunctionManager() {
@@ -1661,7 +1661,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		try {
 			final List<String> list = Lists.<String>newArrayList();
 			final GameRules gameRules = this.getGameRules();
-			GameRules.forEach(new GameRules.RuleConsumer() {
+			GameRules.forEachType(new GameRules.RuleTypeConsumer() {
 				@Override
 				public <T extends GameRules.Rule<T>> void accept(GameRules.RuleKey<T> key, GameRules.RuleType<T> type) {
 					list.add(String.format("%s=%s\n", key.getName(), gameRules.<T>get(key).toString()));

@@ -447,7 +447,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			double d = this.random.nextGaussian() * 0.02;
 			double e = this.random.nextGaussian() * 0.02;
 			double f = this.random.nextGaussian() * 0.02;
-			this.world.addParticle(parameters, this.method_23322(1.0), this.method_23319() + 1.0, this.method_23325(1.0), d, e, f);
+			this.world.addParticle(parameters, this.getParticleX(1.0), this.getRandomBodyY() + 1.0, this.getParticleZ(1.0), d, e, f);
 		}
 	}
 
@@ -662,7 +662,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		if (stack.isEmpty()) {
 			return null;
 		} else {
-			double d = this.method_23320() - 0.3F;
+			double d = this.getEyeY() - 0.3F;
 			ItemEntity itemEntity = new ItemEntity(this.world, this.getX(), d, this.getZ(), stack);
 			itemEntity.setPickupDelay(40);
 			if (bl2) {
@@ -1202,7 +1202,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 							if (this.world instanceof ServerWorld && m > 2.0F) {
 								int n = (int)((double)m * 0.5);
-								((ServerWorld)this.world).spawnParticles(ParticleTypes.DAMAGE_INDICATOR, target.getX(), target.getHeightAt(0.5), target.getZ(), n, 0.1, 0.0, 0.1, 0.2);
+								((ServerWorld)this.world).spawnParticles(ParticleTypes.DAMAGE_INDICATOR, target.getX(), target.getBodyY(0.5), target.getZ(), n, 0.1, 0.0, 0.1, 0.2);
 							}
 						}
 
@@ -1246,7 +1246,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		double d = (double)(-MathHelper.sin(this.yaw * (float) (Math.PI / 180.0)));
 		double e = (double)MathHelper.cos(this.yaw * (float) (Math.PI / 180.0));
 		if (this.world instanceof ServerWorld) {
-			((ServerWorld)this.world).spawnParticles(ParticleTypes.SWEEP_ATTACK, this.getX() + d, this.getHeightAt(0.5), this.getZ() + e, 0, d, 0.0, e, 0.0);
+			((ServerWorld)this.world).spawnParticles(ParticleTypes.SWEEP_ATTACK, this.getX() + d, this.getBodyY(0.5), this.getZ() + e, 0, d, 0.0, e, 0.0);
 		}
 	}
 

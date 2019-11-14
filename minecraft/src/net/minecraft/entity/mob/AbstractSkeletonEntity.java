@@ -181,7 +181,7 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 		ItemStack itemStack = this.getArrowType(this.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this, Items.BOW)));
 		ProjectileEntity projectileEntity = this.createArrowProjectile(itemStack, f);
 		double d = target.getX() - this.getX();
-		double e = target.getHeightAt(0.3333333333333333) - projectileEntity.getY();
+		double e = target.getBodyY(0.3333333333333333) - projectileEntity.getY();
 		double g = target.getZ() - this.getZ();
 		double h = (double)MathHelper.sqrt(d * d + g * g);
 		projectileEntity.setVelocity(d, e + h * 0.2F, g, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));

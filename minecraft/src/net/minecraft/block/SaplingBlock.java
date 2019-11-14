@@ -20,7 +20,7 @@ public class SaplingBlock extends PlantBlock implements Fertilizable {
 	protected SaplingBlock(SaplingGenerator generator, Block.Settings settings) {
 		super(settings);
 		this.generator = generator;
-		this.setDefaultState(this.stateFactory.getDefaultState().with(STAGE, Integer.valueOf(0)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(STAGE, Integer.valueOf(0)));
 	}
 
 	@Override

@@ -219,7 +219,7 @@ public class CrossbowItem extends RangedWeaponItem {
 			boolean bl = projectile.getItem() == Items.FIREWORK_ROCKET;
 			Projectile projectile2;
 			if (bl) {
-				projectile2 = new FireworkEntity(world, projectile, shooter.getX(), shooter.method_23320() - 0.15F, shooter.getZ(), true);
+				projectile2 = new FireworkEntity(world, projectile, shooter.getX(), shooter.getEyeY() - 0.15F, shooter.getZ(), true);
 			} else {
 				projectile2 = createArrow(world, shooter, crossbow, projectile);
 				if (creative || simulated != 0.0F) {

@@ -34,7 +34,7 @@ public class BrewingStandBlock extends BlockWithEntity {
 	public BrewingStandBlock(Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateFactory
+			this.stateManager
 				.getDefaultState()
 				.with(BOTTLE_PROPERTIES[0], Boolean.valueOf(false))
 				.with(BOTTLE_PROPERTIES[1], Boolean.valueOf(false))

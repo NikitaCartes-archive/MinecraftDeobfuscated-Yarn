@@ -24,7 +24,7 @@ public class CuredZombieVillagerCriterion extends AbstractCriterion<CuredZombieV
 	}
 
 	public void trigger(ServerPlayerEntity player, ZombieEntity zombie, VillagerEntity villager) {
-		this.test(player.getAdvancementManager(), conditions -> conditions.matches(player, zombie, villager));
+		this.test(player.getAdvancementTracker(), conditions -> conditions.matches(player, zombie, villager));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

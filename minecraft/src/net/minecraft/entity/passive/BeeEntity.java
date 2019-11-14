@@ -215,7 +215,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 		if (this.hasNectar() && this.getCropsGrownSincePollination() < 10 && this.random.nextFloat() < 0.05F) {
 			for (int i = 0; i < this.random.nextInt(2) + 1; i++) {
 				this.addParticle(
-					this.world, this.getX() - 0.3F, this.getX() + 0.3F, this.getZ() - 0.3F, this.getZ() + 0.3F, this.getHeightAt(0.5), ParticleTypes.FALLING_NECTAR
+					this.world, this.getX() - 0.3F, this.getX() + 0.3F, this.getZ() - 0.3F, this.getZ() + 0.3F, this.getBodyY(0.5), ParticleTypes.FALLING_NECTAR
 				);
 			}
 		}
@@ -602,11 +602,6 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 		@Nullable
 		protected abstract BlockPos getTargetPos();
 
-		@Override
-		public boolean canBeeContinue() {
-			return this.method_23741();
-		}
-
 		boolean method_23741() {
 			BlockPos blockPos = this.getTargetPos();
 			if (blockPos == null) {
@@ -625,10 +620,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 		public void tick() {
 			BlockPos blockPos = this.getTargetPos();
 			EntityNavigation entityNavigation = BeeEntity.this.getNavigation();
-			if (entityNavigation.getCurrentPath() != null && !entityNavigation.getCurrentPath().reachesTarget()) {
-				this.stop();
-				this.method_23885();
-			} else {
+			if (blockPos != null && (entityNavigation.getCurrentPath() == null || entityNavigation.getCurrentPath().reachesTarget())) {
 				if (entityNavigation.isIdle()) {
 					Vec3d vec3d = new Vec3d(blockPos);
 					Vec3d vec3d2 = TargetFinder.method_23736(BeeEntity.this, 8, 6, vec3d, (float) (Math.PI / 10), false);
@@ -644,6 +636,9 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 
 					entityNavigation.startMovingTo(vec3d2.x, vec3d2.y, vec3d2.z, 1.0);
 				}
+			} else {
+				this.stop();
+				this.method_23885();
 			}
 		}
 

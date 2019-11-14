@@ -67,9 +67,9 @@ public class CapeFeatureRenderer extends FeatureRenderer<AbstractClientPlayerEnt
 					q += 25.0F;
 				}
 
-				matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(6.0F + r / 2.0F + q));
-				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(s / 2.0F));
-				matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F - s / 2.0F));
+				matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(6.0F + r / 2.0F + q));
+				matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(s / 2.0F));
+				matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F - s / 2.0F));
 				VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(abstractClientPlayerEntity.getCapeTexture()));
 				this.getModel().renderCape(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
 				matrixStack.pop();

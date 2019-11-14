@@ -30,7 +30,7 @@ public class BrewedPotionCriterion extends AbstractCriterion<BrewedPotionCriteri
 	}
 
 	public void trigger(ServerPlayerEntity player, Potion potion) {
-		this.test(player.getAdvancementManager(), conditions -> conditions.matches(potion));
+		this.test(player.getAdvancementTracker(), conditions -> conditions.matches(potion));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

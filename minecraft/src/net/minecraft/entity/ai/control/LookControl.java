@@ -80,7 +80,7 @@ public class LookControl {
 
 	protected float getTargetPitch() {
 		double d = this.lookX - this.entity.getX();
-		double e = this.lookY - this.entity.method_23320();
+		double e = this.lookY - this.entity.getEyeY();
 		double f = this.lookZ - this.entity.getZ();
 		double g = (double)MathHelper.sqrt(d * d + f * f);
 		return (float)(-(MathHelper.atan2(e, g) * 180.0F / (float)Math.PI));
@@ -99,6 +99,6 @@ public class LookControl {
 	}
 
 	private static double getLookingHeightFor(Entity entity) {
-		return entity instanceof LivingEntity ? entity.method_23320() : (entity.getBoundingBox().y1 + entity.getBoundingBox().y2) / 2.0;
+		return entity instanceof LivingEntity ? entity.getEyeY() : (entity.getBoundingBox().y1 + entity.getBoundingBox().y2) / 2.0;
 	}
 }

@@ -180,8 +180,8 @@ public class FontManager implements AutoCloseable {
 		}
 	};
 
-	public FontManager(TextureManager textureManager, boolean bl) {
-		this.textureManager = textureManager;
+	public FontManager(TextureManager manager, boolean bl) {
+		this.textureManager = manager;
 		this.forceUnicodeFont = bl;
 	}
 
@@ -194,7 +194,7 @@ public class FontManager implements AutoCloseable {
 		});
 	}
 
-	public void setForceUnicodeFont(boolean forceUnicodeFont, Executor executor, Executor executor2) {
+	public void setForceUnicodeFont(boolean forceUnicodeFont, Executor prepareExecutor, Executor applyExecutor) {
 		if (forceUnicodeFont != this.forceUnicodeFont) {
 			this.forceUnicodeFont = forceUnicodeFont;
 			ResourceManager resourceManager = MinecraftClient.getInstance().getResourceManager();
@@ -204,7 +204,7 @@ public class FontManager implements AutoCloseable {
 					return CompletableFuture.completedFuture(preparedObject);
 				}
 			};
-			this.resourceReloadListener.reload(synchronizer, resourceManager, DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, executor, executor2);
+			this.resourceReloadListener.reload(synchronizer, resourceManager, DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, prepareExecutor, applyExecutor);
 		}
 	}
 

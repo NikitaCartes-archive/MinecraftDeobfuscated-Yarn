@@ -35,7 +35,7 @@ public class PortalBlock extends Block {
 
 	public PortalBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(AXIS, Direction.Axis.X));
+		this.setDefaultState(this.stateManager.getDefaultState().with(AXIS, Direction.Axis.X));
 	}
 
 	@Override

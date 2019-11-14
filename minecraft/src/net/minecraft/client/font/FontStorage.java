@@ -81,13 +81,13 @@ public class FontStorage implements AutoCloseable {
 		}
 	}
 
-	public Glyph getGlyph(char c) {
-		return this.glyphCache.computeIfAbsent(c, i -> (Glyph)(i == 32 ? SPACE : this.getRenderableGlyph((char)i)));
+	public Glyph getGlyph(char character) {
+		return this.glyphCache.computeIfAbsent(character, i -> (Glyph)(i == 32 ? SPACE : this.getRenderableGlyph((char)i)));
 	}
 
-	private RenderableGlyph getRenderableGlyph(char c) {
+	private RenderableGlyph getRenderableGlyph(char character) {
 		for (Font font : this.fonts) {
-			RenderableGlyph renderableGlyph = font.getGlyph(c);
+			RenderableGlyph renderableGlyph = font.getGlyph(character);
 			if (renderableGlyph != null) {
 				return renderableGlyph;
 			}
@@ -96,9 +96,9 @@ public class FontStorage implements AutoCloseable {
 		return BlankGlyph.INSTANCE;
 	}
 
-	public GlyphRenderer getGlyphRenderer(char c) {
+	public GlyphRenderer getGlyphRenderer(char character) {
 		return this.glyphRendererCache
-			.computeIfAbsent(c, i -> (GlyphRenderer)(i == 32 ? EMPTY_GLYPH_RENDERER : this.getGlyphRenderer(this.getRenderableGlyph((char)i))));
+			.computeIfAbsent(character, i -> (GlyphRenderer)(i == 32 ? EMPTY_GLYPH_RENDERER : this.getGlyphRenderer(this.getRenderableGlyph((char)i))));
 	}
 
 	private GlyphRenderer getGlyphRenderer(RenderableGlyph c) {

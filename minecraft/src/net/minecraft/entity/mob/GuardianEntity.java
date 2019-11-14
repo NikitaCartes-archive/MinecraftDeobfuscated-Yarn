@@ -235,9 +235,9 @@ public class GuardianEntity extends HostileEntity {
 						this.world
 							.addParticle(
 								ParticleTypes.BUBBLE,
-								this.method_23322(0.5) - vec3d.x * 1.5,
-								this.method_23319() - vec3d.y * 1.5,
-								this.method_23325(0.5) - vec3d.z * 1.5,
+								this.getParticleX(0.5) - vec3d.x * 1.5,
+								this.getRandomBodyY() - vec3d.y * 1.5,
+								this.getParticleZ(0.5) - vec3d.z * 1.5,
 								0.0,
 								0.0,
 								0.0
@@ -256,7 +256,7 @@ public class GuardianEntity extends HostileEntity {
 						this.getLookControl().tick();
 						double d = (double)this.getBeamProgress(0.0F);
 						double e = livingEntity.getX() - this.getX();
-						double f = livingEntity.getHeightAt(0.5) - this.method_23320();
+						double f = livingEntity.getBodyY(0.5) - this.getEyeY();
 						double g = livingEntity.getZ() - this.getZ();
 						double h = Math.sqrt(e * e + f * f + g * g);
 						e /= h;
@@ -266,7 +266,7 @@ public class GuardianEntity extends HostileEntity {
 
 						while (j < h) {
 							j += 1.8 - d + this.random.nextDouble() * (1.7 - d);
-							this.world.addParticle(ParticleTypes.BUBBLE, this.getX() + e * j, this.method_23320() + f * j, this.getZ() + g * j, 0.0, 0.0, 0.0);
+							this.world.addParticle(ParticleTypes.BUBBLE, this.getX() + e * j, this.getEyeY() + f * j, this.getZ() + g * j, 0.0, 0.0, 0.0);
 						}
 					}
 				}
@@ -453,7 +453,7 @@ public class GuardianEntity extends HostileEntity {
 				this.guardian.setVelocity(this.guardian.getVelocity().add(k * l, n * (m + l) * 0.25 + (double)j * f * 0.1, k * m));
 				LookControl lookControl = this.guardian.getLookControl();
 				double o = this.guardian.getX() + e * 2.0;
-				double p = this.guardian.method_23320() + f / d;
+				double p = this.guardian.getEyeY() + f / d;
 				double q = this.guardian.getZ() + g * 2.0;
 				double r = lookControl.getLookX();
 				double s = lookControl.getLookY();

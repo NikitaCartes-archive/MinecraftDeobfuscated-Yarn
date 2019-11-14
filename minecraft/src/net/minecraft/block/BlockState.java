@@ -367,7 +367,7 @@ public class BlockState extends AbstractState<Block, BlockState> implements Stat
 		Block block = Registry.BLOCK.get(new Identifier((String)dynamic.getElement("Name").flatMap(dynamic.getOps()::getStringValue).orElse("minecraft:air")));
 		Map<String, String> map = dynamic.get("Properties").asMap(dynamicx -> dynamicx.asString(""), dynamicx -> dynamicx.asString(""));
 		BlockState blockState = block.getDefaultState();
-		StateManager<Block, BlockState> stateManager = block.getStateFactory();
+		StateManager<Block, BlockState> stateManager = block.getStateManager();
 
 		for (Entry<String, String> entry : map.entrySet()) {
 			String string = (String)entry.getKey();

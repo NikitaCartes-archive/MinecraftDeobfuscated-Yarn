@@ -67,22 +67,22 @@ public class BlockCrackParticle extends SpriteBillboardParticle {
 
 	@Override
 	protected float getMinU() {
-		return this.sprite.getU((double)((this.field_17884 + 1.0F) / 4.0F * 16.0F));
+		return this.sprite.getFrameU((double)((this.field_17884 + 1.0F) / 4.0F * 16.0F));
 	}
 
 	@Override
 	protected float getMaxU() {
-		return this.sprite.getU((double)(this.field_17884 / 4.0F * 16.0F));
+		return this.sprite.getFrameU((double)(this.field_17884 / 4.0F * 16.0F));
 	}
 
 	@Override
 	protected float getMinV() {
-		return this.sprite.getV((double)(this.field_17885 / 4.0F * 16.0F));
+		return this.sprite.getFrameV((double)(this.field_17885 / 4.0F * 16.0F));
 	}
 
 	@Override
 	protected float getMaxV() {
-		return this.sprite.getV((double)((this.field_17885 + 1.0F) / 4.0F * 16.0F));
+		return this.sprite.getFrameV((double)((this.field_17885 + 1.0F) / 4.0F * 16.0F));
 	}
 
 	@Override

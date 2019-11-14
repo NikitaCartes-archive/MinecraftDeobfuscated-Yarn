@@ -46,7 +46,7 @@ public class DoorBlock extends Block {
 	protected DoorBlock(Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateFactory
+			this.stateManager
 				.getDefaultState()
 				.with(FACING, Direction.NORTH)
 				.with(OPEN, Boolean.valueOf(false))

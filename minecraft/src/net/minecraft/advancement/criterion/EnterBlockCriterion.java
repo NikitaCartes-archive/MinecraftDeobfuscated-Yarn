@@ -25,7 +25,7 @@ public class EnterBlockCriterion extends AbstractCriterion<EnterBlockCriterion.C
 		Block block = getBlock(jsonObject);
 		StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("state"));
 		if (block != null) {
-			statePredicate.check(block.getStateFactory(), name -> {
+			statePredicate.check(block.getStateManager(), name -> {
 				throw new JsonSyntaxException("Block " + block + " has no property " + name);
 			});
 		}
@@ -44,7 +44,7 @@ public class EnterBlockCriterion extends AbstractCriterion<EnterBlockCriterion.C
 	}
 
 	public void trigger(ServerPlayerEntity player, BlockState state) {
-		this.test(player.getAdvancementManager(), conditions -> conditions.matches(state));
+		this.test(player.getAdvancementTracker(), conditions -> conditions.matches(state));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

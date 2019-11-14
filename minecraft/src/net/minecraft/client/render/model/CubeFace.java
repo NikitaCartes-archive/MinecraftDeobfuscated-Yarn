@@ -44,7 +44,7 @@ public enum CubeFace {
 		new CubeFace.Corner(CubeFace.DirectionIds.EAST, CubeFace.DirectionIds.UP, CubeFace.DirectionIds.NORTH)
 	);
 
-	private static final CubeFace[] field_3958 = Util.create(new CubeFace[6], cubeFaces -> {
+	private static final CubeFace[] DIRECTION_LOOKUP = Util.create(new CubeFace[6], cubeFaces -> {
 		cubeFaces[CubeFace.DirectionIds.DOWN] = DOWN;
 		cubeFaces[CubeFace.DirectionIds.UP] = UP;
 		cubeFaces[CubeFace.DirectionIds.NORTH] = NORTH;
@@ -54,16 +54,16 @@ public enum CubeFace {
 	});
 	private final CubeFace.Corner[] corners;
 
-	public static CubeFace method_3163(Direction direction) {
-		return field_3958[direction.getId()];
+	public static CubeFace getFace(Direction direction) {
+		return DIRECTION_LOOKUP[direction.getId()];
 	}
 
 	private CubeFace(CubeFace.Corner... corners) {
 		this.corners = corners;
 	}
 
-	public CubeFace.Corner getCorner(int i) {
-		return this.corners[i];
+	public CubeFace.Corner getCorner(int corner) {
+		return this.corners[corner];
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -72,10 +72,10 @@ public enum CubeFace {
 		public final int ySide;
 		public final int zSide;
 
-		private Corner(int i, int j, int k) {
-			this.xSide = i;
-			this.ySide = j;
-			this.zSide = k;
+		private Corner(int x, int y, int z) {
+			this.xSide = x;
+			this.ySide = y;
+			this.zSide = z;
 		}
 	}
 

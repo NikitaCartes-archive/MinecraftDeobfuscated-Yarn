@@ -21,9 +21,9 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import javax.annotation.Nullable;
-import net.minecraft.class_4706;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ChunkPosDistanceLevelPropagator;
+import net.minecraft.util.SortedArraySet;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.thread.MessageListener;
@@ -36,7 +36,7 @@ public abstract class ChunkTicketManager {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final int NEARBY_PLAYER_TICKET_LEVEL = 33 + ChunkStatus.getTargetGenerationRadius(ChunkStatus.FULL) - 2;
 	private final Long2ObjectMap<ObjectSet<ServerPlayerEntity>> playersByChunkPos = new Long2ObjectOpenHashMap<>();
-	private final Long2ObjectOpenHashMap<class_4706<ChunkTicket<?>>> ticketsByPosition = new Long2ObjectOpenHashMap<>();
+	private final Long2ObjectOpenHashMap<SortedArraySet<ChunkTicket<?>>> ticketsByPosition = new Long2ObjectOpenHashMap<>();
 	private final ChunkTicketManager.TicketDistanceLevelPropagator distanceFromTicketTracker = new ChunkTicketManager.TicketDistanceLevelPropagator();
 	private final ChunkTicketManager.DistanceFromNearestPlayerTracker distanceFromNearestPlayerTracker = new ChunkTicketManager.DistanceFromNearestPlayerTracker(8);
 	private final ChunkTicketManager.NearbyChunkTicketUpdater nearbyChunkTicketUpdater = new ChunkTicketManager.NearbyChunkTicketUpdater(33);
@@ -59,22 +59,22 @@ public abstract class ChunkTicketManager {
 
 	protected void purge() {
 		this.location++;
-		ObjectIterator<Entry<class_4706<ChunkTicket<?>>>> objectIterator = this.ticketsByPosition.long2ObjectEntrySet().fastIterator();
+		ObjectIterator<Entry<SortedArraySet<ChunkTicket<?>>>> objectIterator = this.ticketsByPosition.long2ObjectEntrySet().fastIterator();
 
 		while (objectIterator.hasNext()) {
-			Entry<class_4706<ChunkTicket<?>>> entry = (Entry<class_4706<ChunkTicket<?>>>)objectIterator.next();
-			if (((class_4706)entry.getValue()).removeIf(chunkTicket -> chunkTicket.method_20627(this.location))) {
-				this.distanceFromTicketTracker.updateLevel(entry.getLongKey(), getLevel((class_4706<ChunkTicket<?>>)entry.getValue()), false);
+			Entry<SortedArraySet<ChunkTicket<?>>> entry = (Entry<SortedArraySet<ChunkTicket<?>>>)objectIterator.next();
+			if (((SortedArraySet)entry.getValue()).removeIf(chunkTicket -> chunkTicket.method_20627(this.location))) {
+				this.distanceFromTicketTracker.updateLevel(entry.getLongKey(), getLevel((SortedArraySet<ChunkTicket<?>>)entry.getValue()), false);
 			}
 
-			if (((class_4706)entry.getValue()).isEmpty()) {
+			if (((SortedArraySet)entry.getValue()).isEmpty()) {
 				objectIterator.remove();
 			}
 		}
 	}
 
-	private static int getLevel(class_4706<ChunkTicket<?>> arg) {
-		return !arg.isEmpty() ? arg.method_23865().getLevel() : ThreadedAnvilChunkStorage.MAX_LEVEL + 1;
+	private static int getLevel(SortedArraySet<ChunkTicket<?>> sortedArraySet) {
+		return !sortedArraySet.isEmpty() ? sortedArraySet.first().getLevel() : ThreadedAnvilChunkStorage.MAX_LEVEL + 1;
 	}
 
 	protected abstract boolean isUnloaded(long pos);
@@ -125,9 +125,9 @@ public abstract class ChunkTicketManager {
 	}
 
 	private void addTicket(long position, ChunkTicket<?> chunkTicket) {
-		class_4706<ChunkTicket<?>> lv = this.getTicketSet(position);
-		int i = getLevel(lv);
-		ChunkTicket<?> chunkTicket2 = lv.method_23862(chunkTicket);
+		SortedArraySet<ChunkTicket<?>> sortedArraySet = this.getTicketSet(position);
+		int i = getLevel(sortedArraySet);
+		ChunkTicket<?> chunkTicket2 = sortedArraySet.addAndGet(chunkTicket);
 		chunkTicket2.method_23956(this.location);
 		if (chunkTicket.getLevel() < i) {
 			this.distanceFromTicketTracker.updateLevel(position, chunkTicket.getLevel(), true);
@@ -135,15 +135,15 @@ public abstract class ChunkTicketManager {
 	}
 
 	private void removeTicket(long pos, ChunkTicket<?> ticket) {
-		class_4706<ChunkTicket<?>> lv = this.getTicketSet(pos);
-		if (lv.remove(ticket)) {
+		SortedArraySet<ChunkTicket<?>> sortedArraySet = this.getTicketSet(pos);
+		if (sortedArraySet.remove(ticket)) {
 		}
 
-		if (lv.isEmpty()) {
+		if (sortedArraySet.isEmpty()) {
 			this.ticketsByPosition.remove(pos);
 		}
 
-		this.distanceFromTicketTracker.updateLevel(pos, getLevel(lv), false);
+		this.distanceFromTicketTracker.updateLevel(pos, getLevel(sortedArraySet), false);
 	}
 
 	public <T> void addTicketWithLevel(ChunkTicketType<T> type, ChunkPos pos, int level, T argument) {
@@ -164,8 +164,8 @@ public abstract class ChunkTicketManager {
 		this.removeTicket(pos.toLong(), chunkTicket);
 	}
 
-	private class_4706<ChunkTicket<?>> getTicketSet(long position) {
-		return this.ticketsByPosition.computeIfAbsent(position, l -> class_4706.method_23859(4));
+	private SortedArraySet<ChunkTicket<?>> getTicketSet(long position) {
+		return this.ticketsByPosition.computeIfAbsent(position, l -> SortedArraySet.create(4));
 	}
 
 	protected void setChunkForced(ChunkPos pos, boolean forced) {
@@ -196,10 +196,10 @@ public abstract class ChunkTicketManager {
 	}
 
 	protected String method_21623(long l) {
-		class_4706<ChunkTicket<?>> lv = this.ticketsByPosition.get(l);
+		SortedArraySet<ChunkTicket<?>> sortedArraySet = this.ticketsByPosition.get(l);
 		String string;
-		if (lv != null && !lv.isEmpty()) {
-			string = lv.method_23865().toString();
+		if (sortedArraySet != null && !sortedArraySet.isEmpty()) {
+			string = sortedArraySet.first().toString();
 		} else {
 			string = "no_ticket";
 		}
@@ -358,11 +358,11 @@ public abstract class ChunkTicketManager {
 
 		@Override
 		protected int getInitialLevel(long id) {
-			class_4706<ChunkTicket<?>> lv = ChunkTicketManager.this.ticketsByPosition.get(id);
-			if (lv == null) {
+			SortedArraySet<ChunkTicket<?>> sortedArraySet = ChunkTicketManager.this.ticketsByPosition.get(id);
+			if (sortedArraySet == null) {
 				return Integer.MAX_VALUE;
 			} else {
-				return lv.isEmpty() ? Integer.MAX_VALUE : lv.method_23865().getLevel();
+				return sortedArraySet.isEmpty() ? Integer.MAX_VALUE : sortedArraySet.first().getLevel();
 			}
 		}
 

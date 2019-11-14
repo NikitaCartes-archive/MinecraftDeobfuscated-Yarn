@@ -29,7 +29,7 @@ public class OnKilledCriterion extends AbstractCriterion<OnKilledCriterion.Condi
 	}
 
 	public void trigger(ServerPlayerEntity player, Entity entity, DamageSource source) {
-		this.test(player.getAdvancementManager(), conditions -> conditions.test(player, entity, source));
+		this.test(player.getAdvancementTracker(), conditions -> conditions.test(player, entity, source));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

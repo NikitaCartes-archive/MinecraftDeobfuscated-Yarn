@@ -1361,7 +1361,7 @@ public class FoxEntity extends AnimalEntity {
 			FoxEntity.this.getLookControl()
 				.lookAt(
 					FoxEntity.this.getX() + this.lookX,
-					FoxEntity.this.method_23320(),
+					FoxEntity.this.getEyeY(),
 					FoxEntity.this.getZ() + this.lookZ,
 					(float)FoxEntity.this.method_5986(),
 					(float)FoxEntity.this.getLookPitchSpeed()

@@ -23,7 +23,7 @@ public class EmitterParticle extends NoRenderParticle {
 	}
 
 	private EmitterParticle(World world, Entity entity, ParticleEffect parameters, int maxEmitterAge, Vec3d vec3d) {
-		super(world, entity.getX(), entity.getHeightAt(0.5), entity.getZ(), vec3d.x, vec3d.y, vec3d.z);
+		super(world, entity.getX(), entity.getBodyY(0.5), entity.getZ(), vec3d.x, vec3d.y, vec3d.z);
 		this.entity = entity;
 		this.maxEmitterAge = maxEmitterAge;
 		this.parameters = parameters;
@@ -37,9 +37,9 @@ public class EmitterParticle extends NoRenderParticle {
 			double e = (double)(this.random.nextFloat() * 2.0F - 1.0F);
 			double f = (double)(this.random.nextFloat() * 2.0F - 1.0F);
 			if (!(d * d + e * e + f * f > 1.0)) {
-				double g = this.entity.method_23316(d / 4.0);
-				double h = this.entity.getHeightAt(0.5 + e / 4.0);
-				double j = this.entity.method_23324(f / 4.0);
+				double g = this.entity.offsetX(d / 4.0);
+				double h = this.entity.getBodyY(0.5 + e / 4.0);
+				double j = this.entity.offsetZ(f / 4.0);
 				this.world.addParticle(this.parameters, false, g, h, j, d, e + 0.2, f);
 			}
 		}

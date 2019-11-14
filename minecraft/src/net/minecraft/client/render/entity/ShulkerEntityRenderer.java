@@ -15,8 +15,8 @@ import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
 public class ShulkerEntityRenderer extends MobEntityRenderer<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> {
-	public static final Identifier SKIN = new Identifier("textures/" + ModelLoader.field_20845.getPath() + ".png");
-	public static final Identifier[] SKIN_COLOR = (Identifier[])ModelLoader.field_20846
+	public static final Identifier SKIN = new Identifier("textures/" + ModelLoader.SHULKER.getPath() + ".png");
+	public static final Identifier[] SKIN_COLOR = (Identifier[])ModelLoader.SHULKER_COLORS
 		.stream()
 		.map(identifier -> new Identifier("textures/" + identifier.getPath() + ".png"))
 		.toArray(Identifier[]::new);

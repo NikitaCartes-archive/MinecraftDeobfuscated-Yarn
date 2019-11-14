@@ -45,7 +45,7 @@ public class PistonHeadBlock extends FacingBlock {
 
 	public PistonHeadBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(TYPE, PistonType.DEFAULT).with(SHORT, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(TYPE, PistonType.DEFAULT).with(SHORT, Boolean.valueOf(false)));
 	}
 
 	private VoxelShape getHeadShape(BlockState state) {

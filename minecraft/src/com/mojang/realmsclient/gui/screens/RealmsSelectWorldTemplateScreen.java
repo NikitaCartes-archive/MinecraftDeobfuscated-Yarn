@@ -472,9 +472,9 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 		private void renderWorldTemplateItem(WorldTemplate worldTemplate, int x, int y, int mouseX, int mouseY) {
 			int i = x + 45 + 20;
 			RealmsSelectWorldTemplateScreen.this.drawString(worldTemplate.name, i, y + 2, 16777215);
-			RealmsSelectWorldTemplateScreen.this.drawString(worldTemplate.author, i, y + 15, 7105644);
+			RealmsSelectWorldTemplateScreen.this.drawString(worldTemplate.author, i, y + 15, 8421504);
 			RealmsSelectWorldTemplateScreen.this.drawString(
-				worldTemplate.version, i + 227 - RealmsSelectWorldTemplateScreen.this.fontWidth(worldTemplate.version), y + 1, 7105644
+				worldTemplate.version, i + 227 - RealmsSelectWorldTemplateScreen.this.fontWidth(worldTemplate.version), y + 1, 8421504
 			);
 			if (!"".equals(worldTemplate.link) || !"".equals(worldTemplate.trailer) || !"".equals(worldTemplate.recommendedPlayers)) {
 				this.drawIcons(i - 1, y + 25, mouseX, mouseY, worldTemplate.link, worldTemplate.trailer, worldTemplate.recommendedPlayers);
@@ -494,7 +494,7 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 
 		private void drawIcons(int x, int y, int xm, int ym, String link, String trailerLink, String recommendedPlayers) {
 			if (!"".equals(recommendedPlayers)) {
-				RealmsSelectWorldTemplateScreen.this.drawString(recommendedPlayers, x, y + 4, 5000268);
+				RealmsSelectWorldTemplateScreen.this.drawString(recommendedPlayers, x, y + 4, 8421504);
 			}
 
 			int i = "".equals(recommendedPlayers) ? 0 : RealmsSelectWorldTemplateScreen.this.fontWidth(recommendedPlayers) + 2;

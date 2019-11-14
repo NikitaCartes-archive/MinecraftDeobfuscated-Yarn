@@ -249,7 +249,7 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 		}
 
 		if (this.targetEntity != null) {
-			Vec3d vec3d3 = new Vec3d(this.targetEntity.getX(), this.targetEntity.method_23320(), this.targetEntity.getZ());
+			Vec3d vec3d3 = new Vec3d(this.targetEntity.getX(), this.targetEntity.getEyeY(), this.targetEntity.getZ());
 			float j = (-0.5F + random.nextFloat()) * (3.0F + this.targetEntity.getWidth());
 			float g = -1.0F + random.nextFloat() * this.targetEntity.getHeight();
 			float h = (-0.5F + random.nextFloat()) * (3.0F + this.targetEntity.getWidth());

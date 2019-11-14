@@ -10,7 +10,7 @@ public interface ModelBakeSettings {
 		return Rotation3.identity();
 	}
 
-	default boolean isUvLocked() {
+	default boolean isShaded() {
 		return false;
 	}
 }

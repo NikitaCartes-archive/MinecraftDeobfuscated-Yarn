@@ -22,7 +22,7 @@ public class TameAnimalCriterion extends AbstractCriterion<TameAnimalCriterion.C
 	}
 
 	public void trigger(ServerPlayerEntity player, AnimalEntity entity) {
-		this.test(player.getAdvancementManager(), conditions -> conditions.matches(player, entity));
+		this.test(player.getAdvancementTracker(), conditions -> conditions.matches(player, entity));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

@@ -99,7 +99,7 @@ public class Block implements ItemConvertible {
 	private final float slipperiness;
 	private final float field_21207;
 	private final float field_21208;
-	protected final StateManager<Block, BlockState> stateFactory;
+	protected final StateManager<Block, BlockState> stateManager;
 	private BlockState defaultState;
 	protected final boolean collidable;
 	private final boolean dynamicBounds;
@@ -255,8 +255,8 @@ public class Block implements ItemConvertible {
 		this.dynamicBounds = settings.dynamicBounds;
 		this.dropTableId = settings.dropTableId;
 		this.opaque = settings.opaque;
-		this.stateFactory = builder.build(BlockState::new);
-		this.setDefaultState(this.stateFactory.getDefaultState());
+		this.stateManager = builder.build(BlockState::new);
+		this.setDefaultState(this.stateManager.getDefaultState());
 	}
 
 	public static boolean canConnect(Block block) {
@@ -749,8 +749,8 @@ public class Block implements ItemConvertible {
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
 	}
 
-	public StateManager<Block, BlockState> getStateFactory() {
-		return this.stateFactory;
+	public StateManager<Block, BlockState> getStateManager() {
+		return this.stateManager;
 	}
 
 	protected final void setDefaultState(BlockState state) {

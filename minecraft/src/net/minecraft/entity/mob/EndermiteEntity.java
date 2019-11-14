@@ -130,9 +130,9 @@ public class EndermiteEntity extends HostileEntity {
 				this.world
 					.addParticle(
 						ParticleTypes.PORTAL,
-						this.method_23322(0.5),
-						this.method_23319(),
-						this.method_23325(0.5),
+						this.getParticleX(0.5),
+						this.getRandomBodyY(),
+						this.getParticleZ(0.5),
 						(this.random.nextDouble() - 0.5) * 2.0,
 						-this.random.nextDouble(),
 						(this.random.nextDouble() - 0.5) * 2.0

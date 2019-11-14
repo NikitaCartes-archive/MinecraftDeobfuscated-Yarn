@@ -28,7 +28,7 @@ public class FishingRodHookedCriterion extends AbstractCriterion<FishingRodHooke
 	}
 
 	public void trigger(ServerPlayerEntity player, ItemStack rodStack, FishingBobberEntity bobber, Collection<ItemStack> fishingLoots) {
-		this.test(player.getAdvancementManager(), conditions -> conditions.matches(player, rodStack, bobber, fishingLoots));
+		this.test(player.getAdvancementTracker(), conditions -> conditions.matches(player, rodStack, bobber, fishingLoots));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

@@ -56,7 +56,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	public CampfireBlock(Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateFactory
+			this.stateManager
 				.getDefaultState()
 				.with(LIT, Boolean.valueOf(true))
 				.with(SIGNAL_FIRE, Boolean.valueOf(false))

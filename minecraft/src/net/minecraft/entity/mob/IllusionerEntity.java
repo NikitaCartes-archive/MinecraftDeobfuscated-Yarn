@@ -123,7 +123,7 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 				}
 
 				for (int j = 0; j < 16; j++) {
-					this.world.addParticle(ParticleTypes.CLOUD, this.method_23322(0.5), this.method_23319(), this.method_23324(0.5), 0.0, 0.0, 0.0);
+					this.world.addParticle(ParticleTypes.CLOUD, this.getParticleX(0.5), this.getRandomBodyY(), this.offsetZ(0.5), 0.0, 0.0, 0.0);
 				}
 
 				this.world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_ILLUSIONER_MIRROR_MOVE, this.getSoundCategory(), 1.0F, 1.0F, false);
@@ -200,7 +200,7 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 		ItemStack itemStack = this.getArrowType(this.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this, Items.BOW)));
 		ProjectileEntity projectileEntity = ProjectileUtil.createArrowProjectile(this, itemStack, f);
 		double d = target.getX() - this.getX();
-		double e = target.getHeightAt(0.3333333333333333) - projectileEntity.getY();
+		double e = target.getBodyY(0.3333333333333333) - projectileEntity.getY();
 		double g = target.getZ() - this.getZ();
 		double h = (double)MathHelper.sqrt(d * d + g * g);
 		projectileEntity.setVelocity(d, e + h * 0.2F, g, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));

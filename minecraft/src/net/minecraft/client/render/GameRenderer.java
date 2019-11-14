@@ -339,7 +339,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			float g = (float)livingEntity.hurtTime - f;
 			if (livingEntity.getHealth() <= 0.0F) {
 				float h = Math.min((float)livingEntity.deathTime + f, 20.0F);
-				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(40.0F - 8000.0F / (h + 200.0F)));
+				matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(40.0F - 8000.0F / (h + 200.0F)));
 			}
 
 			if (g < 0.0F) {
@@ -349,9 +349,9 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			g /= (float)livingEntity.maxHurtTime;
 			g = MathHelper.sin(g * g * g * g * (float) Math.PI);
 			float h = livingEntity.knockbackVelocity;
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-h));
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(-g * 14.0F));
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(h));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-h));
+			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(-g * 14.0F));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(h));
 		}
 	}
 
@@ -362,8 +362,8 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			float h = -(playerEntity.horizontalSpeed + g * f);
 			float i = MathHelper.lerp(f, playerEntity.field_7505, playerEntity.field_7483);
 			matrixStack.translate((double)(MathHelper.sin(h * (float) Math.PI) * i * 0.5F), (double)(-Math.abs(MathHelper.cos(h * (float) Math.PI) * i)), 0.0);
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(MathHelper.sin(h * (float) Math.PI) * i * 3.0F));
-			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(Math.abs(MathHelper.cos(h * (float) Math.PI - 0.2F) * i) * 5.0F));
+			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(MathHelper.sin(h * (float) Math.PI) * i * 3.0F));
+			matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(Math.abs(MathHelper.cos(h * (float) Math.PI - 0.2F) * i) * 5.0F));
 		}
 	}
 
@@ -420,7 +420,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		matrixStack.peek()
 			.getModel()
 			.multiply(
-				Matrix4f.method_4929(
+				Matrix4f.viewboxMatrix(
 					this.getFov(camera, f, bl),
 					(float)this.client.getWindow().getFramebufferWidth() / (float)this.client.getWindow().getFramebufferHeight(),
 					0.05F,
@@ -631,10 +631,10 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			float g = 5.0F / (f * f + 5.0F) - f * 0.04F;
 			g *= g;
 			Vector3f vector3f = new Vector3f(0.0F, MathHelper.SQUARE_ROOT_OF_TWO / 2.0F, MathHelper.SQUARE_ROOT_OF_TWO / 2.0F);
-			matrix.multiply(vector3f.getRotationQuaternion(((float)this.ticks + tickDelta) * (float)i));
+			matrix.multiply(vector3f.getDegreesQuaternion(((float)this.ticks + tickDelta) * (float)i));
 			matrix.scale(1.0F / g, 1.0F, 1.0F);
 			float h = -((float)this.ticks + tickDelta) * (float)i;
-			matrix.multiply(vector3f.getRotationQuaternion(h));
+			matrix.multiply(vector3f.getDegreesQuaternion(h));
 		}
 
 		camera.update(
@@ -644,8 +644,8 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			this.client.options.perspective == 2,
 			tickDelta
 		);
-		matrix.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(camera.getPitch()));
-		matrix.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(camera.getYaw() + 180.0F));
+		matrix.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(camera.getPitch()));
+		matrix.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(camera.getYaw() + 180.0F));
 		this.client.worldRenderer.render(matrix, tickDelta, limitTime, bl, camera, this, this.lightmapTextureManager, matrix4f);
 		this.client.getProfiler().swap("hand");
 		if (this.renderHand) {
@@ -697,9 +697,9 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			);
 			float n = 50.0F + 175.0F * MathHelper.sin(k);
 			matrixStack.scale(n, -n, n);
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(900.0F * MathHelper.abs(MathHelper.sin(k))));
-			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(6.0F * MathHelper.cos(f * 8.0F)));
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(6.0F * MathHelper.cos(f * 8.0F)));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(900.0F * MathHelper.abs(MathHelper.sin(k))));
+			matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(6.0F * MathHelper.cos(f * 8.0F)));
+			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(6.0F * MathHelper.cos(f * 8.0F)));
 			VertexConsumerProvider.Immediate immediate = this.buffers.getEntityVertexConsumers();
 			this.client.getItemRenderer().method_23178(this.floatingItem, ModelTransformation.Type.FIXED, 15728880, OverlayTexture.DEFAULT_UV, matrixStack, immediate);
 			matrixStack.pop();

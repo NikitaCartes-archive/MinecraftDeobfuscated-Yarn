@@ -29,7 +29,7 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 
 	public BubbleColumnBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(DRAG, Boolean.valueOf(true)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(DRAG, Boolean.valueOf(true)));
 	}
 
 	@Override

@@ -147,7 +147,7 @@ public class BlockArgumentParser {
 			Tag<Block> tag = BlockTags.getContainer().get(this.tagId);
 			if (tag != null) {
 				for (Block block : tag.values()) {
-					for (Property<?> property : block.getStateFactory().getProperties()) {
+					for (Property<?> property : block.getStateManager().getProperties()) {
 						if (!this.tagProperties.containsKey(property.getName()) && property.getName().startsWith(string)) {
 							suggestionsBuilder.suggest(property.getName() + '=');
 						}
@@ -224,13 +224,13 @@ public class BlockArgumentParser {
 			Tag<Block> tag = BlockTags.getContainer().get(this.tagId);
 			if (tag != null) {
 				for (Block block : tag.values()) {
-					Property<?> property = block.getStateFactory().getProperty(string);
+					Property<?> property = block.getStateManager().getProperty(string);
 					if (property != null) {
 						suggestPropertyValues(suggestionsBuilder, property);
 					}
 
 					if (!bl) {
-						for (Property<?> property2 : block.getStateFactory().getProperties()) {
+						for (Property<?> property2 : block.getStateManager().getProperties()) {
 							if (!this.tagProperties.containsKey(property2.getName())) {
 								bl = true;
 								break;
@@ -257,7 +257,7 @@ public class BlockArgumentParser {
 				boolean bl2 = false;
 
 				for (Block block : tag.values()) {
-					bl |= !block.getStateFactory().getProperties().isEmpty();
+					bl |= !block.getStateManager().getProperties().isEmpty();
 					bl2 |= block.hasBlockEntity();
 					if (bl && bl2) {
 						break;
@@ -279,7 +279,7 @@ public class BlockArgumentParser {
 
 	private CompletableFuture<Suggestions> suggestSnbtOrBlockProperties(SuggestionsBuilder suggestionsBuilder) {
 		if (suggestionsBuilder.getRemaining().isEmpty()) {
-			if (!this.blockState.getBlock().getStateFactory().getProperties().isEmpty()) {
+			if (!this.blockState.getBlock().getStateManager().getProperties().isEmpty()) {
 				suggestionsBuilder.suggest(String.valueOf('['));
 			}
 
@@ -311,7 +311,7 @@ public class BlockArgumentParser {
 			this.reader.setCursor(i);
 			return INVALID_BLOCK_ID_EXCEPTION.createWithContext(this.reader, this.blockId.toString());
 		});
-		this.stateFactory = block.getStateFactory();
+		this.stateFactory = block.getStateManager();
 		this.blockState = block.getDefaultState();
 	}
 

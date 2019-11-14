@@ -40,44 +40,44 @@ public class Sprite {
 	private float vMax;
 	protected int frameIndex;
 	protected int frameTicks;
-	private static final float[] srgbLinearMap = Util.create(new float[256], fs -> {
+	private static final float[] SRGB_LINEAR_MAP = Util.create(new float[256], fs -> {
 		for (int i = 0; i < fs.length; i++) {
 			fs[i] = (float)Math.pow((double)((float)i / 255.0F), 2.2);
 		}
 	});
 
-	protected Sprite(Identifier identifier, int i, int j) {
-		this.id = identifier;
-		this.width = i;
-		this.height = j;
+	protected Sprite(Identifier id, int width, int height) {
+		this.id = id;
+		this.width = width;
+		this.height = height;
 	}
 
-	protected Sprite(Identifier identifier, PngFile pngFile, @Nullable AnimationResourceMetadata animationResourceMetadata) {
-		this.id = identifier;
-		if (animationResourceMetadata != null) {
-			Pair<Integer, Integer> pair = getDimensions(animationResourceMetadata.getWidth(), animationResourceMetadata.getHeight(), pngFile.width, pngFile.height);
+	protected Sprite(Identifier id, PngFile sourceFile, @Nullable AnimationResourceMetadata animationData) {
+		this.id = id;
+		if (animationData != null) {
+			Pair<Integer, Integer> pair = getDimensions(animationData.getWidth(), animationData.getHeight(), sourceFile.width, sourceFile.height);
 			this.width = pair.getFirst();
 			this.height = pair.getSecond();
-			if (!isDivisibleBy(pngFile.width, this.width) || !isDivisibleBy(pngFile.height, this.height)) {
+			if (!isDivisibleBy(sourceFile.width, this.width) || !isDivisibleBy(sourceFile.height, this.height)) {
 				throw new IllegalArgumentException(
-					String.format("Image size %s,%s is not multiply of frame size %s,%s", this.width, this.height, pngFile.width, pngFile.height)
+					String.format("Image size %s,%s is not multiply of frame size %s,%s", this.width, this.height, sourceFile.width, sourceFile.height)
 				);
 			}
 		} else {
-			this.width = pngFile.width;
-			this.height = pngFile.height;
+			this.width = sourceFile.width;
+			this.height = sourceFile.height;
 		}
 
-		this.animationMetadata = animationResourceMetadata;
+		this.animationMetadata = animationData;
 	}
 
-	private static Pair<Integer, Integer> getDimensions(int animationMetadataWidth, int animationMetadataHeight, int width, int height) {
-		if (animationMetadataWidth != -1) {
-			return animationMetadataHeight != -1 ? Pair.of(animationMetadataWidth, animationMetadataHeight) : Pair.of(animationMetadataWidth, height);
-		} else if (animationMetadataHeight != -1) {
-			return Pair.of(width, animationMetadataHeight);
+	private static Pair<Integer, Integer> getDimensions(int frameWidth, int frameHeight, int imageWidth, int imageHeight) {
+		if (frameWidth != -1) {
+			return frameHeight != -1 ? Pair.of(frameWidth, frameHeight) : Pair.of(frameWidth, imageHeight);
+		} else if (frameHeight != -1) {
+			return Pair.of(imageWidth, frameHeight);
 		} else {
-			int i = Math.min(width, height);
+			int i = Math.min(imageWidth, imageHeight);
 			return Pair.of(i, i);
 		}
 	}
@@ -206,8 +206,8 @@ public class Sprite {
 		return (int)((double)j * 255.0);
 	}
 
-	private static float srgbToLinear(int i) {
-		return srgbLinearMap[i & 0xFF];
+	private static float srgbToLinear(int rgbComponentValue) {
+		return SRGB_LINEAR_MAP[rgbComponentValue & 0xFF];
 	}
 
 	private void upload(int frame) {
@@ -221,9 +221,9 @@ public class Sprite {
 		this.upload(i, j, this.images);
 	}
 
-	private void upload(int i, int j, NativeImage[] nativeImages) {
-		for (int k = 0; k < this.images.length; k++) {
-			nativeImages[k].upload(k, this.x >> k, this.y >> k, i >> k, j >> k, this.width >> k, this.height >> k, this.images.length > 1, false);
+	private void upload(int frameX, int frameY, NativeImage[] output) {
+		for (int i = 0; i < this.images.length; i++) {
+			output[i].upload(i, this.x >> i, this.y >> i, frameX >> i, frameY >> i, this.width >> i, this.height >> i, this.images.length > 1, false);
 		}
 	}
 
@@ -252,9 +252,9 @@ public class Sprite {
 		return this.uMax;
 	}
 
-	public float getU(double d) {
+	public float getFrameU(double frame) {
 		float f = this.uMax - this.uMin;
-		return this.uMin + f * (float)d / 16.0F;
+		return this.uMin + f * (float)frame / 16.0F;
 	}
 
 	public float getMinV() {
@@ -265,9 +265,9 @@ public class Sprite {
 		return this.vMax;
 	}
 
-	public float getV(double d) {
+	public float getFrameV(double frame) {
 		float f = this.vMax - this.vMin;
-		return this.vMin + f * (float)d / 16.0F;
+		return this.vMin + f * (float)frame / 16.0F;
 	}
 
 	public Identifier getId() {
@@ -343,70 +343,70 @@ public class Sprite {
 		return this.frameXs == null ? 0 : this.frameXs.length;
 	}
 
-	public void load(Resource resource, int i) throws IOException {
+	public void load(Resource resource, int mipLevel) throws IOException {
 		NativeImage nativeImage = NativeImage.read(resource.getInputStream());
-		this.images = new NativeImage[i];
+		this.images = new NativeImage[mipLevel];
 		this.images[0] = nativeImage;
-		int j;
+		int i;
 		if (this.animationMetadata != null && this.animationMetadata.getWidth() != -1) {
-			j = nativeImage.getWidth() / this.animationMetadata.getWidth();
+			i = nativeImage.getWidth() / this.animationMetadata.getWidth();
 		} else {
-			j = nativeImage.getWidth() / this.width;
+			i = nativeImage.getWidth() / this.width;
 		}
 
-		int k;
+		int j;
 		if (this.animationMetadata != null && this.animationMetadata.getHeight() != -1) {
-			k = nativeImage.getHeight() / this.animationMetadata.getHeight();
+			j = nativeImage.getHeight() / this.animationMetadata.getHeight();
 		} else {
-			k = nativeImage.getHeight() / this.height;
+			j = nativeImage.getHeight() / this.height;
 		}
 
 		if (this.animationMetadata != null && this.animationMetadata.getFrameCount() > 0) {
-			int l = (Integer)this.animationMetadata.getFrameIndexSet().stream().max(Integer::compareTo).get() + 1;
-			this.frameXs = new int[l];
-			this.frameYs = new int[l];
+			int k = (Integer)this.animationMetadata.getFrameIndexSet().stream().max(Integer::compareTo).get() + 1;
+			this.frameXs = new int[k];
+			this.frameYs = new int[k];
 			Arrays.fill(this.frameXs, -1);
 			Arrays.fill(this.frameYs, -1);
 
-			for (int m : this.animationMetadata.getFrameIndexSet()) {
-				if (m >= j * k) {
-					throw new RuntimeException("invalid frameindex " + m);
+			for (int l : this.animationMetadata.getFrameIndexSet()) {
+				if (l >= i * j) {
+					throw new RuntimeException("invalid frameindex " + l);
 				}
 
-				int n = m / j;
-				int o = m % j;
-				this.frameXs[m] = o;
-				this.frameYs[m] = n;
+				int m = l / i;
+				int n = l % i;
+				this.frameXs[l] = n;
+				this.frameYs[l] = m;
 			}
 		} else {
 			List<AnimationFrameResourceMetadata> list = Lists.<AnimationFrameResourceMetadata>newArrayList();
-			int p = j * k;
-			this.frameXs = new int[p];
-			this.frameYs = new int[p];
+			int o = i * j;
+			this.frameXs = new int[o];
+			this.frameYs = new int[o];
 
-			for (int m = 0; m < k; m++) {
-				for (int n = 0; n < j; n++) {
-					int o = m * j + n;
-					this.frameXs[o] = n;
-					this.frameYs[o] = m;
-					list.add(new AnimationFrameResourceMetadata(o, -1));
+			for (int l = 0; l < j; l++) {
+				for (int m = 0; m < i; m++) {
+					int n = l * i + m;
+					this.frameXs[n] = m;
+					this.frameYs[n] = l;
+					list.add(new AnimationFrameResourceMetadata(n, -1));
 				}
 			}
 
-			int m = 1;
+			int l = 1;
 			boolean bl = false;
 			if (this.animationMetadata != null) {
-				m = this.animationMetadata.getDefaultFrameTime();
+				l = this.animationMetadata.getDefaultFrameTime();
 				bl = this.animationMetadata.shouldInterpolate();
 			}
 
-			this.animationMetadata = new AnimationResourceMetadata(list, this.width, this.height, m, bl);
+			this.animationMetadata = new AnimationResourceMetadata(list, this.width, this.height, l, bl);
 		}
 	}
 
-	public void generateMipmaps(int i) {
+	public void generateMipmaps(int mipLevel) {
 		try {
-			this.generateMipmapsInternal(i);
+			this.generateMipmapsInternal(mipLevel);
 		} catch (Throwable var5) {
 			CrashReport crashReport = CrashReport.create(var5, "Generating mipmaps for frame");
 			CrashReportSection crashReportSection = crashReport.addElement("Frame being iterated");
@@ -490,13 +490,13 @@ public class Sprite {
 		this.upload(0);
 	}
 
-	private float method_23841() {
+	private float getFrameDeltaFactor() {
 		float f = (float)this.width / (this.uMax - this.uMin);
 		float g = (float)this.height / (this.vMax - this.vMin);
 		return Math.max(g, f);
 	}
 
-	public float method_23842() {
-		return 4.0F / this.method_23841();
+	public float getAnimationFrameDelta() {
+		return 4.0F / this.getFrameDeltaFactor();
 	}
 }

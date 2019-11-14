@@ -22,7 +22,7 @@ public class ConstructBeaconCriterion extends AbstractCriterion<ConstructBeaconC
 	}
 
 	public void trigger(ServerPlayerEntity player, BeaconBlockEntity beacon) {
-		this.test(player.getAdvancementManager(), conditions -> conditions.matches(beacon));
+		this.test(player.getAdvancementTracker(), conditions -> conditions.matches(beacon));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

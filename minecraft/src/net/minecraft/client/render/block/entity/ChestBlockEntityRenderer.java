@@ -103,7 +103,7 @@ public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProg
 		matrixStack.push();
 		float g = ((Direction)blockState.get(ChestBlock.FACING)).asRotation();
 		matrixStack.translate(0.5, 0.5, 0.5);
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-g));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-g));
 		matrixStack.translate(-0.5, -0.5, -0.5);
 		float h;
 		if (bl) {

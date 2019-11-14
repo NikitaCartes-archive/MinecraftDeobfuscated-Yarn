@@ -24,7 +24,7 @@ public class TallPlantBlock extends PlantBlock {
 
 	public TallPlantBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(HALF, DoubleBlockHalf.LOWER));
+		this.setDefaultState(this.stateManager.getDefaultState().with(HALF, DoubleBlockHalf.LOWER));
 	}
 
 	@Override

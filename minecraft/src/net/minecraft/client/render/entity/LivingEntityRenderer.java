@@ -150,7 +150,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 	protected void setupTransforms(T entity, MatrixStack matrixStack, float f, float g, float h) {
 		EntityPose entityPose = entity.getPose();
 		if (entityPose != EntityPose.SLEEPING) {
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F - g));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F - g));
 		}
 
 		if (entity.deathTime > 0) {
@@ -160,22 +160,22 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 				i = 1.0F;
 			}
 
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(i * this.getLyingAngle(entity)));
+			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(i * this.getLyingAngle(entity)));
 		} else if (entity.isUsingRiptide()) {
-			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-90.0F - entity.pitch));
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(((float)entity.age + h) * -75.0F));
+			matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0F - entity.pitch));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(((float)entity.age + h) * -75.0F));
 		} else if (entityPose == EntityPose.SLEEPING) {
 			Direction direction = entity.getSleepingDirection();
 			float j = direction != null ? getYaw(direction) : g;
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(j));
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(this.getLyingAngle(entity)));
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(270.0F));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(j));
+			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(this.getLyingAngle(entity)));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(270.0F));
 		} else if (entity.hasCustomName() || entity instanceof PlayerEntity) {
 			String string = Formatting.strip(entity.getName().getString());
 			if (("Dinnerbone".equals(string) || "Grumm".equals(string))
 				&& (!(entity instanceof PlayerEntity) || ((PlayerEntity)entity).isSkinOverlayVisible(PlayerModelPart.CAPE))) {
 				matrixStack.translate(0.0, (double)(entity.getHeight() + 0.1F), 0.0);
-				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0F));
+				matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
 			}
 		}
 	}

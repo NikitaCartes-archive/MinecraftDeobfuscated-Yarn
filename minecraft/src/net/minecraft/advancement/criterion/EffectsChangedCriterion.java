@@ -22,7 +22,7 @@ public class EffectsChangedCriterion extends AbstractCriterion<EffectsChangedCri
 	}
 
 	public void trigger(ServerPlayerEntity player) {
-		this.test(player.getAdvancementManager(), conditions -> conditions.matches(player));
+		this.test(player.getAdvancementTracker(), conditions -> conditions.matches(player));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

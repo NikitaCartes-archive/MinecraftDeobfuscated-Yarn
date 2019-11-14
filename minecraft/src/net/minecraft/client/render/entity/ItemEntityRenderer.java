@@ -57,7 +57,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 		float m = bakedModel.getTransformation().getTransformation(ModelTransformation.Type.GROUND).scale.getY();
 		matrixStack.translate(0.0, (double)(l + 0.25F * m), 0.0);
 		float n = ((float)itemEntity.getAge() + g) / 20.0F + itemEntity.hoverHeight;
-		matrixStack.multiply(Vector3f.POSITIVE_Y.method_23626(n));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRadialQuaternion(n));
 		float o = bakedModel.getTransformation().ground.scale.getX();
 		float p = bakedModel.getTransformation().ground.scale.getY();
 		float q = bakedModel.getTransformation().ground.scale.getZ();

@@ -43,84 +43,84 @@ public class TextRenderer implements AutoCloseable {
 		this.fontStorage.close();
 	}
 
-	public int drawWithShadow(String string, float x, float y, int color) {
+	public int drawWithShadow(String text, float x, float y, int color) {
 		RenderSystem.enableAlphaTest();
-		return this.draw(string, x, y, color, Rotation3.identity().getMatrix(), true);
+		return this.draw(text, x, y, color, Rotation3.identity().getMatrix(), true);
 	}
 
-	public int draw(String string, float x, float y, int color) {
+	public int draw(String text, float x, float y, int color) {
 		RenderSystem.enableAlphaTest();
-		return this.draw(string, x, y, color, Rotation3.identity().getMatrix(), false);
+		return this.draw(text, x, y, color, Rotation3.identity().getMatrix(), false);
 	}
 
-	public String mirror(String string) {
+	public String mirror(String text) {
 		try {
-			Bidi bidi = new Bidi(new ArabicShaping(8).shape(string), 127);
+			Bidi bidi = new Bidi(new ArabicShaping(8).shape(text), 127);
 			bidi.setReorderingMode(0);
 			return bidi.writeReordered(2);
 		} catch (ArabicShapingException var3) {
-			return string;
+			return text;
 		}
 	}
 
-	private int draw(String string, float x, float y, int color, Matrix4f matrix, boolean shadow) {
-		if (string == null) {
+	private int draw(String text, float x, float y, int color, Matrix4f matrix, boolean shadow) {
+		if (text == null) {
 			return 0;
 		} else {
 			VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-			int i = this.draw(string, x, y, color, shadow, matrix, immediate, false, 0, 15728880);
+			int i = this.draw(text, x, y, color, shadow, matrix, immediate, false, 0, 15728880);
 			immediate.draw();
 			return i;
 		}
 	}
 
 	public int draw(
-		String string,
-		float x,
-		float y,
-		int z,
-		boolean color,
-		Matrix4f matrix,
-		VertexConsumerProvider vertexConsumerProvider,
-		boolean seeThrough,
-		int underlineColor,
-		int light
-	) {
-		return this.drawInternal(string, x, y, z, color, matrix, vertexConsumerProvider, seeThrough, underlineColor, light);
-	}
-
-	private int drawInternal(
-		String string,
+		String text,
 		float x,
 		float y,
 		int color,
-		boolean withShadow,
+		boolean shadow,
 		Matrix4f matrix,
 		VertexConsumerProvider vertexConsumerProvider,
 		boolean seeThrough,
-		int underlineColor,
+		int backgroundColor,
+		int light
+	) {
+		return this.drawInternal(text, x, y, color, shadow, matrix, vertexConsumerProvider, seeThrough, backgroundColor, light);
+	}
+
+	private int drawInternal(
+		String text,
+		float x,
+		float y,
+		int color,
+		boolean shadow,
+		Matrix4f matrix,
+		VertexConsumerProvider vertexConsumerProvider,
+		boolean seeThrough,
+		int backgroundColor,
 		int light
 	) {
 		if (this.rightToLeft) {
-			string = this.mirror(string);
+			text = this.mirror(text);
 		}
 
 		if ((color & -67108864) == 0) {
 			color |= -16777216;
 		}
 
-		if (withShadow) {
-			this.drawLayer(string, x, y, color, true, matrix, vertexConsumerProvider, seeThrough, underlineColor, light);
+		if (shadow) {
+			this.drawLayer(text, x, y, color, true, matrix, vertexConsumerProvider, seeThrough, backgroundColor, light);
 		}
 
 		Matrix4f matrix4f = matrix.copy();
 		matrix4f.addToLastColumn(new Vector3f(0.0F, 0.0F, 0.001F));
-		x = this.drawLayer(string, x, y, color, false, matrix4f, vertexConsumerProvider, seeThrough, underlineColor, light);
-		return (int)x + (withShadow ? 1 : 0);
+		x = this.drawLayer(text, x, y, color, false, matrix4f, vertexConsumerProvider, seeThrough, backgroundColor, light);
+		return (int)x + (shadow ? 1 : 0);
 	}
 
 	private float drawLayer(
-		String str,
+		String text,
 		float x,
 		float y,
 		int color,
@@ -147,10 +147,10 @@ public class TextRenderer implements AutoCloseable {
 		boolean bl5 = false;
 		List<GlyphRenderer.Rectangle> list = Lists.<GlyphRenderer.Rectangle>newArrayList();
 
-		for (int o = 0; o < str.length(); o++) {
-			char c = str.charAt(o);
-			if (c == 167 && o + 1 < str.length()) {
-				Formatting formatting = Formatting.byCode(str.charAt(o + 1));
+		for (int o = 0; o < text.length(); o++) {
+			char c = text.charAt(o);
+			if (c == 167 && o + 1 < text.length()) {
+				Formatting formatting = Formatting.byCode(text.charAt(o + 1));
 				if (formatting != null) {
 					if (formatting.affectsGlyphWidth()) {
 						bl = false;
@@ -253,17 +253,17 @@ public class TextRenderer implements AutoCloseable {
 		}
 	}
 
-	public int getStringWidth(String string) {
-		if (string == null) {
+	public int getStringWidth(String text) {
+		if (text == null) {
 			return 0;
 		} else {
 			float f = 0.0F;
 			boolean bl = false;
 
-			for (int i = 0; i < string.length(); i++) {
-				char c = string.charAt(i);
-				if (c == 167 && i < string.length() - 1) {
-					Formatting formatting = Formatting.byCode(string.charAt(++i));
+			for (int i = 0; i < text.length(); i++) {
+				char c = text.charAt(i);
+				if (c == 167 && i < text.length() - 1) {
+					Formatting formatting = Formatting.byCode(text.charAt(++i));
 					if (formatting == Formatting.BOLD) {
 						bl = true;
 					} else if (formatting != null && formatting.affectsGlyphWidth()) {
@@ -282,20 +282,20 @@ public class TextRenderer implements AutoCloseable {
 		return character == 167 ? 0.0F : this.fontStorage.getGlyph(character).getAdvance(false);
 	}
 
-	public String trimToWidth(String string, int width) {
-		return this.trimToWidth(string, width, false);
+	public String trimToWidth(String text, int width) {
+		return this.trimToWidth(text, width, false);
 	}
 
-	public String trimToWidth(String string, int width, boolean rightToLeft) {
+	public String trimToWidth(String text, int width, boolean rightToLeft) {
 		StringBuilder stringBuilder = new StringBuilder();
 		float f = 0.0F;
-		int i = rightToLeft ? string.length() - 1 : 0;
+		int i = rightToLeft ? text.length() - 1 : 0;
 		int j = rightToLeft ? -1 : 1;
 		boolean bl = false;
 		boolean bl2 = false;
 
-		for (int k = i; k >= 0 && k < string.length() && f < (float)width; k += j) {
-			char c = string.charAt(k);
+		for (int k = i; k >= 0 && k < text.length() && f < (float)width; k += j) {
+			char c = text.charAt(k);
 			if (bl) {
 				bl = false;
 				Formatting formatting = Formatting.byCode(c);
@@ -327,60 +327,60 @@ public class TextRenderer implements AutoCloseable {
 		return stringBuilder.toString();
 	}
 
-	private String trimEndNewlines(String string) {
-		while (string != null && string.endsWith("\n")) {
-			string = string.substring(0, string.length() - 1);
+	private String trimEndNewlines(String text) {
+		while (text != null && text.endsWith("\n")) {
+			text = text.substring(0, text.length() - 1);
 		}
 
-		return string;
+		return text;
 	}
 
-	public void drawTrimmed(String string, int x, int y, int maxWidth, int i) {
-		string = this.trimEndNewlines(string);
-		this.drawWrapped(string, x, y, maxWidth, i);
+	public void drawTrimmed(String text, int x, int y, int maxWidth, int color) {
+		text = this.trimEndNewlines(text);
+		this.drawWrapped(text, x, y, maxWidth, color);
 	}
 
-	private void drawWrapped(String str, int x, int y, int maxWidth, int i) {
-		List<String> list = this.wrapStringToWidthAsList(str, maxWidth);
+	private void drawWrapped(String text, int x, int y, int maxWidth, int color) {
+		List<String> list = this.wrapStringToWidthAsList(text, maxWidth);
 		Matrix4f matrix4f = Rotation3.identity().getMatrix();
 
 		for (String string : list) {
 			float f = (float)x;
 			if (this.rightToLeft) {
-				int j = this.getStringWidth(this.mirror(string));
-				f += (float)(maxWidth - j);
+				int i = this.getStringWidth(this.mirror(string));
+				f += (float)(maxWidth - i);
 			}
 
-			this.draw(string, f, (float)y, i, matrix4f, false);
+			this.draw(string, f, (float)y, color, matrix4f, false);
 			y += 9;
 		}
 	}
 
-	public int getStringBoundedHeight(String str, int i) {
-		return 9 * this.wrapStringToWidthAsList(str, i).size();
+	public int getStringBoundedHeight(String text, int maxWidth) {
+		return 9 * this.wrapStringToWidthAsList(text, maxWidth).size();
 	}
 
-	public void setRightToLeft(boolean bl) {
-		this.rightToLeft = bl;
+	public void setRightToLeft(boolean rightToLeft) {
+		this.rightToLeft = rightToLeft;
 	}
 
-	public List<String> wrapStringToWidthAsList(String text, int i) {
-		return Arrays.asList(this.wrapStringToWidth(text, i).split("\n"));
+	public List<String> wrapStringToWidthAsList(String text, int width) {
+		return Arrays.asList(this.wrapStringToWidth(text, width).split("\n"));
 	}
 
-	public String wrapStringToWidth(String text, int i) {
+	public String wrapStringToWidth(String text, int width) {
 		String string = "";
 
 		while (!text.isEmpty()) {
-			int j = this.getCharacterCountForWidth(text, i);
-			if (text.length() <= j) {
+			int i = this.getCharacterCountForWidth(text, width);
+			if (text.length() <= i) {
 				return string + text;
 			}
 
-			String string2 = text.substring(0, j);
-			char c = text.charAt(j);
+			String string2 = text.substring(0, i);
+			char c = text.charAt(i);
 			boolean bl = c == ' ' || c == '\n';
-			text = Formatting.getFormatAtEnd(string2) + text.substring(j + (bl ? 1 : 0));
+			text = Formatting.getFormatAtEnd(string2) + text.substring(i + (bl ? 1 : 0));
 			string = string + string2 + "\n";
 		}
 
@@ -440,24 +440,24 @@ public class TextRenderer implements AutoCloseable {
 		return k != j && l != -1 && l < k ? l : k;
 	}
 
-	public int findWordEdge(String string, int direction, int position, boolean skipWhitespaceToRightOfWord) {
+	public int findWordEdge(String text, int direction, int position, boolean skipWhitespaceToRightOfWord) {
 		int i = position;
 		boolean bl = direction < 0;
 		int j = Math.abs(direction);
 
 		for (int k = 0; k < j; k++) {
 			if (bl) {
-				while (skipWhitespaceToRightOfWord && i > 0 && (string.charAt(i - 1) == ' ' || string.charAt(i - 1) == '\n')) {
+				while (skipWhitespaceToRightOfWord && i > 0 && (text.charAt(i - 1) == ' ' || text.charAt(i - 1) == '\n')) {
 					i--;
 				}
 
-				while (i > 0 && string.charAt(i - 1) != ' ' && string.charAt(i - 1) != '\n') {
+				while (i > 0 && text.charAt(i - 1) != ' ' && text.charAt(i - 1) != '\n') {
 					i--;
 				}
 			} else {
-				int l = string.length();
-				int m = string.indexOf(32, i);
-				int n = string.indexOf(10, i);
+				int l = text.length();
+				int m = text.indexOf(32, i);
+				int n = text.indexOf(10, i);
 				if (m == -1 && n == -1) {
 					i = -1;
 				} else if (m != -1 && n != -1) {
@@ -471,7 +471,7 @@ public class TextRenderer implements AutoCloseable {
 				if (i == -1) {
 					i = l;
 				} else {
-					while (skipWhitespaceToRightOfWord && i < l && (string.charAt(i) == ' ' || string.charAt(i) == '\n')) {
+					while (skipWhitespaceToRightOfWord && i < l && (text.charAt(i) == ' ' || text.charAt(i) == '\n')) {
 						i++;
 					}
 				}

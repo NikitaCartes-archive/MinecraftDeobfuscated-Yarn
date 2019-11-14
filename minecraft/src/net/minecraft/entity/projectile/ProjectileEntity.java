@@ -78,7 +78,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 	}
 
 	protected ProjectileEntity(EntityType<? extends ProjectileEntity> type, LivingEntity owner, World world) {
-		this(type, owner.getX(), owner.method_23320() - 0.1F, owner.getZ(), world);
+		this(type, owner.getX(), owner.getEyeY() - 0.1F, owner.getZ(), world);
 		this.setOwner(owner);
 		if (owner instanceof PlayerEntity) {
 			this.pickupType = ProjectileEntity.PickupPermission.ALLOWED;

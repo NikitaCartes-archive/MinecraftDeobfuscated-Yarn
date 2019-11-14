@@ -44,7 +44,7 @@ public class FluidBlock extends Block implements FluidDrainable {
 		}
 
 		this.statesByLevel.add(fluid.getFlowing(8, true));
-		this.setDefaultState(this.stateFactory.getDefaultState().with(LEVEL, Integer.valueOf(0)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(LEVEL, Integer.valueOf(0)));
 	}
 
 	@Override

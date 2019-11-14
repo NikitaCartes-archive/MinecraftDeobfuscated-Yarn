@@ -38,20 +38,20 @@ public class StingerFeatureRenderer<T extends LivingEntity, M extends PlayerEnti
 		float k = (float)(Math.atan2((double)tickDelta, (double)g) * 180.0F / (float)Math.PI);
 		float l = (float)(Math.atan2((double)f, (double)j) * 180.0F / (float)Math.PI);
 		matrixStack.translate(0.0, 0.0, 0.0);
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(k - 90.0F));
-		matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(l));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(k - 90.0F));
+		matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(l));
 		float m = 0.0F;
 		float n = 0.125F;
 		float o = 0.0F;
 		float p = 0.0625F;
 		float q = 0.03125F;
-		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(45.0F));
+		matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(45.0F));
 		matrixStack.scale(0.03125F, 0.03125F, 0.03125F);
 		matrixStack.translate(2.5, 0.0, 0.0);
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(field_20529));
 
 		for (int r = 0; r < 4; r++) {
-			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0F));
+			matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0F));
 			MatrixStack.Entry entry = matrixStack.peek();
 			Matrix4f matrix4f = entry.getModel();
 			Matrix3f matrix3f = entry.getNormal();

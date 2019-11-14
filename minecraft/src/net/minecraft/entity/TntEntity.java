@@ -75,7 +75,7 @@ public class TntEntity extends Entity {
 
 	private void explode() {
 		float f = 4.0F;
-		this.world.createExplosion(this, this.getX(), this.getHeightAt(0.0625), this.getZ(), 4.0F, Explosion.DestructionType.BREAK);
+		this.world.createExplosion(this, this.getX(), this.getBodyY(0.0625), this.getZ(), 4.0F, Explosion.DestructionType.BREAK);
 	}
 
 	@Override

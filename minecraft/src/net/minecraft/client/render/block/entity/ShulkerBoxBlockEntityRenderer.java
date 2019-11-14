@@ -40,9 +40,9 @@ public class ShulkerBoxBlockEntityRenderer extends BlockEntityRenderer<ShulkerBo
 		DyeColor dyeColor = shulkerBoxBlockEntity.getColor();
 		Identifier identifier;
 		if (dyeColor == null) {
-			identifier = ModelLoader.field_20845;
+			identifier = ModelLoader.SHULKER;
 		} else {
-			identifier = (Identifier)ModelLoader.field_20846.get(dyeColor.getId());
+			identifier = (Identifier)ModelLoader.SHULKER_COLORS.get(dyeColor.getId());
 		}
 
 		Sprite sprite = this.getSprite(identifier);
@@ -56,7 +56,7 @@ public class ShulkerBoxBlockEntityRenderer extends BlockEntityRenderer<ShulkerBo
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.method_23948());
 		this.model.getBottomShell().render(matrixStack, vertexConsumer, i, j, sprite);
 		matrixStack.translate(0.0, (double)(-shulkerBoxBlockEntity.getAnimationProgress(f) * 0.5F), 0.0);
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(270.0F * shulkerBoxBlockEntity.getAnimationProgress(f)));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(270.0F * shulkerBoxBlockEntity.getAnimationProgress(f)));
 		this.model.getTopShell().render(matrixStack, vertexConsumer, i, j, sprite);
 		matrixStack.pop();
 	}

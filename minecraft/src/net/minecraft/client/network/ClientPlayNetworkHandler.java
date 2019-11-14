@@ -1277,14 +1277,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		} else if (i == 6) {
 			this.world
 				.playSound(
-					playerEntity,
-					playerEntity.getX(),
-					playerEntity.method_23320(),
-					playerEntity.getZ(),
-					SoundEvents.ENTITY_ARROW_HIT_PLAYER,
-					SoundCategory.PLAYERS,
-					0.18F,
-					0.45F
+					playerEntity, playerEntity.getX(), playerEntity.getEyeY(), playerEntity.getZ(), SoundEvents.ENTITY_ARROW_HIT_PLAYER, SoundCategory.PLAYERS, 0.18F, 0.45F
 				);
 		} else if (i == 7) {
 			this.world.setRainGradient(f);

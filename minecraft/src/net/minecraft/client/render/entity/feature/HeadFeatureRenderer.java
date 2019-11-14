@@ -76,7 +76,7 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 			} else if (!(item instanceof ArmorItem) || ((ArmorItem)item).getSlotType() != EquipmentSlot.HEAD) {
 				float mx = 0.625F;
 				matrixStack.translate(0.0, -0.25, 0.0);
-				matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F));
+				matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
 				matrixStack.scale(0.625F, -0.625F, -0.625F);
 				if (bl) {
 					matrixStack.translate(0.0, 0.1875, 0.0);

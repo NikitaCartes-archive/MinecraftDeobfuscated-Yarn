@@ -73,8 +73,8 @@ public class ModelLoader {
 	public static final Identifier LAVA_FLOW = new Identifier("block/lava_flow");
 	public static final Identifier WATER_FLOW = new Identifier("block/water_flow");
 	public static final Identifier WATER_OVERLAY = new Identifier("block/water_overlay");
-	public static final Identifier field_20845 = new Identifier("entity/shulker/shulker");
-	public static final List<Identifier> field_20846 = ImmutableList.of(
+	public static final Identifier SHULKER = new Identifier("entity/shulker/shulker");
+	public static final List<Identifier> SHULKER_COLORS = ImmutableList.of(
 		new Identifier("entity/shulker/shulker_white"),
 		new Identifier("entity/shulker/shulker_orange"),
 		new Identifier("entity/shulker/shulker_magenta"),
@@ -92,19 +92,19 @@ public class ModelLoader {
 		new Identifier("entity/shulker/shulker_red"),
 		new Identifier("entity/shulker/shulker_black")
 	);
-	public static final Identifier field_20847 = new Identifier("entity/banner_base");
-	public static final Identifier field_21557 = new Identifier("entity/shield_base");
-	public static final Identifier field_21558 = new Identifier("entity/shield_base_nopattern");
-	public static final Identifier field_21014 = new Identifier("entity/signs/oak");
-	public static final Identifier field_21015 = new Identifier("entity/signs/spruce");
-	public static final Identifier field_21016 = new Identifier("entity/signs/birch");
-	public static final Identifier field_21017 = new Identifier("entity/signs/acacia");
-	public static final Identifier field_21018 = new Identifier("entity/signs/jungle");
-	public static final Identifier field_21019 = new Identifier("entity/signs/dark_oak");
-	public static final List<Identifier> field_20848 = (List<Identifier>)IntStream.range(0, 10)
+	public static final Identifier BANNER_BASE = new Identifier("entity/banner_base");
+	public static final Identifier SHIELD_BASE = new Identifier("entity/shield_base");
+	public static final Identifier SHIELD_BASE_NO_PATTERN = new Identifier("entity/shield_base_nopattern");
+	public static final Identifier OAK_SIGN = new Identifier("entity/signs/oak");
+	public static final Identifier SPRUCE_SIGN = new Identifier("entity/signs/spruce");
+	public static final Identifier BIRCH_SIGN = new Identifier("entity/signs/birch");
+	public static final Identifier ACACIA_SIGN = new Identifier("entity/signs/acacia");
+	public static final Identifier JUNGLE_SIGN = new Identifier("entity/signs/jungle");
+	public static final Identifier DARK_OAK_SIGN = new Identifier("entity/signs/dark_oak");
+	public static final List<Identifier> BLOCK_DESTRUCTION_STAGES = (List<Identifier>)IntStream.range(0, 10)
 		.mapToObj(i -> new Identifier("block/destroy_stage_" + i))
 		.collect(Collectors.toList());
-	public static final List<Identifier> BLOCK_BREAKING_STAGES = (List<Identifier>)field_20848.stream()
+	public static final List<Identifier> BLOCK_DESTRUCTION_STAGE_TEXTURES = (List<Identifier>)BLOCK_DESTRUCTION_STAGES.stream()
 		.map(identifier -> new Identifier("textures/" + identifier.getPath() + ".png"))
 		.collect(Collectors.toList());
 	private static final Set<Identifier> DEFAULT_TEXTURES = Util.create(Sets.<Identifier>newHashSet(), hashSet -> {
@@ -132,24 +132,24 @@ public class ModelLoader {
 		hashSet.add(ConduitBlockEntityRenderer.OPEN_EYE_TEX);
 		hashSet.add(ConduitBlockEntityRenderer.CLOSED_EYE_TEX);
 		hashSet.add(EnchantingTableBlockEntityRenderer.BOOK_TEX);
-		hashSet.add(field_20845);
-		hashSet.addAll(field_20846);
-		hashSet.add(field_20847);
-		hashSet.add(field_21557);
-		hashSet.add(field_21558);
+		hashSet.add(SHULKER);
+		hashSet.addAll(SHULKER_COLORS);
+		hashSet.add(BANNER_BASE);
+		hashSet.add(SHIELD_BASE);
+		hashSet.add(SHIELD_BASE_NO_PATTERN);
 
 		for (BannerPattern bannerPattern : BannerPattern.values()) {
 			hashSet.add(bannerPattern.getSpriteId(true));
 			hashSet.add(bannerPattern.getSpriteId(false));
 		}
 
-		hashSet.add(field_21014);
-		hashSet.add(field_21015);
-		hashSet.add(field_21016);
-		hashSet.add(field_21017);
-		hashSet.add(field_21018);
-		hashSet.add(field_21019);
-		hashSet.addAll(field_20848);
+		hashSet.add(OAK_SIGN);
+		hashSet.add(SPRUCE_SIGN);
+		hashSet.add(BIRCH_SIGN);
+		hashSet.add(ACACIA_SIGN);
+		hashSet.add(JUNGLE_SIGN);
+		hashSet.add(DARK_OAK_SIGN);
+		hashSet.addAll(BLOCK_DESTRUCTION_STAGES);
 		hashSet.add(new Identifier("item/empty_armor_slot_helmet"));
 		hashSet.add(new Identifier("item/empty_armor_slot_chestplate"));
 		hashSet.add(new Identifier("item/empty_armor_slot_leggings"));
@@ -183,7 +183,7 @@ public class ModelLoader {
 	);
 	private final ResourceManager resourceManager;
 	private final SpriteAtlasTexture spriteAtlas;
-	private final BlockColors field_20272;
+	private final BlockColors colorationManager;
 	private final Set<Identifier> modelsToLoad = Sets.<Identifier>newHashSet();
 	private final ModelVariantMap.DeserializationContext variantMapDeserializationContext = new ModelVariantMap.DeserializationContext();
 	private final Map<Identifier, UnbakedModel> unbakedModels = Maps.<Identifier, UnbakedModel>newHashMap();
@@ -191,15 +191,15 @@ public class ModelLoader {
 	private final Map<Identifier, UnbakedModel> modelsToBake = Maps.<Identifier, UnbakedModel>newHashMap();
 	private final Map<Identifier, BakedModel> bakedModels = Maps.<Identifier, BakedModel>newHashMap();
 	private final SpriteAtlasTexture.Data spriteAtlasData;
-	private int currentModelIndex = 1;
-	private final Object2IntMap<BlockState> stateToModelIndex = Util.create(
+	private int nextStateId = 1;
+	private final Object2IntMap<BlockState> stateLookup = Util.create(
 		new Object2IntOpenHashMap<>(), object2IntOpenHashMap -> object2IntOpenHashMap.defaultReturnValue(-1)
 	);
 
-	public ModelLoader(ResourceManager resourceManager, SpriteAtlasTexture spriteAtlas, BlockColors blockColors, Profiler profiler) {
+	public ModelLoader(ResourceManager resourceManager, SpriteAtlasTexture spriteAtlas, BlockColors colorationManager, Profiler profiler) {
 		this.resourceManager = resourceManager;
 		this.spriteAtlas = spriteAtlas;
-		this.field_20272 = blockColors;
+		this.colorationManager = colorationManager;
 		profiler.push("missing_model");
 
 		try {
@@ -217,7 +217,7 @@ public class ModelLoader {
 		profiler.swap("blocks");
 
 		for (Block block : Registry.BLOCK) {
-			block.getStateFactory().getStates().forEach(blockState -> this.addModel(BlockModels.getModelId(blockState)));
+			block.getStateManager().getStates().forEach(blockState -> this.addModel(BlockModels.getModelId(blockState)));
 		}
 
 		profiler.swap("items");
@@ -349,19 +349,19 @@ public class ModelLoader {
 			} else {
 				Identifier identifier = new Identifier(id.getNamespace(), id.getPath());
 				StateManager<Block, BlockState> stateManager = (StateManager<Block, BlockState>)Optional.ofNullable(STATIC_DEFINITIONS.get(identifier))
-					.orElseGet(() -> Registry.BLOCK.get(identifier).getStateFactory());
+					.orElseGet(() -> Registry.BLOCK.get(identifier).getStateManager());
 				this.variantMapDeserializationContext.setStateFactory(stateManager);
-				List<Property<?>> list = ImmutableList.copyOf(this.field_20272.getProperties(stateManager.getOwner()));
+				List<Property<?>> list = ImmutableList.copyOf(this.colorationManager.getProperties(stateManager.getOwner()));
 				ImmutableList<BlockState> immutableList = stateManager.getStates();
 				Map<ModelIdentifier, BlockState> map = Maps.<ModelIdentifier, BlockState>newHashMap();
 				immutableList.forEach(blockState -> {
 					BlockState var10000 = (BlockState)map.put(BlockModels.getModelId(identifier, blockState), blockState);
 				});
-				Map<BlockState, Pair<UnbakedModel, Supplier<ModelLoader.ModelValuePair>>> map2 = Maps.<BlockState, Pair<UnbakedModel, Supplier<ModelLoader.ModelValuePair>>>newHashMap();
+				Map<BlockState, Pair<UnbakedModel, Supplier<ModelLoader.ModelDefinition>>> map2 = Maps.<BlockState, Pair<UnbakedModel, Supplier<ModelLoader.ModelDefinition>>>newHashMap();
 				Identifier identifier2 = new Identifier(id.getNamespace(), "blockstates/" + id.getPath() + ".json");
 				UnbakedModel unbakedModel = (UnbakedModel)this.unbakedModels.get(MISSING);
-				ModelLoader.ModelValuePair modelValuePair = new ModelLoader.ModelValuePair(ImmutableList.of(unbakedModel), ImmutableList.of());
-				Pair<UnbakedModel, Supplier<ModelLoader.ModelValuePair>> pair = Pair.of(unbakedModel, () -> modelValuePair);
+				ModelLoader.ModelDefinition modelDefinition = new ModelLoader.ModelDefinition(ImmutableList.of(unbakedModel), ImmutableList.of());
+				Pair<UnbakedModel, Supplier<ModelLoader.ModelDefinition>> pair = Pair.of(unbakedModel, () -> modelDefinition);
 
 				try {
 					List<Pair<String, ModelVariantMap>> list2;
@@ -416,14 +416,14 @@ public class ModelLoader {
 
 					for (Pair<String, ModelVariantMap> pair2 : list2) {
 						ModelVariantMap modelVariantMap = pair2.getSecond();
-						Map<BlockState, Pair<UnbakedModel, Supplier<ModelLoader.ModelValuePair>>> map4 = Maps.<BlockState, Pair<UnbakedModel, Supplier<ModelLoader.ModelValuePair>>>newIdentityHashMap();
+						Map<BlockState, Pair<UnbakedModel, Supplier<ModelLoader.ModelDefinition>>> map4 = Maps.<BlockState, Pair<UnbakedModel, Supplier<ModelLoader.ModelDefinition>>>newIdentityHashMap();
 						MultipartUnbakedModel multipartUnbakedModel;
 						if (modelVariantMap.hasMultipartModel()) {
 							multipartUnbakedModel = modelVariantMap.getMultipartModel();
 							immutableList.forEach(
 								blockState -> {
 									Pair var10000 = (Pair)map4.put(
-										blockState, Pair.of(multipartUnbakedModel, () -> ModelLoader.ModelValuePair.create(blockState, multipartUnbakedModel, list))
+										blockState, Pair.of(multipartUnbakedModel, () -> ModelLoader.ModelDefinition.create(blockState, multipartUnbakedModel, list))
 									);
 								}
 							);
@@ -439,8 +439,8 @@ public class ModelLoader {
 											.filter(stateKeyToPredicate(stateManager, string))
 											.forEach(
 												blockState -> {
-													Pair<UnbakedModel, Supplier<ModelLoader.ModelValuePair>> pair2xx = (Pair<UnbakedModel, Supplier<ModelLoader.ModelValuePair>>)map4.put(
-														blockState, Pair.of(weightedUnbakedModel, () -> ModelLoader.ModelValuePair.create(blockState, weightedUnbakedModel, list))
+													Pair<UnbakedModel, Supplier<ModelLoader.ModelDefinition>> pair2xx = (Pair<UnbakedModel, Supplier<ModelLoader.ModelDefinition>>)map4.put(
+														blockState, Pair.of(weightedUnbakedModel, () -> ModelLoader.ModelDefinition.create(blockState, weightedUnbakedModel, list))
 													);
 													if (pair2xx != null && pair2xx.getFirst() != multipartUnbakedModel) {
 														map4.put(blockState, pair);
@@ -470,9 +470,9 @@ public class ModelLoader {
 				} catch (Exception var27) {
 					throw new ModelLoader.ModelLoaderException(String.format("Exception loading blockstate definition: '%s': %s", identifier2, var27));
 				} finally {
-					Map<ModelLoader.ModelValuePair, Set<BlockState>> map6 = Maps.<ModelLoader.ModelValuePair, Set<BlockState>>newHashMap();
+					Map<ModelLoader.ModelDefinition, Set<BlockState>> map6 = Maps.<ModelLoader.ModelDefinition, Set<BlockState>>newHashMap();
 					map.forEach((modelIdentifierx, blockState) -> {
-						Pair<UnbakedModel, Supplier<ModelLoader.ModelValuePair>> pair2x = (Pair<UnbakedModel, Supplier<ModelLoader.ModelValuePair>>)map2.get(blockState);
+						Pair<UnbakedModel, Supplier<ModelLoader.ModelDefinition>> pair2x = (Pair<UnbakedModel, Supplier<ModelLoader.ModelDefinition>>)map2.get(blockState);
 						if (pair2x == null) {
 							LOGGER.warn("Exception loading blockstate definition: '{}' missing model for variant: '{}'", identifier2, modelIdentifierx);
 							pair2x = pair;
@@ -481,25 +481,25 @@ public class ModelLoader {
 						this.putModel(modelIdentifierx, pair2x.getFirst());
 
 						try {
-							ModelLoader.ModelValuePair modelValuePairx = (ModelLoader.ModelValuePair)pair2x.getSecond().get();
-							((Set)map6.computeIfAbsent(modelValuePairx, modelValuePairxx -> Sets.newIdentityHashSet())).add(blockState);
+							ModelLoader.ModelDefinition modelDefinitionx = (ModelLoader.ModelDefinition)pair2x.getSecond().get();
+							((Set)map6.computeIfAbsent(modelDefinitionx, modelDefinitionxx -> Sets.newIdentityHashSet())).add(blockState);
 						} catch (Exception var9x) {
 							LOGGER.warn("Exception evaluating model definition: '{}'", modelIdentifierx, var9x);
 						}
 					});
-					map6.forEach((modelValuePairx, set) -> {
+					map6.forEach((modelDefinitionx, set) -> {
 						Iterator<BlockState> iterator = set.iterator();
 
 						while (iterator.hasNext()) {
 							BlockState blockState = (BlockState)iterator.next();
 							if (blockState.getRenderType() != BlockRenderType.MODEL) {
 								iterator.remove();
-								this.stateToModelIndex.put(blockState, 0);
+								this.stateLookup.put(blockState, 0);
 							}
 						}
 
 						if (set.size() > 1) {
-							this.groupBlockStates(set);
+							this.addStates(set);
 						}
 					});
 				}
@@ -518,14 +518,14 @@ public class ModelLoader {
 		this.modelsToBake.put(modelId, unbakedModel);
 	}
 
-	private void groupBlockStates(Iterable<BlockState> states) {
-		int i = this.currentModelIndex++;
-		states.forEach(blockState -> this.stateToModelIndex.put(blockState, i));
+	private void addStates(Iterable<BlockState> states) {
+		int i = this.nextStateId++;
+		states.forEach(blockState -> this.stateLookup.put(blockState, i));
 	}
 
 	@Nullable
 	public BakedModel bake(Identifier id, ModelBakeSettings settings) {
-		Triple<Identifier, Rotation3, Boolean> triple = Triple.of(id, settings.getRotation(), settings.isUvLocked());
+		Triple<Identifier, Rotation3, Boolean> triple = Triple.of(id, settings.getRotation(), settings.isShaded());
 		if (this.bakedModelCache.containsKey(triple)) {
 			return (BakedModel)this.bakedModelCache.get(triple);
 		} else {
@@ -586,60 +586,60 @@ public class ModelLoader {
 		return this.bakedModels;
 	}
 
-	public Object2IntMap<BlockState> getStateToModelIndex() {
-		return this.stateToModelIndex;
+	public Object2IntMap<BlockState> getStateLookup() {
+		return this.stateLookup;
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class ModelLoaderException extends RuntimeException {
-		public ModelLoaderException(String string) {
-			super(string);
-		}
-	}
+	static class ModelDefinition {
+		private final List<UnbakedModel> components;
+		private final List<Object> values;
 
-	@Environment(EnvType.CLIENT)
-	static class ModelValuePair {
-		private final List<UnbakedModel> model;
-		private final List<Object> propertyValues;
-
-		public ModelValuePair(List<UnbakedModel> list, List<Object> list2) {
-			this.model = list;
-			this.propertyValues = list2;
+		public ModelDefinition(List<UnbakedModel> components, List<Object> values) {
+			this.components = components;
+			this.values = values;
 		}
 
-		public boolean equals(Object object) {
-			if (this == object) {
+		public boolean equals(Object o) {
+			if (this == o) {
 				return true;
-			} else if (!(object instanceof ModelLoader.ModelValuePair)) {
+			} else if (!(o instanceof ModelLoader.ModelDefinition)) {
 				return false;
 			} else {
-				ModelLoader.ModelValuePair modelValuePair = (ModelLoader.ModelValuePair)object;
-				return Objects.equals(this.model, modelValuePair.model) && Objects.equals(this.propertyValues, modelValuePair.propertyValues);
+				ModelLoader.ModelDefinition modelDefinition = (ModelLoader.ModelDefinition)o;
+				return Objects.equals(this.components, modelDefinition.components) && Objects.equals(this.values, modelDefinition.values);
 			}
 		}
 
 		public int hashCode() {
-			return 31 * this.model.hashCode() + this.propertyValues.hashCode();
+			return 31 * this.components.hashCode() + this.values.hashCode();
 		}
 
-		public static ModelLoader.ModelValuePair create(BlockState blockState, MultipartUnbakedModel multipartUnbakedModel, Collection<Property<?>> collection) {
-			StateManager<Block, BlockState> stateManager = blockState.getBlock().getStateFactory();
-			List<UnbakedModel> list = (List<UnbakedModel>)multipartUnbakedModel.getComponents()
+		public static ModelLoader.ModelDefinition create(BlockState state, MultipartUnbakedModel rawModel, Collection<Property<?>> properties) {
+			StateManager<Block, BlockState> stateManager = state.getBlock().getStateManager();
+			List<UnbakedModel> list = (List<UnbakedModel>)rawModel.getComponents()
 				.stream()
-				.filter(multipartModelComponent -> multipartModelComponent.getPredicate(stateManager).test(blockState))
+				.filter(multipartModelComponent -> multipartModelComponent.getPredicate(stateManager).test(state))
 				.map(MultipartModelComponent::getModel)
 				.collect(ImmutableList.toImmutableList());
-			List<Object> list2 = getValues(blockState, collection);
-			return new ModelLoader.ModelValuePair(list, list2);
+			List<Object> list2 = getStateValues(state, properties);
+			return new ModelLoader.ModelDefinition(list, list2);
 		}
 
-		public static ModelLoader.ModelValuePair create(BlockState blockState, UnbakedModel unbakedModel, Collection<Property<?>> collection) {
-			List<Object> list = getValues(blockState, collection);
-			return new ModelLoader.ModelValuePair(ImmutableList.of(unbakedModel), list);
+		public static ModelLoader.ModelDefinition create(BlockState state, UnbakedModel rawModel, Collection<Property<?>> properties) {
+			List<Object> list = getStateValues(state, properties);
+			return new ModelLoader.ModelDefinition(ImmutableList.of(rawModel), list);
 		}
 
-		private static List<Object> getValues(BlockState blockState, Collection<Property<?>> collection) {
-			return (List<Object>)collection.stream().map(blockState::get).collect(ImmutableList.toImmutableList());
+		private static List<Object> getStateValues(BlockState state, Collection<Property<?>> properties) {
+			return (List<Object>)properties.stream().map(state::get).collect(ImmutableList.toImmutableList());
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	static class ModelLoaderException extends RuntimeException {
+		public ModelLoaderException(String message) {
+			super(message);
 		}
 	}
 }

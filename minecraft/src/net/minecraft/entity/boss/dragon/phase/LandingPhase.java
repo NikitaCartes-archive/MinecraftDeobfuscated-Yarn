@@ -22,7 +22,7 @@ public class LandingPhase extends AbstractPhase {
 		Vec3d vec3d = this.dragon.method_6834(1.0F).normalize();
 		vec3d.rotateY((float) (-Math.PI / 4));
 		double d = this.dragon.partHead.getX();
-		double e = this.dragon.partHead.getHeightAt(0.5);
+		double e = this.dragon.partHead.getBodyY(0.5);
 		double f = this.dragon.partHead.getZ();
 
 		for (int i = 0; i < 8; i++) {

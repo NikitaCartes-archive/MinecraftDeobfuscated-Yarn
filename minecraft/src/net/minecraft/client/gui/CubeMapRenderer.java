@@ -30,7 +30,7 @@ public class CubeMapRenderer {
 		RenderSystem.pushMatrix();
 		RenderSystem.loadIdentity();
 		RenderSystem.multMatrix(
-			Matrix4f.method_4929(85.0, (float)client.getWindow().getFramebufferWidth() / (float)client.getWindow().getFramebufferHeight(), 0.05F, 10.0F)
+			Matrix4f.viewboxMatrix(85.0, (float)client.getWindow().getFramebufferWidth() / (float)client.getWindow().getFramebufferHeight(), 0.05F, 10.0F)
 		);
 		RenderSystem.matrixMode(5888);
 		RenderSystem.pushMatrix();

@@ -16,13 +16,13 @@ import net.minecraft.util.math.Direction;
 @Environment(EnvType.CLIENT)
 public class WeightedBakedModel implements BakedModel {
 	private final int totalWeight;
-	private final List<WeightedBakedModel.ModelEntry> models;
+	private final List<WeightedBakedModel.Entry> models;
 	private final BakedModel defaultModel;
 
-	public WeightedBakedModel(List<WeightedBakedModel.ModelEntry> models) {
+	public WeightedBakedModel(List<WeightedBakedModel.Entry> models) {
 		this.models = models;
 		this.totalWeight = WeightedPicker.getWeightSum(models);
-		this.defaultModel = ((WeightedBakedModel.ModelEntry)models.get(0)).model;
+		this.defaultModel = ((WeightedBakedModel.Entry)models.get(0)).model;
 	}
 
 	@Override
@@ -62,11 +62,11 @@ public class WeightedBakedModel implements BakedModel {
 
 	@Environment(EnvType.CLIENT)
 	public static class Builder {
-		private final List<WeightedBakedModel.ModelEntry> models = Lists.<WeightedBakedModel.ModelEntry>newArrayList();
+		private final List<WeightedBakedModel.Entry> models = Lists.<WeightedBakedModel.Entry>newArrayList();
 
 		public WeightedBakedModel.Builder add(@Nullable BakedModel model, int weight) {
 			if (model != null) {
-				this.models.add(new WeightedBakedModel.ModelEntry(model, weight));
+				this.models.add(new WeightedBakedModel.Entry(model, weight));
 			}
 
 			return this;
@@ -77,16 +77,16 @@ public class WeightedBakedModel implements BakedModel {
 			if (this.models.isEmpty()) {
 				return null;
 			} else {
-				return (BakedModel)(this.models.size() == 1 ? ((WeightedBakedModel.ModelEntry)this.models.get(0)).model : new WeightedBakedModel(this.models));
+				return (BakedModel)(this.models.size() == 1 ? ((WeightedBakedModel.Entry)this.models.get(0)).model : new WeightedBakedModel(this.models));
 			}
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class ModelEntry extends WeightedPicker.Entry {
+	static class Entry extends WeightedPicker.Entry {
 		protected final BakedModel model;
 
-		public ModelEntry(BakedModel model, int weight) {
+		public Entry(BakedModel model, int weight) {
 			super(weight);
 			this.model = model;
 		}

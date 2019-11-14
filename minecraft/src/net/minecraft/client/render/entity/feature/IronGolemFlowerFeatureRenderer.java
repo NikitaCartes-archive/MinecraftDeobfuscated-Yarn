@@ -38,7 +38,7 @@ public class IronGolemFlowerFeatureRenderer extends FeatureRenderer<IronGolemEnt
 			matrixStack.translate(0.5, 0.5, 0.5);
 			float m = 0.5F;
 			matrixStack.scale(0.5F, 0.5F, 0.5F);
-			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-90.0F));
+			matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0F));
 			matrixStack.translate(-0.5, -0.5, -0.5);
 			MinecraftClient.getInstance()
 				.getBlockRenderManager()

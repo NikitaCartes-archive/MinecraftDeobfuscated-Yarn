@@ -106,8 +106,8 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerContainer> im
 		MatrixStack matrixStack = new MatrixStack();
 		matrixStack.translate((double)(-i), (double)j, 50.0);
 		matrixStack.scale((float)k, (float)k, (float)k);
-		matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0F));
-		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-((float)Math.atan((double)(g / 40.0F))) * 20.0F));
+		matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
+		matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-((float)Math.atan((double)(g / 40.0F))) * 20.0F));
 		float h = entity.bodyYaw;
 		float l = entity.yaw;
 		float m = entity.pitch;

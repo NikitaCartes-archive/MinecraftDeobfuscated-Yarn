@@ -108,7 +108,7 @@ public class BuiltinModelItemRenderer {
 				VertexConsumer vertexConsumer = ItemRenderer.getArmorVertexConsumer(
 					vertexConsumerProvider, this.modelShield.getLayer(SpriteAtlasTexture.BLOCK_ATLAS_TEX), false, stack.hasEnchantmentGlint()
 				);
-				Sprite sprite = spriteAtlasTexture.getSprite(bl ? ModelLoader.field_21557 : ModelLoader.field_21558);
+				Sprite sprite = spriteAtlasTexture.getSprite(bl ? ModelLoader.SHIELD_BASE : ModelLoader.SHIELD_BASE_NO_PATTERN);
 				this.modelShield.method_23775().render(matrix, vertexConsumer, light, overlay, sprite, 1.0F, 1.0F, 1.0F);
 				this.modelShield.method_23774().render(matrix, vertexConsumer, light, overlay, sprite, 1.0F, 1.0F, 1.0F);
 				if (bl) {

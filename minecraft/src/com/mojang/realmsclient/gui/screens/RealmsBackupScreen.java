@@ -370,7 +370,7 @@ public class RealmsBackupScreen extends RealmsScreen {
 			RealmsBackupScreen.this.drawString(
 				"Backup (" + RealmsUtil.convertToAgePresentation(System.currentTimeMillis() - backup.lastModifiedDate.getTime()) + ")", x + 40, y + 1, i
 			);
-			RealmsBackupScreen.this.drawString(this.getMediumDatePresentation(backup.lastModifiedDate), x + 40, y + 12, 5000268);
+			RealmsBackupScreen.this.drawString(this.getMediumDatePresentation(backup.lastModifiedDate), x + 40, y + 12, 8421504);
 			int j = RealmsBackupScreen.this.width() - 175;
 			int k = -3;
 			int l = j - 10;

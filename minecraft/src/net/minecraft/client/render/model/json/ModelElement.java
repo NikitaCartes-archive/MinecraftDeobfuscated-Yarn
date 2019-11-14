@@ -33,17 +33,17 @@ public class ModelElement {
 		this.faces = faces;
 		this.rotation = rotation;
 		this.shade = shade;
-		this.setUvs();
+		this.initTextures();
 	}
 
-	private void setUvs() {
+	private void initTextures() {
 		for (Entry<Direction, ModelElementFace> entry : this.faces.entrySet()) {
-			float[] fs = this.getUvs((Direction)entry.getKey());
+			float[] fs = this.getRotatedMatrix((Direction)entry.getKey());
 			((ModelElementFace)entry.getValue()).textureData.setUvs(fs);
 		}
 	}
 
-	private float[] getUvs(Direction direction) {
+	private float[] getRotatedMatrix(Direction direction) {
 		switch (direction) {
 			case DOWN:
 				return new float[]{this.from.getX(), 16.0F - this.to.getZ(), this.to.getX(), 16.0F - this.from.getZ()};

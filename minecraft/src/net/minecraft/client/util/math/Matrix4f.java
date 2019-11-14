@@ -221,14 +221,14 @@ public final class Matrix4f {
 		}
 	}
 
-	public static Matrix4f method_4929(double fov, float aspectRatio, float f, float viewDistance) {
-		float g = (float)(1.0 / Math.tan(fov * (float) (Math.PI / 180.0) / 2.0));
+	public static Matrix4f viewboxMatrix(double fov, float aspectRatio, float cameraDepth, float viewDistance) {
+		float f = (float)(1.0 / Math.tan(fov * (float) (Math.PI / 180.0) / 2.0));
 		Matrix4f matrix4f = new Matrix4f();
-		matrix4f.set(0, 0, g / aspectRatio);
-		matrix4f.set(1, 1, g);
-		matrix4f.set(2, 2, (viewDistance + f) / (f - viewDistance));
+		matrix4f.set(0, 0, f / aspectRatio);
+		matrix4f.set(1, 1, f);
+		matrix4f.set(2, 2, (viewDistance + cameraDepth) / (cameraDepth - viewDistance));
 		matrix4f.set(3, 2, -1.0F);
-		matrix4f.set(2, 3, 2.0F * viewDistance * f / (f - viewDistance));
+		matrix4f.set(2, 3, 2.0F * viewDistance * cameraDepth / (cameraDepth - viewDistance));
 		return matrix4f;
 	}
 

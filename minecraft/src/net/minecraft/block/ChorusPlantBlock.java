@@ -15,7 +15,7 @@ public class ChorusPlantBlock extends ConnectedPlantBlock {
 	protected ChorusPlantBlock(Block.Settings settings) {
 		super(0.3125F, settings);
 		this.setDefaultState(
-			this.stateFactory
+			this.stateManager
 				.getDefaultState()
 				.with(NORTH, Boolean.valueOf(false))
 				.with(EAST, Boolean.valueOf(false))

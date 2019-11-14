@@ -73,7 +73,7 @@ public class CopyStateFunction extends ConditionalLootFunction {
 		}
 
 		public CopyStateFunction.Builder method_21898(Property<?> property) {
-			if (!this.block.getStateFactory().getProperties().contains(property)) {
+			if (!this.block.getStateManager().getProperties().contains(property)) {
 				throw new IllegalStateException("Property " + property + " is not present on block " + this.block);
 			} else {
 				this.properties.add(property);
@@ -107,7 +107,7 @@ public class CopyStateFunction extends ConditionalLootFunction {
 		public CopyStateFunction method_21900(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "block"));
 			Block block = (Block)Registry.BLOCK.getOrEmpty(identifier).orElseThrow(() -> new IllegalArgumentException("Can't find block " + identifier));
-			StateManager<Block, BlockState> stateManager = block.getStateFactory();
+			StateManager<Block, BlockState> stateManager = block.getStateManager();
 			Set<Property<?>> set = Sets.<Property<?>>newHashSet();
 			JsonArray jsonArray = JsonHelper.getArray(jsonObject, "properties", null);
 			if (jsonArray != null) {

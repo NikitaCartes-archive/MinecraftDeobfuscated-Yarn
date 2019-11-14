@@ -32,7 +32,7 @@ public class TridentRiptideFeatureRenderer<T extends LivingEntity> extends Featu
 			for (int m = 0; m < 3; m++) {
 				matrixStack.push();
 				float n = j * (float)(-(45 + m * 5));
-				matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(n));
+				matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(n));
 				float o = 0.75F * (float)m;
 				matrixStack.scale(o, o, o);
 				matrixStack.translate(0.0, (double)(-0.2F + 0.6F * (float)m), 0.0);

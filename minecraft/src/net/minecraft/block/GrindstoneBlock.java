@@ -91,7 +91,7 @@ public class GrindstoneBlock extends WallMountedBlock {
 
 	protected GrindstoneBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(FACE, WallMountLocation.WALL));
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(FACE, WallMountLocation.WALL));
 	}
 
 	@Override

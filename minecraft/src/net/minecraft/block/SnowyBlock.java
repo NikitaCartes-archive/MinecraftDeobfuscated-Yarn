@@ -13,7 +13,7 @@ public class SnowyBlock extends Block {
 
 	protected SnowyBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(SNOWY, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(SNOWY, Boolean.valueOf(false)));
 	}
 
 	@Override

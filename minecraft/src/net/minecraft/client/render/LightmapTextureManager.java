@@ -112,14 +112,14 @@ public class LightmapTextureManager implements AutoCloseable {
 						if (clientWorld.dimension.getType() == DimensionType.THE_END) {
 							vector3f2.method_23847(new Vector3f(0.99F, 1.12F, 1.0F), 0.25F);
 						} else {
-							Vector3f vector3f3 = vector3f.method_23850();
+							Vector3f vector3f3 = vector3f.copy();
 							vector3f3.scale(m);
-							vector3f2.method_23846(vector3f3);
+							vector3f2.add(vector3f3);
 							vector3f2.method_23847(new Vector3f(0.75F, 0.75F, 0.75F), 0.04F);
 							if (this.worldRenderer.getSkyDarkness(delta) > 0.0F) {
 								float r = this.worldRenderer.getSkyDarkness(delta);
-								Vector3f vector3f4 = vector3f2.method_23850();
-								vector3f4.method_23849(0.7F, 0.6F, 0.6F);
+								Vector3f vector3f4 = vector3f2.copy();
+								vector3f4.piecewiseMultiply(0.7F, 0.6F, 0.6F);
 								vector3f2.method_23847(vector3f4, r);
 							}
 						}
@@ -129,14 +129,14 @@ public class LightmapTextureManager implements AutoCloseable {
 							float s = Math.max(vector3f2.getX(), Math.max(vector3f2.getY(), vector3f2.getZ()));
 							if (s < 1.0F) {
 								float r = 1.0F / s;
-								Vector3f vector3f4 = vector3f2.method_23850();
+								Vector3f vector3f4 = vector3f2.copy();
 								vector3f4.scale(r);
 								vector3f2.method_23847(vector3f4, i);
 							}
 						}
 
 						float s = (float)this.client.options.gamma;
-						Vector3f vector3f5 = vector3f2.method_23850();
+						Vector3f vector3f5 = vector3f2.copy();
 						vector3f5.method_23848(this::method_23795);
 						vector3f2.method_23847(vector3f5, s);
 						vector3f2.method_23847(new Vector3f(0.75F, 0.75F, 0.75F), 0.04F);

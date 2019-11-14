@@ -35,7 +35,7 @@ public class DeadCoralWallFanBlock extends DeadCoralFanBlock {
 
 	protected DeadCoralWallFanBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(WATERLOGGED, Boolean.valueOf(true)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(WATERLOGGED, Boolean.valueOf(true)));
 	}
 
 	@Override

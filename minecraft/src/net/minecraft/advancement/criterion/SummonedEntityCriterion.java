@@ -22,7 +22,7 @@ public class SummonedEntityCriterion extends AbstractCriterion<SummonedEntityCri
 	}
 
 	public void trigger(ServerPlayerEntity player, Entity entity) {
-		this.test(player.getAdvancementManager(), conditions -> conditions.matches(player, entity));
+		this.test(player.getAdvancementTracker(), conditions -> conditions.matches(player, entity));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

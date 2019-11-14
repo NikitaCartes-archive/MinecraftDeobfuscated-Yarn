@@ -36,8 +36,8 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 		matrixStack.push();
 		float h = (float)enderDragonEntity.method_6817(7, g)[0];
 		float j = (float)(enderDragonEntity.method_6817(5, g)[1] - enderDragonEntity.method_6817(10, g)[1]);
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-h));
-		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(j * 10.0F));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-h));
+		matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(j * 10.0F));
 		matrixStack.translate(0.0, 0.0, 1.0);
 		matrixStack.scale(-1.0F, -1.0F, 1.0F);
 		matrixStack.translate(0.0, -1.501F, 0.0);
@@ -69,12 +69,12 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 			matrixStack.translate(0.0, -1.0, -2.0);
 
 			for (int n = 0; (float)n < (l + l * l) / 2.0F * 60.0F; n++) {
-				matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(random.nextFloat() * 360.0F));
-				matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(random.nextFloat() * 360.0F));
-				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(random.nextFloat() * 360.0F));
-				matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(random.nextFloat() * 360.0F));
-				matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(random.nextFloat() * 360.0F));
-				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(random.nextFloat() * 360.0F + l * 90.0F));
+				matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(random.nextFloat() * 360.0F));
+				matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(random.nextFloat() * 360.0F));
+				matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(random.nextFloat() * 360.0F));
+				matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(random.nextFloat() * 360.0F));
+				matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(random.nextFloat() * 360.0F));
+				matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(random.nextFloat() * 360.0F + l * 90.0F));
 				float o = random.nextFloat() * 20.0F + 5.0F + m * 10.0F;
 				float p = random.nextFloat() * 2.0F + 1.0F + m * 2.0F;
 				Matrix4f matrix4f = matrixStack.peek().getModel();
@@ -130,8 +130,8 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 		float m = MathHelper.sqrt(f * f + g * g + h * h);
 		matrixStack.push();
 		matrixStack.translate(0.0, 2.0, 0.0);
-		matrixStack.multiply(Vector3f.POSITIVE_Y.method_23626((float)(-Math.atan2((double)h, (double)f)) - (float) (Math.PI / 2)));
-		matrixStack.multiply(Vector3f.POSITIVE_X.method_23626((float)(-Math.atan2((double)l, (double)g)) - (float) (Math.PI / 2)));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRadialQuaternion((float)(-Math.atan2((double)h, (double)f)) - (float) (Math.PI / 2)));
+		matrixStack.multiply(Vector3f.POSITIVE_X.getRadialQuaternion((float)(-Math.atan2((double)l, (double)g)) - (float) (Math.PI / 2)));
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySmoothCutout(CRYSTAL_BEAM_TEX));
 		float n = 0.0F - ((float)j + i) * 0.01F;
 		float o = MathHelper.sqrt(f * f + g * g + h * h) / 32.0F - ((float)j + i) * 0.01F;
@@ -321,7 +321,7 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 			float h = (float)(Math.sin((double)(f * (float) (Math.PI * 2) - 1.0F)) + 1.0);
 			h = (h * h + h * 2.0F) * 0.05F;
 			matrixStack.translate(0.0, (double)(h - 2.0F), -3.0);
-			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(h * 2.0F));
+			matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(h * 2.0F));
 			float k = 0.0F;
 			float l = 20.0F;
 			float m = -12.0F;
@@ -356,7 +356,7 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 			this.head.render(matrixStack, vertexConsumer, i, j, null);
 			matrixStack.push();
 			matrixStack.translate(0.0, 1.0, 0.0);
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(-o * 1.5F));
+			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(-o * 1.5F));
 			matrixStack.translate(0.0, -1.0, 0.0);
 			this.body.roll = 0.0F;
 			this.body.render(matrixStack, vertexConsumer, i, j, null);

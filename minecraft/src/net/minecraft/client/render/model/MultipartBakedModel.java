@@ -27,7 +27,7 @@ public class MultipartBakedModel implements BakedModel {
 	protected final Sprite sprite;
 	protected final ModelTransformation transformations;
 	protected final ModelItemPropertyOverrideList itemPropertyOverrides;
-	private final Map<BlockState, BitSet> field_5431 = new Object2ObjectOpenCustomHashMap<>(Util.identityHashStrategy());
+	private final Map<BlockState, BitSet> stateCache = new Object2ObjectOpenCustomHashMap<>(Util.identityHashStrategy());
 
 	public MultipartBakedModel(List<Pair<Predicate<BlockState>, BakedModel>> components) {
 		this.components = components;
@@ -44,7 +44,7 @@ public class MultipartBakedModel implements BakedModel {
 		if (state == null) {
 			return Collections.emptyList();
 		} else {
-			BitSet bitSet = (BitSet)this.field_5431.get(state);
+			BitSet bitSet = (BitSet)this.stateCache.get(state);
 			if (bitSet == null) {
 				bitSet = new BitSet();
 
@@ -55,7 +55,7 @@ public class MultipartBakedModel implements BakedModel {
 					}
 				}
 
-				this.field_5431.put(state, bitSet);
+				this.stateCache.put(state, bitSet);
 			}
 
 			List<BakedQuad> list = Lists.<BakedQuad>newArrayList();

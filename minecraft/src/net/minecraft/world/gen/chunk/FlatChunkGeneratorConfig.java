@@ -404,7 +404,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 				if (iterator.hasNext()) {
 					try {
 						Identifier identifier = new Identifier((String)iterator.next());
-						biome = Registry.BIOME.get(identifier);
+						biome = (Biome)Registry.BIOME.getOrEmpty(identifier).orElseThrow(() -> new IllegalArgumentException("Invalid Biome: " + identifier));
 					} catch (Exception var17) {
 						LOGGER.error("Error while parsing flat world string => {}", var17.getMessage());
 					}

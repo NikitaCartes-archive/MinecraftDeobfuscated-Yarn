@@ -137,7 +137,7 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 				return false;
 			} else {
 				for (Entry<String, String> entry : this.properties.entrySet()) {
-					Property<?> property = blockState.getBlock().getStateFactory().getProperty((String)entry.getKey());
+					Property<?> property = blockState.getBlock().getStateManager().getProperty((String)entry.getKey());
 					if (property == null) {
 						return false;
 					}

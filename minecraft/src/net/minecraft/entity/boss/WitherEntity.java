@@ -183,7 +183,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 				double f = this.getHeadY(i + 1);
 				double g = this.getHeadZ(i + 1);
 				double h = entity2.getX() - e;
-				double k = entity2.method_23320() - f;
+				double k = entity2.getEyeY() - f;
 				double l = entity2.getZ() - g;
 				double m = (double)MathHelper.sqrt(h * h + l * l);
 				float n = (float)(MathHelper.atan2(l, h) * 180.0F / (float)Math.PI) - 90.0F;
@@ -243,7 +243,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 				Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)
 					? Explosion.DestructionType.DESTROY
 					: Explosion.DestructionType.NONE;
-				this.world.createExplosion(this, this.getX(), this.method_23320(), this.getZ(), 7.0F, false, destructionType);
+				this.world.createExplosion(this, this.getX(), this.getEyeY(), this.getZ(), 7.0F, false, destructionType);
 				this.world.playGlobalEvent(1023, new BlockPos(this), 0);
 			}
 

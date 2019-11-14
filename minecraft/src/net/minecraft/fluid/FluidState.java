@@ -140,7 +140,7 @@ public interface FluidState extends State<FluidState> {
 		Fluid fluid = Registry.FLUID.get(new Identifier((String)dynamic.getElement("Name").flatMap(dynamic.getOps()::getStringValue).orElse("minecraft:empty")));
 		Map<String, String> map = dynamic.get("Properties").asMap(dynamicx -> dynamicx.asString(""), dynamicx -> dynamicx.asString(""));
 		FluidState fluidState = fluid.getDefaultState();
-		StateManager<Fluid, FluidState> stateManager = fluid.getStateFactory();
+		StateManager<Fluid, FluidState> stateManager = fluid.getStateManager();
 
 		for (Entry<String, String> entry : map.entrySet()) {
 			String string = (String)entry.getKey();

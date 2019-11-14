@@ -1399,23 +1399,23 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		for (int i = 0; i < 6; i++) {
 			matrixStack.push();
 			if (i == 1) {
-				matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0F));
+				matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0F));
 			}
 
 			if (i == 2) {
-				matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-90.0F));
+				matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0F));
 			}
 
 			if (i == 3) {
-				matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(180.0F));
+				matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(180.0F));
 			}
 
 			if (i == 4) {
-				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(90.0F));
+				matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
 			}
 
 			if (i == 5) {
-				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(-90.0F));
+				matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(-90.0F));
 			}
 
 			Matrix4f matrix4f = matrixStack.peek().getModel();
@@ -1462,10 +1462,10 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				RenderSystem.disableTexture();
 				RenderSystem.shadeModel(7425);
 				matrixStack.push();
-				matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0F));
+				matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0F));
 				float j = MathHelper.sin(this.world.getSkyAngleRadians(f)) < 0.0F ? 180.0F : 0.0F;
-				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(j));
-				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(90.0F));
+				matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(j));
+				matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
 				float k = fs[0];
 				float l = fs[1];
 				float m = fs[2];
@@ -1494,8 +1494,8 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			matrixStack.push();
 			float j = 1.0F - this.world.getRainGradient(f);
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, j);
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-90.0F));
-			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(this.world.getSkyAngle(f) * 360.0F));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
+			matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(this.world.getSkyAngle(f) * 360.0F));
 			Matrix4f matrix4f2 = matrixStack.peek().getModel();
 			float l = 30.0F;
 			this.textureManager.bindTexture(SUN);

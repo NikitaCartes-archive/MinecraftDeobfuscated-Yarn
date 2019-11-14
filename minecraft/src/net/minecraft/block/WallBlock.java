@@ -23,7 +23,7 @@ public class WallBlock extends HorizontalConnectedBlock {
 	public WallBlock(Block.Settings settings) {
 		super(0.0F, 3.0F, 0.0F, 14.0F, 24.0F, settings);
 		this.setDefaultState(
-			this.stateFactory
+			this.stateManager
 				.getDefaultState()
 				.with(UP, Boolean.valueOf(true))
 				.with(NORTH, Boolean.valueOf(false))

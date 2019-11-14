@@ -51,7 +51,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 				double d = this.random.nextGaussian() * 0.02;
 				double e = this.random.nextGaussian() * 0.02;
 				double f = this.random.nextGaussian() * 0.02;
-				this.world.addParticle(ParticleTypes.HEART, this.method_23322(1.0), this.method_23319() + 0.5, this.method_23325(1.0), d, e, f);
+				this.world.addParticle(ParticleTypes.HEART, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), d, e, f);
 			}
 		}
 	}
@@ -193,7 +193,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 				double d = this.random.nextGaussian() * 0.02;
 				double e = this.random.nextGaussian() * 0.02;
 				double f = this.random.nextGaussian() * 0.02;
-				this.world.addParticle(ParticleTypes.HEART, this.method_23322(1.0), this.method_23319() + 0.5, this.method_23325(1.0), d, e, f);
+				this.world.addParticle(ParticleTypes.HEART, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), d, e, f);
 			}
 		} else {
 			super.handleStatus(status);

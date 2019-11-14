@@ -96,8 +96,8 @@ public class PlayerPredicate {
 				}
 
 				if (!this.advancements.isEmpty()) {
-					PlayerAdvancementTracker playerAdvancementTracker = serverPlayerEntity.getAdvancementManager();
-					ServerAdvancementLoader serverAdvancementLoader = serverPlayerEntity.getServer().getAdvancementManager();
+					PlayerAdvancementTracker playerAdvancementTracker = serverPlayerEntity.getAdvancementTracker();
+					ServerAdvancementLoader serverAdvancementLoader = serverPlayerEntity.getServer().getAdvancementLoader();
 
 					for (Entry<Identifier, PlayerPredicate.AdvancementPredicate> entry3 : this.advancements.entrySet()) {
 						Advancement advancement = serverAdvancementLoader.get((Identifier)entry3.getKey());

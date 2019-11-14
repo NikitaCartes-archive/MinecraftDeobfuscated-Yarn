@@ -404,9 +404,9 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (packet.getAction() == AdvancementTabC2SPacket.Action.OPENED_TAB) {
 			Identifier identifier = packet.getTabToOpen();
-			Advancement advancement = this.server.getAdvancementManager().get(identifier);
+			Advancement advancement = this.server.getAdvancementLoader().get(identifier);
 			if (advancement != null) {
-				this.player.getAdvancementManager().setDisplayTab(advancement);
+				this.player.getAdvancementTracker().setDisplayTab(advancement);
 			}
 		}
 	}

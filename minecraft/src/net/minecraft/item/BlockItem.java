@@ -110,7 +110,7 @@ public class BlockItem extends Item {
 		CompoundTag compoundTag = stack.getTag();
 		if (compoundTag != null) {
 			CompoundTag compoundTag2 = compoundTag.getCompound("BlockStateTag");
-			StateManager<Block, BlockState> stateManager = state.getBlock().getStateFactory();
+			StateManager<Block, BlockState> stateManager = state.getBlock().getStateManager();
 
 			for (String string : compoundTag2.getKeys()) {
 				Property<?> property = stateManager.getProperty(string);

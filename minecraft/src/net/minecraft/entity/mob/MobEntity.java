@@ -259,7 +259,7 @@ public abstract class MobEntity extends LivingEntity {
 				double e = this.random.nextGaussian() * 0.02;
 				double f = this.random.nextGaussian() * 0.02;
 				double g = 10.0;
-				this.world.addParticle(ParticleTypes.POOF, this.method_23316(1.0) - d * 10.0, this.method_23319() - e * 10.0, this.method_23325(1.0) - f * 10.0, d, e, f);
+				this.world.addParticle(ParticleTypes.POOF, this.offsetX(1.0) - d * 10.0, this.getRandomBodyY() - e * 10.0, this.getParticleZ(1.0) - f * 10.0, d, e, f);
 			}
 		} else {
 			this.world.sendEntityStatus(this, (byte)20);
@@ -642,9 +642,9 @@ public abstract class MobEntity extends LivingEntity {
 		double f;
 		if (targetEntity instanceof LivingEntity) {
 			LivingEntity livingEntity = (LivingEntity)targetEntity;
-			f = livingEntity.method_23320() - this.method_23320();
+			f = livingEntity.getEyeY() - this.getEyeY();
 		} else {
-			f = (targetEntity.getBoundingBox().y1 + targetEntity.getBoundingBox().y2) / 2.0 - this.method_23320();
+			f = (targetEntity.getBoundingBox().y1 + targetEntity.getBoundingBox().y2) / 2.0 - this.getEyeY();
 		}
 
 		double g = (double)MathHelper.sqrt(d * d + e * e);

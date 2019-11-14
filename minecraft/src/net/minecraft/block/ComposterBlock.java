@@ -134,7 +134,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 
 	public ComposterBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(LEVEL, Integer.valueOf(0)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(LEVEL, Integer.valueOf(0)));
 	}
 
 	@Environment(EnvType.CLIENT)
