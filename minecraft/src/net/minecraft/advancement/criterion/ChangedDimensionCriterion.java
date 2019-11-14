@@ -24,7 +24,7 @@ public class ChangedDimensionCriterion extends AbstractCriterion<ChangedDimensio
 	}
 
 	public void trigger(ServerPlayerEntity player, DimensionType from, DimensionType to) {
-		this.test(player.getAdvancementManager(), conditions -> conditions.matches(from, to));
+		this.test(player.getAdvancementTracker(), conditions -> conditions.matches(from, to));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

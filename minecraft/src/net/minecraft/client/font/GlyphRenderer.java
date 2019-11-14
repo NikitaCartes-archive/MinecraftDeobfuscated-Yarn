@@ -19,8 +19,8 @@ public class GlyphRenderer {
 	private final float yMin;
 	private final float yMax;
 
-	public GlyphRenderer(Identifier identifier, float uMin, float uMax, float vMin, float vMax, float xMin, float xMax, float yMin, float yMax) {
-		this.id = identifier;
+	public GlyphRenderer(Identifier id, float uMin, float uMax, float vMin, float vMax, float xMin, float xMax, float yMin, float yMax) {
+		this.id = id;
 		this.uMin = uMin;
 		this.uMax = uMax;
 		this.vMin = vMin;
@@ -48,22 +48,22 @@ public class GlyphRenderer {
 	}
 
 	public void drawRectangle(GlyphRenderer.Rectangle rectangle, Matrix4f matrix, VertexConsumer vertexConsumer, int light) {
-		vertexConsumer.vertex(matrix, rectangle.xMin, rectangle.yMin, rectangle.field_20911)
+		vertexConsumer.vertex(matrix, rectangle.xMin, rectangle.yMin, rectangle.zIndex)
 			.color(rectangle.red, rectangle.green, rectangle.blue, rectangle.alpha)
 			.texture(this.uMin, this.vMin)
 			.light(light)
 			.next();
-		vertexConsumer.vertex(matrix, rectangle.xMax, rectangle.yMin, rectangle.field_20911)
+		vertexConsumer.vertex(matrix, rectangle.xMax, rectangle.yMin, rectangle.zIndex)
 			.color(rectangle.red, rectangle.green, rectangle.blue, rectangle.alpha)
 			.texture(this.uMin, this.vMax)
 			.light(light)
 			.next();
-		vertexConsumer.vertex(matrix, rectangle.xMax, rectangle.yMax, rectangle.field_20911)
+		vertexConsumer.vertex(matrix, rectangle.xMax, rectangle.yMax, rectangle.zIndex)
 			.color(rectangle.red, rectangle.green, rectangle.blue, rectangle.alpha)
 			.texture(this.uMax, this.vMax)
 			.light(light)
 			.next();
-		vertexConsumer.vertex(matrix, rectangle.xMin, rectangle.yMax, rectangle.field_20911)
+		vertexConsumer.vertex(matrix, rectangle.xMin, rectangle.yMax, rectangle.zIndex)
 			.color(rectangle.red, rectangle.green, rectangle.blue, rectangle.alpha)
 			.texture(this.uMax, this.vMin)
 			.light(light)
@@ -81,22 +81,22 @@ public class GlyphRenderer {
 		protected final float yMin;
 		protected final float xMax;
 		protected final float yMax;
-		protected final float field_20911;
+		protected final float zIndex;
 		protected final float red;
 		protected final float green;
 		protected final float blue;
 		protected final float alpha;
 
-		public Rectangle(float f, float g, float h, float i, float j, float k, float l, float m, float n) {
-			this.xMin = f;
-			this.yMin = g;
-			this.xMax = h;
-			this.yMax = i;
-			this.field_20911 = j;
-			this.red = k;
-			this.green = l;
-			this.blue = m;
-			this.alpha = n;
+		public Rectangle(float xMin, float yMin, float xMax, float yMax, float zndex, float red, float green, float blue, float alpha) {
+			this.xMin = xMin;
+			this.yMin = yMin;
+			this.xMax = xMax;
+			this.yMax = yMax;
+			this.zIndex = zndex;
+			this.red = red;
+			this.green = green;
+			this.blue = blue;
+			this.alpha = alpha;
 		}
 	}
 }

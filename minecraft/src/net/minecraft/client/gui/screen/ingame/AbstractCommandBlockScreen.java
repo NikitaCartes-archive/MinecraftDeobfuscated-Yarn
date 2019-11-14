@@ -50,7 +50,12 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 				this.updateTrackedOutput();
 			})
 		);
-		this.consoleCommandTextField = new TextFieldWidget(this.font, this.width / 2 - 150, 50, 300, 20, I18n.translate("advMode.command"));
+		this.consoleCommandTextField = new TextFieldWidget(this.font, this.width / 2 - 150, 50, 300, 20, I18n.translate("advMode.command")) {
+			@Override
+			protected String getNarrationMessage() {
+				return super.getNarrationMessage() + AbstractCommandBlockScreen.this.commandSuggestor.method_23958();
+			}
+		};
 		this.consoleCommandTextField.setMaxLength(32500);
 		this.consoleCommandTextField.setChangedListener(this::onCommandChanged);
 		this.children.add(this.consoleCommandTextField);
@@ -63,7 +68,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		this.children.add(this.previousOutputTextField);
 		this.setInitialFocus(this.consoleCommandTextField);
 		this.consoleCommandTextField.setSelected(true);
-		this.commandSuggestor = new CommandSuggestor(this.minecraft, this, this.consoleCommandTextField, this.font, false, true, 0, 7, false, Integer.MIN_VALUE);
+		this.commandSuggestor = new CommandSuggestor(this.minecraft, this, this.consoleCommandTextField, this.font, true, true, 0, 7, false, Integer.MIN_VALUE);
 		this.commandSuggestor.setWindowActive(true);
 		this.commandSuggestor.refresh();
 	}

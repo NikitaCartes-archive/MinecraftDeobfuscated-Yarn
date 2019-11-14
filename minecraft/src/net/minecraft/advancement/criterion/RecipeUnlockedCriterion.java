@@ -22,7 +22,7 @@ public class RecipeUnlockedCriterion extends AbstractCriterion<RecipeUnlockedCri
 	}
 
 	public void trigger(ServerPlayerEntity player, Recipe<?> recipe) {
-		this.test(player.getAdvancementManager(), conditions -> conditions.matches(recipe));
+		this.test(player.getAdvancementTracker(), conditions -> conditions.matches(recipe));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

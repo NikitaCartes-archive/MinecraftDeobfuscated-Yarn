@@ -26,7 +26,7 @@ public class RepeaterBlock extends AbstractRedstoneGateBlock {
 	protected RepeaterBlock(Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateFactory
+			this.stateManager
 				.getDefaultState()
 				.with(FACING, Direction.NORTH)
 				.with(DELAY, Integer.valueOf(1))

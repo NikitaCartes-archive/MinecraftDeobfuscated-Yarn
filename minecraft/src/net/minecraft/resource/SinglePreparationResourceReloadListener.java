@@ -21,5 +21,5 @@ public abstract class SinglePreparationResourceReloadListener<T> implements Reso
 
 	protected abstract T prepare(ResourceManager manager, Profiler profiler);
 
-	protected abstract void apply(T preparedObject, ResourceManager manager, Profiler profiler);
+	protected abstract void apply(T loader, ResourceManager manager, Profiler profiler);
 }

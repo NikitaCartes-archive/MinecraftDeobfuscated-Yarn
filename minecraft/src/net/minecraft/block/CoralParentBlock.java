@@ -22,7 +22,7 @@ public class CoralParentBlock extends Block implements Waterloggable {
 
 	protected CoralParentBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(WATERLOGGED, Boolean.valueOf(true)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(WATERLOGGED, Boolean.valueOf(true)));
 	}
 
 	protected void checkLivingConditions(BlockState state, IWorld world, BlockPos pos) {

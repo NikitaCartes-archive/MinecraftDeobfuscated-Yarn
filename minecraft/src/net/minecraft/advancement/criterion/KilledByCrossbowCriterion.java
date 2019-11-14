@@ -31,7 +31,7 @@ public class KilledByCrossbowCriterion extends AbstractCriterion<KilledByCrossbo
 	}
 
 	public void trigger(ServerPlayerEntity player, Collection<Entity> victims, int amount) {
-		this.test(player.getAdvancementManager(), conditions -> conditions.matches(player, victims, amount));
+		this.test(player.getAdvancementTracker(), conditions -> conditions.matches(player, victims, amount));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

@@ -25,9 +25,9 @@ public class ArmorStandEntityModel extends ArmorStandArmorEntityModel {
 		this.head = new ModelPart(this, 0, 0);
 		this.head.addCuboid(-1.0F, -7.0F, -1.0F, 2.0F, 7.0F, 2.0F, f);
 		this.head.setPivot(0.0F, 0.0F, 0.0F);
-		this.body = new ModelPart(this, 0, 26);
-		this.body.addCuboid(-6.0F, 0.0F, -1.5F, 12.0F, 3.0F, 3.0F, f);
-		this.body.setPivot(0.0F, 0.0F, 0.0F);
+		this.torso = new ModelPart(this, 0, 26);
+		this.torso.addCuboid(-6.0F, 0.0F, -1.5F, 12.0F, 3.0F, 3.0F, f);
+		this.torso.setPivot(0.0F, 0.0F, 0.0F);
 		this.rightArm = new ModelPart(this, 24, 0);
 		this.rightArm.addCuboid(-2.0F, -2.0F, -1.0F, 2.0F, 12.0F, 2.0F, f);
 		this.rightArm.setPivot(-5.0F, 2.0F, 0.0F);
@@ -55,7 +55,7 @@ public class ArmorStandEntityModel extends ArmorStandArmorEntityModel {
 		this.plate = new ModelPart(this, 0, 32);
 		this.plate.addCuboid(-6.0F, 11.0F, -6.0F, 12.0F, 1.0F, 12.0F, f);
 		this.plate.setPivot(0.0F, 12.0F, 0.0F);
-		this.headwear.visible = false;
+		this.helmet.visible = false;
 	}
 
 	@Override

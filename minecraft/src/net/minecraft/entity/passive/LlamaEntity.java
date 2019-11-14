@@ -193,7 +193,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 		}
 
 		if (this.isBaby() && i > 0) {
-			this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.method_23322(1.0), this.method_23319() + 0.5, this.method_23325(1.0), 0.0, 0.0, 0.0);
+			this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), 0.0, 0.0, 0.0);
 			if (!this.world.isClient) {
 				this.growUp(i);
 			}
@@ -372,7 +372,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	private void spitAt(LivingEntity target) {
 		LlamaSpitEntity llamaSpitEntity = new LlamaSpitEntity(this.world, this);
 		double d = target.getX() - this.getX();
-		double e = target.getHeightAt(0.3333333333333333) - llamaSpitEntity.getY();
+		double e = target.getBodyY(0.3333333333333333) - llamaSpitEntity.getY();
 		double f = target.getZ() - this.getZ();
 		float g = MathHelper.sqrt(d * d + f * f) * 0.2F;
 		llamaSpitEntity.setVelocity(d, e + (double)g, f, 1.5F, 10.0F);

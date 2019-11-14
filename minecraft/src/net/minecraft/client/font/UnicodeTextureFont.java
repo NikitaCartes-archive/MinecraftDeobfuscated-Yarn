@@ -83,13 +83,13 @@ public class UnicodeTextureFont implements Font {
 
 	@Nullable
 	@Override
-	public RenderableGlyph getGlyph(char c) {
-		byte b = this.sizes[c];
+	public RenderableGlyph getGlyph(char character) {
+		byte b = this.sizes[character];
 		if (b != 0) {
-			NativeImage nativeImage = (NativeImage)this.images.computeIfAbsent(this.getImageId(c), this::getGlyphImage);
+			NativeImage nativeImage = (NativeImage)this.images.computeIfAbsent(this.getImageId(character), this::getGlyphImage);
 			if (nativeImage != null) {
 				int i = getStart(b);
-				return new UnicodeTextureFont.UnicodeTextureGlyph(c % 16 * 16 + i, (c & 255) / 16 * 16, getEnd(b) - i, 16, nativeImage);
+				return new UnicodeTextureFont.UnicodeTextureGlyph(character % 16 * 16 + i, (character & 255) / 16 * 16, getEnd(b) - i, 16, nativeImage);
 			}
 		}
 
@@ -153,7 +153,7 @@ public class UnicodeTextureFont implements Font {
 
 		@Nullable
 		@Override
-		public Font load(ResourceManager resourceManager) {
+		public Font load(ResourceManager manager) {
 			try {
 				Resource resource = MinecraftClient.getInstance().getResourceManager().getResource(this.sizes);
 				Throwable var3 = null;
@@ -162,7 +162,7 @@ public class UnicodeTextureFont implements Font {
 				try {
 					byte[] bs = new byte[65536];
 					resource.getInputStream().read(bs);
-					var5 = new UnicodeTextureFont(resourceManager, bs, this.template);
+					var5 = new UnicodeTextureFont(manager, bs, this.template);
 				} catch (Throwable var15) {
 					var3 = var15;
 					throw var15;

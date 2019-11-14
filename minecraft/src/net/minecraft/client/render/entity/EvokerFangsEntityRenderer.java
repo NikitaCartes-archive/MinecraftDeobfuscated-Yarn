@@ -29,7 +29,7 @@ public class EvokerFangsEntityRenderer extends EntityRenderer<EvokerFangsEntity>
 			}
 
 			matrixStack.push();
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(90.0F - model.yaw));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(90.0F - model.yaw));
 			matrixStack.scale(-j, -j, j);
 			float k = 0.03125F;
 			matrixStack.translate(0.0, -0.626F, 0.0);

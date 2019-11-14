@@ -56,7 +56,7 @@ public abstract class AbstractTexture {
 		}
 	}
 
-	public abstract void load(ResourceManager resourceManager) throws IOException;
+	public abstract void load(ResourceManager manager) throws IOException;
 
 	public void bindTexture() {
 		if (!RenderSystem.isOnRenderThreadOrInit()) {

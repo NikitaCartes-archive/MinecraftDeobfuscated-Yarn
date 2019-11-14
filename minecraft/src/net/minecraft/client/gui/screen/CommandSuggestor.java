@@ -29,6 +29,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.Rect2i;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandSource;
@@ -95,7 +97,7 @@ public class CommandSuggestor {
 		if (this.window != null && this.window.keyPressed(keyCode, scanCode, modifiers)) {
 			return true;
 		} else if (this.owner.getFocused() == this.textField && keyCode == 258) {
-			this.showSuggestions();
+			this.showSuggestions(true);
 			return true;
 		} else {
 			return false;
@@ -110,7 +112,7 @@ public class CommandSuggestor {
 		return this.window != null && this.window.mouseClicked((int)mouseX, (int)mouseY, button);
 	}
 
-	public void showSuggestions() {
+	public void showSuggestions(boolean narrateFirstSuggestion) {
 		if (this.pendingSuggestions != null && this.pendingSuggestions.isDone()) {
 			Suggestions suggestions = (Suggestions)this.pendingSuggestions.join();
 			if (!suggestions.isEmpty()) {
@@ -124,7 +126,7 @@ public class CommandSuggestor {
 					this.textField.getCharacterX(suggestions.getRange().getStart()), 0, this.textField.getCharacterX(0) + this.textField.getInnerWidth() - i
 				);
 				int k = this.chatScreenSized ? this.owner.height - 12 : 72;
-				this.window = new CommandSuggestor.SuggestionWindow(j, k, i, suggestions);
+				this.window = new CommandSuggestor.SuggestionWindow(j, k, i, suggestions, narrateFirstSuggestion);
 			}
 		}
 	}
@@ -142,30 +144,37 @@ public class CommandSuggestor {
 
 		this.messages.clear();
 		StringReader stringReader = new StringReader(string);
-		if (stringReader.canRead() && stringReader.peek() == '/') {
+		boolean bl;
+		if (this.slashRequired) {
+			bl = true;
+		} else if (stringReader.canRead() && stringReader.peek() == '/') {
 			stringReader.skip();
-		} else if (this.slashRequired) {
-			return;
-		}
-
-		CommandDispatcher<CommandSource> commandDispatcher = this.client.player.networkHandler.getCommandDispatcher();
-		if (this.parse == null) {
-			this.parse = commandDispatcher.parse(stringReader, this.client.player.networkHandler.getCommandSource());
-		}
-
-		int i = this.suggestingWhenEmpty ? stringReader.getCursor() : 1;
-		int j = this.textField.getCursor();
-		if (j < i || this.window != null && this.completingSuggestions) {
-			int k = getLastPlayerNameStart(string);
-			Collection<String> collection = this.client.player.networkHandler.getCommandSource().getPlayerNames();
-			this.pendingSuggestions = CommandSource.suggestMatching(collection, new SuggestionsBuilder(string, k));
+			bl = true;
 		} else {
-			this.pendingSuggestions = commandDispatcher.getCompletionSuggestions(this.parse, j);
-			this.pendingSuggestions.thenRun(() -> {
-				if (this.pendingSuggestions.isDone()) {
-					this.show();
-				}
-			});
+			bl = false;
+		}
+
+		int i = this.textField.getCursor();
+		if (bl) {
+			CommandDispatcher<CommandSource> commandDispatcher = this.client.player.networkHandler.getCommandDispatcher();
+			if (this.parse == null) {
+				this.parse = commandDispatcher.parse(stringReader, this.client.player.networkHandler.getCommandSource());
+			}
+
+			int j = this.suggestingWhenEmpty ? stringReader.getCursor() : 1;
+			if (i >= j && (this.window == null || !this.completingSuggestions)) {
+				this.pendingSuggestions = commandDispatcher.getCompletionSuggestions(this.parse, i);
+				this.pendingSuggestions.thenRun(() -> {
+					if (this.pendingSuggestions.isDone()) {
+						this.show();
+					}
+				});
+			}
+		} else {
+			String string2 = string.substring(0, i);
+			int j = getLastPlayerNameStart(string2);
+			Collection<String> collection = this.client.player.networkHandler.getCommandSource().getPlayerNames();
+			this.pendingSuggestions = CommandSource.suggestMatching(collection, new SuggestionsBuilder(string2, j));
 		}
 	}
 
@@ -214,7 +223,7 @@ public class CommandSuggestor {
 
 		this.window = null;
 		if (this.windowActive && this.client.options.autoSuggestions) {
-			this.showSuggestions();
+			this.showSuggestions(false);
 		}
 	}
 
@@ -310,6 +319,10 @@ public class CommandSuggestor {
 		}
 	}
 
+	public String method_23958() {
+		return this.window != null ? "\n" + this.window.getNarration() : "";
+	}
+
 	@Environment(EnvType.CLIENT)
 	public class SuggestionWindow {
 		private final Rect2i area;
@@ -319,13 +332,15 @@ public class CommandSuggestor {
 		private int selection;
 		private Vec2f mouse = Vec2f.ZERO;
 		private boolean completed;
+		private int lastNarrationIndex;
 
-		private SuggestionWindow(int x, int y, int width, Suggestions suggestions) {
+		private SuggestionWindow(int x, int y, int width, Suggestions suggestions, boolean narrateFirstSuggestion) {
 			int i = x - 1;
 			int j = CommandSuggestor.this.chatScreenSized ? y - 3 - Math.min(suggestions.getList().size(), CommandSuggestor.this.maxSuggestionSize) * 12 : y;
 			this.area = new Rect2i(i, j, width + 1, Math.min(suggestions.getList().size(), CommandSuggestor.this.maxSuggestionSize) * 12);
 			this.suggestions = suggestions;
 			this.typedText = CommandSuggestor.this.textField.getText();
+			this.lastNarrationIndex = narrateFirstSuggestion ? -1 : 0;
 			this.select(0);
 		}
 
@@ -487,6 +502,9 @@ public class CommandSuggestor {
 			Suggestion suggestion = (Suggestion)this.suggestions.getList().get(this.selection);
 			CommandSuggestor.this.textField
 				.setSuggestion(CommandSuggestor.getSuggestionSuffix(CommandSuggestor.this.textField.getText(), suggestion.apply(this.typedText)));
+			if (NarratorManager.INSTANCE.isActive() && this.lastNarrationIndex != this.selection) {
+				NarratorManager.INSTANCE.narrate(this.getNarration());
+			}
 		}
 
 		public void complete() {
@@ -499,6 +517,16 @@ public class CommandSuggestor {
 			this.select(this.selection);
 			CommandSuggestor.this.completingSuggestions = false;
 			this.completed = true;
+		}
+
+		private String getNarration() {
+			this.lastNarrationIndex = this.selection;
+			List<Suggestion> list = this.suggestions.getList();
+			Suggestion suggestion = (Suggestion)list.get(this.selection);
+			Message message = suggestion.getTooltip();
+			return message != null
+				? I18n.translate("narration.suggestion.tooltip", this.selection + 1, list.size(), suggestion.getText(), message.getString())
+				: I18n.translate("narration.suggestion", this.selection + 1, list.size(), suggestion.getText());
 		}
 
 		public void discard() {

@@ -50,9 +50,7 @@ public class CelebrateRaidWinTask extends Task<VillagerEntity> {
 			DyeColor dyeColor = DyeColor.values()[random.nextInt(DyeColor.values().length)];
 			int i = random.nextInt(3);
 			ItemStack itemStack = this.createFirework(dyeColor, i);
-			FireworkEntity fireworkEntity = new FireworkEntity(
-				villagerEntity.world, villagerEntity.getX(), villagerEntity.method_23320(), villagerEntity.getZ(), itemStack
-			);
+			FireworkEntity fireworkEntity = new FireworkEntity(villagerEntity.world, villagerEntity.getX(), villagerEntity.getEyeY(), villagerEntity.getZ(), itemStack);
 			villagerEntity.world.spawnEntity(fireworkEntity);
 		}
 	}

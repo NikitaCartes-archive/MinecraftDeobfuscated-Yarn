@@ -649,12 +649,12 @@ public class InGameHud extends DrawableHelper {
 			int s = l - o * 9;
 			int t = this.scaledWidth - 3 + 2;
 			fill(n - 2, s, t, s + 9, p);
-			this.getFontRenderer().draw(string3, (float)n, (float)s, 553648127);
-			this.getFontRenderer().draw(string4, (float)(t - this.getFontRenderer().getStringWidth(string4)), (float)s, 553648127);
+			this.getFontRenderer().draw(string3, (float)n, (float)s, -1);
+			this.getFontRenderer().draw(string4, (float)(t - this.getFontRenderer().getStringWidth(string4)), (float)s, -1);
 			if (o == collection.size()) {
 				fill(n - 2, s - 9 - 1, t, s - 1, q);
 				fill(n - 2, s - 1, t, s, p);
-				this.getFontRenderer().draw(string, (float)(n + j / 2 - i / 2), (float)(s - 9), 553648127);
+				this.getFontRenderer().draw(string, (float)(n + j / 2 - i / 2), (float)(s - 9), -1);
 			}
 		}
 	}

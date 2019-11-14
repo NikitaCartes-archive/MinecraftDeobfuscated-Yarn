@@ -336,7 +336,7 @@ public class EntityRenderDispatcher {
 		float h = 0.0F;
 		float i = entity.getHeight() / f;
 		float j = 0.0F;
-		matrix.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-this.camera.getYaw()));
+		matrix.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-this.camera.getYaw()));
 		matrix.translate(0.0, 0.0, (double)(-0.3F + (float)((int)i) * 0.02F));
 		float k = 0.0F;
 		int l = 0;

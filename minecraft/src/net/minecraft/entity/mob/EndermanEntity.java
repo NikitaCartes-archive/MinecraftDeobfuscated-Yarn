@@ -128,7 +128,7 @@ public class EndermanEntity extends HostileEntity {
 		if (this.age >= this.lastAngrySoundAge + 400) {
 			this.lastAngrySoundAge = this.age;
 			if (!this.isSilent()) {
-				this.world.playSound(this.getX(), this.method_23320(), this.getZ(), SoundEvents.ENTITY_ENDERMAN_STARE, this.getSoundCategory(), 2.5F, 1.0F, false);
+				this.world.playSound(this.getX(), this.getEyeY(), this.getZ(), SoundEvents.ENTITY_ENDERMAN_STARE, this.getSoundCategory(), 2.5F, 1.0F, false);
 			}
 		}
 	}
@@ -171,7 +171,7 @@ public class EndermanEntity extends HostileEntity {
 			return false;
 		} else {
 			Vec3d vec3d = player.getRotationVec(1.0F).normalize();
-			Vec3d vec3d2 = new Vec3d(this.getX() - player.getX(), this.method_23320() - player.method_23320(), this.getZ() - player.getZ());
+			Vec3d vec3d2 = new Vec3d(this.getX() - player.getX(), this.getEyeY() - player.getEyeY(), this.getZ() - player.getZ());
 			double d = vec3d2.length();
 			vec3d2 = vec3d2.normalize();
 			double e = vec3d.dotProduct(vec3d2);
@@ -191,9 +191,9 @@ public class EndermanEntity extends HostileEntity {
 				this.world
 					.addParticle(
 						ParticleTypes.PORTAL,
-						this.method_23322(0.5),
-						this.method_23319() - 0.25,
-						this.method_23325(0.5),
+						this.getParticleX(0.5),
+						this.getRandomBodyY() - 0.25,
+						this.getParticleZ(0.5),
 						(this.random.nextDouble() - 0.5) * 2.0,
 						-this.random.nextDouble(),
 						(this.random.nextDouble() - 0.5) * 2.0
@@ -234,7 +234,7 @@ public class EndermanEntity extends HostileEntity {
 	}
 
 	private boolean teleportTo(Entity entity) {
-		Vec3d vec3d = new Vec3d(this.getX() - entity.getX(), this.getHeightAt(0.5) - entity.method_23320(), this.getZ() - entity.getZ());
+		Vec3d vec3d = new Vec3d(this.getX() - entity.getX(), this.getBodyY(0.5) - entity.getEyeY(), this.getZ() - entity.getZ());
 		vec3d = vec3d.normalize();
 		double d = 16.0;
 		double e = this.getX() + (this.random.nextDouble() - 0.5) * 8.0 - vec3d.x * 16.0;
@@ -360,7 +360,7 @@ public class EndermanEntity extends HostileEntity {
 
 		@Override
 		public void tick() {
-			this.enderman.getLookControl().lookAt(this.field_21513.getX(), this.field_21513.method_23320(), this.field_21513.getZ());
+			this.enderman.getLookControl().lookAt(this.field_21513.getX(), this.field_21513.getEyeY(), this.field_21513.getZ());
 		}
 	}
 

@@ -33,7 +33,7 @@ public class SnowBlock extends Block {
 
 	protected SnowBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(LAYERS, Integer.valueOf(1)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(LAYERS, Integer.valueOf(1)));
 	}
 
 	@Override

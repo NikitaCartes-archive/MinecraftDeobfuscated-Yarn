@@ -41,7 +41,7 @@ public class PistonBlock extends FacingBlock {
 
 	public PistonBlock(boolean isSticky, Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(EXTENDED, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(EXTENDED, Boolean.valueOf(false)));
 		this.isSticky = isSticky;
 	}
 

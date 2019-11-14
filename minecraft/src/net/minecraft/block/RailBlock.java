@@ -15,7 +15,7 @@ public class RailBlock extends AbstractRailBlock {
 
 	protected RailBlock(Block.Settings settings) {
 		super(false, settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(SHAPE, RailShape.NORTH_SOUTH));
+		this.setDefaultState(this.stateManager.getDefaultState().with(SHAPE, RailShape.NORTH_SOUTH));
 	}
 
 	@Override

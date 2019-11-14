@@ -13,27 +13,27 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class StrayEntityModel<T extends MobEntity & RangedAttackMob> extends BipedEntityModel<T> {
-	public StrayEntityModel() {
+public class SkeletonEntityModel<T extends MobEntity & RangedAttackMob> extends BipedEntityModel<T> {
+	public SkeletonEntityModel() {
 		this(0.0F, false);
 	}
 
-	public StrayEntityModel(float f, boolean bl) {
-		super(f);
-		if (!bl) {
+	public SkeletonEntityModel(float stretch, boolean isClothing) {
+		super(stretch);
+		if (!isClothing) {
 			this.rightArm = new ModelPart(this, 40, 16);
-			this.rightArm.addCuboid(-1.0F, -2.0F, -1.0F, 2.0F, 12.0F, 2.0F, f);
+			this.rightArm.addCuboid(-1.0F, -2.0F, -1.0F, 2.0F, 12.0F, 2.0F, stretch);
 			this.rightArm.setPivot(-5.0F, 2.0F, 0.0F);
 			this.leftArm = new ModelPart(this, 40, 16);
 			this.leftArm.mirror = true;
-			this.leftArm.addCuboid(-1.0F, -2.0F, -1.0F, 2.0F, 12.0F, 2.0F, f);
+			this.leftArm.addCuboid(-1.0F, -2.0F, -1.0F, 2.0F, 12.0F, 2.0F, stretch);
 			this.leftArm.setPivot(5.0F, 2.0F, 0.0F);
 			this.rightLeg = new ModelPart(this, 0, 16);
-			this.rightLeg.addCuboid(-1.0F, 0.0F, -1.0F, 2.0F, 12.0F, 2.0F, f);
+			this.rightLeg.addCuboid(-1.0F, 0.0F, -1.0F, 2.0F, 12.0F, 2.0F, stretch);
 			this.rightLeg.setPivot(-2.0F, 12.0F, 0.0F);
 			this.leftLeg = new ModelPart(this, 0, 16);
 			this.leftLeg.mirror = true;
-			this.leftLeg.addCuboid(-1.0F, 0.0F, -1.0F, 2.0F, 12.0F, 2.0F, f);
+			this.leftLeg.addCuboid(-1.0F, 0.0F, -1.0F, 2.0F, 12.0F, 2.0F, stretch);
 			this.leftLeg.setPivot(2.0F, 12.0F, 0.0F);
 		}
 	}

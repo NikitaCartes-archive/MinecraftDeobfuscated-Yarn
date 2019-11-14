@@ -51,7 +51,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 	}
 
 	@Override
-	public void load(ResourceManager resourceManager) throws IOException {
+	public void load(ResourceManager manager) throws IOException {
 	}
 
 	public void upload(SpriteAtlasTexture.Data data) {

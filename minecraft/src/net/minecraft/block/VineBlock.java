@@ -40,7 +40,7 @@ public class VineBlock extends Block {
 	public VineBlock(Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateFactory
+			this.stateManager
 				.getDefaultState()
 				.with(UP, Boolean.valueOf(false))
 				.with(NORTH, Boolean.valueOf(false))

@@ -38,7 +38,7 @@ public class TripwireBlock extends Block {
 	public TripwireBlock(TripwireHookBlock hookBlock, Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateFactory
+			this.stateManager
 				.getDefaultState()
 				.with(POWERED, Boolean.valueOf(false))
 				.with(ATTACHED, Boolean.valueOf(false))

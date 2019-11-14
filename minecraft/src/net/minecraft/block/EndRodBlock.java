@@ -23,7 +23,7 @@ public class EndRodBlock extends FacingBlock {
 
 	protected EndRodBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.UP));
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.UP));
 	}
 
 	@Override

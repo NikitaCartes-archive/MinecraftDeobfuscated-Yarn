@@ -19,7 +19,7 @@ public class PressurePlateBlock extends AbstractPressurePlateBlock {
 
 	protected PressurePlateBlock(PressurePlateBlock.ActivationRule type, Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(POWERED, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(POWERED, Boolean.valueOf(false)));
 		this.type = type;
 	}
 

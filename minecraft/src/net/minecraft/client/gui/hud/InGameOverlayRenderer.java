@@ -123,7 +123,7 @@ public class InGameOverlayRenderer {
 		float i = sprite.getMinV();
 		float j = sprite.getMaxV();
 		float k = (i + j) / 2.0F;
-		float l = sprite.method_23842();
+		float l = sprite.getAnimationFrameDelta();
 		float m = MathHelper.lerp(l, f, h);
 		float n = MathHelper.lerp(l, g, h);
 		float o = MathHelper.lerp(l, i, k);
@@ -138,7 +138,7 @@ public class InGameOverlayRenderer {
 			float v = 0.5F;
 			float w = -0.5F;
 			matrixStack.translate((double)((float)(-(r * 2 - 1)) * 0.24F), -0.3F, 0.0);
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion((float)(r * 2 - 1) * 10.0F));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion((float)(r * 2 - 1) * 10.0F));
 			Matrix4f matrix4f = matrixStack.peek().getModel();
 			bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_TEXTURE);
 			bufferBuilder.vertex(matrix4f, -0.5F, -0.5F, -0.5F).color(1.0F, 1.0F, 1.0F, 0.9F).texture(n, p).next();

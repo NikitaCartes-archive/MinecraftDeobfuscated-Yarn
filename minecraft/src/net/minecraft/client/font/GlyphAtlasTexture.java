@@ -16,15 +16,15 @@ public class GlyphAtlasTexture extends AbstractTexture implements Closeable {
 	private final boolean hasColor;
 	private final GlyphAtlasTexture.Slot rootSlot;
 
-	public GlyphAtlasTexture(Identifier identifier, boolean hasColor) {
-		this.id = identifier;
+	public GlyphAtlasTexture(Identifier id, boolean hasColor) {
+		this.id = id;
 		this.hasColor = hasColor;
 		this.rootSlot = new GlyphAtlasTexture.Slot(0, 0, 256, 256);
 		TextureUtil.prepareImage(hasColor ? NativeImage.GLFormat.RGBA : NativeImage.GLFormat.INTENSITY, this.getGlId(), 256, 256);
 	}
 
 	@Override
-	public void load(ResourceManager resourceManager) {
+	public void load(ResourceManager manager) {
 	}
 
 	public void close() {
@@ -74,11 +74,11 @@ public class GlyphAtlasTexture extends AbstractTexture implements Closeable {
 		private GlyphAtlasTexture.Slot subSlot2;
 		private boolean isOccupied;
 
-		private Slot(int i, int j, int k, int l) {
-			this.x = i;
-			this.y = j;
-			this.width = k;
-			this.height = l;
+		private Slot(int x, int y, int width, int height) {
+			this.x = x;
+			this.y = y;
+			this.width = width;
+			this.height = height;
 		}
 
 		@Nullable

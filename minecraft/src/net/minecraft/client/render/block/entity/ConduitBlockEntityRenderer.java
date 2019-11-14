@@ -46,7 +46,7 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.method_23946());
 			matrixStack.push();
 			matrixStack.translate(0.5, 0.5, 0.5);
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(h));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(h));
 			this.field_20825.render(matrixStack, vertexConsumer, i, j, this.getSprite(BASE_TEX));
 			matrixStack.pop();
 		} else {
@@ -65,9 +65,9 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 			matrixStack.push();
 			matrixStack.translate(0.5, 0.5, 0.5);
 			if (m == 1) {
-				matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0F));
+				matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0F));
 			} else if (m == 2) {
-				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(90.0F));
+				matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
 			}
 
 			Sprite sprite = this.getSprite(m == 1 ? WIND_VERTICAL_TEX : WIND_TEX);
@@ -76,8 +76,8 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 			matrixStack.push();
 			matrixStack.translate(0.5, 0.5, 0.5);
 			matrixStack.scale(0.875F, 0.875F, 0.875F);
-			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(180.0F));
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0F));
+			matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(180.0F));
+			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
 			this.field_20824.render(matrixStack, vertexConsumer2, i, j, sprite);
 			matrixStack.pop();
 			Camera camera = this.blockEntityRenderDispatcher.camera;
@@ -85,9 +85,9 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 			matrixStack.translate(0.5, (double)(0.3F + l * 0.2F), 0.5);
 			matrixStack.scale(0.5F, 0.5F, 0.5F);
 			float n = -camera.getYaw();
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(n));
-			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(camera.getPitch()));
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0F));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(n));
+			matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(camera.getPitch()));
+			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
 			float o = 1.3333334F;
 			matrixStack.scale(1.3333334F, 1.3333334F, 1.3333334F);
 			this.field_20823.render(matrixStack, vertexConsumer2, i, j, this.getSprite(conduitBlockEntity.isEyeOpen() ? OPEN_EYE_TEX : CLOSED_EYE_TEX));

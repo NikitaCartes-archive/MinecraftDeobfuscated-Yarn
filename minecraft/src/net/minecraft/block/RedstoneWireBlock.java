@@ -67,7 +67,7 @@ public class RedstoneWireBlock extends Block {
 	public RedstoneWireBlock(Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateFactory
+			this.stateManager
 				.getDefaultState()
 				.with(WIRE_CONNECTION_NORTH, WireConnection.NONE)
 				.with(WIRE_CONNECTION_EAST, WireConnection.NONE)

@@ -25,7 +25,7 @@ public class SlideDownBlockCriterion extends AbstractCriterion<SlideDownBlockCri
 		Block block = getBlock(jsonObject);
 		StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("state"));
 		if (block != null) {
-			statePredicate.check(block.getStateFactory(), key -> {
+			statePredicate.check(block.getStateManager(), key -> {
 				throw new JsonSyntaxException("Block " + block + " has no property " + key);
 			});
 		}
@@ -44,7 +44,7 @@ public class SlideDownBlockCriterion extends AbstractCriterion<SlideDownBlockCri
 	}
 
 	public void test(ServerPlayerEntity player, BlockState state) {
-		this.test(player.getAdvancementManager(), conditions -> conditions.test(state));
+		this.test(player.getAdvancementTracker(), conditions -> conditions.test(state));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

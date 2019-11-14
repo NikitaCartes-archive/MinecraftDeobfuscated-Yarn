@@ -35,7 +35,7 @@ public class PistonExtensionBlock extends BlockWithEntity {
 
 	public PistonExtensionBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(TYPE, PistonType.DEFAULT));
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(TYPE, PistonType.DEFAULT));
 	}
 
 	@Nullable

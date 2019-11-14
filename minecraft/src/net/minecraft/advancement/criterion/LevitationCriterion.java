@@ -24,7 +24,7 @@ public class LevitationCriterion extends AbstractCriterion<LevitationCriterion.C
 	}
 
 	public void trigger(ServerPlayerEntity player, Vec3d startPos, int duration) {
-		this.test(player.getAdvancementManager(), conditions -> conditions.matches(player, startPos, duration));
+		this.test(player.getAdvancementTracker(), conditions -> conditions.matches(player, startPos, duration));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

@@ -27,7 +27,7 @@ public class ConduitBlock extends BlockWithEntity implements Waterloggable {
 
 	public ConduitBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(WATERLOGGED, Boolean.valueOf(true)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(WATERLOGGED, Boolean.valueOf(true)));
 	}
 
 	@Override

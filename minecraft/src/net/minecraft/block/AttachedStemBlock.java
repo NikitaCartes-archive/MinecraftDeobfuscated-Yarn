@@ -37,7 +37,7 @@ public class AttachedStemBlock extends PlantBlock {
 
 	protected AttachedStemBlock(GourdBlock gourdBlock, Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH));
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH));
 		this.gourdBlock = gourdBlock;
 	}
 

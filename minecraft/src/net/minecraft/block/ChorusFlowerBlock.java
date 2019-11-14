@@ -21,7 +21,7 @@ public class ChorusFlowerBlock extends Block {
 	protected ChorusFlowerBlock(ChorusPlantBlock plantBlock, Block.Settings settings) {
 		super(settings);
 		this.plantBlock = plantBlock;
-		this.setDefaultState(this.stateFactory.getDefaultState().with(AGE, Integer.valueOf(0)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(AGE, Integer.valueOf(0)));
 	}
 
 	@Override

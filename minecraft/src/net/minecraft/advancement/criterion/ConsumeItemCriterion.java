@@ -25,7 +25,7 @@ public class ConsumeItemCriterion extends AbstractCriterion<ConsumeItemCriterion
 	}
 
 	public void trigger(ServerPlayerEntity player, ItemStack stack) {
-		this.test(player.getAdvancementManager(), conditions -> conditions.matches(stack));
+		this.test(player.getAdvancementTracker(), conditions -> conditions.matches(stack));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

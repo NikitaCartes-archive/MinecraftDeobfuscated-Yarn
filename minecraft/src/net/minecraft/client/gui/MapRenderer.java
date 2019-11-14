@@ -116,7 +116,7 @@ public class MapRenderer implements AutoCloseable {
 				if (!bl || mapIcon.isAlwaysRendered()) {
 					matrixStack.push();
 					matrixStack.translate((double)(0.0F + (float)mapIcon.getX() / 2.0F + 64.0F), (double)(0.0F + (float)mapIcon.getZ() / 2.0F + 64.0F), -0.02F);
-					matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion((float)(mapIcon.getRotation() * 360) / 16.0F));
+					matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion((float)(mapIcon.getRotation() * 360) / 16.0F));
 					matrixStack.scale(4.0F, 4.0F, 3.0F);
 					matrixStack.translate(-0.125, 0.125, 0.0);
 					byte b = mapIcon.getTypeId();

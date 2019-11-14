@@ -24,7 +24,7 @@ public class MushroomBlock extends Block {
 	public MushroomBlock(Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateFactory
+			this.stateManager
 				.getDefaultState()
 				.with(NORTH, Boolean.valueOf(true))
 				.with(EAST, Boolean.valueOf(true))

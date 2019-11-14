@@ -104,8 +104,8 @@ public class Camera {
 		this.pitch = pitch;
 		this.yaw = yaw;
 		this.field_21518.method_23758(0.0F, 0.0F, 0.0F, 1.0F);
-		this.field_21518.hamiltonProduct(Vector3f.POSITIVE_Y.getRotationQuaternion(-yaw));
-		this.field_21518.hamiltonProduct(Vector3f.POSITIVE_X.getRotationQuaternion(pitch));
+		this.field_21518.hamiltonProduct(Vector3f.POSITIVE_Y.getDegreesQuaternion(-yaw));
+		this.field_21518.hamiltonProduct(Vector3f.POSITIVE_X.getDegreesQuaternion(pitch));
 		this.horizontalPlane.set(0.0F, 0.0F, 1.0F);
 		this.horizontalPlane.method_19262(this.field_21518);
 		this.verticalPlane.set(0.0F, 1.0F, 0.0F);

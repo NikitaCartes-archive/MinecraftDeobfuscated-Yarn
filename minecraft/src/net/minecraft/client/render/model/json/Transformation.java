@@ -22,9 +22,9 @@ public class Transformation {
 	public final Vector3f scale;
 
 	public Transformation(Vector3f rotation, Vector3f translation, Vector3f scale) {
-		this.rotation = rotation.method_23850();
-		this.translation = translation.method_23850();
-		this.scale = scale.method_23850();
+		this.rotation = rotation.copy();
+		this.translation = translation.copy();
+		this.scale = scale.copy();
 	}
 
 	public void method_23075(boolean bl, MatrixStack matrixStack) {

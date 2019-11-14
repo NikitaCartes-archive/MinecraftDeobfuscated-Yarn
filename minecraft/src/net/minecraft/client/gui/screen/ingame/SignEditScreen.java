@@ -116,7 +116,7 @@ public class SignEditScreen extends Screen {
 		matrixStack.translate((double)(this.width / 2), 0.0, 50.0);
 		float f = 93.75F;
 		matrixStack.scale(-93.75F, -93.75F, -93.75F);
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
 		matrixStack.translate(0.0, -1.3125, 0.0);
 		BlockState blockState = this.sign.getCachedState();
 		boolean bl = blockState.getBlock() instanceof SignBlock;

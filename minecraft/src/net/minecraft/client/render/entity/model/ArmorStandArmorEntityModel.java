@@ -19,9 +19,9 @@ public class ArmorStandArmorEntityModel extends BipedEntityModel<ArmorStandEntit
 		this.head.yaw = (float) (Math.PI / 180.0) * armorStandEntity.getHeadRotation().getYaw();
 		this.head.roll = (float) (Math.PI / 180.0) * armorStandEntity.getHeadRotation().getRoll();
 		this.head.setPivot(0.0F, 1.0F, 0.0F);
-		this.body.pitch = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getPitch();
-		this.body.yaw = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getYaw();
-		this.body.roll = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getRoll();
+		this.torso.pitch = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getPitch();
+		this.torso.yaw = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getYaw();
+		this.torso.roll = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getRoll();
 		this.leftArm.pitch = (float) (Math.PI / 180.0) * armorStandEntity.getLeftArmRotation().getPitch();
 		this.leftArm.yaw = (float) (Math.PI / 180.0) * armorStandEntity.getLeftArmRotation().getYaw();
 		this.leftArm.roll = (float) (Math.PI / 180.0) * armorStandEntity.getLeftArmRotation().getRoll();
@@ -36,6 +36,6 @@ public class ArmorStandArmorEntityModel extends BipedEntityModel<ArmorStandEntit
 		this.rightLeg.yaw = (float) (Math.PI / 180.0) * armorStandEntity.getRightLegRotation().getYaw();
 		this.rightLeg.roll = (float) (Math.PI / 180.0) * armorStandEntity.getRightLegRotation().getRoll();
 		this.rightLeg.setPivot(-1.9F, 11.0F, 0.0F);
-		this.headwear.copyPositionAndRotation(this.head);
+		this.helmet.copyPositionAndRotation(this.head);
 	}
 }

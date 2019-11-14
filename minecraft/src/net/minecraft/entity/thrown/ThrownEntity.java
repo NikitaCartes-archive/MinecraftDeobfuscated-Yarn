@@ -45,7 +45,7 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 	}
 
 	protected ThrownEntity(EntityType<? extends ThrownEntity> type, LivingEntity owner, World world) {
-		this(type, owner.getX(), owner.method_23320() - 0.1F, owner.getZ(), world);
+		this(type, owner.getX(), owner.getEyeY() - 0.1F, owner.getZ(), world);
 		this.owner = owner;
 		this.ownerUuid = owner.getUuid();
 	}

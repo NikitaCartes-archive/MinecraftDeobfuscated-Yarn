@@ -59,7 +59,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	public BedBlock(DyeColor color, Block.Settings settings) {
 		super(settings);
 		this.color = color;
-		this.setDefaultState(this.stateFactory.getDefaultState().with(PART, BedPart.FOOT).with(OCCUPIED, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(PART, BedPart.FOOT).with(OCCUPIED, Boolean.valueOf(false)));
 	}
 
 	@Override

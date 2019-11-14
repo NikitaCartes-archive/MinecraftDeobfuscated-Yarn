@@ -30,7 +30,7 @@ public class IronGolemEntityRenderer extends MobEntityRenderer<IronGolemEntity, 
 			float i = 13.0F;
 			float j = ironGolemEntity.limbAngle - ironGolemEntity.limbDistance * (1.0F - h) + 6.0F;
 			float k = (Math.abs(j % 13.0F - 6.5F) - 3.25F) / 3.25F;
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(6.5F * k));
+			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(6.5F * k));
 		}
 	}
 }

@@ -224,7 +224,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 		double d = target.getX() - this.getX();
 		double e = target.getZ() - this.getZ();
 		double f = (double)MathHelper.sqrt(d * d + e * e);
-		double g = target.getHeightAt(0.3333333333333333) - entity.getY() + f * 0.2F;
+		double g = target.getBodyY(0.3333333333333333) - entity.getY() + f * 0.2F;
 		Vector3f vector3f = this.getProjectileVelocity(new Vec3d(d, g, e), multiShotSpray);
 		projectile.setVelocity((double)vector3f.getX(), (double)vector3f.getY(), (double)vector3f.getZ(), 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
 		this.playSound(SoundEvents.ITEM_CROSSBOW_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));

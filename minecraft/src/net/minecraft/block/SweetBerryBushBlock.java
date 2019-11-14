@@ -33,7 +33,7 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 
 	public SweetBerryBushBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(AGE, Integer.valueOf(0)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(AGE, Integer.valueOf(0)));
 	}
 
 	@Environment(EnvType.CLIENT)

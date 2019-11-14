@@ -23,11 +23,11 @@ import org.apache.logging.log4j.Logger;
 public class TextureFont implements Font {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final NativeImage image;
-	private final Char2ObjectMap<TextureFont.TextureFontGlyph> characterToGlyphMap;
+	private final Char2ObjectMap<TextureFont.TextureFontGlyph> glyphs;
 
-	public TextureFont(NativeImage image, Char2ObjectMap<TextureFont.TextureFontGlyph> char2ObjectMap) {
+	public TextureFont(NativeImage image, Char2ObjectMap<TextureFont.TextureFontGlyph> glyphs) {
 		this.image = image;
-		this.characterToGlyphMap = char2ObjectMap;
+		this.glyphs = glyphs;
 	}
 
 	@Override
@@ -37,8 +37,8 @@ public class TextureFont implements Font {
 
 	@Nullable
 	@Override
-	public RenderableGlyph getGlyph(char c) {
-		return this.characterToGlyphMap.get(c);
+	public RenderableGlyph getGlyph(char character) {
+		return this.glyphs.get(character);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -87,9 +87,9 @@ public class TextureFont implements Font {
 
 		@Nullable
 		@Override
-		public Font load(ResourceManager resourceManager) {
+		public Font load(ResourceManager manager) {
 			try {
-				Resource resource = resourceManager.getResource(this.filename);
+				Resource resource = manager.getResource(this.filename);
 				Throwable var3 = null;
 
 				TextureFont var28;

@@ -17,29 +17,29 @@ import net.minecraft.util.profiler.Profiler;
 
 @Environment(EnvType.CLIENT)
 public class BakedModelManager extends SinglePreparationResourceReloadListener<ModelLoader> {
-	private Map<Identifier, BakedModel> modelMap;
+	private Map<Identifier, BakedModel> models;
 	private final SpriteAtlasTexture spriteAtlas;
-	private final BlockModels blockStateMaps;
+	private final BlockModels blockModelCache;
 	private final BlockColors colorMap;
 	private BakedModel missingModel;
-	private Object2IntMap<BlockState> stateToModelIndex;
+	private Object2IntMap<BlockState> stateLookup;
 
 	public BakedModelManager(SpriteAtlasTexture spriteAtlas, BlockColors colorMap) {
 		this.spriteAtlas = spriteAtlas;
 		this.colorMap = colorMap;
-		this.blockStateMaps = new BlockModels(this);
+		this.blockModelCache = new BlockModels(this);
 	}
 
 	public BakedModel getModel(ModelIdentifier id) {
-		return (BakedModel)this.modelMap.getOrDefault(id, this.missingModel);
+		return (BakedModel)this.models.getOrDefault(id, this.missingModel);
 	}
 
 	public BakedModel getMissingModel() {
 		return this.missingModel;
 	}
 
-	public BlockModels getBlockStateMaps() {
-		return this.blockStateMaps;
+	public BlockModels getBlockModels() {
+		return this.blockModelCache;
 	}
 
 	protected ModelLoader method_18178(ResourceManager resourceManager, Profiler profiler) {
@@ -53,25 +53,25 @@ public class BakedModelManager extends SinglePreparationResourceReloadListener<M
 		profiler.startTick();
 		profiler.push("upload");
 		modelLoader.upload(profiler);
-		this.modelMap = modelLoader.getBakedModelMap();
-		this.stateToModelIndex = modelLoader.getStateToModelIndex();
-		this.missingModel = (BakedModel)this.modelMap.get(ModelLoader.MISSING);
+		this.models = modelLoader.getBakedModelMap();
+		this.stateLookup = modelLoader.getStateLookup();
+		this.missingModel = (BakedModel)this.models.get(ModelLoader.MISSING);
 		profiler.swap("cache");
-		this.blockStateMaps.reload();
+		this.blockModelCache.reload();
 		profiler.pop();
 		profiler.endTick();
 	}
 
-	public boolean shouldRerender(BlockState old, BlockState updated) {
-		if (old == updated) {
+	public boolean shouldRerender(BlockState from, BlockState to) {
+		if (from == to) {
 			return false;
 		} else {
-			int i = this.stateToModelIndex.getInt(old);
+			int i = this.stateLookup.getInt(from);
 			if (i != -1) {
-				int j = this.stateToModelIndex.getInt(updated);
+				int j = this.stateLookup.getInt(to);
 				if (i == j) {
-					FluidState fluidState = old.getFluidState();
-					FluidState fluidState2 = updated.getFluidState();
+					FluidState fluidState = from.getFluidState();
+					FluidState fluidState2 = to.getFluidState();
 					return fluidState != fluidState2;
 				}
 			}

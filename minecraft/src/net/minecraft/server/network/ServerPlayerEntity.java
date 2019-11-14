@@ -123,7 +123,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	public final MinecraftServer server;
 	public final ServerPlayerInteractionManager interactionManager;
 	private final List<Integer> removedEntities = Lists.newLinkedList();
-	private final PlayerAdvancementTracker advancementManager;
+	private final PlayerAdvancementTracker advancementTracker;
 	private final ServerStatHandler statHandler;
 	private float lastHealthScore = Float.MIN_VALUE;
 	private int lastFoodScore = Integer.MIN_VALUE;
@@ -161,7 +161,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		this.server = server;
 		this.recipeBook = new ServerRecipeBook(server.getRecipeManager());
 		this.statHandler = server.getPlayerManager().createStatHandler(this);
-		this.advancementManager = server.getPlayerManager().getAdvancementManager(this);
+		this.advancementTracker = server.getPlayerManager().getAdvancementTracker(this);
 		this.stepHeight = 1.0F;
 		this.moveToSpawn(world);
 	}
@@ -359,7 +359,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			Criterions.LEVITATION.trigger(this, this.levitationStartPos, this.age - this.levitationStartTick);
 		}
 
-		this.advancementManager.sendUpdate(this);
+		this.advancementTracker.sendUpdate(this);
 	}
 
 	public void playerTick() {
@@ -1239,8 +1239,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		this.inTeleportationState = false;
 	}
 
-	public PlayerAdvancementTracker getAdvancementManager() {
-		return this.advancementManager;
+	public PlayerAdvancementTracker getAdvancementTracker() {
+		return this.advancementTracker;
 	}
 
 	public void teleport(ServerWorld targetWorld, double x, double y, double z, float yaw, float pitch) {

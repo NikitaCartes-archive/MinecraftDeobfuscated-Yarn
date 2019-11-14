@@ -26,7 +26,7 @@ public class NetherTravelCriterion extends AbstractCriterion<NetherTravelCriteri
 	}
 
 	public void trigger(ServerPlayerEntity player, Vec3d enteredPos) {
-		this.test(player.getAdvancementManager(), conditions -> conditions.matches(player.getServerWorld(), enteredPos, player.getX(), player.getY(), player.getZ()));
+		this.test(player.getAdvancementTracker(), conditions -> conditions.matches(player.getServerWorld(), enteredPos, player.getX(), player.getY(), player.getZ()));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

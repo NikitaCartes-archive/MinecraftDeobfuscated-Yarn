@@ -27,8 +27,8 @@ public class LecternBlockEntityRenderer extends BlockEntityRenderer<LecternBlock
 			matrixStack.push();
 			matrixStack.translate(0.5, 1.0625, 0.5);
 			float g = ((Direction)blockState.get(LecternBlock.FACING)).rotateYClockwise().asRotation();
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-g));
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(67.5F));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-g));
+			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(67.5F));
 			matrixStack.translate(0.0, -0.125, 0.0);
 			this.book.setPageAngles(0.0F, 0.1F, 0.9F, 1.2F);
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.method_23946());

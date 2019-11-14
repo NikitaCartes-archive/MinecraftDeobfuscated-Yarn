@@ -34,7 +34,7 @@ public class BlockUsedCriterion extends AbstractCriterion<BlockUsedCriterion.Con
 
 	public void test(ServerPlayerEntity player, BlockPos pos, ItemStack stack) {
 		BlockState blockState = player.getServerWorld().getBlockState(pos);
-		this.test(player.getAdvancementManager(), conditions -> conditions.test(blockState, player.getServerWorld(), pos, stack));
+		this.test(player.getAdvancementTracker(), conditions -> conditions.test(blockState, player.getServerWorld(), pos, stack));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

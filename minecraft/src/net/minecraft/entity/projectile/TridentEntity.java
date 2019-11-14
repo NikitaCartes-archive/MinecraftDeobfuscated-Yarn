@@ -72,7 +72,7 @@ public class TridentEntity extends ProjectileEntity {
 				this.remove();
 			} else if (i > 0) {
 				this.setNoClip(true);
-				Vec3d vec3d = new Vec3d(entity.getX() - this.getX(), entity.method_23320() - this.getY(), entity.getZ() - this.getZ());
+				Vec3d vec3d = new Vec3d(entity.getX() - this.getX(), entity.getEyeY() - this.getY(), entity.getZ() - this.getZ());
 				this.setPos(this.getX(), this.getY() + vec3d.y * 0.015 * (double)i, this.getZ());
 				if (this.world.isClient) {
 					this.prevRenderY = this.getY();

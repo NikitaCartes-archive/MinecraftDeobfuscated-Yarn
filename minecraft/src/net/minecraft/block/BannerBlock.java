@@ -27,7 +27,7 @@ public class BannerBlock extends AbstractBannerBlock {
 
 	public BannerBlock(DyeColor color, Block.Settings settings) {
 		super(color, settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(ROTATION, Integer.valueOf(0)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(ROTATION, Integer.valueOf(0)));
 		COLORED_BANNERS.put(color, this);
 	}
 

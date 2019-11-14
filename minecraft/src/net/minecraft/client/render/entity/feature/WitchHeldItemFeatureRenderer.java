@@ -26,9 +26,9 @@ public class WitchHeldItemFeatureRenderer<T extends LivingEntity> extends Villag
 			this.getModel().getHead().rotate(matrixStack);
 			this.getModel().getNose().rotate(matrixStack);
 			matrixStack.translate(0.0625, 0.25, 0.0);
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0F));
-			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(140.0F));
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(10.0F));
+			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
+			matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(140.0F));
+			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(10.0F));
 			matrixStack.translate(0.0, -0.4F, 0.4F);
 		}
 

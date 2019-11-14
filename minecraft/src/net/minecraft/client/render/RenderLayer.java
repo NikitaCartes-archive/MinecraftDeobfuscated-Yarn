@@ -345,7 +345,7 @@ public class RenderLayer extends RenderPhase {
 	}
 
 	public static RenderLayer getBlockBreaking(int stage) {
-		RenderPhase.Texture texture = new RenderPhase.Texture((Identifier)ModelLoader.BLOCK_BREAKING_STAGES.get(stage), false, false);
+		RenderPhase.Texture texture = new RenderPhase.Texture((Identifier)ModelLoader.BLOCK_DESTRUCTION_STAGE_TEXTURES.get(stage), false, false);
 		return new RenderLayer.MultiPhase(
 			"crumbling",
 			VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL,

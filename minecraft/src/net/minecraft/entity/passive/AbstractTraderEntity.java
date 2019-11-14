@@ -214,7 +214,7 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 			double d = this.random.nextGaussian() * 0.02;
 			double e = this.random.nextGaussian() * 0.02;
 			double f = this.random.nextGaussian() * 0.02;
-			this.world.addParticle(parameters, this.method_23322(1.0), this.method_23319() + 1.0, this.method_23325(1.0), d, e, f);
+			this.world.addParticle(parameters, this.getParticleX(1.0), this.getRandomBodyY() + 1.0, this.getParticleZ(1.0), d, e, f);
 		}
 	}
 

@@ -114,7 +114,7 @@ public class SnowGolemEntity extends GolemEntity implements RangedAttackMob {
 	@Override
 	public void attack(LivingEntity target, float f) {
 		SnowballEntity snowballEntity = new SnowballEntity(this.world, this);
-		double d = target.method_23320() - 1.1F;
+		double d = target.getEyeY() - 1.1F;
 		double e = target.getX() - this.getX();
 		double g = d - snowballEntity.getY();
 		double h = target.getZ() - this.getZ();

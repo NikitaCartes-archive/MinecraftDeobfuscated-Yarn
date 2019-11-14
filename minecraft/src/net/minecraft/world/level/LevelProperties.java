@@ -172,7 +172,7 @@ public class LevelProperties {
 		}
 
 		if (compoundTag.contains("GameRules", 10)) {
-			this.gameRules.fromNbt(compoundTag.getCompound("GameRules"));
+			this.gameRules.load(compoundTag.getCompound("GameRules"));
 		}
 
 		if (compoundTag.contains("Difficulty", 99)) {

@@ -23,8 +23,8 @@ public class ResourceTexture extends AbstractTexture {
 	}
 
 	@Override
-	public void load(ResourceManager resourceManager) throws IOException {
-		ResourceTexture.TextureData textureData = this.loadTextureData(resourceManager);
+	public void load(ResourceManager manager) throws IOException {
+		ResourceTexture.TextureData textureData = this.loadTextureData(manager);
 		textureData.checkException();
 		TextureResourceMetadata textureResourceMetadata = textureData.getMetadata();
 		boolean bl;

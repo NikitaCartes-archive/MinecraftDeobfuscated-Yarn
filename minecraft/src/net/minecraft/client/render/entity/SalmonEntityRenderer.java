@@ -31,11 +31,11 @@ public class SalmonEntityRenderer extends MobEntityRenderer<SalmonEntity, Salmon
 		}
 
 		float k = i * 4.3F * MathHelper.sin(j * 0.6F * f);
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(k));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(k));
 		matrixStack.translate(0.0, 0.0, -0.4F);
 		if (!salmonEntity.isInsideWater()) {
 			matrixStack.translate(0.2F, 0.1F, 0.0);
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(90.0F));
+			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
 		}
 	}
 }

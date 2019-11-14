@@ -26,7 +26,7 @@ public class BredAnimalsCriterion extends AbstractCriterion<BredAnimalsCriterion
 	}
 
 	public void trigger(ServerPlayerEntity player, AnimalEntity parent, @Nullable AnimalEntity partner, @Nullable PassiveEntity child) {
-		this.test(player.getAdvancementManager(), conditions -> conditions.matches(player, parent, partner, child));
+		this.test(player.getAdvancementTracker(), conditions -> conditions.matches(player, parent, partner, child));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

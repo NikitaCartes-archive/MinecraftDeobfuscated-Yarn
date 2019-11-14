@@ -10,7 +10,7 @@ public class StainedGlassPaneBlock extends PaneBlock implements ColoredBlock {
 		super(settings);
 		this.color = color;
 		this.setDefaultState(
-			this.stateFactory
+			this.stateManager
 				.getDefaultState()
 				.with(NORTH, Boolean.valueOf(false))
 				.with(EAST, Boolean.valueOf(false))

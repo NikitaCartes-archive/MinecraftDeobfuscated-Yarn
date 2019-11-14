@@ -36,7 +36,7 @@ public class SnowmanPumpkinFeatureRenderer extends FeatureRenderer<SnowGolemEnti
 			this.getModel().method_2834().rotate(matrixStack);
 			float m = 0.625F;
 			matrixStack.translate(0.0, -0.34375, 0.0);
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
 			matrixStack.scale(0.625F, -0.625F, -0.625F);
 			ItemStack itemStack = new ItemStack(Blocks.CARVED_PUMPKIN);
 			MinecraftClient.getInstance()

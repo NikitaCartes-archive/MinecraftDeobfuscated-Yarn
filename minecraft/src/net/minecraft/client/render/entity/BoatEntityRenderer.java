@@ -34,7 +34,7 @@ public class BoatEntityRenderer extends EntityRenderer<BoatEntity> {
 	public void method_3888(BoatEntity boatEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
 		matrixStack.translate(0.0, 0.375, 0.0);
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F - f));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F - f));
 		float h = (float)boatEntity.getDamageWobbleTicks() - g;
 		float j = boatEntity.getDamageWobbleStrength() - g;
 		if (j < 0.0F) {
@@ -42,7 +42,7 @@ public class BoatEntityRenderer extends EntityRenderer<BoatEntity> {
 		}
 
 		if (h > 0.0F) {
-			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(MathHelper.sin(h) * h * j / 10.0F * (float)boatEntity.getDamageWobbleSide()));
+			matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(MathHelper.sin(h) * h * j / 10.0F * (float)boatEntity.getDamageWobbleSide()));
 		}
 
 		float k = boatEntity.interpolateBubbleWobble(g);
@@ -51,7 +51,7 @@ public class BoatEntityRenderer extends EntityRenderer<BoatEntity> {
 		}
 
 		matrixStack.scale(-1.0F, -1.0F, 1.0F);
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(90.0F));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(90.0F));
 		this.model.method_22952(boatEntity, g, 0.0F, -0.1F, 0.0F, 0.0F);
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(this.method_3891(boatEntity)));
 		this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F);

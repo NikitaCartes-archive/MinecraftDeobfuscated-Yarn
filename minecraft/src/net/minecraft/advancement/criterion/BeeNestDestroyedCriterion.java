@@ -40,7 +40,7 @@ public class BeeNestDestroyedCriterion extends AbstractCriterion<BeeNestDestroye
 	}
 
 	public void test(ServerPlayerEntity player, Block block, ItemStack stack, int beeCount) {
-		this.test(player.getAdvancementManager(), conditions -> conditions.test(block, stack, beeCount));
+		this.test(player.getAdvancementTracker(), conditions -> conditions.test(block, stack, beeCount));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

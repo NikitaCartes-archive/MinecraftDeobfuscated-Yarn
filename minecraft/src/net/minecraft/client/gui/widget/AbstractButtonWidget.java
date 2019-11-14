@@ -111,7 +111,7 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 		this.blit(this.x, this.y, 0, 46 + i * 20, this.width / 2, this.height);
 		this.blit(this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
 		this.renderBg(minecraftClient, mouseX, mouseY);
-		int j = 14737632;
+		int j = 16777215;
 		if (!this.active) {
 			j = 10526880;
 		} else if (this.isHovered()) {

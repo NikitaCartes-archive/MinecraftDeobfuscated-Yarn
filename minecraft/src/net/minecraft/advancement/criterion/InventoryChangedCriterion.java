@@ -36,7 +36,7 @@ public class InventoryChangedCriterion extends AbstractCriterion<InventoryChange
 	}
 
 	public void trigger(ServerPlayerEntity player, PlayerInventory inventory) {
-		this.test(player.getAdvancementManager(), conditions -> conditions.matches(inventory));
+		this.test(player.getAdvancementTracker(), conditions -> conditions.matches(inventory));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

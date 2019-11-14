@@ -26,13 +26,18 @@ public class ChatScreen extends Screen {
 	protected void init() {
 		this.minecraft.keyboard.enableRepeatEvents(true);
 		this.messageHistorySize = this.minecraft.inGameHud.getChatHud().getMessageHistory().size();
-		this.chatField = new TextFieldWidget(this.font, 4, this.height - 12, this.width - 4, 12, I18n.translate("chat.editBox"));
+		this.chatField = new TextFieldWidget(this.font, 4, this.height - 12, this.width - 4, 12, I18n.translate("chat.editBox")) {
+			@Override
+			protected String getNarrationMessage() {
+				return super.getNarrationMessage() + ChatScreen.this.commandSuggestor.method_23958();
+			}
+		};
 		this.chatField.setMaxLength(256);
 		this.chatField.setHasBorder(false);
 		this.chatField.setText(this.originalChatText);
 		this.chatField.setChangedListener(this::method_23945);
 		this.children.add(this.chatField);
-		this.commandSuggestor = new CommandSuggestor(this.minecraft, this, this.chatField, this.font, true, false, 1, 10, true, -805306368);
+		this.commandSuggestor = new CommandSuggestor(this.minecraft, this, this.chatField, this.font, false, false, 1, 10, true, -805306368);
 		this.commandSuggestor.refresh();
 		this.setInitialFocus(this.chatField);
 	}

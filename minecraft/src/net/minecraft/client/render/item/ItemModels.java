@@ -32,7 +32,7 @@ public class ItemModels {
 	public Sprite getSprite(ItemStack stack) {
 		BakedModel bakedModel = this.getModel(stack);
 		return bakedModel == this.modelManager.getMissingModel() && stack.getItem() instanceof BlockItem
-			? this.modelManager.getBlockStateMaps().getSprite(((BlockItem)stack.getItem()).getBlock().getDefaultState())
+			? this.modelManager.getBlockModels().getSprite(((BlockItem)stack.getItem()).getBlock().getDefaultState())
 			: bakedModel.getSprite();
 	}
 

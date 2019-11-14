@@ -480,7 +480,7 @@ public class ArmorStandEntity extends LivingEntity {
 				.spawnParticles(
 					new BlockStateParticleEffect(ParticleTypes.BLOCK, Blocks.OAK_PLANKS.getDefaultState()),
 					this.getX(),
-					this.getHeightAt(0.6666666666666666),
+					this.getBodyY(0.6666666666666666),
 					this.getZ(),
 					10,
 					(double)(this.getWidth() / 4.0F),

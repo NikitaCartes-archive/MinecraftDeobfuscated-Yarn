@@ -221,7 +221,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 		if (!this.isDrinking()) {
 			Vec3d vec3d = target.getVelocity();
 			double d = target.getX() + vec3d.x - this.getX();
-			double e = target.method_23320() - 1.1F - this.getY();
+			double e = target.getEyeY() - 1.1F - this.getY();
 			double g = target.getZ() + vec3d.z - this.getZ();
 			float h = MathHelper.sqrt(d * d + g * g);
 			Potion potion = Potions.HARMING;

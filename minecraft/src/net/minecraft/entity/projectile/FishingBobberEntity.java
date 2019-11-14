@@ -86,7 +86,7 @@ public class FishingBobberEntity extends Entity {
 		float j = -MathHelper.cos(-f * (float) (Math.PI / 180.0));
 		float k = MathHelper.sin(-f * (float) (Math.PI / 180.0));
 		double d = this.owner.getX() - (double)i * 0.3;
-		double e = this.owner.method_23320();
+		double e = this.owner.getEyeY();
 		double l = this.owner.getZ() - (double)h * 0.3;
 		this.setPositionAndAngles(d, e, l, g, f);
 		Vec3d vec3d = new Vec3d((double)(-i), (double)MathHelper.clamp(-(k / j), -5.0F, 5.0F), (double)(-h));
@@ -181,7 +181,7 @@ public class FishingBobberEntity extends Entity {
 							this.hookedEntity = null;
 							this.state = FishingBobberEntity.State.FLYING;
 						} else {
-							this.setPosition(this.hookedEntity.getX(), this.hookedEntity.getHeightAt(0.8), this.hookedEntity.getZ());
+							this.setPosition(this.hookedEntity.getX(), this.hookedEntity.getBodyY(0.8), this.hookedEntity.getZ());
 						}
 					}
 

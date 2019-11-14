@@ -184,7 +184,7 @@ public class Explosion {
 				double x = (double)(MathHelper.sqrt(entity.squaredDistanceTo(new Vec3d(this.x, this.y, this.z))) / r);
 				if (x <= 1.0) {
 					double y = entity.getX() - this.x;
-					double z = entity.method_23320() - this.y;
+					double z = entity.getEyeY() - this.y;
 					double aa = entity.getZ() - this.z;
 					double ab = (double)MathHelper.sqrt(y * y + z * z + aa * aa);
 					if (ab != 0.0) {

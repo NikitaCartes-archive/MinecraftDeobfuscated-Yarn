@@ -51,8 +51,8 @@ public class HeldItemFeatureRenderer<T extends LivingEntity, M extends EntityMod
 		if (!itemStack.isEmpty()) {
 			matrixStack.push();
 			this.getModel().setArmAngle(arm, matrixStack);
-			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-90.0F));
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F));
+			matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0F));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
 			boolean bl = arm == Arm.LEFT;
 			matrixStack.translate((double)((float)(bl ? -1 : 1) / 16.0F), 0.125, -0.625);
 			MinecraftClient.getInstance().getFirstPersonRenderer().renderItem(livingEntity, itemStack, type, bl, matrixStack, vertexConsumerProvider, i);

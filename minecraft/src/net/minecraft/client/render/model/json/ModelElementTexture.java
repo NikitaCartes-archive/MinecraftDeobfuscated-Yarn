@@ -44,8 +44,8 @@ public class ModelElementTexture {
 		return (rotation + this.rotation / 90) % 4;
 	}
 
-	public int method_3414(int i) {
-		return (i + 4 - this.rotation / 90) % 4;
+	public int getDirectionIndex(int offset) {
+		return (offset + 4 - this.rotation / 90) % 4;
 	}
 
 	public void setUvs(float[] uvs) {

@@ -37,7 +37,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 	protected TrapdoorBlock(Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateFactory
+			this.stateManager
 				.getDefaultState()
 				.with(FACING, Direction.NORTH)
 				.with(OPEN, Boolean.valueOf(false))

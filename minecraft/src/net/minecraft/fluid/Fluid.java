@@ -20,21 +20,21 @@ import net.minecraft.world.WorldView;
 
 public abstract class Fluid {
 	public static final IdList<FluidState> STATE_IDS = new IdList<>();
-	protected final StateManager<Fluid, FluidState> stateFactory;
+	protected final StateManager<Fluid, FluidState> stateManager;
 	private FluidState defaultState;
 
 	protected Fluid() {
 		StateManager.Builder<Fluid, FluidState> builder = new StateManager.Builder<>(this);
 		this.appendProperties(builder);
-		this.stateFactory = builder.build(FluidStateImpl::new);
-		this.setDefaultState(this.stateFactory.getDefaultState());
+		this.stateManager = builder.build(FluidStateImpl::new);
+		this.setDefaultState(this.stateManager.getDefaultState());
 	}
 
 	protected void appendProperties(StateManager.Builder<Fluid, FluidState> builder) {
 	}
 
-	public StateManager<Fluid, FluidState> getStateFactory() {
-		return this.stateFactory;
+	public StateManager<Fluid, FluidState> getStateManager() {
+		return this.stateManager;
 	}
 
 	protected final void setDefaultState(FluidState fluidState) {

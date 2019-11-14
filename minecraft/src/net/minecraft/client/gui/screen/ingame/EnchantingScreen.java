@@ -87,7 +87,7 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingTableCon
 		int k = (int)this.minecraft.getWindow().getScaleFactor();
 		RenderSystem.viewport((this.width - 320) / 2 * k, (this.height - 240) / 2 * k, 320 * k, 240 * k);
 		RenderSystem.translatef(-0.34F, 0.23F, 0.0F);
-		RenderSystem.multMatrix(Matrix4f.method_4929(90.0, 1.3333334F, 9.0F, 80.0F));
+		RenderSystem.multMatrix(Matrix4f.viewboxMatrix(90.0, 1.3333334F, 9.0F, 80.0F));
 		RenderSystem.matrixMode(5888);
 		MatrixStack matrixStack = new MatrixStack();
 		matrixStack.push();
@@ -97,13 +97,13 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingTableCon
 		matrixStack.translate(0.0, 3.3F, 1984.0);
 		float f = 5.0F;
 		matrixStack.scale(5.0F, 5.0F, 5.0F);
-		matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0F));
-		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(20.0F));
+		matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
+		matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(20.0F));
 		float g = MathHelper.lerp(delta, this.pageTurningSpeed, this.nextPageTurningSpeed);
 		matrixStack.translate((double)((1.0F - g) * 0.2F), (double)((1.0F - g) * 0.1F), (double)((1.0F - g) * 0.25F));
 		float h = -(1.0F - g) * 90.0F - 90.0F;
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(h));
-		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(180.0F));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(h));
+		matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(180.0F));
 		float l = MathHelper.lerp(delta, this.pageAngle, this.nextPageAngle) + 0.25F;
 		float m = MathHelper.lerp(delta, this.pageAngle, this.nextPageAngle) + 0.75F;
 		l = (l - (float)MathHelper.fastFloor((double)l)) * 1.6F - 0.3F;
