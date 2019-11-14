@@ -19,9 +19,9 @@ extends QuadrupedEntityModel<T> {
         this.head = new ModelPart(this, 0, 0);
         this.head.addCuboid(-3.0f, -4.0f, -6.0f, 6.0f, 6.0f, 8.0f, 0.0f);
         this.head.setPivot(0.0f, 6.0f, -8.0f);
-        this.body = new ModelPart(this, 28, 8);
-        this.body.addCuboid(-4.0f, -10.0f, -7.0f, 8.0f, 16.0f, 6.0f, 0.0f);
-        this.body.setPivot(0.0f, 5.0f, 2.0f);
+        this.torso = new ModelPart(this, 28, 8);
+        this.torso.addCuboid(-4.0f, -10.0f, -7.0f, 8.0f, 16.0f, 6.0f, 0.0f);
+        this.torso.setPivot(0.0f, 5.0f, 2.0f);
     }
 
     public void method_17120(T sheepEntity, float f, float g, float h) {

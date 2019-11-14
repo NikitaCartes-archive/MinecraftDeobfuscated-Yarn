@@ -32,36 +32,36 @@ extends ResourceTexture {
     @Nullable
     private final File cacheFile;
     private final String url;
-    private final boolean field_20842;
+    private final boolean convertLegacy;
     @Nullable
-    private final Runnable field_20843;
+    private final Runnable loadedCallback;
     @Nullable
-    private CompletableFuture<?> field_20844;
-    private boolean field_5215;
+    private CompletableFuture<?> loader;
+    private boolean loaded;
 
     public PlayerSkinTexture(@Nullable File file, String string, Identifier identifier, boolean bl, @Nullable Runnable runnable) {
         super(identifier);
         this.cacheFile = file;
         this.url = string;
-        this.field_20842 = bl;
-        this.field_20843 = runnable;
+        this.convertLegacy = bl;
+        this.loadedCallback = runnable;
     }
 
-    private void method_4534(NativeImage nativeImage) {
-        if (this.field_20843 != null) {
-            this.field_20843.run();
+    private void onTextureLoaded(NativeImage nativeImage) {
+        if (this.loadedCallback != null) {
+            this.loadedCallback.run();
         }
         MinecraftClient.getInstance().execute(() -> {
-            this.field_5215 = true;
+            this.loaded = true;
             if (!RenderSystem.isOnRenderThread()) {
-                RenderSystem.recordRenderCall(() -> this.method_4531(nativeImage));
+                RenderSystem.recordRenderCall(() -> this.uploadTexture(nativeImage));
             } else {
-                this.method_4531(nativeImage);
+                this.uploadTexture(nativeImage);
             }
         });
     }
 
-    private void method_4531(NativeImage nativeImage) {
+    private void uploadTexture(NativeImage nativeImage) {
         TextureUtil.prepareImage(this.getGlId(), nativeImage.getWidth(), nativeImage.getHeight());
         nativeImage.upload(0, 0, 0, true);
     }
@@ -70,30 +70,30 @@ extends ResourceTexture {
     public void load(ResourceManager resourceManager) throws IOException {
         NativeImage nativeImage;
         MinecraftClient.getInstance().execute(() -> {
-            if (!this.field_5215) {
+            if (!this.loaded) {
                 try {
                     super.load(resourceManager);
                 } catch (IOException iOException) {
                     LOGGER.warn("Failed to load texture: {}", (Object)this.location, (Object)iOException);
                 }
-                this.field_5215 = true;
+                this.loaded = true;
             }
         });
-        if (this.field_20844 != null) {
+        if (this.loader != null) {
             return;
         }
         if (this.cacheFile != null && this.cacheFile.isFile()) {
             LOGGER.debug("Loading http texture from local cache ({})", (Object)this.cacheFile);
             FileInputStream fileInputStream = new FileInputStream(this.cacheFile);
-            nativeImage = this.method_22795(fileInputStream);
+            nativeImage = this.loadTexture(fileInputStream);
         } else {
             nativeImage = null;
         }
         if (nativeImage != null) {
-            this.method_4534(nativeImage);
+            this.onTextureLoaded(nativeImage);
             return;
         }
-        this.field_20844 = CompletableFuture.runAsync(() -> {
+        this.loader = CompletableFuture.runAsync(() -> {
             HttpURLConnection httpURLConnection = null;
             LOGGER.debug("Downloading http texture from {} to {}", (Object)this.url, (Object)this.cacheFile);
             try {
@@ -112,9 +112,9 @@ extends ResourceTexture {
                     inputStream = httpURLConnection.getInputStream();
                 }
                 MinecraftClient.getInstance().execute(() -> {
-                    NativeImage nativeImage = this.method_22795(inputStream);
+                    NativeImage nativeImage = this.loadTexture(inputStream);
                     if (nativeImage != null) {
-                        this.method_4534(nativeImage);
+                        this.onTextureLoaded(nativeImage);
                     }
                 });
             } catch (Exception exception) {
@@ -128,12 +128,12 @@ extends ResourceTexture {
     }
 
     @Nullable
-    private NativeImage method_22795(InputStream inputStream) {
+    private NativeImage loadTexture(InputStream inputStream) {
         NativeImage nativeImage = null;
         try {
             nativeImage = NativeImage.read(inputStream);
-            if (this.field_20842) {
-                nativeImage = PlayerSkinTexture.method_22798(nativeImage);
+            if (this.convertLegacy) {
+                nativeImage = PlayerSkinTexture.remapTexture(nativeImage);
             }
         } catch (IOException iOException) {
             LOGGER.warn("Error while loading the skin texture", (Throwable)iOException);
@@ -141,7 +141,7 @@ extends ResourceTexture {
         return nativeImage;
     }
 
-    private static NativeImage method_22798(NativeImage nativeImage) {
+    private static NativeImage remapTexture(NativeImage nativeImage) {
         boolean bl;
         boolean bl2 = bl = nativeImage.getHeight() == 32;
         if (bl) {
@@ -163,16 +163,16 @@ extends ResourceTexture {
             nativeImage.copyRect(48, 20, -16, 32, 4, 12, true, false);
             nativeImage.copyRect(52, 20, -8, 32, 4, 12, true, false);
         }
-        PlayerSkinTexture.method_22796(nativeImage, 0, 0, 32, 16);
+        PlayerSkinTexture.stripAlpha(nativeImage, 0, 0, 32, 16);
         if (bl) {
-            PlayerSkinTexture.method_22794(nativeImage, 32, 0, 64, 32);
+            PlayerSkinTexture.stripColor(nativeImage, 32, 0, 64, 32);
         }
-        PlayerSkinTexture.method_22796(nativeImage, 0, 16, 64, 32);
-        PlayerSkinTexture.method_22796(nativeImage, 16, 48, 48, 64);
+        PlayerSkinTexture.stripAlpha(nativeImage, 0, 16, 64, 32);
+        PlayerSkinTexture.stripAlpha(nativeImage, 16, 48, 48, 64);
         return nativeImage;
     }
 
-    private static void method_22794(NativeImage nativeImage, int i, int j, int k, int l) {
+    private static void stripColor(NativeImage nativeImage, int i, int j, int k, int l) {
         int n;
         int m;
         for (m = i; m < k; ++m) {
@@ -189,7 +189,7 @@ extends ResourceTexture {
         }
     }
 
-    private static void method_22796(NativeImage nativeImage, int i, int j, int k, int l) {
+    private static void stripAlpha(NativeImage nativeImage, int i, int j, int k, int l) {
         for (int m = i; m < k; ++m) {
             for (int n = j; n < l; ++n) {
                 nativeImage.setPixelRgba(m, n, nativeImage.getPixelRgba(m, n) | 0xFF000000);

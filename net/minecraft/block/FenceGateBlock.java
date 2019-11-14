@@ -43,7 +43,7 @@ extends HorizontalFacingBlock {
 
     public FenceGateBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(OPEN, false)).with(POWERED, false)).with(IN_WALL, false));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(OPEN, false)).with(POWERED, false)).with(IN_WALL, false));
     }
 
     @Override

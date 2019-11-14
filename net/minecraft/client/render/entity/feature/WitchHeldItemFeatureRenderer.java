@@ -30,9 +30,9 @@ extends VillagerHeldItemFeatureRenderer<T, WitchEntityModel<T>> {
             ((WitchEntityModel)this.getModel()).getHead().rotate(matrixStack);
             ((WitchEntityModel)this.getModel()).getNose().rotate(matrixStack);
             matrixStack.translate(0.0625, 0.25, 0.0);
-            matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0f));
-            matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(140.0f));
-            matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(10.0f));
+            matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0f));
+            matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(140.0f));
+            matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(10.0f));
             matrixStack.translate(0.0, -0.4f, 0.4f);
         }
         super.method_4208(matrixStack, vertexConsumerProvider, i, livingEntity, f, g, h, j, k, l);

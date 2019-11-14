@@ -29,7 +29,7 @@ extends AbstractCriterion<Conditions> {
     }
 
     public void trigger(ServerPlayerEntity serverPlayerEntity, Recipe<?> recipe) {
-        this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(recipe));
+        this.test(serverPlayerEntity.getAdvancementTracker(), conditions -> conditions.matches(recipe));
     }
 
     @Override

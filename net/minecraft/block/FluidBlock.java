@@ -53,7 +53,7 @@ implements FluidDrainable {
             this.statesByLevel.add(baseFluid.getFlowing(8 - i, false));
         }
         this.statesByLevel.add(baseFluid.getFlowing(8, true));
-        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(LEVEL, 0));
+        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(LEVEL, 0));
     }
 
     @Override

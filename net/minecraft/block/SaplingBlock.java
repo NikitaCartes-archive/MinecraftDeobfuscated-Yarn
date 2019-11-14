@@ -29,7 +29,7 @@ implements Fertilizable {
     protected SaplingBlock(SaplingGenerator saplingGenerator, Block.Settings settings) {
         super(settings);
         this.generator = saplingGenerator;
-        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(STAGE, 0));
+        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(STAGE, 0));
     }
 
     @Override

@@ -38,7 +38,7 @@ implements Fertilizable {
 
     protected CropBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(this.getAgeProperty(), 0));
+        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(this.getAgeProperty(), 0));
     }
 
     @Override

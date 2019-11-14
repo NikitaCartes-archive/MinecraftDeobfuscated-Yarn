@@ -90,7 +90,7 @@ extends Entity {
         float l = -MathHelper.cos(-f * ((float)Math.PI / 180));
         float m = MathHelper.sin(-f * ((float)Math.PI / 180));
         double d = this.owner.getX() - (double)k * 0.3;
-        double e = this.owner.method_23320();
+        double e = this.owner.getEyeY();
         double n = this.owner.getZ() - (double)h * 0.3;
         this.setPositionAndAngles(d, e, n, g, f);
         Vec3d vec3d = new Vec3d(-k, MathHelper.clamp(-(m / l), -5.0f, 5.0f), -h);
@@ -179,7 +179,7 @@ extends Entity {
                         this.hookedEntity = null;
                         this.state = State.FLYING;
                     } else {
-                        this.setPosition(this.hookedEntity.getX(), this.hookedEntity.getHeightAt(0.8), this.hookedEntity.getZ());
+                        this.setPosition(this.hookedEntity.getX(), this.hookedEntity.getBodyY(0.8), this.hookedEntity.getZ());
                     }
                 }
                 return;

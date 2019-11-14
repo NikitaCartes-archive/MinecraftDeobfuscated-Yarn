@@ -36,7 +36,7 @@ extends EntityRenderer<TntEntity> {
             float j = 1.0f + h * 0.3f;
             matrixStack.scale(j, j, j);
         }
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-90.0f));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-90.0f));
         matrixStack.translate(-0.5, -0.5, 0.5);
         TntMinecartEntityRenderer.method_23190(Blocks.TNT.getDefaultState(), matrixStack, vertexConsumerProvider, i, tntEntity.getFuseTimer() / 5 % 2 == 0);
         matrixStack.pop();

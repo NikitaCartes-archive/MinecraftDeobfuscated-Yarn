@@ -97,7 +97,7 @@ public class PlayerAdvancementTracker {
     }
 
     private void beginTrackingAllAdvancements() {
-        for (Advancement advancement : this.server.getAdvancementManager().getAdvancements()) {
+        for (Advancement advancement : this.server.getAdvancementLoader().getAdvancements()) {
             this.beginTracking(advancement);
         }
     }
@@ -115,7 +115,7 @@ public class PlayerAdvancementTracker {
     }
 
     private void rewardEmptyAdvancements() {
-        for (Advancement advancement : this.server.getAdvancementManager().getAdvancements()) {
+        for (Advancement advancement : this.server.getAdvancementLoader().getAdvancements()) {
             if (!advancement.getCriteria().isEmpty()) continue;
             this.grantCriterion(advancement, "");
             advancement.getRewards().apply(this.owner);
@@ -138,7 +138,7 @@ public class PlayerAdvancementTracker {
                 }
                 Stream<Map.Entry> stream = map.entrySet().stream().sorted(Comparator.comparing(Map.Entry::getValue));
                 for (Map.Entry entry : stream.collect(Collectors.toList())) {
-                    Advancement advancement = this.server.getAdvancementManager().get((Identifier)entry.getKey());
+                    Advancement advancement = this.server.getAdvancementLoader().get((Identifier)entry.getKey());
                     if (advancement == null) {
                         LOGGER.warn("Ignored advancement '{}' in progress file {} - it doesn't exist anymore?", entry.getKey(), (Object)this.advancementFile);
                         continue;

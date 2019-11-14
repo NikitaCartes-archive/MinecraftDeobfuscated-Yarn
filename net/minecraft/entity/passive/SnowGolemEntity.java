@@ -114,7 +114,7 @@ implements RangedAttackMob {
     @Override
     public void attack(LivingEntity livingEntity, float f) {
         SnowballEntity snowballEntity = new SnowballEntity(this.world, this);
-        double d = livingEntity.method_23320() - (double)1.1f;
+        double d = livingEntity.getEyeY() - (double)1.1f;
         double e = livingEntity.getX() - this.getX();
         double g = d - snowballEntity.getY();
         double h = livingEntity.getZ() - this.getZ();

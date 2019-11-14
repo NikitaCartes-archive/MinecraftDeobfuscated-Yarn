@@ -41,19 +41,19 @@ extends StickingOutThingsFeatureRenderer<T, M> {
         float l = (float)(Math.atan2(f, h) * 57.2957763671875);
         float m = (float)(Math.atan2(g, k) * 57.2957763671875);
         matrixStack.translate(0.0, 0.0, 0.0);
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(l - 90.0f));
-        matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(m));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(l - 90.0f));
+        matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(m));
         float n = 0.0f;
         float o = 0.125f;
         float p = 0.0f;
         float q = 0.0625f;
         float r = 0.03125f;
-        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(45.0f));
+        matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(45.0f));
         matrixStack.scale(0.03125f, 0.03125f, 0.03125f);
         matrixStack.translate(2.5, 0.0, 0.0);
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(field_20529));
         for (int s = 0; s < 4; ++s) {
-            matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0f));
+            matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0f));
             MatrixStack.Entry entry = matrixStack.peek();
             Matrix4f matrix4f = entry.getModel();
             Matrix3f matrix3f = entry.getNormal();

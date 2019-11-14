@@ -130,7 +130,7 @@ public class BlockArgumentParser {
         String string = suggestionsBuilder.getRemaining().toLowerCase(Locale.ROOT);
         if (this.tagId != null && !this.tagId.getPath().isEmpty() && (tag = BlockTags.getContainer().get(this.tagId)) != null) {
             for (Block block : tag.values()) {
-                for (Property<?> property : block.getStateFactory().getProperties()) {
+                for (Property<?> property : block.getStateManager().getProperties()) {
                     if (this.tagProperties.containsKey(property.getName()) || !property.getName().startsWith(string)) continue;
                     suggestionsBuilder.suggest(property.getName() + '=');
                 }
@@ -193,12 +193,12 @@ public class BlockArgumentParser {
         boolean bl = false;
         if (this.tagId != null && !this.tagId.getPath().isEmpty() && (tag = BlockTags.getContainer().get(this.tagId)) != null) {
             block0: for (Block block : tag.values()) {
-                Property<?> property = block.getStateFactory().getProperty(string);
+                Property<?> property = block.getStateManager().getProperty(string);
                 if (property != null) {
                     BlockArgumentParser.suggestPropertyValues(suggestionsBuilder, property);
                 }
                 if (bl) continue;
-                for (Property<?> property2 : block.getStateFactory().getProperties()) {
+                for (Property<?> property2 : block.getStateManager().getProperties()) {
                     if (this.tagProperties.containsKey(property2.getName())) continue;
                     bl = true;
                     continue block0;
@@ -219,7 +219,7 @@ public class BlockArgumentParser {
             boolean bl = false;
             boolean bl2 = false;
             Iterator<Block> iterator = tag.values().iterator();
-            while (!(!iterator.hasNext() || (bl |= !(block = iterator.next()).getStateFactory().getProperties().isEmpty()) && (bl2 |= block.hasBlockEntity()))) {
+            while (!(!iterator.hasNext() || (bl |= !(block = iterator.next()).getStateManager().getProperties().isEmpty()) && (bl2 |= block.hasBlockEntity()))) {
             }
             if (bl) {
                 suggestionsBuilder.suggest(String.valueOf('['));
@@ -233,7 +233,7 @@ public class BlockArgumentParser {
 
     private CompletableFuture<Suggestions> suggestSnbtOrBlockProperties(SuggestionsBuilder suggestionsBuilder) {
         if (suggestionsBuilder.getRemaining().isEmpty()) {
-            if (!this.blockState.getBlock().getStateFactory().getProperties().isEmpty()) {
+            if (!this.blockState.getBlock().getStateManager().getProperties().isEmpty()) {
                 suggestionsBuilder.suggest(String.valueOf('['));
             }
             if (this.blockState.getBlock().hasBlockEntity()) {
@@ -262,7 +262,7 @@ public class BlockArgumentParser {
             this.reader.setCursor(i);
             return INVALID_BLOCK_ID_EXCEPTION.createWithContext(this.reader, this.blockId.toString());
         });
-        this.stateFactory = block.getStateFactory();
+        this.stateFactory = block.getStateManager();
         this.blockState = block.getDefaultState();
     }
 

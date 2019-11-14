@@ -28,7 +28,7 @@ extends AbstractPhase {
         Vec3d vec3d = this.dragon.method_6834(1.0f).normalize();
         vec3d.rotateY(-0.7853982f);
         double d = this.dragon.partHead.getX();
-        double e = this.dragon.partHead.getHeightAt(0.5);
+        double e = this.dragon.partHead.getBodyY(0.5);
         double f = this.dragon.partHead.getZ();
         for (int i = 0; i < 8; ++i) {
             Random random = this.dragon.getRandom();

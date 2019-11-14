@@ -71,17 +71,17 @@ public class Vector4f {
         return this.z;
     }
 
-    public float method_23853() {
+    public float getW() {
         return this.w;
     }
 
-    public void multiplyXyz(Vector3f vector3f) {
+    public void multiplyComponentwise(Vector3f vector3f) {
         this.x *= vector3f.getX();
         this.y *= vector3f.getY();
         this.z *= vector3f.getZ();
     }
 
-    public void method_23851(float f, float g, float h, float i) {
+    public void set(float f, float g, float h, float i) {
         this.x = f;
         this.y = g;
         this.z = h;
@@ -120,13 +120,13 @@ public class Vector4f {
         return matrix4f.get(i, 0) * f + matrix4f.get(i, 1) * g + matrix4f.get(i, 2) * h + matrix4f.get(i, 3) * j;
     }
 
-    public void method_23852(Quaternion quaternion) {
+    public void setQuarternion(Quaternion quaternion) {
         Quaternion quaternion2 = new Quaternion(quaternion);
         quaternion2.hamiltonProduct(new Quaternion(this.getX(), this.getY(), this.getZ(), 0.0f));
         Quaternion quaternion3 = new Quaternion(quaternion);
         quaternion3.conjugate();
         quaternion2.hamiltonProduct(quaternion3);
-        this.method_23851(quaternion2.getB(), quaternion2.getC(), quaternion2.getD(), this.method_23853());
+        this.set(quaternion2.getB(), quaternion2.getC(), quaternion2.getD(), this.getW());
     }
 
     public void normalizeProjectiveCoordinates() {

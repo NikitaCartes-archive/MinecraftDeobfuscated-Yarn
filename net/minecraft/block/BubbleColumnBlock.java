@@ -39,7 +39,7 @@ implements FluidDrainable {
 
     public BubbleColumnBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(DRAG, true));
+        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(DRAG, true));
     }
 
     @Override

@@ -201,7 +201,7 @@ implements RangedAttackMob {
             bl = true;
         }
         if (this.isBaby() && i > 0) {
-            this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.method_23322(1.0), this.method_23319() + 0.5, this.method_23325(1.0), 0.0, 0.0, 0.0);
+            this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), 0.0, 0.0, 0.0);
             if (!this.world.isClient) {
                 this.growUp(i);
             }
@@ -366,7 +366,7 @@ implements RangedAttackMob {
     private void spitAt(LivingEntity livingEntity) {
         LlamaSpitEntity llamaSpitEntity = new LlamaSpitEntity(this.world, this);
         double d = livingEntity.getX() - this.getX();
-        double e = livingEntity.getHeightAt(0.3333333333333333) - llamaSpitEntity.getY();
+        double e = livingEntity.getBodyY(0.3333333333333333) - llamaSpitEntity.getY();
         double f = livingEntity.getZ() - this.getZ();
         float g = MathHelper.sqrt(d * d + f * f) * 0.2f;
         llamaSpitEntity.setVelocity(d, e + (double)g, f, 1.5f, 10.0f);

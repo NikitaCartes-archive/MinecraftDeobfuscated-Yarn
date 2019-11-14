@@ -249,7 +249,7 @@ implements RangedAttackMob {
     public void attack(LivingEntity livingEntity, float f) {
         TridentEntity tridentEntity = new TridentEntity(this.world, (LivingEntity)this, new ItemStack(Items.TRIDENT));
         double d = livingEntity.getX() - this.getX();
-        double e = livingEntity.getHeightAt(0.3333333333333333) - tridentEntity.getY();
+        double e = livingEntity.getBodyY(0.3333333333333333) - tridentEntity.getY();
         double g = livingEntity.getZ() - this.getZ();
         double h = MathHelper.sqrt(d * d + g * g);
         tridentEntity.setVelocity(d, e + h * (double)0.2f, g, 1.6f, 14 - this.world.getDifficulty().getId() * 4);

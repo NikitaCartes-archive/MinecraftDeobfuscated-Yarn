@@ -77,9 +77,9 @@ extends BlockEntityRenderer<BedBlockEntity> {
         this.field_20815[3].visible = bl;
         matrixStack.push();
         matrixStack.translate(0.0, 0.5625, bl2 ? -1.0 : 0.0);
-        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0f));
+        matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0f));
         matrixStack.translate(0.5, 0.5, 0.5);
-        matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0f + direction.asRotation()));
+        matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0f + direction.asRotation()));
         matrixStack.translate(-0.5, -0.5, -0.5);
         Sprite sprite = this.getSprite(identifier);
         this.field_20813.render(matrixStack, vertexConsumer, i, j, sprite);

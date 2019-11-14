@@ -141,25 +141,25 @@ public class ItemModelGenerator {
             for (int l = 0; l < j; ++l) {
                 for (int m = 0; m < i; ++m) {
                     boolean bl = !this.isPixelTransparent(sprite, k, m, l, i, j);
-                    this.method_3476(Side.UP, list, sprite, k, m, l, i, j, bl);
-                    this.method_3476(Side.DOWN, list, sprite, k, m, l, i, j, bl);
-                    this.method_3476(Side.LEFT, list, sprite, k, m, l, i, j, bl);
-                    this.method_3476(Side.RIGHT, list, sprite, k, m, l, i, j, bl);
+                    this.buildCube(Side.UP, list, sprite, k, m, l, i, j, bl);
+                    this.buildCube(Side.DOWN, list, sprite, k, m, l, i, j, bl);
+                    this.buildCube(Side.LEFT, list, sprite, k, m, l, i, j, bl);
+                    this.buildCube(Side.RIGHT, list, sprite, k, m, l, i, j, bl);
                 }
             }
         }
         return list;
     }
 
-    private void method_3476(Side side, List<Frame> list, Sprite sprite, int i, int j, int k, int l, int m, boolean bl) {
+    private void buildCube(Side side, List<Frame> list, Sprite sprite, int i, int j, int k, int l, int m, boolean bl) {
         boolean bl2;
         boolean bl3 = bl2 = this.isPixelTransparent(sprite, i, j + side.getOffsetX(), k + side.getOffsetY(), l, m) && bl;
         if (bl2) {
-            this.method_3482(list, side, j, k);
+            this.buildCube(list, side, j, k);
         }
     }
 
-    private void method_3482(List<Frame> list, Side side, int i, int j) {
+    private void buildCube(List<Frame> list, Side side, int i, int j) {
         int m;
         Frame frame = null;
         for (Frame frame2 : list) {

@@ -31,7 +31,7 @@ extends AbstractCriterion<Conditions> {
     }
 
     public void trigger(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d, int i) {
-        this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity, vec3d, i));
+        this.test(serverPlayerEntity.getAdvancementTracker(), conditions -> conditions.matches(serverPlayerEntity, vec3d, i));
     }
 
     @Override

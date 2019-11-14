@@ -124,7 +124,7 @@ implements RangedAttackMob {
                     this.field_7297[1][j] = new Vec3d((double)(-6.0f + (float)this.random.nextInt(13)) * 0.5, Math.max(0, this.random.nextInt(6) - 4), (double)(-6.0f + (float)this.random.nextInt(13)) * 0.5);
                 }
                 for (j = 0; j < 16; ++j) {
-                    this.world.addParticle(ParticleTypes.CLOUD, this.method_23322(0.5), this.method_23319(), this.method_23324(0.5), 0.0, 0.0, 0.0);
+                    this.world.addParticle(ParticleTypes.CLOUD, this.getParticleX(0.5), this.getRandomBodyY(), this.offsetZ(0.5), 0.0, 0.0, 0.0);
                 }
                 this.world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_ILLUSIONER_MIRROR_MOVE, this.getSoundCategory(), 1.0f, 1.0f, false);
             } else if (this.hurtTime == this.maxHurtTime - 1) {
@@ -196,7 +196,7 @@ implements RangedAttackMob {
         ItemStack itemStack = this.getArrowType(this.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this, Items.BOW)));
         ProjectileEntity projectileEntity = ProjectileUtil.createArrowProjectile(this, itemStack, f);
         double d = livingEntity.getX() - this.getX();
-        double e = livingEntity.getHeightAt(0.3333333333333333) - projectileEntity.getY();
+        double e = livingEntity.getBodyY(0.3333333333333333) - projectileEntity.getY();
         double g = livingEntity.getZ() - this.getZ();
         double h = MathHelper.sqrt(d * d + g * g);
         projectileEntity.setVelocity(d, e + h * (double)0.2f, g, 1.6f, 14 - this.world.getDifficulty().getId() * 4);

@@ -392,7 +392,7 @@ extends AnimalEntity {
                 double d = (double)(-this.random.nextFloat()) * 0.6 - 0.3;
                 Vec3d vec3d2 = new Vec3d(((double)this.random.nextFloat() - 0.5) * 0.8, d, 1.0 + ((double)this.random.nextFloat() - 0.5) * 0.4);
                 vec3d2 = vec3d2.rotateY(-this.bodyYaw * ((float)Math.PI / 180));
-                vec3d2 = vec3d2.add(this.getX(), this.method_23320() + 1.0, this.getZ());
+                vec3d2 = vec3d2.add(this.getX(), this.getEyeY() + 1.0, this.getZ());
                 this.world.addParticle(new ItemStackParticleEffect(ParticleTypes.ITEM, this.getEquippedStack(EquipmentSlot.MAINHAND)), vec3d2.x, vec3d2.y, vec3d2.z, vec3d.x, vec3d.y + 0.05, vec3d.z);
             }
         }
@@ -451,7 +451,7 @@ extends AnimalEntity {
 
     private void sneeze() {
         Vec3d vec3d = this.getVelocity();
-        this.world.addParticle(ParticleTypes.SNEEZE, this.getX() - (double)(this.getWidth() + 1.0f) * 0.5 * (double)MathHelper.sin(this.bodyYaw * ((float)Math.PI / 180)), this.method_23320() - (double)0.1f, this.getZ() + (double)(this.getWidth() + 1.0f) * 0.5 * (double)MathHelper.cos(this.bodyYaw * ((float)Math.PI / 180)), vec3d.x, 0.0, vec3d.z);
+        this.world.addParticle(ParticleTypes.SNEEZE, this.getX() - (double)(this.getWidth() + 1.0f) * 0.5 * (double)MathHelper.sin(this.bodyYaw * ((float)Math.PI / 180)), this.getEyeY() - (double)0.1f, this.getZ() + (double)(this.getWidth() + 1.0f) * 0.5 * (double)MathHelper.cos(this.bodyYaw * ((float)Math.PI / 180)), vec3d.x, 0.0, vec3d.z);
         this.playSound(SoundEvents.ENTITY_PANDA_SNEEZE, 1.0f, 1.0f);
         List<PandaEntity> list = this.world.getNonSpectatingEntities(PandaEntity.class, this.getBoundingBox().expand(10.0));
         for (PandaEntity pandaEntity : list) {

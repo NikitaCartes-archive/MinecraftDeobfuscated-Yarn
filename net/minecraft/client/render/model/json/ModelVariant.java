@@ -43,7 +43,7 @@ implements ModelBakeSettings {
     }
 
     @Override
-    public boolean isUvLocked() {
+    public boolean isShaded() {
         return this.uvLock;
     }
 

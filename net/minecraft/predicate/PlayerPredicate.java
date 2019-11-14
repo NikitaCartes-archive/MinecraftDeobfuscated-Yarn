@@ -89,8 +89,8 @@ public class PlayerPredicate {
             return false;
         }
         if (!this.advancements.isEmpty()) {
-            PlayerAdvancementTracker playerAdvancementTracker = serverPlayerEntity.getAdvancementManager();
-            ServerAdvancementLoader serverAdvancementLoader = serverPlayerEntity.getServer().getAdvancementManager();
+            PlayerAdvancementTracker playerAdvancementTracker = serverPlayerEntity.getAdvancementTracker();
+            ServerAdvancementLoader serverAdvancementLoader = serverPlayerEntity.getServer().getAdvancementLoader();
             for (Map.Entry<Identifier, AdvancementPredicate> entry3 : this.advancements.entrySet()) {
                 Advancement advancement = serverAdvancementLoader.get(entry3.getKey());
                 if (advancement != null && entry3.getValue().test(playerAdvancementTracker.getProgress(advancement))) continue;

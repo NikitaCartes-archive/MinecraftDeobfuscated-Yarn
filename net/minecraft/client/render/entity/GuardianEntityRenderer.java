@@ -75,8 +75,8 @@ extends MobEntityRenderer<GuardianEntity, GuardianEntityModel> {
             vec3d3 = vec3d3.normalize();
             float n = (float)Math.acos(vec3d3.y);
             float o = (float)Math.atan2(vec3d3.z, vec3d3.x);
-            matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion((1.5707964f - o) * 57.295776f));
-            matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(n * 57.295776f));
+            matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion((1.5707964f - o) * 57.295776f));
+            matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(n * 57.295776f));
             boolean p = true;
             float q = j * 0.05f * -1.5f;
             float r = h * h;

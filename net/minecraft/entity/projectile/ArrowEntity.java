@@ -123,7 +123,7 @@ extends ProjectileEntity {
         double e = (double)(j >> 8 & 0xFF) / 255.0;
         double f = (double)(j >> 0 & 0xFF) / 255.0;
         for (int k = 0; k < i; ++k) {
-            this.world.addParticle(ParticleTypes.ENTITY_EFFECT, this.method_23322(0.5), this.method_23319(), this.method_23325(0.5), d, e, f);
+            this.world.addParticle(ParticleTypes.ENTITY_EFFECT, this.getParticleX(0.5), this.getRandomBodyY(), this.getParticleZ(0.5), d, e, f);
         }
     }
 
@@ -207,7 +207,7 @@ extends ProjectileEntity {
                 double e = (double)(i >> 8 & 0xFF) / 255.0;
                 double f = (double)(i >> 0 & 0xFF) / 255.0;
                 for (int j = 0; j < 20; ++j) {
-                    this.world.addParticle(ParticleTypes.ENTITY_EFFECT, this.method_23322(0.5), this.method_23319(), this.method_23325(0.5), d, e, f);
+                    this.world.addParticle(ParticleTypes.ENTITY_EFFECT, this.getParticleX(0.5), this.getRandomBodyY(), this.getParticleZ(0.5), d, e, f);
                 }
             }
         } else {

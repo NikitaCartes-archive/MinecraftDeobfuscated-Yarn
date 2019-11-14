@@ -36,7 +36,7 @@ extends EntityRenderer<PaintingEntity> {
 
     public void method_4075(PaintingEntity paintingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         matrixStack.push();
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f - f));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f - f));
         PaintingMotive paintingMotive = paintingEntity.motive;
         float h = 0.0625f;
         matrixStack.scale(0.0625f, 0.0625f, 0.0625f);
@@ -65,9 +65,9 @@ extends EntityRenderer<PaintingEntity> {
         float o = sprite2.getMinU();
         float p = sprite2.getMaxU();
         float q = sprite2.getMinV();
-        float r = sprite2.getV(1.0);
+        float r = sprite2.getFrameV(1.0);
         float s = sprite2.getMinU();
-        float t = sprite2.getU(1.0);
+        float t = sprite2.getFrameU(1.0);
         float u = sprite2.getMinV();
         float v = sprite2.getMaxV();
         int w = i / 16;
@@ -97,10 +97,10 @@ extends EntityRenderer<PaintingEntity> {
                     ag = MathHelper.floor(paintingEntity.getZ() + (double)((aa + ab) / 2.0f / 16.0f));
                 }
                 int ah = WorldRenderer.method_23794(paintingEntity.world, new BlockPos(ae, af, ag));
-                float ai = sprite.getU(d * (double)(w - y));
-                float aj = sprite.getU(d * (double)(w - (y + 1)));
-                float ak = sprite.getV(e * (double)(x - z));
-                float al = sprite.getV(e * (double)(x - (z + 1)));
+                float ai = sprite.getFrameU(d * (double)(w - y));
+                float aj = sprite.getFrameU(d * (double)(w - (y + 1)));
+                float ak = sprite.getFrameV(e * (double)(x - z));
+                float al = sprite.getFrameV(e * (double)(x - (z + 1)));
                 this.method_23188(matrix4f, matrix3f, vertexConsumer, aa, ad, aj, ak, -0.5f, 0, 0, -1, ah);
                 this.method_23188(matrix4f, matrix3f, vertexConsumer, ab, ad, ai, ak, -0.5f, 0, 0, -1, ah);
                 this.method_23188(matrix4f, matrix3f, vertexConsumer, ab, ac, ai, al, -0.5f, 0, 0, -1, ah);

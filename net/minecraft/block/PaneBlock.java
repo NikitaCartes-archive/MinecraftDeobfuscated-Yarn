@@ -22,7 +22,7 @@ public class PaneBlock
 extends HorizontalConnectedBlock {
     protected PaneBlock(Block.Settings settings) {
         super(1.0f, 1.0f, 16.0f, 16.0f, 16.0f, settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(NORTH, false)).with(EAST, false)).with(SOUTH, false)).with(WEST, false)).with(WATERLOGGED, false));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(NORTH, false)).with(EAST, false)).with(SOUTH, false)).with(WEST, false)).with(WATERLOGGED, false));
     }
 
     @Override

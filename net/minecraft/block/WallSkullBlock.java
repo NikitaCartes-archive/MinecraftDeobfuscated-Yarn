@@ -30,7 +30,7 @@ extends AbstractSkullBlock {
 
     protected WallSkullBlock(SkullBlock.SkullType skullType, Block.Settings settings) {
         super(skullType, settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(FACING, Direction.NORTH));
+        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH));
     }
 
     @Override

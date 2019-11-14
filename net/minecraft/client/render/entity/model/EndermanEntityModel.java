@@ -18,12 +18,12 @@ extends BipedEntityModel<T> {
     public EndermanEntityModel(float f) {
         super(0.0f, -14.0f, 64, 32);
         float g = -14.0f;
-        this.headwear = new ModelPart(this, 0, 16);
-        this.headwear.addCuboid(-4.0f, -8.0f, -4.0f, 8.0f, 8.0f, 8.0f, f - 0.5f);
-        this.headwear.setPivot(0.0f, -14.0f, 0.0f);
-        this.body = new ModelPart(this, 32, 16);
-        this.body.addCuboid(-4.0f, 0.0f, -2.0f, 8.0f, 12.0f, 4.0f, f);
-        this.body.setPivot(0.0f, -14.0f, 0.0f);
+        this.helmet = new ModelPart(this, 0, 16);
+        this.helmet.addCuboid(-4.0f, -8.0f, -4.0f, 8.0f, 8.0f, 8.0f, f - 0.5f);
+        this.helmet.setPivot(0.0f, -14.0f, 0.0f);
+        this.torso = new ModelPart(this, 32, 16);
+        this.torso.addCuboid(-4.0f, 0.0f, -2.0f, 8.0f, 12.0f, 4.0f, f);
+        this.torso.setPivot(0.0f, -14.0f, 0.0f);
         this.rightArm = new ModelPart(this, 56, 0);
         this.rightArm.addCuboid(-1.0f, -2.0f, -1.0f, 2.0f, 30.0f, 2.0f, f);
         this.rightArm.setPivot(-3.0f, -12.0f, 0.0f);
@@ -46,9 +46,9 @@ extends BipedEntityModel<T> {
         super.method_17087(livingEntity, f, g, h, i, j);
         this.head.visible = true;
         float k = -14.0f;
-        this.body.pitch = 0.0f;
-        this.body.pivotY = -14.0f;
-        this.body.pivotZ = -0.0f;
+        this.torso.pitch = 0.0f;
+        this.torso.pivotY = -14.0f;
+        this.torso.pivotZ = -0.0f;
         this.rightLeg.pitch -= 0.0f;
         this.leftLeg.pitch -= 0.0f;
         this.rightArm.pitch = (float)((double)this.rightArm.pitch * 0.5);
@@ -94,12 +94,12 @@ extends BipedEntityModel<T> {
         this.leftLeg.pivotY = -5.0f;
         this.head.pivotZ = -0.0f;
         this.head.pivotY = -13.0f;
-        this.headwear.pivotX = this.head.pivotX;
-        this.headwear.pivotY = this.head.pivotY;
-        this.headwear.pivotZ = this.head.pivotZ;
-        this.headwear.pitch = this.head.pitch;
-        this.headwear.yaw = this.head.yaw;
-        this.headwear.roll = this.head.roll;
+        this.helmet.pivotX = this.head.pivotX;
+        this.helmet.pivotY = this.head.pivotY;
+        this.helmet.pivotZ = this.head.pivotZ;
+        this.helmet.pitch = this.head.pitch;
+        this.helmet.yaw = this.head.yaw;
+        this.helmet.roll = this.head.roll;
         if (this.angry) {
             m = 1.0f;
             this.head.pivotY -= 5.0f;

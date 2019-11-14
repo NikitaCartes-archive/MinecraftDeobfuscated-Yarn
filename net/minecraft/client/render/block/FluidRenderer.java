@@ -36,9 +36,9 @@ public class FluidRenderer {
 
     protected void onResourceReload() {
         SpriteAtlasTexture spriteAtlasTexture = MinecraftClient.getInstance().getSpriteAtlas();
-        this.lavaSprites[0] = MinecraftClient.getInstance().getBakedModelManager().getBlockStateMaps().getModel(Blocks.LAVA.getDefaultState()).getSprite();
+        this.lavaSprites[0] = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.LAVA.getDefaultState()).getSprite();
         this.lavaSprites[1] = spriteAtlasTexture.getSprite(ModelLoader.LAVA_FLOW);
-        this.waterSprites[0] = MinecraftClient.getInstance().getBakedModelManager().getBlockStateMaps().getModel(Blocks.WATER.getDefaultState()).getSprite();
+        this.waterSprites[0] = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.WATER.getDefaultState()).getSprite();
         this.waterSprites[1] = spriteAtlasTexture.getSprite(ModelLoader.WATER_FLOW);
         this.waterOverlaySprite = spriteAtlasTexture.getSprite(ModelLoader.WATER_OVERLAY);
     }
@@ -115,11 +115,11 @@ public class FluidRenderer {
             Vec3d vec3d = fluidState.getVelocity(blockRenderView, blockPos);
             if (vec3d.x == 0.0 && vec3d.z == 0.0) {
                 sprite = sprites[0];
-                t = sprite.getU(0.0);
-                u = sprite.getV(0.0);
+                t = sprite.getFrameU(0.0);
+                u = sprite.getFrameV(0.0);
                 v = t;
-                w = sprite.getV(16.0);
-                x = sprite.getU(16.0);
+                w = sprite.getFrameV(16.0);
+                x = sprite.getFrameU(16.0);
                 y = w;
                 z = x;
                 aa = u;
@@ -129,14 +129,14 @@ public class FluidRenderer {
                 ac = MathHelper.sin(ab) * 0.25f;
                 ad = MathHelper.cos(ab) * 0.25f;
                 ae = 8.0f;
-                t = sprite.getU(8.0f + (-ad - ac) * 16.0f);
-                u = sprite.getV(8.0f + (-ad + ac) * 16.0f);
-                v = sprite.getU(8.0f + (-ad + ac) * 16.0f);
-                w = sprite.getV(8.0f + (ad + ac) * 16.0f);
-                x = sprite.getU(8.0f + (ad + ac) * 16.0f);
-                y = sprite.getV(8.0f + (ad - ac) * 16.0f);
-                z = sprite.getU(8.0f + (ad - ac) * 16.0f);
-                aa = sprite.getV(8.0f + (-ad - ac) * 16.0f);
+                t = sprite.getFrameU(8.0f + (-ad - ac) * 16.0f);
+                u = sprite.getFrameV(8.0f + (-ad + ac) * 16.0f);
+                v = sprite.getFrameU(8.0f + (-ad + ac) * 16.0f);
+                w = sprite.getFrameV(8.0f + (ad + ac) * 16.0f);
+                x = sprite.getFrameU(8.0f + (ad + ac) * 16.0f);
+                y = sprite.getFrameV(8.0f + (ad - ac) * 16.0f);
+                z = sprite.getFrameU(8.0f + (ad - ac) * 16.0f);
+                aa = sprite.getFrameV(8.0f + (-ad - ac) * 16.0f);
             }
             float af = (t + v + x + z) / 4.0f;
             ab = (u + w + y + aa) / 4.0f;
@@ -233,11 +233,11 @@ public class FluidRenderer {
             if (!bl && ((block = blockRenderView.getBlockState(blockPos2).getBlock()) == Blocks.GLASS || block instanceof StainedGlassBlock)) {
                 sprite2 = this.waterOverlaySprite;
             }
-            ah = sprite2.getU(0.0);
-            ai = sprite2.getU(8.0);
-            aj = sprite2.getV((1.0f - v) * 16.0f * 0.5f);
-            float aq = sprite2.getV((1.0f - x) * 16.0f * 0.5f);
-            float ar = sprite2.getV(8.0);
+            ah = sprite2.getFrameU(0.0);
+            ai = sprite2.getFrameU(8.0);
+            aj = sprite2.getFrameV((1.0f - v) * 16.0f * 0.5f);
+            float aq = sprite2.getFrameV((1.0f - x) * 16.0f * 0.5f);
+            float ar = sprite2.getFrameV(8.0);
             int as = this.getLight(blockRenderView, blockPos2);
             float at = al < 2 ? 0.8f : 0.6f;
             float au = 1.0f * at * f;

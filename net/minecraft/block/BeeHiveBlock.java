@@ -65,7 +65,7 @@ extends BlockWithEntity {
 
     public BeeHiveBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(HONEY_LEVEL, 0)).with(FACING, Direction.NORTH));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(HONEY_LEVEL, 0)).with(FACING, Direction.NORTH));
     }
 
     @Override

@@ -230,7 +230,7 @@ RangedAttackMob {
         double d = livingEntity.getX() - this.getX();
         double e = livingEntity.getZ() - this.getZ();
         double g = MathHelper.sqrt(d * d + e * e);
-        double h = livingEntity.getHeightAt(0.3333333333333333) - entity.getY() + g * (double)0.2f;
+        double h = livingEntity.getBodyY(0.3333333333333333) - entity.getY() + g * (double)0.2f;
         Vector3f vector3f = this.getProjectileVelocity(new Vec3d(d, h, e), f);
         projectile.setVelocity(vector3f.getX(), vector3f.getY(), vector3f.getZ(), 1.6f, 14 - this.world.getDifficulty().getId() * 4);
         this.playSound(SoundEvents.ITEM_CROSSBOW_SHOOT, 1.0f, 1.0f / (this.getRandom().nextFloat() * 0.4f + 0.8f));

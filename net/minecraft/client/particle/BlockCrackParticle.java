@@ -73,22 +73,22 @@ extends SpriteBillboardParticle {
 
     @Override
     protected float getMinU() {
-        return this.sprite.getU((this.field_17884 + 1.0f) / 4.0f * 16.0f);
+        return this.sprite.getFrameU((this.field_17884 + 1.0f) / 4.0f * 16.0f);
     }
 
     @Override
     protected float getMaxU() {
-        return this.sprite.getU(this.field_17884 / 4.0f * 16.0f);
+        return this.sprite.getFrameU(this.field_17884 / 4.0f * 16.0f);
     }
 
     @Override
     protected float getMinV() {
-        return this.sprite.getV(this.field_17885 / 4.0f * 16.0f);
+        return this.sprite.getFrameV(this.field_17885 / 4.0f * 16.0f);
     }
 
     @Override
     protected float getMaxV() {
-        return this.sprite.getV((this.field_17885 + 1.0f) / 4.0f * 16.0f);
+        return this.sprite.getFrameV((this.field_17885 + 1.0f) / 4.0f * 16.0f);
     }
 
     @Override

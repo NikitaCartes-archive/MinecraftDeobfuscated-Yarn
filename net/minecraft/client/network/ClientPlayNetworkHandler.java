@@ -1124,7 +1124,7 @@ implements ClientPlayPacketListener {
                 this.client.inGameHud.getChatHud().addMessage(new TranslatableText("demo.day.6", gameOptions.keyScreenshot.getLocalizedName()));
             }
         } else if (i == 6) {
-            this.world.playSound(playerEntity, playerEntity.getX(), playerEntity.method_23320(), playerEntity.getZ(), SoundEvents.ENTITY_ARROW_HIT_PLAYER, SoundCategory.PLAYERS, 0.18f, 0.45f);
+            this.world.playSound(playerEntity, playerEntity.getX(), playerEntity.getEyeY(), playerEntity.getZ(), SoundEvents.ENTITY_ARROW_HIT_PLAYER, SoundCategory.PLAYERS, 0.18f, 0.45f);
         } else if (i == 7) {
             this.world.setRainGradient(f);
         } else if (i == 8) {

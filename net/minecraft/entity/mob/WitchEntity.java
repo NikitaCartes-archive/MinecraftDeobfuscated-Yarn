@@ -197,7 +197,7 @@ implements RangedAttackMob {
         }
         Vec3d vec3d = livingEntity.getVelocity();
         double d = livingEntity.getX() + vec3d.x - this.getX();
-        double e = livingEntity.method_23320() - (double)1.1f - this.getY();
+        double e = livingEntity.getEyeY() - (double)1.1f - this.getY();
         double g = livingEntity.getZ() + vec3d.z - this.getZ();
         float h = MathHelper.sqrt(d * d + g * g);
         Potion potion = Potions.HARMING;

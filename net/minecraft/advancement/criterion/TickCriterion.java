@@ -25,7 +25,7 @@ extends AbstractCriterion<Conditions> {
     }
 
     public void trigger(ServerPlayerEntity serverPlayerEntity) {
-        this.grant(serverPlayerEntity.getAdvancementManager());
+        this.grant(serverPlayerEntity.getAdvancementTracker());
     }
 
     @Override

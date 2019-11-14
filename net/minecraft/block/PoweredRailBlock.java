@@ -24,7 +24,7 @@ extends AbstractRailBlock {
 
     protected PoweredRailBlock(Block.Settings settings) {
         super(true, settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(SHAPE, RailShape.NORTH_SOUTH)).with(POWERED, false));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(SHAPE, RailShape.NORTH_SOUTH)).with(POWERED, false));
     }
 
     protected boolean isPoweredByOtherRails(World world, BlockPos blockPos, BlockState blockState, boolean bl, int i) {

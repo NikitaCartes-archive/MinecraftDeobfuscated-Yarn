@@ -27,7 +27,7 @@ extends AbstractPressurePlateBlock {
 
     protected PressurePlateBlock(ActivationRule activationRule, Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(POWERED, false));
+        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(POWERED, false));
         this.type = activationRule;
     }
 

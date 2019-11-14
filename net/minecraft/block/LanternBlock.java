@@ -30,7 +30,7 @@ extends Block {
 
     public LanternBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(HANGING, false));
+        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(HANGING, false));
     }
 
     @Override

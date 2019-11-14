@@ -131,13 +131,13 @@ public class ModelPart {
     public void rotate(MatrixStack matrixStack) {
         matrixStack.translate(this.pivotX / 16.0f, this.pivotY / 16.0f, this.pivotZ / 16.0f);
         if (this.roll != 0.0f) {
-            matrixStack.multiply(Vector3f.POSITIVE_Z.method_23626(this.roll));
+            matrixStack.multiply(Vector3f.POSITIVE_Z.getRadialQuaternion(this.roll));
         }
         if (this.yaw != 0.0f) {
-            matrixStack.multiply(Vector3f.POSITIVE_Y.method_23626(this.yaw));
+            matrixStack.multiply(Vector3f.POSITIVE_Y.getRadialQuaternion(this.yaw));
         }
         if (this.pitch != 0.0f) {
-            matrixStack.multiply(Vector3f.POSITIVE_X.method_23626(this.pitch));
+            matrixStack.multiply(Vector3f.POSITIVE_X.getRadialQuaternion(this.pitch));
         }
     }
 
@@ -146,7 +146,7 @@ public class ModelPart {
         Matrix3f matrix3f = entry.getNormal();
         for (Cuboid cuboid : this.cuboids) {
             for (Quad quad : cuboid.sides) {
-                Vector3f vector3f = quad.field_21618.method_23850();
+                Vector3f vector3f = quad.direction.copy();
                 vector3f.multiply(matrix3f);
                 float k = vector3f.getX();
                 float l = vector3f.getY();
@@ -164,8 +164,8 @@ public class ModelPart {
                         r = vertex.u;
                         s = vertex.v;
                     } else {
-                        r = sprite.getU(vertex.u * 16.0f);
-                        s = sprite.getV(vertex.v * 16.0f);
+                        r = sprite.getFrameU(vertex.u * 16.0f);
+                        s = sprite.getFrameV(vertex.v * 16.0f);
                     }
                     vertexConsumer.method_23919(vector4f.getX(), vector4f.getY(), vector4f.getZ(), f, g, h, 1.0f, r, s, j, i, k, l, m);
                 }
@@ -207,7 +207,7 @@ public class ModelPart {
     @Environment(value=EnvType.CLIENT)
     static class Quad {
         public final Vertex[] vertices;
-        public final Vector3f field_21618;
+        public final Vector3f direction;
 
         public Quad(Vertex[] vertexs, float f, float g, float h, float i, float j, float k, boolean bl, Direction direction) {
             this.vertices = vertexs;
@@ -225,9 +225,9 @@ public class ModelPart {
                     vertexs[n - 1 - o] = vertex;
                 }
             }
-            this.field_21618 = direction.method_23955();
+            this.direction = direction.getUnitVector();
             if (bl) {
-                this.field_21618.method_23849(-1.0f, 1.0f, 1.0f);
+                this.direction.piecewiseMultiply(-1.0f, 1.0f, 1.0f);
             }
         }
     }

@@ -40,7 +40,7 @@ extends AbstractRailBlock {
 
     public DetectorRailBlock(Block.Settings settings) {
         super(true, settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(POWERED, false)).with(SHAPE, RailShape.NORTH_SOUTH));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(POWERED, false)).with(SHAPE, RailShape.NORTH_SOUTH));
     }
 
     @Override

@@ -122,7 +122,7 @@ extends Screen {
         matrixStack.translate(this.width / 2, 0.0, 50.0);
         float g = 93.75f;
         matrixStack.scale(-93.75f, -93.75f, -93.75f);
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
         matrixStack.translate(0.0, -1.3125, 0.0);
         BlockState blockState = this.sign.getCachedState();
         boolean bl = blockState.getBlock() instanceof SignBlock;

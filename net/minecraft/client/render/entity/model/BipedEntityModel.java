@@ -27,8 +27,8 @@ extends AnimalModel<T>
 implements ModelWithArms,
 ModelWithHead {
     public ModelPart head;
-    public ModelPart headwear;
-    public ModelPart body;
+    public ModelPart helmet;
+    public ModelPart torso;
     public ModelPart rightArm;
     public ModelPart leftArm;
     public ModelPart rightLeg;
@@ -54,12 +54,12 @@ ModelWithHead {
         this.head = new ModelPart(this, 0, 0);
         this.head.addCuboid(-4.0f, -8.0f, -4.0f, 8.0f, 8.0f, 8.0f, f);
         this.head.setPivot(0.0f, 0.0f + g, 0.0f);
-        this.headwear = new ModelPart(this, 32, 0);
-        this.headwear.addCuboid(-4.0f, -8.0f, -4.0f, 8.0f, 8.0f, 8.0f, f + 0.5f);
-        this.headwear.setPivot(0.0f, 0.0f + g, 0.0f);
-        this.body = new ModelPart(this, 16, 16);
-        this.body.addCuboid(-4.0f, 0.0f, -2.0f, 8.0f, 12.0f, 4.0f, f);
-        this.body.setPivot(0.0f, 0.0f + g, 0.0f);
+        this.helmet = new ModelPart(this, 32, 0);
+        this.helmet.addCuboid(-4.0f, -8.0f, -4.0f, 8.0f, 8.0f, 8.0f, f + 0.5f);
+        this.helmet.setPivot(0.0f, 0.0f + g, 0.0f);
+        this.torso = new ModelPart(this, 16, 16);
+        this.torso.addCuboid(-4.0f, 0.0f, -2.0f, 8.0f, 12.0f, 4.0f, f);
+        this.torso.setPivot(0.0f, 0.0f + g, 0.0f);
         this.rightArm = new ModelPart(this, 40, 16);
         this.rightArm.addCuboid(-3.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, f);
         this.rightArm.setPivot(-5.0f, 2.0f + g, 0.0f);
@@ -83,7 +83,7 @@ ModelWithHead {
 
     @Override
     protected Iterable<ModelPart> getBodyParts() {
-        return ImmutableList.of(this.body, this.rightArm, this.leftArm, this.rightLeg, this.leftLeg, this.headwear);
+        return ImmutableList.of(this.torso, this.rightArm, this.leftArm, this.rightLeg, this.leftLeg, this.helmet);
     }
 
     public void method_17086(T livingEntity, float f, float g, float h) {
@@ -100,7 +100,7 @@ ModelWithHead {
         boolean bl2 = ((LivingEntity)livingEntity).isInSwimmingPose();
         this.head.yaw = i * ((float)Math.PI / 180);
         this.head.pitch = bl ? -0.7853982f : (this.field_3396 > 0.0f ? (bl2 ? this.lerpAngle(this.head.pitch, -0.7853982f, this.field_3396) : this.lerpAngle(this.head.pitch, j * ((float)Math.PI / 180), this.field_3396)) : j * ((float)Math.PI / 180));
-        this.body.yaw = 0.0f;
+        this.torso.yaw = 0.0f;
         this.rightArm.pivotZ = 0.0f;
         this.rightArm.pivotX = -5.0f;
         this.leftArm.pivotZ = 0.0f;
@@ -179,17 +179,17 @@ ModelWithHead {
             Arm arm = this.getPreferredArm(livingEntity);
             ModelPart modelPart = this.getArm(arm);
             l = this.handSwingProgress;
-            this.body.yaw = MathHelper.sin(MathHelper.sqrt(l) * ((float)Math.PI * 2)) * 0.2f;
+            this.torso.yaw = MathHelper.sin(MathHelper.sqrt(l) * ((float)Math.PI * 2)) * 0.2f;
             if (arm == Arm.LEFT) {
-                this.body.yaw *= -1.0f;
+                this.torso.yaw *= -1.0f;
             }
-            this.rightArm.pivotZ = MathHelper.sin(this.body.yaw) * 5.0f;
-            this.rightArm.pivotX = -MathHelper.cos(this.body.yaw) * 5.0f;
-            this.leftArm.pivotZ = -MathHelper.sin(this.body.yaw) * 5.0f;
-            this.leftArm.pivotX = MathHelper.cos(this.body.yaw) * 5.0f;
-            this.rightArm.yaw += this.body.yaw;
-            this.leftArm.yaw += this.body.yaw;
-            this.leftArm.pitch += this.body.yaw;
+            this.rightArm.pivotZ = MathHelper.sin(this.torso.yaw) * 5.0f;
+            this.rightArm.pivotX = -MathHelper.cos(this.torso.yaw) * 5.0f;
+            this.leftArm.pivotZ = -MathHelper.sin(this.torso.yaw) * 5.0f;
+            this.leftArm.pivotX = MathHelper.cos(this.torso.yaw) * 5.0f;
+            this.rightArm.yaw += this.torso.yaw;
+            this.leftArm.yaw += this.torso.yaw;
+            this.leftArm.pitch += this.torso.yaw;
             l = 1.0f - this.handSwingProgress;
             l *= l;
             l *= l;
@@ -197,11 +197,11 @@ ModelWithHead {
             m = MathHelper.sin(l * (float)Math.PI);
             n = MathHelper.sin(this.handSwingProgress * (float)Math.PI) * -(this.head.pitch - 0.7f) * 0.75f;
             modelPart.pitch = (float)((double)modelPart.pitch - ((double)m * 1.2 + (double)n));
-            modelPart.yaw += this.body.yaw * 2.0f;
+            modelPart.yaw += this.torso.yaw * 2.0f;
             modelPart.roll += MathHelper.sin(this.handSwingProgress * (float)Math.PI) * -0.4f;
         }
         if (this.isSneaking) {
-            this.body.pitch = 0.5f;
+            this.torso.pitch = 0.5f;
             this.rightArm.pitch += 0.4f;
             this.leftArm.pitch += 0.4f;
             this.rightLeg.pivotZ = 4.0f;
@@ -209,17 +209,17 @@ ModelWithHead {
             this.rightLeg.pivotY = 12.2f;
             this.leftLeg.pivotY = 12.2f;
             this.head.pivotY = 4.2f;
-            this.body.pivotY = 3.2f;
+            this.torso.pivotY = 3.2f;
             this.leftArm.pivotY = 5.2f;
             this.rightArm.pivotY = 5.2f;
         } else {
-            this.body.pitch = 0.0f;
+            this.torso.pitch = 0.0f;
             this.rightLeg.pivotZ = 0.1f;
             this.leftLeg.pivotZ = 0.1f;
             this.rightLeg.pivotY = 12.0f;
             this.leftLeg.pivotY = 12.0f;
             this.head.pivotY = 0.0f;
-            this.body.pivotY = 0.0f;
+            this.torso.pivotY = 0.0f;
             this.leftArm.pivotY = 2.0f;
             this.rightArm.pivotY = 2.0f;
         }
@@ -297,7 +297,7 @@ ModelWithHead {
             this.leftLeg.pitch = MathHelper.lerp(this.field_3396, this.leftLeg.pitch, 0.3f * MathHelper.cos(f * 0.33333334f + (float)Math.PI));
             this.rightLeg.pitch = MathHelper.lerp(this.field_3396, this.rightLeg.pitch, 0.3f * MathHelper.cos(f * 0.33333334f));
         }
-        this.headwear.copyPositionAndRotation(this.head);
+        this.helmet.copyPositionAndRotation(this.head);
     }
 
     protected float lerpAngle(float f, float g, float h) {
@@ -324,8 +324,8 @@ ModelWithHead {
 
     public void setVisible(boolean bl) {
         this.head.visible = bl;
-        this.headwear.visible = bl;
-        this.body.visible = bl;
+        this.helmet.visible = bl;
+        this.torso.visible = bl;
         this.rightArm.visible = bl;
         this.leftArm.visible = bl;
         this.rightLeg.visible = bl;

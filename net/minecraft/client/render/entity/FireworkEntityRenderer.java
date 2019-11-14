@@ -31,8 +31,8 @@ extends EntityRenderer<FireworkEntity> {
         matrixStack.push();
         matrixStack.multiply(this.renderManager.camera.method_23767());
         if (fireworkEntity.wasShotAtAngle()) {
-            matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f));
-            matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0f));
+            matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
+            matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0f));
         }
         this.itemRenderer.method_23178(fireworkEntity.getStack(), ModelTransformation.Type.GROUND, i, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider);
         matrixStack.pop();

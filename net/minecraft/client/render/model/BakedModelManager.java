@@ -23,29 +23,29 @@ import net.minecraft.util.profiler.Profiler;
 @Environment(value=EnvType.CLIENT)
 public class BakedModelManager
 extends SinglePreparationResourceReloadListener<ModelLoader> {
-    private Map<Identifier, BakedModel> modelMap;
+    private Map<Identifier, BakedModel> models;
     private final SpriteAtlasTexture spriteAtlas;
-    private final BlockModels blockStateMaps;
+    private final BlockModels blockModelCache;
     private final BlockColors colorMap;
     private BakedModel missingModel;
-    private Object2IntMap<BlockState> stateToModelIndex;
+    private Object2IntMap<BlockState> stateLookup;
 
     public BakedModelManager(SpriteAtlasTexture spriteAtlasTexture, BlockColors blockColors) {
         this.spriteAtlas = spriteAtlasTexture;
         this.colorMap = blockColors;
-        this.blockStateMaps = new BlockModels(this);
+        this.blockModelCache = new BlockModels(this);
     }
 
     public BakedModel getModel(ModelIdentifier modelIdentifier) {
-        return this.modelMap.getOrDefault(modelIdentifier, this.missingModel);
+        return this.models.getOrDefault(modelIdentifier, this.missingModel);
     }
 
     public BakedModel getMissingModel() {
         return this.missingModel;
     }
 
-    public BlockModels getBlockStateMaps() {
-        return this.blockStateMaps;
+    public BlockModels getBlockModels() {
+        return this.blockModelCache;
     }
 
     protected ModelLoader method_18178(ResourceManager resourceManager, Profiler profiler) {
@@ -59,11 +59,11 @@ extends SinglePreparationResourceReloadListener<ModelLoader> {
         profiler.startTick();
         profiler.push("upload");
         modelLoader.upload(profiler);
-        this.modelMap = modelLoader.getBakedModelMap();
-        this.stateToModelIndex = modelLoader.getStateToModelIndex();
-        this.missingModel = this.modelMap.get(ModelLoader.MISSING);
+        this.models = modelLoader.getBakedModelMap();
+        this.stateLookup = modelLoader.getStateLookup();
+        this.missingModel = this.models.get(ModelLoader.MISSING);
         profiler.swap("cache");
-        this.blockStateMaps.reload();
+        this.blockModelCache.reload();
         profiler.pop();
         profiler.endTick();
     }
@@ -73,8 +73,8 @@ extends SinglePreparationResourceReloadListener<ModelLoader> {
         if (blockState == blockState2) {
             return false;
         }
-        int i = this.stateToModelIndex.getInt(blockState);
-        if (i != -1 && i == (j = this.stateToModelIndex.getInt(blockState2))) {
+        int i = this.stateLookup.getInt(blockState);
+        if (i != -1 && i == (j = this.stateLookup.getInt(blockState2))) {
             FluidState fluidState2;
             FluidState fluidState = blockState.getFluidState();
             return fluidState != (fluidState2 = blockState2.getFluidState());

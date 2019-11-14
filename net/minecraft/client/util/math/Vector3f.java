@@ -79,7 +79,7 @@ public final class Vector3f {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void method_23849(float f, float g, float h) {
+    public void piecewiseMultiply(float f, float g, float h) {
         this.x *= f;
         this.y *= g;
         this.z *= h;
@@ -106,7 +106,7 @@ public final class Vector3f {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void method_23846(Vector3f vector3f) {
+    public void add(Vector3f vector3f) {
         this.x += vector3f.x;
         this.y += vector3f.y;
         this.z += vector3f.z;
@@ -155,13 +155,13 @@ public final class Vector3f {
         float f = this.x;
         float g = this.y;
         float h = this.z;
-        this.x = Vector3f.method_23691(0, matrix3f, f, g, h);
-        this.y = Vector3f.method_23691(1, matrix3f, f, g, h);
-        this.z = Vector3f.method_23691(2, matrix3f, f, g, h);
+        this.x = Vector3f.crossMultiplyRow(0, matrix3f, f, g, h);
+        this.y = Vector3f.crossMultiplyRow(1, matrix3f, f, g, h);
+        this.z = Vector3f.crossMultiplyRow(2, matrix3f, f, g, h);
     }
 
     @Environment(value=EnvType.CLIENT)
-    private static float method_23691(int i, Matrix3f matrix3f, float f, float g, float h) {
+    private static float crossMultiplyRow(int i, Matrix3f matrix3f, float f, float g, float h) {
         return matrix3f.get(i, 0) * f + matrix3f.get(i, 1) * g + matrix3f.get(i, 2) * h;
     }
 
@@ -183,17 +183,17 @@ public final class Vector3f {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Quaternion method_23626(float f) {
+    public Quaternion getRadialQuaternion(float f) {
         return new Quaternion(this, f, false);
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Quaternion getRotationQuaternion(float f) {
+    public Quaternion getDegreesQuaternion(float f) {
         return new Quaternion(this, f, true);
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Vector3f method_23850() {
+    public Vector3f copy() {
         return new Vector3f(this.x, this.y, this.z);
     }
 

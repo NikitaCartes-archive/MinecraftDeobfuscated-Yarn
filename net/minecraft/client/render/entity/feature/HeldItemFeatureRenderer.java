@@ -50,8 +50,8 @@ extends FeatureRenderer<T, M> {
         }
         matrixStack.push();
         ((ModelWithArms)this.getModel()).setArmAngle(arm, matrixStack);
-        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-90.0f));
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f));
+        matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0f));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
         boolean bl = arm == Arm.LEFT;
         matrixStack.translate((float)(bl ? -1 : 1) / 16.0f, 0.125, -0.625);
         MinecraftClient.getInstance().getFirstPersonRenderer().renderItem(livingEntity, itemStack, type, bl, matrixStack, vertexConsumerProvider, i);

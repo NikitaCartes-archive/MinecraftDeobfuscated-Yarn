@@ -84,7 +84,7 @@ implements Projectile {
     }
 
     protected ProjectileEntity(EntityType<? extends ProjectileEntity> entityType, LivingEntity livingEntity, World world) {
-        this(entityType, livingEntity.getX(), livingEntity.method_23320() - (double)0.1f, livingEntity.getZ(), world);
+        this(entityType, livingEntity.getX(), livingEntity.getEyeY() - (double)0.1f, livingEntity.getZ(), world);
         this.setOwner(livingEntity);
         if (livingEntity instanceof PlayerEntity) {
             this.pickupType = PickupPermission.ALLOWED;

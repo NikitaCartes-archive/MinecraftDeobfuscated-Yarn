@@ -970,7 +970,7 @@ CommandOutput {
         if (this.getVehicle() instanceof BoatEntity) {
             return false;
         }
-        double d = this.method_23320();
+        double d = this.getEyeY();
         BlockPos blockPos = new BlockPos(this.getX(), d, this.getZ());
         if (bl && !this.world.isChunkLoaded(blockPos.getX() >> 4, blockPos.getZ() >> 4)) {
             return false;
@@ -1014,7 +1014,7 @@ CommandOutput {
     public float getBrightnessAtEyes() {
         BlockPos.Mutable mutable = new BlockPos.Mutable(this.getX(), 0.0, this.getZ());
         if (this.world.isChunkLoaded(mutable)) {
-            mutable.setY(MathHelper.floor(this.method_23320()));
+            mutable.setY(MathHelper.floor(this.getEyeY()));
             return this.world.getBrightness(mutable);
         }
         return 0.0f;
@@ -1174,7 +1174,7 @@ CommandOutput {
 
     public Vec3d getCameraPosVec(float f) {
         if (f == 1.0f) {
-            return new Vec3d(this.getX(), this.method_23320(), this.getZ());
+            return new Vec3d(this.getX(), this.getEyeY(), this.getZ());
         }
         double d = MathHelper.lerp((double)f, this.prevX, this.getX());
         double e = MathHelper.lerp((double)f, this.prevY, this.getY()) + (double)this.getStandingEyeHeight();
@@ -2513,27 +2513,27 @@ CommandOutput {
         return this.x;
     }
 
-    public double method_23316(double d) {
+    public double offsetX(double d) {
         return this.x + (double)this.getWidth() * d;
     }
 
-    public double method_23322(double d) {
-        return this.method_23316((2.0 * this.random.nextDouble() - 1.0) * d);
+    public double getParticleX(double d) {
+        return this.offsetX((2.0 * this.random.nextDouble() - 1.0) * d);
     }
 
     public final double getY() {
         return this.y;
     }
 
-    public double getHeightAt(double d) {
+    public double getBodyY(double d) {
         return this.y + (double)this.getHeight() * d;
     }
 
-    public double method_23319() {
-        return this.getHeightAt(this.random.nextDouble());
+    public double getRandomBodyY() {
+        return this.getBodyY(this.random.nextDouble());
     }
 
-    public double method_23320() {
+    public double getEyeY() {
         return this.y + (double)this.standingEyeHeight;
     }
 
@@ -2541,12 +2541,12 @@ CommandOutput {
         return this.z;
     }
 
-    public double method_23324(double d) {
+    public double offsetZ(double d) {
         return this.z + (double)this.getWidth() * d;
     }
 
-    public double method_23325(double d) {
-        return this.method_23324((2.0 * this.random.nextDouble() - 1.0) * d);
+    public double getParticleZ(double d) {
+        return this.offsetZ((2.0 * this.random.nextDouble() - 1.0) * d);
     }
 
     public void setPos(double d, double e, double f) {

@@ -32,7 +32,7 @@ extends AbstractCriterion<Conditions> {
     }
 
     public void handle(ServerPlayerEntity serverPlayerEntity, AbstractTraderEntity abstractTraderEntity, ItemStack itemStack) {
-        this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity, abstractTraderEntity, itemStack));
+        this.test(serverPlayerEntity.getAdvancementTracker(), conditions -> conditions.matches(serverPlayerEntity, abstractTraderEntity, itemStack));
     }
 
     @Override

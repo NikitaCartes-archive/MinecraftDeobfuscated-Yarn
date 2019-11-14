@@ -31,7 +31,7 @@ implements Waterloggable {
 
     protected CoralParentBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(WATERLOGGED, true));
+        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(WATERLOGGED, true));
     }
 
     protected void checkLivingConditions(BlockState blockState, IWorld iWorld, BlockPos blockPos) {

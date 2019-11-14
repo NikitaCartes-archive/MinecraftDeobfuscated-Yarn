@@ -214,7 +214,7 @@ implements Flutterer {
         super.tick();
         if (this.hasNectar() && this.getCropsGrownSincePollination() < 10 && this.random.nextFloat() < 0.05f) {
             for (int i = 0; i < this.random.nextInt(2) + 1; ++i) {
-                this.addParticle(this.world, this.getX() - (double)0.3f, this.getX() + (double)0.3f, this.getZ() - (double)0.3f, this.getZ() + (double)0.3f, this.getHeightAt(0.5), ParticleTypes.FALLING_NECTAR);
+                this.addParticle(this.world, this.getX() - (double)0.3f, this.getX() + (double)0.3f, this.getZ() - (double)0.3f, this.getZ() + (double)0.3f, this.getBodyY(0.5), ParticleTypes.FALLING_NECTAR);
             }
         }
         this.updateBodyPitch();
@@ -948,11 +948,6 @@ implements Flutterer {
         @Nullable
         protected abstract BlockPos getTargetPos();
 
-        @Override
-        public boolean canBeeContinue() {
-            return this.method_23741();
-        }
-
         boolean method_23741() {
             BlockPos blockPos = this.getTargetPos();
             if (blockPos == null) {
@@ -970,7 +965,7 @@ implements Flutterer {
         public void tick() {
             BlockPos blockPos = this.getTargetPos();
             EntityNavigation entityNavigation = BeeEntity.this.getNavigation();
-            if (entityNavigation.getCurrentPath() != null && !entityNavigation.getCurrentPath().reachesTarget()) {
+            if (blockPos == null || entityNavigation.getCurrentPath() != null && !entityNavigation.getCurrentPath().reachesTarget()) {
                 this.stop();
                 this.method_23885();
                 return;

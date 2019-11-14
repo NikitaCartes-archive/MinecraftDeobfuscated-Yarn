@@ -25,7 +25,7 @@ extends AbstractPressurePlateBlock {
 
     protected WeightedPressurePlateBlock(int i, Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(POWER, 0));
+        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(POWER, 0));
         this.weight = i;
     }
 

@@ -39,7 +39,7 @@ extends Block {
 
     public TurtleEggBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(HATCH, 0)).with(EGGS, 1));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(HATCH, 0)).with(EGGS, 1));
     }
 
     @Override

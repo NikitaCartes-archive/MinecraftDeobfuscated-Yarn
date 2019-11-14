@@ -33,7 +33,7 @@ extends FeatureRenderer<SnowGolemEntity, SnowmanEntityModel<SnowGolemEntity>> {
         ((SnowmanEntityModel)this.getModel()).method_2834().rotate(matrixStack);
         float m = 0.625f;
         matrixStack.translate(0.0, -0.34375, 0.0);
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
         matrixStack.scale(0.625f, -0.625f, -0.625f);
         ItemStack itemStack = new ItemStack(Blocks.CARVED_PUMPKIN);
         MinecraftClient.getInstance().getItemRenderer().method_23177(snowGolemEntity, itemStack, ModelTransformation.Type.HEAD, false, matrixStack, vertexConsumerProvider, snowGolemEntity.world, i, LivingEntityRenderer.method_23622(snowGolemEntity, 0.0f));

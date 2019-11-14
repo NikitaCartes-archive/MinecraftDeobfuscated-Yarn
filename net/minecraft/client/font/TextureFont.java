@@ -31,11 +31,11 @@ public class TextureFont
 implements Font {
     private static final Logger LOGGER = LogManager.getLogger();
     private final NativeImage image;
-    private final Char2ObjectMap<TextureFontGlyph> characterToGlyphMap;
+    private final Char2ObjectMap<TextureFontGlyph> glyphs;
 
     public TextureFont(NativeImage nativeImage, Char2ObjectMap<TextureFontGlyph> char2ObjectMap) {
         this.image = nativeImage;
-        this.characterToGlyphMap = char2ObjectMap;
+        this.glyphs = char2ObjectMap;
     }
 
     @Override
@@ -46,7 +46,7 @@ implements Font {
     @Override
     @Nullable
     public RenderableGlyph getGlyph(char c) {
-        return (RenderableGlyph)this.characterToGlyphMap.get(c);
+        return (RenderableGlyph)this.glyphs.get(c);
     }
 
     @Environment(value=EnvType.CLIENT)

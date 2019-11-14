@@ -46,7 +46,7 @@ extends AbstractCriterion<Conditions> {
     }
 
     public void test(ServerPlayerEntity serverPlayerEntity, Block block, ItemStack itemStack, int i) {
-        this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.test(block, itemStack, i));
+        this.test(serverPlayerEntity.getAdvancementTracker(), conditions -> conditions.test(block, itemStack, i));
     }
 
     @Override

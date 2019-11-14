@@ -8,7 +8,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.SkeletonEntityRenderer;
 import net.minecraft.client.render.entity.feature.StrayOverlayFeatureRenderer;
-import net.minecraft.client.render.entity.model.StrayEntityModel;
+import net.minecraft.client.render.entity.model.SkeletonEntityModel;
 import net.minecraft.entity.mob.AbstractSkeletonEntity;
 import net.minecraft.util.Identifier;
 
@@ -19,7 +19,7 @@ extends SkeletonEntityRenderer {
 
     public StrayEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher);
-        this.addFeature(new StrayOverlayFeatureRenderer<AbstractSkeletonEntity, StrayEntityModel<AbstractSkeletonEntity>>(this));
+        this.addFeature(new StrayOverlayFeatureRenderer<AbstractSkeletonEntity, SkeletonEntityModel<AbstractSkeletonEntity>>(this));
     }
 
     @Override

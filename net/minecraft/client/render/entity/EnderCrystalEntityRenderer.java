@@ -54,18 +54,18 @@ extends EntityRenderer<EnderCrystalEntity> {
         if (enderCrystalEntity.getShowBottom()) {
             this.bottom.render(matrixStack, vertexConsumer, i, k, null);
         }
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(j));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(j));
         matrixStack.translate(0.0, 1.5f + h / 2.0f, 0.0);
         matrixStack.multiply(new Quaternion(new Vector3f(field_21002, 0.0f, field_21002), 60.0f, true));
         this.field_21004.render(matrixStack, vertexConsumer, i, k, null);
         float l = 0.875f;
         matrixStack.scale(0.875f, 0.875f, 0.875f);
         matrixStack.multiply(new Quaternion(new Vector3f(field_21002, 0.0f, field_21002), 60.0f, true));
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(j));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(j));
         this.field_21004.render(matrixStack, vertexConsumer, i, k, null);
         matrixStack.scale(0.875f, 0.875f, 0.875f);
         matrixStack.multiply(new Quaternion(new Vector3f(field_21002, 0.0f, field_21002), 60.0f, true));
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(j));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(j));
         this.field_21003.render(matrixStack, vertexConsumer, i, k, null);
         matrixStack.pop();
         matrixStack.pop();

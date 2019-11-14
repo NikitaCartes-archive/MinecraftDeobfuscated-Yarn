@@ -59,11 +59,11 @@ public class StatePredicate {
     }
 
     public boolean test(BlockState blockState) {
-        return this.test(blockState.getBlock().getStateFactory(), blockState);
+        return this.test(blockState.getBlock().getStateManager(), blockState);
     }
 
     public boolean test(FluidState fluidState) {
-        return this.test(fluidState.getFluid().getStateFactory(), fluidState);
+        return this.test(fluidState.getFluid().getStateManager(), fluidState);
     }
 
     public void check(StateManager<?, ?> stateManager, Consumer<String> consumer) {

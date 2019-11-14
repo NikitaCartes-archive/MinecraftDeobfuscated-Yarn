@@ -64,7 +64,7 @@ extends Goal {
 
     @Override
     public void tick() {
-        this.wolf.getLookControl().lookAt(this.begFrom.getX(), this.begFrom.method_23320(), this.begFrom.getZ(), 10.0f, this.wolf.getLookPitchSpeed());
+        this.wolf.getLookControl().lookAt(this.begFrom.getX(), this.begFrom.getEyeY(), this.begFrom.getZ(), 10.0f, this.wolf.getLookPitchSpeed());
         --this.timer;
     }
 

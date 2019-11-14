@@ -31,9 +31,9 @@ extends MobEntityRenderer<SquidEntity, SquidEntityModel<SquidEntity>> {
         float i = MathHelper.lerp(h, squidEntity.field_6905, squidEntity.field_6907);
         float j = MathHelper.lerp(h, squidEntity.field_6906, squidEntity.field_6903);
         matrixStack.translate(0.0, 0.5, 0.0);
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f - g));
-        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(i));
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(j));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f - g));
+        matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(i));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(j));
         matrixStack.translate(0.0, -1.2f, 0.0);
     }
 

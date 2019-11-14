@@ -36,7 +36,7 @@ extends AbstractCriterion<Conditions> {
     }
 
     public void trigger(ServerPlayerEntity serverPlayerEntity, Potion potion) {
-        this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(potion));
+        this.test(serverPlayerEntity.getAdvancementTracker(), conditions -> conditions.matches(potion));
     }
 
     @Override

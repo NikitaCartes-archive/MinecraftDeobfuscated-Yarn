@@ -231,7 +231,7 @@ Runnable {
     private final BossBarManager bossBarManager = new BossBarManager(this);
     private final LootConditionManager predicateManager = new LootConditionManager();
     private final LootManager lootManager = new LootManager(this.predicateManager);
-    private final ServerAdvancementLoader advancementManager = new ServerAdvancementLoader();
+    private final ServerAdvancementLoader advancementLoader = new ServerAdvancementLoader();
     private final CommandFunctionManager commandFunctionManager = new CommandFunctionManager(this);
     private final MetricsData metricsData = new MetricsData();
     private boolean whitelistEnabled;
@@ -260,7 +260,7 @@ Runnable {
         this.dataManager.registerListener(this.recipeManager);
         this.dataManager.registerListener(this.lootManager);
         this.dataManager.registerListener(this.commandFunctionManager);
-        this.dataManager.registerListener(this.advancementManager);
+        this.dataManager.registerListener(this.advancementLoader);
         this.workerExecutor = Util.getServerWorkerExecutor();
         this.levelName = string;
     }
@@ -1315,8 +1315,8 @@ Runnable {
         return 10;
     }
 
-    public ServerAdvancementLoader getAdvancementManager() {
-        return this.advancementManager;
+    public ServerAdvancementLoader getAdvancementLoader() {
+        return this.advancementLoader;
     }
 
     public CommandFunctionManager getCommandFunctionManager() {
@@ -1518,7 +1518,7 @@ Runnable {
         try (BufferedWriter writer = Files.newBufferedWriter(path, new OpenOption[0]);){
             final ArrayList<String> list = Lists.newArrayList();
             final GameRules gameRules = this.getGameRules();
-            GameRules.forEach(new GameRules.RuleConsumer(){
+            GameRules.forEachType(new GameRules.RuleTypeConsumer(){
 
                 @Override
                 public <T extends GameRules.Rule<T>> void accept(GameRules.RuleKey<T> ruleKey, GameRules.RuleType<T> ruleType) {

@@ -29,7 +29,7 @@ extends AbstractCriterion<Conditions> {
     }
 
     public void trigger(ServerPlayerEntity serverPlayerEntity, BeaconBlockEntity beaconBlockEntity) {
-        this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(beaconBlockEntity));
+        this.test(serverPlayerEntity.getAdvancementTracker(), conditions -> conditions.matches(beaconBlockEntity));
     }
 
     @Override

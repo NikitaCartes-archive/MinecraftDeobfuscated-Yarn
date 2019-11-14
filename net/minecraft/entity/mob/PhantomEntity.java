@@ -355,7 +355,7 @@ implements Monster {
         @Override
         public void tick() {
             LivingEntity livingEntity = PhantomEntity.this.getTarget();
-            PhantomEntity.this.field_7314 = new Vec3d(livingEntity.getX(), livingEntity.getHeightAt(0.5), livingEntity.getZ());
+            PhantomEntity.this.field_7314 = new Vec3d(livingEntity.getX(), livingEntity.getBodyY(0.5), livingEntity.getZ());
             if (PhantomEntity.this.getBoundingBox().expand(0.2f).intersects(livingEntity.getBoundingBox())) {
                 PhantomEntity.this.tryAttack(livingEntity);
                 PhantomEntity.this.movementType = PhantomMovementType.CIRCLE;

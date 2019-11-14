@@ -74,7 +74,7 @@ extends Item {
         }
         playerEntity.setCurrentHand(hand);
         if (world instanceof ServerWorld && (blockPos = ((ServerWorld)world).method_14178().getChunkGenerator().locateStructure(world, "Stronghold", new BlockPos(playerEntity), 100, false)) != null) {
-            EnderEyeEntity enderEyeEntity = new EnderEyeEntity(world, playerEntity.getX(), playerEntity.getHeightAt(0.5), playerEntity.getZ());
+            EnderEyeEntity enderEyeEntity = new EnderEyeEntity(world, playerEntity.getX(), playerEntity.getBodyY(0.5), playerEntity.getZ());
             enderEyeEntity.setItem(itemStack);
             enderEyeEntity.moveTowards(blockPos);
             world.spawnEntity(enderEyeEntity);

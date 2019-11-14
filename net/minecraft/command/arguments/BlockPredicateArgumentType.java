@@ -102,7 +102,7 @@ implements ArgumentType<BlockPredicate> {
                 return false;
             }
             for (Map.Entry<String, String> entry : this.properties.entrySet()) {
-                Property<?> property = blockState.getBlock().getStateFactory().getProperty(entry.getKey());
+                Property<?> property = blockState.getBlock().getStateManager().getProperty(entry.getKey());
                 if (property == null) {
                     return false;
                 }

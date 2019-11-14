@@ -176,7 +176,7 @@ public final class NbtHelper {
         BlockState blockState = block.getDefaultState();
         if (compoundTag.contains("Properties", 10)) {
             CompoundTag compoundTag2 = compoundTag.getCompound("Properties");
-            StateManager<Block, BlockState> stateManager = block.getStateFactory();
+            StateManager<Block, BlockState> stateManager = block.getStateManager();
             for (String string : compoundTag2.getKeys()) {
                 Property<?> property = stateManager.getProperty(string);
                 if (property == null) continue;

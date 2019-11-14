@@ -45,12 +45,12 @@ extends BlockEntityRenderer<SignBlockEntity> {
         if (blockState.getBlock() instanceof SignBlock) {
             matrixStack.translate(0.5, 0.5, 0.5);
             h = -((float)(blockState.get(SignBlock.ROTATION) * 360) / 16.0f);
-            matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(h));
+            matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(h));
             this.field_21529.field_21531.visible = true;
         } else {
             matrixStack.translate(0.5, 0.5, 0.5);
             h = -blockState.get(WallSignBlock.FACING).asRotation();
-            matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(h));
+            matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(h));
             matrixStack.translate(0.0, -0.3125, -0.4375);
             this.field_21529.field_21531.visible = false;
         }
@@ -80,24 +80,24 @@ extends BlockEntityRenderer<SignBlockEntity> {
 
     public static Identifier getModelTexture(Block block) {
         if (block == Blocks.OAK_SIGN || block == Blocks.OAK_WALL_SIGN) {
-            return ModelLoader.field_21014;
+            return ModelLoader.OAK_SIGN;
         }
         if (block == Blocks.SPRUCE_SIGN || block == Blocks.SPRUCE_WALL_SIGN) {
-            return ModelLoader.field_21015;
+            return ModelLoader.SPRUCE_SIGN;
         }
         if (block == Blocks.BIRCH_SIGN || block == Blocks.BIRCH_WALL_SIGN) {
-            return ModelLoader.field_21016;
+            return ModelLoader.BIRCH_SIGN;
         }
         if (block == Blocks.ACACIA_SIGN || block == Blocks.ACACIA_WALL_SIGN) {
-            return ModelLoader.field_21017;
+            return ModelLoader.ACACIA_SIGN;
         }
         if (block == Blocks.JUNGLE_SIGN || block == Blocks.JUNGLE_WALL_SIGN) {
-            return ModelLoader.field_21018;
+            return ModelLoader.JUNGLE_SIGN;
         }
         if (block == Blocks.DARK_OAK_SIGN || block == Blocks.DARK_OAK_WALL_SIGN) {
-            return ModelLoader.field_21019;
+            return ModelLoader.DARK_OAK_SIGN;
         }
-        return ModelLoader.field_21014;
+        return ModelLoader.OAK_SIGN;
     }
 
     @Environment(value=EnvType.CLIENT)

@@ -219,7 +219,7 @@ Projectile {
                 if (livingEntity == this.shooter || this.squaredDistanceTo(livingEntity) > 25.0) continue;
                 boolean bl = false;
                 for (int i = 0; i < 2; ++i) {
-                    Vec3d vec3d2 = new Vec3d(livingEntity.getX(), livingEntity.getHeightAt(0.5 * (double)i), livingEntity.getZ());
+                    Vec3d vec3d2 = new Vec3d(livingEntity.getX(), livingEntity.getBodyY(0.5 * (double)i), livingEntity.getZ());
                     BlockHitResult hitResult = this.world.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, this));
                     if (((HitResult)hitResult).getType() != HitResult.Type.MISS) continue;
                     bl = true;

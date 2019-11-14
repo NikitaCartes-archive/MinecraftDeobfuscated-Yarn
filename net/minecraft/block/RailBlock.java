@@ -23,7 +23,7 @@ extends AbstractRailBlock {
 
     protected RailBlock(Block.Settings settings) {
         super(false, settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(SHAPE, RailShape.NORTH_SOUTH));
+        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(SHAPE, RailShape.NORTH_SOUTH));
     }
 
     @Override

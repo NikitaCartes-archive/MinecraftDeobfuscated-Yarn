@@ -291,7 +291,7 @@ extends WaterCreatureEntity {
             double d = this.random.nextGaussian() * 0.01;
             double e = this.random.nextGaussian() * 0.01;
             double f = this.random.nextGaussian() * 0.01;
-            this.world.addParticle(particleEffect, this.method_23322(1.0), this.method_23319() + 0.2, this.method_23325(1.0), d, e, f);
+            this.world.addParticle(particleEffect, this.getParticleX(1.0), this.getRandomBodyY() + 0.2, this.getParticleZ(1.0), d, e, f);
         }
     }
 
@@ -559,7 +559,7 @@ extends WaterCreatureEntity {
             if (itemStack.isEmpty()) {
                 return;
             }
-            double d = DolphinEntity.this.method_23320() - (double)0.3f;
+            double d = DolphinEntity.this.getEyeY() - (double)0.3f;
             ItemEntity itemEntity = new ItemEntity(DolphinEntity.this.world, DolphinEntity.this.getX(), d, DolphinEntity.this.getZ(), itemStack);
             itemEntity.setPickupDelay(40);
             itemEntity.setThrower(DolphinEntity.this.getUuid());

@@ -154,26 +154,26 @@ implements FeatureRendererContext<T, M> {
         String string;
         EntityPose entityPose = ((Entity)livingEntity).getPose();
         if (entityPose != EntityPose.SLEEPING) {
-            matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f - g));
+            matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f - g));
         }
         if (((LivingEntity)livingEntity).deathTime > 0) {
             float i = ((float)((LivingEntity)livingEntity).deathTime + h - 1.0f) / 20.0f * 1.6f;
             if ((i = MathHelper.sqrt(i)) > 1.0f) {
                 i = 1.0f;
             }
-            matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(i * this.getLyingAngle(livingEntity)));
+            matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(i * this.getLyingAngle(livingEntity)));
         } else if (((LivingEntity)livingEntity).isUsingRiptide()) {
-            matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-90.0f - ((LivingEntity)livingEntity).pitch));
-            matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(((float)((LivingEntity)livingEntity).age + h) * -75.0f));
+            matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0f - ((LivingEntity)livingEntity).pitch));
+            matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(((float)((LivingEntity)livingEntity).age + h) * -75.0f));
         } else if (entityPose == EntityPose.SLEEPING) {
             Direction direction = ((LivingEntity)livingEntity).getSleepingDirection();
             float j = direction != null ? LivingEntityRenderer.getYaw(direction) : g;
-            matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(j));
-            matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(this.getLyingAngle(livingEntity)));
-            matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(270.0f));
+            matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(j));
+            matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(this.getLyingAngle(livingEntity)));
+            matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(270.0f));
         } else if ((((Entity)livingEntity).hasCustomName() || livingEntity instanceof PlayerEntity) && ("Dinnerbone".equals(string = Formatting.strip(((Entity)livingEntity).getName().getString())) || "Grumm".equals(string)) && (!(livingEntity instanceof PlayerEntity) || ((PlayerEntity)livingEntity).isSkinOverlayVisible(PlayerModelPart.CAPE))) {
             matrixStack.translate(0.0, ((Entity)livingEntity).getHeight() + 0.1f, 0.0);
-            matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0f));
+            matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0f));
         }
     }
 

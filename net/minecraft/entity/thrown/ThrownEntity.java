@@ -50,7 +50,7 @@ implements Projectile {
     }
 
     protected ThrownEntity(EntityType<? extends ThrownEntity> entityType, LivingEntity livingEntity, World world) {
-        this(entityType, livingEntity.getX(), livingEntity.method_23320() - (double)0.1f, livingEntity.getZ(), world);
+        this(entityType, livingEntity.getX(), livingEntity.getEyeY() - (double)0.1f, livingEntity.getZ(), world);
         this.owner = livingEntity;
         this.ownerUuid = livingEntity.getUuid();
     }

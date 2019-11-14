@@ -113,8 +113,8 @@ implements RecipeBookProvider {
         MatrixStack matrixStack = new MatrixStack();
         matrixStack.translate(-i, j, 50.0);
         matrixStack.scale(k, k, k);
-        matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0f));
-        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-((float)Math.atan(g / 40.0f)) * 20.0f));
+        matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0f));
+        matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-((float)Math.atan(g / 40.0f)) * 20.0f));
         float h = livingEntity.bodyYaw;
         float l = livingEntity.yaw;
         float m = livingEntity.pitch;

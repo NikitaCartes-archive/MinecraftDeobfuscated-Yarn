@@ -43,7 +43,7 @@ public class Sprite {
     private float vMax;
     protected int frameIndex;
     protected int frameTicks;
-    private static final float[] srgbLinearMap = Util.create(new float[256], fs -> {
+    private static final float[] SRGB_LINEAR_MAP = Util.create(new float[256], fs -> {
         for (int i = 0; i < ((float[])fs).length; ++i) {
             fs[i] = (float)Math.pow((float)i / 255.0f, 2.2);
         }
@@ -182,7 +182,7 @@ public class Sprite {
     }
 
     private static float srgbToLinear(int i) {
-        return srgbLinearMap[i & 0xFF];
+        return SRGB_LINEAR_MAP[i & 0xFF];
     }
 
     private void upload(int i) {
@@ -226,7 +226,7 @@ public class Sprite {
         return this.uMax;
     }
 
-    public float getU(double d) {
+    public float getFrameU(double d) {
         float f = this.uMax - this.uMin;
         return this.uMin + f * (float)d / 16.0f;
     }
@@ -239,7 +239,7 @@ public class Sprite {
         return this.vMax;
     }
 
-    public float getV(double d) {
+    public float getFrameV(double d) {
         float f = this.vMax - this.vMin;
         return this.vMin + f * (float)d / 16.0f;
     }
@@ -416,14 +416,14 @@ public class Sprite {
         this.upload(0);
     }
 
-    private float method_23841() {
+    private float getFrameDeltaFactor() {
         float f = (float)this.width / (this.uMax - this.uMin);
         float g = (float)this.height / (this.vMax - this.vMin);
         return Math.max(g, f);
     }
 
-    public float method_23842() {
-        return 4.0f / this.method_23841();
+    public float getAnimationFrameDelta() {
+        return 4.0f / this.getFrameDeltaFactor();
     }
 }
 

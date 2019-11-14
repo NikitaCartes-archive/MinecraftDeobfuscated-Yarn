@@ -231,7 +231,7 @@ implements Tickable {
             this.world.addParticle(ParticleTypes.NAUTILUS, vec3d.x, vec3d.y, vec3d.z, vec3d2.x, vec3d2.y, vec3d2.z);
         }
         if (this.targetEntity != null) {
-            Vec3d vec3d3 = new Vec3d(this.targetEntity.getX(), this.targetEntity.method_23320(), this.targetEntity.getZ());
+            Vec3d vec3d3 = new Vec3d(this.targetEntity.getX(), this.targetEntity.getEyeY(), this.targetEntity.getZ());
             float j = (-0.5f + random.nextFloat()) * (3.0f + this.targetEntity.getWidth());
             g = -1.0f + random.nextFloat() * this.targetEntity.getHeight();
             h = (-0.5f + random.nextFloat()) * (3.0f + this.targetEntity.getWidth());

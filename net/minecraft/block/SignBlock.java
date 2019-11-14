@@ -27,7 +27,7 @@ extends AbstractSignBlock {
 
     public SignBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(ROTATION, 0)).with(WATERLOGGED, false));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(ROTATION, 0)).with(WATERLOGGED, false));
     }
 
     @Override

@@ -121,7 +121,7 @@ implements AutoCloseable {
                 if (bl && !mapIcon.isAlwaysRendered()) continue;
                 matrixStack.push();
                 matrixStack.translate(0.0f + (float)mapIcon.getX() / 2.0f + 64.0f, 0.0f + (float)mapIcon.getZ() / 2.0f + 64.0f, -0.02f);
-                matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion((float)(mapIcon.getRotation() * 360) / 16.0f));
+                matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion((float)(mapIcon.getRotation() * 360) / 16.0f));
                 matrixStack.scale(4.0f, 4.0f, 3.0f);
                 matrixStack.translate(-0.125, 0.125, 0.0);
                 byte b = mapIcon.getTypeId();

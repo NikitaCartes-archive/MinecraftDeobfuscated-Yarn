@@ -37,7 +37,7 @@ extends AbstractCriterion<Conditions> {
         Block block = PlacedBlockCriterion.getBlock(jsonObject);
         StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("state"));
         if (block != null) {
-            statePredicate.check(block.getStateFactory(), string -> {
+            statePredicate.check(block.getStateManager(), string -> {
                 throw new JsonSyntaxException("Block " + block + " has no property " + string + ":");
             });
         }
@@ -57,7 +57,7 @@ extends AbstractCriterion<Conditions> {
 
     public void trigger(ServerPlayerEntity serverPlayerEntity, BlockPos blockPos, ItemStack itemStack) {
         BlockState blockState = serverPlayerEntity.getServerWorld().getBlockState(blockPos);
-        this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(blockState, blockPos, serverPlayerEntity.getServerWorld(), itemStack));
+        this.test(serverPlayerEntity.getAdvancementTracker(), conditions -> conditions.matches(blockState, blockPos, serverPlayerEntity.getServerWorld(), itemStack));
     }
 
     @Override

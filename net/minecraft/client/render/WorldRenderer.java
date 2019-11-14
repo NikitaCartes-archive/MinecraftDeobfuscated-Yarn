@@ -1226,19 +1226,19 @@ SynchronousResourceReloadListener {
         for (int i = 0; i < 6; ++i) {
             matrixStack.push();
             if (i == 1) {
-                matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0f));
+                matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0f));
             }
             if (i == 2) {
-                matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-90.0f));
+                matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0f));
             }
             if (i == 3) {
-                matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(180.0f));
+                matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(180.0f));
             }
             if (i == 4) {
-                matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(90.0f));
+                matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(90.0f));
             }
             if (i == 5) {
-                matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(-90.0f));
+                matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(-90.0f));
             }
             Matrix4f matrix4f = matrixStack.peek().getModel();
             bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
@@ -1293,10 +1293,10 @@ SynchronousResourceReloadListener {
             RenderSystem.disableTexture();
             RenderSystem.shadeModel(7425);
             matrixStack.push();
-            matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0f));
+            matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0f));
             j = MathHelper.sin(this.world.getSkyAngleRadians(f)) < 0.0f ? 180.0f : 0.0f;
-            matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(j));
-            matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(90.0f));
+            matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(j));
+            matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(90.0f));
             float k = fs[0];
             l = fs[1];
             float m = fs[2];
@@ -1320,8 +1320,8 @@ SynchronousResourceReloadListener {
         matrixStack.push();
         j = 1.0f - this.world.getRainGradient(f);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, j);
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-90.0f));
-        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(this.world.getSkyAngle(f) * 360.0f));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-90.0f));
+        matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(this.world.getSkyAngle(f) * 360.0f));
         Matrix4f matrix4f2 = matrixStack.peek().getModel();
         l = 30.0f;
         this.textureManager.bindTexture(SUN);

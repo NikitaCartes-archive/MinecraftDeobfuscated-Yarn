@@ -23,11 +23,11 @@ import net.minecraft.util.Arm;
 public class PlayerEntityModel<T extends LivingEntity>
 extends BipedEntityModel<T> {
     private List<ModelPart> parts = Lists.newArrayList();
-    public final ModelPart leftArmOverlay;
-    public final ModelPart rightArmOverlay;
-    public final ModelPart leftLegOverlay;
-    public final ModelPart rightLegOverlay;
-    public final ModelPart bodyOverlay;
+    public final ModelPart leftSleeve;
+    public final ModelPart rightSleeve;
+    public final ModelPart leftPantLeg;
+    public final ModelPart rightPantLeg;
+    public final ModelPart jacket;
     private final ModelPart cape;
     private final ModelPart ears;
     private final boolean thinArms;
@@ -47,40 +47,40 @@ extends BipedEntityModel<T> {
             this.rightArm = new ModelPart(this, 40, 16);
             this.rightArm.addCuboid(-2.0f, -2.0f, -2.0f, 3.0f, 12.0f, 4.0f, f);
             this.rightArm.setPivot(-5.0f, 2.5f, 0.0f);
-            this.leftArmOverlay = new ModelPart(this, 48, 48);
-            this.leftArmOverlay.addCuboid(-1.0f, -2.0f, -2.0f, 3.0f, 12.0f, 4.0f, f + 0.25f);
-            this.leftArmOverlay.setPivot(5.0f, 2.5f, 0.0f);
-            this.rightArmOverlay = new ModelPart(this, 40, 32);
-            this.rightArmOverlay.addCuboid(-2.0f, -2.0f, -2.0f, 3.0f, 12.0f, 4.0f, f + 0.25f);
-            this.rightArmOverlay.setPivot(-5.0f, 2.5f, 10.0f);
+            this.leftSleeve = new ModelPart(this, 48, 48);
+            this.leftSleeve.addCuboid(-1.0f, -2.0f, -2.0f, 3.0f, 12.0f, 4.0f, f + 0.25f);
+            this.leftSleeve.setPivot(5.0f, 2.5f, 0.0f);
+            this.rightSleeve = new ModelPart(this, 40, 32);
+            this.rightSleeve.addCuboid(-2.0f, -2.0f, -2.0f, 3.0f, 12.0f, 4.0f, f + 0.25f);
+            this.rightSleeve.setPivot(-5.0f, 2.5f, 10.0f);
         } else {
             this.leftArm = new ModelPart(this, 32, 48);
             this.leftArm.addCuboid(-1.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, f);
             this.leftArm.setPivot(5.0f, 2.0f, 0.0f);
-            this.leftArmOverlay = new ModelPart(this, 48, 48);
-            this.leftArmOverlay.addCuboid(-1.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, f + 0.25f);
-            this.leftArmOverlay.setPivot(5.0f, 2.0f, 0.0f);
-            this.rightArmOverlay = new ModelPart(this, 40, 32);
-            this.rightArmOverlay.addCuboid(-3.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, f + 0.25f);
-            this.rightArmOverlay.setPivot(-5.0f, 2.0f, 10.0f);
+            this.leftSleeve = new ModelPart(this, 48, 48);
+            this.leftSleeve.addCuboid(-1.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, f + 0.25f);
+            this.leftSleeve.setPivot(5.0f, 2.0f, 0.0f);
+            this.rightSleeve = new ModelPart(this, 40, 32);
+            this.rightSleeve.addCuboid(-3.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, f + 0.25f);
+            this.rightSleeve.setPivot(-5.0f, 2.0f, 10.0f);
         }
         this.leftLeg = new ModelPart(this, 16, 48);
         this.leftLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, f);
         this.leftLeg.setPivot(1.9f, 12.0f, 0.0f);
-        this.leftLegOverlay = new ModelPart(this, 0, 48);
-        this.leftLegOverlay.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, f + 0.25f);
-        this.leftLegOverlay.setPivot(1.9f, 12.0f, 0.0f);
-        this.rightLegOverlay = new ModelPart(this, 0, 32);
-        this.rightLegOverlay.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, f + 0.25f);
-        this.rightLegOverlay.setPivot(-1.9f, 12.0f, 0.0f);
-        this.bodyOverlay = new ModelPart(this, 16, 32);
-        this.bodyOverlay.addCuboid(-4.0f, 0.0f, -2.0f, 8.0f, 12.0f, 4.0f, f + 0.25f);
-        this.bodyOverlay.setPivot(0.0f, 0.0f, 0.0f);
+        this.leftPantLeg = new ModelPart(this, 0, 48);
+        this.leftPantLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, f + 0.25f);
+        this.leftPantLeg.setPivot(1.9f, 12.0f, 0.0f);
+        this.rightPantLeg = new ModelPart(this, 0, 32);
+        this.rightPantLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, f + 0.25f);
+        this.rightPantLeg.setPivot(-1.9f, 12.0f, 0.0f);
+        this.jacket = new ModelPart(this, 16, 32);
+        this.jacket.addCuboid(-4.0f, 0.0f, -2.0f, 8.0f, 12.0f, 4.0f, f + 0.25f);
+        this.jacket.setPivot(0.0f, 0.0f, 0.0f);
     }
 
     @Override
     protected Iterable<ModelPart> getBodyParts() {
-        return Iterables.concat(super.getBodyParts(), ImmutableList.of(this.leftLegOverlay, this.rightLegOverlay, this.leftArmOverlay, this.rightArmOverlay, this.bodyOverlay));
+        return Iterables.concat(super.getBodyParts(), ImmutableList.of(this.leftPantLeg, this.rightPantLeg, this.leftSleeve, this.rightSleeve, this.jacket));
     }
 
     public void renderEars(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j) {
@@ -97,22 +97,22 @@ extends BipedEntityModel<T> {
     @Override
     public void method_17087(T livingEntity, float f, float g, float h, float i, float j) {
         super.method_17087(livingEntity, f, g, h, i, j);
-        this.leftLegOverlay.copyPositionAndRotation(this.leftLeg);
-        this.rightLegOverlay.copyPositionAndRotation(this.rightLeg);
-        this.leftArmOverlay.copyPositionAndRotation(this.leftArm);
-        this.rightArmOverlay.copyPositionAndRotation(this.rightArm);
-        this.bodyOverlay.copyPositionAndRotation(this.body);
+        this.leftPantLeg.copyPositionAndRotation(this.leftLeg);
+        this.rightPantLeg.copyPositionAndRotation(this.rightLeg);
+        this.leftSleeve.copyPositionAndRotation(this.leftArm);
+        this.rightSleeve.copyPositionAndRotation(this.rightArm);
+        this.jacket.copyPositionAndRotation(this.torso);
         this.cape.pivotY = ((Entity)livingEntity).isInSneakingPose() ? 2.0f : 0.0f;
     }
 
     @Override
     public void setVisible(boolean bl) {
         super.setVisible(bl);
-        this.leftArmOverlay.visible = bl;
-        this.rightArmOverlay.visible = bl;
-        this.leftLegOverlay.visible = bl;
-        this.rightLegOverlay.visible = bl;
-        this.bodyOverlay.visible = bl;
+        this.leftSleeve.visible = bl;
+        this.rightSleeve.visible = bl;
+        this.leftPantLeg.visible = bl;
+        this.rightPantLeg.visible = bl;
+        this.jacket.visible = bl;
         this.cape.visible = bl;
         this.ears.visible = bl;
     }

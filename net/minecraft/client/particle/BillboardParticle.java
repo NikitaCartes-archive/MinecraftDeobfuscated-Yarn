@@ -41,7 +41,7 @@ extends Particle {
         } else {
             quaternion = new Quaternion(camera.method_23767());
             float j = MathHelper.lerp(f, this.prevAngle, this.angle);
-            quaternion.hamiltonProduct(Vector3f.POSITIVE_Z.method_23626(j));
+            quaternion.hamiltonProduct(Vector3f.POSITIVE_Z.getRadialQuaternion(j));
         }
         Vector3f vector3f = new Vector3f(-1.0f, -1.0f, 0.0f);
         vector3f.method_19262(quaternion);

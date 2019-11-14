@@ -164,7 +164,7 @@ implements VillagerDataContainer {
     public void handleStatus(byte b) {
         if (b == 16) {
             if (!this.isSilent()) {
-                this.world.playSound(this.getX(), this.method_23320(), this.getZ(), SoundEvents.ENTITY_ZOMBIE_VILLAGER_CURE, this.getSoundCategory(), 1.0f + this.random.nextFloat(), this.random.nextFloat() * 0.7f + 0.3f, false);
+                this.world.playSound(this.getX(), this.getEyeY(), this.getZ(), SoundEvents.ENTITY_ZOMBIE_VILLAGER_CURE, this.getSoundCategory(), 1.0f + this.random.nextFloat(), this.random.nextFloat() * 0.7f + 0.3f, false);
             }
             return;
         }

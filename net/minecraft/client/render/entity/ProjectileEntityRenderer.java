@@ -27,8 +27,8 @@ extends EntityRenderer<T> {
 
     public void method_3875(T projectileEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         matrixStack.push();
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(MathHelper.lerp(g, ((ProjectileEntity)projectileEntity).prevYaw, ((ProjectileEntity)projectileEntity).yaw) - 90.0f));
-        matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(MathHelper.lerp(g, ((ProjectileEntity)projectileEntity).prevPitch, ((ProjectileEntity)projectileEntity).pitch)));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(MathHelper.lerp(g, ((ProjectileEntity)projectileEntity).prevYaw, ((ProjectileEntity)projectileEntity).yaw) - 90.0f));
+        matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(MathHelper.lerp(g, ((ProjectileEntity)projectileEntity).prevPitch, ((ProjectileEntity)projectileEntity).pitch)));
         boolean j = false;
         float h = 0.0f;
         float k = 0.5f;
@@ -42,9 +42,9 @@ extends EntityRenderer<T> {
         float s = (float)((ProjectileEntity)projectileEntity).shake - g;
         if (s > 0.0f) {
             float t = -MathHelper.sin(s * 3.0f) * s;
-            matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(t));
+            matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(t));
         }
-        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(45.0f));
+        matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(45.0f));
         matrixStack.scale(0.05625f, 0.05625f, 0.05625f);
         matrixStack.translate(-4.0, 0.0, 0.0);
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutout(this.getTexture(projectileEntity)));
@@ -60,7 +60,7 @@ extends EntityRenderer<T> {
         this.method_23153(matrix4f, matrix3f, vertexConsumer, -7, -2, 2, 0.15625f, 0.3125f, -1, 0, 0, i);
         this.method_23153(matrix4f, matrix3f, vertexConsumer, -7, -2, -2, 0.0f, 0.3125f, -1, 0, 0, i);
         for (int u = 0; u < 4; ++u) {
-            matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0f));
+            matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0f));
             this.method_23153(matrix4f, matrix3f, vertexConsumer, -8, -2, 0, 0.0f, 0.0f, 0, 1, 0, i);
             this.method_23153(matrix4f, matrix3f, vertexConsumer, 8, -2, 0, 0.5f, 0.0f, 0, 1, 0, i);
             this.method_23153(matrix4f, matrix3f, vertexConsumer, 8, 2, 0, 0.5f, 0.15625f, 0, 1, 0, i);

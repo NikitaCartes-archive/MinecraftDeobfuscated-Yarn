@@ -22,10 +22,10 @@ import org.jetbrains.annotations.Nullable;
 public class WeightedBakedModel
 implements BakedModel {
     private final int totalWeight;
-    private final List<ModelEntry> models;
+    private final List<Entry> models;
     private final BakedModel defaultModel;
 
-    public WeightedBakedModel(List<ModelEntry> list) {
+    public WeightedBakedModel(List<Entry> list) {
         this.models = list;
         this.totalWeight = WeightedPicker.getWeightSum(list);
         this.defaultModel = list.get((int)0).model;
@@ -67,11 +67,11 @@ implements BakedModel {
     }
 
     @Environment(value=EnvType.CLIENT)
-    static class ModelEntry
+    static class Entry
     extends WeightedPicker.Entry {
         protected final BakedModel model;
 
-        public ModelEntry(BakedModel bakedModel, int i) {
+        public Entry(BakedModel bakedModel, int i) {
             super(i);
             this.model = bakedModel;
         }
@@ -79,11 +79,11 @@ implements BakedModel {
 
     @Environment(value=EnvType.CLIENT)
     public static class Builder {
-        private final List<ModelEntry> models = Lists.newArrayList();
+        private final List<Entry> models = Lists.newArrayList();
 
         public Builder add(@Nullable BakedModel bakedModel, int i) {
             if (bakedModel != null) {
-                this.models.add(new ModelEntry(bakedModel, i));
+                this.models.add(new Entry(bakedModel, i));
             }
             return this;
         }

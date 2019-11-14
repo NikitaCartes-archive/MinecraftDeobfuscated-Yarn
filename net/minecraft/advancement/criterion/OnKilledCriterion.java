@@ -35,7 +35,7 @@ extends AbstractCriterion<Conditions> {
     }
 
     public void trigger(ServerPlayerEntity serverPlayerEntity, Entity entity, DamageSource damageSource) {
-        this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.test(serverPlayerEntity, entity, damageSource));
+        this.test(serverPlayerEntity.getAdvancementTracker(), conditions -> conditions.test(serverPlayerEntity, entity, damageSource));
     }
 
     @Override

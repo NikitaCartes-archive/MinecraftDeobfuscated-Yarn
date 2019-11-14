@@ -38,7 +38,7 @@ implements Projectile {
     public LlamaSpitEntity(World world, LlamaEntity llamaEntity) {
         this((EntityType<? extends LlamaSpitEntity>)EntityType.LLAMA_SPIT, world);
         this.owner = llamaEntity;
-        this.setPosition(llamaEntity.getX() - (double)(llamaEntity.getWidth() + 1.0f) * 0.5 * (double)MathHelper.sin(llamaEntity.bodyYaw * ((float)Math.PI / 180)), llamaEntity.method_23320() - (double)0.1f, llamaEntity.getZ() + (double)(llamaEntity.getWidth() + 1.0f) * 0.5 * (double)MathHelper.cos(llamaEntity.bodyYaw * ((float)Math.PI / 180)));
+        this.setPosition(llamaEntity.getX() - (double)(llamaEntity.getWidth() + 1.0f) * 0.5 * (double)MathHelper.sin(llamaEntity.bodyYaw * ((float)Math.PI / 180)), llamaEntity.getEyeY() - (double)0.1f, llamaEntity.getZ() + (double)(llamaEntity.getWidth() + 1.0f) * 0.5 * (double)MathHelper.cos(llamaEntity.bodyYaw * ((float)Math.PI / 180)));
     }
 
     @Environment(value=EnvType.CLIENT)

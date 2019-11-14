@@ -31,7 +31,7 @@ extends BlockWithEntity {
 
     protected JukeboxBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(HAS_RECORD, false));
+        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(HAS_RECORD, false));
     }
 
     @Override

@@ -302,7 +302,7 @@ extends ChunkGeneratorConfig {
         if (iterator.hasNext()) {
             try {
                 Identifier identifier = new Identifier(iterator.next());
-                biome = Registry.BIOME.get(identifier);
+                biome = Registry.BIOME.getOrEmpty(identifier).orElseThrow(() -> new IllegalArgumentException("Invalid Biome: " + identifier));
             } catch (Exception exception) {
                 LOGGER.error("Error while parsing flat world string => {}", (Object)exception.getMessage());
             }

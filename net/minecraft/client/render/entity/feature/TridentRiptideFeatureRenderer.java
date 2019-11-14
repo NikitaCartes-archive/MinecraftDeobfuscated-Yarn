@@ -37,7 +37,7 @@ extends FeatureRenderer<T, PlayerEntityModel<T>> {
         for (int m = 0; m < 3; ++m) {
             matrixStack.push();
             float n = j * (float)(-(45 + m * 5));
-            matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(n));
+            matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(n));
             float o = 0.75f * (float)m;
             matrixStack.scale(o, o, o);
             matrixStack.translate(0.0, -0.2f + 0.6f * (float)m, 0.0);

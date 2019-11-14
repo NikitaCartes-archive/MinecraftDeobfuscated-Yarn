@@ -31,7 +31,7 @@ extends AbstractCriterion<Conditions> {
         double d = serverPlayerEntity.getX() - (double)blockPos.getX();
         double e = serverPlayerEntity.getZ() - (double)blockPos.getZ();
         double f = d * d + e * e;
-        this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(f));
+        this.test(serverPlayerEntity.getAdvancementTracker(), conditions -> conditions.matches(f));
     }
 
     @Override

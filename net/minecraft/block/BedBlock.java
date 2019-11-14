@@ -72,7 +72,7 @@ implements BlockEntityProvider {
     public BedBlock(DyeColor dyeColor, Block.Settings settings) {
         super(settings);
         this.color = dyeColor;
-        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(PART, BedPart.FOOT)).with(OCCUPIED, false));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(PART, BedPart.FOOT)).with(OCCUPIED, false));
     }
 
     @Override

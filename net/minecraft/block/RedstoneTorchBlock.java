@@ -31,7 +31,7 @@ extends TorchBlock {
 
     protected RedstoneTorchBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(LIT, true));
+        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(LIT, true));
     }
 
     @Override

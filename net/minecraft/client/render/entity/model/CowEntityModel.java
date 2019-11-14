@@ -19,18 +19,18 @@ extends QuadrupedEntityModel<T> {
         this.head.setPivot(0.0f, 4.0f, -8.0f);
         this.head.setTextureOffset(22, 0).addCuboid(-5.0f, -5.0f, -4.0f, 1.0f, 3.0f, 1.0f, 0.0f);
         this.head.setTextureOffset(22, 0).addCuboid(4.0f, -5.0f, -4.0f, 1.0f, 3.0f, 1.0f, 0.0f);
-        this.body = new ModelPart(this, 18, 4);
-        this.body.addCuboid(-6.0f, -10.0f, -7.0f, 12.0f, 18.0f, 10.0f, 0.0f);
-        this.body.setPivot(0.0f, 5.0f, 2.0f);
-        this.body.setTextureOffset(52, 0).addCuboid(-2.0f, 2.0f, -8.0f, 4.0f, 6.0f, 1.0f);
-        this.leg1.pivotX -= 1.0f;
-        this.leg2.pivotX += 1.0f;
-        this.leg1.pivotZ += 0.0f;
-        this.leg2.pivotZ += 0.0f;
-        this.leg3.pivotX -= 1.0f;
-        this.leg4.pivotX += 1.0f;
-        this.leg3.pivotZ -= 1.0f;
-        this.leg4.pivotZ -= 1.0f;
+        this.torso = new ModelPart(this, 18, 4);
+        this.torso.addCuboid(-6.0f, -10.0f, -7.0f, 12.0f, 18.0f, 10.0f, 0.0f);
+        this.torso.setPivot(0.0f, 5.0f, 2.0f);
+        this.torso.setTextureOffset(52, 0).addCuboid(-2.0f, 2.0f, -8.0f, 4.0f, 6.0f, 1.0f);
+        this.backRightLeg.pivotX -= 1.0f;
+        this.backLeftLeg.pivotX += 1.0f;
+        this.backRightLeg.pivotZ += 0.0f;
+        this.backLeftLeg.pivotZ += 0.0f;
+        this.frontRightLeg.pivotX -= 1.0f;
+        this.frontLeftLeg.pivotX += 1.0f;
+        this.frontRightLeg.pivotZ -= 1.0f;
+        this.frontLeftLeg.pivotZ -= 1.0f;
     }
 
     public ModelPart getHead() {

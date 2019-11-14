@@ -51,10 +51,10 @@ public class GlyphRenderer {
     }
 
     public void drawRectangle(Rectangle rectangle, Matrix4f matrix4f, VertexConsumer vertexConsumer, int i) {
-        vertexConsumer.vertex(matrix4f, rectangle.xMin, rectangle.yMin, rectangle.field_20911).color(rectangle.red, rectangle.green, rectangle.blue, rectangle.alpha).texture(this.uMin, this.vMin).light(i).next();
-        vertexConsumer.vertex(matrix4f, rectangle.xMax, rectangle.yMin, rectangle.field_20911).color(rectangle.red, rectangle.green, rectangle.blue, rectangle.alpha).texture(this.uMin, this.vMax).light(i).next();
-        vertexConsumer.vertex(matrix4f, rectangle.xMax, rectangle.yMax, rectangle.field_20911).color(rectangle.red, rectangle.green, rectangle.blue, rectangle.alpha).texture(this.uMax, this.vMax).light(i).next();
-        vertexConsumer.vertex(matrix4f, rectangle.xMin, rectangle.yMax, rectangle.field_20911).color(rectangle.red, rectangle.green, rectangle.blue, rectangle.alpha).texture(this.uMax, this.vMin).light(i).next();
+        vertexConsumer.vertex(matrix4f, rectangle.xMin, rectangle.yMin, rectangle.zIndex).color(rectangle.red, rectangle.green, rectangle.blue, rectangle.alpha).texture(this.uMin, this.vMin).light(i).next();
+        vertexConsumer.vertex(matrix4f, rectangle.xMax, rectangle.yMin, rectangle.zIndex).color(rectangle.red, rectangle.green, rectangle.blue, rectangle.alpha).texture(this.uMin, this.vMax).light(i).next();
+        vertexConsumer.vertex(matrix4f, rectangle.xMax, rectangle.yMax, rectangle.zIndex).color(rectangle.red, rectangle.green, rectangle.blue, rectangle.alpha).texture(this.uMax, this.vMax).light(i).next();
+        vertexConsumer.vertex(matrix4f, rectangle.xMin, rectangle.yMax, rectangle.zIndex).color(rectangle.red, rectangle.green, rectangle.blue, rectangle.alpha).texture(this.uMax, this.vMin).light(i).next();
     }
 
     @Nullable
@@ -68,7 +68,7 @@ public class GlyphRenderer {
         protected final float yMin;
         protected final float xMax;
         protected final float yMax;
-        protected final float field_20911;
+        protected final float zIndex;
         protected final float red;
         protected final float green;
         protected final float blue;
@@ -79,7 +79,7 @@ public class GlyphRenderer {
             this.yMin = g;
             this.xMax = h;
             this.yMax = i;
-            this.field_20911 = j;
+            this.zIndex = j;
             this.red = k;
             this.green = l;
             this.blue = m;

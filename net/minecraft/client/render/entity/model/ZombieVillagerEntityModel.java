@@ -23,8 +23,8 @@ implements ModelWithHat {
         if (bl) {
             this.head = new ModelPart(this, 0, 0);
             this.head.addCuboid(-4.0f, -10.0f, -4.0f, 8.0f, 8.0f, 8.0f, f);
-            this.body = new ModelPart(this, 16, 16);
-            this.body.addCuboid(-4.0f, 0.0f, -2.0f, 8.0f, 12.0f, 4.0f, f + 0.1f);
+            this.torso = new ModelPart(this, 16, 16);
+            this.torso.addCuboid(-4.0f, 0.0f, -2.0f, 8.0f, 12.0f, 4.0f, f + 0.1f);
             this.rightLeg = new ModelPart(this, 0, 16);
             this.rightLeg.setPivot(-2.0f, 12.0f, 0.0f);
             this.rightLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, f + 0.1f);
@@ -36,15 +36,15 @@ implements ModelWithHat {
             this.head = new ModelPart(this, 0, 0);
             this.head.setTextureOffset(0, 0).addCuboid(-4.0f, -10.0f, -4.0f, 8.0f, 10.0f, 8.0f, f);
             this.head.setTextureOffset(24, 0).addCuboid(-1.0f, -3.0f, -6.0f, 2.0f, 4.0f, 2.0f, f);
-            this.headwear = new ModelPart(this, 32, 0);
-            this.headwear.addCuboid(-4.0f, -10.0f, -4.0f, 8.0f, 10.0f, 8.0f, f + 0.5f);
+            this.helmet = new ModelPart(this, 32, 0);
+            this.helmet.addCuboid(-4.0f, -10.0f, -4.0f, 8.0f, 10.0f, 8.0f, f + 0.5f);
             this.hat = new ModelPart(this);
             this.hat.setTextureOffset(30, 47).addCuboid(-8.0f, -8.0f, -6.0f, 16.0f, 16.0f, 1.0f, f);
             this.hat.pitch = -1.5707964f;
-            this.headwear.addChild(this.hat);
-            this.body = new ModelPart(this, 16, 20);
-            this.body.addCuboid(-4.0f, 0.0f, -3.0f, 8.0f, 12.0f, 6.0f, f);
-            this.body.setTextureOffset(0, 38).addCuboid(-4.0f, 0.0f, -3.0f, 8.0f, 18.0f, 6.0f, f + 0.05f);
+            this.helmet.addChild(this.hat);
+            this.torso = new ModelPart(this, 16, 20);
+            this.torso.addCuboid(-4.0f, 0.0f, -3.0f, 8.0f, 12.0f, 6.0f, f);
+            this.torso.setTextureOffset(0, 38).addCuboid(-4.0f, 0.0f, -3.0f, 8.0f, 18.0f, 6.0f, f + 0.05f);
             this.rightArm = new ModelPart(this, 44, 22);
             this.rightArm.addCuboid(-3.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, f);
             this.rightArm.setPivot(-5.0f, 2.0f, 0.0f);
@@ -84,7 +84,7 @@ implements ModelWithHat {
     @Override
     public void setHatVisible(boolean bl) {
         this.head.visible = bl;
-        this.headwear.visible = bl;
+        this.helmet.visible = bl;
         this.hat.visible = bl;
     }
 }

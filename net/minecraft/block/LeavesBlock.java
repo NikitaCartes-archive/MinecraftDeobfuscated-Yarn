@@ -30,7 +30,7 @@ extends Block {
 
     public LeavesBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(DISTANCE, 7)).with(PERSISTENT, false));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(DISTANCE, 7)).with(PERSISTENT, false));
     }
 
     @Override

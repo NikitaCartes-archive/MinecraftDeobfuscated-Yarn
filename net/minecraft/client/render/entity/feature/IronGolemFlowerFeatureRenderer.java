@@ -35,7 +35,7 @@ extends FeatureRenderer<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> 
         matrixStack.translate(0.5, 0.5, 0.5);
         float m = 0.5f;
         matrixStack.scale(0.5f, 0.5f, 0.5f);
-        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-90.0f));
+        matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0f));
         matrixStack.translate(-0.5, -0.5, -0.5);
         MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(Blocks.POPPY.getDefaultState(), matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV);
         matrixStack.pop();

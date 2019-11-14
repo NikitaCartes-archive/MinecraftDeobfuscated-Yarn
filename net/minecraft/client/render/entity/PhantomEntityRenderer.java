@@ -37,7 +37,7 @@ extends MobEntityRenderer<PhantomEntity, PhantomEntityModel<PhantomEntity>> {
 
     protected void method_4089(PhantomEntity phantomEntity, MatrixStack matrixStack, float f, float g, float h) {
         super.setupTransforms(phantomEntity, matrixStack, f, g, h);
-        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(phantomEntity.pitch));
+        matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(phantomEntity.pitch));
     }
 }
 

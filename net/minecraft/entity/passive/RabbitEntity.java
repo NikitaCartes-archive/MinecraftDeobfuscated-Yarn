@@ -359,7 +359,7 @@ extends AnimalEntity {
         return i < 50 ? 0 : (i < 90 ? 5 : 2);
     }
 
-    public static boolean method_20669(EntityType<RabbitEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+    public static boolean canSpawn(EntityType<RabbitEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
         Block block = iWorld.getBlockState(blockPos.method_10074()).getBlock();
         return (block == Blocks.GRASS_BLOCK || block == Blocks.SNOW || block == Blocks.SAND) && iWorld.getBaseLightLevel(blockPos, 0) > 8;
     }

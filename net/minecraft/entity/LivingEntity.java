@@ -299,7 +299,7 @@ extends Entity {
         boolean bl3 = bl2 = bl && ((PlayerEntity)this).abilities.invulnerable;
         if (this.isAlive()) {
             BlockPos blockPos;
-            if (this.isInFluid(FluidTags.WATER) && this.world.getBlockState(new BlockPos(this.getX(), this.method_23320(), this.getZ())).getBlock() != Blocks.BUBBLE_COLUMN) {
+            if (this.isInFluid(FluidTags.WATER) && this.world.getBlockState(new BlockPos(this.getX(), this.getEyeY(), this.getZ())).getBlock() != Blocks.BUBBLE_COLUMN) {
                 if (!(this.canBreatheInWater() || StatusEffectUtil.hasWaterBreathing(this) || bl2)) {
                     this.setAir(this.getNextAirUnderwater(this.getAir()));
                     if (this.getAir() == -20) {
@@ -389,7 +389,7 @@ extends Entity {
                 double d = this.random.nextGaussian() * 0.02;
                 double e = this.random.nextGaussian() * 0.02;
                 double f = this.random.nextGaussian() * 0.02;
-                this.world.addParticle(ParticleTypes.POOF, this.method_23322(1.0), this.method_23319(), this.method_23325(1.0), d, e, f);
+                this.world.addParticle(ParticleTypes.POOF, this.getParticleX(1.0), this.getRandomBodyY(), this.getParticleZ(1.0), d, e, f);
             }
         }
     }
@@ -577,7 +577,7 @@ extends Entity {
                 double d = (double)(i >> 16 & 0xFF) / 255.0;
                 double e = (double)(i >> 8 & 0xFF) / 255.0;
                 double f = (double)(i >> 0 & 0xFF) / 255.0;
-                this.world.addParticle(bl ? ParticleTypes.AMBIENT_ENTITY_EFFECT : ParticleTypes.ENTITY_EFFECT, this.method_23322(0.5), this.method_23319(), this.method_23325(0.5), d, e, f);
+                this.world.addParticle(bl ? ParticleTypes.AMBIENT_ENTITY_EFFECT : ParticleTypes.ENTITY_EFFECT, this.getParticleX(0.5), this.getRandomBodyY(), this.getParticleZ(0.5), d, e, f);
             }
         }
     }
@@ -1520,11 +1520,11 @@ extends Entity {
                 }
                 n += 1.0;
             }
-            this.setPosition(entity.getX(), entity.getHeightAt(1.0) + 0.001, entity.getZ());
+            this.setPosition(entity.getX(), entity.getBodyY(1.0) + 0.001, entity.getZ());
             return;
         }
         double q = entity.getX();
-        double r = entity.getHeightAt(1.0);
+        double r = entity.getBodyY(1.0);
         double s = entity.getZ();
         Direction direction = entity.getMovementDirection();
         if (direction != null && direction.getAxis() != Direction.Axis.Y) {
@@ -2130,8 +2130,8 @@ extends Entity {
 
     public boolean canSee(Entity entity) {
         Vec3d vec3d2;
-        Vec3d vec3d = new Vec3d(this.getX(), this.method_23320(), this.getZ());
-        return this.world.rayTrace(new RayTraceContext(vec3d, vec3d2 = new Vec3d(entity.getX(), entity.method_23320(), entity.getZ()), RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, this)).getType() == HitResult.Type.MISS;
+        Vec3d vec3d = new Vec3d(this.getX(), this.getEyeY(), this.getZ());
+        return this.world.rayTrace(new RayTraceContext(vec3d, vec3d2 = new Vec3d(entity.getX(), entity.getEyeY(), entity.getZ()), RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, this)).getType() == HitResult.Type.MISS;
     }
 
     @Override
@@ -2312,7 +2312,7 @@ extends Entity {
             Vec3d vec3d2 = new Vec3d(((double)this.random.nextFloat() - 0.5) * 0.3, d, 0.6);
             vec3d2 = vec3d2.rotateX(-this.pitch * ((float)Math.PI / 180));
             vec3d2 = vec3d2.rotateY(-this.yaw * ((float)Math.PI / 180));
-            vec3d2 = vec3d2.add(this.getX(), this.method_23320(), this.getZ());
+            vec3d2 = vec3d2.add(this.getX(), this.getEyeY(), this.getZ());
             this.world.addParticle(new ItemStackParticleEffect(ParticleTypes.ITEM, itemStack), vec3d2.x, vec3d2.y, vec3d2.z, vec3d.x, vec3d.y + 0.05, vec3d.z);
         }
     }

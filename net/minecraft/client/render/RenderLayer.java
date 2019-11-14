@@ -152,7 +152,7 @@ extends RenderPhase {
     }
 
     public static RenderLayer getBlockBreaking(int i) {
-        RenderPhase.Texture texture = new RenderPhase.Texture(ModelLoader.BLOCK_BREAKING_STAGES.get(i), false, false);
+        RenderPhase.Texture texture = new RenderPhase.Texture(ModelLoader.BLOCK_DESTRUCTION_STAGE_TEXTURES.get(i), false, false);
         return new MultiPhase("crumbling", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, 7, 256, false, true, MultiPhaseData.builder().texture(texture).alpha(ONE_TENTH_ALPHA).transparency(CRUMBLING_TRANSPARENCY).writeMaskState(COLOR_MASK).layering(POLYGON_OFFSET_LAYERING).build(false));
     }
 

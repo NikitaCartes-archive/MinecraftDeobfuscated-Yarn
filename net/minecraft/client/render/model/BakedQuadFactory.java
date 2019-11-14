@@ -27,28 +27,28 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class BakedQuadFactory {
-    private static final float field_4260 = 1.0f / (float)Math.cos(0.3926991f) - 1.0f;
-    private static final float field_4259 = 1.0f / (float)Math.cos(0.7853981852531433) - 1.0f;
+    private static final float MIN_SCALE = 1.0f / (float)Math.cos(0.3926991f) - 1.0f;
+    private static final float MAX_SCALE = 1.0f / (float)Math.cos(0.7853981852531433) - 1.0f;
 
     public BakedQuad bake(Vector3f vector3f, Vector3f vector3f2, ModelElementFace modelElementFace, Sprite sprite, Direction direction, ModelBakeSettings modelBakeSettings, @Nullable ModelRotation modelRotation, boolean bl, Identifier identifier) {
         ModelElementTexture modelElementTexture = modelElementFace.textureData;
-        if (modelBakeSettings.isUvLocked()) {
+        if (modelBakeSettings.isShaded()) {
             modelElementTexture = BakedQuadFactory.uvLock(modelElementFace.textureData, direction, modelBakeSettings.getRotation(), identifier);
         }
         float[] fs = new float[modelElementTexture.uvs.length];
         System.arraycopy(modelElementTexture.uvs, 0, fs, 0, fs.length);
-        float f = sprite.method_23842();
+        float f = sprite.getAnimationFrameDelta();
         float g = (modelElementTexture.uvs[0] + modelElementTexture.uvs[0] + modelElementTexture.uvs[2] + modelElementTexture.uvs[2]) / 4.0f;
         float h = (modelElementTexture.uvs[1] + modelElementTexture.uvs[1] + modelElementTexture.uvs[3] + modelElementTexture.uvs[3]) / 4.0f;
         modelElementTexture.uvs[0] = MathHelper.lerp(f, modelElementTexture.uvs[0], g);
         modelElementTexture.uvs[2] = MathHelper.lerp(f, modelElementTexture.uvs[2], g);
         modelElementTexture.uvs[1] = MathHelper.lerp(f, modelElementTexture.uvs[1], h);
         modelElementTexture.uvs[3] = MathHelper.lerp(f, modelElementTexture.uvs[3], h);
-        int[] is = this.method_3458(modelElementTexture, sprite, direction, this.method_3459(vector3f, vector3f2), modelBakeSettings.getRotation(), modelRotation, bl);
-        Direction direction2 = BakedQuadFactory.method_3467(is);
+        int[] is = this.packVertexData(modelElementTexture, sprite, direction, this.getPositionMatrix(vector3f, vector3f2), modelBakeSettings.getRotation(), modelRotation, bl);
+        Direction direction2 = BakedQuadFactory.decodeDirection(is);
         System.arraycopy(fs, 0, modelElementTexture.uvs, 0, fs.length);
         if (modelRotation == null) {
-            this.method_3462(is, direction2);
+            this.encodeDirection(is, direction2);
         }
         return new BakedQuad(is, modelElementFace.tintIndex, direction2, sprite);
     }
@@ -59,14 +59,14 @@ public class BakedQuadFactory {
         float o;
         float n;
         Matrix4f matrix4f = Rotation3Helper.uvLock(rotation3, direction, () -> "Unable to resolve UVLock for model: " + identifier).getMatrix();
-        float f = modelElementTexture.getU(modelElementTexture.method_3414(0));
-        float g = modelElementTexture.getV(modelElementTexture.method_3414(0));
+        float f = modelElementTexture.getU(modelElementTexture.getDirectionIndex(0));
+        float g = modelElementTexture.getV(modelElementTexture.getDirectionIndex(0));
         Vector4f vector4f = new Vector4f(f / 16.0f, g / 16.0f, 0.0f, 1.0f);
         vector4f.multiply(matrix4f);
         float h = 16.0f * vector4f.getX();
         float i = 16.0f * vector4f.getY();
-        float j = modelElementTexture.getU(modelElementTexture.method_3414(2));
-        float k = modelElementTexture.getV(modelElementTexture.method_3414(2));
+        float j = modelElementTexture.getU(modelElementTexture.getDirectionIndex(2));
+        float k = modelElementTexture.getV(modelElementTexture.getDirectionIndex(2));
         Vector4f vector4f2 = new Vector4f(j / 16.0f, k / 16.0f, 0.0f, 1.0f);
         vector4f2.multiply(matrix4f);
         float l = 16.0f * vector4f2.getX();
@@ -93,21 +93,21 @@ public class BakedQuadFactory {
         return new ModelElementTexture(new float[]{n, p, o, q}, s);
     }
 
-    private int[] method_3458(ModelElementTexture modelElementTexture, Sprite sprite, Direction direction, float[] fs, Rotation3 rotation3, @Nullable ModelRotation modelRotation, boolean bl) {
+    private int[] packVertexData(ModelElementTexture modelElementTexture, Sprite sprite, Direction direction, float[] fs, Rotation3 rotation3, @Nullable ModelRotation modelRotation, boolean bl) {
         int[] is = new int[32];
         for (int i = 0; i < 4; ++i) {
-            this.method_3461(is, i, direction, modelElementTexture, fs, sprite, rotation3, modelRotation, bl);
+            this.packVertexData(is, i, direction, modelElementTexture, fs, sprite, rotation3, modelRotation, bl);
         }
         return is;
     }
 
-    private int method_3457(Direction direction) {
-        float f = this.method_3456(direction);
+    private int getLightmapCoordinate(Direction direction) {
+        float f = this.getRelativeDirectionalBrightness(direction);
         int i = MathHelper.clamp((int)(f * 255.0f), 0, 255);
         return 0xFF000000 | i << 16 | i << 8 | i;
     }
 
-    private float method_3456(Direction direction) {
+    private float getRelativeDirectionalBrightness(Direction direction) {
         switch (direction) {
             case DOWN: {
                 return 0.5f;
@@ -127,7 +127,7 @@ public class BakedQuadFactory {
         return 1.0f;
     }
 
-    private float[] method_3459(Vector3f vector3f, Vector3f vector3f2) {
+    private float[] getPositionMatrix(Vector3f vector3f, Vector3f vector3f2) {
         float[] fs = new float[Direction.values().length];
         fs[CubeFace.DirectionIds.WEST] = vector3f.getX() / 16.0f;
         fs[CubeFace.DirectionIds.DOWN] = vector3f.getY() / 16.0f;
@@ -138,27 +138,27 @@ public class BakedQuadFactory {
         return fs;
     }
 
-    private void method_3461(int[] is, int i, Direction direction, ModelElementTexture modelElementTexture, float[] fs, Sprite sprite, Rotation3 rotation3, @Nullable ModelRotation modelRotation, boolean bl) {
+    private void packVertexData(int[] is, int i, Direction direction, ModelElementTexture modelElementTexture, float[] fs, Sprite sprite, Rotation3 rotation3, @Nullable ModelRotation modelRotation, boolean bl) {
         Direction direction2 = Direction.transform(rotation3.getMatrix(), direction);
-        int j = bl ? this.method_3457(direction2) : -1;
-        CubeFace.Corner corner = CubeFace.method_3163(direction).getCorner(i);
+        int j = bl ? this.getLightmapCoordinate(direction2) : -1;
+        CubeFace.Corner corner = CubeFace.getFace(direction).getCorner(i);
         Vector3f vector3f = new Vector3f(fs[corner.xSide], fs[corner.ySide], fs[corner.zSide]);
-        this.method_3463(vector3f, modelRotation);
-        this.method_3455(vector3f, rotation3);
-        this.method_3460(is, i, vector3f, j, sprite, modelElementTexture);
+        this.rotateVertex(vector3f, modelRotation);
+        this.transformVertex(vector3f, rotation3);
+        this.packVertexData(is, i, vector3f, j, sprite, modelElementTexture);
     }
 
-    private void method_3460(int[] is, int i, Vector3f vector3f, int j, Sprite sprite, ModelElementTexture modelElementTexture) {
+    private void packVertexData(int[] is, int i, Vector3f vector3f, int j, Sprite sprite, ModelElementTexture modelElementTexture) {
         int k = i * 8;
         is[k] = Float.floatToRawIntBits(vector3f.getX());
         is[k + 1] = Float.floatToRawIntBits(vector3f.getY());
         is[k + 2] = Float.floatToRawIntBits(vector3f.getZ());
         is[k + 3] = j;
-        is[k + 4] = Float.floatToRawIntBits(sprite.getU(modelElementTexture.getU(i)));
-        is[k + 4 + 1] = Float.floatToRawIntBits(sprite.getV(modelElementTexture.getV(i)));
+        is[k + 4] = Float.floatToRawIntBits(sprite.getFrameU(modelElementTexture.getU(i)));
+        is[k + 4 + 1] = Float.floatToRawIntBits(sprite.getFrameV(modelElementTexture.getV(i)));
     }
 
-    private void method_3463(Vector3f vector3f, @Nullable ModelRotation modelRotation) {
+    private void rotateVertex(Vector3f vector3f, @Nullable ModelRotation modelRotation) {
         Vector3f vector3f3;
         Vector3f vector3f2;
         if (modelRotation == null) {
@@ -187,40 +187,40 @@ public class BakedQuadFactory {
         Quaternion quaternion = new Quaternion(vector3f2, modelRotation.angle, true);
         if (modelRotation.rescale) {
             if (Math.abs(modelRotation.angle) == 22.5f) {
-                vector3f3.scale(field_4260);
+                vector3f3.scale(MIN_SCALE);
             } else {
-                vector3f3.scale(field_4259);
+                vector3f3.scale(MAX_SCALE);
             }
             vector3f3.add(1.0f, 1.0f, 1.0f);
         } else {
             vector3f3.set(1.0f, 1.0f, 1.0f);
         }
-        this.method_3464(vector3f, modelRotation.origin.method_23850(), new Matrix4f(quaternion), vector3f3);
+        this.transformVertex(vector3f, modelRotation.origin.copy(), new Matrix4f(quaternion), vector3f3);
     }
 
-    public void method_3455(Vector3f vector3f, Rotation3 rotation3) {
+    public void transformVertex(Vector3f vector3f, Rotation3 rotation3) {
         if (rotation3 == Rotation3.identity()) {
             return;
         }
-        this.method_3464(vector3f, new Vector3f(0.5f, 0.5f, 0.5f), rotation3.getMatrix(), new Vector3f(1.0f, 1.0f, 1.0f));
+        this.transformVertex(vector3f, new Vector3f(0.5f, 0.5f, 0.5f), rotation3.getMatrix(), new Vector3f(1.0f, 1.0f, 1.0f));
     }
 
-    private void method_3464(Vector3f vector3f, Vector3f vector3f2, Matrix4f matrix4f, Vector3f vector3f3) {
+    private void transformVertex(Vector3f vector3f, Vector3f vector3f2, Matrix4f matrix4f, Vector3f vector3f3) {
         Vector4f vector4f = new Vector4f(vector3f.getX() - vector3f2.getX(), vector3f.getY() - vector3f2.getY(), vector3f.getZ() - vector3f2.getZ(), 1.0f);
         vector4f.multiply(matrix4f);
-        vector4f.multiplyXyz(vector3f3);
+        vector4f.multiplyComponentwise(vector3f3);
         vector3f.set(vector4f.getX() + vector3f2.getX(), vector4f.getY() + vector3f2.getY(), vector4f.getZ() + vector3f2.getZ());
     }
 
-    public static Direction method_3467(int[] is) {
+    public static Direction decodeDirection(int[] is) {
         Vector3f vector3f = new Vector3f(Float.intBitsToFloat(is[0]), Float.intBitsToFloat(is[1]), Float.intBitsToFloat(is[2]));
         Vector3f vector3f2 = new Vector3f(Float.intBitsToFloat(is[8]), Float.intBitsToFloat(is[9]), Float.intBitsToFloat(is[10]));
         Vector3f vector3f3 = new Vector3f(Float.intBitsToFloat(is[16]), Float.intBitsToFloat(is[17]), Float.intBitsToFloat(is[18]));
-        Vector3f vector3f4 = vector3f.method_23850();
+        Vector3f vector3f4 = vector3f.copy();
         vector3f4.subtract(vector3f2);
-        Vector3f vector3f5 = vector3f3.method_23850();
+        Vector3f vector3f5 = vector3f3.copy();
         vector3f5.subtract(vector3f2);
-        Vector3f vector3f6 = vector3f5.method_23850();
+        Vector3f vector3f6 = vector3f5.copy();
         vector3f6.cross(vector3f4);
         vector3f6.reciprocal();
         Direction direction = null;
@@ -239,7 +239,7 @@ public class BakedQuadFactory {
         return direction;
     }
 
-    private void method_3462(int[] is, Direction direction) {
+    private void encodeDirection(int[] is, Direction direction) {
         float h;
         int j;
         int[] js = new int[is.length];
@@ -274,7 +274,7 @@ public class BakedQuadFactory {
             if (!(h > fs[CubeFace.DirectionIds.SOUTH])) continue;
             fs[CubeFace.DirectionIds.SOUTH] = h;
         }
-        CubeFace cubeFace = CubeFace.method_3163(direction);
+        CubeFace cubeFace = CubeFace.getFace(direction);
         for (j = 0; j < 4; ++j) {
             int k = 8 * j;
             CubeFace.Corner corner = cubeFace.getCorner(j);

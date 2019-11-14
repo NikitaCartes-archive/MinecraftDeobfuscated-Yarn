@@ -32,7 +32,7 @@ public class CubeMapRenderer {
         RenderSystem.matrixMode(5889);
         RenderSystem.pushMatrix();
         RenderSystem.loadIdentity();
-        RenderSystem.multMatrix(Matrix4f.method_4929(85.0, (float)minecraftClient.getWindow().getFramebufferWidth() / (float)minecraftClient.getWindow().getFramebufferHeight(), 0.05f, 10.0f));
+        RenderSystem.multMatrix(Matrix4f.viewboxMatrix(85.0, (float)minecraftClient.getWindow().getFramebufferWidth() / (float)minecraftClient.getWindow().getFramebufferHeight(), 0.05f, 10.0f));
         RenderSystem.matrixMode(5888);
         RenderSystem.pushMatrix();
         RenderSystem.loadIdentity();

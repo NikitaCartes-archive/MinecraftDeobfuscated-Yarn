@@ -221,7 +221,7 @@ public final class Matrix4f {
         }
     }
 
-    public static Matrix4f method_4929(double d, float f, float g, float h) {
+    public static Matrix4f viewboxMatrix(double d, float f, float g, float h) {
         float i = (float)(1.0 / Math.tan(d * 0.01745329238474369 / 2.0));
         Matrix4f matrix4f = new Matrix4f();
         matrix4f.set(0, 0, i / f);

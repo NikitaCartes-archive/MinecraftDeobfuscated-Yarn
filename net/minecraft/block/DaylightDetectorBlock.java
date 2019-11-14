@@ -34,7 +34,7 @@ extends BlockWithEntity {
 
     public DaylightDetectorBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(POWER, 0)).with(INVERTED, false));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(POWER, 0)).with(INVERTED, false));
     }
 
     @Override

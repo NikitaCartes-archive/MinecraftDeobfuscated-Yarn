@@ -42,7 +42,7 @@ extends AbstractCriterion<Conditions> {
 
     public void test(ServerPlayerEntity serverPlayerEntity, BlockPos blockPos, ItemStack itemStack) {
         BlockState blockState = serverPlayerEntity.getServerWorld().getBlockState(blockPos);
-        this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.test(blockState, serverPlayerEntity.getServerWorld(), blockPos, itemStack));
+        this.test(serverPlayerEntity.getAdvancementTracker(), conditions -> conditions.test(blockState, serverPlayerEntity.getServerWorld(), blockPos, itemStack));
     }
 
     @Override

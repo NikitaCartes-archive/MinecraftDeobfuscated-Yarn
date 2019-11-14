@@ -39,7 +39,7 @@ extends BlockEntityRenderer<ShulkerBoxBlockEntity> {
         if (shulkerBoxBlockEntity.hasWorld() && (blockState = shulkerBoxBlockEntity.getWorld().getBlockState(shulkerBoxBlockEntity.getPos())).getBlock() instanceof ShulkerBoxBlock) {
             direction = blockState.get(ShulkerBoxBlock.FACING);
         }
-        Identifier identifier = (dyeColor = shulkerBoxBlockEntity.getColor()) == null ? ModelLoader.field_20845 : ModelLoader.field_20846.get(dyeColor.getId());
+        Identifier identifier = (dyeColor = shulkerBoxBlockEntity.getColor()) == null ? ModelLoader.SHULKER : ModelLoader.SHULKER_COLORS.get(dyeColor.getId());
         Sprite sprite = this.getSprite(identifier);
         matrixStack.push();
         matrixStack.translate(0.5, 0.5, 0.5);
@@ -51,7 +51,7 @@ extends BlockEntityRenderer<ShulkerBoxBlockEntity> {
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.method_23948());
         this.model.getBottomShell().render(matrixStack, vertexConsumer, i, j, sprite);
         matrixStack.translate(0.0, -shulkerBoxBlockEntity.getAnimationProgress(f) * 0.5f, 0.0);
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(270.0f * shulkerBoxBlockEntity.getAnimationProgress(f)));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(270.0f * shulkerBoxBlockEntity.getAnimationProgress(f)));
         this.model.getTopShell().render(matrixStack, vertexConsumer, i, j, sprite);
         matrixStack.pop();
     }

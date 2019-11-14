@@ -98,7 +98,7 @@ extends BlockEntityRenderer<T> {
         matrixStack.push();
         float g = blockState.get(ChestBlock.FACING).asRotation();
         matrixStack.translate(0.5, 0.5, 0.5);
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-g));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-g));
         matrixStack.translate(-0.5, -0.5, -0.5);
         float h = bl ? ChestBlock.method_23897((ChestAnimationProgress)blockEntity, blockState, world, ((BlockEntity)blockEntity).getPos(), f) : ((ChestAnimationProgress)blockEntity).getAnimationProgress(f);
         h = 1.0f - h;

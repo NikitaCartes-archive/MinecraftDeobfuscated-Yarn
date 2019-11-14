@@ -388,9 +388,9 @@ implements ServerPlayPacketListener {
         NetworkThreadUtils.forceMainThread(advancementTabC2SPacket, this, this.player.getServerWorld());
         if (advancementTabC2SPacket.getAction() == AdvancementTabC2SPacket.Action.OPENED_TAB) {
             Identifier identifier = advancementTabC2SPacket.getTabToOpen();
-            Advancement advancement = this.server.getAdvancementManager().get(identifier);
+            Advancement advancement = this.server.getAdvancementLoader().get(identifier);
             if (advancement != null) {
-                this.player.getAdvancementManager().setDisplayTab(advancement);
+                this.player.getAdvancementTracker().setDisplayTab(advancement);
             }
         }
     }

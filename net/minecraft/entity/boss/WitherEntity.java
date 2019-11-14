@@ -181,7 +181,7 @@ RangedAttackMob {
                 double f = this.getHeadY(i + 1);
                 double g = this.getHeadZ(i + 1);
                 double h = entity2.getX() - e;
-                double k = entity2.method_23320() - f;
+                double k = entity2.getEyeY() - f;
                 double l = entity2.getZ() - g;
                 double m = MathHelper.sqrt(h * h + l * l);
                 float n = (float)(MathHelper.atan2(l, h) * 57.2957763671875) - 90.0f;
@@ -216,7 +216,7 @@ RangedAttackMob {
             int i2 = this.getInvulnerableTimer() - 1;
             if (i2 <= 0) {
                 Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING) ? Explosion.DestructionType.DESTROY : Explosion.DestructionType.NONE;
-                this.world.createExplosion(this, this.getX(), this.method_23320(), this.getZ(), 7.0f, false, destructionType);
+                this.world.createExplosion(this, this.getX(), this.getEyeY(), this.getZ(), 7.0f, false, destructionType);
                 this.world.playGlobalEvent(1023, new BlockPos(this), 0);
             }
             this.setInvulTimer(i2);

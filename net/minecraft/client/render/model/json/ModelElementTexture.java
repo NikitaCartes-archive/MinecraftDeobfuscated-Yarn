@@ -45,7 +45,7 @@ public class ModelElementTexture {
         return (i + this.rotation / 90) % 4;
     }
 
-    public int method_3414(int i) {
+    public int getDirectionIndex(int i) {
         return (i + 4 - this.rotation / 90) % 4;
     }
 

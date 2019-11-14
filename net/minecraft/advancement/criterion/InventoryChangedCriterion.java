@@ -43,7 +43,7 @@ extends AbstractCriterion<Conditions> {
     }
 
     public void trigger(ServerPlayerEntity serverPlayerEntity, PlayerInventory playerInventory) {
-        this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(playerInventory));
+        this.test(serverPlayerEntity.getAdvancementTracker(), conditions -> conditions.matches(playerInventory));
     }
 
     @Override

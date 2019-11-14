@@ -109,26 +109,26 @@ implements AutoCloseable {
                 if (clientWorld.dimension.getType() == DimensionType.THE_END) {
                     vector3f2.method_23847(new Vector3f(0.99f, 1.12f, 1.0f), 0.25f);
                 } else {
-                    Vector3f vector3f3 = vector3f.method_23850();
+                    Vector3f vector3f3 = vector3f.copy();
                     vector3f3.scale(n);
-                    vector3f2.method_23846(vector3f3);
+                    vector3f2.add(vector3f3);
                     vector3f2.method_23847(new Vector3f(0.75f, 0.75f, 0.75f), 0.04f);
                     if (this.worldRenderer.getSkyDarkness(f) > 0.0f) {
                         s = this.worldRenderer.getSkyDarkness(f);
-                        vector3f4 = vector3f2.method_23850();
-                        vector3f4.method_23849(0.7f, 0.6f, 0.6f);
+                        vector3f4 = vector3f2.copy();
+                        vector3f4.piecewiseMultiply(0.7f, 0.6f, 0.6f);
                         vector3f2.method_23847(vector3f4, s);
                     }
                 }
                 vector3f2.clamp(0.0f, 1.0f);
                 if (j > 0.0f && (t = Math.max(vector3f2.getX(), Math.max(vector3f2.getY(), vector3f2.getZ()))) < 1.0f) {
                     s = 1.0f / t;
-                    vector3f4 = vector3f2.method_23850();
+                    vector3f4 = vector3f2.copy();
                     vector3f4.scale(s);
                     vector3f2.method_23847(vector3f4, j);
                 }
                 t = (float)this.client.options.gamma;
-                Vector3f vector3f5 = vector3f2.method_23850();
+                Vector3f vector3f5 = vector3f2.copy();
                 vector3f5.method_23848(this::method_23795);
                 vector3f2.method_23847(vector3f5, t);
                 vector3f2.method_23847(new Vector3f(0.75f, 0.75f, 0.75f), 0.04f);

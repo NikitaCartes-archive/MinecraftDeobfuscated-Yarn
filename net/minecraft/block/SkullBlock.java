@@ -26,7 +26,7 @@ extends AbstractSkullBlock {
 
     protected SkullBlock(SkullType skullType, Block.Settings settings) {
         super(skullType, settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(ROTATION, 0));
+        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(ROTATION, 0));
     }
 
     @Override

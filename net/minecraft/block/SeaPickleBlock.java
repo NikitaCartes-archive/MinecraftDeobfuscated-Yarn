@@ -43,7 +43,7 @@ Waterloggable {
 
     protected SeaPickleBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(PICKLES, 1)).with(WATERLOGGED, true));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(PICKLES, 1)).with(WATERLOGGED, true));
     }
 
     @Override

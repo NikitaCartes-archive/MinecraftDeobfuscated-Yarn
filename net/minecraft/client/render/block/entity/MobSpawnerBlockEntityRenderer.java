@@ -35,9 +35,9 @@ extends BlockEntityRenderer<MobSpawnerBlockEntity> {
                 g /= h;
             }
             matrixStack.translate(0.0, 0.4f, 0.0);
-            matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion((float)MathHelper.lerp((double)f, mobSpawnerLogic.method_8279(), mobSpawnerLogic.method_8278()) * 10.0f));
+            matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion((float)MathHelper.lerp((double)f, mobSpawnerLogic.method_8279(), mobSpawnerLogic.method_8278()) * 10.0f));
             matrixStack.translate(0.0, -0.2f, 0.0);
-            matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-30.0f));
+            matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-30.0f));
             matrixStack.scale(g, g, g);
             MinecraftClient.getInstance().getEntityRenderManager().render(entity, 0.0, 0.0, 0.0, 0.0f, f, matrixStack, vertexConsumerProvider, i);
         }

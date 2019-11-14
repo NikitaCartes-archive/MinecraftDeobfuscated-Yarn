@@ -39,7 +39,7 @@ extends EntityNavigation {
 
     @Override
     protected Vec3d getPos() {
-        return new Vec3d(this.entity.getX(), this.entity.getHeightAt(0.5), this.entity.getZ());
+        return new Vec3d(this.entity.getX(), this.entity.getBodyY(0.5), this.entity.getZ());
     }
 
     @Override

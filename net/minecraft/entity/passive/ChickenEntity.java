@@ -168,7 +168,7 @@ extends AnimalEntity {
         float g = MathHelper.cos(this.bodyYaw * ((float)Math.PI / 180));
         float h = 0.1f;
         float i = 0.0f;
-        entity.setPosition(this.getX() + (double)(0.1f * f), this.getHeightAt(0.5) + entity.getHeightOffset() + 0.0, this.getZ() - (double)(0.1f * g));
+        entity.setPosition(this.getX() + (double)(0.1f * f), this.getBodyY(0.5) + entity.getHeightOffset() + 0.0, this.getZ() - (double)(0.1f * g));
         if (entity instanceof LivingEntity) {
             ((LivingEntity)entity).bodyYaw = this.bodyYaw;
         }

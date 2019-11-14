@@ -35,7 +35,7 @@ implements DataProvider {
         for (Block block : Registry.BLOCK) {
             Identifier identifier = Registry.BLOCK.getId(block);
             JsonObject jsonObject2 = new JsonObject();
-            StateManager<Block, BlockState> stateManager = block.getStateFactory();
+            StateManager<Block, BlockState> stateManager = block.getStateManager();
             if (!stateManager.getProperties().isEmpty()) {
                 JsonObject jsonObject3 = new JsonObject();
                 for (Property property : stateManager.getProperties()) {

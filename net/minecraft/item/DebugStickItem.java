@@ -61,7 +61,7 @@ extends Item {
             return;
         }
         Block block = blockState.getBlock();
-        StateManager<Block, BlockState> stateManager = block.getStateFactory();
+        StateManager<Block, BlockState> stateManager = block.getStateManager();
         Collection<Property<?>> collection = stateManager.getProperties();
         String string = Registry.BLOCK.getId(block).toString();
         if (collection.isEmpty()) {

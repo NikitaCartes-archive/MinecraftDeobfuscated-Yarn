@@ -55,7 +55,7 @@ extends BlockEntityRenderer<BeaconBlockEntity> {
         float r = fs[1];
         float s = fs[2];
         matrixStack.push();
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(n * 2.25f - 45.0f));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(n * 2.25f - 45.0f));
         float t = 0.0f;
         float u = h;
         float v = h;

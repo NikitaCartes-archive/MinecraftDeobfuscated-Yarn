@@ -594,12 +594,12 @@ extends DrawableHelper {
             int s = l - ++o * this.getFontRenderer().fontHeight;
             int t = this.scaledWidth - 3 + 2;
             InGameHud.fill(r - 2, s, t, s + this.getFontRenderer().fontHeight, p);
-            this.getFontRenderer().draw(string3, r, s, 0x20FFFFFF);
-            this.getFontRenderer().draw(string4, t - this.getFontRenderer().getStringWidth(string4), s, 0x20FFFFFF);
+            this.getFontRenderer().draw(string3, r, s, -1);
+            this.getFontRenderer().draw(string4, t - this.getFontRenderer().getStringWidth(string4), s, -1);
             if (o != collection.size()) continue;
             InGameHud.fill(r - 2, s - this.getFontRenderer().fontHeight - 1, t, s - 1, q);
             InGameHud.fill(r - 2, s - 1, t, s, p);
-            this.getFontRenderer().draw(string, r + j / 2 - i / 2, s - this.getFontRenderer().fontHeight, 0x20FFFFFF);
+            this.getFontRenderer().draw(string, r + j / 2 - i / 2, s - this.getFontRenderer().fontHeight, -1);
         }
     }
 

@@ -258,7 +258,7 @@ extends LivingEntity {
                 double e = this.random.nextGaussian() * 0.02;
                 double f = this.random.nextGaussian() * 0.02;
                 double g = 10.0;
-                this.world.addParticle(ParticleTypes.POOF, this.method_23316(1.0) - d * 10.0, this.method_23319() - e * 10.0, this.method_23325(1.0) - f * 10.0, d, e, f);
+                this.world.addParticle(ParticleTypes.POOF, this.offsetX(1.0) - d * 10.0, this.getRandomBodyY() - e * 10.0, this.getParticleZ(1.0) - f * 10.0, d, e, f);
             }
         } else {
             this.world.sendEntityStatus(this, (byte)20);
@@ -608,9 +608,9 @@ extends LivingEntity {
         double e = entity.getZ() - this.getZ();
         if (entity instanceof LivingEntity) {
             LivingEntity livingEntity = (LivingEntity)entity;
-            h = livingEntity.method_23320() - this.method_23320();
+            h = livingEntity.getEyeY() - this.getEyeY();
         } else {
-            h = (entity.getBoundingBox().y1 + entity.getBoundingBox().y2) / 2.0 - this.method_23320();
+            h = (entity.getBoundingBox().y1 + entity.getBoundingBox().y2) / 2.0 - this.getEyeY();
         }
         double i = MathHelper.sqrt(d * d + e * e);
         float j = (float)(MathHelper.atan2(e, d) * 57.2957763671875) - 90.0f;

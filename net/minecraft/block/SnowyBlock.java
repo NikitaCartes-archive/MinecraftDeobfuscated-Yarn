@@ -20,7 +20,7 @@ extends Block {
 
     protected SnowyBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(SNOWY, false));
+        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(SNOWY, false));
     }
 
     @Override

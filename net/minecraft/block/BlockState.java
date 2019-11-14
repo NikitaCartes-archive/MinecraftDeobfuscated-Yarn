@@ -375,7 +375,7 @@ implements State<BlockState> {
         Block block = Registry.BLOCK.get(new Identifier(dynamic2.getElement("Name").flatMap(dynamic2.getOps()::getStringValue).orElse("minecraft:air")));
         Map<String, String> map = dynamic2.get("Properties").asMap(dynamic -> dynamic.asString(""), dynamic -> dynamic.asString(""));
         BlockState blockState = block.getDefaultState();
-        StateManager<Block, BlockState> stateManager = block.getStateFactory();
+        StateManager<Block, BlockState> stateManager = block.getStateManager();
         for (Map.Entry<String, String> entry : map.entrySet()) {
             String string = entry.getKey();
             Property<?> property = stateManager.getProperty(string);

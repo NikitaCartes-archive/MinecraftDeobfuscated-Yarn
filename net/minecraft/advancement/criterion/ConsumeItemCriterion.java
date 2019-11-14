@@ -32,7 +32,7 @@ extends AbstractCriterion<Conditions> {
     }
 
     public void trigger(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack) {
-        this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(itemStack));
+        this.test(serverPlayerEntity.getAdvancementTracker(), conditions -> conditions.matches(itemStack));
     }
 
     @Override

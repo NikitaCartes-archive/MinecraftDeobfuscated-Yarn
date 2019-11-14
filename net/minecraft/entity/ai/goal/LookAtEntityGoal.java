@@ -43,7 +43,7 @@ extends Goal {
         if (this.mob.getTarget() != null) {
             this.target = this.mob.getTarget();
         }
-        this.target = this.targetType == PlayerEntity.class ? this.mob.world.getClosestPlayer(this.targetPredicate, this.mob, this.mob.getX(), this.mob.method_23320(), this.mob.getZ()) : this.mob.world.getClosestEntityIncludingUngeneratedChunks(this.targetType, this.targetPredicate, this.mob, this.mob.getX(), this.mob.method_23320(), this.mob.getZ(), this.mob.getBoundingBox().expand(this.range, 3.0, this.range));
+        this.target = this.targetType == PlayerEntity.class ? this.mob.world.getClosestPlayer(this.targetPredicate, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ()) : this.mob.world.getClosestEntityIncludingUngeneratedChunks(this.targetType, this.targetPredicate, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ(), this.mob.getBoundingBox().expand(this.range, 3.0, this.range));
         return this.target != null;
     }
 
@@ -70,7 +70,7 @@ extends Goal {
 
     @Override
     public void tick() {
-        this.mob.getLookControl().lookAt(this.target.getX(), this.target.method_23320(), this.target.getZ());
+        this.mob.getLookControl().lookAt(this.target.getX(), this.target.getEyeY(), this.target.getZ());
         --this.lookTime;
     }
 }

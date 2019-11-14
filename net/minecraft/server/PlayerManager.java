@@ -101,7 +101,7 @@ public abstract class PlayerManager {
     private final OperatorList ops = new OperatorList(OPERATORS_FILE);
     private final Whitelist whitelist = new Whitelist(WHITELIST_FILE);
     private final Map<UUID, ServerStatHandler> statisticsMap = Maps.newHashMap();
-    private final Map<UUID, PlayerAdvancementTracker> advancementManagerMap = Maps.newHashMap();
+    private final Map<UUID, PlayerAdvancementTracker> advancementTrackers = Maps.newHashMap();
     private PlayerSaveHandler saveHandler;
     private boolean whitelistEnabled;
     protected final int maxPlayers;
@@ -273,7 +273,7 @@ public abstract class PlayerManager {
         if (serverStatHandler != null) {
             serverStatHandler.save();
         }
-        if ((playerAdvancementTracker = this.advancementManagerMap.get(serverPlayerEntity.getUuid())) != null) {
+        if ((playerAdvancementTracker = this.advancementTrackers.get(serverPlayerEntity.getUuid())) != null) {
             playerAdvancementTracker.save();
         }
     }
@@ -294,7 +294,7 @@ public abstract class PlayerManager {
         }
         serverPlayerEntity.detach();
         serverWorld.removePlayer(serverPlayerEntity);
-        serverPlayerEntity.getAdvancementManager().clearCriterions();
+        serverPlayerEntity.getAdvancementTracker().clearCriterions();
         this.players.remove(serverPlayerEntity);
         this.server.getBossBarManager().onPlayerDisconnenct(serverPlayerEntity);
         UUID uUID = serverPlayerEntity.getUuid();
@@ -302,7 +302,7 @@ public abstract class PlayerManager {
         if (serverPlayerEntity2 == serverPlayerEntity) {
             this.playerMap.remove(uUID);
             this.statisticsMap.remove(uUID);
-            this.advancementManagerMap.remove(uUID);
+            this.advancementTrackers.remove(uUID);
         }
         this.sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.REMOVE_PLAYER, serverPlayerEntity));
     }
@@ -654,14 +654,14 @@ public abstract class PlayerManager {
         return serverStatHandler;
     }
 
-    public PlayerAdvancementTracker getAdvancementManager(ServerPlayerEntity serverPlayerEntity) {
+    public PlayerAdvancementTracker getAdvancementTracker(ServerPlayerEntity serverPlayerEntity) {
         UUID uUID = serverPlayerEntity.getUuid();
-        PlayerAdvancementTracker playerAdvancementTracker = this.advancementManagerMap.get(uUID);
+        PlayerAdvancementTracker playerAdvancementTracker = this.advancementTrackers.get(uUID);
         if (playerAdvancementTracker == null) {
             File file = new File(this.server.getWorld(DimensionType.OVERWORLD).getSaveHandler().getWorldDir(), "advancements");
             File file2 = new File(file, uUID + ".json");
             playerAdvancementTracker = new PlayerAdvancementTracker(this.server, file2, serverPlayerEntity);
-            this.advancementManagerMap.put(uUID, playerAdvancementTracker);
+            this.advancementTrackers.put(uUID, playerAdvancementTracker);
         }
         playerAdvancementTracker.setOwner(serverPlayerEntity);
         return playerAdvancementTracker;
@@ -690,7 +690,7 @@ public abstract class PlayerManager {
     }
 
     public void onDataPacksReloaded() {
-        for (PlayerAdvancementTracker playerAdvancementTracker : this.advancementManagerMap.values()) {
+        for (PlayerAdvancementTracker playerAdvancementTracker : this.advancementTrackers.values()) {
             playerAdvancementTracker.reload();
         }
         this.sendToAll(new SynchronizeTagsS2CPacket(this.server.getTagManager()));

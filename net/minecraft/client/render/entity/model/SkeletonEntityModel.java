@@ -17,13 +17,13 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
-public class StrayEntityModel<T extends MobEntity>
+public class SkeletonEntityModel<T extends MobEntity>
 extends BipedEntityModel<T> {
-    public StrayEntityModel() {
+    public SkeletonEntityModel() {
         this(0.0f, false);
     }
 
-    public StrayEntityModel(float f, boolean bl) {
+    public SkeletonEntityModel(float f, boolean bl) {
         super(f);
         if (!bl) {
             this.rightArm = new ModelPart(this, 40, 16);

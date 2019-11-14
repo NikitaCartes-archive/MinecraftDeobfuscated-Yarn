@@ -31,7 +31,7 @@ extends AbstractCriterion<Conditions> {
     }
 
     public void trigger(ServerPlayerEntity serverPlayerEntity, DimensionType dimensionType, DimensionType dimensionType2) {
-        this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(dimensionType, dimensionType2));
+        this.test(serverPlayerEntity.getAdvancementTracker(), conditions -> conditions.matches(dimensionType, dimensionType2));
     }
 
     @Override

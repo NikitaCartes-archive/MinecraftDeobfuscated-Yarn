@@ -434,7 +434,7 @@ WindowEventHandler {
         this.bufferBuilders = new BufferBuilderStorage();
         this.gameRenderer = new GameRenderer(this, this.resourceManager, this.bufferBuilders);
         this.resourceManager.registerListener(this.gameRenderer);
-        this.blockRenderManager = new BlockRenderManager(this.bakedModelManager.getBlockStateMaps(), this.blockColorMap);
+        this.blockRenderManager = new BlockRenderManager(this.bakedModelManager.getBlockModels(), this.blockColorMap);
         this.resourceManager.registerListener(this.blockRenderManager);
         this.worldRenderer = new WorldRenderer(this, this.bufferBuilders);
         this.resourceManager.registerListener(this.worldRenderer);
@@ -614,7 +614,7 @@ WindowEventHandler {
         BlockModels blockModels = this.getBlockRenderManager().getModels();
         BakedModel bakedModel = blockModels.getModelManager().getMissingModel();
         for (Block block : Registry.BLOCK) {
-            for (BlockState blockState : block.getStateFactory().getStates()) {
+            for (BlockState blockState : block.getStateManager().getStates()) {
                 BakedModel bakedModel2;
                 if (blockState.getRenderType() != BlockRenderType.MODEL || (bakedModel2 = blockModels.getModel(blockState)) != bakedModel) continue;
                 LOGGER.debug("Missing model for: {}", (Object)blockState);
@@ -623,7 +623,7 @@ WindowEventHandler {
         }
         Sprite sprite = bakedModel.getSprite();
         for (Block block2 : Registry.BLOCK) {
-            for (BlockState blockState2 : block2.getStateFactory().getStates()) {
+            for (BlockState blockState2 : block2.getStateManager().getStates()) {
                 Sprite sprite2 = blockModels.getSprite(blockState2);
                 if (blockState2.isAir() || sprite2 != sprite) continue;
                 LOGGER.debug("Missing particle icon for: {}", (Object)blockState2);

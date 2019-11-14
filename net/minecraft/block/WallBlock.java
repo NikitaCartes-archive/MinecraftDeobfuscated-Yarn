@@ -31,7 +31,7 @@ extends HorizontalConnectedBlock {
 
     public WallBlock(Block.Settings settings) {
         super(0.0f, 3.0f, 0.0f, 14.0f, 24.0f, settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(UP, true)).with(NORTH, false)).with(EAST, false)).with(SOUTH, false)).with(WEST, false)).with(WATERLOGGED, false));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(UP, true)).with(NORTH, false)).with(EAST, false)).with(SOUTH, false)).with(WEST, false)).with(WATERLOGGED, false));
         this.UP_OUTLINE_SHAPES = this.createShapes(4.0f, 3.0f, 16.0f, 0.0f, 14.0f);
         this.UP_COLLISION_SHAPES = this.createShapes(4.0f, 3.0f, 24.0f, 0.0f, 24.0f);
     }

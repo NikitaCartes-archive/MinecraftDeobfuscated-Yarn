@@ -200,7 +200,7 @@ extends RangedWeaponItem {
         }
         boolean bl3 = bl2 = itemStack2.getItem() == Items.FIREWORK_ROCKET;
         if (bl2) {
-            projectile = new FireworkEntity(world, itemStack2, livingEntity2.getX(), livingEntity2.method_23320() - (double)0.15f, livingEntity2.getZ(), true);
+            projectile = new FireworkEntity(world, itemStack2, livingEntity2.getX(), livingEntity2.getEyeY() - (double)0.15f, livingEntity2.getZ(), true);
         } else {
             projectile = CrossbowItem.createArrow(world, livingEntity2, itemStack, itemStack2);
             if (bl || i != 0.0f) {

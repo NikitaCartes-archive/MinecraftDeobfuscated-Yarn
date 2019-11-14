@@ -35,8 +35,8 @@ extends BlockEntityRenderer<CampfireBlockEntity> {
             matrixStack.translate(0.5, 0.44921875, 0.5);
             Direction direction2 = Direction.fromHorizontal((k + direction.getHorizontal()) % 4);
             float g = -direction2.asRotation();
-            matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(g));
-            matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0f));
+            matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(g));
+            matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0f));
             matrixStack.translate(-0.3125, -0.3125, 0.0);
             matrixStack.scale(0.375f, 0.375f, 0.375f);
             MinecraftClient.getInstance().getItemRenderer().method_23178(itemStack, ModelTransformation.Type.FIXED, i, j, matrixStack, vertexConsumerProvider);

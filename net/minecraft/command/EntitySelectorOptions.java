@@ -399,8 +399,8 @@ public class EntitySelectorOptions {
                         return false;
                     }
                     ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
-                    PlayerAdvancementTracker playerAdvancementTracker = serverPlayerEntity.getAdvancementManager();
-                    ServerAdvancementLoader serverAdvancementLoader = serverPlayerEntity.getServer().getAdvancementManager();
+                    PlayerAdvancementTracker playerAdvancementTracker = serverPlayerEntity.getAdvancementTracker();
+                    ServerAdvancementLoader serverAdvancementLoader = serverPlayerEntity.getServer().getAdvancementLoader();
                     for (Map.Entry entry : map.entrySet()) {
                         Advancement advancement = serverAdvancementLoader.get((Identifier)entry.getKey());
                         if (advancement != null && ((Predicate)entry.getValue()).test(playerAdvancementTracker.getProgress(advancement))) continue;

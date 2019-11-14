@@ -24,9 +24,9 @@ extends BipedEntityModel<ArmorStandEntity> {
         this.head.yaw = (float)Math.PI / 180 * armorStandEntity.getHeadRotation().getYaw();
         this.head.roll = (float)Math.PI / 180 * armorStandEntity.getHeadRotation().getRoll();
         this.head.setPivot(0.0f, 1.0f, 0.0f);
-        this.body.pitch = (float)Math.PI / 180 * armorStandEntity.getBodyRotation().getPitch();
-        this.body.yaw = (float)Math.PI / 180 * armorStandEntity.getBodyRotation().getYaw();
-        this.body.roll = (float)Math.PI / 180 * armorStandEntity.getBodyRotation().getRoll();
+        this.torso.pitch = (float)Math.PI / 180 * armorStandEntity.getBodyRotation().getPitch();
+        this.torso.yaw = (float)Math.PI / 180 * armorStandEntity.getBodyRotation().getYaw();
+        this.torso.roll = (float)Math.PI / 180 * armorStandEntity.getBodyRotation().getRoll();
         this.leftArm.pitch = (float)Math.PI / 180 * armorStandEntity.getLeftArmRotation().getPitch();
         this.leftArm.yaw = (float)Math.PI / 180 * armorStandEntity.getLeftArmRotation().getYaw();
         this.leftArm.roll = (float)Math.PI / 180 * armorStandEntity.getLeftArmRotation().getRoll();
@@ -41,7 +41,7 @@ extends BipedEntityModel<ArmorStandEntity> {
         this.rightLeg.yaw = (float)Math.PI / 180 * armorStandEntity.getRightLegRotation().getYaw();
         this.rightLeg.roll = (float)Math.PI / 180 * armorStandEntity.getRightLegRotation().getRoll();
         this.rightLeg.setPivot(-1.9f, 11.0f, 0.0f);
-        this.headwear.copyPositionAndRotation(this.head);
+        this.helmet.copyPositionAndRotation(this.head);
     }
 }
 

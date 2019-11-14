@@ -38,7 +38,7 @@ implements Waterloggable {
 
     public ConduitBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(WATERLOGGED, true));
+        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(WATERLOGGED, true));
     }
 
     @Override

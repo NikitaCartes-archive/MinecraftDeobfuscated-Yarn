@@ -32,7 +32,7 @@ extends Block {
 
     protected CakeBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(BITES, 0));
+        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(BITES, 0));
     }
 
     @Override

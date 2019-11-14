@@ -32,7 +32,7 @@ extends MobEntityRenderer<FoxEntity, FoxEntityModel<FoxEntity>> {
         super.setupTransforms(foxEntity, matrixStack, f, g, h);
         if (foxEntity.isChasing() || foxEntity.isWalking()) {
             float i = -MathHelper.lerp(h, foxEntity.prevPitch, foxEntity.pitch);
-            matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(i));
+            matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(i));
         }
     }
 
