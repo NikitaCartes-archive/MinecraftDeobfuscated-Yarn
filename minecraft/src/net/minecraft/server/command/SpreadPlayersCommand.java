@@ -276,7 +276,7 @@ public class SpreadPlayersCommand {
 			BlockPos blockPos = new BlockPos(this.x, 256.0, this.z);
 
 			while (blockPos.getY() > 0) {
-				blockPos = blockPos.method_10074();
+				blockPos = blockPos.down();
 				if (!blockView.getBlockState(blockPos).isAir()) {
 					return blockPos.getY() + 1;
 				}
@@ -289,7 +289,7 @@ public class SpreadPlayersCommand {
 			BlockPos blockPos = new BlockPos(this.x, 256.0, this.z);
 
 			while (blockPos.getY() > 0) {
-				blockPos = blockPos.method_10074();
+				blockPos = blockPos.down();
 				BlockState blockState = world.getBlockState(blockPos);
 				if (!blockState.isAir()) {
 					Material material = blockState.getMaterial();

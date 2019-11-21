@@ -54,8 +54,8 @@ public class ZombieVillagerEntityModel<T extends ZombieEntity> extends BipedEnti
 		}
 	}
 
-	public void method_17135(T zombieEntity, float f, float g, float h, float i, float j) {
-		super.method_17087(zombieEntity, f, g, h, i, j);
+	public void setAngles(T zombieEntity, float f, float g, float h, float i, float j) {
+		super.setAngles(zombieEntity, f, g, h, i, j);
 		float k = MathHelper.sin(this.handSwingProgress * (float) Math.PI);
 		float l = MathHelper.sin((1.0F - (1.0F - this.handSwingProgress) * (1.0F - this.handSwingProgress)) * (float) Math.PI);
 		this.rightArm.roll = 0.0F;

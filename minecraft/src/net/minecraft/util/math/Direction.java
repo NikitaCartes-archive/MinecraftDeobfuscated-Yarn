@@ -171,15 +171,15 @@ public enum Direction implements StringIdentifiable {
 	}
 
 	public int getOffsetX() {
-		return this.axis == Direction.Axis.X ? this.direction.offset() : 0;
+		return this.vector.getX();
 	}
 
 	public int getOffsetY() {
-		return this.axis == Direction.Axis.Y ? this.direction.offset() : 0;
+		return this.vector.getY();
 	}
 
 	public int getOffsetZ() {
-		return this.axis == Direction.Axis.Z ? this.direction.offset() : 0;
+		return this.vector.getZ();
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -349,7 +349,7 @@ public enum Direction implements StringIdentifiable {
 			return values()[random.nextInt(values().length)];
 		}
 
-		public boolean method_10176(@Nullable Direction direction) {
+		public boolean test(@Nullable Direction direction) {
 			return direction != null && direction.getAxis() == this;
 		}
 
@@ -412,7 +412,7 @@ public enum Direction implements StringIdentifiable {
 			return this.facingArray[random.nextInt(this.facingArray.length)];
 		}
 
-		public boolean method_10182(@Nullable Direction direction) {
+		public boolean test(@Nullable Direction direction) {
 			return direction != null && direction.getAxis().getType() == this;
 		}
 

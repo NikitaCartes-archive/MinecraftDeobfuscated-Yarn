@@ -17,7 +17,7 @@ public class KelpFeature extends Feature<DefaultFeatureConfig> {
 		super(configFactory);
 	}
 
-	public boolean method_13460(
+	public boolean generate(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		int i = 0;
@@ -39,8 +39,8 @@ public class KelpFeature extends Feature<DefaultFeatureConfig> {
 						iWorld.setBlockState(blockPos2, blockState2, 2);
 					}
 				} else if (l > 0) {
-					BlockPos blockPos3 = blockPos2.method_10074();
-					if (blockState.canPlaceAt(iWorld, blockPos3) && iWorld.getBlockState(blockPos3.method_10074()).getBlock() != Blocks.KELP) {
+					BlockPos blockPos3 = blockPos2.down();
+					if (blockState.canPlaceAt(iWorld, blockPos3) && iWorld.getBlockState(blockPos3.down()).getBlock() != Blocks.KELP) {
 						iWorld.setBlockState(blockPos3, blockState.with(KelpBlock.AGE, Integer.valueOf(random.nextInt(4) + 20)), 2);
 						i++;
 					}

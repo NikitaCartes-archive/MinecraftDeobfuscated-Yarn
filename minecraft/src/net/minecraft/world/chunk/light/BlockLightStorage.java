@@ -31,7 +31,7 @@ public class BlockLightStorage extends LightStorage<BlockLightStorage.Data> {
 			super(map);
 		}
 
-		public BlockLightStorage.Data method_15443() {
+		public BlockLightStorage.Data copy() {
 			return new BlockLightStorage.Data(this.arrays.clone());
 		}
 	}

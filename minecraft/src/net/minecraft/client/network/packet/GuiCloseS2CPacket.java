@@ -15,7 +15,7 @@ public class GuiCloseS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.id = id;
 	}
 
-	public void method_11427(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onGuiClose(this);
 	}
 

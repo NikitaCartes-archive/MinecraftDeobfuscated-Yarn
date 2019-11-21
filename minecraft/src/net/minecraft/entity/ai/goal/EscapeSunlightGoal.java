@@ -28,7 +28,7 @@ public class EscapeSunlightGoal extends Goal {
 	public boolean canStart() {
 		if (this.mob.getTarget() != null) {
 			return false;
-		} else if (!this.world.isDaylight()) {
+		} else if (!this.world.isDay()) {
 			return false;
 		} else if (!this.mob.isOnFire()) {
 			return false;

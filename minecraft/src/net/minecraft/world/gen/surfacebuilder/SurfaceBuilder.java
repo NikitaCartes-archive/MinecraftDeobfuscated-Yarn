@@ -77,7 +77,7 @@ public abstract class SurfaceBuilder<C extends SurfaceConfig> {
 		Biome biome,
 		int x,
 		int z,
-		int worldHeight,
+		int height,
 		double noise,
 		BlockState defaultBlock,
 		BlockState defaultFluid,

@@ -465,7 +465,7 @@ public class StatsScreen extends Screen implements StatsListener {
 			private ItemComparator() {
 			}
 
-			public int method_2297(Item item, Item item2) {
+			public int compare(Item item, Item item2) {
 				int i;
 				int j;
 				if (ItemStatsListWidget.this.selectedStatType == null) {

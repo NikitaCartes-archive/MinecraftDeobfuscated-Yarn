@@ -25,7 +25,7 @@ public class ResourcePackStatusC2SPacket implements Packet<ServerPlayPacketListe
 		buf.writeEnumConstant(this.status);
 	}
 
-	public void method_12409(ServerPlayPacketListener serverPlayPacketListener) {
+	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onResourcePackStatus(this);
 	}
 

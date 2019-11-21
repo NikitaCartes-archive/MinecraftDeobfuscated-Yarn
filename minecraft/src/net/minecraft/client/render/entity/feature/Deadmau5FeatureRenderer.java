@@ -18,7 +18,7 @@ public class Deadmau5FeatureRenderer extends FeatureRenderer<AbstractClientPlaye
 		super(context);
 	}
 
-	public void method_4181(
+	public void render(
 		MatrixStack matrixStack,
 		VertexConsumerProvider vertexConsumerProvider,
 		int i,

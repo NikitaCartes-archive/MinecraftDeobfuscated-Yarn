@@ -20,7 +20,7 @@ public class PigSaddleFeatureRenderer extends FeatureRenderer<PigEntity, PigEnti
 		super(context);
 	}
 
-	public void method_4196(
+	public void render(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, PigEntity pigEntity, float f, float g, float h, float j, float k, float l
 	) {
 		if (pigEntity.isSaddled()) {
@@ -28,7 +28,7 @@ public class PigSaddleFeatureRenderer extends FeatureRenderer<PigEntity, PigEnti
 			this.model.animateModel(pigEntity, f, g, h);
 			this.model.setAngles(pigEntity, f, g, j, k, l);
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(SKIN));
-			this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F);
+			this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
 		}
 	}
 }

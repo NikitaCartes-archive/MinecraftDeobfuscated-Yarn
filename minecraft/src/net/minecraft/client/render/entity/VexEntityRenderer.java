@@ -16,11 +16,15 @@ public class VexEntityRenderer extends BipedEntityRenderer<VexEntity, VexEntityM
 		super(entityRenderDispatcher, new VexEntityModel(), 0.3F);
 	}
 
-	public Identifier method_4144(VexEntity vexEntity) {
+	protected int method_24087(VexEntity vexEntity, float f) {
+		return 15;
+	}
+
+	public Identifier getTexture(VexEntity vexEntity) {
 		return vexEntity.isCharging() ? CHARGING_TEXTURE : TEXTURE;
 	}
 
-	protected void method_4143(VexEntity vexEntity, MatrixStack matrixStack, float f) {
+	protected void scale(VexEntity vexEntity, MatrixStack matrixStack, float f) {
 		matrixStack.scale(0.4F, 0.4F, 0.4F);
 	}
 }

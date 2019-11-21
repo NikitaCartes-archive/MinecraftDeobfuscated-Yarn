@@ -166,8 +166,8 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 			super(new Identifier("set_attributes"), SetAttributesLootFunction.class);
 		}
 
-		public void method_618(JsonObject jsonObject, SetAttributesLootFunction setAttributesLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.method_529(jsonObject, setAttributesLootFunction, jsonSerializationContext);
+		public void toJson(JsonObject jsonObject, SetAttributesLootFunction setAttributesLootFunction, JsonSerializationContext jsonSerializationContext) {
+			super.toJson(jsonObject, setAttributesLootFunction, jsonSerializationContext);
 			JsonArray jsonArray = new JsonArray();
 
 			for (SetAttributesLootFunction.Attribute attribute : setAttributesLootFunction.attributes) {
@@ -177,7 +177,7 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 			jsonObject.add("modifiers", jsonArray);
 		}
 
-		public SetAttributesLootFunction method_617(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public SetAttributesLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			JsonArray jsonArray = JsonHelper.getArray(jsonObject, "modifiers");
 			List<SetAttributesLootFunction.Attribute> list = Lists.<SetAttributesLootFunction.Attribute>newArrayListWithExpectedSize(jsonArray.size());
 

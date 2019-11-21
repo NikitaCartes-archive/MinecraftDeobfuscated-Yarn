@@ -56,7 +56,7 @@ public class TemptGoal extends Goal {
 	}
 
 	protected boolean isTempedBy(ItemStack stack) {
-		return this.food.method_8093(stack);
+		return this.food.test(stack);
 	}
 
 	@Override

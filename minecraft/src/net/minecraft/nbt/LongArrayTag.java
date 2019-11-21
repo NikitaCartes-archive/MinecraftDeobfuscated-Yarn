@@ -12,7 +12,7 @@ import org.apache.commons.lang3.ArrayUtils;
 
 public class LongArrayTag extends AbstractListTag<LongTag> {
 	public static final TagReader<LongArrayTag> READER = new TagReader<LongArrayTag>() {
-		public LongArrayTag method_23250(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+		public LongArrayTag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
 			positionTracker.add(192L);
 			int j = dataInput.readInt();
 			positionTracker.add((long)(64 * j));
@@ -94,7 +94,7 @@ public class LongArrayTag extends AbstractListTag<LongTag> {
 		return stringBuilder.append(']').toString();
 	}
 
-	public LongArrayTag method_10618() {
+	public LongArrayTag copy() {
 		long[] ls = new long[this.value.length];
 		System.arraycopy(this.value, 0, ls, 0, this.value.length);
 		return new LongArrayTag(ls);
@@ -133,17 +133,17 @@ public class LongArrayTag extends AbstractListTag<LongTag> {
 		return this.value.length;
 	}
 
-	public LongTag method_10616(int i) {
+	public LongTag get(int i) {
 		return LongTag.of(this.value[i]);
 	}
 
-	public LongTag method_17810(int i, LongTag longTag) {
+	public LongTag set(int i, LongTag longTag) {
 		long l = this.value[i];
 		this.value[i] = longTag.getLong();
 		return LongTag.of(l);
 	}
 
-	public void method_17812(int i, LongTag longTag) {
+	public void method_10531(int i, LongTag longTag) {
 		this.value = ArrayUtils.add(this.value, i, longTag.getLong());
 	}
 
@@ -167,7 +167,7 @@ public class LongArrayTag extends AbstractListTag<LongTag> {
 		}
 	}
 
-	public LongTag method_17811(int i) {
+	public LongTag method_10536(int i) {
 		long l = this.value[i];
 		this.value = ArrayUtils.remove(this.value, i);
 		return LongTag.of(l);

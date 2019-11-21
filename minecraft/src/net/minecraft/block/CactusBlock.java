@@ -84,7 +84,7 @@ public class CactusBlock extends Block {
 			}
 		}
 
-		Block block = world.getBlockState(pos.method_10074()).getBlock();
+		Block block = world.getBlockState(pos.down()).getBlock();
 		return (block == Blocks.CACTUS || block == Blocks.SAND || block == Blocks.RED_SAND) && !world.getBlockState(pos.up()).getMaterial().isLiquid();
 	}
 

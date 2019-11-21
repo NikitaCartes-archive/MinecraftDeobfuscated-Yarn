@@ -36,7 +36,7 @@ public class HeightmapDebugRenderer implements DebugRenderer.Renderer {
 
 		for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-40, 0, -40), blockPos.add(40, 0, 40))) {
 			int i = iWorld.getTopY(Heightmap.Type.WORLD_SURFACE_WG, blockPos2.getX(), blockPos2.getZ());
-			if (iWorld.getBlockState(blockPos2.add(0, i, 0).method_10074()).isAir()) {
+			if (iWorld.getBlockState(blockPos2.add(0, i, 0).down()).isAir()) {
 				WorldRenderer.drawBox(
 					bufferBuilder,
 					(double)((float)blockPos2.getX() + 0.25F) - d,

@@ -33,7 +33,7 @@ public class LargeOakTreeFeature extends AbstractTreeFeature<BranchedTreeFeature
 		for (int j = -i; j <= i; j++) {
 			for (int k = -i; k <= i; k++) {
 				if (Math.pow((double)Math.abs(j) + 0.5, 2.0) + Math.pow((double)Math.abs(k) + 0.5, 2.0) <= (double)(f * f)) {
-					this.method_23383(modifiableTestableWorld, random, blockPos.add(j, 0, k), set, blockBox, branchedTreeFeatureConfig);
+					this.setLeavesBlockState(modifiableTestableWorld, random, blockPos.add(j, 0, k), set, blockBox, branchedTreeFeatureConfig);
 				}
 			}
 		}
@@ -189,7 +189,7 @@ public class LargeOakTreeFeature extends AbstractTreeFeature<BranchedTreeFeature
 		}
 	}
 
-	public boolean method_23394(
+	public boolean generate(
 		ModifiableTestableWorld modifiableTestableWorld,
 		Random random,
 		BlockPos blockPos,
@@ -203,7 +203,7 @@ public class LargeOakTreeFeature extends AbstractTreeFeature<BranchedTreeFeature
 		if (i == -1) {
 			return false;
 		} else {
-			this.setToDirt(modifiableTestableWorld, blockPos.method_10074());
+			this.setToDirt(modifiableTestableWorld, blockPos.down());
 			int j = (int)((double)i * 0.618);
 			if (j >= i) {
 				j = i - 1;
@@ -261,7 +261,7 @@ public class LargeOakTreeFeature extends AbstractTreeFeature<BranchedTreeFeature
 		BlockBox blockBox,
 		BranchedTreeFeatureConfig branchedTreeFeatureConfig
 	) {
-		if (!isDirtOrGrass(modifiableTestableWorld, pos.method_10074())) {
+		if (!isDirtOrGrass(modifiableTestableWorld, pos.down())) {
 			return -1;
 		} else {
 			int i = this.makeOrCheckBranch(modifiableTestableWorld, random, pos, pos.up(height - 1), false, set, blockBox, branchedTreeFeatureConfig);

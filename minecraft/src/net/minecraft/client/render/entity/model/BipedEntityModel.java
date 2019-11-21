@@ -76,13 +76,13 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 		return ImmutableList.<ModelPart>of(this.torso, this.rightArm, this.leftArm, this.rightLeg, this.leftLeg, this.helmet);
 	}
 
-	public void method_17086(T livingEntity, float f, float g, float h) {
+	public void animateModel(T livingEntity, float f, float g, float h) {
 		this.field_3396 = livingEntity.getLeaningPitch(h);
 		this.itemUsedTime = (float)livingEntity.getItemUseTime();
 		super.animateModel(livingEntity, f, g, h);
 	}
 
-	public void method_17087(T livingEntity, float f, float g, float h, float i, float j) {
+	public void setAngles(T livingEntity, float f, float g, float h, float i, float j) {
 		boolean bl = livingEntity.getRoll() > 4;
 		boolean bl2 = livingEntity.isInSwimmingPose();
 		this.head.yaw = i * (float) (Math.PI / 180.0);

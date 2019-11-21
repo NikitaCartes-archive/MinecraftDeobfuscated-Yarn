@@ -13,7 +13,7 @@ public class RandomRandomFeature extends Feature<RandomRandomFeatureConfig> {
 		super(configFactory);
 	}
 
-	public boolean method_13696(
+	public boolean generate(
 		IWorld iWorld,
 		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
 		Random random,

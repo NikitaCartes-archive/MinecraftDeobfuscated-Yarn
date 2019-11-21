@@ -64,7 +64,7 @@ public class KelpBlock extends Block implements FluidFillable {
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		BlockPos blockPos = pos.method_10074();
+		BlockPos blockPos = pos.down();
 		BlockState blockState = world.getBlockState(blockPos);
 		Block block = blockState.getBlock();
 		return block == Blocks.MAGMA_BLOCK ? false : block == this || block == Blocks.KELP_PLANT || blockState.isSideSolidFullSquare(world, blockPos, Direction.UP);

@@ -6,7 +6,7 @@ import net.minecraft.command.arguments.BrigadierArgumentTypes;
 import net.minecraft.util.PacketByteBuf;
 
 public class DoubleArgumentSerializer implements ArgumentSerializer<DoubleArgumentType> {
-	public void method_10041(DoubleArgumentType doubleArgumentType, PacketByteBuf packetByteBuf) {
+	public void toPacket(DoubleArgumentType doubleArgumentType, PacketByteBuf packetByteBuf) {
 		boolean bl = doubleArgumentType.getMinimum() != -Double.MAX_VALUE;
 		boolean bl2 = doubleArgumentType.getMaximum() != Double.MAX_VALUE;
 		packetByteBuf.writeByte(BrigadierArgumentTypes.createFlag(bl, bl2));
@@ -19,14 +19,14 @@ public class DoubleArgumentSerializer implements ArgumentSerializer<DoubleArgume
 		}
 	}
 
-	public DoubleArgumentType method_10042(PacketByteBuf packetByteBuf) {
+	public DoubleArgumentType fromPacket(PacketByteBuf packetByteBuf) {
 		byte b = packetByteBuf.readByte();
 		double d = BrigadierArgumentTypes.hasMin(b) ? packetByteBuf.readDouble() : -Double.MAX_VALUE;
 		double e = BrigadierArgumentTypes.hasMax(b) ? packetByteBuf.readDouble() : Double.MAX_VALUE;
 		return DoubleArgumentType.doubleArg(d, e);
 	}
 
-	public void method_10043(DoubleArgumentType doubleArgumentType, JsonObject jsonObject) {
+	public void toJson(DoubleArgumentType doubleArgumentType, JsonObject jsonObject) {
 		if (doubleArgumentType.getMinimum() != -Double.MAX_VALUE) {
 			jsonObject.addProperty("min", doubleArgumentType.getMinimum());
 		}

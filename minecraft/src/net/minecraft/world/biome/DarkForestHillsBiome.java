@@ -46,10 +46,10 @@ public final class DarkForestHillsBiome extends Biome {
 							Feature.HUGE_RED_MUSHROOM.configure(DefaultBiomeFeatures.field_21142).method_23387(0.025F),
 							Feature.HUGE_BROWN_MUSHROOM.configure(DefaultBiomeFeatures.field_21143).method_23387(0.05F),
 							Feature.DARK_OAK_TREE.configure(DefaultBiomeFeatures.field_21197).method_23387(0.6666667F),
-							Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.field_21187).method_23387(0.2F),
-							Feature.FANCY_TREE.configure(DefaultBiomeFeatures.field_21190).method_23387(0.1F)
+							Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.BIRCH_TREE_CONFIG).method_23387(0.2F),
+							Feature.FANCY_TREE.configure(DefaultBiomeFeatures.FANCY_TREE_CONFIG).method_23387(0.1F)
 						),
-						Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.field_21126)
+						Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.OAK_TREE_CONFIG)
 					)
 				)
 				.createDecoratedFeature(Decorator.DARK_OAK_TREE.configure(DecoratorConfig.DEFAULT))

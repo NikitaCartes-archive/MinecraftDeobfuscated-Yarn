@@ -1129,7 +1129,7 @@ public class RecipesProvider implements DataProvider {
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.DARK_PRISMARINE)
 			.input('S', Items.PRISMARINE_SHARD)
-			.input('I', Items.INK_SAC)
+			.input('I', Items.BLACK_DYE)
 			.pattern("SSS")
 			.pattern("SIS")
 			.pattern("SSS")

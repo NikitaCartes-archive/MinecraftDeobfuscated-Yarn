@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Random;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
@@ -75,10 +74,10 @@ public class ParticleManager implements ResourceReloadListener {
 	private final Int2ObjectMap<ParticleFactory<?>> factories = new Int2ObjectOpenHashMap<>();
 	private final Queue<Particle> newParticles = Queues.<Particle>newArrayDeque();
 	private final Map<Identifier, ParticleManager.SimpleSpriteProvider> spriteAwareFactories = Maps.<Identifier, ParticleManager.SimpleSpriteProvider>newHashMap();
-	private final SpriteAtlasTexture particleAtlasTexture = new SpriteAtlasTexture("textures/particle");
+	private final SpriteAtlasTexture particleAtlasTexture = new SpriteAtlasTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEX);
 
 	public ParticleManager(World world, TextureManager textureManager) {
-		textureManager.registerTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEX, this.particleAtlasTexture);
+		textureManager.registerTexture(this.particleAtlasTexture.method_24106(), this.particleAtlasTexture);
 		this.world = world;
 		this.textureManager = textureManager;
 		this.registerDefaultFactories();
@@ -178,8 +177,7 @@ public class ParticleManager implements ResourceReloadListener {
 			.thenApplyAsync(void_ -> {
 				prepareProfiler.startTick();
 				prepareProfiler.push("stitching");
-				Set<Identifier> set = (Set<Identifier>)map.values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
-				SpriteAtlasTexture.Data data = this.particleAtlasTexture.stitch(manager, set, prepareProfiler);
+				SpriteAtlasTexture.Data data = this.particleAtlasTexture.stitch(manager, map.values().stream().flatMap(Collection::stream), prepareProfiler, 0);
 				prepareProfiler.pop();
 				prepareProfiler.endTick();
 				return data;
@@ -236,7 +234,9 @@ public class ParticleManager implements ResourceReloadListener {
 							throw new IllegalStateException("Redundant texture list for particle " + id);
 						}
 
-						result.put(id, list);
+						result.put(
+							id, list.stream().map(identifierx -> new Identifier(identifierx.getNamespace(), "particle/" + identifierx.getPath())).collect(Collectors.toList())
+						);
 					}
 				} catch (Throwable var35) {
 					var8 = var35;

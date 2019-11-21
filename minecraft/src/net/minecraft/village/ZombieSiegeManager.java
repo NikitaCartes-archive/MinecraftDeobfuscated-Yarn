@@ -23,7 +23,7 @@ public class ZombieSiegeManager {
 	private int startZ;
 
 	public int tick(ServerWorld serverWorld, boolean bl, boolean bl2) {
-		if (!serverWorld.isDaylight() && bl) {
+		if (!serverWorld.isDay() && bl) {
 			float f = serverWorld.getSkyAngle(0.0F);
 			if ((double)f == 0.5) {
 				this.state = serverWorld.random.nextInt(10) == 0 ? ZombieSiegeManager.State.SIEGE_TONIGHT : ZombieSiegeManager.State.SIEGE_DONE;

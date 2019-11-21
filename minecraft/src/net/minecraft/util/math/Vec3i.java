@@ -44,7 +44,7 @@ public class Vec3i implements Comparable<Vec3i> {
 		return (this.getY() + this.getZ() * 31) * 31 + this.getX();
 	}
 
-	public int method_10265(Vec3i vec3i) {
+	public int compareTo(Vec3i vec3i) {
 		if (this.getY() == vec3i.getY()) {
 			return this.getZ() == vec3i.getZ() ? this.getX() - vec3i.getX() : this.getZ() - vec3i.getZ();
 		} else {

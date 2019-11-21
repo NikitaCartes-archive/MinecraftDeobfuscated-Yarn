@@ -36,7 +36,7 @@ public class LootEntries {
 	}
 
 	public static class Serializer implements JsonDeserializer<LootEntry>, JsonSerializer<LootEntry> {
-		public LootEntry method_407(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) {
+		public LootEntry deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) {
 			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "entry");
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "type"));
 			LootEntry.Serializer<?> serializer = (LootEntry.Serializer<?>)LootEntries.idSerializers.get(identifier);
@@ -48,7 +48,7 @@ public class LootEntries {
 			}
 		}
 
-		public JsonElement method_408(LootEntry lootEntry, Type type, JsonSerializationContext jsonSerializationContext) {
+		public JsonElement serialize(LootEntry lootEntry, Type type, JsonSerializationContext jsonSerializationContext) {
 			JsonObject jsonObject = new JsonObject();
 			LootEntry.Serializer<LootEntry> serializer = getSerializer(lootEntry.getClass());
 			jsonObject.addProperty("type", serializer.getIdentifier().toString());

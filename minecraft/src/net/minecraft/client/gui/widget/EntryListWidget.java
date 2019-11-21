@@ -496,7 +496,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		private Entries() {
 		}
 
-		public E method_1912(int i) {
+		public E get(int i) {
 			return (E)this.entries.get(i);
 		}
 
@@ -504,18 +504,18 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 			return this.entries.size();
 		}
 
-		public E method_1909(int i, E entry) {
+		public E set(int i, E entry) {
 			E entry2 = (E)this.entries.set(i, entry);
 			entry.list = EntryListWidget.this;
 			return entry2;
 		}
 
-		public void method_1910(int i, E entry) {
+		public void add(int i, E entry) {
 			this.entries.add(i, entry);
 			entry.list = EntryListWidget.this;
 		}
 
-		public E method_1911(int i) {
+		public E remove(int i) {
 			return (E)this.entries.remove(i);
 		}
 	}

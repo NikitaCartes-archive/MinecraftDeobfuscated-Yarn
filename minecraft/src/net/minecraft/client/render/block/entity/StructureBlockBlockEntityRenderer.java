@@ -21,7 +21,7 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 		super(blockEntityRenderDispatcher);
 	}
 
-	public void method_3587(
+	public void render(
 		StructureBlockBlockEntity structureBlockBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j
 	) {
 		if (MinecraftClient.getInstance().player.isCreativeLevelTwoOp() || MinecraftClient.getInstance().player.isSpectator()) {
@@ -126,7 +126,7 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 		}
 	}
 
-	public boolean method_3588(StructureBlockBlockEntity structureBlockBlockEntity) {
+	public boolean method_3563(StructureBlockBlockEntity structureBlockBlockEntity) {
 		return true;
 	}
 }

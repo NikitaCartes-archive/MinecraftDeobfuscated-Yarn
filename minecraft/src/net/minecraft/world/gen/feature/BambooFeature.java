@@ -29,7 +29,7 @@ public class BambooFeature extends Feature<ProbabilityConfig> {
 		super(configFactory);
 	}
 
-	public boolean method_12718(
+	public boolean generate(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, ProbabilityConfig probabilityConfig
 	) {
 		int i = 0;
@@ -47,7 +47,7 @@ public class BambooFeature extends Feature<ProbabilityConfig> {
 							int o = m - blockPos.getZ();
 							if (n * n + o * o <= k * k) {
 								mutable2.set(l, iWorld.getTopY(Heightmap.Type.WORLD_SURFACE, l, m) - 1, m);
-								if (method_23396(iWorld.getBlockState(mutable2).getBlock())) {
+								if (isDirt(iWorld.getBlockState(mutable2).getBlock())) {
 									iWorld.setBlockState(mutable2, Blocks.PODZOL.getDefaultState(), 2);
 								}
 							}

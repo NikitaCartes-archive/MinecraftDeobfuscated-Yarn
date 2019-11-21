@@ -33,7 +33,7 @@ public class EntityScoresLootCondition implements LootCondition {
 		return ImmutableSet.of(this.target.getParameter());
 	}
 
-	public boolean method_864(LootContext lootContext) {
+	public boolean test(LootContext lootContext) {
 		Entity entity = lootContext.get(this.target.getParameter());
 		if (entity == null) {
 			return false;
@@ -67,7 +67,7 @@ public class EntityScoresLootCondition implements LootCondition {
 			super(new Identifier("entity_scores"), EntityScoresLootCondition.class);
 		}
 
-		public void method_868(JsonObject jsonObject, EntityScoresLootCondition entityScoresLootCondition, JsonSerializationContext jsonSerializationContext) {
+		public void toJson(JsonObject jsonObject, EntityScoresLootCondition entityScoresLootCondition, JsonSerializationContext jsonSerializationContext) {
 			JsonObject jsonObject2 = new JsonObject();
 
 			for (Entry<String, UniformLootTableRange> entry : entityScoresLootCondition.scores.entrySet()) {
@@ -78,7 +78,7 @@ public class EntityScoresLootCondition implements LootCondition {
 			jsonObject.add("entity", jsonSerializationContext.serialize(entityScoresLootCondition.target));
 		}
 
-		public EntityScoresLootCondition method_867(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		public EntityScoresLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			Set<Entry<String, JsonElement>> set = JsonHelper.getObject(jsonObject, "scores").entrySet();
 			Map<String, UniformLootTableRange> map = Maps.<String, UniformLootTableRange>newLinkedHashMap();
 

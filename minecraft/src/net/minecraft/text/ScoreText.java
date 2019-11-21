@@ -67,7 +67,7 @@ public class ScoreText extends BaseText implements ParsableText {
 		}
 	}
 
-	public ScoreText method_10929() {
+	public ScoreText copy() {
 		ScoreText scoreText = new ScoreText(this.name, this.objective);
 		scoreText.setScore(this.score);
 		return scoreText;
@@ -76,7 +76,7 @@ public class ScoreText extends BaseText implements ParsableText {
 	@Override
 	public Text parse(@Nullable ServerCommandSource source, @Nullable Entity sender, int depth) throws CommandSyntaxException {
 		if (source == null) {
-			return this.method_10929();
+			return this.copy();
 		} else {
 			String string;
 			if (this.selector != null) {

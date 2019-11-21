@@ -316,7 +316,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 			this.defaultTopArraySectionY = i;
 		}
 
-		public SkyLightStorage.Data method_15572() {
+		public SkyLightStorage.Data copy() {
 			return new SkyLightStorage.Data(this.arrays.clone(), this.topArraySectionY.clone(), this.defaultTopArraySectionY);
 		}
 	}

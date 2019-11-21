@@ -63,7 +63,7 @@ public class TitleS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 	}
 
-	public void method_11879(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onTitle(this);
 	}
 

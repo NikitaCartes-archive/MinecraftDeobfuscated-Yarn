@@ -363,7 +363,7 @@ public abstract class MobEntity extends LivingEntity {
 
 			tag.put("Leash", compoundTag2);
 		} else if (this.leashTag != null) {
-			tag.put("Leash", this.leashTag.method_10553());
+			tag.put("Leash", this.leashTag.copy());
 		}
 
 		tag.putBoolean("LeftHanded", this.isLeftHanded());
@@ -668,7 +668,7 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	public static boolean canMobSpawn(EntityType<? extends MobEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
-		BlockPos blockPos = pos.method_10074();
+		BlockPos blockPos = pos.down();
 		return spawnType == SpawnType.SPAWNER || world.getBlockState(blockPos).allowsSpawning(world, blockPos, type);
 	}
 
@@ -1021,7 +1021,7 @@ public abstract class MobEntity extends LivingEntity {
 			}
 
 			if (!this.world.isClient && sendPacket && this.world instanceof ServerWorld) {
-				((ServerWorld)this.world).method_14178().sendToOtherNearbyPlayers(this, new EntityAttachS2CPacket(this, null));
+				((ServerWorld)this.world).getChunkManager().sendToOtherNearbyPlayers(this, new EntityAttachS2CPacket(this, null));
 			}
 		}
 	}
@@ -1051,7 +1051,7 @@ public abstract class MobEntity extends LivingEntity {
 		}
 
 		if (!this.world.isClient && bl && this.world instanceof ServerWorld) {
-			((ServerWorld)this.world).method_14178().sendToOtherNearbyPlayers(this, new EntityAttachS2CPacket(this, this.holdingEntity));
+			((ServerWorld)this.world).getChunkManager().sendToOtherNearbyPlayers(this, new EntityAttachS2CPacket(this, this.holdingEntity));
 		}
 
 		if (this.hasVehicle()) {
@@ -1221,7 +1221,7 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	protected boolean isInDaylight() {
-		if (this.world.isDaylight() && !this.world.isClient) {
+		if (this.world.isDay() && !this.world.isClient) {
 			float f = this.getBrightnessAtEyes();
 			BlockPos blockPos = this.getVehicle() instanceof BoatEntity
 				? new BlockPos(this.getX(), (double)Math.round(this.getY()), this.getZ()).up()

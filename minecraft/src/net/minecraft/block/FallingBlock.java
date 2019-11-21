@@ -31,7 +31,7 @@ public class FallingBlock extends Block {
 
 	@Override
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-		if (canFallThrough(world.getBlockState(pos.method_10074())) && pos.getY() >= 0) {
+		if (canFallThrough(world.getBlockState(pos.down())) && pos.getY() >= 0) {
 			FallingBlockEntity fallingBlockEntity = new FallingBlockEntity(
 				world, (double)pos.getX() + 0.5, (double)pos.getY(), (double)pos.getZ() + 0.5, world.getBlockState(pos)
 			);
@@ -64,7 +64,7 @@ public class FallingBlock extends Block {
 	@Override
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		if (random.nextInt(16) == 0) {
-			BlockPos blockPos = pos.method_10074();
+			BlockPos blockPos = pos.down();
 			if (canFallThrough(world.getBlockState(blockPos))) {
 				double d = (double)((float)pos.getX() + random.nextFloat());
 				double e = (double)pos.getY() - 0.05;

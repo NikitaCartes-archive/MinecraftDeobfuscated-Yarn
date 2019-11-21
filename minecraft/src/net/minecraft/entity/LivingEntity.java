@@ -1218,7 +1218,7 @@ public abstract class LivingEntity extends Entity {
 
 	private boolean canEnterTrapdoor(BlockPos pos, BlockState state) {
 		if ((Boolean)state.get(TrapdoorBlock.OPEN)) {
-			BlockState blockState = this.world.getBlockState(pos.method_10074());
+			BlockState blockState = this.world.getBlockState(pos.down());
 			if (blockState.getBlock() == Blocks.LADDER && blockState.get(LadderBlock.FACING) == state.get(TrapdoorBlock.FACING)) {
 				return true;
 			}
@@ -1400,7 +1400,7 @@ public abstract class LivingEntity extends Entity {
 			this.preferredHand = hand;
 			if (this.world instanceof ServerWorld) {
 				EntityAnimationS2CPacket entityAnimationS2CPacket = new EntityAnimationS2CPacket(this, hand == Hand.MAIN_HAND ? 0 : 3);
-				ServerChunkManager serverChunkManager = ((ServerWorld)this.world).method_14178();
+				ServerChunkManager serverChunkManager = ((ServerWorld)this.world).getChunkManager();
 				if (bl) {
 					serverChunkManager.sendToNearbyPlayers(this, entityAnimationS2CPacket);
 				} else {
@@ -2030,7 +2030,9 @@ public abstract class LivingEntity extends Entity {
 
 				ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
 				if (!ItemStack.areEqualIgnoreDamage(itemStack2, itemStack)) {
-					((ServerWorld)this.world).method_14178().sendToOtherNearbyPlayers(this, new EntityEquipmentUpdateS2CPacket(this.getEntityId(), equipmentSlot, itemStack2));
+					((ServerWorld)this.world)
+						.getChunkManager()
+						.sendToOtherNearbyPlayers(this, new EntityEquipmentUpdateS2CPacket(this.getEntityId(), equipmentSlot, itemStack2));
 					if (!itemStack.isEmpty()) {
 						this.getAttributes().removeAll(itemStack.getAttributeModifiers(equipmentSlot));
 					}
@@ -2391,7 +2393,7 @@ public abstract class LivingEntity extends Entity {
 
 	public void sendPickup(Entity item, int count) {
 		if (!item.removed && !this.world.isClient && (item instanceof ItemEntity || item instanceof ProjectileEntity || item instanceof ExperienceOrbEntity)) {
-			((ServerWorld)this.world).method_14178().sendToOtherNearbyPlayers(item, new ItemPickupAnimationS2CPacket(item.getEntityId(), this.getEntityId(), count));
+			((ServerWorld)this.world).getChunkManager().sendToOtherNearbyPlayers(item, new ItemPickupAnimationS2CPacket(item.getEntityId(), this.getEntityId(), count));
 		}
 	}
 
@@ -2678,7 +2680,7 @@ public abstract class LivingEntity extends Entity {
 			boolean bl2 = false;
 
 			while (!bl2 && blockPos.getY() > 0) {
-				BlockPos blockPos2 = blockPos.method_10074();
+				BlockPos blockPos2 = blockPos.down();
 				BlockState blockState = world.getBlockState(blockPos2);
 				if (blockState.getMaterial().blocksMovement()) {
 					bl2 = true;

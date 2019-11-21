@@ -159,7 +159,7 @@ public abstract class PlayerManager {
 		this.sendCommandTree(player);
 		player.getStatHandler().updateStatSet();
 		player.getRecipeBook().sendInitRecipesPacket(player);
-		this.sendScoreboard(serverWorld.method_14170(), player);
+		this.sendScoreboard(serverWorld.getScoreboard(), player);
 		this.server.forcePlayerSampleUpdate();
 		Text text;
 		if (player.getGameProfile().getName().equalsIgnoreCase(string)) {
@@ -321,7 +321,7 @@ public abstract class PlayerManager {
 					serverWorld.removeEntity(entity2);
 				}
 
-				serverWorld.method_8497(player.chunkX, player.chunkZ).markDirty();
+				serverWorld.getChunk(player.chunkX, player.chunkZ).markDirty();
 			}
 		}
 
@@ -766,7 +766,7 @@ public abstract class PlayerManager {
 
 		for (ServerWorld serverWorld : this.server.getWorlds()) {
 			if (serverWorld != null) {
-				serverWorld.method_14178().applyViewDistance(viewDistance);
+				serverWorld.getChunkManager().applyViewDistance(viewDistance);
 			}
 		}
 	}

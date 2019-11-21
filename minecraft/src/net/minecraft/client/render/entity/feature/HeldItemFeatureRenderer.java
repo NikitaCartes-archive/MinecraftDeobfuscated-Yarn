@@ -19,7 +19,7 @@ public class HeldItemFeatureRenderer<T extends LivingEntity, M extends EntityMod
 		super(context);
 	}
 
-	public void method_17162(
+	public void render(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l
 	) {
 		boolean bl = livingEntity.getMainArm() == Arm.RIGHT;

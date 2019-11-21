@@ -34,7 +34,7 @@ public class LoginSuccessS2CPacket implements Packet<ClientLoginPacketListener> 
 		buf.writeString(this.profile.getName());
 	}
 
-	public void method_12594(ClientLoginPacketListener clientLoginPacketListener) {
+	public void apply(ClientLoginPacketListener clientLoginPacketListener) {
 		clientLoginPacketListener.onLoginSuccess(this);
 	}
 

@@ -30,7 +30,7 @@ public class PistonHandler {
 			this.posTo = pos.offset(dir);
 		} else {
 			this.direction = dir.getOpposite();
-			this.posTo = pos.method_10079(dir, 2);
+			this.posTo = pos.offset(dir, 2);
 		}
 	}
 
@@ -88,7 +88,7 @@ public class PistonHandler {
 				return false;
 			} else {
 				while (method_23367(block)) {
-					BlockPos blockPos2 = blockPos.method_10079(this.direction.getOpposite(), i);
+					BlockPos blockPos2 = blockPos.offset(this.direction.getOpposite(), i);
 					Block block2 = block;
 					blockState = this.world.getBlockState(blockPos2);
 					block = blockState.getBlock();
@@ -107,14 +107,14 @@ public class PistonHandler {
 				int j = 0;
 
 				for (int k = i - 1; k >= 0; k--) {
-					this.movedBlocks.add(blockPos.method_10079(this.direction.getOpposite(), k));
+					this.movedBlocks.add(blockPos.offset(this.direction.getOpposite(), k));
 					j++;
 				}
 
 				int k = 1;
 
 				while (true) {
-					BlockPos blockPos3 = blockPos.method_10079(this.direction, k);
+					BlockPos blockPos3 = blockPos.offset(this.direction, k);
 					int l = this.movedBlocks.indexOf(blockPos3);
 					if (l > -1) {
 						this.method_11539(j, l);

@@ -559,6 +559,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 
 	@Override
 	public void onDeath(DamageSource source) {
+		LOGGER.info("Villager {} died, message: '{}'", this, source.getDeathMessage(this).getString());
 		Entity entity = source.getAttacker();
 		if (entity != null) {
 			this.notifyDeath(entity);
@@ -693,7 +694,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
 	}
 
-	public VillagerEntity method_7225(PassiveEntity passiveEntity) {
+	public VillagerEntity createChild(PassiveEntity passiveEntity) {
 		double d = this.random.nextDouble();
 		VillagerType villagerType;
 		if (d < 0.5) {
@@ -886,7 +887,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 			for (int j = 0; j >= -12; j--) {
 				BlockPos blockPos2 = blockPos.add(d, f + (double)j, e);
 				if ((this.world.getBlockState(blockPos2).isAir() || this.world.getBlockState(blockPos2).getMaterial().isLiquid())
-					&& this.world.getBlockState(blockPos2.method_10074()).getMaterial().blocksLight()) {
+					&& this.world.getBlockState(blockPos2.down()).getMaterial().blocksLight()) {
 					f += (double)j;
 					break;
 				}

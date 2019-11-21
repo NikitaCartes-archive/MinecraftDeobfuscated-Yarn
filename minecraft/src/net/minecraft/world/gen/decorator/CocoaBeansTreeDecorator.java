@@ -29,7 +29,7 @@ public class CocoaBeansTreeDecorator extends TreeDecorator {
 	}
 
 	@Override
-	public void method_23469(IWorld iWorld, Random random, List<BlockPos> list, List<BlockPos> list2, Set<BlockPos> set, BlockBox blockBox) {
+	public void generate(IWorld iWorld, Random random, List<BlockPos> list, List<BlockPos> list2, Set<BlockPos> set, BlockBox blockBox) {
 		if (!(random.nextFloat() >= this.field_21318)) {
 			int i = ((BlockPos)list.get(0)).getY();
 			list.stream().filter(blockPos -> blockPos.getY() - i <= 2).forEach(blockPos -> {

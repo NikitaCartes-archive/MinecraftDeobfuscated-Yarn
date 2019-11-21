@@ -31,7 +31,7 @@ public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends Bip
 		this.modelBody = bipedEntityModel2;
 	}
 
-	public void method_17157(
+	public void render(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l
 	) {
 		this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, f, g, h, j, k, l, EquipmentSlot.CHEST, i);
@@ -59,9 +59,9 @@ public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends Bip
 			if (armorItem.getSlotType() == equipmentSlot) {
 				A bipedEntityModel = this.getArmor(equipmentSlot);
 				this.getModel().setAttributes(bipedEntityModel);
-				bipedEntityModel.method_17086(livingEntity, f, g, h);
+				bipedEntityModel.animateModel(livingEntity, f, g, h);
 				this.setVisible(bipedEntityModel, equipmentSlot);
-				bipedEntityModel.method_17087(livingEntity, f, g, i, j, k);
+				bipedEntityModel.setAngles(livingEntity, f, g, i, j, k);
 				boolean bl = this.isLegs(equipmentSlot);
 				boolean bl2 = itemStack.hasEnchantmentGlint();
 				if (armorItem instanceof DyeableArmorItem) {
@@ -94,7 +94,7 @@ public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends Bip
 		VertexConsumer vertexConsumer = ItemRenderer.getArmorVertexConsumer(
 			vertexConsumerProvider, RenderLayer.getEntityCutoutNoCull(this.getArmorTexture(armorItem, lowerParts, textureSuffix)), false, renderGlint
 		);
-		bipedEntityModel.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, r, g, b);
+		bipedEntityModel.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, r, g, b, 1.0F);
 	}
 
 	public A getArmor(EquipmentSlot equipmentSlot) {

@@ -29,7 +29,7 @@ public class CompoundTag implements Tag {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Pattern PATTERN = Pattern.compile("[A-Za-z0-9._+-]+");
 	public static final TagReader<CompoundTag> READER = new TagReader<CompoundTag>() {
-		public CompoundTag method_23240(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+		public CompoundTag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
 			positionTracker.add(384L);
 			if (i > 512) {
 				throw new RuntimeException("Tried to read NBT tag with too high complexity, depth > 512");
@@ -380,7 +380,7 @@ public class CompoundTag implements Tag {
 		return crashReport;
 	}
 
-	public CompoundTag method_10553() {
+	public CompoundTag copy() {
 		Map<String, Tag> map = Maps.<String, Tag>newHashMap(Maps.transformValues(this.tags, Tag::copy));
 		return new CompoundTag(map);
 	}

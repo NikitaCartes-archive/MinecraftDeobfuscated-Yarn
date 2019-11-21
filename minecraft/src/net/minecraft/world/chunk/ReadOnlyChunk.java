@@ -197,12 +197,12 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public ChunkTickScheduler<Block> method_12303() {
+	public ChunkTickScheduler<Block> getBlockTickScheduler() {
 		return new ChunkTickScheduler<>(block -> block.getDefaultState().isAir(), this.getPos());
 	}
 
 	@Override
-	public ChunkTickScheduler<Fluid> method_12313() {
+	public ChunkTickScheduler<Fluid> getFluidTickScheduler() {
 		return new ChunkTickScheduler<>(fluid -> fluid == Fluids.EMPTY, this.getPos());
 	}
 

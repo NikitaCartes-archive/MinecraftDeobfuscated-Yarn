@@ -54,7 +54,7 @@ public class RedstoneTorchBlock extends TorchBlock {
 	}
 
 	protected boolean shouldUnpower(World world, BlockPos pos, BlockState state) {
-		return world.isEmittingRedstonePower(pos.method_10074(), Direction.DOWN);
+		return world.isEmittingRedstonePower(pos.down(), Direction.DOWN);
 	}
 
 	@Override

@@ -62,7 +62,7 @@ public class ItemPickupParticle extends Particle {
 				tickDelta,
 				new MatrixStack(),
 				immediate,
-				EntityRenderDispatcher.method_23839(this.field_3823)
+				this.field_3824.method_23839(this.field_3823, tickDelta)
 			);
 		immediate.draw();
 	}

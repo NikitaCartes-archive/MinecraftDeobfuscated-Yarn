@@ -125,7 +125,7 @@ public class PoweredRailBlock extends AbstractRailBlock {
 			|| this.isPoweredByOtherRails(world, pos, state, false, 0);
 		if (bl2 != bl) {
 			world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl2)), 3);
-			world.updateNeighborsAlways(pos.method_10074(), this);
+			world.updateNeighborsAlways(pos.down(), this);
 			if (((RailShape)state.get(SHAPE)).isAscending()) {
 				world.updateNeighborsAlways(pos.up(), this);
 			}

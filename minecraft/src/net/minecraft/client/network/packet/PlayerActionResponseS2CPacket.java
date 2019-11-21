@@ -46,7 +46,7 @@ public class PlayerActionResponseS2CPacket implements Packet<ClientPlayPacketLis
 		buf.writeBoolean(this.approved);
 	}
 
-	public void method_21708(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.handlePlayerActionResponse(this);
 	}
 

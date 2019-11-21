@@ -72,7 +72,7 @@ public class ItemTags {
 			super(identifier);
 		}
 
-		public boolean method_15109(Item item) {
+		public boolean contains(Item item) {
 			if (this.version != ItemTags.latestVersion) {
 				this.delegate = ItemTags.container.getOrCreate(this.getId());
 				this.version = ItemTags.latestVersion;

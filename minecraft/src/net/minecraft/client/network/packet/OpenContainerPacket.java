@@ -39,7 +39,7 @@ public class OpenContainerPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeText(this.name);
 	}
 
-	public void method_17591(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onOpenContainer(this);
 	}
 

@@ -69,7 +69,7 @@ public class ChunkRegion implements IWorld {
 			this.width = i;
 			this.world = world;
 			this.seed = world.getSeed();
-			this.generatorSettings = world.method_14178().getChunkGenerator().getConfig();
+			this.generatorSettings = world.getChunkManager().getChunkGenerator().getConfig();
 			this.seaLevel = world.getSeaLevel();
 			this.levelProperties = world.getLevelProperties();
 			this.random = world.getRandom();
@@ -276,7 +276,7 @@ public class ChunkRegion implements IWorld {
 	}
 
 	@Deprecated
-	public ServerWorld method_19506() {
+	public ServerWorld getWorld() {
 		return this.world;
 	}
 
@@ -296,7 +296,7 @@ public class ChunkRegion implements IWorld {
 
 	@Override
 	public ChunkManager getChunkManager() {
-		return this.world.method_14178();
+		return this.world.getChunkManager();
 	}
 
 	@Override

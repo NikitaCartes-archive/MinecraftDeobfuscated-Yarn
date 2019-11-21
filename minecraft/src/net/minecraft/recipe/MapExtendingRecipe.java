@@ -34,8 +34,8 @@ public class MapExtendingRecipe extends ShapedRecipe {
 	}
 
 	@Override
-	public boolean method_17728(CraftingInventory craftingInventory, World world) {
-		if (!super.method_17728(craftingInventory, world)) {
+	public boolean matches(CraftingInventory craftingInventory, World world) {
+		if (!super.matches(craftingInventory, world)) {
 			return false;
 		} else {
 			ItemStack itemStack = ItemStack.EMPTY;
@@ -73,7 +73,7 @@ public class MapExtendingRecipe extends ShapedRecipe {
 	}
 
 	@Override
-	public ItemStack method_17727(CraftingInventory craftingInventory) {
+	public ItemStack craft(CraftingInventory craftingInventory) {
 		ItemStack itemStack = ItemStack.EMPTY;
 
 		for (int i = 0; i < craftingInventory.getInvSize() && itemStack.isEmpty(); i++) {

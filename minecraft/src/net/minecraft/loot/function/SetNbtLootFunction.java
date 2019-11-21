@@ -36,12 +36,12 @@ public class SetNbtLootFunction extends ConditionalLootFunction {
 			super(new Identifier("set_nbt"), SetNbtLootFunction.class);
 		}
 
-		public void method_678(JsonObject jsonObject, SetNbtLootFunction setNbtLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.method_529(jsonObject, setNbtLootFunction, jsonSerializationContext);
+		public void toJson(JsonObject jsonObject, SetNbtLootFunction setNbtLootFunction, JsonSerializationContext jsonSerializationContext) {
+			super.toJson(jsonObject, setNbtLootFunction, jsonSerializationContext);
 			jsonObject.addProperty("tag", setNbtLootFunction.tag.toString());
 		}
 
-		public SetNbtLootFunction method_679(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public SetNbtLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			try {
 				CompoundTag compoundTag = StringNbtReader.parse(JsonHelper.getString(jsonObject, "tag"));
 				return new SetNbtLootFunction(lootConditions, compoundTag);

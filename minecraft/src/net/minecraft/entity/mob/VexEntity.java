@@ -2,8 +2,6 @@ package net.minecraft.entity.mob;
 
 import java.util.EnumSet;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -180,12 +178,6 @@ public class VexEntity extends HostileEntity {
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
 		return SoundEvents.ENTITY_VEX_HURT;
-	}
-
-	@Environment(EnvType.CLIENT)
-	@Override
-	public int getLightmapCoordinates() {
-		return 15;
 	}
 
 	@Override

@@ -50,7 +50,7 @@ public class ChunkDeltaUpdateS2CPacket implements Packet<ClientPlayPacketListene
 		}
 	}
 
-	public void method_11392(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onChunkDeltaUpdate(this);
 	}
 

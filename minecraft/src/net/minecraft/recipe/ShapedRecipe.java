@@ -72,7 +72,7 @@ public class ShapedRecipe implements CraftingRecipe {
 		return width >= this.width && height >= this.height;
 	}
 
-	public boolean method_17728(CraftingInventory craftingInventory, World world) {
+	public boolean matches(CraftingInventory craftingInventory, World world) {
 		for (int i = 0; i <= craftingInventory.getWidth() - this.width; i++) {
 			for (int j = 0; j <= craftingInventory.getHeight() - this.height; j++) {
 				if (this.matchesSmall(craftingInventory, i, j, true)) {
@@ -102,7 +102,7 @@ public class ShapedRecipe implements CraftingRecipe {
 					}
 				}
 
-				if (!ingredient.method_8093(inv.getInvStack(i + j * inv.getWidth()))) {
+				if (!ingredient.test(inv.getInvStack(i + j * inv.getWidth()))) {
 					return false;
 				}
 			}
@@ -111,7 +111,7 @@ public class ShapedRecipe implements CraftingRecipe {
 		return true;
 	}
 
-	public ItemStack method_17727(CraftingInventory craftingInventory) {
+	public ItemStack craft(CraftingInventory craftingInventory) {
 		return this.getOutput().copy();
 	}
 
@@ -259,7 +259,7 @@ public class ShapedRecipe implements CraftingRecipe {
 	}
 
 	public static class Serializer implements RecipeSerializer<ShapedRecipe> {
-		public ShapedRecipe method_8164(Identifier identifier, JsonObject jsonObject) {
+		public ShapedRecipe read(Identifier identifier, JsonObject jsonObject) {
 			String string = JsonHelper.getString(jsonObject, "group", "");
 			Map<String, Ingredient> map = ShapedRecipe.getComponents(JsonHelper.getObject(jsonObject, "key"));
 			String[] strings = ShapedRecipe.combinePattern(ShapedRecipe.getPattern(JsonHelper.getArray(jsonObject, "pattern")));
@@ -270,7 +270,7 @@ public class ShapedRecipe implements CraftingRecipe {
 			return new ShapedRecipe(identifier, string, i, j, defaultedList, itemStack);
 		}
 
-		public ShapedRecipe method_8163(Identifier identifier, PacketByteBuf packetByteBuf) {
+		public ShapedRecipe read(Identifier identifier, PacketByteBuf packetByteBuf) {
 			int i = packetByteBuf.readVarInt();
 			int j = packetByteBuf.readVarInt();
 			String string = packetByteBuf.readString(32767);
@@ -284,7 +284,7 @@ public class ShapedRecipe implements CraftingRecipe {
 			return new ShapedRecipe(identifier, string, i, j, defaultedList, itemStack);
 		}
 
-		public void method_8165(PacketByteBuf packetByteBuf, ShapedRecipe shapedRecipe) {
+		public void write(PacketByteBuf packetByteBuf, ShapedRecipe shapedRecipe) {
 			packetByteBuf.writeVarInt(shapedRecipe.width);
 			packetByteBuf.writeVarInt(shapedRecipe.height);
 			packetByteBuf.writeString(shapedRecipe.group);

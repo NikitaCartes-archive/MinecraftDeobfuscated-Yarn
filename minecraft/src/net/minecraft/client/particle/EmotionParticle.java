@@ -61,7 +61,7 @@ public class EmotionParticle extends SpriteBillboardParticle {
 			this.field_17813 = spriteProvider;
 		}
 
-		public Particle method_3034(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			EmotionParticle emotionParticle = new EmotionParticle(world, d, e + 0.5, f);
 			emotionParticle.setSprite(this.field_17813);
 			emotionParticle.setColor(1.0F, 1.0F, 1.0F);
@@ -77,7 +77,7 @@ public class EmotionParticle extends SpriteBillboardParticle {
 			this.field_17814 = spriteProvider;
 		}
 
-		public Particle method_3035(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			EmotionParticle emotionParticle = new EmotionParticle(world, d, e, f);
 			emotionParticle.setSprite(this.field_17814);
 			return emotionParticle;

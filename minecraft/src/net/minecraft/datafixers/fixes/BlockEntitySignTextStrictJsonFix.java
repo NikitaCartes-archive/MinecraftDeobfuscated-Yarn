@@ -20,7 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class BlockEntitySignTextStrictJsonFix extends ChoiceFix {
 	public static final Gson GSON = new GsonBuilder().registerTypeAdapter(Text.class, new JsonDeserializer<Text>() {
-		public Text method_15583(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+		public Text deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			if (jsonElement.isJsonPrimitive()) {
 				return new LiteralText(jsonElement.getAsString());
 			} else if (jsonElement.isJsonArray()) {
@@ -28,7 +28,7 @@ public class BlockEntitySignTextStrictJsonFix extends ChoiceFix {
 				Text text = null;
 
 				for (JsonElement jsonElement2 : jsonArray) {
-					Text text2 = this.method_15583(jsonElement2, jsonElement2.getClass(), jsonDeserializationContext);
+					Text text2 = this.deserialize(jsonElement2, jsonElement2.getClass(), jsonDeserializationContext);
 					if (text == null) {
 						text = text2;
 					} else {

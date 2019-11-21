@@ -21,7 +21,7 @@ public class LecternBlockEntityRenderer extends BlockEntityRenderer<LecternBlock
 		super(blockEntityRenderDispatcher);
 	}
 
-	public void method_17582(LecternBlockEntity lecternBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
+	public void render(LecternBlockEntity lecternBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
 		BlockState blockState = lecternBlockEntity.getCachedState();
 		if ((Boolean)blockState.get(LecternBlock.HAS_BOOK)) {
 			matrixStack.push();
@@ -31,8 +31,8 @@ public class LecternBlockEntityRenderer extends BlockEntityRenderer<LecternBlock
 			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(67.5F));
 			matrixStack.translate(0.0, -0.125, 0.0);
 			this.book.setPageAngles(0.0F, 0.1F, 0.9F, 1.2F);
-			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.method_23946());
-			this.book.render(matrixStack, vertexConsumer, i, j, 1.0F, 1.0F, 1.0F, this.getSprite(EnchantingTableBlockEntityRenderer.BOOK_TEX));
+			VertexConsumer vertexConsumer = EnchantingTableBlockEntityRenderer.BOOK_TEX.method_24145(vertexConsumerProvider, RenderLayer::getEntitySolid);
+			this.book.b(matrixStack, vertexConsumer, i, j, 1.0F, 1.0F, 1.0F, 1.0F);
 			matrixStack.pop();
 		}
 	}

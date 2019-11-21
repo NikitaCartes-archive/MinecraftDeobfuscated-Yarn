@@ -185,7 +185,7 @@ public final class ItemStack {
 		tag.putString("id", identifier == null ? "minecraft:air" : identifier.toString());
 		tag.putByte("Count", (byte)this.count);
 		if (this.tag != null) {
-			tag.put("tag", this.tag.method_10553());
+			tag.put("tag", this.tag.copy());
 		}
 
 		return tag;
@@ -300,7 +300,7 @@ public final class ItemStack {
 			ItemStack itemStack = new ItemStack(this.getItem(), this.count);
 			itemStack.setCooldown(this.getCooldown());
 			if (this.tag != null) {
-				itemStack.tag = this.tag.method_10553();
+				itemStack.tag = this.tag.copy();
 			}
 
 			return itemStack;
@@ -827,7 +827,7 @@ public final class ItemStack {
 					String string = listTag.getString(i);
 
 					try {
-						Predicate<CachedBlockPosition> predicate = BlockPredicateArgumentType.blockPredicate().method_9642(new StringReader(string)).create(manager);
+						Predicate<CachedBlockPosition> predicate = BlockPredicateArgumentType.blockPredicate().parse(new StringReader(string)).create(manager);
 						if (predicate.test(pos)) {
 							this.lastDestroyResult = true;
 							return true;
@@ -854,7 +854,7 @@ public final class ItemStack {
 					String string = listTag.getString(i);
 
 					try {
-						Predicate<CachedBlockPosition> predicate = BlockPredicateArgumentType.blockPredicate().method_9642(new StringReader(string)).create(manager);
+						Predicate<CachedBlockPosition> predicate = BlockPredicateArgumentType.blockPredicate().parse(new StringReader(string)).create(manager);
 						if (predicate.test(pos)) {
 							this.lastPlaceOnResult = true;
 							return true;

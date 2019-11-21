@@ -32,7 +32,7 @@ public class FluidTags {
 			super(identifier);
 		}
 
-		public boolean method_15101(Fluid fluid) {
+		public boolean contains(Fluid fluid) {
 			if (this.version != FluidTags.latestVersion) {
 				this.delegate = FluidTags.container.getOrCreate(this.getId());
 				this.version = FluidTags.latestVersion;

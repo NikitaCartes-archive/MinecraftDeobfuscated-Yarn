@@ -44,7 +44,7 @@ public class SelectorText extends BaseText implements ParsableText {
 		return this.pattern;
 	}
 
-	public SelectorText method_10931() {
+	public SelectorText copy() {
 		return new SelectorText(this.pattern);
 	}
 

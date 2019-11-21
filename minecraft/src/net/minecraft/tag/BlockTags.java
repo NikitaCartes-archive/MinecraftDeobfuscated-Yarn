@@ -85,7 +85,7 @@ public class BlockTags {
 			super(identifier);
 		}
 
-		public boolean method_15076(Block block) {
+		public boolean contains(Block block) {
 			if (this.version != BlockTags.latestVersion) {
 				this.delegate = BlockTags.container.getOrCreate(this.getId());
 				this.version = BlockTags.latestVersion;

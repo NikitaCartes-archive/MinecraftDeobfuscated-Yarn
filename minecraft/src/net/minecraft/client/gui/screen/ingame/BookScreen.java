@@ -255,7 +255,7 @@ public class BookScreen extends Screen {
 	}
 
 	public static List<String> readPages(CompoundTag tag) {
-		ListTag listTag = tag.getList("pages", 8).method_10612();
+		ListTag listTag = tag.getList("pages", 8).copy();
 		Builder<String> builder = ImmutableList.builder();
 
 		for (int i = 0; i < listTag.size(); i++) {

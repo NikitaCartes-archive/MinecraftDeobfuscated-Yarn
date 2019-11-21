@@ -16,7 +16,7 @@ public class EffectsChangedCriterion extends AbstractCriterion<EffectsChangedCri
 		return ID;
 	}
 
-	public EffectsChangedCriterion.Conditions method_8862(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public EffectsChangedCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		EntityEffectPredicate entityEffectPredicate = EntityEffectPredicate.deserialize(jsonObject.get("effects"));
 		return new EffectsChangedCriterion.Conditions(entityEffectPredicate);
 	}

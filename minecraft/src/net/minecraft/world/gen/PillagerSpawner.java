@@ -1,6 +1,7 @@
 package net.minecraft.world.gen;
 
 import java.util.Random;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.mob.PatrolEntity;
@@ -8,6 +9,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
+import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 
@@ -25,7 +27,7 @@ public class PillagerSpawner {
 			} else {
 				this.ticksUntilNextSpawn = this.ticksUntilNextSpawn + 12000 + random.nextInt(1200);
 				long l = serverWorld.getTimeOfDay() / 24000L;
-				if (l < 5L || !serverWorld.isDaylight()) {
+				if (l < 5L || !serverWorld.isDay()) {
 					return 0;
 				} else if (random.nextInt(5) != 0) {
 					return 0;
@@ -82,7 +84,10 @@ public class PillagerSpawner {
 	}
 
 	private boolean spawnOneEntity(World world, BlockPos blockPos, Random random, boolean bl) {
-		if (!PatrolEntity.canSpawn(EntityType.PILLAGER, world, SpawnType.PATROL, blockPos, random)) {
+		BlockState blockState = world.getBlockState(blockPos);
+		if (!SpawnHelper.isClearForSpawn(world, blockPos, blockState, blockState.getFluidState())) {
+			return false;
+		} else if (!PatrolEntity.canSpawn(EntityType.PILLAGER, world, SpawnType.PATROL, blockPos, random)) {
 			return false;
 		} else {
 			PatrolEntity patrolEntity = EntityType.PILLAGER.create(world);

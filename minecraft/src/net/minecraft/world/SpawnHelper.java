@@ -34,7 +34,7 @@ public final class SpawnHelper {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	public static void spawnEntitiesInChunk(EntityCategory category, ServerWorld serverWorld, WorldChunk chunk, BlockPos spawnPos) {
-		ChunkGenerator<?> chunkGenerator = serverWorld.method_14178().getChunkGenerator();
+		ChunkGenerator<?> chunkGenerator = serverWorld.getChunkManager().getChunkGenerator();
 		int i = 0;
 		BlockPos blockPos = getSpawnPos(serverWorld, chunk);
 		int j = blockPos.getX();
@@ -76,7 +76,7 @@ public final class SpawnHelper {
 								}
 
 								ChunkPos chunkPos = new ChunkPos(mutable);
-								if (!Objects.equals(chunkPos, chunk.getPos()) && !serverWorld.method_14178().shouldTickChunk(chunkPos)) {
+								if (!Objects.equals(chunkPos, chunk.getPos()) && !serverWorld.getChunkManager().shouldTickChunk(chunkPos)) {
 									break label115;
 								}
 
@@ -184,7 +184,7 @@ public final class SpawnHelper {
 			BlockState blockState = worldView.getBlockState(pos);
 			FluidState fluidState = worldView.getFluidState(pos);
 			BlockPos blockPos = pos.up();
-			BlockPos blockPos2 = pos.method_10074();
+			BlockPos blockPos2 = pos.down();
 			switch (location) {
 				case IN_WATER:
 					return fluidState.matches(FluidTags.WATER)
@@ -264,7 +264,7 @@ public final class SpawnHelper {
 
 	private static BlockPos getEntitySpawnPos(WorldView worldView, @Nullable EntityType<?> entityType, int x, int z) {
 		BlockPos blockPos = new BlockPos(x, worldView.getTopY(SpawnRestriction.getHeightmapType(entityType), x, z), z);
-		BlockPos blockPos2 = blockPos.method_10074();
+		BlockPos blockPos2 = blockPos.down();
 		return worldView.getBlockState(blockPos2).canPlaceAtSide(worldView, blockPos2, BlockPlacementEnvironment.LAND) ? blockPos2 : blockPos;
 	}
 }

@@ -21,7 +21,7 @@ public class IntegratedPlayerManager extends PlayerManager {
 
 	@Override
 	protected void savePlayerData(ServerPlayerEntity player) {
-		if (player.getName().getString().equals(this.method_4811().getUserName())) {
+		if (player.getName().getString().equals(this.getServer().getUserName())) {
 			this.userData = player.toTag(new CompoundTag());
 		}
 
@@ -30,12 +30,12 @@ public class IntegratedPlayerManager extends PlayerManager {
 
 	@Override
 	public Text checkCanJoin(SocketAddress socketAddress, GameProfile gameProfile) {
-		return (Text)(gameProfile.getName().equalsIgnoreCase(this.method_4811().getUserName()) && this.getPlayer(gameProfile.getName()) != null
+		return (Text)(gameProfile.getName().equalsIgnoreCase(this.getServer().getUserName()) && this.getPlayer(gameProfile.getName()) != null
 			? new TranslatableText("multiplayer.disconnect.name_taken")
 			: super.checkCanJoin(socketAddress, gameProfile));
 	}
 
-	public IntegratedServer method_4811() {
+	public IntegratedServer getServer() {
 		return (IntegratedServer)super.getServer();
 	}
 

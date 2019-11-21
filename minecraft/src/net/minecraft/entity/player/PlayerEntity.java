@@ -221,7 +221,7 @@ public abstract class PlayerEntity extends LivingEntity {
 				this.sleepTimer = 100;
 			}
 
-			if (!this.world.isClient && this.world.isDaylight()) {
+			if (!this.world.isClient && this.world.isDay()) {
 				this.wakeUp(false, true);
 			}
 		} else if (this.sleepTimer > 0) {
@@ -1282,7 +1282,7 @@ public abstract class PlayerEntity extends LivingEntity {
 				return Either.left(PlayerEntity.SleepFailureReason.NOT_POSSIBLE_HERE);
 			}
 
-			if (this.world.isDaylight()) {
+			if (this.world.isDay()) {
 				this.setPlayerSpawn(pos, false);
 				return Either.left(PlayerEntity.SleepFailureReason.NOT_POSSIBLE_NOW);
 			}

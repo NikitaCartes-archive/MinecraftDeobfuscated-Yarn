@@ -17,7 +17,7 @@ public class ChorusPlantDecorator extends Decorator<NopeDecoratorConfig> {
 		super(function);
 	}
 
-	public Stream<BlockPos> method_14373(
+	public Stream<BlockPos> getPositions(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, NopeDecoratorConfig nopeDecoratorConfig, BlockPos blockPos
 	) {
 		int i = random.nextInt(5);

@@ -44,7 +44,7 @@ public class TrueTypeFont implements Font {
 	}
 
 	@Nullable
-	public TrueTypeFont.TtfGlyph method_2051(char c) {
+	public TrueTypeFont.TtfGlyph getGlyph(char c) {
 		if (this.excludedCharacters.contains(c)) {
 			return null;
 		} else {

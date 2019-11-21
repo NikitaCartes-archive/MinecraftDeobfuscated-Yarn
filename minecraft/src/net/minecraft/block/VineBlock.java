@@ -226,7 +226,7 @@ public class VineBlock extends Block {
 				}
 
 				if (pos.getY() > 0) {
-					BlockPos blockPos2 = pos.method_10074();
+					BlockPos blockPos2 = pos.down();
 					BlockState blockState2 = world.getBlockState(blockPos2);
 					if (blockState2.isAir() || blockState2.getBlock() == this) {
 						BlockState blockState4 = blockState2.isAir() ? this.getDefaultState() : blockState2;

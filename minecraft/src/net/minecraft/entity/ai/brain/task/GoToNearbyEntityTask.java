@@ -20,12 +20,12 @@ public class GoToNearbyEntityTask extends Task<MobEntityWithAi> {
 		this.field_18381 = f;
 	}
 
-	protected boolean method_19002(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
+	protected boolean shouldRun(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
 		Entity entity = (Entity)mobEntityWithAi.getBrain().getOptionalMemory(this.entityMemory).get();
 		return mobEntityWithAi.squaredDistanceTo(entity) < 36.0;
 	}
 
-	protected void method_19003(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
+	protected void run(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
 		Entity entity = (Entity)mobEntityWithAi.getBrain().getOptionalMemory(this.entityMemory).get();
 		method_19596(mobEntityWithAi, entity, this.field_18381);
 	}

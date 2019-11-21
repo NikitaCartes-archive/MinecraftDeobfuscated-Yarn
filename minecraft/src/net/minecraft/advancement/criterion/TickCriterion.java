@@ -13,7 +13,7 @@ public class TickCriterion extends AbstractCriterion<TickCriterion.Conditions> {
 		return ID;
 	}
 
-	public TickCriterion.Conditions method_9140(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public TickCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		return new TickCriterion.Conditions();
 	}
 

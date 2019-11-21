@@ -21,7 +21,7 @@ public class KilledByPlayerLootCondition implements LootCondition {
 		return ImmutableSet.of(LootContextParameters.LAST_DAMAGE_PLAYER);
 	}
 
-	public boolean method_938(LootContext lootContext) {
+	public boolean test(LootContext lootContext) {
 		return lootContext.hasParameter(LootContextParameters.LAST_DAMAGE_PLAYER);
 	}
 
@@ -34,10 +34,10 @@ public class KilledByPlayerLootCondition implements LootCondition {
 			super(new Identifier("killed_by_player"), KilledByPlayerLootCondition.class);
 		}
 
-		public void method_942(JsonObject jsonObject, KilledByPlayerLootCondition killedByPlayerLootCondition, JsonSerializationContext jsonSerializationContext) {
+		public void toJson(JsonObject jsonObject, KilledByPlayerLootCondition killedByPlayerLootCondition, JsonSerializationContext jsonSerializationContext) {
 		}
 
-		public KilledByPlayerLootCondition method_943(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		public KilledByPlayerLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			return KilledByPlayerLootCondition.INSTANCE;
 		}
 	}

@@ -14,7 +14,7 @@ import org.apache.commons.lang3.Validate;
 
 @Environment(EnvType.CLIENT)
 public class AnimationResourceMetadataReader implements ResourceMetadataReader<AnimationResourceMetadata> {
-	public AnimationResourceMetadata method_4692(JsonObject jsonObject) {
+	public AnimationResourceMetadata fromJson(JsonObject jsonObject) {
 		List<AnimationFrameResourceMetadata> list = Lists.<AnimationFrameResourceMetadata>newArrayList();
 		int i = JsonHelper.getInt(jsonObject, "frametime", 1);
 		if (i != 1) {

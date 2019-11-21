@@ -20,11 +20,11 @@ public class IronGolemEntityRenderer extends MobEntityRenderer<IronGolemEntity, 
 		this.addFeature(new IronGolemFlowerFeatureRenderer(this));
 	}
 
-	public Identifier method_3987(IronGolemEntity ironGolemEntity) {
+	public Identifier getTexture(IronGolemEntity ironGolemEntity) {
 		return SKIN;
 	}
 
-	protected void method_3986(IronGolemEntity ironGolemEntity, MatrixStack matrixStack, float f, float g, float h) {
+	protected void setupTransforms(IronGolemEntity ironGolemEntity, MatrixStack matrixStack, float f, float g, float h) {
 		super.setupTransforms(ironGolemEntity, matrixStack, f, g, h);
 		if (!((double)ironGolemEntity.limbDistance < 0.01)) {
 			float i = 13.0F;

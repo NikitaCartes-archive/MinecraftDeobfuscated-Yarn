@@ -102,14 +102,10 @@ public class Vector4f {
 		float g = this.y;
 		float h = this.z;
 		float i = this.w;
-		this.x = calculateProductRow(0, matrix, f, g, h, i);
-		this.y = calculateProductRow(1, matrix, f, g, h, i);
-		this.z = calculateProductRow(2, matrix, f, g, h, i);
-		this.w = calculateProductRow(3, matrix, f, g, h, i);
-	}
-
-	private static float calculateProductRow(int row, Matrix4f matrix, float x, float y, float z, float w) {
-		return matrix.get(row, 0) * x + matrix.get(row, 1) * y + matrix.get(row, 2) * z + matrix.get(row, 3) * w;
+		this.x = matrix.field_21652 * f + matrix.field_21653 * g + matrix.field_21654 * h + matrix.field_21655 * i;
+		this.y = matrix.field_21656 * f + matrix.field_21657 * g + matrix.field_21658 * h + matrix.field_21659 * i;
+		this.z = matrix.field_21660 * f + matrix.field_21661 * g + matrix.field_21662 * h + matrix.field_21663 * i;
+		this.w = matrix.field_21664 * f + matrix.field_21665 * g + matrix.field_21666 * h + matrix.field_21667 * i;
 	}
 
 	public void setQuarternion(Quaternion quarternion) {

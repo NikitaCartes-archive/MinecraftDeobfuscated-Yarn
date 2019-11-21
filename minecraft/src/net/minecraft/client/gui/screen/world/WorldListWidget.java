@@ -116,7 +116,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		return this.parent.getFocused() == this;
 	}
 
-	public void method_20157(@Nullable WorldListWidget.Entry entry) {
+	public void setSelected(@Nullable WorldListWidget.Entry entry) {
 		super.setSelected(entry);
 		if (entry != null) {
 			LevelSummary levelSummary = entry.level;
@@ -260,7 +260,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 
 		@Override
 		public boolean mouseClicked(double mouseX, double mouseY, int button) {
-			WorldListWidget.this.method_20157(this);
+			WorldListWidget.this.setSelected(this);
 			this.screen.worldSelected(WorldListWidget.this.method_20159().isPresent());
 			if (mouseX - (double)WorldListWidget.this.getRowLeft() <= 32.0) {
 				this.play();

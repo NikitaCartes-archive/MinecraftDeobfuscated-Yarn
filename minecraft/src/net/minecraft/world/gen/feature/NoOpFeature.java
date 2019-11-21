@@ -13,7 +13,7 @@ public class NoOpFeature extends Feature<DefaultFeatureConfig> {
 		super(function);
 	}
 
-	public boolean method_23914(
+	public boolean generate(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		return true;

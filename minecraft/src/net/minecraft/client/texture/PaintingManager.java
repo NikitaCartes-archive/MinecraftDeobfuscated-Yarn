@@ -1,7 +1,6 @@
 package net.minecraft.client.texture;
 
-import com.google.common.collect.Iterables;
-import java.util.Collections;
+import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.decoration.painting.PaintingMotive;
@@ -13,12 +12,12 @@ public class PaintingManager extends SpriteAtlasHolder {
 	private static final Identifier PAINTING_BACK_ID = new Identifier("back");
 
 	public PaintingManager(TextureManager textureManager) {
-		super(textureManager, SpriteAtlasTexture.PAINTING_ATLAS_TEX, "textures/painting");
+		super(textureManager, new Identifier("textures/atlas/paintings.png"), "painting");
 	}
 
 	@Override
-	protected Iterable<Identifier> getSprites() {
-		return Iterables.concat(Registry.MOTIVE.getIds(), Collections.singleton(PAINTING_BACK_ID));
+	protected Stream<Identifier> getSprites() {
+		return Stream.concat(Registry.MOTIVE.getIds().stream(), Stream.of(PAINTING_BACK_ID));
 	}
 
 	public Sprite getPaintingSprite(PaintingMotive motive) {

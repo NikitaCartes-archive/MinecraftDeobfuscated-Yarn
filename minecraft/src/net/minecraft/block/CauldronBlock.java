@@ -179,7 +179,7 @@ public class CauldronBlock extends Block {
 					if (block instanceof ShulkerBoxBlock && !world.isClient()) {
 						ItemStack itemStack3 = new ItemStack(Blocks.SHULKER_BOX, 1);
 						if (itemStack.hasTag()) {
-							itemStack3.setTag(itemStack.getTag().method_10553());
+							itemStack3.setTag(itemStack.getTag().copy());
 						}
 
 						player.setStackInHand(hand, itemStack3);

@@ -59,11 +59,11 @@ public abstract class CombinedEntry extends LootEntry {
 			super(identifier, class_);
 		}
 
-		public void method_397(JsonObject jsonObject, T combinedEntry, JsonSerializationContext jsonSerializationContext) {
+		public void toJson(JsonObject jsonObject, T combinedEntry, JsonSerializationContext jsonSerializationContext) {
 			jsonObject.add("children", jsonSerializationContext.serialize(combinedEntry.children));
 		}
 
-		public final T method_396(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public final T fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			LootEntry[] lootEntrys = JsonHelper.deserialize(jsonObject, "children", jsonDeserializationContext, LootEntry[].class);
 			return this.fromJson(jsonObject, jsonDeserializationContext, lootEntrys, lootConditions);
 		}

@@ -32,7 +32,7 @@ public class EndRodParticle extends AnimatedParticle {
 			this.field_17805 = spriteProvider;
 		}
 
-		public Particle method_3024(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			return new EndRodParticle(world, d, e, f, g, h, i, this.field_17805);
 		}
 	}

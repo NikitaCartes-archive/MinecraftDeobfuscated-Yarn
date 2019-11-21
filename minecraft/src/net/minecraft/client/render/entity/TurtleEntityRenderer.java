@@ -16,15 +16,15 @@ public class TurtleEntityRenderer extends MobEntityRenderer<TurtleEntity, Turtle
 		super(entityRenderDispatcher, new TurtleEntityModel<>(0.0F), 0.7F);
 	}
 
-	public void method_4138(TurtleEntity turtleEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	public void render(TurtleEntity turtleEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		if (turtleEntity.isBaby()) {
 			this.field_4673 *= 0.5F;
 		}
 
-		super.method_4072(turtleEntity, f, g, matrixStack, vertexConsumerProvider, i);
+		super.render(turtleEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
-	public Identifier method_4139(TurtleEntity turtleEntity) {
+	public Identifier getTexture(TurtleEntity turtleEntity) {
 		return SKIN;
 	}
 }

@@ -53,9 +53,9 @@ public abstract class Feature<FC extends FeatureConfig> {
 	);
 	public static final StructureFeature<VillageFeatureConfig> VILLAGE = register("village", new VillageFeature(VillageFeatureConfig::deserialize));
 	public static final Feature<DefaultFeatureConfig> NO_OP = register("no_op", new NoOpFeature(DefaultFeatureConfig::deserialize));
-	public static final Feature<BranchedTreeFeatureConfig> NORMAL_TREE = register("normal_tree", new OakTreeFeature(BranchedTreeFeatureConfig::method_23426));
-	public static final Feature<BranchedTreeFeatureConfig> ACACIA_TREE = register("acacia_tree", new AcaciaTreeFeature(BranchedTreeFeatureConfig::method_23426));
-	public static final Feature<BranchedTreeFeatureConfig> FANCY_TREE = register("fancy_tree", new LargeOakTreeFeature(BranchedTreeFeatureConfig::method_23426));
+	public static final Feature<BranchedTreeFeatureConfig> NORMAL_TREE = register("normal_tree", new OakTreeFeature(BranchedTreeFeatureConfig::deserialize2));
+	public static final Feature<BranchedTreeFeatureConfig> ACACIA_TREE = register("acacia_tree", new AcaciaTreeFeature(BranchedTreeFeatureConfig::deserialize2));
+	public static final Feature<BranchedTreeFeatureConfig> FANCY_TREE = register("fancy_tree", new LargeOakTreeFeature(BranchedTreeFeatureConfig::deserialize2));
 	public static final Feature<TreeFeatureConfig> JUNGLE_GROUND_BUSH = register("jungle_ground_bush", new JungleGroundBushFeature(TreeFeatureConfig::deserialize));
 	public static final Feature<MegaTreeFeatureConfig> DARK_OAK_TREE = register("dark_oak_tree", new DarkOakTreeFeature(MegaTreeFeatureConfig::method_23408));
 	public static final Feature<MegaTreeFeatureConfig> MEGA_JUNGLE_TREE = register(
@@ -170,11 +170,11 @@ public abstract class Feature<FC extends FeatureConfig> {
 		return Collections.emptyList();
 	}
 
-	protected static boolean method_23395(Block block) {
+	protected static boolean isStone(Block block) {
 		return block == Blocks.STONE || block == Blocks.GRANITE || block == Blocks.DIORITE || block == Blocks.ANDESITE;
 	}
 
-	protected static boolean method_23396(Block block) {
+	protected static boolean isDirt(Block block) {
 		return block == Blocks.DIRT || block == Blocks.GRASS_BLOCK || block == Blocks.PODZOL || block == Blocks.COARSE_DIRT || block == Blocks.MYCELIUM;
 	}
 }

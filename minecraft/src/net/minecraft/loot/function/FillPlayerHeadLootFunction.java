@@ -49,12 +49,12 @@ public class FillPlayerHeadLootFunction extends ConditionalLootFunction {
 			super(new Identifier("fill_player_head"), FillPlayerHeadLootFunction.class);
 		}
 
-		public void method_15957(JsonObject jsonObject, FillPlayerHeadLootFunction fillPlayerHeadLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.method_529(jsonObject, fillPlayerHeadLootFunction, jsonSerializationContext);
+		public void toJson(JsonObject jsonObject, FillPlayerHeadLootFunction fillPlayerHeadLootFunction, JsonSerializationContext jsonSerializationContext) {
+			super.toJson(jsonObject, fillPlayerHeadLootFunction, jsonSerializationContext);
 			jsonObject.add("entity", jsonSerializationContext.serialize(fillPlayerHeadLootFunction.entity));
 		}
 
-		public FillPlayerHeadLootFunction method_15958(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public FillPlayerHeadLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			LootContext.EntityTarget entityTarget = JsonHelper.deserialize(jsonObject, "entity", jsonDeserializationContext, LootContext.EntityTarget.class);
 			return new FillPlayerHeadLootFunction(lootConditions, entityTarget);
 		}

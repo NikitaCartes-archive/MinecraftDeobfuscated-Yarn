@@ -63,7 +63,7 @@ public class SugarCaneBlock extends Block {
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		Block block = world.getBlockState(pos.method_10074()).getBlock();
+		Block block = world.getBlockState(pos.down()).getBlock();
 		if (block == this) {
 			return true;
 		} else {
@@ -73,7 +73,7 @@ public class SugarCaneBlock extends Block {
 				|| block == Blocks.PODZOL
 				|| block == Blocks.SAND
 				|| block == Blocks.RED_SAND) {
-				BlockPos blockPos = pos.method_10074();
+				BlockPos blockPos = pos.down();
 
 				for (Direction direction : Direction.Type.HORIZONTAL) {
 					BlockState blockState = world.getBlockState(blockPos.offset(direction));

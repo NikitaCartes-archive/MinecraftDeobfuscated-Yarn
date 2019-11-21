@@ -65,7 +65,7 @@ public class LeavesBlock extends Block {
 
 		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
 			for (Direction direction : Direction.values()) {
-				pooledMutable.method_10114(pos).method_10118(direction);
+				pooledMutable.set(pos).setOffset(direction);
 				i = Math.min(i, getDistanceFromLog(world.getBlockState(pooledMutable)) + 1);
 				if (i == 1) {
 					break;
@@ -89,7 +89,7 @@ public class LeavesBlock extends Block {
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		if (world.hasRain(pos.up())) {
 			if (random.nextInt(15) == 1) {
-				BlockPos blockPos = pos.method_10074();
+				BlockPos blockPos = pos.down();
 				BlockState blockState = world.getBlockState(blockPos);
 				if (!blockState.isOpaque() || !blockState.isSideSolidFullSquare(world, blockPos, Direction.UP)) {
 					double d = (double)((float)pos.getX() + random.nextFloat());

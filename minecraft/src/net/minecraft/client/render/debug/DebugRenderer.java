@@ -17,6 +17,7 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Rotation3;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.util.hit.EntityHitResult;
@@ -169,9 +170,8 @@ public class DebugRenderer {
 			RenderSystem.pushMatrix();
 			RenderSystem.translatef((float)(x - d), (float)(y - e) + 0.07F, (float)(z - f));
 			RenderSystem.normal3f(0.0F, 1.0F, 0.0F);
-			RenderSystem.scalef(size, -size, size);
-			RenderSystem.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
 			RenderSystem.multMatrix(new Matrix4f(camera.method_23767()));
+			RenderSystem.scalef(size, -size, size);
 			RenderSystem.enableTexture();
 			if (visibleThroughObjects) {
 				RenderSystem.disableDepthTest();
@@ -183,7 +183,10 @@ public class DebugRenderer {
 			RenderSystem.scalef(-1.0F, 1.0F, 1.0F);
 			float g = center ? (float)(-textRenderer.getStringWidth(string)) / 2.0F : 0.0F;
 			g -= offset / size;
-			textRenderer.draw(string, g, 0.0F, color);
+			RenderSystem.enableAlphaTest();
+			VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
+			textRenderer.draw(string, g, 0.0F, color, false, Rotation3.identity().getMatrix(), immediate, visibleThroughObjects, 0, 15728880);
+			immediate.draw();
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			RenderSystem.enableDepthTest();
 			RenderSystem.popMatrix();

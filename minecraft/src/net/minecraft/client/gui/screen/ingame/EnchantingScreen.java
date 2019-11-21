@@ -128,7 +128,7 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingTableCon
 		bookModel.setPageAngles(0.0F, l, m, g);
 		VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
 		VertexConsumer vertexConsumer = immediate.getBuffer(bookModel.getLayer(BOOK_TEXURE));
-		bookModel.render(matrixStack, vertexConsumer, 15728880, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F);
+		bookModel.render(matrixStack, vertexConsumer, 15728880, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
 		immediate.draw();
 		matrixStack.pop();
 		RenderSystem.matrixMode(5889);

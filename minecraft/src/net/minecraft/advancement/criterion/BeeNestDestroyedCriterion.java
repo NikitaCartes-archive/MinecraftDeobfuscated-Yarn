@@ -22,7 +22,7 @@ public class BeeNestDestroyedCriterion extends AbstractCriterion<BeeNestDestroye
 		return ID;
 	}
 
-	public BeeNestDestroyedCriterion.Conditions method_23877(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public BeeNestDestroyedCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		Block block = getBlock(jsonObject);
 		ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
 		NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("num_bees_inside"));

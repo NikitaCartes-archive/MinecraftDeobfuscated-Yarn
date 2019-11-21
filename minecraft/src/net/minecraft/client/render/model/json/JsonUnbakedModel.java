@@ -1,6 +1,7 @@
 package net.minecraft.client.render.model.json;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -11,6 +12,8 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.mojang.datafixers.util.Either;
+import com.mojang.datafixers.util.Pair;
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.Type;
@@ -18,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.Map.Entry;
 import java.util.function.Function;
@@ -25,6 +29,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4730;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.BakedQuadFactory;
@@ -35,6 +40,7 @@ import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.render.model.UnbakedModel;
 import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.Direction;
@@ -62,7 +68,7 @@ public class JsonUnbakedModel implements UnbakedModel {
 	private final List<ModelItemOverride> overrides;
 	public String id = "";
 	@VisibleForTesting
-	protected final Map<String, String> textureMap;
+	protected final Map<String, Either<class_4730, String>> textureMap;
 	@Nullable
 	protected JsonUnbakedModel parent;
 	@Nullable
@@ -79,7 +85,7 @@ public class JsonUnbakedModel implements UnbakedModel {
 	public JsonUnbakedModel(
 		@Nullable Identifier parentId,
 		List<ModelElement> elements,
-		Map<String, String> textureMap,
+		Map<String, Either<class_4730, String>> textureMap,
 		boolean ambientOcclusion,
 		boolean depthInGui,
 		ModelTransformation transformations,
@@ -132,7 +138,9 @@ public class JsonUnbakedModel implements UnbakedModel {
 	}
 
 	@Override
-	public Collection<Identifier> getTextureDependencies(Function<Identifier, UnbakedModel> unbakedModelGetter, Set<String> unresolvedTextureReferences) {
+	public Collection<class_4730> getTextureDependencies(
+		Function<Identifier, UnbakedModel> unbakedModelGetter, Set<Pair<String, String>> unresolvedTextureReferences
+	) {
 		Set<UnbakedModel> set = Sets.<UnbakedModel>newLinkedHashSet();
 
 		for (JsonUnbakedModel jsonUnbakedModel = this;
@@ -167,16 +175,16 @@ public class JsonUnbakedModel implements UnbakedModel {
 			jsonUnbakedModel.parent = (JsonUnbakedModel)unbakedModel;
 		}
 
-		Set<Identifier> set2 = Sets.<Identifier>newHashSet(new Identifier(this.resolveTexture("particle")));
+		Set<class_4730> set2 = Sets.<class_4730>newHashSet(this.method_24077("particle"));
 
 		for (ModelElement modelElement : this.getElements()) {
 			for (ModelElementFace modelElementFace : modelElement.faces.values()) {
-				String string = this.resolveTexture(modelElementFace.textureId);
-				if (Objects.equals(string, MissingSprite.getMissingSpriteId().toString())) {
-					unresolvedTextureReferences.add(String.format("%s in %s", modelElementFace.textureId, this.id));
+				class_4730 lv = this.method_24077(modelElementFace.textureId);
+				if (Objects.equals(lv.method_24147(), MissingSprite.getMissingSpriteId())) {
+					unresolvedTextureReferences.add(Pair.of(modelElementFace.textureId, this.id));
 				}
 
-				set2.add(new Identifier(string));
+				set2.add(lv);
 			}
 		}
 
@@ -187,21 +195,21 @@ public class JsonUnbakedModel implements UnbakedModel {
 			}
 		});
 		if (this.getRootModel() == ModelLoader.GENERATION_MARKER) {
-			ItemModelGenerator.LAYERS.forEach(stringx -> set2.add(new Identifier(this.resolveTexture(stringx))));
+			ItemModelGenerator.LAYERS.forEach(string -> set2.add(this.method_24077(string)));
 		}
 
 		return set2;
 	}
 
 	@Override
-	public BakedModel bake(ModelLoader loader, Function<Identifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
+	public BakedModel bake(ModelLoader loader, Function<class_4730, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
 		return this.bake(loader, this, textureGetter, rotationContainer, modelId);
 	}
 
 	public BakedModel bake(
-		ModelLoader loader, JsonUnbakedModel parent, Function<Identifier, Sprite> textureGetter, ModelBakeSettings settings, Identifier identifier
+		ModelLoader loader, JsonUnbakedModel parent, Function<class_4730, Sprite> textureGetter, ModelBakeSettings settings, Identifier identifier
 	) {
-		Sprite sprite = (Sprite)textureGetter.apply(new Identifier(this.resolveTexture("particle")));
+		Sprite sprite = (Sprite)textureGetter.apply(this.method_24077("particle"));
 		if (this.getRootModel() == ModelLoader.BLOCK_ENTITY_MARKER) {
 			return new BuiltinBakedModel(this.getTransformations(), this.compileOverrides(loader, parent), sprite);
 		} else {
@@ -210,7 +218,7 @@ public class JsonUnbakedModel implements UnbakedModel {
 			for (ModelElement modelElement : this.getElements()) {
 				for (Direction direction : modelElement.faces.keySet()) {
 					ModelElementFace modelElementFace = (ModelElementFace)modelElement.faces.get(direction);
-					Sprite sprite2 = (Sprite)textureGetter.apply(new Identifier(this.resolveTexture(modelElementFace.textureId)));
+					Sprite sprite2 = (Sprite)textureGetter.apply(this.method_24077(modelElementFace.textureId));
 					if (modelElementFace.cullFace == null) {
 						builder.addQuad(createQuad(modelElement, modelElementFace, sprite2, direction, settings, identifier));
 					} else {
@@ -233,42 +241,46 @@ public class JsonUnbakedModel implements UnbakedModel {
 	}
 
 	public boolean textureExists(String name) {
-		return !MissingSprite.getMissingSpriteId().toString().equals(this.resolveTexture(name));
+		return !MissingSprite.getMissingSpriteId().equals(this.method_24077(name).method_24147());
 	}
 
-	public String resolveTexture(String name) {
-		if (!this.isTextureReference(name)) {
-			name = '#' + name;
+	public class_4730 method_24077(String string) {
+		if (isTextureReference(string)) {
+			string = string.substring(1);
 		}
 
-		return this.resolveTexture(name, new JsonUnbakedModel.TextureResolutionContext(this));
-	}
+		List<String> list = Lists.<String>newArrayList();
 
-	private String resolveTexture(String name, JsonUnbakedModel.TextureResolutionContext context) {
-		if (this.isTextureReference(name)) {
-			if (this == context.current) {
-				LOGGER.warn("Unable to resolve texture due to upward reference: {} in {}", name, this.id);
-				return MissingSprite.getMissingSpriteId().toString();
-			} else {
-				String string = (String)this.textureMap.get(name.substring(1));
-				if (string == null && this.parent != null) {
-					string = this.parent.resolveTexture(name, context);
-				}
-
-				context.current = this;
-				if (string != null && this.isTextureReference(string)) {
-					string = context.root.resolveTexture(string, context);
-				}
-
-				return string != null && !this.isTextureReference(string) ? string : MissingSprite.getMissingSpriteId().toString();
+		while (true) {
+			Either<class_4730, String> either = this.resolveTexture(string);
+			Optional<class_4730> optional = either.left();
+			if (optional.isPresent()) {
+				return (class_4730)optional.get();
 			}
-		} else {
-			return name;
+
+			string = (String)either.right().get();
+			if (list.contains(string)) {
+				LOGGER.warn("Unable to resolve texture due to reference chain {}->{} in {}", Joiner.on("->").join(list), string, this.id);
+				return new class_4730(SpriteAtlasTexture.BLOCK_ATLAS_TEX, MissingSprite.getMissingSpriteId());
+			}
+
+			list.add(string);
 		}
 	}
 
-	private boolean isTextureReference(String name) {
-		return name.charAt(0) == '#';
+	private Either<class_4730, String> resolveTexture(String name) {
+		for (JsonUnbakedModel jsonUnbakedModel = this; jsonUnbakedModel != null; jsonUnbakedModel = jsonUnbakedModel.parent) {
+			Either<class_4730, String> either = (Either<class_4730, String>)jsonUnbakedModel.textureMap.get(name);
+			if (either != null) {
+				return either;
+			}
+		}
+
+		return Either.left(new class_4730(SpriteAtlasTexture.BLOCK_ATLAS_TEX, MissingSprite.getMissingSpriteId()));
+	}
+
+	private static boolean isTextureReference(String string) {
+		return string.charAt(0) == '#';
 	}
 
 	public JsonUnbakedModel getRootModel() {
@@ -301,11 +313,11 @@ public class JsonUnbakedModel implements UnbakedModel {
 
 	@Environment(EnvType.CLIENT)
 	public static class Deserializer implements JsonDeserializer<JsonUnbakedModel> {
-		public JsonUnbakedModel method_3451(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
+		public JsonUnbakedModel deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
 			JsonObject jsonObject = element.getAsJsonObject();
 			List<ModelElement> list = this.deserializeElements(context, jsonObject);
 			String string = this.deserializeParent(jsonObject);
-			Map<String, String> map = this.deserializeTextures(jsonObject);
+			Map<String, Either<class_4730, String>> map = this.deserializeTextures(jsonObject);
 			boolean bl = this.deserializeAmbientOcclusion(jsonObject);
 			ModelTransformation modelTransformation = ModelTransformation.NONE;
 			if (jsonObject.has("display")) {
@@ -329,17 +341,31 @@ public class JsonUnbakedModel implements UnbakedModel {
 			return list;
 		}
 
-		private Map<String, String> deserializeTextures(JsonObject object) {
-			Map<String, String> map = Maps.<String, String>newHashMap();
+		private Map<String, Either<class_4730, String>> deserializeTextures(JsonObject object) {
+			Identifier identifier = SpriteAtlasTexture.BLOCK_ATLAS_TEX;
+			Map<String, Either<class_4730, String>> map = Maps.<String, Either<class_4730, String>>newHashMap();
 			if (object.has("textures")) {
 				JsonObject jsonObject = JsonHelper.getObject(object, "textures");
 
 				for (Entry<String, JsonElement> entry : jsonObject.entrySet()) {
-					map.put(entry.getKey(), ((JsonElement)entry.getValue()).getAsString());
+					map.put(entry.getKey(), method_24079(identifier, ((JsonElement)entry.getValue()).getAsString()));
 				}
 			}
 
 			return map;
+		}
+
+		private static Either<class_4730, String> method_24079(Identifier identifier, String string) {
+			if (JsonUnbakedModel.isTextureReference(string)) {
+				return Either.right(string.substring(1));
+			} else {
+				Identifier identifier2 = Identifier.tryParse(string);
+				if (identifier2 == null) {
+					throw new JsonParseException(string + " is not valid resource location");
+				} else {
+					return Either.left(new class_4730(identifier, identifier2));
+				}
+			}
 		}
 
 		private String deserializeParent(JsonObject object) {
@@ -359,16 +385,6 @@ public class JsonUnbakedModel implements UnbakedModel {
 			}
 
 			return list;
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	static final class TextureResolutionContext {
-		public final JsonUnbakedModel root;
-		public JsonUnbakedModel current;
-
-		private TextureResolutionContext(JsonUnbakedModel root) {
-			this.root = root;
 		}
 	}
 }

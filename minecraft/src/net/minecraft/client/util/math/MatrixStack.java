@@ -19,31 +19,19 @@ public class MatrixStack {
 	});
 
 	public void translate(double x, double y, double z) {
-		Matrix4f matrix4f = new Matrix4f();
-		matrix4f.loadIdentity();
-		matrix4f.addToLastColumn(new Vector3f((float)x, (float)y, (float)z));
 		MatrixStack.Entry entry = (MatrixStack.Entry)this.stack.getLast();
-		entry.modelMatrix.multiply(matrix4f);
+		entry.modelMatrix.multiply(Matrix4f.method_24021((float)x, (float)y, (float)z));
 	}
 
 	public void scale(float x, float y, float z) {
 		MatrixStack.Entry entry = (MatrixStack.Entry)this.stack.getLast();
-		Matrix4f matrix4f = new Matrix4f();
-		matrix4f.loadIdentity();
-		matrix4f.set(0, 0, x);
-		matrix4f.set(1, 1, y);
-		matrix4f.set(2, 2, z);
-		entry.modelMatrix.multiply(matrix4f);
+		entry.modelMatrix.multiply(Matrix4f.method_24019(x, y, z));
 		if (x != y || y != z) {
 			float f = 1.0F / x;
 			float g = 1.0F / y;
 			float h = 1.0F / z;
 			float i = MathHelper.fastInverseCbrt(f * g * h);
-			Matrix3f matrix3f = new Matrix3f();
-			matrix3f.set(0, 0, i * f);
-			matrix3f.set(1, 1, i * g);
-			matrix3f.set(2, 2, i * h);
-			entry.normalMatrix.multiply(matrix3f);
+			entry.normalMatrix.multiply(Matrix3f.method_23963(i * f, i * g, i * h));
 		}
 	}
 

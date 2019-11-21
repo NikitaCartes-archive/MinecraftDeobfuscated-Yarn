@@ -106,7 +106,7 @@ public class TripwireHookBlock extends Block {
 		BlockState[] blockStates = new BlockState[42];
 
 		for (int k = 1; k < 42; k++) {
-			BlockPos blockPos = pos.method_10079(direction, k);
+			BlockPos blockPos = pos.offset(direction, k);
 			BlockState blockState2 = world.getBlockState(blockPos);
 			if (blockState2.getBlock() == Blocks.TRIPWIRE_HOOK) {
 				if (blockState2.get(FACING) == direction.getOpposite()) {
@@ -138,7 +138,7 @@ public class TripwireHookBlock extends Block {
 		bl5 &= bl4;
 		BlockState blockState3 = this.getDefaultState().with(ATTACHED, Boolean.valueOf(bl4)).with(POWERED, Boolean.valueOf(bl5));
 		if (j > 0) {
-			BlockPos blockPosx = pos.method_10079(direction, j);
+			BlockPos blockPosx = pos.offset(direction, j);
 			Direction direction2 = direction.getOpposite();
 			world.setBlockState(blockPosx, blockState3.with(FACING, direction2), 3);
 			this.updateNeighborsOnAxis(world, blockPosx, direction2);
@@ -155,7 +155,7 @@ public class TripwireHookBlock extends Block {
 
 		if (bl2 != bl4) {
 			for (int l = 1; l < j; l++) {
-				BlockPos blockPos2 = pos.method_10079(direction, l);
+				BlockPos blockPos2 = pos.offset(direction, l);
 				BlockState blockState4 = blockStates[l];
 				if (blockState4 != null) {
 					world.setBlockState(blockPos2, blockState4.with(ATTACHED, Boolean.valueOf(bl4)), 3);

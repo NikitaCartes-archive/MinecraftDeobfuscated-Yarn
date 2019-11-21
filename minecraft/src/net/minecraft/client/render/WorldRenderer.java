@@ -1,6 +1,5 @@
 package net.minecraft.client.render;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
@@ -26,6 +25,8 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4720;
+import net.minecraft.class_4722;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -44,8 +45,10 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.chunk.ChunkBuilder;
 import net.minecraft.client.render.chunk.ChunkOcclusionGraphBuilder;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundInstance;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
@@ -376,7 +379,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 					Heightmap.Type.MOTION_BLOCKING, blockPos.add(random.nextInt(10) - random.nextInt(10), 0, random.nextInt(10) - random.nextInt(10))
 				);
 				Biome biome = worldView.method_23753(blockPos2);
-				BlockPos blockPos3 = blockPos2.method_10074();
+				BlockPos blockPos3 = blockPos2.down();
 				if (blockPos2.getY() <= blockPos.getY() + 10
 					&& blockPos2.getY() >= blockPos.getY() - 10
 					&& biome.getPrecipitation() == Biome.Precipitation.RAIN
@@ -897,7 +900,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		this.entityRenderDispatcher.configure(this.world, camera, this.client.targetedEntity);
 		Profiler profiler = this.world.getProfiler();
 		profiler.swap("light_updates");
-		this.client.world.method_2935().getLightingProvider().doLightUpdates(Integer.MAX_VALUE, true, true);
+		this.client.world.getChunkManager().getLightingProvider().doLightUpdates(Integer.MAX_VALUE, true, true);
 		Vec3d vec3d = camera.getPos();
 		double d = vec3d.getX();
 		double e = vec3d.getY();
@@ -932,7 +935,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		}
 
 		profiler.swap("fog");
-		BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_TERRAIN, g, bl2);
+		BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_TERRAIN, Math.max(g - 16.0F, 32.0F), bl2);
 		profiler.swap("terrain_setup");
 		this.setUpTerrain(camera, frustum, bl, this.frame++, this.client.player.isSpectator());
 		profiler.swap("updatechunks");
@@ -993,6 +996,10 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		}
 
 		this.checkEmpty(matrix);
+		immediate.draw(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+		immediate.draw(RenderLayer.getEntityCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+		immediate.draw(RenderLayer.getEntityCutoutNoCull(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+		immediate.draw(RenderLayer.getEntitySmoothCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
 		profiler.swap("blockentities");
 
 		for (WorldRenderer.BuiltChunkInfo builtChunkInfo : this.chunkInfos) {
@@ -1008,13 +1015,11 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 						int l = ((BlockBreakingInfo)sortedSet.last()).getStage();
 						if (l >= 0) {
 							VertexConsumer vertexConsumer = new TransformingVertexConsumer(
-								this.bufferBuilders.getEffectVertexConsumers().getBuffer(RenderLayer.getBlockBreaking(l)), matrix.peek()
+								this.bufferBuilders.getEffectVertexConsumers().getBuffer((RenderLayer)ModelLoader.field_21772.get(l)), matrix.peek()
 							);
 							vertexConsumerProvider2 = renderLayer -> {
 								VertexConsumer vertexConsumer2x = immediate.getBuffer(renderLayer);
-								return (VertexConsumer)(renderLayer.method_23037()
-									? new DelegatingVertexConsumer(ImmutableList.of(vertexConsumer, vertexConsumer2x))
-									: vertexConsumer2x);
+								return renderLayer.method_23037() ? class_4720.method_24037(vertexConsumer, vertexConsumer2x) : vertexConsumer2x;
 							};
 						}
 					}
@@ -1037,8 +1042,12 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 		this.checkEmpty(matrix);
 		immediate.draw(RenderLayer.getSolid());
-		immediate.draw(RenderLayer.method_23946());
-		immediate.draw(RenderLayer.method_23947());
+		immediate.draw(class_4722.method_24073());
+		immediate.draw(class_4722.method_24074());
+		immediate.draw(class_4722.method_24069());
+		immediate.draw(class_4722.method_24070());
+		immediate.draw(class_4722.method_24071());
+		immediate.draw(class_4722.method_24072());
 		this.bufferBuilders.getOutlineVertexConsumers().draw();
 		if (bl3) {
 			this.entityOutlineShader.render(tickDelta);
@@ -1059,7 +1068,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 					matrix.push();
 					matrix.translate((double)blockPos3.getX() - d, (double)blockPos3.getY() - e, (double)blockPos3.getZ() - f);
 					VertexConsumer vertexConsumer2 = new TransformingVertexConsumer(
-						this.bufferBuilders.getEffectVertexConsumers().getBuffer(RenderLayer.getBlockBreaking(p)), matrix.peek()
+						this.bufferBuilders.getEffectVertexConsumers().getBuffer((RenderLayer)ModelLoader.field_21772.get(p)), matrix.peek()
 					);
 					this.client.getBlockRenderManager().renderDamage(this.world.getBlockState(blockPos3), blockPos3, this.world, matrix, vertexConsumer2);
 					matrix.pop();
@@ -1085,13 +1094,15 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		this.client.debugRenderer.render(matrix, immediate, d, e, f, limitTime);
 		this.renderWorldBorder(camera);
 		RenderSystem.popMatrix();
-		immediate.draw(RenderLayer.getWaterMask());
-		profiler.swap("translucent");
-		this.renderLayer(RenderLayer.getTranslucent(), matrix, d, e, f);
-		immediate.draw(RenderLayer.method_23949());
-		immediate.draw(RenderLayer.method_23951());
+		immediate.draw(RenderLayer.getLines());
 		immediate.draw();
 		this.bufferBuilders.getEffectVertexConsumers().draw();
+		immediate.draw(RenderLayer.getWaterMask());
+		immediate.draw(class_4722.method_24075());
+		immediate.draw(class_4722.method_24059());
+		immediate.draw(class_4722.method_24067());
+		profiler.swap("translucent");
+		this.renderLayer(RenderLayer.getTranslucent(), matrix, d, e, f);
 		profiler.swap("particles");
 		this.client.particleManager.renderParticles(matrix, immediate, lightmapTextureManager, camera, tickDelta);
 		RenderSystem.pushMatrix();
@@ -1128,7 +1139,9 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		double f = MathHelper.lerp((double)tickDelta, entity.prevRenderZ, entity.getZ());
 		float g = MathHelper.lerp(tickDelta, entity.prevYaw, entity.yaw);
 		this.entityRenderDispatcher
-			.render(entity, d - cameraX, e - cameraY, f - cameraZ, g, tickDelta, matrix, vertexConsumerProvider, EntityRenderDispatcher.method_23839(entity));
+			.render(
+				entity, d - cameraX, e - cameraY, f - cameraZ, g, tickDelta, matrix, vertexConsumerProvider, this.entityRenderDispatcher.method_23839(entity, tickDelta)
+			);
 	}
 
 	private void renderLayer(RenderLayer renderLayer, MatrixStack matrixStack, double d, double e, double f) {

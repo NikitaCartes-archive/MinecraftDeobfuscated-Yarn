@@ -16,7 +16,7 @@ public class DolphinEntityRenderer extends MobEntityRenderer<DolphinEntity, Dolp
 		this.addFeature(new DolphinHeldItemFeatureRenderer(this));
 	}
 
-	public Identifier method_3903(DolphinEntity dolphinEntity) {
+	public Identifier getTexture(DolphinEntity dolphinEntity) {
 		return SKIN;
 	}
 }

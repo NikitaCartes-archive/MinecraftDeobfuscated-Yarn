@@ -35,7 +35,7 @@ public class ItemPickupAnimationS2CPacket implements Packet<ClientPlayPacketList
 		buf.writeVarInt(this.stackAmount);
 	}
 
-	public void method_11914(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onItemPickupAnimation(this);
 	}
 

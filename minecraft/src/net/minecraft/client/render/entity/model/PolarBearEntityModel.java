@@ -46,7 +46,7 @@ public class PolarBearEntityModel<T extends PolarBearEntity> extends QuadrupedEn
 		this.frontLeftLeg.pivotZ--;
 	}
 
-	public void method_17114(T polarBearEntity, float f, float g, float h, float i, float j) {
+	public void setAngles(T polarBearEntity, float f, float g, float h, float i, float j) {
 		super.setAngles(polarBearEntity, f, g, h, i, j);
 		float k = h - (float)polarBearEntity.age;
 		float l = polarBearEntity.getWarningAnimationProgress(k);

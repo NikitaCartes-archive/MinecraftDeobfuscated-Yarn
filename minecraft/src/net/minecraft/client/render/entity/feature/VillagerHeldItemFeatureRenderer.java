@@ -18,7 +18,7 @@ public class VillagerHeldItemFeatureRenderer<T extends LivingEntity, M extends E
 		super(featureRendererContext);
 	}
 
-	public void method_4208(
+	public void render(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l
 	) {
 		matrixStack.push();

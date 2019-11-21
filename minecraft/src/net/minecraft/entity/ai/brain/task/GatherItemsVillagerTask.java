@@ -22,21 +22,21 @@ public class GatherItemsVillagerTask extends Task<VillagerEntity> {
 		super(ImmutableMap.of(MemoryModuleType.INTERACTION_TARGET, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.VISIBLE_MOBS, MemoryModuleState.VALUE_PRESENT));
 	}
 
-	protected boolean method_19015(ServerWorld serverWorld, VillagerEntity villagerEntity) {
+	protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
 		return LookTargetUtil.canSee(villagerEntity.getBrain(), MemoryModuleType.INTERACTION_TARGET, EntityType.VILLAGER);
 	}
 
-	protected boolean method_19016(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		return this.method_19015(serverWorld, villagerEntity);
+	protected boolean shouldKeepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+		return this.shouldRun(serverWorld, villagerEntity);
 	}
 
-	protected void method_19017(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		VillagerEntity villagerEntity2 = (VillagerEntity)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).get();
 		LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, villagerEntity2);
 		this.items = getGatherableItems(villagerEntity, villagerEntity2);
 	}
 
-	protected void method_19018(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		VillagerEntity villagerEntity2 = (VillagerEntity)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).get();
 		if (!(villagerEntity.squaredDistanceTo(villagerEntity2) > 5.0)) {
 			LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, villagerEntity2);
@@ -51,7 +51,7 @@ public class GatherItemsVillagerTask extends Task<VillagerEntity> {
 		}
 	}
 
-	protected void method_19019(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	protected void finishRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		villagerEntity.getBrain().forget(MemoryModuleType.INTERACTION_TARGET);
 	}
 

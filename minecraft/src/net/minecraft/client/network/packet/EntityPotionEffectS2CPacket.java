@@ -66,7 +66,7 @@ public class EntityPotionEffectS2CPacket implements Packet<ClientPlayPacketListe
 		return this.duration == 32767;
 	}
 
-	public void method_11948(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onEntityPotionEffect(this);
 	}
 

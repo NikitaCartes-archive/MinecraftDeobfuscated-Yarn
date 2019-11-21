@@ -24,7 +24,7 @@ public class SwizzleArgumentType implements ArgumentType<EnumSet<Direction.Axis>
 		return commandContext.getArgument(string, EnumSet.class);
 	}
 
-	public EnumSet<Direction.Axis> method_9722(StringReader stringReader) throws CommandSyntaxException {
+	public EnumSet<Direction.Axis> parse(StringReader stringReader) throws CommandSyntaxException {
 		EnumSet<Direction.Axis> enumSet = EnumSet.noneOf(Direction.Axis.class);
 
 		while (stringReader.canRead() && stringReader.peek() != ' ') {

@@ -62,7 +62,7 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 					this,
 					PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.INVISIBILITY),
 					SoundEvents.ENTITY_WANDERING_TRADER_DISAPPEARED,
-					wanderingTraderEntity -> !this.world.isDaylight() && !wanderingTraderEntity.isInvisible()
+					wanderingTraderEntity -> !this.world.isDay() && !wanderingTraderEntity.isInvisible()
 				)
 			);
 		this.goalSelector
@@ -72,7 +72,7 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 					this,
 					new ItemStack(Items.MILK_BUCKET),
 					SoundEvents.ENTITY_WANDERING_TRADER_REAPPEARED,
-					wanderingTraderEntity -> this.world.isDaylight() && wanderingTraderEntity.isInvisible()
+					wanderingTraderEntity -> this.world.isDay() && wanderingTraderEntity.isInvisible()
 				)
 			);
 		this.goalSelector.add(1, new StopFollowingCustomerGoal(this));

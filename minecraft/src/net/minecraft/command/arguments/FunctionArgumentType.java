@@ -28,7 +28,7 @@ public class FunctionArgumentType implements ArgumentType<FunctionArgumentType.F
 		return new FunctionArgumentType();
 	}
 
-	public FunctionArgumentType.FunctionArgument method_9764(StringReader stringReader) throws CommandSyntaxException {
+	public FunctionArgumentType.FunctionArgument parse(StringReader stringReader) throws CommandSyntaxException {
 		if (stringReader.canRead() && stringReader.peek() == '#') {
 			stringReader.skip();
 			final Identifier identifier = Identifier.fromCommandInput(stringReader);

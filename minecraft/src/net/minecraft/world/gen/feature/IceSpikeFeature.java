@@ -17,11 +17,11 @@ public class IceSpikeFeature extends Feature<DefaultFeatureConfig> {
 		super(configFactory);
 	}
 
-	public boolean method_13408(
+	public boolean generate(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		while (iWorld.isAir(blockPos) && blockPos.getY() > 2) {
-			blockPos = blockPos.method_10074();
+			blockPos = blockPos.down();
 		}
 
 		if (iWorld.getBlockState(blockPos).getBlock() != Blocks.SNOW_BLOCK) {
@@ -46,14 +46,14 @@ public class IceSpikeFeature extends Feature<DefaultFeatureConfig> {
 						if ((m == 0 && n == 0 || !(g * g + h * h > f * f)) && (m != -l && m != l && n != -l && n != l || !(random.nextFloat() > 0.75F))) {
 							BlockState blockState = iWorld.getBlockState(blockPos.add(m, k, n));
 							Block block = blockState.getBlock();
-							if (blockState.isAir() || method_23396(block) || block == Blocks.SNOW_BLOCK || block == Blocks.ICE) {
+							if (blockState.isAir() || isDirt(block) || block == Blocks.SNOW_BLOCK || block == Blocks.ICE) {
 								this.setBlockState(iWorld, blockPos.add(m, k, n), Blocks.PACKED_ICE.getDefaultState());
 							}
 
 							if (k != 0 && l > 1) {
 								blockState = iWorld.getBlockState(blockPos.add(m, -k, n));
 								block = blockState.getBlock();
-								if (blockState.isAir() || method_23396(block) || block == Blocks.SNOW_BLOCK || block == Blocks.ICE) {
+								if (blockState.isAir() || isDirt(block) || block == Blocks.SNOW_BLOCK || block == Blocks.ICE) {
 									this.setBlockState(iWorld, blockPos.add(m, -k, n), Blocks.PACKED_ICE.getDefaultState());
 								}
 							}
@@ -80,12 +80,12 @@ public class IceSpikeFeature extends Feature<DefaultFeatureConfig> {
 					while (blockPos2.getY() > 50) {
 						BlockState blockState2 = iWorld.getBlockState(blockPos2);
 						Block block2 = blockState2.getBlock();
-						if (!blockState2.isAir() && !method_23396(block2) && block2 != Blocks.SNOW_BLOCK && block2 != Blocks.ICE && block2 != Blocks.PACKED_ICE) {
+						if (!blockState2.isAir() && !isDirt(block2) && block2 != Blocks.SNOW_BLOCK && block2 != Blocks.ICE && block2 != Blocks.PACKED_ICE) {
 							break;
 						}
 
 						this.setBlockState(iWorld, blockPos2, Blocks.PACKED_ICE.getDefaultState());
-						blockPos2 = blockPos2.method_10074();
+						blockPos2 = blockPos2.down();
 						if (--p <= 0) {
 							blockPos2 = blockPos2.down(random.nextInt(5) + 1);
 							p = random.nextInt(5);

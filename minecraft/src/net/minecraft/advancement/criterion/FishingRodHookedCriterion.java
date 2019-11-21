@@ -20,7 +20,7 @@ public class FishingRodHookedCriterion extends AbstractCriterion<FishingRodHooke
 		return ID;
 	}
 
-	public FishingRodHookedCriterion.Conditions method_8941(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public FishingRodHookedCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("rod"));
 		EntityPredicate entityPredicate = EntityPredicate.fromJson(jsonObject.get("entity"));
 		ItemPredicate itemPredicate2 = ItemPredicate.fromJson(jsonObject.get("item"));

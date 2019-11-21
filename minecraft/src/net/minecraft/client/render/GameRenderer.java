@@ -15,7 +15,6 @@ import net.minecraft.client.gl.ShaderEffect;
 import net.minecraft.client.gui.MapRenderer;
 import net.minecraft.client.gui.hud.InGameOverlayRenderer;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.ScreenshotUtils;
@@ -386,7 +385,9 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 				&& this.client.interactionManager.getCurrentGameMode() != GameMode.SPECTATOR) {
 				this.lightmapTextureManager.enable();
 				this.firstPersonRenderer
-					.method_22976(f, matrixStack, this.buffers.getEntityVertexConsumers(), this.client.player, EntityRenderDispatcher.method_23839(this.client.player));
+					.method_22976(
+						f, matrixStack, this.buffers.getEntityVertexConsumers(), this.client.player, this.client.getEntityRenderManager().method_23839(this.client.player, f)
+					);
 				this.lightmapTextureManager.disable();
 			}
 
@@ -454,11 +455,11 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			RenderSystem.viewport(0, 0, this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight());
 			if (tick && this.client.world != null) {
 				this.client.getProfiler().push("level");
-				int l = Math.min(MinecraftClient.getCurrentFps(), k);
-				l = Math.max(l, 60);
+				int l = 30;
 				long m = Util.getMeasuringTimeNano() - startTime;
-				long n = Math.max((long)(1000000000 / l / 4) - m, 0L);
-				this.renderWorld(tickDelta, Util.getMeasuringTimeNano() + n, matrixStack);
+				long n = (long)(1000000000 / l);
+				long o = Math.max(n * 3L / 4L - m, n / 10L);
+				this.renderWorld(tickDelta, Util.getMeasuringTimeNano() + o, matrixStack);
 				if (this.client.isIntegratedServerRunning() && this.lastWorldIconUpdate < Util.getMeasuringTimeMs() - 1000L) {
 					this.lastWorldIconUpdate = Util.getMeasuringTimeMs();
 					if (!this.client.getServer().hasIconFile()) {
@@ -508,8 +509,8 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			if (this.client.overlay != null) {
 				try {
 					this.client.overlay.render(i, j, this.client.getLastFrameDuration());
-				} catch (Throwable var15) {
-					CrashReport crashReport = CrashReport.create(var15, "Rendering overlay");
+				} catch (Throwable var17) {
+					CrashReport crashReport = CrashReport.create(var17, "Rendering overlay");
 					CrashReportSection crashReportSection = crashReport.addElement("Overlay render details");
 					crashReportSection.add("Overlay name", (CrashCallable<String>)(() -> this.client.overlay.getClass().getCanonicalName()));
 					throw new CrashException(crashReport);
@@ -517,8 +518,8 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			} else if (this.client.currentScreen != null) {
 				try {
 					this.client.currentScreen.render(i, j, this.client.getLastFrameDuration());
-				} catch (Throwable var14) {
-					CrashReport crashReport = CrashReport.create(var14, "Rendering screen");
+				} catch (Throwable var16) {
+					CrashReport crashReport = CrashReport.create(var16, "Rendering screen");
 					CrashReportSection crashReportSection = crashReport.addElement("Screen render details");
 					crashReportSection.add("Screen name", (CrashCallable<String>)(() -> this.client.currentScreen.getClass().getCanonicalName()));
 					crashReportSection.add(

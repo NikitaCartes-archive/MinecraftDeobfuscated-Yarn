@@ -20,7 +20,7 @@ public class DifficultyS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.difficultyLocked = difficultyLocked;
 	}
 
-	public void method_11341(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onDifficulty(this);
 	}
 

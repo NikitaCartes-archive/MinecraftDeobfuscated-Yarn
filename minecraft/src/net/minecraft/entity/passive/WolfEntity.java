@@ -436,7 +436,7 @@ public class WolfEntity extends TameableEntity {
 		this.dataTracker.set(COLLAR_COLOR, color.getId());
 	}
 
-	public WolfEntity method_6717(PassiveEntity passiveEntity) {
+	public WolfEntity createChild(PassiveEntity passiveEntity) {
 		WolfEntity wolfEntity = EntityType.WOLF.create(this.world);
 		UUID uUID = this.getOwnerUuid();
 		if (uUID != null) {

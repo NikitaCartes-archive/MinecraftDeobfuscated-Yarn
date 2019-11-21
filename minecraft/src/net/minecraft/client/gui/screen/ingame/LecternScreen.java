@@ -38,7 +38,7 @@ public class LecternScreen extends BookScreen implements ContainerProvider<Lecte
 		this.lecternContainer = lecternContainer;
 	}
 
-	public LecternContainer method_17573() {
+	public LecternContainer getContainer() {
 		return this.lecternContainer;
 	}
 

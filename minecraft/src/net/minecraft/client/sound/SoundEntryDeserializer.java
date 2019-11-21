@@ -16,7 +16,7 @@ import org.apache.commons.lang3.Validate;
 
 @Environment(EnvType.CLIENT)
 public class SoundEntryDeserializer implements JsonDeserializer<SoundEntry> {
-	public SoundEntry method_4791(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+	public SoundEntry deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 		JsonObject jsonObject = JsonHelper.asObject(jsonElement, "entry");
 		boolean bl = JsonHelper.getBoolean(jsonObject, "replace", false);
 		String string = JsonHelper.getString(jsonObject, "subtitle", null);

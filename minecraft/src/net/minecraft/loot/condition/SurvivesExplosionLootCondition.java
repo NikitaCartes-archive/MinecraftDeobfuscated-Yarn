@@ -22,7 +22,7 @@ public class SurvivesExplosionLootCondition implements LootCondition {
 		return ImmutableSet.of(LootContextParameters.EXPLOSION_RADIUS);
 	}
 
-	public boolean method_869(LootContext lootContext) {
+	public boolean test(LootContext lootContext) {
 		Float float_ = lootContext.get(LootContextParameters.EXPLOSION_RADIUS);
 		if (float_ != null) {
 			Random random = lootContext.getRandom();
@@ -42,12 +42,10 @@ public class SurvivesExplosionLootCondition implements LootCondition {
 			super(new Identifier("survives_explosion"), SurvivesExplosionLootCondition.class);
 		}
 
-		public void method_874(
-			JsonObject jsonObject, SurvivesExplosionLootCondition survivesExplosionLootCondition, JsonSerializationContext jsonSerializationContext
-		) {
+		public void toJson(JsonObject jsonObject, SurvivesExplosionLootCondition survivesExplosionLootCondition, JsonSerializationContext jsonSerializationContext) {
 		}
 
-		public SurvivesExplosionLootCondition method_873(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		public SurvivesExplosionLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			return SurvivesExplosionLootCondition.INSTANCE;
 		}
 	}

@@ -1,6 +1,6 @@
 package net.minecraft.entity;
 
-import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -146,15 +146,15 @@ public class ItemEntity extends Entity {
 	}
 
 	private void tryMerge() {
-		List<ItemEntity> list = this.world
-			.getEntities(ItemEntity.class, this.getBoundingBox().expand(0.5, 0.0, 0.5), itemEntityx -> itemEntityx != this && itemEntityx.canMerge());
-		if (!list.isEmpty()) {
-			for (ItemEntity itemEntity : list) {
-				if (!this.canMerge()) {
-					return;
+		if (this.canMerge()) {
+			for (ItemEntity itemEntity : this.world
+				.getEntities(ItemEntity.class, this.getBoundingBox().expand(0.5, 0.0, 0.5), itemEntityx -> itemEntityx != this && itemEntityx.canMerge())) {
+				if (itemEntity.canMerge()) {
+					this.tryMerge(itemEntity);
+					if (this.removed) {
+						break;
+					}
 				}
-
-				this.tryMerge(itemEntity);
 			}
 		}
 	}
@@ -167,28 +167,40 @@ public class ItemEntity extends Entity {
 	private void tryMerge(ItemEntity other) {
 		ItemStack itemStack = this.getStack();
 		ItemStack itemStack2 = other.getStack();
-		if (itemStack2.getItem() == itemStack.getItem()) {
-			if (itemStack2.getCount() + itemStack.getCount() <= itemStack2.getMaxCount()) {
-				if (!(itemStack2.hasTag() ^ itemStack.hasTag())) {
-					if (!itemStack2.hasTag() || itemStack2.getTag().equals(itemStack.getTag())) {
-						if (itemStack2.getCount() < itemStack.getCount()) {
-							merge(this, itemStack, other, itemStack2);
-						} else {
-							merge(other, itemStack2, this, itemStack);
-						}
-					}
-				}
+		if (Objects.equals(this.getOwner(), other.getOwner()) && method_24017(itemStack, itemStack2)) {
+			if (itemStack2.getCount() < itemStack.getCount()) {
+				merge(this, itemStack, other, itemStack2);
+			} else {
+				merge(other, itemStack2, this, itemStack);
 			}
 		}
 	}
 
+	public static boolean method_24017(ItemStack itemStack, ItemStack itemStack2) {
+		if (itemStack2.getItem() != itemStack.getItem()) {
+			return false;
+		} else if (itemStack2.getCount() + itemStack.getCount() > itemStack2.getMaxCount()) {
+			return false;
+		} else {
+			return itemStack2.hasTag() ^ itemStack.hasTag() ? false : !itemStack2.hasTag() || itemStack2.getTag().equals(itemStack.getTag());
+		}
+	}
+
+	public static ItemStack method_24018(ItemStack itemStack, ItemStack itemStack2, int i) {
+		int j = Math.min(Math.min(itemStack.getMaxCount(), i) - itemStack.getCount(), itemStack2.getCount());
+		ItemStack itemStack3 = itemStack.copy();
+		itemStack3.increment(j);
+		itemStack2.decrement(j);
+		return itemStack3;
+	}
+
+	private static void method_24016(ItemEntity itemEntity, ItemStack itemStack, ItemStack itemStack2) {
+		ItemStack itemStack3 = method_24018(itemStack, itemStack2, 64);
+		itemEntity.setStack(itemStack3);
+	}
+
 	private static void merge(ItemEntity targetEntity, ItemStack targetStack, ItemEntity sourceEntity, ItemStack sourceStack) {
-		int i = Math.min(targetStack.getMaxCount() - targetStack.getCount(), sourceStack.getCount());
-		ItemStack itemStack = targetStack.copy();
-		itemStack.increment(i);
-		targetEntity.setStack(itemStack);
-		sourceStack.decrement(i);
-		sourceEntity.setStack(sourceStack);
+		method_24016(targetEntity, targetStack, sourceStack);
 		targetEntity.pickupDelay = Math.max(targetEntity.pickupDelay, sourceEntity.pickupDelay);
 		targetEntity.age = Math.min(targetEntity.age, sourceEntity.age);
 		if (sourceStack.isEmpty()) {
@@ -265,9 +277,7 @@ public class ItemEntity extends Entity {
 			ItemStack itemStack = this.getStack();
 			Item item = itemStack.getItem();
 			int i = itemStack.getCount();
-			if (this.pickupDelay == 0
-				&& (this.owner == null || 6000 - this.age <= 200 || this.owner.equals(player.getUuid()))
-				&& player.inventory.insertStack(itemStack)) {
+			if (this.pickupDelay == 0 && (this.owner == null || this.owner.equals(player.getUuid())) && player.inventory.insertStack(itemStack)) {
 				player.sendPickup(this, i);
 				if (itemStack.isEmpty()) {
 					this.remove();

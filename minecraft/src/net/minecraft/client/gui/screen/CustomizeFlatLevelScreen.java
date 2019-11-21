@@ -75,7 +75,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 						int j = list.size() - i - 1;
 						list.remove(j);
 						this.layers
-							.method_20094(
+							.setSelected(
 								list.isEmpty() ? null : (CustomizeFlatLevelScreen.SuperflatLayersListWidget.SuperflatLayerItem)this.layers.children().get(Math.min(i, list.size() - 1))
 							);
 						this.config.updateLayerBlocks();
@@ -141,7 +141,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 			}
 		}
 
-		public void method_20094(@Nullable CustomizeFlatLevelScreen.SuperflatLayersListWidget.SuperflatLayerItem superflatLayerItem) {
+		public void setSelected(@Nullable CustomizeFlatLevelScreen.SuperflatLayersListWidget.SuperflatLayerItem superflatLayerItem) {
 			super.setSelected(superflatLayerItem);
 			if (superflatLayerItem != null) {
 				FlatChunkGeneratorLayer flatChunkGeneratorLayer = (FlatChunkGeneratorLayer)CustomizeFlatLevelScreen.this.config
@@ -180,7 +180,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 
 			List<CustomizeFlatLevelScreen.SuperflatLayersListWidget.SuperflatLayerItem> list = this.children();
 			if (i >= 0 && i < list.size()) {
-				this.method_20094((CustomizeFlatLevelScreen.SuperflatLayersListWidget.SuperflatLayerItem)list.get(i));
+				this.setSelected((CustomizeFlatLevelScreen.SuperflatLayersListWidget.SuperflatLayerItem)list.get(i));
 			}
 		}
 
@@ -225,7 +225,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 			@Override
 			public boolean mouseClicked(double mouseX, double mouseY, int button) {
 				if (button == 0) {
-					SuperflatLayersListWidget.this.method_20094(this);
+					SuperflatLayersListWidget.this.setSelected(this);
 					CustomizeFlatLevelScreen.this.method_2145();
 					return true;
 				} else {

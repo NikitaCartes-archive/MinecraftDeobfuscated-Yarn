@@ -724,7 +724,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		int i = packet.getX();
 		int j = packet.getZ();
 		WorldChunk worldChunk = this.world
-			.method_2935()
+			.getChunkManager()
 			.loadChunkFromPacket(i, j, packet.getBiomeArray(), packet.getReadBuffer(), packet.getHeightmaps(), packet.getVerticalStripBitmask());
 		if (worldChunk != null && packet.isFullChunk()) {
 			this.world.addEntitiesToChunk(worldChunk);
@@ -748,7 +748,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		int i = packet.getX();
 		int j = packet.getZ();
-		ClientChunkManager clientChunkManager = this.world.method_2935();
+		ClientChunkManager clientChunkManager = this.world.getChunkManager();
 		clientChunkManager.unload(i, j);
 		LightingProvider lightingProvider = clientChunkManager.getLightingProvider();
 
@@ -1952,18 +1952,26 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 					blockPos5 = packetByteBuf.readBlockPos();
 				}
 
-				boolean bl2 = packetByteBuf.readBoolean();
-				Path path2 = null;
-				if (bl2) {
-					path2 = Path.fromBuffer(packetByteBuf);
+				int w = packetByteBuf.readInt();
+				boolean bl6 = packetByteBuf.readBoolean();
+				Path path3 = null;
+				if (bl6) {
+					path3 = Path.fromBuffer(packetByteBuf);
 				}
 
-				class_4703.class_4704 lv = new class_4703.class_4704(uUID, o, position, path2, blockPos4, blockPos5);
-				int w = packetByteBuf.readInt();
+				class_4703.class_4704 lv = new class_4703.class_4704(uUID, o, position, path3, blockPos4, blockPos5, w);
+				int q = packetByteBuf.readInt();
 
-				for (int q = 0; q < w; q++) {
-					String string10 = packetByteBuf.readString();
-					lv.field_21542.add(string10);
+				for (int r = 0; r < q; r++) {
+					String string6 = packetByteBuf.readString();
+					lv.field_21542.add(string6);
+				}
+
+				int r = packetByteBuf.readInt();
+
+				for (int s = 0; s < r; s++) {
+					BlockPos blockPos6 = packetByteBuf.readBlockPos();
+					lv.field_21734.add(blockPos6);
 				}
 
 				this.client.debugRenderer.field_21547.method_23805(lv);
@@ -1972,17 +1980,17 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				String string = packetByteBuf.readString();
 				int m = packetByteBuf.readInt();
 				int x = packetByteBuf.readInt();
-				boolean bl6 = packetByteBuf.readBoolean();
-				class_4703.class_4705 lv2 = new class_4703.class_4705(blockPos2, string, m, x, bl6, this.world.getTime());
+				boolean bl7 = packetByteBuf.readBoolean();
+				class_4703.class_4705 lv2 = new class_4703.class_4705(blockPos2, string, m, x, bl7, this.world.getTime());
 				this.client.debugRenderer.field_21547.method_23807(lv2);
 			} else if (CustomPayloadS2CPacket.DEBUG_GAME_TEST_CLEAR.equals(identifier)) {
 				this.client.debugRenderer.gameTestDebugRenderer.clear();
 			} else if (CustomPayloadS2CPacket.DEBUG_GAME_TEST_ADD_MARKER.equals(identifier)) {
 				BlockPos blockPos2 = packetByteBuf.readBlockPos();
 				int j = packetByteBuf.readInt();
-				String string11 = packetByteBuf.readString();
+				String string10 = packetByteBuf.readString();
 				int x = packetByteBuf.readInt();
-				this.client.debugRenderer.gameTestDebugRenderer.addMarker(blockPos2, j, string11, x);
+				this.client.debugRenderer.gameTestDebugRenderer.addMarker(blockPos2, j, string10, x);
 			} else {
 				LOGGER.warn("Unknown custom packed identifier: {}", identifier);
 			}
@@ -2162,7 +2170,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		int i = packet.getChunkX();
 		int j = packet.getChunkZ();
-		LightingProvider lightingProvider = this.world.method_2935().getLightingProvider();
+		LightingProvider lightingProvider = this.world.getChunkManager().getLightingProvider();
 		int k = packet.getSkyLightMask();
 		int l = packet.getFilledSkyLightMask();
 		Iterator<byte[]> iterator = packet.getSkyLightUpdates().iterator();
@@ -2190,13 +2198,13 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	public void onChunkLoadDistance(ChunkLoadDistanceS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		this.chunkLoadDistance = packet.getDistance();
-		this.world.method_2935().updateLoadDistance(packet.getDistance());
+		this.world.getChunkManager().updateLoadDistance(packet.getDistance());
 	}
 
 	@Override
 	public void onChunkRenderDistanceCenter(ChunkRenderDistanceCenterS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		this.world.method_2935().setChunkMapCenter(packet.getChunkX(), packet.getChunkZ());
+		this.world.getChunkManager().setChunkMapCenter(packet.getChunkX(), packet.getChunkZ());
 	}
 
 	@Override

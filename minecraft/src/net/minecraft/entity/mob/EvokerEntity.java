@@ -187,7 +187,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 			double d = 0.0;
 
 			do {
-				BlockPos blockPos2 = blockPos.method_10074();
+				BlockPos blockPos2 = blockPos.down();
 				BlockState blockState = EvokerEntity.this.world.getBlockState(blockPos2);
 				if (blockState.isSideSolidFullSquare(EvokerEntity.this.world, blockPos2, Direction.UP)) {
 					if (!EvokerEntity.this.world.isAir(blockPos)) {
@@ -202,7 +202,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 					break;
 				}
 
-				blockPos = blockPos.method_10074();
+				blockPos = blockPos.down();
 			} while (blockPos.getY() >= MathHelper.floor(maxY) - 1);
 
 			if (bl) {

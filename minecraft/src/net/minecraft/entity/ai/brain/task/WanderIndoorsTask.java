@@ -20,11 +20,11 @@ public class WanderIndoorsTask extends Task<MobEntityWithAi> {
 		this.speed = speed;
 	}
 
-	protected boolean method_20421(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
+	protected boolean shouldRun(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
 		return !serverWorld.isSkyVisible(new BlockPos(mobEntityWithAi));
 	}
 
-	protected void method_20422(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
+	protected void run(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
 		BlockPos blockPos = new BlockPos(mobEntityWithAi);
 		List<BlockPos> list = (List<BlockPos>)BlockPos.stream(blockPos.add(-1, -1, -1), blockPos.add(1, 1, 1))
 			.map(BlockPos::toImmutable)

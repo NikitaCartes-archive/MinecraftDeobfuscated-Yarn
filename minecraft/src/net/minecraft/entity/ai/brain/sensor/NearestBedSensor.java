@@ -29,7 +29,7 @@ public class NearestBedSensor extends Sensor<MobEntity> {
 		return ImmutableSet.of(MemoryModuleType.NEAREST_BED);
 	}
 
-	protected void method_21646(ServerWorld serverWorld, MobEntity mobEntity) {
+	protected void sense(ServerWorld serverWorld, MobEntity mobEntity) {
 		if (mobEntity.isBaby()) {
 			this.field_20296 = 0;
 			this.field_20297 = serverWorld.getTime() + (long)serverWorld.getRandom().nextInt(20);

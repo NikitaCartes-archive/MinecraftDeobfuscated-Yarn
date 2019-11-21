@@ -35,7 +35,7 @@ public class BuriedTreasureGenerator {
 
 			while (mutable.getY() > 0) {
 				BlockState blockState = world.getBlockState(mutable);
-				BlockState blockState2 = world.getBlockState(mutable.method_10074());
+				BlockState blockState2 = world.getBlockState(mutable.down());
 				if (blockState2 == Blocks.SANDSTONE.getDefaultState()
 					|| blockState2 == Blocks.STONE.getDefaultState()
 					|| blockState2 == Blocks.ANDESITE.getDefaultState()
@@ -47,7 +47,7 @@ public class BuriedTreasureGenerator {
 						BlockPos blockPos = mutable.offset(direction);
 						BlockState blockState4 = world.getBlockState(blockPos);
 						if (blockState4.isAir() || this.isLiquid(blockState4)) {
-							BlockPos blockPos2 = blockPos.method_10074();
+							BlockPos blockPos2 = blockPos.down();
 							BlockState blockState5 = world.getBlockState(blockPos2);
 							if ((blockState5.isAir() || this.isLiquid(blockState5)) && direction != Direction.UP) {
 								world.setBlockState(blockPos, blockState2, 3);

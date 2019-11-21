@@ -144,7 +144,7 @@ public class ShulkerBulletEntity extends Entity {
 		double d = 0.5;
 		BlockPos blockPos;
 		if (this.target == null) {
-			blockPos = new BlockPos(this).method_10074();
+			blockPos = new BlockPos(this).down();
 		} else {
 			d = (double)this.target.getHeight() * 0.5;
 			blockPos = new BlockPos(this.target.getX(), this.target.getY() + d, this.target.getZ());
@@ -168,7 +168,7 @@ public class ShulkerBulletEntity extends Entity {
 			if (axis != Direction.Axis.Y) {
 				if (blockPos2.getY() < blockPos.getY() && this.world.isAir(blockPos2.up())) {
 					list.add(Direction.UP);
-				} else if (blockPos2.getY() > blockPos.getY() && this.world.isAir(blockPos2.method_10074())) {
+				} else if (blockPos2.getY() > blockPos.getY() && this.world.isAir(blockPos2.down())) {
 					list.add(Direction.DOWN);
 				}
 			}
@@ -311,12 +311,6 @@ public class ShulkerBulletEntity extends Entity {
 	@Override
 	public float getBrightnessAtEyes() {
 		return 1.0F;
-	}
-
-	@Environment(EnvType.CLIENT)
-	@Override
-	public int getLightmapCoordinates() {
-		return 15;
 	}
 
 	protected void onHit(HitResult hitResult) {

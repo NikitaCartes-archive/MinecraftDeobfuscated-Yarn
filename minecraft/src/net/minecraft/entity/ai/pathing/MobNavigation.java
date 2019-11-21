@@ -37,10 +37,10 @@ public class MobNavigation extends EntityNavigation {
 	@Override
 	public Path findPathTo(BlockPos target, int distance) {
 		if (this.world.getBlockState(target).isAir()) {
-			BlockPos blockPos = target.method_10074();
+			BlockPos blockPos = target.down();
 
 			while (blockPos.getY() > 0 && this.world.getBlockState(blockPos).isAir()) {
-				blockPos = blockPos.method_10074();
+				blockPos = blockPos.down();
 			}
 
 			if (blockPos.getY() > 0) {

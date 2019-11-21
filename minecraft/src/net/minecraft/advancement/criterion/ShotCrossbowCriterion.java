@@ -17,7 +17,7 @@ public class ShotCrossbowCriterion extends AbstractCriterion<ShotCrossbowCriteri
 		return ID;
 	}
 
-	public ShotCrossbowCriterion.Conditions method_9114(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public ShotCrossbowCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
 		return new ShotCrossbowCriterion.Conditions(itemPredicate);
 	}

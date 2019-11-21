@@ -18,7 +18,7 @@ public class CreeperEntityRenderer extends MobEntityRenderer<CreeperEntity, Cree
 		this.addFeature(new CreeperChargeFeatureRenderer(this));
 	}
 
-	protected void method_3900(CreeperEntity creeperEntity, MatrixStack matrixStack, float f) {
+	protected void scale(CreeperEntity creeperEntity, MatrixStack matrixStack, float f) {
 		float g = creeperEntity.getClientFuseTime(f);
 		float h = 1.0F + MathHelper.sin(g * 100.0F) * g * 0.01F;
 		g = MathHelper.clamp(g, 0.0F, 1.0F);
@@ -29,12 +29,12 @@ public class CreeperEntityRenderer extends MobEntityRenderer<CreeperEntity, Cree
 		matrixStack.scale(i, j, i);
 	}
 
-	protected float method_23154(CreeperEntity creeperEntity, float f) {
+	protected float method_23185(CreeperEntity creeperEntity, float f) {
 		float g = creeperEntity.getClientFuseTime(f);
 		return (int)(g * 10.0F) % 2 == 0 ? 0.0F : MathHelper.clamp(g, 0.0F, 1.0F);
 	}
 
-	public Identifier method_3899(CreeperEntity creeperEntity) {
+	public Identifier getTexture(CreeperEntity creeperEntity) {
 		return SKIN;
 	}
 }

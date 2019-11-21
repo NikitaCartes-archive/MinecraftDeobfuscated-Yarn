@@ -172,7 +172,7 @@ public class ClientWorld extends World {
 	}
 
 	public void tickEntity(Entity entity) {
-		if (entity instanceof PlayerEntity || this.method_2935().shouldTickEntity(entity)) {
+		if (entity instanceof PlayerEntity || this.getChunkManager().shouldTickEntity(entity)) {
 			entity.method_22862(entity.getX(), entity.getY(), entity.getZ());
 			entity.prevYaw = entity.yaw;
 			entity.prevPitch = entity.pitch;
@@ -195,7 +195,7 @@ public class ClientWorld extends World {
 	public void tickPassenger(Entity entity, Entity passenger) {
 		if (passenger.removed || passenger.getVehicle() != entity) {
 			passenger.stopRiding();
-		} else if (passenger instanceof PlayerEntity || this.method_2935().shouldTickEntity(passenger)) {
+		} else if (passenger instanceof PlayerEntity || this.getChunkManager().shouldTickEntity(passenger)) {
 			passenger.method_22862(passenger.getX(), passenger.getY(), passenger.getZ());
 			passenger.prevYaw = passenger.yaw;
 			passenger.prevPitch = passenger.pitch;
@@ -220,13 +220,13 @@ public class ClientWorld extends World {
 		int k = MathHelper.floor(entity.getZ() / 16.0);
 		if (!entity.updateNeeded || entity.chunkX != i || entity.chunkY != j || entity.chunkZ != k) {
 			if (entity.updateNeeded && this.isChunkLoaded(entity.chunkX, entity.chunkZ)) {
-				this.method_8497(entity.chunkX, entity.chunkZ).remove(entity, entity.chunkY);
+				this.getChunk(entity.chunkX, entity.chunkZ).remove(entity, entity.chunkY);
 			}
 
 			if (!entity.teleportRequested() && !this.isChunkLoaded(i, k)) {
 				entity.updateNeeded = false;
 			} else {
-				this.method_8497(i, k).addEntity(entity);
+				this.getChunk(i, k).addEntity(entity);
 			}
 		}
 
@@ -299,7 +299,7 @@ public class ClientWorld extends World {
 	private void addEntityPrivate(int id, Entity entity) {
 		this.removeEntity(id);
 		this.regularEntities.put(id, entity);
-		this.method_2935().method_2857(MathHelper.floor(entity.getX() / 16.0), MathHelper.floor(entity.getZ() / 16.0), ChunkStatus.FULL, true).addEntity(entity);
+		this.getChunkManager().getChunk(MathHelper.floor(entity.getX() / 16.0), MathHelper.floor(entity.getZ() / 16.0), ChunkStatus.FULL, true).addEntity(entity);
 	}
 
 	public void removeEntity(int i) {
@@ -313,7 +313,7 @@ public class ClientWorld extends World {
 	private void finishRemovingEntity(Entity entity) {
 		entity.detach();
 		if (entity.updateNeeded) {
-			this.method_8497(entity.chunkX, entity.chunkZ).remove(entity);
+			this.getChunk(entity.chunkX, entity.chunkZ).remove(entity);
 		}
 
 		this.players.remove(entity);
@@ -373,7 +373,7 @@ public class ClientWorld extends World {
 			ParticleEffect particleEffect = fluidState.getParticle();
 			if (particleEffect != null && this.random.nextInt(10) == 0) {
 				boolean bl = blockState.isSideSolidFullSquare(this, mutable, Direction.DOWN);
-				BlockPos blockPos = mutable.method_10074();
+				BlockPos blockPos = mutable.down();
 				this.addParticle(blockPos, this.getBlockState(blockPos), particleEffect, bl);
 			}
 		}
@@ -396,7 +396,7 @@ public class ClientWorld extends World {
 				if (e > 0.0) {
 					this.addParticle(pos, parameters, voxelShape, (double)pos.getY() + e - 0.05);
 				} else {
-					BlockPos blockPos = pos.method_10074();
+					BlockPos blockPos = pos.down();
 					BlockState blockState = this.getBlockState(blockPos);
 					VoxelShape voxelShape2 = blockState.getCollisionShape(this, blockPos);
 					double f = voxelShape2.getMaximum(Direction.Axis.Y);
@@ -521,7 +521,7 @@ public class ClientWorld extends World {
 		return DummyClientTickScheduler.get();
 	}
 
-	public ClientChunkManager method_2935() {
+	public ClientChunkManager getChunkManager() {
 		return (ClientChunkManager)super.getChunkManager();
 	}
 

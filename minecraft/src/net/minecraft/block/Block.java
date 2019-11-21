@@ -81,7 +81,7 @@ public class Block implements ItemConvertible {
 		.maximumSize(512L)
 		.weakKeys()
 		.build(new CacheLoader<VoxelShape, Boolean>() {
-			public Boolean method_20516(VoxelShape voxelShape) {
+			public Boolean load(VoxelShape voxelShape) {
 				return !VoxelShapes.matchesAnywhere(VoxelShapes.fullCube(), voxelShape, BooleanBiFunction.NOT_SAME);
 			}
 		});
@@ -183,7 +183,7 @@ public class Block implements ItemConvertible {
 	public void updateNeighborStates(BlockState state, IWorld world, BlockPos pos, int flags) {
 		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
 			for (Direction direction : FACINGS) {
-				pooledMutable.method_10114(pos).method_10118(direction);
+				pooledMutable.set(pos).setOffset(direction);
 				BlockState blockState = world.getBlockState(pooledMutable);
 				BlockState blockState2 = blockState.getStateForNeighborUpdate(direction.getOpposite(), state, world, pooledMutable, pos);
 				replaceBlock(blockState, blockState2, world, pooledMutable, flags);
@@ -537,13 +537,6 @@ public class Block implements ItemConvertible {
 			.putNullable(LootContextParameters.THIS_ENTITY, entity)
 			.putNullable(LootContextParameters.BLOCK_ENTITY, blockEntity);
 		return state.getDroppedStacks(builder);
-	}
-
-	public static void dropStacks(BlockState state, LootContext.Builder builder) {
-		ServerWorld serverWorld = builder.getWorld();
-		BlockPos blockPos = builder.get(LootContextParameters.POSITION);
-		state.getDroppedStacks(builder).forEach(itemStack -> dropStack(serverWorld, blockPos, itemStack));
-		state.onStacksDropped(serverWorld, blockPos, ItemStack.EMPTY);
 	}
 
 	public static void dropStacks(BlockState state, World world, BlockPos pos) {

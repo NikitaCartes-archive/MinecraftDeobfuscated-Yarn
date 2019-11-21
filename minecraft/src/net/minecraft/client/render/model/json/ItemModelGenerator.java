@@ -2,22 +2,23 @@ package net.minecraft.client.render.model.json;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mojang.datafixers.util.Either;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4730;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.Vector3f;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 
 @Environment(EnvType.CLIENT)
 public class ItemModelGenerator {
 	public static final List<String> LAYERS = Lists.<String>newArrayList("layer0", "layer1", "layer2", "layer3", "layer4");
 
-	public JsonUnbakedModel create(Function<Identifier, Sprite> textureGetter, JsonUnbakedModel blockModel) {
-		Map<String, String> map = Maps.<String, String>newHashMap();
+	public JsonUnbakedModel create(Function<class_4730, Sprite> textureGetter, JsonUnbakedModel blockModel) {
+		Map<String, Either<class_4730, String>> map = Maps.<String, Either<class_4730, String>>newHashMap();
 		List<ModelElement> list = Lists.<ModelElement>newArrayList();
 
 		for (int i = 0; i < LAYERS.size(); i++) {
@@ -26,13 +27,13 @@ public class ItemModelGenerator {
 				break;
 			}
 
-			String string2 = blockModel.resolveTexture(string);
-			map.put(string, string2);
-			Sprite sprite = (Sprite)textureGetter.apply(new Identifier(string2));
+			class_4730 lv = blockModel.method_24077(string);
+			map.put(string, Either.left(lv));
+			Sprite sprite = (Sprite)textureGetter.apply(lv);
 			list.addAll(this.addLayerElements(i, string, sprite));
 		}
 
-		map.put("particle", blockModel.textureExists("particle") ? blockModel.resolveTexture("particle") : (String)map.get("layer0"));
+		map.put("particle", blockModel.textureExists("particle") ? Either.left(blockModel.method_24077("particle")) : (Either)map.get("layer0"));
 		JsonUnbakedModel jsonUnbakedModel = new JsonUnbakedModel(null, list, map, false, false, blockModel.getTransformations(), blockModel.getOverrides());
 		jsonUnbakedModel.id = blockModel.id;
 		return jsonUnbakedModel;

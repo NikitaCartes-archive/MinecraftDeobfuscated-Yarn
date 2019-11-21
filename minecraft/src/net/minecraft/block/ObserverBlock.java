@@ -43,7 +43,7 @@ public class ObserverBlock extends FacingBlock {
 			world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(false)), 2);
 		} else {
 			world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(true)), 2);
-			world.method_14196().schedule(pos, this, 2);
+			world.getBlockTickScheduler().schedule(pos, this, 2);
 		}
 
 		this.updateNeighbors(world, pos, state);

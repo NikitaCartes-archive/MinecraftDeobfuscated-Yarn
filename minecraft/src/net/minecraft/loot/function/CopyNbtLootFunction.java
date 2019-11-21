@@ -44,7 +44,7 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 
 	private static NbtPathArgumentType.NbtPath parseNbtPath(String nbtPath) {
 		try {
-			return new NbtPathArgumentType().method_9362(new StringReader(nbtPath));
+			return new NbtPathArgumentType().parse(new StringReader(nbtPath));
 		} catch (CommandSyntaxException var2) {
 			throw new IllegalArgumentException("Failed to parse path " + nbtPath, var2);
 		}
@@ -86,7 +86,7 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 			return this.withOperation(source, target, CopyNbtLootFunction.Operator.REPLACE);
 		}
 
-		protected CopyNbtLootFunction.Builder method_16855() {
+		protected CopyNbtLootFunction.Builder getThisBuilder() {
 			return this;
 		}
 
@@ -101,15 +101,15 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 			super(new Identifier("copy_nbt"), CopyNbtLootFunction.class);
 		}
 
-		public void method_16870(JsonObject jsonObject, CopyNbtLootFunction copyNbtLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.method_529(jsonObject, copyNbtLootFunction, jsonSerializationContext);
+		public void toJson(JsonObject jsonObject, CopyNbtLootFunction copyNbtLootFunction, JsonSerializationContext jsonSerializationContext) {
+			super.toJson(jsonObject, copyNbtLootFunction, jsonSerializationContext);
 			jsonObject.addProperty("source", copyNbtLootFunction.source.name);
 			JsonArray jsonArray = new JsonArray();
 			copyNbtLootFunction.operations.stream().map(CopyNbtLootFunction.Operation::toJson).forEach(jsonArray::add);
 			jsonObject.add("ops", jsonArray);
 		}
 
-		public CopyNbtLootFunction method_16871(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public CopyNbtLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			CopyNbtLootFunction.Source source = CopyNbtLootFunction.Source.get(JsonHelper.getString(jsonObject, "source"));
 			List<CopyNbtLootFunction.Operation> list = Lists.<CopyNbtLootFunction.Operation>newArrayList();
 

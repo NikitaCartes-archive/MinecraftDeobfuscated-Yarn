@@ -21,7 +21,7 @@ public class FireworkEntityRenderer extends EntityRenderer<FireworkEntity> {
 		this.itemRenderer = itemRenderer;
 	}
 
-	public void method_3968(FireworkEntity fireworkEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	public void render(FireworkEntity fireworkEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
 		matrixStack.multiply(this.renderManager.camera.method_23767());
 		if (fireworkEntity.wasShotAtAngle()) {
@@ -34,7 +34,7 @@ public class FireworkEntityRenderer extends EntityRenderer<FireworkEntity> {
 		super.render(fireworkEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
-	public Identifier method_3969(FireworkEntity fireworkEntity) {
+	public Identifier getTexture(FireworkEntity fireworkEntity) {
 		return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
 	}
 }

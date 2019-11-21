@@ -175,7 +175,7 @@ public class AdvancementRewards {
 	}
 
 	public static class Deserializer implements JsonDeserializer<AdvancementRewards> {
-		public AdvancementRewards method_754(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+		public AdvancementRewards deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "rewards");
 			int i = JsonHelper.getInt(jsonObject, "experience", 0);
 			JsonArray jsonArray = JsonHelper.getArray(jsonObject, "loot", new JsonArray());

@@ -58,7 +58,7 @@ public class TallPlantBlock extends PlantBlock {
 		if (state.get(HALF) != DoubleBlockHalf.UPPER) {
 			return super.canPlaceAt(state, world, pos);
 		} else {
-			BlockState blockState = world.getBlockState(pos.method_10074());
+			BlockState blockState = world.getBlockState(pos.down());
 			return blockState.getBlock() == this && blockState.get(HALF) == DoubleBlockHalf.LOWER;
 		}
 	}
@@ -76,7 +76,7 @@ public class TallPlantBlock extends PlantBlock {
 	@Override
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		DoubleBlockHalf doubleBlockHalf = state.get(HALF);
-		BlockPos blockPos = doubleBlockHalf == DoubleBlockHalf.LOWER ? pos.up() : pos.method_10074();
+		BlockPos blockPos = doubleBlockHalf == DoubleBlockHalf.LOWER ? pos.up() : pos.down();
 		BlockState blockState = world.getBlockState(blockPos);
 		if (blockState.getBlock() == this && blockState.get(HALF) != doubleBlockHalf) {
 			world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 35);

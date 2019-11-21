@@ -270,7 +270,7 @@ public class RealmsResetWorldScreen extends RealmsScreenWithCallback<WorldTempla
 		this.drawCenteredString(text, x + 30, y, hoveredOrFocused ? 10526880 : 16777215);
 	}
 
-	void method_21371(WorldTemplate worldTemplate) {
+	void callback(WorldTemplate worldTemplate) {
 		if (worldTemplate != null) {
 			if (this.slot == -1) {
 				this.resetWorldWithTemplate(worldTemplate);

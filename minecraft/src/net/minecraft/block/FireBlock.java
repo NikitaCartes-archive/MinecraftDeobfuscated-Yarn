@@ -76,7 +76,7 @@ public class FireBlock extends Block {
 	}
 
 	public BlockState getStateForPosition(BlockView world, BlockPos pos) {
-		BlockPos blockPos = pos.method_10074();
+		BlockPos blockPos = pos.down();
 		BlockState blockState = world.getBlockState(blockPos);
 		if (!this.isFlammable(blockState) && !blockState.isSideSolidFullSquare(world, blockPos, Direction.UP)) {
 			BlockState blockState2 = this.getDefaultState();
@@ -96,7 +96,7 @@ public class FireBlock extends Block {
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		BlockPos blockPos = pos.method_10074();
+		BlockPos blockPos = pos.down();
 		return world.getBlockState(blockPos).isSideSolidFullSquare(world, blockPos, Direction.UP) || this.areBlocksAroundFlammable(world, pos);
 	}
 
@@ -112,7 +112,7 @@ public class FireBlock extends Block {
 				world.removeBlock(pos, false);
 			}
 
-			Block block = world.getBlockState(pos.method_10074()).getBlock();
+			Block block = world.getBlockState(pos.down()).getBlock();
 			boolean bl = world.dimension instanceof TheEndDimension && block == Blocks.BEDROCK || block == Blocks.NETHERRACK || block == Blocks.MAGMA_BLOCK;
 			int i = (Integer)state.get(AGE);
 			if (!bl && world.isRaining() && this.isRainingAround(world, pos) && random.nextFloat() < 0.2F + (float)i * 0.03F) {
@@ -125,9 +125,9 @@ public class FireBlock extends Block {
 				}
 
 				if (!bl) {
-					world.method_14196().schedule(pos, this, this.getTickRate(world) + random.nextInt(10));
+					world.getBlockTickScheduler().schedule(pos, this, this.getTickRate(world) + random.nextInt(10));
 					if (!this.areBlocksAroundFlammable(world, pos)) {
-						BlockPos blockPos = pos.method_10074();
+						BlockPos blockPos = pos.down();
 						if (!world.getBlockState(blockPos).isSideSolidFullSquare(world, blockPos, Direction.UP) || i > 3) {
 							world.removeBlock(pos, false);
 						}
@@ -135,7 +135,7 @@ public class FireBlock extends Block {
 						return;
 					}
 
-					if (i == 15 && random.nextInt(4) == 0 && !this.isFlammable(world.getBlockState(pos.method_10074()))) {
+					if (i == 15 && random.nextInt(4) == 0 && !this.isFlammable(world.getBlockState(pos.down()))) {
 						world.removeBlock(pos, false);
 						return;
 					}
@@ -145,7 +145,7 @@ public class FireBlock extends Block {
 				int k = bl2 ? -50 : 0;
 				this.trySpreadingFire(world, pos.east(), 300 + k, random, i);
 				this.trySpreadingFire(world, pos.west(), 300 + k, random, i);
-				this.trySpreadingFire(world, pos.method_10074(), 250 + k, random, i);
+				this.trySpreadingFire(world, pos.down(), 250 + k, random, i);
 				this.trySpreadingFire(world, pos.up(), 250 + k, random, i);
 				this.trySpreadingFire(world, pos.north(), 300 + k, random, i);
 				this.trySpreadingFire(world, pos.south(), 300 + k, random, i);
@@ -270,7 +270,7 @@ public class FireBlock extends Block {
 			);
 		}
 
-		BlockPos blockPos = pos.method_10074();
+		BlockPos blockPos = pos.down();
 		BlockState blockState = world.getBlockState(blockPos);
 		if (!this.isFlammable(blockState) && !blockState.isSideSolidFullSquare(world, blockPos, Direction.UP)) {
 			if (this.isFlammable(world.getBlockState(pos.west()))) {

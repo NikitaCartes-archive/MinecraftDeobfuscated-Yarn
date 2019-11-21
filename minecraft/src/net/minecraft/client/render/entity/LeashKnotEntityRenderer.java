@@ -19,17 +19,17 @@ public class LeashKnotEntityRenderer extends EntityRenderer<LeadKnotEntity> {
 		super(entityRenderDispatcher);
 	}
 
-	public void method_4035(LeadKnotEntity leadKnotEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	public void render(LeadKnotEntity leadKnotEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
 		matrixStack.scale(-1.0F, -1.0F, 1.0F);
 		this.model.setAngles(leadKnotEntity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(SKIN));
-		this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F);
+		this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
 		matrixStack.pop();
 		super.render(leadKnotEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
-	public Identifier method_4036(LeadKnotEntity leadKnotEntity) {
+	public Identifier getTexture(LeadKnotEntity leadKnotEntity) {
 		return SKIN;
 	}
 }

@@ -236,7 +236,7 @@ public class PresetsScreen extends Screen {
 			}
 		}
 
-		public void method_20103(@Nullable PresetsScreen.SuperflatPresetsListWidget.SuperflatPresetEntry superflatPresetEntry) {
+		public void setSelected(@Nullable PresetsScreen.SuperflatPresetsListWidget.SuperflatPresetEntry superflatPresetEntry) {
 			super.setSelected(superflatPresetEntry);
 			if (superflatPresetEntry != null) {
 				NarratorManager.INSTANCE
@@ -290,7 +290,7 @@ public class PresetsScreen extends Screen {
 			}
 
 			private void setPreset() {
-				SuperflatPresetsListWidget.this.method_20103(this);
+				SuperflatPresetsListWidget.this.setSelected(this);
 				PresetsScreen.this.updateSelectButton(true);
 				PresetsScreen.this.customPresetField
 					.setText(((PresetsScreen.SuperflatPreset)PresetsScreen.presets.get(SuperflatPresetsListWidget.this.children().indexOf(this))).config);

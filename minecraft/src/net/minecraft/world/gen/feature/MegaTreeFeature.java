@@ -16,8 +16,8 @@ public abstract class MegaTreeFeature<T extends TreeFeatureConfig> extends Abstr
 
 	protected int getHeight(Random random, MegaTreeFeatureConfig megaTreeFeatureConfig) {
 		int i = random.nextInt(3) + megaTreeFeatureConfig.baseHeight;
-		if (megaTreeFeatureConfig.field_21233 > 1) {
-			i += random.nextInt(megaTreeFeatureConfig.field_21233);
+		if (megaTreeFeatureConfig.heightInterval > 1) {
+			i += random.nextInt(megaTreeFeatureConfig.heightInterval);
 		}
 
 		return i;
@@ -50,7 +50,7 @@ public abstract class MegaTreeFeature<T extends TreeFeatureConfig> extends Abstr
 	}
 
 	private boolean replaceGround(ModifiableTestableWorld world, BlockPos pos) {
-		BlockPos blockPos = pos.method_10074();
+		BlockPos blockPos = pos.down();
 		if (isNaturalDirtOrGrass(world, blockPos) && pos.getY() >= 2) {
 			this.setToDirt(world, blockPos);
 			this.setToDirt(world, blockPos.east());
@@ -82,7 +82,7 @@ public abstract class MegaTreeFeature<T extends TreeFeatureConfig> extends Abstr
 				int m = Math.min(Math.abs(k), Math.abs(k - 1));
 				int n = Math.min(Math.abs(l), Math.abs(l - 1));
 				if (m + n < 7 && m * m + n * n <= j) {
-					this.method_23383(modifiableTestableWorld, random, blockPos.add(k, 0, l), set, blockBox, treeFeatureConfig);
+					this.setLeavesBlockState(modifiableTestableWorld, random, blockPos.add(k, 0, l), set, blockBox, treeFeatureConfig);
 				}
 			}
 		}
@@ -102,7 +102,7 @@ public abstract class MegaTreeFeature<T extends TreeFeatureConfig> extends Abstr
 		for (int k = -i; k <= i; k++) {
 			for (int l = -i; l <= i; l++) {
 				if (k * k + l * l <= j) {
-					this.method_23383(modifiableTestableWorld, random, blockPos.add(k, 0, l), set, blockBox, treeFeatureConfig);
+					this.setLeavesBlockState(modifiableTestableWorld, random, blockPos.add(k, 0, l), set, blockBox, treeFeatureConfig);
 				}
 			}
 		}
@@ -122,23 +122,23 @@ public abstract class MegaTreeFeature<T extends TreeFeatureConfig> extends Abstr
 		for (int j = 0; j < i; j++) {
 			mutable.set(blockPos).setOffset(0, j, 0);
 			if (canTreeReplace(modifiableTestableWorld, mutable)) {
-				this.method_23382(modifiableTestableWorld, random, mutable, set, blockBox, megaTreeFeatureConfig);
+				this.setLogBlockState(modifiableTestableWorld, random, mutable, set, blockBox, megaTreeFeatureConfig);
 			}
 
 			if (j < i - 1) {
 				mutable.set(blockPos).setOffset(1, j, 0);
 				if (canTreeReplace(modifiableTestableWorld, mutable)) {
-					this.method_23382(modifiableTestableWorld, random, mutable, set, blockBox, megaTreeFeatureConfig);
+					this.setLogBlockState(modifiableTestableWorld, random, mutable, set, blockBox, megaTreeFeatureConfig);
 				}
 
 				mutable.set(blockPos).setOffset(1, j, 1);
 				if (canTreeReplace(modifiableTestableWorld, mutable)) {
-					this.method_23382(modifiableTestableWorld, random, mutable, set, blockBox, megaTreeFeatureConfig);
+					this.setLogBlockState(modifiableTestableWorld, random, mutable, set, blockBox, megaTreeFeatureConfig);
 				}
 
 				mutable.set(blockPos).setOffset(0, j, 1);
 				if (canTreeReplace(modifiableTestableWorld, mutable)) {
-					this.method_23382(modifiableTestableWorld, random, mutable, set, blockBox, megaTreeFeatureConfig);
+					this.setLogBlockState(modifiableTestableWorld, random, mutable, set, blockBox, megaTreeFeatureConfig);
 				}
 			}
 		}

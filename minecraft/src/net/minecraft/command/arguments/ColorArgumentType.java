@@ -32,7 +32,7 @@ public class ColorArgumentType implements ArgumentType<Formatting> {
 		return context.getArgument(name, Formatting.class);
 	}
 
-	public Formatting method_9279(StringReader stringReader) throws CommandSyntaxException {
+	public Formatting parse(StringReader stringReader) throws CommandSyntaxException {
 		String string = stringReader.readUnquotedString();
 		Formatting formatting = Formatting.byName(string);
 		if (formatting != null && !formatting.isModifier()) {

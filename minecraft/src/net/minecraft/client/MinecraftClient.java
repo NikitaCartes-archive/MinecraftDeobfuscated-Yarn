@@ -19,6 +19,7 @@ import java.nio.ByteOrder;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -26,6 +27,7 @@ import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -34,6 +36,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_4729;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -113,7 +116,6 @@ import net.minecraft.client.sound.SoundManager;
 import net.minecraft.client.texture.PaintingManager;
 import net.minecraft.client.texture.PlayerSkinProvider;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.StatusEffectSpriteManager;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.toast.ToastManager;
@@ -152,6 +154,7 @@ import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.ResourceType;
+import net.minecraft.resource.metadata.PackResourceMetadata;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.QueueingWorldGenerationProgressListener;
 import net.minecraft.server.integrated.IntegratedServer;
@@ -249,7 +252,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private final BlockColors blockColorMap;
 	private final ItemColors itemColorMap;
 	private final Framebuffer framebuffer;
-	private final SpriteAtlasTexture spriteAtlas;
 	private final SoundManager soundManager;
 	private final MusicTracker musicTracker;
 	private final FontManager fontManager;
@@ -321,16 +323,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.versionType = args.game.versionType;
 		this.sessionPropertyMap = args.network.profileProperties;
 		this.builtinPackProvider = new ClientBuiltinResourcePackProvider(new File(this.runDirectory, "server-resource-packs"), args.directories.getResourceIndex());
-		this.resourcePackManager = new ResourcePackManager<>((stringx, bl, supplier, resourcePackx, packResourceMetadata, insertionPosition) -> {
-			Supplier<ResourcePack> supplier2;
-			if (packResourceMetadata.getPackFormat() < SharedConstants.getGameVersion().getPackVersion()) {
-				supplier2 = () -> new RedirectedResourcePack((ResourcePack)supplier.get(), RedirectedResourcePack.NEW_TO_OLD_MAP);
-			} else {
-				supplier2 = supplier;
-			}
-
-			return new ClientResourcePackProfile(stringx, bl, supplier2, resourcePackx, packResourceMetadata, insertionPosition);
-		});
+		this.resourcePackManager = new ResourcePackManager<>(MinecraftClient::method_24038);
 		this.resourcePackManager.registerProvider(this.builtinPackProvider);
 		this.resourcePackManager.registerProvider(new FileResourcePackProvider(this.resourcePackDir));
 		this.netProxy = args.network.netProxy;
@@ -434,14 +427,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.window.setPhase("Startup");
 			RenderSystem.setupDefaultState(0, 0, this.window.getFramebufferWidth(), this.window.getFramebufferHeight());
 			this.window.setPhase("Post startup");
-			this.spriteAtlas = new SpriteAtlasTexture("textures");
-			this.spriteAtlas.setMipLevel(this.options.mipmapLevels);
-			this.textureManager.registerTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX, this.spriteAtlas);
-			this.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-			this.spriteAtlas.setFilter(false, this.options.mipmapLevels > 0);
 			this.blockColorMap = BlockColors.create();
 			this.itemColorMap = ItemColors.create(this.blockColorMap);
-			this.bakedModelManager = new BakedModelManager(this.spriteAtlas, this.blockColorMap);
+			this.bakedModelManager = new BakedModelManager(this.textureManager, this.blockColorMap, this.options.mipmapLevels);
 			this.resourceManager.registerListener(this.bakedModelManager);
 			this.itemRenderer = new ItemRenderer(this.textureManager, this.bakedModelManager, this.itemColorMap);
 			this.entityRenderManager = new EntityRenderDispatcher(this.textureManager, this.itemRenderer, this.resourceManager, this.textRenderer, this.options);
@@ -482,11 +470,27 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 			SplashScreen.init(this);
 			this.setOverlay(
-				new SplashScreen(this, this.resourceManager.beginInitialMonitoredReload(Util.getServerWorkerExecutor(), this, COMPLETED_UNIT_FUTURE), () -> {
-					if (SharedConstants.isDevelopment) {
-						this.checkGameData();
-					}
-				}, false)
+				new SplashScreen(
+					this,
+					this.resourceManager.beginInitialMonitoredReload(Util.getServerWorkerExecutor(), this, COMPLETED_UNIT_FUTURE),
+					optional -> Util.ifPresentOrElse(optional, throwable -> {
+							if (this.resourcePackManager.getEnabledProfiles().size() > 1) {
+								LOGGER.info("Caught error loading resourcepacks, removing all assigned resourcepacks", throwable);
+								this.resourcePackManager.setEnabledProfiles(Collections.emptyList());
+								this.options.resourcePacks.clear();
+								this.options.incompatibleResourcePacks.clear();
+								this.options.write();
+								this.reloadResources();
+							} else {
+								Util.method_24155(throwable);
+							}
+						}, () -> {
+							if (SharedConstants.isDevelopment) {
+								this.checkGameData();
+							}
+						}),
+					false
+				)
 			);
 		}
 	}
@@ -650,7 +654,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 					.map(ResourcePackProfile::createResourcePack)
 					.collect(Collectors.toList());
 				this.setOverlay(
-					new SplashScreen(this, this.resourceManager.beginMonitoredReload(Util.getServerWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list), () -> {
+					new SplashScreen(this, this.resourceManager.beginMonitoredReload(Util.getServerWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list), optional -> {
+						optional.ifPresent(Util::method_24155);
 						this.languageManager.reloadResources(list);
 						this.worldRenderer.reload();
 						completableFuture.complete(null);
@@ -782,7 +787,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	@Override
 	public void close() {
 		try {
-			this.spriteAtlas.clear();
+			this.bakedModelManager.close();
 			this.textRenderer.close();
 			this.fontManager.close();
 			this.gameRenderer.close();
@@ -1902,8 +1907,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.languageManager;
 	}
 
-	public SpriteAtlasTexture getSpriteAtlas() {
-		return this.spriteAtlas;
+	public Function<Identifier, Sprite> getSpriteAtlas(Identifier identifier) {
+		return this.bakedModelManager.method_24153(identifier)::getSprite;
 	}
 
 	public boolean is64Bit() {
@@ -1993,10 +1998,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	public <T> SearchableContainer<T> getSearchableContainer(SearchManager.Key<T> key) {
 		return this.searchManager.get(key);
-	}
-
-	public static int getCurrentFps() {
-		return currentFps;
 	}
 
 	public MetricsData getMetricsData() {
@@ -2095,5 +2096,38 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	public BufferBuilderStorage getBufferBuilders() {
 		return this.bufferBuilders;
+	}
+
+	private static ClientResourcePackProfile method_24038(
+		String string,
+		boolean bl,
+		Supplier<ResourcePack> supplier,
+		ResourcePack resourcePack,
+		PackResourceMetadata packResourceMetadata,
+		ResourcePackProfile.InsertionPosition insertionPosition
+	) {
+		int i = packResourceMetadata.getPackFormat();
+		Supplier<ResourcePack> supplier2 = supplier;
+		if (i <= 3) {
+			supplier2 = method_24042(supplier);
+		}
+
+		if (i <= 4) {
+			supplier2 = method_24043(supplier2);
+		}
+
+		return new ClientResourcePackProfile(string, bl, supplier2, resourcePack, packResourceMetadata, insertionPosition);
+	}
+
+	private static Supplier<ResourcePack> method_24042(Supplier<ResourcePack> supplier) {
+		return () -> new RedirectedResourcePack((ResourcePack)supplier.get(), RedirectedResourcePack.NEW_TO_OLD_MAP);
+	}
+
+	private static Supplier<ResourcePack> method_24043(Supplier<ResourcePack> supplier) {
+		return () -> new class_4729((ResourcePack)supplier.get());
+	}
+
+	public void method_24041(int i) {
+		this.bakedModelManager.method_24152(i);
 	}
 }

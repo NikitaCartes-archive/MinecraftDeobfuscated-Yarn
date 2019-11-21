@@ -19,7 +19,7 @@ public class IcebergFeature extends Feature<BushFeatureConfig> {
 		super(configFactory);
 	}
 
-	public boolean method_13423(
+	public boolean generate(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, BushFeatureConfig bushFeatureConfig
 	) {
 		blockPos = new BlockPos(blockPos.getX(), iWorld.getSeaLevel(), blockPos.getZ());
@@ -113,12 +113,12 @@ public class IcebergFeature extends Feature<BushFeatureConfig> {
 				if (e < 0.0) {
 					BlockPos blockPos3 = blockPos.add(o, j, p);
 					Block block = iWorld.getBlockState(blockPos3).getBlock();
-					if (this.method_13420(block) || block == Blocks.SNOW_BLOCK) {
+					if (this.isSnowyOrIcy(block) || block == Blocks.SNOW_BLOCK) {
 						if (bl) {
 							this.setBlockState(iWorld, blockPos3, Blocks.WATER.getDefaultState());
 						} else {
 							this.setBlockState(iWorld, blockPos3, Blocks.AIR.getDefaultState());
-							this.method_13422(iWorld, blockPos3);
+							this.clearSnowAbove(iWorld, blockPos3);
 						}
 					}
 				}
@@ -126,9 +126,9 @@ public class IcebergFeature extends Feature<BushFeatureConfig> {
 		}
 	}
 
-	private void method_13422(IWorld iWorld, BlockPos blockPos) {
-		if (iWorld.getBlockState(blockPos.up()).getBlock() == Blocks.SNOW) {
-			this.setBlockState(iWorld, blockPos.up(), Blocks.AIR.getDefaultState());
+	private void clearSnowAbove(IWorld world, BlockPos pos) {
+		if (world.getBlockState(pos.up()).getBlock() == Blocks.SNOW) {
+			this.setBlockState(world, pos.up(), Blocks.AIR.getDefaultState());
 		}
 	}
 
@@ -204,43 +204,43 @@ public class IcebergFeature extends Feature<BushFeatureConfig> {
 		return MathHelper.ceil(g / 2.0F);
 	}
 
-	private boolean method_13420(Block block) {
+	private boolean isSnowyOrIcy(Block block) {
 		return block == Blocks.PACKED_ICE || block == Blocks.SNOW_BLOCK || block == Blocks.BLUE_ICE;
 	}
 
-	private boolean method_13414(BlockView blockView, BlockPos blockPos) {
-		return blockView.getBlockState(blockPos.method_10074()).getMaterial() == Material.AIR;
+	private boolean isAirBelow(BlockView world, BlockPos pos) {
+		return world.getBlockState(pos.down()).getMaterial() == Material.AIR;
 	}
 
-	private void method_13418(IWorld iWorld, BlockPos blockPos, int i, int j, boolean bl, int k) {
+	private void method_13418(IWorld world, BlockPos pos, int i, int j, boolean bl, int k) {
 		int l = bl ? k : i / 2;
 
 		for (int m = -l; m <= l; m++) {
 			for (int n = -l; n <= l; n++) {
 				for (int o = 0; o <= j; o++) {
-					BlockPos blockPos2 = blockPos.add(m, o, n);
-					Block block = iWorld.getBlockState(blockPos2).getBlock();
-					if (this.method_13420(block) || block == Blocks.SNOW) {
-						if (this.method_13414(iWorld, blockPos2)) {
-							this.setBlockState(iWorld, blockPos2, Blocks.AIR.getDefaultState());
-							this.setBlockState(iWorld, blockPos2.up(), Blocks.AIR.getDefaultState());
-						} else if (this.method_13420(block)) {
+					BlockPos blockPos = pos.add(m, o, n);
+					Block block = world.getBlockState(blockPos).getBlock();
+					if (this.isSnowyOrIcy(block) || block == Blocks.SNOW) {
+						if (this.isAirBelow(world, blockPos)) {
+							this.setBlockState(world, blockPos, Blocks.AIR.getDefaultState());
+							this.setBlockState(world, blockPos.up(), Blocks.AIR.getDefaultState());
+						} else if (this.isSnowyOrIcy(block)) {
 							Block[] blocks = new Block[]{
-								iWorld.getBlockState(blockPos2.west()).getBlock(),
-								iWorld.getBlockState(blockPos2.east()).getBlock(),
-								iWorld.getBlockState(blockPos2.north()).getBlock(),
-								iWorld.getBlockState(blockPos2.south()).getBlock()
+								world.getBlockState(blockPos.west()).getBlock(),
+								world.getBlockState(blockPos.east()).getBlock(),
+								world.getBlockState(blockPos.north()).getBlock(),
+								world.getBlockState(blockPos.south()).getBlock()
 							};
 							int p = 0;
 
 							for (Block block2 : blocks) {
-								if (!this.method_13420(block2)) {
+								if (!this.isSnowyOrIcy(block2)) {
 									p++;
 								}
 							}
 
 							if (p >= 3) {
-								this.setBlockState(iWorld, blockPos2, Blocks.AIR.getDefaultState());
+								this.setBlockState(world, blockPos, Blocks.AIR.getDefaultState());
 							}
 						}
 					}

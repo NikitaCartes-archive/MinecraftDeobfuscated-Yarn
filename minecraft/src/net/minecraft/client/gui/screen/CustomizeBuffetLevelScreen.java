@@ -97,7 +97,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 			for (int ix = 0; ix < listTag.size(); ix++) {
 				Identifier identifier2 = new Identifier(listTag.getString(ix));
 				this.biomeSelectionList
-					.method_20089(
+					.setSelected(
 						(CustomizeBuffetLevelScreen.BuffetBiomesListWidget.BuffetBiomeItem)this.biomeSelectionList
 							.children()
 							.stream()
@@ -169,7 +169,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 			return CustomizeBuffetLevelScreen.this.getFocused() == this;
 		}
 
-		public void method_20089(@Nullable CustomizeBuffetLevelScreen.BuffetBiomesListWidget.BuffetBiomeItem buffetBiomeItem) {
+		public void setSelected(@Nullable CustomizeBuffetLevelScreen.BuffetBiomesListWidget.BuffetBiomeItem buffetBiomeItem) {
 			super.setSelected(buffetBiomeItem);
 			if (buffetBiomeItem != null) {
 				NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", Registry.BIOME.get(buffetBiomeItem.biome).getName().getString()).getString());
@@ -198,7 +198,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 			@Override
 			public boolean mouseClicked(double mouseX, double mouseY, int button) {
 				if (button == 0) {
-					BuffetBiomesListWidget.this.method_20089(this);
+					BuffetBiomesListWidget.this.setSelected(this);
 					CustomizeBuffetLevelScreen.this.refreshConfirmButton();
 					return true;
 				} else {

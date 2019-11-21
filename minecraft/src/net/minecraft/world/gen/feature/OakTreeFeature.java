@@ -14,7 +14,7 @@ public class OakTreeFeature extends BranchedTreeFeature<BranchedTreeFeatureConfi
 		super(function);
 	}
 
-	public boolean method_23402(
+	public boolean generate(
 		ModifiableTestableWorld modifiableTestableWorld,
 		Random random,
 		BlockPos blockPos,
@@ -28,21 +28,21 @@ public class OakTreeFeature extends BranchedTreeFeature<BranchedTreeFeatureConfi
 			+ random.nextInt(branchedTreeFeatureConfig.heightRandB + 1);
 		int j = branchedTreeFeatureConfig.trunkHeight >= 0
 			? branchedTreeFeatureConfig.trunkHeight + random.nextInt(branchedTreeFeatureConfig.trunkHeightRandom + 1)
-			: i - (branchedTreeFeatureConfig.field_21266 + random.nextInt(branchedTreeFeatureConfig.field_21267 + 1));
+			: i - (branchedTreeFeatureConfig.foliageHeight + random.nextInt(branchedTreeFeatureConfig.foliageHeightRandom + 1));
 		int k = branchedTreeFeatureConfig.foliagePlacer.method_23452(random, j, i, branchedTreeFeatureConfig);
-		Optional<BlockPos> optional = this.method_23378(modifiableTestableWorld, i, j, k, blockPos, branchedTreeFeatureConfig);
+		Optional<BlockPos> optional = this.findPositionToGenerate(modifiableTestableWorld, i, j, k, blockPos, branchedTreeFeatureConfig);
 		if (!optional.isPresent()) {
 			return false;
 		} else {
 			BlockPos blockPos2 = (BlockPos)optional.get();
-			this.setToDirt(modifiableTestableWorld, blockPos2.method_10074());
+			this.setToDirt(modifiableTestableWorld, blockPos2.down());
 			branchedTreeFeatureConfig.foliagePlacer.method_23448(modifiableTestableWorld, random, branchedTreeFeatureConfig, i, j, k, blockPos2, set2);
-			this.method_23379(
+			this.generate(
 				modifiableTestableWorld,
 				random,
 				i,
 				blockPos2,
-				branchedTreeFeatureConfig.trunkTopOffsetRandom + random.nextInt(branchedTreeFeatureConfig.field_21265 + 1),
+				branchedTreeFeatureConfig.trunkTopOffset + random.nextInt(branchedTreeFeatureConfig.trunkTopOffsetRandom + 1),
 				set,
 				blockBox,
 				branchedTreeFeatureConfig

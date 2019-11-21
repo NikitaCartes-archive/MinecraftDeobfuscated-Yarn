@@ -10,11 +10,11 @@ public class EntityAttributeContainer extends AbstractEntityAttributeContainer {
 	private final Set<EntityAttributeInstance> trackedAttributes = Sets.<EntityAttributeInstance>newHashSet();
 	protected final Map<String, EntityAttributeInstance> instancesByName = new LowercaseMap();
 
-	public EntityAttributeInstanceImpl method_6216(EntityAttribute entityAttribute) {
+	public EntityAttributeInstanceImpl get(EntityAttribute entityAttribute) {
 		return (EntityAttributeInstanceImpl)super.get(entityAttribute);
 	}
 
-	public EntityAttributeInstanceImpl method_6214(String string) {
+	public EntityAttributeInstanceImpl get(String string) {
 		EntityAttributeInstance entityAttributeInstance = super.get(string);
 		if (entityAttributeInstance == null) {
 			entityAttributeInstance = (EntityAttributeInstance)this.instancesByName.get(string);
@@ -45,7 +45,7 @@ public class EntityAttributeContainer extends AbstractEntityAttributeContainer {
 		}
 
 		for (EntityAttribute entityAttribute : this.attributeHierarchy.get(instance.getAttribute())) {
-			EntityAttributeInstanceImpl entityAttributeInstanceImpl = this.method_6216(entityAttribute);
+			EntityAttributeInstanceImpl entityAttributeInstanceImpl = this.get(entityAttribute);
 			if (entityAttributeInstanceImpl != null) {
 				entityAttributeInstanceImpl.invalidateCache();
 			}

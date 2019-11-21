@@ -167,38 +167,36 @@ public abstract class Particle {
 	}
 
 	public void move(double dx, double dy, double dz) {
-		if (this.field_21507) {
-			dy = 0.0;
-		}
+		if (!this.field_21507) {
+			double d = dx;
+			double e = dy;
+			double f = dz;
+			if (this.collidesWithWorld && (dx != 0.0 || dy != 0.0 || dz != 0.0)) {
+				Vec3d vec3d = Entity.adjustMovementForCollisions(
+					null, new Vec3d(dx, dy, dz), this.getBoundingBox(), this.world, EntityContext.absent(), new ReusableStream<>(Stream.empty())
+				);
+				dx = vec3d.x;
+				dy = vec3d.y;
+				dz = vec3d.z;
+			}
 
-		double d = dx;
-		double e = dy;
-		double f = dz;
-		if (this.collidesWithWorld && (dx != 0.0 || dy != 0.0 || dz != 0.0) && !this.field_21507) {
-			Vec3d vec3d = Entity.adjustMovementForCollisions(
-				null, new Vec3d(dx, dy, dz), this.getBoundingBox(), this.world, EntityContext.absent(), new ReusableStream<>(Stream.empty())
-			);
-			dx = vec3d.x;
-			dy = vec3d.y;
-			dz = vec3d.z;
-		}
+			if (dx != 0.0 || dy != 0.0 || dz != 0.0) {
+				this.setBoundingBox(this.getBoundingBox().offset(dx, dy, dz));
+				this.repositionFromBoundingBox();
+			}
 
-		if (dx != 0.0 || dy != 0.0 || dz != 0.0) {
-			this.setBoundingBox(this.getBoundingBox().offset(dx, dy, dz));
-			this.repositionFromBoundingBox();
-		}
+			if (Math.abs(e) >= 1.0E-5F && Math.abs(dy) < 1.0E-5F) {
+				this.field_21507 = true;
+			}
 
-		if (Math.abs(dy) < 1.0E-5F) {
-			this.field_21507 = true;
-		}
+			this.onGround = e != dy && e < 0.0;
+			if (d != dx) {
+				this.velocityX = 0.0;
+			}
 
-		this.onGround = e != dy && e < 0.0;
-		if (d != dx) {
-			this.velocityX = 0.0;
-		}
-
-		if (f != dz) {
-			this.velocityZ = 0.0;
+			if (f != dz) {
+				this.velocityZ = 0.0;
+			}
 		}
 	}
 

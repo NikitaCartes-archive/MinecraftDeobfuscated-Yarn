@@ -320,7 +320,7 @@ public class CatEntity extends TameableEntity {
 		return MathHelper.lerp(tickDelta, this.prevHeadDownAniamtion, this.headDownAnimation);
 	}
 
-	public CatEntity method_6573(PassiveEntity passiveEntity) {
+	public CatEntity createChild(PassiveEntity passiveEntity) {
 		CatEntity catEntity = EntityType.CAT.create(this.world);
 		if (passiveEntity instanceof CatEntity) {
 			if (this.random.nextBoolean()) {
@@ -437,7 +437,7 @@ public class CatEntity extends TameableEntity {
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return TAMING_INGREDIENT.method_8093(stack);
+		return TAMING_INGREDIENT.test(stack);
 	}
 
 	@Override

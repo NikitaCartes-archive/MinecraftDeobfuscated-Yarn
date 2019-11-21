@@ -67,7 +67,7 @@ public class SummonCommand {
 	}
 
 	private static int execute(ServerCommandSource source, Identifier entity, Vec3d pos, CompoundTag nbt, boolean initialize) throws CommandSyntaxException {
-		CompoundTag compoundTag = nbt.method_10553();
+		CompoundTag compoundTag = nbt.copy();
 		compoundTag.putString("id", entity.toString());
 		if (EntityType.getId(EntityType.LIGHTNING_BOLT).equals(entity)) {
 			LightningEntity lightningEntity = new LightningEntity(source.getWorld(), pos.x, pos.y, pos.z, false);

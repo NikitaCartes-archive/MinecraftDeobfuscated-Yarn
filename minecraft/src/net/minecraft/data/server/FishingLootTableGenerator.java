@@ -36,7 +36,7 @@ public class FishingLootTableGenerator implements Consumer<BiConsumer<Identifier
 		LocationPredicate.Builder.create().biome(Biomes.BAMBOO_JUNGLE_HILLS)
 	);
 
-	public void method_10405(BiConsumer<Identifier, LootTable.Builder> biConsumer) {
+	public void accept(BiConsumer<Identifier, LootTable.Builder> biConsumer) {
 		biConsumer.accept(
 			LootTables.FISHING_GAMEPLAY,
 			LootTable.builder()
@@ -64,24 +64,24 @@ public class FishingLootTableGenerator implements Consumer<BiConsumer<Identifier
 			LootTable.builder()
 				.withPool(
 					LootPool.builder()
-						.withEntry(ItemEntry.builder(Items.LEATHER_BOOTS).setWeight(10).method_438(SetDamageLootFunction.builder(UniformLootTableRange.between(0.0F, 0.9F))))
+						.withEntry(ItemEntry.builder(Items.LEATHER_BOOTS).setWeight(10).withFunction(SetDamageLootFunction.builder(UniformLootTableRange.between(0.0F, 0.9F))))
 						.withEntry(ItemEntry.builder(Items.LEATHER).setWeight(10))
 						.withEntry(ItemEntry.builder(Items.BONE).setWeight(10))
 						.withEntry(
 							ItemEntry.builder(Items.POTION)
 								.setWeight(10)
-								.method_438(SetNbtLootFunction.builder(Util.create(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:water"))))
+								.withFunction(SetNbtLootFunction.builder(Util.create(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:water"))))
 						)
 						.withEntry(ItemEntry.builder(Items.STRING).setWeight(5))
-						.withEntry(ItemEntry.builder(Items.FISHING_ROD).setWeight(2).method_438(SetDamageLootFunction.builder(UniformLootTableRange.between(0.0F, 0.9F))))
+						.withEntry(ItemEntry.builder(Items.FISHING_ROD).setWeight(2).withFunction(SetDamageLootFunction.builder(UniformLootTableRange.between(0.0F, 0.9F))))
 						.withEntry(ItemEntry.builder(Items.BOWL).setWeight(10))
 						.withEntry(ItemEntry.builder(Items.STICK).setWeight(5))
-						.withEntry(ItemEntry.builder(Items.INK_SAC).setWeight(1).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(10))))
+						.withEntry(ItemEntry.builder(Items.INK_SAC).setWeight(1).withFunction(SetCountLootFunction.builder(ConstantLootTableRange.create(10))))
 						.withEntry(ItemEntry.builder(Blocks.TRIPWIRE_HOOK).setWeight(10))
 						.withEntry(ItemEntry.builder(Items.ROTTEN_FLESH).setWeight(10))
 						.withEntry(
 							ItemEntry.builder(Blocks.BAMBOO)
-								.method_421(
+								.withCondition(
 									field_11346.withCondition(field_11347)
 										.withCondition(field_11350)
 										.withCondition(field_11349)
@@ -103,15 +103,17 @@ public class FishingLootTableGenerator implements Consumer<BiConsumer<Identifier
 						.withEntry(ItemEntry.builder(Items.SADDLE))
 						.withEntry(
 							ItemEntry.builder(Items.BOW)
-								.method_438(SetDamageLootFunction.builder(UniformLootTableRange.between(0.0F, 0.25F)))
-								.method_438(EnchantWithLevelsLootFunction.builder(ConstantLootTableRange.create(30)).allowTreasureEnchantments())
+								.withFunction(SetDamageLootFunction.builder(UniformLootTableRange.between(0.0F, 0.25F)))
+								.withFunction(EnchantWithLevelsLootFunction.builder(ConstantLootTableRange.create(30)).allowTreasureEnchantments())
 						)
 						.withEntry(
 							ItemEntry.builder(Items.FISHING_ROD)
-								.method_438(SetDamageLootFunction.builder(UniformLootTableRange.between(0.0F, 0.25F)))
-								.method_438(EnchantWithLevelsLootFunction.builder(ConstantLootTableRange.create(30)).allowTreasureEnchantments())
+								.withFunction(SetDamageLootFunction.builder(UniformLootTableRange.between(0.0F, 0.25F)))
+								.withFunction(EnchantWithLevelsLootFunction.builder(ConstantLootTableRange.create(30)).allowTreasureEnchantments())
 						)
-						.withEntry(ItemEntry.builder(Items.BOOK).method_438(EnchantWithLevelsLootFunction.builder(ConstantLootTableRange.create(30)).allowTreasureEnchantments()))
+						.withEntry(
+							ItemEntry.builder(Items.BOOK).withFunction(EnchantWithLevelsLootFunction.builder(ConstantLootTableRange.create(30)).allowTreasureEnchantments())
+						)
 						.withEntry(ItemEntry.builder(Items.NAUTILUS_SHELL))
 				)
 		);

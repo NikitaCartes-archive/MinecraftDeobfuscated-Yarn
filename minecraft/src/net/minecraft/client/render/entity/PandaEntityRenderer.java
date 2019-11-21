@@ -30,11 +30,11 @@ public class PandaEntityRenderer extends MobEntityRenderer<PandaEntity, PandaEnt
 		this.addFeature(new PandaHeldItemFeatureRenderer(this));
 	}
 
-	public Identifier method_4083(PandaEntity pandaEntity) {
+	public Identifier getTexture(PandaEntity pandaEntity) {
 		return (Identifier)SKIN_MAP.getOrDefault(pandaEntity.getProductGene(), SKIN_MAP.get(PandaEntity.Gene.NORMAL));
 	}
 
-	protected void method_4085(PandaEntity pandaEntity, MatrixStack matrixStack, float f, float g, float h) {
+	protected void setupTransforms(PandaEntity pandaEntity, MatrixStack matrixStack, float f, float g, float h) {
 		super.setupTransforms(pandaEntity, matrixStack, f, g, h);
 		if (pandaEntity.playingTicks > 0) {
 			int i = pandaEntity.playingTicks;

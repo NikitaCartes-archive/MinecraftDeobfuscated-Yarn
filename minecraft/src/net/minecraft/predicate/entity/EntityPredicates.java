@@ -71,7 +71,7 @@ public final class EntityPredicates {
 			this.itemstack = itemStack;
 		}
 
-		public boolean method_5916(@Nullable Entity entity) {
+		public boolean test(@Nullable Entity entity) {
 			if (!entity.isAlive()) {
 				return false;
 			} else if (!(entity instanceof LivingEntity)) {

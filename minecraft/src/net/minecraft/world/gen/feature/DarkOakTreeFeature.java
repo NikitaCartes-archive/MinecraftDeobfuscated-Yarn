@@ -15,7 +15,7 @@ public class DarkOakTreeFeature extends AbstractTreeFeature<MegaTreeFeatureConfi
 		super(configFactory);
 	}
 
-	public boolean method_23389(
+	public boolean generate(
 		ModifiableTestableWorld modifiableTestableWorld,
 		Random random,
 		BlockPos blockPos,
@@ -29,7 +29,7 @@ public class DarkOakTreeFeature extends AbstractTreeFeature<MegaTreeFeatureConfi
 		int k = blockPos.getY();
 		int l = blockPos.getZ();
 		if (k >= 1 && k + i + 1 < 256) {
-			BlockPos blockPos2 = blockPos.method_10074();
+			BlockPos blockPos2 = blockPos.down();
 			if (!isNaturalDirtOrGrass(modifiableTestableWorld, blockPos2)) {
 				return false;
 			} else if (!this.doesTreeFit(modifiableTestableWorld, blockPos, i)) {
@@ -56,41 +56,41 @@ public class DarkOakTreeFeature extends AbstractTreeFeature<MegaTreeFeatureConfi
 					int s = k + r;
 					BlockPos blockPos3 = new BlockPos(o, s, p);
 					if (isAirOrLeaves(modifiableTestableWorld, blockPos3)) {
-						this.method_23382(modifiableTestableWorld, random, blockPos3, set, blockBox, megaTreeFeatureConfig);
-						this.method_23382(modifiableTestableWorld, random, blockPos3.east(), set, blockBox, megaTreeFeatureConfig);
-						this.method_23382(modifiableTestableWorld, random, blockPos3.south(), set, blockBox, megaTreeFeatureConfig);
-						this.method_23382(modifiableTestableWorld, random, blockPos3.east().south(), set, blockBox, megaTreeFeatureConfig);
+						this.setLogBlockState(modifiableTestableWorld, random, blockPos3, set, blockBox, megaTreeFeatureConfig);
+						this.setLogBlockState(modifiableTestableWorld, random, blockPos3.east(), set, blockBox, megaTreeFeatureConfig);
+						this.setLogBlockState(modifiableTestableWorld, random, blockPos3.south(), set, blockBox, megaTreeFeatureConfig);
+						this.setLogBlockState(modifiableTestableWorld, random, blockPos3.east().south(), set, blockBox, megaTreeFeatureConfig);
 					}
 				}
 
 				for (int r = -2; r <= 0; r++) {
 					for (int s = -2; s <= 0; s++) {
 						int t = -1;
-						this.method_23383(modifiableTestableWorld, random, new BlockPos(o + r, q + t, p + s), set2, blockBox, megaTreeFeatureConfig);
-						this.method_23383(modifiableTestableWorld, random, new BlockPos(1 + o - r, q + t, p + s), set2, blockBox, megaTreeFeatureConfig);
-						this.method_23383(modifiableTestableWorld, random, new BlockPos(o + r, q + t, 1 + p - s), set2, blockBox, megaTreeFeatureConfig);
-						this.method_23383(modifiableTestableWorld, random, new BlockPos(1 + o - r, q + t, 1 + p - s), set2, blockBox, megaTreeFeatureConfig);
+						this.setLeavesBlockState(modifiableTestableWorld, random, new BlockPos(o + r, q + t, p + s), set2, blockBox, megaTreeFeatureConfig);
+						this.setLeavesBlockState(modifiableTestableWorld, random, new BlockPos(1 + o - r, q + t, p + s), set2, blockBox, megaTreeFeatureConfig);
+						this.setLeavesBlockState(modifiableTestableWorld, random, new BlockPos(o + r, q + t, 1 + p - s), set2, blockBox, megaTreeFeatureConfig);
+						this.setLeavesBlockState(modifiableTestableWorld, random, new BlockPos(1 + o - r, q + t, 1 + p - s), set2, blockBox, megaTreeFeatureConfig);
 						if ((r > -2 || s > -1) && (r != -1 || s != -2)) {
 							int var31 = 1;
-							this.method_23383(modifiableTestableWorld, random, new BlockPos(o + r, q + var31, p + s), set2, blockBox, megaTreeFeatureConfig);
-							this.method_23383(modifiableTestableWorld, random, new BlockPos(1 + o - r, q + var31, p + s), set2, blockBox, megaTreeFeatureConfig);
-							this.method_23383(modifiableTestableWorld, random, new BlockPos(o + r, q + var31, 1 + p - s), set2, blockBox, megaTreeFeatureConfig);
-							this.method_23383(modifiableTestableWorld, random, new BlockPos(1 + o - r, q + var31, 1 + p - s), set2, blockBox, megaTreeFeatureConfig);
+							this.setLeavesBlockState(modifiableTestableWorld, random, new BlockPos(o + r, q + var31, p + s), set2, blockBox, megaTreeFeatureConfig);
+							this.setLeavesBlockState(modifiableTestableWorld, random, new BlockPos(1 + o - r, q + var31, p + s), set2, blockBox, megaTreeFeatureConfig);
+							this.setLeavesBlockState(modifiableTestableWorld, random, new BlockPos(o + r, q + var31, 1 + p - s), set2, blockBox, megaTreeFeatureConfig);
+							this.setLeavesBlockState(modifiableTestableWorld, random, new BlockPos(1 + o - r, q + var31, 1 + p - s), set2, blockBox, megaTreeFeatureConfig);
 						}
 					}
 				}
 
 				if (random.nextBoolean()) {
-					this.method_23383(modifiableTestableWorld, random, new BlockPos(o, q + 2, p), set2, blockBox, megaTreeFeatureConfig);
-					this.method_23383(modifiableTestableWorld, random, new BlockPos(o + 1, q + 2, p), set2, blockBox, megaTreeFeatureConfig);
-					this.method_23383(modifiableTestableWorld, random, new BlockPos(o + 1, q + 2, p + 1), set2, blockBox, megaTreeFeatureConfig);
-					this.method_23383(modifiableTestableWorld, random, new BlockPos(o, q + 2, p + 1), set2, blockBox, megaTreeFeatureConfig);
+					this.setLeavesBlockState(modifiableTestableWorld, random, new BlockPos(o, q + 2, p), set2, blockBox, megaTreeFeatureConfig);
+					this.setLeavesBlockState(modifiableTestableWorld, random, new BlockPos(o + 1, q + 2, p), set2, blockBox, megaTreeFeatureConfig);
+					this.setLeavesBlockState(modifiableTestableWorld, random, new BlockPos(o + 1, q + 2, p + 1), set2, blockBox, megaTreeFeatureConfig);
+					this.setLeavesBlockState(modifiableTestableWorld, random, new BlockPos(o, q + 2, p + 1), set2, blockBox, megaTreeFeatureConfig);
 				}
 
 				for (int r = -3; r <= 4; r++) {
 					for (int sx = -3; sx <= 4; sx++) {
 						if ((r != -3 || sx != -3) && (r != -3 || sx != 4) && (r != 4 || sx != -3) && (r != 4 || sx != 4) && (Math.abs(r) < 3 || Math.abs(sx) < 3)) {
-							this.method_23383(modifiableTestableWorld, random, new BlockPos(o + r, q, p + sx), set2, blockBox, megaTreeFeatureConfig);
+							this.setLeavesBlockState(modifiableTestableWorld, random, new BlockPos(o + r, q, p + sx), set2, blockBox, megaTreeFeatureConfig);
 						}
 					}
 				}
@@ -101,19 +101,19 @@ public class DarkOakTreeFeature extends AbstractTreeFeature<MegaTreeFeatureConfi
 							int t = random.nextInt(3) + 2;
 
 							for (int u = 0; u < t; u++) {
-								this.method_23382(modifiableTestableWorld, random, new BlockPos(j + r, q - u - 1, l + sxx), set, blockBox, megaTreeFeatureConfig);
+								this.setLogBlockState(modifiableTestableWorld, random, new BlockPos(j + r, q - u - 1, l + sxx), set, blockBox, megaTreeFeatureConfig);
 							}
 
 							for (int u = -1; u <= 1; u++) {
 								for (int v = -1; v <= 1; v++) {
-									this.method_23383(modifiableTestableWorld, random, new BlockPos(o + r + u, q, p + sxx + v), set2, blockBox, megaTreeFeatureConfig);
+									this.setLeavesBlockState(modifiableTestableWorld, random, new BlockPos(o + r + u, q, p + sxx + v), set2, blockBox, megaTreeFeatureConfig);
 								}
 							}
 
 							for (int u = -2; u <= 2; u++) {
 								for (int v = -2; v <= 2; v++) {
 									if (Math.abs(u) != 2 || Math.abs(v) != 2) {
-										this.method_23383(modifiableTestableWorld, random, new BlockPos(o + r + u, q - 1, p + sxx + v), set2, blockBox, megaTreeFeatureConfig);
+										this.setLeavesBlockState(modifiableTestableWorld, random, new BlockPos(o + r + u, q - 1, p + sxx + v), set2, blockBox, megaTreeFeatureConfig);
 									}
 								}
 							}

@@ -40,8 +40,8 @@ public abstract class HugeMushroomFeature extends Feature<HugeMushroomFeatureCon
 	protected boolean method_23374(IWorld iWorld, BlockPos blockPos, int i, BlockPos.Mutable mutable, HugeMushroomFeatureConfig hugeMushroomFeatureConfig) {
 		int j = blockPos.getY();
 		if (j >= 1 && j + i + 1 < 256) {
-			Block block = iWorld.getBlockState(blockPos.method_10074()).getBlock();
-			if (!method_23396(block)) {
+			Block block = iWorld.getBlockState(blockPos.down()).getBlock();
+			if (!isDirt(block)) {
 				return false;
 			} else {
 				for (int k = 0; k <= i; k++) {
@@ -64,7 +64,7 @@ public abstract class HugeMushroomFeature extends Feature<HugeMushroomFeatureCon
 		}
 	}
 
-	public boolean method_23373(
+	public boolean generate(
 		IWorld iWorld,
 		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
 		Random random,

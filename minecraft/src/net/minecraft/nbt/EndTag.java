@@ -8,7 +8,7 @@ import net.minecraft.text.Text;
 
 public class EndTag implements Tag {
 	public static final TagReader<EndTag> READER = new TagReader<EndTag>() {
-		public EndTag method_23243(DataInput dataInput, int i, PositionTracker positionTracker) {
+		public EndTag read(DataInput dataInput, int i, PositionTracker positionTracker) {
 			positionTracker.add(64L);
 			return EndTag.INSTANCE;
 		}
@@ -52,7 +52,7 @@ public class EndTag implements Tag {
 		return "END";
 	}
 
-	public EndTag method_10586() {
+	public EndTag copy() {
 		return this;
 	}
 

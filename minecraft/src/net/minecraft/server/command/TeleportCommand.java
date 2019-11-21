@@ -239,7 +239,7 @@ public class TeleportCommand {
 	) {
 		if (target instanceof ServerPlayerEntity) {
 			ChunkPos chunkPos = new ChunkPos(new BlockPos(x, y, z));
-			world.method_14178().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos, 1, target.getEntityId());
+			world.getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos, 1, target.getEntityId());
 			target.stopRiding();
 			if (((ServerPlayerEntity)target).isSleeping()) {
 				((ServerPlayerEntity)target).wakeUp(true, true);

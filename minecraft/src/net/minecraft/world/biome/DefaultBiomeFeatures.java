@@ -138,158 +138,160 @@ public class DefaultBiomeFeatures {
 		.getDefaultState()
 		.with(MushroomBlock.UP, Boolean.valueOf(false))
 		.with(MushroomBlock.DOWN, Boolean.valueOf(false));
-	public static final BranchedTreeFeatureConfig field_21126 = new BranchedTreeFeatureConfig.Builder(
+	public static final BranchedTreeFeatureConfig OAK_TREE_CONFIG = new BranchedTreeFeatureConfig.Builder(
 			new SimpleStateProvider(OAK_LOG), new SimpleStateProvider(OAK_LEAVES), new BlobFoliagePlacer(2, 0)
 		)
-		.method_23428(4)
-		.method_23430(2)
-		.method_23437(3)
-		.method_23427()
-		.method_23431();
+		.baseHeight(4)
+		.heightRandA(2)
+		.foliageHeight(3)
+		.noVines()
+		.build();
 	public static final BranchedTreeFeatureConfig field_21167 = new BranchedTreeFeatureConfig.Builder(
 			new SimpleStateProvider(JUNGLE_LOG), new SimpleStateProvider(JUNGLE_LEAVES), new BlobFoliagePlacer(2, 0)
 		)
-		.method_23428(4)
-		.method_23430(6)
-		.method_23437(3)
-		.method_23429(ImmutableList.of(new CocoaBeansTreeDecorator(0.2F), new TrunkVineTreeDecorator(), new LeaveVineTreeDecorator()))
-		.method_23427()
-		.method_23431();
+		.baseHeight(4)
+		.heightRandA(6)
+		.foliageHeight(3)
+		.treeDecorators(ImmutableList.of(new CocoaBeansTreeDecorator(0.2F), new TrunkVineTreeDecorator(), new LeaveVineTreeDecorator()))
+		.noVines()
+		.build();
 	public static final BranchedTreeFeatureConfig field_21183 = new BranchedTreeFeatureConfig.Builder(
 			new SimpleStateProvider(JUNGLE_LOG), new SimpleStateProvider(JUNGLE_LEAVES), new BlobFoliagePlacer(2, 0)
 		)
-		.method_23428(4)
-		.method_23430(6)
-		.method_23437(3)
-		.method_23427()
-		.method_23431();
+		.baseHeight(4)
+		.heightRandA(6)
+		.foliageHeight(3)
+		.noVines()
+		.build();
 	public static final BranchedTreeFeatureConfig field_21184 = new BranchedTreeFeatureConfig.Builder(
 			new SimpleStateProvider(SPRUCE_LOG), new SimpleStateProvider(SPRUCE_LEAVES), new PineFoliagePlacer(1, 0)
 		)
-		.method_23428(7)
-		.method_23430(4)
-		.method_23435(1)
-		.method_23437(3)
-		.method_23438(1)
-		.method_23427()
-		.method_23431();
+		.baseHeight(7)
+		.heightRandA(4)
+		.trunkTopOffset(1)
+		.foliageHeight(3)
+		.foliageHeightRandom(1)
+		.noVines()
+		.build();
 	public static final BranchedTreeFeatureConfig field_21185 = new BranchedTreeFeatureConfig.Builder(
 			new SimpleStateProvider(SPRUCE_LOG), new SimpleStateProvider(SPRUCE_LEAVES), new SpruceFoliagePlacer(2, 1)
 		)
-		.method_23428(6)
-		.method_23430(3)
-		.method_23433(1)
-		.method_23434(1)
-		.method_23436(2)
-		.method_23427()
-		.method_23431();
-	public static final BranchedTreeFeatureConfig field_21186 = new BranchedTreeFeatureConfig.Builder(
+		.baseHeight(6)
+		.heightRandA(3)
+		.trunkHeight(1)
+		.trunkHeightRandom(1)
+		.trunkTopOffsetRandom(2)
+		.noVines()
+		.build();
+	public static final BranchedTreeFeatureConfig ACACIA_TREE_CONFIG = new BranchedTreeFeatureConfig.Builder(
 			new SimpleStateProvider(ACACIA_LOG), new SimpleStateProvider(ACACIA_LEAVES), new AcaciaFoliagePlacer(2, 0)
 		)
-		.method_23428(5)
-		.method_23430(2)
-		.method_23432(2)
-		.method_23433(0)
-		.method_23427()
-		.method_23431();
-	public static final BranchedTreeFeatureConfig field_21187 = new BranchedTreeFeatureConfig.Builder(
+		.baseHeight(5)
+		.heightRandA(2)
+		.heightRandB(2)
+		.trunkHeight(0)
+		.noVines()
+		.build();
+	public static final BranchedTreeFeatureConfig BIRCH_TREE_CONFIG = new BranchedTreeFeatureConfig.Builder(
 			new SimpleStateProvider(BIRCH_LOG), new SimpleStateProvider(BIRCH_LEAVES), new BlobFoliagePlacer(2, 0)
 		)
-		.method_23428(5)
-		.method_23430(2)
-		.method_23437(3)
-		.method_23427()
-		.method_23431();
-	public static final BranchedTreeFeatureConfig field_21188 = new BranchedTreeFeatureConfig.Builder(
+		.baseHeight(5)
+		.heightRandA(2)
+		.foliageHeight(3)
+		.noVines()
+		.build();
+	public static final BranchedTreeFeatureConfig LARGE_BIRCH_TREE_CONFIG = new BranchedTreeFeatureConfig.Builder(
 			new SimpleStateProvider(BIRCH_LOG), new SimpleStateProvider(BIRCH_LEAVES), new BlobFoliagePlacer(2, 0)
 		)
-		.method_23428(5)
-		.method_23430(2)
-		.method_23432(6)
-		.method_23437(3)
-		.method_23427()
-		.method_23431();
+		.baseHeight(5)
+		.heightRandA(2)
+		.heightRandB(6)
+		.foliageHeight(3)
+		.noVines()
+		.build();
 	public static final BranchedTreeFeatureConfig field_21189 = new BranchedTreeFeatureConfig.Builder(
 			new SimpleStateProvider(OAK_LOG), new SimpleStateProvider(OAK_LEAVES), new BlobFoliagePlacer(3, 0)
 		)
-		.method_23428(5)
-		.method_23430(3)
-		.method_23437(3)
-		.method_23439(1)
-		.method_23429(ImmutableList.of(new LeaveVineTreeDecorator()))
-		.method_23431();
-	public static final BranchedTreeFeatureConfig field_21190 = new BranchedTreeFeatureConfig.Builder(
+		.baseHeight(5)
+		.heightRandA(3)
+		.foliageHeight(3)
+		.maxWaterDepth(1)
+		.treeDecorators(ImmutableList.of(new LeaveVineTreeDecorator()))
+		.build();
+	public static final BranchedTreeFeatureConfig FANCY_TREE_CONFIG = new BranchedTreeFeatureConfig.Builder(
 			new SimpleStateProvider(OAK_LOG), new SimpleStateProvider(OAK_LEAVES), new BlobFoliagePlacer(0, 0)
 		)
-		.method_23431();
+		.build();
 	public static final BranchedTreeFeatureConfig field_21191 = new BranchedTreeFeatureConfig.Builder(
 			new SimpleStateProvider(OAK_LOG), new SimpleStateProvider(OAK_LEAVES), new BlobFoliagePlacer(2, 0)
 		)
-		.method_23428(4)
-		.method_23430(2)
-		.method_23437(3)
-		.method_23427()
-		.method_23429(ImmutableList.of(new BeehiveTreeDecorator(0.05F)))
-		.method_23431();
+		.baseHeight(4)
+		.heightRandA(2)
+		.foliageHeight(3)
+		.noVines()
+		.treeDecorators(ImmutableList.of(new BeehiveTreeDecorator(0.05F)))
+		.build();
 	public static final BranchedTreeFeatureConfig field_21192 = new BranchedTreeFeatureConfig.Builder(
 			new SimpleStateProvider(OAK_LOG), new SimpleStateProvider(OAK_LEAVES), new BlobFoliagePlacer(0, 0)
 		)
-		.method_23429(ImmutableList.of(new BeehiveTreeDecorator(0.05F)))
-		.method_23431();
+		.treeDecorators(ImmutableList.of(new BeehiveTreeDecorator(0.05F)))
+		.build();
 	public static final BranchedTreeFeatureConfig field_21193 = new BranchedTreeFeatureConfig.Builder(
 			new SimpleStateProvider(OAK_LOG), new SimpleStateProvider(OAK_LEAVES), new BlobFoliagePlacer(2, 0)
 		)
-		.method_23428(4)
-		.method_23430(2)
-		.method_23437(3)
-		.method_23427()
-		.method_23429(ImmutableList.of(new BeehiveTreeDecorator(0.01F)))
-		.method_23431();
+		.baseHeight(4)
+		.heightRandA(2)
+		.foliageHeight(3)
+		.noVines()
+		.treeDecorators(ImmutableList.of(new BeehiveTreeDecorator(0.01F)))
+		.build();
 	public static final BranchedTreeFeatureConfig field_21194 = new BranchedTreeFeatureConfig.Builder(
 			new SimpleStateProvider(OAK_LOG), new SimpleStateProvider(OAK_LEAVES), new BlobFoliagePlacer(0, 0)
 		)
-		.method_23429(ImmutableList.of(new BeehiveTreeDecorator(0.01F)))
-		.method_23431();
+		.treeDecorators(ImmutableList.of(new BeehiveTreeDecorator(0.01F)))
+		.build();
 	public static final BranchedTreeFeatureConfig field_21195 = new BranchedTreeFeatureConfig.Builder(
 			new SimpleStateProvider(BIRCH_LOG), new SimpleStateProvider(BIRCH_LEAVES), new BlobFoliagePlacer(2, 0)
 		)
-		.method_23428(5)
-		.method_23430(2)
-		.method_23437(3)
-		.method_23427()
-		.method_23429(ImmutableList.of(new BeehiveTreeDecorator(0.01F)))
-		.method_23431();
-	public static final TreeFeatureConfig field_21196 = new TreeFeatureConfig.Builder(new SimpleStateProvider(JUNGLE_LOG), new SimpleStateProvider(OAK_LEAVES))
+		.baseHeight(5)
+		.heightRandA(2)
+		.foliageHeight(3)
+		.noVines()
+		.treeDecorators(ImmutableList.of(new BeehiveTreeDecorator(0.01F)))
+		.build();
+	public static final TreeFeatureConfig JUNGLE_GROUND_BUSH_CONFIG = new TreeFeatureConfig.Builder(
+			new SimpleStateProvider(JUNGLE_LOG), new SimpleStateProvider(OAK_LEAVES)
+		)
 		.baseHeight(4)
 		.build();
 	public static final MegaTreeFeatureConfig field_21197 = new MegaTreeFeatureConfig.Builder(
 			new SimpleStateProvider(DARK_OAK_LOG), new SimpleStateProvider(DARK_OAK_LEAVES)
 		)
-		.method_23410(6)
-		.method_23409();
+		.baseHeight(6)
+		.build();
 	public static final MegaTreeFeatureConfig field_21198 = new MegaTreeFeatureConfig.Builder(
 			new SimpleStateProvider(SPRUCE_LOG), new SimpleStateProvider(SPRUCE_LEAVES)
 		)
-		.method_23410(13)
-		.method_23412(15)
-		.method_23915(13)
+		.baseHeight(13)
+		.heightInterval(15)
+		.crownHeight(13)
 		.method_23411(ImmutableList.of(new AlterGroundTreeDecorator(new SimpleStateProvider(PODZOL))))
-		.method_23409();
+		.build();
 	public static final MegaTreeFeatureConfig field_21199 = new MegaTreeFeatureConfig.Builder(
 			new SimpleStateProvider(SPRUCE_LOG), new SimpleStateProvider(SPRUCE_LEAVES)
 		)
-		.method_23410(13)
-		.method_23412(15)
-		.method_23915(3)
+		.baseHeight(13)
+		.heightInterval(15)
+		.crownHeight(3)
 		.method_23411(ImmutableList.of(new AlterGroundTreeDecorator(new SimpleStateProvider(PODZOL))))
-		.method_23409();
+		.build();
 	public static final MegaTreeFeatureConfig field_21200 = new MegaTreeFeatureConfig.Builder(
 			new SimpleStateProvider(JUNGLE_LOG), new SimpleStateProvider(JUNGLE_LEAVES)
 		)
-		.method_23410(10)
-		.method_23412(20)
+		.baseHeight(10)
+		.heightInterval(20)
 		.method_23411(ImmutableList.of(new TrunkVineTreeDecorator(), new LeaveVineTreeDecorator()))
-		.method_23409();
+		.build();
 	public static final FlowerFeatureConfig field_21201 = new FlowerFeatureConfig.Builder(new SimpleStateProvider(GRASS), new SimpleBlockPlacer())
 		.method_23417(32)
 		.method_23424();
@@ -693,8 +695,8 @@ public class DefaultBiomeFeatures {
 				.configure(
 					new RandomFeatureConfig(
 						ImmutableList.of(
-							Feature.FANCY_TREE.configure(field_21190).method_23387(0.05F),
-							Feature.JUNGLE_GROUND_BUSH.configure(field_21196).method_23387(0.15F),
+							Feature.FANCY_TREE.configure(FANCY_TREE_CONFIG).method_23387(0.05F),
+							Feature.JUNGLE_GROUND_BUSH.configure(JUNGLE_GROUND_BUSH_CONFIG).method_23387(0.15F),
 							Feature.MEGA_JUNGLE_TREE.configure(field_21200).method_23387(0.7F)
 						),
 						Feature.RANDOM_PATCH.configure(field_21203)
@@ -720,7 +722,9 @@ public class DefaultBiomeFeatures {
 			GenerationStep.Feature.VEGETAL_DECORATION,
 			Feature.RANDOM_SELECTOR
 				.configure(
-					new RandomFeatureConfig(ImmutableList.of(Feature.FANCY_TREE.configure(field_21190).method_23387(0.1F)), Feature.NORMAL_TREE.configure(field_21126))
+					new RandomFeatureConfig(
+						ImmutableList.of(Feature.FANCY_TREE.configure(FANCY_TREE_CONFIG).method_23387(0.1F)), Feature.NORMAL_TREE.configure(OAK_TREE_CONFIG)
+					)
 				)
 				.createDecoratedFeature(Decorator.COUNT_EXTRA_HEIGHTMAP.configure(new CountExtraChanceDecoratorConfig(0, 0.1F, 1)))
 		);
@@ -730,7 +734,7 @@ public class DefaultBiomeFeatures {
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
 			Feature.NORMAL_TREE
-				.configure(field_21187)
+				.configure(BIRCH_TREE_CONFIG)
 				.createDecoratedFeature(Decorator.COUNT_EXTRA_HEIGHTMAP.configure(new CountExtraChanceDecoratorConfig(10, 0.1F, 1)))
 		);
 	}
@@ -741,8 +745,8 @@ public class DefaultBiomeFeatures {
 			Feature.RANDOM_SELECTOR
 				.configure(
 					new RandomFeatureConfig(
-						ImmutableList.of(Feature.NORMAL_TREE.configure(field_21187).method_23387(0.2F), Feature.FANCY_TREE.configure(field_21190).method_23387(0.1F)),
-						Feature.NORMAL_TREE.configure(field_21126)
+						ImmutableList.of(Feature.NORMAL_TREE.configure(BIRCH_TREE_CONFIG).method_23387(0.2F), Feature.FANCY_TREE.configure(FANCY_TREE_CONFIG).method_23387(0.1F)),
+						Feature.NORMAL_TREE.configure(OAK_TREE_CONFIG)
 					)
 				)
 				.createDecoratedFeature(Decorator.COUNT_EXTRA_HEIGHTMAP.configure(new CountExtraChanceDecoratorConfig(10, 0.1F, 1)))
@@ -754,7 +758,9 @@ public class DefaultBiomeFeatures {
 			GenerationStep.Feature.VEGETAL_DECORATION,
 			Feature.RANDOM_SELECTOR
 				.configure(
-					new RandomFeatureConfig(ImmutableList.of(Feature.NORMAL_TREE.configure(field_21188).method_23387(0.5F)), Feature.NORMAL_TREE.configure(field_21187))
+					new RandomFeatureConfig(
+						ImmutableList.of(Feature.NORMAL_TREE.configure(LARGE_BIRCH_TREE_CONFIG).method_23387(0.5F)), Feature.NORMAL_TREE.configure(BIRCH_TREE_CONFIG)
+					)
 				)
 				.createDecoratedFeature(Decorator.COUNT_EXTRA_HEIGHTMAP.configure(new CountExtraChanceDecoratorConfig(10, 0.1F, 1)))
 		);
@@ -765,7 +771,9 @@ public class DefaultBiomeFeatures {
 			GenerationStep.Feature.VEGETAL_DECORATION,
 			Feature.RANDOM_SELECTOR
 				.configure(
-					new RandomFeatureConfig(ImmutableList.of(Feature.ACACIA_TREE.configure(field_21186).method_23387(0.8F)), Feature.NORMAL_TREE.configure(field_21126))
+					new RandomFeatureConfig(
+						ImmutableList.of(Feature.ACACIA_TREE.configure(ACACIA_TREE_CONFIG).method_23387(0.8F)), Feature.NORMAL_TREE.configure(OAK_TREE_CONFIG)
+					)
 				)
 				.createDecoratedFeature(Decorator.COUNT_EXTRA_HEIGHTMAP.configure(new CountExtraChanceDecoratorConfig(1, 0.1F, 1)))
 		);
@@ -776,7 +784,9 @@ public class DefaultBiomeFeatures {
 			GenerationStep.Feature.VEGETAL_DECORATION,
 			Feature.RANDOM_SELECTOR
 				.configure(
-					new RandomFeatureConfig(ImmutableList.of(Feature.ACACIA_TREE.configure(field_21186).method_23387(0.8F)), Feature.NORMAL_TREE.configure(field_21126))
+					new RandomFeatureConfig(
+						ImmutableList.of(Feature.ACACIA_TREE.configure(ACACIA_TREE_CONFIG).method_23387(0.8F)), Feature.NORMAL_TREE.configure(OAK_TREE_CONFIG)
+					)
 				)
 				.createDecoratedFeature(Decorator.COUNT_EXTRA_HEIGHTMAP.configure(new CountExtraChanceDecoratorConfig(2, 0.1F, 1)))
 		);
@@ -788,8 +798,8 @@ public class DefaultBiomeFeatures {
 			Feature.RANDOM_SELECTOR
 				.configure(
 					new RandomFeatureConfig(
-						ImmutableList.of(Feature.NORMAL_TREE.configure(field_21185).method_23387(0.666F), Feature.FANCY_TREE.configure(field_21190).method_23387(0.1F)),
-						Feature.NORMAL_TREE.configure(field_21126)
+						ImmutableList.of(Feature.NORMAL_TREE.configure(field_21185).method_23387(0.666F), Feature.FANCY_TREE.configure(FANCY_TREE_CONFIG).method_23387(0.1F)),
+						Feature.NORMAL_TREE.configure(OAK_TREE_CONFIG)
 					)
 				)
 				.createDecoratedFeature(Decorator.COUNT_EXTRA_HEIGHTMAP.configure(new CountExtraChanceDecoratorConfig(0, 0.1F, 1)))
@@ -802,8 +812,8 @@ public class DefaultBiomeFeatures {
 			Feature.RANDOM_SELECTOR
 				.configure(
 					new RandomFeatureConfig(
-						ImmutableList.of(Feature.NORMAL_TREE.configure(field_21185).method_23387(0.666F), Feature.FANCY_TREE.configure(field_21190).method_23387(0.1F)),
-						Feature.NORMAL_TREE.configure(field_21126)
+						ImmutableList.of(Feature.NORMAL_TREE.configure(field_21185).method_23387(0.666F), Feature.FANCY_TREE.configure(FANCY_TREE_CONFIG).method_23387(0.1F)),
+						Feature.NORMAL_TREE.configure(OAK_TREE_CONFIG)
 					)
 				)
 				.createDecoratedFeature(Decorator.COUNT_EXTRA_HEIGHTMAP.configure(new CountExtraChanceDecoratorConfig(3, 0.1F, 1)))
@@ -817,8 +827,8 @@ public class DefaultBiomeFeatures {
 				.configure(
 					new RandomFeatureConfig(
 						ImmutableList.of(
-							Feature.FANCY_TREE.configure(field_21190).method_23387(0.1F),
-							Feature.JUNGLE_GROUND_BUSH.configure(field_21196).method_23387(0.5F),
+							Feature.FANCY_TREE.configure(FANCY_TREE_CONFIG).method_23387(0.1F),
+							Feature.JUNGLE_GROUND_BUSH.configure(JUNGLE_GROUND_BUSH_CONFIG).method_23387(0.5F),
 							Feature.MEGA_JUNGLE_TREE.configure(field_21200).method_23387(0.33333334F)
 						),
 						Feature.NORMAL_TREE.configure(field_21167)
@@ -834,7 +844,9 @@ public class DefaultBiomeFeatures {
 			Feature.RANDOM_SELECTOR
 				.configure(
 					new RandomFeatureConfig(
-						ImmutableList.of(Feature.FANCY_TREE.configure(field_21190).method_23387(0.1F), Feature.JUNGLE_GROUND_BUSH.configure(field_21196).method_23387(0.5F)),
+						ImmutableList.of(
+							Feature.FANCY_TREE.configure(FANCY_TREE_CONFIG).method_23387(0.1F), Feature.JUNGLE_GROUND_BUSH.configure(JUNGLE_GROUND_BUSH_CONFIG).method_23387(0.5F)
+						),
 						Feature.NORMAL_TREE.configure(field_21167)
 					)
 				)
@@ -846,7 +858,7 @@ public class DefaultBiomeFeatures {
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
 			Feature.NORMAL_TREE
-				.configure(field_21126)
+				.configure(OAK_TREE_CONFIG)
 				.createDecoratedFeature(Decorator.COUNT_EXTRA_HEIGHTMAP.configure(new CountExtraChanceDecoratorConfig(5, 0.1F, 1)))
 		);
 	}

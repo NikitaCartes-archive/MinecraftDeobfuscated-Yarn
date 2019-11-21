@@ -143,7 +143,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		addFuel(map, Items.CROSSBOW, 300);
 		addFuel(map, Blocks.BAMBOO, 50);
 		addFuel(map, Blocks.DEAD_BUSH, 100);
-		addFuel(map, Blocks.SCAFFOLDING, 50);
+		addFuel(map, Blocks.SCAFFOLDING, 400);
 		addFuel(map, Blocks.LOOM, 300);
 		addFuel(map, Blocks.BARREL, 300);
 		addFuel(map, Blocks.CARTOGRAPHY_TABLE, 300);

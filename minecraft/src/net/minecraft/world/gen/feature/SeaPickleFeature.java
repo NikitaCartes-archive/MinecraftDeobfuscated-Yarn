@@ -16,7 +16,7 @@ public class SeaPickleFeature extends Feature<SeaPickleFeatureConfig> {
 		super(configFactory);
 	}
 
-	public boolean method_13876(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, BlockPos blockPos, SeaPickleFeatureConfig seaPickleFeatureConfig) {
+	public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, BlockPos blockPos, SeaPickleFeatureConfig seaPickleFeatureConfig) {
 		int i = 0;
 
 		for (int j = 0; j < seaPickleFeatureConfig.count; j++) {

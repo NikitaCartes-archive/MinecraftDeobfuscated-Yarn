@@ -22,7 +22,7 @@ public class OnKilledCriterion extends AbstractCriterion<OnKilledCriterion.Condi
 		return this.id;
 	}
 
-	public OnKilledCriterion.Conditions method_8989(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public OnKilledCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		return new OnKilledCriterion.Conditions(
 			this.id, EntityPredicate.fromJson(jsonObject.get("entity")), DamageSourcePredicate.deserialize(jsonObject.get("killing_blow"))
 		);

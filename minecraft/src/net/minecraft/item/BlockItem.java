@@ -161,7 +161,7 @@ public class BlockItem extends Item {
 					}
 
 					CompoundTag compoundTag2 = blockEntity.toTag(new CompoundTag());
-					CompoundTag compoundTag3 = compoundTag2.method_10553();
+					CompoundTag compoundTag3 = compoundTag2.copy();
 					compoundTag2.copyFrom(compoundTag);
 					compoundTag2.putInt("x", pos.getX());
 					compoundTag2.putInt("y", pos.getY());

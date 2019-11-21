@@ -16,14 +16,17 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class DragonFireballEntityRenderer extends EntityRenderer<DragonFireballEntity> {
 	private static final Identifier SKIN = new Identifier("textures/entity/enderdragon/dragon_fireball.png");
+	private static final RenderLayer field_21735 = RenderLayer.getEntityCutoutNoCull(SKIN);
 
 	public DragonFireballEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
 	}
 
-	public void method_3906(
-		DragonFireballEntity dragonFireballEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i
-	) {
+	protected int method_24087(DragonFireballEntity dragonFireballEntity, float f) {
+		return 15;
+	}
+
+	public void render(DragonFireballEntity dragonFireballEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
 		matrixStack.scale(2.0F, 2.0F, 2.0F);
 		matrixStack.multiply(this.renderManager.camera.method_23767());
@@ -31,7 +34,7 @@ public class DragonFireballEntityRenderer extends EntityRenderer<DragonFireballE
 		MatrixStack.Entry entry = matrixStack.peek();
 		Matrix4f matrix4f = entry.getModel();
 		Matrix3f matrix3f = entry.getNormal();
-		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(SKIN));
+		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(field_21735);
 		method_23837(vertexConsumer, matrix4f, matrix3f, i, 0.0F, 0, 0, 1);
 		method_23837(vertexConsumer, matrix4f, matrix3f, i, 1.0F, 0, 1, 1);
 		method_23837(vertexConsumer, matrix4f, matrix3f, i, 1.0F, 1, 1, 0);
@@ -50,7 +53,7 @@ public class DragonFireballEntityRenderer extends EntityRenderer<DragonFireballE
 			.next();
 	}
 
-	public Identifier method_3905(DragonFireballEntity dragonFireballEntity) {
+	public Identifier getTexture(DragonFireballEntity dragonFireballEntity) {
 		return SKIN;
 	}
 }

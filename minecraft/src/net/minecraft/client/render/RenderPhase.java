@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.OptionalDouble;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -14,22 +15,11 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
-public class RenderPhase {
+public abstract class RenderPhase {
 	protected final String name;
 	private final Runnable beginAction;
 	private final Runnable endAction;
 	protected static final RenderPhase.Transparency NO_TRANSPARENCY = new RenderPhase.Transparency("no_transparency", () -> RenderSystem.disableBlend(), () -> {
-	});
-	protected static final RenderPhase.Transparency FORCED_TRANSPARENCY = new RenderPhase.Transparency("forced_transparency", () -> {
-		RenderSystem.enableBlend();
-		RenderSystem.blendColor(1.0F, 1.0F, 1.0F, 0.15F);
-		RenderSystem.blendFunc(GlStateManager.SourceFactor.CONSTANT_ALPHA, GlStateManager.DestFactor.ONE_MINUS_CONSTANT_ALPHA);
-		RenderSystem.depthMask(false);
-	}, () -> {
-		RenderSystem.disableBlend();
-		RenderSystem.defaultBlendFunc();
-		RenderSystem.blendColor(1.0F, 1.0F, 1.0F, 1.0F);
-		RenderSystem.depthMask(true);
 	});
 	protected static final RenderPhase.Transparency ADDITIVE_TRANSPARENCY = new RenderPhase.Transparency("additive_transparency", () -> {
 		RenderSystem.enableBlend();
@@ -151,7 +141,7 @@ public class RenderPhase {
 		() -> MinecraftClient.getInstance().worldRenderer.method_22990().beginWrite(false),
 		() -> MinecraftClient.getInstance().getFramebuffer().beginWrite(false)
 	);
-	protected static final RenderPhase.LineWidth FULL_LINEWIDTH = new RenderPhase.LineWidth(1.0F);
+	protected static final RenderPhase.LineWidth FULL_LINEWIDTH = new RenderPhase.LineWidth(OptionalDouble.of(1.0));
 
 	public RenderPhase(String name, Runnable beginAction, Runnable endAction) {
 		this.name = name;
@@ -329,19 +319,23 @@ public class RenderPhase {
 
 	@Environment(EnvType.CLIENT)
 	public static class LineWidth extends RenderPhase {
-		private final float width;
+		private final OptionalDouble width;
 
-		public LineWidth(float width) {
+		public LineWidth(OptionalDouble optionalDouble) {
 			super("alpha", () -> {
-				if (width != 1.0F) {
-					RenderSystem.lineWidth(width);
+				if (!Objects.equals(optionalDouble, OptionalDouble.of(1.0))) {
+					if (optionalDouble.isPresent()) {
+						RenderSystem.lineWidth((float)optionalDouble.getAsDouble());
+					} else {
+						RenderSystem.lineWidth(Math.max(2.5F, (float)MinecraftClient.getInstance().getWindow().getFramebufferWidth() / 1920.0F * 2.5F));
+					}
 				}
 			}, () -> {
-				if (width != 1.0F) {
+				if (!Objects.equals(optionalDouble, OptionalDouble.of(1.0))) {
 					RenderSystem.lineWidth(1.0F);
 				}
 			});
-			this.width = width;
+			this.width = optionalDouble;
 		}
 
 		@Override
@@ -351,7 +345,7 @@ public class RenderPhase {
 			} else if (object == null || this.getClass() != object.getClass()) {
 				return false;
 			} else {
-				return !super.equals(object) ? false : this.width == ((RenderPhase.LineWidth)object).width;
+				return !super.equals(object) ? false : Objects.equals(this.width, ((RenderPhase.LineWidth)object).width);
 			}
 		}
 

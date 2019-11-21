@@ -55,7 +55,7 @@ public class BlockBreakingInfo implements Comparable<BlockBreakingInfo> {
 		return Integer.hashCode(this.actorNetworkId);
 	}
 
-	public int method_23269(BlockBreakingInfo blockBreakingInfo) {
+	public int compareTo(BlockBreakingInfo blockBreakingInfo) {
 		return this.stage != blockBreakingInfo.stage
 			? Integer.compare(this.stage, blockBreakingInfo.stage)
 			: Integer.compare(this.actorNetworkId, blockBreakingInfo.actorNetworkId);

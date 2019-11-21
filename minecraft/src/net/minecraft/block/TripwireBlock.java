@@ -100,7 +100,7 @@ public class TripwireBlock extends Block {
 	private void update(World world, BlockPos pos, BlockState state) {
 		for (Direction direction : new Direction[]{Direction.SOUTH, Direction.WEST}) {
 			for (int i = 1; i < 42; i++) {
-				BlockPos blockPos = pos.method_10079(direction, i);
+				BlockPos blockPos = pos.offset(direction, i);
 				BlockState blockState = world.getBlockState(blockPos);
 				if (blockState.getBlock() == this.hookBlock) {
 					if (blockState.get(TripwireHookBlock.FACING) == direction.getOpposite()) {

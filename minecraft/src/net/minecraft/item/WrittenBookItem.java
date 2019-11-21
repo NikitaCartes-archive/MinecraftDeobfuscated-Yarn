@@ -12,6 +12,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.LiteralText;
@@ -118,7 +119,7 @@ public class WrittenBookItem extends Item {
 						text = new LiteralText(string);
 					}
 
-					listTag.method_10606(i, StringTag.of(Text.Serializer.toJson(text)));
+					listTag.set(i, (Tag)StringTag.of(Text.Serializer.toJson(text)));
 				}
 
 				compoundTag.put("pages", listTag);

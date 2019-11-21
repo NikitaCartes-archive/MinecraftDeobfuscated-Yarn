@@ -47,7 +47,7 @@ public class InventoryS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 	}
 
-	public void method_11439(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onInventory(this);
 	}
 

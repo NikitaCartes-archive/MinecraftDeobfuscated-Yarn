@@ -188,12 +188,12 @@ public class LootTable {
 			return this;
 		}
 
-		public LootTable.Builder method_335(LootFunction.Builder builder) {
+		public LootTable.Builder withFunction(LootFunction.Builder builder) {
 			this.functions.add(builder.build());
 			return this;
 		}
 
-		public LootTable.Builder method_337() {
+		public LootTable.Builder getThis() {
 			return this;
 		}
 
@@ -203,7 +203,7 @@ public class LootTable {
 	}
 
 	public static class Serializer implements JsonDeserializer<LootTable>, JsonSerializer<LootTable> {
-		public LootTable method_340(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+		public LootTable deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "loot table");
 			LootPool[] lootPools = JsonHelper.deserialize(jsonObject, "pools", new LootPool[0], jsonDeserializationContext, LootPool[].class);
 			LootContextType lootContextType = null;
@@ -216,7 +216,7 @@ public class LootTable {
 			return new LootTable(lootContextType != null ? lootContextType : LootContextTypes.GENERIC, lootPools, lootFunctions);
 		}
 
-		public JsonElement method_339(LootTable lootTable, Type type, JsonSerializationContext jsonSerializationContext) {
+		public JsonElement serialize(LootTable lootTable, Type type, JsonSerializationContext jsonSerializationContext) {
 			JsonObject jsonObject = new JsonObject();
 			if (lootTable.type != LootTable.GENERIC) {
 				Identifier identifier = LootContextTypes.getId(lootTable.type);

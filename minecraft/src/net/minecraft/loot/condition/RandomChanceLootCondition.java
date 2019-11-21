@@ -14,7 +14,7 @@ public class RandomChanceLootCondition implements LootCondition {
 		this.chance = chance;
 	}
 
-	public boolean method_934(LootContext lootContext) {
+	public boolean test(LootContext lootContext) {
 		return lootContext.getRandom().nextFloat() < this.chance;
 	}
 
@@ -27,11 +27,11 @@ public class RandomChanceLootCondition implements LootCondition {
 			super(new Identifier("random_chance"), RandomChanceLootCondition.class);
 		}
 
-		public void method_936(JsonObject jsonObject, RandomChanceLootCondition randomChanceLootCondition, JsonSerializationContext jsonSerializationContext) {
+		public void toJson(JsonObject jsonObject, RandomChanceLootCondition randomChanceLootCondition, JsonSerializationContext jsonSerializationContext) {
 			jsonObject.addProperty("chance", randomChanceLootCondition.chance);
 		}
 
-		public RandomChanceLootCondition method_937(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		public RandomChanceLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			return new RandomChanceLootCondition(JsonHelper.getFloat(jsonObject, "chance"));
 		}
 	}

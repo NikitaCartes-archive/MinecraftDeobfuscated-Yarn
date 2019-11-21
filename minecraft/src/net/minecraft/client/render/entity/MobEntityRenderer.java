@@ -23,11 +23,11 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 		super(renderManager, model, f);
 	}
 
-	protected boolean method_4071(T mobEntity) {
-		return super.method_4055(mobEntity) && (mobEntity.shouldRenderName() || mobEntity.hasCustomName() && mobEntity == this.renderManager.targetedEntity);
+	protected boolean hasLabel(T mobEntity) {
+		return super.hasLabel(mobEntity) && (mobEntity.shouldRenderName() || mobEntity.hasCustomName() && mobEntity == this.renderManager.targetedEntity);
 	}
 
-	public boolean method_4068(T mobEntity, Frustum frustum, double d, double e, double f) {
+	public boolean isVisible(T mobEntity, Frustum frustum, double d, double e, double f) {
 		if (super.isVisible(mobEntity, frustum, d, e, f)) {
 			return true;
 		} else {
@@ -36,15 +36,15 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 		}
 	}
 
-	public void method_4072(T mobEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
-		super.method_4054(mobEntity, f, g, matrixStack, vertexConsumerProvider, i);
+	public void render(T mobEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+		super.render(mobEntity, f, g, matrixStack, vertexConsumerProvider, i);
 		Entity entity = mobEntity.getHoldingEntity();
 		if (entity != null) {
-			method_4073(mobEntity, g, matrixStack, vertexConsumerProvider, entity);
+			this.method_4073(mobEntity, g, matrixStack, vertexConsumerProvider, entity);
 		}
 	}
 
-	public static void method_4073(MobEntity mobEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, Entity entity) {
+	private <E extends Entity> void method_4073(T mobEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, E entity) {
 		matrixStack.push();
 		double d = (double)(MathHelper.lerp(f * 0.5F, entity.yaw, entity.prevYaw) * (float) (Math.PI / 180.0));
 		double e = (double)(MathHelper.lerp(f * 0.5F, entity.pitch, entity.prevPitch) * (float) (Math.PI / 180.0));
@@ -79,10 +79,10 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 		float v = MathHelper.fastInverseSqrt(r * r + t * t) * 0.025F / 2.0F;
 		float w = t * v;
 		float x = r * v;
-		int y = mobEntity.getLightmapCoordinates();
-		int z = entity.getLightmapCoordinates();
-		int aa = mobEntity.world.getLightLevel(LightType.SKY, new BlockPos(mobEntity));
-		int ab = mobEntity.world.getLightLevel(LightType.SKY, new BlockPos(entity));
+		int y = this.method_24087(mobEntity, f);
+		int z = this.renderManager.getRenderer(entity).method_24087(entity, f);
+		int aa = mobEntity.world.getLightLevel(LightType.SKY, new BlockPos(mobEntity.getCameraPosVec(f)));
+		int ab = mobEntity.world.getLightLevel(LightType.SKY, new BlockPos(entity.getCameraPosVec(f)));
 		method_23186(vertexConsumer, matrix4f, r, s, t, y, z, aa, ab, 0.025F, 0.025F, w, x);
 		method_23186(vertexConsumer, matrix4f, r, s, t, y, z, aa, ab, 0.025F, 0.0F, w, x);
 		matrixStack.pop();

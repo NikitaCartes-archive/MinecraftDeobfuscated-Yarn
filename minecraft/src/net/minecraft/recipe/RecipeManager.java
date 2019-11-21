@@ -44,7 +44,7 @@ public class RecipeManager extends JsonDataLoader {
 		super(GSON, "recipes");
 	}
 
-	protected void method_20705(Map<Identifier, JsonObject> map, ResourceManager resourceManager, Profiler profiler) {
+	protected void apply(Map<Identifier, JsonObject> map, ResourceManager resourceManager, Profiler profiler) {
 		this.errored = false;
 		Map<RecipeType<?>, Builder<Identifier, Recipe<?>>> map2 = Maps.<RecipeType<?>, Builder<Identifier, Recipe<?>>>newHashMap();
 

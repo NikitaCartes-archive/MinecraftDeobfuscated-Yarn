@@ -23,6 +23,7 @@ import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
+import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.ai.pathing.SwimNavigation;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -59,6 +60,7 @@ public class GuardianEntity extends HostileEntity {
 	public GuardianEntity(EntityType<? extends GuardianEntity> entityType, World world) {
 		super(entityType, world);
 		this.experiencePoints = 10;
+		this.setPathfindingPenalty(PathNodeType.WATER, 0.0F);
 		this.moveControl = new GuardianEntity.GuardianMoveControl(this);
 		this.spikesExtension = this.random.nextFloat();
 		this.prevSpikesExtension = this.spikesExtension;
@@ -207,7 +209,7 @@ public class GuardianEntity extends HostileEntity {
 						this.world.playSound(this.getX(), this.getY(), this.getZ(), this.getFlopSound(), this.getSoundCategory(), 1.0F, 1.0F, false);
 					}
 
-					this.flopping = vec3d.y < 0.0 && this.world.isTopSolid(new BlockPos(this).method_10074(), this);
+					this.flopping = vec3d.y < 0.0 && this.world.isTopSolid(new BlockPos(this).down(), this);
 				} else if (this.areSpikesRetracted()) {
 					if (this.spikesExtensionRate < 0.5F) {
 						this.spikesExtensionRate = 4.0F;
@@ -480,7 +482,7 @@ public class GuardianEntity extends HostileEntity {
 			this.owner = owner;
 		}
 
-		public boolean method_7064(@Nullable LivingEntity livingEntity) {
+		public boolean test(@Nullable LivingEntity livingEntity) {
 			return (livingEntity instanceof PlayerEntity || livingEntity instanceof SquidEntity) && livingEntity.squaredDistanceTo(this.owner) > 9.0;
 		}
 	}

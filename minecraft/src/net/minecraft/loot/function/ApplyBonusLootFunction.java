@@ -114,8 +114,8 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 			super(new Identifier("apply_bonus"), ApplyBonusLootFunction.class);
 		}
 
-		public void method_469(JsonObject jsonObject, ApplyBonusLootFunction applyBonusLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.method_529(jsonObject, applyBonusLootFunction, jsonSerializationContext);
+		public void toJson(JsonObject jsonObject, ApplyBonusLootFunction applyBonusLootFunction, JsonSerializationContext jsonSerializationContext) {
+			super.toJson(jsonObject, applyBonusLootFunction, jsonSerializationContext);
 			jsonObject.addProperty("enchantment", Registry.ENCHANTMENT.getId(applyBonusLootFunction.enchantment).toString());
 			jsonObject.addProperty("formula", applyBonusLootFunction.formula.getId().toString());
 			JsonObject jsonObject2 = new JsonObject();
@@ -125,7 +125,7 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 			}
 		}
 
-		public ApplyBonusLootFunction method_470(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public ApplyBonusLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "enchantment"));
 			Enchantment enchantment = (Enchantment)Registry.ENCHANTMENT
 				.getOrEmpty(identifier)

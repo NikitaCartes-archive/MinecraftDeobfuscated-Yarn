@@ -61,7 +61,7 @@ public class GiveGiftsToHeroTask extends Task<VillagerEntity> {
 		);
 	}
 
-	protected boolean method_19962(ServerWorld serverWorld, VillagerEntity villagerEntity) {
+	protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
 		if (!this.isNearestPlayerHero(villagerEntity)) {
 			return false;
 		} else if (this.ticksLeft > 0) {
@@ -72,7 +72,7 @@ public class GiveGiftsToHeroTask extends Task<VillagerEntity> {
 		}
 	}
 
-	protected void method_19963(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		this.done = false;
 		this.startTime = l;
 		PlayerEntity playerEntity = (PlayerEntity)this.getNearestPlayerIfHero(villagerEntity).get();
@@ -80,11 +80,11 @@ public class GiveGiftsToHeroTask extends Task<VillagerEntity> {
 		LookTargetUtil.lookAt(villagerEntity, playerEntity);
 	}
 
-	protected boolean method_19965(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	protected boolean shouldKeepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		return this.isNearestPlayerHero(villagerEntity) && !this.done;
 	}
 
-	protected void method_19967(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		PlayerEntity playerEntity = (PlayerEntity)this.getNearestPlayerIfHero(villagerEntity).get();
 		LookTargetUtil.lookAt(villagerEntity, playerEntity);
 		if (this.isCloseEnough(villagerEntity, playerEntity)) {
@@ -97,7 +97,7 @@ public class GiveGiftsToHeroTask extends Task<VillagerEntity> {
 		}
 	}
 
-	protected void method_19968(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	protected void finishRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		this.ticksLeft = getNextGiftDelay(serverWorld);
 		villagerEntity.getBrain().forget(MemoryModuleType.INTERACTION_TARGET);
 		villagerEntity.getBrain().forget(MemoryModuleType.WALK_TARGET);

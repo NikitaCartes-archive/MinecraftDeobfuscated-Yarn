@@ -22,7 +22,7 @@ public class MooshroomEntityRenderer extends MobEntityRenderer<MooshroomEntity, 
 		this.addFeature(new MooshroomMushroomFeatureRenderer<>(this));
 	}
 
-	public Identifier method_4066(MooshroomEntity mooshroomEntity) {
+	public Identifier getTexture(MooshroomEntity mooshroomEntity) {
 		return (Identifier)SKIN.get(mooshroomEntity.getMooshroomType());
 	}
 }

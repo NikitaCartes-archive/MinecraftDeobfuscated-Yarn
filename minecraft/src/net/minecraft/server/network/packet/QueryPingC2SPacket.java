@@ -28,7 +28,7 @@ public class QueryPingC2SPacket implements Packet<ServerQueryPacketListener> {
 		buf.writeLong(this.startTime);
 	}
 
-	public void method_12699(ServerQueryPacketListener serverQueryPacketListener) {
+	public void apply(ServerQueryPacketListener serverQueryPacketListener) {
 		serverQueryPacketListener.onPing(this);
 	}
 

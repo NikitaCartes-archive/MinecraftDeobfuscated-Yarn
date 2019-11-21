@@ -22,7 +22,7 @@ import net.minecraft.text.LiteralText;
 public class TestFunctionArgumentType implements ArgumentType<TestFunction> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("techtests.piston", "techtests");
 
-	public TestFunction method_22302(StringReader reader) throws CommandSyntaxException {
+	public TestFunction parse(StringReader reader) throws CommandSyntaxException {
 		String string = reader.readUnquotedString();
 		Optional<TestFunction> optional = TestFunctions.getTestFunction(string);
 		if (optional.isPresent()) {

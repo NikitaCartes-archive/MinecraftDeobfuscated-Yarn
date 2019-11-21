@@ -248,12 +248,12 @@ public class PigEntity extends AnimalEntity {
 		}
 	}
 
-	public PigEntity method_6574(PassiveEntity passiveEntity) {
+	public PigEntity createChild(PassiveEntity passiveEntity) {
 		return EntityType.PIG.create(this.world);
 	}
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return BREEDING_INGREDIENT.method_8093(stack);
+		return BREEDING_INGREDIENT.test(stack);
 	}
 }

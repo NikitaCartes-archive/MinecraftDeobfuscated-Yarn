@@ -47,7 +47,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		return this.model;
 	}
 
-	public void method_4054(T livingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	public void render(T livingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
 		this.model.handSwingProgress = this.getHandSwingProgress(livingEntity, g);
 		this.model.isRiding = livingEntity.hasVehicle();
@@ -110,8 +110,8 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		this.model.setAngles(livingEntity, o, n, lx, k, m);
 		if (bl || bl2) {
 			Identifier identifier = this.getTexture(livingEntity);
-			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(bl2 ? RenderLayer.getEntityForceTranslucent(identifier) : this.model.getLayer(identifier));
-			this.model.render(matrixStack, vertexConsumer, i, method_23622(livingEntity, this.method_23185(livingEntity, g)), 1.0F, 1.0F, 1.0F);
+			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(bl2 ? RenderLayer.getEntityTranslucent(identifier) : this.model.getLayer(identifier));
+			this.model.render(matrixStack, vertexConsumer, i, method_23622(livingEntity, this.method_23185(livingEntity, g)), 1.0F, 1.0F, 1.0F, bl2 ? 0.15F : 1.0F);
 		}
 
 		if (!livingEntity.isSpectator()) {
@@ -199,7 +199,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 	protected void scale(T entity, MatrixStack matrixStack, float f) {
 	}
 
-	protected boolean method_4055(T livingEntity) {
+	protected boolean hasLabel(T livingEntity) {
 		double d = this.renderManager.getSquaredDistanceToCamera(livingEntity);
 		float f = livingEntity.method_21751() ? 32.0F : 64.0F;
 		if (d >= (double)(f * f)) {

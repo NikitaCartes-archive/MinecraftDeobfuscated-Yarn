@@ -34,7 +34,7 @@ public abstract class NbtText extends BaseText implements ParsableText {
 	@Nullable
 	private static NbtPathArgumentType.NbtPath parsePath(String rawPath) {
 		try {
-			return new NbtPathArgumentType().method_9362(new StringReader(rawPath));
+			return new NbtPathArgumentType().parse(new StringReader(rawPath));
 		} catch (CommandSyntaxException var2) {
 			return null;
 		}
@@ -103,7 +103,7 @@ public abstract class NbtText extends BaseText implements ParsableText {
 		@Nullable
 		private PosArgument parsePos(String rawPos) {
 			try {
-				return BlockPosArgumentType.blockPos().method_9699(new StringReader(rawPos));
+				return BlockPosArgumentType.blockPos().parse(new StringReader(rawPos));
 			} catch (CommandSyntaxException var3) {
 				return null;
 			}

@@ -10,7 +10,7 @@ public class StopPanickingTask extends Task<VillagerEntity> {
 		super(ImmutableMap.of());
 	}
 
-	protected void method_20645(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		boolean bl = PanicTask.wasHurt(villagerEntity) || PanicTask.isHostileNearby(villagerEntity) || wasHurtByNearbyEntity(villagerEntity);
 		if (!bl) {
 			villagerEntity.getBrain().forget(MemoryModuleType.HURT_BY);

@@ -32,7 +32,7 @@ public class ScoreboardSlotArgumentType implements ArgumentType<Integer> {
 		return context.<Integer>getArgument(name, Integer.class);
 	}
 
-	public Integer method_9466(StringReader stringReader) throws CommandSyntaxException {
+	public Integer parse(StringReader stringReader) throws CommandSyntaxException {
 		String string = stringReader.readUnquotedString();
 		int i = Scoreboard.getDisplaySlotId(string);
 		if (i == -1) {

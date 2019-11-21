@@ -26,7 +26,7 @@ public abstract class ConditionalLootFunction implements LootFunction {
 		this.predicate = LootConditions.joinAnd(conditions);
 	}
 
-	public final ItemStack method_521(ItemStack itemStack, LootContext lootContext) {
+	public final ItemStack apply(ItemStack itemStack, LootContext lootContext) {
 		return this.predicate.test(lootContext) ? this.process(itemStack, lootContext) : itemStack;
 	}
 
@@ -48,12 +48,12 @@ public abstract class ConditionalLootFunction implements LootFunction {
 	public abstract static class Builder<T extends ConditionalLootFunction.Builder<T>> implements LootFunction.Builder, LootConditionConsumingBuilder<T> {
 		private final List<LootCondition> conditionList = Lists.<LootCondition>newArrayList();
 
-		public T method_524(LootCondition.Builder builder) {
+		public T withCondition(LootCondition.Builder builder) {
 			this.conditionList.add(builder.build());
 			return this.getThisBuilder();
 		}
 
-		public final T method_525() {
+		public final T getThis() {
 			return this.getThisBuilder();
 		}
 
@@ -69,13 +69,13 @@ public abstract class ConditionalLootFunction implements LootFunction {
 			super(identifier, class_);
 		}
 
-		public void method_529(JsonObject jsonObject, T conditionalLootFunction, JsonSerializationContext jsonSerializationContext) {
+		public void toJson(JsonObject jsonObject, T conditionalLootFunction, JsonSerializationContext jsonSerializationContext) {
 			if (!ArrayUtils.isEmpty((Object[])conditionalLootFunction.conditions)) {
 				jsonObject.add("conditions", jsonSerializationContext.serialize(conditionalLootFunction.conditions));
 			}
 		}
 
-		public final T method_528(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		public final T fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			LootCondition[] lootConditions = JsonHelper.deserialize(jsonObject, "conditions", new LootCondition[0], jsonDeserializationContext, LootCondition[].class);
 			return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
 		}
@@ -90,7 +90,7 @@ public abstract class ConditionalLootFunction implements LootFunction {
 			this.joiner = joiner;
 		}
 
-		protected ConditionalLootFunction.Joiner method_527() {
+		protected ConditionalLootFunction.Joiner getThisBuilder() {
 			return this;
 		}
 

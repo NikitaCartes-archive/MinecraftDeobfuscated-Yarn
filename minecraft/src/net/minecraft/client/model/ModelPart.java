@@ -3,11 +3,9 @@ package net.minecraft.client.model;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import java.util.Random;
-import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.Matrix3f;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
@@ -33,13 +31,13 @@ public class ModelPart {
 	private final ObjectList<ModelPart> children = new ObjectArrayList<>();
 
 	public ModelPart(Model model) {
-		model.method_22696(this);
+		model.accept(this);
 		this.setTextureSize(model.textureWidth, model.textureHeight);
 	}
 
 	public ModelPart(Model model, int textureOffsetU, int textureOffsetV) {
 		this(model.textureWidth, model.textureHeight, textureOffsetU, textureOffsetV);
-		model.method_22696(this);
+		model.accept(this);
 	}
 
 	public ModelPart(int textureWidth, int textureHeight, int textureOffsetU, int textureOffsetV) {
@@ -106,19 +104,19 @@ public class ModelPart {
 		this.pivotZ = z;
 	}
 
-	public void render(MatrixStack matrix, VertexConsumer vertexConsumer, int i, int j, @Nullable Sprite sprite) {
-		this.render(matrix, vertexConsumer, i, j, sprite, 1.0F, 1.0F, 1.0F);
+	public void render(MatrixStack matrix, VertexConsumer vertexConsumer, int i, int j) {
+		this.render(matrix, vertexConsumer, i, j, 1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
-	public void render(MatrixStack matrix, VertexConsumer vertexConsumer, int i, int j, @Nullable Sprite sprite, float f, float g, float h) {
+	public void render(MatrixStack matrix, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k) {
 		if (this.visible) {
 			if (!this.cuboids.isEmpty() || !this.children.isEmpty()) {
 				matrix.push();
 				this.rotate(matrix);
-				this.renderCuboids(matrix.peek(), vertexConsumer, i, j, sprite, f, g, h);
+				this.renderCuboids(matrix.peek(), vertexConsumer, i, j, f, g, h, k);
 
 				for (ModelPart modelPart : this.children) {
-					modelPart.render(matrix, vertexConsumer, i, j, sprite, f, g, h);
+					modelPart.render(matrix, vertexConsumer, i, j, f, g, h, k);
 				}
 
 				matrix.pop();
@@ -141,7 +139,7 @@ public class ModelPart {
 		}
 	}
 
-	private void renderCuboids(MatrixStack.Entry entry, VertexConsumer vertexConsumer, int i, int j, @Nullable Sprite sprite, float f, float g, float h) {
+	private void renderCuboids(MatrixStack.Entry entry, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k) {
 		Matrix4f matrix4f = entry.getModel();
 		Matrix3f matrix3f = entry.getNormal();
 
@@ -149,28 +147,18 @@ public class ModelPart {
 			for (ModelPart.Quad quad : cuboid.sides) {
 				Vector3f vector3f = quad.direction.copy();
 				vector3f.multiply(matrix3f);
-				float k = vector3f.getX();
-				float l = vector3f.getY();
-				float m = vector3f.getZ();
+				float l = vector3f.getX();
+				float m = vector3f.getY();
+				float n = vector3f.getZ();
 
-				for (int n = 0; n < 4; n++) {
-					ModelPart.Vertex vertex = quad.vertices[n];
-					float o = vertex.pos.getX() / 16.0F;
-					float p = vertex.pos.getY() / 16.0F;
-					float q = vertex.pos.getZ() / 16.0F;
-					Vector4f vector4f = new Vector4f(o, p, q, 1.0F);
+				for (int o = 0; o < 4; o++) {
+					ModelPart.Vertex vertex = quad.vertices[o];
+					float p = vertex.pos.getX() / 16.0F;
+					float q = vertex.pos.getY() / 16.0F;
+					float r = vertex.pos.getZ() / 16.0F;
+					Vector4f vector4f = new Vector4f(p, q, r, 1.0F);
 					vector4f.multiply(matrix4f);
-					float r;
-					float s;
-					if (sprite == null) {
-						r = vertex.u;
-						s = vertex.v;
-					} else {
-						r = sprite.getFrameU((double)(vertex.u * 16.0F));
-						s = sprite.getFrameV((double)(vertex.v * 16.0F));
-					}
-
-					vertexConsumer.method_23919(vector4f.getX(), vector4f.getY(), vector4f.getZ(), f, g, h, 1.0F, r, s, j, i, k, l, m);
+					vertexConsumer.method_23919(vector4f.getX(), vector4f.getY(), vector4f.getZ(), f, g, h, k, vertex.u, vertex.v, j, i, l, m, n);
 				}
 			}
 		}

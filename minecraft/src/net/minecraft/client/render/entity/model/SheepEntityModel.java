@@ -19,13 +19,13 @@ public class SheepEntityModel<T extends SheepEntity> extends QuadrupedEntityMode
 		this.torso.setPivot(0.0F, 5.0F, 2.0F);
 	}
 
-	public void method_17120(T sheepEntity, float f, float g, float h) {
+	public void animateModel(T sheepEntity, float f, float g, float h) {
 		super.animateModel(sheepEntity, f, g, h);
 		this.head.pivotY = 6.0F + sheepEntity.method_6628(h) * 9.0F;
 		this.field_3552 = sheepEntity.method_6641(h);
 	}
 
-	public void method_17121(T sheepEntity, float f, float g, float h, float i, float j) {
+	public void setAngles(T sheepEntity, float f, float g, float h, float i, float j) {
 		super.setAngles(sheepEntity, f, g, h, i, j);
 		this.head.pitch = this.field_3552;
 	}

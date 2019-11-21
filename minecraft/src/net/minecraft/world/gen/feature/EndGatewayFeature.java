@@ -16,7 +16,7 @@ public class EndGatewayFeature extends Feature<EndGatewayFeatureConfig> {
 		super(configFactory);
 	}
 
-	public boolean method_13142(
+	public boolean generate(
 		IWorld iWorld,
 		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
 		Random random,

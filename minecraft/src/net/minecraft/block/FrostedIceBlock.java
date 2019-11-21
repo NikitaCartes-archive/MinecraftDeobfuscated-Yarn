@@ -29,15 +29,15 @@ public class FrostedIceBlock extends IceBlock {
 			&& this.increaseAge(state, world, pos)) {
 			try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
 				for (Direction direction : Direction.values()) {
-					pooledMutable.method_10114(pos).method_10118(direction);
+					pooledMutable.set(pos).setOffset(direction);
 					BlockState blockState = world.getBlockState(pooledMutable);
 					if (blockState.getBlock() == this && !this.increaseAge(blockState, world, pooledMutable)) {
-						world.method_14196().schedule(pooledMutable, this, MathHelper.nextInt(random, 20, 40));
+						world.getBlockTickScheduler().schedule(pooledMutable, this, MathHelper.nextInt(random, 20, 40));
 					}
 				}
 			}
 		} else {
-			world.method_14196().schedule(pos, this, MathHelper.nextInt(random, 20, 40));
+			world.getBlockTickScheduler().schedule(pos, this, MathHelper.nextInt(random, 20, 40));
 		}
 	}
 
@@ -66,7 +66,7 @@ public class FrostedIceBlock extends IceBlock {
 
 		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
 			for (Direction direction : Direction.values()) {
-				pooledMutable.method_10114(pos).method_10118(direction);
+				pooledMutable.set(pos).setOffset(direction);
 				if (world.getBlockState(pooledMutable).getBlock() == this) {
 					if (++i >= maxNeighbors) {
 						return false;

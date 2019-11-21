@@ -45,7 +45,7 @@ public abstract class AbstractSoundInstance implements SoundInstance {
 		if (this.soundSet == null) {
 			this.sound = SoundManager.MISSING_SOUND;
 		} else {
-			this.sound = this.soundSet.method_4887();
+			this.sound = this.soundSet.getSound();
 		}
 
 		return this.soundSet;

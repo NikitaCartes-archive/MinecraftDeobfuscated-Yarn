@@ -13,7 +13,7 @@ public class MeleeAttackGoal extends Goal {
 	protected final MobEntityWithAi mob;
 	protected int ticksUntilAttack;
 	private final double speed;
-	private final boolean field_6502;
+	private final boolean pauseWhenMobIdle;
 	private Path field_6509;
 	private int field_6501;
 	private double targetX;
@@ -22,10 +22,10 @@ public class MeleeAttackGoal extends Goal {
 	protected final int field_6504 = 20;
 	private long field_19200;
 
-	public MeleeAttackGoal(MobEntityWithAi mob, double speed, boolean bl) {
+	public MeleeAttackGoal(MobEntityWithAi mob, double speed, boolean pauseWhenMobIdle) {
 		this.mob = mob;
 		this.speed = speed;
-		this.field_6502 = bl;
+		this.pauseWhenMobIdle = pauseWhenMobIdle;
 		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 	}
 
@@ -57,7 +57,7 @@ public class MeleeAttackGoal extends Goal {
 			return false;
 		} else if (!livingEntity.isAlive()) {
 			return false;
-		} else if (!this.field_6502) {
+		} else if (!this.pauseWhenMobIdle) {
 			return !this.mob.getNavigation().isIdle();
 		} else {
 			return !this.mob.isInWalkTargetRange(new BlockPos(livingEntity))
@@ -90,7 +90,7 @@ public class MeleeAttackGoal extends Goal {
 		this.mob.getLookControl().lookAt(livingEntity, 30.0F, 30.0F);
 		double d = this.mob.squaredDistanceTo(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ());
 		this.field_6501--;
-		if ((this.field_6502 || this.mob.getVisibilityCache().canSee(livingEntity))
+		if ((this.pauseWhenMobIdle || this.mob.getVisibilityCache().canSee(livingEntity))
 			&& this.field_6501 <= 0
 			&& (
 				this.targetX == 0.0 && this.targetY == 0.0 && this.targetZ == 0.0

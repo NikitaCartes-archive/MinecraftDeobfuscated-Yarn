@@ -1,25 +1,52 @@
 package net.minecraft.client.util.math;
 
 import java.nio.FloatBuffer;
-import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.math.Quaternion;
 
 @Environment(EnvType.CLIENT)
 public final class Matrix4f {
-	private final float[] components;
+	protected float field_21652;
+	protected float field_21653;
+	protected float field_21654;
+	protected float field_21655;
+	protected float field_21656;
+	protected float field_21657;
+	protected float field_21658;
+	protected float field_21659;
+	protected float field_21660;
+	protected float field_21661;
+	protected float field_21662;
+	protected float field_21663;
+	protected float field_21664;
+	protected float field_21665;
+	protected float field_21666;
+	protected float field_21667;
 
 	public Matrix4f() {
-		this(new float[16]);
 	}
 
-	public Matrix4f(float[] components) {
-		this.components = components;
+	public Matrix4f(Matrix4f matrix4f) {
+		this.field_21652 = matrix4f.field_21652;
+		this.field_21653 = matrix4f.field_21653;
+		this.field_21654 = matrix4f.field_21654;
+		this.field_21655 = matrix4f.field_21655;
+		this.field_21656 = matrix4f.field_21656;
+		this.field_21657 = matrix4f.field_21657;
+		this.field_21658 = matrix4f.field_21658;
+		this.field_21659 = matrix4f.field_21659;
+		this.field_21660 = matrix4f.field_21660;
+		this.field_21661 = matrix4f.field_21661;
+		this.field_21662 = matrix4f.field_21662;
+		this.field_21663 = matrix4f.field_21663;
+		this.field_21664 = matrix4f.field_21664;
+		this.field_21665 = matrix4f.field_21665;
+		this.field_21666 = matrix4f.field_21666;
+		this.field_21667 = matrix4f.field_21667;
 	}
 
 	public Matrix4f(Quaternion quaternion) {
-		this();
 		float f = quaternion.getB();
 		float g = quaternion.getC();
 		float h = quaternion.getD();
@@ -27,22 +54,22 @@ public final class Matrix4f {
 		float j = 2.0F * f * f;
 		float k = 2.0F * g * g;
 		float l = 2.0F * h * h;
-		this.set(0, 0, 1.0F - k - l);
-		this.set(1, 1, 1.0F - l - j);
-		this.set(2, 2, 1.0F - j - k);
-		this.set(3, 3, 1.0F);
+		this.field_21652 = 1.0F - k - l;
+		this.field_21657 = 1.0F - l - j;
+		this.field_21662 = 1.0F - j - k;
+		this.field_21667 = 1.0F;
 		float m = f * g;
 		float n = g * h;
 		float o = h * f;
 		float p = f * i;
 		float q = g * i;
 		float r = h * i;
-		this.set(1, 0, 2.0F * (m + r));
-		this.set(0, 1, 2.0F * (m - r));
-		this.set(2, 0, 2.0F * (o - q));
-		this.set(0, 2, 2.0F * (o + q));
-		this.set(2, 1, 2.0F * (n + p));
-		this.set(1, 2, 2.0F * (n - p));
+		this.field_21656 = 2.0F * (m + r);
+		this.field_21653 = 2.0F * (m - r);
+		this.field_21660 = 2.0F * (o - q);
+		this.field_21654 = 2.0F * (o + q);
+		this.field_21661 = 2.0F * (n + p);
+		this.field_21658 = 2.0F * (n - p);
 	}
 
 	public boolean equals(Object o) {
@@ -50,137 +77,193 @@ public final class Matrix4f {
 			return true;
 		} else if (o != null && this.getClass() == o.getClass()) {
 			Matrix4f matrix4f = (Matrix4f)o;
-			return Arrays.equals(this.components, matrix4f.components);
+			return Float.compare(matrix4f.field_21652, this.field_21652) == 0
+				&& Float.compare(matrix4f.field_21653, this.field_21653) == 0
+				&& Float.compare(matrix4f.field_21654, this.field_21654) == 0
+				&& Float.compare(matrix4f.field_21655, this.field_21655) == 0
+				&& Float.compare(matrix4f.field_21656, this.field_21656) == 0
+				&& Float.compare(matrix4f.field_21657, this.field_21657) == 0
+				&& Float.compare(matrix4f.field_21658, this.field_21658) == 0
+				&& Float.compare(matrix4f.field_21659, this.field_21659) == 0
+				&& Float.compare(matrix4f.field_21660, this.field_21660) == 0
+				&& Float.compare(matrix4f.field_21661, this.field_21661) == 0
+				&& Float.compare(matrix4f.field_21662, this.field_21662) == 0
+				&& Float.compare(matrix4f.field_21663, this.field_21663) == 0
+				&& Float.compare(matrix4f.field_21664, this.field_21664) == 0
+				&& Float.compare(matrix4f.field_21665, this.field_21665) == 0
+				&& Float.compare(matrix4f.field_21666, this.field_21666) == 0
+				&& Float.compare(matrix4f.field_21667, this.field_21667) == 0;
 		} else {
 			return false;
 		}
 	}
 
 	public int hashCode() {
-		return Arrays.hashCode(this.components);
+		int i = this.field_21652 != 0.0F ? Float.floatToIntBits(this.field_21652) : 0;
+		i = 31 * i + (this.field_21653 != 0.0F ? Float.floatToIntBits(this.field_21653) : 0);
+		i = 31 * i + (this.field_21654 != 0.0F ? Float.floatToIntBits(this.field_21654) : 0);
+		i = 31 * i + (this.field_21655 != 0.0F ? Float.floatToIntBits(this.field_21655) : 0);
+		i = 31 * i + (this.field_21656 != 0.0F ? Float.floatToIntBits(this.field_21656) : 0);
+		i = 31 * i + (this.field_21657 != 0.0F ? Float.floatToIntBits(this.field_21657) : 0);
+		i = 31 * i + (this.field_21658 != 0.0F ? Float.floatToIntBits(this.field_21658) : 0);
+		i = 31 * i + (this.field_21659 != 0.0F ? Float.floatToIntBits(this.field_21659) : 0);
+		i = 31 * i + (this.field_21660 != 0.0F ? Float.floatToIntBits(this.field_21660) : 0);
+		i = 31 * i + (this.field_21661 != 0.0F ? Float.floatToIntBits(this.field_21661) : 0);
+		i = 31 * i + (this.field_21662 != 0.0F ? Float.floatToIntBits(this.field_21662) : 0);
+		i = 31 * i + (this.field_21663 != 0.0F ? Float.floatToIntBits(this.field_21663) : 0);
+		i = 31 * i + (this.field_21664 != 0.0F ? Float.floatToIntBits(this.field_21664) : 0);
+		i = 31 * i + (this.field_21665 != 0.0F ? Float.floatToIntBits(this.field_21665) : 0);
+		i = 31 * i + (this.field_21666 != 0.0F ? Float.floatToIntBits(this.field_21666) : 0);
+		return 31 * i + (this.field_21667 != 0.0F ? Float.floatToIntBits(this.field_21667) : 0);
+	}
+
+	private static int method_24020(int i, int j) {
+		return j * 4 + i;
 	}
 
 	public String toString() {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("Matrix4f:\n");
-
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 4; j++) {
-				stringBuilder.append(this.components[i + j * 4]);
-				if (j != 3) {
-					stringBuilder.append(" ");
-				}
-			}
-
-			stringBuilder.append("\n");
-		}
-
+		stringBuilder.append(this.field_21652);
+		stringBuilder.append(" ");
+		stringBuilder.append(this.field_21653);
+		stringBuilder.append(" ");
+		stringBuilder.append(this.field_21654);
+		stringBuilder.append(" ");
+		stringBuilder.append(this.field_21655);
+		stringBuilder.append("\n");
+		stringBuilder.append(this.field_21656);
+		stringBuilder.append(" ");
+		stringBuilder.append(this.field_21657);
+		stringBuilder.append(" ");
+		stringBuilder.append(this.field_21658);
+		stringBuilder.append(" ");
+		stringBuilder.append(this.field_21659);
+		stringBuilder.append("\n");
+		stringBuilder.append(this.field_21660);
+		stringBuilder.append(" ");
+		stringBuilder.append(this.field_21661);
+		stringBuilder.append(" ");
+		stringBuilder.append(this.field_21662);
+		stringBuilder.append(" ");
+		stringBuilder.append(this.field_21663);
+		stringBuilder.append("\n");
+		stringBuilder.append(this.field_21664);
+		stringBuilder.append(" ");
+		stringBuilder.append(this.field_21665);
+		stringBuilder.append(" ");
+		stringBuilder.append(this.field_21666);
+		stringBuilder.append(" ");
+		stringBuilder.append(this.field_21667);
+		stringBuilder.append("\n");
 		return stringBuilder.toString();
 	}
 
-	public void writeToBuffer(FloatBuffer buffer) {
-		this.writeToBuffer(buffer, false);
-	}
-
-	public void writeToBuffer(FloatBuffer buffer, boolean atBufferStart) {
-		if (atBufferStart) {
-			for (int i = 0; i < 4; i++) {
-				for (int j = 0; j < 4; j++) {
-					buffer.put(j * 4 + i, this.components[i * 4 + j]);
-				}
-			}
-		} else {
-			buffer.put(this.components);
-		}
+	public void writeToBuffer(FloatBuffer floatBuffer) {
+		floatBuffer.put(method_24020(0, 0), this.field_21652);
+		floatBuffer.put(method_24020(0, 1), this.field_21653);
+		floatBuffer.put(method_24020(0, 2), this.field_21654);
+		floatBuffer.put(method_24020(0, 3), this.field_21655);
+		floatBuffer.put(method_24020(1, 0), this.field_21656);
+		floatBuffer.put(method_24020(1, 1), this.field_21657);
+		floatBuffer.put(method_24020(1, 2), this.field_21658);
+		floatBuffer.put(method_24020(1, 3), this.field_21659);
+		floatBuffer.put(method_24020(2, 0), this.field_21660);
+		floatBuffer.put(method_24020(2, 1), this.field_21661);
+		floatBuffer.put(method_24020(2, 2), this.field_21662);
+		floatBuffer.put(method_24020(2, 3), this.field_21663);
+		floatBuffer.put(method_24020(3, 0), this.field_21664);
+		floatBuffer.put(method_24020(3, 1), this.field_21665);
+		floatBuffer.put(method_24020(3, 2), this.field_21666);
+		floatBuffer.put(method_24020(3, 3), this.field_21667);
 	}
 
 	public void loadIdentity() {
-		this.components[0] = 1.0F;
-		this.components[1] = 0.0F;
-		this.components[2] = 0.0F;
-		this.components[3] = 0.0F;
-		this.components[4] = 0.0F;
-		this.components[5] = 1.0F;
-		this.components[6] = 0.0F;
-		this.components[7] = 0.0F;
-		this.components[8] = 0.0F;
-		this.components[9] = 0.0F;
-		this.components[10] = 1.0F;
-		this.components[11] = 0.0F;
-		this.components[12] = 0.0F;
-		this.components[13] = 0.0F;
-		this.components[14] = 0.0F;
-		this.components[15] = 1.0F;
-	}
-
-	public float get(int row, int column) {
-		return this.components[4 * column + row];
-	}
-
-	public void set(int row, int column, float value) {
-		this.components[4 * column + row] = value;
+		this.field_21652 = 1.0F;
+		this.field_21653 = 0.0F;
+		this.field_21654 = 0.0F;
+		this.field_21655 = 0.0F;
+		this.field_21656 = 0.0F;
+		this.field_21657 = 1.0F;
+		this.field_21658 = 0.0F;
+		this.field_21659 = 0.0F;
+		this.field_21660 = 0.0F;
+		this.field_21661 = 0.0F;
+		this.field_21662 = 1.0F;
+		this.field_21663 = 0.0F;
+		this.field_21664 = 0.0F;
+		this.field_21665 = 0.0F;
+		this.field_21666 = 0.0F;
+		this.field_21667 = 1.0F;
 	}
 
 	public float determinantAndAdjugate() {
-		float f = this.minor(0, 1, 0, 1);
-		float g = this.minor(0, 1, 0, 2);
-		float h = this.minor(0, 1, 0, 3);
-		float i = this.minor(0, 1, 1, 2);
-		float j = this.minor(0, 1, 1, 3);
-		float k = this.minor(0, 1, 2, 3);
-		float l = this.minor(2, 3, 0, 1);
-		float m = this.minor(2, 3, 0, 2);
-		float n = this.minor(2, 3, 0, 3);
-		float o = this.minor(2, 3, 1, 2);
-		float p = this.minor(2, 3, 1, 3);
-		float q = this.minor(2, 3, 2, 3);
-		float r = this.get(1, 1) * q - this.get(1, 2) * p + this.get(1, 3) * o;
-		float s = -this.get(1, 0) * q + this.get(1, 2) * n - this.get(1, 3) * m;
-		float t = this.get(1, 0) * p - this.get(1, 1) * n + this.get(1, 3) * l;
-		float u = -this.get(1, 0) * o + this.get(1, 1) * m - this.get(1, 2) * l;
-		float v = -this.get(0, 1) * q + this.get(0, 2) * p - this.get(0, 3) * o;
-		float w = this.get(0, 0) * q - this.get(0, 2) * n + this.get(0, 3) * m;
-		float x = -this.get(0, 0) * p + this.get(0, 1) * n - this.get(0, 3) * l;
-		float y = this.get(0, 0) * o - this.get(0, 1) * m + this.get(0, 2) * l;
-		float z = this.get(3, 1) * k - this.get(3, 2) * j + this.get(3, 3) * i;
-		float aa = -this.get(3, 0) * k + this.get(3, 2) * h - this.get(3, 3) * g;
-		float ab = this.get(3, 0) * j - this.get(3, 1) * h + this.get(3, 3) * f;
-		float ac = -this.get(3, 0) * i + this.get(3, 1) * g - this.get(3, 2) * f;
-		float ad = -this.get(2, 1) * k + this.get(2, 2) * j - this.get(2, 3) * i;
-		float ae = this.get(2, 0) * k - this.get(2, 2) * h + this.get(2, 3) * g;
-		float af = -this.get(2, 0) * j + this.get(2, 1) * h - this.get(2, 3) * f;
-		float ag = this.get(2, 0) * i - this.get(2, 1) * g + this.get(2, 2) * f;
-		this.set(0, 0, r);
-		this.set(1, 0, s);
-		this.set(2, 0, t);
-		this.set(3, 0, u);
-		this.set(0, 1, v);
-		this.set(1, 1, w);
-		this.set(2, 1, x);
-		this.set(3, 1, y);
-		this.set(0, 2, z);
-		this.set(1, 2, aa);
-		this.set(2, 2, ab);
-		this.set(3, 2, ac);
-		this.set(0, 3, ad);
-		this.set(1, 3, ae);
-		this.set(2, 3, af);
-		this.set(3, 3, ag);
+		float f = this.field_21652 * this.field_21657 - this.field_21653 * this.field_21656;
+		float g = this.field_21652 * this.field_21658 - this.field_21654 * this.field_21656;
+		float h = this.field_21652 * this.field_21659 - this.field_21655 * this.field_21656;
+		float i = this.field_21653 * this.field_21658 - this.field_21654 * this.field_21657;
+		float j = this.field_21653 * this.field_21659 - this.field_21655 * this.field_21657;
+		float k = this.field_21654 * this.field_21659 - this.field_21655 * this.field_21658;
+		float l = this.field_21660 * this.field_21665 - this.field_21661 * this.field_21664;
+		float m = this.field_21660 * this.field_21666 - this.field_21662 * this.field_21664;
+		float n = this.field_21660 * this.field_21667 - this.field_21663 * this.field_21664;
+		float o = this.field_21661 * this.field_21666 - this.field_21662 * this.field_21665;
+		float p = this.field_21661 * this.field_21667 - this.field_21663 * this.field_21665;
+		float q = this.field_21662 * this.field_21667 - this.field_21663 * this.field_21666;
+		float r = this.field_21657 * q - this.field_21658 * p + this.field_21659 * o;
+		float s = -this.field_21656 * q + this.field_21658 * n - this.field_21659 * m;
+		float t = this.field_21656 * p - this.field_21657 * n + this.field_21659 * l;
+		float u = -this.field_21656 * o + this.field_21657 * m - this.field_21658 * l;
+		float v = -this.field_21653 * q + this.field_21654 * p - this.field_21655 * o;
+		float w = this.field_21652 * q - this.field_21654 * n + this.field_21655 * m;
+		float x = -this.field_21652 * p + this.field_21653 * n - this.field_21655 * l;
+		float y = this.field_21652 * o - this.field_21653 * m + this.field_21654 * l;
+		float z = this.field_21665 * k - this.field_21666 * j + this.field_21667 * i;
+		float aa = -this.field_21664 * k + this.field_21666 * h - this.field_21667 * g;
+		float ab = this.field_21664 * j - this.field_21665 * h + this.field_21667 * f;
+		float ac = -this.field_21664 * i + this.field_21665 * g - this.field_21666 * f;
+		float ad = -this.field_21661 * k + this.field_21662 * j - this.field_21663 * i;
+		float ae = this.field_21660 * k - this.field_21662 * h + this.field_21663 * g;
+		float af = -this.field_21660 * j + this.field_21661 * h - this.field_21663 * f;
+		float ag = this.field_21660 * i - this.field_21661 * g + this.field_21662 * f;
+		this.field_21652 = r;
+		this.field_21656 = s;
+		this.field_21660 = t;
+		this.field_21664 = u;
+		this.field_21653 = v;
+		this.field_21657 = w;
+		this.field_21661 = x;
+		this.field_21665 = y;
+		this.field_21654 = z;
+		this.field_21658 = aa;
+		this.field_21662 = ab;
+		this.field_21666 = ac;
+		this.field_21655 = ad;
+		this.field_21659 = ae;
+		this.field_21663 = af;
+		this.field_21667 = ag;
 		return f * q - g * p + h * o + i * n - j * m + k * l;
 	}
 
 	public void transpose() {
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < i; j++) {
-				this.transpose(i, j);
-			}
-		}
-	}
-
-	private void transpose(int row, int column) {
-		float f = this.components[row + column * 4];
-		this.components[row + column * 4] = this.components[column + row * 4];
-		this.components[column + row * 4] = f;
+		float f = this.field_21656;
+		this.field_21656 = this.field_21653;
+		this.field_21653 = f;
+		f = this.field_21660;
+		this.field_21660 = this.field_21654;
+		this.field_21654 = f;
+		f = this.field_21661;
+		this.field_21661 = this.field_21658;
+		this.field_21658 = f;
+		f = this.field_21664;
+		this.field_21664 = this.field_21655;
+		this.field_21655 = f;
+		f = this.field_21665;
+		this.field_21665 = this.field_21659;
+		this.field_21659 = f;
+		f = this.field_21666;
+		this.field_21666 = this.field_21663;
+		this.field_21663 = f;
 	}
 
 	public boolean invert() {
@@ -193,22 +276,87 @@ public final class Matrix4f {
 		}
 	}
 
-	private float minor(int row1, int row2, int column1, int column2) {
-		return this.get(row1, column1) * this.get(row2, column2) - this.get(row1, column2) * this.get(row2, column1);
-	}
-
 	public void multiply(Matrix4f matrix) {
-		float[] fs = Arrays.copyOf(this.components, 16);
-
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 4; j++) {
-				this.components[i + j * 4] = 0.0F;
-
-				for (int k = 0; k < 4; k++) {
-					this.components[i + j * 4] = this.components[i + j * 4] + fs[i + k * 4] * matrix.components[k + j * 4];
-				}
-			}
-		}
+		float f = this.field_21652 * matrix.field_21652
+			+ this.field_21653 * matrix.field_21656
+			+ this.field_21654 * matrix.field_21660
+			+ this.field_21655 * matrix.field_21664;
+		float g = this.field_21652 * matrix.field_21653
+			+ this.field_21653 * matrix.field_21657
+			+ this.field_21654 * matrix.field_21661
+			+ this.field_21655 * matrix.field_21665;
+		float h = this.field_21652 * matrix.field_21654
+			+ this.field_21653 * matrix.field_21658
+			+ this.field_21654 * matrix.field_21662
+			+ this.field_21655 * matrix.field_21666;
+		float i = this.field_21652 * matrix.field_21655
+			+ this.field_21653 * matrix.field_21659
+			+ this.field_21654 * matrix.field_21663
+			+ this.field_21655 * matrix.field_21667;
+		float j = this.field_21656 * matrix.field_21652
+			+ this.field_21657 * matrix.field_21656
+			+ this.field_21658 * matrix.field_21660
+			+ this.field_21659 * matrix.field_21664;
+		float k = this.field_21656 * matrix.field_21653
+			+ this.field_21657 * matrix.field_21657
+			+ this.field_21658 * matrix.field_21661
+			+ this.field_21659 * matrix.field_21665;
+		float l = this.field_21656 * matrix.field_21654
+			+ this.field_21657 * matrix.field_21658
+			+ this.field_21658 * matrix.field_21662
+			+ this.field_21659 * matrix.field_21666;
+		float m = this.field_21656 * matrix.field_21655
+			+ this.field_21657 * matrix.field_21659
+			+ this.field_21658 * matrix.field_21663
+			+ this.field_21659 * matrix.field_21667;
+		float n = this.field_21660 * matrix.field_21652
+			+ this.field_21661 * matrix.field_21656
+			+ this.field_21662 * matrix.field_21660
+			+ this.field_21663 * matrix.field_21664;
+		float o = this.field_21660 * matrix.field_21653
+			+ this.field_21661 * matrix.field_21657
+			+ this.field_21662 * matrix.field_21661
+			+ this.field_21663 * matrix.field_21665;
+		float p = this.field_21660 * matrix.field_21654
+			+ this.field_21661 * matrix.field_21658
+			+ this.field_21662 * matrix.field_21662
+			+ this.field_21663 * matrix.field_21666;
+		float q = this.field_21660 * matrix.field_21655
+			+ this.field_21661 * matrix.field_21659
+			+ this.field_21662 * matrix.field_21663
+			+ this.field_21663 * matrix.field_21667;
+		float r = this.field_21664 * matrix.field_21652
+			+ this.field_21665 * matrix.field_21656
+			+ this.field_21666 * matrix.field_21660
+			+ this.field_21667 * matrix.field_21664;
+		float s = this.field_21664 * matrix.field_21653
+			+ this.field_21665 * matrix.field_21657
+			+ this.field_21666 * matrix.field_21661
+			+ this.field_21667 * matrix.field_21665;
+		float t = this.field_21664 * matrix.field_21654
+			+ this.field_21665 * matrix.field_21658
+			+ this.field_21666 * matrix.field_21662
+			+ this.field_21667 * matrix.field_21666;
+		float u = this.field_21664 * matrix.field_21655
+			+ this.field_21665 * matrix.field_21659
+			+ this.field_21666 * matrix.field_21663
+			+ this.field_21667 * matrix.field_21667;
+		this.field_21652 = f;
+		this.field_21653 = g;
+		this.field_21654 = h;
+		this.field_21655 = i;
+		this.field_21656 = j;
+		this.field_21657 = k;
+		this.field_21658 = l;
+		this.field_21659 = m;
+		this.field_21660 = n;
+		this.field_21661 = o;
+		this.field_21662 = p;
+		this.field_21663 = q;
+		this.field_21664 = r;
+		this.field_21665 = s;
+		this.field_21666 = t;
+		this.field_21667 = u;
 	}
 
 	public void multiply(Quaternion quaternion) {
@@ -216,42 +364,76 @@ public final class Matrix4f {
 	}
 
 	public void multiply(float scalar) {
-		for (int i = 0; i < 16; i++) {
-			this.components[i] = this.components[i] * scalar;
-		}
+		this.field_21652 *= scalar;
+		this.field_21653 *= scalar;
+		this.field_21654 *= scalar;
+		this.field_21655 *= scalar;
+		this.field_21656 *= scalar;
+		this.field_21657 *= scalar;
+		this.field_21658 *= scalar;
+		this.field_21659 *= scalar;
+		this.field_21660 *= scalar;
+		this.field_21661 *= scalar;
+		this.field_21662 *= scalar;
+		this.field_21663 *= scalar;
+		this.field_21664 *= scalar;
+		this.field_21665 *= scalar;
+		this.field_21666 *= scalar;
+		this.field_21667 *= scalar;
 	}
 
 	public static Matrix4f viewboxMatrix(double fov, float aspectRatio, float cameraDepth, float viewDistance) {
 		float f = (float)(1.0 / Math.tan(fov * (float) (Math.PI / 180.0) / 2.0));
 		Matrix4f matrix4f = new Matrix4f();
-		matrix4f.set(0, 0, f / aspectRatio);
-		matrix4f.set(1, 1, f);
-		matrix4f.set(2, 2, (viewDistance + cameraDepth) / (cameraDepth - viewDistance));
-		matrix4f.set(3, 2, -1.0F);
-		matrix4f.set(2, 3, 2.0F * viewDistance * cameraDepth / (cameraDepth - viewDistance));
+		matrix4f.field_21652 = f / aspectRatio;
+		matrix4f.field_21657 = f;
+		matrix4f.field_21662 = (viewDistance + cameraDepth) / (cameraDepth - viewDistance);
+		matrix4f.field_21666 = -1.0F;
+		matrix4f.field_21663 = 2.0F * viewDistance * cameraDepth / (cameraDepth - viewDistance);
 		return matrix4f;
 	}
 
 	public static Matrix4f projectionMatrix(float width, float height, float nearPlane, float farPlane) {
 		Matrix4f matrix4f = new Matrix4f();
-		matrix4f.set(0, 0, 2.0F / width);
-		matrix4f.set(1, 1, 2.0F / height);
+		matrix4f.field_21652 = 2.0F / width;
+		matrix4f.field_21657 = 2.0F / height;
 		float f = farPlane - nearPlane;
-		matrix4f.set(2, 2, -2.0F / f);
-		matrix4f.set(3, 3, 1.0F);
-		matrix4f.set(0, 3, -1.0F);
-		matrix4f.set(1, 3, -1.0F);
-		matrix4f.set(2, 3, -(farPlane + nearPlane) / f);
+		matrix4f.field_21662 = -2.0F / f;
+		matrix4f.field_21667 = 1.0F;
+		matrix4f.field_21655 = -1.0F;
+		matrix4f.field_21659 = -1.0F;
+		matrix4f.field_21663 = -(farPlane + nearPlane) / f;
 		return matrix4f;
 	}
 
 	public void addToLastColumn(Vector3f vector) {
-		this.set(0, 3, this.get(0, 3) + vector.getX());
-		this.set(1, 3, this.get(1, 3) + vector.getY());
-		this.set(2, 3, this.get(2, 3) + vector.getZ());
+		this.field_21655 = this.field_21655 + vector.getX();
+		this.field_21659 = this.field_21659 + vector.getY();
+		this.field_21663 = this.field_21663 + vector.getZ();
 	}
 
 	public Matrix4f copy() {
-		return new Matrix4f((float[])this.components.clone());
+		return new Matrix4f(this);
+	}
+
+	public static Matrix4f method_24019(float f, float g, float h) {
+		Matrix4f matrix4f = new Matrix4f();
+		matrix4f.field_21652 = f;
+		matrix4f.field_21657 = g;
+		matrix4f.field_21662 = h;
+		matrix4f.field_21667 = 1.0F;
+		return matrix4f;
+	}
+
+	public static Matrix4f method_24021(float f, float g, float h) {
+		Matrix4f matrix4f = new Matrix4f();
+		matrix4f.field_21652 = 1.0F;
+		matrix4f.field_21657 = 1.0F;
+		matrix4f.field_21662 = 1.0F;
+		matrix4f.field_21667 = 1.0F;
+		matrix4f.field_21655 = f;
+		matrix4f.field_21659 = g;
+		matrix4f.field_21663 = h;
+		return matrix4f;
 	}
 }

@@ -25,7 +25,7 @@ public class ClientStatusC2SPacket implements Packet<ServerPlayPacketListener> {
 		buf.writeEnumConstant(this.mode);
 	}
 
-	public void method_12120(ServerPlayPacketListener serverPlayPacketListener) {
+	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onClientStatus(this);
 	}
 

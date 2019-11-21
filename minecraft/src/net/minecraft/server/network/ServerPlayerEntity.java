@@ -343,7 +343,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		if (entity != this) {
 			if (entity.isAlive()) {
 				this.setPositionAnglesAndUpdate(entity.getX(), entity.getY(), entity.getZ(), entity.yaw, entity.pitch);
-				this.getServerWorld().method_14178().updateCameraPosition(this);
+				this.getServerWorld().getChunkManager().updateCameraPosition(this);
 				if (this.shouldDismount()) {
 					this.setCameraEntity(this);
 				}
@@ -718,7 +718,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	@Override
 	public void wakeUp(boolean bl, boolean bl2) {
 		if (this.isSleeping()) {
-			this.getServerWorld().method_14178().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(this, 2));
+			this.getServerWorld().getChunkManager().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(this, 2));
 		}
 
 		super.wakeUp(bl, bl2);
@@ -1058,12 +1058,12 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	@Override
 	public void addCritParticles(Entity target) {
-		this.getServerWorld().method_14178().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(target, 4));
+		this.getServerWorld().getChunkManager().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(target, 4));
 	}
 
 	@Override
 	public void addEnchantedHitParticles(Entity target) {
-		this.getServerWorld().method_14178().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(target, 5));
+		this.getServerWorld().getChunkManager().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(target, 5));
 	}
 
 	@Override

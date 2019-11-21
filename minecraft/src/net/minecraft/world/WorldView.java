@@ -71,7 +71,7 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 			if (!this.isSkyVisible(blockPos)) {
 				return false;
 			} else {
-				for (BlockPos var4 = blockPos.method_10074(); var4.getY() > pos.getY(); var4 = var4.method_10074()) {
+				for (BlockPos var4 = blockPos.down(); var4.getY() > pos.getY(); var4 = var4.down()) {
 					BlockState blockState = this.getBlockState(var4);
 					if (blockState.getOpacity(this, var4) > 0 && !blockState.getMaterial().isLiquid()) {
 						return false;
@@ -126,7 +126,7 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 			for (int o = i; o < j; o++) {
 				for (int p = k; p < l; p++) {
 					for (int q = m; q < n; q++) {
-						BlockState blockState = this.getBlockState(pooledMutable.method_10113(o, p, q));
+						BlockState blockState = this.getBlockState(pooledMutable.set(o, p, q));
 						if (!blockState.getFluidState().isEmpty()) {
 							return true;
 						}

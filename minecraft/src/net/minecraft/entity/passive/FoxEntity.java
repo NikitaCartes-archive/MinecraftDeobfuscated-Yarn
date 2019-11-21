@@ -278,7 +278,7 @@ public class FoxEntity extends AnimalEntity {
 		this.getAttributes().register(EntityAttributes.ATTACK_DAMAGE).setBaseValue(2.0);
 	}
 
-	public FoxEntity method_18260(PassiveEntity passiveEntity) {
+	public FoxEntity createChild(PassiveEntity passiveEntity) {
 		FoxEntity foxEntity = EntityType.FOX.create(this.world);
 		foxEntity.setType(this.random.nextBoolean() ? this.getFoxType() : ((FoxEntity)passiveEntity).getFoxType());
 		return foxEntity;
@@ -622,7 +622,7 @@ public class FoxEntity extends AnimalEntity {
 		if (this.isSleeping()) {
 			return SoundEvents.ENTITY_FOX_SLEEP;
 		} else {
-			if (!this.world.isDaylight() && this.random.nextFloat() < 0.1F) {
+			if (!this.world.isDay() && this.random.nextFloat() < 0.1F) {
 				List<PlayerEntity> list = this.world.getEntities(PlayerEntity.class, this.getBoundingBox().expand(16.0, 16.0, 16.0), EntityPredicates.EXCEPT_SPECTATOR);
 				if (list.isEmpty()) {
 					return SoundEvents.ENTITY_FOX_SCREECH;
@@ -726,7 +726,7 @@ public class FoxEntity extends AnimalEntity {
 			} else {
 				this.timer = 100;
 				BlockPos blockPos = new BlockPos(this.mob);
-				return FoxEntity.this.world.isDaylight()
+				return FoxEntity.this.world.isDay()
 					&& FoxEntity.this.world.isSkyVisible(blockPos)
 					&& !((ServerWorld)FoxEntity.this.world).isNearOccupiedPointOfInterest(blockPos)
 					&& this.method_18250();
@@ -834,7 +834,7 @@ public class FoxEntity extends AnimalEntity {
 				this.timer--;
 				return false;
 			} else {
-				return FoxEntity.this.world.isDaylight() && this.isAtFavoredLocation() && !this.canCalmDown();
+				return FoxEntity.this.world.isDay() && this.isAtFavoredLocation() && !this.canCalmDown();
 			}
 		}
 
@@ -988,7 +988,7 @@ public class FoxEntity extends AnimalEntity {
 		}
 
 		@Override
-		protected boolean method_20433() {
+		protected boolean shouldStayHorizontal() {
 			return !FoxEntity.this.isChasing() && !FoxEntity.this.isInSneakingPose() && !FoxEntity.this.isRollingHead() & !FoxEntity.this.isWalking();
 		}
 	}
@@ -1468,7 +1468,7 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	public class WorriableEntityFilter implements Predicate<LivingEntity> {
-		public boolean method_18303(LivingEntity livingEntity) {
+		public boolean test(LivingEntity livingEntity) {
 			if (livingEntity instanceof FoxEntity) {
 				return false;
 			} else if (livingEntity instanceof ChickenEntity || livingEntity instanceof RabbitEntity || livingEntity instanceof HostileEntity) {

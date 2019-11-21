@@ -15,7 +15,7 @@ public class IcebergDecorator extends Decorator<LakeDecoratorConfig> {
 		super(function);
 	}
 
-	public Stream<BlockPos> method_15929(
+	public Stream<BlockPos> getPositions(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, LakeDecoratorConfig lakeDecoratorConfig, BlockPos blockPos
 	) {
 		if (random.nextFloat() < 1.0F / (float)lakeDecoratorConfig.chance) {

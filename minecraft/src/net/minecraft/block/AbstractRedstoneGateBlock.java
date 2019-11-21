@@ -32,7 +32,7 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		return topCoversMediumSquare(world, pos.method_10074());
+		return topCoversMediumSquare(world, pos.down());
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 			} else if (!bl) {
 				world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(true)), 2);
 				if (!bl2) {
-					world.method_14196().schedule(pos, this, this.getUpdateDelayInternal(state), TickPriority.HIGH);
+					world.getBlockTickScheduler().schedule(pos, this, this.getUpdateDelayInternal(state), TickPriority.HIGH);
 				}
 			}
 		}

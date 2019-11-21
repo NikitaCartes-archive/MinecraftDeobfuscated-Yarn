@@ -76,7 +76,7 @@ public enum EnderDragonSpawnState {
 							.configure(endSpikeFeatureConfig)
 							.generate(
 								world,
-								(ChunkGenerator<? extends ChunkGeneratorConfig>)world.method_14178().getChunkGenerator(),
+								(ChunkGenerator<? extends ChunkGeneratorConfig>)world.getChunkManager().getChunkGenerator(),
 								new Random(),
 								new BlockPos(spike.getCenterX(), 45, spike.getCenterZ())
 							);

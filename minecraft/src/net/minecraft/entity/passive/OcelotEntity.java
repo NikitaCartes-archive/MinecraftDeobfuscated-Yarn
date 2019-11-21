@@ -228,13 +228,13 @@ public class OcelotEntity extends AnimalEntity {
 		}
 	}
 
-	public OcelotEntity method_16104(PassiveEntity passiveEntity) {
+	public OcelotEntity createChild(PassiveEntity passiveEntity) {
 		return EntityType.OCELOT.create(this.world);
 	}
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return TAMING_INGREDIENT.method_8093(stack);
+		return TAMING_INGREDIENT.test(stack);
 	}
 
 	public static boolean canSpawn(EntityType<OcelotEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
@@ -249,7 +249,7 @@ public class OcelotEntity extends AnimalEntity {
 				return false;
 			}
 
-			BlockState blockState = worldView.getBlockState(blockPos.method_10074());
+			BlockState blockState = worldView.getBlockState(blockPos.down());
 			Block block = blockState.getBlock();
 			if (block == Blocks.GRASS_BLOCK || blockState.matches(BlockTags.LEAVES)) {
 				return true;

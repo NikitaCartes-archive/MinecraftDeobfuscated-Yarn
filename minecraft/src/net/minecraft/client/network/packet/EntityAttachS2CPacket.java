@@ -33,7 +33,7 @@ public class EntityAttachS2CPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeInt(this.holdingId);
 	}
 
-	public void method_11811(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onEntityAttach(this);
 	}
 

@@ -13,7 +13,7 @@ public class EmeraldOreFeature extends Feature<EmeraldOreFeatureConfig> {
 		super(configFactory);
 	}
 
-	public boolean method_13811(
+	public boolean generate(
 		IWorld iWorld,
 		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
 		Random random,

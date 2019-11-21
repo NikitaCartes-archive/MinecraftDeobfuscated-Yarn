@@ -131,7 +131,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		}
 	}
 
-	protected void method_10770(ChannelHandlerContext channelHandlerContext, Packet<?> packet) throws Exception {
+	protected void channelRead0(ChannelHandlerContext channelHandlerContext, Packet<?> packet) throws Exception {
 		if (this.channel.isOpen()) {
 			try {
 				handlePacket(packet, this.packetListener);

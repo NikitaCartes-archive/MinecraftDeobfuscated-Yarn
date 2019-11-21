@@ -1,8 +1,6 @@
 package net.minecraft.entity.mob;
 
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -47,12 +45,6 @@ public class MagmaCubeEntity extends SlimeEntity {
 	protected void setSize(int size, boolean heal) {
 		super.setSize(size, heal);
 		this.getAttributeInstance(EntityAttributes.ARMOR).setBaseValue((double)(size * 3));
-	}
-
-	@Environment(EnvType.CLIENT)
-	@Override
-	public int getLightmapCoordinates() {
-		return 15;
 	}
 
 	@Override

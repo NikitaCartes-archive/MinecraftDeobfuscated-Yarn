@@ -68,7 +68,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 					)
 					&& blockPos.getY() > 0
 			) {
-				blockPos = blockPos.method_10074();
+				blockPos = blockPos.down();
 			}
 
 			i = blockPos.up().getY();
@@ -170,7 +170,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 	}
 
 	public static double getHeight(BlockView world, BlockPos pos) {
-		BlockPos blockPos = pos.method_10074();
+		BlockPos blockPos = pos.down();
 		VoxelShape voxelShape = world.getBlockState(blockPos).getCollisionShape(world, blockPos);
 		return (double)blockPos.getY() + (voxelShape.isEmpty() ? 0.0 : voxelShape.getMaximum(Direction.Axis.Y));
 	}
@@ -362,7 +362,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 
 		if (type == PathNodeType.RAIL
 			&& !(world.getBlockState(pos).getBlock() instanceof AbstractRailBlock)
-			&& !(world.getBlockState(pos.method_10074()).getBlock() instanceof AbstractRailBlock)) {
+			&& !(world.getBlockState(pos.down()).getBlock() instanceof AbstractRailBlock)) {
 			type = PathNodeType.FENCE;
 		}
 
@@ -427,7 +427,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 				for (int m = -1; m <= 1; m++) {
 					for (int n = -1; n <= 1; n++) {
 						if (l != 0 || n != 0) {
-							Block block = blockView.getBlockState(pooledMutable.method_10113(l + i, m + j, n + k)).getBlock();
+							Block block = blockView.getBlockState(pooledMutable.set(l + i, m + j, n + k)).getBlock();
 							if (block == Blocks.CACTUS) {
 								pathNodeType = PathNodeType.DANGER_CACTUS;
 							} else if (block == Blocks.FIRE || block == Blocks.LAVA) {

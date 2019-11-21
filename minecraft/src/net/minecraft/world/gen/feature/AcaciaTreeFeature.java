@@ -15,7 +15,7 @@ public class AcaciaTreeFeature extends BranchedTreeFeature<BranchedTreeFeatureCo
 		super(function);
 	}
 
-	public boolean method_23386(
+	public boolean generate(
 		ModifiableTestableWorld modifiableTestableWorld,
 		Random random,
 		BlockPos blockPos,
@@ -29,14 +29,14 @@ public class AcaciaTreeFeature extends BranchedTreeFeature<BranchedTreeFeatureCo
 			+ random.nextInt(branchedTreeFeatureConfig.heightRandB + 1);
 		int j = branchedTreeFeatureConfig.trunkHeight >= 0
 			? branchedTreeFeatureConfig.trunkHeight + random.nextInt(branchedTreeFeatureConfig.trunkHeightRandom + 1)
-			: i - (branchedTreeFeatureConfig.field_21266 + random.nextInt(branchedTreeFeatureConfig.field_21267 + 1));
+			: i - (branchedTreeFeatureConfig.foliageHeight + random.nextInt(branchedTreeFeatureConfig.foliageHeightRandom + 1));
 		int k = branchedTreeFeatureConfig.foliagePlacer.method_23452(random, j, i, branchedTreeFeatureConfig);
-		Optional<BlockPos> optional = this.method_23378(modifiableTestableWorld, i, j, k, blockPos, branchedTreeFeatureConfig);
+		Optional<BlockPos> optional = this.findPositionToGenerate(modifiableTestableWorld, i, j, k, blockPos, branchedTreeFeatureConfig);
 		if (!optional.isPresent()) {
 			return false;
 		} else {
 			BlockPos blockPos2 = (BlockPos)optional.get();
-			this.setToDirt(modifiableTestableWorld, blockPos2.method_10074());
+			this.setToDirt(modifiableTestableWorld, blockPos2.down());
 			Direction direction = Direction.Type.HORIZONTAL.random(random);
 			int l = i - random.nextInt(4) - 1;
 			int m = 3 - random.nextInt(3);
@@ -53,7 +53,7 @@ public class AcaciaTreeFeature extends BranchedTreeFeature<BranchedTreeFeatureCo
 					m--;
 				}
 
-				if (this.method_23382(modifiableTestableWorld, random, mutable.set(n, r, o), set, blockBox, branchedTreeFeatureConfig)) {
+				if (this.setLogBlockState(modifiableTestableWorld, random, mutable.set(n, r, o), set, blockBox, branchedTreeFeatureConfig)) {
 					p = r;
 				}
 			}
@@ -73,7 +73,7 @@ public class AcaciaTreeFeature extends BranchedTreeFeature<BranchedTreeFeatureCo
 						int u = blockPos2.getY() + t;
 						n += direction2.getOffsetX();
 						o += direction2.getOffsetZ();
-						if (this.method_23382(modifiableTestableWorld, random, mutable.set(n, u, o), set, blockBox, branchedTreeFeatureConfig)) {
+						if (this.setLogBlockState(modifiableTestableWorld, random, mutable.set(n, u, o), set, blockBox, branchedTreeFeatureConfig)) {
 							p = u;
 						}
 					}

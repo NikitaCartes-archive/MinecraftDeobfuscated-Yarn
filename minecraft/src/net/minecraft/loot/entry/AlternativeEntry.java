@@ -57,7 +57,7 @@ public class AlternativeEntry extends CombinedEntry {
 			}
 		}
 
-		protected AlternativeEntry.Builder method_388() {
+		protected AlternativeEntry.Builder getThisBuilder() {
 			return this;
 		}
 

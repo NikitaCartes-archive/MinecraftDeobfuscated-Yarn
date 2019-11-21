@@ -17,6 +17,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEntity> {
 	private static final Identifier SKIN = new Identifier("textures/entity/experience_orb.png");
+	private static final RenderLayer field_21741 = RenderLayer.getEntityTranslucent(SKIN);
 
 	public ExperienceOrbEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
@@ -24,9 +25,11 @@ public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEnt
 		this.field_4672 = 0.75F;
 	}
 
-	public void method_3966(
-		ExperienceOrbEntity experienceOrbEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i
-	) {
+	protected int method_24087(ExperienceOrbEntity experienceOrbEntity, float f) {
+		return MathHelper.clamp(super.method_24087(experienceOrbEntity, f) + 7, 0, 15);
+	}
+
+	public void render(ExperienceOrbEntity experienceOrbEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
 		int j = experienceOrbEntity.getOrbSize();
 		float h = (float)(j % 4 * 16 + 0) / 64.0F;
@@ -46,7 +49,7 @@ public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEnt
 		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
 		float v = 0.3F;
 		matrixStack.scale(0.3F, 0.3F, 0.3F);
-		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityTranslucent(SKIN));
+		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(field_21741);
 		MatrixStack.Entry entry = matrixStack.peek();
 		Matrix4f matrix4f = entry.getModel();
 		Matrix3f matrix3f = entry.getNormal();
@@ -70,7 +73,7 @@ public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEnt
 			.next();
 	}
 
-	public Identifier method_3967(ExperienceOrbEntity experienceOrbEntity) {
+	public Identifier getTexture(ExperienceOrbEntity experienceOrbEntity) {
 		return SKIN;
 	}
 }

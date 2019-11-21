@@ -323,7 +323,7 @@ public class SheepEntity extends AnimalEntity {
 		}
 	}
 
-	public SheepEntity method_6640(PassiveEntity passiveEntity) {
+	public SheepEntity createChild(PassiveEntity passiveEntity) {
 		SheepEntity sheepEntity = (SheepEntity)passiveEntity;
 		SheepEntity sheepEntity2 = EntityType.SHEEP.create(this.world);
 		sheepEntity2.setColor(this.getChildColor(this, sheepEntity));

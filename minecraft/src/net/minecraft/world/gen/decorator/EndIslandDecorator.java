@@ -11,7 +11,7 @@ public class EndIslandDecorator extends SimpleDecorator<NopeDecoratorConfig> {
 		super(function);
 	}
 
-	public Stream<BlockPos> method_15923(Random random, NopeDecoratorConfig nopeDecoratorConfig, BlockPos blockPos) {
+	public Stream<BlockPos> getPositions(Random random, NopeDecoratorConfig nopeDecoratorConfig, BlockPos blockPos) {
 		Stream<BlockPos> stream = Stream.empty();
 		if (random.nextInt(14) == 0) {
 			stream = Stream.concat(stream, Stream.of(blockPos.add(random.nextInt(16), 55 + random.nextInt(16), random.nextInt(16))));

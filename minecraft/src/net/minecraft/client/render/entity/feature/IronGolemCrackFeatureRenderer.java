@@ -25,7 +25,7 @@ public class IronGolemCrackFeatureRenderer extends FeatureRenderer<IronGolemEnti
 		super(featureRendererContext);
 	}
 
-	public void method_23623(
+	public void render(
 		MatrixStack matrixStack,
 		VertexConsumerProvider vertexConsumerProvider,
 		int i,

@@ -14,7 +14,7 @@ public class QueryRequestC2SPacket implements Packet<ServerQueryPacketListener> 
 	public void write(PacketByteBuf buf) throws IOException {
 	}
 
-	public void method_12701(ServerQueryPacketListener serverQueryPacketListener) {
+	public void apply(ServerQueryPacketListener serverQueryPacketListener) {
 		serverQueryPacketListener.onRequest(this);
 	}
 }

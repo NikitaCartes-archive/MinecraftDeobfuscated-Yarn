@@ -92,7 +92,6 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.LightType;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
@@ -463,6 +462,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 			if (this.movementMultiplier.lengthSquared() > 1.0E-7) {
 				movement = movement.multiply(this.movementMultiplier);
 				this.movementMultiplier = Vec3d.ZERO;
+				this.setVelocity(Vec3d.ZERO);
 			}
 
 			movement = this.adjustMovementForSneaking(movement, type);
@@ -569,7 +569,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		int k = MathHelper.floor(this.z);
 		BlockPos blockPos = new BlockPos(i, j, k);
 		if (this.world.getBlockState(blockPos).isAir()) {
-			BlockPos blockPos2 = blockPos.method_10074();
+			BlockPos blockPos2 = blockPos.down();
 			BlockState blockState = this.world.getBlockState(blockPos2);
 			Block block = blockState.getBlock();
 			if (block.matches(BlockTags.FENCES) || block.matches(BlockTags.WALLS) || block instanceof FenceGateBlock) {
@@ -791,7 +791,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 				for (int i = pooledMutable.getX(); i <= pooledMutable2.getX(); i++) {
 					for (int j = pooledMutable.getY(); j <= pooledMutable2.getY(); j++) {
 						for (int k = pooledMutable.getZ(); k <= pooledMutable2.getZ(); k++) {
-							pooledMutable3.method_10113(i, j, k);
+							pooledMutable3.set(i, j, k);
 							BlockState blockState = this.world.getBlockState(pooledMutable3);
 
 							try {
@@ -903,8 +903,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	private boolean isBeingRainedOn() {
 		boolean var3;
 		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.getEntityPos(this)) {
-			var3 = this.world.hasRain(pooledMutable)
-				|| this.world.hasRain(pooledMutable.method_10112(this.getX(), this.getY() + (double)this.dimensions.height, this.getZ()));
+			var3 = this.world.hasRain(pooledMutable) || this.world.hasRain(pooledMutable.set(this.getX(), this.getY() + (double)this.dimensions.height, this.getZ()));
 		}
 
 		return var3;
@@ -1076,11 +1075,6 @@ public abstract class Entity implements Nameable, CommandOutput {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
-	public int getLightmapCoordinates() {
-		return this.isOnFire() ? 15 : this.world.getLightLevel(LightType.BLOCK, new BlockPos(this.getX(), this.getY(), this.getZ()));
-	}
-
 	public float getBrightnessAtEyes() {
 		BlockPos.Mutable mutable = new BlockPos.Mutable(this.getX(), 0.0, this.getZ());
 		if (this.world.isChunkLoaded(mutable)) {
@@ -1238,7 +1232,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return this.getRotationVector(pitch - 90.0F, yaw);
 	}
 
-	public Vec3d getCameraPosVec(float tickDelta) {
+	public final Vec3d getCameraPosVec(float tickDelta) {
 		if (tickDelta == 1.0F) {
 			return new Vec3d(this.getX(), this.getEyeY(), this.getZ());
 		} else {
@@ -1527,7 +1521,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 					int k = MathHelper.floor(this.getX() + (double)(((float)((i >> 1) % 2) - 0.5F) * this.dimensions.width * 0.8F));
 					int l = MathHelper.floor(this.getZ() + (double)(((float)((i >> 2) % 2) - 0.5F) * this.dimensions.width * 0.8F));
 					if (pooledMutable.getX() != k || pooledMutable.getY() != j || pooledMutable.getZ() != l) {
-						pooledMutable.method_10113(k, j, l);
+						pooledMutable.set(k, j, l);
 						if (this.world.getBlockState(pooledMutable).canSuffocate(this.world, pooledMutable)) {
 							return true;
 						}
@@ -2236,8 +2230,8 @@ public abstract class Entity implements Nameable, CommandOutput {
 	public final void teleport(double destX, double destY, double destZ) {
 		if (this.world instanceof ServerWorld) {
 			ChunkPos chunkPos = new ChunkPos(new BlockPos(destX, destY, destZ));
-			((ServerWorld)this.world).method_14178().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos, 0, this.getEntityId());
-			this.world.method_8497(chunkPos.x, chunkPos.z);
+			((ServerWorld)this.world).getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos, 0, this.getEntityId());
+			this.world.getChunk(chunkPos.x, chunkPos.z);
 			this.requestTeleport(destX, destY, destZ);
 		}
 	}
@@ -2602,7 +2596,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 				for (int p = i; p < j; p++) {
 					for (int q = k; q < l; q++) {
 						for (int r = m; r < n; r++) {
-							pooledMutable.method_10113(p, q, r);
+							pooledMutable.set(p, q, r);
 							FluidState fluidState = this.world.getFluidState(pooledMutable);
 							if (fluidState.matches(tag)) {
 								double e = (double)((float)q + fluidState.getHeight(this.world, pooledMutable));

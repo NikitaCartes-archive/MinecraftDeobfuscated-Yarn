@@ -137,8 +137,8 @@ public class WorldChunk implements Chunk {
 			protoChunk.getPos(),
 			protoChunk.getBiomeArray(),
 			protoChunk.getUpgradeData(),
-			protoChunk.method_12303(),
-			protoChunk.method_12313(),
+			protoChunk.getBlockTickScheduler(),
+			protoChunk.getFluidTickScheduler(),
 			protoChunk.getInhabitedTime(),
 			protoChunk.getSectionArray(),
 			null
@@ -448,7 +448,7 @@ public class WorldChunk implements Chunk {
 		} else {
 			CompoundTag compoundTag = (CompoundTag)this.pendingBlockEntityTags.get(blockPos);
 			if (compoundTag != null) {
-				compoundTag = compoundTag.method_10553();
+				compoundTag = compoundTag.copy();
 				compoundTag.putBoolean("keepPacked", true);
 			}
 
@@ -781,12 +781,16 @@ public class WorldChunk implements Chunk {
 
 	public void method_20471(ServerWorld serverWorld) {
 		if (this.blockTickScheduler == DummyClientTickScheduler.get()) {
-			this.blockTickScheduler = new SimpleTickScheduler<>(Registry.BLOCK::getId, serverWorld.method_14196().getScheduledTicksInChunk(this.pos, true, false));
+			this.blockTickScheduler = new SimpleTickScheduler<>(
+				Registry.BLOCK::getId, serverWorld.getBlockTickScheduler().getScheduledTicksInChunk(this.pos, true, false)
+			);
 			this.setShouldSave(true);
 		}
 
 		if (this.fluidTickScheduler == DummyClientTickScheduler.get()) {
-			this.fluidTickScheduler = new SimpleTickScheduler<>(Registry.FLUID::getId, serverWorld.method_14179().getScheduledTicksInChunk(this.pos, true, false));
+			this.fluidTickScheduler = new SimpleTickScheduler<>(
+				Registry.FLUID::getId, serverWorld.getFluidTickScheduler().getScheduledTicksInChunk(this.pos, true, false)
+			);
 			this.setShouldSave(true);
 		}
 	}

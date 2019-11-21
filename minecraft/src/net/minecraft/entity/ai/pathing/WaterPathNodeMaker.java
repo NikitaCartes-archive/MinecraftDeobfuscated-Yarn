@@ -62,7 +62,7 @@ public class WaterPathNodeMaker extends PathNodeMaker {
 		BlockPos blockPos = new BlockPos(x, y, z);
 		FluidState fluidState = world.getFluidState(blockPos);
 		BlockState blockState = world.getBlockState(blockPos);
-		if (fluidState.isEmpty() && blockState.canPlaceAtSide(world, blockPos.method_10074(), BlockPlacementEnvironment.WATER) && blockState.isAir()) {
+		if (fluidState.isEmpty() && blockState.canPlaceAtSide(world, blockPos.down(), BlockPlacementEnvironment.WATER) && blockState.isAir()) {
 			return PathNodeType.BREACH;
 		} else {
 			return fluidState.matches(FluidTags.WATER) && blockState.canPlaceAtSide(world, blockPos, BlockPlacementEnvironment.WATER)
@@ -103,7 +103,7 @@ public class WaterPathNodeMaker extends PathNodeMaker {
 				for (int l = i; l < i + this.field_28; l++) {
 					FluidState fluidState = this.field_20622.getFluidState(mutable.set(j, k, l));
 					BlockState blockState = this.field_20622.getBlockState(mutable.set(j, k, l));
-					if (fluidState.isEmpty() && blockState.canPlaceAtSide(this.field_20622, mutable.method_10074(), BlockPlacementEnvironment.WATER) && blockState.isAir()) {
+					if (fluidState.isEmpty() && blockState.canPlaceAtSide(this.field_20622, mutable.down(), BlockPlacementEnvironment.WATER) && blockState.isAir()) {
 						return PathNodeType.BREACH;
 					}
 

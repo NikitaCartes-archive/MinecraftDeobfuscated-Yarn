@@ -198,7 +198,7 @@ public interface Text extends Message, Iterable<Text> {
 			}
 		});
 
-		public Text method_10871(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+		public Text deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			if (jsonElement.isJsonPrimitive()) {
 				return new LiteralText(jsonElement.getAsString());
 			} else if (!jsonElement.isJsonObject()) {
@@ -207,7 +207,7 @@ public interface Text extends Message, Iterable<Text> {
 					Text text = null;
 
 					for (JsonElement jsonElement2 : jsonArray3) {
-						Text text2 = this.method_10871(jsonElement2, jsonElement2.getClass(), jsonDeserializationContext);
+						Text text2 = this.deserialize(jsonElement2, jsonElement2.getClass(), jsonDeserializationContext);
 						if (text == null) {
 							text = text2;
 						} else {
@@ -231,7 +231,7 @@ public interface Text extends Message, Iterable<Text> {
 						Object[] objects = new Object[jsonArray.size()];
 
 						for (int i = 0; i < objects.length; i++) {
-							objects[i] = this.method_10871(jsonArray.get(i), type, jsonDeserializationContext);
+							objects[i] = this.deserialize(jsonArray.get(i), type, jsonDeserializationContext);
 							if (objects[i] instanceof LiteralText) {
 								LiteralText literalText = (LiteralText)objects[i];
 								if (literalText.getStyle().isEmpty() && literalText.getSiblings().isEmpty()) {
@@ -285,7 +285,7 @@ public interface Text extends Message, Iterable<Text> {
 					}
 
 					for (int j = 0; j < jsonArray2.size(); j++) {
-						text.append(this.method_10871(jsonArray2.get(j), type, jsonDeserializationContext));
+						text.append(this.deserialize(jsonArray2.get(j), type, jsonDeserializationContext));
 					}
 				}
 
@@ -305,7 +305,7 @@ public interface Text extends Message, Iterable<Text> {
 			}
 		}
 
-		public JsonElement method_10874(Text text, Type type, JsonSerializationContext jsonSerializationContext) {
+		public JsonElement serialize(Text text, Type type, JsonSerializationContext jsonSerializationContext) {
 			JsonObject jsonObject = new JsonObject();
 			if (!text.getStyle().isEmpty()) {
 				this.addStyle(text.getStyle(), jsonObject, jsonSerializationContext);
@@ -315,7 +315,7 @@ public interface Text extends Message, Iterable<Text> {
 				JsonArray jsonArray = new JsonArray();
 
 				for (Text text2 : text.getSiblings()) {
-					jsonArray.add(this.method_10874(text2, text2.getClass(), jsonSerializationContext));
+					jsonArray.add(this.serialize(text2, text2.getClass(), jsonSerializationContext));
 				}
 
 				jsonObject.add("extra", jsonArray);
@@ -331,7 +331,7 @@ public interface Text extends Message, Iterable<Text> {
 
 					for (Object object : translatableText.getArgs()) {
 						if (object instanceof Text) {
-							jsonArray2.add(this.method_10874((Text)object, object.getClass(), jsonSerializationContext));
+							jsonArray2.add(this.serialize((Text)object, object.getClass(), jsonSerializationContext));
 						} else {
 							jsonArray2.add(new JsonPrimitive(String.valueOf(object)));
 						}

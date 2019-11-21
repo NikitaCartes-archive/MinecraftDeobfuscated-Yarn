@@ -57,7 +57,7 @@ public class FishingParticle extends SpriteBillboardParticle {
 			this.field_17889 = spriteProvider;
 		}
 
-		public Particle method_3115(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			return new FishingParticle(world, d, e, f, g, h, i, this.field_17889);
 		}
 	}

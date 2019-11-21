@@ -35,7 +35,7 @@ public class RemoveEntityEffectS2CPacket implements Packet<ClientPlayPacketListe
 		buf.writeByte(StatusEffect.getRawId(this.effectType));
 	}
 
-	public void method_11769(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onRemoveEntityEffect(this);
 	}
 

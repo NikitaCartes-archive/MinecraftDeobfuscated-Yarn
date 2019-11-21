@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.datafixers.util.Pair;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -900,7 +901,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 
 		@Nullable
 		@Override
-		public String getBackgroundSprite() {
+		public Pair<Identifier, Identifier> getBackgroundSprite() {
 			return this.slot.getBackgroundSprite();
 		}
 

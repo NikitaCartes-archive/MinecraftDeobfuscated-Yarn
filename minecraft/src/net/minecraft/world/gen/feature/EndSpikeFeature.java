@@ -42,7 +42,7 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 		return CACHE.getUnchecked(l);
 	}
 
-	public boolean method_15887(
+	public boolean generate(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, EndSpikeFeatureConfig endSpikeFeatureConfig
 	) {
 		List<EndSpikeFeature.Spike> list = endSpikeFeatureConfig.getSpikes();
@@ -181,7 +181,7 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 		private SpikeCache() {
 		}
 
-		public List<EndSpikeFeature.Spike> method_14507(Long long_) {
+		public List<EndSpikeFeature.Spike> load(Long long_) {
 			List<Integer> list = (List<Integer>)IntStream.range(0, 10).boxed().collect(Collectors.toList());
 			Collections.shuffle(list, new Random(long_));
 			List<EndSpikeFeature.Spike> list2 = Lists.<EndSpikeFeature.Spike>newArrayList();

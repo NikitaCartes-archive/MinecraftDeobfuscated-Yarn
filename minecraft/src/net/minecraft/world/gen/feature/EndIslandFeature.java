@@ -15,7 +15,7 @@ public class EndIslandFeature extends Feature<DefaultFeatureConfig> {
 		super(configFactory);
 	}
 
-	public boolean method_13110(
+	public boolean generate(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		float f = (float)(random.nextInt(3) + 4);

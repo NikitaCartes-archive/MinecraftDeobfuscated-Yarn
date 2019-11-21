@@ -65,7 +65,7 @@ public class ClientChunkManager extends ChunkManager {
 	}
 
 	@Nullable
-	public WorldChunk method_2857(int i, int j, ChunkStatus chunkStatus, boolean bl) {
+	public WorldChunk getChunk(int i, int j, ChunkStatus chunkStatus, boolean bl) {
 		if (this.chunks.isInRadius(i, j)) {
 			WorldChunk worldChunk = this.chunks.getChunk(this.chunks.getIndex(i, j));
 			if (positionEquals(worldChunk, i, j)) {

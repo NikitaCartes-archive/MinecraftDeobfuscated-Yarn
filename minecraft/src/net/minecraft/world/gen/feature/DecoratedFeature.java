@@ -14,7 +14,7 @@ public class DecoratedFeature extends Feature<DecoratedFeatureConfig> {
 		super(configFactory);
 	}
 
-	public boolean method_12892(
+	public boolean generate(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DecoratedFeatureConfig decoratedFeatureConfig
 	) {
 		return decoratedFeatureConfig.decorator.generate(iWorld, chunkGenerator, random, blockPos, decoratedFeatureConfig.feature);

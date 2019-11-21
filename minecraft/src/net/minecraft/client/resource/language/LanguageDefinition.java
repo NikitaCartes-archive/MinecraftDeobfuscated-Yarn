@@ -53,7 +53,7 @@ public class LanguageDefinition implements Language, Comparable<LanguageDefiniti
 		return this.code.hashCode();
 	}
 
-	public int method_4673(LanguageDefinition languageDefinition) {
+	public int compareTo(LanguageDefinition languageDefinition) {
 		return this.code.compareTo(languageDefinition.code);
 	}
 }

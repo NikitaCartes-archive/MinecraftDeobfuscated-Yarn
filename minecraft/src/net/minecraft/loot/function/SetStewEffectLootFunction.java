@@ -58,7 +58,7 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 	public static class Builder extends ConditionalLootFunction.Builder<SetStewEffectLootFunction.Builder> {
 		private final Map<StatusEffect, UniformLootTableRange> map = Maps.<StatusEffect, UniformLootTableRange>newHashMap();
 
-		protected SetStewEffectLootFunction.Builder method_639() {
+		protected SetStewEffectLootFunction.Builder getThisBuilder() {
 			return this;
 		}
 
@@ -78,8 +78,8 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 			super(new Identifier("set_stew_effect"), SetStewEffectLootFunction.class);
 		}
 
-		public void method_642(JsonObject jsonObject, SetStewEffectLootFunction setStewEffectLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.method_529(jsonObject, setStewEffectLootFunction, jsonSerializationContext);
+		public void toJson(JsonObject jsonObject, SetStewEffectLootFunction setStewEffectLootFunction, JsonSerializationContext jsonSerializationContext) {
+			super.toJson(jsonObject, setStewEffectLootFunction, jsonSerializationContext);
 			if (!setStewEffectLootFunction.effects.isEmpty()) {
 				JsonArray jsonArray = new JsonArray();
 
@@ -99,7 +99,7 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 			}
 		}
 
-		public SetStewEffectLootFunction method_641(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public SetStewEffectLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			Map<StatusEffect, UniformLootTableRange> map = Maps.<StatusEffect, UniformLootTableRange>newHashMap();
 			if (jsonObject.has("effects")) {
 				for (JsonElement jsonElement : JsonHelper.getArray(jsonObject, "effects")) {

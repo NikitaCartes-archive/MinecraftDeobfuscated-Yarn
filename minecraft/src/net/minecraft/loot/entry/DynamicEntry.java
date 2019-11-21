@@ -34,12 +34,12 @@ public class DynamicEntry extends LeafEntry {
 			super(new Identifier("dynamic"), DynamicEntry.class);
 		}
 
-		public void method_393(JsonObject jsonObject, DynamicEntry dynamicEntry, JsonSerializationContext jsonSerializationContext) {
-			super.method_442(jsonObject, dynamicEntry, jsonSerializationContext);
+		public void toJson(JsonObject jsonObject, DynamicEntry dynamicEntry, JsonSerializationContext jsonSerializationContext) {
+			super.toJson(jsonObject, dynamicEntry, jsonSerializationContext);
 			jsonObject.addProperty("name", dynamicEntry.name.toString());
 		}
 
-		protected DynamicEntry method_392(
+		protected DynamicEntry fromJson(
 			JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions
 		) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "name"));

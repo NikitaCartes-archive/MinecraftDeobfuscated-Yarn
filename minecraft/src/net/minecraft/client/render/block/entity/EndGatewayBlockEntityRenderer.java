@@ -17,9 +17,7 @@ public class EndGatewayBlockEntityRenderer extends EndPortalBlockEntityRenderer<
 		super(blockEntityRenderDispatcher);
 	}
 
-	public void method_22751(
-		EndGatewayBlockEntity endGatewayBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j
-	) {
+	public void render(EndGatewayBlockEntity endGatewayBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
 		if (endGatewayBlockEntity.isRecentlyGenerated() || endGatewayBlockEntity.needsCooldownBeforeTeleporting()) {
 			float g = endGatewayBlockEntity.isRecentlyGenerated()
 				? endGatewayBlockEntity.getRecentlyGeneratedBeamHeight(f)
@@ -33,7 +31,7 @@ public class EndGatewayBlockEntityRenderer extends EndPortalBlockEntityRenderer<
 			BeaconBlockEntityRenderer.renderLightBeam(matrixStack, vertexConsumerProvider, BEAM_TEXTURE, f, g, l, 0, -k, fs, 0.15F, 0.175F);
 		}
 
-		super.method_3591(endGatewayBlockEntity, f, matrixStack, vertexConsumerProvider, i, j);
+		super.render(endGatewayBlockEntity, f, matrixStack, vertexConsumerProvider, i, j);
 	}
 
 	@Override

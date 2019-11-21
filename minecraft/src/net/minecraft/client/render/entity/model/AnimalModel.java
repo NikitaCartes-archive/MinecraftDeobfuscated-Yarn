@@ -52,26 +52,26 @@ public abstract class AnimalModel<E extends Entity> extends EntityModel<E> {
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float r, float g, float b) {
+	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float r, float g, float b, float f) {
 		if (this.isChild) {
 			matrixStack.push();
 			if (this.headScaled) {
-				float f = 1.5F / this.invertedChildHeadScale;
-				matrixStack.scale(f, f, f);
+				float h = 1.5F / this.invertedChildHeadScale;
+				matrixStack.scale(h, h, h);
 			}
 
 			matrixStack.translate(0.0, (double)(this.childHeadYOffset / 16.0F), (double)(this.childHeadZOffset / 16.0F));
-			this.getHeadParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, null, r, g, b));
+			this.getHeadParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, r, g, b, f));
 			matrixStack.pop();
 			matrixStack.push();
-			float f = 1.0F / this.invertedChildBodyScale;
-			matrixStack.scale(f, f, f);
+			float h = 1.0F / this.invertedChildBodyScale;
+			matrixStack.scale(h, h, h);
 			matrixStack.translate(0.0, (double)(this.childBodyYOffset / 16.0F), 0.0);
-			this.getBodyParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, null, r, g, b));
+			this.getBodyParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, r, g, b, f));
 			matrixStack.pop();
 		} else {
-			this.getHeadParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, null, r, g, b));
-			this.getBodyParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, null, r, g, b));
+			this.getHeadParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, r, g, b, f));
+			this.getBodyParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, r, g, b, f));
 		}
 	}
 

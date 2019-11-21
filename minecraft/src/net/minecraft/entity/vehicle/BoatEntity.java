@@ -439,7 +439,7 @@ public class BoatEntity extends Entity {
 				while (true) {
 					if (p < j) {
 						for (int q = m; q < n; q++) {
-							pooledMutable.method_10113(p, o, q);
+							pooledMutable.set(p, o, q);
 							FluidState fluidState = this.world.getFluidState(pooledMutable);
 							if (fluidState.matches(FluidTags.WATER)) {
 								f = Math.max(f, fluidState.getHeight(this.world, pooledMutable));
@@ -484,7 +484,7 @@ public class BoatEntity extends Entity {
 					if (r != 2) {
 						for (int s = k; s < l; s++) {
 							if (r <= 0 || s != k && s != l - 1) {
-								pooledMutable.method_10113(p, s, q);
+								pooledMutable.set(p, s, q);
 								BlockState blockState = this.world.getBlockState(pooledMutable);
 								if (!(blockState.getBlock() instanceof LilyPadBlock)
 									&& VoxelShapes.matchesAnywhere(
@@ -518,7 +518,7 @@ public class BoatEntity extends Entity {
 			for (int o = i; o < j; o++) {
 				for (int p = k; p < l; p++) {
 					for (int q = m; q < n; q++) {
-						pooledMutable.method_10113(o, p, q);
+						pooledMutable.set(o, p, q);
 						FluidState fluidState = this.world.getFluidState(pooledMutable);
 						if (fluidState.matches(FluidTags.WATER)) {
 							float f = (float)p + fluidState.getHeight(this.world, pooledMutable);
@@ -549,7 +549,7 @@ public class BoatEntity extends Entity {
 			for (int o = i; o < j; o++) {
 				for (int p = k; p < l; p++) {
 					for (int q = m; q < n; q++) {
-						pooledMutable.method_10113(o, p, q);
+						pooledMutable.set(o, p, q);
 						FluidState fluidState = this.world.getFluidState(pooledMutable);
 						if (fluidState.matches(FluidTags.WATER) && d < (double)((float)pooledMutable.getY() + fluidState.getHeight(this.world, pooledMutable))) {
 							if (!fluidState.isStill()) {
@@ -732,7 +732,7 @@ public class BoatEntity extends Entity {
 				}
 
 				this.fallDistance = 0.0F;
-			} else if (!this.world.getFluidState(new BlockPos(this).method_10074()).matches(FluidTags.WATER) && heightDifference < 0.0) {
+			} else if (!this.world.getFluidState(new BlockPos(this).down()).matches(FluidTags.WATER) && heightDifference < 0.0) {
 				this.fallDistance = (float)((double)this.fallDistance - heightDifference);
 			}
 		}

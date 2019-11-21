@@ -242,7 +242,7 @@ public abstract class MobSpawnerLogic {
 			compoundTag.putShort("MaxNearbyEntities", (short)this.maxNearbyEntities);
 			compoundTag.putShort("RequiredPlayerRange", (short)this.requiredPlayerRange);
 			compoundTag.putShort("SpawnRange", (short)this.spawnRange);
-			compoundTag.put("SpawnData", this.spawnEntry.getEntityTag().method_10553());
+			compoundTag.put("SpawnData", this.spawnEntry.getEntityTag().copy());
 			ListTag listTag = new ListTag();
 			if (this.spawnPotentials.isEmpty()) {
 				listTag.add(this.spawnEntry.serialize());

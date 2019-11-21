@@ -63,7 +63,7 @@ public class NoteParticle extends SpriteBillboardParticle {
 			this.field_17819 = spriteProvider;
 		}
 
-		public Particle method_3041(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			NoteParticle noteParticle = new NoteParticle(world, d, e, f, g);
 			noteParticle.setSprite(this.field_17819);
 			return noteParticle;

@@ -16,7 +16,7 @@ public class FilledBucketCriterion extends AbstractCriterion<FilledBucketCriteri
 		return ID;
 	}
 
-	public FilledBucketCriterion.Conditions method_8931(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public FilledBucketCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
 		return new FilledBucketCriterion.Conditions(itemPredicate);
 	}

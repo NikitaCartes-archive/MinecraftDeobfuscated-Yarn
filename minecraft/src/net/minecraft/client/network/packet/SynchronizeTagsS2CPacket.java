@@ -28,7 +28,7 @@ public class SynchronizeTagsS2CPacket implements Packet<ClientPlayPacketListener
 		this.tagManager.toPacket(buf);
 	}
 
-	public void method_12001(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onSynchronizeTags(this);
 	}
 

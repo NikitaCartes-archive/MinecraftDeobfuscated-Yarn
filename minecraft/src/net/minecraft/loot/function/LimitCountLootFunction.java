@@ -34,12 +34,12 @@ public class LimitCountLootFunction extends ConditionalLootFunction {
 			super(new Identifier("limit_count"), LimitCountLootFunction.class);
 		}
 
-		public void method_510(JsonObject jsonObject, LimitCountLootFunction limitCountLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.method_529(jsonObject, limitCountLootFunction, jsonSerializationContext);
+		public void toJson(JsonObject jsonObject, LimitCountLootFunction limitCountLootFunction, JsonSerializationContext jsonSerializationContext) {
+			super.toJson(jsonObject, limitCountLootFunction, jsonSerializationContext);
 			jsonObject.add("limit", jsonSerializationContext.serialize(limitCountLootFunction.limit));
 		}
 
-		public LimitCountLootFunction method_509(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public LimitCountLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			BoundedIntUnaryOperator boundedIntUnaryOperator = JsonHelper.deserialize(jsonObject, "limit", jsonDeserializationContext, BoundedIntUnaryOperator.class);
 			return new LimitCountLootFunction(lootConditions, boundedIntUnaryOperator);
 		}

@@ -55,14 +55,14 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		this.addFeature(new StingerFeatureRenderer<>(this));
 	}
 
-	public void method_4215(
+	public void render(
 		AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i
 	) {
 		this.setModelPose(abstractClientPlayerEntity);
-		super.method_4054(abstractClientPlayerEntity, f, g, matrixStack, vertexConsumerProvider, i);
+		super.render(abstractClientPlayerEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
-	public Vec3d method_23206(AbstractClientPlayerEntity abstractClientPlayerEntity, float f) {
+	public Vec3d getPositionOffset(AbstractClientPlayerEntity abstractClientPlayerEntity, float f) {
 		return abstractClientPlayerEntity.isInSneakingPose() ? new Vec3d(0.0, -0.125, 0.0) : super.getPositionOffset(abstractClientPlayerEntity, f);
 	}
 
@@ -129,16 +129,16 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		return armPose;
 	}
 
-	public Identifier method_4216(AbstractClientPlayerEntity abstractClientPlayerEntity) {
+	public Identifier getTexture(AbstractClientPlayerEntity abstractClientPlayerEntity) {
 		return abstractClientPlayerEntity.getSkinTexture();
 	}
 
-	protected void method_4217(AbstractClientPlayerEntity abstractClientPlayerEntity, MatrixStack matrixStack, float f) {
+	protected void scale(AbstractClientPlayerEntity abstractClientPlayerEntity, MatrixStack matrixStack, float f) {
 		float g = 0.9375F;
 		matrixStack.scale(0.9375F, 0.9375F, 0.9375F);
 	}
 
-	protected void method_4213(
+	protected void renderLabelIfPresent(
 		AbstractClientPlayerEntity abstractClientPlayerEntity, String string, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i
 	) {
 		double d = this.renderManager.getSquaredDistanceToCamera(abstractClientPlayerEntity);
@@ -186,22 +186,18 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		playerEntityModel.handSwingProgress = 0.0F;
 		playerEntityModel.isSneaking = false;
 		playerEntityModel.field_3396 = 0.0F;
-		playerEntityModel.method_17087(abstractClientPlayerEntity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+		playerEntityModel.setAngles(abstractClientPlayerEntity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
 		modelPart.pitch = 0.0F;
 		modelPart.render(
-			matrixStack, vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(abstractClientPlayerEntity.getSkinTexture())), i, OverlayTexture.DEFAULT_UV, null
+			matrixStack, vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(abstractClientPlayerEntity.getSkinTexture())), i, OverlayTexture.DEFAULT_UV
 		);
 		modelPart2.pitch = 0.0F;
 		modelPart2.render(
-			matrixStack,
-			vertexConsumerProvider.getBuffer(RenderLayer.getEntityTranslucent(abstractClientPlayerEntity.getSkinTexture())),
-			i,
-			OverlayTexture.DEFAULT_UV,
-			null
+			matrixStack, vertexConsumerProvider.getBuffer(RenderLayer.getEntityTranslucent(abstractClientPlayerEntity.getSkinTexture())), i, OverlayTexture.DEFAULT_UV
 		);
 	}
 
-	protected void method_4212(AbstractClientPlayerEntity abstractClientPlayerEntity, MatrixStack matrixStack, float f, float g, float h) {
+	protected void setupTransforms(AbstractClientPlayerEntity abstractClientPlayerEntity, MatrixStack matrixStack, float f, float g, float h) {
 		float i = abstractClientPlayerEntity.getLeaningPitch(h);
 		if (abstractClientPlayerEntity.isFallFlying()) {
 			super.setupTransforms(abstractClientPlayerEntity, matrixStack, f, g, h);

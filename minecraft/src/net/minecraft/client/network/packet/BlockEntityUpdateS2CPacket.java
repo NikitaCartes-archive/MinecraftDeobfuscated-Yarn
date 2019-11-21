@@ -37,7 +37,7 @@ public class BlockEntityUpdateS2CPacket implements Packet<ClientPlayPacketListen
 		buf.writeCompoundTag(this.tag);
 	}
 
-	public void method_11292(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onBlockEntityUpdate(this);
 	}
 

@@ -23,14 +23,13 @@ import net.minecraft.util.math.Vec3d;
 @Environment(EnvType.CLIENT)
 public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEntity> {
 	private static final Identifier SKIN = new Identifier("textures/entity/fishing_hook.png");
+	private static final RenderLayer field_21742 = RenderLayer.getEntityCutout(SKIN);
 
 	public FishingBobberEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
 	}
 
-	public void method_3974(
-		FishingBobberEntity fishingBobberEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i
-	) {
+	public void render(FishingBobberEntity fishingBobberEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		PlayerEntity playerEntity = fishingBobberEntity.getOwner();
 		if (playerEntity != null) {
 			matrixStack.push();
@@ -41,7 +40,7 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 			MatrixStack.Entry entry = matrixStack.peek();
 			Matrix4f matrix4f = entry.getModel();
 			Matrix3f matrix3f = entry.getNormal();
-			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutout(SKIN));
+			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(field_21742);
 			method_23840(vertexConsumer, matrix4f, matrix3f, i, 0.0F, 0, 0, 1);
 			method_23840(vertexConsumer, matrix4f, matrix3f, i, 1.0F, 0, 1, 1);
 			method_23840(vertexConsumer, matrix4f, matrix3f, i, 1.0F, 1, 1, 0);
@@ -121,7 +120,7 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 		vertexConsumer.vertex(matrix4f, f * i, g * (i * i + i) * 0.5F + 0.25F, h * i).color(0, 0, 0, 255).next();
 	}
 
-	public Identifier method_3975(FishingBobberEntity fishingBobberEntity) {
+	public Identifier getTexture(FishingBobberEntity fishingBobberEntity) {
 		return SKIN;
 	}
 }

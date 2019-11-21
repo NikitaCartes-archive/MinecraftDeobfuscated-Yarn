@@ -33,7 +33,7 @@ public class ReferenceLootCondition implements LootCondition {
 		}
 	}
 
-	public boolean method_22579(LootContext lootContext) {
+	public boolean test(LootContext lootContext) {
 		LootCondition lootCondition = lootContext.getCondition(this.id);
 		if (lootContext.addCondition(lootCondition)) {
 			boolean var3;
@@ -55,11 +55,11 @@ public class ReferenceLootCondition implements LootCondition {
 			super(new Identifier("reference"), ReferenceLootCondition.class);
 		}
 
-		public void method_22582(JsonObject jsonObject, ReferenceLootCondition referenceLootCondition, JsonSerializationContext jsonSerializationContext) {
+		public void toJson(JsonObject jsonObject, ReferenceLootCondition referenceLootCondition, JsonSerializationContext jsonSerializationContext) {
 			jsonObject.addProperty("name", referenceLootCondition.id.toString());
 		}
 
-		public ReferenceLootCondition method_22581(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		public ReferenceLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "name"));
 			return new ReferenceLootCondition(identifier);
 		}

@@ -14,7 +14,7 @@ public class LakeLakeDecorator extends Decorator<LakeDecoratorConfig> {
 		super(function);
 	}
 
-	public Stream<BlockPos> method_15931(
+	public Stream<BlockPos> getPositions(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, LakeDecoratorConfig lakeDecoratorConfig, BlockPos blockPos
 	) {
 		if (random.nextInt(lakeDecoratorConfig.chance / 10) == 0) {

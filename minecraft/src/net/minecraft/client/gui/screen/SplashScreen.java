@@ -3,6 +3,8 @@ package net.minecraft.client.gui.screen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
+import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -21,16 +23,16 @@ public class SplashScreen extends Overlay {
 	private static final Identifier LOGO = new Identifier("textures/gui/title/mojang.png");
 	private final MinecraftClient client;
 	private final ResourceReloadMonitor reloadMonitor;
-	private final Runnable field_18218;
+	private final Consumer<Optional<Throwable>> field_18218;
 	private final boolean field_18219;
 	private float field_17770;
 	private long field_17771 = -1L;
 	private long field_18220 = -1L;
 
-	public SplashScreen(MinecraftClient minecraftClient, ResourceReloadMonitor resourceReloadMonitor, Runnable runnable, boolean bl) {
+	public SplashScreen(MinecraftClient minecraftClient, ResourceReloadMonitor resourceReloadMonitor, Consumer<Optional<Throwable>> consumer, boolean bl) {
 		this.client = minecraftClient;
 		this.reloadMonitor = resourceReloadMonitor;
-		this.field_18218 = runnable;
+		this.field_18218 = consumer;
 		this.field_18219 = bl;
 	}
 
@@ -88,9 +90,14 @@ public class SplashScreen extends Overlay {
 		}
 
 		if (this.field_17771 == -1L && this.reloadMonitor.isApplyStageComplete() && (!this.field_18219 || g >= 2.0F)) {
-			this.reloadMonitor.throwExceptions();
+			try {
+				this.reloadMonitor.throwExceptions();
+				this.field_18218.accept(Optional.empty());
+			} catch (Throwable var15) {
+				this.field_18218.accept(Optional.of(var15));
+			}
+
 			this.field_17771 = Util.getMeasuringTimeMs();
-			this.field_18218.run();
 			if (this.client.currentScreen != null) {
 				this.client.currentScreen.init(this.client, this.client.getWindow().getScaledWidth(), this.client.getWindow().getScaledHeight());
 			}

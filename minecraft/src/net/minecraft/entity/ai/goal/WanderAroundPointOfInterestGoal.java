@@ -28,6 +28,6 @@ public class WanderAroundPointOfInterestGoal extends WanderAroundGoal {
 		BlockPos blockPos = new BlockPos(this.mob);
 		ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(blockPos);
 		ChunkSectionPos chunkSectionPos2 = LookTargetUtil.getPosClosestToOccupiedPointOfInterest(serverWorld, chunkSectionPos, 2);
-		return chunkSectionPos2 != chunkSectionPos ? TargetFinder.method_23735(this.mob, 10, 7, new Vec3d(chunkSectionPos2.getCenterPos())) : null;
+		return chunkSectionPos2 != chunkSectionPos ? TargetFinder.findTargetTowards(this.mob, 10, 7, new Vec3d(chunkSectionPos2.getCenterPos())) : null;
 	}
 }

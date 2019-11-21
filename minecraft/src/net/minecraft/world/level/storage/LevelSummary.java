@@ -61,7 +61,7 @@ public class LevelSummary implements Comparable<LevelSummary> {
 		return this.lastPlayed;
 	}
 
-	public int method_251(LevelSummary levelSummary) {
+	public int compareTo(LevelSummary levelSummary) {
 		if (this.lastPlayed < levelSummary.lastPlayed) {
 			return 1;
 		} else {

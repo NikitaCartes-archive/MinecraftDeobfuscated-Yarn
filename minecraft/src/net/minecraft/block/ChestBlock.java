@@ -57,16 +57,16 @@ public class ChestBlock extends BlockWithEntity implements Waterloggable {
 	protected static final VoxelShape DOUBLE_EAST_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 16.0, 14.0, 15.0);
 	protected static final VoxelShape SINGLE_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 14.0, 15.0);
 	private static final ChestBlock.PropertyRetriever<Inventory> INVENTORY_RETRIEVER = new ChestBlock.PropertyRetriever<Inventory>() {
-		public Inventory method_17461(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
+		public Inventory getFromDoubleChest(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
 			return new DoubleInventory(chestBlockEntity, chestBlockEntity2);
 		}
 
-		public Inventory method_17460(ChestBlockEntity chestBlockEntity) {
+		public Inventory getFromSingleChest(ChestBlockEntity chestBlockEntity) {
 			return chestBlockEntity;
 		}
 	};
 	private static final ChestBlock.PropertyRetriever<NameableContainerProvider> NAME_RETRIEVER = new ChestBlock.PropertyRetriever<NameableContainerProvider>() {
-		public NameableContainerProvider method_17463(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
+		public NameableContainerProvider getFromDoubleChest(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
 			final Inventory inventory = new DoubleInventory(chestBlockEntity, chestBlockEntity2);
 			return new NameableContainerProvider() {
 				@Nullable
@@ -92,16 +92,16 @@ public class ChestBlock extends BlockWithEntity implements Waterloggable {
 			};
 		}
 
-		public NameableContainerProvider method_17462(ChestBlockEntity chestBlockEntity) {
+		public NameableContainerProvider getFromSingleChest(ChestBlockEntity chestBlockEntity) {
 			return chestBlockEntity;
 		}
 	};
 	private static final ChestBlock.PropertyRetriever<Float2FloatFunction> field_21581 = new ChestBlock.PropertyRetriever<Float2FloatFunction>() {
-		public Float2FloatFunction method_23899(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
+		public Float2FloatFunction getFromDoubleChest(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
 			return f -> Math.max(chestBlockEntity.getAnimationProgress(f), chestBlockEntity2.getAnimationProgress(f));
 		}
 
-		public Float2FloatFunction method_23898(ChestBlockEntity chestBlockEntity) {
+		public Float2FloatFunction getFromSingleChest(ChestBlockEntity chestBlockEntity) {
 			return chestBlockEntity::getAnimationProgress;
 		}
 	};

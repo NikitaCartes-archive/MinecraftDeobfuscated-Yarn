@@ -3,9 +3,11 @@ package net.minecraft.client.render.block.entity;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4722;
+import net.minecraft.class_4730;
+import net.minecraft.block.AbstractSignBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.SignBlock;
 import net.minecraft.block.WallSignBlock;
 import net.minecraft.block.entity.SignBlockEntity;
@@ -15,13 +17,11 @@ import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.model.ModelLoader;
-import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.Texts;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.util.WoodType;
 import net.minecraft.util.math.Direction;
 
 @Environment(EnvType.CLIENT)
@@ -32,7 +32,7 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 		super(blockEntityRenderDispatcher);
 	}
 
-	public void method_23083(SignBlockEntity signBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
+	public void render(SignBlockEntity signBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
 		BlockState blockState = signBlockEntity.getCachedState();
 		matrixStack.push();
 		float g = 0.6666667F;
@@ -49,12 +49,12 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 			this.field_21529.field_21531.visible = false;
 		}
 
-		Sprite sprite = this.getSprite(getModelTexture(blockState.getBlock()));
 		matrixStack.push();
 		matrixStack.scale(0.6666667F, -0.6666667F, -0.6666667F);
-		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.method_23946());
-		this.field_21529.field_21530.render(matrixStack, vertexConsumer, i, j, sprite);
-		this.field_21529.field_21531.render(matrixStack, vertexConsumer, i, j, sprite);
+		class_4730 lv = getModelTexture(blockState.getBlock());
+		VertexConsumer vertexConsumer = lv.method_24145(vertexConsumerProvider, this.field_21529::getLayer);
+		this.field_21529.field_21530.render(matrixStack, vertexConsumer, i, j);
+		this.field_21529.field_21531.render(matrixStack, vertexConsumer, i, j);
 		matrixStack.pop();
 		TextRenderer textRenderer = this.blockEntityRenderDispatcher.getTextRenderer();
 		float k = 0.010416667F;
@@ -78,20 +78,15 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 		matrixStack.pop();
 	}
 
-	public static Identifier getModelTexture(Block block) {
-		if (block == Blocks.OAK_SIGN || block == Blocks.OAK_WALL_SIGN) {
-			return ModelLoader.OAK_SIGN;
-		} else if (block == Blocks.SPRUCE_SIGN || block == Blocks.SPRUCE_WALL_SIGN) {
-			return ModelLoader.SPRUCE_SIGN;
-		} else if (block == Blocks.BIRCH_SIGN || block == Blocks.BIRCH_WALL_SIGN) {
-			return ModelLoader.BIRCH_SIGN;
-		} else if (block == Blocks.ACACIA_SIGN || block == Blocks.ACACIA_WALL_SIGN) {
-			return ModelLoader.ACACIA_SIGN;
-		} else if (block == Blocks.JUNGLE_SIGN || block == Blocks.JUNGLE_WALL_SIGN) {
-			return ModelLoader.JUNGLE_SIGN;
+	public static class_4730 getModelTexture(Block block) {
+		WoodType woodType;
+		if (block instanceof AbstractSignBlock) {
+			woodType = ((AbstractSignBlock)block).method_24025();
 		} else {
-			return block != Blocks.DARK_OAK_SIGN && block != Blocks.DARK_OAK_WALL_SIGN ? ModelLoader.OAK_SIGN : ModelLoader.DARK_OAK_SIGN;
+			woodType = WoodType.OAK;
 		}
+
+		return class_4722.method_24064(woodType);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -107,9 +102,9 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 		}
 
 		@Override
-		public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float r, float g, float b) {
-			this.field_21530.render(matrixStack, vertexConsumer, i, j, null, r, g, b);
-			this.field_21531.render(matrixStack, vertexConsumer, i, j, null, r, g, b);
+		public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float r, float g, float b, float f) {
+			this.field_21530.render(matrixStack, vertexConsumer, i, j, r, g, b, f);
+			this.field_21531.render(matrixStack, vertexConsumer, i, j, r, g, b, f);
 		}
 	}
 }

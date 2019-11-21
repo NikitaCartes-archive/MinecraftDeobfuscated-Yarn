@@ -19,7 +19,7 @@ public class BrewedPotionCriterion extends AbstractCriterion<BrewedPotionCriteri
 		return ID;
 	}
 
-	public BrewedPotionCriterion.Conditions method_8785(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public BrewedPotionCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		Potion potion = null;
 		if (jsonObject.has("potion")) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "potion"));

@@ -36,11 +36,11 @@ public class PlayWithVillagerBabiesTask extends Task<MobEntityWithAi> {
 		);
 	}
 
-	protected boolean method_19583(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
+	protected boolean shouldRun(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
 		return serverWorld.getRandom().nextInt(10) == 0 && this.hasVisibleVillagerBabies(mobEntityWithAi);
 	}
 
-	protected void method_19584(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
+	protected void run(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
 		LivingEntity livingEntity = this.findVisibleVillagerBaby(mobEntityWithAi);
 		if (livingEntity != null) {
 			this.method_19585(serverWorld, mobEntityWithAi, livingEntity);

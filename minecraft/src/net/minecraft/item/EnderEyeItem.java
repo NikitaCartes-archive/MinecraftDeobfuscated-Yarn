@@ -69,7 +69,7 @@ public class EnderEyeItem extends Item {
 		} else {
 			user.setCurrentHand(hand);
 			if (world instanceof ServerWorld) {
-				BlockPos blockPos = ((ServerWorld)world).method_14178().getChunkGenerator().locateStructure(world, "Stronghold", new BlockPos(user), 100, false);
+				BlockPos blockPos = ((ServerWorld)world).getChunkManager().getChunkGenerator().locateStructure(world, "Stronghold", new BlockPos(user), 100, false);
 				if (blockPos != null) {
 					EnderEyeEntity enderEyeEntity = new EnderEyeEntity(world, user.getX(), user.getBodyY(0.5), user.getZ());
 					enderEyeEntity.setItem(itemStack);

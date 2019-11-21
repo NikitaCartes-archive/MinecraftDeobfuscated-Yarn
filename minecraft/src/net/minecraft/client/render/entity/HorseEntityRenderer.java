@@ -20,7 +20,7 @@ public final class HorseEntityRenderer extends HorseBaseEntityRenderer<HorseEnti
 		this.addFeature(new HorseArmorFeatureRenderer(this));
 	}
 
-	public Identifier method_3983(HorseEntity horseEntity) {
+	public Identifier getTexture(HorseEntity horseEntity) {
 		String string = horseEntity.getTextureLocation();
 		Identifier identifier = (Identifier)SKINS.get(string);
 		if (identifier == null) {

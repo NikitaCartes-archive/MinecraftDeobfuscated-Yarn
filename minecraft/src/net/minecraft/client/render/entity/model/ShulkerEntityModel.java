@@ -24,7 +24,7 @@ public class ShulkerEntityModel<T extends ShulkerEntity> extends CompositeEntity
 		this.head.setPivot(0.0F, 12.0F, 0.0F);
 	}
 
-	public void method_17122(T shulkerEntity, float f, float g, float h, float i, float j) {
+	public void setAngles(T shulkerEntity, float f, float g, float h, float i, float j) {
 		float k = h - (float)shulkerEntity.age;
 		float l = (0.5F + shulkerEntity.method_7116(k)) * (float) Math.PI;
 		float m = -1.0F + MathHelper.sin(l);

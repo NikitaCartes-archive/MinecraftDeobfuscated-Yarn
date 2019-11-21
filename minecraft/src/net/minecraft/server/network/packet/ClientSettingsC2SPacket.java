@@ -50,7 +50,7 @@ public class ClientSettingsC2SPacket implements Packet<ServerPlayPacketListener>
 		buf.writeEnumConstant(this.mainArm);
 	}
 
-	public void method_12133(ServerPlayPacketListener serverPlayPacketListener) {
+	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onClientSettings(this);
 	}
 

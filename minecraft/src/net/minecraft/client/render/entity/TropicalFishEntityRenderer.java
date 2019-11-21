@@ -24,22 +24,22 @@ public class TropicalFishEntityRenderer extends MobEntityRenderer<TropicalFishEn
 		this.addFeature(new TropicalFishSomethingFeatureRenderer(this));
 	}
 
-	public Identifier method_4141(TropicalFishEntity tropicalFishEntity) {
+	public Identifier getTexture(TropicalFishEntity tropicalFishEntity) {
 		return tropicalFishEntity.getShapeId();
 	}
 
-	public void method_4140(TropicalFishEntity tropicalFishEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	public void render(TropicalFishEntity tropicalFishEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		TintableCompositeModel<TropicalFishEntity> tintableCompositeModel = (TintableCompositeModel<TropicalFishEntity>)(tropicalFishEntity.getShape() == 0
 			? this.field_4800
 			: this.field_4799);
 		this.model = tintableCompositeModel;
 		float[] fs = tropicalFishEntity.getBaseColorComponents();
 		tintableCompositeModel.setColorMultiplier(fs[0], fs[1], fs[2]);
-		super.method_4072(tropicalFishEntity, f, g, matrixStack, vertexConsumerProvider, i);
+		super.render(tropicalFishEntity, f, g, matrixStack, vertexConsumerProvider, i);
 		tintableCompositeModel.setColorMultiplier(1.0F, 1.0F, 1.0F);
 	}
 
-	protected void method_4142(TropicalFishEntity tropicalFishEntity, MatrixStack matrixStack, float f, float g, float h) {
+	protected void setupTransforms(TropicalFishEntity tropicalFishEntity, MatrixStack matrixStack, float f, float g, float h) {
 		super.setupTransforms(tropicalFishEntity, matrixStack, f, g, h);
 		float i = 4.3F * MathHelper.sin(0.6F * f);
 		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(i));

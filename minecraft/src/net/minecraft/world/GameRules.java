@@ -168,7 +168,7 @@ public class GameRules {
 			return this.value ? 1 : 0;
 		}
 
-		protected GameRules.BooleanRule method_20761() {
+		protected GameRules.BooleanRule getThis() {
 			return this;
 		}
 	}
@@ -226,7 +226,7 @@ public class GameRules {
 			return this.value;
 		}
 
-		protected GameRules.IntRule method_20770() {
+		protected GameRules.IntRule getThis() {
 			return this;
 		}
 	}

@@ -441,13 +441,13 @@ public class InGameHud extends DrawableHelper {
 					int o = l;
 					float g = f;
 					list.add((Runnable)() -> {
+						this.client.getTextureManager().bindTexture(sprite.method_24119().method_24106());
 						RenderSystem.color4f(1.0F, 1.0F, 1.0F, g);
 						blit(n + 3, o + 3, this.getBlitOffset(), 18, 18, sprite);
 					});
 				}
 			}
 
-			this.client.getTextureManager().bindTexture(SpriteAtlasTexture.STATUS_EFFECT_ATLAS_TEX);
 			list.forEach(Runnable::run);
 		}
 	}

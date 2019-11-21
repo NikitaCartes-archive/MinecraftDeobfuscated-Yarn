@@ -37,7 +37,7 @@ public class PlayerSkinProvider {
 		this.skinCache = CacheBuilder.newBuilder()
 			.expireAfterAccess(15L, TimeUnit.SECONDS)
 			.build(new CacheLoader<GameProfile, Map<Type, MinecraftProfileTexture>>() {
-				public Map<Type, MinecraftProfileTexture> method_4657(GameProfile gameProfile) throws Exception {
+				public Map<Type, MinecraftProfileTexture> load(GameProfile gameProfile) throws Exception {
 					try {
 						return MinecraftClient.getInstance().getSessionService().getTextures(gameProfile, false);
 					} catch (Throwable var3) {

@@ -16,7 +16,7 @@ public class WolfCollarFeatureRenderer extends FeatureRenderer<WolfEntity, WolfE
 		super(context);
 	}
 
-	public void method_4209(
+	public void render(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, WolfEntity wolfEntity, float f, float g, float h, float j, float k, float l
 	) {
 		if (wolfEntity.isTamed() && !wolfEntity.isInvisible()) {

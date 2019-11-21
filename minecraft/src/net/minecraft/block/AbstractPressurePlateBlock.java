@@ -47,7 +47,7 @@ public abstract class AbstractPressurePlateBlock extends Block {
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		BlockPos blockPos = pos.method_10074();
+		BlockPos blockPos = pos.down();
 		return topCoversMediumSquare(world, blockPos) || sideCoversSmallSquare(world, blockPos, Direction.UP);
 	}
 
@@ -108,7 +108,7 @@ public abstract class AbstractPressurePlateBlock extends Block {
 
 	protected void updateNeighbors(World world, BlockPos pos) {
 		world.updateNeighborsAlways(pos, this);
-		world.updateNeighborsAlways(pos.method_10074(), this);
+		world.updateNeighborsAlways(pos.down(), this);
 	}
 
 	@Override

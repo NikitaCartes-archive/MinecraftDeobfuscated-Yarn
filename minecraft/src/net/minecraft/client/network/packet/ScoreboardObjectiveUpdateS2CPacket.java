@@ -46,7 +46,7 @@ public class ScoreboardObjectiveUpdateS2CPacket implements Packet<ClientPlayPack
 		}
 	}
 
-	public void method_11838(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onScoreboardObjectiveUpdate(this);
 	}
 

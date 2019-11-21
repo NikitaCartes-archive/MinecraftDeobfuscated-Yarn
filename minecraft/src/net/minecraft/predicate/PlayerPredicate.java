@@ -226,7 +226,7 @@ public class PlayerPredicate {
 			return jsonObject;
 		}
 
-		public boolean method_22504(AdvancementProgress advancementProgress) {
+		public boolean test(AdvancementProgress advancementProgress) {
 			for (it.unimi.dsi.fastutil.objects.Object2BooleanMap.Entry<String> entry : this.criteria.object2BooleanEntrySet()) {
 				CriterionProgress criterionProgress = advancementProgress.getCriterionProgress((String)entry.getKey());
 				if (criterionProgress == null || criterionProgress.isObtained() != entry.getBooleanValue()) {
@@ -266,7 +266,7 @@ public class PlayerPredicate {
 			return new JsonPrimitive(this.done);
 		}
 
-		public boolean method_22505(AdvancementProgress advancementProgress) {
+		public boolean test(AdvancementProgress advancementProgress) {
 			return advancementProgress.isDone() == this.done;
 		}
 	}

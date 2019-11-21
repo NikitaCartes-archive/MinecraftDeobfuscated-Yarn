@@ -3,38 +3,26 @@ package net.minecraft.client.render.block.entity;
 import java.util.Calendar;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4722;
+import net.minecraft.class_4730;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.EnderChestBlockEntity;
-import net.minecraft.block.entity.TrappedChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.client.block.ChestAnimationProgress;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.state.property.Property;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProgress> extends BlockEntityRenderer<T> {
-	public static final Identifier TRAPPED_TEX = new Identifier("entity/chest/trapped");
-	public static final Identifier field_21473 = new Identifier("entity/chest/trapped_left");
-	public static final Identifier field_21474 = new Identifier("entity/chest/trapped_right");
-	public static final Identifier CHRISTMAS_TEX = new Identifier("entity/chest/christmas");
-	public static final Identifier field_21475 = new Identifier("entity/chest/christmas_left");
-	public static final Identifier field_21476 = new Identifier("entity/chest/christmas_right");
-	public static final Identifier NORMAL_TEX = new Identifier("entity/chest/normal");
-	public static final Identifier field_21477 = new Identifier("entity/chest/normal_left");
-	public static final Identifier field_21478 = new Identifier("entity/chest/normal_right");
-	public static final Identifier ENDER_TEX = new Identifier("entity/chest/ender");
 	private final ModelPart field_20817;
 	private final ModelPart field_20818;
 	private final ModelPart field_20819;
@@ -89,17 +77,6 @@ public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProg
 		BlockState blockState = bl ? blockEntity.getCachedState() : Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.SOUTH);
 		ChestType chestType = blockState.contains((Property<T>)ChestBlock.CHEST_TYPE) ? blockState.get(ChestBlock.CHEST_TYPE) : ChestType.SINGLE;
 		boolean bl2 = chestType != ChestType.SINGLE;
-		Identifier identifier;
-		if (this.isChristmas) {
-			identifier = this.method_23690(chestType, CHRISTMAS_TEX, field_21475, field_21476);
-		} else if (blockEntity instanceof TrappedChestBlockEntity) {
-			identifier = this.method_23690(chestType, TRAPPED_TEX, field_21473, field_21474);
-		} else if (blockEntity instanceof EnderChestBlockEntity) {
-			identifier = ENDER_TEX;
-		} else {
-			identifier = this.method_23690(chestType, NORMAL_TEX, field_21477, field_21478);
-		}
-
 		matrixStack.push();
 		float g = ((Direction)blockState.get(ChestBlock.FACING)).asRotation();
 		matrixStack.translate(0.5, 0.5, 0.5);
@@ -114,41 +91,28 @@ public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProg
 
 		h = 1.0F - h;
 		h = 1.0F - h * h * h;
-		Sprite sprite = this.getSprite(identifier);
+		class_4730 lv = class_4722.method_24062(blockEntity, chestType, this.isChristmas);
+		VertexConsumer vertexConsumer = lv.method_24145(vertexConsumerProvider, RenderLayer::getEntityCutout);
 		if (bl2) {
-			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.method_23947());
 			if (chestType == ChestType.LEFT) {
-				this.method_22749(matrixStack, vertexConsumer, this.field_21479, this.field_21481, this.field_21480, h, i, j, sprite);
+				this.method_22749(matrixStack, vertexConsumer, this.field_21479, this.field_21481, this.field_21480, h, i, j);
 			} else {
-				this.method_22749(matrixStack, vertexConsumer, this.field_20820, this.field_20822, this.field_20821, h, i, j, sprite);
+				this.method_22749(matrixStack, vertexConsumer, this.field_20820, this.field_20822, this.field_20821, h, i, j);
 			}
 		} else {
-			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.method_23946());
-			this.method_22749(matrixStack, vertexConsumer, this.field_20817, this.field_20819, this.field_20818, h, i, j, sprite);
+			this.method_22749(matrixStack, vertexConsumer, this.field_20817, this.field_20819, this.field_20818, h, i, j);
 		}
 
 		matrixStack.pop();
 	}
 
-	private Identifier method_23690(ChestType chestType, Identifier identifier, Identifier identifier2, Identifier identifier3) {
-		switch (chestType) {
-			case LEFT:
-				return identifier3;
-			case RIGHT:
-				return identifier2;
-			case SINGLE:
-			default:
-				return identifier;
-		}
-	}
-
 	private void method_22749(
-		MatrixStack matrixStack, VertexConsumer vertexConsumer, ModelPart modelPart, ModelPart modelPart2, ModelPart modelPart3, float f, int i, int j, Sprite sprite
+		MatrixStack matrixStack, VertexConsumer vertexConsumer, ModelPart modelPart, ModelPart modelPart2, ModelPart modelPart3, float f, int i, int j
 	) {
 		modelPart.pitch = -(f * (float) (Math.PI / 2));
 		modelPart2.pitch = modelPart.pitch;
-		modelPart.render(matrixStack, vertexConsumer, i, j, sprite);
-		modelPart2.render(matrixStack, vertexConsumer, i, j, sprite);
-		modelPart3.render(matrixStack, vertexConsumer, i, j, sprite);
+		modelPart.render(matrixStack, vertexConsumer, i, j);
+		modelPart2.render(matrixStack, vertexConsumer, i, j);
+		modelPart3.render(matrixStack, vertexConsumer, i, j);
 	}
 }

@@ -23,7 +23,6 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
@@ -192,11 +191,6 @@ public class ZombiePigmanEntity extends ZombieEntity {
 	@Override
 	protected SoundEvent getDeathSound() {
 		return SoundEvents.ENTITY_ZOMBIE_PIGMAN_DEATH;
-	}
-
-	@Override
-	public boolean interactMob(PlayerEntity player, Hand hand) {
-		return false;
 	}
 
 	@Override

@@ -18,7 +18,7 @@ public class TropicalFishSomethingFeatureRenderer extends FeatureRenderer<Tropic
 		super(context);
 	}
 
-	public void method_4205(
+	public void render(
 		MatrixStack matrixStack,
 		VertexConsumerProvider vertexConsumerProvider,
 		int i,

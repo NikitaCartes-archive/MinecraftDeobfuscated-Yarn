@@ -96,7 +96,7 @@ public class ModelTransformation {
 		protected Deserializer() {
 		}
 
-		public ModelTransformation method_3505(JsonElement element, java.lang.reflect.Type type, JsonDeserializationContext context) throws JsonParseException {
+		public ModelTransformation deserialize(JsonElement element, java.lang.reflect.Type type, JsonDeserializationContext context) throws JsonParseException {
 			JsonObject jsonObject = element.getAsJsonObject();
 			Transformation transformation = this.parseModelTransformation(context, jsonObject, "thirdperson_righthand");
 			Transformation transformation2 = this.parseModelTransformation(context, jsonObject, "thirdperson_lefthand");

@@ -203,12 +203,6 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 		return 1.0F;
 	}
 
-	@Environment(EnvType.CLIENT)
-	@Override
-	public int getLightmapCoordinates() {
-		return 15;
-	}
-
 	@Override
 	public Packet<?> createSpawnPacket() {
 		int i = this.owner == null ? 0 : this.owner.getEntityId();

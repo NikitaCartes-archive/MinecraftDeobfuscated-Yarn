@@ -55,6 +55,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.network.packet.DifficultyS2CPacket;
 import net.minecraft.client.network.packet.WorldTimeUpdateS2CPacket;
 import net.minecraft.command.DataCommandStorage;
@@ -452,6 +454,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 		this.dataPackManager.setEnabledProfiles(list);
 		this.reloadDataPacks(levelProperties);
+		this.method_24154();
 	}
 
 	protected void prepareStartRegion(WorldGenerationProgressListener worldGenerationProgressListener) {
@@ -460,8 +463,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		LOGGER.info("Preparing start region for dimension " + DimensionType.getId(serverWorld.dimension.getType()));
 		BlockPos blockPos = serverWorld.getSpawnPos();
 		worldGenerationProgressListener.start(new ChunkPos(blockPos));
-		ServerChunkManager serverChunkManager = serverWorld.method_14178();
-		serverChunkManager.method_17293().setTaskBatchSize(500);
+		ServerChunkManager serverChunkManager = serverWorld.getChunkManager();
+		serverChunkManager.getLightingProvider().setTaskBatchSize(500);
 		this.timeReference = Util.getMeasuringTimeMs();
 		serverChunkManager.addTicket(ChunkTicketType.START, new ChunkPos(blockPos), 11, Unit.INSTANCE);
 
@@ -482,7 +485,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				while (longIterator.hasNext()) {
 					long l = longIterator.nextLong();
 					ChunkPos chunkPos = new ChunkPos(l);
-					serverWorld2.method_14178().setChunkForced(chunkPos, true);
+					serverWorld2.getChunkManager().setChunkForced(chunkPos, true);
 				}
 			}
 		}
@@ -490,7 +493,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.timeReference = Util.getMeasuringTimeMs() + 10L;
 		this.method_16208();
 		worldGenerationProgressListener.stop();
-		serverChunkManager.method_17293().setTaskBatchSize(5);
+		serverChunkManager.getLightingProvider().setTaskBatchSize(5);
 	}
 
 	protected void loadWorldResourcePack(String worldName, WorldSaveHandler worldSaveHandler) {
@@ -685,11 +688,11 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.runTasks(() -> !this.shouldKeepTicking());
 	}
 
-	protected ServerTask method_16209(Runnable runnable) {
+	protected ServerTask createTask(Runnable runnable) {
 		return new ServerTask(this.ticks, runnable);
 	}
 
-	protected boolean method_19464(ServerTask serverTask) {
+	protected boolean canExecute(ServerTask serverTask) {
 		return serverTask.getCreationTicks() + 3 < this.ticks || this.shouldKeepTicking();
 	}
 
@@ -706,7 +709,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		} else {
 			if (this.shouldKeepTicking()) {
 				for (ServerWorld serverWorld : this.getWorlds()) {
-					if (serverWorld.method_14178().executeQueuedTasks()) {
+					if (serverWorld.getChunkManager().executeQueuedTasks()) {
 						return true;
 					}
 				}
@@ -1202,7 +1205,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				snooper.addInfo("world[" + i + "][generator_name]", levelProperties.getGeneratorType().getName());
 				snooper.addInfo("world[" + i + "][generator_version]", levelProperties.getGeneratorType().getVersion());
 				snooper.addInfo("world[" + i + "][height]", this.worldHeight);
-				snooper.addInfo("world[" + i + "][chunks_loaded]", serverWorld.method_14178().getLoadedChunkCount());
+				snooper.addInfo("world[" + i + "][chunks_loaded]", serverWorld.getChunkManager().getLoadedChunkCount());
 				i++;
 			}
 		}
@@ -1419,6 +1422,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			this.dataPackManager.scanPacks();
 			this.reloadDataPacks(this.getWorld(DimensionType.OVERWORLD).getLevelProperties());
 			this.getPlayerManager().onDataPacksReloaded();
+			this.method_24154();
 		}
 	}
 
@@ -1747,5 +1751,9 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				}
 			}
 		}
+	}
+
+	private void method_24154() {
+		Block.STATE_IDS.forEach(BlockState::initShapeCache);
 	}
 }

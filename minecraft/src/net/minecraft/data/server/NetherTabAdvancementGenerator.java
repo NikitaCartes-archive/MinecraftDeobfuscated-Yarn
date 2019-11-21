@@ -29,7 +29,7 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.feature.Feature;
 
 public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancement>> {
-	public void method_10346(Consumer<Advancement> consumer) {
+	public void accept(Consumer<Advancement> consumer) {
 		Advancement advancement = Advancement.Task.create()
 			.display(
 				Blocks.RED_NETHER_BRICKS,

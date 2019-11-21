@@ -1,10 +1,9 @@
 package net.minecraft.client.render;
 
-import com.google.common.collect.ImmutableList;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.Identifier;
+import net.minecraft.class_4720;
 
 @Environment(EnvType.CLIENT)
 public class OutlineVertexConsumerProvider implements VertexConsumerProvider {
@@ -22,13 +21,13 @@ public class OutlineVertexConsumerProvider implements VertexConsumerProvider {
 	@Override
 	public net.minecraft.client.render.VertexConsumer getBuffer(RenderLayer renderLayer) {
 		net.minecraft.client.render.VertexConsumer vertexConsumer = this.parent.getBuffer(renderLayer);
-		Optional<Identifier> optional = renderLayer.getTexture();
+		Optional<RenderLayer> optional = renderLayer.getTexture();
 		if (optional.isPresent()) {
-			net.minecraft.client.render.VertexConsumer vertexConsumer2 = this.plainDrawer.getBuffer(RenderLayer.getOutline((Identifier)optional.get()));
+			net.minecraft.client.render.VertexConsumer vertexConsumer2 = this.plainDrawer.getBuffer((RenderLayer)optional.get());
 			OutlineVertexConsumerProvider.VertexConsumer vertexConsumer3 = new OutlineVertexConsumerProvider.VertexConsumer(
 				vertexConsumer2, this.red, this.green, this.blue, this.alpha
 			);
-			return new DelegatingVertexConsumer(ImmutableList.of(vertexConsumer3, vertexConsumer));
+			return class_4720.method_24037(vertexConsumer3, vertexConsumer);
 		} else {
 			return vertexConsumer;
 		}
@@ -96,6 +95,11 @@ public class OutlineVertexConsumerProvider implements VertexConsumerProvider {
 		@Override
 		public net.minecraft.client.render.VertexConsumer normal(float x, float y, float z) {
 			return this;
+		}
+
+		@Override
+		public void method_23919(float f, float g, float h, float i, float j, float k, float l, float m, float n, int o, int p, float q, float r, float s) {
+			this.delegate.vertex((double)f, (double)g, (double)h).color(this.fixedRed, this.fixedGreen, this.fixedBlue, this.fixedAlpha).texture(m, n).next();
 		}
 
 		@Override

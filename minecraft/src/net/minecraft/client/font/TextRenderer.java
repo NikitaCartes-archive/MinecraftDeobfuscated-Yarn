@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -19,7 +18,6 @@ import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.Rotation3;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
@@ -185,11 +183,10 @@ public class TextRenderer implements AutoCloseable {
 			} else {
 				Glyph glyph = this.fontStorage.getGlyph(c);
 				GlyphRenderer glyphRenderer = bl && c != ' ' ? this.fontStorage.getObfuscatedGlyphRenderer(glyph) : this.fontStorage.getGlyphRenderer(c);
-				Identifier identifier = glyphRenderer.getId();
-				if (identifier != null) {
+				if (!(glyphRenderer instanceof EmptyGlyphRenderer)) {
 					float q = bl2 ? glyph.getBoldOffset() : 0.0F;
 					float r = shadow ? glyph.getShadowOffset() : 0.0F;
-					VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(seeThrough ? RenderLayer.getTextSeeThrough(identifier) : RenderLayer.getText(identifier));
+					VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(glyphRenderer.method_24045(seeThrough));
 					this.drawGlyph(glyphRenderer, bl2, bl3, q, j + r, y + r, matrix, vertexConsumer, k, l, m, n, light);
 				}
 
@@ -217,15 +214,10 @@ public class TextRenderer implements AutoCloseable {
 
 		if (!list.isEmpty()) {
 			GlyphRenderer glyphRenderer2 = this.fontStorage.getRectangleRenderer();
-			Identifier identifier2 = glyphRenderer2.getId();
-			if (identifier2 != null) {
-				VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(
-					seeThrough ? RenderLayer.getTextSeeThrough(identifier2) : RenderLayer.getText(identifier2)
-				);
+			VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(glyphRenderer2.method_24045(seeThrough));
 
-				for (GlyphRenderer.Rectangle rectangle : list) {
-					glyphRenderer2.drawRectangle(rectangle, matrix, vertexConsumer2, light);
-				}
+			for (GlyphRenderer.Rectangle rectangle : list) {
+				glyphRenderer2.drawRectangle(rectangle, matrix, vertexConsumer2, light);
 			}
 		}
 

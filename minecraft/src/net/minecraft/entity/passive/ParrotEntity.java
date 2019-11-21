@@ -63,7 +63,7 @@ import net.minecraft.world.World;
 public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 	private static final TrackedData<Integer> ATTR_VARIANT = DataTracker.registerData(ParrotEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final Predicate<MobEntity> CAN_IMITATE = new Predicate<MobEntity>() {
-		public boolean method_6590(@Nullable MobEntity mobEntity) {
+		public boolean test(@Nullable MobEntity mobEntity) {
 			return mobEntity != null && ParrotEntity.MOB_SOUNDS.containsKey(mobEntity.getType());
 		}
 	};
@@ -290,7 +290,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 	}
 
 	public static boolean canSpawn(EntityType<ParrotEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
-		Block block = world.getBlockState(pos.method_10074()).getBlock();
+		Block block = world.getBlockState(pos.down()).getBlock();
 		return (block.matches(BlockTags.LEAVES) || block == Blocks.GRASS_BLOCK || block instanceof LogBlock || block == Blocks.AIR)
 			&& world.getBaseLightLevel(pos, 0) > 8;
 	}

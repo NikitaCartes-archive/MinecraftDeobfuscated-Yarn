@@ -80,7 +80,7 @@ public class CloudParticle extends SpriteBillboardParticle {
 			this.field_17863 = spriteProvider;
 		}
 
-		public Particle method_3088(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			return new CloudParticle(world, d, e, f, g, h, i, this.field_17863);
 		}
 	}
@@ -93,7 +93,7 @@ public class CloudParticle extends SpriteBillboardParticle {
 			this.field_17864 = spriteProvider;
 		}
 
-		public Particle method_3089(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			Particle particle = new CloudParticle(world, d, e, f, g, h, i, this.field_17864);
 			particle.setColor(200.0F, 50.0F, 120.0F);
 			particle.setColorAlpha(0.4F);

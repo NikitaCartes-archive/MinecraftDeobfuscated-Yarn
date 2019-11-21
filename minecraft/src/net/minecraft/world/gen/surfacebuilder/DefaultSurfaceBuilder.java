@@ -14,7 +14,7 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 		super(function);
 	}
 
-	public void method_15219(
+	public void generate(
 		Random random,
 		Chunk chunk,
 		Biome biome,
@@ -51,7 +51,7 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 		Biome biome,
 		int x,
 		int z,
-		int worldHeight,
+		int height,
 		double noise,
 		BlockState defaultBlock,
 		BlockState fluidBlock,
@@ -68,7 +68,7 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 		int k = x & 15;
 		int l = z & 15;
 
-		for (int m = worldHeight; m >= 0; m--) {
+		for (int m = height; m >= 0; m--) {
 			mutable.set(k, m, l);
 			BlockState blockState3 = chunk.getBlockState(mutable);
 			if (blockState3.isAir()) {

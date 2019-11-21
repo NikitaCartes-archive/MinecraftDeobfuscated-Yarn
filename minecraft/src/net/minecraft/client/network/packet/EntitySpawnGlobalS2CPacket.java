@@ -47,7 +47,7 @@ public class EntitySpawnGlobalS2CPacket implements Packet<ClientPlayPacketListen
 		buf.writeDouble(this.z);
 	}
 
-	public void method_11188(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onEntitySpawnGlobal(this);
 	}
 

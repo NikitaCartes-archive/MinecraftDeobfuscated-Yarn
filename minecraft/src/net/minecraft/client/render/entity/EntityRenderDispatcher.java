@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4722;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
@@ -13,7 +14,6 @@ import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Frustum;
-import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -22,7 +22,6 @@ import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
@@ -44,13 +43,12 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
 @Environment(EnvType.CLIENT)
 public class EntityRenderDispatcher {
-	private static final Identifier field_21009 = new Identifier("textures/misc/shadow.png");
+	private static final RenderLayer field_21009 = RenderLayer.getEntityNoOutline(new Identifier("textures/misc/shadow.png"));
 	private final Map<EntityType<?>, EntityRenderer<?>> renderers = Maps.<EntityType<?>, EntityRenderer<?>>newHashMap();
 	private final Map<String, PlayerEntityRenderer> modelRenderers = Maps.<String, PlayerEntityRenderer>newHashMap();
 	private final PlayerEntityRenderer playerRenderer;
@@ -63,8 +61,8 @@ public class EntityRenderDispatcher {
 	private boolean renderShadows = true;
 	private boolean renderHitboxes;
 
-	public static int method_23839(Entity entity) {
-		return LightmapTextureManager.method_23687(entity.getLightmapCoordinates(), entity.world.getLightLevel(LightType.SKY, new BlockPos(entity)));
+	public <E extends Entity> int method_23839(E entity, float f) {
+		return this.getRenderer(entity).method_24088(entity, f);
 	}
 
 	private <T extends Entity> void register(EntityType<T> entityType, EntityRenderer<? super T> entityRenderer) {
@@ -102,9 +100,9 @@ public class EntityRenderDispatcher {
 		this.register(EntityType.EVOKER, new EvokerIllagerEntityRenderer<>(this));
 		this.register(EntityType.EXPERIENCE_BOTTLE, new FlyingItemEntityRenderer<>(this, itemRenderer));
 		this.register(EntityType.EXPERIENCE_ORB, new ExperienceOrbEntityRenderer(this));
-		this.register(EntityType.EYE_OF_ENDER, new FlyingItemEntityRenderer<>(this, itemRenderer));
+		this.register(EntityType.EYE_OF_ENDER, new FlyingItemEntityRenderer<>(this, itemRenderer, 1.0F, true));
 		this.register(EntityType.FALLING_BLOCK, new FallingBlockEntityRenderer(this));
-		this.register(EntityType.FIREBALL, new FlyingItemEntityRenderer<>(this, itemRenderer, 3.0F));
+		this.register(EntityType.FIREBALL, new FlyingItemEntityRenderer<>(this, itemRenderer, 3.0F, true));
 		this.register(EntityType.FIREWORK_ROCKET, new FireworkEntityRenderer(this, itemRenderer));
 		this.register(EntityType.FISHING_BOBBER, new FishingBobberEntityRenderer(this));
 		this.register(EntityType.FOX, new FoxEntityRenderer(this));
@@ -147,7 +145,7 @@ public class EntityRenderDispatcher {
 		this.register(EntityType.SKELETON_HORSE, new ZombieHorseEntityRenderer(this));
 		this.register(EntityType.SKELETON, new SkeletonEntityRenderer(this));
 		this.register(EntityType.SLIME, new SlimeEntityRenderer(this));
-		this.register(EntityType.SMALL_FIREBALL, new FlyingItemEntityRenderer<>(this, itemRenderer, 0.75F));
+		this.register(EntityType.SMALL_FIREBALL, new FlyingItemEntityRenderer<>(this, itemRenderer, 0.75F, true));
 		this.register(EntityType.SNOWBALL, new FlyingItemEntityRenderer<>(this, itemRenderer));
 		this.register(EntityType.SNOW_GOLEM, new SnowGolemEntityRenderer(this));
 		this.register(EntityType.SPAWNER_MINECART, new MinecartEntityRenderer<>(this));
@@ -326,9 +324,8 @@ public class EntityRenderDispatcher {
 	}
 
 	private void renderFire(MatrixStack matrix, VertexConsumerProvider vertexConsumerProvider, Entity entity) {
-		SpriteAtlasTexture spriteAtlasTexture = MinecraftClient.getInstance().getSpriteAtlas();
-		Sprite sprite = spriteAtlasTexture.getSprite(ModelLoader.FIRE_0);
-		Sprite sprite2 = spriteAtlasTexture.getSprite(ModelLoader.FIRE_1);
+		Sprite sprite = ModelLoader.FIRE_0.method_24148();
+		Sprite sprite2 = ModelLoader.FIRE_1.method_24148();
 		matrix.push();
 		float f = entity.getWidth() * 1.4F;
 		matrix.scale(f, f, f);
@@ -340,7 +337,7 @@ public class EntityRenderDispatcher {
 		matrix.translate(0.0, 0.0, (double)(-0.3F + (float)((int)i) * 0.02F));
 		float k = 0.0F;
 		int l = 0;
-		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.method_23947());
+		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(class_4722.method_24074());
 
 		for (MatrixStack.Entry entry = matrix.peek(); i > 0.0F; l++) {
 			Sprite sprite3 = l % 2 == 0 ? sprite : sprite2;
@@ -398,7 +395,7 @@ public class EntityRenderDispatcher {
 		int o = MathHelper.floor(j - (double)i);
 		int p = MathHelper.floor(j + (double)i);
 		MatrixStack.Entry entry = matrixStack.peek();
-		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityNoOutline(field_21009));
+		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(field_21009);
 
 		for (BlockPos blockPos : BlockPos.iterate(new BlockPos(k, m, o), new BlockPos(l, n, p))) {
 			method_23163(entry, vertexConsumer, worldView, blockPos, d, e, j, i, f);
@@ -408,11 +405,11 @@ public class EntityRenderDispatcher {
 	private static void method_23163(
 		MatrixStack.Entry entry, VertexConsumer vertexConsumer, WorldView worldView, BlockPos blockPos, double d, double e, double f, float g, float h
 	) {
-		BlockPos blockPos2 = blockPos.method_10074();
+		BlockPos blockPos2 = blockPos.down();
 		BlockState blockState = worldView.getBlockState(blockPos2);
 		if (blockState.getRenderType() != BlockRenderType.INVISIBLE && worldView.getLightLevel(blockPos) > 3) {
 			if (blockState.isFullCube(worldView, blockPos2)) {
-				VoxelShape voxelShape = blockState.getOutlineShape(worldView, blockPos.method_10074());
+				VoxelShape voxelShape = blockState.getOutlineShape(worldView, blockPos.down());
 				if (!voxelShape.isEmpty()) {
 					float i = (float)(((double)h - (e - (double)blockPos.getY()) / 2.0) * 0.5 * (double)worldView.getBrightness(blockPos));
 					if (i >= 0.0F) {

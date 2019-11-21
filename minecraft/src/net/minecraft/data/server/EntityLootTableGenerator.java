@@ -54,7 +54,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 			.withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(LootTableEntry.builder(EntityType.SHEEP.getLootTableId())));
 	}
 
-	public void method_10400(BiConsumer<Identifier, LootTable.Builder> biConsumer) {
+	public void accept(BiConsumer<Identifier, LootTable.Builder> biConsumer) {
 		this.method_16368(EntityType.ARMOR_STAND, LootTable.builder());
 		this.method_16368(EntityType.BAT, LootTable.builder());
 		this.method_16368(EntityType.BEE, LootTable.builder());
@@ -66,10 +66,10 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.BLAZE_ROD)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
-						.method_356(KilledByPlayerLootCondition.builder())
+						.withCondition(KilledByPlayerLootCondition.builder())
 				)
 		);
 		this.method_16368(
@@ -78,7 +78,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.STRING).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F))))
+						.withEntry(ItemEntry.builder(Items.STRING).withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F))))
 				)
 		);
 		this.method_16368(
@@ -89,8 +89,8 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.STRING)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 				.withPool(
@@ -98,10 +98,10 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.SPIDER_EYE)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(-1.0F, 1.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(-1.0F, 1.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
-						.method_356(KilledByPlayerLootCondition.builder())
+						.withCondition(KilledByPlayerLootCondition.builder())
 				)
 		);
 		this.method_16368(
@@ -112,8 +112,8 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.FEATHER)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 				.withPool(
@@ -121,8 +121,8 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.CHICKEN)
-								.method_438(FurnaceSmeltLootFunction.builder().method_524(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, field_11344)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(FurnaceSmeltLootFunction.builder().withCondition(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, field_11344)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
@@ -134,14 +134,14 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.COD)
-								.method_438(FurnaceSmeltLootFunction.builder().method_524(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, field_11344)))
+								.withFunction(FurnaceSmeltLootFunction.builder().withCondition(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, field_11344)))
 						)
 				)
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(ItemEntry.builder(Items.BONE_MEAL))
-						.method_356(RandomChanceLootCondition.builder(0.05F))
+						.withCondition(RandomChanceLootCondition.builder(0.05F))
 				)
 		);
 		this.method_16368(
@@ -152,8 +152,8 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.LEATHER)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 				.withPool(
@@ -161,9 +161,9 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.BEEF)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F)))
-								.method_438(FurnaceSmeltLootFunction.builder().method_524(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, field_11344)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F)))
+								.withFunction(FurnaceSmeltLootFunction.builder().withCondition(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, field_11344)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
@@ -175,14 +175,14 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.GUNPOWDER)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 				.withPool(
 					LootPool.builder()
 						.withEntry(TagEntry.builder(ItemTags.MUSIC_DISCS))
-						.method_356(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.KILLER, EntityPredicate.Builder.create().type(EntityTypeTags.SKELETONS)))
+						.withCondition(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.KILLER, EntityPredicate.Builder.create().type(EntityTypeTags.SKELETONS)))
 				)
 		);
 		this.method_16368(
@@ -193,9 +193,9 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.COD)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.method_438(FurnaceSmeltLootFunction.builder().method_524(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, field_11344)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(FurnaceSmeltLootFunction.builder().withCondition(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, field_11344)))
 						)
 				)
 		);
@@ -207,8 +207,8 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.LEATHER)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
@@ -220,16 +220,16 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.ROTTEN_FLESH)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(ItemEntry.builder(Items.GOLD_INGOT))
-						.method_356(KilledByPlayerLootCondition.builder())
-						.method_356(RandomChanceWithLootingLootCondition.builder(0.05F, 0.01F))
+						.withCondition(KilledByPlayerLootCondition.builder())
+						.withCondition(RandomChanceWithLootingLootCondition.builder(0.05F, 0.01F))
 				)
 		);
 		this.method_16368(
@@ -240,8 +240,8 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.PRISMARINE_SHARD)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 				.withPool(
@@ -250,11 +250,11 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withEntry(
 							ItemEntry.builder(Items.COD)
 								.setWeight(3)
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.method_438(FurnaceSmeltLootFunction.builder().method_524(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, field_11344)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(FurnaceSmeltLootFunction.builder().withCondition(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, field_11344)))
 						)
 						.withEntry(
-							ItemEntry.builder(Items.PRISMARINE_CRYSTALS).setWeight(2).method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+							ItemEntry.builder(Items.PRISMARINE_CRYSTALS).setWeight(2).withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 						.withEntry(EmptyEntry.Serializer())
 				)
@@ -262,14 +262,14 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(ItemEntry.builder(Blocks.WET_SPONGE))
-						.method_356(KilledByPlayerLootCondition.builder())
+						.withCondition(KilledByPlayerLootCondition.builder())
 				)
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(LootTableEntry.builder(LootTables.FISHING_FISH_GAMEPLAY))
-						.method_356(KilledByPlayerLootCondition.builder())
-						.method_356(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
+						.withCondition(KilledByPlayerLootCondition.builder())
+						.withCondition(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
 				)
 		);
 		this.method_16368(EntityType.ENDER_DRAGON, LootTable.builder());
@@ -281,8 +281,8 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.ENDER_PEARL)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
@@ -296,10 +296,10 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.EMERALD)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
-						.method_356(KilledByPlayerLootCondition.builder())
+						.withCondition(KilledByPlayerLootCondition.builder())
 				)
 		);
 		this.method_16368(EntityType.FOX, LootTable.builder());
@@ -311,8 +311,8 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.GHAST_TEAR)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 				.withPool(
@@ -320,8 +320,8 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.GUNPOWDER)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
@@ -334,8 +334,8 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.PRISMARINE_SHARD)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 				.withPool(
@@ -344,11 +344,11 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withEntry(
 							ItemEntry.builder(Items.COD)
 								.setWeight(2)
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.method_438(FurnaceSmeltLootFunction.builder().method_524(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, field_11344)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(FurnaceSmeltLootFunction.builder().withCondition(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, field_11344)))
 						)
 						.withEntry(
-							ItemEntry.builder(Items.PRISMARINE_CRYSTALS).setWeight(2).method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+							ItemEntry.builder(Items.PRISMARINE_CRYSTALS).setWeight(2).withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 						.withEntry(EmptyEntry.Serializer())
 				)
@@ -356,8 +356,8 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(LootTableEntry.builder(LootTables.FISHING_FISH_GAMEPLAY))
-						.method_356(KilledByPlayerLootCondition.builder())
-						.method_356(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
+						.withCondition(KilledByPlayerLootCondition.builder())
+						.withCondition(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
 				)
 		);
 		this.method_16368(
@@ -368,8 +368,8 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.LEATHER)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
@@ -381,8 +381,8 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.ROTTEN_FLESH)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 				.withPool(
@@ -391,8 +391,8 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withEntry(ItemEntry.builder(Items.IRON_INGOT))
 						.withEntry(ItemEntry.builder(Items.CARROT))
 						.withEntry(ItemEntry.builder(Items.POTATO))
-						.method_356(KilledByPlayerLootCondition.builder())
-						.method_356(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
+						.withCondition(KilledByPlayerLootCondition.builder())
+						.withCondition(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
 				)
 		);
 		this.method_16368(
@@ -401,7 +401,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.SADDLE).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(1))))
+						.withEntry(ItemEntry.builder(Items.SADDLE).withFunction(SetCountLootFunction.builder(ConstantLootTableRange.create(1))))
 				)
 		);
 		this.method_16368(EntityType.ILLUSIONER, LootTable.builder());
@@ -411,12 +411,12 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Blocks.POPPY).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F))))
+						.withEntry(ItemEntry.builder(Blocks.POPPY).withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F))))
 				)
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.IRON_INGOT).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(3.0F, 5.0F))))
+						.withEntry(ItemEntry.builder(Items.IRON_INGOT).withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(3.0F, 5.0F))))
 				)
 		);
 		this.method_16368(
@@ -427,8 +427,8 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.LEATHER)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
@@ -440,8 +440,8 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.MAGMA_CREAM)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(-2.0F, 1.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(-2.0F, 1.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
@@ -453,8 +453,8 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.LEATHER)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
@@ -466,8 +466,8 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.LEATHER)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 				.withPool(
@@ -475,9 +475,9 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.BEEF)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F)))
-								.method_438(FurnaceSmeltLootFunction.builder().method_524(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, field_11344)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F)))
+								.withFunction(FurnaceSmeltLootFunction.builder().withCondition(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, field_11344)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
@@ -488,7 +488,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Blocks.BAMBOO).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(1))))
+						.withEntry(ItemEntry.builder(Blocks.BAMBOO).withFunction(SetCountLootFunction.builder(ConstantLootTableRange.create(1))))
 				)
 		);
 		this.method_16368(
@@ -499,8 +499,8 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.FEATHER)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 2.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
@@ -512,10 +512,10 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.PHANTOM_MEMBRANE)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
-						.method_356(KilledByPlayerLootCondition.builder())
+						.withCondition(KilledByPlayerLootCondition.builder())
 				)
 		);
 		this.method_16368(
@@ -526,9 +526,9 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.PORKCHOP)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F)))
-								.method_438(FurnaceSmeltLootFunction.builder().method_524(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, field_11344)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F)))
+								.withFunction(FurnaceSmeltLootFunction.builder().withCondition(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, field_11344)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
@@ -543,13 +543,13 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withEntry(
 							ItemEntry.builder(Items.COD)
 								.setWeight(3)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 						.withEntry(
 							ItemEntry.builder(Items.SALMON)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
@@ -559,13 +559,13 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.PUFFERFISH).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(1))))
+						.withEntry(ItemEntry.builder(Items.PUFFERFISH).withFunction(SetCountLootFunction.builder(ConstantLootTableRange.create(1))))
 				)
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(ItemEntry.builder(Items.BONE_MEAL))
-						.method_356(RandomChanceLootCondition.builder(0.05F))
+						.withCondition(RandomChanceLootCondition.builder(0.05F))
 				)
 		);
 		this.method_16368(
@@ -576,8 +576,8 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.RABBIT_HIDE)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 				.withPool(
@@ -585,17 +585,17 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.RABBIT)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.method_438(FurnaceSmeltLootFunction.builder().method_524(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, field_11344)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(FurnaceSmeltLootFunction.builder().withCondition(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, field_11344)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(ItemEntry.builder(Items.RABBIT_FOOT))
-						.method_356(KilledByPlayerLootCondition.builder())
-						.method_356(RandomChanceWithLootingLootCondition.builder(0.1F, 0.03F))
+						.withCondition(KilledByPlayerLootCondition.builder())
+						.withCondition(RandomChanceWithLootingLootCondition.builder(0.1F, 0.03F))
 				)
 		);
 		this.method_16368(
@@ -606,14 +606,14 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.SALMON)
-								.method_438(FurnaceSmeltLootFunction.builder().method_524(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, field_11344)))
+								.withFunction(FurnaceSmeltLootFunction.builder().withCondition(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, field_11344)))
 						)
 				)
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(ItemEntry.builder(Items.BONE_MEAL))
-						.method_356(RandomChanceLootCondition.builder(0.05F))
+						.withCondition(RandomChanceLootCondition.builder(0.05F))
 				)
 		);
 		this.method_16368(
@@ -624,9 +624,9 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.MUTTON)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 2.0F)))
-								.method_438(FurnaceSmeltLootFunction.builder().method_524(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, field_11344)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 2.0F)))
+								.withFunction(FurnaceSmeltLootFunction.builder().withCondition(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, field_11344)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
@@ -653,7 +653,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(ItemEntry.builder(Items.SHULKER_SHELL))
-						.method_356(RandomChanceWithLootingLootCondition.builder(0.5F, 0.0625F))
+						.withCondition(RandomChanceWithLootingLootCondition.builder(0.5F, 0.0625F))
 				)
 		);
 		this.method_16368(EntityType.SILVERFISH, LootTable.builder());
@@ -665,8 +665,8 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.ARROW)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 				.withPool(
@@ -674,8 +674,8 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.BONE)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
@@ -687,8 +687,8 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.BONE)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
@@ -700,8 +700,8 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.SLIME_BALL)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
@@ -711,7 +711,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.SNOWBALL).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 15.0F))))
+						.withEntry(ItemEntry.builder(Items.SNOWBALL).withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 15.0F))))
 				)
 		);
 		this.method_16368(
@@ -722,8 +722,8 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.STRING)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 				.withPool(
@@ -731,10 +731,10 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.SPIDER_EYE)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(-1.0F, 1.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(-1.0F, 1.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
-						.method_356(KilledByPlayerLootCondition.builder())
+						.withCondition(KilledByPlayerLootCondition.builder())
 				)
 		);
 		this.method_16368(
@@ -745,8 +745,8 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.INK_SAC)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
@@ -758,8 +758,8 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.ARROW)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 				.withPool(
@@ -767,8 +767,8 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.BONE)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 				.withPool(
@@ -776,11 +776,11 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.TIPPED_ARROW)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)).withLimit(1))
-								.method_438(SetNbtLootFunction.builder(Util.create(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:slowness"))))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)).withLimit(1))
+								.withFunction(SetNbtLootFunction.builder(Util.create(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:slowness"))))
 						)
-						.method_356(KilledByPlayerLootCondition.builder())
+						.withCondition(KilledByPlayerLootCondition.builder())
 				)
 		);
 		this.method_16368(
@@ -791,8 +791,8 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.LEATHER)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
@@ -802,13 +802,13 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.TROPICAL_FISH).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(1))))
+						.withEntry(ItemEntry.builder(Items.TROPICAL_FISH).withFunction(SetCountLootFunction.builder(ConstantLootTableRange.create(1))))
 				)
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(ItemEntry.builder(Items.BONE_MEAL))
-						.method_356(RandomChanceLootCondition.builder(0.05F))
+						.withCondition(RandomChanceLootCondition.builder(0.05F))
 				)
 		);
 		this.method_16368(
@@ -820,15 +820,15 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withEntry(
 							ItemEntry.builder(Blocks.SEAGRASS)
 								.setWeight(3)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(ItemEntry.builder(Items.BOWL))
-						.method_356(DamageSourcePropertiesLootCondition.builder(DamageSourcePredicate.Builder.create().lightning(true)))
+						.withCondition(DamageSourcePropertiesLootCondition.builder(DamageSourcePredicate.Builder.create().lightning(true)))
 				)
 		);
 		this.method_16368(EntityType.VEX, LootTable.builder());
@@ -842,10 +842,10 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.EMERALD)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
-						.method_356(KilledByPlayerLootCondition.builder())
+						.withCondition(KilledByPlayerLootCondition.builder())
 				)
 		);
 		this.method_16368(
@@ -856,39 +856,39 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(UniformLootTableRange.between(1.0F, 3.0F))
 						.withEntry(
 							ItemEntry.builder(Items.GLOWSTONE_DUST)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 						.withEntry(
 							ItemEntry.builder(Items.SUGAR)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 						.withEntry(
 							ItemEntry.builder(Items.REDSTONE)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 						.withEntry(
 							ItemEntry.builder(Items.SPIDER_EYE)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 						.withEntry(
 							ItemEntry.builder(Items.GLASS_BOTTLE)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 						.withEntry(
 							ItemEntry.builder(Items.GUNPOWDER)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 						.withEntry(
 							ItemEntry.builder(Items.STICK)
 								.setWeight(2)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
@@ -901,8 +901,8 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.COAL)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(-1.0F, 1.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(-1.0F, 1.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 				.withPool(
@@ -910,16 +910,16 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.BONE)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(ItemEntry.builder(Blocks.WITHER_SKELETON_SKULL))
-						.method_356(KilledByPlayerLootCondition.builder())
-						.method_356(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
+						.withCondition(KilledByPlayerLootCondition.builder())
+						.withCondition(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
 				)
 		);
 		this.method_16368(EntityType.WOLF, LootTable.builder());
@@ -931,8 +931,8 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.ROTTEN_FLESH)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 				.withPool(
@@ -941,8 +941,8 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withEntry(ItemEntry.builder(Items.IRON_INGOT))
 						.withEntry(ItemEntry.builder(Items.CARROT))
 						.withEntry(ItemEntry.builder(Items.POTATO))
-						.method_356(KilledByPlayerLootCondition.builder())
-						.method_356(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
+						.withCondition(KilledByPlayerLootCondition.builder())
+						.withCondition(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
 				)
 		);
 		this.method_16368(
@@ -953,8 +953,8 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.ROTTEN_FLESH)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
@@ -966,8 +966,8 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.ROTTEN_FLESH)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 				.withPool(
@@ -975,16 +975,16 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.GOLD_NUGGET)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(ItemEntry.builder(Items.GOLD_INGOT))
-						.method_356(KilledByPlayerLootCondition.builder())
-						.method_356(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
+						.withCondition(KilledByPlayerLootCondition.builder())
+						.withCondition(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
 				)
 		);
 		this.method_16368(
@@ -995,8 +995,8 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(Items.ROTTEN_FLESH)
-								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 				.withPool(
@@ -1005,8 +1005,8 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.withEntry(ItemEntry.builder(Items.IRON_INGOT))
 						.withEntry(ItemEntry.builder(Items.CARROT))
 						.withEntry(ItemEntry.builder(Items.POTATO))
-						.method_356(KilledByPlayerLootCondition.builder())
-						.method_356(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
+						.withCondition(KilledByPlayerLootCondition.builder())
+						.withCondition(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
 				)
 		);
 		Set<Identifier> set = Sets.<Identifier>newHashSet();

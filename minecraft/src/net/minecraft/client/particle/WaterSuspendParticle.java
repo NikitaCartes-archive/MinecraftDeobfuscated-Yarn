@@ -47,7 +47,7 @@ public class WaterSuspendParticle extends SpriteBillboardParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle method_3104(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			WaterSuspendParticle waterSuspendParticle = new WaterSuspendParticle(world, d, e, f);
 			waterSuspendParticle.setSprite(this.spriteProvider);
 			return waterSuspendParticle;

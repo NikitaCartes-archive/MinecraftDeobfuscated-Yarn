@@ -14,7 +14,7 @@ public class MegaPineTreeFeature extends MegaTreeFeature<MegaTreeFeatureConfig> 
 		super(function);
 	}
 
-	public boolean method_23399(
+	public boolean generate(
 		ModifiableTestableWorld modifiableTestableWorld,
 		Random random,
 		BlockPos blockPos,
@@ -44,7 +44,7 @@ public class MegaPineTreeFeature extends MegaTreeFeature<MegaTreeFeatureConfig> 
 		BlockBox blockBox,
 		MegaTreeFeatureConfig megaTreeFeatureConfig
 	) {
-		int m = random.nextInt(5) + megaTreeFeatureConfig.field_21591;
+		int m = random.nextInt(5) + megaTreeFeatureConfig.crownHeight;
 		int n = 0;
 
 		for (int o = k - m; o <= k; o++) {

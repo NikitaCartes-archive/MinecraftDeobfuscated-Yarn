@@ -40,7 +40,7 @@ public class SaplingBlock extends PlantBlock implements Fertilizable {
 		if ((Integer)blockState.get(STAGE) == 0) {
 			serverWorld.setBlockState(blockPos, blockState.cycle(STAGE), 4);
 		} else {
-			this.generator.generate(serverWorld, serverWorld.method_14178().getChunkGenerator(), blockPos, blockState, random);
+			this.generator.generate(serverWorld, serverWorld.getChunkManager().getChunkGenerator(), blockPos, blockState, random);
 		}
 	}
 

@@ -129,7 +129,7 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 		if (view.getBlockState(pos).getBlock() == this.targetBlock) {
 			return pos;
 		} else {
-			BlockPos[] blockPoss = new BlockPos[]{pos.method_10074(), pos.west(), pos.east(), pos.north(), pos.south(), pos.method_10074().method_10074()};
+			BlockPos[] blockPoss = new BlockPos[]{pos.down(), pos.west(), pos.east(), pos.north(), pos.south(), pos.down().down()};
 
 			for (BlockPos blockPos : blockPoss) {
 				if (view.getBlockState(blockPos).getBlock() == this.targetBlock) {

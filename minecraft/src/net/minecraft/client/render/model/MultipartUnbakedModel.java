@@ -7,6 +7,7 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
+import com.mojang.datafixers.util.Pair;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4730;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.json.ModelVariantMap;
@@ -74,8 +76,10 @@ public class MultipartUnbakedModel implements UnbakedModel {
 	}
 
 	@Override
-	public Collection<Identifier> getTextureDependencies(Function<Identifier, UnbakedModel> unbakedModelGetter, Set<String> unresolvedTextureReferences) {
-		return (Collection<Identifier>)this.getComponents()
+	public Collection<class_4730> getTextureDependencies(
+		Function<Identifier, UnbakedModel> unbakedModelGetter, Set<Pair<String, String>> unresolvedTextureReferences
+	) {
+		return (Collection<class_4730>)this.getComponents()
 			.stream()
 			.flatMap(multipartModelComponent -> multipartModelComponent.getModel().getTextureDependencies(unbakedModelGetter, unresolvedTextureReferences).stream())
 			.collect(Collectors.toSet());
@@ -83,7 +87,7 @@ public class MultipartUnbakedModel implements UnbakedModel {
 
 	@Nullable
 	@Override
-	public BakedModel bake(ModelLoader loader, Function<Identifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
+	public BakedModel bake(ModelLoader loader, Function<class_4730, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
 		MultipartBakedModel.Builder builder = new MultipartBakedModel.Builder();
 
 		for (MultipartModelComponent multipartModelComponent : this.getComponents()) {
@@ -104,7 +108,7 @@ public class MultipartUnbakedModel implements UnbakedModel {
 			this.context = context;
 		}
 
-		public MultipartUnbakedModel method_3523(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
+		public MultipartUnbakedModel deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
 			return new MultipartUnbakedModel(this.context.getStateFactory(), this.deserializeComponents(context, element.getAsJsonArray()));
 		}
 

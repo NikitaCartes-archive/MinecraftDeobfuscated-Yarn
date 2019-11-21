@@ -357,7 +357,7 @@ public class Style {
 
 	public static class Serializer implements JsonDeserializer<Style>, JsonSerializer<Style> {
 		@Nullable
-		public Style method_10991(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+		public Style deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			if (jsonElement.isJsonObject()) {
 				Style style = new Style();
 				JsonObject jsonObject = jsonElement.getAsJsonObject();
@@ -420,7 +420,7 @@ public class Style {
 		}
 
 		@Nullable
-		public JsonElement method_10990(Style style, Type type, JsonSerializationContext jsonSerializationContext) {
+		public JsonElement serialize(Style style, Type type, JsonSerializationContext jsonSerializationContext) {
 			if (style.isEmpty()) {
 				return null;
 			} else {

@@ -30,7 +30,7 @@ public class ElytraEntityModel<T extends LivingEntity> extends AnimalModel<T> {
 		return ImmutableList.<ModelPart>of(this.field_3365, this.field_3364);
 	}
 
-	public void method_17079(T livingEntity, float f, float g, float h, float i, float j) {
+	public void setAngles(T livingEntity, float f, float g, float h, float i, float j) {
 		float k = (float) (Math.PI / 12);
 		float l = (float) (-Math.PI / 12);
 		float m = 0.0F;

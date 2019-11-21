@@ -136,7 +136,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		this.chunkGenerator = chunkGenerator;
 		this.mainThreadExecutor = mainThreadExecutor;
 		TaskExecutor<Runnable> taskExecutor = TaskExecutor.create(workerExecutor, "worldgen");
-		MessageListener<Runnable> messageListener = MessageListener.create("main", mainThreadExecutor::method_18858);
+		MessageListener<Runnable> messageListener = MessageListener.create("main", mainThreadExecutor::send);
 		this.worldGenerationProgressListener = worldGenerationProgressListener;
 		TaskExecutor<Runnable> taskExecutor2 = TaskExecutor.create(workerExecutor, "light");
 		this.chunkTaskPrioritySystem = new ChunkTaskPrioritySystem(ImmutableList.of(taskExecutor, messageListener, taskExecutor2), workerExecutor, Integer.MAX_VALUE);
@@ -531,7 +531,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 	protected void releaseLightTicket(ChunkPos pos) {
 		this.mainThreadExecutor
-			.method_18858(
+			.send(
 				Util.debugRunnable(
 					() -> this.ticketManager.removeTicketWithLevel(ChunkTicketType.LIGHT, pos, 33 + ChunkStatus.getTargetGenerationRadius(ChunkStatus.FEATURES), pos),
 					() -> "release light ticket " + pos

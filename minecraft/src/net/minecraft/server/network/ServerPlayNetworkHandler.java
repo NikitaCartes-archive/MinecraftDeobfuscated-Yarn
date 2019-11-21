@@ -56,6 +56,7 @@ import net.minecraft.item.WritableBookItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.NetworkThreadUtils;
@@ -353,7 +354,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 					return;
 				}
 
-				this.player.getServerWorld().method_14178().updateCameraPosition(this.player);
+				this.player.getServerWorld().getChunkManager().updateCameraPosition(this.player);
 				this.player.method_7282(this.player.getX() - d, this.player.getY() - e, this.player.getZ() - f);
 				this.ridingEntity = m >= -0.03125
 					&& !this.server.isFlightEnabled()
@@ -643,7 +644,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 						ItemStack itemStack3 = new ItemStack(Items.WRITTEN_BOOK);
 						CompoundTag compoundTag = itemStack2.getTag();
 						if (compoundTag != null) {
-							itemStack3.setTag(compoundTag.method_10553());
+							itemStack3.setTag(compoundTag.copy());
 						}
 
 						itemStack3.putSubTag("author", StringTag.of(this.player.getName().getString()));
@@ -654,7 +655,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 							String string = listTag.getString(i);
 							Text text = new LiteralText(string);
 							string = Text.Serializer.toJson(text);
-							listTag.method_10606(i, StringTag.of(string));
+							listTag.set(i, (Tag)StringTag.of(string));
 						}
 
 						itemStack3.putSubTag("pages", listTag);
@@ -713,7 +714,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 							.setPositionAnglesAndUpdate(
 								this.player.getX(), this.player.getY(), this.player.getZ(), packet.getYaw(this.player.yaw), packet.getPitch(this.player.pitch)
 							);
-						this.player.getServerWorld().method_14178().updateCameraPosition(this.player);
+						this.player.getServerWorld().getChunkManager().updateCameraPosition(this.player);
 					} else {
 						double d = this.player.getX();
 						double e = this.player.getY();
@@ -797,7 +798,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 								&& !this.player.isFallFlying()
 								&& !serverWorld.isAreaNotEmpty(this.player.getBoundingBox().expand(0.0625).stretch(0.0, -0.55, 0.0));
 							this.player.onGround = packet.isOnGround();
-							this.player.getServerWorld().method_14178().updateCameraPosition(this.player);
+							this.player.getServerWorld().getChunkManager().updateCameraPosition(this.player);
 							this.player.method_14207(this.player.getY() - g, packet.isOnGround());
 							this.updatedX = this.player.getX();
 							this.updatedY = this.player.getY();

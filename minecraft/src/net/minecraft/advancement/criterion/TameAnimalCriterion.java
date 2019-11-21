@@ -16,7 +16,7 @@ public class TameAnimalCriterion extends AbstractCriterion<TameAnimalCriterion.C
 		return ID;
 	}
 
-	public TameAnimalCriterion.Conditions method_9133(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public TameAnimalCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		EntityPredicate entityPredicate = EntityPredicate.fromJson(jsonObject.get("entity"));
 		return new TameAnimalCriterion.Conditions(entityPredicate);
 	}

@@ -14,7 +14,7 @@ public class MegaJungleTreeFeature extends MegaTreeFeature<MegaTreeFeatureConfig
 		super(function);
 	}
 
-	public boolean method_23398(
+	public boolean generate(
 		ModifiableTestableWorld modifiableTestableWorld,
 		Random random,
 		BlockPos blockPos,
@@ -38,7 +38,7 @@ public class MegaJungleTreeFeature extends MegaTreeFeature<MegaTreeFeatureConfig
 					k = blockPos.getX() + (int)(1.5F + MathHelper.cos(f) * (float)m);
 					l = blockPos.getZ() + (int)(1.5F + MathHelper.sin(f) * (float)m);
 					BlockPos blockPos2 = new BlockPos(k, j - 3 + m / 2, l);
-					this.method_23382(modifiableTestableWorld, random, blockPos2, set, blockBox, megaTreeFeatureConfig);
+					this.setLogBlockState(modifiableTestableWorld, random, blockPos2, set, blockBox, megaTreeFeatureConfig);
 				}
 
 				int m = 1 + random.nextInt(2);

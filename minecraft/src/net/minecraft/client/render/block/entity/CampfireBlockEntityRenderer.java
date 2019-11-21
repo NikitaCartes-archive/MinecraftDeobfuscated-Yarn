@@ -19,9 +19,7 @@ public class CampfireBlockEntityRenderer extends BlockEntityRenderer<CampfireBlo
 		super(blockEntityRenderDispatcher);
 	}
 
-	public void method_17581(
-		CampfireBlockEntity campfireBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j
-	) {
+	public void render(CampfireBlockEntity campfireBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
 		Direction direction = campfireBlockEntity.getCachedState().get(CampfireBlock.FACING);
 		DefaultedList<ItemStack> defaultedList = campfireBlockEntity.getItemsBeingCooked();
 

@@ -1,9 +1,12 @@
 package net.minecraft.client.texture;
 
+import com.google.common.collect.Lists;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.resource.metadata.AnimationFrameResourceMetadata;
+import net.minecraft.client.resource.metadata.AnimationResourceMetadata;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Lazy;
 
@@ -30,18 +33,27 @@ public final class MissingSprite extends Sprite {
 		nativeImage.untrack();
 		return nativeImage;
 	});
+	private static final Sprite.class_4727 field_21748 = new Sprite.class_4727(
+		MISSINGNO,
+		16,
+		16,
+		new AnimationResourceMetadata(Lists.<AnimationFrameResourceMetadata>newArrayList(new AnimationFrameResourceMetadata(0, -1)), 16, 16, 1, false)
+	);
 
-	private MissingSprite() {
-		super(MISSINGNO, 16, 16);
-		this.images = new NativeImage[]{IMAGE.get()};
+	private MissingSprite(SpriteAtlasTexture spriteAtlasTexture, int i, int j, int k, int l, int m) {
+		super(spriteAtlasTexture, field_21748, i, j, k, l, m, IMAGE.get());
 	}
 
-	public static MissingSprite getMissingSprite() {
-		return new MissingSprite();
+	public static MissingSprite getMissingSprite(SpriteAtlasTexture spriteAtlasTexture, int i, int j, int k, int l, int m) {
+		return new MissingSprite(spriteAtlasTexture, i, j, k, l, m);
 	}
 
 	public static Identifier getMissingSpriteId() {
 		return MISSINGNO;
+	}
+
+	public static Sprite.class_4727 method_24104() {
+		return field_21748;
 	}
 
 	@Override
@@ -49,8 +61,6 @@ public final class MissingSprite extends Sprite {
 		for (int i = 1; i < this.images.length; i++) {
 			this.images[i].close();
 		}
-
-		this.images = new NativeImage[]{IMAGE.get()};
 	}
 
 	public static NativeImageBackedTexture getMissingSpriteTexture() {

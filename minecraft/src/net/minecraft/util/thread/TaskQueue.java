@@ -24,7 +24,7 @@ public interface TaskQueue<T, F> {
 		}
 
 		@Nullable
-		public Runnable method_17346() {
+		public Runnable poll() {
 			for (Queue<Runnable> queue : this.queues) {
 				Runnable runnable = (Runnable)queue.poll();
 				if (runnable != null) {
@@ -35,7 +35,7 @@ public interface TaskQueue<T, F> {
 			return null;
 		}
 
-		public boolean method_16913(TaskQueue.PrioritizedTask prioritizedTask) {
+		public boolean add(TaskQueue.PrioritizedTask prioritizedTask) {
 			int i = prioritizedTask.getPriority();
 			((Queue)this.queues.get(i)).add(prioritizedTask);
 			return true;

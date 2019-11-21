@@ -78,8 +78,8 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 			super(new Identifier("enchant_randomly"), EnchantRandomlyLootFunction.class);
 		}
 
-		public void method_491(JsonObject jsonObject, EnchantRandomlyLootFunction enchantRandomlyLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.method_529(jsonObject, enchantRandomlyLootFunction, jsonSerializationContext);
+		public void toJson(JsonObject jsonObject, EnchantRandomlyLootFunction enchantRandomlyLootFunction, JsonSerializationContext jsonSerializationContext) {
+			super.toJson(jsonObject, enchantRandomlyLootFunction, jsonSerializationContext);
 			if (!enchantRandomlyLootFunction.enchantments.isEmpty()) {
 				JsonArray jsonArray = new JsonArray();
 
@@ -96,7 +96,7 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 			}
 		}
 
-		public EnchantRandomlyLootFunction method_490(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public EnchantRandomlyLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			List<Enchantment> list = Lists.<Enchantment>newArrayList();
 			if (jsonObject.has("enchantments")) {
 				for (JsonElement jsonElement : JsonHelper.getArray(jsonObject, "enchantments")) {

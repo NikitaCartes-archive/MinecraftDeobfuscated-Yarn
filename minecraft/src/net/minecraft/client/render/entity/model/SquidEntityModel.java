@@ -10,15 +10,15 @@ import net.minecraft.entity.Entity;
 
 @Environment(EnvType.CLIENT)
 public class SquidEntityModel<T extends Entity> extends CompositeEntityModel<T> {
-	private final ModelPart field_3575;
+	private final ModelPart head;
 	private final ModelPart[] field_3574 = new ModelPart[8];
 	private final ImmutableList<ModelPart> field_20942;
 
 	public SquidEntityModel() {
 		int i = -16;
-		this.field_3575 = new ModelPart(this, 0, 0);
-		this.field_3575.addCuboid(-6.0F, -8.0F, -6.0F, 12.0F, 16.0F, 12.0F);
-		this.field_3575.pivotY += 8.0F;
+		this.head = new ModelPart(this, 0, 0);
+		this.head.addCuboid(-6.0F, -8.0F, -6.0F, 12.0F, 16.0F, 12.0F);
+		this.head.pivotY += 8.0F;
 
 		for (int j = 0; j < this.field_3574.length; j++) {
 			this.field_3574[j] = new ModelPart(this, 48, 0);
@@ -34,7 +34,7 @@ public class SquidEntityModel<T extends Entity> extends CompositeEntityModel<T> 
 		}
 
 		Builder<ModelPart> builder = ImmutableList.builder();
-		builder.add(this.field_3575);
+		builder.add(this.head);
 		builder.addAll(Arrays.asList(this.field_3574));
 		this.field_20942 = builder.build();
 	}

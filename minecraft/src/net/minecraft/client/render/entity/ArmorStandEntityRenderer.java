@@ -26,11 +26,11 @@ public class ArmorStandEntityRenderer extends LivingEntityRenderer<ArmorStandEnt
 		this.addFeature(new HeadFeatureRenderer<>(this));
 	}
 
-	public Identifier method_3880(ArmorStandEntity armorStandEntity) {
+	public Identifier getTexture(ArmorStandEntity armorStandEntity) {
 		return SKIN;
 	}
 
-	protected void method_3877(ArmorStandEntity armorStandEntity, MatrixStack matrixStack, float f, float g, float h) {
+	protected void setupTransforms(ArmorStandEntity armorStandEntity, MatrixStack matrixStack, float f, float g, float h) {
 		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F - g));
 		float i = (float)(armorStandEntity.world.getTime() - armorStandEntity.field_7112) + h;
 		if (i < 5.0F) {
@@ -38,13 +38,13 @@ public class ArmorStandEntityRenderer extends LivingEntityRenderer<ArmorStandEnt
 		}
 	}
 
-	protected boolean method_3878(ArmorStandEntity armorStandEntity) {
+	protected boolean hasLabel(ArmorStandEntity armorStandEntity) {
 		double d = this.renderManager.getSquaredDistanceToCamera(armorStandEntity);
 		float f = armorStandEntity.isInSneakingPose() ? 32.0F : 64.0F;
 		return d >= (double)(f * f) ? false : armorStandEntity.isCustomNameVisible();
 	}
 
-	protected boolean method_23152(ArmorStandEntity armorStandEntity, boolean bl) {
+	protected boolean method_4056(ArmorStandEntity armorStandEntity, boolean bl) {
 		return armorStandEntity.isMarker() ? !armorStandEntity.isInvisible() && !bl : !armorStandEntity.isInvisible() || bl;
 	}
 }

@@ -26,7 +26,7 @@ public class LoginHelloC2SPacket implements Packet<ServerLoginPacketListener> {
 		buf.writeString(this.profile.getName());
 	}
 
-	public void method_12649(ServerLoginPacketListener serverLoginPacketListener) {
+	public void apply(ServerLoginPacketListener serverLoginPacketListener) {
 		serverLoginPacketListener.onHello(this);
 	}
 

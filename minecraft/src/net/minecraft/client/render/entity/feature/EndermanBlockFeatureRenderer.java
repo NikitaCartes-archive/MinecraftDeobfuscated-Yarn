@@ -17,7 +17,7 @@ public class EndermanBlockFeatureRenderer extends FeatureRenderer<EndermanEntity
 		super(context);
 	}
 
-	public void method_4179(
+	public void render(
 		MatrixStack matrixStack,
 		VertexConsumerProvider vertexConsumerProvider,
 		int i,

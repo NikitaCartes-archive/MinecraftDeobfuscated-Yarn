@@ -99,7 +99,7 @@ public class DoorBlock extends Block {
 	@Override
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		DoubleBlockHalf doubleBlockHalf = state.get(HALF);
-		BlockPos blockPos = doubleBlockHalf == DoubleBlockHalf.LOWER ? pos.up() : pos.method_10074();
+		BlockPos blockPos = doubleBlockHalf == DoubleBlockHalf.LOWER ? pos.up() : pos.down();
 		BlockState blockState = world.getBlockState(blockPos);
 		if (blockState.getBlock() == this && blockState.get(HALF) != doubleBlockHalf) {
 			world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 35);
@@ -231,7 +231,7 @@ public class DoorBlock extends Block {
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		BlockPos blockPos = pos.method_10074();
+		BlockPos blockPos = pos.down();
 		BlockState blockState = world.getBlockState(blockPos);
 		return state.get(HALF) == DoubleBlockHalf.LOWER ? blockState.isSideSolidFullSquare(world, blockPos, Direction.UP) : blockState.getBlock() == this;
 	}

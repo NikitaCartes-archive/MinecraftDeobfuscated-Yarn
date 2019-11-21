@@ -304,7 +304,7 @@ public class RealmsServer extends ValueObject {
 			this.refOwner = owner;
 		}
 
-		public int method_20830(RealmsServer realmsServer, RealmsServer realmsServer2) {
+		public int compare(RealmsServer realmsServer, RealmsServer realmsServer2) {
 			return ComparisonChain.start()
 				.compareTrueFirst(realmsServer.state.equals(RealmsServer.State.UNINITIALIZED), realmsServer2.state.equals(RealmsServer.State.UNINITIALIZED))
 				.compareTrueFirst(realmsServer.expiredTrial, realmsServer2.expiredTrial)

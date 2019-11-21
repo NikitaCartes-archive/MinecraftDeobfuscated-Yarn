@@ -24,7 +24,9 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class MapRenderer implements AutoCloseable {
 	public static final Identifier field_21056 = new Identifier("textures/map/map_background.png");
+	public static final RenderLayer field_21687 = RenderLayer.getText(field_21056);
 	private static final Identifier MAP_ICONS_TEXTURE = new Identifier("textures/map/map_icons.png");
+	private static final RenderLayer field_21688 = RenderLayer.getText(MAP_ICONS_TEXTURE);
 	private final TextureManager textureManager;
 	private final Map<String, MapRenderer.MapTexture> mapTextures = Maps.<String, MapRenderer.MapTexture>newHashMap();
 
@@ -76,12 +78,13 @@ public class MapRenderer implements AutoCloseable {
 	class MapTexture implements AutoCloseable {
 		private final MapState mapState;
 		private final NativeImageBackedTexture texture;
-		private final Identifier id;
+		private final RenderLayer field_21689;
 
 		private MapTexture(MapState mapState) {
 			this.mapState = mapState;
 			this.texture = new NativeImageBackedTexture(128, 128, true);
-			this.id = MapRenderer.this.textureManager.registerDynamicTexture("map/" + mapState.getId(), this.texture);
+			Identifier identifier = MapRenderer.this.textureManager.registerDynamicTexture("map/" + mapState.getId(), this.texture);
+			this.field_21689 = RenderLayer.getText(identifier);
 		}
 
 		private void updateTexture() {
@@ -105,7 +108,7 @@ public class MapRenderer implements AutoCloseable {
 			int k = 0;
 			float f = 0.0F;
 			Matrix4f matrix4f = matrixStack.peek().getModel();
-			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getText(this.id));
+			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.field_21689);
 			vertexConsumer.vertex(matrix4f, 0.0F, 128.0F, -0.01F).color(255, 255, 255, 255).texture(0.0F, 1.0F).light(i).next();
 			vertexConsumer.vertex(matrix4f, 128.0F, 128.0F, -0.01F).color(255, 255, 255, 255).texture(1.0F, 1.0F).light(i).next();
 			vertexConsumer.vertex(matrix4f, 128.0F, 0.0F, -0.01F).color(255, 255, 255, 255).texture(1.0F, 0.0F).light(i).next();
@@ -126,7 +129,7 @@ public class MapRenderer implements AutoCloseable {
 					float n = (float)(b / 16 + 1) / 16.0F;
 					Matrix4f matrix4f2 = matrixStack.peek().getModel();
 					float o = -0.001F;
-					VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.getText(MapRenderer.MAP_ICONS_TEXTURE));
+					VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(MapRenderer.field_21688);
 					vertexConsumer2.vertex(matrix4f2, -1.0F, 1.0F, (float)l * -0.001F).color(255, 255, 255, 255).texture(g, h).light(i).next();
 					vertexConsumer2.vertex(matrix4f2, 1.0F, 1.0F, (float)l * -0.001F).color(255, 255, 255, 255).texture(m, h).light(i).next();
 					vertexConsumer2.vertex(matrix4f2, 1.0F, -1.0F, (float)l * -0.001F).color(255, 255, 255, 255).texture(m, n).light(i).next();

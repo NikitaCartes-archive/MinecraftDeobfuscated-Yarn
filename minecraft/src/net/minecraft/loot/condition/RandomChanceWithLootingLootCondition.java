@@ -28,7 +28,7 @@ public class RandomChanceWithLootingLootCondition implements LootCondition {
 		return ImmutableSet.of(LootContextParameters.KILLER_ENTITY);
 	}
 
-	public boolean method_950(LootContext lootContext) {
+	public boolean test(LootContext lootContext) {
 		Entity entity = lootContext.get(LootContextParameters.KILLER_ENTITY);
 		int i = 0;
 		if (entity instanceof LivingEntity) {
@@ -47,14 +47,14 @@ public class RandomChanceWithLootingLootCondition implements LootCondition {
 			super(new Identifier("random_chance_with_looting"), RandomChanceWithLootingLootCondition.class);
 		}
 
-		public void method_955(
+		public void toJson(
 			JsonObject jsonObject, RandomChanceWithLootingLootCondition randomChanceWithLootingLootCondition, JsonSerializationContext jsonSerializationContext
 		) {
 			jsonObject.addProperty("chance", randomChanceWithLootingLootCondition.chance);
 			jsonObject.addProperty("looting_multiplier", randomChanceWithLootingLootCondition.lootingMultiplier);
 		}
 
-		public RandomChanceWithLootingLootCondition method_956(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		public RandomChanceWithLootingLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			return new RandomChanceWithLootingLootCondition(JsonHelper.getFloat(jsonObject, "chance"), JsonHelper.getFloat(jsonObject, "looting_multiplier"));
 		}
 	}

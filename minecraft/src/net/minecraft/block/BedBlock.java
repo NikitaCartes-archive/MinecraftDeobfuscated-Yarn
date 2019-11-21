@@ -319,7 +319,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	@Environment(EnvType.CLIENT)
 	@Override
 	public long getRenderingSeed(BlockState state, BlockPos pos) {
-		BlockPos blockPos = pos.method_10079(state.get(FACING), state.get(PART) == BedPart.HEAD ? 0 : 1);
+		BlockPos blockPos = pos.offset(state.get(FACING), state.get(PART) == BedPart.HEAD ? 0 : 1);
 		return MathHelper.hashCode(blockPos.getX(), pos.getY(), blockPos.getZ());
 	}
 

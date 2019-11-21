@@ -21,7 +21,7 @@ public class LlamaEntityRenderer extends MobEntityRenderer<LlamaEntity, LlamaEnt
 		this.addFeature(new LlamaDecorFeatureRenderer(this));
 	}
 
-	public Identifier method_4037(LlamaEntity llamaEntity) {
+	public Identifier getTexture(LlamaEntity llamaEntity) {
 		return TEXTURES[llamaEntity.getVariant()];
 	}
 }

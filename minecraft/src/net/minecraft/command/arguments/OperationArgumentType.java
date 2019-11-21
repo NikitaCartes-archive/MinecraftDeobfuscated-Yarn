@@ -29,7 +29,7 @@ public class OperationArgumentType implements ArgumentType<OperationArgumentType
 		return commandContext.getArgument(string, OperationArgumentType.Operation.class);
 	}
 
-	public OperationArgumentType.Operation method_9412(StringReader stringReader) throws CommandSyntaxException {
+	public OperationArgumentType.Operation parse(StringReader stringReader) throws CommandSyntaxException {
 		if (!stringReader.canRead()) {
 			throw INVALID_OPERATION.create();
 		} else {

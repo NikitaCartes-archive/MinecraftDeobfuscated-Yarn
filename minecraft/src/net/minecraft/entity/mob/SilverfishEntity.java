@@ -117,7 +117,7 @@ public class SilverfishEntity extends HostileEntity {
 
 	@Override
 	public float getPathfindingFavor(BlockPos pos, WorldView worldView) {
-		return InfestedBlock.isInfestable(worldView.getBlockState(pos.method_10074())) ? 10.0F : super.getPathfindingFavor(pos, worldView);
+		return InfestedBlock.isInfestable(worldView.getBlockState(pos.down())) ? 10.0F : super.getPathfindingFavor(pos, worldView);
 	}
 
 	public static boolean canSpawn(EntityType<SilverfishEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {

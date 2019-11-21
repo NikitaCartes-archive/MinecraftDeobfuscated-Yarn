@@ -15,11 +15,11 @@ public class CaveCarver extends Carver<ProbabilityConfig> {
 		super(configDeserializer, heightLimit);
 	}
 
-	public boolean method_12676(Random random, int i, int j, ProbabilityConfig probabilityConfig) {
+	public boolean shouldCarve(Random random, int i, int j, ProbabilityConfig probabilityConfig) {
 		return random.nextFloat() <= probabilityConfig.probability;
 	}
 
-	public boolean method_12673(
+	public boolean carve(
 		Chunk chunk, Function<BlockPos, Biome> function, Random random, int i, int j, int k, int l, int m, BitSet bitSet, ProbabilityConfig probabilityConfig
 	) {
 		int n = (this.getBranchFactor() * 2 - 1) * 16;

@@ -36,7 +36,7 @@ public class ChunkRendererRegion implements BlockRenderView {
 
 		for (int m = i; m <= k; m++) {
 			for (int n = j; n <= l; n++) {
-				worldChunks[m - i][n - j] = world.method_8497(m, n);
+				worldChunks[m - i][n - j] = world.getChunk(m, n);
 			}
 		}
 

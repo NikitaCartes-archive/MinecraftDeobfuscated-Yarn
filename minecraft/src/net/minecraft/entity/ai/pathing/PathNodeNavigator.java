@@ -20,7 +20,7 @@ public class PathNodeNavigator {
 	private final Set<PathNode> field_59 = Sets.<PathNode>newHashSet();
 	private final PathNode[] successors = new PathNode[32];
 	private final int range;
-	private PathNodeMaker pathNodeMaker;
+	private final PathNodeMaker pathNodeMaker;
 
 	public PathNodeNavigator(PathNodeMaker pathNodeMaker, int range) {
 		this.pathNodeMaker = pathNodeMaker;
@@ -28,7 +28,7 @@ public class PathNodeNavigator {
 	}
 
 	@Nullable
-	public Path findPathToAny(ChunkCache world, MobEntity mob, Set<BlockPos> positions, float followRange, int distance) {
+	public Path findPathToAny(ChunkCache world, MobEntity mob, Set<BlockPos> positions, float followRange, int distance, float rangeMultiplier) {
 		this.minHeap.clear();
 		this.pathNodeMaker.init(world, mob);
 		PathNode pathNode = this.pathNodeMaker.getStart();
@@ -36,13 +36,13 @@ public class PathNodeNavigator {
 			.collect(
 				Collectors.toMap(blockPos -> this.pathNodeMaker.getNode((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()), Function.identity())
 			);
-		Path path = this.findPathToAny(pathNode, map, followRange, distance);
+		Path path = this.findPathToAny(pathNode, map, followRange, distance, rangeMultiplier);
 		this.pathNodeMaker.clear();
 		return path;
 	}
 
 	@Nullable
-	private Path findPathToAny(PathNode startNode, Map<TargetPathNode, BlockPos> positions, float followRange, int distance) {
+	private Path findPathToAny(PathNode startNode, Map<TargetPathNode, BlockPos> positions, float followRange, int distance, float rangeMultiplier) {
 		Set<TargetPathNode> set = positions.keySet();
 		startNode.penalizedPathLength = 0.0F;
 		startNode.distanceToNearestTarget = this.calculateDistances(startNode, set);
@@ -51,9 +51,10 @@ public class PathNodeNavigator {
 		this.field_59.clear();
 		this.minHeap.push(startNode);
 		int i = 0;
+		int j = (int)((float)this.range * rangeMultiplier);
 
 		while (!this.minHeap.isEmpty()) {
-			if (++i >= this.range) {
+			if (++i >= j) {
 				break;
 			}
 
@@ -65,10 +66,10 @@ public class PathNodeNavigator {
 			}
 
 			if (!(pathNode.getDistance(startNode) >= followRange)) {
-				int j = this.pathNodeMaker.getSuccessors(this.successors, pathNode);
+				int k = this.pathNodeMaker.getSuccessors(this.successors, pathNode);
 
-				for (int k = 0; k < j; k++) {
-					PathNode pathNode2 = this.successors[k];
+				for (int l = 0; l < k; l++) {
+					PathNode pathNode2 = this.successors[l];
 					float f = pathNode.getDistance(pathNode2);
 					pathNode2.pathLength = pathNode.pathLength + f;
 					float g = pathNode.penalizedPathLength + f + pathNode2.penalty;

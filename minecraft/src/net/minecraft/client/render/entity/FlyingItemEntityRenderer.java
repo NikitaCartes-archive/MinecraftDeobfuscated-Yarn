@@ -16,15 +16,22 @@ import net.minecraft.util.Identifier;
 public class FlyingItemEntityRenderer<T extends Entity & FlyingItemEntity> extends EntityRenderer<T> {
 	private final ItemRenderer item;
 	private final float scale;
+	private final boolean field_21745;
 
-	public FlyingItemEntityRenderer(EntityRenderDispatcher renderManager, ItemRenderer itemRenderer, float scale) {
+	public FlyingItemEntityRenderer(EntityRenderDispatcher renderManager, ItemRenderer itemRenderer, float scale, boolean bl) {
 		super(renderManager);
 		this.item = itemRenderer;
 		this.scale = scale;
+		this.field_21745 = bl;
 	}
 
 	public FlyingItemEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, ItemRenderer itemRenderer) {
-		this(entityRenderDispatcher, itemRenderer, 1.0F);
+		this(entityRenderDispatcher, itemRenderer, 1.0F, false);
+	}
+
+	@Override
+	protected int method_24087(T entity, float f) {
+		return this.field_21745 ? 15 : super.method_24087(entity, f);
 	}
 
 	@Override

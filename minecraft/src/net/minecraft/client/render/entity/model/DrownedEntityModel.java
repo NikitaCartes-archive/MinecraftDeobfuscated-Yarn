@@ -26,7 +26,7 @@ public class DrownedEntityModel<T extends ZombieEntity> extends ZombieEntityMode
 		super(f, 0.0F, 64, bl ? 32 : 64);
 	}
 
-	public void method_17077(T zombieEntity, float f, float g, float h) {
+	public void animateModel(T zombieEntity, float f, float g, float h) {
 		this.rightArmPose = BipedEntityModel.ArmPose.EMPTY;
 		this.leftArmPose = BipedEntityModel.ArmPose.EMPTY;
 		ItemStack itemStack = zombieEntity.getStackInHand(Hand.MAIN_HAND);
@@ -38,11 +38,11 @@ public class DrownedEntityModel<T extends ZombieEntity> extends ZombieEntityMode
 			}
 		}
 
-		super.method_17086(zombieEntity, f, g, h);
+		super.animateModel(zombieEntity, f, g, h);
 	}
 
-	public void method_17134(T zombieEntity, float f, float g, float h, float i, float j) {
-		super.method_17791(zombieEntity, f, g, h, i, j);
+	public void setAngles(T zombieEntity, float f, float g, float h, float i, float j) {
+		super.setAngles(zombieEntity, f, g, h, i, j);
 		if (this.leftArmPose == BipedEntityModel.ArmPose.THROW_SPEAR) {
 			this.leftArm.pitch = this.leftArm.pitch * 0.5F - (float) Math.PI;
 			this.leftArm.yaw = 0.0F;

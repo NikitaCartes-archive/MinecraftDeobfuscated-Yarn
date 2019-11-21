@@ -61,7 +61,7 @@ public class UpdatePlayerAbilitiesC2SPacket implements Packet<ServerPlayPacketLi
 		buf.writeFloat(this.walkSpeed);
 	}
 
-	public void method_12339(ServerPlayPacketListener serverPlayPacketListener) {
+	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onPlayerAbilities(this);
 	}
 

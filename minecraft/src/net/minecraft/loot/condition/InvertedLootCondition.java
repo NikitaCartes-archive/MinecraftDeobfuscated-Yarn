@@ -17,7 +17,7 @@ public class InvertedLootCondition implements LootCondition {
 		this.term = term;
 	}
 
-	public final boolean method_888(LootContext lootContext) {
+	public final boolean test(LootContext lootContext) {
 		return !this.term.test(lootContext);
 	}
 
@@ -42,11 +42,11 @@ public class InvertedLootCondition implements LootCondition {
 			super(new Identifier("inverted"), InvertedLootCondition.class);
 		}
 
-		public void method_892(JsonObject jsonObject, InvertedLootCondition invertedLootCondition, JsonSerializationContext jsonSerializationContext) {
+		public void toJson(JsonObject jsonObject, InvertedLootCondition invertedLootCondition, JsonSerializationContext jsonSerializationContext) {
 			jsonObject.add("term", jsonSerializationContext.serialize(invertedLootCondition.term));
 		}
 
-		public InvertedLootCondition method_891(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		public InvertedLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			LootCondition lootCondition = JsonHelper.deserialize(jsonObject, "term", jsonDeserializationContext, LootCondition.class);
 			return new InvertedLootCondition(lootCondition);
 		}

@@ -22,11 +22,11 @@ public class LakeFeature extends Feature<BushFeatureConfig> {
 		super(configFactory);
 	}
 
-	public boolean method_13471(
+	public boolean generate(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, BushFeatureConfig bushFeatureConfig
 	) {
 		while (blockPos.getY() > 5 && iWorld.isAir(blockPos)) {
-			blockPos = blockPos.method_10074();
+			blockPos = blockPos.down();
 		}
 
 		if (blockPos.getY() <= 4) {
@@ -104,7 +104,7 @@ public class LakeFeature extends Feature<BushFeatureConfig> {
 						for (int txx = 4; txx < 8; txx++) {
 							if (bls[(j * 16 + s) * 8 + txx]) {
 								BlockPos blockPos2 = blockPos.add(j, txx - 1, s);
-								if (method_23396(iWorld.getBlockState(blockPos2).getBlock()) && iWorld.getLightLevel(LightType.SKY, blockPos.add(j, txx, s)) > 0) {
+								if (isDirt(iWorld.getBlockState(blockPos2).getBlock()) && iWorld.getLightLevel(LightType.SKY, blockPos.add(j, txx, s)) > 0) {
 									Biome biome = iWorld.method_23753(blockPos2);
 									if (biome.getSurfaceConfig().getTopMaterial().getBlock() == Blocks.MYCELIUM) {
 										iWorld.setBlockState(blockPos2, Blocks.MYCELIUM.getDefaultState(), 2);

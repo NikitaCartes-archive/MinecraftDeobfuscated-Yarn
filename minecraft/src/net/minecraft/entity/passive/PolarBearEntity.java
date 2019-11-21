@@ -89,7 +89,7 @@ public class PolarBearEntity extends AnimalEntity {
 		Biome biome = world.method_23753(pos);
 		return biome != Biomes.FROZEN_OCEAN && biome != Biomes.DEEP_FROZEN_OCEAN
 			? isValidNaturalSpawn(type, world, spawnType, pos, random)
-			: world.getBaseLightLevel(pos, 0) > 8 && world.getBlockState(pos.method_10074()).getBlock() == Blocks.ICE;
+			: world.getBaseLightLevel(pos, 0) > 8 && world.getBlockState(pos.down()).getBlock() == Blocks.ICE;
 	}
 
 	@Override

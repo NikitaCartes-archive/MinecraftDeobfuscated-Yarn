@@ -25,7 +25,7 @@ public class LeaveVineTreeDecorator extends TreeDecorator {
 	}
 
 	@Override
-	public void method_23469(IWorld iWorld, Random random, List<BlockPos> list, List<BlockPos> list2, Set<BlockPos> set, BlockBox blockBox) {
+	public void generate(IWorld iWorld, Random random, List<BlockPos> list, List<BlockPos> list2, Set<BlockPos> set, BlockBox blockBox) {
 		list2.forEach(blockPos -> {
 			if (random.nextInt(4) == 0) {
 				BlockPos blockPos2 = blockPos.west();
@@ -63,9 +63,9 @@ public class LeaveVineTreeDecorator extends TreeDecorator {
 		this.method_23471(modifiableTestableWorld, blockPos, booleanProperty, set, blockBox);
 		int i = 4;
 
-		for (BlockPos var7 = blockPos.method_10074(); AbstractTreeFeature.isAir(modifiableTestableWorld, var7) && i > 0; i--) {
+		for (BlockPos var7 = blockPos.down(); AbstractTreeFeature.isAir(modifiableTestableWorld, var7) && i > 0; i--) {
 			this.method_23471(modifiableTestableWorld, var7, booleanProperty, set, blockBox);
-			var7 = var7.method_10074();
+			var7 = var7.down();
 		}
 	}
 

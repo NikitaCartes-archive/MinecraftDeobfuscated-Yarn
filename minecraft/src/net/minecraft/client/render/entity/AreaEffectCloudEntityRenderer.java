@@ -12,7 +12,7 @@ public class AreaEffectCloudEntityRenderer extends EntityRenderer<AreaEffectClou
 		super(entityRenderDispatcher);
 	}
 
-	public Identifier method_3873(AreaEffectCloudEntity areaEffectCloudEntity) {
+	public Identifier getTexture(AreaEffectCloudEntity areaEffectCloudEntity) {
 		return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
 	}
 }

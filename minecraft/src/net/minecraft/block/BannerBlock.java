@@ -33,7 +33,7 @@ public class BannerBlock extends AbstractBannerBlock {
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		return world.getBlockState(pos.method_10074()).getMaterial().isSolid();
+		return world.getBlockState(pos.down()).getMaterial().isSolid();
 	}
 
 	@Override

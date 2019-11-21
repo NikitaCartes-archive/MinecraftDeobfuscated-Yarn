@@ -212,7 +212,7 @@ public class MultiplayerServerListPinger {
 						}
 					}
 
-					protected void method_3005(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf) throws Exception {
+					protected void channelRead0(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf) throws Exception {
 						short s = byteBuf.readUnsignedByte();
 						if (s == 255) {
 							String string = new String(byteBuf.readBytes(byteBuf.readShort() * 2).array(), StandardCharsets.UTF_16BE);

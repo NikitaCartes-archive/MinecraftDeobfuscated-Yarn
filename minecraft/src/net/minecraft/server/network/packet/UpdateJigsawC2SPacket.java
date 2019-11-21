@@ -42,7 +42,7 @@ public class UpdateJigsawC2SPacket implements Packet<ServerPlayPacketListener> {
 		buf.writeString(this.finalState);
 	}
 
-	public void method_16392(ServerPlayPacketListener serverPlayPacketListener) {
+	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onJigsawUpdate(this);
 	}
 

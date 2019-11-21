@@ -51,12 +51,12 @@ public class LootTableEntry extends LeafEntry {
 			super(new Identifier("loot_table"), LootTableEntry.class);
 		}
 
-		public void method_431(JsonObject jsonObject, LootTableEntry lootTableEntry, JsonSerializationContext jsonSerializationContext) {
-			super.method_442(jsonObject, lootTableEntry, jsonSerializationContext);
+		public void toJson(JsonObject jsonObject, LootTableEntry lootTableEntry, JsonSerializationContext jsonSerializationContext) {
+			super.toJson(jsonObject, lootTableEntry, jsonSerializationContext);
 			jsonObject.addProperty("name", lootTableEntry.id.toString());
 		}
 
-		protected LootTableEntry method_432(
+		protected LootTableEntry fromJson(
 			JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions
 		) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "name"));

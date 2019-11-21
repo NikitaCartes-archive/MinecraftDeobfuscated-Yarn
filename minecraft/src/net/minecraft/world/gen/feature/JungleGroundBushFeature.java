@@ -16,18 +16,18 @@ public class JungleGroundBushFeature extends AbstractTreeFeature<TreeFeatureConf
 
 	@Override
 	public boolean generate(
-		ModifiableTestableWorld modifiableTestableWorld,
+		ModifiableTestableWorld world,
 		Random random,
-		BlockPos blockPos,
-		Set<BlockPos> set,
-		Set<BlockPos> set2,
+		BlockPos pos,
+		Set<BlockPos> logPositions,
+		Set<BlockPos> leavesPositions,
 		BlockBox blockBox,
-		TreeFeatureConfig treeFeatureConfig
+		TreeFeatureConfig config
 	) {
-		blockPos = modifiableTestableWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos).method_10074();
-		if (isNaturalDirtOrGrass(modifiableTestableWorld, blockPos)) {
-			blockPos = blockPos.up();
-			this.method_23382(modifiableTestableWorld, random, blockPos, set, blockBox, treeFeatureConfig);
+		pos = world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, pos).down();
+		if (isNaturalDirtOrGrass(world, pos)) {
+			pos = pos.up();
+			this.setLogBlockState(world, random, pos, logPositions, blockBox, config);
 
 			for (int i = 0; i <= 2; i++) {
 				int j = 2 - i;
@@ -35,9 +35,7 @@ public class JungleGroundBushFeature extends AbstractTreeFeature<TreeFeatureConf
 				for (int k = -j; k <= j; k++) {
 					for (int l = -j; l <= j; l++) {
 						if (Math.abs(k) != j || Math.abs(l) != j || random.nextInt(2) != 0) {
-							this.method_23383(
-								modifiableTestableWorld, random, new BlockPos(k + blockPos.getX(), i + blockPos.getY(), l + blockPos.getZ()), set2, blockBox, treeFeatureConfig
-							);
+							this.setLeavesBlockState(world, random, new BlockPos(k + pos.getX(), i + pos.getY(), l + pos.getZ()), leavesPositions, blockBox, config);
 						}
 					}
 				}

@@ -17,7 +17,7 @@ public class CuredZombieVillagerCriterion extends AbstractCriterion<CuredZombieV
 		return ID;
 	}
 
-	public CuredZombieVillagerCriterion.Conditions method_8830(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public CuredZombieVillagerCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		EntityPredicate entityPredicate = EntityPredicate.fromJson(jsonObject.get("zombie"));
 		EntityPredicate entityPredicate2 = EntityPredicate.fromJson(jsonObject.get("villager"));
 		return new CuredZombieVillagerCriterion.Conditions(entityPredicate, entityPredicate2);

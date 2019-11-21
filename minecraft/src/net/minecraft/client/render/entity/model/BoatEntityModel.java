@@ -59,12 +59,12 @@ public class BoatEntityModel extends CompositeEntityModel<BoatEntity> {
 		this.parts = builder.build();
 	}
 
-	public void method_22952(BoatEntity boatEntity, float f, float g, float h, float i, float j) {
+	public void setAngles(BoatEntity boatEntity, float f, float g, float h, float i, float j) {
 		this.renderPaddle(boatEntity, 0, f);
 		this.renderPaddle(boatEntity, 1, f);
 	}
 
-	public ImmutableList<ModelPart> method_22953() {
+	public ImmutableList<ModelPart> getParts() {
 		return this.parts;
 	}
 

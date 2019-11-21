@@ -63,9 +63,7 @@ public class CavesChunkGenerator extends SurfaceChunkGenerator<CavesChunkGenerat
 				return Feature.NETHER_BRIDGE.getMonsterSpawns();
 			}
 
-			if (Feature.NETHER_BRIDGE.isApproximatelyInsideStructure(this.world, pos) && this.world.getBlockState(pos.method_10074()).getBlock() == Blocks.NETHER_BRICKS
-				)
-			 {
+			if (Feature.NETHER_BRIDGE.isApproximatelyInsideStructure(this.world, pos) && this.world.getBlockState(pos.down()).getBlock() == Blocks.NETHER_BRICKS) {
 				return Feature.NETHER_BRIDGE.getMonsterSpawns();
 			}
 		}

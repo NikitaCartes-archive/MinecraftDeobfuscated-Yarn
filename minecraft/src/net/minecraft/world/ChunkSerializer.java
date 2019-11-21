@@ -55,7 +55,7 @@ public class ChunkSerializer {
 	public static ProtoChunk deserialize(
 		ServerWorld serverWorld, StructureManager structureManager, PointOfInterestStorage pointOfInterestStorage, ChunkPos chunkPos, CompoundTag compoundTag
 	) {
-		ChunkGenerator<?> chunkGenerator = serverWorld.method_14178().getChunkGenerator();
+		ChunkGenerator<?> chunkGenerator = serverWorld.getChunkManager().getChunkGenerator();
 		BiomeSource biomeSource = chunkGenerator.getBiomeSource();
 		CompoundTag compoundTag2 = compoundTag.getCompound("Level");
 		ChunkPos chunkPos2 = new ChunkPos(compoundTag2.getInt("xPos"), compoundTag2.getInt("zPos"));
@@ -76,7 +76,7 @@ public class ChunkSerializer {
 		int i = 16;
 		ChunkSection[] chunkSections = new ChunkSection[16];
 		boolean bl2 = serverWorld.getDimension().hasSkyLight();
-		ChunkManager chunkManager = serverWorld.method_14178();
+		ChunkManager chunkManager = serverWorld.getChunkManager();
 		LightingProvider lightingProvider = chunkManager.getLightingProvider();
 		if (bl) {
 			lightingProvider.setRetainData(chunkPos, true);
@@ -171,7 +171,7 @@ public class ChunkSerializer {
 		Heightmap.populateHeightmaps(chunk, enumSet);
 		CompoundTag compoundTag5 = compoundTag2.getCompound("Structures");
 		chunk.setStructureStarts(readStructureStarts(chunkGenerator, structureManager, compoundTag5));
-		chunk.setStructureReferences(readStructureReferences(compoundTag5));
+		chunk.setStructureReferences(readStructureReferences(chunkPos, compoundTag5));
 		if (compoundTag2.getBoolean("shouldSave")) {
 			chunk.setShouldSave(true);
 		}
@@ -242,7 +242,7 @@ public class ChunkSerializer {
 
 		ChunkSection[] chunkSections = chunk.getSectionArray();
 		ListTag listTag = new ListTag();
-		LightingProvider lightingProvider = serverWorld.method_14178().method_17293();
+		LightingProvider lightingProvider = serverWorld.getChunkManager().getLightingProvider();
 		boolean bl = chunk.isLightOn();
 
 		for (int i = -1; i < 17; i++) {
@@ -326,7 +326,7 @@ public class ChunkSerializer {
 		} else if (tickScheduler instanceof SimpleTickScheduler) {
 			compoundTag2.put("TileTicks", ((SimpleTickScheduler)tickScheduler).toNbt(serverWorld.getTime()));
 		} else {
-			compoundTag2.put("TileTicks", serverWorld.method_14196().toTag(chunkPos));
+			compoundTag2.put("TileTicks", serverWorld.getBlockTickScheduler().toTag(chunkPos));
 		}
 
 		TickScheduler<Fluid> tickScheduler2 = chunk.getFluidTickScheduler();
@@ -335,7 +335,7 @@ public class ChunkSerializer {
 		} else if (tickScheduler2 instanceof SimpleTickScheduler) {
 			compoundTag2.put("LiquidTicks", ((SimpleTickScheduler)tickScheduler2).toNbt(serverWorld.getTime()));
 		} else {
-			compoundTag2.put("LiquidTicks", serverWorld.method_14179().toTag(chunkPos));
+			compoundTag2.put("LiquidTicks", serverWorld.getFluidTickScheduler().toTag(chunkPos));
 		}
 
 		compoundTag2.put("PostProcessing", toNbt(chunk.getPostProcessingLists()));
@@ -422,12 +422,20 @@ public class ChunkSerializer {
 		return map;
 	}
 
-	private static Map<String, LongSet> readStructureReferences(CompoundTag tag) {
+	private static Map<String, LongSet> readStructureReferences(ChunkPos chunkPos, CompoundTag compoundTag) {
 		Map<String, LongSet> map = Maps.<String, LongSet>newHashMap();
-		CompoundTag compoundTag = tag.getCompound("References");
+		CompoundTag compoundTag2 = compoundTag.getCompound("References");
 
-		for (String string : compoundTag.getKeys()) {
-			map.put(string, new LongOpenHashSet(compoundTag.getLongArray(string)));
+		for (String string : compoundTag2.getKeys()) {
+			map.put(string, new LongOpenHashSet(Arrays.stream(compoundTag2.getLongArray(string)).filter(l -> {
+				ChunkPos chunkPos2 = new ChunkPos(l);
+				if (chunkPos2.method_24022(chunkPos) > 8) {
+					LOGGER.warn("Found invalid structure reference [ {} @ {} ] for chunk {}.", string, chunkPos2, chunkPos);
+					return false;
+				} else {
+					return true;
+				}
+			}).toArray()));
 		}
 
 		return map;

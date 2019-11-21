@@ -147,10 +147,10 @@ public abstract class World implements IWorld, AutoCloseable {
 	}
 
 	public WorldChunk getWorldChunk(BlockPos blockPos) {
-		return this.method_8497(blockPos.getX() >> 4, blockPos.getZ() >> 4);
+		return this.getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4);
 	}
 
-	public WorldChunk method_8497(int i, int j) {
+	public WorldChunk getChunk(int i, int j) {
 		return (WorldChunk)this.getChunk(i, j, ChunkStatus.FULL);
 	}
 
@@ -268,7 +268,7 @@ public abstract class World implements IWorld, AutoCloseable {
 	public void updateNeighborsAlways(BlockPos pos, Block block) {
 		this.updateNeighbor(pos.west(), block, pos);
 		this.updateNeighbor(pos.east(), block, pos);
-		this.updateNeighbor(pos.method_10074(), block, pos);
+		this.updateNeighbor(pos.down(), block, pos);
 		this.updateNeighbor(pos.up(), block, pos);
 		this.updateNeighbor(pos.north(), block, pos);
 		this.updateNeighbor(pos.south(), block, pos);
@@ -284,7 +284,7 @@ public abstract class World implements IWorld, AutoCloseable {
 		}
 
 		if (direction != Direction.DOWN) {
-			this.updateNeighbor(pos.method_10074(), sourceBlock, pos);
+			this.updateNeighbor(pos.down(), sourceBlock, pos);
 		}
 
 		if (direction != Direction.UP) {
@@ -327,7 +327,7 @@ public abstract class World implements IWorld, AutoCloseable {
 		int i;
 		if (x >= -30000000 && z >= -30000000 && x < 30000000 && z < 30000000) {
 			if (this.isChunkLoaded(x >> 4, z >> 4)) {
-				i = this.method_8497(x >> 4, z >> 4).sampleHeightmap(heightmap, x & 15, z & 15) + 1;
+				i = this.getChunk(x >> 4, z >> 4).sampleHeightmap(heightmap, x & 15, z & 15) + 1;
 			} else {
 				i = 0;
 			}
@@ -348,7 +348,7 @@ public abstract class World implements IWorld, AutoCloseable {
 		if (isHeightInvalid(pos)) {
 			return Blocks.VOID_AIR.getDefaultState();
 		} else {
-			WorldChunk worldChunk = this.method_8497(pos.getX() >> 4, pos.getZ() >> 4);
+			WorldChunk worldChunk = this.getChunk(pos.getX() >> 4, pos.getZ() >> 4);
 			return worldChunk.getBlockState(pos);
 		}
 	}
@@ -363,12 +363,12 @@ public abstract class World implements IWorld, AutoCloseable {
 		}
 	}
 
-	public boolean isDaylight() {
+	public boolean isDay() {
 		return this.dimension.getType() == DimensionType.OVERWORLD && this.ambientDarkness < 4;
 	}
 
-	public boolean method_23886() {
-		return this.dimension.getType() == DimensionType.OVERWORLD && !this.isDaylight();
+	public boolean isNight() {
+		return this.dimension.getType() == DimensionType.OVERWORLD && !this.isDay();
 	}
 
 	@Override
@@ -529,7 +529,7 @@ public abstract class World implements IWorld, AutoCloseable {
 			for (int o = i; o < j; o++) {
 				for (int p = k; p < l; p++) {
 					for (int q = m; q < n; q++) {
-						BlockState blockState = this.getBlockState(pooledMutable.method_10113(o, p, q));
+						BlockState blockState = this.getBlockState(pooledMutable.set(o, p, q));
 						if (!blockState.isAir()) {
 							return true;
 						}
@@ -553,7 +553,7 @@ public abstract class World implements IWorld, AutoCloseable {
 				for (int o = i; o < j; o++) {
 					for (int p = k; p < l; p++) {
 						for (int q = m; q < n; q++) {
-							Block block = this.getBlockState(pooledMutable.method_10113(o, p, q)).getBlock();
+							Block block = this.getBlockState(pooledMutable.set(o, p, q)).getBlock();
 							if (block == Blocks.FIRE || block == Blocks.LAVA) {
 								return true;
 							}
@@ -580,7 +580,7 @@ public abstract class World implements IWorld, AutoCloseable {
 				for (int o = i; o < j; o++) {
 					for (int p = k; p < l; p++) {
 						for (int q = m; q < n; q++) {
-							BlockState blockState = this.getBlockState(pooledMutable.method_10113(o, p, q));
+							BlockState blockState = this.getBlockState(pooledMutable.set(o, p, q));
 							if (blockState.getBlock() == block) {
 								return blockState;
 							}
@@ -603,7 +603,7 @@ public abstract class World implements IWorld, AutoCloseable {
 		int m = MathHelper.floor(area.z1);
 		int n = MathHelper.ceil(area.z2);
 		MaterialPredicate materialPredicate = MaterialPredicate.create(material);
-		return BlockPos.stream(i, k, m, j - 1, l - 1, n - 1).anyMatch(blockPos -> materialPredicate.method_11745(this.getBlockState(blockPos)));
+		return BlockPos.stream(i, k, m, j - 1, l - 1, n - 1).anyMatch(blockPos -> materialPredicate.test(this.getBlockState(blockPos)));
 	}
 
 	public Explosion createExplosion(@Nullable Entity entity, double x, double y, double z, float power, Explosion.DestructionType destructionType) {
@@ -878,7 +878,7 @@ public abstract class World implements IWorld, AutoCloseable {
 
 	public int getReceivedStrongRedstonePower(BlockPos blockPos) {
 		int i = 0;
-		i = Math.max(i, this.getStrongRedstonePower(blockPos.method_10074(), Direction.DOWN));
+		i = Math.max(i, this.getStrongRedstonePower(blockPos.down(), Direction.DOWN));
 		if (i >= 15) {
 			return i;
 		} else {
@@ -917,7 +917,7 @@ public abstract class World implements IWorld, AutoCloseable {
 	}
 
 	public boolean isReceivingRedstonePower(BlockPos blockPos) {
-		if (this.getEmittedRedstonePower(blockPos.method_10074(), Direction.DOWN) > 0) {
+		if (this.getEmittedRedstonePower(blockPos.down(), Direction.DOWN) > 0) {
 			return true;
 		} else if (this.getEmittedRedstonePower(blockPos.up(), Direction.UP) > 0) {
 			return true;

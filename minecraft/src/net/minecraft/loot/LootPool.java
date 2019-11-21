@@ -122,7 +122,7 @@ public class LootPool {
 			return this;
 		}
 
-		public LootPool.Builder method_354() {
+		public LootPool.Builder getThis() {
 			return this;
 		}
 
@@ -131,12 +131,12 @@ public class LootPool {
 			return this;
 		}
 
-		public LootPool.Builder method_356(LootCondition.Builder builder) {
+		public LootPool.Builder withCondition(LootCondition.Builder builder) {
 			this.conditions.add(builder.build());
 			return this;
 		}
 
-		public LootPool.Builder method_353(LootFunction.Builder builder) {
+		public LootPool.Builder withFunction(LootFunction.Builder builder) {
 			this.functions.add(builder.build());
 			return this;
 		}
@@ -157,7 +157,7 @@ public class LootPool {
 	}
 
 	public static class Serializer implements JsonDeserializer<LootPool>, JsonSerializer<LootPool> {
-		public LootPool method_358(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+		public LootPool deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "loot pool");
 			LootEntry[] lootEntrys = JsonHelper.deserialize(jsonObject, "entries", jsonDeserializationContext, LootEntry[].class);
 			LootCondition[] lootConditions = JsonHelper.deserialize(jsonObject, "conditions", new LootCondition[0], jsonDeserializationContext, LootCondition[].class);
@@ -169,7 +169,7 @@ public class LootPool {
 			return new LootPool(lootEntrys, lootConditions, lootFunctions, lootTableRange, uniformLootTableRange);
 		}
 
-		public JsonElement method_357(LootPool lootPool, Type type, JsonSerializationContext jsonSerializationContext) {
+		public JsonElement serialize(LootPool lootPool, Type type, JsonSerializationContext jsonSerializationContext) {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("rolls", LootTableRanges.toJson(lootPool.rollsRange, jsonSerializationContext));
 			jsonObject.add("entries", jsonSerializationContext.serialize(lootPool.entries));

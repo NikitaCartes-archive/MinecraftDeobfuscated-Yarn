@@ -27,7 +27,7 @@ public class EmptyEntry extends LeafEntry {
 			super(new Identifier("empty"), EmptyEntry.class);
 		}
 
-		protected EmptyEntry method_402(
+		protected EmptyEntry fromJson(
 			JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions
 		) {
 			return new EmptyEntry(i, j, lootConditions, lootFunctions);
