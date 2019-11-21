@@ -75,15 +75,17 @@ extends ConditionalLootFunction {
             super(new Identifier("copy_state"), CopyStateFunction.class);
         }
 
-        public void method_21901(JsonObject jsonObject, CopyStateFunction copyStateFunction, JsonSerializationContext jsonSerializationContext) {
-            super.method_529(jsonObject, copyStateFunction, jsonSerializationContext);
+        @Override
+        public void toJson(JsonObject jsonObject, CopyStateFunction copyStateFunction, JsonSerializationContext jsonSerializationContext) {
+            super.toJson(jsonObject, copyStateFunction, jsonSerializationContext);
             jsonObject.addProperty("block", Registry.BLOCK.getId(copyStateFunction.block).toString());
             JsonArray jsonArray = new JsonArray();
             copyStateFunction.properties.forEach(property -> jsonArray.add(property.getName()));
             jsonObject.add("properties", jsonArray);
         }
 
-        public CopyStateFunction method_21900(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+        @Override
+        public CopyStateFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
             Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "block"));
             Block block = (Block)Registry.BLOCK.getOrEmpty(identifier).orElseThrow(() -> new IllegalArgumentException("Can't find block " + identifier));
             StateManager<Block, BlockState> stateManager = block.getStateManager();
@@ -97,7 +99,7 @@ extends ConditionalLootFunction {
 
         @Override
         public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            return this.method_21900(jsonObject, jsonDeserializationContext, lootConditions);
+            return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
         }
     }
 
@@ -118,7 +120,8 @@ extends ConditionalLootFunction {
             return this;
         }
 
-        protected Builder method_21897() {
+        @Override
+        protected Builder getThisBuilder() {
             return this;
         }
 
@@ -129,7 +132,7 @@ extends ConditionalLootFunction {
 
         @Override
         protected /* synthetic */ ConditionalLootFunction.Builder getThisBuilder() {
-            return this.method_21897();
+            return this.getThisBuilder();
         }
     }
 }

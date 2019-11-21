@@ -33,7 +33,8 @@ implements ArgumentType<Operation> {
         return commandContext.getArgument(string, Operation.class);
     }
 
-    public Operation method_9412(StringReader stringReader) throws CommandSyntaxException {
+    @Override
+    public Operation parse(StringReader stringReader) throws CommandSyntaxException {
         if (stringReader.canRead()) {
             int i = stringReader.getCursor();
             while (stringReader.canRead() && stringReader.peek() != ' ') {
@@ -107,7 +108,7 @@ implements ArgumentType<Operation> {
 
     @Override
     public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.method_9412(stringReader);
+        return this.parse(stringReader);
     }
 
     @FunctionalInterface

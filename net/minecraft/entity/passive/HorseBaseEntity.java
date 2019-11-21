@@ -501,7 +501,7 @@ JumpingMount {
             this.heal(1.0f);
         }
         if (this.eatsGrass()) {
-            if (!this.isEatingGrass() && !this.hasPassengers() && this.random.nextInt(300) == 0 && this.world.getBlockState(new BlockPos(this).method_10074()).getBlock() == Blocks.GRASS_BLOCK) {
+            if (!this.isEatingGrass() && !this.hasPassengers() && this.random.nextInt(300) == 0 && this.world.getBlockState(new BlockPos(this).down()).getBlock() == Blocks.GRASS_BLOCK) {
                 this.setEatingGrass(true);
             }
             if (this.isEatingGrass() && ++this.eatingGrassTicks > 50) {

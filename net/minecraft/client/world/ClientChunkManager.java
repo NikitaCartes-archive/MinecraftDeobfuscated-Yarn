@@ -71,8 +71,9 @@ extends ChunkManager {
         }
     }
 
+    @Override
     @Nullable
-    public WorldChunk method_2857(int i, int j, ChunkStatus chunkStatus, boolean bl) {
+    public WorldChunk getChunk(int i, int j, ChunkStatus chunkStatus, boolean bl) {
         WorldChunk worldChunk;
         if (this.chunks.isInRadius(i, j) && ClientChunkManager.positionEquals(worldChunk = this.chunks.getChunk(this.chunks.getIndex(i, j)), i, j)) {
             return worldChunk;
@@ -181,7 +182,7 @@ extends ChunkManager {
     @Override
     @Nullable
     public /* synthetic */ Chunk getChunk(int i, int j, ChunkStatus chunkStatus, boolean bl) {
-        return this.method_2857(i, j, chunkStatus, bl);
+        return this.getChunk(i, j, chunkStatus, bl);
     }
 
     @Environment(value=EnvType.CLIENT)

@@ -24,7 +24,8 @@ implements Packet<ClientPlayPacketListener> {
         this.difficultyLocked = bl;
     }
 
-    public void method_11341(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onDifficulty(this);
     }
 

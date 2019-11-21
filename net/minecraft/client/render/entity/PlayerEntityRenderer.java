@@ -62,12 +62,14 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
         this.addFeature(new StingerFeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>>(this));
     }
 
-    public void method_4215(AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+    @Override
+    public void render(AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         this.setModelPose(abstractClientPlayerEntity);
-        super.method_4054(abstractClientPlayerEntity, f, g, matrixStack, vertexConsumerProvider, i);
+        super.render(abstractClientPlayerEntity, f, g, matrixStack, vertexConsumerProvider, i);
     }
 
-    public Vec3d method_23206(AbstractClientPlayerEntity abstractClientPlayerEntity, float f) {
+    @Override
+    public Vec3d getPositionOffset(AbstractClientPlayerEntity abstractClientPlayerEntity, float f) {
         if (abstractClientPlayerEntity.isInSneakingPose()) {
             return new Vec3d(0.0, -0.125, 0.0);
         }
@@ -136,16 +138,19 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
         return armPose;
     }
 
-    public Identifier method_4216(AbstractClientPlayerEntity abstractClientPlayerEntity) {
+    @Override
+    public Identifier getTexture(AbstractClientPlayerEntity abstractClientPlayerEntity) {
         return abstractClientPlayerEntity.getSkinTexture();
     }
 
-    protected void method_4217(AbstractClientPlayerEntity abstractClientPlayerEntity, MatrixStack matrixStack, float f) {
+    @Override
+    protected void scale(AbstractClientPlayerEntity abstractClientPlayerEntity, MatrixStack matrixStack, float f) {
         float g = 0.9375f;
         matrixStack.scale(0.9375f, 0.9375f, 0.9375f);
     }
 
-    protected void method_4213(AbstractClientPlayerEntity abstractClientPlayerEntity, String string, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+    @Override
+    protected void renderLabelIfPresent(AbstractClientPlayerEntity abstractClientPlayerEntity, String string, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         Scoreboard scoreboard;
         ScoreboardObjective scoreboardObjective;
         double d = this.renderManager.getSquaredDistanceToCamera(abstractClientPlayerEntity);
@@ -174,14 +179,15 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
         playerEntityModel.handSwingProgress = 0.0f;
         playerEntityModel.isSneaking = false;
         playerEntityModel.field_3396 = 0.0f;
-        playerEntityModel.method_17087(abstractClientPlayerEntity, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+        playerEntityModel.setAngles(abstractClientPlayerEntity, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
         modelPart.pitch = 0.0f;
-        modelPart.render(matrixStack, vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(abstractClientPlayerEntity.getSkinTexture())), i, OverlayTexture.DEFAULT_UV, null);
+        modelPart.render(matrixStack, vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(abstractClientPlayerEntity.getSkinTexture())), i, OverlayTexture.DEFAULT_UV);
         modelPart2.pitch = 0.0f;
-        modelPart2.render(matrixStack, vertexConsumerProvider.getBuffer(RenderLayer.getEntityTranslucent(abstractClientPlayerEntity.getSkinTexture())), i, OverlayTexture.DEFAULT_UV, null);
+        modelPart2.render(matrixStack, vertexConsumerProvider.getBuffer(RenderLayer.getEntityTranslucent(abstractClientPlayerEntity.getSkinTexture())), i, OverlayTexture.DEFAULT_UV);
     }
 
-    protected void method_4212(AbstractClientPlayerEntity abstractClientPlayerEntity, MatrixStack matrixStack, float f, float g, float h) {
+    @Override
+    protected void setupTransforms(AbstractClientPlayerEntity abstractClientPlayerEntity, MatrixStack matrixStack, float f, float g, float h) {
         float i = abstractClientPlayerEntity.getLeaningPitch(h);
         if (abstractClientPlayerEntity.isFallFlying()) {
             super.setupTransforms(abstractClientPlayerEntity, matrixStack, f, g, h);
@@ -210,6 +216,11 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
         } else {
             super.setupTransforms(abstractClientPlayerEntity, matrixStack, f, g, h);
         }
+    }
+
+    @Override
+    public /* synthetic */ Vec3d getPositionOffset(Entity entity, float f) {
+        return this.getPositionOffset((AbstractClientPlayerEntity)entity, f);
     }
 }
 

@@ -41,7 +41,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeCompoundTag(this.tag);
     }
 
-    public void method_11292(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onBlockEntityUpdate(this);
     }
 

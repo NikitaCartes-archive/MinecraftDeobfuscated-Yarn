@@ -211,7 +211,7 @@ extends Block {
                 return;
             }
         }
-        if (blockPos.getY() > 0 && ((blockState3 = serverWorld.getBlockState(blockPos3 = blockPos.method_10074())).isAir() || blockState3.getBlock() == this) && (blockState5 = blockState3.isAir() ? this.getDefaultState() : blockState3) != (blockState6 = this.getGrownState(blockState, blockState5, random)) && this.hasHorizontalSide(blockState6)) {
+        if (blockPos.getY() > 0 && ((blockState3 = serverWorld.getBlockState(blockPos3 = blockPos.down())).isAir() || blockState3.getBlock() == this) && (blockState5 = blockState3.isAir() ? this.getDefaultState() : blockState3) != (blockState6 = this.getGrownState(blockState, blockState5, random)) && this.hasHorizontalSide(blockState6)) {
             serverWorld.setBlockState(blockPos3, blockState6, 2);
         }
     }

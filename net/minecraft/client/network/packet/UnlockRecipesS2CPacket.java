@@ -38,7 +38,8 @@ implements Packet<ClientPlayPacketListener> {
         this.furnaceFilteringCraftable = bl4;
     }
 
-    public void method_11753(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onUnlockRecipes(this);
     }
 

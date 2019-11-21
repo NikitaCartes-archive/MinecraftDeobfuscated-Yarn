@@ -29,7 +29,8 @@ implements Packet<ServerPlayPacketListener> {
         packetByteBuf.writeEnumConstant(this.mode);
     }
 
-    public void method_12120(ServerPlayPacketListener serverPlayPacketListener) {
+    @Override
+    public void apply(ServerPlayPacketListener serverPlayPacketListener) {
         serverPlayPacketListener.onClientStatus(this);
     }
 

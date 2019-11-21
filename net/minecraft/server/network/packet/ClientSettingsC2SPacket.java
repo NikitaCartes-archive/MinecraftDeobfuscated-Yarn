@@ -54,7 +54,8 @@ implements Packet<ServerPlayPacketListener> {
         packetByteBuf.writeEnumConstant(this.mainArm);
     }
 
-    public void method_12133(ServerPlayPacketListener serverPlayPacketListener) {
+    @Override
+    public void apply(ServerPlayPacketListener serverPlayPacketListener) {
         serverPlayPacketListener.onClientSettings(this);
     }
 

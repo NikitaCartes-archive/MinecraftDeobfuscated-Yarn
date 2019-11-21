@@ -23,7 +23,8 @@ extends FeatureRenderer<EndermanEntity, EndermanEntityModel<EndermanEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_4179(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, EndermanEntity endermanEntity, float f, float g, float h, float j, float k, float l) {
+    @Override
+    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, EndermanEntity endermanEntity, float f, float g, float h, float j, float k, float l) {
         BlockState blockState = endermanEntity.getCarriedBlock();
         if (blockState == null) {
             return;

@@ -74,13 +74,14 @@ implements Flutterer {
     private static final TrackedData<Integer> ATTR_VARIANT = DataTracker.registerData(ParrotEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final Predicate<MobEntity> CAN_IMITATE = new Predicate<MobEntity>(){
 
-        public boolean method_6590(@Nullable MobEntity mobEntity) {
+        @Override
+        public boolean test(@Nullable MobEntity mobEntity) {
             return mobEntity != null && MOB_SOUNDS.containsKey(mobEntity.getType());
         }
 
         @Override
         public /* synthetic */ boolean test(@Nullable Object object) {
-            return this.method_6590((MobEntity)object);
+            return this.test((MobEntity)object);
         }
     };
     private static final Item COOKIE = Items.COOKIE;
@@ -280,7 +281,7 @@ implements Flutterer {
     }
 
     public static boolean canSpawn(EntityType<ParrotEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-        Block block = iWorld.getBlockState(blockPos.method_10074()).getBlock();
+        Block block = iWorld.getBlockState(blockPos.down()).getBlock();
         return (block.matches(BlockTags.LEAVES) || block == Blocks.GRASS_BLOCK || block instanceof LogBlock || block == Blocks.AIR) && iWorld.getBaseLightLevel(blockPos, 0) > 8;
     }
 

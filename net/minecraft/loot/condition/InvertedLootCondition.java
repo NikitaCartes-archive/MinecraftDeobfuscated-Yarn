@@ -22,7 +22,8 @@ implements LootCondition {
         this.term = lootCondition;
     }
 
-    public final boolean method_888(LootContext lootContext) {
+    @Override
+    public final boolean test(LootContext lootContext) {
         return !this.term.test(lootContext);
     }
 
@@ -44,7 +45,7 @@ implements LootCondition {
 
     @Override
     public /* synthetic */ boolean test(Object object) {
-        return this.method_888((LootContext)object);
+        return this.test((LootContext)object);
     }
 
     public static class Factory
@@ -53,18 +54,20 @@ implements LootCondition {
             super(new Identifier("inverted"), InvertedLootCondition.class);
         }
 
-        public void method_892(JsonObject jsonObject, InvertedLootCondition invertedLootCondition, JsonSerializationContext jsonSerializationContext) {
+        @Override
+        public void toJson(JsonObject jsonObject, InvertedLootCondition invertedLootCondition, JsonSerializationContext jsonSerializationContext) {
             jsonObject.add("term", jsonSerializationContext.serialize(invertedLootCondition.term));
         }
 
-        public InvertedLootCondition method_891(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+        @Override
+        public InvertedLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
             LootCondition lootCondition = JsonHelper.deserialize(jsonObject, "term", jsonDeserializationContext, LootCondition.class);
             return new InvertedLootCondition(lootCondition);
         }
 
         @Override
         public /* synthetic */ LootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            return this.method_891(jsonObject, jsonDeserializationContext);
+            return this.fromJson(jsonObject, jsonDeserializationContext);
         }
     }
 }

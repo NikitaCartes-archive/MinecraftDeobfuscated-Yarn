@@ -47,26 +47,26 @@ extends EntityModel<E> {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
+    public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k) {
         if (this.isChild) {
-            float k;
+            float l;
             matrixStack.push();
             if (this.headScaled) {
-                k = 1.5f / this.invertedChildHeadScale;
-                matrixStack.scale(k, k, k);
+                l = 1.5f / this.invertedChildHeadScale;
+                matrixStack.scale(l, l, l);
             }
             matrixStack.translate(0.0, this.childHeadYOffset / 16.0f, this.childHeadZOffset / 16.0f);
-            this.getHeadParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, null, f, g, h));
+            this.getHeadParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, f, g, h, k));
             matrixStack.pop();
             matrixStack.push();
-            k = 1.0f / this.invertedChildBodyScale;
-            matrixStack.scale(k, k, k);
+            l = 1.0f / this.invertedChildBodyScale;
+            matrixStack.scale(l, l, l);
             matrixStack.translate(0.0, this.childBodyYOffset / 16.0f, 0.0);
-            this.getBodyParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, null, f, g, h));
+            this.getBodyParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, f, g, h, k));
             matrixStack.pop();
         } else {
-            this.getHeadParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, null, f, g, h));
-            this.getBodyParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, null, f, g, h));
+            this.getHeadParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, f, g, h, k));
+            this.getBodyParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, f, g, h, k));
         }
     }
 

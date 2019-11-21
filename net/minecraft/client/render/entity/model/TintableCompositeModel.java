@@ -24,8 +24,8 @@ extends CompositeEntityModel<E> {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
-        super.render(matrixStack, vertexConsumer, i, j, this.redMultiplier * f, this.greenMultiplier * g, this.blueMultiplier * h);
+    public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k) {
+        super.render(matrixStack, vertexConsumer, i, j, this.redMultiplier * f, this.greenMultiplier * g, this.blueMultiplier * h, k);
     }
 }
 

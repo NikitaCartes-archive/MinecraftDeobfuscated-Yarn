@@ -46,7 +46,8 @@ implements ContainerProvider<LecternContainer> {
         this.lecternContainer = lecternContainer;
     }
 
-    public LecternContainer method_17573() {
+    @Override
+    public LecternContainer getContainer() {
         return this.lecternContainer;
     }
 
@@ -117,7 +118,7 @@ implements ContainerProvider<LecternContainer> {
 
     @Override
     public /* synthetic */ Container getContainer() {
-        return this.method_17573();
+        return this.getContainer();
     }
 }
 

@@ -65,7 +65,8 @@ implements Packet<ClientPlayPacketListener> {
         }
     }
 
-    public void method_11879(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onTitle(this);
     }
 

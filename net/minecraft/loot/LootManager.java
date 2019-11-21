@@ -51,7 +51,8 @@ extends JsonDataLoader {
         return this.suppliers.getOrDefault(identifier, LootTable.EMPTY);
     }
 
-    protected void method_20712(Map<Identifier, JsonObject> map, ResourceManager resourceManager, Profiler profiler) {
+    @Override
+    protected void apply(Map<Identifier, JsonObject> map, ResourceManager resourceManager, Profiler profiler) {
         ImmutableMap.Builder<Identifier, LootTable> builder = ImmutableMap.builder();
         JsonObject jsonObject2 = map.remove(LootTables.EMPTY);
         if (jsonObject2 != null) {

@@ -17,7 +17,8 @@ public class ByteTag
 extends AbstractNumberTag {
     public static final TagReader<ByteTag> READER = new TagReader<ByteTag>(){
 
-        public ByteTag method_23235(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+        @Override
+        public ByteTag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
             positionTracker.add(72L);
             return ByteTag.of(dataInput.readByte());
         }
@@ -39,7 +40,7 @@ extends AbstractNumberTag {
 
         @Override
         public /* synthetic */ Tag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-            return this.method_23235(dataInput, i, positionTracker);
+            return this.read(dataInput, i, positionTracker);
         }
     };
     public static final ByteTag ZERO = ByteTag.of((byte)0);
@@ -77,7 +78,8 @@ extends AbstractNumberTag {
         return this.value + "b";
     }
 
-    public ByteTag method_10530() {
+    @Override
+    public ByteTag copy() {
         return this;
     }
 
@@ -135,7 +137,7 @@ extends AbstractNumberTag {
 
     @Override
     public /* synthetic */ Tag copy() {
-        return this.method_10530();
+        return this.copy();
     }
 
     static class Cache {

@@ -118,7 +118,8 @@ implements Packet<ClientPlayPacketListener> {
         }
     }
 
-    public void method_11796(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onWorldBorder(this);
     }
 

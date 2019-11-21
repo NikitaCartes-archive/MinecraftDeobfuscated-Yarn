@@ -22,14 +22,16 @@ extends MobEntityRenderer<TurtleEntity, TurtleEntityModel<TurtleEntity>> {
         super(entityRenderDispatcher, new TurtleEntityModel(0.0f), 0.7f);
     }
 
-    public void method_4138(TurtleEntity turtleEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+    @Override
+    public void render(TurtleEntity turtleEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         if (turtleEntity.isBaby()) {
             this.field_4673 *= 0.5f;
         }
-        super.method_4072(turtleEntity, f, g, matrixStack, vertexConsumerProvider, i);
+        super.render(turtleEntity, f, g, matrixStack, vertexConsumerProvider, i);
     }
 
-    public Identifier method_4139(TurtleEntity turtleEntity) {
+    @Override
+    public Identifier getTexture(TurtleEntity turtleEntity) {
         return SKIN;
     }
 }

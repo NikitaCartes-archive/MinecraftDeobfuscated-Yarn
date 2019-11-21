@@ -61,7 +61,7 @@ implements FluidDrainable {
 
     @Override
     public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
-        BubbleColumnBlock.update(world, blockPos.up(), BubbleColumnBlock.calculateDrag(world, blockPos.method_10074()));
+        BubbleColumnBlock.update(world, blockPos.up(), BubbleColumnBlock.calculateDrag(world, blockPos.down()));
     }
 
     @Override
@@ -135,7 +135,7 @@ implements FluidDrainable {
 
     @Override
     public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
-        Block block = worldView.getBlockState(blockPos.method_10074()).getBlock();
+        Block block = worldView.getBlockState(blockPos.down()).getBlock();
         return block == Blocks.BUBBLE_COLUMN || block == Blocks.MAGMA_BLOCK || block == Blocks.SOUL_SAND;
     }
 

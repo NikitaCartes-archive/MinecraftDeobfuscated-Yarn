@@ -5,13 +5,14 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4722;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.feature.ShulkerSomethingFeatureRenderer;
 import net.minecraft.client.render.entity.model.ShulkerEntityModel;
-import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -21,15 +22,16 @@ import net.minecraft.util.math.Vec3d;
 @Environment(value=EnvType.CLIENT)
 public class ShulkerEntityRenderer
 extends MobEntityRenderer<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> {
-    public static final Identifier SKIN = new Identifier("textures/" + ModelLoader.SHULKER.getPath() + ".png");
-    public static final Identifier[] SKIN_COLOR = (Identifier[])ModelLoader.SHULKER_COLORS.stream().map(identifier -> new Identifier("textures/" + identifier.getPath() + ".png")).toArray(Identifier[]::new);
+    public static final Identifier SKIN = new Identifier("textures/" + class_4722.field_21710.method_24147().getPath() + ".png");
+    public static final Identifier[] SKIN_COLOR = (Identifier[])class_4722.field_21711.stream().map(arg -> new Identifier("textures/" + arg.method_24147().getPath() + ".png")).toArray(Identifier[]::new);
 
     public ShulkerEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher, new ShulkerEntityModel(), 0.0f);
         this.addFeature(new ShulkerSomethingFeatureRenderer(this));
     }
 
-    public Vec3d method_23189(ShulkerEntity shulkerEntity, float f) {
+    @Override
+    public Vec3d getPositionOffset(ShulkerEntity shulkerEntity, float f) {
         int i = shulkerEntity.method_7113();
         if (i > 0 && shulkerEntity.method_7117()) {
             BlockPos blockPos = shulkerEntity.getAttachedBlock();
@@ -44,8 +46,9 @@ extends MobEntityRenderer<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> {
         return super.getPositionOffset(shulkerEntity, f);
     }
 
-    public boolean method_4112(ShulkerEntity shulkerEntity, Frustum frustum, double d, double e, double f) {
-        if (super.method_4068(shulkerEntity, frustum, d, e, f)) {
+    @Override
+    public boolean isVisible(ShulkerEntity shulkerEntity, Frustum frustum, double d, double e, double f) {
+        if (super.isVisible(shulkerEntity, frustum, d, e, f)) {
             return true;
         }
         if (shulkerEntity.method_7113() > 0 && shulkerEntity.method_7117()) {
@@ -58,23 +61,31 @@ extends MobEntityRenderer<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> {
         return false;
     }
 
-    public Identifier method_4111(ShulkerEntity shulkerEntity) {
+    @Override
+    public Identifier getTexture(ShulkerEntity shulkerEntity) {
         if (shulkerEntity.getColor() == null) {
             return SKIN;
         }
         return SKIN_COLOR[shulkerEntity.getColor().getId()];
     }
 
-    protected void method_4114(ShulkerEntity shulkerEntity, MatrixStack matrixStack, float f, float g, float h) {
+    @Override
+    protected void setupTransforms(ShulkerEntity shulkerEntity, MatrixStack matrixStack, float f, float g, float h) {
         super.setupTransforms(shulkerEntity, matrixStack, f, g, h);
         matrixStack.translate(0.0, 0.5, 0.0);
         matrixStack.multiply(shulkerEntity.getAttachedFace().getOpposite().getRotationQuaternion());
         matrixStack.translate(0.0, -0.5, 0.0);
     }
 
-    protected void method_4109(ShulkerEntity shulkerEntity, MatrixStack matrixStack, float f) {
+    @Override
+    protected void scale(ShulkerEntity shulkerEntity, MatrixStack matrixStack, float f) {
         float g = 0.999f;
         matrixStack.scale(0.999f, 0.999f, 0.999f);
+    }
+
+    @Override
+    public /* synthetic */ Vec3d getPositionOffset(Entity entity, float f) {
+        return this.getPositionOffset((ShulkerEntity)entity, f);
     }
 }
 

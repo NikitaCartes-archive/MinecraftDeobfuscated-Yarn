@@ -45,11 +45,13 @@ implements DynamicOps<Tag> {
     protected NbtOps() {
     }
 
-    public Tag method_10668() {
+    @Override
+    public Tag empty() {
         return EndTag.INSTANCE;
     }
 
-    public Type<?> method_10642(Tag tag) {
+    @Override
+    public Type<?> getType(Tag tag) {
         switch (tag.getType()) {
             case 0: {
                 return DSL.nilType();
@@ -94,57 +96,69 @@ implements DynamicOps<Tag> {
         return DSL.remainderType();
     }
 
-    public Optional<Number> method_10645(Tag tag) {
+    @Override
+    public Optional<Number> getNumberValue(Tag tag) {
         if (tag instanceof AbstractNumberTag) {
             return Optional.of(((AbstractNumberTag)tag).getNumber());
         }
         return Optional.empty();
     }
 
-    public Tag method_10660(Number number) {
+    @Override
+    public Tag createNumeric(Number number) {
         return DoubleTag.of(number.doubleValue());
     }
 
-    public Tag method_10640(byte b) {
+    @Override
+    public Tag createByte(byte b) {
         return ByteTag.of(b);
     }
 
-    public Tag method_10635(short s) {
+    @Override
+    public Tag createShort(short s) {
         return ShortTag.of(s);
     }
 
-    public Tag method_10661(int i) {
+    @Override
+    public Tag createInt(int i) {
         return IntTag.of(i);
     }
 
-    public Tag method_10654(long l) {
+    @Override
+    public Tag createLong(long l) {
         return LongTag.of(l);
     }
 
-    public Tag method_10662(float f) {
+    @Override
+    public Tag createFloat(float f) {
         return FloatTag.of(f);
     }
 
-    public Tag method_10652(double d) {
+    @Override
+    public Tag createDouble(double d) {
         return DoubleTag.of(d);
     }
 
-    public Tag method_23253(boolean bl) {
+    @Override
+    public Tag createBoolean(boolean bl) {
         return ByteTag.of(bl);
     }
 
-    public Optional<String> method_10656(Tag tag) {
+    @Override
+    public Optional<String> getStringValue(Tag tag) {
         if (tag instanceof StringTag) {
             return Optional.of(tag.asString());
         }
         return Optional.empty();
     }
 
-    public Tag method_10639(String string) {
+    @Override
+    public Tag createString(String string) {
         return StringTag.of(string);
     }
 
-    public Tag method_10653(Tag tag, Tag tag2) {
+    @Override
+    public Tag mergeInto(Tag tag, Tag tag2) {
         if (tag2 instanceof EndTag) {
             return tag;
         }
@@ -176,7 +190,8 @@ implements DynamicOps<Tag> {
         return abstractListTag;
     }
 
-    public Tag method_10644(Tag tag, Tag tag2, Tag tag3) {
+    @Override
+    public Tag mergeInto(Tag tag, Tag tag2, Tag tag3) {
         CompoundTag compoundTag;
         if (tag instanceof EndTag) {
             compoundTag = new CompoundTag();
@@ -191,7 +206,8 @@ implements DynamicOps<Tag> {
         return compoundTag;
     }
 
-    public Tag method_10647(Tag tag, Tag tag2) {
+    @Override
+    public Tag merge(Tag tag, Tag tag2) {
         if (tag instanceof EndTag) {
             return tag2;
         }
@@ -214,15 +230,17 @@ implements DynamicOps<Tag> {
         throw new IllegalArgumentException("Could not merge " + tag + " and " + tag2);
     }
 
-    public Optional<Map<Tag, Tag>> method_10669(Tag tag) {
+    @Override
+    public Optional<Map<Tag, Tag>> getMapValues(Tag tag) {
         if (tag instanceof CompoundTag) {
             CompoundTag compoundTag = (CompoundTag)tag;
-            return Optional.of(compoundTag.getKeys().stream().map(string -> Pair.of(this.method_10639((String)string), compoundTag.get((String)string))).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond)));
+            return Optional.of(compoundTag.getKeys().stream().map(string -> Pair.of(this.createString((String)string), compoundTag.get((String)string))).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond)));
         }
         return Optional.empty();
     }
 
-    public Tag method_10655(Map<Tag, Tag> map) {
+    @Override
+    public Tag createMap(Map<Tag, Tag> map) {
         CompoundTag compoundTag = new CompoundTag();
         for (Map.Entry<Tag, Tag> entry : map.entrySet()) {
             compoundTag.put(entry.getKey().asString(), entry.getValue());
@@ -230,47 +248,55 @@ implements DynamicOps<Tag> {
         return compoundTag;
     }
 
-    public Optional<Stream<Tag>> method_10664(Tag tag2) {
+    @Override
+    public Optional<Stream<Tag>> getStream(Tag tag2) {
         if (tag2 instanceof AbstractListTag) {
             return Optional.of(((AbstractListTag)tag2).stream().map(tag -> tag));
         }
         return Optional.empty();
     }
 
-    public Optional<ByteBuffer> method_10646(Tag tag) {
+    @Override
+    public Optional<ByteBuffer> getByteBuffer(Tag tag) {
         if (tag instanceof ByteArrayTag) {
             return Optional.of(ByteBuffer.wrap(((ByteArrayTag)tag).getByteArray()));
         }
         return DynamicOps.super.getByteBuffer(tag);
     }
 
-    public Tag method_10657(ByteBuffer byteBuffer) {
+    @Override
+    public Tag createByteList(ByteBuffer byteBuffer) {
         return new ByteArrayTag(DataFixUtils.toArray(byteBuffer));
     }
 
-    public Optional<IntStream> method_10651(Tag tag) {
+    @Override
+    public Optional<IntStream> getIntStream(Tag tag) {
         if (tag instanceof IntArrayTag) {
             return Optional.of(Arrays.stream(((IntArrayTag)tag).getIntArray()));
         }
         return DynamicOps.super.getIntStream(tag);
     }
 
-    public Tag method_10663(IntStream intStream) {
+    @Override
+    public Tag createIntList(IntStream intStream) {
         return new IntArrayTag(intStream.toArray());
     }
 
-    public Optional<LongStream> method_10637(Tag tag) {
+    @Override
+    public Optional<LongStream> getLongStream(Tag tag) {
         if (tag instanceof LongArrayTag) {
             return Optional.of(Arrays.stream(((LongArrayTag)tag).getLongArray()));
         }
         return DynamicOps.super.getLongStream(tag);
     }
 
-    public Tag method_10643(LongStream longStream) {
+    @Override
+    public Tag createLongList(LongStream longStream) {
         return new LongArrayTag(longStream.toArray());
     }
 
-    public Tag method_10665(Stream<Tag> stream) {
+    @Override
+    public Tag createList(Stream<Tag> stream) {
         PeekingIterator peekingIterator = Iterators.peekingIterator(stream.iterator());
         if (!peekingIterator.hasNext()) {
             return new ListTag();
@@ -297,7 +323,8 @@ implements DynamicOps<Tag> {
         return listTag;
     }
 
-    public Tag method_10648(Tag tag, String string3) {
+    @Override
+    public Tag remove(Tag tag, String string3) {
         if (tag instanceof CompoundTag) {
             CompoundTag compoundTag = (CompoundTag)tag;
             CompoundTag compoundTag2 = new CompoundTag();
@@ -313,137 +340,137 @@ implements DynamicOps<Tag> {
 
     @Override
     public /* synthetic */ Object remove(Object object, String string) {
-        return this.method_10648((Tag)object, string);
+        return this.remove((Tag)object, string);
     }
 
     @Override
     public /* synthetic */ Object createLongList(LongStream longStream) {
-        return this.method_10643(longStream);
+        return this.createLongList(longStream);
     }
 
     @Override
     public /* synthetic */ Optional getLongStream(Object object) {
-        return this.method_10637((Tag)object);
+        return this.getLongStream((Tag)object);
     }
 
     @Override
     public /* synthetic */ Object createIntList(IntStream intStream) {
-        return this.method_10663(intStream);
+        return this.createIntList(intStream);
     }
 
     @Override
     public /* synthetic */ Optional getIntStream(Object object) {
-        return this.method_10651((Tag)object);
+        return this.getIntStream((Tag)object);
     }
 
     @Override
     public /* synthetic */ Object createByteList(ByteBuffer byteBuffer) {
-        return this.method_10657(byteBuffer);
+        return this.createByteList(byteBuffer);
     }
 
     @Override
     public /* synthetic */ Optional getByteBuffer(Object object) {
-        return this.method_10646((Tag)object);
+        return this.getByteBuffer((Tag)object);
     }
 
     @Override
     public /* synthetic */ Object createList(Stream stream) {
-        return this.method_10665(stream);
+        return this.createList(stream);
     }
 
     @Override
     public /* synthetic */ Optional getStream(Object object) {
-        return this.method_10664((Tag)object);
+        return this.getStream((Tag)object);
     }
 
     @Override
     public /* synthetic */ Object createMap(Map map) {
-        return this.method_10655(map);
+        return this.createMap(map);
     }
 
     @Override
     public /* synthetic */ Optional getMapValues(Object object) {
-        return this.method_10669((Tag)object);
+        return this.getMapValues((Tag)object);
     }
 
     @Override
     public /* synthetic */ Object merge(Object object, Object object2) {
-        return this.method_10647((Tag)object, (Tag)object2);
+        return this.merge((Tag)object, (Tag)object2);
     }
 
     @Override
     public /* synthetic */ Object mergeInto(Object object, Object object2, Object object3) {
-        return this.method_10644((Tag)object, (Tag)object2, (Tag)object3);
+        return this.mergeInto((Tag)object, (Tag)object2, (Tag)object3);
     }
 
     @Override
     public /* synthetic */ Object mergeInto(Object object, Object object2) {
-        return this.method_10653((Tag)object, (Tag)object2);
+        return this.mergeInto((Tag)object, (Tag)object2);
     }
 
     @Override
     public /* synthetic */ Object createString(String string) {
-        return this.method_10639(string);
+        return this.createString(string);
     }
 
     @Override
     public /* synthetic */ Optional getStringValue(Object object) {
-        return this.method_10656((Tag)object);
+        return this.getStringValue((Tag)object);
     }
 
     @Override
     public /* synthetic */ Object createBoolean(boolean bl) {
-        return this.method_23253(bl);
+        return this.createBoolean(bl);
     }
 
     @Override
     public /* synthetic */ Object createDouble(double d) {
-        return this.method_10652(d);
+        return this.createDouble(d);
     }
 
     @Override
     public /* synthetic */ Object createFloat(float f) {
-        return this.method_10662(f);
+        return this.createFloat(f);
     }
 
     @Override
     public /* synthetic */ Object createLong(long l) {
-        return this.method_10654(l);
+        return this.createLong(l);
     }
 
     @Override
     public /* synthetic */ Object createInt(int i) {
-        return this.method_10661(i);
+        return this.createInt(i);
     }
 
     @Override
     public /* synthetic */ Object createShort(short s) {
-        return this.method_10635(s);
+        return this.createShort(s);
     }
 
     @Override
     public /* synthetic */ Object createByte(byte b) {
-        return this.method_10640(b);
+        return this.createByte(b);
     }
 
     @Override
     public /* synthetic */ Object createNumeric(Number number) {
-        return this.method_10660(number);
+        return this.createNumeric(number);
     }
 
     @Override
     public /* synthetic */ Optional getNumberValue(Object object) {
-        return this.method_10645((Tag)object);
+        return this.getNumberValue((Tag)object);
     }
 
     @Override
     public /* synthetic */ Type getType(Object object) {
-        return this.method_10642((Tag)object);
+        return this.getType((Tag)object);
     }
 
     @Override
     public /* synthetic */ Object empty() {
-        return this.method_10668();
+        return this.empty();
     }
 }
 

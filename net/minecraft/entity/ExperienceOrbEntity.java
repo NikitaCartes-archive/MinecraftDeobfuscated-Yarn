@@ -21,7 +21,6 @@ import net.minecraft.network.Packet;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -54,12 +53,6 @@ extends Entity {
 
     @Override
     protected void initDataTracker() {
-    }
-
-    @Override
-    @Environment(value=EnvType.CLIENT)
-    public int getLightmapCoordinates() {
-        return MathHelper.clamp(super.getLightmapCoordinates() + 7, 0, 15);
     }
 
     @Override

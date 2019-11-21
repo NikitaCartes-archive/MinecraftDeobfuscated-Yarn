@@ -54,7 +54,8 @@ extends QuadrupedEntityModel<T> {
         return Iterables.concat(super.getBodyParts(), ImmutableList.of(this.field_3594));
     }
 
-    public void method_17125(T turtleEntity, float f, float g, float h, float i, float j) {
+    @Override
+    public void setAngles(T turtleEntity, float f, float g, float h, float i, float j) {
         super.setAngles(turtleEntity, f, g, h, i, j);
         this.backRightLeg.pitch = MathHelper.cos(f * 0.6662f * 0.6f) * 0.5f * g;
         this.backLeftLeg.pitch = MathHelper.cos(f * 0.6662f * 0.6f + (float)Math.PI) * 0.5f * g;
@@ -84,13 +85,13 @@ extends QuadrupedEntityModel<T> {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
+    public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k) {
         boolean bl = this.field_3594.visible;
         if (bl) {
             matrixStack.push();
             matrixStack.translate(0.0, -0.08f, 0.0);
         }
-        super.render(matrixStack, vertexConsumer, i, j, f, g, h);
+        super.render(matrixStack, vertexConsumer, i, j, f, g, h, k);
         if (bl) {
             matrixStack.pop();
         }

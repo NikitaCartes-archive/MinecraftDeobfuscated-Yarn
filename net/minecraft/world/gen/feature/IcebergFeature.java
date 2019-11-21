@@ -25,7 +25,8 @@ extends Feature<BushFeatureConfig> {
         super(function);
     }
 
-    public boolean method_13423(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, BushFeatureConfig bushFeatureConfig) {
+    @Override
+    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, BushFeatureConfig bushFeatureConfig) {
         boolean bl3;
         int s;
         int r;
@@ -110,18 +111,18 @@ extends Feature<BushFeatureConfig> {
                 BlockPos blockPos3;
                 Block block;
                 double e = this.method_13424(o, p, blockPos2, m, n, d);
-                if (!(e < 0.0) || !this.method_13420(block = iWorld.getBlockState(blockPos3 = blockPos.add(o, j, p)).getBlock()) && block != Blocks.SNOW_BLOCK) continue;
+                if (!(e < 0.0) || !this.isSnowyOrIcy(block = iWorld.getBlockState(blockPos3 = blockPos.add(o, j, p)).getBlock()) && block != Blocks.SNOW_BLOCK) continue;
                 if (bl) {
                     this.setBlockState(iWorld, blockPos3, Blocks.WATER.getDefaultState());
                     continue;
                 }
                 this.setBlockState(iWorld, blockPos3, Blocks.AIR.getDefaultState());
-                this.method_13422(iWorld, blockPos3);
+                this.clearSnowAbove(iWorld, blockPos3);
             }
         }
     }
 
-    private void method_13422(IWorld iWorld, BlockPos blockPos) {
+    private void clearSnowAbove(IWorld iWorld, BlockPos blockPos) {
         if (iWorld.getBlockState(blockPos.up()).getBlock() == Blocks.SNOW) {
             this.setBlockState(iWorld, blockPos.up(), Blocks.AIR.getDefaultState());
         }
@@ -195,12 +196,12 @@ extends Feature<BushFeatureConfig> {
         return MathHelper.ceil(g / 2.0f);
     }
 
-    private boolean method_13420(Block block) {
+    private boolean isSnowyOrIcy(Block block) {
         return block == Blocks.PACKED_ICE || block == Blocks.SNOW_BLOCK || block == Blocks.BLUE_ICE;
     }
 
-    private boolean method_13414(BlockView blockView, BlockPos blockPos) {
-        return blockView.getBlockState(blockPos.method_10074()).getMaterial() == Material.AIR;
+    private boolean isAirBelow(BlockView blockView, BlockPos blockPos) {
+        return blockView.getBlockState(blockPos.down()).getMaterial() == Material.AIR;
     }
 
     private void method_13418(IWorld iWorld, BlockPos blockPos, int i, int j, boolean bl, int k) {
@@ -210,17 +211,17 @@ extends Feature<BushFeatureConfig> {
                 for (int o = 0; o <= j; ++o) {
                     BlockPos blockPos2 = blockPos.add(m, o, n);
                     Block block = iWorld.getBlockState(blockPos2).getBlock();
-                    if (!this.method_13420(block) && block != Blocks.SNOW) continue;
-                    if (this.method_13414(iWorld, blockPos2)) {
+                    if (!this.isSnowyOrIcy(block) && block != Blocks.SNOW) continue;
+                    if (this.isAirBelow(iWorld, blockPos2)) {
                         this.setBlockState(iWorld, blockPos2, Blocks.AIR.getDefaultState());
                         this.setBlockState(iWorld, blockPos2.up(), Blocks.AIR.getDefaultState());
                         continue;
                     }
-                    if (!this.method_13420(block)) continue;
+                    if (!this.isSnowyOrIcy(block)) continue;
                     Block[] blocks = new Block[]{iWorld.getBlockState(blockPos2.west()).getBlock(), iWorld.getBlockState(blockPos2.east()).getBlock(), iWorld.getBlockState(blockPos2.north()).getBlock(), iWorld.getBlockState(blockPos2.south()).getBlock()};
                     int p = 0;
                     for (Block block2 : blocks) {
-                        if (this.method_13420(block2)) continue;
+                        if (this.isSnowyOrIcy(block2)) continue;
                         ++p;
                     }
                     if (p < 3) continue;

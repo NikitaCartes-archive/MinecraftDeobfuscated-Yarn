@@ -20,11 +20,13 @@ extends Carver<ProbabilityConfig> {
         super(function, i);
     }
 
-    public boolean method_12676(Random random, int i, int j, ProbabilityConfig probabilityConfig) {
+    @Override
+    public boolean shouldCarve(Random random, int i, int j, ProbabilityConfig probabilityConfig) {
         return random.nextFloat() <= probabilityConfig.probability;
     }
 
-    public boolean method_12673(Chunk chunk, Function<BlockPos, Biome> function, Random random, int i, int j, int k, int l, int m, BitSet bitSet, ProbabilityConfig probabilityConfig) {
+    @Override
+    public boolean carve(Chunk chunk, Function<BlockPos, Biome> function, Random random, int i, int j, int k, int l, int m, BitSet bitSet, ProbabilityConfig probabilityConfig) {
         int n = (this.getBranchFactor() * 2 - 1) * 16;
         int o = random.nextInt(random.nextInt(random.nextInt(this.getMaxCaveCount()) + 1) + 1);
         for (int p = 0; p < o; ++p) {

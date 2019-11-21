@@ -346,7 +346,8 @@ implements RangedAttackMob {
         return animalEntity != this && animalEntity instanceof LlamaEntity && this.canBreed() && ((LlamaEntity)animalEntity).canBreed();
     }
 
-    public LlamaEntity method_6804(PassiveEntity passiveEntity) {
+    @Override
+    public LlamaEntity createChild(PassiveEntity passiveEntity) {
         LlamaEntity llamaEntity = this.createChild();
         this.setChildAttributes(passiveEntity, llamaEntity);
         LlamaEntity llamaEntity2 = (LlamaEntity)passiveEntity;
@@ -446,7 +447,7 @@ implements RangedAttackMob {
 
     @Override
     public /* synthetic */ PassiveEntity createChild(PassiveEntity passiveEntity) {
-        return this.method_6804(passiveEntity);
+        return this.createChild(passiveEntity);
     }
 
     static class ChaseWolvesGoal

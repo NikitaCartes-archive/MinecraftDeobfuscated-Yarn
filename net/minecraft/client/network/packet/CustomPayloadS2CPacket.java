@@ -60,7 +60,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeBytes(this.data.copy());
     }
 
-    public void method_11457(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onCustomPayload(this);
     }
 

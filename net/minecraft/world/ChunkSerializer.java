@@ -27,6 +27,7 @@ import net.minecraft.nbt.ShortTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerLightingProvider;
+import net.minecraft.server.world.ServerTickScheduler;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.server.world.SimpleTickScheduler;
 import net.minecraft.structure.StructureFeatures;
@@ -67,7 +68,7 @@ public class ChunkSerializer {
         int n;
         ListTag listTag3;
         Chunk chunk;
-        ChunkGenerator<?> chunkGenerator = serverWorld.method_14178().getChunkGenerator();
+        ChunkGenerator<?> chunkGenerator = serverWorld.getChunkManager().getChunkGenerator();
         BiomeSource biomeSource = chunkGenerator.getBiomeSource();
         CompoundTag compoundTag2 = compoundTag.getCompound("Level");
         ChunkPos chunkPos2 = new ChunkPos(compoundTag2.getInt("xPos"), compoundTag2.getInt("zPos"));
@@ -83,7 +84,7 @@ public class ChunkSerializer {
         int i = 16;
         ChunkSection[] chunkSections = new ChunkSection[16];
         boolean bl2 = serverWorld.getDimension().hasSkyLight();
-        ServerChunkManager chunkManager = serverWorld.method_14178();
+        ServerChunkManager chunkManager = serverWorld.getChunkManager();
         LightingProvider lightingProvider = ((ChunkManager)chunkManager).getLightingProvider();
         if (bl) {
             lightingProvider.setRetainData(chunkPos, true);
@@ -143,7 +144,7 @@ public class ChunkSerializer {
         Heightmap.populateHeightmaps(chunk, enumSet);
         CompoundTag compoundTag3 = compoundTag2.getCompound("Structures");
         chunk.setStructureStarts(ChunkSerializer.readStructureStarts(chunkGenerator, structureManager, compoundTag3));
-        chunk.setStructureReferences(ChunkSerializer.readStructureReferences(compoundTag3));
+        chunk.setStructureReferences(ChunkSerializer.readStructureReferences(chunkPos, compoundTag3));
         if (compoundTag2.getBoolean("shouldSave")) {
             chunk.setShouldSave(true);
         }
@@ -202,7 +203,7 @@ public class ChunkSerializer {
         }
         ChunkSection[] chunkSections = chunk.getSectionArray();
         ListTag listTag = new ListTag();
-        ServerLightingProvider lightingProvider = serverWorld.method_14178().method_17293();
+        ServerLightingProvider lightingProvider = serverWorld.getChunkManager().getLightingProvider();
         boolean bl = chunk.isLightOn();
         for (int i = -1; i < 17; ++i) {
             int j = i;
@@ -266,7 +267,7 @@ public class ChunkSerializer {
         } else if (tickScheduler instanceof SimpleTickScheduler) {
             compoundTag2.put("TileTicks", ((SimpleTickScheduler)tickScheduler).toNbt(serverWorld.getTime()));
         } else {
-            compoundTag2.put("TileTicks", serverWorld.method_14196().toTag(chunkPos));
+            compoundTag2.put("TileTicks", ((ServerTickScheduler)serverWorld.getBlockTickScheduler()).toTag(chunkPos));
         }
         TickScheduler<Fluid> tickScheduler2 = chunk.getFluidTickScheduler();
         if (tickScheduler2 instanceof ChunkTickScheduler) {
@@ -274,7 +275,7 @@ public class ChunkSerializer {
         } else if (tickScheduler2 instanceof SimpleTickScheduler) {
             compoundTag2.put("LiquidTicks", ((SimpleTickScheduler)tickScheduler2).toNbt(serverWorld.getTime()));
         } else {
-            compoundTag2.put("LiquidTicks", serverWorld.method_14179().toTag(chunkPos));
+            compoundTag2.put("LiquidTicks", ((ServerTickScheduler)serverWorld.getFluidTickScheduler()).toTag(chunkPos));
         }
         compoundTag2.put("PostProcessing", ChunkSerializer.toNbt(chunk.getPostProcessingLists()));
         compoundTag3 = new CompoundTag();
@@ -344,11 +345,18 @@ public class ChunkSerializer {
         return map;
     }
 
-    private static Map<String, LongSet> readStructureReferences(CompoundTag compoundTag) {
+    private static Map<String, LongSet> readStructureReferences(ChunkPos chunkPos, CompoundTag compoundTag) {
         HashMap<String, LongSet> map = Maps.newHashMap();
         CompoundTag compoundTag2 = compoundTag.getCompound("References");
         for (String string : compoundTag2.getKeys()) {
-            map.put(string, new LongOpenHashSet(compoundTag2.getLongArray(string)));
+            map.put(string, new LongOpenHashSet(Arrays.stream(compoundTag2.getLongArray(string)).filter(l -> {
+                ChunkPos chunkPos2 = new ChunkPos(l);
+                if (chunkPos2.method_24022(chunkPos) > 8) {
+                    LOGGER.warn("Found invalid structure reference [ {} @ {} ] for chunk {}.", (Object)string, (Object)chunkPos2, (Object)chunkPos);
+                    return false;
+                }
+                return true;
+            }).toArray()));
         }
         return map;
     }

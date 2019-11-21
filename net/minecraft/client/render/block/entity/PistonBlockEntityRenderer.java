@@ -34,7 +34,8 @@ extends BlockEntityRenderer<PistonBlockEntity> {
         super(blockEntityRenderDispatcher);
     }
 
-    public void method_3576(PistonBlockEntity pistonBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
+    @Override
+    public void render(PistonBlockEntity pistonBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
         World world = pistonBlockEntity.getWorld();
         if (world == null) {
             return;

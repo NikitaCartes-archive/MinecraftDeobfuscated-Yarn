@@ -3,10 +3,14 @@
  */
 package net.minecraft.entity.passive;
 
+import com.google.common.collect.Lists;
+import java.util.Comparator;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -78,6 +82,7 @@ import net.minecraft.village.PointOfInterestStorage;
 import net.minecraft.village.PointOfInterestType;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 public class BeeEntity
@@ -92,12 +97,16 @@ implements Flutterer {
     private int ticksSincePollination;
     private int cannotEnterHiveTicks;
     private int cropsGrownSincePollination;
+    private int ticksLeftToFindHive = 0;
+    private int ticksUntilCanPollinate = 0;
     @Nullable
     private BlockPos flowerPos = null;
     @Nullable
-    private BlockPos hivePos = null;
-    private PollinateGoal field_21079;
-    private int field_21509;
+    private BlockPos chosenHive = null;
+    private PollinateGoal pollinateGoal;
+    private MoveToHiveGoal moveToHiveGoal;
+    private MoveToFlowerGoal moveToFlowerGoal;
+    private int ticksInsideWater;
 
     public BeeEntity(EntityType<? extends BeeEntity> entityType, World world) {
         super((EntityType<? extends AnimalEntity>)entityType, world);
@@ -116,17 +125,27 @@ implements Flutterer {
     }
 
     @Override
+    public float getPathfindingFavor(BlockPos blockPos, WorldView worldView) {
+        if (worldView.getBlockState(blockPos).isAir()) {
+            return 10.0f;
+        }
+        return 0.0f;
+    }
+
+    @Override
     protected void initGoals() {
-        this.goalSelector.add(0, new FindHiveGoal());
         this.goalSelector.add(0, new StingGoal(this, 1.4f, true));
         this.goalSelector.add(1, new EnterHiveGoal());
         this.goalSelector.add(2, new AnimalMateGoal(this, 1.0));
         this.goalSelector.add(3, new TemptGoal((MobEntityWithAi)this, 1.25, Ingredient.fromTag(ItemTags.FLOWERS), false));
-        this.field_21079 = new PollinateGoal();
-        this.goalSelector.add(4, this.field_21079);
+        this.pollinateGoal = new PollinateGoal();
+        this.goalSelector.add(4, this.pollinateGoal);
         this.goalSelector.add(5, new FollowParentGoal(this, 1.25));
-        this.goalSelector.add(5, new MoveToHiveGoal());
-        this.goalSelector.add(6, new MoveToFlowerGoal());
+        this.goalSelector.add(5, new FindHiveGoal());
+        this.moveToHiveGoal = new MoveToHiveGoal();
+        this.goalSelector.add(5, this.moveToHiveGoal);
+        this.moveToFlowerGoal = new MoveToFlowerGoal();
+        this.goalSelector.add(6, this.moveToFlowerGoal);
         this.goalSelector.add(7, new GrowCropsGoal());
         this.goalSelector.add(8, new BeeWanderAroundGoal());
         this.goalSelector.add(9, new SwimGoal(this));
@@ -138,7 +157,7 @@ implements Flutterer {
     public void writeCustomDataToTag(CompoundTag compoundTag) {
         super.writeCustomDataToTag(compoundTag);
         if (this.hasHive()) {
-            compoundTag.put("HivePos", NbtHelper.fromBlockPos(this.method_23884()));
+            compoundTag.put("HivePos", NbtHelper.fromBlockPos(this.getHivePos()));
         }
         if (this.hasFlower()) {
             compoundTag.put("FlowerPos", NbtHelper.fromBlockPos(this.getFlowerPos()));
@@ -158,9 +177,9 @@ implements Flutterer {
 
     @Override
     public void readCustomDataFromTag(CompoundTag compoundTag) {
-        this.hivePos = null;
+        this.chosenHive = null;
         if (compoundTag.contains("HivePos")) {
-            this.hivePos = NbtHelper.toBlockPos(compoundTag.getCompound("HivePos"));
+            this.chosenHive = NbtHelper.toBlockPos(compoundTag.getCompound("HivePos"));
         }
         this.flowerPos = null;
         if (compoundTag.contains("FlowerPos")) {
@@ -224,6 +243,31 @@ implements Flutterer {
         world.addParticle(particleEffect, MathHelper.lerp(world.random.nextDouble(), d, e), h, MathHelper.lerp(world.random.nextDouble(), f, g), 0.0, 0.0, 0.0);
     }
 
+    private void startMovingTo(BlockPos blockPos) {
+        Vec3d vec3d2;
+        Vec3d vec3d = new Vec3d(blockPos);
+        int i = 0;
+        BlockPos blockPos2 = new BlockPos(this);
+        int j = (int)vec3d.y - blockPos2.getY();
+        if (j > 2) {
+            i = 4;
+        } else if (j < -2) {
+            i = -4;
+        }
+        int k = 6;
+        int l = 8;
+        int m = blockPos2.getManhattanDistance(blockPos);
+        if (m < 15) {
+            k = m / 2;
+            l = m / 2;
+        }
+        if ((vec3d2 = TargetFinder.findGroundTargetTowards(this, k, l, i, vec3d, 0.3141592741012573)) == null) {
+            return;
+        }
+        this.navigation.setRangeMultiplier(0.5f);
+        this.navigation.startMovingTo(vec3d2.x, vec3d2.y, vec3d2.z, 1.0);
+    }
+
     @Nullable
     public BlockPos getFlowerPos() {
         return this.flowerPos;
@@ -237,23 +281,16 @@ implements Flutterer {
         this.flowerPos = blockPos;
     }
 
+    private boolean failedPollinatingTooLong() {
+        return this.ticksSincePollination > 3600;
+    }
+
     private boolean canEnterHive() {
-        boolean bl;
-        if (this.cannotEnterHiveTicks > 0) {
+        if (this.cannotEnterHiveTicks > 0 || this.pollinateGoal.isRunning() || this.hasStung()) {
             return false;
         }
-        if (!this.hasHive()) {
-            return false;
-        }
-        if (this.hasStung()) {
-            return false;
-        }
-        boolean bl2 = bl = this.ticksSincePollination > 3600;
-        if (bl || this.hasNectar() || this.world.method_23886() || this.world.isRaining()) {
-            BlockEntity blockEntity = this.world.getBlockEntity(this.hivePos);
-            return blockEntity instanceof BeeHiveBlockEntity && !((BeeHiveBlockEntity)blockEntity).method_23280();
-        }
-        return false;
+        boolean bl = this.failedPollinatingTooLong() || this.world.isRaining() || this.world.isNight() || this.hasNectar();
+        return bl && !this.isHiveNearFire();
     }
 
     public void setCannotEnterHiveTicks(int i) {
@@ -281,8 +318,8 @@ implements Flutterer {
     @Override
     protected void mobTick() {
         boolean bl = this.hasStung();
-        this.field_21509 = this.isInsideWaterOrBubbleColumn() ? ++this.field_21509 : 0;
-        if (this.field_21509 > 20) {
+        this.ticksInsideWater = this.isInsideWaterOrBubbleColumn() ? ++this.ticksInsideWater : 0;
+        if (this.ticksInsideWater > 20) {
             this.damage(DamageSource.DROWN, 1.0f);
         }
         if (bl) {
@@ -308,25 +345,41 @@ implements Flutterer {
         this.ticksSincePollination = 0;
     }
 
+    private boolean isHiveNearFire() {
+        if (this.chosenHive == null) {
+            return false;
+        }
+        BlockEntity blockEntity = this.world.getBlockEntity(this.chosenHive);
+        return blockEntity instanceof BeeHiveBlockEntity && ((BeeHiveBlockEntity)blockEntity).isNearFire();
+    }
+
     public boolean isAngry() {
         return this.getAnger() > 0;
     }
 
-    public int getAnger() {
+    private int getAnger() {
         return this.dataTracker.get(anger);
     }
 
-    public void setAnger(int i) {
+    private void setAnger(int i) {
         this.dataTracker.set(anger, i);
     }
 
+    private boolean doesHiveHaveSpace(BlockPos blockPos) {
+        BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
+        if (blockEntity instanceof BeeHiveBlockEntity) {
+            return !((BeeHiveBlockEntity)blockEntity).isFullOfBees();
+        }
+        return false;
+    }
+
     public boolean hasHive() {
-        return this.hivePos != null;
+        return this.chosenHive != null;
     }
 
     @Nullable
-    public BlockPos method_23884() {
-        return this.hivePos;
+    public BlockPos getHivePos() {
+        return this.chosenHive;
     }
 
     @Override
@@ -339,7 +392,7 @@ implements Flutterer {
         return this.cropsGrownSincePollination;
     }
 
-    public void resetCropCounter() {
+    private void resetCropCounter() {
         this.cropsGrownSincePollination = 0;
     }
 
@@ -354,10 +407,16 @@ implements Flutterer {
             if (this.cannotEnterHiveTicks > 0) {
                 --this.cannotEnterHiveTicks;
             }
+            if (this.ticksLeftToFindHive > 0) {
+                --this.ticksLeftToFindHive;
+            }
+            if (this.ticksUntilCanPollinate > 0) {
+                --this.ticksUntilCanPollinate;
+            }
             boolean bl = this.isAngry() && !this.hasStung() && this.getTarget() != null && this.getTarget().squaredDistanceTo(this) < 4.0;
             this.setNearTarget(bl);
             if (this.age % 20 == 0 && !this.isHiveValid()) {
-                this.hivePos = null;
+                this.chosenHive = null;
             }
         }
     }
@@ -366,7 +425,7 @@ implements Flutterer {
         if (!this.hasHive()) {
             return false;
         }
-        BlockEntity blockEntity = this.world.getBlockEntity(this.hivePos);
+        BlockEntity blockEntity = this.world.getBlockEntity(this.chosenHive);
         return blockEntity != null && blockEntity.getType() == BlockEntityType.BEEHIVE;
     }
 
@@ -374,7 +433,10 @@ implements Flutterer {
         return this.getBeeFlag(8);
     }
 
-    public void setHasNectar(boolean bl) {
+    private void setHasNectar(boolean bl) {
+        if (bl) {
+            this.resetPollinationTicks();
+        }
         this.setBeeFlag(8, bl);
     }
 
@@ -382,16 +444,20 @@ implements Flutterer {
         return this.getBeeFlag(4);
     }
 
-    public void setHasStung(boolean bl) {
+    private void setHasStung(boolean bl) {
         this.setBeeFlag(4, bl);
     }
 
-    public boolean isNearTarget() {
+    private boolean isNearTarget() {
         return this.getBeeFlag(2);
     }
 
-    public void setNearTarget(boolean bl) {
+    private void setNearTarget(boolean bl) {
         this.setBeeFlag(2, bl);
+    }
+
+    private boolean isTooFar(BlockPos blockPos) {
+        return !this.isWithinDistance(blockPos, 48);
     }
 
     private void setBeeFlag(int i, boolean bl) {
@@ -414,6 +480,7 @@ implements Flutterer {
         this.getAttributeInstance(EntityAttributes.FLYING_SPEED).setBaseValue(0.6f);
         this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.3f);
         this.getAttributes().register(EntityAttributes.ATTACK_DAMAGE).setBaseValue(2.0);
+        this.getAttributeInstance(EntityAttributes.FOLLOW_RANGE).setBaseValue(48.0);
     }
 
     @Override
@@ -422,12 +489,12 @@ implements Flutterer {
 
             @Override
             public boolean isValidPosition(BlockPos blockPos) {
-                return !this.world.getBlockState(blockPos.method_10074()).isAir();
+                return !this.world.getBlockState(blockPos.down()).isAir();
             }
 
             @Override
             public void tick() {
-                if (BeeEntity.this.field_21079.method_23346()) {
+                if (BeeEntity.this.pollinateGoal.isRunning()) {
                     return;
                 }
                 super.tick();
@@ -442,6 +509,10 @@ implements Flutterer {
     @Override
     public boolean isBreedingItem(ItemStack itemStack) {
         return itemStack.getItem().isIn(ItemTags.FLOWERS);
+    }
+
+    private boolean isFlowers(BlockPos blockPos) {
+        return this.world.canSetBlock(blockPos) && this.world.getBlockState(blockPos).getBlock().matches(BlockTags.FLOWERS);
     }
 
     @Override
@@ -468,7 +539,8 @@ implements Flutterer {
         return 0.4f;
     }
 
-    public BeeEntity method_21771(PassiveEntity passiveEntity) {
+    @Override
+    public BeeEntity createChild(PassiveEntity passiveEntity) {
         return EntityType.BEE.create(this.world);
     }
 
@@ -514,7 +586,7 @@ implements Flutterer {
         }
         Entity entity = damageSource.getAttacker();
         if (!this.world.isClient && entity instanceof PlayerEntity && !((PlayerEntity)entity).isCreative() && this.canSee(entity) && !this.isAiDisabled()) {
-            this.field_21079.method_23748();
+            this.pollinateGoal.cancel();
             this.setBeeAttacker(entity);
         }
         return super.damage(damageSource, f);
@@ -530,9 +602,13 @@ implements Flutterer {
         this.setVelocity(this.getVelocity().add(0.0, 0.01, 0.0));
     }
 
+    private boolean isWithinDistance(BlockPos blockPos, int i) {
+        return blockPos.isWithinDistance(new BlockPos(this), (double)i);
+    }
+
     @Override
     public /* synthetic */ PassiveEntity createChild(PassiveEntity passiveEntity) {
-        return this.method_21771(passiveEntity);
+        return this.createChild(passiveEntity);
     }
 
     class EnterHiveGoal
@@ -543,10 +619,10 @@ implements Flutterer {
         @Override
         public boolean canBeeStart() {
             BlockEntity blockEntity;
-            if (BeeEntity.this.canEnterHive() && BeeEntity.this.hivePos.isWithinDistance(BeeEntity.this.getPos(), 2.0) && (blockEntity = BeeEntity.this.world.getBlockEntity(BeeEntity.this.hivePos)) instanceof BeeHiveBlockEntity) {
+            if (BeeEntity.this.hasHive() && BeeEntity.this.canEnterHive() && BeeEntity.this.chosenHive.isWithinDistance(BeeEntity.this.getPos(), 2.0) && (blockEntity = BeeEntity.this.world.getBlockEntity(BeeEntity.this.chosenHive)) instanceof BeeHiveBlockEntity) {
                 BeeHiveBlockEntity beeHiveBlockEntity = (BeeHiveBlockEntity)blockEntity;
                 if (beeHiveBlockEntity.isFullOfBees()) {
-                    BeeEntity.this.hivePos = null;
+                    BeeEntity.this.chosenHive = null;
                 } else {
                     return true;
                 }
@@ -561,7 +637,7 @@ implements Flutterer {
 
         @Override
         public void start() {
-            BlockEntity blockEntity = BeeEntity.this.world.getBlockEntity(BeeEntity.this.hivePos);
+            BlockEntity blockEntity = BeeEntity.this.world.getBlockEntity(BeeEntity.this.chosenHive);
             if (blockEntity instanceof BeeHiveBlockEntity) {
                 BeeHiveBlockEntity beeHiveBlockEntity = (BeeHiveBlockEntity)blockEntity;
                 beeHiveBlockEntity.tryEnterHive(BeeEntity.this, BeeEntity.this.hasNectar());
@@ -571,7 +647,7 @@ implements Flutterer {
 
     class StingGoal
     extends MeleeAttackGoal {
-        public StingGoal(MobEntityWithAi mobEntityWithAi, double d, boolean bl) {
+        StingGoal(MobEntityWithAi mobEntityWithAi, double d, boolean bl) {
             super(mobEntityWithAi, d, bl);
         }
 
@@ -651,7 +727,7 @@ implements Flutterer {
 
         @Override
         public boolean canBeeStart() {
-            return BeeEntity.this.age % 10 == 0 && !BeeEntity.this.hasHive();
+            return BeeEntity.this.ticksLeftToFindHive == 0 && !BeeEntity.this.hasHive() && BeeEntity.this.canEnterHive();
         }
 
         @Override
@@ -661,25 +737,25 @@ implements Flutterer {
 
         @Override
         public void start() {
-            Stream<BlockPos> stream = this.method_23742(20);
-            Optional<BlockPos> optional = stream.filter(blockPos -> {
-                BlockEntity blockEntity = BeeEntity.this.world.getBlockEntity((BlockPos)blockPos);
-                if (blockEntity instanceof BeeHiveBlockEntity && !((BeeHiveBlockEntity)blockEntity).isFullOfBees()) {
-                    Path path = BeeEntity.this.getNavigation().findPathTo((BlockPos)blockPos, 20);
-                    return path != null;
-                }
-                return false;
-            }).findFirst();
-            optional.ifPresent(blockPos -> BeeEntity.this.hivePos = blockPos);
+            BeeEntity.this.ticksLeftToFindHive = 200;
+            List<BlockPos> list = this.getNearbyFreeHives();
+            if (list.isEmpty()) {
+                return;
+            }
+            for (BlockPos blockPos : list) {
+                if (BeeEntity.this.moveToHiveGoal.isPossibleHive(blockPos)) continue;
+                BeeEntity.this.chosenHive = blockPos;
+                return;
+            }
+            BeeEntity.this.moveToHiveGoal.clearPossibleHives();
+            BeeEntity.this.chosenHive = list.get(0);
         }
 
-        private Stream<BlockPos> method_23742(int i) {
-            BlockPos blockPos = new BlockPos(BeeEntity.this);
-            if (BeeEntity.this.world instanceof ServerWorld) {
-                Stream<PointOfInterest> stream = ((ServerWorld)BeeEntity.this.world).getPointOfInterestStorage().get(pointOfInterestType -> pointOfInterestType == PointOfInterestType.BEEHIVE || pointOfInterestType == PointOfInterestType.BEE_NEST, blockPos, i, PointOfInterestStorage.OccupationStatus.ANY);
-                return stream.map(PointOfInterest::getPos);
-            }
-            return Stream.empty();
+        private List<BlockPos> getNearbyFreeHives() {
+            BlockPos blockPos3 = new BlockPos(BeeEntity.this);
+            PointOfInterestStorage pointOfInterestStorage = ((ServerWorld)BeeEntity.this.world).getPointOfInterestStorage();
+            Stream<PointOfInterest> stream = pointOfInterestStorage.get(pointOfInterestType -> pointOfInterestType == PointOfInterestType.BEEHIVE || pointOfInterestType == PointOfInterestType.BEE_NEST, blockPos3, 20, PointOfInterestStorage.OccupationStatus.ANY);
+            return stream.map(PointOfInterest::getPos).filter(blockPos -> BeeEntity.this.doesHiveHaveSpace(blockPos)).sorted(Comparator.comparingDouble(blockPos2 -> blockPos2.getSquaredDistance(blockPos3))).collect(Collectors.toList());
         }
     }
 
@@ -688,10 +764,11 @@ implements Flutterer {
         private final Predicate<BlockState> flowerPredicate;
         private int pollinationTicks;
         private int lastPollinationTick;
-        private boolean field_21080;
-        private Vec3d field_21511;
+        private boolean running;
+        private Vec3d nextTarget;
+        private int ticks;
 
-        public PollinateGoal() {
+        PollinateGoal() {
             this.flowerPredicate = blockState -> {
                 if (blockState.matches(BlockTags.TALL_FLOWERS)) {
                     if (blockState.getBlock() == Blocks.SUNFLOWER) {
@@ -703,11 +780,15 @@ implements Flutterer {
             };
             this.pollinationTicks = 0;
             this.lastPollinationTick = 0;
+            this.ticks = 0;
             this.setControls(EnumSet.of(Goal.Control.MOVE));
         }
 
         @Override
         public boolean canBeeStart() {
+            if (BeeEntity.this.ticksUntilCanPollinate > 0) {
+                return false;
+            }
             if (BeeEntity.this.hasNectar()) {
                 return false;
             }
@@ -720,7 +801,7 @@ implements Flutterer {
             Optional<BlockPos> optional = this.getFlower();
             if (optional.isPresent()) {
                 BeeEntity.this.flowerPos = optional.get();
-                BeeEntity.this.getNavigation().startMovingTo((double)BeeEntity.this.flowerPos.getX() + 0.5, (double)BeeEntity.this.flowerPos.getY() + 0.5, (double)BeeEntity.this.flowerPos.getZ() + 0.5, 1.2f);
+                BeeEntity.this.navigation.startMovingTo((double)BeeEntity.this.flowerPos.getX() + 0.5, (double)BeeEntity.this.flowerPos.getY() + 0.5, (double)BeeEntity.this.flowerPos.getZ() + 0.5, 1.2f);
                 return true;
             }
             return false;
@@ -728,7 +809,7 @@ implements Flutterer {
 
         @Override
         public boolean canBeeContinue() {
-            if (!this.field_21080) {
+            if (!this.running) {
                 return false;
             }
             if (!BeeEntity.this.hasFlower()) {
@@ -740,8 +821,9 @@ implements Flutterer {
             if (this.completedPollination()) {
                 return BeeEntity.this.random.nextFloat() < 0.2f;
             }
-            if (BeeEntity.this.age % 20 == 0) {
-                return BeeEntity.this.world.canSetBlock(BeeEntity.this.flowerPos) && BeeEntity.this.world.getBlockState(BeeEntity.this.flowerPos).getBlock().matches(BlockTags.FLOWERS) && new BlockPos(BeeEntity.this).isWithinDistance(BeeEntity.this.flowerPos, 2.0);
+            if (BeeEntity.this.age % 20 == 0 && !BeeEntity.this.isFlowers(BeeEntity.this.flowerPos)) {
+                BeeEntity.this.flowerPos = null;
+                return false;
             }
             return true;
         }
@@ -750,19 +832,21 @@ implements Flutterer {
             return this.pollinationTicks > 400;
         }
 
-        private boolean method_23346() {
-            return this.field_21080;
+        private boolean isRunning() {
+            return this.running;
         }
 
-        private void method_23748() {
-            this.field_21080 = false;
+        private void cancel() {
+            this.running = false;
         }
 
         @Override
         public void start() {
             this.pollinationTicks = 0;
+            this.ticks = 0;
             this.lastPollinationTick = 0;
-            this.field_21080 = true;
+            this.running = true;
+            BeeEntity.this.resetPollinationTicks();
         }
 
         @Override
@@ -770,35 +854,46 @@ implements Flutterer {
             if (this.completedPollination()) {
                 BeeEntity.this.setHasNectar(true);
             }
-            this.field_21080 = false;
+            this.running = false;
+            BeeEntity.this.navigation.stop();
+            BeeEntity.this.ticksUntilCanPollinate = 200;
         }
 
         @Override
         public void tick() {
-            Vec3d vec3d = new Vec3d(BeeEntity.this.flowerPos).add(0.5, 0.6f, 0.5);
-            if (vec3d.distanceTo(BeeEntity.this.getPos()) > 1.0) {
-                this.field_21511 = vec3d;
-                this.method_23749();
+            ++this.ticks;
+            if (this.ticks > 600) {
+                BeeEntity.this.flowerPos = null;
                 return;
             }
-            if (this.field_21511 == null) {
-                this.field_21511 = vec3d;
+            Vec3d vec3d = new Vec3d(BeeEntity.this.flowerPos).add(0.5, 0.6f, 0.5);
+            if (vec3d.distanceTo(BeeEntity.this.getPos()) > 1.0) {
+                this.nextTarget = vec3d;
+                this.moveToNextTarget();
+                return;
             }
-            boolean bl = BeeEntity.this.getPos().distanceTo(this.field_21511) <= 0.1;
+            if (this.nextTarget == null) {
+                this.nextTarget = vec3d;
+            }
+            boolean bl = BeeEntity.this.getPos().distanceTo(this.nextTarget) <= 0.1;
             boolean bl2 = true;
+            if (!bl && this.ticks > 600) {
+                BeeEntity.this.flowerPos = null;
+                return;
+            }
             if (bl) {
                 boolean bl3;
                 boolean bl4 = bl3 = BeeEntity.this.random.nextInt(100) == 0;
                 if (bl3) {
-                    this.field_21511 = new Vec3d(vec3d.getX() + (double)this.method_23750(), vec3d.getY(), vec3d.getZ() + (double)this.method_23750());
-                    BeeEntity.this.getNavigation().stop();
+                    this.nextTarget = new Vec3d(vec3d.getX() + (double)this.getRandomOffset(), vec3d.getY(), vec3d.getZ() + (double)this.getRandomOffset());
+                    BeeEntity.this.navigation.stop();
                 } else {
                     bl2 = false;
                 }
                 BeeEntity.this.getLookControl().lookAt(vec3d.getX(), vec3d.getY(), vec3d.getZ());
             }
             if (bl2) {
-                this.method_23749();
+                this.moveToNextTarget();
             }
             ++this.pollinationTicks;
             if (BeeEntity.this.random.nextFloat() < 0.05f && this.pollinationTicks > this.lastPollinationTick + 60) {
@@ -807,11 +902,11 @@ implements Flutterer {
             }
         }
 
-        private void method_23749() {
-            BeeEntity.this.getMoveControl().moveTo(this.field_21511.getX(), this.field_21511.getY(), this.field_21511.getZ(), 0.35f);
+        private void moveToNextTarget() {
+            BeeEntity.this.getMoveControl().moveTo(this.nextTarget.getX(), this.nextTarget.getY(), this.nextTarget.getZ(), 0.35f);
         }
 
-        private float method_23750() {
+        private float getRandomOffset() {
             return (BeeEntity.this.random.nextFloat() * 2.0f - 1.0f) * 0.33333334f;
         }
 
@@ -832,7 +927,7 @@ implements Flutterer {
                         int n = l = k < j && k > -j ? j : 0;
                         while (l <= j) {
                             mutable.set(blockPos).setOffset(k, i - 1, l);
-                            if (blockPos.getSquaredDistance(mutable) < d * d && predicate.test(BeeEntity.this.world.getBlockState(mutable))) {
+                            if (blockPos.isWithinDistance(mutable, d) && predicate.test(BeeEntity.this.world.getBlockState(mutable))) {
                                 return Optional.of(mutable);
                             }
                             l = l > 0 ? -l : 1 - l;
@@ -849,7 +944,7 @@ implements Flutterer {
 
     class BeeLookControl
     extends LookControl {
-        public BeeLookControl(MobEntity mobEntity) {
+        BeeLookControl(MobEntity mobEntity) {
             super(mobEntity);
         }
 
@@ -862,175 +957,217 @@ implements Flutterer {
         }
 
         @Override
-        protected boolean method_20433() {
-            return !BeeEntity.this.field_21079.method_23346();
+        protected boolean shouldStayHorizontal() {
+            return !BeeEntity.this.pollinateGoal.isRunning();
         }
     }
 
     public class MoveToFlowerGoal
-    extends BeeMoveToTargetGoal {
-        public MoveToFlowerGoal() {
-            super(1, 48);
-        }
-
-        @Override
-        @Nullable
-        protected BlockPos getTargetPos() {
-            return BeeEntity.this.flowerPos;
-        }
-
-        @Override
-        public boolean canBeeStart() {
-            if (this.getTargetPos() == null) {
-                return false;
-            }
-            if (this.method_23741()) {
-                return BeeEntity.this.ticksSincePollination > 3600 && BeeEntity.this.world.getBlockState(this.getTargetPos()).matches(BlockTags.FLOWERS);
-            }
-            BeeEntity.this.flowerPos = null;
-            return false;
-        }
-
-        @Override
-        public boolean canBeeContinue() {
-            return this.canBeeStart();
-        }
-
-        @Override
-        protected void method_23885() {
-            BeeEntity.this.flowerPos = null;
-        }
-    }
-
-    class MoveToHiveGoal
-    extends BeeMoveToTargetGoal {
-        public MoveToHiveGoal() {
-            super(2, 48);
-        }
-
-        @Override
-        @Nullable
-        protected BlockPos getTargetPos() {
-            return BeeEntity.this.hivePos;
-        }
-
-        @Override
-        public boolean canBeeStart() {
-            if (this.method_23741()) {
-                return BeeEntity.this.canEnterHive();
-            }
-            BeeEntity.this.hivePos = null;
-            return false;
-        }
-
-        @Override
-        public boolean canBeeContinue() {
-            return this.canBeeStart();
-        }
-
-        @Override
-        protected void method_23885() {
-            BeeEntity.this.hivePos = null;
-        }
-    }
-
-    abstract class BeeMoveToTargetGoal
     extends NotAngryGoal {
-        private int field_21510;
-        private int range;
+        private int ticks;
 
-        public BeeMoveToTargetGoal(int i, int j) {
-            this.field_21510 = i;
-            this.range = j;
+        MoveToFlowerGoal() {
+            this.ticks = BeeEntity.this.world.random.nextInt(10);
             this.setControls(EnumSet.of(Goal.Control.MOVE));
         }
 
-        @Nullable
-        protected abstract BlockPos getTargetPos();
-
-        boolean method_23741() {
-            BlockPos blockPos = this.getTargetPos();
-            if (blockPos == null) {
-                return false;
-            }
-            double d = blockPos.getSquaredDistance(new BlockPos(BeeEntity.this));
-            boolean bl = d > (double)(this.field_21510 * this.field_21510);
-            boolean bl2 = d < (double)(this.range * this.range);
-            return bl && bl2;
+        @Override
+        public boolean canBeeStart() {
+            return BeeEntity.this.flowerPos != null && !BeeEntity.this.hasPositionTarget() && this.shouldMoveToFlower() && BeeEntity.this.isFlowers(BeeEntity.this.flowerPos) && !BeeEntity.this.isWithinDistance(BeeEntity.this.flowerPos, 2);
         }
 
-        protected abstract void method_23885();
+        @Override
+        public boolean canBeeContinue() {
+            return this.canBeeStart();
+        }
 
         @Override
-        public void tick() {
-            BlockPos blockPos = this.getTargetPos();
-            EntityNavigation entityNavigation = BeeEntity.this.getNavigation();
-            if (blockPos == null || entityNavigation.getCurrentPath() != null && !entityNavigation.getCurrentPath().reachesTarget()) {
-                this.stop();
-                this.method_23885();
-                return;
-            }
-            if (entityNavigation.isIdle()) {
-                Vec3d vec3d = new Vec3d(blockPos);
-                Vec3d vec3d2 = TargetFinder.method_23736(BeeEntity.this, 8, 6, vec3d, 0.3141592741012573, false);
-                if (vec3d2 == null) {
-                    vec3d2 = TargetFinder.findTargetTowards((MobEntityWithAi)BeeEntity.this, 3, 3, vec3d, false);
-                }
-                if (vec3d2 == null) {
-                    this.stop();
-                    this.method_23885();
-                    return;
-                }
-                entityNavigation.startMovingTo(vec3d2.x, vec3d2.y, vec3d2.z, 1.0);
-            }
+        public void start() {
+            this.ticks = 0;
+            super.start();
         }
 
         @Override
         public void stop() {
-            BeeEntity.this.getNavigation().stop();
+            this.ticks = 0;
+            BeeEntity.this.navigation.stop();
+            BeeEntity.this.navigation.resetRangeMultiplier();
+        }
+
+        @Override
+        public void tick() {
+            if (BeeEntity.this.flowerPos == null) {
+                return;
+            }
+            ++this.ticks;
+            if (this.ticks > 600) {
+                BeeEntity.this.flowerPos = null;
+                return;
+            }
+            if (BeeEntity.this.navigation.method_23966()) {
+                return;
+            }
+            if (BeeEntity.this.isTooFar(BeeEntity.this.flowerPos)) {
+                BeeEntity.this.flowerPos = null;
+                return;
+            }
+            BeeEntity.this.startMovingTo(BeeEntity.this.flowerPos);
+        }
+
+        private boolean shouldMoveToFlower() {
+            return BeeEntity.this.ticksSincePollination > 2400;
+        }
+    }
+
+    public class MoveToHiveGoal
+    extends NotAngryGoal {
+        private int ticks;
+        private List<BlockPos> possibleHives;
+        @Nullable
+        private Path path;
+
+        MoveToHiveGoal() {
+            this.ticks = BeeEntity.this.world.random.nextInt(10);
+            this.possibleHives = Lists.newArrayList();
+            this.path = null;
+            this.setControls(EnumSet.of(Goal.Control.MOVE));
+        }
+
+        @Override
+        public boolean canBeeStart() {
+            return BeeEntity.this.chosenHive != null && !BeeEntity.this.hasPositionTarget() && BeeEntity.this.canEnterHive() && !this.isCloseEnough(BeeEntity.this.chosenHive) && BeeEntity.this.world.getBlockState(BeeEntity.this.chosenHive).matches(BlockTags.BEEHIVES);
+        }
+
+        @Override
+        public boolean canBeeContinue() {
+            return this.canBeeStart();
+        }
+
+        @Override
+        public void start() {
+            this.ticks = 0;
+            super.start();
+        }
+
+        @Override
+        public void stop() {
+            this.ticks = 0;
+            BeeEntity.this.navigation.stop();
+            BeeEntity.this.navigation.resetRangeMultiplier();
+        }
+
+        @Override
+        public void tick() {
+            if (BeeEntity.this.chosenHive == null) {
+                return;
+            }
+            ++this.ticks;
+            if (this.ticks > 600) {
+                this.makeChosenHivePossibleHive();
+                return;
+            }
+            if (BeeEntity.this.navigation.method_23966()) {
+                return;
+            }
+            if (BeeEntity.this.isWithinDistance(BeeEntity.this.chosenHive, 16)) {
+                boolean bl = this.startMovingToFar(BeeEntity.this.chosenHive);
+                if (!bl) {
+                    this.makeChosenHivePossibleHive();
+                } else if (this.path != null && BeeEntity.this.navigation.getCurrentPath().equalsPath(this.path)) {
+                    this.reset();
+                } else {
+                    this.path = BeeEntity.this.navigation.getCurrentPath();
+                }
+                return;
+            }
+            if (BeeEntity.this.isTooFar(BeeEntity.this.chosenHive)) {
+                this.reset();
+                return;
+            }
+            BeeEntity.this.startMovingTo(BeeEntity.this.chosenHive);
+        }
+
+        private boolean startMovingToFar(BlockPos blockPos) {
+            BeeEntity.this.navigation.setRangeMultiplier(10.0f);
+            BeeEntity.this.navigation.startMovingTo(blockPos.getX(), blockPos.getY(), blockPos.getZ(), 1.0);
+            return BeeEntity.this.navigation.getCurrentPath() != null && BeeEntity.this.navigation.getCurrentPath().reachesTarget();
+        }
+
+        private boolean isPossibleHive(BlockPos blockPos) {
+            return this.possibleHives.contains(blockPos);
+        }
+
+        private void addPossibleHive(BlockPos blockPos) {
+            this.possibleHives.add(blockPos);
+            while (this.possibleHives.size() > 3) {
+                this.possibleHives.remove(0);
+            }
+        }
+
+        private void clearPossibleHives() {
+            this.possibleHives.clear();
+        }
+
+        private void makeChosenHivePossibleHive() {
+            if (BeeEntity.this.chosenHive != null) {
+                this.addPossibleHive(BeeEntity.this.chosenHive);
+            }
+            this.reset();
+        }
+
+        private void reset() {
+            BeeEntity.this.chosenHive = null;
+            BeeEntity.this.ticksLeftToFindHive = 200;
+        }
+
+        private boolean isCloseEnough(BlockPos blockPos) {
+            if (BeeEntity.this.isWithinDistance(blockPos, 2)) {
+                return true;
+            }
+            Path path = BeeEntity.this.navigation.getCurrentPath();
+            return path != null && path.getTarget().equals(blockPos) && path.reachesTarget() && path.isFinished();
         }
     }
 
     class BeeWanderAroundGoal
     extends Goal {
-        public BeeWanderAroundGoal() {
+        BeeWanderAroundGoal() {
             this.setControls(EnumSet.of(Goal.Control.MOVE));
         }
 
         @Override
         public boolean canStart() {
-            return BeeEntity.this.getNavigation().isIdle() && BeeEntity.this.random.nextInt(10) == 0;
+            return BeeEntity.this.navigation.isIdle() && BeeEntity.this.random.nextInt(10) == 0;
         }
 
         @Override
         public boolean shouldContinue() {
-            return BeeEntity.this.getNavigation().getCurrentPath() != null && !BeeEntity.this.getNavigation().isIdle();
+            return BeeEntity.this.navigation.method_23966();
         }
 
         @Override
         public void start() {
             Vec3d vec3d = this.getRandomLocation();
             if (vec3d != null) {
-                EntityNavigation entityNavigation = BeeEntity.this.getNavigation();
-                entityNavigation.startMovingAlong(entityNavigation.findPathTo(new BlockPos(vec3d), 1), 1.0);
+                BeeEntity.this.navigation.startMovingAlong(BeeEntity.this.navigation.findPathTo(new BlockPos(vec3d), 1), 1.0);
             }
         }
 
         @Nullable
         private Vec3d getRandomLocation() {
             Vec3d vec3d2;
-            if (BeeEntity.this.isHiveValid() && !BeeEntity.this.hivePos.isWithinDistance(BeeEntity.this.getPos(), 40.0)) {
-                Vec3d vec3d = new Vec3d(BeeEntity.this.hivePos);
+            if (BeeEntity.this.isHiveValid() && !BeeEntity.this.isWithinDistance(BeeEntity.this.chosenHive, 40)) {
+                Vec3d vec3d = new Vec3d(BeeEntity.this.chosenHive);
                 vec3d2 = vec3d.subtract(BeeEntity.this.getPos()).normalize();
             } else {
                 vec3d2 = BeeEntity.this.getRotationVec(0.0f);
             }
             int i = 8;
-            Vec3d vec3d3 = TargetFinder.method_21757(BeeEntity.this, 8, 7, vec3d2, 1.5707964f, 2, 1);
+            Vec3d vec3d3 = TargetFinder.findAirTarget(BeeEntity.this, 8, 7, vec3d2, 1.5707964f, 2, 1);
             if (vec3d3 != null) {
                 return vec3d3;
             }
-            return TargetFinder.method_21756(BeeEntity.this, 8, 4, -2, vec3d2, 1.5707963705062866);
+            return TargetFinder.findGroundTarget(BeeEntity.this, 8, 4, -2, vec3d2, 1.5707963705062866);
         }
     }
 
@@ -1056,7 +1193,7 @@ implements Flutterer {
 
     static class BeeFollowTargetGoal
     extends FollowTargetGoal<PlayerEntity> {
-        public BeeFollowTargetGoal(BeeEntity beeEntity) {
+        BeeFollowTargetGoal(BeeEntity beeEntity) {
             super((MobEntity)beeEntity, PlayerEntity.class, true);
         }
 
@@ -1083,7 +1220,7 @@ implements Flutterer {
 
     class BeeRevengeGoal
     extends RevengeGoal {
-        public BeeRevengeGoal(BeeEntity beeEntity2) {
+        BeeRevengeGoal(BeeEntity beeEntity2) {
             super(beeEntity2, new Class[0]);
         }
 

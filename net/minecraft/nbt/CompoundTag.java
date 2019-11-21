@@ -51,7 +51,8 @@ implements Tag {
     private static final Pattern PATTERN = Pattern.compile("[A-Za-z0-9._+-]+");
     public static final TagReader<CompoundTag> READER = new TagReader<CompoundTag>(){
 
-        public CompoundTag method_23240(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+        @Override
+        public CompoundTag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
             byte b;
             positionTracker.add(384L);
             if (i > 512) {
@@ -80,7 +81,7 @@ implements Tag {
 
         @Override
         public /* synthetic */ Tag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-            return this.method_23240(dataInput, i, positionTracker);
+            return this.read(dataInput, i, positionTracker);
         }
     };
     private final Map<String, Tag> tags;
@@ -397,7 +398,8 @@ implements Tag {
         return crashReport;
     }
 
-    public CompoundTag method_10553() {
+    @Override
+    public CompoundTag copy() {
         HashMap<String, Tag> map = Maps.newHashMap(Maps.transformValues(this.tags, Tag::copy));
         return new CompoundTag(map);
     }
@@ -509,7 +511,7 @@ implements Tag {
 
     @Override
     public /* synthetic */ Tag copy() {
-        return this.method_10553();
+        return this.copy();
     }
 }
 

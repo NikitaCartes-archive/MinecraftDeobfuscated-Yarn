@@ -23,7 +23,8 @@ public interface TagReader<T extends Tag> {
     public static TagReader<EndTag> createInvalid(final int i) {
         return new TagReader<EndTag>(){
 
-            public EndTag method_23264(DataInput dataInput, int i2, PositionTracker positionTracker) throws IOException {
+            @Override
+            public EndTag read(DataInput dataInput, int i2, PositionTracker positionTracker) throws IOException {
                 throw new IllegalArgumentException("Invalid tag id: " + i);
             }
 
@@ -39,7 +40,7 @@ public interface TagReader<T extends Tag> {
 
             @Override
             public /* synthetic */ Tag read(DataInput dataInput, int i2, PositionTracker positionTracker) throws IOException {
-                return this.method_23264(dataInput, i2, positionTracker);
+                return this.read(dataInput, i2, positionTracker);
             }
         };
     }

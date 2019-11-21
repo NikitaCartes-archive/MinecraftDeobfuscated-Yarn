@@ -60,7 +60,7 @@ implements FluidFillable {
 
     @Override
     public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
-        BlockPos blockPos2 = blockPos.method_10074();
+        BlockPos blockPos2 = blockPos.down();
         BlockState blockState2 = worldView.getBlockState(blockPos2);
         Block block = blockState2.getBlock();
         return block != Blocks.MAGMA_BLOCK && (block == this || blockState2.isSideSolidFullSquare(worldView, blockPos2, Direction.UP));

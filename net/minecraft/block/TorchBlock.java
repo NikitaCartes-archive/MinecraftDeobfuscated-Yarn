@@ -42,7 +42,7 @@ extends Block {
 
     @Override
     public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
-        return TorchBlock.sideCoversSmallSquare(worldView, blockPos.method_10074(), Direction.UP);
+        return TorchBlock.sideCoversSmallSquare(worldView, blockPos.down(), Direction.UP);
     }
 
     @Override

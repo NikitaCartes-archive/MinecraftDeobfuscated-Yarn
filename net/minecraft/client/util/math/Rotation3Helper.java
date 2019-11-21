@@ -35,18 +35,9 @@ public class Rotation3Helper {
     });
 
     public static Rotation3 setupUvLock(Rotation3 rotation3) {
-        Matrix4f matrix4f = new Matrix4f();
-        matrix4f.loadIdentity();
-        matrix4f.set(0, 3, 0.5f);
-        matrix4f.set(1, 3, 0.5f);
-        matrix4f.set(2, 3, 0.5f);
+        Matrix4f matrix4f = Matrix4f.method_24021(0.5f, 0.5f, 0.5f);
         matrix4f.multiply(rotation3.getMatrix());
-        Matrix4f matrix4f2 = new Matrix4f();
-        matrix4f2.loadIdentity();
-        matrix4f2.set(0, 3, -0.5f);
-        matrix4f2.set(1, 3, -0.5f);
-        matrix4f2.set(2, 3, -0.5f);
-        matrix4f.multiply(matrix4f2);
+        matrix4f.multiply(Matrix4f.method_24021(-0.5f, -0.5f, -0.5f));
         return new Rotation3(matrix4f);
     }
 

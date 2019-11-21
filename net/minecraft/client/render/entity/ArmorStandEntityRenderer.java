@@ -33,11 +33,13 @@ extends LivingEntityRenderer<ArmorStandEntity, ArmorStandArmorEntityModel> {
         this.addFeature(new HeadFeatureRenderer<ArmorStandEntity, ArmorStandArmorEntityModel>(this));
     }
 
-    public Identifier method_3880(ArmorStandEntity armorStandEntity) {
+    @Override
+    public Identifier getTexture(ArmorStandEntity armorStandEntity) {
         return SKIN;
     }
 
-    protected void method_3877(ArmorStandEntity armorStandEntity, MatrixStack matrixStack, float f, float g, float h) {
+    @Override
+    protected void setupTransforms(ArmorStandEntity armorStandEntity, MatrixStack matrixStack, float f, float g, float h) {
         matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f - g));
         float i = (float)(armorStandEntity.world.getTime() - armorStandEntity.field_7112) + h;
         if (i < 5.0f) {
@@ -45,7 +47,8 @@ extends LivingEntityRenderer<ArmorStandEntity, ArmorStandArmorEntityModel> {
         }
     }
 
-    protected boolean method_3878(ArmorStandEntity armorStandEntity) {
+    @Override
+    protected boolean hasLabel(ArmorStandEntity armorStandEntity) {
         float f;
         double d = this.renderManager.getSquaredDistanceToCamera(armorStandEntity);
         float f2 = f = armorStandEntity.isInSneakingPose() ? 32.0f : 64.0f;
@@ -55,7 +58,8 @@ extends LivingEntityRenderer<ArmorStandEntity, ArmorStandArmorEntityModel> {
         return armorStandEntity.isCustomNameVisible();
     }
 
-    protected boolean method_23152(ArmorStandEntity armorStandEntity, boolean bl) {
+    @Override
+    protected boolean method_4056(ArmorStandEntity armorStandEntity, boolean bl) {
         if (armorStandEntity.isMarker()) {
             return !armorStandEntity.isInvisible() && !bl;
         }
@@ -63,8 +67,8 @@ extends LivingEntityRenderer<ArmorStandEntity, ArmorStandArmorEntityModel> {
     }
 
     @Override
-    protected /* synthetic */ boolean method_4055(LivingEntity livingEntity) {
-        return this.method_3878((ArmorStandEntity)livingEntity);
+    protected /* synthetic */ boolean hasLabel(LivingEntity livingEntity) {
+        return this.hasLabel((ArmorStandEntity)livingEntity);
     }
 }
 

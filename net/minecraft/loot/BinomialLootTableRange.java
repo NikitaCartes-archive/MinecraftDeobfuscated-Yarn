@@ -48,14 +48,16 @@ implements LootTableRange {
     public static class Serializer
     implements JsonDeserializer<BinomialLootTableRange>,
     JsonSerializer<BinomialLootTableRange> {
-        public BinomialLootTableRange method_275(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        @Override
+        public BinomialLootTableRange deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             JsonObject jsonObject = JsonHelper.asObject(jsonElement, "value");
             int i = JsonHelper.getInt(jsonObject, "n");
             float f = JsonHelper.getFloat(jsonObject, "p");
             return new BinomialLootTableRange(i, f);
         }
 
-        public JsonElement method_276(BinomialLootTableRange binomialLootTableRange, Type type, JsonSerializationContext jsonSerializationContext) {
+        @Override
+        public JsonElement serialize(BinomialLootTableRange binomialLootTableRange, Type type, JsonSerializationContext jsonSerializationContext) {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("n", binomialLootTableRange.n);
             jsonObject.addProperty("p", Float.valueOf(binomialLootTableRange.p));
@@ -64,12 +66,12 @@ implements LootTableRange {
 
         @Override
         public /* synthetic */ JsonElement serialize(Object object, Type type, JsonSerializationContext jsonSerializationContext) {
-            return this.method_276((BinomialLootTableRange)object, type, jsonSerializationContext);
+            return this.serialize((BinomialLootTableRange)object, type, jsonSerializationContext);
         }
 
         @Override
         public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.method_275(jsonElement, type, jsonDeserializationContext);
+            return this.deserialize(jsonElement, type, jsonDeserializationContext);
         }
     }
 }

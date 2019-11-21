@@ -1093,7 +1093,7 @@ extends Entity {
 
     private boolean canEnterTrapdoor(BlockPos blockPos, BlockState blockState) {
         BlockState blockState2;
-        return blockState.get(TrapdoorBlock.OPEN) != false && (blockState2 = this.world.getBlockState(blockPos.method_10074())).getBlock() == Blocks.LADDER && blockState2.get(LadderBlock.FACING) == blockState.get(TrapdoorBlock.FACING);
+        return blockState.get(TrapdoorBlock.OPEN) != false && (blockState2 = this.world.getBlockState(blockPos.down())).getBlock() == Blocks.LADDER && blockState2.get(LadderBlock.FACING) == blockState.get(TrapdoorBlock.FACING);
     }
 
     @Override
@@ -1266,7 +1266,7 @@ extends Entity {
             this.preferredHand = hand;
             if (this.world instanceof ServerWorld) {
                 EntityAnimationS2CPacket entityAnimationS2CPacket = new EntityAnimationS2CPacket(this, hand == Hand.MAIN_HAND ? 0 : 3);
-                ServerChunkManager serverChunkManager = ((ServerWorld)this.world).method_14178();
+                ServerChunkManager serverChunkManager = ((ServerWorld)this.world).getChunkManager();
                 if (bl) {
                     serverChunkManager.sendToNearbyPlayers(this, entityAnimationS2CPacket);
                 } else {
@@ -1810,7 +1810,7 @@ extends Entity {
                 }
                 ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
                 if (ItemStack.areEqualIgnoreDamage(itemStack2, itemStack)) continue;
-                ((ServerWorld)this.world).method_14178().sendToOtherNearbyPlayers(this, new EntityEquipmentUpdateS2CPacket(this.getEntityId(), equipmentSlot, itemStack2));
+                ((ServerWorld)this.world).getChunkManager().sendToOtherNearbyPlayers(this, new EntityEquipmentUpdateS2CPacket(this.getEntityId(), equipmentSlot, itemStack2));
                 if (!itemStack.isEmpty()) {
                     this.getAttributes().removeAll(itemStack.getAttributeModifiers(equipmentSlot));
                 }
@@ -2124,7 +2124,7 @@ extends Entity {
 
     public void sendPickup(Entity entity, int i) {
         if (!entity.removed && !this.world.isClient && (entity instanceof ItemEntity || entity instanceof ProjectileEntity || entity instanceof ExperienceOrbEntity)) {
-            ((ServerWorld)this.world).method_14178().sendToOtherNearbyPlayers(entity, new ItemPickupAnimationS2CPacket(entity.getEntityId(), this.getEntityId(), i));
+            ((ServerWorld)this.world).getChunkManager().sendToOtherNearbyPlayers(entity, new ItemPickupAnimationS2CPacket(entity.getEntityId(), this.getEntityId(), i));
         }
     }
 
@@ -2402,7 +2402,7 @@ extends Entity {
         if (world.isChunkLoaded(blockPos)) {
             boolean bl3 = false;
             while (!bl3 && blockPos.getY() > 0) {
-                BlockPos blockPos2 = blockPos.method_10074();
+                BlockPos blockPos2 = blockPos.down();
                 BlockState blockState = world.getBlockState(blockPos2);
                 if (blockState.getMaterial().blocksMovement()) {
                     bl3 = true;

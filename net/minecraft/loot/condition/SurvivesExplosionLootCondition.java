@@ -27,7 +27,8 @@ implements LootCondition {
         return ImmutableSet.of(LootContextParameters.EXPLOSION_RADIUS);
     }
 
-    public boolean method_869(LootContext lootContext) {
+    @Override
+    public boolean test(LootContext lootContext) {
         Float float_ = lootContext.get(LootContextParameters.EXPLOSION_RADIUS);
         if (float_ != null) {
             Random random = lootContext.getRandom();
@@ -43,7 +44,7 @@ implements LootCondition {
 
     @Override
     public /* synthetic */ boolean test(Object object) {
-        return this.method_869((LootContext)object);
+        return this.test((LootContext)object);
     }
 
     public static class Factory
@@ -52,16 +53,18 @@ implements LootCondition {
             super(new Identifier("survives_explosion"), SurvivesExplosionLootCondition.class);
         }
 
-        public void method_874(JsonObject jsonObject, SurvivesExplosionLootCondition survivesExplosionLootCondition, JsonSerializationContext jsonSerializationContext) {
+        @Override
+        public void toJson(JsonObject jsonObject, SurvivesExplosionLootCondition survivesExplosionLootCondition, JsonSerializationContext jsonSerializationContext) {
         }
 
-        public SurvivesExplosionLootCondition method_873(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+        @Override
+        public SurvivesExplosionLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
             return INSTANCE;
         }
 
         @Override
         public /* synthetic */ LootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            return this.method_873(jsonObject, jsonDeserializationContext);
+            return this.fromJson(jsonObject, jsonDeserializationContext);
         }
     }
 }

@@ -25,7 +25,8 @@ extends FeatureRenderer<SheepEntity, SheepEntityModel<SheepEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_4198(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, SheepEntity sheepEntity, float f, float g, float h, float j, float k, float l) {
+    @Override
+    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, SheepEntity sheepEntity, float f, float g, float h, float j, float k, float l) {
         float u;
         float t;
         float s;

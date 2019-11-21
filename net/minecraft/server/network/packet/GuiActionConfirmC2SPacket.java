@@ -26,7 +26,8 @@ implements Packet<ServerPlayPacketListener> {
         this.accepted = bl;
     }
 
-    public void method_12177(ServerPlayPacketListener serverPlayPacketListener) {
+    @Override
+    public void apply(ServerPlayPacketListener serverPlayPacketListener) {
         serverPlayPacketListener.onConfirmTransaction(this);
     }
 

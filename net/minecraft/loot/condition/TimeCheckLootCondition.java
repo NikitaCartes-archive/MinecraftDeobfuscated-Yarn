@@ -25,7 +25,8 @@ implements LootCondition {
         this.value = uniformLootTableRange;
     }
 
-    public boolean method_22587(LootContext lootContext) {
+    @Override
+    public boolean test(LootContext lootContext) {
         ServerWorld serverWorld = lootContext.getWorld();
         long l = serverWorld.getTimeOfDay();
         if (this.period != null) {
@@ -36,7 +37,7 @@ implements LootCondition {
 
     @Override
     public /* synthetic */ boolean test(Object object) {
-        return this.method_22587((LootContext)object);
+        return this.test((LootContext)object);
     }
 
     public static class Factory
@@ -45,12 +46,14 @@ implements LootCondition {
             super(new Identifier("time_check"), TimeCheckLootCondition.class);
         }
 
-        public void method_22591(JsonObject jsonObject, TimeCheckLootCondition timeCheckLootCondition, JsonSerializationContext jsonSerializationContext) {
+        @Override
+        public void toJson(JsonObject jsonObject, TimeCheckLootCondition timeCheckLootCondition, JsonSerializationContext jsonSerializationContext) {
             jsonObject.addProperty("period", timeCheckLootCondition.period);
             jsonObject.add("value", jsonSerializationContext.serialize(timeCheckLootCondition.value));
         }
 
-        public TimeCheckLootCondition method_22590(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+        @Override
+        public TimeCheckLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
             Long long_ = jsonObject.has("period") ? Long.valueOf(JsonHelper.getLong(jsonObject, "period")) : null;
             UniformLootTableRange uniformLootTableRange = JsonHelper.deserialize(jsonObject, "value", jsonDeserializationContext, UniformLootTableRange.class);
             return new TimeCheckLootCondition(long_, uniformLootTableRange);
@@ -58,7 +61,7 @@ implements LootCondition {
 
         @Override
         public /* synthetic */ LootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            return this.method_22590(jsonObject, jsonDeserializationContext);
+            return this.fromJson(jsonObject, jsonDeserializationContext);
         }
     }
 }

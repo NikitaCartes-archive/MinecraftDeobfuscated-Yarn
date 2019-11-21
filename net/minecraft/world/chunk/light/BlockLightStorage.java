@@ -34,13 +34,14 @@ extends LightStorage<Data> {
             super(long2ObjectOpenHashMap);
         }
 
-        public Data method_15443() {
+        @Override
+        public Data copy() {
             return new Data((Long2ObjectOpenHashMap<ChunkNibbleArray>)this.arrays.clone());
         }
 
         @Override
         public /* synthetic */ ChunkToNibbleArrayMap copy() {
-            return this.method_15443();
+            return this.copy();
         }
     }
 }

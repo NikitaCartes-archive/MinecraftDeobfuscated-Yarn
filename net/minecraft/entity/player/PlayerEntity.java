@@ -219,7 +219,7 @@ extends LivingEntity {
             if (this.sleepTimer > 100) {
                 this.sleepTimer = 100;
             }
-            if (!this.world.isClient && this.world.isDaylight()) {
+            if (!this.world.isClient && this.world.isDay()) {
                 this.wakeUp(false, true);
             }
         } else if (this.sleepTimer > 0) {
@@ -1134,7 +1134,7 @@ extends LivingEntity {
             if (!this.world.dimension.hasVisibleSky()) {
                 return Either.left(SleepFailureReason.NOT_POSSIBLE_HERE);
             }
-            if (this.world.isDaylight()) {
+            if (this.world.isDay()) {
                 this.setPlayerSpawn(blockPos, false);
                 return Either.left(SleepFailureReason.NOT_POSSIBLE_NOW);
             }

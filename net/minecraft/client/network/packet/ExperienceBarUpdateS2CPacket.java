@@ -39,7 +39,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeVarInt(this.experienceLevel);
     }
 
-    public void method_11829(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onExperienceBarUpdate(this);
     }
 

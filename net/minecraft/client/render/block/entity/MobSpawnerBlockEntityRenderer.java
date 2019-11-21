@@ -23,7 +23,8 @@ extends BlockEntityRenderer<MobSpawnerBlockEntity> {
         super(blockEntityRenderDispatcher);
     }
 
-    public void method_3589(MobSpawnerBlockEntity mobSpawnerBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
+    @Override
+    public void render(MobSpawnerBlockEntity mobSpawnerBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
         matrixStack.push();
         matrixStack.translate(0.5, 0.0, 0.5);
         MobSpawnerLogic mobSpawnerLogic = mobSpawnerBlockEntity.getLogic();

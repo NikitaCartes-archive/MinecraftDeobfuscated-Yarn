@@ -69,22 +69,24 @@ extends ConditionalLootFunction {
             super(new Identifier("looting_enchant"), LootingEnchantLootFunction.class);
         }
 
-        public void method_553(JsonObject jsonObject, LootingEnchantLootFunction lootingEnchantLootFunction, JsonSerializationContext jsonSerializationContext) {
-            super.method_529(jsonObject, lootingEnchantLootFunction, jsonSerializationContext);
+        @Override
+        public void toJson(JsonObject jsonObject, LootingEnchantLootFunction lootingEnchantLootFunction, JsonSerializationContext jsonSerializationContext) {
+            super.toJson(jsonObject, lootingEnchantLootFunction, jsonSerializationContext);
             jsonObject.add("count", jsonSerializationContext.serialize(lootingEnchantLootFunction.countRange));
             if (lootingEnchantLootFunction.hasLimit()) {
                 jsonObject.add("limit", jsonSerializationContext.serialize(lootingEnchantLootFunction.limit));
             }
         }
 
-        public LootingEnchantLootFunction method_554(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+        @Override
+        public LootingEnchantLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
             int i = JsonHelper.getInt(jsonObject, "limit", 0);
             return new LootingEnchantLootFunction(lootConditions, JsonHelper.deserialize(jsonObject, "count", jsonDeserializationContext, UniformLootTableRange.class), i);
         }
 
         @Override
         public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            return this.method_554(jsonObject, jsonDeserializationContext, lootConditions);
+            return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
         }
     }
 
@@ -97,7 +99,8 @@ extends ConditionalLootFunction {
             this.countRange = uniformLootTableRange;
         }
 
-        protected Builder method_552() {
+        @Override
+        protected Builder getThisBuilder() {
             return this;
         }
 
@@ -113,7 +116,7 @@ extends ConditionalLootFunction {
 
         @Override
         protected /* synthetic */ ConditionalLootFunction.Builder getThisBuilder() {
-            return this.method_552();
+            return this.getThisBuilder();
         }
     }
 }

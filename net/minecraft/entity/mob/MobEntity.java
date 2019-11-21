@@ -351,7 +351,7 @@ extends LivingEntity {
             }
             compoundTag.put("Leash", (Tag)compoundTag3);
         } else if (this.leashTag != null) {
-            compoundTag.put("Leash", this.leashTag.method_10553());
+            compoundTag.put("Leash", this.leashTag.copy());
         }
         compoundTag.putBoolean("LeftHanded", this.isLeftHanded());
         if (this.lootTable != null) {
@@ -631,7 +631,7 @@ extends LivingEntity {
     }
 
     public static boolean canMobSpawn(EntityType<? extends MobEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-        BlockPos blockPos2 = blockPos.method_10074();
+        BlockPos blockPos2 = blockPos.down();
         return spawnType == SpawnType.SPAWNER || iWorld.getBlockState(blockPos2).allowsSpawning(iWorld, blockPos2, entityType);
     }
 
@@ -988,7 +988,7 @@ extends LivingEntity {
                 this.dropItem(Items.LEAD);
             }
             if (!this.world.isClient && bl && this.world instanceof ServerWorld) {
-                ((ServerWorld)this.world).method_14178().sendToOtherNearbyPlayers(this, new EntityAttachS2CPacket(this, null));
+                ((ServerWorld)this.world).getChunkManager().sendToOtherNearbyPlayers(this, new EntityAttachS2CPacket(this, null));
             }
         }
     }
@@ -1016,7 +1016,7 @@ extends LivingEntity {
             this.holdingEntity.teleporting = true;
         }
         if (!this.world.isClient && bl && this.world instanceof ServerWorld) {
-            ((ServerWorld)this.world).method_14178().sendToOtherNearbyPlayers(this, new EntityAttachS2CPacket(this, this.holdingEntity));
+            ((ServerWorld)this.world).getChunkManager().sendToOtherNearbyPlayers(this, new EntityAttachS2CPacket(this, this.holdingEntity));
         }
         if (this.hasVehicle()) {
             this.stopRiding();
@@ -1173,7 +1173,7 @@ extends LivingEntity {
     }
 
     protected boolean isInDaylight() {
-        if (this.world.isDaylight() && !this.world.isClient) {
+        if (this.world.isDay() && !this.world.isClient) {
             BlockPos blockPos;
             float f = this.getBrightnessAtEyes();
             BlockPos blockPos2 = blockPos = this.getVehicle() instanceof BoatEntity ? new BlockPos(this.getX(), Math.round(this.getY()), this.getZ()).up() : new BlockPos(this.getX(), Math.round(this.getY()), this.getZ());

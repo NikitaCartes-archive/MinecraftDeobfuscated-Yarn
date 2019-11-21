@@ -6,6 +6,8 @@ package net.minecraft.world.explosion;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +20,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.enchantment.ProtectionEnchantment;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -172,7 +175,7 @@ public class Explosion {
             double ab;
             double x;
             Entity entity = list.get(w);
-            if (entity.isImmuneToExplosion() || !((x = (double)(MathHelper.sqrt(entity.squaredDistanceTo(new Vec3d(this.x, this.y, this.z))) / r)) <= 1.0) || (ab = (double)MathHelper.sqrt((y = entity.getX() - this.x) * y + (z = entity.getEyeY() - this.y) * z + (aa = entity.getZ() - this.z) * aa)) == 0.0) continue;
+            if (entity.isImmuneToExplosion() || !((x = (double)(MathHelper.sqrt(entity.squaredDistanceTo(vec3d)) / r)) <= 1.0) || (ab = (double)MathHelper.sqrt((y = entity.getX() - this.x) * y + (z = entity.getEyeY() - this.y) * z + (aa = entity.getZ() - this.z) * aa)) == 0.0) continue;
             y /= ab;
             z /= ab;
             aa /= ab;
@@ -191,51 +194,62 @@ public class Explosion {
 
     public void affectWorld(boolean bl) {
         boolean bl2;
-        this.world.playSound(null, this.x, this.y, this.z, SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 4.0f, (1.0f + (this.world.random.nextFloat() - this.world.random.nextFloat()) * 0.2f) * 0.7f);
+        if (this.world.isClient) {
+            this.world.playSound(this.x, this.y, this.z, SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 4.0f, (1.0f + (this.world.random.nextFloat() - this.world.random.nextFloat()) * 0.2f) * 0.7f, false);
+        }
         boolean bl3 = bl2 = this.blockDestructionType != DestructionType.NONE;
-        if (this.power < 2.0f || !bl2) {
-            this.world.addParticle(ParticleTypes.EXPLOSION, this.x, this.y, this.z, 1.0, 0.0, 0.0);
-        } else {
-            this.world.addParticle(ParticleTypes.EXPLOSION_EMITTER, this.x, this.y, this.z, 1.0, 0.0, 0.0);
+        if (bl) {
+            if (this.power < 2.0f || !bl2) {
+                this.world.addParticle(ParticleTypes.EXPLOSION, this.x, this.y, this.z, 1.0, 0.0, 0.0);
+            } else {
+                this.world.addParticle(ParticleTypes.EXPLOSION_EMITTER, this.x, this.y, this.z, 1.0, 0.0, 0.0);
+            }
         }
         if (bl2) {
+            ObjectArrayList objectArrayList = new ObjectArrayList();
+            ArrayList<BlockPos> list = Lists.newArrayList();
             for (BlockPos blockPos : this.affectedBlocks) {
                 BlockState blockState = this.world.getBlockState(blockPos);
                 Block block = blockState.getBlock();
-                if (bl) {
-                    double d = (float)blockPos.getX() + this.world.random.nextFloat();
-                    double e = (float)blockPos.getY() + this.world.random.nextFloat();
-                    double f = (float)blockPos.getZ() + this.world.random.nextFloat();
-                    double g = d - this.x;
-                    double h = e - this.y;
-                    double i = f - this.z;
-                    double j = MathHelper.sqrt(g * g + h * h + i * i);
-                    g /= j;
-                    h /= j;
-                    i /= j;
-                    double k = 0.5 / (j / (double)this.power + 0.1);
-                    this.world.addParticle(ParticleTypes.POOF, (d + this.x) / 2.0, (e + this.y) / 2.0, (f + this.z) / 2.0, g *= (k *= (double)(this.world.random.nextFloat() * this.world.random.nextFloat() + 0.3f)), h *= k, i *= k);
-                    this.world.addParticle(ParticleTypes.SMOKE, d, e, f, g, h, i);
-                }
                 if (blockState.isAir()) continue;
+                list.add(blockPos.toImmutable());
+                this.world.getProfiler().push("explosion_blocks");
                 if (block.shouldDropItemsOnExplosion(this) && this.world instanceof ServerWorld) {
                     BlockEntity blockEntity = block.hasBlockEntity() ? this.world.getBlockEntity(blockPos) : null;
                     LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world).setRandom(this.world.random).put(LootContextParameters.POSITION, blockPos).put(LootContextParameters.TOOL, ItemStack.EMPTY).putNullable(LootContextParameters.BLOCK_ENTITY, blockEntity).putNullable(LootContextParameters.THIS_ENTITY, this.entity);
                     if (this.blockDestructionType == DestructionType.DESTROY) {
                         builder.put(LootContextParameters.EXPLOSION_RADIUS, Float.valueOf(this.power));
                     }
-                    Block.dropStacks(blockState, builder);
+                    blockState.getDroppedStacks(builder).forEach(itemStack -> Explosion.method_24023(objectArrayList, itemStack));
                 }
                 this.world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 3);
                 block.onDestroyedByExplosion(this.world, blockPos, this);
+                this.world.getProfiler().pop();
+            }
+            int i = list.size();
+            for (ItemStack itemStack2 : objectArrayList) {
+                Block.dropStack(this.world, (BlockPos)list.get(this.random.nextInt(i)), itemStack2);
             }
         }
         if (this.createFire) {
-            for (BlockPos blockPos : this.affectedBlocks) {
-                if (!this.world.getBlockState(blockPos).isAir() || !this.world.getBlockState(blockPos.method_10074()).isFullOpaque(this.world, blockPos.method_10074()) || this.random.nextInt(3) != 0) continue;
-                this.world.setBlockState(blockPos, Blocks.FIRE.getDefaultState());
+            for (BlockPos blockPos2 : this.affectedBlocks) {
+                if (this.random.nextInt(3) != 0 || !this.world.getBlockState(blockPos2).isAir() || !this.world.getBlockState(blockPos2.down()).isFullOpaque(this.world, blockPos2.down())) continue;
+                this.world.setBlockState(blockPos2, Blocks.FIRE.getDefaultState());
             }
         }
+    }
+
+    private static void method_24023(ObjectArrayList<ItemStack> objectArrayList, ItemStack itemStack) {
+        int i = objectArrayList.size();
+        for (int j = 0; j < i; ++j) {
+            ItemStack itemStack2 = objectArrayList.get(j);
+            if (!ItemEntity.method_24017(itemStack2, itemStack)) continue;
+            ItemStack itemStack3 = ItemEntity.method_24018(itemStack2, itemStack, 16);
+            objectArrayList.set(j, itemStack3);
+            if (!itemStack.isEmpty()) continue;
+            return;
+        }
+        objectArrayList.add(itemStack);
     }
 
     public DamageSource getDamageSource() {

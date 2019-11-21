@@ -49,7 +49,7 @@ extends CompositeEntityModel<T> {
         this.field_20941 = builder.build();
     }
 
-    public ImmutableList<ModelPart> method_22969() {
+    public ImmutableList<ModelPart> getParts() {
         return this.field_20941;
     }
 
@@ -68,7 +68,7 @@ extends CompositeEntityModel<T> {
 
     @Override
     public /* synthetic */ Iterable getParts() {
-        return this.method_22969();
+        return this.getParts();
     }
 }
 

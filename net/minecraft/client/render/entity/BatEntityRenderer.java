@@ -22,15 +22,18 @@ extends MobEntityRenderer<BatEntity, BatEntityModel> {
         super(entityRenderDispatcher, new BatEntityModel(), 0.25f);
     }
 
-    public Identifier method_3883(BatEntity batEntity) {
+    @Override
+    public Identifier getTexture(BatEntity batEntity) {
         return SKIN;
     }
 
-    protected void method_3884(BatEntity batEntity, MatrixStack matrixStack, float f) {
+    @Override
+    protected void scale(BatEntity batEntity, MatrixStack matrixStack, float f) {
         matrixStack.scale(0.35f, 0.35f, 0.35f);
     }
 
-    protected void method_3882(BatEntity batEntity, MatrixStack matrixStack, float f, float g, float h) {
+    @Override
+    protected void setupTransforms(BatEntity batEntity, MatrixStack matrixStack, float f, float g, float h) {
         if (batEntity.isRoosting()) {
             matrixStack.translate(0.0, -0.1f, 0.0);
         } else {

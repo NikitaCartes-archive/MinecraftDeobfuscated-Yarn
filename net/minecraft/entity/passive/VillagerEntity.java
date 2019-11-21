@@ -487,6 +487,7 @@ VillagerDataContainer {
 
     @Override
     public void onDeath(DamageSource damageSource) {
+        LOGGER.info("Villager {} died, message: '{}'", (Object)this, (Object)damageSource.getDeathMessage(this).getString());
         Entity entity = damageSource.getAttacker();
         if (entity != null) {
             this.notifyDeath(entity);
@@ -612,7 +613,8 @@ VillagerDataContainer {
         return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
     }
 
-    public VillagerEntity method_7225(PassiveEntity passiveEntity) {
+    @Override
+    public VillagerEntity createChild(PassiveEntity passiveEntity) {
         double d = this.random.nextDouble();
         VillagerType villagerType = d < 0.5 ? VillagerType.forBiome(this.world.method_23753(new BlockPos(this))) : (d < 0.75 ? this.getVillagerData().getType() : ((VillagerEntity)passiveEntity).getVillagerData().getType());
         VillagerEntity villagerEntity = new VillagerEntity(EntityType.VILLAGER, this.world, villagerType);
@@ -797,7 +799,7 @@ VillagerDataContainer {
             double f = 6.0;
             for (int j = 0; j >= -12; --j) {
                 BlockPos blockPos2 = blockPos.add(d, f + (double)j, e);
-                if (!this.world.getBlockState(blockPos2).isAir() && !this.world.getBlockState(blockPos2).getMaterial().isLiquid() || !this.world.getBlockState(blockPos2.method_10074()).getMaterial().blocksLight()) continue;
+                if (!this.world.getBlockState(blockPos2).isAir() && !this.world.getBlockState(blockPos2).getMaterial().isLiquid() || !this.world.getBlockState(blockPos2.down()).getMaterial().blocksLight()) continue;
                 f += (double)j;
                 break;
             }
@@ -876,7 +878,7 @@ VillagerDataContainer {
 
     @Override
     public /* synthetic */ PassiveEntity createChild(PassiveEntity passiveEntity) {
-        return this.method_7225(passiveEntity);
+        return this.createChild(passiveEntity);
     }
 }
 

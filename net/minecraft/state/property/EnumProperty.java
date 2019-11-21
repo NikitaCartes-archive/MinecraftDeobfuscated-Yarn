@@ -43,7 +43,8 @@ extends AbstractProperty<T> {
         return Optional.ofNullable(this.byName.get(string));
     }
 
-    public String method_11846(T enum_) {
+    @Override
+    public String name(T enum_) {
         return ((StringIdentifiable)enum_).asString();
     }
 

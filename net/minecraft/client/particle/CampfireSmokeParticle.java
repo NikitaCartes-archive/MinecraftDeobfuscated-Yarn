@@ -59,7 +59,8 @@ extends SpriteBillboardParticle {
             this.field_17789 = spriteProvider;
         }
 
-        public Particle method_18820(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+        @Override
+        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
             CampfireSmokeParticle campfireSmokeParticle = new CampfireSmokeParticle(world, d, e, f, g, h, i, true);
             campfireSmokeParticle.setColorAlpha(0.95f);
             campfireSmokeParticle.setSprite(this.field_17789);
@@ -76,7 +77,8 @@ extends SpriteBillboardParticle {
             this.field_18290 = spriteProvider;
         }
 
-        public Particle method_17579(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+        @Override
+        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
             CampfireSmokeParticle campfireSmokeParticle = new CampfireSmokeParticle(world, d, e, f, g, h, i, false);
             campfireSmokeParticle.setColorAlpha(0.9f);
             campfireSmokeParticle.setSprite(this.field_18290);

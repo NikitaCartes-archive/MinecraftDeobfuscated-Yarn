@@ -33,7 +33,8 @@ implements LootCondition {
         return ImmutableSet.of(LootContextParameters.KILLER_ENTITY);
     }
 
-    public boolean method_950(LootContext lootContext) {
+    @Override
+    public boolean test(LootContext lootContext) {
         Entity entity = lootContext.get(LootContextParameters.KILLER_ENTITY);
         int i = 0;
         if (entity instanceof LivingEntity) {
@@ -48,7 +49,7 @@ implements LootCondition {
 
     @Override
     public /* synthetic */ boolean test(Object object) {
-        return this.method_950((LootContext)object);
+        return this.test((LootContext)object);
     }
 
     public static class Factory
@@ -57,18 +58,20 @@ implements LootCondition {
             super(new Identifier("random_chance_with_looting"), RandomChanceWithLootingLootCondition.class);
         }
 
-        public void method_955(JsonObject jsonObject, RandomChanceWithLootingLootCondition randomChanceWithLootingLootCondition, JsonSerializationContext jsonSerializationContext) {
+        @Override
+        public void toJson(JsonObject jsonObject, RandomChanceWithLootingLootCondition randomChanceWithLootingLootCondition, JsonSerializationContext jsonSerializationContext) {
             jsonObject.addProperty("chance", Float.valueOf(randomChanceWithLootingLootCondition.chance));
             jsonObject.addProperty("looting_multiplier", Float.valueOf(randomChanceWithLootingLootCondition.lootingMultiplier));
         }
 
-        public RandomChanceWithLootingLootCondition method_956(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+        @Override
+        public RandomChanceWithLootingLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
             return new RandomChanceWithLootingLootCondition(JsonHelper.getFloat(jsonObject, "chance"), JsonHelper.getFloat(jsonObject, "looting_multiplier"));
         }
 
         @Override
         public /* synthetic */ LootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            return this.method_956(jsonObject, jsonDeserializationContext);
+            return this.fromJson(jsonObject, jsonDeserializationContext);
         }
     }
 }

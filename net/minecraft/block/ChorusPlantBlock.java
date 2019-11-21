@@ -32,7 +32,7 @@ extends ConnectedPlantBlock {
     }
 
     public BlockState withConnectionProperties(BlockView blockView, BlockPos blockPos) {
-        Block block = blockView.getBlockState(blockPos.method_10074()).getBlock();
+        Block block = blockView.getBlockState(blockPos.down()).getBlock();
         Block block2 = blockView.getBlockState(blockPos.up()).getBlock();
         Block block3 = blockView.getBlockState(blockPos.north()).getBlock();
         Block block4 = blockView.getBlockState(blockPos.east()).getBlock();
@@ -61,7 +61,7 @@ extends ConnectedPlantBlock {
 
     @Override
     public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
-        BlockState blockState2 = worldView.getBlockState(blockPos.method_10074());
+        BlockState blockState2 = worldView.getBlockState(blockPos.down());
         boolean bl = !worldView.getBlockState(blockPos.up()).isAir() && !blockState2.isAir();
         for (Direction direction : Direction.Type.HORIZONTAL) {
             BlockPos blockPos2 = blockPos.offset(direction);
@@ -70,7 +70,7 @@ extends ConnectedPlantBlock {
             if (bl) {
                 return false;
             }
-            Block block2 = worldView.getBlockState(blockPos2.method_10074()).getBlock();
+            Block block2 = worldView.getBlockState(blockPos2.down()).getBlock();
             if (block2 != this && block2 != Blocks.END_STONE) continue;
             return true;
         }

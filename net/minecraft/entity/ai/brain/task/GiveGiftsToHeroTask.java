@@ -55,7 +55,8 @@ extends Task<VillagerEntity> {
         super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.INTERACTION_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleState.VALUE_PRESENT), i);
     }
 
-    protected boolean method_19962(ServerWorld serverWorld, VillagerEntity villagerEntity) {
+    @Override
+    protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
         if (!this.isNearestPlayerHero(villagerEntity)) {
             return false;
         }
@@ -66,7 +67,8 @@ extends Task<VillagerEntity> {
         return true;
     }
 
-    protected void method_19963(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+    @Override
+    protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         this.done = false;
         this.startTime = l;
         PlayerEntity playerEntity = this.getNearestPlayerIfHero(villagerEntity).get();
@@ -74,11 +76,13 @@ extends Task<VillagerEntity> {
         LookTargetUtil.lookAt(villagerEntity, playerEntity);
     }
 
-    protected boolean method_19965(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+    @Override
+    protected boolean shouldKeepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         return this.isNearestPlayerHero(villagerEntity) && !this.done;
     }
 
-    protected void method_19967(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+    @Override
+    protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         PlayerEntity playerEntity = this.getNearestPlayerIfHero(villagerEntity).get();
         LookTargetUtil.lookAt(villagerEntity, playerEntity);
         if (this.isCloseEnough(villagerEntity, playerEntity)) {
@@ -91,7 +95,8 @@ extends Task<VillagerEntity> {
         }
     }
 
-    protected void method_19968(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+    @Override
+    protected void finishRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         this.ticksLeft = GiveGiftsToHeroTask.getNextGiftDelay(serverWorld);
         villagerEntity.getBrain().forget(MemoryModuleType.INTERACTION_TARGET);
         villagerEntity.getBrain().forget(MemoryModuleType.WALK_TARGET);
@@ -142,17 +147,17 @@ extends Task<VillagerEntity> {
 
     @Override
     protected /* synthetic */ boolean shouldKeepRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        return this.method_19965(serverWorld, (VillagerEntity)livingEntity, l);
+        return this.shouldKeepRunning(serverWorld, (VillagerEntity)livingEntity, l);
     }
 
     @Override
     protected /* synthetic */ void finishRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        this.method_19968(serverWorld, (VillagerEntity)livingEntity, l);
+        this.finishRunning(serverWorld, (VillagerEntity)livingEntity, l);
     }
 
     @Override
     protected /* synthetic */ void keepRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        this.method_19967(serverWorld, (VillagerEntity)livingEntity, l);
+        this.keepRunning(serverWorld, (VillagerEntity)livingEntity, l);
     }
 }
 

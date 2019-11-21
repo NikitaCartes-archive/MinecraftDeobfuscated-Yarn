@@ -34,7 +34,8 @@ implements LootCondition {
         return ImmutableSet.of(LootContextParameters.POSITION, this.entity.getParameter());
     }
 
-    public boolean method_914(LootContext lootContext) {
+    @Override
+    public boolean test(LootContext lootContext) {
         Entity entity = lootContext.get(this.entity.getParameter());
         BlockPos blockPos = lootContext.get(LootContextParameters.POSITION);
         return this.predicate.test(lootContext.getWorld(), blockPos != null ? new Vec3d(blockPos) : null, entity);
@@ -50,7 +51,7 @@ implements LootCondition {
 
     @Override
     public /* synthetic */ boolean test(Object object) {
-        return this.method_914((LootContext)object);
+        return this.test((LootContext)object);
     }
 
     public static class Factory
@@ -59,19 +60,21 @@ implements LootCondition {
             super(new Identifier("entity_properties"), EntityPropertiesLootCondition.class);
         }
 
-        public void method_919(JsonObject jsonObject, EntityPropertiesLootCondition entityPropertiesLootCondition, JsonSerializationContext jsonSerializationContext) {
+        @Override
+        public void toJson(JsonObject jsonObject, EntityPropertiesLootCondition entityPropertiesLootCondition, JsonSerializationContext jsonSerializationContext) {
             jsonObject.add("predicate", entityPropertiesLootCondition.predicate.serialize());
             jsonObject.add("entity", jsonSerializationContext.serialize((Object)entityPropertiesLootCondition.entity));
         }
 
-        public EntityPropertiesLootCondition method_920(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+        @Override
+        public EntityPropertiesLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
             EntityPredicate entityPredicate = EntityPredicate.fromJson(jsonObject.get("predicate"));
             return new EntityPropertiesLootCondition(entityPredicate, JsonHelper.deserialize(jsonObject, "entity", jsonDeserializationContext, LootContext.EntityTarget.class));
         }
 
         @Override
         public /* synthetic */ LootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            return this.method_920(jsonObject, jsonDeserializationContext);
+            return this.fromJson(jsonObject, jsonDeserializationContext);
         }
     }
 }

@@ -249,18 +249,19 @@ extends AnimalEntity {
         return true;
     }
 
-    public PigEntity method_6574(PassiveEntity passiveEntity) {
+    @Override
+    public PigEntity createChild(PassiveEntity passiveEntity) {
         return EntityType.PIG.create(this.world);
     }
 
     @Override
     public boolean isBreedingItem(ItemStack itemStack) {
-        return BREEDING_INGREDIENT.method_8093(itemStack);
+        return BREEDING_INGREDIENT.test(itemStack);
     }
 
     @Override
     public /* synthetic */ PassiveEntity createChild(PassiveEntity passiveEntity) {
-        return this.method_6574(passiveEntity);
+        return this.createChild(passiveEntity);
     }
 }
 

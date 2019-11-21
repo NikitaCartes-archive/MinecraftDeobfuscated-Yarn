@@ -29,12 +29,14 @@ extends Task<MobEntityWithAi> {
         this.maxDistance = j;
     }
 
-    protected boolean method_19607(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
+    @Override
+    protected boolean shouldRun(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
         Optional<GlobalPos> optional = mobEntityWithAi.getBrain().getOptionalMemory(this.memoryModuleType);
         return optional.isPresent() && Objects.equals(serverWorld.getDimension().getType(), optional.get().getDimension()) && optional.get().getPos().isWithinDistance(mobEntityWithAi.getPos(), (double)this.maxDistance);
     }
 
-    protected void method_19608(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
+    @Override
+    protected void run(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
         if (l > this.nextRunTime) {
             Brain<?> brain = mobEntityWithAi.getBrain();
             Optional<GlobalPos> optional = brain.getOptionalMemory(this.memoryModuleType);

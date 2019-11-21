@@ -91,13 +91,14 @@ implements ItemConvertible {
     private static final Direction[] FACINGS = new Direction[]{Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH, Direction.DOWN, Direction.UP};
     private static final LoadingCache<VoxelShape, Boolean> FULL_CUBE_SHAPE_CACHE = CacheBuilder.newBuilder().maximumSize(512L).weakKeys().build(new CacheLoader<VoxelShape, Boolean>(){
 
-        public Boolean method_20516(VoxelShape voxelShape) {
+        @Override
+        public Boolean load(VoxelShape voxelShape) {
             return !VoxelShapes.matchesAnywhere(VoxelShapes.fullCube(), voxelShape, BooleanBiFunction.NOT_SAME);
         }
 
         @Override
         public /* synthetic */ Object load(Object object) throws Exception {
-            return this.method_20516((VoxelShape)object);
+            return this.load((VoxelShape)object);
         }
     });
     private static final VoxelShape SOLID_MEDIUM_SQUARE_SHAPE = VoxelShapes.combineAndSimplify(VoxelShapes.fullCube(), Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0), BooleanBiFunction.ONLY_FIRST);
@@ -197,7 +198,7 @@ implements ItemConvertible {
     public void updateNeighborStates(BlockState blockState, IWorld iWorld, BlockPos blockPos, int i) {
         try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
             for (Direction direction : FACINGS) {
-                pooledMutable.method_10114(blockPos).method_10118(direction);
+                pooledMutable.set(blockPos).setOffset(direction);
                 BlockState blockState2 = iWorld.getBlockState(pooledMutable);
                 BlockState blockState3 = blockState2.getStateForNeighborUpdate(direction.getOpposite(), blockState, iWorld, pooledMutable, blockPos);
                 Block.replaceBlock(blockState2, blockState3, iWorld, pooledMutable, i);
@@ -529,13 +530,6 @@ implements ItemConvertible {
     public static List<ItemStack> getDroppedStacks(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, @Nullable BlockEntity blockEntity, @Nullable Entity entity, ItemStack itemStack) {
         LootContext.Builder builder = new LootContext.Builder(serverWorld).setRandom(serverWorld.random).put(LootContextParameters.POSITION, blockPos).put(LootContextParameters.TOOL, itemStack).putNullable(LootContextParameters.THIS_ENTITY, entity).putNullable(LootContextParameters.BLOCK_ENTITY, blockEntity);
         return blockState.getDroppedStacks(builder);
-    }
-
-    public static void dropStacks(BlockState blockState, LootContext.Builder builder) {
-        ServerWorld serverWorld = builder.getWorld();
-        BlockPos blockPos = builder.get(LootContextParameters.POSITION);
-        blockState.getDroppedStacks(builder).forEach(itemStack -> Block.dropStack(serverWorld, blockPos, itemStack));
-        blockState.onStacksDropped(serverWorld, blockPos, ItemStack.EMPTY);
     }
 
     public static void dropStacks(BlockState blockState, World world, BlockPos blockPos) {

@@ -14,18 +14,18 @@ import net.minecraft.world.gen.stateprovider.StateProvider;
 
 public class MegaTreeFeatureConfig
 extends TreeFeatureConfig {
-    public final int field_21233;
-    public final int field_21591;
+    public final int heightInterval;
+    public final int crownHeight;
 
     protected MegaTreeFeatureConfig(StateProvider stateProvider, StateProvider stateProvider2, List<TreeDecorator> list, int i, int j, int k) {
         super(stateProvider, stateProvider2, list, i);
-        this.field_21233 = j;
-        this.field_21591 = k;
+        this.heightInterval = j;
+        this.crownHeight = k;
     }
 
     @Override
     public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-        Dynamic<T> dynamic = new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("height_interval"), dynamicOps.createInt(this.field_21233), dynamicOps.createString("crown_height"), dynamicOps.createInt(this.field_21591))));
+        Dynamic<T> dynamic = new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("height_interval"), dynamicOps.createInt(this.heightInterval), dynamicOps.createString("crown_height"), dynamicOps.createInt(this.crownHeight))));
         return dynamic.merge(super.serialize(dynamicOps));
     }
 
@@ -38,8 +38,8 @@ extends TreeFeatureConfig {
     extends TreeFeatureConfig.Builder {
         private List<TreeDecorator> field_21234 = ImmutableList.of();
         private int field_21235;
-        private int field_21236;
-        private int field_21592;
+        private int heightInterval;
+        private int crownHeight;
 
         public Builder(StateProvider stateProvider, StateProvider stateProvider2) {
             super(stateProvider, stateProvider2);
@@ -50,33 +50,35 @@ extends TreeFeatureConfig {
             return this;
         }
 
-        public Builder method_23410(int i) {
+        @Override
+        public Builder baseHeight(int i) {
             this.field_21235 = i;
             return this;
         }
 
-        public Builder method_23412(int i) {
-            this.field_21236 = i;
+        public Builder heightInterval(int i) {
+            this.heightInterval = i;
             return this;
         }
 
-        public Builder method_23915(int i) {
-            this.field_21592 = i;
+        public Builder crownHeight(int i) {
+            this.crownHeight = i;
             return this;
         }
 
-        public MegaTreeFeatureConfig method_23409() {
-            return new MegaTreeFeatureConfig(this.trunkProvider, this.leavesProvider, this.field_21234, this.field_21235, this.field_21236, this.field_21592);
+        @Override
+        public MegaTreeFeatureConfig build() {
+            return new MegaTreeFeatureConfig(this.trunkProvider, this.leavesProvider, this.field_21234, this.field_21235, this.heightInterval, this.crownHeight);
         }
 
         @Override
         public /* synthetic */ TreeFeatureConfig build() {
-            return this.method_23409();
+            return this.build();
         }
 
         @Override
         public /* synthetic */ TreeFeatureConfig.Builder baseHeight(int i) {
-            return this.method_23410(i);
+            return this.baseHeight(i);
         }
     }
 }

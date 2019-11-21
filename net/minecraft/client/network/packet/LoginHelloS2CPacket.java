@@ -41,7 +41,8 @@ implements Packet<ClientLoginPacketListener> {
         packetByteBuf.writeByteArray(this.nonce);
     }
 
-    public void method_12612(ClientLoginPacketListener clientLoginPacketListener) {
+    @Override
+    public void apply(ClientLoginPacketListener clientLoginPacketListener) {
         clientLoginPacketListener.onHello(this);
     }
 

@@ -30,7 +30,8 @@ extends Feature<ProbabilityConfig> {
         super(function);
     }
 
-    public boolean method_12718(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, ProbabilityConfig probabilityConfig) {
+    @Override
+    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, ProbabilityConfig probabilityConfig) {
         int i = 0;
         BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos);
         BlockPos.Mutable mutable2 = new BlockPos.Mutable(blockPos);
@@ -46,7 +47,7 @@ extends Feature<ProbabilityConfig> {
                             int n = l - blockPos.getX();
                             if (n * n + (o = m - blockPos.getZ()) * o > k * k) continue;
                             mutable2.set(l, iWorld.getTopY(Heightmap.Type.WORLD_SURFACE, l, m) - 1, m);
-                            if (!BambooFeature.method_23396(iWorld.getBlockState(mutable2).getBlock())) continue;
+                            if (!BambooFeature.isDirt(iWorld.getBlockState(mutable2).getBlock())) continue;
                             iWorld.setBlockState(mutable2, Blocks.PODZOL.getDefaultState(), 2);
                         }
                     }

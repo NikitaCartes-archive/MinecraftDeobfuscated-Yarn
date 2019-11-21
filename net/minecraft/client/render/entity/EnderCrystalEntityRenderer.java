@@ -26,7 +26,8 @@ import net.minecraft.util.math.Quaternion;
 public class EnderCrystalEntityRenderer
 extends EntityRenderer<EnderCrystalEntity> {
     private static final Identifier SKIN = new Identifier("textures/entity/end_crystal/end_crystal.png");
-    public static final float field_21002 = (float)Math.sin(0.7853981633974483);
+    private static final RenderLayer field_21736 = RenderLayer.getEntityCutoutNoCull(SKIN);
+    private static final float field_21002 = (float)Math.sin(0.7853981633974483);
     private final ModelPart field_21003;
     private final ModelPart field_21004;
     private final ModelPart bottom;
@@ -42,31 +43,32 @@ extends EntityRenderer<EnderCrystalEntity> {
         this.bottom.addCuboid(-6.0f, 0.0f, -6.0f, 12.0f, 4.0f, 12.0f);
     }
 
-    public void method_3908(EnderCrystalEntity enderCrystalEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+    @Override
+    public void render(EnderCrystalEntity enderCrystalEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         matrixStack.push();
         float h = EnderCrystalEntityRenderer.method_23155(enderCrystalEntity, g);
         float j = ((float)enderCrystalEntity.field_7034 + g) * 3.0f;
-        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(this.method_3909(enderCrystalEntity)));
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(field_21736);
         matrixStack.push();
         matrixStack.scale(2.0f, 2.0f, 2.0f);
         matrixStack.translate(0.0, -0.5, 0.0);
         int k = OverlayTexture.DEFAULT_UV;
         if (enderCrystalEntity.getShowBottom()) {
-            this.bottom.render(matrixStack, vertexConsumer, i, k, null);
+            this.bottom.render(matrixStack, vertexConsumer, i, k);
         }
         matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(j));
         matrixStack.translate(0.0, 1.5f + h / 2.0f, 0.0);
         matrixStack.multiply(new Quaternion(new Vector3f(field_21002, 0.0f, field_21002), 60.0f, true));
-        this.field_21004.render(matrixStack, vertexConsumer, i, k, null);
+        this.field_21004.render(matrixStack, vertexConsumer, i, k);
         float l = 0.875f;
         matrixStack.scale(0.875f, 0.875f, 0.875f);
         matrixStack.multiply(new Quaternion(new Vector3f(field_21002, 0.0f, field_21002), 60.0f, true));
         matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(j));
-        this.field_21004.render(matrixStack, vertexConsumer, i, k, null);
+        this.field_21004.render(matrixStack, vertexConsumer, i, k);
         matrixStack.scale(0.875f, 0.875f, 0.875f);
         matrixStack.multiply(new Quaternion(new Vector3f(field_21002, 0.0f, field_21002), 60.0f, true));
         matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(j));
-        this.field_21003.render(matrixStack, vertexConsumer, i, k, null);
+        this.field_21003.render(matrixStack, vertexConsumer, i, k);
         matrixStack.pop();
         matrixStack.pop();
         BlockPos blockPos = enderCrystalEntity.getBeamTarget();
@@ -90,11 +92,13 @@ extends EntityRenderer<EnderCrystalEntity> {
         return h - 1.4f;
     }
 
-    public Identifier method_3909(EnderCrystalEntity enderCrystalEntity) {
+    @Override
+    public Identifier getTexture(EnderCrystalEntity enderCrystalEntity) {
         return SKIN;
     }
 
-    public boolean method_3907(EnderCrystalEntity enderCrystalEntity, Frustum frustum, double d, double e, double f) {
+    @Override
+    public boolean isVisible(EnderCrystalEntity enderCrystalEntity, Frustum frustum, double d, double e, double f) {
         return super.isVisible(enderCrystalEntity, frustum, d, e, f) || enderCrystalEntity.getBeamTarget() != null;
     }
 }

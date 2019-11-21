@@ -198,7 +198,7 @@ extends HostileEntity {
         if (this.isTouchingWater()) {
             this.damage(DamageSource.DROWN, 1.0f);
         }
-        if (this.world.isDaylight() && this.age >= this.ageWhenTargetSet + 600 && (f = this.getBrightnessAtEyes()) > 0.5f && this.world.isSkyVisible(new BlockPos(this)) && this.random.nextFloat() * 30.0f < (f - 0.4f) * 2.0f) {
+        if (this.world.isDay() && this.age >= this.ageWhenTargetSet + 600 && (f = this.getBrightnessAtEyes()) > 0.5f && this.world.isSkyVisible(new BlockPos(this)) && this.random.nextFloat() * 30.0f < (f - 0.4f) * 2.0f) {
             this.setTarget(null);
             this.teleportRandomly();
         }
@@ -376,7 +376,7 @@ extends HostileEntity {
             int k = MathHelper.floor(this.enderman.getZ() - 1.0 + random.nextDouble() * 2.0);
             BlockPos blockPos = new BlockPos(i, j, k);
             BlockState blockState = iWorld.getBlockState(blockPos);
-            BlockPos blockPos2 = blockPos.method_10074();
+            BlockPos blockPos2 = blockPos.down();
             BlockState blockState2 = iWorld.getBlockState(blockPos2);
             BlockState blockState3 = this.enderman.getCarriedBlock();
             if (blockState3 != null && this.method_7033(iWorld, blockPos, blockState3, blockState, blockState2, blockPos2)) {

@@ -38,7 +38,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeString(this.hash);
     }
 
-    public void method_11774(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onResourcePackSend(this);
     }
 

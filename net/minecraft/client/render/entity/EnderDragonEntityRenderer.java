@@ -31,6 +31,10 @@ extends EntityRenderer<EnderDragonEntity> {
     private static final Identifier EXPLOSION_TEX = new Identifier("textures/entity/enderdragon/dragon_exploding.png");
     private static final Identifier SKIN = new Identifier("textures/entity/enderdragon/dragon.png");
     private static final Identifier EYES_TEX = new Identifier("textures/entity/enderdragon/dragon_eyes.png");
+    private static final RenderLayer field_21737 = RenderLayer.getEntityCutoutNoCull(SKIN);
+    private static final RenderLayer field_21738 = RenderLayer.getEntityDecal(SKIN);
+    private static final RenderLayer field_21739 = RenderLayer.getEyes(EYES_TEX);
+    private static final RenderLayer field_21740 = RenderLayer.getEntitySmoothCutout(CRYSTAL_BEAM_TEX);
     private static final float field_21007 = (float)(Math.sqrt(3.0) / 2.0);
     private final DragonEntityModel field_21008 = new DragonEntityModel();
 
@@ -39,7 +43,8 @@ extends EntityRenderer<EnderDragonEntity> {
         this.field_4673 = 0.5f;
     }
 
-    public void method_3918(EnderDragonEntity enderDragonEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+    @Override
+    public void render(EnderDragonEntity enderDragonEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         matrixStack.push();
         float h = (float)enderDragonEntity.method_6817(7, g)[0];
         float j = (float)(enderDragonEntity.method_6817(5, g)[1] - enderDragonEntity.method_6817(10, g)[1]);
@@ -49,19 +54,19 @@ extends EntityRenderer<EnderDragonEntity> {
         matrixStack.scale(-1.0f, -1.0f, 1.0f);
         matrixStack.translate(0.0, -1.501f, 0.0);
         boolean bl = enderDragonEntity.hurtTime > 0;
-        this.field_21008.method_23620(enderDragonEntity, 0.0f, 0.0f, g);
+        this.field_21008.animateModel(enderDragonEntity, 0.0f, 0.0f, g);
         if (enderDragonEntity.field_7031 > 0) {
             float k = (float)enderDragonEntity.field_7031 / 200.0f;
             VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityAlpha(EXPLOSION_TEX, k));
-            this.field_21008.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f);
-            VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.getEntityDecal(SKIN));
-            this.field_21008.render(matrixStack, vertexConsumer2, i, OverlayTexture.packUv(0.0f, bl), 1.0f, 1.0f, 1.0f);
+            this.field_21008.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f, 1.0f);
+            VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(field_21738);
+            this.field_21008.render(matrixStack, vertexConsumer2, i, OverlayTexture.packUv(0.0f, bl), 1.0f, 1.0f, 1.0f, 1.0f);
         } else {
-            VertexConsumer vertexConsumer3 = vertexConsumerProvider.getBuffer(this.field_21008.getLayer(SKIN));
-            this.field_21008.render(matrixStack, vertexConsumer3, i, OverlayTexture.packUv(0.0f, bl), 1.0f, 1.0f, 1.0f);
+            VertexConsumer vertexConsumer3 = vertexConsumerProvider.getBuffer(field_21737);
+            this.field_21008.render(matrixStack, vertexConsumer3, i, OverlayTexture.packUv(0.0f, bl), 1.0f, 1.0f, 1.0f, 1.0f);
         }
-        VertexConsumer vertexConsumer3 = vertexConsumerProvider.getBuffer(RenderLayer.getEyes(EYES_TEX));
-        this.field_21008.render(matrixStack, vertexConsumer3, i, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f);
+        VertexConsumer vertexConsumer3 = vertexConsumerProvider.getBuffer(field_21739);
+        this.field_21008.render(matrixStack, vertexConsumer3, i, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f, 1.0f);
         if (enderDragonEntity.field_7031 > 0) {
             float l = ((float)enderDragonEntity.field_7031 + g) / 200.0f;
             float m = 0.0f;
@@ -133,7 +138,7 @@ extends EntityRenderer<EnderDragonEntity> {
         matrixStack.translate(0.0, 2.0, 0.0);
         matrixStack.multiply(Vector3f.POSITIVE_Y.getRadialQuaternion((float)(-Math.atan2(h, f)) - 1.5707964f));
         matrixStack.multiply(Vector3f.POSITIVE_X.getRadialQuaternion((float)(-Math.atan2(l, g)) - 1.5707964f));
-        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySmoothCutout(CRYSTAL_BEAM_TEX));
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(field_21740);
         float n = 0.0f - ((float)j + i) * 0.01f;
         float o = MathHelper.sqrt(f * f + g * g + h * h) / 32.0f - ((float)j + i) * 0.01f;
         int p = 8;
@@ -158,7 +163,8 @@ extends EntityRenderer<EnderDragonEntity> {
         matrixStack.pop();
     }
 
-    public Identifier method_3914(EnderDragonEntity enderDragonEntity) {
+    @Override
+    public Identifier getTexture(EnderDragonEntity enderDragonEntity) {
         return SKIN;
     }
 
@@ -281,91 +287,93 @@ extends EntityRenderer<EnderDragonEntity> {
             this.rearLegTip.addChild(this.rearFoot);
         }
 
-        public void method_23620(EnderDragonEntity enderDragonEntity, float f, float g, float h) {
+        @Override
+        public void animateModel(EnderDragonEntity enderDragonEntity, float f, float g, float h) {
             this.dragon = enderDragonEntity;
             this.field_21442 = h;
         }
 
-        public void method_23621(EnderDragonEntity enderDragonEntity, float f, float g, float h, float i, float j) {
+        @Override
+        public void setAngles(EnderDragonEntity enderDragonEntity, float f, float g, float h, float i, float j) {
         }
 
         @Override
-        public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
-            float u;
+        public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k) {
+            float v;
             matrixStack.push();
-            float k = MathHelper.lerp(this.field_21442, this.dragon.field_7019, this.dragon.field_7030);
-            this.jaw.pitch = (float)(Math.sin(k * ((float)Math.PI * 2)) + 1.0) * 0.2f;
-            float l = (float)(Math.sin(k * ((float)Math.PI * 2) - 1.0f) + 1.0);
-            l = (l * l + l * 2.0f) * 0.05f;
-            matrixStack.translate(0.0, l - 2.0f, -3.0);
-            matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(l * 2.0f));
-            float m = 0.0f;
-            float n = 20.0f;
-            float o = -12.0f;
-            float p = 1.5f;
+            float l = MathHelper.lerp(this.field_21442, this.dragon.field_7019, this.dragon.field_7030);
+            this.jaw.pitch = (float)(Math.sin(l * ((float)Math.PI * 2)) + 1.0) * 0.2f;
+            float m = (float)(Math.sin(l * ((float)Math.PI * 2) - 1.0f) + 1.0);
+            m = (m * m + m * 2.0f) * 0.05f;
+            matrixStack.translate(0.0, m - 2.0f, -3.0);
+            matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(m * 2.0f));
+            float n = 0.0f;
+            float o = 20.0f;
+            float p = -12.0f;
+            float q = 1.5f;
             double[] ds = this.dragon.method_6817(6, this.field_21442);
-            float q = MathHelper.method_22860(this.dragon.method_6817(5, this.field_21442)[0] - this.dragon.method_6817(10, this.field_21442)[0]);
-            float r = MathHelper.method_22860(this.dragon.method_6817(5, this.field_21442)[0] + (double)(q / 2.0f));
-            float s = k * ((float)Math.PI * 2);
-            for (int t = 0; t < 5; ++t) {
-                double[] es = this.dragon.method_6817(5 - t, this.field_21442);
-                u = (float)Math.cos((float)t * 0.45f + s) * 0.15f;
+            float r = MathHelper.method_22860(this.dragon.method_6817(5, this.field_21442)[0] - this.dragon.method_6817(10, this.field_21442)[0]);
+            float s = MathHelper.method_22860(this.dragon.method_6817(5, this.field_21442)[0] + (double)(r / 2.0f));
+            float t = l * ((float)Math.PI * 2);
+            for (int u = 0; u < 5; ++u) {
+                double[] es = this.dragon.method_6817(5 - u, this.field_21442);
+                v = (float)Math.cos((float)u * 0.45f + t) * 0.15f;
                 this.neck.yaw = MathHelper.method_22860(es[0] - ds[0]) * ((float)Math.PI / 180) * 1.5f;
-                this.neck.pitch = u + this.dragon.method_6823(t, ds, es) * ((float)Math.PI / 180) * 1.5f * 5.0f;
-                this.neck.roll = -MathHelper.method_22860(es[0] - (double)r) * ((float)Math.PI / 180) * 1.5f;
-                this.neck.pivotY = n;
-                this.neck.pivotZ = o;
-                this.neck.pivotX = m;
-                n = (float)((double)n + Math.sin(this.neck.pitch) * 10.0);
-                o = (float)((double)o - Math.cos(this.neck.yaw) * Math.cos(this.neck.pitch) * 10.0);
-                m = (float)((double)m - Math.sin(this.neck.yaw) * Math.cos(this.neck.pitch) * 10.0);
-                this.neck.render(matrixStack, vertexConsumer, i, j, null);
+                this.neck.pitch = v + this.dragon.method_6823(u, ds, es) * ((float)Math.PI / 180) * 1.5f * 5.0f;
+                this.neck.roll = -MathHelper.method_22860(es[0] - (double)s) * ((float)Math.PI / 180) * 1.5f;
+                this.neck.pivotY = o;
+                this.neck.pivotZ = p;
+                this.neck.pivotX = n;
+                o = (float)((double)o + Math.sin(this.neck.pitch) * 10.0);
+                p = (float)((double)p - Math.cos(this.neck.yaw) * Math.cos(this.neck.pitch) * 10.0);
+                n = (float)((double)n - Math.sin(this.neck.yaw) * Math.cos(this.neck.pitch) * 10.0);
+                this.neck.render(matrixStack, vertexConsumer, i, j);
             }
-            this.head.pivotY = n;
-            this.head.pivotZ = o;
-            this.head.pivotX = m;
+            this.head.pivotY = o;
+            this.head.pivotZ = p;
+            this.head.pivotX = n;
             double[] fs = this.dragon.method_6817(0, this.field_21442);
             this.head.yaw = MathHelper.method_22860(fs[0] - ds[0]) * ((float)Math.PI / 180);
             this.head.pitch = MathHelper.method_22860(this.dragon.method_6823(6, ds, fs)) * ((float)Math.PI / 180) * 1.5f * 5.0f;
-            this.head.roll = -MathHelper.method_22860(fs[0] - (double)r) * ((float)Math.PI / 180);
-            this.head.render(matrixStack, vertexConsumer, i, j, null);
+            this.head.roll = -MathHelper.method_22860(fs[0] - (double)s) * ((float)Math.PI / 180);
+            this.head.render(matrixStack, vertexConsumer, i, j);
             matrixStack.push();
             matrixStack.translate(0.0, 1.0, 0.0);
-            matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(-q * 1.5f));
+            matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(-r * 1.5f));
             matrixStack.translate(0.0, -1.0, 0.0);
             this.body.roll = 0.0f;
-            this.body.render(matrixStack, vertexConsumer, i, j, null);
-            float v = k * ((float)Math.PI * 2);
-            this.wing.pitch = 0.125f - (float)Math.cos(v) * 0.2f;
+            this.body.render(matrixStack, vertexConsumer, i, j);
+            float w = l * ((float)Math.PI * 2);
+            this.wing.pitch = 0.125f - (float)Math.cos(w) * 0.2f;
             this.wing.yaw = -0.25f;
-            this.wing.roll = -((float)(Math.sin(v) + 0.125)) * 0.8f;
-            this.field_21548.roll = (float)(Math.sin(v + 2.0f) + 0.5) * 0.75f;
+            this.wing.roll = -((float)(Math.sin(w) + 0.125)) * 0.8f;
+            this.field_21548.roll = (float)(Math.sin(w + 2.0f) + 0.5) * 0.75f;
             this.field_21555.pitch = this.wing.pitch;
             this.field_21555.yaw = -this.wing.yaw;
             this.field_21555.roll = -this.wing.roll;
             this.wingTip.roll = -this.field_21548.roll;
-            this.method_23838(matrixStack, vertexConsumer, i, j, l, this.wing, this.field_21549, this.field_21550, this.field_21551, this.field_21552, this.field_21553, this.field_21554);
-            this.method_23838(matrixStack, vertexConsumer, i, j, l, this.field_21555, this.frontLeg, this.frontLegTip, this.frontFoot, this.rearLeg, this.rearLegTip, this.rearFoot);
+            this.method_23838(matrixStack, vertexConsumer, i, j, m, this.wing, this.field_21549, this.field_21550, this.field_21551, this.field_21552, this.field_21553, this.field_21554);
+            this.method_23838(matrixStack, vertexConsumer, i, j, m, this.field_21555, this.frontLeg, this.frontLegTip, this.frontFoot, this.rearLeg, this.rearLegTip, this.rearFoot);
             matrixStack.pop();
-            u = -((float)Math.sin(k * ((float)Math.PI * 2))) * 0.0f;
-            s = k * ((float)Math.PI * 2);
-            n = 10.0f;
-            o = 60.0f;
-            m = 0.0f;
+            v = -((float)Math.sin(l * ((float)Math.PI * 2))) * 0.0f;
+            t = l * ((float)Math.PI * 2);
+            o = 10.0f;
+            p = 60.0f;
+            n = 0.0f;
             ds = this.dragon.method_6817(11, this.field_21442);
-            for (int w = 0; w < 12; ++w) {
-                fs = this.dragon.method_6817(12 + w, this.field_21442);
-                u = (float)((double)u + Math.sin((float)w * 0.45f + s) * (double)0.05f);
+            for (int x = 0; x < 12; ++x) {
+                fs = this.dragon.method_6817(12 + x, this.field_21442);
+                v = (float)((double)v + Math.sin((float)x * 0.45f + t) * (double)0.05f);
                 this.neck.yaw = (MathHelper.method_22860(fs[0] - ds[0]) * 1.5f + 180.0f) * ((float)Math.PI / 180);
-                this.neck.pitch = u + (float)(fs[1] - ds[1]) * ((float)Math.PI / 180) * 1.5f * 5.0f;
-                this.neck.roll = MathHelper.method_22860(fs[0] - (double)r) * ((float)Math.PI / 180) * 1.5f;
-                this.neck.pivotY = n;
-                this.neck.pivotZ = o;
-                this.neck.pivotX = m;
-                n = (float)((double)n + Math.sin(this.neck.pitch) * 10.0);
-                o = (float)((double)o - Math.cos(this.neck.yaw) * Math.cos(this.neck.pitch) * 10.0);
-                m = (float)((double)m - Math.sin(this.neck.yaw) * Math.cos(this.neck.pitch) * 10.0);
-                this.neck.render(matrixStack, vertexConsumer, i, j, null);
+                this.neck.pitch = v + (float)(fs[1] - ds[1]) * ((float)Math.PI / 180) * 1.5f * 5.0f;
+                this.neck.roll = MathHelper.method_22860(fs[0] - (double)s) * ((float)Math.PI / 180) * 1.5f;
+                this.neck.pivotY = o;
+                this.neck.pivotZ = p;
+                this.neck.pivotX = n;
+                o = (float)((double)o + Math.sin(this.neck.pitch) * 10.0);
+                p = (float)((double)p - Math.cos(this.neck.yaw) * Math.cos(this.neck.pitch) * 10.0);
+                n = (float)((double)n - Math.sin(this.neck.yaw) * Math.cos(this.neck.pitch) * 10.0);
+                this.neck.render(matrixStack, vertexConsumer, i, j);
             }
             matrixStack.pop();
         }
@@ -377,9 +385,9 @@ extends EntityRenderer<EnderDragonEntity> {
             modelPart2.pitch = 1.3f + f * 0.1f;
             modelPart3.pitch = -0.5f - f * 0.1f;
             modelPart4.pitch = 0.75f + f * 0.1f;
-            modelPart.render(matrixStack, vertexConsumer, i, j, null);
-            modelPart2.render(matrixStack, vertexConsumer, i, j, null);
-            modelPart5.render(matrixStack, vertexConsumer, i, j, null);
+            modelPart.render(matrixStack, vertexConsumer, i, j);
+            modelPart2.render(matrixStack, vertexConsumer, i, j);
+            modelPart5.render(matrixStack, vertexConsumer, i, j);
         }
     }
 }

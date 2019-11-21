@@ -4,8 +4,6 @@
 package net.minecraft.entity.mob;
 
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -52,12 +50,6 @@ extends SlimeEntity {
     protected void setSize(int i, boolean bl) {
         super.setSize(i, bl);
         this.getAttributeInstance(EntityAttributes.ARMOR).setBaseValue(i * 3);
-    }
-
-    @Override
-    @Environment(value=EnvType.CLIENT)
-    public int getLightmapCoordinates() {
-        return 15;
     }
 
     @Override

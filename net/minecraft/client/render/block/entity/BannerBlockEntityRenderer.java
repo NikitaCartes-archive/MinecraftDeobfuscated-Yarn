@@ -11,7 +11,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.WallBannerBlock;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BannerPattern;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.class_4722;
+import net.minecraft.class_4730;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -19,8 +20,6 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.model.ModelLoader;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.DyeColor;
@@ -30,20 +29,25 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class BannerBlockEntityRenderer
 extends BlockEntityRenderer<BannerBlockEntity> {
-    private final ModelPart area = new ModelPart(64, 64, 0, 0);
-    private final ModelPart verticalBar;
+    private final ModelPart area = BannerBlockEntityRenderer.method_24080();
+    private final ModelPart verticalBar = new ModelPart(64, 64, 44, 0);
     private final ModelPart topBar;
 
     public BannerBlockEntityRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher) {
         super(blockEntityRenderDispatcher);
-        this.area.addCuboid(-10.0f, 0.0f, -2.0f, 20.0f, 40.0f, 1.0f, 0.0f);
-        this.verticalBar = new ModelPart(64, 64, 44, 0);
         this.verticalBar.addCuboid(-1.0f, -30.0f, -1.0f, 2.0f, 42.0f, 2.0f, 0.0f);
         this.topBar = new ModelPart(64, 64, 0, 42);
         this.topBar.addCuboid(-10.0f, -32.0f, -1.0f, 20.0f, 2.0f, 2.0f, 0.0f);
     }
 
-    public void method_3546(BannerBlockEntity bannerBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
+    public static ModelPart method_24080() {
+        ModelPart modelPart = new ModelPart(64, 64, 0, 0);
+        modelPart.addCuboid(-10.0f, 0.0f, -2.0f, 20.0f, 40.0f, 1.0f, 0.0f);
+        return modelPart;
+    }
+
+    @Override
+    public void render(BannerBlockEntity bannerBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
         long l;
         if (bannerBlockEntity.getPatterns() == null) {
             return;
@@ -72,12 +76,11 @@ extends BlockEntityRenderer<BannerBlockEntity> {
                 this.verticalBar.visible = false;
             }
         }
-        Sprite sprite = this.getSprite(ModelLoader.BANNER_BASE);
         matrixStack.push();
         matrixStack.scale(0.6666667f, -0.6666667f, -0.6666667f);
-        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.method_23946());
-        this.verticalBar.render(matrixStack, vertexConsumer, i, j, sprite);
-        this.topBar.render(matrixStack, vertexConsumer, i, j, sprite);
+        VertexConsumer vertexConsumer = ModelLoader.BANNER_BASE.method_24145(vertexConsumerProvider, RenderLayer::getEntitySolid);
+        this.verticalBar.render(matrixStack, vertexConsumer, i, j);
+        this.topBar.render(matrixStack, vertexConsumer, i, j);
         if (bannerBlockEntity.isPreview()) {
             this.area.pitch = 0.0f;
         } else {
@@ -86,22 +89,21 @@ extends BlockEntityRenderer<BannerBlockEntity> {
             this.area.pitch = (-0.0125f + 0.01f * MathHelper.cos(k * (float)Math.PI * 0.02f)) * (float)Math.PI;
         }
         this.area.pivotY = -32.0f;
-        this.area.render(matrixStack, vertexConsumer, i, j, sprite);
         BannerBlockEntityRenderer.method_23802(bannerBlockEntity, matrixStack, vertexConsumerProvider, i, j, this.area, true);
         matrixStack.pop();
         matrixStack.pop();
     }
 
     public static void method_23802(BannerBlockEntity bannerBlockEntity, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j, ModelPart modelPart, boolean bl) {
+        modelPart.render(matrixStack, ModelLoader.BANNER_BASE.method_24145(vertexConsumerProvider, RenderLayer::getEntitySolid), i, j);
         List<BannerPattern> list = bannerBlockEntity.getPatterns();
         List<DyeColor> list2 = bannerBlockEntity.getPatternColors();
-        SpriteAtlasTexture spriteAtlasTexture = MinecraftClient.getInstance().getSpriteAtlas();
-        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.method_23951());
         for (int k = 0; k < 17 && k < list.size() && k < list2.size(); ++k) {
             BannerPattern bannerPattern = list.get(k);
             DyeColor dyeColor = list2.get(k);
             float[] fs = dyeColor.getColorComponents();
-            modelPart.render(matrixStack, vertexConsumer, i, j, spriteAtlasTexture.getSprite(bannerPattern.getSpriteId(bl)), fs[0], fs[1], fs[2]);
+            class_4730 lv = new class_4730(bl ? class_4722.field_21706 : class_4722.field_21707, bannerPattern.getSpriteId(bl));
+            modelPart.render(matrixStack, lv.method_24145(vertexConsumerProvider, RenderLayer::getEntityNoOutline), i, j, fs[0], fs[1], fs[2], 1.0f);
         }
     }
 }

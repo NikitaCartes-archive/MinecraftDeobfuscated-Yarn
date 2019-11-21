@@ -19,7 +19,8 @@ implements LootCondition {
         this.chance = f;
     }
 
-    public boolean method_934(LootContext lootContext) {
+    @Override
+    public boolean test(LootContext lootContext) {
         return lootContext.getRandom().nextFloat() < this.chance;
     }
 
@@ -29,7 +30,7 @@ implements LootCondition {
 
     @Override
     public /* synthetic */ boolean test(Object object) {
-        return this.method_934((LootContext)object);
+        return this.test((LootContext)object);
     }
 
     public static class Factory
@@ -38,17 +39,19 @@ implements LootCondition {
             super(new Identifier("random_chance"), RandomChanceLootCondition.class);
         }
 
-        public void method_936(JsonObject jsonObject, RandomChanceLootCondition randomChanceLootCondition, JsonSerializationContext jsonSerializationContext) {
+        @Override
+        public void toJson(JsonObject jsonObject, RandomChanceLootCondition randomChanceLootCondition, JsonSerializationContext jsonSerializationContext) {
             jsonObject.addProperty("chance", Float.valueOf(randomChanceLootCondition.chance));
         }
 
-        public RandomChanceLootCondition method_937(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+        @Override
+        public RandomChanceLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
             return new RandomChanceLootCondition(JsonHelper.getFloat(jsonObject, "chance"));
         }
 
         @Override
         public /* synthetic */ LootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            return this.method_937(jsonObject, jsonDeserializationContext);
+            return this.fromJson(jsonObject, jsonDeserializationContext);
         }
     }
 }

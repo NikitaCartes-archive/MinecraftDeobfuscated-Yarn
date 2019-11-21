@@ -126,7 +126,8 @@ implements Packet<ClientPlayPacketListener> {
         }
     }
 
-    public void method_11560(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onLightUpdate(this);
     }
 

@@ -47,7 +47,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeIdentifier(this.recipeId);
     }
 
-    public void method_11686(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onCraftFailedResponse(this);
     }
 }

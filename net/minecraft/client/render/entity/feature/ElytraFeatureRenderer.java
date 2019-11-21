@@ -32,7 +32,8 @@ extends FeatureRenderer<T, M> {
         super(featureRendererContext);
     }
 
-    public void method_17161(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l) {
+    @Override
+    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l) {
         AbstractClientPlayerEntity abstractClientPlayerEntity;
         ItemStack itemStack = ((LivingEntity)livingEntity).getEquippedStack(EquipmentSlot.CHEST);
         if (itemStack.getItem() != Items.ELYTRA) {
@@ -42,9 +43,9 @@ extends FeatureRenderer<T, M> {
         matrixStack.push();
         matrixStack.translate(0.0, 0.0, 0.125);
         ((EntityModel)this.getModel()).copyStateTo(this.elytra);
-        this.elytra.method_17079(livingEntity, f, g, j, k, l);
+        this.elytra.setAngles(livingEntity, f, g, j, k, l);
         VertexConsumer vertexConsumer = ItemRenderer.getArmorVertexConsumer(vertexConsumerProvider, this.elytra.getLayer(identifier), false, itemStack.hasEnchantmentGlint());
-        this.elytra.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f);
+        this.elytra.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f, 1.0f);
         matrixStack.pop();
     }
 }

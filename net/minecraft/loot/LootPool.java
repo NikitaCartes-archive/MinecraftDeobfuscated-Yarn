@@ -117,7 +117,8 @@ public class LootPool {
     public static class Serializer
     implements JsonDeserializer<LootPool>,
     JsonSerializer<LootPool> {
-        public LootPool method_358(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        @Override
+        public LootPool deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             JsonObject jsonObject = JsonHelper.asObject(jsonElement, "loot pool");
             LootEntry[] lootEntrys = JsonHelper.deserialize(jsonObject, "entries", jsonDeserializationContext, LootEntry[].class);
             LootCondition[] lootConditions = JsonHelper.deserialize(jsonObject, "conditions", new LootCondition[0], jsonDeserializationContext, LootCondition[].class);
@@ -127,7 +128,8 @@ public class LootPool {
             return new LootPool(lootEntrys, lootConditions, lootFunctions, lootTableRange, uniformLootTableRange);
         }
 
-        public JsonElement method_357(LootPool lootPool, Type type, JsonSerializationContext jsonSerializationContext) {
+        @Override
+        public JsonElement serialize(LootPool lootPool, Type type, JsonSerializationContext jsonSerializationContext) {
             JsonObject jsonObject = new JsonObject();
             jsonObject.add("rolls", LootTableRanges.toJson(lootPool.rollsRange, jsonSerializationContext));
             jsonObject.add("entries", jsonSerializationContext.serialize(lootPool.entries));
@@ -145,12 +147,12 @@ public class LootPool {
 
         @Override
         public /* synthetic */ JsonElement serialize(Object object, Type type, JsonSerializationContext jsonSerializationContext) {
-            return this.method_357((LootPool)object, type, jsonSerializationContext);
+            return this.serialize((LootPool)object, type, jsonSerializationContext);
         }
 
         @Override
         public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.method_358(jsonElement, type, jsonDeserializationContext);
+            return this.deserialize(jsonElement, type, jsonDeserializationContext);
         }
     }
 
@@ -168,7 +170,8 @@ public class LootPool {
             return this;
         }
 
-        public Builder method_354() {
+        @Override
+        public Builder getThis() {
             return this;
         }
 
@@ -177,12 +180,14 @@ public class LootPool {
             return this;
         }
 
-        public Builder method_356(LootCondition.Builder builder) {
+        @Override
+        public Builder withCondition(LootCondition.Builder builder) {
             this.conditions.add(builder.build());
             return this;
         }
 
-        public Builder method_353(LootFunction.Builder builder) {
+        @Override
+        public Builder withFunction(LootFunction.Builder builder) {
             this.functions.add(builder.build());
             return this;
         }
@@ -196,17 +201,17 @@ public class LootPool {
 
         @Override
         public /* synthetic */ Object getThis() {
-            return this.method_354();
+            return this.getThis();
         }
 
         @Override
         public /* synthetic */ Object withFunction(LootFunction.Builder builder) {
-            return this.method_353(builder);
+            return this.withFunction(builder);
         }
 
         @Override
         public /* synthetic */ Object withCondition(LootCondition.Builder builder) {
-            return this.method_356(builder);
+            return this.withCondition(builder);
         }
     }
 }

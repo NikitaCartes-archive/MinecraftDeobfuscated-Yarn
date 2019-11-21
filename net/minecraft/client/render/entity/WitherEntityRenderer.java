@@ -24,7 +24,13 @@ extends MobEntityRenderer<WitherEntity, WitherEntityModel<WitherEntity>> {
         this.addFeature(new WitherArmorFeatureRenderer(this));
     }
 
-    public Identifier method_4153(WitherEntity witherEntity) {
+    @Override
+    protected int method_24087(WitherEntity witherEntity, float f) {
+        return 15;
+    }
+
+    @Override
+    public Identifier getTexture(WitherEntity witherEntity) {
         int i = witherEntity.getInvulnerableTimer();
         if (i <= 0 || i <= 80 && i / 5 % 2 == 1) {
             return SKIN;
@@ -32,7 +38,8 @@ extends MobEntityRenderer<WitherEntity, WitherEntityModel<WitherEntity>> {
         return INVINCIBLE_SKIN;
     }
 
-    protected void method_4152(WitherEntity witherEntity, MatrixStack matrixStack, float f) {
+    @Override
+    protected void scale(WitherEntity witherEntity, MatrixStack matrixStack, float f) {
         float g = 2.0f;
         int i = witherEntity.getInvulnerableTimer();
         if (i > 0) {

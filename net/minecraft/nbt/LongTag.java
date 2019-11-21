@@ -17,7 +17,8 @@ public class LongTag
 extends AbstractNumberTag {
     public static final TagReader<LongTag> READER = new TagReader<LongTag>(){
 
-        public LongTag method_23252(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+        @Override
+        public LongTag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
             positionTracker.add(128L);
             return LongTag.of(dataInput.readLong());
         }
@@ -39,7 +40,7 @@ extends AbstractNumberTag {
 
         @Override
         public /* synthetic */ Tag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-            return this.method_23252(dataInput, i, positionTracker);
+            return this.read(dataInput, i, positionTracker);
         }
     };
     private final long value;
@@ -74,7 +75,8 @@ extends AbstractNumberTag {
         return this.value + "L";
     }
 
-    public LongTag method_10621() {
+    @Override
+    public LongTag copy() {
         return this;
     }
 
@@ -132,7 +134,7 @@ extends AbstractNumberTag {
 
     @Override
     public /* synthetic */ Tag copy() {
-        return this.method_10621();
+        return this.copy();
     }
 
     static class Cache {

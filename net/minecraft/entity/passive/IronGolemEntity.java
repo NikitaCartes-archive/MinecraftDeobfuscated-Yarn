@@ -269,7 +269,7 @@ extends GolemEntity {
     @Override
     public boolean canSpawn(WorldView worldView) {
         BlockPos blockPos = new BlockPos(this);
-        BlockPos blockPos2 = blockPos.method_10074();
+        BlockPos blockPos2 = blockPos.down();
         BlockState blockState = worldView.getBlockState(blockPos2);
         if (blockState.hasSolidTopSurface(worldView, blockPos2, this)) {
             for (int i = 1; i < 3; ++i) {

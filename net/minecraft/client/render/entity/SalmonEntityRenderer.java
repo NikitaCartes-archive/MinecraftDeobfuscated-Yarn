@@ -23,11 +23,13 @@ extends MobEntityRenderer<SalmonEntity, SalmonEntityModel<SalmonEntity>> {
         super(entityRenderDispatcher, new SalmonEntityModel(), 0.4f);
     }
 
-    public Identifier method_4101(SalmonEntity salmonEntity) {
+    @Override
+    public Identifier getTexture(SalmonEntity salmonEntity) {
         return SKIN;
     }
 
-    protected void method_4100(SalmonEntity salmonEntity, MatrixStack matrixStack, float f, float g, float h) {
+    @Override
+    protected void setupTransforms(SalmonEntity salmonEntity, MatrixStack matrixStack, float f, float g, float h) {
         super.setupTransforms(salmonEntity, matrixStack, f, g, h);
         float i = 1.0f;
         float j = 1.0f;

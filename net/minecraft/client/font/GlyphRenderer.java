@@ -5,14 +5,14 @@ package net.minecraft.client.font;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.Matrix4f;
-import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class GlyphRenderer {
-    private final Identifier id;
+    private final RenderLayer field_21692;
+    private final RenderLayer field_21693;
     private final float uMin;
     private final float uMax;
     private final float vMin;
@@ -22,8 +22,9 @@ public class GlyphRenderer {
     private final float yMin;
     private final float yMax;
 
-    public GlyphRenderer(Identifier identifier, float f, float g, float h, float i, float j, float k, float l, float m) {
-        this.id = identifier;
+    public GlyphRenderer(RenderLayer renderLayer, RenderLayer renderLayer2, float f, float g, float h, float i, float j, float k, float l, float m) {
+        this.field_21692 = renderLayer;
+        this.field_21693 = renderLayer2;
         this.uMin = f;
         this.uMax = g;
         this.vMin = h;
@@ -57,9 +58,8 @@ public class GlyphRenderer {
         vertexConsumer.vertex(matrix4f, rectangle.xMin, rectangle.yMax, rectangle.zIndex).color(rectangle.red, rectangle.green, rectangle.blue, rectangle.alpha).texture(this.uMax, this.vMin).light(i).next();
     }
 
-    @Nullable
-    public Identifier getId() {
-        return this.id;
+    public RenderLayer method_24045(boolean bl) {
+        return bl ? this.field_21693 : this.field_21692;
     }
 
     @Environment(value=EnvType.CLIENT)

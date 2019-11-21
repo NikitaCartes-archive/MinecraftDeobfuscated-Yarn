@@ -41,7 +41,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeItemStack(this.stack);
     }
 
-    public void method_11823(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onEquipmentUpdate(this);
     }
 

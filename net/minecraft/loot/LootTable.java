@@ -170,7 +170,8 @@ public class LootTable {
     public static class Serializer
     implements JsonDeserializer<LootTable>,
     JsonSerializer<LootTable> {
-        public LootTable method_340(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        @Override
+        public LootTable deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             JsonObject jsonObject = JsonHelper.asObject(jsonElement, "loot table");
             LootPool[] lootPools = JsonHelper.deserialize(jsonObject, "pools", new LootPool[0], jsonDeserializationContext, LootPool[].class);
             LootContextType lootContextType = null;
@@ -182,7 +183,8 @@ public class LootTable {
             return new LootTable(lootContextType != null ? lootContextType : LootContextTypes.GENERIC, lootPools, lootFunctions);
         }
 
-        public JsonElement method_339(LootTable lootTable, Type type, JsonSerializationContext jsonSerializationContext) {
+        @Override
+        public JsonElement serialize(LootTable lootTable, Type type, JsonSerializationContext jsonSerializationContext) {
             JsonObject jsonObject = new JsonObject();
             if (lootTable.type != GENERIC) {
                 Identifier identifier = LootContextTypes.getId(lootTable.type);
@@ -203,12 +205,12 @@ public class LootTable {
 
         @Override
         public /* synthetic */ JsonElement serialize(Object object, Type type, JsonSerializationContext jsonSerializationContext) {
-            return this.method_339((LootTable)object, type, jsonSerializationContext);
+            return this.serialize((LootTable)object, type, jsonSerializationContext);
         }
 
         @Override
         public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.method_340(jsonElement, type, jsonDeserializationContext);
+            return this.deserialize(jsonElement, type, jsonDeserializationContext);
         }
     }
 
@@ -228,12 +230,14 @@ public class LootTable {
             return this;
         }
 
-        public Builder method_335(LootFunction.Builder builder) {
+        @Override
+        public Builder withFunction(LootFunction.Builder builder) {
             this.functions.add(builder.build());
             return this;
         }
 
-        public Builder method_337() {
+        @Override
+        public Builder getThis() {
             return this;
         }
 
@@ -243,12 +247,12 @@ public class LootTable {
 
         @Override
         public /* synthetic */ Object getThis() {
-            return this.method_337();
+            return this.getThis();
         }
 
         @Override
         public /* synthetic */ Object withFunction(LootFunction.Builder builder) {
-            return this.method_335(builder);
+            return this.withFunction(builder);
         }
     }
 }

@@ -38,7 +38,8 @@ implements Packet<ClientLoginPacketListener> {
         packetByteBuf.writeString(this.profile.getName());
     }
 
-    public void method_12594(ClientLoginPacketListener clientLoginPacketListener) {
+    @Override
+    public void apply(ClientLoginPacketListener clientLoginPacketListener) {
         clientLoginPacketListener.onLoginSuccess(this);
     }
 

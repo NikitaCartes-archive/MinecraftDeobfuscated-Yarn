@@ -263,7 +263,7 @@ public class ChunkBuilder {
         private boolean needsImportantRebuild;
 
         private boolean isChunkNonEmpty(BlockPos blockPos) {
-            return !ChunkBuilder.this.world.method_8497(blockPos.getX() >> 4, blockPos.getZ() >> 4).isEmpty();
+            return !ChunkBuilder.this.world.getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4).isEmpty();
         }
 
         public boolean shouldBuild() {
@@ -419,13 +419,14 @@ public class ChunkBuilder {
 
             public abstract void cancel();
 
-            public int method_22784(Task task) {
+            @Override
+            public int compareTo(Task task) {
                 return Doubles.compare(this.priority, task.priority);
             }
 
             @Override
             public /* synthetic */ int compareTo(Object object) {
-                return this.method_22784((Task)object);
+                return this.compareTo((Task)object);
             }
         }
 

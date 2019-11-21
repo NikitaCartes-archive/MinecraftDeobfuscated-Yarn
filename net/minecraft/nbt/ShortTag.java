@@ -17,7 +17,8 @@ public class ShortTag
 extends AbstractNumberTag {
     public static final TagReader<ShortTag> READER = new TagReader<ShortTag>(){
 
-        public ShortTag method_23255(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+        @Override
+        public ShortTag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
             positionTracker.add(80L);
             return ShortTag.of(dataInput.readShort());
         }
@@ -39,7 +40,7 @@ extends AbstractNumberTag {
 
         @Override
         public /* synthetic */ Tag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-            return this.method_23255(dataInput, i, positionTracker);
+            return this.read(dataInput, i, positionTracker);
         }
     };
     private final short value;
@@ -74,7 +75,8 @@ extends AbstractNumberTag {
         return this.value + "s";
     }
 
-    public ShortTag method_10704() {
+    @Override
+    public ShortTag copy() {
         return this;
     }
 
@@ -132,7 +134,7 @@ extends AbstractNumberTag {
 
     @Override
     public /* synthetic */ Tag copy() {
-        return this.method_10704();
+        return this.copy();
     }
 
     static class Cache {

@@ -33,7 +33,8 @@ extends AbstractProperty<Boolean> {
         return Optional.empty();
     }
 
-    public String method_11826(Boolean boolean_) {
+    @Override
+    public String name(Boolean boolean_) {
         return boolean_.toString();
     }
 

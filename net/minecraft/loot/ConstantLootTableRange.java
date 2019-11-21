@@ -41,22 +41,24 @@ implements LootTableRange {
     public static class Serializer
     implements JsonDeserializer<ConstantLootTableRange>,
     JsonSerializer<ConstantLootTableRange> {
-        public ConstantLootTableRange method_291(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        @Override
+        public ConstantLootTableRange deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             return new ConstantLootTableRange(JsonHelper.asInt(jsonElement, "value"));
         }
 
-        public JsonElement method_290(ConstantLootTableRange constantLootTableRange, Type type, JsonSerializationContext jsonSerializationContext) {
+        @Override
+        public JsonElement serialize(ConstantLootTableRange constantLootTableRange, Type type, JsonSerializationContext jsonSerializationContext) {
             return new JsonPrimitive(constantLootTableRange.value);
         }
 
         @Override
         public /* synthetic */ JsonElement serialize(Object object, Type type, JsonSerializationContext jsonSerializationContext) {
-            return this.method_290((ConstantLootTableRange)object, type, jsonSerializationContext);
+            return this.serialize((ConstantLootTableRange)object, type, jsonSerializationContext);
         }
 
         @Override
         public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.method_291(jsonElement, type, jsonDeserializationContext);
+            return this.deserialize(jsonElement, type, jsonDeserializationContext);
         }
     }
 }

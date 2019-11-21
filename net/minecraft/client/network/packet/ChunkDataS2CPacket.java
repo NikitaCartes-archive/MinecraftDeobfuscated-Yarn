@@ -107,7 +107,8 @@ implements Packet<ClientPlayPacketListener> {
         }
     }
 
-    public void method_11528(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onChunkData(this);
     }
 

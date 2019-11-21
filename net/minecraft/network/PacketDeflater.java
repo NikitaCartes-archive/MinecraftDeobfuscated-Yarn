@@ -20,7 +20,8 @@ extends MessageToByteEncoder<ByteBuf> {
         this.deflater = new Deflater();
     }
 
-    protected void method_10741(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, ByteBuf byteBuf2) throws Exception {
+    @Override
+    protected void encode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, ByteBuf byteBuf2) throws Exception {
         int i = byteBuf.readableBytes();
         PacketByteBuf packetByteBuf = new PacketByteBuf(byteBuf2);
         if (i < this.compressionThreshold) {
@@ -46,7 +47,7 @@ extends MessageToByteEncoder<ByteBuf> {
 
     @Override
     protected /* synthetic */ void encode(ChannelHandlerContext channelHandlerContext, Object object, ByteBuf byteBuf) throws Exception {
-        this.method_10741(channelHandlerContext, (ByteBuf)object, byteBuf);
+        this.encode(channelHandlerContext, (ByteBuf)object, byteBuf);
     }
 }
 

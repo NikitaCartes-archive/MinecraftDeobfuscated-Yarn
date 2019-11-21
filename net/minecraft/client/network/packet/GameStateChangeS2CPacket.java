@@ -36,7 +36,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeFloat(this.value);
     }
 
-    public void method_11490(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onGameStateChange(this);
     }
 

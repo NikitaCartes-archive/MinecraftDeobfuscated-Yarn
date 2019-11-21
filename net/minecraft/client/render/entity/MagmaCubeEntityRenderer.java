@@ -22,11 +22,18 @@ extends MobEntityRenderer<MagmaCubeEntity, MagmaCubeEntityModel<MagmaCubeEntity>
         super(entityRenderDispatcher, new MagmaCubeEntityModel(), 0.25f);
     }
 
-    public Identifier method_4001(MagmaCubeEntity magmaCubeEntity) {
+    @Override
+    protected int method_24087(MagmaCubeEntity magmaCubeEntity, float f) {
+        return 15;
+    }
+
+    @Override
+    public Identifier getTexture(MagmaCubeEntity magmaCubeEntity) {
         return SKIN;
     }
 
-    protected void method_4000(MagmaCubeEntity magmaCubeEntity, MatrixStack matrixStack, float f) {
+    @Override
+    protected void scale(MagmaCubeEntity magmaCubeEntity, MatrixStack matrixStack, float f) {
         int i = magmaCubeEntity.getSize();
         float g = MathHelper.lerp(f, magmaCubeEntity.lastStretch, magmaCubeEntity.stretch) / ((float)i * 0.5f + 1.0f);
         float h = 1.0f / (g + 1.0f);

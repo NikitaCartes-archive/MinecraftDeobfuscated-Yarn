@@ -12,7 +12,8 @@ import net.minecraft.util.PacketByteBuf;
 
 public class IntegerArgumentSerializer
 implements ArgumentSerializer<IntegerArgumentType> {
-    public void method_10048(IntegerArgumentType integerArgumentType, PacketByteBuf packetByteBuf) {
+    @Override
+    public void toPacket(IntegerArgumentType integerArgumentType, PacketByteBuf packetByteBuf) {
         boolean bl = integerArgumentType.getMinimum() != Integer.MIN_VALUE;
         boolean bl2 = integerArgumentType.getMaximum() != Integer.MAX_VALUE;
         packetByteBuf.writeByte(BrigadierArgumentTypes.createFlag(bl, bl2));
@@ -24,14 +25,16 @@ implements ArgumentSerializer<IntegerArgumentType> {
         }
     }
 
-    public IntegerArgumentType method_10050(PacketByteBuf packetByteBuf) {
+    @Override
+    public IntegerArgumentType fromPacket(PacketByteBuf packetByteBuf) {
         byte b = packetByteBuf.readByte();
         int i = BrigadierArgumentTypes.hasMin(b) ? packetByteBuf.readInt() : Integer.MIN_VALUE;
         int j = BrigadierArgumentTypes.hasMax(b) ? packetByteBuf.readInt() : Integer.MAX_VALUE;
         return IntegerArgumentType.integer(i, j);
     }
 
-    public void method_10049(IntegerArgumentType integerArgumentType, JsonObject jsonObject) {
+    @Override
+    public void toJson(IntegerArgumentType integerArgumentType, JsonObject jsonObject) {
         if (integerArgumentType.getMinimum() != Integer.MIN_VALUE) {
             jsonObject.addProperty("min", integerArgumentType.getMinimum());
         }
@@ -42,7 +45,7 @@ implements ArgumentSerializer<IntegerArgumentType> {
 
     @Override
     public /* synthetic */ ArgumentType fromPacket(PacketByteBuf packetByteBuf) {
-        return this.method_10050(packetByteBuf);
+        return this.fromPacket(packetByteBuf);
     }
 }
 

@@ -218,7 +218,8 @@ extends RealmsScreenWithCallback<WorldTemplate> {
         this.drawCenteredString(string, i + 30, j, bl ? 0xA0A0A0 : 0xFFFFFF);
     }
 
-    void method_21371(WorldTemplate worldTemplate) {
+    @Override
+    void callback(WorldTemplate worldTemplate) {
         if (worldTemplate != null) {
             if (this.slot == -1) {
                 this.resetWorldWithTemplate(worldTemplate);

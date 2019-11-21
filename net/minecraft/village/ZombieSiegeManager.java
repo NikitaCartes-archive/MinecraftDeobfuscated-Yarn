@@ -26,7 +26,7 @@ public class ZombieSiegeManager {
     private int startZ;
 
     public int tick(ServerWorld serverWorld, boolean bl, boolean bl2) {
-        if (serverWorld.isDaylight() || !bl) {
+        if (serverWorld.isDay() || !bl) {
             this.state = State.SIEGE_DONE;
             this.spawned = false;
             return 0;

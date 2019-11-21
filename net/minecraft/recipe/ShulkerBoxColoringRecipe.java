@@ -23,7 +23,8 @@ extends SpecialCraftingRecipe {
         super(identifier);
     }
 
-    public boolean method_17734(CraftingInventory craftingInventory, World world) {
+    @Override
+    public boolean matches(CraftingInventory craftingInventory, World world) {
         int i = 0;
         int j = 0;
         for (int k = 0; k < craftingInventory.getInvSize(); ++k) {
@@ -42,7 +43,8 @@ extends SpecialCraftingRecipe {
         return i == 1 && j == 1;
     }
 
-    public ItemStack method_17733(CraftingInventory craftingInventory) {
+    @Override
+    public ItemStack craft(CraftingInventory craftingInventory) {
         ItemStack itemStack = ItemStack.EMPTY;
         DyeItem dyeItem = (DyeItem)Items.WHITE_DYE;
         for (int i = 0; i < craftingInventory.getInvSize(); ++i) {
@@ -58,7 +60,7 @@ extends SpecialCraftingRecipe {
         }
         ItemStack itemStack3 = ShulkerBoxBlock.getItemStack(dyeItem.getColor());
         if (itemStack.hasTag()) {
-            itemStack3.setTag(itemStack.getTag().method_10553());
+            itemStack3.setTag(itemStack.getTag().copy());
         }
         return itemStack3;
     }

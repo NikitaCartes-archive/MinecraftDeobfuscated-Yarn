@@ -50,7 +50,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeBoolean(this.approved);
     }
 
-    public void method_21708(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.handlePlayerActionResponse(this);
     }
 

@@ -77,7 +77,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeBoolean(this.showsDeathScreen);
     }
 
-    public void method_11567(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onGameJoin(this);
     }
 

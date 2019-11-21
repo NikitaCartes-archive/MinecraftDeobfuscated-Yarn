@@ -3,31 +3,27 @@
  */
 package net.minecraft.client.render.block.entity;
 
-import java.util.Arrays;
-import java.util.Comparator;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BedBlockEntity;
 import net.minecraft.block.enums.BedPart;
+import net.minecraft.class_4722;
+import net.minecraft.class_4730;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
-import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
-import net.minecraft.util.DyeColor;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 
 @Environment(value=EnvType.CLIENT)
 public class BedBlockEntityRenderer
 extends BlockEntityRenderer<BedBlockEntity> {
-    public static final Identifier[] TEXTURES = (Identifier[])Arrays.stream(DyeColor.values()).sorted(Comparator.comparingInt(DyeColor::getId)).map(dyeColor -> new Identifier("entity/bed/" + dyeColor.getName())).toArray(Identifier[]::new);
     private final ModelPart field_20813;
     private final ModelPart field_20814;
     private final ModelPart[] field_20815 = new ModelPart[4];
@@ -56,19 +52,19 @@ extends BlockEntityRenderer<BedBlockEntity> {
         this.field_20815[3].roll = (float)Math.PI;
     }
 
-    public void method_3557(BedBlockEntity bedBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
-        Identifier identifier = TEXTURES[bedBlockEntity.getColor().getId()];
-        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.method_23946());
+    @Override
+    public void render(BedBlockEntity bedBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
+        class_4730 lv = class_4722.field_21713[bedBlockEntity.getColor().getId()];
         if (bedBlockEntity.hasWorld()) {
             BlockState blockState = bedBlockEntity.getCachedState();
-            this.method_3558(matrixStack, vertexConsumer, blockState.get(BedBlock.PART) == BedPart.HEAD, blockState.get(BedBlock.FACING), identifier, i, j, false);
+            this.method_3558(matrixStack, vertexConsumerProvider, blockState.get(BedBlock.PART) == BedPart.HEAD, blockState.get(BedBlock.FACING), lv, i, j, false);
         } else {
-            this.method_3558(matrixStack, vertexConsumer, true, Direction.SOUTH, identifier, i, j, false);
-            this.method_3558(matrixStack, vertexConsumer, false, Direction.SOUTH, identifier, i, j, true);
+            this.method_3558(matrixStack, vertexConsumerProvider, true, Direction.SOUTH, lv, i, j, false);
+            this.method_3558(matrixStack, vertexConsumerProvider, false, Direction.SOUTH, lv, i, j, true);
         }
     }
 
-    private void method_3558(MatrixStack matrixStack, VertexConsumer vertexConsumer, boolean bl, Direction direction, Identifier identifier, int i, int j, boolean bl2) {
+    private void method_3558(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, boolean bl, Direction direction, class_4730 arg, int i, int j, boolean bl2) {
         this.field_20813.visible = bl;
         this.field_20814.visible = !bl;
         this.field_20815[0].visible = !bl;
@@ -81,13 +77,13 @@ extends BlockEntityRenderer<BedBlockEntity> {
         matrixStack.translate(0.5, 0.5, 0.5);
         matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0f + direction.asRotation()));
         matrixStack.translate(-0.5, -0.5, -0.5);
-        Sprite sprite = this.getSprite(identifier);
-        this.field_20813.render(matrixStack, vertexConsumer, i, j, sprite);
-        this.field_20814.render(matrixStack, vertexConsumer, i, j, sprite);
-        this.field_20815[0].render(matrixStack, vertexConsumer, i, j, sprite);
-        this.field_20815[1].render(matrixStack, vertexConsumer, i, j, sprite);
-        this.field_20815[2].render(matrixStack, vertexConsumer, i, j, sprite);
-        this.field_20815[3].render(matrixStack, vertexConsumer, i, j, sprite);
+        VertexConsumer vertexConsumer = arg.method_24145(vertexConsumerProvider, RenderLayer::getEntitySolid);
+        this.field_20813.render(matrixStack, vertexConsumer, i, j);
+        this.field_20814.render(matrixStack, vertexConsumer, i, j);
+        this.field_20815[0].render(matrixStack, vertexConsumer, i, j);
+        this.field_20815[1].render(matrixStack, vertexConsumer, i, j);
+        this.field_20815[2].render(matrixStack, vertexConsumer, i, j);
+        this.field_20815[3].render(matrixStack, vertexConsumer, i, j);
         matrixStack.pop();
     }
 }

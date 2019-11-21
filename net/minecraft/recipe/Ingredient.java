@@ -57,7 +57,8 @@ implements Predicate<ItemStack> {
         }
     }
 
-    public boolean method_8093(@Nullable ItemStack itemStack) {
+    @Override
+    public boolean test(@Nullable ItemStack itemStack) {
         if (itemStack == null) {
             return false;
         }
@@ -169,7 +170,7 @@ implements Predicate<ItemStack> {
 
     @Override
     public /* synthetic */ boolean test(@Nullable Object object) {
-        return this.method_8093((ItemStack)object);
+        return this.test((ItemStack)object);
     }
 
     static class TagEntry

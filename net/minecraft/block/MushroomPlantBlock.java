@@ -64,7 +64,7 @@ implements Fertilizable {
 
     @Override
     public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
-        BlockPos blockPos2 = blockPos.method_10074();
+        BlockPos blockPos2 = blockPos.down();
         BlockState blockState2 = worldView.getBlockState(blockPos2);
         Block block = blockState2.getBlock();
         if (block == Blocks.MYCELIUM || block == Blocks.PODZOL) {
@@ -84,7 +84,7 @@ implements Fertilizable {
             serverWorld.setBlockState(blockPos, blockState, 3);
             return false;
         }
-        if (configuredFeature.generate(serverWorld, serverWorld.method_14178().getChunkGenerator(), random, blockPos)) {
+        if (configuredFeature.generate(serverWorld, serverWorld.getChunkManager().getChunkGenerator(), random, blockPos)) {
             return true;
         }
         serverWorld.setBlockState(blockPos, blockState, 3);

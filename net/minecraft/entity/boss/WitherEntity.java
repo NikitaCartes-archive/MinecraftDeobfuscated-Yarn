@@ -444,12 +444,6 @@ RangedAttackMob {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
-    public int getLightmapCoordinates() {
-        return 15;
-    }
-
-    @Override
     public boolean handleFallDamage(float f, float g) {
         return false;
     }

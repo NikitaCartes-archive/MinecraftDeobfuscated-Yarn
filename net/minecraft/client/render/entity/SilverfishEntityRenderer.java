@@ -22,22 +22,24 @@ extends MobEntityRenderer<SilverfishEntity, SilverfishEntityModel<SilverfishEnti
         super(entityRenderDispatcher, new SilverfishEntityModel(), 0.3f);
     }
 
-    protected float method_4107(SilverfishEntity silverfishEntity) {
+    @Override
+    protected float getLyingAngle(SilverfishEntity silverfishEntity) {
         return 180.0f;
     }
 
-    public Identifier method_4108(SilverfishEntity silverfishEntity) {
+    @Override
+    public Identifier getTexture(SilverfishEntity silverfishEntity) {
         return SKIN;
     }
 
     @Override
     protected /* synthetic */ float getLyingAngle(LivingEntity livingEntity) {
-        return this.method_4107((SilverfishEntity)livingEntity);
+        return this.getLyingAngle((SilverfishEntity)livingEntity);
     }
 
     @Override
     public /* synthetic */ Identifier getTexture(Entity entity) {
-        return this.method_4108((SilverfishEntity)entity);
+        return this.getTexture((SilverfishEntity)entity);
     }
 }
 

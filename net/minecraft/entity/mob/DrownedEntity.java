@@ -196,7 +196,7 @@ implements RangedAttackMob {
 
     public boolean method_7012(@Nullable LivingEntity livingEntity) {
         if (livingEntity != null) {
-            return !this.world.isDaylight() || livingEntity.isInsideWater();
+            return !this.world.isDay() || livingEntity.isInsideWater();
         }
         return false;
     }
@@ -339,7 +339,7 @@ implements RangedAttackMob {
 
         @Override
         public boolean canStart() {
-            if (!this.world.isDaylight()) {
+            if (!this.world.isDay()) {
                 return false;
             }
             if (this.mob.isInsideWater()) {
@@ -389,7 +389,7 @@ implements RangedAttackMob {
 
         @Override
         public boolean canStart() {
-            return super.canStart() && !this.drowned.world.isDaylight() && this.drowned.isInsideWater() && this.drowned.getY() >= (double)(this.drowned.world.getSeaLevel() - 3);
+            return super.canStart() && !this.drowned.world.isDay() && this.drowned.isInsideWater() && this.drowned.getY() >= (double)(this.drowned.world.getSeaLevel() - 3);
         }
 
         @Override
@@ -434,7 +434,7 @@ implements RangedAttackMob {
 
         @Override
         public boolean canStart() {
-            return !this.drowned.world.isDaylight() && this.drowned.isInsideWater() && this.drowned.getY() < (double)(this.minY - 2);
+            return !this.drowned.world.isDay() && this.drowned.isInsideWater() && this.drowned.getY() < (double)(this.minY - 2);
         }
 
         @Override
@@ -445,7 +445,7 @@ implements RangedAttackMob {
         @Override
         public void tick() {
             if (this.drowned.getY() < (double)(this.minY - 1) && (this.drowned.getNavigation().isIdle() || this.drowned.hasFinishedCurrentPath())) {
-                Vec3d vec3d = TargetFinder.method_23735(this.drowned, 4, 8, new Vec3d(this.drowned.getX(), this.minY - 1, this.drowned.getZ()));
+                Vec3d vec3d = TargetFinder.findTargetTowards(this.drowned, 4, 8, new Vec3d(this.drowned.getX(), this.minY - 1, this.drowned.getZ()));
                 if (vec3d == null) {
                     this.foundTarget = true;
                     return;

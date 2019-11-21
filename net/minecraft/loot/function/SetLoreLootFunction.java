@@ -96,8 +96,9 @@ extends ConditionalLootFunction {
             super(new Identifier("set_lore"), SetLoreLootFunction.class);
         }
 
-        public void method_15969(JsonObject jsonObject, SetLoreLootFunction setLoreLootFunction, JsonSerializationContext jsonSerializationContext) {
-            super.method_529(jsonObject, setLoreLootFunction, jsonSerializationContext);
+        @Override
+        public void toJson(JsonObject jsonObject, SetLoreLootFunction setLoreLootFunction, JsonSerializationContext jsonSerializationContext) {
+            super.toJson(jsonObject, setLoreLootFunction, jsonSerializationContext);
             jsonObject.addProperty("replace", setLoreLootFunction.replace);
             JsonArray jsonArray = new JsonArray();
             for (Text text : setLoreLootFunction.lore) {
@@ -109,7 +110,8 @@ extends ConditionalLootFunction {
             }
         }
 
-        public SetLoreLootFunction method_15968(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+        @Override
+        public SetLoreLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
             boolean bl = JsonHelper.getBoolean(jsonObject, "replace", false);
             List list = Streams.stream(JsonHelper.getArray(jsonObject, "lore")).map(Text.Serializer::fromJson).collect(ImmutableList.toImmutableList());
             LootContext.EntityTarget entityTarget = JsonHelper.deserialize(jsonObject, "entity", null, jsonDeserializationContext, LootContext.EntityTarget.class);
@@ -118,7 +120,7 @@ extends ConditionalLootFunction {
 
         @Override
         public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            return this.method_15968(jsonObject, jsonDeserializationContext, lootConditions);
+            return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
         }
     }
 }

@@ -27,7 +27,8 @@ implements Packet<ClientPlayPacketListener> {
         this.recipes = Lists.newArrayList(collection);
     }
 
-    public void method_11997(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onSynchronizeRecipes(this);
     }
 

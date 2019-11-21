@@ -20,7 +20,8 @@ extends AbstractCriterion<Conditions> {
         return ID;
     }
 
-    public Conditions method_9140(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+    @Override
+    public Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
         return new Conditions();
     }
 
@@ -30,7 +31,7 @@ extends AbstractCriterion<Conditions> {
 
     @Override
     public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.method_9140(jsonObject, jsonDeserializationContext);
+        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
     }
 
     public static class Conditions

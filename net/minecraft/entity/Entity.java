@@ -103,7 +103,6 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.LightType;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
@@ -472,6 +471,7 @@ CommandOutput {
         if (this.movementMultiplier.lengthSquared() > 1.0E-7) {
             vec3d = vec3d.multiply(this.movementMultiplier);
             this.movementMultiplier = Vec3d.ZERO;
+            this.setVelocity(Vec3d.ZERO);
         }
         if ((vec3d2 = this.adjustMovementForCollisions(vec3d = this.adjustMovementForSneaking(vec3d, movementType))).lengthSquared() > 1.0E-7) {
             this.setBoundingBox(this.getBoundingBox().offset(vec3d2));
@@ -564,7 +564,7 @@ CommandOutput {
         int j;
         int i = MathHelper.floor(this.x);
         BlockPos blockPos = new BlockPos(i, j = MathHelper.floor(this.y - (double)0.2f), k = MathHelper.floor(this.z));
-        if (this.world.getBlockState(blockPos).isAir() && ((block = (blockState = this.world.getBlockState(blockPos2 = blockPos.method_10074())).getBlock()).matches(BlockTags.FENCES) || block.matches(BlockTags.WALLS) || block instanceof FenceGateBlock)) {
+        if (this.world.getBlockState(blockPos).isAir() && ((block = (blockState = this.world.getBlockState(blockPos2 = blockPos.down())).getBlock()).matches(BlockTags.FENCES) || block.matches(BlockTags.WALLS) || block instanceof FenceGateBlock)) {
             return blockPos2;
         }
         return blockPos;
@@ -743,7 +743,7 @@ CommandOutput {
                 for (int i = pooledMutable.getX(); i <= pooledMutable2.getX(); ++i) {
                     for (int j = pooledMutable.getY(); j <= pooledMutable2.getY(); ++j) {
                         for (int k = pooledMutable.getZ(); k <= pooledMutable2.getZ(); ++k) {
-                            pooledMutable3.method_10113(i, j, k);
+                            pooledMutable3.set(i, j, k);
                             BlockState blockState = this.world.getBlockState(pooledMutable3);
                             try {
                                 blockState.onEntityCollision(this.world, pooledMutable3, this);
@@ -853,7 +853,7 @@ CommandOutput {
 
     private boolean isBeingRainedOn() {
         try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.getEntityPos(this);){
-            boolean bl = this.world.hasRain(pooledMutable) || this.world.hasRain(pooledMutable.method_10112(this.getX(), this.getY() + (double)this.dimensions.height, this.getZ()));
+            boolean bl = this.world.hasRain(pooledMutable) || this.world.hasRain(pooledMutable.set(this.getX(), this.getY() + (double)this.dimensions.height, this.getZ()));
             return bl;
         }
     }
@@ -1001,14 +1001,6 @@ CommandOutput {
         float h = MathHelper.sin(g * ((float)Math.PI / 180));
         float i = MathHelper.cos(g * ((float)Math.PI / 180));
         return new Vec3d(vec3d2.x * (double)i - vec3d2.z * (double)h, vec3d2.y, vec3d2.z * (double)i + vec3d2.x * (double)h);
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public int getLightmapCoordinates() {
-        if (this.isOnFire()) {
-            return 15;
-        }
-        return this.world.getLightLevel(LightType.BLOCK, new BlockPos(this.getX(), this.getY(), this.getZ()));
     }
 
     public float getBrightnessAtEyes() {
@@ -1172,7 +1164,7 @@ CommandOutput {
         return this.getRotationVector(f - 90.0f, g);
     }
 
-    public Vec3d getCameraPosVec(float f) {
+    public final Vec3d getCameraPosVec(float f) {
         if (f == 1.0f) {
             return new Vec3d(this.getX(), this.getEyeY(), this.getZ());
         }
@@ -1435,7 +1427,7 @@ CommandOutput {
                 int k = MathHelper.floor(this.getX() + (double)(((float)((i >> 1) % 2) - 0.5f) * this.dimensions.width * 0.8f));
                 int l = MathHelper.floor(this.getZ() + (double)(((float)((i >> 2) % 2) - 0.5f) * this.dimensions.width * 0.8f));
                 if (pooledMutable.getX() == k && pooledMutable.getY() == j && pooledMutable.getZ() == l) continue;
-                pooledMutable.method_10113(k, j, l);
+                pooledMutable.set(k, j, l);
                 if (!this.world.getBlockState(pooledMutable).canSuffocate(this.world, pooledMutable)) continue;
                 boolean bl = true;
                 return bl;
@@ -2099,8 +2091,8 @@ CommandOutput {
             return;
         }
         ChunkPos chunkPos = new ChunkPos(new BlockPos(d, e, f));
-        ((ServerWorld)this.world).method_14178().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos, 0, this.getEntityId());
-        this.world.method_8497(chunkPos.x, chunkPos.z);
+        ((ServerWorld)this.world).getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos, 0, this.getEntityId());
+        this.world.getChunk(chunkPos.x, chunkPos.z);
         this.requestTeleport(d, e, f);
     }
 
@@ -2446,7 +2438,7 @@ CommandOutput {
                 for (int q = k; q < l; ++q) {
                     for (int r = m; r < n; ++r) {
                         double e;
-                        pooledMutable.method_10113(p, q, r);
+                        pooledMutable.set(p, q, r);
                         FluidState fluidState = this.world.getFluidState(pooledMutable);
                         if (!fluidState.matches(tag) || !((e = (double)((float)q + fluidState.getHeight(this.world, pooledMutable))) >= box.y1)) continue;
                         bl2 = true;

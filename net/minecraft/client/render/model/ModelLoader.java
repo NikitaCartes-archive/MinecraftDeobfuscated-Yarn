@@ -20,7 +20,6 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
@@ -41,12 +40,13 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.BannerPattern;
+import net.minecraft.class_4722;
+import net.minecraft.class_4724;
+import net.minecraft.class_4730;
 import net.minecraft.client.color.block.BlockColors;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.block.BlockModels;
-import net.minecraft.client.render.block.entity.BedBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BellBlockEntityRenderer;
-import net.minecraft.client.render.block.entity.ChestBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.ConduitBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.EnchantingTableBlockEntityRenderer;
 import net.minecraft.client.render.model.BakedModel;
@@ -61,8 +61,10 @@ import net.minecraft.client.render.model.json.MultipartModelComponent;
 import net.minecraft.client.render.model.json.WeightedUnbakedModel;
 import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.client.util.math.Rotation3;
+import net.minecraft.container.PlayerContainer;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.state.StateManager;
@@ -80,42 +82,24 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class ModelLoader {
-    public static final Identifier FIRE_0 = new Identifier("block/fire_0");
-    public static final Identifier FIRE_1 = new Identifier("block/fire_1");
-    public static final Identifier LAVA_FLOW = new Identifier("block/lava_flow");
-    public static final Identifier WATER_FLOW = new Identifier("block/water_flow");
-    public static final Identifier WATER_OVERLAY = new Identifier("block/water_overlay");
-    public static final Identifier SHULKER = new Identifier("entity/shulker/shulker");
-    public static final List<Identifier> SHULKER_COLORS = ImmutableList.of(new Identifier("entity/shulker/shulker_white"), new Identifier("entity/shulker/shulker_orange"), new Identifier("entity/shulker/shulker_magenta"), new Identifier("entity/shulker/shulker_light_blue"), new Identifier("entity/shulker/shulker_yellow"), new Identifier("entity/shulker/shulker_lime"), new Identifier("entity/shulker/shulker_pink"), new Identifier("entity/shulker/shulker_gray"), new Identifier("entity/shulker/shulker_light_gray"), new Identifier("entity/shulker/shulker_cyan"), new Identifier("entity/shulker/shulker_purple"), new Identifier("entity/shulker/shulker_blue"), new Identifier[]{new Identifier("entity/shulker/shulker_brown"), new Identifier("entity/shulker/shulker_green"), new Identifier("entity/shulker/shulker_red"), new Identifier("entity/shulker/shulker_black")});
-    public static final Identifier BANNER_BASE = new Identifier("entity/banner_base");
-    public static final Identifier SHIELD_BASE = new Identifier("entity/shield_base");
-    public static final Identifier SHIELD_BASE_NO_PATTERN = new Identifier("entity/shield_base_nopattern");
-    public static final Identifier OAK_SIGN = new Identifier("entity/signs/oak");
-    public static final Identifier SPRUCE_SIGN = new Identifier("entity/signs/spruce");
-    public static final Identifier BIRCH_SIGN = new Identifier("entity/signs/birch");
-    public static final Identifier ACACIA_SIGN = new Identifier("entity/signs/acacia");
-    public static final Identifier JUNGLE_SIGN = new Identifier("entity/signs/jungle");
-    public static final Identifier DARK_OAK_SIGN = new Identifier("entity/signs/dark_oak");
+    public static final class_4730 FIRE_0 = new class_4730(SpriteAtlasTexture.BLOCK_ATLAS_TEX, new Identifier("block/fire_0"));
+    public static final class_4730 FIRE_1 = new class_4730(SpriteAtlasTexture.BLOCK_ATLAS_TEX, new Identifier("block/fire_1"));
+    public static final class_4730 LAVA_FLOW = new class_4730(SpriteAtlasTexture.BLOCK_ATLAS_TEX, new Identifier("block/lava_flow"));
+    public static final class_4730 WATER_FLOW = new class_4730(SpriteAtlasTexture.BLOCK_ATLAS_TEX, new Identifier("block/water_flow"));
+    public static final class_4730 WATER_OVERLAY = new class_4730(SpriteAtlasTexture.BLOCK_ATLAS_TEX, new Identifier("block/water_overlay"));
+    public static final class_4730 BANNER_BASE = new class_4730(SpriteAtlasTexture.BLOCK_ATLAS_TEX, new Identifier("entity/banner_base"));
+    public static final class_4730 SHIELD_BASE = new class_4730(SpriteAtlasTexture.BLOCK_ATLAS_TEX, new Identifier("entity/shield_base"));
+    public static final class_4730 SHIELD_BASE_NO_PATTERN = new class_4730(SpriteAtlasTexture.BLOCK_ATLAS_TEX, new Identifier("entity/shield_base_nopattern"));
     public static final List<Identifier> BLOCK_DESTRUCTION_STAGES = IntStream.range(0, 10).mapToObj(i -> new Identifier("block/destroy_stage_" + i)).collect(Collectors.toList());
     public static final List<Identifier> BLOCK_DESTRUCTION_STAGE_TEXTURES = BLOCK_DESTRUCTION_STAGES.stream().map(identifier -> new Identifier("textures/" + identifier.getPath() + ".png")).collect(Collectors.toList());
-    private static final Set<Identifier> DEFAULT_TEXTURES = Util.create(Sets.newHashSet(), hashSet -> {
+    public static final List<RenderLayer> field_21772 = BLOCK_DESTRUCTION_STAGE_TEXTURES.stream().map(RenderLayer::getBlockBreaking).collect(Collectors.toList());
+    private static final Set<class_4730> DEFAULT_TEXTURES = Util.create(Sets.newHashSet(), hashSet -> {
         hashSet.add(WATER_FLOW);
         hashSet.add(LAVA_FLOW);
         hashSet.add(WATER_OVERLAY);
         hashSet.add(FIRE_0);
         hashSet.add(FIRE_1);
         hashSet.add(BellBlockEntityRenderer.BELL_BODY_TEXTURE);
-        hashSet.addAll(Arrays.asList(BedBlockEntityRenderer.TEXTURES));
-        hashSet.add(ChestBlockEntityRenderer.TRAPPED_TEX);
-        hashSet.add(ChestBlockEntityRenderer.field_21473);
-        hashSet.add(ChestBlockEntityRenderer.field_21474);
-        hashSet.add(ChestBlockEntityRenderer.CHRISTMAS_TEX);
-        hashSet.add(ChestBlockEntityRenderer.field_21475);
-        hashSet.add(ChestBlockEntityRenderer.field_21476);
-        hashSet.add(ChestBlockEntityRenderer.NORMAL_TEX);
-        hashSet.add(ChestBlockEntityRenderer.field_21477);
-        hashSet.add(ChestBlockEntityRenderer.field_21478);
-        hashSet.add(ChestBlockEntityRenderer.ENDER_TEX);
         hashSet.add(ConduitBlockEntityRenderer.BASE_TEX);
         hashSet.add(ConduitBlockEntityRenderer.CAGE_TEX);
         hashSet.add(ConduitBlockEntityRenderer.WIND_TEX);
@@ -123,30 +107,22 @@ public class ModelLoader {
         hashSet.add(ConduitBlockEntityRenderer.OPEN_EYE_TEX);
         hashSet.add(ConduitBlockEntityRenderer.CLOSED_EYE_TEX);
         hashSet.add(EnchantingTableBlockEntityRenderer.BOOK_TEX);
-        hashSet.add(SHULKER);
-        hashSet.addAll(SHULKER_COLORS);
         hashSet.add(BANNER_BASE);
         hashSet.add(SHIELD_BASE);
         hashSet.add(SHIELD_BASE_NO_PATTERN);
-        for (BannerPattern bannerPattern : BannerPattern.values()) {
-            hashSet.add(bannerPattern.getSpriteId(true));
-            hashSet.add(bannerPattern.getSpriteId(false));
+        for (Identifier identifier : BLOCK_DESTRUCTION_STAGES) {
+            hashSet.add(new class_4730(SpriteAtlasTexture.BLOCK_ATLAS_TEX, identifier));
         }
-        hashSet.add(OAK_SIGN);
-        hashSet.add(SPRUCE_SIGN);
-        hashSet.add(BIRCH_SIGN);
-        hashSet.add(ACACIA_SIGN);
-        hashSet.add(JUNGLE_SIGN);
-        hashSet.add(DARK_OAK_SIGN);
-        hashSet.addAll(BLOCK_DESTRUCTION_STAGES);
-        hashSet.add(new Identifier("item/empty_armor_slot_helmet"));
-        hashSet.add(new Identifier("item/empty_armor_slot_chestplate"));
-        hashSet.add(new Identifier("item/empty_armor_slot_leggings"));
-        hashSet.add(new Identifier("item/empty_armor_slot_boots"));
-        hashSet.add(new Identifier("item/empty_armor_slot_shield"));
+        hashSet.add(new class_4730(SpriteAtlasTexture.BLOCK_ATLAS_TEX, PlayerContainer.field_21669));
+        hashSet.add(new class_4730(SpriteAtlasTexture.BLOCK_ATLAS_TEX, PlayerContainer.field_21670));
+        hashSet.add(new class_4730(SpriteAtlasTexture.BLOCK_ATLAS_TEX, PlayerContainer.field_21671));
+        hashSet.add(new class_4730(SpriteAtlasTexture.BLOCK_ATLAS_TEX, PlayerContainer.field_21672));
+        hashSet.add(new class_4730(SpriteAtlasTexture.BLOCK_ATLAS_TEX, PlayerContainer.field_21673));
+        class_4722.method_24066(hashSet::add);
     });
     private static final Logger LOGGER = LogManager.getLogger();
     public static final ModelIdentifier MISSING = new ModelIdentifier("builtin/missing", "missing");
+    private static final String field_21773 = MISSING.toString();
     @VisibleForTesting
     public static final String MISSING_DEFINITION = ("{    'textures': {       'particle': '" + MissingSprite.getMissingSpriteId().getPath() + "',       'missingno': '" + MissingSprite.getMissingSpriteId().getPath() + "'    },    'elements': [         {  'from': [ 0, 0, 0 ],            'to': [ 16, 16, 16 ],            'faces': {                'down':  { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'down',  'texture': '#missingno' },                'up':    { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'up',    'texture': '#missingno' },                'north': { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'north', 'texture': '#missingno' },                'south': { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'south', 'texture': '#missingno' },                'west':  { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'west',  'texture': '#missingno' },                'east':  { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'east',  'texture': '#missingno' }            }        }    ]}").replace('\'', '\"');
     private static final Map<String, String> BUILTIN_MODEL_DEFINITIONS = Maps.newHashMap(ImmutableMap.of("missing", MISSING_DEFINITION));
@@ -162,7 +138,8 @@ public class ModelLoader {
     private static final ItemModelGenerator ITEM_MODEL_GENERATOR = new ItemModelGenerator();
     private static final Map<Identifier, StateManager<Block, BlockState>> STATIC_DEFINITIONS = ImmutableMap.of(new Identifier("item_frame"), ITEM_FRAME_STATE_FACTORY);
     private final ResourceManager resourceManager;
-    private final SpriteAtlasTexture spriteAtlas;
+    @Nullable
+    private class_4724 field_21774;
     private final BlockColors colorationManager;
     private final Set<Identifier> modelsToLoad = Sets.newHashSet();
     private final ModelVariantMap.DeserializationContext variantMapDeserializationContext = new ModelVariantMap.DeserializationContext();
@@ -170,13 +147,12 @@ public class ModelLoader {
     private final Map<Triple<Identifier, Rotation3, Boolean>, BakedModel> bakedModelCache = Maps.newHashMap();
     private final Map<Identifier, UnbakedModel> modelsToBake = Maps.newHashMap();
     private final Map<Identifier, BakedModel> bakedModels = Maps.newHashMap();
-    private final SpriteAtlasTexture.Data spriteAtlasData;
+    private final Map<Identifier, Pair<SpriteAtlasTexture, SpriteAtlasTexture.Data>> spriteAtlasData;
     private int nextStateId = 1;
     private final Object2IntMap<BlockState> stateLookup = Util.create(new Object2IntOpenHashMap(), object2IntOpenHashMap -> object2IntOpenHashMap.defaultReturnValue(-1));
 
-    public ModelLoader(ResourceManager resourceManager, SpriteAtlasTexture spriteAtlasTexture, BlockColors blockColors, Profiler profiler) {
+    public ModelLoader(ResourceManager resourceManager, BlockColors blockColors, Profiler profiler, int i) {
         this.resourceManager = resourceManager;
-        this.spriteAtlas = spriteAtlasTexture;
         this.colorationManager = blockColors;
         profiler.push("missing_model");
         try {
@@ -200,17 +176,31 @@ public class ModelLoader {
         this.addModel(new ModelIdentifier("minecraft:trident_in_hand#inventory"));
         profiler.swap("textures");
         LinkedHashSet set = Sets.newLinkedHashSet();
-        Set<Identifier> set2 = this.modelsToBake.values().stream().flatMap(unbakedModel -> unbakedModel.getTextureDependencies(this::getOrLoadModel, set).stream()).collect(Collectors.toSet());
+        Set set2 = this.modelsToBake.values().stream().flatMap(unbakedModel -> unbakedModel.getTextureDependencies(this::getOrLoadModel, set).stream()).collect(Collectors.toSet());
         set2.addAll(DEFAULT_TEXTURES);
-        set.forEach(string -> LOGGER.warn("Unable to resolve texture reference: {}", string));
+        set.stream().filter(pair -> !((String)pair.getSecond()).equals(field_21773)).forEach(pair -> LOGGER.warn("Unable to resolve texture reference: {} in {}", pair.getFirst(), pair.getSecond()));
+        Map<Identifier, List<class_4730>> map = set2.stream().collect(Collectors.groupingBy(class_4730::method_24144));
         profiler.swap("stitching");
-        this.spriteAtlasData = this.spriteAtlas.stitch(this.resourceManager, set2, profiler);
+        this.spriteAtlasData = Maps.newHashMap();
+        for (Map.Entry<Identifier, List<class_4730>> entry : map.entrySet()) {
+            SpriteAtlasTexture spriteAtlasTexture = new SpriteAtlasTexture(entry.getKey());
+            SpriteAtlasTexture.Data data = spriteAtlasTexture.stitch(this.resourceManager, entry.getValue().stream().map(class_4730::method_24147), profiler, i);
+            this.spriteAtlasData.put(entry.getKey(), Pair.of(spriteAtlasTexture, data));
+        }
         profiler.pop();
     }
 
-    public void upload(Profiler profiler) {
+    public class_4724 upload(TextureManager textureManager, int i, Profiler profiler) {
         profiler.push("atlas");
-        this.spriteAtlas.upload(this.spriteAtlasData);
+        for (Pair<SpriteAtlasTexture, SpriteAtlasTexture.Data> pair : this.spriteAtlasData.values()) {
+            SpriteAtlasTexture spriteAtlasTexture = pair.getFirst();
+            spriteAtlasTexture.setMipLevel(i);
+            spriteAtlasTexture.upload(pair.getSecond());
+            textureManager.registerTexture(spriteAtlasTexture.method_24106(), spriteAtlasTexture);
+            textureManager.bindTexture(spriteAtlasTexture.method_24106());
+            spriteAtlasTexture.setFilter(false, i > 0);
+        }
+        this.field_21774 = new class_4724(this.spriteAtlasData.values().stream().map(Pair::getFirst).collect(Collectors.toList()));
         profiler.swap("baking");
         this.modelsToBake.keySet().forEach(identifier -> {
             BakedModel bakedModel = null;
@@ -224,6 +214,7 @@ public class ModelLoader {
             }
         });
         profiler.pop();
+        return this.field_21774;
     }
 
     private static Predicate<BlockState> stateKeyToPredicate(StateManager<Block, BlockState> stateManager, String string) {
@@ -443,11 +434,14 @@ public class ModelLoader {
         if (this.bakedModelCache.containsKey(triple)) {
             return this.bakedModelCache.get(triple);
         }
+        if (this.field_21774 == null) {
+            throw new IllegalStateException("bake called too early");
+        }
         UnbakedModel unbakedModel = this.getOrLoadModel(identifier);
         if (unbakedModel instanceof JsonUnbakedModel && (jsonUnbakedModel = (JsonUnbakedModel)unbakedModel).getRootModel() == GENERATION_MARKER) {
-            return ITEM_MODEL_GENERATOR.create(this.spriteAtlas::getSprite, jsonUnbakedModel).bake(this, jsonUnbakedModel, this.spriteAtlas::getSprite, modelBakeSettings, identifier);
+            return ITEM_MODEL_GENERATOR.create(this.field_21774::method_24097, jsonUnbakedModel).bake(this, jsonUnbakedModel, this.field_21774::method_24097, modelBakeSettings, identifier);
         }
-        BakedModel bakedModel = unbakedModel.bake(this, this.spriteAtlas::getSprite, modelBakeSettings, identifier);
+        BakedModel bakedModel = unbakedModel.bake(this, this.field_21774::method_24097, modelBakeSettings, identifier);
         this.bakedModelCache.put(triple, bakedModel);
         return bakedModel;
     }

@@ -342,7 +342,7 @@ implements ServerPlayPacketListener {
                 this.client.send(new VehicleMoveS2CPacket(entity));
                 return;
             }
-            this.player.getServerWorld().method_14178().updateCameraPosition(this.player);
+            this.player.getServerWorld().getChunkManager().updateCameraPosition(this.player);
             this.player.method_7282(this.player.getX() - d, this.player.getY() - e, this.player.getZ() - f);
             this.ridingEntity = q >= -0.03125 && !this.server.isFlightEnabled() && !serverWorld.isAreaNotEmpty(entity.getBoundingBox().expand(0.0625).stretch(0.0, -0.55, 0.0));
             this.updatedRiddenX = entity.getX();
@@ -617,7 +617,7 @@ implements ServerPlayPacketListener {
                 ItemStack itemStack3 = new ItemStack(Items.WRITTEN_BOOK);
                 CompoundTag compoundTag = itemStack2.getTag();
                 if (compoundTag != null) {
-                    itemStack3.setTag(compoundTag.method_10553());
+                    itemStack3.setTag(compoundTag.copy());
                 }
                 itemStack3.putSubTag("author", StringTag.of(this.player.getName().getString()));
                 itemStack3.putSubTag("title", StringTag.of(itemStack.getTag().getString("title")));
@@ -626,7 +626,7 @@ implements ServerPlayPacketListener {
                     String string = listTag.getString(i);
                     LiteralText text = new LiteralText(string);
                     string = Text.Serializer.toJson(text);
-                    listTag.method_10606(i, StringTag.of(string));
+                    listTag.set(i, StringTag.of(string));
                 }
                 itemStack3.putSubTag("pages", listTag);
                 this.player.setStackInHand(bookUpdateC2SPacket.getHand(), itemStack3);
@@ -684,7 +684,7 @@ implements ServerPlayPacketListener {
         this.teleportRequestTick = this.ticks;
         if (this.player.hasVehicle()) {
             this.player.setPositionAnglesAndUpdate(this.player.getX(), this.player.getY(), this.player.getZ(), playerMoveC2SPacket.getYaw(this.player.yaw), playerMoveC2SPacket.getPitch(this.player.pitch));
-            this.player.getServerWorld().method_14178().updateCameraPosition(this.player);
+            this.player.getServerWorld().getChunkManager().updateCameraPosition(this.player);
             return;
         }
         double d = this.player.getX();
@@ -755,7 +755,7 @@ implements ServerPlayPacketListener {
         }
         this.floating = t >= -0.03125 && this.player.interactionManager.getGameMode() != GameMode.SPECTATOR && !this.server.isFlightEnabled() && !this.player.abilities.allowFlying && !this.player.hasStatusEffect(StatusEffects.LEVITATION) && !this.player.isFallFlying() && !serverWorld.isAreaNotEmpty(this.player.getBoundingBox().expand(0.0625).stretch(0.0, -0.55, 0.0));
         this.player.onGround = playerMoveC2SPacket.isOnGround();
-        this.player.getServerWorld().method_14178().updateCameraPosition(this.player);
+        this.player.getServerWorld().getChunkManager().updateCameraPosition(this.player);
         this.player.method_14207(this.player.getY() - g, playerMoveC2SPacket.isOnGround());
         this.updatedX = this.player.getX();
         this.updatedY = this.player.getY();

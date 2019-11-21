@@ -16,7 +16,7 @@ extends SaplingGenerator {
     @Override
     @Nullable
     protected ConfiguredFeature<BranchedTreeFeatureConfig, ?> createTreeFeature(Random random) {
-        return Feature.ACACIA_TREE.configure(DefaultBiomeFeatures.field_21186);
+        return Feature.ACACIA_TREE.configure(DefaultBiomeFeatures.ACACIA_TREE_CONFIG);
     }
 }
 

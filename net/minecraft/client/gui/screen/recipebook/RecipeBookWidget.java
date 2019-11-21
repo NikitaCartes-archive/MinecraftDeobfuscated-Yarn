@@ -389,7 +389,7 @@ RecipeGridAligner<Ingredient> {
         if ("excitedze".equals(string)) {
             LanguageManager languageManager = this.client.getLanguageManager();
             LanguageDefinition languageDefinition = languageManager.getLanguage("en_pt");
-            if (languageManager.getLanguage().method_4673(languageDefinition) == 0) {
+            if (languageManager.getLanguage().compareTo(languageDefinition) == 0) {
                 return;
             }
             languageManager.setLanguage(languageDefinition);

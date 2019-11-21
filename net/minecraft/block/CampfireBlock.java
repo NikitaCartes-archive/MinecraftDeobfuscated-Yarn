@@ -112,7 +112,7 @@ implements Waterloggable {
         BlockPos blockPos;
         World iWorld = itemPlacementContext.getWorld();
         boolean bl = iWorld.getFluidState(blockPos = itemPlacementContext.getBlockPos()).getFluid() == Fluids.WATER;
-        return (BlockState)((BlockState)((BlockState)((BlockState)this.getDefaultState().with(WATERLOGGED, bl)).with(SIGNAL_FIRE, this.doesBlockCauseSignalFire(iWorld.getBlockState(blockPos.method_10074())))).with(LIT, !bl)).with(FACING, itemPlacementContext.getPlayerFacing());
+        return (BlockState)((BlockState)((BlockState)((BlockState)this.getDefaultState().with(WATERLOGGED, bl)).with(SIGNAL_FIRE, this.doesBlockCauseSignalFire(iWorld.getBlockState(blockPos.down())))).with(LIT, !bl)).with(FACING, itemPlacementContext.getPlayerFacing());
     }
 
     @Override
@@ -231,7 +231,7 @@ implements Waterloggable {
             }
             boolean bl = VoxelShapes.matchesAnywhere(field_21580, blockState.getCollisionShape(world, blockPos, EntityContext.absent()), BooleanBiFunction.AND);
             if (!bl) continue;
-            BlockState blockState2 = world.getBlockState(blockPos2.method_10074());
+            BlockState blockState2 = world.getBlockState(blockPos2.down());
             return CampfireBlock.method_23896(blockState2);
         }
         return false;

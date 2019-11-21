@@ -239,7 +239,7 @@ extends Screen {
     }
 
     public static List<String> readPages(CompoundTag compoundTag) {
-        ListTag listTag = compoundTag.getList("pages", 8).method_10612();
+        ListTag listTag = compoundTag.getList("pages", 8).copy();
         ImmutableList.Builder builder = ImmutableList.builder();
         for (int i = 0; i < listTag.size(); ++i) {
             builder.add(listTag.getString(i));

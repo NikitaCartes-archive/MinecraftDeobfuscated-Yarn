@@ -36,7 +36,8 @@ implements Packet<ServerPlayPacketListener> {
         packetByteBuf.writeVarInt(this.secondaryEffectId);
     }
 
-    public void method_12434(ServerPlayPacketListener serverPlayPacketListener) {
+    @Override
+    public void apply(ServerPlayPacketListener serverPlayPacketListener) {
         serverPlayPacketListener.onUpdateBeacon(this);
     }
 

@@ -25,7 +25,8 @@ implements Packet<ClientPlayPacketListener> {
         this.value = k;
     }
 
-    public void method_11447(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onGuiUpdate(this);
     }
 

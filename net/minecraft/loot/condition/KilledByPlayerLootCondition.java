@@ -26,7 +26,8 @@ implements LootCondition {
         return ImmutableSet.of(LootContextParameters.LAST_DAMAGE_PLAYER);
     }
 
-    public boolean method_938(LootContext lootContext) {
+    @Override
+    public boolean test(LootContext lootContext) {
         return lootContext.hasParameter(LootContextParameters.LAST_DAMAGE_PLAYER);
     }
 
@@ -36,7 +37,7 @@ implements LootCondition {
 
     @Override
     public /* synthetic */ boolean test(Object object) {
-        return this.method_938((LootContext)object);
+        return this.test((LootContext)object);
     }
 
     public static class Factory
@@ -45,16 +46,18 @@ implements LootCondition {
             super(new Identifier("killed_by_player"), KilledByPlayerLootCondition.class);
         }
 
-        public void method_942(JsonObject jsonObject, KilledByPlayerLootCondition killedByPlayerLootCondition, JsonSerializationContext jsonSerializationContext) {
+        @Override
+        public void toJson(JsonObject jsonObject, KilledByPlayerLootCondition killedByPlayerLootCondition, JsonSerializationContext jsonSerializationContext) {
         }
 
-        public KilledByPlayerLootCondition method_943(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+        @Override
+        public KilledByPlayerLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
             return INSTANCE;
         }
 
         @Override
         public /* synthetic */ LootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            return this.method_943(jsonObject, jsonDeserializationContext);
+            return this.fromJson(jsonObject, jsonDeserializationContext);
         }
     }
 }

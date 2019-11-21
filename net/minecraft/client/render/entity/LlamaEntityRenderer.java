@@ -22,7 +22,8 @@ extends MobEntityRenderer<LlamaEntity, LlamaEntityModel<LlamaEntity>> {
         this.addFeature(new LlamaDecorFeatureRenderer(this));
     }
 
-    public Identifier method_4037(LlamaEntity llamaEntity) {
+    @Override
+    public Identifier getTexture(LlamaEntity llamaEntity) {
         return TEXTURES[llamaEntity.getVariant()];
     }
 }

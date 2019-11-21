@@ -4,8 +4,6 @@
 package net.minecraft.entity.mob;
 
 import java.util.EnumSet;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
@@ -87,12 +85,6 @@ extends HostileEntity {
     @Override
     protected SoundEvent getDeathSound() {
         return SoundEvents.ENTITY_BLAZE_DEATH;
-    }
-
-    @Override
-    @Environment(value=EnvType.CLIENT)
-    public int getLightmapCoordinates() {
-        return 15;
     }
 
     @Override

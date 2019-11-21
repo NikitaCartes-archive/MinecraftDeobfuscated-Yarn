@@ -33,7 +33,7 @@ extends ItemDispenserBehavior {
         BlockPos blockPos = blockPointer.getBlockPos().offset(direction);
         if (world.getFluidState(blockPos).matches(FluidTags.WATER)) {
             g = 1.0;
-        } else if (world.getBlockState(blockPos).isAir() && world.getFluidState(blockPos.method_10074()).matches(FluidTags.WATER)) {
+        } else if (world.getBlockState(blockPos).isAir() && world.getFluidState(blockPos.down()).matches(FluidTags.WATER)) {
             g = 0.0;
         } else {
             return this.itemDispenser.dispense(blockPointer, itemStack);

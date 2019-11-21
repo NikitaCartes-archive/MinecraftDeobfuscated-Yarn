@@ -3,7 +3,10 @@
  */
 package net.minecraft.client.render.block.entity;
 
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
@@ -24,20 +27,22 @@ extends BlockEntityRenderer<T> {
     public static final Identifier SKY_TEX = new Identifier("textures/environment/end_sky.png");
     public static final Identifier PORTAL_TEX = new Identifier("textures/entity/end_portal.png");
     private static final Random RANDOM = new Random(31100L);
+    private static final List<RenderLayer> field_21732 = IntStream.range(0, 16).mapToObj(RenderLayer::getEndPortal).collect(Collectors.toList());
 
     public EndPortalBlockEntityRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher) {
         super(blockEntityRenderDispatcher);
     }
 
-    public void method_3591(T endPortalBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
+    @Override
+    public void render(T endPortalBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
         RANDOM.setSeed(31100L);
         double d = ((BlockEntity)endPortalBlockEntity).getPos().getSquaredDistance(this.blockEntityRenderDispatcher.camera.getPos(), true);
         int k = this.method_3592(d);
         float g = this.method_3594();
         Matrix4f matrix4f = matrixStack.peek().getModel();
-        this.method_23084(endPortalBlockEntity, g, 0.15f, matrix4f, vertexConsumerProvider.getBuffer(RenderLayer.getEndPortal(1)));
+        this.method_23084(endPortalBlockEntity, g, 0.15f, matrix4f, vertexConsumerProvider.getBuffer(field_21732.get(1)));
         for (int l = 1; l < k; ++l) {
-            this.method_23084(endPortalBlockEntity, g, 2.0f / (float)(18 - l), matrix4f, vertexConsumerProvider.getBuffer(RenderLayer.getEndPortal(l + 1)));
+            this.method_23084(endPortalBlockEntity, g, 2.0f / (float)(18 - l), matrix4f, vertexConsumerProvider.getBuffer(field_21732.get(l + 1)));
         }
     }
 

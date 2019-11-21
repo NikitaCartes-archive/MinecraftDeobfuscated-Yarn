@@ -20,7 +20,8 @@ extends MobEntityRenderer<CowEntity, CowEntityModel<CowEntity>> {
         super(entityRenderDispatcher, new CowEntityModel(), 0.7f);
     }
 
-    public Identifier method_3895(CowEntity cowEntity) {
+    @Override
+    public Identifier getTexture(CowEntity cowEntity) {
         return SKIN;
     }
 }

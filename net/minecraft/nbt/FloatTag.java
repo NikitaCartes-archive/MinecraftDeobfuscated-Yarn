@@ -19,7 +19,8 @@ extends AbstractNumberTag {
     public static final FloatTag ZERO = new FloatTag(0.0f);
     public static final TagReader<FloatTag> READER = new TagReader<FloatTag>(){
 
-        public FloatTag method_23245(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+        @Override
+        public FloatTag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
             positionTracker.add(96L);
             return FloatTag.of(dataInput.readFloat());
         }
@@ -41,7 +42,7 @@ extends AbstractNumberTag {
 
         @Override
         public /* synthetic */ Tag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-            return this.method_23245(dataInput, i, positionTracker);
+            return this.read(dataInput, i, positionTracker);
         }
     };
     private final float value;
@@ -76,7 +77,8 @@ extends AbstractNumberTag {
         return this.value + "f";
     }
 
-    public FloatTag method_10587() {
+    @Override
+    public FloatTag copy() {
         return this;
     }
 
@@ -134,7 +136,7 @@ extends AbstractNumberTag {
 
     @Override
     public /* synthetic */ Tag copy() {
-        return this.method_10587();
+        return this.copy();
     }
 }
 

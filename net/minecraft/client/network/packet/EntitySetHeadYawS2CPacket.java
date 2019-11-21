@@ -37,7 +37,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeByte(this.headYaw);
     }
 
-    public void method_11788(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onEntitySetHeadYaw(this);
     }
 

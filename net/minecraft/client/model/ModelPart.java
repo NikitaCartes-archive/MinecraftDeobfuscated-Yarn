@@ -10,14 +10,12 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.Matrix3f;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.util.math.Direction;
-import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class ModelPart {
@@ -37,13 +35,13 @@ public class ModelPart {
     private final ObjectList<ModelPart> children = new ObjectArrayList<ModelPart>();
 
     public ModelPart(Model model) {
-        model.method_22696(this);
+        model.accept(this);
         this.setTextureSize(model.textureWidth, model.textureHeight);
     }
 
     public ModelPart(Model model, int i, int j) {
         this(model.textureWidth, model.textureHeight, i, j);
-        model.method_22696(this);
+        model.accept(this);
     }
 
     public ModelPart(int i, int j, int k, int l) {
@@ -108,11 +106,11 @@ public class ModelPart {
         this.pivotZ = h;
     }
 
-    public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, @Nullable Sprite sprite) {
-        this.render(matrixStack, vertexConsumer, i, j, sprite, 1.0f, 1.0f, 1.0f);
+    public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j) {
+        this.render(matrixStack, vertexConsumer, i, j, 1.0f, 1.0f, 1.0f, 1.0f);
     }
 
-    public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, @Nullable Sprite sprite, float f, float g, float h) {
+    public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k) {
         if (!this.visible) {
             return;
         }
@@ -121,9 +119,9 @@ public class ModelPart {
         }
         matrixStack.push();
         this.rotate(matrixStack);
-        this.renderCuboids(matrixStack.peek(), vertexConsumer, i, j, sprite, f, g, h);
+        this.renderCuboids(matrixStack.peek(), vertexConsumer, i, j, f, g, h, k);
         for (ModelPart modelPart : this.children) {
-            modelPart.render(matrixStack, vertexConsumer, i, j, sprite, f, g, h);
+            modelPart.render(matrixStack, vertexConsumer, i, j, f, g, h, k);
         }
         matrixStack.pop();
     }
@@ -141,33 +139,24 @@ public class ModelPart {
         }
     }
 
-    private void renderCuboids(MatrixStack.Entry entry, VertexConsumer vertexConsumer, int i, int j, @Nullable Sprite sprite, float f, float g, float h) {
+    private void renderCuboids(MatrixStack.Entry entry, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k) {
         Matrix4f matrix4f = entry.getModel();
         Matrix3f matrix3f = entry.getNormal();
         for (Cuboid cuboid : this.cuboids) {
             for (Quad quad : cuboid.sides) {
                 Vector3f vector3f = quad.direction.copy();
                 vector3f.multiply(matrix3f);
-                float k = vector3f.getX();
-                float l = vector3f.getY();
-                float m = vector3f.getZ();
-                for (int n = 0; n < 4; ++n) {
-                    float s;
-                    float r;
-                    Vertex vertex = quad.vertices[n];
-                    float o = vertex.pos.getX() / 16.0f;
-                    float p = vertex.pos.getY() / 16.0f;
-                    float q = vertex.pos.getZ() / 16.0f;
-                    Vector4f vector4f = new Vector4f(o, p, q, 1.0f);
+                float l = vector3f.getX();
+                float m = vector3f.getY();
+                float n = vector3f.getZ();
+                for (int o = 0; o < 4; ++o) {
+                    Vertex vertex = quad.vertices[o];
+                    float p = vertex.pos.getX() / 16.0f;
+                    float q = vertex.pos.getY() / 16.0f;
+                    float r = vertex.pos.getZ() / 16.0f;
+                    Vector4f vector4f = new Vector4f(p, q, r, 1.0f);
                     vector4f.multiply(matrix4f);
-                    if (sprite == null) {
-                        r = vertex.u;
-                        s = vertex.v;
-                    } else {
-                        r = sprite.getFrameU(vertex.u * 16.0f);
-                        s = sprite.getFrameV(vertex.v * 16.0f);
-                    }
-                    vertexConsumer.method_23919(vector4f.getX(), vector4f.getY(), vector4f.getZ(), f, g, h, 1.0f, r, s, j, i, k, l, m);
+                    vertexConsumer.method_23919(vector4f.getX(), vector4f.getY(), vector4f.getZ(), f, g, h, k, vertex.u, vertex.v, j, i, l, m, n);
                 }
             }
         }

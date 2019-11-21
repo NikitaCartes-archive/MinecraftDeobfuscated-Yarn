@@ -71,13 +71,15 @@ extends LeafEntry {
             super(new Identifier("tag"), TagEntry.class);
         }
 
-        public void method_451(JsonObject jsonObject, TagEntry tagEntry, JsonSerializationContext jsonSerializationContext) {
-            super.method_442(jsonObject, tagEntry, jsonSerializationContext);
+        @Override
+        public void toJson(JsonObject jsonObject, TagEntry tagEntry, JsonSerializationContext jsonSerializationContext) {
+            super.toJson(jsonObject, tagEntry, jsonSerializationContext);
             jsonObject.addProperty("name", tagEntry.name.getId().toString());
             jsonObject.addProperty("expand", tagEntry.expand);
         }
 
-        protected TagEntry method_450(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
+        @Override
+        protected TagEntry fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
             Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "name"));
             Tag<Item> tag = ItemTags.getContainer().get(identifier);
             if (tag == null) {
@@ -89,7 +91,7 @@ extends LeafEntry {
 
         @Override
         protected /* synthetic */ LeafEntry fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
-            return this.method_450(jsonObject, jsonDeserializationContext, i, j, lootConditions, lootFunctions);
+            return this.fromJson(jsonObject, jsonDeserializationContext, i, j, lootConditions, lootFunctions);
         }
     }
 }

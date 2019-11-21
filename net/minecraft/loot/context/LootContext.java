@@ -128,22 +128,24 @@ public class LootContext {
 
         public static class Serializer
         extends TypeAdapter<EntityTarget> {
-            public void method_318(JsonWriter jsonWriter, EntityTarget entityTarget) throws IOException {
+            @Override
+            public void write(JsonWriter jsonWriter, EntityTarget entityTarget) throws IOException {
                 jsonWriter.value(entityTarget.type);
             }
 
-            public EntityTarget method_317(JsonReader jsonReader) throws IOException {
+            @Override
+            public EntityTarget read(JsonReader jsonReader) throws IOException {
                 return EntityTarget.fromString(jsonReader.nextString());
             }
 
             @Override
             public /* synthetic */ Object read(JsonReader jsonReader) throws IOException {
-                return this.method_317(jsonReader);
+                return this.read(jsonReader);
             }
 
             @Override
             public /* synthetic */ void write(JsonWriter jsonWriter, Object object) throws IOException {
-                this.method_318(jsonWriter, (EntityTarget)((Object)object));
+                this.write(jsonWriter, (EntityTarget)((Object)object));
             }
         }
     }

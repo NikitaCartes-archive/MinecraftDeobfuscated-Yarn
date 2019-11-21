@@ -35,7 +35,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeVarInt(this.chunkZ);
     }
 
-    public void method_20321(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onChunkRenderDistanceCenter(this);
     }
 

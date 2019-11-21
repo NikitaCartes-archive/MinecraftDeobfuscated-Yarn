@@ -77,7 +77,7 @@ extends Screen {
             ListTag listTag = this.generatorOptionsTag.getCompound("biome_source").getList("biomes", 8);
             for (i = 0; i < listTag.size(); ++i) {
                 Identifier identifier2 = new Identifier(listTag.getString(i));
-                this.biomeSelectionList.method_20089(this.biomeSelectionList.children().stream().filter(buffetBiomeItem -> Objects.equals(((BuffetBiomesListWidget.BuffetBiomeItem)buffetBiomeItem).biome, identifier2)).findFirst().orElse(null));
+                this.biomeSelectionList.setSelected((BuffetBiomesListWidget.BuffetBiomeItem)this.biomeSelectionList.children().stream().filter(buffetBiomeItem -> Objects.equals(((BuffetBiomesListWidget.BuffetBiomeItem)buffetBiomeItem).biome, identifier2)).findFirst().orElse(null));
             }
         }
         this.generatorOptionsTag.remove("chunk_generator");
@@ -131,7 +131,8 @@ extends Screen {
             return CustomizeBuffetLevelScreen.this.getFocused() == this;
         }
 
-        public void method_20089(@Nullable BuffetBiomeItem buffetBiomeItem) {
+        @Override
+        public void setSelected(@Nullable BuffetBiomeItem buffetBiomeItem) {
             super.setSelected(buffetBiomeItem);
             if (buffetBiomeItem != null) {
                 NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", Registry.BIOME.get(buffetBiomeItem.biome).getName().getString()).getString());
@@ -146,7 +147,7 @@ extends Screen {
 
         @Override
         public /* synthetic */ void setSelected(@Nullable EntryListWidget.Entry entry) {
-            this.method_20089((BuffetBiomeItem)entry);
+            this.setSelected((BuffetBiomeItem)entry);
         }
 
         @Environment(value=EnvType.CLIENT)
@@ -166,7 +167,7 @@ extends Screen {
             @Override
             public boolean mouseClicked(double d, double e, int i) {
                 if (i == 0) {
-                    BuffetBiomesListWidget.this.method_20089(this);
+                    BuffetBiomesListWidget.this.setSelected(this);
                     CustomizeBuffetLevelScreen.this.refreshConfirmButton();
                     return true;
                 }

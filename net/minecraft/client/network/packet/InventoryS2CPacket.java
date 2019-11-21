@@ -48,7 +48,8 @@ implements Packet<ClientPlayPacketListener> {
         }
     }
 
-    public void method_11439(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onInventory(this);
     }
 

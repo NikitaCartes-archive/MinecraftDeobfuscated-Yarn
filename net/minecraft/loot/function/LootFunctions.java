@@ -125,7 +125,8 @@ public class LootFunctions {
     public static class Factory
     implements JsonDeserializer<LootFunction>,
     JsonSerializer<LootFunction> {
-        public LootFunction method_596(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        @Override
+        public LootFunction deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             LootFunction.Factory<?> factory;
             JsonObject jsonObject = JsonHelper.asObject(jsonElement, "function");
             Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "function"));
@@ -137,7 +138,8 @@ public class LootFunctions {
             return factory.fromJson(jsonObject, jsonDeserializationContext);
         }
 
-        public JsonElement method_597(LootFunction lootFunction, Type type, JsonSerializationContext jsonSerializationContext) {
+        @Override
+        public JsonElement serialize(LootFunction lootFunction, Type type, JsonSerializationContext jsonSerializationContext) {
             LootFunction.Factory<LootFunction> factory = LootFunctions.getFactory(lootFunction);
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("function", factory.getId().toString());
@@ -147,12 +149,12 @@ public class LootFunctions {
 
         @Override
         public /* synthetic */ JsonElement serialize(Object object, Type type, JsonSerializationContext jsonSerializationContext) {
-            return this.method_597((LootFunction)object, type, jsonSerializationContext);
+            return this.serialize((LootFunction)object, type, jsonSerializationContext);
         }
 
         @Override
         public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.method_596(jsonElement, type, jsonDeserializationContext);
+            return this.deserialize(jsonElement, type, jsonDeserializationContext);
         }
     }
 }

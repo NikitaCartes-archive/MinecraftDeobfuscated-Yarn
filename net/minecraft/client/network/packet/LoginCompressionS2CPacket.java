@@ -31,7 +31,8 @@ implements Packet<ClientLoginPacketListener> {
         packetByteBuf.writeVarInt(this.compressionThreshold);
     }
 
-    public void method_12633(ClientLoginPacketListener clientLoginPacketListener) {
+    @Override
+    public void apply(ClientLoginPacketListener clientLoginPacketListener) {
         clientLoginPacketListener.onCompression(this);
     }
 

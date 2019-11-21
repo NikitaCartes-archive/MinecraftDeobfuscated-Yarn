@@ -51,7 +51,8 @@ implements Packet<ClientPlayPacketListener> {
         }
     }
 
-    public void method_11392(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onChunkDeltaUpdate(this);
     }
 

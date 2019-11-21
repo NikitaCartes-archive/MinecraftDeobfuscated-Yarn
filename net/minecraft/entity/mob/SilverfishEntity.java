@@ -121,7 +121,7 @@ extends HostileEntity {
 
     @Override
     public float getPathfindingFavor(BlockPos blockPos, WorldView worldView) {
-        if (InfestedBlock.isInfestable(worldView.getBlockState(blockPos.method_10074()))) {
+        if (InfestedBlock.isInfestable(worldView.getBlockState(blockPos.down()))) {
             return 10.0f;
         }
         return super.getPathfindingFavor(blockPos, worldView);

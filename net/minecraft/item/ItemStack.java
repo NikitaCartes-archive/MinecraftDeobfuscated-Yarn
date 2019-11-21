@@ -191,7 +191,7 @@ public final class ItemStack {
         compoundTag.putString("id", identifier == null ? "minecraft:air" : identifier.toString());
         compoundTag.putByte("Count", (byte)this.count);
         if (this.tag != null) {
-            compoundTag.put("tag", this.tag.method_10553());
+            compoundTag.put("tag", this.tag.copy());
         }
         return compoundTag;
     }
@@ -299,7 +299,7 @@ public final class ItemStack {
         ItemStack itemStack = new ItemStack(this.getItem(), this.count);
         itemStack.setCooldown(this.getCooldown());
         if (this.tag != null) {
-            itemStack.tag = this.tag.method_10553();
+            itemStack.tag = this.tag.copy();
         }
         return itemStack;
     }
@@ -779,7 +779,7 @@ public final class ItemStack {
             for (int i = 0; i < listTag.size(); ++i) {
                 String string = listTag.getString(i);
                 try {
-                    Predicate<CachedBlockPosition> predicate = BlockPredicateArgumentType.blockPredicate().method_9642(new StringReader(string)).create(registryTagManager);
+                    Predicate<CachedBlockPosition> predicate = BlockPredicateArgumentType.blockPredicate().parse(new StringReader(string)).create(registryTagManager);
                     if (predicate.test(cachedBlockPosition)) {
                         this.lastDestroyResult = true;
                         return true;
@@ -804,7 +804,7 @@ public final class ItemStack {
             for (int i = 0; i < listTag.size(); ++i) {
                 String string = listTag.getString(i);
                 try {
-                    Predicate<CachedBlockPosition> predicate = BlockPredicateArgumentType.blockPredicate().method_9642(new StringReader(string)).create(registryTagManager);
+                    Predicate<CachedBlockPosition> predicate = BlockPredicateArgumentType.blockPredicate().parse(new StringReader(string)).create(registryTagManager);
                     if (predicate.test(cachedBlockPosition)) {
                         this.lastPlaceOnResult = true;
                         return true;

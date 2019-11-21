@@ -22,7 +22,8 @@ extends MobEntityRenderer<DolphinEntity, DolphinEntityModel<DolphinEntity>> {
         this.addFeature(new DolphinHeldItemFeatureRenderer(this));
     }
 
-    public Identifier method_3903(DolphinEntity dolphinEntity) {
+    @Override
+    public Identifier getTexture(DolphinEntity dolphinEntity) {
         return SKIN;
     }
 }

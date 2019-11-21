@@ -25,7 +25,8 @@ public class TestFunctionArgumentType
 implements ArgumentType<TestFunction> {
     private static final Collection<String> EXAMPLES = Arrays.asList("techtests.piston", "techtests");
 
-    public TestFunction method_22302(StringReader stringReader) throws CommandSyntaxException {
+    @Override
+    public TestFunction parse(StringReader stringReader) throws CommandSyntaxException {
         String string = stringReader.readUnquotedString();
         Optional<TestFunction> optional = TestFunctions.getTestFunction(string);
         if (optional.isPresent()) {
@@ -56,7 +57,7 @@ implements ArgumentType<TestFunction> {
 
     @Override
     public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.method_22302(stringReader);
+        return this.parse(stringReader);
     }
 }
 

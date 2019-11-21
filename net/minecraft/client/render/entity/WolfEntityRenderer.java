@@ -26,22 +26,25 @@ extends MobEntityRenderer<WolfEntity, WolfEntityModel<WolfEntity>> {
         this.addFeature(new WolfCollarFeatureRenderer(this));
     }
 
-    protected float method_4167(WolfEntity wolfEntity, float f) {
+    @Override
+    protected float getAge(WolfEntity wolfEntity, float f) {
         return wolfEntity.method_6714();
     }
 
-    public void method_4166(WolfEntity wolfEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+    @Override
+    public void render(WolfEntity wolfEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         if (wolfEntity.isWet()) {
             float h = wolfEntity.getBrightnessAtEyes() * wolfEntity.getWetBrightnessMultiplier(g);
             ((WolfEntityModel)this.model).setColorMultiplier(h, h, h);
         }
-        super.method_4072(wolfEntity, f, g, matrixStack, vertexConsumerProvider, i);
+        super.render(wolfEntity, f, g, matrixStack, vertexConsumerProvider, i);
         if (wolfEntity.isWet()) {
             ((WolfEntityModel)this.model).setColorMultiplier(1.0f, 1.0f, 1.0f);
         }
     }
 
-    public Identifier method_4165(WolfEntity wolfEntity) {
+    @Override
+    public Identifier getTexture(WolfEntity wolfEntity) {
         if (wolfEntity.isTamed()) {
             return TAMED_SKIN;
         }

@@ -26,7 +26,8 @@ extends BaseText {
         return this.name.get();
     }
 
-    public KeybindText method_10902() {
+    @Override
+    public KeybindText copy() {
         return new KeybindText(this.key);
     }
 
@@ -53,7 +54,7 @@ extends BaseText {
 
     @Override
     public /* synthetic */ Text copy() {
-        return this.method_10902();
+        return this.copy();
     }
 }
 

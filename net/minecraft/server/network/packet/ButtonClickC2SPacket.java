@@ -24,7 +24,8 @@ implements Packet<ServerPlayPacketListener> {
         this.buttonId = j;
     }
 
-    public void method_12185(ServerPlayPacketListener serverPlayPacketListener) {
+    @Override
+    public void apply(ServerPlayPacketListener serverPlayPacketListener) {
         serverPlayPacketListener.onButtonClick(this);
     }
 

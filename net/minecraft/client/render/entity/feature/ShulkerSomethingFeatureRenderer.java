@@ -27,7 +27,8 @@ extends FeatureRenderer<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_4115(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, ShulkerEntity shulkerEntity, float f, float g, float h, float j, float k, float l) {
+    @Override
+    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, ShulkerEntity shulkerEntity, float f, float g, float h, float j, float k, float l) {
         matrixStack.push();
         matrixStack.translate(0.0, 1.0, 0.0);
         matrixStack.scale(-1.0f, -1.0f, 1.0f);
@@ -42,7 +43,7 @@ extends FeatureRenderer<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> {
         DyeColor dyeColor = shulkerEntity.getColor();
         Identifier identifier = dyeColor == null ? ShulkerEntityRenderer.SKIN : ShulkerEntityRenderer.SKIN_COLOR[dyeColor.getId()];
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(identifier));
-        modelPart.render(matrixStack, vertexConsumer, i, LivingEntityRenderer.method_23622(shulkerEntity, 0.0f), null);
+        modelPart.render(matrixStack, vertexConsumer, i, LivingEntityRenderer.method_23622(shulkerEntity, 0.0f));
         matrixStack.pop();
     }
 }

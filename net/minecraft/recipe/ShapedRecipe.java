@@ -80,7 +80,8 @@ implements CraftingRecipe {
         return i >= this.width && j >= this.height;
     }
 
-    public boolean method_17728(CraftingInventory craftingInventory, World world) {
+    @Override
+    public boolean matches(CraftingInventory craftingInventory, World world) {
         for (int i = 0; i <= craftingInventory.getWidth() - this.width; ++i) {
             for (int j = 0; j <= craftingInventory.getHeight() - this.height; ++j) {
                 if (this.matchesSmall(craftingInventory, i, j, true)) {
@@ -102,14 +103,15 @@ implements CraftingRecipe {
                 if (m >= 0 && n >= 0 && m < this.width && n < this.height) {
                     ingredient = bl ? this.inputs.get(this.width - m - 1 + n * this.width) : this.inputs.get(m + n * this.width);
                 }
-                if (ingredient.method_8093(craftingInventory.getInvStack(k + l * craftingInventory.getWidth()))) continue;
+                if (ingredient.test(craftingInventory.getInvStack(k + l * craftingInventory.getWidth()))) continue;
                 return false;
             }
         }
         return true;
     }
 
-    public ItemStack method_17727(CraftingInventory craftingInventory) {
+    @Override
+    public ItemStack craft(CraftingInventory craftingInventory) {
         return this.getOutput().copy();
     }
 
@@ -234,7 +236,8 @@ implements CraftingRecipe {
 
     public static class Serializer
     implements RecipeSerializer<ShapedRecipe> {
-        public ShapedRecipe method_8164(Identifier identifier, JsonObject jsonObject) {
+        @Override
+        public ShapedRecipe read(Identifier identifier, JsonObject jsonObject) {
             String string = JsonHelper.getString(jsonObject, "group", "");
             Map map = ShapedRecipe.getComponents(JsonHelper.getObject(jsonObject, "key"));
             String[] strings = ShapedRecipe.combinePattern(ShapedRecipe.getPattern(JsonHelper.getArray(jsonObject, "pattern")));
@@ -245,7 +248,8 @@ implements CraftingRecipe {
             return new ShapedRecipe(identifier, string, i, j, defaultedList, itemStack);
         }
 
-        public ShapedRecipe method_8163(Identifier identifier, PacketByteBuf packetByteBuf) {
+        @Override
+        public ShapedRecipe read(Identifier identifier, PacketByteBuf packetByteBuf) {
             int i = packetByteBuf.readVarInt();
             int j = packetByteBuf.readVarInt();
             String string = packetByteBuf.readString(Short.MAX_VALUE);
@@ -257,7 +261,8 @@ implements CraftingRecipe {
             return new ShapedRecipe(identifier, string, i, j, defaultedList, itemStack);
         }
 
-        public void method_8165(PacketByteBuf packetByteBuf, ShapedRecipe shapedRecipe) {
+        @Override
+        public void write(PacketByteBuf packetByteBuf, ShapedRecipe shapedRecipe) {
             packetByteBuf.writeVarInt(shapedRecipe.width);
             packetByteBuf.writeVarInt(shapedRecipe.height);
             packetByteBuf.writeString(shapedRecipe.group);
@@ -269,12 +274,12 @@ implements CraftingRecipe {
 
         @Override
         public /* synthetic */ Recipe read(Identifier identifier, PacketByteBuf packetByteBuf) {
-            return this.method_8163(identifier, packetByteBuf);
+            return this.read(identifier, packetByteBuf);
         }
 
         @Override
         public /* synthetic */ Recipe read(Identifier identifier, JsonObject jsonObject) {
-            return this.method_8164(identifier, jsonObject);
+            return this.read(identifier, jsonObject);
         }
     }
 }

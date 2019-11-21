@@ -80,8 +80,9 @@ extends ConditionalLootFunction {
             super(new Identifier("apply_bonus"), ApplyBonusLootFunction.class);
         }
 
-        public void method_469(JsonObject jsonObject, ApplyBonusLootFunction applyBonusLootFunction, JsonSerializationContext jsonSerializationContext) {
-            super.method_529(jsonObject, applyBonusLootFunction, jsonSerializationContext);
+        @Override
+        public void toJson(JsonObject jsonObject, ApplyBonusLootFunction applyBonusLootFunction, JsonSerializationContext jsonSerializationContext) {
+            super.toJson(jsonObject, applyBonusLootFunction, jsonSerializationContext);
             jsonObject.addProperty("enchantment", Registry.ENCHANTMENT.getId(applyBonusLootFunction.enchantment).toString());
             jsonObject.addProperty("formula", applyBonusLootFunction.formula.getId().toString());
             JsonObject jsonObject2 = new JsonObject();
@@ -91,7 +92,8 @@ extends ConditionalLootFunction {
             }
         }
 
-        public ApplyBonusLootFunction method_470(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+        @Override
+        public ApplyBonusLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
             Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "enchantment"));
             Enchantment enchantment = Registry.ENCHANTMENT.getOrEmpty(identifier).orElseThrow(() -> new JsonParseException("Invalid enchantment id: " + identifier));
             Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "formula"));
@@ -105,7 +107,7 @@ extends ConditionalLootFunction {
 
         @Override
         public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            return this.method_470(jsonObject, jsonDeserializationContext, lootConditions);
+            return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
         }
     }
 

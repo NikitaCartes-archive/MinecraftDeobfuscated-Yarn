@@ -36,7 +36,8 @@ extends AnimalModel<T> {
         return ImmutableList.of(this.field_3365, this.field_3364);
     }
 
-    public void method_17079(T livingEntity, float f, float g, float h, float i, float j) {
+    @Override
+    public void setAngles(T livingEntity, float f, float g, float h, float i, float j) {
         float k = 0.2617994f;
         float l = -0.2617994f;
         float m = 0.0f;

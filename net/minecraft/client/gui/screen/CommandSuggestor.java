@@ -130,16 +130,13 @@ public class CommandSuggestor {
         }
         this.messages.clear();
         StringReader stringReader = new StringReader(string);
-        if (this.slashRequired) {
-            bl = true;
-        } else if (stringReader.canRead() && stringReader.peek() == '/') {
-            stringReader.skip();
-            bl = true;
-        } else {
-            bl = false;
-        }
-        int i = this.textField.getCursor();
+        boolean bl2 = bl = stringReader.canRead() && stringReader.peek() == '/';
         if (bl) {
+            stringReader.skip();
+        }
+        boolean bl22 = this.slashRequired || bl;
+        int i = this.textField.getCursor();
+        if (bl22) {
             int j;
             CommandDispatcher<CommandSource> commandDispatcher = this.client.player.networkHandler.getCommandDispatcher();
             if (this.parse == null) {

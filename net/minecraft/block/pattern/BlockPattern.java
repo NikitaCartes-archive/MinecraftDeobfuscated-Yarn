@@ -197,13 +197,14 @@ public class BlockPattern {
             this.forceLoad = bl;
         }
 
-        public CachedBlockPosition method_11714(BlockPos blockPos) throws Exception {
+        @Override
+        public CachedBlockPosition load(BlockPos blockPos) throws Exception {
             return new CachedBlockPosition(this.world, blockPos, this.forceLoad);
         }
 
         @Override
         public /* synthetic */ Object load(Object object) throws Exception {
-            return this.method_11714((BlockPos)object);
+            return this.load((BlockPos)object);
         }
     }
 }

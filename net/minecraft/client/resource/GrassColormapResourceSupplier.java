@@ -26,7 +26,8 @@ extends SinglePreparationResourceReloadListener<int[]> {
         }
     }
 
-    protected void method_18661(int[] is, ResourceManager resourceManager, Profiler profiler) {
+    @Override
+    protected void apply(int[] is, ResourceManager resourceManager, Profiler profiler) {
         GrassColors.setColorMap(is);
     }
 

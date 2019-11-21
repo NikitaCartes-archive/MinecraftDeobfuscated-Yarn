@@ -22,7 +22,8 @@ public class TestClassArgumentType
 implements ArgumentType<String> {
     private static final Collection<String> field_20580 = Arrays.asList("techtests", "mobtests");
 
-    public String method_22261(StringReader stringReader) throws CommandSyntaxException {
+    @Override
+    public String parse(StringReader stringReader) throws CommandSyntaxException {
         String string = stringReader.readUnquotedString();
         if (TestFunctions.testClassExists(string)) {
             return string;
@@ -51,7 +52,7 @@ implements ArgumentType<String> {
 
     @Override
     public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.method_22261(stringReader);
+        return this.parse(stringReader);
     }
 }
 

@@ -37,7 +37,7 @@ extends Goal {
         if (GRASS_PREDICATE.test(this.world.getBlockState(blockPos))) {
             return true;
         }
-        return this.world.getBlockState(blockPos.method_10074()).getBlock() == Blocks.GRASS_BLOCK;
+        return this.world.getBlockState(blockPos.down()).getBlock() == Blocks.GRASS_BLOCK;
     }
 
     @Override
@@ -74,7 +74,7 @@ extends Goal {
             }
             this.mob.onEatingGrass();
         } else {
-            BlockPos blockPos2 = blockPos.method_10074();
+            BlockPos blockPos2 = blockPos.down();
             if (this.world.getBlockState(blockPos2).getBlock() == Blocks.GRASS_BLOCK) {
                 if (this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
                     this.world.playLevelEvent(2001, blockPos2, Block.getRawIdFromState(Blocks.GRASS_BLOCK.getDefaultState()));

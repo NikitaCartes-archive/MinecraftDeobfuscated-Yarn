@@ -61,7 +61,8 @@ implements Packet<ServerPlayPacketListener> {
         packetByteBuf.writeFloat(this.walkSpeed);
     }
 
-    public void method_12339(ServerPlayPacketListener serverPlayPacketListener) {
+    @Override
+    public void apply(ServerPlayPacketListener serverPlayPacketListener) {
         serverPlayPacketListener.onPlayerAbilities(this);
     }
 

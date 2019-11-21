@@ -40,7 +40,8 @@ implements ArgumentType<BlockPredicate> {
         return new BlockPredicateArgumentType();
     }
 
-    public BlockPredicate method_9642(StringReader stringReader) throws CommandSyntaxException {
+    @Override
+    public BlockPredicate parse(StringReader stringReader) throws CommandSyntaxException {
         BlockArgumentParser blockArgumentParser = new BlockArgumentParser(stringReader, true).parse(true);
         if (blockArgumentParser.getBlockState() != null) {
             StatePredicate statePredicate = new StatePredicate(blockArgumentParser.getBlockState(), blockArgumentParser.getBlockProperties().keySet(), blockArgumentParser.getNbtData());
@@ -80,7 +81,7 @@ implements ArgumentType<BlockPredicate> {
 
     @Override
     public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.method_9642(stringReader);
+        return this.parse(stringReader);
     }
 
     static class TagPredicate
@@ -96,7 +97,8 @@ implements ArgumentType<BlockPredicate> {
             this.nbt = compoundTag;
         }
 
-        public boolean method_9649(CachedBlockPosition cachedBlockPosition) {
+        @Override
+        public boolean test(CachedBlockPosition cachedBlockPosition) {
             BlockState blockState = cachedBlockPosition.getBlockState();
             if (!blockState.matches(this.tag)) {
                 return false;
@@ -122,7 +124,7 @@ implements ArgumentType<BlockPredicate> {
 
         @Override
         public /* synthetic */ boolean test(Object object) {
-            return this.method_9649((CachedBlockPosition)object);
+            return this.test((CachedBlockPosition)object);
         }
     }
 
@@ -139,7 +141,8 @@ implements ArgumentType<BlockPredicate> {
             this.nbt = compoundTag;
         }
 
-        public boolean method_9648(CachedBlockPosition cachedBlockPosition) {
+        @Override
+        public boolean test(CachedBlockPosition cachedBlockPosition) {
             BlockState blockState = cachedBlockPosition.getBlockState();
             if (blockState.getBlock() != this.state.getBlock()) {
                 return false;
@@ -157,7 +160,7 @@ implements ArgumentType<BlockPredicate> {
 
         @Override
         public /* synthetic */ boolean test(Object object) {
-            return this.method_9648((CachedBlockPosition)object);
+            return this.test((CachedBlockPosition)object);
         }
     }
 

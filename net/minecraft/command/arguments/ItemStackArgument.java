@@ -30,7 +30,8 @@ implements Predicate<ItemStack> {
         return this.item;
     }
 
-    public boolean method_9783(ItemStack itemStack) {
+    @Override
+    public boolean test(ItemStack itemStack) {
         return itemStack.getItem() == this.item && NbtHelper.matches(this.tag, itemStack.getTag(), true);
     }
 
@@ -55,7 +56,7 @@ implements Predicate<ItemStack> {
 
     @Override
     public /* synthetic */ boolean test(Object object) {
-        return this.method_9783((ItemStack)object);
+        return this.test((ItemStack)object);
     }
 }
 

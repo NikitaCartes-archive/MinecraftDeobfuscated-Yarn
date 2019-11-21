@@ -62,7 +62,7 @@ extends Screen {
         this.hand = hand;
         CompoundTag compoundTag = itemStack.getTag();
         if (compoundTag != null) {
-            ListTag listTag = compoundTag.getList("pages", 8).method_10612();
+            ListTag listTag = compoundTag.getList("pages", 8).copy();
             for (int i = 0; i < listTag.size(); ++i) {
                 this.pages.add(listTag.getString(i));
             }

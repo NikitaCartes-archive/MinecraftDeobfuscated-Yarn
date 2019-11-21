@@ -94,7 +94,7 @@ extends BlockWithEntity {
                     commandBlockExecutor.setSuccessCount(0);
                 }
                 if (commandBlockBlockEntity.isPowered() || commandBlockBlockEntity.isAuto()) {
-                    serverWorld.method_14196().schedule(blockPos, this, this.getTickRate(serverWorld));
+                    serverWorld.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(serverWorld));
                 }
             } else if (type == CommandBlockBlockEntity.Type.REDSTONE) {
                 if (bl2) {

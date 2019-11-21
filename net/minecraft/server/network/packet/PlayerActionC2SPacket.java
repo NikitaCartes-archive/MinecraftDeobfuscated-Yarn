@@ -42,7 +42,8 @@ implements Packet<ServerPlayPacketListener> {
         packetByteBuf.writeByte(this.direction.getId());
     }
 
-    public void method_12361(ServerPlayPacketListener serverPlayPacketListener) {
+    @Override
+    public void apply(ServerPlayPacketListener serverPlayPacketListener) {
         serverPlayPacketListener.onPlayerAction(this);
     }
 

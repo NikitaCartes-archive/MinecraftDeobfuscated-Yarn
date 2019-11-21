@@ -23,9 +23,10 @@ extends Feature<IcePatchFeatureConfig> {
         super(function);
     }
 
-    public boolean method_13385(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, IcePatchFeatureConfig icePatchFeatureConfig) {
+    @Override
+    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, IcePatchFeatureConfig icePatchFeatureConfig) {
         while (iWorld.isAir(blockPos) && blockPos.getY() > 2) {
-            blockPos = blockPos.method_10074();
+            blockPos = blockPos.down();
         }
         if (iWorld.getBlockState(blockPos).getBlock() != Blocks.SNOW_BLOCK) {
             return false;
@@ -40,7 +41,7 @@ extends Feature<IcePatchFeatureConfig> {
                 for (int o = blockPos.getY() - 1; o <= blockPos.getY() + 1; ++o) {
                     BlockPos blockPos2 = new BlockPos(k, o, l);
                     Block block = iWorld.getBlockState(blockPos2).getBlock();
-                    if (!IcePatchFeature.method_23396(block) && block != Blocks.SNOW_BLOCK && block != Blocks.ICE) continue;
+                    if (!IcePatchFeature.isDirt(block) && block != Blocks.SNOW_BLOCK && block != Blocks.ICE) continue;
                     iWorld.setBlockState(blockPos2, this.ICE.getDefaultState(), 2);
                 }
             }

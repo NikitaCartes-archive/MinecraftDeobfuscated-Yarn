@@ -39,7 +39,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeVarInt(this.stackAmount);
     }
 
-    public void method_11914(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onItemPickupAnimation(this);
     }
 

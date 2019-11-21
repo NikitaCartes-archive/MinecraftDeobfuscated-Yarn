@@ -63,7 +63,8 @@ implements Packet<ServerPlayPacketListener> {
         packetByteBuf.writeByte(i);
     }
 
-    public void method_12469(ServerPlayPacketListener serverPlayPacketListener) {
+    @Override
+    public void apply(ServerPlayPacketListener serverPlayPacketListener) {
         serverPlayPacketListener.onUpdateCommandBlock(this);
     }
 

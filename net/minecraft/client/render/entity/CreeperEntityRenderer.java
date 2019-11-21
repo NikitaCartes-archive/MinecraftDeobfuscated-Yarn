@@ -25,7 +25,8 @@ extends MobEntityRenderer<CreeperEntity, CreeperEntityModel<CreeperEntity>> {
         this.addFeature(new CreeperChargeFeatureRenderer(this));
     }
 
-    protected void method_3900(CreeperEntity creeperEntity, MatrixStack matrixStack, float f) {
+    @Override
+    protected void scale(CreeperEntity creeperEntity, MatrixStack matrixStack, float f) {
         float g = creeperEntity.getClientFuseTime(f);
         float h = 1.0f + MathHelper.sin(g * 100.0f) * g * 0.01f;
         g = MathHelper.clamp(g, 0.0f, 1.0f);
@@ -36,7 +37,8 @@ extends MobEntityRenderer<CreeperEntity, CreeperEntityModel<CreeperEntity>> {
         matrixStack.scale(i, j, i);
     }
 
-    protected float method_23154(CreeperEntity creeperEntity, float f) {
+    @Override
+    protected float method_23185(CreeperEntity creeperEntity, float f) {
         float g = creeperEntity.getClientFuseTime(f);
         if ((int)(g * 10.0f) % 2 == 0) {
             return 0.0f;
@@ -44,13 +46,14 @@ extends MobEntityRenderer<CreeperEntity, CreeperEntityModel<CreeperEntity>> {
         return MathHelper.clamp(g, 0.0f, 1.0f);
     }
 
-    public Identifier method_3899(CreeperEntity creeperEntity) {
+    @Override
+    public Identifier getTexture(CreeperEntity creeperEntity) {
         return SKIN;
     }
 
     @Override
     protected /* synthetic */ float method_23185(LivingEntity livingEntity, float f) {
-        return this.method_23154((CreeperEntity)livingEntity, f);
+        return this.method_23185((CreeperEntity)livingEntity, f);
     }
 }
 

@@ -21,11 +21,12 @@ extends SkeletonEntityRenderer {
     }
 
     @Override
-    public Identifier method_4119(AbstractSkeletonEntity abstractSkeletonEntity) {
+    public Identifier getTexture(AbstractSkeletonEntity abstractSkeletonEntity) {
         return SKIN;
     }
 
-    protected void method_4161(AbstractSkeletonEntity abstractSkeletonEntity, MatrixStack matrixStack, float f) {
+    @Override
+    protected void scale(AbstractSkeletonEntity abstractSkeletonEntity, MatrixStack matrixStack, float f) {
         matrixStack.scale(1.2f, 1.2f, 1.2f);
     }
 }

@@ -12,7 +12,6 @@ import net.minecraft.client.gui.MapRenderer;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -131,7 +130,7 @@ public class FirstPersonRenderer {
         matrixStack.scale(0.38f, 0.38f, 0.38f);
         matrixStack.translate(-0.5, -0.5, 0.0);
         matrixStack.scale(0.0078125f, 0.0078125f, 0.0078125f);
-        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getText(MapRenderer.field_21056));
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(MapRenderer.field_21687);
         Matrix4f matrix4f = matrixStack.peek().getModel();
         vertexConsumer.vertex(matrix4f, -7.0f, 135.0f, 0.0f).color(255, 255, 255, 255).texture(0.0f, 1.0f).light(i).next();
         vertexConsumer.vertex(matrix4f, 135.0f, 135.0f, 0.0f).color(255, 255, 255, 255).texture(1.0f, 1.0f).light(i).next();

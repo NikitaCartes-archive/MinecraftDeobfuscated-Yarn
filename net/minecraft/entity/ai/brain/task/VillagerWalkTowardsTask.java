@@ -41,7 +41,8 @@ extends Task<VillagerEntity> {
         brain.putMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, l);
     }
 
-    protected void method_19509(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+    @Override
+    protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         Brain<VillagerEntity> brain = villagerEntity.getBrain();
         brain.getOptionalMemory(this.destination).ifPresent(globalPos -> {
             if (this.shouldGiveUp(serverWorld, villagerEntity)) {
@@ -51,7 +52,7 @@ extends Task<VillagerEntity> {
                 Vec3d vec3d = null;
                 int j = 1000;
                 for (i = 0; i < 1000 && (vec3d == null || this.method_19597(serverWorld, villagerEntity, GlobalPos.create(villagerEntity.dimension, new BlockPos(vec3d)))); ++i) {
-                    vec3d = TargetFinder.method_23735(villagerEntity, 15, 7, new Vec3d(globalPos.getPos()));
+                    vec3d = TargetFinder.findTargetTowards(villagerEntity, 15, 7, new Vec3d(globalPos.getPos()));
                 }
                 if (i == 1000) {
                     this.method_21722(villagerEntity, l);

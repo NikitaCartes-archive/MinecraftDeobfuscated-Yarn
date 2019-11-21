@@ -116,7 +116,8 @@ implements Packet<ClientPlayPacketListener> {
         }
     }
 
-    public void method_11860(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onTeam(this);
     }
 

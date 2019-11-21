@@ -26,6 +26,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringNbtReader;
+import net.minecraft.server.world.ServerTickScheduler;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
@@ -71,7 +72,7 @@ public class StructureTestUtil {
         StructureTestUtil.forceLoadNearbyChunks(blockPos, serverWorld);
         StructureTestUtil.clearArea(blockBox, blockPos.getY(), serverWorld);
         StructureBlockBlockEntity structureBlockBlockEntity = StructureTestUtil.placeStructure(string, blockPos, serverWorld, bl);
-        serverWorld.method_14196().getScheduledTicks(blockBox, true, false);
+        ((ServerTickScheduler)serverWorld.getBlockTickScheduler()).getScheduledTicks(blockBox, true, false);
         serverWorld.method_23658(blockBox);
         return structureBlockBlockEntity;
     }
@@ -89,7 +90,7 @@ public class StructureTestUtil {
 
     public static void clearArea(BlockBox blockBox, int i, ServerWorld serverWorld) {
         BlockPos.method_23627(blockBox).forEach(blockPos -> StructureTestUtil.method_22368(i, blockPos, serverWorld));
-        serverWorld.method_14196().getScheduledTicks(blockBox, true, false);
+        ((ServerTickScheduler)serverWorld.getBlockTickScheduler()).getScheduledTicks(blockBox, true, false);
         serverWorld.method_23658(blockBox);
         Box box = new Box(blockBox.minX, blockBox.minY, blockBox.minZ, blockBox.maxX, blockBox.maxY, blockBox.maxZ);
         List<Entity> list = serverWorld.getEntities(Entity.class, box, entity -> !(entity instanceof PlayerEntity));
@@ -179,7 +180,7 @@ public class StructureTestUtil {
 
     private static void method_22368(int i, BlockPos blockPos, ServerWorld serverWorld) {
         BlockState blockState;
-        Object chunkGeneratorConfig = serverWorld.method_14178().getChunkGenerator().getConfig();
+        Object chunkGeneratorConfig = serverWorld.getChunkManager().getChunkGenerator().getConfig();
         if (chunkGeneratorConfig instanceof FlatChunkGeneratorConfig) {
             BlockState[] blockStates = ((FlatChunkGeneratorConfig)chunkGeneratorConfig).getLayerBlocks();
             blockState = blockPos.getY() < i ? blockStates[blockPos.getY() - 1] : Blocks.AIR.getDefaultState();

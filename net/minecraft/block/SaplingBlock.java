@@ -49,7 +49,7 @@ implements Fertilizable {
         if (blockState.get(STAGE) == 0) {
             serverWorld.setBlockState(blockPos, (BlockState)blockState.cycle(STAGE), 4);
         } else {
-            this.generator.generate(serverWorld, serverWorld.method_14178().getChunkGenerator(), blockPos, blockState, random);
+            this.generator.generate(serverWorld, serverWorld.getChunkManager().getChunkGenerator(), blockPos, blockState, random);
         }
     }
 

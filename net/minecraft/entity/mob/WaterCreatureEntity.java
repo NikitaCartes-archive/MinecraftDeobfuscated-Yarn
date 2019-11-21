@@ -5,6 +5,7 @@ package net.minecraft.entity.mob;
 
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.player.PlayerEntity;
@@ -15,6 +16,7 @@ public abstract class WaterCreatureEntity
 extends MobEntityWithAi {
     protected WaterCreatureEntity(EntityType<? extends WaterCreatureEntity> entityType, World world) {
         super((EntityType<? extends MobEntityWithAi>)entityType, world);
+        this.setPathfindingPenalty(PathNodeType.WATER, 0.0f);
     }
 
     @Override

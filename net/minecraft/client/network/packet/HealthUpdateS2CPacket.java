@@ -39,7 +39,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeFloat(this.saturation);
     }
 
-    public void method_11832(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onHealthUpdate(this);
     }
 

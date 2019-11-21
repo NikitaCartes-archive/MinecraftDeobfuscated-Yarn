@@ -100,7 +100,7 @@ extends Block {
     }
 
     private boolean isSand(BlockView blockView, BlockPos blockPos) {
-        return blockView.getBlockState(blockPos.method_10074()).getBlock() == Blocks.SAND;
+        return blockView.getBlockState(blockPos.down()).getBlock() == Blocks.SAND;
     }
 
     @Override

@@ -57,7 +57,8 @@ implements FeatureRendererContext<T, M> {
         return this.model;
     }
 
-    public void method_4054(T livingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+    @Override
+    public void render(T livingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         float n;
         Direction direction;
         matrixStack.push();
@@ -112,8 +113,8 @@ implements FeatureRendererContext<T, M> {
         ((EntityModel)this.model).setAngles(livingEntity, o, n, l, k, m);
         if (bl || bl2) {
             Identifier identifier = this.getTexture(livingEntity);
-            VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(bl2 ? RenderLayer.getEntityForceTranslucent(identifier) : ((Model)this.model).getLayer(identifier));
-            ((Model)this.model).render(matrixStack, vertexConsumer, i, LivingEntityRenderer.method_23622(livingEntity, this.method_23185(livingEntity, g)), 1.0f, 1.0f, 1.0f);
+            VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(bl2 ? RenderLayer.getEntityTranslucent(identifier) : ((Model)this.model).getLayer(identifier));
+            ((Model)this.model).render(matrixStack, vertexConsumer, i, LivingEntityRenderer.method_23622(livingEntity, this.method_23185(livingEntity, g)), 1.0f, 1.0f, 1.0f, bl2 ? 0.15f : 1.0f);
         }
         if (!((Entity)livingEntity).isSpectator()) {
             for (FeatureRenderer<T, M> featureRenderer : this.features) {
@@ -196,7 +197,8 @@ implements FeatureRendererContext<T, M> {
     protected void scale(T livingEntity, MatrixStack matrixStack, float f) {
     }
 
-    protected boolean method_4055(T livingEntity) {
+    @Override
+    protected boolean hasLabel(T livingEntity) {
         boolean bl;
         float f;
         double d = this.renderManager.getSquaredDistanceToCamera((Entity)livingEntity);
@@ -234,7 +236,7 @@ implements FeatureRendererContext<T, M> {
 
     @Override
     protected /* synthetic */ boolean hasLabel(Entity entity) {
-        return this.method_4055((LivingEntity)entity);
+        return this.hasLabel((T)((LivingEntity)entity));
     }
 }
 

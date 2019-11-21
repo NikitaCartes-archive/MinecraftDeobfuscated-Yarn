@@ -23,7 +23,8 @@ extends FeatureRenderer<CatEntity, CatEntityModel<CatEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_16047(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, CatEntity catEntity, float f, float g, float h, float j, float k, float l) {
+    @Override
+    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, CatEntity catEntity, float f, float g, float h, float j, float k, float l) {
         if (!catEntity.isTamed()) {
             return;
         }

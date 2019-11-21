@@ -30,21 +30,24 @@ extends MobEntityRenderer<PufferfishEntity, EntityModel<PufferfishEntity>> {
         super(entityRenderDispatcher, new LargePufferfishEntityModel(), 0.2f);
     }
 
-    public Identifier method_4096(PufferfishEntity pufferfishEntity) {
+    @Override
+    public Identifier getTexture(PufferfishEntity pufferfishEntity) {
         return SKIN;
     }
 
-    public void method_4094(PufferfishEntity pufferfishEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+    @Override
+    public void render(PufferfishEntity pufferfishEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         int j = pufferfishEntity.getPuffState();
         if (j != this.modelSize) {
             this.model = j == 0 ? this.smallModel : (j == 1 ? this.mediumModel : this.largeModel);
         }
         this.modelSize = j;
         this.field_4673 = 0.1f + 0.1f * (float)j;
-        super.method_4072(pufferfishEntity, f, g, matrixStack, vertexConsumerProvider, i);
+        super.render(pufferfishEntity, f, g, matrixStack, vertexConsumerProvider, i);
     }
 
-    protected void method_4095(PufferfishEntity pufferfishEntity, MatrixStack matrixStack, float f, float g, float h) {
+    @Override
+    protected void setupTransforms(PufferfishEntity pufferfishEntity, MatrixStack matrixStack, float f, float g, float h) {
         matrixStack.translate(0.0, MathHelper.cos(f * 0.05f) * 0.08f, 0.0);
         super.setupTransforms(pufferfishEntity, matrixStack, f, g, h);
     }

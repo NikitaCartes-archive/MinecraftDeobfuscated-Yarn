@@ -45,7 +45,8 @@ implements ArgumentType<NbtPath> {
         return commandContext.getArgument(string, NbtPath.class);
     }
 
-    public NbtPath method_9362(StringReader stringReader) throws CommandSyntaxException {
+    @Override
+    public NbtPath parse(StringReader stringReader) throws CommandSyntaxException {
         ArrayList<PathNode> list = Lists.newArrayList();
         int i = stringReader.getCursor();
         Object2IntOpenHashMap<PathNode> object2IntMap = new Object2IntOpenHashMap<PathNode>();
@@ -130,7 +131,7 @@ implements ArgumentType<NbtPath> {
 
     @Override
     public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.method_9362(stringReader);
+        return this.parse(stringReader);
     }
 
     static class FilteredRootNode
@@ -195,7 +196,7 @@ implements ArgumentType<NbtPath> {
                 CompoundTag compoundTag = (CompoundTag)tag;
                 Tag tag2 = compoundTag.get(this.name);
                 if (tag2 == null) {
-                    tag2 = this.filter.method_10553();
+                    tag2 = this.filter.copy();
                     compoundTag.put(this.name, tag2);
                     list.add(tag2);
                 } else if (this.predicate.test(tag2)) {
@@ -333,7 +334,7 @@ implements ArgumentType<NbtPath> {
                     mutableBoolean.setTrue();
                 });
                 if (mutableBoolean.isFalse()) {
-                    CompoundTag compoundTag = this.filter.method_10553();
+                    CompoundTag compoundTag = this.filter.copy();
                     listTag.add(compoundTag);
                     list.add(compoundTag);
                 }
@@ -357,7 +358,7 @@ implements ArgumentType<NbtPath> {
                 } else {
                     for (int k = 0; k < j; ++k) {
                         Tag tag3;
-                        Tag tag2 = listTag.method_10534(k);
+                        Tag tag2 = listTag.get(k);
                         if (!this.predicate.test(tag2) || (tag3 = supplier.get()).equals(tag2) || !listTag.setTag(k, tag3)) continue;
                         ++i;
                     }
@@ -372,8 +373,8 @@ implements ArgumentType<NbtPath> {
             if (tag instanceof ListTag) {
                 ListTag listTag = (ListTag)tag;
                 for (int j = listTag.size() - 1; j >= 0; --j) {
-                    if (!this.predicate.test(listTag.method_10534(j))) continue;
-                    listTag.method_10536(j);
+                    if (!this.predicate.test(listTag.get(j))) continue;
+                    listTag.remove(j);
                     ++i;
                 }
             }
@@ -438,7 +439,7 @@ implements ArgumentType<NbtPath> {
                 int i = abstractListTag.size();
                 int n = j = this.index < 0 ? i + this.index : this.index;
                 if (0 <= j && j < i) {
-                    abstractListTag.method_10536(j);
+                    abstractListTag.remove(j);
                     return 1;
                 }
             }

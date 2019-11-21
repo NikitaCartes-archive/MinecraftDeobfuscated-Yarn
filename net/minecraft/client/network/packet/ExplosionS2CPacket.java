@@ -87,7 +87,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeFloat(this.playerVelocityZ);
     }
 
-    public void method_11480(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onExplosion(this);
     }
 

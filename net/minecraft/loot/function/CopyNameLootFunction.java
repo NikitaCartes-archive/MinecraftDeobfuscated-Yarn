@@ -52,19 +52,21 @@ extends ConditionalLootFunction {
             super(new Identifier("copy_name"), CopyNameLootFunction.class);
         }
 
-        public void method_476(JsonObject jsonObject, CopyNameLootFunction copyNameLootFunction, JsonSerializationContext jsonSerializationContext) {
-            super.method_529(jsonObject, copyNameLootFunction, jsonSerializationContext);
+        @Override
+        public void toJson(JsonObject jsonObject, CopyNameLootFunction copyNameLootFunction, JsonSerializationContext jsonSerializationContext) {
+            super.toJson(jsonObject, copyNameLootFunction, jsonSerializationContext);
             jsonObject.addProperty("source", ((CopyNameLootFunction)copyNameLootFunction).source.name);
         }
 
-        public CopyNameLootFunction method_477(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+        @Override
+        public CopyNameLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
             Source source = Source.get(JsonHelper.getString(jsonObject, "source"));
             return new CopyNameLootFunction(lootConditions, source);
         }
 
         @Override
         public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            return this.method_477(jsonObject, jsonDeserializationContext, lootConditions);
+            return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
         }
     }
 

@@ -37,13 +37,15 @@ extends QuadrupedEntityModel<T> {
         this.frontLeftLeg.setPivot(3.0f, 12.0f, -5.0f);
     }
 
-    public void method_17118(T sheepEntity, float f, float g, float h) {
+    @Override
+    public void animateModel(T sheepEntity, float f, float g, float h) {
         super.animateModel(sheepEntity, f, g, h);
         this.head.pivotY = 6.0f + ((SheepEntity)sheepEntity).method_6628(h) * 9.0f;
         this.field_3541 = ((SheepEntity)sheepEntity).method_6641(h);
     }
 
-    public void method_17119(T sheepEntity, float f, float g, float h, float i, float j) {
+    @Override
+    public void setAngles(T sheepEntity, float f, float g, float h, float i, float j) {
         super.setAngles(sheepEntity, f, g, h, i, j);
         this.head.pitch = this.field_3541;
     }

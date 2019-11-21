@@ -40,7 +40,7 @@ implements BlockRenderView {
         WorldChunk[][] worldChunks = new WorldChunk[l - j + 1][m - k + 1];
         for (int n = j; n <= l; ++n) {
             for (o = k; o <= m; ++o) {
-                worldChunks[n - j][o - k] = world.method_8497(n, o);
+                worldChunks[n - j][o - k] = world.getChunk(n, o);
             }
         }
         boolean bl = true;

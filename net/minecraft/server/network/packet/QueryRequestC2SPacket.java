@@ -18,7 +18,8 @@ implements Packet<ServerQueryPacketListener> {
     public void write(PacketByteBuf packetByteBuf) throws IOException {
     }
 
-    public void method_12701(ServerQueryPacketListener serverQueryPacketListener) {
+    @Override
+    public void apply(ServerQueryPacketListener serverQueryPacketListener) {
         serverQueryPacketListener.onRequest(this);
     }
 }

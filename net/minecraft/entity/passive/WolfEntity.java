@@ -433,7 +433,8 @@ extends TameableEntity {
         this.dataTracker.set(COLLAR_COLOR, dyeColor.getId());
     }
 
-    public WolfEntity method_6717(PassiveEntity passiveEntity) {
+    @Override
+    public WolfEntity createChild(PassiveEntity passiveEntity) {
         WolfEntity wolfEntity = EntityType.WOLF.create(this.world);
         UUID uUID = this.getOwnerUuid();
         if (uUID != null) {
@@ -497,7 +498,7 @@ extends TameableEntity {
 
     @Override
     public /* synthetic */ PassiveEntity createChild(PassiveEntity passiveEntity) {
-        return this.method_6717(passiveEntity);
+        return this.createChild(passiveEntity);
     }
 
     class AvoidLlamaGoal<T extends LivingEntity>

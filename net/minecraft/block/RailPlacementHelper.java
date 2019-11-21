@@ -102,7 +102,7 @@ public class RailPlacementHelper {
     }
 
     private boolean isVerticallyNearRail(BlockPos blockPos) {
-        return AbstractRailBlock.isRail(this.world, blockPos) || AbstractRailBlock.isRail(this.world, blockPos.up()) || AbstractRailBlock.isRail(this.world, blockPos.method_10074());
+        return AbstractRailBlock.isRail(this.world, blockPos) || AbstractRailBlock.isRail(this.world, blockPos.up()) || AbstractRailBlock.isRail(this.world, blockPos.down());
     }
 
     @Nullable
@@ -117,7 +117,7 @@ public class RailPlacementHelper {
         if (AbstractRailBlock.isRail(blockState)) {
             return new RailPlacementHelper(this.world, blockPos2, blockState);
         }
-        blockPos2 = blockPos.method_10074();
+        blockPos2 = blockPos.down();
         blockState = this.world.getBlockState(blockPos2);
         if (AbstractRailBlock.isRail(blockState)) {
             return new RailPlacementHelper(this.world, blockPos2, blockState);

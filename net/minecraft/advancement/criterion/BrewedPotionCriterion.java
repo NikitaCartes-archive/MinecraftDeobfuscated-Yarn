@@ -26,7 +26,8 @@ extends AbstractCriterion<Conditions> {
         return ID;
     }
 
-    public Conditions method_8785(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+    @Override
+    public Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
         Potion potion = null;
         if (jsonObject.has("potion")) {
             Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "potion"));
@@ -41,7 +42,7 @@ extends AbstractCriterion<Conditions> {
 
     @Override
     public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.method_8785(jsonObject, jsonDeserializationContext);
+        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
     }
 
     public static class Conditions

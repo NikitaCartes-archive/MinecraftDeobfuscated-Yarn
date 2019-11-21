@@ -42,7 +42,8 @@ implements Packet<ClientPlayPacketListener> {
         DataTracker.entriesToPacket(this.trackedValues, packetByteBuf);
     }
 
-    public void method_11808(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onEntityTrackerUpdate(this);
     }
 

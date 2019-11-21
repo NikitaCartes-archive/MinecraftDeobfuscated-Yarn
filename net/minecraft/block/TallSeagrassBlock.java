@@ -67,7 +67,7 @@ implements FluidFillable {
     @Override
     public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
         if (blockState.get(HALF) == DoubleBlockHalf.UPPER) {
-            BlockState blockState2 = worldView.getBlockState(blockPos.method_10074());
+            BlockState blockState2 = worldView.getBlockState(blockPos.down());
             return blockState2.getBlock() == this && blockState2.get(HALF) == DoubleBlockHalf.LOWER;
         }
         FluidState fluidState = worldView.getFluidState(blockPos);

@@ -23,7 +23,8 @@ public abstract class AbstractState<O, S>
 implements State<S> {
     private static final Function<Map.Entry<Property<?>, Comparable<?>>, String> PROPERTY_MAP_PRINTER = new Function<Map.Entry<Property<?>, Comparable<?>>, String>(){
 
-        public String method_11576(@Nullable Map.Entry<Property<?>, Comparable<?>> entry) {
+        @Override
+        public String apply(@Nullable Map.Entry<Property<?>, Comparable<?>> entry) {
             if (entry == null) {
                 return "<NULL>";
             }
@@ -37,7 +38,7 @@ implements State<S> {
 
         @Override
         public /* synthetic */ Object apply(@Nullable Object object) {
-            return this.method_11576((Map.Entry)object);
+            return this.apply((Map.Entry)object);
         }
     };
     protected final O owner;

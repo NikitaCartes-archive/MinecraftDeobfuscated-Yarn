@@ -14,14 +14,14 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class OcelotEntityModel<T extends Entity>
 extends AnimalModel<T> {
-    protected final ModelPart frontLegLeft;
-    protected final ModelPart frontLegRight;
-    protected final ModelPart backLegLeft;
-    protected final ModelPart backLegRight;
-    protected final ModelPart tail1;
-    protected final ModelPart tail2;
+    protected final ModelPart leftBackLeg;
+    protected final ModelPart rightBackLeg;
+    protected final ModelPart leftFrontLeg;
+    protected final ModelPart rightFrontLeg;
+    protected final ModelPart upperTail;
+    protected final ModelPart lowerTail;
     protected final ModelPart head = new ModelPart(this);
-    protected final ModelPart body;
+    protected final ModelPart torso;
     protected int animationState = 1;
 
     public OcelotEntityModel(float f) {
@@ -31,28 +31,28 @@ extends AnimalModel<T> {
         this.head.addCuboid("ear1", -2.0f, -3.0f, 0.0f, 1, 1, 2, f, 0, 10);
         this.head.addCuboid("ear2", 1.0f, -3.0f, 0.0f, 1, 1, 2, f, 6, 10);
         this.head.setPivot(0.0f, 15.0f, -9.0f);
-        this.body = new ModelPart(this, 20, 0);
-        this.body.addCuboid(-2.0f, 3.0f, -8.0f, 4.0f, 16.0f, 6.0f, f);
-        this.body.setPivot(0.0f, 12.0f, -10.0f);
-        this.tail1 = new ModelPart(this, 0, 15);
-        this.tail1.addCuboid(-0.5f, 0.0f, 0.0f, 1.0f, 8.0f, 1.0f, f);
-        this.tail1.pitch = 0.9f;
-        this.tail1.setPivot(0.0f, 15.0f, 8.0f);
-        this.tail2 = new ModelPart(this, 4, 15);
-        this.tail2.addCuboid(-0.5f, 0.0f, 0.0f, 1.0f, 8.0f, 1.0f, f);
-        this.tail2.setPivot(0.0f, 20.0f, 14.0f);
-        this.frontLegLeft = new ModelPart(this, 8, 13);
-        this.frontLegLeft.addCuboid(-1.0f, 0.0f, 1.0f, 2.0f, 6.0f, 2.0f, f);
-        this.frontLegLeft.setPivot(1.1f, 18.0f, 5.0f);
-        this.frontLegRight = new ModelPart(this, 8, 13);
-        this.frontLegRight.addCuboid(-1.0f, 0.0f, 1.0f, 2.0f, 6.0f, 2.0f, f);
-        this.frontLegRight.setPivot(-1.1f, 18.0f, 5.0f);
-        this.backLegLeft = new ModelPart(this, 40, 0);
-        this.backLegLeft.addCuboid(-1.0f, 0.0f, 0.0f, 2.0f, 10.0f, 2.0f, f);
-        this.backLegLeft.setPivot(1.2f, 14.1f, -5.0f);
-        this.backLegRight = new ModelPart(this, 40, 0);
-        this.backLegRight.addCuboid(-1.0f, 0.0f, 0.0f, 2.0f, 10.0f, 2.0f, f);
-        this.backLegRight.setPivot(-1.2f, 14.1f, -5.0f);
+        this.torso = new ModelPart(this, 20, 0);
+        this.torso.addCuboid(-2.0f, 3.0f, -8.0f, 4.0f, 16.0f, 6.0f, f);
+        this.torso.setPivot(0.0f, 12.0f, -10.0f);
+        this.upperTail = new ModelPart(this, 0, 15);
+        this.upperTail.addCuboid(-0.5f, 0.0f, 0.0f, 1.0f, 8.0f, 1.0f, f);
+        this.upperTail.pitch = 0.9f;
+        this.upperTail.setPivot(0.0f, 15.0f, 8.0f);
+        this.lowerTail = new ModelPart(this, 4, 15);
+        this.lowerTail.addCuboid(-0.5f, 0.0f, 0.0f, 1.0f, 8.0f, 1.0f, f);
+        this.lowerTail.setPivot(0.0f, 20.0f, 14.0f);
+        this.leftBackLeg = new ModelPart(this, 8, 13);
+        this.leftBackLeg.addCuboid(-1.0f, 0.0f, 1.0f, 2.0f, 6.0f, 2.0f, f);
+        this.leftBackLeg.setPivot(1.1f, 18.0f, 5.0f);
+        this.rightBackLeg = new ModelPart(this, 8, 13);
+        this.rightBackLeg.addCuboid(-1.0f, 0.0f, 1.0f, 2.0f, 6.0f, 2.0f, f);
+        this.rightBackLeg.setPivot(-1.1f, 18.0f, 5.0f);
+        this.leftFrontLeg = new ModelPart(this, 40, 0);
+        this.leftFrontLeg.addCuboid(-1.0f, 0.0f, 0.0f, 2.0f, 10.0f, 2.0f, f);
+        this.leftFrontLeg.setPivot(1.2f, 14.1f, -5.0f);
+        this.rightFrontLeg = new ModelPart(this, 40, 0);
+        this.rightFrontLeg.addCuboid(-1.0f, 0.0f, 0.0f, 2.0f, 10.0f, 2.0f, f);
+        this.rightFrontLeg.setPivot(-1.2f, 14.1f, -5.0f);
     }
 
     @Override
@@ -62,7 +62,7 @@ extends AnimalModel<T> {
 
     @Override
     protected Iterable<ModelPart> getBodyParts() {
-        return ImmutableList.of(this.body, this.frontLegLeft, this.frontLegRight, this.backLegLeft, this.backLegRight, this.tail1, this.tail2);
+        return ImmutableList.of(this.torso, this.leftBackLeg, this.rightBackLeg, this.leftFrontLeg, this.rightFrontLeg, this.upperTail, this.lowerTail);
     }
 
     @Override
@@ -70,56 +70,56 @@ extends AnimalModel<T> {
         this.head.pitch = j * ((float)Math.PI / 180);
         this.head.yaw = i * ((float)Math.PI / 180);
         if (this.animationState != 3) {
-            this.body.pitch = 1.5707964f;
+            this.torso.pitch = 1.5707964f;
             if (this.animationState == 2) {
-                this.frontLegLeft.pitch = MathHelper.cos(f * 0.6662f) * g;
-                this.frontLegRight.pitch = MathHelper.cos(f * 0.6662f + 0.3f) * g;
-                this.backLegLeft.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI + 0.3f) * g;
-                this.backLegRight.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * g;
-                this.tail2.pitch = 1.7278761f + 0.31415927f * MathHelper.cos(f) * g;
+                this.leftBackLeg.pitch = MathHelper.cos(f * 0.6662f) * g;
+                this.rightBackLeg.pitch = MathHelper.cos(f * 0.6662f + 0.3f) * g;
+                this.leftFrontLeg.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI + 0.3f) * g;
+                this.rightFrontLeg.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * g;
+                this.lowerTail.pitch = 1.7278761f + 0.31415927f * MathHelper.cos(f) * g;
             } else {
-                this.frontLegLeft.pitch = MathHelper.cos(f * 0.6662f) * g;
-                this.frontLegRight.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * g;
-                this.backLegLeft.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * g;
-                this.backLegRight.pitch = MathHelper.cos(f * 0.6662f) * g;
-                this.tail2.pitch = this.animationState == 1 ? 1.7278761f + 0.7853982f * MathHelper.cos(f) * g : 1.7278761f + 0.47123894f * MathHelper.cos(f) * g;
+                this.leftBackLeg.pitch = MathHelper.cos(f * 0.6662f) * g;
+                this.rightBackLeg.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * g;
+                this.leftFrontLeg.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * g;
+                this.rightFrontLeg.pitch = MathHelper.cos(f * 0.6662f) * g;
+                this.lowerTail.pitch = this.animationState == 1 ? 1.7278761f + 0.7853982f * MathHelper.cos(f) * g : 1.7278761f + 0.47123894f * MathHelper.cos(f) * g;
             }
         }
     }
 
     @Override
     public void animateModel(T entity, float f, float g, float h) {
-        this.body.pivotY = 12.0f;
-        this.body.pivotZ = -10.0f;
+        this.torso.pivotY = 12.0f;
+        this.torso.pivotZ = -10.0f;
         this.head.pivotY = 15.0f;
         this.head.pivotZ = -9.0f;
-        this.tail1.pivotY = 15.0f;
-        this.tail1.pivotZ = 8.0f;
-        this.tail2.pivotY = 20.0f;
-        this.tail2.pivotZ = 14.0f;
-        this.backLegLeft.pivotY = 14.1f;
-        this.backLegLeft.pivotZ = -5.0f;
-        this.backLegRight.pivotY = 14.1f;
-        this.backLegRight.pivotZ = -5.0f;
-        this.frontLegLeft.pivotY = 18.0f;
-        this.frontLegLeft.pivotZ = 5.0f;
-        this.frontLegRight.pivotY = 18.0f;
-        this.frontLegRight.pivotZ = 5.0f;
-        this.tail1.pitch = 0.9f;
+        this.upperTail.pivotY = 15.0f;
+        this.upperTail.pivotZ = 8.0f;
+        this.lowerTail.pivotY = 20.0f;
+        this.lowerTail.pivotZ = 14.0f;
+        this.leftFrontLeg.pivotY = 14.1f;
+        this.leftFrontLeg.pivotZ = -5.0f;
+        this.rightFrontLeg.pivotY = 14.1f;
+        this.rightFrontLeg.pivotZ = -5.0f;
+        this.leftBackLeg.pivotY = 18.0f;
+        this.leftBackLeg.pivotZ = 5.0f;
+        this.rightBackLeg.pivotY = 18.0f;
+        this.rightBackLeg.pivotZ = 5.0f;
+        this.upperTail.pitch = 0.9f;
         if (((Entity)entity).isInSneakingPose()) {
-            this.body.pivotY += 1.0f;
+            this.torso.pivotY += 1.0f;
             this.head.pivotY += 2.0f;
-            this.tail1.pivotY += 1.0f;
-            this.tail2.pivotY += -4.0f;
-            this.tail2.pivotZ += 2.0f;
-            this.tail1.pitch = 1.5707964f;
-            this.tail2.pitch = 1.5707964f;
+            this.upperTail.pivotY += 1.0f;
+            this.lowerTail.pivotY += -4.0f;
+            this.lowerTail.pivotZ += 2.0f;
+            this.upperTail.pitch = 1.5707964f;
+            this.lowerTail.pitch = 1.5707964f;
             this.animationState = 0;
         } else if (((Entity)entity).isSprinting()) {
-            this.tail2.pivotY = this.tail1.pivotY;
-            this.tail2.pivotZ += 2.0f;
-            this.tail1.pitch = 1.5707964f;
-            this.tail2.pitch = 1.5707964f;
+            this.lowerTail.pivotY = this.upperTail.pivotY;
+            this.lowerTail.pivotZ += 2.0f;
+            this.upperTail.pitch = 1.5707964f;
+            this.lowerTail.pitch = 1.5707964f;
             this.animationState = 2;
         } else {
             this.animationState = 1;

@@ -55,7 +55,7 @@ extends Block {
 
     @Override
     public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
-        BlockPos blockPos2 = blockPos.method_10074();
+        BlockPos blockPos2 = blockPos.down();
         return AbstractPressurePlateBlock.topCoversMediumSquare(worldView, blockPos2) || AbstractPressurePlateBlock.sideCoversSmallSquare(worldView, blockPos2, Direction.UP);
     }
 
@@ -116,7 +116,7 @@ extends Block {
 
     protected void updateNeighbors(World world, BlockPos blockPos) {
         world.updateNeighborsAlways(blockPos, this);
-        world.updateNeighborsAlways(blockPos.method_10074(), this);
+        world.updateNeighborsAlways(blockPos.down(), this);
     }
 
     @Override

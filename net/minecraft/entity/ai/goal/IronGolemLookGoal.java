@@ -23,7 +23,7 @@ extends Goal {
 
     @Override
     public boolean canStart() {
-        if (!this.golem.world.isDaylight()) {
+        if (!this.golem.world.isDay()) {
             return false;
         }
         if (this.golem.getRandom().nextInt(8000) != 0) {

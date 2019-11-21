@@ -37,7 +37,8 @@ implements Packet<ServerPlayPacketListener> {
         packetByteBuf.writeBlockPos(this.pos);
     }
 
-    public void method_12095(ServerPlayPacketListener serverPlayPacketListener) {
+    @Override
+    public void apply(ServerPlayPacketListener serverPlayPacketListener) {
         serverPlayPacketListener.onQueryBlockNbt(this);
     }
 

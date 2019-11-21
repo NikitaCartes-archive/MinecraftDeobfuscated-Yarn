@@ -36,7 +36,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeVarInt(this.cooldown);
     }
 
-    public void method_11455(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onCooldownUpdate(this);
     }
 

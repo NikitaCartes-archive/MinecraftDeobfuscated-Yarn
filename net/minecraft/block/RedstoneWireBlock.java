@@ -107,15 +107,15 @@ extends Block {
         try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
             for (Direction direction : Direction.Type.HORIZONTAL) {
                 WireConnection wireConnection = (WireConnection)blockState.get(DIRECTION_TO_WIRE_CONNECTION_PROPERTY.get(direction));
-                if (wireConnection == WireConnection.NONE || iWorld.getBlockState(pooledMutable.method_10114(blockPos).method_10118(direction)).getBlock() == this) continue;
-                pooledMutable.method_10118(Direction.DOWN);
+                if (wireConnection == WireConnection.NONE || iWorld.getBlockState(pooledMutable.set(blockPos).setOffset(direction)).getBlock() == this) continue;
+                pooledMutable.setOffset(Direction.DOWN);
                 BlockState blockState2 = iWorld.getBlockState(pooledMutable);
                 if (blockState2.getBlock() != Blocks.OBSERVER) {
                     BlockPos blockPos2 = pooledMutable.offset(direction.getOpposite());
                     BlockState blockState3 = blockState2.getStateForNeighborUpdate(direction.getOpposite(), iWorld.getBlockState(blockPos2), iWorld, pooledMutable, blockPos2);
                     RedstoneWireBlock.replaceBlock(blockState2, blockState3, iWorld, pooledMutable, i);
                 }
-                pooledMutable.method_10114(blockPos).method_10118(direction).method_10118(Direction.UP);
+                pooledMutable.set(blockPos).setOffset(direction).setOffset(Direction.UP);
                 BlockState blockState4 = iWorld.getBlockState(pooledMutable);
                 if (blockState4.getBlock() == Blocks.OBSERVER) continue;
                 BlockPos blockPos3 = pooledMutable.offset(direction.getOpposite());
@@ -140,7 +140,7 @@ extends Block {
                 return WireConnection.SIDE;
             }
         }
-        if (RedstoneWireBlock.connectsTo(blockState, direction) || !blockState.isSimpleFullBlock(blockView, blockPos2) && RedstoneWireBlock.connectsTo(blockView.getBlockState(blockPos2.method_10074()))) {
+        if (RedstoneWireBlock.connectsTo(blockState, direction) || !blockState.isSimpleFullBlock(blockView, blockPos2) && RedstoneWireBlock.connectsTo(blockView.getBlockState(blockPos2.down()))) {
             return WireConnection.SIDE;
         }
         return WireConnection.NONE;
@@ -148,7 +148,7 @@ extends Block {
 
     @Override
     public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
-        BlockPos blockPos2 = blockPos.method_10074();
+        BlockPos blockPos2 = blockPos.down();
         BlockState blockState2 = worldView.getBlockState(blockPos2);
         return blockState2.isSideSolidFullSquare(worldView, blockPos2, Direction.UP) || blockState2.getBlock() == Blocks.HOPPER;
     }
@@ -182,7 +182,7 @@ extends Block {
                     continue;
                 }
                 if (blockState3.isSimpleFullBlock(world, blockPos2)) continue;
-                k = this.increasePower(k, world.getBlockState(blockPos2.method_10074()));
+                k = this.increasePower(k, world.getBlockState(blockPos2.down()));
             }
         }
         if (j > (l = k - 1)) {
@@ -229,7 +229,7 @@ extends Block {
                 this.updateNeighbors(world, blockPos2.up());
                 continue;
             }
-            this.updateNeighbors(world, blockPos2.method_10074());
+            this.updateNeighbors(world, blockPos2.down());
         }
     }
 
@@ -255,7 +255,7 @@ extends Block {
                 this.updateNeighbors(world, blockPos2.up());
                 continue;
             }
-            this.updateNeighbors(world, blockPos2.method_10074());
+            this.updateNeighbors(world, blockPos2.down());
         }
     }
 
@@ -332,7 +332,7 @@ extends Block {
         if (blockState.getBlock() == Blocks.REPEATER && blockState.get(AbstractRedstoneGateBlock.POWERED).booleanValue() && blockState.get(AbstractRedstoneGateBlock.FACING) == direction) {
             return true;
         }
-        return !bl && RedstoneWireBlock.connectsTo(blockView, blockPos2.method_10074());
+        return !bl && RedstoneWireBlock.connectsTo(blockView, blockPos2.down());
     }
 
     protected static boolean connectsTo(BlockView blockView, BlockPos blockPos) {

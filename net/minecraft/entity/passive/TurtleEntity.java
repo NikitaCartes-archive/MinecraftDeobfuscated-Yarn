@@ -33,13 +33,13 @@ import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.ai.pathing.AmphibiousPathNodeMaker;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeNavigator;
+import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.ai.pathing.SwimNavigation;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -76,6 +76,7 @@ extends AnimalEntity {
 
     public TurtleEntity(EntityType<? extends TurtleEntity> entityType, World world) {
         super((EntityType<? extends AnimalEntity>)entityType, world);
+        this.setPathfindingPenalty(PathNodeType.WATER, 0.0f);
         this.moveControl = new TurtleMoveControl(this);
         this.stepHeight = 1.0f;
     }
@@ -175,7 +176,7 @@ extends AnimalEntity {
     }
 
     public static boolean canSpawn(EntityType<TurtleEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-        return blockPos.getY() < iWorld.getSeaLevel() + 4 && iWorld.getBlockState(blockPos.method_10074()).getBlock() == Blocks.SAND && iWorld.getBaseLightLevel(blockPos, 0) > 8;
+        return blockPos.getY() < iWorld.getSeaLevel() + 4 && iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.SAND && iWorld.getBaseLightLevel(blockPos, 0) > 8;
     }
 
     @Override
@@ -297,7 +298,7 @@ extends AnimalEntity {
         if (!this.isLandBound() && worldView.getFluidState(blockPos).matches(FluidTags.WATER)) {
             return 10.0f;
         }
-        if (worldView.getBlockState(blockPos.method_10074()).getBlock() == Blocks.SAND) {
+        if (worldView.getBlockState(blockPos.down()).getBlock() == Blocks.SAND) {
             return 10.0f;
         }
         return worldView.getBrightness(blockPos) - 0.5f;
@@ -307,7 +308,7 @@ extends AnimalEntity {
     public void tickMovement() {
         BlockPos blockPos;
         super.tickMovement();
-        if (this.isAlive() && this.isDiggingSand() && this.sandDiggingCounter >= 1 && this.sandDiggingCounter % 5 == 0 && this.world.getBlockState((blockPos = new BlockPos(this)).method_10074()).getBlock() == Blocks.SAND) {
+        if (this.isAlive() && this.isDiggingSand() && this.sandDiggingCounter >= 1 && this.sandDiggingCounter % 5 == 0 && this.world.getBlockState((blockPos = new BlockPos(this)).down()).getBlock() == Blocks.SAND) {
             this.world.playLevelEvent(2001, blockPos, Block.getRawIdFromState(Blocks.SAND.getDefaultState()));
         }
     }
@@ -367,7 +368,7 @@ extends AnimalEntity {
             if (this.entity instanceof TurtleEntity && (turtleEntity = (TurtleEntity)this.entity).isActivelyTravelling()) {
                 return this.world.getBlockState(blockPos).getBlock() == Blocks.WATER;
             }
-            return !this.world.getBlockState(blockPos.method_10074()).isAir();
+            return !this.world.getBlockState(blockPos.down()).isAir();
         }
     }
 
@@ -664,12 +665,12 @@ extends AnimalEntity {
             }
             if (this.turtle.getNavigation().isIdle()) {
                 Vec3d vec3d = new Vec3d(blockPos);
-                Vec3d vec3d2 = TargetFinder.findTargetTowards((MobEntityWithAi)this.turtle, 16, 3, vec3d, 0.3141592741012573);
+                Vec3d vec3d2 = TargetFinder.findTargetTowards(this.turtle, 16, 3, vec3d, 0.3141592741012573);
                 if (vec3d2 == null) {
-                    vec3d2 = TargetFinder.method_23735(this.turtle, 8, 7, vec3d);
+                    vec3d2 = TargetFinder.findTargetTowards(this.turtle, 8, 7, vec3d);
                 }
                 if (vec3d2 != null && !bl && this.turtle.world.getBlockState(new BlockPos(vec3d2)).getBlock() != Blocks.WATER) {
-                    vec3d2 = TargetFinder.method_23735(this.turtle, 16, 5, vec3d);
+                    vec3d2 = TargetFinder.findTargetTowards(this.turtle, 16, 5, vec3d);
                 }
                 if (vec3d2 == null) {
                     this.noPath = true;
@@ -717,9 +718,9 @@ extends AnimalEntity {
         public void tick() {
             if (this.turtle.getNavigation().isIdle()) {
                 Vec3d vec3d = new Vec3d(this.turtle.getTravelPos());
-                Vec3d vec3d2 = TargetFinder.findTargetTowards((MobEntityWithAi)this.turtle, 16, 3, vec3d, 0.3141592741012573);
+                Vec3d vec3d2 = TargetFinder.findTargetTowards(this.turtle, 16, 3, vec3d, 0.3141592741012573);
                 if (vec3d2 == null) {
-                    vec3d2 = TargetFinder.method_23735(this.turtle, 8, 7, vec3d);
+                    vec3d2 = TargetFinder.findTargetTowards(this.turtle, 8, 7, vec3d);
                 }
                 if (vec3d2 != null) {
                     int i = MathHelper.floor(vec3d2.x);

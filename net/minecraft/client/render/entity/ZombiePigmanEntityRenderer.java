@@ -22,7 +22,8 @@ extends BipedEntityRenderer<ZombiePigmanEntity, ZombieEntityModel<ZombiePigmanEn
         this.addFeature(new ArmorBipedFeatureRenderer(this, new ZombieEntityModel(0.5f, true), new ZombieEntityModel(1.0f, true)));
     }
 
-    public Identifier method_4093(ZombiePigmanEntity zombiePigmanEntity) {
+    @Override
+    public Identifier getTexture(ZombiePigmanEntity zombiePigmanEntity) {
         return SKIN;
     }
 }

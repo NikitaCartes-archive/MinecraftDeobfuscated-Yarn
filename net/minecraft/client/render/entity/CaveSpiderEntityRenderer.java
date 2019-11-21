@@ -21,11 +21,13 @@ extends SpiderEntityRenderer<CaveSpiderEntity> {
         this.field_4673 *= 0.7f;
     }
 
-    protected void method_3886(CaveSpiderEntity caveSpiderEntity, MatrixStack matrixStack, float f) {
+    @Override
+    protected void scale(CaveSpiderEntity caveSpiderEntity, MatrixStack matrixStack, float f) {
         matrixStack.scale(0.7f, 0.7f, 0.7f);
     }
 
-    public Identifier method_3885(CaveSpiderEntity caveSpiderEntity) {
+    @Override
+    public Identifier getTexture(CaveSpiderEntity caveSpiderEntity) {
         return SKIN;
     }
 }

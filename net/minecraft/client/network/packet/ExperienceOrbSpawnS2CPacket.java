@@ -48,7 +48,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeShort(this.experience);
     }
 
-    public void method_11182(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onExperienceOrbSpawn(this);
     }
 

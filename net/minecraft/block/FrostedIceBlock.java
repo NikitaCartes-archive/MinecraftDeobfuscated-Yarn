@@ -34,15 +34,15 @@ extends IceBlock {
         if ((random.nextInt(3) == 0 || this.canMelt(serverWorld, blockPos, 4)) && serverWorld.getLightLevel(blockPos) > 11 - blockState.get(AGE) - blockState.getOpacity(serverWorld, blockPos) && this.increaseAge(blockState, serverWorld, blockPos)) {
             try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
                 for (Direction direction : Direction.values()) {
-                    pooledMutable.method_10114(blockPos).method_10118(direction);
+                    pooledMutable.set(blockPos).setOffset(direction);
                     BlockState blockState2 = serverWorld.getBlockState(pooledMutable);
                     if (blockState2.getBlock() != this || this.increaseAge(blockState2, serverWorld, pooledMutable)) continue;
-                    serverWorld.method_14196().schedule(pooledMutable, this, MathHelper.nextInt(random, 20, 40));
+                    serverWorld.getBlockTickScheduler().schedule(pooledMutable, this, MathHelper.nextInt(random, 20, 40));
                 }
             }
             return;
         }
-        serverWorld.method_14196().schedule(blockPos, this, MathHelper.nextInt(random, 20, 40));
+        serverWorld.getBlockTickScheduler().schedule(blockPos, this, MathHelper.nextInt(random, 20, 40));
     }
 
     private boolean increaseAge(BlockState blockState, World world, BlockPos blockPos) {
@@ -67,7 +67,7 @@ extends IceBlock {
         int j = 0;
         try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
             for (Direction direction : Direction.values()) {
-                pooledMutable.method_10114(blockPos).method_10118(direction);
+                pooledMutable.set(blockPos).setOffset(direction);
                 if (blockView.getBlockState(pooledMutable).getBlock() != this || ++j < i) continue;
                 boolean bl = false;
                 return bl;

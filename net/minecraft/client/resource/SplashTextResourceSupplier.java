@@ -33,7 +33,8 @@ extends SinglePreparationResourceReloadListener<List<String>> {
     /*
      * Exception decompiling
      */
-    protected List<String> method_18176(ResourceManager resourceManager, Profiler profiler) {
+    @Override
+    protected List<String> prepare(ResourceManager resourceManager, Profiler profiler) {
         /*
          * This method has failed to decompile.  When submitting a bug report, please provide this stack trace, and (if you hold appropriate legal rights) the relevant class file.
          * 
@@ -83,7 +84,8 @@ extends SinglePreparationResourceReloadListener<List<String>> {
         throw new IllegalStateException("Decompilation failed");
     }
 
-    protected void method_18175(List<String> list, ResourceManager resourceManager, Profiler profiler) {
+    @Override
+    protected void apply(List<String> list, ResourceManager resourceManager, Profiler profiler) {
         this.splashTexts.clear();
         this.splashTexts.addAll(list);
     }
@@ -112,7 +114,7 @@ extends SinglePreparationResourceReloadListener<List<String>> {
 
     @Override
     protected /* synthetic */ Object prepare(ResourceManager resourceManager, Profiler profiler) {
-        return this.method_18176(resourceManager, profiler);
+        return this.prepare(resourceManager, profiler);
     }
 
     private static /* synthetic */ boolean method_18664(String string) {

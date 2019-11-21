@@ -24,7 +24,6 @@ import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.ScreenshotUtils;
@@ -355,7 +354,7 @@ SynchronousResourceReloadListener {
         boolean bl2 = bl = this.client.getCameraEntity() instanceof LivingEntity && ((LivingEntity)this.client.getCameraEntity()).isSleeping();
         if (this.client.options.perspective == 0 && !bl && !this.client.options.hudHidden && this.client.interactionManager.getCurrentGameMode() != GameMode.SPECTATOR) {
             this.lightmapTextureManager.enable();
-            this.firstPersonRenderer.method_22976(f, matrixStack, this.buffers.getEntityVertexConsumers(), this.client.player, EntityRenderDispatcher.method_23839(this.client.player));
+            this.firstPersonRenderer.method_22976(f, matrixStack, this.buffers.getEntityVertexConsumers(), this.client.player, this.client.getEntityRenderManager().method_23839(this.client.player, f));
             this.lightmapTextureManager.disable();
         }
         matrixStack.pop();
@@ -410,11 +409,11 @@ SynchronousResourceReloadListener {
         RenderSystem.viewport(0, 0, this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight());
         if (bl && this.client.world != null) {
             this.client.getProfiler().push("level");
-            int m = Math.min(MinecraftClient.getCurrentFps(), k);
-            m = Math.max(m, 60);
+            int m = 30;
             long n = Util.getMeasuringTimeNano() - l;
-            long o = Math.max((long)(1000000000 / m / 4) - n, 0L);
-            this.renderWorld(f, Util.getMeasuringTimeNano() + o, matrixStack);
+            long o = 1000000000 / m;
+            long p = Math.max(o * 3L / 4L - n, o / 10L);
+            this.renderWorld(f, Util.getMeasuringTimeNano() + p, matrixStack);
             if (this.client.isIntegratedServerRunning() && this.lastWorldIconUpdate < Util.getMeasuringTimeMs() - 1000L) {
                 this.lastWorldIconUpdate = Util.getMeasuringTimeMs();
                 if (!this.client.getServer().hasIconFile()) {

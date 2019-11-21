@@ -191,7 +191,8 @@ public class MultiplayerServerListPinger {
                         }
                     }
 
-                    protected void method_3005(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf) throws Exception {
+                    @Override
+                    protected void channelRead0(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf) throws Exception {
                         short s = byteBuf.readUnsignedByte();
                         if (s == 255) {
                             String string = new String(byteBuf.readBytes(byteBuf.readShort() * 2).array(), StandardCharsets.UTF_16BE);
@@ -218,7 +219,7 @@ public class MultiplayerServerListPinger {
 
                     @Override
                     protected /* synthetic */ void channelRead0(ChannelHandlerContext channelHandlerContext, Object object) throws Exception {
-                        this.method_3005(channelHandlerContext, (ByteBuf)object);
+                        this.channelRead0(channelHandlerContext, (ByteBuf)object);
                     }
                 });
             }

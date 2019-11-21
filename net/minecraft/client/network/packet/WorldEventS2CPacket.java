@@ -44,7 +44,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeBoolean(this.global);
     }
 
-    public void method_11535(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onWorldEvent(this);
     }
 

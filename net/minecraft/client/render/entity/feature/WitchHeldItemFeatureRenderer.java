@@ -23,7 +23,7 @@ extends VillagerHeldItemFeatureRenderer<T, WitchEntityModel<T>> {
     }
 
     @Override
-    public void method_4208(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l) {
+    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l) {
         ItemStack itemStack = ((LivingEntity)livingEntity).getMainHandStack();
         matrixStack.push();
         if (itemStack.getItem() == Items.POTION) {
@@ -35,7 +35,7 @@ extends VillagerHeldItemFeatureRenderer<T, WitchEntityModel<T>> {
             matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(10.0f));
             matrixStack.translate(0.0, -0.4f, 0.4f);
         }
-        super.method_4208(matrixStack, vertexConsumerProvider, i, livingEntity, f, g, h, j, k, l);
+        super.render(matrixStack, vertexConsumerProvider, i, livingEntity, f, g, h, j, k, l);
         matrixStack.pop();
     }
 }

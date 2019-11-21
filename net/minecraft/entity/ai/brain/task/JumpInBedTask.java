@@ -30,11 +30,13 @@ extends Task<MobEntity> {
         this.walkSpeed = f;
     }
 
-    protected boolean method_19971(ServerWorld serverWorld, MobEntity mobEntity) {
+    @Override
+    protected boolean shouldRun(ServerWorld serverWorld, MobEntity mobEntity) {
         return mobEntity.isBaby() && this.shouldStartJumping(serverWorld, mobEntity);
     }
 
-    protected void method_19972(ServerWorld serverWorld, MobEntity mobEntity, long l) {
+    @Override
+    protected void run(ServerWorld serverWorld, MobEntity mobEntity, long l) {
         super.run(serverWorld, mobEntity, l);
         this.getNearestBed(mobEntity).ifPresent(blockPos -> {
             this.bedPos = blockPos;
@@ -45,7 +47,8 @@ extends Task<MobEntity> {
         });
     }
 
-    protected void method_19976(ServerWorld serverWorld, MobEntity mobEntity, long l) {
+    @Override
+    protected void finishRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
         super.finishRunning(serverWorld, mobEntity, l);
         this.bedPos = null;
         this.ticksOutOfBedUntilStopped = 0;
@@ -53,7 +56,8 @@ extends Task<MobEntity> {
         this.ticksToNextJump = 0;
     }
 
-    protected boolean method_19978(ServerWorld serverWorld, MobEntity mobEntity, long l) {
+    @Override
+    protected boolean shouldKeepRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
         return mobEntity.isBaby() && this.bedPos != null && this.isBedAt(serverWorld, this.bedPos) && !this.isBedGoneTooLong(serverWorld, mobEntity) && !this.isDoneJumping(serverWorld, mobEntity);
     }
 
@@ -62,7 +66,8 @@ extends Task<MobEntity> {
         return false;
     }
 
-    protected void method_19980(ServerWorld serverWorld, MobEntity mobEntity, long l) {
+    @Override
+    protected void keepRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
         if (!this.isAboveBed(serverWorld, mobEntity)) {
             --this.ticksOutOfBedUntilStopped;
             return;
@@ -88,7 +93,7 @@ extends Task<MobEntity> {
 
     private boolean isAboveBed(ServerWorld serverWorld, MobEntity mobEntity) {
         BlockPos blockPos = new BlockPos(mobEntity);
-        BlockPos blockPos2 = blockPos.method_10074();
+        BlockPos blockPos2 = blockPos.down();
         return this.isBedAt(serverWorld, blockPos) || this.isBedAt(serverWorld, blockPos2);
     }
 
@@ -114,12 +119,12 @@ extends Task<MobEntity> {
 
     @Override
     protected /* synthetic */ boolean shouldKeepRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        return this.method_19978(serverWorld, (MobEntity)livingEntity, l);
+        return this.shouldKeepRunning(serverWorld, (MobEntity)livingEntity, l);
     }
 
     @Override
     protected /* synthetic */ void finishRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        this.method_19976(serverWorld, (MobEntity)livingEntity, l);
+        this.finishRunning(serverWorld, (MobEntity)livingEntity, l);
     }
 }
 

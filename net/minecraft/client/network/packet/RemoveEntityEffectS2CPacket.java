@@ -39,7 +39,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeByte(StatusEffect.getRawId(this.effectType));
     }
 
-    public void method_11769(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onRemoveEntityEffect(this);
     }
 

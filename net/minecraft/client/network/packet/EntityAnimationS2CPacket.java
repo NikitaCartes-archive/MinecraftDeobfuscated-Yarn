@@ -36,7 +36,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeByte(this.animationId);
     }
 
-    public void method_11268(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onEntityAnimation(this);
     }
 

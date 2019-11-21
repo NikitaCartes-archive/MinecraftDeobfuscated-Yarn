@@ -8,14 +8,17 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.Frustum;
+import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.LightType;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class EntityRenderer<T extends Entity> {
@@ -25,6 +28,17 @@ public abstract class EntityRenderer<T extends Entity> {
 
     protected EntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         this.renderManager = entityRenderDispatcher;
+    }
+
+    public final int method_24088(T entity, float f) {
+        return LightmapTextureManager.method_23687(this.method_24087(entity, f), ((Entity)entity).world.getLightLevel(LightType.SKY, new BlockPos(((Entity)entity).getCameraPosVec(f))));
+    }
+
+    protected int method_24087(T entity, float f) {
+        if (((Entity)entity).isOnFire()) {
+            return 15;
+        }
+        return ((Entity)entity).world.getLightLevel(LightType.BLOCK, new BlockPos(((Entity)entity).getCameraPosVec(f)));
     }
 
     public boolean isVisible(T entity, Frustum frustum, double d, double e, double f) {

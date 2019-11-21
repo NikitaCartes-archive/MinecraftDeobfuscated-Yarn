@@ -14,6 +14,7 @@ import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerTickScheduler;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
@@ -41,7 +42,7 @@ extends HorizontalFacingBlock {
 
     @Override
     public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
-        return AbstractRedstoneGateBlock.topCoversMediumSquare(worldView, blockPos.method_10074());
+        return AbstractRedstoneGateBlock.topCoversMediumSquare(worldView, blockPos.down());
     }
 
     @Override
@@ -56,7 +57,7 @@ extends HorizontalFacingBlock {
         } else if (!bl) {
             serverWorld.setBlockState(blockPos, (BlockState)blockState.with(POWERED, true), 2);
             if (!bl2) {
-                serverWorld.method_14196().schedule(blockPos, this, this.getUpdateDelayInternal(blockState), TickPriority.HIGH);
+                ((ServerTickScheduler)serverWorld.getBlockTickScheduler()).schedule(blockPos, this, this.getUpdateDelayInternal(blockState), TickPriority.HIGH);
             }
         }
     }

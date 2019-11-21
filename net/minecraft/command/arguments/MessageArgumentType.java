@@ -30,7 +30,8 @@ implements ArgumentType<MessageFormat> {
         return commandContext.getArgument(string, MessageFormat.class).format(commandContext.getSource(), commandContext.getSource().hasPermissionLevel(2));
     }
 
-    public MessageFormat method_9338(StringReader stringReader) throws CommandSyntaxException {
+    @Override
+    public MessageFormat parse(StringReader stringReader) throws CommandSyntaxException {
         return MessageFormat.parse(stringReader, true);
     }
 
@@ -41,7 +42,7 @@ implements ArgumentType<MessageFormat> {
 
     @Override
     public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.method_9338(stringReader);
+        return this.parse(stringReader);
     }
 
     public static class MessageSelector {

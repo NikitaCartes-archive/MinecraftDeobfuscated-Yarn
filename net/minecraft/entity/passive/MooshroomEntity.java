@@ -50,14 +50,14 @@ extends CowEntity {
 
     @Override
     public float getPathfindingFavor(BlockPos blockPos, WorldView worldView) {
-        if (worldView.getBlockState(blockPos.method_10074()).getBlock() == Blocks.MYCELIUM) {
+        if (worldView.getBlockState(blockPos.down()).getBlock() == Blocks.MYCELIUM) {
             return 10.0f;
         }
         return worldView.getBrightness(blockPos) - 0.5f;
     }
 
     public static boolean canSpawn(EntityType<MooshroomEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-        return iWorld.getBlockState(blockPos.method_10074()).getBlock() == Blocks.MYCELIUM && iWorld.getBaseLightLevel(blockPos, 0) > 8;
+        return iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.MYCELIUM && iWorld.getBaseLightLevel(blockPos, 0) > 8;
     }
 
     @Override
@@ -182,7 +182,8 @@ extends CowEntity {
         return Type.fromName(this.dataTracker.get(MooshroomEntity.TYPE));
     }
 
-    public MooshroomEntity method_6495(PassiveEntity passiveEntity) {
+    @Override
+    public MooshroomEntity createChild(PassiveEntity passiveEntity) {
         MooshroomEntity mooshroomEntity = EntityType.MOOSHROOM.create(this.world);
         mooshroomEntity.setType(this.chooseBabyType((MooshroomEntity)passiveEntity));
         return mooshroomEntity;
@@ -196,13 +197,13 @@ extends CowEntity {
     }
 
     @Override
-    public /* synthetic */ CowEntity method_6483(PassiveEntity passiveEntity) {
-        return this.method_6495(passiveEntity);
+    public /* synthetic */ CowEntity createChild(PassiveEntity passiveEntity) {
+        return this.createChild(passiveEntity);
     }
 
     @Override
     public /* synthetic */ PassiveEntity createChild(PassiveEntity passiveEntity) {
-        return this.method_6495(passiveEntity);
+        return this.createChild(passiveEntity);
     }
 
     public static enum Type {

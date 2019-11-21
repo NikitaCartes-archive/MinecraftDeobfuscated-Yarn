@@ -40,7 +40,7 @@ extends TreeDecorator {
     }
 
     @Override
-    public void method_23469(IWorld iWorld, Random random, List<BlockPos> list, List<BlockPos> list2, Set<BlockPos> set, BlockBox blockBox) {
+    public void generate(IWorld iWorld, Random random, List<BlockPos> list, List<BlockPos> list2, Set<BlockPos> set, BlockBox blockBox) {
         if (random.nextFloat() >= this.field_21317) {
             return;
         }

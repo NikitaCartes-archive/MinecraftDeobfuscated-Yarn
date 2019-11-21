@@ -31,7 +31,8 @@ implements LootFunction {
         this.predicate = LootConditions.joinAnd(lootConditions);
     }
 
-    public final ItemStack method_521(ItemStack itemStack, LootContext lootContext) {
+    @Override
+    public final ItemStack apply(ItemStack itemStack, LootContext lootContext) {
         return this.predicate.test(lootContext) ? this.process(itemStack, lootContext) : itemStack;
     }
 
@@ -51,7 +52,7 @@ implements LootFunction {
 
     @Override
     public /* synthetic */ Object apply(Object object, Object object2) {
-        return this.method_521((ItemStack)object, (LootContext)object2);
+        return this.apply((ItemStack)object, (LootContext)object2);
     }
 
     public static abstract class Factory<T extends ConditionalLootFunction>
@@ -60,13 +61,15 @@ implements LootFunction {
             super(identifier, class_);
         }
 
-        public void method_529(JsonObject jsonObject, T conditionalLootFunction, JsonSerializationContext jsonSerializationContext) {
+        @Override
+        public void toJson(JsonObject jsonObject, T conditionalLootFunction, JsonSerializationContext jsonSerializationContext) {
             if (!ArrayUtils.isEmpty(((ConditionalLootFunction)conditionalLootFunction).conditions)) {
                 jsonObject.add("conditions", jsonSerializationContext.serialize(((ConditionalLootFunction)conditionalLootFunction).conditions));
             }
         }
 
-        public final T method_528(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+        @Override
+        public final T fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
             LootCondition[] lootConditions = JsonHelper.deserialize(jsonObject, "conditions", new LootCondition[0], jsonDeserializationContext, LootCondition[].class);
             return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
         }
@@ -75,7 +78,7 @@ implements LootFunction {
 
         @Override
         public /* synthetic */ LootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            return this.method_528(jsonObject, jsonDeserializationContext);
+            return this.fromJson(jsonObject, jsonDeserializationContext);
         }
     }
 
@@ -87,7 +90,8 @@ implements LootFunction {
             this.joiner = function;
         }
 
-        protected Joiner method_527() {
+        @Override
+        protected Joiner getThisBuilder() {
             return this;
         }
 
@@ -98,7 +102,7 @@ implements LootFunction {
 
         @Override
         protected /* synthetic */ Builder getThisBuilder() {
-            return this.method_527();
+            return this.getThisBuilder();
         }
     }
 
@@ -107,12 +111,14 @@ implements LootFunction {
     LootConditionConsumingBuilder<T> {
         private final List<LootCondition> conditionList = Lists.newArrayList();
 
-        public T method_524(LootCondition.Builder builder) {
+        @Override
+        public T withCondition(LootCondition.Builder builder) {
             this.conditionList.add(builder.build());
             return this.getThisBuilder();
         }
 
-        public final T method_525() {
+        @Override
+        public final T getThis() {
             return this.getThisBuilder();
         }
 
@@ -124,12 +130,12 @@ implements LootFunction {
 
         @Override
         public /* synthetic */ Object getThis() {
-            return this.method_525();
+            return this.getThis();
         }
 
         @Override
         public /* synthetic */ Object withCondition(LootCondition.Builder builder) {
-            return this.method_524(builder);
+            return this.withCondition(builder);
         }
     }
 }

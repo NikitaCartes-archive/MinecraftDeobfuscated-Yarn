@@ -28,7 +28,7 @@ public class PathNodeNavigator {
     private final Set<PathNode> field_59 = Sets.newHashSet();
     private final PathNode[] successors = new PathNode[32];
     private final int range;
-    private PathNodeMaker pathNodeMaker;
+    private final PathNodeMaker pathNodeMaker;
 
     public PathNodeNavigator(PathNodeMaker pathNodeMaker, int i) {
         this.pathNodeMaker = pathNodeMaker;
@@ -36,18 +36,18 @@ public class PathNodeNavigator {
     }
 
     @Nullable
-    public Path findPathToAny(ChunkCache chunkCache, MobEntity mobEntity, Set<BlockPos> set, float f, int i) {
+    public Path findPathToAny(ChunkCache chunkCache, MobEntity mobEntity, Set<BlockPos> set, float f, int i, float g) {
         this.minHeap.clear();
         this.pathNodeMaker.init(chunkCache, mobEntity);
         PathNode pathNode = this.pathNodeMaker.getStart();
         Map<TargetPathNode, BlockPos> map = set.stream().collect(Collectors.toMap(blockPos -> this.pathNodeMaker.getNode((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()), Function.identity()));
-        Path path = this.findPathToAny(pathNode, map, f, i);
+        Path path = this.findPathToAny(pathNode, map, f, i, g);
         this.pathNodeMaker.clear();
         return path;
     }
 
     @Nullable
-    private Path findPathToAny(PathNode pathNode, Map<TargetPathNode, BlockPos> map, float f, int i) {
+    private Path findPathToAny(PathNode pathNode, Map<TargetPathNode, BlockPos> map, float f, int i, float g) {
         Stream<Path> stream;
         Optional<Path> optional;
         Set<TargetPathNode> set = map.keySet();
@@ -57,21 +57,22 @@ public class PathNodeNavigator {
         this.field_59.clear();
         this.minHeap.push(pathNode);
         int j = 0;
-        while (!this.minHeap.isEmpty() && ++j < this.range) {
+        int k = (int)((float)this.range * g);
+        while (!this.minHeap.isEmpty() && ++j < k) {
             PathNode pathNode2 = this.minHeap.pop();
             pathNode2.visited = true;
             set.stream().filter(targetPathNode -> pathNode2.getManhattanDistance((PathNode)targetPathNode) <= (float)i).forEach(TargetPathNode::markReached);
             if (set.stream().anyMatch(TargetPathNode::isReached)) break;
             if (pathNode2.getDistance(pathNode) >= f) continue;
-            int k = this.pathNodeMaker.getSuccessors(this.successors, pathNode2);
-            for (int l = 0; l < k; ++l) {
-                PathNode pathNode3 = this.successors[l];
-                float g = pathNode2.getDistance(pathNode3);
-                pathNode3.pathLength = pathNode2.pathLength + g;
-                float h = pathNode2.penalizedPathLength + g + pathNode3.penalty;
-                if (!(pathNode3.pathLength < f) || pathNode3.isInHeap() && !(h < pathNode3.penalizedPathLength)) continue;
+            int l = this.pathNodeMaker.getSuccessors(this.successors, pathNode2);
+            for (int m = 0; m < l; ++m) {
+                PathNode pathNode3 = this.successors[m];
+                float h = pathNode2.getDistance(pathNode3);
+                pathNode3.pathLength = pathNode2.pathLength + h;
+                float n = pathNode2.penalizedPathLength + h + pathNode3.penalty;
+                if (!(pathNode3.pathLength < f) || pathNode3.isInHeap() && !(n < pathNode3.penalizedPathLength)) continue;
                 pathNode3.previous = pathNode2;
-                pathNode3.penalizedPathLength = h;
+                pathNode3.penalizedPathLength = n;
                 pathNode3.distanceToNearestTarget = this.calculateDistances(pathNode3, set) * 1.5f;
                 if (pathNode3.isInHeap()) {
                     this.minHeap.setNodeWeight(pathNode3, pathNode3.penalizedPathLength + pathNode3.distanceToNearestTarget);

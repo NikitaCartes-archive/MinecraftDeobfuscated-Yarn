@@ -24,7 +24,8 @@ extends BipedEntityRenderer<AbstractSkeletonEntity, SkeletonEntityModel<Abstract
         this.addFeature(new ArmorBipedFeatureRenderer(this, new SkeletonEntityModel(0.5f, true), new SkeletonEntityModel(1.0f, true)));
     }
 
-    public Identifier method_4119(AbstractSkeletonEntity abstractSkeletonEntity) {
+    @Override
+    public Identifier getTexture(AbstractSkeletonEntity abstractSkeletonEntity) {
         return SKIN;
     }
 }

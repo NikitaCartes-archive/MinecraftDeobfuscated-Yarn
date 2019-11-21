@@ -56,7 +56,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeBoolean(this.onGround);
     }
 
-    public void method_11922(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onEntityPosition(this);
     }
 

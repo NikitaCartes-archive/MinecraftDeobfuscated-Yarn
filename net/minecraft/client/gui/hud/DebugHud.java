@@ -195,7 +195,7 @@ extends DrawableHelper {
                 if (worldChunk.isEmpty()) {
                     list.add("Waiting for chunk...");
                 } else {
-                    int i = this.client.world.method_2935().getLightingProvider().getLight(blockPos, 0);
+                    int i = this.client.world.getChunkManager().getLightingProvider().getLight(blockPos, 0);
                     int j = this.client.world.getLightLevel(LightType.SKY, blockPos);
                     int k = this.client.world.getLightLevel(LightType.BLOCK, blockPos);
                     list.add("Client Light: " + i + " (" + j + " sky, " + k + " block)");
@@ -273,7 +273,7 @@ extends DrawableHelper {
             ServerWorld serverWorld;
             IntegratedServer integratedServer = this.client.getServer();
             if (integratedServer != null && (serverWorld = integratedServer.getWorld(this.client.world.dimension.getType())) != null) {
-                this.chunkFuture = serverWorld.method_14178().getChunkFutureSyncOnMainThread(this.pos.x, this.pos.z, ChunkStatus.FULL, false).thenApply(either -> either.map(chunk -> (WorldChunk)chunk, unloaded -> null));
+                this.chunkFuture = serverWorld.getChunkManager().getChunkFutureSyncOnMainThread(this.pos.x, this.pos.z, ChunkStatus.FULL, false).thenApply(either -> either.map(chunk -> (WorldChunk)chunk, unloaded -> null));
             }
             if (this.chunkFuture == null) {
                 this.chunkFuture = CompletableFuture.completedFuture(this.getClientChunk());
@@ -284,7 +284,7 @@ extends DrawableHelper {
 
     private WorldChunk getClientChunk() {
         if (this.chunk == null) {
-            this.chunk = this.client.world.method_8497(this.pos.x, this.pos.z);
+            this.chunk = this.client.world.getChunk(this.pos.x, this.pos.z);
         }
         return this.chunk;
     }

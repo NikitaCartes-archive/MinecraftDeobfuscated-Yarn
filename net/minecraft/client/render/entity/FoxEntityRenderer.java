@@ -28,7 +28,8 @@ extends MobEntityRenderer<FoxEntity, FoxEntityModel<FoxEntity>> {
         this.addFeature(new FoxHeldItemFeatureRenderer(this));
     }
 
-    protected void method_18334(FoxEntity foxEntity, MatrixStack matrixStack, float f, float g, float h) {
+    @Override
+    protected void setupTransforms(FoxEntity foxEntity, MatrixStack matrixStack, float f, float g, float h) {
         super.setupTransforms(foxEntity, matrixStack, f, g, h);
         if (foxEntity.isChasing() || foxEntity.isWalking()) {
             float i = -MathHelper.lerp(h, foxEntity.prevPitch, foxEntity.pitch);
@@ -36,7 +37,8 @@ extends MobEntityRenderer<FoxEntity, FoxEntityModel<FoxEntity>> {
         }
     }
 
-    public Identifier method_18333(FoxEntity foxEntity) {
+    @Override
+    public Identifier getTexture(FoxEntity foxEntity) {
         if (foxEntity.getFoxType() == FoxEntity.Type.RED) {
             return foxEntity.isSleeping() ? SLEEPING_SKIN : SKIN;
         }

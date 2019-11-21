@@ -52,7 +52,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeBoolean(this.refreshable);
     }
 
-    public void method_17588(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onSetTradeOffers(this);
     }
 

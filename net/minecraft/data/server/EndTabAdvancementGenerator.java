@@ -29,7 +29,8 @@ import net.minecraft.world.gen.feature.Feature;
 
 public class EndTabAdvancementGenerator
 implements Consumer<Consumer<Advancement>> {
-    public void method_10348(Consumer<Advancement> consumer) {
+    @Override
+    public void accept(Consumer<Advancement> consumer) {
         Advancement advancement = Advancement.Task.create().display(Blocks.END_STONE, (Text)new TranslatableText("advancements.end.root.title", new Object[0]), (Text)new TranslatableText("advancements.end.root.description", new Object[0]), new Identifier("textures/gui/advancements/backgrounds/end.png"), AdvancementFrame.TASK, false, false, false).criterion("entered_end", ChangedDimensionCriterion.Conditions.to(DimensionType.THE_END)).build(consumer, "end/root");
         Advancement advancement2 = Advancement.Task.create().parent(advancement).display(Blocks.DRAGON_HEAD, (Text)new TranslatableText("advancements.end.kill_dragon.title", new Object[0]), (Text)new TranslatableText("advancements.end.kill_dragon.description", new Object[0]), null, AdvancementFrame.TASK, true, true, false).criterion("killed_dragon", OnKilledCriterion.Conditions.createPlayerKilledEntity(EntityPredicate.Builder.create().type(EntityType.ENDER_DRAGON))).build(consumer, "end/kill_dragon");
         Advancement advancement3 = Advancement.Task.create().parent(advancement2).display(Items.ENDER_PEARL, (Text)new TranslatableText("advancements.end.enter_end_gateway.title", new Object[0]), (Text)new TranslatableText("advancements.end.enter_end_gateway.description", new Object[0]), null, AdvancementFrame.TASK, true, true, false).criterion("entered_end_gateway", EnterBlockCriterion.Conditions.block(Blocks.END_GATEWAY)).build(consumer, "end/enter_end_gateway");
@@ -43,7 +44,7 @@ implements Consumer<Consumer<Advancement>> {
 
     @Override
     public /* synthetic */ void accept(Object object) {
-        this.method_10348((Consumer)object);
+        this.accept((Consumer)object);
     }
 }
 

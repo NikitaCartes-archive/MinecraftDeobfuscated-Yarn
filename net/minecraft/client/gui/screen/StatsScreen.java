@@ -402,7 +402,8 @@ implements StatsListener {
             private ItemComparator() {
             }
 
-            public int method_2297(Item item, Item item2) {
+            @Override
+            public int compare(Item item, Item item2) {
                 int j;
                 int i;
                 if (ItemStatsListWidget.this.selectedStatType == null) {
@@ -425,7 +426,7 @@ implements StatsListener {
 
             @Override
             public /* synthetic */ int compare(Object object, Object object2) {
-                return this.method_2297((Item)object, (Item)object2);
+                return this.compare((Item)object, (Item)object2);
             }
         }
     }

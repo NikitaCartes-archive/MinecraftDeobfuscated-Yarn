@@ -56,7 +56,7 @@ extends Particle {
         double k = MathHelper.lerp((double)g, this.field_3823.getZ(), h);
         VertexConsumerProvider.Immediate immediate = this.field_20944.getEntityVertexConsumers();
         Vec3d vec3d = camera.getPos();
-        this.field_3824.render(this.field_3823, i - vec3d.getX(), j - vec3d.getY(), k - vec3d.getZ(), this.field_3823.yaw, f, new MatrixStack(), immediate, EntityRenderDispatcher.method_23839(this.field_3823));
+        this.field_3824.render(this.field_3823, i - vec3d.getX(), j - vec3d.getY(), k - vec3d.getZ(), this.field_3823.yaw, f, new MatrixStack(), immediate, this.field_3824.method_23839(this.field_3823, f));
         immediate.draw();
     }
 

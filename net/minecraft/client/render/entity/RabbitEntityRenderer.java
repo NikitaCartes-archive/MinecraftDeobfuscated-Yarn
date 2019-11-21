@@ -28,7 +28,8 @@ extends MobEntityRenderer<RabbitEntity, RabbitEntityModel<RabbitEntity>> {
         super(entityRenderDispatcher, new RabbitEntityModel(), 0.3f);
     }
 
-    public Identifier method_4102(RabbitEntity rabbitEntity) {
+    @Override
+    public Identifier getTexture(RabbitEntity rabbitEntity) {
         String string = Formatting.strip(rabbitEntity.getName().getString());
         if (string != null && "Toast".equals(string)) {
             return TOAST_SKIN;

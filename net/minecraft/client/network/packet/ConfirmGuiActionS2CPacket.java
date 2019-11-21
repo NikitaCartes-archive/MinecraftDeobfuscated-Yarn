@@ -25,7 +25,8 @@ implements Packet<ClientPlayPacketListener> {
         this.accepted = bl;
     }
 
-    public void method_11424(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onGuiActionConfirm(this);
     }
 

@@ -24,16 +24,19 @@ extends MobEntityRenderer<WitchEntity, WitchEntityModel<WitchEntity>> {
         this.addFeature(new WitchHeldItemFeatureRenderer<WitchEntity>(this));
     }
 
-    public void method_4155(WitchEntity witchEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+    @Override
+    public void render(WitchEntity witchEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         ((WitchEntityModel)this.model).setLiftingNose(!witchEntity.getMainHandStack().isEmpty());
-        super.method_4072(witchEntity, f, g, matrixStack, vertexConsumerProvider, i);
+        super.render(witchEntity, f, g, matrixStack, vertexConsumerProvider, i);
     }
 
-    public Identifier method_4154(WitchEntity witchEntity) {
+    @Override
+    public Identifier getTexture(WitchEntity witchEntity) {
         return SKIN;
     }
 
-    protected void method_4157(WitchEntity witchEntity, MatrixStack matrixStack, float f) {
+    @Override
+    protected void scale(WitchEntity witchEntity, MatrixStack matrixStack, float f) {
         float g = 0.9375f;
         matrixStack.scale(0.9375f, 0.9375f, 0.9375f);
     }

@@ -123,13 +123,14 @@ extends AnimalEntity {
         this.playSound(SoundEvents.ENTITY_CHICKEN_STEP, 0.15f, 1.0f);
     }
 
-    public ChickenEntity method_6471(PassiveEntity passiveEntity) {
+    @Override
+    public ChickenEntity createChild(PassiveEntity passiveEntity) {
         return EntityType.CHICKEN.create(this.world);
     }
 
     @Override
     public boolean isBreedingItem(ItemStack itemStack) {
-        return BREEDING_INGREDIENT.method_8093(itemStack);
+        return BREEDING_INGREDIENT.test(itemStack);
     }
 
     @Override
@@ -184,7 +185,7 @@ extends AnimalEntity {
 
     @Override
     public /* synthetic */ PassiveEntity createChild(PassiveEntity passiveEntity) {
-        return this.method_6471(passiveEntity);
+        return this.createChild(passiveEntity);
     }
 }
 

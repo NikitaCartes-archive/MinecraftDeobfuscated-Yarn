@@ -20,13 +20,13 @@ extends CompositeEntityModel<T>
 implements ModelWithHead,
 ModelWithHat {
     protected ModelPart head;
-    protected ModelPart headOverlay;
-    protected final ModelPart hat;
-    protected final ModelPart body;
+    protected ModelPart field_17141;
+    protected final ModelPart field_17142;
+    protected final ModelPart torso;
     protected final ModelPart robe;
     protected final ModelPart arms;
-    protected final ModelPart leftLeg;
     protected final ModelPart rightLeg;
+    protected final ModelPart leftLeg;
     protected final ModelPart nose;
 
     public VillagerResemblingModel(float f) {
@@ -38,43 +38,43 @@ ModelWithHat {
         this.head = new ModelPart(this).setTextureSize(i, j);
         this.head.setPivot(0.0f, 0.0f, 0.0f);
         this.head.setTextureOffset(0, 0).addCuboid(-4.0f, -10.0f, -4.0f, 8.0f, 10.0f, 8.0f, f);
-        this.headOverlay = new ModelPart(this).setTextureSize(i, j);
-        this.headOverlay.setPivot(0.0f, 0.0f, 0.0f);
-        this.headOverlay.setTextureOffset(32, 0).addCuboid(-4.0f, -10.0f, -4.0f, 8.0f, 10.0f, 8.0f, f + 0.5f);
-        this.head.addChild(this.headOverlay);
-        this.hat = new ModelPart(this).setTextureSize(i, j);
-        this.hat.setPivot(0.0f, 0.0f, 0.0f);
-        this.hat.setTextureOffset(30, 47).addCuboid(-8.0f, -8.0f, -6.0f, 16.0f, 16.0f, 1.0f, f);
-        this.hat.pitch = -1.5707964f;
-        this.headOverlay.addChild(this.hat);
+        this.field_17141 = new ModelPart(this).setTextureSize(i, j);
+        this.field_17141.setPivot(0.0f, 0.0f, 0.0f);
+        this.field_17141.setTextureOffset(32, 0).addCuboid(-4.0f, -10.0f, -4.0f, 8.0f, 10.0f, 8.0f, f + 0.5f);
+        this.head.addChild(this.field_17141);
+        this.field_17142 = new ModelPart(this).setTextureSize(i, j);
+        this.field_17142.setPivot(0.0f, 0.0f, 0.0f);
+        this.field_17142.setTextureOffset(30, 47).addCuboid(-8.0f, -8.0f, -6.0f, 16.0f, 16.0f, 1.0f, f);
+        this.field_17142.pitch = -1.5707964f;
+        this.field_17141.addChild(this.field_17142);
         this.nose = new ModelPart(this).setTextureSize(i, j);
         this.nose.setPivot(0.0f, -2.0f, 0.0f);
         this.nose.setTextureOffset(24, 0).addCuboid(-1.0f, -1.0f, -6.0f, 2.0f, 4.0f, 2.0f, f);
         this.head.addChild(this.nose);
-        this.body = new ModelPart(this).setTextureSize(i, j);
-        this.body.setPivot(0.0f, 0.0f, 0.0f);
-        this.body.setTextureOffset(16, 20).addCuboid(-4.0f, 0.0f, -3.0f, 8.0f, 12.0f, 6.0f, f);
+        this.torso = new ModelPart(this).setTextureSize(i, j);
+        this.torso.setPivot(0.0f, 0.0f, 0.0f);
+        this.torso.setTextureOffset(16, 20).addCuboid(-4.0f, 0.0f, -3.0f, 8.0f, 12.0f, 6.0f, f);
         this.robe = new ModelPart(this).setTextureSize(i, j);
         this.robe.setPivot(0.0f, 0.0f, 0.0f);
         this.robe.setTextureOffset(0, 38).addCuboid(-4.0f, 0.0f, -3.0f, 8.0f, 18.0f, 6.0f, f + 0.5f);
-        this.body.addChild(this.robe);
+        this.torso.addChild(this.robe);
         this.arms = new ModelPart(this).setTextureSize(i, j);
         this.arms.setPivot(0.0f, 2.0f, 0.0f);
         this.arms.setTextureOffset(44, 22).addCuboid(-8.0f, -2.0f, -2.0f, 4.0f, 8.0f, 4.0f, f);
         this.arms.setTextureOffset(44, 22).addCuboid(4.0f, -2.0f, -2.0f, 4.0f, 8.0f, 4.0f, f, true);
         this.arms.setTextureOffset(40, 38).addCuboid(-4.0f, 2.0f, -2.0f, 8.0f, 4.0f, 4.0f, f);
-        this.leftLeg = new ModelPart(this, 0, 22).setTextureSize(i, j);
-        this.leftLeg.setPivot(-2.0f, 12.0f, 0.0f);
-        this.leftLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, f);
         this.rightLeg = new ModelPart(this, 0, 22).setTextureSize(i, j);
-        this.rightLeg.mirror = true;
-        this.rightLeg.setPivot(2.0f, 12.0f, 0.0f);
+        this.rightLeg.setPivot(-2.0f, 12.0f, 0.0f);
         this.rightLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, f);
+        this.leftLeg = new ModelPart(this, 0, 22).setTextureSize(i, j);
+        this.leftLeg.mirror = true;
+        this.leftLeg.setPivot(2.0f, 12.0f, 0.0f);
+        this.leftLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, f);
     }
 
     @Override
     public Iterable<ModelPart> getParts() {
-        return ImmutableList.of(this.head, this.body, this.leftLeg, this.rightLeg, this.arms);
+        return ImmutableList.of(this.head, this.torso, this.rightLeg, this.leftLeg, this.arms);
     }
 
     @Override
@@ -94,10 +94,10 @@ ModelWithHat {
         this.arms.pivotY = 3.0f;
         this.arms.pivotZ = -1.0f;
         this.arms.pitch = -0.75f;
-        this.leftLeg.pitch = MathHelper.cos(f * 0.6662f) * 1.4f * g * 0.5f;
-        this.rightLeg.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * 1.4f * g * 0.5f;
-        this.leftLeg.yaw = 0.0f;
+        this.rightLeg.pitch = MathHelper.cos(f * 0.6662f) * 1.4f * g * 0.5f;
+        this.leftLeg.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * 1.4f * g * 0.5f;
         this.rightLeg.yaw = 0.0f;
+        this.leftLeg.yaw = 0.0f;
     }
 
     @Override
@@ -108,8 +108,8 @@ ModelWithHat {
     @Override
     public void setHatVisible(boolean bl) {
         this.head.visible = bl;
-        this.headOverlay.visible = bl;
-        this.hat.visible = bl;
+        this.field_17141.visible = bl;
+        this.field_17142.visible = bl;
     }
 }
 

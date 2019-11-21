@@ -63,7 +63,8 @@ extends CombinedEntry {
             }
         }
 
-        protected Builder method_388() {
+        @Override
+        protected Builder getThisBuilder() {
             return this;
         }
 
@@ -80,7 +81,7 @@ extends CombinedEntry {
 
         @Override
         protected /* synthetic */ LootEntry.Builder getThisBuilder() {
-            return this.method_388();
+            return this.getThisBuilder();
         }
     }
 }

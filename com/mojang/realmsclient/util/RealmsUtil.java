@@ -25,7 +25,8 @@ public class RealmsUtil {
     private static final MinecraftSessionService sessionService = authenticationService.createMinecraftSessionService();
     public static LoadingCache<String, GameProfile> gameProfileCache = CacheBuilder.newBuilder().expireAfterWrite(60L, TimeUnit.MINUTES).build(new CacheLoader<String, GameProfile>(){
 
-        public GameProfile method_21571(String string) throws Exception {
+        @Override
+        public GameProfile load(String string) throws Exception {
             GameProfile gameProfile = sessionService.fillProfileProperties(new GameProfile(UUIDTypeAdapter.fromString(string), null), false);
             if (gameProfile == null) {
                 throw new Exception("Couldn't get profile");
@@ -35,7 +36,7 @@ public class RealmsUtil {
 
         @Override
         public /* synthetic */ Object load(Object object) throws Exception {
-            return this.method_21571((String)object);
+            return this.load((String)object);
         }
     });
 

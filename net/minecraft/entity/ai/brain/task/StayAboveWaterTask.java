@@ -20,15 +20,18 @@ extends Task<MobEntity> {
         this.chance = g;
     }
 
-    protected boolean method_19010(ServerWorld serverWorld, MobEntity mobEntity) {
+    @Override
+    protected boolean shouldRun(ServerWorld serverWorld, MobEntity mobEntity) {
         return mobEntity.isInsideWater() && mobEntity.getWaterHeight() > (double)this.minWaterHeight || mobEntity.isInLava();
     }
 
-    protected boolean method_19011(ServerWorld serverWorld, MobEntity mobEntity, long l) {
-        return this.method_19010(serverWorld, mobEntity);
+    @Override
+    protected boolean shouldKeepRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
+        return this.shouldRun(serverWorld, mobEntity);
     }
 
-    protected void method_19012(ServerWorld serverWorld, MobEntity mobEntity, long l) {
+    @Override
+    protected void keepRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
         if (mobEntity.getRandom().nextFloat() < this.chance) {
             mobEntity.getJumpControl().setActive();
         }
@@ -36,12 +39,12 @@ extends Task<MobEntity> {
 
     @Override
     protected /* synthetic */ boolean shouldKeepRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        return this.method_19011(serverWorld, (MobEntity)livingEntity, l);
+        return this.shouldKeepRunning(serverWorld, (MobEntity)livingEntity, l);
     }
 
     @Override
     protected /* synthetic */ void keepRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        this.method_19012(serverWorld, (MobEntity)livingEntity, l);
+        this.keepRunning(serverWorld, (MobEntity)livingEntity, l);
     }
 }
 

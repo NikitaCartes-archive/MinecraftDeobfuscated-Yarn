@@ -63,6 +63,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.network.packet.DifficultyS2CPacket;
 import net.minecraft.client.network.packet.WorldTimeUpdateS2CPacket;
 import net.minecraft.command.DataCommandStorage;
@@ -438,6 +440,7 @@ Runnable {
         }
         this.dataPackManager.setEnabledProfiles(list);
         this.reloadDataPacks(levelProperties);
+        this.method_24154();
     }
 
     protected void prepareStartRegion(WorldGenerationProgressListener worldGenerationProgressListener) {
@@ -446,8 +449,8 @@ Runnable {
         LOGGER.info("Preparing start region for dimension " + DimensionType.getId(serverWorld.dimension.getType()));
         BlockPos blockPos = serverWorld.getSpawnPos();
         worldGenerationProgressListener.start(new ChunkPos(blockPos));
-        ServerChunkManager serverChunkManager = serverWorld.method_14178();
-        serverChunkManager.method_17293().setTaskBatchSize(500);
+        ServerChunkManager serverChunkManager = serverWorld.getChunkManager();
+        serverChunkManager.getLightingProvider().setTaskBatchSize(500);
         this.timeReference = Util.getMeasuringTimeMs();
         serverChunkManager.addTicket(ChunkTicketType.START, new ChunkPos(blockPos), 11, Unit.INSTANCE);
         while (serverChunkManager.getTotalChunksLoadedCount() != 441) {
@@ -464,13 +467,13 @@ Runnable {
             while (longIterator.hasNext()) {
                 long l = longIterator.nextLong();
                 ChunkPos chunkPos = new ChunkPos(l);
-                serverWorld2.method_14178().setChunkForced(chunkPos, true);
+                serverWorld2.getChunkManager().setChunkForced(chunkPos, true);
             }
         }
         this.timeReference = Util.getMeasuringTimeMs() + 10L;
         this.method_16208();
         worldGenerationProgressListener.stop();
-        serverChunkManager.method_17293().setTaskBatchSize(5);
+        serverChunkManager.getLightingProvider().setTaskBatchSize(5);
     }
 
     protected void loadWorldResourcePack(String string, WorldSaveHandler worldSaveHandler) {
@@ -645,11 +648,13 @@ Runnable {
         this.runTasks(() -> !this.shouldKeepTicking());
     }
 
-    protected ServerTask method_16209(Runnable runnable) {
+    @Override
+    protected ServerTask createTask(Runnable runnable) {
         return new ServerTask(this.ticks, runnable);
     }
 
-    protected boolean method_19464(ServerTask serverTask) {
+    @Override
+    protected boolean canExecute(ServerTask serverTask) {
         return serverTask.getCreationTicks() + 3 < this.ticks || this.shouldKeepTicking();
     }
 
@@ -666,7 +671,7 @@ Runnable {
         }
         if (this.shouldKeepTicking()) {
             for (ServerWorld serverWorld : this.getWorlds()) {
-                if (!serverWorld.method_14178().executeQueuedTasks()) continue;
+                if (!serverWorld.getChunkManager().executeQueuedTasks()) continue;
                 return true;
             }
         }
@@ -1113,7 +1118,7 @@ Runnable {
             snooper.addInfo("world[" + i + "][generator_name]", levelProperties.getGeneratorType().getName());
             snooper.addInfo("world[" + i + "][generator_version]", levelProperties.getGeneratorType().getVersion());
             snooper.addInfo("world[" + i + "][height]", this.worldHeight);
-            snooper.addInfo("world[" + i + "][chunks_loaded]", serverWorld.method_14178().getLoadedChunkCount());
+            snooper.addInfo("world[" + i + "][chunks_loaded]", serverWorld.getChunkManager().getLoadedChunkCount());
             ++i;
         }
         snooper.addInfo("worlds", i);
@@ -1332,6 +1337,7 @@ Runnable {
         this.dataPackManager.scanPacks();
         this.reloadDataPacks(this.getWorld(DimensionType.OVERWORLD).getLevelProperties());
         this.getPlayerManager().onDataPacksReloaded();
+        this.method_24154();
     }
 
     private void reloadDataPacks(LevelProperties levelProperties) {
@@ -1554,14 +1560,18 @@ Runnable {
         }
     }
 
+    private void method_24154() {
+        Block.STATE_IDS.forEach(BlockState::initShapeCache);
+    }
+
     @Override
     public /* synthetic */ boolean canExecute(Runnable runnable) {
-        return this.method_19464((ServerTask)runnable);
+        return this.canExecute((ServerTask)runnable);
     }
 
     @Override
     public /* synthetic */ Runnable createTask(Runnable runnable) {
-        return this.method_16209(runnable);
+        return this.createTask(runnable);
     }
 }
 

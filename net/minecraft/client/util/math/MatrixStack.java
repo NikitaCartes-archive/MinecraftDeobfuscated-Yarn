@@ -9,7 +9,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.util.math.Matrix3f;
 import net.minecraft.client.util.math.Matrix4f;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
@@ -25,21 +24,13 @@ public class MatrixStack {
     });
 
     public void translate(double d, double e, double f) {
-        Matrix4f matrix4f = new Matrix4f();
-        matrix4f.loadIdentity();
-        matrix4f.addToLastColumn(new Vector3f((float)d, (float)e, (float)f));
         Entry entry = this.stack.getLast();
-        entry.modelMatrix.multiply(matrix4f);
+        entry.modelMatrix.multiply(Matrix4f.method_24021((float)d, (float)e, (float)f));
     }
 
     public void scale(float f, float g, float h) {
         Entry entry = this.stack.getLast();
-        Matrix4f matrix4f = new Matrix4f();
-        matrix4f.loadIdentity();
-        matrix4f.set(0, 0, f);
-        matrix4f.set(1, 1, g);
-        matrix4f.set(2, 2, h);
-        entry.modelMatrix.multiply(matrix4f);
+        entry.modelMatrix.multiply(Matrix4f.method_24019(f, g, h));
         if (f == g && g == h) {
             return;
         }
@@ -47,11 +38,7 @@ public class MatrixStack {
         float j = 1.0f / g;
         float k = 1.0f / h;
         float l = MathHelper.fastInverseCbrt(i * j * k);
-        Matrix3f matrix3f = new Matrix3f();
-        matrix3f.set(0, 0, l * i);
-        matrix3f.set(1, 1, l * j);
-        matrix3f.set(2, 2, l * k);
-        entry.normalMatrix.multiply(matrix3f);
+        entry.normalMatrix.multiply(Matrix3f.method_23963(l * i, l * j, l * k));
     }
 
     public void multiply(Quaternion quaternion) {

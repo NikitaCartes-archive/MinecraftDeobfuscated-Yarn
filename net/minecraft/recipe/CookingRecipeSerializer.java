@@ -26,7 +26,8 @@ implements RecipeSerializer<T> {
         this.recipeFactory = recipeFactory;
     }
 
-    public T method_17736(Identifier identifier, JsonObject jsonObject) {
+    @Override
+    public T read(Identifier identifier, JsonObject jsonObject) {
         String string = JsonHelper.getString(jsonObject, "group", "");
         JsonElement jsonElement = JsonHelper.hasArray(jsonObject, "ingredient") ? JsonHelper.getArray(jsonObject, "ingredient") : JsonHelper.getObject(jsonObject, "ingredient");
         Ingredient ingredient = Ingredient.fromJson(jsonElement);
@@ -38,7 +39,8 @@ implements RecipeSerializer<T> {
         return this.recipeFactory.create(identifier, string, ingredient, itemStack, f, i);
     }
 
-    public T method_17737(Identifier identifier, PacketByteBuf packetByteBuf) {
+    @Override
+    public T read(Identifier identifier, PacketByteBuf packetByteBuf) {
         String string = packetByteBuf.readString(Short.MAX_VALUE);
         Ingredient ingredient = Ingredient.fromPacket(packetByteBuf);
         ItemStack itemStack = packetByteBuf.readItemStack();
@@ -47,7 +49,8 @@ implements RecipeSerializer<T> {
         return this.recipeFactory.create(identifier, string, ingredient, itemStack, f, i);
     }
 
-    public void method_17735(PacketByteBuf packetByteBuf, T abstractCookingRecipe) {
+    @Override
+    public void write(PacketByteBuf packetByteBuf, T abstractCookingRecipe) {
         packetByteBuf.writeString(((AbstractCookingRecipe)abstractCookingRecipe).group);
         ((AbstractCookingRecipe)abstractCookingRecipe).input.write(packetByteBuf);
         packetByteBuf.writeItemStack(((AbstractCookingRecipe)abstractCookingRecipe).output);
@@ -57,12 +60,12 @@ implements RecipeSerializer<T> {
 
     @Override
     public /* synthetic */ Recipe read(Identifier identifier, PacketByteBuf packetByteBuf) {
-        return this.method_17737(identifier, packetByteBuf);
+        return this.read(identifier, packetByteBuf);
     }
 
     @Override
     public /* synthetic */ Recipe read(Identifier identifier, JsonObject jsonObject) {
-        return this.method_17736(identifier, jsonObject);
+        return this.read(identifier, jsonObject);
     }
 
     static interface RecipeFactory<T extends AbstractCookingRecipe> {

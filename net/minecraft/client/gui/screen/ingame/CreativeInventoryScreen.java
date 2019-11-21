@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.datafixers.util.Pair;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -778,7 +779,7 @@ extends AbstractInventoryScreen<CreativeContainer> {
 
         @Override
         @Nullable
-        public String getBackgroundSprite() {
+        public Pair<Identifier, Identifier> getBackgroundSprite() {
             return this.slot.getBackgroundSprite();
         }
 

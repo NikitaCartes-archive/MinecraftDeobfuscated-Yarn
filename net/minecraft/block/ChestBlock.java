@@ -70,27 +70,30 @@ implements Waterloggable {
     protected static final VoxelShape SINGLE_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 14.0, 15.0);
     private static final PropertyRetriever<Inventory> INVENTORY_RETRIEVER = new PropertyRetriever<Inventory>(){
 
-        public Inventory method_17461(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
+        @Override
+        public Inventory getFromDoubleChest(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
             return new DoubleInventory(chestBlockEntity, chestBlockEntity2);
         }
 
-        public Inventory method_17460(ChestBlockEntity chestBlockEntity) {
+        @Override
+        public Inventory getFromSingleChest(ChestBlockEntity chestBlockEntity) {
             return chestBlockEntity;
         }
 
         @Override
         public /* synthetic */ Object getFromSingleChest(ChestBlockEntity chestBlockEntity) {
-            return this.method_17460(chestBlockEntity);
+            return this.getFromSingleChest(chestBlockEntity);
         }
 
         @Override
         public /* synthetic */ Object getFromDoubleChest(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
-            return this.method_17461(chestBlockEntity, chestBlockEntity2);
+            return this.getFromDoubleChest(chestBlockEntity, chestBlockEntity2);
         }
     };
     private static final PropertyRetriever<NameableContainerProvider> NAME_RETRIEVER = new PropertyRetriever<NameableContainerProvider>(){
 
-        public NameableContainerProvider method_17463(final ChestBlockEntity chestBlockEntity, final ChestBlockEntity chestBlockEntity2) {
+        @Override
+        public NameableContainerProvider getFromDoubleChest(final ChestBlockEntity chestBlockEntity, final ChestBlockEntity chestBlockEntity2) {
             final DoubleInventory inventory = new DoubleInventory(chestBlockEntity, chestBlockEntity2);
             return new NameableContainerProvider(){
 
@@ -118,38 +121,41 @@ implements Waterloggable {
             };
         }
 
-        public NameableContainerProvider method_17462(ChestBlockEntity chestBlockEntity) {
+        @Override
+        public NameableContainerProvider getFromSingleChest(ChestBlockEntity chestBlockEntity) {
             return chestBlockEntity;
         }
 
         @Override
         public /* synthetic */ Object getFromSingleChest(ChestBlockEntity chestBlockEntity) {
-            return this.method_17462(chestBlockEntity);
+            return this.getFromSingleChest(chestBlockEntity);
         }
 
         @Override
         public /* synthetic */ Object getFromDoubleChest(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
-            return this.method_17463(chestBlockEntity, chestBlockEntity2);
+            return this.getFromDoubleChest(chestBlockEntity, chestBlockEntity2);
         }
     };
     private static final PropertyRetriever<Float2FloatFunction> field_21581 = new PropertyRetriever<Float2FloatFunction>(){
 
-        public Float2FloatFunction method_23899(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
+        @Override
+        public Float2FloatFunction getFromDoubleChest(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
             return f -> Math.max(chestBlockEntity.getAnimationProgress(f), chestBlockEntity2.getAnimationProgress(f));
         }
 
-        public Float2FloatFunction method_23898(ChestBlockEntity chestBlockEntity) {
+        @Override
+        public Float2FloatFunction getFromSingleChest(ChestBlockEntity chestBlockEntity) {
             return chestBlockEntity::getAnimationProgress;
         }
 
         @Override
         public /* synthetic */ Object getFromSingleChest(ChestBlockEntity chestBlockEntity) {
-            return this.method_23898(chestBlockEntity);
+            return this.getFromSingleChest(chestBlockEntity);
         }
 
         @Override
         public /* synthetic */ Object getFromDoubleChest(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
-            return this.method_23899(chestBlockEntity, chestBlockEntity2);
+            return this.getFromDoubleChest(chestBlockEntity, chestBlockEntity2);
         }
     };
 

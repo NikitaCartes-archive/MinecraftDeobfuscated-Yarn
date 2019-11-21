@@ -130,7 +130,8 @@ implements Packet<ClientPlayPacketListener> {
         return this.parameters;
     }
 
-    public void method_11553(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onParticle(this);
     }
 }

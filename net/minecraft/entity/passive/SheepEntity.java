@@ -337,7 +337,8 @@ extends AnimalEntity {
         return DyeColor.WHITE;
     }
 
-    public SheepEntity method_6640(PassiveEntity passiveEntity) {
+    @Override
+    public SheepEntity createChild(PassiveEntity passiveEntity) {
         SheepEntity sheepEntity = (SheepEntity)passiveEntity;
         SheepEntity sheepEntity2 = EntityType.SHEEP.create(this.world);
         sheepEntity2.setColor(this.getChildColor(this, sheepEntity));
@@ -386,7 +387,7 @@ extends AnimalEntity {
 
     @Override
     public /* synthetic */ PassiveEntity createChild(PassiveEntity passiveEntity) {
-        return this.method_6640(passiveEntity);
+        return this.createChild(passiveEntity);
     }
 }
 

@@ -24,7 +24,8 @@ implements Packet<ClientPlayPacketListener> {
         this.tabId = identifier;
     }
 
-    public void method_11794(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onSelectAdvancementTab(this);
     }
 

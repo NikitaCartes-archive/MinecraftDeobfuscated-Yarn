@@ -44,7 +44,7 @@ implements ParsableText {
     @Nullable
     private static NbtPathArgumentType.NbtPath parsePath(String string) {
         try {
-            return new NbtPathArgumentType().method_9362(new StringReader(string));
+            return new NbtPathArgumentType().parse(new StringReader(string));
         } catch (CommandSyntaxException commandSyntaxException) {
             return null;
         }
@@ -163,7 +163,7 @@ implements ParsableText {
         @Nullable
         private PosArgument parsePos(String string) {
             try {
-                return BlockPosArgumentType.blockPos().method_9699(new StringReader(string));
+                return BlockPosArgumentType.blockPos().parse(new StringReader(string));
             } catch (CommandSyntaxException commandSyntaxException) {
                 return null;
             }

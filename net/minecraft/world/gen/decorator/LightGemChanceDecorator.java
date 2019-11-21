@@ -18,7 +18,8 @@ extends SimpleDecorator<CountDecoratorConfig> {
         super(function);
     }
 
-    public Stream<BlockPos> method_15953(Random random, CountDecoratorConfig countDecoratorConfig, BlockPos blockPos) {
+    @Override
+    public Stream<BlockPos> getPositions(Random random, CountDecoratorConfig countDecoratorConfig, BlockPos blockPos) {
         return IntStream.range(0, random.nextInt(random.nextInt(countDecoratorConfig.count) + 1)).mapToObj(i -> {
             int j = random.nextInt(16) + blockPos.getX();
             int k = random.nextInt(16) + blockPos.getZ();

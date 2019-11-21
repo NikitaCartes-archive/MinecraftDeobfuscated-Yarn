@@ -95,7 +95,7 @@ public class TeleportCommand {
     private static void teleport(ServerCommandSource serverCommandSource, Entity entity, ServerWorld serverWorld, double d, double e, double f, Set<PlayerPositionLookS2CPacket.Flag> set, float g, float h, @Nullable LookTarget lookTarget) {
         if (entity instanceof ServerPlayerEntity) {
             ChunkPos chunkPos = new ChunkPos(new BlockPos(d, e, f));
-            serverWorld.method_14178().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos, 1, entity.getEntityId());
+            serverWorld.getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos, 1, entity.getEntityId());
             entity.stopRiding();
             if (((ServerPlayerEntity)entity).isSleeping()) {
                 ((ServerPlayerEntity)entity).wakeUp(true, true);

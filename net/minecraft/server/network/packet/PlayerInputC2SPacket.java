@@ -51,7 +51,8 @@ implements Packet<ServerPlayPacketListener> {
         packetByteBuf.writeByte(b);
     }
 
-    public void method_12369(ServerPlayPacketListener serverPlayPacketListener) {
+    @Override
+    public void apply(ServerPlayPacketListener serverPlayPacketListener) {
         serverPlayPacketListener.onPlayerInput(this);
     }
 

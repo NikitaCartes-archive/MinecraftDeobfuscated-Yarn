@@ -257,7 +257,8 @@ extends DrawableHelper {
         private EntryOrderComparator() {
         }
 
-        public int method_1926(PlayerListEntry playerListEntry, PlayerListEntry playerListEntry2) {
+        @Override
+        public int compare(PlayerListEntry playerListEntry, PlayerListEntry playerListEntry2) {
             Team team = playerListEntry.getScoreboardTeam();
             Team team2 = playerListEntry2.getScoreboardTeam();
             return ComparisonChain.start().compareTrueFirst(playerListEntry.getGameMode() != GameMode.SPECTATOR, playerListEntry2.getGameMode() != GameMode.SPECTATOR).compare((Comparable<?>)((Object)(team != null ? team.getName() : "")), (Comparable<?>)((Object)(team2 != null ? team2.getName() : ""))).compare(playerListEntry.getProfile().getName(), playerListEntry2.getProfile().getName(), String::compareToIgnoreCase).result();
@@ -265,7 +266,7 @@ extends DrawableHelper {
 
         @Override
         public /* synthetic */ int compare(Object object, Object object2) {
-            return this.method_1926((PlayerListEntry)object, (PlayerListEntry)object2);
+            return this.compare((PlayerListEntry)object, (PlayerListEntry)object2);
         }
     }
 }

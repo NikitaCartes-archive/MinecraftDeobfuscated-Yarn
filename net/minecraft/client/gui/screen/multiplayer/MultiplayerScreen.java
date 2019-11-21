@@ -132,7 +132,7 @@ extends Screen {
         if (bl && entry instanceof MultiplayerServerListWidget.ServerEntry) {
             this.serverList.remove(((MultiplayerServerListWidget.ServerEntry)entry).getServer());
             this.serverList.saveFile();
-            this.serverListWidget.method_20122(null);
+            this.serverListWidget.setSelected((MultiplayerServerListWidget.Entry)null);
             this.serverListWidget.setServers(this.serverList);
         }
         this.minecraft.openScreen(this);
@@ -155,7 +155,7 @@ extends Screen {
         if (bl) {
             this.serverList.add(this.selectedEntry);
             this.serverList.saveFile();
-            this.serverListWidget.method_20122(null);
+            this.serverListWidget.setSelected((MultiplayerServerListWidget.Entry)null);
             this.serverListWidget.setServers(this.serverList);
         }
         this.minecraft.openScreen(this);
@@ -215,7 +215,7 @@ extends Screen {
     }
 
     public void select(MultiplayerServerListWidget.Entry entry) {
-        this.serverListWidget.method_20122(entry);
+        this.serverListWidget.setSelected(entry);
         this.updateButtonActivationStates();
     }
 

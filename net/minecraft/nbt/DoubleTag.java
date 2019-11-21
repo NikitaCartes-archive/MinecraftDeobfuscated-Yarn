@@ -19,7 +19,8 @@ extends AbstractNumberTag {
     public static final DoubleTag ZERO = new DoubleTag(0.0);
     public static final TagReader<DoubleTag> READER = new TagReader<DoubleTag>(){
 
-        public DoubleTag method_23242(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+        @Override
+        public DoubleTag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
             positionTracker.add(128L);
             return DoubleTag.of(dataInput.readDouble());
         }
@@ -41,7 +42,7 @@ extends AbstractNumberTag {
 
         @Override
         public /* synthetic */ Tag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-            return this.method_23242(dataInput, i, positionTracker);
+            return this.read(dataInput, i, positionTracker);
         }
     };
     private final double value;
@@ -76,7 +77,8 @@ extends AbstractNumberTag {
         return this.value + "d";
     }
 
-    public DoubleTag method_10585() {
+    @Override
+    public DoubleTag copy() {
         return this;
     }
 
@@ -135,7 +137,7 @@ extends AbstractNumberTag {
 
     @Override
     public /* synthetic */ Tag copy() {
-        return this.method_10585();
+        return this.copy();
     }
 }
 

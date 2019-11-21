@@ -49,7 +49,8 @@ extends JsonDataLoader {
         super(GSON, "recipes");
     }
 
-    protected void method_20705(Map<Identifier, JsonObject> map, ResourceManager resourceManager, Profiler profiler) {
+    @Override
+    protected void apply(Map<Identifier, JsonObject> map, ResourceManager resourceManager, Profiler profiler) {
         this.errored = false;
         HashMap<RecipeType, ImmutableMap.Builder> map2 = Maps.newHashMap();
         for (Map.Entry<Identifier, JsonObject> entry2 : map.entrySet()) {

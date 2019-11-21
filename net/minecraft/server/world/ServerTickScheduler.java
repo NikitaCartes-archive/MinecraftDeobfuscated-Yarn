@@ -62,7 +62,7 @@ implements TickScheduler<T> {
         if (i > 65536) {
             i = 65536;
         }
-        ServerChunkManager serverChunkManager = this.world.method_14178();
+        ServerChunkManager serverChunkManager = this.world.getChunkManager();
         Iterator<ScheduledTick<T>> iterator = this.scheduledTickActionsInOrder.iterator();
         this.world.getProfiler().push("cleaning");
         while (i > 0 && iterator.hasNext()) {

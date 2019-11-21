@@ -125,7 +125,7 @@ extends MoveToTargetPosGoal {
         if (blockView.getBlockState(blockPos).getBlock() == this.targetBlock) {
             return blockPos;
         }
-        for (BlockPos blockPos2 : blockPoss = new BlockPos[]{blockPos.method_10074(), blockPos.west(), blockPos.east(), blockPos.north(), blockPos.south(), blockPos.method_10074().method_10074()}) {
+        for (BlockPos blockPos2 : blockPoss = new BlockPos[]{blockPos.down(), blockPos.west(), blockPos.east(), blockPos.north(), blockPos.south(), blockPos.down().down()}) {
             if (blockView.getBlockState(blockPos2).getBlock() != this.targetBlock) continue;
             return blockPos2;
         }

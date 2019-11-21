@@ -23,11 +23,13 @@ extends MobEntityRenderer<CodEntity, CodEntityModel<CodEntity>> {
         super(entityRenderDispatcher, new CodEntityModel(), 0.3f);
     }
 
-    public Identifier method_3897(CodEntity codEntity) {
+    @Override
+    public Identifier getTexture(CodEntity codEntity) {
         return SKIN;
     }
 
-    protected void method_3896(CodEntity codEntity, MatrixStack matrixStack, float f, float g, float h) {
+    @Override
+    protected void setupTransforms(CodEntity codEntity, MatrixStack matrixStack, float f, float g, float h) {
         super.setupTransforms(codEntity, matrixStack, f, g, h);
         float i = 4.3f * MathHelper.sin(0.6f * f);
         matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(i));

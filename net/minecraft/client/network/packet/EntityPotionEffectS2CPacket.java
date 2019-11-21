@@ -63,7 +63,8 @@ implements Packet<ClientPlayPacketListener> {
         return this.duration == Short.MAX_VALUE;
     }
 
-    public void method_11948(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onEntityPotionEffect(this);
     }
 

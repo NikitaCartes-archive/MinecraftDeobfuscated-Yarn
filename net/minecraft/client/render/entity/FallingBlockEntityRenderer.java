@@ -30,7 +30,8 @@ extends EntityRenderer<FallingBlockEntity> {
         this.field_4673 = 0.5f;
     }
 
-    public void method_3965(FallingBlockEntity fallingBlockEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+    @Override
+    public void render(FallingBlockEntity fallingBlockEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         BlockState blockState = fallingBlockEntity.getBlockState();
         if (blockState.getRenderType() != BlockRenderType.MODEL) {
             return;
@@ -48,7 +49,8 @@ extends EntityRenderer<FallingBlockEntity> {
         super.render(fallingBlockEntity, f, g, matrixStack, vertexConsumerProvider, i);
     }
 
-    public Identifier method_3964(FallingBlockEntity fallingBlockEntity) {
+    @Override
+    public Identifier getTexture(FallingBlockEntity fallingBlockEntity) {
         return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
     }
 }

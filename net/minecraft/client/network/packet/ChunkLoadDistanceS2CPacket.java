@@ -31,7 +31,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeVarInt(this.distance);
     }
 
-    public void method_20205(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onChunkLoadDistance(this);
     }
 

@@ -34,7 +34,7 @@ extends TreeDecorator {
     }
 
     @Override
-    public void method_23469(IWorld iWorld, Random random, List<BlockPos> list, List<BlockPos> list2, Set<BlockPos> set, BlockBox blockBox) {
+    public void generate(IWorld iWorld, Random random, List<BlockPos> list, List<BlockPos> list2, Set<BlockPos> set, BlockBox blockBox) {
         int i = list.get(0).getY();
         list.stream().filter(blockPos -> blockPos.getY() == i).forEach(blockPos -> {
             this.method_23462(iWorld, random, blockPos.west().north());

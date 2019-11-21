@@ -15,7 +15,6 @@ import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.Identifier;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class EyesFeatureRenderer<T extends Entity, M extends EntityModel<T>>
@@ -26,10 +25,10 @@ extends FeatureRenderer<T, M> {
 
     @Override
     public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T entity, float f, float g, float h, float j, float k, float l) {
-        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEyes(this.getEyesTexture()));
-        ((Model)this.getModel()).render(matrixStack, vertexConsumer, 0xF00000, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f);
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.getEyesTexture());
+        ((Model)this.getModel()).render(matrixStack, vertexConsumer, 0xF00000, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f, 1.0f);
     }
 
-    public abstract Identifier getEyesTexture();
+    public abstract RenderLayer getEyesTexture();
 }
 

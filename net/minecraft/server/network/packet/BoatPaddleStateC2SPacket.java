@@ -33,7 +33,8 @@ implements Packet<ServerPlayPacketListener> {
         packetByteBuf.writeBoolean(this.rightPaddling);
     }
 
-    public void method_12283(ServerPlayPacketListener serverPlayPacketListener) {
+    @Override
+    public void apply(ServerPlayPacketListener serverPlayPacketListener) {
         serverPlayPacketListener.onBoatPaddleState(this);
     }
 

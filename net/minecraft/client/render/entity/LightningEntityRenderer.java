@@ -24,7 +24,8 @@ extends EntityRenderer<LightningEntity> {
         super(entityRenderDispatcher);
     }
 
-    public void method_4034(LightningEntity lightningEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+    @Override
+    public void render(LightningEntity lightningEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         float[] fs = new float[8];
         float[] gs = new float[8];
         float h = 0.0f;
@@ -89,7 +90,8 @@ extends EntityRenderer<LightningEntity> {
         vertexConsumer.vertex(matrix4f, f + (bl3 ? o : -o), i * 16, g + (bl4 ? o : -o)).color(k, l, m, 0.3f).next();
     }
 
-    public Identifier method_4033(LightningEntity lightningEntity) {
+    @Override
+    public Identifier getTexture(LightningEntity lightningEntity) {
         return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
     }
 }

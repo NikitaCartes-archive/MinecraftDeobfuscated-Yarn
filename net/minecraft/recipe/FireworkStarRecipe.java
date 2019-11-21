@@ -45,7 +45,8 @@ extends SpecialCraftingRecipe {
         super(identifier);
     }
 
-    public boolean method_17713(CraftingInventory craftingInventory, World world) {
+    @Override
+    public boolean matches(CraftingInventory craftingInventory, World world) {
         boolean bl = false;
         boolean bl2 = false;
         boolean bl3 = false;
@@ -54,28 +55,28 @@ extends SpecialCraftingRecipe {
         for (int i = 0; i < craftingInventory.getInvSize(); ++i) {
             ItemStack itemStack = craftingInventory.getInvStack(i);
             if (itemStack.isEmpty()) continue;
-            if (TYPE_MODIFIER.method_8093(itemStack)) {
+            if (TYPE_MODIFIER.test(itemStack)) {
                 if (bl3) {
                     return false;
                 }
                 bl3 = true;
                 continue;
             }
-            if (FLICKER_MODIFIER.method_8093(itemStack)) {
+            if (FLICKER_MODIFIER.test(itemStack)) {
                 if (bl5) {
                     return false;
                 }
                 bl5 = true;
                 continue;
             }
-            if (TRAIL_MODIFIER.method_8093(itemStack)) {
+            if (TRAIL_MODIFIER.test(itemStack)) {
                 if (bl4) {
                     return false;
                 }
                 bl4 = true;
                 continue;
             }
-            if (GUNPOWDER.method_8093(itemStack)) {
+            if (GUNPOWDER.test(itemStack)) {
                 if (bl) {
                     return false;
                 }
@@ -91,7 +92,8 @@ extends SpecialCraftingRecipe {
         return bl && bl2;
     }
 
-    public ItemStack method_17712(CraftingInventory craftingInventory) {
+    @Override
+    public ItemStack craft(CraftingInventory craftingInventory) {
         ItemStack itemStack = new ItemStack(Items.FIREWORK_STAR);
         CompoundTag compoundTag = itemStack.getOrCreateSubTag("Explosion");
         FireworkItem.Type type = FireworkItem.Type.SMALL_BALL;
@@ -99,15 +101,15 @@ extends SpecialCraftingRecipe {
         for (int i = 0; i < craftingInventory.getInvSize(); ++i) {
             ItemStack itemStack2 = craftingInventory.getInvStack(i);
             if (itemStack2.isEmpty()) continue;
-            if (TYPE_MODIFIER.method_8093(itemStack2)) {
+            if (TYPE_MODIFIER.test(itemStack2)) {
                 type = TYPE_MODIFIER_MAP.get(itemStack2.getItem());
                 continue;
             }
-            if (FLICKER_MODIFIER.method_8093(itemStack2)) {
+            if (FLICKER_MODIFIER.test(itemStack2)) {
                 compoundTag.putBoolean("Flicker", true);
                 continue;
             }
-            if (TRAIL_MODIFIER.method_8093(itemStack2)) {
+            if (TRAIL_MODIFIER.test(itemStack2)) {
                 compoundTag.putBoolean("Trail", true);
                 continue;
             }

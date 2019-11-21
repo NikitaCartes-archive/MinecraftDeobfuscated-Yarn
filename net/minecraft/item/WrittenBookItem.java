@@ -123,7 +123,7 @@ extends Item {
             } catch (Exception exception) {
                 text = new LiteralText(string);
             }
-            listTag.method_10606(i, StringTag.of(Text.Serializer.toJson(text)));
+            listTag.set(i, StringTag.of(Text.Serializer.toJson(text)));
         }
         compoundTag.put("pages", listTag);
         return true;

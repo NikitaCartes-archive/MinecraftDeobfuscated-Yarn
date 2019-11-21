@@ -31,7 +31,8 @@ implements LootCondition {
         return ImmutableSet.of(LootContextParameters.POSITION, LootContextParameters.DAMAGE_SOURCE);
     }
 
-    public boolean method_834(LootContext lootContext) {
+    @Override
+    public boolean test(LootContext lootContext) {
         DamageSource damageSource = lootContext.get(LootContextParameters.DAMAGE_SOURCE);
         BlockPos blockPos = lootContext.get(LootContextParameters.POSITION);
         return blockPos != null && damageSource != null && this.predicate.test(lootContext.getWorld(), new Vec3d(blockPos), damageSource);
@@ -43,7 +44,7 @@ implements LootCondition {
 
     @Override
     public /* synthetic */ boolean test(Object object) {
-        return this.method_834((LootContext)object);
+        return this.test((LootContext)object);
     }
 
     public static class Factory
@@ -52,18 +53,20 @@ implements LootCondition {
             super(new Identifier("damage_source_properties"), DamageSourcePropertiesLootCondition.class);
         }
 
-        public void method_838(JsonObject jsonObject, DamageSourcePropertiesLootCondition damageSourcePropertiesLootCondition, JsonSerializationContext jsonSerializationContext) {
+        @Override
+        public void toJson(JsonObject jsonObject, DamageSourcePropertiesLootCondition damageSourcePropertiesLootCondition, JsonSerializationContext jsonSerializationContext) {
             jsonObject.add("predicate", damageSourcePropertiesLootCondition.predicate.serialize());
         }
 
-        public DamageSourcePropertiesLootCondition method_839(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+        @Override
+        public DamageSourcePropertiesLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
             DamageSourcePredicate damageSourcePredicate = DamageSourcePredicate.deserialize(jsonObject.get("predicate"));
             return new DamageSourcePropertiesLootCondition(damageSourcePredicate);
         }
 
         @Override
         public /* synthetic */ LootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            return this.method_839(jsonObject, jsonDeserializationContext);
+            return this.fromJson(jsonObject, jsonDeserializationContext);
         }
     }
 }

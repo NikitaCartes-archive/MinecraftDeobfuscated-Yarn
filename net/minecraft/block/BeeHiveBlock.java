@@ -113,6 +113,7 @@ extends BlockWithEntity {
     @Override
     public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity2, Hand hand, BlockHitResult blockHitResult) {
         ItemStack itemStack = playerEntity2.getStackInHand(hand);
+        ItemStack itemStack2 = itemStack.copy();
         int i = blockState.get(HONEY_LEVEL);
         boolean bl = false;
         if (i >= 5) {
@@ -141,7 +142,7 @@ extends BlockWithEntity {
             } else {
                 this.method_23754(world, blockState, blockPos);
                 if (playerEntity2 instanceof ServerPlayerEntity) {
-                    Criterions.SAFELY_HARVEST_HONEY.test((ServerPlayerEntity)playerEntity2, blockPos, itemStack);
+                    Criterions.SAFELY_HARVEST_HONEY.test((ServerPlayerEntity)playerEntity2, blockPos, itemStack2);
                 }
             }
             return ActionResult.SUCCESS;
@@ -193,7 +194,7 @@ extends BlockWithEntity {
             if (e > 0.0) {
                 this.addHoneyParticle(world, blockPos, voxelShape, (double)blockPos.getY() + e - 0.05);
             } else {
-                BlockPos blockPos2 = blockPos.method_10074();
+                BlockPos blockPos2 = blockPos.down();
                 BlockState blockState2 = world.getBlockState(blockPos2);
                 VoxelShape voxelShape2 = blockState2.getCollisionShape(world, blockPos2);
                 double f = voxelShape2.getMaximum(Direction.Axis.Y);

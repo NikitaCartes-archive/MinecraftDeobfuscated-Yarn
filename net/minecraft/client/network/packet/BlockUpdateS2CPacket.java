@@ -39,7 +39,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeVarInt(Block.getRawIdFromState(this.state));
     }
 
-    public void method_11310(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onBlockUpdate(this);
     }
 

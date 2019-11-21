@@ -43,7 +43,8 @@ extends JsonDataLoader {
         return this.conditions.get(identifier);
     }
 
-    protected void method_22563(Map<Identifier, JsonObject> map, ResourceManager resourceManager, Profiler profiler) {
+    @Override
+    protected void apply(Map<Identifier, JsonObject> map, ResourceManager resourceManager, Profiler profiler) {
         ImmutableMap.Builder builder = ImmutableMap.builder();
         map.forEach((identifier, jsonObject) -> {
             try {

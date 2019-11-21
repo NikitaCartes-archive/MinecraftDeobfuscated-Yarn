@@ -23,7 +23,8 @@ extends Feature<DefaultFeatureConfig> {
         super(function);
     }
 
-    public boolean method_13460(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
+    @Override
+    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
         int i = 0;
         int j = iWorld.getTopY(Heightmap.Type.OCEAN_FLOOR, blockPos.getX(), blockPos.getZ());
         BlockPos blockPos2 = new BlockPos(blockPos.getX(), j, blockPos.getZ());
@@ -40,8 +41,8 @@ extends Feature<DefaultFeatureConfig> {
                         iWorld.setBlockState(blockPos2, blockState2, 2);
                     }
                 } else if (l > 0) {
-                    BlockPos blockPos3 = blockPos2.method_10074();
-                    if (!blockState.canPlaceAt(iWorld, blockPos3) || iWorld.getBlockState(blockPos3.method_10074()).getBlock() == Blocks.KELP) break;
+                    BlockPos blockPos3 = blockPos2.down();
+                    if (!blockState.canPlaceAt(iWorld, blockPos3) || iWorld.getBlockState(blockPos3.down()).getBlock() == Blocks.KELP) break;
                     iWorld.setBlockState(blockPos3, (BlockState)blockState.with(KelpBlock.AGE, random.nextInt(4) + 20), 2);
                     ++i;
                     break;

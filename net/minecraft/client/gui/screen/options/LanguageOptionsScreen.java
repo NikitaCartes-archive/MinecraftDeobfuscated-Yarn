@@ -77,7 +77,7 @@ extends GameOptionsScreen {
                 LanguageEntry languageEntry = new LanguageEntry(languageDefinition);
                 this.addEntry(languageEntry);
                 if (!LanguageOptionsScreen.this.languageManager.getLanguage().getCode().equals(languageDefinition.getCode())) continue;
-                this.method_20100(languageEntry);
+                this.setSelected(languageEntry);
             }
             if (this.getSelected() != null) {
                 this.centerScrollOn(this.getSelected());
@@ -94,7 +94,8 @@ extends GameOptionsScreen {
             return super.getRowWidth() + 50;
         }
 
-        public void method_20100(@Nullable LanguageEntry languageEntry) {
+        @Override
+        public void setSelected(@Nullable LanguageEntry languageEntry) {
             super.setSelected(languageEntry);
             if (languageEntry != null) {
                 NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", languageEntry.languageDefinition).getString());
@@ -113,7 +114,7 @@ extends GameOptionsScreen {
 
         @Override
         public /* synthetic */ void setSelected(@Nullable EntryListWidget.Entry entry) {
-            this.method_20100((LanguageEntry)entry);
+            this.setSelected((LanguageEntry)entry);
         }
 
         @Environment(value=EnvType.CLIENT)
@@ -142,7 +143,7 @@ extends GameOptionsScreen {
             }
 
             private void onPressed() {
-                LanguageSelectionListWidget.this.method_20100(this);
+                LanguageSelectionListWidget.this.setSelected(this);
             }
         }
     }

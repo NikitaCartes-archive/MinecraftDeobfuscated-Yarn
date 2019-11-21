@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Random;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executor;
@@ -118,10 +117,10 @@ implements ResourceReloadListener {
     private final Int2ObjectMap<ParticleFactory<?>> factories = new Int2ObjectOpenHashMap();
     private final Queue<Particle> newParticles = Queues.newArrayDeque();
     private final Map<Identifier, SimpleSpriteProvider> spriteAwareFactories = Maps.newHashMap();
-    private final SpriteAtlasTexture particleAtlasTexture = new SpriteAtlasTexture("textures/particle");
+    private final SpriteAtlasTexture particleAtlasTexture = new SpriteAtlasTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEX);
 
     public ParticleManager(World world, TextureManager textureManager) {
-        textureManager.registerTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEX, this.particleAtlasTexture);
+        textureManager.registerTexture(this.particleAtlasTexture.method_24106(), this.particleAtlasTexture);
         this.world = world;
         this.textureManager = textureManager;
         this.registerDefaultFactories();
@@ -209,8 +208,7 @@ implements ResourceReloadListener {
         return ((CompletableFuture)((CompletableFuture)CompletableFuture.allOf(completableFutures).thenApplyAsync(void_ -> {
             profiler.startTick();
             profiler.push("stitching");
-            Set<Identifier> set = map.values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
-            SpriteAtlasTexture.Data data = this.particleAtlasTexture.stitch(resourceManager, set, profiler);
+            SpriteAtlasTexture.Data data = this.particleAtlasTexture.stitch(resourceManager, map.values().stream().flatMap(Collection::stream), profiler, 0);
             profiler.pop();
             profiler.endTick();
             return data;
@@ -234,25 +232,25 @@ implements ResourceReloadListener {
         this.particleAtlasTexture.clear();
     }
 
-    private void loadTextureList(ResourceManager resourceManager, Identifier identifier, Map<Identifier, List<Identifier>> map) {
-        Identifier identifier2 = new Identifier(identifier.getNamespace(), "particles/" + identifier.getPath() + ".json");
-        try (Resource resource = resourceManager.getResource(identifier2);
+    private void loadTextureList(ResourceManager resourceManager, Identifier identifier2, Map<Identifier, List<Identifier>> map) {
+        Identifier identifier22 = new Identifier(identifier2.getNamespace(), "particles/" + identifier2.getPath() + ".json");
+        try (Resource resource = resourceManager.getResource(identifier22);
              InputStreamReader reader = new InputStreamReader(resource.getInputStream(), Charsets.UTF_8);){
             ParticleTextureData particleTextureData = ParticleTextureData.load(JsonHelper.deserialize(reader));
             List<Identifier> list = particleTextureData.getTextureList();
-            boolean bl = this.spriteAwareFactories.containsKey(identifier);
+            boolean bl = this.spriteAwareFactories.containsKey(identifier2);
             if (list == null) {
                 if (bl) {
-                    throw new IllegalStateException("Missing texture list for particle " + identifier);
+                    throw new IllegalStateException("Missing texture list for particle " + identifier2);
                 }
             } else {
                 if (!bl) {
-                    throw new IllegalStateException("Redundant texture list for particle " + identifier);
+                    throw new IllegalStateException("Redundant texture list for particle " + identifier2);
                 }
-                map.put(identifier, list);
+                map.put(identifier2, list.stream().map(identifier -> new Identifier(identifier.getNamespace(), "particle/" + identifier.getPath())).collect(Collectors.toList()));
             }
         } catch (IOException iOException) {
-            throw new IllegalStateException("Failed to load description for particle " + identifier, iOException);
+            throw new IllegalStateException("Failed to load description for particle " + identifier2, iOException);
         }
     }
 

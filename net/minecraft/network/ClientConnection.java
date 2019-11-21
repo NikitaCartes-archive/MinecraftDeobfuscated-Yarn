@@ -141,7 +141,8 @@ extends SimpleChannelInboundHandler<Packet<?>> {
         }
     }
 
-    protected void method_10770(ChannelHandlerContext channelHandlerContext, Packet<?> packet) throws Exception {
+    @Override
+    protected void channelRead0(ChannelHandlerContext channelHandlerContext, Packet<?> packet) throws Exception {
         if (this.channel.isOpen()) {
             try {
                 ClientConnection.handlePacket(packet, this.packetListener);
@@ -378,7 +379,7 @@ extends SimpleChannelInboundHandler<Packet<?>> {
 
     @Override
     protected /* synthetic */ void channelRead0(ChannelHandlerContext channelHandlerContext, Object object) throws Exception {
-        this.method_10770(channelHandlerContext, (Packet)object);
+        this.channelRead0(channelHandlerContext, (Packet)object);
     }
 
     static class PacketWrapper {

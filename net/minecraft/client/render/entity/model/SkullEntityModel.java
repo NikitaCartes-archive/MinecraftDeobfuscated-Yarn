@@ -35,8 +35,8 @@ extends Model {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
-        this.skull.render(matrixStack, vertexConsumer, i, j, null, f, g, h);
+    public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k) {
+        this.skull.render(matrixStack, vertexConsumer, i, j, f, g, h, k);
     }
 }
 

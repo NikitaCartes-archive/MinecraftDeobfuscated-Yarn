@@ -147,10 +147,11 @@ AutoCloseable {
     }
 
     public WorldChunk getWorldChunk(BlockPos blockPos) {
-        return this.method_8497(blockPos.getX() >> 4, blockPos.getZ() >> 4);
+        return this.getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4);
     }
 
-    public WorldChunk method_8497(int i, int j) {
+    @Override
+    public WorldChunk getChunk(int i, int j) {
         return (WorldChunk)this.getChunk(i, j, ChunkStatus.FULL);
     }
 
@@ -250,7 +251,7 @@ AutoCloseable {
     public void updateNeighborsAlways(BlockPos blockPos, Block block) {
         this.updateNeighbor(blockPos.west(), block, blockPos);
         this.updateNeighbor(blockPos.east(), block, blockPos);
-        this.updateNeighbor(blockPos.method_10074(), block, blockPos);
+        this.updateNeighbor(blockPos.down(), block, blockPos);
         this.updateNeighbor(blockPos.up(), block, blockPos);
         this.updateNeighbor(blockPos.north(), block, blockPos);
         this.updateNeighbor(blockPos.south(), block, blockPos);
@@ -264,7 +265,7 @@ AutoCloseable {
             this.updateNeighbor(blockPos.east(), block, blockPos);
         }
         if (direction != Direction.DOWN) {
-            this.updateNeighbor(blockPos.method_10074(), block, blockPos);
+            this.updateNeighbor(blockPos.down(), block, blockPos);
         }
         if (direction != Direction.UP) {
             this.updateNeighbor(blockPos.up(), block, blockPos);
@@ -301,7 +302,7 @@ AutoCloseable {
 
     @Override
     public int getTopY(Heightmap.Type type, int i, int j) {
-        int k = i < -30000000 || j < -30000000 || i >= 30000000 || j >= 30000000 ? this.getSeaLevel() + 1 : (this.isChunkLoaded(i >> 4, j >> 4) ? this.method_8497(i >> 4, j >> 4).sampleHeightmap(type, i & 0xF, j & 0xF) + 1 : 0);
+        int k = i < -30000000 || j < -30000000 || i >= 30000000 || j >= 30000000 ? this.getSeaLevel() + 1 : (this.isChunkLoaded(i >> 4, j >> 4) ? this.getChunk(i >> 4, j >> 4).sampleHeightmap(type, i & 0xF, j & 0xF) + 1 : 0);
         return k;
     }
 
@@ -315,7 +316,7 @@ AutoCloseable {
         if (World.isHeightInvalid(blockPos)) {
             return Blocks.VOID_AIR.getDefaultState();
         }
-        WorldChunk worldChunk = this.method_8497(blockPos.getX() >> 4, blockPos.getZ() >> 4);
+        WorldChunk worldChunk = this.getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4);
         return worldChunk.getBlockState(blockPos);
     }
 
@@ -328,12 +329,12 @@ AutoCloseable {
         return worldChunk.getFluidState(blockPos);
     }
 
-    public boolean isDaylight() {
+    public boolean isDay() {
         return this.dimension.getType() == DimensionType.OVERWORLD && this.ambientDarkness < 4;
     }
 
-    public boolean method_23886() {
-        return this.dimension.getType() == DimensionType.OVERWORLD && !this.isDaylight();
+    public boolean isNight() {
+        return this.dimension.getType() == DimensionType.OVERWORLD && !this.isDay();
     }
 
     @Override
@@ -473,7 +474,7 @@ AutoCloseable {
             for (int o = i; o < j; ++o) {
                 for (int p = k; p < l; ++p) {
                     for (int q = m; q < n; ++q) {
-                        BlockState blockState = this.getBlockState(pooledMutable.method_10113(o, p, q));
+                        BlockState blockState = this.getBlockState(pooledMutable.set(o, p, q));
                         if (blockState.isAir()) continue;
                         boolean bl = true;
                         return bl;
@@ -496,7 +497,7 @@ AutoCloseable {
                 for (int o = i; o < j; ++o) {
                     for (int p = k; p < l; ++p) {
                         for (int q = m; q < n; ++q) {
-                            Block block = this.getBlockState(pooledMutable.method_10113(o, p, q)).getBlock();
+                            Block block = this.getBlockState(pooledMutable.set(o, p, q)).getBlock();
                             if (block != Blocks.FIRE && block != Blocks.LAVA) continue;
                             boolean bl = true;
                             return bl;
@@ -522,7 +523,7 @@ AutoCloseable {
                 for (int o = i; o < j; ++o) {
                     for (int p = k; p < l; ++p) {
                         for (int q = m; q < n; ++q) {
-                            BlockState blockState = this.getBlockState(pooledMutable.method_10113(o, p, q));
+                            BlockState blockState = this.getBlockState(pooledMutable.set(o, p, q));
                             if (blockState.getBlock() != block) continue;
                             BlockState blockState2 = blockState;
                             return blockState2;
@@ -542,7 +543,7 @@ AutoCloseable {
         int m = MathHelper.floor(box.z1);
         int n = MathHelper.ceil(box.z2);
         MaterialPredicate materialPredicate = MaterialPredicate.create(material);
-        return BlockPos.stream(i, k, m, j - 1, l - 1, n - 1).anyMatch(blockPos -> materialPredicate.method_11745(this.getBlockState((BlockPos)blockPos)));
+        return BlockPos.stream(i, k, m, j - 1, l - 1, n - 1).anyMatch(blockPos -> materialPredicate.test(this.getBlockState((BlockPos)blockPos)));
     }
 
     public Explosion createExplosion(@Nullable Entity entity, double d, double e, double f, float g, Explosion.DestructionType destructionType) {
@@ -789,7 +790,7 @@ AutoCloseable {
 
     public int getReceivedStrongRedstonePower(BlockPos blockPos) {
         int i = 0;
-        if ((i = Math.max(i, this.getStrongRedstonePower(blockPos.method_10074(), Direction.DOWN))) >= 15) {
+        if ((i = Math.max(i, this.getStrongRedstonePower(blockPos.down(), Direction.DOWN))) >= 15) {
             return i;
         }
         if ((i = Math.max(i, this.getStrongRedstonePower(blockPos.up(), Direction.UP))) >= 15) {
@@ -823,7 +824,7 @@ AutoCloseable {
     }
 
     public boolean isReceivingRedstonePower(BlockPos blockPos) {
-        if (this.getEmittedRedstonePower(blockPos.method_10074(), Direction.DOWN) > 0) {
+        if (this.getEmittedRedstonePower(blockPos.down(), Direction.DOWN) > 0) {
             return true;
         }
         if (this.getEmittedRedstonePower(blockPos.up(), Direction.UP) > 0) {
@@ -1090,7 +1091,7 @@ AutoCloseable {
 
     @Override
     public /* synthetic */ Chunk getChunk(int i, int j) {
-        return this.method_8497(i, j);
+        return this.getChunk(i, j);
     }
 }
 

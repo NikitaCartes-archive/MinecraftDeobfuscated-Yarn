@@ -24,18 +24,19 @@ implements Consumer<ModelPart> {
         this.layerFactory = function;
     }
 
-    public void method_22696(ModelPart modelPart) {
+    @Override
+    public void accept(ModelPart modelPart) {
     }
 
     public final RenderLayer getLayer(Identifier identifier) {
         return this.layerFactory.apply(identifier);
     }
 
-    public abstract void render(MatrixStack var1, VertexConsumer var2, int var3, int var4, float var5, float var6, float var7);
+    public abstract void render(MatrixStack var1, VertexConsumer var2, int var3, int var4, float var5, float var6, float var7, float var8);
 
     @Override
     public /* synthetic */ void accept(Object object) {
-        this.method_22696((ModelPart)object);
+        this.accept((ModelPart)object);
     }
 }
 

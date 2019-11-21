@@ -43,7 +43,8 @@ extends Task<VillagerEntity> {
         super(ImmutableMap.of(MemoryModuleType.LOOK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.SECONDARY_JOB_SITE, MemoryModuleState.VALUE_PRESENT));
     }
 
-    protected boolean method_19564(ServerWorld serverWorld, VillagerEntity villagerEntity) {
+    @Override
+    protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
         if (!serverWorld.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
             return false;
         }
@@ -87,29 +88,32 @@ extends Task<VillagerEntity> {
     private boolean method_20640(BlockPos blockPos, ServerWorld serverWorld) {
         BlockState blockState = serverWorld.getBlockState(blockPos);
         Block block = blockState.getBlock();
-        Block block2 = serverWorld.getBlockState(blockPos.method_10074()).getBlock();
+        Block block2 = serverWorld.getBlockState(blockPos.down()).getBlock();
         return block instanceof CropBlock && ((CropBlock)block).isMature(blockState) && this.field_18860 || blockState.isAir() && block2 instanceof FarmlandBlock && this.field_18859;
     }
 
-    protected void method_20392(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+    @Override
+    protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         if (l > this.field_18861 && this.field_18858 != null) {
             villagerEntity.getBrain().putMemory(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(this.field_18858));
             villagerEntity.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(new BlockPosLookTarget(this.field_18858), 0.5f, 1));
         }
     }
 
-    protected void method_19566(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+    @Override
+    protected void finishRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         villagerEntity.getBrain().forget(MemoryModuleType.LOOK_TARGET);
         villagerEntity.getBrain().forget(MemoryModuleType.WALK_TARGET);
         this.field_19239 = 0;
         this.field_18861 = l + 40L;
     }
 
-    protected void method_19565(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+    @Override
+    protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         if (this.field_18858 != null && l > this.field_18861) {
             BlockState blockState = serverWorld.getBlockState(this.field_18858);
             Block block = blockState.getBlock();
-            Block block2 = serverWorld.getBlockState(this.field_18858.method_10074()).getBlock();
+            Block block2 = serverWorld.getBlockState(this.field_18858.down()).getBlock();
             if (block instanceof CropBlock && ((CropBlock)block).isMature(blockState) && this.field_18860) {
                 serverWorld.breakBlock(this.field_18858, true, villagerEntity);
             }
@@ -154,23 +158,24 @@ extends Task<VillagerEntity> {
         ++this.field_19239;
     }
 
-    protected boolean method_20394(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+    @Override
+    protected boolean shouldKeepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         return this.field_19239 < 200;
     }
 
     @Override
     protected /* synthetic */ boolean shouldKeepRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        return this.method_20394(serverWorld, (VillagerEntity)livingEntity, l);
+        return this.shouldKeepRunning(serverWorld, (VillagerEntity)livingEntity, l);
     }
 
     @Override
     protected /* synthetic */ void finishRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        this.method_19566(serverWorld, (VillagerEntity)livingEntity, l);
+        this.finishRunning(serverWorld, (VillagerEntity)livingEntity, l);
     }
 
     @Override
     protected /* synthetic */ void keepRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        this.method_19565(serverWorld, (VillagerEntity)livingEntity, l);
+        this.keepRunning(serverWorld, (VillagerEntity)livingEntity, l);
     }
 }
 

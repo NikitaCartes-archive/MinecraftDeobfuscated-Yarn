@@ -3,7 +3,9 @@
  */
 package net.minecraft.client.resource.metadata;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.mojang.datafixers.util.Pair;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -15,6 +17,13 @@ import net.minecraft.client.resource.metadata.AnimationResourceMetadataReader;
 @Environment(value=EnvType.CLIENT)
 public class AnimationResourceMetadata {
     public static final AnimationResourceMetadataReader READER = new AnimationResourceMetadataReader();
+    public static final AnimationResourceMetadata field_21768 = new AnimationResourceMetadata((List)Lists.newArrayList(), -1, -1, 1, false){
+
+        @Override
+        public Pair<Integer, Integer> method_24141(int i, int j) {
+            return Pair.of(i, j);
+        }
+    };
     private final List<AnimationFrameResourceMetadata> frames;
     private final int width;
     private final int height;
@@ -29,12 +38,40 @@ public class AnimationResourceMetadata {
         this.interpolate = bl;
     }
 
-    public int getHeight() {
-        return this.height;
+    private static boolean method_24142(int i, int j) {
+        return i / j * j == i;
     }
 
-    public int getWidth() {
-        return this.width;
+    public Pair<Integer, Integer> method_24141(int i, int j) {
+        Pair<Integer, Integer> pair = this.method_24143(i, j);
+        int k = pair.getFirst();
+        int l = pair.getSecond();
+        if (!AnimationResourceMetadata.method_24142(i, k) || !AnimationResourceMetadata.method_24142(j, l)) {
+            throw new IllegalArgumentException(String.format("Image size %s,%s is not multiply of frame size %s,%s", i, j, k, l));
+        }
+        return pair;
+    }
+
+    private Pair<Integer, Integer> method_24143(int i, int j) {
+        if (this.width != -1) {
+            if (this.height != -1) {
+                return Pair.of(this.width, this.height);
+            }
+            return Pair.of(this.width, j);
+        }
+        if (this.height != -1) {
+            return Pair.of(i, this.height);
+        }
+        int k = Math.min(i, j);
+        return Pair.of(k, k);
+    }
+
+    public int getHeight(int i) {
+        return this.height == -1 ? i : this.height;
+    }
+
+    public int getWidth(int i) {
+        return this.width == -1 ? i : this.width;
     }
 
     public int getFrameCount() {

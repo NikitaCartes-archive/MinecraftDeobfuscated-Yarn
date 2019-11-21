@@ -160,13 +160,14 @@ public class GameRules {
             return this.value ? 1 : 0;
         }
 
-        protected BooleanRule method_20761() {
+        @Override
+        protected BooleanRule getThis() {
             return this;
         }
 
         @Override
         protected /* synthetic */ Rule getThis() {
-            return this.method_20761();
+            return this.getThis();
         }
 
         static /* synthetic */ RuleType method_20755(boolean bl) {
@@ -230,13 +231,14 @@ public class GameRules {
             return this.value;
         }
 
-        protected IntRule method_20770() {
+        @Override
+        protected IntRule getThis() {
             return this;
         }
 
         @Override
         protected /* synthetic */ Rule getThis() {
-            return this.method_20770();
+            return this.getThis();
         }
 
         static /* synthetic */ RuleType method_20764(int i) {

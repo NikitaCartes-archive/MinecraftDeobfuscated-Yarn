@@ -26,7 +26,8 @@ implements LootCondition {
         this.predicate = LootConditions.joinOr(lootConditions);
     }
 
-    public final boolean method_825(LootContext lootContext) {
+    @Override
+    public final boolean test(LootContext lootContext) {
         return this.predicate.test(lootContext);
     }
 
@@ -44,7 +45,7 @@ implements LootCondition {
 
     @Override
     public /* synthetic */ boolean test(Object object) {
-        return this.method_825((LootContext)object);
+        return this.test((LootContext)object);
     }
 
     public static class Factory
@@ -53,18 +54,20 @@ implements LootCondition {
             super(new Identifier("alternative"), AlternativeLootCondition.class);
         }
 
-        public void method_828(JsonObject jsonObject, AlternativeLootCondition alternativeLootCondition, JsonSerializationContext jsonSerializationContext) {
+        @Override
+        public void toJson(JsonObject jsonObject, AlternativeLootCondition alternativeLootCondition, JsonSerializationContext jsonSerializationContext) {
             jsonObject.add("terms", jsonSerializationContext.serialize(alternativeLootCondition.terms));
         }
 
-        public AlternativeLootCondition method_829(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+        @Override
+        public AlternativeLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
             LootCondition[] lootConditions = JsonHelper.deserialize(jsonObject, "terms", jsonDeserializationContext, LootCondition[].class);
             return new AlternativeLootCondition(lootConditions);
         }
 
         @Override
         public /* synthetic */ LootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            return this.method_829(jsonObject, jsonDeserializationContext);
+            return this.fromJson(jsonObject, jsonDeserializationContext);
         }
     }
 

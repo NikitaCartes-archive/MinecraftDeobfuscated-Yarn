@@ -157,7 +157,7 @@ RangedAttackMob {
 
     @Override
     public float getPathfindingFavor(BlockPos blockPos, WorldView worldView) {
-        Block block = worldView.getBlockState(blockPos.method_10074()).getBlock();
+        Block block = worldView.getBlockState(blockPos.down()).getBlock();
         if (block == Blocks.GRASS_BLOCK || block == Blocks.SAND) {
             return 10.0f;
         }

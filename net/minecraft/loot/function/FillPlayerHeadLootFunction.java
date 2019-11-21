@@ -52,19 +52,21 @@ extends ConditionalLootFunction {
             super(new Identifier("fill_player_head"), FillPlayerHeadLootFunction.class);
         }
 
-        public void method_15957(JsonObject jsonObject, FillPlayerHeadLootFunction fillPlayerHeadLootFunction, JsonSerializationContext jsonSerializationContext) {
-            super.method_529(jsonObject, fillPlayerHeadLootFunction, jsonSerializationContext);
+        @Override
+        public void toJson(JsonObject jsonObject, FillPlayerHeadLootFunction fillPlayerHeadLootFunction, JsonSerializationContext jsonSerializationContext) {
+            super.toJson(jsonObject, fillPlayerHeadLootFunction, jsonSerializationContext);
             jsonObject.add("entity", jsonSerializationContext.serialize((Object)fillPlayerHeadLootFunction.entity));
         }
 
-        public FillPlayerHeadLootFunction method_15958(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+        @Override
+        public FillPlayerHeadLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
             LootContext.EntityTarget entityTarget = JsonHelper.deserialize(jsonObject, "entity", jsonDeserializationContext, LootContext.EntityTarget.class);
             return new FillPlayerHeadLootFunction(lootConditions, entityTarget);
         }
 
         @Override
         public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            return this.method_15958(jsonObject, jsonDeserializationContext, lootConditions);
+            return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
         }
     }
 }

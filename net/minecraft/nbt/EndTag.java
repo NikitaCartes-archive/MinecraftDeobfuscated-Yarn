@@ -16,7 +16,8 @@ public class EndTag
 implements Tag {
     public static final TagReader<EndTag> READER = new TagReader<EndTag>(){
 
-        public EndTag method_23243(DataInput dataInput, int i, PositionTracker positionTracker) {
+        @Override
+        public EndTag read(DataInput dataInput, int i, PositionTracker positionTracker) {
             positionTracker.add(64L);
             return INSTANCE;
         }
@@ -38,7 +39,7 @@ implements Tag {
 
         @Override
         public /* synthetic */ Tag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-            return this.method_23243(dataInput, i, positionTracker);
+            return this.read(dataInput, i, positionTracker);
         }
     };
     public static final EndTag INSTANCE = new EndTag();
@@ -64,7 +65,8 @@ implements Tag {
         return "END";
     }
 
-    public EndTag method_10586() {
+    @Override
+    public EndTag copy() {
         return this;
     }
 
@@ -75,7 +77,7 @@ implements Tag {
 
     @Override
     public /* synthetic */ Tag copy() {
-        return this.method_10586();
+        return this.copy();
     }
 }
 

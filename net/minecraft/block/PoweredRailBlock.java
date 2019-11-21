@@ -131,7 +131,7 @@ extends AbstractRailBlock {
         boolean bl3 = bl2 = world.isReceivingRedstonePower(blockPos) || this.isPoweredByOtherRails(world, blockPos, blockState, true, 0) || this.isPoweredByOtherRails(world, blockPos, blockState, false, 0);
         if (bl2 != bl) {
             world.setBlockState(blockPos, (BlockState)blockState.with(POWERED, bl2), 3);
-            world.updateNeighborsAlways(blockPos.method_10074(), this);
+            world.updateNeighborsAlways(blockPos.down(), this);
             if (blockState.get(SHAPE).isAscending()) {
                 world.updateNeighborsAlways(blockPos.up(), this);
             }

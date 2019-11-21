@@ -40,19 +40,21 @@ extends LeafEntry {
             super(new Identifier("dynamic"), DynamicEntry.class);
         }
 
-        public void method_393(JsonObject jsonObject, DynamicEntry dynamicEntry, JsonSerializationContext jsonSerializationContext) {
-            super.method_442(jsonObject, dynamicEntry, jsonSerializationContext);
+        @Override
+        public void toJson(JsonObject jsonObject, DynamicEntry dynamicEntry, JsonSerializationContext jsonSerializationContext) {
+            super.toJson(jsonObject, dynamicEntry, jsonSerializationContext);
             jsonObject.addProperty("name", dynamicEntry.name.toString());
         }
 
-        protected DynamicEntry method_392(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
+        @Override
+        protected DynamicEntry fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
             Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "name"));
             return new DynamicEntry(identifier, i, j, lootConditions, lootFunctions);
         }
 
         @Override
         protected /* synthetic */ LeafEntry fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
-            return this.method_392(jsonObject, jsonDeserializationContext, i, j, lootConditions, lootFunctions);
+            return this.fromJson(jsonObject, jsonDeserializationContext, i, j, lootConditions, lootFunctions);
         }
     }
 }

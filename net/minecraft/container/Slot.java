@@ -3,11 +3,13 @@
  */
 package net.minecraft.container;
 
+import com.mojang.datafixers.util.Pair;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 public class Slot {
@@ -76,7 +78,7 @@ public class Slot {
 
     @Nullable
     @Environment(value=EnvType.CLIENT)
-    public String getBackgroundSprite() {
+    public Pair<Identifier, Identifier> getBackgroundSprite() {
         return null;
     }
 

@@ -80,7 +80,8 @@ implements Packet<ServerPlayPacketListener> {
         }
     }
 
-    public void method_12400(ServerPlayPacketListener serverPlayPacketListener) {
+    @Override
+    public void apply(ServerPlayPacketListener serverPlayPacketListener) {
         serverPlayPacketListener.onRecipeBookData(this);
     }
 

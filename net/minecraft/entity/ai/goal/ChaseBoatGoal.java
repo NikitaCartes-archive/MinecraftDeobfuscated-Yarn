@@ -88,7 +88,7 @@ extends Goal {
             }
         } else if (this.state == ChaseBoatState.GO_IN_BOAT_DIRECTION) {
             Direction direction = this.passenger.getMovementDirection();
-            BlockPos blockPos2 = new BlockPos(this.passenger).method_10079(direction, 10);
+            BlockPos blockPos2 = new BlockPos(this.passenger).offset(direction, 10);
             this.mob.getNavigation().startMovingTo(blockPos2.getX(), blockPos2.getY() - 1, blockPos2.getZ(), 1.0);
             if (this.mob.distanceTo(this.passenger) > 12.0f) {
                 this.field_6428 = 0;

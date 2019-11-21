@@ -16,13 +16,14 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BedBlockEntity;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.entity.ConduitBlockEntity;
 import net.minecraft.block.entity.EnderChestBlockEntity;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.block.entity.TrappedChestBlockEntity;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.class_4730;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BannerBlockEntityRenderer;
@@ -32,8 +33,6 @@ import net.minecraft.client.render.entity.model.ShieldEntityModel;
 import net.minecraft.client.render.entity.model.TridentEntityModel;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.ModelLoader;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -62,14 +61,9 @@ public class BuiltinModelItemRenderer {
     public void render(ItemStack itemStack, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
         Item item = itemStack.getItem();
         if (item instanceof BlockItem) {
+            BlockEntity blockEntity;
             Block block = ((BlockItem)item).getBlock();
-            if (block instanceof AbstractBannerBlock) {
-                this.renderBanner.readFrom(itemStack, ((AbstractBannerBlock)block).getColor());
-                BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.renderBanner, matrixStack, vertexConsumerProvider, i, j);
-            } else if (block instanceof BedBlock) {
-                this.renderBed.setColor(((BedBlock)block).getColor());
-                BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.renderBed, matrixStack, vertexConsumerProvider, i, j);
-            } else if (block instanceof AbstractSkullBlock) {
+            if (block instanceof AbstractSkullBlock) {
                 GameProfile gameProfile = null;
                 if (itemStack.hasTag()) {
                     CompoundTag compoundTag = itemStack.getTag();
@@ -83,33 +77,39 @@ public class BuiltinModelItemRenderer {
                     }
                 }
                 SkullBlockEntityRenderer.render(null, 180.0f, ((AbstractSkullBlock)block).getSkullType(), gameProfile, 0.0f, matrixStack, vertexConsumerProvider, i);
+                return;
+            }
+            if (block instanceof AbstractBannerBlock) {
+                this.renderBanner.readFrom(itemStack, ((AbstractBannerBlock)block).getColor());
+                blockEntity = this.renderBanner;
+            } else if (block instanceof BedBlock) {
+                this.renderBed.setColor(((BedBlock)block).getColor());
+                blockEntity = this.renderBed;
             } else if (block == Blocks.CONDUIT) {
-                BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.renderConduit, matrixStack, vertexConsumerProvider, i, j);
+                blockEntity = this.renderConduit;
             } else if (block == Blocks.CHEST) {
-                BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.renderChestNormal, matrixStack, vertexConsumerProvider, i, j);
+                blockEntity = this.renderChestNormal;
             } else if (block == Blocks.ENDER_CHEST) {
-                BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.renderChestEnder, matrixStack, vertexConsumerProvider, i, j);
+                blockEntity = this.renderChestEnder;
             } else if (block == Blocks.TRAPPED_CHEST) {
-                BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.renderChestTrapped, matrixStack, vertexConsumerProvider, i, j);
+                blockEntity = this.renderChestTrapped;
             } else if (block instanceof ShulkerBoxBlock) {
                 DyeColor dyeColor = ShulkerBoxBlock.getColor(item);
-                if (dyeColor == null) {
-                    BlockEntityRenderDispatcher.INSTANCE.renderEntity(RENDER_SHULKER_BOX, matrixStack, vertexConsumerProvider, i, j);
-                } else {
-                    BlockEntityRenderDispatcher.INSTANCE.renderEntity(RENDER_SHULKER_BOX_DYED[dyeColor.getId()], matrixStack, vertexConsumerProvider, i, j);
-                }
+                blockEntity = dyeColor == null ? RENDER_SHULKER_BOX : RENDER_SHULKER_BOX_DYED[dyeColor.getId()];
+            } else {
+                return;
             }
+            BlockEntityRenderDispatcher.INSTANCE.renderEntity(blockEntity, matrixStack, vertexConsumerProvider, i, j);
             return;
         }
         if (item == Items.SHIELD) {
             boolean bl = itemStack.getSubTag("BlockEntityTag") != null;
-            SpriteAtlasTexture spriteAtlasTexture = MinecraftClient.getInstance().getSpriteAtlas();
             matrixStack.push();
             matrixStack.scale(1.0f, -1.0f, -1.0f);
-            VertexConsumer vertexConsumer = ItemRenderer.getArmorVertexConsumer(vertexConsumerProvider, this.modelShield.getLayer(SpriteAtlasTexture.BLOCK_ATLAS_TEX), false, itemStack.hasEnchantmentGlint());
-            Sprite sprite = spriteAtlasTexture.getSprite(bl ? ModelLoader.SHIELD_BASE : ModelLoader.SHIELD_BASE_NO_PATTERN);
-            this.modelShield.method_23775().render(matrixStack, vertexConsumer, i, j, sprite, 1.0f, 1.0f, 1.0f);
-            this.modelShield.method_23774().render(matrixStack, vertexConsumer, i, j, sprite, 1.0f, 1.0f, 1.0f);
+            class_4730 lv = bl ? ModelLoader.SHIELD_BASE : ModelLoader.SHIELD_BASE_NO_PATTERN;
+            VertexConsumer vertexConsumer = lv.method_24148().method_24108(ItemRenderer.getArmorVertexConsumer(vertexConsumerProvider, this.modelShield.getLayer(lv.method_24144()), false, itemStack.hasEnchantmentGlint()));
+            this.modelShield.method_23775().render(matrixStack, vertexConsumer, i, j, 1.0f, 1.0f, 1.0f, 1.0f);
+            this.modelShield.method_23774().render(matrixStack, vertexConsumer, i, j, 1.0f, 1.0f, 1.0f, 1.0f);
             if (bl) {
                 this.renderBanner.readFrom(itemStack, ShieldItem.getColor(itemStack));
                 BannerBlockEntityRenderer.method_23802(this.renderBanner, matrixStack, vertexConsumerProvider, i, j, this.modelShield.method_23774(), false);
@@ -119,7 +119,7 @@ public class BuiltinModelItemRenderer {
             matrixStack.push();
             matrixStack.scale(1.0f, -1.0f, -1.0f);
             VertexConsumer vertexConsumer2 = ItemRenderer.getArmorVertexConsumer(vertexConsumerProvider, this.modelTrident.getLayer(TridentEntityModel.TEXTURE), false, itemStack.hasEnchantmentGlint());
-            this.modelTrident.render(matrixStack, vertexConsumer2, i, j, 1.0f, 1.0f, 1.0f);
+            this.modelTrident.render(matrixStack, vertexConsumer2, i, j, 1.0f, 1.0f, 1.0f, 1.0f);
             matrixStack.pop();
         }
     }

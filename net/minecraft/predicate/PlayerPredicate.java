@@ -215,7 +215,8 @@ public class PlayerPredicate {
             return jsonObject;
         }
 
-        public boolean method_22504(AdvancementProgress advancementProgress) {
+        @Override
+        public boolean test(AdvancementProgress advancementProgress) {
             for (Object2BooleanMap.Entry entry : this.criteria.object2BooleanEntrySet()) {
                 CriterionProgress criterionProgress = advancementProgress.getCriterionProgress((String)entry.getKey());
                 if (criterionProgress != null && criterionProgress.isObtained() == entry.getBooleanValue()) continue;
@@ -226,7 +227,7 @@ public class PlayerPredicate {
 
         @Override
         public /* synthetic */ boolean test(Object object) {
-            return this.method_22504((AdvancementProgress)object);
+            return this.test((AdvancementProgress)object);
         }
     }
 
@@ -243,13 +244,14 @@ public class PlayerPredicate {
             return new JsonPrimitive(this.done);
         }
 
-        public boolean method_22505(AdvancementProgress advancementProgress) {
+        @Override
+        public boolean test(AdvancementProgress advancementProgress) {
             return advancementProgress.isDone() == this.done;
         }
 
         @Override
         public /* synthetic */ boolean test(Object object) {
-            return this.method_22505((AdvancementProgress)object);
+            return this.test((AdvancementProgress)object);
         }
     }
 

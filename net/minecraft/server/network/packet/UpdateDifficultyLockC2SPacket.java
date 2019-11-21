@@ -22,7 +22,8 @@ implements Packet<ServerPlayPacketListener> {
         this.difficultyLocked = bl;
     }
 
-    public void method_19484(ServerPlayPacketListener serverPlayPacketListener) {
+    @Override
+    public void apply(ServerPlayPacketListener serverPlayPacketListener) {
         serverPlayPacketListener.onUpdateDifficultyLock(this);
     }
 

@@ -310,7 +310,7 @@ implements BlockEntityProvider {
     @Override
     @Environment(value=EnvType.CLIENT)
     public long getRenderingSeed(BlockState blockState, BlockPos blockPos) {
-        BlockPos blockPos2 = blockPos.method_10079(blockState.get(FACING), blockState.get(PART) == BedPart.HEAD ? 0 : 1);
+        BlockPos blockPos2 = blockPos.offset(blockState.get(FACING), blockState.get(PART) == BedPart.HEAD ? 0 : 1);
         return MathHelper.hashCode(blockPos2.getX(), blockPos.getY(), blockPos2.getZ());
     }
 

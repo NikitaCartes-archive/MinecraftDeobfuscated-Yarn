@@ -71,7 +71,8 @@ implements Packet<ServerPlayPacketListener> {
         }
     }
 
-    public void method_12251(ServerPlayPacketListener serverPlayPacketListener) {
+    @Override
+    public void apply(ServerPlayPacketListener serverPlayPacketListener) {
         serverPlayPacketListener.onPlayerInteractEntity(this);
     }
 

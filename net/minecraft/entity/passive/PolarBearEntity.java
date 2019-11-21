@@ -97,7 +97,7 @@ extends AnimalEntity {
     public static boolean canSpawn(EntityType<PolarBearEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
         Biome biome = iWorld.method_23753(blockPos);
         if (biome == Biomes.FROZEN_OCEAN || biome == Biomes.DEEP_FROZEN_OCEAN) {
-            return iWorld.getBaseLightLevel(blockPos, 0) > 8 && iWorld.getBlockState(blockPos.method_10074()).getBlock() == Blocks.ICE;
+            return iWorld.getBaseLightLevel(blockPos, 0) > 8 && iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.ICE;
         }
         return PolarBearEntity.isValidNaturalSpawn(entityType, iWorld, spawnType, blockPos, random);
     }

@@ -53,7 +53,8 @@ implements Packet<ServerPlayPacketListener> {
         }
     }
 
-    public void method_12417(ServerPlayPacketListener serverPlayPacketListener) {
+    @Override
+    public void apply(ServerPlayPacketListener serverPlayPacketListener) {
         serverPlayPacketListener.onAdvancementTab(this);
     }
 

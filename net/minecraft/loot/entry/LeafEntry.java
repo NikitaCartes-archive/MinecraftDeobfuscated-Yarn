@@ -75,7 +75,8 @@ extends LootEntry {
             super(identifier, class_);
         }
 
-        public void method_442(JsonObject jsonObject, T leafEntry, JsonSerializationContext jsonSerializationContext) {
+        @Override
+        public void toJson(JsonObject jsonObject, T leafEntry, JsonSerializationContext jsonSerializationContext) {
             if (((LeafEntry)leafEntry).weight != 1) {
                 jsonObject.addProperty("weight", ((LeafEntry)leafEntry).weight);
             }
@@ -87,7 +88,8 @@ extends LootEntry {
             }
         }
 
-        public final T method_441(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+        @Override
+        public final T fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
             int i = JsonHelper.getInt(jsonObject, "weight", 1);
             int j = JsonHelper.getInt(jsonObject, "quality", 0);
             LootFunction[] lootFunctions = JsonHelper.deserialize(jsonObject, "functions", new LootFunction[0], jsonDeserializationContext, LootFunction[].class);
@@ -98,7 +100,7 @@ extends LootEntry {
 
         @Override
         public /* synthetic */ LootEntry fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            return this.method_441(jsonObject, jsonDeserializationContext, lootConditions);
+            return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
         }
     }
 
@@ -110,7 +112,8 @@ extends LootEntry {
             this.factory = factory;
         }
 
-        protected BasicBuilder method_440() {
+        @Override
+        protected BasicBuilder getThisBuilder() {
             return this;
         }
 
@@ -121,7 +124,7 @@ extends LootEntry {
 
         @Override
         protected /* synthetic */ LootEntry.Builder getThisBuilder() {
-            return this.method_440();
+            return this.getThisBuilder();
         }
     }
 
@@ -137,7 +140,8 @@ extends LootEntry {
         protected int quality = 0;
         private final List<LootFunction> functions = Lists.newArrayList();
 
-        public T method_438(LootFunction.Builder builder) {
+        @Override
+        public T withFunction(LootFunction.Builder builder) {
             this.functions.add(builder.build());
             return (T)((Builder)this.getThisBuilder());
         }
@@ -158,7 +162,7 @@ extends LootEntry {
 
         @Override
         public /* synthetic */ Object withFunction(LootFunction.Builder builder) {
-            return this.method_438(builder);
+            return this.withFunction(builder);
         }
     }
 

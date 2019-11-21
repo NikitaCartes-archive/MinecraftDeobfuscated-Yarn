@@ -22,7 +22,8 @@ implements Packet<ClientPlayPacketListener> {
         this.pos = blockPos;
     }
 
-    public void method_11676(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onSignEditorOpen(this);
     }
 

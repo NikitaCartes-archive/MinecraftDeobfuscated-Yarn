@@ -64,7 +64,7 @@ public class DataCommand {
                         throw MODIFY_EXPECTED_OBJECT_EXCEPTION.create(tag);
                     }
                     CompoundTag compoundTag2 = (CompoundTag)tag;
-                    CompoundTag compoundTag3 = compoundTag2.method_10553();
+                    CompoundTag compoundTag3 = compoundTag2.copy();
                     for (Tag tag2 : list) {
                         if (!(tag2 instanceof CompoundTag)) {
                             throw MODIFY_EXPECTED_OBJECT_EXCEPTION.create(tag2);
@@ -199,7 +199,7 @@ public class DataCommand {
     private static int executeMerge(ServerCommandSource serverCommandSource, DataCommandObject dataCommandObject, CompoundTag compoundTag) throws CommandSyntaxException {
         CompoundTag compoundTag3;
         CompoundTag compoundTag2 = dataCommandObject.getTag();
-        if (compoundTag2.equals(compoundTag3 = compoundTag2.method_10553().copyFrom(compoundTag))) {
+        if (compoundTag2.equals(compoundTag3 = compoundTag2.copy().copyFrom(compoundTag))) {
             throw MERGE_FAILED_EXCEPTION.create();
         }
         dataCommandObject.setTag(compoundTag3);

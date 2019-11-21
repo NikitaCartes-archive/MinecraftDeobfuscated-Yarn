@@ -78,7 +78,8 @@ implements ArgumentType<ScoreHolder> {
         return new ScoreHolderArgumentType(true);
     }
 
-    public ScoreHolder method_9453(StringReader stringReader) throws CommandSyntaxException {
+    @Override
+    public ScoreHolder parse(StringReader stringReader) throws CommandSyntaxException {
         if (stringReader.canRead() && stringReader.peek() == '@') {
             EntitySelectorReader entitySelectorReader = new EntitySelectorReader(stringReader);
             EntitySelector entitySelector = entitySelectorReader.read();
@@ -112,12 +113,13 @@ implements ArgumentType<ScoreHolder> {
 
     @Override
     public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.method_9453(stringReader);
+        return this.parse(stringReader);
     }
 
     public static class Serializer
     implements ArgumentSerializer<ScoreHolderArgumentType> {
-        public void method_9461(ScoreHolderArgumentType scoreHolderArgumentType, PacketByteBuf packetByteBuf) {
+        @Override
+        public void toPacket(ScoreHolderArgumentType scoreHolderArgumentType, PacketByteBuf packetByteBuf) {
             int b = 0;
             if (scoreHolderArgumentType.multiple) {
                 b = (byte)(b | 1);
@@ -125,19 +127,21 @@ implements ArgumentType<ScoreHolder> {
             packetByteBuf.writeByte(b);
         }
 
-        public ScoreHolderArgumentType method_9460(PacketByteBuf packetByteBuf) {
+        @Override
+        public ScoreHolderArgumentType fromPacket(PacketByteBuf packetByteBuf) {
             byte b = packetByteBuf.readByte();
             boolean bl = (b & 1) != 0;
             return new ScoreHolderArgumentType(bl);
         }
 
-        public void method_9459(ScoreHolderArgumentType scoreHolderArgumentType, JsonObject jsonObject) {
+        @Override
+        public void toJson(ScoreHolderArgumentType scoreHolderArgumentType, JsonObject jsonObject) {
             jsonObject.addProperty("amount", scoreHolderArgumentType.multiple ? "multiple" : "single");
         }
 
         @Override
         public /* synthetic */ ArgumentType fromPacket(PacketByteBuf packetByteBuf) {
-            return this.method_9460(packetByteBuf);
+            return this.fromPacket(packetByteBuf);
         }
     }
 

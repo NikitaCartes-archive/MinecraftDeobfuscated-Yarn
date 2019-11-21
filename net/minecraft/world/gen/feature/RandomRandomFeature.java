@@ -20,7 +20,8 @@ extends Feature<RandomRandomFeatureConfig> {
         super(function);
     }
 
-    public boolean method_13696(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, RandomRandomFeatureConfig randomRandomFeatureConfig) {
+    @Override
+    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, RandomRandomFeatureConfig randomRandomFeatureConfig) {
         int i = random.nextInt(5) - 3 + randomRandomFeatureConfig.count;
         for (int j = 0; j < i; ++j) {
             int k = random.nextInt(randomRandomFeatureConfig.features.size());

@@ -27,7 +27,8 @@ extends BlockEntityRenderer<StructureBlockBlockEntity> {
         super(blockEntityRenderDispatcher);
     }
 
-    public void method_3587(StructureBlockBlockEntity structureBlockBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
+    @Override
+    public void render(StructureBlockBlockEntity structureBlockBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
         double p;
         double o;
         double n;
@@ -136,7 +137,8 @@ extends BlockEntityRenderer<StructureBlockBlockEntity> {
         }
     }
 
-    public boolean method_3588(StructureBlockBlockEntity structureBlockBlockEntity) {
+    @Override
+    public boolean method_3563(StructureBlockBlockEntity structureBlockBlockEntity) {
         return true;
     }
 }

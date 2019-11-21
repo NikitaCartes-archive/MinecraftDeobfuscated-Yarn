@@ -32,7 +32,8 @@ implements Packet<ServerPlayPacketListener> {
         packetByteBuf.writeVarInt(this.tradeId);
     }
 
-    public void method_12430(ServerPlayPacketListener serverPlayPacketListener) {
+    @Override
+    public void apply(ServerPlayPacketListener serverPlayPacketListener) {
         serverPlayPacketListener.onVillagerTradeSelect(this);
     }
 

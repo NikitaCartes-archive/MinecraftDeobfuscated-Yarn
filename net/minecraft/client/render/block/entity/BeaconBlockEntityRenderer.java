@@ -29,7 +29,8 @@ extends BlockEntityRenderer<BeaconBlockEntity> {
         super(blockEntityRenderDispatcher);
     }
 
-    public void method_3541(BeaconBlockEntity beaconBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
+    @Override
+    public void render(BeaconBlockEntity beaconBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
         long l = beaconBlockEntity.getWorld().getTime();
         List<BeaconBlockEntity.BeamSegment> list = beaconBlockEntity.getBeamSegments();
         int k = 0;
@@ -107,7 +108,8 @@ extends BlockEntityRenderer<BeaconBlockEntity> {
         vertexConsumer.vertex(matrix4f, k, j, l).color(f, g, h, i).texture(m, n).overlay(OverlayTexture.DEFAULT_UV).light(0xF000F0).method_23763(matrix3f, 0.0f, 1.0f, 0.0f).next();
     }
 
-    public boolean method_3542(BeaconBlockEntity beaconBlockEntity) {
+    @Override
+    public boolean method_3563(BeaconBlockEntity beaconBlockEntity) {
         return true;
     }
 }

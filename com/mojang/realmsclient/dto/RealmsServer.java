@@ -281,13 +281,14 @@ extends ValueObject {
             this.refOwner = string;
         }
 
-        public int method_20830(RealmsServer realmsServer, RealmsServer realmsServer2) {
+        @Override
+        public int compare(RealmsServer realmsServer, RealmsServer realmsServer2) {
             return ComparisonChain.start().compareTrueFirst(realmsServer.state.equals((Object)State.UNINITIALIZED), realmsServer2.state.equals((Object)State.UNINITIALIZED)).compareTrueFirst(realmsServer.expiredTrial, realmsServer2.expiredTrial).compareTrueFirst(realmsServer.owner.equals(this.refOwner), realmsServer2.owner.equals(this.refOwner)).compareFalseFirst(realmsServer.expired, realmsServer2.expired).compareTrueFirst(realmsServer.state.equals((Object)State.OPEN), realmsServer2.state.equals((Object)State.OPEN)).compare(realmsServer.id, realmsServer2.id).result();
         }
 
         @Override
         public /* synthetic */ int compare(Object object, Object object2) {
-            return this.method_20830((RealmsServer)object, (RealmsServer)object2);
+            return this.compare((RealmsServer)object, (RealmsServer)object2);
         }
     }
 }

@@ -33,13 +33,14 @@ extends LeafEntry {
             super(new Identifier("empty"), EmptyEntry.class);
         }
 
-        protected EmptyEntry method_402(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
+        @Override
+        protected EmptyEntry fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
             return new EmptyEntry(i, j, lootConditions, lootFunctions);
         }
 
         @Override
         protected /* synthetic */ LeafEntry fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
-            return this.method_402(jsonObject, jsonDeserializationContext, i, j, lootConditions, lootFunctions);
+            return this.fromJson(jsonObject, jsonDeserializationContext, i, j, lootConditions, lootFunctions);
         }
     }
 }

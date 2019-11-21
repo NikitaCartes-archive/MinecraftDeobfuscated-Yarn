@@ -99,9 +99,11 @@ implements DebugRenderer.Renderer {
             if (!blockPos.isWithinDistance(blockPos22, 30.0)) continue;
             class_4703.method_23808(blockPos22);
         }
+        Map<BlockPos, Set<UUID>> map = this.method_24084();
         this.field_21533.values().forEach(arg -> {
             if (blockPos.isWithinDistance(arg.field_21543, 30.0)) {
-                this.method_23821((class_4705)arg);
+                Set set = (Set)map.get(arg.field_21543);
+                this.method_23821((class_4705)arg, set == null ? Sets.newHashSet() : set);
             }
         });
         this.method_23830().forEach((blockPos2, list) -> {
@@ -109,6 +111,12 @@ implements DebugRenderer.Renderer {
                 this.method_23813((BlockPos)blockPos2, (List<String>)list);
             }
         });
+    }
+
+    private Map<BlockPos, Set<UUID>> method_24084() {
+        HashMap<BlockPos, Set<UUID>> map = Maps.newHashMap();
+        this.field_21534.values().forEach(arg -> arg.field_21734.forEach(blockPos -> class_4703.method_24081(map, arg, blockPos)));
+        return map;
     }
 
     private void method_23826() {
@@ -125,11 +133,31 @@ implements DebugRenderer.Renderer {
             BlockPos blockPos = (BlockPos)entry.getKey();
             Set set = (Set)entry.getValue();
             Set set2 = set.stream().map(VillagerNamer::name).collect(Collectors.toSet());
-            class_4703.method_23816(set2.toString(), blockPos, 1, -256);
-            class_4703.method_23816("Flower", blockPos, 2, -1);
+            int i = 1;
+            class_4703.method_23816(set2.toString(), blockPos, i++, -256);
+            class_4703.method_23816("Flower", blockPos, i++, -1);
             float f = 0.05f;
             class_4703.method_23809(blockPos, 0.05f, 0.8f, 0.8f, 0.0f, 0.3f);
         });
+    }
+
+    private static String method_23825(Collection<UUID> collection) {
+        if (collection.isEmpty()) {
+            return "-";
+        }
+        if (collection.size() > 3) {
+            return "" + collection.size() + " bees";
+        }
+        return collection.stream().map(VillagerNamer::name).collect(Collectors.toSet()).toString();
+    }
+
+    private static void method_24081(Map<BlockPos, Set<UUID>> map, class_4704 arg, BlockPos blockPos) {
+        Set<UUID> set = map.get(blockPos);
+        if (set == null) {
+            set = Sets.newHashSet();
+            map.put(blockPos, set);
+        }
+        set.add(arg.method_23833());
     }
 
     private static void method_23808(BlockPos blockPos) {
@@ -150,25 +178,21 @@ implements DebugRenderer.Renderer {
         DebugRenderer.drawBox(blockPos, f, g, h, i, j);
     }
 
-    private void method_23821(class_4705 arg) {
+    private void method_23821(class_4705 arg, Collection<UUID> collection) {
         int i = 0;
-        if (this.method_23825(arg).isEmpty()) {
-            class_4703.method_23815("Out: -", arg, i, -3355444);
-        } else if (this.method_23825(arg).size() < 4) {
-            class_4703.method_23815("Out: " + this.method_23825(arg), arg, i, -3355444);
-        } else {
-            class_4703.method_23815("Out: " + this.method_23825(arg).size() + " bees", arg, i, -3355444);
+        if (!collection.isEmpty()) {
+            class_4703.method_23815("Blacklisted by " + class_4703.method_23825(collection), arg, i++, -65536);
         }
-        ++i;
+        class_4703.method_23815("Out: " + class_4703.method_23825(this.method_23822(arg.field_21543)), arg, i++, -3355444);
         if (arg.field_21545 == 0) {
-            class_4703.method_23815("In: -", arg, i, -256);
+            class_4703.method_23815("In: -", arg, i++, -256);
         } else if (arg.field_21545 == 1) {
-            class_4703.method_23815("In: 1 bee", arg, i, -256);
+            class_4703.method_23815("In: 1 bee", arg, i++, -256);
         } else {
-            class_4703.method_23815("In: " + arg.field_21545 + " bees", arg, i, -256);
+            class_4703.method_23815("In: " + arg.field_21545 + " bees", arg, i++, -256);
         }
-        class_4703.method_23815("Honey: " + arg.field_21625, arg, ++i, -23296);
-        class_4703.method_23815(arg.field_21544 + (arg.field_21626 ? " (sedated)" : ""), arg, ++i, -1);
+        class_4703.method_23815("Honey: " + arg.field_21625, arg, i++, -23296);
+        class_4703.method_23815(arg.field_21544 + (arg.field_21626 ? " (sedated)" : ""), arg, i++, -1);
     }
 
     private void method_23820(class_4704 arg) {
@@ -180,26 +204,26 @@ implements DebugRenderer.Renderer {
     private void method_23824(class_4704 arg) {
         boolean bl = this.method_23827(arg);
         int i = 0;
-        class_4703.method_23814(arg.field_21538, i, arg.toString(), -1, 0.03f);
-        ++i;
+        class_4703.method_23814(arg.field_21538, i++, arg.toString(), -1, 0.03f);
         if (arg.field_21540 == null) {
-            class_4703.method_23814(arg.field_21538, i, "Homeless :(", -98404, 0.02f);
+            class_4703.method_23814(arg.field_21538, i++, "No hive", -98404, 0.02f);
         } else {
-            class_4703.method_23814(arg.field_21538, i, "Hive: " + this.method_23806(arg, arg.field_21540), -256, 0.02f);
+            class_4703.method_23814(arg.field_21538, i++, "Hive: " + this.method_23806(arg, arg.field_21540), -256, 0.02f);
         }
-        ++i;
         if (arg.field_21541 == null) {
-            class_4703.method_23814(arg.field_21538, i, "No flower :(", -98404, 0.02f);
+            class_4703.method_23814(arg.field_21538, i++, "No flower", -98404, 0.02f);
         } else {
-            class_4703.method_23814(arg.field_21538, i, "Flower: " + this.method_23806(arg, arg.field_21541), -256, 0.02f);
+            class_4703.method_23814(arg.field_21538, i++, "Flower: " + this.method_23806(arg, arg.field_21541), -256, 0.02f);
         }
-        ++i;
         for (String string : arg.field_21542) {
-            class_4703.method_23814(arg.field_21538, i, string, -16711936, 0.02f);
-            ++i;
+            class_4703.method_23814(arg.field_21538, i++, string, -16711936, 0.02f);
         }
         if (bl) {
             this.method_23820(arg);
+        }
+        if (arg.field_21733 > 0) {
+            int j = arg.field_21733 < 600 ? -3355444 : -23296;
+            class_4703.method_23814(arg.field_21538, i++, "Travelling: " + arg.field_21733 + " ticks", j, 0.02f);
         }
     }
 
@@ -230,10 +254,6 @@ implements DebugRenderer.Renderer {
 
     private Camera method_23828() {
         return this.field_21532.gameRenderer.getCamera();
-    }
-
-    private Set<String> method_23825(class_4705 arg) {
-        return this.method_23822(arg.field_21543).stream().map(VillagerNamer::name).collect(Collectors.toSet());
     }
 
     private String method_23806(class_4704 arg, BlockPos blockPos) {
@@ -288,15 +308,18 @@ implements DebugRenderer.Renderer {
         public final BlockPos field_21540;
         @Nullable
         public final BlockPos field_21541;
+        public final int field_21733;
         public final List<String> field_21542 = Lists.newArrayList();
+        public final Set<BlockPos> field_21734 = Sets.newHashSet();
 
-        public class_4704(UUID uUID, int i, Position position, Path path, BlockPos blockPos, BlockPos blockPos2) {
+        public class_4704(UUID uUID, int i, Position position, Path path, BlockPos blockPos, BlockPos blockPos2, int j) {
             this.field_21536 = uUID;
             this.field_21537 = i;
             this.field_21538 = position;
             this.field_21539 = path;
             this.field_21540 = blockPos;
             this.field_21541 = blockPos2;
+            this.field_21733 = j;
         }
 
         public boolean method_23834(BlockPos blockPos) {

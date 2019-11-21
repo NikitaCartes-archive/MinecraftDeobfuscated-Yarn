@@ -35,7 +35,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeInt(this.z);
     }
 
-    public void method_11486(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onUnloadChunk(this);
     }
 

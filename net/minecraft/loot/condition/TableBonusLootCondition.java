@@ -35,7 +35,8 @@ implements LootCondition {
         return ImmutableSet.of(LootContextParameters.TOOL);
     }
 
-    public boolean method_799(LootContext lootContext) {
+    @Override
+    public boolean test(LootContext lootContext) {
         ItemStack itemStack = lootContext.get(LootContextParameters.TOOL);
         int i = itemStack != null ? EnchantmentHelper.getLevel(this.enchantment, itemStack) : 0;
         float f = this.chances[Math.min(i, this.chances.length - 1)];
@@ -48,7 +49,7 @@ implements LootCondition {
 
     @Override
     public /* synthetic */ boolean test(Object object) {
-        return this.method_799((LootContext)object);
+        return this.test((LootContext)object);
     }
 
     public static class Factory
@@ -57,12 +58,14 @@ implements LootCondition {
             super(new Identifier("table_bonus"), TableBonusLootCondition.class);
         }
 
-        public void method_805(JsonObject jsonObject, TableBonusLootCondition tableBonusLootCondition, JsonSerializationContext jsonSerializationContext) {
+        @Override
+        public void toJson(JsonObject jsonObject, TableBonusLootCondition tableBonusLootCondition, JsonSerializationContext jsonSerializationContext) {
             jsonObject.addProperty("enchantment", Registry.ENCHANTMENT.getId(tableBonusLootCondition.enchantment).toString());
             jsonObject.add("chances", jsonSerializationContext.serialize(tableBonusLootCondition.chances));
         }
 
-        public TableBonusLootCondition method_804(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+        @Override
+        public TableBonusLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
             Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "enchantment"));
             Enchantment enchantment = Registry.ENCHANTMENT.getOrEmpty(identifier).orElseThrow(() -> new JsonParseException("Invalid enchantment id: " + identifier));
             float[] fs = JsonHelper.deserialize(jsonObject, "chances", jsonDeserializationContext, float[].class);
@@ -71,7 +74,7 @@ implements LootCondition {
 
         @Override
         public /* synthetic */ LootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            return this.method_804(jsonObject, jsonDeserializationContext);
+            return this.fromJson(jsonObject, jsonDeserializationContext);
         }
     }
 }

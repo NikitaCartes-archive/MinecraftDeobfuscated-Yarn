@@ -29,6 +29,7 @@ public class GuardianEntityRenderer
 extends MobEntityRenderer<GuardianEntity, GuardianEntityModel> {
     private static final Identifier SKIN = new Identifier("textures/entity/guardian.png");
     private static final Identifier EXPLOSION_BEAM_TEX = new Identifier("textures/entity/guardian_beam.png");
+    private static final RenderLayer field_21743 = RenderLayer.getEntityCutoutNoCull(EXPLOSION_BEAM_TEX);
 
     public GuardianEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         this(entityRenderDispatcher, 0.5f);
@@ -38,9 +39,10 @@ extends MobEntityRenderer<GuardianEntity, GuardianEntityModel> {
         super(entityRenderDispatcher, new GuardianEntityModel(), f);
     }
 
-    public boolean method_3978(GuardianEntity guardianEntity, Frustum frustum, double d, double e, double f) {
+    @Override
+    public boolean isVisible(GuardianEntity guardianEntity, Frustum frustum, double d, double e, double f) {
         LivingEntity livingEntity;
-        if (super.method_4068(guardianEntity, frustum, d, e, f)) {
+        if (super.isVisible(guardianEntity, frustum, d, e, f)) {
             return true;
         }
         if (guardianEntity.hasBeamTarget() && (livingEntity = guardianEntity.getBeamTarget()) != null) {
@@ -58,8 +60,9 @@ extends MobEntityRenderer<GuardianEntity, GuardianEntityModel> {
         return new Vec3d(e, g, h);
     }
 
-    public void method_3977(GuardianEntity guardianEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
-        super.method_4072(guardianEntity, f, g, matrixStack, vertexConsumerProvider, i);
+    @Override
+    public void render(GuardianEntity guardianEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+        super.render(guardianEntity, f, g, matrixStack, vertexConsumerProvider, i);
         LivingEntity livingEntity = guardianEntity.getBeamTarget();
         if (livingEntity != null) {
             float h = guardianEntity.getBeamProgress(g);
@@ -106,7 +109,7 @@ extends MobEntityRenderer<GuardianEntity, GuardianEntityModel> {
             float ap = 0.4999f;
             float aq = -1.0f + k;
             float ar = m * 2.5f + aq;
-            VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(EXPLOSION_BEAM_TEX));
+            VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(field_21743);
             MatrixStack.Entry entry = matrixStack.peek();
             Matrix4f matrix4f = entry.getModel();
             Matrix3f matrix3f = entry.getNormal();
@@ -134,7 +137,8 @@ extends MobEntityRenderer<GuardianEntity, GuardianEntityModel> {
         vertexConsumer.vertex(matrix4f, f, g, h).color(i, j, k, 255).texture(l, m).overlay(OverlayTexture.DEFAULT_UV).light(0xF000F0).method_23763(matrix3f, 0.0f, 1.0f, 0.0f).next();
     }
 
-    public Identifier method_3976(GuardianEntity guardianEntity) {
+    @Override
+    public Identifier getTexture(GuardianEntity guardianEntity) {
         return SKIN;
     }
 }

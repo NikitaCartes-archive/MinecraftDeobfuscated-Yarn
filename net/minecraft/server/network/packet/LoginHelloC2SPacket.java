@@ -30,7 +30,8 @@ implements Packet<ServerLoginPacketListener> {
         packetByteBuf.writeString(this.profile.getName());
     }
 
-    public void method_12649(ServerLoginPacketListener serverLoginPacketListener) {
+    @Override
+    public void apply(ServerLoginPacketListener serverLoginPacketListener) {
         serverLoginPacketListener.onHello(this);
     }
 

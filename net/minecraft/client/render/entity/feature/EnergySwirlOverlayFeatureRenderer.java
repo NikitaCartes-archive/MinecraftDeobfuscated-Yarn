@@ -35,7 +35,7 @@ extends FeatureRenderer<T, M> {
         ((EntityModel)this.getModel()).copyStateTo(entityModel);
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEnergySwirl(this.getEnergySwirlTexture(), this.getEnergySwirlX(m), m * 0.01f));
         entityModel.setAngles(entity, f, g, j, k, l);
-        entityModel.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 0.5f, 0.5f, 0.5f);
+        entityModel.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 0.5f, 0.5f, 0.5f, 1.0f);
     }
 
     protected abstract float getEnergySwirlX(float var1);

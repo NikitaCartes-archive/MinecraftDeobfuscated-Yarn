@@ -110,14 +110,10 @@ public class Vector4f {
         float g = this.y;
         float h = this.z;
         float i = this.w;
-        this.x = Vector4f.calculateProductRow(0, matrix4f, f, g, h, i);
-        this.y = Vector4f.calculateProductRow(1, matrix4f, f, g, h, i);
-        this.z = Vector4f.calculateProductRow(2, matrix4f, f, g, h, i);
-        this.w = Vector4f.calculateProductRow(3, matrix4f, f, g, h, i);
-    }
-
-    private static float calculateProductRow(int i, Matrix4f matrix4f, float f, float g, float h, float j) {
-        return matrix4f.get(i, 0) * f + matrix4f.get(i, 1) * g + matrix4f.get(i, 2) * h + matrix4f.get(i, 3) * j;
+        this.x = matrix4f.field_21652 * f + matrix4f.field_21653 * g + matrix4f.field_21654 * h + matrix4f.field_21655 * i;
+        this.y = matrix4f.field_21656 * f + matrix4f.field_21657 * g + matrix4f.field_21658 * h + matrix4f.field_21659 * i;
+        this.z = matrix4f.field_21660 * f + matrix4f.field_21661 * g + matrix4f.field_21662 * h + matrix4f.field_21663 * i;
+        this.w = matrix4f.field_21664 * f + matrix4f.field_21665 * g + matrix4f.field_21666 * h + matrix4f.field_21667 * i;
     }
 
     public void setQuarternion(Quaternion quaternion) {

@@ -19,7 +19,8 @@ implements Comparable<ChunkTicket<?>> {
         this.argument = object;
     }
 
-    public int method_14285(ChunkTicket<?> chunkTicket) {
+    @Override
+    public int compareTo(ChunkTicket<?> chunkTicket) {
         int i = Integer.compare(this.level, chunkTicket.level);
         if (i != 0) {
             return i;
@@ -69,7 +70,7 @@ implements Comparable<ChunkTicket<?>> {
 
     @Override
     public /* synthetic */ int compareTo(Object object) {
-        return this.method_14285((ChunkTicket)object);
+        return this.compareTo((ChunkTicket)object);
     }
 }
 

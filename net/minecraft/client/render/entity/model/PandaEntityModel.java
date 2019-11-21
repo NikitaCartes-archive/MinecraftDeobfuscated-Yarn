@@ -48,14 +48,16 @@ extends QuadrupedEntityModel<T> {
         this.frontLeftLeg.setPivot(5.5f, 15.0f, -9.0f);
     }
 
-    public void method_17102(T pandaEntity, float f, float g, float h) {
+    @Override
+    public void animateModel(T pandaEntity, float f, float g, float h) {
         super.animateModel(pandaEntity, f, g, h);
         this.scaredAnimationProgress = ((PandaEntity)pandaEntity).getScaredAnimationProgress(h);
         this.lieOnBackAnimationProgress = ((PandaEntity)pandaEntity).getLieOnBackAnimationProgress(h);
         this.playAnimationProgress = ((PassiveEntity)pandaEntity).isBaby() ? 0.0f : ((PandaEntity)pandaEntity).getRollOverAnimationProgress(h);
     }
 
-    public void method_17103(T pandaEntity, float f, float g, float h, float i, float j) {
+    @Override
+    public void setAngles(T pandaEntity, float f, float g, float h, float i, float j) {
         super.setAngles(pandaEntity, f, g, h, i, j);
         boolean bl = ((PandaEntity)pandaEntity).getAskForBambooTicks() > 0;
         boolean bl2 = ((PandaEntity)pandaEntity).isSneezing();

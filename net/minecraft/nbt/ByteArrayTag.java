@@ -22,7 +22,8 @@ public class ByteArrayTag
 extends AbstractListTag<ByteTag> {
     public static final TagReader<ByteArrayTag> READER = new TagReader<ByteArrayTag>(){
 
-        public ByteArrayTag method_23232(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+        @Override
+        public ByteArrayTag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
             positionTracker.add(192L);
             int j = dataInput.readInt();
             positionTracker.add(8 * j);
@@ -43,7 +44,7 @@ extends AbstractListTag<ByteTag> {
 
         @Override
         public /* synthetic */ Tag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-            return this.method_23232(dataInput, i, positionTracker);
+            return this.read(dataInput, i, positionTracker);
         }
     };
     private byte[] value;
@@ -135,17 +136,19 @@ extends AbstractListTag<ByteTag> {
         return this.value.length;
     }
 
-    public ByteTag method_10523(int i) {
+    @Override
+    public ByteTag get(int i) {
         return ByteTag.of(this.value[i]);
     }
 
-    public ByteTag method_17803(int i, ByteTag byteTag) {
+    public ByteTag method_10606(int i, ByteTag byteTag) {
         byte b = this.value[i];
         this.value[i] = byteTag.getByte();
         return ByteTag.of(b);
     }
 
-    public void method_17805(int i, ByteTag byteTag) {
+    @Override
+    public void add(int i, ByteTag byteTag) {
         this.value = ArrayUtils.add(this.value, i, byteTag.getByte());
     }
 
@@ -167,7 +170,8 @@ extends AbstractListTag<ByteTag> {
         return false;
     }
 
-    public ByteTag method_17804(int i) {
+    @Override
+    public ByteTag remove(int i) {
         byte b = this.value[i];
         this.value = ArrayUtils.remove(this.value, i);
         return ByteTag.of(b);
@@ -179,38 +183,38 @@ extends AbstractListTag<ByteTag> {
     }
 
     @Override
-    public /* synthetic */ Tag method_10536(int i) {
-        return this.method_17804(i);
+    public /* synthetic */ Tag remove(int i) {
+        return this.remove(i);
     }
 
     @Override
-    public /* synthetic */ void method_10531(int i, Tag tag) {
-        this.method_17805(i, (ByteTag)tag);
+    public /* synthetic */ void add(int i, Tag tag) {
+        this.add(i, (ByteTag)tag);
     }
 
     @Override
-    public /* synthetic */ Tag method_10606(int i, Tag tag) {
-        return this.method_17803(i, (ByteTag)tag);
+    public /* synthetic */ Tag set(int i, Tag tag) {
+        return this.method_10606(i, (ByteTag)tag);
     }
 
     @Override
     public /* synthetic */ Object remove(int i) {
-        return this.method_17804(i);
+        return this.remove(i);
     }
 
     @Override
     public /* synthetic */ void add(int i, Object object) {
-        this.method_17805(i, (ByteTag)object);
+        this.add(i, (ByteTag)object);
     }
 
     @Override
     public /* synthetic */ Object set(int i, Object object) {
-        return this.method_17803(i, (ByteTag)object);
+        return this.method_10606(i, (ByteTag)object);
     }
 
     @Override
     public /* synthetic */ Object get(int i) {
-        return this.method_10523(i);
+        return this.get(i);
     }
 }
 

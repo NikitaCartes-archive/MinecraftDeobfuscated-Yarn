@@ -43,7 +43,8 @@ implements Packet<ServerPlayPacketListener> {
         }
     }
 
-    public void method_12509(ServerPlayPacketListener serverPlayPacketListener) {
+    @Override
+    public void apply(ServerPlayPacketListener serverPlayPacketListener) {
         serverPlayPacketListener.onSignUpdate(this);
     }
 

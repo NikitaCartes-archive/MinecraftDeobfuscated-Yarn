@@ -29,7 +29,8 @@ extends AbstractCriterion<Conditions> {
         return ID;
     }
 
-    public Conditions method_23877(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+    @Override
+    public Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
         Block block = BeeNestDestroyedCriterion.getBlock(jsonObject);
         ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
         NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("num_bees_inside"));
@@ -51,7 +52,7 @@ extends AbstractCriterion<Conditions> {
 
     @Override
     public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.method_23877(jsonObject, jsonDeserializationContext);
+        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
     }
 
     public static class Conditions

@@ -9,11 +9,14 @@ import net.minecraft.nbt.Tag;
 public abstract class AbstractListTag<T extends Tag>
 extends AbstractList<T>
 implements Tag {
-    public abstract T method_10606(int var1, T var2);
+    @Override
+    public abstract T set(int var1, T var2);
 
-    public abstract void method_10531(int var1, T var2);
+    @Override
+    public abstract void add(int var1, T var2);
 
-    public abstract T method_10536(int var1);
+    @Override
+    public abstract T remove(int var1);
 
     public abstract boolean setTag(int var1, Tag var2);
 
@@ -21,17 +24,17 @@ implements Tag {
 
     @Override
     public /* synthetic */ Object remove(int i) {
-        return this.method_10536(i);
+        return this.remove(i);
     }
 
     @Override
     public /* synthetic */ void add(int i, Object object) {
-        this.method_10531(i, (Tag)object);
+        this.add(i, (T)((Tag)object));
     }
 
     @Override
     public /* synthetic */ Object set(int i, Object object) {
-        return this.method_10606(i, (Tag)object);
+        return this.set(i, (T)((Tag)object));
     }
 }
 

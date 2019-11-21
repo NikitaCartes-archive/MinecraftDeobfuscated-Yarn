@@ -21,7 +21,8 @@ extends Decorator<NopeDecoratorConfig> {
         super(function);
     }
 
-    public Stream<BlockPos> method_15940(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, NopeDecoratorConfig nopeDecoratorConfig, BlockPos blockPos) {
+    @Override
+    public Stream<BlockPos> getPositions(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, NopeDecoratorConfig nopeDecoratorConfig, BlockPos blockPos) {
         int i = random.nextInt(16) + blockPos.getX();
         int j = random.nextInt(16) + blockPos.getZ();
         int k = iWorld.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, i, j);

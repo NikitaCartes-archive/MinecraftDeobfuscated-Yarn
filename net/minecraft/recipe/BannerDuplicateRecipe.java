@@ -23,7 +23,8 @@ extends SpecialCraftingRecipe {
         super(identifier);
     }
 
-    public boolean method_17703(CraftingInventory craftingInventory, World world) {
+    @Override
+    public boolean matches(CraftingInventory craftingInventory, World world) {
         DyeColor dyeColor = null;
         ItemStack itemStack = null;
         ItemStack itemStack2 = null;
@@ -57,7 +58,8 @@ extends SpecialCraftingRecipe {
         return itemStack != null && itemStack2 != null;
     }
 
-    public ItemStack method_17702(CraftingInventory craftingInventory) {
+    @Override
+    public ItemStack craft(CraftingInventory craftingInventory) {
         for (int i = 0; i < craftingInventory.getInvSize(); ++i) {
             int j;
             ItemStack itemStack = craftingInventory.getInvStack(i);
@@ -69,7 +71,8 @@ extends SpecialCraftingRecipe {
         return ItemStack.EMPTY;
     }
 
-    public DefaultedList<ItemStack> method_17704(CraftingInventory craftingInventory) {
+    @Override
+    public DefaultedList<ItemStack> getRemainingStacks(CraftingInventory craftingInventory) {
         DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(craftingInventory.getInvSize(), ItemStack.EMPTY);
         for (int i = 0; i < defaultedList.size(); ++i) {
             ItemStack itemStack = craftingInventory.getInvStack(i);

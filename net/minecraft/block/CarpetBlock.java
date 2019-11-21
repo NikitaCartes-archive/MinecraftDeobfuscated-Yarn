@@ -44,7 +44,7 @@ extends Block {
 
     @Override
     public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
-        return !worldView.isAir(blockPos.method_10074());
+        return !worldView.isAir(blockPos.down());
     }
 }
 

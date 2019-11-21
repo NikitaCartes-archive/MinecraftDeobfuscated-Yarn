@@ -18,13 +18,14 @@ extends MessageToMessageDecoder<ByteBuf> {
         this.manager = new PacketEncryptionManager(cipher);
     }
 
-    protected void method_10735(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {
+    @Override
+    protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {
         list.add(this.manager.decrypt(channelHandlerContext, byteBuf));
     }
 
     @Override
     protected /* synthetic */ void decode(ChannelHandlerContext channelHandlerContext, Object object, List list) throws Exception {
-        this.method_10735(channelHandlerContext, (ByteBuf)object, list);
+        this.decode(channelHandlerContext, (ByteBuf)object, (List<Object>)list);
     }
 }
 

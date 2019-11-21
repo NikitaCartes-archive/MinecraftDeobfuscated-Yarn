@@ -189,12 +189,6 @@ extends Entity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
-    public int getLightmapCoordinates() {
-        return 15;
-    }
-
-    @Override
     public Packet<?> createSpawnPacket() {
         int i = this.owner == null ? 0 : this.owner.getEntityId();
         return new EntitySpawnS2CPacket(this.getEntityId(), this.getUuid(), this.getX(), this.getY(), this.getZ(), this.pitch, this.yaw, this.getType(), i, new Vec3d(this.posX, this.posY, this.posZ));

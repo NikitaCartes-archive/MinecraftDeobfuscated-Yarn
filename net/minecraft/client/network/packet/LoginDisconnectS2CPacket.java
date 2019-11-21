@@ -32,7 +32,8 @@ implements Packet<ClientLoginPacketListener> {
         packetByteBuf.writeText(this.reason);
     }
 
-    public void method_12637(ClientLoginPacketListener clientLoginPacketListener) {
+    @Override
+    public void apply(ClientLoginPacketListener clientLoginPacketListener) {
         clientLoginPacketListener.onDisconnect(this);
     }
 

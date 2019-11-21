@@ -23,7 +23,8 @@ extends MobEntityRenderer<BeeEntity, BeeEntityModel<BeeEntity>> {
         super(entityRenderDispatcher, new BeeEntityModel(), 0.4f);
     }
 
-    public Identifier method_22129(BeeEntity beeEntity) {
+    @Override
+    public Identifier getTexture(BeeEntity beeEntity) {
         if (beeEntity.isAngry()) {
             if (beeEntity.hasNectar()) {
                 return ANGRY_NECTAR_SKIN;

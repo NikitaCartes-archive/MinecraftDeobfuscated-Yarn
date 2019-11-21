@@ -139,7 +139,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         this.chunkGenerator = chunkGenerator;
         this.mainThreadExecutor = threadExecutor;
         TaskExecutor<Runnable> taskExecutor = TaskExecutor.create(executor, "worldgen");
-        MessageListener<Runnable> messageListener = MessageListener.create("main", threadExecutor::method_18858);
+        MessageListener<Runnable> messageListener = MessageListener.create("main", threadExecutor::send);
         this.worldGenerationProgressListener = worldGenerationProgressListener;
         TaskExecutor<Runnable> taskExecutor2 = TaskExecutor.create(executor, "light");
         this.chunkTaskPrioritySystem = new ChunkTaskPrioritySystem(ImmutableList.of(taskExecutor, messageListener, taskExecutor2), executor, Integer.MAX_VALUE);
@@ -479,7 +479,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     }
 
     protected void releaseLightTicket(ChunkPos chunkPos) {
-        this.mainThreadExecutor.method_18858(Util.debugRunnable(() -> this.ticketManager.removeTicketWithLevel(ChunkTicketType.LIGHT, chunkPos, 33 + ChunkStatus.getTargetGenerationRadius(ChunkStatus.FEATURES), chunkPos), () -> "release light ticket " + chunkPos));
+        this.mainThreadExecutor.send(Util.debugRunnable(() -> this.ticketManager.removeTicketWithLevel(ChunkTicketType.LIGHT, chunkPos, 33 + ChunkStatus.getTargetGenerationRadius(ChunkStatus.FEATURES), chunkPos), () -> "release light ticket " + chunkPos));
     }
 
     private ChunkStatus getRequiredStatusForGeneration(ChunkStatus chunkStatus, int i) {

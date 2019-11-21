@@ -39,7 +39,8 @@ implements ArgumentType<ScoreboardCriterion> {
         return commandContext.getArgument(string, ScoreboardCriterion.class);
     }
 
-    public ScoreboardCriterion method_9403(StringReader stringReader) throws CommandSyntaxException {
+    @Override
+    public ScoreboardCriterion parse(StringReader stringReader) throws CommandSyntaxException {
         int i = stringReader.getCursor();
         while (stringReader.canRead() && stringReader.peek() != ' ') {
             stringReader.skip();
@@ -74,7 +75,7 @@ implements ArgumentType<ScoreboardCriterion> {
 
     @Override
     public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.method_9403(stringReader);
+        return this.parse(stringReader);
     }
 }
 

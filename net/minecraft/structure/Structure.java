@@ -473,7 +473,7 @@ public class Structure {
 
     private void method_16186(BlockRotation blockRotation, int i, int j, BlockBox blockBox, Direction direction, Direction direction2) {
         BlockPos blockPos = BlockPos.ORIGIN;
-        blockPos = blockRotation == BlockRotation.CLOCKWISE_90 || blockRotation == BlockRotation.COUNTERCLOCKWISE_90 ? blockPos.method_10079(blockRotation.rotate(direction), j) : (blockRotation == BlockRotation.CLOCKWISE_180 ? blockPos.method_10079(direction2, i) : blockPos.method_10079(direction, i));
+        blockPos = blockRotation == BlockRotation.CLOCKWISE_90 || blockRotation == BlockRotation.COUNTERCLOCKWISE_90 ? blockPos.offset(blockRotation.rotate(direction), j) : (blockRotation == BlockRotation.CLOCKWISE_180 ? blockPos.offset(direction2, i) : blockPos.offset(direction, i));
         blockBox.offset(blockPos.getX(), 0, blockPos.getZ());
     }
 

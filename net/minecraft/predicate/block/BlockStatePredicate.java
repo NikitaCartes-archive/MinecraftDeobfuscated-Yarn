@@ -26,7 +26,8 @@ implements Predicate<BlockState> {
         return new BlockStatePredicate(block.getStateManager());
     }
 
-    public boolean method_11760(@Nullable BlockState blockState) {
+    @Override
+    public boolean test(@Nullable BlockState blockState) {
         if (blockState == null || !blockState.getBlock().equals(this.factory.getOwner())) {
             return false;
         }
@@ -55,7 +56,7 @@ implements Predicate<BlockState> {
 
     @Override
     public /* synthetic */ boolean test(@Nullable Object object) {
-        return this.method_11760((BlockState)object);
+        return this.test((BlockState)object);
     }
 }
 

@@ -66,12 +66,14 @@ implements EntryCombiner {
 
         protected abstract T getThisBuilder();
 
-        public T method_421(LootCondition.Builder builder) {
+        @Override
+        public T withCondition(LootCondition.Builder builder) {
             this.conditions.add(builder.build());
             return this.getThisBuilder();
         }
 
-        public final T method_416() {
+        @Override
+        public final T getThis() {
             return this.getThisBuilder();
         }
 
@@ -87,12 +89,12 @@ implements EntryCombiner {
 
         @Override
         public /* synthetic */ Object getThis() {
-            return this.method_416();
+            return this.getThis();
         }
 
         @Override
         public /* synthetic */ Object withCondition(LootCondition.Builder builder) {
-            return this.method_421(builder);
+            return this.withCondition(builder);
         }
     }
 }

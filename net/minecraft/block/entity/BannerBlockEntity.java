@@ -50,7 +50,7 @@ implements Nameable {
         this.patternListTag = null;
         CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
         if (compoundTag != null && compoundTag.contains("Patterns", 9)) {
-            this.patternListTag = compoundTag.getList("Patterns", 10).method_10612();
+            this.patternListTag = compoundTag.getList("Patterns", 10).copy();
         }
         this.baseColor = dyeColor;
         this.patterns = null;
@@ -176,7 +176,7 @@ implements Nameable {
         if (listTag.isEmpty()) {
             return;
         }
-        listTag.method_10536(listTag.size() - 1);
+        listTag.remove(listTag.size() - 1);
         if (listTag.isEmpty()) {
             itemStack.removeSubTag("BlockEntityTag");
         }
@@ -186,7 +186,7 @@ implements Nameable {
     public ItemStack getPickStack(BlockState blockState) {
         ItemStack itemStack = new ItemStack(BannerBlock.getForColor(this.getColorForState(() -> blockState)));
         if (this.patternListTag != null && !this.patternListTag.isEmpty()) {
-            itemStack.getOrCreateSubTag("BlockEntityTag").put("Patterns", this.patternListTag.method_10612());
+            itemStack.getOrCreateSubTag("BlockEntityTag").put("Patterns", this.patternListTag.copy());
         }
         if (this.customName != null) {
             itemStack.setCustomName(this.customName);

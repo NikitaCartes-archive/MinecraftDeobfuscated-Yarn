@@ -41,9 +41,9 @@ extends BipedEntityModel<T> {
     }
 
     @Override
-    public void method_17087(T livingEntity, float f, float g, float h, float i, float j) {
+    public void setAngles(T livingEntity, float f, float g, float h, float i, float j) {
         float m;
-        super.method_17087(livingEntity, f, g, h, i, j);
+        super.setAngles(livingEntity, f, g, h, i, j);
         this.head.visible = true;
         float k = -14.0f;
         this.torso.pitch = 0.0f;

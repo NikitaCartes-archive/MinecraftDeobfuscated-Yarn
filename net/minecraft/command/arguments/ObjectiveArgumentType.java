@@ -48,7 +48,8 @@ implements ArgumentType<String> {
         return scoreboardObjective;
     }
 
-    public String method_9396(StringReader stringReader) throws CommandSyntaxException {
+    @Override
+    public String parse(StringReader stringReader) throws CommandSyntaxException {
         String string = stringReader.readUnquotedString();
         if (string.length() > 16) {
             throw LONG_NAME_EXCEPTION.create(16);
@@ -75,7 +76,7 @@ implements ArgumentType<String> {
 
     @Override
     public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.method_9396(stringReader);
+        return this.parse(stringReader);
     }
 }
 

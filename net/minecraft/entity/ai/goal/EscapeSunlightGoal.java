@@ -34,7 +34,7 @@ extends Goal {
         if (this.mob.getTarget() != null) {
             return false;
         }
-        if (!this.world.isDaylight()) {
+        if (!this.world.isDay()) {
             return false;
         }
         if (!this.mob.isOnFire()) {

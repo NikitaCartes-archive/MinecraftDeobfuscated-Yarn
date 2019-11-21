@@ -33,7 +33,8 @@ public class ListTag
 extends AbstractListTag<Tag> {
     public static final TagReader<ListTag> READER = new TagReader<ListTag>(){
 
-        public ListTag method_23249(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+        @Override
+        public ListTag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
             positionTracker.add(296L);
             if (i > 512) {
                 throw new RuntimeException("Tried to read NBT tag with too high complexity, depth > 512");
@@ -64,7 +65,7 @@ extends AbstractListTag<Tag> {
 
         @Override
         public /* synthetic */ Tag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-            return this.method_23249(dataInput, i, positionTracker);
+            return this.read(dataInput, i, positionTracker);
         }
     };
     private static final ByteSet field_21461 = new ByteOpenHashSet(Arrays.asList((byte)1, (byte)2, (byte)3, (byte)4, (byte)5, (byte)6));
@@ -118,7 +119,7 @@ extends AbstractListTag<Tag> {
     }
 
     @Override
-    public Tag method_10536(int i) {
+    public Tag remove(int i) {
         Tag tag = this.value.remove(i);
         this.forgetTypeIfEmpty();
         return tag;
@@ -201,13 +202,14 @@ extends AbstractListTag<Tag> {
         return this.value.size();
     }
 
-    public Tag method_10534(int i) {
+    @Override
+    public Tag get(int i) {
         return this.value.get(i);
     }
 
     @Override
-    public Tag method_10606(int i, Tag tag) {
-        Tag tag2 = this.method_10534(i);
+    public Tag set(int i, Tag tag) {
+        Tag tag2 = this.get(i);
         if (!this.setTag(i, tag)) {
             throw new UnsupportedOperationException(String.format("Trying to add tag of type %d to list of %d", tag.getType(), this.type));
         }
@@ -215,7 +217,7 @@ extends AbstractListTag<Tag> {
     }
 
     @Override
-    public void method_10531(int i, Tag tag) {
+    public void add(int i, Tag tag) {
         if (!this.addTag(i, tag)) {
             throw new UnsupportedOperationException(String.format("Trying to add tag of type %d to list of %d", tag.getType(), this.type));
         }
@@ -250,7 +252,8 @@ extends AbstractListTag<Tag> {
         return this.type == tag.getType();
     }
 
-    public ListTag method_10612() {
+    @Override
+    public ListTag copy() {
         List<Tag> iterable = TagReaders.of(this.type).isImmutable() ? this.value : Iterables.transform(this.value, Tag::copy);
         ArrayList<Tag> list = Lists.newArrayList(iterable);
         return new ListTag(list, this.type);
@@ -318,27 +321,27 @@ extends AbstractListTag<Tag> {
 
     @Override
     public /* synthetic */ Tag copy() {
-        return this.method_10612();
+        return this.copy();
     }
 
     @Override
     public /* synthetic */ Object remove(int i) {
-        return this.method_10536(i);
+        return this.remove(i);
     }
 
     @Override
     public /* synthetic */ void add(int i, Object object) {
-        this.method_10531(i, (Tag)object);
+        this.add(i, (Tag)object);
     }
 
     @Override
     public /* synthetic */ Object set(int i, Object object) {
-        return this.method_10606(i, (Tag)object);
+        return this.set(i, (Tag)object);
     }
 
     @Override
     public /* synthetic */ Object get(int i) {
-        return this.method_10534(i);
+        return this.get(i);
     }
 }
 

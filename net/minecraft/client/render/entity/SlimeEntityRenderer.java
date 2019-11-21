@@ -25,12 +25,14 @@ extends MobEntityRenderer<SlimeEntity, SlimeEntityModel<SlimeEntity>> {
         this.addFeature(new SlimeOverlayFeatureRenderer<SlimeEntity>(this));
     }
 
-    public void method_4117(SlimeEntity slimeEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+    @Override
+    public void render(SlimeEntity slimeEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         this.field_4673 = 0.25f * (float)slimeEntity.getSize();
-        super.method_4072(slimeEntity, f, g, matrixStack, vertexConsumerProvider, i);
+        super.render(slimeEntity, f, g, matrixStack, vertexConsumerProvider, i);
     }
 
-    protected void method_4118(SlimeEntity slimeEntity, MatrixStack matrixStack, float f) {
+    @Override
+    protected void scale(SlimeEntity slimeEntity, MatrixStack matrixStack, float f) {
         float g = 0.999f;
         matrixStack.scale(0.999f, 0.999f, 0.999f);
         matrixStack.translate(0.0, 0.001f, 0.0);
@@ -40,7 +42,8 @@ extends MobEntityRenderer<SlimeEntity, SlimeEntityModel<SlimeEntity>> {
         matrixStack.scale(j * h, 1.0f / j * h, j * h);
     }
 
-    public Identifier method_4116(SlimeEntity slimeEntity) {
+    @Override
+    public Identifier getTexture(SlimeEntity slimeEntity) {
         return SKIN;
     }
 }

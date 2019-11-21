@@ -158,7 +158,8 @@ extends Screen {
             }
         }
 
-        public void method_20103(@Nullable SuperflatPresetEntry superflatPresetEntry) {
+        @Override
+        public void setSelected(@Nullable SuperflatPresetEntry superflatPresetEntry) {
             super.setSelected(superflatPresetEntry);
             if (superflatPresetEntry != null) {
                 NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", ((SuperflatPreset)presets.get((int)this.children().indexOf((Object)superflatPresetEntry))).name).getString());
@@ -189,7 +190,7 @@ extends Screen {
 
         @Override
         public /* synthetic */ void setSelected(@Nullable EntryListWidget.Entry entry) {
-            this.method_20103((SuperflatPresetEntry)entry);
+            this.setSelected((SuperflatPresetEntry)entry);
         }
 
         @Environment(value=EnvType.CLIENT)
@@ -211,7 +212,7 @@ extends Screen {
             }
 
             private void setPreset() {
-                SuperflatPresetsListWidget.this.method_20103(this);
+                SuperflatPresetsListWidget.this.setSelected(this);
                 PresetsScreen.this.updateSelectButton(true);
                 PresetsScreen.this.customPresetField.setText(((SuperflatPreset)presets.get((int)SuperflatPresetsListWidget.this.children().indexOf((Object)this))).config);
                 PresetsScreen.this.customPresetField.setCursorToStart();

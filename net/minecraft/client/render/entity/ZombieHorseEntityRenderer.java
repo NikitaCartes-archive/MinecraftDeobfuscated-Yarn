@@ -24,7 +24,8 @@ extends HorseBaseEntityRenderer<HorseBaseEntity, HorseEntityModel<HorseBaseEntit
         super(entityRenderDispatcher, new HorseEntityModel(0.0f), 1.0f);
     }
 
-    public Identifier method_4145(HorseBaseEntity horseBaseEntity) {
+    @Override
+    public Identifier getTexture(HorseBaseEntity horseBaseEntity) {
         return TEXTURES.get(horseBaseEntity.getType());
     }
 }

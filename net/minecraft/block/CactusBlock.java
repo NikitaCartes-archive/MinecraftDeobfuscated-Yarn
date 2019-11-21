@@ -90,7 +90,7 @@ extends Block {
             if (!material.isSolid() && !worldView.getFluidState(blockPos.offset(direction)).matches(FluidTags.LAVA)) continue;
             return false;
         }
-        Block block = worldView.getBlockState(blockPos.method_10074()).getBlock();
+        Block block = worldView.getBlockState(blockPos.down()).getBlock();
         return (block == Blocks.CACTUS || block == Blocks.SAND || block == Blocks.RED_SAND) && !worldView.getBlockState(blockPos.up()).getMaterial().isLiquid();
     }
 

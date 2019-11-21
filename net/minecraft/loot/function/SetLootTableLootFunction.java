@@ -62,15 +62,17 @@ extends ConditionalLootFunction {
             super(new Identifier("set_loot_table"), SetLootTableLootFunction.class);
         }
 
-        public void method_626(JsonObject jsonObject, SetLootTableLootFunction setLootTableLootFunction, JsonSerializationContext jsonSerializationContext) {
-            super.method_529(jsonObject, setLootTableLootFunction, jsonSerializationContext);
+        @Override
+        public void toJson(JsonObject jsonObject, SetLootTableLootFunction setLootTableLootFunction, JsonSerializationContext jsonSerializationContext) {
+            super.toJson(jsonObject, setLootTableLootFunction, jsonSerializationContext);
             jsonObject.addProperty("name", setLootTableLootFunction.id.toString());
             if (setLootTableLootFunction.seed != 0L) {
                 jsonObject.addProperty("seed", setLootTableLootFunction.seed);
             }
         }
 
-        public SetLootTableLootFunction method_627(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+        @Override
+        public SetLootTableLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
             Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "name"));
             long l = JsonHelper.getLong(jsonObject, "seed", 0L);
             return new SetLootTableLootFunction(lootConditions, identifier, l);
@@ -78,7 +80,7 @@ extends ConditionalLootFunction {
 
         @Override
         public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            return this.method_627(jsonObject, jsonDeserializationContext, lootConditions);
+            return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
         }
     }
 }

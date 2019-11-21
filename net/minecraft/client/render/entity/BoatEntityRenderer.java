@@ -30,7 +30,8 @@ extends EntityRenderer<BoatEntity> {
         this.field_4673 = 0.8f;
     }
 
-    public void method_3888(BoatEntity boatEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+    @Override
+    public void render(BoatEntity boatEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         float k;
         matrixStack.push();
         matrixStack.translate(0.0, 0.375, 0.0);
@@ -48,16 +49,17 @@ extends EntityRenderer<BoatEntity> {
         }
         matrixStack.scale(-1.0f, -1.0f, 1.0f);
         matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(90.0f));
-        this.model.method_22952(boatEntity, g, 0.0f, -0.1f, 0.0f, 0.0f);
-        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(this.method_3891(boatEntity)));
-        this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f);
+        this.model.setAngles(boatEntity, g, 0.0f, -0.1f, 0.0f, 0.0f);
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(this.getTexture(boatEntity)));
+        this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f, 1.0f);
         VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.getWaterMask());
-        this.model.getBottom().render(matrixStack, vertexConsumer2, i, OverlayTexture.DEFAULT_UV, null);
+        this.model.getBottom().render(matrixStack, vertexConsumer2, i, OverlayTexture.DEFAULT_UV);
         matrixStack.pop();
         super.render(boatEntity, f, g, matrixStack, vertexConsumerProvider, i);
     }
 
-    public Identifier method_3891(BoatEntity boatEntity) {
+    @Override
+    public Identifier getTexture(BoatEntity boatEntity) {
         return SKIN[boatEntity.getBoatType().ordinal()];
     }
 }

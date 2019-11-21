@@ -155,14 +155,9 @@ public final class Vector3f {
         float f = this.x;
         float g = this.y;
         float h = this.z;
-        this.x = Vector3f.crossMultiplyRow(0, matrix3f, f, g, h);
-        this.y = Vector3f.crossMultiplyRow(1, matrix3f, f, g, h);
-        this.z = Vector3f.crossMultiplyRow(2, matrix3f, f, g, h);
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    private static float crossMultiplyRow(int i, Matrix3f matrix3f, float f, float g, float h) {
-        return matrix3f.get(i, 0) * f + matrix3f.get(i, 1) * g + matrix3f.get(i, 2) * h;
+        this.x = matrix3f.field_21633 * f + matrix3f.field_21634 * g + matrix3f.field_21635 * h;
+        this.y = matrix3f.field_21636 * f + matrix3f.field_21637 * g + matrix3f.field_21638 * h;
+        this.z = matrix3f.field_21639 * f + matrix3f.field_21640 * g + matrix3f.field_21641 * h;
     }
 
     public void method_19262(Quaternion quaternion) {

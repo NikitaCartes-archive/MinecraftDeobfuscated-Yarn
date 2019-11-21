@@ -130,10 +130,10 @@ public final class NbtHelper {
                 return listTag2.isEmpty();
             }
             for (int i = 0; i < listTag.size(); ++i) {
-                Tag tag4 = listTag.method_10534(i);
+                Tag tag4 = listTag.get(i);
                 boolean bl2 = false;
                 for (int j = 0; j < listTag2.size(); ++j) {
-                    if (!NbtHelper.matches(tag4, listTag2.method_10534(j), bl)) continue;
+                    if (!NbtHelper.matches(tag4, listTag2.get(j), bl)) continue;
                     bl2 = true;
                     break;
                 }

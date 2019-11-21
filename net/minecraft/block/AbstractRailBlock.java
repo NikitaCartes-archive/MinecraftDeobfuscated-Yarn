@@ -54,7 +54,7 @@ extends Block {
 
     @Override
     public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
-        return AbstractRailBlock.topCoversMediumSquare(worldView, blockPos.method_10074());
+        return AbstractRailBlock.topCoversMediumSquare(worldView, blockPos.down());
     }
 
     @Override
@@ -75,7 +75,7 @@ extends Block {
         }
         RailShape railShape = blockState.get(this.getShapeProperty());
         boolean bl2 = false;
-        BlockPos blockPos3 = blockPos.method_10074();
+        BlockPos blockPos3 = blockPos.down();
         if (!AbstractRailBlock.topCoversMediumSquare(world, blockPos3)) {
             bl2 = true;
         }
@@ -135,7 +135,7 @@ extends Block {
         }
         if (this.allowCurves) {
             world.updateNeighborsAlways(blockPos, this);
-            world.updateNeighborsAlways(blockPos.method_10074(), this);
+            world.updateNeighborsAlways(blockPos.down(), this);
         }
     }
 

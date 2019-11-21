@@ -28,11 +28,13 @@ extends MobEntityRenderer<VillagerEntity, VillagerResemblingModel<VillagerEntity
         this.addFeature(new VillagerHeldItemFeatureRenderer<VillagerEntity, VillagerResemblingModel<VillagerEntity>>(this));
     }
 
-    public Identifier method_4151(VillagerEntity villagerEntity) {
+    @Override
+    public Identifier getTexture(VillagerEntity villagerEntity) {
         return VILLAGER_SKIN;
     }
 
-    protected void method_4149(VillagerEntity villagerEntity, MatrixStack matrixStack, float f) {
+    @Override
+    protected void scale(VillagerEntity villagerEntity, MatrixStack matrixStack, float f) {
         float g = 0.9375f;
         if (villagerEntity.isBaby()) {
             g = (float)((double)g * 0.5);

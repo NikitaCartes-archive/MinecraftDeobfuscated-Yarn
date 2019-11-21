@@ -42,7 +42,7 @@ public final class SpawnHelper {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static void spawnEntitiesInChunk(EntityCategory entityCategory, ServerWorld serverWorld, WorldChunk worldChunk, BlockPos blockPos) {
-        ChunkGenerator<?> chunkGenerator = serverWorld.method_14178().getChunkGenerator();
+        ChunkGenerator<?> chunkGenerator = serverWorld.getChunkManager().getChunkGenerator();
         int i = 0;
         BlockPos blockPos2 = SpawnHelper.getSpawnPos(serverWorld, worldChunk);
         int j = blockPos2.getX();
@@ -74,7 +74,7 @@ public final class SpawnHelper {
                 float f = (float)n + 0.5f;
                 float g = (float)o + 0.5f;
                 PlayerEntity playerEntity = serverWorld.getClosestPlayer(f, g, -1.0);
-                if (playerEntity == null || (d = playerEntity.squaredDistanceTo(f, k, g)) <= 576.0 || blockPos.isWithinDistance(new Vec3d(f, k, g), 24.0) || !Objects.equals(chunkPos = new ChunkPos(mutable), worldChunk.getPos()) && !serverWorld.method_14178().shouldTickChunk(chunkPos)) continue;
+                if (playerEntity == null || (d = playerEntity.squaredDistanceTo(f, k, g)) <= 576.0 || blockPos.isWithinDistance(new Vec3d(f, k, g), 24.0) || !Objects.equals(chunkPos = new ChunkPos(mutable), worldChunk.getPos()) && !serverWorld.getChunkManager().shouldTickChunk(chunkPos)) continue;
                 if (spawnEntry == null) {
                     spawnEntry = SpawnHelper.pickRandomSpawnEntry(chunkGenerator, entityCategory, serverWorld.random, mutable);
                     if (spawnEntry == null) continue block2;
@@ -153,7 +153,7 @@ public final class SpawnHelper {
         BlockState blockState = worldView.getBlockState(blockPos);
         FluidState fluidState = worldView.getFluidState(blockPos);
         BlockPos blockPos2 = blockPos.up();
-        BlockPos blockPos3 = blockPos.method_10074();
+        BlockPos blockPos3 = blockPos.down();
         switch (location) {
             case IN_WATER: {
                 return fluidState.matches(FluidTags.WATER) && worldView.getFluidState(blockPos3).matches(FluidTags.WATER) && !worldView.getBlockState(blockPos2).isSimpleFullBlock(worldView, blockPos2);
@@ -218,7 +218,7 @@ public final class SpawnHelper {
 
     private static BlockPos getEntitySpawnPos(WorldView worldView, @Nullable EntityType<?> entityType, int i, int j) {
         BlockPos blockPos = new BlockPos(i, worldView.getTopY(SpawnRestriction.getHeightmapType(entityType), i, j), j);
-        BlockPos blockPos2 = blockPos.method_10074();
+        BlockPos blockPos2 = blockPos.down();
         if (worldView.getBlockState(blockPos2).canPlaceAtSide(worldView, blockPos2, BlockPlacementEnvironment.LAND)) {
             return blockPos2;
         }

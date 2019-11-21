@@ -34,7 +34,7 @@ extends Goal {
         if (this.mob.hasPassengers()) {
             return false;
         }
-        if (this.mob.world.isDaylight()) {
+        if (this.mob.world.isDay()) {
             return false;
         }
         if (this.mob.getRandom().nextInt(this.searchRange) != 0) {

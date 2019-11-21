@@ -22,12 +22,19 @@ import net.minecraft.util.Identifier;
 public class DragonFireballEntityRenderer
 extends EntityRenderer<DragonFireballEntity> {
     private static final Identifier SKIN = new Identifier("textures/entity/enderdragon/dragon_fireball.png");
+    private static final RenderLayer field_21735 = RenderLayer.getEntityCutoutNoCull(SKIN);
 
     public DragonFireballEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher);
     }
 
-    public void method_3906(DragonFireballEntity dragonFireballEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+    @Override
+    protected int method_24087(DragonFireballEntity dragonFireballEntity, float f) {
+        return 15;
+    }
+
+    @Override
+    public void render(DragonFireballEntity dragonFireballEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         matrixStack.push();
         matrixStack.scale(2.0f, 2.0f, 2.0f);
         matrixStack.multiply(this.renderManager.camera.method_23767());
@@ -35,7 +42,7 @@ extends EntityRenderer<DragonFireballEntity> {
         MatrixStack.Entry entry = matrixStack.peek();
         Matrix4f matrix4f = entry.getModel();
         Matrix3f matrix3f = entry.getNormal();
-        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(SKIN));
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(field_21735);
         DragonFireballEntityRenderer.method_23837(vertexConsumer, matrix4f, matrix3f, i, 0.0f, 0, 0, 1);
         DragonFireballEntityRenderer.method_23837(vertexConsumer, matrix4f, matrix3f, i, 1.0f, 0, 1, 1);
         DragonFireballEntityRenderer.method_23837(vertexConsumer, matrix4f, matrix3f, i, 1.0f, 1, 1, 0);
@@ -48,7 +55,8 @@ extends EntityRenderer<DragonFireballEntity> {
         vertexConsumer.vertex(matrix4f, f - 0.5f, (float)j - 0.25f, 0.0f).color(255, 255, 255, 255).texture(k, l).overlay(OverlayTexture.DEFAULT_UV).light(i).method_23763(matrix3f, 0.0f, 1.0f, 0.0f).next();
     }
 
-    public Identifier method_3905(DragonFireballEntity dragonFireballEntity) {
+    @Override
+    public Identifier getTexture(DragonFireballEntity dragonFireballEntity) {
         return SKIN;
     }
 }

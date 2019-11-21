@@ -35,7 +35,8 @@ implements Packet<ClientLoginPacketListener> {
         packetByteBuf.writeBytes(this.payload.copy());
     }
 
-    public void method_12591(ClientLoginPacketListener clientLoginPacketListener) {
+    @Override
+    public void apply(ClientLoginPacketListener clientLoginPacketListener) {
         clientLoginPacketListener.onQueryRequest(this);
     }
 

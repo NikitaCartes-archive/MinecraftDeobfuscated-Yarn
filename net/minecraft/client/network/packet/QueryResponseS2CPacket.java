@@ -40,7 +40,8 @@ implements Packet<ClientQueryPacketListener> {
         packetByteBuf.writeString(GSON.toJson(this.metadata));
     }
 
-    public void method_12671(ClientQueryPacketListener clientQueryPacketListener) {
+    @Override
+    public void apply(ClientQueryPacketListener clientQueryPacketListener) {
         clientQueryPacketListener.onResponse(this);
     }
 

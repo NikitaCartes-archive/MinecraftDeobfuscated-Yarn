@@ -40,7 +40,8 @@ implements Packet<ServerLoginPacketListener> {
         packetByteBuf.writeByteArray(this.encryptedNonce);
     }
 
-    public void method_12653(ServerLoginPacketListener serverLoginPacketListener) {
+    @Override
+    public void apply(ServerLoginPacketListener serverLoginPacketListener) {
         serverLoginPacketListener.onKey(this);
     }
 

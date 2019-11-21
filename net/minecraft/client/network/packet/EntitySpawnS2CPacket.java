@@ -94,7 +94,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeShort(this.velocityZ);
     }
 
-    public void method_11178(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onEntitySpawn(this);
     }
 

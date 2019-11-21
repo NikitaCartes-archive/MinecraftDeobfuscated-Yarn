@@ -191,7 +191,7 @@ extends World {
 
     @Override
     public Biome getGeneratorStoredBiome(int i, int j, int k) {
-        return this.method_14178().getChunkGenerator().getBiomeSource().getStoredBiome(i, j, k);
+        return this.getChunkManager().getChunkGenerator().getBiomeSource().getStoredBiome(i, j, k);
     }
 
     public void tick(BooleanSupplier booleanSupplier) {
@@ -277,7 +277,7 @@ extends World {
         this.calculateAmbientDarkness();
         this.tickTime();
         profiler.swap("chunkSource");
-        this.method_14178().tick(booleanSupplier);
+        this.getChunkManager().tick(booleanSupplier);
         profiler.swap("tickPending");
         if (this.properties.getGeneratorType() != LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
             this.blockTickScheduler.tick();
@@ -382,7 +382,7 @@ extends World {
         profiler.swap("iceandsnow");
         if (this.random.nextInt(16) == 0) {
             blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, this.getRandomPosInChunk(j, 0, k, 15));
-            BlockPos blockPos2 = blockPos.method_10074();
+            BlockPos blockPos2 = blockPos.down();
             Biome biome = this.method_23753(blockPos);
             if (biome.canSetSnow(this, blockPos2)) {
                 this.setBlockState(blockPos2, Blocks.ICE.getDefaultState());
@@ -451,7 +451,8 @@ extends World {
         }
     }
 
-    public ServerScoreboard method_14170() {
+    @Override
+    public ServerScoreboard getScoreboard() {
         return this.server.getScoreboard();
     }
 
@@ -499,7 +500,7 @@ extends World {
     }
 
     public void tickEntity(Entity entity) {
-        if (!(entity instanceof PlayerEntity) && !this.method_14178().shouldTickEntity(entity)) {
+        if (!(entity instanceof PlayerEntity) && !this.getChunkManager().shouldTickEntity(entity)) {
             return;
         }
         entity.method_22862(entity.getX(), entity.getY(), entity.getZ());
@@ -524,7 +525,7 @@ extends World {
             entity2.stopRiding();
             return;
         }
-        if (!(entity2 instanceof PlayerEntity) && !this.method_14178().shouldTickEntity(entity2)) {
+        if (!(entity2 instanceof PlayerEntity) && !this.getChunkManager().shouldTickEntity(entity2)) {
             return;
         }
         entity2.method_22862(entity2.getX(), entity2.getY(), entity2.getZ());
@@ -549,10 +550,10 @@ extends World {
         int k = MathHelper.floor(entity.getZ() / 16.0);
         if (!entity.updateNeeded || entity.chunkX != i || entity.chunkY != j || entity.chunkZ != k) {
             if (entity.updateNeeded && this.isChunkLoaded(entity.chunkX, entity.chunkZ)) {
-                this.method_8497(entity.chunkX, entity.chunkZ).remove(entity, entity.chunkY);
+                this.getChunk(entity.chunkX, entity.chunkZ).remove(entity, entity.chunkY);
             }
             if (entity.teleportRequested() || this.isChunkLoaded(i, k)) {
-                this.method_8497(i, k).addEntity(entity);
+                this.getChunk(i, k).addEntity(entity);
             } else {
                 entity.updateNeeded = false;
             }
@@ -568,14 +569,14 @@ extends World {
     public void init(LevelInfo levelInfo) {
         ChunkPos chunkPos;
         if (!this.dimension.canPlayersSleep()) {
-            this.properties.setSpawnPos(BlockPos.ORIGIN.up(this.method_14178().getChunkGenerator().getSpawnHeight()));
+            this.properties.setSpawnPos(BlockPos.ORIGIN.up(this.getChunkManager().getChunkGenerator().getSpawnHeight()));
             return;
         }
         if (this.properties.getGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
             this.properties.setSpawnPos(BlockPos.ORIGIN.up());
             return;
         }
-        BiomeSource biomeSource = this.method_14178().getChunkGenerator().getBiomeSource();
+        BiomeSource biomeSource = this.getChunkManager().getChunkGenerator().getBiomeSource();
         List<Biome> list = biomeSource.getSpawnBiomes();
         Random random = new Random(this.getSeed());
         BlockPos blockPos = biomeSource.locateBiome(0, this.getSeaLevel(), 0, 256, list, random);
@@ -589,7 +590,7 @@ extends World {
             bl = true;
             break;
         }
-        this.properties.setSpawnPos(chunkPos.getCenterBlockPos().add(8, this.method_14178().getChunkGenerator().getSpawnHeight(), 8));
+        this.properties.setSpawnPos(chunkPos.getCenterBlockPos().add(8, this.getChunkManager().getChunkGenerator().getSpawnHeight(), 8));
         int i = 0;
         int j = 0;
         int k = 0;
@@ -616,7 +617,7 @@ extends World {
 
     protected void placeBonusChest() {
         ConfiguredFeature<DefaultFeatureConfig, ?> configuredFeature = Feature.BONUS_CHEST.configure(FeatureConfig.DEFAULT);
-        configuredFeature.generate(this, this.method_14178().getChunkGenerator(), this.random, new BlockPos(this.properties.getSpawnX(), this.properties.getSpawnY(), this.properties.getSpawnZ()));
+        configuredFeature.generate(this, this.getChunkManager().getChunkGenerator(), this.random, new BlockPos(this.properties.getSpawnX(), this.properties.getSpawnY(), this.properties.getSpawnZ()));
     }
 
     @Nullable
@@ -625,7 +626,7 @@ extends World {
     }
 
     public void save(@Nullable ProgressListener progressListener, boolean bl, boolean bl2) throws SessionLockException {
-        ServerChunkManager serverChunkManager = this.method_14178();
+        ServerChunkManager serverChunkManager = this.getChunkManager();
         if (bl2) {
             return;
         }
@@ -642,12 +643,12 @@ extends World {
     protected void saveLevel() throws SessionLockException {
         this.checkSessionLock();
         this.dimension.saveWorldData();
-        this.method_14178().getPersistentStateManager().save();
+        this.getChunkManager().getPersistentStateManager().save();
     }
 
     public List<Entity> getEntities(@Nullable EntityType<?> entityType, Predicate<? super Entity> predicate) {
         ArrayList<Entity> list = Lists.newArrayList();
-        ServerChunkManager serverChunkManager = this.method_14178();
+        ServerChunkManager serverChunkManager = this.getChunkManager();
         for (Entity entity : this.entitiesById.values()) {
             if (entityType != null && entity.getType() != entityType || !serverChunkManager.isChunkLoaded(MathHelper.floor(entity.getX()) >> 4, MathHelper.floor(entity.getZ()) >> 4) || !predicate.test(entity)) continue;
             list.add(entity);
@@ -687,7 +688,7 @@ extends World {
         for (Entity entity : this.entitiesById.values()) {
             EntityCategory entityCategory;
             MobEntity mobEntity;
-            if (entity instanceof MobEntity && ((mobEntity = (MobEntity)entity).isPersistent() || mobEntity.cannotDespawn()) || (entityCategory = entity.getType().getCategory()) == EntityCategory.MISC || !this.method_14178().method_20727(entity)) continue;
+            if (entity instanceof MobEntity && ((mobEntity = (MobEntity)entity).isPersistent() || mobEntity.cannotDespawn()) || (entityCategory = entity.getType().getCategory()) == EntityCategory.MISC || !this.getChunkManager().method_20727(entity)) continue;
             object2IntMap.mergeInt(entityCategory, 1, Integer::sum);
         }
         return object2IntMap;
@@ -799,12 +800,12 @@ extends World {
             }
         }
         this.entitiesByUuid.remove(entity.getUuid());
-        this.method_14178().unloadEntity(entity);
+        this.getChunkManager().unloadEntity(entity);
         if (entity instanceof ServerPlayerEntity) {
             ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
             this.players.remove(serverPlayerEntity);
         }
-        this.method_14170().resetEntityScore(entity);
+        this.getScoreboard().resetEntityScore(entity);
         if (entity instanceof MobEntity) {
             this.entityNavigations.remove(((MobEntity)entity).getNavigation());
         }
@@ -821,7 +822,7 @@ extends World {
                 }
             }
             this.entitiesByUuid.put(entity.getUuid(), entity);
-            this.method_14178().loadEntity(entity);
+            this.getChunkManager().loadEntity(entity);
             if (entity instanceof MobEntity) {
                 this.entityNavigations.add(((MobEntity)entity).getNavigation());
             }
@@ -888,7 +889,7 @@ extends World {
 
     @Override
     public void updateListeners(BlockPos blockPos, BlockState blockState, BlockState blockState2, int i) {
-        this.method_14178().markForUpdate(blockPos);
+        this.getChunkManager().markForUpdate(blockPos);
         VoxelShape voxelShape = blockState.getCollisionShape(this, blockPos);
         VoxelShape voxelShape2 = blockState2.getCollisionShape(this, blockPos);
         if (!VoxelShapes.matchesAnywhere(voxelShape, voxelShape2, BooleanBiFunction.NOT_SAME)) {
@@ -902,10 +903,11 @@ extends World {
 
     @Override
     public void sendEntityStatus(Entity entity, byte b) {
-        this.method_14178().sendToNearbyPlayers(entity, new EntityStatusS2CPacket(entity, b));
+        this.getChunkManager().sendToNearbyPlayers(entity, new EntityStatusS2CPacket(entity, b));
     }
 
-    public ServerChunkManager method_14178() {
+    @Override
+    public ServerChunkManager getChunkManager() {
         return (ServerChunkManager)super.getChunkManager();
     }
 
@@ -948,11 +950,11 @@ extends World {
         return false;
     }
 
-    public ServerTickScheduler<Block> method_14196() {
+    public ServerTickScheduler<Block> getBlockTickScheduler() {
         return this.blockTickScheduler;
     }
 
-    public ServerTickScheduler<Fluid> method_14179() {
+    public ServerTickScheduler<Fluid> getFluidTickScheduler() {
         return this.fluidTickScheduler;
     }
 
@@ -1011,7 +1013,7 @@ extends World {
 
     @Nullable
     public BlockPos locateStructure(String string, BlockPos blockPos, int i, boolean bl) {
-        return this.method_14178().getChunkGenerator().locateStructure(this, string, blockPos, i, bl);
+        return this.getChunkManager().getChunkGenerator().locateStructure(this, string, blockPos, i, bl);
     }
 
     @Override
@@ -1044,7 +1046,7 @@ extends World {
     }
 
     public PersistentStateManager getPersistentStateManager() {
-        return this.method_14178().getPersistentStateManager();
+        return this.getChunkManager().getPersistentStateManager();
     }
 
     @Override
@@ -1067,8 +1069,8 @@ extends World {
     public void setSpawnPos(BlockPos blockPos) {
         ChunkPos chunkPos = new ChunkPos(new BlockPos(this.properties.getSpawnX(), 0, this.properties.getSpawnZ()));
         super.setSpawnPos(blockPos);
-        this.method_14178().removeTicket(ChunkTicketType.START, chunkPos, 11, Unit.INSTANCE);
-        this.method_14178().addTicket(ChunkTicketType.START, new ChunkPos(blockPos), 11, Unit.INSTANCE);
+        this.getChunkManager().removeTicket(ChunkTicketType.START, chunkPos, 11, Unit.INSTANCE);
+        this.getChunkManager().addTicket(ChunkTicketType.START, new ChunkPos(blockPos), 11, Unit.INSTANCE);
     }
 
     public LongSet getForcedChunks() {
@@ -1084,14 +1086,14 @@ extends World {
         if (bl) {
             bl2 = forcedChunkState.getChunks().add(l);
             if (bl2) {
-                this.method_8497(i, j);
+                this.getChunk(i, j);
             }
         } else {
             bl2 = forcedChunkState.getChunks().remove(l);
         }
         forcedChunkState.setDirty(bl2);
         if (bl2) {
-            this.method_14178().setChunkForced(chunkPos, bl);
+            this.getChunkManager().setChunkForced(chunkPos, bl);
         }
         return bl2;
     }
@@ -1119,7 +1121,7 @@ extends World {
     }
 
     public PointOfInterestStorage getPointOfInterestStorage() {
-        return this.method_14178().getPointOfInterestStorage();
+        return this.getChunkManager().getPointOfInterestStorage();
     }
 
     public boolean isNearOccupiedPointOfInterest(BlockPos blockPos) {
@@ -1159,7 +1161,7 @@ extends World {
     }
 
     public void method_21625(Path path) throws IOException {
-        ThreadedAnvilChunkStorage threadedAnvilChunkStorage = this.method_14178().threadedAnvilChunkStorage;
+        ThreadedAnvilChunkStorage threadedAnvilChunkStorage = this.getChunkManager().threadedAnvilChunkStorage;
         try (BufferedWriter writer = Files.newBufferedWriter(path.resolve("stats.txt"), new OpenOption[0]);){
             writer.write(String.format("spawning_chunks: %d\n", threadedAnvilChunkStorage.getTicketManager().getLevelCount()));
             for (Object2IntMap.Entry entry : this.getMobCountsByCategory().object2IntEntrySet()) {
@@ -1167,10 +1169,10 @@ extends World {
             }
             writer.write(String.format("entities: %d\n", this.entitiesById.size()));
             writer.write(String.format("block_entities: %d\n", this.blockEntities.size()));
-            writer.write(String.format("block_ticks: %d\n", this.method_14196().method_20825()));
-            writer.write(String.format("fluid_ticks: %d\n", this.method_14179().method_20825()));
+            writer.write(String.format("block_ticks: %d\n", ((ServerTickScheduler)this.getBlockTickScheduler()).method_20825()));
+            writer.write(String.format("fluid_ticks: %d\n", ((ServerTickScheduler)this.getFluidTickScheduler()).method_20825()));
             writer.write("distance_manager: " + threadedAnvilChunkStorage.getTicketManager().method_21683() + "\n");
-            writer.write(String.format("pending_tasks: %d\n", this.method_14178().method_21694()));
+            writer.write(String.format("pending_tasks: %d\n", this.getChunkManager().method_21694()));
         }
         CrashReport crashReport = new CrashReport("Level dump", new Exception("dummy"));
         this.addDetailsToCrashReport(crashReport);
@@ -1240,20 +1242,20 @@ extends World {
 
     @Override
     public /* synthetic */ Scoreboard getScoreboard() {
-        return this.method_14170();
+        return this.getScoreboard();
     }
 
     @Override
     public /* synthetic */ ChunkManager getChunkManager() {
-        return this.method_14178();
+        return this.getChunkManager();
     }
 
     public /* synthetic */ TickScheduler getFluidTickScheduler() {
-        return this.method_14179();
+        return this.getFluidTickScheduler();
     }
 
     public /* synthetic */ TickScheduler getBlockTickScheduler() {
-        return this.method_14196();
+        return this.getBlockTickScheduler();
     }
 }
 

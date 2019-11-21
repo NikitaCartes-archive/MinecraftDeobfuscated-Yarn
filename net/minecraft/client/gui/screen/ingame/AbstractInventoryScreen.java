@@ -11,7 +11,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.StatusEffectSpriteManager;
 import net.minecraft.container.Container;
 import net.minecraft.entity.effect.StatusEffect;
@@ -81,12 +81,13 @@ extends AbstractContainerScreen<T> {
     }
 
     private void method_18643(int i, int j, Iterable<StatusEffectInstance> iterable) {
-        this.minecraft.getTextureManager().bindTexture(SpriteAtlasTexture.STATUS_EFFECT_ATLAS_TEX);
         StatusEffectSpriteManager statusEffectSpriteManager = this.minecraft.getStatusEffectSpriteManager();
         int k = this.top;
         for (StatusEffectInstance statusEffectInstance : iterable) {
             StatusEffect statusEffect = statusEffectInstance.getEffectType();
-            AbstractInventoryScreen.blit(i + 6, k + 7, this.getBlitOffset(), 18, 18, statusEffectSpriteManager.getSprite(statusEffect));
+            Sprite sprite = statusEffectSpriteManager.getSprite(statusEffect);
+            this.minecraft.getTextureManager().bindTexture(sprite.method_24119().method_24106());
+            AbstractInventoryScreen.blit(i + 6, k + 7, this.getBlitOffset(), 18, 18, sprite);
             k += j;
         }
     }

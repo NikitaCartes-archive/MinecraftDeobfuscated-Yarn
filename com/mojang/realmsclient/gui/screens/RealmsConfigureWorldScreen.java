@@ -502,7 +502,8 @@ implements RealmsWorldSlotButton.Listener {
         this.stateChanged = true;
     }
 
-    void method_21209(WorldTemplate worldTemplate) {
+    @Override
+    void callback(WorldTemplate worldTemplate) {
         if (worldTemplate == null) {
             return;
         }

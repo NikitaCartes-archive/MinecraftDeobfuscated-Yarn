@@ -86,13 +86,15 @@ ModelWithHead {
         return ImmutableList.of(this.torso, this.rightArm, this.leftArm, this.rightLeg, this.leftLeg, this.helmet);
     }
 
-    public void method_17086(T livingEntity, float f, float g, float h) {
+    @Override
+    public void animateModel(T livingEntity, float f, float g, float h) {
         this.field_3396 = ((LivingEntity)livingEntity).getLeaningPitch(h);
         this.itemUsedTime = ((LivingEntity)livingEntity).getItemUseTime();
         super.animateModel(livingEntity, f, g, h);
     }
 
-    public void method_17087(T livingEntity, float f, float g, float h, float i, float j) {
+    @Override
+    public void setAngles(T livingEntity, float f, float g, float h, float i, float j) {
         float n;
         float m;
         float l;

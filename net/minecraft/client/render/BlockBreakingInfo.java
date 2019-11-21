@@ -58,7 +58,8 @@ implements Comparable<BlockBreakingInfo> {
         return Integer.hashCode(this.actorNetworkId);
     }
 
-    public int method_23269(BlockBreakingInfo blockBreakingInfo) {
+    @Override
+    public int compareTo(BlockBreakingInfo blockBreakingInfo) {
         if (this.stage != blockBreakingInfo.stage) {
             return Integer.compare(this.stage, blockBreakingInfo.stage);
         }
@@ -67,7 +68,7 @@ implements Comparable<BlockBreakingInfo> {
 
     @Override
     public /* synthetic */ int compareTo(Object object) {
-        return this.method_23269((BlockBreakingInfo)object);
+        return this.compareTo((BlockBreakingInfo)object);
     }
 }
 

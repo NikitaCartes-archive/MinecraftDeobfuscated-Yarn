@@ -20,11 +20,12 @@ extends Feature<SpringFeatureConfig> {
         super(function);
     }
 
-    public boolean method_13979(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, SpringFeatureConfig springFeatureConfig) {
+    @Override
+    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, SpringFeatureConfig springFeatureConfig) {
         if (!springFeatureConfig.field_21287.contains(iWorld.getBlockState(blockPos.up()).getBlock())) {
             return false;
         }
-        if (springFeatureConfig.field_21284 && !springFeatureConfig.field_21287.contains(iWorld.getBlockState(blockPos.method_10074()).getBlock())) {
+        if (springFeatureConfig.field_21284 && !springFeatureConfig.field_21287.contains(iWorld.getBlockState(blockPos.down()).getBlock())) {
             return false;
         }
         BlockState blockState = iWorld.getBlockState(blockPos);
@@ -45,7 +46,7 @@ extends Feature<SpringFeatureConfig> {
         if (springFeatureConfig.field_21287.contains(iWorld.getBlockState(blockPos.south()).getBlock())) {
             ++j;
         }
-        if (springFeatureConfig.field_21287.contains(iWorld.getBlockState(blockPos.method_10074()).getBlock())) {
+        if (springFeatureConfig.field_21287.contains(iWorld.getBlockState(blockPos.down()).getBlock())) {
             ++j;
         }
         int k = 0;
@@ -61,7 +62,7 @@ extends Feature<SpringFeatureConfig> {
         if (iWorld.isAir(blockPos.south())) {
             ++k;
         }
-        if (iWorld.isAir(blockPos.method_10074())) {
+        if (iWorld.isAir(blockPos.down())) {
             ++k;
         }
         if (j == springFeatureConfig.field_21285 && k == springFeatureConfig.field_21286) {

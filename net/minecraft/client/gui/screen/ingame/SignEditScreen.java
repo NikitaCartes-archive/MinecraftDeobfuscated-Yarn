@@ -11,20 +11,19 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SignBlock;
 import net.minecraft.block.entity.SignBlockEntity;
+import net.minecraft.class_4730;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.block.entity.SignBlockEntityRenderer;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.SelectionManager;
 import net.minecraft.client.util.Texts;
 import net.minecraft.client.util.math.Matrix4f;
@@ -134,11 +133,11 @@ extends Screen {
         matrixStack.push();
         matrixStack.scale(0.6666667f, -0.6666667f, -0.6666667f);
         VertexConsumerProvider.Immediate immediate = this.minecraft.getBufferBuilders().getEntityVertexConsumers();
-        Sprite sprite = this.minecraft.getSpriteAtlas().getSprite(SignBlockEntityRenderer.getModelTexture(blockState.getBlock()));
-        VertexConsumer vertexConsumer = immediate.getBuffer(RenderLayer.getCutout());
-        this.field_21525.field_21530.render(matrixStack, vertexConsumer, 0xF000F0, OverlayTexture.DEFAULT_UV, sprite);
+        class_4730 lv = SignBlockEntityRenderer.getModelTexture(blockState.getBlock());
+        VertexConsumer vertexConsumer = lv.method_24145(immediate, this.field_21525::getLayer);
+        this.field_21525.field_21530.render(matrixStack, vertexConsumer, 0xF000F0, OverlayTexture.DEFAULT_UV);
         if (bl) {
-            this.field_21525.field_21531.render(matrixStack, vertexConsumer, 0xF000F0, OverlayTexture.DEFAULT_UV, sprite);
+            this.field_21525.field_21531.render(matrixStack, vertexConsumer, 0xF000F0, OverlayTexture.DEFAULT_UV);
         }
         matrixStack.pop();
         float k = 0.010416667f;

@@ -25,7 +25,8 @@ extends EntityRenderer<TntEntity> {
         this.field_4673 = 0.5f;
     }
 
-    public void method_4135(TntEntity tntEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+    @Override
+    public void render(TntEntity tntEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         matrixStack.push();
         matrixStack.translate(0.0, 0.5, 0.0);
         if ((float)tntEntity.getFuseTimer() - g + 1.0f < 10.0f) {
@@ -43,7 +44,8 @@ extends EntityRenderer<TntEntity> {
         super.render(tntEntity, f, g, matrixStack, vertexConsumerProvider, i);
     }
 
-    public Identifier method_4136(TntEntity tntEntity) {
+    @Override
+    public Identifier getTexture(TntEntity tntEntity) {
         return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
     }
 }

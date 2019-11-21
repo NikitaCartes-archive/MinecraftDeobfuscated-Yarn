@@ -35,6 +35,7 @@ import net.minecraft.client.render.debug.WaterDebugRenderer;
 import net.minecraft.client.render.debug.WorldGenAttemptDebugRenderer;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Rotation3;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.util.hit.EntityHitResult;
@@ -192,9 +193,8 @@ public class DebugRenderer {
         RenderSystem.pushMatrix();
         RenderSystem.translatef((float)(d - j), (float)(e - k) + 0.07f, (float)(f - l));
         RenderSystem.normal3f(0.0f, 1.0f, 0.0f);
-        RenderSystem.scalef(g, -g, g);
-        RenderSystem.rotatef(180.0f, 0.0f, 1.0f, 0.0f);
         RenderSystem.multMatrix(new Matrix4f(camera.method_23767()));
+        RenderSystem.scalef(g, -g, g);
         RenderSystem.enableTexture();
         if (bl2) {
             RenderSystem.disableDepthTest();
@@ -204,7 +204,10 @@ public class DebugRenderer {
         RenderSystem.depthMask(true);
         RenderSystem.scalef(-1.0f, 1.0f, 1.0f);
         float m = bl ? (float)(-textRenderer.getStringWidth(string)) / 2.0f : 0.0f;
-        textRenderer.draw(string, m -= h / g, 0.0f, i);
+        RenderSystem.enableAlphaTest();
+        VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
+        textRenderer.draw(string, m -= h / g, 0.0f, i, false, Rotation3.identity().getMatrix(), immediate, bl2, 0, 0xF000F0);
+        immediate.draw();
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.enableDepthTest();
         RenderSystem.popMatrix();

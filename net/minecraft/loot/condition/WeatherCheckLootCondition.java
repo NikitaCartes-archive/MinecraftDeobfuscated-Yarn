@@ -25,7 +25,8 @@ implements LootCondition {
         this.thundering = boolean2;
     }
 
-    public boolean method_957(LootContext lootContext) {
+    @Override
+    public boolean test(LootContext lootContext) {
         ServerWorld serverWorld = lootContext.getWorld();
         if (this.raining != null && this.raining.booleanValue() != serverWorld.isRaining()) {
             return false;
@@ -35,7 +36,7 @@ implements LootCondition {
 
     @Override
     public /* synthetic */ boolean test(Object object) {
-        return this.method_957((LootContext)object);
+        return this.test((LootContext)object);
     }
 
     public static class Factory
@@ -44,12 +45,14 @@ implements LootCondition {
             super(new Identifier("weather_check"), WeatherCheckLootCondition.class);
         }
 
-        public void method_960(JsonObject jsonObject, WeatherCheckLootCondition weatherCheckLootCondition, JsonSerializationContext jsonSerializationContext) {
+        @Override
+        public void toJson(JsonObject jsonObject, WeatherCheckLootCondition weatherCheckLootCondition, JsonSerializationContext jsonSerializationContext) {
             jsonObject.addProperty("raining", weatherCheckLootCondition.raining);
             jsonObject.addProperty("thundering", weatherCheckLootCondition.thundering);
         }
 
-        public WeatherCheckLootCondition method_961(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+        @Override
+        public WeatherCheckLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
             Boolean boolean_ = jsonObject.has("raining") ? Boolean.valueOf(JsonHelper.getBoolean(jsonObject, "raining")) : null;
             Boolean boolean2 = jsonObject.has("thundering") ? Boolean.valueOf(JsonHelper.getBoolean(jsonObject, "thundering")) : null;
             return new WeatherCheckLootCondition(boolean_, boolean2);
@@ -57,7 +60,7 @@ implements LootCondition {
 
         @Override
         public /* synthetic */ LootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            return this.method_961(jsonObject, jsonDeserializationContext);
+            return this.fromJson(jsonObject, jsonDeserializationContext);
         }
     }
 }

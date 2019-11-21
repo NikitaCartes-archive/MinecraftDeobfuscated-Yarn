@@ -107,7 +107,8 @@ extends AlwaysSelectedEntryListWidget<Entry> {
         return this.parent.getFocused() == this;
     }
 
-    public void method_20157(@Nullable Entry entry) {
+    @Override
+    public void setSelected(@Nullable Entry entry) {
         super.setSelected(entry);
         if (entry != null) {
             LevelSummary levelSummary = entry.level;
@@ -131,7 +132,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
 
     @Override
     public /* synthetic */ void setSelected(@Nullable EntryListWidget.Entry entry) {
-        this.method_20157((Entry)entry);
+        this.setSelected((Entry)entry);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -222,7 +223,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
 
         @Override
         public boolean mouseClicked(double d, double e, int i) {
-            WorldListWidget.this.method_20157(this);
+            WorldListWidget.this.setSelected(this);
             this.screen.worldSelected(WorldListWidget.this.method_20159().isPresent());
             if (d - (double)WorldListWidget.this.getRowLeft() <= 32.0) {
                 this.play();

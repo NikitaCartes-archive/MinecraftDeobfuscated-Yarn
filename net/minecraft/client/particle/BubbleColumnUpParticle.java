@@ -61,7 +61,8 @@ extends SpriteBillboardParticle {
             this.field_17785 = spriteProvider;
         }
 
-        public Particle method_3012(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+        @Override
+        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
             BubbleColumnUpParticle bubbleColumnUpParticle = new BubbleColumnUpParticle(world, d, e, f, g, h, i);
             bubbleColumnUpParticle.setSprite(this.field_17785);
             return bubbleColumnUpParticle;

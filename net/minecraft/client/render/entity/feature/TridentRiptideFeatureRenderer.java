@@ -29,7 +29,8 @@ extends FeatureRenderer<T, PlayerEntityModel<T>> {
         this.field_21012.addCuboid(-8.0f, -16.0f, -8.0f, 16.0f, 32.0f, 16.0f);
     }
 
-    public void method_4203(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l) {
+    @Override
+    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l) {
         if (!((LivingEntity)livingEntity).isUsingRiptide()) {
             return;
         }
@@ -41,7 +42,7 @@ extends FeatureRenderer<T, PlayerEntityModel<T>> {
             float o = 0.75f * (float)m;
             matrixStack.scale(o, o, o);
             matrixStack.translate(0.0, -0.2f + 0.6f * (float)m, 0.0);
-            this.field_21012.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, null);
+            this.field_21012.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
             matrixStack.pop();
         }
     }

@@ -162,7 +162,7 @@ extends BlockWithEntity {
     }
 
     private static void updateNeighborAlways(World world, BlockPos blockPos, BlockState blockState) {
-        world.updateNeighborsAlways(blockPos.method_10074(), blockState.getBlock());
+        world.updateNeighborsAlways(blockPos.down(), blockState.getBlock());
     }
 
     @Override
@@ -179,7 +179,7 @@ extends BlockWithEntity {
             this.dropBook(blockState, world, blockPos);
         }
         if (blockState.get(POWERED).booleanValue()) {
-            world.updateNeighborsAlways(blockPos.method_10074(), this);
+            world.updateNeighborsAlways(blockPos.down(), this);
         }
         super.onBlockRemoved(blockState, world, blockPos, blockState2, bl);
     }

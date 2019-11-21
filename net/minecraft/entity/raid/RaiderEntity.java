@@ -30,7 +30,6 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.IllagerEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.mob.PatrolEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -350,9 +349,9 @@ extends PatrolEntity {
         public void tick() {
             if (this.raider.getNavigation().isIdle()) {
                 Vec3d vec3d = new Vec3d(this.home);
-                Vec3d vec3d2 = TargetFinder.findTargetTowards((MobEntityWithAi)this.raider, 16, 7, vec3d, 0.3141592741012573);
+                Vec3d vec3d2 = TargetFinder.findTargetTowards(this.raider, 16, 7, vec3d, 0.3141592741012573);
                 if (vec3d2 == null) {
-                    vec3d2 = TargetFinder.method_23735(this.raider, 8, 7, vec3d);
+                    vec3d2 = TargetFinder.findTargetTowards(this.raider, 8, 7, vec3d);
                 }
                 if (vec3d2 == null) {
                     this.finished = true;

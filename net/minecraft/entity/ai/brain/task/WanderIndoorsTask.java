@@ -25,11 +25,13 @@ extends Task<MobEntityWithAi> {
         this.speed = f;
     }
 
-    protected boolean method_20421(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
+    @Override
+    protected boolean shouldRun(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
         return !serverWorld.isSkyVisible(new BlockPos(mobEntityWithAi));
     }
 
-    protected void method_20422(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
+    @Override
+    protected void run(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
         BlockPos blockPos2 = new BlockPos(mobEntityWithAi);
         List list = BlockPos.stream(blockPos2.add(-1, -1, -1), blockPos2.add(1, 1, 1)).map(BlockPos::toImmutable).collect(Collectors.toList());
         Collections.shuffle(list);

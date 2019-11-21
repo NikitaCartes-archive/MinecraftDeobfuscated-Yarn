@@ -147,7 +147,7 @@ extends Entity {
         BlockPos blockPos;
         double d = 0.5;
         if (this.target == null) {
-            blockPos = new BlockPos(this).method_10074();
+            blockPos = new BlockPos(this).down();
         } else {
             d = (double)this.target.getHeight() * 0.5;
             blockPos = new BlockPos(this.target.getX(), this.target.getY() + d, this.target.getZ());
@@ -169,7 +169,7 @@ extends Entity {
             if (axis != Direction.Axis.Y) {
                 if (blockPos2.getY() < blockPos.getY() && this.world.isAir(blockPos2.up())) {
                     list.add(Direction.UP);
-                } else if (blockPos2.getY() > blockPos.getY() && this.world.isAir(blockPos2.method_10074())) {
+                } else if (blockPos2.getY() > blockPos.getY() && this.world.isAir(blockPos2.down())) {
                     list.add(Direction.DOWN);
                 }
             }
@@ -296,12 +296,6 @@ extends Entity {
     @Override
     public float getBrightnessAtEyes() {
         return 1.0f;
-    }
-
-    @Override
-    @Environment(value=EnvType.CLIENT)
-    public int getLightmapCoordinates() {
-        return 15;
     }
 
     protected void onHit(HitResult hitResult) {

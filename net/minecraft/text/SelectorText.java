@@ -54,7 +54,8 @@ implements ParsableText {
         return this.pattern;
     }
 
-    public SelectorText method_10931() {
+    @Override
+    public SelectorText copy() {
         return new SelectorText(this.pattern);
     }
 
@@ -77,7 +78,7 @@ implements ParsableText {
 
     @Override
     public /* synthetic */ Text copy() {
-        return this.method_10931();
+        return this.copy();
     }
 }
 

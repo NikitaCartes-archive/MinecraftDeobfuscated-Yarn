@@ -34,7 +34,8 @@ extends Sensor<MobEntity> {
         return ImmutableSet.of(MemoryModuleType.NEAREST_BED);
     }
 
-    protected void method_21646(ServerWorld serverWorld, MobEntity mobEntity) {
+    @Override
+    protected void sense(ServerWorld serverWorld, MobEntity mobEntity) {
         if (!mobEntity.isBaby()) {
             return;
         }

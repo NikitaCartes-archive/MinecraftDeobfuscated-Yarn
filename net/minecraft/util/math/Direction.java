@@ -187,15 +187,15 @@ public enum Direction implements StringIdentifiable
     }
 
     public int getOffsetX() {
-        return this.axis == Axis.X ? this.direction.offset() : 0;
+        return this.vector.getX();
     }
 
     public int getOffsetY() {
-        return this.axis == Axis.Y ? this.direction.offset() : 0;
+        return this.vector.getY();
     }
 
     public int getOffsetZ() {
-        return this.axis == Axis.Z ? this.direction.offset() : 0;
+        return this.vector.getZ();
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -322,7 +322,8 @@ public enum Direction implements StringIdentifiable
             return this.facingArray[random.nextInt(this.facingArray.length)];
         }
 
-        public boolean method_10182(@Nullable Direction direction) {
+        @Override
+        public boolean test(@Nullable Direction direction) {
             return direction != null && direction.getAxis().getType() == this;
         }
 
@@ -333,7 +334,7 @@ public enum Direction implements StringIdentifiable
 
         @Override
         public /* synthetic */ boolean test(@Nullable Object object) {
-            return this.method_10182((Direction)object);
+            return this.test((Direction)object);
         }
     }
 
@@ -375,7 +376,7 @@ public enum Direction implements StringIdentifiable
 
             @Override
             public /* synthetic */ boolean test(@Nullable Object object) {
-                return super.method_10176((Direction)object);
+                return super.test((Direction)object);
             }
         }
         ,
@@ -393,7 +394,7 @@ public enum Direction implements StringIdentifiable
 
             @Override
             public /* synthetic */ boolean test(@Nullable Object object) {
-                return super.method_10176((Direction)object);
+                return super.test((Direction)object);
             }
         }
         ,
@@ -411,7 +412,7 @@ public enum Direction implements StringIdentifiable
 
             @Override
             public /* synthetic */ boolean test(@Nullable Object object) {
-                return super.method_10176((Direction)object);
+                return super.test((Direction)object);
             }
         };
 
@@ -448,7 +449,8 @@ public enum Direction implements StringIdentifiable
             return Axis.values()[random.nextInt(Axis.values().length)];
         }
 
-        public boolean method_10176(@Nullable Direction direction) {
+        @Override
+        public boolean test(@Nullable Direction direction) {
             return direction != null && direction.getAxis() == this;
         }
 
@@ -476,7 +478,7 @@ public enum Direction implements StringIdentifiable
 
         @Override
         public /* synthetic */ boolean test(@Nullable Object object) {
-            return this.method_10176((Direction)object);
+            return this.test((Direction)object);
         }
 
         static {

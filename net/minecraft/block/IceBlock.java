@@ -37,7 +37,7 @@ extends TransparentBlock {
                 world.removeBlock(blockPos, false);
                 return;
             }
-            Material material = world.getBlockState(blockPos.method_10074()).getMaterial();
+            Material material = world.getBlockState(blockPos.down()).getMaterial();
             if (material.blocksMovement() || material.isLiquid()) {
                 world.setBlockState(blockPos, Blocks.WATER.getDefaultState());
             }

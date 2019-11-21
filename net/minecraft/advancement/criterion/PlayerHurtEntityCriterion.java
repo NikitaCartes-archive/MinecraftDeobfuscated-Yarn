@@ -25,7 +25,8 @@ extends AbstractCriterion<Conditions> {
         return ID;
     }
 
-    public Conditions method_9098(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+    @Override
+    public Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
         DamagePredicate damagePredicate = DamagePredicate.deserialize(jsonObject.get("damage"));
         EntityPredicate entityPredicate = EntityPredicate.fromJson(jsonObject.get("entity"));
         return new Conditions(damagePredicate, entityPredicate);
@@ -37,7 +38,7 @@ extends AbstractCriterion<Conditions> {
 
     @Override
     public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.method_9098(jsonObject, jsonDeserializationContext);
+        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
     }
 
     public static class Conditions

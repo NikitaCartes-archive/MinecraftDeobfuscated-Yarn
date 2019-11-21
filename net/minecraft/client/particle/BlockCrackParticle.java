@@ -104,7 +104,8 @@ extends SpriteBillboardParticle {
     @Environment(value=EnvType.CLIENT)
     public static class Factory
     implements ParticleFactory<BlockStateParticleEffect> {
-        public Particle method_3109(BlockStateParticleEffect blockStateParticleEffect, World world, double d, double e, double f, double g, double h, double i) {
+        @Override
+        public Particle createParticle(BlockStateParticleEffect blockStateParticleEffect, World world, double d, double e, double f, double g, double h, double i) {
             BlockState blockState = blockStateParticleEffect.getBlockState();
             if (blockState.isAir() || blockState.getBlock() == Blocks.MOVING_PISTON) {
                 return null;

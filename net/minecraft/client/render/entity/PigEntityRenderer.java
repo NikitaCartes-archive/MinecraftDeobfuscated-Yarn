@@ -22,7 +22,8 @@ extends MobEntityRenderer<PigEntity, PigEntityModel<PigEntity>> {
         this.addFeature(new PigSaddleFeatureRenderer(this));
     }
 
-    public Identifier method_4087(PigEntity pigEntity) {
+    @Override
+    public Identifier getTexture(PigEntity pigEntity) {
         return SKIN;
     }
 }

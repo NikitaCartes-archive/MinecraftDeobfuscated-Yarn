@@ -57,7 +57,7 @@ implements Fertilizable {
 
     @Override
     public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
-        return worldView.getBlockState(blockPos.method_10074()).matches(BlockTags.BAMBOO_PLANTABLE_ON);
+        return worldView.getBlockState(blockPos.down()).matches(BlockTags.BAMBOO_PLANTABLE_ON);
     }
 
     @Override

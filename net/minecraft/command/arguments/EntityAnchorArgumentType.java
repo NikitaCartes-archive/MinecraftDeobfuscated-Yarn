@@ -37,7 +37,8 @@ implements ArgumentType<EntityAnchor> {
         return new EntityAnchorArgumentType();
     }
 
-    public EntityAnchor method_9292(StringReader stringReader) throws CommandSyntaxException {
+    @Override
+    public EntityAnchor parse(StringReader stringReader) throws CommandSyntaxException {
         int i = stringReader.getCursor();
         String string = stringReader.readUnquotedString();
         EntityAnchor entityAnchor = EntityAnchor.fromId(string);
@@ -60,7 +61,7 @@ implements ArgumentType<EntityAnchor> {
 
     @Override
     public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.method_9292(stringReader);
+        return this.parse(stringReader);
     }
 
     public static enum EntityAnchor {

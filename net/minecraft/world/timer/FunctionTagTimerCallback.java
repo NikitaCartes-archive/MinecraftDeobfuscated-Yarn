@@ -20,7 +20,8 @@ implements TimerCallback<MinecraftServer> {
         this.name = identifier;
     }
 
-    public void method_962(MinecraftServer minecraftServer, Timer<MinecraftServer> timer, long l) {
+    @Override
+    public void call(MinecraftServer minecraftServer, Timer<MinecraftServer> timer, long l) {
         CommandFunctionManager commandFunctionManager = minecraftServer.getCommandFunctionManager();
         Tag<CommandFunction> tag = commandFunctionManager.getTags().getOrCreate(this.name);
         for (CommandFunction commandFunction : tag.values()) {
@@ -34,18 +35,20 @@ implements TimerCallback<MinecraftServer> {
             super(new Identifier("function_tag"), FunctionTagTimerCallback.class);
         }
 
-        public void method_964(CompoundTag compoundTag, FunctionTagTimerCallback functionTagTimerCallback) {
+        @Override
+        public void serialize(CompoundTag compoundTag, FunctionTagTimerCallback functionTagTimerCallback) {
             compoundTag.putString("Name", functionTagTimerCallback.name.toString());
         }
 
-        public FunctionTagTimerCallback method_965(CompoundTag compoundTag) {
+        @Override
+        public FunctionTagTimerCallback deserialize(CompoundTag compoundTag) {
             Identifier identifier = new Identifier(compoundTag.getString("Name"));
             return new FunctionTagTimerCallback(identifier);
         }
 
         @Override
         public /* synthetic */ TimerCallback deserialize(CompoundTag compoundTag) {
-            return this.method_965(compoundTag);
+            return this.deserialize(compoundTag);
         }
     }
 }

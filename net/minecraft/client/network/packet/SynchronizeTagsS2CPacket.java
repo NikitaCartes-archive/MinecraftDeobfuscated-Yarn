@@ -32,7 +32,8 @@ implements Packet<ClientPlayPacketListener> {
         this.tagManager.toPacket(packetByteBuf);
     }
 
-    public void method_12001(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onSynchronizeTags(this);
     }
 

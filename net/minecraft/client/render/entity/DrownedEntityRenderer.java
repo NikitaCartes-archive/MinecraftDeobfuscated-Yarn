@@ -27,12 +27,13 @@ extends ZombieBaseEntityRenderer<DrownedEntity, DrownedEntityModel<DrownedEntity
     }
 
     @Override
-    public Identifier method_4163(ZombieEntity zombieEntity) {
+    public Identifier getTexture(ZombieEntity zombieEntity) {
         return SKIN;
     }
 
-    protected void method_4164(DrownedEntity drownedEntity, MatrixStack matrixStack, float f, float g, float h) {
-        super.method_17144(drownedEntity, matrixStack, f, g, h);
+    @Override
+    protected void setupTransforms(DrownedEntity drownedEntity, MatrixStack matrixStack, float f, float g, float h) {
+        super.setupTransforms(drownedEntity, matrixStack, f, g, h);
         float i = drownedEntity.getLeaningPitch(h);
         if (i > 0.0f) {
             matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(MathHelper.lerp(i, drownedEntity.pitch, -10.0f - drownedEntity.pitch)));

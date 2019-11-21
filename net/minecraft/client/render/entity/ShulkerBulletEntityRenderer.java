@@ -22,13 +22,20 @@ import net.minecraft.util.math.MathHelper;
 public class ShulkerBulletEntityRenderer
 extends EntityRenderer<ShulkerBulletEntity> {
     private static final Identifier SKIN = new Identifier("textures/entity/shulker/spark.png");
+    private static final RenderLayer field_21744 = RenderLayer.getEntityTranslucent(SKIN);
     private final ShulkerBulletEntityModel<ShulkerBulletEntity> model = new ShulkerBulletEntityModel();
 
     public ShulkerBulletEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher);
     }
 
-    public void method_4103(ShulkerBulletEntity shulkerBulletEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+    @Override
+    protected int method_24087(ShulkerBulletEntity shulkerBulletEntity, float f) {
+        return 15;
+    }
+
+    @Override
+    public void render(ShulkerBulletEntity shulkerBulletEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         matrixStack.push();
         float h = MathHelper.method_22859(shulkerBulletEntity.prevYaw, shulkerBulletEntity.yaw, g);
         float j = MathHelper.lerp(g, shulkerBulletEntity.prevPitch, shulkerBulletEntity.pitch);
@@ -40,15 +47,16 @@ extends EntityRenderer<ShulkerBulletEntity> {
         matrixStack.scale(-0.5f, -0.5f, 0.5f);
         this.model.setAngles(shulkerBulletEntity, 0.0f, 0.0f, 0.0f, h, j);
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(SKIN));
-        this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f);
+        this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f, 1.0f);
         matrixStack.scale(1.5f, 1.5f, 1.5f);
-        VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.getEntityForceTranslucent(SKIN));
-        this.model.render(matrixStack, vertexConsumer2, i, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f);
+        VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(field_21744);
+        this.model.render(matrixStack, vertexConsumer2, i, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f, 0.15f);
         matrixStack.pop();
         super.render(shulkerBulletEntity, f, g, matrixStack, vertexConsumerProvider, i);
     }
 
-    public Identifier method_4105(ShulkerBulletEntity shulkerBulletEntity) {
+    @Override
+    public Identifier getTexture(ShulkerBulletEntity shulkerBulletEntity) {
         return SKIN;
     }
 }

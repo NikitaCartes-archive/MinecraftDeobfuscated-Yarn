@@ -21,7 +21,8 @@ extends SpecialCraftingRecipe {
         super(identifier);
     }
 
-    public boolean method_17732(CraftingInventory craftingInventory, World world) {
+    @Override
+    public boolean matches(CraftingInventory craftingInventory, World world) {
         ItemStack itemStack = ItemStack.EMPTY;
         ItemStack itemStack2 = ItemStack.EMPTY;
         for (int i = 0; i < craftingInventory.getInvSize(); ++i) {
@@ -49,7 +50,8 @@ extends SpecialCraftingRecipe {
         return !itemStack.isEmpty() && !itemStack2.isEmpty();
     }
 
-    public ItemStack method_17731(CraftingInventory craftingInventory) {
+    @Override
+    public ItemStack craft(CraftingInventory craftingInventory) {
         ItemStack itemStack = ItemStack.EMPTY;
         ItemStack itemStack2 = ItemStack.EMPTY;
         for (int i = 0; i < craftingInventory.getInvSize(); ++i) {
@@ -66,7 +68,7 @@ extends SpecialCraftingRecipe {
             return itemStack2;
         }
         CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
-        CompoundTag compoundTag2 = compoundTag == null ? new CompoundTag() : compoundTag.method_10553();
+        CompoundTag compoundTag2 = compoundTag == null ? new CompoundTag() : compoundTag.copy();
         compoundTag2.putInt("Base", ((BannerItem)itemStack.getItem()).getColor().getId());
         itemStack2.putSubTag("BlockEntityTag", compoundTag2);
         return itemStack2;

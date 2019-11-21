@@ -85,7 +85,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeShort(this.velocityZ);
     }
 
-    public void method_11217(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onMobSpawn(this);
     }
 

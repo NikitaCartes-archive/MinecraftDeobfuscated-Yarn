@@ -63,14 +63,16 @@ implements IntUnaryOperator {
     public static class Serializer
     implements JsonDeserializer<BoundedIntUnaryOperator>,
     JsonSerializer<BoundedIntUnaryOperator> {
-        public BoundedIntUnaryOperator method_286(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        @Override
+        public BoundedIntUnaryOperator deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             JsonObject jsonObject = JsonHelper.asObject(jsonElement, "value");
             Integer integer = jsonObject.has("min") ? Integer.valueOf(JsonHelper.getInt(jsonObject, "min")) : null;
             Integer integer2 = jsonObject.has("max") ? Integer.valueOf(JsonHelper.getInt(jsonObject, "max")) : null;
             return new BoundedIntUnaryOperator(integer, integer2);
         }
 
-        public JsonElement method_287(BoundedIntUnaryOperator boundedIntUnaryOperator, Type type, JsonSerializationContext jsonSerializationContext) {
+        @Override
+        public JsonElement serialize(BoundedIntUnaryOperator boundedIntUnaryOperator, Type type, JsonSerializationContext jsonSerializationContext) {
             JsonObject jsonObject = new JsonObject();
             if (boundedIntUnaryOperator.max != null) {
                 jsonObject.addProperty("max", boundedIntUnaryOperator.max);
@@ -83,12 +85,12 @@ implements IntUnaryOperator {
 
         @Override
         public /* synthetic */ JsonElement serialize(Object object, Type type, JsonSerializationContext jsonSerializationContext) {
-            return this.method_287((BoundedIntUnaryOperator)object, type, jsonSerializationContext);
+            return this.serialize((BoundedIntUnaryOperator)object, type, jsonSerializationContext);
         }
 
         @Override
         public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.method_286(jsonElement, type, jsonDeserializationContext);
+            return this.deserialize(jsonElement, type, jsonDeserializationContext);
         }
     }
 }

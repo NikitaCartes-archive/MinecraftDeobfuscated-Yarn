@@ -3,7 +3,6 @@
  */
 package net.minecraft.client.render.item;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -13,12 +12,13 @@ import java.util.Random;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4720;
+import net.minecraft.class_4722;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.DelegatingVertexConsumer;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderLayers;
@@ -104,7 +104,7 @@ implements SynchronousResourceReloadListener {
             BuiltinModelItemRenderer.INSTANCE.render(itemStack, matrixStack, vertexConsumerProvider, i, j);
         } else {
             RenderLayer renderLayer = RenderLayers.getItemLayer(itemStack);
-            RenderLayer renderLayer2 = bl2 && Objects.equals(renderLayer, RenderLayer.method_23949()) ? RenderLayer.method_23950() : renderLayer;
+            RenderLayer renderLayer2 = bl2 && Objects.equals(renderLayer, class_4722.method_24075()) ? class_4722.method_24076() : renderLayer;
             VertexConsumer vertexConsumer = ItemRenderer.getArmorVertexConsumer(vertexConsumerProvider, renderLayer2, true, itemStack.hasEnchantmentGlint());
             this.method_23182(bakedModel, itemStack, i, j, matrixStack, vertexConsumer);
         }
@@ -113,7 +113,7 @@ implements SynchronousResourceReloadListener {
 
     public static VertexConsumer getArmorVertexConsumer(VertexConsumerProvider vertexConsumerProvider, RenderLayer renderLayer, boolean bl, boolean bl2) {
         if (bl2) {
-            return new DelegatingVertexConsumer(ImmutableList.of(vertexConsumerProvider.getBuffer(bl ? RenderLayer.getGlint() : RenderLayer.getEntityGlint()), vertexConsumerProvider.getBuffer(renderLayer)));
+            return class_4720.method_24037(vertexConsumerProvider.getBuffer(bl ? RenderLayer.getGlint() : RenderLayer.getEntityGlint()), vertexConsumerProvider.getBuffer(renderLayer));
         }
         return vertexConsumerProvider.getBuffer(renderLayer);
     }

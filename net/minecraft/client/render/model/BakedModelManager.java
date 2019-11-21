@@ -8,11 +8,13 @@ import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
+import net.minecraft.class_4724;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.render.block.BlockModels;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.resource.ResourceManager;
@@ -22,17 +24,21 @@ import net.minecraft.util.profiler.Profiler;
 
 @Environment(value=EnvType.CLIENT)
 public class BakedModelManager
-extends SinglePreparationResourceReloadListener<ModelLoader> {
+extends SinglePreparationResourceReloadListener<ModelLoader>
+implements AutoCloseable {
     private Map<Identifier, BakedModel> models;
-    private final SpriteAtlasTexture spriteAtlas;
+    private class_4724 field_21775;
     private final BlockModels blockModelCache;
+    private final TextureManager field_21776;
     private final BlockColors colorMap;
+    private final int field_21777;
     private BakedModel missingModel;
     private Object2IntMap<BlockState> stateLookup;
 
-    public BakedModelManager(SpriteAtlasTexture spriteAtlasTexture, BlockColors blockColors) {
-        this.spriteAtlas = spriteAtlasTexture;
+    public BakedModelManager(TextureManager textureManager, BlockColors blockColors, int i) {
+        this.field_21776 = textureManager;
         this.colorMap = blockColors;
+        this.field_21777 = i;
         this.blockModelCache = new BlockModels(this);
     }
 
@@ -48,17 +54,19 @@ extends SinglePreparationResourceReloadListener<ModelLoader> {
         return this.blockModelCache;
     }
 
-    protected ModelLoader method_18178(ResourceManager resourceManager, Profiler profiler) {
+    @Override
+    protected ModelLoader prepare(ResourceManager resourceManager, Profiler profiler) {
         profiler.startTick();
-        ModelLoader modelLoader = new ModelLoader(resourceManager, this.spriteAtlas, this.colorMap, profiler);
+        ModelLoader modelLoader = new ModelLoader(resourceManager, this.colorMap, profiler, this.field_21777);
         profiler.endTick();
         return modelLoader;
     }
 
-    protected void method_18179(ModelLoader modelLoader, ResourceManager resourceManager, Profiler profiler) {
+    @Override
+    protected void apply(ModelLoader modelLoader, ResourceManager resourceManager, Profiler profiler) {
         profiler.startTick();
         profiler.push("upload");
-        modelLoader.upload(profiler);
+        this.field_21775 = modelLoader.upload(this.field_21776, this.field_21777, profiler);
         this.models = modelLoader.getBakedModelMap();
         this.stateLookup = modelLoader.getStateLookup();
         this.missingModel = this.models.get(ModelLoader.MISSING);
@@ -82,9 +90,22 @@ extends SinglePreparationResourceReloadListener<ModelLoader> {
         return true;
     }
 
+    public SpriteAtlasTexture method_24153(Identifier identifier) {
+        return this.field_21775.method_24098(identifier);
+    }
+
+    @Override
+    public void close() {
+        this.field_21775.close();
+    }
+
+    public void method_24152(int i) {
+        this.field_21775.method_24096(this.field_21776, i);
+    }
+
     @Override
     protected /* synthetic */ Object prepare(ResourceManager resourceManager, Profiler profiler) {
-        return this.method_18178(resourceManager, profiler);
+        return this.prepare(resourceManager, profiler);
     }
 }
 

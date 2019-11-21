@@ -28,11 +28,12 @@ extends Feature<BushFeatureConfig> {
         super(function);
     }
 
-    public boolean method_13471(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, BushFeatureConfig bushFeatureConfig) {
+    @Override
+    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, BushFeatureConfig bushFeatureConfig) {
         int t;
         int j;
         while (blockPos.getY() > 5 && iWorld.isAir(blockPos)) {
-            blockPos = blockPos.method_10074();
+            blockPos = blockPos.down();
         }
         if (blockPos.getY() <= 4) {
             return false;
@@ -91,7 +92,7 @@ extends Feature<BushFeatureConfig> {
             for (int s = 0; s < 16; ++s) {
                 for (t = 4; t < 8; ++t) {
                     BlockPos blockPos2;
-                    if (!bls[(j * 16 + s) * 8 + t] || !LakeFeature.method_23396(iWorld.getBlockState(blockPos2 = blockPos.add(j, t - 1, s)).getBlock()) || iWorld.getLightLevel(LightType.SKY, blockPos.add(j, t, s)) <= 0) continue;
+                    if (!bls[(j * 16 + s) * 8 + t] || !LakeFeature.isDirt(iWorld.getBlockState(blockPos2 = blockPos.add(j, t - 1, s)).getBlock()) || iWorld.getLightLevel(LightType.SKY, blockPos.add(j, t, s)) <= 0) continue;
                     Biome biome = iWorld.method_23753(blockPos2);
                     if (biome.getSurfaceConfig().getTopMaterial().getBlock() == Blocks.MYCELIUM) {
                         iWorld.setBlockState(blockPos2, Blocks.MYCELIUM.getDefaultState(), 2);

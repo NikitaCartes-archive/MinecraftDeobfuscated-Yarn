@@ -42,8 +42,9 @@ extends LeafEntry {
             super(new Identifier("item"), ItemEntry.class);
         }
 
-        public void method_412(JsonObject jsonObject, ItemEntry itemEntry, JsonSerializationContext jsonSerializationContext) {
-            super.method_442(jsonObject, itemEntry, jsonSerializationContext);
+        @Override
+        public void toJson(JsonObject jsonObject, ItemEntry itemEntry, JsonSerializationContext jsonSerializationContext) {
+            super.toJson(jsonObject, itemEntry, jsonSerializationContext);
             Identifier identifier = Registry.ITEM.getId(itemEntry.item);
             if (identifier == null) {
                 throw new IllegalArgumentException("Can't serialize unknown item " + itemEntry.item);
@@ -51,14 +52,15 @@ extends LeafEntry {
             jsonObject.addProperty("name", identifier.toString());
         }
 
-        protected ItemEntry method_413(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
+        @Override
+        protected ItemEntry fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
             Item item = JsonHelper.getItem(jsonObject, "name");
             return new ItemEntry(item, i, j, lootConditions, lootFunctions);
         }
 
         @Override
         protected /* synthetic */ LeafEntry fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
-            return this.method_413(jsonObject, jsonDeserializationContext, i, j, lootConditions, lootFunctions);
+            return this.fromJson(jsonObject, jsonDeserializationContext, i, j, lootConditions, lootFunctions);
         }
     }
 }

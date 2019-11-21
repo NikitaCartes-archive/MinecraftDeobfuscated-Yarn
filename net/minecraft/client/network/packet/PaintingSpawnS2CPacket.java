@@ -53,7 +53,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeByte(this.facing.getHorizontal());
     }
 
-    public void method_11224(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onPaintingSpawn(this);
     }
 

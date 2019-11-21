@@ -55,7 +55,8 @@ implements Packet<ClientPlayPacketListener> {
         }
     }
 
-    public void method_11866(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onScoreboardPlayerUpdate(this);
     }
 

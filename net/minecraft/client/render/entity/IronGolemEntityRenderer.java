@@ -26,11 +26,13 @@ extends MobEntityRenderer<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>
         this.addFeature(new IronGolemFlowerFeatureRenderer(this));
     }
 
-    public Identifier method_3987(IronGolemEntity ironGolemEntity) {
+    @Override
+    public Identifier getTexture(IronGolemEntity ironGolemEntity) {
         return SKIN;
     }
 
-    protected void method_3986(IronGolemEntity ironGolemEntity, MatrixStack matrixStack, float f, float g, float h) {
+    @Override
+    protected void setupTransforms(IronGolemEntity ironGolemEntity, MatrixStack matrixStack, float f, float g, float h) {
         super.setupTransforms(ironGolemEntity, matrixStack, f, g, h);
         if ((double)ironGolemEntity.limbDistance < 0.01) {
             return;

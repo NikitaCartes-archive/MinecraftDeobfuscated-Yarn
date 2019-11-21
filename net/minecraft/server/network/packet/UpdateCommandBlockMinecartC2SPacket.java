@@ -45,7 +45,8 @@ implements Packet<ServerPlayPacketListener> {
         packetByteBuf.writeBoolean(this.trackOutput);
     }
 
-    public void method_12477(ServerPlayPacketListener serverPlayPacketListener) {
+    @Override
+    public void apply(ServerPlayPacketListener serverPlayPacketListener) {
         serverPlayPacketListener.onUpdateCommandBlockMinecart(this);
     }
 

@@ -13,23 +13,23 @@ import net.minecraft.entity.Entity;
 @Environment(value=EnvType.CLIENT)
 public class SlimeEntityModel<T extends Entity>
 extends CompositeEntityModel<T> {
-    private final ModelPart field_3571;
-    private final ModelPart field_3573;
-    private final ModelPart field_3572;
-    private final ModelPart field_3570;
+    private final ModelPart innerCube;
+    private final ModelPart rightEye;
+    private final ModelPart leftEye;
+    private final ModelPart mouth;
 
     public SlimeEntityModel(int i) {
-        this.field_3571 = new ModelPart(this, 0, i);
-        this.field_3573 = new ModelPart(this, 32, 0);
-        this.field_3572 = new ModelPart(this, 32, 4);
-        this.field_3570 = new ModelPart(this, 32, 8);
+        this.innerCube = new ModelPart(this, 0, i);
+        this.rightEye = new ModelPart(this, 32, 0);
+        this.leftEye = new ModelPart(this, 32, 4);
+        this.mouth = new ModelPart(this, 32, 8);
         if (i > 0) {
-            this.field_3571.addCuboid(-3.0f, 17.0f, -3.0f, 6.0f, 6.0f, 6.0f);
-            this.field_3573.addCuboid(-3.25f, 18.0f, -3.5f, 2.0f, 2.0f, 2.0f);
-            this.field_3572.addCuboid(1.25f, 18.0f, -3.5f, 2.0f, 2.0f, 2.0f);
-            this.field_3570.addCuboid(0.0f, 21.0f, -3.5f, 1.0f, 1.0f, 1.0f);
+            this.innerCube.addCuboid(-3.0f, 17.0f, -3.0f, 6.0f, 6.0f, 6.0f);
+            this.rightEye.addCuboid(-3.25f, 18.0f, -3.5f, 2.0f, 2.0f, 2.0f);
+            this.leftEye.addCuboid(1.25f, 18.0f, -3.5f, 2.0f, 2.0f, 2.0f);
+            this.mouth.addCuboid(0.0f, 21.0f, -3.5f, 1.0f, 1.0f, 1.0f);
         } else {
-            this.field_3571.addCuboid(-4.0f, 16.0f, -4.0f, 8.0f, 8.0f, 8.0f);
+            this.innerCube.addCuboid(-4.0f, 16.0f, -4.0f, 8.0f, 8.0f, 8.0f);
         }
     }
 
@@ -39,7 +39,7 @@ extends CompositeEntityModel<T> {
 
     @Override
     public Iterable<ModelPart> getParts() {
-        return ImmutableList.of(this.field_3571, this.field_3573, this.field_3572, this.field_3570);
+        return ImmutableList.of(this.innerCube, this.rightEye, this.leftEye, this.mouth);
     }
 }
 

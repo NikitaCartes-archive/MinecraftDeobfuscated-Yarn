@@ -68,7 +68,8 @@ implements Packet<ClientPlayPacketListener> {
         return this.category;
     }
 
-    public void method_11905(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onStopSound(this);
     }
 }

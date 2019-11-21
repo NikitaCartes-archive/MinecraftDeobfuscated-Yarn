@@ -39,7 +39,7 @@ extends Block {
 
     @Override
     public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
-        if (!FallingBlock.canFallThrough(serverWorld.getBlockState(blockPos.method_10074())) || blockPos.getY() < 0) {
+        if (!FallingBlock.canFallThrough(serverWorld.getBlockState(blockPos.down())) || blockPos.getY() < 0) {
             return;
         }
         FallingBlockEntity fallingBlockEntity = new FallingBlockEntity(serverWorld, (double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5, serverWorld.getBlockState(blockPos));
@@ -71,7 +71,7 @@ extends Block {
     @Environment(value=EnvType.CLIENT)
     public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
         BlockPos blockPos2;
-        if (random.nextInt(16) == 0 && FallingBlock.canFallThrough(world.getBlockState(blockPos2 = blockPos.method_10074()))) {
+        if (random.nextInt(16) == 0 && FallingBlock.canFallThrough(world.getBlockState(blockPos2 = blockPos.down()))) {
             double d = (float)blockPos.getX() + random.nextFloat();
             double e = (double)blockPos.getY() - 0.05;
             double f = (float)blockPos.getZ() + random.nextFloat();

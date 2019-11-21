@@ -33,7 +33,8 @@ implements ArgumentType<StatusEffect> {
         return commandContext.getArgument(string, StatusEffect.class);
     }
 
-    public StatusEffect method_9348(StringReader stringReader) throws CommandSyntaxException {
+    @Override
+    public StatusEffect parse(StringReader stringReader) throws CommandSyntaxException {
         Identifier identifier = Identifier.fromCommandInput(stringReader);
         return Registry.STATUS_EFFECT.getOrEmpty(identifier).orElseThrow(() -> INVALID_EFFECT_EXCEPTION.create(identifier));
     }
@@ -50,7 +51,7 @@ implements ArgumentType<StatusEffect> {
 
     @Override
     public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.method_9348(stringReader);
+        return this.parse(stringReader);
     }
 }
 

@@ -81,8 +81,9 @@ extends ConditionalLootFunction {
             super(new Identifier("exploration_map"), ExplorationMapLootFunction.class);
         }
 
-        public void method_505(JsonObject jsonObject, ExplorationMapLootFunction explorationMapLootFunction, JsonSerializationContext jsonSerializationContext) {
-            super.method_529(jsonObject, explorationMapLootFunction, jsonSerializationContext);
+        @Override
+        public void toJson(JsonObject jsonObject, ExplorationMapLootFunction explorationMapLootFunction, JsonSerializationContext jsonSerializationContext) {
+            super.toJson(jsonObject, explorationMapLootFunction, jsonSerializationContext);
             if (!explorationMapLootFunction.destination.equals("Buried_Treasure")) {
                 jsonObject.add("destination", jsonSerializationContext.serialize(explorationMapLootFunction.destination));
             }
@@ -100,7 +101,8 @@ extends ConditionalLootFunction {
             }
         }
 
-        public ExplorationMapLootFunction method_504(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+        @Override
+        public ExplorationMapLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
             String string = jsonObject.has("destination") ? JsonHelper.getString(jsonObject, "destination") : "Buried_Treasure";
             string = Feature.STRUCTURES.containsKey(string.toLowerCase(Locale.ROOT)) ? string : "Buried_Treasure";
             String string2 = jsonObject.has("decoration") ? JsonHelper.getString(jsonObject, "decoration") : "mansion";
@@ -118,7 +120,7 @@ extends ConditionalLootFunction {
 
         @Override
         public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            return this.method_504(jsonObject, jsonDeserializationContext, lootConditions);
+            return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
         }
     }
 
@@ -130,7 +132,8 @@ extends ConditionalLootFunction {
         private int searchRadius = 50;
         private boolean skipExistingChunks = true;
 
-        protected Builder method_501() {
+        @Override
+        protected Builder getThisBuilder() {
             return this;
         }
 
@@ -161,7 +164,7 @@ extends ConditionalLootFunction {
 
         @Override
         protected /* synthetic */ ConditionalLootFunction.Builder getThisBuilder() {
-            return this.method_501();
+            return this.getThisBuilder();
         }
     }
 }

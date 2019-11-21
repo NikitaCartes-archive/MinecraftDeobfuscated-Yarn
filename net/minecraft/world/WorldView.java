@@ -82,13 +82,13 @@ BiomeAccess.Storage {
         if (!this.isSkyVisible(blockPos2)) {
             return false;
         }
-        blockPos2 = blockPos2.method_10074();
+        blockPos2 = blockPos2.down();
         while (blockPos2.getY() > blockPos.getY()) {
             BlockState blockState = this.getBlockState(blockPos2);
             if (blockState.getOpacity(this, blockPos2) > 0 && !blockState.getMaterial().isLiquid()) {
                 return false;
             }
-            blockPos2 = blockPos2.method_10074();
+            blockPos2 = blockPos2.down();
         }
         return true;
     }
@@ -135,7 +135,7 @@ BiomeAccess.Storage {
             for (int o = i; o < j; ++o) {
                 for (int p = k; p < l; ++p) {
                     for (int q = m; q < n; ++q) {
-                        BlockState blockState = this.getBlockState(pooledMutable.method_10113(o, p, q));
+                        BlockState blockState = this.getBlockState(pooledMutable.set(o, p, q));
                         if (blockState.getFluidState().isEmpty()) continue;
                         boolean bl = true;
                         return bl;

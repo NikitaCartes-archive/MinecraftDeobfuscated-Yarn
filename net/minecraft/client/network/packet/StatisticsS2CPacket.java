@@ -27,7 +27,8 @@ implements Packet<ClientPlayPacketListener> {
         this.stats = object2IntMap;
     }
 
-    public void method_11270(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onStatistics(this);
     }
 

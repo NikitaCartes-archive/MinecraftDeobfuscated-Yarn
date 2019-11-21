@@ -25,7 +25,7 @@ extends BadlandsSurfaceBuilder {
     }
 
     @Override
-    public void method_15208(Random random, Chunk chunk, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, long m, TernarySurfaceConfig ternarySurfaceConfig) {
+    public void generate(Random random, Chunk chunk, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, long m, TernarySurfaceConfig ternarySurfaceConfig) {
         int n = i & 0xF;
         int o = j & 0xF;
         BlockState blockState3 = WHITE_TERRACOTTA;

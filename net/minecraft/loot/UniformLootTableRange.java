@@ -66,7 +66,8 @@ implements LootTableRange {
     public static class Serializer
     implements JsonDeserializer<UniformLootTableRange>,
     JsonSerializer<UniformLootTableRange> {
-        public UniformLootTableRange method_381(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        @Override
+        public UniformLootTableRange deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             if (JsonHelper.isNumber(jsonElement)) {
                 return new UniformLootTableRange(JsonHelper.asFloat(jsonElement, "value"));
             }
@@ -76,7 +77,8 @@ implements LootTableRange {
             return new UniformLootTableRange(f, g);
         }
 
-        public JsonElement method_382(UniformLootTableRange uniformLootTableRange, Type type, JsonSerializationContext jsonSerializationContext) {
+        @Override
+        public JsonElement serialize(UniformLootTableRange uniformLootTableRange, Type type, JsonSerializationContext jsonSerializationContext) {
             if (uniformLootTableRange.min == uniformLootTableRange.max) {
                 return new JsonPrimitive(Float.valueOf(uniformLootTableRange.min));
             }
@@ -88,12 +90,12 @@ implements LootTableRange {
 
         @Override
         public /* synthetic */ JsonElement serialize(Object object, Type type, JsonSerializationContext jsonSerializationContext) {
-            return this.method_382((UniformLootTableRange)object, type, jsonSerializationContext);
+            return this.serialize((UniformLootTableRange)object, type, jsonSerializationContext);
         }
 
         @Override
         public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.method_381(jsonElement, type, jsonDeserializationContext);
+            return this.deserialize(jsonElement, type, jsonDeserializationContext);
         }
     }
 }

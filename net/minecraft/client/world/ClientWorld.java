@@ -58,6 +58,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
@@ -156,7 +157,7 @@ extends World {
     }
 
     public void tickEntity(Entity entity) {
-        if (!(entity instanceof PlayerEntity) && !this.method_2935().shouldTickEntity(entity)) {
+        if (!(entity instanceof PlayerEntity) && !this.getChunkManager().shouldTickEntity(entity)) {
             return;
         }
         entity.method_22862(entity.getX(), entity.getY(), entity.getZ());
@@ -181,7 +182,7 @@ extends World {
             entity2.stopRiding();
             return;
         }
-        if (!(entity2 instanceof PlayerEntity) && !this.method_2935().shouldTickEntity(entity2)) {
+        if (!(entity2 instanceof PlayerEntity) && !this.getChunkManager().shouldTickEntity(entity2)) {
             return;
         }
         entity2.method_22862(entity2.getX(), entity2.getY(), entity2.getZ());
@@ -206,10 +207,10 @@ extends World {
         int k = MathHelper.floor(entity.getZ() / 16.0);
         if (!entity.updateNeeded || entity.chunkX != i || entity.chunkY != j || entity.chunkZ != k) {
             if (entity.updateNeeded && this.isChunkLoaded(entity.chunkX, entity.chunkZ)) {
-                this.method_8497(entity.chunkX, entity.chunkZ).remove(entity, entity.chunkY);
+                this.getChunk(entity.chunkX, entity.chunkZ).remove(entity, entity.chunkY);
             }
             if (entity.teleportRequested() || this.isChunkLoaded(i, k)) {
-                this.method_8497(i, k).addEntity(entity);
+                this.getChunk(i, k).addEntity(entity);
             } else {
                 entity.updateNeeded = false;
             }
@@ -273,7 +274,7 @@ extends World {
     private void addEntityPrivate(int i, Entity entity) {
         this.removeEntity(i);
         this.regularEntities.put(i, entity);
-        this.method_2935().method_2857(MathHelper.floor(entity.getX() / 16.0), MathHelper.floor(entity.getZ() / 16.0), ChunkStatus.FULL, true).addEntity(entity);
+        this.getChunkManager().getChunk(MathHelper.floor(entity.getX() / 16.0), MathHelper.floor(entity.getZ() / 16.0), ChunkStatus.FULL, true).addEntity(entity);
     }
 
     public void removeEntity(int i) {
@@ -287,7 +288,7 @@ extends World {
     private void finishRemovingEntity(Entity entity) {
         entity.detach();
         if (entity.updateNeeded) {
-            this.method_8497(entity.chunkX, entity.chunkZ).remove(entity);
+            this.getChunk(entity.chunkX, entity.chunkZ).remove(entity);
         }
         this.players.remove(entity);
     }
@@ -342,8 +343,8 @@ extends World {
             ParticleEffect particleEffect = fluidState.getParticle();
             if (particleEffect != null && this.random.nextInt(10) == 0) {
                 boolean bl2 = blockState.isSideSolidFullSquare(this, mutable, Direction.DOWN);
-                BlockPos blockPos = mutable.method_10074();
-                this.addParticle(blockPos, this.getBlockState(blockPos), particleEffect, bl2);
+                Vec3i blockPos = mutable.down();
+                this.addParticle((BlockPos)blockPos, this.getBlockState((BlockPos)blockPos), particleEffect, bl2);
             }
         }
         if (bl && blockState.getBlock() == Blocks.BARRIER) {
@@ -366,7 +367,7 @@ extends World {
             if (e > 0.0) {
                 this.addParticle(blockPos, particleEffect, voxelShape, (double)blockPos.getY() + e - 0.05);
             } else {
-                BlockPos blockPos2 = blockPos.method_10074();
+                BlockPos blockPos2 = blockPos.down();
                 BlockState blockState2 = this.getBlockState(blockPos2);
                 VoxelShape voxelShape2 = blockState2.getCollisionShape(this, blockPos2);
                 double f = voxelShape2.getMaximum(Direction.Axis.Y);
@@ -474,7 +475,8 @@ extends World {
         return DummyClientTickScheduler.get();
     }
 
-    public ClientChunkManager method_2935() {
+    @Override
+    public ClientChunkManager getChunkManager() {
         return (ClientChunkManager)super.getChunkManager();
     }
 
@@ -711,7 +713,7 @@ extends World {
 
     @Override
     public /* synthetic */ ChunkManager getChunkManager() {
-        return this.method_2935();
+        return this.getChunkManager();
     }
 }
 

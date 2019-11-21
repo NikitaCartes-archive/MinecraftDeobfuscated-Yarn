@@ -238,13 +238,14 @@ extends AnimalEntity {
         }
     }
 
-    public OcelotEntity method_16104(PassiveEntity passiveEntity) {
+    @Override
+    public OcelotEntity createChild(PassiveEntity passiveEntity) {
         return EntityType.OCELOT.create(this.world);
     }
 
     @Override
     public boolean isBreedingItem(ItemStack itemStack) {
-        return TAMING_INGREDIENT.method_8093(itemStack);
+        return TAMING_INGREDIENT.test(itemStack);
     }
 
     public static boolean canSpawn(EntityType<OcelotEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
@@ -258,7 +259,7 @@ extends AnimalEntity {
             if (blockPos.getY() < worldView.getSeaLevel()) {
                 return false;
             }
-            BlockState blockState = worldView.getBlockState(blockPos.method_10074());
+            BlockState blockState = worldView.getBlockState(blockPos.down());
             Block block = blockState.getBlock();
             if (block == Blocks.GRASS_BLOCK || blockState.matches(BlockTags.LEAVES)) {
                 return true;
@@ -279,7 +280,7 @@ extends AnimalEntity {
 
     @Override
     public /* synthetic */ PassiveEntity createChild(PassiveEntity passiveEntity) {
-        return this.method_16104(passiveEntity);
+        return this.createChild(passiveEntity);
     }
 
     static class OcelotTemptGoal

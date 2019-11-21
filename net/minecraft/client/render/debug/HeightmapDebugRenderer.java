@@ -40,7 +40,7 @@ implements DebugRenderer.Renderer {
         bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
         for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-40, 0, -40), blockPos.add(40, 0, 40))) {
             int i;
-            if (iWorld.getBlockState(blockPos2.add(0, i = iWorld.getTopY(Heightmap.Type.WORLD_SURFACE_WG, blockPos2.getX(), blockPos2.getZ()), 0).method_10074()).isAir()) {
+            if (iWorld.getBlockState(blockPos2.add(0, i = iWorld.getTopY(Heightmap.Type.WORLD_SURFACE_WG, blockPos2.getX(), blockPos2.getZ()), 0).down()).isAir()) {
                 WorldRenderer.drawBox(bufferBuilder, (double)((float)blockPos2.getX() + 0.25f) - d, (double)i - e, (double)((float)blockPos2.getZ() + 0.25f) - f, (double)((float)blockPos2.getX() + 0.75f) - d, (double)i + 0.09375 - e, (double)((float)blockPos2.getZ() + 0.75f) - f, 0.0f, 0.0f, 1.0f, 0.5f);
                 continue;
             }

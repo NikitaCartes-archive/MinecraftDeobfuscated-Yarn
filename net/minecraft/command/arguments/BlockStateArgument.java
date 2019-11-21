@@ -32,7 +32,8 @@ implements Predicate<CachedBlockPosition> {
         return this.state;
     }
 
-    public boolean method_9493(CachedBlockPosition cachedBlockPosition) {
+    @Override
+    public boolean test(CachedBlockPosition cachedBlockPosition) {
         BlockState blockState = cachedBlockPosition.getBlockState();
         if (blockState.getBlock() != this.state.getBlock()) {
             return false;
@@ -54,7 +55,7 @@ implements Predicate<CachedBlockPosition> {
             return false;
         }
         if (this.data != null && (blockEntity = serverWorld.getBlockEntity(blockPos)) != null) {
-            CompoundTag compoundTag = this.data.method_10553();
+            CompoundTag compoundTag = this.data.copy();
             compoundTag.putInt("x", blockPos.getX());
             compoundTag.putInt("y", blockPos.getY());
             compoundTag.putInt("z", blockPos.getZ());
@@ -65,7 +66,7 @@ implements Predicate<CachedBlockPosition> {
 
     @Override
     public /* synthetic */ boolean test(Object object) {
-        return this.method_9493((CachedBlockPosition)object);
+        return this.test((CachedBlockPosition)object);
     }
 }
 

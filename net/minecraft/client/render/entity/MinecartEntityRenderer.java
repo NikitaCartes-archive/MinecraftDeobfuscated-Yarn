@@ -34,7 +34,8 @@ extends EntityRenderer<T> {
         this.field_4673 = 0.7f;
     }
 
-    public void method_4063(T abstractMinecartEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+    @Override
+    public void render(T abstractMinecartEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         super.render(abstractMinecartEntity, f, g, matrixStack, vertexConsumerProvider, i);
         matrixStack.push();
         long l = (long)((Entity)abstractMinecartEntity).getEntityId() * 493286711L;
@@ -90,12 +91,13 @@ extends EntityRenderer<T> {
         }
         matrixStack.scale(-1.0f, -1.0f, 1.0f);
         this.model.setAngles(abstractMinecartEntity, 0.0f, 0.0f, -0.1f, 0.0f, 0.0f);
-        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(this.method_4065(abstractMinecartEntity)));
-        this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f);
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(this.getTexture(abstractMinecartEntity)));
+        this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f, 1.0f);
         matrixStack.pop();
     }
 
-    public Identifier method_4065(T abstractMinecartEntity) {
+    @Override
+    public Identifier getTexture(T abstractMinecartEntity) {
         return SKIN;
     }
 

@@ -27,8 +27,9 @@ public interface TaskQueue<T, F> {
             this.queues = IntStream.range(0, i2).mapToObj(i -> Queues.newConcurrentLinkedQueue()).collect(Collectors.toList());
         }
 
+        @Override
         @Nullable
-        public Runnable method_17346() {
+        public Runnable poll() {
             for (Queue<Runnable> queue : this.queues) {
                 Runnable runnable = queue.poll();
                 if (runnable == null) continue;
@@ -37,7 +38,8 @@ public interface TaskQueue<T, F> {
             return null;
         }
 
-        public boolean method_16913(PrioritizedTask prioritizedTask) {
+        @Override
+        public boolean add(PrioritizedTask prioritizedTask) {
             int i = prioritizedTask.getPriority();
             this.queues.get(i).add(prioritizedTask);
             return true;
@@ -51,7 +53,7 @@ public interface TaskQueue<T, F> {
         @Override
         @Nullable
         public /* synthetic */ Object poll() {
-            return this.method_17346();
+            return this.poll();
         }
     }
 

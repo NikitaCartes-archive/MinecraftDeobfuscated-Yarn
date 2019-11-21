@@ -30,7 +30,8 @@ implements Packet<ServerPlayPacketListener> {
         packetByteBuf.writeEnumConstant(this.hand);
     }
 
-    public void method_12511(ServerPlayPacketListener serverPlayPacketListener) {
+    @Override
+    public void apply(ServerPlayPacketListener serverPlayPacketListener) {
         serverPlayPacketListener.onHandSwing(this);
     }
 

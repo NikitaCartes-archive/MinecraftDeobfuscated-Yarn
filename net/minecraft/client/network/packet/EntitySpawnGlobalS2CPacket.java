@@ -51,7 +51,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeDouble(this.z);
     }
 
-    public void method_11188(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onEntitySpawnGlobal(this);
     }
 

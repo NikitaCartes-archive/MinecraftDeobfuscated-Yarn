@@ -50,7 +50,8 @@ implements Packet<ServerLoginPacketListener> {
         }
     }
 
-    public void method_12645(ServerLoginPacketListener serverLoginPacketListener) {
+    @Override
+    public void apply(ServerLoginPacketListener serverLoginPacketListener) {
         serverLoginPacketListener.onQueryResponse(this);
     }
 }

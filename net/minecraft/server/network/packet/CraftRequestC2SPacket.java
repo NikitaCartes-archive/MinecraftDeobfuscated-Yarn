@@ -42,7 +42,8 @@ implements Packet<ServerPlayPacketListener> {
         packetByteBuf.writeBoolean(this.craftAll);
     }
 
-    public void method_12317(ServerPlayPacketListener serverPlayPacketListener) {
+    @Override
+    public void apply(ServerPlayPacketListener serverPlayPacketListener) {
         serverPlayPacketListener.onCraftRequest(this);
     }
 

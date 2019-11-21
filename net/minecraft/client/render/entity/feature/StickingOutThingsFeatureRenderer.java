@@ -27,7 +27,8 @@ extends FeatureRenderer<T, M> {
 
     protected abstract void renderThing(MatrixStack var1, VertexConsumerProvider var2, int var3, Entity var4, float var5, float var6, float var7, float var8);
 
-    public void method_22132(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l) {
+    @Override
+    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l) {
         int m = this.getThingCount(livingEntity);
         Random random = new Random(((Entity)livingEntity).getEntityId());
         if (m <= 0) {

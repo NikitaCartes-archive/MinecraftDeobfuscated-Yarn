@@ -209,7 +209,8 @@ implements Comparable<StatusEffectInstance> {
         return this.permanent;
     }
 
-    public int method_5587(StatusEffectInstance statusEffectInstance) {
+    @Override
+    public int compareTo(StatusEffectInstance statusEffectInstance) {
         int i = 32147;
         if (this.getDuration() > 32147 && statusEffectInstance.getDuration() > 32147 || this.isAmbient() && statusEffectInstance.isAmbient()) {
             return ComparisonChain.start().compare(this.isAmbient(), statusEffectInstance.isAmbient()).compare(this.getEffectType().getColor(), statusEffectInstance.getEffectType().getColor()).result();
@@ -219,7 +220,7 @@ implements Comparable<StatusEffectInstance> {
 
     @Override
     public /* synthetic */ int compareTo(Object object) {
-        return this.method_5587((StatusEffectInstance)object);
+        return this.compareTo((StatusEffectInstance)object);
     }
 }
 

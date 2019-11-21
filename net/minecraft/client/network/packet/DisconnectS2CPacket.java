@@ -32,7 +32,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeText(this.reason);
     }
 
-    public void method_11467(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onDisconnect(this);
     }
 

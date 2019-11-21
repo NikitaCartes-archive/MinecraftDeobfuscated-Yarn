@@ -19,7 +19,8 @@ extends Feature<FillLayerFeatureConfig> {
         super(function);
     }
 
-    public boolean method_20312(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, FillLayerFeatureConfig fillLayerFeatureConfig) {
+    @Override
+    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, FillLayerFeatureConfig fillLayerFeatureConfig) {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (int i = 0; i < 16; ++i) {
             for (int j = 0; j < 16; ++j) {

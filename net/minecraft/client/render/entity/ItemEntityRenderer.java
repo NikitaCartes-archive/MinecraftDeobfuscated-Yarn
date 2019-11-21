@@ -49,7 +49,8 @@ extends EntityRenderer<ItemEntity> {
         return i;
     }
 
-    public void method_3996(ItemEntity itemEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+    @Override
+    public void render(ItemEntity itemEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         float t;
         float s;
         matrixStack.push();
@@ -97,7 +98,8 @@ extends EntityRenderer<ItemEntity> {
         super.render(itemEntity, f, g, matrixStack, vertexConsumerProvider, i);
     }
 
-    public Identifier method_3999(ItemEntity itemEntity) {
+    @Override
+    public Identifier getTexture(ItemEntity itemEntity) {
         return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
     }
 }

@@ -44,8 +44,8 @@ extends Feature<HugeMushroomFeatureConfig> {
         if (j < 1 || j + i + 1 >= 256) {
             return false;
         }
-        Block block = iWorld.getBlockState(blockPos.method_10074()).getBlock();
-        if (!HugeMushroomFeature.method_23396(block)) {
+        Block block = iWorld.getBlockState(blockPos.down()).getBlock();
+        if (!HugeMushroomFeature.isDirt(block)) {
             return false;
         }
         for (int k = 0; k <= i; ++k) {
@@ -61,7 +61,8 @@ extends Feature<HugeMushroomFeatureConfig> {
         return true;
     }
 
-    public boolean method_23373(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, HugeMushroomFeatureConfig hugeMushroomFeatureConfig) {
+    @Override
+    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, HugeMushroomFeatureConfig hugeMushroomFeatureConfig) {
         BlockPos.Mutable mutable;
         int i = this.method_23377(random);
         if (!this.method_23374(iWorld, blockPos, i, mutable = new BlockPos.Mutable(), hugeMushroomFeatureConfig)) {

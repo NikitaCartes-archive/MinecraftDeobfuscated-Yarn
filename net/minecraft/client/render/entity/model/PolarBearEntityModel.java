@@ -51,7 +51,8 @@ extends QuadrupedEntityModel<T> {
         this.frontLeftLeg.pivotZ -= 1.0f;
     }
 
-    public void method_17114(T polarBearEntity, float f, float g, float h, float i, float j) {
+    @Override
+    public void setAngles(T polarBearEntity, float f, float g, float h, float i, float j) {
         super.setAngles(polarBearEntity, f, g, h, i, j);
         float k = h - (float)((PolarBearEntity)polarBearEntity).age;
         float l = ((PolarBearEntity)polarBearEntity).getWarningAnimationProgress(k);

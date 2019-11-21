@@ -24,7 +24,8 @@ extends FeatureRenderer<DolphinEntity, DolphinEntityModel<DolphinEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_17160(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, DolphinEntity dolphinEntity, float f, float g, float h, float j, float k, float l) {
+    @Override
+    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, DolphinEntity dolphinEntity, float f, float g, float h, float j, float k, float l) {
         boolean bl = dolphinEntity.getMainArm() == Arm.RIGHT;
         matrixStack.push();
         float m = 1.0f;

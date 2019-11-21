@@ -135,7 +135,8 @@ public class AdvancementRewards {
 
     public static class Deserializer
     implements JsonDeserializer<AdvancementRewards> {
-        public AdvancementRewards method_754(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        @Override
+        public AdvancementRewards deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             JsonObject jsonObject = JsonHelper.asObject(jsonElement, "rewards");
             int i = JsonHelper.getInt(jsonObject, "experience", 0);
             JsonArray jsonArray = JsonHelper.getArray(jsonObject, "loot", new JsonArray());
@@ -154,7 +155,7 @@ public class AdvancementRewards {
 
         @Override
         public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.method_754(jsonElement, type, jsonDeserializationContext);
+            return this.deserialize(jsonElement, type, jsonDeserializationContext);
         }
     }
 }

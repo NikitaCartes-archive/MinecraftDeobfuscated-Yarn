@@ -28,7 +28,8 @@ extends AbstractCriterion<Conditions> {
         return this.id;
     }
 
-    public Conditions method_9026(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+    @Override
+    public Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
         LocationPredicate locationPredicate = LocationPredicate.fromJson(jsonObject);
         return new Conditions(this.id, locationPredicate);
     }
@@ -39,7 +40,7 @@ extends AbstractCriterion<Conditions> {
 
     @Override
     public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.method_9026(jsonObject, jsonDeserializationContext);
+        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
     }
 
     public static class Conditions

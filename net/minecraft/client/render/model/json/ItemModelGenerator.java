@@ -5,36 +5,37 @@ package net.minecraft.client.render.model.json;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mojang.datafixers.util.Either;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4730;
 import net.minecraft.client.render.model.json.JsonUnbakedModel;
 import net.minecraft.client.render.model.json.ModelElement;
 import net.minecraft.client.render.model.json.ModelElementFace;
 import net.minecraft.client.render.model.json.ModelElementTexture;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.Vector3f;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 
 @Environment(value=EnvType.CLIENT)
 public class ItemModelGenerator {
     public static final List<String> LAYERS = Lists.newArrayList("layer0", "layer1", "layer2", "layer3", "layer4");
 
-    public JsonUnbakedModel create(Function<Identifier, Sprite> function, JsonUnbakedModel jsonUnbakedModel) {
+    public JsonUnbakedModel create(Function<class_4730, Sprite> function, JsonUnbakedModel jsonUnbakedModel) {
         String string;
-        HashMap<String, String> map = Maps.newHashMap();
+        HashMap<String, Either<class_4730, String>> map = Maps.newHashMap();
         ArrayList<ModelElement> list = Lists.newArrayList();
         for (int i = 0; i < LAYERS.size() && jsonUnbakedModel.textureExists(string = LAYERS.get(i)); ++i) {
-            String string2 = jsonUnbakedModel.resolveTexture(string);
-            map.put(string, string2);
-            Sprite sprite = function.apply(new Identifier(string2));
+            class_4730 lv = jsonUnbakedModel.method_24077(string);
+            map.put(string, Either.left(lv));
+            Sprite sprite = function.apply(lv);
             list.addAll(this.addLayerElements(i, string, sprite));
         }
-        map.put("particle", jsonUnbakedModel.textureExists("particle") ? jsonUnbakedModel.resolveTexture("particle") : (String)map.get("layer0"));
+        map.put("particle", jsonUnbakedModel.textureExists("particle") ? Either.left(jsonUnbakedModel.method_24077("particle")) : (Either)map.get("layer0"));
         JsonUnbakedModel jsonUnbakedModel2 = new JsonUnbakedModel(null, list, map, false, false, jsonUnbakedModel.getTransformations(), jsonUnbakedModel.getOverrides());
         jsonUnbakedModel2.id = jsonUnbakedModel.id;
         return jsonUnbakedModel2;

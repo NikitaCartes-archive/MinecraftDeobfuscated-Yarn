@@ -29,7 +29,8 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
         super(function);
     }
 
-    public void method_15300(Random random, Chunk chunk, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, long m, TernarySurfaceConfig ternarySurfaceConfig) {
+    @Override
+    public void generate(Random random, Chunk chunk, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, long m, TernarySurfaceConfig ternarySurfaceConfig) {
         int n = l + 1;
         int o = i & 0xF;
         int p = j & 0xF;

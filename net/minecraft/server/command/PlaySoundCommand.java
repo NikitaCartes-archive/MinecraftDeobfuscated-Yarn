@@ -65,7 +65,7 @@ public class PlaySoundCommand {
         if (collection.size() == 1) {
             serverCommandSource.sendFeedback(new TranslatableText("commands.playsound.success.single", identifier, collection.iterator().next().getDisplayName()), true);
         } else {
-            serverCommandSource.sendFeedback(new TranslatableText("commands.playsound.success.multiple", identifier, collection.iterator().next().getDisplayName()), true);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.playsound.success.multiple", identifier, collection.size()), true);
         }
         return i;
     }

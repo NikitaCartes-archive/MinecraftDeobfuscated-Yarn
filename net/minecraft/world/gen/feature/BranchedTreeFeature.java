@@ -21,13 +21,13 @@ extends AbstractTreeFeature<T> {
         super(function);
     }
 
-    protected void method_23379(ModifiableTestableWorld modifiableTestableWorld, Random random, int i, BlockPos blockPos, int j, Set<BlockPos> set, BlockBox blockBox, BranchedTreeFeatureConfig branchedTreeFeatureConfig) {
+    protected void generate(ModifiableTestableWorld modifiableTestableWorld, Random random, int i, BlockPos blockPos, int j, Set<BlockPos> set, BlockBox blockBox, BranchedTreeFeatureConfig branchedTreeFeatureConfig) {
         for (int k = 0; k < i - j; ++k) {
-            this.method_23382(modifiableTestableWorld, random, blockPos.up(k), set, blockBox, branchedTreeFeatureConfig);
+            this.setLogBlockState(modifiableTestableWorld, random, blockPos.up(k), set, blockBox, branchedTreeFeatureConfig);
         }
     }
 
-    public Optional<BlockPos> method_23378(ModifiableTestableWorld modifiableTestableWorld, int i, int j, int k, BlockPos blockPos, BranchedTreeFeatureConfig branchedTreeFeatureConfig) {
+    public Optional<BlockPos> findPositionToGenerate(ModifiableTestableWorld modifiableTestableWorld, int i, int j, int k, BlockPos blockPos, BranchedTreeFeatureConfig branchedTreeFeatureConfig) {
         BlockPos blockPos2;
         int m;
         int l;
@@ -35,7 +35,7 @@ extends AbstractTreeFeature<T> {
             l = modifiableTestableWorld.getTopPosition(Heightmap.Type.OCEAN_FLOOR, blockPos).getY();
             m = modifiableTestableWorld.getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos).getY();
             blockPos2 = new BlockPos(blockPos.getX(), l, blockPos.getZ());
-            if (m - l > branchedTreeFeatureConfig.field_21268) {
+            if (m - l > branchedTreeFeatureConfig.maxWaterDepth) {
                 return Optional.empty();
             }
         } else {
@@ -51,14 +51,14 @@ extends AbstractTreeFeature<T> {
                 for (int o = -m; o <= m; ++o) {
                     if (l + blockPos2.getY() >= 0 && l + blockPos2.getY() < 256) {
                         mutable.set(n + blockPos2.getX(), l + blockPos2.getY(), o + blockPos2.getZ());
-                        if (BranchedTreeFeature.canTreeReplace(modifiableTestableWorld, mutable) && (branchedTreeFeatureConfig.field_21269 || !BranchedTreeFeature.isLeaves(modifiableTestableWorld, mutable))) continue;
+                        if (BranchedTreeFeature.canTreeReplace(modifiableTestableWorld, mutable) && (branchedTreeFeatureConfig.noVines || !BranchedTreeFeature.isLeaves(modifiableTestableWorld, mutable))) continue;
                         return Optional.empty();
                     }
                     return Optional.empty();
                 }
             }
         }
-        if (!BranchedTreeFeature.isDirtOrGrass(modifiableTestableWorld, blockPos2.method_10074()) || blockPos2.getY() >= 256 - i - 1) {
+        if (!BranchedTreeFeature.isDirtOrGrass(modifiableTestableWorld, blockPos2.down()) || blockPos2.getY() >= 256 - i - 1) {
             return Optional.empty();
         }
         return Optional.of(blockPos2);

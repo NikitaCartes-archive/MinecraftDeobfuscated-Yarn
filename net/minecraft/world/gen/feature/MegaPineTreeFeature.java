@@ -20,7 +20,8 @@ extends MegaTreeFeature<MegaTreeFeatureConfig> {
         super(function);
     }
 
-    public boolean method_23399(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, Set<BlockPos> set, Set<BlockPos> set2, BlockBox blockBox, MegaTreeFeatureConfig megaTreeFeatureConfig) {
+    @Override
+    public boolean generate(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, Set<BlockPos> set, Set<BlockPos> set2, BlockBox blockBox, MegaTreeFeatureConfig megaTreeFeatureConfig) {
         int i = this.getHeight(random, megaTreeFeatureConfig);
         if (!this.checkTreeFitsAndReplaceGround(modifiableTestableWorld, blockPos, i)) {
             return false;
@@ -31,7 +32,7 @@ extends MegaTreeFeature<MegaTreeFeatureConfig> {
     }
 
     private void makeTopLeaves(ModifiableTestableWorld modifiableTestableWorld, Random random, int i, int j, int k, int l, Set<BlockPos> set, BlockBox blockBox, MegaTreeFeatureConfig megaTreeFeatureConfig) {
-        int m = random.nextInt(5) + megaTreeFeatureConfig.field_21591;
+        int m = random.nextInt(5) + megaTreeFeatureConfig.crownHeight;
         int n = 0;
         for (int o = k - m; o <= k; ++o) {
             int p = k - o;

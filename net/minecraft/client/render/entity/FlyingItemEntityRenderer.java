@@ -22,15 +22,22 @@ public class FlyingItemEntityRenderer<T extends Entity>
 extends EntityRenderer<T> {
     private final ItemRenderer item;
     private final float scale;
+    private final boolean field_21745;
 
-    public FlyingItemEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, ItemRenderer itemRenderer, float f) {
+    public FlyingItemEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, ItemRenderer itemRenderer, float f, boolean bl) {
         super(entityRenderDispatcher);
         this.item = itemRenderer;
         this.scale = f;
+        this.field_21745 = bl;
     }
 
     public FlyingItemEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, ItemRenderer itemRenderer) {
-        this(entityRenderDispatcher, itemRenderer, 1.0f);
+        this(entityRenderDispatcher, itemRenderer, 1.0f, false);
+    }
+
+    @Override
+    protected int method_24087(T entity, float f) {
+        return this.field_21745 ? 15 : super.method_24087(entity, f);
     }
 
     @Override

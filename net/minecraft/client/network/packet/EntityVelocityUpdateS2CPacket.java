@@ -54,7 +54,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeShort(this.velocityZ);
     }
 
-    public void method_11817(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onVelocityUpdate(this);
     }
 

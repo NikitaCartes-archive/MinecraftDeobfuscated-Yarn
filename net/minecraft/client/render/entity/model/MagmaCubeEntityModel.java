@@ -16,7 +16,7 @@ import net.minecraft.util.math.MathHelper;
 public class MagmaCubeEntityModel<T extends SlimeEntity>
 extends CompositeEntityModel<T> {
     private final ModelPart[] field_3427 = new ModelPart[8];
-    private final ModelPart field_3428;
+    private final ModelPart innerCube;
     private final ImmutableList<ModelPart> field_20934;
 
     public MagmaCubeEntityModel() {
@@ -33,18 +33,20 @@ extends CompositeEntityModel<T> {
             this.field_3427[i] = new ModelPart(this, j, k);
             this.field_3427[i].addCuboid(-4.0f, 16 + i, -4.0f, 8.0f, 1.0f, 8.0f);
         }
-        this.field_3428 = new ModelPart(this, 0, 16);
-        this.field_3428.addCuboid(-2.0f, 18.0f, -2.0f, 4.0f, 4.0f, 4.0f);
+        this.innerCube = new ModelPart(this, 0, 16);
+        this.innerCube.addCuboid(-2.0f, 18.0f, -2.0f, 4.0f, 4.0f, 4.0f);
         ImmutableList.Builder builder = ImmutableList.builder();
-        builder.add(this.field_3428);
+        builder.add(this.innerCube);
         builder.addAll(Arrays.asList(this.field_3427));
         this.field_20934 = builder.build();
     }
 
-    public void method_22958(T slimeEntity, float f, float g, float h, float i, float j) {
+    @Override
+    public void setAngles(T slimeEntity, float f, float g, float h, float i, float j) {
     }
 
-    public void method_17098(T slimeEntity, float f, float g, float h) {
+    @Override
+    public void animateModel(T slimeEntity, float f, float g, float h) {
         float i = MathHelper.lerp(h, ((SlimeEntity)slimeEntity).lastStretch, ((SlimeEntity)slimeEntity).stretch);
         if (i < 0.0f) {
             i = 0.0f;
@@ -54,13 +56,13 @@ extends CompositeEntityModel<T> {
         }
     }
 
-    public ImmutableList<ModelPart> method_22959() {
+    public ImmutableList<ModelPart> getParts() {
         return this.field_20934;
     }
 
     @Override
     public /* synthetic */ Iterable getParts() {
-        return this.method_22959();
+        return this.getParts();
     }
 }
 

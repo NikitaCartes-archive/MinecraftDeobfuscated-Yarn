@@ -65,19 +65,21 @@ extends ConditionalLootFunction {
             super(new Identifier("set_contents"), SetContentsLootFunction.class);
         }
 
-        public void method_604(JsonObject jsonObject, SetContentsLootFunction setContentsLootFunction, JsonSerializationContext jsonSerializationContext) {
-            super.method_529(jsonObject, setContentsLootFunction, jsonSerializationContext);
+        @Override
+        public void toJson(JsonObject jsonObject, SetContentsLootFunction setContentsLootFunction, JsonSerializationContext jsonSerializationContext) {
+            super.toJson(jsonObject, setContentsLootFunction, jsonSerializationContext);
             jsonObject.add("entries", jsonSerializationContext.serialize(setContentsLootFunction.entries));
         }
 
-        public SetContentsLootFunction method_605(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+        @Override
+        public SetContentsLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
             LootEntry[] lootEntrys = JsonHelper.deserialize(jsonObject, "entries", jsonDeserializationContext, LootEntry[].class);
             return new SetContentsLootFunction(lootConditions, Arrays.asList(lootEntrys));
         }
 
         @Override
         public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            return this.method_605(jsonObject, jsonDeserializationContext, lootConditions);
+            return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
         }
     }
 
@@ -85,7 +87,8 @@ extends ConditionalLootFunction {
     extends ConditionalLootFunction.Builder<Builer> {
         private final List<LootEntry> entries = Lists.newArrayList();
 
-        protected Builer method_603() {
+        @Override
+        protected Builer getThisBuilder() {
             return this;
         }
 
@@ -101,7 +104,7 @@ extends ConditionalLootFunction {
 
         @Override
         protected /* synthetic */ ConditionalLootFunction.Builder getThisBuilder() {
-            return this.method_603();
+            return this.getThisBuilder();
         }
     }
 }

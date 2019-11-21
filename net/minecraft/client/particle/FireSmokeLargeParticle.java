@@ -28,7 +28,8 @@ extends FireSmokeParticle {
             this.field_17817 = spriteProvider;
         }
 
-        public Particle method_3040(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+        @Override
+        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
             return new FireSmokeLargeParticle(world, d, e, f, g, h, i, this.field_17817);
         }
     }

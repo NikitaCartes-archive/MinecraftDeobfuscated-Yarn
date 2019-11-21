@@ -22,7 +22,8 @@ extends Feature<BlockPileFeatureConfig> {
         super(function);
     }
 
-    public boolean method_16709(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, BlockPileFeatureConfig blockPileFeatureConfig) {
+    @Override
+    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, BlockPileFeatureConfig blockPileFeatureConfig) {
         if (blockPos.getY() < 5) {
             return false;
         }
@@ -42,7 +43,7 @@ extends Feature<BlockPileFeatureConfig> {
     }
 
     private boolean canPlacePileBlock(IWorld iWorld, BlockPos blockPos, Random random) {
-        BlockPos blockPos2 = blockPos.method_10074();
+        BlockPos blockPos2 = blockPos.down();
         BlockState blockState = iWorld.getBlockState(blockPos2);
         if (blockState.getBlock() == Blocks.GRASS_PATH) {
             return random.nextBoolean();

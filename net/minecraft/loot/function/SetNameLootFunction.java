@@ -73,8 +73,9 @@ extends ConditionalLootFunction {
             super(new Identifier("set_name"), SetNameLootFunction.class);
         }
 
-        public void method_630(JsonObject jsonObject, SetNameLootFunction setNameLootFunction, JsonSerializationContext jsonSerializationContext) {
-            super.method_529(jsonObject, setNameLootFunction, jsonSerializationContext);
+        @Override
+        public void toJson(JsonObject jsonObject, SetNameLootFunction setNameLootFunction, JsonSerializationContext jsonSerializationContext) {
+            super.toJson(jsonObject, setNameLootFunction, jsonSerializationContext);
             if (setNameLootFunction.name != null) {
                 jsonObject.add("name", Text.Serializer.toJsonTree(setNameLootFunction.name));
             }
@@ -83,7 +84,8 @@ extends ConditionalLootFunction {
             }
         }
 
-        public SetNameLootFunction method_629(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+        @Override
+        public SetNameLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
             Text text = Text.Serializer.fromJson(jsonObject.get("name"));
             LootContext.EntityTarget entityTarget = JsonHelper.deserialize(jsonObject, "entity", null, jsonDeserializationContext, LootContext.EntityTarget.class);
             return new SetNameLootFunction(lootConditions, text, entityTarget);
@@ -91,7 +93,7 @@ extends ConditionalLootFunction {
 
         @Override
         public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            return this.method_629(jsonObject, jsonDeserializationContext, lootConditions);
+            return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
         }
     }
 }

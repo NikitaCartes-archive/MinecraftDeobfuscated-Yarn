@@ -69,7 +69,7 @@ extends Block {
         int i = 7;
         try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
             for (Direction direction : Direction.values()) {
-                pooledMutable.method_10114(blockPos).method_10118(direction);
+                pooledMutable.set(blockPos).setOffset(direction);
                 i = Math.min(i, LeavesBlock.getDistanceFromLog(iWorld.getBlockState(pooledMutable)) + 1);
                 if (i != 1) continue;
                 break;
@@ -97,7 +97,7 @@ extends Block {
         if (random.nextInt(15) != 1) {
             return;
         }
-        BlockPos blockPos2 = blockPos.method_10074();
+        BlockPos blockPos2 = blockPos.down();
         BlockState blockState2 = world.getBlockState(blockPos2);
         if (blockState2.isOpaque() && blockState2.isSideSolidFullSquare(world, blockPos2, Direction.UP)) {
             return;

@@ -130,7 +130,8 @@ implements Packet<ClientPlayPacketListener> {
         return i;
     }
 
-    public void method_11330(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onBossBar(this);
     }
 

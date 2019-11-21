@@ -47,7 +47,7 @@ implements DebugRenderer.Renderer {
             PathfindingDebugRenderer.drawPath(path, g, true, true, d, e, f);
         }
         for (Integer integer2 : this.pathTimes.keySet().toArray(new Integer[0])) {
-            if (m - this.pathTimes.get(integer2) <= 20000L) continue;
+            if (m - this.pathTimes.get(integer2) <= 5000L) continue;
             this.paths.remove(integer2);
             this.pathTimes.remove(integer2);
         }
@@ -70,11 +70,11 @@ implements DebugRenderer.Renderer {
         int i;
         PathfindingDebugRenderer.drawPathLines(path, d, e, g);
         BlockPos blockPos = path.getTarget();
-        if (PathfindingDebugRenderer.getManhattanDistance(blockPos, d, e, g) <= 40.0f) {
+        if (PathfindingDebugRenderer.getManhattanDistance(blockPos, d, e, g) <= 80.0f) {
             DebugRenderer.drawBox(new Box((float)blockPos.getX() + 0.25f, (float)blockPos.getY() + 0.25f, (double)blockPos.getZ() + 0.25, (float)blockPos.getX() + 0.75f, (float)blockPos.getY() + 0.75f, (float)blockPos.getZ() + 0.75f).offset(-d, -e, -g), 0.0f, 1.0f, 0.0f, 0.5f);
             for (i = 0; i < path.getLength(); ++i) {
                 PathNode pathNode = path.getNode(i);
-                if (!(PathfindingDebugRenderer.getManhattanDistance(pathNode.getPos(), d, e, g) <= 40.0f)) continue;
+                if (!(PathfindingDebugRenderer.getManhattanDistance(pathNode.getPos(), d, e, g) <= 80.0f)) continue;
                 float h = i == path.getCurrentNodeIndex() ? 1.0f : 0.0f;
                 float j = i == path.getCurrentNodeIndex() ? 0.0f : 1.0f;
                 DebugRenderer.drawBox(new Box((float)pathNode.x + 0.5f - f, (float)pathNode.y + 0.01f * (float)i, (float)pathNode.z + 0.5f - f, (float)pathNode.x + 0.5f + f, (float)pathNode.y + 0.25f + 0.01f * (float)i, (float)pathNode.z + 0.5f + f).offset(-d, -e, -g), h, 0.0f, j, 0.5f);
@@ -82,20 +82,18 @@ implements DebugRenderer.Renderer {
         }
         if (bl) {
             for (PathNode pathNode2 : path.method_22881()) {
-                if (!(PathfindingDebugRenderer.getManhattanDistance(pathNode2.getPos(), d, e, g) <= 40.0f)) continue;
-                DebugRenderer.drawString(String.format("%s", new Object[]{pathNode2.type}), (double)pathNode2.x + 0.5, (double)pathNode2.y + 0.75, (double)pathNode2.z + 0.5, -65536);
-                DebugRenderer.drawString(String.format(Locale.ROOT, "%.2f", Float.valueOf(pathNode2.penalty)), (double)pathNode2.x + 0.5, (double)pathNode2.y + 0.25, (double)pathNode2.z + 0.5, -65536);
+                if (!(PathfindingDebugRenderer.getManhattanDistance(pathNode2.getPos(), d, e, g) <= 80.0f)) continue;
+                DebugRenderer.drawBox(new Box((float)pathNode2.x + 0.5f - f / 2.0f, (float)pathNode2.y + 0.01f, (float)pathNode2.z + 0.5f - f / 2.0f, (float)pathNode2.x + 0.5f + f / 2.0f, (double)pathNode2.y + 0.1, (float)pathNode2.z + 0.5f + f / 2.0f).offset(-d, -e, -g), 1.0f, 0.8f, 0.8f, 0.5f);
             }
             for (PathNode pathNode2 : path.method_22880()) {
-                if (!(PathfindingDebugRenderer.getManhattanDistance(pathNode2.getPos(), d, e, g) <= 40.0f)) continue;
-                DebugRenderer.drawString(String.format("%s", new Object[]{pathNode2.type}), (double)pathNode2.x + 0.5, (double)pathNode2.y + 0.75, (double)pathNode2.z + 0.5, -16776961);
-                DebugRenderer.drawString(String.format(Locale.ROOT, "%.2f", Float.valueOf(pathNode2.penalty)), (double)pathNode2.x + 0.5, (double)pathNode2.y + 0.25, (double)pathNode2.z + 0.5, -16776961);
+                if (!(PathfindingDebugRenderer.getManhattanDistance(pathNode2.getPos(), d, e, g) <= 80.0f)) continue;
+                DebugRenderer.drawBox(new Box((float)pathNode2.x + 0.5f - f / 2.0f, (float)pathNode2.y + 0.01f, (float)pathNode2.z + 0.5f - f / 2.0f, (float)pathNode2.x + 0.5f + f / 2.0f, (double)pathNode2.y + 0.1, (float)pathNode2.z + 0.5f + f / 2.0f).offset(-d, -e, -g), 0.8f, 1.0f, 1.0f, 0.5f);
             }
         }
         if (bl2) {
             for (i = 0; i < path.getLength(); ++i) {
                 PathNode pathNode = path.getNode(i);
-                if (!(PathfindingDebugRenderer.getManhattanDistance(pathNode.getPos(), d, e, g) <= 40.0f)) continue;
+                if (!(PathfindingDebugRenderer.getManhattanDistance(pathNode.getPos(), d, e, g) <= 80.0f)) continue;
                 DebugRenderer.drawString(String.format("%s", new Object[]{pathNode.type}), (double)pathNode.x + 0.5, (double)pathNode.y + 0.75, (double)pathNode.z + 0.5, -1);
                 DebugRenderer.drawString(String.format(Locale.ROOT, "%.2f", Float.valueOf(pathNode.penalty)), (double)pathNode.x + 0.5, (double)pathNode.y + 0.25, (double)pathNode.z + 0.5, -1);
             }
@@ -108,7 +106,7 @@ implements DebugRenderer.Renderer {
         bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
         for (int i = 0; i < path.getLength(); ++i) {
             PathNode pathNode = path.getNode(i);
-            if (PathfindingDebugRenderer.getManhattanDistance(pathNode.getPos(), d, e, f) > 40.0f) continue;
+            if (PathfindingDebugRenderer.getManhattanDistance(pathNode.getPos(), d, e, f) > 80.0f) continue;
             float g = (float)i / (float)path.getLength() * 0.33f;
             int j = i == 0 ? 0 : MathHelper.hsvToRgb(g, 0.9f, 0.9f);
             int k = j >> 16 & 0xFF;

@@ -50,7 +50,7 @@ extends FacingBlock {
             serverWorld.setBlockState(blockPos, (BlockState)blockState.with(POWERED, false), 2);
         } else {
             serverWorld.setBlockState(blockPos, (BlockState)blockState.with(POWERED, true), 2);
-            serverWorld.method_14196().schedule(blockPos, this, 2);
+            serverWorld.getBlockTickScheduler().schedule(blockPos, this, 2);
         }
         this.updateNeighbors(serverWorld, blockPos, blockState);
     }

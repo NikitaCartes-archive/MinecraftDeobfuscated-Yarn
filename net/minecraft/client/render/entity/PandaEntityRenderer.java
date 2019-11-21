@@ -36,11 +36,13 @@ extends MobEntityRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
         this.addFeature(new PandaHeldItemFeatureRenderer(this));
     }
 
-    public Identifier method_4083(PandaEntity pandaEntity) {
+    @Override
+    public Identifier getTexture(PandaEntity pandaEntity) {
         return SKIN_MAP.getOrDefault((Object)pandaEntity.getProductGene(), SKIN_MAP.get((Object)PandaEntity.Gene.NORMAL));
     }
 
-    protected void method_4085(PandaEntity pandaEntity, MatrixStack matrixStack, float f, float g, float h) {
+    @Override
+    protected void setupTransforms(PandaEntity pandaEntity, MatrixStack matrixStack, float f, float g, float h) {
         float r;
         float q;
         float k;

@@ -19,8 +19,9 @@ extends Feature<SimpleBlockFeatureConfig> {
         super(function);
     }
 
-    public boolean method_13929(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, SimpleBlockFeatureConfig simpleBlockFeatureConfig) {
-        if (simpleBlockFeatureConfig.placeOn.contains(iWorld.getBlockState(blockPos.method_10074())) && simpleBlockFeatureConfig.placeIn.contains(iWorld.getBlockState(blockPos)) && simpleBlockFeatureConfig.placeUnder.contains(iWorld.getBlockState(blockPos.up()))) {
+    @Override
+    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, SimpleBlockFeatureConfig simpleBlockFeatureConfig) {
+        if (simpleBlockFeatureConfig.placeOn.contains(iWorld.getBlockState(blockPos.down())) && simpleBlockFeatureConfig.placeIn.contains(iWorld.getBlockState(blockPos)) && simpleBlockFeatureConfig.placeUnder.contains(iWorld.getBlockState(blockPos.up()))) {
             iWorld.setBlockState(blockPos, simpleBlockFeatureConfig.toPlace, 2);
             return true;
         }

@@ -43,7 +43,7 @@ extends Feature<T> {
     protected static boolean canTreeReplace(TestableWorld testableWorld, BlockPos blockPos) {
         return testableWorld.testBlockState(blockPos, blockState -> {
             Block block = blockState.getBlock();
-            return blockState.isAir() || blockState.matches(BlockTags.LEAVES) || AbstractTreeFeature.method_23396(block) || block.matches(BlockTags.LOGS) || block.matches(BlockTags.SAPLINGS) || block == Blocks.VINE;
+            return blockState.isAir() || blockState.matches(BlockTags.LEAVES) || AbstractTreeFeature.isDirt(block) || block.matches(BlockTags.LOGS) || block.matches(BlockTags.SAPLINGS) || block == Blocks.VINE;
         });
     }
 
@@ -54,7 +54,7 @@ extends Feature<T> {
     protected static boolean isNaturalDirt(TestableWorld testableWorld, BlockPos blockPos) {
         return testableWorld.testBlockState(blockPos, blockState -> {
             Block block = blockState.getBlock();
-            return AbstractTreeFeature.method_23396(block) && block != Blocks.GRASS_BLOCK && block != Blocks.MYCELIUM;
+            return AbstractTreeFeature.isDirt(block) && block != Blocks.GRASS_BLOCK && block != Blocks.MYCELIUM;
         });
     }
 
@@ -71,13 +71,13 @@ extends Feature<T> {
     }
 
     public static boolean isNaturalDirtOrGrass(TestableWorld testableWorld, BlockPos blockPos) {
-        return testableWorld.testBlockState(blockPos, blockState -> AbstractTreeFeature.method_23396(blockState.getBlock()));
+        return testableWorld.testBlockState(blockPos, blockState -> AbstractTreeFeature.isDirt(blockState.getBlock()));
     }
 
     protected static boolean isDirtOrGrass(TestableWorld testableWorld, BlockPos blockPos) {
         return testableWorld.testBlockState(blockPos, blockState -> {
             Block block = blockState.getBlock();
-            return AbstractTreeFeature.method_23396(block) || block == Blocks.FARMLAND;
+            return AbstractTreeFeature.isDirt(block) || block == Blocks.FARMLAND;
         });
     }
 
@@ -94,7 +94,7 @@ extends Feature<T> {
         }
     }
 
-    protected boolean method_23382(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, Set<BlockPos> set, BlockBox blockBox, TreeFeatureConfig treeFeatureConfig) {
+    protected boolean setLogBlockState(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, Set<BlockPos> set, BlockBox blockBox, TreeFeatureConfig treeFeatureConfig) {
         if (AbstractTreeFeature.isAirOrLeaves(modifiableTestableWorld, blockPos) || AbstractTreeFeature.isReplaceablePlant(modifiableTestableWorld, blockPos) || AbstractTreeFeature.isWater(modifiableTestableWorld, blockPos)) {
             this.setBlockState(modifiableTestableWorld, blockPos, treeFeatureConfig.trunkProvider.getBlockState(random, blockPos), blockBox);
             set.add(blockPos.toImmutable());
@@ -103,7 +103,7 @@ extends Feature<T> {
         return false;
     }
 
-    protected boolean method_23383(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, Set<BlockPos> set, BlockBox blockBox, TreeFeatureConfig treeFeatureConfig) {
+    protected boolean setLeavesBlockState(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, Set<BlockPos> set, BlockBox blockBox, TreeFeatureConfig treeFeatureConfig) {
         if (AbstractTreeFeature.isAirOrLeaves(modifiableTestableWorld, blockPos) || AbstractTreeFeature.isReplaceablePlant(modifiableTestableWorld, blockPos) || AbstractTreeFeature.isWater(modifiableTestableWorld, blockPos)) {
             this.setBlockState(modifiableTestableWorld, blockPos, treeFeatureConfig.leavesProvider.getBlockState(random, blockPos), blockBox);
             set.add(blockPos.toImmutable());
@@ -126,7 +126,8 @@ extends Feature<T> {
         modifiableWorld.setBlockState(blockPos, blockState, 19);
     }
 
-    public final boolean method_22362(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, T treeFeatureConfig) {
+    @Override
+    public final boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, T treeFeatureConfig) {
         HashSet<BlockPos> set = Sets.newHashSet();
         HashSet<BlockPos> set2 = Sets.newHashSet();
         HashSet<BlockPos> set3 = Sets.newHashSet();
@@ -140,7 +141,7 @@ extends Feature<T> {
             ArrayList<BlockPos> list2 = Lists.newArrayList(set2);
             list.sort(Comparator.comparingInt(Vec3i::getY));
             list2.sort(Comparator.comparingInt(Vec3i::getY));
-            ((TreeFeatureConfig)treeFeatureConfig).decorators.forEach(treeDecorator -> treeDecorator.method_23469(iWorld, random, list, list2, set3, blockBox));
+            ((TreeFeatureConfig)treeFeatureConfig).decorators.forEach(treeDecorator -> treeDecorator.generate(iWorld, random, list, list2, set3, blockBox));
         }
         VoxelSet voxelSet = this.method_23380(iWorld, blockBox, set, set3);
         Structure.method_20532(iWorld, 3, voxelSet, blockBox.minX, blockBox.minY, blockBox.minZ);
@@ -165,7 +166,7 @@ extends Feature<T> {
                 }
                 for (Direction direction : Direction.values()) {
                     BlockState blockState;
-                    pooledMutable.method_10114(blockPos).method_10118(direction);
+                    pooledMutable.set(blockPos).setOffset(direction);
                     if (set.contains(pooledMutable) || !(blockState = iWorld.getBlockState(pooledMutable)).contains(Properties.DISTANCE_1_7)) continue;
                     ((Set)list.get(0)).add(pooledMutable.toImmutable());
                     this.setBlockStateWithoutUpdatingNeighbors(iWorld, pooledMutable, (BlockState)blockState.with(Properties.DISTANCE_1_7, 1));
@@ -183,7 +184,7 @@ extends Feature<T> {
                     for (Direction direction2 : Direction.values()) {
                         int l;
                         BlockState blockState2;
-                        pooledMutable.method_10114(blockPos2).method_10118(direction2);
+                        pooledMutable.set(blockPos2).setOffset(direction2);
                         if (set3.contains(pooledMutable) || set4.contains(pooledMutable) || !(blockState2 = iWorld.getBlockState(pooledMutable)).contains(Properties.DISTANCE_1_7) || (l = blockState2.get(Properties.DISTANCE_1_7).intValue()) <= k + 1) continue;
                         BlockState blockState3 = (BlockState)blockState2.with(Properties.DISTANCE_1_7, k + 1);
                         this.setBlockStateWithoutUpdatingNeighbors(iWorld, pooledMutable, blockState3);

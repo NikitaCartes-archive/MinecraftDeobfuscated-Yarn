@@ -242,7 +242,8 @@ extends AnimalEntity {
         this.getAttributes().register(EntityAttributes.ATTACK_DAMAGE).setBaseValue(2.0);
     }
 
-    public FoxEntity method_18260(PassiveEntity passiveEntity) {
+    @Override
+    public FoxEntity createChild(PassiveEntity passiveEntity) {
         FoxEntity foxEntity = EntityType.FOX.create(this.world);
         foxEntity.setType(this.random.nextBoolean() ? this.getFoxType() : ((FoxEntity)passiveEntity).getFoxType());
         return foxEntity;
@@ -573,7 +574,7 @@ extends AnimalEntity {
         if (this.isSleeping()) {
             return SoundEvents.ENTITY_FOX_SLEEP;
         }
-        if (!this.world.isDaylight() && this.random.nextFloat() < 0.1f && (list = this.world.getEntities(PlayerEntity.class, this.getBoundingBox().expand(16.0, 16.0, 16.0), EntityPredicates.EXCEPT_SPECTATOR)).isEmpty()) {
+        if (!this.world.isDay() && this.random.nextFloat() < 0.1f && (list = this.world.getEntities(PlayerEntity.class, this.getBoundingBox().expand(16.0, 16.0, 16.0), EntityPredicates.EXCEPT_SPECTATOR)).isEmpty()) {
             return SoundEvents.ENTITY_FOX_SCREECH;
         }
         return SoundEvents.ENTITY_FOX_AMBIENT;
@@ -623,7 +624,7 @@ extends AnimalEntity {
 
     @Override
     public /* synthetic */ PassiveEntity createChild(PassiveEntity passiveEntity) {
-        return this.method_18260(passiveEntity);
+        return this.createChild(passiveEntity);
     }
 
     class LookAtEntityGoal
@@ -683,7 +684,7 @@ extends AnimalEntity {
         }
 
         @Override
-        protected boolean method_20433() {
+        protected boolean shouldStayHorizontal() {
             return !FoxEntity.this.isChasing() && !FoxEntity.this.isInSneakingPose() && !FoxEntity.this.isRollingHead() & !FoxEntity.this.isWalking();
         }
     }
@@ -1027,7 +1028,7 @@ extends AnimalEntity {
                 --this.timer;
                 return false;
             }
-            return FoxEntity.this.world.isDaylight() && this.isAtFavoredLocation() && !this.canCalmDown();
+            return FoxEntity.this.world.isDay() && this.isAtFavoredLocation() && !this.canCalmDown();
         }
 
         @Override
@@ -1068,7 +1069,8 @@ extends AnimalEntity {
 
     public class WorriableEntityFilter
     implements Predicate<LivingEntity> {
-        public boolean method_18303(LivingEntity livingEntity) {
+        @Override
+        public boolean test(LivingEntity livingEntity) {
             if (livingEntity instanceof FoxEntity) {
                 return false;
             }
@@ -1089,7 +1091,7 @@ extends AnimalEntity {
 
         @Override
         public /* synthetic */ boolean test(Object object) {
-            return this.method_18303((LivingEntity)object);
+            return this.test((LivingEntity)object);
         }
     }
 
@@ -1116,7 +1118,7 @@ extends AnimalEntity {
             }
             this.timer = 100;
             BlockPos blockPos = new BlockPos(this.mob);
-            return FoxEntity.this.world.isDaylight() && FoxEntity.this.world.isSkyVisible(blockPos) && !((ServerWorld)FoxEntity.this.world).isNearOccupiedPointOfInterest(blockPos) && this.method_18250();
+            return FoxEntity.this.world.isDay() && FoxEntity.this.world.isSkyVisible(blockPos) && !((ServerWorld)FoxEntity.this.world).isNearOccupiedPointOfInterest(blockPos) && this.method_18250();
         }
 
         @Override

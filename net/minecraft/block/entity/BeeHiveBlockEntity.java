@@ -43,13 +43,13 @@ implements Tickable {
 
     @Override
     public void markDirty() {
-        if (this.method_23280()) {
+        if (this.isNearFire()) {
             this.angerBees(null, this.world.getBlockState(this.getPos()), BeeState.EMERGENCY);
         }
         super.markDirty();
     }
 
-    public boolean method_23280() {
+    public boolean isNearFire() {
         if (this.world == null) {
             return false;
         }
@@ -131,7 +131,7 @@ implements Tickable {
 
     private boolean releaseBee(BlockState blockState, CompoundTag compoundTag, @Nullable List<Entity> list, BeeState beeState) {
         BlockPos blockPos = this.getPos();
-        if ((this.world.method_23886() || this.world.isRaining()) && beeState != BeeState.EMERGENCY) {
+        if ((this.world.isNight() || this.world.isRaining()) && beeState != BeeState.EMERGENCY) {
             return false;
         }
         compoundTag.remove("Passengers");
@@ -170,8 +170,8 @@ implements Tickable {
                         this.world.setBlockState(this.getPos(), (BlockState)blockState.with(BeeHiveBlock.HONEY_LEVEL, i + j));
                     }
                 }
+                beeEntity.resetPollinationTicks();
                 if (list != null) {
-                    beeEntity.resetPollinationTicks();
                     list.add(beeEntity);
                 }
             }

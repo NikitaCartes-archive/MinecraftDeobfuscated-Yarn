@@ -16,7 +16,7 @@ extends SaplingGenerator {
     @Override
     @Nullable
     protected ConfiguredFeature<BranchedTreeFeatureConfig, ?> createTreeFeature(Random random) {
-        return Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.field_21187);
+        return Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.BIRCH_TREE_CONFIG);
     }
 }
 

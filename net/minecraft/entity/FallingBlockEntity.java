@@ -123,7 +123,6 @@ extends Entity {
         }
         this.move(MovementType.SELF, this.getVelocity());
         if (!this.world.isClient) {
-            boolean bl3;
             BlockHitResult blockHitResult;
             blockPos = new BlockPos(this);
             boolean bl = this.block.getBlock() instanceof ConcretePowderBlock;
@@ -133,16 +132,16 @@ extends Entity {
                 blockPos = blockHitResult.getBlockPos();
                 bl2 = true;
             }
-            boolean bl4 = bl3 = this.onGround && !FallingBlock.canFallThrough(this.world.getBlockState(blockPos.method_10074()));
-            if (bl3 || bl2) {
+            if (this.onGround || bl2) {
                 BlockState blockState = this.world.getBlockState(blockPos);
                 this.setVelocity(this.getVelocity().multiply(0.7, -0.5, 0.7));
                 if (blockState.getBlock() != Blocks.MOVING_PISTON) {
                     this.remove();
                     if (!this.destroyedOnLanding) {
-                        boolean bl42 = blockState.canReplace(new AutomaticItemPlacementContext(this.world, blockPos, Direction.DOWN, ItemStack.EMPTY, Direction.UP));
-                        boolean bl5 = this.block.canPlaceAt(this.world, blockPos);
-                        if (bl42 && bl5) {
+                        boolean bl4;
+                        boolean bl3 = blockState.canReplace(new AutomaticItemPlacementContext(this.world, blockPos, Direction.DOWN, ItemStack.EMPTY, Direction.UP));
+                        boolean bl5 = bl4 = this.block.canPlaceAt(this.world, blockPos) && !FallingBlock.canFallThrough(this.world.getBlockState(blockPos.down()));
+                        if (bl3 && bl4) {
                             if (this.block.contains(Properties.WATERLOGGED) && this.world.getFluidState(blockPos).getFluid() == Fluids.WATER) {
                                 this.block = (BlockState)this.block.with(Properties.WATERLOGGED, true);
                             }

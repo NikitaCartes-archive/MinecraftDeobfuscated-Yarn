@@ -26,7 +26,8 @@ public class BlockEntitySignTextStrictJsonFix
 extends ChoiceFix {
     public static final Gson GSON = new GsonBuilder().registerTypeAdapter((Type)((Object)Text.class), new JsonDeserializer<Text>(){
 
-        public Text method_15583(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        @Override
+        public Text deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             if (jsonElement.isJsonPrimitive()) {
                 return new LiteralText(jsonElement.getAsString());
             }
@@ -34,7 +35,7 @@ extends ChoiceFix {
                 JsonArray jsonArray = jsonElement.getAsJsonArray();
                 Text text = null;
                 for (JsonElement jsonElement2 : jsonArray) {
-                    Text text2 = this.method_15583(jsonElement2, jsonElement2.getClass(), jsonDeserializationContext);
+                    Text text2 = this.deserialize(jsonElement2, jsonElement2.getClass(), jsonDeserializationContext);
                     if (text == null) {
                         text = text2;
                         continue;
@@ -48,7 +49,7 @@ extends ChoiceFix {
 
         @Override
         public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.method_15583(jsonElement, type, jsonDeserializationContext);
+            return this.deserialize(jsonElement, type, jsonDeserializationContext);
         }
     }).create();
 

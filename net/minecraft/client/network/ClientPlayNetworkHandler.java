@@ -666,7 +666,7 @@ implements ClientPlayPacketListener {
         NetworkThreadUtils.forceMainThread(chunkDataS2CPacket, this, this.client);
         int i = chunkDataS2CPacket.getX();
         int j = chunkDataS2CPacket.getZ();
-        WorldChunk worldChunk = this.world.method_2935().loadChunkFromPacket(i, j, chunkDataS2CPacket.getBiomeArray(), chunkDataS2CPacket.getReadBuffer(), chunkDataS2CPacket.getHeightmaps(), chunkDataS2CPacket.getVerticalStripBitmask());
+        WorldChunk worldChunk = this.world.getChunkManager().loadChunkFromPacket(i, j, chunkDataS2CPacket.getBiomeArray(), chunkDataS2CPacket.getReadBuffer(), chunkDataS2CPacket.getHeightmaps(), chunkDataS2CPacket.getVerticalStripBitmask());
         if (worldChunk != null && chunkDataS2CPacket.isFullChunk()) {
             this.world.addEntitiesToChunk(worldChunk);
         }
@@ -686,7 +686,7 @@ implements ClientPlayPacketListener {
         NetworkThreadUtils.forceMainThread(unloadChunkS2CPacket, this, this.client);
         int i = unloadChunkS2CPacket.getX();
         int j = unloadChunkS2CPacket.getZ();
-        ClientChunkManager clientChunkManager = this.world.method_2935();
+        ClientChunkManager clientChunkManager = this.world.getChunkManager();
         clientChunkManager.unload(i, j);
         LightingProvider lightingProvider = clientChunkManager.getLightingProvider();
         for (int k = 0; k < 16; ++k) {
@@ -1718,6 +1718,7 @@ implements ClientPlayPacketListener {
                 }
                 this.client.debugRenderer.villageDebugRenderer.addBrain(brain);
             } else if (CustomPayloadS2CPacket.field_21559.equals(identifier)) {
+                int r;
                 double d = packetByteBuf.readDouble();
                 double e = packetByteBuf.readDouble();
                 double g = packetByteBuf.readDouble();
@@ -1734,16 +1735,22 @@ implements ClientPlayPacketListener {
                 if (bl5) {
                     blockPos5 = packetByteBuf.readBlockPos();
                 }
-                boolean bl2 = packetByteBuf.readBoolean();
-                Path path2 = null;
-                if (bl2) {
-                    path2 = Path.fromBuffer(packetByteBuf);
-                }
-                class_4703.class_4704 lv = new class_4703.class_4704(uUID, o, position, path2, blockPos4, blockPos5);
                 int w = packetByteBuf.readInt();
-                for (int q = 0; q < w; ++q) {
-                    String string10 = packetByteBuf.readString();
-                    lv.field_21542.add(string10);
+                boolean bl6 = packetByteBuf.readBoolean();
+                Path path3 = null;
+                if (bl6) {
+                    path3 = Path.fromBuffer(packetByteBuf);
+                }
+                class_4703.class_4704 lv = new class_4703.class_4704(uUID, o, position, path3, blockPos4, blockPos5, w);
+                int q = packetByteBuf.readInt();
+                for (r = 0; r < q; ++r) {
+                    String string6 = packetByteBuf.readString();
+                    lv.field_21542.add(string6);
+                }
+                r = packetByteBuf.readInt();
+                for (int s = 0; s < r; ++s) {
+                    BlockPos blockPos6 = packetByteBuf.readBlockPos();
+                    lv.field_21734.add(blockPos6);
                 }
                 this.client.debugRenderer.field_21547.method_23805(lv);
             } else if (CustomPayloadS2CPacket.field_21560.equals(identifier)) {
@@ -1751,17 +1758,17 @@ implements ClientPlayPacketListener {
                 String string = packetByteBuf.readString();
                 int m = packetByteBuf.readInt();
                 int x = packetByteBuf.readInt();
-                boolean bl6 = packetByteBuf.readBoolean();
-                class_4703.class_4705 lv2 = new class_4703.class_4705(blockPos2, string, m, x, bl6, this.world.getTime());
+                boolean bl7 = packetByteBuf.readBoolean();
+                class_4703.class_4705 lv2 = new class_4703.class_4705(blockPos2, string, m, x, bl7, this.world.getTime());
                 this.client.debugRenderer.field_21547.method_23807(lv2);
             } else if (CustomPayloadS2CPacket.DEBUG_GAME_TEST_CLEAR.equals(identifier)) {
                 this.client.debugRenderer.gameTestDebugRenderer.clear();
             } else if (CustomPayloadS2CPacket.DEBUG_GAME_TEST_ADD_MARKER.equals(identifier)) {
                 BlockPos blockPos2 = packetByteBuf.readBlockPos();
                 int j = packetByteBuf.readInt();
-                String string11 = packetByteBuf.readString();
+                String string10 = packetByteBuf.readString();
                 int x = packetByteBuf.readInt();
-                this.client.debugRenderer.gameTestDebugRenderer.addMarker(blockPos2, j, string11, x);
+                this.client.debugRenderer.gameTestDebugRenderer.addMarker(blockPos2, j, string10, x);
             } else {
                 LOGGER.warn("Unknown custom packed identifier: {}", (Object)identifier);
             }
@@ -1927,7 +1934,7 @@ implements ClientPlayPacketListener {
         NetworkThreadUtils.forceMainThread(lightUpdateS2CPacket, this, this.client);
         int i = lightUpdateS2CPacket.getChunkX();
         int j = lightUpdateS2CPacket.getChunkZ();
-        LightingProvider lightingProvider = this.world.method_2935().getLightingProvider();
+        LightingProvider lightingProvider = this.world.getChunkManager().getLightingProvider();
         int k = lightUpdateS2CPacket.getSkyLightMask();
         int l = lightUpdateS2CPacket.getFilledSkyLightMask();
         Iterator<byte[]> iterator = lightUpdateS2CPacket.getSkyLightUpdates().iterator();
@@ -1955,13 +1962,13 @@ implements ClientPlayPacketListener {
     public void onChunkLoadDistance(ChunkLoadDistanceS2CPacket chunkLoadDistanceS2CPacket) {
         NetworkThreadUtils.forceMainThread(chunkLoadDistanceS2CPacket, this, this.client);
         this.chunkLoadDistance = chunkLoadDistanceS2CPacket.getDistance();
-        this.world.method_2935().updateLoadDistance(chunkLoadDistanceS2CPacket.getDistance());
+        this.world.getChunkManager().updateLoadDistance(chunkLoadDistanceS2CPacket.getDistance());
     }
 
     @Override
     public void onChunkRenderDistanceCenter(ChunkRenderDistanceCenterS2CPacket chunkRenderDistanceCenterS2CPacket) {
         NetworkThreadUtils.forceMainThread(chunkRenderDistanceCenterS2CPacket, this, this.client);
-        this.world.method_2935().setChunkMapCenter(chunkRenderDistanceCenterS2CPacket.getChunkX(), chunkRenderDistanceCenterS2CPacket.getChunkZ());
+        this.world.getChunkManager().setChunkMapCenter(chunkRenderDistanceCenterS2CPacket.getChunkX(), chunkRenderDistanceCenterS2CPacket.getChunkZ());
     }
 
     @Override

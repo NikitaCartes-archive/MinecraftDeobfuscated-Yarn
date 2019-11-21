@@ -101,7 +101,7 @@ extends Block {
     @Override
     public void onBreak(World world, BlockPos blockPos, BlockState blockState, PlayerEntity playerEntity) {
         DoubleBlockHalf doubleBlockHalf = blockState.get(HALF);
-        BlockPos blockPos2 = doubleBlockHalf == DoubleBlockHalf.LOWER ? blockPos.up() : blockPos.method_10074();
+        BlockPos blockPos2 = doubleBlockHalf == DoubleBlockHalf.LOWER ? blockPos.up() : blockPos.down();
         BlockState blockState2 = world.getBlockState(blockPos2);
         if (blockState2.getBlock() == this && blockState2.get(HALF) != doubleBlockHalf) {
             world.setBlockState(blockPos2, Blocks.AIR.getDefaultState(), 35);
@@ -223,7 +223,7 @@ extends Block {
 
     @Override
     public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
-        BlockPos blockPos2 = blockPos.method_10074();
+        BlockPos blockPos2 = blockPos.down();
         BlockState blockState2 = worldView.getBlockState(blockPos2);
         if (blockState.get(HALF) == DoubleBlockHalf.LOWER) {
             return blockState2.isSideSolidFullSquare(worldView, blockPos2, Direction.UP);

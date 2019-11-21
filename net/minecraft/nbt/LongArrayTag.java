@@ -23,7 +23,8 @@ public class LongArrayTag
 extends AbstractListTag<LongTag> {
     public static final TagReader<LongArrayTag> READER = new TagReader<LongArrayTag>(){
 
-        public LongArrayTag method_23250(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+        @Override
+        public LongArrayTag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
             positionTracker.add(192L);
             int j = dataInput.readInt();
             positionTracker.add(64 * j);
@@ -46,7 +47,7 @@ extends AbstractListTag<LongTag> {
 
         @Override
         public /* synthetic */ Tag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-            return this.method_23250(dataInput, i, positionTracker);
+            return this.read(dataInput, i, positionTracker);
         }
     };
     private long[] value;
@@ -101,7 +102,8 @@ extends AbstractListTag<LongTag> {
         return stringBuilder.append(']').toString();
     }
 
-    public LongArrayTag method_10618() {
+    @Override
+    public LongArrayTag copy() {
         long[] ls = new long[this.value.length];
         System.arraycopy(this.value, 0, ls, 0, this.value.length);
         return new LongArrayTag(ls);
@@ -143,17 +145,19 @@ extends AbstractListTag<LongTag> {
         return this.value.length;
     }
 
-    public LongTag method_10616(int i) {
+    @Override
+    public LongTag get(int i) {
         return LongTag.of(this.value[i]);
     }
 
-    public LongTag method_17810(int i, LongTag longTag) {
+    @Override
+    public LongTag set(int i, LongTag longTag) {
         long l = this.value[i];
         this.value[i] = longTag.getLong();
         return LongTag.of(l);
     }
 
-    public void method_17812(int i, LongTag longTag) {
+    public void method_10531(int i, LongTag longTag) {
         this.value = ArrayUtils.add(this.value, i, longTag.getLong());
     }
 
@@ -175,7 +179,7 @@ extends AbstractListTag<LongTag> {
         return false;
     }
 
-    public LongTag method_17811(int i) {
+    public LongTag method_10536(int i) {
         long l = this.value[i];
         this.value = ArrayUtils.remove(this.value, i);
         return LongTag.of(l);
@@ -187,43 +191,43 @@ extends AbstractListTag<LongTag> {
     }
 
     @Override
-    public /* synthetic */ Tag method_10536(int i) {
-        return this.method_17811(i);
+    public /* synthetic */ Tag remove(int i) {
+        return this.method_10536(i);
     }
 
     @Override
-    public /* synthetic */ void method_10531(int i, Tag tag) {
-        this.method_17812(i, (LongTag)tag);
+    public /* synthetic */ void add(int i, Tag tag) {
+        this.method_10531(i, (LongTag)tag);
     }
 
     @Override
-    public /* synthetic */ Tag method_10606(int i, Tag tag) {
-        return this.method_17810(i, (LongTag)tag);
+    public /* synthetic */ Tag set(int i, Tag tag) {
+        return this.set(i, (LongTag)tag);
     }
 
     @Override
     public /* synthetic */ Tag copy() {
-        return this.method_10618();
+        return this.copy();
     }
 
     @Override
     public /* synthetic */ Object remove(int i) {
-        return this.method_17811(i);
+        return this.method_10536(i);
     }
 
     @Override
     public /* synthetic */ void add(int i, Object object) {
-        this.method_17812(i, (LongTag)object);
+        this.method_10531(i, (LongTag)object);
     }
 
     @Override
     public /* synthetic */ Object set(int i, Object object) {
-        return this.method_17810(i, (LongTag)object);
+        return this.set(i, (LongTag)object);
     }
 
     @Override
     public /* synthetic */ Object get(int i) {
-        return this.method_10616(i);
+        return this.get(i);
     }
 }
 

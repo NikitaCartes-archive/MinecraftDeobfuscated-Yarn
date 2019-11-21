@@ -59,7 +59,8 @@ extends CompositeEntityModel<BatEntity> {
         return ImmutableList.of(this.head, this.body);
     }
 
-    public void method_17069(BatEntity batEntity, float f, float g, float h, float i, float j) {
+    @Override
+    public void setAngles(BatEntity batEntity, float f, float g, float h, float i, float j) {
         if (batEntity.isRoosting()) {
             this.head.pitch = j * ((float)Math.PI / 180);
             this.head.yaw = (float)Math.PI - i * ((float)Math.PI / 180);

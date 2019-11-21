@@ -8,6 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.GlyphRenderer;
 import net.minecraft.client.font.RenderableGlyph;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.TextureUtil;
@@ -20,6 +21,8 @@ public class GlyphAtlasTexture
 extends AbstractTexture
 implements Closeable {
     private final Identifier id;
+    private final RenderLayer field_21690;
+    private final RenderLayer field_21691;
     private final boolean hasColor;
     private final Slot rootSlot;
 
@@ -28,6 +31,8 @@ implements Closeable {
         this.hasColor = bl;
         this.rootSlot = new Slot(0, 0, 256, 256);
         TextureUtil.prepareImage(bl ? NativeImage.GLFormat.RGBA : NativeImage.GLFormat.INTENSITY, this.getGlId(), 256, 256);
+        this.field_21690 = RenderLayer.getText(identifier);
+        this.field_21691 = RenderLayer.getTextSeeThrough(identifier);
     }
 
     @Override
@@ -51,7 +56,7 @@ implements Closeable {
             float f = 256.0f;
             float g = 256.0f;
             float h = 0.01f;
-            return new GlyphRenderer(this.id, ((float)slot.x + 0.01f) / 256.0f, ((float)slot.x - 0.01f + (float)renderableGlyph.getWidth()) / 256.0f, ((float)slot.y + 0.01f) / 256.0f, ((float)slot.y - 0.01f + (float)renderableGlyph.getHeight()) / 256.0f, renderableGlyph.getXMin(), renderableGlyph.getXMax(), renderableGlyph.getYMin(), renderableGlyph.getYMax());
+            return new GlyphRenderer(this.field_21690, this.field_21691, ((float)slot.x + 0.01f) / 256.0f, ((float)slot.x - 0.01f + (float)renderableGlyph.getWidth()) / 256.0f, ((float)slot.y + 0.01f) / 256.0f, ((float)slot.y - 0.01f + (float)renderableGlyph.getHeight()) / 256.0f, renderableGlyph.getXMin(), renderableGlyph.getXMax(), renderableGlyph.getYMin(), renderableGlyph.getYMax());
         }
         return null;
     }

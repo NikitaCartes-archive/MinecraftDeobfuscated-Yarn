@@ -21,7 +21,8 @@ implements Packet<ClientPlayPacketListener> {
         this.id = l;
     }
 
-    public void method_11518(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onKeepAlive(this);
     }
 

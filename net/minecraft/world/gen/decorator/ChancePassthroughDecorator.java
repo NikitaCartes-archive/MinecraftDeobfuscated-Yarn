@@ -17,7 +17,8 @@ extends SimpleDecorator<LakeDecoratorConfig> {
         super(function);
     }
 
-    public Stream<BlockPos> method_14347(Random random, LakeDecoratorConfig lakeDecoratorConfig, BlockPos blockPos) {
+    @Override
+    public Stream<BlockPos> getPositions(Random random, LakeDecoratorConfig lakeDecoratorConfig, BlockPos blockPos) {
         if (random.nextFloat() < 1.0f / (float)lakeDecoratorConfig.chance) {
             return Stream.of(blockPos);
         }

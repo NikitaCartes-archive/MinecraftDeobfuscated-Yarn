@@ -35,7 +35,7 @@ public abstract class FeatureRenderer<T extends Entity, M extends EntityModel<T>
 
     protected static <T extends LivingEntity> void renderModel(EntityModel<T> entityModel, Identifier identifier, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h) {
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(identifier));
-        entityModel.render(matrixStack, vertexConsumer, i, LivingEntityRenderer.method_23622(livingEntity, 0.0f), f, g, h);
+        entityModel.render(matrixStack, vertexConsumer, i, LivingEntityRenderer.method_23622(livingEntity, 0.0f), f, g, h, 1.0f);
     }
 
     public M getModel() {

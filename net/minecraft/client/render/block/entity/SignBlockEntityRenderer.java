@@ -6,12 +6,14 @@ package net.minecraft.client.render.block.entity;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.AbstractSignBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.SignBlock;
 import net.minecraft.block.WallSignBlock;
 import net.minecraft.block.entity.SignBlockEntity;
+import net.minecraft.class_4722;
+import net.minecraft.class_4730;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.ModelPart;
@@ -20,13 +22,11 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
-import net.minecraft.client.render.model.ModelLoader;
-import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.Texts;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.util.WoodType;
 
 @Environment(value=EnvType.CLIENT)
 public class SignBlockEntityRenderer
@@ -37,7 +37,8 @@ extends BlockEntityRenderer<SignBlockEntity> {
         super(blockEntityRenderDispatcher);
     }
 
-    public void method_23083(SignBlockEntity signBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
+    @Override
+    public void render(SignBlockEntity signBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
         float h;
         BlockState blockState = signBlockEntity.getCachedState();
         matrixStack.push();
@@ -54,12 +55,12 @@ extends BlockEntityRenderer<SignBlockEntity> {
             matrixStack.translate(0.0, -0.3125, -0.4375);
             this.field_21529.field_21531.visible = false;
         }
-        Sprite sprite = this.getSprite(SignBlockEntityRenderer.getModelTexture(blockState.getBlock()));
         matrixStack.push();
         matrixStack.scale(0.6666667f, -0.6666667f, -0.6666667f);
-        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.method_23946());
-        this.field_21529.field_21530.render(matrixStack, vertexConsumer, i, j, sprite);
-        this.field_21529.field_21531.render(matrixStack, vertexConsumer, i, j, sprite);
+        class_4730 lv = SignBlockEntityRenderer.getModelTexture(blockState.getBlock());
+        VertexConsumer vertexConsumer = lv.method_24145(vertexConsumerProvider, this.field_21529::getLayer);
+        this.field_21529.field_21530.render(matrixStack, vertexConsumer, i, j);
+        this.field_21529.field_21531.render(matrixStack, vertexConsumer, i, j);
         matrixStack.pop();
         TextRenderer textRenderer = this.blockEntityRenderDispatcher.getTextRenderer();
         float k = 0.010416667f;
@@ -78,26 +79,9 @@ extends BlockEntityRenderer<SignBlockEntity> {
         matrixStack.pop();
     }
 
-    public static Identifier getModelTexture(Block block) {
-        if (block == Blocks.OAK_SIGN || block == Blocks.OAK_WALL_SIGN) {
-            return ModelLoader.OAK_SIGN;
-        }
-        if (block == Blocks.SPRUCE_SIGN || block == Blocks.SPRUCE_WALL_SIGN) {
-            return ModelLoader.SPRUCE_SIGN;
-        }
-        if (block == Blocks.BIRCH_SIGN || block == Blocks.BIRCH_WALL_SIGN) {
-            return ModelLoader.BIRCH_SIGN;
-        }
-        if (block == Blocks.ACACIA_SIGN || block == Blocks.ACACIA_WALL_SIGN) {
-            return ModelLoader.ACACIA_SIGN;
-        }
-        if (block == Blocks.JUNGLE_SIGN || block == Blocks.JUNGLE_WALL_SIGN) {
-            return ModelLoader.JUNGLE_SIGN;
-        }
-        if (block == Blocks.DARK_OAK_SIGN || block == Blocks.DARK_OAK_WALL_SIGN) {
-            return ModelLoader.DARK_OAK_SIGN;
-        }
-        return ModelLoader.OAK_SIGN;
+    public static class_4730 getModelTexture(Block block) {
+        WoodType woodType = block instanceof AbstractSignBlock ? ((AbstractSignBlock)block).method_24025() : WoodType.OAK;
+        return class_4722.method_24064(woodType);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -114,9 +98,9 @@ extends BlockEntityRenderer<SignBlockEntity> {
         }
 
         @Override
-        public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
-            this.field_21530.render(matrixStack, vertexConsumer, i, j, null, f, g, h);
-            this.field_21531.render(matrixStack, vertexConsumer, i, j, null, f, g, h);
+        public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k) {
+            this.field_21530.render(matrixStack, vertexConsumer, i, j, f, g, h, k);
+            this.field_21531.render(matrixStack, vertexConsumer, i, j, f, g, h, k);
         }
     }
 }

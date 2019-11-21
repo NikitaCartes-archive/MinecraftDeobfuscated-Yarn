@@ -12,7 +12,8 @@ import net.minecraft.util.PacketByteBuf;
 
 public class LongArgumentSerializer
 implements ArgumentSerializer<LongArgumentType> {
-    public void method_21690(LongArgumentType longArgumentType, PacketByteBuf packetByteBuf) {
+    @Override
+    public void toPacket(LongArgumentType longArgumentType, PacketByteBuf packetByteBuf) {
         boolean bl = longArgumentType.getMinimum() != Long.MIN_VALUE;
         boolean bl2 = longArgumentType.getMaximum() != Long.MAX_VALUE;
         packetByteBuf.writeByte(BrigadierArgumentTypes.createFlag(bl, bl2));
@@ -24,14 +25,16 @@ implements ArgumentSerializer<LongArgumentType> {
         }
     }
 
-    public LongArgumentType method_21691(PacketByteBuf packetByteBuf) {
+    @Override
+    public LongArgumentType fromPacket(PacketByteBuf packetByteBuf) {
         byte b = packetByteBuf.readByte();
         long l = BrigadierArgumentTypes.hasMin(b) ? packetByteBuf.readLong() : Long.MIN_VALUE;
         long m = BrigadierArgumentTypes.hasMax(b) ? packetByteBuf.readLong() : Long.MAX_VALUE;
         return LongArgumentType.longArg(l, m);
     }
 
-    public void method_21689(LongArgumentType longArgumentType, JsonObject jsonObject) {
+    @Override
+    public void toJson(LongArgumentType longArgumentType, JsonObject jsonObject) {
         if (longArgumentType.getMinimum() != Long.MIN_VALUE) {
             jsonObject.addProperty("min", longArgumentType.getMinimum());
         }
@@ -42,7 +45,7 @@ implements ArgumentSerializer<LongArgumentType> {
 
     @Override
     public /* synthetic */ ArgumentType fromPacket(PacketByteBuf packetByteBuf) {
-        return this.method_21691(packetByteBuf);
+        return this.fromPacket(packetByteBuf);
     }
 }
 

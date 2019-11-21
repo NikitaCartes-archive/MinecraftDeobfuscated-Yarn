@@ -134,7 +134,7 @@ extends Goal {
         if (pathNodeType != PathNodeType.WALKABLE) {
             return false;
         }
-        BlockState blockState = this.world.getBlockState(blockPos.method_10074());
+        BlockState blockState = this.world.getBlockState(blockPos.down());
         if (!this.field_21078 && blockState.getBlock() instanceof LeavesBlock) {
             return false;
         }

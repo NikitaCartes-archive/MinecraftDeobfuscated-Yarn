@@ -36,7 +36,8 @@ implements Packet<ServerPlayPacketListener> {
         packetByteBuf.writeVarInt(this.entityId);
     }
 
-    public void method_12243(ServerPlayPacketListener serverPlayPacketListener) {
+    @Override
+    public void apply(ServerPlayPacketListener serverPlayPacketListener) {
         serverPlayPacketListener.onQueryEntityNbt(this);
     }
 

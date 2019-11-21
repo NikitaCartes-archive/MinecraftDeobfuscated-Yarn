@@ -31,7 +31,7 @@ extends TreeDecorator {
     }
 
     @Override
-    public void method_23469(IWorld iWorld, Random random, List<BlockPos> list, List<BlockPos> list2, Set<BlockPos> set, BlockBox blockBox) {
+    public void generate(IWorld iWorld, Random random, List<BlockPos> list, List<BlockPos> list2, Set<BlockPos> set, BlockBox blockBox) {
         list2.forEach(blockPos -> {
             BlockPos blockPos2;
             if (random.nextInt(4) == 0 && AbstractTreeFeature.isAir(iWorld, blockPos2 = blockPos.west())) {
@@ -51,10 +51,10 @@ extends TreeDecorator {
 
     private void method_23467(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, BooleanProperty booleanProperty, Set<BlockPos> set, BlockBox blockBox) {
         this.method_23471(modifiableTestableWorld, blockPos, booleanProperty, set, blockBox);
-        blockPos = blockPos.method_10074();
+        blockPos = blockPos.down();
         for (int i = 4; AbstractTreeFeature.isAir(modifiableTestableWorld, blockPos) && i > 0; --i) {
             this.method_23471(modifiableTestableWorld, blockPos, booleanProperty, set, blockBox);
-            blockPos = blockPos.method_10074();
+            blockPos = blockPos.down();
         }
     }
 

@@ -51,7 +51,8 @@ public class LootEntries {
     public static class Serializer
     implements JsonDeserializer<LootEntry>,
     JsonSerializer<LootEntry> {
-        public LootEntry method_407(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) {
+        @Override
+        public LootEntry deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) {
             JsonObject jsonObject = JsonHelper.asObject(jsonElement, "entry");
             Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "type"));
             LootEntry.Serializer serializer = (LootEntry.Serializer)idSerializers.get(identifier);
@@ -62,7 +63,8 @@ public class LootEntries {
             return serializer.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
         }
 
-        public JsonElement method_408(LootEntry lootEntry, Type type, JsonSerializationContext jsonSerializationContext) {
+        @Override
+        public JsonElement serialize(LootEntry lootEntry, Type type, JsonSerializationContext jsonSerializationContext) {
             JsonObject jsonObject = new JsonObject();
             LootEntry.Serializer<LootEntry> serializer = Serializer.getSerializer(lootEntry.getClass());
             jsonObject.addProperty("type", serializer.getIdentifier().toString());
@@ -83,12 +85,12 @@ public class LootEntries {
 
         @Override
         public /* synthetic */ JsonElement serialize(Object object, Type type, JsonSerializationContext jsonSerializationContext) {
-            return this.method_408((LootEntry)object, type, jsonSerializationContext);
+            return this.serialize((LootEntry)object, type, jsonSerializationContext);
         }
 
         @Override
         public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.method_407(jsonElement, type, jsonDeserializationContext);
+            return this.deserialize(jsonElement, type, jsonDeserializationContext);
         }
     }
 }

@@ -40,7 +40,7 @@ extends PlayerManager {
     @Override
     public void setWhitelistEnabled(boolean bl) {
         super.setWhitelistEnabled(bl);
-        this.method_13938().setUseWhitelist(bl);
+        this.getServer().setUseWhitelist(bl);
     }
 
     @Override
@@ -129,7 +129,8 @@ extends PlayerManager {
         return !this.isWhitelistEnabled() || this.isOperator(gameProfile) || this.getWhitelist().isAllowed(gameProfile);
     }
 
-    public MinecraftDedicatedServer method_13938() {
+    @Override
+    public MinecraftDedicatedServer getServer() {
         return (MinecraftDedicatedServer)super.getServer();
     }
 
@@ -140,7 +141,7 @@ extends PlayerManager {
 
     @Override
     public /* synthetic */ MinecraftServer getServer() {
-        return this.method_13938();
+        return this.getServer();
     }
 }
 

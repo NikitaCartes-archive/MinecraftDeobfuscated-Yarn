@@ -51,7 +51,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeVarInt(this.id);
     }
 
-    public void method_11651(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onEntityUpdate(this);
     }
 

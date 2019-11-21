@@ -150,7 +150,7 @@ public abstract class PlayerManager {
         this.sendCommandTree(serverPlayerEntity);
         serverPlayerEntity.getStatHandler().updateStatSet();
         serverPlayerEntity.getRecipeBook().sendInitRecipesPacket(serverPlayerEntity);
-        this.sendScoreboard(serverWorld.method_14170(), serverPlayerEntity);
+        this.sendScoreboard(serverWorld.getScoreboard(), serverPlayerEntity);
         this.server.forcePlayerSampleUpdate();
         TranslatableText text = serverPlayerEntity.getGameProfile().getName().equalsIgnoreCase(string) ? new TranslatableText("multiplayer.player.joined", serverPlayerEntity.getDisplayName()) : new TranslatableText("multiplayer.player.joined.renamed", serverPlayerEntity.getDisplayName(), string);
         this.sendToAll(text.formatted(Formatting.YELLOW));
@@ -290,7 +290,7 @@ public abstract class PlayerManager {
             for (Entity entity2 : entity.getPassengersDeep()) {
                 serverWorld.removeEntity(entity2);
             }
-            serverWorld.method_8497(serverPlayerEntity.chunkX, serverPlayerEntity.chunkZ).markDirty();
+            serverWorld.getChunk(serverPlayerEntity.chunkX, serverPlayerEntity.chunkZ).markDirty();
         }
         serverPlayerEntity.detach();
         serverWorld.removePlayer(serverPlayerEntity);
@@ -672,7 +672,7 @@ public abstract class PlayerManager {
         this.sendToAll(new ChunkLoadDistanceS2CPacket(i));
         for (ServerWorld serverWorld : this.server.getWorlds()) {
             if (serverWorld == null) continue;
-            serverWorld.method_14178().applyViewDistance(i);
+            serverWorld.getChunkManager().applyViewDistance(i);
         }
     }
 

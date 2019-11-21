@@ -46,7 +46,8 @@ implements Packet<ServerPlayPacketListener> {
         packetByteBuf.writeFloat(this.pitch);
     }
 
-    public void method_12278(ServerPlayPacketListener serverPlayPacketListener) {
+    @Override
+    public void apply(ServerPlayPacketListener serverPlayPacketListener) {
         serverPlayPacketListener.onVehicleMove(this);
     }
 

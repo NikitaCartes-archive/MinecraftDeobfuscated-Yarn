@@ -32,7 +32,8 @@ implements Packet<ServerPlayPacketListener> {
         packetByteBuf.writeVarInt(this.slot);
     }
 
-    public void method_12292(ServerPlayPacketListener serverPlayPacketListener) {
+    @Override
+    public void apply(ServerPlayPacketListener serverPlayPacketListener) {
         serverPlayPacketListener.onPickFromInventory(this);
     }
 

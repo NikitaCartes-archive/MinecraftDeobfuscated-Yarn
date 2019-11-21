@@ -25,6 +25,7 @@ import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
+import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.ai.pathing.SwimNavigation;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -65,6 +66,7 @@ extends HostileEntity {
     public GuardianEntity(EntityType<? extends GuardianEntity> entityType, World world) {
         super((EntityType<? extends HostileEntity>)entityType, world);
         this.experiencePoints = 10;
+        this.setPathfindingPenalty(PathNodeType.WATER, 0.0f);
         this.moveControl = new GuardianMoveControl(this);
         this.prevSpikesExtension = this.spikesExtension = this.random.nextFloat();
     }
@@ -213,7 +215,7 @@ extends HostileEntity {
                     if (vec3d.y > 0.0 && this.flopping && !this.isSilent()) {
                         this.world.playSound(this.getX(), this.getY(), this.getZ(), this.getFlopSound(), this.getSoundCategory(), 1.0f, 1.0f, false);
                     }
-                    this.flopping = vec3d.y < 0.0 && this.world.isTopSolid(new BlockPos(this).method_10074(), this);
+                    this.flopping = vec3d.y < 0.0 && this.world.isTopSolid(new BlockPos(this).down(), this);
                 } else {
                     this.spikesExtensionRate = this.areSpikesRetracted() ? (this.spikesExtensionRate < 0.5f ? 4.0f : (this.spikesExtensionRate += (0.5f - this.spikesExtensionRate) * 0.1f)) : (this.spikesExtensionRate += (0.125f - this.spikesExtensionRate) * 0.2f);
                 }
@@ -447,13 +449,14 @@ extends HostileEntity {
             this.owner = guardianEntity;
         }
 
-        public boolean method_7064(@Nullable LivingEntity livingEntity) {
+        @Override
+        public boolean test(@Nullable LivingEntity livingEntity) {
             return (livingEntity instanceof PlayerEntity || livingEntity instanceof SquidEntity) && livingEntity.squaredDistanceTo(this.owner) > 9.0;
         }
 
         @Override
         public /* synthetic */ boolean test(@Nullable Object object) {
-            return this.method_7064((LivingEntity)object);
+            return this.test((LivingEntity)object);
         }
     }
 }

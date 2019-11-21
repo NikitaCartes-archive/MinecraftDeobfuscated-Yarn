@@ -20,7 +20,8 @@ implements Packet<ServerPlayPacketListener> {
         this.difficulty = difficulty;
     }
 
-    public void method_19477(ServerPlayPacketListener serverPlayPacketListener) {
+    @Override
+    public void apply(ServerPlayPacketListener serverPlayPacketListener) {
         serverPlayPacketListener.onUpdateDifficulty(this);
     }
 

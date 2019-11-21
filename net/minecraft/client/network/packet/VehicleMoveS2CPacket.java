@@ -48,7 +48,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeFloat(this.pitch);
     }
 
-    public void method_11672(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onVehicleMove(this);
     }
 

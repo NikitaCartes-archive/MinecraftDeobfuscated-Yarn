@@ -13,13 +13,13 @@ implements Predicate<BlockState> {
     private static final MaterialPredicate IS_AIR = new MaterialPredicate(Material.AIR){
 
         @Override
-        public boolean method_11745(@Nullable BlockState blockState) {
+        public boolean test(@Nullable BlockState blockState) {
             return blockState != null && blockState.isAir();
         }
 
         @Override
         public /* synthetic */ boolean test(@Nullable Object object) {
-            return this.method_11745((BlockState)object);
+            return this.test((BlockState)object);
         }
     };
     private final Material material;
@@ -32,13 +32,14 @@ implements Predicate<BlockState> {
         return material == Material.AIR ? IS_AIR : new MaterialPredicate(material);
     }
 
-    public boolean method_11745(@Nullable BlockState blockState) {
+    @Override
+    public boolean test(@Nullable BlockState blockState) {
         return blockState != null && blockState.getMaterial() == this.material;
     }
 
     @Override
     public /* synthetic */ boolean test(@Nullable Object object) {
-        return this.method_11745((BlockState)object);
+        return this.test((BlockState)object);
     }
 }
 

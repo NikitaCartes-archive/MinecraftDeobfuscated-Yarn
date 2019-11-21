@@ -38,7 +38,8 @@ extends FeatureRenderer<T, M> {
         this.modelBody = bipedEntityModel2;
     }
 
-    public void method_17157(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l) {
+    @Override
+    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l) {
         this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, f, g, h, j, k, l, EquipmentSlot.CHEST, i);
         this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, f, g, h, j, k, l, EquipmentSlot.LEGS, i);
         this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, f, g, h, j, k, l, EquipmentSlot.FEET, i);
@@ -56,9 +57,9 @@ extends FeatureRenderer<T, M> {
         }
         A bipedEntityModel = this.getArmor(equipmentSlot);
         ((BipedEntityModel)this.getModel()).setAttributes(bipedEntityModel);
-        ((BipedEntityModel)bipedEntityModel).method_17086(livingEntity, f, g, h);
+        ((BipedEntityModel)bipedEntityModel).animateModel(livingEntity, f, g, h);
         this.setVisible(bipedEntityModel, equipmentSlot);
-        ((BipedEntityModel)bipedEntityModel).method_17087(livingEntity, f, g, i, j, k);
+        ((BipedEntityModel)bipedEntityModel).setAngles(livingEntity, f, g, i, j, k);
         boolean bl = this.isLegs(equipmentSlot);
         boolean bl2 = itemStack.hasEnchantmentGlint();
         if (armorItem instanceof DyeableArmorItem) {
@@ -75,7 +76,7 @@ extends FeatureRenderer<T, M> {
 
     private void renderArmorParts(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, ArmorItem armorItem, boolean bl, A bipedEntityModel, boolean bl2, float f, float g, float h, @Nullable String string) {
         VertexConsumer vertexConsumer = ItemRenderer.getArmorVertexConsumer(vertexConsumerProvider, RenderLayer.getEntityCutoutNoCull(this.getArmorTexture(armorItem, bl2, string)), false, bl);
-        ((AnimalModel)bipedEntityModel).render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, f, g, h);
+        ((AnimalModel)bipedEntityModel).render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, f, g, h, 1.0f);
     }
 
     public A getArmor(EquipmentSlot equipmentSlot) {

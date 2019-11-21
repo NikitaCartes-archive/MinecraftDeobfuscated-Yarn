@@ -41,7 +41,8 @@ implements LootCondition {
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    public boolean method_22579(LootContext lootContext) {
+    @Override
+    public boolean test(LootContext lootContext) {
         LootCondition lootCondition = lootContext.getCondition(this.id);
         if (lootContext.addCondition(lootCondition)) {
             try {
@@ -57,7 +58,7 @@ implements LootCondition {
 
     @Override
     public /* synthetic */ boolean test(Object object) {
-        return this.method_22579((LootContext)object);
+        return this.test((LootContext)object);
     }
 
     public static class Factory
@@ -66,18 +67,20 @@ implements LootCondition {
             super(new Identifier("reference"), ReferenceLootCondition.class);
         }
 
-        public void method_22582(JsonObject jsonObject, ReferenceLootCondition referenceLootCondition, JsonSerializationContext jsonSerializationContext) {
+        @Override
+        public void toJson(JsonObject jsonObject, ReferenceLootCondition referenceLootCondition, JsonSerializationContext jsonSerializationContext) {
             jsonObject.addProperty("name", referenceLootCondition.id.toString());
         }
 
-        public ReferenceLootCondition method_22581(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+        @Override
+        public ReferenceLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
             Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "name"));
             return new ReferenceLootCondition(identifier);
         }
 
         @Override
         public /* synthetic */ LootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            return this.method_22581(jsonObject, jsonDeserializationContext);
+            return this.fromJson(jsonObject, jsonDeserializationContext);
         }
     }
 }

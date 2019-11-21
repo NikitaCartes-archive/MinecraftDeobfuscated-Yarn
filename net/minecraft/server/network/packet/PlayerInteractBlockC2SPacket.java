@@ -38,7 +38,8 @@ implements Packet<ServerPlayPacketListener> {
         packetByteBuf.writeBlockHitResult(this.field_17602);
     }
 
-    public void method_12547(ServerPlayPacketListener serverPlayPacketListener) {
+    @Override
+    public void apply(ServerPlayPacketListener serverPlayPacketListener) {
         serverPlayPacketListener.onPlayerInteractBlock(this);
     }
 

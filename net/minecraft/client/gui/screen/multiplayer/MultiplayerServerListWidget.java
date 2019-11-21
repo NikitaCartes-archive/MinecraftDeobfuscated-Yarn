@@ -61,7 +61,8 @@ extends AlwaysSelectedEntryListWidget<Entry> {
         this.lanServers.forEach(this::addEntry);
     }
 
-    public void method_20122(Entry entry) {
+    @Override
+    public void setSelected(Entry entry) {
         super.setSelected(entry);
         if (this.getSelected() instanceof ServerEntry) {
             NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", ((ServerEntry)((ServerEntry)this.getSelected())).server.name).getString());
@@ -127,7 +128,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
 
     @Override
     public /* synthetic */ void setSelected(EntryListWidget.Entry entry) {
-        this.method_20122((Entry)entry);
+        this.setSelected((Entry)entry);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -308,7 +309,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             this.screen.getServerList().swapEntries(i, j);
             this.screen.serverListWidget.setServers(this.screen.getServerList());
             Entry entry = (Entry)this.screen.serverListWidget.children().get(j);
-            this.screen.serverListWidget.method_20122(entry);
+            this.screen.serverListWidget.setSelected(entry);
             MultiplayerServerListWidget.this.ensureVisible(entry);
         }
 

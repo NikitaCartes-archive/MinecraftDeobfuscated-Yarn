@@ -185,7 +185,7 @@ extends Dimension {
         if (bl && !blockState.getBlock().matches(BlockTags.VALID_SPAWN)) {
             return null;
         }
-        WorldChunk worldChunk = this.world.method_8497(i >> 4, j >> 4);
+        WorldChunk worldChunk = this.world.getChunk(i >> 4, j >> 4);
         int k = worldChunk.sampleHeightmap(Heightmap.Type.MOTION_BLOCKING, i & 0xF, j & 0xF);
         if (k < 0) {
             return null;

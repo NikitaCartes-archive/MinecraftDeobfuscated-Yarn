@@ -12,20 +12,20 @@ import net.minecraft.entity.passive.AbstractDonkeyEntity;
 @Environment(value=EnvType.CLIENT)
 public class DonkeyEntityModel<T extends AbstractDonkeyEntity>
 extends HorseEntityModel<T> {
-    private final ModelPart field_3349 = new ModelPart(this, 26, 21);
-    private final ModelPart field_3348;
+    private final ModelPart leftChest = new ModelPart(this, 26, 21);
+    private final ModelPart rightChest;
 
     public DonkeyEntityModel(float f) {
         super(f);
-        this.field_3349.addCuboid(-4.0f, 0.0f, -2.0f, 8.0f, 8.0f, 3.0f);
-        this.field_3348 = new ModelPart(this, 26, 21);
-        this.field_3348.addCuboid(-4.0f, 0.0f, -2.0f, 8.0f, 8.0f, 3.0f);
-        this.field_3349.yaw = -1.5707964f;
-        this.field_3348.yaw = 1.5707964f;
-        this.field_3349.setPivot(6.0f, -8.0f, 0.0f);
-        this.field_3348.setPivot(-6.0f, -8.0f, 0.0f);
-        this.field_3305.addChild(this.field_3349);
-        this.field_3305.addChild(this.field_3348);
+        this.leftChest.addCuboid(-4.0f, 0.0f, -2.0f, 8.0f, 8.0f, 3.0f);
+        this.rightChest = new ModelPart(this, 26, 21);
+        this.rightChest.addCuboid(-4.0f, 0.0f, -2.0f, 8.0f, 8.0f, 3.0f);
+        this.leftChest.yaw = -1.5707964f;
+        this.rightChest.yaw = 1.5707964f;
+        this.leftChest.setPivot(6.0f, -8.0f, 0.0f);
+        this.rightChest.setPivot(-6.0f, -8.0f, 0.0f);
+        this.torso.addChild(this.leftChest);
+        this.torso.addChild(this.rightChest);
     }
 
     @Override
@@ -44,14 +44,15 @@ extends HorseEntityModel<T> {
         modelPart.addChild(modelPart3);
     }
 
-    public void method_17076(T abstractDonkeyEntity, float f, float g, float h, float i, float j) {
-        super.method_17085(abstractDonkeyEntity, f, g, h, i, j);
+    @Override
+    public void setAngles(T abstractDonkeyEntity, float f, float g, float h, float i, float j) {
+        super.setAngles(abstractDonkeyEntity, f, g, h, i, j);
         if (((AbstractDonkeyEntity)abstractDonkeyEntity).hasChest()) {
-            this.field_3349.visible = true;
-            this.field_3348.visible = true;
+            this.leftChest.visible = true;
+            this.rightChest.visible = true;
         } else {
-            this.field_3349.visible = false;
-            this.field_3348.visible = false;
+            this.leftChest.visible = false;
+            this.rightChest.visible = false;
         }
     }
 }

@@ -50,7 +50,7 @@ implements Toast {
         this.justUpdated = true;
     }
 
-    public Type method_1989() {
+    public Type getType() {
         return this.type;
     }
 
@@ -65,7 +65,7 @@ implements Toast {
 
     @Override
     public /* synthetic */ Object getType() {
-        return this.method_1989();
+        return this.getType();
     }
 
     @Environment(value=EnvType.CLIENT)

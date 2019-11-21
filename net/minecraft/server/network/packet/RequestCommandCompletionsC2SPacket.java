@@ -36,7 +36,8 @@ implements Packet<ServerPlayPacketListener> {
         packetByteBuf.writeString(this.partialCommand, 32500);
     }
 
-    public void method_12147(ServerPlayPacketListener serverPlayPacketListener) {
+    @Override
+    public void apply(ServerPlayPacketListener serverPlayPacketListener) {
         serverPlayPacketListener.onRequestCommandCompletions(this);
     }
 

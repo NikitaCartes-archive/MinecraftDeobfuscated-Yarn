@@ -25,7 +25,8 @@ implements Packet<ClientPlayPacketListener> {
         this.entityHorseId = k;
     }
 
-    public void method_11437(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onGuiOpen(this);
     }
 

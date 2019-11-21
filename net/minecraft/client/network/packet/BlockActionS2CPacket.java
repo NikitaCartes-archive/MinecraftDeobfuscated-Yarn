@@ -46,7 +46,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeVarInt(Registry.BLOCK.getRawId(this.block));
     }
 
-    public void method_11297(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onBlockAction(this);
     }
 

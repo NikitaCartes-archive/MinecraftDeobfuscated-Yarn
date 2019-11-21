@@ -38,7 +38,8 @@ implements Packet<ClientPlayPacketListener> {
         this.toSetProgress = Maps.newHashMap(map);
     }
 
-    public void method_11925(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onAdvancements(this);
     }
 

@@ -7,6 +7,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.OptionalDouble;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -19,22 +20,11 @@ import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
-public class RenderPhase {
+public abstract class RenderPhase {
     protected final String name;
     private final Runnable beginAction;
     private final Runnable endAction;
     protected static final Transparency NO_TRANSPARENCY = new Transparency("no_transparency", () -> RenderSystem.disableBlend(), () -> {});
-    protected static final Transparency FORCED_TRANSPARENCY = new Transparency("forced_transparency", () -> {
-        RenderSystem.enableBlend();
-        RenderSystem.blendColor(1.0f, 1.0f, 1.0f, 0.15f);
-        RenderSystem.blendFunc(GlStateManager.SourceFactor.CONSTANT_ALPHA, GlStateManager.DestFactor.ONE_MINUS_CONSTANT_ALPHA);
-        RenderSystem.depthMask(false);
-    }, () -> {
-        RenderSystem.disableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.blendColor(1.0f, 1.0f, 1.0f, 1.0f);
-        RenderSystem.depthMask(true);
-    });
     protected static final Transparency ADDITIVE_TRANSPARENCY = new Transparency("additive_transparency", () -> {
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
@@ -133,7 +123,7 @@ public class RenderPhase {
     });
     protected static final Target MAIN_TARGET = new Target("main_target", () -> {}, () -> {});
     protected static final Target OUTLINE_TARGET = new Target("outline_target", () -> MinecraftClient.getInstance().worldRenderer.method_22990().beginWrite(false), () -> MinecraftClient.getInstance().getFramebuffer().beginWrite(false));
-    protected static final LineWidth FULL_LINEWIDTH = new LineWidth(1.0f);
+    protected static final LineWidth FULL_LINEWIDTH = new LineWidth(OptionalDouble.of(1.0));
 
     public RenderPhase(String string, Runnable runnable, Runnable runnable2) {
         this.name = string;
@@ -180,19 +170,23 @@ public class RenderPhase {
     @Environment(value=EnvType.CLIENT)
     public static class LineWidth
     extends RenderPhase {
-        private final float width;
+        private final OptionalDouble width;
 
-        public LineWidth(float f) {
+        public LineWidth(OptionalDouble optionalDouble) {
             super("alpha", () -> {
-                if (f != 1.0f) {
-                    RenderSystem.lineWidth(f);
+                if (!Objects.equals(optionalDouble, OptionalDouble.of(1.0))) {
+                    if (optionalDouble.isPresent()) {
+                        RenderSystem.lineWidth((float)optionalDouble.getAsDouble());
+                    } else {
+                        RenderSystem.lineWidth(Math.max(2.5f, (float)MinecraftClient.getInstance().getWindow().getFramebufferWidth() / 1920.0f * 2.5f));
+                    }
                 }
             }, () -> {
-                if (f != 1.0f) {
+                if (!Objects.equals(optionalDouble, OptionalDouble.of(1.0))) {
                     RenderSystem.lineWidth(1.0f);
                 }
             });
-            this.width = f;
+            this.width = optionalDouble;
         }
 
         @Override
@@ -206,12 +200,12 @@ public class RenderPhase {
             if (!super.equals(object)) {
                 return false;
             }
-            return this.width == ((LineWidth)object).width;
+            return Objects.equals(this.width, ((LineWidth)object).width);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(super.hashCode(), Float.valueOf(this.width));
+            return Objects.hash(super.hashCode(), this.width);
         }
     }
 

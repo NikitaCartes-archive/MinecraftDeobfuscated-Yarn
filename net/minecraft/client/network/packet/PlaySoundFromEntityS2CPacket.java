@@ -78,7 +78,8 @@ implements Packet<ClientPlayPacketListener> {
         return this.pitch;
     }
 
-    public void method_11884(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onPlaySoundFromEntity(this);
     }
 }

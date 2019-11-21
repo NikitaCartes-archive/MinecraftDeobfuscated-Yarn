@@ -41,7 +41,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeIntArray(this.passengerIds);
     }
 
-    public void method_11842(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onEntityPassengersSet(this);
     }
 

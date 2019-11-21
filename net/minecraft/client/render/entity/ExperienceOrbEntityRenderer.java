@@ -23,6 +23,7 @@ import net.minecraft.util.math.MathHelper;
 public class ExperienceOrbEntityRenderer
 extends EntityRenderer<ExperienceOrbEntity> {
     private static final Identifier SKIN = new Identifier("textures/entity/experience_orb.png");
+    private static final RenderLayer field_21741 = RenderLayer.getEntityTranslucent(SKIN);
 
     public ExperienceOrbEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher);
@@ -30,7 +31,13 @@ extends EntityRenderer<ExperienceOrbEntity> {
         this.field_4672 = 0.75f;
     }
 
-    public void method_3966(ExperienceOrbEntity experienceOrbEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+    @Override
+    protected int method_24087(ExperienceOrbEntity experienceOrbEntity, float f) {
+        return MathHelper.clamp(super.method_24087(experienceOrbEntity, f) + 7, 0, 15);
+    }
+
+    @Override
+    public void render(ExperienceOrbEntity experienceOrbEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         matrixStack.push();
         int j = experienceOrbEntity.getOrbSize();
         float h = (float)(j % 4 * 16 + 0) / 64.0f;
@@ -50,7 +57,7 @@ extends EntityRenderer<ExperienceOrbEntity> {
         matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
         float v = 0.3f;
         matrixStack.scale(0.3f, 0.3f, 0.3f);
-        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityTranslucent(SKIN));
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(field_21741);
         MatrixStack.Entry entry = matrixStack.peek();
         Matrix4f matrix4f = entry.getModel();
         Matrix3f matrix3f = entry.getNormal();
@@ -66,7 +73,8 @@ extends EntityRenderer<ExperienceOrbEntity> {
         vertexConsumer.vertex(matrix4f, f, g, 0.0f).color(i, j, k, 128).texture(h, l).overlay(OverlayTexture.DEFAULT_UV).light(m).method_23763(matrix3f, 0.0f, 1.0f, 0.0f).next();
     }
 
-    public Identifier method_3967(ExperienceOrbEntity experienceOrbEntity) {
+    @Override
+    public Identifier getTexture(ExperienceOrbEntity experienceOrbEntity) {
         return SKIN;
     }
 }

@@ -14,6 +14,7 @@ import net.minecraft.client.render.entity.feature.EndermanBlockFeatureRenderer;
 import net.minecraft.client.render.entity.feature.EndermanEyesFeatureRenderer;
 import net.minecraft.client.render.entity.model.EndermanEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
@@ -30,15 +31,17 @@ extends MobEntityRenderer<EndermanEntity, EndermanEntityModel<EndermanEntity>> {
         this.addFeature(new EndermanBlockFeatureRenderer(this));
     }
 
-    public void method_3911(EndermanEntity endermanEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+    @Override
+    public void render(EndermanEntity endermanEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         BlockState blockState = endermanEntity.getCarriedBlock();
         EndermanEntityModel endermanEntityModel = (EndermanEntityModel)this.getModel();
         endermanEntityModel.carryingBlock = blockState != null;
         endermanEntityModel.angry = endermanEntity.isAngry();
-        super.method_4072(endermanEntity, f, g, matrixStack, vertexConsumerProvider, i);
+        super.render(endermanEntity, f, g, matrixStack, vertexConsumerProvider, i);
     }
 
-    public Vec3d method_23160(EndermanEntity endermanEntity, float f) {
+    @Override
+    public Vec3d getPositionOffset(EndermanEntity endermanEntity, float f) {
         if (endermanEntity.isAngry()) {
             double d = 0.02;
             return new Vec3d(this.random.nextGaussian() * 0.02, 0.0, this.random.nextGaussian() * 0.02);
@@ -46,8 +49,14 @@ extends MobEntityRenderer<EndermanEntity, EndermanEntityModel<EndermanEntity>> {
         return super.getPositionOffset(endermanEntity, f);
     }
 
-    public Identifier method_3912(EndermanEntity endermanEntity) {
+    @Override
+    public Identifier getTexture(EndermanEntity endermanEntity) {
         return SKIN;
+    }
+
+    @Override
+    public /* synthetic */ Vec3d getPositionOffset(Entity entity, float f) {
+        return this.getPositionOffset((EndermanEntity)entity, f);
     }
 }
 

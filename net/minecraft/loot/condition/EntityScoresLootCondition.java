@@ -38,7 +38,8 @@ implements LootCondition {
         return ImmutableSet.of(this.target.getParameter());
     }
 
-    public boolean method_864(LootContext lootContext) {
+    @Override
+    public boolean test(LootContext lootContext) {
         Entity entity = lootContext.get(this.target.getParameter());
         if (entity == null) {
             return false;
@@ -65,7 +66,7 @@ implements LootCondition {
 
     @Override
     public /* synthetic */ boolean test(Object object) {
-        return this.method_864((LootContext)object);
+        return this.test((LootContext)object);
     }
 
     public static class Factory
@@ -74,7 +75,8 @@ implements LootCondition {
             super(new Identifier("entity_scores"), EntityScoresLootCondition.class);
         }
 
-        public void method_868(JsonObject jsonObject, EntityScoresLootCondition entityScoresLootCondition, JsonSerializationContext jsonSerializationContext) {
+        @Override
+        public void toJson(JsonObject jsonObject, EntityScoresLootCondition entityScoresLootCondition, JsonSerializationContext jsonSerializationContext) {
             JsonObject jsonObject2 = new JsonObject();
             for (Map.Entry entry : entityScoresLootCondition.scores.entrySet()) {
                 jsonObject2.add((String)entry.getKey(), jsonSerializationContext.serialize(entry.getValue()));
@@ -83,7 +85,8 @@ implements LootCondition {
             jsonObject.add("entity", jsonSerializationContext.serialize((Object)entityScoresLootCondition.target));
         }
 
-        public EntityScoresLootCondition method_867(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+        @Override
+        public EntityScoresLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
             Set<Map.Entry<String, JsonElement>> set = JsonHelper.getObject(jsonObject, "scores").entrySet();
             LinkedHashMap<String, UniformLootTableRange> map = Maps.newLinkedHashMap();
             for (Map.Entry<String, JsonElement> entry : set) {
@@ -94,7 +97,7 @@ implements LootCondition {
 
         @Override
         public /* synthetic */ LootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            return this.method_867(jsonObject, jsonDeserializationContext);
+            return this.fromJson(jsonObject, jsonDeserializationContext);
         }
     }
 }

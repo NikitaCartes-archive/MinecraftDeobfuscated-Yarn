@@ -20,7 +20,13 @@ extends MobEntityRenderer<BlazeEntity, BlazeEntityModel<BlazeEntity>> {
         super(entityRenderDispatcher, new BlazeEntityModel(), 0.5f);
     }
 
-    public Identifier method_3881(BlazeEntity blazeEntity) {
+    @Override
+    protected int method_24087(BlazeEntity blazeEntity, float f) {
+        return 15;
+    }
+
+    @Override
+    public Identifier getTexture(BlazeEntity blazeEntity) {
         return SKIN;
     }
 }

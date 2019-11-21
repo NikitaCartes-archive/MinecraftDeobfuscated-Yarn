@@ -62,9 +62,10 @@ implements ModelWithHat {
         }
     }
 
-    public void method_17135(T zombieEntity, float f, float g, float h, float i, float j) {
+    @Override
+    public void setAngles(T zombieEntity, float f, float g, float h, float i, float j) {
         float m;
-        super.method_17087(zombieEntity, f, g, h, i, j);
+        super.setAngles(zombieEntity, f, g, h, i, j);
         float k = MathHelper.sin(this.handSwingProgress * (float)Math.PI);
         float l = MathHelper.sin((1.0f - (1.0f - this.handSwingProgress) * (1.0f - this.handSwingProgress)) * (float)Math.PI);
         this.rightArm.roll = 0.0f;

@@ -335,8 +335,8 @@ implements DedicatedServer {
 
     @Override
     public void addSnooperInfo(Snooper snooper) {
-        snooper.addInfo("whitelist_enabled", this.method_13949().isWhitelistEnabled());
-        snooper.addInfo("whitelist_count", this.method_13949().getWhitelistedNames().length);
+        snooper.addInfo("whitelist_enabled", this.getPlayerManager().isWhitelistEnabled());
+        snooper.addInfo("whitelist_count", this.getPlayerManager().getWhitelistedNames().length);
         super.addSnooperInfo(snooper);
     }
 
@@ -361,7 +361,8 @@ implements DedicatedServer {
         return this.getProperties().useNativeTransport;
     }
 
-    public DedicatedPlayerManager method_13949() {
+    @Override
+    public DedicatedPlayerManager getPlayerManager() {
         return (DedicatedPlayerManager)super.getPlayerManager();
     }
 
@@ -417,10 +418,10 @@ implements DedicatedServer {
         if (world.dimension.getType() != DimensionType.OVERWORLD) {
             return false;
         }
-        if (this.method_13949().getOpList().isEmpty()) {
+        if (this.getPlayerManager().getOpList().isEmpty()) {
             return false;
         }
-        if (this.method_13949().isOperator(playerEntity.getGameProfile())) {
+        if (this.getPlayerManager().isOperator(playerEntity.getGameProfile())) {
             return false;
         }
         if (this.getSpawnProtectionRadius() <= 0) {
@@ -554,7 +555,7 @@ implements DedicatedServer {
 
     @Override
     public /* synthetic */ PlayerManager getPlayerManager() {
-        return this.method_13949();
+        return this.getPlayerManager();
     }
 }
 

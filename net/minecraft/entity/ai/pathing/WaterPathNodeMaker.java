@@ -57,7 +57,7 @@ extends PathNodeMaker {
         BlockPos blockPos = new BlockPos(i, j, k);
         FluidState fluidState = blockView.getFluidState(blockPos);
         BlockState blockState = blockView.getBlockState(blockPos);
-        if (fluidState.isEmpty() && blockState.canPlaceAtSide(blockView, blockPos.method_10074(), BlockPlacementEnvironment.WATER) && blockState.isAir()) {
+        if (fluidState.isEmpty() && blockState.canPlaceAtSide(blockView, blockPos.down(), BlockPlacementEnvironment.WATER) && blockState.isAir()) {
             return PathNodeType.BREACH;
         }
         if (!fluidState.matches(FluidTags.WATER) || !blockState.canPlaceAtSide(blockView, blockPos, BlockPlacementEnvironment.WATER)) {
@@ -102,7 +102,7 @@ extends PathNodeMaker {
                 for (int n = k; n < k + this.field_28; ++n) {
                     FluidState fluidState = this.field_20622.getFluidState(mutable.set(l, m, n));
                     BlockState blockState = this.field_20622.getBlockState(mutable.set(l, m, n));
-                    if (fluidState.isEmpty() && blockState.canPlaceAtSide(this.field_20622, mutable.method_10074(), BlockPlacementEnvironment.WATER) && blockState.isAir()) {
+                    if (fluidState.isEmpty() && blockState.canPlaceAtSide(this.field_20622, (BlockPos)mutable.down(), BlockPlacementEnvironment.WATER) && blockState.isAir()) {
                         return PathNodeType.BREACH;
                     }
                     if (fluidState.matches(FluidTags.WATER)) continue;

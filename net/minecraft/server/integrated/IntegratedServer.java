@@ -115,7 +115,7 @@ extends MinecraftServer {
             return;
         }
         super.tick(booleanSupplier);
-        int i = Math.max(2, this.client.options.viewDistance + -2);
+        int i = Math.max(2, this.client.options.viewDistance + -1);
         if (i != this.getPlayerManager().getViewDistance()) {
             LOGGER.info("Changing view distance to {}, from {}", (Object)i, (Object)this.getPlayerManager().getViewDistance());
             this.getPlayerManager().setViewDistance(i);

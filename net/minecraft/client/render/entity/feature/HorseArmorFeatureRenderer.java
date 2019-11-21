@@ -27,7 +27,8 @@ extends FeatureRenderer<HorseEntity, HorseEntityModel<HorseEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_18658(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, HorseEntity horseEntity, float f, float g, float h, float j, float k, float l) {
+    @Override
+    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, HorseEntity horseEntity, float f, float g, float h, float j, float k, float l) {
         float p;
         float o;
         float n;
@@ -37,8 +38,8 @@ extends FeatureRenderer<HorseEntity, HorseEntityModel<HorseEntity>> {
         }
         HorseArmorItem horseArmorItem = (HorseArmorItem)itemStack.getItem();
         ((HorseEntityModel)this.getModel()).copyStateTo(this.model);
-        this.model.method_17084(horseEntity, f, g, h);
-        this.model.method_17085(horseEntity, f, g, j, k, l);
+        this.model.animateModel(horseEntity, f, g, h);
+        this.model.setAngles(horseEntity, f, g, j, k, l);
         if (horseArmorItem instanceof DyeableHorseArmorItem) {
             int m = ((DyeableHorseArmorItem)horseArmorItem).getColor(itemStack);
             n = (float)(m >> 16 & 0xFF) / 255.0f;
@@ -50,7 +51,7 @@ extends FeatureRenderer<HorseEntity, HorseEntityModel<HorseEntity>> {
             p = 1.0f;
         }
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(horseArmorItem.getEntityTexture()));
-        this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, n, o, p);
+        this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, n, o, p, 1.0f);
     }
 }
 

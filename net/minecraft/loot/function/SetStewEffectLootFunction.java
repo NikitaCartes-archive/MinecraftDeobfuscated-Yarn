@@ -65,8 +65,9 @@ extends ConditionalLootFunction {
             super(new Identifier("set_stew_effect"), SetStewEffectLootFunction.class);
         }
 
-        public void method_642(JsonObject jsonObject, SetStewEffectLootFunction setStewEffectLootFunction, JsonSerializationContext jsonSerializationContext) {
-            super.method_529(jsonObject, setStewEffectLootFunction, jsonSerializationContext);
+        @Override
+        public void toJson(JsonObject jsonObject, SetStewEffectLootFunction setStewEffectLootFunction, JsonSerializationContext jsonSerializationContext) {
+            super.toJson(jsonObject, setStewEffectLootFunction, jsonSerializationContext);
             if (!setStewEffectLootFunction.effects.isEmpty()) {
                 JsonArray jsonArray = new JsonArray();
                 for (StatusEffect statusEffect : setStewEffectLootFunction.effects.keySet()) {
@@ -83,7 +84,8 @@ extends ConditionalLootFunction {
             }
         }
 
-        public SetStewEffectLootFunction method_641(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+        @Override
+        public SetStewEffectLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
             HashMap<StatusEffect, UniformLootTableRange> map = Maps.newHashMap();
             if (jsonObject.has("effects")) {
                 JsonArray jsonArray = JsonHelper.getArray(jsonObject, "effects");
@@ -99,7 +101,7 @@ extends ConditionalLootFunction {
 
         @Override
         public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            return this.method_641(jsonObject, jsonDeserializationContext, lootConditions);
+            return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
         }
     }
 
@@ -107,7 +109,8 @@ extends ConditionalLootFunction {
     extends ConditionalLootFunction.Builder<Builder> {
         private final Map<StatusEffect, UniformLootTableRange> map = Maps.newHashMap();
 
-        protected Builder method_639() {
+        @Override
+        protected Builder getThisBuilder() {
             return this;
         }
 
@@ -123,7 +126,7 @@ extends ConditionalLootFunction {
 
         @Override
         protected /* synthetic */ ConditionalLootFunction.Builder getThisBuilder() {
-            return this.method_639();
+            return this.getThisBuilder();
         }
     }
 }

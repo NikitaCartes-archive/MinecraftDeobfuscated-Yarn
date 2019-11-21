@@ -18,7 +18,7 @@ extends Goal {
     protected final MobEntityWithAi mob;
     protected int ticksUntilAttack;
     private final double speed;
-    private final boolean field_6502;
+    private final boolean pauseWhenMobIdle;
     private Path field_6509;
     private int field_6501;
     private double targetX;
@@ -30,7 +30,7 @@ extends Goal {
     public MeleeAttackGoal(MobEntityWithAi mobEntityWithAi, double d, boolean bl) {
         this.mob = mobEntityWithAi;
         this.speed = d;
-        this.field_6502 = bl;
+        this.pauseWhenMobIdle = bl;
         this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
     }
 
@@ -64,7 +64,7 @@ extends Goal {
         if (!livingEntity.isAlive()) {
             return false;
         }
-        if (!this.field_6502) {
+        if (!this.pauseWhenMobIdle) {
             return !this.mob.getNavigation().isIdle();
         }
         if (!this.mob.isInWalkTargetRange(new BlockPos(livingEntity))) {
@@ -96,7 +96,7 @@ extends Goal {
         this.mob.getLookControl().lookAt(livingEntity, 30.0f, 30.0f);
         double d = this.mob.squaredDistanceTo(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ());
         --this.field_6501;
-        if ((this.field_6502 || this.mob.getVisibilityCache().canSee(livingEntity)) && this.field_6501 <= 0 && (this.targetX == 0.0 && this.targetY == 0.0 && this.targetZ == 0.0 || livingEntity.squaredDistanceTo(this.targetX, this.targetY, this.targetZ) >= 1.0 || this.mob.getRandom().nextFloat() < 0.05f)) {
+        if ((this.pauseWhenMobIdle || this.mob.getVisibilityCache().canSee(livingEntity)) && this.field_6501 <= 0 && (this.targetX == 0.0 && this.targetY == 0.0 && this.targetZ == 0.0 || livingEntity.squaredDistanceTo(this.targetX, this.targetY, this.targetZ) >= 1.0 || this.mob.getRandom().nextFloat() < 0.05f)) {
             this.targetX = livingEntity.getX();
             this.targetY = livingEntity.getY();
             this.targetZ = livingEntity.getZ();

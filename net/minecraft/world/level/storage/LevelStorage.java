@@ -260,7 +260,8 @@ public class LevelStorage {
             final Path path4 = Paths.get(string, new String[0]);
             Files.walkFileTree(path, (FileVisitor<? super Path>)new SimpleFileVisitor<Path>(){
 
-                public FileVisitResult method_246(Path path2, BasicFileAttributes basicFileAttributes) throws IOException {
+                @Override
+                public FileVisitResult visitFile(Path path2, BasicFileAttributes basicFileAttributes) throws IOException {
                     String string = path4.resolve(path.relativize(path2)).toString().replace('\\', '/');
                     ZipEntry zipEntry = new ZipEntry(string);
                     zipOutputStream.putNextEntry(zipEntry);
@@ -271,7 +272,7 @@ public class LevelStorage {
 
                 @Override
                 public /* synthetic */ FileVisitResult visitFile(Object object, BasicFileAttributes basicFileAttributes) throws IOException {
-                    return this.method_246((Path)object, basicFileAttributes);
+                    return this.visitFile((Path)object, basicFileAttributes);
                 }
             });
         }

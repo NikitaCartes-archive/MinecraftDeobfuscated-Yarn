@@ -42,7 +42,8 @@ implements Packet<ServerPlayPacketListener> {
         packetByteBuf.writeBytes(this.data);
     }
 
-    public void method_12199(ServerPlayPacketListener serverPlayPacketListener) {
+    @Override
+    public void apply(ServerPlayPacketListener serverPlayPacketListener) {
         serverPlayPacketListener.onCustomPayload(this);
         if (this.data != null) {
             this.data.release();

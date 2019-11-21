@@ -91,7 +91,8 @@ extends ChunkManager {
         this.initChunkCaches();
     }
 
-    public ServerLightingProvider method_17293() {
+    @Override
+    public ServerLightingProvider getLightingProvider() {
         return this.lightProvider;
     }
 
@@ -244,7 +245,8 @@ extends ChunkManager {
         return null;
     }
 
-    public World method_16434() {
+    @Override
+    public World getWorld() {
         return this.world;
     }
 
@@ -466,12 +468,12 @@ extends ChunkManager {
 
     @Override
     public /* synthetic */ LightingProvider getLightingProvider() {
-        return this.method_17293();
+        return this.getLightingProvider();
     }
 
     @Override
     public /* synthetic */ BlockView getWorld() {
-        return this.method_16434();
+        return this.getWorld();
     }
 
     final class MainThreadExecutor

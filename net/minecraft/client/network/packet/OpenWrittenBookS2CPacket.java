@@ -32,7 +32,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeEnumConstant(this.hand);
     }
 
-    public void method_17187(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onOpenWrittenBook(this);
     }
 

@@ -95,7 +95,8 @@ implements Packet<ClientPlayPacketListener> {
         return this.pitch;
     }
 
-    public void method_11895(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onPlaySound(this);
     }
 }

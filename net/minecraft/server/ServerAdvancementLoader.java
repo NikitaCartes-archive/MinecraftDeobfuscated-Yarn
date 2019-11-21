@@ -42,7 +42,8 @@ extends JsonDataLoader {
         super(GSON, "advancements");
     }
 
-    protected void method_20724(Map<Identifier, JsonObject> map, ResourceManager resourceManager, Profiler profiler) {
+    @Override
+    protected void apply(Map<Identifier, JsonObject> map, ResourceManager resourceManager, Profiler profiler) {
         HashMap<Identifier, Advancement.Task> map2 = Maps.newHashMap();
         map.forEach((identifier, jsonObject) -> {
             try {

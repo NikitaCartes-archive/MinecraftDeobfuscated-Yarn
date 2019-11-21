@@ -32,7 +32,7 @@ extends AbstractTreeFeature<BranchedTreeFeatureConfig> {
         for (int j = -i; j <= i; ++j) {
             for (int k = -i; k <= i; ++k) {
                 if (!(Math.pow((double)Math.abs(j) + 0.5, 2.0) + Math.pow((double)Math.abs(k) + 0.5, 2.0) <= (double)(f * f))) continue;
-                this.method_23383(modifiableTestableWorld, random, blockPos.add(j, 0, k), set, blockBox, branchedTreeFeatureConfig);
+                this.setLeavesBlockState(modifiableTestableWorld, random, blockPos.add(j, 0, k), set, blockBox, branchedTreeFeatureConfig);
             }
         }
     }
@@ -142,14 +142,15 @@ extends AbstractTreeFeature<BranchedTreeFeatureConfig> {
         }
     }
 
-    public boolean method_23394(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, Set<BlockPos> set, Set<BlockPos> set2, BlockBox blockBox, BranchedTreeFeatureConfig branchedTreeFeatureConfig) {
+    @Override
+    public boolean generate(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, Set<BlockPos> set, Set<BlockPos> set2, BlockBox blockBox, BranchedTreeFeatureConfig branchedTreeFeatureConfig) {
         int m;
         Random random2 = new Random(random.nextLong());
         int i = this.getTreeHeight(modifiableTestableWorld, random, blockPos, 5 + random2.nextInt(12), set, blockBox, branchedTreeFeatureConfig);
         if (i == -1) {
             return false;
         }
-        this.setToDirt(modifiableTestableWorld, blockPos.method_10074());
+        this.setToDirt(modifiableTestableWorld, blockPos.down());
         int j = (int)((double)i * 0.618);
         if (j >= i) {
             j = i - 1;
@@ -190,7 +191,7 @@ extends AbstractTreeFeature<BranchedTreeFeatureConfig> {
     }
 
     private int getTreeHeight(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, int i, Set<BlockPos> set, BlockBox blockBox, BranchedTreeFeatureConfig branchedTreeFeatureConfig) {
-        if (!LargeOakTreeFeature.isDirtOrGrass(modifiableTestableWorld, blockPos.method_10074())) {
+        if (!LargeOakTreeFeature.isDirtOrGrass(modifiableTestableWorld, blockPos.down())) {
             return -1;
         }
         int j = this.makeOrCheckBranch(modifiableTestableWorld, random, blockPos, blockPos.up(i - 1), false, set, blockBox, branchedTreeFeatureConfig);

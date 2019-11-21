@@ -15,6 +15,7 @@ import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
+import net.minecraft.util.WoodType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -25,14 +26,14 @@ public class SignBlock
 extends AbstractSignBlock {
     public static final IntProperty ROTATION = Properties.ROTATION;
 
-    public SignBlock(Block.Settings settings) {
-        super(settings);
+    public SignBlock(Block.Settings settings, WoodType woodType) {
+        super(settings, woodType);
         this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(ROTATION, 0)).with(WATERLOGGED, false));
     }
 
     @Override
     public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
-        return worldView.getBlockState(blockPos.method_10074()).getMaterial().isSolid();
+        return worldView.getBlockState(blockPos.down()).getMaterial().isSolid();
     }
 
     @Override

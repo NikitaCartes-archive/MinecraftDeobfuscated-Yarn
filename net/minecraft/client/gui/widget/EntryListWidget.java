@@ -463,7 +463,8 @@ implements Drawable {
         private Entries() {
         }
 
-        public E method_1912(int i) {
+        @Override
+        public E get(int i) {
             return (Entry)this.entries.get(i);
         }
 
@@ -472,39 +473,42 @@ implements Drawable {
             return this.entries.size();
         }
 
-        public E method_1909(int i, E entry) {
+        @Override
+        public E set(int i, E entry) {
             Entry entry2 = (Entry)this.entries.set(i, entry);
             ((Entry)entry).list = EntryListWidget.this;
             return entry2;
         }
 
-        public void method_1910(int i, E entry) {
+        @Override
+        public void add(int i, E entry) {
             this.entries.add(i, entry);
             ((Entry)entry).list = EntryListWidget.this;
         }
 
-        public E method_1911(int i) {
+        @Override
+        public E remove(int i) {
             return (Entry)this.entries.remove(i);
         }
 
         @Override
         public /* synthetic */ Object remove(int i) {
-            return this.method_1911(i);
+            return this.remove(i);
         }
 
         @Override
         public /* synthetic */ void add(int i, Object object) {
-            this.method_1910(i, (Entry)object);
+            this.add(i, (E)((Entry)object));
         }
 
         @Override
         public /* synthetic */ Object set(int i, Object object) {
-            return this.method_1909(i, (Entry)object);
+            return this.set(i, (E)((Entry)object));
         }
 
         @Override
         public /* synthetic */ Object get(int i) {
-            return this.method_1912(i);
+            return this.get(i);
         }
     }
 

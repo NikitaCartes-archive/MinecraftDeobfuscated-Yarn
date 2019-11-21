@@ -118,7 +118,8 @@ implements Comparable<KeyBinding> {
         this.keyCode = keyCode;
     }
 
-    public int method_1430(KeyBinding keyBinding) {
+    @Override
+    public int compareTo(KeyBinding keyBinding) {
         if (this.category.equals(keyBinding.category)) {
             return I18n.translate(this.id, new Object[0]).compareTo(I18n.translate(keyBinding.id, new Object[0]));
         }
@@ -187,7 +188,7 @@ implements Comparable<KeyBinding> {
 
     @Override
     public /* synthetic */ int compareTo(Object object) {
-        return this.method_1430((KeyBinding)object);
+        return this.compareTo((KeyBinding)object);
     }
 }
 

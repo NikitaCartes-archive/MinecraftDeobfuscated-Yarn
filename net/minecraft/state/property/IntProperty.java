@@ -65,7 +65,8 @@ extends AbstractProperty<Integer> {
         }
     }
 
-    public String method_11868(Integer integer) {
+    @Override
+    public String name(Integer integer) {
         return integer.toString();
     }
 }

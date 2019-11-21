@@ -30,11 +30,13 @@ extends Task<MobEntityWithAi> {
         super(ImmutableMap.of(MemoryModuleType.VISIBLE_VILLAGER_BABIES, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.INTERACTION_TARGET, MemoryModuleState.REGISTERED));
     }
 
-    protected boolean method_19583(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
+    @Override
+    protected boolean shouldRun(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
         return serverWorld.getRandom().nextInt(10) == 0 && this.hasVisibleVillagerBabies(mobEntityWithAi);
     }
 
-    protected void method_19584(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
+    @Override
+    protected void run(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
         LivingEntity livingEntity2 = this.findVisibleVillagerBaby(mobEntityWithAi);
         if (livingEntity2 != null) {
             this.method_19585(serverWorld, mobEntityWithAi, livingEntity2);

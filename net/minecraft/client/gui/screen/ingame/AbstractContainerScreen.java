@@ -5,6 +5,7 @@ package net.minecraft.client.gui.screen.ingame;
 
 import com.google.common.collect.Sets;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.datafixers.util.Pair;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -12,7 +13,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.ContainerProvider;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.container.Container;
 import net.minecraft.container.Slot;
@@ -165,7 +165,7 @@ implements ContainerProvider<T> {
     protected abstract void drawBackground(float var1, int var2, int var3);
 
     private void drawSlot(Slot slot) {
-        String string2;
+        Pair<Identifier, Identifier> pair;
         int i = slot.xPosition;
         int j = slot.yPosition;
         ItemStack itemStack = slot.getStack();
@@ -196,9 +196,9 @@ implements ContainerProvider<T> {
         }
         this.setBlitOffset(100);
         this.itemRenderer.zOffset = 100.0f;
-        if (itemStack.isEmpty() && slot.doDrawHoveringEffect() && (string2 = slot.getBackgroundSprite()) != null) {
-            Sprite sprite = this.minecraft.getSpriteAtlas().getSprite(string2);
-            this.minecraft.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+        if (itemStack.isEmpty() && slot.doDrawHoveringEffect() && (pair = slot.getBackgroundSprite()) != null) {
+            Sprite sprite = this.minecraft.getSpriteAtlas(pair.getFirst()).apply(pair.getSecond());
+            this.minecraft.getTextureManager().bindTexture(sprite.method_24119().method_24106());
             AbstractContainerScreen.blit(i, j, this.getBlitOffset(), 16, 16, sprite);
             bl2 = true;
         }

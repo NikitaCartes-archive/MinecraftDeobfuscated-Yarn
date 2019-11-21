@@ -22,7 +22,8 @@ extends Decorator<TopSolidHeightmapNoiseBiasedDecoratorConfig> {
         super(function);
     }
 
-    public Stream<BlockPos> method_15943(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, TopSolidHeightmapNoiseBiasedDecoratorConfig topSolidHeightmapNoiseBiasedDecoratorConfig, BlockPos blockPos) {
+    @Override
+    public Stream<BlockPos> getPositions(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, TopSolidHeightmapNoiseBiasedDecoratorConfig topSolidHeightmapNoiseBiasedDecoratorConfig, BlockPos blockPos) {
         double d = Biome.FOLIAGE_NOISE.sample((double)blockPos.getX() / topSolidHeightmapNoiseBiasedDecoratorConfig.noiseFactor, (double)blockPos.getZ() / topSolidHeightmapNoiseBiasedDecoratorConfig.noiseFactor, false);
         int i2 = (int)Math.ceil((d + topSolidHeightmapNoiseBiasedDecoratorConfig.noiseOffset) * (double)topSolidHeightmapNoiseBiasedDecoratorConfig.noiseToCountRatio);
         return IntStream.range(0, i2).mapToObj(i -> {

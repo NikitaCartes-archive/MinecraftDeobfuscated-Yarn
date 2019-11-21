@@ -141,9 +141,9 @@ public abstract class Feature<FC extends FeatureConfig> {
     public static final StructureFeature<BuriedTreasureFeatureConfig> BURIED_TREASURE = Feature.register("buried_treasure", new BuriedTreasureFeature((Function<Dynamic<?>, ? extends BuriedTreasureFeatureConfig>)((Function<Dynamic<?>, BuriedTreasureFeatureConfig>)BuriedTreasureFeatureConfig::deserialize)));
     public static final StructureFeature<VillageFeatureConfig> VILLAGE = Feature.register("village", new VillageFeature((Function<Dynamic<?>, ? extends VillageFeatureConfig>)((Function<Dynamic<?>, VillageFeatureConfig>)VillageFeatureConfig::deserialize)));
     public static final Feature<DefaultFeatureConfig> NO_OP = Feature.register("no_op", new NoOpFeature((Function<Dynamic<?>, ? extends DefaultFeatureConfig>)((Function<Dynamic<?>, DefaultFeatureConfig>)DefaultFeatureConfig::deserialize)));
-    public static final Feature<BranchedTreeFeatureConfig> NORMAL_TREE = Feature.register("normal_tree", new OakTreeFeature((Function<Dynamic<?>, ? extends BranchedTreeFeatureConfig>)((Function<Dynamic<?>, BranchedTreeFeatureConfig>)BranchedTreeFeatureConfig::method_23426)));
-    public static final Feature<BranchedTreeFeatureConfig> ACACIA_TREE = Feature.register("acacia_tree", new AcaciaTreeFeature((Function<Dynamic<?>, ? extends BranchedTreeFeatureConfig>)((Function<Dynamic<?>, BranchedTreeFeatureConfig>)BranchedTreeFeatureConfig::method_23426)));
-    public static final Feature<BranchedTreeFeatureConfig> FANCY_TREE = Feature.register("fancy_tree", new LargeOakTreeFeature((Function<Dynamic<?>, ? extends BranchedTreeFeatureConfig>)((Function<Dynamic<?>, BranchedTreeFeatureConfig>)BranchedTreeFeatureConfig::method_23426)));
+    public static final Feature<BranchedTreeFeatureConfig> NORMAL_TREE = Feature.register("normal_tree", new OakTreeFeature((Function<Dynamic<?>, ? extends BranchedTreeFeatureConfig>)((Function<Dynamic<?>, BranchedTreeFeatureConfig>)BranchedTreeFeatureConfig::deserialize2)));
+    public static final Feature<BranchedTreeFeatureConfig> ACACIA_TREE = Feature.register("acacia_tree", new AcaciaTreeFeature((Function<Dynamic<?>, ? extends BranchedTreeFeatureConfig>)((Function<Dynamic<?>, BranchedTreeFeatureConfig>)BranchedTreeFeatureConfig::deserialize2)));
+    public static final Feature<BranchedTreeFeatureConfig> FANCY_TREE = Feature.register("fancy_tree", new LargeOakTreeFeature((Function<Dynamic<?>, ? extends BranchedTreeFeatureConfig>)((Function<Dynamic<?>, BranchedTreeFeatureConfig>)BranchedTreeFeatureConfig::deserialize2)));
     public static final Feature<TreeFeatureConfig> JUNGLE_GROUND_BUSH = Feature.register("jungle_ground_bush", new JungleGroundBushFeature((Function<Dynamic<?>, ? extends TreeFeatureConfig>)((Function<Dynamic<?>, TreeFeatureConfig>)TreeFeatureConfig::deserialize)));
     public static final Feature<MegaTreeFeatureConfig> DARK_OAK_TREE = Feature.register("dark_oak_tree", new DarkOakTreeFeature((Function<Dynamic<?>, ? extends MegaTreeFeatureConfig>)((Function<Dynamic<?>, MegaTreeFeatureConfig>)MegaTreeFeatureConfig::method_23408)));
     public static final Feature<MegaTreeFeatureConfig> MEGA_JUNGLE_TREE = Feature.register("mega_jungle_tree", new MegaJungleTreeFeature((Function<Dynamic<?>, ? extends MegaTreeFeatureConfig>)((Function<Dynamic<?>, MegaTreeFeatureConfig>)MegaTreeFeatureConfig::method_23408)));
@@ -240,11 +240,11 @@ public abstract class Feature<FC extends FeatureConfig> {
         return Collections.emptyList();
     }
 
-    protected static boolean method_23395(Block block) {
+    protected static boolean isStone(Block block) {
         return block == Blocks.STONE || block == Blocks.GRANITE || block == Blocks.DIORITE || block == Blocks.ANDESITE;
     }
 
-    protected static boolean method_23396(Block block) {
+    protected static boolean isDirt(Block block) {
         return block == Blocks.DIRT || block == Blocks.GRASS_BLOCK || block == Blocks.PODZOL || block == Blocks.COARSE_DIRT || block == Blocks.MYCELIUM;
     }
 }

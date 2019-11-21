@@ -51,7 +51,7 @@ extends ConditionalLootFunction {
 
     private static NbtPathArgumentType.NbtPath parseNbtPath(String string) {
         try {
-            return new NbtPathArgumentType().method_9362(new StringReader(string));
+            return new NbtPathArgumentType().parse(new StringReader(string));
         } catch (CommandSyntaxException commandSyntaxException) {
             throw new IllegalArgumentException("Failed to parse path " + string, commandSyntaxException);
         }
@@ -89,15 +89,17 @@ extends ConditionalLootFunction {
             super(new Identifier("copy_nbt"), CopyNbtLootFunction.class);
         }
 
-        public void method_16870(JsonObject jsonObject, CopyNbtLootFunction copyNbtLootFunction, JsonSerializationContext jsonSerializationContext) {
-            super.method_529(jsonObject, copyNbtLootFunction, jsonSerializationContext);
+        @Override
+        public void toJson(JsonObject jsonObject, CopyNbtLootFunction copyNbtLootFunction, JsonSerializationContext jsonSerializationContext) {
+            super.toJson(jsonObject, copyNbtLootFunction, jsonSerializationContext);
             jsonObject.addProperty("source", ((CopyNbtLootFunction)copyNbtLootFunction).source.name);
             JsonArray jsonArray = new JsonArray();
             copyNbtLootFunction.operations.stream().map(Operation::toJson).forEach(jsonArray::add);
             jsonObject.add("ops", jsonArray);
         }
 
-        public CopyNbtLootFunction method_16871(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+        @Override
+        public CopyNbtLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
             Source source = Source.get(JsonHelper.getString(jsonObject, "source"));
             ArrayList<Operation> list = Lists.newArrayList();
             JsonArray jsonArray = JsonHelper.getArray(jsonObject, "ops");
@@ -110,7 +112,7 @@ extends ConditionalLootFunction {
 
         @Override
         public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            return this.method_16871(jsonObject, jsonDeserializationContext, lootConditions);
+            return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
         }
     }
 
@@ -216,7 +218,8 @@ extends ConditionalLootFunction {
             return this.withOperation(string, string2, Operator.REPLACE);
         }
 
-        protected Builder method_16855() {
+        @Override
+        protected Builder getThisBuilder() {
             return this;
         }
 
@@ -227,7 +230,7 @@ extends ConditionalLootFunction {
 
         @Override
         protected /* synthetic */ ConditionalLootFunction.Builder getThisBuilder() {
-            return this.method_16855();
+            return this.getThisBuilder();
         }
     }
 

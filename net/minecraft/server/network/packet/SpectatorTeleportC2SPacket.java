@@ -33,7 +33,8 @@ implements Packet<ServerPlayPacketListener> {
         packetByteBuf.writeUuid(this.targetUuid);
     }
 
-    public void method_12542(ServerPlayPacketListener serverPlayPacketListener) {
+    @Override
+    public void apply(ServerPlayPacketListener serverPlayPacketListener) {
         serverPlayPacketListener.onSpectatorTeleport(this);
     }
 

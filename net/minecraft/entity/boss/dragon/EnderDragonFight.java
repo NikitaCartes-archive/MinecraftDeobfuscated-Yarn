@@ -136,7 +136,7 @@ public class EnderDragonFight {
             this.playerUpdateTimer = 0;
         }
         if (!this.bossBar.getPlayers().isEmpty()) {
-            this.world.method_14178().addTicket(ChunkTicketType.DRAGON, new ChunkPos(0, 0), 9, Unit.INSTANCE);
+            this.world.getChunkManager().addTicket(ChunkTicketType.DRAGON, new ChunkPos(0, 0), 9, Unit.INSTANCE);
             boolean bl = this.loadChunks();
             if (this.doLegacyCheck && bl) {
                 this.convertFromLegacy();
@@ -160,7 +160,7 @@ public class EnderDragonFight {
                 }
             }
         } else {
-            this.world.method_14178().removeTicket(ChunkTicketType.DRAGON, new ChunkPos(0, 0), 9, Unit.INSTANCE);
+            this.world.getChunkManager().removeTicket(ChunkTicketType.DRAGON, new ChunkPos(0, 0), 9, Unit.INSTANCE);
         }
     }
 
@@ -225,7 +225,7 @@ public class EnderDragonFight {
     private boolean worldContainsEndPortal() {
         for (int i = -8; i <= 8; ++i) {
             for (int j = -8; j <= 8; ++j) {
-                WorldChunk worldChunk = this.world.method_8497(i, j);
+                WorldChunk worldChunk = this.world.getChunk(i, j);
                 for (BlockEntity blockEntity : worldChunk.getBlockEntities().values()) {
                     if (!(blockEntity instanceof EndPortalBlockEntity)) continue;
                     return true;
@@ -241,7 +241,7 @@ public class EnderDragonFight {
         int i;
         for (i = -8; i <= 8; ++i) {
             for (j = -8; j <= 8; ++j) {
-                WorldChunk worldChunk = this.world.method_8497(i, j);
+                WorldChunk worldChunk = this.world.getChunk(i, j);
                 for (BlockEntity blockEntity : worldChunk.getBlockEntities().values()) {
                     BlockPattern.Result result;
                     if (!(blockEntity instanceof EndPortalBlockEntity) || (result = this.endPortalPattern.searchAround(this.world, blockEntity.getPos())) == null) continue;
@@ -327,18 +327,18 @@ public class EnderDragonFight {
 
     private void generateEndGateway(BlockPos blockPos) {
         this.world.playLevelEvent(3000, blockPos, 0);
-        Feature.END_GATEWAY.configure(EndGatewayFeatureConfig.createConfig()).generate(this.world, this.world.method_14178().getChunkGenerator(), new Random(), blockPos);
+        Feature.END_GATEWAY.configure(EndGatewayFeatureConfig.createConfig()).generate(this.world, this.world.getChunkManager().getChunkGenerator(), new Random(), blockPos);
     }
 
     private void generateEndPortal(boolean bl) {
         EndPortalFeature endPortalFeature = new EndPortalFeature(bl);
         if (this.exitPortalLocation == null) {
-            this.exitPortalLocation = this.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN).method_10074();
+            this.exitPortalLocation = this.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN).down();
             while (this.world.getBlockState(this.exitPortalLocation).getBlock() == Blocks.BEDROCK && this.exitPortalLocation.getY() > this.world.getSeaLevel()) {
-                this.exitPortalLocation = this.exitPortalLocation.method_10074();
+                this.exitPortalLocation = this.exitPortalLocation.down();
             }
         }
-        endPortalFeature.configure(FeatureConfig.DEFAULT).generate(this.world, this.world.method_14178().getChunkGenerator(), new Random(), this.exitPortalLocation);
+        endPortalFeature.configure(FeatureConfig.DEFAULT).generate(this.world, this.world.getChunkManager().getChunkGenerator(), new Random(), this.exitPortalLocation);
     }
 
     private EnderDragonEntity createDragon() {
@@ -402,7 +402,7 @@ public class EnderDragonFight {
             ArrayList<EnderCrystalEntity> list = Lists.newArrayList();
             BlockPos blockPos2 = blockPos.up(1);
             for (Direction direction : Direction.Type.HORIZONTAL) {
-                List<EnderCrystalEntity> list2 = this.world.getNonSpectatingEntities(EnderCrystalEntity.class, new Box(blockPos2.method_10079(direction, 2)));
+                List<EnderCrystalEntity> list2 = this.world.getNonSpectatingEntities(EnderCrystalEntity.class, new Box(blockPos2.offset(direction, 2)));
                 if (list2.isEmpty()) {
                     return;
                 }

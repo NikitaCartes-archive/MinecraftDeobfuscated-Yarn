@@ -70,7 +70,7 @@ extends PassiveEntity {
 
     @Override
     public float getPathfindingFavor(BlockPos blockPos, WorldView worldView) {
-        if (worldView.getBlockState(blockPos.method_10074()).getBlock() == Blocks.GRASS_BLOCK) {
+        if (worldView.getBlockState(blockPos.down()).getBlock() == Blocks.GRASS_BLOCK) {
             return 10.0f;
         }
         return worldView.getBrightness(blockPos) - 0.5f;
@@ -98,7 +98,7 @@ extends PassiveEntity {
     }
 
     public static boolean isValidNaturalSpawn(EntityType<? extends AnimalEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-        return iWorld.getBlockState(blockPos.method_10074()).getBlock() == Blocks.GRASS_BLOCK && iWorld.getBaseLightLevel(blockPos, 0) > 8;
+        return iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.GRASS_BLOCK && iWorld.getBaseLightLevel(blockPos, 0) > 8;
     }
 
     @Override

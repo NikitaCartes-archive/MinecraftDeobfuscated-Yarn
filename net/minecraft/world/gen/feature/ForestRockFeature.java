@@ -20,10 +20,11 @@ extends Feature<BoulderFeatureConfig> {
         super(function);
     }
 
-    public boolean method_12813(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, BoulderFeatureConfig boulderFeatureConfig) {
+    @Override
+    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, BoulderFeatureConfig boulderFeatureConfig) {
         Block block;
-        while (blockPos.getY() > 3 && (iWorld.isAir(blockPos.method_10074()) || !ForestRockFeature.method_23396(block = iWorld.getBlockState(blockPos.method_10074()).getBlock()) && !ForestRockFeature.method_23395(block))) {
-            blockPos = blockPos.method_10074();
+        while (blockPos.getY() > 3 && (iWorld.isAir(blockPos.down()) || !ForestRockFeature.isDirt(block = iWorld.getBlockState(blockPos.down()).getBlock()) && !ForestRockFeature.isStone(block))) {
+            blockPos = blockPos.down();
         }
         if (blockPos.getY() <= 3) {
             return false;

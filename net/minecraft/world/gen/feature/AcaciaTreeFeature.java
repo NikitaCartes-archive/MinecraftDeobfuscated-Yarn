@@ -21,17 +21,18 @@ extends BranchedTreeFeature<BranchedTreeFeatureConfig> {
         super(function);
     }
 
-    public boolean method_23386(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, Set<BlockPos> set, Set<BlockPos> set2, BlockBox blockBox, BranchedTreeFeatureConfig branchedTreeFeatureConfig) {
+    @Override
+    public boolean generate(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, Set<BlockPos> set, Set<BlockPos> set2, BlockBox blockBox, BranchedTreeFeatureConfig branchedTreeFeatureConfig) {
         int r;
         int k;
         int j;
         int i = branchedTreeFeatureConfig.baseHeight + random.nextInt(branchedTreeFeatureConfig.heightRandA + 1) + random.nextInt(branchedTreeFeatureConfig.heightRandB + 1);
-        Optional<BlockPos> optional = this.method_23378(modifiableTestableWorld, i, j = branchedTreeFeatureConfig.trunkHeight >= 0 ? branchedTreeFeatureConfig.trunkHeight + random.nextInt(branchedTreeFeatureConfig.trunkHeightRandom + 1) : i - (branchedTreeFeatureConfig.field_21266 + random.nextInt(branchedTreeFeatureConfig.field_21267 + 1)), k = branchedTreeFeatureConfig.foliagePlacer.method_23452(random, j, i, branchedTreeFeatureConfig), blockPos, branchedTreeFeatureConfig);
+        Optional<BlockPos> optional = this.findPositionToGenerate(modifiableTestableWorld, i, j = branchedTreeFeatureConfig.trunkHeight >= 0 ? branchedTreeFeatureConfig.trunkHeight + random.nextInt(branchedTreeFeatureConfig.trunkHeightRandom + 1) : i - (branchedTreeFeatureConfig.foliageHeight + random.nextInt(branchedTreeFeatureConfig.foliageHeightRandom + 1)), k = branchedTreeFeatureConfig.foliagePlacer.method_23452(random, j, i, branchedTreeFeatureConfig), blockPos, branchedTreeFeatureConfig);
         if (!optional.isPresent()) {
             return false;
         }
         BlockPos blockPos2 = optional.get();
-        this.setToDirt(modifiableTestableWorld, blockPos2.method_10074());
+        this.setToDirt(modifiableTestableWorld, blockPos2.down());
         Direction direction = Direction.Type.HORIZONTAL.random(random);
         int l = i - random.nextInt(4) - 1;
         int m = 3 - random.nextInt(3);
@@ -46,7 +47,7 @@ extends BranchedTreeFeature<BranchedTreeFeatureConfig> {
                 o += direction.getOffsetZ();
                 --m;
             }
-            if (!this.method_23382(modifiableTestableWorld, random, mutable.set(n, r, o), set, blockBox, branchedTreeFeatureConfig)) continue;
+            if (!this.setLogBlockState(modifiableTestableWorld, random, mutable.set(n, r, o), set, blockBox, branchedTreeFeatureConfig)) continue;
             p = r;
         }
         BlockPos blockPos3 = new BlockPos(n, p, o);
@@ -61,7 +62,7 @@ extends BranchedTreeFeature<BranchedTreeFeatureConfig> {
             for (int t = r; t < i && s > 0; ++t, --s) {
                 if (t < 1) continue;
                 int u = blockPos2.getY() + t;
-                if (!this.method_23382(modifiableTestableWorld, random, mutable.set(n += direction2.getOffsetX(), u, o += direction2.getOffsetZ()), set, blockBox, branchedTreeFeatureConfig)) continue;
+                if (!this.setLogBlockState(modifiableTestableWorld, random, mutable.set(n += direction2.getOffsetX(), u, o += direction2.getOffsetZ()), set, blockBox, branchedTreeFeatureConfig)) continue;
                 p = u;
             }
             if (p > 0) {

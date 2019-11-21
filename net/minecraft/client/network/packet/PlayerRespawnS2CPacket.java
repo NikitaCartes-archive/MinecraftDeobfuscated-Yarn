@@ -30,7 +30,8 @@ implements Packet<ClientPlayPacketListener> {
         this.generatorType = levelGeneratorType;
     }
 
-    public void method_11782(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onPlayerRespawn(this);
     }
 

@@ -325,7 +325,8 @@ extends TameableEntity {
         return MathHelper.lerp(f, this.prevHeadDownAniamtion, this.headDownAnimation);
     }
 
-    public CatEntity method_6573(PassiveEntity passiveEntity) {
+    @Override
+    public CatEntity createChild(PassiveEntity passiveEntity) {
         CatEntity catEntity = EntityType.CAT.create(this.world);
         if (passiveEntity instanceof CatEntity) {
             if (this.random.nextBoolean()) {
@@ -437,7 +438,7 @@ extends TameableEntity {
 
     @Override
     public boolean isBreedingItem(ItemStack itemStack) {
-        return TAMING_INGREDIENT.method_8093(itemStack);
+        return TAMING_INGREDIENT.test(itemStack);
     }
 
     @Override
@@ -463,7 +464,7 @@ extends TameableEntity {
 
     @Override
     public /* synthetic */ PassiveEntity createChild(PassiveEntity passiveEntity) {
-        return this.method_6573(passiveEntity);
+        return this.createChild(passiveEntity);
     }
 
     static class SleepWithOwnerGoal

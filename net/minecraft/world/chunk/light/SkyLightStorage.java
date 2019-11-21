@@ -293,13 +293,14 @@ extends LightStorage<Data> {
             this.defaultTopArraySectionY = i;
         }
 
-        public Data method_15572() {
+        @Override
+        public Data copy() {
             return new Data((Long2ObjectOpenHashMap<ChunkNibbleArray>)this.arrays.clone(), this.topArraySectionY.clone(), this.defaultTopArraySectionY);
         }
 
         @Override
         public /* synthetic */ ChunkToNibbleArrayMap copy() {
-            return this.method_15572();
+            return this.copy();
         }
     }
 }

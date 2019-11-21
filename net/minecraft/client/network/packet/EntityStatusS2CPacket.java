@@ -37,7 +37,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeByte(this.status);
     }
 
-    public void method_11471(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onEntityStatus(this);
     }
 

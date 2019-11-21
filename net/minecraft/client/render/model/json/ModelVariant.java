@@ -77,7 +77,8 @@ implements ModelBakeSettings {
     @Environment(value=EnvType.CLIENT)
     public static class Deserializer
     implements JsonDeserializer<ModelVariant> {
-        public ModelVariant method_3513(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        @Override
+        public ModelVariant deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
             Identifier identifier = this.deserializeModel(jsonObject);
             ModelRotation modelRotation = this.deserializeRotation(jsonObject);
@@ -114,7 +115,7 @@ implements ModelBakeSettings {
 
         @Override
         public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.method_3513(jsonElement, type, jsonDeserializationContext);
+            return this.deserialize(jsonElement, type, jsonDeserializationContext);
         }
     }
 }

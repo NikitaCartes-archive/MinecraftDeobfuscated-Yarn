@@ -15,11 +15,11 @@ import net.minecraft.util.math.MathHelper;
 public class ChickenEntityModel<T extends Entity>
 extends AnimalModel<T> {
     private final ModelPart head;
-    private final ModelPart body;
-    private final ModelPart leftLeg;
+    private final ModelPart torso;
     private final ModelPart rightLeg;
-    private final ModelPart leftWing;
+    private final ModelPart leftLeg;
     private final ModelPart rightWing;
+    private final ModelPart leftWing;
     private final ModelPart beak;
     private final ModelPart wattle;
 
@@ -34,21 +34,21 @@ extends AnimalModel<T> {
         this.wattle = new ModelPart(this, 14, 4);
         this.wattle.addCuboid(-1.0f, -2.0f, -3.0f, 2.0f, 2.0f, 2.0f, 0.0f);
         this.wattle.setPivot(0.0f, 15.0f, -4.0f);
-        this.body = new ModelPart(this, 0, 9);
-        this.body.addCuboid(-3.0f, -4.0f, -3.0f, 6.0f, 8.0f, 6.0f, 0.0f);
-        this.body.setPivot(0.0f, 16.0f, 0.0f);
-        this.leftLeg = new ModelPart(this, 26, 0);
-        this.leftLeg.addCuboid(-1.0f, 0.0f, -3.0f, 3.0f, 5.0f, 3.0f);
-        this.leftLeg.setPivot(-2.0f, 19.0f, 1.0f);
+        this.torso = new ModelPart(this, 0, 9);
+        this.torso.addCuboid(-3.0f, -4.0f, -3.0f, 6.0f, 8.0f, 6.0f, 0.0f);
+        this.torso.setPivot(0.0f, 16.0f, 0.0f);
         this.rightLeg = new ModelPart(this, 26, 0);
         this.rightLeg.addCuboid(-1.0f, 0.0f, -3.0f, 3.0f, 5.0f, 3.0f);
-        this.rightLeg.setPivot(1.0f, 19.0f, 1.0f);
-        this.leftWing = new ModelPart(this, 24, 13);
-        this.leftWing.addCuboid(0.0f, 0.0f, -3.0f, 1.0f, 4.0f, 6.0f);
-        this.leftWing.setPivot(-4.0f, 13.0f, 0.0f);
+        this.rightLeg.setPivot(-2.0f, 19.0f, 1.0f);
+        this.leftLeg = new ModelPart(this, 26, 0);
+        this.leftLeg.addCuboid(-1.0f, 0.0f, -3.0f, 3.0f, 5.0f, 3.0f);
+        this.leftLeg.setPivot(1.0f, 19.0f, 1.0f);
         this.rightWing = new ModelPart(this, 24, 13);
-        this.rightWing.addCuboid(-1.0f, 0.0f, -3.0f, 1.0f, 4.0f, 6.0f);
-        this.rightWing.setPivot(4.0f, 13.0f, 0.0f);
+        this.rightWing.addCuboid(0.0f, 0.0f, -3.0f, 1.0f, 4.0f, 6.0f);
+        this.rightWing.setPivot(-4.0f, 13.0f, 0.0f);
+        this.leftWing = new ModelPart(this, 24, 13);
+        this.leftWing.addCuboid(-1.0f, 0.0f, -3.0f, 1.0f, 4.0f, 6.0f);
+        this.leftWing.setPivot(4.0f, 13.0f, 0.0f);
     }
 
     @Override
@@ -58,7 +58,7 @@ extends AnimalModel<T> {
 
     @Override
     protected Iterable<ModelPart> getBodyParts() {
-        return ImmutableList.of(this.body, this.leftLeg, this.rightLeg, this.leftWing, this.rightWing);
+        return ImmutableList.of(this.torso, this.rightLeg, this.leftLeg, this.rightWing, this.leftWing);
     }
 
     @Override
@@ -69,11 +69,11 @@ extends AnimalModel<T> {
         this.beak.yaw = this.head.yaw;
         this.wattle.pitch = this.head.pitch;
         this.wattle.yaw = this.head.yaw;
-        this.body.pitch = 1.5707964f;
-        this.leftLeg.pitch = MathHelper.cos(f * 0.6662f) * 1.4f * g;
-        this.rightLeg.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * 1.4f * g;
-        this.leftWing.roll = h;
-        this.rightWing.roll = -h;
+        this.torso.pitch = 1.5707964f;
+        this.rightLeg.pitch = MathHelper.cos(f * 0.6662f) * 1.4f * g;
+        this.leftLeg.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * 1.4f * g;
+        this.rightWing.roll = h;
+        this.leftWing.roll = -h;
     }
 }
 

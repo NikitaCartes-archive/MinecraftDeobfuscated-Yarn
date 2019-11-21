@@ -43,7 +43,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeText(this.name);
     }
 
-    public void method_17591(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onOpenContainer(this);
     }
 

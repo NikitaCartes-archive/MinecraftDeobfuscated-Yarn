@@ -46,7 +46,8 @@ implements Packet<ServerPlayPacketListener> {
         packetByteBuf.writeString(this.finalState);
     }
 
-    public void method_16392(ServerPlayPacketListener serverPlayPacketListener) {
+    @Override
+    public void apply(ServerPlayPacketListener serverPlayPacketListener) {
         serverPlayPacketListener.onJigsawUpdate(this);
     }
 

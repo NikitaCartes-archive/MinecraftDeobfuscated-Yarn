@@ -11,6 +11,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
+import net.minecraft.class_4722;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
@@ -264,9 +265,9 @@ public class RenderLayers {
     public static RenderLayer getEntityBlockLayer(BlockState blockState) {
         RenderLayer renderLayer = RenderLayers.getBlockLayer(blockState);
         if (renderLayer == RenderLayer.getTranslucent()) {
-            return RenderLayer.method_23949();
+            return class_4722.method_24075();
         }
-        return RenderLayer.method_23947();
+        return class_4722.method_24074();
     }
 
     public static RenderLayer getItemLayer(ItemStack itemStack) {
@@ -275,7 +276,7 @@ public class RenderLayers {
             Block block = ((BlockItem)item).getBlock();
             return RenderLayers.getEntityBlockLayer(block.getDefaultState());
         }
-        return RenderLayer.method_23949();
+        return class_4722.method_24075();
     }
 
     public static RenderLayer getFluidLayer(FluidState fluidState) {

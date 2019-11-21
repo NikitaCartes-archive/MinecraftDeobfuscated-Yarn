@@ -65,13 +65,14 @@ implements BlockEntityProvider {
     @Override
     protected boolean hasPower(World world, BlockPos blockPos, BlockState blockState) {
         int i = this.getPower(world, blockPos, blockState);
-        if (i >= 15) {
-            return true;
-        }
         if (i == 0) {
             return false;
         }
-        return i >= this.getMaxInputLevelSides(world, blockPos, blockState);
+        int j = this.getMaxInputLevelSides(world, blockPos, blockState);
+        if (i > j) {
+            return true;
+        }
+        return i == j && blockState.get(MODE) == ComparatorMode.COMPARE;
     }
 
     @Override

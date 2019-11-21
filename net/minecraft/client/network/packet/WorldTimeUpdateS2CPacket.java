@@ -41,7 +41,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeLong(this.timeOfDay);
     }
 
-    public void method_11872(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onWorldTimeUpdate(this);
     }
 

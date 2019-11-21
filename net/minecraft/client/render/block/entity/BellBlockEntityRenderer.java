@@ -6,12 +6,14 @@ package net.minecraft.client.render.block.entity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BellBlockEntity;
+import net.minecraft.class_4730;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
@@ -20,7 +22,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class BellBlockEntityRenderer
 extends BlockEntityRenderer<BellBlockEntity> {
-    public static final Identifier BELL_BODY_TEXTURE = new Identifier("entity/bell/bell_body");
+    public static final class_4730 BELL_BODY_TEXTURE = new class_4730(SpriteAtlasTexture.BLOCK_ATLAS_TEX, new Identifier("entity/bell/bell_body"));
     private final ModelPart field_20816 = new ModelPart(32, 32, 0, 0);
 
     public BellBlockEntityRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher) {
@@ -33,7 +35,8 @@ extends BlockEntityRenderer<BellBlockEntity> {
         this.field_20816.addChild(modelPart);
     }
 
-    public void method_17139(BellBlockEntity bellBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
+    @Override
+    public void render(BellBlockEntity bellBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
         float g = (float)bellBlockEntity.ringTicks + f;
         float h = 0.0f;
         float k = 0.0f;
@@ -51,8 +54,8 @@ extends BlockEntityRenderer<BellBlockEntity> {
         }
         this.field_20816.pitch = h;
         this.field_20816.roll = k;
-        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.method_23946());
-        this.field_20816.render(matrixStack, vertexConsumer, i, j, this.getSprite(BELL_BODY_TEXTURE));
+        VertexConsumer vertexConsumer = BELL_BODY_TEXTURE.method_24145(vertexConsumerProvider, RenderLayer::getEntitySolid);
+        this.field_20816.render(matrixStack, vertexConsumer, i, j);
     }
 }
 

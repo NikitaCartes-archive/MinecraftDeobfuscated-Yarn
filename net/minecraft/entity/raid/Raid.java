@@ -63,8 +63,8 @@ public class Raid {
     private static final TranslatableText EVENT_TEXT = new TranslatableText("event.minecraft.raid", new Object[0]);
     private static final TranslatableText VICTORY_SUFFIX_TEXT = new TranslatableText("event.minecraft.raid.victory", new Object[0]);
     private static final TranslatableText DEFEAT_SUFFIX_TEXT = new TranslatableText("event.minecraft.raid.defeat", new Object[0]);
-    private static final Text VICTORY_TITLE = EVENT_TEXT.method_11020().append(" - ").append(VICTORY_SUFFIX_TEXT);
-    private static final Text DEFEAT_TITLE = EVENT_TEXT.method_11020().append(" - ").append(DEFEAT_SUFFIX_TEXT);
+    private static final Text VICTORY_TITLE = EVENT_TEXT.copy().append(" - ").append(VICTORY_SUFFIX_TEXT);
+    private static final Text DEFEAT_TITLE = EVENT_TEXT.copy().append(" - ").append(DEFEAT_SUFFIX_TEXT);
     private final Map<Integer, RaiderEntity> waveToCaptain = Maps.newHashMap();
     private final Map<Integer, Set<RaiderEntity>> waveToRaiders = Maps.newHashMap();
     private final Set<UUID> heroesOfTheVillage = Sets.newHashSet();
@@ -239,7 +239,7 @@ public class Raid {
                     boolean bl3;
                     bl2 = this.preCalculatedRavagerSpawnLocation.isPresent();
                     boolean bl4 = bl3 = !bl2 && this.preRaidTicks % 5 == 0;
-                    if (bl2 && !this.world.method_14178().shouldTickChunk(new ChunkPos(this.preCalculatedRavagerSpawnLocation.get()))) {
+                    if (bl2 && !this.world.getChunkManager().shouldTickChunk(new ChunkPos(this.preCalculatedRavagerSpawnLocation.get()))) {
                         bl3 = true;
                     }
                     if (bl3) {
@@ -267,7 +267,7 @@ public class Raid {
                 this.removeObsoleteRaiders();
                 if (i > 0) {
                     if (i <= 2) {
-                        this.bar.setName(EVENT_TEXT.method_11020().append(" - ").append(new TranslatableText("event.minecraft.raid.raiders_remaining", i)));
+                        this.bar.setName(EVENT_TEXT.copy().append(" - ").append(new TranslatableText("event.minecraft.raid.raiders_remaining", i)));
                     } else {
                         this.bar.setName(EVENT_TEXT);
                     }
@@ -527,7 +527,7 @@ public class Raid {
             int n = this.center.getZ() + MathHelper.floor(MathHelper.sin(f) * 32.0f * (float)k) + this.world.random.nextInt(5);
             int o = this.world.getTopY(Heightmap.Type.WORLD_SURFACE, m, n);
             mutable.set(m, o, n);
-            if (this.world.isNearOccupiedPointOfInterest(mutable) && i < 2 || !this.world.isRegionLoaded(mutable.getX() - 10, mutable.getY() - 10, mutable.getZ() - 10, mutable.getX() + 10, mutable.getY() + 10, mutable.getZ() + 10) || !this.world.method_14178().shouldTickChunk(new ChunkPos(mutable)) || !SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, this.world, mutable, EntityType.RAVAGER) && (this.world.getBlockState(mutable.method_10074()).getBlock() != Blocks.SNOW || !this.world.getBlockState(mutable).isAir())) continue;
+            if (this.world.isNearOccupiedPointOfInterest(mutable) && i < 2 || !this.world.isRegionLoaded(mutable.getX() - 10, mutable.getY() - 10, mutable.getZ() - 10, mutable.getX() + 10, mutable.getY() + 10, mutable.getZ() + 10) || !this.world.getChunkManager().shouldTickChunk(new ChunkPos(mutable)) || !SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, this.world, mutable, EntityType.RAVAGER) && (this.world.getBlockState((BlockPos)mutable.down()).getBlock() != Blocks.SNOW || !this.world.getBlockState(mutable).isAir())) continue;
             return mutable;
         }
         return null;

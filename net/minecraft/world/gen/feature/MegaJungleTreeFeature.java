@@ -21,7 +21,8 @@ extends MegaTreeFeature<MegaTreeFeatureConfig> {
         super(function);
     }
 
-    public boolean method_23398(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, Set<BlockPos> set, Set<BlockPos> set2, BlockBox blockBox, MegaTreeFeatureConfig megaTreeFeatureConfig) {
+    @Override
+    public boolean generate(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, Set<BlockPos> set, Set<BlockPos> set2, BlockBox blockBox, MegaTreeFeatureConfig megaTreeFeatureConfig) {
         int i = this.getHeight(random, megaTreeFeatureConfig);
         if (!this.checkTreeFitsAndReplaceGround(modifiableTestableWorld, blockPos, i)) {
             return false;
@@ -36,7 +37,7 @@ extends MegaTreeFeature<MegaTreeFeatureConfig> {
                 k = blockPos.getX() + (int)(1.5f + MathHelper.cos(f) * (float)m);
                 l = blockPos.getZ() + (int)(1.5f + MathHelper.sin(f) * (float)m);
                 BlockPos blockPos2 = new BlockPos(k, j - 3 + m / 2, l);
-                this.method_23382(modifiableTestableWorld, random, blockPos2, set, blockBox, megaTreeFeatureConfig);
+                this.setLogBlockState(modifiableTestableWorld, random, blockPos2, set, blockBox, megaTreeFeatureConfig);
             }
             m = 1 + random.nextInt(2);
             int n = j;

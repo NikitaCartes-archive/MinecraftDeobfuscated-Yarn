@@ -50,11 +50,12 @@ extends CompositeEntityModel<T> {
         this.field_20943 = builder.build();
     }
 
-    public ImmutableList<ModelPart> method_22970() {
+    public ImmutableList<ModelPart> getParts() {
         return this.field_20943;
     }
 
-    public void method_17130(T witherEntity, float f, float g, float h, float i, float j) {
+    @Override
+    public void setAngles(T witherEntity, float f, float g, float h, float i, float j) {
         float k = MathHelper.cos(h * 0.1f);
         this.field_3613[1].pitch = (0.065f + 0.05f * k) * (float)Math.PI;
         this.field_3613[2].setPivot(-2.0f, 6.9f + MathHelper.cos(this.field_3613[1].pitch) * 10.0f, -0.5f + MathHelper.sin(this.field_3613[1].pitch) * 10.0f);
@@ -63,7 +64,8 @@ extends CompositeEntityModel<T> {
         this.field_3612[0].pitch = j * ((float)Math.PI / 180);
     }
 
-    public void method_17128(T witherEntity, float f, float g, float h) {
+    @Override
+    public void animateModel(T witherEntity, float f, float g, float h) {
         for (int i = 1; i < 3; ++i) {
             this.field_3612[i].yaw = (((WitherEntity)witherEntity).getHeadYaw(i - 1) - ((WitherEntity)witherEntity).bodyYaw) * ((float)Math.PI / 180);
             this.field_3612[i].pitch = ((WitherEntity)witherEntity).getHeadPitch(i - 1) * ((float)Math.PI / 180);
@@ -72,7 +74,7 @@ extends CompositeEntityModel<T> {
 
     @Override
     public /* synthetic */ Iterable getParts() {
-        return this.method_22970();
+        return this.getParts();
     }
 }
 

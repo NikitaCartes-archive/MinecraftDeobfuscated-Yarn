@@ -157,12 +157,12 @@ public abstract class Particle {
 
     public void move(double d, double e, double f) {
         if (this.field_21507) {
-            e = 0.0;
+            return;
         }
         double g = d;
         double h = e;
         double i = f;
-        if (this.collidesWithWorld && (d != 0.0 || e != 0.0 || f != 0.0) && !this.field_21507) {
+        if (this.collidesWithWorld && (d != 0.0 || e != 0.0 || f != 0.0)) {
             Vec3d vec3d = Entity.adjustMovementForCollisions(null, new Vec3d(d, e, f), this.getBoundingBox(), this.world, EntityContext.absent(), new ReusableStream<VoxelShape>(Stream.empty()));
             d = vec3d.x;
             e = vec3d.y;
@@ -172,7 +172,7 @@ public abstract class Particle {
             this.setBoundingBox(this.getBoundingBox().offset(d, e, f));
             this.repositionFromBoundingBox();
         }
-        if (Math.abs(e) < (double)1.0E-5f) {
+        if (Math.abs(h) >= (double)1.0E-5f && Math.abs(e) < (double)1.0E-5f) {
             this.field_21507 = true;
         }
         boolean bl = this.onGround = h != e && h < 0.0;

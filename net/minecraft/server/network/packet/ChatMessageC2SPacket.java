@@ -32,7 +32,8 @@ implements Packet<ServerPlayPacketListener> {
         packetByteBuf.writeString(this.chatMessage);
     }
 
-    public void method_12115(ServerPlayPacketListener serverPlayPacketListener) {
+    @Override
+    public void apply(ServerPlayPacketListener serverPlayPacketListener) {
         serverPlayPacketListener.onChatMessage(this);
     }
 

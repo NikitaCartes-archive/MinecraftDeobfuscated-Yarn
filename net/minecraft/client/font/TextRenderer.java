@@ -14,11 +14,11 @@ import java.util.List;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.font.EmptyGlyphRenderer;
 import net.minecraft.client.font.Font;
 import net.minecraft.client.font.FontStorage;
 import net.minecraft.client.font.Glyph;
 import net.minecraft.client.font.GlyphRenderer;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -27,7 +27,6 @@ import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.Rotation3;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
@@ -104,8 +103,6 @@ implements AutoCloseable {
     }
 
     private float drawLayer(String string, float f, float g, int i, boolean bl, Matrix4f matrix4f, VertexConsumerProvider vertexConsumerProvider, boolean bl2, int j, int k) {
-        GlyphRenderer glyphRenderer2;
-        Identifier identifier2;
         float h = bl ? 0.25f : 1.0f;
         float l = (float)(i >> 16 & 0xFF) / 255.0f * h;
         float m = (float)(i >> 8 & 0xFF) / 255.0f * h;
@@ -124,6 +121,7 @@ implements AutoCloseable {
         for (int t = 0; t < string.length(); ++t) {
             float w;
             float v;
+            GlyphRenderer glyphRenderer;
             char c = string.charAt(t);
             if (c == '\u00a7' && t + 1 < string.length()) {
                 Formatting formatting = Formatting.byCode(string.charAt(t + 1));
@@ -159,12 +157,11 @@ implements AutoCloseable {
                 continue;
             }
             Glyph glyph = this.fontStorage.getGlyph(c);
-            GlyphRenderer glyphRenderer = bl3 && c != ' ' ? this.fontStorage.getObfuscatedGlyphRenderer(glyph) : this.fontStorage.getGlyphRenderer(c);
-            Identifier identifier = glyphRenderer.getId();
-            if (identifier != null) {
+            GlyphRenderer glyphRenderer2 = glyphRenderer = bl3 && c != ' ' ? this.fontStorage.getObfuscatedGlyphRenderer(glyph) : this.fontStorage.getGlyphRenderer(c);
+            if (!(glyphRenderer instanceof EmptyGlyphRenderer)) {
                 v = bl4 ? glyph.getBoldOffset() : 0.0f;
                 w = bl ? glyph.getShadowOffset() : 0.0f;
-                VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(bl2 ? RenderLayer.getTextSeeThrough(identifier) : RenderLayer.getText(identifier));
+                VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(glyphRenderer.method_24045(bl2));
                 this.drawGlyph(glyphRenderer, bl4, bl5, v, o + w, g + w, matrix4f, vertexConsumer, p, q, r, s, k);
             }
             v = glyph.getAdvance(bl4);
@@ -184,8 +181,9 @@ implements AutoCloseable {
             float aa = (float)(j & 0xFF) / 255.0f;
             list.add(new GlyphRenderer.Rectangle(f - 1.0f, g + 9.0f, o + 1.0f, g - 1.0f, 0.01f, y, z, aa, x));
         }
-        if (!list.isEmpty() && (identifier2 = (glyphRenderer2 = this.fontStorage.getRectangleRenderer()).getId()) != null) {
-            VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(bl2 ? RenderLayer.getTextSeeThrough(identifier2) : RenderLayer.getText(identifier2));
+        if (!list.isEmpty()) {
+            GlyphRenderer glyphRenderer2 = this.fontStorage.getRectangleRenderer();
+            VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(glyphRenderer2.method_24045(bl2));
             for (GlyphRenderer.Rectangle rectangle : list) {
                 glyphRenderer2.drawRectangle(rectangle, matrix4f, vertexConsumer2, k);
             }

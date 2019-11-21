@@ -38,7 +38,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeCompoundTag(this.tag);
     }
 
-    public void method_11909(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onTagQuery(this);
     }
 

@@ -24,11 +24,12 @@ extends Feature<DefaultFeatureConfig> {
         super(function);
     }
 
-    public boolean method_12818(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
+    @Override
+    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
         if (blockPos.getY() > iWorld.getSeaLevel() - 1) {
             return false;
         }
-        if (iWorld.getBlockState(blockPos).getBlock() != Blocks.WATER && iWorld.getBlockState(blockPos.method_10074()).getBlock() != Blocks.WATER) {
+        if (iWorld.getBlockState(blockPos).getBlock() != Blocks.WATER && iWorld.getBlockState(blockPos.down()).getBlock() != Blocks.WATER) {
             return false;
         }
         boolean bl = false;

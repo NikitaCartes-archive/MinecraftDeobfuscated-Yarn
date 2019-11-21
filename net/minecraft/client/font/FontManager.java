@@ -56,7 +56,8 @@ implements AutoCloseable {
     private boolean forceUnicodeFont;
     private final ResourceReloadListener resourceReloadListener = new SinglePreparationResourceReloadListener<Map<Identifier, List<Font>>>(){
 
-        protected Map<Identifier, List<Font>> method_18638(ResourceManager resourceManager, Profiler profiler) {
+        @Override
+        protected Map<Identifier, List<Font>> prepare(ResourceManager resourceManager, Profiler profiler) {
             profiler.startTick();
             Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
             HashMap<Identifier, List<Font>> map = Maps.newHashMap();
@@ -111,7 +112,8 @@ implements AutoCloseable {
             return map;
         }
 
-        protected void method_18635(Map<Identifier, List<Font>> map, ResourceManager resourceManager, Profiler profiler) {
+        @Override
+        protected void apply(Map<Identifier, List<Font>> map, ResourceManager resourceManager, Profiler profiler) {
             profiler.startTick();
             profiler.push("reloading");
             Stream.concat(FontManager.this.textRenderers.keySet().stream(), map.keySet().stream()).distinct().forEach(identifier2 -> {
@@ -131,7 +133,7 @@ implements AutoCloseable {
 
         @Override
         protected /* synthetic */ Object prepare(ResourceManager resourceManager, Profiler profiler) {
-            return this.method_18638(resourceManager, profiler);
+            return this.prepare(resourceManager, profiler);
         }
     };
 

@@ -28,7 +28,8 @@ extends MobEntityRenderer<MooshroomEntity, CowEntityModel<MooshroomEntity>> {
         this.addFeature(new MooshroomMushroomFeatureRenderer<MooshroomEntity>(this));
     }
 
-    public Identifier method_4066(MooshroomEntity mooshroomEntity) {
+    @Override
+    public Identifier getTexture(MooshroomEntity mooshroomEntity) {
         return SKIN.get((Object)mooshroomEntity.getMooshroomType());
     }
 }

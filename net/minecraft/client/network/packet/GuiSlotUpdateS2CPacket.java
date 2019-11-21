@@ -26,7 +26,8 @@ implements Packet<ClientPlayPacketListener> {
         this.stack = itemStack.copy();
     }
 
-    public void method_11451(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onGuiSlotUpdate(this);
     }
 

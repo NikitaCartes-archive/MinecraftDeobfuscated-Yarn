@@ -32,7 +32,8 @@ implements Packet<ServerPlayPacketListener> {
         packetByteBuf.writeVarInt(this.teleportId);
     }
 
-    public void method_12085(ServerPlayPacketListener serverPlayPacketListener) {
+    @Override
+    public void apply(ServerPlayPacketListener serverPlayPacketListener) {
         serverPlayPacketListener.onTeleportConfirm(this);
     }
 

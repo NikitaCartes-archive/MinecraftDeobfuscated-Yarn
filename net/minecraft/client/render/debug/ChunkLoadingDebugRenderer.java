@@ -84,7 +84,7 @@ implements DebugRenderer.Renderer {
             int i = (int)d >> 4;
             int j = (int)e >> 4;
             ImmutableMap.Builder<ChunkPos, String> builder = ImmutableMap.builder();
-            ClientChunkManager clientChunkManager = clientWorld.method_2935();
+            ClientChunkManager clientChunkManager = clientWorld.getChunkManager();
             for (int k = i - 12; k <= i + 12; ++k) {
                 for (int l = j - 12; l <= j + 12; ++l) {
                     ChunkPos chunkPos = new ChunkPos(k, l);
@@ -103,7 +103,7 @@ implements DebugRenderer.Renderer {
             this.clientStates = builder.build();
             this.serverStates = integratedServer.submit(() -> {
                 ImmutableMap.Builder<ChunkPos, String> builder = ImmutableMap.builder();
-                ServerChunkManager serverChunkManager = serverWorld.method_14178();
+                ServerChunkManager serverChunkManager = serverWorld.getChunkManager();
                 for (int k = i - 12; k <= i + 12; ++k) {
                     for (int l = j - 12; l <= j + 12; ++l) {
                         ChunkPos chunkPos = new ChunkPos(k, l);

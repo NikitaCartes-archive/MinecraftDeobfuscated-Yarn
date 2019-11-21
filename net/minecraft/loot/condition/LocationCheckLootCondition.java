@@ -24,7 +24,8 @@ implements LootCondition {
         this.offset = blockPos;
     }
 
-    public boolean method_881(LootContext lootContext) {
+    @Override
+    public boolean test(LootContext lootContext) {
         BlockPos blockPos = lootContext.get(LootContextParameters.POSITION);
         return blockPos != null && this.predicate.test(lootContext.getWorld(), blockPos.getX() + this.offset.getX(), blockPos.getY() + this.offset.getY(), blockPos.getZ() + this.offset.getZ());
     }
@@ -35,7 +36,7 @@ implements LootCondition {
 
     @Override
     public /* synthetic */ boolean test(Object object) {
-        return this.method_881((LootContext)object);
+        return this.test((LootContext)object);
     }
 
     public static class Factory
@@ -44,7 +45,8 @@ implements LootCondition {
             super(new Identifier("location_check"), LocationCheckLootCondition.class);
         }
 
-        public void method_886(JsonObject jsonObject, LocationCheckLootCondition locationCheckLootCondition, JsonSerializationContext jsonSerializationContext) {
+        @Override
+        public void toJson(JsonObject jsonObject, LocationCheckLootCondition locationCheckLootCondition, JsonSerializationContext jsonSerializationContext) {
             jsonObject.add("predicate", locationCheckLootCondition.predicate.toJson());
             if (locationCheckLootCondition.offset.getX() != 0) {
                 jsonObject.addProperty("offsetX", locationCheckLootCondition.offset.getX());
@@ -57,7 +59,8 @@ implements LootCondition {
             }
         }
 
-        public LocationCheckLootCondition method_885(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+        @Override
+        public LocationCheckLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
             LocationPredicate locationPredicate = LocationPredicate.fromJson(jsonObject.get("predicate"));
             int i = JsonHelper.getInt(jsonObject, "offsetX", 0);
             int j = JsonHelper.getInt(jsonObject, "offsetY", 0);
@@ -67,7 +70,7 @@ implements LootCondition {
 
         @Override
         public /* synthetic */ LootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            return this.method_885(jsonObject, jsonDeserializationContext);
+            return this.fromJson(jsonObject, jsonDeserializationContext);
         }
     }
 }

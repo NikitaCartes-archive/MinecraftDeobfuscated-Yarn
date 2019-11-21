@@ -25,7 +25,8 @@ implements Packet<ServerPlayPacketListener> {
         this.stack = itemStack.copy();
     }
 
-    public void method_12480(ServerPlayPacketListener serverPlayPacketListener) {
+    @Override
+    public void apply(ServerPlayPacketListener serverPlayPacketListener) {
         serverPlayPacketListener.onCreativeInventoryAction(this);
     }
 

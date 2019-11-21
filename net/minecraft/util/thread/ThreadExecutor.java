@@ -82,7 +82,8 @@ Executor {
         }
     }
 
-    public void method_18858(R runnable) {
+    @Override
+    public void send(R runnable) {
         this.tasks.add(runnable);
         LockSupport.unpark(this.getThread());
     }
@@ -90,7 +91,7 @@ Executor {
     @Override
     public void execute(Runnable runnable) {
         if (this.shouldExecuteAsync()) {
-            this.method_18858(this.createTask(runnable));
+            this.send(this.createTask(runnable));
         } else {
             runnable.run();
         }
@@ -145,7 +146,7 @@ Executor {
 
     @Override
     public /* synthetic */ void send(Object object) {
-        this.method_18858((Runnable)object);
+        this.send((R)((Runnable)object));
     }
 }
 

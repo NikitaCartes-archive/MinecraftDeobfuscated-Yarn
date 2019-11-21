@@ -29,7 +29,8 @@ implements LootCondition {
         return ImmutableSet.of(LootContextParameters.TOOL);
     }
 
-    public boolean method_946(LootContext lootContext) {
+    @Override
+    public boolean test(LootContext lootContext) {
         ItemStack itemStack = lootContext.get(LootContextParameters.TOOL);
         return itemStack != null && this.predicate.test(itemStack);
     }
@@ -40,7 +41,7 @@ implements LootCondition {
 
     @Override
     public /* synthetic */ boolean test(Object object) {
-        return this.method_946((LootContext)object);
+        return this.test((LootContext)object);
     }
 
     public static class Factory
@@ -49,18 +50,20 @@ implements LootCondition {
             super(new Identifier("match_tool"), MatchToolLootCondition.class);
         }
 
-        public void method_948(JsonObject jsonObject, MatchToolLootCondition matchToolLootCondition, JsonSerializationContext jsonSerializationContext) {
+        @Override
+        public void toJson(JsonObject jsonObject, MatchToolLootCondition matchToolLootCondition, JsonSerializationContext jsonSerializationContext) {
             jsonObject.add("predicate", matchToolLootCondition.predicate.toJson());
         }
 
-        public MatchToolLootCondition method_949(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+        @Override
+        public MatchToolLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
             ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("predicate"));
             return new MatchToolLootCondition(itemPredicate);
         }
 
         @Override
         public /* synthetic */ LootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            return this.method_949(jsonObject, jsonDeserializationContext);
+            return this.fromJson(jsonObject, jsonDeserializationContext);
         }
     }
 }

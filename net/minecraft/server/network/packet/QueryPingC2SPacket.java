@@ -32,7 +32,8 @@ implements Packet<ServerQueryPacketListener> {
         packetByteBuf.writeLong(this.startTime);
     }
 
-    public void method_12699(ServerQueryPacketListener serverQueryPacketListener) {
+    @Override
+    public void apply(ServerQueryPacketListener serverQueryPacketListener) {
         serverQueryPacketListener.onPing(this);
     }
 

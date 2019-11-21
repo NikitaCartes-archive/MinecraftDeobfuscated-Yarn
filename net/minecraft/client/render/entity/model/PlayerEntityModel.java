@@ -87,16 +87,16 @@ extends BipedEntityModel<T> {
         this.ears.copyPositionAndRotation(this.head);
         this.ears.pivotX = 0.0f;
         this.ears.pivotY = 0.0f;
-        this.ears.render(matrixStack, vertexConsumer, i, j, null);
+        this.ears.render(matrixStack, vertexConsumer, i, j);
     }
 
     public void renderCape(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j) {
-        this.cape.render(matrixStack, vertexConsumer, i, j, null);
+        this.cape.render(matrixStack, vertexConsumer, i, j);
     }
 
     @Override
-    public void method_17087(T livingEntity, float f, float g, float h, float i, float j) {
-        super.method_17087(livingEntity, f, g, h, i, j);
+    public void setAngles(T livingEntity, float f, float g, float h, float i, float j) {
+        super.setAngles(livingEntity, f, g, h, i, j);
         this.leftPantLeg.copyPositionAndRotation(this.leftLeg);
         this.rightPantLeg.copyPositionAndRotation(this.rightLeg);
         this.leftSleeve.copyPositionAndRotation(this.leftArm);
@@ -135,7 +135,7 @@ extends BipedEntityModel<T> {
     }
 
     @Override
-    public void method_22696(ModelPart modelPart) {
+    public void accept(ModelPart modelPart) {
         if (this.parts == null) {
             this.parts = Lists.newArrayList();
         }
@@ -144,7 +144,7 @@ extends BipedEntityModel<T> {
 
     @Override
     public /* synthetic */ void accept(Object object) {
-        this.method_22696((ModelPart)object);
+        this.accept((ModelPart)object);
     }
 }
 

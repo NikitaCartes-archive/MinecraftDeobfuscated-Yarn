@@ -56,7 +56,8 @@ implements SynchronousResourceReloadListener {
         reloadableResourceManager.registerListener(this);
     }
 
-    public void method_17151(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l) {
+    @Override
+    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l) {
         if (((Entity)livingEntity).isInvisible()) {
             return;
         }

@@ -3,6 +3,8 @@
  */
 package net.minecraft.block;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
@@ -19,6 +21,7 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.WoodType;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -32,9 +35,11 @@ extends BlockWithEntity
 implements Waterloggable {
     public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
     protected static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 16.0, 12.0);
+    private final WoodType field_21675;
 
-    protected AbstractSignBlock(Block.Settings settings) {
+    protected AbstractSignBlock(Block.Settings settings, WoodType woodType) {
         super(settings);
+        this.field_21675 = woodType;
     }
 
     @Override
@@ -86,6 +91,11 @@ implements Waterloggable {
             return Fluids.WATER.getStill(false);
         }
         return super.getFluidState(blockState);
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public WoodType method_24025() {
+        return this.field_21675;
     }
 }
 

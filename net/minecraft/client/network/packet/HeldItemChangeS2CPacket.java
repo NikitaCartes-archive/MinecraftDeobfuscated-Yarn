@@ -31,7 +31,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeByte(this.slot);
     }
 
-    public void method_11802(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onHeldItemChange(this);
     }
 

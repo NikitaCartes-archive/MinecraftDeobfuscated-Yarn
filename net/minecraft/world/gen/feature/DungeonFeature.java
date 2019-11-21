@@ -35,7 +35,8 @@ extends Feature<DefaultFeatureConfig> {
         super(function);
     }
 
-    public boolean method_13548(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
+    @Override
+    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
         BlockPos blockPos2;
         int u;
         int t;
@@ -75,7 +76,7 @@ extends Feature<DefaultFeatureConfig> {
                 for (u = p; u <= q; ++u) {
                     blockPos2 = blockPos.add(s, t, u);
                     if (s == k || t == -1 || u == p || s == l || t == 4 || u == q) {
-                        if (blockPos2.getY() >= 0 && !iWorld.getBlockState(blockPos2.method_10074()).getMaterial().isSolid()) {
+                        if (blockPos2.getY() >= 0 && !iWorld.getBlockState(blockPos2.down()).getMaterial().isSolid()) {
                             iWorld.setBlockState(blockPos2, AIR, 2);
                             continue;
                         }

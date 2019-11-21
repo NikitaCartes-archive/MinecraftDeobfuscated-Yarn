@@ -87,7 +87,8 @@ extends SpriteBillboardParticle {
             this.field_17864 = spriteProvider;
         }
 
-        public Particle method_3089(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+        @Override
+        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
             CloudParticle particle = new CloudParticle(world, d, e, f, g, h, i, this.field_17864);
             particle.setColor(200.0f, 50.0f, 120.0f);
             particle.setColorAlpha(0.4f);
@@ -104,7 +105,8 @@ extends SpriteBillboardParticle {
             this.field_17863 = spriteProvider;
         }
 
-        public Particle method_3088(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+        @Override
+        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
             return new CloudParticle(world, d, e, f, g, h, i, this.field_17863);
         }
     }

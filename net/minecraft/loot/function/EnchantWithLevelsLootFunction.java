@@ -45,13 +45,15 @@ extends ConditionalLootFunction {
             super(new Identifier("enchant_with_levels"), EnchantWithLevelsLootFunction.class);
         }
 
-        public void method_485(JsonObject jsonObject, EnchantWithLevelsLootFunction enchantWithLevelsLootFunction, JsonSerializationContext jsonSerializationContext) {
-            super.method_529(jsonObject, enchantWithLevelsLootFunction, jsonSerializationContext);
+        @Override
+        public void toJson(JsonObject jsonObject, EnchantWithLevelsLootFunction enchantWithLevelsLootFunction, JsonSerializationContext jsonSerializationContext) {
+            super.toJson(jsonObject, enchantWithLevelsLootFunction, jsonSerializationContext);
             jsonObject.add("levels", LootTableRanges.toJson(enchantWithLevelsLootFunction.range, jsonSerializationContext));
             jsonObject.addProperty("treasure", enchantWithLevelsLootFunction.treasureEnchantmentsAllowed);
         }
 
-        public EnchantWithLevelsLootFunction method_486(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+        @Override
+        public EnchantWithLevelsLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
             LootTableRange lootTableRange = LootTableRanges.fromJson(jsonObject.get("levels"), jsonDeserializationContext);
             boolean bl = JsonHelper.getBoolean(jsonObject, "treasure", false);
             return new EnchantWithLevelsLootFunction(lootConditions, lootTableRange, bl);
@@ -59,7 +61,7 @@ extends ConditionalLootFunction {
 
         @Override
         public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            return this.method_486(jsonObject, jsonDeserializationContext, lootConditions);
+            return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
         }
     }
 
@@ -72,7 +74,8 @@ extends ConditionalLootFunction {
             this.range = lootTableRange;
         }
 
-        protected Builder method_483() {
+        @Override
+        protected Builder getThisBuilder() {
             return this;
         }
 
@@ -88,7 +91,7 @@ extends ConditionalLootFunction {
 
         @Override
         protected /* synthetic */ ConditionalLootFunction.Builder getThisBuilder() {
-            return this.method_483();
+            return this.getThisBuilder();
         }
     }
 }

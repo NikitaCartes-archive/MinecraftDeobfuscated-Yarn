@@ -21,7 +21,8 @@ extends Decorator<LakeDecoratorConfig> {
         super(function);
     }
 
-    public Stream<BlockPos> method_14343(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, LakeDecoratorConfig lakeDecoratorConfig, BlockPos blockPos) {
+    @Override
+    public Stream<BlockPos> getPositions(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, LakeDecoratorConfig lakeDecoratorConfig, BlockPos blockPos) {
         if (random.nextFloat() < 1.0f / (float)lakeDecoratorConfig.chance) {
             int i = random.nextInt(16) + blockPos.getX();
             int j = random.nextInt(16) + blockPos.getZ();

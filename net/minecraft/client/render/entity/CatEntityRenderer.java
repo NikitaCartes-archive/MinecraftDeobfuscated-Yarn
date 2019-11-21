@@ -27,16 +27,19 @@ extends MobEntityRenderer<CatEntity, CatEntityModel<CatEntity>> {
         this.addFeature(new CatCollarFeatureRenderer(this));
     }
 
-    public Identifier method_4078(CatEntity catEntity) {
+    @Override
+    public Identifier getTexture(CatEntity catEntity) {
         return catEntity.getTexture();
     }
 
-    protected void method_4079(CatEntity catEntity, MatrixStack matrixStack, float f) {
+    @Override
+    protected void scale(CatEntity catEntity, MatrixStack matrixStack, float f) {
         super.scale(catEntity, matrixStack, f);
         matrixStack.scale(0.8f, 0.8f, 0.8f);
     }
 
-    protected void method_16045(CatEntity catEntity, MatrixStack matrixStack, float f, float g, float h) {
+    @Override
+    protected void setupTransforms(CatEntity catEntity, MatrixStack matrixStack, float f, float g, float h) {
         super.setupTransforms(catEntity, matrixStack, f, g, h);
         float i = catEntity.getSleepAnimation(h);
         if (i > 0.0f) {

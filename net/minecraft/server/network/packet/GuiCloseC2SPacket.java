@@ -22,7 +22,8 @@ implements Packet<ServerPlayPacketListener> {
         this.id = i;
     }
 
-    public void method_12198(ServerPlayPacketListener serverPlayPacketListener) {
+    @Override
+    public void apply(ServerPlayPacketListener serverPlayPacketListener) {
         serverPlayPacketListener.onGuiClose(this);
     }
 

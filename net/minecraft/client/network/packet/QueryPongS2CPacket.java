@@ -29,7 +29,8 @@ implements Packet<ClientQueryPacketListener> {
         packetByteBuf.writeLong(this.startTime);
     }
 
-    public void method_12670(ClientQueryPacketListener clientQueryPacketListener) {
+    @Override
+    public void apply(ClientQueryPacketListener clientQueryPacketListener) {
         clientQueryPacketListener.onPong(this);
     }
 }

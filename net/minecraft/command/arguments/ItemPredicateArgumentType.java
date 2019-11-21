@@ -34,7 +34,8 @@ implements ArgumentType<ItemPredicateArgument> {
         return new ItemPredicateArgumentType();
     }
 
-    public ItemPredicateArgument method_9800(StringReader stringReader) throws CommandSyntaxException {
+    @Override
+    public ItemPredicateArgument parse(StringReader stringReader) throws CommandSyntaxException {
         ItemStringReader itemStringReader = new ItemStringReader(stringReader, true).consume();
         if (itemStringReader.getItem() != null) {
             ItemPredicate itemPredicate = new ItemPredicate(itemStringReader.getItem(), itemStringReader.getTag());
@@ -74,7 +75,7 @@ implements ArgumentType<ItemPredicateArgument> {
 
     @Override
     public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.method_9800(stringReader);
+        return this.parse(stringReader);
     }
 
     static class TagPredicate
@@ -88,13 +89,14 @@ implements ArgumentType<ItemPredicateArgument> {
             this.compound = compoundTag;
         }
 
-        public boolean method_9807(ItemStack itemStack) {
+        @Override
+        public boolean test(ItemStack itemStack) {
             return this.tag.contains(itemStack.getItem()) && NbtHelper.matches(this.compound, itemStack.getTag(), true);
         }
 
         @Override
         public /* synthetic */ boolean test(Object object) {
-            return this.method_9807((ItemStack)object);
+            return this.test((ItemStack)object);
         }
     }
 
@@ -109,13 +111,14 @@ implements ArgumentType<ItemPredicateArgument> {
             this.compound = compoundTag;
         }
 
-        public boolean method_9806(ItemStack itemStack) {
+        @Override
+        public boolean test(ItemStack itemStack) {
             return itemStack.getItem() == this.item && NbtHelper.matches(this.compound, itemStack.getTag(), true);
         }
 
         @Override
         public /* synthetic */ boolean test(Object object) {
-            return this.method_9806((ItemStack)object);
+            return this.test((ItemStack)object);
         }
     }
 

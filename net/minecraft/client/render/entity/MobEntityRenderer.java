@@ -30,11 +30,13 @@ extends LivingEntityRenderer<T, M> {
         super(entityRenderDispatcher, entityModel, f);
     }
 
-    protected boolean method_4071(T mobEntity) {
-        return super.method_4055(mobEntity) && (((LivingEntity)mobEntity).shouldRenderName() || ((Entity)mobEntity).hasCustomName() && mobEntity == this.renderManager.targetedEntity);
+    @Override
+    protected boolean hasLabel(T mobEntity) {
+        return super.hasLabel(mobEntity) && (((LivingEntity)mobEntity).shouldRenderName() || ((Entity)mobEntity).hasCustomName() && mobEntity == this.renderManager.targetedEntity);
     }
 
-    public boolean method_4068(T mobEntity, Frustum frustum, double d, double e, double f) {
+    @Override
+    public boolean isVisible(T mobEntity, Frustum frustum, double d, double e, double f) {
         if (super.isVisible(mobEntity, frustum, d, e, f)) {
             return true;
         }
@@ -45,16 +47,17 @@ extends LivingEntityRenderer<T, M> {
         return false;
     }
 
-    public void method_4072(T mobEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
-        super.method_4054(mobEntity, f, g, matrixStack, vertexConsumerProvider, i);
+    @Override
+    public void render(T mobEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+        super.render(mobEntity, f, g, matrixStack, vertexConsumerProvider, i);
         Entity entity = ((MobEntity)mobEntity).getHoldingEntity();
         if (entity == null) {
             return;
         }
-        MobEntityRenderer.method_4073(mobEntity, g, matrixStack, vertexConsumerProvider, entity);
+        this.method_4073(mobEntity, g, matrixStack, vertexConsumerProvider, entity);
     }
 
-    public static void method_4073(MobEntity mobEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, Entity entity) {
+    private <E extends Entity> void method_4073(T mobEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, E entity) {
         matrixStack.push();
         double d = MathHelper.lerp(f * 0.5f, entity.yaw, entity.prevYaw) * ((float)Math.PI / 180);
         double e = MathHelper.lerp(f * 0.5f, entity.pitch, entity.prevPitch) * ((float)Math.PI / 180);
@@ -70,13 +73,13 @@ extends LivingEntityRenderer<T, M> {
         double k = MathHelper.lerp((double)f, entity.prevX, entity.getX()) - g * 0.7 - h * 0.5 * j;
         double l = MathHelper.lerp((double)f, entity.prevY + (double)entity.getStandingEyeHeight() * 0.7, entity.getY() + (double)entity.getStandingEyeHeight() * 0.7) - i * 0.5 - 0.25;
         double m = MathHelper.lerp((double)f, entity.prevZ, entity.getZ()) - h * 0.7 + g * 0.5 * j;
-        double n = (double)(MathHelper.lerp(f, mobEntity.bodyYaw, mobEntity.prevBodyYaw) * ((float)Math.PI / 180)) + 1.5707963267948966;
-        g = Math.cos(n) * (double)mobEntity.getWidth() * 0.4;
-        h = Math.sin(n) * (double)mobEntity.getWidth() * 0.4;
-        double o = MathHelper.lerp((double)f, mobEntity.prevX, mobEntity.getX()) + g;
-        double p = MathHelper.lerp((double)f, mobEntity.prevY, mobEntity.getY());
-        double q = MathHelper.lerp((double)f, mobEntity.prevZ, mobEntity.getZ()) + h;
-        matrixStack.translate(g, -(1.6 - (double)mobEntity.getHeight()) * 0.5, h);
+        double n = (double)(MathHelper.lerp(f, ((MobEntity)mobEntity).bodyYaw, ((MobEntity)mobEntity).prevBodyYaw) * ((float)Math.PI / 180)) + 1.5707963267948966;
+        g = Math.cos(n) * (double)((Entity)mobEntity).getWidth() * 0.4;
+        h = Math.sin(n) * (double)((Entity)mobEntity).getWidth() * 0.4;
+        double o = MathHelper.lerp((double)f, ((MobEntity)mobEntity).prevX, ((Entity)mobEntity).getX()) + g;
+        double p = MathHelper.lerp((double)f, ((MobEntity)mobEntity).prevY, ((Entity)mobEntity).getY());
+        double q = MathHelper.lerp((double)f, ((MobEntity)mobEntity).prevZ, ((Entity)mobEntity).getZ()) + h;
+        matrixStack.translate(g, -(1.6 - (double)((Entity)mobEntity).getHeight()) * 0.5, h);
         float r = (float)(k - o);
         float s = (float)(l - p);
         float t = (float)(m - q);
@@ -86,10 +89,10 @@ extends LivingEntityRenderer<T, M> {
         float v = MathHelper.fastInverseSqrt(r * r + t * t) * 0.025f / 2.0f;
         float w = t * v;
         float x = r * v;
-        int y = mobEntity.getLightmapCoordinates();
-        int z = entity.getLightmapCoordinates();
-        int aa = mobEntity.world.getLightLevel(LightType.SKY, new BlockPos(mobEntity));
-        int ab = mobEntity.world.getLightLevel(LightType.SKY, new BlockPos(entity));
+        int y = this.method_24087(mobEntity, f);
+        int z = this.renderManager.getRenderer(entity).method_24087(entity, f);
+        int aa = ((MobEntity)mobEntity).world.getLightLevel(LightType.SKY, new BlockPos(((Entity)mobEntity).getCameraPosVec(f)));
+        int ab = ((MobEntity)mobEntity).world.getLightLevel(LightType.SKY, new BlockPos(entity.getCameraPosVec(f)));
         MobEntityRenderer.method_23186(vertexConsumer, matrix4f, r, s, t, y, z, aa, ab, 0.025f, 0.025f, w, x);
         MobEntityRenderer.method_23186(vertexConsumer, matrix4f, r, s, t, y, z, aa, ab, 0.025f, 0.0f, w, x);
         matrixStack.pop();
@@ -130,8 +133,8 @@ extends LivingEntityRenderer<T, M> {
     }
 
     @Override
-    protected /* synthetic */ boolean method_4055(LivingEntity livingEntity) {
-        return this.method_4071((MobEntity)livingEntity);
+    protected /* synthetic */ boolean hasLabel(LivingEntity livingEntity) {
+        return this.hasLabel((T)((MobEntity)livingEntity));
     }
 }
 

@@ -15,7 +15,6 @@ import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.texture.PaintingManager;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.Matrix3f;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
@@ -34,21 +33,23 @@ extends EntityRenderer<PaintingEntity> {
         super(entityRenderDispatcher);
     }
 
-    public void method_4075(PaintingEntity paintingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+    @Override
+    public void render(PaintingEntity paintingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         matrixStack.push();
         matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f - f));
         PaintingMotive paintingMotive = paintingEntity.motive;
         float h = 0.0625f;
         matrixStack.scale(0.0625f, 0.0625f, 0.0625f);
-        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(this.method_4077(paintingEntity)));
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(this.getTexture(paintingEntity)));
         PaintingManager paintingManager = MinecraftClient.getInstance().getPaintingManager();
         this.method_4074(matrixStack, vertexConsumer, paintingEntity, paintingMotive.getWidth(), paintingMotive.getHeight(), paintingManager.getPaintingSprite(paintingMotive), paintingManager.getBackSprite());
         matrixStack.pop();
         super.render(paintingEntity, f, g, matrixStack, vertexConsumerProvider, i);
     }
 
-    public Identifier method_4077(PaintingEntity paintingEntity) {
-        return SpriteAtlasTexture.PAINTING_ATLAS_TEX;
+    @Override
+    public Identifier getTexture(PaintingEntity paintingEntity) {
+        return MinecraftClient.getInstance().getPaintingManager().getBackSprite().method_24119().method_24106();
     }
 
     private void method_4074(MatrixStack matrixStack, VertexConsumer vertexConsumer, PaintingEntity paintingEntity, int i, int j, Sprite sprite, Sprite sprite2) {

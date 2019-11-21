@@ -41,7 +41,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeByte(this.location.getId());
     }
 
-    public void method_11386(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onChatMessage(this);
     }
 

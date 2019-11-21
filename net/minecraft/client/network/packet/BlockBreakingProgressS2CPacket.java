@@ -40,7 +40,8 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeByte(this.progress);
     }
 
-    public void method_11279(ClientPlayPacketListener clientPlayPacketListener) {
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onBlockDestroyProgress(this);
     }
 
