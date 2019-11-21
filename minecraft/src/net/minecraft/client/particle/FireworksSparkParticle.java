@@ -97,7 +97,7 @@ public class FireworksSparkParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle method_3025(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			FireworksSparkParticle.Explosion explosion = new FireworksSparkParticle.Explosion(
 				world, d, e, f, g, h, i, MinecraftClient.getInstance().particleManager, this.spriteProvider
 			);
@@ -362,7 +362,7 @@ public class FireworksSparkParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle method_18121(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			FireworksSparkParticle.Flash flash = new FireworksSparkParticle.Flash(world, d, e, f);
 			flash.setSprite(this.spriteProvider);
 			return flash;

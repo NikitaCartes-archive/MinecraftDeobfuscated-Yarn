@@ -18,7 +18,7 @@ public class FoxHeldItemFeatureRenderer extends FeatureRenderer<FoxEntity, FoxEn
 		super(featureRendererContext);
 	}
 
-	public void method_18335(
+	public void render(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, FoxEntity foxEntity, float f, float g, float h, float j, float k, float l
 	) {
 		boolean bl = foxEntity.isSleeping();

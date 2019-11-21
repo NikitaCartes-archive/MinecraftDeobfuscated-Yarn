@@ -21,7 +21,7 @@ public class ShoulderParrotFeatureRenderer<T extends PlayerEntity> extends Featu
 		super(context);
 	}
 
-	public void method_4185(
+	public void render(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T playerEntity, float f, float g, float h, float j, float k, float l
 	) {
 		this.renderShoulderParrot(matrixStack, vertexConsumerProvider, i, playerEntity, f, g, k, l, true);

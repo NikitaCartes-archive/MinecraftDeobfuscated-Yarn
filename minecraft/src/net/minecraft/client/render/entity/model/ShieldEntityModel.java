@@ -32,8 +32,8 @@ public class ShieldEntityModel extends Model {
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float r, float g, float b) {
-		this.field_3550.render(matrixStack, vertexConsumer, i, j, null, r, g, b);
-		this.field_3551.render(matrixStack, vertexConsumer, i, j, null, r, g, b);
+	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float r, float g, float b, float f) {
+		this.field_3550.render(matrixStack, vertexConsumer, i, j, r, g, b, f);
+		this.field_3551.render(matrixStack, vertexConsumer, i, j, r, g, b, f);
 	}
 }

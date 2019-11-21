@@ -38,11 +38,11 @@ public class MinecartItem extends Item {
 					g = 0.1;
 				}
 			} else {
-				if (!blockState.isAir() || !world.getBlockState(blockPos.method_10074()).matches(BlockTags.RAILS)) {
+				if (!blockState.isAir() || !world.getBlockState(blockPos.down()).matches(BlockTags.RAILS)) {
 					return this.defaultBehavior.dispense(pointer, stack);
 				}
 
-				BlockState blockState2 = world.getBlockState(blockPos.method_10074());
+				BlockState blockState2 = world.getBlockState(blockPos.down());
 				RailShape railShape2 = blockState2.getBlock() instanceof AbstractRailBlock
 					? blockState2.get(((AbstractRailBlock)blockState2.getBlock()).getShapeProperty())
 					: RailShape.NORTH_SOUTH;

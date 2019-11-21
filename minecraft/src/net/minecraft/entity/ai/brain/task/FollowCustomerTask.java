@@ -20,7 +20,7 @@ public class FollowCustomerTask extends Task<VillagerEntity> {
 		this.speed = speed;
 	}
 
-	protected boolean method_18954(ServerWorld serverWorld, VillagerEntity villagerEntity) {
+	protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
 		PlayerEntity playerEntity = villagerEntity.getCurrentCustomer();
 		return villagerEntity.isAlive()
 			&& playerEntity != null
@@ -30,21 +30,21 @@ public class FollowCustomerTask extends Task<VillagerEntity> {
 			&& playerEntity.container != null;
 	}
 
-	protected boolean method_18955(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		return this.method_18954(serverWorld, villagerEntity);
+	protected boolean shouldKeepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+		return this.shouldRun(serverWorld, villagerEntity);
 	}
 
-	protected void method_18956(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		this.update(villagerEntity);
 	}
 
-	protected void method_18957(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	protected void finishRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		Brain<?> brain = villagerEntity.getBrain();
 		brain.forget(MemoryModuleType.WALK_TARGET);
 		brain.forget(MemoryModuleType.LOOK_TARGET);
 	}
 
-	protected void method_18958(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		this.update(villagerEntity);
 	}
 

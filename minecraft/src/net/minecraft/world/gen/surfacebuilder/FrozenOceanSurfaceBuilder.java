@@ -26,7 +26,7 @@ public class FrozenOceanSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConf
 		super(function);
 	}
 
-	public void method_15221(
+	public void generate(
 		Random random,
 		Chunk chunk,
 		Biome biome,

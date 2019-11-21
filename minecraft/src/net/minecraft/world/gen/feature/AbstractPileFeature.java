@@ -16,7 +16,7 @@ public class AbstractPileFeature extends Feature<BlockPileFeatureConfig> {
 		super(configFactory);
 	}
 
-	public boolean method_16709(
+	public boolean generate(
 		IWorld iWorld,
 		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
 		Random random,
@@ -44,7 +44,7 @@ public class AbstractPileFeature extends Feature<BlockPileFeatureConfig> {
 	}
 
 	private boolean canPlacePileBlock(IWorld world, BlockPos pos, Random random) {
-		BlockPos blockPos = pos.method_10074();
+		BlockPos blockPos = pos.down();
 		BlockState blockState = world.getBlockState(blockPos);
 		return blockState.getBlock() == Blocks.GRASS_PATH ? random.nextBoolean() : blockState.isSideSolidFullSquare(world, blockPos, Direction.UP);
 	}

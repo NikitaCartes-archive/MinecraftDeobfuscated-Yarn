@@ -15,7 +15,7 @@ public class ChorusPlantFeature extends Feature<DefaultFeatureConfig> {
 		super(configFactory);
 	}
 
-	public boolean method_12843(
+	public boolean generate(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		if (iWorld.isAir(blockPos.up()) && iWorld.getBlockState(blockPos).getBlock() == Blocks.END_STONE) {

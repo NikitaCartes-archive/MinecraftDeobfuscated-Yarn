@@ -101,7 +101,7 @@ public class ServerChunkManager extends ChunkManager {
 		this.initChunkCaches();
 	}
 
-	public ServerLightingProvider method_17293() {
+	public ServerLightingProvider getLightingProvider() {
 		return this.lightProvider;
 	}
 
@@ -273,7 +273,7 @@ public class ServerChunkManager extends ChunkManager {
 		}
 	}
 
-	public World method_16434() {
+	public World getWorld() {
 		return this.world;
 	}
 

@@ -13,7 +13,7 @@ public class FunctionTimerCallback implements TimerCallback<MinecraftServer> {
 		this.name = identifier;
 	}
 
-	public void method_967(MinecraftServer minecraftServer, Timer<MinecraftServer> timer, long l) {
+	public void call(MinecraftServer minecraftServer, Timer<MinecraftServer> timer, long l) {
 		CommandFunctionManager commandFunctionManager = minecraftServer.getCommandFunctionManager();
 		commandFunctionManager.getFunction(this.name)
 			.ifPresent(commandFunction -> commandFunctionManager.execute(commandFunction, commandFunctionManager.getTaggedFunctionSource()));
@@ -24,11 +24,11 @@ public class FunctionTimerCallback implements TimerCallback<MinecraftServer> {
 			super(new Identifier("function"), FunctionTimerCallback.class);
 		}
 
-		public void method_968(CompoundTag compoundTag, FunctionTimerCallback functionTimerCallback) {
+		public void serialize(CompoundTag compoundTag, FunctionTimerCallback functionTimerCallback) {
 			compoundTag.putString("Name", functionTimerCallback.name.toString());
 		}
 
-		public FunctionTimerCallback method_969(CompoundTag compoundTag) {
+		public FunctionTimerCallback deserialize(CompoundTag compoundTag) {
 			Identifier identifier = new Identifier(compoundTag.getString("Name"));
 			return new FunctionTimerCallback(identifier);
 		}

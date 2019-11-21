@@ -42,7 +42,7 @@ public class ClientCommandC2SPacket implements Packet<ServerPlayPacketListener> 
 		buf.writeVarInt(this.mountJumpHeight);
 	}
 
-	public void method_12364(ServerPlayPacketListener serverPlayPacketListener) {
+	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onClientCommand(this);
 	}
 

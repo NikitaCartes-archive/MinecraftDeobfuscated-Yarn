@@ -21,7 +21,7 @@ public class KeybindText extends BaseText {
 		return (String)this.name.get();
 	}
 
-	public KeybindText method_10902() {
+	public KeybindText copy() {
 		return new KeybindText(this.key);
 	}
 

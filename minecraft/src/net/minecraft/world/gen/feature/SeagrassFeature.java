@@ -18,7 +18,7 @@ public class SeagrassFeature extends Feature<SeagrassFeatureConfig> {
 		super(configFactory);
 	}
 
-	public boolean method_13926(
+	public boolean generate(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, SeagrassFeatureConfig seagrassFeatureConfig
 	) {
 		int i = 0;

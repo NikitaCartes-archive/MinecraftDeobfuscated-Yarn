@@ -16,7 +16,7 @@ public class ZombiePigmanEntityRenderer extends BipedEntityRenderer<ZombiePigman
 		this.addFeature(new ArmorBipedFeatureRenderer<>(this, new ZombieEntityModel(0.5F, true), new ZombieEntityModel(1.0F, true)));
 	}
 
-	public Identifier method_4093(ZombiePigmanEntity zombiePigmanEntity) {
+	public Identifier getTexture(ZombiePigmanEntity zombiePigmanEntity) {
 		return SKIN;
 	}
 }

@@ -98,7 +98,7 @@ public class BlockCrackParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<BlockStateParticleEffect> {
-		public Particle method_3109(BlockStateParticleEffect blockStateParticleEffect, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(BlockStateParticleEffect blockStateParticleEffect, World world, double d, double e, double f, double g, double h, double i) {
 			BlockState blockState = blockStateParticleEffect.getBlockState();
 			return !blockState.isAir() && blockState.getBlock() != Blocks.MOVING_PISTON
 				? new BlockCrackParticle(world, d, e, f, g, h, i, blockState).setBlockPosFromPosition()

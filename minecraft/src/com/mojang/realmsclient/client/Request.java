@@ -197,7 +197,7 @@ public abstract class Request<T extends Request<T>> {
 			super(uri, connectTimeout, readTimeout);
 		}
 
-		public Request.Delete method_21057() {
+		public Request.Delete doConnect() {
 			try {
 				this.connection.setDoOutput(true);
 				this.connection.setRequestMethod("DELETE");
@@ -215,7 +215,7 @@ public abstract class Request<T extends Request<T>> {
 			super(uri, connectTimeout, readTimeout);
 		}
 
-		public Request.Get method_21058() {
+		public Request.Get doConnect() {
 			try {
 				this.connection.setDoInput(true);
 				this.connection.setDoOutput(true);
@@ -237,7 +237,7 @@ public abstract class Request<T extends Request<T>> {
 			this.content = content;
 		}
 
-		public Request.Post method_21059() {
+		public Request.Post doConnect() {
 			try {
 				if (this.content != null) {
 					this.connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
@@ -268,7 +268,7 @@ public abstract class Request<T extends Request<T>> {
 			this.content = content;
 		}
 
-		public Request.Put method_21060() {
+		public Request.Put doConnect() {
 			try {
 				if (this.content != null) {
 					this.connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");

@@ -35,7 +35,7 @@ public class EntitiesDestroyS2CPacket implements Packet<ClientPlayPacketListener
 		}
 	}
 
-	public void method_11764(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onEntitiesDestroy(this);
 	}
 

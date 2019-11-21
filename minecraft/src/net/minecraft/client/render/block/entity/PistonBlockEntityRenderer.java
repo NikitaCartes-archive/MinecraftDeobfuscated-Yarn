@@ -28,7 +28,7 @@ public class PistonBlockEntityRenderer extends BlockEntityRenderer<PistonBlockEn
 		super(blockEntityRenderDispatcher);
 	}
 
-	public void method_3576(PistonBlockEntity pistonBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
+	public void render(PistonBlockEntity pistonBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
 		World world = pistonBlockEntity.getWorld();
 		if (world != null) {
 			BlockPos blockPos = pistonBlockEntity.getPos().offset(pistonBlockEntity.getMovementDirection().getOpposite());

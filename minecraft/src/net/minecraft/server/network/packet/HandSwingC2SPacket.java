@@ -26,7 +26,7 @@ public class HandSwingC2SPacket implements Packet<ServerPlayPacketListener> {
 		buf.writeEnumConstant(this.hand);
 	}
 
-	public void method_12511(ServerPlayPacketListener serverPlayPacketListener) {
+	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onHandSwing(this);
 	}
 

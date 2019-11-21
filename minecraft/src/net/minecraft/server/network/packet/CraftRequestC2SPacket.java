@@ -38,7 +38,7 @@ public class CraftRequestC2SPacket implements Packet<ServerPlayPacketListener> {
 		buf.writeBoolean(this.craftAll);
 	}
 
-	public void method_12317(ServerPlayPacketListener serverPlayPacketListener) {
+	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onCraftRequest(this);
 	}
 

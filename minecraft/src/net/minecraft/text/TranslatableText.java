@@ -163,7 +163,7 @@ public class TranslatableText extends BaseText implements ParsableText {
 		return stringBuilder.toString();
 	}
 
-	public TranslatableText method_11020() {
+	public TranslatableText copy() {
 		Object[] objects = new Object[this.args.length];
 
 		for(int i = 0; i < this.args.length; ++i) {

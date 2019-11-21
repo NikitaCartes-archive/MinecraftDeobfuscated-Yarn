@@ -351,7 +351,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 		return other != this && other instanceof LlamaEntity && this.canBreed() && ((LlamaEntity)other).canBreed();
 	}
 
-	public LlamaEntity method_6804(PassiveEntity passiveEntity) {
+	public LlamaEntity createChild(PassiveEntity passiveEntity) {
 		LlamaEntity llamaEntity = this.createChild();
 		this.setChildAttributes(passiveEntity, llamaEntity);
 		LlamaEntity llamaEntity2 = (LlamaEntity)passiveEntity;

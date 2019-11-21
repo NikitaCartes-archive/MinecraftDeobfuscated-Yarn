@@ -51,7 +51,7 @@ public class LootManager extends JsonDataLoader {
 		return (LootTable)this.suppliers.getOrDefault(id, LootTable.EMPTY);
 	}
 
-	protected void method_20712(Map<Identifier, JsonObject> map, ResourceManager resourceManager, Profiler profiler) {
+	protected void apply(Map<Identifier, JsonObject> map, ResourceManager resourceManager, Profiler profiler) {
 		Builder<Identifier, LootTable> builder = ImmutableMap.builder();
 		JsonObject jsonObject = (JsonObject)map.remove(LootTables.EMPTY);
 		if (jsonObject != null) {

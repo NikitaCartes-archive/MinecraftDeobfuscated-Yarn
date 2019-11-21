@@ -23,7 +23,7 @@ public class NetherSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 		super(function);
 	}
 
-	public void method_15300(
+	public void generate(
 		Random random,
 		Chunk chunk,
 		Biome biome,

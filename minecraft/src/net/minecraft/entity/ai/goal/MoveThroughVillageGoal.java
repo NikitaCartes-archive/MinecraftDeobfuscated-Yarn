@@ -42,7 +42,7 @@ public class MoveThroughVillageGoal extends Goal {
 	@Override
 	public boolean canStart() {
 		this.method_6297();
-		if (this.requiresNighttime && this.mob.world.isDaylight()) {
+		if (this.requiresNighttime && this.mob.world.isDay()) {
 			return false;
 		} else {
 			ServerWorld serverWorld = (ServerWorld)this.mob.world;
@@ -79,7 +79,7 @@ public class MoveThroughVillageGoal extends Goal {
 						this.targetPath = mobNavigation.findPathTo(this.target, 0);
 						mobNavigation.setCanPathThroughDoors(bl);
 						if (this.targetPath == null) {
-							Vec3d vec3d2 = TargetFinder.method_23735(this.mob, 10, 7, new Vec3d(this.target));
+							Vec3d vec3d2 = TargetFinder.findTargetTowards(this.mob, 10, 7, new Vec3d(this.target));
 							if (vec3d2 == null) {
 								return false;
 							}

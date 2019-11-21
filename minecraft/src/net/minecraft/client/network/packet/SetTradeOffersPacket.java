@@ -48,7 +48,7 @@ public class SetTradeOffersPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeBoolean(this.refreshable);
 	}
 
-	public void method_17588(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onSetTradeOffers(this);
 	}
 

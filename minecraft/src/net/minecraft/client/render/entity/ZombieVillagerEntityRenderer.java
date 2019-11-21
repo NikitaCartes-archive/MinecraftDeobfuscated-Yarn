@@ -20,11 +20,11 @@ public class ZombieVillagerEntityRenderer extends BipedEntityRenderer<ZombieVill
 		this.addFeature(new VillagerClothingFeatureRenderer<>(this, reloadableResourceManager, "zombie_villager"));
 	}
 
-	public Identifier method_4175(ZombieVillagerEntity zombieVillagerEntity) {
+	public Identifier getTexture(ZombieVillagerEntity zombieVillagerEntity) {
 		return SKIN;
 	}
 
-	protected void method_4176(ZombieVillagerEntity zombieVillagerEntity, MatrixStack matrixStack, float f, float g, float h) {
+	protected void setupTransforms(ZombieVillagerEntity zombieVillagerEntity, MatrixStack matrixStack, float f, float g, float h) {
 		if (zombieVillagerEntity.isConverting()) {
 			g += (float)(Math.cos((double)zombieVillagerEntity.age * 3.25) * Math.PI * 0.25);
 		}

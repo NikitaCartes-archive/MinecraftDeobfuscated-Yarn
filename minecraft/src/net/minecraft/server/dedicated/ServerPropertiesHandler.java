@@ -86,7 +86,7 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 		return new ServerPropertiesHandler(load(path));
 	}
 
-	protected ServerPropertiesHandler method_16713(Properties properties) {
+	protected ServerPropertiesHandler create(Properties properties) {
 		return new ServerPropertiesHandler(properties);
 	}
 }

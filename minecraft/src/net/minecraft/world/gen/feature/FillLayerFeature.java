@@ -13,7 +13,7 @@ public class FillLayerFeature extends Feature<FillLayerFeatureConfig> {
 		super(function);
 	}
 
-	public boolean method_20312(
+	public boolean generate(
 		IWorld iWorld,
 		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
 		Random random,

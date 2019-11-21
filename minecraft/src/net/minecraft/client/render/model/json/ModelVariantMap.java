@@ -107,7 +107,7 @@ public class ModelVariantMap {
 
 	@Environment(EnvType.CLIENT)
 	public static class Deserializer implements JsonDeserializer<ModelVariantMap> {
-		public ModelVariantMap method_3428(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
+		public ModelVariantMap deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
 			JsonObject jsonObject = element.getAsJsonObject();
 			Map<String, WeightedUnbakedModel> map = this.deserializeVariants(context, jsonObject);
 			MultipartUnbakedModel multipartUnbakedModel = this.deserializeMultipart(context, jsonObject);

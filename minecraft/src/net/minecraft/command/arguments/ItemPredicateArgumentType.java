@@ -31,7 +31,7 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 		return new ItemPredicateArgumentType();
 	}
 
-	public ItemPredicateArgumentType.ItemPredicateArgument method_9800(StringReader stringReader) throws CommandSyntaxException {
+	public ItemPredicateArgumentType.ItemPredicateArgument parse(StringReader stringReader) throws CommandSyntaxException {
 		ItemStringReader itemStringReader = new ItemStringReader(stringReader, true).consume();
 		if (itemStringReader.getItem() != null) {
 			ItemPredicateArgumentType.ItemPredicate itemPredicate = new ItemPredicateArgumentType.ItemPredicate(itemStringReader.getItem(), itemStringReader.getTag());
@@ -82,7 +82,7 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 			this.compound = compoundTag;
 		}
 
-		public boolean method_9806(ItemStack itemStack) {
+		public boolean test(ItemStack itemStack) {
 			return itemStack.getItem() == this.item && NbtHelper.matches(this.compound, itemStack.getTag(), true);
 		}
 	}
@@ -101,7 +101,7 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 			this.compound = compoundTag;
 		}
 
-		public boolean method_9807(ItemStack itemStack) {
+		public boolean test(ItemStack itemStack) {
 			return this.tag.contains(itemStack.getItem()) && NbtHelper.matches(this.compound, itemStack.getTag(), true);
 		}
 	}

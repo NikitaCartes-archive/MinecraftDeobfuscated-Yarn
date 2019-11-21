@@ -245,7 +245,7 @@ public class UserCache {
 		private JsonConverter() {
 		}
 
-		public JsonElement method_14522(UserCache.Entry entry, Type type, JsonSerializationContext jsonSerializationContext) {
+		public JsonElement serialize(UserCache.Entry entry, Type type, JsonSerializationContext jsonSerializationContext) {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.addProperty("name", entry.getProfile().getName());
 			UUID uUID = entry.getProfile().getId();
@@ -254,7 +254,7 @@ public class UserCache {
 			return jsonObject;
 		}
 
-		public UserCache.Entry method_14523(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+		public UserCache.Entry deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			if (jsonElement.isJsonObject()) {
 				JsonObject jsonObject = jsonElement.getAsJsonObject();
 				JsonElement jsonElement2 = jsonObject.get("name");

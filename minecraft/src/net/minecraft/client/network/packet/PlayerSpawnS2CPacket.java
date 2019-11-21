@@ -53,7 +53,7 @@ public class PlayerSpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeByte(this.pitch);
 	}
 
-	public void method_11235(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onPlayerSpawn(this);
 	}
 

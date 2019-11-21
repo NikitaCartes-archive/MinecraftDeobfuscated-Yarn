@@ -11,8 +11,8 @@ import net.minecraft.util.Arm;
 
 @Environment(EnvType.CLIENT)
 public class ArmorStandEntityModel extends ArmorStandArmorEntityModel {
-	private final ModelPart bodyStickRight;
-	private final ModelPart bodyStickLeft;
+	private final ModelPart rightTorso;
+	private final ModelPart leftTorso;
 	private final ModelPart hip;
 	private final ModelPart plate;
 
@@ -42,13 +42,13 @@ public class ArmorStandEntityModel extends ArmorStandArmorEntityModel {
 		this.leftLeg.mirror = true;
 		this.leftLeg.addCuboid(-1.0F, 0.0F, -1.0F, 2.0F, 11.0F, 2.0F, f);
 		this.leftLeg.setPivot(1.9F, 12.0F, 0.0F);
-		this.bodyStickRight = new ModelPart(this, 16, 0);
-		this.bodyStickRight.addCuboid(-3.0F, 3.0F, -1.0F, 2.0F, 7.0F, 2.0F, f);
-		this.bodyStickRight.setPivot(0.0F, 0.0F, 0.0F);
-		this.bodyStickRight.visible = true;
-		this.bodyStickLeft = new ModelPart(this, 48, 16);
-		this.bodyStickLeft.addCuboid(1.0F, 3.0F, -1.0F, 2.0F, 7.0F, 2.0F, f);
-		this.bodyStickLeft.setPivot(0.0F, 0.0F, 0.0F);
+		this.rightTorso = new ModelPart(this, 16, 0);
+		this.rightTorso.addCuboid(-3.0F, 3.0F, -1.0F, 2.0F, 7.0F, 2.0F, f);
+		this.rightTorso.setPivot(0.0F, 0.0F, 0.0F);
+		this.rightTorso.visible = true;
+		this.leftTorso = new ModelPart(this, 48, 16);
+		this.leftTorso.addCuboid(1.0F, 3.0F, -1.0F, 2.0F, 7.0F, 2.0F, f);
+		this.leftTorso.setPivot(0.0F, 0.0F, 0.0F);
 		this.hip = new ModelPart(this, 0, 48);
 		this.hip.addCuboid(-4.0F, 10.0F, -1.0F, 8.0F, 2.0F, 2.0F, f);
 		this.hip.setPivot(0.0F, 0.0F, 0.0F);
@@ -59,19 +59,19 @@ public class ArmorStandEntityModel extends ArmorStandArmorEntityModel {
 	}
 
 	@Override
-	public void method_17066(ArmorStandEntity armorStandEntity, float f, float g, float h, float i, float j) {
-		super.method_17066(armorStandEntity, f, g, h, i, j);
+	public void setAngles(ArmorStandEntity armorStandEntity, float f, float g, float h, float i, float j) {
+		super.setAngles(armorStandEntity, f, g, h, i, j);
 		this.leftArm.visible = armorStandEntity.shouldShowArms();
 		this.rightArm.visible = armorStandEntity.shouldShowArms();
 		this.plate.visible = !armorStandEntity.shouldHideBasePlate();
 		this.leftLeg.setPivot(1.9F, 12.0F, 0.0F);
 		this.rightLeg.setPivot(-1.9F, 12.0F, 0.0F);
-		this.bodyStickRight.pitch = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getPitch();
-		this.bodyStickRight.yaw = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getYaw();
-		this.bodyStickRight.roll = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getRoll();
-		this.bodyStickLeft.pitch = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getPitch();
-		this.bodyStickLeft.yaw = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getYaw();
-		this.bodyStickLeft.roll = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getRoll();
+		this.rightTorso.pitch = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getPitch();
+		this.rightTorso.yaw = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getYaw();
+		this.rightTorso.roll = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getRoll();
+		this.leftTorso.pitch = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getPitch();
+		this.leftTorso.yaw = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getYaw();
+		this.leftTorso.roll = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getRoll();
 		this.hip.pitch = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getPitch();
 		this.hip.yaw = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getYaw();
 		this.hip.roll = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getRoll();
@@ -82,7 +82,7 @@ public class ArmorStandEntityModel extends ArmorStandArmorEntityModel {
 
 	@Override
 	protected Iterable<ModelPart> getBodyParts() {
-		return Iterables.concat(super.getBodyParts(), ImmutableList.of(this.bodyStickRight, this.bodyStickLeft, this.hip, this.plate));
+		return Iterables.concat(super.getBodyParts(), ImmutableList.of(this.rightTorso, this.leftTorso, this.hip, this.plate));
 	}
 
 	@Override

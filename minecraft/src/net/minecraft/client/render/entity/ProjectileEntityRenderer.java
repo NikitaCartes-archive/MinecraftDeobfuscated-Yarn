@@ -19,7 +19,7 @@ public abstract class ProjectileEntityRenderer<T extends ProjectileEntity> exten
 		super(entityRenderDispatcher);
 	}
 
-	public void method_3875(T projectileEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	public void render(T projectileEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
 		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(MathHelper.lerp(g, projectileEntity.prevYaw, projectileEntity.yaw) - 90.0F));
 		matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(MathHelper.lerp(g, projectileEntity.prevPitch, projectileEntity.pitch)));

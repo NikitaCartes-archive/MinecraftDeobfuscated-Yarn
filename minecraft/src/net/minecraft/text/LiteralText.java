@@ -16,7 +16,7 @@ public class LiteralText extends BaseText {
 		return this.string;
 	}
 
-	public LiteralText method_10992() {
+	public LiteralText copy() {
 		return new LiteralText(this.string);
 	}
 

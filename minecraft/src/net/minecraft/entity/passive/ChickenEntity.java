@@ -118,13 +118,13 @@ public class ChickenEntity extends AnimalEntity {
 		this.playSound(SoundEvents.ENTITY_CHICKEN_STEP, 0.15F, 1.0F);
 	}
 
-	public ChickenEntity method_6471(PassiveEntity passiveEntity) {
+	public ChickenEntity createChild(PassiveEntity passiveEntity) {
 		return EntityType.CHICKEN.create(this.world);
 	}
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return BREEDING_INGREDIENT.method_8093(stack);
+		return BREEDING_INGREDIENT.test(stack);
 	}
 
 	@Override

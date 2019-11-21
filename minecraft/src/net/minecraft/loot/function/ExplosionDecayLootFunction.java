@@ -44,7 +44,7 @@ public class ExplosionDecayLootFunction extends ConditionalLootFunction {
 			super(new Identifier("explosion_decay"), ExplosionDecayLootFunction.class);
 		}
 
-		public ExplosionDecayLootFunction method_479(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public ExplosionDecayLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			return new ExplosionDecayLootFunction(lootConditions);
 		}
 	}

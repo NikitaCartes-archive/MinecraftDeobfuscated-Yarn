@@ -7,6 +7,10 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.block.entity.BannerBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.MatrixStack;
@@ -28,6 +32,7 @@ import net.minecraft.util.math.MathHelper;
 public class LoomScreen extends AbstractContainerScreen<LoomContainer> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/loom.png");
 	private static final int PATTERN_BUTTON_ROW_COUNT = (BannerPattern.COUNT - 5 - 1 + 4 - 1) / 4;
+	private final ModelPart field_21694;
 	@Nullable
 	private BannerBlockEntity preview;
 	private ItemStack banner = ItemStack.EMPTY;
@@ -42,6 +47,7 @@ public class LoomScreen extends AbstractContainerScreen<LoomContainer> {
 
 	public LoomScreen(LoomContainer loomContainer, PlayerInventory playerInventory, Text text) {
 		super(loomContainer, playerInventory, text);
+		this.field_21694 = BannerBlockEntityRenderer.method_24080();
 		loomContainer.setInventoryChangeListener(this::onInventoryChanged);
 	}
 
@@ -125,8 +131,6 @@ public class LoomScreen extends AbstractContainerScreen<LoomContainer> {
 	}
 
 	private void method_22692(int i, int j, int k) {
-		this.minecraft.getSpriteAtlas().bindTexture();
-		RenderSystem.texParameter(3553, 10241, 9728);
 		BannerBlockEntity bannerBlockEntity = new BannerBlockEntity();
 		bannerBlockEntity.setPreview(true);
 		ItemStack itemStack = new ItemStack(Items.GRAY_BANNER);
@@ -134,13 +138,20 @@ public class LoomScreen extends AbstractContainerScreen<LoomContainer> {
 		ListTag listTag = new BannerPattern.Patterns().add(BannerPattern.BASE, DyeColor.GRAY).add(BannerPattern.values()[i], DyeColor.WHITE).toTag();
 		compoundTag.put("Patterns", listTag);
 		bannerBlockEntity.readFrom(itemStack, DyeColor.GRAY);
-		RenderSystem.pushMatrix();
-		RenderSystem.translatef((float)j + 0.5F, (float)(k + 16), 0.0F);
-		RenderSystem.scalef(6.0F, -6.0F, 1.0F);
-		RenderSystem.translatef(0.5F, 0.5F, 0.0F);
-		BlockEntityRenderDispatcher.INSTANCE.renderEntity(bannerBlockEntity, new MatrixStack());
-		RenderSystem.popMatrix();
-		this.minecraft.getSpriteAtlas().bindTexture();
+		MatrixStack matrixStack = new MatrixStack();
+		matrixStack.push();
+		matrixStack.translate((double)((float)j + 0.5F), (double)(k + 16), 0.0);
+		matrixStack.scale(6.0F, -6.0F, 1.0F);
+		matrixStack.translate(0.5, 0.5, 0.0);
+		float f = 0.6666667F;
+		matrixStack.translate(0.5, 0.5, 0.5);
+		matrixStack.scale(0.6666667F, -0.6666667F, -0.6666667F);
+		VertexConsumerProvider.Immediate immediate = this.minecraft.getBufferBuilders().getEntityVertexConsumers();
+		this.field_21694.pitch = 0.0F;
+		this.field_21694.pivotY = -32.0F;
+		BannerBlockEntityRenderer.method_23802(bannerBlockEntity, matrixStack, immediate, 15728880, OverlayTexture.DEFAULT_UV, this.field_21694, true);
+		matrixStack.pop();
+		immediate.draw();
 	}
 
 	@Override

@@ -29,7 +29,7 @@ public class TextArgumentType implements ArgumentType<Text> {
 		return new TextArgumentType();
 	}
 
-	public Text method_9283(StringReader stringReader) throws CommandSyntaxException {
+	public Text parse(StringReader stringReader) throws CommandSyntaxException {
 		try {
 			Text text = Text.Serializer.fromJson(stringReader);
 			if (text == null) {

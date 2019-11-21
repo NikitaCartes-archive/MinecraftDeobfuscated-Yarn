@@ -35,14 +35,14 @@ public class BeeHiveBlockEntity extends BlockEntity implements Tickable {
 
 	@Override
 	public void markDirty() {
-		if (this.method_23280()) {
+		if (this.isNearFire()) {
 			this.angerBees(null, this.world.getBlockState(this.getPos()), BeeHiveBlockEntity.BeeState.EMERGENCY);
 		}
 
 		super.markDirty();
 	}
 
-	public boolean method_23280() {
+	public boolean isNearFire() {
 		if (this.world == null) {
 			return false;
 		} else {
@@ -135,7 +135,7 @@ public class BeeHiveBlockEntity extends BlockEntity implements Tickable {
 
 	private boolean releaseBee(BlockState blockState, CompoundTag compoundTag, @Nullable List<Entity> list, BeeHiveBlockEntity.BeeState beeState) {
 		BlockPos blockPos = this.getPos();
-		if ((this.world.method_23886() || this.world.isRaining()) && beeState != BeeHiveBlockEntity.BeeState.EMERGENCY) {
+		if ((this.world.isNight() || this.world.isRaining()) && beeState != BeeHiveBlockEntity.BeeState.EMERGENCY) {
 			return false;
 		} else {
 			compoundTag.remove("Passengers");
@@ -178,8 +178,8 @@ public class BeeHiveBlockEntity extends BlockEntity implements Tickable {
 								}
 							}
 
+							beeEntity.resetPollinationTicks();
 							if (list != null) {
-								beeEntity.resetPollinationTicks();
 								list.add(beeEntity);
 							}
 						}

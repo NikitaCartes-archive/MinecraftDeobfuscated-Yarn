@@ -20,7 +20,7 @@ public class TimeCheckLootCondition implements LootCondition {
 		this.value = value;
 	}
 
-	public boolean method_22587(LootContext lootContext) {
+	public boolean test(LootContext lootContext) {
 		ServerWorld serverWorld = lootContext.getWorld();
 		long l = serverWorld.getTimeOfDay();
 		if (this.period != null) {
@@ -35,12 +35,12 @@ public class TimeCheckLootCondition implements LootCondition {
 			super(new Identifier("time_check"), TimeCheckLootCondition.class);
 		}
 
-		public void method_22591(JsonObject jsonObject, TimeCheckLootCondition timeCheckLootCondition, JsonSerializationContext jsonSerializationContext) {
+		public void toJson(JsonObject jsonObject, TimeCheckLootCondition timeCheckLootCondition, JsonSerializationContext jsonSerializationContext) {
 			jsonObject.addProperty("period", timeCheckLootCondition.period);
 			jsonObject.add("value", jsonSerializationContext.serialize(timeCheckLootCondition.value));
 		}
 
-		public TimeCheckLootCondition method_22590(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		public TimeCheckLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			Long long_ = jsonObject.has("period") ? JsonHelper.getLong(jsonObject, "period") : null;
 			UniformLootTableRange uniformLootTableRange = JsonHelper.deserialize(jsonObject, "value", jsonDeserializationContext, UniformLootTableRange.class);
 			return new TimeCheckLootCondition(long_, uniformLootTableRange);

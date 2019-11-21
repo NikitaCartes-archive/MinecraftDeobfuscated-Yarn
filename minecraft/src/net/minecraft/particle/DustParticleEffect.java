@@ -12,7 +12,7 @@ import net.minecraft.util.registry.Registry;
 public class DustParticleEffect implements ParticleEffect {
 	public static final DustParticleEffect RED = new DustParticleEffect(1.0F, 0.0F, 0.0F, 1.0F);
 	public static final ParticleEffect.Factory<DustParticleEffect> PARAMETERS_FACTORY = new ParticleEffect.Factory<DustParticleEffect>() {
-		public DustParticleEffect method_10287(ParticleType<DustParticleEffect> particleType, StringReader stringReader) throws CommandSyntaxException {
+		public DustParticleEffect read(ParticleType<DustParticleEffect> particleType, StringReader stringReader) throws CommandSyntaxException {
 			stringReader.expect(' ');
 			float f = (float)stringReader.readDouble();
 			stringReader.expect(' ');
@@ -24,7 +24,7 @@ public class DustParticleEffect implements ParticleEffect {
 			return new DustParticleEffect(f, g, h, i);
 		}
 
-		public DustParticleEffect method_10288(ParticleType<DustParticleEffect> particleType, PacketByteBuf packetByteBuf) {
+		public DustParticleEffect read(ParticleType<DustParticleEffect> particleType, PacketByteBuf packetByteBuf) {
 			return new DustParticleEffect(packetByteBuf.readFloat(), packetByteBuf.readFloat(), packetByteBuf.readFloat(), packetByteBuf.readFloat());
 		}
 	};

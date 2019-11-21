@@ -28,7 +28,7 @@ public class UpdateSelectedSlotC2SPacket implements Packet<ServerPlayPacketListe
 		buf.writeShort(this.selectedSlot);
 	}
 
-	public void method_12441(ServerPlayPacketListener serverPlayPacketListener) {
+	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onUpdateSelectedSlot(this);
 	}
 

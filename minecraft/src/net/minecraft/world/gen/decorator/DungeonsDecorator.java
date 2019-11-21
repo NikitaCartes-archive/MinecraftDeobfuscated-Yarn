@@ -15,7 +15,7 @@ public class DungeonsDecorator extends Decorator<LakeDecoratorConfig> {
 		super(function);
 	}
 
-	public Stream<BlockPos> method_15933(
+	public Stream<BlockPos> getPositions(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, LakeDecoratorConfig lakeDecoratorConfig, BlockPos blockPos
 	) {
 		int i = lakeDecoratorConfig.chance;

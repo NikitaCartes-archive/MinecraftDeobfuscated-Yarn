@@ -62,8 +62,8 @@ public class LevelGeneratorType {
 		return this.version;
 	}
 
-	public LevelGeneratorType getTypeForVersion(int i) {
-		return this == DEFAULT && i == 0 ? DEFAULT_1_1 : this;
+	public LevelGeneratorType getTypeForVersion(int version) {
+		return this == DEFAULT && version == 0 ? DEFAULT_1_1 : this;
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -9,7 +9,6 @@ import net.minecraft.client.options.FullScreenOption;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.Option;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
@@ -55,9 +54,7 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 	@Override
 	public void removed() {
 		if (this.field_21336.mipmapLevels != this.mipmapLevels) {
-			this.minecraft.getSpriteAtlas().setMipLevel(this.field_21336.mipmapLevels);
-			this.minecraft.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-			this.minecraft.getSpriteAtlas().setFilter(false, this.field_21336.mipmapLevels > 0);
+			this.minecraft.method_24041(this.field_21336.mipmapLevels);
 			this.minecraft.reloadResourcesConcurrently();
 		}
 

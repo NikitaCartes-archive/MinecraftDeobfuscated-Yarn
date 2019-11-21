@@ -12,7 +12,6 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.tag.FluidTags;
@@ -32,12 +31,11 @@ public class FluidRenderer {
 	private Sprite waterOverlaySprite;
 
 	protected void onResourceReload() {
-		SpriteAtlasTexture spriteAtlasTexture = MinecraftClient.getInstance().getSpriteAtlas();
 		this.lavaSprites[0] = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.LAVA.getDefaultState()).getSprite();
-		this.lavaSprites[1] = spriteAtlasTexture.getSprite(ModelLoader.LAVA_FLOW);
+		this.lavaSprites[1] = ModelLoader.LAVA_FLOW.method_24148();
 		this.waterSprites[0] = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.WATER.getDefaultState()).getSprite();
-		this.waterSprites[1] = spriteAtlasTexture.getSprite(ModelLoader.WATER_FLOW);
-		this.waterOverlaySprite = spriteAtlasTexture.getSprite(ModelLoader.WATER_OVERLAY);
+		this.waterSprites[1] = ModelLoader.WATER_FLOW.method_24148();
+		this.waterOverlaySprite = ModelLoader.WATER_OVERLAY.method_24148();
 	}
 
 	private static boolean isSameFluid(BlockView world, BlockPos pos, Direction side, FluidState state) {
@@ -162,14 +160,14 @@ public class FluidRenderer {
 				float v = sprites[0].getMaxU();
 				float x = sprites[0].getMinV();
 				float z = sprites[0].getMaxV();
-				int ak = this.getLight(world, pos.method_10074());
+				int ak = this.getLight(world, pos.down());
 				float w = 0.5F * f;
 				float y = 0.5F * g;
 				float aa = 0.5F * h;
-				this.vertex(vertexConsumer, d, e, r + 1.0, w, y, aa, t, z, ak);
-				this.vertex(vertexConsumer, d, e, r, w, y, aa, t, x, ak);
-				this.vertex(vertexConsumer, d + 1.0, e, r, w, y, aa, v, x, ak);
-				this.vertex(vertexConsumer, d + 1.0, e, r + 1.0, w, y, aa, v, z, ak);
+				this.vertex(vertexConsumer, d, e + 0.001F, r + 1.0, w, y, aa, t, z, ak);
+				this.vertex(vertexConsumer, d, e + 0.001F, r, w, y, aa, t, x, ak);
+				this.vertex(vertexConsumer, d + 1.0, e + 0.001F, r, w, y, aa, v, x, ak);
+				this.vertex(vertexConsumer, d + 1.0, e + 0.001F, r + 1.0, w, y, aa, v, z, ak);
 				bl8 = true;
 			}
 
@@ -243,11 +241,11 @@ public class FluidRenderer {
 					float aw = 1.0F * at * h;
 					this.vertex(vertexConsumer, am, e + (double)v, ao, au, av, aw, ah, aj, as);
 					this.vertex(vertexConsumer, an, e + (double)x, ap, au, av, aw, ai, aq, as);
-					this.vertex(vertexConsumer, an, e + 0.0, ap, au, av, aw, ai, ar, as);
-					this.vertex(vertexConsumer, am, e + 0.0, ao, au, av, aw, ah, ar, as);
+					this.vertex(vertexConsumer, an, e + 0.001F, ap, au, av, aw, ai, ar, as);
+					this.vertex(vertexConsumer, am, e + 0.001F, ao, au, av, aw, ah, ar, as);
 					if (sprite2 != this.waterOverlaySprite) {
-						this.vertex(vertexConsumer, am, e + 0.0, ao, au, av, aw, ah, ar, as);
-						this.vertex(vertexConsumer, an, e + 0.0, ap, au, av, aw, ai, ar, as);
+						this.vertex(vertexConsumer, am, e + 0.001F, ao, au, av, aw, ah, ar, as);
+						this.vertex(vertexConsumer, an, e + 0.001F, ap, au, av, aw, ai, ar, as);
 						this.vertex(vertexConsumer, an, e + (double)x, ap, au, av, aw, ai, aq, as);
 						this.vertex(vertexConsumer, am, e + (double)v, ao, au, av, aw, ah, aj, as);
 					}

@@ -34,11 +34,11 @@ public final class ConstantLootTableRange implements LootTableRange {
 	}
 
 	public static class Serializer implements JsonDeserializer<ConstantLootTableRange>, JsonSerializer<ConstantLootTableRange> {
-		public ConstantLootTableRange method_291(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+		public ConstantLootTableRange deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			return new ConstantLootTableRange(JsonHelper.asInt(jsonElement, "value"));
 		}
 
-		public JsonElement method_290(ConstantLootTableRange constantLootTableRange, Type type, JsonSerializationContext jsonSerializationContext) {
+		public JsonElement serialize(ConstantLootTableRange constantLootTableRange, Type type, JsonSerializationContext jsonSerializationContext) {
 			return new JsonPrimitive(constantLootTableRange.value);
 		}
 	}

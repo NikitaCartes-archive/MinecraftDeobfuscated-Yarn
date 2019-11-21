@@ -19,7 +19,7 @@ public class LocationCheckLootCondition implements LootCondition {
 		this.offset = offset;
 	}
 
-	public boolean method_881(LootContext lootContext) {
+	public boolean test(LootContext lootContext) {
 		BlockPos blockPos = lootContext.get(LootContextParameters.POSITION);
 		return blockPos != null
 			&& this.predicate
@@ -40,7 +40,7 @@ public class LocationCheckLootCondition implements LootCondition {
 			super(new Identifier("location_check"), LocationCheckLootCondition.class);
 		}
 
-		public void method_886(JsonObject jsonObject, LocationCheckLootCondition locationCheckLootCondition, JsonSerializationContext jsonSerializationContext) {
+		public void toJson(JsonObject jsonObject, LocationCheckLootCondition locationCheckLootCondition, JsonSerializationContext jsonSerializationContext) {
 			jsonObject.add("predicate", locationCheckLootCondition.predicate.toJson());
 			if (locationCheckLootCondition.offset.getX() != 0) {
 				jsonObject.addProperty("offsetX", locationCheckLootCondition.offset.getX());
@@ -55,7 +55,7 @@ public class LocationCheckLootCondition implements LootCondition {
 			}
 		}
 
-		public LocationCheckLootCondition method_885(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		public LocationCheckLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			LocationPredicate locationPredicate = LocationPredicate.fromJson(jsonObject.get("predicate"));
 			int i = JsonHelper.getInt(jsonObject, "offsetX", 0);
 			int j = JsonHelper.getInt(jsonObject, "offsetY", 0);

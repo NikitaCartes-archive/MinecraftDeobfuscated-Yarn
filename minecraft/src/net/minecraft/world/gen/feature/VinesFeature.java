@@ -18,7 +18,7 @@ public class VinesFeature extends Feature<DefaultFeatureConfig> {
 		super(configFactory);
 	}
 
-	public boolean method_14201(
+	public boolean generate(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos);

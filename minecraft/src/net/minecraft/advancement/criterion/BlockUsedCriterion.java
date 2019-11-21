@@ -25,7 +25,7 @@ public class BlockUsedCriterion extends AbstractCriterion<BlockUsedCriterion.Con
 		return this.id;
 	}
 
-	public BlockUsedCriterion.Conditions method_23890(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public BlockUsedCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		BlockPredicate blockPredicate = BlockPredicate.fromJson(jsonObject.get("block"));
 		StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("state"));
 		ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));

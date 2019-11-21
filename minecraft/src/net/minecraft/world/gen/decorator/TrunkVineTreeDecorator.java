@@ -23,7 +23,7 @@ public class TrunkVineTreeDecorator extends TreeDecorator {
 	}
 
 	@Override
-	public void method_23469(IWorld iWorld, Random random, List<BlockPos> list, List<BlockPos> list2, Set<BlockPos> set, BlockBox blockBox) {
+	public void generate(IWorld iWorld, Random random, List<BlockPos> list, List<BlockPos> list2, Set<BlockPos> set, BlockBox blockBox) {
 		list.forEach(blockPos -> {
 			if (random.nextInt(3) > 0) {
 				BlockPos blockPos2 = blockPos.west();

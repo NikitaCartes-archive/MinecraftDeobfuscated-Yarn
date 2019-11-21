@@ -518,11 +518,11 @@ public class Structure {
 	private void method_16186(BlockRotation blockRotation, int i, int j, BlockBox blockBox, Direction direction, Direction direction2) {
 		BlockPos blockPos = BlockPos.ORIGIN;
 		if (blockRotation == BlockRotation.CLOCKWISE_90 || blockRotation == BlockRotation.COUNTERCLOCKWISE_90) {
-			blockPos = blockPos.method_10079(blockRotation.rotate(direction), j);
+			blockPos = blockPos.offset(blockRotation.rotate(direction), j);
 		} else if (blockRotation == BlockRotation.CLOCKWISE_180) {
-			blockPos = blockPos.method_10079(direction2, i);
+			blockPos = blockPos.offset(direction2, i);
 		} else {
-			blockPos = blockPos.method_10079(direction, i);
+			blockPos = blockPos.offset(direction, i);
 		}
 
 		blockBox.offset(blockPos.getX(), 0, blockPos.getZ());

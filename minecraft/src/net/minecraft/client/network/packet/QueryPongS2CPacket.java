@@ -25,7 +25,7 @@ public class QueryPongS2CPacket implements Packet<ClientQueryPacketListener> {
 		buf.writeLong(this.startTime);
 	}
 
-	public void method_12670(ClientQueryPacketListener clientQueryPacketListener) {
+	public void apply(ClientQueryPacketListener clientQueryPacketListener) {
 		clientQueryPacketListener.onPong(this);
 	}
 }

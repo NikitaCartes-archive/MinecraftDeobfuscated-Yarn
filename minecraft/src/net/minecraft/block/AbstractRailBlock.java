@@ -43,7 +43,7 @@ public abstract class AbstractRailBlock extends Block {
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		return topCoversMediumSquare(world, pos.method_10074());
+		return topCoversMediumSquare(world, pos.down());
 	}
 
 	@Override
@@ -61,7 +61,7 @@ public abstract class AbstractRailBlock extends Block {
 		if (!world.isClient) {
 			RailShape railShape = state.get(this.getShapeProperty());
 			boolean bl = false;
-			BlockPos blockPos = pos.method_10074();
+			BlockPos blockPos = pos.down();
 			if (!topCoversMediumSquare(world, blockPos)) {
 				bl = true;
 			}
@@ -125,7 +125,7 @@ public abstract class AbstractRailBlock extends Block {
 
 			if (this.allowCurves) {
 				world.updateNeighborsAlways(pos, this);
-				world.updateNeighborsAlways(pos.method_10074(), this);
+				world.updateNeighborsAlways(pos.down(), this);
 			}
 		}
 	}

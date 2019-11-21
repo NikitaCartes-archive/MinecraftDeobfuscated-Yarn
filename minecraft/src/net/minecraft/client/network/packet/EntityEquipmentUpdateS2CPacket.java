@@ -37,7 +37,7 @@ public class EntityEquipmentUpdateS2CPacket implements Packet<ClientPlayPacketLi
 		buf.writeItemStack(this.stack);
 	}
 
-	public void method_11823(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onEquipmentUpdate(this);
 	}
 

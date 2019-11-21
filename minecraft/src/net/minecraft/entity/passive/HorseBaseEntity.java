@@ -523,7 +523,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 				if (!this.isEatingGrass()
 					&& !this.hasPassengers()
 					&& this.random.nextInt(300) == 0
-					&& this.world.getBlockState(new BlockPos(this).method_10074()).getBlock() == Blocks.GRASS_BLOCK) {
+					&& this.world.getBlockState(new BlockPos(this).down()).getBlock() == Blocks.GRASS_BLOCK) {
 					this.setEatingGrass(true);
 				}
 

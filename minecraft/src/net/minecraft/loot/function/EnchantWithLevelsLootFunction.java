@@ -41,7 +41,7 @@ public class EnchantWithLevelsLootFunction extends ConditionalLootFunction {
 			this.range = range;
 		}
 
-		protected EnchantWithLevelsLootFunction.Builder method_483() {
+		protected EnchantWithLevelsLootFunction.Builder getThisBuilder() {
 			return this;
 		}
 
@@ -61,13 +61,13 @@ public class EnchantWithLevelsLootFunction extends ConditionalLootFunction {
 			super(new Identifier("enchant_with_levels"), EnchantWithLevelsLootFunction.class);
 		}
 
-		public void method_485(JsonObject jsonObject, EnchantWithLevelsLootFunction enchantWithLevelsLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.method_529(jsonObject, enchantWithLevelsLootFunction, jsonSerializationContext);
+		public void toJson(JsonObject jsonObject, EnchantWithLevelsLootFunction enchantWithLevelsLootFunction, JsonSerializationContext jsonSerializationContext) {
+			super.toJson(jsonObject, enchantWithLevelsLootFunction, jsonSerializationContext);
 			jsonObject.add("levels", LootTableRanges.toJson(enchantWithLevelsLootFunction.range, jsonSerializationContext));
 			jsonObject.addProperty("treasure", enchantWithLevelsLootFunction.treasureEnchantmentsAllowed);
 		}
 
-		public EnchantWithLevelsLootFunction method_486(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public EnchantWithLevelsLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			LootTableRange lootTableRange = LootTableRanges.fromJson(jsonObject.get("levels"), jsonDeserializationContext);
 			boolean bl = JsonHelper.getBoolean(jsonObject, "treasure", false);
 			return new EnchantWithLevelsLootFunction(lootConditions, lootTableRange, bl);

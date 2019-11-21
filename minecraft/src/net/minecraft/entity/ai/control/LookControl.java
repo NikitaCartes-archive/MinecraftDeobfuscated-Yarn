@@ -41,7 +41,7 @@ public class LookControl {
 	}
 
 	public void tick() {
-		if (this.method_20433()) {
+		if (this.shouldStayHorizontal()) {
 			this.entity.pitch = 0.0F;
 		}
 
@@ -58,7 +58,7 @@ public class LookControl {
 		}
 	}
 
-	protected boolean method_20433() {
+	protected boolean shouldStayHorizontal() {
 		return true;
 	}
 

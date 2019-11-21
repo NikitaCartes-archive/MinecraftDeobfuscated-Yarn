@@ -52,7 +52,7 @@ public class ModelItemOverride {
 		protected Deserializer() {
 		}
 
-		public ModelItemOverride method_3475(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
+		public ModelItemOverride deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
 			JsonObject jsonObject = element.getAsJsonObject();
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "model"));
 			Map<Identifier, Float> map = this.deserializeMinPropertyValues(jsonObject);

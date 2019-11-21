@@ -82,7 +82,7 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 		private int searchRadius = 50;
 		private boolean skipExistingChunks = true;
 
-		protected ExplorationMapLootFunction.Builder method_501() {
+		protected ExplorationMapLootFunction.Builder getThisBuilder() {
 			return this;
 		}
 
@@ -117,8 +117,8 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 			super(new Identifier("exploration_map"), ExplorationMapLootFunction.class);
 		}
 
-		public void method_505(JsonObject jsonObject, ExplorationMapLootFunction explorationMapLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.method_529(jsonObject, explorationMapLootFunction, jsonSerializationContext);
+		public void toJson(JsonObject jsonObject, ExplorationMapLootFunction explorationMapLootFunction, JsonSerializationContext jsonSerializationContext) {
+			super.toJson(jsonObject, explorationMapLootFunction, jsonSerializationContext);
 			if (!explorationMapLootFunction.destination.equals("Buried_Treasure")) {
 				jsonObject.add("destination", jsonSerializationContext.serialize(explorationMapLootFunction.destination));
 			}
@@ -140,7 +140,7 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 			}
 		}
 
-		public ExplorationMapLootFunction method_504(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public ExplorationMapLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			String string = jsonObject.has("destination") ? JsonHelper.getString(jsonObject, "destination") : "Buried_Treasure";
 			string = Feature.STRUCTURES.containsKey(string.toLowerCase(Locale.ROOT)) ? string : "Buried_Treasure";
 			String string2 = jsonObject.has("decoration") ? JsonHelper.getString(jsonObject, "decoration") : "mansion";

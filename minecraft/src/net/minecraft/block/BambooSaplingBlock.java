@@ -47,7 +47,7 @@ public class BambooSaplingBlock extends Block implements Fertilizable {
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		return world.getBlockState(pos.method_10074()).matches(BlockTags.BAMBOO_PLANTABLE_ON);
+		return world.getBlockState(pos.down()).matches(BlockTags.BAMBOO_PLANTABLE_ON);
 	}
 
 	@Override

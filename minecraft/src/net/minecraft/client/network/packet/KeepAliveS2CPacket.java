@@ -17,7 +17,7 @@ public class KeepAliveS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.id = id;
 	}
 
-	public void method_11518(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onKeepAlive(this);
 	}
 

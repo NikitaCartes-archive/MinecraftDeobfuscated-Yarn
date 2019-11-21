@@ -21,7 +21,7 @@ public class GuiUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.value = value;
 	}
 
-	public void method_11447(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onGuiUpdate(this);
 	}
 

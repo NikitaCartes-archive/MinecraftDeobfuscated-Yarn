@@ -42,7 +42,7 @@ public class LootConditionManager extends JsonDataLoader {
 		return (LootCondition)this.conditions.get(id);
 	}
 
-	protected void method_22563(Map<Identifier, JsonObject> map, ResourceManager resourceManager, Profiler profiler) {
+	protected void apply(Map<Identifier, JsonObject> map, ResourceManager resourceManager, Profiler profiler) {
 		Builder<Identifier, LootCondition> builder = ImmutableMap.builder();
 		map.forEach((identifier, jsonObject) -> {
 			try {

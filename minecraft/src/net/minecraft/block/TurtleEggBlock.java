@@ -95,7 +95,7 @@ public class TurtleEggBlock extends Block {
 	}
 
 	private boolean isSand(BlockView world, BlockPos pos) {
-		return world.getBlockState(pos.method_10074()).getBlock() == Blocks.SAND;
+		return world.getBlockState(pos.down()).getBlock() == Blocks.SAND;
 	}
 
 	@Override

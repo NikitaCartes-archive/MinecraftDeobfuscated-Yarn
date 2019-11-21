@@ -70,7 +70,7 @@ public class CoralParentBlock extends Block implements Waterloggable {
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		BlockPos blockPos = pos.method_10074();
+		BlockPos blockPos = pos.down();
 		return world.getBlockState(blockPos).isSideSolidFullSquare(world, blockPos, Direction.UP);
 	}
 

@@ -21,7 +21,7 @@ public class ShulkerSomethingFeatureRenderer extends FeatureRenderer<ShulkerEnti
 		super(context);
 	}
 
-	public void method_4115(
+	public void render(
 		MatrixStack matrixStack,
 		VertexConsumerProvider vertexConsumerProvider,
 		int i,
@@ -53,7 +53,7 @@ public class ShulkerSomethingFeatureRenderer extends FeatureRenderer<ShulkerEnti
 		}
 
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(identifier));
-		modelPart.render(matrixStack, vertexConsumer, i, LivingEntityRenderer.method_23622(shulkerEntity, 0.0F), null);
+		modelPart.render(matrixStack, vertexConsumer, i, LivingEntityRenderer.method_23622(shulkerEntity, 0.0F));
 		matrixStack.pop();
 	}
 }

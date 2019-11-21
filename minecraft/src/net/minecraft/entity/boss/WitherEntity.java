@@ -490,12 +490,6 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
-	@Override
-	public int getLightmapCoordinates() {
-		return 15;
-	}
-
 	@Override
 	public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
 		return false;

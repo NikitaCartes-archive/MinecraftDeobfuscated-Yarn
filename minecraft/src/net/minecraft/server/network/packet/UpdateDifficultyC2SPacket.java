@@ -16,7 +16,7 @@ public class UpdateDifficultyC2SPacket implements Packet<ServerPlayPacketListene
 		this.difficulty = difficulty;
 	}
 
-	public void method_19477(ServerPlayPacketListener serverPlayPacketListener) {
+	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onUpdateDifficulty(this);
 	}
 

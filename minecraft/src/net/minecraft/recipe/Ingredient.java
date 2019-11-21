@@ -52,7 +52,7 @@ public final class Ingredient implements Predicate<ItemStack> {
 		}
 	}
 
-	public boolean method_8093(@Nullable ItemStack itemStack) {
+	public boolean test(@Nullable ItemStack itemStack) {
 		if (itemStack == null) {
 			return false;
 		} else if (this.entries.length == 0) {

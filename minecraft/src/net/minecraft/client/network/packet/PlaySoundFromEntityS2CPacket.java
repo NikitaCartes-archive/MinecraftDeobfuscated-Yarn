@@ -74,7 +74,7 @@ public class PlaySoundFromEntityS2CPacket implements Packet<ClientPlayPacketList
 		return this.pitch;
 	}
 
-	public void method_11884(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onPlaySoundFromEntity(this);
 	}
 }

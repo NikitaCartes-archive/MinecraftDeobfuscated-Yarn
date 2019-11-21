@@ -92,7 +92,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 		Items.HONEY_BOTTLE
 	};
 
-	public void method_10338(Consumer<Advancement> consumer) {
+	public void accept(Consumer<Advancement> consumer) {
 		Advancement advancement = Advancement.Task.create()
 			.display(
 				Blocks.HAY_BLOCK,

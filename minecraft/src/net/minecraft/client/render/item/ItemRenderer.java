@@ -1,6 +1,5 @@
 package net.minecraft.client.render.item;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -11,12 +10,13 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4720;
+import net.minecraft.class_4722;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.DelegatingVertexConsumer;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderLayers;
@@ -110,8 +110,8 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 			if (!bakedModel.isBuiltin() && (itemStack.getItem() != Items.TRIDENT || bl3)) {
 				RenderLayer renderLayer = RenderLayers.getItemLayer(itemStack);
 				RenderLayer renderLayer2;
-				if (bl2 && Objects.equals(renderLayer, RenderLayer.method_23949())) {
-					renderLayer2 = RenderLayer.method_23950();
+				if (bl2 && Objects.equals(renderLayer, class_4722.method_24075())) {
+					renderLayer2 = class_4722.method_24076();
 				} else {
 					renderLayer2 = renderLayer;
 				}
@@ -127,11 +127,9 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 	}
 
 	public static VertexConsumer getArmorVertexConsumer(VertexConsumerProvider vertexConsumers, RenderLayer layer, boolean bl, boolean glint) {
-		return (VertexConsumer)(glint
-			? new DelegatingVertexConsumer(
-				ImmutableList.of(vertexConsumers.getBuffer(bl ? RenderLayer.getGlint() : RenderLayer.getEntityGlint()), vertexConsumers.getBuffer(layer))
-			)
-			: vertexConsumers.getBuffer(layer));
+		return glint
+			? class_4720.method_24037(vertexConsumers.getBuffer(bl ? RenderLayer.getGlint() : RenderLayer.getEntityGlint()), vertexConsumers.getBuffer(layer))
+			: vertexConsumers.getBuffer(layer);
 	}
 
 	private void method_23180(MatrixStack matrixStack, VertexConsumer vertexConsumer, List<BakedQuad> list, ItemStack itemStack, int i, int j) {

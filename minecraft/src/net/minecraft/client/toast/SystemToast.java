@@ -46,7 +46,7 @@ public class SystemToast implements Toast {
 		this.justUpdated = true;
 	}
 
-	public SystemToast.Type method_1989() {
+	public SystemToast.Type getType() {
 		return this.type;
 	}
 

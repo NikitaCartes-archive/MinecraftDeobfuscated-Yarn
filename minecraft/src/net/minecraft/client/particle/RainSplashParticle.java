@@ -68,7 +68,7 @@ public class RainSplashParticle extends SpriteBillboardParticle {
 			this.field_17891 = spriteProvider;
 		}
 
-		public Particle method_3116(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			RainSplashParticle rainSplashParticle = new RainSplashParticle(world, d, e, f);
 			rainSplashParticle.setSprite(this.field_17891);
 			return rainSplashParticle;

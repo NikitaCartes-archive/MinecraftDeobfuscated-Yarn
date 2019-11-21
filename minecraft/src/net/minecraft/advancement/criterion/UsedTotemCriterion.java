@@ -17,7 +17,7 @@ public class UsedTotemCriterion extends AbstractCriterion<UsedTotemCriterion.Con
 		return ID;
 	}
 
-	public UsedTotemCriterion.Conditions method_9163(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public UsedTotemCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
 		return new UsedTotemCriterion.Conditions(itemPredicate);
 	}

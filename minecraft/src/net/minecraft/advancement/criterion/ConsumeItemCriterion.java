@@ -20,7 +20,7 @@ public class ConsumeItemCriterion extends AbstractCriterion<ConsumeItemCriterion
 		return ID;
 	}
 
-	public ConsumeItemCriterion.Conditions method_8820(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public ConsumeItemCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		return new ConsumeItemCriterion.Conditions(ItemPredicate.fromJson(jsonObject.get("item")));
 	}
 

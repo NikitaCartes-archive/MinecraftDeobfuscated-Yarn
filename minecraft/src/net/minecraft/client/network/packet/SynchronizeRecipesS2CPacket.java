@@ -24,7 +24,7 @@ public class SynchronizeRecipesS2CPacket implements Packet<ClientPlayPacketListe
 		this.recipes = Lists.<Recipe<?>>newArrayList(recipes);
 	}
 
-	public void method_11997(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onSynchronizeRecipes(this);
 	}
 

@@ -11,7 +11,7 @@ public class ChancePassthroughDecorator extends SimpleDecorator<LakeDecoratorCon
 		super(function);
 	}
 
-	public Stream<BlockPos> method_14347(Random random, LakeDecoratorConfig lakeDecoratorConfig, BlockPos blockPos) {
+	public Stream<BlockPos> getPositions(Random random, LakeDecoratorConfig lakeDecoratorConfig, BlockPos blockPos) {
 		return random.nextFloat() < 1.0F / (float)lakeDecoratorConfig.chance ? Stream.of(blockPos) : Stream.empty();
 	}
 }

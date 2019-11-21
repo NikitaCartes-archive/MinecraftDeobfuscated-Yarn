@@ -38,7 +38,7 @@ public class EntityPassengersSetS2CPacket implements Packet<ClientPlayPacketList
 		buf.writeIntArray(this.passengerIds);
 	}
 
-	public void method_11842(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onEntityPassengersSet(this);
 	}
 

@@ -31,7 +31,7 @@ public class UnloadChunkS2CPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeInt(this.z);
 	}
 
-	public void method_11486(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onUnloadChunk(this);
 	}
 

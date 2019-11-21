@@ -33,7 +33,7 @@ public class TridentEntityModel extends Model {
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float r, float g, float b) {
-		this.field_3593.render(matrixStack, vertexConsumer, i, j, null, r, g, b);
+	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float r, float g, float b, float f) {
+		this.field_3593.render(matrixStack, vertexConsumer, i, j, r, g, b, f);
 	}
 }

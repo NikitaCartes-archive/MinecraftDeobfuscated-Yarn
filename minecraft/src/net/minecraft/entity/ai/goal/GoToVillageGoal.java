@@ -28,7 +28,7 @@ public class GoToVillageGoal extends Goal {
 	public boolean canStart() {
 		if (this.mob.hasPassengers()) {
 			return false;
-		} else if (this.mob.world.isDaylight()) {
+		} else if (this.mob.world.isDay()) {
 			return false;
 		} else if (this.mob.getRandom().nextInt(this.searchRange) != 0) {
 			return false;

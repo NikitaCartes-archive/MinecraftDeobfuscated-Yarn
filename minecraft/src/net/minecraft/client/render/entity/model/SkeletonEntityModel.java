@@ -38,7 +38,7 @@ public class SkeletonEntityModel<T extends MobEntity & RangedAttackMob> extends 
 		}
 	}
 
-	public void method_19689(T mobEntity, float f, float g, float h) {
+	public void animateModel(T mobEntity, float f, float g, float h) {
 		this.rightArmPose = BipedEntityModel.ArmPose.EMPTY;
 		this.leftArmPose = BipedEntityModel.ArmPose.EMPTY;
 		ItemStack itemStack = mobEntity.getStackInHand(Hand.MAIN_HAND);
@@ -50,11 +50,11 @@ public class SkeletonEntityModel<T extends MobEntity & RangedAttackMob> extends 
 			}
 		}
 
-		super.method_17086(mobEntity, f, g, h);
+		super.animateModel(mobEntity, f, g, h);
 	}
 
-	public void method_19690(T mobEntity, float f, float g, float h, float i, float j) {
-		super.method_17087(mobEntity, f, g, h, i, j);
+	public void setAngles(T mobEntity, float f, float g, float h, float i, float j) {
+		super.setAngles(mobEntity, f, g, h, i, j);
 		ItemStack itemStack = mobEntity.getMainHandStack();
 		if (mobEntity.isAttacking() && (itemStack.isEmpty() || itemStack.getItem() != Items.BOW)) {
 			float k = MathHelper.sin(this.handSwingProgress * (float) Math.PI);

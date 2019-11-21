@@ -14,7 +14,11 @@ public class BlazeEntityRenderer extends MobEntityRenderer<BlazeEntity, BlazeEnt
 		super(entityRenderDispatcher, new BlazeEntityModel<>(), 0.5F);
 	}
 
-	public Identifier method_3881(BlazeEntity blazeEntity) {
+	protected int method_24087(BlazeEntity blazeEntity, float f) {
+		return 15;
+	}
+
+	public Identifier getTexture(BlazeEntity blazeEntity) {
 		return SKIN;
 	}
 }

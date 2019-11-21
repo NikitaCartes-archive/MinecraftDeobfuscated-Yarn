@@ -2,10 +2,10 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4722;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.MapRenderer;
 import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -36,11 +36,11 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 		this.itemRenderer = itemRenderer;
 	}
 
-	public void method_3994(ItemFrameEntity itemFrameEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	public void render(ItemFrameEntity itemFrameEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		super.render(itemFrameEntity, f, g, matrixStack, vertexConsumerProvider, i);
 		matrixStack.push();
 		Direction direction = itemFrameEntity.getHorizontalFacing();
-		Vec3d vec3d = this.method_23174(itemFrameEntity, g);
+		Vec3d vec3d = this.getPositionOffset(itemFrameEntity, g);
 		matrixStack.translate(-vec3d.getX(), -vec3d.getY(), -vec3d.getZ());
 		double d = 0.46875;
 		matrixStack.translate((double)direction.getOffsetX() * 0.46875, (double)direction.getOffsetY() * 0.46875, (double)direction.getOffsetZ() * 0.46875);
@@ -54,7 +54,7 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 		blockRenderManager.getModelRenderer()
 			.render(
 				matrixStack.peek(),
-				vertexConsumerProvider.getBuffer(RenderLayer.method_23946()),
+				vertexConsumerProvider.getBuffer(class_4722.method_24073()),
 				null,
 				bakedModelManager.getModel(modelIdentifier),
 				1.0F,
@@ -90,7 +90,7 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 		matrixStack.pop();
 	}
 
-	public Vec3d method_23174(ItemFrameEntity itemFrameEntity, float f) {
+	public Vec3d getPositionOffset(ItemFrameEntity itemFrameEntity, float f) {
 		return new Vec3d(
 			(double)((float)itemFrameEntity.getHorizontalFacing().getOffsetX() * 0.3F),
 			-0.25,
@@ -98,11 +98,11 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 		);
 	}
 
-	public Identifier method_3993(ItemFrameEntity itemFrameEntity) {
+	public Identifier getTexture(ItemFrameEntity itemFrameEntity) {
 		return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
 	}
 
-	protected boolean method_23176(ItemFrameEntity itemFrameEntity) {
+	protected boolean hasLabel(ItemFrameEntity itemFrameEntity) {
 		if (MinecraftClient.isHudEnabled()
 			&& !itemFrameEntity.getHeldItemStack().isEmpty()
 			&& itemFrameEntity.getHeldItemStack().hasCustomName()
@@ -115,7 +115,9 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 		}
 	}
 
-	protected void method_23175(ItemFrameEntity itemFrameEntity, String string, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	protected void renderLabelIfPresent(
+		ItemFrameEntity itemFrameEntity, String string, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i
+	) {
 		super.renderLabelIfPresent(itemFrameEntity, itemFrameEntity.getHeldItemStack().getName().asFormattedString(), matrixStack, vertexConsumerProvider, i);
 	}
 }

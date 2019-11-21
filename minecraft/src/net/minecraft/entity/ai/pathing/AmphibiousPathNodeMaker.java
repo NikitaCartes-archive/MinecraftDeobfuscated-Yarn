@@ -121,7 +121,7 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 
 	private double method_66(BlockPos blockPos) {
 		if (!this.entity.isInsideWater()) {
-			BlockPos blockPos2 = blockPos.method_10074();
+			BlockPos blockPos2 = blockPos.down();
 			VoxelShape voxelShape = this.field_20622.getBlockState(blockPos2).getCollisionShape(this.field_20622, blockPos2);
 			return (double)blockPos2.getY() + (voxelShape.isEmpty() ? 0.0 : voxelShape.getMaximum(Direction.Axis.Y));
 		} else {
@@ -212,7 +212,7 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 	protected PathNodeType adjustNodeType(BlockView world, boolean canOpenDoors, boolean canEnterOpenDoors, BlockPos pos, PathNodeType type) {
 		if (type == PathNodeType.RAIL
 			&& !(world.getBlockState(pos).getBlock() instanceof AbstractRailBlock)
-			&& !(world.getBlockState(pos.method_10074()).getBlock() instanceof AbstractRailBlock)) {
+			&& !(world.getBlockState(pos.down()).getBlock() instanceof AbstractRailBlock)) {
 			type = PathNodeType.FENCE;
 		}
 

@@ -29,7 +29,7 @@ public abstract class AbstractCookingRecipe implements Recipe<Inventory> {
 
 	@Override
 	public boolean matches(Inventory inv, World world) {
-		return this.input.method_8093(inv.getInvStack(0));
+		return this.input.test(inv.getInvStack(0));
 	}
 
 	@Override

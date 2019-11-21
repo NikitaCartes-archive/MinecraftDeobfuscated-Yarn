@@ -87,7 +87,7 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeBoolean(this.showsDeathScreen);
 	}
 
-	public void method_11567(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onGameJoin(this);
 	}
 

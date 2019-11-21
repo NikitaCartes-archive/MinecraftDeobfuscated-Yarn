@@ -18,7 +18,7 @@ public class CarvingMaskDecorator extends Decorator<CarvingMaskDecoratorConfig> 
 		super(configDeserializer);
 	}
 
-	public Stream<BlockPos> method_14341(
+	public Stream<BlockPos> getPositions(
 		IWorld iWorld,
 		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
 		Random random,

@@ -37,7 +37,7 @@ public class ChatMessageS2CPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeByte(this.location.getId());
 	}
 
-	public void method_11386(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onChatMessage(this);
 	}
 

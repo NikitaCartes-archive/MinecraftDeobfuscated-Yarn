@@ -12,15 +12,15 @@ public class DefaultFlowerFeature extends FlowerFeature<FlowerFeatureConfig> {
 		super(configFactory);
 	}
 
-	public boolean method_23390(IWorld iWorld, BlockPos blockPos, FlowerFeatureConfig flowerFeatureConfig) {
+	public boolean method_23369(IWorld iWorld, BlockPos blockPos, FlowerFeatureConfig flowerFeatureConfig) {
 		return !flowerFeatureConfig.field_21240.contains(iWorld.getBlockState(blockPos));
 	}
 
-	public int method_23391(FlowerFeatureConfig flowerFeatureConfig) {
+	public int method_23370(FlowerFeatureConfig flowerFeatureConfig) {
 		return flowerFeatureConfig.field_21241;
 	}
 
-	public BlockPos method_23392(Random random, BlockPos blockPos, FlowerFeatureConfig flowerFeatureConfig) {
+	public BlockPos method_23371(Random random, BlockPos blockPos, FlowerFeatureConfig flowerFeatureConfig) {
 		return blockPos.add(
 			random.nextInt(flowerFeatureConfig.field_21242) - random.nextInt(flowerFeatureConfig.field_21242),
 			random.nextInt(flowerFeatureConfig.field_21243) - random.nextInt(flowerFeatureConfig.field_21243),
@@ -28,7 +28,7 @@ public class DefaultFlowerFeature extends FlowerFeature<FlowerFeatureConfig> {
 		);
 	}
 
-	public BlockState method_23393(Random random, BlockPos blockPos, FlowerFeatureConfig flowerFeatureConfig) {
+	public BlockState getFlowerToPlace(Random random, BlockPos blockPos, FlowerFeatureConfig flowerFeatureConfig) {
 		return flowerFeatureConfig.field_21237.getBlockState(random, blockPos);
 	}
 }

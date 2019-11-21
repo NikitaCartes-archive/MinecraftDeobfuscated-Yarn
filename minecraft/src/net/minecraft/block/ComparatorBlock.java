@@ -54,12 +54,15 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 	@Override
 	protected boolean hasPower(World world, BlockPos pos, BlockState state) {
 		int i = this.getPower(world, pos, state);
-		if (i >= 15) {
-			return true;
-		} else if (i == 0) {
+		if (i == 0) {
 			return false;
 		} else {
-			return i >= this.getMaxInputLevelSides(world, pos, state);
+			int j = this.getMaxInputLevelSides(world, pos, state);
+			if (i > j) {
+				return true;
+			} else {
+				return i == j && state.get(MODE) == ComparatorMode.COMPARE;
+			}
 		}
 	}
 

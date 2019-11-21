@@ -34,7 +34,7 @@ public class EntityTypeTags {
 			super(identifier);
 		}
 
-		public boolean method_15084(EntityType<?> entityType) {
+		public boolean contains(EntityType<?> entityType) {
 			if (this.version != EntityTypeTags.latestVersion) {
 				this.delegate = EntityTypeTags.container.getOrCreate(this.getId());
 				this.version = EntityTypeTags.latestVersion;

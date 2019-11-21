@@ -20,7 +20,7 @@ public class EvokerFangsEntityRenderer extends EntityRenderer<EvokerFangsEntity>
 		super(entityRenderDispatcher);
 	}
 
-	public void method_3962(EvokerFangsEntity model, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	public void render(EvokerFangsEntity model, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		float h = model.getAnimationProgress(g);
 		if (h != 0.0F) {
 			float j = 2.0F;
@@ -36,13 +36,13 @@ public class EvokerFangsEntityRenderer extends EntityRenderer<EvokerFangsEntity>
 			matrixStack.scale(0.5F, 0.5F, 0.5F);
 			this.model.setAngles(model, h, 0.0F, 0.0F, model.yaw, model.pitch);
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(SKIN));
-			this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F);
+			this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
 			matrixStack.pop();
 			super.render(model, f, g, matrixStack, vertexConsumerProvider, i);
 		}
 	}
 
-	public Identifier method_3963(EvokerFangsEntity evokerFangsEntity) {
+	public Identifier getTexture(EvokerFangsEntity evokerFangsEntity) {
 		return SKIN;
 	}
 }

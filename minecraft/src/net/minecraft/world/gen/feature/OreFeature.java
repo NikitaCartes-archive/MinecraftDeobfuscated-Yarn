@@ -16,7 +16,7 @@ public class OreFeature extends Feature<OreFeatureConfig> {
 		super(configFactory);
 	}
 
-	public boolean method_13628(
+	public boolean generate(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, OreFeatureConfig oreFeatureConfig
 	) {
 		float f = random.nextFloat() * (float) Math.PI;

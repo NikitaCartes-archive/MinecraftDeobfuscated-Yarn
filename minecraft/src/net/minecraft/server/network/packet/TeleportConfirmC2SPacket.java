@@ -28,7 +28,7 @@ public class TeleportConfirmC2SPacket implements Packet<ServerPlayPacketListener
 		buf.writeVarInt(this.teleportId);
 	}
 
-	public void method_12085(ServerPlayPacketListener serverPlayPacketListener) {
+	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onTeleportConfirm(this);
 	}
 

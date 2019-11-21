@@ -44,11 +44,11 @@ public class MooshroomEntity extends CowEntity {
 
 	@Override
 	public float getPathfindingFavor(BlockPos pos, WorldView worldView) {
-		return worldView.getBlockState(pos.method_10074()).getBlock() == Blocks.MYCELIUM ? 10.0F : worldView.getBrightness(pos) - 0.5F;
+		return worldView.getBlockState(pos.down()).getBlock() == Blocks.MYCELIUM ? 10.0F : worldView.getBrightness(pos) - 0.5F;
 	}
 
 	public static boolean canSpawn(EntityType<MooshroomEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
-		return world.getBlockState(pos.method_10074()).getBlock() == Blocks.MYCELIUM && world.getBaseLightLevel(pos, 0) > 8;
+		return world.getBlockState(pos.down()).getBlock() == Blocks.MYCELIUM && world.getBaseLightLevel(pos, 0) > 8;
 	}
 
 	@Override
@@ -209,7 +209,7 @@ public class MooshroomEntity extends CowEntity {
 		return MooshroomEntity.Type.fromName(this.dataTracker.get(TYPE));
 	}
 
-	public MooshroomEntity method_6495(PassiveEntity passiveEntity) {
+	public MooshroomEntity createChild(PassiveEntity passiveEntity) {
 		MooshroomEntity mooshroomEntity = EntityType.MOOSHROOM.create(this.world);
 		mooshroomEntity.setType(this.chooseBabyType((MooshroomEntity)passiveEntity));
 		return mooshroomEntity;

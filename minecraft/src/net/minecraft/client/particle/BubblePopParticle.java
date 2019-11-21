@@ -47,7 +47,7 @@ public class BubblePopParticle extends SpriteBillboardParticle {
 			this.field_17788 = spriteProvider;
 		}
 
-		public Particle method_3016(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			return new BubblePopParticle(world, d, e, f, g, h, i, this.field_17788);
 		}
 	}

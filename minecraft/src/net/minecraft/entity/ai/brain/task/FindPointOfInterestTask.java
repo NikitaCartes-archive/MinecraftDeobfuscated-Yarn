@@ -32,7 +32,7 @@ public class FindPointOfInterestTask extends Task<MobEntityWithAi> {
 		this.onlyRunIfChild = onlyRunIfChild;
 	}
 
-	protected boolean method_20816(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
+	protected boolean shouldRun(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
 		if (this.onlyRunIfChild && mobEntityWithAi.isBaby()) {
 			return false;
 		} else {
@@ -40,7 +40,7 @@ public class FindPointOfInterestTask extends Task<MobEntityWithAi> {
 		}
 	}
 
-	protected void method_20817(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
+	protected void run(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
 		this.field_19290 = 0;
 		this.lastRunTime = serverWorld.getTime() + (long)serverWorld.getRandom().nextInt(20);
 		PointOfInterestStorage pointOfInterestStorage = serverWorld.getPointOfInterestStorage();

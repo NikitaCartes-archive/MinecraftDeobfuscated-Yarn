@@ -34,7 +34,7 @@ public class DedicatedPlayerManager extends PlayerManager {
 	@Override
 	public void setWhitelistEnabled(boolean whitelistEnabled) {
 		super.setWhitelistEnabled(whitelistEnabled);
-		this.method_13938().setUseWhitelist(whitelistEnabled);
+		this.getServer().setUseWhitelist(whitelistEnabled);
 	}
 
 	@Override
@@ -123,7 +123,7 @@ public class DedicatedPlayerManager extends PlayerManager {
 		return !this.isWhitelistEnabled() || this.isOperator(gameProfile) || this.getWhitelist().isAllowed(gameProfile);
 	}
 
-	public MinecraftDedicatedServer method_13938() {
+	public MinecraftDedicatedServer getServer() {
 		return (MinecraftDedicatedServer)super.getServer();
 	}
 

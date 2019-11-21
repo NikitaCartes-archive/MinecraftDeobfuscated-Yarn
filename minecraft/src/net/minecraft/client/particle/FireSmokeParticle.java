@@ -74,7 +74,7 @@ public class FireSmokeParticle extends SpriteBillboardParticle {
 			this.field_17869 = spriteProvider;
 		}
 
-		public Particle method_3101(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			return new FireSmokeParticle(world, d, e, f, g, h, i, 1.0F, this.field_17869);
 		}
 	}

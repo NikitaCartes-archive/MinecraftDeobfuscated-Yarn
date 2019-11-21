@@ -13,11 +13,11 @@ public class PanicTask extends Task<VillagerEntity> {
 		super(ImmutableMap.of());
 	}
 
-	protected boolean method_20646(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	protected boolean shouldKeepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		return wasHurt(villagerEntity) || isHostileNearby(villagerEntity);
 	}
 
-	protected void method_20647(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		if (wasHurt(villagerEntity) || isHostileNearby(villagerEntity)) {
 			Brain<?> brain = villagerEntity.getBrain();
 			if (!brain.hasActivity(Activity.PANIC)) {
@@ -32,7 +32,7 @@ public class PanicTask extends Task<VillagerEntity> {
 		}
 	}
 
-	protected void method_20648(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		if (l % 100L == 0L) {
 			villagerEntity.summonGolem(l, 3);
 		}

@@ -18,7 +18,7 @@ public class IronGolemFlowerFeatureRenderer extends FeatureRenderer<IronGolemEnt
 		super(context);
 	}
 
-	public void method_4188(
+	public void render(
 		MatrixStack matrixStack,
 		VertexConsumerProvider vertexConsumerProvider,
 		int i,

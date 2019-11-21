@@ -38,7 +38,7 @@ public class EntityTrackerUpdateS2CPacket implements Packet<ClientPlayPacketList
 		DataTracker.entriesToPacket(this.trackedValues, buf);
 	}
 
-	public void method_11808(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onEntityTrackerUpdate(this);
 	}
 

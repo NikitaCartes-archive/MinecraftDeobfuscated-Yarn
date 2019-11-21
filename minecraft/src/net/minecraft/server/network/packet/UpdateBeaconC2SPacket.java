@@ -32,7 +32,7 @@ public class UpdateBeaconC2SPacket implements Packet<ServerPlayPacketListener> {
 		buf.writeVarInt(this.secondaryEffectId);
 	}
 
-	public void method_12434(ServerPlayPacketListener serverPlayPacketListener) {
+	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onUpdateBeacon(this);
 	}
 

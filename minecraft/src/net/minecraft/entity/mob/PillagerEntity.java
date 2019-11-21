@@ -152,7 +152,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 
 	@Override
 	public float getPathfindingFavor(BlockPos pos, WorldView worldView) {
-		Block block = worldView.getBlockState(pos.method_10074()).getBlock();
+		Block block = worldView.getBlockState(pos.down()).getBlock();
 		return block != Blocks.GRASS_BLOCK && block != Blocks.SAND ? 0.5F - worldView.getBrightness(pos) : 10.0F;
 	}
 

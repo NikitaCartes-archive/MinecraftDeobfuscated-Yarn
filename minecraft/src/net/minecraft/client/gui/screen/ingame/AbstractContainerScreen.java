@@ -2,13 +2,13 @@ package net.minecraft.client.gui.screen.ingame;
 
 import com.google.common.collect.Sets;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.datafixers.util.Pair;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.container.Container;
 import net.minecraft.container.Slot;
@@ -197,10 +197,10 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 		this.setBlitOffset(100);
 		this.itemRenderer.zOffset = 100.0F;
 		if (itemStack.isEmpty() && slot.doDrawHoveringEffect()) {
-			String string2 = slot.getBackgroundSprite();
-			if (string2 != null) {
-				Sprite sprite = this.minecraft.getSpriteAtlas().getSprite(string2);
-				this.minecraft.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+			Pair<Identifier, Identifier> pair = slot.getBackgroundSprite();
+			if (pair != null) {
+				Sprite sprite = (Sprite)this.minecraft.getSpriteAtlas(pair.getFirst()).apply(pair.getSecond());
+				this.minecraft.getTextureManager().bindTexture(sprite.method_24119().method_24106());
 				blit(i, j, this.getBlitOffset(), 16, 16, sprite);
 				bl2 = true;
 			}

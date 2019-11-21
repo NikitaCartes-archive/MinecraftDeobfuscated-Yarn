@@ -43,7 +43,7 @@ public class Vec3ArgumentType implements ArgumentType<PosArgument> {
 		return commandContext.getArgument(string, PosArgument.class);
 	}
 
-	public PosArgument method_9738(StringReader stringReader) throws CommandSyntaxException {
+	public PosArgument parse(StringReader stringReader) throws CommandSyntaxException {
 		return (PosArgument)(stringReader.canRead() && stringReader.peek() == '^'
 			? LookingPosArgument.parse(stringReader)
 			: DefaultPosArgument.parse(stringReader, this.centerIntegers));
@@ -62,7 +62,7 @@ public class Vec3ArgumentType implements ArgumentType<PosArgument> {
 				collection = ((CommandSource)context.getSource()).getPositionSuggestions();
 			}
 
-			return CommandSource.suggestPositions(string, collection, builder, CommandManager.getCommandValidator(this::method_9738));
+			return CommandSource.suggestPositions(string, collection, builder, CommandManager.getCommandValidator(this::parse));
 		}
 	}
 

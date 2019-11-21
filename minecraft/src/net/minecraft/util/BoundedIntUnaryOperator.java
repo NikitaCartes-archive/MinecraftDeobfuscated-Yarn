@@ -55,14 +55,14 @@ public class BoundedIntUnaryOperator implements IntUnaryOperator {
 	}
 
 	public static class Serializer implements JsonDeserializer<BoundedIntUnaryOperator>, JsonSerializer<BoundedIntUnaryOperator> {
-		public BoundedIntUnaryOperator method_286(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+		public BoundedIntUnaryOperator deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "value");
 			Integer integer = jsonObject.has("min") ? JsonHelper.getInt(jsonObject, "min") : null;
 			Integer integer2 = jsonObject.has("max") ? JsonHelper.getInt(jsonObject, "max") : null;
 			return new BoundedIntUnaryOperator(integer, integer2);
 		}
 
-		public JsonElement method_287(BoundedIntUnaryOperator boundedIntUnaryOperator, Type type, JsonSerializationContext jsonSerializationContext) {
+		public JsonElement serialize(BoundedIntUnaryOperator boundedIntUnaryOperator, Type type, JsonSerializationContext jsonSerializationContext) {
 			JsonObject jsonObject = new JsonObject();
 			if (boundedIntUnaryOperator.max != null) {
 				jsonObject.addProperty("max", boundedIntUnaryOperator.max);

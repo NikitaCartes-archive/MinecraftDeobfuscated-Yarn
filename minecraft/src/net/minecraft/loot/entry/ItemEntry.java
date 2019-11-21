@@ -36,8 +36,8 @@ public class ItemEntry extends LeafEntry {
 			super(new Identifier("item"), ItemEntry.class);
 		}
 
-		public void method_412(JsonObject jsonObject, ItemEntry itemEntry, JsonSerializationContext jsonSerializationContext) {
-			super.method_442(jsonObject, itemEntry, jsonSerializationContext);
+		public void toJson(JsonObject jsonObject, ItemEntry itemEntry, JsonSerializationContext jsonSerializationContext) {
+			super.toJson(jsonObject, itemEntry, jsonSerializationContext);
 			Identifier identifier = Registry.ITEM.getId(itemEntry.item);
 			if (identifier == null) {
 				throw new IllegalArgumentException("Can't serialize unknown item " + itemEntry.item);
@@ -46,7 +46,7 @@ public class ItemEntry extends LeafEntry {
 			}
 		}
 
-		protected ItemEntry method_413(
+		protected ItemEntry fromJson(
 			JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions
 		) {
 			Item item = JsonHelper.getItem(jsonObject, "name");

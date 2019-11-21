@@ -305,7 +305,7 @@ public class PlayerListHud extends DrawableHelper {
 		private EntryOrderComparator() {
 		}
 
-		public int method_1926(PlayerListEntry playerListEntry, PlayerListEntry playerListEntry2) {
+		public int compare(PlayerListEntry playerListEntry, PlayerListEntry playerListEntry2) {
 			Team team = playerListEntry.getScoreboardTeam();
 			Team team2 = playerListEntry2.getScoreboardTeam();
 			return ComparisonChain.start()

@@ -18,7 +18,7 @@ public class SkeletonEntityRenderer extends BipedEntityRenderer<AbstractSkeleton
 		this.addFeature(new ArmorBipedFeatureRenderer<>(this, new SkeletonEntityModel(0.5F, true), new SkeletonEntityModel(1.0F, true)));
 	}
 
-	public Identifier method_4119(AbstractSkeletonEntity abstractSkeletonEntity) {
+	public Identifier getTexture(AbstractSkeletonEntity abstractSkeletonEntity) {
 		return SKIN;
 	}
 }

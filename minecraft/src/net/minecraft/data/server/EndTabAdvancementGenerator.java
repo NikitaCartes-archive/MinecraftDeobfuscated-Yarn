@@ -24,7 +24,7 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.feature.Feature;
 
 public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement>> {
-	public void method_10348(Consumer<Advancement> consumer) {
+	public void accept(Consumer<Advancement> consumer) {
 		Advancement advancement = Advancement.Task.create()
 			.display(
 				Blocks.END_STONE,

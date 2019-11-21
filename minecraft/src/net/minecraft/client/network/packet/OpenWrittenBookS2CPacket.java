@@ -28,7 +28,7 @@ public class OpenWrittenBookS2CPacket implements Packet<ClientPlayPacketListener
 		buf.writeEnumConstant(this.hand);
 	}
 
-	public void method_17187(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onOpenWrittenBook(this);
 	}
 

@@ -82,7 +82,7 @@ public class CommandBlock extends BlockWithEntity {
 				}
 
 				if (commandBlockBlockEntity.isPowered() || commandBlockBlockEntity.isAuto()) {
-					world.method_14196().schedule(pos, this, this.getTickRate(world));
+					world.getBlockTickScheduler().schedule(pos, this, this.getTickRate(world));
 				}
 			} else if (type == CommandBlockBlockEntity.Type.REDSTONE) {
 				if (bl2) {

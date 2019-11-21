@@ -129,7 +129,7 @@ public class ParticleS2CPacket implements Packet<ClientPlayPacketListener> {
 		return this.parameters;
 	}
 
-	public void method_11553(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onParticle(this);
 	}
 }

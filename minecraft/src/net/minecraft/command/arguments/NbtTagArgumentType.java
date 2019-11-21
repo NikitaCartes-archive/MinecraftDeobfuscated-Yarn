@@ -23,7 +23,7 @@ public class NbtTagArgumentType implements ArgumentType<Tag> {
 		return context.getArgument(name, Tag.class);
 	}
 
-	public Tag method_9388(StringReader stringReader) throws CommandSyntaxException {
+	public Tag parse(StringReader stringReader) throws CommandSyntaxException {
 		return new StringNbtReader(stringReader).parseTag();
 	}
 

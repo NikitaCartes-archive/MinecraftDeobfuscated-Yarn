@@ -103,6 +103,10 @@ public class ChunkPos {
 		return new BlockPos(this.x << 4, 0, this.z << 4);
 	}
 
+	public int method_24022(ChunkPos chunkPos) {
+		return Math.max(Math.abs(this.x - chunkPos.x), Math.abs(this.z - chunkPos.z));
+	}
+
 	public static Stream<ChunkPos> stream(ChunkPos center, int radius) {
 		return stream(new ChunkPos(center.x - radius, center.z - radius), new ChunkPos(center.x + radius, center.z + radius));
 	}

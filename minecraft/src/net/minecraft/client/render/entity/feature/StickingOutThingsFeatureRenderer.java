@@ -24,7 +24,7 @@ public abstract class StickingOutThingsFeatureRenderer<T extends LivingEntity, M
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, Entity entity, float tickDelta, float f, float g, float h
 	);
 
-	public void method_22132(
+	public void render(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l
 	) {
 		int m = this.getThingCount(livingEntity);

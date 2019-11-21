@@ -300,7 +300,7 @@ public class RabbitEntity extends AnimalEntity {
 		return item == Items.CARROT || item == Items.GOLDEN_CARROT || item == Blocks.DANDELION.asItem();
 	}
 
-	public RabbitEntity method_6620(PassiveEntity passiveEntity) {
+	public RabbitEntity createChild(PassiveEntity passiveEntity) {
 		RabbitEntity rabbitEntity = EntityType.RABBIT.create(this.world);
 		int i = this.chooseType(this.world);
 		if (this.random.nextInt(20) != 0) {
@@ -368,7 +368,7 @@ public class RabbitEntity extends AnimalEntity {
 	}
 
 	public static boolean canSpawn(EntityType<RabbitEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		Block block = iWorld.getBlockState(blockPos.method_10074()).getBlock();
+		Block block = iWorld.getBlockState(blockPos.down()).getBlock();
 		return (block == Blocks.GRASS_BLOCK || block == Blocks.SNOW || block == Blocks.SAND) && iWorld.getBaseLightLevel(blockPos, 0) > 8;
 	}
 

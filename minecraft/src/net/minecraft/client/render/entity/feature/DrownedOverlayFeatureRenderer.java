@@ -17,7 +17,7 @@ public class DrownedOverlayFeatureRenderer<T extends ZombieEntity> extends Featu
 		super(context);
 	}
 
-	public void method_4182(
+	public void render(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T zombieEntity, float f, float g, float h, float j, float k, float l
 	) {
 		render(this.getModel(), this.model, SKIN, matrixStack, vertexConsumerProvider, i, zombieEntity, f, g, j, k, l, h, 1.0F, 1.0F, 1.0F);

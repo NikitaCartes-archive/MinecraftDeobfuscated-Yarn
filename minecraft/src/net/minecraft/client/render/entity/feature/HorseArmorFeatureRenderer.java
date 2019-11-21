@@ -21,15 +21,15 @@ public class HorseArmorFeatureRenderer extends FeatureRenderer<HorseEntity, Hors
 		super(featureRendererContext);
 	}
 
-	public void method_18658(
+	public void render(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, HorseEntity horseEntity, float f, float g, float h, float j, float k, float l
 	) {
 		ItemStack itemStack = horseEntity.getArmorType();
 		if (itemStack.getItem() instanceof HorseArmorItem) {
 			HorseArmorItem horseArmorItem = (HorseArmorItem)itemStack.getItem();
 			this.getModel().copyStateTo(this.model);
-			this.model.method_17084(horseEntity, f, g, h);
-			this.model.method_17085(horseEntity, f, g, j, k, l);
+			this.model.animateModel(horseEntity, f, g, h);
+			this.model.setAngles(horseEntity, f, g, j, k, l);
 			float n;
 			float o;
 			float p;
@@ -45,7 +45,7 @@ public class HorseArmorFeatureRenderer extends FeatureRenderer<HorseEntity, Hors
 			}
 
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(horseArmorItem.getEntityTexture()));
-			this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, n, o, p);
+			this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, n, o, p, 1.0F);
 		}
 	}
 }

@@ -69,7 +69,7 @@ public class ItemSlotArgumentType implements ArgumentType<Integer> {
 		return context.getArgument(name, Integer.class);
 	}
 
-	public Integer method_9470(StringReader reader) throws CommandSyntaxException {
+	public Integer parse(StringReader reader) throws CommandSyntaxException {
 		String string = reader.readUnquotedString();
 		if (!slotNamesToSlotCommandId.containsKey(string)) {
 			throw UNKNOWN_SLOT_EXCEPTION.create(string);

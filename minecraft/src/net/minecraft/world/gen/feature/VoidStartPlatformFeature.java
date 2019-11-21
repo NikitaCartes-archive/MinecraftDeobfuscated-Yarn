@@ -22,7 +22,7 @@ public class VoidStartPlatformFeature extends Feature<DefaultFeatureConfig> {
 		return Math.max(Math.abs(i - k), Math.abs(j - l));
 	}
 
-	public boolean method_14165(
+	public boolean generate(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		ChunkPos chunkPos = new ChunkPos(blockPos);

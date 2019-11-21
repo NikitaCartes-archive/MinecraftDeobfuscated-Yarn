@@ -26,7 +26,7 @@ public class PlacedBlockCriterion extends AbstractCriterion<PlacedBlockCriterion
 		return ID;
 	}
 
-	public PlacedBlockCriterion.Conditions method_9088(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public PlacedBlockCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		Block block = getBlock(jsonObject);
 		StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("state"));
 		if (block != null) {

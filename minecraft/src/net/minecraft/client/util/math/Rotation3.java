@@ -86,12 +86,7 @@ public final class Rotation3 {
 		}
 
 		if (vector3f2 != null) {
-			Matrix4f matrix4f2 = new Matrix4f();
-			matrix4f2.loadIdentity();
-			matrix4f2.set(0, 0, vector3f2.getX());
-			matrix4f2.set(1, 1, vector3f2.getY());
-			matrix4f2.set(2, 2, vector3f2.getZ());
-			matrix4f.multiply(matrix4f2);
+			matrix4f.multiply(Matrix4f.method_24019(vector3f2.getX(), vector3f2.getY(), vector3f2.getZ()));
 		}
 
 		if (quaternion2 != null) {
@@ -99,17 +94,17 @@ public final class Rotation3 {
 		}
 
 		if (vector3f != null) {
-			matrix4f.set(0, 3, vector3f.getX());
-			matrix4f.set(1, 3, vector3f.getY());
-			matrix4f.set(2, 3, vector3f.getZ());
+			matrix4f.field_21655 = vector3f.getX();
+			matrix4f.field_21659 = vector3f.getY();
+			matrix4f.field_21666 = vector3f.getZ();
 		}
 
 		return matrix4f;
 	}
 
 	public static Pair<Matrix3f, Vector3f> method_22932(Matrix4f matrix4f) {
-		matrix4f.multiply(1.0F / matrix4f.get(3, 3));
-		Vector3f vector3f = new Vector3f(matrix4f.get(0, 3), matrix4f.get(1, 3), matrix4f.get(2, 3));
+		matrix4f.multiply(1.0F / matrix4f.field_21667);
+		Vector3f vector3f = new Vector3f(matrix4f.field_21655, matrix4f.field_21659, matrix4f.field_21663);
 		Matrix3f matrix3f = new Matrix3f(matrix4f);
 		return Pair.of(matrix3f, vector3f);
 	}

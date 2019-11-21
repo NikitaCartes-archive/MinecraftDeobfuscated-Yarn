@@ -134,7 +134,7 @@ public class LightUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 	}
 
-	public void method_11560(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onLightUpdate(this);
 	}
 

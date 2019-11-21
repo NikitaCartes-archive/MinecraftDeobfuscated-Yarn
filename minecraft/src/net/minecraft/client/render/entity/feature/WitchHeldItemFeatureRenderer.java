@@ -17,7 +17,7 @@ public class WitchHeldItemFeatureRenderer<T extends LivingEntity> extends Villag
 	}
 
 	@Override
-	public void method_4208(
+	public void render(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l
 	) {
 		ItemStack itemStack = livingEntity.getMainHandStack();
@@ -32,7 +32,7 @@ public class WitchHeldItemFeatureRenderer<T extends LivingEntity> extends Villag
 			matrixStack.translate(0.0, -0.4F, 0.4F);
 		}
 
-		super.method_4208(matrixStack, vertexConsumerProvider, i, livingEntity, f, g, h, j, k, l);
+		super.render(matrixStack, vertexConsumerProvider, i, livingEntity, f, g, h, j, k, l);
 		matrixStack.pop();
 	}
 }

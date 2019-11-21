@@ -21,7 +21,7 @@ public class GuiOpenS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.entityHorseId = entityHorseId;
 	}
 
-	public void method_11437(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onGuiOpen(this);
 	}
 

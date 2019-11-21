@@ -18,42 +18,42 @@ public class BranchedTreeFeatureConfig extends TreeFeatureConfig {
 	public final int heightRandB;
 	public final int trunkHeight;
 	public final int trunkHeightRandom;
+	public final int trunkTopOffset;
 	public final int trunkTopOffsetRandom;
-	public final int field_21265;
-	public final int field_21266;
-	public final int field_21267;
-	public final int field_21268;
-	public final boolean field_21269;
+	public final int foliageHeight;
+	public final int foliageHeightRandom;
+	public final int maxWaterDepth;
+	public final boolean noVines;
 
 	protected BranchedTreeFeatureConfig(
-		StateProvider stateProvider,
-		StateProvider stateProvider2,
+		StateProvider trunkProvider,
+		StateProvider leavesProvider,
 		FoliagePlacer foliagePlacer,
-		List<TreeDecorator> list,
-		int i,
+		List<TreeDecorator> treeDecorators,
+		int baseHeight,
 		int heightRandA,
 		int heightRandB,
 		int trunkHeight,
 		int trunkHeightRandom,
+		int trunkTopOffset,
 		int trunkTopOffsetRandom,
-		int j,
-		int k,
-		int l,
-		int m,
-		boolean bl
+		int foliageHeight,
+		int foliageHeightRandom,
+		int maxWaterDepth,
+		boolean noVines
 	) {
-		super(stateProvider, stateProvider2, list, i);
+		super(trunkProvider, leavesProvider, treeDecorators, baseHeight);
 		this.foliagePlacer = foliagePlacer;
 		this.heightRandA = heightRandA;
 		this.heightRandB = heightRandB;
 		this.trunkHeight = trunkHeight;
 		this.trunkHeightRandom = trunkHeightRandom;
+		this.trunkTopOffset = trunkTopOffset;
 		this.trunkTopOffsetRandom = trunkTopOffsetRandom;
-		this.field_21265 = j;
-		this.field_21266 = k;
-		this.field_21267 = l;
-		this.field_21268 = m;
-		this.field_21269 = bl;
+		this.foliageHeight = foliageHeight;
+		this.foliageHeightRandom = foliageHeightRandom;
+		this.maxWaterDepth = maxWaterDepth;
+		this.noVines = noVines;
 	}
 
 	@Override
@@ -64,17 +64,17 @@ public class BranchedTreeFeatureConfig extends TreeFeatureConfig {
 			.put(ops.createString("height_rand_b"), ops.createInt(this.heightRandB))
 			.put(ops.createString("trunk_height"), ops.createInt(this.trunkHeight))
 			.put(ops.createString("trunk_height_random"), ops.createInt(this.trunkHeightRandom))
-			.put(ops.createString("trunk_top_offset"), ops.createInt(this.trunkTopOffsetRandom))
-			.put(ops.createString("trunk_top_offset_random"), ops.createInt(this.field_21265))
-			.put(ops.createString("foliage_height"), ops.createInt(this.field_21266))
-			.put(ops.createString("foliage_height_random"), ops.createInt(this.field_21267))
-			.put(ops.createString("max_water_depth"), ops.createInt(this.field_21268))
-			.put(ops.createString("ignore_vines"), ops.createBoolean(this.field_21269));
+			.put(ops.createString("trunk_top_offset"), ops.createInt(this.trunkTopOffset))
+			.put(ops.createString("trunk_top_offset_random"), ops.createInt(this.trunkTopOffsetRandom))
+			.put(ops.createString("foliage_height"), ops.createInt(this.foliageHeight))
+			.put(ops.createString("foliage_height_random"), ops.createInt(this.foliageHeightRandom))
+			.put(ops.createString("max_water_depth"), ops.createInt(this.maxWaterDepth))
+			.put(ops.createString("ignore_vines"), ops.createBoolean(this.noVines));
 		Dynamic<T> dynamic = new Dynamic<>(ops, ops.createMap(builder.build()));
 		return dynamic.merge(super.serialize(ops));
 	}
 
-	public static <T> BranchedTreeFeatureConfig method_23426(Dynamic<T> dynamic) {
+	public static <T> BranchedTreeFeatureConfig deserialize2(Dynamic<T> dynamic) {
 		TreeFeatureConfig treeFeatureConfig = TreeFeatureConfig.deserialize(dynamic);
 		FoliagePlacerType<?> foliagePlacerType = Registry.FOLIAGE_PLACER_TYPE
 			.get(new Identifier((String)dynamic.get("foliage_placer").get("type").asString().orElseThrow(RuntimeException::new)));
@@ -98,102 +98,102 @@ public class BranchedTreeFeatureConfig extends TreeFeatureConfig {
 	}
 
 	public static class Builder extends TreeFeatureConfig.Builder {
-		private final FoliagePlacer field_21270;
+		private final FoliagePlacer foliagePlacer;
 		private List<TreeDecorator> treeDecorators = ImmutableList.of();
 		private int field_21272;
-		private int field_21273;
-		private int field_21274;
-		private int field_21275 = -1;
-		private int field_21276;
-		private int field_21277;
-		private int field_21278;
-		private int field_21279 = -1;
-		private int field_21280;
-		private int field_21281;
-		private boolean field_21282;
+		private int heightRandA;
+		private int heightRandB;
+		private int trunkHeight = -1;
+		private int trunkHeightRandom;
+		private int trunkTopOffset;
+		private int trunkTopOffsetRandom;
+		private int foliageHeight = -1;
+		private int foliageHeightRandom;
+		private int maxWaterDepth;
+		private boolean noVines;
 
 		public Builder(StateProvider trunkProvider, StateProvider leavesProvider, FoliagePlacer foliagePlacer) {
 			super(trunkProvider, leavesProvider);
-			this.field_21270 = foliagePlacer;
+			this.foliagePlacer = foliagePlacer;
 		}
 
-		public BranchedTreeFeatureConfig.Builder method_23429(List<TreeDecorator> list) {
-			this.treeDecorators = list;
+		public BranchedTreeFeatureConfig.Builder treeDecorators(List<TreeDecorator> treeDecorators) {
+			this.treeDecorators = treeDecorators;
 			return this;
 		}
 
-		public BranchedTreeFeatureConfig.Builder method_23428(int i) {
+		public BranchedTreeFeatureConfig.Builder baseHeight(int i) {
 			this.field_21272 = i;
 			return this;
 		}
 
-		public BranchedTreeFeatureConfig.Builder method_23430(int i) {
-			this.field_21273 = i;
+		public BranchedTreeFeatureConfig.Builder heightRandA(int heightRandA) {
+			this.heightRandA = heightRandA;
 			return this;
 		}
 
-		public BranchedTreeFeatureConfig.Builder method_23432(int i) {
-			this.field_21274 = i;
+		public BranchedTreeFeatureConfig.Builder heightRandB(int heightRandB) {
+			this.heightRandB = heightRandB;
 			return this;
 		}
 
-		public BranchedTreeFeatureConfig.Builder method_23433(int i) {
-			this.field_21275 = i;
+		public BranchedTreeFeatureConfig.Builder trunkHeight(int trunkHeight) {
+			this.trunkHeight = trunkHeight;
 			return this;
 		}
 
-		public BranchedTreeFeatureConfig.Builder method_23434(int i) {
-			this.field_21276 = i;
+		public BranchedTreeFeatureConfig.Builder trunkHeightRandom(int trunkHeightRandom) {
+			this.trunkHeightRandom = trunkHeightRandom;
 			return this;
 		}
 
-		public BranchedTreeFeatureConfig.Builder method_23435(int i) {
-			this.field_21277 = i;
+		public BranchedTreeFeatureConfig.Builder trunkTopOffset(int trunkTopOffset) {
+			this.trunkTopOffset = trunkTopOffset;
 			return this;
 		}
 
-		public BranchedTreeFeatureConfig.Builder method_23436(int i) {
-			this.field_21278 = i;
+		public BranchedTreeFeatureConfig.Builder trunkTopOffsetRandom(int trunkTopOffsetRandom) {
+			this.trunkTopOffsetRandom = trunkTopOffsetRandom;
 			return this;
 		}
 
-		public BranchedTreeFeatureConfig.Builder method_23437(int i) {
-			this.field_21279 = i;
+		public BranchedTreeFeatureConfig.Builder foliageHeight(int foliageHeight) {
+			this.foliageHeight = foliageHeight;
 			return this;
 		}
 
-		public BranchedTreeFeatureConfig.Builder method_23438(int i) {
-			this.field_21280 = i;
+		public BranchedTreeFeatureConfig.Builder foliageHeightRandom(int foliageHeightRandom) {
+			this.foliageHeightRandom = foliageHeightRandom;
 			return this;
 		}
 
-		public BranchedTreeFeatureConfig.Builder method_23439(int i) {
-			this.field_21281 = i;
+		public BranchedTreeFeatureConfig.Builder maxWaterDepth(int maxWaterDepth) {
+			this.maxWaterDepth = maxWaterDepth;
 			return this;
 		}
 
-		public BranchedTreeFeatureConfig.Builder method_23427() {
-			this.field_21282 = true;
+		public BranchedTreeFeatureConfig.Builder noVines() {
+			this.noVines = true;
 			return this;
 		}
 
-		public BranchedTreeFeatureConfig method_23431() {
+		public BranchedTreeFeatureConfig build() {
 			return new BranchedTreeFeatureConfig(
 				this.trunkProvider,
 				this.leavesProvider,
-				this.field_21270,
+				this.foliagePlacer,
 				this.treeDecorators,
 				this.field_21272,
-				this.field_21273,
-				this.field_21274,
-				this.field_21275,
-				this.field_21276,
-				this.field_21277,
-				this.field_21278,
-				this.field_21279,
-				this.field_21280,
-				this.field_21281,
-				this.field_21282
+				this.heightRandA,
+				this.heightRandB,
+				this.trunkHeight,
+				this.trunkHeightRandom,
+				this.trunkTopOffset,
+				this.trunkTopOffsetRandom,
+				this.foliageHeight,
+				this.foliageHeightRandom,
+				this.maxWaterDepth,
+				this.noVines
 			);
 		}
 	}

@@ -16,7 +16,7 @@ public class RandomPatchFeature extends Feature<FlowerFeatureConfig> {
 		super(function);
 	}
 
-	public boolean method_23401(
+	public boolean generate(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, FlowerFeatureConfig flowerFeatureConfig
 	) {
 		BlockState blockState = flowerFeatureConfig.field_21237.getBlockState(random, blockPos);
@@ -37,7 +37,7 @@ public class RandomPatchFeature extends Feature<FlowerFeatureConfig> {
 					random.nextInt(flowerFeatureConfig.field_21243 + 1) - random.nextInt(flowerFeatureConfig.field_21243 + 1),
 					random.nextInt(flowerFeatureConfig.field_21244 + 1) - random.nextInt(flowerFeatureConfig.field_21244 + 1)
 				);
-			BlockPos blockPos3 = mutable.method_10074();
+			BlockPos blockPos3 = mutable.down();
 			BlockState blockState2 = iWorld.getBlockState(blockPos3);
 			if ((iWorld.isAir(mutable) || flowerFeatureConfig.field_21245 && iWorld.getBlockState(mutable).getMaterial().isReplaceable())
 				&& blockState.canPlaceAt(iWorld, mutable)

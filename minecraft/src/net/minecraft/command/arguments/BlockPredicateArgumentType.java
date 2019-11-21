@@ -38,7 +38,7 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 		return new BlockPredicateArgumentType();
 	}
 
-	public BlockPredicateArgumentType.BlockPredicate method_9642(StringReader stringReader) throws CommandSyntaxException {
+	public BlockPredicateArgumentType.BlockPredicate parse(StringReader stringReader) throws CommandSyntaxException {
 		BlockArgumentParser blockArgumentParser = new BlockArgumentParser(stringReader, true).parse(true);
 		if (blockArgumentParser.getBlockState() != null) {
 			BlockPredicateArgumentType.StatePredicate statePredicate = new BlockPredicateArgumentType.StatePredicate(
@@ -98,7 +98,7 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 			this.nbt = nbt;
 		}
 
-		public boolean method_9648(CachedBlockPosition pos) {
+		public boolean test(CachedBlockPosition pos) {
 			BlockState blockState = pos.getBlockState();
 			if (blockState.getBlock() != this.state.getBlock()) {
 				return false;
@@ -131,7 +131,7 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 			this.nbt = nbt;
 		}
 
-		public boolean method_9649(CachedBlockPosition cachedBlockPosition) {
+		public boolean test(CachedBlockPosition cachedBlockPosition) {
 			BlockState blockState = cachedBlockPosition.getBlockState();
 			if (!blockState.matches(this.tag)) {
 				return false;

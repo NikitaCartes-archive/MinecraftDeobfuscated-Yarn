@@ -24,7 +24,7 @@ public class KilledByCrossbowCriterion extends AbstractCriterion<KilledByCrossbo
 		return ID;
 	}
 
-	public KilledByCrossbowCriterion.Conditions method_8979(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public KilledByCrossbowCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		EntityPredicate[] entityPredicates = EntityPredicate.fromJsonArray(jsonObject.get("victims"));
 		NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("unique_entity_types"));
 		return new KilledByCrossbowCriterion.Conditions(entityPredicates, intRange);

@@ -39,7 +39,7 @@ public abstract class BlockEntity {
 
 	public void setWorld(World world, BlockPos blockPos) {
 		this.world = world;
-		this.pos = blockPos;
+		this.pos = blockPos.toImmutable();
 	}
 
 	public boolean hasWorld() {

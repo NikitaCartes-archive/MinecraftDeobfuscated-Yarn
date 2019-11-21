@@ -19,7 +19,7 @@ public abstract class TintableAnimalModel<E extends Entity> extends AnimalModel<
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float r, float g, float b) {
-		super.render(matrixStack, vertexConsumer, i, j, this.redMultiplier * r, this.greenMultiplier * g, this.blueMultiplier * b);
+	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float r, float g, float b, float f) {
+		super.render(matrixStack, vertexConsumer, i, j, this.redMultiplier * r, this.greenMultiplier * g, this.blueMultiplier * b, f);
 	}
 }

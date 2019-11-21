@@ -32,7 +32,7 @@ public class ExplosionEmitterParticle extends NoRenderParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
-		public Particle method_3037(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			return new ExplosionEmitterParticle(world, d, e, f);
 		}
 	}

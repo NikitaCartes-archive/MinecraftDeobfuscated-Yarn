@@ -139,7 +139,7 @@ public class MultiplayerScreen extends Screen {
 		if (confirmedAction && entry instanceof MultiplayerServerListWidget.ServerEntry) {
 			this.serverList.remove(((MultiplayerServerListWidget.ServerEntry)entry).getServer());
 			this.serverList.saveFile();
-			this.serverListWidget.method_20122(null);
+			this.serverListWidget.setSelected(null);
 			this.serverListWidget.setServers(this.serverList);
 		}
 
@@ -164,7 +164,7 @@ public class MultiplayerScreen extends Screen {
 		if (confirmedAction) {
 			this.serverList.add(this.selectedEntry);
 			this.serverList.saveFile();
-			this.serverListWidget.method_20122(null);
+			this.serverListWidget.setSelected(null);
 			this.serverListWidget.setServers(this.serverList);
 		}
 
@@ -225,7 +225,7 @@ public class MultiplayerScreen extends Screen {
 	}
 
 	public void select(MultiplayerServerListWidget.Entry entry) {
-		this.serverListWidget.method_20122(entry);
+		this.serverListWidget.setSelected(entry);
 		this.updateButtonActivationStates();
 	}
 

@@ -1,15 +1,15 @@
 package net.minecraft.client.font;
 
-import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.Matrix4f;
-import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class GlyphRenderer {
-	private final Identifier id;
+	private final RenderLayer field_21692;
+	private final RenderLayer field_21693;
 	private final float uMin;
 	private final float uMax;
 	private final float vMin;
@@ -19,16 +19,17 @@ public class GlyphRenderer {
 	private final float yMin;
 	private final float yMax;
 
-	public GlyphRenderer(Identifier id, float uMin, float uMax, float vMin, float vMax, float xMin, float xMax, float yMin, float yMax) {
-		this.id = id;
-		this.uMin = uMin;
-		this.uMax = uMax;
-		this.vMin = vMin;
-		this.vMax = vMax;
-		this.xMin = xMin;
-		this.xMax = xMax;
-		this.yMin = yMin;
-		this.yMax = yMax;
+	public GlyphRenderer(RenderLayer renderLayer, RenderLayer renderLayer2, float f, float g, float h, float i, float j, float k, float l, float m) {
+		this.field_21692 = renderLayer;
+		this.field_21693 = renderLayer2;
+		this.uMin = f;
+		this.uMax = g;
+		this.vMin = h;
+		this.vMax = i;
+		this.xMin = j;
+		this.xMax = k;
+		this.yMin = l;
+		this.yMax = m;
 	}
 
 	public void draw(boolean italic, float x, float y, Matrix4f matrix, VertexConsumer vertexConsumer, float red, float green, float blue, float alpha, int light) {
@@ -70,9 +71,8 @@ public class GlyphRenderer {
 			.next();
 	}
 
-	@Nullable
-	public Identifier getId() {
-		return this.id;
+	public RenderLayer method_24045(boolean bl) {
+		return bl ? this.field_21693 : this.field_21692;
 	}
 
 	@Environment(EnvType.CLIENT)

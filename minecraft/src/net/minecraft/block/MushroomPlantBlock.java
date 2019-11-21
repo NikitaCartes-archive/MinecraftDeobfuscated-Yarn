@@ -62,7 +62,7 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		BlockPos blockPos = pos.method_10074();
+		BlockPos blockPos = pos.down();
 		BlockState blockState = world.getBlockState(blockPos);
 		Block block = blockState.getBlock();
 		if (block != Blocks.MYCELIUM && block != Blocks.PODZOL) {
@@ -86,7 +86,7 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 			configuredFeature = Feature.HUGE_RED_MUSHROOM.configure(DefaultBiomeFeatures.field_21142);
 		}
 
-		if (configuredFeature.generate(serverWorld, serverWorld.method_14178().getChunkGenerator(), random, pos)) {
+		if (configuredFeature.generate(serverWorld, serverWorld.getChunkManager().getChunkGenerator(), random, pos)) {
 			return true;
 		} else {
 			serverWorld.setBlockState(pos, state, 3);

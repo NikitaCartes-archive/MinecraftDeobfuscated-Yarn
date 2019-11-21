@@ -23,6 +23,7 @@ import net.minecraft.util.math.Vec3d;
 public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, GuardianEntityModel> {
 	private static final Identifier SKIN = new Identifier("textures/entity/guardian.png");
 	private static final Identifier EXPLOSION_BEAM_TEX = new Identifier("textures/entity/guardian_beam.png");
+	private static final RenderLayer field_21743 = RenderLayer.getEntityCutoutNoCull(EXPLOSION_BEAM_TEX);
 
 	public GuardianEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		this(entityRenderDispatcher, 0.5F);
@@ -32,8 +33,8 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 		super(entityRenderDispatcher, new GuardianEntityModel(), f);
 	}
 
-	public boolean method_3978(GuardianEntity guardianEntity, Frustum frustum, double d, double e, double f) {
-		if (super.method_4068(guardianEntity, frustum, d, e, f)) {
+	public boolean isVisible(GuardianEntity guardianEntity, Frustum frustum, double d, double e, double f) {
+		if (super.isVisible(guardianEntity, frustum, d, e, f)) {
 			return true;
 		} else {
 			if (guardianEntity.hasBeamTarget()) {
@@ -56,8 +57,8 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 		return new Vec3d(d, e, f);
 	}
 
-	public void method_3977(GuardianEntity guardianEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
-		super.method_4072(guardianEntity, f, g, matrixStack, vertexConsumerProvider, i);
+	public void render(GuardianEntity guardianEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+		super.render(guardianEntity, f, g, matrixStack, vertexConsumerProvider, i);
 		LivingEntity livingEntity = guardianEntity.getBeamTarget();
 		if (livingEntity != null) {
 			float h = guardianEntity.getBeamProgress(g);
@@ -103,7 +104,7 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 			float ap = 0.4999F;
 			float aq = -1.0F + k;
 			float ar = m * 2.5F + aq;
-			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(EXPLOSION_BEAM_TEX));
+			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(field_21743);
 			MatrixStack.Entry entry = matrixStack.peek();
 			Matrix4f matrix4f = entry.getModel();
 			Matrix3f matrix3f = entry.getNormal();
@@ -140,7 +141,7 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 			.next();
 	}
 
-	public Identifier method_3976(GuardianEntity guardianEntity) {
+	public Identifier getTexture(GuardianEntity guardianEntity) {
 		return SKIN;
 	}
 }

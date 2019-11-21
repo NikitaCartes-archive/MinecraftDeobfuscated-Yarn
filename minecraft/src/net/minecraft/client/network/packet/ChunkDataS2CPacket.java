@@ -114,7 +114,7 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 	}
 
-	public void method_11528(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onChunkData(this);
 	}
 

@@ -9,55 +9,55 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class SnowmanEntityModel<T extends Entity> extends CompositeEntityModel<T> {
-	private final ModelPart field_3567;
-	private final ModelPart field_3569;
-	private final ModelPart field_3568;
-	private final ModelPart field_3566;
-	private final ModelPart field_3565;
+	private final ModelPart middleSnowball;
+	private final ModelPart bottomSnowball;
+	private final ModelPart topSnowball;
+	private final ModelPart leftArm;
+	private final ModelPart rightArm;
 
 	public SnowmanEntityModel() {
 		float f = 4.0F;
 		float g = 0.0F;
-		this.field_3568 = new ModelPart(this, 0, 0).setTextureSize(64, 64);
-		this.field_3568.addCuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, -0.5F);
-		this.field_3568.setPivot(0.0F, 4.0F, 0.0F);
-		this.field_3566 = new ModelPart(this, 32, 0).setTextureSize(64, 64);
-		this.field_3566.addCuboid(-1.0F, 0.0F, -1.0F, 12.0F, 2.0F, 2.0F, -0.5F);
-		this.field_3566.setPivot(0.0F, 6.0F, 0.0F);
-		this.field_3565 = new ModelPart(this, 32, 0).setTextureSize(64, 64);
-		this.field_3565.addCuboid(-1.0F, 0.0F, -1.0F, 12.0F, 2.0F, 2.0F, -0.5F);
-		this.field_3565.setPivot(0.0F, 6.0F, 0.0F);
-		this.field_3567 = new ModelPart(this, 0, 16).setTextureSize(64, 64);
-		this.field_3567.addCuboid(-5.0F, -10.0F, -5.0F, 10.0F, 10.0F, 10.0F, -0.5F);
-		this.field_3567.setPivot(0.0F, 13.0F, 0.0F);
-		this.field_3569 = new ModelPart(this, 0, 36).setTextureSize(64, 64);
-		this.field_3569.addCuboid(-6.0F, -12.0F, -6.0F, 12.0F, 12.0F, 12.0F, -0.5F);
-		this.field_3569.setPivot(0.0F, 24.0F, 0.0F);
+		this.topSnowball = new ModelPart(this, 0, 0).setTextureSize(64, 64);
+		this.topSnowball.addCuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, -0.5F);
+		this.topSnowball.setPivot(0.0F, 4.0F, 0.0F);
+		this.leftArm = new ModelPart(this, 32, 0).setTextureSize(64, 64);
+		this.leftArm.addCuboid(-1.0F, 0.0F, -1.0F, 12.0F, 2.0F, 2.0F, -0.5F);
+		this.leftArm.setPivot(0.0F, 6.0F, 0.0F);
+		this.rightArm = new ModelPart(this, 32, 0).setTextureSize(64, 64);
+		this.rightArm.addCuboid(-1.0F, 0.0F, -1.0F, 12.0F, 2.0F, 2.0F, -0.5F);
+		this.rightArm.setPivot(0.0F, 6.0F, 0.0F);
+		this.middleSnowball = new ModelPart(this, 0, 16).setTextureSize(64, 64);
+		this.middleSnowball.addCuboid(-5.0F, -10.0F, -5.0F, 10.0F, 10.0F, 10.0F, -0.5F);
+		this.middleSnowball.setPivot(0.0F, 13.0F, 0.0F);
+		this.bottomSnowball = new ModelPart(this, 0, 36).setTextureSize(64, 64);
+		this.bottomSnowball.addCuboid(-6.0F, -12.0F, -6.0F, 12.0F, 12.0F, 12.0F, -0.5F);
+		this.bottomSnowball.setPivot(0.0F, 24.0F, 0.0F);
 	}
 
 	@Override
 	public void setAngles(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch) {
-		this.field_3568.yaw = headYaw * (float) (Math.PI / 180.0);
-		this.field_3568.pitch = headPitch * (float) (Math.PI / 180.0);
-		this.field_3567.yaw = headYaw * (float) (Math.PI / 180.0) * 0.25F;
-		float f = MathHelper.sin(this.field_3567.yaw);
-		float g = MathHelper.cos(this.field_3567.yaw);
-		this.field_3566.roll = 1.0F;
-		this.field_3565.roll = -1.0F;
-		this.field_3566.yaw = 0.0F + this.field_3567.yaw;
-		this.field_3565.yaw = (float) Math.PI + this.field_3567.yaw;
-		this.field_3566.pivotX = g * 5.0F;
-		this.field_3566.pivotZ = -f * 5.0F;
-		this.field_3565.pivotX = -g * 5.0F;
-		this.field_3565.pivotZ = f * 5.0F;
+		this.topSnowball.yaw = headYaw * (float) (Math.PI / 180.0);
+		this.topSnowball.pitch = headPitch * (float) (Math.PI / 180.0);
+		this.middleSnowball.yaw = headYaw * (float) (Math.PI / 180.0) * 0.25F;
+		float f = MathHelper.sin(this.middleSnowball.yaw);
+		float g = MathHelper.cos(this.middleSnowball.yaw);
+		this.leftArm.roll = 1.0F;
+		this.rightArm.roll = -1.0F;
+		this.leftArm.yaw = 0.0F + this.middleSnowball.yaw;
+		this.rightArm.yaw = (float) Math.PI + this.middleSnowball.yaw;
+		this.leftArm.pivotX = g * 5.0F;
+		this.leftArm.pivotZ = -f * 5.0F;
+		this.rightArm.pivotX = -g * 5.0F;
+		this.rightArm.pivotZ = f * 5.0F;
 	}
 
 	@Override
 	public Iterable<ModelPart> getParts() {
-		return ImmutableList.<ModelPart>of(this.field_3567, this.field_3569, this.field_3568, this.field_3566, this.field_3565);
+		return ImmutableList.<ModelPart>of(this.middleSnowball, this.bottomSnowball, this.topSnowball, this.leftArm, this.rightArm);
 	}
 
 	public ModelPart method_2834() {
-		return this.field_3568;
+		return this.topSnowball;
 	}
 }

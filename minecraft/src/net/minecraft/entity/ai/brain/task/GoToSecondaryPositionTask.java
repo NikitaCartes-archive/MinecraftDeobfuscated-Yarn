@@ -46,7 +46,7 @@ public class GoToSecondaryPositionTask extends Task<VillagerEntity> {
 		this.primaryPosition = primaryPosition;
 	}
 
-	protected boolean method_19609(ServerWorld serverWorld, VillagerEntity villagerEntity) {
+	protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
 		Optional<List<GlobalPos>> optional = villagerEntity.getBrain().getOptionalMemory(this.secondaryPositions);
 		Optional<GlobalPos> optional2 = villagerEntity.getBrain().getOptionalMemory(this.primaryPosition);
 		if (optional.isPresent() && optional2.isPresent()) {
@@ -62,7 +62,7 @@ public class GoToSecondaryPositionTask extends Task<VillagerEntity> {
 		return false;
 	}
 
-	protected void method_19610(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		if (l > this.nextRunTime && this.chosenPosition != null) {
 			villagerEntity.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(this.chosenPosition.getPos(), this.speed, this.completionRange));
 			this.nextRunTime = l + 100L;

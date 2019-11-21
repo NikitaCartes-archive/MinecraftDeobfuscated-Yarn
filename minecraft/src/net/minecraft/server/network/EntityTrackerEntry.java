@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+import net.minecraft.client.network.packet.EntityAttachS2CPacket;
 import net.minecraft.client.network.packet.EntityAttributesS2CPacket;
 import net.minecraft.client.network.packet.EntityEquipmentUpdateS2CPacket;
 import net.minecraft.client.network.packet.EntityPassengersSetS2CPacket;
@@ -23,6 +24,7 @@ import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
@@ -246,6 +248,13 @@ public class EntityTrackerEntry {
 
 		if (this.entity.hasVehicle()) {
 			sender.accept(new EntityPassengersSetS2CPacket(this.entity.getVehicle()));
+		}
+
+		if (this.entity instanceof MobEntity) {
+			MobEntity mobEntity = (MobEntity)this.entity;
+			if (mobEntity.isLeashed()) {
+				sender.accept(new EntityAttachS2CPacket(mobEntity, mobEntity.getHoldingEntity()));
+			}
 		}
 	}
 

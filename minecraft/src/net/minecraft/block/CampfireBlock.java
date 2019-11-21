@@ -117,7 +117,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 		boolean bl = iWorld.getFluidState(blockPos).getFluid() == Fluids.WATER;
 		return this.getDefaultState()
 			.with(WATERLOGGED, Boolean.valueOf(bl))
-			.with(SIGNAL_FIRE, Boolean.valueOf(this.doesBlockCauseSignalFire(iWorld.getBlockState(blockPos.method_10074()))))
+			.with(SIGNAL_FIRE, Boolean.valueOf(this.doesBlockCauseSignalFire(iWorld.getBlockState(blockPos.down()))))
 			.with(LIT, Boolean.valueOf(!bl))
 			.with(FACING, ctx.getPlayerFacing());
 	}
@@ -272,7 +272,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 
 			boolean bl = VoxelShapes.matchesAnywhere(field_21580, blockState.getCollisionShape(world, blockPos, EntityContext.absent()), BooleanBiFunction.AND);
 			if (bl) {
-				BlockState blockState2 = world.getBlockState(blockPos2.method_10074());
+				BlockState blockState2 = world.getBlockState(blockPos2.down());
 				return method_23896(blockState2);
 			}
 		}

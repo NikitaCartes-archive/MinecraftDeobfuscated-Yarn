@@ -18,7 +18,7 @@ public class VillagerTradeCriterion extends AbstractCriterion<VillagerTradeCrite
 		return ID;
 	}
 
-	public VillagerTradeCriterion.Conditions method_9148(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public VillagerTradeCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		EntityPredicate entityPredicate = EntityPredicate.fromJson(jsonObject.get("villager"));
 		ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
 		return new VillagerTradeCriterion.Conditions(entityPredicate, itemPredicate);

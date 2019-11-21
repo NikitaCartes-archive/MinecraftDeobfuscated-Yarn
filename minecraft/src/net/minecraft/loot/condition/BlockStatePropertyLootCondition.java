@@ -30,7 +30,7 @@ public class BlockStatePropertyLootCondition implements LootCondition {
 		return ImmutableSet.of(LootContextParameters.BLOCK_STATE);
 	}
 
-	public boolean method_899(LootContext lootContext) {
+	public boolean test(LootContext lootContext) {
 		BlockState blockState = lootContext.get(LootContextParameters.BLOCK_STATE);
 		return blockState != null && this.block == blockState.getBlock() && this.properties.test(blockState);
 	}
@@ -63,14 +63,12 @@ public class BlockStatePropertyLootCondition implements LootCondition {
 			super(new Identifier("block_state_property"), BlockStatePropertyLootCondition.class);
 		}
 
-		public void method_909(
-			JsonObject jsonObject, BlockStatePropertyLootCondition blockStatePropertyLootCondition, JsonSerializationContext jsonSerializationContext
-		) {
+		public void toJson(JsonObject jsonObject, BlockStatePropertyLootCondition blockStatePropertyLootCondition, JsonSerializationContext jsonSerializationContext) {
 			jsonObject.addProperty("block", Registry.BLOCK.getId(blockStatePropertyLootCondition.block).toString());
 			jsonObject.add("properties", blockStatePropertyLootCondition.properties.toJson());
 		}
 
-		public BlockStatePropertyLootCondition method_910(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		public BlockStatePropertyLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "block"));
 			Block block = (Block)Registry.BLOCK.getOrEmpty(identifier).orElseThrow(() -> new IllegalArgumentException("Can't find block " + identifier));
 			StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("properties"));

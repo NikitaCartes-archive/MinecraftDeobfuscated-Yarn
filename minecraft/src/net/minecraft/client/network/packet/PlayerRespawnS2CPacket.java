@@ -26,7 +26,7 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 		this.generatorType = levelGeneratorType;
 	}
 
-	public void method_11782(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onPlayerRespawn(this);
 	}
 

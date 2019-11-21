@@ -36,7 +36,7 @@ public class EntityAnchorArgumentType implements ArgumentType<EntityAnchorArgume
 		return new EntityAnchorArgumentType();
 	}
 
-	public EntityAnchorArgumentType.EntityAnchor method_9292(StringReader stringReader) throws CommandSyntaxException {
+	public EntityAnchorArgumentType.EntityAnchor parse(StringReader stringReader) throws CommandSyntaxException {
 		int i = stringReader.getCursor();
 		String string = stringReader.readUnquotedString();
 		EntityAnchorArgumentType.EntityAnchor entityAnchor = EntityAnchorArgumentType.EntityAnchor.fromId(string);

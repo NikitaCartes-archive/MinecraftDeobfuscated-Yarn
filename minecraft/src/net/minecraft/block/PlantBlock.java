@@ -23,7 +23,7 @@ public class PlantBlock extends Block {
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		BlockPos blockPos = pos.method_10074();
+		BlockPos blockPos = pos.down();
 		return this.canPlantOnTop(world.getBlockState(blockPos), world, blockPos);
 	}
 

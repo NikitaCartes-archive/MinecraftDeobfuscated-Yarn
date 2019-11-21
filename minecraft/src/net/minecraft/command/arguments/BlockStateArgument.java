@@ -28,7 +28,7 @@ public class BlockStateArgument implements Predicate<CachedBlockPosition> {
 		return this.state;
 	}
 
-	public boolean method_9493(CachedBlockPosition cachedBlockPosition) {
+	public boolean test(CachedBlockPosition cachedBlockPosition) {
 		BlockState blockState = cachedBlockPosition.getBlockState();
 		if (blockState.getBlock() != this.state.getBlock()) {
 			return false;
@@ -55,7 +55,7 @@ public class BlockStateArgument implements Predicate<CachedBlockPosition> {
 			if (this.data != null) {
 				BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
 				if (blockEntity != null) {
-					CompoundTag compoundTag = this.data.method_10553();
+					CompoundTag compoundTag = this.data.copy();
 					compoundTag.putInt("x", blockPos.getX());
 					compoundTag.putInt("y", blockPos.getY());
 					compoundTag.putInt("z", blockPos.getZ());

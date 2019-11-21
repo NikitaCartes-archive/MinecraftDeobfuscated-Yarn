@@ -53,7 +53,7 @@ public class ServerMetadata {
 	}
 
 	public static class Deserializer implements JsonDeserializer<ServerMetadata>, JsonSerializer<ServerMetadata> {
-		public ServerMetadata method_12691(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+		public ServerMetadata deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "status");
 			ServerMetadata serverMetadata = new ServerMetadata();
 			if (jsonObject.has("description")) {
@@ -75,7 +75,7 @@ public class ServerMetadata {
 			return serverMetadata;
 		}
 
-		public JsonElement method_12692(ServerMetadata serverMetadata, Type type, JsonSerializationContext jsonSerializationContext) {
+		public JsonElement serialize(ServerMetadata serverMetadata, Type type, JsonSerializationContext jsonSerializationContext) {
 			JsonObject jsonObject = new JsonObject();
 			if (serverMetadata.getDescription() != null) {
 				jsonObject.add("description", jsonSerializationContext.serialize(serverMetadata.getDescription()));
@@ -124,7 +124,7 @@ public class ServerMetadata {
 		}
 
 		public static class Deserializer implements JsonDeserializer<ServerMetadata.Players>, JsonSerializer<ServerMetadata.Players> {
-			public ServerMetadata.Players method_12689(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+			public ServerMetadata.Players deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 				JsonObject jsonObject = JsonHelper.asObject(jsonElement, "players");
 				ServerMetadata.Players players = new ServerMetadata.Players(JsonHelper.getInt(jsonObject, "max"), JsonHelper.getInt(jsonObject, "online"));
 				if (JsonHelper.hasArray(jsonObject, "sample")) {
@@ -145,7 +145,7 @@ public class ServerMetadata {
 				return players;
 			}
 
-			public JsonElement method_12690(ServerMetadata.Players players, Type type, JsonSerializationContext jsonSerializationContext) {
+			public JsonElement serialize(ServerMetadata.Players players, Type type, JsonSerializationContext jsonSerializationContext) {
 				JsonObject jsonObject = new JsonObject();
 				jsonObject.addProperty("max", players.getPlayerLimit());
 				jsonObject.addProperty("online", players.getOnlinePlayerCount());
@@ -186,12 +186,12 @@ public class ServerMetadata {
 		}
 
 		public static class Serializer implements JsonDeserializer<ServerMetadata.Version>, JsonSerializer<ServerMetadata.Version> {
-			public ServerMetadata.Version method_12695(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+			public ServerMetadata.Version deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 				JsonObject jsonObject = JsonHelper.asObject(jsonElement, "version");
 				return new ServerMetadata.Version(JsonHelper.getString(jsonObject, "name"), JsonHelper.getInt(jsonObject, "protocol"));
 			}
 
-			public JsonElement method_12696(ServerMetadata.Version version, Type type, JsonSerializationContext jsonSerializationContext) {
+			public JsonElement serialize(ServerMetadata.Version version, Type type, JsonSerializationContext jsonSerializationContext) {
 				JsonObject jsonObject = new JsonObject();
 				jsonObject.addProperty("name", version.getGameVersion());
 				jsonObject.addProperty("protocol", version.getProtocolVersion());

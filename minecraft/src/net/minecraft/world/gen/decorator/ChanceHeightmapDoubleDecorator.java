@@ -15,7 +15,7 @@ public class ChanceHeightmapDoubleDecorator extends Decorator<LakeDecoratorConfi
 		super(function);
 	}
 
-	public Stream<BlockPos> method_14342(
+	public Stream<BlockPos> getPositions(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, LakeDecoratorConfig lakeDecoratorConfig, BlockPos blockPos
 	) {
 		if (random.nextFloat() < 1.0F / (float)lakeDecoratorConfig.chance) {

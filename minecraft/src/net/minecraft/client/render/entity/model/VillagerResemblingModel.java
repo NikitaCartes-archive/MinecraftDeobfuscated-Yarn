@@ -11,13 +11,13 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class VillagerResemblingModel<T extends Entity> extends CompositeEntityModel<T> implements ModelWithHead, ModelWithHat {
 	protected ModelPart head;
-	protected ModelPart headOverlay;
-	protected final ModelPart hat;
-	protected final ModelPart body;
+	protected ModelPart field_17141;
+	protected final ModelPart field_17142;
+	protected final ModelPart torso;
 	protected final ModelPart robe;
 	protected final ModelPart arms;
-	protected final ModelPart leftLeg;
 	protected final ModelPart rightLeg;
+	protected final ModelPart leftLeg;
 	protected final ModelPart nose;
 
 	public VillagerResemblingModel(float scale) {
@@ -29,43 +29,43 @@ public class VillagerResemblingModel<T extends Entity> extends CompositeEntityMo
 		this.head = new ModelPart(this).setTextureSize(textureWidth, textureHeight);
 		this.head.setPivot(0.0F, 0.0F, 0.0F);
 		this.head.setTextureOffset(0, 0).addCuboid(-4.0F, -10.0F, -4.0F, 8.0F, 10.0F, 8.0F, scale);
-		this.headOverlay = new ModelPart(this).setTextureSize(textureWidth, textureHeight);
-		this.headOverlay.setPivot(0.0F, 0.0F, 0.0F);
-		this.headOverlay.setTextureOffset(32, 0).addCuboid(-4.0F, -10.0F, -4.0F, 8.0F, 10.0F, 8.0F, scale + 0.5F);
-		this.head.addChild(this.headOverlay);
-		this.hat = new ModelPart(this).setTextureSize(textureWidth, textureHeight);
-		this.hat.setPivot(0.0F, 0.0F, 0.0F);
-		this.hat.setTextureOffset(30, 47).addCuboid(-8.0F, -8.0F, -6.0F, 16.0F, 16.0F, 1.0F, scale);
-		this.hat.pitch = (float) (-Math.PI / 2);
-		this.headOverlay.addChild(this.hat);
+		this.field_17141 = new ModelPart(this).setTextureSize(textureWidth, textureHeight);
+		this.field_17141.setPivot(0.0F, 0.0F, 0.0F);
+		this.field_17141.setTextureOffset(32, 0).addCuboid(-4.0F, -10.0F, -4.0F, 8.0F, 10.0F, 8.0F, scale + 0.5F);
+		this.head.addChild(this.field_17141);
+		this.field_17142 = new ModelPart(this).setTextureSize(textureWidth, textureHeight);
+		this.field_17142.setPivot(0.0F, 0.0F, 0.0F);
+		this.field_17142.setTextureOffset(30, 47).addCuboid(-8.0F, -8.0F, -6.0F, 16.0F, 16.0F, 1.0F, scale);
+		this.field_17142.pitch = (float) (-Math.PI / 2);
+		this.field_17141.addChild(this.field_17142);
 		this.nose = new ModelPart(this).setTextureSize(textureWidth, textureHeight);
 		this.nose.setPivot(0.0F, -2.0F, 0.0F);
 		this.nose.setTextureOffset(24, 0).addCuboid(-1.0F, -1.0F, -6.0F, 2.0F, 4.0F, 2.0F, scale);
 		this.head.addChild(this.nose);
-		this.body = new ModelPart(this).setTextureSize(textureWidth, textureHeight);
-		this.body.setPivot(0.0F, 0.0F, 0.0F);
-		this.body.setTextureOffset(16, 20).addCuboid(-4.0F, 0.0F, -3.0F, 8.0F, 12.0F, 6.0F, scale);
+		this.torso = new ModelPart(this).setTextureSize(textureWidth, textureHeight);
+		this.torso.setPivot(0.0F, 0.0F, 0.0F);
+		this.torso.setTextureOffset(16, 20).addCuboid(-4.0F, 0.0F, -3.0F, 8.0F, 12.0F, 6.0F, scale);
 		this.robe = new ModelPart(this).setTextureSize(textureWidth, textureHeight);
 		this.robe.setPivot(0.0F, 0.0F, 0.0F);
 		this.robe.setTextureOffset(0, 38).addCuboid(-4.0F, 0.0F, -3.0F, 8.0F, 18.0F, 6.0F, scale + 0.5F);
-		this.body.addChild(this.robe);
+		this.torso.addChild(this.robe);
 		this.arms = new ModelPart(this).setTextureSize(textureWidth, textureHeight);
 		this.arms.setPivot(0.0F, 2.0F, 0.0F);
 		this.arms.setTextureOffset(44, 22).addCuboid(-8.0F, -2.0F, -2.0F, 4.0F, 8.0F, 4.0F, scale);
 		this.arms.setTextureOffset(44, 22).addCuboid(4.0F, -2.0F, -2.0F, 4.0F, 8.0F, 4.0F, scale, true);
 		this.arms.setTextureOffset(40, 38).addCuboid(-4.0F, 2.0F, -2.0F, 8.0F, 4.0F, 4.0F, scale);
-		this.leftLeg = new ModelPart(this, 0, 22).setTextureSize(textureWidth, textureHeight);
-		this.leftLeg.setPivot(-2.0F, 12.0F, 0.0F);
-		this.leftLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, scale);
 		this.rightLeg = new ModelPart(this, 0, 22).setTextureSize(textureWidth, textureHeight);
-		this.rightLeg.mirror = true;
-		this.rightLeg.setPivot(2.0F, 12.0F, 0.0F);
+		this.rightLeg.setPivot(-2.0F, 12.0F, 0.0F);
 		this.rightLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, scale);
+		this.leftLeg = new ModelPart(this, 0, 22).setTextureSize(textureWidth, textureHeight);
+		this.leftLeg.mirror = true;
+		this.leftLeg.setPivot(2.0F, 12.0F, 0.0F);
+		this.leftLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, scale);
 	}
 
 	@Override
 	public Iterable<ModelPart> getParts() {
-		return ImmutableList.<ModelPart>of(this.head, this.body, this.leftLeg, this.rightLeg, this.arms);
+		return ImmutableList.<ModelPart>of(this.head, this.torso, this.rightLeg, this.leftLeg, this.arms);
 	}
 
 	@Override
@@ -87,10 +87,10 @@ public class VillagerResemblingModel<T extends Entity> extends CompositeEntityMo
 		this.arms.pivotY = 3.0F;
 		this.arms.pivotZ = -1.0F;
 		this.arms.pitch = -0.75F;
-		this.leftLeg.pitch = MathHelper.cos(limbAngle * 0.6662F) * 1.4F * limbDistance * 0.5F;
-		this.rightLeg.pitch = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.4F * limbDistance * 0.5F;
-		this.leftLeg.yaw = 0.0F;
+		this.rightLeg.pitch = MathHelper.cos(limbAngle * 0.6662F) * 1.4F * limbDistance * 0.5F;
+		this.leftLeg.pitch = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.4F * limbDistance * 0.5F;
 		this.rightLeg.yaw = 0.0F;
+		this.leftLeg.yaw = 0.0F;
 	}
 
 	@Override
@@ -101,7 +101,7 @@ public class VillagerResemblingModel<T extends Entity> extends CompositeEntityMo
 	@Override
 	public void setHatVisible(boolean visible) {
 		this.head.visible = visible;
-		this.headOverlay.visible = visible;
-		this.hat.visible = visible;
+		this.field_17141.visible = visible;
+		this.field_17142.visible = visible;
 	}
 }

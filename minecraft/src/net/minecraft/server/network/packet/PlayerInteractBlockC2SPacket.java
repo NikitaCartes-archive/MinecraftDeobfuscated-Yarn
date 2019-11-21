@@ -34,7 +34,7 @@ public class PlayerInteractBlockC2SPacket implements Packet<ServerPlayPacketList
 		buf.writeBlockHitResult(this.field_17602);
 	}
 
-	public void method_12547(ServerPlayPacketListener serverPlayPacketListener) {
+	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onPlayerInteractBlock(this);
 	}
 

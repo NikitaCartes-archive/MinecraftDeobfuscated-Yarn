@@ -18,7 +18,7 @@ public class IronGolemLookGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		if (!this.golem.world.isDaylight()) {
+		if (!this.golem.world.isDay()) {
 			return false;
 		} else if (this.golem.getRandom().nextInt(8000) != 0) {
 			return false;

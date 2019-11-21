@@ -1,6 +1,6 @@
 package net.minecraft.container;
 
-import javax.annotation.Nullable;
+import com.mojang.datafixers.util.Pair;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -14,11 +14,16 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeFinder;
+import net.minecraft.util.Identifier;
 
 public class PlayerContainer extends CraftingContainer<CraftingInventory> {
-	private static final String[] EMPTY_ARMOR_SLOT_IDS = new String[]{
-		"item/empty_armor_slot_boots", "item/empty_armor_slot_leggings", "item/empty_armor_slot_chestplate", "item/empty_armor_slot_helmet"
-	};
+	public static final Identifier field_21668 = new Identifier("textures/atlas/blocks.png");
+	public static final Identifier field_21669 = new Identifier("item/empty_armor_slot_helmet");
+	public static final Identifier field_21670 = new Identifier("item/empty_armor_slot_chestplate");
+	public static final Identifier field_21671 = new Identifier("item/empty_armor_slot_leggings");
+	public static final Identifier field_21672 = new Identifier("item/empty_armor_slot_boots");
+	public static final Identifier field_21673 = new Identifier("item/empty_armor_slot_shield");
+	private static final Identifier[] EMPTY_ARMOR_SLOT_IDS = new Identifier[]{field_21672, field_21671, field_21670, field_21669};
 	private static final EquipmentSlot[] EQUIPMENT_SLOT_ORDER = new EquipmentSlot[]{
 		EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET
 	};
@@ -58,11 +63,10 @@ public class PlayerContainer extends CraftingContainer<CraftingInventory> {
 					return !itemStack.isEmpty() && !playerEntity.isCreative() && EnchantmentHelper.hasBindingCurse(itemStack) ? false : super.canTakeItems(playerEntity);
 				}
 
-				@Nullable
 				@Environment(EnvType.CLIENT)
 				@Override
-				public String getBackgroundSprite() {
-					return PlayerContainer.EMPTY_ARMOR_SLOT_IDS[equipmentSlot.getEntitySlotId()];
+				public Pair<Identifier, Identifier> getBackgroundSprite() {
+					return Pair.of(PlayerContainer.field_21668, PlayerContainer.EMPTY_ARMOR_SLOT_IDS[equipmentSlot.getEntitySlotId()]);
 				}
 			});
 		}
@@ -78,11 +82,10 @@ public class PlayerContainer extends CraftingContainer<CraftingInventory> {
 		}
 
 		this.addSlot(new Slot(inventory, 40, 77, 62) {
-			@Nullable
 			@Environment(EnvType.CLIENT)
 			@Override
-			public String getBackgroundSprite() {
-				return "item/empty_armor_slot_shield";
+			public Pair<Identifier, Identifier> getBackgroundSprite() {
+				return Pair.of(PlayerContainer.field_21668, PlayerContainer.field_21673);
 			}
 		});
 	}

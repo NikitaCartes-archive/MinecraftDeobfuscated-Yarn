@@ -9,7 +9,6 @@ import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.AbstractPressableButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.container.BeaconContainer;
 import net.minecraft.container.Container;
 import net.minecraft.container.ContainerListener;
@@ -273,7 +272,7 @@ public class BeaconScreen extends AbstractContainerScreen<BeaconContainer> {
 
 		@Override
 		protected void renderExtra() {
-			MinecraftClient.getInstance().getTextureManager().bindTexture(SpriteAtlasTexture.STATUS_EFFECT_ATLAS_TEX);
+			MinecraftClient.getInstance().getTextureManager().bindTexture(this.sprite.method_24119().method_24106());
 			blit(this.x + 2, this.y + 2, this.getBlitOffset(), 18, 18, this.sprite);
 		}
 	}

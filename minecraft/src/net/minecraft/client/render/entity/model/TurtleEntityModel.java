@@ -48,7 +48,7 @@ public class TurtleEntityModel<T extends TurtleEntity> extends QuadrupedEntityMo
 		return Iterables.concat(super.getBodyParts(), ImmutableList.of(this.field_3594));
 	}
 
-	public void method_17125(T turtleEntity, float f, float g, float h, float i, float j) {
+	public void setAngles(T turtleEntity, float f, float g, float h, float i, float j) {
 		super.setAngles(turtleEntity, f, g, h, i, j);
 		this.backRightLeg.pitch = MathHelper.cos(f * 0.6662F * 0.6F) * 0.5F * g;
 		this.backLeftLeg.pitch = MathHelper.cos(f * 0.6662F * 0.6F + (float) Math.PI) * 0.5F * g;
@@ -79,14 +79,14 @@ public class TurtleEntityModel<T extends TurtleEntity> extends QuadrupedEntityMo
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float r, float g, float b) {
+	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float r, float g, float b, float f) {
 		boolean bl = this.field_3594.visible;
 		if (bl) {
 			matrixStack.push();
 			matrixStack.translate(0.0, -0.08F, 0.0);
 		}
 
-		super.render(matrixStack, vertexConsumer, i, j, r, g, b);
+		super.render(matrixStack, vertexConsumer, i, j, r, g, b, f);
 		if (bl) {
 			matrixStack.pop();
 		}

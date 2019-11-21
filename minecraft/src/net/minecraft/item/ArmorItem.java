@@ -83,7 +83,7 @@ public class ArmorItem extends Item {
 
 	@Override
 	public boolean canRepair(ItemStack stack, ItemStack ingredient) {
-		return this.type.getRepairIngredient().method_8093(ingredient) || super.canRepair(stack, ingredient);
+		return this.type.getRepairIngredient().test(ingredient) || super.canRepair(stack, ingredient);
 	}
 
 	@Override

@@ -106,7 +106,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 		EntityType.RAVAGER
 	};
 
-	public void method_10335(Consumer<Advancement> consumer) {
+	public void accept(Consumer<Advancement> consumer) {
 		Advancement advancement = Advancement.Task.create()
 			.display(
 				Items.MAP,

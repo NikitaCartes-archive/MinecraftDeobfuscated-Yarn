@@ -17,7 +17,7 @@ public class ChanneledLightningCriterion extends AbstractCriterion<ChanneledLigh
 		return ID;
 	}
 
-	public ChanneledLightningCriterion.Conditions method_8801(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public ChanneledLightningCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		EntityPredicate[] entityPredicates = EntityPredicate.fromJsonArray(jsonObject.get("victims"));
 		return new ChanneledLightningCriterion.Conditions(entityPredicates);
 	}

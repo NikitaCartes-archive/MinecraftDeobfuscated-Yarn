@@ -18,7 +18,7 @@ public class PandaHeldItemFeatureRenderer extends FeatureRenderer<PandaEntity, P
 		super(context);
 	}
 
-	public void method_4194(
+	public void render(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, PandaEntity pandaEntity, float f, float g, float h, float j, float k, float l
 	) {
 		ItemStack itemStack = pandaEntity.getEquippedStack(EquipmentSlot.MAINHAND);

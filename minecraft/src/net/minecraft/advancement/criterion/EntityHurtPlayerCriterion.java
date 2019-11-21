@@ -16,7 +16,7 @@ public class EntityHurtPlayerCriterion extends AbstractCriterion<EntityHurtPlaye
 		return ID;
 	}
 
-	public EntityHurtPlayerCriterion.Conditions method_8902(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public EntityHurtPlayerCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		DamagePredicate damagePredicate = DamagePredicate.deserialize(jsonObject.get("damage"));
 		return new EntityHurtPlayerCriterion.Conditions(damagePredicate);
 	}

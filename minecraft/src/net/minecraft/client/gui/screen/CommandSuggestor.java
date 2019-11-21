@@ -144,18 +144,14 @@ public class CommandSuggestor {
 
 		this.messages.clear();
 		StringReader stringReader = new StringReader(string);
-		boolean bl;
-		if (this.slashRequired) {
-			bl = true;
-		} else if (stringReader.canRead() && stringReader.peek() == '/') {
+		boolean bl = stringReader.canRead() && stringReader.peek() == '/';
+		if (bl) {
 			stringReader.skip();
-			bl = true;
-		} else {
-			bl = false;
 		}
 
+		boolean bl2 = this.slashRequired || bl;
 		int i = this.textField.getCursor();
-		if (bl) {
+		if (bl2) {
 			CommandDispatcher<CommandSource> commandDispatcher = this.client.player.networkHandler.getCommandDispatcher();
 			if (this.parse == null) {
 				this.parse = commandDispatcher.parse(stringReader, this.client.player.networkHandler.getCommandSource());

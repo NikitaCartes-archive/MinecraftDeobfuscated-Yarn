@@ -21,7 +21,7 @@ public class SlideDownBlockCriterion extends AbstractCriterion<SlideDownBlockCri
 		return ID;
 	}
 
-	public SlideDownBlockCriterion.Conditions method_23911(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public SlideDownBlockCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		Block block = getBlock(jsonObject);
 		StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("state"));
 		if (block != null) {

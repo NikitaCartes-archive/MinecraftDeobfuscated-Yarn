@@ -26,7 +26,7 @@ public class InventoryChangedCriterion extends AbstractCriterion<InventoryChange
 		return ID;
 	}
 
-	public InventoryChangedCriterion.Conditions method_8952(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public InventoryChangedCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "slots", new JsonObject());
 		NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject2.get("occupied"));
 		NumberRange.IntRange intRange2 = NumberRange.IntRange.fromJson(jsonObject2.get("full"));

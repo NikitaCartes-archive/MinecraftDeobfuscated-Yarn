@@ -57,7 +57,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 		this.lanServers.forEach(this::addEntry);
 	}
 
-	public void method_20122(MultiplayerServerListWidget.Entry entry) {
+	public void setSelected(MultiplayerServerListWidget.Entry entry) {
 		super.setSelected(entry);
 		if (this.getSelected() instanceof MultiplayerServerListWidget.ServerEntry) {
 			NarratorManager.INSTANCE
@@ -406,7 +406,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			this.screen.getServerList().swapEntries(i, j);
 			this.screen.serverListWidget.setServers(this.screen.getServerList());
 			MultiplayerServerListWidget.Entry entry = (MultiplayerServerListWidget.Entry)this.screen.serverListWidget.children().get(j);
-			this.screen.serverListWidget.method_20122(entry);
+			this.screen.serverListWidget.setSelected(entry);
 			MultiplayerServerListWidget.this.ensureVisible(entry);
 		}
 

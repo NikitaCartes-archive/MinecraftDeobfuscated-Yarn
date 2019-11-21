@@ -18,12 +18,12 @@ public class BlueIceFeature extends Feature<DefaultFeatureConfig> {
 		super(configFactory);
 	}
 
-	public boolean method_12818(
+	public boolean generate(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		if (blockPos.getY() > iWorld.getSeaLevel() - 1) {
 			return false;
-		} else if (iWorld.getBlockState(blockPos).getBlock() != Blocks.WATER && iWorld.getBlockState(blockPos.method_10074()).getBlock() != Blocks.WATER) {
+		} else if (iWorld.getBlockState(blockPos).getBlock() != Blocks.WATER && iWorld.getBlockState(blockPos.down()).getBlock() != Blocks.WATER) {
 			return false;
 		} else {
 			boolean bl = false;

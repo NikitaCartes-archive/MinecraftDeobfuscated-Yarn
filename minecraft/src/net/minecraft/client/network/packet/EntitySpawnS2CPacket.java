@@ -114,7 +114,7 @@ public class EntitySpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeShort(this.velocityZ);
 	}
 
-	public void method_11178(ClientPlayPacketListener clientPlayPacketListener) {
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onEntitySpawn(this);
 	}
 

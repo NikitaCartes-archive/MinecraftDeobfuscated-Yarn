@@ -66,7 +66,7 @@ public class ModelElement {
 		protected Deserializer() {
 		}
 
-		public ModelElement method_3406(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
+		public ModelElement deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
 			JsonObject jsonObject = element.getAsJsonObject();
 			Vector3f vector3f = this.deserializeFrom(jsonObject);
 			Vector3f vector3f2 = this.deserializeTo(jsonObject);

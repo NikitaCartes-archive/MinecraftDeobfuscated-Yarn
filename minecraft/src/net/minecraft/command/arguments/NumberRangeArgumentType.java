@@ -20,7 +20,7 @@ public interface NumberRangeArgumentType<T extends NumberRange<?>> extends Argum
 	public static class FloatRangeArgumentType implements NumberRangeArgumentType<NumberRange.FloatRange> {
 		private static final Collection<String> EXAMPLES = Arrays.asList("0..5.2", "0", "-5.4", "-100.76..", "..100");
 
-		public NumberRange.FloatRange method_9423(StringReader stringReader) throws CommandSyntaxException {
+		public NumberRange.FloatRange parse(StringReader stringReader) throws CommandSyntaxException {
 			return NumberRange.FloatRange.parse(stringReader);
 		}
 
@@ -30,7 +30,7 @@ public interface NumberRangeArgumentType<T extends NumberRange<?>> extends Argum
 		}
 
 		public static class Serializer extends NumberRangeArgumentType.NumberSerializer<NumberRangeArgumentType.FloatRangeArgumentType> {
-			public NumberRangeArgumentType.FloatRangeArgumentType method_9424(PacketByteBuf packetByteBuf) {
+			public NumberRangeArgumentType.FloatRangeArgumentType fromPacket(PacketByteBuf packetByteBuf) {
 				return new NumberRangeArgumentType.FloatRangeArgumentType();
 			}
 		}
@@ -43,7 +43,7 @@ public interface NumberRangeArgumentType<T extends NumberRange<?>> extends Argum
 			return commandContext.getArgument(string, NumberRange.IntRange.class);
 		}
 
-		public NumberRange.IntRange method_9426(StringReader stringReader) throws CommandSyntaxException {
+		public NumberRange.IntRange parse(StringReader stringReader) throws CommandSyntaxException {
 			return NumberRange.IntRange.parse(stringReader);
 		}
 
@@ -53,17 +53,17 @@ public interface NumberRangeArgumentType<T extends NumberRange<?>> extends Argum
 		}
 
 		public static class Serializer extends NumberRangeArgumentType.NumberSerializer<NumberRangeArgumentType.IntRangeArgumentType> {
-			public NumberRangeArgumentType.IntRangeArgumentType method_9427(PacketByteBuf packetByteBuf) {
+			public NumberRangeArgumentType.IntRangeArgumentType fromPacket(PacketByteBuf packetByteBuf) {
 				return new NumberRangeArgumentType.IntRangeArgumentType();
 			}
 		}
 	}
 
 	public abstract static class NumberSerializer<T extends NumberRangeArgumentType<?>> implements ArgumentSerializer<T> {
-		public void method_9429(T numberRangeArgumentType, PacketByteBuf packetByteBuf) {
+		public void toPacket(T numberRangeArgumentType, PacketByteBuf packetByteBuf) {
 		}
 
-		public void method_9428(T numberRangeArgumentType, JsonObject jsonObject) {
+		public void toJson(T numberRangeArgumentType, JsonObject jsonObject) {
 		}
 	}
 }

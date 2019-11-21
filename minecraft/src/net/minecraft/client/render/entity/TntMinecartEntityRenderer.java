@@ -7,6 +7,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.vehicle.TntMinecartEntity;
 import net.minecraft.util.math.MathHelper;
 
@@ -16,7 +17,7 @@ public class TntMinecartEntityRenderer extends MinecartEntityRenderer<TntMinecar
 		super(entityRenderDispatcher);
 	}
 
-	protected void method_4137(
+	protected void renderBlock(
 		TntMinecartEntity tntMinecartEntity, float f, BlockState blockState, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i
 	) {
 		int j = tntMinecartEntity.getFuseTicks();
@@ -40,6 +41,9 @@ public class TntMinecartEntityRenderer extends MinecartEntityRenderer<TntMinecar
 			j = OverlayTexture.DEFAULT_UV;
 		}
 
+		matrixStack.push();
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(90.0F));
 		MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(blockState, matrixStack, vertexConsumerProvider, i, j);
+		matrixStack.pop();
 	}
 }

@@ -11,8 +11,8 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class VexEntityModel extends BipedEntityModel<VexEntity> {
-	private final ModelPart field_3601;
-	private final ModelPart field_3602;
+	private final ModelPart leftWing;
+	private final ModelPart rightWing;
 
 	public VexEntityModel() {
 		super(0.0F, 0.0F, 64, 64);
@@ -21,20 +21,20 @@ public class VexEntityModel extends BipedEntityModel<VexEntity> {
 		this.rightLeg = new ModelPart(this, 32, 0);
 		this.rightLeg.addCuboid(-1.0F, -1.0F, -2.0F, 6.0F, 10.0F, 4.0F, 0.0F);
 		this.rightLeg.setPivot(-1.9F, 12.0F, 0.0F);
-		this.field_3602 = new ModelPart(this, 0, 32);
-		this.field_3602.addCuboid(-20.0F, 0.0F, 0.0F, 20.0F, 12.0F, 1.0F);
-		this.field_3601 = new ModelPart(this, 0, 32);
-		this.field_3601.mirror = true;
-		this.field_3601.addCuboid(0.0F, 0.0F, 0.0F, 20.0F, 12.0F, 1.0F);
+		this.rightWing = new ModelPart(this, 0, 32);
+		this.rightWing.addCuboid(-20.0F, 0.0F, 0.0F, 20.0F, 12.0F, 1.0F);
+		this.leftWing = new ModelPart(this, 0, 32);
+		this.leftWing.mirror = true;
+		this.leftWing.addCuboid(0.0F, 0.0F, 0.0F, 20.0F, 12.0F, 1.0F);
 	}
 
 	@Override
 	protected Iterable<ModelPart> getBodyParts() {
-		return Iterables.concat(super.getBodyParts(), ImmutableList.of(this.field_3602, this.field_3601));
+		return Iterables.concat(super.getBodyParts(), ImmutableList.of(this.rightWing, this.leftWing));
 	}
 
-	public void method_17127(VexEntity vexEntity, float f, float g, float h, float i, float j) {
-		super.method_17087(vexEntity, f, g, h, i, j);
+	public void setAngles(VexEntity vexEntity, float f, float g, float h, float i, float j) {
+		super.setAngles(vexEntity, f, g, h, i, j);
 		if (vexEntity.isCharging()) {
 			if (vexEntity.getMainArm() == Arm.RIGHT) {
 				this.rightArm.pitch = 3.7699115F;
@@ -44,15 +44,15 @@ public class VexEntityModel extends BipedEntityModel<VexEntity> {
 		}
 
 		this.rightLeg.pitch += (float) (Math.PI / 5);
-		this.field_3602.pivotZ = 2.0F;
-		this.field_3601.pivotZ = 2.0F;
-		this.field_3602.pivotY = 1.0F;
-		this.field_3601.pivotY = 1.0F;
-		this.field_3602.yaw = 0.47123894F + MathHelper.cos(h * 0.8F) * (float) Math.PI * 0.05F;
-		this.field_3601.yaw = -this.field_3602.yaw;
-		this.field_3601.roll = -0.47123894F;
-		this.field_3601.pitch = 0.47123894F;
-		this.field_3602.pitch = 0.47123894F;
-		this.field_3602.roll = 0.47123894F;
+		this.rightWing.pivotZ = 2.0F;
+		this.leftWing.pivotZ = 2.0F;
+		this.rightWing.pivotY = 1.0F;
+		this.leftWing.pivotY = 1.0F;
+		this.rightWing.yaw = 0.47123894F + MathHelper.cos(h * 0.8F) * (float) Math.PI * 0.05F;
+		this.leftWing.yaw = -this.rightWing.yaw;
+		this.leftWing.roll = -0.47123894F;
+		this.leftWing.pitch = 0.47123894F;
+		this.rightWing.pitch = 0.47123894F;
+		this.rightWing.roll = 0.47123894F;
 	}
 }

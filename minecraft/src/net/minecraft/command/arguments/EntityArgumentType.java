@@ -97,7 +97,7 @@ public class EntityArgumentType implements ArgumentType<EntitySelector> {
 		}
 	}
 
-	public EntitySelector method_9318(StringReader stringReader) throws CommandSyntaxException {
+	public EntitySelector parse(StringReader stringReader) throws CommandSyntaxException {
 		int i = 0;
 		EntitySelectorReader entitySelectorReader = new EntitySelectorReader(stringReader);
 		EntitySelector entitySelector = entitySelectorReader.read();
@@ -146,7 +146,7 @@ public class EntityArgumentType implements ArgumentType<EntitySelector> {
 	}
 
 	public static class Serializer implements ArgumentSerializer<EntityArgumentType> {
-		public void method_9320(EntityArgumentType entityArgumentType, PacketByteBuf packetByteBuf) {
+		public void toPacket(EntityArgumentType entityArgumentType, PacketByteBuf packetByteBuf) {
 			byte b = 0;
 			if (entityArgumentType.singleTarget) {
 				b = (byte)(b | 1);
@@ -159,12 +159,12 @@ public class EntityArgumentType implements ArgumentType<EntitySelector> {
 			packetByteBuf.writeByte(b);
 		}
 
-		public EntityArgumentType method_9321(PacketByteBuf packetByteBuf) {
+		public EntityArgumentType fromPacket(PacketByteBuf packetByteBuf) {
 			byte b = packetByteBuf.readByte();
 			return new EntityArgumentType((b & 1) != 0, (b & 2) != 0);
 		}
 
-		public void method_9319(EntityArgumentType entityArgumentType, JsonObject jsonObject) {
+		public void toJson(EntityArgumentType entityArgumentType, JsonObject jsonObject) {
 			jsonObject.addProperty("amount", entityArgumentType.singleTarget ? "single" : "multiple");
 			jsonObject.addProperty("type", entityArgumentType.playersOnly ? "players" : "entities");
 		}

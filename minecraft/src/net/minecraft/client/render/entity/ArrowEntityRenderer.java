@@ -14,7 +14,7 @@ public class ArrowEntityRenderer extends ProjectileEntityRenderer<ArrowEntity> {
 		super(entityRenderDispatcher);
 	}
 
-	public Identifier method_4130(ArrowEntity arrowEntity) {
+	public Identifier getTexture(ArrowEntity arrowEntity) {
 		return arrowEntity.getColor() > 0 ? TIPPED_SKIN : SKIN;
 	}
 }

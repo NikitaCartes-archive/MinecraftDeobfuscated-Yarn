@@ -185,7 +185,7 @@ public class OverworldDimension extends Dimension {
 		if (checkMobSpawnValidity && !blockState.getBlock().matches(BlockTags.VALID_SPAWN)) {
 			return null;
 		} else {
-			WorldChunk worldChunk = this.world.method_8497(x >> 4, z >> 4);
+			WorldChunk worldChunk = this.world.getChunk(x >> 4, z >> 4);
 			int i = worldChunk.sampleHeightmap(Heightmap.Type.MOTION_BLOCKING, x & 15, z & 15);
 			if (i < 0) {
 				return null;

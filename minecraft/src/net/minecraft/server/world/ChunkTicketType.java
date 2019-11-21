@@ -15,7 +15,7 @@ public class ChunkTicketType<T> {
 	public static final ChunkTicketType<ChunkPos> PLAYER = create("player", Comparator.comparingLong(ChunkPos::toLong));
 	public static final ChunkTicketType<ChunkPos> FORCED = create("forced", Comparator.comparingLong(ChunkPos::toLong));
 	public static final ChunkTicketType<ChunkPos> LIGHT = create("light", Comparator.comparingLong(ChunkPos::toLong));
-	public static final ChunkTicketType<BlockPos> PORTAL = method_20628("portal", Vec3i::method_10265, 300);
+	public static final ChunkTicketType<BlockPos> PORTAL = method_20628("portal", Vec3i::compareTo, 300);
 	public static final ChunkTicketType<Integer> POST_TELEPORT = method_20628("post_teleport", Integer::compareTo, 5);
 	public static final ChunkTicketType<ChunkPos> UNKNOWN = method_20628("unknown", Comparator.comparingLong(ChunkPos::toLong), 1);
 

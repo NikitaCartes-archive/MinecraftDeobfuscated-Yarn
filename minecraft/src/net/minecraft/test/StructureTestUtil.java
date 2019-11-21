@@ -68,7 +68,7 @@ public class StructureTestUtil {
 		forceLoadNearbyChunks(blockPos, serverWorld);
 		clearArea(blockBox, blockPos.getY(), serverWorld);
 		StructureBlockBlockEntity structureBlockBlockEntity = placeStructure(string, blockPos, serverWorld, bl);
-		serverWorld.method_14196().getScheduledTicks(blockBox, true, false);
+		serverWorld.getBlockTickScheduler().getScheduledTicks(blockBox, true, false);
 		serverWorld.method_23658(blockBox);
 		return structureBlockBlockEntity;
 	}
@@ -87,7 +87,7 @@ public class StructureTestUtil {
 
 	public static void clearArea(BlockBox blockBox, int i, ServerWorld serverWorld) {
 		BlockPos.method_23627(blockBox).forEach(blockPos -> method_22368(i, blockPos, serverWorld));
-		serverWorld.method_14196().getScheduledTicks(blockBox, true, false);
+		serverWorld.getBlockTickScheduler().getScheduledTicks(blockBox, true, false);
 		serverWorld.method_23658(blockBox);
 		Box box = new Box((double)blockBox.minX, (double)blockBox.minY, (double)blockBox.minZ, (double)blockBox.maxX, (double)blockBox.maxY, (double)blockBox.maxZ);
 		List<Entity> list = serverWorld.getEntities(Entity.class, box, entity -> !(entity instanceof PlayerEntity));
@@ -183,7 +183,7 @@ public class StructureTestUtil {
 	}
 
 	private static void method_22368(int i, BlockPos blockPos, ServerWorld serverWorld) {
-		ChunkGeneratorConfig chunkGeneratorConfig = serverWorld.method_14178().getChunkGenerator().getConfig();
+		ChunkGeneratorConfig chunkGeneratorConfig = serverWorld.getChunkManager().getChunkGenerator().getConfig();
 		BlockState blockState;
 		if (chunkGeneratorConfig instanceof FlatChunkGeneratorConfig) {
 			BlockState[] blockStates = ((FlatChunkGeneratorConfig)chunkGeneratorConfig).getLayerBlocks();
