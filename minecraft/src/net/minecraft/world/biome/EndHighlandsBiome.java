@@ -35,7 +35,7 @@ public class EndHighlandsBiome extends Biome {
 				.configure(EndGatewayFeatureConfig.createConfig(TheEndDimension.SPAWN_POINT, true))
 				.createDecoratedFeature(Decorator.END_GATEWAY.configure(DecoratorConfig.DEFAULT))
 		);
-		DefaultBiomeFeatures.method_20826(this);
+		DefaultBiomeFeatures.addEndCities(this);
 		this.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
 			Feature.CHORUS_PLANT.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.CHORUS_PLANT.configure(DecoratorConfig.DEFAULT))

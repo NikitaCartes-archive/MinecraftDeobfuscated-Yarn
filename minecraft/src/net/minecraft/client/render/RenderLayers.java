@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4722;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -259,7 +258,7 @@ public class RenderLayers {
 
 	public static RenderLayer getEntityBlockLayer(BlockState state) {
 		RenderLayer renderLayer = getBlockLayer(state);
-		return renderLayer == RenderLayer.getTranslucent() ? class_4722.method_24075() : class_4722.method_24074();
+		return renderLayer == RenderLayer.getTranslucent() ? TexturedRenderLayers.getEntityTranslucent() : TexturedRenderLayers.getEntityCutout();
 	}
 
 	public static RenderLayer getItemLayer(ItemStack stack) {
@@ -268,7 +267,7 @@ public class RenderLayers {
 			Block block = ((BlockItem)item).getBlock();
 			return getEntityBlockLayer(block.getDefaultState());
 		} else {
-			return class_4722.method_24075();
+			return TexturedRenderLayers.getEntityTranslucent();
 		}
 	}
 

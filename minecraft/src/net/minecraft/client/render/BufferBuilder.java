@@ -252,37 +252,52 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 	}
 
 	@Override
-	public void method_23919(float f, float g, float h, float i, float j, float k, float l, float m, float n, int o, int p, float q, float r, float s) {
+	public void elements(
+		float x,
+		float y,
+		float z,
+		float r,
+		float g,
+		float b,
+		float a,
+		float textureU,
+		float textureV,
+		int overlay,
+		int light,
+		float normalX,
+		float normalY,
+		float normalZ
+	) {
 		if (this.colorFixed) {
 			throw new IllegalStateException();
 		} else if (this.field_21594) {
-			this.putFloat(0, f);
-			this.putFloat(4, g);
-			this.putFloat(8, h);
-			this.putByte(12, (byte)((int)(i * 255.0F)));
-			this.putByte(13, (byte)((int)(j * 255.0F)));
-			this.putByte(14, (byte)((int)(k * 255.0F)));
-			this.putByte(15, (byte)((int)(l * 255.0F)));
-			this.putFloat(16, m);
-			this.putFloat(20, n);
-			int t;
+			this.putFloat(0, x);
+			this.putFloat(4, y);
+			this.putFloat(8, z);
+			this.putByte(12, (byte)((int)(r * 255.0F)));
+			this.putByte(13, (byte)((int)(g * 255.0F)));
+			this.putByte(14, (byte)((int)(b * 255.0F)));
+			this.putByte(15, (byte)((int)(a * 255.0F)));
+			this.putFloat(16, textureU);
+			this.putFloat(20, textureV);
+			int i;
 			if (this.field_21595) {
-				this.putShort(24, (short)(o & 65535));
-				this.putShort(26, (short)(o >> 16 & 65535));
-				t = 28;
+				this.putShort(24, (short)(overlay & 65535));
+				this.putShort(26, (short)(overlay >> 16 & 65535));
+				i = 28;
 			} else {
-				t = 24;
+				i = 24;
 			}
 
-			this.putShort(t + 0, (short)(p & 65535));
-			this.putShort(t + 2, (short)(p >> 16 & 65535));
-			this.putByte(t + 4, (byte)((int)(q * 127.0F) & 0xFF));
-			this.putByte(t + 5, (byte)((int)(r * 127.0F) & 0xFF));
-			this.putByte(t + 6, (byte)((int)(s * 127.0F) & 0xFF));
-			this.elementOffset += t + 8;
+			this.putShort(i + 0, (short)(light & 65535));
+			this.putShort(i + 2, (short)(light >> 16 & 65535));
+			this.putByte(i + 4, (byte)((int)(normalX * 127.0F) & 0xFF));
+			this.putByte(i + 5, (byte)((int)(normalY * 127.0F) & 0xFF));
+			this.putByte(i + 6, (byte)((int)(normalZ * 127.0F) & 0xFF));
+			this.elementOffset += i + 8;
 			this.next();
 		} else {
-			super.method_23919(f, g, h, i, j, k, l, m, n, o, p, q, r, s);
+			super.elements(x, y, z, r, g, b, a, textureU, textureV, overlay, light, normalX, normalY, normalZ);
 		}
 	}
 

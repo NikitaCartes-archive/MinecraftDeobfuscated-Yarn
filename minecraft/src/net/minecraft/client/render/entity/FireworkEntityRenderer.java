@@ -23,7 +23,7 @@ public class FireworkEntityRenderer extends EntityRenderer<FireworkEntity> {
 
 	public void render(FireworkEntity fireworkEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
-		matrixStack.multiply(this.renderManager.camera.method_23767());
+		matrixStack.multiply(this.renderManager.method_24197());
 		if (fireworkEntity.wasShotAtAngle()) {
 			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
 			matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0F));

@@ -48,10 +48,10 @@ public class TransformingVertexConsumer extends FixedColorVertexConsumer {
 	@Override
 	public void next() {
 		Vector3f vector3f = new Vector3f(this.normalX, this.normalY, this.normalZ);
-		vector3f.multiply(this.normalMatrix);
+		vector3f.transform(this.normalMatrix);
 		Direction direction = Direction.getFacing(vector3f.getX(), vector3f.getY(), vector3f.getZ());
 		Vector4f vector4f = new Vector4f(this.x, this.y, this.z, 1.0F);
-		vector4f.multiply(this.textureMatrix);
+		vector4f.transform(this.textureMatrix);
 		vector4f.setQuarternion(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
 		vector4f.setQuarternion(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0F));
 		vector4f.setQuarternion(direction.getRotationQuaternion());

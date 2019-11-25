@@ -72,11 +72,11 @@ public class MultiplayerScreen extends Screen {
 		);
 		this.addButton(new ButtonWidget(this.width / 2 - 50, this.height - 52, 100, 20, I18n.translate("selectServer.direct"), buttonWidget -> {
 			this.selectedEntry = new ServerInfo(I18n.translate("selectServer.defaultName"), "", false);
-			this.minecraft.openScreen(new DirectConnectScreen(this::directConnect, this.selectedEntry));
+			this.minecraft.openScreen(new DirectConnectScreen(this, this::directConnect, this.selectedEntry));
 		}));
 		this.addButton(new ButtonWidget(this.width / 2 + 4 + 50, this.height - 52, 100, 20, I18n.translate("selectServer.add"), buttonWidget -> {
 			this.selectedEntry = new ServerInfo(I18n.translate("selectServer.defaultName"), "", false);
-			this.minecraft.openScreen(new AddServerScreen(this::addEntry, this.selectedEntry));
+			this.minecraft.openScreen(new AddServerScreen(this, this::addEntry, this.selectedEntry));
 		}));
 		this.buttonEdit = this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 28, 70, 20, I18n.translate("selectServer.edit"), buttonWidget -> {
 			MultiplayerServerListWidget.Entry entry = this.serverListWidget.getSelected();
@@ -84,7 +84,7 @@ public class MultiplayerScreen extends Screen {
 				ServerInfo serverInfo = ((MultiplayerServerListWidget.ServerEntry)entry).getServer();
 				this.selectedEntry = new ServerInfo(serverInfo.name, serverInfo.address, false);
 				this.selectedEntry.copyFrom(serverInfo);
-				this.minecraft.openScreen(new AddServerScreen(this::editEntry, this.selectedEntry));
+				this.minecraft.openScreen(new AddServerScreen(this, this::editEntry, this.selectedEntry));
 			}
 		}));
 		this.buttonDelete = this.addButton(new ButtonWidget(this.width / 2 - 74, this.height - 28, 70, 20, I18n.translate("selectServer.delete"), buttonWidget -> {

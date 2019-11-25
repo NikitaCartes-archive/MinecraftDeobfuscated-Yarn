@@ -1,5 +1,11 @@
 package net.minecraft.world.biome.layer;
 
+import net.minecraft.world.biome.layer.type.MergingLayer;
+import net.minecraft.world.biome.layer.util.BiomeLayers;
+import net.minecraft.world.biome.layer.util.IdentityCoordinateTransformer;
+import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
+import net.minecraft.world.biome.layer.util.LayerSampler;
+
 public enum ApplyOceanTemperatureLayer implements MergingLayer, IdentityCoordinateTransformer {
 	INSTANCE;
 

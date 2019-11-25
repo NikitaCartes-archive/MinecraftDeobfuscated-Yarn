@@ -14,9 +14,9 @@ public class RandomFeatureEntry<FC extends FeatureConfig> {
 	public final ConfiguredFeature<FC, ?> feature;
 	public final float chance;
 
-	public RandomFeatureEntry(ConfiguredFeature<FC, ?> configuredFeature, float f) {
-		this.feature = configuredFeature;
-		this.chance = f;
+	public RandomFeatureEntry(ConfiguredFeature<FC, ?> feature, float chance) {
+		this.feature = feature;
+		this.chance = chance;
 	}
 
 	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
@@ -40,6 +40,6 @@ public class RandomFeatureEntry<FC extends FeatureConfig> {
 	}
 
 	public static <T> RandomFeatureEntry<?> deserialize(Dynamic<T> dynamic) {
-		return ConfiguredFeature.deserialize(dynamic).method_23387(dynamic.get("chance").asFloat(0.0F));
+		return ConfiguredFeature.deserialize(dynamic).withChance(dynamic.get("chance").asFloat(0.0F));
 	}
 }

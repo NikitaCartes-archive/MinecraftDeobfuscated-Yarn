@@ -68,7 +68,7 @@ public class StingerFeatureRenderer<T extends LivingEntity, M extends PlayerEnti
 			.texture(g, h)
 			.overlay(OverlayTexture.DEFAULT_UV)
 			.light(j)
-			.method_23763(matrix3f, 0.0F, 1.0F, 0.0F)
+			.normal(matrix3f, 0.0F, 1.0F, 0.0F)
 			.next();
 	}
 }

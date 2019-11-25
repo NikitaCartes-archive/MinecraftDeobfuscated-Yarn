@@ -38,7 +38,7 @@ public class FlyingItemEntityRenderer<T extends Entity & FlyingItemEntity> exten
 	public void render(T entity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
 		matrixStack.scale(this.scale, this.scale, this.scale);
-		matrixStack.multiply(this.renderManager.camera.method_23767());
+		matrixStack.multiply(this.renderManager.method_24197());
 		this.item.method_23178(entity.getStack(), ModelTransformation.Type.GROUND, i, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider);
 		matrixStack.pop();
 		super.render(entity, f, g, matrixStack, vertexConsumerProvider, i);

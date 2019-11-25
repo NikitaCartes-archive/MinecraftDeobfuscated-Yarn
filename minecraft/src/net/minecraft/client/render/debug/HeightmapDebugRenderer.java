@@ -23,13 +23,13 @@ public class HeightmapDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f, long l) {
+	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
 		IWorld iWorld = this.client.world;
 		RenderSystem.pushMatrix();
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.disableTexture();
-		BlockPos blockPos = new BlockPos(d, 0.0, f);
+		BlockPos blockPos = new BlockPos(cameraX, 0.0, cameraZ);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
@@ -39,12 +39,12 @@ public class HeightmapDebugRenderer implements DebugRenderer.Renderer {
 			if (iWorld.getBlockState(blockPos2.add(0, i, 0).down()).isAir()) {
 				WorldRenderer.drawBox(
 					bufferBuilder,
-					(double)((float)blockPos2.getX() + 0.25F) - d,
-					(double)i - e,
-					(double)((float)blockPos2.getZ() + 0.25F) - f,
-					(double)((float)blockPos2.getX() + 0.75F) - d,
-					(double)i + 0.09375 - e,
-					(double)((float)blockPos2.getZ() + 0.75F) - f,
+					(double)((float)blockPos2.getX() + 0.25F) - cameraX,
+					(double)i - cameraY,
+					(double)((float)blockPos2.getZ() + 0.25F) - cameraZ,
+					(double)((float)blockPos2.getX() + 0.75F) - cameraX,
+					(double)i + 0.09375 - cameraY,
+					(double)((float)blockPos2.getZ() + 0.75F) - cameraZ,
 					0.0F,
 					0.0F,
 					1.0F,
@@ -53,12 +53,12 @@ public class HeightmapDebugRenderer implements DebugRenderer.Renderer {
 			} else {
 				WorldRenderer.drawBox(
 					bufferBuilder,
-					(double)((float)blockPos2.getX() + 0.25F) - d,
-					(double)i - e,
-					(double)((float)blockPos2.getZ() + 0.25F) - f,
-					(double)((float)blockPos2.getX() + 0.75F) - d,
-					(double)i + 0.09375 - e,
-					(double)((float)blockPos2.getZ() + 0.75F) - f,
+					(double)((float)blockPos2.getX() + 0.25F) - cameraX,
+					(double)i - cameraY,
+					(double)((float)blockPos2.getZ() + 0.25F) - cameraZ,
+					(double)((float)blockPos2.getX() + 0.75F) - cameraX,
+					(double)i + 0.09375 - cameraY,
+					(double)((float)blockPos2.getZ() + 0.75F) - cameraZ,
 					0.0F,
 					1.0F,
 					0.0F,

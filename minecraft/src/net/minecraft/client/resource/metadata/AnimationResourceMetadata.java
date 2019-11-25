@@ -11,7 +11,7 @@ import net.fabricmc.api.Environment;
 @Environment(EnvType.CLIENT)
 public class AnimationResourceMetadata {
 	public static final AnimationResourceMetadataReader READER = new AnimationResourceMetadataReader();
-	public static final AnimationResourceMetadata field_21768 = new AnimationResourceMetadata(Lists.newArrayList(), -1, -1, 1, false) {
+	public static final AnimationResourceMetadata EMPTY = new AnimationResourceMetadata(Lists.newArrayList(), -1, -1, 1, false) {
 		@Override
 		public Pair<Integer, Integer> method_24141(int i, int j) {
 			return Pair.of(i, j);

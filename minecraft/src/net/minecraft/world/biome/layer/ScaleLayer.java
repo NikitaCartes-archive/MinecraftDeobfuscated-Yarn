@@ -1,5 +1,9 @@
 package net.minecraft.world.biome.layer;
 
+import net.minecraft.world.biome.layer.type.ParentedLayer;
+import net.minecraft.world.biome.layer.util.LayerSampleContext;
+import net.minecraft.world.biome.layer.util.LayerSampler;
+
 public enum ScaleLayer implements ParentedLayer {
 	NORMAL,
 	FUZZY {

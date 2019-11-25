@@ -7,28 +7,28 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 
-public class DefaultFlowerFeature extends FlowerFeature<FlowerFeatureConfig> {
-	public DefaultFlowerFeature(Function<Dynamic<?>, ? extends FlowerFeatureConfig> configFactory) {
+public class DefaultFlowerFeature extends FlowerFeature<RandomPatchFeatureConfig> {
+	public DefaultFlowerFeature(Function<Dynamic<?>, ? extends RandomPatchFeatureConfig> configFactory) {
 		super(configFactory);
 	}
 
-	public boolean method_23369(IWorld iWorld, BlockPos blockPos, FlowerFeatureConfig flowerFeatureConfig) {
-		return !flowerFeatureConfig.field_21240.contains(iWorld.getBlockState(blockPos));
+	public boolean method_23369(IWorld iWorld, BlockPos blockPos, RandomPatchFeatureConfig randomPatchFeatureConfig) {
+		return !randomPatchFeatureConfig.blacklist.contains(iWorld.getBlockState(blockPos));
 	}
 
-	public int method_23370(FlowerFeatureConfig flowerFeatureConfig) {
-		return flowerFeatureConfig.field_21241;
+	public int method_23370(RandomPatchFeatureConfig randomPatchFeatureConfig) {
+		return randomPatchFeatureConfig.tries;
 	}
 
-	public BlockPos method_23371(Random random, BlockPos blockPos, FlowerFeatureConfig flowerFeatureConfig) {
+	public BlockPos method_23371(Random random, BlockPos blockPos, RandomPatchFeatureConfig randomPatchFeatureConfig) {
 		return blockPos.add(
-			random.nextInt(flowerFeatureConfig.field_21242) - random.nextInt(flowerFeatureConfig.field_21242),
-			random.nextInt(flowerFeatureConfig.field_21243) - random.nextInt(flowerFeatureConfig.field_21243),
-			random.nextInt(flowerFeatureConfig.field_21244) - random.nextInt(flowerFeatureConfig.field_21244)
+			random.nextInt(randomPatchFeatureConfig.spreadX) - random.nextInt(randomPatchFeatureConfig.spreadX),
+			random.nextInt(randomPatchFeatureConfig.spreadY) - random.nextInt(randomPatchFeatureConfig.spreadY),
+			random.nextInt(randomPatchFeatureConfig.spreadZ) - random.nextInt(randomPatchFeatureConfig.spreadZ)
 		);
 	}
 
-	public BlockState getFlowerToPlace(Random random, BlockPos blockPos, FlowerFeatureConfig flowerFeatureConfig) {
-		return flowerFeatureConfig.field_21237.getBlockState(random, blockPos);
+	public BlockState getFlowerToPlace(Random random, BlockPos blockPos, RandomPatchFeatureConfig randomPatchFeatureConfig) {
+		return randomPatchFeatureConfig.stateProvider.getBlockState(random, blockPos);
 	}
 }

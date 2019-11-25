@@ -310,7 +310,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 	@Nullable
 	@Override
 	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-		this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.method_23753(new BlockPos(this)))));
+		this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.getBiome(new BlockPos(this)))));
 		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
 	}
 

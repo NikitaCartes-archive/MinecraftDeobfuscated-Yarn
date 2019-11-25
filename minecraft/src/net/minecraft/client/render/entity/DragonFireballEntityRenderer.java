@@ -29,7 +29,7 @@ public class DragonFireballEntityRenderer extends EntityRenderer<DragonFireballE
 	public void render(DragonFireballEntity dragonFireballEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
 		matrixStack.scale(2.0F, 2.0F, 2.0F);
-		matrixStack.multiply(this.renderManager.camera.method_23767());
+		matrixStack.multiply(this.renderManager.method_24197());
 		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
 		MatrixStack.Entry entry = matrixStack.peek();
 		Matrix4f matrix4f = entry.getModel();
@@ -49,7 +49,7 @@ public class DragonFireballEntityRenderer extends EntityRenderer<DragonFireballE
 			.texture((float)k, (float)l)
 			.overlay(OverlayTexture.DEFAULT_UV)
 			.light(i)
-			.method_23763(matrix3f, 0.0F, 1.0F, 0.0F)
+			.normal(matrix3f, 0.0F, 1.0F, 0.0F)
 			.next();
 	}
 

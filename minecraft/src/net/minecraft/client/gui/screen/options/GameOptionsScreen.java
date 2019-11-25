@@ -8,13 +8,13 @@ import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class GameOptionsScreen extends Screen {
-	protected final Screen field_21335;
-	protected final GameOptions field_21336;
+	protected final Screen parent;
+	protected final GameOptions gameOptions;
 
-	public GameOptionsScreen(Screen screen, GameOptions gameOptions, Text text) {
+	public GameOptionsScreen(Screen parent, GameOptions gameOptions, Text text) {
 		super(text);
-		this.field_21335 = screen;
-		this.field_21336 = gameOptions;
+		this.parent = parent;
+		this.gameOptions = gameOptions;
 	}
 
 	@Override
@@ -24,6 +24,6 @@ public class GameOptionsScreen extends Screen {
 
 	@Override
 	public void onClose() {
-		this.minecraft.openScreen(this.field_21335);
+		this.minecraft.openScreen(this.parent);
 	}
 }

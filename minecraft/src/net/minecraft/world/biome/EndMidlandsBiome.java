@@ -24,7 +24,7 @@ public class EndMidlandsBiome extends Biome {
 				.parent(null)
 		);
 		this.addStructureFeature(Feature.END_CITY.configure(FeatureConfig.DEFAULT));
-		DefaultBiomeFeatures.method_20826(this);
+		DefaultBiomeFeatures.addEndCities(this);
 		this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.ENDERMAN, 10, 4, 4));
 	}
 

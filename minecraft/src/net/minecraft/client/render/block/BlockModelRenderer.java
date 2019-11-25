@@ -120,7 +120,7 @@ public class BlockModelRenderer {
 			random.setSeed(l);
 			List<BakedQuad> list = model.getQuads(state, direction, random);
 			if (!list.isEmpty() && (!cull || Block.shouldDrawSide(state, view, pos, direction))) {
-				int j = WorldRenderer.method_23793(view, state, pos.offset(direction));
+				int j = WorldRenderer.getLightmapCoordinates(view, state, pos.offset(direction));
 				this.renderQuadsFlat(view, state, pos, j, i, false, buffer, vertexConsumer, list, bitSet);
 				bl = true;
 			}
@@ -176,33 +176,35 @@ public class BlockModelRenderer {
 		BlockState state,
 		BlockPos pos,
 		VertexConsumer vertexConsumer,
-		MatrixStack.Entry entry,
-		BakedQuad bakedQuad,
-		float f,
-		float g,
-		float h,
-		float i,
-		int j,
-		int k,
-		int l,
-		int m,
-		int n
+		MatrixStack.Entry matrixEntry,
+		BakedQuad quad,
+		float brightness0,
+		float brightness1,
+		float brightness2,
+		float brightness3,
+		int light0,
+		int light1,
+		int light2,
+		int light3,
+		int overlay
 	) {
-		float p;
-		float q;
-		float r;
-		if (bakedQuad.hasColor()) {
-			int o = this.colorMap.getColor(state, world, pos, bakedQuad.getColorIndex());
-			p = (float)(o >> 16 & 0xFF) / 255.0F;
-			q = (float)(o >> 8 & 0xFF) / 255.0F;
-			r = (float)(o & 0xFF) / 255.0F;
+		float f;
+		float g;
+		float h;
+		if (quad.hasColor()) {
+			int i = this.colorMap.getColor(state, world, pos, quad.getColorIndex());
+			f = (float)(i >> 16 & 0xFF) / 255.0F;
+			g = (float)(i >> 8 & 0xFF) / 255.0F;
+			h = (float)(i & 0xFF) / 255.0F;
 		} else {
-			p = 1.0F;
-			q = 1.0F;
-			r = 1.0F;
+			f = 1.0F;
+			g = 1.0F;
+			h = 1.0F;
 		}
 
-		vertexConsumer.quad(entry, bakedQuad, new float[]{f, g, h, i}, p, q, r, new int[]{j, k, l, m}, n, true);
+		vertexConsumer.quad(
+			matrixEntry, quad, new float[]{brightness0, brightness1, brightness2, brightness3}, f, g, h, new int[]{light0, light1, light2, light3}, overlay, true
+		);
 	}
 
 	private void getQuadDimensions(BlockRenderView world, BlockState state, BlockPos pos, int[] vertexData, Direction face, @Nullable float[] box, BitSet flags) {
@@ -286,7 +288,7 @@ public class BlockModelRenderer {
 			if (useWorldLight) {
 				this.getQuadDimensions(world, state, pos, bakedQuad.getVertexData(), bakedQuad.getFace(), null, flags);
 				BlockPos blockPos = flags.get(0) ? pos.offset(bakedQuad.getFace()) : pos;
-				light = WorldRenderer.method_23793(world, state, blockPos);
+				light = WorldRenderer.getLightmapCoordinates(world, state, blockPos);
 			}
 
 			this.renderQuad(world, state, pos, vertexConsumer, matrix.peek(), bakedQuad, 1.0F, 1.0F, 1.0F, 1.0F, light, light, light, light, overlay);
@@ -547,7 +549,7 @@ public class BlockModelRenderer {
 				}
 			}
 
-			int i = WorldRenderer.method_23793(blockRenderView, blockState, pos);
+			int i = WorldRenderer.getLightmapCoordinates(blockRenderView, blockState, pos);
 			if (this.enabled) {
 				if (this.intCache.size() == 100) {
 					this.intCache.removeFirstInt();

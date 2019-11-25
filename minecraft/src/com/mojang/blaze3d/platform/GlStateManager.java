@@ -645,14 +645,14 @@ public class GlStateManager {
 		enableLight(0);
 		enableLight(1);
 		Vector4f vector4f = new Vector4f(field_20772);
-		vector4f.multiply(matrix4f);
+		vector4f.transform(matrix4f);
 		light(16384, 4611, method_22613(vector4f.getX(), vector4f.getY(), vector4f.getZ(), 0.0F));
 		float f = 0.6F;
 		light(16384, 4609, method_22613(0.6F, 0.6F, 0.6F, 1.0F));
 		light(16384, 4608, method_22613(0.0F, 0.0F, 0.0F, 1.0F));
 		light(16384, 4610, method_22613(0.0F, 0.0F, 0.0F, 1.0F));
 		Vector4f vector4f2 = new Vector4f(field_20773);
-		vector4f2.multiply(matrix4f);
+		vector4f2.transform(matrix4f);
 		light(16385, 4611, method_22613(vector4f2.getX(), vector4f2.getY(), vector4f2.getZ(), 0.0F));
 		light(16385, 4609, method_22613(0.6F, 0.6F, 0.6F, 1.0F));
 		light(16385, 4608, method_22613(0.0F, 0.0F, 0.0F, 1.0F));

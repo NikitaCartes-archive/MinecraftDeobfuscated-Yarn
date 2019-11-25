@@ -18,7 +18,7 @@ public class FixedBiomeSource extends BiomeSource {
 	}
 
 	@Override
-	public Biome getStoredBiome(int biomeX, int biomeY, int biomeZ) {
+	public Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
 		return this.biome;
 	}
 

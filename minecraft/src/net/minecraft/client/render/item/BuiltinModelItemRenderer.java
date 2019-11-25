@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4730;
 import net.minecraft.block.AbstractBannerBlock;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.BedBlock;
@@ -29,6 +28,7 @@ import net.minecraft.client.render.block.entity.SkullBlockEntityRenderer;
 import net.minecraft.client.render.entity.model.ShieldEntityModel;
 import net.minecraft.client.render.entity.model.TridentEntityModel;
 import net.minecraft.client.render.model.ModelLoader;
+import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -112,10 +112,10 @@ public class BuiltinModelItemRenderer {
 				boolean bl = stack.getSubTag("BlockEntityTag") != null;
 				matrix.push();
 				matrix.scale(1.0F, -1.0F, -1.0F);
-				class_4730 lv = bl ? ModelLoader.SHIELD_BASE : ModelLoader.SHIELD_BASE_NO_PATTERN;
-				VertexConsumer vertexConsumer = lv.method_24148()
-					.method_24108(
-						ItemRenderer.getArmorVertexConsumer(vertexConsumerProvider, this.modelShield.getLayer(lv.method_24144()), false, stack.hasEnchantmentGlint())
+				SpriteIdentifier spriteIdentifier = bl ? ModelLoader.SHIELD_BASE : ModelLoader.SHIELD_BASE_NO_PATTERN;
+				VertexConsumer vertexConsumer = spriteIdentifier.getSprite()
+					.getTextureSpecificVertexConsumer(
+						ItemRenderer.getArmorVertexConsumer(vertexConsumerProvider, this.modelShield.getLayer(spriteIdentifier.getAtlasId()), false, stack.hasEnchantmentGlint())
 					);
 				this.modelShield.method_23775().render(matrix, vertexConsumer, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
 				this.modelShield.method_23774().render(matrix, vertexConsumer, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);

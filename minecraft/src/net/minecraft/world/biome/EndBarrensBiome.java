@@ -21,7 +21,7 @@ public class EndBarrensBiome extends Biome {
 				.waterFogColor(329011)
 				.parent(null)
 		);
-		DefaultBiomeFeatures.method_20826(this);
+		DefaultBiomeFeatures.addEndCities(this);
 		this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.ENDERMAN, 10, 4, 4));
 	}
 

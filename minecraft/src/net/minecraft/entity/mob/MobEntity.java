@@ -1219,6 +1219,7 @@ public abstract class MobEntity extends LivingEntity {
 			}
 
 			this.dealDamage(this, target);
+			this.onAttacking(target);
 		}
 
 		return bl;

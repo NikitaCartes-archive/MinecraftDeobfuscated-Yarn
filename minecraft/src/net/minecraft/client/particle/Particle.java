@@ -209,7 +209,7 @@ public abstract class Particle {
 
 	protected int getColorMultiplier(float tint) {
 		BlockPos blockPos = new BlockPos(this.x, this.y, this.z);
-		return this.world.isChunkLoaded(blockPos) ? WorldRenderer.method_23794(this.world, blockPos) : 0;
+		return this.world.isChunkLoaded(blockPos) ? WorldRenderer.getLightmapCoordinates(this.world, blockPos) : 0;
 	}
 
 	public boolean isAlive() {

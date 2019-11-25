@@ -367,6 +367,15 @@ public class CreateWorldScreen extends Screen {
 	}
 
 	@Override
+	public void onClose() {
+		if (this.moreOptionsOpen) {
+			this.setMoreOptionsOpen(false);
+		} else {
+			this.minecraft.openScreen(this.parent);
+		}
+	}
+
+	@Override
 	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
 		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, -1);

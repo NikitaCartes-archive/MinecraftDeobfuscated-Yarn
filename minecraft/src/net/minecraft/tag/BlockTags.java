@@ -63,6 +63,7 @@ public class BlockTags {
 	public static final Tag<Block> BEEHIVES = register("beehives");
 	public static final Tag<Block> CROPS = register("crops");
 	public static final Tag<Block> BEE_GROWABLES = register("bee_growables");
+	public static final Tag<Block> PORTALS = register("portals");
 
 	public static void setContainer(TagContainer<Block> container) {
 		BlockTags.container = container;

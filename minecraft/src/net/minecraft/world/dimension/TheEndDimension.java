@@ -41,7 +41,7 @@ public class TheEndDimension extends Dimension {
 	}
 
 	@Override
-	public float getSkyAngle(long timeOfDay, float delta) {
+	public float getSkyAngle(long timeOfDay, float tickDelta) {
 		return 0.0F;
 	}
 
@@ -69,7 +69,7 @@ public class TheEndDimension extends Dimension {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean method_12449() {
+	public boolean hasGround() {
 		return false;
 	}
 

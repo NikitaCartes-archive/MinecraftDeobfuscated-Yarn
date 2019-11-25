@@ -4,11 +4,10 @@ import com.google.common.collect.ImmutableSet;
 import java.util.Set;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
-import net.minecraft.world.biome.layer.BiomeLayerSampler;
-import net.minecraft.world.biome.layer.BiomeLayers;
+import net.minecraft.world.biome.layer.util.BiomeLayers;
 
 public class VanillaLayeredBiomeSource extends BiomeSource {
-	private final BiomeLayerSampler noiseLayer;
+	private final BiomeLayerSampler biomeSampler;
 	private static final Set<Biome> BIOMES = ImmutableSet.of(
 		Biomes.OCEAN,
 		Biomes.PLAINS,
@@ -80,11 +79,11 @@ public class VanillaLayeredBiomeSource extends BiomeSource {
 
 	public VanillaLayeredBiomeSource(VanillaLayeredBiomeSourceConfig config) {
 		super(BIOMES);
-		this.noiseLayer = BiomeLayers.build(config.getSeed(), config.getGeneratorType(), config.getGeneratorSettings());
+		this.biomeSampler = BiomeLayers.build(config.getSeed(), config.getGeneratorType(), config.getGeneratorSettings());
 	}
 
 	@Override
-	public Biome getStoredBiome(int biomeX, int biomeY, int biomeZ) {
-		return this.noiseLayer.sample(biomeX, biomeZ);
+	public Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
+		return this.biomeSampler.sample(biomeX, biomeZ);
 	}
 }

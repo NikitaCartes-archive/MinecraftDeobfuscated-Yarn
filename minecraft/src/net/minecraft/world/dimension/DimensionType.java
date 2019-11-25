@@ -9,9 +9,9 @@ import net.minecraft.util.DynamicSerializable;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeAccessType;
-import net.minecraft.world.biome.HorizontalVoronoiBiomeAccessType;
-import net.minecraft.world.biome.VoronoiBiomeAccessType;
+import net.minecraft.world.biome.source.BiomeAccessType;
+import net.minecraft.world.biome.source.HorizontalVoronoiBiomeAccessType;
+import net.minecraft.world.biome.source.VoronoiBiomeAccessType;
 
 public class DimensionType implements DynamicSerializable {
 	public static final DimensionType OVERWORLD = register(

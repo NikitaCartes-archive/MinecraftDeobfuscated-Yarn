@@ -31,7 +31,7 @@ public class CreeperEntityRenderer extends MobEntityRenderer<CreeperEntity, Cree
 
 	protected float method_23185(CreeperEntity creeperEntity, float f) {
 		float g = creeperEntity.getClientFuseTime(f);
-		return (int)(g * 10.0F) % 2 == 0 ? 0.0F : MathHelper.clamp(g, 0.0F, 1.0F);
+		return (int)(g * 10.0F) % 2 == 0 ? 0.0F : MathHelper.clamp(g, 0.5F, 1.0F);
 	}
 
 	public Identifier getTexture(CreeperEntity creeperEntity) {

@@ -18,7 +18,7 @@ public interface ResourcePack extends Closeable {
 
 	InputStream open(ResourceType type, Identifier id) throws IOException;
 
-	Collection<Identifier> findResources(ResourceType type, String namespace, String string, int i, Predicate<String> predicate);
+	Collection<Identifier> findResources(ResourceType type, String namespace, String prefix, int maxDepth, Predicate<String> pathFilter);
 
 	boolean contains(ResourceType type, Identifier id);
 

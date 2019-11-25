@@ -724,7 +724,7 @@ public class GameOptions {
 		return this.useNativeTransport;
 	}
 
-	public void addResourcePackContainersToManager(ResourcePackManager<ClientResourcePackProfile> manager) {
+	public void addResourcePackProfilesToManager(ResourcePackManager<ClientResourcePackProfile> manager) {
 		manager.scanPacks();
 		Set<ClientResourcePackProfile> set = Sets.<ClientResourcePackProfile>newLinkedHashSet();
 		Iterator<String> iterator = this.resourcePacks.iterator();

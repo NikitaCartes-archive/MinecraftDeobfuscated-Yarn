@@ -2,6 +2,9 @@ package net.minecraft.world.biome.layer;
 
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.biome.layer.type.IdentitySamplingLayer;
+import net.minecraft.world.biome.layer.util.BiomeLayers;
+import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
 import net.minecraft.world.level.LevelGeneratorType;
 
 public class SetBaseBiomesLayer implements IdentitySamplingLayer {

@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.entity.TrappedChestBlockEntity;
 import net.minecraft.stat.Stat;
@@ -13,7 +14,7 @@ import net.minecraft.world.BlockView;
 
 public class TrappedChestBlock extends ChestBlock {
 	public TrappedChestBlock(Block.Settings settings) {
-		super(settings);
+		super(settings, () -> BlockEntityType.TRAPPED_CHEST);
 	}
 
 	@Override

@@ -89,10 +89,10 @@ public class DirectoryResourcePack extends AbstractFileResourcePack {
 	}
 
 	@Override
-	public Collection<Identifier> findResources(ResourceType type, String namespace, String string, int i, Predicate<String> predicate) {
+	public Collection<Identifier> findResources(ResourceType type, String namespace, String prefix, int maxDepth, Predicate<String> pathFilter) {
 		File file = new File(this.base, type.getDirectory());
 		List<Identifier> list = Lists.<Identifier>newArrayList();
-		this.findFiles(new File(new File(file, namespace), string), i, namespace, list, string + "/", predicate);
+		this.findFiles(new File(new File(file, namespace), prefix), maxDepth, namespace, list, prefix + "/", pathFilter);
 		return list;
 	}
 

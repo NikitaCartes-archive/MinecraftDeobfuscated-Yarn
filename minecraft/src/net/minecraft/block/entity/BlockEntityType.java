@@ -12,7 +12,9 @@ import net.minecraft.block.Blocks;
 import net.minecraft.datafixers.Schemas;
 import net.minecraft.datafixers.TypeReferences;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.BlockView;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -239,6 +241,12 @@ public class BlockEntityType<T extends BlockEntity> {
 
 	public boolean supports(Block block) {
 		return this.blocks.contains(block);
+	}
+
+	@Nullable
+	public T get(BlockView world, BlockPos pos) {
+		BlockEntity blockEntity = world.getBlockEntity(pos);
+		return (T)(blockEntity != null && blockEntity.getType() == this ? blockEntity : null);
 	}
 
 	public static final class Builder<T extends BlockEntity> {

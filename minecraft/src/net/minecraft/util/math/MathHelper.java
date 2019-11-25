@@ -90,6 +90,15 @@ public class MathHelper {
 		}
 	}
 
+	@Environment(EnvType.CLIENT)
+	public static long method_24156(long l, long m, long n) {
+		if (l < m) {
+			return m;
+		} else {
+			return l > n ? n : l;
+		}
+	}
+
 	public static float clamp(float value, float min, float max) {
 		if (value < min) {
 			return min;

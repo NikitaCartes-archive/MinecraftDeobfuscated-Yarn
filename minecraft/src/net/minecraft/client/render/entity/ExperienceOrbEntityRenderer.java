@@ -45,7 +45,7 @@ public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEnt
 		int t = 255;
 		int u = (int)((MathHelper.sin(r + (float) (Math.PI * 4.0 / 3.0)) + 1.0F) * 0.1F * 255.0F);
 		matrixStack.translate(0.0, 0.1F, 0.0);
-		matrixStack.multiply(this.renderManager.camera.method_23767());
+		matrixStack.multiply(this.renderManager.method_24197());
 		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
 		float v = 0.3F;
 		matrixStack.scale(0.3F, 0.3F, 0.3F);
@@ -69,7 +69,7 @@ public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEnt
 			.texture(h, l)
 			.overlay(OverlayTexture.DEFAULT_UV)
 			.light(m)
-			.method_23763(matrix3f, 0.0F, 1.0F, 0.0F)
+			.normal(matrix3f, 0.0F, 1.0F, 0.0F)
 			.next();
 	}
 

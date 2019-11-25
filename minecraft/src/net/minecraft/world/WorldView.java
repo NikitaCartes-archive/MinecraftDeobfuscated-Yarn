@@ -10,7 +10,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BiomeAccess;
+import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.dimension.Dimension;
@@ -29,21 +29,21 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 
 	BiomeAccess getBiomeAccess();
 
-	default Biome method_23753(BlockPos blockPos) {
+	default Biome getBiome(BlockPos blockPos) {
 		return this.getBiomeAccess().getBiome(blockPos);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	default int method_23752(BlockPos blockPos, ColorResolver colorResolver) {
-		return colorResolver.getColor(this.method_23753(blockPos), (double)blockPos.getX(), (double)blockPos.getZ());
+	default int getColor(BlockPos pos, ColorResolver colorResolver) {
+		return colorResolver.getColor(this.getBiome(pos), (double)pos.getX(), (double)pos.getZ());
 	}
 
 	@Override
-	default Biome getStoredBiome(int biomeX, int biomeY, int biomeZ) {
+	default Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
 		Chunk chunk = this.getChunk(biomeX >> 2, biomeZ >> 2, ChunkStatus.BIOMES, false);
 		return chunk != null && chunk.getBiomeArray() != null
-			? chunk.getBiomeArray().getStoredBiome(biomeX, biomeY, biomeZ)
+			? chunk.getBiomeArray().getBiomeForNoiseGen(biomeX, biomeY, biomeZ)
 			: this.getGeneratorStoredBiome(biomeX, biomeY, biomeZ);
 	}
 
@@ -85,7 +85,7 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 
 	@Deprecated
 	default float getBrightness(BlockPos pos) {
-		return this.getDimension().method_23759(this.getLightLevel(pos));
+		return this.getDimension().getBrightness(this.getLightLevel(pos));
 	}
 
 	default int getStrongRedstonePower(BlockPos pos, Direction direction) {

@@ -11,8 +11,8 @@ import net.minecraft.resource.ResourceManager;
 public class NativeImageBackedTexture extends AbstractTexture implements AutoCloseable {
 	private NativeImage image;
 
-	public NativeImageBackedTexture(NativeImage nativeImage) {
-		this.image = nativeImage;
+	public NativeImageBackedTexture(NativeImage image) {
+		this.image = image;
 		if (!RenderSystem.isOnRenderThread()) {
 			RenderSystem.recordRenderCall(() -> {
 				TextureUtil.prepareImage(this.getGlId(), this.image.getWidth(), this.image.getHeight());
@@ -24,9 +24,9 @@ public class NativeImageBackedTexture extends AbstractTexture implements AutoClo
 		}
 	}
 
-	public NativeImageBackedTexture(int i, int j, boolean bl) {
+	public NativeImageBackedTexture(int width, int height, boolean useStb) {
 		RenderSystem.assertThread(RenderSystem::isOnGameThreadOrInit);
-		this.image = new NativeImage(i, j, bl);
+		this.image = new NativeImage(width, height, useStb);
 		TextureUtil.prepareImage(this.getGlId(), this.image.getWidth(), this.image.getHeight());
 	}
 
@@ -44,9 +44,9 @@ public class NativeImageBackedTexture extends AbstractTexture implements AutoClo
 		return this.image;
 	}
 
-	public void setImage(NativeImage nativeImage) throws Exception {
+	public void setImage(NativeImage image) throws Exception {
 		this.image.close();
-		this.image = nativeImage;
+		this.image = image;
 	}
 
 	public void close() {

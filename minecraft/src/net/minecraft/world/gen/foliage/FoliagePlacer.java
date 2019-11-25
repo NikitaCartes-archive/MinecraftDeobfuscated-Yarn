@@ -24,24 +24,17 @@ public abstract class FoliagePlacer implements DynamicSerializable {
 		this.type = type;
 	}
 
-	public abstract void method_23448(
-		ModifiableTestableWorld modifiableTestableWorld,
-		Random random,
-		BranchedTreeFeatureConfig branchedTreeFeatureConfig,
-		int i,
-		int j,
-		int k,
-		BlockPos blockPos,
-		Set<BlockPos> set
+	public abstract void generate(
+		ModifiableTestableWorld world, Random random, BranchedTreeFeatureConfig config, int i, int j, int k, BlockPos pos, Set<BlockPos> positions
 	);
 
-	public abstract int method_23452(Random random, int i, int j, BranchedTreeFeatureConfig branchedTreeFeatureConfig);
+	public abstract int getRadius(Random random, int i, int j, BranchedTreeFeatureConfig config);
 
 	protected abstract boolean method_23451(Random random, int i, int j, int k, int l, int m);
 
 	public abstract int method_23447(int i, int j, int k, int l);
 
-	protected void method_23449(
+	protected void generate(
 		ModifiableTestableWorld modifiableTestableWorld,
 		Random random,
 		BranchedTreeFeatureConfig branchedTreeFeatureConfig,

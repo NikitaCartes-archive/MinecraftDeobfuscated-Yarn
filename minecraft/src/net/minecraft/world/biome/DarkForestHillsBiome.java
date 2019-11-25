@@ -43,11 +43,11 @@ public final class DarkForestHillsBiome extends Biome {
 				.configure(
 					new RandomFeatureConfig(
 						ImmutableList.of(
-							Feature.HUGE_RED_MUSHROOM.configure(DefaultBiomeFeatures.field_21142).method_23387(0.025F),
-							Feature.HUGE_BROWN_MUSHROOM.configure(DefaultBiomeFeatures.field_21143).method_23387(0.05F),
-							Feature.DARK_OAK_TREE.configure(DefaultBiomeFeatures.field_21197).method_23387(0.6666667F),
-							Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.BIRCH_TREE_CONFIG).method_23387(0.2F),
-							Feature.FANCY_TREE.configure(DefaultBiomeFeatures.FANCY_TREE_CONFIG).method_23387(0.1F)
+							Feature.HUGE_RED_MUSHROOM.configure(DefaultBiomeFeatures.field_21142).withChance(0.025F),
+							Feature.HUGE_BROWN_MUSHROOM.configure(DefaultBiomeFeatures.field_21143).withChance(0.05F),
+							Feature.DARK_OAK_TREE.configure(DefaultBiomeFeatures.field_21197).withChance(0.6666667F),
+							Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.BIRCH_TREE_CONFIG).withChance(0.2F),
+							Feature.FANCY_TREE.configure(DefaultBiomeFeatures.FANCY_TREE_CONFIG).withChance(0.1F)
 						),
 						Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.OAK_TREE_CONFIG)
 					)

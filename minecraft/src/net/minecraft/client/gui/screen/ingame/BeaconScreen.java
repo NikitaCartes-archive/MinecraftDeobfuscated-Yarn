@@ -272,7 +272,7 @@ public class BeaconScreen extends AbstractContainerScreen<BeaconContainer> {
 
 		@Override
 		protected void renderExtra() {
-			MinecraftClient.getInstance().getTextureManager().bindTexture(this.sprite.method_24119().method_24106());
+			MinecraftClient.getInstance().getTextureManager().bindTexture(this.sprite.getAtlas().getId());
 			blit(this.x + 2, this.y + 2, this.getBlitOffset(), 18, 18, this.sprite);
 		}
 	}

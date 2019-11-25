@@ -94,17 +94,17 @@ public final class Rotation3 {
 		}
 
 		if (vector3f != null) {
-			matrix4f.field_21655 = vector3f.getX();
-			matrix4f.field_21659 = vector3f.getY();
-			matrix4f.field_21666 = vector3f.getZ();
+			matrix4f.a03 = vector3f.getX();
+			matrix4f.a13 = vector3f.getY();
+			matrix4f.a32 = vector3f.getZ();
 		}
 
 		return matrix4f;
 	}
 
 	public static Pair<Matrix3f, Vector3f> method_22932(Matrix4f matrix4f) {
-		matrix4f.multiply(1.0F / matrix4f.field_21667);
-		Vector3f vector3f = new Vector3f(matrix4f.field_21655, matrix4f.field_21659, matrix4f.field_21663);
+		matrix4f.multiply(1.0F / matrix4f.a33);
+		Vector3f vector3f = new Vector3f(matrix4f.a03, matrix4f.a13, matrix4f.a23);
 		Matrix3f matrix3f = new Matrix3f(matrix4f);
 		return Pair.of(matrix3f, vector3f);
 	}

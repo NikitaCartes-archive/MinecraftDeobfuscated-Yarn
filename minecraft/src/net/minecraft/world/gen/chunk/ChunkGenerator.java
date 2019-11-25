@@ -22,8 +22,8 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BiomeAccess;
-import net.minecraft.world.biome.BiomeArray;
+import net.minecraft.world.biome.source.BiomeAccess;
+import net.minecraft.world.biome.source.BiomeArray;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ProtoChunk;
@@ -145,7 +145,7 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
 	}
 
 	public List<Biome.SpawnEntry> getEntitySpawnList(EntityCategory category, BlockPos pos) {
-		return this.world.method_23753(pos).getEntitySpawnList(category);
+		return this.world.getBiome(pos).getEntitySpawnList(category);
 	}
 
 	public void setStructureStarts(BiomeAccess biomeAccess, Chunk chunk, ChunkGenerator<?> chunkGenerator, StructureManager structureManager) {
