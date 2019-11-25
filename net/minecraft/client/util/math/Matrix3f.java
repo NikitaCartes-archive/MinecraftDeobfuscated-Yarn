@@ -18,15 +18,15 @@ public final class Matrix3f {
     private static final float COS_PI_OVER_EIGHT = (float)Math.cos(0.39269908169872414);
     private static final float SIN_PI_OVER_EIGHT = (float)Math.sin(0.39269908169872414);
     private static final float SQRT_HALF = 1.0f / (float)Math.sqrt(2.0);
-    protected float field_21633;
-    protected float field_21634;
-    protected float field_21635;
-    protected float field_21636;
-    protected float field_21637;
-    protected float field_21638;
-    protected float field_21639;
-    protected float field_21640;
-    protected float field_21641;
+    protected float a00;
+    protected float a01;
+    protected float a02;
+    protected float a10;
+    protected float a11;
+    protected float a12;
+    protected float a20;
+    protected float a21;
+    protected float a22;
 
     public Matrix3f() {
     }
@@ -39,53 +39,53 @@ public final class Matrix3f {
         float j = 2.0f * f * f;
         float k = 2.0f * g * g;
         float l = 2.0f * h * h;
-        this.field_21633 = 1.0f - k - l;
-        this.field_21637 = 1.0f - l - j;
-        this.field_21641 = 1.0f - j - k;
+        this.a00 = 1.0f - k - l;
+        this.a11 = 1.0f - l - j;
+        this.a22 = 1.0f - j - k;
         float m = f * g;
         float n = g * h;
         float o = h * f;
         float p = f * i;
         float q = g * i;
         float r = h * i;
-        this.field_21636 = 2.0f * (m + r);
-        this.field_21634 = 2.0f * (m - r);
-        this.field_21639 = 2.0f * (o - q);
-        this.field_21635 = 2.0f * (o + q);
-        this.field_21640 = 2.0f * (n + p);
-        this.field_21638 = 2.0f * (n - p);
+        this.a10 = 2.0f * (m + r);
+        this.a01 = 2.0f * (m - r);
+        this.a20 = 2.0f * (o - q);
+        this.a02 = 2.0f * (o + q);
+        this.a21 = 2.0f * (n + p);
+        this.a12 = 2.0f * (n - p);
     }
 
     public static Matrix3f method_23963(float f, float g, float h) {
         Matrix3f matrix3f = new Matrix3f();
-        matrix3f.field_21633 = f;
-        matrix3f.field_21637 = g;
-        matrix3f.field_21641 = h;
+        matrix3f.a00 = f;
+        matrix3f.a11 = g;
+        matrix3f.a22 = h;
         return matrix3f;
     }
 
     public Matrix3f(Matrix4f matrix4f) {
-        this.field_21633 = matrix4f.field_21652;
-        this.field_21634 = matrix4f.field_21653;
-        this.field_21635 = matrix4f.field_21654;
-        this.field_21636 = matrix4f.field_21656;
-        this.field_21637 = matrix4f.field_21657;
-        this.field_21638 = matrix4f.field_21658;
-        this.field_21639 = matrix4f.field_21660;
-        this.field_21640 = matrix4f.field_21661;
-        this.field_21641 = matrix4f.field_21662;
+        this.a00 = matrix4f.a00;
+        this.a01 = matrix4f.a01;
+        this.a02 = matrix4f.a02;
+        this.a10 = matrix4f.a10;
+        this.a11 = matrix4f.a11;
+        this.a12 = matrix4f.a12;
+        this.a20 = matrix4f.a20;
+        this.a21 = matrix4f.a21;
+        this.a22 = matrix4f.a22;
     }
 
     public Matrix3f(Matrix3f matrix3f) {
-        this.field_21633 = matrix3f.field_21633;
-        this.field_21634 = matrix3f.field_21634;
-        this.field_21635 = matrix3f.field_21635;
-        this.field_21636 = matrix3f.field_21636;
-        this.field_21637 = matrix3f.field_21637;
-        this.field_21638 = matrix3f.field_21638;
-        this.field_21639 = matrix3f.field_21639;
-        this.field_21640 = matrix3f.field_21640;
-        this.field_21641 = matrix3f.field_21641;
+        this.a00 = matrix3f.a00;
+        this.a01 = matrix3f.a01;
+        this.a02 = matrix3f.a02;
+        this.a10 = matrix3f.a10;
+        this.a11 = matrix3f.a11;
+        this.a12 = matrix3f.a12;
+        this.a20 = matrix3f.a20;
+        this.a21 = matrix3f.a21;
+        this.a22 = matrix3f.a22;
     }
 
     private static Pair<Float, Float> method_22849(float f, float g, float h) {
@@ -122,8 +122,8 @@ public final class Matrix3f {
         Pair<Float, Float> pair;
         Matrix3f matrix3f2 = new Matrix3f();
         Quaternion quaternion = Quaternion.IDENTITY.copy();
-        if (matrix3f.field_21634 * matrix3f.field_21634 + matrix3f.field_21636 * matrix3f.field_21636 > 1.0E-6f) {
-            pair = Matrix3f.method_22849(matrix3f.field_21633, 0.5f * (matrix3f.field_21634 + matrix3f.field_21636), matrix3f.field_21637);
+        if (matrix3f.a01 * matrix3f.a01 + matrix3f.a10 * matrix3f.a10 > 1.0E-6f) {
+            pair = Matrix3f.method_22849(matrix3f.a00, 0.5f * (matrix3f.a01 + matrix3f.a10), matrix3f.a11);
             float_ = pair.getFirst();
             float2 = pair.getSecond();
             quaternion2 = new Quaternion(0.0f, 0.0f, float_.floatValue(), float2.floatValue());
@@ -132,18 +132,18 @@ public final class Matrix3f {
             h = float2.floatValue() * float2.floatValue() + float_.floatValue() * float_.floatValue();
             quaternion.hamiltonProduct(quaternion2);
             matrix3f2.loadIdentity();
-            matrix3f2.field_21633 = f;
-            matrix3f2.field_21637 = f;
-            matrix3f2.field_21636 = -g;
-            matrix3f2.field_21634 = g;
-            matrix3f2.field_21641 = h;
+            matrix3f2.a00 = f;
+            matrix3f2.a11 = f;
+            matrix3f2.a10 = -g;
+            matrix3f2.a01 = g;
+            matrix3f2.a22 = h;
             matrix3f.multiply(matrix3f2);
             matrix3f2.transpose();
             matrix3f2.multiply(matrix3f);
             matrix3f.load(matrix3f2);
         }
-        if (matrix3f.field_21635 * matrix3f.field_21635 + matrix3f.field_21639 * matrix3f.field_21639 > 1.0E-6f) {
-            pair = Matrix3f.method_22849(matrix3f.field_21633, 0.5f * (matrix3f.field_21635 + matrix3f.field_21639), matrix3f.field_21641);
+        if (matrix3f.a02 * matrix3f.a02 + matrix3f.a20 * matrix3f.a20 > 1.0E-6f) {
+            pair = Matrix3f.method_22849(matrix3f.a00, 0.5f * (matrix3f.a02 + matrix3f.a20), matrix3f.a22);
             float i = -pair.getFirst().floatValue();
             float2 = pair.getSecond();
             quaternion2 = new Quaternion(0.0f, i, 0.0f, float2.floatValue());
@@ -152,18 +152,18 @@ public final class Matrix3f {
             h = float2.floatValue() * float2.floatValue() + i * i;
             quaternion.hamiltonProduct(quaternion2);
             matrix3f2.loadIdentity();
-            matrix3f2.field_21633 = f;
-            matrix3f2.field_21641 = f;
-            matrix3f2.field_21639 = g;
-            matrix3f2.field_21635 = -g;
-            matrix3f2.field_21637 = h;
+            matrix3f2.a00 = f;
+            matrix3f2.a22 = f;
+            matrix3f2.a20 = g;
+            matrix3f2.a02 = -g;
+            matrix3f2.a11 = h;
             matrix3f.multiply(matrix3f2);
             matrix3f2.transpose();
             matrix3f2.multiply(matrix3f);
             matrix3f.load(matrix3f2);
         }
-        if (matrix3f.field_21638 * matrix3f.field_21638 + matrix3f.field_21640 * matrix3f.field_21640 > 1.0E-6f) {
-            pair = Matrix3f.method_22849(matrix3f.field_21637, 0.5f * (matrix3f.field_21638 + matrix3f.field_21640), matrix3f.field_21641);
+        if (matrix3f.a12 * matrix3f.a12 + matrix3f.a21 * matrix3f.a21 > 1.0E-6f) {
+            pair = Matrix3f.method_22849(matrix3f.a11, 0.5f * (matrix3f.a12 + matrix3f.a21), matrix3f.a22);
             float_ = pair.getFirst();
             float2 = pair.getSecond();
             quaternion2 = new Quaternion(float_.floatValue(), 0.0f, 0.0f, float2.floatValue());
@@ -172,11 +172,11 @@ public final class Matrix3f {
             h = float2.floatValue() * float2.floatValue() + float_.floatValue() * float_.floatValue();
             quaternion.hamiltonProduct(quaternion2);
             matrix3f2.loadIdentity();
-            matrix3f2.field_21637 = f;
-            matrix3f2.field_21641 = f;
-            matrix3f2.field_21640 = -g;
-            matrix3f2.field_21638 = g;
-            matrix3f2.field_21633 = h;
+            matrix3f2.a11 = f;
+            matrix3f2.a22 = f;
+            matrix3f2.a21 = -g;
+            matrix3f2.a12 = g;
+            matrix3f2.a00 = h;
             matrix3f.multiply(matrix3f2);
             matrix3f2.transpose();
             matrix3f2.multiply(matrix3f);
@@ -186,15 +186,15 @@ public final class Matrix3f {
     }
 
     public void transpose() {
-        float f = this.field_21634;
-        this.field_21634 = this.field_21636;
-        this.field_21636 = f;
-        f = this.field_21635;
-        this.field_21635 = this.field_21639;
-        this.field_21639 = f;
-        f = this.field_21638;
-        this.field_21638 = this.field_21640;
-        this.field_21640 = f;
+        float f = this.a01;
+        this.a01 = this.a10;
+        this.a10 = f;
+        f = this.a02;
+        this.a02 = this.a20;
+        this.a20 = f;
+        f = this.a12;
+        this.a12 = this.a21;
+        this.a21 = f;
     }
 
     public Triple<Quaternion, Vector3f, Quaternion> method_22853() {
@@ -210,7 +210,7 @@ public final class Matrix3f {
         Matrix3f matrix3f2 = new Matrix3f(this);
         matrix3f2.multiply(new Matrix3f(quaternion2));
         float f = 1.0f;
-        Pair<Float, Float> pair = Matrix3f.method_22848(matrix3f2.field_21633, matrix3f2.field_21636);
+        Pair<Float, Float> pair = Matrix3f.method_22848(matrix3f2.a00, matrix3f2.a10);
         Float float_ = pair.getFirst();
         Float float2 = pair.getSecond();
         float g = float2.floatValue() * float2.floatValue() - float_.floatValue() * float_.floatValue();
@@ -220,14 +220,14 @@ public final class Matrix3f {
         quaternion.hamiltonProduct(quaternion3);
         Matrix3f matrix3f3 = new Matrix3f();
         matrix3f3.loadIdentity();
-        matrix3f3.field_21633 = g;
-        matrix3f3.field_21637 = g;
-        matrix3f3.field_21636 = h;
-        matrix3f3.field_21634 = -h;
-        matrix3f3.field_21641 = j;
+        matrix3f3.a00 = g;
+        matrix3f3.a11 = g;
+        matrix3f3.a10 = h;
+        matrix3f3.a01 = -h;
+        matrix3f3.a22 = j;
         f *= j;
         matrix3f3.multiply(matrix3f2);
-        pair = Matrix3f.method_22848(matrix3f3.field_21633, matrix3f3.field_21639);
+        pair = Matrix3f.method_22848(matrix3f3.a00, matrix3f3.a20);
         float k = -pair.getFirst().floatValue();
         Float float3 = pair.getSecond();
         float l = float3.floatValue() * float3.floatValue() - k * k;
@@ -237,14 +237,14 @@ public final class Matrix3f {
         quaternion.hamiltonProduct(quaternion4);
         Matrix3f matrix3f4 = new Matrix3f();
         matrix3f4.loadIdentity();
-        matrix3f4.field_21633 = l;
-        matrix3f4.field_21641 = l;
-        matrix3f4.field_21639 = -m;
-        matrix3f4.field_21635 = m;
-        matrix3f4.field_21637 = n;
+        matrix3f4.a00 = l;
+        matrix3f4.a22 = l;
+        matrix3f4.a20 = -m;
+        matrix3f4.a02 = m;
+        matrix3f4.a11 = n;
         f *= n;
         matrix3f4.multiply(matrix3f3);
-        pair = Matrix3f.method_22848(matrix3f4.field_21637, matrix3f4.field_21640);
+        pair = Matrix3f.method_22848(matrix3f4.a11, matrix3f4.a21);
         Float float4 = pair.getFirst();
         Float float5 = pair.getSecond();
         float o = float5.floatValue() * float5.floatValue() - float4.floatValue() * float4.floatValue();
@@ -254,16 +254,16 @@ public final class Matrix3f {
         quaternion.hamiltonProduct(quaternion5);
         Matrix3f matrix3f5 = new Matrix3f();
         matrix3f5.loadIdentity();
-        matrix3f5.field_21637 = o;
-        matrix3f5.field_21641 = o;
-        matrix3f5.field_21640 = p;
-        matrix3f5.field_21638 = -p;
-        matrix3f5.field_21633 = q;
+        matrix3f5.a11 = o;
+        matrix3f5.a22 = o;
+        matrix3f5.a21 = p;
+        matrix3f5.a12 = -p;
+        matrix3f5.a00 = q;
         f *= q;
         matrix3f5.multiply(matrix3f4);
         f = 1.0f / f;
         quaternion.scale((float)Math.sqrt(f));
-        Vector3f vector3f = new Vector3f(matrix3f5.field_21633 * f, matrix3f5.field_21637 * f, matrix3f5.field_21641 * f);
+        Vector3f vector3f = new Vector3f(matrix3f5.a00 * f, matrix3f5.a11 * f, matrix3f5.a22 * f);
         return Triple.of(quaternion, vector3f, quaternion2);
     }
 
@@ -275,137 +275,137 @@ public final class Matrix3f {
             return false;
         }
         Matrix3f matrix3f = (Matrix3f)object;
-        return Float.compare(matrix3f.field_21633, this.field_21633) == 0 && Float.compare(matrix3f.field_21634, this.field_21634) == 0 && Float.compare(matrix3f.field_21635, this.field_21635) == 0 && Float.compare(matrix3f.field_21636, this.field_21636) == 0 && Float.compare(matrix3f.field_21637, this.field_21637) == 0 && Float.compare(matrix3f.field_21638, this.field_21638) == 0 && Float.compare(matrix3f.field_21639, this.field_21639) == 0 && Float.compare(matrix3f.field_21640, this.field_21640) == 0 && Float.compare(matrix3f.field_21641, this.field_21641) == 0;
+        return Float.compare(matrix3f.a00, this.a00) == 0 && Float.compare(matrix3f.a01, this.a01) == 0 && Float.compare(matrix3f.a02, this.a02) == 0 && Float.compare(matrix3f.a10, this.a10) == 0 && Float.compare(matrix3f.a11, this.a11) == 0 && Float.compare(matrix3f.a12, this.a12) == 0 && Float.compare(matrix3f.a20, this.a20) == 0 && Float.compare(matrix3f.a21, this.a21) == 0 && Float.compare(matrix3f.a22, this.a22) == 0;
     }
 
     public int hashCode() {
-        int i = this.field_21633 != 0.0f ? Float.floatToIntBits(this.field_21633) : 0;
-        i = 31 * i + (this.field_21634 != 0.0f ? Float.floatToIntBits(this.field_21634) : 0);
-        i = 31 * i + (this.field_21635 != 0.0f ? Float.floatToIntBits(this.field_21635) : 0);
-        i = 31 * i + (this.field_21636 != 0.0f ? Float.floatToIntBits(this.field_21636) : 0);
-        i = 31 * i + (this.field_21637 != 0.0f ? Float.floatToIntBits(this.field_21637) : 0);
-        i = 31 * i + (this.field_21638 != 0.0f ? Float.floatToIntBits(this.field_21638) : 0);
-        i = 31 * i + (this.field_21639 != 0.0f ? Float.floatToIntBits(this.field_21639) : 0);
-        i = 31 * i + (this.field_21640 != 0.0f ? Float.floatToIntBits(this.field_21640) : 0);
-        i = 31 * i + (this.field_21641 != 0.0f ? Float.floatToIntBits(this.field_21641) : 0);
+        int i = this.a00 != 0.0f ? Float.floatToIntBits(this.a00) : 0;
+        i = 31 * i + (this.a01 != 0.0f ? Float.floatToIntBits(this.a01) : 0);
+        i = 31 * i + (this.a02 != 0.0f ? Float.floatToIntBits(this.a02) : 0);
+        i = 31 * i + (this.a10 != 0.0f ? Float.floatToIntBits(this.a10) : 0);
+        i = 31 * i + (this.a11 != 0.0f ? Float.floatToIntBits(this.a11) : 0);
+        i = 31 * i + (this.a12 != 0.0f ? Float.floatToIntBits(this.a12) : 0);
+        i = 31 * i + (this.a20 != 0.0f ? Float.floatToIntBits(this.a20) : 0);
+        i = 31 * i + (this.a21 != 0.0f ? Float.floatToIntBits(this.a21) : 0);
+        i = 31 * i + (this.a22 != 0.0f ? Float.floatToIntBits(this.a22) : 0);
         return i;
     }
 
     public void load(Matrix3f matrix3f) {
-        this.field_21633 = matrix3f.field_21633;
-        this.field_21634 = matrix3f.field_21634;
-        this.field_21635 = matrix3f.field_21635;
-        this.field_21636 = matrix3f.field_21636;
-        this.field_21637 = matrix3f.field_21637;
-        this.field_21638 = matrix3f.field_21638;
-        this.field_21639 = matrix3f.field_21639;
-        this.field_21640 = matrix3f.field_21640;
-        this.field_21641 = matrix3f.field_21641;
+        this.a00 = matrix3f.a00;
+        this.a01 = matrix3f.a01;
+        this.a02 = matrix3f.a02;
+        this.a10 = matrix3f.a10;
+        this.a11 = matrix3f.a11;
+        this.a12 = matrix3f.a12;
+        this.a20 = matrix3f.a20;
+        this.a21 = matrix3f.a21;
+        this.a22 = matrix3f.a22;
     }
 
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("Matrix3f:\n");
-        stringBuilder.append(this.field_21633);
+        stringBuilder.append(this.a00);
         stringBuilder.append(" ");
-        stringBuilder.append(this.field_21634);
+        stringBuilder.append(this.a01);
         stringBuilder.append(" ");
-        stringBuilder.append(this.field_21635);
+        stringBuilder.append(this.a02);
         stringBuilder.append("\n");
-        stringBuilder.append(this.field_21636);
+        stringBuilder.append(this.a10);
         stringBuilder.append(" ");
-        stringBuilder.append(this.field_21637);
+        stringBuilder.append(this.a11);
         stringBuilder.append(" ");
-        stringBuilder.append(this.field_21638);
+        stringBuilder.append(this.a12);
         stringBuilder.append("\n");
-        stringBuilder.append(this.field_21639);
+        stringBuilder.append(this.a20);
         stringBuilder.append(" ");
-        stringBuilder.append(this.field_21640);
+        stringBuilder.append(this.a21);
         stringBuilder.append(" ");
-        stringBuilder.append(this.field_21641);
+        stringBuilder.append(this.a22);
         stringBuilder.append("\n");
         return stringBuilder.toString();
     }
 
     public void loadIdentity() {
-        this.field_21633 = 1.0f;
-        this.field_21634 = 0.0f;
-        this.field_21635 = 0.0f;
-        this.field_21636 = 0.0f;
-        this.field_21637 = 1.0f;
-        this.field_21638 = 0.0f;
-        this.field_21639 = 0.0f;
-        this.field_21640 = 0.0f;
-        this.field_21641 = 1.0f;
+        this.a00 = 1.0f;
+        this.a01 = 0.0f;
+        this.a02 = 0.0f;
+        this.a10 = 0.0f;
+        this.a11 = 1.0f;
+        this.a12 = 0.0f;
+        this.a20 = 0.0f;
+        this.a21 = 0.0f;
+        this.a22 = 1.0f;
     }
 
     public float method_23731() {
-        float f = this.field_21637 * this.field_21641 - this.field_21638 * this.field_21640;
-        float g = -(this.field_21636 * this.field_21641 - this.field_21638 * this.field_21639);
-        float h = this.field_21636 * this.field_21640 - this.field_21637 * this.field_21639;
-        float i = -(this.field_21634 * this.field_21641 - this.field_21635 * this.field_21640);
-        float j = this.field_21633 * this.field_21641 - this.field_21635 * this.field_21639;
-        float k = -(this.field_21633 * this.field_21640 - this.field_21634 * this.field_21639);
-        float l = this.field_21634 * this.field_21638 - this.field_21635 * this.field_21637;
-        float m = -(this.field_21633 * this.field_21638 - this.field_21635 * this.field_21636);
-        float n = this.field_21633 * this.field_21637 - this.field_21634 * this.field_21636;
-        float o = this.field_21633 * f + this.field_21634 * g + this.field_21635 * h;
-        this.field_21633 = f;
-        this.field_21636 = g;
-        this.field_21639 = h;
-        this.field_21634 = i;
-        this.field_21637 = j;
-        this.field_21640 = k;
-        this.field_21635 = l;
-        this.field_21638 = m;
-        this.field_21641 = n;
+        float f = this.a11 * this.a22 - this.a12 * this.a21;
+        float g = -(this.a10 * this.a22 - this.a12 * this.a20);
+        float h = this.a10 * this.a21 - this.a11 * this.a20;
+        float i = -(this.a01 * this.a22 - this.a02 * this.a21);
+        float j = this.a00 * this.a22 - this.a02 * this.a20;
+        float k = -(this.a00 * this.a21 - this.a01 * this.a20);
+        float l = this.a01 * this.a12 - this.a02 * this.a11;
+        float m = -(this.a00 * this.a12 - this.a02 * this.a10);
+        float n = this.a00 * this.a11 - this.a01 * this.a10;
+        float o = this.a00 * f + this.a01 * g + this.a02 * h;
+        this.a00 = f;
+        this.a10 = g;
+        this.a20 = h;
+        this.a01 = i;
+        this.a11 = j;
+        this.a21 = k;
+        this.a02 = l;
+        this.a12 = m;
+        this.a22 = n;
         return o;
     }
 
     public boolean method_23732() {
         float f = this.method_23731();
         if (Math.abs(f) > 1.0E-6f) {
-            this.method_23729(f);
+            this.multiply(f);
             return true;
         }
         return false;
     }
 
     public void multiply(Matrix3f matrix3f) {
-        float f = this.field_21633 * matrix3f.field_21633 + this.field_21634 * matrix3f.field_21636 + this.field_21635 * matrix3f.field_21639;
-        float g = this.field_21633 * matrix3f.field_21634 + this.field_21634 * matrix3f.field_21637 + this.field_21635 * matrix3f.field_21640;
-        float h = this.field_21633 * matrix3f.field_21635 + this.field_21634 * matrix3f.field_21638 + this.field_21635 * matrix3f.field_21641;
-        float i = this.field_21636 * matrix3f.field_21633 + this.field_21637 * matrix3f.field_21636 + this.field_21638 * matrix3f.field_21639;
-        float j = this.field_21636 * matrix3f.field_21634 + this.field_21637 * matrix3f.field_21637 + this.field_21638 * matrix3f.field_21640;
-        float k = this.field_21636 * matrix3f.field_21635 + this.field_21637 * matrix3f.field_21638 + this.field_21638 * matrix3f.field_21641;
-        float l = this.field_21639 * matrix3f.field_21633 + this.field_21640 * matrix3f.field_21636 + this.field_21641 * matrix3f.field_21639;
-        float m = this.field_21639 * matrix3f.field_21634 + this.field_21640 * matrix3f.field_21637 + this.field_21641 * matrix3f.field_21640;
-        float n = this.field_21639 * matrix3f.field_21635 + this.field_21640 * matrix3f.field_21638 + this.field_21641 * matrix3f.field_21641;
-        this.field_21633 = f;
-        this.field_21634 = g;
-        this.field_21635 = h;
-        this.field_21636 = i;
-        this.field_21637 = j;
-        this.field_21638 = k;
-        this.field_21639 = l;
-        this.field_21640 = m;
-        this.field_21641 = n;
+        float f = this.a00 * matrix3f.a00 + this.a01 * matrix3f.a10 + this.a02 * matrix3f.a20;
+        float g = this.a00 * matrix3f.a01 + this.a01 * matrix3f.a11 + this.a02 * matrix3f.a21;
+        float h = this.a00 * matrix3f.a02 + this.a01 * matrix3f.a12 + this.a02 * matrix3f.a22;
+        float i = this.a10 * matrix3f.a00 + this.a11 * matrix3f.a10 + this.a12 * matrix3f.a20;
+        float j = this.a10 * matrix3f.a01 + this.a11 * matrix3f.a11 + this.a12 * matrix3f.a21;
+        float k = this.a10 * matrix3f.a02 + this.a11 * matrix3f.a12 + this.a12 * matrix3f.a22;
+        float l = this.a20 * matrix3f.a00 + this.a21 * matrix3f.a10 + this.a22 * matrix3f.a20;
+        float m = this.a20 * matrix3f.a01 + this.a21 * matrix3f.a11 + this.a22 * matrix3f.a21;
+        float n = this.a20 * matrix3f.a02 + this.a21 * matrix3f.a12 + this.a22 * matrix3f.a22;
+        this.a00 = f;
+        this.a01 = g;
+        this.a02 = h;
+        this.a10 = i;
+        this.a11 = j;
+        this.a12 = k;
+        this.a20 = l;
+        this.a21 = m;
+        this.a22 = n;
     }
 
     public void multiply(Quaternion quaternion) {
         this.multiply(new Matrix3f(quaternion));
     }
 
-    public void method_23729(float f) {
-        this.field_21633 *= f;
-        this.field_21634 *= f;
-        this.field_21635 *= f;
-        this.field_21636 *= f;
-        this.field_21637 *= f;
-        this.field_21638 *= f;
-        this.field_21639 *= f;
-        this.field_21640 *= f;
-        this.field_21641 *= f;
+    public void multiply(float f) {
+        this.a00 *= f;
+        this.a01 *= f;
+        this.a02 *= f;
+        this.a10 *= f;
+        this.a11 *= f;
+        this.a12 *= f;
+        this.a20 *= f;
+        this.a21 *= f;
+        this.a22 *= f;
     }
 
     public Matrix3f copy() {

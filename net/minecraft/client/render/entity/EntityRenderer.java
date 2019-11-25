@@ -31,7 +31,7 @@ public abstract class EntityRenderer<T extends Entity> {
     }
 
     public final int method_24088(T entity, float f) {
-        return LightmapTextureManager.method_23687(this.method_24087(entity, f), ((Entity)entity).world.getLightLevel(LightType.SKY, new BlockPos(((Entity)entity).getCameraPosVec(f))));
+        return LightmapTextureManager.pack(this.method_24087(entity, f), ((Entity)entity).world.getLightLevel(LightType.SKY, new BlockPos(((Entity)entity).getCameraPosVec(f))));
     }
 
     protected int method_24087(T entity, float f) {
@@ -86,7 +86,7 @@ public abstract class EntityRenderer<T extends Entity> {
         int j = "deadmau5".equals(string) ? -10 : 0;
         matrixStack.push();
         matrixStack.translate(0.0, f, 0.0);
-        matrixStack.multiply(this.renderManager.camera.method_23767());
+        matrixStack.multiply(this.renderManager.method_24197());
         matrixStack.scale(-0.025f, -0.025f, 0.025f);
         Matrix4f matrix4f = matrixStack.peek().getModel();
         float g = MinecraftClient.getInstance().options.getTextBackgroundOpacity(0.25f);

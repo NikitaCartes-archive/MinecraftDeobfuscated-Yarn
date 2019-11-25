@@ -68,6 +68,7 @@ public class BlockTags {
     public static final Tag<Block> BEEHIVES;
     public static final Tag<Block> CROPS;
     public static final Tag<Block> BEE_GROWABLES;
+    public static final Tag<Block> PORTALS;
 
     public static void setContainer(TagContainer<Block> tagContainer) {
         container = tagContainer;
@@ -138,6 +139,7 @@ public class BlockTags {
         BEEHIVES = BlockTags.register("beehives");
         CROPS = BlockTags.register("crops");
         BEE_GROWABLES = BlockTags.register("bee_growables");
+        PORTALS = BlockTags.register("portals");
     }
 
     static class CachingTag

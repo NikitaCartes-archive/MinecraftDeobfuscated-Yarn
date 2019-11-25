@@ -71,11 +71,11 @@ extends Screen {
         this.buttonJoin = this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 52, 100, 20, I18n.translate("selectServer.select", new Object[0]), buttonWidget -> this.connect()));
         this.addButton(new ButtonWidget(this.width / 2 - 50, this.height - 52, 100, 20, I18n.translate("selectServer.direct", new Object[0]), buttonWidget -> {
             this.selectedEntry = new ServerInfo(I18n.translate("selectServer.defaultName", new Object[0]), "", false);
-            this.minecraft.openScreen(new DirectConnectScreen(this::directConnect, this.selectedEntry));
+            this.minecraft.openScreen(new DirectConnectScreen(this, this::directConnect, this.selectedEntry));
         }));
         this.addButton(new ButtonWidget(this.width / 2 + 4 + 50, this.height - 52, 100, 20, I18n.translate("selectServer.add", new Object[0]), buttonWidget -> {
             this.selectedEntry = new ServerInfo(I18n.translate("selectServer.defaultName", new Object[0]), "", false);
-            this.minecraft.openScreen(new AddServerScreen(this::addEntry, this.selectedEntry));
+            this.minecraft.openScreen(new AddServerScreen(this, this::addEntry, this.selectedEntry));
         }));
         this.buttonEdit = this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 28, 70, 20, I18n.translate("selectServer.edit", new Object[0]), buttonWidget -> {
             MultiplayerServerListWidget.Entry entry = (MultiplayerServerListWidget.Entry)this.serverListWidget.getSelected();
@@ -83,7 +83,7 @@ extends Screen {
                 ServerInfo serverInfo = ((MultiplayerServerListWidget.ServerEntry)entry).getServer();
                 this.selectedEntry = new ServerInfo(serverInfo.name, serverInfo.address, false);
                 this.selectedEntry.copyFrom(serverInfo);
-                this.minecraft.openScreen(new AddServerScreen(this::editEntry, this.selectedEntry));
+                this.minecraft.openScreen(new AddServerScreen(this, this::editEntry, this.selectedEntry));
             }
         }));
         this.buttonDelete = this.addButton(new ButtonWidget(this.width / 2 - 74, this.height - 28, 70, 20, I18n.translate("selectServer.delete", new Object[0]), buttonWidget -> {

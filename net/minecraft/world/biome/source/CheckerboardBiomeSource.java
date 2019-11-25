@@ -20,7 +20,7 @@ extends BiomeSource {
     }
 
     @Override
-    public Biome getStoredBiome(int i, int j, int k) {
+    public Biome getBiomeForNoiseGen(int i, int j, int k) {
         return this.biomeArray[Math.abs(((i >> this.gridSize) + (k >> this.gridSize)) % this.biomeArray.length)];
     }
 }

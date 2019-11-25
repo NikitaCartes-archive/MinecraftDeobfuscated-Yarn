@@ -19,7 +19,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4730;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.ModelBakeSettings;
 import net.minecraft.client.render.model.ModelLoader;
@@ -27,6 +26,7 @@ import net.minecraft.client.render.model.UnbakedModel;
 import net.minecraft.client.render.model.WeightedBakedModel;
 import net.minecraft.client.render.model.json.ModelVariant;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -64,13 +64,13 @@ implements UnbakedModel {
     }
 
     @Override
-    public Collection<class_4730> getTextureDependencies(Function<Identifier, UnbakedModel> function, Set<Pair<String, String>> set) {
+    public Collection<SpriteIdentifier> getTextureDependencies(Function<Identifier, UnbakedModel> function, Set<Pair<String, String>> set) {
         return this.getVariants().stream().map(ModelVariant::getLocation).distinct().flatMap(identifier -> ((UnbakedModel)function.apply((Identifier)identifier)).getTextureDependencies(function, set).stream()).collect(Collectors.toSet());
     }
 
     @Override
     @Nullable
-    public BakedModel bake(ModelLoader modelLoader, Function<class_4730, Sprite> function, ModelBakeSettings modelBakeSettings, Identifier identifier) {
+    public BakedModel bake(ModelLoader modelLoader, Function<SpriteIdentifier, Sprite> function, ModelBakeSettings modelBakeSettings, Identifier identifier) {
         if (this.getVariants().isEmpty()) {
             return null;
         }

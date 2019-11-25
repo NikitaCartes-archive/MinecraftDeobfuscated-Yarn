@@ -27,21 +27,21 @@ extends GameOptionsScreen {
         int i = 0;
         for (PlayerModelPart playerModelPart : PlayerModelPart.values()) {
             this.addButton(new ButtonWidget(this.width / 2 - 155 + i % 2 * 160, this.height / 6 + 24 * (i >> 1), 150, 20, this.getPlayerModelPartDisplayString(playerModelPart), buttonWidget -> {
-                this.field_21336.togglePlayerModelPart(playerModelPart);
+                this.gameOptions.togglePlayerModelPart(playerModelPart);
                 buttonWidget.setMessage(this.getPlayerModelPartDisplayString(playerModelPart));
             }));
             ++i;
         }
-        this.addButton(new OptionButtonWidget(this.width / 2 - 155 + i % 2 * 160, this.height / 6 + 24 * (i >> 1), 150, 20, Option.MAIN_HAND, Option.MAIN_HAND.getMessage(this.field_21336), buttonWidget -> {
-            Option.MAIN_HAND.cycle(this.field_21336, 1);
-            this.field_21336.write();
-            buttonWidget.setMessage(Option.MAIN_HAND.getMessage(this.field_21336));
-            this.field_21336.onPlayerModelPartChange();
+        this.addButton(new OptionButtonWidget(this.width / 2 - 155 + i % 2 * 160, this.height / 6 + 24 * (i >> 1), 150, 20, Option.MAIN_HAND, Option.MAIN_HAND.getMessage(this.gameOptions), buttonWidget -> {
+            Option.MAIN_HAND.cycle(this.gameOptions, 1);
+            this.gameOptions.write();
+            buttonWidget.setMessage(Option.MAIN_HAND.getMessage(this.gameOptions));
+            this.gameOptions.onPlayerModelPartChange();
         }));
         if (++i % 2 == 1) {
             ++i;
         }
-        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 24 * (i >> 1), 200, 20, I18n.translate("gui.done", new Object[0]), buttonWidget -> this.minecraft.openScreen(this.field_21335)));
+        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 24 * (i >> 1), 200, 20, I18n.translate("gui.done", new Object[0]), buttonWidget -> this.minecraft.openScreen(this.parent)));
     }
 
     @Override
@@ -52,7 +52,7 @@ extends GameOptionsScreen {
     }
 
     private String getPlayerModelPartDisplayString(PlayerModelPart playerModelPart) {
-        String string = this.field_21336.getEnabledPlayerModelParts().contains((Object)playerModelPart) ? I18n.translate("options.on", new Object[0]) : I18n.translate("options.off", new Object[0]);
+        String string = this.gameOptions.getEnabledPlayerModelParts().contains((Object)playerModelPart) ? I18n.translate("options.on", new Object[0]) : I18n.translate("options.off", new Object[0]);
         return playerModelPart.getOptionName().asFormattedString() + ": " + string;
     }
 }

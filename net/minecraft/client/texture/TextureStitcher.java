@@ -19,7 +19,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class TextureStitcher {
-    private static final Comparator<Holder> comparator = Comparator.comparing(holder -> -holder.height).thenComparing(holder -> -holder.width).thenComparing(holder -> holder.sprite.method_24121());
+    private static final Comparator<Holder> comparator = Comparator.comparing(holder -> -holder.height).thenComparing(holder -> -holder.width).thenComparing(holder -> holder.sprite.getId());
     private final int mipLevel;
     private final Set<Holder> holders = Sets.newHashSetWithExpectedSize(256);
     private final List<Slot> slots = Lists.newArrayListWithCapacity(256);
@@ -42,8 +42,8 @@ public class TextureStitcher {
         return this.height;
     }
 
-    public void add(Sprite.class_4727 arg) {
-        Holder holder = new Holder(arg, this.mipLevel);
+    public void add(Sprite.Info info) {
+        Holder holder = new Holder(info, this.mipLevel);
         this.holders.add(holder);
     }
 
@@ -58,12 +58,12 @@ public class TextureStitcher {
         this.height = MathHelper.smallestEncompassingPowerOfTwo(this.height);
     }
 
-    public void getStitchedSprites(class_4726 arg) {
+    public void getStitchedSprites(SpriteConsumer spriteConsumer) {
         for (Slot slot2 : this.slots) {
             slot2.addAllFilledSlots(slot -> {
                 Holder holder = slot.getTexture();
-                Sprite.class_4727 lv = holder.sprite;
-                arg.load(lv, this.width, this.height, slot.getX(), slot.getY());
+                Sprite.Info info = holder.sprite;
+                spriteConsumer.load(info, this.width, this.height, slot.getX(), slot.getY());
             });
         }
     }
@@ -202,14 +202,14 @@ public class TextureStitcher {
 
     @Environment(value=EnvType.CLIENT)
     static class Holder {
-        public final Sprite.class_4727 sprite;
+        public final Sprite.Info sprite;
         public final int width;
         public final int height;
 
-        public Holder(Sprite.class_4727 arg, int i) {
-            this.sprite = arg;
-            this.width = TextureStitcher.applyMipLevel(arg.method_24123(), i);
-            this.height = TextureStitcher.applyMipLevel(arg.method_24125(), i);
+        public Holder(Sprite.Info info, int i) {
+            this.sprite = info;
+            this.width = TextureStitcher.applyMipLevel(info.getWidth(), i);
+            this.height = TextureStitcher.applyMipLevel(info.getHeight(), i);
         }
 
         public String toString() {
@@ -218,8 +218,8 @@ public class TextureStitcher {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static interface class_4726 {
-        public void load(Sprite.class_4727 var1, int var2, int var3, int var4, int var5);
+    public static interface SpriteConsumer {
+        public void load(Sprite.Info var1, int var2, int var3, int var4, int var5);
     }
 }
 

@@ -105,15 +105,15 @@ public class Vector4f {
         return true;
     }
 
-    public void multiply(Matrix4f matrix4f) {
+    public void transform(Matrix4f matrix4f) {
         float f = this.x;
         float g = this.y;
         float h = this.z;
         float i = this.w;
-        this.x = matrix4f.field_21652 * f + matrix4f.field_21653 * g + matrix4f.field_21654 * h + matrix4f.field_21655 * i;
-        this.y = matrix4f.field_21656 * f + matrix4f.field_21657 * g + matrix4f.field_21658 * h + matrix4f.field_21659 * i;
-        this.z = matrix4f.field_21660 * f + matrix4f.field_21661 * g + matrix4f.field_21662 * h + matrix4f.field_21663 * i;
-        this.w = matrix4f.field_21664 * f + matrix4f.field_21665 * g + matrix4f.field_21666 * h + matrix4f.field_21667 * i;
+        this.x = matrix4f.a00 * f + matrix4f.a01 * g + matrix4f.a02 * h + matrix4f.a03 * i;
+        this.y = matrix4f.a10 * f + matrix4f.a11 * g + matrix4f.a12 * h + matrix4f.a13 * i;
+        this.z = matrix4f.a20 * f + matrix4f.a21 * g + matrix4f.a22 * h + matrix4f.a23 * i;
+        this.w = matrix4f.a30 * f + matrix4f.a31 * g + matrix4f.a32 * h + matrix4f.a33 * i;
     }
 
     public void setQuarternion(Quaternion quaternion) {

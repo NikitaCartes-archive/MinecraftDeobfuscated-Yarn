@@ -34,7 +34,7 @@ public class RandomFeatureEntry<FC extends FeatureConfig> {
     }
 
     public static <T> RandomFeatureEntry<?> deserialize(Dynamic<T> dynamic) {
-        return ConfiguredFeature.deserialize(dynamic).method_23387(dynamic.get("chance").asFloat(0.0f));
+        return ConfiguredFeature.deserialize(dynamic).withChance(dynamic.get("chance").asFloat(0.0f));
     }
 }
 

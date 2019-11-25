@@ -24,7 +24,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_4730;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.ModelBakeSettings;
 import net.minecraft.client.render.model.ModelLoader;
@@ -34,6 +33,7 @@ import net.minecraft.client.render.model.json.ModelVariantMap;
 import net.minecraft.client.render.model.json.MultipartModelComponent;
 import net.minecraft.client.render.model.json.WeightedUnbakedModel;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -82,13 +82,13 @@ implements UnbakedModel {
     }
 
     @Override
-    public Collection<class_4730> getTextureDependencies(Function<Identifier, UnbakedModel> function, Set<Pair<String, String>> set) {
+    public Collection<SpriteIdentifier> getTextureDependencies(Function<Identifier, UnbakedModel> function, Set<Pair<String, String>> set) {
         return this.getComponents().stream().flatMap(multipartModelComponent -> multipartModelComponent.getModel().getTextureDependencies(function, set).stream()).collect(Collectors.toSet());
     }
 
     @Override
     @Nullable
-    public BakedModel bake(ModelLoader modelLoader, Function<class_4730, Sprite> function, ModelBakeSettings modelBakeSettings, Identifier identifier) {
+    public BakedModel bake(ModelLoader modelLoader, Function<SpriteIdentifier, Sprite> function, ModelBakeSettings modelBakeSettings, Identifier identifier) {
         MultipartBakedModel.Builder builder = new MultipartBakedModel.Builder();
         for (MultipartModelComponent multipartModelComponent : this.getComponents()) {
             BakedModel bakedModel = multipartModelComponent.getModel().bake(modelLoader, function, modelBakeSettings, identifier);

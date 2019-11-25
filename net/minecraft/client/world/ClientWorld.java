@@ -321,8 +321,14 @@ extends World {
     public void doRandomBlockDisplayTicks(int i, int j, int k) {
         int l = 32;
         Random random = new Random();
-        ItemStack itemStack = this.client.player.getMainHandStack();
-        boolean bl = this.client.interactionManager.getCurrentGameMode() == GameMode.CREATIVE && !itemStack.isEmpty() && itemStack.getItem() == Blocks.BARRIER.asItem();
+        boolean bl = false;
+        if (this.client.interactionManager.getCurrentGameMode() == GameMode.CREATIVE) {
+            for (ItemStack itemStack : this.client.player.getItemsHand()) {
+                if (itemStack.getItem() != Blocks.BARRIER.asItem()) continue;
+                bl = true;
+                break;
+            }
+        }
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (int m = 0; m < 667; ++m) {
             this.randomBlockDisplayTick(i, j, k, 16, random, bl, mutable);
@@ -590,7 +596,7 @@ extends World {
         float g = this.getSkyAngle(f);
         float h = MathHelper.cos(g * ((float)Math.PI * 2)) * 2.0f + 0.5f;
         h = MathHelper.clamp(h, 0.0f, 1.0f);
-        Biome biome = this.method_23753(blockPos);
+        Biome biome = this.getBiome(blockPos);
         int i = biome.getSkyColor();
         float j = (float)(i >> 16 & 0xFF) / 255.0f;
         float k = (float)(i >> 8 & 0xFF) / 255.0f;
@@ -625,7 +631,7 @@ extends World {
         return new Vec3d(j, k, l);
     }
 
-    public Vec3d method_23785(float f) {
+    public Vec3d getCloudsColor(float f) {
         float n;
         float m;
         float g = this.getSkyAngle(f);
@@ -656,7 +662,7 @@ extends World {
         return new Vec3d(i, j, k);
     }
 
-    public Vec3d method_23786(float f) {
+    public Vec3d getFogColor(float f) {
         float g = this.getSkyAngle(f);
         return this.dimension.getFogColor(g, f);
     }
@@ -668,7 +674,7 @@ extends World {
         return h * h * 0.5f;
     }
 
-    public double method_23788() {
+    public double getSkyDarknessHeight() {
         if (this.properties.getGeneratorType() == LevelGeneratorType.FLAT) {
             return 0.0;
         }
@@ -685,15 +691,15 @@ extends World {
     }
 
     @Override
-    public int method_23752(BlockPos blockPos, ColorResolver colorResolver) {
+    public int getColor(BlockPos blockPos, ColorResolver colorResolver) {
         BiomeColorCache biomeColorCache = this.colorCache.get(colorResolver);
-        return biomeColorCache.getBiomeColor(blockPos, () -> this.method_23780(blockPos, colorResolver));
+        return biomeColorCache.getBiomeColor(blockPos, () -> this.calculateColor(blockPos, colorResolver));
     }
 
-    public int method_23780(BlockPos blockPos, ColorResolver colorResolver) {
+    public int calculateColor(BlockPos blockPos, ColorResolver colorResolver) {
         int i = MinecraftClient.getInstance().options.biomeBlendRadius;
         if (i == 0) {
-            return colorResolver.getColor(this.method_23753(blockPos), blockPos.getX(), blockPos.getZ());
+            return colorResolver.getColor(this.getBiome(blockPos), blockPos.getX(), blockPos.getZ());
         }
         int j = (i * 2 + 1) * (i * 2 + 1);
         int k = 0;
@@ -703,7 +709,7 @@ extends World {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         while (cuboidBlockIterator.step()) {
             mutable.set(cuboidBlockIterator.getX(), cuboidBlockIterator.getY(), cuboidBlockIterator.getZ());
-            int n = colorResolver.getColor(this.method_23753(mutable), mutable.getX(), mutable.getZ());
+            int n = colorResolver.getColor(this.getBiome(mutable), mutable.getX(), mutable.getZ());
             k += (n & 0xFF0000) >> 16;
             l += (n & 0xFF00) >> 8;
             m += n & 0xFF;

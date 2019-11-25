@@ -69,7 +69,7 @@ extends Dimension {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean method_12449() {
+    public boolean hasGround() {
         return false;
     }
 

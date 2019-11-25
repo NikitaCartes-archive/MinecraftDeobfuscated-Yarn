@@ -6,11 +6,11 @@ package net.minecraft.client.render;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4720;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.FixedColorVertexConsumer;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.VertexConsumers;
 
 @Environment(value=EnvType.CLIENT)
 public class OutlineVertexConsumerProvider
@@ -33,7 +33,7 @@ implements VertexConsumerProvider {
         if (optional.isPresent()) {
             net.minecraft.client.render.VertexConsumer vertexConsumer2 = this.plainDrawer.getBuffer(optional.get());
             VertexConsumer vertexConsumer3 = new VertexConsumer(vertexConsumer2, this.red, this.green, this.blue, this.alpha);
-            return class_4720.method_24037(vertexConsumer3, vertexConsumer);
+            return VertexConsumers.dual(vertexConsumer3, vertexConsumer);
         }
         return vertexConsumer;
     }
@@ -104,7 +104,7 @@ implements VertexConsumerProvider {
         }
 
         @Override
-        public void method_23919(float f, float g, float h, float i, float j, float k, float l, float m, float n, int o, int p, float q, float r, float s) {
+        public void elements(float f, float g, float h, float i, float j, float k, float l, float m, float n, int o, int p, float q, float r, float s) {
             this.delegate.vertex(f, g, h).color(this.fixedRed, this.fixedGreen, this.fixedBlue, this.fixedAlpha).texture(m, n).next();
         }
 

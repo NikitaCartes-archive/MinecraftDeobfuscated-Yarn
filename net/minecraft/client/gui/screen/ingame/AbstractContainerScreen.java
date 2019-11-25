@@ -198,7 +198,7 @@ implements ContainerProvider<T> {
         this.itemRenderer.zOffset = 100.0f;
         if (itemStack.isEmpty() && slot.doDrawHoveringEffect() && (pair = slot.getBackgroundSprite()) != null) {
             Sprite sprite = this.minecraft.getSpriteAtlas(pair.getFirst()).apply(pair.getSecond());
-            this.minecraft.getTextureManager().bindTexture(sprite.method_24119().method_24106());
+            this.minecraft.getTextureManager().bindTexture(sprite.getAtlas().getId());
             AbstractContainerScreen.blit(i, j, this.getBlitOffset(), 16, 16, sprite);
             bl2 = true;
         }

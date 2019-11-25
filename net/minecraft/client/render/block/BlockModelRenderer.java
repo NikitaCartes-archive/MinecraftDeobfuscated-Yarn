@@ -85,7 +85,7 @@ public class BlockModelRenderer {
             random.setSeed(l);
             List<BakedQuad> list = bakedModel.getQuads(blockState, direction, random);
             if (list.isEmpty() || bl && !Block.shouldDrawSide(blockState, blockRenderView, blockPos, direction)) continue;
-            int j = WorldRenderer.method_23793(blockRenderView, blockState, blockPos.offset(direction));
+            int j = WorldRenderer.getLightmapCoordinates(blockRenderView, blockState, blockPos.offset(direction));
             this.renderQuadsFlat(blockRenderView, blockState, blockPos, j, i, false, matrixStack, vertexConsumer, list, bitSet);
             bl2 = true;
         }
@@ -198,7 +198,7 @@ public class BlockModelRenderer {
             if (bl) {
                 this.getQuadDimensions(blockRenderView, blockState, blockPos, bakedQuad.getVertexData(), bakedQuad.getFace(), null, bitSet);
                 BlockPos blockPos2 = bitSet.get(0) ? blockPos.offset(bakedQuad.getFace()) : blockPos;
-                i = WorldRenderer.method_23793(blockRenderView, blockState, blockPos2);
+                i = WorldRenderer.getLightmapCoordinates(blockRenderView, blockState, blockPos2);
             }
             this.renderQuad(blockRenderView, blockState, blockPos, vertexConsumer, matrixStack.peek(), bakedQuad, 1.0f, 1.0f, 1.0f, 1.0f, i, i, i, i, j);
         }
@@ -505,7 +505,7 @@ public class BlockModelRenderer {
             if (this.enabled && (i = this.intCache.get(l)) != Integer.MAX_VALUE) {
                 return i;
             }
-            i = WorldRenderer.method_23793(blockRenderView, blockState, blockPos);
+            i = WorldRenderer.getLightmapCoordinates(blockRenderView, blockState, blockPos);
             if (this.enabled) {
                 if (this.intCache.size() == 100) {
                     this.intCache.removeFirstInt();

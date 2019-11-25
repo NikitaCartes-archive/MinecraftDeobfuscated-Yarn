@@ -42,8 +42,8 @@ import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.chunk.BlockBufferBuilderStorage;
-import net.minecraft.client.render.chunk.ChunkOcclusionGraph;
-import net.minecraft.client.render.chunk.ChunkOcclusionGraphBuilder;
+import net.minecraft.client.render.chunk.ChunkOcclusionData;
+import net.minecraft.client.render.chunk.ChunkOcclusionDataBuilder;
 import net.minecraft.client.render.chunk.ChunkRendererRegion;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.fluid.FluidState;
@@ -210,11 +210,11 @@ public class ChunkBuilder {
                 return false;
             }
         };
-        private final Set<RenderLayer> nonEmpty = new ObjectArraySet<RenderLayer>();
-        private final Set<RenderLayer> initialized = new ObjectArraySet<RenderLayer>();
+        private final Set<RenderLayer> nonEmptyLayers = new ObjectArraySet<RenderLayer>();
+        private final Set<RenderLayer> initializedLayers = new ObjectArraySet<RenderLayer>();
         private boolean empty = true;
         private final List<BlockEntity> blockEntities = Lists.newArrayList();
-        private ChunkOcclusionGraph occlusionGraph = new ChunkOcclusionGraph();
+        private ChunkOcclusionData occlusionGraph = new ChunkOcclusionData();
         @Nullable
         private BufferBuilder.State bufferState;
 
@@ -223,7 +223,7 @@ public class ChunkBuilder {
         }
 
         public boolean isEmpty(RenderLayer renderLayer) {
-            return !this.nonEmpty.contains(renderLayer);
+            return !this.nonEmptyLayers.contains(renderLayer);
         }
 
         public List<BlockEntity> getBlockEntities() {
@@ -357,7 +357,7 @@ public class ChunkBuilder {
             if (this.sortTask != null) {
                 this.sortTask.cancel();
             }
-            if (!chunkData.initialized.contains(renderLayer)) {
+            if (!chunkData.initializedLayers.contains(renderLayer)) {
                 return false;
             }
             this.sortTask = new SortTask(this.getSquaredCameraDistance(), chunkData);
@@ -390,14 +390,14 @@ public class ChunkBuilder {
             chunkBuilder.send(task);
         }
 
-        private void method_22778(Set<BlockEntity> set) {
+        private void setNoCullingBlockEntities(Set<BlockEntity> set) {
             HashSet<BlockEntity> set2 = Sets.newHashSet(set);
             HashSet<BlockEntity> set3 = Sets.newHashSet(this.blockEntities);
             set2.removeAll(this.blockEntities);
             set3.removeAll(set);
             this.blockEntities.clear();
             this.blockEntities.addAll(set);
-            ChunkBuilder.this.worldRenderer.updateBlockEntities(set3, set2);
+            ChunkBuilder.this.worldRenderer.updateNoCullingBlockEntities(set3, set2);
         }
 
         public void rebuild() {
@@ -408,11 +408,11 @@ public class ChunkBuilder {
         @Environment(value=EnvType.CLIENT)
         abstract class Task
         implements Comparable<Task> {
-            protected final double priority;
+            protected final double distance;
             protected final AtomicBoolean cancelled = new AtomicBoolean(false);
 
             public Task(double d) {
-                this.priority = d;
+                this.distance = d;
             }
 
             public abstract CompletableFuture<Result> run(BlockBufferBuilderStorage var1);
@@ -421,7 +421,7 @@ public class ChunkBuilder {
 
             @Override
             public int compareTo(Task task) {
-                return Doubles.compare(this.priority, task.priority);
+                return Doubles.compare(this.distance, task.distance);
             }
 
             @Override
@@ -457,7 +457,7 @@ public class ChunkBuilder {
                 float g = (float)vec3d.y;
                 float h = (float)vec3d.z;
                 BufferBuilder.State state = this.data.bufferState;
-                if (state == null || !this.data.nonEmpty.contains(RenderLayer.getTranslucent())) {
+                if (state == null || !this.data.nonEmptyLayers.contains(RenderLayer.getTranslucent())) {
                     return CompletableFuture.completedFuture(Result.CANCELLED);
                 }
                 BufferBuilder bufferBuilder = blockBufferBuilderStorage.get(RenderLayer.getTranslucent());
@@ -514,13 +514,13 @@ public class ChunkBuilder {
                 float g = (float)vec3d.y;
                 float h = (float)vec3d.z;
                 ChunkData chunkData = new ChunkData();
-                Set<BlockEntity> set = this.method_22785(f, g, h, chunkData, blockBufferBuilderStorage);
-                BuiltChunk.this.method_22778(set);
+                Set<BlockEntity> set = this.render(f, g, h, chunkData, blockBufferBuilderStorage);
+                BuiltChunk.this.setNoCullingBlockEntities(set);
                 if (this.cancelled.get()) {
                     return CompletableFuture.completedFuture(Result.CANCELLED);
                 }
                 ArrayList list2 = Lists.newArrayList();
-                chunkData.initialized.forEach(renderLayer -> list2.add(ChunkBuilder.this.scheduleUpload(blockBufferBuilderStorage.get((RenderLayer)renderLayer), BuiltChunk.this.getBuffer((RenderLayer)renderLayer))));
+                chunkData.initializedLayers.forEach(renderLayer -> list2.add(ChunkBuilder.this.scheduleUpload(blockBufferBuilderStorage.get((RenderLayer)renderLayer), BuiltChunk.this.getBuffer((RenderLayer)renderLayer))));
                 return Util.combine(list2).handle((list, throwable) -> {
                     if (throwable != null && !(throwable instanceof CancellationException) && !(throwable instanceof InterruptedException)) {
                         MinecraftClient.getInstance().setCrashReport(CrashReport.create(throwable, "Rendering chunk"));
@@ -533,11 +533,11 @@ public class ChunkBuilder {
                 });
             }
 
-            private Set<BlockEntity> method_22785(float f, float g, float h, ChunkData chunkData, BlockBufferBuilderStorage blockBufferBuilderStorage) {
+            private Set<BlockEntity> render(float f, float g, float h, ChunkData chunkData, BlockBufferBuilderStorage blockBufferBuilderStorage) {
                 boolean i = true;
                 BlockPos blockPos = BuiltChunk.this.origin.toImmutable();
                 BlockPos blockPos2 = blockPos.add(15, 15, 15);
-                ChunkOcclusionGraphBuilder chunkOcclusionGraphBuilder = new ChunkOcclusionGraphBuilder();
+                ChunkOcclusionDataBuilder chunkOcclusionDataBuilder = new ChunkOcclusionDataBuilder();
                 HashSet<BlockEntity> set = Sets.newHashSet();
                 ChunkRendererRegion chunkRendererRegion = this.region;
                 this.region = null;
@@ -554,53 +554,53 @@ public class ChunkBuilder {
                         BlockState blockState = chunkRendererRegion.getBlockState(blockPos3);
                         Block block = blockState.getBlock();
                         if (blockState.isFullOpaque(chunkRendererRegion, blockPos3)) {
-                            chunkOcclusionGraphBuilder.markClosed(blockPos3);
+                            chunkOcclusionDataBuilder.markClosed(blockPos3);
                         }
                         if (block.hasBlockEntity() && (blockEntity = chunkRendererRegion.getBlockEntity(blockPos3, WorldChunk.CreationType.CHECK)) != null) {
-                            this.method_23087(chunkData, set, blockEntity);
+                            this.addBlockEntity(chunkData, set, blockEntity);
                         }
                         if (!(fluidState = chunkRendererRegion.getFluidState(blockPos3)).isEmpty()) {
                             renderLayer = RenderLayers.getFluidLayer(fluidState);
                             bufferBuilder = blockBufferBuilderStorage.get(renderLayer);
-                            if (chunkData.initialized.add(renderLayer)) {
+                            if (chunkData.initializedLayers.add(renderLayer)) {
                                 BuiltChunk.this.beginBufferBuilding(bufferBuilder);
                             }
                             if (blockRenderManager.renderFluid(blockPos3, chunkRendererRegion, bufferBuilder, fluidState)) {
                                 chunkData.empty = false;
-                                chunkData.nonEmpty.add(renderLayer);
+                                chunkData.nonEmptyLayers.add(renderLayer);
                             }
                         }
                         if (blockState.getRenderType() == BlockRenderType.INVISIBLE) continue;
                         renderLayer = RenderLayers.getBlockLayer(blockState);
                         bufferBuilder = blockBufferBuilderStorage.get(renderLayer);
-                        if (chunkData.initialized.add(renderLayer)) {
+                        if (chunkData.initializedLayers.add(renderLayer)) {
                             BuiltChunk.this.beginBufferBuilding(bufferBuilder);
                         }
                         matrixStack.push();
                         matrixStack.translate(blockPos3.getX() & 0xF, blockPos3.getY() & 0xF, blockPos3.getZ() & 0xF);
                         if (blockRenderManager.renderBlock(blockState, blockPos3, chunkRendererRegion, matrixStack, bufferBuilder, true, random)) {
                             chunkData.empty = false;
-                            chunkData.nonEmpty.add(renderLayer);
+                            chunkData.nonEmptyLayers.add(renderLayer);
                         }
                         matrixStack.pop();
                     }
-                    if (chunkData.nonEmpty.contains(RenderLayer.getTranslucent())) {
+                    if (chunkData.nonEmptyLayers.contains(RenderLayer.getTranslucent())) {
                         BufferBuilder bufferBuilder2 = blockBufferBuilderStorage.get(RenderLayer.getTranslucent());
                         bufferBuilder2.sortQuads(f - (float)blockPos.getX(), g - (float)blockPos.getY(), h - (float)blockPos.getZ());
                         chunkData.bufferState = bufferBuilder2.popState();
                     }
-                    chunkData.initialized.stream().map(blockBufferBuilderStorage::get).forEach(BufferBuilder::end);
+                    chunkData.initializedLayers.stream().map(blockBufferBuilderStorage::get).forEach(BufferBuilder::end);
                     BlockModelRenderer.disableBrightnessCache();
                 }
-                chunkData.occlusionGraph = chunkOcclusionGraphBuilder.build();
+                chunkData.occlusionGraph = chunkOcclusionDataBuilder.build();
                 return set;
             }
 
-            private <E extends BlockEntity> void method_23087(ChunkData chunkData, Set<BlockEntity> set, E blockEntity) {
+            private <E extends BlockEntity> void addBlockEntity(ChunkData chunkData, Set<BlockEntity> set, E blockEntity) {
                 BlockEntityRenderer<E> blockEntityRenderer = BlockEntityRenderDispatcher.INSTANCE.get(blockEntity);
                 if (blockEntityRenderer != null) {
                     chunkData.blockEntities.add(blockEntity);
-                    if (blockEntityRenderer.method_3563(blockEntity)) {
+                    if (blockEntityRenderer.rendersOutsideBoundingBox(blockEntity)) {
                         set.add(blockEntity);
                     }
                 }

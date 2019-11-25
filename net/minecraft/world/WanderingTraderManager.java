@@ -85,7 +85,7 @@ public class WanderingTraderManager {
         BlockPos blockPos22 = optional.orElse(blockPos2);
         BlockPos blockPos3 = this.method_18017(blockPos22, 48);
         if (blockPos3 != null && this.method_23279(blockPos3)) {
-            if (this.world.method_23753(blockPos3) == Biomes.THE_VOID) {
+            if (this.world.getBiome(blockPos3) == Biomes.THE_VOID) {
                 return false;
             }
             WanderingTraderEntity wanderingTraderEntity = EntityType.WANDERING_TRADER.spawn(this.world, null, null, null, blockPos3, SpawnType.EVENT, false, false);

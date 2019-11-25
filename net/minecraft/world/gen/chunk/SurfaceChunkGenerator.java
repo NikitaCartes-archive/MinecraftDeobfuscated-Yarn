@@ -196,7 +196,7 @@ extends ChunkGenerator<T> {
                 int p = l + n;
                 int q = chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, m, n) + 1;
                 double e = this.surfaceDepthNoise.sample((double)o * 0.0625, (double)p * 0.0625, 0.0625, (double)m * 0.0625) * 15.0;
-                chunkRegion.method_23753(mutable.set(k + m, q, l + n)).buildSurface(chunkRandom, chunk, o, p, q, e, ((ChunkGeneratorConfig)this.getConfig()).getDefaultBlock(), ((ChunkGeneratorConfig)this.getConfig()).getDefaultFluid(), this.getSeaLevel(), this.world.getSeed());
+                chunkRegion.getBiome(mutable.set(k + m, q, l + n)).buildSurface(chunkRandom, chunk, o, p, q, e, ((ChunkGeneratorConfig)this.getConfig()).getDefaultBlock(), ((ChunkGeneratorConfig)this.getConfig()).getDefaultFluid(), this.getSeaLevel(), this.world.getSeed());
             }
         }
         this.buildBedrock(chunk, chunkRandom);

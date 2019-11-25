@@ -15,7 +15,7 @@ import net.minecraft.world.CollisionView;
 import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.ChunkStatus;
+import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.EmptyChunk;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,10 +37,11 @@ CollisionView {
         int i = blockPos2.getX() >> 4;
         int j = blockPos2.getZ() >> 4;
         this.chunks = new Chunk[i - this.minX + 1][j - this.minZ + 1];
+        ChunkManager chunkManager = world.getChunkManager();
         this.empty = true;
         for (k = this.minX; k <= i; ++k) {
             for (l = this.minZ; l <= j; ++l) {
-                this.chunks[k - this.minX][l - this.minZ] = world.getChunk(k, l, ChunkStatus.FULL, false);
+                this.chunks[k - this.minX][l - this.minZ] = chunkManager.getWorldChunk(k, l);
             }
         }
         for (k = blockPos.getX() >> 4; k <= blockPos2.getX() >> 4; ++k) {

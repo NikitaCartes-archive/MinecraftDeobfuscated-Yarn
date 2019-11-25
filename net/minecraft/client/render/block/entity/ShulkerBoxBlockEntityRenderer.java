@@ -8,14 +8,14 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
-import net.minecraft.class_4722;
-import net.minecraft.class_4730;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.entity.model.ShulkerEntityModel;
+import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.DyeColor;
@@ -39,7 +39,7 @@ extends BlockEntityRenderer<ShulkerBoxBlockEntity> {
         if (shulkerBoxBlockEntity.hasWorld() && (blockState = shulkerBoxBlockEntity.getWorld().getBlockState(shulkerBoxBlockEntity.getPos())).getBlock() instanceof ShulkerBoxBlock) {
             direction = blockState.get(ShulkerBoxBlock.FACING);
         }
-        class_4730 lv = (dyeColor = shulkerBoxBlockEntity.getColor()) == null ? class_4722.field_21710 : class_4722.field_21711.get(dyeColor.getId());
+        SpriteIdentifier spriteIdentifier = (dyeColor = shulkerBoxBlockEntity.getColor()) == null ? TexturedRenderLayers.SHULKER_TEXTURE_ID : TexturedRenderLayers.COLORED_SHULKER_BOXES_TEXTURES.get(dyeColor.getId());
         matrixStack.push();
         matrixStack.translate(0.5, 0.5, 0.5);
         float g = 0.9995f;
@@ -47,7 +47,7 @@ extends BlockEntityRenderer<ShulkerBoxBlockEntity> {
         matrixStack.multiply(direction.getRotationQuaternion());
         matrixStack.scale(1.0f, -1.0f, -1.0f);
         matrixStack.translate(0.0, -1.0, 0.0);
-        VertexConsumer vertexConsumer = lv.method_24145(vertexConsumerProvider, RenderLayer::getEntityCutoutNoCull);
+        VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityCutoutNoCull);
         this.model.getBottomShell().render(matrixStack, vertexConsumer, i, j);
         matrixStack.translate(0.0, -shulkerBoxBlockEntity.getAnimationProgress(f) * 0.5f, 0.0);
         matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(270.0f * shulkerBoxBlockEntity.getAnimationProgress(f)));

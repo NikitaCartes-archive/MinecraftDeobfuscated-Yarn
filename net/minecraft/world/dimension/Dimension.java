@@ -64,7 +64,7 @@ public abstract class Dimension {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public boolean method_12449() {
+    public boolean hasGround() {
         return true;
     }
 
@@ -93,7 +93,7 @@ public abstract class Dimension {
         return this.isNether;
     }
 
-    public float method_23759(int i) {
+    public float getBrightness(int i) {
         return this.lightLevelToBrightness[i];
     }
 

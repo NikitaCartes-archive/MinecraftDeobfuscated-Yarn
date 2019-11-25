@@ -28,7 +28,7 @@ implements DebugRenderer.Renderer {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f, long l) {
+    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f) {
         ClientWorld world = this.client.world;
         RenderSystem.pushMatrix();
         RenderSystem.enableBlend();
@@ -40,9 +40,9 @@ implements DebugRenderer.Renderer {
             int i = world.getLightLevel(LightType.SKY, blockPos2);
             float g = (float)(15 - i) / 15.0f * 0.5f + 0.16f;
             int j = MathHelper.hsvToRgb(g, 0.9f, 0.9f);
-            long m = ChunkSectionPos.fromGlobalPos(blockPos2.asLong());
-            if (longSet.add(m)) {
-                DebugRenderer.drawString(((World)world).getChunkManager().getLightingProvider().method_22876(LightType.SKY, ChunkSectionPos.from(m)), ChunkSectionPos.getX(m) * 16 + 8, ChunkSectionPos.getY(m) * 16 + 8, ChunkSectionPos.getZ(m) * 16 + 8, 0xFF0000, 0.3f);
+            long l = ChunkSectionPos.fromGlobalPos(blockPos2.asLong());
+            if (longSet.add(l)) {
+                DebugRenderer.drawString(((World)world).getChunkManager().getLightingProvider().method_22876(LightType.SKY, ChunkSectionPos.from(l)), ChunkSectionPos.getX(l) * 16 + 8, ChunkSectionPos.getY(l) * 16 + 8, ChunkSectionPos.getZ(l) * 16 + 8, 0xFF0000, 0.3f);
             }
             if (i == 15) continue;
             DebugRenderer.drawString(String.valueOf(i), (double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.25, (double)blockPos2.getZ() + 0.5, j);

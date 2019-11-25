@@ -40,11 +40,9 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_4722;
-import net.minecraft.class_4724;
-import net.minecraft.class_4730;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.block.BlockModels;
 import net.minecraft.client.render.block.entity.BellBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.ConduitBlockEntityRenderer;
@@ -53,6 +51,7 @@ import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.ModelBakeSettings;
 import net.minecraft.client.render.model.ModelRotation;
 import net.minecraft.client.render.model.MultipartUnbakedModel;
+import net.minecraft.client.render.model.SpriteAtlasManager;
 import net.minecraft.client.render.model.UnbakedModel;
 import net.minecraft.client.render.model.json.ItemModelGenerator;
 import net.minecraft.client.render.model.json.JsonUnbakedModel;
@@ -63,6 +62,7 @@ import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.ModelIdentifier;
+import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.Rotation3;
 import net.minecraft.container.PlayerContainer;
 import net.minecraft.resource.Resource;
@@ -82,18 +82,18 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class ModelLoader {
-    public static final class_4730 FIRE_0 = new class_4730(SpriteAtlasTexture.BLOCK_ATLAS_TEX, new Identifier("block/fire_0"));
-    public static final class_4730 FIRE_1 = new class_4730(SpriteAtlasTexture.BLOCK_ATLAS_TEX, new Identifier("block/fire_1"));
-    public static final class_4730 LAVA_FLOW = new class_4730(SpriteAtlasTexture.BLOCK_ATLAS_TEX, new Identifier("block/lava_flow"));
-    public static final class_4730 WATER_FLOW = new class_4730(SpriteAtlasTexture.BLOCK_ATLAS_TEX, new Identifier("block/water_flow"));
-    public static final class_4730 WATER_OVERLAY = new class_4730(SpriteAtlasTexture.BLOCK_ATLAS_TEX, new Identifier("block/water_overlay"));
-    public static final class_4730 BANNER_BASE = new class_4730(SpriteAtlasTexture.BLOCK_ATLAS_TEX, new Identifier("entity/banner_base"));
-    public static final class_4730 SHIELD_BASE = new class_4730(SpriteAtlasTexture.BLOCK_ATLAS_TEX, new Identifier("entity/shield_base"));
-    public static final class_4730 SHIELD_BASE_NO_PATTERN = new class_4730(SpriteAtlasTexture.BLOCK_ATLAS_TEX, new Identifier("entity/shield_base_nopattern"));
+    public static final SpriteIdentifier FIRE_0 = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, new Identifier("block/fire_0"));
+    public static final SpriteIdentifier FIRE_1 = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, new Identifier("block/fire_1"));
+    public static final SpriteIdentifier LAVA_FLOW = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, new Identifier("block/lava_flow"));
+    public static final SpriteIdentifier WATER_FLOW = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, new Identifier("block/water_flow"));
+    public static final SpriteIdentifier WATER_OVERLAY = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, new Identifier("block/water_overlay"));
+    public static final SpriteIdentifier BANNER_BASE = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, new Identifier("entity/banner_base"));
+    public static final SpriteIdentifier SHIELD_BASE = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, new Identifier("entity/shield_base"));
+    public static final SpriteIdentifier SHIELD_BASE_NO_PATTERN = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, new Identifier("entity/shield_base_nopattern"));
     public static final List<Identifier> BLOCK_DESTRUCTION_STAGES = IntStream.range(0, 10).mapToObj(i -> new Identifier("block/destroy_stage_" + i)).collect(Collectors.toList());
     public static final List<Identifier> BLOCK_DESTRUCTION_STAGE_TEXTURES = BLOCK_DESTRUCTION_STAGES.stream().map(identifier -> new Identifier("textures/" + identifier.getPath() + ".png")).collect(Collectors.toList());
-    public static final List<RenderLayer> field_21772 = BLOCK_DESTRUCTION_STAGE_TEXTURES.stream().map(RenderLayer::getBlockBreaking).collect(Collectors.toList());
-    private static final Set<class_4730> DEFAULT_TEXTURES = Util.create(Sets.newHashSet(), hashSet -> {
+    public static final List<RenderLayer> BLOCK_DESTRUCTION_RENDER_LAYERS = BLOCK_DESTRUCTION_STAGE_TEXTURES.stream().map(RenderLayer::getCrumbling).collect(Collectors.toList());
+    private static final Set<SpriteIdentifier> DEFAULT_TEXTURES = Util.create(Sets.newHashSet(), hashSet -> {
         hashSet.add(WATER_FLOW);
         hashSet.add(LAVA_FLOW);
         hashSet.add(WATER_OVERLAY);
@@ -111,14 +111,14 @@ public class ModelLoader {
         hashSet.add(SHIELD_BASE);
         hashSet.add(SHIELD_BASE_NO_PATTERN);
         for (Identifier identifier : BLOCK_DESTRUCTION_STAGES) {
-            hashSet.add(new class_4730(SpriteAtlasTexture.BLOCK_ATLAS_TEX, identifier));
+            hashSet.add(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, identifier));
         }
-        hashSet.add(new class_4730(SpriteAtlasTexture.BLOCK_ATLAS_TEX, PlayerContainer.field_21669));
-        hashSet.add(new class_4730(SpriteAtlasTexture.BLOCK_ATLAS_TEX, PlayerContainer.field_21670));
-        hashSet.add(new class_4730(SpriteAtlasTexture.BLOCK_ATLAS_TEX, PlayerContainer.field_21671));
-        hashSet.add(new class_4730(SpriteAtlasTexture.BLOCK_ATLAS_TEX, PlayerContainer.field_21672));
-        hashSet.add(new class_4730(SpriteAtlasTexture.BLOCK_ATLAS_TEX, PlayerContainer.field_21673));
-        class_4722.method_24066(hashSet::add);
+        hashSet.add(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, PlayerContainer.field_21669));
+        hashSet.add(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, PlayerContainer.field_21670));
+        hashSet.add(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, PlayerContainer.field_21671));
+        hashSet.add(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, PlayerContainer.field_21672));
+        hashSet.add(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, PlayerContainer.field_21673));
+        TexturedRenderLayers.addDefaultTextures(hashSet::add);
     });
     private static final Logger LOGGER = LogManager.getLogger();
     public static final ModelIdentifier MISSING = new ModelIdentifier("builtin/missing", "missing");
@@ -139,7 +139,7 @@ public class ModelLoader {
     private static final Map<Identifier, StateManager<Block, BlockState>> STATIC_DEFINITIONS = ImmutableMap.of(new Identifier("item_frame"), ITEM_FRAME_STATE_FACTORY);
     private final ResourceManager resourceManager;
     @Nullable
-    private class_4724 field_21774;
+    private SpriteAtlasManager spriteAtlasManager;
     private final BlockColors colorationManager;
     private final Set<Identifier> modelsToLoad = Sets.newHashSet();
     private final ModelVariantMap.DeserializationContext variantMapDeserializationContext = new ModelVariantMap.DeserializationContext();
@@ -179,28 +179,28 @@ public class ModelLoader {
         Set set2 = this.modelsToBake.values().stream().flatMap(unbakedModel -> unbakedModel.getTextureDependencies(this::getOrLoadModel, set).stream()).collect(Collectors.toSet());
         set2.addAll(DEFAULT_TEXTURES);
         set.stream().filter(pair -> !((String)pair.getSecond()).equals(field_21773)).forEach(pair -> LOGGER.warn("Unable to resolve texture reference: {} in {}", pair.getFirst(), pair.getSecond()));
-        Map<Identifier, List<class_4730>> map = set2.stream().collect(Collectors.groupingBy(class_4730::method_24144));
+        Map<Identifier, List<SpriteIdentifier>> map = set2.stream().collect(Collectors.groupingBy(SpriteIdentifier::getAtlasId));
         profiler.swap("stitching");
         this.spriteAtlasData = Maps.newHashMap();
-        for (Map.Entry<Identifier, List<class_4730>> entry : map.entrySet()) {
+        for (Map.Entry<Identifier, List<SpriteIdentifier>> entry : map.entrySet()) {
             SpriteAtlasTexture spriteAtlasTexture = new SpriteAtlasTexture(entry.getKey());
-            SpriteAtlasTexture.Data data = spriteAtlasTexture.stitch(this.resourceManager, entry.getValue().stream().map(class_4730::method_24147), profiler, i);
+            SpriteAtlasTexture.Data data = spriteAtlasTexture.stitch(this.resourceManager, entry.getValue().stream().map(SpriteIdentifier::getTextureId), profiler, i);
             this.spriteAtlasData.put(entry.getKey(), Pair.of(spriteAtlasTexture, data));
         }
         profiler.pop();
     }
 
-    public class_4724 upload(TextureManager textureManager, int i, Profiler profiler) {
+    public SpriteAtlasManager upload(TextureManager textureManager, Profiler profiler) {
         profiler.push("atlas");
         for (Pair<SpriteAtlasTexture, SpriteAtlasTexture.Data> pair : this.spriteAtlasData.values()) {
             SpriteAtlasTexture spriteAtlasTexture = pair.getFirst();
-            spriteAtlasTexture.setMipLevel(i);
-            spriteAtlasTexture.upload(pair.getSecond());
-            textureManager.registerTexture(spriteAtlasTexture.method_24106(), spriteAtlasTexture);
-            textureManager.bindTexture(spriteAtlasTexture.method_24106());
-            spriteAtlasTexture.setFilter(false, i > 0);
+            SpriteAtlasTexture.Data data = pair.getSecond();
+            spriteAtlasTexture.upload(data);
+            textureManager.registerTexture(spriteAtlasTexture.getId(), spriteAtlasTexture);
+            textureManager.bindTexture(spriteAtlasTexture.getId());
+            spriteAtlasTexture.method_24198(data);
         }
-        this.field_21774 = new class_4724(this.spriteAtlasData.values().stream().map(Pair::getFirst).collect(Collectors.toList()));
+        this.spriteAtlasManager = new SpriteAtlasManager(this.spriteAtlasData.values().stream().map(Pair::getFirst).collect(Collectors.toList()));
         profiler.swap("baking");
         this.modelsToBake.keySet().forEach(identifier -> {
             BakedModel bakedModel = null;
@@ -214,7 +214,7 @@ public class ModelLoader {
             }
         });
         profiler.pop();
-        return this.field_21774;
+        return this.spriteAtlasManager;
     }
 
     private static Predicate<BlockState> stateKeyToPredicate(StateManager<Block, BlockState> stateManager, String string) {
@@ -434,14 +434,14 @@ public class ModelLoader {
         if (this.bakedModelCache.containsKey(triple)) {
             return this.bakedModelCache.get(triple);
         }
-        if (this.field_21774 == null) {
+        if (this.spriteAtlasManager == null) {
             throw new IllegalStateException("bake called too early");
         }
         UnbakedModel unbakedModel = this.getOrLoadModel(identifier);
         if (unbakedModel instanceof JsonUnbakedModel && (jsonUnbakedModel = (JsonUnbakedModel)unbakedModel).getRootModel() == GENERATION_MARKER) {
-            return ITEM_MODEL_GENERATOR.create(this.field_21774::method_24097, jsonUnbakedModel).bake(this, jsonUnbakedModel, this.field_21774::method_24097, modelBakeSettings, identifier);
+            return ITEM_MODEL_GENERATOR.create(this.spriteAtlasManager::getSprite, jsonUnbakedModel).bake(this, jsonUnbakedModel, this.spriteAtlasManager::getSprite, modelBakeSettings, identifier);
         }
-        BakedModel bakedModel = unbakedModel.bake(this, this.field_21774::method_24097, modelBakeSettings, identifier);
+        BakedModel bakedModel = unbakedModel.bake(this, this.spriteAtlasManager::getSprite, modelBakeSettings, identifier);
         this.bakedModelCache.put(triple, bakedModel);
         return bakedModel;
     }

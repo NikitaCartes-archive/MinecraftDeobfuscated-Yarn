@@ -90,6 +90,8 @@ public class Stats {
     public static final Identifier BELL_RING = Stats.register("bell_ring", StatFormatter.DEFAULT);
     public static final Identifier RAID_TRIGGER = Stats.register("raid_trigger", StatFormatter.DEFAULT);
     public static final Identifier RAID_WIN = Stats.register("raid_win", StatFormatter.DEFAULT);
+    public static final Identifier INTERACT_WITH_ANVIL = Stats.register("interact_with_anvil", StatFormatter.DEFAULT);
+    public static final Identifier INTERACT_WITH_GRINDSTONE = Stats.register("interact_with_grindstone", StatFormatter.DEFAULT);
 
     private static Identifier register(String string, StatFormatter statFormatter) {
         Identifier identifier = new Identifier(string);

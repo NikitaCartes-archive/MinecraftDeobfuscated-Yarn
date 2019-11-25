@@ -28,15 +28,15 @@ implements DynamicSerializable {
         this.type = foliagePlacerType;
     }
 
-    public abstract void method_23448(ModifiableTestableWorld var1, Random var2, BranchedTreeFeatureConfig var3, int var4, int var5, int var6, BlockPos var7, Set<BlockPos> var8);
+    public abstract void generate(ModifiableTestableWorld var1, Random var2, BranchedTreeFeatureConfig var3, int var4, int var5, int var6, BlockPos var7, Set<BlockPos> var8);
 
-    public abstract int method_23452(Random var1, int var2, int var3, BranchedTreeFeatureConfig var4);
+    public abstract int getRadius(Random var1, int var2, int var3, BranchedTreeFeatureConfig var4);
 
     protected abstract boolean method_23451(Random var1, int var2, int var3, int var4, int var5, int var6);
 
     public abstract int method_23447(int var1, int var2, int var3, int var4);
 
-    protected void method_23449(ModifiableTestableWorld modifiableTestableWorld, Random random, BranchedTreeFeatureConfig branchedTreeFeatureConfig, int i, BlockPos blockPos, int j, int k, Set<BlockPos> set) {
+    protected void generate(ModifiableTestableWorld modifiableTestableWorld, Random random, BranchedTreeFeatureConfig branchedTreeFeatureConfig, int i, BlockPos blockPos, int j, int k, Set<BlockPos> set) {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (int l = -k; l <= k; ++l) {
             for (int m = -k; m <= k; ++m) {

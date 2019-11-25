@@ -12,12 +12,12 @@ import java.util.List;
 import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4730;
 import net.minecraft.client.render.model.json.JsonUnbakedModel;
 import net.minecraft.client.render.model.json.ModelElement;
 import net.minecraft.client.render.model.json.ModelElementFace;
 import net.minecraft.client.render.model.json.ModelElementTexture;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.math.Direction;
 
@@ -25,14 +25,14 @@ import net.minecraft.util.math.Direction;
 public class ItemModelGenerator {
     public static final List<String> LAYERS = Lists.newArrayList("layer0", "layer1", "layer2", "layer3", "layer4");
 
-    public JsonUnbakedModel create(Function<class_4730, Sprite> function, JsonUnbakedModel jsonUnbakedModel) {
+    public JsonUnbakedModel create(Function<SpriteIdentifier, Sprite> function, JsonUnbakedModel jsonUnbakedModel) {
         String string;
-        HashMap<String, Either<class_4730, String>> map = Maps.newHashMap();
+        HashMap<String, Either<SpriteIdentifier, String>> map = Maps.newHashMap();
         ArrayList<ModelElement> list = Lists.newArrayList();
         for (int i = 0; i < LAYERS.size() && jsonUnbakedModel.textureExists(string = LAYERS.get(i)); ++i) {
-            class_4730 lv = jsonUnbakedModel.method_24077(string);
-            map.put(string, Either.left(lv));
-            Sprite sprite = function.apply(lv);
+            SpriteIdentifier spriteIdentifier = jsonUnbakedModel.method_24077(string);
+            map.put(string, Either.left(spriteIdentifier));
+            Sprite sprite = function.apply(spriteIdentifier);
             list.addAll(this.addLayerElements(i, string, sprite));
         }
         map.put("particle", jsonUnbakedModel.textureExists("particle") ? Either.left(jsonUnbakedModel.method_24077("particle")) : (Either)map.get("layer0"));

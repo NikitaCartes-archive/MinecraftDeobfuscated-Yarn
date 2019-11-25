@@ -256,7 +256,7 @@ implements BufferVertexConsumer {
     }
 
     @Override
-    public void method_23919(float f, float g, float h, float i, float j, float k, float l, float m, float n, int o, int p, float q, float r, float s) {
+    public void elements(float f, float g, float h, float i, float j, float k, float l, float m, float n, int o, int p, float q, float r, float s) {
         if (this.colorFixed) {
             throw new IllegalStateException();
         }
@@ -287,7 +287,7 @@ implements BufferVertexConsumer {
             this.next();
             return;
         }
-        super.method_23919(f, g, h, i, j, k, l, m, n, o, p, q, r, s);
+        super.elements(f, g, h, i, j, k, l, m, n, o, p, q, r, s);
     }
 
     public Pair<DrawArrayParameters, ByteBuffer> popData() {

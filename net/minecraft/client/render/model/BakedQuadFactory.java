@@ -62,13 +62,13 @@ public class BakedQuadFactory {
         float f = modelElementTexture.getU(modelElementTexture.getDirectionIndex(0));
         float g = modelElementTexture.getV(modelElementTexture.getDirectionIndex(0));
         Vector4f vector4f = new Vector4f(f / 16.0f, g / 16.0f, 0.0f, 1.0f);
-        vector4f.multiply(matrix4f);
+        vector4f.transform(matrix4f);
         float h = 16.0f * vector4f.getX();
         float i = 16.0f * vector4f.getY();
         float j = modelElementTexture.getU(modelElementTexture.getDirectionIndex(2));
         float k = modelElementTexture.getV(modelElementTexture.getDirectionIndex(2));
         Vector4f vector4f2 = new Vector4f(j / 16.0f, k / 16.0f, 0.0f, 1.0f);
-        vector4f2.multiply(matrix4f);
+        vector4f2.transform(matrix4f);
         float l = 16.0f * vector4f2.getX();
         float m = 16.0f * vector4f2.getY();
         if (Math.signum(j - f) == Math.signum(l - h)) {
@@ -88,7 +88,7 @@ public class BakedQuadFactory {
         float r = (float)Math.toRadians(modelElementTexture.rotation);
         Vector3f vector3f = new Vector3f(MathHelper.cos(r), MathHelper.sin(r), 0.0f);
         Matrix3f matrix3f = new Matrix3f(matrix4f);
-        vector3f.multiply(matrix3f);
+        vector3f.transform(matrix3f);
         int s = Math.floorMod(-((int)Math.round(Math.toDegrees(Math.atan2(vector3f.getY(), vector3f.getX())) / 90.0)) * 90, 360);
         return new ModelElementTexture(new float[]{n, p, o, q}, s);
     }
@@ -207,7 +207,7 @@ public class BakedQuadFactory {
 
     private void transformVertex(Vector3f vector3f, Vector3f vector3f2, Matrix4f matrix4f, Vector3f vector3f3) {
         Vector4f vector4f = new Vector4f(vector3f.getX() - vector3f2.getX(), vector3f.getY() - vector3f2.getY(), vector3f.getZ() - vector3f2.getZ(), 1.0f);
-        vector4f.multiply(matrix4f);
+        vector4f.transform(matrix4f);
         vector4f.multiplyComponentwise(vector3f3);
         vector3f.set(vector4f.getX() + vector3f2.getX(), vector4f.getY() + vector3f2.getY(), vector4f.getZ() + vector3f2.getZ());
     }

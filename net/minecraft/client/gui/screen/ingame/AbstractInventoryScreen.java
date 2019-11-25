@@ -86,7 +86,7 @@ extends AbstractContainerScreen<T> {
         for (StatusEffectInstance statusEffectInstance : iterable) {
             StatusEffect statusEffect = statusEffectInstance.getEffectType();
             Sprite sprite = statusEffectSpriteManager.getSprite(statusEffect);
-            this.minecraft.getTextureManager().bindTexture(sprite.method_24119().method_24106());
+            this.minecraft.getTextureManager().bindTexture(sprite.getAtlas().getId());
             AbstractInventoryScreen.blit(i + 6, k + 7, this.getBlitOffset(), 18, 18, sprite);
             k += j;
         }

@@ -674,14 +674,14 @@ public class GlStateManager {
         GlStateManager.enableLight(0);
         GlStateManager.enableLight(1);
         Vector4f vector4f = new Vector4f(field_20772);
-        vector4f.multiply(matrix4f);
+        vector4f.transform(matrix4f);
         GlStateManager.light(16384, 4611, GlStateManager.method_22613(vector4f.getX(), vector4f.getY(), vector4f.getZ(), 0.0f));
         float f = 0.6f;
         GlStateManager.light(16384, 4609, GlStateManager.method_22613(0.6f, 0.6f, 0.6f, 1.0f));
         GlStateManager.light(16384, 4608, GlStateManager.method_22613(0.0f, 0.0f, 0.0f, 1.0f));
         GlStateManager.light(16384, 4610, GlStateManager.method_22613(0.0f, 0.0f, 0.0f, 1.0f));
         Vector4f vector4f2 = new Vector4f(field_20773);
-        vector4f2.multiply(matrix4f);
+        vector4f2.transform(matrix4f);
         GlStateManager.light(16385, 4611, GlStateManager.method_22613(vector4f2.getX(), vector4f2.getY(), vector4f2.getZ(), 0.0f));
         GlStateManager.light(16385, 4609, GlStateManager.method_22613(0.6f, 0.6f, 0.6f, 1.0f));
         GlStateManager.light(16385, 4608, GlStateManager.method_22613(0.0f, 0.0f, 0.0f, 1.0f));

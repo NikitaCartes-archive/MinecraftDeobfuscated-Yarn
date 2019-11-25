@@ -23,7 +23,6 @@ import net.minecraft.block.entity.EnderChestBlockEntity;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.block.entity.TrappedChestBlockEntity;
-import net.minecraft.class_4730;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BannerBlockEntityRenderer;
@@ -33,6 +32,7 @@ import net.minecraft.client.render.entity.model.ShieldEntityModel;
 import net.minecraft.client.render.entity.model.TridentEntityModel;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.ModelLoader;
+import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -106,8 +106,8 @@ public class BuiltinModelItemRenderer {
             boolean bl = itemStack.getSubTag("BlockEntityTag") != null;
             matrixStack.push();
             matrixStack.scale(1.0f, -1.0f, -1.0f);
-            class_4730 lv = bl ? ModelLoader.SHIELD_BASE : ModelLoader.SHIELD_BASE_NO_PATTERN;
-            VertexConsumer vertexConsumer = lv.method_24148().method_24108(ItemRenderer.getArmorVertexConsumer(vertexConsumerProvider, this.modelShield.getLayer(lv.method_24144()), false, itemStack.hasEnchantmentGlint()));
+            SpriteIdentifier spriteIdentifier = bl ? ModelLoader.SHIELD_BASE : ModelLoader.SHIELD_BASE_NO_PATTERN;
+            VertexConsumer vertexConsumer = spriteIdentifier.getSprite().getTextureSpecificVertexConsumer(ItemRenderer.getArmorVertexConsumer(vertexConsumerProvider, this.modelShield.getLayer(spriteIdentifier.getAtlasId()), false, itemStack.hasEnchantmentGlint()));
             this.modelShield.method_23775().render(matrixStack, vertexConsumer, i, j, 1.0f, 1.0f, 1.0f, 1.0f);
             this.modelShield.method_23774().render(matrixStack, vertexConsumer, i, j, 1.0f, 1.0f, 1.0f, 1.0f);
             if (bl) {

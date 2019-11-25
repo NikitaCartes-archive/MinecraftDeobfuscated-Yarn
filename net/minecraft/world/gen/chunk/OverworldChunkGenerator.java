@@ -54,7 +54,7 @@ extends SurfaceChunkGenerator<OverworldChunkGeneratorConfig> {
     public void populateEntities(ChunkRegion chunkRegion) {
         int i = chunkRegion.getCenterChunkX();
         int j = chunkRegion.getCenterChunkZ();
-        Biome biome = chunkRegion.method_23753(new ChunkPos(i, j).getCenterBlockPos());
+        Biome biome = chunkRegion.getBiome(new ChunkPos(i, j).getCenterBlockPos());
         ChunkRandom chunkRandom = new ChunkRandom();
         chunkRandom.setSeed(chunkRegion.getSeed(), i << 4, j << 4);
         SpawnHelper.populateEntities(chunkRegion, biome, i, j, chunkRandom);
@@ -89,10 +89,10 @@ extends SurfaceChunkGenerator<OverworldChunkGeneratorConfig> {
         float h = 0.0f;
         int k = 2;
         int l = this.getSeaLevel();
-        float m = this.biomeSource.getStoredBiome(i, l, j).getDepth();
+        float m = this.biomeSource.getBiomeForNoiseGen(i, l, j).getDepth();
         for (int n = -2; n <= 2; ++n) {
             for (int o = -2; o <= 2; ++o) {
-                Biome biome = this.biomeSource.getStoredBiome(i + n, l, j + o);
+                Biome biome = this.biomeSource.getBiomeForNoiseGen(i + n, l, j + o);
                 float p = biome.getDepth();
                 float q = biome.getScale();
                 if (this.amplified && p > 0.0f) {

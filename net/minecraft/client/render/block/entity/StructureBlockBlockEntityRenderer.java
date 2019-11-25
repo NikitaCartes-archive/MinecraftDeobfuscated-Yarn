@@ -138,7 +138,7 @@ extends BlockEntityRenderer<StructureBlockBlockEntity> {
     }
 
     @Override
-    public boolean method_3563(StructureBlockBlockEntity structureBlockBlockEntity) {
+    public boolean rendersOutsideBoundingBox(StructureBlockBlockEntity structureBlockBlockEntity) {
         return true;
     }
 }

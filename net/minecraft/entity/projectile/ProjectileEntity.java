@@ -27,7 +27,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.Projectile;
 import net.minecraft.item.ItemStack;
@@ -341,11 +340,15 @@ implements Projectile {
                 ((LivingEntity)entity2).onAttacking(entity);
             }
         }
+        boolean bl = entity.getType() == EntityType.ENDERMAN;
         int j = entity.getFireTicks();
-        if (this.isOnFire() && !(entity instanceof EndermanEntity)) {
+        if (this.isOnFire() && !bl) {
             entity.setOnFireFor(5);
         }
         if (entity.damage(damageSource, i)) {
+            if (bl) {
+                return;
+            }
             if (entity instanceof LivingEntity) {
                 Vec3d vec3d;
                 LivingEntity livingEntity = (LivingEntity)entity;
@@ -376,7 +379,7 @@ implements Projectile {
                 }
             }
             this.playSound(this.sound, 1.0f, 1.2f / (this.random.nextFloat() * 0.2f + 0.9f));
-            if (this.getPierceLevel() <= 0 && !(entity instanceof EndermanEntity)) {
+            if (this.getPierceLevel() <= 0) {
                 this.remove();
             }
         } else {

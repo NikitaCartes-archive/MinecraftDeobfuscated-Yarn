@@ -43,7 +43,7 @@ extends MobEntityRenderer<CreeperEntity, CreeperEntityModel<CreeperEntity>> {
         if ((int)(g * 10.0f) % 2 == 0) {
             return 0.0f;
         }
-        return MathHelper.clamp(g, 0.0f, 1.0f);
+        return MathHelper.clamp(g, 0.5f, 1.0f);
     }
 
     @Override

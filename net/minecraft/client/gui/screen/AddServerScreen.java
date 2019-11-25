@@ -26,6 +26,7 @@ extends Screen {
     private TextFieldWidget addressField;
     private TextFieldWidget serverNameField;
     private ButtonWidget resourcePackOptionButton;
+    private final Screen field_21791;
     private final Predicate<String> addressTextFilter = string -> {
         if (ChatUtil.isEmpty(string)) {
             return true;
@@ -42,8 +43,9 @@ extends Screen {
         }
     };
 
-    public AddServerScreen(BooleanConsumer booleanConsumer, ServerInfo serverInfo) {
+    public AddServerScreen(Screen screen, BooleanConsumer booleanConsumer, ServerInfo serverInfo) {
         super(new TranslatableText("addServer.title", new Object[0]));
+        this.field_21791 = screen;
         this.callback = booleanConsumer;
         this.server = serverInfo;
     }
@@ -74,7 +76,7 @@ extends Screen {
         }));
         this.buttonAdd = this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96 + 18, 200, 20, I18n.translate("addServer.add", new Object[0]), buttonWidget -> this.addAndClose()));
         this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 18, 200, 20, I18n.translate("gui.cancel", new Object[0]), buttonWidget -> this.callback.accept(false)));
-        this.onClose();
+        this.method_24183();
     }
 
     @Override
@@ -103,6 +105,11 @@ extends Screen {
 
     @Override
     public void onClose() {
+        this.method_24183();
+        this.minecraft.openScreen(this.field_21791);
+    }
+
+    private void method_24183() {
         String string = this.addressField.getText();
         boolean bl = !string.isEmpty() && string.split(":").length > 0 && string.indexOf(32) == -1;
         this.buttonAdd.active = bl && !this.serverNameField.getText().isEmpty();

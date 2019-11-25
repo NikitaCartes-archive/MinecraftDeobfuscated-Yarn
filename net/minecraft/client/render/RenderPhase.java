@@ -122,7 +122,7 @@ public abstract class RenderPhase {
         RenderSystem.disableFog();
     });
     protected static final Target MAIN_TARGET = new Target("main_target", () -> {}, () -> {});
-    protected static final Target OUTLINE_TARGET = new Target("outline_target", () -> MinecraftClient.getInstance().worldRenderer.method_22990().beginWrite(false), () -> MinecraftClient.getInstance().getFramebuffer().beginWrite(false));
+    protected static final Target OUTLINE_TARGET = new Target("outline_target", () -> MinecraftClient.getInstance().worldRenderer.getEntityOutlinesFramebuffer().beginWrite(false), () -> MinecraftClient.getInstance().getFramebuffer().beginWrite(false));
     protected static final LineWidth FULL_LINEWIDTH = new LineWidth(OptionalDouble.of(1.0));
 
     public RenderPhase(String string, Runnable runnable, Runnable runnable2) {

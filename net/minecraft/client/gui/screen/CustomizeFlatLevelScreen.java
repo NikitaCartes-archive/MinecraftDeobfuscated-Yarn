@@ -110,6 +110,11 @@ extends Screen {
     }
 
     @Override
+    public void onClose() {
+        this.minecraft.openScreen(this.parent);
+    }
+
+    @Override
     public void render(int i, int j, float f) {
         this.renderBackground();
         this.layers.render(i, j, f);

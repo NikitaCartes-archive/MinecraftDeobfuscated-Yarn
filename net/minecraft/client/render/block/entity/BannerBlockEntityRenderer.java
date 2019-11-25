@@ -11,15 +11,15 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.WallBannerBlock;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BannerPattern;
-import net.minecraft.class_4722;
-import net.minecraft.class_4730;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.model.ModelLoader;
+import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.DyeColor;
@@ -78,7 +78,7 @@ extends BlockEntityRenderer<BannerBlockEntity> {
         }
         matrixStack.push();
         matrixStack.scale(0.6666667f, -0.6666667f, -0.6666667f);
-        VertexConsumer vertexConsumer = ModelLoader.BANNER_BASE.method_24145(vertexConsumerProvider, RenderLayer::getEntitySolid);
+        VertexConsumer vertexConsumer = ModelLoader.BANNER_BASE.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntitySolid);
         this.verticalBar.render(matrixStack, vertexConsumer, i, j);
         this.topBar.render(matrixStack, vertexConsumer, i, j);
         if (bannerBlockEntity.isPreview()) {
@@ -95,15 +95,15 @@ extends BlockEntityRenderer<BannerBlockEntity> {
     }
 
     public static void method_23802(BannerBlockEntity bannerBlockEntity, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j, ModelPart modelPart, boolean bl) {
-        modelPart.render(matrixStack, ModelLoader.BANNER_BASE.method_24145(vertexConsumerProvider, RenderLayer::getEntitySolid), i, j);
+        modelPart.render(matrixStack, ModelLoader.BANNER_BASE.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntitySolid), i, j);
         List<BannerPattern> list = bannerBlockEntity.getPatterns();
         List<DyeColor> list2 = bannerBlockEntity.getPatternColors();
         for (int k = 0; k < 17 && k < list.size() && k < list2.size(); ++k) {
             BannerPattern bannerPattern = list.get(k);
             DyeColor dyeColor = list2.get(k);
             float[] fs = dyeColor.getColorComponents();
-            class_4730 lv = new class_4730(bl ? class_4722.field_21706 : class_4722.field_21707, bannerPattern.getSpriteId(bl));
-            modelPart.render(matrixStack, lv.method_24145(vertexConsumerProvider, RenderLayer::getEntityNoOutline), i, j, fs[0], fs[1], fs[2], 1.0f);
+            SpriteIdentifier spriteIdentifier = new SpriteIdentifier(bl ? TexturedRenderLayers.BANNER_PATTERNS_ATLAS_TEXTURE : TexturedRenderLayers.SHIELD_PATTERNS_ATLAS_TEXTURE, bannerPattern.getSpriteId(bl));
+            modelPart.render(matrixStack, spriteIdentifier.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityNoOutline), i, j, fs[0], fs[1], fs[2], 1.0f);
         }
     }
 }

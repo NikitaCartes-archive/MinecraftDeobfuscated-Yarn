@@ -27,7 +27,7 @@ extends BiomeSource {
     }
 
     @Override
-    public Biome getStoredBiome(int i, int j, int k) {
+    public Biome getBiomeForNoiseGen(int i, int j, int k) {
         int l = i >> 2;
         int m = k >> 2;
         if ((long)l * (long)l + (long)m * (long)m <= 4096L) {

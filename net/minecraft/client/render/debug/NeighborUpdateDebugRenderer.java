@@ -46,8 +46,8 @@ implements DebugRenderer.Renderer {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f, long l) {
-        long m = this.client.world.getTime();
+    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f) {
+        long l = this.client.world.getTime();
         int i = 200;
         double g = 0.0025;
         HashSet<BlockPos> set = Sets.newHashSet();
@@ -58,8 +58,8 @@ implements DebugRenderer.Renderer {
             Map.Entry<Long, Map<BlockPos, Integer>> entry = iterator.next();
             Long long_ = entry.getKey();
             Map<BlockPos, Integer> map2 = entry.getValue();
-            long n = m - long_;
-            if (n > 200L) {
+            long m = l - long_;
+            if (m > 200L) {
                 iterator.remove();
                 continue;
             }
@@ -67,7 +67,7 @@ implements DebugRenderer.Renderer {
                 BlockPos blockPos = entry2.getKey();
                 Integer integer = entry2.getValue();
                 if (!set.add(blockPos)) continue;
-                Box box = new Box(BlockPos.ORIGIN).expand(0.002).contract(0.0025 * (double)n).offset(blockPos.getX(), blockPos.getY(), blockPos.getZ()).offset(-d, -e, -f);
+                Box box = new Box(BlockPos.ORIGIN).expand(0.002).contract(0.0025 * (double)m).offset(blockPos.getX(), blockPos.getY(), blockPos.getZ()).offset(-d, -e, -f);
                 WorldRenderer.drawBox(vertexConsumer, box.x1, box.y1, box.z1, box.x2, box.y2, box.z2, 1.0f, 1.0f, 1.0f, 1.0f);
                 map.put(blockPos, integer);
             }

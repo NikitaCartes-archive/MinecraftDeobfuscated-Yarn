@@ -64,5 +64,10 @@ extends Block {
     public boolean allowsSpawning(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
         return true;
     }
+
+    @Override
+    public boolean canSuffocate(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+        return true;
+    }
 }
 

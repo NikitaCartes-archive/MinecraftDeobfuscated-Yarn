@@ -21,9 +21,11 @@ extends Screen {
     private final ServerInfo serverEntry;
     private TextFieldWidget addressField;
     private final BooleanConsumer callback;
+    private final Screen field_21790;
 
-    public DirectConnectScreen(BooleanConsumer booleanConsumer, ServerInfo serverInfo) {
+    public DirectConnectScreen(Screen screen, BooleanConsumer booleanConsumer, ServerInfo serverInfo) {
         super(new TranslatableText("selectServer.direct", new Object[0]));
+        this.field_21790 = screen;
         this.serverEntry = serverInfo;
         this.callback = booleanConsumer;
     }
@@ -67,6 +69,11 @@ extends Screen {
     private void saveAndClose() {
         this.serverEntry.address = this.addressField.getText();
         this.callback.accept(true);
+    }
+
+    @Override
+    public void onClose() {
+        this.minecraft.openScreen(this.field_21790);
     }
 
     @Override

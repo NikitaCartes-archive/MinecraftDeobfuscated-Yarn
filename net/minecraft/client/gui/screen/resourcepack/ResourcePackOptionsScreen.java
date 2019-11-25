@@ -43,19 +43,19 @@ extends GameOptionsScreen {
                 }
                 Collections.reverse(list);
                 this.minecraft.getResourcePackManager().setEnabledProfiles(list);
-                this.field_21336.resourcePacks.clear();
-                this.field_21336.incompatibleResourcePacks.clear();
+                this.gameOptions.resourcePacks.clear();
+                this.gameOptions.incompatibleResourcePacks.clear();
                 for (ClientResourcePackProfile clientResourcePackProfile : list) {
                     if (clientResourcePackProfile.isPinned()) continue;
-                    this.field_21336.resourcePacks.add(clientResourcePackProfile.getName());
+                    this.gameOptions.resourcePacks.add(clientResourcePackProfile.getName());
                     if (clientResourcePackProfile.getCompatibility().isCompatible()) continue;
-                    this.field_21336.incompatibleResourcePacks.add(clientResourcePackProfile.getName());
+                    this.gameOptions.incompatibleResourcePacks.add(clientResourcePackProfile.getName());
                 }
-                this.field_21336.write();
-                this.minecraft.openScreen(this.field_21335);
+                this.gameOptions.write();
+                this.minecraft.openScreen(this.parent);
                 this.minecraft.reloadResources();
             } else {
-                this.minecraft.openScreen(this.field_21335);
+                this.minecraft.openScreen(this.parent);
             }
         }));
         AvailableResourcePackListWidget availableResourcePackListWidget = this.availablePacks;

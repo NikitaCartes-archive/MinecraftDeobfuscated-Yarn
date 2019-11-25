@@ -60,10 +60,7 @@ extends LivingEntityRenderer<ArmorStandEntity, ArmorStandArmorEntityModel> {
 
     @Override
     protected boolean method_4056(ArmorStandEntity armorStandEntity, boolean bl) {
-        if (armorStandEntity.isMarker()) {
-            return !armorStandEntity.isInvisible() && !bl;
-        }
-        return !armorStandEntity.isInvisible() || bl;
+        return !armorStandEntity.isInvisible();
     }
 
     @Override

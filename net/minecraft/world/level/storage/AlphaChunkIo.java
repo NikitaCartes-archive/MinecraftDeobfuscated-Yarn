@@ -6,7 +6,7 @@ package net.minecraft.world.level.storage;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.biome.BiomeArray;
+import net.minecraft.world.biome.source.BiomeArray;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.chunk.ChunkNibbleArray;
 import net.minecraft.world.level.storage.AlphaChunkDataArray;

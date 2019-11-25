@@ -12,6 +12,7 @@ import com.mojang.datafixers.schemas.Schema;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import net.minecraft.SharedConstants;
+import net.minecraft.datafixer.fixes.RemovePoiValidTagFix;
 import net.minecraft.datafixers.StructureReferenceFixer;
 import net.minecraft.datafixers.TypeReferences;
 import net.minecraft.datafixers.fixes.AddTrappedChestFix;
@@ -427,6 +428,8 @@ public class Schemas {
         dataFixerBuilder.addFixer(BlockNameFix.create(schema98, "Rename bee_hive block to beehive", string -> ImmutableMap.of("minecraft:bee_hive", "minecraft:beehive").getOrDefault(string, (String)string)));
         Schema schema99 = dataFixerBuilder.addSchema(2211, EMPTY_IDENTIFIER_NORMALIZE);
         dataFixerBuilder.addFixer(new StructureReferenceFixer(schema99, false));
+        Schema schema100 = dataFixerBuilder.addSchema(2218, EMPTY_IDENTIFIER_NORMALIZE);
+        dataFixerBuilder.addFixer(new RemovePoiValidTagFix(schema100, false));
     }
 }
 

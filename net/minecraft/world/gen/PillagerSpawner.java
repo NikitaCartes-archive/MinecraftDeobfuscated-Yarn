@@ -53,7 +53,7 @@ public class PillagerSpawner {
         if (!serverWorld.isRegionLoaded(mutable.getX() - 10, mutable.getY() - 10, mutable.getZ() - 10, mutable.getX() + 10, mutable.getY() + 10, mutable.getZ() + 10)) {
             return 0;
         }
-        Biome biome = serverWorld.method_23753(mutable);
+        Biome biome = serverWorld.getBiome(mutable);
         Biome.Category category = biome.getCategory();
         if (category == Biome.Category.MUSHROOM) {
             return 0;

@@ -116,12 +116,7 @@ Element {
         this.blit(this.x, this.y, 0, 46 + k * 20, this.width / 2, this.height);
         this.blit(this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + k * 20, this.width / 2, this.height);
         this.renderBg(minecraftClient, i, j);
-        int l = 0xFFFFFF;
-        if (!this.active) {
-            l = 0xA0A0A0;
-        } else if (this.isHovered()) {
-            l = 0xFFFFA0;
-        }
+        int l = this.active ? 0xFFFFFF : 0xA0A0A0;
         this.drawCenteredString(textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, l | MathHelper.ceil(this.alpha * 255.0f) << 24);
     }
 

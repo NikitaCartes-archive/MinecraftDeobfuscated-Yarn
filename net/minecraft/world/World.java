@@ -56,7 +56,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BiomeAccess;
+import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkManager;
@@ -966,11 +966,11 @@ AutoCloseable {
         if (this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos).getY() > blockPos.getY()) {
             return false;
         }
-        return this.method_23753(blockPos).getPrecipitation() == Biome.Precipitation.RAIN;
+        return this.getBiome(blockPos).getPrecipitation() == Biome.Precipitation.RAIN;
     }
 
     public boolean hasHighHumidity(BlockPos blockPos) {
-        Biome biome = this.method_23753(blockPos);
+        Biome biome = this.getBiome(blockPos);
         return biome.hasHighHumidity();
     }
 

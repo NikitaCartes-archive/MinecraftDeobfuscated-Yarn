@@ -17,6 +17,7 @@ import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.text.TranslatableText;
@@ -62,6 +63,7 @@ extends FallingBlock {
             return ActionResult.SUCCESS;
         }
         playerEntity.openContainer(blockState.createContainerProvider(world, blockPos));
+        playerEntity.incrementStat(Stats.INTERACT_WITH_ANVIL);
         return ActionResult.SUCCESS;
     }
 

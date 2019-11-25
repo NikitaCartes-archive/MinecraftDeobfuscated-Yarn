@@ -1168,6 +1168,7 @@ extends LivingEntity {
                 }
             }
             this.dealDamage(this, entity);
+            this.onAttacking(entity);
         }
         return bl;
     }

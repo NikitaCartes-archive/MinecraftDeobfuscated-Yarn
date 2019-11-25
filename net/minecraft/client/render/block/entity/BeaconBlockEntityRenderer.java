@@ -105,11 +105,11 @@ extends BlockEntityRenderer<BeaconBlockEntity> {
     }
 
     private static void method_23076(Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer vertexConsumer, float f, float g, float h, float i, int j, float k, float l, float m, float n) {
-        vertexConsumer.vertex(matrix4f, k, j, l).color(f, g, h, i).texture(m, n).overlay(OverlayTexture.DEFAULT_UV).light(0xF000F0).method_23763(matrix3f, 0.0f, 1.0f, 0.0f).next();
+        vertexConsumer.vertex(matrix4f, k, j, l).color(f, g, h, i).texture(m, n).overlay(OverlayTexture.DEFAULT_UV).light(0xF000F0).normal(matrix3f, 0.0f, 1.0f, 0.0f).next();
     }
 
     @Override
-    public boolean method_3563(BeaconBlockEntity beaconBlockEntity) {
+    public boolean rendersOutsideBoundingBox(BeaconBlockEntity beaconBlockEntity) {
         return true;
     }
 }

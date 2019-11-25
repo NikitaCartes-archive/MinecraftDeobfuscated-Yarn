@@ -33,12 +33,12 @@ extends GameOptionsScreen {
             this.addButton(new SoundSliderWidget(this.minecraft, this.width / 2 - 155 + i % 2 * 160, this.height / 6 - 12 + 24 * (i >> 1), soundCategory, 150));
             ++i;
         }
-        this.addButton(new OptionButtonWidget(this.width / 2 - 75, this.height / 6 - 12 + 24 * (++i >> 1), 150, 20, Option.SUBTITLES, Option.SUBTITLES.getDisplayString(this.field_21336), buttonWidget -> {
+        this.addButton(new OptionButtonWidget(this.width / 2 - 75, this.height / 6 - 12 + 24 * (++i >> 1), 150, 20, Option.SUBTITLES, Option.SUBTITLES.getDisplayString(this.gameOptions), buttonWidget -> {
             Option.SUBTITLES.set(this.minecraft.options);
             buttonWidget.setMessage(Option.SUBTITLES.getDisplayString(this.minecraft.options));
             this.minecraft.options.write();
         }));
-        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, 200, 20, I18n.translate("gui.done", new Object[0]), buttonWidget -> this.minecraft.openScreen(this.field_21335)));
+        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, 200, 20, I18n.translate("gui.done", new Object[0]), buttonWidget -> this.minecraft.openScreen(this.parent)));
     }
 
     @Override

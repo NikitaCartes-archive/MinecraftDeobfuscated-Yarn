@@ -28,7 +28,7 @@ extends GameOptionsScreen {
 
     @Override
     protected void init() {
-        this.mipmapLevels = this.field_21336.mipmapLevels;
+        this.mipmapLevels = this.gameOptions.mipmapLevels;
         this.list = new ButtonListWidget(this.minecraft, this.width, this.height, 32, this.height - 32, 25);
         this.list.addSingleOptionEntry(new FullScreenOption(this.minecraft.getWindow()));
         this.list.addSingleOptionEntry(Option.BIOME_BLEND_RADIUS);
@@ -37,14 +37,14 @@ extends GameOptionsScreen {
         this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, I18n.translate("gui.done", new Object[0]), buttonWidget -> {
             this.minecraft.options.write();
             this.minecraft.getWindow().method_4475();
-            this.minecraft.openScreen(this.field_21335);
+            this.minecraft.openScreen(this.parent);
         }));
     }
 
     @Override
     public void removed() {
-        if (this.field_21336.mipmapLevels != this.mipmapLevels) {
-            this.minecraft.method_24041(this.field_21336.mipmapLevels);
+        if (this.gameOptions.mipmapLevels != this.mipmapLevels) {
+            this.minecraft.resetMipmapLevels(this.gameOptions.mipmapLevels);
             this.minecraft.reloadResourcesConcurrently();
         }
         super.removed();
@@ -52,9 +52,9 @@ extends GameOptionsScreen {
 
     @Override
     public boolean mouseClicked(double d, double e, int i) {
-        int j = this.field_21336.guiScale;
+        int j = this.gameOptions.guiScale;
         if (super.mouseClicked(d, e, i)) {
-            if (this.field_21336.guiScale != j) {
+            if (this.gameOptions.guiScale != j) {
                 this.minecraft.onResolutionChanged();
             }
             return true;
@@ -64,12 +64,12 @@ extends GameOptionsScreen {
 
     @Override
     public boolean mouseReleased(double d, double e, int i) {
-        int j = this.field_21336.guiScale;
+        int j = this.gameOptions.guiScale;
         if (super.mouseReleased(d, e, i)) {
             return true;
         }
         if (this.list.mouseReleased(d, e, i)) {
-            if (this.field_21336.guiScale != j) {
+            if (this.gameOptions.guiScale != j) {
                 this.minecraft.onResolutionChanged();
             }
             return true;

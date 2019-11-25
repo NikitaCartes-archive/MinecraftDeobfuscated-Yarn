@@ -29,7 +29,7 @@ implements DebugRenderer.Renderer {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f, long l) {
+    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f) {
         BlockPos blockPos = this.method_23125().getBlockPos();
         for (BlockPos blockPos2 : this.raidCenters) {
             if (!blockPos.isWithinDistance(blockPos2, 160.0)) continue;

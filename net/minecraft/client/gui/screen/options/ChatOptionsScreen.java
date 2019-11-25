@@ -38,7 +38,7 @@ extends GameOptionsScreen {
             }
             ++i;
         }
-        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 24 * (i + 1) / 2, 200, 20, I18n.translate("gui.done", new Object[0]), buttonWidget -> this.minecraft.openScreen(this.field_21335)));
+        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 24 * (i + 1) / 2, 200, 20, I18n.translate("gui.done", new Object[0]), buttonWidget -> this.minecraft.openScreen(this.parent)));
     }
 
     @Override
@@ -49,7 +49,7 @@ extends GameOptionsScreen {
     }
 
     public void setNarratorMessage() {
-        this.narratorOptionButton.setMessage(Option.NARRATOR.getMessage(this.field_21336));
+        this.narratorOptionButton.setMessage(Option.NARRATOR.getMessage(this.gameOptions));
     }
 }
 

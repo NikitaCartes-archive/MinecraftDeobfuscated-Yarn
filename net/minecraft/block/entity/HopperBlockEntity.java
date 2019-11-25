@@ -328,7 +328,7 @@ Tickable {
         if (block instanceof InventoryProvider) {
             inventory = ((InventoryProvider)((Object)block)).getInventory(blockState, world, blockPos);
         } else if (block.hasBlockEntity() && (blockEntity = world.getBlockEntity(blockPos)) instanceof Inventory && (inventory = (Inventory)((Object)blockEntity)) instanceof ChestBlockEntity && block instanceof ChestBlock) {
-            inventory = ChestBlock.getInventory(blockState, world, blockPos, true);
+            inventory = ChestBlock.getInventory((ChestBlock)block, blockState, world, blockPos, true);
         }
         if (inventory == null && !(list = world.getEntities((Entity)null, new Box(d - 0.5, e - 0.5, f - 0.5, d + 0.5, e + 0.5, f + 0.5), EntityPredicates.VALID_INVENTORIES)).isEmpty()) {
             inventory = (Inventory)((Object)list.get(world.random.nextInt(list.size())));

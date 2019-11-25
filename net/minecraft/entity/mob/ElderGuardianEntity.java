@@ -4,8 +4,6 @@
 package net.minecraft.entity.mob;
 
 import java.util.List;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.network.packet.GameStateChangeS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -45,11 +43,6 @@ extends GuardianEntity {
     @Override
     public int getWarmupTime() {
         return 60;
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public void straightenTail() {
-        this.prevTailAngle = this.tailAngle = 1.0f;
     }
 
     @Override

@@ -21,7 +21,7 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.WoodType;
+import net.minecraft.util.SignType;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -35,11 +35,11 @@ extends BlockWithEntity
 implements Waterloggable {
     public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
     protected static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 16.0, 12.0);
-    private final WoodType field_21675;
+    private final SignType type;
 
-    protected AbstractSignBlock(Block.Settings settings, WoodType woodType) {
+    protected AbstractSignBlock(Block.Settings settings, SignType signType) {
         super(settings);
-        this.field_21675 = woodType;
+        this.type = signType;
     }
 
     @Override
@@ -94,8 +94,8 @@ implements Waterloggable {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public WoodType method_24025() {
-        return this.field_21675;
+    public SignType getSignType() {
+        return this.type;
     }
 }
 

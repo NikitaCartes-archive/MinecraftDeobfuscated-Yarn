@@ -131,7 +131,7 @@ implements Comparable<Vec3i> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public String method_23854() {
+    public String toShortString() {
         return "" + this.getX() + ", " + this.getY() + ", " + this.getZ();
     }
 

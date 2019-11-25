@@ -6,11 +6,11 @@ package net.minecraft.world.biome.layer;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
-import net.minecraft.world.biome.layer.BiomeLayers;
-import net.minecraft.world.biome.layer.LayerRandomnessSource;
-import net.minecraft.world.biome.layer.LayerSampler;
-import net.minecraft.world.biome.layer.MergingLayer;
-import net.minecraft.world.biome.layer.NorthWestCoordinateTransformer;
+import net.minecraft.world.biome.layer.type.MergingLayer;
+import net.minecraft.world.biome.layer.util.BiomeLayers;
+import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
+import net.minecraft.world.biome.layer.util.LayerSampler;
+import net.minecraft.world.biome.layer.util.NorthWestCoordinateTransformer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

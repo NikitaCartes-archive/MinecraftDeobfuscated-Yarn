@@ -101,8 +101,8 @@ implements AutoCloseable {
                 Vector3f vector3f4;
                 float s;
                 float o;
-                float n = this.method_23284(clientWorld, l) * h;
-                float p = o = this.method_23284(clientWorld, m) * k;
+                float n = this.getBrightness(clientWorld, l) * h;
+                float p = o = this.getBrightness(clientWorld, m) * k;
                 float q = o * ((o * 0.6f + 0.4f) * 0.6f + 0.4f);
                 float r = o * (o * o * 0.6f + 0.4f);
                 vector3f2.set(p, q, r);
@@ -150,12 +150,20 @@ implements AutoCloseable {
         return 1.0f - g * g * g * g;
     }
 
-    private float method_23284(World world, int i) {
-        return world.dimension.method_23759(i);
+    private float getBrightness(World world, int i) {
+        return world.dimension.getBrightness(i);
     }
 
-    public static int method_23687(int i, int j) {
+    public static int pack(int i, int j) {
         return i << 4 | j << 20;
+    }
+
+    public static int getBlockLightCoordinates(int i) {
+        return i >> 4 & 0xFFFF;
+    }
+
+    public static int getSkyLightCoordinates(int i) {
+        return i >> 20 & 0xFFFF;
     }
 }
 

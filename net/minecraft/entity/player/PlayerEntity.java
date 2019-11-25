@@ -1135,7 +1135,7 @@ extends LivingEntity {
                 return Either.left(SleepFailureReason.NOT_POSSIBLE_HERE);
             }
             if (this.world.isDay()) {
-                this.setPlayerSpawn(blockPos, false);
+                this.setPlayerSpawn(blockPos, false, true);
                 return Either.left(SleepFailureReason.NOT_POSSIBLE_NOW);
             }
             if (!this.isWithinSleepingRange(blockPos, direction)) {
@@ -1164,7 +1164,7 @@ extends LivingEntity {
     @Override
     public void sleep(BlockPos blockPos) {
         this.resetStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_REST));
-        this.setPlayerSpawn(blockPos, false);
+        this.setPlayerSpawn(blockPos, false, true);
         super.sleep(blockPos);
     }
 
@@ -1229,8 +1229,11 @@ extends LivingEntity {
         return this.spawnForced;
     }
 
-    public void setPlayerSpawn(BlockPos blockPos, boolean bl) {
+    public void setPlayerSpawn(BlockPos blockPos, boolean bl, boolean bl2) {
         if (blockPos != null) {
+            if (bl2 && !blockPos.equals(this.spawnPosition)) {
+                this.sendMessage(new TranslatableText("block.minecraft.bed.set_spawn", new Object[0]));
+            }
             this.spawnPosition = blockPos;
             this.spawnForced = bl;
         } else {
@@ -1830,6 +1833,11 @@ extends LivingEntity {
 
     public ItemCooldownManager getItemCooldownManager() {
         return this.itemCooldownManager;
+    }
+
+    @Override
+    protected float method_23326() {
+        return this.abilities.flying || this.isFallFlying() ? 1.0f : super.method_23326();
     }
 
     public float getLuck() {

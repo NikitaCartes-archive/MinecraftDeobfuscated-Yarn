@@ -37,7 +37,7 @@ public interface VertexConsumer {
 
     public void next();
 
-    default public void method_23919(float f, float g, float h, float i, float j, float k, float l, float m, float n, int o, int p, float q, float r, float s) {
+    default public void elements(float f, float g, float h, float i, float j, float k, float l, float m, float n, int o, int p, float q, float r, float s) {
         this.vertex(f, g, h);
         this.color(i, j, k, l);
         this.texture(m, n);
@@ -68,7 +68,7 @@ public interface VertexConsumer {
         Vec3i vec3i = bakedQuad.getFace().getVector();
         Vector3f vector3f = new Vector3f(vec3i.getX(), vec3i.getY(), vec3i.getZ());
         Matrix4f matrix4f = entry.getModel();
-        vector3f.multiply(entry.getNormal());
+        vector3f.transform(entry.getNormal());
         int j = 8;
         int k = js.length / 8;
         try (MemoryStack memoryStack = MemoryStack.stackPush();){
@@ -101,21 +101,21 @@ public interface VertexConsumer {
                 q = byteBuffer.getFloat(16);
                 r = byteBuffer.getFloat(20);
                 Vector4f vector4f = new Vector4f(m, n, o, 1.0f);
-                vector4f.multiply(matrix4f);
-                this.method_23919(vector4f.getX(), vector4f.getY(), vector4f.getZ(), s, t, u, 1.0f, q, r, i, v, vector3f.getX(), vector3f.getY(), vector3f.getZ());
+                vector4f.transform(matrix4f);
+                this.elements(vector4f.getX(), vector4f.getY(), vector4f.getZ(), s, t, u, 1.0f, q, r, i, v, vector3f.getX(), vector3f.getY(), vector3f.getZ());
             }
         }
     }
 
     default public VertexConsumer vertex(Matrix4f matrix4f, float f, float g, float h) {
         Vector4f vector4f = new Vector4f(f, g, h, 1.0f);
-        vector4f.multiply(matrix4f);
+        vector4f.transform(matrix4f);
         return this.vertex(vector4f.getX(), vector4f.getY(), vector4f.getZ());
     }
 
-    default public VertexConsumer method_23763(Matrix3f matrix3f, float f, float g, float h) {
+    default public VertexConsumer normal(Matrix3f matrix3f, float f, float g, float h) {
         Vector3f vector3f = new Vector3f(f, g, h);
-        vector3f.multiply(matrix3f);
+        vector3f.transform(matrix3f);
         return this.normal(vector3f.getX(), vector3f.getY(), vector3f.getZ());
     }
 }

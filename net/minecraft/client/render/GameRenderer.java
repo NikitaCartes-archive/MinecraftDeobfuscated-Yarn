@@ -404,16 +404,11 @@ SynchronousResourceReloadListener {
         }
         int i = (int)(this.client.mouse.getX() * (double)this.client.getWindow().getScaledWidth() / (double)this.client.getWindow().getWidth());
         int j = (int)(this.client.mouse.getY() * (double)this.client.getWindow().getScaledHeight() / (double)this.client.getWindow().getHeight());
-        int k = this.client.options.maxFps;
         MatrixStack matrixStack = new MatrixStack();
         RenderSystem.viewport(0, 0, this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight());
         if (bl && this.client.world != null) {
             this.client.getProfiler().push("level");
-            int m = 30;
-            long n = Util.getMeasuringTimeNano() - l;
-            long o = 1000000000 / m;
-            long p = Math.max(o * 3L / 4L - n, o / 10L);
-            this.renderWorld(f, Util.getMeasuringTimeNano() + p, matrixStack);
+            this.renderWorld(f, l, matrixStack);
             if (this.client.isIntegratedServerRunning() && this.lastWorldIconUpdate < Util.getMeasuringTimeMs() - 1000L) {
                 this.lastWorldIconUpdate = Util.getMeasuringTimeMs();
                 if (!this.client.getServer().hasIconFile()) {
@@ -540,11 +535,11 @@ SynchronousResourceReloadListener {
         this.client.getProfiler().swap("camera");
         Camera camera = this.camera;
         this.viewDistance = this.client.options.viewDistance * 16;
-        Matrix4f matrix4f = this.method_22973(camera, f, true);
-        this.method_22709(matrix4f);
-        this.bobViewWhenHurt(matrixStack, f);
+        MatrixStack matrixStack2 = new MatrixStack();
+        matrixStack2.peek().getModel().multiply(this.method_22973(camera, f, true));
+        this.bobViewWhenHurt(matrixStack2, f);
         if (this.client.options.bobView) {
-            this.bobView(matrixStack, f);
+            this.bobView(matrixStack2, f);
         }
         if ((g = MathHelper.lerp(f, this.client.player.lastNauseaStrength, this.client.player.nextNauseaStrength)) > 0.0f) {
             int i = 20;
@@ -554,11 +549,13 @@ SynchronousResourceReloadListener {
             float h = 5.0f / (g * g + 5.0f) - g * 0.04f;
             h *= h;
             Vector3f vector3f = new Vector3f(0.0f, MathHelper.SQUARE_ROOT_OF_TWO / 2.0f, MathHelper.SQUARE_ROOT_OF_TWO / 2.0f);
-            matrixStack.multiply(vector3f.getDegreesQuaternion(((float)this.ticks + f) * (float)i));
-            matrixStack.scale(1.0f / h, 1.0f, 1.0f);
+            matrixStack2.multiply(vector3f.getDegreesQuaternion(((float)this.ticks + f) * (float)i));
+            matrixStack2.scale(1.0f / h, 1.0f, 1.0f);
             float j = -((float)this.ticks + f) * (float)i;
-            matrixStack.multiply(vector3f.getDegreesQuaternion(j));
+            matrixStack2.multiply(vector3f.getDegreesQuaternion(j));
         }
+        Matrix4f matrix4f = matrixStack2.peek().getModel();
+        this.method_22709(matrix4f);
         camera.update(this.client.world, this.client.getCameraEntity() == null ? this.client.player : this.client.getCameraEntity(), this.client.options.perspective > 0, this.client.options.perspective == 2, f);
         matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(camera.getPitch()));
         matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(camera.getYaw() + 180.0f));

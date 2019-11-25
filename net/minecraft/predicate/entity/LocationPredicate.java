@@ -80,7 +80,7 @@ public class LocationPredicate {
         }
         BlockPos blockPos = new BlockPos(f, g, h);
         boolean bl = serverWorld.canSetBlock(blockPos);
-        if (!(this.biome == null || bl && this.biome == serverWorld.method_23753(blockPos))) {
+        if (!(this.biome == null || bl && this.biome == serverWorld.getBiome(blockPos))) {
             return false;
         }
         if (!(this.feature == null || bl && this.feature.isInsideStructure(serverWorld, blockPos))) {

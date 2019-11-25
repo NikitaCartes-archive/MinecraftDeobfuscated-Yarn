@@ -99,7 +99,7 @@ implements RangedAttackMob {
 
     public static boolean canSpawn(EntityType<DrownedEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
         boolean bl;
-        Biome biome = iWorld.method_23753(blockPos);
+        Biome biome = iWorld.getBiome(blockPos);
         boolean bl2 = bl = iWorld.getDifficulty() != Difficulty.PEACEFUL && DrownedEntity.isSpawnDark(iWorld, blockPos, random) && (spawnType == SpawnType.SPAWNER || iWorld.getFluidState(blockPos).matches(FluidTags.WATER));
         if (biome == Biomes.RIVER || biome == Biomes.FROZEN_RIVER) {
             return random.nextInt(15) == 0 && bl;

@@ -22,7 +22,7 @@ extends Biome {
     public EndBiome() {
         super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.END_CONFIG).precipitation(Biome.Precipitation.NONE).category(Biome.Category.THEEND).depth(0.1f).scale(0.2f).temperature(0.5f).downfall(0.5f).waterColor(4159204).waterFogColor(329011).parent(null));
         this.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, Feature.END_SPIKE.configure(new EndSpikeFeatureConfig(false, ImmutableList.of(), null)).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT)));
-        DefaultBiomeFeatures.method_20826(this);
+        DefaultBiomeFeatures.addEndCities(this);
         this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.ENDERMAN, 10, 4, 4));
     }
 

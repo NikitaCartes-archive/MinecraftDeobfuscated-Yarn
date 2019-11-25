@@ -104,7 +104,7 @@ extends LivingEntityRenderer<T, M> {
             float s = (float)r / 23.0f;
             int t = (int)MathHelper.lerp(s, i, j);
             int u = (int)MathHelper.lerp(s, k, l);
-            int v = LightmapTextureManager.method_23687(t, u);
+            int v = LightmapTextureManager.pack(t, u);
             MobEntityRenderer.method_23187(vertexConsumer, matrix4f, v, f, g, h, m, n, 24, r, false, o, p);
             MobEntityRenderer.method_23187(vertexConsumer, matrix4f, v, f, g, h, m, n, 24, r + 1, true, o, p);
         }

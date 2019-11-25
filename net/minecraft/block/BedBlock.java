@@ -13,6 +13,7 @@ import net.minecraft.block.BlockPlacementEnvironment;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.DoubleBlockProperties;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.MaterialColor;
 import net.minecraft.block.entity.BedBlockEntity;
@@ -98,7 +99,7 @@ implements BlockEntityProvider {
         if (blockState.get(PART) != BedPart.HEAD && (blockState = world.getBlockState(blockPos = blockPos.offset(blockState.get(FACING)))).getBlock() != this) {
             return ActionResult.CONSUME;
         }
-        if (!world.dimension.canPlayersSleep() || world.method_23753(blockPos) == Biomes.NETHER) {
+        if (!world.dimension.canPlayersSleep() || world.getBiome(blockPos) == Biomes.NETHER) {
             world.removeBlock(blockPos, false);
             BlockPos blockPos2 = blockPos.offset(blockState.get(FACING).getOpposite());
             if (world.getBlockState(blockPos2).getBlock() == this) {
@@ -204,9 +205,8 @@ implements BlockEntityProvider {
 
     @Override
     public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-        Direction direction = blockState.get(FACING);
-        Direction direction2 = blockState.get(PART) == BedPart.HEAD ? direction : direction.getOpposite();
-        switch (direction2) {
+        Direction direction = BedBlock.method_24163(blockState).getOpposite();
+        switch (direction) {
             case NORTH: {
                 return NORTH_SHAPE;
             }
@@ -218,6 +218,20 @@ implements BlockEntityProvider {
             }
         }
         return EAST_SHAPE;
+    }
+
+    public static Direction method_24163(BlockState blockState) {
+        Direction direction = blockState.get(FACING);
+        return blockState.get(PART) == BedPart.HEAD ? direction.getOpposite() : direction;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public static DoubleBlockProperties.Type method_24164(BlockState blockState) {
+        BedPart bedPart = blockState.get(PART);
+        if (bedPart == BedPart.HEAD) {
+            return DoubleBlockProperties.Type.FIRST;
+        }
+        return DoubleBlockProperties.Type.SECOND;
     }
 
     public static Optional<Vec3d> findWakeUpPosition(EntityType<?> entityType, WorldView worldView, BlockPos blockPos, int i) {

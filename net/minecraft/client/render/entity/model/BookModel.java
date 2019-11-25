@@ -40,10 +40,10 @@ extends Model {
 
     @Override
     public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k) {
-        this.b(matrixStack, vertexConsumer, i, j, f, g, h, k);
+        this.method_24184(matrixStack, vertexConsumer, i, j, f, g, h, k);
     }
 
-    public void b(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k) {
+    public void method_24184(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k) {
         this.parts.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, f, g, h, k));
     }
 

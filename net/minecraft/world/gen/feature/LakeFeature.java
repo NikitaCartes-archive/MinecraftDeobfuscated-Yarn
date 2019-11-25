@@ -93,7 +93,7 @@ extends Feature<BushFeatureConfig> {
                 for (t = 4; t < 8; ++t) {
                     BlockPos blockPos2;
                     if (!bls[(j * 16 + s) * 8 + t] || !LakeFeature.isDirt(iWorld.getBlockState(blockPos2 = blockPos.add(j, t - 1, s)).getBlock()) || iWorld.getLightLevel(LightType.SKY, blockPos.add(j, t, s)) <= 0) continue;
-                    Biome biome = iWorld.method_23753(blockPos2);
+                    Biome biome = iWorld.getBiome(blockPos2);
                     if (biome.getSurfaceConfig().getTopMaterial().getBlock() == Blocks.MYCELIUM) {
                         iWorld.setBlockState(blockPos2, Blocks.MYCELIUM.getDefaultState(), 2);
                         continue;
@@ -119,7 +119,7 @@ extends Feature<BushFeatureConfig> {
                 for (int s = 0; s < 16; ++s) {
                     t = 4;
                     BlockPos blockPos2 = blockPos.add(j, 4, s);
-                    if (!iWorld.method_23753(blockPos2).canSetSnow(iWorld, blockPos2, false)) continue;
+                    if (!iWorld.getBiome(blockPos2).canSetSnow(iWorld, blockPos2, false)) continue;
                     iWorld.setBlockState(blockPos2, Blocks.ICE.getDefaultState(), 2);
                 }
             }

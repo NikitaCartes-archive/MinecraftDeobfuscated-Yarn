@@ -93,10 +93,12 @@ extends Block {
         if (item == Items.FLINT_AND_STEEL || item == Items.FIRE_CHARGE) {
             TntBlock.primeTnt(world, blockPos, playerEntity2);
             world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 11);
-            if (item == Items.FLINT_AND_STEEL) {
-                itemStack.damage(1, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(hand));
-            } else {
-                itemStack.decrement(1);
+            if (!playerEntity2.isCreative()) {
+                if (item == Items.FLINT_AND_STEEL) {
+                    itemStack.damage(1, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(hand));
+                } else {
+                    itemStack.decrement(1);
+                }
             }
             return ActionResult.SUCCESS;
         }

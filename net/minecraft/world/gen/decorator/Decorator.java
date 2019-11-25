@@ -53,7 +53,7 @@ import net.minecraft.world.gen.decorator.HeightmapRangeDecoratorConfig;
 import net.minecraft.world.gen.decorator.HellFireDecorator;
 import net.minecraft.world.gen.decorator.IcebergDecorator;
 import net.minecraft.world.gen.decorator.LakeDecoratorConfig;
-import net.minecraft.world.gen.decorator.LakeLakeDecorator;
+import net.minecraft.world.gen.decorator.LavaLakeDecorator;
 import net.minecraft.world.gen.decorator.LightGemChanceDecorator;
 import net.minecraft.world.gen.decorator.MagmaDecorator;
 import net.minecraft.world.gen.decorator.NoiseHeightmap32Decorator;
@@ -99,7 +99,7 @@ public abstract class Decorator<DC extends DecoratorConfig> {
     public static final Decorator<CountDecoratorConfig> HELL_FIRE = Decorator.register("hell_fire", new HellFireDecorator((Function<Dynamic<?>, ? extends CountDecoratorConfig>)((Function<Dynamic<?>, CountDecoratorConfig>)CountDecoratorConfig::deserialize)));
     public static final Decorator<CountDecoratorConfig> MAGMA = Decorator.register("magma", new MagmaDecorator((Function<Dynamic<?>, ? extends CountDecoratorConfig>)((Function<Dynamic<?>, CountDecoratorConfig>)CountDecoratorConfig::deserialize)));
     public static final Decorator<NopeDecoratorConfig> EMERALD_ORE = Decorator.register("emerald_ore", new EmeraldOreDecorator((Function<Dynamic<?>, ? extends NopeDecoratorConfig>)((Function<Dynamic<?>, NopeDecoratorConfig>)NopeDecoratorConfig::deserialize)));
-    public static final Decorator<LakeDecoratorConfig> LAVA_LAKE = Decorator.register("lava_lake", new LakeLakeDecorator((Function<Dynamic<?>, ? extends LakeDecoratorConfig>)((Function<Dynamic<?>, LakeDecoratorConfig>)LakeDecoratorConfig::deserialize)));
+    public static final Decorator<LakeDecoratorConfig> LAVA_LAKE = Decorator.register("lava_lake", new LavaLakeDecorator((Function<Dynamic<?>, ? extends LakeDecoratorConfig>)((Function<Dynamic<?>, LakeDecoratorConfig>)LakeDecoratorConfig::deserialize)));
     public static final Decorator<LakeDecoratorConfig> WATER_LAKE = Decorator.register("water_lake", new WaterLakeDecorator((Function<Dynamic<?>, ? extends LakeDecoratorConfig>)((Function<Dynamic<?>, LakeDecoratorConfig>)LakeDecoratorConfig::deserialize)));
     public static final Decorator<LakeDecoratorConfig> DUNGEONS = Decorator.register("dungeons", new DungeonsDecorator((Function<Dynamic<?>, ? extends LakeDecoratorConfig>)((Function<Dynamic<?>, LakeDecoratorConfig>)LakeDecoratorConfig::deserialize)));
     public static final Decorator<NopeDecoratorConfig> DARK_OAK_TREE = Decorator.register("dark_oak_tree", new DarkOakTreeDecorator((Function<Dynamic<?>, ? extends NopeDecoratorConfig>)((Function<Dynamic<?>, NopeDecoratorConfig>)NopeDecoratorConfig::deserialize)));

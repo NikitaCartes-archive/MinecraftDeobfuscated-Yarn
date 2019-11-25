@@ -30,9 +30,9 @@ implements DebugRenderer.Renderer {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f, long l) {
-        long m = Util.getMeasuringTimeMs();
-        this.markers.entrySet().removeIf(entry -> m > ((Marker)entry.getValue()).removalTime);
+    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f) {
+        long l = Util.getMeasuringTimeMs();
+        this.markers.entrySet().removeIf(entry -> l > ((Marker)entry.getValue()).removalTime);
         this.markers.forEach(this::method_23111);
     }
 

@@ -23,15 +23,15 @@ extends FoliagePlacer {
     }
 
     @Override
-    public void method_23448(ModifiableTestableWorld modifiableTestableWorld, Random random, BranchedTreeFeatureConfig branchedTreeFeatureConfig, int i, int j, int k, BlockPos blockPos, Set<BlockPos> set) {
+    public void generate(ModifiableTestableWorld modifiableTestableWorld, Random random, BranchedTreeFeatureConfig branchedTreeFeatureConfig, int i, int j, int k, BlockPos blockPos, Set<BlockPos> set) {
         for (int l = i; l >= j; --l) {
             int m = Math.max(k - 1 - (l - i) / 2, 0);
-            this.method_23449(modifiableTestableWorld, random, branchedTreeFeatureConfig, i, blockPos, l, m, set);
+            this.generate(modifiableTestableWorld, random, branchedTreeFeatureConfig, i, blockPos, l, m, set);
         }
     }
 
     @Override
-    public int method_23452(Random random, int i, int j, BranchedTreeFeatureConfig branchedTreeFeatureConfig) {
+    public int getRadius(Random random, int i, int j, BranchedTreeFeatureConfig branchedTreeFeatureConfig) {
         return this.radius + random.nextInt(this.randomRadius + 1);
     }
 

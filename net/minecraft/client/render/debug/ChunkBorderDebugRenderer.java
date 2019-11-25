@@ -25,7 +25,7 @@ implements DebugRenderer.Renderer {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f, long l) {
+    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f) {
         int k;
         RenderSystem.enableDepthTest();
         RenderSystem.shadeModel(7425);
@@ -43,11 +43,11 @@ implements DebugRenderer.Renderer {
         RenderSystem.lineWidth(1.0f);
         bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
         for (k = -16; k <= 32; k += 16) {
-            for (int m = -16; m <= 32; m += 16) {
-                bufferBuilder.vertex(i + (double)k, g, j + (double)m).color(1.0f, 0.0f, 0.0f, 0.0f).next();
-                bufferBuilder.vertex(i + (double)k, g, j + (double)m).color(1.0f, 0.0f, 0.0f, 0.5f).next();
-                bufferBuilder.vertex(i + (double)k, h, j + (double)m).color(1.0f, 0.0f, 0.0f, 0.5f).next();
-                bufferBuilder.vertex(i + (double)k, h, j + (double)m).color(1.0f, 0.0f, 0.0f, 0.0f).next();
+            for (int l = -16; l <= 32; l += 16) {
+                bufferBuilder.vertex(i + (double)k, g, j + (double)l).color(1.0f, 0.0f, 0.0f, 0.0f).next();
+                bufferBuilder.vertex(i + (double)k, g, j + (double)l).color(1.0f, 0.0f, 0.0f, 0.5f).next();
+                bufferBuilder.vertex(i + (double)k, h, j + (double)l).color(1.0f, 0.0f, 0.0f, 0.5f).next();
+                bufferBuilder.vertex(i + (double)k, h, j + (double)l).color(1.0f, 0.0f, 0.0f, 0.0f).next();
             }
         }
         for (k = 2; k < 16; k += 2) {
@@ -71,35 +71,35 @@ implements DebugRenderer.Renderer {
             bufferBuilder.vertex(i + 16.0, h, j + (double)k).color(1.0f, 1.0f, 0.0f, 0.0f).next();
         }
         for (k = 0; k <= 256; k += 2) {
-            double n = (double)k - e;
-            bufferBuilder.vertex(i, n, j).color(1.0f, 1.0f, 0.0f, 0.0f).next();
-            bufferBuilder.vertex(i, n, j).color(1.0f, 1.0f, 0.0f, 1.0f).next();
-            bufferBuilder.vertex(i, n, j + 16.0).color(1.0f, 1.0f, 0.0f, 1.0f).next();
-            bufferBuilder.vertex(i + 16.0, n, j + 16.0).color(1.0f, 1.0f, 0.0f, 1.0f).next();
-            bufferBuilder.vertex(i + 16.0, n, j).color(1.0f, 1.0f, 0.0f, 1.0f).next();
-            bufferBuilder.vertex(i, n, j).color(1.0f, 1.0f, 0.0f, 1.0f).next();
-            bufferBuilder.vertex(i, n, j).color(1.0f, 1.0f, 0.0f, 0.0f).next();
+            double m = (double)k - e;
+            bufferBuilder.vertex(i, m, j).color(1.0f, 1.0f, 0.0f, 0.0f).next();
+            bufferBuilder.vertex(i, m, j).color(1.0f, 1.0f, 0.0f, 1.0f).next();
+            bufferBuilder.vertex(i, m, j + 16.0).color(1.0f, 1.0f, 0.0f, 1.0f).next();
+            bufferBuilder.vertex(i + 16.0, m, j + 16.0).color(1.0f, 1.0f, 0.0f, 1.0f).next();
+            bufferBuilder.vertex(i + 16.0, m, j).color(1.0f, 1.0f, 0.0f, 1.0f).next();
+            bufferBuilder.vertex(i, m, j).color(1.0f, 1.0f, 0.0f, 1.0f).next();
+            bufferBuilder.vertex(i, m, j).color(1.0f, 1.0f, 0.0f, 0.0f).next();
         }
         tessellator.draw();
         RenderSystem.lineWidth(2.0f);
         bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
         for (k = 0; k <= 16; k += 16) {
-            for (int m = 0; m <= 16; m += 16) {
-                bufferBuilder.vertex(i + (double)k, g, j + (double)m).color(0.25f, 0.25f, 1.0f, 0.0f).next();
-                bufferBuilder.vertex(i + (double)k, g, j + (double)m).color(0.25f, 0.25f, 1.0f, 1.0f).next();
-                bufferBuilder.vertex(i + (double)k, h, j + (double)m).color(0.25f, 0.25f, 1.0f, 1.0f).next();
-                bufferBuilder.vertex(i + (double)k, h, j + (double)m).color(0.25f, 0.25f, 1.0f, 0.0f).next();
+            for (int l = 0; l <= 16; l += 16) {
+                bufferBuilder.vertex(i + (double)k, g, j + (double)l).color(0.25f, 0.25f, 1.0f, 0.0f).next();
+                bufferBuilder.vertex(i + (double)k, g, j + (double)l).color(0.25f, 0.25f, 1.0f, 1.0f).next();
+                bufferBuilder.vertex(i + (double)k, h, j + (double)l).color(0.25f, 0.25f, 1.0f, 1.0f).next();
+                bufferBuilder.vertex(i + (double)k, h, j + (double)l).color(0.25f, 0.25f, 1.0f, 0.0f).next();
             }
         }
         for (k = 0; k <= 256; k += 16) {
-            double n = (double)k - e;
-            bufferBuilder.vertex(i, n, j).color(0.25f, 0.25f, 1.0f, 0.0f).next();
-            bufferBuilder.vertex(i, n, j).color(0.25f, 0.25f, 1.0f, 1.0f).next();
-            bufferBuilder.vertex(i, n, j + 16.0).color(0.25f, 0.25f, 1.0f, 1.0f).next();
-            bufferBuilder.vertex(i + 16.0, n, j + 16.0).color(0.25f, 0.25f, 1.0f, 1.0f).next();
-            bufferBuilder.vertex(i + 16.0, n, j).color(0.25f, 0.25f, 1.0f, 1.0f).next();
-            bufferBuilder.vertex(i, n, j).color(0.25f, 0.25f, 1.0f, 1.0f).next();
-            bufferBuilder.vertex(i, n, j).color(0.25f, 0.25f, 1.0f, 0.0f).next();
+            double m = (double)k - e;
+            bufferBuilder.vertex(i, m, j).color(0.25f, 0.25f, 1.0f, 0.0f).next();
+            bufferBuilder.vertex(i, m, j).color(0.25f, 0.25f, 1.0f, 1.0f).next();
+            bufferBuilder.vertex(i, m, j + 16.0).color(0.25f, 0.25f, 1.0f, 1.0f).next();
+            bufferBuilder.vertex(i + 16.0, m, j + 16.0).color(0.25f, 0.25f, 1.0f, 1.0f).next();
+            bufferBuilder.vertex(i + 16.0, m, j).color(0.25f, 0.25f, 1.0f, 1.0f).next();
+            bufferBuilder.vertex(i, m, j).color(0.25f, 0.25f, 1.0f, 1.0f).next();
+            bufferBuilder.vertex(i, m, j).color(0.25f, 0.25f, 1.0f, 0.0f).next();
         }
         tessellator.draw();
         RenderSystem.lineWidth(1.0f);

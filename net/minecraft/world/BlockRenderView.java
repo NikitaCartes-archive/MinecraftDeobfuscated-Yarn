@@ -16,7 +16,7 @@ extends BlockView {
     public LightingProvider getLightingProvider();
 
     @Environment(value=EnvType.CLIENT)
-    public int method_23752(BlockPos var1, ColorResolver var2);
+    public int getColor(BlockPos var1, ColorResolver var2);
 
     default public int getLightLevel(LightType lightType, BlockPos blockPos) {
         return this.getLightingProvider().get(lightType).getLightLevel(blockPos);

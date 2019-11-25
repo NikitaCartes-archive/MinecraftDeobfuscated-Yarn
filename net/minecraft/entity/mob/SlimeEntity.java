@@ -108,12 +108,12 @@ implements Monster {
 
     @Override
     public void readCustomDataFromTag(CompoundTag compoundTag) {
-        super.readCustomDataFromTag(compoundTag);
         int i = compoundTag.getInt("Size");
         if (i < 0) {
             i = 0;
         }
         this.setSize(i + 1, false);
+        super.readCustomDataFromTag(compoundTag);
         this.onGroundLastTick = compoundTag.getBoolean("wasOnGround");
     }
 
@@ -283,7 +283,7 @@ implements Monster {
         }
         if (iWorld.getDifficulty() != Difficulty.PEACEFUL) {
             boolean bl;
-            Biome biome = iWorld.method_23753(blockPos);
+            Biome biome = iWorld.getBiome(blockPos);
             if (biome == Biomes.SWAMP && blockPos.getY() > 50 && blockPos.getY() < 70 && random.nextFloat() < 0.5f && random.nextFloat() < iWorld.getMoonSize() && iWorld.getLightLevel(blockPos) <= random.nextInt(8)) {
                 return SlimeEntity.canMobSpawn(entityType, iWorld, spawnType, blockPos, random);
             }

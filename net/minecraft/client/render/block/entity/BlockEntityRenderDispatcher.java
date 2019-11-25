@@ -111,7 +111,7 @@ public class BlockEntityRenderDispatcher {
 
     private static <T extends BlockEntity> void render(BlockEntityRenderer<T> blockEntityRenderer, T blockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
         World world = blockEntity.getWorld();
-        int i = world != null ? WorldRenderer.method_23794(world, blockEntity.getPos()) : 0xF000F0;
+        int i = world != null ? WorldRenderer.getLightmapCoordinates(world, blockEntity.getPos()) : 0xF000F0;
         blockEntityRenderer.render(blockEntity, f, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV);
     }
 

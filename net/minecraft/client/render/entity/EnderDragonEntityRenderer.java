@@ -152,10 +152,10 @@ extends EntityRenderer<EnderDragonEntity> {
             float u = MathHelper.sin((float)(t % 8) * ((float)Math.PI * 2) / 8.0f) * 0.75f;
             float v = MathHelper.cos((float)(t % 8) * ((float)Math.PI * 2) / 8.0f) * 0.75f;
             float w = (float)(t % 8) / 8.0f;
-            vertexConsumer.vertex(matrix4f, q * 0.2f, r * 0.2f, 0.0f).color(0, 0, 0, 255).texture(s, n).overlay(OverlayTexture.DEFAULT_UV).light(k).method_23763(matrix3f, 0.0f, 1.0f, 0.0f).next();
-            vertexConsumer.vertex(matrix4f, q, r, m).color(255, 255, 255, 255).texture(s, o).overlay(OverlayTexture.DEFAULT_UV).light(k).method_23763(matrix3f, 0.0f, 1.0f, 0.0f).next();
-            vertexConsumer.vertex(matrix4f, u, v, m).color(255, 255, 255, 255).texture(w, o).overlay(OverlayTexture.DEFAULT_UV).light(k).method_23763(matrix3f, 0.0f, 1.0f, 0.0f).next();
-            vertexConsumer.vertex(matrix4f, u * 0.2f, v * 0.2f, 0.0f).color(0, 0, 0, 255).texture(w, n).overlay(OverlayTexture.DEFAULT_UV).light(k).method_23763(matrix3f, 0.0f, 1.0f, 0.0f).next();
+            vertexConsumer.vertex(matrix4f, q * 0.2f, r * 0.2f, 0.0f).color(0, 0, 0, 255).texture(s, n).overlay(OverlayTexture.DEFAULT_UV).light(k).normal(matrix3f, 0.0f, 1.0f, 0.0f).next();
+            vertexConsumer.vertex(matrix4f, q, r, m).color(255, 255, 255, 255).texture(s, o).overlay(OverlayTexture.DEFAULT_UV).light(k).normal(matrix3f, 0.0f, 1.0f, 0.0f).next();
+            vertexConsumer.vertex(matrix4f, u, v, m).color(255, 255, 255, 255).texture(w, o).overlay(OverlayTexture.DEFAULT_UV).light(k).normal(matrix3f, 0.0f, 1.0f, 0.0f).next();
+            vertexConsumer.vertex(matrix4f, u * 0.2f, v * 0.2f, 0.0f).color(0, 0, 0, 255).texture(w, n).overlay(OverlayTexture.DEFAULT_UV).light(k).normal(matrix3f, 0.0f, 1.0f, 0.0f).next();
             q = u;
             r = v;
             s = w;

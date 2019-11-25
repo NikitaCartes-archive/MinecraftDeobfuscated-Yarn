@@ -347,6 +347,15 @@ extends Screen {
     }
 
     @Override
+    public void onClose() {
+        if (this.moreOptionsOpen) {
+            this.setMoreOptionsOpen(false);
+        } else {
+            this.minecraft.openScreen(this.parent);
+        }
+    }
+
+    @Override
     public void render(int i, int j, float f) {
         this.renderBackground();
         this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, -1);

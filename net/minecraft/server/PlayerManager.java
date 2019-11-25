@@ -375,7 +375,7 @@ public abstract class PlayerManager {
             if (optional.isPresent()) {
                 Vec3d vec3d = optional.get();
                 serverPlayerEntity2.setPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, 0.0f, 0.0f);
-                serverPlayerEntity2.setPlayerSpawn(blockPos, bl2);
+                serverPlayerEntity2.setPlayerSpawn(blockPos, bl2, false);
             } else {
                 serverPlayerEntity2.networkHandler.sendPacket(new GameStateChangeS2CPacket(0, 0.0f));
             }

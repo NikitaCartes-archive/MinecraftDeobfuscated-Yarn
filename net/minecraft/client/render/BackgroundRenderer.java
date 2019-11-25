@@ -39,7 +39,7 @@ public class BackgroundRenderer {
         FluidState fluidState = camera.getSubmergedFluidState();
         if (fluidState.matches(FluidTags.WATER)) {
             long l = Util.getMeasuringTimeMs();
-            j = clientWorld.method_23753(new BlockPos(camera.getPos())).getWaterFogColor();
+            j = clientWorld.getBiome(new BlockPos(camera.getPos())).getWaterFogColor();
             if (lastWaterFogColorUpdateTime < 0L) {
                 waterFogColor = j;
                 nextWaterFogColor = j;
@@ -78,7 +78,7 @@ public class BackgroundRenderer {
             float v = (float)vec3d.x;
             float w = (float)vec3d.y;
             float x = (float)vec3d.z;
-            Vec3d vec3d2 = clientWorld.method_23786(f);
+            Vec3d vec3d2 = clientWorld.getFogColor(f);
             red = (float)vec3d2.x;
             green = (float)vec3d2.y;
             blue = (float)vec3d2.z;
@@ -171,7 +171,7 @@ public class BackgroundRenderer {
                 if (entity instanceof ClientPlayerEntity) {
                     ClientPlayerEntity clientPlayerEntity = (ClientPlayerEntity)entity;
                     g -= clientPlayerEntity.method_3140() * clientPlayerEntity.method_3140() * 0.03f;
-                    Biome biome = clientPlayerEntity.world.method_23753(new BlockPos(clientPlayerEntity));
+                    Biome biome = clientPlayerEntity.world.getBiome(new BlockPos(clientPlayerEntity));
                     if (biome == Biomes.SWAMP || biome == Biomes.SWAMP_HILLS) {
                         g += 0.005f;
                     }

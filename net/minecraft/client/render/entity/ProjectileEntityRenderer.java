@@ -72,7 +72,7 @@ extends EntityRenderer<T> {
     }
 
     public void method_23153(Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer vertexConsumer, int i, int j, int k, float f, float g, int l, int m, int n, int o) {
-        vertexConsumer.vertex(matrix4f, i, j, k).color(255, 255, 255, 255).texture(f, g).overlay(OverlayTexture.DEFAULT_UV).light(o).method_23763(matrix3f, l, n, m).next();
+        vertexConsumer.vertex(matrix4f, i, j, k).color(255, 255, 255, 255).texture(f, g).overlay(OverlayTexture.DEFAULT_UV).light(o).normal(matrix3f, l, n, m).next();
     }
 }
 

@@ -24,7 +24,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ConfiguredFeature<FC extends FeatureConfig, F extends Feature<FC>> {
-    public static final Logger field_21589 = LogManager.getLogger();
+    public static final Logger log = LogManager.getLogger();
     public final F feature;
     public final FC config;
 
@@ -42,7 +42,7 @@ public class ConfiguredFeature<FC extends FeatureConfig, F extends Feature<FC>> 
         return feature.configure(new DecoratedFeatureConfig(this, configuredDecorator));
     }
 
-    public RandomFeatureEntry<FC> method_23387(float f) {
+    public RandomFeatureEntry<FC> withChance(float f) {
         return new RandomFeatureEntry(this, f);
     }
 
@@ -60,7 +60,7 @@ public class ConfiguredFeature<FC extends FeatureConfig, F extends Feature<FC>> 
         try {
             return new ConfiguredFeature(feature, dynamic.get("config").orElseEmptyMap());
         } catch (RuntimeException runtimeException) {
-            field_21589.warn("Error while deserializing {}", (Object)string);
+            log.warn("Error while deserializing {}", (Object)string);
             return new ConfiguredFeature<DefaultFeatureConfig, Feature<DefaultFeatureConfig>>(Feature.NO_OP, DefaultFeatureConfig.DEFAULT);
         }
     }

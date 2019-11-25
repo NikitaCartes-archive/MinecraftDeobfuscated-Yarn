@@ -3,9 +3,9 @@
  */
 package net.minecraft.client.render.block.entity;
 
+import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -27,7 +27,7 @@ extends BlockEntityRenderer<T> {
     public static final Identifier SKY_TEX = new Identifier("textures/environment/end_sky.png");
     public static final Identifier PORTAL_TEX = new Identifier("textures/entity/end_portal.png");
     private static final Random RANDOM = new Random(31100L);
-    private static final List<RenderLayer> field_21732 = IntStream.range(0, 16).mapToObj(RenderLayer::getEndPortal).collect(Collectors.toList());
+    private static final List<RenderLayer> field_21732 = IntStream.range(0, 16).mapToObj(i -> RenderLayer.getEndPortal(i + 1)).collect(ImmutableList.toImmutableList());
 
     public EndPortalBlockEntityRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher) {
         super(blockEntityRenderDispatcher);
@@ -40,9 +40,9 @@ extends BlockEntityRenderer<T> {
         int k = this.method_3592(d);
         float g = this.method_3594();
         Matrix4f matrix4f = matrixStack.peek().getModel();
-        this.method_23084(endPortalBlockEntity, g, 0.15f, matrix4f, vertexConsumerProvider.getBuffer(field_21732.get(1)));
+        this.method_23084(endPortalBlockEntity, g, 0.15f, matrix4f, vertexConsumerProvider.getBuffer(field_21732.get(0)));
         for (int l = 1; l < k; ++l) {
-            this.method_23084(endPortalBlockEntity, g, 2.0f / (float)(18 - l), matrix4f, vertexConsumerProvider.getBuffer(field_21732.get(l + 1)));
+            this.method_23084(endPortalBlockEntity, g, 2.0f / (float)(18 - l), matrix4f, vertexConsumerProvider.getBuffer(field_21732.get(l)));
         }
     }
 
@@ -68,8 +68,31 @@ extends BlockEntityRenderer<T> {
     }
 
     protected int method_3592(double d) {
-        int i = d > 36864.0 ? 1 : (d > 25600.0 ? 3 : (d > 16384.0 ? 5 : (d > 9216.0 ? 7 : (d > 4096.0 ? 9 : (d > 1024.0 ? 11 : (d > 576.0 ? 13 : (d > 256.0 ? 14 : 15)))))));
-        return i;
+        if (d > 36864.0) {
+            return 1;
+        }
+        if (d > 25600.0) {
+            return 3;
+        }
+        if (d > 16384.0) {
+            return 5;
+        }
+        if (d > 9216.0) {
+            return 7;
+        }
+        if (d > 4096.0) {
+            return 9;
+        }
+        if (d > 1024.0) {
+            return 11;
+        }
+        if (d > 576.0) {
+            return 13;
+        }
+        if (d > 256.0) {
+            return 14;
+        }
+        return 15;
     }
 
     protected float method_3594() {

@@ -180,7 +180,7 @@ extends Dimension {
     @Nullable
     public BlockPos getTopSpawningBlockPosition(int i, int j, boolean bl) {
         BlockPos.Mutable mutable = new BlockPos.Mutable(i, 0, j);
-        Biome biome = this.world.method_23753(mutable);
+        Biome biome = this.world.getBiome(mutable);
         BlockState blockState = biome.getSurfaceConfig().getTopMaterial();
         if (bl && !blockState.getBlock().matches(BlockTags.VALID_SPAWN)) {
             return null;

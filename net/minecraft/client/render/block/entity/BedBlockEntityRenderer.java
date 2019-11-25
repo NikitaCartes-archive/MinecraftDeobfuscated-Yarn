@@ -3,23 +3,29 @@
  */
 package net.minecraft.client.render.block.entity;
 
+import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.ChestBlock;
+import net.minecraft.block.DoubleBlockProperties;
 import net.minecraft.block.entity.BedBlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.enums.BedPart;
-import net.minecraft.class_4722;
-import net.minecraft.class_4730;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
+import net.minecraft.client.render.block.entity.LightmapCoordinatesRetriever;
+import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.World;
 
 @Environment(value=EnvType.CLIENT)
 public class BedBlockEntityRenderer
@@ -54,17 +60,20 @@ extends BlockEntityRenderer<BedBlockEntity> {
 
     @Override
     public void render(BedBlockEntity bedBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
-        class_4730 lv = class_4722.field_21713[bedBlockEntity.getColor().getId()];
-        if (bedBlockEntity.hasWorld()) {
+        SpriteIdentifier spriteIdentifier = TexturedRenderLayers.BED_TEXTURES[bedBlockEntity.getColor().getId()];
+        World world = bedBlockEntity.getWorld();
+        if (world != null) {
             BlockState blockState = bedBlockEntity.getCachedState();
-            this.method_3558(matrixStack, vertexConsumerProvider, blockState.get(BedBlock.PART) == BedPart.HEAD, blockState.get(BedBlock.FACING), lv, i, j, false);
+            DoubleBlockProperties.PropertySource<BedBlockEntity> propertySource = DoubleBlockProperties.toPropertySource(BlockEntityType.BED, BedBlock::method_24164, BedBlock::method_24163, ChestBlock.FACING, blockState, world, bedBlockEntity.getPos(), (iWorld, blockPos) -> false);
+            int k = ((Int2IntFunction)propertySource.apply(new LightmapCoordinatesRetriever())).get(i);
+            this.method_3558(matrixStack, vertexConsumerProvider, blockState.get(BedBlock.PART) == BedPart.HEAD, blockState.get(BedBlock.FACING), spriteIdentifier, k, j, false);
         } else {
-            this.method_3558(matrixStack, vertexConsumerProvider, true, Direction.SOUTH, lv, i, j, false);
-            this.method_3558(matrixStack, vertexConsumerProvider, false, Direction.SOUTH, lv, i, j, true);
+            this.method_3558(matrixStack, vertexConsumerProvider, true, Direction.SOUTH, spriteIdentifier, i, j, false);
+            this.method_3558(matrixStack, vertexConsumerProvider, false, Direction.SOUTH, spriteIdentifier, i, j, true);
         }
     }
 
-    private void method_3558(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, boolean bl, Direction direction, class_4730 arg, int i, int j, boolean bl2) {
+    private void method_3558(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, boolean bl, Direction direction, SpriteIdentifier spriteIdentifier, int i, int j, boolean bl2) {
         this.field_20813.visible = bl;
         this.field_20814.visible = !bl;
         this.field_20815[0].visible = !bl;
@@ -77,7 +86,7 @@ extends BlockEntityRenderer<BedBlockEntity> {
         matrixStack.translate(0.5, 0.5, 0.5);
         matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0f + direction.asRotation()));
         matrixStack.translate(-0.5, -0.5, -0.5);
-        VertexConsumer vertexConsumer = arg.method_24145(vertexConsumerProvider, RenderLayer::getEntitySolid);
+        VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntitySolid);
         this.field_20813.render(matrixStack, vertexConsumer, i, j);
         this.field_20814.render(matrixStack, vertexConsumer, i, j);
         this.field_20815[0].render(matrixStack, vertexConsumer, i, j);

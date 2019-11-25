@@ -39,7 +39,6 @@ import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
-import net.minecraft.class_4703;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.MapRenderer;
@@ -164,6 +163,7 @@ import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.ServerList;
 import net.minecraft.client.particle.ItemPickupParticle;
 import net.minecraft.client.recipe.book.ClientRecipeBook;
+import net.minecraft.client.render.debug.BeeDebugRenderer;
 import net.minecraft.client.render.debug.GoalSelectorDebugRenderer;
 import net.minecraft.client.render.debug.NeighborUpdateDebugRenderer;
 import net.minecraft.client.render.debug.VillageDebugRenderer;
@@ -822,7 +822,7 @@ implements ClientPlayPacketListener {
     @Override
     public void onPlayerSpawnPosition(PlayerSpawnPositionS2CPacket playerSpawnPositionS2CPacket) {
         NetworkThreadUtils.forceMainThread(playerSpawnPositionS2CPacket, this, this.client);
-        this.client.player.setPlayerSpawn(playerSpawnPositionS2CPacket.getPos(), true);
+        this.client.player.setPlayerSpawn(playerSpawnPositionS2CPacket.getPos(), true, false);
         this.client.world.getLevelProperties().setSpawnPos(playerSpawnPositionS2CPacket.getPos());
     }
 
@@ -1717,7 +1717,7 @@ implements ClientPlayPacketListener {
                     brain.field_19375.add(string9);
                 }
                 this.client.debugRenderer.villageDebugRenderer.addBrain(brain);
-            } else if (CustomPayloadS2CPacket.field_21559.equals(identifier)) {
+            } else if (CustomPayloadS2CPacket.DEBUG_BEE.equals(identifier)) {
                 int r;
                 double d = packetByteBuf.readDouble();
                 double e = packetByteBuf.readDouble();
@@ -1741,26 +1741,26 @@ implements ClientPlayPacketListener {
                 if (bl6) {
                     path3 = Path.fromBuffer(packetByteBuf);
                 }
-                class_4703.class_4704 lv = new class_4703.class_4704(uUID, o, position, path3, blockPos4, blockPos5, w);
+                BeeDebugRenderer.Bee bee = new BeeDebugRenderer.Bee(uUID, o, position, path3, blockPos4, blockPos5, w);
                 int q = packetByteBuf.readInt();
                 for (r = 0; r < q; ++r) {
                     String string6 = packetByteBuf.readString();
-                    lv.field_21542.add(string6);
+                    bee.field_21542.add(string6);
                 }
                 r = packetByteBuf.readInt();
                 for (int s = 0; s < r; ++s) {
                     BlockPos blockPos6 = packetByteBuf.readBlockPos();
-                    lv.field_21734.add(blockPos6);
+                    bee.blacklistedHives.add(blockPos6);
                 }
-                this.client.debugRenderer.field_21547.method_23805(lv);
-            } else if (CustomPayloadS2CPacket.field_21560.equals(identifier)) {
+                this.client.debugRenderer.beeDebugRenderer.addBee(bee);
+            } else if (CustomPayloadS2CPacket.DEBUG_HIVE.equals(identifier)) {
                 BlockPos blockPos2 = packetByteBuf.readBlockPos();
                 String string = packetByteBuf.readString();
                 int m = packetByteBuf.readInt();
                 int x = packetByteBuf.readInt();
                 boolean bl7 = packetByteBuf.readBoolean();
-                class_4703.class_4705 lv2 = new class_4703.class_4705(blockPos2, string, m, x, bl7, this.world.getTime());
-                this.client.debugRenderer.field_21547.method_23807(lv2);
+                BeeDebugRenderer.Hive hive = new BeeDebugRenderer.Hive(blockPos2, string, m, x, bl7, this.world.getTime());
+                this.client.debugRenderer.beeDebugRenderer.addHive(hive);
             } else if (CustomPayloadS2CPacket.DEBUG_GAME_TEST_CLEAR.equals(identifier)) {
                 this.client.debugRenderer.gameTestDebugRenderer.clear();
             } else if (CustomPayloadS2CPacket.DEBUG_GAME_TEST_ADD_MARKER.equals(identifier)) {

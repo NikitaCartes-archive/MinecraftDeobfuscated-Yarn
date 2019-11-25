@@ -40,7 +40,7 @@ public class Frustum {
 
     private void transform(Matrix4f matrix4f, int i, int j, int k, int l) {
         Vector4f vector4f = new Vector4f(i, j, k, 1.0f);
-        vector4f.multiply(matrix4f);
+        vector4f.transform(matrix4f);
         vector4f.normalize();
         this.homogeneousCoordinates[l] = vector4f;
     }

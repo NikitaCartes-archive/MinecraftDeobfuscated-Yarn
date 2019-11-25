@@ -35,7 +35,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4730;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.BakedQuadFactory;
@@ -55,6 +54,7 @@ import net.minecraft.client.render.model.json.Transformation;
 import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.Direction;
@@ -76,7 +76,7 @@ implements UnbakedModel {
     private final List<ModelItemOverride> overrides;
     public String id = "";
     @VisibleForTesting
-    protected final Map<String, Either<class_4730, String>> textureMap;
+    protected final Map<String, Either<SpriteIdentifier, String>> textureMap;
     @Nullable
     protected JsonUnbakedModel parent;
     @Nullable
@@ -90,7 +90,7 @@ implements UnbakedModel {
         return JsonUnbakedModel.deserialize(new StringReader(string));
     }
 
-    public JsonUnbakedModel(@Nullable Identifier identifier, List<ModelElement> list, Map<String, Either<class_4730, String>> map, boolean bl, boolean bl2, ModelTransformation modelTransformation, List<ModelItemOverride> list2) {
+    public JsonUnbakedModel(@Nullable Identifier identifier, List<ModelElement> list, Map<String, Either<SpriteIdentifier, String>> map, boolean bl, boolean bl2, ModelTransformation modelTransformation, List<ModelItemOverride> list2) {
         this.elements = list;
         this.ambientOcclusion = bl;
         this.depthInGui = bl2;
@@ -142,7 +142,7 @@ implements UnbakedModel {
     }
 
     @Override
-    public Collection<class_4730> getTextureDependencies(Function<Identifier, UnbakedModel> function, Set<Pair<String, String>> set) {
+    public Collection<SpriteIdentifier> getTextureDependencies(Function<Identifier, UnbakedModel> function, Set<Pair<String, String>> set) {
         LinkedHashSet<JsonUnbakedModel> set2 = Sets.newLinkedHashSet();
         JsonUnbakedModel jsonUnbakedModel = this;
         while (jsonUnbakedModel.parentId != null && jsonUnbakedModel.parent == null) {
@@ -165,14 +165,14 @@ implements UnbakedModel {
             jsonUnbakedModel.parent = (JsonUnbakedModel)unbakedModel;
             jsonUnbakedModel = jsonUnbakedModel.parent;
         }
-        HashSet<class_4730> set3 = Sets.newHashSet(this.method_24077("particle"));
+        HashSet<SpriteIdentifier> set3 = Sets.newHashSet(this.method_24077("particle"));
         for (ModelElement modelElement : this.getElements()) {
             for (ModelElementFace modelElementFace : modelElement.faces.values()) {
-                class_4730 lv = this.method_24077(modelElementFace.textureId);
-                if (Objects.equals(lv.method_24147(), MissingSprite.getMissingSpriteId())) {
+                SpriteIdentifier spriteIdentifier = this.method_24077(modelElementFace.textureId);
+                if (Objects.equals(spriteIdentifier.getTextureId(), MissingSprite.getMissingSpriteId())) {
                     set.add(Pair.of(modelElementFace.textureId, this.id));
                 }
-                set3.add(lv);
+                set3.add(spriteIdentifier);
             }
         }
         this.overrides.forEach(modelItemOverride -> {
@@ -189,11 +189,11 @@ implements UnbakedModel {
     }
 
     @Override
-    public BakedModel bake(ModelLoader modelLoader, Function<class_4730, Sprite> function, ModelBakeSettings modelBakeSettings, Identifier identifier) {
+    public BakedModel bake(ModelLoader modelLoader, Function<SpriteIdentifier, Sprite> function, ModelBakeSettings modelBakeSettings, Identifier identifier) {
         return this.bake(modelLoader, this, function, modelBakeSettings, identifier);
     }
 
-    public BakedModel bake(ModelLoader modelLoader, JsonUnbakedModel jsonUnbakedModel, Function<class_4730, Sprite> function, ModelBakeSettings modelBakeSettings, Identifier identifier) {
+    public BakedModel bake(ModelLoader modelLoader, JsonUnbakedModel jsonUnbakedModel, Function<SpriteIdentifier, Sprite> function, ModelBakeSettings modelBakeSettings, Identifier identifier) {
         Sprite sprite = function.apply(this.method_24077("particle"));
         if (this.getRootModel() == ModelLoader.BLOCK_ENTITY_MARKER) {
             return new BuiltinBakedModel(this.getTransformations(), this.compileOverrides(modelLoader, jsonUnbakedModel), sprite);
@@ -218,37 +218,37 @@ implements UnbakedModel {
     }
 
     public boolean textureExists(String string) {
-        return !MissingSprite.getMissingSpriteId().equals(this.method_24077(string).method_24147());
+        return !MissingSprite.getMissingSpriteId().equals(this.method_24077(string).getTextureId());
     }
 
-    public class_4730 method_24077(String string) {
+    public SpriteIdentifier method_24077(String string) {
         if (JsonUnbakedModel.isTextureReference(string)) {
             string = string.substring(1);
         }
         ArrayList<String> list = Lists.newArrayList();
-        Either<class_4730, String> either;
-        Optional<class_4730> optional;
+        Either<SpriteIdentifier, String> either;
+        Optional<SpriteIdentifier> optional;
         while (!(optional = (either = this.resolveTexture(string)).left()).isPresent()) {
             string = either.right().get();
             if (list.contains(string)) {
                 LOGGER.warn("Unable to resolve texture due to reference chain {}->{} in {}", (Object)Joiner.on("->").join(list), (Object)string, (Object)this.id);
-                return new class_4730(SpriteAtlasTexture.BLOCK_ATLAS_TEX, MissingSprite.getMissingSpriteId());
+                return new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, MissingSprite.getMissingSpriteId());
             }
             list.add(string);
         }
         return optional.get();
     }
 
-    private Either<class_4730, String> resolveTexture(String string) {
+    private Either<SpriteIdentifier, String> resolveTexture(String string) {
         JsonUnbakedModel jsonUnbakedModel = this;
         while (jsonUnbakedModel != null) {
-            Either<class_4730, String> either = jsonUnbakedModel.textureMap.get(string);
+            Either<SpriteIdentifier, String> either = jsonUnbakedModel.textureMap.get(string);
             if (either != null) {
                 return either;
             }
             jsonUnbakedModel = jsonUnbakedModel.parent;
         }
-        return Either.left(new class_4730(SpriteAtlasTexture.BLOCK_ATLAS_TEX, MissingSprite.getMissingSpriteId()));
+        return Either.left(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, MissingSprite.getMissingSpriteId()));
     }
 
     private static boolean isTextureReference(String string) {
@@ -290,7 +290,7 @@ implements UnbakedModel {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
             List<ModelElement> list = this.deserializeElements(jsonDeserializationContext, jsonObject);
             String string = this.deserializeParent(jsonObject);
-            Map<String, Either<class_4730, String>> map = this.deserializeTextures(jsonObject);
+            Map<String, Either<SpriteIdentifier, String>> map = this.deserializeTextures(jsonObject);
             boolean bl = this.deserializeAmbientOcclusion(jsonObject);
             ModelTransformation modelTransformation = ModelTransformation.NONE;
             if (jsonObject.has("display")) {
@@ -313,9 +313,9 @@ implements UnbakedModel {
             return list;
         }
 
-        private Map<String, Either<class_4730, String>> deserializeTextures(JsonObject jsonObject) {
+        private Map<String, Either<SpriteIdentifier, String>> deserializeTextures(JsonObject jsonObject) {
             Identifier identifier = SpriteAtlasTexture.BLOCK_ATLAS_TEX;
-            HashMap<String, Either<class_4730, String>> map = Maps.newHashMap();
+            HashMap<String, Either<SpriteIdentifier, String>> map = Maps.newHashMap();
             if (jsonObject.has("textures")) {
                 JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "textures");
                 for (Map.Entry<String, JsonElement> entry : jsonObject2.entrySet()) {
@@ -325,7 +325,7 @@ implements UnbakedModel {
             return map;
         }
 
-        private static Either<class_4730, String> method_24079(Identifier identifier, String string) {
+        private static Either<SpriteIdentifier, String> method_24079(Identifier identifier, String string) {
             if (JsonUnbakedModel.isTextureReference(string)) {
                 return Either.right(string.substring(1));
             }
@@ -333,7 +333,7 @@ implements UnbakedModel {
             if (identifier2 == null) {
                 throw new JsonParseException(string + " is not valid resource location");
             }
-            return Either.left(new class_4730(identifier, identifier2));
+            return Either.left(new SpriteIdentifier(identifier, identifier2));
         }
 
         private String deserializeParent(JsonObject jsonObject) {

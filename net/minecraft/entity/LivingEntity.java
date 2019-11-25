@@ -23,6 +23,7 @@ import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.HoneyBlock;
 import net.minecraft.block.LadderBlock;
 import net.minecraft.block.TrapdoorBlock;
 import net.minecraft.client.network.packet.EntityAnimationS2CPacket;
@@ -99,6 +100,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.Arm;
 import net.minecraft.util.DefaultedList;
@@ -1360,6 +1362,10 @@ extends Entity {
                 this.playEquipmentBreakEffects(this.getEquippedStack(EquipmentSlot.FEET));
                 break;
             }
+            case 54: {
+                HoneyBlock.method_24178(this);
+                break;
+            }
             default: {
                 super.handleStatus(b);
             }
@@ -1487,7 +1493,11 @@ extends Entity {
         }
     }
 
-    public void onDismounted(Entity entity) {
+    private void onDismounted(Entity entity) {
+        if (this.world.getBlockState(new BlockPos(entity)).getBlock().matches(BlockTags.PORTALS)) {
+            this.setPosition(entity.getX(), entity.getBodyY(1.0) + 0.001, entity.getZ());
+            return;
+        }
         if (entity instanceof BoatEntity || entity instanceof HorseBaseEntity) {
             float f;
             int i;

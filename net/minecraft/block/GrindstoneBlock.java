@@ -15,6 +15,7 @@ import net.minecraft.container.GrindstoneContainer;
 import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
@@ -160,6 +161,7 @@ extends WallMountedBlock {
             return ActionResult.SUCCESS;
         }
         playerEntity.openContainer(blockState.createContainerProvider(world, blockPos));
+        playerEntity.incrementStat(Stats.INTERACT_WITH_GRINDSTONE);
         return ActionResult.SUCCESS;
     }
 

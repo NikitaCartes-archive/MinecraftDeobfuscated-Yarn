@@ -17,7 +17,7 @@ extends LargeTreeSaplingGenerator {
     @Override
     @Nullable
     protected ConfiguredFeature<BranchedTreeFeatureConfig, ?> createTreeFeature(Random random) {
-        return Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.field_21185);
+        return Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.SPRUCE_TREE_CONFIG);
     }
 
     @Override

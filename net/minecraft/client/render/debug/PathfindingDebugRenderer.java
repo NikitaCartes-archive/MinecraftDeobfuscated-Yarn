@@ -36,18 +36,18 @@ implements DebugRenderer.Renderer {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f, long l) {
+    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f) {
         if (this.paths.isEmpty()) {
             return;
         }
-        long m = Util.getMeasuringTimeMs();
+        long l = Util.getMeasuringTimeMs();
         for (Integer integer : this.paths.keySet()) {
             Path path = this.paths.get(integer);
             float g = this.field_4617.get(integer).floatValue();
             PathfindingDebugRenderer.drawPath(path, g, true, true, d, e, f);
         }
         for (Integer integer2 : this.pathTimes.keySet().toArray(new Integer[0])) {
-            if (m - this.pathTimes.get(integer2) <= 5000L) continue;
+            if (l - this.pathTimes.get(integer2) <= 5000L) continue;
             this.paths.remove(integer2);
             this.pathTimes.remove(integer2);
         }

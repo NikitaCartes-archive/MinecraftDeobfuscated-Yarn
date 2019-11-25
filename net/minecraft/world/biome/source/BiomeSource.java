@@ -14,8 +14,8 @@ import java.util.Set;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BiomeAccess;
 import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.gen.feature.StructureFeature;
 import org.jetbrains.annotations.Nullable;
 
@@ -51,7 +51,7 @@ implements BiomeAccess.Storage {
                     int y = m + w;
                     int z = n + x;
                     int aa = o + v;
-                    set.add(this.getStoredBiome(y, z, aa));
+                    set.add(this.getBiomeForNoiseGen(y, z, aa));
                 }
             }
         }
@@ -73,7 +73,7 @@ implements BiomeAccess.Storage {
             for (int v = 0; v < q; ++v) {
                 int w = m + v;
                 int x = n + u;
-                if (!list.contains(this.getStoredBiome(w, s, x))) continue;
+                if (!list.contains(this.getBiomeForNoiseGen(w, s, x))) continue;
                 if (blockPos == null || random.nextInt(t + 1) == 0) {
                     blockPos = new BlockPos(w << 2, j, x << 2);
                 }

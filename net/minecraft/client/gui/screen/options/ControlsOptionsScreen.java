@@ -32,23 +32,23 @@ extends GameOptionsScreen {
 
     @Override
     protected void init() {
-        this.addButton(new ButtonWidget(this.width / 2 - 155, 18, 150, 20, I18n.translate("options.mouse_settings", new Object[0]), buttonWidget -> this.minecraft.openScreen(new MouseOptionsScreen(this, this.field_21336))));
-        this.addButton(Option.AUTO_JUMP.createButton(this.field_21336, this.width / 2 - 155 + 160, 18, 150));
+        this.addButton(new ButtonWidget(this.width / 2 - 155, 18, 150, 20, I18n.translate("options.mouse_settings", new Object[0]), buttonWidget -> this.minecraft.openScreen(new MouseOptionsScreen(this, this.gameOptions))));
+        this.addButton(Option.AUTO_JUMP.createButton(this.gameOptions, this.width / 2 - 155 + 160, 18, 150));
         this.keyBindingListWidget = new ControlsListWidget(this, this.minecraft);
         this.children.add(this.keyBindingListWidget);
         this.resetButton = this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 29, 150, 20, I18n.translate("controls.resetAll", new Object[0]), buttonWidget -> {
-            for (KeyBinding keyBinding : this.field_21336.keysAll) {
+            for (KeyBinding keyBinding : this.gameOptions.keysAll) {
                 keyBinding.setKeyCode(keyBinding.getDefaultKeyCode());
             }
             KeyBinding.updateKeysByCode();
         }));
-        this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, this.height - 29, 150, 20, I18n.translate("gui.done", new Object[0]), buttonWidget -> this.minecraft.openScreen(this.field_21335)));
+        this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, this.height - 29, 150, 20, I18n.translate("gui.done", new Object[0]), buttonWidget -> this.minecraft.openScreen(this.parent)));
     }
 
     @Override
     public boolean mouseClicked(double d, double e, int i) {
         if (this.focusedBinding != null) {
-            this.field_21336.setKeyCode(this.focusedBinding, InputUtil.Type.MOUSE.createFromCode(i));
+            this.gameOptions.setKeyCode(this.focusedBinding, InputUtil.Type.MOUSE.createFromCode(i));
             this.focusedBinding = null;
             KeyBinding.updateKeysByCode();
             return true;
@@ -60,9 +60,9 @@ extends GameOptionsScreen {
     public boolean keyPressed(int i, int j, int k) {
         if (this.focusedBinding != null) {
             if (i == 256) {
-                this.field_21336.setKeyCode(this.focusedBinding, InputUtil.UNKNOWN_KEYCODE);
+                this.gameOptions.setKeyCode(this.focusedBinding, InputUtil.UNKNOWN_KEYCODE);
             } else {
-                this.field_21336.setKeyCode(this.focusedBinding, InputUtil.getKeyCode(i, j));
+                this.gameOptions.setKeyCode(this.focusedBinding, InputUtil.getKeyCode(i, j));
             }
             this.focusedBinding = null;
             this.time = Util.getMeasuringTimeMs();
@@ -78,7 +78,7 @@ extends GameOptionsScreen {
         this.keyBindingListWidget.render(i, j, f);
         this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 8, 0xFFFFFF);
         boolean bl = false;
-        for (KeyBinding keyBinding : this.field_21336.keysAll) {
+        for (KeyBinding keyBinding : this.gameOptions.keysAll) {
             if (keyBinding.isDefault()) continue;
             bl = true;
             break;

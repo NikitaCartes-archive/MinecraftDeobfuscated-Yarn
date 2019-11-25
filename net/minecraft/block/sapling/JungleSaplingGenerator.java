@@ -20,13 +20,13 @@ extends LargeTreeSaplingGenerator {
     @Override
     @Nullable
     protected ConfiguredFeature<BranchedTreeFeatureConfig, ?> createTreeFeature(Random random) {
-        return new OakTreeFeature((Function<Dynamic<?>, ? extends BranchedTreeFeatureConfig>)((Function<Dynamic<?>, BranchedTreeFeatureConfig>)BranchedTreeFeatureConfig::deserialize2)).configure(DefaultBiomeFeatures.field_21183);
+        return new OakTreeFeature((Function<Dynamic<?>, ? extends BranchedTreeFeatureConfig>)((Function<Dynamic<?>, BranchedTreeFeatureConfig>)BranchedTreeFeatureConfig::deserialize2)).configure(DefaultBiomeFeatures.JUNGLE_SAPLING_TREE_CONFIG);
     }
 
     @Override
     @Nullable
     protected ConfiguredFeature<MegaTreeFeatureConfig, ?> createLargeTreeFeature(Random random) {
-        return Feature.MEGA_JUNGLE_TREE.configure(DefaultBiomeFeatures.field_21200);
+        return Feature.MEGA_JUNGLE_TREE.configure(DefaultBiomeFeatures.MEGA_JUNGLE_TREE_CONFIG);
     }
 }
 

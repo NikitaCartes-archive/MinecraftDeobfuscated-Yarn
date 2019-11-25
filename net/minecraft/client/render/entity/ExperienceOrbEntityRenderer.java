@@ -53,7 +53,7 @@ extends EntityRenderer<ExperienceOrbEntity> {
         int t = 255;
         int u = (int)((MathHelper.sin(r + 4.1887903f) + 1.0f) * 0.1f * 255.0f);
         matrixStack.translate(0.0, 0.1f, 0.0);
-        matrixStack.multiply(this.renderManager.camera.method_23767());
+        matrixStack.multiply(this.renderManager.method_24197());
         matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
         float v = 0.3f;
         matrixStack.scale(0.3f, 0.3f, 0.3f);
@@ -70,7 +70,7 @@ extends EntityRenderer<ExperienceOrbEntity> {
     }
 
     private static void method_23171(VertexConsumer vertexConsumer, Matrix4f matrix4f, Matrix3f matrix3f, float f, float g, int i, int j, int k, float h, float l, int m) {
-        vertexConsumer.vertex(matrix4f, f, g, 0.0f).color(i, j, k, 128).texture(h, l).overlay(OverlayTexture.DEFAULT_UV).light(m).method_23763(matrix3f, 0.0f, 1.0f, 0.0f).next();
+        vertexConsumer.vertex(matrix4f, f, g, 0.0f).color(i, j, k, 128).texture(h, l).overlay(OverlayTexture.DEFAULT_UV).light(m).normal(matrix3f, 0.0f, 1.0f, 0.0f).next();
     }
 
     @Override

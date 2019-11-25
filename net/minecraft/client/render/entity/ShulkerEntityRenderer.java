@@ -5,8 +5,8 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4722;
 import net.minecraft.client.render.Frustum;
+import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.feature.ShulkerSomethingFeatureRenderer;
@@ -22,8 +22,8 @@ import net.minecraft.util.math.Vec3d;
 @Environment(value=EnvType.CLIENT)
 public class ShulkerEntityRenderer
 extends MobEntityRenderer<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> {
-    public static final Identifier SKIN = new Identifier("textures/" + class_4722.field_21710.method_24147().getPath() + ".png");
-    public static final Identifier[] SKIN_COLOR = (Identifier[])class_4722.field_21711.stream().map(arg -> new Identifier("textures/" + arg.method_24147().getPath() + ".png")).toArray(Identifier[]::new);
+    public static final Identifier SKIN = new Identifier("textures/" + TexturedRenderLayers.SHULKER_TEXTURE_ID.getTextureId().getPath() + ".png");
+    public static final Identifier[] SKIN_COLOR = (Identifier[])TexturedRenderLayers.COLORED_SHULKER_BOXES_TEXTURES.stream().map(spriteIdentifier -> new Identifier("textures/" + spriteIdentifier.getTextureId().getPath() + ".png")).toArray(Identifier[]::new);
 
     public ShulkerEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher, new ShulkerEntityModel(), 0.0f);

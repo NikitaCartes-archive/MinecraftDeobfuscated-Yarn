@@ -9,11 +9,11 @@ import java.util.Set;
 import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4730;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.ModelBakeSettings;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,9 +21,9 @@ import org.jetbrains.annotations.Nullable;
 public interface UnbakedModel {
     public Collection<Identifier> getModelDependencies();
 
-    public Collection<class_4730> getTextureDependencies(Function<Identifier, UnbakedModel> var1, Set<Pair<String, String>> var2);
+    public Collection<SpriteIdentifier> getTextureDependencies(Function<Identifier, UnbakedModel> var1, Set<Pair<String, String>> var2);
 
     @Nullable
-    public BakedModel bake(ModelLoader var1, Function<class_4730, Sprite> var2, ModelBakeSettings var3, Identifier var4);
+    public BakedModel bake(ModelLoader var1, Function<SpriteIdentifier, Sprite> var2, ModelBakeSettings var3, Identifier var4);
 }
 

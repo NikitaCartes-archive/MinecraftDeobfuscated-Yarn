@@ -31,7 +31,7 @@ implements DebugRenderer.Renderer {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f, long l) {
+    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f) {
         double g = Util.getMeasuringTimeNano();
         if (g - this.lastUpdateTime > 1.0E8) {
             this.lastUpdateTime = g;

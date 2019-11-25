@@ -82,6 +82,11 @@ extends Screen {
     }
 
     @Override
+    public void onClose() {
+        this.minecraft.openScreen(this.parent);
+    }
+
+    @Override
     public void removed() {
         this.minecraft.keyboard.enableRepeatEvents(false);
     }

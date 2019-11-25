@@ -65,7 +65,7 @@ extends StickingOutThingsFeatureRenderer<T, M> {
     }
 
     private static void method_23295(VertexConsumer vertexConsumer, Matrix4f matrix4f, Matrix3f matrix3f, float f, int i, float g, float h, int j) {
-        vertexConsumer.vertex(matrix4f, f, i, 0.0f).color(255, 255, 255, 255).texture(g, h).overlay(OverlayTexture.DEFAULT_UV).light(j).method_23763(matrix3f, 0.0f, 1.0f, 0.0f).next();
+        vertexConsumer.vertex(matrix4f, f, i, 0.0f).color(255, 255, 255, 255).texture(g, h).overlay(OverlayTexture.DEFAULT_UV).light(j).normal(matrix3f, 0.0f, 1.0f, 0.0f).next();
     }
 }
 

@@ -311,7 +311,7 @@ extends WaterCreatureEntity {
     }
 
     public static boolean canSpawn(EntityType<DolphinEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-        return blockPos.getY() > 45 && blockPos.getY() < iWorld.getSeaLevel() && (iWorld.method_23753(blockPos) != Biomes.OCEAN || iWorld.method_23753(blockPos) != Biomes.DEEP_OCEAN) && iWorld.getFluidState(blockPos).matches(FluidTags.WATER);
+        return blockPos.getY() > 45 && blockPos.getY() < iWorld.getSeaLevel() && (iWorld.getBiome(blockPos) != Biomes.OCEAN || iWorld.getBiome(blockPos) != Biomes.DEEP_OCEAN) && iWorld.getFluidState(blockPos).matches(FluidTags.WATER);
     }
 
     @Override

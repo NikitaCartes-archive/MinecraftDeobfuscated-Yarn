@@ -8,7 +8,6 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4703;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.BufferBuilder;
@@ -17,6 +16,7 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.render.debug.BeeDebugRenderer;
 import net.minecraft.client.render.debug.BlockOutlineDebugRenderer;
 import net.minecraft.client.render.debug.CaveDebugRenderer;
 import net.minecraft.client.render.debug.ChunkBorderDebugRenderer;
@@ -59,7 +59,7 @@ public class DebugRenderer {
     public final Renderer blockOutlineDebugRenderer;
     public final Renderer chunkLoadingDebugRenderer;
     public final VillageDebugRenderer villageDebugRenderer;
-    public final class_4703 field_21547;
+    public final BeeDebugRenderer beeDebugRenderer;
     public final RaidCenterDebugRenderer raidCenterDebugRenderer;
     public final GoalSelectorDebugRenderer goalSelectorDebugRenderer;
     public final GameTestDebugRenderer gameTestDebugRenderer;
@@ -78,7 +78,7 @@ public class DebugRenderer {
         this.blockOutlineDebugRenderer = new BlockOutlineDebugRenderer(minecraftClient);
         this.chunkLoadingDebugRenderer = new ChunkLoadingDebugRenderer(minecraftClient);
         this.villageDebugRenderer = new VillageDebugRenderer(minecraftClient);
-        this.field_21547 = new class_4703(minecraftClient);
+        this.beeDebugRenderer = new BeeDebugRenderer(minecraftClient);
         this.raidCenterDebugRenderer = new RaidCenterDebugRenderer(minecraftClient);
         this.goalSelectorDebugRenderer = new GoalSelectorDebugRenderer(minecraftClient);
         this.gameTestDebugRenderer = new GameTestDebugRenderer();
@@ -98,7 +98,7 @@ public class DebugRenderer {
         this.blockOutlineDebugRenderer.clear();
         this.chunkLoadingDebugRenderer.clear();
         this.villageDebugRenderer.clear();
-        this.field_21547.clear();
+        this.beeDebugRenderer.clear();
         this.raidCenterDebugRenderer.clear();
         this.goalSelectorDebugRenderer.clear();
         this.gameTestDebugRenderer.clear();
@@ -109,14 +109,14 @@ public class DebugRenderer {
         return this.showChunkBorder;
     }
 
-    public void render(MatrixStack matrixStack, VertexConsumerProvider.Immediate immediate, double d, double e, double f, long l) {
+    public void render(MatrixStack matrixStack, VertexConsumerProvider.Immediate immediate, double d, double e, double f) {
         if (this.showChunkBorder && !MinecraftClient.getInstance().hasReducedDebugInfo()) {
-            this.chunkBorderDebugRenderer.render(matrixStack, immediate, d, e, f, l);
+            this.chunkBorderDebugRenderer.render(matrixStack, immediate, d, e, f);
         }
-        this.gameTestDebugRenderer.render(matrixStack, immediate, d, e, f, l);
+        this.gameTestDebugRenderer.render(matrixStack, immediate, d, e, f);
     }
 
-    public static Optional<Entity> getTargettedEntity(@Nullable Entity entity2, int i) {
+    public static Optional<Entity> getTargetedEntity(@Nullable Entity entity2, int i) {
         int j;
         Predicate<Entity> predicate;
         Box box;
@@ -215,7 +215,7 @@ public class DebugRenderer {
 
     @Environment(value=EnvType.CLIENT)
     public static interface Renderer {
-        public void render(MatrixStack var1, VertexConsumerProvider var2, double var3, double var5, double var7, long var9);
+        public void render(MatrixStack var1, VertexConsumerProvider var2, double var3, double var5, double var7);
 
         default public void clear() {
         }

@@ -49,7 +49,7 @@ extends EntityRenderer<PaintingEntity> {
 
     @Override
     public Identifier getTexture(PaintingEntity paintingEntity) {
-        return MinecraftClient.getInstance().getPaintingManager().getBackSprite().method_24119().method_24106();
+        return MinecraftClient.getInstance().getPaintingManager().getBackSprite().getAtlas().getId();
     }
 
     private void method_4074(MatrixStack matrixStack, VertexConsumer vertexConsumer, PaintingEntity paintingEntity, int i, int j, Sprite sprite, Sprite sprite2) {
@@ -97,7 +97,7 @@ extends EntityRenderer<PaintingEntity> {
                 if (direction == Direction.EAST) {
                     ag = MathHelper.floor(paintingEntity.getZ() + (double)((aa + ab) / 2.0f / 16.0f));
                 }
-                int ah = WorldRenderer.method_23794(paintingEntity.world, new BlockPos(ae, af, ag));
+                int ah = WorldRenderer.getLightmapCoordinates(paintingEntity.world, new BlockPos(ae, af, ag));
                 float ai = sprite.getFrameU(d * (double)(w - y));
                 float aj = sprite.getFrameU(d * (double)(w - (y + 1)));
                 float ak = sprite.getFrameV(e * (double)(x - z));
@@ -131,7 +131,7 @@ extends EntityRenderer<PaintingEntity> {
     }
 
     private void method_23188(Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer vertexConsumer, float f, float g, float h, float i, float j, int k, int l, int m, int n) {
-        vertexConsumer.vertex(matrix4f, f, g, j).color(255, 255, 255, 255).texture(h, i).overlay(OverlayTexture.DEFAULT_UV).light(n).method_23763(matrix3f, k, l, m).next();
+        vertexConsumer.vertex(matrix4f, f, g, j).color(255, 255, 255, 255).texture(h, i).overlay(OverlayTexture.DEFAULT_UV).light(n).normal(matrix3f, k, l, m).next();
     }
 }
 

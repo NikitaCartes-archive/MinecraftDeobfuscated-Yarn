@@ -28,7 +28,7 @@ implements DebugRenderer.Renderer {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f, long l) {
+    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f) {
         ClientWorld iWorld = this.client.world;
         RenderSystem.pushMatrix();
         RenderSystem.enableBlend();

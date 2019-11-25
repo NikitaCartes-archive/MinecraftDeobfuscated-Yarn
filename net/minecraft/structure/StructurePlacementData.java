@@ -4,6 +4,7 @@
 package net.minecraft.structure;
 
 import com.google.common.collect.Lists;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import net.minecraft.structure.Structure;
@@ -30,7 +31,6 @@ public class StructurePlacementData {
     @Nullable
     private Random random;
     @Nullable
-    private Integer field_15572;
     private int field_15575;
     private final List<StructureProcessor> processors = Lists.newArrayList();
     private boolean field_16587;
@@ -45,7 +45,6 @@ public class StructurePlacementData {
         structurePlacementData.boundingBox = this.boundingBox;
         structurePlacementData.placeFluids = this.placeFluids;
         structurePlacementData.random = this.random;
-        structurePlacementData.field_15572 = this.field_15572;
         structurePlacementData.field_15575 = this.field_15575;
         structurePlacementData.processors.addAll(this.processors);
         structurePlacementData.field_16587 = this.field_16587;
@@ -160,12 +159,8 @@ public class StructurePlacementData {
     }
 
     public List<Structure.StructureBlockInfo> method_15121(List<List<Structure.StructureBlockInfo>> list, @Nullable BlockPos blockPos) {
-        this.field_15572 = 8;
-        if (this.field_15572 != null && this.field_15572 >= 0 && this.field_15572 < list.size()) {
-            return list.get(this.field_15572);
-        }
-        this.field_15572 = this.getRandom(blockPos).nextInt(list.size());
-        return list.get(this.field_15572);
+        int i = list.size();
+        return i > 0 ? list.get(this.getRandom(blockPos).nextInt(i)) : Collections.emptyList();
     }
 
     @Nullable

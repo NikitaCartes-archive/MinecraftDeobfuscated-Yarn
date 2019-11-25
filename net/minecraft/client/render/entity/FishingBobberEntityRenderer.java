@@ -49,7 +49,7 @@ extends EntityRenderer<FishingBobberEntity> {
         matrixStack.push();
         matrixStack.push();
         matrixStack.scale(0.5f, 0.5f, 0.5f);
-        matrixStack.multiply(this.renderManager.camera.method_23767());
+        matrixStack.multiply(this.renderManager.method_24197());
         matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
         MatrixStack.Entry entry = matrixStack.peek();
         Matrix4f matrix4f = entry.getModel();
@@ -111,7 +111,7 @@ extends EntityRenderer<FishingBobberEntity> {
     }
 
     private static void method_23840(VertexConsumer vertexConsumer, Matrix4f matrix4f, Matrix3f matrix3f, int i, float f, int j, int k, int l) {
-        vertexConsumer.vertex(matrix4f, f - 0.5f, (float)j - 0.5f, 0.0f).color(255, 255, 255, 255).texture(k, l).overlay(OverlayTexture.DEFAULT_UV).light(i).method_23763(matrix3f, 0.0f, 1.0f, 0.0f).next();
+        vertexConsumer.vertex(matrix4f, f - 0.5f, (float)j - 0.5f, 0.0f).color(255, 255, 255, 255).texture(k, l).overlay(OverlayTexture.DEFAULT_UV).light(i).normal(matrix3f, 0.0f, 1.0f, 0.0f).next();
     }
 
     private static void method_23172(float f, float g, float h, VertexConsumer vertexConsumer, Matrix4f matrix4f, float i) {

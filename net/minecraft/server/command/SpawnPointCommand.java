@@ -23,7 +23,7 @@ public class SpawnPointCommand {
 
     private static int execute(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, BlockPos blockPos) {
         for (ServerPlayerEntity serverPlayerEntity : collection) {
-            serverPlayerEntity.setPlayerSpawn(blockPos, true);
+            serverPlayerEntity.setPlayerSpawn(blockPos, true, false);
         }
         if (collection.size() == 1) {
             serverCommandSource.sendFeedback(new TranslatableText("commands.spawnpoint.success.single", blockPos.getX(), blockPos.getY(), blockPos.getZ(), collection.iterator().next().getDisplayName()), true);

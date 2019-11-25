@@ -603,7 +603,7 @@ public class GameOptions {
         return this.useNativeTransport;
     }
 
-    public void addResourcePackContainersToManager(ResourcePackManager<ClientResourcePackProfile> resourcePackManager) {
+    public void addResourcePackProfilesToManager(ResourcePackManager<ClientResourcePackProfile> resourcePackManager) {
         resourcePackManager.scanPacks();
         LinkedHashSet<ClientResourcePackProfile> set = Sets.newLinkedHashSet();
         Iterator<String> iterator = this.resourcePacks.iterator();

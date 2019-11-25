@@ -27,7 +27,7 @@ extends BranchedTreeFeature<BranchedTreeFeatureConfig> {
         int k;
         int j;
         int i = branchedTreeFeatureConfig.baseHeight + random.nextInt(branchedTreeFeatureConfig.heightRandA + 1) + random.nextInt(branchedTreeFeatureConfig.heightRandB + 1);
-        Optional<BlockPos> optional = this.findPositionToGenerate(modifiableTestableWorld, i, j = branchedTreeFeatureConfig.trunkHeight >= 0 ? branchedTreeFeatureConfig.trunkHeight + random.nextInt(branchedTreeFeatureConfig.trunkHeightRandom + 1) : i - (branchedTreeFeatureConfig.foliageHeight + random.nextInt(branchedTreeFeatureConfig.foliageHeightRandom + 1)), k = branchedTreeFeatureConfig.foliagePlacer.method_23452(random, j, i, branchedTreeFeatureConfig), blockPos, branchedTreeFeatureConfig);
+        Optional<BlockPos> optional = this.findPositionToGenerate(modifiableTestableWorld, i, j = branchedTreeFeatureConfig.trunkHeight >= 0 ? branchedTreeFeatureConfig.trunkHeight + random.nextInt(branchedTreeFeatureConfig.trunkHeightRandom + 1) : i - (branchedTreeFeatureConfig.foliageHeight + random.nextInt(branchedTreeFeatureConfig.foliageHeightRandom + 1)), k = branchedTreeFeatureConfig.foliagePlacer.getRadius(random, j, i, branchedTreeFeatureConfig), blockPos, branchedTreeFeatureConfig);
         if (!optional.isPresent()) {
             return false;
         }
@@ -51,7 +51,7 @@ extends BranchedTreeFeature<BranchedTreeFeatureConfig> {
             p = r;
         }
         BlockPos blockPos3 = new BlockPos(n, p, o);
-        branchedTreeFeatureConfig.foliagePlacer.method_23448(modifiableTestableWorld, random, branchedTreeFeatureConfig, i, j, k + 1, blockPos3, set2);
+        branchedTreeFeatureConfig.foliagePlacer.generate(modifiableTestableWorld, random, branchedTreeFeatureConfig, i, j, k + 1, blockPos3, set2);
         n = blockPos2.getX();
         o = blockPos2.getZ();
         Direction direction2 = Direction.Type.HORIZONTAL.random(random);
@@ -67,7 +67,7 @@ extends BranchedTreeFeature<BranchedTreeFeatureConfig> {
             }
             if (p > 0) {
                 BlockPos blockPos4 = new BlockPos(n, p, o);
-                branchedTreeFeatureConfig.foliagePlacer.method_23448(modifiableTestableWorld, random, branchedTreeFeatureConfig, i, j, k, blockPos4, set2);
+                branchedTreeFeatureConfig.foliagePlacer.generate(modifiableTestableWorld, random, branchedTreeFeatureConfig, i, j, k, blockPos4, set2);
             }
         }
         return true;

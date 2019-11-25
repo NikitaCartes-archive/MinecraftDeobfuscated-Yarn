@@ -22,8 +22,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.debug.DebugRenderer;
+import net.minecraft.client.render.debug.NameGenerator;
 import net.minecraft.client.render.debug.PathfindingDebugRenderer;
-import net.minecraft.client.render.debug.VillagerNamer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.util.math.BlockPos;
@@ -42,7 +42,7 @@ implements DebugRenderer.Renderer {
     private final Map<BlockPos, PointOfInterest> pointsOfInterest = Maps.newHashMap();
     private final Set<ChunkSectionPos> sections = Sets.newHashSet();
     private final Map<UUID, Brain> brains = Maps.newHashMap();
-    private UUID targettedEntity;
+    private UUID targetedEntity;
 
     public VillageDebugRenderer(MinecraftClient minecraftClient) {
         this.client = minecraftClient;
@@ -53,7 +53,7 @@ implements DebugRenderer.Renderer {
         this.pointsOfInterest.clear();
         this.sections.clear();
         this.brains.clear();
-        this.targettedEntity = null;
+        this.targetedEntity = null;
     }
 
     public void addPointOfInterest(PointOfInterest pointOfInterest) {
@@ -86,7 +86,7 @@ implements DebugRenderer.Renderer {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f, long l) {
+    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f) {
         RenderSystem.pushMatrix();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
@@ -96,7 +96,7 @@ implements DebugRenderer.Renderer {
         RenderSystem.disableBlend();
         RenderSystem.popMatrix();
         if (!this.client.player.isSpectator()) {
-            this.updateTargettedEntity();
+            this.updateTargetedEntity();
         }
     }
 
@@ -170,7 +170,7 @@ implements DebugRenderer.Renderer {
     }
 
     private void drawBrain(Brain brain, double d, double e, double f) {
-        boolean bl = this.isTargetted(brain);
+        boolean bl = this.isTargeted(brain);
         int i = 0;
         VillageDebugRenderer.drawString(brain.pos, i, brain.field_19328, -1, 0.03f);
         ++i;
@@ -245,11 +245,11 @@ implements DebugRenderer.Renderer {
     }
 
     private Set<String> getVillagerNames(PointOfInterest pointOfInterest) {
-        return this.method_23142(pointOfInterest.pos).stream().map(VillagerNamer::name).collect(Collectors.toSet());
+        return this.method_23142(pointOfInterest.pos).stream().map(NameGenerator::name).collect(Collectors.toSet());
     }
 
-    private boolean isTargetted(Brain brain) {
-        return Objects.equals(this.targettedEntity, brain.uuid);
+    private boolean isTargeted(Brain brain) {
+        return Objects.equals(this.targetedEntity, brain.uuid);
     }
 
     private boolean method_23147(Brain brain) {
@@ -279,9 +279,9 @@ implements DebugRenderer.Renderer {
         return map;
     }
 
-    private void updateTargettedEntity() {
-        DebugRenderer.getTargettedEntity(this.client.getCameraEntity(), 8).ifPresent(entity -> {
-            this.targettedEntity = entity.getUuid();
+    private void updateTargetedEntity() {
+        DebugRenderer.getTargetedEntity(this.client.getCameraEntity(), 8).ifPresent(entity -> {
+            this.targetedEntity = entity.getUuid();
         });
     }
 

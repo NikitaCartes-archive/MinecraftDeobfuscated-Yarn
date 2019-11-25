@@ -48,7 +48,9 @@ import net.minecraft.block.entity.TrappedChestBlockEntity;
 import net.minecraft.datafixers.Schemas;
 import net.minecraft.datafixers.TypeReferences;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.BlockView;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -128,6 +130,15 @@ public class BlockEntityType<T extends BlockEntity> {
 
     public boolean supports(Block block) {
         return this.blocks.contains(block);
+    }
+
+    @Nullable
+    public T get(BlockView blockView, BlockPos blockPos) {
+        BlockEntity blockEntity = blockView.getBlockEntity(blockPos);
+        if (blockEntity == null || blockEntity.getType() != this) {
+            return null;
+        }
+        return (T)blockEntity;
     }
 
     public static final class Builder<T extends BlockEntity> {

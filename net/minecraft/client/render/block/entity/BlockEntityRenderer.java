@@ -20,7 +20,7 @@ public abstract class BlockEntityRenderer<T extends BlockEntity> {
 
     public abstract void render(T var1, float var2, MatrixStack var3, VertexConsumerProvider var4, int var5, int var6);
 
-    public boolean method_3563(T blockEntity) {
+    public boolean rendersOutsideBoundingBox(T blockEntity) {
         return false;
     }
 }
