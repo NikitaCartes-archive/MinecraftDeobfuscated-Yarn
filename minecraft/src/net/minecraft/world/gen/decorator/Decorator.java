@@ -90,7 +90,7 @@ public abstract class Decorator<DC extends DecoratorConfig> {
 	public static final Decorator<CountDecoratorConfig> HELL_FIRE = register("hell_fire", new HellFireDecorator(CountDecoratorConfig::deserialize));
 	public static final Decorator<CountDecoratorConfig> MAGMA = register("magma", new MagmaDecorator(CountDecoratorConfig::deserialize));
 	public static final Decorator<NopeDecoratorConfig> EMERALD_ORE = register("emerald_ore", new EmeraldOreDecorator(NopeDecoratorConfig::deserialize));
-	public static final Decorator<LakeDecoratorConfig> LAVA_LAKE = register("lava_lake", new LakeLakeDecorator(LakeDecoratorConfig::deserialize));
+	public static final Decorator<LakeDecoratorConfig> LAVA_LAKE = register("lava_lake", new LavaLakeDecorator(LakeDecoratorConfig::deserialize));
 	public static final Decorator<LakeDecoratorConfig> WATER_LAKE = register("water_lake", new WaterLakeDecorator(LakeDecoratorConfig::deserialize));
 	public static final Decorator<LakeDecoratorConfig> DUNGEONS = register("dungeons", new DungeonsDecorator(LakeDecoratorConfig::deserialize));
 	public static final Decorator<NopeDecoratorConfig> DARK_OAK_TREE = register("dark_oak_tree", new DarkOakTreeDecorator(NopeDecoratorConfig::deserialize));

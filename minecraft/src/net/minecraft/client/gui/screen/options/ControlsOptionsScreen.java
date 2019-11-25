@@ -32,30 +32,28 @@ public class ControlsOptionsScreen extends GameOptionsScreen {
 				150,
 				20,
 				I18n.translate("options.mouse_settings"),
-				buttonWidget -> this.minecraft.openScreen(new MouseOptionsScreen(this, this.field_21336))
+				buttonWidget -> this.minecraft.openScreen(new MouseOptionsScreen(this, this.gameOptions))
 			)
 		);
-		this.addButton(Option.AUTO_JUMP.createButton(this.field_21336, this.width / 2 - 155 + 160, 18, 150));
+		this.addButton(Option.AUTO_JUMP.createButton(this.gameOptions, this.width / 2 - 155 + 160, 18, 150));
 		this.keyBindingListWidget = new ControlsListWidget(this, this.minecraft);
 		this.children.add(this.keyBindingListWidget);
 		this.resetButton = this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 29, 150, 20, I18n.translate("controls.resetAll"), buttonWidget -> {
-			for (KeyBinding keyBinding : this.field_21336.keysAll) {
+			for (KeyBinding keyBinding : this.gameOptions.keysAll) {
 				keyBinding.setKeyCode(keyBinding.getDefaultKeyCode());
 			}
 
 			KeyBinding.updateKeysByCode();
 		}));
 		this.addButton(
-			new ButtonWidget(
-				this.width / 2 - 155 + 160, this.height - 29, 150, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(this.field_21335)
-			)
+			new ButtonWidget(this.width / 2 - 155 + 160, this.height - 29, 150, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(this.parent))
 		);
 	}
 
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
 		if (this.focusedBinding != null) {
-			this.field_21336.setKeyCode(this.focusedBinding, InputUtil.Type.MOUSE.createFromCode(button));
+			this.gameOptions.setKeyCode(this.focusedBinding, InputUtil.Type.MOUSE.createFromCode(button));
 			this.focusedBinding = null;
 			KeyBinding.updateKeysByCode();
 			return true;
@@ -68,9 +66,9 @@ public class ControlsOptionsScreen extends GameOptionsScreen {
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (this.focusedBinding != null) {
 			if (keyCode == 256) {
-				this.field_21336.setKeyCode(this.focusedBinding, InputUtil.UNKNOWN_KEYCODE);
+				this.gameOptions.setKeyCode(this.focusedBinding, InputUtil.UNKNOWN_KEYCODE);
 			} else {
-				this.field_21336.setKeyCode(this.focusedBinding, InputUtil.getKeyCode(keyCode, scanCode));
+				this.gameOptions.setKeyCode(this.focusedBinding, InputUtil.getKeyCode(keyCode, scanCode));
 			}
 
 			this.focusedBinding = null;
@@ -89,7 +87,7 @@ public class ControlsOptionsScreen extends GameOptionsScreen {
 		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 8, 16777215);
 		boolean bl = false;
 
-		for (KeyBinding keyBinding : this.field_21336.keysAll) {
+		for (KeyBinding keyBinding : this.gameOptions.keysAll) {
 			if (!keyBinding.isDefault()) {
 				bl = true;
 				break;

@@ -200,7 +200,7 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 			Pair<Identifier, Identifier> pair = slot.getBackgroundSprite();
 			if (pair != null) {
 				Sprite sprite = (Sprite)this.minecraft.getSpriteAtlas(pair.getFirst()).apply(pair.getSecond());
-				this.minecraft.getTextureManager().bindTexture(sprite.method_24119().method_24106());
+				this.minecraft.getTextureManager().bindTexture(sprite.getAtlas().getId());
 				blit(i, j, this.getBlitOffset(), 16, 16, sprite);
 				bl2 = true;
 			}

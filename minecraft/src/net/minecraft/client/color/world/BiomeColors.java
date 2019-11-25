@@ -14,7 +14,7 @@ public class BiomeColors {
 	public static final ColorResolver WATER_COLOR = (biome, d, e) -> biome.getWaterColor();
 
 	private static int getColor(BlockRenderView blockRenderView, BlockPos blockPos, ColorResolver colorResolver) {
-		return blockRenderView.method_23752(blockPos, colorResolver);
+		return blockRenderView.getColor(blockPos, colorResolver);
 	}
 
 	public static int getGrassColor(BlockRenderView view, BlockPos pos) {

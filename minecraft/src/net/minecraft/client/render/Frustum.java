@@ -37,7 +37,7 @@ public class Frustum {
 
 	private void transform(Matrix4f function, int x, int y, int z, int index) {
 		Vector4f vector4f = new Vector4f((float)x, (float)y, (float)z, 1.0F);
-		vector4f.multiply(function);
+		vector4f.transform(function);
 		vector4f.normalize();
 		this.homogeneousCoordinates[index] = vector4f;
 	}

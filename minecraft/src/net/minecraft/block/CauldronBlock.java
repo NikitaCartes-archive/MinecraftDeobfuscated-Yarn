@@ -204,7 +204,7 @@ public class CauldronBlock extends Block {
 	@Override
 	public void rainTick(World world, BlockPos pos) {
 		if (world.random.nextInt(20) == 1) {
-			float f = world.method_23753(pos).getTemperature(pos);
+			float f = world.getBiome(pos).getTemperature(pos);
 			if (!(f < 0.15F)) {
 				BlockState blockState = world.getBlockState(pos);
 				if ((Integer)blockState.get(LEVEL) < 3) {

@@ -65,9 +65,9 @@ public class DefaultClientResourcePack extends DefaultResourcePack {
 	}
 
 	@Override
-	public Collection<Identifier> findResources(ResourceType type, String namespace, String string, int i, Predicate<String> predicate) {
-		Collection<Identifier> collection = super.findResources(type, namespace, string, i, predicate);
-		collection.addAll(this.index.getFilesRecursively(string, namespace, i, predicate));
+	public Collection<Identifier> findResources(ResourceType type, String namespace, String prefix, int maxDepth, Predicate<String> pathFilter) {
+		Collection<Identifier> collection = super.findResources(type, namespace, prefix, maxDepth, pathFilter);
+		collection.addAll(this.index.getFilesRecursively(prefix, namespace, maxDepth, pathFilter));
 		return collection;
 	}
 }

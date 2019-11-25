@@ -105,7 +105,7 @@ public class LakeFeature extends Feature<BushFeatureConfig> {
 							if (bls[(j * 16 + s) * 8 + txx]) {
 								BlockPos blockPos2 = blockPos.add(j, txx - 1, s);
 								if (isDirt(iWorld.getBlockState(blockPos2).getBlock()) && iWorld.getLightLevel(LightType.SKY, blockPos.add(j, txx, s)) > 0) {
-									Biome biome = iWorld.method_23753(blockPos2);
+									Biome biome = iWorld.getBiome(blockPos2);
 									if (biome.getSurfaceConfig().getTopMaterial().getBlock() == Blocks.MYCELIUM) {
 										iWorld.setBlockState(blockPos2, Blocks.MYCELIUM.getDefaultState(), 2);
 									} else {
@@ -143,7 +143,7 @@ public class LakeFeature extends Feature<BushFeatureConfig> {
 						for (int s = 0; s < 16; s++) {
 							int txxxx = 4;
 							BlockPos blockPos2 = blockPos.add(j, 4, s);
-							if (iWorld.method_23753(blockPos2).canSetSnow(iWorld, blockPos2, false)) {
+							if (iWorld.getBiome(blockPos2).canSetSnow(iWorld, blockPos2, false)) {
 								iWorld.setBlockState(blockPos2, Blocks.ICE.getDefaultState(), 2);
 							}
 						}

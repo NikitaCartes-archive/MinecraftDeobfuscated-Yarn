@@ -156,28 +156,28 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 				.texture(s, n)
 				.overlay(OverlayTexture.DEFAULT_UV)
 				.light(k)
-				.method_23763(matrix3f, 0.0F, 1.0F, 0.0F)
+				.normal(matrix3f, 0.0F, 1.0F, 0.0F)
 				.next();
 			vertexConsumer.vertex(matrix4f, q, r, m)
 				.color(255, 255, 255, 255)
 				.texture(s, o)
 				.overlay(OverlayTexture.DEFAULT_UV)
 				.light(k)
-				.method_23763(matrix3f, 0.0F, 1.0F, 0.0F)
+				.normal(matrix3f, 0.0F, 1.0F, 0.0F)
 				.next();
 			vertexConsumer.vertex(matrix4f, u, v, m)
 				.color(255, 255, 255, 255)
 				.texture(w, o)
 				.overlay(OverlayTexture.DEFAULT_UV)
 				.light(k)
-				.method_23763(matrix3f, 0.0F, 1.0F, 0.0F)
+				.normal(matrix3f, 0.0F, 1.0F, 0.0F)
 				.next();
 			vertexConsumer.vertex(matrix4f, u * 0.2F, v * 0.2F, 0.0F)
 				.color(0, 0, 0, 255)
 				.texture(w, n)
 				.overlay(OverlayTexture.DEFAULT_UV)
 				.light(k)
-				.method_23763(matrix3f, 0.0F, 1.0F, 0.0F)
+				.normal(matrix3f, 0.0F, 1.0F, 0.0F)
 				.next();
 			q = u;
 			r = v;

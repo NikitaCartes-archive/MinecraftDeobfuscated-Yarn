@@ -45,6 +45,6 @@ public class ArmorStandEntityRenderer extends LivingEntityRenderer<ArmorStandEnt
 	}
 
 	protected boolean method_4056(ArmorStandEntity armorStandEntity, boolean bl) {
-		return armorStandEntity.isMarker() ? !armorStandEntity.isInvisible() && !bl : !armorStandEntity.isInvisible() || bl;
+		return !armorStandEntity.isInvisible();
 	}
 }

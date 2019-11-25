@@ -1,8 +1,8 @@
 package net.minecraft.client.render.block.entity;
 
+import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -21,8 +21,8 @@ public class EndPortalBlockEntityRenderer<T extends EndPortalBlockEntity> extend
 	public static final Identifier PORTAL_TEX = new Identifier("textures/entity/end_portal.png");
 	private static final Random RANDOM = new Random(31100L);
 	private static final List<RenderLayer> field_21732 = (List<RenderLayer>)IntStream.range(0, 16)
-		.mapToObj(RenderLayer::getEndPortal)
-		.collect(Collectors.toList());
+		.mapToObj(i -> RenderLayer.getEndPortal(i + 1))
+		.collect(ImmutableList.toImmutableList());
 
 	public EndPortalBlockEntityRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher) {
 		super(blockEntityRenderDispatcher);
@@ -34,10 +34,10 @@ public class EndPortalBlockEntityRenderer<T extends EndPortalBlockEntity> extend
 		int k = this.method_3592(d);
 		float g = this.method_3594();
 		Matrix4f matrix4f = matrixStack.peek().getModel();
-		this.method_23084(endPortalBlockEntity, g, 0.15F, matrix4f, vertexConsumerProvider.getBuffer((RenderLayer)field_21732.get(1)));
+		this.method_23084(endPortalBlockEntity, g, 0.15F, matrix4f, vertexConsumerProvider.getBuffer((RenderLayer)field_21732.get(0)));
 
 		for (int l = 1; l < k; l++) {
-			this.method_23084(endPortalBlockEntity, g, 2.0F / (float)(18 - l), matrix4f, vertexConsumerProvider.getBuffer((RenderLayer)field_21732.get(l + 1)));
+			this.method_23084(endPortalBlockEntity, g, 2.0F / (float)(18 - l), matrix4f, vertexConsumerProvider.getBuffer((RenderLayer)field_21732.get(l)));
 		}
 	}
 
@@ -79,28 +79,23 @@ public class EndPortalBlockEntityRenderer<T extends EndPortalBlockEntity> extend
 	}
 
 	protected int method_3592(double d) {
-		int i;
 		if (d > 36864.0) {
-			i = 1;
+			return 1;
 		} else if (d > 25600.0) {
-			i = 3;
+			return 3;
 		} else if (d > 16384.0) {
-			i = 5;
+			return 5;
 		} else if (d > 9216.0) {
-			i = 7;
+			return 7;
 		} else if (d > 4096.0) {
-			i = 9;
+			return 9;
 		} else if (d > 1024.0) {
-			i = 11;
+			return 11;
 		} else if (d > 576.0) {
-			i = 13;
-		} else if (d > 256.0) {
-			i = 14;
+			return 13;
 		} else {
-			i = 15;
+			return d > 256.0 ? 14 : 15;
 		}
-
-		return i;
 	}
 
 	protected float method_3594() {

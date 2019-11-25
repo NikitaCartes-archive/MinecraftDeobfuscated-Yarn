@@ -413,6 +413,7 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 				Blocks.WHITE_SHULKER_BOX,
 				Blocks.YELLOW_SHULKER_BOX
 			);
+		this.method_10512(BlockTags.PORTALS).add(Blocks.NETHER_PORTAL, Blocks.END_PORTAL, Blocks.END_GATEWAY);
 	}
 
 	@Override

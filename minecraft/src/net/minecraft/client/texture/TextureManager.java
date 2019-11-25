@@ -41,59 +41,59 @@ public class TextureManager implements TextureTickListener, ResourceReloadListen
 		this.resourceContainer = resourceManager;
 	}
 
-	public void bindTexture(Identifier identifier) {
+	public void bindTexture(Identifier id) {
 		if (!RenderSystem.isOnRenderThread()) {
-			RenderSystem.recordRenderCall(() -> this.bindTextureInner(identifier));
+			RenderSystem.recordRenderCall(() -> this.bindTextureInner(id));
 		} else {
-			this.bindTextureInner(identifier);
+			this.bindTextureInner(id);
 		}
 	}
 
-	private void bindTextureInner(Identifier identifier) {
-		AbstractTexture abstractTexture = (AbstractTexture)this.textures.get(identifier);
+	private void bindTextureInner(Identifier id) {
+		AbstractTexture abstractTexture = (AbstractTexture)this.textures.get(id);
 		if (abstractTexture == null) {
-			abstractTexture = new ResourceTexture(identifier);
-			this.registerTexture(identifier, abstractTexture);
+			abstractTexture = new ResourceTexture(id);
+			this.registerTexture(id, abstractTexture);
 		}
 
 		abstractTexture.bindTexture();
 	}
 
-	public boolean registerTexture(Identifier id, AbstractTexture abstractTexture) {
+	public boolean registerTexture(Identifier id, AbstractTexture texture) {
 		boolean bl = true;
 
 		try {
-			abstractTexture.load(this.resourceContainer);
+			texture.load(this.resourceContainer);
 		} catch (IOException var8) {
 			if (id != MISSING_IDENTIFIER) {
 				LOGGER.warn("Failed to load texture: {}", id, var8);
 			}
 
-			abstractTexture = MissingSprite.getMissingSpriteTexture();
-			this.textures.put(id, abstractTexture);
+			texture = MissingSprite.getMissingSpriteTexture();
+			this.textures.put(id, texture);
 			bl = false;
 		} catch (Throwable var9) {
 			CrashReport crashReport = CrashReport.create(var9, "Registering texture");
 			CrashReportSection crashReportSection = crashReport.addElement("Resource location being registered");
 			crashReportSection.add("Resource location", id);
-			crashReportSection.add("Texture object class", (CrashCallable<String>)(() -> abstractTexture.getClass().getName()));
+			crashReportSection.add("Texture object class", (CrashCallable<String>)(() -> texture.getClass().getName()));
 			throw new CrashException(crashReport);
 		}
 
-		this.textures.put(id, abstractTexture);
-		if (bl && abstractTexture instanceof TextureTickListener) {
-			this.tickListeners.add((TextureTickListener)abstractTexture);
+		this.textures.put(id, texture);
+		if (bl && texture instanceof TextureTickListener) {
+			this.tickListeners.add((TextureTickListener)texture);
 		}
 
 		return bl;
 	}
 
 	@Nullable
-	public AbstractTexture getTexture(Identifier identifier) {
-		return (AbstractTexture)this.textures.get(identifier);
+	public AbstractTexture getTexture(Identifier id) {
+		return (AbstractTexture)this.textures.get(id);
 	}
 
-	public Identifier registerDynamicTexture(String prefix, NativeImageBackedTexture nativeImageBackedTexture) {
+	public Identifier registerDynamicTexture(String prefix, NativeImageBackedTexture texture) {
 		Integer integer = (Integer)this.dynamicIdCounters.get(prefix);
 		if (integer == null) {
 			integer = 1;
@@ -103,15 +103,15 @@ public class TextureManager implements TextureTickListener, ResourceReloadListen
 
 		this.dynamicIdCounters.put(prefix, integer);
 		Identifier identifier = new Identifier(String.format("dynamic/%s_%d", prefix, integer));
-		this.registerTexture(identifier, nativeImageBackedTexture);
+		this.registerTexture(identifier, texture);
 		return identifier;
 	}
 
-	public CompletableFuture<Void> loadTextureAsync(Identifier identifier, Executor executor) {
-		if (!this.textures.containsKey(identifier)) {
-			AsyncTexture asyncTexture = new AsyncTexture(this.resourceContainer, identifier, executor);
-			this.textures.put(identifier, asyncTexture);
-			return asyncTexture.getLoadCompleteFuture().thenRunAsync(() -> this.registerTexture(identifier, asyncTexture), TextureManager::runOnRenderThread);
+	public CompletableFuture<Void> loadTextureAsync(Identifier id, Executor executor) {
+		if (!this.textures.containsKey(id)) {
+			AsyncTexture asyncTexture = new AsyncTexture(this.resourceContainer, id, executor);
+			this.textures.put(id, asyncTexture);
+			return asyncTexture.getLoadCompleteFuture().thenRunAsync(() -> this.registerTexture(id, asyncTexture), TextureManager::runOnRenderThread);
 		} else {
 			return CompletableFuture.completedFuture(null);
 		}
@@ -128,8 +128,8 @@ public class TextureManager implements TextureTickListener, ResourceReloadListen
 		}
 	}
 
-	public void destroyTexture(Identifier identifier) {
-		AbstractTexture abstractTexture = this.getTexture(identifier);
+	public void destroyTexture(Identifier id) {
+		AbstractTexture abstractTexture = this.getTexture(id);
 		if (abstractTexture != null) {
 			TextureUtil.releaseTextureId(abstractTexture.getGlId());
 		}

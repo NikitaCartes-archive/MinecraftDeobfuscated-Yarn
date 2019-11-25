@@ -18,26 +18,29 @@ public class FireChargeItem extends Item {
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext context) {
 		World world = context.getWorld();
-		if (world.isClient) {
-			return ActionResult.SUCCESS;
-		} else {
-			BlockPos blockPos = context.getBlockPos();
-			BlockState blockState = world.getBlockState(blockPos);
-			if (blockState.getBlock() == Blocks.CAMPFIRE) {
-				if (!(Boolean)blockState.get(CampfireBlock.LIT) && !(Boolean)blockState.get(CampfireBlock.WATERLOGGED)) {
-					this.playUseSound(world, blockPos);
-					world.setBlockState(blockPos, blockState.with(CampfireBlock.LIT, Boolean.valueOf(true)));
-				}
-			} else {
-				blockPos = blockPos.offset(context.getSide());
-				if (world.getBlockState(blockPos).isAir()) {
-					this.playUseSound(world, blockPos);
-					world.setBlockState(blockPos, ((FireBlock)Blocks.FIRE).getStateForPosition(world, blockPos));
-				}
+		BlockPos blockPos = context.getBlockPos();
+		BlockState blockState = world.getBlockState(blockPos);
+		boolean bl = false;
+		if (blockState.getBlock() == Blocks.CAMPFIRE) {
+			if (!(Boolean)blockState.get(CampfireBlock.LIT) && !(Boolean)blockState.get(CampfireBlock.WATERLOGGED)) {
+				this.playUseSound(world, blockPos);
+				world.setBlockState(blockPos, blockState.with(CampfireBlock.LIT, Boolean.valueOf(true)));
+				bl = true;
 			}
+		} else {
+			blockPos = blockPos.offset(context.getSide());
+			if (world.getBlockState(blockPos).isAir()) {
+				this.playUseSound(world, blockPos);
+				world.setBlockState(blockPos, ((FireBlock)Blocks.FIRE).getStateForPosition(world, blockPos));
+				bl = true;
+			}
+		}
 
+		if (bl) {
 			context.getStack().decrement(1);
 			return ActionResult.SUCCESS;
+		} else {
+			return ActionResult.FAIL;
 		}
 	}
 

@@ -24,6 +24,7 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FenceGateBlock;
+import net.minecraft.block.HoneyBlock;
 import net.minecraft.block.PortalBlock;
 import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.block.piston.PistonBehavior;
@@ -586,7 +587,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return (double)f == 1.0 ? g : f;
 	}
 
-	private float method_23326() {
+	protected float method_23326() {
 		float f = this.world.getBlockState(new BlockPos(this)).getBlock().method_23349();
 		float g = this.world.getBlockState(this.method_23314()).getBlock().method_23349();
 		return (double)f == 1.0 ? g : f;
@@ -1735,6 +1736,10 @@ public abstract class Entity implements Nameable, CommandOutput {
 
 	@Environment(EnvType.CLIENT)
 	public void handleStatus(byte status) {
+		switch (status) {
+			case 53:
+				HoneyBlock.method_24175(this);
+		}
 	}
 
 	@Environment(EnvType.CLIENT)

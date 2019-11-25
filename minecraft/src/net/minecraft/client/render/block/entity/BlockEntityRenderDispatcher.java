@@ -92,7 +92,7 @@ public class BlockEntityRenderDispatcher {
 		World world = blockEntity.getWorld();
 		int i;
 		if (world != null) {
-			i = WorldRenderer.method_23794(world, blockEntity.getPos());
+			i = WorldRenderer.getLightmapCoordinates(world, blockEntity.getPos());
 		} else {
 			i = 15728880;
 		}

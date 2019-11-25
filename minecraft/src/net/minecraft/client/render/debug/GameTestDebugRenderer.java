@@ -25,9 +25,9 @@ public class GameTestDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f, long l) {
-		long m = Util.getMeasuringTimeMs();
-		this.markers.entrySet().removeIf(entry -> m > ((GameTestDebugRenderer.Marker)entry.getValue()).removalTime);
+	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
+		long l = Util.getMeasuringTimeMs();
+		this.markers.entrySet().removeIf(entry -> l > ((GameTestDebugRenderer.Marker)entry.getValue()).removalTime);
 		this.markers.forEach(this::method_23111);
 	}
 

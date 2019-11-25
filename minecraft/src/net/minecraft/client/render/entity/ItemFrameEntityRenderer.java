@@ -2,10 +2,10 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4722;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.MapRenderer;
 import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -54,7 +54,7 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 		blockRenderManager.getModelRenderer()
 			.render(
 				matrixStack.peek(),
-				vertexConsumerProvider.getBuffer(class_4722.method_24073()),
+				vertexConsumerProvider.getBuffer(TexturedRenderLayers.getEntitySolid()),
 				null,
 				bakedModelManager.getModel(modelIdentifier),
 				1.0F,

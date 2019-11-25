@@ -105,13 +105,24 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		}
 
 		this.model.animateModel(livingEntity, o, n, g);
-		boolean bl = this.method_4056(livingEntity, false);
-		boolean bl2 = !bl && !livingEntity.canSeePlayer(MinecraftClient.getInstance().player);
+		boolean bl = livingEntity.isGlowing();
+		boolean bl2 = this.method_4056(livingEntity, false);
+		boolean bl3 = !bl2 && !livingEntity.canSeePlayer(MinecraftClient.getInstance().player);
 		this.model.setAngles(livingEntity, o, n, lx, k, m);
-		if (bl || bl2) {
-			Identifier identifier = this.getTexture(livingEntity);
-			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(bl2 ? RenderLayer.getEntityTranslucent(identifier) : this.model.getLayer(identifier));
-			this.model.render(matrixStack, vertexConsumer, i, method_23622(livingEntity, this.method_23185(livingEntity, g)), 1.0F, 1.0F, 1.0F, bl2 ? 0.15F : 1.0F);
+		Identifier identifier = this.getTexture(livingEntity);
+		RenderLayer renderLayer;
+		if (bl3) {
+			renderLayer = RenderLayer.getEntityTranslucent(identifier);
+		} else if (bl2) {
+			renderLayer = this.model.getLayer(identifier);
+		} else {
+			renderLayer = RenderLayer.getOutline(identifier);
+		}
+
+		if (bl2 || bl3 || bl) {
+			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(renderLayer);
+			int p = method_23622(livingEntity, this.method_23185(livingEntity, g));
+			this.model.render(matrixStack, vertexConsumer, i, p, 1.0F, 1.0F, 1.0F, bl3 ? 0.15F : 1.0F);
 		}
 
 		if (!livingEntity.isSpectator()) {

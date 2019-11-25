@@ -61,7 +61,7 @@ public class TheNetherDimension extends Dimension {
 	}
 
 	@Override
-	public float getSkyAngle(long timeOfDay, float delta) {
+	public float getSkyAngle(long timeOfDay, float tickDelta) {
 		return 0.5F;
 	}
 

@@ -64,8 +64,8 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<MegaTreeFeatureConfig> MEGA_SPRUCE_TREE = register(
 		"mega_spruce_tree", new MegaPineTreeFeature(MegaTreeFeatureConfig::method_23408)
 	);
-	public static final FlowerFeature<FlowerFeatureConfig> FLOWER = register("flower", new DefaultFlowerFeature(FlowerFeatureConfig::method_23413));
-	public static final Feature<FlowerFeatureConfig> RANDOM_PATCH = register("random_patch", new RandomPatchFeature(FlowerFeatureConfig::method_23413));
+	public static final FlowerFeature<RandomPatchFeatureConfig> FLOWER = register("flower", new DefaultFlowerFeature(RandomPatchFeatureConfig::deserialize));
+	public static final Feature<RandomPatchFeatureConfig> RANDOM_PATCH = register("random_patch", new RandomPatchFeature(RandomPatchFeatureConfig::deserialize));
 	public static final Feature<BlockPileFeatureConfig> BLOCK_PILE = register("block_pile", new AbstractPileFeature(BlockPileFeatureConfig::method_23406));
 	public static final Feature<SpringFeatureConfig> SPRING_FEATURE = register("spring_feature", new SpringFeature(SpringFeatureConfig::method_23440));
 	public static final Feature<DefaultFeatureConfig> CHORUS_PLANT = register("chorus_plant", new ChorusPlantFeature(DefaultFeatureConfig::deserialize));

@@ -97,7 +97,7 @@ public enum Direction implements StringIdentifiable {
 	public static Direction transform(Matrix4f matrix4f, Direction direction) {
 		Vec3i vec3i = direction.getVector();
 		Vector4f vector4f = new Vector4f((float)vec3i.getX(), (float)vec3i.getY(), (float)vec3i.getZ(), 0.0F);
-		vector4f.multiply(matrix4f);
+		vector4f.transform(matrix4f);
 		return getFacing(vector4f.getX(), vector4f.getY(), vector4f.getZ());
 	}
 

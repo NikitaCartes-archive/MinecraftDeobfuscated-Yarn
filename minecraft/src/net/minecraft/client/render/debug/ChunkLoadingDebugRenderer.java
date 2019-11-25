@@ -35,13 +35,13 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f, long l) {
-		double g = (double)Util.getMeasuringTimeNano();
-		if (g - this.lastUpdateTime > 3.0E9) {
-			this.lastUpdateTime = g;
+	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
+		double d = (double)Util.getMeasuringTimeNano();
+		if (d - this.lastUpdateTime > 3.0E9) {
+			this.lastUpdateTime = d;
 			IntegratedServer integratedServer = this.client.getServer();
 			if (integratedServer != null) {
-				this.loadingData = new ChunkLoadingDebugRenderer.ChunkLoadingStatus(integratedServer, d, f);
+				this.loadingData = new ChunkLoadingDebugRenderer.ChunkLoadingStatus(integratedServer, cameraX, cameraZ);
 			} else {
 				this.loadingData = null;
 			}
@@ -54,7 +54,7 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 			RenderSystem.disableTexture();
 			RenderSystem.depthMask(false);
 			Map<ChunkPos, String> map = (Map<ChunkPos, String>)this.loadingData.serverStates.getNow(null);
-			double h = this.client.gameRenderer.getCamera().getPos().y * 0.85;
+			double e = this.client.gameRenderer.getCamera().getPos().y * 0.85;
 
 			for (Entry<ChunkPos, String> entry : this.loadingData.clientStates.entrySet()) {
 				ChunkPos chunkPos = (ChunkPos)entry.getKey();
@@ -67,7 +67,7 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 				int i = 0;
 
 				for (String string2 : strings) {
-					DebugRenderer.drawString(string2, (double)((chunkPos.x << 4) + 8), h + (double)i, (double)((chunkPos.z << 4) + 8), -1, 0.15F);
+					DebugRenderer.drawString(string2, (double)((chunkPos.x << 4) + 8), e + (double)i, (double)((chunkPos.z << 4) + 8), -1, 0.15F);
 					i -= 2;
 				}
 			}

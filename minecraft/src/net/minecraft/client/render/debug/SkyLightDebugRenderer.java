@@ -23,26 +23,26 @@ public class SkyLightDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f, long l) {
+	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
 		World world = this.client.world;
 		RenderSystem.pushMatrix();
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.disableTexture();
-		BlockPos blockPos = new BlockPos(d, e, f);
+		BlockPos blockPos = new BlockPos(cameraX, cameraY, cameraZ);
 		LongSet longSet = new LongOpenHashSet();
 
 		for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-10, -10, -10), blockPos.add(10, 10, 10))) {
 			int i = world.getLightLevel(LightType.SKY, blockPos2);
-			float g = (float)(15 - i) / 15.0F * 0.5F + 0.16F;
-			int j = MathHelper.hsvToRgb(g, 0.9F, 0.9F);
-			long m = ChunkSectionPos.fromGlobalPos(blockPos2.asLong());
-			if (longSet.add(m)) {
+			float f = (float)(15 - i) / 15.0F * 0.5F + 0.16F;
+			int j = MathHelper.hsvToRgb(f, 0.9F, 0.9F);
+			long l = ChunkSectionPos.fromGlobalPos(blockPos2.asLong());
+			if (longSet.add(l)) {
 				DebugRenderer.drawString(
-					world.getChunkManager().getLightingProvider().method_22876(LightType.SKY, ChunkSectionPos.from(m)),
-					(double)(ChunkSectionPos.getX(m) * 16 + 8),
-					(double)(ChunkSectionPos.getY(m) * 16 + 8),
-					(double)(ChunkSectionPos.getZ(m) * 16 + 8),
+					world.getChunkManager().getLightingProvider().method_22876(LightType.SKY, ChunkSectionPos.from(l)),
+					(double)(ChunkSectionPos.getX(l) * 16 + 8),
+					(double)(ChunkSectionPos.getY(l) * 16 + 8),
+					(double)(ChunkSectionPos.getZ(l) * 16 + 8),
 					16711680,
 					0.3F
 				);

@@ -11,7 +11,6 @@ import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BiomeAccess;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.gen.feature.StructureFeature;
 
@@ -49,7 +48,7 @@ public abstract class BiomeSource implements BiomeAccess.Storage {
 					int u = i + s;
 					int v = j + t;
 					int w = k + r;
-					set.add(this.getStoredBiome(u, v, w));
+					set.add(this.getBiomeForNoiseGen(u, v, w));
 				}
 			}
 		}
@@ -73,7 +72,7 @@ public abstract class BiomeSource implements BiomeAccess.Storage {
 			for (int r = 0; r < m; r++) {
 				int s = i + r;
 				int t = j + q;
-				if (list.contains(this.getStoredBiome(s, o, t))) {
+				if (list.contains(this.getBiomeForNoiseGen(s, o, t))) {
 					if (blockPos == null || random.nextInt(p + 1) == 0) {
 						blockPos = new BlockPos(s << 2, y, t << 2);
 					}

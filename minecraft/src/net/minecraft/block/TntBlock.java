@@ -88,10 +88,12 @@ public class TntBlock extends Block {
 		} else {
 			primeTnt(world, pos, player);
 			world.setBlockState(pos, Blocks.AIR.getDefaultState(), 11);
-			if (item == Items.FLINT_AND_STEEL) {
-				itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
-			} else {
-				itemStack.decrement(1);
+			if (!player.isCreative()) {
+				if (item == Items.FLINT_AND_STEEL) {
+					itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
+				} else {
+					itemStack.decrement(1);
+				}
 			}
 
 			return ActionResult.SUCCESS;

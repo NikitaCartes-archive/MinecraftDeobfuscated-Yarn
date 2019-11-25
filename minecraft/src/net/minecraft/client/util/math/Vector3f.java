@@ -145,13 +145,13 @@ public final class Vector3f {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void multiply(Matrix3f matrix3f) {
+	public void transform(Matrix3f matrix3f) {
 		float f = this.x;
 		float g = this.y;
 		float h = this.z;
-		this.x = matrix3f.field_21633 * f + matrix3f.field_21634 * g + matrix3f.field_21635 * h;
-		this.y = matrix3f.field_21636 * f + matrix3f.field_21637 * g + matrix3f.field_21638 * h;
-		this.z = matrix3f.field_21639 * f + matrix3f.field_21640 * g + matrix3f.field_21641 * h;
+		this.x = matrix3f.a00 * f + matrix3f.a01 * g + matrix3f.a02 * h;
+		this.y = matrix3f.a10 * f + matrix3f.a11 * g + matrix3f.a12 * h;
+		this.z = matrix3f.a20 * f + matrix3f.a21 * g + matrix3f.a22 * h;
 	}
 
 	public void method_19262(Quaternion quaternion) {

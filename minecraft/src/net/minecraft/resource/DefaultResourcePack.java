@@ -93,11 +93,11 @@ public class DefaultResourcePack implements ResourcePack {
 	}
 
 	@Override
-	public Collection<Identifier> findResources(ResourceType type, String namespace, String string, int i, Predicate<String> predicate) {
+	public Collection<Identifier> findResources(ResourceType type, String namespace, String prefix, int maxDepth, Predicate<String> pathFilter) {
 		Set<Identifier> set = Sets.<Identifier>newHashSet();
 		if (resourcePath != null) {
 			try {
-				getIdentifiers(set, i, namespace, resourcePath.resolve(type.getDirectory()), string, predicate);
+				getIdentifiers(set, maxDepth, namespace, resourcePath.resolve(type.getDirectory()), prefix, pathFilter);
 			} catch (IOException var15) {
 			}
 
@@ -113,7 +113,7 @@ public class DefaultResourcePack implements ResourcePack {
 					try {
 						URI uRI = ((URL)enumeration.nextElement()).toURI();
 						if ("file".equals(uRI.getScheme())) {
-							getIdentifiers(set, i, namespace, Paths.get(uRI), string, predicate);
+							getIdentifiers(set, maxDepth, namespace, Paths.get(uRI), prefix, pathFilter);
 						}
 					} catch (IOException | URISyntaxException var13) {
 					}
@@ -132,10 +132,10 @@ public class DefaultResourcePack implements ResourcePack {
 			if ("file".equals(uRI.getScheme())) {
 				URL uRL2 = new URL(uRL.toString().substring(0, uRL.toString().length() - ".mcassetsroot".length()));
 				Path path = Paths.get(uRL2.toURI());
-				getIdentifiers(set, i, namespace, path, string, predicate);
+				getIdentifiers(set, maxDepth, namespace, path, prefix, pathFilter);
 			} else if ("jar".equals(uRI.getScheme())) {
 				Path path2 = ((FileSystem)typeToFileSystem.get(type)).getPath("/" + type.getDirectory());
-				getIdentifiers(set, i, "minecraft", path2, string, predicate);
+				getIdentifiers(set, maxDepth, "minecraft", path2, prefix, pathFilter);
 			} else {
 				LOGGER.error("Unsupported scheme {} trying to list vanilla resources (NYI?)", uRI);
 			}

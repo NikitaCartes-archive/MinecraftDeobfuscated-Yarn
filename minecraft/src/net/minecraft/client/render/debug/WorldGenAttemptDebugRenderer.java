@@ -32,7 +32,7 @@ public class WorldGenAttemptDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f, long l) {
+	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
 		RenderSystem.pushMatrix();
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
@@ -44,15 +44,15 @@ public class WorldGenAttemptDebugRenderer implements DebugRenderer.Renderer {
 		for (int i = 0; i < this.field_4640.size(); i++) {
 			BlockPos blockPos = (BlockPos)this.field_4640.get(i);
 			Float float_ = (Float)this.field_4635.get(i);
-			float g = float_ / 2.0F;
+			float f = float_ / 2.0F;
 			WorldRenderer.drawBox(
 				bufferBuilder,
-				(double)((float)blockPos.getX() + 0.5F - g) - d,
-				(double)((float)blockPos.getY() + 0.5F - g) - e,
-				(double)((float)blockPos.getZ() + 0.5F - g) - f,
-				(double)((float)blockPos.getX() + 0.5F + g) - d,
-				(double)((float)blockPos.getY() + 0.5F + g) - e,
-				(double)((float)blockPos.getZ() + 0.5F + g) - f,
+				(double)((float)blockPos.getX() + 0.5F - f) - cameraX,
+				(double)((float)blockPos.getY() + 0.5F - f) - cameraY,
+				(double)((float)blockPos.getZ() + 0.5F - f) - cameraZ,
+				(double)((float)blockPos.getX() + 0.5F + f) - cameraX,
+				(double)((float)blockPos.getY() + 0.5F + f) - cameraY,
+				(double)((float)blockPos.getZ() + 0.5F + f) - cameraZ,
 				(Float)this.field_4639.get(i),
 				(Float)this.field_4636.get(i),
 				(Float)this.field_4638.get(i),

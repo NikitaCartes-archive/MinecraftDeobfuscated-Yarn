@@ -9,6 +9,7 @@ import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.text.TranslatableText;
@@ -52,6 +53,7 @@ public class AnvilBlock extends FallingBlock {
 			return ActionResult.SUCCESS;
 		} else {
 			player.openContainer(state.createContainerProvider(world, pos));
+			player.incrementStat(Stats.INTERACT_WITH_ANVIL);
 			return ActionResult.SUCCESS;
 		}
 	}

@@ -36,10 +36,10 @@ public class BookModel extends Model {
 
 	@Override
 	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float r, float g, float b, float f) {
-		this.b(matrixStack, vertexConsumer, i, j, r, g, b, f);
+		this.method_24184(matrixStack, vertexConsumer, i, j, r, g, b, f);
 	}
 
-	public void b(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k) {
+	public void method_24184(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k) {
 		this.parts.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, f, g, h, k));
 	}
 

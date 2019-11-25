@@ -348,10 +348,16 @@ public class ClientWorld extends World {
 	public void doRandomBlockDisplayTicks(int xCenter, int yCenter, int i) {
 		int j = 32;
 		Random random = new Random();
-		ItemStack itemStack = this.client.player.getMainHandStack();
-		boolean bl = this.client.interactionManager.getCurrentGameMode() == GameMode.CREATIVE
-			&& !itemStack.isEmpty()
-			&& itemStack.getItem() == Blocks.BARRIER.asItem();
+		boolean bl = false;
+		if (this.client.interactionManager.getCurrentGameMode() == GameMode.CREATIVE) {
+			for (ItemStack itemStack : this.client.player.getItemsHand()) {
+				if (itemStack.getItem() == Blocks.BARRIER.asItem()) {
+					bl = true;
+					break;
+				}
+			}
+		}
+
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (int k = 0; k < 667; k++) {
@@ -636,7 +642,7 @@ public class ClientWorld extends World {
 		float g = this.getSkyAngle(f);
 		float h = MathHelper.cos(g * (float) (Math.PI * 2)) * 2.0F + 0.5F;
 		h = MathHelper.clamp(h, 0.0F, 1.0F);
-		Biome biome = this.method_23753(blockPos);
+		Biome biome = this.getBiome(blockPos);
 		int i = biome.getSkyColor();
 		float j = (float)(i >> 16 & 0xFF) / 255.0F;
 		float k = (float)(i >> 8 & 0xFF) / 255.0F;
@@ -677,40 +683,40 @@ public class ClientWorld extends World {
 		return new Vec3d((double)j, (double)k, (double)l);
 	}
 
-	public Vec3d method_23785(float f) {
-		float g = this.getSkyAngle(f);
-		float h = MathHelper.cos(g * (float) (Math.PI * 2)) * 2.0F + 0.5F;
-		h = MathHelper.clamp(h, 0.0F, 1.0F);
+	public Vec3d getCloudsColor(float tickDelta) {
+		float f = this.getSkyAngle(tickDelta);
+		float g = MathHelper.cos(f * (float) (Math.PI * 2)) * 2.0F + 0.5F;
+		g = MathHelper.clamp(g, 0.0F, 1.0F);
+		float h = 1.0F;
 		float i = 1.0F;
 		float j = 1.0F;
-		float k = 1.0F;
-		float l = this.getRainGradient(f);
+		float k = this.getRainGradient(tickDelta);
+		if (k > 0.0F) {
+			float l = (h * 0.3F + i * 0.59F + j * 0.11F) * 0.6F;
+			float m = 1.0F - k * 0.95F;
+			h = h * m + l * (1.0F - m);
+			i = i * m + l * (1.0F - m);
+			j = j * m + l * (1.0F - m);
+		}
+
+		h *= g * 0.9F + 0.1F;
+		i *= g * 0.9F + 0.1F;
+		j *= g * 0.85F + 0.15F;
+		float l = this.getThunderGradient(tickDelta);
 		if (l > 0.0F) {
-			float m = (i * 0.3F + j * 0.59F + k * 0.11F) * 0.6F;
+			float m = (h * 0.3F + i * 0.59F + j * 0.11F) * 0.2F;
 			float n = 1.0F - l * 0.95F;
+			h = h * n + m * (1.0F - n);
 			i = i * n + m * (1.0F - n);
 			j = j * n + m * (1.0F - n);
-			k = k * n + m * (1.0F - n);
 		}
 
-		i *= h * 0.9F + 0.1F;
-		j *= h * 0.9F + 0.1F;
-		k *= h * 0.85F + 0.15F;
-		float m = this.getThunderGradient(f);
-		if (m > 0.0F) {
-			float n = (i * 0.3F + j * 0.59F + k * 0.11F) * 0.2F;
-			float o = 1.0F - m * 0.95F;
-			i = i * o + n * (1.0F - o);
-			j = j * o + n * (1.0F - o);
-			k = k * o + n * (1.0F - o);
-		}
-
-		return new Vec3d((double)i, (double)j, (double)k);
+		return new Vec3d((double)h, (double)i, (double)j);
 	}
 
-	public Vec3d method_23786(float f) {
-		float g = this.getSkyAngle(f);
-		return this.dimension.getFogColor(g, f);
+	public Vec3d getFogColor(float tickDelta) {
+		float f = this.getSkyAngle(tickDelta);
+		return this.dimension.getFogColor(f, tickDelta);
 	}
 
 	public float method_23787(float f) {
@@ -720,7 +726,7 @@ public class ClientWorld extends World {
 		return h * h * 0.5F;
 	}
 
-	public double method_23788() {
+	public double getSkyDarknessHeight() {
 		return this.properties.getGeneratorType() == LevelGeneratorType.FLAT ? 0.0 : 63.0;
 	}
 
@@ -734,28 +740,26 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public int method_23752(BlockPos blockPos, ColorResolver colorResolver) {
+	public int getColor(BlockPos pos, ColorResolver colorResolver) {
 		BiomeColorCache biomeColorCache = this.colorCache.get(colorResolver);
-		return biomeColorCache.getBiomeColor(blockPos, () -> this.method_23780(blockPos, colorResolver));
+		return biomeColorCache.getBiomeColor(pos, () -> this.calculateColor(pos, colorResolver));
 	}
 
-	public int method_23780(BlockPos blockPos, ColorResolver colorResolver) {
+	public int calculateColor(BlockPos pos, ColorResolver colorResolver) {
 		int i = MinecraftClient.getInstance().options.biomeBlendRadius;
 		if (i == 0) {
-			return colorResolver.getColor(this.method_23753(blockPos), (double)blockPos.getX(), (double)blockPos.getZ());
+			return colorResolver.getColor(this.getBiome(pos), (double)pos.getX(), (double)pos.getZ());
 		} else {
 			int j = (i * 2 + 1) * (i * 2 + 1);
 			int k = 0;
 			int l = 0;
 			int m = 0;
-			CuboidBlockIterator cuboidBlockIterator = new CuboidBlockIterator(
-				blockPos.getX() - i, blockPos.getY(), blockPos.getZ() - i, blockPos.getX() + i, blockPos.getY(), blockPos.getZ() + i
-			);
+			CuboidBlockIterator cuboidBlockIterator = new CuboidBlockIterator(pos.getX() - i, pos.getY(), pos.getZ() - i, pos.getX() + i, pos.getY(), pos.getZ() + i);
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 			while (cuboidBlockIterator.step()) {
 				mutable.set(cuboidBlockIterator.getX(), cuboidBlockIterator.getY(), cuboidBlockIterator.getZ());
-				int n = colorResolver.getColor(this.method_23753(mutable), (double)mutable.getX(), (double)mutable.getZ());
+				int n = colorResolver.getColor(this.getBiome(mutable), (double)mutable.getX(), (double)mutable.getZ());
 				k += (n & 0xFF0000) >> 16;
 				l += (n & 0xFF00) >> 8;
 				m += n & 0xFF;

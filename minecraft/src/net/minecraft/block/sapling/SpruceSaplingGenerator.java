@@ -12,7 +12,7 @@ public class SpruceSaplingGenerator extends LargeTreeSaplingGenerator {
 	@Nullable
 	@Override
 	protected ConfiguredFeature<BranchedTreeFeatureConfig, ?> createTreeFeature(Random random) {
-		return Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.field_21185);
+		return Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.SPRUCE_TREE_CONFIG);
 	}
 
 	@Nullable

@@ -10,7 +10,7 @@ public interface BlockRenderView extends BlockView {
 	LightingProvider getLightingProvider();
 
 	@Environment(EnvType.CLIENT)
-	int method_23752(BlockPos blockPos, ColorResolver colorResolver);
+	int getColor(BlockPos pos, ColorResolver colorResolver);
 
 	default int getLightLevel(LightType type, BlockPos pos) {
 		return this.getLightingProvider().get(type).getLightLevel(pos);

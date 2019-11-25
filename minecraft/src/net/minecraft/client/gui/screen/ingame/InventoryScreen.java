@@ -18,6 +18,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Quaternion;
 
 @Environment(EnvType.CLIENT)
 public class InventoryScreen extends AbstractInventoryScreen<PlayerContainer> implements RecipeBookProvider {
@@ -106,8 +107,10 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerContainer> im
 		MatrixStack matrixStack = new MatrixStack();
 		matrixStack.translate((double)(-i), (double)j, 50.0);
 		matrixStack.scale((float)k, (float)k, (float)k);
-		matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
-		matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-((float)Math.atan((double)(g / 40.0F))) * 20.0F));
+		Quaternion quaternion = Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0F);
+		Quaternion quaternion2 = Vector3f.POSITIVE_X.getDegreesQuaternion(-((float)Math.atan((double)(g / 40.0F))) * 20.0F);
+		quaternion.hamiltonProduct(quaternion2);
+		matrixStack.multiply(quaternion);
 		float h = entity.bodyYaw;
 		float l = entity.yaw;
 		float m = entity.pitch;
@@ -119,6 +122,9 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerContainer> im
 		entity.headYaw = entity.yaw;
 		entity.prevHeadYaw = entity.yaw;
 		EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderManager();
+		quaternion2.conjugate();
+		quaternion2.hamiltonProduct(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
+		entityRenderDispatcher.method_24196(quaternion2);
 		entityRenderDispatcher.setRenderShadows(false);
 		VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
 		entityRenderDispatcher.render(entity, 0.0, 0.0, 0.0, 0.0F, 1.0F, matrixStack, immediate, 15728880);

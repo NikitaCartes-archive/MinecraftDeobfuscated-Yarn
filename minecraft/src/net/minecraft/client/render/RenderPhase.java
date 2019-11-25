@@ -138,7 +138,7 @@ public abstract class RenderPhase {
 	});
 	protected static final RenderPhase.Target OUTLINE_TARGET = new RenderPhase.Target(
 		"outline_target",
-		() -> MinecraftClient.getInstance().worldRenderer.method_22990().beginWrite(false),
+		() -> MinecraftClient.getInstance().worldRenderer.getEntityOutlinesFramebuffer().beginWrite(false),
 		() -> MinecraftClient.getInstance().getFramebuffer().beginWrite(false)
 	);
 	protected static final RenderPhase.LineWidth FULL_LINEWIDTH = new RenderPhase.LineWidth(OptionalDouble.of(1.0));

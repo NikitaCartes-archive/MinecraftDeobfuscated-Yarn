@@ -34,10 +34,10 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 		this.children.add(this.languageSelectionList);
 		this.forceUnicodeButton = this.addButton(
 			new OptionButtonWidget(
-				this.width / 2 - 155, this.height - 38, 150, 20, Option.FORCE_UNICODE_FONT, Option.FORCE_UNICODE_FONT.getDisplayString(this.field_21336), buttonWidget -> {
-					Option.FORCE_UNICODE_FONT.set(this.field_21336);
-					this.field_21336.write();
-					buttonWidget.setMessage(Option.FORCE_UNICODE_FONT.getDisplayString(this.field_21336));
+				this.width / 2 - 155, this.height - 38, 150, 20, Option.FORCE_UNICODE_FONT, Option.FORCE_UNICODE_FONT.getDisplayString(this.gameOptions), buttonWidget -> {
+					Option.FORCE_UNICODE_FONT.set(this.gameOptions);
+					this.gameOptions.write();
+					buttonWidget.setMessage(Option.FORCE_UNICODE_FONT.getDisplayString(this.gameOptions));
 					this.minecraft.onResolutionChanged();
 				}
 			)
@@ -46,15 +46,15 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 			LanguageOptionsScreen.LanguageSelectionListWidget.LanguageEntry languageEntry = this.languageSelectionList.getSelected();
 			if (languageEntry != null && !languageEntry.languageDefinition.getCode().equals(this.languageManager.getLanguage().getCode())) {
 				this.languageManager.setLanguage(languageEntry.languageDefinition);
-				this.field_21336.language = languageEntry.languageDefinition.getCode();
+				this.gameOptions.language = languageEntry.languageDefinition.getCode();
 				this.minecraft.reloadResources();
 				this.font.setRightToLeft(this.languageManager.isRightToLeft());
 				this.doneButton.setMessage(I18n.translate("gui.done"));
-				this.forceUnicodeButton.setMessage(Option.FORCE_UNICODE_FONT.getDisplayString(this.field_21336));
-				this.field_21336.write();
+				this.forceUnicodeButton.setMessage(Option.FORCE_UNICODE_FONT.getDisplayString(this.gameOptions));
+				this.gameOptions.write();
 			}
 
-			this.minecraft.openScreen(this.field_21335);
+			this.minecraft.openScreen(this.parent);
 		}));
 		super.init();
 	}

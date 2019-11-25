@@ -350,7 +350,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 			if (blockEntity instanceof Inventory) {
 				inventory = (Inventory)blockEntity;
 				if (inventory instanceof ChestBlockEntity && block instanceof ChestBlock) {
-					inventory = ChestBlock.getInventory(blockState, world, blockPos, true);
+					inventory = ChestBlock.getInventory((ChestBlock)block, blockState, world, blockPos, true);
 				}
 			}
 		}

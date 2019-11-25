@@ -3,6 +3,9 @@ package net.minecraft.world.biome.layer;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.biome.layer.type.CrossSamplingLayer;
+import net.minecraft.world.biome.layer.util.BiomeLayers;
+import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
 
 public enum AddEdgeBiomesLayer implements CrossSamplingLayer {
 	INSTANCE;

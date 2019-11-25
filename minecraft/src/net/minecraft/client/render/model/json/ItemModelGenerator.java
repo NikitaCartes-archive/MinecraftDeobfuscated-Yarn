@@ -8,8 +8,8 @@ import java.util.Map;
 import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4730;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.math.Direction;
 
@@ -17,8 +17,8 @@ import net.minecraft.util.math.Direction;
 public class ItemModelGenerator {
 	public static final List<String> LAYERS = Lists.<String>newArrayList("layer0", "layer1", "layer2", "layer3", "layer4");
 
-	public JsonUnbakedModel create(Function<class_4730, Sprite> textureGetter, JsonUnbakedModel blockModel) {
-		Map<String, Either<class_4730, String>> map = Maps.<String, Either<class_4730, String>>newHashMap();
+	public JsonUnbakedModel create(Function<SpriteIdentifier, Sprite> textureGetter, JsonUnbakedModel blockModel) {
+		Map<String, Either<SpriteIdentifier, String>> map = Maps.<String, Either<SpriteIdentifier, String>>newHashMap();
 		List<ModelElement> list = Lists.<ModelElement>newArrayList();
 
 		for (int i = 0; i < LAYERS.size(); i++) {
@@ -27,9 +27,9 @@ public class ItemModelGenerator {
 				break;
 			}
 
-			class_4730 lv = blockModel.method_24077(string);
-			map.put(string, Either.left(lv));
-			Sprite sprite = (Sprite)textureGetter.apply(lv);
+			SpriteIdentifier spriteIdentifier = blockModel.method_24077(string);
+			map.put(string, Either.left(spriteIdentifier));
+			Sprite sprite = (Sprite)textureGetter.apply(spriteIdentifier);
 			list.addAll(this.addLayerElements(i, string, sprite));
 		}
 

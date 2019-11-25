@@ -9,6 +9,7 @@ import com.mojang.datafixers.schemas.Schema;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import net.minecraft.SharedConstants;
+import net.minecraft.datafixer.fixes.RemovePoiValidTagFix;
 import net.minecraft.datafixers.fixes.AddTrappedChestFix;
 import net.minecraft.datafixers.fixes.AdvancementsFix;
 import net.minecraft.datafixers.fixes.BedBlockEntityFix;
@@ -514,5 +515,7 @@ public class Schemas {
 		);
 		Schema schema99 = builder.addSchema(2211, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new StructureReferenceFixer(schema99, false));
+		Schema schema100 = builder.addSchema(2218, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new RemovePoiValidTagFix(schema100, false));
 	}
 }

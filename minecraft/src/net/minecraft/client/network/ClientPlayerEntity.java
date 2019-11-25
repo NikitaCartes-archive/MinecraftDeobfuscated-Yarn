@@ -134,6 +134,11 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
+	public boolean isGlowing() {
+		return super.isGlowing() || this.client.player.isSpectator() && this.client.options.keySpectatorOutlines.isPressed();
+	}
+
+	@Override
 	public boolean damage(DamageSource source, float amount) {
 		return false;
 	}
@@ -594,7 +599,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	@Override
 	public boolean isInSneakingPose() {
 		return !this.abilities.flying && !this.isSwimming() && this.wouldPoseNotCollide(EntityPose.CROUCHING)
-			? this.isSneaking() || !this.wouldPoseNotCollide(EntityPose.STANDING)
+			? this.isSneaking() || !this.isSleeping() && !this.wouldPoseNotCollide(EntityPose.STANDING)
 			: false;
 	}
 

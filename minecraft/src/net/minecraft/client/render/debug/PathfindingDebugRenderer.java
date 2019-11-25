@@ -31,18 +31,18 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f, long l) {
+	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
 		if (!this.paths.isEmpty()) {
-			long m = Util.getMeasuringTimeMs();
+			long l = Util.getMeasuringTimeMs();
 
 			for (Integer integer : this.paths.keySet()) {
 				Path path = (Path)this.paths.get(integer);
-				float g = (Float)this.field_4617.get(integer);
-				drawPath(path, g, true, true, d, e, f);
+				float f = (Float)this.field_4617.get(integer);
+				drawPath(path, f, true, true, cameraX, cameraY, cameraZ);
 			}
 
 			for (Integer integer2 : (Integer[])this.pathTimes.keySet().toArray(new Integer[0])) {
-				if (m - (Long)this.pathTimes.get(integer2) > 5000L) {
+				if (l - (Long)this.pathTimes.get(integer2) > 5000L) {
 					this.paths.remove(integer2);
 					this.pathTimes.remove(integer2);
 				}

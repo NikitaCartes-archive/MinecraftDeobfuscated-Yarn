@@ -7,8 +7,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4723;
-import net.minecraft.class_4725;
+import net.minecraft.client.render.SpriteTexturedVertexConsumer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.resource.metadata.AnimationFrameResourceMetadata;
 import net.minecraft.client.resource.metadata.AnimationResourceMetadata;
@@ -20,14 +19,14 @@ import net.minecraft.util.crash.CrashReportSection;
 
 @Environment(EnvType.CLIENT)
 public class Sprite implements AutoCloseable {
-	private final SpriteAtlasTexture field_21750;
-	private final Sprite.class_4727 field_21751;
+	private final SpriteAtlasTexture atlas;
+	private final Sprite.Info info;
 	private final AnimationResourceMetadata animationMetadata;
 	protected final NativeImage[] images;
 	private final int[] frameXs;
 	private final int[] frameYs;
 	@Nullable
-	private final Sprite.class_4728 field_21752;
+	private final Sprite.Interpolation interpolation;
 	private final int x;
 	private final int y;
 	private final float uMin;
@@ -37,11 +36,11 @@ public class Sprite implements AutoCloseable {
 	private int frameIndex;
 	private int frameTicks;
 
-	protected Sprite(SpriteAtlasTexture spriteAtlasTexture, Sprite.class_4727 arg, int i, int j, int k, int l, int m, NativeImage nativeImage) {
-		this.field_21750 = spriteAtlasTexture;
-		AnimationResourceMetadata animationResourceMetadata = arg.field_21756;
-		int n = arg.field_21754;
-		int o = arg.field_21755;
+	protected Sprite(SpriteAtlasTexture spriteAtlasTexture, Sprite.Info info, int i, int j, int k, int l, int m, NativeImage nativeImage) {
+		this.atlas = spriteAtlasTexture;
+		AnimationResourceMetadata animationResourceMetadata = info.animationData;
+		int n = info.width;
+		int o = info.height;
 		this.x = l;
 		this.y = m;
 		this.uMin = (float)l / (float)j;
@@ -87,12 +86,12 @@ public class Sprite implements AutoCloseable {
 			);
 		}
 
-		this.field_21751 = new Sprite.class_4727(arg.field_21753, n, o, animationResourceMetadata);
+		this.info = new Sprite.Info(info.id, n, o, animationResourceMetadata);
 		this.animationMetadata = animationResourceMetadata;
 
 		try {
 			try {
-				this.images = class_4725.method_24102(nativeImage, i);
+				this.images = MipmapHelper.getMipmapLevelsImages(nativeImage, i);
 			} catch (Throwable var19) {
 				CrashReport crashReport = CrashReport.create(var19, "Generating mipmaps for frame");
 				CrashReportSection crashReportSection = crashReport.addElement("Frame being iterated");
@@ -118,33 +117,30 @@ public class Sprite implements AutoCloseable {
 		}
 
 		if (animationResourceMetadata.shouldInterpolate()) {
-			this.field_21752 = new Sprite.class_4728(arg, i);
+			this.interpolation = new Sprite.Interpolation(info, i);
 		} else {
-			this.field_21752 = null;
+			this.interpolation = null;
 		}
 	}
 
 	private void upload(int frame) {
-		int i = this.frameXs[frame] * this.field_21751.field_21754;
-		int j = this.frameYs[frame] * this.field_21751.field_21755;
+		int i = this.frameXs[frame] * this.info.width;
+		int j = this.frameYs[frame] * this.info.height;
 		this.upload(i, j, this.images);
 	}
 
 	private void upload(int frameX, int frameY, NativeImage[] output) {
 		for (int i = 0; i < this.images.length; i++) {
-			output[i]
-				.upload(
-					i, this.x >> i, this.y >> i, frameX >> i, frameY >> i, this.field_21751.field_21754 >> i, this.field_21751.field_21755 >> i, this.images.length > 1, false
-				);
+			output[i].upload(i, this.x >> i, this.y >> i, frameX >> i, frameY >> i, this.info.width >> i, this.info.height >> i, this.images.length > 1, false);
 		}
 	}
 
 	public int getWidth() {
-		return this.field_21751.field_21754;
+		return this.info.width;
 	}
 
 	public int getHeight() {
-		return this.field_21751.field_21755;
+		return this.info.height;
 	}
 
 	public float getMinU() {
@@ -174,33 +170,33 @@ public class Sprite implements AutoCloseable {
 	}
 
 	public Identifier getId() {
-		return this.field_21751.field_21753;
+		return this.info.id;
 	}
 
-	public SpriteAtlasTexture method_24119() {
-		return this.field_21750;
+	public SpriteAtlasTexture getAtlas() {
+		return this.atlas;
 	}
 
 	public int getFrameCount() {
 		return this.frameXs.length;
 	}
 
-	public void destroy() {
+	public void close() {
 		for (NativeImage nativeImage : this.images) {
 			if (nativeImage != null) {
 				nativeImage.close();
 			}
 		}
 
-		if (this.field_21752 != null) {
-			this.field_21752.close();
+		if (this.interpolation != null) {
+			this.interpolation.close();
 		}
 	}
 
 	public String toString() {
 		int i = this.frameXs.length;
 		return "TextureAtlasSprite{name='"
-			+ this.field_21751.field_21753
+			+ this.info.id
 			+ '\''
 			+ ", frameCount="
 			+ i
@@ -209,9 +205,9 @@ public class Sprite implements AutoCloseable {
 			+ ", y="
 			+ this.y
 			+ ", height="
-			+ this.field_21751.field_21755
+			+ this.info.height
 			+ ", width="
-			+ this.field_21751.field_21754
+			+ this.info.width
 			+ ", u0="
 			+ this.uMin
 			+ ", u1="
@@ -224,10 +220,7 @@ public class Sprite implements AutoCloseable {
 	}
 
 	public boolean isPixelTransparent(int frame, int x, int y) {
-		return (
-				this.images[0].getPixelRgba(x + this.frameXs[frame] * this.field_21751.field_21754, y + this.frameYs[frame] * this.field_21751.field_21755) >> 24 & 0xFF
-			)
-			== 0;
+		return (this.images[0].getPixelRgba(x + this.frameXs[frame] * this.info.width, y + this.frameYs[frame] * this.info.height) >> 24 & 0xFF) == 0;
 	}
 
 	public void upload() {
@@ -235,8 +228,8 @@ public class Sprite implements AutoCloseable {
 	}
 
 	private float getFrameDeltaFactor() {
-		float f = (float)this.field_21751.field_21754 / (this.uMax - this.uMin);
-		float g = (float)this.field_21751.field_21755 / (this.vMax - this.vMin);
+		float f = (float)this.info.width / (this.uMax - this.uMin);
+		float g = (float)this.info.height / (this.vMax - this.vMin);
 		return Math.max(g, f);
 	}
 
@@ -255,11 +248,11 @@ public class Sprite implements AutoCloseable {
 			if (i != k && k >= 0 && k < this.getFrameCount()) {
 				this.upload(k);
 			}
-		} else if (this.field_21752 != null) {
+		} else if (this.interpolation != null) {
 			if (!RenderSystem.isOnRenderThread()) {
-				RenderSystem.recordRenderCall(() -> arg.method_24128());
+				RenderSystem.recordRenderCall(() -> interpolation.method_24128());
 			} else {
-				this.field_21752.method_24128();
+				this.interpolation.method_24128();
 			}
 		}
 	}
@@ -268,49 +261,49 @@ public class Sprite implements AutoCloseable {
 		return this.animationMetadata.getFrameCount() > 1;
 	}
 
-	public VertexConsumer method_24108(VertexConsumer vertexConsumer) {
-		return new class_4723(vertexConsumer, this);
+	public VertexConsumer getTextureSpecificVertexConsumer(VertexConsumer vertexConsumer) {
+		return new SpriteTexturedVertexConsumer(vertexConsumer, this);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static final class class_4727 {
-		private final Identifier field_21753;
-		private final int field_21754;
-		private final int field_21755;
-		private final AnimationResourceMetadata field_21756;
+	public static final class Info {
+		private final Identifier id;
+		private final int width;
+		private final int height;
+		private final AnimationResourceMetadata animationData;
 
-		public class_4727(Identifier identifier, int i, int j, AnimationResourceMetadata animationResourceMetadata) {
-			this.field_21753 = identifier;
-			this.field_21754 = i;
-			this.field_21755 = j;
-			this.field_21756 = animationResourceMetadata;
+		public Info(Identifier id, int width, int height, AnimationResourceMetadata animationData) {
+			this.id = id;
+			this.width = width;
+			this.height = height;
+			this.animationData = animationData;
 		}
 
-		public Identifier method_24121() {
-			return this.field_21753;
+		public Identifier getId() {
+			return this.id;
 		}
 
-		public int method_24123() {
-			return this.field_21754;
+		public int getWidth() {
+			return this.width;
 		}
 
-		public int method_24125() {
-			return this.field_21755;
+		public int getHeight() {
+			return this.height;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	final class class_4728 implements AutoCloseable {
-		private final NativeImage[] field_21758;
+	final class Interpolation implements AutoCloseable {
+		private final NativeImage[] images;
 
-		private class_4728(Sprite.class_4727 arg, int i) {
-			this.field_21758 = new NativeImage[i + 1];
+		private Interpolation(Sprite.Info info, int mipmap) {
+			this.images = new NativeImage[mipmap + 1];
 
-			for (int j = 0; j < this.field_21758.length; j++) {
-				int k = arg.field_21754 >> j;
-				int l = arg.field_21755 >> j;
-				if (this.field_21758[j] == null) {
-					this.field_21758[j] = new NativeImage(k, l, false);
+			for (int i = 0; i < this.images.length; i++) {
+				int j = info.width >> i;
+				int k = info.height >> i;
+				if (this.images[i] == null) {
+					this.images[i] = new NativeImage(j, k, false);
 				}
 			}
 		}
@@ -321,9 +314,9 @@ public class Sprite implements AutoCloseable {
 			int j = Sprite.this.animationMetadata.getFrameCount() == 0 ? Sprite.this.getFrameCount() : Sprite.this.animationMetadata.getFrameCount();
 			int k = Sprite.this.animationMetadata.getFrameIndex((Sprite.this.frameIndex + 1) % j);
 			if (i != k && k >= 0 && k < Sprite.this.getFrameCount()) {
-				for (int l = 0; l < this.field_21758.length; l++) {
-					int m = Sprite.this.field_21751.field_21754 >> l;
-					int n = Sprite.this.field_21751.field_21755 >> l;
+				for (int l = 0; l < this.images.length; l++) {
+					int m = Sprite.this.info.width >> l;
+					int n = Sprite.this.info.height >> l;
 
 					for (int o = 0; o < n; o++) {
 						for (int p = 0; p < m; p++) {
@@ -332,20 +325,18 @@ public class Sprite implements AutoCloseable {
 							int s = this.method_24129(d, q >> 16 & 0xFF, r >> 16 & 0xFF);
 							int t = this.method_24129(d, q >> 8 & 0xFF, r >> 8 & 0xFF);
 							int u = this.method_24129(d, q & 0xFF, r & 0xFF);
-							this.field_21758[l].setPixelRgba(p, o, q & 0xFF000000 | s << 16 | t << 8 | u);
+							this.images[l].setPixelRgba(p, o, q & 0xFF000000 | s << 16 | t << 8 | u);
 						}
 					}
 				}
 
-				Sprite.this.upload(0, 0, this.field_21758);
+				Sprite.this.upload(0, 0, this.images);
 			}
 		}
 
 		private int method_24130(int i, int j, int k, int l) {
 			return Sprite.this.images[j]
-				.getPixelRgba(
-					k + (Sprite.this.frameXs[i] * Sprite.this.field_21751.field_21754 >> j), l + (Sprite.this.frameYs[i] * Sprite.this.field_21751.field_21755 >> j)
-				);
+				.getPixelRgba(k + (Sprite.this.frameXs[i] * Sprite.this.info.width >> j), l + (Sprite.this.frameYs[i] * Sprite.this.info.height >> j));
 		}
 
 		private int method_24129(double d, int i, int j) {
@@ -353,7 +344,7 @@ public class Sprite implements AutoCloseable {
 		}
 
 		public void close() {
-			for (NativeImage nativeImage : this.field_21758) {
+			for (NativeImage nativeImage : this.images) {
 				if (nativeImage != null) {
 					nativeImage.close();
 				}

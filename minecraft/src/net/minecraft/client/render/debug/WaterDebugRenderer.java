@@ -21,7 +21,7 @@ public class WaterDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f, long l) {
+	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
 		BlockPos blockPos = this.client.player.getBlockPos();
 		WorldView worldView = this.client.player.world;
 		RenderSystem.enableBlend();
@@ -33,17 +33,17 @@ public class WaterDebugRenderer implements DebugRenderer.Renderer {
 		for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-10, -10, -10), blockPos.add(10, 10, 10))) {
 			FluidState fluidState = worldView.getFluidState(blockPos2);
 			if (fluidState.matches(FluidTags.WATER)) {
-				double g = (double)((float)blockPos2.getY() + fluidState.getHeight(worldView, blockPos2));
+				double d = (double)((float)blockPos2.getY() + fluidState.getHeight(worldView, blockPos2));
 				DebugRenderer.drawBox(
 					new Box(
 							(double)((float)blockPos2.getX() + 0.01F),
 							(double)((float)blockPos2.getY() + 0.01F),
 							(double)((float)blockPos2.getZ() + 0.01F),
 							(double)((float)blockPos2.getX() + 0.99F),
-							g,
+							d,
 							(double)((float)blockPos2.getZ() + 0.99F)
 						)
-						.offset(-d, -e, -f),
+						.offset(-cameraX, -cameraY, -cameraZ),
 					1.0F,
 					1.0F,
 					1.0F,

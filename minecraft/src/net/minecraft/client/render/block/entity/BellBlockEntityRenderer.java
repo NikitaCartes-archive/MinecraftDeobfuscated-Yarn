@@ -2,13 +2,13 @@ package net.minecraft.client.render.block.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4730;
 import net.minecraft.block.entity.BellBlockEntity;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
@@ -16,7 +16,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class BellBlockEntityRenderer extends BlockEntityRenderer<BellBlockEntity> {
-	public static final class_4730 BELL_BODY_TEXTURE = new class_4730(SpriteAtlasTexture.BLOCK_ATLAS_TEX, new Identifier("entity/bell/bell_body"));
+	public static final SpriteIdentifier BELL_BODY_TEXTURE = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, new Identifier("entity/bell/bell_body"));
 	private final ModelPart field_20816 = new ModelPart(32, 32, 0, 0);
 
 	public BellBlockEntityRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher) {
@@ -48,7 +48,7 @@ public class BellBlockEntityRenderer extends BlockEntityRenderer<BellBlockEntity
 
 		this.field_20816.pitch = h;
 		this.field_20816.roll = k;
-		VertexConsumer vertexConsumer = BELL_BODY_TEXTURE.method_24145(vertexConsumerProvider, RenderLayer::getEntitySolid);
+		VertexConsumer vertexConsumer = BELL_BODY_TEXTURE.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntitySolid);
 		this.field_20816.render(matrixStack, vertexConsumer, i, j);
 	}
 }

@@ -208,7 +208,7 @@ public class ServerWorld extends World {
 
 	@Override
 	public Biome getGeneratorStoredBiome(int biomeX, int biomeY, int biomeZ) {
-		return this.getChunkManager().getChunkGenerator().getBiomeSource().getStoredBiome(biomeX, biomeY, biomeZ);
+		return this.getChunkManager().getChunkGenerator().getBiomeSource().getBiomeForNoiseGen(biomeX, biomeY, biomeZ);
 	}
 
 	public void tick(BooleanSupplier booleanSupplier) {
@@ -448,7 +448,7 @@ public class ServerWorld extends World {
 		if (this.random.nextInt(16) == 0) {
 			BlockPos blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, this.getRandomPosInChunk(i, 0, j, 15));
 			BlockPos blockPos2 = blockPos.down();
-			Biome biome = this.method_23753(blockPos);
+			Biome biome = this.getBiome(blockPos);
 			if (biome.canSetSnow(this, blockPos2)) {
 				this.setBlockState(blockPos2, Blocks.ICE.getDefaultState());
 			}
@@ -457,7 +457,7 @@ public class ServerWorld extends World {
 				this.setBlockState(blockPos, Blocks.SNOW.getDefaultState());
 			}
 
-			if (bl && this.method_23753(blockPos2).getPrecipitation() == Biome.Precipitation.RAIN) {
+			if (bl && this.getBiome(blockPos2).getPrecipitation() == Biome.Precipitation.RAIN) {
 				this.getBlockState(blockPos2).getBlock().rainTick(this, blockPos2);
 			}
 		}

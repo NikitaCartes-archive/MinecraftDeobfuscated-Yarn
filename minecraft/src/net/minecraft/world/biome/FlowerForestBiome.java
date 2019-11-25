@@ -42,9 +42,9 @@ public final class FlowerForestBiome extends Biome {
 				.configure(
 					new RandomRandomFeatureConfig(
 						ImmutableList.of(
-							Feature.RANDOM_PATCH.configure(DefaultBiomeFeatures.field_21098),
-							Feature.RANDOM_PATCH.configure(DefaultBiomeFeatures.field_21099),
-							Feature.RANDOM_PATCH.configure(DefaultBiomeFeatures.field_21100),
+							Feature.RANDOM_PATCH.configure(DefaultBiomeFeatures.LILAC_CONFIG),
+							Feature.RANDOM_PATCH.configure(DefaultBiomeFeatures.ROSE_BUSH_CONFIG),
+							Feature.RANDOM_PATCH.configure(DefaultBiomeFeatures.PEONY_CONFIG),
 							Feature.FLOWER.configure(DefaultBiomeFeatures.field_21204)
 						),
 						2
@@ -61,8 +61,8 @@ public final class FlowerForestBiome extends Biome {
 				.configure(
 					new RandomFeatureConfig(
 						ImmutableList.of(
-							Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.field_21195).method_23387(0.2F),
-							Feature.FANCY_TREE.configure(DefaultBiomeFeatures.field_21194).method_23387(0.1F)
+							Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.field_21195).withChance(0.2F),
+							Feature.FANCY_TREE.configure(DefaultBiomeFeatures.field_21194).withChance(0.1F)
 						),
 						Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.field_21193)
 					)

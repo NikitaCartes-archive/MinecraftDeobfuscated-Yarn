@@ -335,7 +335,7 @@ public class PlainsVillageData {
 						new Pair<>(new SinglePoolElement("village/plains/plains_lamp_1"), 2),
 						new Pair<>(new FeaturePoolElement(Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.OAK_TREE_CONFIG)), 1),
 						new Pair<>(new FeaturePoolElement(Feature.FLOWER.configure(DefaultBiomeFeatures.field_21088)), 1),
-						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.configure(DefaultBiomeFeatures.field_21106)), 1),
+						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.configure(DefaultBiomeFeatures.HAY_PILE_CONFIG)), 1),
 						Pair.of(EmptyPoolElement.INSTANCE, 2)
 					),
 					StructurePool.Projection.RIGID
@@ -350,7 +350,7 @@ public class PlainsVillageData {
 						new Pair<>(new SinglePoolElement("village/plains/plains_lamp_1", immutableList), 1),
 						new Pair<>(new FeaturePoolElement(Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.OAK_TREE_CONFIG)), 1),
 						new Pair<>(new FeaturePoolElement(Feature.FLOWER.configure(DefaultBiomeFeatures.field_21088)), 1),
-						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.configure(DefaultBiomeFeatures.field_21106)), 1),
+						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.configure(DefaultBiomeFeatures.HAY_PILE_CONFIG)), 1),
 						Pair.of(EmptyPoolElement.INSTANCE, 2)
 					),
 					StructurePool.Projection.RIGID

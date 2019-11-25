@@ -103,13 +103,13 @@ public class SlimeEntity extends MobEntity implements Monster {
 
 	@Override
 	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
 		int i = tag.getInt("Size");
 		if (i < 0) {
 			i = 0;
 		}
 
 		this.setSize(i + 1, false);
+		super.readCustomDataFromTag(tag);
 		this.onGroundLastTick = tag.getBoolean("wasOnGround");
 	}
 
@@ -280,7 +280,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 			return false;
 		} else {
 			if (world.getDifficulty() != Difficulty.PEACEFUL) {
-				Biome biome = world.method_23753(pos);
+				Biome biome = world.getBiome(pos);
 				if (biome == Biomes.SWAMP
 					&& pos.getY() > 50
 					&& pos.getY() < 70

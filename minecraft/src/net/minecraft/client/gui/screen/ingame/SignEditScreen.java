@@ -5,7 +5,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4730;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SignBlock;
 import net.minecraft.block.entity.SignBlockEntity;
@@ -22,6 +21,7 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.block.entity.SignBlockEntityRenderer;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.SelectionManager;
+import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.Texts;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
@@ -33,7 +33,7 @@ import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class SignEditScreen extends Screen {
-	private final SignBlockEntityRenderer.class_4702 field_21525 = new SignBlockEntityRenderer.class_4702();
+	private final SignBlockEntityRenderer.SignModel field_21525 = new SignBlockEntityRenderer.SignModel();
 	private final SignBlockEntity sign;
 	private int ticksSinceOpened;
 	private int currentRow;
@@ -128,11 +128,11 @@ public class SignEditScreen extends Screen {
 		matrixStack.push();
 		matrixStack.scale(0.6666667F, -0.6666667F, -0.6666667F);
 		VertexConsumerProvider.Immediate immediate = this.minecraft.getBufferBuilders().getEntityVertexConsumers();
-		class_4730 lv = SignBlockEntityRenderer.getModelTexture(blockState.getBlock());
-		VertexConsumer vertexConsumer = lv.method_24145(immediate, this.field_21525::getLayer);
-		this.field_21525.field_21530.render(matrixStack, vertexConsumer, 15728880, OverlayTexture.DEFAULT_UV);
+		SpriteIdentifier spriteIdentifier = SignBlockEntityRenderer.getModelTexture(blockState.getBlock());
+		VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(immediate, this.field_21525::getLayer);
+		this.field_21525.field.render(matrixStack, vertexConsumer, 15728880, OverlayTexture.DEFAULT_UV);
 		if (bl) {
-			this.field_21525.field_21531.render(matrixStack, vertexConsumer, 15728880, OverlayTexture.DEFAULT_UV);
+			this.field_21525.foot.render(matrixStack, vertexConsumer, 15728880, OverlayTexture.DEFAULT_UV);
 		}
 
 		matrixStack.pop();

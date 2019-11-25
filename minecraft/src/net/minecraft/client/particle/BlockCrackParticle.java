@@ -90,7 +90,7 @@ public class BlockCrackParticle extends SpriteBillboardParticle {
 		int i = super.getColorMultiplier(tint);
 		int j = 0;
 		if (this.world.isChunkLoaded(this.blockPos)) {
-			j = WorldRenderer.method_23794(this.world, this.blockPos);
+			j = WorldRenderer.getLightmapCoordinates(this.world, this.blockPos);
 		}
 
 		return i == 0 ? j : i;

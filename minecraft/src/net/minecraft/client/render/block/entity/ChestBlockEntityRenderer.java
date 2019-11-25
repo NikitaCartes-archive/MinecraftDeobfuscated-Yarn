@@ -3,18 +3,21 @@ package net.minecraft.client.render.block.entity;
 import java.util.Calendar;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4722;
-import net.minecraft.class_4730;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
+import net.minecraft.block.DoubleBlockProperties;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.client.block.ChestAnimationProgress;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.state.property.Property;
@@ -76,34 +79,40 @@ public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProg
 		boolean bl = world != null;
 		BlockState blockState = bl ? blockEntity.getCachedState() : Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.SOUTH);
 		ChestType chestType = blockState.contains((Property<T>)ChestBlock.CHEST_TYPE) ? blockState.get(ChestBlock.CHEST_TYPE) : ChestType.SINGLE;
-		boolean bl2 = chestType != ChestType.SINGLE;
-		matrixStack.push();
-		float g = ((Direction)blockState.get(ChestBlock.FACING)).asRotation();
-		matrixStack.translate(0.5, 0.5, 0.5);
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-g));
-		matrixStack.translate(-0.5, -0.5, -0.5);
-		float h;
-		if (bl) {
-			h = ChestBlock.method_23897(blockEntity, blockState, world, blockEntity.getPos(), f);
-		} else {
-			h = blockEntity.getAnimationProgress(f);
-		}
-
-		h = 1.0F - h;
-		h = 1.0F - h * h * h;
-		class_4730 lv = class_4722.method_24062(blockEntity, chestType, this.isChristmas);
-		VertexConsumer vertexConsumer = lv.method_24145(vertexConsumerProvider, RenderLayer::getEntityCutout);
-		if (bl2) {
-			if (chestType == ChestType.LEFT) {
-				this.method_22749(matrixStack, vertexConsumer, this.field_21479, this.field_21481, this.field_21480, h, i, j);
+		Block block = blockState.getBlock();
+		if (block instanceof ChestBlock) {
+			ChestBlock chestBlock = (ChestBlock)block;
+			boolean bl2 = chestType != ChestType.SINGLE;
+			matrixStack.push();
+			float g = ((Direction)blockState.get(ChestBlock.FACING)).asRotation();
+			matrixStack.translate(0.5, 0.5, 0.5);
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-g));
+			matrixStack.translate(-0.5, -0.5, -0.5);
+			DoubleBlockProperties.PropertySource<? extends ChestBlockEntity> propertySource;
+			if (bl) {
+				propertySource = ChestBlock.method_24167(chestBlock, blockState, world, blockEntity.getPos(), true);
 			} else {
-				this.method_22749(matrixStack, vertexConsumer, this.field_20820, this.field_20822, this.field_20821, h, i, j);
+				propertySource = DoubleBlockProperties.PropertyRetriever::getFallback;
 			}
-		} else {
-			this.method_22749(matrixStack, vertexConsumer, this.field_20817, this.field_20819, this.field_20818, h, i, j);
-		}
 
-		matrixStack.pop();
+			float h = propertySource.apply(ChestBlock.method_24166(blockEntity)).get(f);
+			h = 1.0F - h;
+			h = 1.0F - h * h * h;
+			int k = propertySource.apply(new LightmapCoordinatesRetriever<>()).applyAsInt(i);
+			SpriteIdentifier spriteIdentifier = TexturedRenderLayers.getChestTexture(blockEntity, chestType, this.isChristmas);
+			VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityCutout);
+			if (bl2) {
+				if (chestType == ChestType.LEFT) {
+					this.method_22749(matrixStack, vertexConsumer, this.field_21479, this.field_21481, this.field_21480, h, k, j);
+				} else {
+					this.method_22749(matrixStack, vertexConsumer, this.field_20820, this.field_20822, this.field_20821, h, k, j);
+				}
+			} else {
+				this.method_22749(matrixStack, vertexConsumer, this.field_20817, this.field_20819, this.field_20818, h, k, j);
+			}
+
+			matrixStack.pop();
+		}
 	}
 
 	private void method_22749(

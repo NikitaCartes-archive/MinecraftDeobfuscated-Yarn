@@ -87,7 +87,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 				}
 			}
 
-			if (!world.dimension.canPlayersSleep() || world.method_23753(pos) == Biomes.NETHER) {
+			if (!world.dimension.canPlayersSleep() || world.getBiome(pos) == Biomes.NETHER) {
 				world.removeBlock(pos, false);
 				BlockPos blockPos = pos.offset(((Direction)state.get(FACING)).getOpposite());
 				if (world.getBlockState(blockPos).getBlock() == this) {
@@ -205,9 +205,8 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
-		Direction direction = state.get(FACING);
-		Direction direction2 = state.get(PART) == BedPart.HEAD ? direction : direction.getOpposite();
-		switch (direction2) {
+		Direction direction = method_24163(state).getOpposite();
+		switch (direction) {
 			case NORTH:
 				return NORTH_SHAPE;
 			case SOUTH:
@@ -217,6 +216,17 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 			default:
 				return EAST_SHAPE;
 		}
+	}
+
+	public static Direction method_24163(BlockState blockState) {
+		Direction direction = blockState.get(FACING);
+		return blockState.get(PART) == BedPart.HEAD ? direction.getOpposite() : direction;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static DoubleBlockProperties.Type method_24164(BlockState blockState) {
+		BedPart bedPart = blockState.get(PART);
+		return bedPart == BedPart.HEAD ? DoubleBlockProperties.Type.FIRST : DoubleBlockProperties.Type.SECOND;
 	}
 
 	public static Optional<Vec3d> findWakeUpPosition(EntityType<?> type, WorldView worldView, BlockPos pos, int index) {

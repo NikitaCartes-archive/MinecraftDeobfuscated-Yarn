@@ -1283,7 +1283,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			}
 
 			if (this.world.isDay()) {
-				this.setPlayerSpawn(pos, false);
+				this.setPlayerSpawn(pos, false, true);
 				return Either.left(PlayerEntity.SleepFailureReason.NOT_POSSIBLE_NOW);
 			}
 
@@ -1329,7 +1329,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	@Override
 	public void sleep(BlockPos pos) {
 		this.resetStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_REST));
-		this.setPlayerSpawn(pos, false);
+		this.setPlayerSpawn(pos, false, true);
 		super.sleep(pos);
 	}
 
@@ -1399,9 +1399,13 @@ public abstract class PlayerEntity extends LivingEntity {
 		return this.spawnForced;
 	}
 
-	public void setPlayerSpawn(BlockPos pos, boolean bl) {
-		if (pos != null) {
-			this.spawnPosition = pos;
+	public void setPlayerSpawn(BlockPos blockPos, boolean bl, boolean bl2) {
+		if (blockPos != null) {
+			if (bl2 && !blockPos.equals(this.spawnPosition)) {
+				this.sendMessage(new TranslatableText("block.minecraft.bed.set_spawn"));
+			}
+
+			this.spawnPosition = blockPos;
 			this.spawnForced = bl;
 		} else {
 			this.spawnPosition = null;
@@ -2025,6 +2029,11 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	public ItemCooldownManager getItemCooldownManager() {
 		return this.itemCooldownManager;
+	}
+
+	@Override
+	protected float method_23326() {
+		return !this.abilities.flying && !this.isFallFlying() ? super.method_23326() : 1.0F;
 	}
 
 	public float getLuck() {

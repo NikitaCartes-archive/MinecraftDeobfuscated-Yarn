@@ -10,8 +10,6 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4720;
-import net.minecraft.class_4722;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.font.TextRenderer;
@@ -21,8 +19,10 @@ import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.VertexConsumers;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedModelManager;
@@ -50,7 +50,7 @@ import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class ItemRenderer implements SynchronousResourceReloadListener {
-	public static final Identifier field_21010 = new Identifier("textures/misc/enchanted_item_glint.png");
+	public static final Identifier ENCHANTED_ITEM_GLINT = new Identifier("textures/misc/enchanted_item_glint.png");
 	private static final Set<Item> WITHOUT_MODELS = Sets.<Item>newHashSet(Items.AIR);
 	public float zOffset;
 	private final ItemModels models;
@@ -110,8 +110,8 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 			if (!bakedModel.isBuiltin() && (itemStack.getItem() != Items.TRIDENT || bl3)) {
 				RenderLayer renderLayer = RenderLayers.getItemLayer(itemStack);
 				RenderLayer renderLayer2;
-				if (bl2 && Objects.equals(renderLayer, class_4722.method_24075())) {
-					renderLayer2 = class_4722.method_24076();
+				if (bl2 && Objects.equals(renderLayer, TexturedRenderLayers.getEntityTranslucent())) {
+					renderLayer2 = TexturedRenderLayers.getEntityTranslucentCull();
 				} else {
 					renderLayer2 = renderLayer;
 				}
@@ -128,7 +128,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 
 	public static VertexConsumer getArmorVertexConsumer(VertexConsumerProvider vertexConsumers, RenderLayer layer, boolean bl, boolean glint) {
 		return glint
-			? class_4720.method_24037(vertexConsumers.getBuffer(bl ? RenderLayer.getGlint() : RenderLayer.getEntityGlint()), vertexConsumers.getBuffer(layer))
+			? VertexConsumers.dual(vertexConsumers.getBuffer(bl ? RenderLayer.getGlint() : RenderLayer.getEntityGlint()), vertexConsumers.getBuffer(layer))
 			: vertexConsumers.getBuffer(layer);
 	}
 
@@ -294,6 +294,8 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 			if (k > 0.0F) {
 				RenderSystem.disableDepthTest();
 				RenderSystem.disableTexture();
+				RenderSystem.enableBlend();
+				RenderSystem.defaultBlendFunc();
 				Tessellator tessellator2 = Tessellator.getInstance();
 				BufferBuilder bufferBuilder2 = tessellator2.getBuffer();
 				this.renderGuiQuad(bufferBuilder2, x, y + MathHelper.floor(16.0F * (1.0F - k)), 16, MathHelper.ceil(16.0F * k), 255, 255, 255, 127);

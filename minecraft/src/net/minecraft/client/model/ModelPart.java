@@ -146,7 +146,7 @@ public class ModelPart {
 		for (ModelPart.Cuboid cuboid : this.cuboids) {
 			for (ModelPart.Quad quad : cuboid.sides) {
 				Vector3f vector3f = quad.direction.copy();
-				vector3f.multiply(matrix3f);
+				vector3f.transform(matrix3f);
 				float l = vector3f.getX();
 				float m = vector3f.getY();
 				float n = vector3f.getZ();
@@ -157,8 +157,8 @@ public class ModelPart {
 					float q = vertex.pos.getY() / 16.0F;
 					float r = vertex.pos.getZ() / 16.0F;
 					Vector4f vector4f = new Vector4f(p, q, r, 1.0F);
-					vector4f.multiply(matrix4f);
-					vertexConsumer.method_23919(vector4f.getX(), vector4f.getY(), vector4f.getZ(), f, g, h, k, vertex.u, vertex.v, j, i, l, m, n);
+					vector4f.transform(matrix4f);
+					vertexConsumer.elements(vector4f.getX(), vector4f.getY(), vector4f.getZ(), f, g, h, k, vertex.u, vertex.v, j, i, l, m, n);
 				}
 			}
 		}

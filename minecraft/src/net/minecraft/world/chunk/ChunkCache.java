@@ -27,11 +27,12 @@ public class ChunkCache implements BlockView, CollisionView {
 		int i = maxPos.getX() >> 4;
 		int j = maxPos.getZ() >> 4;
 		this.chunks = new Chunk[i - this.minX + 1][j - this.minZ + 1];
+		ChunkManager chunkManager = world.getChunkManager();
 		this.empty = true;
 
 		for (int k = this.minX; k <= i; k++) {
 			for (int l = this.minZ; l <= j; l++) {
-				this.chunks[k - this.minX][l - this.minZ] = world.getChunk(k, l, ChunkStatus.FULL, false);
+				this.chunks[k - this.minX][l - this.minZ] = chunkManager.getWorldChunk(k, l);
 			}
 		}
 

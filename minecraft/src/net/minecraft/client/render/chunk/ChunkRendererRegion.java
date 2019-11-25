@@ -123,7 +123,7 @@ public class ChunkRendererRegion implements BlockRenderView {
 	}
 
 	@Override
-	public int method_23752(BlockPos blockPos, ColorResolver colorResolver) {
-		return this.world.method_23752(blockPos, colorResolver);
+	public int getColor(BlockPos pos, ColorResolver colorResolver) {
+		return this.world.getColor(pos, colorResolver);
 	}
 }

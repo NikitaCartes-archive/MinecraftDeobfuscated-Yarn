@@ -47,23 +47,23 @@ public class ResourcePackOptionsScreen extends GameOptionsScreen {
 
 				Collections.reverse(listx);
 				this.minecraft.getResourcePackManager().setEnabledProfiles(listx);
-				this.field_21336.resourcePacks.clear();
-				this.field_21336.incompatibleResourcePacks.clear();
+				this.gameOptions.resourcePacks.clear();
+				this.gameOptions.incompatibleResourcePacks.clear();
 
 				for (ClientResourcePackProfile clientResourcePackProfilex : listx) {
 					if (!clientResourcePackProfilex.isPinned()) {
-						this.field_21336.resourcePacks.add(clientResourcePackProfilex.getName());
+						this.gameOptions.resourcePacks.add(clientResourcePackProfilex.getName());
 						if (!clientResourcePackProfilex.getCompatibility().isCompatible()) {
-							this.field_21336.incompatibleResourcePacks.add(clientResourcePackProfilex.getName());
+							this.gameOptions.incompatibleResourcePacks.add(clientResourcePackProfilex.getName());
 						}
 					}
 				}
 
-				this.field_21336.write();
-				this.minecraft.openScreen(this.field_21335);
+				this.gameOptions.write();
+				this.minecraft.openScreen(this.parent);
 				this.minecraft.reloadResources();
 			} else {
-				this.minecraft.openScreen(this.field_21335);
+				this.minecraft.openScreen(this.parent);
 			}
 		}));
 		AvailableResourcePackListWidget availableResourcePackListWidget = this.availablePacks;

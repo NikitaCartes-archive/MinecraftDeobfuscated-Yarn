@@ -37,7 +37,7 @@ public final class SunflowerPlainsBiome extends Biome {
 		this.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
 			Feature.RANDOM_PATCH
-				.configure(DefaultBiomeFeatures.field_21101)
+				.configure(DefaultBiomeFeatures.SUNFLOWER_CONFIG)
 				.createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_32.configure(new CountDecoratorConfig(10)))
 		);
 		DefaultBiomeFeatures.addMineables(this);
@@ -47,7 +47,7 @@ public final class SunflowerPlainsBiome extends Biome {
 		this.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
 			Feature.RANDOM_PATCH
-				.configure(DefaultBiomeFeatures.field_21105)
+				.configure(DefaultBiomeFeatures.SUGAR_CANE_CONFIG)
 				.createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_DOUBLE.configure(new CountDecoratorConfig(10)))
 		);
 		DefaultBiomeFeatures.addDefaultMushrooms(this);

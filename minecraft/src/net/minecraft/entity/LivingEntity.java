@@ -21,6 +21,7 @@ import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.HoneyBlock;
 import net.minecraft.block.LadderBlock;
 import net.minecraft.block.TrapdoorBlock;
 import net.minecraft.client.network.packet.EntityAnimationS2CPacket;
@@ -86,6 +87,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Arm;
@@ -1497,6 +1499,7 @@ public abstract class LivingEntity extends Entity {
 			case 42:
 			case 43:
 			case 45:
+			case 53:
 			default:
 				super.handleStatus(status);
 				break;
@@ -1537,6 +1540,9 @@ public abstract class LivingEntity extends Entity {
 				break;
 			case 52:
 				this.playEquipmentBreakEffects(this.getEquippedStack(EquipmentSlot.FEET));
+				break;
+			case 54:
+				HoneyBlock.method_24178(this);
 		}
 	}
 
@@ -1666,8 +1672,10 @@ public abstract class LivingEntity extends Entity {
 		}
 	}
 
-	public void onDismounted(Entity vehicle) {
-		if (!(vehicle instanceof BoatEntity) && !(vehicle instanceof HorseBaseEntity)) {
+	private void onDismounted(Entity vehicle) {
+		if (this.world.getBlockState(new BlockPos(vehicle)).getBlock().matches(BlockTags.PORTALS)) {
+			this.setPosition(vehicle.getX(), vehicle.getBodyY(1.0) + 0.001, vehicle.getZ());
+		} else if (!(vehicle instanceof BoatEntity) && !(vehicle instanceof HorseBaseEntity)) {
 			double q = vehicle.getX();
 			double r = vehicle.getBodyY(1.0);
 			double s = vehicle.getZ();

@@ -65,13 +65,13 @@ public final class NetherBiome extends Biome {
 		this.addFeature(
 			GenerationStep.Feature.UNDERGROUND_DECORATION,
 			Feature.RANDOM_PATCH
-				.configure(DefaultBiomeFeatures.field_21097)
+				.configure(DefaultBiomeFeatures.BROWN_MUSHROOM_CONFIG)
 				.createDecoratedFeature(Decorator.CHANCE_RANGE.configure(new ChanceRangeDecoratorConfig(0.5F, 0, 0, 128)))
 		);
 		this.addFeature(
 			GenerationStep.Feature.UNDERGROUND_DECORATION,
 			Feature.RANDOM_PATCH
-				.configure(DefaultBiomeFeatures.field_21096)
+				.configure(DefaultBiomeFeatures.RED_MUSHROOM_CONFIG)
 				.createDecoratedFeature(Decorator.CHANCE_RANGE.configure(new ChanceRangeDecoratorConfig(0.5F, 0, 0, 128)))
 		);
 		this.addFeature(

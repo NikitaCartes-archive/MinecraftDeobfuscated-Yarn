@@ -5,7 +5,6 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4722;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
@@ -16,6 +15,7 @@ import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.WorldRenderer;
@@ -40,6 +40,7 @@ import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
@@ -56,6 +57,7 @@ public class EntityRenderDispatcher {
 	public final TextureManager textureManager;
 	private World world;
 	public Camera camera;
+	private Quaternion field_21794;
 	public Entity targetedEntity;
 	public final GameOptions gameOptions;
 	private boolean renderShadows = true;
@@ -209,7 +211,12 @@ public class EntityRenderDispatcher {
 	public void configure(World world, Camera camera, Entity entity) {
 		this.world = world;
 		this.camera = camera;
+		this.field_21794 = camera.method_23767();
 		this.targetedEntity = entity;
+	}
+
+	public void method_24196(Quaternion quaternion) {
+		this.field_21794 = quaternion;
 	}
 
 	public void setRenderShadows(boolean value) {
@@ -324,8 +331,8 @@ public class EntityRenderDispatcher {
 	}
 
 	private void renderFire(MatrixStack matrix, VertexConsumerProvider vertexConsumerProvider, Entity entity) {
-		Sprite sprite = ModelLoader.FIRE_0.method_24148();
-		Sprite sprite2 = ModelLoader.FIRE_1.method_24148();
+		Sprite sprite = ModelLoader.FIRE_0.getSprite();
+		Sprite sprite2 = ModelLoader.FIRE_1.getSprite();
 		matrix.push();
 		float f = entity.getWidth() * 1.4F;
 		matrix.scale(f, f, f);
@@ -337,7 +344,7 @@ public class EntityRenderDispatcher {
 		matrix.translate(0.0, 0.0, (double)(-0.3F + (float)((int)i) * 0.02F));
 		float k = 0.0F;
 		int l = 0;
-		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(class_4722.method_24074());
+		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(TexturedRenderLayers.getEntityCutout());
 
 		for (MatrixStack.Entry entry = matrix.peek(); i > 0.0F; l++) {
 			Sprite sprite3 = l % 2 == 0 ? sprite : sprite2;
@@ -370,7 +377,7 @@ public class EntityRenderDispatcher {
 			.texture(i, j)
 			.overlay(0, 10)
 			.light(240)
-			.method_23763(entry.getNormal(), 0.0F, 1.0F, 0.0F)
+			.normal(entry.getNormal(), 0.0F, 1.0F, 0.0F)
 			.next();
 	}
 
@@ -448,7 +455,7 @@ public class EntityRenderDispatcher {
 			.texture(j, k)
 			.overlay(OverlayTexture.DEFAULT_UV)
 			.light(15728880)
-			.method_23763(entry.getNormal(), 0.0F, 1.0F, 0.0F)
+			.normal(entry.getNormal(), 0.0F, 1.0F, 0.0F)
 			.next();
 	}
 
@@ -465,6 +472,10 @@ public class EntityRenderDispatcher {
 
 	public double getSquaredDistanceToCamera(double x, double y, double z) {
 		return this.camera.getPos().squaredDistanceTo(x, y, z);
+	}
+
+	public Quaternion method_24197() {
+		return this.field_21794;
 	}
 
 	public TextRenderer getTextRenderer() {

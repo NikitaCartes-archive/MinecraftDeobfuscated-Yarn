@@ -61,12 +61,18 @@ public class WanderAroundGoal extends Goal {
 
 	@Override
 	public boolean shouldContinue() {
-		return !this.mob.getNavigation().isIdle();
+		return !this.mob.getNavigation().isIdle() && !this.mob.hasPassengers();
 	}
 
 	@Override
 	public void start() {
 		this.mob.getNavigation().startMovingTo(this.targetX, this.targetY, this.targetZ, this.speed);
+	}
+
+	@Override
+	public void stop() {
+		this.mob.getNavigation().stop();
+		super.stop();
 	}
 
 	public void ignoreChanceOnce() {

@@ -36,7 +36,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_4729;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -103,8 +102,9 @@ import net.minecraft.client.render.model.BakedModelManager;
 import net.minecraft.client.resource.ClientBuiltinResourcePackProvider;
 import net.minecraft.client.resource.ClientResourcePackProfile;
 import net.minecraft.client.resource.FoliageColormapResourceSupplier;
+import net.minecraft.client.resource.Format3ResourcePack;
+import net.minecraft.client.resource.Format4ResourcePack;
 import net.minecraft.client.resource.GrassColormapResourceSupplier;
-import net.minecraft.client.resource.RedirectedResourcePack;
 import net.minecraft.client.resource.SplashTextResourceSupplier;
 import net.minecraft.client.resource.language.LanguageManager;
 import net.minecraft.client.search.IdentifierSearchableContainer;
@@ -306,7 +306,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public String fpsDebugString = "";
 	public boolean field_20907;
 	public boolean field_20908;
-	public boolean field_1730 = true;
+	public boolean chunkCullingEnabled = true;
 	private boolean windowFocused;
 	private final Queue<Runnable> renderTaskQueue = Queues.<Runnable>newConcurrentLinkedQueue();
 	@Nullable
@@ -323,7 +323,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.versionType = args.game.versionType;
 		this.sessionPropertyMap = args.network.profileProperties;
 		this.builtinPackProvider = new ClientBuiltinResourcePackProvider(new File(this.runDirectory, "server-resource-packs"), args.directories.getResourceIndex());
-		this.resourcePackManager = new ResourcePackManager<>(MinecraftClient::method_24038);
+		this.resourcePackManager = new ResourcePackManager<>(MinecraftClient::createResourcePackProfile);
 		this.resourcePackManager.registerProvider(this.builtinPackProvider);
 		this.resourcePackManager.registerProvider(new FileResourcePackProvider(this.resourcePackDir));
 		this.netProxy = args.network.netProxy;
@@ -390,7 +390,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.framebuffer = new Framebuffer(this.window.getFramebufferWidth(), this.window.getFramebufferHeight(), true, IS_SYSTEM_MAC);
 		this.framebuffer.setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
 		this.resourceManager = new ReloadableResourceManagerImpl(ResourceType.CLIENT_RESOURCES, this.thread);
-		this.options.addResourcePackContainersToManager(this.resourcePackManager);
+		this.options.addResourcePackProfilesToManager(this.resourcePackManager);
 		this.resourcePackManager.scanPacks();
 		List<ResourcePack> list = (List<ResourcePack>)this.resourcePackManager
 			.getEnabledProfiles()
@@ -1933,7 +1933,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		} else if (this.player.world.dimension instanceof TheEndDimension) {
 			return this.inGameHud.getBossBarHud().shouldPlayDragonMusic() ? MusicTracker.MusicType.END_BOSS : MusicTracker.MusicType.END;
 		} else {
-			Biome.Category category = this.player.world.method_23753(new BlockPos(this.player)).getCategory();
+			Biome.Category category = this.player.world.getBiome(new BlockPos(this.player)).getCategory();
 			if (!this.musicTracker.isPlayingType(MusicTracker.MusicType.UNDER_WATER)
 				&& (
 					!this.player.isInWater()
@@ -2098,7 +2098,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.bufferBuilders;
 	}
 
-	private static ClientResourcePackProfile method_24038(
+	private static ClientResourcePackProfile createResourcePackProfile(
 		String string,
 		boolean bl,
 		Supplier<ResourcePack> supplier,
@@ -2109,25 +2109,25 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		int i = packResourceMetadata.getPackFormat();
 		Supplier<ResourcePack> supplier2 = supplier;
 		if (i <= 3) {
-			supplier2 = method_24042(supplier);
+			supplier2 = createV3ResoucePackFactory(supplier);
 		}
 
 		if (i <= 4) {
-			supplier2 = method_24043(supplier2);
+			supplier2 = createV4ResourcePackFactory(supplier2);
 		}
 
 		return new ClientResourcePackProfile(string, bl, supplier2, resourcePack, packResourceMetadata, insertionPosition);
 	}
 
-	private static Supplier<ResourcePack> method_24042(Supplier<ResourcePack> supplier) {
-		return () -> new RedirectedResourcePack((ResourcePack)supplier.get(), RedirectedResourcePack.NEW_TO_OLD_MAP);
+	private static Supplier<ResourcePack> createV3ResoucePackFactory(Supplier<ResourcePack> supplier) {
+		return () -> new Format3ResourcePack((ResourcePack)supplier.get(), Format3ResourcePack.NEW_TO_OLD_MAP);
 	}
 
-	private static Supplier<ResourcePack> method_24043(Supplier<ResourcePack> supplier) {
-		return () -> new class_4729((ResourcePack)supplier.get());
+	private static Supplier<ResourcePack> createV4ResourcePackFactory(Supplier<ResourcePack> supplier) {
+		return () -> new Format4ResourcePack((ResourcePack)supplier.get());
 	}
 
-	public void method_24041(int i) {
-		this.bakedModelManager.method_24152(i);
+	public void resetMipmapLevels(int mipmapLevels) {
+		this.bakedModelManager.resetMipmapLevels(mipmapLevels);
 	}
 }

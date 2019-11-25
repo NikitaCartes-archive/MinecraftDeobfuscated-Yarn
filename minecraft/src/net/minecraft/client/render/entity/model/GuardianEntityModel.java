@@ -54,6 +54,7 @@ public class GuardianEntityModel extends CompositeEntityModel<GuardianEntity> {
 		this.body.addChild(this.field_3378[0]);
 		this.field_3378[0].addChild(this.field_3378[1]);
 		this.field_3378[1].addChild(this.field_3378[2]);
+		this.method_24185(0.0F, 0.0F);
 	}
 
 	@Override
@@ -66,16 +67,7 @@ public class GuardianEntityModel extends CompositeEntityModel<GuardianEntity> {
 		this.body.yaw = i * (float) (Math.PI / 180.0);
 		this.body.pitch = j * (float) (Math.PI / 180.0);
 		float l = (1.0F - guardianEntity.getTailAngle(k)) * 0.55F;
-
-		for (int m = 0; m < 12; m++) {
-			this.field_3380[m].pitch = (float) Math.PI * field_17131[m];
-			this.field_3380[m].yaw = (float) Math.PI * field_17132[m];
-			this.field_3380[m].roll = (float) Math.PI * field_17133[m];
-			this.field_3380[m].pivotX = field_17134[m] * (1.0F + MathHelper.cos(h * 1.5F + (float)m) * 0.01F - l);
-			this.field_3380[m].pivotY = 16.0F + field_17135[m] * (1.0F + MathHelper.cos(h * 1.5F + (float)m) * 0.01F - l);
-			this.field_3380[m].pivotZ = field_17136[m] * (1.0F + MathHelper.cos(h * 1.5F + (float)m) * 0.01F - l);
-		}
-
+		this.method_24185(h, l);
 		this.eye.pivotZ = -8.25F;
 		Entity entity = MinecraftClient.getInstance().getCameraEntity();
 		if (guardianEntity.hasBeamTarget()) {
@@ -100,15 +92,26 @@ public class GuardianEntityModel extends CompositeEntityModel<GuardianEntity> {
 		}
 
 		this.eye.visible = true;
-		float n = guardianEntity.getSpikesExtension(k);
-		this.field_3378[0].yaw = MathHelper.sin(n) * (float) Math.PI * 0.05F;
-		this.field_3378[1].yaw = MathHelper.sin(n) * (float) Math.PI * 0.1F;
+		float m = guardianEntity.getSpikesExtension(k);
+		this.field_3378[0].yaw = MathHelper.sin(m) * (float) Math.PI * 0.05F;
+		this.field_3378[1].yaw = MathHelper.sin(m) * (float) Math.PI * 0.1F;
 		this.field_3378[1].pivotX = -1.5F;
 		this.field_3378[1].pivotY = 0.5F;
 		this.field_3378[1].pivotZ = 14.0F;
-		this.field_3378[2].yaw = MathHelper.sin(n) * (float) Math.PI * 0.15F;
+		this.field_3378[2].yaw = MathHelper.sin(m) * (float) Math.PI * 0.15F;
 		this.field_3378[2].pivotX = 0.5F;
 		this.field_3378[2].pivotY = 0.5F;
 		this.field_3378[2].pivotZ = 6.0F;
+	}
+
+	private void method_24185(float f, float g) {
+		for (int i = 0; i < 12; i++) {
+			this.field_3380[i].pitch = (float) Math.PI * field_17131[i];
+			this.field_3380[i].yaw = (float) Math.PI * field_17132[i];
+			this.field_3380[i].roll = (float) Math.PI * field_17133[i];
+			this.field_3380[i].pivotX = field_17134[i] * (1.0F + MathHelper.cos(f * 1.5F + (float)i) * 0.01F - g);
+			this.field_3380[i].pivotY = 16.0F + field_17135[i] * (1.0F + MathHelper.cos(f * 1.5F + (float)i) * 0.01F - g);
+			this.field_3380[i].pivotZ = field_17136[i] * (1.0F + MathHelper.cos(f * 1.5F + (float)i) * 0.01F - g);
+		}
 	}
 }

@@ -43,21 +43,21 @@ public class NeighborUpdateDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f, long l) {
-		long m = this.client.world.getTime();
+	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
+		long l = this.client.world.getTime();
 		int i = 200;
-		double g = 0.0025;
+		double d = 0.0025;
 		Set<BlockPos> set = Sets.<BlockPos>newHashSet();
 		Map<BlockPos, Integer> map = Maps.<BlockPos, Integer>newHashMap();
-		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getLines());
+		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getLines());
 		Iterator<Entry<Long, Map<BlockPos, Integer>>> iterator = this.neighborUpdates.entrySet().iterator();
 
 		while (iterator.hasNext()) {
 			Entry<Long, Map<BlockPos, Integer>> entry = (Entry<Long, Map<BlockPos, Integer>>)iterator.next();
 			Long long_ = (Long)entry.getKey();
 			Map<BlockPos, Integer> map2 = (Map<BlockPos, Integer>)entry.getValue();
-			long n = m - long_;
-			if (n > 200L) {
+			long m = l - long_;
+			if (m > 200L) {
 				iterator.remove();
 			} else {
 				for (Entry<BlockPos, Integer> entry2 : map2.entrySet()) {
@@ -66,9 +66,9 @@ public class NeighborUpdateDebugRenderer implements DebugRenderer.Renderer {
 					if (set.add(blockPos)) {
 						Box box = new Box(BlockPos.ORIGIN)
 							.expand(0.002)
-							.contract(0.0025 * (double)n)
+							.contract(0.0025 * (double)m)
 							.offset((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ())
-							.offset(-d, -e, -f);
+							.offset(-cameraX, -cameraY, -cameraZ);
 						WorldRenderer.drawBox(vertexConsumer, box.x1, box.y1, box.z1, box.x2, box.y2, box.z2, 1.0F, 1.0F, 1.0F, 1.0F);
 						map.put(blockPos, integer);
 					}

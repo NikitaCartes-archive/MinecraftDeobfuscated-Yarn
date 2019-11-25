@@ -29,14 +29,14 @@ public class OakTreeFeature extends BranchedTreeFeature<BranchedTreeFeatureConfi
 		int j = branchedTreeFeatureConfig.trunkHeight >= 0
 			? branchedTreeFeatureConfig.trunkHeight + random.nextInt(branchedTreeFeatureConfig.trunkHeightRandom + 1)
 			: i - (branchedTreeFeatureConfig.foliageHeight + random.nextInt(branchedTreeFeatureConfig.foliageHeightRandom + 1));
-		int k = branchedTreeFeatureConfig.foliagePlacer.method_23452(random, j, i, branchedTreeFeatureConfig);
+		int k = branchedTreeFeatureConfig.foliagePlacer.getRadius(random, j, i, branchedTreeFeatureConfig);
 		Optional<BlockPos> optional = this.findPositionToGenerate(modifiableTestableWorld, i, j, k, blockPos, branchedTreeFeatureConfig);
 		if (!optional.isPresent()) {
 			return false;
 		} else {
 			BlockPos blockPos2 = (BlockPos)optional.get();
 			this.setToDirt(modifiableTestableWorld, blockPos2.down());
-			branchedTreeFeatureConfig.foliagePlacer.method_23448(modifiableTestableWorld, random, branchedTreeFeatureConfig, i, j, k, blockPos2, set2);
+			branchedTreeFeatureConfig.foliagePlacer.generate(modifiableTestableWorld, random, branchedTreeFeatureConfig, i, j, k, blockPos2, set2);
 			this.generate(
 				modifiableTestableWorld,
 				random,

@@ -62,7 +62,7 @@ public abstract class Dimension {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean method_12449() {
+	public boolean hasGround() {
 		return true;
 	}
 
@@ -88,8 +88,8 @@ public abstract class Dimension {
 		return this.isNether;
 	}
 
-	public float method_23759(int i) {
-		return this.lightLevelToBrightness[i];
+	public float getBrightness(int lightLevel) {
+		return this.lightLevelToBrightness[lightLevel];
 	}
 
 	public WorldBorder createWorldBorder() {
@@ -110,7 +110,7 @@ public abstract class Dimension {
 	@Nullable
 	public abstract BlockPos getTopSpawningBlockPosition(int x, int z, boolean checkMobSpawnValidity);
 
-	public abstract float getSkyAngle(long timeOfDay, float delta);
+	public abstract float getSkyAngle(long timeOfDay, float tickDelta);
 
 	public abstract boolean hasVisibleSky();
 

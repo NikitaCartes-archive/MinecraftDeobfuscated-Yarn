@@ -38,7 +38,7 @@ public class SoundOptionsScreen extends GameOptionsScreen {
 				150,
 				20,
 				Option.SUBTITLES,
-				Option.SUBTITLES.getDisplayString(this.field_21336),
+				Option.SUBTITLES.getDisplayString(this.gameOptions),
 				buttonWidget -> {
 					Option.SUBTITLES.set(this.minecraft.options);
 					buttonWidget.setMessage(Option.SUBTITLES.getDisplayString(this.minecraft.options));
@@ -47,9 +47,7 @@ public class SoundOptionsScreen extends GameOptionsScreen {
 			)
 		);
 		this.addButton(
-			new ButtonWidget(
-				this.width / 2 - 100, this.height / 6 + 168, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(this.field_21335)
-			)
+			new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(this.parent))
 		);
 	}
 

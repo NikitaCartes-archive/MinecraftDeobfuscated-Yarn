@@ -24,7 +24,7 @@ public class RaidCenterDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f, long l) {
+	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
 		BlockPos blockPos = this.method_23125().getBlockPos();
 
 		for (BlockPos blockPos2 : this.raidCenters) {

@@ -30,23 +30,23 @@ public class StructureDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f, long l) {
+	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
 		Camera camera = this.field_4624.gameRenderer.getCamera();
 		IWorld iWorld = this.field_4624.world;
 		DimensionType dimensionType = iWorld.getDimension().getType();
 		BlockPos blockPos = new BlockPos(camera.getPos().x, 0.0, camera.getPos().z);
-		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getLines());
+		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getLines());
 		if (this.field_4626.containsKey(dimensionType)) {
 			for (BlockBox blockBox : ((Map)this.field_4626.get(dimensionType)).values()) {
 				if (blockPos.isWithinDistance(blockBox.method_22874(), 500.0)) {
 					WorldRenderer.drawBox(
 						vertexConsumer,
-						(double)blockBox.minX - d,
-						(double)blockBox.minY - e,
-						(double)blockBox.minZ - f,
-						(double)(blockBox.maxX + 1) - d,
-						(double)(blockBox.maxY + 1) - e,
-						(double)(blockBox.maxZ + 1) - f,
+						(double)blockBox.minX - cameraX,
+						(double)blockBox.minY - cameraY,
+						(double)blockBox.minZ - cameraZ,
+						(double)(blockBox.maxX + 1) - cameraX,
+						(double)(blockBox.maxY + 1) - cameraY,
+						(double)(blockBox.maxZ + 1) - cameraZ,
 						1.0F,
 						1.0F,
 						1.0F,
@@ -65,12 +65,12 @@ public class StructureDebugRenderer implements DebugRenderer.Renderer {
 					if (boolean_) {
 						WorldRenderer.drawBox(
 							vertexConsumer,
-							(double)blockBox2.minX - d,
-							(double)blockBox2.minY - e,
-							(double)blockBox2.minZ - f,
-							(double)(blockBox2.maxX + 1) - d,
-							(double)(blockBox2.maxY + 1) - e,
-							(double)(blockBox2.maxZ + 1) - f,
+							(double)blockBox2.minX - cameraX,
+							(double)blockBox2.minY - cameraY,
+							(double)blockBox2.minZ - cameraZ,
+							(double)(blockBox2.maxX + 1) - cameraX,
+							(double)(blockBox2.maxY + 1) - cameraY,
+							(double)(blockBox2.maxZ + 1) - cameraZ,
 							0.0F,
 							1.0F,
 							0.0F,
@@ -79,12 +79,12 @@ public class StructureDebugRenderer implements DebugRenderer.Renderer {
 					} else {
 						WorldRenderer.drawBox(
 							vertexConsumer,
-							(double)blockBox2.minX - d,
-							(double)blockBox2.minY - e,
-							(double)blockBox2.minZ - f,
-							(double)(blockBox2.maxX + 1) - d,
-							(double)(blockBox2.maxY + 1) - e,
-							(double)(blockBox2.maxZ + 1) - f,
+							(double)blockBox2.minX - cameraX,
+							(double)blockBox2.minY - cameraY,
+							(double)blockBox2.minZ - cameraZ,
+							(double)(blockBox2.maxX + 1) - cameraX,
+							(double)(blockBox2.maxY + 1) - cameraY,
+							(double)(blockBox2.maxZ + 1) - cameraZ,
 							0.0F,
 							0.0F,
 							1.0F,

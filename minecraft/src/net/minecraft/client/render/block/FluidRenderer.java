@@ -32,10 +32,10 @@ public class FluidRenderer {
 
 	protected void onResourceReload() {
 		this.lavaSprites[0] = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.LAVA.getDefaultState()).getSprite();
-		this.lavaSprites[1] = ModelLoader.LAVA_FLOW.method_24148();
+		this.lavaSprites[1] = ModelLoader.LAVA_FLOW.getSprite();
 		this.waterSprites[0] = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.WATER.getDefaultState()).getSprite();
-		this.waterSprites[1] = ModelLoader.WATER_FLOW.method_24148();
-		this.waterOverlaySprite = ModelLoader.WATER_OVERLAY.method_24148();
+		this.waterSprites[1] = ModelLoader.WATER_FLOW.getSprite();
+		this.waterOverlaySprite = ModelLoader.WATER_OVERLAY.getSprite();
 	}
 
 	private static boolean isSameFluid(BlockView world, BlockPos pos, Direction side, FluidState state) {
@@ -261,8 +261,8 @@ public class FluidRenderer {
 	}
 
 	private int getLight(BlockRenderView world, BlockPos pos) {
-		int i = WorldRenderer.method_23794(world, pos);
-		int j = WorldRenderer.method_23794(world, pos.up());
+		int i = WorldRenderer.getLightmapCoordinates(world, pos);
+		int j = WorldRenderer.getLightmapCoordinates(world, pos.up());
 		int k = i & 0xFF;
 		int l = j & 0xFF;
 		int m = i >> 16 & 0xFF;

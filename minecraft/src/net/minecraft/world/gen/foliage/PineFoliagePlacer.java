@@ -17,20 +17,13 @@ public class PineFoliagePlacer extends FoliagePlacer {
 	}
 
 	@Override
-	public void method_23448(
-		ModifiableTestableWorld modifiableTestableWorld,
-		Random random,
-		BranchedTreeFeatureConfig branchedTreeFeatureConfig,
-		int i,
-		int j,
-		int k,
-		BlockPos blockPos,
-		Set<BlockPos> set
+	public void generate(
+		ModifiableTestableWorld world, Random random, BranchedTreeFeatureConfig config, int i, int j, int k, BlockPos pos, Set<BlockPos> positions
 	) {
 		int l = 0;
 
 		for (int m = i; m >= j; m--) {
-			this.method_23449(modifiableTestableWorld, random, branchedTreeFeatureConfig, i, blockPos, m, l, set);
+			this.generate(world, random, config, i, pos, m, l, positions);
 			if (l >= 1 && m == j + 1) {
 				l--;
 			} else if (l < k) {
@@ -40,7 +33,7 @@ public class PineFoliagePlacer extends FoliagePlacer {
 	}
 
 	@Override
-	public int method_23452(Random random, int i, int j, BranchedTreeFeatureConfig branchedTreeFeatureConfig) {
+	public int getRadius(Random random, int i, int j, BranchedTreeFeatureConfig config) {
 		return this.radius + random.nextInt(this.randomRadius + 1) + random.nextInt(j - i + 1);
 	}
 

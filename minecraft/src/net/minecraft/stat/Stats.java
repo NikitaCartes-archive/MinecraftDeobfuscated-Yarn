@@ -85,6 +85,8 @@ public class Stats {
 	public static final Identifier BELL_RING = register("bell_ring", StatFormatter.DEFAULT);
 	public static final Identifier RAID_TRIGGER = register("raid_trigger", StatFormatter.DEFAULT);
 	public static final Identifier RAID_WIN = register("raid_win", StatFormatter.DEFAULT);
+	public static final Identifier INTERACT_WITH_ANVIL = register("interact_with_anvil", StatFormatter.DEFAULT);
+	public static final Identifier INTERACT_WITH_GRINDSTONE = register("interact_with_grindstone", StatFormatter.DEFAULT);
 
 	private static Identifier register(String string, StatFormatter statFormatter) {
 		Identifier identifier = new Identifier(string);

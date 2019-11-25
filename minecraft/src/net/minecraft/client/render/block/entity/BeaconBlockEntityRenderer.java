@@ -193,11 +193,11 @@ public class BeaconBlockEntityRenderer extends BlockEntityRenderer<BeaconBlockEn
 			.texture(m, n)
 			.overlay(OverlayTexture.DEFAULT_UV)
 			.light(15728880)
-			.method_23763(matrix3f, 0.0F, 1.0F, 0.0F)
+			.normal(matrix3f, 0.0F, 1.0F, 0.0F)
 			.next();
 	}
 
-	public boolean method_3563(BeaconBlockEntity beaconBlockEntity) {
+	public boolean rendersOutsideBoundingBox(BeaconBlockEntity beaconBlockEntity) {
 		return true;
 	}
 }

@@ -97,7 +97,7 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 			float s = (float)r / 23.0F;
 			int t = (int)MathHelper.lerp(s, (float)i, (float)j);
 			int u = (int)MathHelper.lerp(s, (float)k, (float)l);
-			int v = LightmapTextureManager.method_23687(t, u);
+			int v = LightmapTextureManager.pack(t, u);
 			method_23187(vertexConsumer, matrix4f, v, f, g, h, m, n, 24, r, false, o, p);
 			method_23187(vertexConsumer, matrix4f, v, f, g, h, m, n, 24, r + 1, true, o, p);
 		}

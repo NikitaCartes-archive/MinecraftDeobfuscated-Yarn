@@ -27,8 +27,8 @@ public interface IWorld extends EntityView, WorldView, ModifiableTestableWorld {
 		return Dimension.MOON_PHASE_TO_SIZE[this.getDimension().getMoonPhase(this.getLevelProperties().getTimeOfDay())];
 	}
 
-	default float getSkyAngle(float delta) {
-		return this.getDimension().getSkyAngle(this.getLevelProperties().getTimeOfDay(), delta);
+	default float getSkyAngle(float tickDelta) {
+		return this.getDimension().getSkyAngle(this.getLevelProperties().getTimeOfDay(), tickDelta);
 	}
 
 	@Environment(EnvType.CLIENT)

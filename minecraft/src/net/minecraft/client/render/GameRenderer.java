@@ -450,16 +450,11 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		if (!this.client.skipGameRender) {
 			int i = (int)(this.client.mouse.getX() * (double)this.client.getWindow().getScaledWidth() / (double)this.client.getWindow().getWidth());
 			int j = (int)(this.client.mouse.getY() * (double)this.client.getWindow().getScaledHeight() / (double)this.client.getWindow().getHeight());
-			int k = this.client.options.maxFps;
 			MatrixStack matrixStack = new MatrixStack();
 			RenderSystem.viewport(0, 0, this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight());
 			if (tick && this.client.world != null) {
 				this.client.getProfiler().push("level");
-				int l = 30;
-				long m = Util.getMeasuringTimeNano() - startTime;
-				long n = (long)(1000000000 / l);
-				long o = Math.max(n * 3L / 4L - m, n / 10L);
-				this.renderWorld(tickDelta, Util.getMeasuringTimeNano() + o, matrixStack);
+				this.renderWorld(tickDelta, startTime, matrixStack);
 				if (this.client.isIntegratedServerRunning() && this.lastWorldIconUpdate < Util.getMeasuringTimeMs() - 1000L) {
 					this.lastWorldIconUpdate = Util.getMeasuringTimeMs();
 					if (!this.client.getServer().hasIconFile()) {
@@ -509,8 +504,8 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			if (this.client.overlay != null) {
 				try {
 					this.client.overlay.render(i, j, this.client.getLastFrameDuration());
-				} catch (Throwable var17) {
-					CrashReport crashReport = CrashReport.create(var17, "Rendering overlay");
+				} catch (Throwable var13) {
+					CrashReport crashReport = CrashReport.create(var13, "Rendering overlay");
 					CrashReportSection crashReportSection = crashReport.addElement("Overlay render details");
 					crashReportSection.add("Overlay name", (CrashCallable<String>)(() -> this.client.overlay.getClass().getCanonicalName()));
 					throw new CrashException(crashReport);
@@ -518,8 +513,8 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			} else if (this.client.currentScreen != null) {
 				try {
 					this.client.currentScreen.render(i, j, this.client.getLastFrameDuration());
-				} catch (Throwable var16) {
-					CrashReport crashReport = CrashReport.create(var16, "Rendering screen");
+				} catch (Throwable var12) {
+					CrashReport crashReport = CrashReport.create(var12, "Rendering screen");
 					CrashReportSection crashReportSection = crashReport.addElement("Screen render details");
 					crashReportSection.add("Screen name", (CrashCallable<String>)(() -> this.client.currentScreen.getClass().getCanonicalName()));
 					crashReportSection.add(
@@ -615,11 +610,11 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		this.client.getProfiler().swap("camera");
 		Camera camera = this.camera;
 		this.viewDistance = (float)(this.client.options.viewDistance * 16);
-		Matrix4f matrix4f = this.method_22973(camera, tickDelta, true);
-		this.method_22709(matrix4f);
-		this.bobViewWhenHurt(matrix, tickDelta);
+		MatrixStack matrixStack = new MatrixStack();
+		matrixStack.peek().getModel().multiply(this.method_22973(camera, tickDelta, true));
+		this.bobViewWhenHurt(matrixStack, tickDelta);
 		if (this.client.options.bobView) {
-			this.bobView(matrix, tickDelta);
+			this.bobView(matrixStack, tickDelta);
 		}
 
 		float f = MathHelper.lerp(tickDelta, this.client.player.lastNauseaStrength, this.client.player.nextNauseaStrength);
@@ -632,12 +627,14 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			float g = 5.0F / (f * f + 5.0F) - f * 0.04F;
 			g *= g;
 			Vector3f vector3f = new Vector3f(0.0F, MathHelper.SQUARE_ROOT_OF_TWO / 2.0F, MathHelper.SQUARE_ROOT_OF_TWO / 2.0F);
-			matrix.multiply(vector3f.getDegreesQuaternion(((float)this.ticks + tickDelta) * (float)i));
-			matrix.scale(1.0F / g, 1.0F, 1.0F);
+			matrixStack.multiply(vector3f.getDegreesQuaternion(((float)this.ticks + tickDelta) * (float)i));
+			matrixStack.scale(1.0F / g, 1.0F, 1.0F);
 			float h = -((float)this.ticks + tickDelta) * (float)i;
-			matrix.multiply(vector3f.getDegreesQuaternion(h));
+			matrixStack.multiply(vector3f.getDegreesQuaternion(h));
 		}
 
+		Matrix4f matrix4f = matrixStack.peek().getModel();
+		this.method_22709(matrix4f);
 		camera.update(
 			this.client.world,
 			(Entity)(this.client.getCameraEntity() == null ? this.client.player : this.client.getCameraEntity()),

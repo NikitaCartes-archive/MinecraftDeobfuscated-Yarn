@@ -289,7 +289,7 @@ public class FoxEntity extends AnimalEntity {
 	public net.minecraft.entity.EntityData initialize(
 		IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable net.minecraft.entity.EntityData entityData, @Nullable CompoundTag entityTag
 	) {
-		Biome biome = world.method_23753(new BlockPos(this));
+		Biome biome = world.getBiome(new BlockPos(this));
 		FoxEntity.Type type = FoxEntity.Type.fromBiome(biome);
 		boolean bl = false;
 		if (entityData instanceof FoxEntity.FoxData) {

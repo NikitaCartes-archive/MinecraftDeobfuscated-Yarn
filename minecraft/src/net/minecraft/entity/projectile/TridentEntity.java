@@ -125,32 +125,34 @@ public class TridentEntity extends ProjectileEntity {
 		DamageSource damageSource = DamageSource.trident(this, (Entity)(entity2 == null ? this : entity2));
 		this.dealtDamage = true;
 		SoundEvent soundEvent = SoundEvents.ITEM_TRIDENT_HIT;
-		if (entity.damage(damageSource, f) && entity instanceof LivingEntity) {
-			LivingEntity livingEntity2 = (LivingEntity)entity;
-			if (entity2 instanceof LivingEntity) {
-				EnchantmentHelper.onUserDamaged(livingEntity2, entity2);
-				EnchantmentHelper.onTargetDamaged((LivingEntity)entity2, livingEntity2);
+		if (entity.damage(damageSource, f) && entity.getType() != EntityType.ENDERMAN) {
+			if (entity instanceof LivingEntity) {
+				LivingEntity livingEntity2 = (LivingEntity)entity;
+				if (entity2 instanceof LivingEntity) {
+					EnchantmentHelper.onUserDamaged(livingEntity2, entity2);
+					EnchantmentHelper.onTargetDamaged((LivingEntity)entity2, livingEntity2);
+				}
+
+				this.onHit(livingEntity2);
 			}
 
-			this.onHit(livingEntity2);
-		}
-
-		this.setVelocity(this.getVelocity().multiply(-0.01, -0.1, -0.01));
-		float g = 1.0F;
-		if (this.world instanceof ServerWorld && this.world.isThundering() && EnchantmentHelper.hasChanneling(this.tridentStack)) {
-			BlockPos blockPos = entity.getBlockPos();
-			if (this.world.isSkyVisible(blockPos)) {
-				LightningEntity lightningEntity = new LightningEntity(
-					this.world, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, false
-				);
-				lightningEntity.setChanneller(entity2 instanceof ServerPlayerEntity ? (ServerPlayerEntity)entity2 : null);
-				((ServerWorld)this.world).addLightning(lightningEntity);
-				soundEvent = SoundEvents.ITEM_TRIDENT_THUNDER;
-				g = 5.0F;
+			this.setVelocity(this.getVelocity().multiply(-0.01, -0.1, -0.01));
+			float g = 1.0F;
+			if (this.world instanceof ServerWorld && this.world.isThundering() && EnchantmentHelper.hasChanneling(this.tridentStack)) {
+				BlockPos blockPos = entity.getBlockPos();
+				if (this.world.isSkyVisible(blockPos)) {
+					LightningEntity lightningEntity = new LightningEntity(
+						this.world, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, false
+					);
+					lightningEntity.setChanneller(entity2 instanceof ServerPlayerEntity ? (ServerPlayerEntity)entity2 : null);
+					((ServerWorld)this.world).addLightning(lightningEntity);
+					soundEvent = SoundEvents.ITEM_TRIDENT_THUNDER;
+					g = 5.0F;
+				}
 			}
-		}
 
-		this.playSound(soundEvent, g, 1.0F);
+			this.playSound(soundEvent, g, 1.0F);
+		}
 	}
 
 	@Override

@@ -104,8 +104,8 @@ public class LightmapTextureManager implements AutoCloseable {
 
 				for (int k = 0; k < 16; k++) {
 					for (int l = 0; l < 16; l++) {
-						float m = this.method_23284(clientWorld, k) * g;
-						float n = this.method_23284(clientWorld, l) * j;
+						float m = this.getBrightness(clientWorld, k) * g;
+						float n = this.getBrightness(clientWorld, l) * j;
 						float p = n * ((n * 0.6F + 0.4F) * 0.6F + 0.4F);
 						float q = n * (n * n * 0.6F + 0.4F);
 						vector3f2.set(n, p, q);
@@ -161,11 +161,19 @@ public class LightmapTextureManager implements AutoCloseable {
 		return 1.0F - g * g * g * g;
 	}
 
-	private float method_23284(World world, int i) {
-		return world.dimension.method_23759(i);
+	private float getBrightness(World world, int i) {
+		return world.dimension.getBrightness(i);
 	}
 
-	public static int method_23687(int i, int j) {
-		return i << 4 | j << 20;
+	public static int pack(int block, int sky) {
+		return block << 4 | sky << 20;
+	}
+
+	public static int getBlockLightCoordinates(int light) {
+		return light >> 4 & 65535;
+	}
+
+	public static int getSkyLightCoordinates(int light) {
+		return light >> 20 & 65535;
 	}
 }

@@ -126,7 +126,7 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 		}
 	}
 
-	public boolean method_3563(StructureBlockBlockEntity structureBlockBlockEntity) {
+	public boolean rendersOutsideBoundingBox(StructureBlockBlockEntity structureBlockBlockEntity) {
 		return true;
 	}
 }

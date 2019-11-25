@@ -25,7 +25,7 @@ public class SkinOptionsScreen extends GameOptionsScreen {
 			this.addButton(
 				new ButtonWidget(
 					this.width / 2 - 155 + i % 2 * 160, this.height / 6 + 24 * (i >> 1), 150, 20, this.getPlayerModelPartDisplayString(playerModelPart), buttonWidget -> {
-						this.field_21336.togglePlayerModelPart(playerModelPart);
+						this.gameOptions.togglePlayerModelPart(playerModelPart);
 						buttonWidget.setMessage(this.getPlayerModelPartDisplayString(playerModelPart));
 					}
 				)
@@ -40,12 +40,12 @@ public class SkinOptionsScreen extends GameOptionsScreen {
 				150,
 				20,
 				Option.MAIN_HAND,
-				Option.MAIN_HAND.getMessage(this.field_21336),
+				Option.MAIN_HAND.getMessage(this.gameOptions),
 				buttonWidget -> {
-					Option.MAIN_HAND.cycle(this.field_21336, 1);
-					this.field_21336.write();
-					buttonWidget.setMessage(Option.MAIN_HAND.getMessage(this.field_21336));
-					this.field_21336.onPlayerModelPartChange();
+					Option.MAIN_HAND.cycle(this.gameOptions, 1);
+					this.gameOptions.write();
+					buttonWidget.setMessage(Option.MAIN_HAND.getMessage(this.gameOptions));
+					this.gameOptions.onPlayerModelPartChange();
 				}
 			)
 		);
@@ -55,7 +55,7 @@ public class SkinOptionsScreen extends GameOptionsScreen {
 
 		this.addButton(
 			new ButtonWidget(
-				this.width / 2 - 100, this.height / 6 + 24 * (i >> 1), 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(this.field_21335)
+				this.width / 2 - 100, this.height / 6 + 24 * (i >> 1), 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(this.parent)
 			)
 		);
 	}
@@ -69,7 +69,7 @@ public class SkinOptionsScreen extends GameOptionsScreen {
 
 	private String getPlayerModelPartDisplayString(PlayerModelPart part) {
 		String string;
-		if (this.field_21336.getEnabledPlayerModelParts().contains(part)) {
+		if (this.gameOptions.getEnabledPlayerModelParts().contains(part)) {
 			string = I18n.translate("options.on");
 		} else {
 			string = I18n.translate("options.off");

@@ -23,7 +23,7 @@ public class TheEndBiomeSource extends BiomeSource {
 	}
 
 	@Override
-	public Biome getStoredBiome(int biomeX, int biomeY, int biomeZ) {
+	public Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
 		int i = biomeX >> 2;
 		int j = biomeZ >> 2;
 		if ((long)i * (long)i + (long)j * (long)j <= 4096L) {

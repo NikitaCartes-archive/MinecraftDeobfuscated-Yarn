@@ -34,7 +34,7 @@ import org.lwjgl.system.MemoryUtil;
 
 @Environment(EnvType.CLIENT)
 public final class NativeImage implements AutoCloseable {
-	private static final Logger field_21684 = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Set<StandardOpenOption> WRITE_TO_FILE_OPEN_OPTIONS = EnumSet.of(
 		StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING
 	);
@@ -413,7 +413,7 @@ public final class NativeImage implements AutoCloseable {
 		}
 	}
 
-	public byte[] method_24036() throws IOException {
+	public byte[] getBytes() throws IOException {
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		Throwable var2 = null;
 
@@ -471,7 +471,7 @@ public final class NativeImage implements AutoCloseable {
 		try {
 			int i = Math.min(this.getHeight(), Integer.MAX_VALUE / this.getWidth() / this.format.getChannelCount());
 			if (i < this.getHeight()) {
-				field_21684.warn("Dropping image height from {} to {} to fit the size into 32-bit signed int", this.getHeight(), i);
+				LOGGER.warn("Dropping image height from {} to {} to fit the size into 32-bit signed int", this.getHeight(), i);
 			}
 
 			if (STBImageWrite.nstbi_write_png_to_func(writeCallback.address(), 0L, this.getWidth(), i, this.format.getChannelCount(), this.pointer, 0) != 0) {

@@ -50,7 +50,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BiomeAccess;
+import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkManager;
@@ -1054,12 +1054,12 @@ public abstract class World implements IWorld, AutoCloseable {
 		} else {
 			return this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, pos).getY() > pos.getY()
 				? false
-				: this.method_23753(pos).getPrecipitation() == Biome.Precipitation.RAIN;
+				: this.getBiome(pos).getPrecipitation() == Biome.Precipitation.RAIN;
 		}
 	}
 
 	public boolean hasHighHumidity(BlockPos blockPos) {
-		Biome biome = this.method_23753(blockPos);
+		Biome biome = this.getBiome(blockPos);
 		return biome.hasHighHumidity();
 	}
 

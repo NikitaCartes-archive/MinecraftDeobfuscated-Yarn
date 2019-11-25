@@ -32,7 +32,7 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 	private final Map<BlockPos, VillageDebugRenderer.PointOfInterest> pointsOfInterest = Maps.<BlockPos, VillageDebugRenderer.PointOfInterest>newHashMap();
 	private final Set<ChunkSectionPos> sections = Sets.<ChunkSectionPos>newHashSet();
 	private final Map<UUID, VillageDebugRenderer.Brain> brains = Maps.<UUID, VillageDebugRenderer.Brain>newHashMap();
-	private UUID targettedEntity;
+	private UUID targetedEntity;
 
 	public VillageDebugRenderer(MinecraftClient minecraftClient) {
 		this.client = minecraftClient;
@@ -43,7 +43,7 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 		this.pointsOfInterest.clear();
 		this.sections.clear();
 		this.brains.clear();
-		this.targettedEntity = null;
+		this.targetedEntity = null;
 	}
 
 	public void addPointOfInterest(VillageDebugRenderer.PointOfInterest pointOfInterest) {
@@ -76,17 +76,17 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f, long l) {
+	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
 		RenderSystem.pushMatrix();
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.disableTexture();
-		this.method_23135(d, e, f);
+		this.method_23135(cameraX, cameraY, cameraZ);
 		RenderSystem.enableTexture();
 		RenderSystem.disableBlend();
 		RenderSystem.popMatrix();
 		if (!this.client.player.isSpectator()) {
-			this.updateTargettedEntity();
+			this.updateTargetedEntity();
 		}
 	}
 
@@ -164,7 +164,7 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	private void drawBrain(VillageDebugRenderer.Brain brain, double d, double e, double f) {
-		boolean bl = this.isTargetted(brain);
+		boolean bl = this.isTargeted(brain);
 		int i = 0;
 		drawString(brain.pos, i, brain.field_19328, -1, 0.03F);
 		i++;
@@ -247,11 +247,11 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	private Set<String> getVillagerNames(VillageDebugRenderer.PointOfInterest pointOfInterest) {
-		return (Set<String>)this.method_23142(pointOfInterest.pos).stream().map(VillagerNamer::name).collect(Collectors.toSet());
+		return (Set<String>)this.method_23142(pointOfInterest.pos).stream().map(NameGenerator::name).collect(Collectors.toSet());
 	}
 
-	private boolean isTargetted(VillageDebugRenderer.Brain brain) {
-		return Objects.equals(this.targettedEntity, brain.uuid);
+	private boolean isTargeted(VillageDebugRenderer.Brain brain) {
+		return Objects.equals(this.targetedEntity, brain.uuid);
 	}
 
 	private boolean method_23147(VillageDebugRenderer.Brain brain) {
@@ -290,8 +290,8 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 		return map;
 	}
 
-	private void updateTargettedEntity() {
-		DebugRenderer.getTargettedEntity(this.client.getCameraEntity(), 8).ifPresent(entity -> this.targettedEntity = entity.getUuid());
+	private void updateTargetedEntity() {
+		DebugRenderer.getTargetedEntity(this.client.getCameraEntity(), 8).ifPresent(entity -> this.targetedEntity = entity.getUuid());
 	}
 
 	@Environment(EnvType.CLIENT)

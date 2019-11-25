@@ -14,7 +14,7 @@ import net.minecraft.util.Lazy;
 public final class MissingSprite extends Sprite {
 	private static final Identifier MISSINGNO = new Identifier("missingno");
 	@Nullable
-	private static NativeImageBackedTexture TEXTURE;
+	private static NativeImageBackedTexture texture;
 	private static final Lazy<NativeImage> IMAGE = new Lazy<>(() -> {
 		NativeImage nativeImage = new NativeImage(16, 16, false);
 		int i = -16777216;
@@ -33,7 +33,7 @@ public final class MissingSprite extends Sprite {
 		nativeImage.untrack();
 		return nativeImage;
 	});
-	private static final Sprite.class_4727 field_21748 = new Sprite.class_4727(
+	private static final Sprite.Info INFO = new Sprite.Info(
 		MISSINGNO,
 		16,
 		16,
@@ -41,7 +41,7 @@ public final class MissingSprite extends Sprite {
 	);
 
 	private MissingSprite(SpriteAtlasTexture spriteAtlasTexture, int i, int j, int k, int l, int m) {
-		super(spriteAtlasTexture, field_21748, i, j, k, l, m, IMAGE.get());
+		super(spriteAtlasTexture, INFO, i, j, k, l, m, IMAGE.get());
 	}
 
 	public static MissingSprite getMissingSprite(SpriteAtlasTexture spriteAtlasTexture, int i, int j, int k, int l, int m) {
@@ -52,23 +52,23 @@ public final class MissingSprite extends Sprite {
 		return MISSINGNO;
 	}
 
-	public static Sprite.class_4727 method_24104() {
-		return field_21748;
+	public static Sprite.Info getMissingInfo() {
+		return INFO;
 	}
 
 	@Override
-	public void destroy() {
+	public void close() {
 		for (int i = 1; i < this.images.length; i++) {
 			this.images[i].close();
 		}
 	}
 
 	public static NativeImageBackedTexture getMissingSpriteTexture() {
-		if (TEXTURE == null) {
-			TEXTURE = new NativeImageBackedTexture(IMAGE.get());
-			MinecraftClient.getInstance().getTextureManager().registerTexture(MISSINGNO, TEXTURE);
+		if (texture == null) {
+			texture = new NativeImageBackedTexture(IMAGE.get());
+			MinecraftClient.getInstance().getTextureManager().registerTexture(MISSINGNO, texture);
 		}
 
-		return TEXTURE;
+		return texture;
 	}
 }

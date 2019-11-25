@@ -114,6 +114,11 @@ public class CustomizeFlatLevelScreen extends Screen {
 	}
 
 	@Override
+	public void onClose() {
+		this.minecraft.openScreen(this.parent);
+	}
+
+	@Override
 	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
 		this.layers.render(mouseX, mouseY, delta);

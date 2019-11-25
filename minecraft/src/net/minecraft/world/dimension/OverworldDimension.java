@@ -180,7 +180,7 @@ public class OverworldDimension extends Dimension {
 	@Override
 	public BlockPos getTopSpawningBlockPosition(int x, int z, boolean checkMobSpawnValidity) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable(x, 0, z);
-		Biome biome = this.world.method_23753(mutable);
+		Biome biome = this.world.getBiome(mutable);
 		BlockState blockState = biome.getSurfaceConfig().getTopMaterial();
 		if (checkMobSpawnValidity && !blockState.getBlock().matches(BlockTags.VALID_SPAWN)) {
 			return null;
@@ -212,7 +212,7 @@ public class OverworldDimension extends Dimension {
 	}
 
 	@Override
-	public float getSkyAngle(long timeOfDay, float delta) {
+	public float getSkyAngle(long timeOfDay, float tickDelta) {
 		double d = MathHelper.fractionalPart((double)timeOfDay / 24000.0 - 0.25);
 		double e = 0.5 - Math.cos(d * Math.PI) / 2.0;
 		return (float)(d * 2.0 + e) / 3.0F;

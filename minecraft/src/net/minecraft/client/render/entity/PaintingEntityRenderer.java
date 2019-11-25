@@ -49,7 +49,7 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 	}
 
 	public Identifier getTexture(PaintingEntity paintingEntity) {
-		return MinecraftClient.getInstance().getPaintingManager().getBackSprite().method_24119().method_24106();
+		return MinecraftClient.getInstance().getPaintingManager().getBackSprite().getAtlas().getId();
 	}
 
 	private void method_4074(MatrixStack matrixStack, VertexConsumer vertexConsumer, PaintingEntity paintingEntity, int i, int j, Sprite sprite, Sprite sprite2) {
@@ -102,7 +102,7 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 					ag = MathHelper.floor(paintingEntity.getZ() + (double)((aa + ab) / 2.0F / 16.0F));
 				}
 
-				int ah = WorldRenderer.method_23794(paintingEntity.world, new BlockPos(ae, af, ag));
+				int ah = WorldRenderer.getLightmapCoordinates(paintingEntity.world, new BlockPos(ae, af, ag));
 				float ai = sprite.getFrameU(d * (double)(w - y));
 				float aj = sprite.getFrameU(d * (double)(w - (y + 1)));
 				float ak = sprite.getFrameV(e * (double)(x - z));
@@ -143,7 +143,7 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 			.texture(h, i)
 			.overlay(OverlayTexture.DEFAULT_UV)
 			.light(n)
-			.method_23763(matrix3f, (float)k, (float)l, (float)m)
+			.normal(matrix3f, (float)k, (float)l, (float)m)
 			.next();
 	}
 }

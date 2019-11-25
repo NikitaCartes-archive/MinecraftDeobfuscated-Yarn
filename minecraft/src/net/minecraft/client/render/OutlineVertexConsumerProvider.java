@@ -3,7 +3,6 @@ package net.minecraft.client.render;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4720;
 
 @Environment(EnvType.CLIENT)
 public class OutlineVertexConsumerProvider implements VertexConsumerProvider {
@@ -27,7 +26,7 @@ public class OutlineVertexConsumerProvider implements VertexConsumerProvider {
 			OutlineVertexConsumerProvider.VertexConsumer vertexConsumer3 = new OutlineVertexConsumerProvider.VertexConsumer(
 				vertexConsumer2, this.red, this.green, this.blue, this.alpha
 			);
-			return class_4720.method_24037(vertexConsumer3, vertexConsumer);
+			return VertexConsumers.dual(vertexConsumer3, vertexConsumer);
 		} else {
 			return vertexConsumer;
 		}
@@ -98,8 +97,27 @@ public class OutlineVertexConsumerProvider implements VertexConsumerProvider {
 		}
 
 		@Override
-		public void method_23919(float f, float g, float h, float i, float j, float k, float l, float m, float n, int o, int p, float q, float r, float s) {
-			this.delegate.vertex((double)f, (double)g, (double)h).color(this.fixedRed, this.fixedGreen, this.fixedBlue, this.fixedAlpha).texture(m, n).next();
+		public void elements(
+			float x,
+			float y,
+			float z,
+			float r,
+			float g,
+			float b,
+			float a,
+			float textureU,
+			float textureV,
+			int overlay,
+			int light,
+			float normalX,
+			float normalY,
+			float normalZ
+		) {
+			this.delegate
+				.vertex((double)x, (double)y, (double)z)
+				.color(this.fixedRed, this.fixedGreen, this.fixedBlue, this.fixedAlpha)
+				.texture(textureU, textureV)
+				.next();
 		}
 
 		@Override

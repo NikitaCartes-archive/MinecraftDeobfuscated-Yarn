@@ -75,7 +75,7 @@ public abstract class ProjectileEntityRenderer<T extends ProjectileEntity> exten
 			.texture(f, g)
 			.overlay(OverlayTexture.DEFAULT_UV)
 			.light(o)
-			.method_23763(matrix3f, (float)l, (float)n, (float)m)
+			.normal(matrix3f, (float)l, (float)n, (float)m)
 			.next();
 	}
 }
