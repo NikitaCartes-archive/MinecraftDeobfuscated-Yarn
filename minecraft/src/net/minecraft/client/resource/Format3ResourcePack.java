@@ -23,7 +23,7 @@ import net.minecraft.util.Util;
 public class Format3ResourcePack implements ResourcePack {
 	private final ResourcePack parent;
 	private final Map<Identifier, Identifier> idMap;
-	public static final Map<Identifier, Identifier> NEW_TO_OLD_MAP = Util.create(
+	public static final Map<Identifier, Identifier> NEW_TO_OLD_MAP = Util.make(
 		() -> {
 			Builder<Identifier, Identifier> builder = ImmutableMap.builder();
 			builder.put(new Identifier("textures/block/melon_stem.png"), new Identifier("textures/block/pumpkin_stem.png"));

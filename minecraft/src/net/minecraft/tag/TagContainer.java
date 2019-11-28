@@ -106,7 +106,7 @@ public class TagContainer<T> {
 												resource.getResourcePackName()
 											);
 										} else {
-											((Tag.Builder)map.computeIfAbsent(identifier2, identifierx -> Util.create(Tag.Builder.create(), builder -> builder.ordered(this.ordered))))
+											((Tag.Builder)map.computeIfAbsent(identifier2, identifierx -> Util.make(Tag.Builder.create(), builder -> builder.ordered(this.ordered))))
 												.fromJson(this.getter, jsonObject);
 										}
 									} catch (Throwable var53) {

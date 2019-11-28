@@ -214,11 +214,11 @@ public class Util {
 		return object2;
 	}
 
-	public static <T> T create(Supplier<T> factory) {
+	public static <T> T make(Supplier<T> factory) {
 		return (T)factory.get();
 	}
 
-	public static <T> T create(T object, Consumer<T> initializer) {
+	public static <T> T make(T object, Consumer<T> initializer) {
 		initializer.accept(object);
 		return object;
 	}

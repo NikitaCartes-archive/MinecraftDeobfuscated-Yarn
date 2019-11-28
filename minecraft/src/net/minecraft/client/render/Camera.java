@@ -103,15 +103,15 @@ public class Camera {
 	protected void setRotation(float yaw, float pitch) {
 		this.pitch = pitch;
 		this.yaw = yaw;
-		this.field_21518.method_23758(0.0F, 0.0F, 0.0F, 1.0F);
+		this.field_21518.set(0.0F, 0.0F, 0.0F, 1.0F);
 		this.field_21518.hamiltonProduct(Vector3f.POSITIVE_Y.getDegreesQuaternion(-yaw));
 		this.field_21518.hamiltonProduct(Vector3f.POSITIVE_X.getDegreesQuaternion(pitch));
 		this.horizontalPlane.set(0.0F, 0.0F, 1.0F);
-		this.horizontalPlane.method_19262(this.field_21518);
+		this.horizontalPlane.rotate(this.field_21518);
 		this.verticalPlane.set(0.0F, 1.0F, 0.0F);
-		this.verticalPlane.method_19262(this.field_21518);
+		this.verticalPlane.rotate(this.field_21518);
 		this.diagonalPlane.set(1.0F, 0.0F, 0.0F);
-		this.diagonalPlane.method_19262(this.field_21518);
+		this.diagonalPlane.rotate(this.field_21518);
 	}
 
 	protected void setPos(double x, double y, double z) {

@@ -30,7 +30,7 @@ import net.minecraft.util.math.Direction;
 
 @Environment(EnvType.CLIENT)
 public class SkullBlockEntityRenderer extends BlockEntityRenderer<SkullBlockEntity> {
-	private static final Map<SkullBlock.SkullType, SkullEntityModel> MODELS = Util.create(Maps.<SkullBlock.SkullType, SkullEntityModel>newHashMap(), hashMap -> {
+	private static final Map<SkullBlock.SkullType, SkullEntityModel> MODELS = Util.make(Maps.<SkullBlock.SkullType, SkullEntityModel>newHashMap(), hashMap -> {
 		SkullEntityModel skullEntityModel = new SkullEntityModel(0, 0, 64, 32);
 		SkullEntityModel skullEntityModel2 = new SkullOverlayEntityModel();
 		DragonHeadEntityModel dragonHeadEntityModel = new DragonHeadEntityModel(0.0F);
@@ -41,7 +41,7 @@ public class SkullBlockEntityRenderer extends BlockEntityRenderer<SkullBlockEnti
 		hashMap.put(SkullBlock.Type.CREEPER, skullEntityModel);
 		hashMap.put(SkullBlock.Type.DRAGON, dragonHeadEntityModel);
 	});
-	private static final Map<SkullBlock.SkullType, Identifier> TEXTURES = Util.create(Maps.<SkullBlock.SkullType, Identifier>newHashMap(), hashMap -> {
+	private static final Map<SkullBlock.SkullType, Identifier> TEXTURES = Util.make(Maps.<SkullBlock.SkullType, Identifier>newHashMap(), hashMap -> {
 		hashMap.put(SkullBlock.Type.SKELETON, new Identifier("textures/entity/skeleton/skeleton.png"));
 		hashMap.put(SkullBlock.Type.WITHER_SKELETON, new Identifier("textures/entity/skeleton/wither_skeleton.png"));
 		hashMap.put(SkullBlock.Type.ZOMBIE, new Identifier("textures/entity/zombie/zombie.png"));

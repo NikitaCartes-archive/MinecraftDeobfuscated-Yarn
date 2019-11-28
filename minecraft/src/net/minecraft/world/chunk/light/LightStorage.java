@@ -1,6 +1,7 @@
 package net.minecraft.world.chunk.light;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMaps;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
@@ -29,7 +30,7 @@ public abstract class LightStorage<M extends ChunkToNibbleArrayMap<M>> extends S
 	protected final M lightArrays;
 	protected final LongSet field_15802 = new LongOpenHashSet();
 	protected final LongSet dirtySections = new LongOpenHashSet();
-	protected final Long2ObjectMap<ChunkNibbleArray> lightArraysToAdd = new Long2ObjectOpenHashMap<>();
+	protected final Long2ObjectMap<ChunkNibbleArray> lightArraysToAdd = Long2ObjectMaps.synchronize(new Long2ObjectOpenHashMap<>());
 	private final LongSet field_19342 = new LongOpenHashSet();
 	private final LongSet lightArraysToRemove = new LongOpenHashSet();
 	protected volatile boolean hasLightUpdates;
@@ -162,15 +163,19 @@ public abstract class LightStorage<M extends ChunkToNibbleArrayMap<M>> extends S
 	}
 
 	protected void removeChunkData(ChunkLightProvider<?, ?> storage, long blockChunkPos) {
-		int i = ChunkSectionPos.getWorldCoord(ChunkSectionPos.getX(blockChunkPos));
-		int j = ChunkSectionPos.getWorldCoord(ChunkSectionPos.getY(blockChunkPos));
-		int k = ChunkSectionPos.getWorldCoord(ChunkSectionPos.getZ(blockChunkPos));
+		if (storage.method_24208() < 8192) {
+			storage.method_24206(mx -> ChunkSectionPos.fromGlobalPos(mx) == blockChunkPos);
+		} else {
+			int i = ChunkSectionPos.getWorldCoord(ChunkSectionPos.getX(blockChunkPos));
+			int j = ChunkSectionPos.getWorldCoord(ChunkSectionPos.getY(blockChunkPos));
+			int k = ChunkSectionPos.getWorldCoord(ChunkSectionPos.getZ(blockChunkPos));
 
-		for (int l = 0; l < 16; l++) {
-			for (int m = 0; m < 16; m++) {
-				for (int n = 0; n < 16; n++) {
-					long o = BlockPos.asLong(i + l, j + m, k + n);
-					storage.removePendingUpdate(o);
+			for (int l = 0; l < 16; l++) {
+				for (int m = 0; m < 16; m++) {
+					for (int n = 0; n < 16; n++) {
+						long o = BlockPos.asLong(i + l, j + m, k + n);
+						storage.removePendingUpdate(o);
+					}
 				}
 			}
 		}

@@ -93,13 +93,13 @@ public interface DispenserBehavior {
 		DispenserBlock.registerBehavior(Items.EGG, new ProjectileDispenserBehavior() {
 			@Override
 			protected Projectile createProjectile(World position, Position stack, ItemStack itemStack) {
-				return Util.create(new ThrownEggEntity(position, stack.getX(), stack.getY(), stack.getZ()), thrownEggEntity -> thrownEggEntity.setItem(itemStack));
+				return Util.make(new ThrownEggEntity(position, stack.getX(), stack.getY(), stack.getZ()), thrownEggEntity -> thrownEggEntity.setItem(itemStack));
 			}
 		});
 		DispenserBlock.registerBehavior(Items.SNOWBALL, new ProjectileDispenserBehavior() {
 			@Override
 			protected Projectile createProjectile(World position, Position stack, ItemStack itemStack) {
-				return Util.create(new SnowballEntity(position, stack.getX(), stack.getY(), stack.getZ()), snowballEntity -> snowballEntity.setItem(itemStack));
+				return Util.make(new SnowballEntity(position, stack.getX(), stack.getY(), stack.getZ()), snowballEntity -> snowballEntity.setItem(itemStack));
 			}
 		});
 		DispenserBlock.registerBehavior(
@@ -107,7 +107,7 @@ public interface DispenserBehavior {
 			new ProjectileDispenserBehavior() {
 				@Override
 				protected Projectile createProjectile(World position, Position stack, ItemStack itemStack) {
-					return Util.create(
+					return Util.make(
 						new ThrownExperienceBottleEntity(position, stack.getX(), stack.getY(), stack.getZ()),
 						thrownExperienceBottleEntity -> thrownExperienceBottleEntity.setItem(itemStack)
 					);
@@ -132,7 +132,7 @@ public interface DispenserBehavior {
 					return (new ProjectileDispenserBehavior() {
 							@Override
 							protected Projectile createProjectile(World position, Position stack, ItemStack itemStack) {
-								return Util.create(
+								return Util.make(
 									new ThrownPotionEntity(position, stack.getX(), stack.getY(), stack.getZ()), thrownPotionEntity -> thrownPotionEntity.setItemStack(itemStack)
 								);
 							}
@@ -159,7 +159,7 @@ public interface DispenserBehavior {
 					return (new ProjectileDispenserBehavior() {
 							@Override
 							protected Projectile createProjectile(World position, Position stack, ItemStack itemStack) {
-								return Util.create(
+								return Util.make(
 									new ThrownPotionEntity(position, stack.getX(), stack.getY(), stack.getZ()), thrownPotionEntity -> thrownPotionEntity.setItemStack(itemStack)
 								);
 							}
@@ -244,7 +244,7 @@ public interface DispenserBehavior {
 				double g = random.nextGaussian() * 0.05 + (double)direction.getOffsetX();
 				double h = random.nextGaussian() * 0.05 + (double)direction.getOffsetY();
 				double i = random.nextGaussian() * 0.05 + (double)direction.getOffsetZ();
-				world.spawnEntity(Util.create(new SmallFireballEntity(world, d, e, f, g, h, i), smallFireballEntity -> smallFireballEntity.setItem(stack)));
+				world.spawnEntity(Util.make(new SmallFireballEntity(world, d, e, f, g, h, i), smallFireballEntity -> smallFireballEntity.setItem(stack)));
 				stack.decrement(1);
 				return stack;
 			}
@@ -368,7 +368,7 @@ public interface DispenserBehavior {
 		DispenserBehavior dispenserBehavior2 = new FallibleItemDispenserBehavior() {
 			@Override
 			protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-				this.success = !ArmorItem.dispenseArmor(pointer, stack).isEmpty();
+				this.success = ArmorItem.dispenseArmor(pointer, stack);
 				return stack;
 			}
 		};
@@ -385,7 +385,6 @@ public interface DispenserBehavior {
 					World world = pointer.getWorld();
 					Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
 					BlockPos blockPos = pointer.getBlockPos().offset(direction);
-					this.success = true;
 					if (world.isAir(blockPos) && WitherSkullBlock.canDispense(world, blockPos, stack)) {
 						world.setBlockState(
 							blockPos,
@@ -400,14 +399,12 @@ public interface DispenserBehavior {
 						}
 
 						stack.decrement(1);
+						this.success = true;
 					} else {
-						ItemStack itemStack = ArmorItem.dispenseArmor(pointer, stack);
-						if (stack.getCount() < itemStack.getCount()) {
-							this.success = false;
-						}
+						this.success = ArmorItem.dispenseArmor(pointer, stack);
 					}
 
-					return super.dispenseSilently(pointer, stack);
+					return stack;
 				}
 			}
 		);
@@ -417,21 +414,18 @@ public interface DispenserBehavior {
 				World world = pointer.getWorld();
 				BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
 				CarvedPumpkinBlock carvedPumpkinBlock = (CarvedPumpkinBlock)Blocks.CARVED_PUMPKIN;
-				this.success = true;
 				if (world.isAir(blockPos) && carvedPumpkinBlock.canDispense(world, blockPos)) {
 					if (!world.isClient) {
 						world.setBlockState(blockPos, carvedPumpkinBlock.getDefaultState(), 3);
 					}
 
 					stack.decrement(1);
+					this.success = true;
 				} else {
-					ItemStack itemStack = ArmorItem.dispenseArmor(pointer, stack);
-					if (stack.getCount() < itemStack.getCount()) {
-						this.success = false;
-					}
+					this.success = ArmorItem.dispenseArmor(pointer, stack);
 				}
 
-				return super.dispenseSilently(pointer, stack);
+				return stack;
 			}
 		});
 		DispenserBlock.registerBehavior(Blocks.SHULKER_BOX.asItem(), new BlockPlacementDispenserBehavior());

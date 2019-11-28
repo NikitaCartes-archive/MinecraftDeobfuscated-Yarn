@@ -56,7 +56,7 @@ public class SalmonEntityModel<T extends Entity> extends CompositeEntityModel<T>
 	}
 
 	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch) {
+	public void setAngles(T entity, float limbAngle, float limbDistance, float customAngle, float headYaw, float headPitch) {
 		float f = 1.0F;
 		float g = 1.0F;
 		if (!entity.isInsideWater()) {
@@ -64,6 +64,6 @@ public class SalmonEntityModel<T extends Entity> extends CompositeEntityModel<T>
 			g = 1.7F;
 		}
 
-		this.tail.yaw = -f * 0.25F * MathHelper.sin(g * 0.6F * age);
+		this.tail.yaw = -f * 0.25F * MathHelper.sin(g * 0.6F * customAngle);
 	}
 }

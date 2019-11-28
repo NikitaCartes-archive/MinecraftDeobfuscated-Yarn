@@ -70,7 +70,7 @@ public class FishingLootTableGenerator implements Consumer<BiConsumer<Identifier
 						.withEntry(
 							ItemEntry.builder(Items.POTION)
 								.setWeight(10)
-								.withFunction(SetNbtLootFunction.builder(Util.create(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:water"))))
+								.withFunction(SetNbtLootFunction.builder(Util.make(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:water"))))
 						)
 						.withEntry(ItemEntry.builder(Items.STRING).setWeight(5))
 						.withEntry(ItemEntry.builder(Items.FISHING_ROD).setWeight(2).withFunction(SetDamageLootFunction.builder(UniformLootTableRange.between(0.0F, 0.9F))))

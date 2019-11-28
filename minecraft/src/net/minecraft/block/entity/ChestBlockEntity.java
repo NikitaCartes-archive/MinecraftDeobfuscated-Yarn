@@ -57,17 +57,6 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	}
 
 	@Override
-	public boolean isInvEmpty() {
-		for (ItemStack itemStack : this.inventory) {
-			if (!itemStack.isEmpty()) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	@Override
 	protected Text getContainerName() {
 		return new TranslatableText("container.chest");
 	}

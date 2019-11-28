@@ -56,45 +56,6 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	public boolean isInvEmpty() {
-		for (ItemStack itemStack : this.inventory) {
-			if (!itemStack.isEmpty()) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	@Override
-	public ItemStack getInvStack(int slot) {
-		return this.inventory.get(slot);
-	}
-
-	@Override
-	public ItemStack takeInvStack(int slot, int amount) {
-		return Inventories.splitStack(this.inventory, slot, amount);
-	}
-
-	@Override
-	public ItemStack removeInvStack(int slot) {
-		return Inventories.removeStack(this.inventory, slot);
-	}
-
-	@Override
-	public void setInvStack(int slot, ItemStack stack) {
-		this.inventory.set(slot, stack);
-		if (stack.getCount() > this.getInvMaxStackAmount()) {
-			stack.setCount(this.getInvMaxStackAmount());
-		}
-	}
-
-	@Override
-	public void clear() {
-		this.inventory.clear();
-	}
-
-	@Override
 	protected DefaultedList<ItemStack> getInvStackList() {
 		return this.inventory;
 	}

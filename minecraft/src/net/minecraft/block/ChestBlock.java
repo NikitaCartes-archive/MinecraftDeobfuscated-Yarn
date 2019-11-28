@@ -51,7 +51,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
-public class ChestBlock extends BlockWithEntity implements Waterloggable {
+public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements Waterloggable {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final EnumProperty<ChestType> CHEST_TYPE = Properties.CHEST_TYPE;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
@@ -60,7 +60,6 @@ public class ChestBlock extends BlockWithEntity implements Waterloggable {
 	protected static final VoxelShape DOUBLE_WEST_SHAPE = Block.createCuboidShape(0.0, 0.0, 1.0, 15.0, 14.0, 15.0);
 	protected static final VoxelShape DOUBLE_EAST_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 16.0, 14.0, 15.0);
 	protected static final VoxelShape SINGLE_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 14.0, 15.0);
-	protected final Supplier<BlockEntityType<? extends ChestBlockEntity>> field_21781;
 	private static final DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Optional<Inventory>> INVENTORY_RETRIEVER = new DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Optional<Inventory>>() {
 		public Optional<Inventory> getFromBoth(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
 			return Optional.of(new DoubleInventory(chestBlockEntity, chestBlockEntity2));
@@ -111,15 +110,14 @@ public class ChestBlock extends BlockWithEntity implements Waterloggable {
 	};
 
 	protected ChestBlock(Block.Settings settings, Supplier<BlockEntityType<? extends ChestBlockEntity>> supplier) {
-		super(settings);
-		this.field_21781 = supplier;
+		super(settings, supplier);
 		this.setDefaultState(
 			this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(CHEST_TYPE, ChestType.SINGLE).with(WATERLOGGED, Boolean.valueOf(false))
 		);
 	}
 
-	public static DoubleBlockProperties.Type method_24169(BlockState blockState) {
-		ChestType chestType = blockState.get(CHEST_TYPE);
+	public static DoubleBlockProperties.Type getDoubleBlockType(BlockState state) {
+		ChestType chestType = state.get(CHEST_TYPE);
 		if (chestType == ChestType.SINGLE) {
 			return DoubleBlockProperties.Type.SINGLE;
 		} else {
@@ -257,28 +255,29 @@ public class ChestBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	@Nullable
-	public static Inventory getInventory(ChestBlock chestBlock, BlockState blockState, World world, BlockPos blockPos, boolean bl) {
-		return (Inventory)method_24167(chestBlock, blockState, world, blockPos, bl).apply(INVENTORY_RETRIEVER).orElse(null);
+	public static Inventory getInventory(ChestBlock block, BlockState state, World world, BlockPos pos, boolean ignoreBlocked) {
+		return (Inventory)block.getBlockEntitySource(state, world, pos, ignoreBlocked).apply(INVENTORY_RETRIEVER).orElse(null);
 	}
 
-	public static DoubleBlockProperties.PropertySource<? extends ChestBlockEntity> method_24167(
-		ChestBlock chestBlock, BlockState blockState, World world, BlockPos blockPos, boolean bl
+	@Override
+	public DoubleBlockProperties.PropertySource<? extends ChestBlockEntity> getBlockEntitySource(
+		BlockState state, World world, BlockPos pos, boolean ignoreBlocked
 	) {
 		BiPredicate<IWorld, BlockPos> biPredicate;
-		if (bl) {
-			biPredicate = (iWorld, blockPosx) -> false;
+		if (ignoreBlocked) {
+			biPredicate = (iWorld, blockPos) -> false;
 		} else {
 			biPredicate = ChestBlock::isChestBlocked;
 		}
 
 		return DoubleBlockProperties.toPropertySource(
-			(BlockEntityType<? extends ChestBlockEntity>)chestBlock.field_21781.get(),
-			ChestBlock::method_24169,
+			(BlockEntityType<? extends ChestBlockEntity>)this.entityTypeRetriever.get(),
+			ChestBlock::getDoubleBlockType,
 			ChestBlock::getFacing,
 			FACING,
-			blockState,
+			state,
 			world,
-			blockPos,
+			pos,
 			biPredicate
 		);
 	}
@@ -286,11 +285,13 @@ public class ChestBlock extends BlockWithEntity implements Waterloggable {
 	@Nullable
 	@Override
 	public NameableContainerProvider createContainerProvider(BlockState state, World world, BlockPos pos) {
-		return (NameableContainerProvider)method_24167(this, state, world, pos, false).apply(NAME_RETRIEVER).orElse(null);
+		return (NameableContainerProvider)this.getBlockEntitySource(state, world, pos, false).apply(NAME_RETRIEVER).orElse(null);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Float2FloatFunction> method_24166(ChestAnimationProgress chestAnimationProgress) {
+	public static DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Float2FloatFunction> getAnimationProgressRetriever(
+		ChestAnimationProgress chestAnimationProgress
+	) {
 		return new DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Float2FloatFunction>() {
 			public Float2FloatFunction getFromBoth(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
 				return f -> Math.max(chestBlockEntity.getAnimationProgress(f), chestBlockEntity2.getAnimationProgress(f));

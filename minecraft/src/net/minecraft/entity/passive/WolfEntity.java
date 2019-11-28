@@ -310,6 +310,7 @@ public class WolfEntity extends TameableEntity {
 		super.setTamed(tamed);
 		if (tamed) {
 			this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(20.0);
+			this.setHealth(20.0F);
 		} else {
 			this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(8.0);
 		}

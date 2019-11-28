@@ -1053,14 +1053,14 @@ public class ServerWorld extends World {
 	}
 
 	@Override
-	public void updateListeners(BlockPos blockPos, BlockState blockState, BlockState blockState2, int i) {
-		this.getChunkManager().markForUpdate(blockPos);
-		VoxelShape voxelShape = blockState.getCollisionShape(this, blockPos);
-		VoxelShape voxelShape2 = blockState2.getCollisionShape(this, blockPos);
+	public void updateListeners(BlockPos pos, BlockState oldState, BlockState newState, int flags) {
+		this.getChunkManager().markForUpdate(pos);
+		VoxelShape voxelShape = oldState.getCollisionShape(this, pos);
+		VoxelShape voxelShape2 = newState.getCollisionShape(this, pos);
 		if (VoxelShapes.matchesAnywhere(voxelShape, voxelShape2, BooleanBiFunction.NOT_SAME)) {
 			for (EntityNavigation entityNavigation : this.entityNavigations) {
 				if (!entityNavigation.shouldRecalculatePath()) {
-					entityNavigation.method_18053(blockPos);
+					entityNavigation.method_18053(pos);
 				}
 			}
 		}

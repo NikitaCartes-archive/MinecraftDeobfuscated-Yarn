@@ -142,8 +142,8 @@ public class EnderCrystalEntity extends Entity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean shouldRenderAtDistance(double distance) {
-		return super.shouldRenderAtDistance(distance) || this.getBeamTarget() != null;
+	public boolean shouldRender(double distance) {
+		return super.shouldRender(distance) || this.getBeamTarget() != null;
 	}
 
 	@Override

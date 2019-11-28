@@ -24,7 +24,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.WorldView;
 
 public final class VoxelShapes {
-	private static final VoxelShape FULL_CUBE = Util.create(() -> {
+	private static final VoxelShape FULL_CUBE = Util.make(() -> {
 		VoxelSet voxelSet = new BitSetVoxelSet(1, 1, 1);
 		voxelSet.set(0, 0, 0, true, true);
 		return new SimpleVoxelShape(voxelSet);

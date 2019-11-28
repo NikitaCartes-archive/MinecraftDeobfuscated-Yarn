@@ -253,7 +253,7 @@ public abstract class World implements IWorld, AutoCloseable {
 		return this.setBlockState(pos, blockState, 3);
 	}
 
-	public abstract void updateListeners(BlockPos blockPos, BlockState blockState, BlockState blockState2, int i);
+	public abstract void updateListeners(BlockPos pos, BlockState oldState, BlockState newState, int flags);
 
 	@Override
 	public void updateNeighbors(BlockPos pos, Block block) {

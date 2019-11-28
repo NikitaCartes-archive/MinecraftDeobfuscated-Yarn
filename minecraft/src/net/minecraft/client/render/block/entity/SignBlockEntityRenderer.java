@@ -16,6 +16,7 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.Texts;
 import net.minecraft.client.util.math.MatrixStack;
@@ -56,21 +57,26 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 		this.model.field.render(matrixStack, vertexConsumer, i, j);
 		this.model.foot.render(matrixStack, vertexConsumer, i, j);
 		matrixStack.pop();
-		TextRenderer textRenderer = this.blockEntityRenderDispatcher.getTextRenderer();
+		TextRenderer textRenderer = this.dispatcher.getTextRenderer();
 		float k = 0.010416667F;
 		matrixStack.translate(0.0, 0.33333334F, 0.046666667F);
 		matrixStack.scale(0.010416667F, -0.010416667F, 0.010416667F);
 		int l = signBlockEntity.getTextColor().getSignColor();
+		double d = 0.4;
+		int m = (int)((double)NativeImage.method_24033(l) * 0.4);
+		int n = (int)((double)NativeImage.method_24034(l) * 0.4);
+		int o = (int)((double)NativeImage.method_24035(l) * 0.4);
+		int p = NativeImage.method_24031(0, o, n, m);
 
-		for (int m = 0; m < 4; m++) {
-			String string = signBlockEntity.getTextBeingEditedOnRow(m, text -> {
+		for (int q = 0; q < 4; q++) {
+			String string = signBlockEntity.getTextBeingEditedOnRow(q, text -> {
 				List<Text> list = Texts.wrapLines(text, 90, textRenderer, false, true);
 				return list.isEmpty() ? "" : ((Text)list.get(0)).asFormattedString();
 			});
 			if (string != null) {
-				float n = (float)(-textRenderer.getStringWidth(string) / 2);
+				float r = (float)(-textRenderer.getStringWidth(string) / 2);
 				textRenderer.draw(
-					string, n, (float)(m * 10 - signBlockEntity.text.length * 5), l, false, matrixStack.peek().getModel(), vertexConsumerProvider, false, 0, i
+					string, r, (float)(q * 10 - signBlockEntity.text.length * 5), p, false, matrixStack.peek().getModel(), vertexConsumerProvider, false, 0, i
 				);
 			}
 		}
@@ -102,9 +108,9 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 		}
 
 		@Override
-		public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float r, float g, float b, float f) {
-			this.field.render(matrixStack, vertexConsumer, i, j, r, g, b, f);
-			this.foot.render(matrixStack, vertexConsumer, i, j, r, g, b, f);
+		public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
+			this.field.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+			this.foot.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
 		}
 	}
 }

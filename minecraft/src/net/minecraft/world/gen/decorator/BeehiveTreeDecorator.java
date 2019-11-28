@@ -22,11 +22,11 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.feature.AbstractTreeFeature;
 
 public class BeehiveTreeDecorator extends TreeDecorator {
-	private final float field_21317;
+	private final float chance;
 
-	public BeehiveTreeDecorator(float f) {
+	public BeehiveTreeDecorator(float chance) {
 		super(TreeDecoratorType.BEEHIVE);
-		this.field_21317 = f;
+		this.chance = chance;
 	}
 
 	public <T> BeehiveTreeDecorator(Dynamic<T> dynamic) {
@@ -34,8 +34,8 @@ public class BeehiveTreeDecorator extends TreeDecorator {
 	}
 
 	@Override
-	public void generate(IWorld iWorld, Random random, List<BlockPos> list, List<BlockPos> list2, Set<BlockPos> set, BlockBox blockBox) {
-		if (!(random.nextFloat() >= this.field_21317)) {
+	public void generate(IWorld world, Random random, List<BlockPos> list, List<BlockPos> list2, Set<BlockPos> set, BlockBox box) {
+		if (!(random.nextFloat() >= this.chance)) {
 			Direction direction = BeeHiveBlock.field_20418[random.nextInt(BeeHiveBlock.field_20418.length)];
 			int i = !list2.isEmpty()
 				? Math.max(((BlockPos)list2.get(0)).getY() - 1, ((BlockPos)list.get(0)).getY())
@@ -43,16 +43,16 @@ public class BeehiveTreeDecorator extends TreeDecorator {
 			List<BlockPos> list3 = (List<BlockPos>)list.stream().filter(blockPosx -> blockPosx.getY() == i).collect(Collectors.toList());
 			BlockPos blockPos = (BlockPos)list3.get(random.nextInt(list3.size()));
 			BlockPos blockPos2 = blockPos.offset(direction);
-			if (AbstractTreeFeature.isAir(iWorld, blockPos2) && AbstractTreeFeature.isAir(iWorld, blockPos2.offset(Direction.SOUTH))) {
+			if (AbstractTreeFeature.isAir(world, blockPos2) && AbstractTreeFeature.isAir(world, blockPos2.offset(Direction.SOUTH))) {
 				BlockState blockState = Blocks.BEE_NEST.getDefaultState().with(BeeHiveBlock.FACING, Direction.SOUTH);
-				this.method_23470(iWorld, blockPos2, blockState, set, blockBox);
-				BlockEntity blockEntity = iWorld.getBlockEntity(blockPos2);
+				this.method_23470(world, blockPos2, blockState, set, box);
+				BlockEntity blockEntity = world.getBlockEntity(blockPos2);
 				if (blockEntity instanceof BeeHiveBlockEntity) {
 					BeeHiveBlockEntity beeHiveBlockEntity = (BeeHiveBlockEntity)blockEntity;
 					int j = 2 + random.nextInt(2);
 
 					for (int k = 0; k < j; k++) {
-						BeeEntity beeEntity = new BeeEntity(EntityType.BEE, iWorld.getWorld());
+						BeeEntity beeEntity = new BeeEntity(EntityType.BEE, world.getWorld());
 						beeHiveBlockEntity.tryEnterHive(beeEntity, false, random.nextInt(599));
 					}
 				}
@@ -69,7 +69,7 @@ public class BeehiveTreeDecorator extends TreeDecorator {
 						ops.createString("type"),
 						ops.createString(Registry.TREE_DECORATOR_TYPE.getId(this.field_21319).toString()),
 						ops.createString("probability"),
-						ops.createFloat(this.field_21317)
+						ops.createFloat(this.chance)
 					)
 				)
 			)

@@ -36,6 +36,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 	private static final Logger LOGGER = LogManager.getLogger();
 	private long age;
 	private int teleportCooldown;
+	@Nullable
 	private BlockPos exitPortalPos;
 	private boolean exactTeleport;
 
@@ -85,7 +86,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 		} else if (!this.world.isClient) {
 			List<Entity> list = this.world.getNonSpectatingEntities(Entity.class, new Box(this.getPos()));
 			if (!list.isEmpty()) {
-				this.tryTeleportingEntity((Entity)list.get(0));
+				this.tryTeleportingEntity(((Entity)list.get(0)).getRootVehicle());
 			}
 
 			if (this.age % 2400L == 0L) {

@@ -104,7 +104,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 		if (this.world != null && !this.world.isClient) {
 			if (!this.needsCooldown() && (Boolean)this.getCachedState().get(HopperBlock.ENABLED)) {
 				boolean bl = false;
-				if (!this.isEmpty()) {
+				if (!this.isInvEmpty()) {
 					bl = this.insert();
 				}
 
@@ -123,21 +123,6 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 		} else {
 			return false;
 		}
-	}
-
-	private boolean isEmpty() {
-		for (ItemStack itemStack : this.inventory) {
-			if (!itemStack.isEmpty()) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	@Override
-	public boolean isInvEmpty() {
-		return this.isEmpty();
 	}
 
 	private boolean isFull() {

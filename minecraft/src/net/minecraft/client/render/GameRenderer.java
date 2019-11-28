@@ -386,7 +386,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 				this.lightmapTextureManager.enable();
 				this.firstPersonRenderer
 					.method_22976(
-						f, matrixStack, this.buffers.getEntityVertexConsumers(), this.client.player, this.client.getEntityRenderManager().method_23839(this.client.player, f)
+						f, matrixStack, this.buffers.getEntityVertexConsumers(), this.client.player, this.client.getEntityRenderManager().getLight(this.client.player, f)
 					);
 				this.lightmapTextureManager.disable();
 			}
@@ -488,7 +488,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			RenderSystem.matrixMode(5888);
 			RenderSystem.loadIdentity();
 			RenderSystem.translatef(0.0F, 0.0F, -2000.0F);
-			GuiLighting.enableForItems(matrixStack.peek().getModel());
+			DiffuseLighting.enableForGui(matrixStack.peek().getModel());
 			if (tick && this.client.world != null) {
 				this.client.getProfiler().swap("gui");
 				if (!this.client.options.hudHidden || this.client.currentScreen != null) {

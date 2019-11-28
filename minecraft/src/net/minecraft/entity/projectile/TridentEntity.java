@@ -75,7 +75,7 @@ public class TridentEntity extends ProjectileEntity {
 				Vec3d vec3d = new Vec3d(entity.getX() - this.getX(), entity.getEyeY() - this.getY(), entity.getZ() - this.getZ());
 				this.setPos(this.getX(), this.getY() + vec3d.y * 0.015 * (double)i, this.getZ());
 				if (this.world.isClient) {
-					this.prevRenderY = this.getY();
+					this.lastRenderY = this.getY();
 				}
 
 				double d = 0.05 * (double)i;
@@ -125,7 +125,11 @@ public class TridentEntity extends ProjectileEntity {
 		DamageSource damageSource = DamageSource.trident(this, (Entity)(entity2 == null ? this : entity2));
 		this.dealtDamage = true;
 		SoundEvent soundEvent = SoundEvents.ITEM_TRIDENT_HIT;
-		if (entity.damage(damageSource, f) && entity.getType() != EntityType.ENDERMAN) {
+		if (entity.damage(damageSource, f)) {
+			if (entity.getType() == EntityType.ENDERMAN) {
+				return;
+			}
+
 			if (entity instanceof LivingEntity) {
 				LivingEntity livingEntity2 = (LivingEntity)entity;
 				if (entity2 instanceof LivingEntity) {
@@ -135,24 +139,24 @@ public class TridentEntity extends ProjectileEntity {
 
 				this.onHit(livingEntity2);
 			}
-
-			this.setVelocity(this.getVelocity().multiply(-0.01, -0.1, -0.01));
-			float g = 1.0F;
-			if (this.world instanceof ServerWorld && this.world.isThundering() && EnchantmentHelper.hasChanneling(this.tridentStack)) {
-				BlockPos blockPos = entity.getBlockPos();
-				if (this.world.isSkyVisible(blockPos)) {
-					LightningEntity lightningEntity = new LightningEntity(
-						this.world, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, false
-					);
-					lightningEntity.setChanneller(entity2 instanceof ServerPlayerEntity ? (ServerPlayerEntity)entity2 : null);
-					((ServerWorld)this.world).addLightning(lightningEntity);
-					soundEvent = SoundEvents.ITEM_TRIDENT_THUNDER;
-					g = 5.0F;
-				}
-			}
-
-			this.playSound(soundEvent, g, 1.0F);
 		}
+
+		this.setVelocity(this.getVelocity().multiply(-0.01, -0.1, -0.01));
+		float g = 1.0F;
+		if (this.world instanceof ServerWorld && this.world.isThundering() && EnchantmentHelper.hasChanneling(this.tridentStack)) {
+			BlockPos blockPos = entity.getBlockPos();
+			if (this.world.isSkyVisible(blockPos)) {
+				LightningEntity lightningEntity = new LightningEntity(
+					this.world, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, false
+				);
+				lightningEntity.setChanneller(entity2 instanceof ServerPlayerEntity ? (ServerPlayerEntity)entity2 : null);
+				((ServerWorld)this.world).addLightning(lightningEntity);
+				soundEvent = SoundEvents.ITEM_TRIDENT_THUNDER;
+				g = 5.0F;
+			}
+		}
+
+		this.playSound(soundEvent, g, 1.0F);
 	}
 
 	@Override
@@ -201,7 +205,7 @@ public class TridentEntity extends ProjectileEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean shouldRenderFrom(double x, double y, double z) {
+	public boolean shouldRender(double cameraX, double cameraY, double cameraZ) {
 		return true;
 	}
 }

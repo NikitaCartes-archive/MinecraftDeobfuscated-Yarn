@@ -11,8 +11,8 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public abstract class EntityModel<T extends Entity> extends Model {
 	public float handSwingProgress;
-	public boolean isRiding;
-	public boolean isChild = true;
+	public boolean riding;
+	public boolean child = true;
 
 	protected EntityModel() {
 		this(RenderLayer::getEntityCutoutNoCull);
@@ -22,14 +22,14 @@ public abstract class EntityModel<T extends Entity> extends Model {
 		super(function);
 	}
 
-	public abstract void setAngles(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch);
+	public abstract void setAngles(T entity, float limbAngle, float limbDistance, float customAngle, float headYaw, float headPitch);
 
 	public void animateModel(T entity, float limbAngle, float limbDistance, float tickDelta) {
 	}
 
 	public void copyStateTo(EntityModel<T> copy) {
 		copy.handSwingProgress = this.handSwingProgress;
-		copy.isRiding = this.isRiding;
-		copy.isChild = this.isChild;
+		copy.riding = this.riding;
+		copy.child = this.child;
 	}
 }

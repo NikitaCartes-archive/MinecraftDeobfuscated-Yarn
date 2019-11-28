@@ -1009,7 +1009,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 		this.enchantmentTableSeed = oldPlayer.enchantmentTableSeed;
 		this.enderChestInventory = oldPlayer.enderChestInventory;
-		this.getDataTracker().set(PLAYER_MODEL_BIT_MASK, oldPlayer.getDataTracker().get(PLAYER_MODEL_BIT_MASK));
+		this.getDataTracker().set(PLAYER_MODEL_PARTS, oldPlayer.getDataTracker().get(PLAYER_MODEL_PARTS));
 		this.syncedExperience = -1;
 		this.syncedHealth = -1.0F;
 		this.syncedFoodLevel = -1;
@@ -1054,6 +1054,12 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	@Override
 	public void requestTeleport(double destX, double destY, double destZ) {
 		this.networkHandler.requestTeleport(destX, destY, destZ, this.yaw, this.pitch);
+	}
+
+	@Override
+	public void method_24203(double d, double e, double f) {
+		this.networkHandler.requestTeleport(d, e, f, this.yaw, this.pitch);
+		this.networkHandler.syncWithPlayerPosition();
 	}
 
 	@Override
@@ -1134,7 +1140,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		this.clientLanguage = clientSettingsC2SPacket.getLanguage();
 		this.clientChatVisibility = clientSettingsC2SPacket.getChatVisibility();
 		this.field_13971 = clientSettingsC2SPacket.hasChatColors();
-		this.getDataTracker().set(PLAYER_MODEL_BIT_MASK, (byte)clientSettingsC2SPacket.getPlayerModelBitMask());
+		this.getDataTracker().set(PLAYER_MODEL_PARTS, (byte)clientSettingsC2SPacket.getPlayerModelBitMask());
 		this.getDataTracker().set(MAIN_ARM, (byte)(clientSettingsC2SPacket.getMainArm() == Arm.LEFT ? 0 : 1));
 	}
 

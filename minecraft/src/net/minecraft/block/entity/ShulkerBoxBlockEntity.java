@@ -263,17 +263,6 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	@Override
-	public boolean isInvEmpty() {
-		for (ItemStack itemStack : this.inventory) {
-			if (!itemStack.isEmpty()) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	@Override
 	public int[] getInvAvailableSlots(Direction side) {
 		return AVAILABLE_SLOTS;
 	}

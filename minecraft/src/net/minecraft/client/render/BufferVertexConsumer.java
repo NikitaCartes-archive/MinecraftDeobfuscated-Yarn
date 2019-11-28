@@ -2,6 +2,7 @@ package net.minecraft.client.render;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public interface BufferVertexConsumer extends VertexConsumer {
@@ -94,11 +95,15 @@ public interface BufferVertexConsumer extends VertexConsumer {
 		} else if (vertexFormatElement.getFormat() != VertexFormatElement.Format.BYTE) {
 			throw new IllegalStateException();
 		} else {
-			this.putByte(0, (byte)((int)(x * 127.0F) & 0xFF));
-			this.putByte(1, (byte)((int)(y * 127.0F) & 0xFF));
-			this.putByte(2, (byte)((int)(z * 127.0F) & 0xFF));
+			this.putByte(0, method_24212(x));
+			this.putByte(1, method_24212(y));
+			this.putByte(2, method_24212(z));
 			this.nextElement();
 			return this;
 		}
+	}
+
+	static byte method_24212(float f) {
+		return (byte)((int)(MathHelper.clamp(f, -1.0F, 1.0F) * 127.0F) & 0xFF);
 	}
 }

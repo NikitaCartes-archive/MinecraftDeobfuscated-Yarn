@@ -32,20 +32,20 @@ public class AlterGroundTreeDecorator extends TreeDecorator {
 	}
 
 	@Override
-	public void generate(IWorld iWorld, Random random, List<BlockPos> list, List<BlockPos> list2, Set<BlockPos> set, BlockBox blockBox) {
+	public void generate(IWorld world, Random random, List<BlockPos> list, List<BlockPos> list2, Set<BlockPos> set, BlockBox box) {
 		int i = ((BlockPos)list.get(0)).getY();
 		list.stream().filter(blockPos -> blockPos.getY() == i).forEach(blockPos -> {
-			this.method_23462(iWorld, random, blockPos.west().north());
-			this.method_23462(iWorld, random, blockPos.east(2).north());
-			this.method_23462(iWorld, random, blockPos.west().south(2));
-			this.method_23462(iWorld, random, blockPos.east(2).south(2));
+			this.method_23462(world, random, blockPos.west().north());
+			this.method_23462(world, random, blockPos.east(2).north());
+			this.method_23462(world, random, blockPos.west().south(2));
+			this.method_23462(world, random, blockPos.east(2).south(2));
 
 			for (int ix = 0; ix < 5; ix++) {
 				int j = random.nextInt(64);
 				int k = j % 8;
 				int l = j / 8;
 				if (k == 0 || k == 7 || l == 0 || l == 7) {
-					this.method_23462(iWorld, random, blockPos.add(-3 + k, 0, -3 + l));
+					this.method_23462(world, random, blockPos.add(-3 + k, 0, -3 + l));
 				}
 			}
 		});

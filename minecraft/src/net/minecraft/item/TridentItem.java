@@ -110,7 +110,7 @@ public class TridentItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
-		if (itemStack.getDamage() >= itemStack.getMaxDamage()) {
+		if (itemStack.getDamage() >= itemStack.getMaxDamage() - 1) {
 			return TypedActionResult.fail(itemStack);
 		} else if (EnchantmentHelper.getRiptide(itemStack) > 0 && !user.isInsideWaterOrRain()) {
 			return TypedActionResult.fail(itemStack);

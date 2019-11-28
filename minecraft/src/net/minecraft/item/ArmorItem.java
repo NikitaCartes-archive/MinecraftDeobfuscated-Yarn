@@ -30,8 +30,7 @@ public class ArmorItem extends Item {
 	public static final DispenserBehavior DISPENSER_BEHAVIOR = new ItemDispenserBehavior() {
 		@Override
 		protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-			ItemStack itemStack = ArmorItem.dispenseArmor(pointer, stack);
-			return itemStack.isEmpty() ? super.dispenseSilently(pointer, stack) : itemStack;
+			return ArmorItem.dispenseArmor(pointer, stack) ? stack : super.dispenseSilently(pointer, stack);
 		}
 	};
 	protected final EquipmentSlot slot;
@@ -39,12 +38,12 @@ public class ArmorItem extends Item {
 	protected final float toughness;
 	protected final ArmorMaterial type;
 
-	public static ItemStack dispenseArmor(BlockPointer pointer, ItemStack armor) {
+	public static boolean dispenseArmor(BlockPointer pointer, ItemStack armor) {
 		BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
 		List<LivingEntity> list = pointer.getWorld()
 			.getEntities(LivingEntity.class, new Box(blockPos), EntityPredicates.EXCEPT_SPECTATOR.and(new EntityPredicates.CanPickup(armor)));
 		if (list.isEmpty()) {
-			return ItemStack.EMPTY;
+			return false;
 		} else {
 			LivingEntity livingEntity = (LivingEntity)list.get(0);
 			EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(armor);
@@ -55,7 +54,7 @@ public class ArmorItem extends Item {
 				((MobEntity)livingEntity).setPersistent();
 			}
 
-			return armor;
+			return true;
 		}
 	}
 

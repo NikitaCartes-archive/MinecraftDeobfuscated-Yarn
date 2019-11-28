@@ -23,21 +23,21 @@ public abstract class RenderPhase {
 	});
 	protected static final RenderPhase.Transparency ADDITIVE_TRANSPARENCY = new RenderPhase.Transparency("additive_transparency", () -> {
 		RenderSystem.enableBlend();
-		RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
+		RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE);
 	}, () -> {
 		RenderSystem.disableBlend();
 		RenderSystem.defaultBlendFunc();
 	});
 	protected static final RenderPhase.Transparency LIGHTNING_TRANSPARENCY = new RenderPhase.Transparency("lightning_transparency", () -> {
 		RenderSystem.enableBlend();
-		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
+		RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE);
 	}, () -> {
 		RenderSystem.disableBlend();
 		RenderSystem.defaultBlendFunc();
 	});
 	protected static final RenderPhase.Transparency GLINT_TRANSPARENCY = new RenderPhase.Transparency("glint_transparency", () -> {
 		RenderSystem.enableBlend();
-		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_COLOR, GlStateManager.DestFactor.ONE);
+		RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_COLOR, GlStateManager.DstFactor.ONE);
 	}, () -> {
 		RenderSystem.disableBlend();
 		RenderSystem.defaultBlendFunc();
@@ -47,7 +47,7 @@ public abstract class RenderPhase {
 		() -> {
 			RenderSystem.enableBlend();
 			RenderSystem.blendFuncSeparate(
-				GlStateManager.SourceFactor.DST_COLOR, GlStateManager.DestFactor.SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
+				GlStateManager.SrcFactor.DST_COLOR, GlStateManager.DstFactor.SRC_COLOR, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO
 			);
 		},
 		() -> {
@@ -278,11 +278,11 @@ public abstract class RenderPhase {
 		public DiffuseLighting(boolean guiLighting) {
 			super("diffuse_lighting", () -> {
 				if (guiLighting) {
-					GuiLighting.enable();
+					net.minecraft.client.render.DiffuseLighting.enable();
 				}
 			}, () -> {
 				if (guiLighting) {
-					GuiLighting.disable();
+					net.minecraft.client.render.DiffuseLighting.disable();
 				}
 			}, guiLighting);
 		}

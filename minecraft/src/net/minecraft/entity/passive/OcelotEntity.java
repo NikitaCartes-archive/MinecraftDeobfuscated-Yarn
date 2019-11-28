@@ -266,7 +266,7 @@ public class OcelotEntity extends AnimalEntity {
 	) {
 		if (entityData == null) {
 			entityData = new PassiveEntity.EntityData();
-			((PassiveEntity.EntityData)entityData).setBabyChance(0.14285715F);
+			((PassiveEntity.EntityData)entityData).setBabyChance(1.0F);
 		}
 
 		return super.initialize(world, difficulty, spawnType, entityData, entityTag);

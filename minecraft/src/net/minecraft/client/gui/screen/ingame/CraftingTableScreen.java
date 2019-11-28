@@ -29,14 +29,14 @@ public class CraftingTableScreen extends AbstractContainerScreen<CraftingTableCo
 		super.init();
 		this.isNarrow = this.width < 379;
 		this.recipeBookGui.initialize(this.width, this.height, this.minecraft, this.isNarrow, this.container);
-		this.left = this.recipeBookGui.findLeftEdge(this.isNarrow, this.width, this.containerWidth);
+		this.x = this.recipeBookGui.findLeftEdge(this.isNarrow, this.width, this.containerWidth);
 		this.children.add(this.recipeBookGui);
 		this.setInitialFocus(this.recipeBookGui);
-		this.addButton(new TexturedButtonWidget(this.left + 5, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEX, buttonWidget -> {
+		this.addButton(new TexturedButtonWidget(this.x + 5, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEX, buttonWidget -> {
 			this.recipeBookGui.reset(this.isNarrow);
 			this.recipeBookGui.toggleOpen();
-			this.left = this.recipeBookGui.findLeftEdge(this.isNarrow, this.width, this.containerWidth);
-			((TexturedButtonWidget)buttonWidget).setPos(this.left + 5, this.height / 2 - 49);
+			this.x = this.recipeBookGui.findLeftEdge(this.isNarrow, this.width, this.containerWidth);
+			((TexturedButtonWidget)buttonWidget).setPos(this.x + 5, this.height / 2 - 49);
 		}));
 	}
 
@@ -55,11 +55,11 @@ public class CraftingTableScreen extends AbstractContainerScreen<CraftingTableCo
 		} else {
 			this.recipeBookGui.render(mouseX, mouseY, delta);
 			super.render(mouseX, mouseY, delta);
-			this.recipeBookGui.drawGhostSlots(this.left, this.top, true, delta);
+			this.recipeBookGui.drawGhostSlots(this.x, this.y, true, delta);
 		}
 
 		this.drawMouseoverTooltip(mouseX, mouseY);
-		this.recipeBookGui.drawTooltip(this.left, this.top, mouseX, mouseY);
+		this.recipeBookGui.drawTooltip(this.x, this.y, mouseX, mouseY);
 		this.focusOn(this.recipeBookGui);
 	}
 
@@ -73,7 +73,7 @@ public class CraftingTableScreen extends AbstractContainerScreen<CraftingTableCo
 	protected void drawBackground(float delta, int mouseX, int mouseY) {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.minecraft.getTextureManager().bindTexture(BG_TEX);
-		int i = this.left;
+		int i = this.x;
 		int j = (this.height - this.containerHeight) / 2;
 		this.blit(i, j, 0, 0, this.containerWidth, this.containerHeight);
 	}
@@ -98,7 +98,7 @@ public class CraftingTableScreen extends AbstractContainerScreen<CraftingTableCo
 			|| mouseY < (double)top
 			|| mouseX >= (double)(left + this.containerWidth)
 			|| mouseY >= (double)(top + this.containerHeight);
-		return this.recipeBookGui.isClickOutsideBounds(mouseX, mouseY, this.left, this.top, this.containerWidth, this.containerHeight, button) && bl;
+		return this.recipeBookGui.isClickOutsideBounds(mouseX, mouseY, this.x, this.y, this.containerWidth, this.containerHeight, button) && bl;
 	}
 
 	@Override

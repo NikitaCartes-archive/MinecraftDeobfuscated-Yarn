@@ -10,7 +10,7 @@ import net.minecraft.util.math.Quaternion;
 
 @Environment(EnvType.CLIENT)
 public class MatrixStack {
-	private final Deque<MatrixStack.Entry> stack = Util.create(Queues.<MatrixStack.Entry>newArrayDeque(), arrayDeque -> {
+	private final Deque<MatrixStack.Entry> stack = Util.make(Queues.<MatrixStack.Entry>newArrayDeque(), arrayDeque -> {
 		Matrix4f matrix4f = new Matrix4f();
 		matrix4f.loadIdentity();
 		Matrix3f matrix3f = new Matrix3f();

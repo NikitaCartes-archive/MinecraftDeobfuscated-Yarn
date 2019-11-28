@@ -45,7 +45,7 @@ public final class FlowerForestBiome extends Biome {
 							Feature.RANDOM_PATCH.configure(DefaultBiomeFeatures.LILAC_CONFIG),
 							Feature.RANDOM_PATCH.configure(DefaultBiomeFeatures.ROSE_BUSH_CONFIG),
 							Feature.RANDOM_PATCH.configure(DefaultBiomeFeatures.PEONY_CONFIG),
-							Feature.FLOWER.configure(DefaultBiomeFeatures.field_21204)
+							Feature.FLOWER.configure(DefaultBiomeFeatures.LILY_OF_THE_VALLEY_CONFIG)
 						),
 						2
 					)
@@ -61,17 +61,19 @@ public final class FlowerForestBiome extends Biome {
 				.configure(
 					new RandomFeatureConfig(
 						ImmutableList.of(
-							Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.field_21195).withChance(0.2F),
-							Feature.FANCY_TREE.configure(DefaultBiomeFeatures.field_21194).withChance(0.1F)
+							Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.BIRCH_TREE_WITH_BEEHIVES_CONFIG).withChance(0.2F),
+							Feature.FANCY_TREE.configure(DefaultBiomeFeatures.FANCY_TREE_WITH_BEEHIVES_CONFIG).withChance(0.1F)
 						),
-						Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.field_21193)
+						Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.OAK_TREE_WITH_BEEHIVES_CONFIG)
 					)
 				)
 				.createDecoratedFeature(Decorator.COUNT_EXTRA_HEIGHTMAP.configure(new CountExtraChanceDecoratorConfig(6, 0.1F, 1)))
 		);
 		this.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.FLOWER.configure(DefaultBiomeFeatures.field_21089).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_32.configure(new CountDecoratorConfig(100)))
+			Feature.FLOWER
+				.configure(DefaultBiomeFeatures.FOREST_FLOWER_CONFIG)
+				.createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_32.configure(new CountDecoratorConfig(100)))
 		);
 		DefaultBiomeFeatures.addDefaultGrass(this);
 		DefaultBiomeFeatures.addDefaultMushrooms(this);

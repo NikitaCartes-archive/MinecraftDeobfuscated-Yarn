@@ -94,24 +94,24 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 		BlockPos blockPos = new BlockPos(d, e, f);
 		this.sections.forEach(chunkSectionPos -> {
 			if (blockPos.isWithinDistance(chunkSectionPos.getCenterPos(), 60.0)) {
-				method_23143(chunkSectionPos);
+				drawSection(chunkSectionPos);
 			}
 		});
 		this.brains.values().forEach(brain -> {
-			if (this.method_23147(brain)) {
+			if (this.isClose(brain)) {
 				this.drawBrain(brain, d, e, f);
 			}
 		});
 
 		for (BlockPos blockPos2 : this.pointsOfInterest.keySet()) {
 			if (blockPos.isWithinDistance(blockPos2, 30.0)) {
-				method_23138(blockPos2);
+				drawPointOfInterest(blockPos2);
 			}
 		}
 
 		this.pointsOfInterest.values().forEach(pointOfInterest -> {
 			if (blockPos.isWithinDistance(pointOfInterest.pos, 30.0)) {
-				this.drawPointOfInterest(pointOfInterest);
+				this.drawPointOfInterestInfo(pointOfInterest);
 			}
 		});
 		this.getGhostPointsOfInterest().forEach((blockPos2x, list) -> {
@@ -121,31 +121,31 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 		});
 	}
 
-	private static void method_23143(ChunkSectionPos chunkSectionPos) {
+	private static void drawSection(ChunkSectionPos pos) {
 		float f = 1.0F;
-		BlockPos blockPos = chunkSectionPos.getCenterPos();
+		BlockPos blockPos = pos.getCenterPos();
 		BlockPos blockPos2 = blockPos.add(-1.0, -1.0, -1.0);
 		BlockPos blockPos3 = blockPos.add(1.0, 1.0, 1.0);
 		DebugRenderer.drawBox(blockPos2, blockPos3, 0.2F, 1.0F, 0.2F, 0.15F);
 	}
 
-	private static void method_23138(BlockPos blockPos) {
+	private static void drawPointOfInterest(BlockPos pos) {
 		float f = 0.05F;
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
-		DebugRenderer.drawBox(blockPos, 0.05F, 0.2F, 0.2F, 1.0F, 0.3F);
+		DebugRenderer.drawBox(pos, 0.05F, 0.2F, 0.2F, 1.0F, 0.3F);
 	}
 
-	private void drawGhostPointOfInterest(BlockPos blockPos, List<String> list) {
+	private void drawGhostPointOfInterest(BlockPos pos, List<String> brains) {
 		float f = 0.05F;
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
-		DebugRenderer.drawBox(blockPos, 0.05F, 0.2F, 0.2F, 1.0F, 0.3F);
-		drawString("" + list, blockPos, 0, -256);
-		drawString("Ghost POI", blockPos, 1, -65536);
+		DebugRenderer.drawBox(pos, 0.05F, 0.2F, 0.2F, 1.0F, 0.3F);
+		drawString("" + brains, pos, 0, -256);
+		drawString("Ghost POI", pos, 1, -65536);
 	}
 
-	private void drawPointOfInterest(VillageDebugRenderer.PointOfInterest pointOfInterest) {
+	private void drawPointOfInterestInfo(VillageDebugRenderer.PointOfInterest pointOfInterest) {
 		int i = 0;
 		if (this.getVillagerNames(pointOfInterest).size() < 4) {
 			drawString("" + this.getVillagerNames(pointOfInterest), pointOfInterest, i, -256);
@@ -157,19 +157,19 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 		drawString(pointOfInterest.field_18932, pointOfInterest, ++i, -1);
 	}
 
-	private void drawPath(VillageDebugRenderer.Brain brain, double d, double e, double f) {
+	private void drawPath(VillageDebugRenderer.Brain brain, double cameraX, double cameraY, double cameraZ) {
 		if (brain.path != null) {
-			PathfindingDebugRenderer.drawPath(brain.path, 0.5F, false, false, d, e, f);
+			PathfindingDebugRenderer.drawPath(brain.path, 0.5F, false, false, cameraX, cameraY, cameraZ);
 		}
 	}
 
-	private void drawBrain(VillageDebugRenderer.Brain brain, double d, double e, double f) {
+	private void drawBrain(VillageDebugRenderer.Brain brain, double cameraX, double cameraY, double cameraZ) {
 		boolean bl = this.isTargeted(brain);
 		int i = 0;
 		drawString(brain.pos, i, brain.field_19328, -1, 0.03F);
 		i++;
 		if (bl) {
-			drawString(brain.pos, i, brain.field_18925 + " " + brain.xp + "xp", -1, 0.02F);
+			drawString(brain.pos, i, brain.profession + " " + brain.xp + "xp", -1, 0.02F);
 			i++;
 		}
 
@@ -217,7 +217,7 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 		}
 
 		if (bl) {
-			this.drawPath(brain, d, e, f);
+			this.drawPath(brain, cameraX, cameraY, cameraZ);
 		}
 	}
 
@@ -247,25 +247,25 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	private Set<String> getVillagerNames(VillageDebugRenderer.PointOfInterest pointOfInterest) {
-		return (Set<String>)this.method_23142(pointOfInterest.pos).stream().map(NameGenerator::name).collect(Collectors.toSet());
+		return (Set<String>)this.getBrains(pointOfInterest.pos).stream().map(NameGenerator::name).collect(Collectors.toSet());
 	}
 
 	private boolean isTargeted(VillageDebugRenderer.Brain brain) {
 		return Objects.equals(this.targetedEntity, brain.uuid);
 	}
 
-	private boolean method_23147(VillageDebugRenderer.Brain brain) {
+	private boolean isClose(VillageDebugRenderer.Brain brain) {
 		PlayerEntity playerEntity = this.client.player;
 		BlockPos blockPos = new BlockPos(playerEntity.getX(), brain.pos.getY(), playerEntity.getZ());
 		BlockPos blockPos2 = new BlockPos(brain.pos);
 		return blockPos.isWithinDistance(blockPos2, 30.0);
 	}
 
-	private Collection<UUID> method_23142(BlockPos blockPos) {
+	private Collection<UUID> getBrains(BlockPos pointOfInterest) {
 		return (Collection<UUID>)this.brains
 			.values()
 			.stream()
-			.filter(brain -> brain.method_23151(blockPos))
+			.filter(brain -> brain.isPointOfInterest(pointOfInterest))
 			.map(VillageDebugRenderer.Brain::getUuid)
 			.collect(Collectors.toSet());
 	}
@@ -274,7 +274,7 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 		Map<BlockPos, List<String>> map = Maps.<BlockPos, List<String>>newHashMap();
 
 		for (VillageDebugRenderer.Brain brain : this.brains.values()) {
-			for (BlockPos blockPos : brain.field_18930) {
+			for (BlockPos blockPos : brain.pointsOfInterest) {
 				if (!this.pointsOfInterest.containsKey(blockPos)) {
 					List<String> list = (List<String>)map.get(blockPos);
 					if (list == null) {
@@ -299,7 +299,7 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 		public final UUID uuid;
 		public final int field_18924;
 		public final String field_19328;
-		public final String field_18925;
+		public final String profession;
 		public final int xp;
 		public final Position pos;
 		public final String field_19372;
@@ -309,22 +309,22 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 		public final List<String> field_18928 = Lists.<String>newArrayList();
 		public final List<String> field_19374 = Lists.<String>newArrayList();
 		public final List<String> field_19375 = Lists.<String>newArrayList();
-		public final Set<BlockPos> field_18930 = Sets.<BlockPos>newHashSet();
+		public final Set<BlockPos> pointsOfInterest = Sets.<BlockPos>newHashSet();
 
-		public Brain(UUID uuid, int i, String string, String string2, int xp, Position pos, String string3, @Nullable Path path, boolean wantsGolem) {
+		public Brain(UUID uuid, int i, String string, String profession, int xp, Position pos, String string2, @Nullable Path path, boolean wantsGolem) {
 			this.uuid = uuid;
 			this.field_18924 = i;
 			this.field_19328 = string;
-			this.field_18925 = string2;
+			this.profession = profession;
 			this.xp = xp;
 			this.pos = pos;
-			this.field_19372 = string3;
+			this.field_19372 = string2;
 			this.path = path;
 			this.wantsGolem = wantsGolem;
 		}
 
-		private boolean method_23151(BlockPos blockPos) {
-			return this.field_18930.stream().anyMatch(blockPos::equals);
+		private boolean isPointOfInterest(BlockPos blockPos) {
+			return this.pointsOfInterest.stream().anyMatch(blockPos::equals);
 		}
 
 		public UUID getUuid() {

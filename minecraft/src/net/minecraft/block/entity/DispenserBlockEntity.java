@@ -28,17 +28,6 @@ public class DispenserBlockEntity extends LootableContainerBlockEntity {
 		return 9;
 	}
 
-	@Override
-	public boolean isInvEmpty() {
-		for (ItemStack itemStack : this.inventory) {
-			if (!itemStack.isEmpty()) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
 	public int chooseNonEmptySlot() {
 		this.checkLootInteraction(null);
 		int i = -1;

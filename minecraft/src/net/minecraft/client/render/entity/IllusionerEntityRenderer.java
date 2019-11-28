@@ -48,7 +48,7 @@ public class IllusionerEntityRenderer extends IllagerEntityRenderer<IllusionerEn
 	public void render(IllusionerEntity illusionerEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		if (illusionerEntity.isInvisible()) {
 			Vec3d[] vec3ds = illusionerEntity.method_7065(g);
-			float h = this.getAge(illusionerEntity, g);
+			float h = this.getCustomAngle(illusionerEntity, g);
 
 			for (int j = 0; j < vec3ds.length; j++) {
 				matrixStack.push();

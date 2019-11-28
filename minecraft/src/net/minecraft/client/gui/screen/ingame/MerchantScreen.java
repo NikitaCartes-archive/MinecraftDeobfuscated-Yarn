@@ -96,7 +96,7 @@ public class MerchantScreen extends AbstractContainerScreen<MerchantContainer> {
 			if (tradeOffer.isDisabled()) {
 				this.minecraft.getTextureManager().bindTexture(TEXTURE);
 				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-				blit(this.left + 83 + 99, this.top + 35, this.getBlitOffset(), 311.0F, 0.0F, 28, 21, 256, 512);
+				blit(this.x + 83 + 99, this.y + 35, this.getBlitOffset(), 311.0F, 0.0F, 28, 21, 256, 512);
 			}
 		}
 	}
@@ -249,7 +249,7 @@ public class MerchantScreen extends AbstractContainerScreen<MerchantContainer> {
 	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
 		int i = this.container.getRecipes().size();
 		if (this.scrolling) {
-			int j = this.top + 18;
+			int j = this.y + 18;
 			int k = j + 139;
 			int l = i - 7;
 			float f = ((float)mouseY - (float)j - 13.5F) / ((float)(k - j) - 27.0F);

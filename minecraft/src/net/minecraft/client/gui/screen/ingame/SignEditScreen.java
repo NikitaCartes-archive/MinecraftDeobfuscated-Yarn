@@ -25,7 +25,6 @@ import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.Texts;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.server.network.packet.UpdateSignC2SPacket;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -114,8 +113,7 @@ public class SignEditScreen extends Screen {
 		matrixStack.push();
 		matrixStack.translate((double)(this.width / 2), 0.0, 50.0);
 		float f = 93.75F;
-		matrixStack.scale(-93.75F, -93.75F, -93.75F);
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
+		matrixStack.scale(93.75F, -93.75F, 93.75F);
 		matrixStack.translate(0.0, -1.3125, 0.0);
 		BlockState blockState = this.sign.getCachedState();
 		boolean bl = blockState.getBlock() instanceof SignBlock;

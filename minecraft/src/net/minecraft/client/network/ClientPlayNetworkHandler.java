@@ -610,8 +610,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 					float g = packet.hasRotation() ? (float)(packet.getPitch() * 360) / 256.0F : entity.pitch;
 					entity.updateTrackedPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, f, g, 3, false);
 				} else if (packet.hasRotation()) {
-					float h = (float)packet.getYaw();
-					float f = (float)packet.getPitch();
+					float h = (float)(packet.getYaw() * 360) / 256.0F;
+					float f = (float)(packet.getPitch() * 360) / 256.0F;
 					entity.updateTrackedPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), h, f, 3, false);
 				}
 
@@ -653,11 +653,11 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		if (bl) {
 			d = vec3d.getX();
 			e = playerEntity.getX() + packet.getX();
-			playerEntity.prevRenderX = playerEntity.prevRenderX + packet.getX();
+			playerEntity.lastRenderX = playerEntity.lastRenderX + packet.getX();
 		} else {
 			d = 0.0;
 			e = packet.getX();
-			playerEntity.prevRenderX = e;
+			playerEntity.lastRenderX = e;
 		}
 
 		double f;
@@ -665,11 +665,11 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		if (bl2) {
 			f = vec3d.getY();
 			g = playerEntity.getY() + packet.getY();
-			playerEntity.prevRenderY = playerEntity.prevRenderY + packet.getY();
+			playerEntity.lastRenderY = playerEntity.lastRenderY + packet.getY();
 		} else {
 			f = 0.0;
 			g = packet.getY();
-			playerEntity.prevRenderY = g;
+			playerEntity.lastRenderY = g;
 		}
 
 		double h;
@@ -677,11 +677,11 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		if (bl3) {
 			h = vec3d.getZ();
 			i = playerEntity.getZ() + packet.getZ();
-			playerEntity.prevRenderZ = playerEntity.prevRenderZ + packet.getZ();
+			playerEntity.lastRenderZ = playerEntity.lastRenderZ + packet.getZ();
 		} else {
 			h = 0.0;
 			i = packet.getZ();
-			playerEntity.prevRenderZ = i;
+			playerEntity.lastRenderZ = i;
 		}
 
 		playerEntity.setPos(e, g, i);
@@ -1922,7 +1922,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 
 				for (int u = 0; u < t; u++) {
 					BlockPos blockPos3 = packetByteBuf.readBlockPos();
-					brain.field_18930.add(blockPos3);
+					brain.pointsOfInterest.add(blockPos3);
 				}
 
 				int u = packetByteBuf.readInt();

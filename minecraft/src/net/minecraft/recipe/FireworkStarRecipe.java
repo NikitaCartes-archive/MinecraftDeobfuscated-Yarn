@@ -31,7 +31,7 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 	);
 	private static final Ingredient TRAIL_MODIFIER = Ingredient.ofItems(Items.DIAMOND);
 	private static final Ingredient FLICKER_MODIFIER = Ingredient.ofItems(Items.GLOWSTONE_DUST);
-	private static final Map<Item, FireworkItem.Type> TYPE_MODIFIER_MAP = Util.create(Maps.<Item, FireworkItem.Type>newHashMap(), hashMap -> {
+	private static final Map<Item, FireworkItem.Type> TYPE_MODIFIER_MAP = Util.make(Maps.<Item, FireworkItem.Type>newHashMap(), hashMap -> {
 		hashMap.put(Items.FIRE_CHARGE, FireworkItem.Type.LARGE_BALL);
 		hashMap.put(Items.FEATHER, FireworkItem.Type.BURST);
 		hashMap.put(Items.GOLD_NUGGET, FireworkItem.Type.STAR);

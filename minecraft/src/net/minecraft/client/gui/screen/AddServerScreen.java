@@ -100,7 +100,7 @@ public class AddServerScreen extends Screen {
 	}
 
 	private void onClose(String text) {
-		this.onClose();
+		this.method_24183();
 	}
 
 	@Override

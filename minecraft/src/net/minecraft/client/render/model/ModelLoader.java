@@ -86,9 +86,9 @@ public class ModelLoader {
 		.map(identifier -> new Identifier("textures/" + identifier.getPath() + ".png"))
 		.collect(Collectors.toList());
 	public static final List<RenderLayer> BLOCK_DESTRUCTION_RENDER_LAYERS = (List<RenderLayer>)BLOCK_DESTRUCTION_STAGE_TEXTURES.stream()
-		.map(RenderLayer::getCrumbling)
+		.map(RenderLayer::getBlockBreaking)
 		.collect(Collectors.toList());
-	private static final Set<SpriteIdentifier> DEFAULT_TEXTURES = Util.create(Sets.<SpriteIdentifier>newHashSet(), hashSet -> {
+	private static final Set<SpriteIdentifier> DEFAULT_TEXTURES = Util.make(Sets.<SpriteIdentifier>newHashSet(), hashSet -> {
 		hashSet.add(WATER_FLOW);
 		hashSet.add(LAVA_FLOW);
 		hashSet.add(WATER_OVERLAY);
@@ -130,10 +130,10 @@ public class ModelLoader {
 	private static final Map<String, String> BUILTIN_MODEL_DEFINITIONS = Maps.<String, String>newHashMap(ImmutableMap.of("missing", MISSING_DEFINITION));
 	private static final Splitter COMMA_SPLITTER = Splitter.on(',');
 	private static final Splitter KEY_VALUE_SPLITTER = Splitter.on('=').limit(2);
-	public static final JsonUnbakedModel GENERATION_MARKER = Util.create(
+	public static final JsonUnbakedModel GENERATION_MARKER = Util.make(
 		JsonUnbakedModel.deserialize("{}"), jsonUnbakedModel -> jsonUnbakedModel.id = "generation marker"
 	);
-	public static final JsonUnbakedModel BLOCK_ENTITY_MARKER = Util.create(
+	public static final JsonUnbakedModel BLOCK_ENTITY_MARKER = Util.make(
 		JsonUnbakedModel.deserialize("{}"), jsonUnbakedModel -> jsonUnbakedModel.id = "block entity marker"
 	);
 	private static final StateManager<Block, BlockState> ITEM_FRAME_STATE_FACTORY = new StateManager.Builder<Block, BlockState>(Blocks.AIR)
@@ -155,7 +155,7 @@ public class ModelLoader {
 	private final Map<Identifier, BakedModel> bakedModels = Maps.<Identifier, BakedModel>newHashMap();
 	private final Map<Identifier, Pair<SpriteAtlasTexture, SpriteAtlasTexture.Data>> spriteAtlasData;
 	private int nextStateId = 1;
-	private final Object2IntMap<BlockState> stateLookup = Util.create(
+	private final Object2IntMap<BlockState> stateLookup = Util.make(
 		new Object2IntOpenHashMap<>(), object2IntOpenHashMap -> object2IntOpenHashMap.defaultReturnValue(-1)
 	);
 

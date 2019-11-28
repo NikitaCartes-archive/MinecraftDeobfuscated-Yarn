@@ -69,7 +69,7 @@ public class SnowBlock extends Block {
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
 		BlockState blockState = world.getBlockState(pos.down());
 		Block block = blockState.getBlock();
-		return block != Blocks.ICE && block != Blocks.PACKED_ICE && block != Blocks.BARRIER
+		return block != Blocks.ICE && block != Blocks.PACKED_ICE && block != Blocks.BARRIER && block != Blocks.WHEAT
 			? Block.isFaceFullSquare(blockState.getOutlineShape(world, pos.down()), Direction.UP) || block == this && (Integer)blockState.get(LAYERS) == 8
 			: false;
 	}

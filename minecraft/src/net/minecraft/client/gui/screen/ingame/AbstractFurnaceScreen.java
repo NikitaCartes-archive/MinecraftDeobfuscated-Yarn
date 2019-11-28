@@ -32,12 +32,12 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceContainer> 
 		super.init();
 		this.narrow = this.width < 379;
 		this.recipeBook.initialize(this.width, this.height, this.minecraft, this.narrow, this.container);
-		this.left = this.recipeBook.findLeftEdge(this.narrow, this.width, this.containerWidth);
-		this.addButton(new TexturedButtonWidget(this.left + 20, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE, buttonWidget -> {
+		this.x = this.recipeBook.findLeftEdge(this.narrow, this.width, this.containerWidth);
+		this.addButton(new TexturedButtonWidget(this.x + 20, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE, buttonWidget -> {
 			this.recipeBook.reset(this.narrow);
 			this.recipeBook.toggleOpen();
-			this.left = this.recipeBook.findLeftEdge(this.narrow, this.width, this.containerWidth);
-			((TexturedButtonWidget)buttonWidget).setPos(this.left + 20, this.height / 2 - 49);
+			this.x = this.recipeBook.findLeftEdge(this.narrow, this.width, this.containerWidth);
+			((TexturedButtonWidget)buttonWidget).setPos(this.x + 20, this.height / 2 - 49);
 		}));
 	}
 
@@ -56,11 +56,11 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceContainer> 
 		} else {
 			this.recipeBook.render(mouseX, mouseY, delta);
 			super.render(mouseX, mouseY, delta);
-			this.recipeBook.drawGhostSlots(this.left, this.top, true, delta);
+			this.recipeBook.drawGhostSlots(this.x, this.y, true, delta);
 		}
 
 		this.drawMouseoverTooltip(mouseX, mouseY);
-		this.recipeBook.drawTooltip(this.left, this.top, mouseX, mouseY);
+		this.recipeBook.drawTooltip(this.x, this.y, mouseX, mouseY);
 	}
 
 	@Override
@@ -74,8 +74,8 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceContainer> 
 	protected void drawBackground(float delta, int mouseX, int mouseY) {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.minecraft.getTextureManager().bindTexture(this.background);
-		int i = this.left;
-		int j = this.top;
+		int i = this.x;
+		int j = this.y;
 		this.blit(i, j, 0, 0, this.containerWidth, this.containerHeight);
 		if (this.container.isBurning()) {
 			int k = this.container.getFuelProgress();
@@ -112,7 +112,7 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceContainer> 
 			|| mouseY < (double)top
 			|| mouseX >= (double)(left + this.containerWidth)
 			|| mouseY >= (double)(top + this.containerHeight);
-		return this.recipeBook.isClickOutsideBounds(mouseX, mouseY, this.left, this.top, this.containerWidth, this.containerHeight, button) && bl;
+		return this.recipeBook.isClickOutsideBounds(mouseX, mouseY, this.x, this.y, this.containerWidth, this.containerHeight, button) && bl;
 	}
 
 	@Override

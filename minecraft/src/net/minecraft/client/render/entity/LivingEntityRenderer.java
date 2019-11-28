@@ -35,7 +35,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 	public LivingEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, M entityModel, float f) {
 		super(entityRenderDispatcher);
 		this.model = entityModel;
-		this.field_4673 = f;
+		this.shadowSize = f;
 	}
 
 	protected final boolean addFeature(FeatureRenderer<T, M> featureRenderer) {
@@ -50,8 +50,8 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 	public void render(T livingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
 		this.model.handSwingProgress = this.getHandSwingProgress(livingEntity, g);
-		this.model.isRiding = livingEntity.hasVehicle();
-		this.model.isChild = livingEntity.isBaby();
+		this.model.riding = livingEntity.hasVehicle();
+		this.model.child = livingEntity.isBaby();
 		float h = MathHelper.lerpAngleDegrees(g, livingEntity.prevBodyYaw, livingEntity.bodyYaw);
 		float j = MathHelper.lerpAngleDegrees(g, livingEntity.prevHeadYaw, livingEntity.headYaw);
 		float k = j - h;
@@ -85,7 +85,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 			}
 		}
 
-		float lx = this.getAge(livingEntity, g);
+		float lx = this.getCustomAngle(livingEntity, g);
 		this.setupTransforms(livingEntity, matrixStack, lx, h, g);
 		matrixStack.scale(-1.0F, -1.0F, 1.0F);
 		this.scale(livingEntity, matrixStack, g);
@@ -121,7 +121,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 
 		if (bl2 || bl3 || bl) {
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(renderLayer);
-			int p = method_23622(livingEntity, this.method_23185(livingEntity, g));
+			int p = getOverlay(livingEntity, this.getWhiteOverlayProgress(livingEntity, g));
 			this.model.render(matrixStack, vertexConsumer, i, p, 1.0F, 1.0F, 1.0F, bl3 ? 0.15F : 1.0F);
 		}
 
@@ -135,8 +135,8 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		super.render(livingEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
-	public static int method_23622(LivingEntity livingEntity, float f) {
-		return OverlayTexture.packUv(OverlayTexture.getU(f), OverlayTexture.getV(livingEntity.hurtTime > 0 || livingEntity.deathTime > 0));
+	public static int getOverlay(LivingEntity entity, float whiteOverlayProgress) {
+		return OverlayTexture.packUv(OverlayTexture.getU(whiteOverlayProgress), OverlayTexture.getV(entity.hurtTime > 0 || entity.deathTime > 0));
 	}
 
 	protected boolean method_4056(T livingEntity, boolean bl) {
@@ -184,7 +184,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		} else if (entity.hasCustomName() || entity instanceof PlayerEntity) {
 			String string = Formatting.strip(entity.getName().getString());
 			if (("Dinnerbone".equals(string) || "Grumm".equals(string))
-				&& (!(entity instanceof PlayerEntity) || ((PlayerEntity)entity).isSkinOverlayVisible(PlayerModelPart.CAPE))) {
+				&& (!(entity instanceof PlayerEntity) || ((PlayerEntity)entity).isPartVisible(PlayerModelPart.CAPE))) {
 				matrixStack.translate(0.0, (double)(entity.getHeight() + 0.1F), 0.0);
 				matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
 			}
@@ -195,7 +195,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		return entity.getHandSwingProgress(tickDelta);
 	}
 
-	protected float getAge(T entity, float tickDelta) {
+	protected float getCustomAngle(T entity, float tickDelta) {
 		return (float)entity.age + tickDelta;
 	}
 
@@ -203,7 +203,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		return 90.0F;
 	}
 
-	protected float method_23185(T livingEntity, float f) {
+	protected float getWhiteOverlayProgress(T entity, float tickDelta) {
 		return 0.0F;
 	}
 

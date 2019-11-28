@@ -52,14 +52,14 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean shouldRenderAtDistance(double distance) {
+	public boolean shouldRender(double distance) {
 		return distance < 4096.0 && !this.wasShotByEntity();
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean shouldRenderFrom(double x, double y, double z) {
-		return super.shouldRenderFrom(x, y, z) && !this.wasShotByEntity();
+	public boolean shouldRender(double cameraX, double cameraY, double cameraZ) {
+		return super.shouldRender(cameraX, cameraY, cameraZ) && !this.wasShotByEntity();
 	}
 
 	public FireworkEntity(World world, double x, double y, double z, ItemStack item) {

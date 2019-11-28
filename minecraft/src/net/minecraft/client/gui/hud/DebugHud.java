@@ -53,7 +53,7 @@ import net.minecraft.world.dimension.DimensionType;
 
 @Environment(EnvType.CLIENT)
 public class DebugHud extends DrawableHelper {
-	private static final Map<Heightmap.Type, String> HEIGHT_MAP_TYPES = Util.create(new EnumMap(Heightmap.Type.class), enumMap -> {
+	private static final Map<Heightmap.Type, String> HEIGHT_MAP_TYPES = Util.make(new EnumMap(Heightmap.Type.class), enumMap -> {
 		enumMap.put(Heightmap.Type.WORLD_SURFACE_WG, "SW");
 		enumMap.put(Heightmap.Type.WORLD_SURFACE, "S");
 		enumMap.put(Heightmap.Type.OCEAN_FLOOR_WG, "OW");

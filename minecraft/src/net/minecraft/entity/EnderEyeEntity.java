@@ -44,7 +44,7 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 
 	public void setItem(ItemStack stack) {
 		if (stack.getItem() != Items.ENDER_EYE || stack.hasTag()) {
-			this.getDataTracker().set(ITEM, Util.create(stack.copy(), stackx -> stackx.setCount(1)));
+			this.getDataTracker().set(ITEM, Util.make(stack.copy(), stackx -> stackx.setCount(1)));
 		}
 	}
 
@@ -65,7 +65,7 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean shouldRenderAtDistance(double distance) {
+	public boolean shouldRender(double distance) {
 		double d = this.getBoundingBox().getAverageSideLength() * 4.0;
 		if (Double.isNaN(d)) {
 			d = 4.0;
