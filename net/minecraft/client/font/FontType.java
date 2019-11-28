@@ -43,7 +43,7 @@ public enum FontType {
     }
 
     static {
-        REGISTRY = Util.create(Maps.newHashMap(), hashMap -> {
+        REGISTRY = Util.make(Maps.newHashMap(), hashMap -> {
             for (FontType fontType : FontType.values()) {
                 hashMap.put(fontType.id, fontType);
             }

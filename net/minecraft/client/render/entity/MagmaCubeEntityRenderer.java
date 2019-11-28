@@ -23,7 +23,7 @@ extends MobEntityRenderer<MagmaCubeEntity, MagmaCubeEntityModel<MagmaCubeEntity>
     }
 
     @Override
-    protected int method_24087(MagmaCubeEntity magmaCubeEntity, float f) {
+    protected int getBlockLight(MagmaCubeEntity magmaCubeEntity, float f) {
         return 15;
     }
 

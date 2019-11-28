@@ -61,43 +61,6 @@ extends LootableContainerBlockEntity {
     }
 
     @Override
-    public boolean isInvEmpty() {
-        for (ItemStack itemStack : this.inventory) {
-            if (itemStack.isEmpty()) continue;
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public ItemStack getInvStack(int i) {
-        return this.inventory.get(i);
-    }
-
-    @Override
-    public ItemStack takeInvStack(int i, int j) {
-        return Inventories.splitStack(this.inventory, i, j);
-    }
-
-    @Override
-    public ItemStack removeInvStack(int i) {
-        return Inventories.removeStack(this.inventory, i);
-    }
-
-    @Override
-    public void setInvStack(int i, ItemStack itemStack) {
-        this.inventory.set(i, itemStack);
-        if (itemStack.getCount() > this.getInvMaxStackAmount()) {
-            itemStack.setCount(this.getInvMaxStackAmount());
-        }
-    }
-
-    @Override
-    public void clear() {
-        this.inventory.clear();
-    }
-
-    @Override
     protected DefaultedList<ItemStack> getInvStackList() {
         return this.inventory;
     }

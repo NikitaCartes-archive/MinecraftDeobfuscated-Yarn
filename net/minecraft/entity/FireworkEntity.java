@@ -62,14 +62,14 @@ Projectile {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean shouldRenderAtDistance(double d) {
+    public boolean shouldRender(double d) {
         return d < 4096.0 && !this.wasShotByEntity();
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean shouldRenderFrom(double d, double e, double f) {
-        return super.shouldRenderFrom(d, e, f) && !this.wasShotByEntity();
+    public boolean shouldRender(double d, double e, double f) {
+        return super.shouldRender(d, e, f) && !this.wasShotByEntity();
     }
 
     public FireworkEntity(World world, double d, double e, double f, ItemStack itemStack) {

@@ -7,6 +7,7 @@ import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import java.util.Calendar;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.AbstractChestBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -85,18 +86,18 @@ extends BlockEntityRenderer<T> {
         BlockState blockState = bl ? ((BlockEntity)blockEntity).getCachedState() : (BlockState)Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.SOUTH);
         ChestType chestType = blockState.contains(ChestBlock.CHEST_TYPE) ? blockState.get(ChestBlock.CHEST_TYPE) : ChestType.SINGLE;
         Block block = blockState.getBlock();
-        if (!(block instanceof ChestBlock)) {
+        if (!(block instanceof AbstractChestBlock)) {
             return;
         }
-        ChestBlock chestBlock = (ChestBlock)block;
+        AbstractChestBlock abstractChestBlock = (AbstractChestBlock)block;
         boolean bl2 = chestType != ChestType.SINGLE;
         matrixStack.push();
         float g = blockState.get(ChestBlock.FACING).asRotation();
         matrixStack.translate(0.5, 0.5, 0.5);
         matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-g));
         matrixStack.translate(-0.5, -0.5, -0.5);
-        DoubleBlockProperties.PropertySource<Object> propertySource = bl ? ChestBlock.method_24167(chestBlock, blockState, world, ((BlockEntity)blockEntity).getPos(), true) : DoubleBlockProperties.PropertyRetriever::getFallback;
-        float h = propertySource.apply(ChestBlock.method_24166((ChestAnimationProgress)blockEntity)).get(f);
+        DoubleBlockProperties.PropertySource<Object> propertySource = bl ? abstractChestBlock.getBlockEntitySource(blockState, world, ((BlockEntity)blockEntity).getPos(), true) : DoubleBlockProperties.PropertyRetriever::getFallback;
+        float h = propertySource.apply(ChestBlock.getAnimationProgressRetriever((ChestAnimationProgress)blockEntity)).get(f);
         h = 1.0f - h;
         h = 1.0f - h * h * h;
         int k = ((Int2IntFunction)propertySource.apply(new LightmapCoordinatesRetriever())).applyAsInt(i);

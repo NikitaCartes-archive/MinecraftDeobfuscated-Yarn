@@ -26,7 +26,7 @@ extends Block {
     public static final BooleanProperty WEST = Properties.WEST;
     public static final BooleanProperty UP = Properties.UP;
     public static final BooleanProperty DOWN = Properties.DOWN;
-    public static final Map<Direction, BooleanProperty> FACING_PROPERTIES = Util.create(Maps.newEnumMap(Direction.class), enumMap -> {
+    public static final Map<Direction, BooleanProperty> FACING_PROPERTIES = Util.make(Maps.newEnumMap(Direction.class), enumMap -> {
         enumMap.put(Direction.NORTH, NORTH);
         enumMap.put(Direction.EAST, EAST);
         enumMap.put(Direction.SOUTH, SOUTH);

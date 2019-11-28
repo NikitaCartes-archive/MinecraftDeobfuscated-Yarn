@@ -161,7 +161,7 @@ extends Screen {
         int m = 30;
         this.minecraft.getTextureManager().bindTexture(PANORAMA_OVERLAY);
         RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, this.doBackgroundFade ? (float)MathHelper.ceil(MathHelper.clamp(g, 0.0f, 1.0f)) : 1.0f);
         TitleScreen.blit(0, 0, this.width, this.height, 0.0f, 0.0f, 16, 128, 16, 128);
         float h = this.doBackgroundFade ? MathHelper.clamp(g - 1.0f, 0.0f, 1.0f) : 1.0f;

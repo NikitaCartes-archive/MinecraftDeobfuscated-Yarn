@@ -81,7 +81,7 @@ extends QuadrupedEntityModel<T> {
             this.backLeftLeg.yaw = MathHelper.cos(f * 5.0f) * 3.0f * g;
             this.backLeftLeg.pitch = 0.0f;
         }
-        this.field_3594.visible = !this.isChild && ((TurtleEntity)turtleEntity).hasEgg();
+        this.field_3594.visible = !this.child && ((TurtleEntity)turtleEntity).hasEgg();
     }
 
     @Override

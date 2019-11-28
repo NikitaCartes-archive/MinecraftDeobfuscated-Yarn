@@ -32,7 +32,7 @@ extends FeatureRenderer<T, M> {
         float m = (float)((Entity)entity).age + h;
         EntityModel<T> entityModel = this.getEnergySwirlModel();
         entityModel.animateModel(entity, f, g, h);
-        ((EntityModel)this.getModel()).copyStateTo(entityModel);
+        ((EntityModel)this.getContextModel()).copyStateTo(entityModel);
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEnergySwirl(this.getEnergySwirlTexture(), this.getEnergySwirlX(m), m * 0.01f));
         entityModel.setAngles(entity, f, g, j, k, l);
         entityModel.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 0.5f, 0.5f, 0.5f, 1.0f);

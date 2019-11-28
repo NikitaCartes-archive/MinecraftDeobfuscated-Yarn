@@ -10,16 +10,16 @@ import net.minecraft.util.math.MathHelper;
 
 public final class Quaternion {
     public static final Quaternion IDENTITY = new Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
-    private float field_21582;
-    private float field_21583;
-    private float field_21584;
-    private float field_21585;
+    private float b;
+    private float c;
+    private float d;
+    private float a;
 
     public Quaternion(float f, float g, float h, float i) {
-        this.field_21582 = f;
-        this.field_21583 = g;
-        this.field_21584 = h;
-        this.field_21585 = i;
+        this.b = f;
+        this.c = g;
+        this.d = h;
+        this.a = i;
     }
 
     public Quaternion(Vector3f vector3f, float f, boolean bl) {
@@ -27,10 +27,10 @@ public final class Quaternion {
             f *= (float)Math.PI / 180;
         }
         float g = Quaternion.sin(f / 2.0f);
-        this.field_21582 = vector3f.getX() * g;
-        this.field_21583 = vector3f.getY() * g;
-        this.field_21584 = vector3f.getZ() * g;
-        this.field_21585 = Quaternion.cos(f / 2.0f);
+        this.b = vector3f.getX() * g;
+        this.c = vector3f.getY() * g;
+        this.d = vector3f.getZ() * g;
+        this.a = Quaternion.cos(f / 2.0f);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -46,17 +46,17 @@ public final class Quaternion {
         float l = Quaternion.cos(0.5f * g);
         float m = Quaternion.sin(0.5f * h);
         float n = Quaternion.cos(0.5f * h);
-        this.field_21582 = i * l * n + j * k * m;
-        this.field_21583 = j * k * n - i * l * m;
-        this.field_21584 = i * k * n + j * l * m;
-        this.field_21585 = j * l * n - i * k * m;
+        this.b = i * l * n + j * k * m;
+        this.c = j * k * n - i * l * m;
+        this.d = i * k * n + j * l * m;
+        this.a = j * l * n - i * k * m;
     }
 
     public Quaternion(Quaternion quaternion) {
-        this.field_21582 = quaternion.field_21582;
-        this.field_21583 = quaternion.field_21583;
-        this.field_21584 = quaternion.field_21584;
-        this.field_21585 = quaternion.field_21585;
+        this.b = quaternion.b;
+        this.c = quaternion.c;
+        this.d = quaternion.d;
+        this.a = quaternion.a;
     }
 
     public boolean equals(Object object) {
@@ -67,23 +67,23 @@ public final class Quaternion {
             return false;
         }
         Quaternion quaternion = (Quaternion)object;
-        if (Float.compare(quaternion.field_21582, this.field_21582) != 0) {
+        if (Float.compare(quaternion.b, this.b) != 0) {
             return false;
         }
-        if (Float.compare(quaternion.field_21583, this.field_21583) != 0) {
+        if (Float.compare(quaternion.c, this.c) != 0) {
             return false;
         }
-        if (Float.compare(quaternion.field_21584, this.field_21584) != 0) {
+        if (Float.compare(quaternion.d, this.d) != 0) {
             return false;
         }
-        return Float.compare(quaternion.field_21585, this.field_21585) == 0;
+        return Float.compare(quaternion.a, this.a) == 0;
     }
 
     public int hashCode() {
-        int i = Float.floatToIntBits(this.field_21582);
-        i = 31 * i + Float.floatToIntBits(this.field_21583);
-        i = 31 * i + Float.floatToIntBits(this.field_21584);
-        i = 31 * i + Float.floatToIntBits(this.field_21585);
+        int i = Float.floatToIntBits(this.b);
+        i = 31 * i + Float.floatToIntBits(this.c);
+        i = 31 * i + Float.floatToIntBits(this.d);
+        i = 31 * i + Float.floatToIntBits(this.a);
         return i;
     }
 
@@ -97,19 +97,19 @@ public final class Quaternion {
     }
 
     public float getB() {
-        return this.field_21582;
+        return this.b;
     }
 
     public float getC() {
-        return this.field_21583;
+        return this.c;
     }
 
     public float getD() {
-        return this.field_21584;
+        return this.d;
     }
 
     public float getA() {
-        return this.field_21585;
+        return this.a;
     }
 
     public void hamiltonProduct(Quaternion quaternion) {
@@ -121,32 +121,32 @@ public final class Quaternion {
         float k = quaternion.getC();
         float l = quaternion.getD();
         float m = quaternion.getA();
-        this.field_21582 = i * j + f * m + g * l - h * k;
-        this.field_21583 = i * k - f * l + g * m + h * j;
-        this.field_21584 = i * l + f * k - g * j + h * m;
-        this.field_21585 = i * m - f * j - g * k - h * l;
+        this.b = i * j + f * m + g * l - h * k;
+        this.c = i * k - f * l + g * m + h * j;
+        this.d = i * l + f * k - g * j + h * m;
+        this.a = i * m - f * j - g * k - h * l;
     }
 
     @Environment(value=EnvType.CLIENT)
     public void scale(float f) {
-        this.field_21582 *= f;
-        this.field_21583 *= f;
-        this.field_21584 *= f;
-        this.field_21585 *= f;
+        this.b *= f;
+        this.c *= f;
+        this.d *= f;
+        this.a *= f;
     }
 
     public void conjugate() {
-        this.field_21582 = -this.field_21582;
-        this.field_21583 = -this.field_21583;
-        this.field_21584 = -this.field_21584;
+        this.b = -this.b;
+        this.c = -this.c;
+        this.d = -this.d;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void method_23758(float f, float g, float h, float i) {
-        this.field_21582 = f;
-        this.field_21583 = g;
-        this.field_21584 = h;
-        this.field_21585 = i;
+    public void set(float f, float g, float h, float i) {
+        this.b = f;
+        this.c = g;
+        this.d = h;
+        this.a = i;
     }
 
     private static float cos(float f) {
@@ -162,15 +162,15 @@ public final class Quaternion {
         float f = this.getB() * this.getB() + this.getC() * this.getC() + this.getD() * this.getD() + this.getA() * this.getA();
         if (f > 1.0E-6f) {
             float g = MathHelper.fastInverseSqrt(f);
-            this.field_21582 *= g;
-            this.field_21583 *= g;
-            this.field_21584 *= g;
-            this.field_21585 *= g;
+            this.b *= g;
+            this.c *= g;
+            this.d *= g;
+            this.a *= g;
         } else {
-            this.field_21582 = 0.0f;
-            this.field_21583 = 0.0f;
-            this.field_21584 = 0.0f;
-            this.field_21585 = 0.0f;
+            this.b = 0.0f;
+            this.c = 0.0f;
+            this.d = 0.0f;
+            this.a = 0.0f;
         }
     }
 

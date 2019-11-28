@@ -121,7 +121,7 @@ extends LivingEntity {
     private static final Map<EntityPose, EntityDimensions> POSE_DIMENSIONS = ImmutableMap.builder().put(EntityPose.STANDING, STANDING_DIMENSIONS).put(EntityPose.SLEEPING, SLEEPING_DIMENSIONS).put(EntityPose.FALL_FLYING, EntityDimensions.changing(0.6f, 0.6f)).put(EntityPose.SWIMMING, EntityDimensions.changing(0.6f, 0.6f)).put(EntityPose.SPIN_ATTACK, EntityDimensions.changing(0.6f, 0.6f)).put(EntityPose.CROUCHING, EntityDimensions.changing(0.6f, 1.5f)).put(EntityPose.DYING, EntityDimensions.fixed(0.2f, 0.2f)).build();
     private static final TrackedData<Float> ABSORPTION_AMOUNT = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final TrackedData<Integer> SCORE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.INTEGER);
-    protected static final TrackedData<Byte> PLAYER_MODEL_BIT_MASK = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.BYTE);
+    protected static final TrackedData<Byte> PLAYER_MODEL_PARTS = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.BYTE);
     protected static final TrackedData<Byte> MAIN_ARM = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.BYTE);
     protected static final TrackedData<CompoundTag> LEFT_SHOULDER_ENTITY = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
     protected static final TrackedData<CompoundTag> RIGHT_SHOULDER_ENTITY = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
@@ -199,7 +199,7 @@ extends LivingEntity {
         super.initDataTracker();
         this.dataTracker.startTracking(ABSORPTION_AMOUNT, Float.valueOf(0.0f));
         this.dataTracker.startTracking(SCORE, 0);
-        this.dataTracker.startTracking(PLAYER_MODEL_BIT_MASK, (byte)0);
+        this.dataTracker.startTracking(PLAYER_MODEL_PARTS, (byte)0);
         this.dataTracker.startTracking(MAIN_ARM, (byte)1);
         this.dataTracker.startTracking(LEFT_SHOULDER_ENTITY, new CompoundTag());
         this.dataTracker.startTracking(RIGHT_SHOULDER_ENTITY, new CompoundTag());
@@ -1750,8 +1750,8 @@ extends LivingEntity {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public boolean isSkinOverlayVisible(PlayerModelPart playerModelPart) {
-        return (this.getDataTracker().get(PLAYER_MODEL_BIT_MASK) & playerModelPart.getBitFlag()) == playerModelPart.getBitFlag();
+    public boolean isPartVisible(PlayerModelPart playerModelPart) {
+        return (this.getDataTracker().get(PLAYER_MODEL_PARTS) & playerModelPart.getBitFlag()) == playerModelPart.getBitFlag();
     }
 
     @Override

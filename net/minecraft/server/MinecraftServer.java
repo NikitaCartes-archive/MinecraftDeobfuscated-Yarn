@@ -214,7 +214,7 @@ Runnable {
     private final GameProfileRepository gameProfileRepo;
     private final UserCache userCache;
     private long lastPlayerSampleUpdate;
-    protected final Thread serverThread = Util.create(new Thread((Runnable)this, "Server thread"), (T thread2) -> thread2.setUncaughtExceptionHandler((thread, throwable) -> LOGGER.error(throwable)));
+    protected final Thread serverThread = Util.make(new Thread((Runnable)this, "Server thread"), thread2 -> thread2.setUncaughtExceptionHandler((thread, throwable) -> LOGGER.error(throwable)));
     private long timeReference = Util.getMeasuringTimeMs();
     private long field_19248;
     private boolean field_19249;

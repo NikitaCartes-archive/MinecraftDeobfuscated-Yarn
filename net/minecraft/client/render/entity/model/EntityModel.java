@@ -15,8 +15,8 @@ import net.minecraft.util.Identifier;
 public abstract class EntityModel<T extends Entity>
 extends Model {
     public float handSwingProgress;
-    public boolean isRiding;
-    public boolean isChild = true;
+    public boolean riding;
+    public boolean child = true;
 
     protected EntityModel() {
         this(RenderLayer::getEntityCutoutNoCull);
@@ -33,8 +33,8 @@ extends Model {
 
     public void copyStateTo(EntityModel<T> entityModel) {
         entityModel.handSwingProgress = this.handSwingProgress;
-        entityModel.isRiding = this.isRiding;
-        entityModel.isChild = this.isChild;
+        entityModel.riding = this.riding;
+        entityModel.child = this.child;
     }
 }
 

@@ -39,7 +39,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.WorldView;
 
 public final class VoxelShapes {
-    private static final VoxelShape FULL_CUBE = Util.create(() -> {
+    private static final VoxelShape FULL_CUBE = Util.make(() -> {
         BitSetVoxelSet voxelSet = new BitSetVoxelSet(1, 1, 1);
         ((VoxelSet)voxelSet).set(0, 0, 0, true, true);
         return new SimpleVoxelShape(voxelSet);

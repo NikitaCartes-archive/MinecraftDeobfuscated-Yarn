@@ -12,7 +12,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.util.Util;
 
 public interface StatFormatter {
-    public static final DecimalFormat DECIMAL_FORMAT = Util.create(new DecimalFormat("########0.00"), decimalFormat -> decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT)));
+    public static final DecimalFormat DECIMAL_FORMAT = Util.make(new DecimalFormat("########0.00"), decimalFormat -> decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT)));
     public static final StatFormatter DEFAULT = NumberFormat.getIntegerInstance(Locale.US)::format;
     public static final StatFormatter DIVIDE_BY_TEN = i -> DECIMAL_FORMAT.format((double)i * 0.1);
     public static final StatFormatter DISTANCE = i -> {

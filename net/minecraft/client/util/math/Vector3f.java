@@ -160,7 +160,7 @@ public final class Vector3f {
         this.z = matrix3f.a20 * f + matrix3f.a21 * g + matrix3f.a22 * h;
     }
 
-    public void method_19262(Quaternion quaternion) {
+    public void rotate(Quaternion quaternion) {
         Quaternion quaternion2 = new Quaternion(quaternion);
         quaternion2.hamiltonProduct(new Quaternion(this.getX(), this.getY(), this.getZ(), 0.0f));
         Quaternion quaternion3 = new Quaternion(quaternion);
@@ -170,7 +170,7 @@ public final class Vector3f {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void method_23847(Vector3f vector3f, float f) {
+    public void multiplyComponentwise(Vector3f vector3f, float f) {
         float g = 1.0f - f;
         this.x = this.x * g + vector3f.x * f;
         this.y = this.y * g + vector3f.y * f;
@@ -193,7 +193,7 @@ public final class Vector3f {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void method_23848(Float2FloatFunction float2FloatFunction) {
+    public void modify(Float2FloatFunction float2FloatFunction) {
         this.x = float2FloatFunction.get(this.x);
         this.y = float2FloatFunction.get(this.y);
         this.z = float2FloatFunction.get(this.z);

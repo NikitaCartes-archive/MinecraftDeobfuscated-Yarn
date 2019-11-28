@@ -33,7 +33,7 @@ extends FeatureRenderer<T, CowEntityModel<T>> {
         }
         BlockRenderManager blockRenderManager = MinecraftClient.getInstance().getBlockRenderManager();
         BlockState blockState = ((MooshroomEntity)mooshroomEntity).getMooshroomType().getMushroomState();
-        int m = LivingEntityRenderer.method_23622(mooshroomEntity, 0.0f);
+        int m = LivingEntityRenderer.getOverlay(mooshroomEntity, 0.0f);
         matrixStack.push();
         matrixStack.translate(0.2f, -0.35f, 0.5);
         matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-48.0f));
@@ -51,7 +51,7 @@ extends FeatureRenderer<T, CowEntityModel<T>> {
         blockRenderManager.renderBlockAsEntity(blockState, matrixStack, vertexConsumerProvider, i, m);
         matrixStack.pop();
         matrixStack.push();
-        ((CowEntityModel)this.getModel()).getHead().rotate(matrixStack);
+        ((CowEntityModel)this.getContextModel()).getHead().rotate(matrixStack);
         matrixStack.translate(0.0, -0.7f, -0.2f);
         matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-78.0f));
         matrixStack.scale(-1.0f, -1.0f, 1.0f);

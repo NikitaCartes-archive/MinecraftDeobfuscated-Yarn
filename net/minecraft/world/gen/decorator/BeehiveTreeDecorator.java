@@ -28,11 +28,11 @@ import net.minecraft.world.gen.feature.AbstractTreeFeature;
 
 public class BeehiveTreeDecorator
 extends TreeDecorator {
-    private final float field_21317;
+    private final float chance;
 
     public BeehiveTreeDecorator(float f) {
         super(TreeDecoratorType.BEEHIVE);
-        this.field_21317 = f;
+        this.chance = f;
     }
 
     public <T> BeehiveTreeDecorator(Dynamic<T> dynamic) {
@@ -41,7 +41,7 @@ extends TreeDecorator {
 
     @Override
     public void generate(IWorld iWorld, Random random, List<BlockPos> list, List<BlockPos> list2, Set<BlockPos> set, BlockBox blockBox) {
-        if (random.nextFloat() >= this.field_21317) {
+        if (random.nextFloat() >= this.chance) {
             return;
         }
         Direction direction = BeeHiveBlock.field_20418[random.nextInt(BeeHiveBlock.field_20418.length)];
@@ -67,7 +67,7 @@ extends TreeDecorator {
 
     @Override
     public <T> T serialize(DynamicOps<T> dynamicOps) {
-        return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("type"), dynamicOps.createString(Registry.TREE_DECORATOR_TYPE.getId(this.field_21319).toString()), dynamicOps.createString("probability"), dynamicOps.createFloat(this.field_21317)))).getValue();
+        return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("type"), dynamicOps.createString(Registry.TREE_DECORATOR_TYPE.getId(this.field_21319).toString()), dynamicOps.createString("probability"), dynamicOps.createFloat(this.chance)))).getValue();
     }
 }
 

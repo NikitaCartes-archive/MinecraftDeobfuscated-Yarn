@@ -69,7 +69,7 @@ extends Block {
     public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
         BlockState blockState2 = worldView.getBlockState(blockPos.down());
         Block block = blockState2.getBlock();
-        if (block == Blocks.ICE || block == Blocks.PACKED_ICE || block == Blocks.BARRIER) {
+        if (block == Blocks.ICE || block == Blocks.PACKED_ICE || block == Blocks.BARRIER || block == Blocks.WHEAT) {
             return false;
         }
         return Block.isFaceFullSquare(blockState2.getOutlineShape(worldView, blockPos.down()), Direction.UP) || block == this && blockState2.get(LAYERS) == 8;

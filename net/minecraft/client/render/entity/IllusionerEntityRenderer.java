@@ -45,7 +45,7 @@ extends IllagerEntityRenderer<IllusionerEntity> {
     public void render(IllusionerEntity illusionerEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         if (illusionerEntity.isInvisible()) {
             Vec3d[] vec3ds = illusionerEntity.method_7065(g);
-            float h = this.getAge(illusionerEntity, g);
+            float h = this.getCustomAngle(illusionerEntity, g);
             for (int j = 0; j < vec3ds.length; ++j) {
                 matrixStack.push();
                 matrixStack.translate(vec3ds[j].x + (double)MathHelper.cos((float)j + h * 0.5f) * 0.025, vec3ds[j].y + (double)MathHelper.cos((float)j + h * 0.75f) * 0.0125, vec3ds[j].z + (double)MathHelper.cos((float)j + h * 0.7f) * 0.025);

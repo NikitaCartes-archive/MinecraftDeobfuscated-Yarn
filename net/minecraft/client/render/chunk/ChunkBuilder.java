@@ -255,7 +255,7 @@ public class ChunkBuilder {
         private int rebuildFrame = -1;
         private boolean needsRebuild = true;
         private final BlockPos.Mutable origin = new BlockPos.Mutable(-1, -1, -1);
-        private final BlockPos.Mutable[] neighborPositions = Util.create(new BlockPos.Mutable[6], mutables -> {
+        private final BlockPos.Mutable[] neighborPositions = Util.make(new BlockPos.Mutable[6], mutables -> {
             for (int i = 0; i < ((BlockPos.Mutable[])mutables).length; ++i) {
                 mutables[i] = new BlockPos.Mutable();
             }

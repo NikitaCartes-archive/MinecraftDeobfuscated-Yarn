@@ -77,9 +77,9 @@ implements Fertilizable {
             return;
         }
         entity.slowMovement(blockState, new Vec3d(0.8f, 0.75, 0.8f));
-        if (!(world.isClient || blockState.get(AGE) <= 0 || entity.prevRenderX == entity.getX() && entity.prevRenderZ == entity.getZ())) {
-            double d = Math.abs(entity.getX() - entity.prevRenderX);
-            double e = Math.abs(entity.getZ() - entity.prevRenderZ);
+        if (!(world.isClient || blockState.get(AGE) <= 0 || entity.lastRenderX == entity.getX() && entity.lastRenderZ == entity.getZ())) {
+            double d = Math.abs(entity.getX() - entity.lastRenderX);
+            double e = Math.abs(entity.getZ() - entity.lastRenderZ);
             if (d >= (double)0.003f || e >= (double)0.003f) {
                 entity.damage(DamageSource.SWEET_BERRY_BUSH, 1.0f);
             }

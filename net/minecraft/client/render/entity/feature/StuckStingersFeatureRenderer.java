@@ -10,7 +10,7 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
-import net.minecraft.client.render.entity.feature.StickingOutThingsFeatureRenderer;
+import net.minecraft.client.render.entity.feature.StuckObjectsFeatureRenderer;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.math.Matrix3f;
 import net.minecraft.client.util.math.Matrix4f;
@@ -22,21 +22,21 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
-public class StingerFeatureRenderer<T extends LivingEntity, M extends PlayerEntityModel<T>>
-extends StickingOutThingsFeatureRenderer<T, M> {
+public class StuckStingersFeatureRenderer<T extends LivingEntity, M extends PlayerEntityModel<T>>
+extends StuckObjectsFeatureRenderer<T, M> {
     private static final Identifier field_20529 = new Identifier("textures/entity/bee/bee_stinger.png");
 
-    public StingerFeatureRenderer(LivingEntityRenderer<T, M> livingEntityRenderer) {
+    public StuckStingersFeatureRenderer(LivingEntityRenderer<T, M> livingEntityRenderer) {
         super(livingEntityRenderer);
     }
 
     @Override
-    protected int getThingCount(T livingEntity) {
+    protected int getObjectCount(T livingEntity) {
         return ((LivingEntity)livingEntity).getStingerCount();
     }
 
     @Override
-    protected void renderThing(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, Entity entity, float f, float g, float h, float j) {
+    protected void renderObject(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, Entity entity, float f, float g, float h, float j) {
         float k = MathHelper.sqrt(f * f + h * h);
         float l = (float)(Math.atan2(f, h) * 57.2957763671875);
         float m = (float)(Math.atan2(g, k) * 57.2957763671875);
@@ -57,10 +57,10 @@ extends StickingOutThingsFeatureRenderer<T, M> {
             MatrixStack.Entry entry = matrixStack.peek();
             Matrix4f matrix4f = entry.getModel();
             Matrix3f matrix3f = entry.getNormal();
-            StingerFeatureRenderer.method_23295(vertexConsumer, matrix4f, matrix3f, -4.5f, -1, 0.0f, 0.0f, i);
-            StingerFeatureRenderer.method_23295(vertexConsumer, matrix4f, matrix3f, 4.5f, -1, 0.125f, 0.0f, i);
-            StingerFeatureRenderer.method_23295(vertexConsumer, matrix4f, matrix3f, 4.5f, 1, 0.125f, 0.0625f, i);
-            StingerFeatureRenderer.method_23295(vertexConsumer, matrix4f, matrix3f, -4.5f, 1, 0.0f, 0.0625f, i);
+            StuckStingersFeatureRenderer.method_23295(vertexConsumer, matrix4f, matrix3f, -4.5f, -1, 0.0f, 0.0f, i);
+            StuckStingersFeatureRenderer.method_23295(vertexConsumer, matrix4f, matrix3f, 4.5f, -1, 0.125f, 0.0f, i);
+            StuckStingersFeatureRenderer.method_23295(vertexConsumer, matrix4f, matrix3f, 4.5f, 1, 0.125f, 0.0625f, i);
+            StuckStingersFeatureRenderer.method_23295(vertexConsumer, matrix4f, matrix3f, -4.5f, 1, 0.0f, 0.0625f, i);
         }
     }
 

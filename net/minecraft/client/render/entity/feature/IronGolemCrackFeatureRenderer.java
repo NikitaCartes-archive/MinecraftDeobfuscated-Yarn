@@ -31,7 +31,7 @@ extends FeatureRenderer<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> 
             return;
         }
         Identifier identifier = DAMAGE_TO_TEXTURE.get((Object)crack);
-        IronGolemCrackFeatureRenderer.renderModel(this.getModel(), identifier, matrixStack, vertexConsumerProvider, i, ironGolemEntity, 1.0f, 1.0f, 1.0f);
+        IronGolemCrackFeatureRenderer.renderModel(this.getContextModel(), identifier, matrixStack, vertexConsumerProvider, i, ironGolemEntity, 1.0f, 1.0f, 1.0f);
     }
 }
 

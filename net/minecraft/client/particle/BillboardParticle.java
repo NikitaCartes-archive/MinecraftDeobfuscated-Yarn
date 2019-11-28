@@ -44,12 +44,12 @@ extends Particle {
             quaternion.hamiltonProduct(Vector3f.POSITIVE_Z.getRadialQuaternion(j));
         }
         Vector3f vector3f = new Vector3f(-1.0f, -1.0f, 0.0f);
-        vector3f.method_19262(quaternion);
+        vector3f.rotate(quaternion);
         Vector3f[] vector3fs = new Vector3f[]{new Vector3f(-1.0f, -1.0f, 0.0f), new Vector3f(-1.0f, 1.0f, 0.0f), new Vector3f(1.0f, 1.0f, 0.0f), new Vector3f(1.0f, -1.0f, 0.0f)};
         float k = this.getSize(f);
         for (int l = 0; l < 4; ++l) {
             Vector3f vector3f2 = vector3fs[l];
-            vector3f2.method_19262(quaternion);
+            vector3f2.rotate(quaternion);
             vector3f2.scale(k);
             vector3f2.add(g, h, i);
         }

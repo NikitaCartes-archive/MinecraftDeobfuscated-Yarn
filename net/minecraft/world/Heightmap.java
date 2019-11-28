@@ -157,7 +157,7 @@ public class Heightmap {
         }
 
         static {
-            BY_NAME = Util.create(Maps.newHashMap(), hashMap -> {
+            BY_NAME = Util.make(Maps.newHashMap(), hashMap -> {
                 for (Type type : Type.values()) {
                     hashMap.put(type.name, type);
                 }

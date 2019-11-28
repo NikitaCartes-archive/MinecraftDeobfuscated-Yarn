@@ -690,7 +690,7 @@ extends AbstractClientPlayerEntity {
                 }
             }
         }
-        if (this.input.jumping && !bl6 && !bl && !this.abilities.flying && (itemStack = this.getEquippedStack(EquipmentSlot.CHEST)).getItem() == Items.ELYTRA && ElytraItem.isUsable(itemStack) && this.method_23668()) {
+        if (this.input.jumping && !bl6 && !bl && !this.abilities.flying && !this.hasVehicle() && (itemStack = this.getEquippedStack(EquipmentSlot.CHEST)).getItem() == Items.ELYTRA && ElytraItem.isUsable(itemStack) && this.method_23668()) {
             this.networkHandler.sendPacket(new ClientCommandC2SPacket(this, ClientCommandC2SPacket.Mode.START_FALL_FLYING));
         }
         this.field_3939 = this.isFallFlying();

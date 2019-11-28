@@ -138,8 +138,8 @@ extends Entity {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean shouldRenderAtDistance(double d) {
-        return super.shouldRenderAtDistance(d) || this.getBeamTarget() != null;
+    public boolean shouldRender(double d) {
+        return super.shouldRender(d) || this.getBeamTarget() != null;
     }
 
     @Override

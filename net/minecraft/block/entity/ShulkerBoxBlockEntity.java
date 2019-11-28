@@ -248,15 +248,6 @@ Tickable {
     }
 
     @Override
-    public boolean isInvEmpty() {
-        for (ItemStack itemStack : this.inventory) {
-            if (itemStack.isEmpty()) continue;
-            return false;
-        }
-        return true;
-    }
-
-    @Override
     public int[] getInvAvailableSlots(Direction direction) {
         return AVAILABLE_SLOTS;
     }

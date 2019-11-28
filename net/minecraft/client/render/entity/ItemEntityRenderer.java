@@ -31,8 +31,8 @@ extends EntityRenderer<ItemEntity> {
     public ItemEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, ItemRenderer itemRenderer) {
         super(entityRenderDispatcher);
         this.itemRenderer = itemRenderer;
-        this.field_4673 = 0.15f;
-        this.field_4672 = 0.75f;
+        this.shadowSize = 0.15f;
+        this.shadowDarkness = 0.75f;
     }
 
     private int getRenderedAmount(ItemStack itemStack) {

@@ -215,7 +215,7 @@ extends RangedWeaponItem {
             Quaternion quaternion = new Quaternion(new Vector3f(vec3d), i, true);
             Vec3d vec3d2 = livingEntity2.getRotationVec(1.0f);
             Vector3f vector3f = new Vector3f(vec3d2);
-            vector3f.method_19262(quaternion);
+            vector3f.rotate(quaternion);
             projectile.setVelocity(vector3f.getX(), vector3f.getY(), vector3f.getZ(), g, h);
         }
         itemStack.damage(bl2 ? 3 : 1, livingEntity2, livingEntity -> livingEntity.sendToolBreakStatus(hand));

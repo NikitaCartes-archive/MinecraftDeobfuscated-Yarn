@@ -22,31 +22,31 @@ extends Feature<SpringFeatureConfig> {
 
     @Override
     public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, SpringFeatureConfig springFeatureConfig) {
-        if (!springFeatureConfig.field_21287.contains(iWorld.getBlockState(blockPos.up()).getBlock())) {
+        if (!springFeatureConfig.validBlocks.contains(iWorld.getBlockState(blockPos.up()).getBlock())) {
             return false;
         }
-        if (springFeatureConfig.field_21284 && !springFeatureConfig.field_21287.contains(iWorld.getBlockState(blockPos.down()).getBlock())) {
+        if (springFeatureConfig.requiresBlockBelow && !springFeatureConfig.validBlocks.contains(iWorld.getBlockState(blockPos.down()).getBlock())) {
             return false;
         }
         BlockState blockState = iWorld.getBlockState(blockPos);
-        if (!blockState.isAir() && !springFeatureConfig.field_21287.contains(blockState.getBlock())) {
+        if (!blockState.isAir() && !springFeatureConfig.validBlocks.contains(blockState.getBlock())) {
             return false;
         }
         int i = 0;
         int j = 0;
-        if (springFeatureConfig.field_21287.contains(iWorld.getBlockState(blockPos.west()).getBlock())) {
+        if (springFeatureConfig.validBlocks.contains(iWorld.getBlockState(blockPos.west()).getBlock())) {
             ++j;
         }
-        if (springFeatureConfig.field_21287.contains(iWorld.getBlockState(blockPos.east()).getBlock())) {
+        if (springFeatureConfig.validBlocks.contains(iWorld.getBlockState(blockPos.east()).getBlock())) {
             ++j;
         }
-        if (springFeatureConfig.field_21287.contains(iWorld.getBlockState(blockPos.north()).getBlock())) {
+        if (springFeatureConfig.validBlocks.contains(iWorld.getBlockState(blockPos.north()).getBlock())) {
             ++j;
         }
-        if (springFeatureConfig.field_21287.contains(iWorld.getBlockState(blockPos.south()).getBlock())) {
+        if (springFeatureConfig.validBlocks.contains(iWorld.getBlockState(blockPos.south()).getBlock())) {
             ++j;
         }
-        if (springFeatureConfig.field_21287.contains(iWorld.getBlockState(blockPos.down()).getBlock())) {
+        if (springFeatureConfig.validBlocks.contains(iWorld.getBlockState(blockPos.down()).getBlock())) {
             ++j;
         }
         int k = 0;
@@ -65,9 +65,9 @@ extends Feature<SpringFeatureConfig> {
         if (iWorld.isAir(blockPos.down())) {
             ++k;
         }
-        if (j == springFeatureConfig.field_21285 && k == springFeatureConfig.field_21286) {
-            iWorld.setBlockState(blockPos, springFeatureConfig.field_21283.getBlockState(), 2);
-            iWorld.getFluidTickScheduler().schedule(blockPos, springFeatureConfig.field_21283.getFluid(), 0);
+        if (j == springFeatureConfig.rockCount && k == springFeatureConfig.holeCount) {
+            iWorld.setBlockState(blockPos, springFeatureConfig.state.getBlockState(), 2);
+            iWorld.getFluidTickScheduler().schedule(blockPos, springFeatureConfig.state.getFluid(), 0);
             ++i;
         }
         return i > 0;

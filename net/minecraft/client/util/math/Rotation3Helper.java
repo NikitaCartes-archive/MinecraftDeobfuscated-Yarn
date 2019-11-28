@@ -20,7 +20,7 @@ import org.apache.logging.log4j.Logger;
 @Environment(value=EnvType.CLIENT)
 public class Rotation3Helper {
     private static final Logger LOGGER = LogManager.getLogger();
-    public static final EnumMap<Direction, Rotation3> DIRECTION_ROTATIONS = Util.create(Maps.newEnumMap(Direction.class), enumMap -> {
+    public static final EnumMap<Direction, Rotation3> DIRECTION_ROTATIONS = Util.make(Maps.newEnumMap(Direction.class), enumMap -> {
         enumMap.put(Direction.SOUTH, Rotation3.identity());
         enumMap.put(Direction.EAST, new Rotation3(null, new Quaternion(new Vector3f(0.0f, 1.0f, 0.0f), 90.0f, true), null, null));
         enumMap.put(Direction.WEST, new Rotation3(null, new Quaternion(new Vector3f(0.0f, 1.0f, 0.0f), -90.0f, true), null, null));
@@ -28,7 +28,7 @@ public class Rotation3Helper {
         enumMap.put(Direction.UP, new Rotation3(null, new Quaternion(new Vector3f(1.0f, 0.0f, 0.0f), -90.0f, true), null, null));
         enumMap.put(Direction.DOWN, new Rotation3(null, new Quaternion(new Vector3f(1.0f, 0.0f, 0.0f), 90.0f, true), null, null));
     });
-    public static final EnumMap<Direction, Rotation3> INVERSED_DIRECTION_ROTATIONS = Util.create(Maps.newEnumMap(Direction.class), enumMap -> {
+    public static final EnumMap<Direction, Rotation3> INVERSED_DIRECTION_ROTATIONS = Util.make(Maps.newEnumMap(Direction.class), enumMap -> {
         for (Direction direction : Direction.values()) {
             enumMap.put(direction, DIRECTION_ROTATIONS.get(direction).invert());
         }

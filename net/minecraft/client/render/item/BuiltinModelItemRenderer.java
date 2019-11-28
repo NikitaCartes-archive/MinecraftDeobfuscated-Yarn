@@ -109,10 +109,11 @@ public class BuiltinModelItemRenderer {
             SpriteIdentifier spriteIdentifier = bl ? ModelLoader.SHIELD_BASE : ModelLoader.SHIELD_BASE_NO_PATTERN;
             VertexConsumer vertexConsumer = spriteIdentifier.getSprite().getTextureSpecificVertexConsumer(ItemRenderer.getArmorVertexConsumer(vertexConsumerProvider, this.modelShield.getLayer(spriteIdentifier.getAtlasId()), false, itemStack.hasEnchantmentGlint()));
             this.modelShield.method_23775().render(matrixStack, vertexConsumer, i, j, 1.0f, 1.0f, 1.0f, 1.0f);
-            this.modelShield.method_23774().render(matrixStack, vertexConsumer, i, j, 1.0f, 1.0f, 1.0f, 1.0f);
             if (bl) {
                 this.renderBanner.readFrom(itemStack, ShieldItem.getColor(itemStack));
-                BannerBlockEntityRenderer.method_23802(this.renderBanner, matrixStack, vertexConsumerProvider, i, j, this.modelShield.method_23774(), false);
+                BannerBlockEntityRenderer.method_23802(this.renderBanner, matrixStack, vertexConsumerProvider, i, j, this.modelShield.method_23774(), spriteIdentifier, false);
+            } else {
+                this.modelShield.method_23774().render(matrixStack, vertexConsumer, i, j, 1.0f, 1.0f, 1.0f, 1.0f);
             }
             matrixStack.pop();
         } else if (item == Items.TRIDENT) {

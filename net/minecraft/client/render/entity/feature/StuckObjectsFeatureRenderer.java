@@ -17,26 +17,26 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
-public abstract class StickingOutThingsFeatureRenderer<T extends LivingEntity, M extends PlayerEntityModel<T>>
+public abstract class StuckObjectsFeatureRenderer<T extends LivingEntity, M extends PlayerEntityModel<T>>
 extends FeatureRenderer<T, M> {
-    public StickingOutThingsFeatureRenderer(LivingEntityRenderer<T, M> livingEntityRenderer) {
+    public StuckObjectsFeatureRenderer(LivingEntityRenderer<T, M> livingEntityRenderer) {
         super(livingEntityRenderer);
     }
 
-    protected abstract int getThingCount(T var1);
+    protected abstract int getObjectCount(T var1);
 
-    protected abstract void renderThing(MatrixStack var1, VertexConsumerProvider var2, int var3, Entity var4, float var5, float var6, float var7, float var8);
+    protected abstract void renderObject(MatrixStack var1, VertexConsumerProvider var2, int var3, Entity var4, float var5, float var6, float var7, float var8);
 
     @Override
     public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l) {
-        int m = this.getThingCount(livingEntity);
+        int m = this.getObjectCount(livingEntity);
         Random random = new Random(((Entity)livingEntity).getEntityId());
         if (m <= 0) {
             return;
         }
         for (int n = 0; n < m; ++n) {
             matrixStack.push();
-            ModelPart modelPart = ((PlayerEntityModel)this.getModel()).getRandomPart(random);
+            ModelPart modelPart = ((PlayerEntityModel)this.getContextModel()).getRandomPart(random);
             ModelPart.Cuboid cuboid = modelPart.getRandomCuboid(random);
             modelPart.rotate(matrixStack);
             float o = random.nextFloat();
@@ -49,7 +49,7 @@ extends FeatureRenderer<T, M> {
             o = -1.0f * (o * 2.0f - 1.0f);
             p = -1.0f * (p * 2.0f - 1.0f);
             q = -1.0f * (q * 2.0f - 1.0f);
-            this.renderThing(matrixStack, vertexConsumerProvider, i, (Entity)livingEntity, o, p, q, h);
+            this.renderObject(matrixStack, vertexConsumerProvider, i, (Entity)livingEntity, o, p, q, h);
             matrixStack.pop();
         }
     }

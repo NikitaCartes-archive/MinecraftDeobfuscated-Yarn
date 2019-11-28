@@ -126,6 +126,7 @@ CommandOutput {
     public boolean inanimate;
     private final List<Entity> passengerList = Lists.newArrayList();
     protected int ridingCooldown;
+    @Nullable
     private Entity vehicle;
     public boolean teleporting;
     public World world;
@@ -154,9 +155,9 @@ CommandOutput {
     public float fallDistance;
     private float nextStepSoundDistance = 1.0f;
     private float nextFlySoundDistance = 1.0f;
-    public double prevRenderX;
-    public double prevRenderY;
-    public double prevRenderZ;
+    public double lastRenderX;
+    public double lastRenderY;
+    public double lastRenderZ;
     public float stepHeight;
     public boolean noClip;
     public float pushSpeedReduction;
@@ -1046,9 +1047,9 @@ CommandOutput {
         this.prevX = d;
         this.prevY = e;
         this.prevZ = f;
-        this.prevRenderX = d;
-        this.prevRenderY = e;
-        this.prevRenderZ = f;
+        this.lastRenderX = d;
+        this.lastRenderY = e;
+        this.lastRenderZ = f;
     }
 
     public float distanceTo(Entity entity) {
@@ -1197,16 +1198,16 @@ CommandOutput {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public boolean shouldRenderFrom(double d, double e, double f) {
+    public boolean shouldRender(double d, double e, double f) {
         double g = this.getX() - d;
         double h = this.getY() - e;
         double i = this.getZ() - f;
         double j = g * g + h * h + i * i;
-        return this.shouldRenderAtDistance(j);
+        return this.shouldRender(j);
     }
 
     @Environment(value=EnvType.CLIENT)
-    public boolean shouldRenderAtDistance(double d) {
+    public boolean shouldRender(double d) {
         double e = this.getBoundingBox().getAverageSideLength();
         if (Double.isNaN(e)) {
             e = 1.0;
@@ -1456,10 +1457,14 @@ CommandOutput {
     }
 
     public void updatePassengerPosition(Entity entity) {
+        this.method_24201(entity, Entity::setPosition);
+    }
+
+    public void method_24201(Entity entity, class_4738 arg) {
         if (!this.hasPassenger(entity)) {
             return;
         }
-        entity.setPosition(this.getX(), this.getY() + this.getMountedHeightOffset() + entity.getHeightOffset(), this.getZ());
+        arg.accept(entity, this.getX(), this.getY() + this.getMountedHeightOffset() + entity.getHeightOffset(), this.getZ());
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -2106,9 +2111,13 @@ CommandOutput {
         if (!(this.world instanceof ServerWorld)) {
             return;
         }
-        this.teleportRequested = true;
+        ServerWorld serverWorld = (ServerWorld)this.world;
         this.setPositionAndAngles(d, e, f, this.yaw, this.pitch);
-        ((ServerWorld)this.world).checkChunk(this);
+        this.method_24204().forEach(entity -> {
+            serverWorld.checkChunk((Entity)entity);
+            entity.teleportRequested = true;
+            entity.method_24200(Entity::method_24203);
+        });
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -2320,6 +2329,10 @@ CommandOutput {
         return set;
     }
 
+    public Stream<Entity> method_24204() {
+        return Stream.concat(Stream.of(this), this.passengerList.stream().flatMap(Entity::method_24204));
+    }
+
     public boolean hasPlayerRider() {
         HashSet<Entity> set = Sets.newHashSet();
         this.collectPassengers(true, set);
@@ -2356,6 +2369,12 @@ CommandOutput {
             return true;
         }
         return false;
+    }
+
+    public void method_24200(class_4738 arg) {
+        for (Entity entity : this.passengerList) {
+            this.method_24201(entity, arg);
+        }
     }
 
     public boolean isLogicalSideForUpdatingMovement() {
@@ -2554,6 +2573,15 @@ CommandOutput {
     }
 
     public void checkDespawn() {
+    }
+
+    public void method_24203(double d, double e, double f) {
+        this.setPositionAndAngles(d, e, f, this.yaw, this.pitch);
+    }
+
+    @FunctionalInterface
+    public static interface class_4738 {
+        public void accept(Entity var1, double var2, double var4, double var6);
     }
 }
 

@@ -87,7 +87,7 @@ extends BlockEntityRenderer<ConduitBlockEntity> {
         matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0f));
         this.field_20824.render(matrixStack, vertexConsumer2, i, j);
         matrixStack.pop();
-        Camera camera = this.blockEntityRenderDispatcher.camera;
+        Camera camera = this.dispatcher.camera;
         matrixStack.push();
         matrixStack.translate(0.5, 0.3f + k * 0.2f, 0.5);
         matrixStack.scale(0.5f, 0.5f, 0.5f);

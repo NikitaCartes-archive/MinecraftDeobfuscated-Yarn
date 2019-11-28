@@ -37,7 +37,7 @@ import net.minecraft.village.VillagerType;
 public class VillagerClothingFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>>
 extends FeatureRenderer<T, M>
 implements SynchronousResourceReloadListener {
-    private static final Int2ObjectMap<Identifier> LEVEL_TO_ID = Util.create(new Int2ObjectOpenHashMap(), int2ObjectOpenHashMap -> {
+    private static final Int2ObjectMap<Identifier> LEVEL_TO_ID = Util.make(new Int2ObjectOpenHashMap(), int2ObjectOpenHashMap -> {
         int2ObjectOpenHashMap.put(1, new Identifier("stone"));
         int2ObjectOpenHashMap.put(2, new Identifier("iron"));
         int2ObjectOpenHashMap.put(3, new Identifier("gold"));
@@ -66,7 +66,7 @@ implements SynchronousResourceReloadListener {
         VillagerProfession villagerProfession = villagerData.getProfession();
         VillagerResourceMetadata.HatType hatType = this.getHatType(this.villagerTypeToHat, "type", Registry.VILLAGER_TYPE, villagerType);
         VillagerResourceMetadata.HatType hatType2 = this.getHatType(this.professionToHat, "profession", Registry.VILLAGER_PROFESSION, villagerProfession);
-        Object entityModel = this.getModel();
+        Object entityModel = this.getContextModel();
         ((ModelWithHat)entityModel).setHatVisible(hatType2 == VillagerResourceMetadata.HatType.NONE || hatType2 == VillagerResourceMetadata.HatType.PARTIAL && hatType != VillagerResourceMetadata.HatType.FULL);
         Identifier identifier = this.findTexture("type", Registry.VILLAGER_TYPE.getId(villagerType));
         VillagerClothingFeatureRenderer.renderModel(entityModel, identifier, matrixStack, vertexConsumerProvider, i, livingEntity, 1.0f, 1.0f, 1.0f);

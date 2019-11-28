@@ -212,11 +212,11 @@ public class Util {
         return object2;
     }
 
-    public static <T> T create(Supplier<T> supplier) {
+    public static <T> T make(Supplier<T> supplier) {
         return supplier.get();
     }
 
-    public static <T> T create(T object, Consumer<T> consumer) {
+    public static <T> T make(T object, Consumer<T> consumer) {
         consumer.accept(object);
         return object;
     }

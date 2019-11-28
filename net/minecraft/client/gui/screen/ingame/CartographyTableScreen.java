@@ -48,8 +48,8 @@ extends AbstractContainerScreen<CartographyTableContainer> {
         this.renderBackground();
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.minecraft.getTextureManager().bindTexture(TEXTURE);
-        int k = this.left;
-        int l = this.top;
+        int k = this.x;
+        int l = this.y;
         this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);
         Item item = ((CartographyTableContainer)this.container).getSlot(1).getStack().getItem();
         boolean bl = item == Items.MAP;
@@ -78,8 +78,8 @@ extends AbstractContainerScreen<CartographyTableContainer> {
     }
 
     private void drawMap(@Nullable MapState mapState, boolean bl, boolean bl2, boolean bl3, boolean bl4) {
-        int i = this.left;
-        int j = this.top;
+        int i = this.x;
+        int j = this.y;
         if (bl2 && !bl4) {
             this.blit(i + 67, j + 13, this.containerWidth, 66, 66, 66);
             this.drawMap(mapState, i + 85, j + 31, 0.226f);

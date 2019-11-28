@@ -48,7 +48,7 @@ extends EntityModel<E> {
 
     @Override
     public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k) {
-        if (this.isChild) {
+        if (this.child) {
             float l;
             matrixStack.push();
             if (this.headScaled) {

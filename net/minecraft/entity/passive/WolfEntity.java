@@ -314,6 +314,7 @@ extends TameableEntity {
         super.setTamed(bl);
         if (bl) {
             this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(20.0);
+            this.setHealth(20.0f);
         } else {
             this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(8.0);
         }

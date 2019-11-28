@@ -28,7 +28,6 @@ import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.Texts;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.server.network.packet.UpdateSignC2SPacket;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -120,8 +119,7 @@ extends Screen {
         matrixStack.push();
         matrixStack.translate(this.width / 2, 0.0, 50.0);
         float g = 93.75f;
-        matrixStack.scale(-93.75f, -93.75f, -93.75f);
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
+        matrixStack.scale(93.75f, -93.75f, 93.75f);
         matrixStack.translate(0.0, -1.3125, 0.0);
         BlockState blockState = this.sign.getCachedState();
         boolean bl = blockState.getBlock() instanceof SignBlock;

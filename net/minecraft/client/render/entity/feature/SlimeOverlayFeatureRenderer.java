@@ -31,11 +31,11 @@ extends FeatureRenderer<T, SlimeEntityModel<T>> {
         if (((Entity)livingEntity).isInvisible()) {
             return;
         }
-        ((SlimeEntityModel)this.getModel()).copyStateTo(this.model);
+        ((SlimeEntityModel)this.getContextModel()).copyStateTo(this.model);
         this.model.animateModel(livingEntity, f, g, h);
         this.model.setAngles(livingEntity, f, g, j, k, l);
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityTranslucent(this.getTexture(livingEntity)));
-        this.model.render(matrixStack, vertexConsumer, i, LivingEntityRenderer.method_23622(livingEntity, 0.0f), 1.0f, 1.0f, 1.0f, 1.0f);
+        this.model.render(matrixStack, vertexConsumer, i, LivingEntityRenderer.getOverlay(livingEntity, 0.0f), 1.0f, 1.0f, 1.0f, 1.0f);
     }
 }
 

@@ -30,23 +30,23 @@ public interface VertexConsumerProvider {
     @Environment(value=EnvType.CLIENT)
     public static class Immediate
     implements VertexConsumerProvider {
-        protected final BufferBuilder defaultBuilder;
-        protected final Map<RenderLayer, BufferBuilder> layerBuilders;
+        protected final BufferBuilder fallbackBuffer;
+        protected final Map<RenderLayer, BufferBuilder> layerBuffers;
         protected Optional<RenderLayer> currentLayer = Optional.empty();
         protected final Set<BufferBuilder> activeConsumers = Sets.newHashSet();
 
         protected Immediate(BufferBuilder bufferBuilder, Map<RenderLayer, BufferBuilder> map) {
-            this.defaultBuilder = bufferBuilder;
-            this.layerBuilders = map;
+            this.fallbackBuffer = bufferBuilder;
+            this.layerBuffers = map;
         }
 
         @Override
         public VertexConsumer getBuffer(RenderLayer renderLayer) {
             Optional<RenderLayer> optional = Optional.of(renderLayer);
-            BufferBuilder bufferBuilder = this.getConsumer(renderLayer);
+            BufferBuilder bufferBuilder = this.getBufferInternal(renderLayer);
             if (!Objects.equals(this.currentLayer, optional)) {
                 RenderLayer renderLayer2;
-                if (this.currentLayer.isPresent() && !this.layerBuilders.containsKey(renderLayer2 = this.currentLayer.get())) {
+                if (this.currentLayer.isPresent() && !this.layerBuffers.containsKey(renderLayer2 = this.currentLayer.get())) {
                     this.draw(renderLayer2);
                 }
                 if (this.activeConsumers.add(bufferBuilder)) {
@@ -57,40 +57,32 @@ public interface VertexConsumerProvider {
             return bufferBuilder;
         }
 
-        private BufferBuilder getConsumer(RenderLayer renderLayer) {
-            return this.layerBuilders.getOrDefault(renderLayer, this.defaultBuilder);
+        private BufferBuilder getBufferInternal(RenderLayer renderLayer) {
+            return this.layerBuffers.getOrDefault(renderLayer, this.fallbackBuffer);
         }
 
         public void draw() {
-            this.method_23796(0, 0, 0);
-        }
-
-        public void method_23796(int i, int j, int k) {
             this.currentLayer.ifPresent(renderLayer -> {
                 VertexConsumer vertexConsumer = this.getBuffer((RenderLayer)renderLayer);
-                if (vertexConsumer == this.defaultBuilder) {
-                    this.method_23797((RenderLayer)renderLayer, i, j, k);
+                if (vertexConsumer == this.fallbackBuffer) {
+                    this.draw((RenderLayer)renderLayer);
                 }
             });
-            for (RenderLayer renderLayer2 : this.layerBuilders.keySet()) {
-                this.method_23797(renderLayer2, i, j, k);
+            for (RenderLayer renderLayer2 : this.layerBuffers.keySet()) {
+                this.draw(renderLayer2);
             }
         }
 
         public void draw(RenderLayer renderLayer) {
-            this.method_23797(renderLayer, 0, 0, 0);
-        }
-
-        public void method_23797(RenderLayer renderLayer, int i, int j, int k) {
-            BufferBuilder bufferBuilder = this.getConsumer(renderLayer);
+            BufferBuilder bufferBuilder = this.getBufferInternal(renderLayer);
             boolean bl = Objects.equals(this.currentLayer, Optional.of(renderLayer));
-            if (!bl && bufferBuilder == this.defaultBuilder) {
+            if (!bl && bufferBuilder == this.fallbackBuffer) {
                 return;
             }
             if (!this.activeConsumers.remove(bufferBuilder)) {
                 return;
             }
-            renderLayer.draw(bufferBuilder, i, j, k);
+            renderLayer.draw(bufferBuilder, 0, 0, 0);
             if (bl) {
                 this.currentLayer = Optional.empty();
             }

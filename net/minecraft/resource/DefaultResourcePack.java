@@ -214,7 +214,7 @@ implements ResourcePack {
 
     static {
         LOGGER = LogManager.getLogger();
-        typeToFileSystem = Util.create(Maps.newHashMap(), hashMap -> {
+        typeToFileSystem = Util.make(Maps.newHashMap(), hashMap -> {
             Class<DefaultResourcePack> clazz = DefaultResourcePack.class;
             synchronized (DefaultResourcePack.class) {
                 for (ResourceType resourceType : ResourceType.values()) {

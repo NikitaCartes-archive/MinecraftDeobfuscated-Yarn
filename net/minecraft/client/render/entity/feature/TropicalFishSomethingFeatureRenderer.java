@@ -29,7 +29,7 @@ extends FeatureRenderer<TropicalFishEntity, EntityModel<TropicalFishEntity>> {
     public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, TropicalFishEntity tropicalFishEntity, float f, float g, float h, float j, float k, float l) {
         TintableCompositeModel entityModel = tropicalFishEntity.getShape() == 0 ? this.modelA : this.modelB;
         float[] fs = tropicalFishEntity.getPatternColorComponents();
-        TropicalFishSomethingFeatureRenderer.render(this.getModel(), entityModel, tropicalFishEntity.getVarietyId(), matrixStack, vertexConsumerProvider, i, tropicalFishEntity, f, g, j, k, l, h, fs[0], fs[1], fs[2]);
+        TropicalFishSomethingFeatureRenderer.render(this.getContextModel(), entityModel, tropicalFishEntity.getVarietyId(), matrixStack, vertexConsumerProvider, i, tropicalFishEntity, f, g, j, k, l, h, fs[0], fs[1], fs[2]);
     }
 }
 

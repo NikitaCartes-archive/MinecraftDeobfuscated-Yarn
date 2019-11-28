@@ -21,7 +21,7 @@ extends MobEntityRenderer<BlazeEntity, BlazeEntityModel<BlazeEntity>> {
     }
 
     @Override
-    protected int method_24087(BlazeEntity blazeEntity, float f) {
+    protected int getBlockLight(BlazeEntity blazeEntity, float f) {
         return 15;
     }
 

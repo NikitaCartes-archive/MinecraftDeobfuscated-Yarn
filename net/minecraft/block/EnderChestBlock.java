@@ -6,14 +6,17 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.AbstractChestBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockPlacementEnvironment;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.BlockWithEntity;
+import net.minecraft.block.DoubleBlockProperties;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.Waterloggable;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.entity.EnderChestBlockEntity;
 import net.minecraft.client.network.ClientDummyContainerProvider;
 import net.minecraft.container.GenericContainer;
@@ -43,7 +46,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class EnderChestBlock
-extends BlockWithEntity
+extends AbstractChestBlock<EnderChestBlockEntity>
 implements Waterloggable {
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
     public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
@@ -51,8 +54,14 @@ implements Waterloggable {
     public static final TranslatableText CONTAINER_NAME = new TranslatableText("container.enderchest", new Object[0]);
 
     protected EnderChestBlock(Block.Settings settings) {
-        super(settings);
+        super(settings, () -> BlockEntityType.ENDER_CHEST);
         this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH)).with(WATERLOGGED, false));
+    }
+
+    @Override
+    @Environment(value=EnvType.CLIENT)
+    public DoubleBlockProperties.PropertySource<? extends ChestBlockEntity> getBlockEntitySource(BlockState blockState, World world, BlockPos blockPos, boolean bl) {
+        return DoubleBlockProperties.PropertyRetriever::getFallback;
     }
 
     @Override

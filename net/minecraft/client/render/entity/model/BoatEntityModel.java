@@ -59,8 +59,8 @@ extends CompositeEntityModel<BoatEntity> {
 
     @Override
     public void setAngles(BoatEntity boatEntity, float f, float g, float h, float i, float j) {
-        this.renderPaddle(boatEntity, 0, f);
-        this.renderPaddle(boatEntity, 1, f);
+        this.setPaddleAngle(boatEntity, 0, f);
+        this.setPaddleAngle(boatEntity, 1, f);
     }
 
     public ImmutableList<ModelPart> getParts() {
@@ -82,7 +82,7 @@ extends CompositeEntityModel<BoatEntity> {
         return modelPart;
     }
 
-    protected void renderPaddle(BoatEntity boatEntity, int i, float f) {
+    protected void setPaddleAngle(BoatEntity boatEntity, int i, float f) {
         float g = boatEntity.interpolatePaddlePhase(i, f);
         ModelPart modelPart = this.paddles[i];
         modelPart.pitch = (float)MathHelper.clampedLerp(-1.0471975803375244, -0.2617993950843811, (MathHelper.sin(-g) + 1.0f) / 2.0f);

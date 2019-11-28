@@ -104,7 +104,7 @@ implements VertexConsumerProvider {
         }
 
         @Override
-        public void elements(float f, float g, float h, float i, float j, float k, float l, float m, float n, int o, int p, float q, float r, float s) {
+        public void vertex(float f, float g, float h, float i, float j, float k, float l, float m, float n, int o, int p, float q, float r, float s) {
             this.delegate.vertex(f, g, h).color(this.fixedRed, this.fixedGreen, this.fixedBlue, this.fixedAlpha).texture(m, n).next();
         }
 

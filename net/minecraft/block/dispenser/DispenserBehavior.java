@@ -105,21 +105,21 @@ public interface DispenserBehavior {
 
             @Override
             protected Projectile createProjectile(World world, Position position, ItemStack itemStack) {
-                return Util.create(new ThrownEggEntity(world, position.getX(), position.getY(), position.getZ()), thrownEggEntity -> thrownEggEntity.setItem(itemStack));
+                return Util.make(new ThrownEggEntity(world, position.getX(), position.getY(), position.getZ()), thrownEggEntity -> thrownEggEntity.setItem(itemStack));
             }
         });
         DispenserBlock.registerBehavior(Items.SNOWBALL, new ProjectileDispenserBehavior(){
 
             @Override
             protected Projectile createProjectile(World world, Position position, ItemStack itemStack) {
-                return Util.create(new SnowballEntity(world, position.getX(), position.getY(), position.getZ()), snowballEntity -> snowballEntity.setItem(itemStack));
+                return Util.make(new SnowballEntity(world, position.getX(), position.getY(), position.getZ()), snowballEntity -> snowballEntity.setItem(itemStack));
             }
         });
         DispenserBlock.registerBehavior(Items.EXPERIENCE_BOTTLE, new ProjectileDispenserBehavior(){
 
             @Override
             protected Projectile createProjectile(World world, Position position, ItemStack itemStack) {
-                return Util.create(new ThrownExperienceBottleEntity(world, position.getX(), position.getY(), position.getZ()), thrownExperienceBottleEntity -> thrownExperienceBottleEntity.setItem(itemStack));
+                return Util.make(new ThrownExperienceBottleEntity(world, position.getX(), position.getY(), position.getZ()), thrownExperienceBottleEntity -> thrownExperienceBottleEntity.setItem(itemStack));
             }
 
             @Override
@@ -140,7 +140,7 @@ public interface DispenserBehavior {
 
                     @Override
                     protected Projectile createProjectile(World world, Position position, ItemStack itemStack) {
-                        return Util.create(new ThrownPotionEntity(world, position.getX(), position.getY(), position.getZ()), thrownPotionEntity -> thrownPotionEntity.setItemStack(itemStack));
+                        return Util.make(new ThrownPotionEntity(world, position.getX(), position.getY(), position.getZ()), thrownPotionEntity -> thrownPotionEntity.setItemStack(itemStack));
                     }
 
                     @Override
@@ -163,7 +163,7 @@ public interface DispenserBehavior {
 
                     @Override
                     protected Projectile createProjectile(World world, Position position, ItemStack itemStack) {
-                        return Util.create(new ThrownPotionEntity(world, position.getX(), position.getY(), position.getZ()), thrownPotionEntity -> thrownPotionEntity.setItemStack(itemStack));
+                        return Util.make(new ThrownPotionEntity(world, position.getX(), position.getY(), position.getZ()), thrownPotionEntity -> thrownPotionEntity.setItemStack(itemStack));
                     }
 
                     @Override
@@ -244,7 +244,7 @@ public interface DispenserBehavior {
                 double g = random.nextGaussian() * 0.05 + (double)direction.getOffsetX();
                 double h = random.nextGaussian() * 0.05 + (double)direction.getOffsetY();
                 double i = random.nextGaussian() * 0.05 + (double)direction.getOffsetZ();
-                world.spawnEntity(Util.create(new SmallFireballEntity(world, d, e, f, g, h, i), smallFireballEntity -> smallFireballEntity.setItem(itemStack)));
+                world.spawnEntity(Util.make(new SmallFireballEntity(world, d, e, f, g, h, i), smallFireballEntity -> smallFireballEntity.setItem(itemStack)));
                 itemStack.decrement(1);
                 return itemStack;
             }
@@ -368,7 +368,7 @@ public interface DispenserBehavior {
 
             @Override
             protected ItemStack dispenseSilently(BlockPointer blockPointer, ItemStack itemStack) {
-                this.success = !ArmorItem.dispenseArmor(blockPointer, itemStack).isEmpty();
+                this.success = ArmorItem.dispenseArmor(blockPointer, itemStack);
                 return itemStack;
             }
         };
@@ -384,7 +384,6 @@ public interface DispenserBehavior {
                 World world = blockPointer.getWorld();
                 Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);
                 BlockPos blockPos = blockPointer.getBlockPos().offset(direction);
-                this.success = true;
                 if (world.isAir(blockPos) && WitherSkullBlock.canDispense(world, blockPos, itemStack)) {
                     world.setBlockState(blockPos, (BlockState)Blocks.WITHER_SKELETON_SKULL.getDefaultState().with(SkullBlock.ROTATION, direction.getAxis() == Direction.Axis.Y ? 0 : direction.getOpposite().getHorizontal() * 4), 3);
                     BlockEntity blockEntity = world.getBlockEntity(blockPos);
@@ -392,13 +391,11 @@ public interface DispenserBehavior {
                         WitherSkullBlock.onPlaced(world, blockPos, (SkullBlockEntity)blockEntity);
                     }
                     itemStack.decrement(1);
+                    this.success = true;
                 } else {
-                    ItemStack itemStack2 = ArmorItem.dispenseArmor(blockPointer, itemStack);
-                    if (itemStack.getCount() < itemStack2.getCount()) {
-                        this.success = false;
-                    }
+                    this.success = ArmorItem.dispenseArmor(blockPointer, itemStack);
                 }
-                return super.dispenseSilently(blockPointer, itemStack);
+                return itemStack;
             }
         });
         DispenserBlock.registerBehavior(Blocks.CARVED_PUMPKIN, new FallibleItemDispenserBehavior(){
@@ -408,19 +405,16 @@ public interface DispenserBehavior {
                 World world = blockPointer.getWorld();
                 BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING));
                 CarvedPumpkinBlock carvedPumpkinBlock = (CarvedPumpkinBlock)Blocks.CARVED_PUMPKIN;
-                this.success = true;
                 if (world.isAir(blockPos) && carvedPumpkinBlock.canDispense(world, blockPos)) {
                     if (!world.isClient) {
                         world.setBlockState(blockPos, carvedPumpkinBlock.getDefaultState(), 3);
                     }
                     itemStack.decrement(1);
+                    this.success = true;
                 } else {
-                    ItemStack itemStack2 = ArmorItem.dispenseArmor(blockPointer, itemStack);
-                    if (itemStack.getCount() < itemStack2.getCount()) {
-                        this.success = false;
-                    }
+                    this.success = ArmorItem.dispenseArmor(blockPointer, itemStack);
                 }
-                return super.dispenseSilently(blockPointer, itemStack);
+                return itemStack;
             }
         });
         DispenserBlock.registerBehavior(Blocks.SHULKER_BOX.asItem(), new BlockPlacementDispenserBehavior());

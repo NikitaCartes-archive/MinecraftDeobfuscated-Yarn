@@ -92,7 +92,7 @@ extends World {
     private Scoreboard scoreboard = new Scoreboard();
     private final Map<String, MapState> mapStates = Maps.newHashMap();
     private int lightningTicksLeft;
-    private final Object2ObjectArrayMap<ColorResolver, BiomeColorCache> colorCache = Util.create(new Object2ObjectArrayMap(3), object2ObjectArrayMap -> {
+    private final Object2ObjectArrayMap<ColorResolver, BiomeColorCache> colorCache = Util.make(new Object2ObjectArrayMap(3), object2ObjectArrayMap -> {
         object2ObjectArrayMap.put(BiomeColors.GRASS_COLOR, new BiomeColorCache());
         object2ObjectArrayMap.put(BiomeColors.FOLIAGE_COLOR, new BiomeColorCache());
         object2ObjectArrayMap.put(BiomeColors.WATER_COLOR, new BiomeColorCache());

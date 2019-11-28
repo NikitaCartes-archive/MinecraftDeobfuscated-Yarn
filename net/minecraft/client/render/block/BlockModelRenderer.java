@@ -272,7 +272,7 @@ public class BlockModelRenderer {
         }
 
         static {
-            field_4190 = Util.create(new NeighborData[6], neighborDatas -> {
+            field_4190 = Util.make(new NeighborData[6], neighborDatas -> {
                 neighborDatas[Direction.DOWN.getId()] = DOWN;
                 neighborDatas[Direction.UP.getId()] = UP;
                 neighborDatas[Direction.NORTH.getId()] = NORTH;
@@ -465,7 +465,7 @@ public class BlockModelRenderer {
     @Environment(value=EnvType.CLIENT)
     static class BrightnessCache {
         private boolean enabled;
-        private final Long2IntLinkedOpenHashMap intCache = Util.create(() -> {
+        private final Long2IntLinkedOpenHashMap intCache = Util.make(() -> {
             Long2IntLinkedOpenHashMap long2IntLinkedOpenHashMap = new Long2IntLinkedOpenHashMap(100, 0.25f){
 
                 @Override
@@ -475,7 +475,7 @@ public class BlockModelRenderer {
             long2IntLinkedOpenHashMap.defaultReturnValue(Integer.MAX_VALUE);
             return long2IntLinkedOpenHashMap;
         });
-        private final Long2FloatLinkedOpenHashMap floatCache = Util.create(() -> {
+        private final Long2FloatLinkedOpenHashMap floatCache = Util.make(() -> {
             Long2FloatLinkedOpenHashMap long2FloatLinkedOpenHashMap = new Long2FloatLinkedOpenHashMap(100, 0.25f){
 
                 @Override
@@ -559,7 +559,7 @@ public class BlockModelRenderer {
         }
 
         static {
-            VALUES = Util.create(new Translation[6], translations -> {
+            VALUES = Util.make(new Translation[6], translations -> {
                 translations[Direction.DOWN.getId()] = DOWN;
                 translations[Direction.UP.getId()] = UP;
                 translations[Direction.NORTH.getId()] = NORTH;

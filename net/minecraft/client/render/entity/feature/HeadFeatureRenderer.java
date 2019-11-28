@@ -55,7 +55,7 @@ extends FeatureRenderer<T, M> {
             matrixStack.scale(0.7f, 0.7f, 0.7f);
             matrixStack.translate(0.0, 1.0, 0.0);
         }
-        ((ModelWithHead)this.getModel()).getHead().rotate(matrixStack);
+        ((ModelWithHead)this.getContextModel()).getHead().rotate(matrixStack);
         if (item instanceof BlockItem && ((BlockItem)item).getBlock() instanceof AbstractSkullBlock) {
             m = 1.1875f;
             matrixStack.scale(1.1875f, -1.1875f, -1.1875f);

@@ -45,7 +45,7 @@ extends TreeFeatureConfig {
             super(stateProvider, stateProvider2);
         }
 
-        public Builder method_23411(List<TreeDecorator> list) {
+        public Builder treeDecorators(List<TreeDecorator> list) {
             this.field_21234 = list;
             return this;
         }

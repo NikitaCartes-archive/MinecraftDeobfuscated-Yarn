@@ -60,7 +60,7 @@ implements AutoCloseable {
         return i | j << 16;
     }
 
-    public static int packUv(float f, boolean bl) {
+    public static int getUv(float f, boolean bl) {
         return OverlayTexture.packUv(OverlayTexture.getU(f), OverlayTexture.getV(bl));
     }
 

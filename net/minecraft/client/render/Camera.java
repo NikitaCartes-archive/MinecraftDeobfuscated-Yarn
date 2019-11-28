@@ -90,15 +90,15 @@ public class Camera {
     protected void setRotation(float f, float g) {
         this.pitch = g;
         this.yaw = f;
-        this.field_21518.method_23758(0.0f, 0.0f, 0.0f, 1.0f);
+        this.field_21518.set(0.0f, 0.0f, 0.0f, 1.0f);
         this.field_21518.hamiltonProduct(Vector3f.POSITIVE_Y.getDegreesQuaternion(-f));
         this.field_21518.hamiltonProduct(Vector3f.POSITIVE_X.getDegreesQuaternion(g));
         this.horizontalPlane.set(0.0f, 0.0f, 1.0f);
-        this.horizontalPlane.method_19262(this.field_21518);
+        this.horizontalPlane.rotate(this.field_21518);
         this.verticalPlane.set(0.0f, 1.0f, 0.0f);
-        this.verticalPlane.method_19262(this.field_21518);
+        this.verticalPlane.rotate(this.field_21518);
         this.diagonalPlane.set(1.0f, 0.0f, 0.0f);
-        this.diagonalPlane.method_19262(this.field_21518);
+        this.diagonalPlane.rotate(this.field_21518);
     }
 
     protected void setPos(double d, double e, double f) {

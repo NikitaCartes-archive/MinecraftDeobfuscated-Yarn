@@ -66,7 +66,7 @@ extends QuadrupedEntityModel<T> {
         this.frontLeftLeg.pivotY = this.frontRightLeg.pivotY;
         this.frontLeftLeg.pivotZ = this.frontRightLeg.pivotZ;
         this.frontLeftLeg.pitch -= l * (float)Math.PI * 0.45f;
-        if (this.isChild) {
+        if (this.child) {
             this.head.pivotY = 10.0f * m - 9.0f * l;
             this.head.pivotZ = -16.0f * m - 7.0f * l;
         } else {

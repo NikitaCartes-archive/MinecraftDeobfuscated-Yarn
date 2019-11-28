@@ -42,6 +42,7 @@ implements Tickable {
     private static final Logger LOGGER = LogManager.getLogger();
     private long age;
     private int teleportCooldown;
+    @Nullable
     private BlockPos exitPortalPos;
     private boolean exactTeleport;
 
@@ -88,7 +89,7 @@ implements Tickable {
         } else if (!this.world.isClient) {
             List<Entity> list = this.world.getNonSpectatingEntities(Entity.class, new Box(this.getPos()));
             if (!list.isEmpty()) {
-                this.tryTeleportingEntity(list.get(0));
+                this.tryTeleportingEntity(list.get(0).getRootVehicle());
             }
             if (this.age % 2400L == 0L) {
                 this.startTeleportCooldown();

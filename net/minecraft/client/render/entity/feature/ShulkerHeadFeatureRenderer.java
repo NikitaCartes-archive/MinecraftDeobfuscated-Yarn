@@ -21,9 +21,9 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Quaternion;
 
 @Environment(value=EnvType.CLIENT)
-public class ShulkerSomethingFeatureRenderer
+public class ShulkerHeadFeatureRenderer
 extends FeatureRenderer<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> {
-    public ShulkerSomethingFeatureRenderer(FeatureRendererContext<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> featureRendererContext) {
+    public ShulkerHeadFeatureRenderer(FeatureRendererContext<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> featureRendererContext) {
         super(featureRendererContext);
     }
 
@@ -37,13 +37,13 @@ extends FeatureRenderer<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> {
         matrixStack.multiply(quaternion);
         matrixStack.scale(-1.0f, -1.0f, 1.0f);
         matrixStack.translate(0.0, -1.0, 0.0);
-        ModelPart modelPart = ((ShulkerEntityModel)this.getModel()).getHead();
+        ModelPart modelPart = ((ShulkerEntityModel)this.getContextModel()).getHead();
         modelPart.yaw = k * ((float)Math.PI / 180);
         modelPart.pitch = l * ((float)Math.PI / 180);
         DyeColor dyeColor = shulkerEntity.getColor();
         Identifier identifier = dyeColor == null ? ShulkerEntityRenderer.SKIN : ShulkerEntityRenderer.SKIN_COLOR[dyeColor.getId()];
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(identifier));
-        modelPart.render(matrixStack, vertexConsumer, i, LivingEntityRenderer.method_23622(shulkerEntity, 0.0f));
+        modelPart.render(matrixStack, vertexConsumer, i, LivingEntityRenderer.getOverlay(shulkerEntity, 0.0f));
         matrixStack.pop();
     }
 }

@@ -31,7 +31,7 @@ extends EntityRenderer<T> {
 
     public MinecartEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher);
-        this.field_4673 = 0.7f;
+        this.shadowSize = 0.7f;
     }
 
     @Override
@@ -44,9 +44,9 @@ extends EntityRenderer<T> {
         float j = (((float)(l >> 20 & 7L) + 0.5f) / 8.0f - 0.5f) * 0.004f;
         float k = (((float)(l >> 24 & 7L) + 0.5f) / 8.0f - 0.5f) * 0.004f;
         matrixStack.translate(h, j, k);
-        double d = MathHelper.lerp((double)g, ((AbstractMinecartEntity)abstractMinecartEntity).prevRenderX, ((Entity)abstractMinecartEntity).getX());
-        double e = MathHelper.lerp((double)g, ((AbstractMinecartEntity)abstractMinecartEntity).prevRenderY, ((Entity)abstractMinecartEntity).getY());
-        double m = MathHelper.lerp((double)g, ((AbstractMinecartEntity)abstractMinecartEntity).prevRenderZ, ((Entity)abstractMinecartEntity).getZ());
+        double d = MathHelper.lerp((double)g, ((AbstractMinecartEntity)abstractMinecartEntity).lastRenderX, ((Entity)abstractMinecartEntity).getX());
+        double e = MathHelper.lerp((double)g, ((AbstractMinecartEntity)abstractMinecartEntity).lastRenderY, ((Entity)abstractMinecartEntity).getY());
+        double m = MathHelper.lerp((double)g, ((AbstractMinecartEntity)abstractMinecartEntity).lastRenderZ, ((Entity)abstractMinecartEntity).getZ());
         double n = 0.3f;
         Vec3d vec3d = ((AbstractMinecartEntity)abstractMinecartEntity).method_7508(d, e, m);
         float o = MathHelper.lerp(g, ((AbstractMinecartEntity)abstractMinecartEntity).prevPitch, ((AbstractMinecartEntity)abstractMinecartEntity).pitch);

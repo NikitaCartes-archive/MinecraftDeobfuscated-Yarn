@@ -34,8 +34,8 @@ implements ContainerProvider<T> {
     protected int containerHeight = 166;
     protected final T container;
     protected final PlayerInventory playerInventory;
-    protected int left;
-    protected int top;
+    protected int x;
+    protected int y;
     protected Slot focusedSlot;
     private Slot touchDragSlotStart;
     private boolean touchIsRightClickDrag;
@@ -69,8 +69,8 @@ implements ContainerProvider<T> {
     @Override
     protected void init() {
         super.init();
-        this.left = (this.width - this.containerWidth) / 2;
-        this.top = (this.height - this.containerHeight) / 2;
+        this.x = (this.width - this.containerWidth) / 2;
+        this.y = (this.height - this.containerHeight) / 2;
     }
 
     @Override
@@ -78,8 +78,8 @@ implements ContainerProvider<T> {
         ItemStack itemStack;
         int q;
         int p;
-        int k = this.left;
-        int l = this.top;
+        int k = this.x;
+        int l = this.y;
         this.drawBackground(f, i, j);
         RenderSystem.disableRescaleNormal();
         RenderSystem.disableDepthTest();
@@ -257,8 +257,8 @@ implements ContainerProvider<T> {
         this.isDoubleClicking = this.lastClickedSlot == slot && l - this.lastButtonClickTime < 250L && this.lastClickedButton == i;
         this.cancelNextRelease = false;
         if (i == 0 || i == 1 || bl) {
-            int j = this.left;
-            int k = this.top;
+            int j = this.x;
+            int k = this.y;
             boolean bl2 = this.isClickOutsideBounds(d, e, j, k, i);
             int m = -1;
             if (slot != null) {
@@ -357,8 +357,8 @@ implements ContainerProvider<T> {
     @Override
     public boolean mouseReleased(double d, double e, int i) {
         Slot slot = this.getSlotAt(d, e);
-        int j = this.left;
-        int k = this.top;
+        int j = this.x;
+        int k = this.y;
         boolean bl = this.isClickOutsideBounds(d, e, j, k, i);
         int l = -1;
         if (slot != null) {
@@ -451,8 +451,8 @@ implements ContainerProvider<T> {
     }
 
     protected boolean isPointWithinBounds(int i, int j, int k, int l, double d, double e) {
-        int m = this.left;
-        int n = this.top;
+        int m = this.x;
+        int n = this.y;
         return (d -= (double)m) >= (double)(i - 1) && d < (double)(i + k + 1) && (e -= (double)n) >= (double)(j - 1) && e < (double)(j + l + 1);
     }
 

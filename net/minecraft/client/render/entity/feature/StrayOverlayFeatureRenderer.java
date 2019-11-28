@@ -26,7 +26,7 @@ extends FeatureRenderer<T, M> {
 
     @Override
     public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T mobEntity, float f, float g, float h, float j, float k, float l) {
-        StrayOverlayFeatureRenderer.render(this.getModel(), this.model, SKIN, matrixStack, vertexConsumerProvider, i, mobEntity, f, g, j, k, l, h, 1.0f, 1.0f, 1.0f);
+        StrayOverlayFeatureRenderer.render(this.getContextModel(), this.model, SKIN, matrixStack, vertexConsumerProvider, i, mobEntity, f, g, j, k, l, h, 1.0f, 1.0f, 1.0f);
     }
 }
 

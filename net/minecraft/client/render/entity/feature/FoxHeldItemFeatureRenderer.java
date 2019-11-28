@@ -35,7 +35,7 @@ extends FeatureRenderer<FoxEntity, FoxEntityModel<FoxEntity>> {
             matrixStack.scale(0.75f, 0.75f, 0.75f);
             matrixStack.translate(0.0, 0.5, 0.209375f);
         }
-        matrixStack.translate(((FoxEntityModel)this.getModel()).head.pivotX / 16.0f, ((FoxEntityModel)this.getModel()).head.pivotY / 16.0f, ((FoxEntityModel)this.getModel()).head.pivotZ / 16.0f);
+        matrixStack.translate(((FoxEntityModel)this.getContextModel()).head.pivotX / 16.0f, ((FoxEntityModel)this.getContextModel()).head.pivotY / 16.0f, ((FoxEntityModel)this.getContextModel()).head.pivotZ / 16.0f);
         m = foxEntity.getHeadRoll(h);
         matrixStack.multiply(Vector3f.POSITIVE_Z.getRadialQuaternion(m));
         matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(k));

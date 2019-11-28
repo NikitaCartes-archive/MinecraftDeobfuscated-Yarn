@@ -4,6 +4,7 @@
 package net.minecraft.world.chunk.light;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMaps;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
@@ -33,7 +34,7 @@ extends SectionDistanceLevelPropagator {
     protected final M lightArrays;
     protected final LongSet field_15802 = new LongOpenHashSet();
     protected final LongSet dirtySections = new LongOpenHashSet();
-    protected final Long2ObjectMap<ChunkNibbleArray> lightArraysToAdd = new Long2ObjectOpenHashMap<ChunkNibbleArray>();
+    protected final Long2ObjectMap<ChunkNibbleArray> lightArraysToAdd = Long2ObjectMaps.synchronize(new Long2ObjectOpenHashMap());
     private final LongSet field_19342 = new LongOpenHashSet();
     private final LongSet lightArraysToRemove = new LongOpenHashSet();
     protected volatile boolean hasLightUpdates;
@@ -161,13 +162,17 @@ extends SectionDistanceLevelPropagator {
     }
 
     protected void removeChunkData(ChunkLightProvider<?, ?> chunkLightProvider, long l) {
+        if (chunkLightProvider.method_24208() < 8192) {
+            chunkLightProvider.method_24206(m -> ChunkSectionPos.fromGlobalPos(m) == l);
+            return;
+        }
         int i = ChunkSectionPos.getWorldCoord(ChunkSectionPos.getX(l));
         int j = ChunkSectionPos.getWorldCoord(ChunkSectionPos.getY(l));
         int k = ChunkSectionPos.getWorldCoord(ChunkSectionPos.getZ(l));
-        for (int m = 0; m < 16; ++m) {
+        for (int m2 = 0; m2 < 16; ++m2) {
             for (int n = 0; n < 16; ++n) {
                 for (int o = 0; o < 16; ++o) {
-                    long p = BlockPos.asLong(i + m, j + n, k + o);
+                    long p = BlockPos.asLong(i + m2, j + n, k + o);
                     chunkLightProvider.removePendingUpdate(p);
                 }
             }

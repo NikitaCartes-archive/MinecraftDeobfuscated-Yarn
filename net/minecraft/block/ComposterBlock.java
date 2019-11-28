@@ -47,7 +47,7 @@ implements InventoryProvider {
     public static final IntProperty LEVEL = Properties.LEVEL_8;
     public static final Object2FloatMap<ItemConvertible> ITEM_TO_LEVEL_INCREASE_CHANCE = new Object2FloatOpenHashMap<ItemConvertible>();
     public static final VoxelShape RAY_TRACE_SHAPE = VoxelShapes.fullCube();
-    private static final VoxelShape[] LEVEL_TO_COLLISION_SHAPE = Util.create(new VoxelShape[9], voxelShapes -> {
+    private static final VoxelShape[] LEVEL_TO_COLLISION_SHAPE = Util.make(new VoxelShape[9], voxelShapes -> {
         for (int i = 0; i < 8; ++i) {
             voxelShapes[i] = VoxelShapes.combineAndSimplify(RAY_TRACE_SHAPE, Block.createCuboidShape(2.0, Math.max(2, 1 + i * 2), 2.0, 14.0, 16.0, 14.0), BooleanBiFunction.ONLY_FIRST);
         }

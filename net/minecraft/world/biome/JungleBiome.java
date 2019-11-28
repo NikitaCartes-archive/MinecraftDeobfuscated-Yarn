@@ -52,7 +52,7 @@ extends Biome {
         this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.SLIME, 100, 4, 4));
         this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.ENDERMAN, 10, 1, 4));
         this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.WITCH, 5, 1, 1));
-        this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.OCELOT, 2, 1, 1));
+        this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.OCELOT, 2, 1, 3));
     }
 }
 

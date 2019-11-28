@@ -21,7 +21,7 @@ import net.minecraft.world.updater.WorldUpdater;
 @Environment(value=EnvType.CLIENT)
 public class OptimizeWorldScreen
 extends Screen {
-    private static final Object2IntMap<DimensionType> DIMENSION_COLORS = Util.create(new Object2IntOpenCustomHashMap(Util.identityHashStrategy()), object2IntOpenCustomHashMap -> {
+    private static final Object2IntMap<DimensionType> DIMENSION_COLORS = Util.make(new Object2IntOpenCustomHashMap(Util.identityHashStrategy()), object2IntOpenCustomHashMap -> {
         object2IntOpenCustomHashMap.put(DimensionType.OVERWORLD, -13408734);
         object2IntOpenCustomHashMap.put(DimensionType.THE_NETHER, -10075085);
         object2IntOpenCustomHashMap.put(DimensionType.THE_END, -8943531);

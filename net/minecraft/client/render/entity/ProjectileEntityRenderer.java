@@ -52,14 +52,14 @@ extends EntityRenderer<T> {
         MatrixStack.Entry entry = matrixStack.peek();
         Matrix4f matrix4f = entry.getModel();
         Matrix3f matrix3f = entry.getNormal();
-        this.method_23153(matrix4f, matrix3f, vertexConsumer, -7, -2, -2, 0.0f, 0.15625f, 1, 0, 0, i);
-        this.method_23153(matrix4f, matrix3f, vertexConsumer, -7, -2, 2, 0.15625f, 0.15625f, 1, 0, 0, i);
-        this.method_23153(matrix4f, matrix3f, vertexConsumer, -7, 2, 2, 0.15625f, 0.3125f, 1, 0, 0, i);
-        this.method_23153(matrix4f, matrix3f, vertexConsumer, -7, 2, -2, 0.0f, 0.3125f, 1, 0, 0, i);
-        this.method_23153(matrix4f, matrix3f, vertexConsumer, -7, 2, -2, 0.0f, 0.15625f, -1, 0, 0, i);
-        this.method_23153(matrix4f, matrix3f, vertexConsumer, -7, 2, 2, 0.15625f, 0.15625f, -1, 0, 0, i);
-        this.method_23153(matrix4f, matrix3f, vertexConsumer, -7, -2, 2, 0.15625f, 0.3125f, -1, 0, 0, i);
-        this.method_23153(matrix4f, matrix3f, vertexConsumer, -7, -2, -2, 0.0f, 0.3125f, -1, 0, 0, i);
+        this.method_23153(matrix4f, matrix3f, vertexConsumer, -7, -2, -2, 0.0f, 0.15625f, -1, 0, 0, i);
+        this.method_23153(matrix4f, matrix3f, vertexConsumer, -7, -2, 2, 0.15625f, 0.15625f, -1, 0, 0, i);
+        this.method_23153(matrix4f, matrix3f, vertexConsumer, -7, 2, 2, 0.15625f, 0.3125f, -1, 0, 0, i);
+        this.method_23153(matrix4f, matrix3f, vertexConsumer, -7, 2, -2, 0.0f, 0.3125f, -1, 0, 0, i);
+        this.method_23153(matrix4f, matrix3f, vertexConsumer, -7, 2, -2, 0.0f, 0.15625f, 1, 0, 0, i);
+        this.method_23153(matrix4f, matrix3f, vertexConsumer, -7, 2, 2, 0.15625f, 0.15625f, 1, 0, 0, i);
+        this.method_23153(matrix4f, matrix3f, vertexConsumer, -7, -2, 2, 0.15625f, 0.3125f, 1, 0, 0, i);
+        this.method_23153(matrix4f, matrix3f, vertexConsumer, -7, -2, -2, 0.0f, 0.3125f, 1, 0, 0, i);
         for (int u = 0; u < 4; ++u) {
             matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0f));
             this.method_23153(matrix4f, matrix3f, vertexConsumer, -8, -2, 0, 0.0f, 0.0f, 0, 1, 0, i);

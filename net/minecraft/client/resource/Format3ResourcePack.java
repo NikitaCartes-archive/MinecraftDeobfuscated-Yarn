@@ -25,7 +25,7 @@ public class Format3ResourcePack
 implements ResourcePack {
     private final ResourcePack parent;
     private final Map<Identifier, Identifier> idMap;
-    public static final Map<Identifier, Identifier> NEW_TO_OLD_MAP = Util.create(() -> {
+    public static final Map<Identifier, Identifier> NEW_TO_OLD_MAP = Util.make(() -> {
         ImmutableMap.Builder<Identifier, Identifier> builder = ImmutableMap.builder();
         builder.put(new Identifier("textures/block/melon_stem.png"), new Identifier("textures/block/pumpkin_stem.png"));
         builder.put(new Identifier("textures/block/anvil.png"), new Identifier("textures/blocks/anvil_base.png"));

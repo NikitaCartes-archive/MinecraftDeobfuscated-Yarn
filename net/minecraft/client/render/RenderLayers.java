@@ -23,7 +23,7 @@ import net.minecraft.util.Util;
 
 @Environment(value=EnvType.CLIENT)
 public class RenderLayers {
-    private static final Map<Block, RenderLayer> BLOCKS = Util.create(Maps.newHashMap(), hashMap -> {
+    private static final Map<Block, RenderLayer> BLOCKS = Util.make(Maps.newHashMap(), hashMap -> {
         RenderLayer renderLayer = RenderLayer.getCutoutMipped();
         hashMap.put(Blocks.GRASS_BLOCK, renderLayer);
         hashMap.put(Blocks.IRON_BARS, renderLayer);
@@ -243,7 +243,7 @@ public class RenderLayers {
         hashMap.put(Blocks.FROSTED_ICE, renderLayer3);
         hashMap.put(Blocks.BUBBLE_COLUMN, renderLayer3);
     });
-    private static final Map<Fluid, RenderLayer> FLUIDS = Util.create(Maps.newHashMap(), hashMap -> {
+    private static final Map<Fluid, RenderLayer> FLUIDS = Util.make(Maps.newHashMap(), hashMap -> {
         RenderLayer renderLayer = RenderLayer.getTranslucent();
         hashMap.put(Fluids.FLOWING_WATER, renderLayer);
         hashMap.put(Fluids.WATER, renderLayer);

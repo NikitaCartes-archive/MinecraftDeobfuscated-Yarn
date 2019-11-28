@@ -70,9 +70,9 @@ public class VertexConsumers {
         }
 
         @Override
-        public void elements(float f, float g, float h, float i, float j, float k, float l, float m, float n, int o, int p, float q, float r, float s) {
-            this.first.elements(f, g, h, i, j, k, l, m, n, o, p, q, r, s);
-            this.second.elements(f, g, h, i, j, k, l, m, n, o, p, q, r, s);
+        public void vertex(float f, float g, float h, float i, float j, float k, float l, float m, float n, int o, int p, float q, float r, float s) {
+            this.first.vertex(f, g, h, i, j, k, l, m, n, o, p, q, r, s);
+            this.second.vertex(f, g, h, i, j, k, l, m, n, o, p, q, r, s);
         }
 
         @Override

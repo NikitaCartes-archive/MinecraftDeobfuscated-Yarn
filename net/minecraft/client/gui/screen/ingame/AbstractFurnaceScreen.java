@@ -39,12 +39,12 @@ implements RecipeBookProvider {
         super.init();
         this.narrow = this.width < 379;
         this.recipeBook.initialize(this.width, this.height, this.minecraft, this.narrow, (CraftingContainer)this.container);
-        this.left = this.recipeBook.findLeftEdge(this.narrow, this.width, this.containerWidth);
-        this.addButton(new TexturedButtonWidget(this.left + 20, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE, buttonWidget -> {
+        this.x = this.recipeBook.findLeftEdge(this.narrow, this.width, this.containerWidth);
+        this.addButton(new TexturedButtonWidget(this.x + 20, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE, buttonWidget -> {
             this.recipeBook.reset(this.narrow);
             this.recipeBook.toggleOpen();
-            this.left = this.recipeBook.findLeftEdge(this.narrow, this.width, this.containerWidth);
-            ((TexturedButtonWidget)buttonWidget).setPos(this.left + 20, this.height / 2 - 49);
+            this.x = this.recipeBook.findLeftEdge(this.narrow, this.width, this.containerWidth);
+            ((TexturedButtonWidget)buttonWidget).setPos(this.x + 20, this.height / 2 - 49);
         }));
     }
 
@@ -63,10 +63,10 @@ implements RecipeBookProvider {
         } else {
             this.recipeBook.render(i, j, f);
             super.render(i, j, f);
-            this.recipeBook.drawGhostSlots(this.left, this.top, true, f);
+            this.recipeBook.drawGhostSlots(this.x, this.y, true, f);
         }
         this.drawMouseoverTooltip(i, j);
-        this.recipeBook.drawTooltip(this.left, this.top, i, j);
+        this.recipeBook.drawTooltip(this.x, this.y, i, j);
     }
 
     @Override
@@ -81,8 +81,8 @@ implements RecipeBookProvider {
         int m;
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.minecraft.getTextureManager().bindTexture(this.background);
-        int k = this.left;
-        int l = this.top;
+        int k = this.x;
+        int l = this.y;
         this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);
         if (((AbstractFurnaceContainer)this.container).isBurning()) {
             m = ((AbstractFurnaceContainer)this.container).getFuelProgress();
@@ -120,7 +120,7 @@ implements RecipeBookProvider {
     @Override
     protected boolean isClickOutsideBounds(double d, double e, int i, int j, int k) {
         boolean bl = d < (double)i || e < (double)j || d >= (double)(i + this.containerWidth) || e >= (double)(j + this.containerHeight);
-        return this.recipeBook.isClickOutsideBounds(d, e, this.left, this.top, this.containerWidth, this.containerHeight, k) && bl;
+        return this.recipeBook.isClickOutsideBounds(d, e, this.x, this.y, this.containerWidth, this.containerHeight, k) && bl;
     }
 
     @Override

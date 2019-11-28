@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class EmptyChunk
 extends WorldChunk {
-    private static final Biome[] BIOMES = Util.create(new Biome[BiomeArray.DEFAULT_LENGTH], biomes -> Arrays.fill(biomes, Biomes.PLAINS));
+    private static final Biome[] BIOMES = Util.make(new Biome[BiomeArray.DEFAULT_LENGTH], biomes -> Arrays.fill(biomes, Biomes.PLAINS));
 
     public EmptyChunk(World world, ChunkPos chunkPos) {
         super(world, chunkPos, new BiomeArray(BIOMES));

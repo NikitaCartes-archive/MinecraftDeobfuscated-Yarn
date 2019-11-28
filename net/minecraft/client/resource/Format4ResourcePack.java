@@ -29,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class Format4ResourcePack
 implements ResourcePack {
-    private static final Map<String, Pair<ChestType, Identifier>> NEW_TO_OLD_CHEST_TEXTURES = Util.create(Maps.newHashMap(), hashMap -> {
+    private static final Map<String, Pair<ChestType, Identifier>> NEW_TO_OLD_CHEST_TEXTURES = Util.make(Maps.newHashMap(), hashMap -> {
         hashMap.put("textures/entity/chest/normal_left.png", new Pair<ChestType, Identifier>(ChestType.LEFT, new Identifier("textures/entity/chest/normal_double.png")));
         hashMap.put("textures/entity/chest/normal_right.png", new Pair<ChestType, Identifier>(ChestType.RIGHT, new Identifier("textures/entity/chest/normal_double.png")));
         hashMap.put("textures/entity/chest/normal.png", new Pair<ChestType, Identifier>(ChestType.SINGLE, new Identifier("textures/entity/chest/normal.png")));

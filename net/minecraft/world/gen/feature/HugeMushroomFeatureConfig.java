@@ -16,22 +16,22 @@ public class HugeMushroomFeatureConfig
 implements FeatureConfig {
     public final StateProvider capProvider;
     public final StateProvider stemProvider;
-    public final int field_21232;
+    public final int capSize;
 
     public HugeMushroomFeatureConfig(StateProvider stateProvider, StateProvider stateProvider2, int i) {
         this.capProvider = stateProvider;
         this.stemProvider = stateProvider2;
-        this.field_21232 = i;
+        this.capSize = i;
     }
 
     @Override
     public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
         ImmutableMap.Builder<T, T> builder = ImmutableMap.builder();
-        builder.put(dynamicOps.createString("cap_provider"), this.capProvider.serialize(dynamicOps)).put(dynamicOps.createString("stem_provider"), this.stemProvider.serialize(dynamicOps)).put(dynamicOps.createString("foliage_radius"), dynamicOps.createInt(this.field_21232));
+        builder.put(dynamicOps.createString("cap_provider"), this.capProvider.serialize(dynamicOps)).put(dynamicOps.createString("stem_provider"), this.stemProvider.serialize(dynamicOps)).put(dynamicOps.createString("foliage_radius"), dynamicOps.createInt(this.capSize));
         return new Dynamic<T>(dynamicOps, dynamicOps.createMap(builder.build()));
     }
 
-    public static <T> HugeMushroomFeatureConfig method_23407(Dynamic<T> dynamic) {
+    public static <T> HugeMushroomFeatureConfig deserialize(Dynamic<T> dynamic) {
         StateProviderType<T> stateProviderType = Registry.BLOCK_STATE_PROVIDER_TYPE.get(new Identifier(dynamic.get("cap_provider").get("type").asString().orElseThrow(RuntimeException::new)));
         StateProviderType<T> stateProviderType2 = Registry.BLOCK_STATE_PROVIDER_TYPE.get(new Identifier(dynamic.get("stem_provider").get("type").asString().orElseThrow(RuntimeException::new)));
         return new HugeMushroomFeatureConfig((StateProvider)stateProviderType.deserialize(dynamic.get("cap_provider").orElseEmptyMap()), (StateProvider)stateProviderType2.deserialize(dynamic.get("stem_provider").orElseEmptyMap()), dynamic.get("foliage_radius").asInt(2));

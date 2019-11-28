@@ -29,7 +29,7 @@ extends FeatureRenderer<CatEntity, CatEntityModel<CatEntity>> {
             return;
         }
         float[] fs = catEntity.getCollarColor().getColorComponents();
-        CatCollarFeatureRenderer.render(this.getModel(), this.model, SKIN, matrixStack, vertexConsumerProvider, i, catEntity, f, g, j, k, l, h, fs[0], fs[1], fs[2]);
+        CatCollarFeatureRenderer.render(this.getContextModel(), this.model, SKIN, matrixStack, vertexConsumerProvider, i, catEntity, f, g, j, k, l, h, fs[0], fs[1], fs[2]);
     }
 }
 

@@ -86,7 +86,7 @@ ModelWithHead {
         this.arms.pivotY = 3.0f;
         this.arms.pivotZ = -1.0f;
         this.arms.pitch = -0.75f;
-        if (this.isRiding) {
+        if (this.riding) {
             this.rightAttackingArm.pitch = -0.62831855f;
             this.rightAttackingArm.yaw = 0.0f;
             this.rightAttackingArm.roll = 0.0f;

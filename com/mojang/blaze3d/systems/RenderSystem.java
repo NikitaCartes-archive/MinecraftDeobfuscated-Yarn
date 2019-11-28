@@ -201,9 +201,9 @@ public class RenderSystem {
         GlStateManager.disableBlend();
     }
 
-    public static void blendFunc(GlStateManager.SourceFactor sourceFactor, GlStateManager.DestFactor destFactor) {
+    public static void blendFunc(GlStateManager.SrcFactor srcFactor, GlStateManager.DstFactor dstFactor) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.blendFunc(sourceFactor.value, destFactor.value);
+        GlStateManager.blendFunc(srcFactor.value, dstFactor.value);
     }
 
     public static void blendFunc(int i, int j) {
@@ -211,9 +211,9 @@ public class RenderSystem {
         GlStateManager.blendFunc(i, j);
     }
 
-    public static void blendFuncSeparate(GlStateManager.SourceFactor sourceFactor, GlStateManager.DestFactor destFactor, GlStateManager.SourceFactor sourceFactor2, GlStateManager.DestFactor destFactor2) {
+    public static void blendFuncSeparate(GlStateManager.SrcFactor srcFactor, GlStateManager.DstFactor dstFactor, GlStateManager.SrcFactor srcFactor2, GlStateManager.DstFactor dstFactor2) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.blendFuncSeparate(sourceFactor.value, destFactor.value, sourceFactor2.value, destFactor2.value);
+        GlStateManager.blendFuncSeparate(srcFactor.value, dstFactor.value, srcFactor2.value, dstFactor2.value);
     }
 
     public static void blendFuncSeparate(int i, int j, int k, int l) {
@@ -228,7 +228,7 @@ public class RenderSystem {
 
     public static void blendColor(float f, float g, float h, float i) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.method_22883(f, g, h, i);
+        GlStateManager.blendColor(f, g, h, i);
     }
 
     public static void enableFog() {
@@ -243,7 +243,7 @@ public class RenderSystem {
 
     public static void fogMode(GlStateManager.FogMode fogMode) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.fogMode(fogMode.glValue);
+        GlStateManager.fogMode(fogMode.value);
     }
 
     public static void fogMode(int i) {
@@ -328,7 +328,7 @@ public class RenderSystem {
 
     public static void logicOp(GlStateManager.LogicOp logicOp) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.logicOp(logicOp.glValue);
+        GlStateManager.logicOp(logicOp.value);
     }
 
     public static void activeTexture(int i) {
@@ -466,7 +466,7 @@ public class RenderSystem {
 
     public static void translated(double d, double e, double f) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.rotated(d, e, f);
+        GlStateManager.translated(d, e, f);
     }
 
     public static void multMatrix(Matrix4f matrix4f) {
@@ -671,47 +671,47 @@ public class RenderSystem {
 
     public static void setupOutline() {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.method_23282();
+        GlStateManager.setupOutline();
     }
 
     public static void teardownOutline() {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.method_23283();
+        GlStateManager.teardownOutline();
     }
 
     public static void setupOverlayColor(IntSupplier intSupplier, int i) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.method_22610(intSupplier.getAsInt(), i);
+        GlStateManager.setupOverlayColor(intSupplier.getAsInt(), i);
     }
 
     public static void teardownOverlayColor() {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.method_22618();
+        GlStateManager.teardownOverlayColor();
     }
 
     public static void setupLevelDiffuseLighting(Matrix4f matrix4f) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.method_22616(matrix4f);
+        GlStateManager.setupLevelDiffuseLighting(matrix4f);
     }
 
     public static void setupGuiDiffuseLighting(Matrix4f matrix4f) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.method_22617(matrix4f);
+        GlStateManager.setupGuiDiffuseLighting(matrix4f);
     }
 
     public static void mulTextureByProjModelView() {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.method_22889();
+        GlStateManager.mulTextureByProjModelView();
     }
 
     public static void setupEndPortalTexGen() {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.method_22887();
+        GlStateManager.setupEndPortalTexGen();
     }
 
     public static void clearTexGen() {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.method_22888();
+        GlStateManager.clearTexGen();
     }
 
     public static void beginInitialization() {
@@ -742,7 +742,7 @@ public class RenderSystem {
     }
 
     public static void defaultBlendFunc() {
-        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
     }
 
     public static void defaultAlphaFunc() {
@@ -750,15 +750,15 @@ public class RenderSystem {
     }
 
     private static /* synthetic */ void lambda$setupGuiDiffuseLighting$69(Matrix4f matrix4f) {
-        GlStateManager.method_22617(matrix4f);
+        GlStateManager.setupGuiDiffuseLighting(matrix4f);
     }
 
     private static /* synthetic */ void lambda$setupLevelDiffuseLighting$68(Matrix4f matrix4f) {
-        GlStateManager.method_22616(matrix4f);
+        GlStateManager.setupLevelDiffuseLighting(matrix4f);
     }
 
     private static /* synthetic */ void lambda$setupOverlayColor$67(IntSupplier intSupplier, int i) {
-        GlStateManager.method_22610(intSupplier.getAsInt(), i);
+        GlStateManager.setupOverlayColor(intSupplier.getAsInt(), i);
     }
 
     private static /* synthetic */ void lambda$glUniformMatrix4$66(int i, boolean bl, FloatBuffer floatBuffer) {
@@ -863,7 +863,7 @@ public class RenderSystem {
     }
 
     private static /* synthetic */ void lambda$translated$41(double d, double e, double f) {
-        GlStateManager.rotated(d, e, f);
+        GlStateManager.translated(d, e, f);
     }
 
     private static /* synthetic */ void lambda$translatef$40(float f, float g, float h) {
@@ -947,7 +947,7 @@ public class RenderSystem {
     }
 
     private static /* synthetic */ void lambda$logicOp$20(GlStateManager.LogicOp logicOp) {
-        GlStateManager.logicOp(logicOp.glValue);
+        GlStateManager.logicOp(logicOp.value);
     }
 
     private static /* synthetic */ void lambda$polygonOffset$19(float f, float g) {
@@ -983,11 +983,11 @@ public class RenderSystem {
     }
 
     private static /* synthetic */ void lambda$fogMode$11(GlStateManager.FogMode fogMode) {
-        GlStateManager.fogMode(fogMode.glValue);
+        GlStateManager.fogMode(fogMode.value);
     }
 
     private static /* synthetic */ void lambda$blendColor$10(float f, float g, float h, float i) {
-        GlStateManager.method_22883(f, g, h, i);
+        GlStateManager.blendColor(f, g, h, i);
     }
 
     private static /* synthetic */ void lambda$blendEquation$9(int i) {
@@ -998,16 +998,16 @@ public class RenderSystem {
         GlStateManager.blendFuncSeparate(i, j, k, l);
     }
 
-    private static /* synthetic */ void lambda$blendFuncSeparate$7(GlStateManager.SourceFactor sourceFactor, GlStateManager.DestFactor destFactor, GlStateManager.SourceFactor sourceFactor2, GlStateManager.DestFactor destFactor2) {
-        GlStateManager.blendFuncSeparate(sourceFactor.value, destFactor.value, sourceFactor2.value, destFactor2.value);
+    private static /* synthetic */ void lambda$blendFuncSeparate$7(GlStateManager.SrcFactor srcFactor, GlStateManager.DstFactor dstFactor, GlStateManager.SrcFactor srcFactor2, GlStateManager.DstFactor dstFactor2) {
+        GlStateManager.blendFuncSeparate(srcFactor.value, dstFactor.value, srcFactor2.value, dstFactor2.value);
     }
 
     private static /* synthetic */ void lambda$blendFunc$6(int i, int j) {
         GlStateManager.blendFunc(i, j);
     }
 
-    private static /* synthetic */ void lambda$blendFunc$5(GlStateManager.SourceFactor sourceFactor, GlStateManager.DestFactor destFactor) {
-        GlStateManager.blendFunc(sourceFactor.value, destFactor.value);
+    private static /* synthetic */ void lambda$blendFunc$5(GlStateManager.SrcFactor srcFactor, GlStateManager.DstFactor dstFactor) {
+        GlStateManager.blendFunc(srcFactor.value, dstFactor.value);
     }
 
     private static /* synthetic */ void lambda$depthMask$4(boolean bl) {

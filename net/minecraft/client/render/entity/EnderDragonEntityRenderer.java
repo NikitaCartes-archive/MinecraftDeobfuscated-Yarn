@@ -40,7 +40,7 @@ extends EntityRenderer<EnderDragonEntity> {
 
     public EnderDragonEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher);
-        this.field_4673 = 0.5f;
+        this.shadowSize = 0.5f;
     }
 
     @Override
@@ -60,10 +60,10 @@ extends EntityRenderer<EnderDragonEntity> {
             VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityAlpha(EXPLOSION_TEX, k));
             this.field_21008.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f, 1.0f);
             VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(field_21738);
-            this.field_21008.render(matrixStack, vertexConsumer2, i, OverlayTexture.packUv(0.0f, bl), 1.0f, 1.0f, 1.0f, 1.0f);
+            this.field_21008.render(matrixStack, vertexConsumer2, i, OverlayTexture.getUv(0.0f, bl), 1.0f, 1.0f, 1.0f, 1.0f);
         } else {
             VertexConsumer vertexConsumer3 = vertexConsumerProvider.getBuffer(field_21737);
-            this.field_21008.render(matrixStack, vertexConsumer3, i, OverlayTexture.packUv(0.0f, bl), 1.0f, 1.0f, 1.0f, 1.0f);
+            this.field_21008.render(matrixStack, vertexConsumer3, i, OverlayTexture.getUv(0.0f, bl), 1.0f, 1.0f, 1.0f, 1.0f);
         }
         VertexConsumer vertexConsumer3 = vertexConsumerProvider.getBuffer(field_21739);
         this.field_21008.render(matrixStack, vertexConsumer3, i, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f, 1.0f);

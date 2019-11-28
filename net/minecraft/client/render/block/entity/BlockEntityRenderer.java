@@ -12,10 +12,10 @@ import net.minecraft.client.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class BlockEntityRenderer<T extends BlockEntity> {
-    protected final BlockEntityRenderDispatcher blockEntityRenderDispatcher;
+    protected final BlockEntityRenderDispatcher dispatcher;
 
     public BlockEntityRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher) {
-        this.blockEntityRenderDispatcher = blockEntityRenderDispatcher;
+        this.dispatcher = blockEntityRenderDispatcher;
     }
 
     public abstract void render(T var1, float var2, MatrixStack var3, VertexConsumerProvider var4, int var5, int var6);

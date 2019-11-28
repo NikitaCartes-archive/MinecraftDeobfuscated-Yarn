@@ -92,8 +92,8 @@ public class ModelLoader {
     public static final SpriteIdentifier SHIELD_BASE_NO_PATTERN = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, new Identifier("entity/shield_base_nopattern"));
     public static final List<Identifier> BLOCK_DESTRUCTION_STAGES = IntStream.range(0, 10).mapToObj(i -> new Identifier("block/destroy_stage_" + i)).collect(Collectors.toList());
     public static final List<Identifier> BLOCK_DESTRUCTION_STAGE_TEXTURES = BLOCK_DESTRUCTION_STAGES.stream().map(identifier -> new Identifier("textures/" + identifier.getPath() + ".png")).collect(Collectors.toList());
-    public static final List<RenderLayer> BLOCK_DESTRUCTION_RENDER_LAYERS = BLOCK_DESTRUCTION_STAGE_TEXTURES.stream().map(RenderLayer::getCrumbling).collect(Collectors.toList());
-    private static final Set<SpriteIdentifier> DEFAULT_TEXTURES = Util.create(Sets.newHashSet(), hashSet -> {
+    public static final List<RenderLayer> BLOCK_DESTRUCTION_RENDER_LAYERS = BLOCK_DESTRUCTION_STAGE_TEXTURES.stream().map(RenderLayer::getBlockBreaking).collect(Collectors.toList());
+    private static final Set<SpriteIdentifier> DEFAULT_TEXTURES = Util.make(Sets.newHashSet(), hashSet -> {
         hashSet.add(WATER_FLOW);
         hashSet.add(LAVA_FLOW);
         hashSet.add(WATER_OVERLAY);
@@ -128,10 +128,10 @@ public class ModelLoader {
     private static final Map<String, String> BUILTIN_MODEL_DEFINITIONS = Maps.newHashMap(ImmutableMap.of("missing", MISSING_DEFINITION));
     private static final Splitter COMMA_SPLITTER = Splitter.on(',');
     private static final Splitter KEY_VALUE_SPLITTER = Splitter.on('=').limit(2);
-    public static final JsonUnbakedModel GENERATION_MARKER = Util.create(JsonUnbakedModel.deserialize("{}"), jsonUnbakedModel -> {
+    public static final JsonUnbakedModel GENERATION_MARKER = Util.make(JsonUnbakedModel.deserialize("{}"), jsonUnbakedModel -> {
         jsonUnbakedModel.id = "generation marker";
     });
-    public static final JsonUnbakedModel BLOCK_ENTITY_MARKER = Util.create(JsonUnbakedModel.deserialize("{}"), jsonUnbakedModel -> {
+    public static final JsonUnbakedModel BLOCK_ENTITY_MARKER = Util.make(JsonUnbakedModel.deserialize("{}"), jsonUnbakedModel -> {
         jsonUnbakedModel.id = "block entity marker";
     });
     private static final StateManager<Block, BlockState> ITEM_FRAME_STATE_FACTORY = new StateManager.Builder(Blocks.AIR).add(BooleanProperty.of("map")).build(BlockState::new);
@@ -149,7 +149,7 @@ public class ModelLoader {
     private final Map<Identifier, BakedModel> bakedModels = Maps.newHashMap();
     private final Map<Identifier, Pair<SpriteAtlasTexture, SpriteAtlasTexture.Data>> spriteAtlasData;
     private int nextStateId = 1;
-    private final Object2IntMap<BlockState> stateLookup = Util.create(new Object2IntOpenHashMap(), object2IntOpenHashMap -> object2IntOpenHashMap.defaultReturnValue(-1));
+    private final Object2IntMap<BlockState> stateLookup = Util.make(new Object2IntOpenHashMap(), object2IntOpenHashMap -> object2IntOpenHashMap.defaultReturnValue(-1));
 
     public ModelLoader(ResourceManager resourceManager, BlockColors blockColors, Profiler profiler, int i) {
         this.resourceManager = resourceManager;

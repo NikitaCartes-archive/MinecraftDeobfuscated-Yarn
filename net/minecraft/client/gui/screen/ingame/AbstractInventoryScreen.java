@@ -37,10 +37,10 @@ extends AbstractContainerScreen<T> {
 
     protected void applyStatusEffectOffset() {
         if (this.minecraft.player.getStatusEffects().isEmpty()) {
-            this.left = (this.width - this.containerWidth) / 2;
+            this.x = (this.width - this.containerWidth) / 2;
             this.offsetGuiForEffects = false;
         } else {
-            this.left = 160 + (this.width - this.containerWidth - 200) / 2;
+            this.x = 160 + (this.width - this.containerWidth - 200) / 2;
             this.offsetGuiForEffects = true;
         }
     }
@@ -54,7 +54,7 @@ extends AbstractContainerScreen<T> {
     }
 
     private void drawPotionEffects() {
-        int i = this.left - 124;
+        int i = this.x - 124;
         Collection<StatusEffectInstance> collection = this.minecraft.player.getStatusEffects();
         if (collection.isEmpty()) {
             return;
@@ -72,7 +72,7 @@ extends AbstractContainerScreen<T> {
 
     private void method_18642(int i, int j, Iterable<StatusEffectInstance> iterable) {
         this.minecraft.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
-        int k = this.top;
+        int k = this.y;
         for (StatusEffectInstance statusEffectInstance : iterable) {
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             this.blit(i, k, 0, 166, 140, 32);
@@ -82,7 +82,7 @@ extends AbstractContainerScreen<T> {
 
     private void method_18643(int i, int j, Iterable<StatusEffectInstance> iterable) {
         StatusEffectSpriteManager statusEffectSpriteManager = this.minecraft.getStatusEffectSpriteManager();
-        int k = this.top;
+        int k = this.y;
         for (StatusEffectInstance statusEffectInstance : iterable) {
             StatusEffect statusEffect = statusEffectInstance.getEffectType();
             Sprite sprite = statusEffectSpriteManager.getSprite(statusEffect);
@@ -93,7 +93,7 @@ extends AbstractContainerScreen<T> {
     }
 
     private void method_18644(int i, int j, Iterable<StatusEffectInstance> iterable) {
-        int k = this.top;
+        int k = this.y;
         for (StatusEffectInstance statusEffectInstance : iterable) {
             String string = I18n.translate(statusEffectInstance.getEffectType().getTranslationKey(), new Object[0]);
             if (statusEffectInstance.getAmplifier() >= 1 && statusEffectInstance.getAmplifier() <= 9) {

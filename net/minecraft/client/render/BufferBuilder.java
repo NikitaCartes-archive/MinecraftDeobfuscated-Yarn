@@ -256,7 +256,7 @@ implements BufferVertexConsumer {
     }
 
     @Override
-    public void elements(float f, float g, float h, float i, float j, float k, float l, float m, float n, int o, int p, float q, float r, float s) {
+    public void vertex(float f, float g, float h, float i, float j, float k, float l, float m, float n, int o, int p, float q, float r, float s) {
         if (this.colorFixed) {
             throw new IllegalStateException();
         }
@@ -280,14 +280,14 @@ implements BufferVertexConsumer {
             }
             this.putShort(t + 0, (short)(p & 0xFFFF));
             this.putShort(t + 2, (short)(p >> 16 & 0xFFFF));
-            this.putByte(t + 4, (byte)((int)(q * 127.0f) & 0xFF));
-            this.putByte(t + 5, (byte)((int)(r * 127.0f) & 0xFF));
-            this.putByte(t + 6, (byte)((int)(s * 127.0f) & 0xFF));
+            this.putByte(t + 4, BufferVertexConsumer.method_24212(q));
+            this.putByte(t + 5, BufferVertexConsumer.method_24212(r));
+            this.putByte(t + 6, BufferVertexConsumer.method_24212(s));
             this.elementOffset += t + 8;
             this.next();
             return;
         }
-        super.elements(f, g, h, i, j, k, l, m, n, o, p, q, r, s);
+        super.vertex(f, g, h, i, j, k, l, m, n, o, p, q, r, s);
     }
 
     public Pair<DrawArrayParameters, ByteBuffer> popData() {

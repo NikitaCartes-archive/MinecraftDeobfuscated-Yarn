@@ -23,7 +23,7 @@ extends BipedEntityRenderer<VexEntity, VexEntityModel> {
     }
 
     @Override
-    protected int method_24087(VexEntity vexEntity, float f) {
+    protected int getBlockLight(VexEntity vexEntity, float f) {
         return 15;
     }
 

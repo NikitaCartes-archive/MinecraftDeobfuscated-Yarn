@@ -92,7 +92,7 @@ implements AutoCloseable {
         float i = this.client.player.method_3140();
         float j = this.client.player.hasStatusEffect(StatusEffects.NIGHT_VISION) ? GameRenderer.getNightVisionStrength(this.client.player, f) : (i > 0.0f && this.client.player.hasStatusEffect(StatusEffects.CONDUIT_POWER) ? i : 0.0f);
         Vector3f vector3f = new Vector3f(g, g, 1.0f);
-        vector3f.method_23847(new Vector3f(1.0f, 1.0f, 1.0f), 0.35f);
+        vector3f.multiplyComponentwise(new Vector3f(1.0f, 1.0f, 1.0f), 0.35f);
         float k = this.field_21528 + 1.5f;
         Vector3f vector3f2 = new Vector3f();
         for (int l = 0; l < 16; ++l) {
@@ -107,17 +107,17 @@ implements AutoCloseable {
                 float r = o * (o * o * 0.6f + 0.4f);
                 vector3f2.set(p, q, r);
                 if (clientWorld.dimension.getType() == DimensionType.THE_END) {
-                    vector3f2.method_23847(new Vector3f(0.99f, 1.12f, 1.0f), 0.25f);
+                    vector3f2.multiplyComponentwise(new Vector3f(0.99f, 1.12f, 1.0f), 0.25f);
                 } else {
                     Vector3f vector3f3 = vector3f.copy();
                     vector3f3.scale(n);
                     vector3f2.add(vector3f3);
-                    vector3f2.method_23847(new Vector3f(0.75f, 0.75f, 0.75f), 0.04f);
+                    vector3f2.multiplyComponentwise(new Vector3f(0.75f, 0.75f, 0.75f), 0.04f);
                     if (this.worldRenderer.getSkyDarkness(f) > 0.0f) {
                         s = this.worldRenderer.getSkyDarkness(f);
                         vector3f4 = vector3f2.copy();
                         vector3f4.piecewiseMultiply(0.7f, 0.6f, 0.6f);
-                        vector3f2.method_23847(vector3f4, s);
+                        vector3f2.multiplyComponentwise(vector3f4, s);
                     }
                 }
                 vector3f2.clamp(0.0f, 1.0f);
@@ -125,13 +125,13 @@ implements AutoCloseable {
                     s = 1.0f / t;
                     vector3f4 = vector3f2.copy();
                     vector3f4.scale(s);
-                    vector3f2.method_23847(vector3f4, j);
+                    vector3f2.multiplyComponentwise(vector3f4, j);
                 }
                 t = (float)this.client.options.gamma;
                 Vector3f vector3f5 = vector3f2.copy();
-                vector3f5.method_23848(this::method_23795);
-                vector3f2.method_23847(vector3f5, t);
-                vector3f2.method_23847(new Vector3f(0.75f, 0.75f, 0.75f), 0.04f);
+                vector3f5.modify(this::method_23795);
+                vector3f2.multiplyComponentwise(vector3f5, t);
+                vector3f2.multiplyComponentwise(new Vector3f(0.75f, 0.75f, 0.75f), 0.04f);
                 vector3f2.clamp(0.0f, 1.0f);
                 vector3f2.scale(255.0f);
                 int u = 255;

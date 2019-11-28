@@ -15,7 +15,7 @@ import net.minecraft.util.math.Quaternion;
 
 @Environment(value=EnvType.CLIENT)
 public class MatrixStack {
-    private final Deque<Entry> stack = Util.create(Queues.newArrayDeque(), arrayDeque -> {
+    private final Deque<Entry> stack = Util.make(Queues.newArrayDeque(), arrayDeque -> {
         Matrix4f matrix4f = new Matrix4f();
         matrix4f.loadIdentity();
         Matrix3f matrix3f = new Matrix3f();

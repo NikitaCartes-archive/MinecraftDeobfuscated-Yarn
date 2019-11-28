@@ -40,7 +40,7 @@ implements FlyingItemEntity {
 
     public void setItem(ItemStack itemStack2) {
         if (itemStack2.getItem() != Items.FIRE_CHARGE || itemStack2.hasTag()) {
-            this.getDataTracker().set(ITEM, Util.create(itemStack2.copy(), itemStack -> itemStack.setCount(1)));
+            this.getDataTracker().set(ITEM, Util.make(itemStack2.copy(), itemStack -> itemStack.setCount(1)));
         }
     }
 

@@ -9,7 +9,7 @@ import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.MobEntityRenderer;
-import net.minecraft.client.render.entity.feature.ShulkerSomethingFeatureRenderer;
+import net.minecraft.client.render.entity.feature.ShulkerHeadFeatureRenderer;
 import net.minecraft.client.render.entity.model.ShulkerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
@@ -27,7 +27,7 @@ extends MobEntityRenderer<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> {
 
     public ShulkerEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher, new ShulkerEntityModel(), 0.0f);
-        this.addFeature(new ShulkerSomethingFeatureRenderer(this));
+        this.addFeature(new ShulkerHeadFeatureRenderer(this));
     }
 
     @Override
@@ -47,8 +47,8 @@ extends MobEntityRenderer<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> {
     }
 
     @Override
-    public boolean isVisible(ShulkerEntity shulkerEntity, Frustum frustum, double d, double e, double f) {
-        if (super.isVisible(shulkerEntity, frustum, d, e, f)) {
+    public boolean shouldRender(ShulkerEntity shulkerEntity, Frustum frustum, double d, double e, double f) {
+        if (super.shouldRender(shulkerEntity, frustum, d, e, f)) {
             return true;
         }
         if (shulkerEntity.method_7113() > 0 && shulkerEntity.method_7117()) {

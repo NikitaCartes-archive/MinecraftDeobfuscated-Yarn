@@ -27,7 +27,7 @@ public class FallingBlockEntityRenderer
 extends EntityRenderer<FallingBlockEntity> {
     public FallingBlockEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher);
-        this.field_4673 = 0.5f;
+        this.shadowSize = 0.5f;
     }
 
     @Override

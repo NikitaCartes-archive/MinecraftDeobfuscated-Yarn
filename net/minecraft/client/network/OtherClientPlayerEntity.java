@@ -23,7 +23,7 @@ extends AbstractClientPlayerEntity {
     }
 
     @Override
-    public boolean shouldRenderAtDistance(double d) {
+    public boolean shouldRender(double d) {
         double e = this.getBoundingBox().getAverageSideLength() * 10.0;
         if (Double.isNaN(e)) {
             e = 1.0;

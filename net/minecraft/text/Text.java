@@ -173,7 +173,7 @@ Iterable<Text> {
     public static class Serializer
     implements JsonDeserializer<Text>,
     JsonSerializer<Text> {
-        private static final Gson GSON = Util.create(() -> {
+        private static final Gson GSON = Util.make(() -> {
             GsonBuilder gsonBuilder = new GsonBuilder();
             gsonBuilder.disableHtmlEscaping();
             gsonBuilder.registerTypeHierarchyAdapter(Text.class, new Serializer());
@@ -181,7 +181,7 @@ Iterable<Text> {
             gsonBuilder.registerTypeAdapterFactory(new LowercaseEnumTypeAdapterFactory());
             return gsonBuilder.create();
         });
-        private static final Field JSON_READER_POS = Util.create(() -> {
+        private static final Field JSON_READER_POS = Util.make(() -> {
             try {
                 new JsonReader(new StringReader(""));
                 Field field = JsonReader.class.getDeclaredField("pos");
@@ -191,7 +191,7 @@ Iterable<Text> {
                 throw new IllegalStateException("Couldn't get field 'pos' for JsonReader", noSuchFieldException);
             }
         });
-        private static final Field JSON_READER_LINE_START = Util.create(() -> {
+        private static final Field JSON_READER_LINE_START = Util.make(() -> {
             try {
                 new JsonReader(new StringReader(""));
                 Field field = JsonReader.class.getDeclaredField("lineStart");

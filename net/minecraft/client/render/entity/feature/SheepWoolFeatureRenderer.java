@@ -51,7 +51,7 @@ extends FeatureRenderer<SheepEntity, SheepEntityModel<SheepEntity>> {
             t = hs[1];
             u = hs[2];
         }
-        SheepWoolFeatureRenderer.render(this.getModel(), this.model, SKIN, matrixStack, vertexConsumerProvider, i, sheepEntity, f, g, j, k, l, h, s, t, u);
+        SheepWoolFeatureRenderer.render(this.getContextModel(), this.model, SKIN, matrixStack, vertexConsumerProvider, i, sheepEntity, f, g, j, k, l, h, s, t, u);
     }
 }
 

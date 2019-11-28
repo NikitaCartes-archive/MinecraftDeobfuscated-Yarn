@@ -15,6 +15,7 @@ import net.minecraft.client.gui.hud.ChatHudLine;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.options.ChatVisibility;
 import net.minecraft.client.util.Texts;
+import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
@@ -62,6 +63,7 @@ extends DrawableHelper {
         double e = this.client.options.chatOpacity * (double)0.9f + (double)0.1f;
         double f = this.client.options.textBackgroundOpacity;
         int m = 0;
+        Matrix4f matrix4f = Matrix4f.method_24021(0.0f, 0.0f, -100.0f);
         for (n = 0; n + this.scrolledLines < this.visibleMessages.size() && n < j; ++n) {
             ChatHudLine chatHudLine = this.visibleMessages.get(n + this.scrolledLines);
             if (chatHudLine == null || (o = i - chatHudLine.getCreationTick()) >= 200 && !bl) continue;
@@ -72,7 +74,7 @@ extends DrawableHelper {
             if (p <= 3) continue;
             boolean r = false;
             int s = -n * 9;
-            ChatHud.fill(-2, s - 9, 0 + l + 4, s, q << 24);
+            ChatHud.fill(matrix4f, -2, s - 9, 0 + l + 4, s, q << 24);
             String string = chatHudLine.getText().asFormattedString();
             RenderSystem.enableBlend();
             this.client.textRenderer.drawWithShadow(string, 0.0f, s - 8, 0xFFFFFF + (p << 24));

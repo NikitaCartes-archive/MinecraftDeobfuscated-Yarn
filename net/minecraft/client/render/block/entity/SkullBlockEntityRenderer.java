@@ -35,7 +35,7 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class SkullBlockEntityRenderer
 extends BlockEntityRenderer<SkullBlockEntity> {
-    private static final Map<SkullBlock.SkullType, SkullEntityModel> MODELS = Util.create(Maps.newHashMap(), hashMap -> {
+    private static final Map<SkullBlock.SkullType, SkullEntityModel> MODELS = Util.make(Maps.newHashMap(), hashMap -> {
         SkullEntityModel skullEntityModel = new SkullEntityModel(0, 0, 64, 32);
         SkullOverlayEntityModel skullEntityModel2 = new SkullOverlayEntityModel();
         DragonHeadEntityModel dragonHeadEntityModel = new DragonHeadEntityModel(0.0f);
@@ -46,7 +46,7 @@ extends BlockEntityRenderer<SkullBlockEntity> {
         hashMap.put(SkullBlock.Type.CREEPER, skullEntityModel);
         hashMap.put(SkullBlock.Type.DRAGON, dragonHeadEntityModel);
     });
-    private static final Map<SkullBlock.SkullType, Identifier> TEXTURES = Util.create(Maps.newHashMap(), hashMap -> {
+    private static final Map<SkullBlock.SkullType, Identifier> TEXTURES = Util.make(Maps.newHashMap(), hashMap -> {
         hashMap.put(SkullBlock.Type.SKELETON, new Identifier("textures/entity/skeleton/skeleton.png"));
         hashMap.put(SkullBlock.Type.WITHER_SKELETON, new Identifier("textures/entity/skeleton/wither_skeleton.png"));
         hashMap.put(SkullBlock.Type.ZOMBIE, new Identifier("textures/entity/zombie/zombie.png"));

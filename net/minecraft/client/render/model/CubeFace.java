@@ -33,7 +33,7 @@ public enum CubeFace {
     }
 
     static {
-        DIRECTION_LOOKUP = Util.create(new CubeFace[6], cubeFaces -> {
+        DIRECTION_LOOKUP = Util.make(new CubeFace[6], cubeFaces -> {
             cubeFaces[DirectionIds.DOWN] = DOWN;
             cubeFaces[DirectionIds.UP] = UP;
             cubeFaces[DirectionIds.NORTH] = NORTH;

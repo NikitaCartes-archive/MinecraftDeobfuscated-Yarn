@@ -131,12 +131,12 @@ extends DrawableHelper {
             GameProfile gameProfile = playerListEntry2.getProfile();
             if (bl) {
                 PlayerEntity playerEntity = this.client.world.getPlayerByUuid(gameProfile.getId());
-                boolean bl22 = playerEntity != null && playerEntity.isSkinOverlayVisible(PlayerModelPart.CAPE) && ("Dinnerbone".equals(gameProfile.getName()) || "Grumm".equals(gameProfile.getName()));
+                boolean bl22 = playerEntity != null && playerEntity.isPartVisible(PlayerModelPart.CAPE) && ("Dinnerbone".equals(gameProfile.getName()) || "Grumm".equals(gameProfile.getName()));
                 this.client.getTextureManager().bindTexture(playerListEntry2.getSkinTexture());
                 z = 8 + (bl22 ? 8 : 0);
                 int aa = 8 * (bl22 ? -1 : 1);
                 DrawableHelper.blit(x, y, 8, 8, 8.0f, z, 8, aa, 64, 64);
-                if (playerEntity != null && playerEntity.isSkinOverlayVisible(PlayerModelPart.HAT)) {
+                if (playerEntity != null && playerEntity.isPartVisible(PlayerModelPart.HAT)) {
                     int ab = 8 + (bl22 ? 8 : 0);
                     int ac = 8 * (bl22 ? -1 : 1);
                     DrawableHelper.blit(x, y, 8, 8, 40.0f, ab, 8, ac, 64, 64);

@@ -27,13 +27,13 @@ extends EntityRenderer<ExperienceOrbEntity> {
 
     public ExperienceOrbEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher);
-        this.field_4673 = 0.15f;
-        this.field_4672 = 0.75f;
+        this.shadowSize = 0.15f;
+        this.shadowDarkness = 0.75f;
     }
 
     @Override
-    protected int method_24087(ExperienceOrbEntity experienceOrbEntity, float f) {
-        return MathHelper.clamp(super.method_24087(experienceOrbEntity, f) + 7, 0, 15);
+    protected int getBlockLight(ExperienceOrbEntity experienceOrbEntity, float f) {
+        return MathHelper.clamp(super.getBlockLight(experienceOrbEntity, f) + 7, 0, 15);
     }
 
     @Override

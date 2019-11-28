@@ -28,7 +28,7 @@ extends EntityRenderer<WitherSkullEntity> {
     }
 
     @Override
-    protected int method_24087(WitherSkullEntity witherSkullEntity, float f) {
+    protected int getBlockLight(WitherSkullEntity witherSkullEntity, float f) {
         return 15;
     }
 

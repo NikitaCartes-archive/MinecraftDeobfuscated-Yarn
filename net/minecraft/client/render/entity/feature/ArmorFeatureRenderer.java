@@ -56,7 +56,7 @@ extends FeatureRenderer<T, M> {
             return;
         }
         A bipedEntityModel = this.getArmor(equipmentSlot);
-        ((BipedEntityModel)this.getModel()).setAttributes(bipedEntityModel);
+        ((BipedEntityModel)this.getContextModel()).setAttributes(bipedEntityModel);
         ((BipedEntityModel)bipedEntityModel).animateModel(livingEntity, f, g, h);
         this.setVisible(bipedEntityModel, equipmentSlot);
         ((BipedEntityModel)bipedEntityModel).setAngles(livingEntity, f, g, i, j, k);

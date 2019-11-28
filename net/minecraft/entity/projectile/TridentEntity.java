@@ -78,7 +78,7 @@ extends ProjectileEntity {
                 Vec3d vec3d = new Vec3d(entity.getX() - this.getX(), entity.getEyeY() - this.getY(), entity.getZ() - this.getZ());
                 this.setPos(this.getX(), this.getY() + vec3d.y * 0.015 * (double)i, this.getZ());
                 if (this.world.isClient) {
-                    this.prevRenderY = this.getY();
+                    this.lastRenderY = this.getY();
                 }
                 double d = 0.05 * (double)i;
                 this.setVelocity(this.getVelocity().multiply(0.95).add(vec3d.normalize().multiply(d)));
@@ -120,6 +120,7 @@ extends ProjectileEntity {
 
     @Override
     protected void onEntityHit(EntityHitResult entityHitResult) {
+        BlockPos blockPos;
         Entity entity2;
         Entity entity = entityHitResult.getEntity();
         float f = 8.0f;
@@ -130,8 +131,10 @@ extends ProjectileEntity {
         DamageSource damageSource = DamageSource.trident(this, (entity2 = this.getOwner()) == null ? this : entity2);
         this.dealtDamage = true;
         SoundEvent soundEvent = SoundEvents.ITEM_TRIDENT_HIT;
-        if (entity.damage(damageSource, f) && entity.getType() != EntityType.ENDERMAN) {
-            BlockPos blockPos;
+        if (entity.damage(damageSource, f)) {
+            if (entity.getType() == EntityType.ENDERMAN) {
+                return;
+            }
             if (entity instanceof LivingEntity) {
                 LivingEntity livingEntity2 = (LivingEntity)entity;
                 if (entity2 instanceof LivingEntity) {
@@ -140,17 +143,17 @@ extends ProjectileEntity {
                 }
                 this.onHit(livingEntity2);
             }
-            this.setVelocity(this.getVelocity().multiply(-0.01, -0.1, -0.01));
-            float g = 1.0f;
-            if (this.world instanceof ServerWorld && this.world.isThundering() && EnchantmentHelper.hasChanneling(this.tridentStack) && this.world.isSkyVisible(blockPos = entity.getBlockPos())) {
-                LightningEntity lightningEntity = new LightningEntity(this.world, (double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5, false);
-                lightningEntity.setChanneller(entity2 instanceof ServerPlayerEntity ? (ServerPlayerEntity)entity2 : null);
-                ((ServerWorld)this.world).addLightning(lightningEntity);
-                soundEvent = SoundEvents.ITEM_TRIDENT_THUNDER;
-                g = 5.0f;
-            }
-            this.playSound(soundEvent, g, 1.0f);
         }
+        this.setVelocity(this.getVelocity().multiply(-0.01, -0.1, -0.01));
+        float g = 1.0f;
+        if (this.world instanceof ServerWorld && this.world.isThundering() && EnchantmentHelper.hasChanneling(this.tridentStack) && this.world.isSkyVisible(blockPos = entity.getBlockPos())) {
+            LightningEntity lightningEntity = new LightningEntity(this.world, (double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5, false);
+            lightningEntity.setChanneller(entity2 instanceof ServerPlayerEntity ? (ServerPlayerEntity)entity2 : null);
+            ((ServerWorld)this.world).addLightning(lightningEntity);
+            soundEvent = SoundEvents.ITEM_TRIDENT_THUNDER;
+            g = 5.0f;
+        }
+        this.playSound(soundEvent, g, 1.0f);
     }
 
     @Override
@@ -199,7 +202,7 @@ extends ProjectileEntity {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean shouldRenderFrom(double d, double e, double f) {
+    public boolean shouldRender(double d, double e, double f) {
         return true;
     }
 }

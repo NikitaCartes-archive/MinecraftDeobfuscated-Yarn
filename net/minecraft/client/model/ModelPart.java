@@ -156,7 +156,7 @@ public class ModelPart {
                     float r = vertex.pos.getZ() / 16.0f;
                     Vector4f vector4f = new Vector4f(p, q, r, 1.0f);
                     vector4f.transform(matrix4f);
-                    vertexConsumer.elements(vector4f.getX(), vector4f.getY(), vector4f.getZ(), f, g, h, k, vertex.u, vertex.v, j, i, l, m, n);
+                    vertexConsumer.vertex(vector4f.getX(), vector4f.getY(), vector4f.getZ(), f, g, h, k, vertex.u, vertex.v, j, i, l, m, n);
                 }
             }
         }

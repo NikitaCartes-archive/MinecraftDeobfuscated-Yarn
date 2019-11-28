@@ -28,7 +28,7 @@ extends FeatureRenderer<WolfEntity, WolfEntityModel<WolfEntity>> {
             return;
         }
         float[] fs = wolfEntity.getCollarColor().getColorComponents();
-        WolfCollarFeatureRenderer.renderModel(this.getModel(), SKIN, matrixStack, vertexConsumerProvider, i, wolfEntity, fs[0], fs[1], fs[2]);
+        WolfCollarFeatureRenderer.renderModel(this.getContextModel(), SKIN, matrixStack, vertexConsumerProvider, i, wolfEntity, fs[0], fs[1], fs[2]);
     }
 }
 

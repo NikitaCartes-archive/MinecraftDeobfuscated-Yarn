@@ -49,13 +49,13 @@ extends AbstractContainerScreen<StonecutterContainer> {
         this.renderBackground();
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.minecraft.getTextureManager().bindTexture(TEXTURE);
-        int k = this.left;
-        int l = this.top;
+        int k = this.x;
+        int l = this.y;
         this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);
         int m = (int)(41.0f * this.scrollAmount);
         this.blit(k + 119, l + 15 + m, 176 + (this.shouldScroll() ? 0 : 12), 0, 12, 15);
-        int n = this.left + 52;
-        int o = this.top + 14;
+        int n = this.x + 52;
+        int o = this.y + 14;
         int p = this.scrollOffset + 12;
         this.method_17952(i, j, n, o, p);
         this.method_17951(n, o, p);
@@ -92,8 +92,8 @@ extends AbstractContainerScreen<StonecutterContainer> {
     public boolean mouseClicked(double d, double e, int i) {
         this.mouseClicked = false;
         if (this.canCraft) {
-            int j = this.left + 52;
-            int k = this.top + 14;
+            int j = this.x + 52;
+            int k = this.y + 14;
             int l = this.scrollOffset + 12;
             for (int m = this.scrollOffset; m < l; ++m) {
                 int n = m - this.scrollOffset;
@@ -104,8 +104,8 @@ extends AbstractContainerScreen<StonecutterContainer> {
                 this.minecraft.interactionManager.clickButton(((StonecutterContainer)this.container).syncId, m);
                 return true;
             }
-            j = this.left + 119;
-            k = this.top + 9;
+            j = this.x + 119;
+            k = this.y + 9;
             if (d >= (double)j && d < (double)(j + 12) && e >= (double)k && e < (double)(k + 54)) {
                 this.mouseClicked = true;
             }
@@ -116,7 +116,7 @@ extends AbstractContainerScreen<StonecutterContainer> {
     @Override
     public boolean mouseDragged(double d, double e, int i, double f, double g) {
         if (this.mouseClicked && this.shouldScroll()) {
-            int j = this.top + 14;
+            int j = this.y + 14;
             int k = j + 54;
             this.scrollAmount = ((float)e - (float)j - 7.5f) / ((float)(k - j) - 15.0f);
             this.scrollAmount = MathHelper.clamp(this.scrollAmount, 0.0f, 1.0f);

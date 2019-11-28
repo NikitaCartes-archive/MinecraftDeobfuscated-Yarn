@@ -51,7 +51,7 @@ public class DispenserBlock
 extends BlockWithEntity {
     public static final DirectionProperty FACING = FacingBlock.FACING;
     public static final BooleanProperty TRIGGERED = Properties.TRIGGERED;
-    private static final Map<Item, DispenserBehavior> BEHAVIORS = Util.create(new Object2ObjectOpenHashMap(), object2ObjectOpenHashMap -> object2ObjectOpenHashMap.defaultReturnValue(new ItemDispenserBehavior()));
+    private static final Map<Item, DispenserBehavior> BEHAVIORS = Util.make(new Object2ObjectOpenHashMap(), object2ObjectOpenHashMap -> object2ObjectOpenHashMap.defaultReturnValue(new ItemDispenserBehavior()));
 
     public static void registerBehavior(ItemConvertible itemConvertible, DispenserBehavior dispenserBehavior) {
         BEHAVIORS.put(itemConvertible.asItem(), dispenserBehavior);

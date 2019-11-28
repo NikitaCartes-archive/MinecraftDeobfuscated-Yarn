@@ -21,7 +21,7 @@ public class LevelLoadingScreen
 extends Screen {
     private final WorldGenerationProgressTracker progressProvider;
     private long field_19101 = -1L;
-    private static final Object2IntMap<ChunkStatus> STATUS_TO_COLOR = Util.create(new Object2IntOpenHashMap(), object2IntOpenHashMap -> {
+    private static final Object2IntMap<ChunkStatus> STATUS_TO_COLOR = Util.make(new Object2IntOpenHashMap(), object2IntOpenHashMap -> {
         object2IntOpenHashMap.defaultReturnValue(0);
         object2IntOpenHashMap.put(ChunkStatus.EMPTY, 0x545454);
         object2IntOpenHashMap.put(ChunkStatus.STRUCTURE_STARTS, 0x999999);

@@ -37,7 +37,7 @@ public interface VertexConsumer {
 
     public void next();
 
-    default public void elements(float f, float g, float h, float i, float j, float k, float l, float m, float n, int o, int p, float q, float r, float s) {
+    default public void vertex(float f, float g, float h, float i, float j, float k, float l, float m, float n, int o, int p, float q, float r, float s) {
         this.vertex(f, g, h);
         this.color(i, j, k, l);
         this.texture(m, n);
@@ -102,7 +102,7 @@ public interface VertexConsumer {
                 r = byteBuffer.getFloat(20);
                 Vector4f vector4f = new Vector4f(m, n, o, 1.0f);
                 vector4f.transform(matrix4f);
-                this.elements(vector4f.getX(), vector4f.getY(), vector4f.getZ(), s, t, u, 1.0f, q, r, i, v, vector3f.getX(), vector3f.getY(), vector3f.getZ());
+                this.vertex(vector4f.getX(), vector4f.getY(), vector4f.getZ(), s, t, u, 1.0f, q, r, i, v, vector3f.getX(), vector3f.getY(), vector3f.getZ());
             }
         }
     }

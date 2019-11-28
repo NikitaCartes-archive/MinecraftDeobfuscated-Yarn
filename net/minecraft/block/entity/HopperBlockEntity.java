@@ -116,7 +116,7 @@ Tickable {
         }
         if (!this.needsCooldown() && this.getCachedState().get(HopperBlock.ENABLED).booleanValue()) {
             boolean bl = false;
-            if (!this.isEmpty()) {
+            if (!this.isInvEmpty()) {
                 bl = this.insert();
             }
             if (!this.isFull()) {
@@ -129,19 +129,6 @@ Tickable {
             }
         }
         return false;
-    }
-
-    private boolean isEmpty() {
-        for (ItemStack itemStack : this.inventory) {
-            if (itemStack.isEmpty()) continue;
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public boolean isInvEmpty() {
-        return this.isEmpty();
     }
 
     private boolean isFull() {

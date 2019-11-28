@@ -20,8 +20,8 @@ extends HugeMushroomFeature {
     }
 
     @Override
-    protected void method_23375(IWorld iWorld, Random random, BlockPos blockPos, int i, BlockPos.Mutable mutable, HugeMushroomFeatureConfig hugeMushroomFeatureConfig) {
-        int j = hugeMushroomFeatureConfig.field_21232;
+    protected void generate(IWorld iWorld, Random random, BlockPos blockPos, int i, BlockPos.Mutable mutable, HugeMushroomFeatureConfig hugeMushroomFeatureConfig) {
+        int j = hugeMushroomFeatureConfig.capSize;
         for (int k = -j; k <= j; ++k) {
             for (int l = -j; l <= j; ++l) {
                 boolean bl6;

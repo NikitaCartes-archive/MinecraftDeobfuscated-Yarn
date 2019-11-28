@@ -30,7 +30,7 @@ extends FeatureRenderer<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> 
             return;
         }
         matrixStack.push();
-        ModelPart modelPart = ((IronGolemEntityModel)this.getModel()).getRightArm();
+        ModelPart modelPart = ((IronGolemEntityModel)this.getContextModel()).getRightArm();
         modelPart.rotate(matrixStack);
         matrixStack.translate(-1.1875, 1.0625, -0.9375);
         matrixStack.translate(0.5, 0.5, 0.5);

@@ -93,7 +93,7 @@ extends AnimalModel<T> {
             this.torso.roll = -1.5707964f;
             this.torso.setPivot(0.0f, 21.0f, -6.0f);
             this.tail.pitch = -2.6179938f;
-            if (this.isChild) {
+            if (this.child) {
                 this.tail.pitch = -2.1816616f;
                 this.torso.setPivot(0.0f, 21.0f, -2.0f);
             }
@@ -113,7 +113,7 @@ extends AnimalModel<T> {
             this.head.setPivot(-1.0f, 10.0f, -0.25f);
             this.head.pitch = 0.0f;
             this.head.yaw = 0.0f;
-            if (this.isChild) {
+            if (this.child) {
                 this.head.setPivot(-1.0f, 13.0f, -3.75f);
             }
             this.rightBackLeg.pitch = -1.3089969f;

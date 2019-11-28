@@ -23,7 +23,7 @@ extends LargeTreeSaplingGenerator {
     @Override
     @Nullable
     protected ConfiguredFeature<MegaTreeFeatureConfig, ?> createLargeTreeFeature(Random random) {
-        return Feature.DARK_OAK_TREE.configure(DefaultBiomeFeatures.field_21197);
+        return Feature.DARK_OAK_TREE.configure(DefaultBiomeFeatures.DARK_OAK_TREE_CONFIG);
     }
 }
 

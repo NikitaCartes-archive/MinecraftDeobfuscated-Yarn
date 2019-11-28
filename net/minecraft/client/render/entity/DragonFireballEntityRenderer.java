@@ -29,7 +29,7 @@ extends EntityRenderer<DragonFireballEntity> {
     }
 
     @Override
-    protected int method_24087(DragonFireballEntity dragonFireballEntity, float f) {
+    protected int getBlockLight(DragonFireballEntity dragonFireballEntity, float f) {
         return 15;
     }
 

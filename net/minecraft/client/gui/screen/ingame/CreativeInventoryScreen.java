@@ -219,10 +219,10 @@ extends AbstractInventoryScreen<CreativeContainer> {
 
     @Override
     protected void applyStatusEffectOffset() {
-        int i = this.left;
+        int i = this.x;
         super.applyStatusEffectOffset();
-        if (this.searchBox != null && this.left != i) {
-            this.searchBox.setX(this.left + 82);
+        if (this.searchBox != null && this.x != i) {
+            this.searchBox.setX(this.x + 82);
         }
     }
 
@@ -231,7 +231,7 @@ extends AbstractInventoryScreen<CreativeContainer> {
         if (this.minecraft.interactionManager.hasCreativeInventory()) {
             super.init();
             this.minecraft.keyboard.enableRepeatEvents(true);
-            this.searchBox = new TextFieldWidget(this.font, this.left + 82, this.top + 6, 80, this.font.fontHeight, I18n.translate("itemGroup.search", new Object[0]));
+            this.searchBox = new TextFieldWidget(this.font, this.x + 82, this.y + 6, 80, this.font.fontHeight, I18n.translate("itemGroup.search", new Object[0]));
             this.searchBox.setMaxLength(50);
             this.searchBox.setHasBorder(false);
             this.searchBox.setVisible(false);
@@ -370,8 +370,8 @@ extends AbstractInventoryScreen<CreativeContainer> {
     @Override
     public boolean mouseClicked(double d, double e, int i) {
         if (i == 0) {
-            double f = d - (double)this.left;
-            double g = e - (double)this.top;
+            double f = d - (double)this.x;
+            double g = e - (double)this.y;
             for (ItemGroup itemGroup : ItemGroup.GROUPS) {
                 if (!this.isClickInTab(itemGroup, f, g)) continue;
                 return true;
@@ -387,8 +387,8 @@ extends AbstractInventoryScreen<CreativeContainer> {
     @Override
     public boolean mouseReleased(double d, double e, int i) {
         if (i == 0) {
-            double f = d - (double)this.left;
-            double g = e - (double)this.top;
+            double f = d - (double)this.x;
+            double g = e - (double)this.y;
             this.scrolling = false;
             for (ItemGroup itemGroup : ItemGroup.GROUPS) {
                 if (!this.isClickInTab(itemGroup, f, g)) continue;
@@ -517,8 +517,8 @@ extends AbstractInventoryScreen<CreativeContainer> {
     }
 
     protected boolean isClickInScrollbar(double d, double e) {
-        int i = this.left;
-        int j = this.top;
+        int i = this.x;
+        int j = this.y;
         int k = i + 175;
         int l = j + 18;
         int m = k + 14;
@@ -529,7 +529,7 @@ extends AbstractInventoryScreen<CreativeContainer> {
     @Override
     public boolean mouseDragged(double d, double e, int i, double f, double g) {
         if (this.scrolling) {
-            int j = this.top + 18;
+            int j = this.y + 18;
             int k = j + 112;
             this.scrollPosition = ((float)e - (float)j - 7.5f) / ((float)(k - j) - 15.0f);
             this.scrollPosition = MathHelper.clamp(this.scrollPosition, 0.0f, 1.0f);
@@ -603,11 +603,11 @@ extends AbstractInventoryScreen<CreativeContainer> {
             this.renderTabIcon(itemGroup2);
         }
         this.minecraft.getTextureManager().bindTexture(new Identifier("textures/gui/container/creative_inventory/tab_" + itemGroup.getTexture()));
-        this.blit(this.left, this.top, 0, 0, this.containerWidth, this.containerHeight);
+        this.blit(this.x, this.y, 0, 0, this.containerWidth, this.containerHeight);
         this.searchBox.render(i, j, f);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        int k = this.left + 175;
-        int l = this.top + 18;
+        int k = this.x + 175;
+        int l = this.y + 18;
         int m = l + 112;
         this.minecraft.getTextureManager().bindTexture(TEXTURE);
         if (itemGroup.hasScrollbar()) {
@@ -615,7 +615,7 @@ extends AbstractInventoryScreen<CreativeContainer> {
         }
         this.renderTabIcon(itemGroup);
         if (itemGroup == ItemGroup.INVENTORY) {
-            InventoryScreen.drawEntity(this.left + 88, this.top + 45, 20, this.left + 88 - i, this.top + 45 - 30 - j, this.minecraft.player);
+            InventoryScreen.drawEntity(this.x + 88, this.y + 45, 20, this.x + 88 - i, this.y + 45 - 30 - j, this.minecraft.player);
         }
     }
 
@@ -655,14 +655,14 @@ extends AbstractInventoryScreen<CreativeContainer> {
         int i = itemGroup.getColumn();
         int j = i * 28;
         int k = 0;
-        int l = this.left + 28 * i;
-        int m = this.top;
+        int l = this.x + 28 * i;
+        int m = this.y;
         int n = 32;
         if (bl) {
             k += 32;
         }
         if (itemGroup.isSpecial()) {
-            l = this.left + this.containerWidth - 28 * (6 - i);
+            l = this.x + this.containerWidth - 28 * (6 - i);
         } else if (i > 0) {
             l += i;
         }

@@ -40,9 +40,9 @@ extends MobEntityRenderer<GuardianEntity, GuardianEntityModel> {
     }
 
     @Override
-    public boolean isVisible(GuardianEntity guardianEntity, Frustum frustum, double d, double e, double f) {
+    public boolean shouldRender(GuardianEntity guardianEntity, Frustum frustum, double d, double e, double f) {
         LivingEntity livingEntity;
-        if (super.isVisible(guardianEntity, frustum, d, e, f)) {
+        if (super.shouldRender(guardianEntity, frustum, d, e, f)) {
             return true;
         }
         if (guardianEntity.hasBeamTarget() && (livingEntity = guardianEntity.getBeamTarget()) != null) {
@@ -54,9 +54,9 @@ extends MobEntityRenderer<GuardianEntity, GuardianEntityModel> {
     }
 
     private Vec3d fromLerpedPosition(LivingEntity livingEntity, double d, float f) {
-        double e = MathHelper.lerp((double)f, livingEntity.prevRenderX, livingEntity.getX());
-        double g = MathHelper.lerp((double)f, livingEntity.prevRenderY, livingEntity.getY()) + d;
-        double h = MathHelper.lerp((double)f, livingEntity.prevRenderZ, livingEntity.getZ());
+        double e = MathHelper.lerp((double)f, livingEntity.lastRenderX, livingEntity.getX());
+        double g = MathHelper.lerp((double)f, livingEntity.lastRenderY, livingEntity.getY()) + d;
+        double h = MathHelper.lerp((double)f, livingEntity.lastRenderZ, livingEntity.getZ());
         return new Vec3d(e, g, h);
     }
 

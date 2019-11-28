@@ -27,7 +27,7 @@ extends EntityRenderer<BoatEntity> {
 
     public BoatEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher);
-        this.field_4673 = 0.8f;
+        this.shadowSize = 0.8f;
     }
 
     @Override

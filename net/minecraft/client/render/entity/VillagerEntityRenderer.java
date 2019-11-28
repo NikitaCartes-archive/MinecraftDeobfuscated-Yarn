@@ -38,9 +38,9 @@ extends MobEntityRenderer<VillagerEntity, VillagerResemblingModel<VillagerEntity
         float g = 0.9375f;
         if (villagerEntity.isBaby()) {
             g = (float)((double)g * 0.5);
-            this.field_4673 = 0.25f;
+            this.shadowSize = 0.25f;
         } else {
-            this.field_4673 = 0.5f;
+            this.shadowSize = 0.5f;
         }
         matrixStack.scale(g, g, g);
     }

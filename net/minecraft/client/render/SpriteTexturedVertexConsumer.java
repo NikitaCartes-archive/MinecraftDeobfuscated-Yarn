@@ -55,8 +55,8 @@ implements VertexConsumer {
     }
 
     @Override
-    public void elements(float f, float g, float h, float i, float j, float k, float l, float m, float n, int o, int p, float q, float r, float s) {
-        this.parent.elements(f, g, h, i, j, k, l, this.sprite.getFrameU(m * 16.0f), this.sprite.getFrameV(n * 16.0f), o, p, q, r, s);
+    public void vertex(float f, float g, float h, float i, float j, float k, float l, float m, float n, int o, int p, float q, float r, float s) {
+        this.parent.vertex(f, g, h, i, j, k, l, this.sprite.getFrameU(m * 16.0f), this.sprite.getFrameV(n * 16.0f), o, p, q, r, s);
     }
 }
 

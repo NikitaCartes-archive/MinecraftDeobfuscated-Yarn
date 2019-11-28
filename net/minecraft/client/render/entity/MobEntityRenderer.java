@@ -36,8 +36,8 @@ extends LivingEntityRenderer<T, M> {
     }
 
     @Override
-    public boolean isVisible(T mobEntity, Frustum frustum, double d, double e, double f) {
-        if (super.isVisible(mobEntity, frustum, d, e, f)) {
+    public boolean shouldRender(T mobEntity, Frustum frustum, double d, double e, double f) {
+        if (super.shouldRender(mobEntity, frustum, d, e, f)) {
             return true;
         }
         Entity entity = ((MobEntity)mobEntity).getHoldingEntity();
@@ -89,8 +89,8 @@ extends LivingEntityRenderer<T, M> {
         float v = MathHelper.fastInverseSqrt(r * r + t * t) * 0.025f / 2.0f;
         float w = t * v;
         float x = r * v;
-        int y = this.method_24087(mobEntity, f);
-        int z = this.renderManager.getRenderer(entity).method_24087(entity, f);
+        int y = this.getBlockLight(mobEntity, f);
+        int z = this.renderManager.getRenderer(entity).getBlockLight(entity, f);
         int aa = ((MobEntity)mobEntity).world.getLightLevel(LightType.SKY, new BlockPos(((Entity)mobEntity).getCameraPosVec(f)));
         int ab = ((MobEntity)mobEntity).world.getLightLevel(LightType.SKY, new BlockPos(entity.getCameraPosVec(f)));
         MobEntityRenderer.method_23186(vertexConsumer, matrix4f, r, s, t, y, z, aa, ab, 0.025f, 0.025f, w, x);

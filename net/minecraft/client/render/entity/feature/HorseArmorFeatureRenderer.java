@@ -37,7 +37,7 @@ extends FeatureRenderer<HorseEntity, HorseEntityModel<HorseEntity>> {
             return;
         }
         HorseArmorItem horseArmorItem = (HorseArmorItem)itemStack.getItem();
-        ((HorseEntityModel)this.getModel()).copyStateTo(this.model);
+        ((HorseEntityModel)this.getContextModel()).copyStateTo(this.model);
         this.model.animateModel(horseEntity, f, g, h);
         this.model.setAngles(horseEntity, f, g, j, k, l);
         if (horseArmorItem instanceof DyeableHorseArmorItem) {

@@ -23,26 +23,26 @@ import net.minecraft.world.LightType;
 @Environment(value=EnvType.CLIENT)
 public abstract class EntityRenderer<T extends Entity> {
     protected final EntityRenderDispatcher renderManager;
-    protected float field_4673;
-    protected float field_4672 = 1.0f;
+    protected float shadowSize;
+    protected float shadowDarkness = 1.0f;
 
     protected EntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         this.renderManager = entityRenderDispatcher;
     }
 
-    public final int method_24088(T entity, float f) {
-        return LightmapTextureManager.pack(this.method_24087(entity, f), ((Entity)entity).world.getLightLevel(LightType.SKY, new BlockPos(((Entity)entity).getCameraPosVec(f))));
+    public final int getLight(T entity, float f) {
+        return LightmapTextureManager.pack(this.getBlockLight(entity, f), ((Entity)entity).world.getLightLevel(LightType.SKY, new BlockPos(((Entity)entity).getCameraPosVec(f))));
     }
 
-    protected int method_24087(T entity, float f) {
+    protected int getBlockLight(T entity, float f) {
         if (((Entity)entity).isOnFire()) {
             return 15;
         }
         return ((Entity)entity).world.getLightLevel(LightType.BLOCK, new BlockPos(((Entity)entity).getCameraPosVec(f)));
     }
 
-    public boolean isVisible(T entity, Frustum frustum, double d, double e, double f) {
-        if (!((Entity)entity).shouldRenderFrom(d, e, f)) {
+    public boolean shouldRender(T entity, Frustum frustum, double d, double e, double f) {
+        if (!((Entity)entity).shouldRender(d, e, f)) {
             return false;
         }
         if (((Entity)entity).ignoreCameraFrustum) {

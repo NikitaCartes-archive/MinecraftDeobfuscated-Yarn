@@ -28,7 +28,7 @@ extends SpecialCraftingRecipe {
     private static final Ingredient TYPE_MODIFIER = Ingredient.ofItems(Items.FIRE_CHARGE, Items.FEATHER, Items.GOLD_NUGGET, Items.SKELETON_SKULL, Items.WITHER_SKELETON_SKULL, Items.CREEPER_HEAD, Items.PLAYER_HEAD, Items.DRAGON_HEAD, Items.ZOMBIE_HEAD);
     private static final Ingredient TRAIL_MODIFIER = Ingredient.ofItems(Items.DIAMOND);
     private static final Ingredient FLICKER_MODIFIER = Ingredient.ofItems(Items.GLOWSTONE_DUST);
-    private static final Map<Item, FireworkItem.Type> TYPE_MODIFIER_MAP = Util.create(Maps.newHashMap(), hashMap -> {
+    private static final Map<Item, FireworkItem.Type> TYPE_MODIFIER_MAP = Util.make(Maps.newHashMap(), hashMap -> {
         hashMap.put(Items.FIRE_CHARGE, FireworkItem.Type.LARGE_BALL);
         hashMap.put(Items.FEATHER, FireworkItem.Type.BURST);
         hashMap.put(Items.GOLD_NUGGET, FireworkItem.Type.STAR);

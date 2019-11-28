@@ -8,7 +8,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
-import net.minecraft.client.render.entity.feature.StickingOutThingsFeatureRenderer;
+import net.minecraft.client.render.entity.feature.StuckObjectsFeatureRenderer;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
@@ -18,7 +18,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class StuckArrowsFeatureRenderer<T extends LivingEntity, M extends PlayerEntityModel<T>>
-extends StickingOutThingsFeatureRenderer<T, M> {
+extends StuckObjectsFeatureRenderer<T, M> {
     private final EntityRenderDispatcher field_17153;
     private ArrowEntity field_20528;
 
@@ -28,12 +28,12 @@ extends StickingOutThingsFeatureRenderer<T, M> {
     }
 
     @Override
-    protected int getThingCount(T livingEntity) {
+    protected int getObjectCount(T livingEntity) {
         return ((LivingEntity)livingEntity).getStuckArrowCount();
     }
 
     @Override
-    protected void renderThing(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, Entity entity, float f, float g, float h, float j) {
+    protected void renderObject(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, Entity entity, float f, float g, float h, float j) {
         float k = MathHelper.sqrt(f * f + h * h);
         this.field_20528 = new ArrowEntity(entity.world, entity.getX(), entity.getY(), entity.getZ());
         this.field_20528.yaw = (float)(Math.atan2(f, h) * 57.2957763671875);

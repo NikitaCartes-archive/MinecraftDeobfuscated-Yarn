@@ -35,7 +35,7 @@ extends FeatureRenderer<T, M> {
             return;
         }
         matrixStack.push();
-        if (((EntityModel)this.getModel()).isChild) {
+        if (((EntityModel)this.getContextModel()).child) {
             float m = 0.5f;
             matrixStack.translate(0.0, 0.75, 0.0);
             matrixStack.scale(0.5f, 0.5f, 0.5f);
@@ -50,7 +50,7 @@ extends FeatureRenderer<T, M> {
             return;
         }
         matrixStack.push();
-        ((ModelWithArms)this.getModel()).setArmAngle(arm, matrixStack);
+        ((ModelWithArms)this.getContextModel()).setArmAngle(arm, matrixStack);
         matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0f));
         matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
         boolean bl = arm == Arm.LEFT;

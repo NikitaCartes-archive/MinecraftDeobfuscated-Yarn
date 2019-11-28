@@ -15,6 +15,7 @@ import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BannerBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.container.LoomContainer;
@@ -52,7 +53,7 @@ extends AbstractContainerScreen<LoomContainer> {
 
     public LoomScreen(LoomContainer loomContainer, PlayerInventory playerInventory, Text text) {
         super(loomContainer, playerInventory, text);
-        this.field_21694 = BannerBlockEntityRenderer.method_24080();
+        this.field_21694 = BannerBlockEntityRenderer.createField();
         loomContainer.setInventoryChangeListener(this::onInventoryChanged);
     }
 
@@ -72,8 +73,8 @@ extends AbstractContainerScreen<LoomContainer> {
     protected void drawBackground(float f, int i, int j) {
         this.renderBackground();
         this.minecraft.getTextureManager().bindTexture(TEXTURE);
-        int k = this.left;
-        int l = this.top;
+        int k = this.x;
+        int l = this.y;
         this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);
         Slot slot = ((LoomContainer)this.container).getBannerSlot();
         Slot slot2 = ((LoomContainer)this.container).getDyeSlot();
@@ -148,7 +149,7 @@ extends AbstractContainerScreen<LoomContainer> {
         VertexConsumerProvider.Immediate immediate = this.minecraft.getBufferBuilders().getEntityVertexConsumers();
         this.field_21694.pitch = 0.0f;
         this.field_21694.pivotY = -32.0f;
-        BannerBlockEntityRenderer.method_23802(bannerBlockEntity, matrixStack, immediate, 0xF000F0, OverlayTexture.DEFAULT_UV, this.field_21694, true);
+        BannerBlockEntityRenderer.method_23802(bannerBlockEntity, matrixStack, immediate, 0xF000F0, OverlayTexture.DEFAULT_UV, this.field_21694, ModelLoader.BANNER_BASE, true);
         matrixStack.pop();
         immediate.draw();
     }
@@ -157,8 +158,8 @@ extends AbstractContainerScreen<LoomContainer> {
     public boolean mouseClicked(double d, double e, int i) {
         this.scrollbarClicked = false;
         if (this.canApplyDyePattern) {
-            int j = this.left + 60;
-            int k = this.top + 13;
+            int j = this.x + 60;
+            int k = this.y + 13;
             int l = this.firstPatternButtonId + 16;
             for (int m = this.firstPatternButtonId; m < l; ++m) {
                 int n = m - this.firstPatternButtonId;
@@ -169,8 +170,8 @@ extends AbstractContainerScreen<LoomContainer> {
                 this.minecraft.interactionManager.clickButton(((LoomContainer)this.container).syncId, m);
                 return true;
             }
-            j = this.left + 119;
-            k = this.top + 9;
+            j = this.x + 119;
+            k = this.y + 9;
             if (d >= (double)j && d < (double)(j + 12) && e >= (double)k && e < (double)(k + 56)) {
                 this.scrollbarClicked = true;
             }
@@ -181,7 +182,7 @@ extends AbstractContainerScreen<LoomContainer> {
     @Override
     public boolean mouseDragged(double d, double e, int i, double f, double g) {
         if (this.scrollbarClicked && this.canApplyDyePattern) {
-            int j = this.top + 13;
+            int j = this.y + 13;
             int k = j + 56;
             this.scrollPosition = ((float)e - (float)j - 7.5f) / ((float)(k - j) - 15.0f);
             this.scrollPosition = MathHelper.clamp(this.scrollPosition, 0.0f, 1.0f);

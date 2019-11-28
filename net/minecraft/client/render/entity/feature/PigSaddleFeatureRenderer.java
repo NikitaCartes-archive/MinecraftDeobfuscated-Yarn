@@ -31,7 +31,7 @@ extends FeatureRenderer<PigEntity, PigEntityModel<PigEntity>> {
         if (!pigEntity.isSaddled()) {
             return;
         }
-        ((PigEntityModel)this.getModel()).copyStateTo(this.model);
+        ((PigEntityModel)this.getContextModel()).copyStateTo(this.model);
         this.model.animateModel(pigEntity, f, g, h);
         this.model.setAngles(pigEntity, f, g, j, k, l);
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(SKIN));

@@ -50,7 +50,7 @@ implements FlyingItemEntity {
 
     public void setItem(ItemStack itemStack2) {
         if (itemStack2.getItem() != Items.ENDER_EYE || itemStack2.hasTag()) {
-            this.getDataTracker().set(ITEM, Util.create(itemStack2.copy(), itemStack -> itemStack.setCount(1)));
+            this.getDataTracker().set(ITEM, Util.make(itemStack2.copy(), itemStack -> itemStack.setCount(1)));
         }
     }
 
@@ -71,7 +71,7 @@ implements FlyingItemEntity {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean shouldRenderAtDistance(double d) {
+    public boolean shouldRender(double d) {
         double e = this.getBoundingBox().getAverageSideLength() * 4.0;
         if (Double.isNaN(e)) {
             e = 4.0;

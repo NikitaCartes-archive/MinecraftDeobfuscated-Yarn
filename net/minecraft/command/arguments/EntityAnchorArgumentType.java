@@ -95,7 +95,7 @@ implements ArgumentType<EntityAnchor> {
         }
 
         static {
-            anchors = Util.create(Maps.newHashMap(), hashMap -> {
+            anchors = Util.make(Maps.newHashMap(), hashMap -> {
                 for (EntityAnchor entityAnchor : EntityAnchor.values()) {
                     hashMap.put(entityAnchor.id, entityAnchor);
                 }

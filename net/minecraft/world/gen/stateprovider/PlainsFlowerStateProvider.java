@@ -15,16 +15,16 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.stateprovider.StateProvider;
 import net.minecraft.world.gen.stateprovider.StateProviderType;
 
-public class PlainFlowerStateProvider
+public class PlainsFlowerStateProvider
 extends StateProvider {
     private static final BlockState[] tulips = new BlockState[]{Blocks.ORANGE_TULIP.getDefaultState(), Blocks.RED_TULIP.getDefaultState(), Blocks.PINK_TULIP.getDefaultState(), Blocks.WHITE_TULIP.getDefaultState()};
     private static final BlockState[] flowers = new BlockState[]{Blocks.POPPY.getDefaultState(), Blocks.AZURE_BLUET.getDefaultState(), Blocks.OXEYE_DAISY.getDefaultState(), Blocks.CORNFLOWER.getDefaultState()};
 
-    public PlainFlowerStateProvider() {
+    public PlainsFlowerStateProvider() {
         super(StateProviderType.PLAIN_FLOWER_PROVIDER);
     }
 
-    public <T> PlainFlowerStateProvider(Dynamic<T> dynamic) {
+    public <T> PlainsFlowerStateProvider(Dynamic<T> dynamic) {
         this();
     }
 

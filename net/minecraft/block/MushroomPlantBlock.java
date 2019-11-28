@@ -77,9 +77,9 @@ implements Fertilizable {
         ConfiguredFeature<HugeMushroomFeatureConfig, ?> configuredFeature;
         serverWorld.removeBlock(blockPos, false);
         if (this == Blocks.BROWN_MUSHROOM) {
-            configuredFeature = Feature.HUGE_BROWN_MUSHROOM.configure(DefaultBiomeFeatures.field_21143);
+            configuredFeature = Feature.HUGE_BROWN_MUSHROOM.configure(DefaultBiomeFeatures.HUGE_BROWN_MUSHROOM_CONFIG);
         } else if (this == Blocks.RED_MUSHROOM) {
-            configuredFeature = Feature.HUGE_RED_MUSHROOM.configure(DefaultBiomeFeatures.field_21142);
+            configuredFeature = Feature.HUGE_RED_MUSHROOM.configure(DefaultBiomeFeatures.HUGE_RED_MUSHROOM_CONFIG);
         } else {
             serverWorld.setBlockState(blockPos, blockState, 3);
             return false;

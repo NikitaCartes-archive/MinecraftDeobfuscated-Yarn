@@ -101,7 +101,7 @@ public class TagContainer<T> {
                                         LOGGER.error("Couldn't load {} tag list {} from {} in data pack {} as it's empty or null", (Object)this.entryType, (Object)identifier22, (Object)identifier2, (Object)resource.getResourcePackName());
                                         continue;
                                     }
-                                    map.computeIfAbsent(identifier22, identifier -> Util.create(Tag.Builder.create(), builder -> builder.ordered(this.ordered))).fromJson(this.getter, jsonObject);
+                                    map.computeIfAbsent(identifier22, identifier -> Util.make(Tag.Builder.create(), builder -> builder.ordered(this.ordered))).fromJson(this.getter, jsonObject);
                                 } catch (Throwable throwable3) {
                                     throwable2 = throwable3;
                                     throw throwable3;

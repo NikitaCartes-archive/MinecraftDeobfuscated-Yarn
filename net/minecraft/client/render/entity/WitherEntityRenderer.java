@@ -25,7 +25,7 @@ extends MobEntityRenderer<WitherEntity, WitherEntityModel<WitherEntity>> {
     }
 
     @Override
-    protected int method_24087(WitherEntity witherEntity, float f) {
+    protected int getBlockLight(WitherEntity witherEntity, float f) {
         return 15;
     }
 

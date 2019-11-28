@@ -10,11 +10,11 @@ import java.util.function.BiPredicate;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.AbstractChestBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockPlacementEnvironment;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.DoubleBlockProperties;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.Waterloggable;
@@ -63,7 +63,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class ChestBlock
-extends BlockWithEntity
+extends AbstractChestBlock<ChestBlockEntity>
 implements Waterloggable {
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
     public static final EnumProperty<ChestType> CHEST_TYPE = Properties.CHEST_TYPE;
@@ -73,7 +73,6 @@ implements Waterloggable {
     protected static final VoxelShape DOUBLE_WEST_SHAPE = Block.createCuboidShape(0.0, 0.0, 1.0, 15.0, 14.0, 15.0);
     protected static final VoxelShape DOUBLE_EAST_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 16.0, 14.0, 15.0);
     protected static final VoxelShape SINGLE_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 14.0, 15.0);
-    protected final Supplier<BlockEntityType<? extends ChestBlockEntity>> field_21781;
     private static final DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Optional<Inventory>> INVENTORY_RETRIEVER = new DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Optional<Inventory>>(){
 
         @Override
@@ -144,12 +143,11 @@ implements Waterloggable {
     };
 
     protected ChestBlock(Block.Settings settings, Supplier<BlockEntityType<? extends ChestBlockEntity>> supplier) {
-        super(settings);
-        this.field_21781 = supplier;
+        super(settings, supplier);
         this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH)).with(CHEST_TYPE, ChestType.SINGLE)).with(WATERLOGGED, false));
     }
 
-    public static DoubleBlockProperties.Type method_24169(BlockState blockState) {
+    public static DoubleBlockProperties.Type getDoubleBlockType(BlockState blockState) {
         ChestType chestType = blockState.get(CHEST_TYPE);
         if (chestType == ChestType.SINGLE) {
             return DoubleBlockProperties.Type.SINGLE;
@@ -282,22 +280,23 @@ implements Waterloggable {
 
     @Nullable
     public static Inventory getInventory(ChestBlock chestBlock, BlockState blockState, World world, BlockPos blockPos, boolean bl) {
-        return ChestBlock.method_24167(chestBlock, blockState, world, blockPos, bl).apply(INVENTORY_RETRIEVER).orElse(null);
+        return chestBlock.getBlockEntitySource(blockState, world, blockPos, bl).apply(INVENTORY_RETRIEVER).orElse(null);
     }
 
-    public static DoubleBlockProperties.PropertySource<? extends ChestBlockEntity> method_24167(ChestBlock chestBlock, BlockState blockState, World world, BlockPos blockPos2, boolean bl) {
+    @Override
+    public DoubleBlockProperties.PropertySource<? extends ChestBlockEntity> getBlockEntitySource(BlockState blockState, World world, BlockPos blockPos2, boolean bl) {
         BiPredicate<IWorld, BlockPos> biPredicate = bl ? (iWorld, blockPos) -> false : ChestBlock::isChestBlocked;
-        return DoubleBlockProperties.toPropertySource(chestBlock.field_21781.get(), ChestBlock::method_24169, ChestBlock::getFacing, FACING, blockState, world, blockPos2, biPredicate);
+        return DoubleBlockProperties.toPropertySource((BlockEntityType)this.entityTypeRetriever.get(), ChestBlock::getDoubleBlockType, ChestBlock::getFacing, FACING, blockState, world, blockPos2, biPredicate);
     }
 
     @Override
     @Nullable
     public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
-        return ChestBlock.method_24167(this, blockState, world, blockPos, false).apply(NAME_RETRIEVER).orElse(null);
+        return this.getBlockEntitySource(blockState, world, blockPos, false).apply(NAME_RETRIEVER).orElse(null);
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Float2FloatFunction> method_24166(final ChestAnimationProgress chestAnimationProgress) {
+    public static DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Float2FloatFunction> getAnimationProgressRetriever(final ChestAnimationProgress chestAnimationProgress) {
         return new DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Float2FloatFunction>(){
 
             @Override

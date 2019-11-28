@@ -45,7 +45,7 @@ implements FeatureRendererContext<T, M> {
     public LivingEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, M entityModel, float f) {
         super(entityRenderDispatcher);
         this.model = entityModel;
-        this.field_4673 = f;
+        this.shadowSize = f;
     }
 
     protected final boolean addFeature(FeatureRenderer<T, M> featureRenderer) {
@@ -63,8 +63,8 @@ implements FeatureRendererContext<T, M> {
         Direction direction;
         matrixStack.push();
         ((EntityModel)this.model).handSwingProgress = this.getHandSwingProgress(livingEntity, g);
-        ((EntityModel)this.model).isRiding = ((Entity)livingEntity).hasVehicle();
-        ((EntityModel)this.model).isChild = ((LivingEntity)livingEntity).isBaby();
+        ((EntityModel)this.model).riding = ((Entity)livingEntity).hasVehicle();
+        ((EntityModel)this.model).child = ((LivingEntity)livingEntity).isBaby();
         float h = MathHelper.lerpAngleDegrees(g, ((LivingEntity)livingEntity).prevBodyYaw, ((LivingEntity)livingEntity).bodyYaw);
         float j = MathHelper.lerpAngleDegrees(g, ((LivingEntity)livingEntity).prevHeadYaw, ((LivingEntity)livingEntity).headYaw);
         float k = j - h;
@@ -90,7 +90,7 @@ implements FeatureRendererContext<T, M> {
             n = ((Entity)livingEntity).getEyeHeight(EntityPose.STANDING) - 0.1f;
             matrixStack.translate((float)(-direction.getOffsetX()) * n, 0.0, (float)(-direction.getOffsetZ()) * n);
         }
-        float l = this.getAge(livingEntity, g);
+        float l = this.getCustomAngle(livingEntity, g);
         this.setupTransforms(livingEntity, matrixStack, l, h, g);
         matrixStack.scale(-1.0f, -1.0f, 1.0f);
         this.scale(livingEntity, matrixStack, g);
@@ -116,7 +116,7 @@ implements FeatureRendererContext<T, M> {
         RenderLayer renderLayer = bl3 ? RenderLayer.getEntityTranslucent(identifier) : (bl2 ? ((Model)this.model).getLayer(identifier) : RenderLayer.getOutline(identifier));
         if (bl2 || bl3 || bl) {
             VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(renderLayer);
-            int p = LivingEntityRenderer.method_23622(livingEntity, this.method_23185(livingEntity, g));
+            int p = LivingEntityRenderer.getOverlay(livingEntity, this.getWhiteOverlayProgress(livingEntity, g));
             ((Model)this.model).render(matrixStack, vertexConsumer, i, p, 1.0f, 1.0f, 1.0f, bl3 ? 0.15f : 1.0f);
         }
         if (!((Entity)livingEntity).isSpectator()) {
@@ -128,7 +128,7 @@ implements FeatureRendererContext<T, M> {
         super.render(livingEntity, f, g, matrixStack, vertexConsumerProvider, i);
     }
 
-    public static int method_23622(LivingEntity livingEntity, float f) {
+    public static int getOverlay(LivingEntity livingEntity, float f) {
         return OverlayTexture.packUv(OverlayTexture.getU(f), OverlayTexture.getV(livingEntity.hurtTime > 0 || livingEntity.deathTime > 0));
     }
 
@@ -175,7 +175,7 @@ implements FeatureRendererContext<T, M> {
             matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(j));
             matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(this.getLyingAngle(livingEntity)));
             matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(270.0f));
-        } else if ((((Entity)livingEntity).hasCustomName() || livingEntity instanceof PlayerEntity) && ("Dinnerbone".equals(string = Formatting.strip(((Entity)livingEntity).getName().getString())) || "Grumm".equals(string)) && (!(livingEntity instanceof PlayerEntity) || ((PlayerEntity)livingEntity).isSkinOverlayVisible(PlayerModelPart.CAPE))) {
+        } else if ((((Entity)livingEntity).hasCustomName() || livingEntity instanceof PlayerEntity) && ("Dinnerbone".equals(string = Formatting.strip(((Entity)livingEntity).getName().getString())) || "Grumm".equals(string)) && (!(livingEntity instanceof PlayerEntity) || ((PlayerEntity)livingEntity).isPartVisible(PlayerModelPart.CAPE))) {
             matrixStack.translate(0.0, ((Entity)livingEntity).getHeight() + 0.1f, 0.0);
             matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0f));
         }
@@ -185,7 +185,7 @@ implements FeatureRendererContext<T, M> {
         return ((LivingEntity)livingEntity).getHandSwingProgress(f);
     }
 
-    protected float getAge(T livingEntity, float f) {
+    protected float getCustomAngle(T livingEntity, float f) {
         return (float)((LivingEntity)livingEntity).age + f;
     }
 
@@ -193,7 +193,7 @@ implements FeatureRendererContext<T, M> {
         return 90.0f;
     }
 
-    protected float method_23185(T livingEntity, float f) {
+    protected float getWhiteOverlayProgress(T livingEntity, float f) {
         return 0.0f;
     }
 

@@ -46,12 +46,12 @@ public class GlStateManager {
     private static final TexGenState TEX_GEN = new TexGenState();
     private static final ClearState CLEAR = new ClearState();
     private static final StencilState STENCIL = new StencilState();
-    private static final FloatBuffer field_20771 = GlAllocationUtils.allocateFloatBuffer(4);
-    private static final Vector3f field_20772 = Util.create(new Vector3f(0.2f, 1.0f, -0.7f), Vector3f::reciprocal);
-    private static final Vector3f field_20773 = Util.create(new Vector3f(-0.2f, 1.0f, 0.7f), Vector3f::reciprocal);
+    private static final FloatBuffer colorBuffer = GlAllocationUtils.allocateFloatBuffer(4);
+    private static final Vector3f DIFFUSE_LIGHT_0_POSITION = Util.make(new Vector3f(0.2f, 1.0f, -0.7f), Vector3f::reciprocal);
+    private static final Vector3f DIFFUSE_LIGHT_1_POSITION = Util.make(new Vector3f(-0.2f, 1.0f, 0.7f), Vector3f::reciprocal);
     private static int activeTexture;
     private static final Texture2DState[] TEXTURES;
-    private static int shadeModel;
+    private static int modelShadeMode;
     private static final CapabilityTracker RESCALE_NORMAL;
     private static final ColorMask COLOR_MASK;
     private static final Color4 COLOR;
@@ -193,25 +193,25 @@ public class GlStateManager {
 
     public static void blendFunc(int i, int j) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-        if (i != GlStateManager.BLEND.sfactor || j != GlStateManager.BLEND.dfactor) {
-            GlStateManager.BLEND.sfactor = i;
-            GlStateManager.BLEND.dfactor = j;
+        if (i != GlStateManager.BLEND.srcFactorRGB || j != GlStateManager.BLEND.dstFactorRGB) {
+            GlStateManager.BLEND.srcFactorRGB = i;
+            GlStateManager.BLEND.dstFactorRGB = j;
             GL11.glBlendFunc(i, j);
         }
     }
 
     public static void blendFuncSeparate(int i, int j, int k, int l) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-        if (i != GlStateManager.BLEND.sfactor || j != GlStateManager.BLEND.dfactor || k != GlStateManager.BLEND.srcAlpha || l != GlStateManager.BLEND.dstAlpha) {
-            GlStateManager.BLEND.sfactor = i;
-            GlStateManager.BLEND.dfactor = j;
-            GlStateManager.BLEND.srcAlpha = k;
-            GlStateManager.BLEND.dstAlpha = l;
-            GlStateManager.blendFuncseparate(i, j, k, l);
+        if (i != GlStateManager.BLEND.srcFactorRGB || j != GlStateManager.BLEND.dstFactorRGB || k != GlStateManager.BLEND.srcFactorAlpha || l != GlStateManager.BLEND.dstFactorAlpha) {
+            GlStateManager.BLEND.srcFactorRGB = i;
+            GlStateManager.BLEND.dstFactorRGB = j;
+            GlStateManager.BLEND.srcFactorAlpha = k;
+            GlStateManager.BLEND.dstFactorAlpha = l;
+            GlStateManager.blendFuncSeparateUntracked(i, j, k, l);
         }
     }
 
-    public static void method_22883(float f, float g, float h, float i) {
+    public static void blendColor(float f, float g, float h, float i) {
         GL14.glBlendColor(f, g, h, i);
     }
 
@@ -576,7 +576,7 @@ public class GlStateManager {
         }
     }
 
-    public static void method_22066(int i) {
+    public static void activeTextureUntracked(int i) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         GL13.glActiveTexture(i);
     }
@@ -593,7 +593,7 @@ public class GlStateManager {
         GL13.glMultiTexCoord2f(i, f, g);
     }
 
-    public static void blendFuncseparate(int i, int j, int k, int l) {
+    public static void blendFuncSeparateUntracked(int i, int j, int k, int l) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         GL14.glBlendFuncSeparate(i, j, k, l);
     }
@@ -608,19 +608,19 @@ public class GlStateManager {
         return GL20.glGetProgramInfoLog(i, j);
     }
 
-    public static void method_23282() {
+    public static void setupOutline() {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         GlStateManager.texEnv(8960, 8704, 34160);
-        GlStateManager.method_23281(7681, 34168);
+        GlStateManager.combineColor(7681, 34168);
     }
 
-    public static void method_23283() {
+    public static void teardownOutline() {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         GlStateManager.texEnv(8960, 8704, 8448);
-        GlStateManager.method_22885(8448, 5890, 34168, 34166);
+        GlStateManager.combineColor(8448, 5890, 34168, 34166);
     }
 
-    public static void method_22610(int i, int j) {
+    public static void setupOverlayColor(int i, int j) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         GlStateManager.activeTexture(33985);
         GlStateManager.enableTexture();
@@ -635,25 +635,25 @@ public class GlStateManager {
         GlStateManager.texParameter(3553, 10242, 10496);
         GlStateManager.texParameter(3553, 10243, 10496);
         GlStateManager.texEnv(8960, 8704, 34160);
-        GlStateManager.method_22885(34165, 34168, 5890, 5890);
-        GlStateManager.method_22886(7681, 34168);
+        GlStateManager.combineColor(34165, 34168, 5890, 5890);
+        GlStateManager.combineAlpha(7681, 34168);
         GlStateManager.activeTexture(33984);
     }
 
-    public static void method_22618() {
+    public static void teardownOverlayColor() {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         GlStateManager.activeTexture(33985);
         GlStateManager.disableTexture();
         GlStateManager.activeTexture(33984);
     }
 
-    private static void method_23281(int i, int j) {
+    private static void combineColor(int i, int j) {
         GlStateManager.texEnv(8960, 34161, i);
         GlStateManager.texEnv(8960, 34176, j);
         GlStateManager.texEnv(8960, 34192, 768);
     }
 
-    private static void method_22885(int i, int j, int k, int l) {
+    private static void combineColor(int i, int j, int k, int l) {
         GlStateManager.texEnv(8960, 34161, i);
         GlStateManager.texEnv(8960, 34176, j);
         GlStateManager.texEnv(8960, 34192, 768);
@@ -663,68 +663,68 @@ public class GlStateManager {
         GlStateManager.texEnv(8960, 34194, 770);
     }
 
-    private static void method_22886(int i, int j) {
+    private static void combineAlpha(int i, int j) {
         GlStateManager.texEnv(8960, 34162, i);
         GlStateManager.texEnv(8960, 34184, j);
         GlStateManager.texEnv(8960, 34200, 770);
     }
 
-    public static void method_22616(Matrix4f matrix4f) {
+    public static void setupLevelDiffuseLighting(Matrix4f matrix4f) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         GlStateManager.enableLight(0);
         GlStateManager.enableLight(1);
-        Vector4f vector4f = new Vector4f(field_20772);
+        Vector4f vector4f = new Vector4f(DIFFUSE_LIGHT_0_POSITION);
         vector4f.transform(matrix4f);
-        GlStateManager.light(16384, 4611, GlStateManager.method_22613(vector4f.getX(), vector4f.getY(), vector4f.getZ(), 0.0f));
+        GlStateManager.light(16384, 4611, GlStateManager.getBuffer(vector4f.getX(), vector4f.getY(), vector4f.getZ(), 0.0f));
         float f = 0.6f;
-        GlStateManager.light(16384, 4609, GlStateManager.method_22613(0.6f, 0.6f, 0.6f, 1.0f));
-        GlStateManager.light(16384, 4608, GlStateManager.method_22613(0.0f, 0.0f, 0.0f, 1.0f));
-        GlStateManager.light(16384, 4610, GlStateManager.method_22613(0.0f, 0.0f, 0.0f, 1.0f));
-        Vector4f vector4f2 = new Vector4f(field_20773);
+        GlStateManager.light(16384, 4609, GlStateManager.getBuffer(0.6f, 0.6f, 0.6f, 1.0f));
+        GlStateManager.light(16384, 4608, GlStateManager.getBuffer(0.0f, 0.0f, 0.0f, 1.0f));
+        GlStateManager.light(16384, 4610, GlStateManager.getBuffer(0.0f, 0.0f, 0.0f, 1.0f));
+        Vector4f vector4f2 = new Vector4f(DIFFUSE_LIGHT_1_POSITION);
         vector4f2.transform(matrix4f);
-        GlStateManager.light(16385, 4611, GlStateManager.method_22613(vector4f2.getX(), vector4f2.getY(), vector4f2.getZ(), 0.0f));
-        GlStateManager.light(16385, 4609, GlStateManager.method_22613(0.6f, 0.6f, 0.6f, 1.0f));
-        GlStateManager.light(16385, 4608, GlStateManager.method_22613(0.0f, 0.0f, 0.0f, 1.0f));
-        GlStateManager.light(16385, 4610, GlStateManager.method_22613(0.0f, 0.0f, 0.0f, 1.0f));
+        GlStateManager.light(16385, 4611, GlStateManager.getBuffer(vector4f2.getX(), vector4f2.getY(), vector4f2.getZ(), 0.0f));
+        GlStateManager.light(16385, 4609, GlStateManager.getBuffer(0.6f, 0.6f, 0.6f, 1.0f));
+        GlStateManager.light(16385, 4608, GlStateManager.getBuffer(0.0f, 0.0f, 0.0f, 1.0f));
+        GlStateManager.light(16385, 4610, GlStateManager.getBuffer(0.0f, 0.0f, 0.0f, 1.0f));
         GlStateManager.shadeModel(7424);
         float g = 0.4f;
-        GlStateManager.lightModel(2899, GlStateManager.method_22613(0.4f, 0.4f, 0.4f, 1.0f));
+        GlStateManager.lightModel(2899, GlStateManager.getBuffer(0.4f, 0.4f, 0.4f, 1.0f));
     }
 
-    public static void method_22617(Matrix4f matrix4f) {
+    public static void setupGuiDiffuseLighting(Matrix4f matrix4f) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         Matrix4f matrix4f2 = matrix4f.copy();
         matrix4f2.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-22.5f));
         matrix4f2.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(135.0f));
-        GlStateManager.method_22616(matrix4f2);
+        GlStateManager.setupLevelDiffuseLighting(matrix4f2);
     }
 
-    private static FloatBuffer method_22613(float f, float g, float h, float i) {
-        field_20771.clear();
-        field_20771.put(f).put(g).put(h).put(i);
-        field_20771.flip();
-        return field_20771;
+    private static FloatBuffer getBuffer(float f, float g, float h, float i) {
+        colorBuffer.clear();
+        colorBuffer.put(f).put(g).put(h).put(i);
+        colorBuffer.flip();
+        return colorBuffer;
     }
 
-    public static void method_22887() {
+    public static void setupEndPortalTexGen() {
         GlStateManager.texGenMode(TexCoord.S, 9216);
         GlStateManager.texGenMode(TexCoord.T, 9216);
         GlStateManager.texGenMode(TexCoord.R, 9216);
-        GlStateManager.texGenParam(TexCoord.S, 9474, GlStateManager.method_22613(1.0f, 0.0f, 0.0f, 0.0f));
-        GlStateManager.texGenParam(TexCoord.T, 9474, GlStateManager.method_22613(0.0f, 1.0f, 0.0f, 0.0f));
-        GlStateManager.texGenParam(TexCoord.R, 9474, GlStateManager.method_22613(0.0f, 0.0f, 1.0f, 0.0f));
+        GlStateManager.texGenParam(TexCoord.S, 9474, GlStateManager.getBuffer(1.0f, 0.0f, 0.0f, 0.0f));
+        GlStateManager.texGenParam(TexCoord.T, 9474, GlStateManager.getBuffer(0.0f, 1.0f, 0.0f, 0.0f));
+        GlStateManager.texGenParam(TexCoord.R, 9474, GlStateManager.getBuffer(0.0f, 0.0f, 1.0f, 0.0f));
         GlStateManager.enableTexGen(TexCoord.S);
         GlStateManager.enableTexGen(TexCoord.T);
         GlStateManager.enableTexGen(TexCoord.R);
     }
 
-    public static void method_22888() {
+    public static void clearTexGen() {
         GlStateManager.disableTexGen(TexCoord.S);
         GlStateManager.disableTexGen(TexCoord.T);
         GlStateManager.disableTexGen(TexCoord.R);
     }
 
-    public static void method_22889() {
+    public static void mulTextureByProjModelView() {
         GlStateManager.texEnv(2983, MATRIX_BUFFER);
         GlStateManager.multMatrix(MATRIX_BUFFER);
         GlStateManager.texEnv(2982, MATRIX_BUFFER);
@@ -847,8 +847,8 @@ public class GlStateManager {
 
     public static void logicOp(int i) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-        if (i != GlStateManager.COLOR_LOGIC.opcode) {
-            GlStateManager.COLOR_LOGIC.opcode = i;
+        if (i != GlStateManager.COLOR_LOGIC.op) {
+            GlStateManager.COLOR_LOGIC.op = i;
             GL11.glLogicOp(i);
         }
     }
@@ -905,7 +905,7 @@ public class GlStateManager {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         if (activeTexture != i - 33984) {
             activeTexture = i - 33984;
-            GlStateManager.method_22066(i);
+            GlStateManager.activeTextureUntracked(i);
         }
     }
 
@@ -980,8 +980,8 @@ public class GlStateManager {
     @Deprecated
     public static void shadeModel(int i) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-        if (i != shadeModel) {
-            shadeModel = i;
+        if (i != modelShadeMode) {
+            modelShadeMode = i;
             GL11.glShadeModel(i);
         }
     }
@@ -1020,28 +1020,28 @@ public class GlStateManager {
 
     public static void stencilFunc(int i, int j, int k) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-        if (i != GlStateManager.STENCIL.subState.func || i != GlStateManager.STENCIL.subState.field_16203 || i != GlStateManager.STENCIL.subState.field_5147) {
+        if (i != GlStateManager.STENCIL.subState.func || i != GlStateManager.STENCIL.subState.ref || i != GlStateManager.STENCIL.subState.mask) {
             GlStateManager.STENCIL.subState.func = i;
-            GlStateManager.STENCIL.subState.field_16203 = j;
-            GlStateManager.STENCIL.subState.field_5147 = k;
+            GlStateManager.STENCIL.subState.ref = j;
+            GlStateManager.STENCIL.subState.mask = k;
             GL11.glStencilFunc(i, j, k);
         }
     }
 
     public static void stencilMask(int i) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-        if (i != GlStateManager.STENCIL.field_5153) {
-            GlStateManager.STENCIL.field_5153 = i;
+        if (i != GlStateManager.STENCIL.mask) {
+            GlStateManager.STENCIL.mask = i;
             GL11.glStencilMask(i);
         }
     }
 
     public static void stencilOp(int i, int j, int k) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-        if (i != GlStateManager.STENCIL.field_5152 || j != GlStateManager.STENCIL.field_5151 || k != GlStateManager.STENCIL.field_5150) {
-            GlStateManager.STENCIL.field_5152 = i;
-            GlStateManager.STENCIL.field_5151 = j;
-            GlStateManager.STENCIL.field_5150 = k;
+        if (i != GlStateManager.STENCIL.sfail || j != GlStateManager.STENCIL.dpfail || k != GlStateManager.STENCIL.dppass) {
+            GlStateManager.STENCIL.sfail = i;
+            GlStateManager.STENCIL.dpfail = j;
+            GlStateManager.STENCIL.dppass = k;
             GL11.glStencilOp(i, j, k);
         }
     }
@@ -1067,8 +1067,8 @@ public class GlStateManager {
 
     public static void clearStencil(int i) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-        if (i != GlStateManager.CLEAR.field_16202) {
-            GlStateManager.CLEAR.field_16202 = i;
+        if (i != GlStateManager.CLEAR.clearStencil) {
+            GlStateManager.CLEAR.clearStencil = i;
             GL11.glClearStencil(i);
         }
     }
@@ -1142,7 +1142,7 @@ public class GlStateManager {
     }
 
     @Deprecated
-    public static void rotated(double d, double e, double f) {
+    public static void translated(double d, double e, double f) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         GL11.glTranslated(d, e, f);
     }
@@ -1275,14 +1275,14 @@ public class GlStateManager {
 
     static {
         TEXTURES = (Texture2DState[])IntStream.range(0, 8).mapToObj(i -> new Texture2DState()).toArray(Texture2DState[]::new);
-        shadeModel = 7425;
+        modelShadeMode = 7425;
         RESCALE_NORMAL = new CapabilityTracker(32826);
         COLOR_MASK = new ColorMask();
         COLOR = new Color4();
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static enum DestFactor {
+    public static enum DstFactor {
         CONSTANT_ALPHA(32771),
         CONSTANT_COLOR(32769),
         DST_ALPHA(772),
@@ -1300,13 +1300,13 @@ public class GlStateManager {
 
         public final int value;
 
-        private DestFactor(int j) {
+        private DstFactor(int j) {
             this.value = j;
         }
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static enum SourceFactor {
+    public static enum SrcFactor {
         CONSTANT_ALPHA(32771),
         CONSTANT_COLOR(32769),
         DST_ALPHA(772),
@@ -1325,7 +1325,7 @@ public class GlStateManager {
 
         public final int value;
 
-        private SourceFactor(int j) {
+        private SrcFactor(int j) {
             this.value = j;
         }
     }
@@ -1429,10 +1429,10 @@ public class GlStateManager {
     @Environment(value=EnvType.CLIENT)
     static class StencilState {
         public final StencilSubState subState = new StencilSubState();
-        public int field_5153 = -1;
-        public int field_5152 = 7680;
-        public int field_5151 = 7680;
-        public int field_5150 = 7680;
+        public int mask = -1;
+        public int sfail = 7680;
+        public int dpfail = 7680;
+        public int dppass = 7680;
 
         private StencilState() {
         }
@@ -1441,8 +1441,8 @@ public class GlStateManager {
     @Environment(value=EnvType.CLIENT)
     static class StencilSubState {
         public int func = 519;
-        public int field_16203;
-        public int field_5147 = -1;
+        public int ref;
+        public int mask = -1;
 
         private StencilSubState() {
         }
@@ -1452,7 +1452,7 @@ public class GlStateManager {
     static class ClearState {
         public double clearDepth = 1.0;
         public final Color4 clearColor = new Color4(0.0f, 0.0f, 0.0f, 0.0f);
-        public int field_16202;
+        public int clearStencil;
 
         private ClearState() {
         }
@@ -1461,7 +1461,7 @@ public class GlStateManager {
     @Environment(value=EnvType.CLIENT)
     static class LogicOpState {
         public final CapabilityTracker capState = new CapabilityTracker(3058);
-        public int opcode = 5379;
+        public int op = 5379;
 
         private LogicOpState() {
         }
@@ -1513,10 +1513,10 @@ public class GlStateManager {
     @Environment(value=EnvType.CLIENT)
     static class BlendFuncState {
         public final CapabilityTracker capState = new CapabilityTracker(3042);
-        public int sfactor = 1;
-        public int dfactor = 0;
-        public int srcAlpha = 1;
-        public int dstAlpha = 0;
+        public int srcFactorRGB = 1;
+        public int dstFactorRGB = 0;
+        public int srcFactorAlpha = 1;
+        public int dstFactorAlpha = 0;
 
         private BlendFuncState() {
         }
@@ -1590,10 +1590,10 @@ public class GlStateManager {
         SET(5391),
         XOR(5382);
 
-        public final int glValue;
+        public final int value;
 
         private LogicOp(int j) {
-            this.glValue = j;
+            this.value = j;
         }
     }
 
@@ -1604,10 +1604,10 @@ public class GlStateManager {
         EXP(2048),
         EXP2(2049);
 
-        public final int glValue;
+        public final int value;
 
         private FogMode(int j) {
-            this.glValue = j;
+            this.value = j;
         }
     }
 }

@@ -36,7 +36,7 @@ extends BlockEntityRenderer<T> {
     @Override
     public void render(T endPortalBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
         RANDOM.setSeed(31100L);
-        double d = ((BlockEntity)endPortalBlockEntity).getPos().getSquaredDistance(this.blockEntityRenderDispatcher.camera.getPos(), true);
+        double d = ((BlockEntity)endPortalBlockEntity).getPos().getSquaredDistance(this.dispatcher.camera.getPos(), true);
         int k = this.method_3592(d);
         float g = this.method_3594();
         Matrix4f matrix4f = matrixStack.peek().getModel();

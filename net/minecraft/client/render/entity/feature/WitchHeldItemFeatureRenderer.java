@@ -27,8 +27,8 @@ extends VillagerHeldItemFeatureRenderer<T, WitchEntityModel<T>> {
         ItemStack itemStack = ((LivingEntity)livingEntity).getMainHandStack();
         matrixStack.push();
         if (itemStack.getItem() == Items.POTION) {
-            ((WitchEntityModel)this.getModel()).getHead().rotate(matrixStack);
-            ((WitchEntityModel)this.getModel()).getNose().rotate(matrixStack);
+            ((WitchEntityModel)this.getContextModel()).getHead().rotate(matrixStack);
+            ((WitchEntityModel)this.getContextModel()).getNose().rotate(matrixStack);
             matrixStack.translate(0.0625, 0.25, 0.0);
             matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0f));
             matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(140.0f));

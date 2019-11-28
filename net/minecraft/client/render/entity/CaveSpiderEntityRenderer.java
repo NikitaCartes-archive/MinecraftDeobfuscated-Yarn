@@ -18,7 +18,7 @@ extends SpiderEntityRenderer<CaveSpiderEntity> {
 
     public CaveSpiderEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher);
-        this.field_4673 *= 0.7f;
+        this.shadowSize *= 0.7f;
     }
 
     @Override

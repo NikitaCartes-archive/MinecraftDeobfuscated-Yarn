@@ -30,7 +30,7 @@ extends FeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractCl
             return;
         }
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(abstractClientPlayerEntity.getSkinTexture()));
-        int m = LivingEntityRenderer.method_23622(abstractClientPlayerEntity, 0.0f);
+        int m = LivingEntityRenderer.getOverlay(abstractClientPlayerEntity, 0.0f);
         for (int n = 0; n < 2; ++n) {
             float o = MathHelper.lerp(h, abstractClientPlayerEntity.prevYaw, abstractClientPlayerEntity.yaw) - MathHelper.lerp(h, abstractClientPlayerEntity.prevBodyYaw, abstractClientPlayerEntity.bodyYaw);
             float p = MathHelper.lerp(h, abstractClientPlayerEntity.prevPitch, abstractClientPlayerEntity.pitch);
@@ -43,7 +43,7 @@ extends FeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractCl
             matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-o));
             float q = 1.3333334f;
             matrixStack.scale(1.3333334f, 1.3333334f, 1.3333334f);
-            ((PlayerEntityModel)this.getModel()).renderEars(matrixStack, vertexConsumer, i, m);
+            ((PlayerEntityModel)this.getContextModel()).renderEars(matrixStack, vertexConsumer, i, m);
             matrixStack.pop();
         }
     }

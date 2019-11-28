@@ -104,21 +104,21 @@ implements DebugRenderer.Renderer {
         BlockPos blockPos = new BlockPos(d, e, f);
         this.sections.forEach(chunkSectionPos -> {
             if (blockPos.isWithinDistance(chunkSectionPos.getCenterPos(), 60.0)) {
-                VillageDebugRenderer.method_23143(chunkSectionPos);
+                VillageDebugRenderer.drawSection(chunkSectionPos);
             }
         });
         this.brains.values().forEach(brain -> {
-            if (this.method_23147((Brain)brain)) {
+            if (this.isClose((Brain)brain)) {
                 this.drawBrain((Brain)brain, d, e, f);
             }
         });
         for (BlockPos blockPos22 : this.pointsOfInterest.keySet()) {
             if (!blockPos.isWithinDistance(blockPos22, 30.0)) continue;
-            VillageDebugRenderer.method_23138(blockPos22);
+            VillageDebugRenderer.drawPointOfInterest(blockPos22);
         }
         this.pointsOfInterest.values().forEach(pointOfInterest -> {
             if (blockPos.isWithinDistance(pointOfInterest.pos, 30.0)) {
-                this.drawPointOfInterest((PointOfInterest)pointOfInterest);
+                this.drawPointOfInterestInfo((PointOfInterest)pointOfInterest);
             }
         });
         this.getGhostPointsOfInterest().forEach((blockPos2, list) -> {
@@ -128,7 +128,7 @@ implements DebugRenderer.Renderer {
         });
     }
 
-    private static void method_23143(ChunkSectionPos chunkSectionPos) {
+    private static void drawSection(ChunkSectionPos chunkSectionPos) {
         float f = 1.0f;
         BlockPos blockPos = chunkSectionPos.getCenterPos();
         BlockPos blockPos2 = blockPos.add(-1.0, -1.0, -1.0);
@@ -136,7 +136,7 @@ implements DebugRenderer.Renderer {
         DebugRenderer.drawBox(blockPos2, blockPos3, 0.2f, 1.0f, 0.2f, 0.15f);
     }
 
-    private static void method_23138(BlockPos blockPos) {
+    private static void drawPointOfInterest(BlockPos blockPos) {
         float f = 0.05f;
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
@@ -152,7 +152,7 @@ implements DebugRenderer.Renderer {
         VillageDebugRenderer.drawString("Ghost POI", blockPos, 1, -65536);
     }
 
-    private void drawPointOfInterest(PointOfInterest pointOfInterest) {
+    private void drawPointOfInterestInfo(PointOfInterest pointOfInterest) {
         int i = 0;
         if (this.getVillagerNames(pointOfInterest).size() < 4) {
             VillageDebugRenderer.drawString("" + this.getVillagerNames(pointOfInterest), pointOfInterest, i, -256);
@@ -175,7 +175,7 @@ implements DebugRenderer.Renderer {
         VillageDebugRenderer.drawString(brain.pos, i, brain.field_19328, -1, 0.03f);
         ++i;
         if (bl) {
-            VillageDebugRenderer.drawString(brain.pos, i, brain.field_18925 + " " + brain.xp + "xp", -1, 0.02f);
+            VillageDebugRenderer.drawString(brain.pos, i, brain.profession + " " + brain.xp + "xp", -1, 0.02f);
             ++i;
         }
         if (bl && !brain.field_19372.equals("")) {
@@ -245,28 +245,28 @@ implements DebugRenderer.Renderer {
     }
 
     private Set<String> getVillagerNames(PointOfInterest pointOfInterest) {
-        return this.method_23142(pointOfInterest.pos).stream().map(NameGenerator::name).collect(Collectors.toSet());
+        return this.getBrains(pointOfInterest.pos).stream().map(NameGenerator::name).collect(Collectors.toSet());
     }
 
     private boolean isTargeted(Brain brain) {
         return Objects.equals(this.targetedEntity, brain.uuid);
     }
 
-    private boolean method_23147(Brain brain) {
+    private boolean isClose(Brain brain) {
         ClientPlayerEntity playerEntity = this.client.player;
         BlockPos blockPos = new BlockPos(playerEntity.getX(), brain.pos.getY(), playerEntity.getZ());
         BlockPos blockPos2 = new BlockPos(brain.pos);
         return blockPos.isWithinDistance(blockPos2, 30.0);
     }
 
-    private Collection<UUID> method_23142(BlockPos blockPos) {
-        return this.brains.values().stream().filter(brain -> ((Brain)brain).method_23151(blockPos)).map(Brain::getUuid).collect(Collectors.toSet());
+    private Collection<UUID> getBrains(BlockPos blockPos) {
+        return this.brains.values().stream().filter(brain -> ((Brain)brain).isPointOfInterest(blockPos)).map(Brain::getUuid).collect(Collectors.toSet());
     }
 
     private Map<BlockPos, List<String>> getGhostPointsOfInterest() {
         HashMap<BlockPos, List<String>> map = Maps.newHashMap();
         for (Brain brain : this.brains.values()) {
-            for (BlockPos blockPos : brain.field_18930) {
+            for (BlockPos blockPos : brain.pointsOfInterest) {
                 if (this.pointsOfInterest.containsKey(blockPos)) continue;
                 ArrayList<String> list = (ArrayList<String>)map.get(blockPos);
                 if (list == null) {
@@ -290,7 +290,7 @@ implements DebugRenderer.Renderer {
         public final UUID uuid;
         public final int field_18924;
         public final String field_19328;
-        public final String field_18925;
+        public final String profession;
         public final int xp;
         public final Position pos;
         public final String field_19372;
@@ -300,13 +300,13 @@ implements DebugRenderer.Renderer {
         public final List<String> field_18928 = Lists.newArrayList();
         public final List<String> field_19374 = Lists.newArrayList();
         public final List<String> field_19375 = Lists.newArrayList();
-        public final Set<BlockPos> field_18930 = Sets.newHashSet();
+        public final Set<BlockPos> pointsOfInterest = Sets.newHashSet();
 
         public Brain(UUID uUID, int i, String string, String string2, int j, Position position, String string3, @Nullable Path path, boolean bl) {
             this.uuid = uUID;
             this.field_18924 = i;
             this.field_19328 = string;
-            this.field_18925 = string2;
+            this.profession = string2;
             this.xp = j;
             this.pos = position;
             this.field_19372 = string3;
@@ -314,8 +314,8 @@ implements DebugRenderer.Renderer {
             this.wantsGolem = bl;
         }
 
-        private boolean method_23151(BlockPos blockPos) {
-            return this.field_18930.stream().anyMatch(blockPos::equals);
+        private boolean isPointOfInterest(BlockPos blockPos) {
+            return this.pointsOfInterest.stream().anyMatch(blockPos::equals);
         }
 
         public UUID getUuid() {

@@ -39,7 +39,7 @@ extends FeatureRenderer<LlamaEntity, LlamaEntityModel<LlamaEntity>> {
         } else {
             return;
         }
-        ((LlamaEntityModel)this.getModel()).copyStateTo(this.model);
+        ((LlamaEntityModel)this.getContextModel()).copyStateTo(this.model);
         this.model.setAngles(llamaEntity, f, g, j, k, l);
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(identifier));
         this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f, 1.0f);

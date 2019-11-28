@@ -126,7 +126,7 @@ ModelWithHead {
         this.leftLeg.yaw = 0.0f;
         this.rightLeg.roll = 0.0f;
         this.leftLeg.roll = 0.0f;
-        if (this.isRiding) {
+        if (this.riding) {
             this.rightArm.pitch += -0.62831855f;
             this.leftArm.pitch += -0.62831855f;
             this.rightLeg.pitch = -1.4137167f;

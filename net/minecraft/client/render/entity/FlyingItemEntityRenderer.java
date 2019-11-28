@@ -13,6 +13,7 @@ import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.FlyingItemEntity;
 import net.minecraft.util.Identifier;
@@ -36,8 +37,8 @@ extends EntityRenderer<T> {
     }
 
     @Override
-    protected int method_24087(T entity, float f) {
-        return this.field_21745 ? 15 : super.method_24087(entity, f);
+    protected int getBlockLight(T entity, float f) {
+        return this.field_21745 ? 15 : super.getBlockLight(entity, f);
     }
 
     @Override
@@ -45,6 +46,7 @@ extends EntityRenderer<T> {
         matrixStack.push();
         matrixStack.scale(this.scale, this.scale, this.scale);
         matrixStack.multiply(this.renderManager.method_24197());
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
         this.item.method_23178(((FlyingItemEntity)entity).getStack(), ModelTransformation.Type.GROUND, i, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider);
         matrixStack.pop();
         super.render(entity, f, g, matrixStack, vertexConsumerProvider, i);

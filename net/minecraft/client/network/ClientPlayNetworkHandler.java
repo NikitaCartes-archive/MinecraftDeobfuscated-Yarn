@@ -565,8 +565,8 @@ implements ClientPlayPacketListener {
                 float g = entityS2CPacket.hasRotation() ? (float)(entityS2CPacket.getPitch() * 360) / 256.0f : entity.pitch;
                 entity.updateTrackedPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, f, g, 3, false);
             } else if (entityS2CPacket.hasRotation()) {
-                float h = entityS2CPacket.getYaw();
-                float f = entityS2CPacket.getPitch();
+                float h = (float)(entityS2CPacket.getYaw() * 360) / 256.0f;
+                float f = (float)(entityS2CPacket.getPitch() * 360) / 256.0f;
                 entity.updateTrackedPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), h, f, 3, false);
             }
             entity.onGround = entityS2CPacket.isOnGround();
@@ -610,26 +610,26 @@ implements ClientPlayPacketListener {
         if (bl) {
             d = vec3d.getX();
             e = playerEntity.getX() + playerPositionLookS2CPacket.getX();
-            playerEntity.prevRenderX += playerPositionLookS2CPacket.getX();
+            playerEntity.lastRenderX += playerPositionLookS2CPacket.getX();
         } else {
             d = 0.0;
-            playerEntity.prevRenderX = e = playerPositionLookS2CPacket.getX();
+            playerEntity.lastRenderX = e = playerPositionLookS2CPacket.getX();
         }
         if (bl2) {
             f = vec3d.getY();
             g = playerEntity.getY() + playerPositionLookS2CPacket.getY();
-            playerEntity.prevRenderY += playerPositionLookS2CPacket.getY();
+            playerEntity.lastRenderY += playerPositionLookS2CPacket.getY();
         } else {
             f = 0.0;
-            playerEntity.prevRenderY = g = playerPositionLookS2CPacket.getY();
+            playerEntity.lastRenderY = g = playerPositionLookS2CPacket.getY();
         }
         if (bl3) {
             h = vec3d.getZ();
             i = playerEntity.getZ() + playerPositionLookS2CPacket.getZ();
-            playerEntity.prevRenderZ += playerPositionLookS2CPacket.getZ();
+            playerEntity.lastRenderZ += playerPositionLookS2CPacket.getZ();
         } else {
             h = 0.0;
-            playerEntity.prevRenderZ = i = playerPositionLookS2CPacket.getZ();
+            playerEntity.lastRenderZ = i = playerPositionLookS2CPacket.getZ();
         }
         playerEntity.setPos(e, g, i);
         playerEntity.prevX = e;
@@ -1709,7 +1709,7 @@ implements ClientPlayPacketListener {
                 t = packetByteBuf.readInt();
                 for (u = 0; u < t; ++u) {
                     BlockPos blockPos3 = packetByteBuf.readBlockPos();
-                    brain.field_18930.add(blockPos3);
+                    brain.pointsOfInterest.add(blockPos3);
                 }
                 u = packetByteBuf.readInt();
                 for (int v = 0; v < u; ++v) {

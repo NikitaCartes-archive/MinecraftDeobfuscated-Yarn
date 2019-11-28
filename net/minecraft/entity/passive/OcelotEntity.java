@@ -273,7 +273,7 @@ extends AnimalEntity {
     public EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag) {
         if (entityData == null) {
             entityData = new PassiveEntity.EntityData();
-            ((PassiveEntity.EntityData)entityData).setBabyChance(0.14285715f);
+            ((PassiveEntity.EntityData)entityData).setBabyChance(1.0f);
         }
         return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
     }

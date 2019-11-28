@@ -19,7 +19,7 @@ public interface VillagerType {
     public static final VillagerType SNOW = VillagerType.create("snow");
     public static final VillagerType SWAMP = VillagerType.create("swamp");
     public static final VillagerType TAIGA = VillagerType.create("taiga");
-    public static final Map<Biome, VillagerType> BIOME_TO_TYPE = Util.create(Maps.newHashMap(), hashMap -> {
+    public static final Map<Biome, VillagerType> BIOME_TO_TYPE = Util.make(Maps.newHashMap(), hashMap -> {
         hashMap.put(Biomes.BADLANDS, DESERT);
         hashMap.put(Biomes.BADLANDS_PLATEAU, DESERT);
         hashMap.put(Biomes.DESERT, DESERT);

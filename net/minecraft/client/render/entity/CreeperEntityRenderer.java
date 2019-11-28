@@ -38,7 +38,7 @@ extends MobEntityRenderer<CreeperEntity, CreeperEntityModel<CreeperEntity>> {
     }
 
     @Override
-    protected float method_23185(CreeperEntity creeperEntity, float f) {
+    protected float getWhiteOverlayProgress(CreeperEntity creeperEntity, float f) {
         float g = creeperEntity.getClientFuseTime(f);
         if ((int)(g * 10.0f) % 2 == 0) {
             return 0.0f;
@@ -52,8 +52,8 @@ extends MobEntityRenderer<CreeperEntity, CreeperEntityModel<CreeperEntity>> {
     }
 
     @Override
-    protected /* synthetic */ float method_23185(LivingEntity livingEntity, float f) {
-        return this.method_23185((CreeperEntity)livingEntity, f);
+    protected /* synthetic */ float getWhiteOverlayProgress(LivingEntity livingEntity, float f) {
+        return this.getWhiteOverlayProgress((CreeperEntity)livingEntity, f);
     }
 }
 

@@ -25,7 +25,7 @@ extends FeatureRenderer<T, DrownedEntityModel<T>> {
 
     @Override
     public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T zombieEntity, float f, float g, float h, float j, float k, float l) {
-        DrownedOverlayFeatureRenderer.render(this.getModel(), this.model, SKIN, matrixStack, vertexConsumerProvider, i, zombieEntity, f, g, j, k, l, h, 1.0f, 1.0f, 1.0f);
+        DrownedOverlayFeatureRenderer.render(this.getContextModel(), this.model, SKIN, matrixStack, vertexConsumerProvider, i, zombieEntity, f, g, j, k, l, h, 1.0f, 1.0f, 1.0f);
     }
 }
 

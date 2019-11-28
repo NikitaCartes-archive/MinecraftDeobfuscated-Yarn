@@ -42,7 +42,7 @@ extends MobEntityRenderer<PufferfishEntity, EntityModel<PufferfishEntity>> {
             this.model = j == 0 ? this.smallModel : (j == 1 ? this.mediumModel : this.largeModel);
         }
         this.modelSize = j;
-        this.field_4673 = 0.1f + 0.1f * (float)j;
+        this.shadowSize = 0.1f + 0.1f * (float)j;
         super.render(pufferfishEntity, f, g, matrixStack, vertexConsumerProvider, i);
     }
 

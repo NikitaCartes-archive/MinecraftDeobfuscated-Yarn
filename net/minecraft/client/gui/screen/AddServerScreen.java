@@ -89,7 +89,7 @@ extends Screen {
     }
 
     private void onClose(String string) {
-        this.onClose();
+        this.method_24183();
     }
 
     @Override
