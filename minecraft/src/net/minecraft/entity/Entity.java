@@ -113,6 +113,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	public boolean inanimate;
 	private final List<Entity> passengerList = Lists.<Entity>newArrayList();
 	protected int ridingCooldown;
+	@Nullable
 	private Entity vehicle;
 	public boolean teleporting;
 	public World world;
@@ -141,9 +142,9 @@ public abstract class Entity implements Nameable, CommandOutput {
 	public float fallDistance;
 	private float nextStepSoundDistance = 1.0F;
 	private float nextFlySoundDistance = 1.0F;
-	public double prevRenderX;
-	public double prevRenderY;
-	public double prevRenderZ;
+	public double lastRenderX;
+	public double lastRenderY;
+	public double lastRenderZ;
 	public float stepHeight;
 	public boolean noClip;
 	public float pushSpeedReduction;
@@ -1124,9 +1125,9 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.prevX = d;
 		this.prevY = e;
 		this.prevZ = f;
-		this.prevRenderX = d;
-		this.prevRenderY = e;
-		this.prevRenderZ = f;
+		this.lastRenderX = d;
+		this.lastRenderY = e;
+		this.lastRenderZ = f;
 	}
 
 	public float distanceTo(Entity entity) {
@@ -1276,16 +1277,16 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean shouldRenderFrom(double x, double y, double z) {
-		double d = this.getX() - x;
-		double e = this.getY() - y;
-		double f = this.getZ() - z;
+	public boolean shouldRender(double cameraX, double cameraY, double cameraZ) {
+		double d = this.getX() - cameraX;
+		double e = this.getY() - cameraY;
+		double f = this.getZ() - cameraZ;
 		double g = d * d + e * e + f * f;
-		return this.shouldRenderAtDistance(g);
+		return this.shouldRender(g);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean shouldRenderAtDistance(double distance) {
+	public boolean shouldRender(double distance) {
 		double d = this.getBoundingBox().getAverageSideLength();
 		if (Double.isNaN(d)) {
 			d = 1.0;
@@ -1557,8 +1558,12 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public void updatePassengerPosition(Entity passenger) {
-		if (this.hasPassenger(passenger)) {
-			passenger.setPosition(this.getX(), this.getY() + this.getMountedHeightOffset() + passenger.getHeightOffset(), this.getZ());
+		this.method_24201(passenger, Entity::setPosition);
+	}
+
+	public void method_24201(Entity entity, Entity.class_4738 arg) {
+		if (this.hasPassenger(entity)) {
+			arg.accept(entity, this.getX(), this.getY() + this.getMountedHeightOffset() + entity.getHeightOffset(), this.getZ());
 		}
 	}
 
@@ -2248,9 +2253,13 @@ public abstract class Entity implements Nameable, CommandOutput {
 
 	public void requestTeleport(double destX, double destY, double destZ) {
 		if (this.world instanceof ServerWorld) {
-			this.teleportRequested = true;
+			ServerWorld serverWorld = (ServerWorld)this.world;
 			this.setPositionAndAngles(destX, destY, destZ, this.yaw, this.pitch);
-			((ServerWorld)this.world).checkChunk(this);
+			this.method_24204().forEach(entity -> {
+				serverWorld.checkChunk(entity);
+				entity.teleportRequested = true;
+				entity.method_24200(Entity::method_24203);
+			});
 		}
 	}
 
@@ -2471,6 +2480,10 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return set;
 	}
 
+	public Stream<Entity> method_24204() {
+		return Stream.concat(Stream.of(this), this.passengerList.stream().flatMap(Entity::method_24204));
+	}
+
 	public boolean hasPlayerRider() {
 		Set<Entity> set = Sets.<Entity>newHashSet();
 		this.collectPassengers(true, set);
@@ -2513,6 +2526,12 @@ public abstract class Entity implements Nameable, CommandOutput {
 		}
 
 		return false;
+	}
+
+	public void method_24200(Entity.class_4738 arg) {
+		for(Entity entity : this.passengerList) {
+			this.method_24201(entity, arg);
+		}
 	}
 
 	public boolean isLogicalSideForUpdatingMovement() {
@@ -2733,5 +2752,14 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public void checkDespawn() {
+	}
+
+	public void method_24203(double d, double e, double f) {
+		this.setPositionAndAngles(d, e, f, this.yaw, this.pitch);
+	}
+
+	@FunctionalInterface
+	public interface class_4738 {
+		void accept(Entity entity, double d, double e, double f);
 	}
 }

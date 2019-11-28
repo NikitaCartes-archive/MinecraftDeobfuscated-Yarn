@@ -66,24 +66,24 @@ public class VertexConsumers {
 		}
 
 		@Override
-		public void elements(
+		public void vertex(
 			float x,
 			float y,
 			float z,
-			float r,
-			float g,
-			float b,
-			float a,
-			float textureU,
-			float textureV,
+			float red,
+			float green,
+			float blue,
+			float alpha,
+			float u,
+			float v,
 			int overlay,
 			int light,
 			float normalX,
 			float normalY,
 			float normalZ
 		) {
-			this.first.elements(x, y, z, r, g, b, a, textureU, textureV, overlay, light, normalX, normalY, normalZ);
-			this.second.elements(x, y, z, r, g, b, a, textureU, textureV, overlay, light, normalX, normalY, normalZ);
+			this.first.vertex(x, y, z, red, green, blue, alpha, u, v, overlay, light, normalX, normalY, normalZ);
+			this.second.vertex(x, y, z, red, green, blue, alpha, u, v, overlay, light, normalX, normalY, normalZ);
 		}
 
 		@Override

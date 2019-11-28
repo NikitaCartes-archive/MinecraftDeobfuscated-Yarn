@@ -235,7 +235,7 @@ public class CrossbowItem extends RangedWeaponItem {
 				Quaternion quaternion = new Quaternion(new Vector3f(vec3d), simulated, true);
 				Vec3d vec3d2 = shooter.getRotationVec(1.0F);
 				Vector3f vector3f = new Vector3f(vec3d2);
-				vector3f.method_19262(quaternion);
+				vector3f.rotate(quaternion);
 				projectile2.setVelocity((double)vector3f.getX(), (double)vector3f.getY(), (double)vector3f.getZ(), speed, divergence);
 			}
 

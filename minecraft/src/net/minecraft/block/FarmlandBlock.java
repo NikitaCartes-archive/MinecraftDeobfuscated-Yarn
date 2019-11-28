@@ -118,9 +118,4 @@ public class FarmlandBlock extends Block {
 	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
 		return false;
 	}
-
-	@Override
-	public boolean canSuffocate(BlockState state, BlockView view, BlockPos pos) {
-		return true;
-	}
 }

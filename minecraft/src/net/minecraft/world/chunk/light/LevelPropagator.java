@@ -1,14 +1,15 @@
 package net.minecraft.world.chunk.light;
 
-import it.unimi.dsi.fastutil.longs.Long2ByteFunction;
+import it.unimi.dsi.fastutil.longs.Long2ByteMap;
 import it.unimi.dsi.fastutil.longs.Long2ByteOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongLinkedOpenHashSet;
+import java.util.function.LongPredicate;
 import net.minecraft.util.math.MathHelper;
 
 public abstract class LevelPropagator {
 	private final int levelCount;
 	private final LongLinkedOpenHashSet[] pendingIdUpdatesByLevel;
-	private final Long2ByteFunction pendingUpdates;
+	private final Long2ByteMap pendingUpdates;
 	private int minPendingLevel;
 	private volatile boolean hasPendingUpdates;
 
@@ -76,6 +77,14 @@ public abstract class LevelPropagator {
 			this.removePendingUpdate(id, k, this.levelCount, true);
 			this.hasPendingUpdates = this.minPendingLevel < this.levelCount;
 		}
+	}
+
+	public void method_24206(LongPredicate longPredicate) {
+		this.pendingUpdates.keySet().forEach(l -> {
+			if (longPredicate.test(l)) {
+				this.removePendingUpdate(l);
+			}
+		});
 	}
 
 	private void removePendingUpdate(long id, int level, int levelCount, boolean removeFully) {
@@ -192,6 +201,10 @@ public abstract class LevelPropagator {
 			this.hasPendingUpdates = this.minPendingLevel < this.levelCount;
 			return maxSteps;
 		}
+	}
+
+	public int method_24208() {
+		return this.pendingUpdates.size();
 	}
 
 	protected abstract boolean isMarker(long id);

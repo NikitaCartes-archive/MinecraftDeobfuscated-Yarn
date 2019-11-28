@@ -27,7 +27,7 @@ public class HorseArmorFeatureRenderer extends FeatureRenderer<HorseEntity, Hors
 		ItemStack itemStack = horseEntity.getArmorType();
 		if (itemStack.getItem() instanceof HorseArmorItem) {
 			HorseArmorItem horseArmorItem = (HorseArmorItem)itemStack.getItem();
-			this.getModel().copyStateTo(this.model);
+			this.getContextModel().copyStateTo(this.model);
 			this.model.animateModel(horseEntity, f, g, h);
 			this.model.setAngles(horseEntity, f, g, j, k, l);
 			float n;

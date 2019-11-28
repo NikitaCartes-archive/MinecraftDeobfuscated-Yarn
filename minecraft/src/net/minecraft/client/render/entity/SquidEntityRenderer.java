@@ -31,7 +31,7 @@ public class SquidEntityRenderer extends MobEntityRenderer<SquidEntity, SquidEnt
 		matrixStack.translate(0.0, -1.2F, 0.0);
 	}
 
-	protected float getAge(SquidEntity squidEntity, float f) {
+	protected float getCustomAngle(SquidEntity squidEntity, float f) {
 		return MathHelper.lerp(f, squidEntity.field_6900, squidEntity.field_6904);
 	}
 }

@@ -76,17 +76,14 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 		int j = this.children().indexOf(this.getSelected());
 		int k = MathHelper.clamp(j + i, 0, this.getItemCount() - 1);
 		MultiplayerServerListWidget.Entry entry = (MultiplayerServerListWidget.Entry)this.children().get(k);
-		super.setSelected(entry);
 		if (entry instanceof MultiplayerServerListWidget.ScanningEntry) {
-			if (i <= 0 || k != this.getItemCount() - 1) {
-				if (i >= 0 || k != 0) {
-					this.moveSelection(i);
-				}
-			}
-		} else {
-			this.ensureVisible(entry);
-			this.screen.updateButtonActivationStates();
+			k = MathHelper.clamp(k + (i > 0 ? 1 : -1), 0, this.getItemCount() - 1);
+			entry = (MultiplayerServerListWidget.Entry)this.children().get(k);
 		}
+
+		super.setSelected(entry);
+		this.ensureVisible(entry);
+		this.screen.updateButtonActivationStates();
 	}
 
 	public void setServers(ServerList servers) {

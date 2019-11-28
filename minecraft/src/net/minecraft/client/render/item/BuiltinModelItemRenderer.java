@@ -118,10 +118,13 @@ public class BuiltinModelItemRenderer {
 						ItemRenderer.getArmorVertexConsumer(vertexConsumerProvider, this.modelShield.getLayer(spriteIdentifier.getAtlasId()), false, stack.hasEnchantmentGlint())
 					);
 				this.modelShield.method_23775().render(matrix, vertexConsumer, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
-				this.modelShield.method_23774().render(matrix, vertexConsumer, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
 				if (bl) {
 					this.renderBanner.readFrom(stack, ShieldItem.getColor(stack));
-					BannerBlockEntityRenderer.method_23802(this.renderBanner, matrix, vertexConsumerProvider, light, overlay, this.modelShield.method_23774(), false);
+					BannerBlockEntityRenderer.method_23802(
+						this.renderBanner, matrix, vertexConsumerProvider, light, overlay, this.modelShield.method_23774(), spriteIdentifier, false
+					);
+				} else {
+					this.modelShield.method_23774().render(matrix, vertexConsumer, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
 				}
 
 				matrix.pop();

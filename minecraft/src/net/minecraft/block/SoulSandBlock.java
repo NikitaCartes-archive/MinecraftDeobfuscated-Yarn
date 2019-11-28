@@ -56,9 +56,4 @@ public class SoulSandBlock extends Block {
 	public boolean allowsSpawning(BlockState state, BlockView view, BlockPos pos, EntityType<?> type) {
 		return true;
 	}
-
-	@Override
-	public boolean canSuffocate(BlockState state, BlockView view, BlockPos pos) {
-		return true;
-	}
 }

@@ -75,20 +75,20 @@ public class TurtleEntityModel<T extends TurtleEntity> extends QuadrupedEntityMo
 			this.backLeftLeg.pitch = 0.0F;
 		}
 
-		this.field_3594.visible = !this.isChild && turtleEntity.hasEgg();
+		this.field_3594.visible = !this.child && turtleEntity.hasEgg();
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float r, float g, float b, float f) {
+	public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
 		boolean bl = this.field_3594.visible;
 		if (bl) {
-			matrixStack.push();
-			matrixStack.translate(0.0, -0.08F, 0.0);
+			matrices.push();
+			matrices.translate(0.0, -0.08F, 0.0);
 		}
 
-		super.render(matrixStack, vertexConsumer, i, j, r, g, b, f);
+		super.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
 		if (bl) {
-			matrixStack.pop();
+			matrices.pop();
 		}
 	}
 }

@@ -25,33 +25,33 @@ public class LeaveVineTreeDecorator extends TreeDecorator {
 	}
 
 	@Override
-	public void generate(IWorld iWorld, Random random, List<BlockPos> list, List<BlockPos> list2, Set<BlockPos> set, BlockBox blockBox) {
+	public void generate(IWorld world, Random random, List<BlockPos> list, List<BlockPos> list2, Set<BlockPos> set, BlockBox box) {
 		list2.forEach(blockPos -> {
 			if (random.nextInt(4) == 0) {
 				BlockPos blockPos2 = blockPos.west();
-				if (AbstractTreeFeature.isAir(iWorld, blockPos2)) {
-					this.method_23467(iWorld, blockPos2, VineBlock.EAST, set, blockBox);
+				if (AbstractTreeFeature.isAir(world, blockPos2)) {
+					this.method_23467(world, blockPos2, VineBlock.EAST, set, box);
 				}
 			}
 
 			if (random.nextInt(4) == 0) {
 				BlockPos blockPos2 = blockPos.east();
-				if (AbstractTreeFeature.isAir(iWorld, blockPos2)) {
-					this.method_23467(iWorld, blockPos2, VineBlock.WEST, set, blockBox);
+				if (AbstractTreeFeature.isAir(world, blockPos2)) {
+					this.method_23467(world, blockPos2, VineBlock.WEST, set, box);
 				}
 			}
 
 			if (random.nextInt(4) == 0) {
 				BlockPos blockPos2 = blockPos.north();
-				if (AbstractTreeFeature.isAir(iWorld, blockPos2)) {
-					this.method_23467(iWorld, blockPos2, VineBlock.SOUTH, set, blockBox);
+				if (AbstractTreeFeature.isAir(world, blockPos2)) {
+					this.method_23467(world, blockPos2, VineBlock.SOUTH, set, box);
 				}
 			}
 
 			if (random.nextInt(4) == 0) {
 				BlockPos blockPos2 = blockPos.south();
-				if (AbstractTreeFeature.isAir(iWorld, blockPos2)) {
-					this.method_23467(iWorld, blockPos2, VineBlock.NORTH, set, blockBox);
+				if (AbstractTreeFeature.isAir(world, blockPos2)) {
+					this.method_23467(world, blockPos2, VineBlock.NORTH, set, box);
 				}
 			}
 		});

@@ -32,7 +32,7 @@ public class IronGolemFlowerFeatureRenderer extends FeatureRenderer<IronGolemEnt
 	) {
 		if (ironGolemEntity.method_6502() != 0) {
 			matrixStack.push();
-			ModelPart modelPart = this.getModel().getRightArm();
+			ModelPart modelPart = this.getContextModel().getRightArm();
 			modelPart.rotate(matrixStack);
 			matrixStack.translate(-1.1875, 1.0625, -0.9375);
 			matrixStack.translate(0.5, 0.5, 0.5);

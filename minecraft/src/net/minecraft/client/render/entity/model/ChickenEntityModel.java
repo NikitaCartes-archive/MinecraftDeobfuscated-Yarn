@@ -57,7 +57,7 @@ public class ChickenEntityModel<T extends Entity> extends AnimalModel<T> {
 	}
 
 	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch) {
+	public void setAngles(T entity, float limbAngle, float limbDistance, float customAngle, float headYaw, float headPitch) {
 		this.head.pitch = headPitch * (float) (Math.PI / 180.0);
 		this.head.yaw = headYaw * (float) (Math.PI / 180.0);
 		this.beak.pitch = this.head.pitch;
@@ -67,7 +67,7 @@ public class ChickenEntityModel<T extends Entity> extends AnimalModel<T> {
 		this.torso.pitch = (float) (Math.PI / 2);
 		this.rightLeg.pitch = MathHelper.cos(limbAngle * 0.6662F) * 1.4F * limbDistance;
 		this.leftLeg.pitch = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.4F * limbDistance;
-		this.rightWing.roll = age;
-		this.leftWing.roll = -age;
+		this.rightWing.roll = customAngle;
+		this.leftWing.roll = -customAngle;
 	}
 }

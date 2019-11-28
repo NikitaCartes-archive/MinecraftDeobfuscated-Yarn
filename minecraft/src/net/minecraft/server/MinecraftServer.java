@@ -191,7 +191,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private final GameProfileRepository gameProfileRepo;
 	private final UserCache userCache;
 	private long lastPlayerSampleUpdate;
-	protected final Thread serverThread = Util.create(
+	protected final Thread serverThread = Util.make(
 		new Thread(this, "Server thread"), thread -> thread.setUncaughtExceptionHandler((threadx, throwable) -> LOGGER.error(throwable))
 	);
 	private long timeReference = Util.getMeasuringTimeMs();

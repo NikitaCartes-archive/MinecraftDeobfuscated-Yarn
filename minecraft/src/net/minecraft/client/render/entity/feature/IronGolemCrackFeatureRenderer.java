@@ -40,7 +40,7 @@ public class IronGolemCrackFeatureRenderer extends FeatureRenderer<IronGolemEnti
 		IronGolemEntity.Crack crack = ironGolemEntity.getCrack();
 		if (crack != IronGolemEntity.Crack.NONE) {
 			Identifier identifier = (Identifier)DAMAGE_TO_TEXTURE.get(crack);
-			renderModel(this.getModel(), identifier, matrixStack, vertexConsumerProvider, i, ironGolemEntity, 1.0F, 1.0F, 1.0F);
+			renderModel(this.getContextModel(), identifier, matrixStack, vertexConsumerProvider, i, ironGolemEntity, 1.0F, 1.0F, 1.0F);
 		}
 	}
 }

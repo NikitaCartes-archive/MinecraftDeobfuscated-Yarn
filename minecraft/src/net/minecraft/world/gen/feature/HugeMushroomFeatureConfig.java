@@ -12,12 +12,12 @@ import net.minecraft.world.gen.stateprovider.StateProviderType;
 public class HugeMushroomFeatureConfig implements FeatureConfig {
 	public final StateProvider capProvider;
 	public final StateProvider stemProvider;
-	public final int field_21232;
+	public final int capSize;
 
-	public HugeMushroomFeatureConfig(StateProvider stateProvider, StateProvider stateProvider2, int i) {
-		this.capProvider = stateProvider;
-		this.stemProvider = stateProvider2;
-		this.field_21232 = i;
+	public HugeMushroomFeatureConfig(StateProvider capProvider, StateProvider stemProvider, int capSize) {
+		this.capProvider = capProvider;
+		this.stemProvider = stemProvider;
+		this.capSize = capSize;
 	}
 
 	@Override
@@ -25,11 +25,11 @@ public class HugeMushroomFeatureConfig implements FeatureConfig {
 		Builder<T, T> builder = ImmutableMap.builder();
 		builder.put(ops.createString("cap_provider"), this.capProvider.serialize(ops))
 			.put(ops.createString("stem_provider"), this.stemProvider.serialize(ops))
-			.put(ops.createString("foliage_radius"), ops.createInt(this.field_21232));
+			.put(ops.createString("foliage_radius"), ops.createInt(this.capSize));
 		return new Dynamic<>(ops, ops.createMap(builder.build()));
 	}
 
-	public static <T> HugeMushroomFeatureConfig method_23407(Dynamic<T> dynamic) {
+	public static <T> HugeMushroomFeatureConfig deserialize(Dynamic<T> dynamic) {
 		StateProviderType<?> stateProviderType = Registry.BLOCK_STATE_PROVIDER_TYPE
 			.get(new Identifier((String)dynamic.get("cap_provider").get("type").asString().orElseThrow(RuntimeException::new)));
 		StateProviderType<?> stateProviderType2 = Registry.BLOCK_STATE_PROVIDER_TYPE

@@ -12,7 +12,6 @@ import net.minecraft.block.PortalBlock;
 import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -46,13 +45,7 @@ public class PortalForcer {
 			Vec3d vec3d3 = teleportTarget.velocity;
 			entity.setVelocity(vec3d3);
 			entity.yaw = f + (float)teleportTarget.yaw;
-			if (entity instanceof ServerPlayerEntity) {
-				((ServerPlayerEntity)entity).networkHandler.requestTeleport(vec3d2.x, vec3d2.y, vec3d2.z, entity.yaw, entity.pitch);
-				((ServerPlayerEntity)entity).networkHandler.syncWithPlayerPosition();
-			} else {
-				entity.setPositionAndAngles(vec3d2.x, vec3d2.y, vec3d2.z, entity.yaw, entity.pitch);
-			}
-
+			entity.method_24203(vec3d2.x, vec3d2.y, vec3d2.z);
 			return true;
 		}
 	}

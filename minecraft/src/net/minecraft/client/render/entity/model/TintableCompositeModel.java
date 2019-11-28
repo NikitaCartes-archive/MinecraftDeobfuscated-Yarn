@@ -19,7 +19,7 @@ public abstract class TintableCompositeModel<E extends Entity> extends Composite
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float r, float g, float b, float f) {
-		super.render(matrixStack, vertexConsumer, i, j, this.redMultiplier * r, this.greenMultiplier * g, this.blueMultiplier * b, f);
+	public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
+		super.render(matrices, vertexConsumer, light, overlay, this.redMultiplier * red, this.greenMultiplier * green, this.blueMultiplier * blue, alpha);
 	}
 }

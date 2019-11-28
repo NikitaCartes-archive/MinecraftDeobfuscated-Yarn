@@ -24,18 +24,18 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class BannerBlockEntityRenderer extends BlockEntityRenderer<BannerBlockEntity> {
-	private final ModelPart area = method_24080();
+	private final ModelPart field = createField();
 	private final ModelPart verticalBar = new ModelPart(64, 64, 44, 0);
 	private final ModelPart topBar;
 
-	public BannerBlockEntityRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher) {
-		super(blockEntityRenderDispatcher);
+	public BannerBlockEntityRenderer(BlockEntityRenderDispatcher dispatcher) {
+		super(dispatcher);
 		this.verticalBar.addCuboid(-1.0F, -30.0F, -1.0F, 2.0F, 42.0F, 2.0F, 0.0F);
 		this.topBar = new ModelPart(64, 64, 0, 42);
 		this.topBar.addCuboid(-10.0F, -32.0F, -1.0F, 20.0F, 2.0F, 2.0F, 0.0F);
 	}
 
-	public static ModelPart method_24080() {
+	public static ModelPart createField() {
 		ModelPart modelPart = new ModelPart(64, 64, 0, 0);
 		modelPart.addCuboid(-10.0F, 0.0F, -2.0F, 20.0F, 40.0F, 1.0F, 0.0F);
 		return modelPart;
@@ -74,24 +74,31 @@ public class BannerBlockEntityRenderer extends BlockEntityRenderer<BannerBlockEn
 			this.verticalBar.render(matrixStack, vertexConsumer, i, j);
 			this.topBar.render(matrixStack, vertexConsumer, i, j);
 			if (bannerBlockEntity.isPreview()) {
-				this.area.pitch = 0.0F;
+				this.field.pitch = 0.0F;
 			} else {
 				BlockPos blockPos = bannerBlockEntity.getPos();
-				float k = (float)((long)(blockPos.getX() * 7 + blockPos.getY() * 9 + blockPos.getZ() * 13) + l) + f;
-				this.area.pitch = (-0.0125F + 0.01F * MathHelper.cos(k * (float) Math.PI * 0.02F)) * (float) Math.PI;
+				float k = ((float)Math.floorMod((long)(blockPos.getX() * 7 + blockPos.getY() * 9 + blockPos.getZ() * 13) + l, 100L) + f) / 100.0F;
+				this.field.pitch = (-0.0125F + 0.01F * MathHelper.cos((float) (Math.PI * 2) * k)) * (float) Math.PI;
 			}
 
-			this.area.pivotY = -32.0F;
-			method_23802(bannerBlockEntity, matrixStack, vertexConsumerProvider, i, j, this.area, true);
+			this.field.pivotY = -32.0F;
+			method_23802(bannerBlockEntity, matrixStack, vertexConsumerProvider, i, j, this.field, ModelLoader.BANNER_BASE, true);
 			matrixStack.pop();
 			matrixStack.pop();
 		}
 	}
 
 	public static void method_23802(
-		BannerBlockEntity bannerBlockEntity, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j, ModelPart modelPart, boolean bl
+		BannerBlockEntity bannerBlockEntity,
+		MatrixStack matrixStack,
+		VertexConsumerProvider vertexConsumerProvider,
+		int i,
+		int j,
+		ModelPart modelPart,
+		SpriteIdentifier spriteIdentifier,
+		boolean bl
 	) {
-		modelPart.render(matrixStack, ModelLoader.BANNER_BASE.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntitySolid), i, j);
+		modelPart.render(matrixStack, spriteIdentifier.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntitySolid), i, j);
 		List<BannerPattern> list = bannerBlockEntity.getPatterns();
 		List<DyeColor> list2 = bannerBlockEntity.getPatternColors();
 
@@ -99,10 +106,10 @@ public class BannerBlockEntityRenderer extends BlockEntityRenderer<BannerBlockEn
 			BannerPattern bannerPattern = (BannerPattern)list.get(k);
 			DyeColor dyeColor = (DyeColor)list2.get(k);
 			float[] fs = dyeColor.getColorComponents();
-			SpriteIdentifier spriteIdentifier = new SpriteIdentifier(
+			SpriteIdentifier spriteIdentifier2 = new SpriteIdentifier(
 				bl ? TexturedRenderLayers.BANNER_PATTERNS_ATLAS_TEXTURE : TexturedRenderLayers.SHIELD_PATTERNS_ATLAS_TEXTURE, bannerPattern.getSpriteId(bl)
 			);
-			modelPart.render(matrixStack, spriteIdentifier.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityNoOutline), i, j, fs[0], fs[1], fs[2], 1.0F);
+			modelPart.render(matrixStack, spriteIdentifier2.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityNoOutline), i, j, fs[0], fs[1], fs[2], 1.0F);
 		}
 	}
 }

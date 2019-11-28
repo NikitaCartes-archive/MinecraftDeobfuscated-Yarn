@@ -24,7 +24,7 @@ public class ItemSlotArgumentType implements ArgumentType<Integer> {
 	private static final DynamicCommandExceptionType UNKNOWN_SLOT_EXCEPTION = new DynamicCommandExceptionType(
 		object -> new TranslatableText("slot.unknown", object)
 	);
-	private static final Map<String, Integer> slotNamesToSlotCommandId = Util.create(Maps.newHashMap(), hashMap -> {
+	private static final Map<String, Integer> slotNamesToSlotCommandId = Util.make(Maps.newHashMap(), hashMap -> {
 		for(int i = 0; i < 54; ++i) {
 			hashMap.put("container." + i, i);
 		}

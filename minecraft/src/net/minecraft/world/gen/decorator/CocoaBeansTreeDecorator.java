@@ -29,7 +29,7 @@ public class CocoaBeansTreeDecorator extends TreeDecorator {
 	}
 
 	@Override
-	public void generate(IWorld iWorld, Random random, List<BlockPos> list, List<BlockPos> list2, Set<BlockPos> set, BlockBox blockBox) {
+	public void generate(IWorld world, Random random, List<BlockPos> list, List<BlockPos> list2, Set<BlockPos> set, BlockBox box) {
 		if (!(random.nextFloat() >= this.field_21318)) {
 			int i = ((BlockPos)list.get(0)).getY();
 			list.stream().filter(blockPos -> blockPos.getY() - i <= 2).forEach(blockPos -> {
@@ -37,9 +37,9 @@ public class CocoaBeansTreeDecorator extends TreeDecorator {
 					if (random.nextFloat() <= 0.25F) {
 						Direction direction2 = direction.getOpposite();
 						BlockPos blockPos2 = blockPos.add(direction2.getOffsetX(), 0, direction2.getOffsetZ());
-						if (AbstractTreeFeature.isAir(iWorld, blockPos2)) {
+						if (AbstractTreeFeature.isAir(world, blockPos2)) {
 							BlockState blockState = Blocks.COCOA.getDefaultState().with(CocoaBlock.AGE, Integer.valueOf(random.nextInt(3))).with(CocoaBlock.FACING, direction);
-							this.method_23470(iWorld, blockPos2, blockState, set, blockBox);
+							this.method_23470(world, blockPos2, blockState, set, box);
 						}
 					}
 				}

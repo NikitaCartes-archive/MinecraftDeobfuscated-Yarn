@@ -29,7 +29,7 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
 
 public class LevelDataGeneratorOptionsFix extends DataFix {
-	static final Map<String, String> NUMERICAL_IDS_TO_BIOME_IDS = Util.create(Maps.newHashMap(), hashMap -> {
+	static final Map<String, String> NUMERICAL_IDS_TO_BIOME_IDS = Util.make(Maps.newHashMap(), hashMap -> {
 		hashMap.put("0", "minecraft:ocean");
 		hashMap.put("1", "minecraft:plains");
 		hashMap.put("2", "minecraft:desert");

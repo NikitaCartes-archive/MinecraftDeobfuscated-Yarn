@@ -94,7 +94,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 	private static final ConfiguredFeature<?, ?> PILLAGER_OUTPOST = Feature.PILLAGER_OUTPOST
 		.configure(FeatureConfig.DEFAULT)
 		.createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT));
-	public static final Map<ConfiguredFeature<?, ?>, GenerationStep.Feature> FEATURE_TO_GENERATION_STEP = Util.create(Maps.newHashMap(), hashMap -> {
+	public static final Map<ConfiguredFeature<?, ?>, GenerationStep.Feature> FEATURE_TO_GENERATION_STEP = Util.make(Maps.newHashMap(), hashMap -> {
 		hashMap.put(MINESHAFT, GenerationStep.Feature.UNDERGROUND_STRUCTURES);
 		hashMap.put(VILLAGE, GenerationStep.Feature.SURFACE_STRUCTURES);
 		hashMap.put(STRONGHOLD, GenerationStep.Feature.UNDERGROUND_STRUCTURES);
@@ -112,7 +112,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 		hashMap.put(OCEAN_MONUMENT, GenerationStep.Feature.SURFACE_STRUCTURES);
 		hashMap.put(PILLAGER_OUTPOST, GenerationStep.Feature.SURFACE_STRUCTURES);
 	});
-	public static final Map<String, ConfiguredFeature<?, ?>[]> STRUCTURE_TO_FEATURES = Util.create(Maps.newHashMap(), hashMap -> {
+	public static final Map<String, ConfiguredFeature<?, ?>[]> STRUCTURE_TO_FEATURES = Util.make(Maps.newHashMap(), hashMap -> {
 		hashMap.put("mineshaft", new ConfiguredFeature[]{MINESHAFT});
 		hashMap.put("village", new ConfiguredFeature[]{VILLAGE});
 		hashMap.put("stronghold", new ConfiguredFeature[]{STRONGHOLD});
@@ -125,7 +125,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 		hashMap.put("fortress", new ConfiguredFeature[]{NETHER_BRIDGE});
 		hashMap.put("pillager_outpost", new ConfiguredFeature[]{PILLAGER_OUTPOST});
 	});
-	public static final Map<ConfiguredFeature<?, ?>, FeatureConfig> FEATURE_TO_FEATURE_CONFIG = Util.create(
+	public static final Map<ConfiguredFeature<?, ?>, FeatureConfig> FEATURE_TO_FEATURE_CONFIG = Util.make(
 		Maps.<ConfiguredFeature<?, ?>, FeatureConfig>newHashMap(), hashMap -> {
 			hashMap.put(MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
 			hashMap.put(VILLAGE, new VillageFeatureConfig("village/plains/town_centers", 6));

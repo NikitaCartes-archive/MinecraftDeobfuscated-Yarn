@@ -18,6 +18,6 @@ public class DarkOakSaplingGenerator extends LargeTreeSaplingGenerator {
 	@Nullable
 	@Override
 	protected ConfiguredFeature<MegaTreeFeatureConfig, ?> createLargeTreeFeature(Random random) {
-		return Feature.DARK_OAK_TREE.configure(DefaultBiomeFeatures.field_21197);
+		return Feature.DARK_OAK_TREE.configure(DefaultBiomeFeatures.DARK_OAK_TREE_CONFIG);
 	}
 }

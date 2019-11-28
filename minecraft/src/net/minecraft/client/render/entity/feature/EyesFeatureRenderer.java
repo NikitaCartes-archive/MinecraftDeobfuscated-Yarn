@@ -18,10 +18,19 @@ public abstract class EyesFeatureRenderer<T extends Entity, M extends EntityMode
 
 	@Override
 	public void render(
-		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T entity, float f, float g, float tickDelta, float h, float j, float k
+		MatrixStack matrices,
+		VertexConsumerProvider vertexConsumers,
+		int light,
+		T entity,
+		float limbAngle,
+		float limbDistance,
+		float tickDelta,
+		float customAngle,
+		float headYaw,
+		float headPitch
 	) {
-		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.getEyesTexture());
-		this.getModel().render(matrixStack, vertexConsumer, 15728640, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
+		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(this.getEyesTexture());
+		this.getContextModel().render(matrices, vertexConsumer, 15728640, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
 	public abstract RenderLayer getEyesTexture();

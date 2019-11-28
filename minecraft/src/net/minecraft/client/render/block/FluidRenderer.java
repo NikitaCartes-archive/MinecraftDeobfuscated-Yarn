@@ -85,6 +85,7 @@ public class FluidRenderer {
 			double e = (double)(pos.getY() & 15);
 			double r = (double)(pos.getZ() & 15);
 			float s = 0.001F;
+			float t = bl3 ? 0.001F : 0.0F;
 			if (bl2 && !isSideCovered(world, pos, Direction.UP, Math.min(Math.min(n, o), Math.min(p, q)))) {
 				bl8 = true;
 				n -= 0.001F;
@@ -92,133 +93,133 @@ public class FluidRenderer {
 				p -= 0.001F;
 				q -= 0.001F;
 				Vec3d vec3d = state.getVelocity(world, pos);
-				float t;
-				float v;
-				float x;
-				float z;
 				float u;
 				float w;
 				float y;
 				float aa;
+				float v;
+				float x;
+				float z;
+				float ab;
 				if (vec3d.x == 0.0 && vec3d.z == 0.0) {
 					Sprite sprite = sprites[0];
-					t = sprite.getFrameU(0.0);
-					u = sprite.getFrameV(0.0);
-					v = t;
-					w = sprite.getFrameV(16.0);
-					x = sprite.getFrameU(16.0);
-					y = w;
+					u = sprite.getFrameU(0.0);
+					v = sprite.getFrameV(0.0);
+					w = u;
+					x = sprite.getFrameV(16.0);
+					y = sprite.getFrameU(16.0);
 					z = x;
-					aa = u;
+					aa = y;
+					ab = v;
 				} else {
 					Sprite sprite = sprites[1];
-					float ab = (float)MathHelper.atan2(vec3d.z, vec3d.x) - (float) (Math.PI / 2);
-					float ac = MathHelper.sin(ab) * 0.25F;
-					float ad = MathHelper.cos(ab) * 0.25F;
-					float ae = 8.0F;
-					t = sprite.getFrameU((double)(8.0F + (-ad - ac) * 16.0F));
-					u = sprite.getFrameV((double)(8.0F + (-ad + ac) * 16.0F));
-					v = sprite.getFrameU((double)(8.0F + (-ad + ac) * 16.0F));
-					w = sprite.getFrameV((double)(8.0F + (ad + ac) * 16.0F));
-					x = sprite.getFrameU((double)(8.0F + (ad + ac) * 16.0F));
-					y = sprite.getFrameV((double)(8.0F + (ad - ac) * 16.0F));
-					z = sprite.getFrameU((double)(8.0F + (ad - ac) * 16.0F));
-					aa = sprite.getFrameV((double)(8.0F + (-ad - ac) * 16.0F));
+					float ac = (float)MathHelper.atan2(vec3d.z, vec3d.x) - (float) (Math.PI / 2);
+					float ad = MathHelper.sin(ac) * 0.25F;
+					float ae = MathHelper.cos(ac) * 0.25F;
+					float af = 8.0F;
+					u = sprite.getFrameU((double)(8.0F + (-ae - ad) * 16.0F));
+					v = sprite.getFrameV((double)(8.0F + (-ae + ad) * 16.0F));
+					w = sprite.getFrameU((double)(8.0F + (-ae + ad) * 16.0F));
+					x = sprite.getFrameV((double)(8.0F + (ae + ad) * 16.0F));
+					y = sprite.getFrameU((double)(8.0F + (ae + ad) * 16.0F));
+					z = sprite.getFrameV((double)(8.0F + (ae - ad) * 16.0F));
+					aa = sprite.getFrameU((double)(8.0F + (ae - ad) * 16.0F));
+					ab = sprite.getFrameV((double)(8.0F + (-ae - ad) * 16.0F));
 				}
 
-				float af = (t + v + x + z) / 4.0F;
-				float ab = (u + w + y + aa) / 4.0F;
-				float ac = (float)sprites[0].getWidth() / (sprites[0].getMaxU() - sprites[0].getMinU());
-				float ad = (float)sprites[0].getHeight() / (sprites[0].getMaxV() - sprites[0].getMinV());
-				float ae = 4.0F / Math.max(ad, ac);
-				t = MathHelper.lerp(ae, t, af);
-				v = MathHelper.lerp(ae, v, af);
-				x = MathHelper.lerp(ae, x, af);
-				z = MathHelper.lerp(ae, z, af);
-				u = MathHelper.lerp(ae, u, ab);
-				w = MathHelper.lerp(ae, w, ab);
-				y = MathHelper.lerp(ae, y, ab);
-				aa = MathHelper.lerp(ae, aa, ab);
-				int ag = this.getLight(world, pos);
-				float ah = 1.0F * f;
-				float ai = 1.0F * g;
-				float aj = 1.0F * h;
-				this.vertex(vertexConsumer, d + 0.0, e + (double)n, r + 0.0, ah, ai, aj, t, u, ag);
-				this.vertex(vertexConsumer, d + 0.0, e + (double)o, r + 1.0, ah, ai, aj, v, w, ag);
-				this.vertex(vertexConsumer, d + 1.0, e + (double)p, r + 1.0, ah, ai, aj, x, y, ag);
-				this.vertex(vertexConsumer, d + 1.0, e + (double)q, r + 0.0, ah, ai, aj, z, aa, ag);
+				float ag = (u + w + y + aa) / 4.0F;
+				float ac = (v + x + z + ab) / 4.0F;
+				float ad = (float)sprites[0].getWidth() / (sprites[0].getMaxU() - sprites[0].getMinU());
+				float ae = (float)sprites[0].getHeight() / (sprites[0].getMaxV() - sprites[0].getMinV());
+				float af = 4.0F / Math.max(ae, ad);
+				u = MathHelper.lerp(af, u, ag);
+				w = MathHelper.lerp(af, w, ag);
+				y = MathHelper.lerp(af, y, ag);
+				aa = MathHelper.lerp(af, aa, ag);
+				v = MathHelper.lerp(af, v, ac);
+				x = MathHelper.lerp(af, x, ac);
+				z = MathHelper.lerp(af, z, ac);
+				ab = MathHelper.lerp(af, ab, ac);
+				int ah = this.getLight(world, pos);
+				float ai = 1.0F * f;
+				float aj = 1.0F * g;
+				float ak = 1.0F * h;
+				this.vertex(vertexConsumer, d + 0.0, e + (double)n, r + 0.0, ai, aj, ak, u, v, ah);
+				this.vertex(vertexConsumer, d + 0.0, e + (double)o, r + 1.0, ai, aj, ak, w, x, ah);
+				this.vertex(vertexConsumer, d + 1.0, e + (double)p, r + 1.0, ai, aj, ak, y, z, ah);
+				this.vertex(vertexConsumer, d + 1.0, e + (double)q, r + 0.0, ai, aj, ak, aa, ab, ah);
 				if (state.method_15756(world, pos.up())) {
-					this.vertex(vertexConsumer, d + 0.0, e + (double)n, r + 0.0, ah, ai, aj, t, u, ag);
-					this.vertex(vertexConsumer, d + 1.0, e + (double)q, r + 0.0, ah, ai, aj, z, aa, ag);
-					this.vertex(vertexConsumer, d + 1.0, e + (double)p, r + 1.0, ah, ai, aj, x, y, ag);
-					this.vertex(vertexConsumer, d + 0.0, e + (double)o, r + 1.0, ah, ai, aj, v, w, ag);
+					this.vertex(vertexConsumer, d + 0.0, e + (double)n, r + 0.0, ai, aj, ak, u, v, ah);
+					this.vertex(vertexConsumer, d + 1.0, e + (double)q, r + 0.0, ai, aj, ak, aa, ab, ah);
+					this.vertex(vertexConsumer, d + 1.0, e + (double)p, r + 1.0, ai, aj, ak, y, z, ah);
+					this.vertex(vertexConsumer, d + 0.0, e + (double)o, r + 1.0, ai, aj, ak, w, x, ah);
 				}
 			}
 
 			if (bl3) {
-				float t = sprites[0].getMinU();
-				float v = sprites[0].getMaxU();
-				float x = sprites[0].getMinV();
-				float z = sprites[0].getMaxV();
-				int ak = this.getLight(world, pos.down());
-				float w = 0.5F * f;
-				float y = 0.5F * g;
-				float aa = 0.5F * h;
-				this.vertex(vertexConsumer, d, e + 0.001F, r + 1.0, w, y, aa, t, z, ak);
-				this.vertex(vertexConsumer, d, e + 0.001F, r, w, y, aa, t, x, ak);
-				this.vertex(vertexConsumer, d + 1.0, e + 0.001F, r, w, y, aa, v, x, ak);
-				this.vertex(vertexConsumer, d + 1.0, e + 0.001F, r + 1.0, w, y, aa, v, z, ak);
+				float u = sprites[0].getMinU();
+				float w = sprites[0].getMaxU();
+				float y = sprites[0].getMinV();
+				float aa = sprites[0].getMaxV();
+				int al = this.getLight(world, pos.down());
+				float x = 0.5F * f;
+				float z = 0.5F * g;
+				float ab = 0.5F * h;
+				this.vertex(vertexConsumer, d, e + (double)t, r + 1.0, x, z, ab, u, aa, al);
+				this.vertex(vertexConsumer, d, e + (double)t, r, x, z, ab, u, y, al);
+				this.vertex(vertexConsumer, d + 1.0, e + (double)t, r, x, z, ab, w, y, al);
+				this.vertex(vertexConsumer, d + 1.0, e + (double)t, r + 1.0, x, z, ab, w, aa, al);
 				bl8 = true;
 			}
 
-			for(int al = 0; al < 4; ++al) {
-				float v;
-				float x;
-				double am;
-				double ao;
+			for(int am = 0; am < 4; ++am) {
+				float w;
+				float y;
 				double an;
 				double ap;
+				double ao;
+				double aq;
 				Direction direction;
 				boolean bl9;
-				if (al == 0) {
-					v = n;
-					x = q;
-					am = d;
-					an = d + 1.0;
-					ao = r + 0.001F;
+				if (am == 0) {
+					w = n;
+					y = q;
+					an = d;
+					ao = d + 1.0;
 					ap = r + 0.001F;
+					aq = r + 0.001F;
 					direction = Direction.NORTH;
 					bl9 = bl4;
-				} else if (al == 1) {
-					v = p;
-					x = o;
-					am = d + 1.0;
-					an = d;
-					ao = r + 1.0 - 0.001F;
+				} else if (am == 1) {
+					w = p;
+					y = o;
+					an = d + 1.0;
+					ao = d;
 					ap = r + 1.0 - 0.001F;
+					aq = r + 1.0 - 0.001F;
 					direction = Direction.SOUTH;
 					bl9 = bl5;
-				} else if (al == 2) {
-					v = o;
-					x = n;
-					am = d + 0.001F;
+				} else if (am == 2) {
+					w = o;
+					y = n;
 					an = d + 0.001F;
-					ao = r + 1.0;
-					ap = r;
+					ao = d + 0.001F;
+					ap = r + 1.0;
+					aq = r;
 					direction = Direction.WEST;
 					bl9 = bl6;
 				} else {
-					v = q;
-					x = p;
-					am = d + 1.0 - 0.001F;
+					w = q;
+					y = p;
 					an = d + 1.0 - 0.001F;
-					ao = r;
-					ap = r + 1.0;
+					ao = d + 1.0 - 0.001F;
+					ap = r;
+					aq = r + 1.0;
 					direction = Direction.EAST;
 					bl9 = bl7;
 				}
 
-				if (bl9 && !isSideCovered(world, pos, direction, Math.max(v, x))) {
+				if (bl9 && !isSideCovered(world, pos, direction, Math.max(w, y))) {
 					bl8 = true;
 					BlockPos blockPos = pos.offset(direction);
 					Sprite sprite2 = sprites[1];
@@ -229,25 +230,25 @@ public class FluidRenderer {
 						}
 					}
 
-					float ah = sprite2.getFrameU(0.0);
-					float ai = sprite2.getFrameU(8.0);
-					float aj = sprite2.getFrameV((double)((1.0F - v) * 16.0F * 0.5F));
-					float aq = sprite2.getFrameV((double)((1.0F - x) * 16.0F * 0.5F));
-					float ar = sprite2.getFrameV(8.0);
-					int as = this.getLight(world, blockPos);
-					float at = al < 2 ? 0.8F : 0.6F;
-					float au = 1.0F * at * f;
-					float av = 1.0F * at * g;
-					float aw = 1.0F * at * h;
-					this.vertex(vertexConsumer, am, e + (double)v, ao, au, av, aw, ah, aj, as);
-					this.vertex(vertexConsumer, an, e + (double)x, ap, au, av, aw, ai, aq, as);
-					this.vertex(vertexConsumer, an, e + 0.001F, ap, au, av, aw, ai, ar, as);
-					this.vertex(vertexConsumer, am, e + 0.001F, ao, au, av, aw, ah, ar, as);
+					float ai = sprite2.getFrameU(0.0);
+					float aj = sprite2.getFrameU(8.0);
+					float ak = sprite2.getFrameV((double)((1.0F - w) * 16.0F * 0.5F));
+					float ar = sprite2.getFrameV((double)((1.0F - y) * 16.0F * 0.5F));
+					float as = sprite2.getFrameV(8.0);
+					int at = this.getLight(world, blockPos);
+					float au = am < 2 ? 0.8F : 0.6F;
+					float av = 1.0F * au * f;
+					float aw = 1.0F * au * g;
+					float ax = 1.0F * au * h;
+					this.vertex(vertexConsumer, an, e + (double)w, ap, av, aw, ax, ai, ak, at);
+					this.vertex(vertexConsumer, ao, e + (double)y, aq, av, aw, ax, aj, ar, at);
+					this.vertex(vertexConsumer, ao, e + (double)t, aq, av, aw, ax, aj, as, at);
+					this.vertex(vertexConsumer, an, e + (double)t, ap, av, aw, ax, ai, as, at);
 					if (sprite2 != this.waterOverlaySprite) {
-						this.vertex(vertexConsumer, am, e + 0.001F, ao, au, av, aw, ah, ar, as);
-						this.vertex(vertexConsumer, an, e + 0.001F, ap, au, av, aw, ai, ar, as);
-						this.vertex(vertexConsumer, an, e + (double)x, ap, au, av, aw, ai, aq, as);
-						this.vertex(vertexConsumer, am, e + (double)v, ao, au, av, aw, ah, aj, as);
+						this.vertex(vertexConsumer, an, e + (double)t, ap, av, aw, ax, ai, as, at);
+						this.vertex(vertexConsumer, ao, e + (double)t, aq, av, aw, ax, aj, as, at);
+						this.vertex(vertexConsumer, ao, e + (double)y, aq, av, aw, ax, aj, ar, at);
+						this.vertex(vertexConsumer, an, e + (double)w, ap, av, aw, ax, ai, ak, at);
 					}
 				}
 			}

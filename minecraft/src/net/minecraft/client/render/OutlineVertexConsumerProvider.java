@@ -97,27 +97,23 @@ public class OutlineVertexConsumerProvider implements VertexConsumerProvider {
 		}
 
 		@Override
-		public void elements(
+		public void vertex(
 			float x,
 			float y,
 			float z,
-			float r,
-			float g,
-			float b,
-			float a,
-			float textureU,
-			float textureV,
+			float red,
+			float green,
+			float blue,
+			float alpha,
+			float u,
+			float v,
 			int overlay,
 			int light,
 			float normalX,
 			float normalY,
 			float normalZ
 		) {
-			this.delegate
-				.vertex((double)x, (double)y, (double)z)
-				.color(this.fixedRed, this.fixedGreen, this.fixedBlue, this.fixedAlpha)
-				.texture(textureU, textureV)
-				.next();
+			this.delegate.vertex((double)x, (double)y, (double)z).color(this.fixedRed, this.fixedGreen, this.fixedBlue, this.fixedAlpha).texture(u, v).next();
 		}
 
 		@Override

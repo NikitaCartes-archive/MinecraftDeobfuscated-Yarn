@@ -21,7 +21,7 @@ public class WolfCollarFeatureRenderer extends FeatureRenderer<WolfEntity, WolfE
 	) {
 		if (wolfEntity.isTamed() && !wolfEntity.isInvisible()) {
 			float[] fs = wolfEntity.getCollarColor().getColorComponents();
-			renderModel(this.getModel(), SKIN, matrixStack, vertexConsumerProvider, i, wolfEntity, fs[0], fs[1], fs[2]);
+			renderModel(this.getContextModel(), SKIN, matrixStack, vertexConsumerProvider, i, wolfEntity, fs[0], fs[1], fs[2]);
 		}
 	}
 }

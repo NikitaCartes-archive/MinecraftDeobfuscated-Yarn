@@ -304,7 +304,7 @@ public class ShulkerBulletEntity extends Entity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean shouldRenderAtDistance(double distance) {
+	public boolean shouldRender(double distance) {
 		return distance < 16384.0;
 	}
 
