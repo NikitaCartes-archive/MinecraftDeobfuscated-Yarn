@@ -75,7 +75,7 @@ public class CrossbowItem extends RangedWeaponItem {
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
 		if (isCharged(itemStack)) {
-			shootAll(world, user, hand, itemStack, getSpeed(itemStack), 1.0F);
+			shootAll(world, user, hand, itemStack, getSpeed(itemStack), 0.25F);
 			setCharged(itemStack, false);
 			return TypedActionResult.consume(itemStack);
 		} else if (!user.getArrowType(itemStack).isEmpty()) {
@@ -235,7 +235,7 @@ public class CrossbowItem extends RangedWeaponItem {
 				Quaternion quaternion = new Quaternion(new Vector3f(vec3d), simulated, true);
 				Vec3d vec3d2 = shooter.getRotationVec(1.0F);
 				Vector3f vector3f = new Vector3f(vec3d2);
-				vector3f.rotate(quaternion);
+				vector3f.method_19262(quaternion);
 				projectile2.setVelocity((double)vector3f.getX(), (double)vector3f.getY(), (double)vector3f.getZ(), speed, divergence);
 			}
 

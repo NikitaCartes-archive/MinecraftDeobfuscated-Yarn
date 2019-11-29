@@ -221,10 +221,10 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 
 	@Override
 	protected void applyStatusEffectOffset() {
-		int i = this.x;
+		int i = this.left;
 		super.applyStatusEffectOffset();
-		if (this.searchBox != null && this.x != i) {
-			this.searchBox.setX(this.x + 82);
+		if (this.searchBox != null && this.left != i) {
+			this.searchBox.setX(this.left + 82);
 		}
 	}
 
@@ -233,7 +233,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		if (this.minecraft.interactionManager.hasCreativeInventory()) {
 			super.init();
 			this.minecraft.keyboard.enableRepeatEvents(true);
-			this.searchBox = new TextFieldWidget(this.font, this.x + 82, this.y + 6, 80, 9, I18n.translate("itemGroup.search"));
+			this.searchBox = new TextFieldWidget(this.font, this.left + 82, this.top + 6, 80, 9, I18n.translate("itemGroup.search"));
 			this.searchBox.setMaxLength(50);
 			this.searchBox.setHasBorder(false);
 			this.searchBox.setVisible(false);
@@ -381,8 +381,8 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
 		if (button == 0) {
-			double d = mouseX - (double)this.x;
-			double e = mouseY - (double)this.y;
+			double d = mouseX - (double)this.left;
+			double e = mouseY - (double)this.top;
 
 			for (ItemGroup itemGroup : ItemGroup.GROUPS) {
 				if (this.isClickInTab(itemGroup, d, e)) {
@@ -402,8 +402,8 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	@Override
 	public boolean mouseReleased(double mouseX, double mouseY, int button) {
 		if (button == 0) {
-			double d = mouseX - (double)this.x;
-			double e = mouseY - (double)this.y;
+			double d = mouseX - (double)this.left;
+			double e = mouseY - (double)this.top;
 			this.scrolling = false;
 
 			for (ItemGroup itemGroup : ItemGroup.GROUPS) {
@@ -542,8 +542,8 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	}
 
 	protected boolean isClickInScrollbar(double mouseX, double mouseY) {
-		int i = this.x;
-		int j = this.y;
+		int i = this.left;
+		int j = this.top;
 		int k = i + 175;
 		int l = j + 18;
 		int m = k + 14;
@@ -554,7 +554,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	@Override
 	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
 		if (this.scrolling) {
-			int i = this.y + 18;
+			int i = this.top + 18;
 			int j = i + 112;
 			this.scrollPosition = ((float)mouseY - (float)i - 7.5F) / ((float)(j - i) - 15.0F);
 			this.scrollPosition = MathHelper.clamp(this.scrollPosition, 0.0F, 1.0F);
@@ -650,11 +650,11 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		}
 
 		this.minecraft.getTextureManager().bindTexture(new Identifier("textures/gui/container/creative_inventory/tab_" + itemGroup.getTexture()));
-		this.blit(this.x, this.y, 0, 0, this.containerWidth, this.containerHeight);
+		this.blit(this.left, this.top, 0, 0, this.containerWidth, this.containerHeight);
 		this.searchBox.render(mouseX, mouseY, delta);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		int i = this.x + 175;
-		int j = this.y + 18;
+		int i = this.left + 175;
+		int j = this.top + 18;
 		int k = j + 112;
 		this.minecraft.getTextureManager().bindTexture(TEXTURE);
 		if (itemGroup.hasScrollbar()) {
@@ -663,7 +663,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 
 		this.renderTabIcon(itemGroup);
 		if (itemGroup == ItemGroup.INVENTORY) {
-			InventoryScreen.drawEntity(this.x + 88, this.y + 45, 20, (float)(this.x + 88 - mouseX), (float)(this.y + 45 - 30 - mouseY), this.minecraft.player);
+			InventoryScreen.drawEntity(this.left + 88, this.top + 45, 20, (float)(this.left + 88 - mouseX), (float)(this.top + 45 - 30 - mouseY), this.minecraft.player);
 		}
 	}
 
@@ -716,15 +716,15 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		int i = group.getColumn();
 		int j = i * 28;
 		int k = 0;
-		int l = this.x + 28 * i;
-		int m = this.y;
+		int l = this.left + 28 * i;
+		int m = this.top;
 		int n = 32;
 		if (bl) {
 			k += 32;
 		}
 
 		if (group.isSpecial()) {
-			l = this.x + this.containerWidth - 28 * (6 - i);
+			l = this.left + this.containerWidth - 28 * (6 - i);
 		} else if (i > 0) {
 			l += i;
 		}

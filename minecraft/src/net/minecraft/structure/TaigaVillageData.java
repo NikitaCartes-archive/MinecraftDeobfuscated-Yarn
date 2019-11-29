@@ -252,7 +252,7 @@ public class TaigaVillageData {
 						new Pair<>(new FeaturePoolElement(Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.SPRUCE_TREE_CONFIG)), 4),
 						new Pair<>(new FeaturePoolElement(Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.PINE_TREE_CONFIG)), 4),
 						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.configure(DefaultBiomeFeatures.PUMPKIN_PILE_CONFIG)), 2),
-						new Pair<>(new FeaturePoolElement(Feature.RANDOM_PATCH.configure(DefaultBiomeFeatures.TAIGA_GRASS_CONFIG)), 4),
+						new Pair<>(new FeaturePoolElement(Feature.RANDOM_PATCH.configure(DefaultBiomeFeatures.field_21202)), 4),
 						new Pair<>(new FeaturePoolElement(Feature.RANDOM_PATCH.configure(DefaultBiomeFeatures.SWEET_BERRY_BUSH_CONFIG)), 1),
 						Pair.of(EmptyPoolElement.INSTANCE, 4)
 					),
@@ -272,7 +272,7 @@ public class TaigaVillageData {
 						new Pair<>(new FeaturePoolElement(Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.SPRUCE_TREE_CONFIG)), 4),
 						new Pair<>(new FeaturePoolElement(Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.PINE_TREE_CONFIG)), 4),
 						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.configure(DefaultBiomeFeatures.PUMPKIN_PILE_CONFIG)), 2),
-						new Pair<>(new FeaturePoolElement(Feature.RANDOM_PATCH.configure(DefaultBiomeFeatures.TAIGA_GRASS_CONFIG)), 4),
+						new Pair<>(new FeaturePoolElement(Feature.RANDOM_PATCH.configure(DefaultBiomeFeatures.field_21202)), 4),
 						new Pair<>(new FeaturePoolElement(Feature.RANDOM_PATCH.configure(DefaultBiomeFeatures.SWEET_BERRY_BUSH_CONFIG)), 1),
 						Pair.of(EmptyPoolElement.INSTANCE, 4)
 					),

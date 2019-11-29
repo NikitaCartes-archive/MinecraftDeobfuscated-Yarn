@@ -4,7 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.TexturedRenderLayers;
-import net.minecraft.client.render.entity.feature.ShulkerHeadFeatureRenderer;
+import net.minecraft.client.render.entity.feature.ShulkerSomethingFeatureRenderer;
 import net.minecraft.client.render.entity.model.ShulkerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.mob.ShulkerEntity;
@@ -23,7 +23,7 @@ public class ShulkerEntityRenderer extends MobEntityRenderer<ShulkerEntity, Shul
 
 	public ShulkerEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new ShulkerEntityModel<>(), 0.0F);
-		this.addFeature(new ShulkerHeadFeatureRenderer(this));
+		this.addFeature(new ShulkerSomethingFeatureRenderer(this));
 	}
 
 	public Vec3d getPositionOffset(ShulkerEntity shulkerEntity, float f) {
@@ -42,8 +42,8 @@ public class ShulkerEntityRenderer extends MobEntityRenderer<ShulkerEntity, Shul
 		}
 	}
 
-	public boolean shouldRender(ShulkerEntity shulkerEntity, Frustum frustum, double d, double e, double f) {
-		if (super.shouldRender(shulkerEntity, frustum, d, e, f)) {
+	public boolean isVisible(ShulkerEntity shulkerEntity, Frustum frustum, double d, double e, double f) {
+		if (super.isVisible(shulkerEntity, frustum, d, e, f)) {
 			return true;
 		} else {
 			if (shulkerEntity.method_7113() > 0 && shulkerEntity.method_7117()) {

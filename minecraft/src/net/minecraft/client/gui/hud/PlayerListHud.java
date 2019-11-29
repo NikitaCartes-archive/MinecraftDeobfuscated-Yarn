@@ -146,13 +146,13 @@ public class PlayerListHud extends DrawableHelper {
 				if (bl) {
 					PlayerEntity playerEntity = this.client.world.getPlayerByUuid(gameProfile.getId());
 					boolean bl2 = playerEntity != null
-						&& playerEntity.isPartVisible(PlayerModelPart.CAPE)
+						&& playerEntity.isSkinOverlayVisible(PlayerModelPart.CAPE)
 						&& ("Dinnerbone".equals(gameProfile.getName()) || "Grumm".equals(gameProfile.getName()));
 					this.client.getTextureManager().bindTexture(playerListEntry2.getSkinTexture());
 					int y = 8 + (bl2 ? 8 : 0);
 					int z = 8 * (bl2 ? -1 : 1);
 					DrawableHelper.blit(w, x, 8, 8, 8.0F, (float)y, 8, z, 64, 64);
-					if (playerEntity != null && playerEntity.isPartVisible(PlayerModelPart.HAT)) {
+					if (playerEntity != null && playerEntity.isSkinOverlayVisible(PlayerModelPart.HAT)) {
 						int aa = 8 + (bl2 ? 8 : 0);
 						int ab = 8 * (bl2 ? -1 : 1);
 						DrawableHelper.blit(w, x, 8, 8, 40.0F, (float)aa, 8, ab, 64, 64);

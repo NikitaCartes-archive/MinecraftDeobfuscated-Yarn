@@ -180,7 +180,7 @@ public class ChunkStatus {
 		STRUCTURE_STARTS,
 		STRUCTURE_STARTS
 	);
-	private static final IntList STATUS_TO_TARGET_GENERATION_RADIUS = Util.make(new IntArrayList(createOrderedList().size()), intArrayList -> {
+	private static final IntList STATUS_TO_TARGET_GENERATION_RADIUS = Util.create(new IntArrayList(createOrderedList().size()), intArrayList -> {
 		int i = 0;
 
 		for (int j = createOrderedList().size() - 1; j >= 0; j--) {

@@ -16,7 +16,7 @@ import net.minecraft.world.chunk.ChunkStatus;
 public class LevelLoadingScreen extends Screen {
 	private final WorldGenerationProgressTracker progressProvider;
 	private long field_19101 = -1L;
-	private static final Object2IntMap<ChunkStatus> STATUS_TO_COLOR = Util.make(new Object2IntOpenHashMap<>(), map -> {
+	private static final Object2IntMap<ChunkStatus> STATUS_TO_COLOR = Util.create(new Object2IntOpenHashMap<>(), map -> {
 		map.defaultReturnValue(0);
 		map.put(ChunkStatus.EMPTY, 5526612);
 		map.put(ChunkStatus.STRUCTURE_STARTS, 10066329);

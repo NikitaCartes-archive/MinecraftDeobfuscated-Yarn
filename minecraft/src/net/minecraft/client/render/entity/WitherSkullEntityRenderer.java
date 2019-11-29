@@ -21,7 +21,7 @@ public class WitherSkullEntityRenderer extends EntityRenderer<WitherSkullEntity>
 		super(entityRenderDispatcher);
 	}
 
-	protected int getBlockLight(WitherSkullEntity witherSkullEntity, float f) {
+	protected int method_24087(WitherSkullEntity witherSkullEntity, float f) {
 		return 15;
 	}
 

@@ -84,9 +84,9 @@ public class ParrotEntityModel extends CompositeEntityModel<ParrotEntity> {
 		this.getParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j));
 	}
 
-	private void method_17111(ParrotEntityModel.Pose pose, int age, float limbAngle, float limbDistance, float age, float headYaw, float headPitch) {
-		this.head.pitch = headPitch * (float) (Math.PI / 180.0);
-		this.head.yaw = headYaw * (float) (Math.PI / 180.0);
+	private void method_17111(ParrotEntityModel.Pose pose, int i, float f, float g, float h, float j, float k) {
+		this.head.pitch = k * (float) (Math.PI / 180.0);
+		this.head.yaw = j * (float) (Math.PI / 180.0);
 		this.head.roll = 0.0F;
 		this.head.pivotX = 0.0F;
 		this.torso.pivotX = 0.0F;
@@ -97,41 +97,41 @@ public class ParrotEntityModel extends CompositeEntityModel<ParrotEntity> {
 			case SITTING:
 				break;
 			case PARTY:
-				float f = MathHelper.cos((float)age);
-				float g = MathHelper.sin((float)age);
-				this.head.pivotX = f;
-				this.head.pivotY = 15.69F + g;
+				float l = MathHelper.cos((float)i);
+				float m = MathHelper.sin((float)i);
+				this.head.pivotX = l;
+				this.head.pivotY = 15.69F + m;
 				this.head.pitch = 0.0F;
 				this.head.yaw = 0.0F;
-				this.head.roll = MathHelper.sin((float)age) * 0.4F;
-				this.torso.pivotX = f;
-				this.torso.pivotY = 16.5F + g;
-				this.leftWing.roll = -0.0873F - age;
-				this.leftWing.pivotX = 1.5F + f;
-				this.leftWing.pivotY = 16.94F + g;
-				this.rightWing.roll = 0.0873F + age;
-				this.rightWing.pivotX = -1.5F + f;
-				this.rightWing.pivotY = 16.94F + g;
-				this.tail.pivotX = f;
-				this.tail.pivotY = 21.07F + g;
+				this.head.roll = MathHelper.sin((float)i) * 0.4F;
+				this.torso.pivotX = l;
+				this.torso.pivotY = 16.5F + m;
+				this.leftWing.roll = -0.0873F - h;
+				this.leftWing.pivotX = 1.5F + l;
+				this.leftWing.pivotY = 16.94F + m;
+				this.rightWing.roll = 0.0873F + h;
+				this.rightWing.pivotX = -1.5F + l;
+				this.rightWing.pivotY = 16.94F + m;
+				this.tail.pivotX = l;
+				this.tail.pivotY = 21.07F + m;
 				break;
 			case STANDING:
-				this.leftLeg.pitch = this.leftLeg.pitch + MathHelper.cos(limbAngle * 0.6662F) * 1.4F * limbDistance;
-				this.rightLeg.pitch = this.rightLeg.pitch + MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.4F * limbDistance;
+				this.leftLeg.pitch = this.leftLeg.pitch + MathHelper.cos(f * 0.6662F) * 1.4F * g;
+				this.rightLeg.pitch = this.rightLeg.pitch + MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.4F * g;
 			case FLYING:
 			case ON_SHOULDER:
 			default:
-				float h = age * 0.3F;
-				this.head.pivotY = 15.69F + h;
-				this.tail.pitch = 1.015F + MathHelper.cos(limbAngle * 0.6662F) * 0.3F * limbDistance;
-				this.tail.pivotY = 21.07F + h;
-				this.torso.pivotY = 16.5F + h;
-				this.leftWing.roll = -0.0873F - age;
-				this.leftWing.pivotY = 16.94F + h;
-				this.rightWing.roll = 0.0873F + age;
-				this.rightWing.pivotY = 16.94F + h;
-				this.leftLeg.pivotY = 22.0F + h;
-				this.rightLeg.pivotY = 22.0F + h;
+				float n = h * 0.3F;
+				this.head.pivotY = 15.69F + n;
+				this.tail.pitch = 1.015F + MathHelper.cos(f * 0.6662F) * 0.3F * g;
+				this.tail.pivotY = 21.07F + n;
+				this.torso.pivotY = 16.5F + n;
+				this.leftWing.roll = -0.0873F - h;
+				this.leftWing.pivotY = 16.94F + n;
+				this.rightWing.roll = 0.0873F + h;
+				this.rightWing.pivotY = 16.94F + n;
+				this.leftLeg.pivotY = 22.0F + n;
+				this.rightLeg.pivotY = 22.0F + n;
 		}
 	}
 

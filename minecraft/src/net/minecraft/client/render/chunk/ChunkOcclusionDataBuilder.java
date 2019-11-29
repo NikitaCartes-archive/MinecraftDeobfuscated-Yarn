@@ -18,7 +18,7 @@ public class ChunkOcclusionDataBuilder {
 	private static final int STEP_Y = (int)Math.pow(16.0, 2.0);
 	private static final Direction[] DIRECTIONS = Direction.values();
 	private final BitSet closed = new BitSet(4096);
-	private static final int[] EDGE_POINTS = Util.make(new int[1352], is -> {
+	private static final int[] EDGE_POINTS = Util.create(new int[1352], is -> {
 		int i = 0;
 		int j = 15;
 		int k = 0;

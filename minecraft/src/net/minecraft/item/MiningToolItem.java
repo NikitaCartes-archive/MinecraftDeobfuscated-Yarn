@@ -2,27 +2,23 @@ package net.minecraft.item;
 
 import com.google.common.collect.Multimap;
 import java.util.Set;
+import net.minecraft.class_4741;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class MiningToolItem extends ToolItem {
+public abstract class MiningToolItem extends ToolItem {
 	private final Set<Block> effectiveBlocks;
 	protected final float miningSpeed;
-	protected final float attackDamage;
-	protected final float attackSpeed;
 
-	protected MiningToolItem(float attackDamage, float attackSpeed, ToolMaterial material, Set<Block> effectiveBlocks, Item.Settings settings) {
-		super(material, settings);
-		this.effectiveBlocks = effectiveBlocks;
-		this.miningSpeed = material.getMiningSpeed();
-		this.attackDamage = attackDamage + material.getAttackDamage();
-		this.attackSpeed = attackSpeed;
+	protected MiningToolItem(ToolMaterial toolMaterial, Set<Block> set, Item.Settings settings) {
+		super(toolMaterial, settings);
+		this.effectiveBlocks = set;
+		this.miningSpeed = toolMaterial.getMiningSpeed();
 	}
 
 	@Override
@@ -45,18 +41,13 @@ public class MiningToolItem extends ToolItem {
 		return true;
 	}
 
+	protected abstract class_4741 method_24225();
+
 	@Override
 	public Multimap<String, EntityAttributeModifier> getModifiers(EquipmentSlot slot) {
 		Multimap<String, EntityAttributeModifier> multimap = super.getModifiers(slot);
 		if (slot == EquipmentSlot.MAINHAND) {
-			multimap.put(
-				EntityAttributes.ATTACK_DAMAGE.getId(),
-				new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_UUID, "Tool modifier", (double)this.attackDamage, EntityAttributeModifier.Operation.ADDITION)
-			);
-			multimap.put(
-				EntityAttributes.ATTACK_SPEED.getId(),
-				new EntityAttributeModifier(ATTACK_SPEED_MODIFIER_UUID, "Tool modifier", (double)this.attackSpeed, EntityAttributeModifier.Operation.ADDITION)
-			);
+			this.method_24225().method_24227(this.getMaterial(), multimap);
 		}
 
 		return multimap;

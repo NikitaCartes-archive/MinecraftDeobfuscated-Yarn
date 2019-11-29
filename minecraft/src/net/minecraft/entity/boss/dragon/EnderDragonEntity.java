@@ -337,9 +337,9 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 					this.parts[ad].prevX = vec3ds[ad].x;
 					this.parts[ad].prevY = vec3ds[ad].y;
 					this.parts[ad].prevZ = vec3ds[ad].z;
-					this.parts[ad].lastRenderX = vec3ds[ad].x;
-					this.parts[ad].lastRenderY = vec3ds[ad].y;
-					this.parts[ad].lastRenderZ = vec3ds[ad].z;
+					this.parts[ad].prevRenderX = vec3ds[ad].x;
+					this.parts[ad].prevRenderY = vec3ds[ad].y;
+					this.parts[ad].prevRenderZ = vec3ds[ad].z;
 				}
 			}
 		}

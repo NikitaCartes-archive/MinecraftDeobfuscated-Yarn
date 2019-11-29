@@ -38,7 +38,7 @@ public class ElytraFeatureRenderer<T extends LivingEntity, M extends EntityModel
 					identifier = abstractClientPlayerEntity.getElytraTexture();
 				} else if (abstractClientPlayerEntity.canRenderCapeTexture()
 					&& abstractClientPlayerEntity.getCapeTexture() != null
-					&& abstractClientPlayerEntity.isPartVisible(PlayerModelPart.CAPE)) {
+					&& abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.CAPE)) {
 					identifier = abstractClientPlayerEntity.getCapeTexture();
 				} else {
 					identifier = SKIN;
@@ -49,7 +49,7 @@ public class ElytraFeatureRenderer<T extends LivingEntity, M extends EntityModel
 
 			matrixStack.push();
 			matrixStack.translate(0.0, 0.0, 0.125);
-			this.getContextModel().copyStateTo(this.elytra);
+			this.getModel().copyStateTo(this.elytra);
 			this.elytra.setAngles(livingEntity, f, g, j, k, l);
 			VertexConsumer vertexConsumer = ItemRenderer.getArmorVertexConsumer(
 				vertexConsumerProvider, this.elytra.getLayer(identifier), false, itemStack.hasEnchantmentGlint()

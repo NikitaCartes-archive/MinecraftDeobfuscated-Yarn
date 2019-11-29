@@ -16,7 +16,7 @@ public interface VillagerType {
 	VillagerType SNOW = create("snow");
 	VillagerType SWAMP = create("swamp");
 	VillagerType TAIGA = create("taiga");
-	Map<Biome, VillagerType> BIOME_TO_TYPE = Util.make(Maps.<Biome, VillagerType>newHashMap(), hashMap -> {
+	Map<Biome, VillagerType> BIOME_TO_TYPE = Util.create(Maps.<Biome, VillagerType>newHashMap(), hashMap -> {
 		hashMap.put(Biomes.BADLANDS, DESERT);
 		hashMap.put(Biomes.BADLANDS_PLATEAU, DESERT);
 		hashMap.put(Biomes.DESERT, DESERT);

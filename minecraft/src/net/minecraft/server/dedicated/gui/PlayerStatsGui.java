@@ -12,7 +12,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Util;
 
 public class PlayerStatsGui extends JComponent {
-	private static final DecimalFormat AVG_TICK_FORMAT = Util.make(
+	private static final DecimalFormat AVG_TICK_FORMAT = Util.create(
 		new DecimalFormat("########0.000"), decimalFormat -> decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT))
 	);
 	private final int[] memoryUsePercentage = new int[256];

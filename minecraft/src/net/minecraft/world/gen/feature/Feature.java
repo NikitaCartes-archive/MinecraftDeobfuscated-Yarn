@@ -67,7 +67,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final FlowerFeature<RandomPatchFeatureConfig> FLOWER = register("flower", new DefaultFlowerFeature(RandomPatchFeatureConfig::deserialize));
 	public static final Feature<RandomPatchFeatureConfig> RANDOM_PATCH = register("random_patch", new RandomPatchFeature(RandomPatchFeatureConfig::deserialize));
 	public static final Feature<BlockPileFeatureConfig> BLOCK_PILE = register("block_pile", new AbstractPileFeature(BlockPileFeatureConfig::method_23406));
-	public static final Feature<SpringFeatureConfig> SPRING_FEATURE = register("spring_feature", new SpringFeature(SpringFeatureConfig::deserialize));
+	public static final Feature<SpringFeatureConfig> SPRING_FEATURE = register("spring_feature", new SpringFeature(SpringFeatureConfig::method_23440));
 	public static final Feature<DefaultFeatureConfig> CHORUS_PLANT = register("chorus_plant", new ChorusPlantFeature(DefaultFeatureConfig::deserialize));
 	public static final Feature<EmeraldOreFeatureConfig> EMERALD_ORE = register("emerald_ore", new EmeraldOreFeature(EmeraldOreFeatureConfig::deserialize));
 	public static final Feature<DefaultFeatureConfig> VOID_START_PLATFORM = register(
@@ -76,10 +76,10 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<DefaultFeatureConfig> DESERT_WELL = register("desert_well", new DesertWellFeature(DefaultFeatureConfig::deserialize));
 	public static final Feature<DefaultFeatureConfig> FOSSIL = register("fossil", new FossilFeature(DefaultFeatureConfig::deserialize));
 	public static final Feature<HugeMushroomFeatureConfig> HUGE_RED_MUSHROOM = register(
-		"huge_red_mushroom", new HugeRedMushroomFeature(HugeMushroomFeatureConfig::deserialize)
+		"huge_red_mushroom", new HugeRedMushroomFeature(HugeMushroomFeatureConfig::method_23407)
 	);
 	public static final Feature<HugeMushroomFeatureConfig> HUGE_BROWN_MUSHROOM = register(
-		"huge_brown_mushroom", new HugeBrownMushroomFeature(HugeMushroomFeatureConfig::deserialize)
+		"huge_brown_mushroom", new HugeBrownMushroomFeature(HugeMushroomFeatureConfig::method_23407)
 	);
 	public static final Feature<DefaultFeatureConfig> ICE_SPIKE = register("ice_spike", new IceSpikeFeature(DefaultFeatureConfig::deserialize));
 	public static final Feature<DefaultFeatureConfig> GLOWSTONE_BLOB = register("glowstone_blob", new GlowstoneBlobFeature(DefaultFeatureConfig::deserialize));
@@ -120,7 +120,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<DecoratedFeatureConfig> DECORATED_FLOWER = register(
 		"decorated_flower", new DecoratedFlowerFeature(DecoratedFeatureConfig::deserialize)
 	);
-	public static final BiMap<String, StructureFeature<?>> STRUCTURES = Util.make(HashBiMap.create(), hashBiMap -> {
+	public static final BiMap<String, StructureFeature<?>> STRUCTURES = Util.create(HashBiMap.create(), hashBiMap -> {
 		hashBiMap.put("Pillager_Outpost".toLowerCase(Locale.ROOT), PILLAGER_OUTPOST);
 		hashBiMap.put("Mineshaft".toLowerCase(Locale.ROOT), MINESHAFT);
 		hashBiMap.put("Mansion".toLowerCase(Locale.ROOT), WOODLAND_MANSION);

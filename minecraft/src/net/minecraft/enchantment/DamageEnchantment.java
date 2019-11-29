@@ -6,8 +6,6 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.item.AxeItem;
-import net.minecraft.item.ItemStack;
 
 public class DamageEnchantment extends Enchantment {
 	private static final String[] typeNames = new String[]{"all", "undead", "arthropods"};
@@ -37,24 +35,19 @@ public class DamageEnchantment extends Enchantment {
 	}
 
 	@Override
-	public float getAttackDamage(int level, EntityGroup group) {
+	public float getAttackDamage(int level, LivingEntity livingEntity) {
 		if (this.typeIndex == 0) {
 			return 1.0F + (float)Math.max(0, level - 1) * 0.5F;
-		} else if (this.typeIndex == 1 && group == EntityGroup.UNDEAD) {
+		} else if (this.typeIndex == 1 && livingEntity != null && livingEntity.getGroup() == EntityGroup.UNDEAD) {
 			return (float)level * 2.5F;
 		} else {
-			return this.typeIndex == 2 && group == EntityGroup.ARTHROPOD ? (float)level * 2.5F : 0.0F;
+			return this.typeIndex == 2 && livingEntity != null && livingEntity.getGroup() == EntityGroup.ARTHROPOD ? (float)level * 2.5F : 0.0F;
 		}
 	}
 
 	@Override
 	public boolean differs(Enchantment other) {
 		return !(other instanceof DamageEnchantment);
-	}
-
-	@Override
-	public boolean isAcceptableItem(ItemStack stack) {
-		return stack.getItem() instanceof AxeItem ? true : super.isAcceptableItem(stack);
 	}
 
 	@Override

@@ -30,7 +30,7 @@ import net.minecraft.village.VillagerType;
 public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDataContainer, M extends EntityModel<T> & ModelWithHat>
 	extends FeatureRenderer<T, M>
 	implements SynchronousResourceReloadListener {
-	private static final Int2ObjectMap<Identifier> LEVEL_TO_ID = Util.make(new Int2ObjectOpenHashMap<>(), int2ObjectOpenHashMap -> {
+	private static final Int2ObjectMap<Identifier> LEVEL_TO_ID = Util.create(new Int2ObjectOpenHashMap<>(), int2ObjectOpenHashMap -> {
 		int2ObjectOpenHashMap.put(1, new Identifier("stone"));
 		int2ObjectOpenHashMap.put(2, new Identifier("iron"));
 		int2ObjectOpenHashMap.put(3, new Identifier("gold"));
@@ -58,7 +58,7 @@ public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDa
 			VillagerProfession villagerProfession = villagerData.getProfession();
 			VillagerResourceMetadata.HatType hatType = this.getHatType(this.villagerTypeToHat, "type", Registry.VILLAGER_TYPE, villagerType);
 			VillagerResourceMetadata.HatType hatType2 = this.getHatType(this.professionToHat, "profession", Registry.VILLAGER_PROFESSION, villagerProfession);
-			M entityModel = this.getContextModel();
+			M entityModel = this.getModel();
 			entityModel.setHatVisible(
 				hatType2 == VillagerResourceMetadata.HatType.NONE
 					|| hatType2 == VillagerResourceMetadata.HatType.PARTIAL && hatType != VillagerResourceMetadata.HatType.FULL

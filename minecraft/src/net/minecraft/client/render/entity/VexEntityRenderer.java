@@ -16,7 +16,7 @@ public class VexEntityRenderer extends BipedEntityRenderer<VexEntity, VexEntityM
 		super(entityRenderDispatcher, new VexEntityModel(), 0.3F);
 	}
 
-	protected int getBlockLight(VexEntity vexEntity, float f) {
+	protected int method_24087(VexEntity vexEntity, float f) {
 		return 15;
 	}
 

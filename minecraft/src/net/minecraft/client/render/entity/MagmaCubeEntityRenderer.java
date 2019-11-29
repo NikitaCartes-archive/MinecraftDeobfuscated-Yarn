@@ -16,7 +16,7 @@ public class MagmaCubeEntityRenderer extends MobEntityRenderer<MagmaCubeEntity, 
 		super(entityRenderDispatcher, new MagmaCubeEntityModel<>(), 0.25F);
 	}
 
-	protected int getBlockLight(MagmaCubeEntity magmaCubeEntity, float f) {
+	protected int method_24087(MagmaCubeEntity magmaCubeEntity, float f) {
 		return 15;
 	}
 

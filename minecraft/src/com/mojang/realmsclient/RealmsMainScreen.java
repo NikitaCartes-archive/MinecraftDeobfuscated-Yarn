@@ -1408,7 +1408,7 @@ public class RealmsMainScreen extends RealmsScreen {
 					RenderSystem.enableBlend();
 					RealmsScreen.bind("minecraft:textures/gui/widgets.png");
 					RenderSystem.pushMatrix();
-					RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
+					RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 					String string2 = RealmsScreen.getLocalizedString("mco.selectServer.expiredList");
 					String string3 = RealmsScreen.getLocalizedString("mco.selectServer.expiredRenew");
 					if (serverData.expiredTrial) {

@@ -4,11 +4,14 @@ import com.google.common.collect.Sets;
 import com.google.common.collect.ImmutableMap.Builder;
 import java.util.Map;
 import java.util.Set;
+import net.minecraft.class_4741;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
 import net.minecraft.block.PillarBlock;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -72,8 +75,8 @@ public class AxeItem extends MiningToolItem {
 		.put(Blocks.SPRUCE_LOG, Blocks.STRIPPED_SPRUCE_LOG)
 		.build();
 
-	protected AxeItem(ToolMaterial material, float attackDamage, float attackSpeed, Item.Settings settings) {
-		super(attackDamage, attackSpeed, material, EFFECTIVE_BLOCKS, settings);
+	protected AxeItem(ToolMaterial material, Item.Settings settings) {
+		super(material, EFFECTIVE_BLOCKS, settings);
 	}
 
 	@Override
@@ -82,6 +85,11 @@ public class AxeItem extends MiningToolItem {
 		return material != Material.WOOD && material != Material.PLANT && material != Material.REPLACEABLE_PLANT && material != Material.BAMBOO
 			? super.getMiningSpeed(stack, state)
 			: this.miningSpeed;
+	}
+
+	@Override
+	protected class_4741 method_24225() {
+		return class_4741.field_21808;
 	}
 
 	@Override
@@ -104,5 +112,11 @@ public class AxeItem extends MiningToolItem {
 		} else {
 			return ActionResult.PASS;
 		}
+	}
+
+	@Override
+	public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+		stack.damage(1, attacker, livingEntity -> livingEntity.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+		return true;
 	}
 }

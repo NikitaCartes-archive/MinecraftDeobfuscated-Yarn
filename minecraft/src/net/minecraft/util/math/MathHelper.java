@@ -10,7 +10,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 
 public class MathHelper {
 	public static final float SQUARE_ROOT_OF_TWO = sqrt(2.0F);
-	private static final float[] SINE_TABLE = Util.make(new float[65536], fs -> {
+	private static final float[] SINE_TABLE = Util.create(new float[65536], fs -> {
 		for (int ix = 0; ix < fs.length; ix++) {
 			fs[ix] = (float)Math.sin((double)ix * Math.PI * 2.0 / 65536.0);
 		}

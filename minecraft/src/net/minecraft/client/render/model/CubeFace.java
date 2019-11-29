@@ -44,7 +44,7 @@ public enum CubeFace {
 		new CubeFace.Corner(CubeFace.DirectionIds.EAST, CubeFace.DirectionIds.UP, CubeFace.DirectionIds.NORTH)
 	);
 
-	private static final CubeFace[] DIRECTION_LOOKUP = Util.make(new CubeFace[6], cubeFaces -> {
+	private static final CubeFace[] DIRECTION_LOOKUP = Util.create(new CubeFace[6], cubeFaces -> {
 		cubeFaces[CubeFace.DirectionIds.DOWN] = DOWN;
 		cubeFaces[CubeFace.DirectionIds.UP] = UP;
 		cubeFaces[CubeFace.DirectionIds.NORTH] = NORTH;

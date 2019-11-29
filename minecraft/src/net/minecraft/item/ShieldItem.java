@@ -19,9 +19,17 @@ import net.minecraft.world.World;
 public class ShieldItem extends Item {
 	public ShieldItem(Item.Settings settings) {
 		super(settings);
-		this.addPropertyGetter(
-			new Identifier("blocking"), (stack, world, entity) -> entity != null && entity.isUsingItem() && entity.getActiveItem() == stack ? 1.0F : 0.0F
-		);
+		this.addPropertyGetter(new Identifier("blocking"), (stack, world, entity) -> {
+			if (entity != null && entity.isBlocking()) {
+				if (entity.getActiveItem() == stack) {
+					return 1.0F;
+				} else {
+					return !entity.isUsingItem() && entity.getStackInHand(Hand.OFF_HAND) == stack ? 1.0F : 0.0F;
+				}
+			} else {
+				return 0.0F;
+			}
+		});
 		DispenserBlock.registerBehavior(this, ArmorItem.DISPENSER_BEHAVIOR);
 	}
 

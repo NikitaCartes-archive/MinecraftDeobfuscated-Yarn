@@ -34,7 +34,7 @@ public class Deadmau5FeatureRenderer extends FeatureRenderer<AbstractClientPlaye
 			&& abstractClientPlayerEntity.hasSkinTexture()
 			&& !abstractClientPlayerEntity.isInvisible()) {
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(abstractClientPlayerEntity.getSkinTexture()));
-			int m = LivingEntityRenderer.getOverlay(abstractClientPlayerEntity, 0.0F);
+			int m = LivingEntityRenderer.method_23622(abstractClientPlayerEntity, 0.0F);
 
 			for (int n = 0; n < 2; n++) {
 				float o = MathHelper.lerp(h, abstractClientPlayerEntity.prevYaw, abstractClientPlayerEntity.yaw)
@@ -49,7 +49,7 @@ public class Deadmau5FeatureRenderer extends FeatureRenderer<AbstractClientPlaye
 				matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-o));
 				float q = 1.3333334F;
 				matrixStack.scale(1.3333334F, 1.3333334F, 1.3333334F);
-				this.getContextModel().renderEars(matrixStack, vertexConsumer, i, m);
+				this.getModel().renderEars(matrixStack, vertexConsumer, i, m);
 				matrixStack.pop();
 			}
 		}

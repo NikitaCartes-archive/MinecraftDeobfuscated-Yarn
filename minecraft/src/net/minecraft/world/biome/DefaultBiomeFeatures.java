@@ -63,7 +63,7 @@ import net.minecraft.world.gen.placer.DoublePlantPlacer;
 import net.minecraft.world.gen.placer.SimpleBlockPlacer;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 import net.minecraft.world.gen.stateprovider.ForestFlowerStateProvider;
-import net.minecraft.world.gen.stateprovider.PlainsFlowerStateProvider;
+import net.minecraft.world.gen.stateprovider.PlainFlowerStateProvider;
 import net.minecraft.world.gen.stateprovider.SimpleStateProvider;
 import net.minecraft.world.gen.stateprovider.WeightedStateProvider;
 
@@ -222,20 +222,6 @@ public class DefaultBiomeFeatures {
 			new SimpleStateProvider(OAK_LOG), new SimpleStateProvider(OAK_LEAVES), new BlobFoliagePlacer(0, 0)
 		)
 		.build();
-	public static final BranchedTreeFeatureConfig OAK_TREE_WITH_MORE_BEEHIVES_CONFIG = new BranchedTreeFeatureConfig.Builder(
-			new SimpleStateProvider(OAK_LOG), new SimpleStateProvider(OAK_LEAVES), new BlobFoliagePlacer(2, 0)
-		)
-		.baseHeight(4)
-		.heightRandA(2)
-		.foliageHeight(3)
-		.noVines()
-		.treeDecorators(ImmutableList.of(new BeehiveTreeDecorator(0.05F)))
-		.build();
-	public static final BranchedTreeFeatureConfig FANCY_TREE_WITH_MORE_BEEHIVES_CONFIG = new BranchedTreeFeatureConfig.Builder(
-			new SimpleStateProvider(OAK_LOG), new SimpleStateProvider(OAK_LEAVES), new BlobFoliagePlacer(0, 0)
-		)
-		.treeDecorators(ImmutableList.of(new BeehiveTreeDecorator(0.05F)))
-		.build();
 	public static final BranchedTreeFeatureConfig OAK_TREE_WITH_BEEHIVES_CONFIG = new BranchedTreeFeatureConfig.Builder(
 			new SimpleStateProvider(OAK_LOG), new SimpleStateProvider(OAK_LEAVES), new BlobFoliagePlacer(2, 0)
 		)
@@ -243,14 +229,28 @@ public class DefaultBiomeFeatures {
 		.heightRandA(2)
 		.foliageHeight(3)
 		.noVines()
-		.treeDecorators(ImmutableList.of(new BeehiveTreeDecorator(0.01F)))
+		.treeDecorators(ImmutableList.of(new BeehiveTreeDecorator(0.05F)))
 		.build();
 	public static final BranchedTreeFeatureConfig FANCY_TREE_WITH_BEEHIVES_CONFIG = new BranchedTreeFeatureConfig.Builder(
 			new SimpleStateProvider(OAK_LOG), new SimpleStateProvider(OAK_LEAVES), new BlobFoliagePlacer(0, 0)
 		)
+		.treeDecorators(ImmutableList.of(new BeehiveTreeDecorator(0.05F)))
+		.build();
+	public static final BranchedTreeFeatureConfig field_21193 = new BranchedTreeFeatureConfig.Builder(
+			new SimpleStateProvider(OAK_LOG), new SimpleStateProvider(OAK_LEAVES), new BlobFoliagePlacer(2, 0)
+		)
+		.baseHeight(4)
+		.heightRandA(2)
+		.foliageHeight(3)
+		.noVines()
 		.treeDecorators(ImmutableList.of(new BeehiveTreeDecorator(0.01F)))
 		.build();
-	public static final BranchedTreeFeatureConfig BIRCH_TREE_WITH_BEEHIVES_CONFIG = new BranchedTreeFeatureConfig.Builder(
+	public static final BranchedTreeFeatureConfig field_21194 = new BranchedTreeFeatureConfig.Builder(
+			new SimpleStateProvider(OAK_LOG), new SimpleStateProvider(OAK_LEAVES), new BlobFoliagePlacer(0, 0)
+		)
+		.treeDecorators(ImmutableList.of(new BeehiveTreeDecorator(0.01F)))
+		.build();
+	public static final BranchedTreeFeatureConfig field_21195 = new BranchedTreeFeatureConfig.Builder(
 			new SimpleStateProvider(BIRCH_LOG), new SimpleStateProvider(BIRCH_LEAVES), new BlobFoliagePlacer(2, 0)
 		)
 		.baseHeight(5)
@@ -264,87 +264,77 @@ public class DefaultBiomeFeatures {
 		)
 		.baseHeight(4)
 		.build();
-	public static final MegaTreeFeatureConfig DARK_OAK_TREE_CONFIG = new MegaTreeFeatureConfig.Builder(
+	public static final MegaTreeFeatureConfig field_21197 = new MegaTreeFeatureConfig.Builder(
 			new SimpleStateProvider(DARK_OAK_LOG), new SimpleStateProvider(DARK_OAK_LEAVES)
 		)
 		.baseHeight(6)
 		.build();
-	public static final MegaTreeFeatureConfig MEGA_SPRUCE_TREE_CONFIG = new MegaTreeFeatureConfig.Builder(
+	public static final MegaTreeFeatureConfig field_21198 = new MegaTreeFeatureConfig.Builder(
 			new SimpleStateProvider(SPRUCE_LOG), new SimpleStateProvider(SPRUCE_LEAVES)
 		)
 		.baseHeight(13)
 		.heightInterval(15)
 		.crownHeight(13)
-		.treeDecorators(ImmutableList.of(new AlterGroundTreeDecorator(new SimpleStateProvider(PODZOL))))
+		.method_23411(ImmutableList.of(new AlterGroundTreeDecorator(new SimpleStateProvider(PODZOL))))
 		.build();
-	public static final MegaTreeFeatureConfig MEGA_PINE_TREE_CONFIG = new MegaTreeFeatureConfig.Builder(
+	public static final MegaTreeFeatureConfig field_21199 = new MegaTreeFeatureConfig.Builder(
 			new SimpleStateProvider(SPRUCE_LOG), new SimpleStateProvider(SPRUCE_LEAVES)
 		)
 		.baseHeight(13)
 		.heightInterval(15)
 		.crownHeight(3)
-		.treeDecorators(ImmutableList.of(new AlterGroundTreeDecorator(new SimpleStateProvider(PODZOL))))
+		.method_23411(ImmutableList.of(new AlterGroundTreeDecorator(new SimpleStateProvider(PODZOL))))
 		.build();
 	public static final MegaTreeFeatureConfig MEGA_JUNGLE_TREE_CONFIG = new MegaTreeFeatureConfig.Builder(
 			new SimpleStateProvider(JUNGLE_LOG), new SimpleStateProvider(JUNGLE_LEAVES)
 		)
 		.baseHeight(10)
 		.heightInterval(20)
-		.treeDecorators(ImmutableList.of(new TrunkVineTreeDecorator(), new LeaveVineTreeDecorator()))
+		.method_23411(ImmutableList.of(new TrunkVineTreeDecorator(), new LeaveVineTreeDecorator()))
 		.build();
-	public static final RandomPatchFeatureConfig GRASS_CONFIG = new RandomPatchFeatureConfig.Builder(new SimpleStateProvider(GRASS), new SimpleBlockPlacer())
+	public static final RandomPatchFeatureConfig field_21201 = new RandomPatchFeatureConfig.Builder(new SimpleStateProvider(GRASS), new SimpleBlockPlacer())
 		.tries(32)
 		.build();
-	public static final RandomPatchFeatureConfig TAIGA_GRASS_CONFIG = new RandomPatchFeatureConfig.Builder(
+	public static final RandomPatchFeatureConfig field_21202 = new RandomPatchFeatureConfig.Builder(
 			new WeightedStateProvider().addState(GRASS, 1).addState(FERN, 4), new SimpleBlockPlacer()
 		)
 		.tries(32)
 		.build();
-	public static final RandomPatchFeatureConfig LUSH_GRASS_CONFIG = new RandomPatchFeatureConfig.Builder(
+	public static final RandomPatchFeatureConfig field_21203 = new RandomPatchFeatureConfig.Builder(
 			new WeightedStateProvider().addState(GRASS, 3).addState(FERN, 1), new SimpleBlockPlacer()
 		)
 		.blacklist(ImmutableSet.of(PODZOL))
 		.tries(32)
 		.build();
-	public static final RandomPatchFeatureConfig LILY_OF_THE_VALLEY_CONFIG = new RandomPatchFeatureConfig.Builder(
+	public static final RandomPatchFeatureConfig field_21204 = new RandomPatchFeatureConfig.Builder(
 			new SimpleStateProvider(LILY_OF_THE_VALLEY), new SimpleBlockPlacer()
 		)
 		.tries(64)
 		.build();
-	public static final RandomPatchFeatureConfig BLUE_ORCHID_CONFIG = new RandomPatchFeatureConfig.Builder(
-			new SimpleStateProvider(BLUE_ORCHID), new SimpleBlockPlacer()
-		)
+	public static final RandomPatchFeatureConfig field_21205 = new RandomPatchFeatureConfig.Builder(new SimpleStateProvider(BLUE_ORCHID), new SimpleBlockPlacer())
 		.tries(64)
 		.build();
-	public static final RandomPatchFeatureConfig DEFAULT_FLOWER_CONFIG = new RandomPatchFeatureConfig.Builder(
+	public static final RandomPatchFeatureConfig field_21206 = new RandomPatchFeatureConfig.Builder(
 			new WeightedStateProvider().addState(POPPY, 2).addState(DANDELION, 1), new SimpleBlockPlacer()
 		)
 		.tries(64)
 		.build();
-	public static final RandomPatchFeatureConfig PLAINS_FLOWER_CONFIG = new RandomPatchFeatureConfig.Builder(
-			new PlainsFlowerStateProvider(), new SimpleBlockPlacer()
-		)
+	public static final RandomPatchFeatureConfig field_21088 = new RandomPatchFeatureConfig.Builder(new PlainFlowerStateProvider(), new SimpleBlockPlacer())
 		.tries(64)
 		.build();
-	public static final RandomPatchFeatureConfig FOREST_FLOWER_CONFIG = new RandomPatchFeatureConfig.Builder(
-			new ForestFlowerStateProvider(), new SimpleBlockPlacer()
-		)
+	public static final RandomPatchFeatureConfig field_21089 = new RandomPatchFeatureConfig.Builder(new ForestFlowerStateProvider(), new SimpleBlockPlacer())
 		.tries(64)
 		.build();
-	public static final RandomPatchFeatureConfig DEAD_BUSH_CONFIG = new RandomPatchFeatureConfig.Builder(
-			new SimpleStateProvider(DEAD_BUSH), new SimpleBlockPlacer()
-		)
+	public static final RandomPatchFeatureConfig field_21090 = new RandomPatchFeatureConfig.Builder(new SimpleStateProvider(DEAD_BUSH), new SimpleBlockPlacer())
 		.tries(4)
 		.build();
-	public static final RandomPatchFeatureConfig MELON_PATCH_CONFIG = new RandomPatchFeatureConfig.Builder(new SimpleStateProvider(MELON), new SimpleBlockPlacer())
+	public static final RandomPatchFeatureConfig field_21091 = new RandomPatchFeatureConfig.Builder(new SimpleStateProvider(MELON), new SimpleBlockPlacer())
 		.tries(64)
 		.whitelist(ImmutableSet.of(GRASS_BLOCK.getBlock()))
 		.canReplace()
 		.cannotProject()
 		.build();
-	public static final RandomPatchFeatureConfig PUMPKIN_PATCH_CONFIG = new RandomPatchFeatureConfig.Builder(
-			new SimpleStateProvider(PUMPKIN), new SimpleBlockPlacer()
-		)
+	public static final RandomPatchFeatureConfig field_21092 = new RandomPatchFeatureConfig.Builder(new SimpleStateProvider(PUMPKIN), new SimpleBlockPlacer())
 		.tries(64)
 		.whitelist(ImmutableSet.of(GRASS_BLOCK.getBlock()))
 		.cannotProject()
@@ -356,12 +346,12 @@ public class DefaultBiomeFeatures {
 		.whitelist(ImmutableSet.of(GRASS_BLOCK.getBlock()))
 		.cannotProject()
 		.build();
-	public static final RandomPatchFeatureConfig NETHER_FIRE_CONFIG = new RandomPatchFeatureConfig.Builder(new SimpleStateProvider(FIRE), new SimpleBlockPlacer())
+	public static final RandomPatchFeatureConfig field_21094 = new RandomPatchFeatureConfig.Builder(new SimpleStateProvider(FIRE), new SimpleBlockPlacer())
 		.tries(64)
 		.whitelist(ImmutableSet.of(NETHERRACK.getBlock()))
 		.cannotProject()
 		.build();
-	public static final RandomPatchFeatureConfig LILY_PAD_CONFIG = new RandomPatchFeatureConfig.Builder(new SimpleStateProvider(LILY_PAD), new SimpleBlockPlacer())
+	public static final RandomPatchFeatureConfig field_21095 = new RandomPatchFeatureConfig.Builder(new SimpleStateProvider(LILY_PAD), new SimpleBlockPlacer())
 		.tries(10)
 		.build();
 	public static final RandomPatchFeatureConfig RED_MUSHROOM_CONFIG = new RandomPatchFeatureConfig.Builder(
@@ -431,22 +421,18 @@ public class DefaultBiomeFeatures {
 	public static final BlockPileFeatureConfig BLUE_ICE_PILE_CONFIG = new BlockPileFeatureConfig(
 		new WeightedStateProvider().addState(BLUE_ICE, 1).addState(PACKED_ICE, 5)
 	);
-	public static final SpringFeatureConfig WATER_SPRING_CONFIG = new SpringFeatureConfig(
+	public static final SpringFeatureConfig field_21111 = new SpringFeatureConfig(
 		Fluids.WATER.getDefaultState(), true, 4, 1, ImmutableSet.of(Blocks.STONE, Blocks.GRANITE, Blocks.DIORITE, Blocks.ANDESITE)
 	);
-	public static final SpringFeatureConfig LAVA_SPRING_CONFIG = new SpringFeatureConfig(
+	public static final SpringFeatureConfig field_21112 = new SpringFeatureConfig(
 		Fluids.LAVA.getDefaultState(), true, 4, 1, ImmutableSet.of(Blocks.STONE, Blocks.GRANITE, Blocks.DIORITE, Blocks.ANDESITE)
 	);
-	public static final SpringFeatureConfig NETHER_SPRING_CONFIG = new SpringFeatureConfig(
-		Fluids.LAVA.getDefaultState(), false, 4, 1, ImmutableSet.of(Blocks.NETHERRACK)
-	);
-	public static final SpringFeatureConfig ENCLOSED_NETHER_SPRING_CONFIG = new SpringFeatureConfig(
-		Fluids.LAVA.getDefaultState(), false, 5, 0, ImmutableSet.of(Blocks.NETHERRACK)
-	);
-	public static final HugeMushroomFeatureConfig HUGE_RED_MUSHROOM_CONFIG = new HugeMushroomFeatureConfig(
+	public static final SpringFeatureConfig field_21113 = new SpringFeatureConfig(Fluids.LAVA.getDefaultState(), false, 4, 1, ImmutableSet.of(Blocks.NETHERRACK));
+	public static final SpringFeatureConfig field_21141 = new SpringFeatureConfig(Fluids.LAVA.getDefaultState(), false, 5, 0, ImmutableSet.of(Blocks.NETHERRACK));
+	public static final HugeMushroomFeatureConfig field_21142 = new HugeMushroomFeatureConfig(
 		new SimpleStateProvider(RED_MUSHROOM_BLOCK), new SimpleStateProvider(MUSHROOM_BLOCK), 2
 	);
-	public static final HugeMushroomFeatureConfig HUGE_BROWN_MUSHROOM_CONFIG = new HugeMushroomFeatureConfig(
+	public static final HugeMushroomFeatureConfig field_21143 = new HugeMushroomFeatureConfig(
 		new SimpleStateProvider(BROWN_MUSHROOM_BLOCK), new SimpleStateProvider(MUSHROOM_BLOCK), 3
 	);
 
@@ -733,7 +719,7 @@ public class DefaultBiomeFeatures {
 							Feature.JUNGLE_GROUND_BUSH.configure(JUNGLE_GROUND_BUSH_CONFIG).withChance(0.15F),
 							Feature.MEGA_JUNGLE_TREE.configure(MEGA_JUNGLE_TREE_CONFIG).withChance(0.7F)
 						),
-						Feature.RANDOM_PATCH.configure(LUSH_GRASS_CONFIG)
+						Feature.RANDOM_PATCH.configure(field_21203)
 					)
 				)
 				.createDecoratedFeature(Decorator.COUNT_EXTRA_HEIGHTMAP.configure(new CountExtraChanceDecoratorConfig(30, 0.1F, 1)))
@@ -913,8 +899,7 @@ public class DefaultBiomeFeatures {
 				.configure(
 					new RandomFeatureConfig(
 						ImmutableList.of(
-							Feature.MEGA_SPRUCE_TREE.configure(MEGA_SPRUCE_TREE_CONFIG).withChance(0.33333334F),
-							Feature.NORMAL_TREE.configure(PINE_TREE_CONFIG).withChance(0.33333334F)
+							Feature.MEGA_SPRUCE_TREE.configure(field_21198).withChance(0.33333334F), Feature.NORMAL_TREE.configure(PINE_TREE_CONFIG).withChance(0.33333334F)
 						),
 						Feature.NORMAL_TREE.configure(SPRUCE_TREE_CONFIG)
 					)
@@ -930,8 +915,8 @@ public class DefaultBiomeFeatures {
 				.configure(
 					new RandomFeatureConfig(
 						ImmutableList.of(
-							Feature.MEGA_SPRUCE_TREE.configure(MEGA_SPRUCE_TREE_CONFIG).withChance(0.025641026F),
-							Feature.MEGA_SPRUCE_TREE.configure(MEGA_PINE_TREE_CONFIG).withChance(0.30769232F),
+							Feature.MEGA_SPRUCE_TREE.configure(field_21198).withChance(0.025641026F),
+							Feature.MEGA_SPRUCE_TREE.configure(field_21199).withChance(0.30769232F),
 							Feature.NORMAL_TREE.configure(PINE_TREE_CONFIG).withChance(0.33333334F)
 						),
 						Feature.NORMAL_TREE.configure(SPRUCE_TREE_CONFIG)
@@ -944,7 +929,7 @@ public class DefaultBiomeFeatures {
 	public static void addJungleGrass(Biome biome) {
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.RANDOM_PATCH.configure(LUSH_GRASS_CONFIG).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_DOUBLE.configure(new CountDecoratorConfig(25)))
+			Feature.RANDOM_PATCH.configure(field_21203).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_DOUBLE.configure(new CountDecoratorConfig(25)))
 		);
 	}
 
@@ -958,25 +943,25 @@ public class DefaultBiomeFeatures {
 	public static void addShatteredSavannaGrass(Biome biome) {
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.RANDOM_PATCH.configure(GRASS_CONFIG).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_DOUBLE.configure(new CountDecoratorConfig(5)))
+			Feature.RANDOM_PATCH.configure(field_21201).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_DOUBLE.configure(new CountDecoratorConfig(5)))
 		);
 	}
 
 	public static void addSavannaGrass(Biome biome) {
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.RANDOM_PATCH.configure(GRASS_CONFIG).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_DOUBLE.configure(new CountDecoratorConfig(20)))
+			Feature.RANDOM_PATCH.configure(field_21201).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_DOUBLE.configure(new CountDecoratorConfig(20)))
 		);
 	}
 
 	public static void addBadlandsGrass(Biome biome) {
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.RANDOM_PATCH.configure(GRASS_CONFIG).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_DOUBLE.configure(new CountDecoratorConfig(1)))
+			Feature.RANDOM_PATCH.configure(field_21201).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_DOUBLE.configure(new CountDecoratorConfig(1)))
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.RANDOM_PATCH.configure(DEAD_BUSH_CONFIG).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_DOUBLE.configure(new CountDecoratorConfig(20)))
+			Feature.RANDOM_PATCH.configure(field_21090).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_DOUBLE.configure(new CountDecoratorConfig(20)))
 		);
 	}
 
@@ -990,7 +975,7 @@ public class DefaultBiomeFeatures {
 							Feature.RANDOM_PATCH.configure(LILAC_CONFIG),
 							Feature.RANDOM_PATCH.configure(ROSE_BUSH_CONFIG),
 							Feature.RANDOM_PATCH.configure(PEONY_CONFIG),
-							Feature.FLOWER.configure(LILY_OF_THE_VALLEY_CONFIG)
+							Feature.FLOWER.configure(field_21204)
 						),
 						0
 					)
@@ -1002,7 +987,7 @@ public class DefaultBiomeFeatures {
 	public static void addForestGrass(Biome biome) {
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.RANDOM_PATCH.configure(GRASS_CONFIG).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_DOUBLE.configure(new CountDecoratorConfig(2)))
+			Feature.RANDOM_PATCH.configure(field_21201).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_DOUBLE.configure(new CountDecoratorConfig(2)))
 		);
 	}
 
@@ -1015,19 +1000,19 @@ public class DefaultBiomeFeatures {
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.FLOWER.configure(BLUE_ORCHID_CONFIG).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_32.configure(new CountDecoratorConfig(1)))
+			Feature.FLOWER.configure(field_21205).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_32.configure(new CountDecoratorConfig(1)))
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.RANDOM_PATCH.configure(GRASS_CONFIG).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_DOUBLE.configure(new CountDecoratorConfig(5)))
+			Feature.RANDOM_PATCH.configure(field_21201).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_DOUBLE.configure(new CountDecoratorConfig(5)))
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.RANDOM_PATCH.configure(DEAD_BUSH_CONFIG).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_DOUBLE.configure(new CountDecoratorConfig(1)))
+			Feature.RANDOM_PATCH.configure(field_21090).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_DOUBLE.configure(new CountDecoratorConfig(1)))
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.RANDOM_PATCH.configure(LILY_PAD_CONFIG).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_DOUBLE.configure(new CountDecoratorConfig(4)))
+			Feature.RANDOM_PATCH.configure(field_21095).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_DOUBLE.configure(new CountDecoratorConfig(4)))
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
@@ -1047,11 +1032,7 @@ public class DefaultBiomeFeatures {
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
 			Feature.RANDOM_BOOLEAN_SELECTOR
-				.configure(
-					new RandomBooleanFeatureConfig(
-						Feature.HUGE_RED_MUSHROOM.configure(HUGE_RED_MUSHROOM_CONFIG), Feature.HUGE_BROWN_MUSHROOM.configure(HUGE_BROWN_MUSHROOM_CONFIG)
-					)
-				)
+				.configure(new RandomBooleanFeatureConfig(Feature.HUGE_RED_MUSHROOM.configure(field_21142), Feature.HUGE_BROWN_MUSHROOM.configure(field_21143)))
 				.createDecoratedFeature(Decorator.COUNT_HEIGHTMAP.configure(new CountDecoratorConfig(1)))
 		);
 		biome.addFeature(
@@ -1074,22 +1055,20 @@ public class DefaultBiomeFeatures {
 			Feature.RANDOM_SELECTOR
 				.configure(
 					new RandomFeatureConfig(
-						ImmutableList.of(Feature.FANCY_TREE.configure(FANCY_TREE_WITH_MORE_BEEHIVES_CONFIG).withChance(0.33333334F)),
-						Feature.NORMAL_TREE.configure(OAK_TREE_WITH_MORE_BEEHIVES_CONFIG)
+						ImmutableList.of(Feature.FANCY_TREE.configure(FANCY_TREE_WITH_BEEHIVES_CONFIG).withChance(0.33333334F)),
+						Feature.NORMAL_TREE.configure(OAK_TREE_WITH_BEEHIVES_CONFIG)
 					)
 				)
 				.createDecoratedFeature(Decorator.COUNT_EXTRA_HEIGHTMAP.configure(new CountExtraChanceDecoratorConfig(0, 0.05F, 1)))
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.FLOWER
-				.configure(PLAINS_FLOWER_CONFIG)
-				.createDecoratedFeature(Decorator.NOISE_HEIGHTMAP_32.configure(new NoiseHeightmapDecoratorConfig(-0.8, 15, 4)))
+			Feature.FLOWER.configure(field_21088).createDecoratedFeature(Decorator.NOISE_HEIGHTMAP_32.configure(new NoiseHeightmapDecoratorConfig(-0.8, 15, 4)))
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
 			Feature.RANDOM_PATCH
-				.configure(GRASS_CONFIG)
+				.configure(field_21201)
 				.createDecoratedFeature(Decorator.NOISE_HEIGHTMAP_DOUBLE.configure(new NoiseHeightmapDecoratorConfig(-0.8, 5, 10)))
 		);
 	}
@@ -1097,18 +1076,18 @@ public class DefaultBiomeFeatures {
 	public static void addDesertDeadBushes(Biome biome) {
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.RANDOM_PATCH.configure(DEAD_BUSH_CONFIG).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_DOUBLE.configure(new CountDecoratorConfig(2)))
+			Feature.RANDOM_PATCH.configure(field_21090).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_DOUBLE.configure(new CountDecoratorConfig(2)))
 		);
 	}
 
 	public static void addGiantTaigaGrass(Biome biome) {
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.RANDOM_PATCH.configure(TAIGA_GRASS_CONFIG).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_DOUBLE.configure(new CountDecoratorConfig(7)))
+			Feature.RANDOM_PATCH.configure(field_21202).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_DOUBLE.configure(new CountDecoratorConfig(7)))
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.RANDOM_PATCH.configure(DEAD_BUSH_CONFIG).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_DOUBLE.configure(new CountDecoratorConfig(1)))
+			Feature.RANDOM_PATCH.configure(field_21090).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_DOUBLE.configure(new CountDecoratorConfig(1)))
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
@@ -1127,28 +1106,28 @@ public class DefaultBiomeFeatures {
 	public static void addDefaultFlowers(Biome biome) {
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.FLOWER.configure(DEFAULT_FLOWER_CONFIG).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_32.configure(new CountDecoratorConfig(2)))
+			Feature.FLOWER.configure(field_21206).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_32.configure(new CountDecoratorConfig(2)))
 		);
 	}
 
 	public static void addExtraDefaultFlowers(Biome biome) {
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.FLOWER.configure(DEFAULT_FLOWER_CONFIG).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_32.configure(new CountDecoratorConfig(4)))
+			Feature.FLOWER.configure(field_21206).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_32.configure(new CountDecoratorConfig(4)))
 		);
 	}
 
 	public static void addDefaultGrass(Biome biome) {
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.RANDOM_PATCH.configure(GRASS_CONFIG).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_DOUBLE.configure(new CountDecoratorConfig(1)))
+			Feature.RANDOM_PATCH.configure(field_21201).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_DOUBLE.configure(new CountDecoratorConfig(1)))
 		);
 	}
 
 	public static void addTaigaGrass(Biome biome) {
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.RANDOM_PATCH.configure(TAIGA_GRASS_CONFIG).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_DOUBLE.configure(new CountDecoratorConfig(1)))
+			Feature.RANDOM_PATCH.configure(field_21202).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_DOUBLE.configure(new CountDecoratorConfig(1)))
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
@@ -1191,7 +1170,7 @@ public class DefaultBiomeFeatures {
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.RANDOM_PATCH.configure(PUMPKIN_PATCH_CONFIG).createDecoratedFeature(Decorator.CHANCE_HEIGHTMAP_DOUBLE.configure(new LakeDecoratorConfig(32)))
+			Feature.RANDOM_PATCH.configure(field_21092).createDecoratedFeature(Decorator.CHANCE_HEIGHTMAP_DOUBLE.configure(new LakeDecoratorConfig(32)))
 		);
 	}
 
@@ -1202,7 +1181,7 @@ public class DefaultBiomeFeatures {
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.RANDOM_PATCH.configure(PUMPKIN_PATCH_CONFIG).createDecoratedFeature(Decorator.CHANCE_HEIGHTMAP_DOUBLE.configure(new LakeDecoratorConfig(32)))
+			Feature.RANDOM_PATCH.configure(field_21092).createDecoratedFeature(Decorator.CHANCE_HEIGHTMAP_DOUBLE.configure(new LakeDecoratorConfig(32)))
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
@@ -1213,7 +1192,7 @@ public class DefaultBiomeFeatures {
 	public static void addJungleVegetation(Biome biome) {
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.RANDOM_PATCH.configure(MELON_PATCH_CONFIG).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_DOUBLE.configure(new CountDecoratorConfig(1)))
+			Feature.RANDOM_PATCH.configure(field_21091).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_DOUBLE.configure(new CountDecoratorConfig(1)))
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
@@ -1228,7 +1207,7 @@ public class DefaultBiomeFeatures {
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.RANDOM_PATCH.configure(PUMPKIN_PATCH_CONFIG).createDecoratedFeature(Decorator.CHANCE_HEIGHTMAP_DOUBLE.configure(new LakeDecoratorConfig(32)))
+			Feature.RANDOM_PATCH.configure(field_21092).createDecoratedFeature(Decorator.CHANCE_HEIGHTMAP_DOUBLE.configure(new LakeDecoratorConfig(32)))
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
@@ -1243,7 +1222,7 @@ public class DefaultBiomeFeatures {
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.RANDOM_PATCH.configure(PUMPKIN_PATCH_CONFIG).createDecoratedFeature(Decorator.CHANCE_HEIGHTMAP_DOUBLE.configure(new LakeDecoratorConfig(32)))
+			Feature.RANDOM_PATCH.configure(field_21092).createDecoratedFeature(Decorator.CHANCE_HEIGHTMAP_DOUBLE.configure(new LakeDecoratorConfig(32)))
 		);
 	}
 
@@ -1313,15 +1292,11 @@ public class DefaultBiomeFeatures {
 	public static void addSprings(Biome biome) {
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.SPRING_FEATURE
-				.configure(WATER_SPRING_CONFIG)
-				.createDecoratedFeature(Decorator.COUNT_BIASED_RANGE.configure(new RangeDecoratorConfig(50, 8, 8, 256)))
+			Feature.SPRING_FEATURE.configure(field_21111).createDecoratedFeature(Decorator.COUNT_BIASED_RANGE.configure(new RangeDecoratorConfig(50, 8, 8, 256)))
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.SPRING_FEATURE
-				.configure(LAVA_SPRING_CONFIG)
-				.createDecoratedFeature(Decorator.COUNT_VERY_BIASED_RANGE.configure(new RangeDecoratorConfig(20, 8, 16, 256)))
+			Feature.SPRING_FEATURE.configure(field_21112).createDecoratedFeature(Decorator.COUNT_VERY_BIASED_RANGE.configure(new RangeDecoratorConfig(20, 8, 16, 256)))
 		);
 	}
 

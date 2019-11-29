@@ -14,7 +14,7 @@ public class BlazeEntityRenderer extends MobEntityRenderer<BlazeEntity, BlazeEnt
 		super(entityRenderDispatcher, new BlazeEntityModel<>(), 0.5F);
 	}
 
-	protected int getBlockLight(BlazeEntity blazeEntity, float f) {
+	protected int method_24087(BlazeEntity blazeEntity, float f) {
 		return 15;
 	}
 

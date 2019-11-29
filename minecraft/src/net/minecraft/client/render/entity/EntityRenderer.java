@@ -19,25 +19,23 @@ import net.minecraft.world.LightType;
 @Environment(EnvType.CLIENT)
 public abstract class EntityRenderer<T extends Entity> {
 	protected final EntityRenderDispatcher renderManager;
-	protected float shadowSize;
-	protected float shadowDarkness = 1.0F;
+	protected float field_4673;
+	protected float field_4672 = 1.0F;
 
 	protected EntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		this.renderManager = entityRenderDispatcher;
 	}
 
-	public final int getLight(T entity, float tickDelta) {
-		return LightmapTextureManager.pack(
-			this.getBlockLight(entity, tickDelta), entity.world.getLightLevel(LightType.SKY, new BlockPos(entity.getCameraPosVec(tickDelta)))
-		);
+	public final int method_24088(T entity, float f) {
+		return LightmapTextureManager.pack(this.method_24087(entity, f), entity.world.getLightLevel(LightType.SKY, new BlockPos(entity.getCameraPosVec(f))));
 	}
 
-	protected int getBlockLight(T entity, float tickDelta) {
-		return entity.isOnFire() ? 15 : entity.world.getLightLevel(LightType.BLOCK, new BlockPos(entity.getCameraPosVec(tickDelta)));
+	protected int method_24087(T entity, float f) {
+		return entity.isOnFire() ? 15 : entity.world.getLightLevel(LightType.BLOCK, new BlockPos(entity.getCameraPosVec(f)));
 	}
 
-	public boolean shouldRender(T entity, Frustum visibleRegion, double cameraX, double cameraY, double cameraZ) {
-		if (!entity.shouldRender(cameraX, cameraY, cameraZ)) {
+	public boolean isVisible(T entity, Frustum visibleRegion, double d, double e, double f) {
+		if (!entity.shouldRenderFrom(d, e, f)) {
 			return false;
 		} else if (entity.ignoreCameraFrustum) {
 			return true;
@@ -51,13 +49,13 @@ public abstract class EntityRenderer<T extends Entity> {
 		}
 	}
 
-	public Vec3d getPositionOffset(T entity, float tickDelta) {
+	public Vec3d getPositionOffset(T entity, float f) {
 		return Vec3d.ZERO;
 	}
 
-	public void render(T entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+	public void render(T entity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		if (this.hasLabel(entity)) {
-			this.renderLabelIfPresent(entity, entity.getDisplayName().asFormattedString(), matrices, vertexConsumers, light);
+			this.renderLabelIfPresent(entity, entity.getDisplayName().asFormattedString(), matrixStack, vertexConsumerProvider, i);
 		}
 	}
 

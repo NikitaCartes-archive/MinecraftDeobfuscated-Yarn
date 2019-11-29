@@ -24,18 +24,18 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class BannerBlockEntityRenderer extends BlockEntityRenderer<BannerBlockEntity> {
-	private final ModelPart field = createField();
+	private final ModelPart area = method_24080();
 	private final ModelPart verticalBar = new ModelPart(64, 64, 44, 0);
 	private final ModelPart topBar;
 
-	public BannerBlockEntityRenderer(BlockEntityRenderDispatcher dispatcher) {
-		super(dispatcher);
+	public BannerBlockEntityRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher) {
+		super(blockEntityRenderDispatcher);
 		this.verticalBar.addCuboid(-1.0F, -30.0F, -1.0F, 2.0F, 42.0F, 2.0F, 0.0F);
 		this.topBar = new ModelPart(64, 64, 0, 42);
 		this.topBar.addCuboid(-10.0F, -32.0F, -1.0F, 20.0F, 2.0F, 2.0F, 0.0F);
 	}
 
-	public static ModelPart createField() {
+	public static ModelPart method_24080() {
 		ModelPart modelPart = new ModelPart(64, 64, 0, 0);
 		modelPart.addCuboid(-10.0F, 0.0F, -2.0F, 20.0F, 40.0F, 1.0F, 0.0F);
 		return modelPart;
@@ -74,15 +74,15 @@ public class BannerBlockEntityRenderer extends BlockEntityRenderer<BannerBlockEn
 			this.verticalBar.render(matrixStack, vertexConsumer, i, j);
 			this.topBar.render(matrixStack, vertexConsumer, i, j);
 			if (bannerBlockEntity.isPreview()) {
-				this.field.pitch = 0.0F;
+				this.area.pitch = 0.0F;
 			} else {
 				BlockPos blockPos = bannerBlockEntity.getPos();
 				float k = ((float)Math.floorMod((long)(blockPos.getX() * 7 + blockPos.getY() * 9 + blockPos.getZ() * 13) + l, 100L) + f) / 100.0F;
-				this.field.pitch = (-0.0125F + 0.01F * MathHelper.cos((float) (Math.PI * 2) * k)) * (float) Math.PI;
+				this.area.pitch = (-0.0125F + 0.01F * MathHelper.cos((float) (Math.PI * 2) * k)) * (float) Math.PI;
 			}
 
-			this.field.pivotY = -32.0F;
-			method_23802(bannerBlockEntity, matrixStack, vertexConsumerProvider, i, j, this.field, ModelLoader.BANNER_BASE, true);
+			this.area.pivotY = -32.0F;
+			method_23802(bannerBlockEntity, matrixStack, vertexConsumerProvider, i, j, this.area, ModelLoader.BANNER_BASE, true);
 			matrixStack.pop();
 			matrixStack.pop();
 		}

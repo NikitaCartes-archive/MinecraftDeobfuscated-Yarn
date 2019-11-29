@@ -25,7 +25,6 @@ import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ProjectileUtil;
-import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.EndermanEntity;
@@ -47,7 +46,6 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
@@ -244,45 +242,37 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			if (this.client.world != null) {
 				this.client.getProfiler().push("pick");
 				this.client.targetedEntity = null;
+				float f = this.client.interactionManager.method_24245();
+				Vec3d vec3d = entity.getRotationVec(1.0F);
+				Vec3d vec3d2 = entity.getCameraPosVec(tickDelta);
+				Vec3d vec3d3 = vec3d2.add(vec3d.x * (double)f, vec3d.y * (double)f, vec3d.z * (double)f);
+				float g = 1.0F;
+				Box box = entity.getBoundingBox().stretch(vec3d.multiply((double)f)).expand(1.0, 1.0, 1.0);
+				EntityHitResult entityHitResult = ProjectileUtil.rayTrace(
+					entity, vec3d2, vec3d3, box, entityx -> !entityx.isSpectator() && entityx.collides(), (double)(f * f)
+				);
+				boolean bl = entityHitResult != null;
 				double d = (double)this.client.interactionManager.getReachDistance();
-				this.client.crosshairTarget = entity.rayTrace(d, tickDelta, false);
-				Vec3d vec3d = entity.getCameraPosVec(tickDelta);
-				boolean bl = false;
-				int i = 3;
-				double e = d;
-				if (this.client.interactionManager.hasExtendedReach()) {
-					e = 6.0;
-					d = e;
+				if (entityHitResult != null && (double)entityHitResult.method_24234() < d) {
+					d = (double)entityHitResult.method_24234();
+				} else if (d > (double)f) {
+					d = (double)f;
+				}
+
+				HitResult hitResult = null;
+				if (bl) {
+					hitResult = entity.method_24216(d, tickDelta);
 				} else {
-					if (d > 3.0) {
-						bl = true;
-					}
-
-					d = d;
+					hitResult = entity.rayTrace(d, tickDelta, false);
 				}
 
-				e *= e;
-				if (this.client.crosshairTarget != null) {
-					e = this.client.crosshairTarget.getPos().squaredDistanceTo(vec3d);
-				}
-
-				Vec3d vec3d2 = entity.getRotationVec(1.0F);
-				Vec3d vec3d3 = vec3d.add(vec3d2.x * d, vec3d2.y * d, vec3d2.z * d);
-				float f = 1.0F;
-				Box box = entity.getBoundingBox().stretch(vec3d2.multiply(d)).expand(1.0, 1.0, 1.0);
-				EntityHitResult entityHitResult = ProjectileUtil.rayTrace(entity, vec3d, vec3d3, box, entityx -> !entityx.isSpectator() && entityx.collides(), e);
-				if (entityHitResult != null) {
-					Entity entity2 = entityHitResult.getEntity();
-					Vec3d vec3d4 = entityHitResult.getPos();
-					double g = vec3d.squaredDistanceTo(vec3d4);
-					if (bl && g > 9.0) {
-						this.client.crosshairTarget = BlockHitResult.createMissed(vec3d4, Direction.getFacing(vec3d2.x, vec3d2.y, vec3d2.z), new BlockPos(vec3d4));
-					} else if (g < e || this.client.crosshairTarget == null) {
-						this.client.crosshairTarget = entityHitResult;
-						if (entity2 instanceof LivingEntity || entity2 instanceof ItemFrameEntity) {
-							this.client.targetedEntity = entity2;
-						}
-					}
+				if (hitResult != null && hitResult.getType() != HitResult.Type.MISS) {
+					this.client.crosshairTarget = hitResult;
+				} else if (entityHitResult != null) {
+					this.client.crosshairTarget = entityHitResult;
+					this.client.targetedEntity = entityHitResult.getEntity();
+				} else {
+					this.client.crosshairTarget = hitResult;
 				}
 
 				this.client.getProfiler().pop();
@@ -386,7 +376,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 				this.lightmapTextureManager.enable();
 				this.firstPersonRenderer
 					.method_22976(
-						f, matrixStack, this.buffers.getEntityVertexConsumers(), this.client.player, this.client.getEntityRenderManager().getLight(this.client.player, f)
+						f, matrixStack, this.buffers.getEntityVertexConsumers(), this.client.player, this.client.getEntityRenderManager().method_23839(this.client.player, f)
 					);
 				this.lightmapTextureManager.disable();
 			}
@@ -488,7 +478,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			RenderSystem.matrixMode(5888);
 			RenderSystem.loadIdentity();
 			RenderSystem.translatef(0.0F, 0.0F, -2000.0F);
-			DiffuseLighting.enableForGui(matrixStack.peek().getModel());
+			GuiLighting.enableForItems(matrixStack.peek().getModel());
 			if (tick && this.client.world != null) {
 				this.client.getProfiler().swap("gui");
 				if (!this.client.options.hudHidden || this.client.currentScreen != null) {

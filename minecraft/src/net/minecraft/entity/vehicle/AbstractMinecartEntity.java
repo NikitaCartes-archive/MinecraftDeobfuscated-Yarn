@@ -48,7 +48,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 	private static final TrackedData<Integer> CUSTOM_BLOCK_OFFSET = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Boolean> CUSTOM_BLOCK_PRESENT = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private boolean field_7660;
-	private static final Map<RailShape, Pair<Vec3i, Vec3i>> field_7664 = Util.make(Maps.newEnumMap(RailShape.class), enumMap -> {
+	private static final Map<RailShape, Pair<Vec3i, Vec3i>> field_7664 = Util.create(Maps.newEnumMap(RailShape.class), enumMap -> {
 		Vec3i vec3i = Direction.WEST.getVector();
 		Vec3i vec3i2 = Direction.EAST.getVector();
 		Vec3i vec3i3 = Direction.NORTH.getVector();

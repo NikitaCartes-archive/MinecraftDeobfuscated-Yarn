@@ -61,6 +61,7 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ArmorItem;
+import net.minecraft.item.AxeItem;
 import net.minecraft.item.ElytraItem;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
@@ -139,6 +140,7 @@ public abstract class LivingEntity extends Entity {
 	public float lastHandSwingProgress;
 	public float handSwingProgress;
 	protected int lastAttackedTicks;
+	protected int field_21804;
 	public float lastLimbDistance;
 	public float limbDistance;
 	public float limbAngle;
@@ -848,8 +850,18 @@ public abstract class LivingEntity extends Entity {
 			}
 
 			this.limbDistance = 1.5F;
+			Entity entity = source.getAttacker();
+			int i = 10;
+			if (entity != null && entity instanceof PlayerEntity) {
+				i = Math.min(((PlayerEntity)entity).method_24221(), i);
+			}
+
+			if (source.isProjectile()) {
+				i = 0;
+			}
+
 			boolean bl2 = true;
-			if ((float)this.timeUntilRegen > 10.0F) {
+			if (this.timeUntilRegen > 0) {
 				if (amount <= this.lastDamageTaken) {
 					return false;
 				}
@@ -859,24 +871,23 @@ public abstract class LivingEntity extends Entity {
 				bl2 = false;
 			} else {
 				this.lastDamageTaken = amount;
-				this.timeUntilRegen = 20;
+				this.timeUntilRegen = i;
 				this.applyDamage(source, amount);
 				this.maxHurtTime = 10;
 				this.hurtTime = this.maxHurtTime;
 			}
 
 			this.knockbackVelocity = 0.0F;
-			Entity entity2 = source.getAttacker();
-			if (entity2 != null) {
-				if (entity2 instanceof LivingEntity) {
-					this.setAttacker((LivingEntity)entity2);
+			if (entity != null) {
+				if (entity instanceof LivingEntity) {
+					this.setAttacker((LivingEntity)entity);
 				}
 
-				if (entity2 instanceof PlayerEntity) {
+				if (entity instanceof PlayerEntity) {
 					this.playerHitTimer = 100;
-					this.attackingPlayer = (PlayerEntity)entity2;
-				} else if (entity2 instanceof WolfEntity) {
-					WolfEntity wolfEntity = (WolfEntity)entity2;
+					this.attackingPlayer = (PlayerEntity)entity;
+				} else if (entity instanceof WolfEntity) {
+					WolfEntity wolfEntity = (WolfEntity)entity;
 					if (wolfEntity.isTamed()) {
 						this.playerHitTimer = 100;
 						LivingEntity livingEntity = wolfEntity.getOwner();
@@ -913,16 +924,16 @@ public abstract class LivingEntity extends Entity {
 					this.scheduleVelocityUpdate();
 				}
 
-				if (entity2 != null) {
-					double d = entity2.getX() - this.getX();
+				if (entity != null) {
+					double d = entity.getX() - this.getX();
 
 					double e;
-					for (e = entity2.getZ() - this.getZ(); d * d + e * e < 1.0E-4; e = (Math.random() - Math.random()) * 0.01) {
+					for (e = entity.getZ() - this.getZ(); d * d + e * e < 1.0E-4; e = (Math.random() - Math.random()) * 0.01) {
 						d = (Math.random() - Math.random()) * 0.01;
 					}
 
 					this.knockbackVelocity = (float)(MathHelper.atan2(e, d) * 180.0F / (float)Math.PI - (double)this.yaw);
-					this.takeKnockback(entity2, 0.4F, d, e);
+					this.takeKnockback(entity, 0.4F, d, e);
 				} else {
 					this.knockbackVelocity = (float)((int)(Math.random() * 2.0) * 180);
 				}
@@ -954,8 +965,8 @@ public abstract class LivingEntity extends Entity {
 				}
 			}
 
-			if (entity2 instanceof ServerPlayerEntity) {
-				Criterions.PLAYER_HURT_ENTITY.trigger((ServerPlayerEntity)entity2, this, source, f, amount, bl);
+			if (entity instanceof ServerPlayerEntity) {
+				Criterions.PLAYER_HURT_ENTITY.trigger((ServerPlayerEntity)entity, this, source, f, amount, bl);
 			}
 
 			return bl3;
@@ -968,6 +979,14 @@ public abstract class LivingEntity extends Entity {
 
 	protected void knockback(LivingEntity target) {
 		target.takeKnockback(this, 0.5F, target.getX() - this.getX(), target.getZ() - this.getZ());
+		if (this.getMainHandStack().getItem() instanceof AxeItem) {
+			float f = 1.6F + (float)EnchantmentHelper.method_24230(this) * 0.5F;
+			target.disableShield(f);
+		}
+	}
+
+	public boolean disableShield(float f) {
+		return false;
 	}
 
 	private boolean tryUseTotem(DamageSource source) {
@@ -1035,7 +1054,7 @@ public abstract class LivingEntity extends Entity {
 				Vec3d vec3d2 = this.getRotationVec(1.0F);
 				Vec3d vec3d3 = vec3d.reverseSubtract(this.getPos()).normalize();
 				vec3d3 = new Vec3d(vec3d3.x, 0.0, vec3d3.z);
-				if (vec3d3.dotProduct(vec3d2) < 0.0) {
+				if (vec3d3.dotProduct(vec3d2) * (float) Math.PI < 0.87266463F) {
 					return true;
 				}
 			}
@@ -1172,7 +1191,8 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	public void takeKnockback(Entity attacker, float speed, double xMovement, double zMovement) {
-		if (!(this.random.nextDouble() < this.getAttributeInstance(EntityAttributes.KNOCKBACK_RESISTANCE).getValue())) {
+		speed = (float)((double)speed * (1.0 - this.getAttributeInstance(EntityAttributes.KNOCKBACK_RESISTANCE).getValue()));
+		if (!(speed <= 0.0F)) {
 			this.velocityDirty = true;
 			Vec3d vec3d = this.getVelocity();
 			Vec3d vec3d2 = new Vec3d(xMovement, 0.0, zMovement).normalize().multiply((double)speed);
@@ -1426,7 +1446,7 @@ public abstract class LivingEntity extends Entity {
 				boolean bl3 = status == 37;
 				boolean bl4 = status == 44;
 				this.limbDistance = 1.5F;
-				this.timeUntilRegen = 20;
+				this.timeUntilRegen = 10;
 				this.maxHurtTime = 10;
 				this.hurtTime = this.maxHurtTime;
 				this.knockbackVelocity = 0.0F;
@@ -2649,13 +2669,36 @@ public abstract class LivingEntity extends Entity {
 		this.itemUseTimeLeft = 0;
 	}
 
+	public float getAttackCooldownProgress(float f) {
+		return 2.0F;
+	}
+
 	public boolean isBlocking() {
-		if (this.isUsingItem() && !this.activeItemStack.isEmpty()) {
-			Item item = this.activeItemStack.getItem();
-			return item.getUseAction(this.activeItemStack) != UseAction.BLOCK ? false : item.getMaxUseTime(this.activeItemStack) - this.itemUseTimeLeft >= 5;
+		if (this.getAttackCooldownProgress(1.0F) < 1.95F) {
+			return false;
 		} else {
+			if (this.isUsingItem() && !this.activeItemStack.isEmpty()) {
+				Item item = this.activeItemStack.getItem();
+				if (item.getUseAction(this.activeItemStack) == UseAction.BLOCK) {
+					return true;
+				}
+			} else if ((this.isInSneakingPose() || this.hasVehicle()) && this.method_24217()) {
+				ItemStack itemStack = this.getStackInHand(Hand.OFF_HAND);
+				if (!itemStack.isEmpty() && itemStack.getItem().getUseAction(itemStack) == UseAction.BLOCK && !this.method_24218(itemStack)) {
+					return true;
+				}
+			}
+
 			return false;
 		}
+	}
+
+	public boolean method_24217() {
+		return true;
+	}
+
+	public boolean method_24218(ItemStack itemStack) {
+		return false;
 	}
 
 	public boolean method_21754() {

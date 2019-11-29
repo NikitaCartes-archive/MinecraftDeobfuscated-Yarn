@@ -21,47 +21,47 @@ public abstract class FeatureRenderer<T extends Entity, M extends EntityModel<T>
 	}
 
 	protected static <T extends LivingEntity> void render(
-		EntityModel<T> contextModel,
-		EntityModel<T> model,
-		Identifier texture,
-		MatrixStack matrices,
-		VertexConsumerProvider vertexConsumers,
-		int light,
-		T entity,
-		float limbAngle,
-		float limbDistance,
-		float age,
-		float headYaw,
-		float headPitch,
+		EntityModel<T> entityModel,
+		EntityModel<T> entityModel2,
+		Identifier identifier,
+		MatrixStack matrixStack,
+		VertexConsumerProvider vertexConsumerProvider,
+		int i,
+		T livingEntity,
 		float f,
-		float red,
-		float green,
-		float blue
+		float g,
+		float h,
+		float j,
+		float k,
+		float l,
+		float m,
+		float n,
+		float o
 	) {
-		if (!entity.isInvisible()) {
-			contextModel.copyStateTo(model);
-			model.animateModel(entity, limbAngle, limbDistance, f);
-			model.setAngles(entity, limbAngle, limbDistance, age, headYaw, headPitch);
-			renderModel(model, texture, matrices, vertexConsumers, light, entity, red, green, blue);
+		if (!livingEntity.isInvisible()) {
+			entityModel.copyStateTo(entityModel2);
+			entityModel2.animateModel(livingEntity, f, g, l);
+			entityModel2.setAngles(livingEntity, f, g, h, j, k);
+			renderModel(entityModel2, identifier, matrixStack, vertexConsumerProvider, i, livingEntity, m, n, o);
 		}
 	}
 
 	protected static <T extends LivingEntity> void renderModel(
-		EntityModel<T> model,
-		Identifier texture,
-		MatrixStack matrices,
-		VertexConsumerProvider vertexConsumers,
-		int light,
-		T entity,
-		float red,
-		float green,
-		float blue
+		EntityModel<T> entityModel,
+		Identifier identifier,
+		MatrixStack matrixStack,
+		VertexConsumerProvider vertexConsumerProvider,
+		int i,
+		T livingEntity,
+		float f,
+		float g,
+		float h
 	) {
-		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(texture));
-		model.render(matrices, vertexConsumer, light, LivingEntityRenderer.getOverlay(entity, 0.0F), red, green, blue, 1.0F);
+		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(identifier));
+		entityModel.render(matrixStack, vertexConsumer, i, LivingEntityRenderer.method_23622(livingEntity, 0.0F), f, g, h, 1.0F);
 	}
 
-	public M getContextModel() {
+	public M getModel() {
 		return this.context.getModel();
 	}
 
@@ -70,15 +70,6 @@ public abstract class FeatureRenderer<T extends Entity, M extends EntityModel<T>
 	}
 
 	public abstract void render(
-		MatrixStack matrices,
-		VertexConsumerProvider vertexConsumers,
-		int light,
-		T entity,
-		float limbAngle,
-		float limbDistance,
-		float tickDelta,
-		float customAngle,
-		float headYaw,
-		float headPitch
+		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T entity, float f, float g, float tickDelta, float h, float j, float k
 	);
 }

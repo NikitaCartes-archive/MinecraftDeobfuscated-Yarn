@@ -3,6 +3,7 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4739;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ChestBlockEntity;
@@ -34,7 +35,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
-public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> implements Waterloggable {
+public class EnderChestBlock extends class_4739<EnderChestBlockEntity> implements Waterloggable {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 14.0, 15.0);
@@ -47,9 +48,7 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public DoubleBlockProperties.PropertySource<? extends ChestBlockEntity> getBlockEntitySource(
-		BlockState state, World world, BlockPos pos, boolean ignoreBlocked
-	) {
+	public DoubleBlockProperties.PropertySource<? extends ChestBlockEntity> method_24167(BlockState blockState, World world, BlockPos blockPos, boolean bl) {
 		return DoubleBlockProperties.PropertyRetriever::getFallback;
 	}
 

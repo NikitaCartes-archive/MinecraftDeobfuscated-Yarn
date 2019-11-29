@@ -19,6 +19,8 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 	private Hand hand;
 
 	public PlayerInteractEntityC2SPacket() {
+		this.entityId = 0;
+		this.type = PlayerInteractEntityC2SPacket.InteractionType.AIR_SWING;
 	}
 
 	public PlayerInteractEntityC2SPacket(Entity entity) {
@@ -93,6 +95,7 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 	public static enum InteractionType {
 		INTERACT,
 		ATTACK,
-		INTERACT_AT;
+		INTERACT_AT,
+		AIR_SWING;
 	}
 }

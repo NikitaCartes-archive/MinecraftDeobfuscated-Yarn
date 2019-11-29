@@ -7,7 +7,7 @@ import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.Vector3f;
 
 @Environment(EnvType.CLIENT)
-public class DiffuseLighting {
+public class GuiLighting {
 	private static Matrix4f field_21797 = new Matrix4f();
 	private static Matrix4f field_21798 = new Matrix4f();
 
@@ -22,16 +22,16 @@ public class DiffuseLighting {
 		RenderSystem.disableColorMaterial();
 	}
 
-	public static void enableForLevel(Matrix4f modelMatrix) {
-		RenderSystem.setupLevelDiffuseLighting(modelMatrix);
+	public static void enable(Matrix4f matrix4f) {
+		RenderSystem.setupLevelDiffuseLighting(matrix4f);
 	}
 
-	public static void enableForGui(Matrix4f modelMatrix) {
-		field_21797 = modelMatrix.copy();
-		field_21798 = modelMatrix.copy();
+	public static void enableForItems(Matrix4f matrix4f) {
+		field_21797 = matrix4f.copy();
+		field_21798 = matrix4f.copy();
 		field_21798.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(62.0F));
 		field_21798.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(185.5F));
-		RenderSystem.setupGuiDiffuseLighting(modelMatrix);
+		RenderSystem.setupGuiDiffuseLighting(matrix4f);
 	}
 
 	public static void method_24210() {

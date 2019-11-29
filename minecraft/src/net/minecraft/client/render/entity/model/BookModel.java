@@ -35,8 +35,8 @@ public class BookModel extends Model {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
-		this.method_24184(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float r, float g, float b, float f) {
+		this.method_24184(matrixStack, vertexConsumer, i, j, r, g, b, f);
 	}
 
 	public void method_24184(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k) {

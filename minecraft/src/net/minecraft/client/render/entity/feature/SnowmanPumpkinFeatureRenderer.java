@@ -33,7 +33,7 @@ public class SnowmanPumpkinFeatureRenderer extends FeatureRenderer<SnowGolemEnti
 	) {
 		if (!snowGolemEntity.isInvisible() && snowGolemEntity.hasPumpkin()) {
 			matrixStack.push();
-			this.getContextModel().method_2834().rotate(matrixStack);
+			this.getModel().method_2834().rotate(matrixStack);
 			float m = 0.625F;
 			matrixStack.translate(0.0, -0.34375, 0.0);
 			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
@@ -50,7 +50,7 @@ public class SnowmanPumpkinFeatureRenderer extends FeatureRenderer<SnowGolemEnti
 					vertexConsumerProvider,
 					snowGolemEntity.world,
 					i,
-					LivingEntityRenderer.getOverlay(snowGolemEntity, 0.0F)
+					LivingEntityRenderer.method_23622(snowGolemEntity, 0.0F)
 				);
 			matrixStack.pop();
 		}

@@ -115,6 +115,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	private boolean field_3939;
 	private int field_3917;
 	private boolean showsDeathScreen = true;
+	private boolean field_21833;
 
 	public ClientPlayerEntity(
 		MinecraftClient client,
@@ -199,6 +200,12 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 			for (ClientPlayerTickable clientPlayerTickable : this.tickables) {
 				clientPlayerTickable.tick();
+			}
+
+			boolean bl = this.isBlocking();
+			if (bl != this.field_21833) {
+				this.field_21833 = bl;
+				this.client.gameRenderer.firstPersonRenderer.resetEquipProgress(Hand.OFF_HAND);
 			}
 		}
 	}
@@ -309,12 +316,12 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			if (g <= 0.0F) {
 				this.setHealth(f);
 				if (g < 0.0F) {
-					this.timeUntilRegen = 10;
+					this.timeUntilRegen = 5;
 				}
 			} else {
 				this.lastDamageTaken = g;
 				this.setHealth(this.getHealth());
-				this.timeUntilRegen = 20;
+				this.timeUntilRegen = 10;
 				this.applyDamage(DamageSource.GENERIC, g);
 				this.maxHurtTime = 10;
 				this.hurtTime = this.maxHurtTime;
@@ -1021,5 +1028,10 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 			return this.isInWater;
 		}
+	}
+
+	@Override
+	public boolean method_24217() {
+		return this.client.options.field_21825;
 	}
 }

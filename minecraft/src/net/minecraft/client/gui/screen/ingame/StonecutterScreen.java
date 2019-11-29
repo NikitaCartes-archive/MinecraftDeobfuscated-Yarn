@@ -44,13 +44,13 @@ public class StonecutterScreen extends AbstractContainerScreen<StonecutterContai
 		this.renderBackground();
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.minecraft.getTextureManager().bindTexture(TEXTURE);
-		int i = this.x;
-		int j = this.y;
+		int i = this.left;
+		int j = this.top;
 		this.blit(i, j, 0, 0, this.containerWidth, this.containerHeight);
 		int k = (int)(41.0F * this.scrollAmount);
 		this.blit(i + 119, j + 15 + k, 176 + (this.shouldScroll() ? 0 : 12), 0, 12, 15);
-		int l = this.x + 52;
-		int m = this.y + 14;
+		int l = this.left + 52;
+		int m = this.top + 14;
 		int n = this.scrollOffset + 12;
 		this.method_17952(mouseX, mouseY, l, m, n);
 		this.method_17951(l, m, n);
@@ -89,8 +89,8 @@ public class StonecutterScreen extends AbstractContainerScreen<StonecutterContai
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
 		this.mouseClicked = false;
 		if (this.canCraft) {
-			int i = this.x + 52;
-			int j = this.y + 14;
+			int i = this.left + 52;
+			int j = this.top + 14;
 			int k = this.scrollOffset + 12;
 
 			for (int l = this.scrollOffset; l < k; l++) {
@@ -104,8 +104,8 @@ public class StonecutterScreen extends AbstractContainerScreen<StonecutterContai
 				}
 			}
 
-			i = this.x + 119;
-			j = this.y + 9;
+			i = this.left + 119;
+			j = this.top + 9;
 			if (mouseX >= (double)i && mouseX < (double)(i + 12) && mouseY >= (double)j && mouseY < (double)(j + 54)) {
 				this.mouseClicked = true;
 			}
@@ -117,7 +117,7 @@ public class StonecutterScreen extends AbstractContainerScreen<StonecutterContai
 	@Override
 	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
 		if (this.mouseClicked && this.shouldScroll()) {
-			int i = this.y + 14;
+			int i = this.top + 14;
 			int j = i + 54;
 			this.scrollAmount = ((float)mouseY - (float)i - 7.5F) / ((float)(j - i) - 15.0F);
 			this.scrollAmount = MathHelper.clamp(this.scrollAmount, 0.0F, 1.0F);

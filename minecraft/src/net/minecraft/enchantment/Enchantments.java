@@ -1,5 +1,6 @@
 package net.minecraft.enchantment;
 
+import net.minecraft.class_4742;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.util.registry.Registry;
 
@@ -35,6 +36,7 @@ public class Enchantments {
 	public static final Enchantment FIRE_ASPECT = register("fire_aspect", new FireAspectEnchantment(Enchantment.Weight.RARE, EquipmentSlot.MAINHAND));
 	public static final Enchantment LOOTING = register("looting", new LuckEnchantment(Enchantment.Weight.RARE, EnchantmentTarget.WEAPON, EquipmentSlot.MAINHAND));
 	public static final Enchantment SWEEPING = register("sweeping", new SweepingEnchantment(Enchantment.Weight.RARE, EquipmentSlot.MAINHAND));
+	public static final Enchantment CHOPPING = register("chopping", new class_4742(Enchantment.Weight.RARE, EquipmentSlot.MAINHAND));
 	public static final Enchantment EFFICIENCY = register("efficiency", new EfficiencyEnchantment(Enchantment.Weight.COMMON, EquipmentSlot.MAINHAND));
 	public static final Enchantment SILK_TOUCH = register("silk_touch", new SilkTouchEnchantment(Enchantment.Weight.VERY_RARE, EquipmentSlot.MAINHAND));
 	public static final Enchantment UNBREAKING = register("unbreaking", new UnbreakingEnchantment(Enchantment.Weight.UNCOMMON, EquipmentSlot.MAINHAND));

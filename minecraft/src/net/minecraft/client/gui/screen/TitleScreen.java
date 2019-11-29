@@ -236,7 +236,7 @@ public class TitleScreen extends Screen {
 		int k = 30;
 		this.minecraft.getTextureManager().bindTexture(PANORAMA_OVERLAY);
 		RenderSystem.enableBlend();
-		RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
+		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.doBackgroundFade ? (float)MathHelper.ceil(MathHelper.clamp(f, 0.0F, 1.0F)) : 1.0F);
 		blit(0, 0, this.width, this.height, 0.0F, 0.0F, 16, 128, 16, 128);
 		float g = this.doBackgroundFade ? MathHelper.clamp(f - 1.0F, 0.0F, 1.0F) : 1.0F;

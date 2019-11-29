@@ -6,7 +6,7 @@ import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class MipmapHelper {
-	private static final float[] COLOR_FRACTIONS = Util.make(new float[256], fs -> {
+	private static final float[] COLOR_FRACTIONS = Util.create(new float[256], fs -> {
 		for (int i = 0; i < fs.length; i++) {
 			fs[i] = (float)Math.pow((double)((float)i / 255.0F), 2.2);
 		}

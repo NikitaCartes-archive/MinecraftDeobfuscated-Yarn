@@ -36,7 +36,7 @@ public final class NetherBiome extends Biome {
 		this.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
 			Feature.SPRING_FEATURE
-				.configure(DefaultBiomeFeatures.LAVA_SPRING_CONFIG)
+				.configure(DefaultBiomeFeatures.field_21112)
 				.createDecoratedFeature(Decorator.COUNT_VERY_BIASED_RANGE.configure(new RangeDecoratorConfig(20, 8, 16, 256)))
 		);
 		DefaultBiomeFeatures.addDefaultMushrooms(this);
@@ -47,12 +47,12 @@ public final class NetherBiome extends Biome {
 		this.addFeature(
 			GenerationStep.Feature.UNDERGROUND_DECORATION,
 			Feature.SPRING_FEATURE
-				.configure(DefaultBiomeFeatures.NETHER_SPRING_CONFIG)
+				.configure(DefaultBiomeFeatures.field_21113)
 				.createDecoratedFeature(Decorator.COUNT_RANGE.configure(new RangeDecoratorConfig(8, 4, 8, 128)))
 		);
 		this.addFeature(
 			GenerationStep.Feature.UNDERGROUND_DECORATION,
-			Feature.RANDOM_PATCH.configure(DefaultBiomeFeatures.NETHER_FIRE_CONFIG).createDecoratedFeature(Decorator.HELL_FIRE.configure(new CountDecoratorConfig(10)))
+			Feature.RANDOM_PATCH.configure(DefaultBiomeFeatures.field_21094).createDecoratedFeature(Decorator.HELL_FIRE.configure(new CountDecoratorConfig(10)))
 		);
 		this.addFeature(
 			GenerationStep.Feature.UNDERGROUND_DECORATION,
@@ -89,7 +89,7 @@ public final class NetherBiome extends Biome {
 		this.addFeature(
 			GenerationStep.Feature.UNDERGROUND_DECORATION,
 			Feature.SPRING_FEATURE
-				.configure(DefaultBiomeFeatures.ENCLOSED_NETHER_SPRING_CONFIG)
+				.configure(DefaultBiomeFeatures.field_21141)
 				.createDecoratedFeature(Decorator.COUNT_RANGE.configure(new RangeDecoratorConfig(16, 10, 20, 128)))
 		);
 		this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.GHAST, 50, 4, 4));

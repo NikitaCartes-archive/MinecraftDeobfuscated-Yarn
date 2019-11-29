@@ -22,7 +22,7 @@ import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.level.LevelGeneratorType;
 
 public class OverworldChunkGenerator extends SurfaceChunkGenerator<OverworldChunkGeneratorConfig> {
-	private static final float[] BIOME_WEIGHT_TABLE = Util.make(new float[25], fs -> {
+	private static final float[] BIOME_WEIGHT_TABLE = Util.create(new float[25], fs -> {
 		for (int i = -2; i <= 2; i++) {
 			for (int j = -2; j <= 2; j++) {
 				float f = 10.0F / MathHelper.sqrt((float)(i * i + j * j) + 0.2F);

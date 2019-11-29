@@ -12,18 +12,18 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class SpringFeatureConfig implements FeatureConfig {
-	public final FluidState state;
-	public final boolean requiresBlockBelow;
-	public final int rockCount;
-	public final int holeCount;
-	public final Set<Block> validBlocks;
+	public final FluidState field_21283;
+	public final boolean field_21284;
+	public final int field_21285;
+	public final int field_21286;
+	public final Set<Block> field_21287;
 
-	public SpringFeatureConfig(FluidState state, boolean requiresBlockBelow, int rockCount, int holeCount, Set<Block> validBlocks) {
-		this.state = state;
-		this.requiresBlockBelow = requiresBlockBelow;
-		this.rockCount = rockCount;
-		this.holeCount = holeCount;
-		this.validBlocks = validBlocks;
+	public SpringFeatureConfig(FluidState fluidState, boolean bl, int i, int j, Set<Block> set) {
+		this.field_21283 = fluidState;
+		this.field_21284 = bl;
+		this.field_21285 = i;
+		this.field_21286 = j;
+		this.field_21287 = set;
 	}
 
 	@Override
@@ -33,21 +33,21 @@ public class SpringFeatureConfig implements FeatureConfig {
 			ops.createMap(
 				ImmutableMap.of(
 					ops.createString("state"),
-					FluidState.serialize(ops, this.state).getValue(),
+					FluidState.serialize(ops, this.field_21283).getValue(),
 					ops.createString("requires_block_below"),
-					ops.createBoolean(this.requiresBlockBelow),
+					ops.createBoolean(this.field_21284),
 					ops.createString("rock_count"),
-					ops.createInt(this.rockCount),
+					ops.createInt(this.field_21285),
 					ops.createString("hole_count"),
-					ops.createInt(this.holeCount),
+					ops.createInt(this.field_21286),
 					ops.createString("valid_blocks"),
-					ops.createList(this.validBlocks.stream().map(Registry.BLOCK::getId).map(Identifier::toString).map(ops::createString))
+					ops.createList(this.field_21287.stream().map(Registry.BLOCK::getId).map(Identifier::toString).map(ops::createString))
 				)
 			)
 		);
 	}
 
-	public static <T> SpringFeatureConfig deserialize(Dynamic<T> dynamic) {
+	public static <T> SpringFeatureConfig method_23440(Dynamic<T> dynamic) {
 		return new SpringFeatureConfig(
 			(FluidState)dynamic.get("state").map(FluidState::deserialize).orElse(Fluids.EMPTY.getDefaultState()),
 			dynamic.get("requires_block_below").asBoolean(true),

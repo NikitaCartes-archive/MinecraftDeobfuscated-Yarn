@@ -10,7 +10,6 @@ import java.util.Random;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -115,9 +114,9 @@ public class EnchantmentHelper {
 		return mutableInt.intValue();
 	}
 
-	public static float getAttackDamage(ItemStack stack, EntityGroup group) {
+	public static float getAttackDamage(ItemStack stack, LivingEntity livingEntity) {
 		MutableFloat mutableFloat = new MutableFloat();
-		accept((enchantment, i) -> mutableFloat.add(enchantment.getAttackDamage(i, group)), stack);
+		accept((enchantment, i) -> mutableFloat.add(enchantment.getAttackDamage(i, livingEntity)), stack);
 		return mutableFloat.floatValue();
 	}
 
@@ -172,6 +171,10 @@ public class EnchantmentHelper {
 
 	public static int getFireAspect(LivingEntity entity) {
 		return getEquipmentLevel(Enchantments.FIRE_ASPECT, entity);
+	}
+
+	public static int method_24230(LivingEntity livingEntity) {
+		return getEquipmentLevel(Enchantments.CHOPPING, livingEntity);
 	}
 
 	public static int getRespiration(LivingEntity entity) {

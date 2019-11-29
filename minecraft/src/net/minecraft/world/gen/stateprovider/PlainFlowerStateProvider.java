@@ -11,7 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 
-public class PlainsFlowerStateProvider extends StateProvider {
+public class PlainFlowerStateProvider extends StateProvider {
 	private static final BlockState[] tulips = new BlockState[]{
 		Blocks.ORANGE_TULIP.getDefaultState(), Blocks.RED_TULIP.getDefaultState(), Blocks.PINK_TULIP.getDefaultState(), Blocks.WHITE_TULIP.getDefaultState()
 	};
@@ -19,11 +19,11 @@ public class PlainsFlowerStateProvider extends StateProvider {
 		Blocks.POPPY.getDefaultState(), Blocks.AZURE_BLUET.getDefaultState(), Blocks.OXEYE_DAISY.getDefaultState(), Blocks.CORNFLOWER.getDefaultState()
 	};
 
-	public PlainsFlowerStateProvider() {
+	public PlainFlowerStateProvider() {
 		super(StateProviderType.PLAIN_FLOWER_PROVIDER);
 	}
 
-	public <T> PlainsFlowerStateProvider(Dynamic<T> configDeserializer) {
+	public <T> PlainFlowerStateProvider(Dynamic<T> configDeserializer) {
 		this();
 	}
 

@@ -13,26 +13,26 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public abstract class StuckObjectsFeatureRenderer<T extends LivingEntity, M extends PlayerEntityModel<T>> extends FeatureRenderer<T, M> {
-	public StuckObjectsFeatureRenderer(LivingEntityRenderer<T, M> entityRenderer) {
+public abstract class StickingOutThingsFeatureRenderer<T extends LivingEntity, M extends PlayerEntityModel<T>> extends FeatureRenderer<T, M> {
+	public StickingOutThingsFeatureRenderer(LivingEntityRenderer<T, M> entityRenderer) {
 		super(entityRenderer);
 	}
 
-	protected abstract int getObjectCount(T entity);
+	protected abstract int getThingCount(T entity);
 
-	protected abstract void renderObject(
-		MatrixStack matrix, VertexConsumerProvider vertexConsumers, int i, Entity entity, float tickDelta, float f, float g, float h
+	protected abstract void renderThing(
+		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, Entity entity, float tickDelta, float f, float g, float h
 	);
 
 	public void render(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l
 	) {
-		int m = this.getObjectCount(livingEntity);
+		int m = this.getThingCount(livingEntity);
 		Random random = new Random((long)livingEntity.getEntityId());
 		if (m > 0) {
 			for (int n = 0; n < m; n++) {
 				matrixStack.push();
-				ModelPart modelPart = this.getContextModel().getRandomPart(random);
+				ModelPart modelPart = this.getModel().getRandomPart(random);
 				ModelPart.Cuboid cuboid = modelPart.getRandomCuboid(random);
 				modelPart.rotate(matrixStack);
 				float o = random.nextFloat();
@@ -45,7 +45,7 @@ public abstract class StuckObjectsFeatureRenderer<T extends LivingEntity, M exte
 				o = -1.0F * (o * 2.0F - 1.0F);
 				p = -1.0F * (p * 2.0F - 1.0F);
 				q = -1.0F * (q * 2.0F - 1.0F);
-				this.renderObject(matrixStack, vertexConsumerProvider, i, livingEntity, o, p, q, h);
+				this.renderThing(matrixStack, vertexConsumerProvider, i, livingEntity, o, p, q, h);
 				matrixStack.pop();
 			}
 		}

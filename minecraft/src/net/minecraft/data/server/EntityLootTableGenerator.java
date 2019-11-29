@@ -778,7 +778,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 							ItemEntry.builder(Items.TIPPED_ARROW)
 								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)).withLimit(1))
-								.withFunction(SetNbtLootFunction.builder(Util.make(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:slowness"))))
+								.withFunction(SetNbtLootFunction.builder(Util.create(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:slowness"))))
 						)
 						.withCondition(KilledByPlayerLootCondition.builder())
 				)

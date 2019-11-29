@@ -44,9 +44,9 @@ public class ItemPickupParticle extends Particle {
 	public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
 		float f = ((float)this.field_3826 + tickDelta) / 3.0F;
 		f *= f;
-		double d = MathHelper.lerp((double)tickDelta, this.field_3821.lastRenderX, this.field_3821.getX());
-		double e = MathHelper.lerp((double)tickDelta, this.field_3821.lastRenderY, this.field_3821.getY()) + 0.5;
-		double g = MathHelper.lerp((double)tickDelta, this.field_3821.lastRenderZ, this.field_3821.getZ());
+		double d = MathHelper.lerp((double)tickDelta, this.field_3821.prevRenderX, this.field_3821.getX());
+		double e = MathHelper.lerp((double)tickDelta, this.field_3821.prevRenderY, this.field_3821.getY()) + 0.5;
+		double g = MathHelper.lerp((double)tickDelta, this.field_3821.prevRenderZ, this.field_3821.getZ());
 		double h = MathHelper.lerp((double)f, this.field_3823.getX(), d);
 		double i = MathHelper.lerp((double)f, this.field_3823.getY(), e);
 		double j = MathHelper.lerp((double)f, this.field_3823.getZ(), g);
@@ -62,7 +62,7 @@ public class ItemPickupParticle extends Particle {
 				tickDelta,
 				new MatrixStack(),
 				immediate,
-				this.field_3824.getLight(this.field_3823, tickDelta)
+				this.field_3824.method_23839(this.field_3823, tickDelta)
 			);
 		immediate.draw();
 	}

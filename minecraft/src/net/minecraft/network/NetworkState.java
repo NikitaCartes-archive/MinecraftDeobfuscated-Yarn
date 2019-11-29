@@ -416,7 +416,7 @@ public enum NetworkState {
 	}
 
 	static class PacketHandler<T extends PacketListener> {
-		private final Object2IntMap<Class<? extends Packet<T>>> packetIds = Util.make(
+		private final Object2IntMap<Class<? extends Packet<T>>> packetIds = Util.create(
 			new Object2IntOpenHashMap<>(), object2IntOpenHashMap -> object2IntOpenHashMap.defaultReturnValue(-1)
 		);
 		private final List<Supplier<? extends Packet<T>>> packetFactories = Lists.<Supplier<? extends Packet<T>>>newArrayList();

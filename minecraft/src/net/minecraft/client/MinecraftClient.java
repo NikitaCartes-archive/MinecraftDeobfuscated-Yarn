@@ -230,6 +230,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public final TextRenderer textRenderer;
 	public final GameRenderer gameRenderer;
 	public final DebugRenderer debugRenderer;
+	protected boolean field_21821;
 	private final AtomicReference<WorldGenerationProgressTracker> worldGenProgressTracker = new AtomicReference();
 	public final InGameHud inGameHud;
 	public final GameOptions options;
@@ -1120,6 +1121,10 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 						this.player.swingHand(Hand.MAIN_HAND);
 					}
 				}
+
+				this.field_21821 = false;
+			} else if (bl && this.player.getAttackCooldownProgress(0.0F) >= 1.2F) {
+				this.doAttack();
 			} else {
 				this.interactionManager.cancelBlockBreaking();
 			}
@@ -1133,27 +1138,40 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				if (this.interactionManager.hasLimitedAttackSpeed()) {
 					this.attackCooldown = 10;
 				}
-			} else if (!this.player.isRiding()) {
-				switch (this.crosshairTarget.getType()) {
-					case ENTITY:
-						this.interactionManager.attackEntity(this.player, ((EntityHitResult)this.crosshairTarget).getEntity());
-						break;
-					case BLOCK:
-						BlockHitResult blockHitResult = (BlockHitResult)this.crosshairTarget;
-						BlockPos blockPos = blockHitResult.getBlockPos();
-						if (!this.world.getBlockState(blockPos).isAir()) {
-							this.interactionManager.attackBlock(blockPos, blockHitResult.getSide());
-							break;
-						}
-					case MISS:
-						if (this.interactionManager.hasLimitedAttackSpeed()) {
-							this.attackCooldown = 10;
-						}
+			} else {
+				if (this.crosshairTarget.getType() != HitResult.Type.BLOCK) {
+					float f = this.player.getAttackCooldownProgress(0.0F);
+					if (f < 0.8F) {
+						return;
+					}
 
-						this.player.resetLastAttackedTicks();
+					if (f < 1.0F) {
+						this.field_21821 = true;
+						return;
+					}
 				}
 
-				this.player.swingHand(Hand.MAIN_HAND);
+				this.field_21821 = false;
+				if (!this.player.isRiding()) {
+					switch (this.crosshairTarget.getType()) {
+						case ENTITY:
+							if (((EntityHitResult)this.crosshairTarget).method_24234() <= this.player.method_24222(0.0F)) {
+								this.interactionManager.attackEntity(this.player, ((EntityHitResult)this.crosshairTarget).getEntity());
+							}
+							break;
+						case BLOCK:
+							BlockHitResult blockHitResult = (BlockHitResult)this.crosshairTarget;
+							BlockPos blockPos = blockHitResult.getBlockPos();
+							if (!this.world.getBlockState(blockPos).isAir()) {
+								this.interactionManager.attackBlock(blockPos, blockHitResult.getSide());
+								break;
+							}
+						case MISS:
+							this.interactionManager.method_24243(this.player);
+					}
+
+					this.player.swingHand(Hand.MAIN_HAND);
+				}
 			}
 		}
 	}
@@ -1173,17 +1191,19 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 							case ENTITY:
 								EntityHitResult entityHitResult = (EntityHitResult)this.crosshairTarget;
 								Entity entity = entityHitResult.getEntity();
-								ActionResult actionResult = this.interactionManager.interactEntityAtLocation(this.player, entity, entityHitResult, hand);
-								if (!actionResult.isAccepted()) {
-									actionResult = this.interactionManager.interactEntity(this.player, entity, hand);
-								}
-
-								if (actionResult.isAccepted()) {
-									if (actionResult.shouldSwingHand()) {
-										this.player.swingHand(hand);
+								if (!(entityHitResult.method_24234() > this.interactionManager.method_24244())) {
+									ActionResult actionResult = this.interactionManager.interactEntityAtLocation(this.player, entity, entityHitResult, hand);
+									if (!actionResult.isAccepted()) {
+										actionResult = this.interactionManager.interactEntity(this.player, entity, hand);
 									}
 
-									return;
+									if (actionResult.isAccepted()) {
+										if (actionResult.shouldSwingHand()) {
+											this.player.swingHand(hand);
+										}
+
+										return;
+									}
 								}
 								break;
 							case BLOCK:
@@ -1448,7 +1468,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.doItemUse();
 		}
 
-		this.handleBlockBreaking(this.currentScreen == null && this.options.keyAttack.isPressed() && this.mouse.isCursorLocked());
+		this.handleBlockBreaking(this.currentScreen == null && (this.options.keyAttack.isPressed() || this.field_21821) && this.mouse.isCursorLocked());
 	}
 
 	public void startIntegratedServer(String name, String displayName, @Nullable LevelInfo levelInfo) {

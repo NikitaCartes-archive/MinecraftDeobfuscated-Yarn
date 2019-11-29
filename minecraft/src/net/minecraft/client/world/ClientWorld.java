@@ -86,7 +86,7 @@ public class ClientWorld extends World {
 	private Scoreboard scoreboard = new Scoreboard();
 	private final Map<String, MapState> mapStates = Maps.<String, MapState>newHashMap();
 	private int lightningTicksLeft;
-	private final Object2ObjectArrayMap<ColorResolver, BiomeColorCache> colorCache = Util.make(new Object2ObjectArrayMap<>(3), object2ObjectArrayMap -> {
+	private final Object2ObjectArrayMap<ColorResolver, BiomeColorCache> colorCache = Util.create(new Object2ObjectArrayMap<>(3), object2ObjectArrayMap -> {
 		object2ObjectArrayMap.put(BiomeColors.GRASS_COLOR, new BiomeColorCache());
 		object2ObjectArrayMap.put(BiomeColors.FOLIAGE_COLOR, new BiomeColorCache());
 		object2ObjectArrayMap.put(BiomeColors.WATER_COLOR, new BiomeColorCache());
@@ -558,8 +558,8 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public void updateListeners(BlockPos pos, BlockState oldState, BlockState newState, int flags) {
-		this.worldRenderer.updateBlock(this, pos, oldState, newState, flags);
+	public void updateListeners(BlockPos blockPos, BlockState blockState, BlockState blockState2, int i) {
+		this.worldRenderer.updateBlock(this, blockPos, blockState, blockState2, i);
 	}
 
 	@Override

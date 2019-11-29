@@ -27,7 +27,7 @@ public class EnderCrystalEntityRenderer extends EntityRenderer<EnderCrystalEntit
 
 	public EnderCrystalEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
-		this.shadowSize = 0.5F;
+		this.field_4673 = 0.5F;
 		this.field_21004 = new ModelPart(64, 32, 0, 0);
 		this.field_21004.addCuboid(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F);
 		this.field_21003 = new ModelPart(64, 32, 32, 0);
@@ -90,7 +90,7 @@ public class EnderCrystalEntityRenderer extends EntityRenderer<EnderCrystalEntit
 		return SKIN;
 	}
 
-	public boolean shouldRender(EnderCrystalEntity enderCrystalEntity, Frustum frustum, double d, double e, double f) {
-		return super.shouldRender(enderCrystalEntity, frustum, d, e, f) || enderCrystalEntity.getBeamTarget() != null;
+	public boolean isVisible(EnderCrystalEntity enderCrystalEntity, Frustum frustum, double d, double e, double f) {
+		return super.isVisible(enderCrystalEntity, frustum, d, e, f) || enderCrystalEntity.getBeamTarget() != null;
 	}
 }

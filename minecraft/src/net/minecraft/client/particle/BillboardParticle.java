@@ -38,7 +38,7 @@ public abstract class BillboardParticle extends Particle {
 		}
 
 		Vector3f vector3f = new Vector3f(-1.0F, -1.0F, 0.0F);
-		vector3f.rotate(quaternion);
+		vector3f.method_19262(quaternion);
 		Vector3f[] vector3fs = new Vector3f[]{
 			new Vector3f(-1.0F, -1.0F, 0.0F), new Vector3f(-1.0F, 1.0F, 0.0F), new Vector3f(1.0F, 1.0F, 0.0F), new Vector3f(1.0F, -1.0F, 0.0F)
 		};
@@ -46,7 +46,7 @@ public abstract class BillboardParticle extends Particle {
 
 		for (int k = 0; k < 4; k++) {
 			Vector3f vector3f2 = vector3fs[k];
-			vector3f2.rotate(quaternion);
+			vector3f2.method_19262(quaternion);
 			vector3f2.scale(j);
 			vector3f2.add(f, g, h);
 		}

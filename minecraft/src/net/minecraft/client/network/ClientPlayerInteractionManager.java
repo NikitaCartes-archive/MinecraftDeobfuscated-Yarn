@@ -167,7 +167,6 @@ public class ClientPlayerInteractionManager {
 			this.breakingBlock = false;
 			this.currentBreakingProgress = 0.0F;
 			this.client.world.setBlockBreakingInfo(this.client.player.getEntityId(), this.currentBreakingPos, -1);
-			this.client.player.resetLastAttackedTicks();
 		}
 	}
 
@@ -221,7 +220,15 @@ public class ClientPlayerInteractionManager {
 	}
 
 	public float getReachDistance() {
-		return this.gameMode.isCreative() ? 5.0F : 4.5F;
+		return this.gameMode.method_24233();
+	}
+
+	public float method_24244() {
+		return this.gameMode.method_24231();
+	}
+
+	public float method_24245() {
+		return this.gameMode.method_24232();
 	}
 
 	public void tick() {
@@ -342,6 +349,14 @@ public class ClientPlayerInteractionManager {
 		return this.gameMode == GameMode.SPECTATOR ? ActionResult.PASS : entity.interactAt(player, vec3d, hand);
 	}
 
+	public void method_24243(PlayerEntity playerEntity) {
+		this.syncSelectedSlot();
+		this.networkHandler.sendPacket(new PlayerInteractEntityC2SPacket());
+		if (this.gameMode != GameMode.SPECTATOR) {
+			playerEntity.resetLastAttackedTicks();
+		}
+	}
+
 	public ItemStack clickSlot(int syncId, int slotId, int mouseButton, SlotActionType actionType, PlayerEntity player) {
 		short s = player.container.getNextActionId(player.inventory);
 		ItemStack itemStack = player.container.onSlotClick(slotId, mouseButton, actionType, player);
@@ -384,10 +399,6 @@ public class ClientPlayerInteractionManager {
 	}
 
 	public boolean hasCreativeInventory() {
-		return this.gameMode.isCreative();
-	}
-
-	public boolean hasExtendedReach() {
 		return this.gameMode.isCreative();
 	}
 

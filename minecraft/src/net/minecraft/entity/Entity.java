@@ -141,9 +141,9 @@ public abstract class Entity implements Nameable, CommandOutput {
 	public float fallDistance;
 	private float nextStepSoundDistance = 1.0F;
 	private float nextFlySoundDistance = 1.0F;
-	public double lastRenderX;
-	public double lastRenderY;
-	public double lastRenderZ;
+	public double prevRenderX;
+	public double prevRenderY;
+	public double prevRenderZ;
 	public float stepHeight;
 	public boolean noClip;
 	public float pushSpeedReduction;
@@ -1120,9 +1120,9 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.prevX = d;
 		this.prevY = e;
 		this.prevZ = f;
-		this.lastRenderX = d;
-		this.lastRenderY = e;
-		this.lastRenderZ = f;
+		this.prevRenderX = d;
+		this.prevRenderY = e;
+		this.prevRenderZ = f;
 	}
 
 	public float distanceTo(Entity entity) {
@@ -1257,6 +1257,14 @@ public abstract class Entity implements Nameable, CommandOutput {
 			);
 	}
 
+	@Environment(EnvType.CLIENT)
+	public HitResult method_24216(double d, float f) {
+		Vec3d vec3d = this.getCameraPosVec(f);
+		Vec3d vec3d2 = this.getRotationVec(f);
+		Vec3d vec3d3 = vec3d.add(vec3d2.x * d, vec3d2.y * d, vec3d2.z * d);
+		return this.world.rayTrace(new RayTraceContext(vec3d, vec3d3, RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, this));
+	}
+
 	public boolean collides() {
 		return false;
 	}
@@ -1272,16 +1280,16 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean shouldRender(double cameraX, double cameraY, double cameraZ) {
-		double d = this.getX() - cameraX;
-		double e = this.getY() - cameraY;
-		double f = this.getZ() - cameraZ;
+	public boolean shouldRenderFrom(double x, double y, double z) {
+		double d = this.getX() - x;
+		double e = this.getY() - y;
+		double f = this.getZ() - z;
 		double g = d * d + e * e + f * f;
-		return this.shouldRender(g);
+		return this.shouldRenderAtDistance(g);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean shouldRender(double distance) {
+	public boolean shouldRenderAtDistance(double distance) {
 		double d = this.getBoundingBox().getAverageSideLength();
 		if (Double.isNaN(d)) {
 			d = 1.0;

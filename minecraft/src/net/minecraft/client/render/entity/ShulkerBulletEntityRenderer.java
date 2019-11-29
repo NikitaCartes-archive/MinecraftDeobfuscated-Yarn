@@ -23,7 +23,7 @@ public class ShulkerBulletEntityRenderer extends EntityRenderer<ShulkerBulletEnt
 		super(entityRenderDispatcher);
 	}
 
-	protected int getBlockLight(ShulkerBulletEntity shulkerBulletEntity, float f) {
+	protected int method_24087(ShulkerBulletEntity shulkerBulletEntity, float f) {
 		return 15;
 	}
 

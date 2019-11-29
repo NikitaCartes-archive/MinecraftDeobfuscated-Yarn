@@ -28,8 +28,8 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 	protected int containerHeight = 166;
 	protected final T container;
 	protected final PlayerInventory playerInventory;
-	protected int x;
-	protected int y;
+	protected int left;
+	protected int top;
 	protected Slot focusedSlot;
 	private Slot touchDragSlotStart;
 	private boolean touchIsRightClickDrag;
@@ -63,14 +63,14 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 	@Override
 	protected void init() {
 		super.init();
-		this.x = (this.width - this.containerWidth) / 2;
-		this.y = (this.height - this.containerHeight) / 2;
+		this.left = (this.width - this.containerWidth) / 2;
+		this.top = (this.height - this.containerHeight) / 2;
 	}
 
 	@Override
 	public void render(int mouseX, int mouseY, float delta) {
-		int i = this.x;
-		int j = this.y;
+		int i = this.left;
+		int j = this.top;
 		this.drawBackground(delta, mouseX, mouseY);
 		RenderSystem.disableRescaleNormal();
 		RenderSystem.disableDepthTest();
@@ -266,8 +266,8 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 			this.isDoubleClicking = this.lastClickedSlot == slot && l - this.lastButtonClickTime < 250L && this.lastClickedButton == button;
 			this.cancelNextRelease = false;
 			if (button == 0 || button == 1 || bl) {
-				int i = this.x;
-				int j = this.y;
+				int i = this.left;
+				int j = this.top;
 				boolean bl2 = this.isClickOutsideBounds(mouseX, mouseY, i, j, button);
 				int k = -1;
 				if (slot != null) {
@@ -384,8 +384,8 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 	@Override
 	public boolean mouseReleased(double mouseX, double mouseY, int button) {
 		Slot slot = this.getSlotAt(mouseX, mouseY);
-		int i = this.x;
-		int j = this.y;
+		int i = this.left;
+		int j = this.top;
 		boolean bl = this.isClickOutsideBounds(mouseX, mouseY, i, j, button);
 		int k = -1;
 		if (slot != null) {
@@ -498,8 +498,8 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 	}
 
 	protected boolean isPointWithinBounds(int xPosition, int yPosition, int width, int height, double pointX, double pointY) {
-		int i = this.x;
-		int j = this.y;
+		int i = this.left;
+		int j = this.top;
 		pointX -= (double)i;
 		pointY -= (double)j;
 		return pointX >= (double)(xPosition - 1)

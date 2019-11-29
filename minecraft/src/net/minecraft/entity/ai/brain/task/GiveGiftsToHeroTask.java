@@ -26,7 +26,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.village.VillagerProfession;
 
 public class GiveGiftsToHeroTask extends Task<VillagerEntity> {
-	private static final Map<VillagerProfession, Identifier> GIFTS = Util.make(Maps.<VillagerProfession, Identifier>newHashMap(), hashMap -> {
+	private static final Map<VillagerProfession, Identifier> GIFTS = Util.create(Maps.<VillagerProfession, Identifier>newHashMap(), hashMap -> {
 		hashMap.put(VillagerProfession.ARMORER, LootTables.HERO_OF_THE_VILLAGE_ARMORER_GIFT_GAMEPLAY);
 		hashMap.put(VillagerProfession.BUTCHER, LootTables.HERO_OF_THE_VILLAGE_BUTCHER_GIFT_GAMEPLAY);
 		hashMap.put(VillagerProfession.CARTOGRAPHER, LootTables.HERO_OF_THE_VILLAGE_CARTOGRAPHER_GIFT_GAMEPLAY);

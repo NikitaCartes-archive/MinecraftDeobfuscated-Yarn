@@ -469,7 +469,7 @@ public class ArmorStandEntity extends LivingEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean shouldRender(double distance) {
+	public boolean shouldRenderAtDistance(double distance) {
 		double d = this.getBoundingBox().getAverageSideLength() * 4.0;
 		if (Double.isNaN(d) || d == 0.0) {
 			d = 4.0;

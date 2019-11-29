@@ -2,6 +2,7 @@ package net.minecraft.item;
 
 import com.google.common.collect.ImmutableSet;
 import java.util.Set;
+import net.minecraft.class_4741;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -91,8 +92,8 @@ public class PickaxeItem extends MiningToolItem {
 		Blocks.YELLOW_SHULKER_BOX
 	);
 
-	protected PickaxeItem(ToolMaterial material, int attackDamage, float attackSpeed, Item.Settings settings) {
-		super((float)attackDamage, attackSpeed, material, EFFECTIVE_BLOCKS, settings);
+	protected PickaxeItem(ToolMaterial material, Item.Settings settings) {
+		super(material, EFFECTIVE_BLOCKS, settings);
 	}
 
 	@Override
@@ -121,5 +122,10 @@ public class PickaxeItem extends MiningToolItem {
 	public float getMiningSpeed(ItemStack stack, BlockState state) {
 		Material material = state.getMaterial();
 		return material != Material.METAL && material != Material.ANVIL && material != Material.STONE ? super.getMiningSpeed(stack, state) : this.miningSpeed;
+	}
+
+	@Override
+	protected class_4741 method_24225() {
+		return class_4741.field_21809;
 	}
 }

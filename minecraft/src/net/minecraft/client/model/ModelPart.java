@@ -104,22 +104,22 @@ public class ModelPart {
 		this.pivotZ = z;
 	}
 
-	public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay) {
-		this.render(matrices, vertexConsumer, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
+	public void render(MatrixStack matrix, VertexConsumer vertexConsumer, int i, int j) {
+		this.render(matrix, vertexConsumer, i, j, 1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
-	public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
+	public void render(MatrixStack matrix, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k) {
 		if (this.visible) {
 			if (!this.cuboids.isEmpty() || !this.children.isEmpty()) {
-				matrices.push();
-				this.rotate(matrices);
-				this.renderCuboids(matrices.peek(), vertexConsumer, light, overlay, red, green, blue, alpha);
+				matrix.push();
+				this.rotate(matrix);
+				this.renderCuboids(matrix.peek(), vertexConsumer, i, j, f, g, h, k);
 
 				for (ModelPart modelPart : this.children) {
-					modelPart.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+					modelPart.render(matrix, vertexConsumer, i, j, f, g, h, k);
 				}
 
-				matrices.pop();
+				matrix.pop();
 			}
 		}
 	}
@@ -139,26 +139,26 @@ public class ModelPart {
 		}
 	}
 
-	private void renderCuboids(MatrixStack.Entry matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
-		Matrix4f matrix4f = matrices.getModel();
-		Matrix3f matrix3f = matrices.getNormal();
+	private void renderCuboids(MatrixStack.Entry entry, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k) {
+		Matrix4f matrix4f = entry.getModel();
+		Matrix3f matrix3f = entry.getNormal();
 
 		for (ModelPart.Cuboid cuboid : this.cuboids) {
 			for (ModelPart.Quad quad : cuboid.sides) {
 				Vector3f vector3f = quad.direction.copy();
 				vector3f.transform(matrix3f);
-				float f = vector3f.getX();
-				float g = vector3f.getY();
-				float h = vector3f.getZ();
+				float l = vector3f.getX();
+				float m = vector3f.getY();
+				float n = vector3f.getZ();
 
-				for (int i = 0; i < 4; i++) {
-					ModelPart.Vertex vertex = quad.vertices[i];
-					float j = vertex.pos.getX() / 16.0F;
-					float k = vertex.pos.getY() / 16.0F;
-					float l = vertex.pos.getZ() / 16.0F;
-					Vector4f vector4f = new Vector4f(j, k, l, 1.0F);
+				for (int o = 0; o < 4; o++) {
+					ModelPart.Vertex vertex = quad.vertices[o];
+					float p = vertex.pos.getX() / 16.0F;
+					float q = vertex.pos.getY() / 16.0F;
+					float r = vertex.pos.getZ() / 16.0F;
+					Vector4f vector4f = new Vector4f(p, q, r, 1.0F);
 					vector4f.transform(matrix4f);
-					vertexConsumer.vertex(vector4f.getX(), vector4f.getY(), vector4f.getZ(), red, green, blue, alpha, vertex.u, vertex.v, overlay, light, f, g, h);
+					vertexConsumer.elements(vector4f.getX(), vector4f.getY(), vector4f.getZ(), f, g, h, k, vertex.u, vertex.v, j, i, l, m, n);
 				}
 			}
 		}

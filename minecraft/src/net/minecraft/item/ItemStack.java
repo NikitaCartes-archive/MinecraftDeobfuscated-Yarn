@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4741;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -32,7 +33,6 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.enchantment.UnbreakingEnchantment;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -562,12 +562,15 @@ public final class ItemStack {
 					double d = entityAttributeModifier.getAmount();
 					boolean bl = false;
 					if (player != null) {
-						if (entityAttributeModifier.getId() == Item.ATTACK_DAMAGE_MODIFIER_UUID) {
+						if (entityAttributeModifier.getId() == class_4741.field_21813) {
 							d += player.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getBaseValue();
-							d += (double)EnchantmentHelper.getAttackDamage(this, EntityGroup.DEFAULT);
+							d += (double)EnchantmentHelper.getAttackDamage(this, null);
 							bl = true;
-						} else if (entityAttributeModifier.getId() == Item.ATTACK_SPEED_MODIFIER_UUID) {
-							d += player.getAttributeInstance(EntityAttributes.ATTACK_SPEED).getBaseValue();
+						} else if (entityAttributeModifier.getId() == class_4741.field_21814) {
+							d += player.getAttributeInstance(EntityAttributes.ATTACK_SPEED).getBaseValue() - 1.5;
+							bl = true;
+						} else if (entityAttributeModifier.getId() == class_4741.field_21815) {
+							d += player.getAttributeInstance(EntityAttributes.field_21805).getBaseValue();
 							bl = true;
 						}
 					}

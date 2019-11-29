@@ -19,7 +19,7 @@ public abstract class TreeDecorator implements DynamicSerializable {
 		this.field_21319 = treeDecoratorType;
 	}
 
-	public abstract void generate(IWorld world, Random random, List<BlockPos> list, List<BlockPos> list2, Set<BlockPos> set, BlockBox box);
+	public abstract void generate(IWorld iWorld, Random random, List<BlockPos> list, List<BlockPos> list2, Set<BlockPos> set, BlockBox blockBox);
 
 	protected void method_23471(ModifiableWorld modifiableWorld, BlockPos blockPos, BooleanProperty booleanProperty, Set<BlockPos> set, BlockBox blockBox) {
 		this.method_23470(modifiableWorld, blockPos, Blocks.VINE.getDefaultState().with(booleanProperty, Boolean.valueOf(true)), set, blockBox);

@@ -55,7 +55,7 @@ import net.minecraft.world.World;
 
 public class SheepEntity extends AnimalEntity {
 	private static final TrackedData<Byte> COLOR = DataTracker.registerData(SheepEntity.class, TrackedDataHandlerRegistry.BYTE);
-	private static final Map<DyeColor, ItemConvertible> DROPS = Util.make(Maps.newEnumMap(DyeColor.class), enumMap -> {
+	private static final Map<DyeColor, ItemConvertible> DROPS = Util.create(Maps.newEnumMap(DyeColor.class), enumMap -> {
 		enumMap.put(DyeColor.WHITE, Blocks.WHITE_WOOL);
 		enumMap.put(DyeColor.ORANGE, Blocks.ORANGE_WOOL);
 		enumMap.put(DyeColor.MAGENTA, Blocks.MAGENTA_WOOL);

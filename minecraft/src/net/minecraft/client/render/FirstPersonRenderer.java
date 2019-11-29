@@ -331,7 +331,9 @@ public class FirstPersonRenderer {
 			);
 		} else {
 			boolean bl2 = arm == Arm.RIGHT;
-			if (player.isUsingItem() && player.getItemUseTimeLeft() > 0 && player.getActiveHand() == hand) {
+			boolean bl3 = player.isUsingItem() && player.getActiveHand() == hand;
+			boolean bl4 = !bl3 && hand == Hand.OFF_HAND && player.isBlocking();
+			if (bl3 || bl4) {
 				int n = bl2 ? 1 : -1;
 				switch (item.getUseAction()) {
 					case NONE:
@@ -351,22 +353,22 @@ public class FirstPersonRenderer {
 						matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-13.935F));
 						matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion((float)n * 35.3F));
 						matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion((float)n * -9.785F));
-						float ox = (float)item.getMaxUseTime() - ((float)this.client.player.getItemUseTimeLeft() - tickDelta + 1.0F);
-						float gxx = ox / 20.0F;
-						gxx = (gxx * gxx + gxx * 2.0F) / 3.0F;
-						if (gxx > 1.0F) {
-							gxx = 1.0F;
+						float hxx = (float)item.getMaxUseTime() - ((float)this.client.player.getItemUseTimeLeft() - tickDelta + 1.0F);
+						float kx = hxx / 20.0F;
+						kx = (kx * kx + kx * 2.0F) / 3.0F;
+						if (kx > 1.0F) {
+							kx = 1.0F;
 						}
 
-						if (gxx > 0.1F) {
-							float hx = MathHelper.sin((ox - 0.1F) * 1.3F);
-							float k = gxx - 0.1F;
-							float l = hx * k;
-							matrixStack.translate((double)(l * 0.0F), (double)(l * 0.004F), (double)(l * 0.0F));
+						if (kx > 0.1F) {
+							float l = MathHelper.sin((hxx - 0.1F) * 1.3F);
+							float m = kx - 0.1F;
+							float o = l * m;
+							matrixStack.translate((double)(o * 0.0F), (double)(o * 0.004F), (double)(o * 0.0F));
 						}
 
-						matrixStack.translate((double)(gxx * 0.0F), (double)(gxx * 0.0F), (double)(gxx * 0.04F));
-						matrixStack.scale(1.0F, 1.0F, 1.0F + gxx * 0.2F);
+						matrixStack.translate((double)(kx * 0.0F), (double)(kx * 0.0F), (double)(kx * 0.04F));
+						matrixStack.scale(1.0F, 1.0F, 1.0F + kx * 0.2F);
 						matrixStack.multiply(Vector3f.NEGATIVE_Y.getDegreesQuaternion((float)n * 45.0F));
 						break;
 					case SPEAR:
@@ -375,21 +377,21 @@ public class FirstPersonRenderer {
 						matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-55.0F));
 						matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion((float)n * 35.3F));
 						matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion((float)n * -9.785F));
-						float o = (float)item.getMaxUseTime() - ((float)this.client.player.getItemUseTimeLeft() - tickDelta + 1.0F);
-						float gx = o / 10.0F;
-						if (gx > 1.0F) {
-							gx = 1.0F;
+						float hx = (float)item.getMaxUseTime() - ((float)this.client.player.getItemUseTimeLeft() - tickDelta + 1.0F);
+						float k = hx / 10.0F;
+						if (k > 1.0F) {
+							k = 1.0F;
 						}
 
-						if (gx > 0.1F) {
-							float hx = MathHelper.sin((o - 0.1F) * 1.3F);
-							float k = gx - 0.1F;
-							float l = hx * k;
-							matrixStack.translate((double)(l * 0.0F), (double)(l * 0.004F), (double)(l * 0.0F));
+						if (k > 0.1F) {
+							float l = MathHelper.sin((hx - 0.1F) * 1.3F);
+							float m = k - 0.1F;
+							float o = l * m;
+							matrixStack.translate((double)(o * 0.0F), (double)(o * 0.004F), (double)(o * 0.0F));
 						}
 
-						matrixStack.translate(0.0, 0.0, (double)(gx * 0.2F));
-						matrixStack.scale(1.0F, 1.0F, 1.0F + gx * 0.2F);
+						matrixStack.translate(0.0, 0.0, (double)(k * 0.2F));
+						matrixStack.scale(1.0F, 1.0F, 1.0F + k * 0.2F);
 						matrixStack.multiply(Vector3f.NEGATIVE_Y.getDegreesQuaternion((float)n * 45.0F));
 				}
 			} else if (player.isUsingRiptide()) {
@@ -399,11 +401,11 @@ public class FirstPersonRenderer {
 				matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion((float)n * 65.0F));
 				matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion((float)n * -85.0F));
 			} else {
-				float p = -0.4F * MathHelper.sin(MathHelper.sqrt(f) * (float) Math.PI);
-				float oxx = 0.2F * MathHelper.sin(MathHelper.sqrt(f) * (float) (Math.PI * 2));
-				float gxxx = -0.2F * MathHelper.sin(f * (float) Math.PI);
-				int q = bl2 ? 1 : -1;
-				matrixStack.translate((double)((float)q * p), (double)oxx, (double)gxxx);
+				float gx = -0.4F * MathHelper.sin(MathHelper.sqrt(f) * (float) Math.PI);
+				float hxxx = 0.2F * MathHelper.sin(MathHelper.sqrt(f) * (float) (Math.PI * 2));
+				float kxx = -0.2F * MathHelper.sin(f * (float) Math.PI);
+				int p = bl2 ? 1 : -1;
+				matrixStack.translate((double)((float)p * gx), (double)hxxx, (double)kxx);
 				this.applyHandOffset(matrixStack, arm, equipProgress);
 				this.method_3217(matrixStack, arm, f);
 			}
@@ -432,9 +434,10 @@ public class FirstPersonRenderer {
 			this.equipProgressMainHand = MathHelper.clamp(this.equipProgressMainHand - 0.4F, 0.0F, 1.0F);
 			this.equipProgressOffHand = MathHelper.clamp(this.equipProgressOffHand - 0.4F, 0.0F, 1.0F);
 		} else {
-			float f = clientPlayerEntity.getAttackCooldownProgress(1.0F);
+			float f = clientPlayerEntity.getAttackCooldownProgress(1.0F) * 0.5F;
+			f = f * f * f * 0.25F + 0.75F;
 			this.equipProgressMainHand = this.equipProgressMainHand
-				+ MathHelper.clamp((Objects.equals(this.mainHand, itemStack) ? f * f * f : 0.0F) - this.equipProgressMainHand, -0.4F, 0.4F);
+				+ MathHelper.clamp((Objects.equals(this.mainHand, itemStack) ? f : 0.0F) - this.equipProgressMainHand, -0.4F, 0.4F);
 			this.equipProgressOffHand = this.equipProgressOffHand
 				+ MathHelper.clamp((float)(Objects.equals(this.offHand, itemStack2) ? 1 : 0) - this.equipProgressOffHand, -0.4F, 0.4F);
 		}
@@ -451,8 +454,10 @@ public class FirstPersonRenderer {
 	public void resetEquipProgress(Hand hand) {
 		if (hand == Hand.MAIN_HAND) {
 			this.equipProgressMainHand = 0.0F;
+			this.prevEquipProgressMainHand = 0.0F;
 		} else {
 			this.equipProgressOffHand = 0.0F;
+			this.prevEquipProgressOffHand = 0.0F;
 		}
 	}
 }

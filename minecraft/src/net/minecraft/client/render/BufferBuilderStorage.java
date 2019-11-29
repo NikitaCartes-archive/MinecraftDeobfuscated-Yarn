@@ -11,7 +11,7 @@ import net.minecraft.util.Util;
 @Environment(EnvType.CLIENT)
 public class BufferBuilderStorage {
 	private final BlockBufferBuilderStorage blockBuilders = new BlockBufferBuilderStorage();
-	private final SortedMap<RenderLayer, BufferBuilder> entityBuilders = Util.make(new Object2ObjectLinkedOpenHashMap<>(), object2ObjectLinkedOpenHashMap -> {
+	private final SortedMap<RenderLayer, BufferBuilder> entityBuilders = Util.create(new Object2ObjectLinkedOpenHashMap<>(), object2ObjectLinkedOpenHashMap -> {
 		object2ObjectLinkedOpenHashMap.put(TexturedRenderLayers.getEntitySolid(), this.blockBuilders.get(RenderLayer.getSolid()));
 		object2ObjectLinkedOpenHashMap.put(TexturedRenderLayers.getEntityCutout(), this.blockBuilders.get(RenderLayer.getCutout()));
 		object2ObjectLinkedOpenHashMap.put(TexturedRenderLayers.getBannerPatterns(), this.blockBuilders.get(RenderLayer.getCutoutMipped()));

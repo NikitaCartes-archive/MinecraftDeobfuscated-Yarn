@@ -43,7 +43,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 
 public class TradeOffers {
-	public static final Map<VillagerProfession, Int2ObjectMap<TradeOffers.Factory[]>> PROFESSION_TO_LEVELED_TRADE = Util.make(
+	public static final Map<VillagerProfession, Int2ObjectMap<TradeOffers.Factory[]>> PROFESSION_TO_LEVELED_TRADE = Util.create(
 		Maps.<VillagerProfession, Int2ObjectMap<TradeOffers.Factory[]>>newHashMap(),
 		hashMap -> {
 			hashMap.put(

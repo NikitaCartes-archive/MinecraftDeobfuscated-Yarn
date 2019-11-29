@@ -87,7 +87,7 @@ public class BlockEntityRenderDispatcher {
 	}
 
 	private static <T extends BlockEntity> void render(
-		BlockEntityRenderer<T> renderer, T blockEntity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers
+		BlockEntityRenderer<T> renderer, T blockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider
 	) {
 		World world = blockEntity.getWorld();
 		int i;
@@ -97,7 +97,7 @@ public class BlockEntityRenderDispatcher {
 			i = 15728880;
 		}
 
-		renderer.render(blockEntity, tickDelta, matrices, vertexConsumers, i, OverlayTexture.DEFAULT_UV);
+		renderer.render(blockEntity, f, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV);
 	}
 
 	@Deprecated

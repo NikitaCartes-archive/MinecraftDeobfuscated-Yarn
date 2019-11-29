@@ -31,9 +31,7 @@ public class FoxHeldItemFeatureRenderer extends FeatureRenderer<FoxEntity, FoxEn
 		}
 
 		matrixStack.translate(
-			(double)(this.getContextModel().head.pivotX / 16.0F),
-			(double)(this.getContextModel().head.pivotY / 16.0F),
-			(double)(this.getContextModel().head.pivotZ / 16.0F)
+			(double)(this.getModel().head.pivotX / 16.0F), (double)(this.getModel().head.pivotY / 16.0F), (double)(this.getModel().head.pivotZ / 16.0F)
 		);
 		float m = foxEntity.getHeadRoll(h);
 		matrixStack.multiply(Vector3f.POSITIVE_Z.getRadialQuaternion(m));

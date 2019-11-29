@@ -24,7 +24,7 @@ public class MooshroomMushroomFeatureRenderer<T extends MooshroomEntity> extends
 		if (!mooshroomEntity.isBaby() && !mooshroomEntity.isInvisible()) {
 			BlockRenderManager blockRenderManager = MinecraftClient.getInstance().getBlockRenderManager();
 			BlockState blockState = mooshroomEntity.getMooshroomType().getMushroomState();
-			int m = LivingEntityRenderer.getOverlay(mooshroomEntity, 0.0F);
+			int m = LivingEntityRenderer.method_23622(mooshroomEntity, 0.0F);
 			matrixStack.push();
 			matrixStack.translate(0.2F, -0.35F, 0.5);
 			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-48.0F));
@@ -42,7 +42,7 @@ public class MooshroomMushroomFeatureRenderer<T extends MooshroomEntity> extends
 			blockRenderManager.renderBlockAsEntity(blockState, matrixStack, vertexConsumerProvider, i, m);
 			matrixStack.pop();
 			matrixStack.push();
-			this.getContextModel().getHead().rotate(matrixStack);
+			this.getModel().getHead().rotate(matrixStack);
 			matrixStack.translate(0.0, -0.7F, -0.2F);
 			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-78.0F));
 			matrixStack.scale(-1.0F, -1.0F, 1.0F);

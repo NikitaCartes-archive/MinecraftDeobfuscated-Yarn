@@ -41,7 +41,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ArmorItem;
-import net.minecraft.item.AxeItem;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.Item;
@@ -1182,7 +1181,7 @@ public abstract class MobEntity extends LivingEntity {
 		float f = (float)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue();
 		float g = (float)this.getAttributeInstance(EntityAttributes.ATTACK_KNOCKBACK).getValue();
 		if (target instanceof LivingEntity) {
-			f += EnchantmentHelper.getAttackDamage(this.getMainHandStack(), ((LivingEntity)target).getGroup());
+			f += EnchantmentHelper.getAttackDamage(this.getMainHandStack(), (LivingEntity)target);
 			g += (float)EnchantmentHelper.getKnockback(this);
 		}
 
@@ -1199,19 +1198,6 @@ public abstract class MobEntity extends LivingEntity {
 						this, g * 0.5F, (double)MathHelper.sin(this.yaw * (float) (Math.PI / 180.0)), (double)(-MathHelper.cos(this.yaw * (float) (Math.PI / 180.0)))
 					);
 				this.setVelocity(this.getVelocity().multiply(0.6, 1.0, 0.6));
-			}
-
-			if (target instanceof PlayerEntity) {
-				PlayerEntity playerEntity = (PlayerEntity)target;
-				ItemStack itemStack = this.getMainHandStack();
-				ItemStack itemStack2 = playerEntity.isUsingItem() ? playerEntity.getActiveItem() : ItemStack.EMPTY;
-				if (!itemStack.isEmpty() && !itemStack2.isEmpty() && itemStack.getItem() instanceof AxeItem && itemStack2.getItem() == Items.SHIELD) {
-					float h = 0.25F + (float)EnchantmentHelper.getEfficiency(this) * 0.05F;
-					if (this.random.nextFloat() < h) {
-						playerEntity.getItemCooldownManager().set(Items.SHIELD, 100);
-						this.world.sendEntityStatus(playerEntity, (byte)30);
-					}
-				}
 			}
 
 			this.dealDamage(this, target);

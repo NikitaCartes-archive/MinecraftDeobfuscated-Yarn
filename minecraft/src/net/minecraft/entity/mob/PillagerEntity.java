@@ -239,10 +239,10 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 
 		Quaternion quaternion = new Quaternion(new Vector3f(vec3d3), 90.0F, true);
 		Vector3f vector3f = new Vector3f(vec3d2);
-		vector3f.rotate(quaternion);
+		vector3f.method_19262(quaternion);
 		Quaternion quaternion2 = new Quaternion(vector3f, f, true);
 		Vector3f vector3f2 = new Vector3f(vec3d2);
-		vector3f2.rotate(quaternion2);
+		vector3f2.method_19262(quaternion2);
 		return vector3f2;
 	}
 

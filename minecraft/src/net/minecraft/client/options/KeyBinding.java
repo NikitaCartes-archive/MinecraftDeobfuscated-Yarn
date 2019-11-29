@@ -18,7 +18,7 @@ public class KeyBinding implements Comparable<KeyBinding> {
 	private static final Map<String, KeyBinding> keysById = Maps.<String, KeyBinding>newHashMap();
 	private static final Map<InputUtil.KeyCode, KeyBinding> keysByCode = Maps.<InputUtil.KeyCode, KeyBinding>newHashMap();
 	private static final Set<String> keyCategories = Sets.<String>newHashSet();
-	private static final Map<String, Integer> categoryOrderMap = Util.make(Maps.<String, Integer>newHashMap(), hashMap -> {
+	private static final Map<String, Integer> categoryOrderMap = Util.create(Maps.<String, Integer>newHashMap(), hashMap -> {
 		hashMap.put("key.categories.movement", 1);
 		hashMap.put("key.categories.gameplay", 2);
 		hashMap.put("key.categories.inventory", 3);

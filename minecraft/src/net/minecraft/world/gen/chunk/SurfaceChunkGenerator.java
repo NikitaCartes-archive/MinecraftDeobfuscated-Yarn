@@ -33,7 +33,7 @@ import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> extends ChunkGenerator<T> {
-	private static final float[] field_16649 = Util.make(new float[13824], fs -> {
+	private static final float[] field_16649 = Util.create(new float[13824], fs -> {
 		for (int i = 0; i < 24; i++) {
 			for (int j = 0; j < 24; j++) {
 				for (int k = 0; k < 24; k++) {

@@ -60,7 +60,7 @@ public class PolarBearEntityModel<T extends PolarBearEntity> extends QuadrupedEn
 		this.frontLeftLeg.pivotY = this.frontRightLeg.pivotY;
 		this.frontLeftLeg.pivotZ = this.frontRightLeg.pivotZ;
 		this.frontLeftLeg.pitch -= l * (float) Math.PI * 0.45F;
-		if (this.child) {
+		if (this.isChild) {
 			this.head.pivotY = 10.0F * m - 9.0F * l;
 			this.head.pivotZ = -16.0F * m - 7.0F * l;
 		} else {

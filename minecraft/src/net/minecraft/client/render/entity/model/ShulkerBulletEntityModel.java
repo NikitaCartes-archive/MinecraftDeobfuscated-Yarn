@@ -26,7 +26,7 @@ public class ShulkerBulletEntityModel<T extends Entity> extends CompositeEntityM
 	}
 
 	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float customAngle, float headYaw, float headPitch) {
+	public void setAngles(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch) {
 		this.field_3556.yaw = headYaw * (float) (Math.PI / 180.0);
 		this.field_3556.pitch = headPitch * (float) (Math.PI / 180.0);
 	}

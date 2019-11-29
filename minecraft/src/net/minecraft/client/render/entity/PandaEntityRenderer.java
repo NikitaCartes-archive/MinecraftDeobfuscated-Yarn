@@ -15,7 +15,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class PandaEntityRenderer extends MobEntityRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
-	private static final Map<PandaEntity.Gene, Identifier> SKIN_MAP = Util.make(Maps.newEnumMap(PandaEntity.Gene.class), enumMap -> {
+	private static final Map<PandaEntity.Gene, Identifier> SKIN_MAP = Util.create(Maps.newEnumMap(PandaEntity.Gene.class), enumMap -> {
 		enumMap.put(PandaEntity.Gene.NORMAL, new Identifier("textures/entity/panda/panda.png"));
 		enumMap.put(PandaEntity.Gene.LAZY, new Identifier("textures/entity/panda/lazy_panda.png"));
 		enumMap.put(PandaEntity.Gene.WORRIED, new Identifier("textures/entity/panda/worried_panda.png"));

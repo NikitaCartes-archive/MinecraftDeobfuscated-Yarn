@@ -74,14 +74,14 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 		serverWorld.removeBlock(pos, false);
 		ConfiguredFeature<HugeMushroomFeatureConfig, ?> configuredFeature;
 		if (this == Blocks.BROWN_MUSHROOM) {
-			configuredFeature = Feature.HUGE_BROWN_MUSHROOM.configure(DefaultBiomeFeatures.HUGE_BROWN_MUSHROOM_CONFIG);
+			configuredFeature = Feature.HUGE_BROWN_MUSHROOM.configure(DefaultBiomeFeatures.field_21143);
 		} else {
 			if (this != Blocks.RED_MUSHROOM) {
 				serverWorld.setBlockState(pos, state, 3);
 				return false;
 			}
 
-			configuredFeature = Feature.HUGE_RED_MUSHROOM.configure(DefaultBiomeFeatures.HUGE_RED_MUSHROOM_CONFIG);
+			configuredFeature = Feature.HUGE_RED_MUSHROOM.configure(DefaultBiomeFeatures.field_21142);
 		}
 
 		if (configuredFeature.generate(serverWorld, (ChunkGenerator<? extends ChunkGeneratorConfig>)serverWorld.getChunkManager().getChunkGenerator(), random, pos)) {

@@ -70,7 +70,7 @@ public class CatEntity extends TameableEntity {
 	private static final TrackedData<Boolean> SLEEPING_WITH_OWNER = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> HEAD_DOWN = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Integer> COLLAR_COLOR = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	public static final Map<Integer, Identifier> TEXTURES = Util.make(Maps.<Integer, Identifier>newHashMap(), hashMap -> {
+	public static final Map<Integer, Identifier> TEXTURES = Util.create(Maps.<Integer, Identifier>newHashMap(), hashMap -> {
 		hashMap.put(0, new Identifier("textures/entity/cat/tabby.png"));
 		hashMap.put(1, new Identifier("textures/entity/cat/black.png"));
 		hashMap.put(2, new Identifier("textures/entity/cat/red.png"));

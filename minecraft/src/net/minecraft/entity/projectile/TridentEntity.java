@@ -43,7 +43,6 @@ public class TridentEntity extends ProjectileEntity {
 		this.dataTracker.set(field_21514, item.hasEnchantmentGlint());
 	}
 
-	@Environment(EnvType.CLIENT)
 	public TridentEntity(World world, double x, double y, double z) {
 		super(EntityType.TRIDENT, x, y, z, world);
 	}
@@ -53,6 +52,12 @@ public class TridentEntity extends ProjectileEntity {
 		super.initDataTracker();
 		this.dataTracker.startTracking(LOYALTY, (byte)0);
 		this.dataTracker.startTracking(field_21514, false);
+	}
+
+	public void method_24223(ItemStack itemStack) {
+		if (itemStack.getItem() == Items.TRIDENT || itemStack.isEmpty()) {
+			this.tridentStack = itemStack.copy();
+		}
 	}
 
 	@Override
@@ -75,7 +80,7 @@ public class TridentEntity extends ProjectileEntity {
 				Vec3d vec3d = new Vec3d(entity.getX() - this.getX(), entity.getEyeY() - this.getY(), entity.getZ() - this.getZ());
 				this.setPos(this.getX(), this.getY() + vec3d.y * 0.015 * (double)i, this.getZ());
 				if (this.world.isClient) {
-					this.lastRenderY = this.getY();
+					this.prevRenderY = this.getY();
 				}
 
 				double d = 0.05 * (double)i;
@@ -118,7 +123,7 @@ public class TridentEntity extends ProjectileEntity {
 		float f = 8.0F;
 		if (entity instanceof LivingEntity) {
 			LivingEntity livingEntity = (LivingEntity)entity;
-			f += EnchantmentHelper.getAttackDamage(this.tridentStack, livingEntity.getGroup());
+			f += EnchantmentHelper.getAttackDamage(this.tridentStack, livingEntity);
 		}
 
 		Entity entity2 = this.getOwner();
@@ -205,7 +210,17 @@ public class TridentEntity extends ProjectileEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean shouldRender(double cameraX, double cameraY, double cameraZ) {
+	public boolean shouldRenderFrom(double x, double y, double z) {
 		return true;
+	}
+
+	@Override
+	protected void destroy() {
+		int i = this.dataTracker.get(LOYALTY);
+		if (i > 0) {
+			this.setNoClip(true);
+		} else {
+			super.destroy();
+		}
 	}
 }

@@ -21,12 +21,12 @@ public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEnt
 
 	public ExperienceOrbEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
-		this.shadowSize = 0.15F;
-		this.shadowDarkness = 0.75F;
+		this.field_4673 = 0.15F;
+		this.field_4672 = 0.75F;
 	}
 
-	protected int getBlockLight(ExperienceOrbEntity experienceOrbEntity, float f) {
-		return MathHelper.clamp(super.getBlockLight(experienceOrbEntity, f) + 7, 0, 15);
+	protected int method_24087(ExperienceOrbEntity experienceOrbEntity, float f) {
+		return MathHelper.clamp(super.method_24087(experienceOrbEntity, f) + 7, 0, 15);
 	}
 
 	public void render(ExperienceOrbEntity experienceOrbEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
