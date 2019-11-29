@@ -77,7 +77,7 @@ public class SpiderEntityModel<T extends Entity> extends CompositeEntityModel<T>
 	}
 
 	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float customAngle, float headYaw, float headPitch) {
+	public void setAngles(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch) {
 		this.head.yaw = headYaw * (float) (Math.PI / 180.0);
 		this.head.pitch = headPitch * (float) (Math.PI / 180.0);
 		float f = (float) (Math.PI / 4);

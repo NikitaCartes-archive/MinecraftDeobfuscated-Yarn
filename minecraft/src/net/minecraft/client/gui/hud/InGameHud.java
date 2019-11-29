@@ -13,6 +13,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4743;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -43,6 +44,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.network.MessageType;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
@@ -54,6 +56,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Arm;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
@@ -351,24 +354,35 @@ public class InGameHud extends DrawableHelper {
 					RenderSystem.popMatrix();
 				} else {
 					RenderSystem.blendFuncSeparate(
-						GlStateManager.SrcFactor.ONE_MINUS_DST_COLOR, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO
+						GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR,
+						GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR,
+						GlStateManager.SourceFactor.ONE,
+						GlStateManager.DestFactor.ZERO
 					);
 					int i = 15;
 					this.blit((this.scaledWidth - 15) / 2, (this.scaledHeight - 15) / 2, 0, 0, 15, 15);
-					if (this.client.options.attackIndicator == AttackIndicator.CROSSHAIR) {
+					int j = this.scaledHeight / 2 - 7 + 16;
+					int k = this.scaledWidth / 2 - 8;
+					ItemStack itemStack = this.client.player.getStackInHand(Hand.OFF_HAND);
+					boolean bl = this.client.options.field_21824 == class_4743.field_21827;
+					if (bl && itemStack.getItem() == Items.SHIELD && this.client.player.method_24218(itemStack)) {
+						this.blit(k, j, 52, 112, 16, 16);
+					} else if (bl && this.client.player.isBlocking()) {
+						this.blit(k, j, 36, 112, 16, 16);
+					} else if (this.client.options.attackIndicator == AttackIndicator.CROSSHAIR) {
 						float f = this.client.player.getAttackCooldownProgress(0.0F);
-						boolean bl = false;
-						if (this.client.targetedEntity != null && this.client.targetedEntity instanceof LivingEntity && f >= 1.0F) {
-							bl = this.client.player.getAttackCooldownProgressPerTick() > 5.0F;
-							bl &= this.client.targetedEntity.isAlive();
+						boolean bl2 = false;
+						if (this.client.targetedEntity != null && this.client.targetedEntity instanceof LivingEntity && f >= 2.0F) {
+							bl2 = ((EntityHitResult)this.client.crosshairTarget).method_24234() <= this.client.player.method_24222(0.0F);
+							bl2 &= this.client.targetedEntity.isAlive();
 						}
 
-						int j = this.scaledHeight / 2 - 7 + 16;
-						int k = this.scaledWidth / 2 - 8;
-						if (bl) {
+						float g = 1.3000001F;
+						if (bl2) {
 							this.blit(k, j, 68, 94, 16, 16);
-						} else if (f < 1.0F) {
-							int l = (int)(f * 17.0F);
+						} else if (f > 1.3000001F && f < 2.0F) {
+							float h = (f - 1.0F) / 1.0F;
+							int l = (int)(h * 17.0F);
 							this.blit(k, j, 36, 94, 16, 4);
 							this.blit(k, j, 52, 94, l, 4);
 						}
@@ -491,20 +505,28 @@ public class InGameHud extends DrawableHelper {
 				}
 			}
 
-			if (this.client.options.attackIndicator == AttackIndicator.HOTBAR) {
+			this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_LOCATION);
+			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+			int m = this.scaledHeight - 20;
+			int n = i + 91 + 6;
+			ItemStack itemStack2 = this.client.player.getStackInHand(Hand.OFF_HAND);
+			boolean bl = this.client.options.field_21824 == class_4743.field_21828;
+			if (bl && itemStack2.getItem() == Items.SHIELD && this.client.player.method_24218(itemStack2)) {
+				this.blit(n, m, 18, 112, 18, 18);
+			} else if (bl && this.client.player.isBlocking()) {
+				this.blit(n, m, 0, 112, 18, 18);
+			} else if (this.client.options.attackIndicator == AttackIndicator.HOTBAR) {
 				float g = this.client.player.getAttackCooldownProgress(0.0F);
-				if (g < 1.0F) {
-					int n = this.scaledHeight - 20;
-					int o = i + 91 + 6;
+				float h = 1.3000001F;
+				if (g > 1.3000001F && g < 2.0F) {
 					if (arm == Arm.RIGHT) {
-						o = i - 91 - 22;
+						n = i - 91 - 22;
 					}
 
-					this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_LOCATION);
-					int p = (int)(g * 19.0F);
+					int p = (int)((g - 1.3000001F) / 0.6999999F * 19.0F);
 					RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-					this.blit(o, n, 0, 94, 18, 18);
-					this.blit(o, n + 18 - p, 18, 112 - p, 18, p);
+					this.blit(n, m, 0, 94, 18, 18);
+					this.blit(n, m + 18 - p, 18, 112 - p, 18, p);
 				}
 			}
 
@@ -950,7 +972,7 @@ public class InGameHud extends DrawableHelper {
 		RenderSystem.disableDepthTest();
 		RenderSystem.depthMask(false);
 		RenderSystem.blendFuncSeparate(
-			GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO
+			GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 		);
 		if (f > 0.0F) {
 			RenderSystem.color4f(0.0F, f, f, 1.0F);

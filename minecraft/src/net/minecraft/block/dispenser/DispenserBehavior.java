@@ -27,6 +27,7 @@ import net.minecraft.entity.projectile.Projectile;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.SmallFireballEntity;
 import net.minecraft.entity.projectile.SpectralArrowEntity;
+import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.entity.thrown.SnowballEntity;
 import net.minecraft.entity.thrown.ThrownEggEntity;
 import net.minecraft.entity.thrown.ThrownExperienceBottleEntity;
@@ -90,16 +91,29 @@ public interface DispenserBehavior {
 				return projectileEntity;
 			}
 		});
+		DispenserBlock.registerBehavior(Items.TRIDENT, new ProjectileDispenserBehavior() {
+			@Override
+			protected Projectile createProjectile(World position, Position stack, ItemStack itemStack) {
+				TridentEntity tridentEntity = new TridentEntity(position, stack.getX(), stack.getY(), stack.getZ());
+				tridentEntity.pickupType = ProjectileEntity.PickupPermission.ALLOWED;
+				if (itemStack.damage(1, position.getRandom(), null)) {
+					itemStack.decrement(1);
+				}
+
+				tridentEntity.method_24223(itemStack);
+				return tridentEntity;
+			}
+		});
 		DispenserBlock.registerBehavior(Items.EGG, new ProjectileDispenserBehavior() {
 			@Override
 			protected Projectile createProjectile(World position, Position stack, ItemStack itemStack) {
-				return Util.make(new ThrownEggEntity(position, stack.getX(), stack.getY(), stack.getZ()), thrownEggEntity -> thrownEggEntity.setItem(itemStack));
+				return Util.create(new ThrownEggEntity(position, stack.getX(), stack.getY(), stack.getZ()), thrownEggEntity -> thrownEggEntity.setItem(itemStack));
 			}
 		});
 		DispenserBlock.registerBehavior(Items.SNOWBALL, new ProjectileDispenserBehavior() {
 			@Override
 			protected Projectile createProjectile(World position, Position stack, ItemStack itemStack) {
-				return Util.make(new SnowballEntity(position, stack.getX(), stack.getY(), stack.getZ()), snowballEntity -> snowballEntity.setItem(itemStack));
+				return Util.create(new SnowballEntity(position, stack.getX(), stack.getY(), stack.getZ()), snowballEntity -> snowballEntity.setItem(itemStack));
 			}
 		});
 		DispenserBlock.registerBehavior(
@@ -107,7 +121,7 @@ public interface DispenserBehavior {
 			new ProjectileDispenserBehavior() {
 				@Override
 				protected Projectile createProjectile(World position, Position stack, ItemStack itemStack) {
-					return Util.make(
+					return Util.create(
 						new ThrownExperienceBottleEntity(position, stack.getX(), stack.getY(), stack.getZ()),
 						thrownExperienceBottleEntity -> thrownExperienceBottleEntity.setItem(itemStack)
 					);
@@ -132,7 +146,7 @@ public interface DispenserBehavior {
 					return (new ProjectileDispenserBehavior() {
 							@Override
 							protected Projectile createProjectile(World position, Position stack, ItemStack itemStack) {
-								return Util.make(
+								return Util.create(
 									new ThrownPotionEntity(position, stack.getX(), stack.getY(), stack.getZ()), thrownPotionEntity -> thrownPotionEntity.setItemStack(itemStack)
 								);
 							}
@@ -159,7 +173,7 @@ public interface DispenserBehavior {
 					return (new ProjectileDispenserBehavior() {
 							@Override
 							protected Projectile createProjectile(World position, Position stack, ItemStack itemStack) {
-								return Util.make(
+								return Util.create(
 									new ThrownPotionEntity(position, stack.getX(), stack.getY(), stack.getZ()), thrownPotionEntity -> thrownPotionEntity.setItemStack(itemStack)
 								);
 							}
@@ -244,7 +258,7 @@ public interface DispenserBehavior {
 				double g = random.nextGaussian() * 0.05 + (double)direction.getOffsetX();
 				double h = random.nextGaussian() * 0.05 + (double)direction.getOffsetY();
 				double i = random.nextGaussian() * 0.05 + (double)direction.getOffsetZ();
-				world.spawnEntity(Util.make(new SmallFireballEntity(world, d, e, f, g, h, i), smallFireballEntity -> smallFireballEntity.setItem(stack)));
+				world.spawnEntity(Util.create(new SmallFireballEntity(world, d, e, f, g, h, i), smallFireballEntity -> smallFireballEntity.setItem(stack)));
 				stack.decrement(1);
 				return stack;
 			}

@@ -24,10 +24,11 @@ public class EntityAttributes {
 		.setTracked(true);
 	public static final EntityAttribute ATTACK_DAMAGE = new ClampedEntityAttribute(null, "generic.attackDamage", 2.0, 0.0, 2048.0);
 	public static final EntityAttribute ATTACK_KNOCKBACK = new ClampedEntityAttribute(null, "generic.attackKnockback", 0.0, 0.0, 5.0);
-	public static final EntityAttribute ATTACK_SPEED = new ClampedEntityAttribute(null, "generic.attackSpeed", 4.0, 0.0, 1024.0).setTracked(true);
+	public static final EntityAttribute ATTACK_SPEED = new ClampedEntityAttribute(null, "generic.attackSpeed", 4.0, 0.1F, 1024.0).setTracked(true);
 	public static final EntityAttribute ARMOR = new ClampedEntityAttribute(null, "generic.armor", 0.0, 0.0, 30.0).setTracked(true);
 	public static final EntityAttribute ARMOR_TOUGHNESS = new ClampedEntityAttribute(null, "generic.armorToughness", 0.0, 0.0, 20.0).setTracked(true);
 	public static final EntityAttribute LUCK = new ClampedEntityAttribute(null, "generic.luck", 0.0, -1024.0, 1024.0).setTracked(true);
+	public static final EntityAttribute field_21805 = new ClampedEntityAttribute(null, "generic.attackReach", 2.5, 0.0, 6.0).setTracked(true);
 
 	public static ListTag toTag(AbstractEntityAttributeContainer container) {
 		ListTag listTag = new ListTag();

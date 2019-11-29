@@ -54,7 +54,7 @@ public final class SunflowerPlainsBiome extends Biome {
 		this.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
 			Feature.RANDOM_PATCH
-				.configure(DefaultBiomeFeatures.PUMPKIN_PATCH_CONFIG)
+				.configure(DefaultBiomeFeatures.field_21092)
 				.createDecoratedFeature(Decorator.CHANCE_HEIGHTMAP_DOUBLE.configure(new LakeDecoratorConfig(32)))
 		);
 		DefaultBiomeFeatures.addSprings(this);

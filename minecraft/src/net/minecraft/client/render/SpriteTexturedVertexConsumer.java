@@ -50,16 +50,16 @@ public class SpriteTexturedVertexConsumer implements VertexConsumer {
 	}
 
 	@Override
-	public void vertex(
+	public void elements(
 		float x,
 		float y,
 		float z,
-		float red,
-		float green,
-		float blue,
-		float alpha,
-		float u,
-		float v,
+		float r,
+		float g,
+		float b,
+		float a,
+		float textureU,
+		float textureV,
 		int overlay,
 		int light,
 		float normalX,
@@ -67,16 +67,16 @@ public class SpriteTexturedVertexConsumer implements VertexConsumer {
 		float normalZ
 	) {
 		this.parent
-			.vertex(
+			.elements(
 				x,
 				y,
 				z,
-				red,
-				green,
-				blue,
-				alpha,
-				this.sprite.getFrameU((double)(u * 16.0F)),
-				this.sprite.getFrameV((double)(v * 16.0F)),
+				r,
+				g,
+				b,
+				a,
+				this.sprite.getFrameU((double)(textureU * 16.0F)),
+				this.sprite.getFrameV((double)(textureV * 16.0F)),
 				overlay,
 				light,
 				normalX,

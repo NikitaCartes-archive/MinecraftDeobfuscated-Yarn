@@ -20,7 +20,7 @@ public class SlimeEntityRenderer extends MobEntityRenderer<SlimeEntity, SlimeEnt
 	}
 
 	public void render(SlimeEntity slimeEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
-		this.shadowSize = 0.25F * (float)slimeEntity.getSize();
+		this.field_4673 = 0.25F * (float)slimeEntity.getSize();
 		super.render(slimeEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 

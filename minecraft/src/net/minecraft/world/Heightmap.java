@@ -143,7 +143,7 @@ public class Heightmap {
 		private final String name;
 		private final Heightmap.Purpose purpose;
 		private final Predicate<BlockState> blockPredicate;
-		private static final Map<String, Heightmap.Type> BY_NAME = Util.make(Maps.newHashMap(), hashMap -> {
+		private static final Map<String, Heightmap.Type> BY_NAME = Util.create(Maps.newHashMap(), hashMap -> {
 			for(Heightmap.Type type : values()) {
 				hashMap.put(type.name, type);
 			}

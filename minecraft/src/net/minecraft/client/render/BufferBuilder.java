@@ -252,16 +252,16 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 	}
 
 	@Override
-	public void vertex(
+	public void elements(
 		float x,
 		float y,
 		float z,
-		float red,
-		float green,
-		float blue,
-		float alpha,
-		float u,
-		float v,
+		float r,
+		float g,
+		float b,
+		float a,
+		float textureU,
+		float textureV,
 		int overlay,
 		int light,
 		float normalX,
@@ -274,12 +274,12 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 			this.putFloat(0, x);
 			this.putFloat(4, y);
 			this.putFloat(8, z);
-			this.putByte(12, (byte)((int)(red * 255.0F)));
-			this.putByte(13, (byte)((int)(green * 255.0F)));
-			this.putByte(14, (byte)((int)(blue * 255.0F)));
-			this.putByte(15, (byte)((int)(alpha * 255.0F)));
-			this.putFloat(16, u);
-			this.putFloat(20, v);
+			this.putByte(12, (byte)((int)(r * 255.0F)));
+			this.putByte(13, (byte)((int)(g * 255.0F)));
+			this.putByte(14, (byte)((int)(b * 255.0F)));
+			this.putByte(15, (byte)((int)(a * 255.0F)));
+			this.putFloat(16, textureU);
+			this.putFloat(20, textureV);
 			int i;
 			if (this.field_21595) {
 				this.putShort(24, (short)(overlay & 65535));
@@ -297,7 +297,7 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 			this.elementOffset += i + 8;
 			this.next();
 		} else {
-			super.vertex(x, y, z, red, green, blue, alpha, u, v, overlay, light, normalX, normalY, normalZ);
+			super.elements(x, y, z, r, g, b, a, textureU, textureV, overlay, light, normalX, normalY, normalZ);
 		}
 	}
 

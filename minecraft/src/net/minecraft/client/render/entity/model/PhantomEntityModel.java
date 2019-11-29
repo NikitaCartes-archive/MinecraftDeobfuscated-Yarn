@@ -66,8 +66,8 @@ public class PhantomEntityModel<T extends Entity> extends CompositeEntityModel<T
 	}
 
 	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float customAngle, float headYaw, float headPitch) {
-		float f = ((float)(entity.getEntityId() * 3) + customAngle) * 0.13F;
+	public void setAngles(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch) {
+		float f = ((float)(entity.getEntityId() * 3) + age) * 0.13F;
 		float g = 16.0F;
 		this.leftWing.roll = MathHelper.cos(f) * 16.0F * (float) (Math.PI / 180.0);
 		this.leftWingTip.roll = MathHelper.cos(f) * 16.0F * (float) (Math.PI / 180.0);

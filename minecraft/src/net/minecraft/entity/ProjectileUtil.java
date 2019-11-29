@@ -117,7 +117,7 @@ public final class ProjectileUtil {
 			}
 		}
 
-		return entity2 == null ? null : new EntityHitResult(entity2, vec3d3);
+		return entity2 == null ? null : new EntityHitResult(entity2, vec3d3, MathHelper.sqrt(e));
 	}
 
 	@Nullable
@@ -137,7 +137,7 @@ public final class ProjectileUtil {
 			}
 		}
 
-		return entity2 == null ? null : new EntityHitResult(entity2);
+		return entity2 == null ? null : new EntityHitResult(entity2, MathHelper.sqrt(e));
 	}
 
 	private static Set<Entity> getEntityAndRidingEntity(Entity entity) {

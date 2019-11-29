@@ -57,7 +57,7 @@ public class DamageSource {
 		return new ProjectileDamageSource("mob", projectile, attacker);
 	}
 
-	public static DamageSource player(PlayerEntity attacker) {
+	public static EntityDamageSource player(PlayerEntity attacker) {
 		return new EntityDamageSource("player", attacker);
 	}
 

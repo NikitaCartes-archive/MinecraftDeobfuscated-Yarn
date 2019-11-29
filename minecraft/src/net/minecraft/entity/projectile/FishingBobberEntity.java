@@ -120,7 +120,7 @@ public class FishingBobberEntity extends Entity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean shouldRender(double distance) {
+	public boolean shouldRenderAtDistance(double distance) {
 		double d = 64.0;
 		return distance < 4096.0;
 	}

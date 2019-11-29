@@ -1101,9 +1101,10 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		this.player.updateLastActionTime();
 		if (entity != null) {
 			boolean bl = this.player.canSee(entity);
-			double d = 36.0;
+			float f = this.player.method_24222(1.0F) + 0.25F + entity.getWidth() * 0.5F;
+			double d = (double)(f * f);
 			if (!bl) {
-				d = 9.0;
+				d = 6.25;
 			}
 
 			if (this.player.squaredDistanceTo(entity) < d) {
@@ -1123,6 +1124,8 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 					this.player.attack(entity);
 				}
 			}
+		} else {
+			this.player.method_24219();
 		}
 	}
 

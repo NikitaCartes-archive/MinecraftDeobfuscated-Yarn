@@ -12,7 +12,7 @@ public class CaveSpiderEntityRenderer extends SpiderEntityRenderer<CaveSpiderEnt
 
 	public CaveSpiderEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
-		this.shadowSize *= 0.7F;
+		this.field_4673 *= 0.7F;
 	}
 
 	protected void scale(CaveSpiderEntity caveSpiderEntity, MatrixStack matrixStack, float f) {

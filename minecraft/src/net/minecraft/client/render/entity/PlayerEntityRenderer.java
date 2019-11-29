@@ -14,8 +14,8 @@ import net.minecraft.client.render.entity.feature.ElytraFeatureRenderer;
 import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
 import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.feature.ShoulderParrotFeatureRenderer;
+import net.minecraft.client.render.entity.feature.StingerFeatureRenderer;
 import net.minecraft.client.render.entity.feature.StuckArrowsFeatureRenderer;
-import net.minecraft.client.render.entity.feature.StuckStingersFeatureRenderer;
 import net.minecraft.client.render.entity.feature.TridentRiptideFeatureRenderer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
@@ -52,7 +52,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		this.addFeature(new ElytraFeatureRenderer<>(this));
 		this.addFeature(new ShoulderParrotFeatureRenderer<>(this));
 		this.addFeature(new TridentRiptideFeatureRenderer<>(this));
-		this.addFeature(new StuckStingersFeatureRenderer<>(this));
+		this.addFeature(new StingerFeatureRenderer<>(this));
 	}
 
 	public void render(
@@ -76,12 +76,12 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 			ItemStack itemStack = abstractClientPlayerEntity.getMainHandStack();
 			ItemStack itemStack2 = abstractClientPlayerEntity.getOffHandStack();
 			playerEntityModel.setVisible(true);
-			playerEntityModel.helmet.visible = abstractClientPlayerEntity.isPartVisible(PlayerModelPart.HAT);
-			playerEntityModel.jacket.visible = abstractClientPlayerEntity.isPartVisible(PlayerModelPart.JACKET);
-			playerEntityModel.leftPantLeg.visible = abstractClientPlayerEntity.isPartVisible(PlayerModelPart.LEFT_PANTS_LEG);
-			playerEntityModel.rightPantLeg.visible = abstractClientPlayerEntity.isPartVisible(PlayerModelPart.RIGHT_PANTS_LEG);
-			playerEntityModel.leftSleeve.visible = abstractClientPlayerEntity.isPartVisible(PlayerModelPart.LEFT_SLEEVE);
-			playerEntityModel.rightSleeve.visible = abstractClientPlayerEntity.isPartVisible(PlayerModelPart.RIGHT_SLEEVE);
+			playerEntityModel.helmet.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.HAT);
+			playerEntityModel.jacket.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.JACKET);
+			playerEntityModel.leftPantLeg.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.LEFT_PANTS_LEG);
+			playerEntityModel.rightPantLeg.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.RIGHT_PANTS_LEG);
+			playerEntityModel.leftSleeve.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.LEFT_SLEEVE);
+			playerEntityModel.rightSleeve.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.RIGHT_SLEEVE);
 			playerEntityModel.isSneaking = abstractClientPlayerEntity.isInSneakingPose();
 			BipedEntityModel.ArmPose armPose = this.getArmPose(abstractClientPlayerEntity, itemStack, itemStack2, Hand.MAIN_HAND);
 			BipedEntityModel.ArmPose armPose2 = this.getArmPose(abstractClientPlayerEntity, itemStack, itemStack2, Hand.OFF_HAND);
@@ -100,7 +100,21 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		ItemStack itemStack3 = hand == Hand.MAIN_HAND ? itemStack : itemStack2;
 		if (!itemStack3.isEmpty()) {
 			armPose = BipedEntityModel.ArmPose.ITEM;
-			if (abstractClientPlayerEntity.getItemUseTimeLeft() > 0) {
+			boolean bl = abstractClientPlayerEntity.isUsingItem() && itemStack3 == abstractClientPlayerEntity.getActiveItem();
+			boolean bl2 = !bl && hand == Hand.OFF_HAND && abstractClientPlayerEntity.isBlocking();
+			if (!bl && !bl2) {
+				boolean bl3 = itemStack.getItem() == Items.CROSSBOW;
+				boolean bl4 = CrossbowItem.isCharged(itemStack);
+				boolean bl5 = itemStack2.getItem() == Items.CROSSBOW;
+				boolean bl6 = CrossbowItem.isCharged(itemStack2);
+				if (bl3 && bl4) {
+					armPose = BipedEntityModel.ArmPose.CROSSBOW_HOLD;
+				}
+
+				if (bl5 && bl6 && itemStack.getItem().getUseAction(itemStack) == UseAction.NONE) {
+					armPose = BipedEntityModel.ArmPose.CROSSBOW_HOLD;
+				}
+			} else {
 				UseAction useAction = itemStack3.getUseAction();
 				if (useAction == UseAction.BLOCK) {
 					armPose = BipedEntityModel.ArmPose.BLOCK;
@@ -110,18 +124,6 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 					armPose = BipedEntityModel.ArmPose.THROW_SPEAR;
 				} else if (useAction == UseAction.CROSSBOW && hand == abstractClientPlayerEntity.getActiveHand()) {
 					armPose = BipedEntityModel.ArmPose.CROSSBOW_CHARGE;
-				}
-			} else {
-				boolean bl = itemStack.getItem() == Items.CROSSBOW;
-				boolean bl2 = CrossbowItem.isCharged(itemStack);
-				boolean bl3 = itemStack2.getItem() == Items.CROSSBOW;
-				boolean bl4 = CrossbowItem.isCharged(itemStack2);
-				if (bl && bl2) {
-					armPose = BipedEntityModel.ArmPose.CROSSBOW_HOLD;
-				}
-
-				if (bl3 && bl4 && itemStack.getItem().getUseAction(itemStack) == UseAction.NONE) {
-					armPose = BipedEntityModel.ArmPose.CROSSBOW_HOLD;
 				}
 			}
 		}

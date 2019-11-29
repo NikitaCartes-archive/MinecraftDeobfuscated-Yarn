@@ -1,13 +1,13 @@
 package net.minecraft.item;
 
 import com.google.common.collect.Multimap;
+import net.minecraft.class_4741;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.TridentEntity;
@@ -139,14 +139,7 @@ public class TridentItem extends Item {
 	public Multimap<String, EntityAttributeModifier> getModifiers(EquipmentSlot slot) {
 		Multimap<String, EntityAttributeModifier> multimap = super.getModifiers(slot);
 		if (slot == EquipmentSlot.MAINHAND) {
-			multimap.put(
-				EntityAttributes.ATTACK_DAMAGE.getId(),
-				new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_UUID, "Tool modifier", 8.0, EntityAttributeModifier.Operation.ADDITION)
-			);
-			multimap.put(
-				EntityAttributes.ATTACK_SPEED.getId(),
-				new EntityAttributeModifier(ATTACK_SPEED_MODIFIER_UUID, "Tool modifier", -2.9F, EntityAttributeModifier.Operation.ADDITION)
-			);
+			class_4741.field_21812.method_24227(ToolMaterials.IRON, multimap);
 		}
 
 		return multimap;

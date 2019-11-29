@@ -27,7 +27,7 @@ public class HeldItemFeatureRenderer<T extends LivingEntity, M extends EntityMod
 		ItemStack itemStack2 = bl ? livingEntity.getMainHandStack() : livingEntity.getOffHandStack();
 		if (!itemStack.isEmpty() || !itemStack2.isEmpty()) {
 			matrixStack.push();
-			if (this.getContextModel().child) {
+			if (this.getModel().isChild) {
 				float m = 0.5F;
 				matrixStack.translate(0.0, 0.75, 0.0);
 				matrixStack.scale(0.5F, 0.5F, 0.5F);
@@ -50,7 +50,7 @@ public class HeldItemFeatureRenderer<T extends LivingEntity, M extends EntityMod
 	) {
 		if (!itemStack.isEmpty()) {
 			matrixStack.push();
-			this.getContextModel().setArmAngle(arm, matrixStack);
+			this.getModel().setArmAngle(arm, matrixStack);
 			matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0F));
 			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
 			boolean bl = arm == Arm.LEFT;

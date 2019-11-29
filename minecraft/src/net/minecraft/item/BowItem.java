@@ -48,7 +48,7 @@ public class BowItem extends RangedWeaponItem {
 					if (!world.isClient) {
 						ArrowItem arrowItem = (ArrowItem)(itemStack.getItem() instanceof ArrowItem ? itemStack.getItem() : Items.ARROW);
 						ProjectileEntity projectileEntity = arrowItem.createArrow(world, itemStack, playerEntity);
-						projectileEntity.setProperties(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, f * 3.0F, 1.0F);
+						projectileEntity.setProperties(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, f * 3.0F, 0.25F);
 						if (f == 1.0F) {
 							projectileEntity.setCritical(true);
 						}

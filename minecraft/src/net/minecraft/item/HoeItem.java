@@ -4,13 +4,13 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import java.util.Map;
+import net.minecraft.class_4741;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -20,7 +20,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public class HoeItem extends ToolItem {
-	private final float attackSpeed;
 	protected static final Map<Block, BlockState> TILLED_BLOCKS = Maps.<Block, BlockState>newHashMap(
 		ImmutableMap.of(
 			Blocks.GRASS_BLOCK,
@@ -34,9 +33,8 @@ public class HoeItem extends ToolItem {
 		)
 	);
 
-	public HoeItem(ToolMaterial material, float attackSpeed, Item.Settings settings) {
+	public HoeItem(ToolMaterial material, Item.Settings settings) {
 		super(material, settings);
-		this.attackSpeed = attackSpeed;
 	}
 
 	@Override
@@ -72,14 +70,7 @@ public class HoeItem extends ToolItem {
 	public Multimap<String, EntityAttributeModifier> getModifiers(EquipmentSlot slot) {
 		Multimap<String, EntityAttributeModifier> multimap = super.getModifiers(slot);
 		if (slot == EquipmentSlot.MAINHAND) {
-			multimap.put(
-				EntityAttributes.ATTACK_DAMAGE.getId(),
-				new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_UUID, "Weapon modifier", 0.0, EntityAttributeModifier.Operation.ADDITION)
-			);
-			multimap.put(
-				EntityAttributes.ATTACK_SPEED.getId(),
-				new EntityAttributeModifier(ATTACK_SPEED_MODIFIER_UUID, "Weapon modifier", (double)this.attackSpeed, EntityAttributeModifier.Operation.ADDITION)
-			);
+			class_4741.field_21810.method_24227(this.getMaterial(), multimap);
 		}
 
 		return multimap;

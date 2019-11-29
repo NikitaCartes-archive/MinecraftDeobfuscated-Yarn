@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import java.util.Map;
 import java.util.Set;
+import net.minecraft.class_4741;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -54,8 +55,8 @@ public class ShovelItem extends MiningToolItem {
 		ImmutableMap.of(Blocks.GRASS_BLOCK, Blocks.GRASS_PATH.getDefaultState())
 	);
 
-	public ShovelItem(ToolMaterial material, float attackDamage, float attackSpeed, Item.Settings settings) {
-		super(attackDamage, attackSpeed, material, EFFECTIVE_BLOCKS, settings);
+	public ShovelItem(ToolMaterial material, Item.Settings settings) {
+		super(material, EFFECTIVE_BLOCKS, settings);
 	}
 
 	@Override
@@ -96,5 +97,10 @@ public class ShovelItem extends MiningToolItem {
 				return ActionResult.PASS;
 			}
 		}
+	}
+
+	@Override
+	protected class_4741 method_24225() {
+		return class_4741.field_21811;
 	}
 }

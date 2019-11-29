@@ -22,7 +22,7 @@ public class CatCollarFeatureRenderer extends FeatureRenderer<CatEntity, CatEnti
 	) {
 		if (catEntity.isTamed()) {
 			float[] fs = catEntity.getCollarColor().getColorComponents();
-			render(this.getContextModel(), this.model, SKIN, matrixStack, vertexConsumerProvider, i, catEntity, f, g, j, k, l, h, fs[0], fs[1], fs[2]);
+			render(this.getModel(), this.model, SKIN, matrixStack, vertexConsumerProvider, i, catEntity, f, g, j, k, l, h, fs[0], fs[1], fs[2]);
 		}
 	}
 }

@@ -60,8 +60,8 @@ public class BoatEntityModel extends CompositeEntityModel<BoatEntity> {
 	}
 
 	public void setAngles(BoatEntity boatEntity, float f, float g, float h, float i, float j) {
-		this.setPaddleAngle(boatEntity, 0, f);
-		this.setPaddleAngle(boatEntity, 1, f);
+		this.renderPaddle(boatEntity, 0, f);
+		this.renderPaddle(boatEntity, 1, f);
 	}
 
 	public ImmutableList<ModelPart> getParts() {
@@ -83,8 +83,8 @@ public class BoatEntityModel extends CompositeEntityModel<BoatEntity> {
 		return modelPart;
 	}
 
-	protected void setPaddleAngle(BoatEntity boat, int paddle, float angle) {
-		float f = boat.interpolatePaddlePhase(paddle, angle);
+	protected void renderPaddle(BoatEntity boat, int paddle, float scale) {
+		float f = boat.interpolatePaddlePhase(paddle, scale);
 		ModelPart modelPart = this.paddles[paddle];
 		modelPart.pitch = (float)MathHelper.clampedLerp((float) (-Math.PI / 3), (float) (-Math.PI / 12), (double)((MathHelper.sin(-f) + 1.0F) / 2.0F));
 		modelPart.yaw = (float)MathHelper.clampedLerp((float) (-Math.PI / 4), (float) (Math.PI / 4), (double)((MathHelper.sin(-f + 1.0F) + 1.0F) / 2.0F));

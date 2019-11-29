@@ -1,5 +1,7 @@
 package net.minecraft.world;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -61,6 +63,21 @@ public enum GameMode {
 
 	public boolean isSurvivalLike() {
 		return this == SURVIVAL || this == ADVENTURE;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public float method_24231() {
+		return 2.5F;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public float method_24232() {
+		return 6.0F;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public float method_24233() {
+		return this.isCreative() ? 5.0F : 4.5F;
 	}
 
 	public static GameMode byId(int id) {

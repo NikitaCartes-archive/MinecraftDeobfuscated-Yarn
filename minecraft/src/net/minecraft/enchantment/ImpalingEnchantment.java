@@ -2,6 +2,7 @@ package net.minecraft.enchantment;
 
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.LivingEntity;
 
 public class ImpalingEnchantment extends Enchantment {
 	public ImpalingEnchantment(Enchantment.Weight weight, EquipmentSlot... slotTypes) {
@@ -24,7 +25,7 @@ public class ImpalingEnchantment extends Enchantment {
 	}
 
 	@Override
-	public float getAttackDamage(int level, EntityGroup group) {
-		return group == EntityGroup.AQUATIC ? (float)level * 2.5F : 0.0F;
+	public float getAttackDamage(int level, LivingEntity livingEntity) {
+		return livingEntity == null || livingEntity.getGroup() != EntityGroup.AQUATIC && !livingEntity.isInsideWaterOrRain() ? 0.0F : (float)level * 2.5F;
 	}
 }

@@ -55,7 +55,7 @@ public interface ParticleTextureSheet {
 			RenderSystem.depthMask(true);
 			textureManager.bindTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEX);
 			RenderSystem.enableBlend();
-			RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
+			RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 			RenderSystem.alphaFunc(516, 0.003921569F);
 			bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
 		}

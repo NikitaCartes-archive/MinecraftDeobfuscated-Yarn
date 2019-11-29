@@ -5,6 +5,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.CarvedPumpkinBlock;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ArmorItem;
+import net.minecraft.item.AxeItem;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ElytraItem;
@@ -60,7 +61,7 @@ public enum EnchantmentTarget {
 	WEAPON {
 		@Override
 		public boolean isAcceptableItem(Item item) {
-			return item instanceof SwordItem;
+			return item instanceof SwordItem || item instanceof AxeItem;
 		}
 	},
 	DIGGER {
@@ -104,6 +105,12 @@ public enum EnchantmentTarget {
 		@Override
 		public boolean isAcceptableItem(Item item) {
 			return item instanceof CrossbowItem;
+		}
+	},
+	AXE {
+		@Override
+		public boolean isAcceptableItem(Item item) {
+			return item instanceof AxeItem;
 		}
 	};
 

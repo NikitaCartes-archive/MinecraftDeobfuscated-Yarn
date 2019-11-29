@@ -21,7 +21,7 @@ public final class Rotation3 {
 	private Vector3f field_20904;
 	@Nullable
 	private Quaternion field_20905;
-	private static final Rotation3 IDENTITY = Util.make(() -> {
+	private static final Rotation3 IDENTITY = Util.create(() -> {
 		Matrix4f matrix4f = new Matrix4f();
 		matrix4f.loadIdentity();
 		Rotation3 rotation3 = new Rotation3(matrix4f);

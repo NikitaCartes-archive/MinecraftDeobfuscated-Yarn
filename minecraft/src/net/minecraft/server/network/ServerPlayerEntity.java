@@ -1011,7 +1011,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 		this.enchantmentTableSeed = oldPlayer.enchantmentTableSeed;
 		this.enderChestInventory = oldPlayer.enderChestInventory;
-		this.getDataTracker().set(PLAYER_MODEL_PARTS, oldPlayer.getDataTracker().get(PLAYER_MODEL_PARTS));
+		this.getDataTracker().set(PLAYER_MODEL_BIT_MASK, oldPlayer.getDataTracker().get(PLAYER_MODEL_BIT_MASK));
 		this.syncedExperience = -1;
 		this.syncedHealth = -1.0F;
 		this.syncedFoodLevel = -1;
@@ -1142,7 +1142,9 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		this.clientLanguage = clientSettingsC2SPacket.getLanguage();
 		this.clientChatVisibility = clientSettingsC2SPacket.getChatVisibility();
 		this.field_13971 = clientSettingsC2SPacket.hasChatColors();
-		this.getDataTracker().set(PLAYER_MODEL_PARTS, (byte)clientSettingsC2SPacket.getPlayerModelBitMask());
+		this.field_21806 = clientSettingsC2SPacket.method_24246();
+		System.out.println(" asddsf s ServerboundClientInformationPacket");
+		this.getDataTracker().set(PLAYER_MODEL_BIT_MASK, (byte)clientSettingsC2SPacket.getPlayerModelBitMask());
 		this.getDataTracker().set(MAIN_ARM, (byte)(clientSettingsC2SPacket.getMainArm() == Arm.LEFT ? 0 : 1));
 	}
 
@@ -1234,7 +1236,6 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	@Override
 	public void swingHand(Hand hand) {
 		super.swingHand(hand);
-		this.resetLastAttackedTicks();
 	}
 
 	public boolean isInTeleportationState() {

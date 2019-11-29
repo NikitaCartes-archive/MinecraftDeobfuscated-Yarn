@@ -6,7 +6,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -74,7 +73,7 @@ public abstract class Enchantment {
 		return 0;
 	}
 
-	public float getAttackDamage(int level, EntityGroup group) {
+	public float getAttackDamage(int level, LivingEntity livingEntity) {
 		return 0.0F;
 	}
 

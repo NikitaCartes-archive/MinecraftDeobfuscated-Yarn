@@ -18,7 +18,7 @@ public class WitherEntityRenderer extends MobEntityRenderer<WitherEntity, Wither
 		this.addFeature(new WitherArmorFeatureRenderer(this));
 	}
 
-	protected int getBlockLight(WitherEntity witherEntity, float f) {
+	protected int method_24087(WitherEntity witherEntity, float f) {
 		return 15;
 	}
 

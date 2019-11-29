@@ -29,7 +29,7 @@ public class SlimeEntityModel<T extends Entity> extends CompositeEntityModel<T> 
 	}
 
 	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float customAngle, float headYaw, float headPitch) {
+	public void setAngles(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch) {
 	}
 
 	@Override

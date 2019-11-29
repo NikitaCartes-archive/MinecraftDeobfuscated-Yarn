@@ -6,7 +6,6 @@ import com.google.common.collect.Multimap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -56,8 +55,6 @@ public class Item implements ItemConvertible {
 	private static final ItemPropertyGetter CUSTOM_DATA_PROPERTY_GETTER = (stack, world, entity) -> stack.hasTag()
 			? (float)stack.getTag().getInt("CustomModelData")
 			: 0.0F;
-	protected static final UUID ATTACK_DAMAGE_MODIFIER_UUID = UUID.fromString("CB3F55D3-645C-4F38-A497-9C13A33DB5CF");
-	protected static final UUID ATTACK_SPEED_MODIFIER_UUID = UUID.fromString("FA233E1C-4180-4865-B01B-BCCE9785ACA3");
 	protected static final Random RANDOM = new Random();
 	private final Map<Identifier, ItemPropertyGetter> propertyGetters = Maps.<Identifier, ItemPropertyGetter>newHashMap();
 	protected final ItemGroup group;

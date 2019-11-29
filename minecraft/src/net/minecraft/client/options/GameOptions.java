@@ -22,6 +22,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_4743;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.resource.ClientResourcePackProfile;
@@ -89,6 +90,8 @@ public class GameOptions {
 	private final Map<SoundCategory, Float> soundVolumeLevels = Maps.newEnumMap(SoundCategory.class);
 	public boolean useNativeTransport = true;
 	public AttackIndicator attackIndicator = AttackIndicator.CROSSHAIR;
+	public class_4743 field_21824 = class_4743.field_21826;
+	public boolean field_21825 = true;
 	public TutorialStep tutorialStep = TutorialStep.MOVEMENT;
 	public int biomeBlendRadius = 2;
 	public double mouseWheelSensitivity = 1.0;
@@ -393,6 +396,14 @@ public class GameOptions {
 						this.attackIndicator = AttackIndicator.byId(Integer.parseInt(string2));
 					}
 
+					if ("shieldIndicator".equals(string)) {
+						this.field_21824 = class_4743.method_24240(Integer.parseInt(string2));
+					}
+
+					if ("useShieldOnCrouch".equals(string)) {
+						Option.field_21823.set(this, string2);
+					}
+
 					if ("resourcePacks".equals(string)) {
 						this.resourcePacks = JsonHelper.deserialize(GSON, string2, STRING_LIST_TYPE);
 						if (this.resourcePacks == null) {
@@ -628,6 +639,8 @@ public class GameOptions {
 				printWriter.println("useNativeTransport:" + this.useNativeTransport);
 				printWriter.println("mainHand:" + (this.mainArm == Arm.LEFT ? "left" : "right"));
 				printWriter.println("attackIndicator:" + this.attackIndicator.getId());
+				printWriter.println("shieldIndicator:" + this.field_21824.method_24239());
+				printWriter.println("useShieldOnCrouch:" + Option.field_21823.get(this));
 				printWriter.println("narrator:" + this.narrator.getId());
 				printWriter.println("tutorialStep:" + this.tutorialStep.getName());
 				printWriter.println("mouseWheelSensitivity:" + this.mouseWheelSensitivity);
@@ -688,7 +701,7 @@ public class GameOptions {
 			this.client
 				.player
 				.networkHandler
-				.sendPacket(new ClientSettingsC2SPacket(this.language, this.viewDistance, this.chatVisibility, this.chatColors, i, this.mainArm));
+				.sendPacket(new ClientSettingsC2SPacket(this.language, this.viewDistance, this.chatVisibility, this.chatColors, i, this.mainArm, this.field_21825));
 		}
 	}
 

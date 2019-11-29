@@ -8,13 +8,13 @@ import net.minecraft.client.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public abstract class BlockEntityRenderer<T extends BlockEntity> {
-	protected final BlockEntityRenderDispatcher dispatcher;
+	protected final BlockEntityRenderDispatcher blockEntityRenderDispatcher;
 
-	public BlockEntityRenderer(BlockEntityRenderDispatcher dispatcher) {
-		this.dispatcher = dispatcher;
+	public BlockEntityRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher) {
+		this.blockEntityRenderDispatcher = blockEntityRenderDispatcher;
 	}
 
-	public abstract void render(T blockEntity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay);
+	public abstract void render(T blockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j);
 
 	public boolean rendersOutsideBoundingBox(T blockEntity) {
 		return false;

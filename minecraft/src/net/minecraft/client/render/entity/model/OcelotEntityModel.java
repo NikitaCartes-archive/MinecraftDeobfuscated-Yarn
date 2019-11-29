@@ -62,7 +62,7 @@ public class OcelotEntityModel<T extends Entity> extends AnimalModel<T> {
 	}
 
 	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float customAngle, float headYaw, float headPitch) {
+	public void setAngles(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch) {
 		this.head.pitch = headPitch * (float) (Math.PI / 180.0);
 		this.head.yaw = headYaw * (float) (Math.PI / 180.0);
 		if (this.animationState != 3) {

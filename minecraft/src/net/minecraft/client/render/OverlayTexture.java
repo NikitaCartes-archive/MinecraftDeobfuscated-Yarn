@@ -45,20 +45,20 @@ public class OverlayTexture implements AutoCloseable {
 		RenderSystem.setupOverlayColor(this.texture::getGlId, 16);
 	}
 
-	public static int getU(float whiteOverlayProgress) {
-		return (int)(whiteOverlayProgress * 15.0F);
+	public static int getU(float f) {
+		return (int)(f * 15.0F);
 	}
 
-	public static int getV(boolean hurt) {
-		return hurt ? 3 : 10;
+	public static int getV(boolean bl) {
+		return bl ? 3 : 10;
 	}
 
 	public static int packUv(int u, int v) {
 		return u | v << 16;
 	}
 
-	public static int getUv(float f, boolean hurt) {
-		return packUv(getU(f), getV(hurt));
+	public static int packUv(float f, boolean bl) {
+		return packUv(getU(f), getV(bl));
 	}
 
 	public void teardownOverlayColor() {

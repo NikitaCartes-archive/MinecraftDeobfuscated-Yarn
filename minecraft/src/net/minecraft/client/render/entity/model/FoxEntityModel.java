@@ -87,7 +87,7 @@ public class FoxEntityModel<T extends FoxEntity> extends AnimalModel<T> {
 			this.torso.roll = (float) (-Math.PI / 2);
 			this.torso.setPivot(0.0F, 21.0F, -6.0F);
 			this.tail.pitch = (float) (-Math.PI * 5.0 / 6.0);
-			if (this.child) {
+			if (this.isChild) {
 				this.tail.pitch = -2.1816616F;
 				this.torso.setPivot(0.0F, 21.0F, -2.0F);
 			}
@@ -108,7 +108,7 @@ public class FoxEntityModel<T extends FoxEntity> extends AnimalModel<T> {
 			this.head.setPivot(-1.0F, 10.0F, -0.25F);
 			this.head.pitch = 0.0F;
 			this.head.yaw = 0.0F;
-			if (this.child) {
+			if (this.isChild) {
 				this.head.setPivot(-1.0F, 13.0F, -3.75F);
 			}
 

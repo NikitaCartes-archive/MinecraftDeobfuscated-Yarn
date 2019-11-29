@@ -38,7 +38,7 @@ public class DefaultResourcePack implements ResourcePack {
 	public static Path resourcePath;
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static Class<?> resourceClass;
-	private static final Map<ResourceType, FileSystem> typeToFileSystem = Util.make(Maps.newHashMap(), hashMap -> {
+	private static final Map<ResourceType, FileSystem> typeToFileSystem = Util.create(Maps.newHashMap(), hashMap -> {
 		synchronized(DefaultResourcePack.class) {
 			for(ResourceType resourceType : ResourceType.values()) {
 				URL uRL = DefaultResourcePack.class.getResource("/" + resourceType.getDirectory() + "/.mcassetsroot");

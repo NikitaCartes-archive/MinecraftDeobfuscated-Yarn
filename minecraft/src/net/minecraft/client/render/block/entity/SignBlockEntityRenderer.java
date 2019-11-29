@@ -57,7 +57,7 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 		this.model.field.render(matrixStack, vertexConsumer, i, j);
 		this.model.foot.render(matrixStack, vertexConsumer, i, j);
 		matrixStack.pop();
-		TextRenderer textRenderer = this.dispatcher.getTextRenderer();
+		TextRenderer textRenderer = this.blockEntityRenderDispatcher.getTextRenderer();
 		float k = 0.010416667F;
 		matrixStack.translate(0.0, 0.33333334F, 0.046666667F);
 		matrixStack.scale(0.010416667F, -0.010416667F, 0.010416667F);
@@ -108,9 +108,9 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 		}
 
 		@Override
-		public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
-			this.field.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
-			this.foot.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+		public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float r, float g, float b, float f) {
+			this.field.render(matrixStack, vertexConsumer, i, j, r, g, b, f);
+			this.foot.render(matrixStack, vertexConsumer, i, j, r, g, b, f);
 		}
 	}
 }

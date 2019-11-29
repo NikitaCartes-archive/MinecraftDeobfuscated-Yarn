@@ -22,7 +22,7 @@ public class DragonFireballEntityRenderer extends EntityRenderer<DragonFireballE
 		super(entityRenderDispatcher);
 	}
 
-	protected int getBlockLight(DragonFireballEntity dragonFireballEntity, float f) {
+	protected int method_24087(DragonFireballEntity dragonFireballEntity, float f) {
 		return 15;
 	}
 
