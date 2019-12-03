@@ -272,6 +272,11 @@ public class BlockState extends AbstractState<Block, BlockState> implements Stat
 		return this.getBlock().canSuffocate(this, view, pos);
 	}
 
+	@Environment(EnvType.CLIENT)
+	public boolean method_24220(BlockView blockView, BlockPos blockPos) {
+		return this.getBlock().method_24219(this, blockView, blockPos);
+	}
+
 	public BlockState getStateForNeighborUpdate(Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
 		return this.getBlock().getStateForNeighborUpdate(this, facing, neighborState, world, pos, neighborPos);
 	}

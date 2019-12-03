@@ -126,7 +126,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerContainer> im
 		entity.prevHeadYaw = entity.yaw;
 		EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderManager();
 		quaternion2.conjugate();
-		entityRenderDispatcher.method_24196(quaternion2);
+		entityRenderDispatcher.setRotation(quaternion2);
 		entityRenderDispatcher.setRenderShadows(false);
 		VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
 		entityRenderDispatcher.render(entity, 0.0, 0.0, 0.0, 0.0F, 1.0F, matrixStack, immediate, 15728880);

@@ -46,6 +46,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.thread.TaskExecutor;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -224,7 +225,7 @@ public class ChunkBuilder {
 		private boolean needsImportantRebuild;
 
 		private boolean isChunkNonEmpty(BlockPos pos) {
-			return !ChunkBuilder.this.world.getChunk(pos.getX() >> 4, pos.getZ() >> 4).isEmpty();
+			return ChunkBuilder.this.world.getChunk(pos.getX() >> 4, pos.getZ() >> 4, ChunkStatus.FULL, false) != null;
 		}
 
 		public boolean shouldBuild() {

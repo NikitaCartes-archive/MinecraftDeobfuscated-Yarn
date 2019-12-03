@@ -385,7 +385,7 @@ public class ClientWorld extends World {
 		}
 
 		if (spawnBarrierParticles && blockState.getBlock() == Blocks.BARRIER) {
-			this.addParticle(ParticleTypes.BARRIER, (double)((float)i + 0.5F), (double)((float)j + 0.5F), (double)((float)k + 0.5F), 0.0, 0.0, 0.0);
+			this.addParticle(ParticleTypes.BARRIER, (double)i + 0.5, (double)j + 0.5, (double)k + 0.5, 0.0, 0.0, 0.0);
 		}
 	}
 

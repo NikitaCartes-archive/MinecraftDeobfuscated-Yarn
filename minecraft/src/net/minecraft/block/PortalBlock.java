@@ -120,9 +120,9 @@ public class PortalBlock extends Block {
 		}
 
 		for (int i = 0; i < 4; i++) {
-			double d = (double)((float)pos.getX() + random.nextFloat());
-			double e = (double)((float)pos.getY() + random.nextFloat());
-			double f = (double)((float)pos.getZ() + random.nextFloat());
+			double d = (double)pos.getX() + (double)random.nextFloat();
+			double e = (double)pos.getY() + (double)random.nextFloat();
+			double f = (double)pos.getZ() + (double)random.nextFloat();
 			double g = ((double)random.nextFloat() - 0.5) * 0.5;
 			double h = ((double)random.nextFloat() - 0.5) * 0.5;
 			double j = ((double)random.nextFloat() - 0.5) * 0.5;

@@ -210,15 +210,17 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 		RenderSystem.scalef(16.0F, 16.0F, 16.0F);
 		MatrixStack matrixStack = new MatrixStack();
 		VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
-		if (bakedModel.hasDepthInGui()) {
-			DiffuseLighting.method_24211();
+		Item item = itemStack.getItem();
+		boolean bl = !bakedModel.hasDepthInGui() || item == Items.SHIELD || item == Items.TRIDENT;
+		if (bl) {
+			DiffuseLighting.method_24210();
 		}
 
 		this.method_23179(itemStack, ModelTransformation.Type.GUI, false, matrixStack, immediate, 15728880, OverlayTexture.DEFAULT_UV, bakedModel);
 		immediate.draw();
 		RenderSystem.enableDepthTest();
-		if (bakedModel.hasDepthInGui()) {
-			DiffuseLighting.method_24210();
+		if (bl) {
+			DiffuseLighting.method_24211();
 		}
 
 		RenderSystem.disableAlphaTest();

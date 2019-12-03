@@ -91,11 +91,11 @@ public class MathHelper {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static long method_24156(long l, long m, long n) {
-		if (l < m) {
-			return m;
+	public static long clamp(long value, long min, long max) {
+		if (value < min) {
+			return min;
 		} else {
-			return l > n ? n : l;
+			return value > max ? max : value;
 		}
 	}
 
@@ -322,8 +322,8 @@ public class MathHelper {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static float method_22450(float f) {
-		return f - (float)floor(f);
+	public static float fractionalPart(float value) {
+		return value - (float)floor(value);
 	}
 
 	public static double fractionalPart(double value) {
@@ -429,7 +429,6 @@ public class MathHelper {
 		return 0.6666667F * f + 1.0F / (3.0F * f * f * x);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static int hsvToRgb(float hue, float saturation, float value) {
 		int i = (int)(hue * 6.0F) % 6;
 		float f = hue * 6.0F - (float)i;

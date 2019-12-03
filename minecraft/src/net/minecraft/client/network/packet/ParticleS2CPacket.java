@@ -12,9 +12,9 @@ import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.registry.Registry;
 
 public class ParticleS2CPacket implements Packet<ClientPlayPacketListener> {
-	private float x;
-	private float y;
-	private float z;
+	private double x;
+	private double y;
+	private double z;
 	private float offsetX;
 	private float offsetY;
 	private float offsetZ;
@@ -27,18 +27,18 @@ public class ParticleS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public <T extends ParticleEffect> ParticleS2CPacket(
-		T parameters, boolean longDistance, float x, float y, float z, float offsetX, float offsetY, float offsetZ, float speed, int count
+		T parameters, boolean longDistance, double d, double e, double f, float g, float h, float i, float j, int k
 	) {
 		this.parameters = parameters;
 		this.longDistance = longDistance;
-		this.x = x;
-		this.y = y;
-		this.z = z;
-		this.offsetX = offsetX;
-		this.offsetY = offsetY;
-		this.offsetZ = offsetZ;
-		this.speed = speed;
-		this.count = count;
+		this.x = d;
+		this.y = e;
+		this.z = f;
+		this.offsetX = g;
+		this.offsetY = h;
+		this.offsetZ = i;
+		this.speed = j;
+		this.count = k;
 	}
 
 	@Override
@@ -49,9 +49,9 @@ public class ParticleS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 
 		this.longDistance = buf.readBoolean();
-		this.x = buf.readFloat();
-		this.y = buf.readFloat();
-		this.z = buf.readFloat();
+		this.x = buf.readDouble();
+		this.y = buf.readDouble();
+		this.z = buf.readDouble();
 		this.offsetX = buf.readFloat();
 		this.offsetY = buf.readFloat();
 		this.offsetZ = buf.readFloat();
@@ -68,9 +68,9 @@ public class ParticleS2CPacket implements Packet<ClientPlayPacketListener> {
 	public void write(PacketByteBuf buf) throws IOException {
 		buf.writeInt(Registry.PARTICLE_TYPE.getRawId((ParticleType<? extends ParticleEffect>)this.parameters.getType()));
 		buf.writeBoolean(this.longDistance);
-		buf.writeFloat(this.x);
-		buf.writeFloat(this.y);
-		buf.writeFloat(this.z);
+		buf.writeDouble(this.x);
+		buf.writeDouble(this.y);
+		buf.writeDouble(this.z);
 		buf.writeFloat(this.offsetX);
 		buf.writeFloat(this.offsetY);
 		buf.writeFloat(this.offsetZ);
@@ -86,17 +86,17 @@ public class ParticleS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	@Environment(EnvType.CLIENT)
 	public double getX() {
-		return (double)this.x;
+		return this.x;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public double getY() {
-		return (double)this.y;
+		return this.y;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public double getZ() {
-		return (double)this.z;
+		return this.z;
 	}
 
 	@Environment(EnvType.CLIENT)

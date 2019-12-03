@@ -1163,9 +1163,7 @@ public class ServerWorld extends World {
 	public <T extends ParticleEffect> int spawnParticles(
 		T particle, double x, double y, double z, int count, double deltaX, double deltaY, double deltaZ, double speed
 	) {
-		ParticleS2CPacket particleS2CPacket = new ParticleS2CPacket(
-			particle, false, (float)x, (float)y, (float)z, (float)deltaX, (float)deltaY, (float)deltaZ, (float)speed, count
-		);
+		ParticleS2CPacket particleS2CPacket = new ParticleS2CPacket(particle, false, x, y, z, (float)deltaX, (float)deltaY, (float)deltaZ, (float)speed, count);
 		int i = 0;
 
 		for (int j = 0; j < this.players.size(); j++) {
@@ -1181,7 +1179,7 @@ public class ServerWorld extends World {
 	public <T extends ParticleEffect> boolean spawnParticles(
 		ServerPlayerEntity viewer, T particle, boolean force, double x, double y, double z, int count, double deltaX, double deltaY, double deltaZ, double speed
 	) {
-		Packet<?> packet = new ParticleS2CPacket(particle, force, (float)x, (float)y, (float)z, (float)deltaX, (float)deltaY, (float)deltaZ, (float)speed, count);
+		Packet<?> packet = new ParticleS2CPacket(particle, force, x, y, z, (float)deltaX, (float)deltaY, (float)deltaZ, (float)speed, count);
 		return this.sendToPlayerIfNearby(viewer, force, x, y, z, packet);
 	}
 

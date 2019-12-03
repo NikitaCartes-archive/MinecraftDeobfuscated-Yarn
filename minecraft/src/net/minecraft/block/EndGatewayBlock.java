@@ -30,9 +30,9 @@ public class EndGatewayBlock extends BlockWithEntity {
 			int i = ((EndGatewayBlockEntity)blockEntity).getDrawnSidesCount();
 
 			for (int j = 0; j < i; j++) {
-				double d = (double)((float)pos.getX() + random.nextFloat());
-				double e = (double)((float)pos.getY() + random.nextFloat());
-				double f = (double)((float)pos.getZ() + random.nextFloat());
+				double d = (double)pos.getX() + (double)random.nextFloat();
+				double e = (double)pos.getY() + (double)random.nextFloat();
+				double f = (double)pos.getZ() + (double)random.nextFloat();
 				double g = ((double)random.nextFloat() - 0.5) * 0.5;
 				double h = ((double)random.nextFloat() - 0.5) * 0.5;
 				double k = ((double)random.nextFloat() - 0.5) * 0.5;

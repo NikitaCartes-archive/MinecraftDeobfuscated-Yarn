@@ -57,7 +57,7 @@ public class EntityRenderDispatcher {
 	public final TextureManager textureManager;
 	private World world;
 	public Camera camera;
-	private Quaternion field_21794;
+	private Quaternion rotation;
 	public Entity targetedEntity;
 	public final GameOptions gameOptions;
 	private boolean renderShadows = true;
@@ -208,15 +208,15 @@ public class EntityRenderDispatcher {
 		}
 	}
 
-	public void configure(World world, Camera camera, Entity entity) {
+	public void configure(World world, Camera camera, Entity targetedEntity) {
 		this.world = world;
 		this.camera = camera;
-		this.field_21794 = camera.method_23767();
-		this.targetedEntity = entity;
+		this.rotation = camera.getRotation();
+		this.targetedEntity = targetedEntity;
 	}
 
-	public void method_24196(Quaternion quaternion) {
-		this.field_21794 = quaternion;
+	public void setRotation(Quaternion rotation) {
+		this.rotation = rotation;
 	}
 
 	public void setRenderShadows(boolean value) {
@@ -474,8 +474,8 @@ public class EntityRenderDispatcher {
 		return this.camera.getPos().squaredDistanceTo(x, y, z);
 	}
 
-	public Quaternion method_24197() {
-		return this.field_21794;
+	public Quaternion getRotation() {
+		return this.rotation;
 	}
 
 	public TextRenderer getTextRenderer() {

@@ -280,6 +280,12 @@ public class Block implements ItemConvertible {
 	}
 
 	@Deprecated
+	@Environment(EnvType.CLIENT)
+	public boolean method_24219(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+		return blockState.canSuffocate(blockView, blockPos);
+	}
+
+	@Deprecated
 	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
 		switch (env) {
 			case LAND:

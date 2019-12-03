@@ -30,9 +30,9 @@ public abstract class BillboardParticle extends Particle {
 		float h = (float)(MathHelper.lerp((double)tickDelta, this.prevPosZ, this.z) - vec3d.getZ());
 		Quaternion quaternion;
 		if (this.angle == 0.0F) {
-			quaternion = camera.method_23767();
+			quaternion = camera.getRotation();
 		} else {
-			quaternion = new Quaternion(camera.method_23767());
+			quaternion = new Quaternion(camera.getRotation());
 			float i = MathHelper.lerp(tickDelta, this.prevAngle, this.angle);
 			quaternion.hamiltonProduct(Vector3f.POSITIVE_Z.getRadialQuaternion(i));
 		}

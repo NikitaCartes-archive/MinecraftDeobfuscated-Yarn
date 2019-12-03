@@ -1106,7 +1106,10 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 					this.player.interact(entity, hand);
 				} else if (rpacket.getType() == PlayerInteractEntityC2SPacket.InteractionType.INTERACT_AT) {
 					Hand hand = rpacket.getHand();
-					entity.interactAt(this.player, rpacket.getHitPosition(), hand);
+					ActionResult actionResult = entity.interactAt(this.player, rpacket.getHitPosition(), hand);
+					if (actionResult.shouldSwingHand()) {
+						this.player.swingHand(hand, true);
+					}
 				} else if (rpacket.getType() == PlayerInteractEntityC2SPacket.InteractionType.ATTACK) {
 					if (entity instanceof ItemEntity || entity instanceof ExperienceOrbEntity || entity instanceof ProjectileEntity || entity == this.player) {
 						this.disconnect(new TranslatableText("multiplayer.disconnect.invalid_entity_attacked"));

@@ -488,7 +488,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			RenderSystem.matrixMode(5888);
 			RenderSystem.loadIdentity();
 			RenderSystem.translatef(0.0F, 0.0F, -2000.0F);
-			DiffuseLighting.enableForGui(matrixStack.peek().getModel());
+			DiffuseLighting.method_24211();
 			if (tick && this.client.world != null) {
 				this.client.getProfiler().swap("gui");
 				if (!this.client.options.hudHidden || this.client.currentScreen != null) {
@@ -725,7 +725,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		return this.lightmapTextureManager;
 	}
 
-	public OverlayTexture method_22975() {
+	public OverlayTexture getOverlayTexture() {
 		return this.overlayTexture;
 	}
 }

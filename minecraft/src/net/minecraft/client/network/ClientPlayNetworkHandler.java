@@ -577,7 +577,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				float g = (float)(packet.getYaw() * 360) / 256.0F;
 				float h = (float)(packet.getPitch() * 360) / 256.0F;
 				if (!(Math.abs(entity.getX() - d) >= 0.03125) && !(Math.abs(entity.getY() - e) >= 0.015625) && !(Math.abs(entity.getZ() - f) >= 0.03125)) {
-					entity.updateTrackedPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), g, h, 0, true);
+					entity.updateTrackedPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), g, h, 3, true);
 				} else {
 					entity.updateTrackedPositionAndAngles(d, e, f, g, h, 3, true);
 				}

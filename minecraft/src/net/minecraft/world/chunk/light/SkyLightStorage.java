@@ -126,6 +126,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 
 	@Override
 	protected void setLightEnabled(long l, boolean bl) {
+		this.updateAll();
 		if (bl && this.lightEnabled.add(l)) {
 			int i = this.lightArrays.topArraySectionY.get(l);
 			if (i != this.lightArrays.defaultTopArraySectionY) {

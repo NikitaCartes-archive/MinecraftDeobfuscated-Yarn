@@ -5,7 +5,6 @@ import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.MapRenderer;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -23,10 +22,13 @@ import net.minecraft.item.Items;
 import net.minecraft.item.map.MapState;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class FirstPersonRenderer {
+	private static final RenderLayer field_21807 = RenderLayer.getText(new Identifier("textures/map/map_background.png"));
+	private static final RenderLayer field_21808 = RenderLayer.getText(new Identifier("textures/map/map_background_checkerboard.png"));
 	private final MinecraftClient client;
 	private ItemStack mainHand = ItemStack.EMPTY;
 	private ItemStack offHand = ItemStack.EMPTY;
@@ -133,13 +135,13 @@ public class FirstPersonRenderer {
 		matrixStack.scale(0.38F, 0.38F, 0.38F);
 		matrixStack.translate(-0.5, -0.5, 0.0);
 		matrixStack.scale(0.0078125F, 0.0078125F, 0.0078125F);
-		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(MapRenderer.field_21687);
+		MapState mapState = FilledMapItem.getOrCreateMapState(itemStack, this.client.world);
+		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(mapState == null ? field_21807 : field_21808);
 		Matrix4f matrix4f = matrixStack.peek().getModel();
 		vertexConsumer.vertex(matrix4f, -7.0F, 135.0F, 0.0F).color(255, 255, 255, 255).texture(0.0F, 1.0F).light(i).next();
 		vertexConsumer.vertex(matrix4f, 135.0F, 135.0F, 0.0F).color(255, 255, 255, 255).texture(1.0F, 1.0F).light(i).next();
 		vertexConsumer.vertex(matrix4f, 135.0F, -7.0F, 0.0F).color(255, 255, 255, 255).texture(1.0F, 0.0F).light(i).next();
 		vertexConsumer.vertex(matrix4f, -7.0F, -7.0F, 0.0F).color(255, 255, 255, 255).texture(0.0F, 0.0F).light(i).next();
-		MapState mapState = FilledMapItem.getOrCreateMapState(itemStack, this.client.world);
 		if (mapState != null) {
 			this.client.gameRenderer.getMapRenderer().draw(matrixStack, vertexConsumerProvider, mapState, false, i);
 		}

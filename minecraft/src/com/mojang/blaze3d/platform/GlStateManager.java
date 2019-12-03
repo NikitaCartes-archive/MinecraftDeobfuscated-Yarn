@@ -645,6 +645,8 @@ public class GlStateManager {
 
 	public static void setupLevelDiffuseLighting(Matrix4f modelMatrix) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+		pushMatrix();
+		loadIdentity();
 		enableLight(0);
 		enableLight(1);
 		Vector4f vector4f = new Vector4f(DIFFUSE_LIGHT_0_POSITION);
@@ -663,11 +665,26 @@ public class GlStateManager {
 		shadeModel(7424);
 		float g = 0.4F;
 		lightModel(2899, getBuffer(0.4F, 0.4F, 0.4F, 1.0F));
+		popMatrix();
 	}
 
-	public static void setupGuiDiffuseLighting(Matrix4f modelMatrix) {
+	public static void method_24221() {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		Matrix4f matrix4f = modelMatrix.copy();
+		Matrix4f matrix4f = new Matrix4f();
+		matrix4f.loadIdentity();
+		matrix4f.multiply(Matrix4f.method_24019(1.0F, -1.0F, 1.0F));
+		matrix4f.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-22.5F));
+		matrix4f.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(135.0F));
+		setupLevelDiffuseLighting(matrix4f);
+	}
+
+	public static void method_24222() {
+		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+		Matrix4f matrix4f = new Matrix4f();
+		matrix4f.loadIdentity();
+		matrix4f.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(62.0F));
+		matrix4f.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(185.5F));
+		matrix4f.multiply(Matrix4f.method_24019(1.0F, -1.0F, 1.0F));
 		matrix4f.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-22.5F));
 		matrix4f.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(135.0F));
 		setupLevelDiffuseLighting(matrix4f);

@@ -53,8 +53,8 @@ public class EnchantingTableBlockEntity extends BlockEntity implements Nameable,
 		PlayerEntity playerEntity = this.world
 			.getClosestPlayer((double)((float)this.pos.getX() + 0.5F), (double)((float)this.pos.getY() + 0.5F), (double)((float)this.pos.getZ() + 0.5F), 3.0, false);
 		if (playerEntity != null) {
-			double d = playerEntity.getX() - (double)((float)this.pos.getX() + 0.5F);
-			double e = playerEntity.getZ() - (double)((float)this.pos.getZ() + 0.5F);
+			double d = playerEntity.getX() - ((double)this.pos.getX() + 0.5);
+			double e = playerEntity.getZ() - ((double)this.pos.getZ() + 0.5);
 			this.field_11962 = (float)MathHelper.atan2(e, d);
 			this.nextPageTurningSpeed += 0.1F;
 			if (this.nextPageTurningSpeed < 0.5F || RANDOM.nextInt(40) == 0) {
