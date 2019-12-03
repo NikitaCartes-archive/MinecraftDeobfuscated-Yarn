@@ -69,10 +69,13 @@ extends Block {
     public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
         BlockState blockState2 = worldView.getBlockState(blockPos.down());
         Block block = blockState2.getBlock();
-        if (block == Blocks.ICE || block == Blocks.PACKED_ICE || block == Blocks.BARRIER || block == Blocks.WHEAT) {
+        if (block == Blocks.ICE || block == Blocks.PACKED_ICE || block == Blocks.BARRIER) {
             return false;
         }
-        return Block.isFaceFullSquare(blockState2.getOutlineShape(worldView, blockPos.down()), Direction.UP) || block == this && blockState2.get(LAYERS) == 8;
+        if (block == Blocks.HONEY_BLOCK || block == Blocks.SOUL_SAND) {
+            return true;
+        }
+        return Block.isFaceFullSquare(blockState2.getCollisionShape(worldView, blockPos.down()), Direction.UP) || block == this && blockState2.get(LAYERS) == 8;
     }
 
     @Override

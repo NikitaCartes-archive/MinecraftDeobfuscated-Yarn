@@ -19,32 +19,23 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class InGameOverlayRenderer {
     private static final Identifier UNDERWATER_TEX = new Identifier("textures/misc/underwater.png");
 
     public static void renderOverlays(MinecraftClient minecraftClient, MatrixStack matrixStack) {
+        BlockState blockState;
         RenderSystem.disableAlphaTest();
-        if (minecraftClient.player.isInsideWall()) {
-            BlockState blockState = minecraftClient.world.getBlockState(new BlockPos(minecraftClient.player));
-            ClientPlayerEntity playerEntity = minecraftClient.player;
-            for (int i = 0; i < 8; ++i) {
-                double d = playerEntity.getX() + (double)(((float)((i >> 0) % 2) - 0.5f) * playerEntity.getWidth() * 0.8f);
-                double e = playerEntity.getY() + (double)(((float)((i >> 1) % 2) - 0.5f) * 0.1f);
-                double f = playerEntity.getZ() + (double)(((float)((i >> 2) % 2) - 0.5f) * playerEntity.getWidth() * 0.8f);
-                BlockPos blockPos = new BlockPos(d, e + (double)playerEntity.getStandingEyeHeight(), f);
-                BlockState blockState2 = minecraftClient.world.getBlockState(blockPos);
-                if (!blockState2.canSuffocate(minecraftClient.world, blockPos)) continue;
-                blockState = blockState2;
-            }
-            if (blockState.getRenderType() != BlockRenderType.INVISIBLE) {
-                InGameOverlayRenderer.renderInWallOverlay(minecraftClient, minecraftClient.getBlockRenderManager().getModels().getSprite(blockState), matrixStack);
-            }
+        ClientPlayerEntity playerEntity = minecraftClient.player;
+        if (!playerEntity.noClip && (blockState = InGameOverlayRenderer.method_24225(playerEntity)) != null) {
+            InGameOverlayRenderer.renderInWallOverlay(minecraftClient, minecraftClient.getBlockRenderManager().getModels().getSprite(blockState), matrixStack);
         }
         if (!minecraftClient.player.isSpectator()) {
             if (minecraftClient.player.isInFluid(FluidTags.WATER)) {
@@ -55,6 +46,21 @@ public class InGameOverlayRenderer {
             }
         }
         RenderSystem.enableAlphaTest();
+    }
+
+    @Nullable
+    private static BlockState method_24225(PlayerEntity playerEntity) {
+        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        for (int i = 0; i < 8; ++i) {
+            double d = playerEntity.getX() + (double)(((float)((i >> 0) % 2) - 0.5f) * playerEntity.getWidth() * 0.8f);
+            double e = playerEntity.getEyeY() + (double)(((float)((i >> 1) % 2) - 0.5f) * 0.1f);
+            double f = playerEntity.getZ() + (double)(((float)((i >> 2) % 2) - 0.5f) * playerEntity.getWidth() * 0.8f);
+            mutable.set(d, e, f);
+            BlockState blockState = playerEntity.world.getBlockState(mutable);
+            if (blockState.getRenderType() == BlockRenderType.INVISIBLE || !blockState.method_24220(playerEntity.world, mutable)) continue;
+            return blockState;
+        }
+        return null;
     }
 
     private static void renderInWallOverlay(MinecraftClient minecraftClient, Sprite sprite, MatrixStack matrixStack) {

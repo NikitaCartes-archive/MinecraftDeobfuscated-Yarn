@@ -215,27 +215,27 @@ implements Tickable {
     }
 
     private void spawnNautilusParticles() {
-        float h;
         float g;
+        float f;
         Random random = this.world.random;
-        float f = MathHelper.sin((float)(this.ticks + 35) * 0.1f) / 2.0f + 0.5f;
-        f = (f * f + f) * 0.3f;
-        Vec3d vec3d = new Vec3d((float)this.pos.getX() + 0.5f, (float)this.pos.getY() + 1.5f + f, (float)this.pos.getZ() + 0.5f);
+        double d = MathHelper.sin((float)(this.ticks + 35) * 0.1f) / 2.0f + 0.5f;
+        d = (d * d + d) * (double)0.3f;
+        Vec3d vec3d = new Vec3d((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 1.5 + d, (double)this.pos.getZ() + 0.5);
         for (BlockPos blockPos : this.activatingBlocks) {
             if (random.nextInt(50) != 0) continue;
-            g = -0.5f + random.nextFloat();
-            h = -2.0f + random.nextFloat();
-            float i = -0.5f + random.nextFloat();
+            f = -0.5f + random.nextFloat();
+            g = -2.0f + random.nextFloat();
+            float h = -0.5f + random.nextFloat();
             BlockPos blockPos2 = blockPos.subtract(this.pos);
-            Vec3d vec3d2 = new Vec3d(g, h, i).add(blockPos2.getX(), blockPos2.getY(), blockPos2.getZ());
+            Vec3d vec3d2 = new Vec3d(f, g, h).add(blockPos2.getX(), blockPos2.getY(), blockPos2.getZ());
             this.world.addParticle(ParticleTypes.NAUTILUS, vec3d.x, vec3d.y, vec3d.z, vec3d2.x, vec3d2.y, vec3d2.z);
         }
         if (this.targetEntity != null) {
             Vec3d vec3d3 = new Vec3d(this.targetEntity.getX(), this.targetEntity.getEyeY(), this.targetEntity.getZ());
-            float j = (-0.5f + random.nextFloat()) * (3.0f + this.targetEntity.getWidth());
-            g = -1.0f + random.nextFloat() * this.targetEntity.getHeight();
-            h = (-0.5f + random.nextFloat()) * (3.0f + this.targetEntity.getWidth());
-            Vec3d vec3d4 = new Vec3d(j, g, h);
+            float i = (-0.5f + random.nextFloat()) * (3.0f + this.targetEntity.getWidth());
+            f = -1.0f + random.nextFloat() * this.targetEntity.getHeight();
+            g = (-0.5f + random.nextFloat()) * (3.0f + this.targetEntity.getWidth());
+            Vec3d vec3d4 = new Vec3d(i, f, g);
             this.world.addParticle(ParticleTypes.NAUTILUS, vec3d3.x, vec3d3.y, vec3d3.z, vec3d4.x, vec3d4.y, vec3d4.z);
         }
     }

@@ -671,6 +671,8 @@ public class GlStateManager {
 
     public static void setupLevelDiffuseLighting(Matrix4f matrix4f) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+        GlStateManager.pushMatrix();
+        GlStateManager.loadIdentity();
         GlStateManager.enableLight(0);
         GlStateManager.enableLight(1);
         Vector4f vector4f = new Vector4f(DIFFUSE_LIGHT_0_POSITION);
@@ -689,14 +691,29 @@ public class GlStateManager {
         GlStateManager.shadeModel(7424);
         float g = 0.4f;
         GlStateManager.lightModel(2899, GlStateManager.getBuffer(0.4f, 0.4f, 0.4f, 1.0f));
+        GlStateManager.popMatrix();
     }
 
-    public static void setupGuiDiffuseLighting(Matrix4f matrix4f) {
+    public static void method_24221() {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-        Matrix4f matrix4f2 = matrix4f.copy();
-        matrix4f2.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-22.5f));
-        matrix4f2.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(135.0f));
-        GlStateManager.setupLevelDiffuseLighting(matrix4f2);
+        Matrix4f matrix4f = new Matrix4f();
+        matrix4f.loadIdentity();
+        matrix4f.multiply(Matrix4f.method_24019(1.0f, -1.0f, 1.0f));
+        matrix4f.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-22.5f));
+        matrix4f.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(135.0f));
+        GlStateManager.setupLevelDiffuseLighting(matrix4f);
+    }
+
+    public static void method_24222() {
+        RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+        Matrix4f matrix4f = new Matrix4f();
+        matrix4f.loadIdentity();
+        matrix4f.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(62.0f));
+        matrix4f.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(185.5f));
+        matrix4f.multiply(Matrix4f.method_24019(1.0f, -1.0f, 1.0f));
+        matrix4f.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-22.5f));
+        matrix4f.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(135.0f));
+        GlStateManager.setupLevelDiffuseLighting(matrix4f);
     }
 
     private static FloatBuffer getBuffer(float f, float g, float h, float i) {

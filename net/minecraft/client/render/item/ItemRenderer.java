@@ -165,6 +165,7 @@ implements SynchronousResourceReloadListener {
     }
 
     protected void renderGuiItemModel(ItemStack itemStack, int i, int j, BakedModel bakedModel) {
+        boolean bl;
         RenderSystem.pushMatrix();
         this.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
         this.textureManager.getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).setFilter(false, false);
@@ -180,14 +181,16 @@ implements SynchronousResourceReloadListener {
         RenderSystem.scalef(16.0f, 16.0f, 16.0f);
         MatrixStack matrixStack = new MatrixStack();
         VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
-        if (bakedModel.hasDepthInGui()) {
-            DiffuseLighting.method_24211();
+        Item item = itemStack.getItem();
+        boolean bl2 = bl = !bakedModel.hasDepthInGui() || item == Items.SHIELD || item == Items.TRIDENT;
+        if (bl) {
+            DiffuseLighting.method_24210();
         }
         this.method_23179(itemStack, ModelTransformation.Type.GUI, false, matrixStack, immediate, 0xF000F0, OverlayTexture.DEFAULT_UV, bakedModel);
         immediate.draw();
         RenderSystem.enableDepthTest();
-        if (bakedModel.hasDepthInGui()) {
-            DiffuseLighting.method_24210();
+        if (bl) {
+            DiffuseLighting.method_24211();
         }
         RenderSystem.disableAlphaTest();
         RenderSystem.disableRescaleNormal();

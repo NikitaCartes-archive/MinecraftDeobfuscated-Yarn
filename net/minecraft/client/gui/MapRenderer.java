@@ -27,8 +27,6 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class MapRenderer
 implements AutoCloseable {
-    public static final Identifier field_21056 = new Identifier("textures/map/map_background.png");
-    public static final RenderLayer field_21687 = RenderLayer.getText(field_21056);
     private static final Identifier MAP_ICONS_TEXTURE = new Identifier("textures/map/map_icons.png");
     private static final RenderLayer field_21688 = RenderLayer.getText(MAP_ICONS_TEXTURE);
     private final TextureManager textureManager;
@@ -100,7 +98,7 @@ implements AutoCloseable {
                     int k = j + i * 128;
                     int l = this.mapState.colors[k] & 0xFF;
                     if (l / 4 == 0) {
-                        this.texture.getImage().setPixelRgba(j, i, (k + k / 128 & 1) * 8 + 16 << 24);
+                        this.texture.getImage().setPixelRgba(j, i, 0);
                         continue;
                     }
                     this.texture.getImage().setPixelRgba(j, i, MaterialColor.COLORS[l / 4].getRenderColor(l & 3));

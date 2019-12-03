@@ -6,7 +6,6 @@ package net.minecraft.client.render.entity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.MapRenderer;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -68,7 +67,6 @@ extends EntityRenderer<ItemFrameEntity> {
             int j = bl ? itemFrameEntity.getRotation() % 4 * 2 : itemFrameEntity.getRotation();
             matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion((float)j * 360.0f / 8.0f));
             if (bl) {
-                this.renderManager.textureManager.bindTexture(MapRenderer.field_21056);
                 matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0f));
                 float h = 0.0078125f;
                 matrixStack.scale(0.0078125f, 0.0078125f, 0.0078125f);

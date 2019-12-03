@@ -57,7 +57,7 @@ extends HorizontalFacingBlock {
         } else if (!bl) {
             serverWorld.setBlockState(blockPos, (BlockState)blockState.with(POWERED, true), 2);
             if (!bl2) {
-                ((ServerTickScheduler)serverWorld.getBlockTickScheduler()).schedule(blockPos, this, this.getUpdateDelayInternal(blockState), TickPriority.HIGH);
+                ((ServerTickScheduler)serverWorld.getBlockTickScheduler()).schedule(blockPos, this, this.getUpdateDelayInternal(blockState), TickPriority.VERY_HIGH);
             }
         }
     }

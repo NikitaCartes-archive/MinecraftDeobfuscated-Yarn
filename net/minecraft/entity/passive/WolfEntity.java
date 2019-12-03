@@ -39,7 +39,6 @@ import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.GhastEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.entity.passive.PassiveEntity;
@@ -476,12 +475,12 @@ extends TameableEntity {
 
     @Override
     public boolean canAttackWithOwner(LivingEntity livingEntity, LivingEntity livingEntity2) {
-        WolfEntity wolfEntity;
         if (livingEntity instanceof CreeperEntity || livingEntity instanceof GhastEntity) {
             return false;
         }
-        if (livingEntity instanceof WolfEntity && (wolfEntity = (WolfEntity)livingEntity).isTamed() && wolfEntity.getOwner() == livingEntity2) {
-            return false;
+        if (livingEntity instanceof WolfEntity) {
+            WolfEntity wolfEntity = (WolfEntity)livingEntity;
+            return !wolfEntity.isTamed() || wolfEntity.getOwner() != livingEntity2;
         }
         if (livingEntity instanceof PlayerEntity && livingEntity2 instanceof PlayerEntity && !((PlayerEntity)livingEntity2).shouldDamagePlayer((PlayerEntity)livingEntity)) {
             return false;
@@ -489,7 +488,7 @@ extends TameableEntity {
         if (livingEntity instanceof HorseBaseEntity && ((HorseBaseEntity)livingEntity).isTame()) {
             return false;
         }
-        return !(livingEntity instanceof CatEntity) || !((CatEntity)livingEntity).isTamed();
+        return !(livingEntity instanceof TameableEntity) || !((TameableEntity)livingEntity).isTamed();
     }
 
     @Override

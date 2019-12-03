@@ -133,7 +133,7 @@ implements RecipeBookProvider {
         livingEntity.prevHeadYaw = livingEntity.yaw;
         EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderManager();
         quaternion2.conjugate();
-        entityRenderDispatcher.method_24196(quaternion2);
+        entityRenderDispatcher.setRotation(quaternion2);
         entityRenderDispatcher.setRenderShadows(false);
         VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
         entityRenderDispatcher.render(livingEntity, 0.0, 0.0, 0.0, 0.0f, 1.0f, matrixStack, immediate, 0xF000F0);

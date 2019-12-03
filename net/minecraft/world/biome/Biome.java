@@ -71,6 +71,7 @@ public abstract class Biome {
     protected final float downfall;
     protected final int waterColor;
     protected final int waterFogColor;
+    private final int field_21806;
     @Nullable
     protected final String parent;
     protected final ConfiguredSurfaceBuilder<?> surfaceBuilder;
@@ -114,6 +115,7 @@ public abstract class Biome {
         this.downfall = settings.downfall.floatValue();
         this.waterColor = settings.waterColor;
         this.waterFogColor = settings.waterFogColor;
+        this.field_21806 = this.method_24218();
         this.parent = settings.parent;
         for (GenerationStep.Feature feature : GenerationStep.Feature.values()) {
             this.features.put(feature, Lists.newArrayList());
@@ -127,9 +129,16 @@ public abstract class Biome {
         return this.parent != null;
     }
 
+    private int method_24218() {
+        float f = this.temperature;
+        f /= 3.0f;
+        f = MathHelper.clamp(f, -1.0f, 1.0f);
+        return MathHelper.hsvToRgb(0.62222224f - f * 0.05f, 0.5f + f * 0.1f, 1.0f);
+    }
+
     @Environment(value=EnvType.CLIENT)
     public int getSkyColor() {
-        return 8364543;
+        return this.field_21806;
     }
 
     protected void addSpawn(EntityCategory entityCategory, SpawnEntry spawnEntry) {

@@ -95,7 +95,7 @@ public class MathHelper {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static long method_24156(long l, long m, long n) {
+    public static long clamp(long l, long m, long n) {
         if (l < m) {
             return m;
         }
@@ -340,7 +340,7 @@ public class MathHelper {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static float method_22450(float f) {
+    public static float fractionalPart(float f) {
         return f - (float)MathHelper.floor(f);
     }
 
@@ -446,7 +446,6 @@ public class MathHelper {
         return g;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static int hsvToRgb(float f, float g, float h) {
         float p;
         float o;

@@ -32,7 +32,7 @@ public class Camera {
     private final Vector3f diagonalPlane = new Vector3f(1.0f, 0.0f, 0.0f);
     private float pitch;
     private float yaw;
-    private final Quaternion field_21518 = new Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
+    private final Quaternion rotation = new Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
     private boolean thirdPerson;
     private boolean inverseView;
     private float cameraY;
@@ -90,15 +90,15 @@ public class Camera {
     protected void setRotation(float f, float g) {
         this.pitch = g;
         this.yaw = f;
-        this.field_21518.set(0.0f, 0.0f, 0.0f, 1.0f);
-        this.field_21518.hamiltonProduct(Vector3f.POSITIVE_Y.getDegreesQuaternion(-f));
-        this.field_21518.hamiltonProduct(Vector3f.POSITIVE_X.getDegreesQuaternion(g));
+        this.rotation.set(0.0f, 0.0f, 0.0f, 1.0f);
+        this.rotation.hamiltonProduct(Vector3f.POSITIVE_Y.getDegreesQuaternion(-f));
+        this.rotation.hamiltonProduct(Vector3f.POSITIVE_X.getDegreesQuaternion(g));
         this.horizontalPlane.set(0.0f, 0.0f, 1.0f);
-        this.horizontalPlane.rotate(this.field_21518);
+        this.horizontalPlane.rotate(this.rotation);
         this.verticalPlane.set(0.0f, 1.0f, 0.0f);
-        this.verticalPlane.rotate(this.field_21518);
+        this.verticalPlane.rotate(this.rotation);
         this.diagonalPlane.set(1.0f, 0.0f, 0.0f);
-        this.diagonalPlane.rotate(this.field_21518);
+        this.diagonalPlane.rotate(this.rotation);
     }
 
     protected void setPos(double d, double e, double f) {
@@ -126,8 +126,8 @@ public class Camera {
         return this.yaw;
     }
 
-    public Quaternion method_23767() {
-        return this.field_21518;
+    public Quaternion getRotation() {
+        return this.rotation;
     }
 
     public Entity getFocusedEntity() {

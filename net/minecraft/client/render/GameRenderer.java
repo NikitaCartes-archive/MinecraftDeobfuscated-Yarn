@@ -437,7 +437,7 @@ SynchronousResourceReloadListener {
         RenderSystem.matrixMode(5888);
         RenderSystem.loadIdentity();
         RenderSystem.translatef(0.0f, 0.0f, -2000.0f);
-        DiffuseLighting.enableForGui(matrixStack.peek().getModel());
+        DiffuseLighting.method_24211();
         if (bl && this.client.world != null) {
             this.client.getProfiler().swap("gui");
             if (!this.client.options.hudHidden || this.client.currentScreen != null) {
@@ -636,7 +636,7 @@ SynchronousResourceReloadListener {
         return this.lightmapTextureManager;
     }
 
-    public OverlayTexture method_22975() {
+    public OverlayTexture getOverlayTexture() {
         return this.overlayTexture;
     }
 }

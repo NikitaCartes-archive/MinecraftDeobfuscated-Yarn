@@ -30,7 +30,7 @@ extends EntityRenderer<FireworkEntity> {
     @Override
     public void render(FireworkEntity fireworkEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         matrixStack.push();
-        matrixStack.multiply(this.renderManager.method_24197());
+        matrixStack.multiply(this.renderManager.getRotation());
         matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
         if (fireworkEntity.wasShotAtAngle()) {
             matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0f));

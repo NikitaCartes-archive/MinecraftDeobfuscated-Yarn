@@ -123,6 +123,7 @@ extends LightStorage<Data> {
 
     @Override
     protected void setLightEnabled(long l, boolean bl) {
+        this.updateAll();
         if (bl && this.lightEnabled.add(l)) {
             int i = ((Data)this.lightArrays).topArraySectionY.get(l);
             if (i != ((Data)this.lightArrays).defaultTopArraySectionY) {

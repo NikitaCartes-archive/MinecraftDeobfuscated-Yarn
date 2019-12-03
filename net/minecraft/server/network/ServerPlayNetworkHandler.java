@@ -1050,7 +1050,10 @@ implements ServerPlayPacketListener {
                     this.player.interact(entity, hand);
                 } else if (playerInteractEntityC2SPacket.getType() == PlayerInteractEntityC2SPacket.InteractionType.INTERACT_AT) {
                     Hand hand = playerInteractEntityC2SPacket.getHand();
-                    entity.interactAt(this.player, playerInteractEntityC2SPacket.getHitPosition(), hand);
+                    ActionResult actionResult = entity.interactAt(this.player, playerInteractEntityC2SPacket.getHitPosition(), hand);
+                    if (actionResult.shouldSwingHand()) {
+                        this.player.swingHand(hand, true);
+                    }
                 } else if (playerInteractEntityC2SPacket.getType() == PlayerInteractEntityC2SPacket.InteractionType.ATTACK) {
                     if (entity instanceof ItemEntity || entity instanceof ExperienceOrbEntity || entity instanceof ProjectileEntity || entity == this.player) {
                         this.disconnect(new TranslatableText("multiplayer.disconnect.invalid_entity_attacked", new Object[0]));

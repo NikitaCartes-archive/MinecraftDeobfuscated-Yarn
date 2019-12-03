@@ -64,7 +64,9 @@ extends AbstractInventoryScreen<CreativeContainer> {
     private float scrollPosition;
     private boolean scrolling;
     private TextFieldWidget searchBox;
+    @Nullable
     private List<Slot> slots;
+    @Nullable
     private Slot deleteItemSlot;
     private CreativeInventoryListener listener;
     private boolean ignoreTypedCharacter;
@@ -441,34 +443,30 @@ extends AbstractInventoryScreen<CreativeContainer> {
             }
             ((CreativeContainer)this.container).slotList.clear();
             for (j = 0; j < container.slotList.size(); ++j) {
+                int o;
+                int n;
                 int m;
-                int l;
-                CreativeSlot slot = new CreativeSlot(container.slotList.get(j), j);
-                ((CreativeContainer)this.container).slotList.add(slot);
                 if (j >= 5 && j < 9) {
-                    k = j - 5;
-                    l = k / 2;
-                    m = k % 2;
-                    slot.xPosition = 54 + l * 54;
-                    slot.yPosition = 6 + m * 27;
-                    continue;
+                    int l = j - 5;
+                    m = l / 2;
+                    n = l % 2;
+                    o = 54 + m * 54;
+                    k = 6 + n * 27;
+                } else if (j >= 0 && j < 5) {
+                    o = -2000;
+                    k = -2000;
+                } else if (j == 45) {
+                    o = 35;
+                    k = 20;
+                } else {
+                    int l = j - 9;
+                    m = l % 9;
+                    n = l / 9;
+                    o = 9 + m * 18;
+                    k = j >= 36 ? 112 : 54 + n * 18;
                 }
-                if (j >= 0 && j < 5) {
-                    slot.xPosition = -2000;
-                    slot.yPosition = -2000;
-                    continue;
-                }
-                if (j == 45) {
-                    slot.xPosition = 35;
-                    slot.yPosition = 20;
-                    continue;
-                }
-                if (j >= container.slotList.size()) continue;
-                k = j - 9;
-                l = k % 9;
-                m = k / 9;
-                slot.xPosition = 9 + l * 18;
-                slot.yPosition = j >= 36 ? 112 : 54 + m * 18;
+                CreativeSlot slot = new CreativeSlot(container.slotList.get(j), j, o, k);
+                ((CreativeContainer)this.container).slotList.add(slot);
             }
             this.deleteItemSlot = new Slot(inventory, 0, 173, 112);
             ((CreativeContainer)this.container).slotList.add(this.deleteItemSlot);
@@ -727,19 +725,18 @@ extends AbstractInventoryScreen<CreativeContainer> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    class CreativeSlot
+    static class CreativeSlot
     extends Slot {
         private final Slot slot;
 
-        public CreativeSlot(Slot slot, int i) {
-            super(slot.inventory, i, 0, 0);
+        public CreativeSlot(Slot slot, int i, int j, int k) {
+            super(slot.inventory, i, j, k);
             this.slot = slot;
         }
 
         @Override
         public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
-            this.slot.onTakeItem(playerEntity, itemStack);
-            return itemStack;
+            return this.slot.onTakeItem(playerEntity, itemStack);
         }
 
         @Override

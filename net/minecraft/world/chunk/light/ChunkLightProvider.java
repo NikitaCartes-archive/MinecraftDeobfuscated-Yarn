@@ -215,7 +215,6 @@ implements ChunkLightingView {
 
     public void setLightEnabled(ChunkPos chunkPos, boolean bl) {
         long l = ChunkSectionPos.withZeroZ(ChunkSectionPos.asLong(chunkPos.x, 0, chunkPos.z));
-        ((LightStorage)this.lightStorage).updateAll();
         ((LightStorage)this.lightStorage).setLightEnabled(l, bl);
     }
 

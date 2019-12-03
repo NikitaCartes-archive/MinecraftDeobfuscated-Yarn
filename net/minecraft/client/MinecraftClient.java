@@ -315,8 +315,8 @@ WindowEventHandler {
     private CrashReport crashReport;
     private static int currentFps;
     public String fpsDebugString = "";
-    public boolean field_20907;
-    public boolean field_20908;
+    public boolean debugChunkInfo;
+    public boolean debugChunkOcculsion;
     public boolean chunkCullingEnabled = true;
     private boolean windowFocused;
     private final Queue<Runnable> renderTaskQueue = Queues.newConcurrentLinkedQueue();

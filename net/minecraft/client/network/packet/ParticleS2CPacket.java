@@ -16,9 +16,9 @@ import net.minecraft.util.registry.Registry;
 
 public class ParticleS2CPacket
 implements Packet<ClientPlayPacketListener> {
-    private float x;
-    private float y;
-    private float z;
+    private double x;
+    private double y;
+    private double z;
     private float offsetX;
     private float offsetY;
     private float offsetZ;
@@ -30,17 +30,17 @@ implements Packet<ClientPlayPacketListener> {
     public ParticleS2CPacket() {
     }
 
-    public <T extends ParticleEffect> ParticleS2CPacket(T particleEffect, boolean bl, float f, float g, float h, float i, float j, float k, float l, int m) {
+    public <T extends ParticleEffect> ParticleS2CPacket(T particleEffect, boolean bl, double d, double e, double f, float g, float h, float i, float j, int k) {
         this.parameters = particleEffect;
         this.longDistance = bl;
-        this.x = f;
-        this.y = g;
-        this.z = h;
-        this.offsetX = i;
-        this.offsetY = j;
-        this.offsetZ = k;
-        this.speed = l;
-        this.count = m;
+        this.x = d;
+        this.y = e;
+        this.z = f;
+        this.offsetX = g;
+        this.offsetY = h;
+        this.offsetZ = i;
+        this.speed = j;
+        this.count = k;
     }
 
     @Override
@@ -50,9 +50,9 @@ implements Packet<ClientPlayPacketListener> {
             particleType = ParticleTypes.BARRIER;
         }
         this.longDistance = packetByteBuf.readBoolean();
-        this.x = packetByteBuf.readFloat();
-        this.y = packetByteBuf.readFloat();
-        this.z = packetByteBuf.readFloat();
+        this.x = packetByteBuf.readDouble();
+        this.y = packetByteBuf.readDouble();
+        this.z = packetByteBuf.readDouble();
         this.offsetX = packetByteBuf.readFloat();
         this.offsetY = packetByteBuf.readFloat();
         this.offsetZ = packetByteBuf.readFloat();
@@ -69,9 +69,9 @@ implements Packet<ClientPlayPacketListener> {
     public void write(PacketByteBuf packetByteBuf) throws IOException {
         packetByteBuf.writeInt(Registry.PARTICLE_TYPE.getRawId(this.parameters.getType()));
         packetByteBuf.writeBoolean(this.longDistance);
-        packetByteBuf.writeFloat(this.x);
-        packetByteBuf.writeFloat(this.y);
-        packetByteBuf.writeFloat(this.z);
+        packetByteBuf.writeDouble(this.x);
+        packetByteBuf.writeDouble(this.y);
+        packetByteBuf.writeDouble(this.z);
         packetByteBuf.writeFloat(this.offsetX);
         packetByteBuf.writeFloat(this.offsetY);
         packetByteBuf.writeFloat(this.offsetZ);

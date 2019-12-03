@@ -4,6 +4,8 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockPlacementEnvironment;
 import net.minecraft.block.BlockState;
@@ -62,6 +64,12 @@ extends Block {
 
     @Override
     public boolean allowsSpawning(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
+        return true;
+    }
+
+    @Override
+    @Environment(value=EnvType.CLIENT)
+    public boolean method_24219(BlockState blockState, BlockView blockView, BlockPos blockPos) {
         return true;
     }
 }

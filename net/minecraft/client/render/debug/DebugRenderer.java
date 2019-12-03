@@ -193,7 +193,7 @@ public class DebugRenderer {
         RenderSystem.pushMatrix();
         RenderSystem.translatef((float)(d - j), (float)(e - k) + 0.07f, (float)(f - l));
         RenderSystem.normal3f(0.0f, 1.0f, 0.0f);
-        RenderSystem.multMatrix(new Matrix4f(camera.method_23767()));
+        RenderSystem.multMatrix(new Matrix4f(camera.getRotation()));
         RenderSystem.scalef(g, -g, g);
         RenderSystem.enableTexture();
         if (bl2) {

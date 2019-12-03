@@ -49,7 +49,7 @@ extends EntityRenderer<FishingBobberEntity> {
         matrixStack.push();
         matrixStack.push();
         matrixStack.scale(0.5f, 0.5f, 0.5f);
-        matrixStack.multiply(this.renderManager.method_24197());
+        matrixStack.multiply(this.renderManager.getRotation());
         matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
         MatrixStack.Entry entry = matrixStack.peek();
         Matrix4f matrix4f = entry.getModel();

@@ -103,14 +103,14 @@ extends BlockEntityRenderer<SkullBlockEntity> {
     private static RenderLayer method_3578(SkullBlock.SkullType skullType, @Nullable GameProfile gameProfile) {
         Identifier identifier = TEXTURES.get(skullType);
         if (skullType != SkullBlock.Type.PLAYER || gameProfile == null) {
-            return RenderLayer.getEntityCutout(identifier);
+            return RenderLayer.getEntityCutoutNoCull(identifier);
         }
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
         Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> map = minecraftClient.getSkinProvider().getTextures(gameProfile);
         if (map.containsKey((Object)MinecraftProfileTexture.Type.SKIN)) {
             return RenderLayer.getEntityTranslucent(minecraftClient.getSkinProvider().loadSkin(map.get((Object)MinecraftProfileTexture.Type.SKIN), MinecraftProfileTexture.Type.SKIN));
         }
-        return RenderLayer.getEntityCutout(DefaultSkinHelper.getTexture(PlayerEntity.getUuidFromProfile(gameProfile)));
+        return RenderLayer.getEntityCutoutNoCull(DefaultSkinHelper.getTexture(PlayerEntity.getUuidFromProfile(gameProfile)));
     }
 }
 

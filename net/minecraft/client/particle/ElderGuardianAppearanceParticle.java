@@ -45,7 +45,7 @@ extends Particle {
         float g = ((float)this.age + f) / (float)this.maxAge;
         float h = 0.05f + 0.5f * MathHelper.sin(g * (float)Math.PI);
         MatrixStack matrixStack = new MatrixStack();
-        matrixStack.multiply(camera.method_23767());
+        matrixStack.multiply(camera.getRotation());
         matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(150.0f * g - 60.0f));
         matrixStack.scale(-1.0f, -1.0f, 1.0f);
         matrixStack.translate(0.0, -1.101f, 1.5);

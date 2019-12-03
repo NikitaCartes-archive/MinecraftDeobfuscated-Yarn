@@ -37,7 +37,7 @@ extends EntityRenderer<DragonFireballEntity> {
     public void render(DragonFireballEntity dragonFireballEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         matrixStack.push();
         matrixStack.scale(2.0f, 2.0f, 2.0f);
-        matrixStack.multiply(this.renderManager.method_24197());
+        matrixStack.multiply(this.renderManager.getRotation());
         matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
         MatrixStack.Entry entry = matrixStack.peek();
         Matrix4f matrix4f = entry.getModel();

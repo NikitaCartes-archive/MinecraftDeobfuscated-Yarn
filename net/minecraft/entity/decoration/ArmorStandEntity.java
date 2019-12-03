@@ -312,6 +312,9 @@ extends LivingEntity {
         if (playerEntity.isSpectator()) {
             return ActionResult.SUCCESS;
         }
+        if (playerEntity.world.isClient) {
+            return ActionResult.CONSUME;
+        }
         EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
         if (itemStack.isEmpty()) {
             EquipmentSlot equipmentSlot3;
@@ -331,14 +334,14 @@ extends LivingEntity {
                 return ActionResult.SUCCESS;
             }
         }
-        return ActionResult.CONSUME;
+        return ActionResult.PASS;
     }
 
     /*
      * Enabled force condition propagation
      * Lifted jumps to return sites
      */
-    protected EquipmentSlot method_6916(Vec3d vec3d) {
+    private EquipmentSlot method_6916(Vec3d vec3d) {
         EquipmentSlot equipmentSlot = EquipmentSlot.MAINHAND;
         boolean bl = this.isSmall();
         double d = bl ? vec3d.y * 2.0 : vec3d.y;
@@ -370,7 +373,7 @@ extends LivingEntity {
         return EquipmentSlot.OFFHAND;
     }
 
-    public boolean method_6915(EquipmentSlot equipmentSlot) {
+    private boolean method_6915(EquipmentSlot equipmentSlot) {
         return (this.disabledSlots & 1 << equipmentSlot.getArmorStandSlotId()) != 0 || equipmentSlot.getType() == EquipmentSlot.Type.HAND && !this.shouldShowArms();
     }
 

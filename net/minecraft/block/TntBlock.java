@@ -81,7 +81,7 @@ extends Block {
         if (world.isClient) {
             return;
         }
-        TntEntity tntEntity = new TntEntity(world, (float)blockPos.getX() + 0.5f, blockPos.getY(), (float)blockPos.getZ() + 0.5f, livingEntity);
+        TntEntity tntEntity = new TntEntity(world, (double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5, livingEntity);
         world.spawnEntity(tntEntity);
         world.playSound(null, tntEntity.getX(), tntEntity.getY(), tntEntity.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0f, 1.0f);
     }

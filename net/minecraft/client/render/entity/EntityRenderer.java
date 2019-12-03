@@ -86,7 +86,7 @@ public abstract class EntityRenderer<T extends Entity> {
         int j = "deadmau5".equals(string) ? -10 : 0;
         matrixStack.push();
         matrixStack.translate(0.0, f, 0.0);
-        matrixStack.multiply(this.renderManager.method_24197());
+        matrixStack.multiply(this.renderManager.getRotation());
         matrixStack.scale(-0.025f, -0.025f, 0.025f);
         Matrix4f matrix4f = matrixStack.peek().getModel();
         float g = MinecraftClient.getInstance().options.getTextBackgroundOpacity(0.25f);

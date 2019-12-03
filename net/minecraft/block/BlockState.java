@@ -297,6 +297,11 @@ implements State<BlockState> {
         return this.getBlock().canSuffocate(this, blockView, blockPos);
     }
 
+    @Environment(value=EnvType.CLIENT)
+    public boolean method_24220(BlockView blockView, BlockPos blockPos) {
+        return this.getBlock().method_24219(this, blockView, blockPos);
+    }
+
     public BlockState getStateForNeighborUpdate(Direction direction, BlockState blockState, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
         return this.getBlock().getStateForNeighborUpdate(this, direction, blockState, iWorld, blockPos, blockPos2);
     }

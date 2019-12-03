@@ -973,7 +973,7 @@ extends World {
     }
 
     public <T extends ParticleEffect> int spawnParticles(T particleEffect, double d, double e, double f, int i, double g, double h, double j, double k) {
-        ParticleS2CPacket particleS2CPacket = new ParticleS2CPacket(particleEffect, false, (float)d, (float)e, (float)f, (float)g, (float)h, (float)j, (float)k, i);
+        ParticleS2CPacket particleS2CPacket = new ParticleS2CPacket(particleEffect, false, d, e, f, (float)g, (float)h, (float)j, (float)k, i);
         int l = 0;
         for (int m = 0; m < this.players.size(); ++m) {
             ServerPlayerEntity serverPlayerEntity = this.players.get(m);
@@ -984,7 +984,7 @@ extends World {
     }
 
     public <T extends ParticleEffect> boolean spawnParticles(ServerPlayerEntity serverPlayerEntity, T particleEffect, boolean bl, double d, double e, double f, int i, double g, double h, double j, double k) {
-        ParticleS2CPacket packet = new ParticleS2CPacket(particleEffect, bl, (float)d, (float)e, (float)f, (float)g, (float)h, (float)j, (float)k, i);
+        ParticleS2CPacket packet = new ParticleS2CPacket(particleEffect, bl, d, e, f, (float)g, (float)h, (float)j, (float)k, i);
         return this.sendToPlayerIfNearby(serverPlayerEntity, bl, d, e, f, packet);
     }
 

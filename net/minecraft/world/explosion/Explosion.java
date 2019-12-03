@@ -6,8 +6,9 @@ package net.minecraft.world.explosion;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -207,12 +208,12 @@ public class Explosion {
         }
         if (bl2) {
             ObjectArrayList objectArrayList = new ObjectArrayList();
-            ArrayList<BlockPos> list = Lists.newArrayList();
+            Collections.shuffle(this.affectedBlocks, this.world.random);
             for (BlockPos blockPos : this.affectedBlocks) {
                 BlockState blockState = this.world.getBlockState(blockPos);
                 Block block = blockState.getBlock();
                 if (blockState.isAir()) continue;
-                list.add(blockPos.toImmutable());
+                BlockPos blockPos2 = blockPos.toImmutable();
                 this.world.getProfiler().push("explosion_blocks");
                 if (block.shouldDropItemsOnExplosion(this) && this.world instanceof ServerWorld) {
                     BlockEntity blockEntity = block.hasBlockEntity() ? this.world.getBlockEntity(blockPos) : null;
@@ -220,36 +221,36 @@ public class Explosion {
                     if (this.blockDestructionType == DestructionType.DESTROY) {
                         builder.put(LootContextParameters.EXPLOSION_RADIUS, Float.valueOf(this.power));
                     }
-                    blockState.getDroppedStacks(builder).forEach(itemStack -> Explosion.method_24023(objectArrayList, itemStack));
+                    blockState.getDroppedStacks(builder).forEach(itemStack -> Explosion.method_24023(objectArrayList, itemStack, blockPos2));
                 }
                 this.world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 3);
                 block.onDestroyedByExplosion(this.world, blockPos, this);
                 this.world.getProfiler().pop();
             }
-            int i = list.size();
-            for (ItemStack itemStack2 : objectArrayList) {
-                Block.dropStack(this.world, (BlockPos)list.get(this.random.nextInt(i)), itemStack2);
+            for (Pair pair : objectArrayList) {
+                Block.dropStack(this.world, (BlockPos)pair.getSecond(), (ItemStack)pair.getFirst());
             }
         }
         if (this.createFire) {
-            for (BlockPos blockPos2 : this.affectedBlocks) {
-                if (this.random.nextInt(3) != 0 || !this.world.getBlockState(blockPos2).isAir() || !this.world.getBlockState(blockPos2.down()).isFullOpaque(this.world, blockPos2.down())) continue;
-                this.world.setBlockState(blockPos2, Blocks.FIRE.getDefaultState());
+            for (BlockPos blockPos3 : this.affectedBlocks) {
+                if (this.random.nextInt(3) != 0 || !this.world.getBlockState(blockPos3).isAir() || !this.world.getBlockState(blockPos3.down()).isFullOpaque(this.world, blockPos3.down())) continue;
+                this.world.setBlockState(blockPos3, Blocks.FIRE.getDefaultState());
             }
         }
     }
 
-    private static void method_24023(ObjectArrayList<ItemStack> objectArrayList, ItemStack itemStack) {
+    private static void method_24023(ObjectArrayList<Pair<ItemStack, BlockPos>> objectArrayList, ItemStack itemStack, BlockPos blockPos) {
         int i = objectArrayList.size();
         for (int j = 0; j < i; ++j) {
-            ItemStack itemStack2 = objectArrayList.get(j);
+            Pair<ItemStack, BlockPos> pair = objectArrayList.get(j);
+            ItemStack itemStack2 = pair.getFirst();
             if (!ItemEntity.method_24017(itemStack2, itemStack)) continue;
             ItemStack itemStack3 = ItemEntity.method_24018(itemStack2, itemStack, 16);
-            objectArrayList.set(j, itemStack3);
+            objectArrayList.set(j, Pair.of(itemStack3, pair.getSecond()));
             if (!itemStack.isEmpty()) continue;
             return;
         }
-        objectArrayList.add(itemStack);
+        objectArrayList.add(Pair.of(itemStack, blockPos));
     }
 
     public DamageSource getDamageSource() {
