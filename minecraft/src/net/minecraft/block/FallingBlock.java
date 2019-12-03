@@ -66,9 +66,9 @@ public class FallingBlock extends Block {
 		if (random.nextInt(16) == 0) {
 			BlockPos blockPos = pos.down();
 			if (canFallThrough(world.getBlockState(blockPos))) {
-				double d = (double)((float)pos.getX() + random.nextFloat());
+				double d = (double)pos.getX() + (double)random.nextFloat();
 				double e = (double)pos.getY() - 0.05;
-				double f = (double)((float)pos.getZ() + random.nextFloat());
+				double f = (double)pos.getZ() + (double)random.nextFloat();
 				world.addParticle(new BlockStateParticleEffect(ParticleTypes.FALLING_DUST, state), d, e, f, 0.0, 0.0, 0.0);
 			}
 		}

@@ -39,7 +39,7 @@ public class FlyingItemEntityRenderer<T extends Entity & FlyingItemEntity> exten
 	public void render(T entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
 		matrices.push();
 		matrices.scale(this.scale, this.scale, this.scale);
-		matrices.multiply(this.renderManager.method_24197());
+		matrices.multiply(this.renderManager.getRotation());
 		matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
 		this.item.method_23178(entity.getStack(), ModelTransformation.Type.GROUND, light, OverlayTexture.DEFAULT_UV, matrices, vertexConsumers);
 		matrices.pop();

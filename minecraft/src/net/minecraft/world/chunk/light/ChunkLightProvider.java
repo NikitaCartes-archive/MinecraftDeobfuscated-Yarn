@@ -221,7 +221,6 @@ public abstract class ChunkLightProvider<M extends ChunkToNibbleArrayMap<M>, S e
 
 	public void setLightEnabled(ChunkPos pos, boolean lightEnabled) {
 		long l = ChunkSectionPos.withZeroZ(ChunkSectionPos.asLong(pos.x, 0, pos.z));
-		this.lightStorage.updateAll();
 		this.lightStorage.setLightEnabled(l, lightEnabled);
 	}
 

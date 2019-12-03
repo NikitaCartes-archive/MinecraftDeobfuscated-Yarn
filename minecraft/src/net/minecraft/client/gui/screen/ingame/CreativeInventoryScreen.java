@@ -55,7 +55,9 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	private float scrollPosition;
 	private boolean scrolling;
 	private TextFieldWidget searchBox;
+	@Nullable
 	private List<Slot> slots;
+	@Nullable
 	private Slot deleteItemSlot;
 	private CreativeInventoryListener listener;
 	private boolean ignoreTypedCharacter;
@@ -460,31 +462,34 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 			this.container.slotList.clear();
 
 			for(int j = 0; j < container.slotList.size(); ++j) {
-				Slot slot = new CreativeInventoryScreen.CreativeSlot((Slot)container.slotList.get(j), j);
-				this.container.slotList.add(slot);
+				int o;
+				int k;
 				if (j >= 5 && j < 9) {
-					int k = j - 5;
-					int l = k / 2;
-					int m = k % 2;
-					slot.xPosition = 54 + l * 54;
-					slot.yPosition = 6 + m * 27;
+					int l = j - 5;
+					int m = l / 2;
+					int n = l % 2;
+					o = 54 + m * 54;
+					k = 6 + n * 27;
 				} else if (j >= 0 && j < 5) {
-					slot.xPosition = -2000;
-					slot.yPosition = -2000;
+					o = -2000;
+					k = -2000;
 				} else if (j == 45) {
-					slot.xPosition = 35;
-					slot.yPosition = 20;
-				} else if (j < container.slotList.size()) {
-					int k = j - 9;
-					int l = k % 9;
-					int m = k / 9;
-					slot.xPosition = 9 + l * 18;
+					o = 35;
+					k = 20;
+				} else {
+					int l = j - 9;
+					int m = l % 9;
+					int n = l / 9;
+					o = 9 + m * 18;
 					if (j >= 36) {
-						slot.yPosition = 112;
+						k = 112;
 					} else {
-						slot.yPosition = 54 + m * 18;
+						k = 54 + n * 18;
 					}
 				}
+
+				Slot slot = new CreativeInventoryScreen.CreativeSlot((Slot)container.slotList.get(j), j, o, k);
+				this.container.slotList.add(slot);
 			}
 
 			this.deleteItemSlot = new Slot(inventory, 0, 173, 112);
@@ -849,18 +854,17 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	}
 
 	@Environment(EnvType.CLIENT)
-	class CreativeSlot extends Slot {
+	static class CreativeSlot extends Slot {
 		private final Slot slot;
 
-		public CreativeSlot(Slot slot, int i) {
-			super(slot.inventory, i, 0, 0);
+		public CreativeSlot(Slot slot, int i, int j, int k) {
+			super(slot.inventory, i, j, k);
 			this.slot = slot;
 		}
 
 		@Override
 		public ItemStack onTakeItem(PlayerEntity player, ItemStack stack) {
-			this.slot.onTakeItem(player, stack);
-			return stack;
+			return this.slot.onTakeItem(player, stack);
 		}
 
 		@Override

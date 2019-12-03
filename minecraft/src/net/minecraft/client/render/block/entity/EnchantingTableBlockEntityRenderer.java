@@ -44,8 +44,8 @@ public class EnchantingTableBlockEntityRenderer extends BlockEntityRenderer<Ench
 		matrixStack.multiply(Vector3f.POSITIVE_Y.getRadialQuaternion(-k));
 		matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(80.0F));
 		float l = MathHelper.lerp(f, enchantingTableBlockEntity.pageAngle, enchantingTableBlockEntity.nextPageAngle);
-		float m = MathHelper.method_22450(l + 0.25F) * 1.6F - 0.3F;
-		float n = MathHelper.method_22450(l + 0.75F) * 1.6F - 0.3F;
+		float m = MathHelper.fractionalPart(l + 0.25F) * 1.6F - 0.3F;
+		float n = MathHelper.fractionalPart(l + 0.75F) * 1.6F - 0.3F;
 		float o = MathHelper.lerp(f, enchantingTableBlockEntity.pageTurningSpeed, enchantingTableBlockEntity.nextPageTurningSpeed);
 		this.book.setPageAngles(g, MathHelper.clamp(m, 0.0F, 1.0F), MathHelper.clamp(n, 0.0F, 1.0F), o);
 		VertexConsumer vertexConsumer = BOOK_TEX.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntitySolid);

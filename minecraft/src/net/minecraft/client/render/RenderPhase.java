@@ -401,11 +401,11 @@ public abstract class RenderPhase {
 		public Overlay(boolean overlayColor) {
 			super("overlay", () -> {
 				if (overlayColor) {
-					MinecraftClient.getInstance().gameRenderer.method_22975().setupOverlayColor();
+					MinecraftClient.getInstance().gameRenderer.getOverlayTexture().setupOverlayColor();
 				}
 			}, () -> {
 				if (overlayColor) {
-					MinecraftClient.getInstance().gameRenderer.method_22975().teardownOverlayColor();
+					MinecraftClient.getInstance().gameRenderer.getOverlayTexture().teardownOverlayColor();
 				}
 			}, overlayColor);
 		}

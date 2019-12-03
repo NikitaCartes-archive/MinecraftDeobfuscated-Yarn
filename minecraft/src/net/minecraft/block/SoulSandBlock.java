@@ -1,6 +1,8 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.EntityType;
 import net.minecraft.server.world.ServerWorld;
@@ -54,6 +56,12 @@ public class SoulSandBlock extends Block {
 
 	@Override
 	public boolean allowsSpawning(BlockState state, BlockView view, BlockPos pos, EntityType<?> type) {
+		return true;
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public boolean method_24219(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return true;
 	}
 }

@@ -13,8 +13,8 @@ public class Slot {
 	private final int invSlot;
 	public final Inventory inventory;
 	public int id;
-	public int xPosition;
-	public int yPosition;
+	public final int xPosition;
+	public final int yPosition;
 
 	public Slot(Inventory inventory, int invSlot, int xPosition, int yPosition) {
 		this.inventory = inventory;

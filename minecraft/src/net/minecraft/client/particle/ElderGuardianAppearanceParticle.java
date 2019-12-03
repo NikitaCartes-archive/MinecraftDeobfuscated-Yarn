@@ -38,7 +38,7 @@ public class ElderGuardianAppearanceParticle extends Particle {
 		float f = ((float)this.age + tickDelta) / (float)this.maxAge;
 		float g = 0.05F + 0.5F * MathHelper.sin(f * (float) Math.PI);
 		MatrixStack matrixStack = new MatrixStack();
-		matrixStack.multiply(camera.method_23767());
+		matrixStack.multiply(camera.getRotation());
 		matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(150.0F * f - 60.0F));
 		matrixStack.scale(-1.0F, -1.0F, 1.0F);
 		matrixStack.translate(0.0, -1.101F, 1.5);

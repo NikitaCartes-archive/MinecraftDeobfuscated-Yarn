@@ -1,6 +1,8 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
@@ -117,5 +119,11 @@ public class FarmlandBlock extends Block {
 	@Override
 	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
 		return false;
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public boolean method_24219(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+		return true;
 	}
 }
