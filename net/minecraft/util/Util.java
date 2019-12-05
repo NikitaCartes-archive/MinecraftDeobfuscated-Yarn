@@ -144,7 +144,7 @@ public class Util {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static void method_24155(Throwable throwable) {
+    public static void throwUnchecked(Throwable throwable) {
         throw throwable instanceof RuntimeException ? (RuntimeException)throwable : new RuntimeException(throwable);
     }
 

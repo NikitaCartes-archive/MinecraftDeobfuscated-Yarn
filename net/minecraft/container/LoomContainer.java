@@ -36,7 +36,7 @@ extends Container {
     private final Slot dyeSlot;
     private final Slot patternSlot;
     private final Slot outputSlot;
-    private long field_20383;
+    private long lastTakeResultTime;
     private final Inventory inputInventory = new BasicInventory(3){
 
         @Override
@@ -100,9 +100,9 @@ extends Container {
                 }
                 blockContext.run((world, blockPos) -> {
                     long l = world.getTime();
-                    if (LoomContainer.this.field_20383 != l) {
+                    if (LoomContainer.this.lastTakeResultTime != l) {
                         world.playSound(null, (BlockPos)blockPos, SoundEvents.UI_LOOM_TAKE_RESULT, SoundCategory.BLOCKS, 1.0f, 1.0f);
-                        LoomContainer.this.field_20383 = l;
+                        LoomContainer.this.lastTakeResultTime = l;
                     }
                 });
                 return super.onTakeItem(playerEntity, itemStack);

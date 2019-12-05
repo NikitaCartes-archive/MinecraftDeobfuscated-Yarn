@@ -52,7 +52,7 @@ extends Entity {
         this(entityType, world);
         this.owner = livingEntity;
         this.setPositionAndAngles(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), livingEntity.yaw, livingEntity.pitch);
-        this.method_23311();
+        this.updatePosition();
         this.setVelocity(Vec3d.ZERO);
         double g = MathHelper.sqrt((d += this.random.nextGaussian() * 0.4) * d + (e += this.random.nextGaussian() * 0.4) * e + (f += this.random.nextGaussian() * 0.4) * f);
         this.posX = d / g * 0.1;

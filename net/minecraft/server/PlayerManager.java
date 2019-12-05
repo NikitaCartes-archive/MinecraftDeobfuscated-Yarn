@@ -161,7 +161,7 @@ public abstract class PlayerManager {
         for (int i = 0; i < this.players.size(); ++i) {
             serverPlayerEntity.networkHandler.sendPacket(new PlayerListS2CPacket(PlayerListS2CPacket.Action.ADD_PLAYER, this.players.get(i)));
         }
-        serverWorld.method_18213(serverPlayerEntity);
+        serverWorld.onPlayerConnected(serverPlayerEntity);
         this.server.getBossBarManager().onPlayerConnect(serverPlayerEntity);
         this.sendWorldInfo(serverPlayerEntity, serverWorld);
         if (!this.server.getResourcePackUrl().isEmpty()) {
@@ -171,7 +171,7 @@ public abstract class PlayerManager {
             serverPlayNetworkHandler.sendPacket(new EntityPotionEffectS2CPacket(serverPlayerEntity.getEntityId(), statusEffectInstance));
         }
         if (compoundTag != null && compoundTag.contains("RootVehicle", 10) && (entity2 = EntityType.loadEntityWithPassengers((compoundTag2 = compoundTag.getCompound("RootVehicle")).getCompound("Entity"), serverWorld, entity -> {
-            if (!serverWorld.method_18768((Entity)entity)) {
+            if (!serverWorld.tryLoadEntity((Entity)entity)) {
                 return null;
             }
             return entity;
@@ -392,7 +392,7 @@ public abstract class PlayerManager {
         serverPlayerEntity2.networkHandler.sendPacket(new ExperienceBarUpdateS2CPacket(serverPlayerEntity2.experienceProgress, serverPlayerEntity2.totalExperience, serverPlayerEntity2.experienceLevel));
         this.sendWorldInfo(serverPlayerEntity2, serverWorld);
         this.sendCommandTree(serverPlayerEntity2);
-        serverWorld.respawnPlayer(serverPlayerEntity2);
+        serverWorld.onPlayerRespawned(serverPlayerEntity2);
         this.players.add(serverPlayerEntity2);
         this.playerMap.put(serverPlayerEntity2.getUuid(), serverPlayerEntity2);
         serverPlayerEntity2.method_14235();

@@ -20,7 +20,7 @@ extends TransparentBlock {
 
     @Override
     public void onLandedUpon(World world, BlockPos blockPos, Entity entity, float f) {
-        if (entity.method_21750()) {
+        if (entity.bypassesLandingEffects()) {
             super.onLandedUpon(world, blockPos, entity, f);
         } else {
             entity.handleFallDamage(f, 0.0f);
@@ -29,7 +29,7 @@ extends TransparentBlock {
 
     @Override
     public void onEntityLand(BlockView blockView, Entity entity) {
-        if (entity.method_21750()) {
+        if (entity.bypassesLandingEffects()) {
             super.onEntityLand(blockView, entity);
         } else {
             this.method_21847(entity);
@@ -47,7 +47,7 @@ extends TransparentBlock {
     @Override
     public void onSteppedOn(World world, BlockPos blockPos, Entity entity) {
         double d = Math.abs(entity.getVelocity().y);
-        if (d < 0.1 && !entity.method_21749()) {
+        if (d < 0.1 && !entity.bypassesSteppingEffects()) {
             double e = 0.4 + d * 0.2;
             entity.setVelocity(entity.getVelocity().multiply(e, 1.0, e));
         }

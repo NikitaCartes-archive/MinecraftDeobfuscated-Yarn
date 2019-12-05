@@ -84,7 +84,7 @@ implements Monster {
 
     protected void setSize(int i, boolean bl) {
         this.dataTracker.set(SLIME_SIZE, i);
-        this.method_23311();
+        this.updatePosition();
         this.calculateDimensions();
         this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(i * i);
         this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.2f + 0.1f * (float)i);

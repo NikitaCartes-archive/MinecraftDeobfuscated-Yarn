@@ -659,7 +659,7 @@ implements Monster {
     public void checkDespawn() {
     }
 
-    public EnderDragonPart[] method_5690() {
+    public EnderDragonPart[] getBodyParts() {
         return this.parts;
     }
 

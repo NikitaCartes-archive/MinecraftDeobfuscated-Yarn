@@ -3,14 +3,16 @@
  */
 package net.minecraft.client.options;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.io.Files;
 import com.google.gson.Gson;
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -49,7 +51,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Arm;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.world.Difficulty;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -76,7 +77,7 @@ public class GameOptions {
             return null;
         }
     };
-    public static final Splitter COLON_SPLITTER = Splitter.on(':');
+    private static final Splitter COLON_SPLITTER = Splitter.on(':').limit(2);
     public double mouseSensitivity = 0.5;
     public int viewDistance = -1;
     public int maxFps = 120;
@@ -209,231 +210,252 @@ public class GameOptions {
                 return;
             }
             this.soundVolumeLevels.clear();
-            List<String> list = IOUtils.readLines(new FileInputStream(this.optionsFile));
             CompoundTag compoundTag = new CompoundTag();
-            for (String string : list) {
-                try {
-                    Iterator<String> iterator = COLON_SPLITTER.omitEmptyStrings().limit(2).split(string).iterator();
-                    compoundTag.putString(iterator.next(), iterator.next());
-                } catch (Exception exception) {
-                    LOGGER.warn("Skipping bad option: {}", (Object)string);
+            BufferedReader bufferedReader = Files.newReader(this.optionsFile, Charsets.UTF_8);
+            Object object = null;
+            try {
+                bufferedReader.lines().forEach(string -> {
+                    try {
+                        Iterator<String> iterator = COLON_SPLITTER.split((CharSequence)string).iterator();
+                        compoundTag.putString(iterator.next(), iterator.next());
+                    } catch (OutOfMemoryError outOfMemoryError) {
+                        System.gc();
+                        throw new ParseError("Failed to parse option: " + string.substring(0, Math.min(200, string.length())), outOfMemoryError);
+                    } catch (Exception exception) {
+                        LOGGER.warn("Skipping bad option: {}", string);
+                    }
+                });
+            } catch (Throwable throwable) {
+                object = throwable;
+                throw throwable;
+            } finally {
+                if (bufferedReader != null) {
+                    if (object != null) {
+                        try {
+                            bufferedReader.close();
+                        } catch (Throwable throwable) {
+                            ((Throwable)object).addSuppressed(throwable);
+                        }
+                    } else {
+                        bufferedReader.close();
+                    }
                 }
             }
-            compoundTag = this.update(compoundTag);
-            for (String string : compoundTag.getKeys()) {
-                String string2 = compoundTag.getString(string);
+            CompoundTag compoundTag2 = this.update(compoundTag);
+            for (String string2 : compoundTag2.getKeys()) {
+                String string22 = compoundTag2.getString(string2);
                 try {
-                    if ("autoJump".equals(string)) {
-                        Option.AUTO_JUMP.set(this, string2);
+                    if ("autoJump".equals(string2)) {
+                        Option.AUTO_JUMP.set(this, string22);
                     }
-                    if ("autoSuggestions".equals(string)) {
-                        Option.AUTO_SUGGESTIONS.set(this, string2);
+                    if ("autoSuggestions".equals(string2)) {
+                        Option.AUTO_SUGGESTIONS.set(this, string22);
                     }
-                    if ("chatColors".equals(string)) {
-                        Option.CHAT_COLOR.set(this, string2);
+                    if ("chatColors".equals(string2)) {
+                        Option.CHAT_COLOR.set(this, string22);
                     }
-                    if ("chatLinks".equals(string)) {
-                        Option.CHAT_LINKS.set(this, string2);
+                    if ("chatLinks".equals(string2)) {
+                        Option.CHAT_LINKS.set(this, string22);
                     }
-                    if ("chatLinksPrompt".equals(string)) {
-                        Option.CHAT_LINKS_PROMPT.set(this, string2);
+                    if ("chatLinksPrompt".equals(string2)) {
+                        Option.CHAT_LINKS_PROMPT.set(this, string22);
                     }
-                    if ("enableVsync".equals(string)) {
-                        Option.VSYNC.set(this, string2);
+                    if ("enableVsync".equals(string2)) {
+                        Option.VSYNC.set(this, string22);
                     }
-                    if ("entityShadows".equals(string)) {
-                        Option.ENTITY_SHADOWS.set(this, string2);
+                    if ("entityShadows".equals(string2)) {
+                        Option.ENTITY_SHADOWS.set(this, string22);
                     }
-                    if ("forceUnicodeFont".equals(string)) {
-                        Option.FORCE_UNICODE_FONT.set(this, string2);
+                    if ("forceUnicodeFont".equals(string2)) {
+                        Option.FORCE_UNICODE_FONT.set(this, string22);
                     }
-                    if ("discrete_mouse_scroll".equals(string)) {
-                        Option.DISCRETE_MOUSE_SCROLL.set(this, string2);
+                    if ("discrete_mouse_scroll".equals(string2)) {
+                        Option.DISCRETE_MOUSE_SCROLL.set(this, string22);
                     }
-                    if ("invertYMouse".equals(string)) {
-                        Option.INVERT_MOUSE.set(this, string2);
+                    if ("invertYMouse".equals(string2)) {
+                        Option.INVERT_MOUSE.set(this, string22);
                     }
-                    if ("realmsNotifications".equals(string)) {
-                        Option.REALMS_NOTIFICATIONS.set(this, string2);
+                    if ("realmsNotifications".equals(string2)) {
+                        Option.REALMS_NOTIFICATIONS.set(this, string22);
                     }
-                    if ("reducedDebugInfo".equals(string)) {
-                        Option.REDUCED_DEBUG_INFO.set(this, string2);
+                    if ("reducedDebugInfo".equals(string2)) {
+                        Option.REDUCED_DEBUG_INFO.set(this, string22);
                     }
-                    if ("showSubtitles".equals(string)) {
-                        Option.SUBTITLES.set(this, string2);
+                    if ("showSubtitles".equals(string2)) {
+                        Option.SUBTITLES.set(this, string22);
                     }
-                    if ("snooperEnabled".equals(string)) {
-                        Option.SNOOPER.set(this, string2);
+                    if ("snooperEnabled".equals(string2)) {
+                        Option.SNOOPER.set(this, string22);
                     }
-                    if ("touchscreen".equals(string)) {
-                        Option.TOUCHSCREEN.set(this, string2);
+                    if ("touchscreen".equals(string2)) {
+                        Option.TOUCHSCREEN.set(this, string22);
                     }
-                    if ("fullscreen".equals(string)) {
-                        Option.FULLSCREEN.set(this, string2);
+                    if ("fullscreen".equals(string2)) {
+                        Option.FULLSCREEN.set(this, string22);
                     }
-                    if ("bobView".equals(string)) {
-                        Option.VIEW_BOBBING.set(this, string2);
+                    if ("bobView".equals(string2)) {
+                        Option.VIEW_BOBBING.set(this, string22);
                     }
-                    if ("toggleCrouch".equals(string)) {
-                        this.sneakToggled = "true".equals(string2);
+                    if ("toggleCrouch".equals(string2)) {
+                        this.sneakToggled = "true".equals(string22);
                     }
-                    if ("toggleSprint".equals(string)) {
-                        this.sprintToggled = "true".equals(string2);
+                    if ("toggleSprint".equals(string2)) {
+                        this.sprintToggled = "true".equals(string22);
                     }
-                    if ("mouseSensitivity".equals(string)) {
-                        this.mouseSensitivity = GameOptions.parseFloat(string2);
+                    if ("mouseSensitivity".equals(string2)) {
+                        this.mouseSensitivity = GameOptions.parseFloat(string22);
                     }
-                    if ("fov".equals(string)) {
-                        this.fov = GameOptions.parseFloat(string2) * 40.0f + 70.0f;
+                    if ("fov".equals(string2)) {
+                        this.fov = GameOptions.parseFloat(string22) * 40.0f + 70.0f;
                     }
-                    if ("gamma".equals(string)) {
-                        this.gamma = GameOptions.parseFloat(string2);
+                    if ("gamma".equals(string2)) {
+                        this.gamma = GameOptions.parseFloat(string22);
                     }
-                    if ("renderDistance".equals(string)) {
-                        this.viewDistance = Integer.parseInt(string2);
+                    if ("renderDistance".equals(string2)) {
+                        this.viewDistance = Integer.parseInt(string22);
                     }
-                    if ("guiScale".equals(string)) {
-                        this.guiScale = Integer.parseInt(string2);
+                    if ("guiScale".equals(string2)) {
+                        this.guiScale = Integer.parseInt(string22);
                     }
-                    if ("particles".equals(string)) {
-                        this.particles = ParticlesOption.byId(Integer.parseInt(string2));
+                    if ("particles".equals(string2)) {
+                        this.particles = ParticlesOption.byId(Integer.parseInt(string22));
                     }
-                    if ("maxFps".equals(string)) {
-                        this.maxFps = Integer.parseInt(string2);
+                    if ("maxFps".equals(string2)) {
+                        this.maxFps = Integer.parseInt(string22);
                         if (this.client.getWindow() != null) {
                             this.client.getWindow().setFramerateLimit(this.maxFps);
                         }
                     }
-                    if ("difficulty".equals(string)) {
-                        this.difficulty = Difficulty.byOrdinal(Integer.parseInt(string2));
+                    if ("difficulty".equals(string2)) {
+                        this.difficulty = Difficulty.byOrdinal(Integer.parseInt(string22));
                     }
-                    if ("fancyGraphics".equals(string)) {
-                        this.fancyGraphics = "true".equals(string2);
+                    if ("fancyGraphics".equals(string2)) {
+                        this.fancyGraphics = "true".equals(string22);
                     }
-                    if ("tutorialStep".equals(string)) {
-                        this.tutorialStep = TutorialStep.byName(string2);
+                    if ("tutorialStep".equals(string2)) {
+                        this.tutorialStep = TutorialStep.byName(string22);
                     }
-                    if ("ao".equals(string)) {
-                        this.ao = "true".equals(string2) ? AoOption.MAX : ("false".equals(string2) ? AoOption.OFF : AoOption.getOption(Integer.parseInt(string2)));
+                    if ("ao".equals(string2)) {
+                        this.ao = "true".equals(string22) ? AoOption.MAX : ("false".equals(string22) ? AoOption.OFF : AoOption.getOption(Integer.parseInt(string22)));
                     }
-                    if ("renderClouds".equals(string)) {
-                        if ("true".equals(string2)) {
+                    if ("renderClouds".equals(string2)) {
+                        if ("true".equals(string22)) {
                             this.cloudRenderMode = CloudRenderMode.FANCY;
-                        } else if ("false".equals(string2)) {
+                        } else if ("false".equals(string22)) {
                             this.cloudRenderMode = CloudRenderMode.OFF;
-                        } else if ("fast".equals(string2)) {
+                        } else if ("fast".equals(string22)) {
                             this.cloudRenderMode = CloudRenderMode.FAST;
                         }
                     }
-                    if ("attackIndicator".equals(string)) {
-                        this.attackIndicator = AttackIndicator.byId(Integer.parseInt(string2));
+                    if ("attackIndicator".equals(string2)) {
+                        this.attackIndicator = AttackIndicator.byId(Integer.parseInt(string22));
                     }
-                    if ("resourcePacks".equals(string)) {
-                        this.resourcePacks = (List)JsonHelper.deserialize(GSON, string2, STRING_LIST_TYPE);
+                    if ("resourcePacks".equals(string2)) {
+                        this.resourcePacks = (List)JsonHelper.deserialize(GSON, string22, STRING_LIST_TYPE);
                         if (this.resourcePacks == null) {
                             this.resourcePacks = Lists.newArrayList();
                         }
                     }
-                    if ("incompatibleResourcePacks".equals(string)) {
-                        this.incompatibleResourcePacks = (List)JsonHelper.deserialize(GSON, string2, STRING_LIST_TYPE);
+                    if ("incompatibleResourcePacks".equals(string2)) {
+                        this.incompatibleResourcePacks = (List)JsonHelper.deserialize(GSON, string22, STRING_LIST_TYPE);
                         if (this.incompatibleResourcePacks == null) {
                             this.incompatibleResourcePacks = Lists.newArrayList();
                         }
                     }
-                    if ("lastServer".equals(string)) {
-                        this.lastServer = string2;
+                    if ("lastServer".equals(string2)) {
+                        this.lastServer = string22;
                     }
-                    if ("lang".equals(string)) {
-                        this.language = string2;
+                    if ("lang".equals(string2)) {
+                        this.language = string22;
                     }
-                    if ("chatVisibility".equals(string)) {
-                        this.chatVisibility = ChatVisibility.byId(Integer.parseInt(string2));
+                    if ("chatVisibility".equals(string2)) {
+                        this.chatVisibility = ChatVisibility.byId(Integer.parseInt(string22));
                     }
-                    if ("chatOpacity".equals(string)) {
-                        this.chatOpacity = GameOptions.parseFloat(string2);
+                    if ("chatOpacity".equals(string2)) {
+                        this.chatOpacity = GameOptions.parseFloat(string22);
                     }
-                    if ("textBackgroundOpacity".equals(string)) {
-                        this.textBackgroundOpacity = GameOptions.parseFloat(string2);
+                    if ("textBackgroundOpacity".equals(string2)) {
+                        this.textBackgroundOpacity = GameOptions.parseFloat(string22);
                     }
-                    if ("backgroundForChatOnly".equals(string)) {
-                        this.backgroundForChatOnly = "true".equals(string2);
+                    if ("backgroundForChatOnly".equals(string2)) {
+                        this.backgroundForChatOnly = "true".equals(string22);
                     }
-                    if ("fullscreenResolution".equals(string)) {
-                        this.fullscreenResolution = string2;
+                    if ("fullscreenResolution".equals(string2)) {
+                        this.fullscreenResolution = string22;
                     }
-                    if ("hideServerAddress".equals(string)) {
-                        this.hideServerAddress = "true".equals(string2);
+                    if ("hideServerAddress".equals(string2)) {
+                        this.hideServerAddress = "true".equals(string22);
                     }
-                    if ("advancedItemTooltips".equals(string)) {
-                        this.advancedItemTooltips = "true".equals(string2);
+                    if ("advancedItemTooltips".equals(string2)) {
+                        this.advancedItemTooltips = "true".equals(string22);
                     }
-                    if ("pauseOnLostFocus".equals(string)) {
-                        this.pauseOnLostFocus = "true".equals(string2);
+                    if ("pauseOnLostFocus".equals(string2)) {
+                        this.pauseOnLostFocus = "true".equals(string22);
                     }
-                    if ("overrideHeight".equals(string)) {
-                        this.overrideHeight = Integer.parseInt(string2);
+                    if ("overrideHeight".equals(string2)) {
+                        this.overrideHeight = Integer.parseInt(string22);
                     }
-                    if ("overrideWidth".equals(string)) {
-                        this.overrideWidth = Integer.parseInt(string2);
+                    if ("overrideWidth".equals(string2)) {
+                        this.overrideWidth = Integer.parseInt(string22);
                     }
-                    if ("heldItemTooltips".equals(string)) {
-                        this.heldItemTooltips = "true".equals(string2);
+                    if ("heldItemTooltips".equals(string2)) {
+                        this.heldItemTooltips = "true".equals(string22);
                     }
-                    if ("chatHeightFocused".equals(string)) {
-                        this.chatHeightFocused = GameOptions.parseFloat(string2);
+                    if ("chatHeightFocused".equals(string2)) {
+                        this.chatHeightFocused = GameOptions.parseFloat(string22);
                     }
-                    if ("chatHeightUnfocused".equals(string)) {
-                        this.chatHeightUnfocused = GameOptions.parseFloat(string2);
+                    if ("chatHeightUnfocused".equals(string2)) {
+                        this.chatHeightUnfocused = GameOptions.parseFloat(string22);
                     }
-                    if ("chatScale".equals(string)) {
-                        this.chatScale = GameOptions.parseFloat(string2);
+                    if ("chatScale".equals(string2)) {
+                        this.chatScale = GameOptions.parseFloat(string22);
                     }
-                    if ("chatWidth".equals(string)) {
-                        this.chatWidth = GameOptions.parseFloat(string2);
+                    if ("chatWidth".equals(string2)) {
+                        this.chatWidth = GameOptions.parseFloat(string22);
                     }
-                    if ("mipmapLevels".equals(string)) {
-                        this.mipmapLevels = Integer.parseInt(string2);
+                    if ("mipmapLevels".equals(string2)) {
+                        this.mipmapLevels = Integer.parseInt(string22);
                     }
-                    if ("useNativeTransport".equals(string)) {
-                        this.useNativeTransport = "true".equals(string2);
+                    if ("useNativeTransport".equals(string2)) {
+                        this.useNativeTransport = "true".equals(string22);
                     }
-                    if ("mainHand".equals(string)) {
-                        Arm arm = this.mainArm = "left".equals(string2) ? Arm.LEFT : Arm.RIGHT;
+                    if ("mainHand".equals(string2)) {
+                        Arm arm = this.mainArm = "left".equals(string22) ? Arm.LEFT : Arm.RIGHT;
                     }
-                    if ("narrator".equals(string)) {
-                        this.narrator = NarratorOption.byId(Integer.parseInt(string2));
+                    if ("narrator".equals(string2)) {
+                        this.narrator = NarratorOption.byId(Integer.parseInt(string22));
                     }
-                    if ("biomeBlendRadius".equals(string)) {
-                        this.biomeBlendRadius = Integer.parseInt(string2);
+                    if ("biomeBlendRadius".equals(string2)) {
+                        this.biomeBlendRadius = Integer.parseInt(string22);
                     }
-                    if ("mouseWheelSensitivity".equals(string)) {
-                        this.mouseWheelSensitivity = GameOptions.parseFloat(string2);
+                    if ("mouseWheelSensitivity".equals(string2)) {
+                        this.mouseWheelSensitivity = GameOptions.parseFloat(string22);
                     }
-                    if ("rawMouseInput".equals(string)) {
-                        this.rawMouseInput = "true".equals(string2);
+                    if ("rawMouseInput".equals(string2)) {
+                        this.rawMouseInput = "true".equals(string22);
                     }
-                    if ("glDebugVerbosity".equals(string)) {
-                        this.glDebugVerbosity = Integer.parseInt(string2);
+                    if ("glDebugVerbosity".equals(string2)) {
+                        this.glDebugVerbosity = Integer.parseInt(string22);
                     }
                     for (KeyBinding keyBinding : this.keysAll) {
-                        if (!string.equals("key_" + keyBinding.getId())) continue;
-                        keyBinding.setKeyCode(InputUtil.fromName(string2));
+                        if (!string2.equals("key_" + keyBinding.getId())) continue;
+                        keyBinding.setKeyCode(InputUtil.fromName(string22));
                     }
                     for (SoundCategory soundCategory : SoundCategory.values()) {
-                        if (!string.equals("soundCategory_" + soundCategory.getName())) continue;
-                        this.soundVolumeLevels.put(soundCategory, Float.valueOf(GameOptions.parseFloat(string2)));
+                        if (!string2.equals("soundCategory_" + soundCategory.getName())) continue;
+                        this.soundVolumeLevels.put(soundCategory, Float.valueOf(GameOptions.parseFloat(string22)));
                     }
                     for (PlayerModelPart playerModelPart : PlayerModelPart.values()) {
-                        if (!string.equals("modelPart_" + playerModelPart.getName())) continue;
-                        this.setPlayerModelPart(playerModelPart, "true".equals(string2));
+                        if (!string2.equals("modelPart_" + playerModelPart.getName())) continue;
+                        this.setPlayerModelPart(playerModelPart, "true".equals(string22));
                     }
                 } catch (Exception exception) {
-                    LOGGER.warn("Skipping bad option: {}:{}", (Object)string, (Object)string2);
+                    LOGGER.warn("Skipping bad option: {}:{}", (Object)string2, (Object)string22);
                 }
             }
             KeyBinding.updateKeysByCode();
-        } catch (Exception exception3) {
-            LOGGER.error("Failed to load options", (Throwable)exception3);
+        } catch (Exception exception2) {
+            LOGGER.error("Failed to load options", (Throwable)exception2);
         }
     }
 
@@ -631,6 +653,14 @@ public class GameOptions {
             set.add(clientResourcePackProfile);
         }
         resourcePackManager.setEnabledProfiles(set);
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    static class ParseError
+    extends Error {
+        public ParseError(String string, Throwable throwable) {
+            super(string, throwable);
+        }
     }
 }
 

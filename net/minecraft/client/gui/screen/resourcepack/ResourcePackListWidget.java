@@ -78,6 +78,10 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
 
         public void enable(SelectedResourcePackListWidget selectedResourcePackListWidget) {
             this.getPack().getInitialPosition().insert(selectedResourcePackListWidget.children(), this, ResourcePackEntry::getPack, true);
+            this.method_24232(selectedResourcePackListWidget);
+        }
+
+        public void method_24232(SelectedResourcePackListWidget selectedResourcePackListWidget) {
             this.resourcePackList = selectedResourcePackListWidget;
         }
 
@@ -216,7 +220,7 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
                 if (f > 16.0 && g < 16.0 && this.canMoveUp()) {
                     List<ResourcePackEntry> list = this.resourcePackList.children();
                     int j = list.indexOf(this);
-                    list.remove(this);
+                    list.remove(j);
                     list.add(j - 1, this);
                     this.getScreen().markDirty();
                     return true;
@@ -224,7 +228,7 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
                 if (f > 16.0 && g > 16.0 && this.canMoveDown()) {
                     List<ResourcePackEntry> list = this.resourcePackList.children();
                     int j = list.indexOf(this);
-                    list.remove(this);
+                    list.remove(j);
                     list.add(j + 1, this);
                     this.getScreen().markDirty();
                     return true;

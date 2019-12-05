@@ -298,8 +298,8 @@ implements State<BlockState> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public boolean method_24220(BlockView blockView, BlockPos blockPos) {
-        return this.getBlock().method_24219(this, blockView, blockPos);
+    public boolean hasInWallOverlay(BlockView blockView, BlockPos blockPos) {
+        return this.getBlock().hasInWallOverlay(this, blockView, blockPos);
     }
 
     public BlockState getStateForNeighborUpdate(Direction direction, BlockState blockState, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {

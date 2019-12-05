@@ -208,7 +208,7 @@ extends Entity {
         this.setHealth(this.getMaximumHealth());
         this.inanimate = true;
         this.randomSmallSeed = (float)((Math.random() + 1.0) * (double)0.01f);
-        this.method_23311();
+        this.updatePosition();
         this.randomLargeSeed = (float)Math.random() * 12398.0f;
         this.headYaw = this.yaw = (float)(Math.random() * 6.2831854820251465);
         this.stepHeight = 0.6f;
@@ -598,7 +598,7 @@ extends Entity {
 
     public double getAttackDistanceScalingFactor(@Nullable Entity entity) {
         double d = 1.0;
-        if (this.method_21751()) {
+        if (this.isSneaky()) {
             d *= 0.8;
         }
         if (this.isInvisible()) {
@@ -1363,7 +1363,7 @@ extends Entity {
                 break;
             }
             case 54: {
-                HoneyBlock.method_24178(this);
+                HoneyBlock.addRichParticles(this);
                 break;
             }
             default: {
@@ -1582,7 +1582,7 @@ extends Entity {
     }
 
     protected float getJumpVelocity() {
-        return 0.42f * this.method_23313();
+        return 0.42f * this.getJumpVelocityMultiplier();
     }
 
     protected void jump() {
@@ -1708,7 +1708,7 @@ extends Entity {
                     this.setFlag(7, false);
                 }
             } else {
-                BlockPos blockPos = this.method_23314();
+                BlockPos blockPos = this.getVelocityAffectingPos();
                 float p = this.world.getBlockState(blockPos).getBlock().getSlipperiness();
                 float f = this.onGround ? p * 0.91f : 0.91f;
                 this.updateVelocity(this.getMovementSpeed(p), vec3d);

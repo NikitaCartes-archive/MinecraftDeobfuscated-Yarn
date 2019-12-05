@@ -338,7 +338,7 @@ CommandOutput {
         this.setBoundingBox(new Box(d - (double)g, e, f - (double)g, d + (double)g, e + (double)h, f + (double)g));
     }
 
-    protected void method_23311() {
+    protected void updatePosition() {
         this.setPosition(this.x, this.y, this.z);
     }
 
@@ -485,7 +485,7 @@ CommandOutput {
         this.verticalCollision = vec3d.y != vec3d2.y;
         this.onGround = this.verticalCollision && vec3d.y < 0.0;
         this.collided = this.horizontalCollision || this.verticalCollision;
-        BlockPos blockPos = this.method_23312();
+        BlockPos blockPos = this.getLandingPos();
         BlockState blockState = this.world.getBlockState(blockPos);
         this.fall(vec3d2.y, this.onGround, blockState, blockPos);
         Vec3d vec3d3 = this.getVelocity();
@@ -499,7 +499,7 @@ CommandOutput {
         if (vec3d.y != vec3d2.y) {
             block.onEntityLand(this.world, this);
         }
-        if (this.onGround && !this.method_21749()) {
+        if (this.onGround && !this.bypassesSteppingEffects()) {
             block.onSteppedOn(this.world, blockPos, this);
         }
         if (this.canClimb() && !this.hasVehicle()) {
@@ -538,7 +538,7 @@ CommandOutput {
             this.populateCrashReport(crashReportSection);
             throw new CrashException(crashReport);
         }
-        this.setVelocity(this.getVelocity().multiply(this.method_23326(), 1.0, this.method_23326()));
+        this.setVelocity(this.getVelocity().multiply(this.getVelocityMultiplier(), 1.0, this.getVelocityMultiplier()));
         boolean bl = this.isTouchingWater();
         if (this.world.doesAreaContainFireSource(this.getBoundingBox().contract(0.001))) {
             if (!bl) {
@@ -558,7 +558,7 @@ CommandOutput {
         this.world.getProfiler().pop();
     }
 
-    protected BlockPos method_23312() {
+    protected BlockPos getLandingPos() {
         BlockPos blockPos2;
         BlockState blockState;
         Block block;
@@ -572,19 +572,19 @@ CommandOutput {
         return blockPos;
     }
 
-    protected float method_23313() {
-        float f = this.world.getBlockState(new BlockPos(this)).getBlock().method_23350();
-        float g = this.world.getBlockState(this.method_23314()).getBlock().method_23350();
+    protected float getJumpVelocityMultiplier() {
+        float f = this.world.getBlockState(new BlockPos(this)).getBlock().getJumpVelocityMultiplier();
+        float g = this.world.getBlockState(this.getVelocityAffectingPos()).getBlock().getJumpVelocityMultiplier();
         return (double)f == 1.0 ? g : f;
     }
 
-    protected float method_23326() {
-        float f = this.world.getBlockState(new BlockPos(this)).getBlock().method_23349();
-        float g = this.world.getBlockState(this.method_23314()).getBlock().method_23349();
+    protected float getVelocityMultiplier() {
+        float f = this.world.getBlockState(new BlockPos(this)).getBlock().getVelocityMultiplier();
+        float g = this.world.getBlockState(this.getVelocityAffectingPos()).getBlock().getVelocityMultiplier();
         return (double)f == 1.0 ? g : f;
     }
 
-    protected BlockPos method_23314() {
+    protected BlockPos getVelocityAffectingPos() {
         return new BlockPos(this.x, this.getBoundingBox().y1 - 0.5000001, this.z);
     }
 
@@ -1036,13 +1036,13 @@ CommandOutput {
     }
 
     public void setPositionAndAngles(double d, double e, double f, float g, float h) {
-        this.method_22862(d, e, f);
+        this.resetPosition(d, e, f);
         this.yaw = g;
         this.pitch = h;
-        this.method_23311();
+        this.updatePosition();
     }
 
-    public void method_22862(double d, double e, double f) {
+    public void resetPosition(double d, double e, double f) {
         this.setPos(d, e, f);
         this.prevX = d;
         this.prevY = e;
@@ -1300,7 +1300,7 @@ CommandOutput {
             double e = listTag2.getDouble(1);
             double f = listTag2.getDouble(2);
             this.setVelocity(Math.abs(d) > 10.0 ? 0.0 : d, Math.abs(e) > 10.0 ? 0.0 : e, Math.abs(f) > 10.0 ? 0.0 : f);
-            this.method_22862(listTag.getDouble(0), listTag.getDouble(1), listTag.getDouble(2));
+            this.resetPosition(listTag.getDouble(0), listTag.getDouble(1), listTag.getDouble(2));
             this.yaw = listTag3.getFloat(0);
             this.pitch = listTag3.getFloat(1);
             this.prevYaw = this.yaw;
@@ -1326,7 +1326,7 @@ CommandOutput {
             if (!Double.isFinite(this.yaw) || !Double.isFinite(this.pitch)) {
                 throw new IllegalStateException("Entity has invalid rotation");
             }
-            this.method_23311();
+            this.updatePosition();
             this.setRotation(this.yaw, this.pitch);
             if (compoundTag.contains("CustomName", 8)) {
                 this.setCustomName(Text.Serializer.fromJson(compoundTag.getString("CustomName")));
@@ -1345,7 +1345,7 @@ CommandOutput {
             }
             this.readCustomDataFromTag(compoundTag);
             if (this.shouldSetPositionOnLoad()) {
-                this.method_23311();
+                this.updatePosition();
             }
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Loading entity NBT");
@@ -1457,14 +1457,14 @@ CommandOutput {
     }
 
     public void updatePassengerPosition(Entity entity) {
-        this.method_24201(entity, Entity::setPosition);
+        this.updatePassengerPosition(entity, Entity::setPosition);
     }
 
-    public void method_24201(Entity entity, class_4738 arg) {
+    public void updatePassengerPosition(Entity entity, PositionUpdater positionUpdater) {
         if (!this.hasPassenger(entity)) {
             return;
         }
-        arg.accept(entity, this.getX(), this.getY() + this.getMountedHeightOffset() + entity.getHeightOffset(), this.getZ());
+        positionUpdater.accept(entity, this.getX(), this.getY() + this.getMountedHeightOffset() + entity.getHeightOffset(), this.getZ());
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -1636,7 +1636,7 @@ CommandOutput {
     public void handleStatus(byte b) {
         switch (b) {
             case 53: {
-                HoneyBlock.method_24175(this);
+                HoneyBlock.addRegularParticles(this);
             }
         }
     }
@@ -1685,19 +1685,19 @@ CommandOutput {
         return this.getFlag(1);
     }
 
-    public boolean method_21749() {
+    public boolean bypassesSteppingEffects() {
         return this.isSneaking();
     }
 
-    public boolean method_21750() {
+    public boolean bypassesLandingEffects() {
         return this.isSneaking();
     }
 
-    public boolean method_21751() {
+    public boolean isSneaky() {
         return this.isSneaking();
     }
 
-    public boolean method_21752() {
+    public boolean isDescending() {
         return this.isSneaking();
     }
 
@@ -1871,10 +1871,10 @@ CommandOutput {
             Entity.removeClickEvents(text2);
             return text2;
         }
-        return this.method_23315();
+        return this.getDefaultName();
     }
 
-    protected Text method_23315() {
+    protected Text getDefaultName() {
         return this.type.getName();
     }
 
@@ -1983,7 +1983,7 @@ CommandOutput {
             ((Entity)entity).copyFrom(this);
             ((Entity)entity).setPositionAndAngles(blockPos, ((Entity)entity).yaw + f, ((Entity)entity).pitch);
             ((Entity)entity).setVelocity(vec3d);
-            serverWorld2.method_18769((Entity)entity);
+            serverWorld2.onDimensionChanged((Entity)entity);
         }
         this.removed = true;
         this.world.getProfiler().pop();
@@ -2113,10 +2113,10 @@ CommandOutput {
         }
         ServerWorld serverWorld = (ServerWorld)this.world;
         this.setPositionAndAngles(d, e, f, this.yaw, this.pitch);
-        this.method_24204().forEach(entity -> {
+        this.streamPassengersRecursively().forEach(entity -> {
             serverWorld.checkChunk((Entity)entity);
             entity.teleportRequested = true;
-            entity.method_24200(Entity::method_24203);
+            entity.updatePositionsRecursively(Entity::positAfterTeleport);
         });
     }
 
@@ -2329,8 +2329,8 @@ CommandOutput {
         return set;
     }
 
-    public Stream<Entity> method_24204() {
-        return Stream.concat(Stream.of(this), this.passengerList.stream().flatMap(Entity::method_24204));
+    public Stream<Entity> streamPassengersRecursively() {
+        return Stream.concat(Stream.of(this), this.passengerList.stream().flatMap(Entity::streamPassengersRecursively));
     }
 
     public boolean hasPlayerRider() {
@@ -2371,9 +2371,9 @@ CommandOutput {
         return false;
     }
 
-    public void method_24200(class_4738 arg) {
+    public void updatePositionsRecursively(PositionUpdater positionUpdater) {
         for (Entity entity : this.passengerList) {
-            this.method_24201(entity, arg);
+            this.updatePassengerPosition(entity, positionUpdater);
         }
     }
 
@@ -2575,12 +2575,12 @@ CommandOutput {
     public void checkDespawn() {
     }
 
-    public void method_24203(double d, double e, double f) {
+    public void positAfterTeleport(double d, double e, double f) {
         this.setPositionAndAngles(d, e, f, this.yaw, this.pitch);
     }
 
     @FunctionalInterface
-    public static interface class_4738 {
+    public static interface PositionUpdater {
         public void accept(Entity var1, double var2, double var4, double var6);
     }
 }

@@ -114,7 +114,7 @@ implements Waterloggable {
 
     @Override
     public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-        if (!entityContext.isAbove(VoxelShapes.fullCube(), blockPos, true) || entityContext.isSneaking()) {
+        if (!entityContext.isAbove(VoxelShapes.fullCube(), blockPos, true) || entityContext.isDescending()) {
             if (blockState.get(DISTANCE) != 0 && blockState.get(BOTTOM).booleanValue() && entityContext.isAbove(OUTLINE_SHAPE, blockPos, true)) {
                 return COLLISION_SHAPE;
             }

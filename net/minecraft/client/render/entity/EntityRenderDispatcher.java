@@ -365,7 +365,7 @@ public class EntityRenderDispatcher {
             double d = entity.getX() - MathHelper.lerp((double)f, entity.lastRenderX, entity.getX());
             double e = entity.getY() - MathHelper.lerp((double)f, entity.lastRenderY, entity.getY());
             double h = entity.getZ() - MathHelper.lerp((double)f, entity.lastRenderZ, entity.getZ());
-            for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).method_5690()) {
+            for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).getBodyParts()) {
                 matrixStack.push();
                 double i = d + MathHelper.lerp((double)f, enderDragonPart.lastRenderX, enderDragonPart.getX());
                 double j = e + MathHelper.lerp((double)f, enderDragonPart.lastRenderY, enderDragonPart.getY());

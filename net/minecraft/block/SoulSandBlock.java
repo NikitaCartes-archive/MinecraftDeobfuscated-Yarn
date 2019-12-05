@@ -69,7 +69,7 @@ extends Block {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean method_24219(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+    public boolean hasInWallOverlay(BlockState blockState, BlockView blockView, BlockPos blockPos) {
         return true;
     }
 }

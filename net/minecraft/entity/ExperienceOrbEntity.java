@@ -32,7 +32,7 @@ extends Entity {
     private int health = 5;
     private int amount;
     private PlayerEntity target;
-    private int field_6160;
+    private int lastTargetUpdateTick;
 
     public ExperienceOrbEntity(World world, double d, double e, double f, int i) {
         this((EntityType<? extends ExperienceOrbEntity>)EntityType.EXPERIENCE_ORB, world);
@@ -79,11 +79,11 @@ extends Entity {
             this.pushOutOfBlocks(this.getX(), (this.getBoundingBox().y1 + this.getBoundingBox().y2) / 2.0, this.getZ());
         }
         double d = 8.0;
-        if (this.field_6160 < this.renderTicks - 20 + this.getEntityId() % 100) {
+        if (this.lastTargetUpdateTick < this.renderTicks - 20 + this.getEntityId() % 100) {
             if (this.target == null || this.target.squaredDistanceTo(this) > 64.0) {
                 this.target = this.world.getClosestPlayer(this, 8.0);
             }
-            this.field_6160 = this.renderTicks;
+            this.lastTargetUpdateTick = this.renderTicks;
         }
         if (this.target != null && this.target.isSpectator()) {
             this.target = null;

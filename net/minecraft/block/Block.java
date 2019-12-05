@@ -111,8 +111,8 @@ implements ItemConvertible {
     protected final Material material;
     protected final MaterialColor materialColor;
     private final float slipperiness;
-    private final float field_21207;
-    private final float field_21208;
+    private final float velocityMultiplier;
+    private final float jumpVelocityMultiplier;
     protected final StateManager<Block, BlockState> stateManager;
     private BlockState defaultState;
     protected final boolean collidable;
@@ -263,8 +263,8 @@ implements ItemConvertible {
         this.hardness = settings.hardness;
         this.randomTicks = settings.randomTicks;
         this.slipperiness = settings.slipperiness;
-        this.field_21207 = settings.field_21209;
-        this.field_21208 = settings.field_21210;
+        this.velocityMultiplier = settings.slowDownMultiplier;
+        this.jumpVelocityMultiplier = settings.jumpVelocityMultiplier;
         this.dynamicBounds = settings.dynamicBounds;
         this.dropTableId = settings.dropTableId;
         this.opaque = settings.opaque;
@@ -288,7 +288,7 @@ implements ItemConvertible {
 
     @Deprecated
     @Environment(value=EnvType.CLIENT)
-    public boolean method_24219(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+    public boolean hasInWallOverlay(BlockState blockState, BlockView blockView, BlockPos blockPos) {
         return blockState.canSuffocate(blockView, blockPos);
     }
 
@@ -697,12 +697,12 @@ implements ItemConvertible {
         return this.slipperiness;
     }
 
-    public float method_23349() {
-        return this.field_21207;
+    public float getVelocityMultiplier() {
+        return this.velocityMultiplier;
     }
 
-    public float method_23350() {
-        return this.field_21208;
+    public float getJumpVelocityMultiplier() {
+        return this.jumpVelocityMultiplier;
     }
 
     @Deprecated
@@ -805,8 +805,8 @@ implements ItemConvertible {
         private float hardness;
         private boolean randomTicks;
         private float slipperiness = 0.6f;
-        private float field_21209 = 1.0f;
-        private float field_21210 = 1.0f;
+        private float slowDownMultiplier = 1.0f;
+        private float jumpVelocityMultiplier = 1.0f;
         private Identifier dropTableId;
         private boolean opaque = true;
         private boolean dynamicBounds;
@@ -839,7 +839,7 @@ implements ItemConvertible {
             settings.materialColor = block.materialColor;
             settings.soundGroup = block.soundGroup;
             settings.slipperiness = block.getSlipperiness();
-            settings.field_21209 = block.method_23349();
+            settings.slowDownMultiplier = block.getVelocityMultiplier();
             settings.dynamicBounds = block.dynamicBounds;
             settings.opaque = block.opaque;
             return settings;
@@ -861,13 +861,13 @@ implements ItemConvertible {
             return this;
         }
 
-        public Settings method_23351(float f) {
-            this.field_21209 = f;
+        public Settings velocityMultiplier(float f) {
+            this.slowDownMultiplier = f;
             return this;
         }
 
-        public Settings method_23352(float f) {
-            this.field_21210 = f;
+        public Settings jumpVelocityMultiplier(float f) {
+            this.jumpVelocityMultiplier = f;
             return this;
         }
 

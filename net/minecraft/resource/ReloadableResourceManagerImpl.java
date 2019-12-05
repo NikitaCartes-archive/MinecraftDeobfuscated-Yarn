@@ -51,7 +51,6 @@ implements ReloadableResourceManager {
         this.mainThread = thread;
     }
 
-    @Override
     public void addPack(ResourcePack resourcePack) {
         for (String string : resourcePack.getNamespaces(this.type)) {
             this.namespaces.add(string);
@@ -133,19 +132,74 @@ implements ReloadableResourceManager {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
-    public ResourceReloadMonitor beginInitialMonitoredReload(Executor executor, Executor executor2, CompletableFuture<Unit> completableFuture) {
-        return this.beginReloadInner(executor, executor2, this.initialListeners, completableFuture);
-    }
-
-    @Override
     public ResourceReloadMonitor beginMonitoredReload(Executor executor, Executor executor2, CompletableFuture<Unit> completableFuture, List<ResourcePack> list) {
         this.clear();
         LOGGER.info("Reloading ResourceManager: {}", (Object)list.stream().map(ResourcePack::getName).collect(Collectors.joining(", ")));
         for (ResourcePack resourcePack : list) {
-            this.addPack(resourcePack);
+            try {
+                this.addPack(resourcePack);
+            } catch (Exception exception) {
+                LOGGER.error("Failed to add resource pack {}", (Object)resourcePack.getName(), (Object)exception);
+                return new FailedResourceReloadMonitor(new PackAdditionFailedException(resourcePack, (Throwable)exception));
+            }
         }
         return this.beginReloadInner(executor, executor2, this.listeners, completableFuture);
+    }
+
+    static class FailedResourceReloadMonitor
+    implements ResourceReloadMonitor {
+        private final PackAdditionFailedException exception;
+        private final CompletableFuture<Unit> future;
+
+        public FailedResourceReloadMonitor(PackAdditionFailedException packAdditionFailedException) {
+            this.exception = packAdditionFailedException;
+            this.future = new CompletableFuture();
+            this.future.completeExceptionally(packAdditionFailedException);
+        }
+
+        @Override
+        public CompletableFuture<Unit> whenComplete() {
+            return this.future;
+        }
+
+        @Override
+        @Environment(value=EnvType.CLIENT)
+        public float getProgress() {
+            return 0.0f;
+        }
+
+        @Override
+        @Environment(value=EnvType.CLIENT)
+        public boolean isPrepareStageComplete() {
+            return false;
+        }
+
+        @Override
+        @Environment(value=EnvType.CLIENT)
+        public boolean isApplyStageComplete() {
+            return true;
+        }
+
+        @Override
+        @Environment(value=EnvType.CLIENT)
+        public void throwExceptions() {
+            throw this.exception;
+        }
+    }
+
+    public static class PackAdditionFailedException
+    extends RuntimeException {
+        private final ResourcePack pack;
+
+        public PackAdditionFailedException(ResourcePack resourcePack, Throwable throwable) {
+            super(resourcePack.getName(), throwable);
+            this.pack = resourcePack;
+        }
+
+        @Environment(value=EnvType.CLIENT)
+        public ResourcePack getPack() {
+            return this.pack;
+        }
     }
 }
 

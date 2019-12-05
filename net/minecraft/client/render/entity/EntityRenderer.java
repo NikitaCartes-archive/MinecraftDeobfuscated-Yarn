@@ -81,7 +81,7 @@ public abstract class EntityRenderer<T extends Entity> {
         if (d > 4096.0) {
             return;
         }
-        boolean bl = !((Entity)entity).method_21751();
+        boolean bl = !((Entity)entity).isSneaky();
         float f = ((Entity)entity).getHeight() + 0.5f;
         int j = "deadmau5".equals(string) ? -10 : 0;
         matrixStack.push();

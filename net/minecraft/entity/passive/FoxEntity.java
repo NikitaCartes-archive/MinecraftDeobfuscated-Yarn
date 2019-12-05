@@ -105,7 +105,7 @@ extends AnimalEntity {
         return false;
     };
     private static final Predicate<Entity> CHICKEN_AND_RABBIT_FILTER = entity -> entity instanceof ChickenEntity || entity instanceof RabbitEntity;
-    private static final Predicate<Entity> NOTICEABLE_PLAYER_FILTER = entity -> !entity.method_21751() && EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test((Entity)entity);
+    private static final Predicate<Entity> NOTICEABLE_PLAYER_FILTER = entity -> !entity.isSneaky() && EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test((Entity)entity);
     private Goal followChickenAndRabbitGoal;
     private Goal followBabyTurtleGoal;
     private Goal followFishGoal;
@@ -1086,7 +1086,7 @@ extends AnimalEntity {
             if (FoxEntity.this.canTrust(livingEntity.getUuid())) {
                 return false;
             }
-            return !livingEntity.isSleeping() && !livingEntity.method_21751();
+            return !livingEntity.isSleeping() && !livingEntity.isSneaky();
         }
 
         @Override

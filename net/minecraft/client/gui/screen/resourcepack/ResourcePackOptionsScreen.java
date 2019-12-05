@@ -69,7 +69,10 @@ extends GameOptionsScreen {
         this.enabledPacks = new SelectedResourcePackListWidget(this.minecraft, 200, this.height);
         this.enabledPacks.setLeftPos(this.width / 2 + 4);
         if (selectedResourcePackListWidget != null) {
-            this.enabledPacks.children().addAll(selectedResourcePackListWidget.children());
+            selectedResourcePackListWidget.children().forEach(resourcePackEntry -> {
+                this.enabledPacks.children().add((ResourcePackListWidget.ResourcePackEntry)resourcePackEntry);
+                resourcePackEntry.method_24232(this.enabledPacks);
+            });
         }
         this.children.add(this.enabledPacks);
         if (!this.dirty) {

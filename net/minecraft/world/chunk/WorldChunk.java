@@ -435,7 +435,7 @@ implements Chunk {
                     list.add(entity2);
                 }
                 if (!(entity2 instanceof EnderDragonEntity)) continue;
-                for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity2).method_5690()) {
+                for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity2).getBodyParts()) {
                     if (enderDragonPart == entity || !enderDragonPart.getBoundingBox().intersects(box) || predicate != null && !predicate.test(enderDragonPart)) continue;
                     list.add(enderDragonPart);
                 }

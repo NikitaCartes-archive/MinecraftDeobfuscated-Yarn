@@ -122,7 +122,7 @@ public class TeleportCommand {
                     entity.copyFrom(entity2);
                     entity.setPositionAndAngles(d, e, f, i, j);
                     entity.setHeadYaw(i);
-                    serverWorld.method_18769(entity);
+                    serverWorld.onDimensionChanged(entity);
                     entity2.removed = true;
                 } else {
                     return;

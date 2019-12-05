@@ -503,7 +503,7 @@ extends World {
         if (!(entity instanceof PlayerEntity) && !this.getChunkManager().shouldTickEntity(entity)) {
             return;
         }
-        entity.method_22862(entity.getX(), entity.getY(), entity.getZ());
+        entity.resetPosition(entity.getX(), entity.getY(), entity.getZ());
         entity.prevYaw = entity.yaw;
         entity.prevPitch = entity.pitch;
         if (entity.updateNeeded) {
@@ -528,7 +528,7 @@ extends World {
         if (!(entity2 instanceof PlayerEntity) && !this.getChunkManager().shouldTickEntity(entity2)) {
             return;
         }
-        entity2.method_22862(entity2.getX(), entity2.getY(), entity2.getZ());
+        entity2.resetPosition(entity2.getX(), entity2.getY(), entity2.getZ());
         entity2.prevYaw = entity2.yaw;
         entity2.prevPitch = entity2.pitch;
         if (entity2.updateNeeded) {
@@ -699,33 +699,33 @@ extends World {
         return this.addEntity(entity);
     }
 
-    public boolean method_18768(Entity entity) {
+    public boolean tryLoadEntity(Entity entity) {
         return this.addEntity(entity);
     }
 
-    public void method_18769(Entity entity) {
+    public void onDimensionChanged(Entity entity) {
         boolean bl = entity.teleporting;
         entity.teleporting = true;
-        this.method_18768(entity);
+        this.tryLoadEntity(entity);
         entity.teleporting = bl;
         this.checkChunk(entity);
     }
 
-    public void method_18207(ServerPlayerEntity serverPlayerEntity) {
+    public void onPlayerTeleport(ServerPlayerEntity serverPlayerEntity) {
         this.addPlayer(serverPlayerEntity);
         this.checkChunk(serverPlayerEntity);
     }
 
-    public void method_18211(ServerPlayerEntity serverPlayerEntity) {
+    public void onPlayerChangeDimension(ServerPlayerEntity serverPlayerEntity) {
         this.addPlayer(serverPlayerEntity);
         this.checkChunk(serverPlayerEntity);
     }
 
-    public void method_18213(ServerPlayerEntity serverPlayerEntity) {
+    public void onPlayerConnected(ServerPlayerEntity serverPlayerEntity) {
         this.addPlayer(serverPlayerEntity);
     }
 
-    public void respawnPlayer(ServerPlayerEntity serverPlayerEntity) {
+    public void onPlayerRespawned(ServerPlayerEntity serverPlayerEntity) {
         this.addPlayer(serverPlayerEntity);
     }
 
@@ -795,7 +795,7 @@ extends World {
 
     public void unloadEntity(Entity entity) {
         if (entity instanceof EnderDragonEntity) {
-            for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).method_5690()) {
+            for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).getBodyParts()) {
                 enderDragonPart.remove();
             }
         }
@@ -817,7 +817,7 @@ extends World {
         } else {
             this.entitiesById.put(entity.getEntityId(), entity);
             if (entity instanceof EnderDragonEntity) {
-                for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).method_5690()) {
+                for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).getBodyParts()) {
                     this.entitiesById.put(enderDragonPart.getEntityId(), (Entity)enderDragonPart);
                 }
             }

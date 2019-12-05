@@ -33,14 +33,13 @@ implements ResourceManager {
     private static final Logger LOGGER = LogManager.getLogger();
     protected final List<ResourcePack> packList = Lists.newArrayList();
     private final ResourceType type;
-    private final String field_21561;
+    private final String namespace;
 
     public NamespaceResourceManager(ResourceType resourceType, String string) {
         this.type = resourceType;
-        this.field_21561 = string;
+        this.namespace = string;
     }
 
-    @Override
     public void addPack(ResourcePack resourcePack) {
         this.packList.add(resourcePack);
     }
@@ -48,7 +47,7 @@ implements ResourceManager {
     @Override
     @Environment(value=EnvType.CLIENT)
     public Set<String> getAllNamespaces() {
-        return ImmutableSet.of(this.field_21561);
+        return ImmutableSet.of(this.namespace);
     }
 
     @Override
@@ -120,7 +119,7 @@ implements ResourceManager {
     public Collection<Identifier> findResources(String string, Predicate<String> predicate) {
         ArrayList<Identifier> list = Lists.newArrayList();
         for (ResourcePack resourcePack : this.packList) {
-            list.addAll(resourcePack.findResources(this.type, this.field_21561, string, Integer.MAX_VALUE, predicate));
+            list.addAll(resourcePack.findResources(this.type, this.namespace, string, Integer.MAX_VALUE, predicate));
         }
         Collections.sort(list);
         return list;

@@ -94,7 +94,7 @@ implements ResourceReloadMonitor {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean isLoadStageComplete() {
+    public boolean isPrepareStageComplete() {
         return this.prepareStageFuture.isDone();
     }
 

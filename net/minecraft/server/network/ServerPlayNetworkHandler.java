@@ -726,6 +726,9 @@ implements ServerPlayPacketListener {
         m = h - this.updatedX;
         n = i - this.updatedY;
         o = j - this.updatedZ;
+        if (n > 0.0) {
+            this.player.fallDistance = 0.0f;
+        }
         if (this.player.onGround && !playerMoveC2SPacket.isOnGround() && n > 0.0) {
             this.player.jump();
         }
@@ -756,7 +759,7 @@ implements ServerPlayPacketListener {
         this.floating = t >= -0.03125 && this.player.interactionManager.getGameMode() != GameMode.SPECTATOR && !this.server.isFlightEnabled() && !this.player.abilities.allowFlying && !this.player.hasStatusEffect(StatusEffects.LEVITATION) && !this.player.isFallFlying() && !serverWorld.isAreaNotEmpty(this.player.getBoundingBox().expand(0.0625).stretch(0.0, -0.55, 0.0));
         this.player.onGround = playerMoveC2SPacket.isOnGround();
         this.player.getServerWorld().getChunkManager().updateCameraPosition(this.player);
-        this.player.method_14207(this.player.getY() - g, playerMoveC2SPacket.isOnGround());
+        this.player.handleFall(this.player.getY() - g, playerMoveC2SPacket.isOnGround());
         this.updatedX = this.player.getX();
         this.updatedY = this.player.getY();
         this.updatedZ = this.player.getZ();

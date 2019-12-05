@@ -138,7 +138,7 @@ implements BlockEntityProvider {
 
     @Override
     public void onEntityLand(BlockView blockView, Entity entity) {
-        if (entity.method_21750()) {
+        if (entity.bypassesLandingEffects()) {
             super.onEntityLand(blockView, entity);
         } else {
             this.method_21838(entity);

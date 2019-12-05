@@ -28,17 +28,17 @@ extends Overlay {
     private static final Identifier LOGO = new Identifier("textures/gui/title/mojang.png");
     private final MinecraftClient client;
     private final ResourceReloadMonitor reloadMonitor;
-    private final Consumer<Optional<Throwable>> field_18218;
-    private final boolean field_18219;
-    private float field_17770;
-    private long field_17771 = -1L;
-    private long field_18220 = -1L;
+    private final Consumer<Optional<Throwable>> exceptionHandler;
+    private final boolean reloading;
+    private float progress;
+    private long applyCompleteTime = -1L;
+    private long prepareCompleteTime = -1L;
 
     public SplashScreen(MinecraftClient minecraftClient, ResourceReloadMonitor resourceReloadMonitor, Consumer<Optional<Throwable>> consumer, boolean bl) {
         this.client = minecraftClient;
         this.reloadMonitor = resourceReloadMonitor;
-        this.field_18218 = consumer;
-        this.field_18219 = bl;
+        this.exceptionHandler = consumer;
+        this.reloading = bl;
     }
 
     public static void init(MinecraftClient minecraftClient) {
@@ -53,11 +53,11 @@ extends Overlay {
         int k = this.client.getWindow().getScaledWidth();
         int l = this.client.getWindow().getScaledHeight();
         long m = Util.getMeasuringTimeMs();
-        if (this.field_18219 && (this.reloadMonitor.isLoadStageComplete() || this.client.currentScreen != null) && this.field_18220 == -1L) {
-            this.field_18220 = m;
+        if (this.reloading && (this.reloadMonitor.isPrepareStageComplete() || this.client.currentScreen != null) && this.prepareCompleteTime == -1L) {
+            this.prepareCompleteTime = m;
         }
-        float g = this.field_17771 > -1L ? (float)(m - this.field_17771) / 1000.0f : -1.0f;
-        float f2 = h = this.field_18220 > -1L ? (float)(m - this.field_18220) / 500.0f : -1.0f;
+        float g = this.applyCompleteTime > -1L ? (float)(m - this.applyCompleteTime) / 1000.0f : -1.0f;
+        float f2 = h = this.prepareCompleteTime > -1L ? (float)(m - this.prepareCompleteTime) / 500.0f : -1.0f;
         if (g >= 1.0f) {
             if (this.client.currentScreen != null) {
                 this.client.currentScreen.render(0, 0, f);
@@ -65,7 +65,7 @@ extends Overlay {
             n = MathHelper.ceil((1.0f - MathHelper.clamp(g - 1.0f, 0.0f, 1.0f)) * 255.0f);
             SplashScreen.fill(0, 0, k, l, 0xFFFFFF | n << 24);
             o = 1.0f - MathHelper.clamp(g - 1.0f, 0.0f, 1.0f);
-        } else if (this.field_18219) {
+        } else if (this.reloading) {
             if (this.client.currentScreen != null && h < 1.0f) {
                 this.client.currentScreen.render(i, j, f);
             }
@@ -83,21 +83,21 @@ extends Overlay {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, o);
         this.blit(n, p, 0, 0, 256, 256);
         float q = this.reloadMonitor.getProgress();
-        this.field_17770 = MathHelper.clamp(this.field_17770 * 0.95f + q * 0.050000012f, 0.0f, 1.0f);
+        this.progress = MathHelper.clamp(this.progress * 0.95f + q * 0.050000012f, 0.0f, 1.0f);
         if (g < 1.0f) {
             this.renderProgressBar(k / 2 - 150, l / 4 * 3, k / 2 + 150, l / 4 * 3 + 10, 1.0f - MathHelper.clamp(g, 0.0f, 1.0f));
         }
         if (g >= 2.0f) {
             this.client.setOverlay(null);
         }
-        if (this.field_17771 == -1L && this.reloadMonitor.isApplyStageComplete() && (!this.field_18219 || h >= 2.0f)) {
+        if (this.applyCompleteTime == -1L && this.reloadMonitor.isApplyStageComplete() && (!this.reloading || h >= 2.0f)) {
             try {
                 this.reloadMonitor.throwExceptions();
-                this.field_18218.accept(Optional.empty());
+                this.exceptionHandler.accept(Optional.empty());
             } catch (Throwable throwable) {
-                this.field_18218.accept(Optional.of(throwable));
+                this.exceptionHandler.accept(Optional.of(throwable));
             }
-            this.field_17771 = Util.getMeasuringTimeMs();
+            this.applyCompleteTime = Util.getMeasuringTimeMs();
             if (this.client.currentScreen != null) {
                 this.client.currentScreen.init(this.client, this.client.getWindow().getScaledWidth(), this.client.getWindow().getScaledHeight());
             }
@@ -105,7 +105,7 @@ extends Overlay {
     }
 
     private void renderProgressBar(int i, int j, int k, int l, float f) {
-        int m = MathHelper.ceil((float)(k - i - 1) * this.field_17770);
+        int m = MathHelper.ceil((float)(k - i - 1) * this.progress);
         SplashScreen.fill(i - 1, j - 1, k + 1, l + 1, 0xFF000000 | Math.round((1.0f - f) * 255.0f) << 16 | Math.round((1.0f - f) * 255.0f) << 8 | Math.round((1.0f - f) * 255.0f));
         SplashScreen.fill(i, j, k, l, -1);
         SplashScreen.fill(i + 1, j + 1, i + m, l - 1, 0xFF000000 | (int)MathHelper.lerp(1.0f - f, 226.0f, 255.0f) << 16 | (int)MathHelper.lerp(1.0f - f, 40.0f, 255.0f) << 8 | (int)MathHelper.lerp(1.0f - f, 55.0f, 255.0f));

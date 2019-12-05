@@ -100,7 +100,7 @@ extends EntityRenderer<ItemFrameEntity> {
             return false;
         }
         double d = this.renderManager.getSquaredDistanceToCamera(itemFrameEntity);
-        float f = itemFrameEntity.method_21751() ? 32.0f : 64.0f;
+        float f = itemFrameEntity.isSneaky() ? 32.0f : 64.0f;
         return d < (double)(f * f);
     }
 

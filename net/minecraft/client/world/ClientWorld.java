@@ -160,7 +160,7 @@ extends World {
         if (!(entity instanceof PlayerEntity) && !this.getChunkManager().shouldTickEntity(entity)) {
             return;
         }
-        entity.method_22862(entity.getX(), entity.getY(), entity.getZ());
+        entity.resetPosition(entity.getX(), entity.getY(), entity.getZ());
         entity.prevYaw = entity.yaw;
         entity.prevPitch = entity.pitch;
         if (entity.updateNeeded || entity.isSpectator()) {
@@ -185,7 +185,7 @@ extends World {
         if (!(entity2 instanceof PlayerEntity) && !this.getChunkManager().shouldTickEntity(entity2)) {
             return;
         }
-        entity2.method_22862(entity2.getX(), entity2.getY(), entity2.getZ());
+        entity2.resetPosition(entity2.getX(), entity2.getY(), entity2.getZ());
         entity2.prevYaw = entity2.yaw;
         entity2.prevPitch = entity2.pitch;
         if (entity2.updateNeeded) {

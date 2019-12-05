@@ -607,7 +607,7 @@ implements ContainerListener {
         }
         serverWorld.getProfiler().pop();
         this.setWorld(serverWorld2);
-        serverWorld2.method_18211(this);
+        serverWorld2.onPlayerChangeDimension(this);
         this.dimensionChanged(serverWorld);
         this.networkHandler.requestTeleport(this.getX(), this.getY(), this.getZ(), h, g);
         this.interactionManager.setWorld(serverWorld2);
@@ -718,8 +718,8 @@ implements ContainerListener {
         }
     }
 
-    public void method_14207(double d, boolean bl) {
-        BlockPos blockPos = this.method_23312();
+    public void handleFall(double d, boolean bl) {
+        BlockPos blockPos = this.getLandingPos();
         if (!this.world.isChunkLoaded(blockPos)) {
             return;
         }
@@ -997,7 +997,7 @@ implements ContainerListener {
     }
 
     @Override
-    public void method_24203(double d, double e, double f) {
+    public void positAfterTeleport(double d, double e, double f) {
         this.networkHandler.requestTeleport(d, e, f, this.yaw, this.pitch);
         this.networkHandler.syncWithPlayerPosition();
     }
@@ -1199,7 +1199,7 @@ implements ContainerListener {
             this.removed = false;
             this.setPositionAndAngles(d, e, f, g, h);
             this.setWorld(serverWorld);
-            serverWorld.method_18207(this);
+            serverWorld.onPlayerTeleport(this);
             this.dimensionChanged(serverWorld2);
             this.networkHandler.requestTeleport(d, e, f, g, h);
             this.interactionManager.setWorld(serverWorld);

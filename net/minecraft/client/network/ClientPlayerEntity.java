@@ -908,7 +908,7 @@ extends AbstractClientPlayerEntity {
     }
 
     private boolean method_22119() {
-        return this.getLastAutoJump() && this.field_3934 <= 0 && this.onGround && !this.method_21825() && !this.hasVehicle() && this.method_22120() && (double)this.method_23313() >= 1.0;
+        return this.getLastAutoJump() && this.field_3934 <= 0 && this.onGround && !this.method_21825() && !this.hasVehicle() && this.method_22120() && (double)this.getJumpVelocityMultiplier() >= 1.0;
     }
 
     private boolean method_22120() {

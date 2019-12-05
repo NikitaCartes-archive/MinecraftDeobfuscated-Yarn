@@ -259,7 +259,7 @@ implements Monster {
                     this.field_7345 = blockPos;
                 }
             }
-            this.method_22862((double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5);
+            this.resetPosition((double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5);
             double d = 0.5 - (double)MathHelper.sin((0.5f + this.field_7337) * (float)Math.PI) * 0.5;
             double e = 0.5 - (double)MathHelper.sin((0.5f + this.field_7339) * (float)Math.PI) * 0.5;
             Direction direction3 = this.getAttachedFace().getOpposite();
@@ -341,7 +341,7 @@ implements Monster {
             } else {
                 this.field_7340 = 6;
             }
-            this.method_22862((double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5);
+            this.resetPosition((double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5);
         }
         super.onTrackedDataSet(trackedData);
     }

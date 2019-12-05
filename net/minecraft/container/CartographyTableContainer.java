@@ -26,7 +26,7 @@ public class CartographyTableContainer
 extends Container {
     private final BlockContext context;
     private boolean currentlyTakingItem;
-    private long field_20382;
+    private long lastTakeResultTime;
     public final Inventory inventory = new BasicInventory(2){
 
         @Override
@@ -101,9 +101,9 @@ extends Container {
                 itemStack.getItem().onCraft(itemStack, playerEntity.world, playerEntity);
                 blockContext.run((world, blockPos) -> {
                     long l = world.getTime();
-                    if (CartographyTableContainer.this.field_20382 != l) {
+                    if (CartographyTableContainer.this.lastTakeResultTime != l) {
                         world.playSound(null, (BlockPos)blockPos, SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, SoundCategory.BLOCKS, 1.0f, 1.0f);
-                        CartographyTableContainer.this.field_20382 = l;
+                        CartographyTableContainer.this.lastTakeResultTime = l;
                     }
                 });
                 return super.onTakeItem(playerEntity, itemStack);

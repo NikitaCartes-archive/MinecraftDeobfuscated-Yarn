@@ -244,7 +244,7 @@ extends LivingEntity {
             if (this.isAlive()) {
                 this.incrementStat(Stats.TIME_SINCE_DEATH);
             }
-            if (this.method_21751()) {
+            if (this.isSneaky()) {
                 this.incrementStat(Stats.SNEAK_TIME);
             }
             if (!this.isSleeping()) {
@@ -520,7 +520,7 @@ extends LivingEntity {
     @Override
     public void onDeath(DamageSource damageSource) {
         super.onDeath(damageSource);
-        this.method_23311();
+        this.updatePosition();
         if (!this.isSpectator()) {
             this.drop(damageSource);
         }
@@ -1571,7 +1571,7 @@ extends LivingEntity {
 
     @Override
     protected boolean canClimb() {
-        return !this.abilities.flying && (!this.onGround || !this.method_21751());
+        return !this.abilities.flying && (!this.onGround || !this.isSneaky());
     }
 
     public void sendAbilitiesUpdate() {
@@ -1665,7 +1665,7 @@ extends LivingEntity {
                     ((TameableEntity)entity).setOwnerUuid(this.uuid);
                 }
                 entity.setPosition(this.getX(), this.getY() + (double)0.7f, this.getZ());
-                ((ServerWorld)this.world).method_18768((Entity)entity);
+                ((ServerWorld)this.world).tryLoadEntity((Entity)entity);
             });
         }
     }
@@ -1836,8 +1836,8 @@ extends LivingEntity {
     }
 
     @Override
-    protected float method_23326() {
-        return this.abilities.flying || this.isFallFlying() ? 1.0f : super.method_23326();
+    protected float getVelocityMultiplier() {
+        return this.abilities.flying || this.isFallFlying() ? 1.0f : super.getVelocityMultiplier();
     }
 
     public float getLuck() {

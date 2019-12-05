@@ -19,9 +19,6 @@ extends ResourceManager {
     public CompletableFuture<Unit> beginReload(Executor var1, Executor var2, List<ResourcePack> var3, CompletableFuture<Unit> var4);
 
     @Environment(value=EnvType.CLIENT)
-    public ResourceReloadMonitor beginInitialMonitoredReload(Executor var1, Executor var2, CompletableFuture<Unit> var3);
-
-    @Environment(value=EnvType.CLIENT)
     public ResourceReloadMonitor beginMonitoredReload(Executor var1, Executor var2, CompletableFuture<Unit> var3, List<ResourcePack> var4);
 
     public void registerListener(ResourceReloadListener var1);

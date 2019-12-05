@@ -211,6 +211,8 @@ extends DrawableHelper {
                     if (worldChunk2 != null) {
                         LightingProvider lightingProvider = world.getChunkManager().getLightingProvider();
                         list.add("Server Light: (" + lightingProvider.get(LightType.SKY).getLightLevel(blockPos) + " sky, " + lightingProvider.get(LightType.BLOCK).getLightLevel(blockPos) + " block)");
+                    } else {
+                        list.add("Server Light: (?? sky, ?? block)");
                     }
                     StringBuilder stringBuilder = new StringBuilder("CH");
                     for (Heightmap.Type type : Heightmap.Type.values()) {
@@ -218,15 +220,18 @@ extends DrawableHelper {
                         stringBuilder.append(" ").append(HEIGHT_MAP_TYPES.get((Object)type)).append(": ").append(worldChunk.sampleHeightmap(type, blockPos.getX(), blockPos.getZ()));
                     }
                     list.add(stringBuilder.toString());
-                    if (worldChunk2 != null) {
-                        stringBuilder.setLength(0);
-                        stringBuilder.append("SH");
-                        for (Heightmap.Type type : Heightmap.Type.values()) {
-                            if (!type.isStoredServerSide()) continue;
-                            stringBuilder.append(" ").append(HEIGHT_MAP_TYPES.get((Object)type)).append(": ").append(worldChunk2.sampleHeightmap(type, blockPos.getX(), blockPos.getZ()));
+                    stringBuilder.setLength(0);
+                    stringBuilder.append("SH");
+                    for (Heightmap.Type type : Heightmap.Type.values()) {
+                        if (!type.isStoredServerSide()) continue;
+                        stringBuilder.append(" ").append(HEIGHT_MAP_TYPES.get((Object)type)).append(": ");
+                        if (worldChunk2 != null) {
+                            stringBuilder.append(worldChunk2.sampleHeightmap(type, blockPos.getX(), blockPos.getZ()));
+                            continue;
                         }
-                        list.add(stringBuilder.toString());
+                        stringBuilder.append("??");
                     }
+                    list.add(stringBuilder.toString());
                     if (blockPos.getY() >= 0 && blockPos.getY() < 256) {
                         list.add("Biome: " + Registry.BIOME.getId(this.client.world.getBiome(blockPos)));
                         long l = 0L;
@@ -375,7 +380,9 @@ extends DrawableHelper {
             q += (long)u;
         }
         t = this.client.getWindow().getScaledHeight();
-        DebugHud.fill(i, t - 60, i + p, t, -1873784752);
+        Matrix4f matrix4f2 = matrix4f.copy();
+        matrix4f2.multiply(Matrix4f.method_24021(0.0f, 0.0f, 100.0f));
+        DebugHud.fill(matrix4f2, i, t - 60, i + p, t, -1873784752);
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         RenderSystem.enableBlend();
         RenderSystem.disableTexture();
@@ -401,15 +408,12 @@ extends DrawableHelper {
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
         if (bl) {
-            DebugHud.fill(i + 1, t - 30 + 1, i + 14, t - 30 + 10, -1873784752);
-            this.fontRenderer.draw("60 FPS", i + 2, t - 30 + 2, 0xE0E0E0, false, matrix4f, immediate, false, 0, 0xF000F0);
+            this.fontRenderer.draw("60 FPS", i + 2, t - 30 + 2, 0xE0E0E0, false, matrix4f, immediate, false, -1873784752, 0xF000F0);
             this.hLine(i, i + p - 1, t - 30, -1);
-            DebugHud.fill(i + 1, t - 60 + 1, i + 14, t - 60 + 10, -1873784752);
-            this.fontRenderer.draw("30 FPS", i + 2, t - 60 + 2, 0xE0E0E0, false, matrix4f, immediate, false, 0, 0xF000F0);
+            this.fontRenderer.draw("30 FPS", i + 2, t - 60 + 2, 0xE0E0E0, false, matrix4f, immediate, false, -1873784752, 0xF000F0);
             this.hLine(i, i + p - 1, t - 60, -1);
         } else {
-            DebugHud.fill(i + 1, t - 60 + 1, i + 14, t - 60 + 10, -1873784752);
-            this.fontRenderer.draw("20 TPS", i + 2, t - 60 + 2, 0xE0E0E0, false, matrix4f, immediate, false, 0, 0xF000F0);
+            this.fontRenderer.draw("20 TPS", i + 2, t - 60 + 2, 0xE0E0E0, false, matrix4f, immediate, false, -1873784752, 0xF000F0);
             this.hLine(i, i + p - 1, t - 60, -1);
         }
         this.hLine(i, i + p - 1, t - 1, -1);

@@ -126,6 +126,7 @@ import net.minecraft.client.texture.PlayerSkinProvider;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.StatusEffectSpriteManager;
 import net.minecraft.client.texture.TextureManager;
+import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.toast.ToastManager;
 import net.minecraft.client.tutorial.TutorialManager;
 import net.minecraft.client.util.NarratorManager;
@@ -171,6 +172,7 @@ import net.minecraft.server.network.packet.LoginHelloC2SPacket;
 import net.minecraft.server.network.packet.PlayerActionC2SPacket;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.text.KeybindText;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.DefaultedList;
@@ -388,13 +390,8 @@ WindowEventHandler {
         this.resourceManager = new ReloadableResourceManagerImpl(ResourceType.CLIENT_RESOURCES, this.thread);
         this.options.addResourcePackProfilesToManager(this.resourcePackManager);
         this.resourcePackManager.scanPacks();
-        List<ResourcePack> list = this.resourcePackManager.getEnabledProfiles().stream().map(ResourcePackProfile::createResourcePack).collect(Collectors.toList());
-        for (ResourcePack resourcePack : list) {
-            this.resourceManager.addPack(resourcePack);
-        }
         this.languageManager = new LanguageManager(this.options.language);
         this.resourceManager.registerListener(this.languageManager);
-        this.languageManager.reloadResources(list);
         this.textureManager = new TextureManager(this.resourceManager);
         this.resourceManager.registerListener(this.textureManager);
         this.skinProvider = new PlayerSkinProvider(this.textureManager, new File(file, "skins"), this.sessionService);
@@ -457,22 +454,30 @@ WindowEventHandler {
             this.openScreen(new TitleScreen(true));
         }
         SplashScreen.init(this);
-        this.setOverlay(new SplashScreen(this, this.resourceManager.beginInitialMonitoredReload(Util.getServerWorkerExecutor(), this, COMPLETED_UNIT_FUTURE), optional -> Util.ifPresentOrElse(optional, throwable -> {
-            if (this.resourcePackManager.getEnabledProfiles().size() > 1) {
-                LOGGER.info("Caught error loading resourcepacks, removing all assigned resourcepacks", (Throwable)throwable);
-                this.resourcePackManager.setEnabledProfiles(Collections.emptyList());
-                this.options.resourcePacks.clear();
-                this.options.incompatibleResourcePacks.clear();
-                this.options.write();
-                this.reloadResources();
-            } else {
-                Util.method_24155(throwable);
-            }
-        }, () -> {
+        List<ResourcePack> list = this.resourcePackManager.getEnabledProfiles().stream().map(ResourcePackProfile::createResourcePack).collect(Collectors.toList());
+        this.setOverlay(new SplashScreen(this, this.resourceManager.beginMonitoredReload(Util.getServerWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list), optional -> Util.ifPresentOrElse(optional, this::handleResourceReloadExecption, () -> {
+            this.languageManager.reloadResources(list);
             if (SharedConstants.isDevelopment) {
                 this.checkGameData();
             }
         }), false));
+    }
+
+    private void handleResourceReloadExecption(Throwable throwable) {
+        if (this.resourcePackManager.getEnabledProfiles().size() > 1) {
+            LiteralText text = throwable instanceof ReloadableResourceManagerImpl.PackAdditionFailedException ? new LiteralText(((ReloadableResourceManagerImpl.PackAdditionFailedException)throwable).getPack().getName()) : null;
+            LOGGER.info("Caught error loading resourcepacks, removing all selected resourcepacks", throwable);
+            this.resourcePackManager.setEnabledProfiles(Collections.emptyList());
+            this.options.resourcePacks.clear();
+            this.options.incompatibleResourcePacks.clear();
+            this.options.write();
+            this.reloadResources().thenRun(() -> {
+                ToastManager toastManager = this.getToastManager();
+                SystemToast.show(toastManager, SystemToast.Type.PACK_LOAD_FAILURE, new TranslatableText("resourcePack.load_fail", new Object[0]), text);
+            });
+        } else {
+            Util.throwUnchecked(throwable);
+        }
     }
 
     public void run() {
@@ -606,12 +611,11 @@ WindowEventHandler {
         }
         this.resourcePackManager.scanPacks();
         List<ResourcePack> list = this.resourcePackManager.getEnabledProfiles().stream().map(ResourcePackProfile::createResourcePack).collect(Collectors.toList());
-        this.setOverlay(new SplashScreen(this, this.resourceManager.beginMonitoredReload(Util.getServerWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list), optional -> {
-            optional.ifPresent(Util::method_24155);
+        this.setOverlay(new SplashScreen(this, this.resourceManager.beginMonitoredReload(Util.getServerWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list), optional -> Util.ifPresentOrElse(optional, this::handleResourceReloadExecption, () -> {
             this.languageManager.reloadResources(list);
             this.worldRenderer.reload();
             completableFuture.complete(null);
-        }, true));
+        }), true));
         return completableFuture;
     }
 
@@ -758,7 +762,6 @@ WindowEventHandler {
             this.runTasks();
             this.profiler.pop();
         }
-        long m = Util.getMeasuringTimeNano();
         this.profiler.push("tick");
         if (bl) {
             for (i = 0; i < Math.min(10, this.renderTickCounter.ticksThisFrame); ++i) {
@@ -798,12 +801,15 @@ WindowEventHandler {
         this.framebuffer.draw(this.window.getFramebufferWidth(), this.window.getFramebufferHeight());
         RenderSystem.popMatrix();
         this.profiler.startTick();
+        this.profiler.push("updateDisplay");
         this.window.setFullscreen();
         i = this.getFramerateLimit();
         if ((double)i < Option.FRAMERATE_LIMIT.getMax()) {
             RenderSystem.limitDisplayFPS(i);
         }
+        this.profiler.swap("yield");
         Thread.yield();
+        this.profiler.pop();
         this.window.setPhase("Post render");
         ++this.fpsCounter;
         boolean bl3 = bl2 = this.isIntegratedServerRunning() && (this.currentScreen != null && this.currentScreen.isPauseScreen() || this.overlay != null && this.overlay.pausesGame()) && !this.server.isRemote();
@@ -815,9 +821,9 @@ WindowEventHandler {
             }
             this.paused = bl2;
         }
-        long n = Util.getMeasuringTimeNano();
-        this.metricsData.pushSample(n - this.lastMetricsSampleTime);
-        this.lastMetricsSampleTime = n;
+        long m = Util.getMeasuringTimeNano();
+        this.metricsData.pushSample(m - this.lastMetricsSampleTime);
+        this.lastMetricsSampleTime = m;
         while (Util.getMeasuringTimeMs() >= this.nextDebugInfoUpdateTime + 1000L) {
             currentFps = this.fpsCounter;
             Object[] objectArray = new Object[6];
@@ -885,19 +891,19 @@ WindowEventHandler {
         ProfilerTiming profilerTiming = list.remove(0);
         if (i == 0) {
             int j;
-            if (!profilerTiming.name.isEmpty() && (j = this.openProfilerSection.lastIndexOf(46)) >= 0) {
+            if (!profilerTiming.name.isEmpty() && (j = this.openProfilerSection.lastIndexOf(30)) >= 0) {
                 this.openProfilerSection = this.openProfilerSection.substring(0, j);
             }
         } else if (--i < list.size() && !"unspecified".equals(list.get((int)i).name)) {
             if (!this.openProfilerSection.isEmpty()) {
-                this.openProfilerSection = this.openProfilerSection + ".";
+                this.openProfilerSection = this.openProfilerSection + '\u001e';
             }
             this.openProfilerSection = this.openProfilerSection + list.get((int)i).name;
         }
     }
 
     private void drawProfilerResults() {
-        int l;
+        int m;
         if (!this.profiler.getController().isEnabled()) {
             return;
         }
@@ -932,9 +938,9 @@ WindowEventHandler {
             float g;
             float f;
             int q;
-            l = MathHelper.floor(profilerTiming2.parentSectionUsagePercentage / 4.0) + 1;
+            int l = MathHelper.floor(profilerTiming2.parentSectionUsagePercentage / 4.0) + 1;
             bufferBuilder.begin(6, VertexFormats.POSITION_COLOR);
-            int m = profilerTiming2.getColor();
+            m = profilerTiming2.getColor();
             int n = m >> 16 & 0xFF;
             int o = m >> 8 & 0xFF;
             int p = m & 0xFF;
@@ -951,6 +957,7 @@ WindowEventHandler {
                 f = (float)((d + profilerTiming2.parentSectionUsagePercentage * (double)q / (double)l) * 6.2831854820251465 / 100.0);
                 g = MathHelper.sin(f) * 160.0f;
                 h = MathHelper.cos(f) * 160.0f * 0.5f;
+                if (h > 0.0f) continue;
                 bufferBuilder.vertex((float)j + g, (float)k - h, 0.0).color(n >> 1, o >> 1, p >> 1, 255).next();
                 bufferBuilder.vertex((float)j + g, (float)k - h + 10.0f, 0.0).color(n >> 1, o >> 1, p >> 1, 255).next();
             }
@@ -960,15 +967,16 @@ WindowEventHandler {
         DecimalFormat decimalFormat = new DecimalFormat("##0.00");
         decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
         RenderSystem.enableTexture();
-        String string = "";
-        if (!"unspecified".equals(profilerTiming.name)) {
-            string = string + "[0] ";
+        String string = ProfileResult.method_21721(profilerTiming.name);
+        String string2 = "";
+        if (!"unspecified".equals(string)) {
+            string2 = string2 + "[0] ";
         }
-        string = profilerTiming.name.isEmpty() ? string + "ROOT " : string + profilerTiming.name + ' ';
-        l = 0xFFFFFF;
-        this.textRenderer.drawWithShadow(string, j - 160, k - 80 - 16, 0xFFFFFF);
-        string = decimalFormat.format(profilerTiming.totalUsagePercentage) + "%";
-        this.textRenderer.drawWithShadow(string, j + 160 - this.textRenderer.getStringWidth(string), k - 80 - 16, 0xFFFFFF);
+        string2 = string.isEmpty() ? string2 + "ROOT " : string2 + string + ' ';
+        m = 0xFFFFFF;
+        this.textRenderer.drawWithShadow(string2, j - 160, k - 80 - 16, 0xFFFFFF);
+        string2 = decimalFormat.format(profilerTiming.totalUsagePercentage) + "%";
+        this.textRenderer.drawWithShadow(string2, j + 160 - this.textRenderer.getStringWidth(string2), k - 80 - 16, 0xFFFFFF);
         for (int r = 0; r < list.size(); ++r) {
             ProfilerTiming profilerTiming3 = list.get(r);
             StringBuilder stringBuilder = new StringBuilder();
@@ -977,12 +985,12 @@ WindowEventHandler {
             } else {
                 stringBuilder.append("[").append(r + 1).append("] ");
             }
-            String string2 = stringBuilder.append(profilerTiming3.name).toString();
-            this.textRenderer.drawWithShadow(string2, j - 160, k + 80 + r * 8 + 20, profilerTiming3.getColor());
-            string2 = decimalFormat.format(profilerTiming3.parentSectionUsagePercentage) + "%";
-            this.textRenderer.drawWithShadow(string2, j + 160 - 50 - this.textRenderer.getStringWidth(string2), k + 80 + r * 8 + 20, profilerTiming3.getColor());
-            string2 = decimalFormat.format(profilerTiming3.totalUsagePercentage) + "%";
-            this.textRenderer.drawWithShadow(string2, j + 160 - this.textRenderer.getStringWidth(string2), k + 80 + r * 8 + 20, profilerTiming3.getColor());
+            String string3 = stringBuilder.append(profilerTiming3.name).toString();
+            this.textRenderer.drawWithShadow(string3, j - 160, k + 80 + r * 8 + 20, profilerTiming3.getColor());
+            string3 = decimalFormat.format(profilerTiming3.parentSectionUsagePercentage) + "%";
+            this.textRenderer.drawWithShadow(string3, j + 160 - 50 - this.textRenderer.getStringWidth(string3), k + 80 + r * 8 + 20, profilerTiming3.getColor());
+            string3 = decimalFormat.format(profilerTiming3.totalUsagePercentage) + "%";
+            this.textRenderer.drawWithShadow(string3, j + 160 - this.textRenderer.getStringWidth(string3), k + 80 + r * 8 + 20, profilerTiming3.getColor());
         }
     }
 
