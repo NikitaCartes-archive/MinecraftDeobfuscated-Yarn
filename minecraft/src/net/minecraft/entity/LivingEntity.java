@@ -199,7 +199,7 @@ public abstract class LivingEntity extends Entity {
 		this.setHealth(this.getMaximumHealth());
 		this.inanimate = true;
 		this.randomSmallSeed = (float)((Math.random() + 1.0) * 0.01F);
-		this.method_23311();
+		this.updatePosition();
 		this.randomLargeSeed = (float)Math.random() * 12398.0F;
 		this.yaw = (float)(Math.random() * (float) (Math.PI * 2));
 		this.headYaw = this.yaw;
@@ -639,7 +639,7 @@ public abstract class LivingEntity extends Entity {
 
 	public double getAttackDistanceScalingFactor(@Nullable Entity entity) {
 		double d = 1.0;
-		if (this.method_21751()) {
+		if (this.isSneaky()) {
 			d *= 0.8;
 		}
 
@@ -1542,7 +1542,7 @@ public abstract class LivingEntity extends Entity {
 				this.playEquipmentBreakEffects(this.getEquippedStack(EquipmentSlot.FEET));
 				break;
 			case 54:
-				HoneyBlock.method_24178(this);
+				HoneyBlock.addRichParticles(this);
 		}
 	}
 
@@ -1769,7 +1769,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	protected float getJumpVelocity() {
-		return 0.42F * this.method_23313();
+		return 0.42F * this.getJumpVelocityMultiplier();
 	}
 
 	protected void jump() {
@@ -1856,7 +1856,7 @@ public abstract class LivingEntity extends Entity {
 							this.setFlag(7, false);
 						}
 					} else {
-						BlockPos blockPos = this.method_23314();
+						BlockPos blockPos = this.getVelocityAffectingPos();
 						float p = this.world.getBlockState(blockPos).getBlock().getSlipperiness();
 						float fx = this.onGround ? p * 0.91F : 0.91F;
 						this.updateVelocity(this.getMovementSpeed(p), movementInput);

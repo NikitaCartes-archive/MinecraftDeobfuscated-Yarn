@@ -1,13 +1,15 @@
 package net.minecraft.client.options;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.io.Files;
 import com.google.gson.Gson;
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -37,7 +39,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Arm;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.world.Difficulty;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -59,7 +60,7 @@ public class GameOptions {
 			return null;
 		}
 	};
-	public static final Splitter COLON_SPLITTER = Splitter.on(':');
+	private static final Splitter COLON_SPLITTER = Splitter.on(':').limit(2);
 	public double mouseSensitivity = 0.5;
 	public int viewDistance = -1;
 	public int maxFps = 120;
@@ -220,8 +221,8 @@ public class GameOptions {
 		return this.backgroundForChatOnly ? fallbackColor : (int)(this.textBackgroundOpacity * 255.0) << 24 & 0xFF000000;
 	}
 
-	public void setKeyCode(KeyBinding keyBinding, InputUtil.KeyCode keyCode) {
-		keyBinding.setKeyCode(keyCode);
+	public void setKeyCode(KeyBinding key, InputUtil.KeyCode code) {
+		key.setKeyCode(code);
 		this.write();
 	}
 
@@ -232,22 +233,43 @@ public class GameOptions {
 			}
 
 			this.soundVolumeLevels.clear();
-			List<String> list = IOUtils.readLines(new FileInputStream(this.optionsFile));
 			CompoundTag compoundTag = new CompoundTag();
+			BufferedReader bufferedReader = Files.newReader(this.optionsFile, Charsets.UTF_8);
+			Throwable var3 = null;
 
-			for (String string : list) {
-				try {
-					Iterator<String> iterator = COLON_SPLITTER.omitEmptyStrings().limit(2).split(string).iterator();
-					compoundTag.putString((String)iterator.next(), (String)iterator.next());
-				} catch (Exception var10) {
-					LOGGER.warn("Skipping bad option: {}", string);
+			try {
+				bufferedReader.lines().forEach(stringx -> {
+					try {
+						Iterator<String> iterator = COLON_SPLITTER.split(stringx).iterator();
+						compoundTag.putString((String)iterator.next(), (String)iterator.next());
+					} catch (OutOfMemoryError var3x) {
+						System.gc();
+						throw new GameOptions.ParseError("Failed to parse option: " + stringx.substring(0, Math.min(200, stringx.length())), var3x);
+					} catch (Exception var4x) {
+						LOGGER.warn("Skipping bad option: {}", stringx);
+					}
+				});
+			} catch (Throwable var17) {
+				var3 = var17;
+				throw var17;
+			} finally {
+				if (bufferedReader != null) {
+					if (var3 != null) {
+						try {
+							bufferedReader.close();
+						} catch (Throwable var16) {
+							var3.addSuppressed(var16);
+						}
+					} else {
+						bufferedReader.close();
+					}
 				}
 			}
 
-			compoundTag = this.update(compoundTag);
+			CompoundTag compoundTag2 = this.update(compoundTag);
 
-			for (String string : compoundTag.getKeys()) {
-				String string2 = compoundTag.getString(string);
+			for (String string : compoundTag2.getKeys()) {
+				String string2 = compoundTag2.getString(string);
 
 				try {
 					if ("autoJump".equals(string)) {
@@ -524,14 +546,14 @@ public class GameOptions {
 							this.setPlayerModelPart(playerModelPart, "true".equals(string2));
 						}
 					}
-				} catch (Exception var11) {
+				} catch (Exception var19) {
 					LOGGER.warn("Skipping bad option: {}:{}", string, string2);
 				}
 			}
 
 			KeyBinding.updateKeysByCode();
-		} catch (Exception var12) {
-			LOGGER.error("Failed to load options", (Throwable)var12);
+		} catch (Exception var20) {
+			LOGGER.error("Failed to load options", (Throwable)var20);
 		}
 	}
 
@@ -668,13 +690,13 @@ public class GameOptions {
 		this.onPlayerModelPartChange();
 	}
 
-	public float getSoundVolume(SoundCategory soundCategory) {
-		return this.soundVolumeLevels.containsKey(soundCategory) ? (Float)this.soundVolumeLevels.get(soundCategory) : 1.0F;
+	public float getSoundVolume(SoundCategory category) {
+		return this.soundVolumeLevels.containsKey(category) ? (Float)this.soundVolumeLevels.get(category) : 1.0F;
 	}
 
-	public void setSoundVolume(SoundCategory category, float f) {
-		this.soundVolumeLevels.put(category, f);
-		this.client.getSoundManager().updateSoundVolume(category, f);
+	public void setSoundVolume(SoundCategory category, float volume) {
+		this.soundVolumeLevels.put(category, volume);
+		this.client.getSoundManager().updateSoundVolume(category, volume);
 	}
 
 	public void onPlayerModelPartChange() {
@@ -696,8 +718,8 @@ public class GameOptions {
 		return ImmutableSet.copyOf(this.enabledPlayerModelParts);
 	}
 
-	public void setPlayerModelPart(PlayerModelPart part, boolean bl) {
-		if (bl) {
+	public void setPlayerModelPart(PlayerModelPart part, boolean enabled) {
+		if (enabled) {
 			this.enabledPlayerModelParts.add(part);
 		} else {
 			this.enabledPlayerModelParts.remove(part);
@@ -706,11 +728,11 @@ public class GameOptions {
 		this.onPlayerModelPartChange();
 	}
 
-	public void togglePlayerModelPart(PlayerModelPart playerModelPart) {
-		if (this.getEnabledPlayerModelParts().contains(playerModelPart)) {
-			this.enabledPlayerModelParts.remove(playerModelPart);
+	public void togglePlayerModelPart(PlayerModelPart part) {
+		if (this.getEnabledPlayerModelParts().contains(part)) {
+			this.enabledPlayerModelParts.remove(part);
 		} else {
-			this.enabledPlayerModelParts.add(playerModelPart);
+			this.enabledPlayerModelParts.add(part);
 		}
 
 		this.onPlayerModelPartChange();
@@ -751,5 +773,12 @@ public class GameOptions {
 		}
 
 		manager.setEnabledProfiles(set);
+	}
+
+	@Environment(EnvType.CLIENT)
+	static class ParseError extends Error {
+		public ParseError(String message, Throwable cause) {
+			super(message, cause);
+		}
 	}
 }

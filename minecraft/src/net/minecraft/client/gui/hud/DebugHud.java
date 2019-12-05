@@ -270,6 +270,8 @@ public class DebugHud extends DrawableHelper {
 									+ lightingProvider.get(LightType.BLOCK).getLightLevel(blockPos)
 									+ " block)"
 							);
+						} else {
+							list.add("Server Light: (?? sky, ?? block)");
 						}
 
 						StringBuilder stringBuilder = new StringBuilder("CH");
@@ -284,22 +286,21 @@ public class DebugHud extends DrawableHelper {
 						}
 
 						list.add(stringBuilder.toString());
-						if (worldChunk2 != null) {
-							stringBuilder.setLength(0);
-							stringBuilder.append("SH");
+						stringBuilder.setLength(0);
+						stringBuilder.append("SH");
 
-							for (Heightmap.Type typex : Heightmap.Type.values()) {
-								if (typex.isStoredServerSide()) {
-									stringBuilder.append(" ")
-										.append((String)HEIGHT_MAP_TYPES.get(typex))
-										.append(": ")
-										.append(worldChunk2.sampleHeightmap(typex, blockPos.getX(), blockPos.getZ()));
+						for (Heightmap.Type typex : Heightmap.Type.values()) {
+							if (typex.isStoredServerSide()) {
+								stringBuilder.append(" ").append((String)HEIGHT_MAP_TYPES.get(typex)).append(": ");
+								if (worldChunk2 != null) {
+									stringBuilder.append(worldChunk2.sampleHeightmap(typex, blockPos.getX(), blockPos.getZ()));
+								} else {
+									stringBuilder.append("??");
 								}
 							}
-
-							list.add(stringBuilder.toString());
 						}
 
+						list.add(stringBuilder.toString());
 						if (blockPos.getY() >= 0 && blockPos.getY() < 256) {
 							list.add("Biome: " + Registry.BIOME.getId(this.client.world.getBiome(blockPos)));
 							long l = 0L;
@@ -496,7 +497,9 @@ public class DebugHud extends DrawableHelper {
 		}
 
 		int t = this.client.getWindow().getScaledHeight();
-		fill(i, t - 60, i + p, t, -1873784752);
+		Matrix4f matrix4f2 = matrix4f.copy();
+		matrix4f2.multiply(Matrix4f.method_24021(0.0F, 0.0F, 100.0F));
+		fill(matrix4f2, i, t - 60, i + p, t, -1873784752);
 		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
 		RenderSystem.enableBlend();
 		RenderSystem.disableTexture();
@@ -524,15 +527,12 @@ public class DebugHud extends DrawableHelper {
 		RenderSystem.enableTexture();
 		RenderSystem.disableBlend();
 		if (bl) {
-			fill(i + 1, t - 30 + 1, i + 14, t - 30 + 10, -1873784752);
-			this.fontRenderer.draw("60 FPS", (float)(i + 2), (float)(t - 30 + 2), 14737632, false, matrix4f, immediate, false, 0, 15728880);
+			this.fontRenderer.draw("60 FPS", (float)(i + 2), (float)(t - 30 + 2), 14737632, false, matrix4f, immediate, false, -1873784752, 15728880);
 			this.hLine(i, i + p - 1, t - 30, -1);
-			fill(i + 1, t - 60 + 1, i + 14, t - 60 + 10, -1873784752);
-			this.fontRenderer.draw("30 FPS", (float)(i + 2), (float)(t - 60 + 2), 14737632, false, matrix4f, immediate, false, 0, 15728880);
+			this.fontRenderer.draw("30 FPS", (float)(i + 2), (float)(t - 60 + 2), 14737632, false, matrix4f, immediate, false, -1873784752, 15728880);
 			this.hLine(i, i + p - 1, t - 60, -1);
 		} else {
-			fill(i + 1, t - 60 + 1, i + 14, t - 60 + 10, -1873784752);
-			this.fontRenderer.draw("20 TPS", (float)(i + 2), (float)(t - 60 + 2), 14737632, false, matrix4f, immediate, false, 0, 15728880);
+			this.fontRenderer.draw("20 TPS", (float)(i + 2), (float)(t - 60 + 2), 14737632, false, matrix4f, immediate, false, -1873784752, 15728880);
 			this.hLine(i, i + p - 1, t - 60, -1);
 		}
 

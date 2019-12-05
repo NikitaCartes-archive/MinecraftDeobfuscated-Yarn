@@ -36,7 +36,7 @@ public class AnvilContainer extends Container {
 	};
 	private final Property levelCost = Property.create();
 	private final BlockContext context;
-	private int field_7776;
+	private int repairItemUsage;
 	private String newItemName;
 	private final PlayerEntity player;
 
@@ -72,10 +72,10 @@ public class AnvilContainer extends Container {
 					}
 
 					AnvilContainer.this.inventory.setInvStack(0, ItemStack.EMPTY);
-					if (AnvilContainer.this.field_7776 > 0) {
+					if (AnvilContainer.this.repairItemUsage > 0) {
 						ItemStack itemStack = AnvilContainer.this.inventory.getInvStack(1);
-						if (!itemStack.isEmpty() && itemStack.getCount() > AnvilContainer.this.field_7776) {
-							itemStack.decrement(AnvilContainer.this.field_7776);
+						if (!itemStack.isEmpty() && itemStack.getCount() > AnvilContainer.this.repairItemUsage) {
+							itemStack.decrement(AnvilContainer.this.repairItemUsage);
 							AnvilContainer.this.inventory.setInvStack(1, itemStack);
 						} else {
 							AnvilContainer.this.inventory.setInvStack(1, ItemStack.EMPTY);
@@ -138,7 +138,7 @@ public class AnvilContainer extends Container {
 			ItemStack itemStack3 = this.inventory.getInvStack(1);
 			Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemStack2);
 			j += itemStack.getRepairCost() + (itemStack3.isEmpty() ? 0 : itemStack3.getRepairCost());
-			this.field_7776 = 0;
+			this.repairItemUsage = 0;
 			if (!itemStack3.isEmpty()) {
 				boolean bl = itemStack3.getItem() == Items.ENCHANTED_BOOK && !EnchantedBookItem.getEnchantmentTag(itemStack3).isEmpty();
 				if (itemStack2.isDamageable() && itemStack2.getItem().canRepair(itemStack, itemStack3)) {
@@ -157,7 +157,7 @@ public class AnvilContainer extends Container {
 						l = Math.min(itemStack2.getDamage(), itemStack2.getMaxDamage() / 4);
 					}
 
-					this.field_7776 = m;
+					this.repairItemUsage = m;
 				} else {
 					if (!bl && (itemStack2.getItem() != itemStack3.getItem() || !itemStack2.isDamageable())) {
 						this.result.setInvStack(0, ItemStack.EMPTY);

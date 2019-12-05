@@ -271,7 +271,7 @@ public class TeleportCommand {
 				target.copyFrom(entity);
 				target.setPositionAndAngles(x, y, z, f, g);
 				target.setHeadYaw(f);
-				world.method_18769(target);
+				world.onDimensionChanged(target);
 				entity.removed = true;
 			}
 		}

@@ -106,7 +106,7 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 			&& itemFrameEntity.getHeldItemStack().hasCustomName()
 			&& this.renderManager.targetedEntity == itemFrameEntity) {
 			double d = this.renderManager.getSquaredDistanceToCamera(itemFrameEntity);
-			float f = itemFrameEntity.method_21751() ? 32.0F : 64.0F;
+			float f = itemFrameEntity.isSneaky() ? 32.0F : 64.0F;
 			return d < (double)(f * f);
 		} else {
 			return false;

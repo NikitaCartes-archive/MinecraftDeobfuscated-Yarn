@@ -17,13 +17,15 @@ import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.util.Identifier;
 
 public class PlayerContainer extends CraftingContainer<CraftingInventory> {
-	public static final Identifier field_21668 = new Identifier("textures/atlas/blocks.png");
-	public static final Identifier field_21669 = new Identifier("item/empty_armor_slot_helmet");
-	public static final Identifier field_21670 = new Identifier("item/empty_armor_slot_chestplate");
-	public static final Identifier field_21671 = new Identifier("item/empty_armor_slot_leggings");
-	public static final Identifier field_21672 = new Identifier("item/empty_armor_slot_boots");
-	public static final Identifier field_21673 = new Identifier("item/empty_armor_slot_shield");
-	private static final Identifier[] EMPTY_ARMOR_SLOT_IDS = new Identifier[]{field_21672, field_21671, field_21670, field_21669};
+	public static final Identifier BLOCK_ATLAS_TEXTURE = new Identifier("textures/atlas/blocks.png");
+	public static final Identifier EMPTY_HELMET_SLOT_TEXTURE = new Identifier("item/empty_armor_slot_helmet");
+	public static final Identifier EMPTY_CHESTPLATE_SLOT_TEXTURE = new Identifier("item/empty_armor_slot_chestplate");
+	public static final Identifier EMPTY_LEGGINGS_SLOT_TEXTURE = new Identifier("item/empty_armor_slot_leggings");
+	public static final Identifier EMPTY_BOOTS_SLOT_TEXTURE = new Identifier("item/empty_armor_slot_boots");
+	public static final Identifier EMPTY_OFFHAND_ARMOR_SLOT = new Identifier("item/empty_armor_slot_shield");
+	private static final Identifier[] EMPTY_ARMOR_SLOT_TEXTURES = new Identifier[]{
+		EMPTY_BOOTS_SLOT_TEXTURE, EMPTY_LEGGINGS_SLOT_TEXTURE, EMPTY_CHESTPLATE_SLOT_TEXTURE, EMPTY_HELMET_SLOT_TEXTURE
+	};
 	private static final EquipmentSlot[] EQUIPMENT_SLOT_ORDER = new EquipmentSlot[]{
 		EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET
 	};
@@ -66,7 +68,7 @@ public class PlayerContainer extends CraftingContainer<CraftingInventory> {
 				@Environment(EnvType.CLIENT)
 				@Override
 				public Pair<Identifier, Identifier> getBackgroundSprite() {
-					return Pair.of(PlayerContainer.field_21668, PlayerContainer.EMPTY_ARMOR_SLOT_IDS[equipmentSlot.getEntitySlotId()]);
+					return Pair.of(PlayerContainer.BLOCK_ATLAS_TEXTURE, PlayerContainer.EMPTY_ARMOR_SLOT_TEXTURES[equipmentSlot.getEntitySlotId()]);
 				}
 			});
 		}
@@ -85,7 +87,7 @@ public class PlayerContainer extends CraftingContainer<CraftingInventory> {
 			@Environment(EnvType.CLIENT)
 			@Override
 			public Pair<Identifier, Identifier> getBackgroundSprite() {
-				return Pair.of(PlayerContainer.field_21668, PlayerContainer.field_21673);
+				return Pair.of(PlayerContainer.BLOCK_ATLAS_TEXTURE, PlayerContainer.EMPTY_OFFHAND_ARMOR_SLOT);
 			}
 		});
 	}

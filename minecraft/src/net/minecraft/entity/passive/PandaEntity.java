@@ -866,6 +866,13 @@ public class PandaEntity extends AnimalEntity {
 				return this.panda.method_18442() && this.target != null;
 			}
 		}
+
+		@Override
+		public void tick() {
+			if (this.target != null) {
+				super.tick();
+			}
+		}
 	}
 
 	static class PandaFleeGoal<T extends LivingEntity> extends FleeEntityGoal<T> {

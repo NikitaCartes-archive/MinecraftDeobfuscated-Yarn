@@ -25,9 +25,9 @@ public enum VoronoiBiomeAccessType implements BiomeAccessType {
 			int p = bl ? l : l + 1;
 			int q = bl2 ? m : m + 1;
 			int r = bl3 ? n : n + 1;
-			double g = bl ? d : 1.0 - d;
-			double h = bl2 ? e : 1.0 - e;
-			double s = bl3 ? f : 1.0 - f;
+			double g = bl ? d : d - 1.0;
+			double h = bl2 ? e : e - 1.0;
+			double s = bl3 ? f : f - 1.0;
 			ds[o] = calcChance(seed, p, q, r, g, h, s);
 		}
 

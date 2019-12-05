@@ -118,6 +118,7 @@ import net.minecraft.client.texture.PlayerSkinProvider;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.StatusEffectSpriteManager;
 import net.minecraft.client.texture.TextureManager;
+import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.toast.ToastManager;
 import net.minecraft.client.tutorial.TutorialManager;
 import net.minecraft.client.util.NarratorManager;
@@ -163,6 +164,8 @@ import net.minecraft.server.network.packet.LoginHelloC2SPacket;
 import net.minecraft.server.network.packet.PlayerActionC2SPacket;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.text.KeybindText;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.DefaultedList;
@@ -377,8 +380,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			InputStream inputStream = this.getResourcePackDownloader().getPack().open(ResourceType.CLIENT_RESOURCES, new Identifier("icons/icon_16x16.png"));
 			InputStream inputStream2 = this.getResourcePackDownloader().getPack().open(ResourceType.CLIENT_RESOURCES, new Identifier("icons/icon_32x32.png"));
 			this.window.setIcon(inputStream, inputStream2);
-		} catch (IOException var9) {
-			LOGGER.error("Couldn't set icon", (Throwable)var9);
+		} catch (IOException var8) {
+			LOGGER.error("Couldn't set icon", (Throwable)var8);
 		}
 
 		this.window.setFramerateLimit(this.options.maxFps);
@@ -392,19 +395,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.resourceManager = new ReloadableResourceManagerImpl(ResourceType.CLIENT_RESOURCES, this.thread);
 		this.options.addResourcePackProfilesToManager(this.resourcePackManager);
 		this.resourcePackManager.scanPacks();
-		List<ResourcePack> list = (List<ResourcePack>)this.resourcePackManager
-			.getEnabledProfiles()
-			.stream()
-			.map(ResourcePackProfile::createResourcePack)
-			.collect(Collectors.toList());
-
-		for (ResourcePack resourcePack : list) {
-			this.resourceManager.addPack(resourcePack);
-		}
-
 		this.languageManager = new LanguageManager(this.options.language);
 		this.resourceManager.registerListener(this.languageManager);
-		this.languageManager.reloadResources(list);
 		this.textureManager = new TextureManager(this.resourceManager);
 		this.resourceManager.registerListener(this.textureManager);
 		this.skinProvider = new PlayerSkinProvider(this.textureManager, new File(file, "skins"), this.sessionService);
@@ -469,22 +461,17 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			}
 
 			SplashScreen.init(this);
+			List<ResourcePack> list = (List<ResourcePack>)this.resourcePackManager
+				.getEnabledProfiles()
+				.stream()
+				.map(ResourcePackProfile::createResourcePack)
+				.collect(Collectors.toList());
 			this.setOverlay(
 				new SplashScreen(
 					this,
-					this.resourceManager.beginInitialMonitoredReload(Util.getServerWorkerExecutor(), this, COMPLETED_UNIT_FUTURE),
-					optional -> Util.ifPresentOrElse(optional, throwable -> {
-							if (this.resourcePackManager.getEnabledProfiles().size() > 1) {
-								LOGGER.info("Caught error loading resourcepacks, removing all assigned resourcepacks", throwable);
-								this.resourcePackManager.setEnabledProfiles(Collections.emptyList());
-								this.options.resourcePacks.clear();
-								this.options.incompatibleResourcePacks.clear();
-								this.options.write();
-								this.reloadResources();
-							} else {
-								Util.method_24155(throwable);
-							}
-						}, () -> {
+					this.resourceManager.beginMonitoredReload(Util.getServerWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list),
+					optional -> Util.ifPresentOrElse(optional, this::handleResourceReloadExecption, () -> {
+							this.languageManager.reloadResources(list);
 							if (SharedConstants.isDevelopment) {
 								this.checkGameData();
 							}
@@ -492,6 +479,29 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 					false
 				)
 			);
+		}
+	}
+
+	private void handleResourceReloadExecption(Throwable throwable) {
+		if (this.resourcePackManager.getEnabledProfiles().size() > 1) {
+			Text text;
+			if (throwable instanceof ReloadableResourceManagerImpl.PackAdditionFailedException) {
+				text = new LiteralText(((ReloadableResourceManagerImpl.PackAdditionFailedException)throwable).getPack().getName());
+			} else {
+				text = null;
+			}
+
+			LOGGER.info("Caught error loading resourcepacks, removing all selected resourcepacks", throwable);
+			this.resourcePackManager.setEnabledProfiles(Collections.emptyList());
+			this.options.resourcePacks.clear();
+			this.options.incompatibleResourcePacks.clear();
+			this.options.write();
+			this.reloadResources().thenRun(() -> {
+				ToastManager toastManager = this.getToastManager();
+				SystemToast.show(toastManager, SystemToast.Type.PACK_LOAD_FAILURE, new TranslatableText("resourcePack.load_fail"), text);
+			});
+		} else {
+			Util.throwUnchecked(throwable);
 		}
 	}
 
@@ -654,12 +664,16 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 					.map(ResourcePackProfile::createResourcePack)
 					.collect(Collectors.toList());
 				this.setOverlay(
-					new SplashScreen(this, this.resourceManager.beginMonitoredReload(Util.getServerWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list), optional -> {
-						optional.ifPresent(Util::method_24155);
-						this.languageManager.reloadResources(list);
-						this.worldRenderer.reload();
-						completableFuture.complete(null);
-					}, true)
+					new SplashScreen(
+						this,
+						this.resourceManager.beginMonitoredReload(Util.getServerWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list),
+						optional -> Util.ifPresentOrElse(optional, this::handleResourceReloadExecption, () -> {
+								this.languageManager.reloadResources(list);
+								this.worldRenderer.reload();
+								completableFuture.complete(null);
+							}),
+						true
+					)
 				);
 				return completableFuture;
 			}
@@ -830,7 +844,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.profiler.pop();
 		}
 
-		long m = Util.getMeasuringTimeNano();
 		this.profiler.push("tick");
 		if (tick) {
 			for (int i = 0; i < Math.min(10, this.renderTickCounter.ticksThisFrame); i++) {
@@ -873,13 +886,16 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.framebuffer.draw(this.window.getFramebufferWidth(), this.window.getFramebufferHeight());
 		RenderSystem.popMatrix();
 		this.profiler.startTick();
+		this.profiler.push("updateDisplay");
 		this.window.setFullscreen();
 		int i = this.getFramerateLimit();
 		if ((double)i < Option.FRAMERATE_LIMIT.getMax()) {
 			RenderSystem.limitDisplayFPS(i);
 		}
 
+		this.profiler.swap("yield");
 		Thread.yield();
+		this.profiler.pop();
 		this.window.setPhase("Post render");
 		this.fpsCounter++;
 		boolean bl = this.isIntegratedServerRunning()
@@ -895,9 +911,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.paused = bl;
 		}
 
-		long n = Util.getMeasuringTimeNano();
-		this.metricsData.pushSample(n - this.lastMetricsSampleTime);
-		this.lastMetricsSampleTime = n;
+		long m = Util.getMeasuringTimeNano();
+		this.metricsData.pushSample(m - this.lastMetricsSampleTime);
+		this.lastMetricsSampleTime = m;
 
 		while (Util.getMeasuringTimeMs() >= this.nextDebugInfoUpdateTime + 1000L) {
 			currentFps = this.fpsCounter;
@@ -966,7 +982,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			ProfilerTiming profilerTiming = (ProfilerTiming)list.remove(0);
 			if (digit == 0) {
 				if (!profilerTiming.name.isEmpty()) {
-					int i = this.openProfilerSection.lastIndexOf(46);
+					int i = this.openProfilerSection.lastIndexOf(30);
 					if (i >= 0) {
 						this.openProfilerSection = this.openProfilerSection.substring(0, i);
 					}
@@ -975,7 +991,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				digit--;
 				if (digit < list.size() && !"unspecified".equals(((ProfilerTiming)list.get(digit)).name)) {
 					if (!this.openProfilerSection.isEmpty()) {
-						this.openProfilerSection = this.openProfilerSection + ".";
+						this.openProfilerSection = this.openProfilerSection + '\u001e';
 					}
 
 					this.openProfilerSection = this.openProfilerSection + ((ProfilerTiming)list.get(digit)).name;
@@ -1036,8 +1052,10 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 					float f = (float)((d + profilerTiming2.parentSectionUsagePercentage * (double)q / (double)l) * (float) (Math.PI * 2) / 100.0);
 					float g = MathHelper.sin(f) * 160.0F;
 					float h = MathHelper.cos(f) * 160.0F * 0.5F;
-					bufferBuilder.vertex((double)((float)j + g), (double)((float)k - h), 0.0).color(n >> 1, o >> 1, p >> 1, 255).next();
-					bufferBuilder.vertex((double)((float)j + g), (double)((float)k - h + 10.0F), 0.0).color(n >> 1, o >> 1, p >> 1, 255).next();
+					if (!(h > 0.0F)) {
+						bufferBuilder.vertex((double)((float)j + g), (double)((float)k - h), 0.0).color(n >> 1, o >> 1, p >> 1, 255).next();
+						bufferBuilder.vertex((double)((float)j + g), (double)((float)k - h + 10.0F), 0.0).color(n >> 1, o >> 1, p >> 1, 255).next();
+					}
 				}
 
 				tessellator.draw();
@@ -1047,21 +1065,22 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			DecimalFormat decimalFormat = new DecimalFormat("##0.00");
 			decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
 			RenderSystem.enableTexture();
-			String string = "";
-			if (!"unspecified".equals(profilerTiming.name)) {
-				string = string + "[0] ";
+			String string = ProfileResult.method_21721(profilerTiming.name);
+			String string2 = "";
+			if (!"unspecified".equals(string)) {
+				string2 = string2 + "[0] ";
 			}
 
-			if (profilerTiming.name.isEmpty()) {
-				string = string + "ROOT ";
+			if (string.isEmpty()) {
+				string2 = string2 + "ROOT ";
 			} else {
-				string = string + profilerTiming.name + ' ';
+				string2 = string2 + string + ' ';
 			}
 
-			int l = 16777215;
-			this.textRenderer.drawWithShadow(string, (float)(j - 160), (float)(k - 80 - 16), 16777215);
-			string = decimalFormat.format(profilerTiming.totalUsagePercentage) + "%";
-			this.textRenderer.drawWithShadow(string, (float)(j + 160 - this.textRenderer.getStringWidth(string)), (float)(k - 80 - 16), 16777215);
+			int m = 16777215;
+			this.textRenderer.drawWithShadow(string2, (float)(j - 160), (float)(k - 80 - 16), 16777215);
+			string2 = decimalFormat.format(profilerTiming.totalUsagePercentage) + "%";
+			this.textRenderer.drawWithShadow(string2, (float)(j + 160 - this.textRenderer.getStringWidth(string2)), (float)(k - 80 - 16), 16777215);
 
 			for (int r = 0; r < list.size(); r++) {
 				ProfilerTiming profilerTiming3 = (ProfilerTiming)list.get(r);
@@ -1072,14 +1091,14 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 					stringBuilder.append("[").append(r + 1).append("] ");
 				}
 
-				String string2 = stringBuilder.append(profilerTiming3.name).toString();
-				this.textRenderer.drawWithShadow(string2, (float)(j - 160), (float)(k + 80 + r * 8 + 20), profilerTiming3.getColor());
-				string2 = decimalFormat.format(profilerTiming3.parentSectionUsagePercentage) + "%";
+				String string3 = stringBuilder.append(profilerTiming3.name).toString();
+				this.textRenderer.drawWithShadow(string3, (float)(j - 160), (float)(k + 80 + r * 8 + 20), profilerTiming3.getColor());
+				string3 = decimalFormat.format(profilerTiming3.parentSectionUsagePercentage) + "%";
 				this.textRenderer
-					.drawWithShadow(string2, (float)(j + 160 - 50 - this.textRenderer.getStringWidth(string2)), (float)(k + 80 + r * 8 + 20), profilerTiming3.getColor());
-				string2 = decimalFormat.format(profilerTiming3.totalUsagePercentage) + "%";
+					.drawWithShadow(string3, (float)(j + 160 - 50 - this.textRenderer.getStringWidth(string3)), (float)(k + 80 + r * 8 + 20), profilerTiming3.getColor());
+				string3 = decimalFormat.format(profilerTiming3.totalUsagePercentage) + "%";
 				this.textRenderer
-					.drawWithShadow(string2, (float)(j + 160 - this.textRenderer.getStringWidth(string2)), (float)(k + 80 + r * 8 + 20), profilerTiming3.getColor());
+					.drawWithShadow(string3, (float)(j + 160 - this.textRenderer.getStringWidth(string3)), (float)(k + 80 + r * 8 + 20), profilerTiming3.getColor());
 			}
 		}
 	}

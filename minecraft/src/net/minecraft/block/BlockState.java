@@ -192,8 +192,8 @@ public class BlockState extends AbstractState<Block, BlockState> implements Stat
 		return this.getBlock().getOutlineShape(this, view, pos, context);
 	}
 
-	public VoxelShape getCollisionShape(BlockView blockView, BlockPos blockPos) {
-		return this.shapeCache != null ? this.shapeCache.collisionShape : this.getCollisionShape(blockView, blockPos, EntityContext.absent());
+	public VoxelShape getCollisionShape(BlockView view, BlockPos pos) {
+		return this.shapeCache != null ? this.shapeCache.collisionShape : this.getCollisionShape(view, pos, EntityContext.absent());
 	}
 
 	public VoxelShape getCollisionShape(BlockView view, BlockPos pos, EntityContext ePos) {
@@ -273,8 +273,8 @@ public class BlockState extends AbstractState<Block, BlockState> implements Stat
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean method_24220(BlockView blockView, BlockPos blockPos) {
-		return this.getBlock().method_24219(this, blockView, blockPos);
+	public boolean hasInWallOverlay(BlockView view, BlockPos pos) {
+		return this.getBlock().hasInWallOverlay(this, view, pos);
 	}
 
 	public BlockState getStateForNeighborUpdate(Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {

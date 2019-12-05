@@ -210,7 +210,7 @@ public class FishingBobberEntity extends Entity {
 			this.smoothenMovement();
 			double e = 0.92;
 			this.setVelocity(this.getVelocity().multiply(0.92));
-			this.method_23311();
+			this.updatePosition();
 		}
 	}
 

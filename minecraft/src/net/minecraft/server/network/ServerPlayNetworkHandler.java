@@ -756,6 +756,10 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 							m = h - this.updatedX;
 							n = i - this.updatedY;
 							o = j - this.updatedZ;
+							if (n > 0.0) {
+								this.player.fallDistance = 0.0F;
+							}
+
 							if (this.player.onGround && !packet.isOnGround() && n > 0.0) {
 								this.player.jump();
 							}
@@ -799,7 +803,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 								&& !serverWorld.isAreaNotEmpty(this.player.getBoundingBox().expand(0.0625).stretch(0.0, -0.55, 0.0));
 							this.player.onGround = packet.isOnGround();
 							this.player.getServerWorld().getChunkManager().updateCameraPosition(this.player);
-							this.player.method_14207(this.player.getY() - g, packet.isOnGround());
+							this.player.handleFall(this.player.getY() - g, packet.isOnGround());
 							this.updatedX = this.player.getX();
 							this.updatedY = this.player.getY();
 							this.updatedZ = this.player.getZ();

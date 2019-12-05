@@ -969,7 +969,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			&& !this.method_21825()
 			&& !this.hasVehicle()
 			&& this.method_22120()
-			&& (double)this.method_23313() >= 1.0;
+			&& (double)this.getJumpVelocityMultiplier() >= 1.0;
 	}
 
 	private boolean method_22120() {

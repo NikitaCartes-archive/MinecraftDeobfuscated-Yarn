@@ -74,7 +74,7 @@ public abstract class EntityRenderer<T extends Entity> {
 	protected void renderLabelIfPresent(T entity, String string, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		double d = this.renderManager.getSquaredDistanceToCamera(entity);
 		if (!(d > 4096.0)) {
-			boolean bl = !entity.method_21751();
+			boolean bl = !entity.isSneaky();
 			float f = entity.getHeight() + 0.5F;
 			int j = "deadmau5".equals(string) ? -10 : 0;
 			matrixStack.push();

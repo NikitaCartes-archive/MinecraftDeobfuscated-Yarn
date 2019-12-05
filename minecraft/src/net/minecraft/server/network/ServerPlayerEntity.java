@@ -650,7 +650,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 			serverWorld.getProfiler().pop();
 			this.setWorld(serverWorld2);
-			serverWorld2.method_18211(this);
+			serverWorld2.onPlayerChangeDimension(this);
 			this.dimensionChanged(serverWorld);
 			this.networkHandler.requestTeleport(this.getX(), this.getY(), this.getZ(), h, g);
 			this.interactionManager.setWorld(serverWorld2);
@@ -768,11 +768,11 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		}
 	}
 
-	public void method_14207(double d, boolean bl) {
-		BlockPos blockPos = this.method_23312();
+	public void handleFall(double heightDifference, boolean onGround) {
+		BlockPos blockPos = this.getLandingPos();
 		if (this.world.isChunkLoaded(blockPos)) {
 			BlockState blockState = this.world.getBlockState(blockPos);
-			super.fall(d, bl, blockState, blockPos);
+			super.fall(heightDifference, onGround, blockState, blockPos);
 		}
 	}
 
@@ -1057,8 +1057,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void method_24203(double d, double e, double f) {
-		this.networkHandler.requestTeleport(d, e, f, this.yaw, this.pitch);
+	public void positAfterTeleport(double x, double y, double z) {
+		this.networkHandler.requestTeleport(x, y, z, this.yaw, this.pitch);
 		this.networkHandler.syncWithPlayerPosition();
 	}
 
@@ -1268,7 +1268,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			this.removed = false;
 			this.setPositionAndAngles(x, y, z, yaw, pitch);
 			this.setWorld(targetWorld);
-			targetWorld.method_18207(this);
+			targetWorld.onPlayerTeleport(this);
 			this.dimensionChanged(serverWorld);
 			this.networkHandler.requestTeleport(x, y, z, yaw, pitch);
 			this.interactionManager.setWorld(targetWorld);

@@ -91,8 +91,7 @@ public class FoxEntity extends AnimalEntity {
 		}
 	};
 	private static final Predicate<Entity> CHICKEN_AND_RABBIT_FILTER = entity -> entity instanceof ChickenEntity || entity instanceof RabbitEntity;
-	private static final Predicate<Entity> NOTICEABLE_PLAYER_FILTER = entity -> !entity.method_21751()
-			&& EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test(entity);
+	private static final Predicate<Entity> NOTICEABLE_PLAYER_FILTER = entity -> !entity.isSneaky() && EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test(entity);
 	private Goal followChickenAndRabbitGoal;
 	private Goal followBabyTurtleGoal;
 	private Goal followFishGoal;
@@ -1476,7 +1475,7 @@ public class FoxEntity extends AnimalEntity {
 			} else if (livingEntity instanceof TameableEntity) {
 				return !((TameableEntity)livingEntity).isTamed();
 			} else if (!(livingEntity instanceof PlayerEntity) || !livingEntity.isSpectator() && !((PlayerEntity)livingEntity).isCreative()) {
-				return FoxEntity.this.canTrust(livingEntity.getUuid()) ? false : !livingEntity.isSleeping() && !livingEntity.method_21751();
+				return FoxEntity.this.canTrust(livingEntity.getUuid()) ? false : !livingEntity.isSleeping() && !livingEntity.isSneaky();
 			} else {
 				return false;
 			}

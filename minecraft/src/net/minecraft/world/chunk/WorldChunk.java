@@ -492,7 +492,7 @@ public class WorldChunk implements Chunk {
 						}
 
 						if (entity instanceof EnderDragonEntity) {
-							for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).method_5690()) {
+							for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).getBodyParts()) {
 								if (enderDragonPart != except && enderDragonPart.getBoundingBox().intersects(box) && (predicate == null || predicate.test(enderDragonPart))) {
 									entityList.add(enderDragonPart);
 								}

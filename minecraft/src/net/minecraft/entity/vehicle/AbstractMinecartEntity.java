@@ -230,7 +230,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 				this.setPosition(d, e, f);
 				this.setRotation(this.yaw, this.pitch);
 			} else {
-				this.method_23311();
+				this.updatePosition();
 				this.setRotation(this.yaw, this.pitch);
 			}
 		} else {

@@ -30,7 +30,7 @@ public class InGameOverlayRenderer {
 		RenderSystem.disableAlphaTest();
 		PlayerEntity playerEntity = minecraftClient.player;
 		if (!playerEntity.noClip) {
-			BlockState blockState = method_24225(playerEntity);
+			BlockState blockState = getInWallBlockState(playerEntity);
 			if (blockState != null) {
 				renderInWallOverlay(minecraftClient, minecraftClient.getBlockRenderManager().getModels().getSprite(blockState), matrixStack);
 			}
@@ -50,7 +50,7 @@ public class InGameOverlayRenderer {
 	}
 
 	@Nullable
-	private static BlockState method_24225(PlayerEntity playerEntity) {
+	private static BlockState getInWallBlockState(PlayerEntity playerEntity) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (int i = 0; i < 8; i++) {
@@ -59,7 +59,7 @@ public class InGameOverlayRenderer {
 			double f = playerEntity.getZ() + (double)(((float)((i >> 2) % 2) - 0.5F) * playerEntity.getWidth() * 0.8F);
 			mutable.set(d, e, f);
 			BlockState blockState = playerEntity.world.getBlockState(mutable);
-			if (blockState.getRenderType() != BlockRenderType.INVISIBLE && blockState.method_24220(playerEntity.world, mutable)) {
+			if (blockState.getRenderType() != BlockRenderType.INVISIBLE && blockState.hasInWallOverlay(playerEntity.world, mutable)) {
 				return blockState;
 			}
 		}

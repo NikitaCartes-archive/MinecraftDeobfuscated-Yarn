@@ -173,7 +173,7 @@ public class ClientWorld extends World {
 
 	public void tickEntity(Entity entity) {
 		if (entity instanceof PlayerEntity || this.getChunkManager().shouldTickEntity(entity)) {
-			entity.method_22862(entity.getX(), entity.getY(), entity.getZ());
+			entity.resetPosition(entity.getX(), entity.getY(), entity.getZ());
 			entity.prevYaw = entity.yaw;
 			entity.prevPitch = entity.pitch;
 			if (entity.updateNeeded || entity.isSpectator()) {
@@ -196,7 +196,7 @@ public class ClientWorld extends World {
 		if (passenger.removed || passenger.getVehicle() != entity) {
 			passenger.stopRiding();
 		} else if (passenger instanceof PlayerEntity || this.getChunkManager().shouldTickEntity(passenger)) {
-			passenger.method_22862(passenger.getX(), passenger.getY(), passenger.getZ());
+			passenger.resetPosition(passenger.getX(), passenger.getY(), passenger.getZ());
 			passenger.prevYaw = passenger.yaw;
 			passenger.prevPitch = passenger.pitch;
 			if (passenger.updateNeeded) {

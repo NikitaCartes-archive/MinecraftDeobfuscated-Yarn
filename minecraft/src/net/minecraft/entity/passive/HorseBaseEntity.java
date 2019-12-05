@@ -688,7 +688,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 				}
 
 				if (this.jumpStrength > 0.0F && !this.isInAir() && this.onGround) {
-					double d = this.getJumpStrength() * (double)this.jumpStrength * (double)this.method_23313();
+					double d = this.getJumpStrength() * (double)this.jumpStrength * (double)this.getJumpVelocityMultiplier();
 					double e;
 					if (this.hasStatusEffect(StatusEffects.JUMP_BOOST)) {
 						e = d + (double)((float)(this.getStatusEffect(StatusEffects.JUMP_BOOST).getAmplifier() + 1) * 0.1F);
