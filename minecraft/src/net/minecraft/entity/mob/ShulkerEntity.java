@@ -261,7 +261,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 				}
 			}
 
-			this.method_22862((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5);
+			this.resetPosition((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5);
 			double d = 0.5 - (double)MathHelper.sin((0.5F + this.field_7337) * (float) Math.PI) * 0.5;
 			double e = 0.5 - (double)MathHelper.sin((0.5F + this.field_7339) * (float) Math.PI) * 0.5;
 			Direction direction3 = this.getAttachedFace().getOpposite();
@@ -364,7 +364,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 					this.field_7340 = 6;
 				}
 
-				this.method_22862((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5);
+				this.resetPosition((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5);
 			}
 		}
 

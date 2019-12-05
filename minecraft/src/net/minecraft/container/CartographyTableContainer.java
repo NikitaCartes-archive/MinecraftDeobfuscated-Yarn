@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 public class CartographyTableContainer extends Container {
 	private final BlockContext context;
 	private boolean currentlyTakingItem;
-	private long field_20382;
+	private long lastTakeResultTime;
 	public final Inventory inventory = new BasicInventory(2) {
 		@Override
 		public void markDirty() {
@@ -93,9 +93,9 @@ public class CartographyTableContainer extends Container {
 				stack.getItem().onCraft(stack, player.world, player);
 				context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
 					long l = world.getTime();
-					if (CartographyTableContainer.this.field_20382 != l) {
+					if (CartographyTableContainer.this.lastTakeResultTime != l) {
 						world.playSound(null, blockPos, SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, SoundCategory.BLOCKS, 1.0F, 1.0F);
-						CartographyTableContainer.this.field_20382 = l;
+						CartographyTableContainer.this.lastTakeResultTime = l;
 					}
 				}));
 				return super.onTakeItem(player, stack);

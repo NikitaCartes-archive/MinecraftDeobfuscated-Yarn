@@ -324,7 +324,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.setBoundingBox(new Box(x - (double)f, y, z - (double)f, x + (double)f, y + (double)g, z + (double)f));
 	}
 
-	protected void method_23311() {
+	protected void updatePosition() {
 		this.setPosition(this.x, this.y, this.z);
 	}
 
@@ -485,7 +485,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 			this.verticalCollision = movement.y != vec3d.y;
 			this.onGround = this.verticalCollision && movement.y < 0.0;
 			this.collided = this.horizontalCollision || this.verticalCollision;
-			BlockPos blockPos = this.method_23312();
+			BlockPos blockPos = this.getLandingPos();
 			BlockState blockState = this.world.getBlockState(blockPos);
 			this.fall(vec3d.y, this.onGround, blockState, blockPos);
 			Vec3d vec3d2 = this.getVelocity();
@@ -502,7 +502,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 				block.onEntityLand(this.world, this);
 			}
 
-			if (this.onGround && !this.method_21749()) {
+			if (this.onGround && !this.bypassesSteppingEffects()) {
 				block.onSteppedOn(this.world, blockPos, this);
 			}
 
@@ -546,7 +546,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 				throw new CrashException(crashReport);
 			}
 
-			this.setVelocity(this.getVelocity().multiply((double)this.method_23326(), 1.0, (double)this.method_23326()));
+			this.setVelocity(this.getVelocity().multiply((double)this.getVelocityMultiplier(), 1.0, (double)this.getVelocityMultiplier()));
 			boolean bl = this.isTouchingWater();
 			if (this.world.doesAreaContainFireSource(this.getBoundingBox().contract(0.001))) {
 				if (!bl) {
@@ -570,7 +570,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		}
 	}
 
-	protected BlockPos method_23312() {
+	protected BlockPos getLandingPos() {
 		int i = MathHelper.floor(this.x);
 		int j = MathHelper.floor(this.y - 0.2F);
 		int k = MathHelper.floor(this.z);
@@ -587,19 +587,19 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return blockPos;
 	}
 
-	protected float method_23313() {
-		float f = this.world.getBlockState(new BlockPos(this)).getBlock().method_23350();
-		float g = this.world.getBlockState(this.method_23314()).getBlock().method_23350();
+	protected float getJumpVelocityMultiplier() {
+		float f = this.world.getBlockState(new BlockPos(this)).getBlock().getJumpVelocityMultiplier();
+		float g = this.world.getBlockState(this.getVelocityAffectingPos()).getBlock().getJumpVelocityMultiplier();
 		return (double)f == 1.0 ? g : f;
 	}
 
-	protected float method_23326() {
-		float f = this.world.getBlockState(new BlockPos(this)).getBlock().method_23349();
-		float g = this.world.getBlockState(this.method_23314()).getBlock().method_23349();
+	protected float getVelocityMultiplier() {
+		float f = this.world.getBlockState(new BlockPos(this)).getBlock().getVelocityMultiplier();
+		float g = this.world.getBlockState(this.getVelocityAffectingPos()).getBlock().getVelocityMultiplier();
 		return (double)f == 1.0 ? g : f;
 	}
 
-	protected BlockPos method_23314() {
+	protected BlockPos getVelocityAffectingPos() {
 		return new BlockPos(this.x, this.getBoundingBox().y1 - 0.5000001, this.z);
 	}
 
@@ -1114,20 +1114,20 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public void setPositionAndAngles(double x, double y, double z, float yaw, float pitch) {
-		this.method_22862(x, y, z);
+		this.resetPosition(x, y, z);
 		this.yaw = yaw;
 		this.pitch = pitch;
-		this.method_23311();
+		this.updatePosition();
 	}
 
-	public void method_22862(double d, double e, double f) {
-		this.setPos(d, e, f);
-		this.prevX = d;
-		this.prevY = e;
-		this.prevZ = f;
-		this.lastRenderX = d;
-		this.lastRenderY = e;
-		this.lastRenderZ = f;
+	public void resetPosition(double x, double y, double z) {
+		this.setPos(x, y, z);
+		this.prevX = x;
+		this.prevY = y;
+		this.prevZ = z;
+		this.lastRenderX = x;
+		this.lastRenderY = y;
+		this.lastRenderZ = z;
 	}
 
 	public float distanceTo(Entity entity) {
@@ -1390,7 +1390,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 			double e = listTag2.getDouble(1);
 			double f = listTag2.getDouble(2);
 			this.setVelocity(Math.abs(d) > 10.0 ? 0.0 : d, Math.abs(e) > 10.0 ? 0.0 : e, Math.abs(f) > 10.0 ? 0.0 : f);
-			this.method_22862(listTag.getDouble(0), listTag.getDouble(1), listTag.getDouble(2));
+			this.resetPosition(listTag.getDouble(0), listTag.getDouble(1), listTag.getDouble(2));
 			this.yaw = listTag3.getFloat(0);
 			this.pitch = listTag3.getFloat(1);
 			this.prevYaw = this.yaw;
@@ -1415,7 +1415,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 			if (!Double.isFinite(this.getX()) || !Double.isFinite(this.getY()) || !Double.isFinite(this.getZ())) {
 				throw new IllegalStateException("Entity has invalid position");
 			} else if (Double.isFinite((double)this.yaw) && Double.isFinite((double)this.pitch)) {
-				this.method_23311();
+				this.updatePosition();
 				this.setRotation(this.yaw, this.pitch);
 				if (tag.contains("CustomName", 8)) {
 					this.setCustomName(Text.Serializer.fromJson(tag.getString("CustomName")));
@@ -1437,7 +1437,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 
 				this.readCustomDataFromTag(tag);
 				if (this.shouldSetPositionOnLoad()) {
-					this.method_23311();
+					this.updatePosition();
 				}
 			} else {
 				throw new IllegalStateException("Entity has invalid rotation");
@@ -1558,12 +1558,12 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public void updatePassengerPosition(Entity passenger) {
-		this.method_24201(passenger, Entity::setPosition);
+		this.updatePassengerPosition(passenger, Entity::setPosition);
 	}
 
-	public void method_24201(Entity entity, Entity.class_4738 arg) {
-		if (this.hasPassenger(entity)) {
-			arg.accept(entity, this.getX(), this.getY() + this.getMountedHeightOffset() + entity.getHeightOffset(), this.getZ());
+	public void updatePassengerPosition(Entity passenger, Entity.PositionUpdater positionUpdater) {
+		if (this.hasPassenger(passenger)) {
+			positionUpdater.accept(passenger, this.getX(), this.getY() + this.getMountedHeightOffset() + passenger.getHeightOffset(), this.getZ());
 		}
 	}
 
@@ -1748,7 +1748,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	public void handleStatus(byte status) {
 		switch(status) {
 			case 53:
-				HoneyBlock.method_24175(this);
+				HoneyBlock.addRegularParticles(this);
 		}
 	}
 
@@ -1796,19 +1796,19 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return this.getFlag(1);
 	}
 
-	public boolean method_21749() {
+	public boolean bypassesSteppingEffects() {
 		return this.isSneaking();
 	}
 
-	public boolean method_21750() {
+	public boolean bypassesLandingEffects() {
 		return this.isSneaking();
 	}
 
-	public boolean method_21751() {
+	public boolean isSneaky() {
 		return this.isSneaking();
 	}
 
-	public boolean method_21752() {
+	public boolean isDescending() {
 		return this.isSneaking();
 	}
 
@@ -1995,11 +1995,11 @@ public abstract class Entity implements Nameable, CommandOutput {
 			removeClickEvents(text2);
 			return text2;
 		} else {
-			return this.method_23315();
+			return this.getDefaultName();
 		}
 	}
 
-	protected Text method_23315() {
+	protected Text getDefaultName() {
 		return this.type.getName();
 	}
 
@@ -2120,7 +2120,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 				entity.copyFrom(this);
 				entity.setPositionAndAngles(blockPos, entity.yaw + f, entity.pitch);
 				entity.setVelocity(vec3d);
-				serverWorld2.method_18769(entity);
+				serverWorld2.onDimensionChanged(entity);
 			}
 
 			this.removed = true;
@@ -2255,10 +2255,10 @@ public abstract class Entity implements Nameable, CommandOutput {
 		if (this.world instanceof ServerWorld) {
 			ServerWorld serverWorld = (ServerWorld)this.world;
 			this.setPositionAndAngles(destX, destY, destZ, this.yaw, this.pitch);
-			this.method_24204().forEach(entity -> {
+			this.streamPassengersRecursively().forEach(entity -> {
 				serverWorld.checkChunk(entity);
 				entity.teleportRequested = true;
-				entity.method_24200(Entity::method_24203);
+				entity.updatePositionsRecursively(Entity::positAfterTeleport);
 			});
 		}
 	}
@@ -2480,8 +2480,8 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return set;
 	}
 
-	public Stream<Entity> method_24204() {
-		return Stream.concat(Stream.of(this), this.passengerList.stream().flatMap(Entity::method_24204));
+	public Stream<Entity> streamPassengersRecursively() {
+		return Stream.concat(Stream.of(this), this.passengerList.stream().flatMap(Entity::streamPassengersRecursively));
 	}
 
 	public boolean hasPlayerRider() {
@@ -2528,9 +2528,9 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return false;
 	}
 
-	public void method_24200(Entity.class_4738 arg) {
+	public void updatePositionsRecursively(Entity.PositionUpdater positionUpdater) {
 		for(Entity entity : this.passengerList) {
-			this.method_24201(entity, arg);
+			this.updatePassengerPosition(entity, positionUpdater);
 		}
 	}
 
@@ -2754,12 +2754,12 @@ public abstract class Entity implements Nameable, CommandOutput {
 	public void checkDespawn() {
 	}
 
-	public void method_24203(double d, double e, double f) {
-		this.setPositionAndAngles(d, e, f, this.yaw, this.pitch);
+	public void positAfterTeleport(double x, double y, double z) {
+		this.setPositionAndAngles(x, y, z, this.yaw, this.pitch);
 	}
 
 	@FunctionalInterface
-	public interface class_4738 {
-		void accept(Entity entity, double d, double e, double f);
+	public interface PositionUpdater {
+		void accept(Entity entity, double x, double y, double z);
 	}
 }

@@ -212,7 +212,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 
 	protected boolean hasLabel(T livingEntity) {
 		double d = this.renderManager.getSquaredDistanceToCamera(livingEntity);
-		float f = livingEntity.method_21751() ? 32.0F : 64.0F;
+		float f = livingEntity.isSneaky() ? 32.0F : 64.0F;
 		if (d >= (double)(f * f)) {
 			return false;
 		} else {

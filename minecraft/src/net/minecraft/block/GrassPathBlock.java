@@ -64,7 +64,7 @@ public class GrassPathBlock extends Block {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean method_24219(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	public boolean hasInWallOverlay(BlockState state, BlockView view, BlockPos pos) {
 		return true;
 	}
 }

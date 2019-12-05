@@ -561,7 +561,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			this.client.world, this.getPlayerListEntry(packet.getPlayerUuid()).getProfile()
 		);
 		otherClientPlayerEntity.setEntityId(i);
-		otherClientPlayerEntity.method_22862(d, e, f);
+		otherClientPlayerEntity.resetPosition(d, e, f);
 		otherClientPlayerEntity.updateTrackedPosition(d, e, f);
 		otherClientPlayerEntity.setPositionAnglesAndUpdate(d, e, f, g, h);
 		this.world.addPlayer(i, otherClientPlayerEntity);
@@ -883,7 +883,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			livingEntity.bodyYaw = (float)(packet.getHeadYaw() * 360) / 256.0F;
 			livingEntity.headYaw = (float)(packet.getHeadYaw() * 360) / 256.0F;
 			if (livingEntity instanceof EnderDragonEntity) {
-				EnderDragonPart[] enderDragonParts = ((EnderDragonEntity)livingEntity).method_5690();
+				EnderDragonPart[] enderDragonParts = ((EnderDragonEntity)livingEntity).getBodyParts();
 
 				for(int i = 0; i < enderDragonParts.length; ++i) {
 					enderDragonParts[i].setEntityId(i + packet.getId());

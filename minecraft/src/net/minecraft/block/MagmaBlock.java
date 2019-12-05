@@ -36,7 +36,7 @@ public class MagmaBlock extends Block {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean hasEmissiveLighting(BlockState blockState) {
+	public boolean hasEmissiveLighting(BlockState state) {
 		return true;
 	}
 

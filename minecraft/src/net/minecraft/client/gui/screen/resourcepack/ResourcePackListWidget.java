@@ -77,7 +77,11 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidg
 
 		public void enable(SelectedResourcePackListWidget list) {
 			this.getPack().getInitialPosition().insert(list.children(), this, ResourcePackListWidget.ResourcePackEntry::getPack, true);
-			this.resourcePackList = list;
+			this.method_24232(list);
+		}
+
+		public void method_24232(SelectedResourcePackListWidget selectedResourcePackListWidget) {
+			this.resourcePackList = selectedResourcePackListWidget;
 		}
 
 		protected void drawIcon() {
@@ -225,7 +229,7 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidg
 				if (d > 16.0 && e < 16.0 && this.canMoveUp()) {
 					List<ResourcePackListWidget.ResourcePackEntry> list = this.resourcePackList.children();
 					int i = list.indexOf(this);
-					list.remove(this);
+					list.remove(i);
 					list.add(i - 1, this);
 					this.getScreen().markDirty();
 					return true;
@@ -234,7 +238,7 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidg
 				if (d > 16.0 && e > 16.0 && this.canMoveDown()) {
 					List<ResourcePackListWidget.ResourcePackEntry> list = this.resourcePackList.children();
 					int i = list.indexOf(this);
-					list.remove(this);
+					list.remove(i);
 					list.add(i + 1, this);
 					this.getScreen().markDirty();
 					return true;

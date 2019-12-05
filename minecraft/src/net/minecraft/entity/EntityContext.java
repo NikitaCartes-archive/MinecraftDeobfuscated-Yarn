@@ -13,7 +13,7 @@ public interface EntityContext {
 		return new EntityContextImpl(entity);
 	}
 
-	boolean isSneaking();
+	boolean isDescending();
 
 	boolean isAbove(VoxelShape shape, BlockPos pos, boolean defaultValue);
 

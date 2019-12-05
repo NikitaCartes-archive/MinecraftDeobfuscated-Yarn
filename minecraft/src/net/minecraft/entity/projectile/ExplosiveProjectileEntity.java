@@ -52,7 +52,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 		this(type, world);
 		this.owner = owner;
 		this.setPositionAndAngles(owner.getX(), owner.getY(), owner.getZ(), owner.yaw, owner.pitch);
-		this.method_23311();
+		this.updatePosition();
 		this.setVelocity(Vec3d.ZERO);
 		directionX += this.random.nextGaussian() * 0.4;
 		directionY += this.random.nextGaussian() * 0.4;
