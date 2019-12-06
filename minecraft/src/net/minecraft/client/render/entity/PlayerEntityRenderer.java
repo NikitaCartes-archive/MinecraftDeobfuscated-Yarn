@@ -163,38 +163,27 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		matrixStack.pop();
 	}
 
-	public void renderRightArm(
-		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, AbstractClientPlayerEntity abstractClientPlayerEntity
-	) {
-		this.method_23205(matrixStack, vertexConsumerProvider, i, abstractClientPlayerEntity, this.model.rightArm, this.model.rightSleeve);
+	public void renderRightArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, AbstractClientPlayerEntity player) {
+		this.renderArm(matrices, vertexConsumers, light, player, this.model.rightArm, this.model.rightSleeve);
 	}
 
-	public void renderLeftArm(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, AbstractClientPlayerEntity abstractClientPlayerEntity) {
-		this.method_23205(matrixStack, vertexConsumerProvider, i, abstractClientPlayerEntity, this.model.leftArm, this.model.leftSleeve);
+	public void renderLeftArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, AbstractClientPlayerEntity player) {
+		this.renderArm(matrices, vertexConsumers, light, player, this.model.leftArm, this.model.leftSleeve);
 	}
 
-	private void method_23205(
-		MatrixStack matrixStack,
-		VertexConsumerProvider vertexConsumerProvider,
-		int i,
-		AbstractClientPlayerEntity abstractClientPlayerEntity,
-		ModelPart modelPart,
-		ModelPart modelPart2
+	private void renderArm(
+		MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, AbstractClientPlayerEntity player, ModelPart arm, ModelPart sleeve
 	) {
 		PlayerEntityModel<AbstractClientPlayerEntity> playerEntityModel = this.getModel();
-		this.setModelPose(abstractClientPlayerEntity);
+		this.setModelPose(player);
 		playerEntityModel.handSwingProgress = 0.0F;
 		playerEntityModel.isSneaking = false;
 		playerEntityModel.field_3396 = 0.0F;
-		playerEntityModel.setAngles(abstractClientPlayerEntity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
-		modelPart.pitch = 0.0F;
-		modelPart.render(
-			matrixStack, vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(abstractClientPlayerEntity.getSkinTexture())), i, OverlayTexture.DEFAULT_UV
-		);
-		modelPart2.pitch = 0.0F;
-		modelPart2.render(
-			matrixStack, vertexConsumerProvider.getBuffer(RenderLayer.getEntityTranslucent(abstractClientPlayerEntity.getSkinTexture())), i, OverlayTexture.DEFAULT_UV
-		);
+		playerEntityModel.setAngles(player, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+		arm.pitch = 0.0F;
+		arm.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntitySolid(player.getSkinTexture())), light, OverlayTexture.DEFAULT_UV);
+		sleeve.pitch = 0.0F;
+		sleeve.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(player.getSkinTexture())), light, OverlayTexture.DEFAULT_UV);
 	}
 
 	protected void setupTransforms(AbstractClientPlayerEntity abstractClientPlayerEntity, MatrixStack matrixStack, float f, float g, float h) {

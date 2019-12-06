@@ -168,40 +168,40 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
 		this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
-		Inventories.fromTag(compoundTag, this.inventory);
-		this.burnTime = compoundTag.getShort("BurnTime");
-		this.cookTime = compoundTag.getShort("CookTime");
-		this.cookTimeTotal = compoundTag.getShort("CookTimeTotal");
+		Inventories.fromTag(tag, this.inventory);
+		this.burnTime = tag.getShort("BurnTime");
+		this.cookTime = tag.getShort("CookTime");
+		this.cookTimeTotal = tag.getShort("CookTimeTotal");
 		this.fuelTime = this.getFuelTime(this.inventory.get(1));
-		int i = compoundTag.getShort("RecipesUsedSize");
+		int i = tag.getShort("RecipesUsedSize");
 
 		for (int j = 0; j < i; j++) {
-			Identifier identifier = new Identifier(compoundTag.getString("RecipeLocation" + j));
-			int k = compoundTag.getInt("RecipeAmount" + j);
+			Identifier identifier = new Identifier(tag.getString("RecipeLocation" + j));
+			int k = tag.getInt("RecipeAmount" + j);
 			this.recipesUsed.put(identifier, k);
 		}
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag compoundTag) {
-		super.toTag(compoundTag);
-		compoundTag.putShort("BurnTime", (short)this.burnTime);
-		compoundTag.putShort("CookTime", (short)this.cookTime);
-		compoundTag.putShort("CookTimeTotal", (short)this.cookTimeTotal);
-		Inventories.toTag(compoundTag, this.inventory);
-		compoundTag.putShort("RecipesUsedSize", (short)this.recipesUsed.size());
+	public CompoundTag toTag(CompoundTag tag) {
+		super.toTag(tag);
+		tag.putShort("BurnTime", (short)this.burnTime);
+		tag.putShort("CookTime", (short)this.cookTime);
+		tag.putShort("CookTimeTotal", (short)this.cookTimeTotal);
+		Inventories.toTag(tag, this.inventory);
+		tag.putShort("RecipesUsedSize", (short)this.recipesUsed.size());
 		int i = 0;
 
 		for (Entry<Identifier, Integer> entry : this.recipesUsed.entrySet()) {
-			compoundTag.putString("RecipeLocation" + i, ((Identifier)entry.getKey()).toString());
-			compoundTag.putInt("RecipeAmount" + i, (Integer)entry.getValue());
+			tag.putString("RecipeLocation" + i, ((Identifier)entry.getKey()).toString());
+			tag.putInt("RecipeAmount" + i, (Integer)entry.getValue());
 			i++;
 		}
 
-		return compoundTag;
+		return tag;
 	}
 
 	@Override

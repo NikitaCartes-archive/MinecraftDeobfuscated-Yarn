@@ -31,7 +31,7 @@ public class FireworkEntityRenderer extends EntityRenderer<FireworkEntity> {
 			matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0F));
 		}
 
-		this.itemRenderer.method_23178(fireworkEntity.getStack(), ModelTransformation.Type.GROUND, i, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider);
+		this.itemRenderer.renderItem(fireworkEntity.getStack(), ModelTransformation.Type.GROUND, i, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider);
 		matrixStack.pop();
 		super.render(fireworkEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}

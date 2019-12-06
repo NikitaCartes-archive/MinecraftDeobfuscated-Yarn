@@ -85,7 +85,6 @@ import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferBuilderStorage;
-import net.minecraft.client.render.FirstPersonRenderer;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.render.Tessellator;
@@ -96,6 +95,7 @@ import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.render.item.HeldItemRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedModelManager;
@@ -226,7 +226,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public final WorldRenderer worldRenderer;
 	private final EntityRenderDispatcher entityRenderManager;
 	private final ItemRenderer itemRenderer;
-	private final FirstPersonRenderer firstPersonRenderer;
+	private final HeldItemRenderer heldItemRenderer;
 	public final ParticleManager particleManager;
 	private final SearchManager searchManager = new SearchManager();
 	private final Session session;
@@ -425,7 +425,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.resourceManager.registerListener(this.bakedModelManager);
 			this.itemRenderer = new ItemRenderer(this.textureManager, this.bakedModelManager, this.itemColorMap);
 			this.entityRenderManager = new EntityRenderDispatcher(this.textureManager, this.itemRenderer, this.resourceManager, this.textRenderer, this.options);
-			this.firstPersonRenderer = new FirstPersonRenderer(this);
+			this.heldItemRenderer = new HeldItemRenderer(this);
 			this.resourceManager.registerListener(this.itemRenderer);
 			this.bufferBuilders = new BufferBuilderStorage();
 			this.gameRenderer = new GameRenderer(this, this.resourceManager, this.bufferBuilders);
@@ -2011,8 +2011,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.itemRenderer;
 	}
 
-	public FirstPersonRenderer getFirstPersonRenderer() {
-		return this.firstPersonRenderer;
+	public HeldItemRenderer getHeldItemRenderer() {
+		return this.heldItemRenderer;
 	}
 
 	public <T> SearchableContainer<T> getSearchableContainer(SearchManager.Key<T> key) {

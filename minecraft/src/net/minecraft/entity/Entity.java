@@ -589,9 +589,13 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	protected float getVelocityMultiplier() {
-		float f = this.world.getBlockState(new BlockPos(this)).getBlock().getVelocityMultiplier();
-		float g = this.world.getBlockState(this.getVelocityAffectingPos()).getBlock().getVelocityMultiplier();
-		return (double)f == 1.0 ? g : f;
+		Block block = this.world.getBlockState(new BlockPos(this)).getBlock();
+		float f = block.getVelocityMultiplier();
+		if (block != Blocks.WATER && block != Blocks.BUBBLE_COLUMN) {
+			return (double)f == 1.0 ? this.world.getBlockState(this.getVelocityAffectingPos()).getBlock().getVelocityMultiplier() : f;
+		} else {
+			return f;
+		}
 	}
 
 	protected BlockPos getVelocityAffectingPos() {

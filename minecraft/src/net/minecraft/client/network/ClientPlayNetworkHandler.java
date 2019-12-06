@@ -27,7 +27,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BedBlockEntity;
-import net.minecraft.block.entity.BeeHiveBlockEntity;
+import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CampfireBlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
@@ -1175,7 +1175,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				|| i == 5 && blockEntity instanceof ConduitBlockEntity
 				|| i == 12 && blockEntity instanceof JigsawBlockEntity
 				|| i == 13 && blockEntity instanceof CampfireBlockEntity
-				|| i == 14 && blockEntity instanceof BeeHiveBlockEntity) {
+				|| i == 14 && blockEntity instanceof BeehiveBlockEntity) {
 				blockEntity.fromTag(packet.getCompoundTag());
 			}
 

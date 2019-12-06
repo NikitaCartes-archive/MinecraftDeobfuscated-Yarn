@@ -1997,8 +1997,8 @@ public class Blocks {
 		"jigsaw", new JigsawBlock(Block.Settings.of(Material.METAL, MaterialColor.LIGHT_GRAY).strength(-1.0F, 3600000.0F).dropsNothing())
 	);
 	public static final Block COMPOSTER = register("composter", new ComposterBlock(Block.Settings.of(Material.WOOD).strength(0.6F).sounds(BlockSoundGroup.WOOD)));
-	public static final Block BEE_NEST = register("bee_nest", new BeeHiveBlock(Block.Settings.of(Material.WOOD).strength(0.3F).sounds(BlockSoundGroup.WOOD)));
-	public static final Block BEEHIVE = register("beehive", new BeeHiveBlock(Block.Settings.of(Material.WOOD).strength(0.6F).sounds(BlockSoundGroup.WOOD)));
+	public static final Block BEE_NEST = register("bee_nest", new BeehiveBlock(Block.Settings.of(Material.WOOD).strength(0.3F).sounds(BlockSoundGroup.WOOD)));
+	public static final Block BEEHIVE = register("beehive", new BeehiveBlock(Block.Settings.of(Material.WOOD).strength(0.6F).sounds(BlockSoundGroup.WOOD)));
 	public static final Block HONEY_BLOCK = register(
 		"honey_block",
 		new HoneyBlock(

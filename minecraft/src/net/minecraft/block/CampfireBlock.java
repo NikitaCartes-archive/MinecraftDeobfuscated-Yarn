@@ -262,26 +262,26 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 		}
 	}
 
-	public static boolean method_23895(World world, BlockPos blockPos, int i) {
-		for (int j = 1; j <= i; j++) {
-			BlockPos blockPos2 = blockPos.down(j);
-			BlockState blockState = world.getBlockState(blockPos2);
-			if (method_23896(blockState)) {
+	public static boolean isLitCampfireInRange(World world, BlockPos pos, int range) {
+		for (int i = 1; i <= range; i++) {
+			BlockPos blockPos = pos.down(i);
+			BlockState blockState = world.getBlockState(blockPos);
+			if (isLitCampfire(blockState)) {
 				return true;
 			}
 
-			boolean bl = VoxelShapes.matchesAnywhere(field_21580, blockState.getCollisionShape(world, blockPos, EntityContext.absent()), BooleanBiFunction.AND);
+			boolean bl = VoxelShapes.matchesAnywhere(field_21580, blockState.getCollisionShape(world, pos, EntityContext.absent()), BooleanBiFunction.AND);
 			if (bl) {
-				BlockState blockState2 = world.getBlockState(blockPos2.down());
-				return method_23896(blockState2);
+				BlockState blockState2 = world.getBlockState(blockPos.down());
+				return isLitCampfire(blockState2);
 			}
 		}
 
 		return false;
 	}
 
-	private static boolean method_23896(BlockState blockState) {
-		return blockState.getBlock() == Blocks.CAMPFIRE && (Boolean)blockState.get(LIT);
+	private static boolean isLitCampfire(BlockState state) {
+		return state.getBlock() == Blocks.CAMPFIRE && (Boolean)state.get(LIT);
 	}
 
 	@Override

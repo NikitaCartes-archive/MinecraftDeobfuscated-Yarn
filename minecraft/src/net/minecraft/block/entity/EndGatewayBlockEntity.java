@@ -45,29 +45,29 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag compoundTag) {
-		super.toTag(compoundTag);
-		compoundTag.putLong("Age", this.age);
+	public CompoundTag toTag(CompoundTag tag) {
+		super.toTag(tag);
+		tag.putLong("Age", this.age);
 		if (this.exitPortalPos != null) {
-			compoundTag.put("ExitPortal", NbtHelper.fromBlockPos(this.exitPortalPos));
+			tag.put("ExitPortal", NbtHelper.fromBlockPos(this.exitPortalPos));
 		}
 
 		if (this.exactTeleport) {
-			compoundTag.putBoolean("ExactTeleport", this.exactTeleport);
+			tag.putBoolean("ExactTeleport", this.exactTeleport);
 		}
 
-		return compoundTag;
+		return tag;
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
-		this.age = compoundTag.getLong("Age");
-		if (compoundTag.contains("ExitPortal", 10)) {
-			this.exitPortalPos = NbtHelper.toBlockPos(compoundTag.getCompound("ExitPortal"));
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
+		this.age = tag.getLong("Age");
+		if (tag.contains("ExitPortal", 10)) {
+			this.exitPortalPos = NbtHelper.toBlockPos(tag.getCompound("ExitPortal"));
 		}
 
-		this.exactTeleport = compoundTag.getBoolean("ExactTeleport");
+		this.exactTeleport = tag.getBoolean("ExactTeleport");
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -10,7 +10,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import net.minecraft.block.BedBlock;
-import net.minecraft.block.BeeHiveBlock;
+import net.minecraft.block.BeehiveBlock;
 import net.minecraft.block.BeetrootsBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -279,7 +279,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 					.withEntry(
 						ItemEntry.builder(block)
 							.withFunction(CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.BLOCK_ENTITY).withOperation("Bees", "BlockEntityTag.Bees"))
-							.withFunction(CopyStateFunction.getBuilder(block).method_21898(BeeHiveBlock.HONEY_LEVEL))
+							.withFunction(CopyStateFunction.getBuilder(block).method_21898(BeehiveBlock.HONEY_LEVEL))
 					)
 			);
 	}
@@ -293,7 +293,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						ItemEntry.builder(block)
 							.withCondition(field_11336)
 							.withFunction(CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.BLOCK_ENTITY).withOperation("Bees", "BlockEntityTag.Bees"))
-							.withFunction(CopyStateFunction.getBuilder(block).method_21898(BeeHiveBlock.HONEY_LEVEL))
+							.withFunction(CopyStateFunction.getBuilder(block).method_21898(BeehiveBlock.HONEY_LEVEL))
 							.withChild(ItemEntry.builder(block))
 					)
 			);

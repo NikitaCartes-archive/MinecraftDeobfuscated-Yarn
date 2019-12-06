@@ -33,26 +33,26 @@ public class SignBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag compoundTag) {
-		super.toTag(compoundTag);
+	public CompoundTag toTag(CompoundTag tag) {
+		super.toTag(tag);
 
 		for (int i = 0; i < 4; i++) {
 			String string = Text.Serializer.toJson(this.text[i]);
-			compoundTag.putString("Text" + (i + 1), string);
+			tag.putString("Text" + (i + 1), string);
 		}
 
-		compoundTag.putString("Color", this.textColor.getName());
-		return compoundTag;
+		tag.putString("Color", this.textColor.getName());
+		return tag;
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
+	public void fromTag(CompoundTag tag) {
 		this.editable = false;
-		super.fromTag(compoundTag);
-		this.textColor = DyeColor.byName(compoundTag.getString("Color"), DyeColor.BLACK);
+		super.fromTag(tag);
+		this.textColor = DyeColor.byName(tag.getString("Color"), DyeColor.BLACK);
 
 		for (int i = 0; i < 4; i++) {
-			String string = compoundTag.getString("Text" + (i + 1));
+			String string = tag.getString("Text" + (i + 1));
 			Text text = Text.Serializer.fromJson(string.isEmpty() ? "\"\"" : string);
 			if (this.world instanceof ServerWorld) {
 				try {

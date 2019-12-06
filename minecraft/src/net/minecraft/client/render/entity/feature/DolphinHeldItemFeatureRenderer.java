@@ -43,7 +43,7 @@ public class DolphinHeldItemFeatureRenderer extends FeatureRenderer<DolphinEntit
 
 		ItemStack itemStack = bl ? dolphinEntity.getMainHandStack() : dolphinEntity.getOffHandStack();
 		MinecraftClient.getInstance()
-			.getFirstPersonRenderer()
+			.getHeldItemRenderer()
 			.renderItem(dolphinEntity, itemStack, ModelTransformation.Type.GROUND, false, matrixStack, vertexConsumerProvider, i);
 		matrixStack.pop();
 	}

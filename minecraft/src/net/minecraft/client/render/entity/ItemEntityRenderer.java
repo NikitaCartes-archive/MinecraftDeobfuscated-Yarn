@@ -22,9 +22,9 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 	private final ItemRenderer itemRenderer;
 	private final Random random = new Random();
 
-	public ItemEntityRenderer(EntityRenderDispatcher renderManager, ItemRenderer itemRenderer) {
-		super(renderManager);
-		this.itemRenderer = itemRenderer;
+	public ItemEntityRenderer(EntityRenderDispatcher dispatcher, ItemRenderer renderer) {
+		super(dispatcher);
+		this.itemRenderer = renderer;
 		this.shadowSize = 0.15F;
 		this.shadowDarkness = 0.75F;
 	}
@@ -84,7 +84,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 			}
 
 			this.itemRenderer
-				.method_23179(itemStack, ModelTransformation.Type.GROUND, false, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV, bakedModel);
+				.renderItem(itemStack, ModelTransformation.Type.GROUND, false, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV, bakedModel);
 			matrixStack.pop();
 			if (!bl) {
 				matrixStack.translate((double)(0.0F * o), (double)(0.0F * p), (double)(0.09375F * q));

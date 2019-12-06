@@ -53,73 +53,73 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag compoundTag) {
-		super.toTag(compoundTag);
-		compoundTag.putString("name", this.getStructureName());
-		compoundTag.putString("author", this.author);
-		compoundTag.putString("metadata", this.metadata);
-		compoundTag.putInt("posX", this.offset.getX());
-		compoundTag.putInt("posY", this.offset.getY());
-		compoundTag.putInt("posZ", this.offset.getZ());
-		compoundTag.putInt("sizeX", this.size.getX());
-		compoundTag.putInt("sizeY", this.size.getY());
-		compoundTag.putInt("sizeZ", this.size.getZ());
-		compoundTag.putString("rotation", this.rotation.toString());
-		compoundTag.putString("mirror", this.mirror.toString());
-		compoundTag.putString("mode", this.mode.toString());
-		compoundTag.putBoolean("ignoreEntities", this.ignoreEntities);
-		compoundTag.putBoolean("powered", this.powered);
-		compoundTag.putBoolean("showair", this.showAir);
-		compoundTag.putBoolean("showboundingbox", this.showBoundingBox);
-		compoundTag.putFloat("integrity", this.integrity);
-		compoundTag.putLong("seed", this.seed);
-		return compoundTag;
+	public CompoundTag toTag(CompoundTag tag) {
+		super.toTag(tag);
+		tag.putString("name", this.getStructureName());
+		tag.putString("author", this.author);
+		tag.putString("metadata", this.metadata);
+		tag.putInt("posX", this.offset.getX());
+		tag.putInt("posY", this.offset.getY());
+		tag.putInt("posZ", this.offset.getZ());
+		tag.putInt("sizeX", this.size.getX());
+		tag.putInt("sizeY", this.size.getY());
+		tag.putInt("sizeZ", this.size.getZ());
+		tag.putString("rotation", this.rotation.toString());
+		tag.putString("mirror", this.mirror.toString());
+		tag.putString("mode", this.mode.toString());
+		tag.putBoolean("ignoreEntities", this.ignoreEntities);
+		tag.putBoolean("powered", this.powered);
+		tag.putBoolean("showair", this.showAir);
+		tag.putBoolean("showboundingbox", this.showBoundingBox);
+		tag.putFloat("integrity", this.integrity);
+		tag.putLong("seed", this.seed);
+		return tag;
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
-		this.setStructureName(compoundTag.getString("name"));
-		this.author = compoundTag.getString("author");
-		this.metadata = compoundTag.getString("metadata");
-		int i = MathHelper.clamp(compoundTag.getInt("posX"), -32, 32);
-		int j = MathHelper.clamp(compoundTag.getInt("posY"), -32, 32);
-		int k = MathHelper.clamp(compoundTag.getInt("posZ"), -32, 32);
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
+		this.setStructureName(tag.getString("name"));
+		this.author = tag.getString("author");
+		this.metadata = tag.getString("metadata");
+		int i = MathHelper.clamp(tag.getInt("posX"), -32, 32);
+		int j = MathHelper.clamp(tag.getInt("posY"), -32, 32);
+		int k = MathHelper.clamp(tag.getInt("posZ"), -32, 32);
 		this.offset = new BlockPos(i, j, k);
-		int l = MathHelper.clamp(compoundTag.getInt("sizeX"), 0, 32);
-		int m = MathHelper.clamp(compoundTag.getInt("sizeY"), 0, 32);
-		int n = MathHelper.clamp(compoundTag.getInt("sizeZ"), 0, 32);
+		int l = MathHelper.clamp(tag.getInt("sizeX"), 0, 32);
+		int m = MathHelper.clamp(tag.getInt("sizeY"), 0, 32);
+		int n = MathHelper.clamp(tag.getInt("sizeZ"), 0, 32);
 		this.size = new BlockPos(l, m, n);
 
 		try {
-			this.rotation = BlockRotation.valueOf(compoundTag.getString("rotation"));
+			this.rotation = BlockRotation.valueOf(tag.getString("rotation"));
 		} catch (IllegalArgumentException var11) {
 			this.rotation = BlockRotation.NONE;
 		}
 
 		try {
-			this.mirror = BlockMirror.valueOf(compoundTag.getString("mirror"));
+			this.mirror = BlockMirror.valueOf(tag.getString("mirror"));
 		} catch (IllegalArgumentException var10) {
 			this.mirror = BlockMirror.NONE;
 		}
 
 		try {
-			this.mode = StructureBlockMode.valueOf(compoundTag.getString("mode"));
+			this.mode = StructureBlockMode.valueOf(tag.getString("mode"));
 		} catch (IllegalArgumentException var9) {
 			this.mode = StructureBlockMode.DATA;
 		}
 
-		this.ignoreEntities = compoundTag.getBoolean("ignoreEntities");
-		this.powered = compoundTag.getBoolean("powered");
-		this.showAir = compoundTag.getBoolean("showair");
-		this.showBoundingBox = compoundTag.getBoolean("showboundingbox");
-		if (compoundTag.contains("integrity")) {
-			this.integrity = compoundTag.getFloat("integrity");
+		this.ignoreEntities = tag.getBoolean("ignoreEntities");
+		this.powered = tag.getBoolean("powered");
+		this.showAir = tag.getBoolean("showair");
+		this.showBoundingBox = tag.getBoolean("showboundingbox");
+		if (tag.contains("integrity")) {
+			this.integrity = tag.getFloat("integrity");
 		} else {
 			this.integrity = 1.0F;
 		}
 
-		this.seed = compoundTag.getLong("seed");
+		this.seed = tag.getLong("seed");
 		this.updateBlockMode();
 	}
 

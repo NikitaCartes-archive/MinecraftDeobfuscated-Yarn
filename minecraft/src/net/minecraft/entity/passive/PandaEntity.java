@@ -841,6 +841,11 @@ public class PandaEntity extends AnimalEntity {
 		}
 
 		@Override
+		public boolean shouldContinue() {
+			return this.target != null && super.shouldContinue();
+		}
+
+		@Override
 		public boolean canStart() {
 			if (this.mob.getRandom().nextFloat() >= this.chance) {
 				return false;

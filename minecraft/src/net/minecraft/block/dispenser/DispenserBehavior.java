@@ -1,7 +1,7 @@
 package net.minecraft.block.dispenser;
 
 import java.util.Random;
-import net.minecraft.block.BeeHiveBlock;
+import net.minecraft.block.BeehiveBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -12,7 +12,7 @@ import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.SkullBlock;
 import net.minecraft.block.TntBlock;
 import net.minecraft.block.WitherSkullBlock;
-import net.minecraft.block.entity.BeeHiveBlockEntity;
+import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.DispenserBlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
@@ -457,8 +457,8 @@ public interface DispenserBehavior {
 				BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
 				BlockState blockState = iWorld.getBlockState(blockPos);
 				Block block = blockState.getBlock();
-				if (block.matches(BlockTags.BEEHIVES) && (Integer)blockState.get(BeeHiveBlock.HONEY_LEVEL) >= 5) {
-					((BeeHiveBlock)blockState.getBlock()).emptyHoney(iWorld.getWorld(), blockState, blockPos, null, BeeHiveBlockEntity.BeeState.BEE_RELEASED);
+				if (block.matches(BlockTags.BEEHIVES) && (Integer)blockState.get(BeehiveBlock.HONEY_LEVEL) >= 5) {
+					((BeehiveBlock)blockState.getBlock()).takeHoney(iWorld.getWorld(), blockState, blockPos, null, BeehiveBlockEntity.BeeState.BEE_RELEASED);
 					this.success = true;
 					return this.method_22141(pointer, stack, new ItemStack(Items.HONEY_BOTTLE));
 				} else if (iWorld.getFluidState(blockPos).matches(FluidTags.WATER)) {
@@ -492,14 +492,14 @@ public interface DispenserBehavior {
 					if (!this.success) {
 						BlockState blockState = world.getBlockState(blockPos);
 						if (blockState.matches(BlockTags.BEEHIVES)) {
-							int i = (Integer)blockState.get(BeeHiveBlock.HONEY_LEVEL);
+							int i = (Integer)blockState.get(BeehiveBlock.HONEY_LEVEL);
 							if (i >= 5) {
 								if (stack.damage(1, world.random, null)) {
 									stack.setCount(0);
 								}
 
-								BeeHiveBlock.dropHoneycomb(world, blockPos);
-								((BeeHiveBlock)blockState.getBlock()).emptyHoney(world, blockState, blockPos, null, BeeHiveBlockEntity.BeeState.BEE_RELEASED);
+								BeehiveBlock.dropHoneycomb(world, blockPos);
+								((BeehiveBlock)blockState.getBlock()).takeHoney(world, blockState, blockPos, null, BeehiveBlockEntity.BeeState.BEE_RELEASED);
 								this.success = true;
 							}
 						}

@@ -242,10 +242,7 @@ public class GameOptions {
 					try {
 						Iterator<String> iterator = COLON_SPLITTER.split(stringx).iterator();
 						compoundTag.putString((String)iterator.next(), (String)iterator.next());
-					} catch (OutOfMemoryError var3x) {
-						System.gc();
-						throw new GameOptions.ParseError("Failed to parse option: " + stringx.substring(0, Math.min(200, stringx.length())), var3x);
-					} catch (Exception var4x) {
+					} catch (Exception var3x) {
 						LOGGER.warn("Skipping bad option: {}", stringx);
 					}
 				});
@@ -773,12 +770,5 @@ public class GameOptions {
 		}
 
 		manager.setEnabledProfiles(set);
-	}
-
-	@Environment(EnvType.CLIENT)
-	static class ParseError extends Error {
-		public ParseError(String message, Throwable cause) {
-			super(message, cause);
-		}
 	}
 }

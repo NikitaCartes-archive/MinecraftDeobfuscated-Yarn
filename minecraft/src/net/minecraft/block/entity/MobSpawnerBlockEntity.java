@@ -43,16 +43,16 @@ public class MobSpawnerBlockEntity extends BlockEntity implements Tickable {
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
-		this.logic.deserialize(compoundTag);
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
+		this.logic.deserialize(tag);
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag compoundTag) {
-		super.toTag(compoundTag);
-		this.logic.serialize(compoundTag);
-		return compoundTag;
+	public CompoundTag toTag(CompoundTag tag) {
+		super.toTag(tag);
+		this.logic.serialize(tag);
+		return tag;
 	}
 
 	@Override
