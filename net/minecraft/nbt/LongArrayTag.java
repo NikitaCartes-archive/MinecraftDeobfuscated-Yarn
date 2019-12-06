@@ -27,7 +27,7 @@ extends AbstractListTag<LongTag> {
         public LongArrayTag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
             positionTracker.add(192L);
             int j = dataInput.readInt();
-            positionTracker.add(64 * j);
+            positionTracker.add(64L * (long)j);
             long[] ls = new long[j];
             for (int k = 0; k < j; ++k) {
                 ls[k] = dataInput.readLong();

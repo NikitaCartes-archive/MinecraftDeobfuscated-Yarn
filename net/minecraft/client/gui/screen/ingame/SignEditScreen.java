@@ -16,6 +16,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
@@ -113,6 +114,7 @@ extends Screen {
         int t;
         String string;
         int r;
+        DiffuseLighting.disableGuiDepthLighting();
         this.renderBackground();
         this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 40, 0xFFFFFF);
         MatrixStack matrixStack = new MatrixStack();
@@ -197,6 +199,7 @@ extends Screen {
             RenderSystem.enableTexture();
         }
         matrixStack.pop();
+        DiffuseLighting.enableGuiDepthLighting();
         super.render(i, j, f);
     }
 }

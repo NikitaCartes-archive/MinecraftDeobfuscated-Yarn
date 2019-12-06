@@ -77,18 +77,18 @@ implements SynchronousResourceReloadListener {
         return this.models;
     }
 
-    private void method_23182(BakedModel bakedModel, ItemStack itemStack, int i, int j, MatrixStack matrixStack, VertexConsumer vertexConsumer) {
+    private void renderBakedItemModel(BakedModel bakedModel, ItemStack itemStack, int i, int j, MatrixStack matrixStack, VertexConsumer vertexConsumer) {
         Random random = new Random();
         long l = 42L;
         for (Direction direction : Direction.values()) {
             random.setSeed(42L);
-            this.method_23180(matrixStack, vertexConsumer, bakedModel.getQuads(null, direction, random), itemStack, i, j);
+            this.renderBakedItemQuads(matrixStack, vertexConsumer, bakedModel.getQuads(null, direction, random), itemStack, i, j);
         }
         random.setSeed(42L);
-        this.method_23180(matrixStack, vertexConsumer, bakedModel.getQuads(null, null, random), itemStack, i, j);
+        this.renderBakedItemQuads(matrixStack, vertexConsumer, bakedModel.getQuads(null, null, random), itemStack, i, j);
     }
 
-    public void method_23179(ItemStack itemStack, ModelTransformation.Type type, boolean bl, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j, BakedModel bakedModel) {
+    public void renderItem(ItemStack itemStack, ModelTransformation.Type type, boolean bl, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j, BakedModel bakedModel) {
         boolean bl3;
         if (itemStack.isEmpty()) {
             return;
@@ -99,7 +99,7 @@ implements SynchronousResourceReloadListener {
         if (itemStack.getItem() == Items.TRIDENT && bl3) {
             bakedModel = this.models.getModelManager().getModel(new ModelIdentifier("minecraft:trident#inventory"));
         }
-        bakedModel.getTransformation().getTransformation(type).method_23075(bl, matrixStack);
+        bakedModel.getTransformation().getTransformation(type).apply(bl, matrixStack);
         matrixStack.translate(-0.5, -0.5, -0.5);
         if (bakedModel.isBuiltin() || itemStack.getItem() == Items.TRIDENT && !bl3) {
             BuiltinModelItemRenderer.INSTANCE.render(itemStack, matrixStack, vertexConsumerProvider, i, j);
@@ -107,7 +107,7 @@ implements SynchronousResourceReloadListener {
             RenderLayer renderLayer = RenderLayers.getItemLayer(itemStack);
             RenderLayer renderLayer2 = bl2 && Objects.equals(renderLayer, TexturedRenderLayers.getEntityTranslucent()) ? TexturedRenderLayers.getEntityTranslucentCull() : renderLayer;
             VertexConsumer vertexConsumer = ItemRenderer.getArmorVertexConsumer(vertexConsumerProvider, renderLayer2, true, itemStack.hasEnchantmentGlint());
-            this.method_23182(bakedModel, itemStack, i, j, matrixStack, vertexConsumer);
+            this.renderBakedItemModel(bakedModel, itemStack, i, j, matrixStack, vertexConsumer);
         }
         matrixStack.pop();
     }
@@ -119,7 +119,7 @@ implements SynchronousResourceReloadListener {
         return vertexConsumerProvider.getBuffer(renderLayer);
     }
 
-    private void method_23180(MatrixStack matrixStack, VertexConsumer vertexConsumer, List<BakedQuad> list, ItemStack itemStack, int i, int j) {
+    private void renderBakedItemQuads(MatrixStack matrixStack, VertexConsumer vertexConsumer, List<BakedQuad> list, ItemStack itemStack, int i, int j) {
         boolean bl = !itemStack.isEmpty();
         MatrixStack.Entry entry = matrixStack.peek();
         for (BakedQuad bakedQuad : list) {
@@ -148,16 +148,16 @@ implements SynchronousResourceReloadListener {
         return bakedModel2 == null ? this.models.getModelManager().getMissingModel() : bakedModel2;
     }
 
-    public void method_23178(ItemStack itemStack, ModelTransformation.Type type, int i, int j, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
-        this.method_23177(null, itemStack, type, false, matrixStack, vertexConsumerProvider, null, i, j);
+    public void renderItem(ItemStack itemStack, ModelTransformation.Type type, int i, int j, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
+        this.renderItem(null, itemStack, type, false, matrixStack, vertexConsumerProvider, null, i, j);
     }
 
-    public void method_23177(@Nullable LivingEntity livingEntity, ItemStack itemStack, ModelTransformation.Type type, boolean bl, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, @Nullable World world, int i, int j) {
+    public void renderItem(@Nullable LivingEntity livingEntity, ItemStack itemStack, ModelTransformation.Type type, boolean bl, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, @Nullable World world, int i, int j) {
         if (itemStack.isEmpty()) {
             return;
         }
         BakedModel bakedModel = this.getHeldItemModel(itemStack, world, livingEntity);
-        this.method_23179(itemStack, type, bl, matrixStack, vertexConsumerProvider, i, j, bakedModel);
+        this.renderItem(itemStack, type, bl, matrixStack, vertexConsumerProvider, i, j, bakedModel);
     }
 
     public void renderGuiItemIcon(ItemStack itemStack, int i, int j) {
@@ -184,13 +184,13 @@ implements SynchronousResourceReloadListener {
         Item item = itemStack.getItem();
         boolean bl2 = bl = !bakedModel.hasDepthInGui() || item == Items.SHIELD || item == Items.TRIDENT;
         if (bl) {
-            DiffuseLighting.method_24210();
+            DiffuseLighting.disableGuiDepthLighting();
         }
-        this.method_23179(itemStack, ModelTransformation.Type.GUI, false, matrixStack, immediate, 0xF000F0, OverlayTexture.DEFAULT_UV, bakedModel);
+        this.renderItem(itemStack, ModelTransformation.Type.GUI, false, matrixStack, immediate, 0xF000F0, OverlayTexture.DEFAULT_UV, bakedModel);
         immediate.draw();
         RenderSystem.enableDepthTest();
         if (bl) {
-            DiffuseLighting.method_24211();
+            DiffuseLighting.enableGuiDepthLighting();
         }
         RenderSystem.disableAlphaTest();
         RenderSystem.disableRescaleNormal();

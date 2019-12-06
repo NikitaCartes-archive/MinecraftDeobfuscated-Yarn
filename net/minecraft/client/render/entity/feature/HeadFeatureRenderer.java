@@ -83,7 +83,7 @@ extends FeatureRenderer<T, M> {
             if (bl) {
                 matrixStack.translate(0.0, 0.1875, 0.0);
             }
-            MinecraftClient.getInstance().getFirstPersonRenderer().renderItem((LivingEntity)livingEntity, itemStack, ModelTransformation.Type.HEAD, false, matrixStack, vertexConsumerProvider, i);
+            MinecraftClient.getInstance().getHeldItemRenderer().renderItem((LivingEntity)livingEntity, itemStack, ModelTransformation.Type.HEAD, false, matrixStack, vertexConsumerProvider, i);
         }
         matrixStack.pop();
     }

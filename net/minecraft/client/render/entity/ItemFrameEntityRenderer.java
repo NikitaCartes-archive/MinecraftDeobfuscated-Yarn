@@ -78,7 +78,7 @@ extends EntityRenderer<ItemFrameEntity> {
                 }
             } else {
                 matrixStack.scale(0.5f, 0.5f, 0.5f);
-                this.itemRenderer.method_23178(itemStack, ModelTransformation.Type.FIXED, i, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider);
+                this.itemRenderer.renderItem(itemStack, ModelTransformation.Type.FIXED, i, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider);
             }
         }
         matrixStack.pop();

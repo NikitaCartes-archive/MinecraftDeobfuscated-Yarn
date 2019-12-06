@@ -14,7 +14,7 @@ import net.minecraft.block.BarrierBlock;
 import net.minecraft.block.BeaconBlock;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BedrockBlock;
-import net.minecraft.block.BeeHiveBlock;
+import net.minecraft.block.BeehiveBlock;
 import net.minecraft.block.BeetrootsBlock;
 import net.minecraft.block.BellBlock;
 import net.minecraft.block.BlastFurnaceBlock;
@@ -869,8 +869,8 @@ public class Blocks {
     public static final Block STRUCTURE_BLOCK = Blocks.register("structure_block", new StructureBlock(Block.Settings.of(Material.METAL, MaterialColor.LIGHT_GRAY).strength(-1.0f, 3600000.0f).dropsNothing()));
     public static final Block JIGSAW = Blocks.register("jigsaw", new JigsawBlock(Block.Settings.of(Material.METAL, MaterialColor.LIGHT_GRAY).strength(-1.0f, 3600000.0f).dropsNothing()));
     public static final Block COMPOSTER = Blocks.register("composter", new ComposterBlock(Block.Settings.of(Material.WOOD).strength(0.6f).sounds(BlockSoundGroup.WOOD)));
-    public static final Block BEE_NEST = Blocks.register("bee_nest", new BeeHiveBlock(Block.Settings.of(Material.WOOD).strength(0.3f).sounds(BlockSoundGroup.WOOD)));
-    public static final Block BEEHIVE = Blocks.register("beehive", new BeeHiveBlock(Block.Settings.of(Material.WOOD).strength(0.6f).sounds(BlockSoundGroup.WOOD)));
+    public static final Block BEE_NEST = Blocks.register("bee_nest", new BeehiveBlock(Block.Settings.of(Material.WOOD).strength(0.3f).sounds(BlockSoundGroup.WOOD)));
+    public static final Block BEEHIVE = Blocks.register("beehive", new BeehiveBlock(Block.Settings.of(Material.WOOD).strength(0.6f).sounds(BlockSoundGroup.WOOD)));
     public static final Block HONEY_BLOCK = Blocks.register("honey_block", new HoneyBlock(Block.Settings.of(Material.CLAY, MaterialColor.ORANGE).velocityMultiplier(0.4f).jumpVelocityMultiplier(0.5f).nonOpaque().sounds(BlockSoundGroup.field_21214)));
     public static final Block HONEYCOMB_BLOCK = Blocks.register("honeycomb_block", new Block(Block.Settings.of(Material.CLAY, MaterialColor.ORANGE).strength(0.6f).sounds(BlockSoundGroup.CORAL)));
 

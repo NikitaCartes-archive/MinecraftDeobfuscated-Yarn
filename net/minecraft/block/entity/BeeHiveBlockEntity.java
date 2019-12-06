@@ -7,7 +7,7 @@ import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import net.minecraft.block.BeeHiveBlock;
+import net.minecraft.block.BeehiveBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.FireBlock;
@@ -30,14 +30,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import org.jetbrains.annotations.Nullable;
 
-public class BeeHiveBlockEntity
+public class BeehiveBlockEntity
 extends BlockEntity
 implements Tickable {
     private final List<Bee> bees = Lists.newArrayList();
     @Nullable
     private BlockPos flowerPos = null;
 
-    public BeeHiveBlockEntity() {
+    public BeehiveBlockEntity() {
         super(BlockEntityType.BEEHIVE);
     }
 
@@ -75,7 +75,7 @@ implements Tickable {
                 if (!(entity instanceof BeeEntity)) continue;
                 BeeEntity beeEntity = (BeeEntity)entity;
                 if (!(playerEntity.getPos().squaredDistanceTo(entity.getPos()) <= 16.0)) continue;
-                if (!this.method_23904()) {
+                if (!this.isSmoked()) {
                     beeEntity.setBeeAttacker(playerEntity);
                     continue;
                 }
@@ -94,20 +94,20 @@ implements Tickable {
         this.tryEnterHive(entity, bl, 0);
     }
 
-    public int method_23903() {
+    public int getBeeCount() {
         return this.bees.size();
     }
 
-    public static int method_23902(BlockState blockState) {
-        return blockState.get(BeeHiveBlock.HONEY_LEVEL);
+    public static int getHoneyLevel(BlockState blockState) {
+        return blockState.get(BeehiveBlock.HONEY_LEVEL);
     }
 
-    public boolean method_23904() {
-        return CampfireBlock.method_23895(this.world, this.getPos(), 5);
+    public boolean isSmoked() {
+        return CampfireBlock.isLitCampfireInRange(this.world, this.getPos(), 5);
     }
 
-    protected void method_23757() {
-        DebugRendererInfoManager.method_23856(this);
+    protected void sendDebugData() {
+        DebugRendererInfoManager.sendBeehiveDebugData(this);
     }
 
     public void tryEnterHive(Entity entity, boolean bl, int i) {
@@ -137,7 +137,7 @@ implements Tickable {
         compoundTag.remove("Passengers");
         compoundTag.remove("Leash");
         compoundTag.removeUuid("UUID");
-        Direction direction = blockState.get(BeeHiveBlock.FACING);
+        Direction direction = blockState.get(BeehiveBlock.FACING);
         BlockPos blockPos2 = blockPos.offset(direction);
         if (!this.world.getBlockState(blockPos2).getCollisionShape(this.world, blockPos2).isEmpty()) {
             return false;
@@ -161,13 +161,13 @@ implements Tickable {
                 if (beeState == BeeState.HONEY_DELIVERED) {
                     int i;
                     beeEntity.onHoneyDelivered();
-                    if (blockState.getBlock().matches(BlockTags.BEEHIVES) && (i = BeeHiveBlockEntity.method_23902(blockState)) < 5) {
+                    if (blockState.getBlock().matches(BlockTags.BEEHIVES) && (i = BeehiveBlockEntity.getHoneyLevel(blockState)) < 5) {
                         int j;
                         int n = j = this.world.random.nextInt(100) == 0 ? 2 : 1;
                         if (i + j > 5) {
                             --j;
                         }
-                        this.world.setBlockState(this.getPos(), (BlockState)blockState.with(BeeHiveBlock.HONEY_LEVEL, i + j));
+                        this.world.setBlockState(this.getPos(), (BlockState)blockState.with(BeehiveBlock.HONEY_LEVEL, i + j));
                     }
                 }
                 beeEntity.resetPollinationTicks();
@@ -215,7 +215,7 @@ implements Tickable {
             double f = (double)blockPos.getZ() + 0.5;
             this.world.playSound(null, d, e, f, SoundEvents.BLOCK_BEEHIVE_WORK, SoundCategory.BLOCKS, 1.0f, 1.0f);
         }
-        this.method_23757();
+        this.sendDebugData();
     }
 
     @Override

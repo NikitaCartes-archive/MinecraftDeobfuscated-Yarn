@@ -80,7 +80,7 @@ extends AbstractContainerScreen<EnchantingTableContainer> {
 
     @Override
     protected void drawBackground(float f, int i, int j) {
-        DiffuseLighting.method_24210();
+        DiffuseLighting.disableGuiDepthLighting();
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.minecraft.getTextureManager().bindTexture(TEXTURE);
         int k = (this.width - this.containerWidth) / 2;
@@ -136,7 +136,7 @@ extends AbstractContainerScreen<EnchantingTableContainer> {
         RenderSystem.viewport(0, 0, this.minecraft.getWindow().getFramebufferWidth(), this.minecraft.getWindow().getFramebufferHeight());
         RenderSystem.popMatrix();
         RenderSystem.matrixMode(5888);
-        DiffuseLighting.method_24211();
+        DiffuseLighting.enableGuiDepthLighting();
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         EnchantingPhrases.getInstance().setSeed(((EnchantingTableContainer)this.container).getSeed());
         int q = ((EnchantingTableContainer)this.container).getLapisCount();

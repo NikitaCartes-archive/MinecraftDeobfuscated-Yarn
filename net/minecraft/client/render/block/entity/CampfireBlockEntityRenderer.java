@@ -40,7 +40,7 @@ extends BlockEntityRenderer<CampfireBlockEntity> {
             matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0f));
             matrixStack.translate(-0.3125, -0.3125, 0.0);
             matrixStack.scale(0.375f, 0.375f, 0.375f);
-            MinecraftClient.getInstance().getItemRenderer().method_23178(itemStack, ModelTransformation.Type.FIXED, i, j, matrixStack, vertexConsumerProvider);
+            MinecraftClient.getInstance().getItemRenderer().renderItem(itemStack, ModelTransformation.Type.FIXED, i, j, matrixStack, vertexConsumerProvider);
             matrixStack.pop();
         }
     }

@@ -20,10 +20,10 @@ import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.BufferBuilderStorage;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.DiffuseLighting;
-import net.minecraft.client.render.FirstPersonRenderer;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.item.HeldItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.ScreenshotUtils;
@@ -72,7 +72,7 @@ SynchronousResourceReloadListener {
     private final ResourceManager resourceContainer;
     private final Random random = new Random();
     private float viewDistance;
-    public final FirstPersonRenderer firstPersonRenderer;
+    public final HeldItemRenderer firstPersonRenderer;
     private final MapRenderer mapRenderer;
     private final BufferBuilderStorage buffers;
     private int ticks;
@@ -106,7 +106,7 @@ SynchronousResourceReloadListener {
     public GameRenderer(MinecraftClient minecraftClient, ResourceManager resourceManager, BufferBuilderStorage bufferBuilderStorage) {
         this.client = minecraftClient;
         this.resourceContainer = resourceManager;
-        this.firstPersonRenderer = minecraftClient.getFirstPersonRenderer();
+        this.firstPersonRenderer = minecraftClient.getHeldItemRenderer();
         this.mapRenderer = new MapRenderer(minecraftClient.getTextureManager());
         this.lightmapTextureManager = new LightmapTextureManager(this, minecraftClient);
         this.buffers = bufferBuilderStorage;
@@ -354,7 +354,7 @@ SynchronousResourceReloadListener {
         boolean bl2 = bl = this.client.getCameraEntity() instanceof LivingEntity && ((LivingEntity)this.client.getCameraEntity()).isSleeping();
         if (this.client.options.perspective == 0 && !bl && !this.client.options.hudHidden && this.client.interactionManager.getCurrentGameMode() != GameMode.SPECTATOR) {
             this.lightmapTextureManager.enable();
-            this.firstPersonRenderer.method_22976(f, matrixStack, this.buffers.getEntityVertexConsumers(), this.client.player, this.client.getEntityRenderManager().getLight(this.client.player, f));
+            this.firstPersonRenderer.renderItem(f, matrixStack, this.buffers.getEntityVertexConsumers(), this.client.player, this.client.getEntityRenderManager().getLight(this.client.player, f));
             this.lightmapTextureManager.disable();
         }
         matrixStack.pop();
@@ -437,7 +437,7 @@ SynchronousResourceReloadListener {
         RenderSystem.matrixMode(5888);
         RenderSystem.loadIdentity();
         RenderSystem.translatef(0.0f, 0.0f, -2000.0f);
-        DiffuseLighting.method_24211();
+        DiffuseLighting.enableGuiDepthLighting();
         if (bl && this.client.world != null) {
             this.client.getProfiler().swap("gui");
             if (!this.client.options.hudHidden || this.client.currentScreen != null) {
@@ -611,7 +611,7 @@ SynchronousResourceReloadListener {
         matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(6.0f * MathHelper.cos(g * 8.0f)));
         matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(6.0f * MathHelper.cos(g * 8.0f)));
         VertexConsumerProvider.Immediate immediate = this.buffers.getEntityVertexConsumers();
-        this.client.getItemRenderer().method_23178(this.floatingItem, ModelTransformation.Type.FIXED, 0xF000F0, OverlayTexture.DEFAULT_UV, matrixStack, immediate);
+        this.client.getItemRenderer().renderItem(this.floatingItem, ModelTransformation.Type.FIXED, 0xF000F0, OverlayTexture.DEFAULT_UV, matrixStack, immediate);
         matrixStack.pop();
         immediate.draw();
         RenderSystem.popAttributes();

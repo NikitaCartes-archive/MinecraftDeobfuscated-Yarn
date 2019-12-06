@@ -26,7 +26,7 @@ extends AbstractListTag<IntTag> {
         public IntArrayTag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
             positionTracker.add(192L);
             int j = dataInput.readInt();
-            positionTracker.add(32 * j);
+            positionTracker.add(32L * (long)j);
             int[] is = new int[j];
             for (int k = 0; k < j; ++k) {
                 is[k] = dataInput.readInt();

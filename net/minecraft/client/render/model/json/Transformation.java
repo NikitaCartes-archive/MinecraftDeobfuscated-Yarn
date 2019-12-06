@@ -30,7 +30,7 @@ public class Transformation {
         this.scale = vector3f3.copy();
     }
 
-    public void method_23075(boolean bl, MatrixStack matrixStack) {
+    public void apply(boolean bl, MatrixStack matrixStack) {
         if (this == NONE) {
             return;
         }

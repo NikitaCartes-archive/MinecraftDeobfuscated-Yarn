@@ -21,7 +21,7 @@ import net.minecraft.block.CropBlock;
 import net.minecraft.block.StemBlock;
 import net.minecraft.block.SweetBerryBushBlock;
 import net.minecraft.block.TallPlantBlock;
-import net.minecraft.block.entity.BeeHiveBlockEntity;
+import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.enums.DoubleBlockHalf;
@@ -350,7 +350,7 @@ implements Flutterer {
             return false;
         }
         BlockEntity blockEntity = this.world.getBlockEntity(this.hivePos);
-        return blockEntity instanceof BeeHiveBlockEntity && ((BeeHiveBlockEntity)blockEntity).isNearFire();
+        return blockEntity instanceof BeehiveBlockEntity && ((BeehiveBlockEntity)blockEntity).isNearFire();
     }
 
     public boolean isAngry() {
@@ -367,8 +367,8 @@ implements Flutterer {
 
     private boolean doesHiveHaveSpace(BlockPos blockPos) {
         BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
-        if (blockEntity instanceof BeeHiveBlockEntity) {
-            return !((BeeHiveBlockEntity)blockEntity).isFullOfBees();
+        if (blockEntity instanceof BeehiveBlockEntity) {
+            return !((BeehiveBlockEntity)blockEntity).isFullOfBees();
         }
         return false;
     }
@@ -385,7 +385,7 @@ implements Flutterer {
     @Override
     protected void sendAiDebugData() {
         super.sendAiDebugData();
-        DebugRendererInfoManager.method_23855(this);
+        DebugRendererInfoManager.sendBeeDebugData(this);
     }
 
     private int getCropsGrownSincePollination() {
@@ -619,9 +619,9 @@ implements Flutterer {
         @Override
         public boolean canBeeStart() {
             BlockEntity blockEntity;
-            if (BeeEntity.this.hasHive() && BeeEntity.this.canEnterHive() && BeeEntity.this.hivePos.isWithinDistance(BeeEntity.this.getPos(), 2.0) && (blockEntity = BeeEntity.this.world.getBlockEntity(BeeEntity.this.hivePos)) instanceof BeeHiveBlockEntity) {
-                BeeHiveBlockEntity beeHiveBlockEntity = (BeeHiveBlockEntity)blockEntity;
-                if (beeHiveBlockEntity.isFullOfBees()) {
+            if (BeeEntity.this.hasHive() && BeeEntity.this.canEnterHive() && BeeEntity.this.hivePos.isWithinDistance(BeeEntity.this.getPos(), 2.0) && (blockEntity = BeeEntity.this.world.getBlockEntity(BeeEntity.this.hivePos)) instanceof BeehiveBlockEntity) {
+                BeehiveBlockEntity beehiveBlockEntity = (BeehiveBlockEntity)blockEntity;
+                if (beehiveBlockEntity.isFullOfBees()) {
                     BeeEntity.this.hivePos = null;
                 } else {
                     return true;
@@ -638,9 +638,9 @@ implements Flutterer {
         @Override
         public void start() {
             BlockEntity blockEntity = BeeEntity.this.world.getBlockEntity(BeeEntity.this.hivePos);
-            if (blockEntity instanceof BeeHiveBlockEntity) {
-                BeeHiveBlockEntity beeHiveBlockEntity = (BeeHiveBlockEntity)blockEntity;
-                beeHiveBlockEntity.tryEnterHive(BeeEntity.this, BeeEntity.this.hasNectar());
+            if (blockEntity instanceof BeehiveBlockEntity) {
+                BeehiveBlockEntity beehiveBlockEntity = (BeehiveBlockEntity)blockEntity;
+                beehiveBlockEntity.tryEnterHive(BeeEntity.this, BeeEntity.this.hasNectar());
             }
         }
     }

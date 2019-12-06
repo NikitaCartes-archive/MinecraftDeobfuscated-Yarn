@@ -14,7 +14,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import net.minecraft.block.BedBlock;
-import net.minecraft.block.BeeHiveBlock;
+import net.minecraft.block.BeehiveBlock;
 import net.minecraft.block.BeetrootsBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -169,11 +169,11 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
     }
 
     private static LootTable.Builder method_22142(Block block) {
-        return LootTable.builder().withPool(LootPool.builder().withCondition(field_11336).withRolls(ConstantLootTableRange.create(1)).withEntry((LootEntry.Builder<?>)((LeafEntry.Builder)ItemEntry.builder(block).withFunction(CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.BLOCK_ENTITY).withOperation("Bees", "BlockEntityTag.Bees"))).withFunction(CopyStateFunction.getBuilder(block).method_21898(BeeHiveBlock.HONEY_LEVEL))));
+        return LootTable.builder().withPool(LootPool.builder().withCondition(field_11336).withRolls(ConstantLootTableRange.create(1)).withEntry((LootEntry.Builder<?>)((LeafEntry.Builder)ItemEntry.builder(block).withFunction(CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.BLOCK_ENTITY).withOperation("Bees", "BlockEntityTag.Bees"))).withFunction(CopyStateFunction.getBuilder(block).method_21898(BeehiveBlock.HONEY_LEVEL))));
     }
 
     private static LootTable.Builder method_22143(Block block) {
-        return LootTable.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(((LootEntry.Builder)((LeafEntry.Builder)((LeafEntry.Builder)ItemEntry.builder(block).withCondition(field_11336)).withFunction(CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.BLOCK_ENTITY).withOperation("Bees", "BlockEntityTag.Bees"))).withFunction(CopyStateFunction.getBuilder(block).method_21898(BeeHiveBlock.HONEY_LEVEL))).withChild(ItemEntry.builder(block))));
+        return LootTable.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(((LootEntry.Builder)((LeafEntry.Builder)((LeafEntry.Builder)ItemEntry.builder(block).withCondition(field_11336)).withFunction(CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.BLOCK_ENTITY).withOperation("Bees", "BlockEntityTag.Bees"))).withFunction(CopyStateFunction.getBuilder(block).method_21898(BeehiveBlock.HONEY_LEVEL))).withChild(ItemEntry.builder(block))));
     }
 
     private static LootTable.Builder method_10377(Block block, Item item) {

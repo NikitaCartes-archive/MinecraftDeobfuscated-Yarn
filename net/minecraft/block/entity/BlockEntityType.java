@@ -15,7 +15,7 @@ import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BarrelBlockEntity;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BedBlockEntity;
-import net.minecraft.block.entity.BeeHiveBlockEntity;
+import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.block.entity.BellBlockEntity;
 import net.minecraft.block.entity.BlastFurnaceBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
@@ -89,7 +89,7 @@ public class BlockEntityType<T extends BlockEntity> {
     public static final BlockEntityType<BellBlockEntity> BELL = BlockEntityType.create("bell", Builder.create(BellBlockEntity::new, Blocks.BELL));
     public static final BlockEntityType<JigsawBlockEntity> JIGSAW = BlockEntityType.create("jigsaw", Builder.create(JigsawBlockEntity::new, Blocks.JIGSAW));
     public static final BlockEntityType<CampfireBlockEntity> CAMPFIRE = BlockEntityType.create("campfire", Builder.create(CampfireBlockEntity::new, Blocks.CAMPFIRE));
-    public static final BlockEntityType<BeeHiveBlockEntity> BEEHIVE = BlockEntityType.create("beehive", Builder.create(BeeHiveBlockEntity::new, Blocks.BEE_NEST, Blocks.BEEHIVE));
+    public static final BlockEntityType<BeehiveBlockEntity> BEEHIVE = BlockEntityType.create("beehive", Builder.create(BeehiveBlockEntity::new, Blocks.BEE_NEST, Blocks.BEEHIVE));
     private final Supplier<? extends T> supplier;
     private final Set<Block> blocks;
     private final Type<?> type;

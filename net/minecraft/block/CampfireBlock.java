@@ -222,22 +222,22 @@ implements Waterloggable {
         }
     }
 
-    public static boolean method_23895(World world, BlockPos blockPos, int i) {
+    public static boolean isLitCampfireInRange(World world, BlockPos blockPos, int i) {
         for (int j = 1; j <= i; ++j) {
             BlockPos blockPos2 = blockPos.down(j);
             BlockState blockState = world.getBlockState(blockPos2);
-            if (CampfireBlock.method_23896(blockState)) {
+            if (CampfireBlock.isLitCampfire(blockState)) {
                 return true;
             }
             boolean bl = VoxelShapes.matchesAnywhere(field_21580, blockState.getCollisionShape(world, blockPos, EntityContext.absent()), BooleanBiFunction.AND);
             if (!bl) continue;
             BlockState blockState2 = world.getBlockState(blockPos2.down());
-            return CampfireBlock.method_23896(blockState2);
+            return CampfireBlock.isLitCampfire(blockState2);
         }
         return false;
     }
 
-    private static boolean method_23896(BlockState blockState) {
+    private static boolean isLitCampfire(BlockState blockState) {
         return blockState.getBlock() == Blocks.CAMPFIRE && blockState.get(LIT) != false;
     }
 

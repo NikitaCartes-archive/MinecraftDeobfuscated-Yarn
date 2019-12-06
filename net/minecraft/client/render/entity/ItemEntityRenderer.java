@@ -89,7 +89,7 @@ extends EntityRenderer<ItemEntity> {
                     matrixStack.translate(s, t, 0.0);
                 }
             }
-            this.itemRenderer.method_23179(itemStack, ModelTransformation.Type.GROUND, false, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV, bakedModel);
+            this.itemRenderer.renderItem(itemStack, ModelTransformation.Type.GROUND, false, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV, bakedModel);
             matrixStack.pop();
             if (bl) continue;
             matrixStack.translate(0.0f * o, 0.0f * p, 0.09375f * q);

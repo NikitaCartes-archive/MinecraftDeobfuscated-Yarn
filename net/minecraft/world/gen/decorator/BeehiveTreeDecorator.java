@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
-import net.minecraft.block.BeeHiveBlock;
+import net.minecraft.block.BeehiveBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.BeeHiveBlockEntity;
+import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.BeeEntity;
@@ -44,7 +44,7 @@ extends TreeDecorator {
         if (random.nextFloat() >= this.chance) {
             return;
         }
-        Direction direction = BeeHiveBlock.field_20418[random.nextInt(BeeHiveBlock.field_20418.length)];
+        Direction direction = BeehiveBlock.GENERATE_DIRECTIONS[random.nextInt(BeehiveBlock.GENERATE_DIRECTIONS.length)];
         int i = !list2.isEmpty() ? Math.max(list2.get(0).getY() - 1, list.get(0).getY()) : Math.min(list.get(0).getY() + 1 + random.nextInt(3), list.get(list.size() - 1).getY());
         List list3 = list.stream().filter(blockPos -> blockPos.getY() == i).collect(Collectors.toList());
         BlockPos blockPos2 = (BlockPos)list3.get(random.nextInt(list3.size()));
@@ -52,15 +52,15 @@ extends TreeDecorator {
         if (!AbstractTreeFeature.isAir(iWorld, blockPos22) || !AbstractTreeFeature.isAir(iWorld, blockPos22.offset(Direction.SOUTH))) {
             return;
         }
-        BlockState blockState = (BlockState)Blocks.BEE_NEST.getDefaultState().with(BeeHiveBlock.FACING, Direction.SOUTH);
+        BlockState blockState = (BlockState)Blocks.BEE_NEST.getDefaultState().with(BeehiveBlock.FACING, Direction.SOUTH);
         this.method_23470(iWorld, blockPos22, blockState, set, blockBox);
         BlockEntity blockEntity = iWorld.getBlockEntity(blockPos22);
-        if (blockEntity instanceof BeeHiveBlockEntity) {
-            BeeHiveBlockEntity beeHiveBlockEntity = (BeeHiveBlockEntity)blockEntity;
+        if (blockEntity instanceof BeehiveBlockEntity) {
+            BeehiveBlockEntity beehiveBlockEntity = (BeehiveBlockEntity)blockEntity;
             int j = 2 + random.nextInt(2);
             for (int k = 0; k < j; ++k) {
                 BeeEntity beeEntity = new BeeEntity((EntityType<? extends BeeEntity>)EntityType.BEE, iWorld.getWorld());
-                beeHiveBlockEntity.tryEnterHive(beeEntity, false, random.nextInt(599));
+                beehiveBlockEntity.tryEnterHive(beeEntity, false, random.nextInt(599));
             }
         }
     }

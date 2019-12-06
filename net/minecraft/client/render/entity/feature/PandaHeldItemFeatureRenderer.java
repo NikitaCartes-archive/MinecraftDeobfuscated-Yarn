@@ -38,7 +38,7 @@ extends FeatureRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
         }
         matrixStack.push();
         matrixStack.translate(0.1f, n, m);
-        MinecraftClient.getInstance().getFirstPersonRenderer().renderItem(pandaEntity, itemStack, ModelTransformation.Type.GROUND, false, matrixStack, vertexConsumerProvider, i);
+        MinecraftClient.getInstance().getHeldItemRenderer().renderItem(pandaEntity, itemStack, ModelTransformation.Type.GROUND, false, matrixStack, vertexConsumerProvider, i);
         matrixStack.pop();
     }
 }

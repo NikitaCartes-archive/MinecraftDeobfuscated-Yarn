@@ -28,7 +28,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BedBlockEntity;
-import net.minecraft.block.entity.BeeHiveBlockEntity;
+import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CampfireBlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
@@ -1040,7 +1040,7 @@ implements ClientPlayPacketListener {
             BlockEntity blockEntity = this.client.world.getBlockEntity(blockEntityUpdateS2CPacket.getPos());
             int i = blockEntityUpdateS2CPacket.getBlockEntityType();
             boolean bl2 = bl = i == 2 && blockEntity instanceof CommandBlockBlockEntity;
-            if (i == 1 && blockEntity instanceof MobSpawnerBlockEntity || bl || i == 3 && blockEntity instanceof BeaconBlockEntity || i == 4 && blockEntity instanceof SkullBlockEntity || i == 6 && blockEntity instanceof BannerBlockEntity || i == 7 && blockEntity instanceof StructureBlockBlockEntity || i == 8 && blockEntity instanceof EndGatewayBlockEntity || i == 9 && blockEntity instanceof SignBlockEntity || i == 11 && blockEntity instanceof BedBlockEntity || i == 5 && blockEntity instanceof ConduitBlockEntity || i == 12 && blockEntity instanceof JigsawBlockEntity || i == 13 && blockEntity instanceof CampfireBlockEntity || i == 14 && blockEntity instanceof BeeHiveBlockEntity) {
+            if (i == 1 && blockEntity instanceof MobSpawnerBlockEntity || bl || i == 3 && blockEntity instanceof BeaconBlockEntity || i == 4 && blockEntity instanceof SkullBlockEntity || i == 6 && blockEntity instanceof BannerBlockEntity || i == 7 && blockEntity instanceof StructureBlockBlockEntity || i == 8 && blockEntity instanceof EndGatewayBlockEntity || i == 9 && blockEntity instanceof SignBlockEntity || i == 11 && blockEntity instanceof BedBlockEntity || i == 5 && blockEntity instanceof ConduitBlockEntity || i == 12 && blockEntity instanceof JigsawBlockEntity || i == 13 && blockEntity instanceof CampfireBlockEntity || i == 14 && blockEntity instanceof BeehiveBlockEntity) {
                 blockEntity.fromTag(blockEntityUpdateS2CPacket.getCompoundTag());
             }
             if (bl && this.client.currentScreen instanceof CommandBlockScreen) {

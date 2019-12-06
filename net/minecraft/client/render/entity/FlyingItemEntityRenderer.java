@@ -47,7 +47,7 @@ extends EntityRenderer<T> {
         matrixStack.scale(this.scale, this.scale, this.scale);
         matrixStack.multiply(this.renderManager.getRotation());
         matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
-        this.item.method_23178(((FlyingItemEntity)entity).getStack(), ModelTransformation.Type.GROUND, i, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider);
+        this.item.renderItem(((FlyingItemEntity)entity).getStack(), ModelTransformation.Type.GROUND, i, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider);
         matrixStack.pop();
         super.render(entity, f, g, matrixStack, vertexConsumerProvider, i);
     }

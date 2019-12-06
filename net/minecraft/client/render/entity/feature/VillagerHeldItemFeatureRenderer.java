@@ -30,7 +30,7 @@ extends FeatureRenderer<T, M> {
         matrixStack.translate(0.0, 0.4f, -0.4f);
         matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(180.0f));
         ItemStack itemStack = ((LivingEntity)livingEntity).getEquippedStack(EquipmentSlot.MAINHAND);
-        MinecraftClient.getInstance().getFirstPersonRenderer().renderItem((LivingEntity)livingEntity, itemStack, ModelTransformation.Type.GROUND, false, matrixStack, vertexConsumerProvider, i);
+        MinecraftClient.getInstance().getHeldItemRenderer().renderItem((LivingEntity)livingEntity, itemStack, ModelTransformation.Type.GROUND, false, matrixStack, vertexConsumerProvider, i);
         matrixStack.pop();
     }
 }

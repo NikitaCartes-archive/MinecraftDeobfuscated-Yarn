@@ -55,7 +55,7 @@ extends FeatureRenderer<T, M> {
         matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
         boolean bl = arm == Arm.LEFT;
         matrixStack.translate((float)(bl ? -1 : 1) / 16.0f, 0.125, -0.625);
-        MinecraftClient.getInstance().getFirstPersonRenderer().renderItem(livingEntity, itemStack, type, bl, matrixStack, vertexConsumerProvider, i);
+        MinecraftClient.getInstance().getHeldItemRenderer().renderItem(livingEntity, itemStack, type, bl, matrixStack, vertexConsumerProvider, i);
         matrixStack.pop();
     }
 }

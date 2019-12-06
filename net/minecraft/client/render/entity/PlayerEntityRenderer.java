@@ -166,14 +166,14 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
     }
 
     public void renderRightArm(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, AbstractClientPlayerEntity abstractClientPlayerEntity) {
-        this.method_23205(matrixStack, vertexConsumerProvider, i, abstractClientPlayerEntity, ((PlayerEntityModel)this.model).rightArm, ((PlayerEntityModel)this.model).rightSleeve);
+        this.renderArm(matrixStack, vertexConsumerProvider, i, abstractClientPlayerEntity, ((PlayerEntityModel)this.model).rightArm, ((PlayerEntityModel)this.model).rightSleeve);
     }
 
     public void renderLeftArm(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, AbstractClientPlayerEntity abstractClientPlayerEntity) {
-        this.method_23205(matrixStack, vertexConsumerProvider, i, abstractClientPlayerEntity, ((PlayerEntityModel)this.model).leftArm, ((PlayerEntityModel)this.model).leftSleeve);
+        this.renderArm(matrixStack, vertexConsumerProvider, i, abstractClientPlayerEntity, ((PlayerEntityModel)this.model).leftArm, ((PlayerEntityModel)this.model).leftSleeve);
     }
 
-    private void method_23205(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, AbstractClientPlayerEntity abstractClientPlayerEntity, ModelPart modelPart, ModelPart modelPart2) {
+    private void renderArm(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, AbstractClientPlayerEntity abstractClientPlayerEntity, ModelPart modelPart, ModelPart modelPart2) {
         PlayerEntityModel playerEntityModel = (PlayerEntityModel)this.getModel();
         this.setModelPose(abstractClientPlayerEntity);
         playerEntityModel.handSwingProgress = 0.0f;
