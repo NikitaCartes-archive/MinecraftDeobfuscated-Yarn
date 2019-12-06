@@ -41,7 +41,7 @@ public class SnowmanPumpkinFeatureRenderer extends FeatureRenderer<SnowGolemEnti
 			ItemStack itemStack = new ItemStack(Blocks.CARVED_PUMPKIN);
 			MinecraftClient.getInstance()
 				.getItemRenderer()
-				.method_23177(
+				.renderItem(
 					snowGolemEntity,
 					itemStack,
 					ModelTransformation.Type.HEAD,

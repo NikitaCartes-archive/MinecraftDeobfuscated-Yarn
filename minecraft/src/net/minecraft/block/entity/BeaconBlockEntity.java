@@ -276,29 +276,29 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
-		this.primary = getPotionEffectById(compoundTag.getInt("Primary"));
-		this.secondary = getPotionEffectById(compoundTag.getInt("Secondary"));
-		if (compoundTag.contains("CustomName", 8)) {
-			this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
+		this.primary = getPotionEffectById(tag.getInt("Primary"));
+		this.secondary = getPotionEffectById(tag.getInt("Secondary"));
+		if (tag.contains("CustomName", 8)) {
+			this.customName = Text.Serializer.fromJson(tag.getString("CustomName"));
 		}
 
-		this.lock = ContainerLock.deserialize(compoundTag);
+		this.lock = ContainerLock.deserialize(tag);
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag compoundTag) {
-		super.toTag(compoundTag);
-		compoundTag.putInt("Primary", StatusEffect.getRawId(this.primary));
-		compoundTag.putInt("Secondary", StatusEffect.getRawId(this.secondary));
-		compoundTag.putInt("Levels", this.level);
+	public CompoundTag toTag(CompoundTag tag) {
+		super.toTag(tag);
+		tag.putInt("Primary", StatusEffect.getRawId(this.primary));
+		tag.putInt("Secondary", StatusEffect.getRawId(this.secondary));
+		tag.putInt("Levels", this.level);
 		if (this.customName != null) {
-			compoundTag.putString("CustomName", Text.Serializer.toJson(this.customName));
+			tag.putString("CustomName", Text.Serializer.toJson(this.customName));
 		}
 
-		this.lock.serialize(compoundTag);
-		return compoundTag;
+		this.lock.serialize(tag);
+		return tag;
 	}
 
 	public void setCustomName(@Nullable Text text) {

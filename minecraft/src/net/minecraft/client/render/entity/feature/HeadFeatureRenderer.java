@@ -83,7 +83,7 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 				}
 
 				MinecraftClient.getInstance()
-					.getFirstPersonRenderer()
+					.getHeldItemRenderer()
 					.renderItem(livingEntity, itemStack, ModelTransformation.Type.HEAD, false, matrixStack, vertexConsumerProvider, i);
 			}
 

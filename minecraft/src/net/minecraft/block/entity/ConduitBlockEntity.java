@@ -51,23 +51,23 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
-		if (compoundTag.contains("target_uuid")) {
-			this.targetUuid = NbtHelper.toUuid(compoundTag.getCompound("target_uuid"));
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
+		if (tag.contains("target_uuid")) {
+			this.targetUuid = NbtHelper.toUuid(tag.getCompound("target_uuid"));
 		} else {
 			this.targetUuid = null;
 		}
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag compoundTag) {
-		super.toTag(compoundTag);
+	public CompoundTag toTag(CompoundTag tag) {
+		super.toTag(tag);
 		if (this.targetEntity != null) {
-			compoundTag.put("target_uuid", NbtHelper.fromUuid(this.targetEntity.getUuid()));
+			tag.put("target_uuid", NbtHelper.fromUuid(this.targetEntity.getUuid()));
 		}
 
-		return compoundTag;
+		return tag;
 	}
 
 	@Nullable

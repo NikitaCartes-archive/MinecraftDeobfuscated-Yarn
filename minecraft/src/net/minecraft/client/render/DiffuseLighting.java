@@ -22,11 +22,11 @@ public class DiffuseLighting {
 		RenderSystem.setupLevelDiffuseLighting(modelMatrix);
 	}
 
-	public static void method_24210() {
+	public static void disableGuiDepthLighting() {
 		RenderSystem.setupGuiFlatDiffuseLighting();
 	}
 
-	public static void method_24211() {
+	public static void enableGuiDepthLighting() {
 		RenderSystem.setupGui3DDiffuseLighting();
 	}
 }

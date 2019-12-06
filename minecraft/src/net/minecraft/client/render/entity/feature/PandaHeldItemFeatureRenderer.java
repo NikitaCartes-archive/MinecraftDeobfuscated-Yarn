@@ -33,7 +33,7 @@ public class PandaHeldItemFeatureRenderer extends FeatureRenderer<PandaEntity, P
 			matrixStack.push();
 			matrixStack.translate(0.1F, (double)n, (double)m);
 			MinecraftClient.getInstance()
-				.getFirstPersonRenderer()
+				.getHeldItemRenderer()
 				.renderItem(pandaEntity, itemStack, ModelTransformation.Type.GROUND, false, matrixStack, vertexConsumerProvider, i);
 			matrixStack.pop();
 		}

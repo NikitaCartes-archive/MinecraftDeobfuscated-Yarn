@@ -46,12 +46,12 @@ public abstract class BlockEntity {
 		return this.world != null;
 	}
 
-	public void fromTag(CompoundTag compoundTag) {
-		this.pos = new BlockPos(compoundTag.getInt("x"), compoundTag.getInt("y"), compoundTag.getInt("z"));
+	public void fromTag(CompoundTag tag) {
+		this.pos = new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z"));
 	}
 
-	public CompoundTag toTag(CompoundTag compoundTag) {
-		return this.writeIdentifyingData(compoundTag);
+	public CompoundTag toTag(CompoundTag tag) {
+		return this.writeIdentifyingData(tag);
 	}
 
 	private CompoundTag writeIdentifyingData(CompoundTag compoundTag) {

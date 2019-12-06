@@ -69,24 +69,24 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag compoundTag) {
-		super.toTag(compoundTag);
+	public CompoundTag toTag(CompoundTag tag) {
+		super.toTag(tag);
 		if (this.patternListTag != null) {
-			compoundTag.put("Patterns", this.patternListTag);
+			tag.put("Patterns", this.patternListTag);
 		}
 
 		if (this.customName != null) {
-			compoundTag.putString("CustomName", Text.Serializer.toJson(this.customName));
+			tag.putString("CustomName", Text.Serializer.toJson(this.customName));
 		}
 
-		return compoundTag;
+		return tag;
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
-		if (compoundTag.contains("CustomName", 8)) {
-			this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
+		if (tag.contains("CustomName", 8)) {
+			this.customName = Text.Serializer.fromJson(tag.getString("CustomName"));
 		}
 
 		if (this.hasWorld()) {
@@ -95,7 +95,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 			this.baseColor = null;
 		}
 
-		this.patternListTag = compoundTag.getList("Patterns", 10);
+		this.patternListTag = tag.getList("Patterns", 10);
 		this.patterns = null;
 		this.patternColors = null;
 		this.patternCacheKey = null;

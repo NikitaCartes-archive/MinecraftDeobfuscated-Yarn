@@ -195,8 +195,8 @@ public class BlockEntityType<T extends BlockEntity> {
 	public static final BlockEntityType<CampfireBlockEntity> CAMPFIRE = create(
 		"campfire", BlockEntityType.Builder.create(CampfireBlockEntity::new, Blocks.CAMPFIRE)
 	);
-	public static final BlockEntityType<BeeHiveBlockEntity> BEEHIVE = create(
-		"beehive", BlockEntityType.Builder.create(BeeHiveBlockEntity::new, Blocks.BEE_NEST, Blocks.BEEHIVE)
+	public static final BlockEntityType<BeehiveBlockEntity> BEEHIVE = create(
+		"beehive", BlockEntityType.Builder.create(BeehiveBlockEntity::new, Blocks.BEE_NEST, Blocks.BEEHIVE)
 	);
 	private final Supplier<? extends T> supplier;
 	private final Set<Block> blocks;
