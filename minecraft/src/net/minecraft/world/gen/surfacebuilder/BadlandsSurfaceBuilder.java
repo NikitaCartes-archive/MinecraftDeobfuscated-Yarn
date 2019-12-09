@@ -23,9 +23,9 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 	private static final BlockState LIGHT_GRAY_TERACOTTA = Blocks.LIGHT_GRAY_TERRACOTTA.getDefaultState();
 	protected BlockState[] layerBlocks;
 	protected long seed;
-	protected OctaveSimplexNoiseSampler field_15623;
-	protected OctaveSimplexNoiseSampler field_15618;
-	protected OctaveSimplexNoiseSampler field_15619;
+	protected OctaveSimplexNoiseSampler heightCutoffNoise;
+	protected OctaveSimplexNoiseSampler heightNoise;
+	protected OctaveSimplexNoiseSampler layerNoise;
 
 	public BadlandsSurfaceBuilder(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function) {
 		super(function);
@@ -89,7 +89,7 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 								} else if (bl) {
 									blockState6 = TERACOTTA;
 								} else {
-									blockState6 = this.method_15207(i, s, j);
+									blockState6 = this.calculateLayerBlockState(i, s, j);
 								}
 
 								chunk.setBlockState(mutable, blockState6, false);
@@ -121,7 +121,7 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 						if (bl2) {
 							chunk.setBlockState(mutable, ORANGE_TERRACOTTA, false);
 						} else {
-							chunk.setBlockState(mutable, this.method_15207(i, s, j), false);
+							chunk.setBlockState(mutable, this.calculateLayerBlockState(i, s, j), false);
 						}
 					}
 
@@ -137,10 +137,10 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 			this.initLayerBlocks(seed);
 		}
 
-		if (this.seed != seed || this.field_15623 == null || this.field_15618 == null) {
+		if (this.seed != seed || this.heightCutoffNoise == null || this.heightNoise == null) {
 			ChunkRandom chunkRandom = new ChunkRandom(seed);
-			this.field_15623 = new OctaveSimplexNoiseSampler(chunkRandom, 3, 0);
-			this.field_15618 = new OctaveSimplexNoiseSampler(chunkRandom, 0, 0);
+			this.heightCutoffNoise = new OctaveSimplexNoiseSampler(chunkRandom, 3, 0);
+			this.heightNoise = new OctaveSimplexNoiseSampler(chunkRandom, 0, 0);
 		}
 
 		this.seed = seed;
@@ -150,7 +150,7 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 		this.layerBlocks = new BlockState[64];
 		Arrays.fill(this.layerBlocks, TERACOTTA);
 		ChunkRandom chunkRandom = new ChunkRandom(seed);
-		this.field_15619 = new OctaveSimplexNoiseSampler(chunkRandom, 0, 0);
+		this.layerNoise = new OctaveSimplexNoiseSampler(chunkRandom, 0, 0);
 
 		for (int i = 0; i < 64; i++) {
 			i += chunkRandom.nextInt(5) + 1;
@@ -212,8 +212,8 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 		}
 	}
 
-	protected BlockState method_15207(int i, int j, int k) {
-		int l = (int)Math.round(this.field_15619.sample((double)i / 512.0, (double)k / 512.0, false) * 2.0);
-		return this.layerBlocks[(j + l + 64) % 64];
+	protected BlockState calculateLayerBlockState(int x, int y, int z) {
+		int i = (int)Math.round(this.layerNoise.sample((double)x / 512.0, (double)z / 512.0, false) * 2.0);
+		return this.layerBlocks[(y + i + 64) % 64];
 	}
 }

@@ -1,45 +1,30 @@
-package net.minecraft.world.biome.layer.util;
+package net.minecraft.world.biome.layer;
 
 import java.util.function.LongFunction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
-import net.minecraft.world.biome.layer.AddBambooJungleLayer;
-import net.minecraft.world.biome.layer.AddClimateLayers;
-import net.minecraft.world.biome.layer.AddColdClimatesLayer;
-import net.minecraft.world.biome.layer.AddDeepOceanLayer;
-import net.minecraft.world.biome.layer.AddEdgeBiomesLayer;
-import net.minecraft.world.biome.layer.AddHillsLayer;
-import net.minecraft.world.biome.layer.AddIslandLayer;
-import net.minecraft.world.biome.layer.AddMushroomIslandLayer;
-import net.minecraft.world.biome.layer.AddRiversLayer;
-import net.minecraft.world.biome.layer.AddSunflowerPlainsLayer;
-import net.minecraft.world.biome.layer.ApplyOceanTemperatureLayer;
-import net.minecraft.world.biome.layer.ContinentLayer;
-import net.minecraft.world.biome.layer.EaseBiomeEdgeLayer;
-import net.minecraft.world.biome.layer.IncreaseEdgeCurvatureLayer;
-import net.minecraft.world.biome.layer.NoiseToRiverLayer;
-import net.minecraft.world.biome.layer.OceanTemperatureLayer;
-import net.minecraft.world.biome.layer.ScaleLayer;
-import net.minecraft.world.biome.layer.SetBaseBiomesLayer;
-import net.minecraft.world.biome.layer.SimpleLandNoiseLayer;
-import net.minecraft.world.biome.layer.SmoothenShorelineLayer;
 import net.minecraft.world.biome.layer.type.ParentedLayer;
+import net.minecraft.world.biome.layer.util.CachingLayerContext;
+import net.minecraft.world.biome.layer.util.CachingLayerSampler;
+import net.minecraft.world.biome.layer.util.LayerFactory;
+import net.minecraft.world.biome.layer.util.LayerSampleContext;
+import net.minecraft.world.biome.layer.util.LayerSampler;
 import net.minecraft.world.biome.source.BiomeLayerSampler;
 import net.minecraft.world.gen.chunk.OverworldChunkGeneratorConfig;
 import net.minecraft.world.level.LevelGeneratorType;
 
 public class BiomeLayers {
-	public static final int WARM_OCEAN_ID = Registry.BIOME.getRawId(Biomes.WARM_OCEAN);
-	public static final int LUKEWARM_OCEAN_ID = Registry.BIOME.getRawId(Biomes.LUKEWARM_OCEAN);
-	public static final int OCEAN_ID = Registry.BIOME.getRawId(Biomes.OCEAN);
-	public static final int COLD_OCEAN_ID = Registry.BIOME.getRawId(Biomes.COLD_OCEAN);
-	public static final int FROZEN_OCEAN_ID = Registry.BIOME.getRawId(Biomes.FROZEN_OCEAN);
-	public static final int DEEP_WARM_OCEAN_ID = Registry.BIOME.getRawId(Biomes.DEEP_WARM_OCEAN);
-	public static final int DEEP_LUKEWARM_OCEAN_ID = Registry.BIOME.getRawId(Biomes.DEEP_LUKEWARM_OCEAN);
-	public static final int DEEP_OCEAN_ID = Registry.BIOME.getRawId(Biomes.DEEP_OCEAN);
-	public static final int DEEP_COLD_OCEAN_ID = Registry.BIOME.getRawId(Biomes.DEEP_COLD_OCEAN);
-	public static final int DEEP_FROZEN_OCEAN_ID = Registry.BIOME.getRawId(Biomes.DEEP_FROZEN_OCEAN);
+	protected static final int WARM_OCEAN_ID = Registry.BIOME.getRawId(Biomes.WARM_OCEAN);
+	protected static final int LUKEWARM_OCEAN_ID = Registry.BIOME.getRawId(Biomes.LUKEWARM_OCEAN);
+	protected static final int OCEAN_ID = Registry.BIOME.getRawId(Biomes.OCEAN);
+	protected static final int COLD_OCEAN_ID = Registry.BIOME.getRawId(Biomes.COLD_OCEAN);
+	protected static final int FROZEN_OCEAN_ID = Registry.BIOME.getRawId(Biomes.FROZEN_OCEAN);
+	protected static final int DEEP_WARM_OCEAN_ID = Registry.BIOME.getRawId(Biomes.DEEP_WARM_OCEAN);
+	protected static final int DEEP_LUKEWARM_OCEAN_ID = Registry.BIOME.getRawId(Biomes.DEEP_LUKEWARM_OCEAN);
+	protected static final int DEEP_OCEAN_ID = Registry.BIOME.getRawId(Biomes.DEEP_OCEAN);
+	protected static final int DEEP_COLD_OCEAN_ID = Registry.BIOME.getRawId(Biomes.DEEP_COLD_OCEAN);
+	protected static final int DEEP_FROZEN_OCEAN_ID = Registry.BIOME.getRawId(Biomes.DEEP_FROZEN_OCEAN);
 
 	private static <T extends LayerSampler, C extends LayerSampleContext<T>> LayerFactory<T> stack(
 		long seed, ParentedLayer layer, LayerFactory<T> parent, int count, LongFunction<C> contextProvider
@@ -134,7 +119,7 @@ public class BiomeLayers {
 		}
 	}
 
-	public static boolean isOcean(int id) {
+	protected static boolean isOcean(int id) {
 		return id == WARM_OCEAN_ID
 			|| id == LUKEWARM_OCEAN_ID
 			|| id == OCEAN_ID
@@ -147,7 +132,7 @@ public class BiomeLayers {
 			|| id == DEEP_FROZEN_OCEAN_ID;
 	}
 
-	public static boolean isShallowOcean(int id) {
+	protected static boolean isShallowOcean(int id) {
 		return id == WARM_OCEAN_ID || id == LUKEWARM_OCEAN_ID || id == OCEAN_ID || id == COLD_OCEAN_ID || id == FROZEN_OCEAN_ID;
 	}
 }

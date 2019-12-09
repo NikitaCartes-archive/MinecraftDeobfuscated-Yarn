@@ -69,7 +69,7 @@ public abstract class Biome {
 	protected final float downfall;
 	protected final int waterColor;
 	protected final int waterFogColor;
-	private final int field_21806;
+	private final int skyColor;
 	@Nullable
 	protected final String parent;
 	protected final ConfiguredSurfaceBuilder<?> surfaceBuilder;
@@ -91,7 +91,7 @@ public abstract class Biome {
 		}));
 
 	@Nullable
-	public static Biome getParentBiome(Biome biome) {
+	public static Biome getModifiedBiome(Biome biome) {
 		return PARENT_BIOME_ID_MAP.get(Registry.BIOME.getRawId(biome));
 	}
 
@@ -118,7 +118,7 @@ public abstract class Biome {
 			this.downfall = settings.downfall;
 			this.waterColor = settings.waterColor;
 			this.waterFogColor = settings.waterFogColor;
-			this.field_21806 = this.method_24218();
+			this.skyColor = this.calculateSkyColor();
 			this.parent = settings.parent;
 
 			for (GenerationStep.Feature feature : GenerationStep.Feature.values()) {
@@ -137,7 +137,7 @@ public abstract class Biome {
 		return this.parent != null;
 	}
 
-	private int method_24218() {
+	private int calculateSkyColor() {
 		float f = this.temperature;
 		f /= 3.0F;
 		f = MathHelper.clamp(f, -1.0F, 1.0F);
@@ -146,15 +146,15 @@ public abstract class Biome {
 
 	@Environment(EnvType.CLIENT)
 	public int getSkyColor() {
-		return this.field_21806;
+		return this.skyColor;
 	}
 
 	protected void addSpawn(EntityCategory type, Biome.SpawnEntry spawnEntry) {
 		((List)this.spawns.get(type)).add(spawnEntry);
 	}
 
-	public List<Biome.SpawnEntry> getEntitySpawnList(EntityCategory entityCategory) {
-		return (List<Biome.SpawnEntry>)this.spawns.get(entityCategory);
+	public List<Biome.SpawnEntry> getEntitySpawnList(EntityCategory category) {
+		return (List<Biome.SpawnEntry>)this.spawns.get(category);
 	}
 
 	public Biome.Precipitation getPrecipitation() {
@@ -195,24 +195,24 @@ public abstract class Biome {
 		}
 	}
 
-	public boolean canSetSnow(WorldView worldView, BlockPos blockPos) {
-		return this.canSetSnow(worldView, blockPos, true);
+	public boolean canSetSnow(WorldView world, BlockPos blockPos) {
+		return this.canSetSnow(world, blockPos, true);
 	}
 
-	public boolean canSetSnow(WorldView worldView, BlockPos pos, boolean bl) {
+	public boolean canSetSnow(WorldView world, BlockPos pos, boolean doWaterCheck) {
 		if (this.getTemperature(pos) >= 0.15F) {
 			return false;
 		} else {
-			if (pos.getY() >= 0 && pos.getY() < 256 && worldView.getLightLevel(LightType.BLOCK, pos) < 10) {
-				BlockState blockState = worldView.getBlockState(pos);
-				FluidState fluidState = worldView.getFluidState(pos);
+			if (pos.getY() >= 0 && pos.getY() < 256 && world.getLightLevel(LightType.BLOCK, pos) < 10) {
+				BlockState blockState = world.getBlockState(pos);
+				FluidState fluidState = world.getFluidState(pos);
 				if (fluidState.getFluid() == Fluids.WATER && blockState.getBlock() instanceof FluidBlock) {
-					if (!bl) {
+					if (!doWaterCheck) {
 						return true;
 					}
 
-					boolean bl2 = worldView.isWater(pos.west()) && worldView.isWater(pos.east()) && worldView.isWater(pos.north()) && worldView.isWater(pos.south());
-					if (!bl2) {
+					boolean bl = world.isWater(pos.west()) && world.isWater(pos.east()) && world.isWater(pos.north()) && world.isWater(pos.south());
+					if (!bl) {
 						return true;
 					}
 				}
@@ -275,20 +275,15 @@ public abstract class Biome {
 	}
 
 	public void generateFeatureStep(
-		GenerationStep.Feature feature,
-		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
-		IWorld iWorld,
-		long l,
-		ChunkRandom chunkRandom,
-		BlockPos blockPos
+		GenerationStep.Feature step, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, IWorld world, long seed, ChunkRandom random, BlockPos pos
 	) {
 		int i = 0;
 
-		for (ConfiguredFeature<?, ?> configuredFeature : (List)this.features.get(feature)) {
-			chunkRandom.setFeatureSeed(l, i, feature.ordinal());
+		for (ConfiguredFeature<?, ?> configuredFeature : (List)this.features.get(step)) {
+			random.setFeatureSeed(seed, i, step.ordinal());
 
 			try {
-				configuredFeature.generate(iWorld, chunkGenerator, chunkRandom, blockPos);
+				configuredFeature.generate(world, chunkGenerator, random, pos);
 			} catch (Exception var13) {
 				CrashReport crashReport = CrashReport.create(var13, "Feature placement");
 				crashReport.addElement("Feature")
@@ -302,14 +297,14 @@ public abstract class Biome {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int getGrassColorAt(double d, double e) {
-		double f = (double)MathHelper.clamp(this.getTemperature(), 0.0F, 1.0F);
-		double g = (double)MathHelper.clamp(this.getRainfall(), 0.0F, 1.0F);
-		return GrassColors.getColor(f, g);
+	public int getGrassColorAt(double x, double z) {
+		double d = (double)MathHelper.clamp(this.getTemperature(), 0.0F, 1.0F);
+		double e = (double)MathHelper.clamp(this.getRainfall(), 0.0F, 1.0F);
+		return GrassColors.getColor(d, e);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int getFoliageColorAt() {
+	public int getFoliageColor() {
 		double d = (double)MathHelper.clamp(this.getTemperature(), 0.0F, 1.0F);
 		double e = (double)MathHelper.clamp(this.getRainfall(), 0.0F, 1.0F);
 		return FoliageColors.getColor(d, e);
@@ -508,6 +503,11 @@ public abstract class Biome {
 			return this;
 		}
 
+		/**
+		 * Sets the biome that this will replace as a modified version of the biome.
+		 * 
+		 * @param parent the string identifier of the biome to be replaced
+		 */
 		public Biome.Settings parent(@Nullable String parent) {
 			this.parent = parent;
 			return this;

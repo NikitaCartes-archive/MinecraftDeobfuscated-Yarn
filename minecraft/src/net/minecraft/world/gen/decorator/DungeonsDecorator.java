@@ -10,15 +10,15 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
-public class DungeonsDecorator extends Decorator<LakeDecoratorConfig> {
-	public DungeonsDecorator(Function<Dynamic<?>, ? extends LakeDecoratorConfig> function) {
+public class DungeonsDecorator extends Decorator<ChanceDecoratorConfig> {
+	public DungeonsDecorator(Function<Dynamic<?>, ? extends ChanceDecoratorConfig> function) {
 		super(function);
 	}
 
 	public Stream<BlockPos> getPositions(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, LakeDecoratorConfig lakeDecoratorConfig, BlockPos blockPos
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, ChanceDecoratorConfig chanceDecoratorConfig, BlockPos blockPos
 	) {
-		int i = lakeDecoratorConfig.chance;
+		int i = chanceDecoratorConfig.chance;
 		return IntStream.range(0, i).mapToObj(ix -> {
 			int j = random.nextInt(16) + blockPos.getX();
 			int k = random.nextInt(16) + blockPos.getZ();

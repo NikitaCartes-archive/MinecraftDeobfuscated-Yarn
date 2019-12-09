@@ -15,15 +15,19 @@ import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
-public class LakeFeature extends Feature<BushFeatureConfig> {
+public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 	private static final BlockState CAVE_AIR = Blocks.CAVE_AIR.getDefaultState();
 
-	public LakeFeature(Function<Dynamic<?>, ? extends BushFeatureConfig> configFactory) {
+	public LakeFeature(Function<Dynamic<?>, ? extends SingleStateFeatureConfig> configFactory) {
 		super(configFactory);
 	}
 
 	public boolean generate(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, BushFeatureConfig bushFeatureConfig
+		IWorld iWorld,
+		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
+		Random random,
+		BlockPos blockPos,
+		SingleStateFeatureConfig singleStateFeatureConfig
 	) {
 		while (blockPos.getY() > 5 && iWorld.isAir(blockPos)) {
 			blockPos = blockPos.down();
@@ -81,7 +85,7 @@ public class LakeFeature extends Feature<BushFeatureConfig> {
 									return false;
 								}
 
-								if (t < 4 && !material.isSolid() && iWorld.getBlockState(blockPos.add(j, t, s)) != bushFeatureConfig.state) {
+								if (t < 4 && !material.isSolid() && iWorld.getBlockState(blockPos.add(j, t, s)) != singleStateFeatureConfig.state) {
 									return false;
 								}
 							}
@@ -93,7 +97,7 @@ public class LakeFeature extends Feature<BushFeatureConfig> {
 					for (int s = 0; s < 16; s++) {
 						for (int tx = 0; tx < 8; tx++) {
 							if (bls[(j * 16 + s) * 8 + tx]) {
-								iWorld.setBlockState(blockPos.add(j, tx, s), tx >= 4 ? CAVE_AIR : bushFeatureConfig.state, 2);
+								iWorld.setBlockState(blockPos.add(j, tx, s), tx >= 4 ? CAVE_AIR : singleStateFeatureConfig.state, 2);
 							}
 						}
 					}
@@ -117,7 +121,7 @@ public class LakeFeature extends Feature<BushFeatureConfig> {
 					}
 				}
 
-				if (bushFeatureConfig.state.getMaterial() == Material.LAVA) {
+				if (singleStateFeatureConfig.state.getMaterial() == Material.LAVA) {
 					for (int j = 0; j < 16; j++) {
 						for (int s = 0; s < 16; s++) {
 							for (int txxx = 0; txxx < 8; txxx++) {
@@ -138,7 +142,7 @@ public class LakeFeature extends Feature<BushFeatureConfig> {
 					}
 				}
 
-				if (bushFeatureConfig.state.getMaterial() == Material.WATER) {
+				if (singleStateFeatureConfig.state.getMaterial() == Material.WATER) {
 					for (int j = 0; j < 16; j++) {
 						for (int s = 0; s < 16; s++) {
 							int txxxx = 4;

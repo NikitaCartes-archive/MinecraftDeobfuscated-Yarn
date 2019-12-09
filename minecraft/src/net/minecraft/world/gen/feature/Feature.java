@@ -87,11 +87,11 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<DefaultFeatureConfig> VINES = register("vines", new VinesFeature(DefaultFeatureConfig::deserialize));
 	public static final Feature<DefaultFeatureConfig> MONSTER_ROOM = register("monster_room", new DungeonFeature(DefaultFeatureConfig::deserialize));
 	public static final Feature<DefaultFeatureConfig> BLUE_ICE = register("blue_ice", new BlueIceFeature(DefaultFeatureConfig::deserialize));
-	public static final Feature<BushFeatureConfig> ICEBERG = register("iceberg", new IcebergFeature(BushFeatureConfig::deserialize));
+	public static final Feature<SingleStateFeatureConfig> ICEBERG = register("iceberg", new IcebergFeature(SingleStateFeatureConfig::deserialize));
 	public static final Feature<BoulderFeatureConfig> FOREST_ROCK = register("forest_rock", new ForestRockFeature(BoulderFeatureConfig::deserialize));
 	public static final Feature<DiskFeatureConfig> DISK = register("disk", new DiskFeature(DiskFeatureConfig::deserialize));
 	public static final Feature<IcePatchFeatureConfig> ICE_PATCH = register("ice_patch", new IcePatchFeature(IcePatchFeatureConfig::deserialize));
-	public static final Feature<BushFeatureConfig> LAKE = register("lake", new LakeFeature(BushFeatureConfig::deserialize));
+	public static final Feature<SingleStateFeatureConfig> LAKE = register("lake", new LakeFeature(SingleStateFeatureConfig::deserialize));
 	public static final Feature<OreFeatureConfig> ORE = register("ore", new OreFeature(OreFeatureConfig::deserialize));
 	public static final Feature<EndSpikeFeatureConfig> END_SPIKE = register("end_spike", new EndSpikeFeature(EndSpikeFeatureConfig::deserialize));
 	public static final Feature<DefaultFeatureConfig> END_ISLAND = register("end_island", new EndIslandFeature(DefaultFeatureConfig::deserialize));

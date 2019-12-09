@@ -15,6 +15,7 @@ import net.minecraft.world.gen.carver.Carver;
 import net.minecraft.world.gen.decorator.AlterGroundTreeDecorator;
 import net.minecraft.world.gen.decorator.BeehiveTreeDecorator;
 import net.minecraft.world.gen.decorator.CarvingMaskDecoratorConfig;
+import net.minecraft.world.gen.decorator.ChanceDecoratorConfig;
 import net.minecraft.world.gen.decorator.CocoaBeansTreeDecorator;
 import net.minecraft.world.gen.decorator.CountChanceDecoratorConfig;
 import net.minecraft.world.gen.decorator.CountDecoratorConfig;
@@ -22,7 +23,6 @@ import net.minecraft.world.gen.decorator.CountDepthDecoratorConfig;
 import net.minecraft.world.gen.decorator.CountExtraChanceDecoratorConfig;
 import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.decorator.DecoratorConfig;
-import net.minecraft.world.gen.decorator.LakeDecoratorConfig;
 import net.minecraft.world.gen.decorator.LeaveVineTreeDecorator;
 import net.minecraft.world.gen.decorator.NoiseHeightmapDecoratorConfig;
 import net.minecraft.world.gen.decorator.RangeDecoratorConfig;
@@ -32,7 +32,6 @@ import net.minecraft.world.gen.feature.BlockPileFeatureConfig;
 import net.minecraft.world.gen.feature.BoulderFeatureConfig;
 import net.minecraft.world.gen.feature.BranchedTreeFeatureConfig;
 import net.minecraft.world.gen.feature.BuriedTreasureFeatureConfig;
-import net.minecraft.world.gen.feature.BushFeatureConfig;
 import net.minecraft.world.gen.feature.DiskFeatureConfig;
 import net.minecraft.world.gen.feature.EmeraldOreFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
@@ -51,6 +50,7 @@ import net.minecraft.world.gen.feature.RandomRandomFeatureConfig;
 import net.minecraft.world.gen.feature.SeagrassFeatureConfig;
 import net.minecraft.world.gen.feature.ShipwreckFeatureConfig;
 import net.minecraft.world.gen.feature.SimpleBlockFeatureConfig;
+import net.minecraft.world.gen.feature.SingleStateFeatureConfig;
 import net.minecraft.world.gen.feature.SpringFeatureConfig;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.feature.VillageFeatureConfig;
@@ -526,25 +526,25 @@ public class DefaultBiomeFeatures {
 	public static void addDefaultLakes(Biome biome) {
 		biome.addFeature(
 			GenerationStep.Feature.LOCAL_MODIFICATIONS,
-			Feature.LAKE.configure(new BushFeatureConfig(WATER)).createDecoratedFeature(Decorator.WATER_LAKE.configure(new LakeDecoratorConfig(4)))
+			Feature.LAKE.configure(new SingleStateFeatureConfig(WATER)).createDecoratedFeature(Decorator.WATER_LAKE.configure(new ChanceDecoratorConfig(4)))
 		);
 		biome.addFeature(
 			GenerationStep.Feature.LOCAL_MODIFICATIONS,
-			Feature.LAKE.configure(new BushFeatureConfig(LAVA)).createDecoratedFeature(Decorator.LAVA_LAKE.configure(new LakeDecoratorConfig(80)))
+			Feature.LAKE.configure(new SingleStateFeatureConfig(LAVA)).createDecoratedFeature(Decorator.LAVA_LAKE.configure(new ChanceDecoratorConfig(80)))
 		);
 	}
 
 	public static void addDesertLakes(Biome biome) {
 		biome.addFeature(
 			GenerationStep.Feature.LOCAL_MODIFICATIONS,
-			Feature.LAKE.configure(new BushFeatureConfig(LAVA)).createDecoratedFeature(Decorator.LAVA_LAKE.configure(new LakeDecoratorConfig(80)))
+			Feature.LAKE.configure(new SingleStateFeatureConfig(LAVA)).createDecoratedFeature(Decorator.LAVA_LAKE.configure(new ChanceDecoratorConfig(80)))
 		);
 	}
 
 	public static void addDungeons(Biome biome) {
 		biome.addFeature(
 			GenerationStep.Feature.UNDERGROUND_STRUCTURES,
-			Feature.MONSTER_ROOM.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.DUNGEONS.configure(new LakeDecoratorConfig(8)))
+			Feature.MONSTER_ROOM.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.DUNGEONS.configure(new ChanceDecoratorConfig(8)))
 		);
 	}
 
@@ -696,7 +696,7 @@ public class DefaultBiomeFeatures {
 	public static void addSweetBerryBushesSnowy(Biome biome) {
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.RANDOM_PATCH.configure(SWEET_BERRY_BUSH_CONFIG).createDecoratedFeature(Decorator.CHANCE_HEIGHTMAP_DOUBLE.configure(new LakeDecoratorConfig(12)))
+			Feature.RANDOM_PATCH.configure(SWEET_BERRY_BUSH_CONFIG).createDecoratedFeature(Decorator.CHANCE_HEIGHTMAP_DOUBLE.configure(new ChanceDecoratorConfig(12)))
 		);
 	}
 
@@ -1176,11 +1176,11 @@ public class DefaultBiomeFeatures {
 	public static void addDefaultMushrooms(Biome biome) {
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.RANDOM_PATCH.configure(BROWN_MUSHROOM_CONFIG).createDecoratedFeature(Decorator.CHANCE_HEIGHTMAP_DOUBLE.configure(new LakeDecoratorConfig(4)))
+			Feature.RANDOM_PATCH.configure(BROWN_MUSHROOM_CONFIG).createDecoratedFeature(Decorator.CHANCE_HEIGHTMAP_DOUBLE.configure(new ChanceDecoratorConfig(4)))
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.RANDOM_PATCH.configure(RED_MUSHROOM_CONFIG).createDecoratedFeature(Decorator.CHANCE_HEIGHTMAP_DOUBLE.configure(new LakeDecoratorConfig(8)))
+			Feature.RANDOM_PATCH.configure(RED_MUSHROOM_CONFIG).createDecoratedFeature(Decorator.CHANCE_HEIGHTMAP_DOUBLE.configure(new ChanceDecoratorConfig(8)))
 		);
 	}
 
@@ -1191,7 +1191,7 @@ public class DefaultBiomeFeatures {
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.RANDOM_PATCH.configure(PUMPKIN_PATCH_CONFIG).createDecoratedFeature(Decorator.CHANCE_HEIGHTMAP_DOUBLE.configure(new LakeDecoratorConfig(32)))
+			Feature.RANDOM_PATCH.configure(PUMPKIN_PATCH_CONFIG).createDecoratedFeature(Decorator.CHANCE_HEIGHTMAP_DOUBLE.configure(new ChanceDecoratorConfig(32)))
 		);
 	}
 
@@ -1202,7 +1202,7 @@ public class DefaultBiomeFeatures {
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.RANDOM_PATCH.configure(PUMPKIN_PATCH_CONFIG).createDecoratedFeature(Decorator.CHANCE_HEIGHTMAP_DOUBLE.configure(new LakeDecoratorConfig(32)))
+			Feature.RANDOM_PATCH.configure(PUMPKIN_PATCH_CONFIG).createDecoratedFeature(Decorator.CHANCE_HEIGHTMAP_DOUBLE.configure(new ChanceDecoratorConfig(32)))
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
@@ -1228,7 +1228,7 @@ public class DefaultBiomeFeatures {
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.RANDOM_PATCH.configure(PUMPKIN_PATCH_CONFIG).createDecoratedFeature(Decorator.CHANCE_HEIGHTMAP_DOUBLE.configure(new LakeDecoratorConfig(32)))
+			Feature.RANDOM_PATCH.configure(PUMPKIN_PATCH_CONFIG).createDecoratedFeature(Decorator.CHANCE_HEIGHTMAP_DOUBLE.configure(new ChanceDecoratorConfig(32)))
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
@@ -1243,25 +1243,25 @@ public class DefaultBiomeFeatures {
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.RANDOM_PATCH.configure(PUMPKIN_PATCH_CONFIG).createDecoratedFeature(Decorator.CHANCE_HEIGHTMAP_DOUBLE.configure(new LakeDecoratorConfig(32)))
+			Feature.RANDOM_PATCH.configure(PUMPKIN_PATCH_CONFIG).createDecoratedFeature(Decorator.CHANCE_HEIGHTMAP_DOUBLE.configure(new ChanceDecoratorConfig(32)))
 		);
 	}
 
 	public static void addDesertFeatures(Biome biome) {
 		biome.addFeature(
 			GenerationStep.Feature.SURFACE_STRUCTURES,
-			Feature.DESERT_WELL.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.CHANCE_HEIGHTMAP.configure(new LakeDecoratorConfig(1000)))
+			Feature.DESERT_WELL.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.CHANCE_HEIGHTMAP.configure(new ChanceDecoratorConfig(1000)))
 		);
 		biome.addFeature(
 			GenerationStep.Feature.UNDERGROUND_DECORATION,
-			Feature.FOSSIL.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.CHANCE_PASSTHROUGH.configure(new LakeDecoratorConfig(64)))
+			Feature.FOSSIL.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.CHANCE_PASSTHROUGH.configure(new ChanceDecoratorConfig(64)))
 		);
 	}
 
 	public static void addFossils(Biome biome) {
 		biome.addFeature(
 			GenerationStep.Feature.UNDERGROUND_DECORATION,
-			Feature.FOSSIL.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.CHANCE_PASSTHROUGH.configure(new LakeDecoratorConfig(64)))
+			Feature.FOSSIL.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.CHANCE_PASSTHROUGH.configure(new ChanceDecoratorConfig(64)))
 		);
 	}
 
@@ -1328,11 +1328,11 @@ public class DefaultBiomeFeatures {
 	public static void addIcebergs(Biome biome) {
 		biome.addFeature(
 			GenerationStep.Feature.LOCAL_MODIFICATIONS,
-			Feature.ICEBERG.configure(new BushFeatureConfig(PACKED_ICE)).createDecoratedFeature(Decorator.ICEBERG.configure(new LakeDecoratorConfig(16)))
+			Feature.ICEBERG.configure(new SingleStateFeatureConfig(PACKED_ICE)).createDecoratedFeature(Decorator.ICEBERG.configure(new ChanceDecoratorConfig(16)))
 		);
 		biome.addFeature(
 			GenerationStep.Feature.LOCAL_MODIFICATIONS,
-			Feature.ICEBERG.configure(new BushFeatureConfig(BLUE_ICE)).createDecoratedFeature(Decorator.ICEBERG.configure(new LakeDecoratorConfig(200)))
+			Feature.ICEBERG.configure(new SingleStateFeatureConfig(BLUE_ICE)).createDecoratedFeature(Decorator.ICEBERG.configure(new ChanceDecoratorConfig(200)))
 		);
 	}
 

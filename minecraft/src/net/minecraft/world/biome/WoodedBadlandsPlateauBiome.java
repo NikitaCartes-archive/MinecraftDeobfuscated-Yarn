@@ -54,13 +54,13 @@ public final class WoodedBadlandsPlateauBiome extends Biome {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public int getFoliageColorAt() {
+	public int getFoliageColor() {
 		return 10387789;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public int getGrassColorAt(double d, double e) {
+	public int getGrassColorAt(double x, double z) {
 		return 9470285;
 	}
 }
