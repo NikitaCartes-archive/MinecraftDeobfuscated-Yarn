@@ -20,12 +20,12 @@ implements AutoCloseable {
     private final Long2ObjectLinkedOpenHashMap<RegionFile> cachedRegionFiles = new Long2ObjectLinkedOpenHashMap();
     private final File directory;
 
-    RegionBasedStorage(File file) {
-        this.directory = file;
+    RegionBasedStorage(File directory) {
+        this.directory = directory;
     }
 
-    private RegionFile getRegionFile(ChunkPos chunkPos) throws IOException {
-        long l = ChunkPos.toLong(chunkPos.getRegionX(), chunkPos.getRegionZ());
+    private RegionFile getRegionFile(ChunkPos pos) throws IOException {
+        long l = ChunkPos.toLong(pos.getRegionX(), pos.getRegionZ());
         RegionFile regionFile = this.cachedRegionFiles.getAndMoveToFirst(l);
         if (regionFile != null) {
             return regionFile;
@@ -36,16 +36,16 @@ implements AutoCloseable {
         if (!this.directory.exists()) {
             this.directory.mkdirs();
         }
-        File file = new File(this.directory, "r." + chunkPos.getRegionX() + "." + chunkPos.getRegionZ() + ".mca");
+        File file = new File(this.directory, "r." + pos.getRegionX() + "." + pos.getRegionZ() + ".mca");
         RegionFile regionFile2 = new RegionFile(file, this.directory);
         this.cachedRegionFiles.putAndMoveToFirst(l, regionFile2);
         return regionFile2;
     }
 
     @Nullable
-    public CompoundTag getTagAt(ChunkPos chunkPos) throws IOException {
-        RegionFile regionFile = this.getRegionFile(chunkPos);
-        try (DataInputStream dataInputStream = regionFile.getChunkInputStream(chunkPos);){
+    public CompoundTag getTagAt(ChunkPos pos) throws IOException {
+        RegionFile regionFile = this.getRegionFile(pos);
+        try (DataInputStream dataInputStream = regionFile.getChunkInputStream(pos);){
             if (dataInputStream == null) {
                 CompoundTag compoundTag = null;
                 return compoundTag;

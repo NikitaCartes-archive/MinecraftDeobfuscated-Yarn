@@ -15,38 +15,38 @@ import net.minecraft.world.World;
 public class ItemDispenserBehavior
 implements DispenserBehavior {
     @Override
-    public final ItemStack dispense(BlockPointer blockPointer, ItemStack itemStack) {
-        ItemStack itemStack2 = this.dispenseSilently(blockPointer, itemStack);
-        this.playSound(blockPointer);
-        this.spawnParticles(blockPointer, blockPointer.getBlockState().get(DispenserBlock.FACING));
-        return itemStack2;
-    }
-
-    protected ItemStack dispenseSilently(BlockPointer blockPointer, ItemStack itemStack) {
-        Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);
-        Position position = DispenserBlock.getOutputLocation(blockPointer);
-        ItemStack itemStack2 = itemStack.split(1);
-        ItemDispenserBehavior.spawnItem(blockPointer.getWorld(), itemStack2, 6, direction, position);
+    public final ItemStack dispense(BlockPointer location, ItemStack stack) {
+        ItemStack itemStack = this.dispenseSilently(location, stack);
+        this.playSound(location);
+        this.spawnParticles(location, location.getBlockState().get(DispenserBlock.FACING));
         return itemStack;
     }
 
-    public static void spawnItem(World world, ItemStack itemStack, int i, Direction direction, Position position) {
-        double d = position.getX();
-        double e = position.getY();
-        double f = position.getZ();
-        e = direction.getAxis() == Direction.Axis.Y ? (e -= 0.125) : (e -= 0.15625);
-        ItemEntity itemEntity = new ItemEntity(world, d, e, f, itemStack);
+    protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
+        Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
+        Position position = DispenserBlock.getOutputLocation(pointer);
+        ItemStack itemStack = stack.split(1);
+        ItemDispenserBehavior.spawnItem(pointer.getWorld(), itemStack, 6, direction, position);
+        return stack;
+    }
+
+    public static void spawnItem(World world, ItemStack stack, int offset, Direction side, Position pos) {
+        double d = pos.getX();
+        double e = pos.getY();
+        double f = pos.getZ();
+        e = side.getAxis() == Direction.Axis.Y ? (e -= 0.125) : (e -= 0.15625);
+        ItemEntity itemEntity = new ItemEntity(world, d, e, f, stack);
         double g = world.random.nextDouble() * 0.1 + 0.2;
-        itemEntity.setVelocity(world.random.nextGaussian() * (double)0.0075f * (double)i + (double)direction.getOffsetX() * g, world.random.nextGaussian() * (double)0.0075f * (double)i + (double)0.2f, world.random.nextGaussian() * (double)0.0075f * (double)i + (double)direction.getOffsetZ() * g);
+        itemEntity.setVelocity(world.random.nextGaussian() * (double)0.0075f * (double)offset + (double)side.getOffsetX() * g, world.random.nextGaussian() * (double)0.0075f * (double)offset + (double)0.2f, world.random.nextGaussian() * (double)0.0075f * (double)offset + (double)side.getOffsetZ() * g);
         world.spawnEntity(itemEntity);
     }
 
-    protected void playSound(BlockPointer blockPointer) {
-        blockPointer.getWorld().playLevelEvent(1000, blockPointer.getBlockPos(), 0);
+    protected void playSound(BlockPointer pointer) {
+        pointer.getWorld().playLevelEvent(1000, pointer.getBlockPos(), 0);
     }
 
-    protected void spawnParticles(BlockPointer blockPointer, Direction direction) {
-        blockPointer.getWorld().playLevelEvent(2000, blockPointer.getBlockPos(), direction.getId());
+    protected void spawnParticles(BlockPointer pointer, Direction side) {
+        pointer.getWorld().playLevelEvent(2000, pointer.getBlockPos(), side.getId());
     }
 }
 

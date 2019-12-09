@@ -136,23 +136,23 @@ extends TameableEntity {
         return this.dataTracker.get(CAT_TYPE);
     }
 
-    public void setCatType(int i) {
-        if (i < 0 || i >= 11) {
-            i = this.random.nextInt(10);
+    public void setCatType(int type) {
+        if (type < 0 || type >= 11) {
+            type = this.random.nextInt(10);
         }
-        this.dataTracker.set(CAT_TYPE, i);
+        this.dataTracker.set(CAT_TYPE, type);
     }
 
-    public void setSleepingWithOwner(boolean bl) {
-        this.dataTracker.set(SLEEPING_WITH_OWNER, bl);
+    public void setSleepingWithOwner(boolean sleeping) {
+        this.dataTracker.set(SLEEPING_WITH_OWNER, sleeping);
     }
 
     public boolean isSleepingWithOwner() {
         return this.dataTracker.get(SLEEPING_WITH_OWNER);
     }
 
-    public void setHeadDown(boolean bl) {
-        this.dataTracker.set(HEAD_DOWN, bl);
+    public void setHeadDown(boolean headDown) {
+        this.dataTracker.set(HEAD_DOWN, headDown);
     }
 
     public boolean isHeadDown() {
@@ -177,18 +177,18 @@ extends TameableEntity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag compoundTag) {
-        super.writeCustomDataToTag(compoundTag);
-        compoundTag.putInt("CatType", this.getCatType());
-        compoundTag.putByte("CollarColor", (byte)this.getCollarColor().getId());
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putInt("CatType", this.getCatType());
+        tag.putByte("CollarColor", (byte)this.getCollarColor().getId());
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag compoundTag) {
-        super.readCustomDataFromTag(compoundTag);
-        this.setCatType(compoundTag.getInt("CatType"));
-        if (compoundTag.contains("CollarColor", 99)) {
-            this.setCollarColor(DyeColor.byId(compoundTag.getInt("CollarColor")));
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        this.setCatType(tag.getInt("CatType"));
+        if (tag.contains("CollarColor", 99)) {
+            this.setCollarColor(DyeColor.byId(tag.getInt("CollarColor")));
         }
     }
 
@@ -237,7 +237,7 @@ extends TameableEntity {
     }
 
     @Override
-    protected SoundEvent getHurtSound(DamageSource damageSource) {
+    protected SoundEvent getHurtSound(DamageSource source) {
         return SoundEvents.ENTITY_CAT_HURT;
     }
 
@@ -255,16 +255,16 @@ extends TameableEntity {
     }
 
     @Override
-    public boolean handleFallDamage(float f, float g) {
+    public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
         return false;
     }
 
     @Override
-    protected void eat(PlayerEntity playerEntity, ItemStack itemStack) {
-        if (this.isBreedingItem(itemStack)) {
+    protected void eat(PlayerEntity player, ItemStack stack) {
+        if (this.isBreedingItem(stack)) {
             this.playSound(SoundEvents.ENTITY_CAT_EAT, 1.0f, 1.0f);
         }
-        super.eat(playerEntity, itemStack);
+        super.eat(player, stack);
     }
 
     private float method_22327() {
@@ -272,8 +272,8 @@ extends TameableEntity {
     }
 
     @Override
-    public boolean tryAttack(Entity entity) {
-        return entity.damage(DamageSource.mob(this), this.method_22327());
+    public boolean tryAttack(Entity target) {
+        return target.damage(DamageSource.mob(this), this.method_22327());
     }
 
     @Override
@@ -311,18 +311,18 @@ extends TameableEntity {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public float getSleepAnimation(float f) {
-        return MathHelper.lerp(f, this.prevSleepAnimation, this.sleepAnimation);
+    public float getSleepAnimation(float tickDelta) {
+        return MathHelper.lerp(tickDelta, this.prevSleepAnimation, this.sleepAnimation);
     }
 
     @Environment(value=EnvType.CLIENT)
-    public float getTailCurlAnimation(float f) {
-        return MathHelper.lerp(f, this.prevTailCurlAnimation, this.tailCurlAnimation);
+    public float getTailCurlAnimation(float tickDelta) {
+        return MathHelper.lerp(tickDelta, this.prevTailCurlAnimation, this.tailCurlAnimation);
     }
 
     @Environment(value=EnvType.CLIENT)
-    public float getHeadDownAnimation(float f) {
-        return MathHelper.lerp(f, this.prevHeadDownAniamtion, this.headDownAnimation);
+    public float getHeadDownAnimation(float tickDelta) {
+        return MathHelper.lerp(tickDelta, this.prevHeadDownAniamtion, this.headDownAnimation);
     }
 
     @Override
@@ -348,27 +348,27 @@ extends TameableEntity {
     }
 
     @Override
-    public boolean canBreedWith(AnimalEntity animalEntity) {
+    public boolean canBreedWith(AnimalEntity other) {
         if (!this.isTamed()) {
             return false;
         }
-        if (!(animalEntity instanceof CatEntity)) {
+        if (!(other instanceof CatEntity)) {
             return false;
         }
-        CatEntity catEntity = (CatEntity)animalEntity;
-        return catEntity.isTamed() && super.canBreedWith(animalEntity);
+        CatEntity catEntity = (CatEntity)other;
+        return catEntity.isTamed() && super.canBreedWith(other);
     }
 
     @Override
     @Nullable
-    public EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag) {
-        entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
-        if (iWorld.getMoonSize() > 0.9f) {
+    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+        entityData = super.initialize(world, difficulty, spawnType, entityData, entityTag);
+        if (world.getMoonSize() > 0.9f) {
             this.setCatType(this.random.nextInt(11));
         } else {
             this.setCatType(this.random.nextInt(10));
         }
-        if (Feature.SWAMP_HUT.isInsideStructure(iWorld, new BlockPos(this))) {
+        if (Feature.SWAMP_HUT.isInsideStructure(world, new BlockPos(this))) {
             this.setCatType(10);
             this.setPersistent();
         }
@@ -379,27 +379,27 @@ extends TameableEntity {
      * Enabled aggressive block sorting
      */
     @Override
-    public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
+    public boolean interactMob(PlayerEntity player, Hand hand) {
         boolean bl;
-        ItemStack itemStack = playerEntity.getStackInHand(hand);
+        ItemStack itemStack = player.getStackInHand(hand);
         Item item = itemStack.getItem();
         if (itemStack.getItem() instanceof SpawnEggItem) {
-            return super.interactMob(playerEntity, hand);
+            return super.interactMob(player, hand);
         }
         if (this.world.isClient) {
             if (this.isTamed()) {
-                if (this.isOwner(playerEntity)) return true;
+                if (this.isOwner(player)) return true;
             }
             if (this.isBreedingItem(itemStack)) return true;
             return false;
         }
         if (this.isTamed()) {
-            if (this.isOwner(playerEntity)) {
+            if (this.isOwner(player)) {
                 if (item instanceof DyeItem) {
                     DyeColor dyeColor = ((DyeItem)item).getColor();
                     if (dyeColor != this.getCollarColor()) {
                         this.setCollarColor(dyeColor);
-                        if (!playerEntity.abilities.creativeMode) {
+                        if (!player.abilities.creativeMode) {
                             itemStack.decrement(1);
                         }
                         this.setPersistent();
@@ -407,11 +407,11 @@ extends TameableEntity {
                     }
                 } else {
                     if (item.isFood() && this.isBreedingItem(itemStack) && this.getHealth() < this.getMaximumHealth()) {
-                        this.eat(playerEntity, itemStack);
+                        this.eat(player, itemStack);
                         this.heal(item.getFoodComponent().getHunger());
                         return true;
                     }
-                    boolean bl2 = super.interactMob(playerEntity, hand);
+                    boolean bl2 = super.interactMob(player, hand);
                     if (bl2) {
                         if (!this.isBaby()) return bl2;
                     }
@@ -420,9 +420,9 @@ extends TameableEntity {
                 }
             }
         } else if (this.isBreedingItem(itemStack)) {
-            this.eat(playerEntity, itemStack);
+            this.eat(player, itemStack);
             if (this.random.nextInt(3) == 0) {
-                this.setOwner(playerEntity);
+                this.setOwner(player);
                 this.sitGoal.setEnabledWithOwner(true);
                 this.world.sendEntityStatus(this, (byte)7);
             } else {
@@ -431,23 +431,23 @@ extends TameableEntity {
             this.setPersistent();
             return true;
         }
-        if (!(bl = super.interactMob(playerEntity, hand))) return bl;
+        if (!(bl = super.interactMob(player, hand))) return bl;
         this.setPersistent();
         return bl;
     }
 
     @Override
-    public boolean isBreedingItem(ItemStack itemStack) {
-        return TAMING_INGREDIENT.test(itemStack);
+    public boolean isBreedingItem(ItemStack stack) {
+        return TAMING_INGREDIENT.test(stack);
     }
 
     @Override
-    protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
-        return entityDimensions.height * 0.5f;
+    protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
+        return dimensions.height * 0.5f;
     }
 
     @Override
-    public boolean canImmediatelyDespawn(double d) {
+    public boolean canImmediatelyDespawn(double distanceSquared) {
         return !this.isTamed() && this.age > 2400;
     }
 
@@ -463,8 +463,8 @@ extends TameableEntity {
     }
 
     @Override
-    public /* synthetic */ PassiveEntity createChild(PassiveEntity passiveEntity) {
-        return this.createChild(passiveEntity);
+    public /* synthetic */ PassiveEntity createChild(PassiveEntity mate) {
+        return this.createChild(mate);
     }
 
     static class SleepWithOwnerGoal
@@ -474,8 +474,8 @@ extends TameableEntity {
         private BlockPos bedPos;
         private int ticksOnBed;
 
-        public SleepWithOwnerGoal(CatEntity catEntity) {
-            this.cat = catEntity;
+        public SleepWithOwnerGoal(CatEntity cat) {
+            this.cat = cat;
         }
 
         @Override
@@ -581,9 +581,9 @@ extends TameableEntity {
         private PlayerEntity player;
         private final CatEntity cat;
 
-        public TemptGoal(CatEntity catEntity, double d, Ingredient ingredient, boolean bl) {
-            super((MobEntityWithAi)catEntity, d, ingredient, bl);
-            this.cat = catEntity;
+        public TemptGoal(CatEntity cat, double speed, Ingredient food, boolean canBeScared) {
+            super((MobEntityWithAi)cat, speed, food, canBeScared);
+            this.cat = cat;
         }
 
         @Override
@@ -614,9 +614,9 @@ extends TameableEntity {
     extends FleeEntityGoal<T> {
         private final CatEntity cat;
 
-        public CatFleeGoal(CatEntity catEntity, Class<T> class_, float f, double d, double e) {
-            super(catEntity, class_, f, d, e, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR::test);
-            this.cat = catEntity;
+        public CatFleeGoal(CatEntity cat, Class<T> fleeFromType, float distance, double slowSpeed, double fastSpeed) {
+            super(cat, fleeFromType, distance, slowSpeed, fastSpeed, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR::test);
+            this.cat = cat;
         }
 
         @Override

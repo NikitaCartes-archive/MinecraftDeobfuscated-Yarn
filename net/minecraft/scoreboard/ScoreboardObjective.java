@@ -19,11 +19,11 @@ public class ScoreboardObjective {
     private Text displayName;
     private ScoreboardCriterion.RenderType renderType;
 
-    public ScoreboardObjective(Scoreboard scoreboard, String string, ScoreboardCriterion scoreboardCriterion, Text text, ScoreboardCriterion.RenderType renderType) {
+    public ScoreboardObjective(Scoreboard scoreboard, String name, ScoreboardCriterion criterion, Text displayName, ScoreboardCriterion.RenderType renderType) {
         this.scoreboard = scoreboard;
-        this.name = string;
-        this.criterion = scoreboardCriterion;
-        this.displayName = text;
+        this.name = name;
+        this.criterion = criterion;
+        this.displayName = displayName;
         this.renderType = renderType;
     }
 
@@ -48,8 +48,8 @@ public class ScoreboardObjective {
         return Texts.bracketed(this.displayName.deepCopy().styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(this.getName())))));
     }
 
-    public void setDisplayName(Text text) {
-        this.displayName = text;
+    public void setDisplayName(Text name) {
+        this.displayName = name;
         this.scoreboard.updateExistingObjective(this);
     }
 

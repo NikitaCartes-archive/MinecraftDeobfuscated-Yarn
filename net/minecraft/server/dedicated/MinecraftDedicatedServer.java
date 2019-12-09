@@ -398,7 +398,7 @@ implements DedicatedServer {
     }
 
     @Override
-    public boolean openToLan(GameMode gameMode, boolean bl, int i) {
+    public boolean openToLan(GameMode gameMode, boolean cheatsAllowed, int port) {
         return false;
     }
 
@@ -444,9 +444,9 @@ implements DedicatedServer {
     }
 
     @Override
-    public void setPlayerIdleTimeout(int i) {
-        super.setPlayerIdleTimeout(i);
-        this.propertiesLoader.apply(serverPropertiesHandler -> (ServerPropertiesHandler)serverPropertiesHandler.playerIdleTimeout.set(i));
+    public void setPlayerIdleTimeout(int playerIdleTimeout) {
+        super.setPlayerIdleTimeout(playerIdleTimeout);
+        this.propertiesLoader.apply(serverPropertiesHandler -> (ServerPropertiesHandler)serverPropertiesHandler.playerIdleTimeout.set(playerIdleTimeout));
     }
 
     @Override
@@ -549,7 +549,7 @@ implements DedicatedServer {
     }
 
     @Override
-    public boolean isOwner(GameProfile gameProfile) {
+    public boolean isOwner(GameProfile profile) {
         return false;
     }
 

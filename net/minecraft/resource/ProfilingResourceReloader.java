@@ -24,32 +24,32 @@ extends ResourceReloader<Summary> {
     private static final Logger LOGGER = LogManager.getLogger();
     private final Stopwatch reloadTimer = Stopwatch.createUnstarted();
 
-    public ProfilingResourceReloader(ResourceManager resourceManager2, List<ResourceReloadListener> list, Executor executor, Executor executor22, CompletableFuture<Unit> completableFuture) {
-        super(executor, executor22, resourceManager2, list, (synchronizer, resourceManager, resourceReloadListener, executor2, executor3) -> {
+    public ProfilingResourceReloader(ResourceManager manager, List<ResourceReloadListener> listeners, Executor prepareExecutor2, Executor applyExecutor2, CompletableFuture<Unit> completableFuture) {
+        super(prepareExecutor2, applyExecutor2, manager, listeners, (synchronizer, resourceManager, resourceReloadListener, prepareExecutor, applyExecutor) -> {
             AtomicLong atomicLong = new AtomicLong();
             AtomicLong atomicLong2 = new AtomicLong();
             ProfilerSystem profilerSystem = new ProfilerSystem(Util.getMeasuringTimeNano(), () -> 0, false);
             ProfilerSystem profilerSystem2 = new ProfilerSystem(Util.getMeasuringTimeNano(), () -> 0, false);
-            CompletableFuture<Void> completableFuture = resourceReloadListener.reload(synchronizer, resourceManager, profilerSystem, profilerSystem2, runnable -> executor2.execute(() -> {
+            CompletableFuture<Void> completableFuture = resourceReloadListener.reload(synchronizer, resourceManager, profilerSystem, profilerSystem2, runnable -> prepareExecutor.execute(() -> {
                 long l = Util.getMeasuringTimeNano();
                 runnable.run();
                 atomicLong.addAndGet(Util.getMeasuringTimeNano() - l);
-            }), runnable -> executor3.execute(() -> {
+            }), runnable -> applyExecutor.execute(() -> {
                 long l = Util.getMeasuringTimeNano();
                 runnable.run();
                 atomicLong2.addAndGet(Util.getMeasuringTimeNano() - l);
             }));
-            return completableFuture.thenApplyAsync(void_ -> new Summary(resourceReloadListener.getName(), profilerSystem.getResults(), profilerSystem2.getResults(), atomicLong, atomicLong2), executor22);
+            return completableFuture.thenApplyAsync(void_ -> new Summary(resourceReloadListener.getName(), profilerSystem.getResults(), profilerSystem2.getResults(), atomicLong, atomicLong2), applyExecutor2);
         }, completableFuture);
         this.reloadTimer.start();
-        this.applyStageFuture.thenAcceptAsync(this::finish, executor22);
+        this.applyStageFuture.thenAcceptAsync(this::finish, applyExecutor2);
     }
 
-    private void finish(List<Summary> list) {
+    private void finish(List<Summary> summaries) {
         this.reloadTimer.stop();
         int i = 0;
         LOGGER.info("Resource reload finished after " + this.reloadTimer.elapsed(TimeUnit.MILLISECONDS) + " ms");
-        for (Summary summary : list) {
+        for (Summary summary : summaries) {
             ProfileResult profileResult = summary.prepareProfile;
             ProfileResult profileResult2 = summary.applyProfile;
             int j = (int)((double)summary.prepareTimeMs.get() / 1000000.0);
@@ -69,12 +69,12 @@ extends ResourceReloader<Summary> {
         private final AtomicLong prepareTimeMs;
         private final AtomicLong applyTimeMs;
 
-        private Summary(String string, ProfileResult profileResult, ProfileResult profileResult2, AtomicLong atomicLong, AtomicLong atomicLong2) {
-            this.name = string;
-            this.prepareProfile = profileResult;
-            this.applyProfile = profileResult2;
-            this.prepareTimeMs = atomicLong;
-            this.applyTimeMs = atomicLong2;
+        private Summary(String name, ProfileResult prepareProfile, ProfileResult applyProfile, AtomicLong prepareTimeMs, AtomicLong applyTimeMs) {
+            this.name = name;
+            this.prepareProfile = prepareProfile;
+            this.applyProfile = applyProfile;
+            this.prepareTimeMs = prepareTimeMs;
+            this.applyTimeMs = applyTimeMs;
         }
     }
 }

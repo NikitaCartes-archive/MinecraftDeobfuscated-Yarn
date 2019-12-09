@@ -14,8 +14,8 @@ import net.minecraft.world.gen.feature.RandomPatchFeatureConfig;
 
 public class DefaultFlowerFeature
 extends FlowerFeature<RandomPatchFeatureConfig> {
-    public DefaultFlowerFeature(Function<Dynamic<?>, ? extends RandomPatchFeatureConfig> function) {
-        super(function);
+    public DefaultFlowerFeature(Function<Dynamic<?>, ? extends RandomPatchFeatureConfig> configFactory) {
+        super(configFactory);
     }
 
     @Override

@@ -55,8 +55,8 @@ extends DataFix {
         int2ObjectOpenHashMap.put(71, "minecraft:vanishing_curse");
     });
 
-    public ItemStackEnchantmentFix(Schema schema, boolean bl) {
-        super(schema, bl);
+    public ItemStackEnchantmentFix(Schema outputSchema, boolean changesType) {
+        super(outputSchema, changesType);
     }
 
     @Override
@@ -66,12 +66,12 @@ extends DataFix {
         return this.fixTypeEverywhereTyped("ItemStackEnchantmentFix", type, typed2 -> typed2.updateTyped(opticFinder, typed -> typed.update(DSL.remainderFinder(), this::fixEnchantments)));
     }
 
-    private Dynamic<?> fixEnchantments(Dynamic<?> dynamic2) {
-        Optional<Dynamic> optional = dynamic2.get("ench").asStreamOpt().map(stream -> stream.map(dynamic -> dynamic.set("id", dynamic.createString(ID_TO_ENCHANTMENTS_MAP.getOrDefault(dynamic.get("id").asInt(0), "null"))))).map(dynamic2::createList);
+    private Dynamic<?> fixEnchantments(Dynamic<?> tag) {
+        Optional<Dynamic> optional = tag.get("ench").asStreamOpt().map(stream -> stream.map(dynamic -> dynamic.set("id", dynamic.createString(ID_TO_ENCHANTMENTS_MAP.getOrDefault(dynamic.get("id").asInt(0), "null"))))).map(tag::createList);
         if (optional.isPresent()) {
-            dynamic2 = dynamic2.remove("ench").set("Enchantments", optional.get());
+            tag = tag.remove("ench").set("Enchantments", optional.get());
         }
-        return dynamic2.update("StoredEnchantments", dynamic -> DataFixUtils.orElse(dynamic.asStreamOpt().map(stream -> stream.map(dynamic -> dynamic.set("id", dynamic.createString(ID_TO_ENCHANTMENTS_MAP.getOrDefault(dynamic.get("id").asInt(0), "null"))))).map(dynamic::createList), dynamic));
+        return tag.update("StoredEnchantments", dynamic -> DataFixUtils.orElse(dynamic.asStreamOpt().map(stream -> stream.map(dynamic -> dynamic.set("id", dynamic.createString(ID_TO_ENCHANTMENTS_MAP.getOrDefault(dynamic.get("id").asInt(0), "null"))))).map(dynamic::createList), dynamic));
     }
 }
 

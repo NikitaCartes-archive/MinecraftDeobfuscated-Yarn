@@ -47,8 +47,8 @@ extends Block {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-        switch (blockState.get(AXIS)) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+        switch (state.get(AXIS)) {
             case Z: {
                 return Z_SHAPE;
             }
@@ -57,20 +57,20 @@ extends Block {
     }
 
     @Override
-    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
-        if (serverWorld.dimension.hasVisibleSky() && serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING) && random.nextInt(2000) < serverWorld.getDifficulty().getId()) {
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        if (world.dimension.hasVisibleSky() && world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING) && random.nextInt(2000) < world.getDifficulty().getId()) {
             ZombiePigmanEntity entity;
-            while (serverWorld.getBlockState(blockPos).getBlock() == this) {
-                blockPos = blockPos.down();
+            while (world.getBlockState(pos).getBlock() == this) {
+                pos = pos.down();
             }
-            if (serverWorld.getBlockState(blockPos).allowsSpawning(serverWorld, blockPos, EntityType.ZOMBIE_PIGMAN) && (entity = EntityType.ZOMBIE_PIGMAN.spawn(serverWorld, null, null, null, blockPos.up(), SpawnType.STRUCTURE, false, false)) != null) {
+            if (world.getBlockState(pos).allowsSpawning(world, pos, EntityType.ZOMBIE_PIGMAN) && (entity = EntityType.ZOMBIE_PIGMAN.spawn(world, null, null, null, pos.up(), SpawnType.STRUCTURE, false, false)) != null) {
                 entity.portalCooldown = entity.getDefaultPortalCooldown();
             }
         }
     }
 
-    public boolean createPortalAt(IWorld iWorld, BlockPos blockPos) {
-        AreaHelper areaHelper = this.createAreaHelper(iWorld, blockPos);
+    public boolean createPortalAt(IWorld world, BlockPos pos) {
+        AreaHelper areaHelper = this.createAreaHelper(world, pos);
         if (areaHelper != null) {
             areaHelper.createPortal();
             return true;
@@ -79,12 +79,12 @@ extends Block {
     }
 
     @Nullable
-    public AreaHelper createAreaHelper(IWorld iWorld, BlockPos blockPos) {
-        AreaHelper areaHelper = new AreaHelper(iWorld, blockPos, Direction.Axis.X);
+    public AreaHelper createAreaHelper(IWorld world, BlockPos pos) {
+        AreaHelper areaHelper = new AreaHelper(world, pos, Direction.Axis.X);
         if (areaHelper.isValid() && areaHelper.foundPortalBlocks == 0) {
             return areaHelper;
         }
-        AreaHelper areaHelper2 = new AreaHelper(iWorld, blockPos, Direction.Axis.Z);
+        AreaHelper areaHelper2 = new AreaHelper(world, pos, Direction.Axis.Z);
         if (areaHelper2.isValid() && areaHelper2.foundPortalBlocks == 0) {
             return areaHelper2;
         }
@@ -92,43 +92,43 @@ extends Block {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
         boolean bl;
-        Direction.Axis axis = direction.getAxis();
-        Direction.Axis axis2 = blockState.get(AXIS);
+        Direction.Axis axis = facing.getAxis();
+        Direction.Axis axis2 = state.get(AXIS);
         boolean bl2 = bl = axis2 != axis && axis.isHorizontal();
-        if (bl || blockState2.getBlock() == this || new AreaHelper(iWorld, blockPos, axis2).wasAlreadyValid()) {
-            return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+        if (bl || neighborState.getBlock() == this || new AreaHelper(world, pos, axis2).wasAlreadyValid()) {
+            return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
         }
         return Blocks.AIR.getDefaultState();
     }
 
     @Override
-    public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
+    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
         if (!entity.hasVehicle() && !entity.hasPassengers() && entity.canUsePortals()) {
-            entity.setInPortal(blockPos);
+            entity.setInPortal(pos);
         }
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+    public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
         if (random.nextInt(100) == 0) {
-            world.playSound((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, SoundEvents.BLOCK_PORTAL_AMBIENT, SoundCategory.BLOCKS, 0.5f, random.nextFloat() * 0.4f + 0.8f, false);
+            world.playSound((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, SoundEvents.BLOCK_PORTAL_AMBIENT, SoundCategory.BLOCKS, 0.5f, random.nextFloat() * 0.4f + 0.8f, false);
         }
         for (int i = 0; i < 4; ++i) {
-            double d = (double)blockPos.getX() + (double)random.nextFloat();
-            double e = (double)blockPos.getY() + (double)random.nextFloat();
-            double f = (double)blockPos.getZ() + (double)random.nextFloat();
+            double d = (double)pos.getX() + (double)random.nextFloat();
+            double e = (double)pos.getY() + (double)random.nextFloat();
+            double f = (double)pos.getZ() + (double)random.nextFloat();
             double g = ((double)random.nextFloat() - 0.5) * 0.5;
             double h = ((double)random.nextFloat() - 0.5) * 0.5;
             double j = ((double)random.nextFloat() - 0.5) * 0.5;
             int k = random.nextInt(2) * 2 - 1;
-            if (world.getBlockState(blockPos.west()).getBlock() == this || world.getBlockState(blockPos.east()).getBlock() == this) {
-                f = (double)blockPos.getZ() + 0.5 + 0.25 * (double)k;
+            if (world.getBlockState(pos.west()).getBlock() == this || world.getBlockState(pos.east()).getBlock() == this) {
+                f = (double)pos.getZ() + 0.5 + 0.25 * (double)k;
                 j = random.nextFloat() * 2.0f * (float)k;
             } else {
-                d = (double)blockPos.getX() + 0.5 + 0.25 * (double)k;
+                d = (double)pos.getX() + 0.5 + 0.25 * (double)k;
                 g = random.nextFloat() * 2.0f * (float)k;
             }
             world.addParticle(ParticleTypes.PORTAL, d, e, f, g, h, j);
@@ -137,27 +137,27 @@ extends Block {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public ItemStack getPickStack(BlockView blockView, BlockPos blockPos, BlockState blockState) {
+    public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
         return ItemStack.EMPTY;
     }
 
     @Override
-    public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
-        switch (blockRotation) {
+    public BlockState rotate(BlockState state, BlockRotation rotation) {
+        switch (rotation) {
             case COUNTERCLOCKWISE_90: 
             case CLOCKWISE_90: {
-                switch (blockState.get(AXIS)) {
+                switch (state.get(AXIS)) {
                     case X: {
-                        return (BlockState)blockState.with(AXIS, Direction.Axis.Z);
+                        return (BlockState)state.with(AXIS, Direction.Axis.Z);
                     }
                     case Z: {
-                        return (BlockState)blockState.with(AXIS, Direction.Axis.X);
+                        return (BlockState)state.with(AXIS, Direction.Axis.X);
                     }
                 }
-                return blockState;
+                return state;
             }
         }
-        return blockState;
+        return state;
     }
 
     @Override
@@ -209,8 +209,8 @@ extends Block {
         private int height;
         private int width;
 
-        public AreaHelper(IWorld iWorld, BlockPos blockPos, Direction.Axis axis) {
-            this.world = iWorld;
+        public AreaHelper(IWorld world, BlockPos pos, Direction.Axis axis) {
+            this.world = world;
             this.axis = axis;
             if (axis == Direction.Axis.X) {
                 this.positiveDir = Direction.EAST;
@@ -219,13 +219,13 @@ extends Block {
                 this.positiveDir = Direction.NORTH;
                 this.negativeDir = Direction.SOUTH;
             }
-            BlockPos blockPos2 = blockPos;
-            while (blockPos.getY() > blockPos2.getY() - 21 && blockPos.getY() > 0 && this.validStateInsidePortal(iWorld.getBlockState(blockPos.down()))) {
-                blockPos = blockPos.down();
+            BlockPos blockPos = pos;
+            while (pos.getY() > blockPos.getY() - 21 && pos.getY() > 0 && this.validStateInsidePortal(world.getBlockState(pos.down()))) {
+                pos = pos.down();
             }
-            int i = this.distanceToPortalEdge(blockPos, this.positiveDir) - 1;
+            int i = this.distanceToPortalEdge(pos, this.positiveDir) - 1;
             if (i >= 0) {
-                this.lowerCorner = blockPos.offset(this.positiveDir, i);
+                this.lowerCorner = pos.offset(this.positiveDir, i);
                 this.width = this.distanceToPortalEdge(this.lowerCorner, this.negativeDir);
                 if (this.width < 2 || this.width > 21) {
                     this.lowerCorner = null;
@@ -237,12 +237,12 @@ extends Block {
             }
         }
 
-        protected int distanceToPortalEdge(BlockPos blockPos, Direction direction) {
-            BlockPos blockPos2;
+        protected int distanceToPortalEdge(BlockPos pos, Direction dir) {
+            BlockPos blockPos;
             int i;
-            for (i = 0; i < 22 && this.validStateInsidePortal(this.world.getBlockState(blockPos2 = blockPos.offset(direction, i))) && this.world.getBlockState(blockPos2.down()).getBlock() == Blocks.OBSIDIAN; ++i) {
+            for (i = 0; i < 22 && this.validStateInsidePortal(this.world.getBlockState(blockPos = pos.offset(dir, i))) && this.world.getBlockState(blockPos.down()).getBlock() == Blocks.OBSIDIAN; ++i) {
             }
-            Block block = this.world.getBlockState(blockPos.offset(direction, i)).getBlock();
+            Block block = this.world.getBlockState(pos.offset(dir, i)).getBlock();
             if (block == Blocks.OBSIDIAN) {
                 return i;
             }
@@ -287,9 +287,9 @@ extends Block {
             return this.height;
         }
 
-        protected boolean validStateInsidePortal(BlockState blockState) {
-            Block block = blockState.getBlock();
-            return blockState.isAir() || block == Blocks.FIRE || block == Blocks.NETHER_PORTAL;
+        protected boolean validStateInsidePortal(BlockState state) {
+            Block block = state.getBlock();
+            return state.isAir() || block == Blocks.FIRE || block == Blocks.NETHER_PORTAL;
         }
 
         public boolean isValid() {

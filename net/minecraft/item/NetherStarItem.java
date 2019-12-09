@@ -13,7 +13,7 @@ extends Item {
     }
 
     @Override
-    public boolean hasEnchantmentGlint(ItemStack itemStack) {
+    public boolean hasEnchantmentGlint(ItemStack stack) {
         return true;
     }
 }

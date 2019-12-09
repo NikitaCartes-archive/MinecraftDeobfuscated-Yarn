@@ -85,17 +85,17 @@ public class BlockEntityRenderDispatcher {
         return this.renderers.get(blockEntity.getType());
     }
 
-    public void configure(World world, TextureManager textureManager, TextRenderer textRenderer, Camera camera, HitResult hitResult) {
+    public void configure(World world, TextureManager textureManager, TextRenderer textRenderer, Camera camera, HitResult crosshairTarget) {
         if (this.world != world) {
             this.setWorld(world);
         }
         this.textureManager = textureManager;
         this.camera = camera;
         this.textRenderer = textRenderer;
-        this.crosshairTarget = hitResult;
+        this.crosshairTarget = crosshairTarget;
     }
 
-    public <E extends BlockEntity> void render(E blockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
+    public <E extends BlockEntity> void render(E blockEntity, float tickDelta, MatrixStack matrix, VertexConsumerProvider vertexConsumerProvider) {
         if (!(blockEntity.getSquaredDistance(this.camera.getPos().x, this.camera.getPos().y, this.camera.getPos().z) < blockEntity.getSquaredRenderDistance())) {
             return;
         }
@@ -106,28 +106,28 @@ public class BlockEntityRenderDispatcher {
         if (!blockEntity.hasWorld() || !blockEntity.getType().supports(blockEntity.getCachedState().getBlock())) {
             return;
         }
-        BlockEntityRenderDispatcher.runReported(blockEntity, () -> BlockEntityRenderDispatcher.render(blockEntityRenderer, blockEntity, f, matrixStack, vertexConsumerProvider));
+        BlockEntityRenderDispatcher.runReported(blockEntity, () -> BlockEntityRenderDispatcher.render(blockEntityRenderer, blockEntity, tickDelta, matrix, vertexConsumerProvider));
     }
 
-    private static <T extends BlockEntity> void render(BlockEntityRenderer<T> blockEntityRenderer, T blockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
+    private static <T extends BlockEntity> void render(BlockEntityRenderer<T> renderer, T blockEntity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers) {
         World world = blockEntity.getWorld();
         int i = world != null ? WorldRenderer.getLightmapCoordinates(world, blockEntity.getPos()) : 0xF000F0;
-        blockEntityRenderer.render(blockEntity, f, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV);
+        renderer.render(blockEntity, tickDelta, matrices, vertexConsumers, i, OverlayTexture.DEFAULT_UV);
     }
 
     @Deprecated
-    public <E extends BlockEntity> void renderEntity(E blockEntity, MatrixStack matrixStack) {
+    public <E extends BlockEntity> void renderEntity(E entity, MatrixStack matrix) {
         VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(this.bufferBuilder);
-        this.renderEntity(blockEntity, matrixStack, immediate, 0xF000F0, OverlayTexture.DEFAULT_UV);
+        this.renderEntity(entity, matrix, immediate, 0xF000F0, OverlayTexture.DEFAULT_UV);
         immediate.draw();
     }
 
-    public <E extends BlockEntity> boolean renderEntity(E blockEntity, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
-        BlockEntityRenderer blockEntityRenderer = this.get(blockEntity);
+    public <E extends BlockEntity> boolean renderEntity(E entity, MatrixStack matrix, VertexConsumerProvider vertexConsumerProvider, int light, int overlay) {
+        BlockEntityRenderer blockEntityRenderer = this.get(entity);
         if (blockEntityRenderer == null) {
             return true;
         }
-        BlockEntityRenderDispatcher.runReported(blockEntity, () -> blockEntityRenderer.render(blockEntity, 0.0f, matrixStack, vertexConsumerProvider, i, j));
+        BlockEntityRenderDispatcher.runReported(entity, () -> blockEntityRenderer.render(entity, 0.0f, matrix, vertexConsumerProvider, light, overlay));
         return false;
     }
 

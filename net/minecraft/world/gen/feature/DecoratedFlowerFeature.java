@@ -10,8 +10,8 @@ import net.minecraft.world.gen.feature.DecoratedFeatureConfig;
 
 public class DecoratedFlowerFeature
 extends DecoratedFeature {
-    public DecoratedFlowerFeature(Function<Dynamic<?>, ? extends DecoratedFeatureConfig> function) {
-        super(function);
+    public DecoratedFlowerFeature(Function<Dynamic<?>, ? extends DecoratedFeatureConfig> configFactory) {
+        super(configFactory);
     }
 }
 

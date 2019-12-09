@@ -17,8 +17,8 @@ import net.minecraft.world.gen.feature.Feature;
 
 public class EndIslandFeature
 extends Feature<DefaultFeatureConfig> {
-    public EndIslandFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-        super(function);
+    public EndIslandFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
+        super(configFactory);
     }
 
     @Override

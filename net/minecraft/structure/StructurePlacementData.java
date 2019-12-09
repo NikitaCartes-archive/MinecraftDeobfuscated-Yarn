@@ -61,8 +61,8 @@ public class StructurePlacementData {
         return this;
     }
 
-    public StructurePlacementData setPosition(BlockPos blockPos) {
-        this.position = blockPos;
+    public StructurePlacementData setPosition(BlockPos position) {
+        this.position = position;
         return this;
     }
 
@@ -71,13 +71,13 @@ public class StructurePlacementData {
         return this;
     }
 
-    public StructurePlacementData setChunkPosition(ChunkPos chunkPos) {
-        this.chunkPosition = chunkPos;
+    public StructurePlacementData setChunkPosition(ChunkPos chunkPosition) {
+        this.chunkPosition = chunkPosition;
         return this;
     }
 
-    public StructurePlacementData setBoundingBox(BlockBox blockBox) {
-        this.boundingBox = blockBox;
+    public StructurePlacementData setBoundingBox(BlockBox boundingBox) {
+        this.boundingBox = boundingBox;
         return this;
     }
 
@@ -96,13 +96,13 @@ public class StructurePlacementData {
         return this;
     }
 
-    public StructurePlacementData addProcessor(StructureProcessor structureProcessor) {
-        this.processors.add(structureProcessor);
+    public StructurePlacementData addProcessor(StructureProcessor processor) {
+        this.processors.add(processor);
         return this;
     }
 
-    public StructurePlacementData removeProcessor(StructureProcessor structureProcessor) {
-        this.processors.remove(structureProcessor);
+    public StructurePlacementData removeProcessor(StructureProcessor processor) {
+        this.processors.remove(processor);
         return this;
     }
 
@@ -118,14 +118,14 @@ public class StructurePlacementData {
         return this.position;
     }
 
-    public Random getRandom(@Nullable BlockPos blockPos) {
+    public Random getRandom(@Nullable BlockPos pos) {
         if (this.random != null) {
             return this.random;
         }
-        if (blockPos == null) {
+        if (pos == null) {
             return new Random(Util.getMeasuringTimeMs());
         }
-        return new Random(MathHelper.hashCode(blockPos));
+        return new Random(MathHelper.hashCode(pos));
     }
 
     public boolean shouldIgnoreEntities() {

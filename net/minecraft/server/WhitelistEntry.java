@@ -28,18 +28,18 @@ extends ServerConfigEntry<GameProfile> {
         super.serialize(jsonObject);
     }
 
-    private static GameProfile deserializeProfile(JsonObject jsonObject) {
+    private static GameProfile deserializeProfile(JsonObject json) {
         UUID uUID;
-        if (!jsonObject.has("uuid") || !jsonObject.has("name")) {
+        if (!json.has("uuid") || !json.has("name")) {
             return null;
         }
-        String string = jsonObject.get("uuid").getAsString();
+        String string = json.get("uuid").getAsString();
         try {
             uUID = UUID.fromString(string);
         } catch (Throwable throwable) {
             return null;
         }
-        return new GameProfile(uUID, jsonObject.get("name").getAsString());
+        return new GameProfile(uUID, json.get("name").getAsString());
     }
 }
 

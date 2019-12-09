@@ -14,11 +14,11 @@ import net.minecraft.util.math.Vec3d;
 public class SittingScanningPhase
 extends AbstractSittingPhase {
     private static final TargetPredicate PLAYER_WITHIN_RANGE_PREDICATE = new TargetPredicate().setBaseMaxDistance(150.0);
-    private final TargetPredicate CLOSE_PLAYER_PREDICATE = new TargetPredicate().setBaseMaxDistance(20.0).setPredicate(livingEntity -> Math.abs(livingEntity.getY() - enderDragonEntity.getY()) <= 10.0);
+    private final TargetPredicate CLOSE_PLAYER_PREDICATE = new TargetPredicate().setBaseMaxDistance(20.0).setPredicate(livingEntity -> Math.abs(livingEntity.getY() - dragon.getY()) <= 10.0);
     private int ticks;
 
-    public SittingScanningPhase(EnderDragonEntity enderDragonEntity) {
-        super(enderDragonEntity);
+    public SittingScanningPhase(EnderDragonEntity dragon) {
+        super(dragon);
     }
 
     @Override

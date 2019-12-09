@@ -19,13 +19,13 @@ import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 
 public class CoralClawFeature
 extends CoralFeature {
-    public CoralClawFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-        super(function);
+    public CoralClawFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
+        super(configFactory);
     }
 
     @Override
-    protected boolean spawnCoral(IWorld iWorld, Random random, BlockPos blockPos, BlockState blockState) {
-        if (!this.spawnCoralPiece(iWorld, random, blockPos, blockState)) {
+    protected boolean spawnCoral(IWorld world, Random random, BlockPos pos, BlockState state) {
+        if (!this.spawnCoralPiece(world, random, pos, state)) {
             return false;
         }
         Direction direction = Direction.Type.HORIZONTAL.random(random);
@@ -37,7 +37,7 @@ extends CoralFeature {
             int l;
             int k;
             Direction direction3;
-            BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos);
+            BlockPos.Mutable mutable = new BlockPos.Mutable(pos);
             int j = random.nextInt(2) + 1;
             mutable.setOffset(direction2);
             if (direction2 == direction) {
@@ -49,14 +49,14 @@ extends CoralFeature {
                 direction3 = directions[random.nextInt(directions.length)];
                 k = random.nextInt(3) + 3;
             }
-            for (l = 0; l < j && this.spawnCoralPiece(iWorld, random, mutable, blockState); ++l) {
+            for (l = 0; l < j && this.spawnCoralPiece(world, random, mutable, state); ++l) {
                 mutable.setOffset(direction3);
             }
             mutable.setOffset(direction3.getOpposite());
             mutable.setOffset(Direction.UP);
             for (l = 0; l < k; ++l) {
                 mutable.setOffset(direction);
-                if (!this.spawnCoralPiece(iWorld, random, mutable, blockState)) continue block0;
+                if (!this.spawnCoralPiece(world, random, mutable, state)) continue block0;
                 if (!(random.nextFloat() < 0.25f)) continue;
                 mutable.setOffset(Direction.UP);
             }

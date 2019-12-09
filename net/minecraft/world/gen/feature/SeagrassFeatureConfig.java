@@ -13,14 +13,14 @@ implements FeatureConfig {
     public final int count;
     public final double tallSeagrassProbability;
 
-    public SeagrassFeatureConfig(int i, double d) {
-        this.count = i;
-        this.tallSeagrassProbability = d;
+    public SeagrassFeatureConfig(int count, double tallSeagrassProbability) {
+        this.count = count;
+        this.tallSeagrassProbability = tallSeagrassProbability;
     }
 
     @Override
-    public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-        return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("count"), dynamicOps.createInt(this.count), dynamicOps.createString("tall_seagrass_probability"), dynamicOps.createDouble(this.tallSeagrassProbability))));
+    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("count"), ops.createInt(this.count), ops.createString("tall_seagrass_probability"), ops.createDouble(this.tallSeagrassProbability))));
     }
 
     public static <T> SeagrassFeatureConfig deserialize(Dynamic<T> dynamic) {

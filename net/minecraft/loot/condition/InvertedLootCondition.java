@@ -18,8 +18,8 @@ public class InvertedLootCondition
 implements LootCondition {
     private final LootCondition term;
 
-    private InvertedLootCondition(LootCondition lootCondition) {
-        this.term = lootCondition;
+    private InvertedLootCondition(LootCondition term) {
+        this.term = term;
     }
 
     @Override
@@ -33,19 +33,19 @@ implements LootCondition {
     }
 
     @Override
-    public void check(LootTableReporter lootTableReporter) {
-        LootCondition.super.check(lootTableReporter);
-        this.term.check(lootTableReporter);
+    public void check(LootTableReporter reporter) {
+        LootCondition.super.check(reporter);
+        this.term.check(reporter);
     }
 
-    public static LootCondition.Builder builder(LootCondition.Builder builder) {
-        InvertedLootCondition invertedLootCondition = new InvertedLootCondition(builder.build());
+    public static LootCondition.Builder builder(LootCondition.Builder term) {
+        InvertedLootCondition invertedLootCondition = new InvertedLootCondition(term.build());
         return () -> invertedLootCondition;
     }
 
     @Override
-    public /* synthetic */ boolean test(Object object) {
-        return this.test((LootContext)object);
+    public /* synthetic */ boolean test(Object context) {
+        return this.test((LootContext)context);
     }
 
     public static class Factory
@@ -66,8 +66,8 @@ implements LootCondition {
         }
 
         @Override
-        public /* synthetic */ LootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            return this.fromJson(jsonObject, jsonDeserializationContext);
+        public /* synthetic */ LootCondition fromJson(JsonObject json, JsonDeserializationContext context) {
+            return this.fromJson(json, context);
         }
     }
 }

@@ -63,8 +63,8 @@ public abstract class EntityNavigation {
         this.rangeMultiplier = 1.0f;
     }
 
-    public void setRangeMultiplier(float f) {
-        this.rangeMultiplier = f;
+    public void setRangeMultiplier(float rangeMultiplier) {
+        this.rangeMultiplier = rangeMultiplier;
     }
 
     public BlockPos getTargetPos() {
@@ -73,8 +73,8 @@ public abstract class EntityNavigation {
 
     protected abstract PathNodeNavigator createPathNodeNavigator(int var1);
 
-    public void setSpeed(double d) {
-        this.speed = d;
+    public void setSpeed(double speed) {
+        this.speed = speed;
     }
 
     public boolean shouldRecalculatePath() {
@@ -95,28 +95,28 @@ public abstract class EntityNavigation {
     }
 
     @Nullable
-    public final Path findPathTo(double d, double e, double f, int i) {
-        return this.findPathTo(new BlockPos(d, e, f), i);
+    public final Path findPathTo(double x, double y, double z, int distance) {
+        return this.findPathTo(new BlockPos(x, y, z), distance);
     }
 
     @Nullable
-    public Path findPathToAny(Stream<BlockPos> stream, int i) {
-        return this.findPathToAny(stream.collect(Collectors.toSet()), 8, false, i);
+    public Path findPathToAny(Stream<BlockPos> positions, int distance) {
+        return this.findPathToAny(positions.collect(Collectors.toSet()), 8, false, distance);
     }
 
     @Nullable
-    public Path findPathTo(BlockPos blockPos, int i) {
-        return this.findPathToAny(ImmutableSet.of(blockPos), 8, false, i);
+    public Path findPathTo(BlockPos target, int distance) {
+        return this.findPathToAny(ImmutableSet.of(target), 8, false, distance);
     }
 
     @Nullable
-    public Path findPathTo(Entity entity, int i) {
-        return this.findPathToAny(ImmutableSet.of(new BlockPos(entity)), 16, true, i);
+    public Path findPathTo(Entity entity, int distance) {
+        return this.findPathToAny(ImmutableSet.of(new BlockPos(entity)), 16, true, distance);
     }
 
     @Nullable
-    protected Path findPathToAny(Set<BlockPos> set, int i, boolean bl, int j) {
-        if (set.isEmpty()) {
+    protected Path findPathToAny(Set<BlockPos> positions, int range, boolean bl, int distance) {
+        if (positions.isEmpty()) {
             return null;
         }
         if (this.entity.getY() < 0.0) {
@@ -125,33 +125,33 @@ public abstract class EntityNavigation {
         if (!this.isAtValidPosition()) {
             return null;
         }
-        if (this.currentPath != null && !this.currentPath.isFinished() && set.contains(this.currentTarget)) {
+        if (this.currentPath != null && !this.currentPath.isFinished() && positions.contains(this.currentTarget)) {
             return this.currentPath;
         }
         this.world.getProfiler().push("pathfind");
         float f = (float)this.followRange.getValue();
         BlockPos blockPos = bl ? new BlockPos(this.entity).up() : new BlockPos(this.entity);
-        int k = (int)(f + (float)i);
-        ChunkCache chunkCache = new ChunkCache(this.world, blockPos.add(-k, -k, -k), blockPos.add(k, k, k));
-        Path path = this.pathNodeNavigator.findPathToAny(chunkCache, this.entity, set, f, j, this.rangeMultiplier);
+        int i = (int)(f + (float)range);
+        ChunkCache chunkCache = new ChunkCache(this.world, blockPos.add(-i, -i, -i), blockPos.add(i, i, i));
+        Path path = this.pathNodeNavigator.findPathToAny(chunkCache, this.entity, positions, f, distance, this.rangeMultiplier);
         this.world.getProfiler().pop();
         if (path != null && path.getTarget() != null) {
             this.currentTarget = path.getTarget();
-            this.field_20294 = j;
+            this.field_20294 = distance;
         }
         return path;
     }
 
-    public boolean startMovingTo(double d, double e, double f, double g) {
-        return this.startMovingAlong(this.findPathTo(d, e, f, 1), g);
+    public boolean startMovingTo(double x, double y, double z, double speed) {
+        return this.startMovingAlong(this.findPathTo(x, y, z, 1), speed);
     }
 
-    public boolean startMovingTo(Entity entity, double d) {
+    public boolean startMovingTo(Entity entity, double speed) {
         Path path = this.findPathTo(entity, 1);
-        return path != null && this.startMovingAlong(path, d);
+        return path != null && this.startMovingAlong(path, speed);
     }
 
-    public boolean startMovingAlong(@Nullable Path path, double d) {
+    public boolean startMovingAlong(@Nullable Path path, double speed) {
         if (path == null) {
             this.currentPath = null;
             return false;
@@ -166,7 +166,7 @@ public abstract class EntityNavigation {
         if (this.currentPath.getLength() <= 0) {
             return false;
         }
-        this.speed = d;
+        this.speed = speed;
         Vec3d vec3d = this.getPos();
         this.field_6674 = this.tickCount;
         this.field_6672 = vec3d;
@@ -280,17 +280,17 @@ public abstract class EntityNavigation {
 
     protected abstract boolean canPathDirectlyThrough(Vec3d var1, Vec3d var2, int var3, int var4, int var5);
 
-    public boolean isValidPosition(BlockPos blockPos) {
-        BlockPos blockPos2 = blockPos.down();
-        return this.world.getBlockState(blockPos2).isFullOpaque(this.world, blockPos2);
+    public boolean isValidPosition(BlockPos pos) {
+        BlockPos blockPos = pos.down();
+        return this.world.getBlockState(blockPos).isFullOpaque(this.world, blockPos);
     }
 
     public PathNodeMaker getNodeMaker() {
         return this.nodeMaker;
     }
 
-    public void setCanSwim(boolean bl) {
-        this.nodeMaker.setCanSwim(bl);
+    public void setCanSwim(boolean canSwim) {
+        this.nodeMaker.setCanSwim(canSwim);
     }
 
     public boolean canSwim() {

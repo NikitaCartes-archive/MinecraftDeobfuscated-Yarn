@@ -9,8 +9,8 @@ public class Lazy<T> {
     private Supplier<T> supplier;
     private T value;
 
-    public Lazy(Supplier<T> supplier) {
-        this.supplier = supplier;
+    public Lazy(Supplier<T> delegate) {
+        this.supplier = delegate;
     }
 
     public T get() {

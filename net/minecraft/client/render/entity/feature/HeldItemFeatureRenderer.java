@@ -21,8 +21,8 @@ import net.minecraft.util.Arm;
 @Environment(value=EnvType.CLIENT)
 public class HeldItemFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>>
 extends FeatureRenderer<T, M> {
-    public HeldItemFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext) {
-        super(featureRendererContext);
+    public HeldItemFeatureRenderer(FeatureRendererContext<T, M> context) {
+        super(context);
     }
 
     @Override

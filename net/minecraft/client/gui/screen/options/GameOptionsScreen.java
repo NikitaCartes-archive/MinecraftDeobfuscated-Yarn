@@ -15,9 +15,9 @@ extends Screen {
     protected final Screen parent;
     protected final GameOptions gameOptions;
 
-    public GameOptionsScreen(Screen screen, GameOptions gameOptions, Text text) {
+    public GameOptionsScreen(Screen parent, GameOptions gameOptions, Text text) {
         super(text);
-        this.parent = screen;
+        this.parent = parent;
         this.gameOptions = gameOptions;
     }
 

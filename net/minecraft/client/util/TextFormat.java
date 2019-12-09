@@ -43,14 +43,14 @@ public enum TextFormat {
     private final boolean isFormat;
     private final String toString;
 
-    private TextFormat(char c) {
-        this(c, false);
+    private TextFormat(char code) {
+        this(code, false);
     }
 
-    private TextFormat(char c, boolean bl) {
-        this.code = c;
-        this.isFormat = bl;
-        this.toString = "\u00a7" + c;
+    private TextFormat(char code, boolean isFormat) {
+        this.code = code;
+        this.isFormat = isFormat;
+        this.toString = "\u00a7" + code;
     }
 
     public char getChar() {

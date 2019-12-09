@@ -21,23 +21,23 @@ public class DecorationItem
 extends Item {
     private final EntityType<? extends AbstractDecorationEntity> entityType;
 
-    public DecorationItem(EntityType<? extends AbstractDecorationEntity> entityType, Item.Settings settings) {
+    public DecorationItem(EntityType<? extends AbstractDecorationEntity> type, Item.Settings settings) {
         super(settings);
-        this.entityType = entityType;
+        this.entityType = type;
     }
 
     @Override
-    public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
+    public ActionResult useOnBlock(ItemUsageContext context) {
         AbstractDecorationEntity abstractDecorationEntity;
-        BlockPos blockPos = itemUsageContext.getBlockPos();
-        Direction direction = itemUsageContext.getSide();
+        BlockPos blockPos = context.getBlockPos();
+        Direction direction = context.getSide();
         BlockPos blockPos2 = blockPos.offset(direction);
-        PlayerEntity playerEntity = itemUsageContext.getPlayer();
-        ItemStack itemStack = itemUsageContext.getStack();
+        PlayerEntity playerEntity = context.getPlayer();
+        ItemStack itemStack = context.getStack();
         if (playerEntity != null && !this.canPlaceOn(playerEntity, direction, itemStack, blockPos2)) {
             return ActionResult.FAIL;
         }
-        World world = itemUsageContext.getWorld();
+        World world = context.getWorld();
         if (this.entityType == EntityType.PAINTING) {
             abstractDecorationEntity = new PaintingEntity(world, blockPos2, direction);
         } else if (this.entityType == EntityType.ITEM_FRAME) {
@@ -60,8 +60,8 @@ extends Item {
         return ActionResult.CONSUME;
     }
 
-    protected boolean canPlaceOn(PlayerEntity playerEntity, Direction direction, ItemStack itemStack, BlockPos blockPos) {
-        return !direction.getAxis().isVertical() && playerEntity.canPlaceOn(blockPos, direction, itemStack);
+    protected boolean canPlaceOn(PlayerEntity player, Direction side, ItemStack stack, BlockPos pos) {
+        return !side.getAxis().isVertical() && player.canPlaceOn(pos, side, stack);
     }
 }
 

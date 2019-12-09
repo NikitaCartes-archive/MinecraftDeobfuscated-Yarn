@@ -21,10 +21,10 @@ extends SpreadableBlock {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-        super.randomDisplayTick(blockState, world, blockPos, random);
+    public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+        super.randomDisplayTick(state, world, pos, random);
         if (random.nextInt(10) == 0) {
-            world.addParticle(ParticleTypes.MYCELIUM, (double)blockPos.getX() + (double)random.nextFloat(), (double)blockPos.getY() + 1.1, (double)blockPos.getZ() + (double)random.nextFloat(), 0.0, 0.0, 0.0);
+            world.addParticle(ParticleTypes.MYCELIUM, (double)pos.getX() + (double)random.nextFloat(), (double)pos.getY() + 1.1, (double)pos.getZ() + (double)random.nextFloat(), 0.0, 0.0, 0.0);
         }
     }
 }

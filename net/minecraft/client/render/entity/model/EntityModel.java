@@ -28,13 +28,13 @@ extends Model {
 
     public abstract void setAngles(T var1, float var2, float var3, float var4, float var5, float var6);
 
-    public void animateModel(T entity, float f, float g, float h) {
+    public void animateModel(T entity, float limbAngle, float limbDistance, float tickDelta) {
     }
 
-    public void copyStateTo(EntityModel<T> entityModel) {
-        entityModel.handSwingProgress = this.handSwingProgress;
-        entityModel.riding = this.riding;
-        entityModel.child = this.child;
+    public void copyStateTo(EntityModel<T> copy) {
+        copy.handSwingProgress = this.handSwingProgress;
+        copy.riding = this.riding;
+        copy.child = this.child;
     }
 }
 

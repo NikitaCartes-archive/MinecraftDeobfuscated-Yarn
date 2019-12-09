@@ -53,13 +53,13 @@ public class MultiplayerServerListPinger {
     private static final Logger LOGGER = LogManager.getLogger();
     private final List<ClientConnection> clientConnections = Collections.synchronizedList(Lists.newArrayList());
 
-    public void add(final ServerInfo serverInfo) throws UnknownHostException {
-        ServerAddress serverAddress = ServerAddress.parse(serverInfo.address);
+    public void add(final ServerInfo entry) throws UnknownHostException {
+        ServerAddress serverAddress = ServerAddress.parse(entry.address);
         final ClientConnection clientConnection = ClientConnection.connect(InetAddress.getByName(serverAddress.getAddress()), serverAddress.getPort(), false);
         this.clientConnections.add(clientConnection);
-        serverInfo.label = I18n.translate("multiplayer.status.pinging", new Object[0]);
-        serverInfo.ping = -1L;
-        serverInfo.playerListSummary = null;
+        entry.label = I18n.translate("multiplayer.status.pinging", new Object[0]);
+        entry.ping = -1L;
+        entry.playerListSummary = null;
         clientConnection.setPacketListener(new ClientQueryPacketListener(){
             private boolean sentQuery;
             private boolean received;
@@ -73,16 +73,16 @@ public class MultiplayerServerListPinger {
                 }
                 this.received = true;
                 ServerMetadata serverMetadata = queryResponseS2CPacket.getServerMetadata();
-                serverInfo.label = serverMetadata.getDescription() != null ? serverMetadata.getDescription().asFormattedString() : "";
+                entry.label = serverMetadata.getDescription() != null ? serverMetadata.getDescription().asFormattedString() : "";
                 if (serverMetadata.getVersion() != null) {
-                    serverInfo.version = serverMetadata.getVersion().getGameVersion();
-                    serverInfo.protocolVersion = serverMetadata.getVersion().getProtocolVersion();
+                    entry.version = serverMetadata.getVersion().getGameVersion();
+                    entry.protocolVersion = serverMetadata.getVersion().getProtocolVersion();
                 } else {
-                    serverInfo.version = I18n.translate("multiplayer.status.old", new Object[0]);
-                    serverInfo.protocolVersion = 0;
+                    entry.version = I18n.translate("multiplayer.status.old", new Object[0]);
+                    entry.protocolVersion = 0;
                 }
                 if (serverMetadata.getPlayers() != null) {
-                    serverInfo.playerCountLabel = (Object)((Object)Formatting.GRAY) + "" + serverMetadata.getPlayers().getOnlinePlayerCount() + "" + (Object)((Object)Formatting.DARK_GRAY) + "/" + (Object)((Object)Formatting.GRAY) + serverMetadata.getPlayers().getPlayerLimit();
+                    entry.playerCountLabel = (Object)((Object)Formatting.GRAY) + "" + serverMetadata.getPlayers().getOnlinePlayerCount() + "" + (Object)((Object)Formatting.DARK_GRAY) + "/" + (Object)((Object)Formatting.GRAY) + serverMetadata.getPlayers().getPlayerLimit();
                     if (ArrayUtils.isNotEmpty(serverMetadata.getPlayers().getSample())) {
                         StringBuilder stringBuilder = new StringBuilder();
                         for (GameProfile gameProfile : serverMetadata.getPlayers().getSample()) {
@@ -97,20 +97,20 @@ public class MultiplayerServerListPinger {
                             }
                             stringBuilder.append(I18n.translate("multiplayer.status.and_more", serverMetadata.getPlayers().getOnlinePlayerCount() - serverMetadata.getPlayers().getSample().length));
                         }
-                        serverInfo.playerListSummary = stringBuilder.toString();
+                        entry.playerListSummary = stringBuilder.toString();
                     }
                 } else {
-                    serverInfo.playerCountLabel = (Object)((Object)Formatting.DARK_GRAY) + I18n.translate("multiplayer.status.unknown", new Object[0]);
+                    entry.playerCountLabel = (Object)((Object)Formatting.DARK_GRAY) + I18n.translate("multiplayer.status.unknown", new Object[0]);
                 }
                 if (serverMetadata.getFavicon() != null) {
                     String string = serverMetadata.getFavicon();
                     if (string.startsWith("data:image/png;base64,")) {
-                        serverInfo.setIcon(string.substring("data:image/png;base64,".length()));
+                        entry.setIcon(string.substring("data:image/png;base64,".length()));
                     } else {
                         LOGGER.error("Invalid server icon (unknown format)");
                     }
                 } else {
-                    serverInfo.setIcon(null);
+                    entry.setIcon(null);
                 }
                 this.startTime = Util.getMeasuringTimeMs();
                 clientConnection.send(new QueryPingC2SPacket(this.startTime));
@@ -121,17 +121,17 @@ public class MultiplayerServerListPinger {
             public void onPong(QueryPongS2CPacket queryPongS2CPacket) {
                 long l = this.startTime;
                 long m = Util.getMeasuringTimeMs();
-                serverInfo.ping = m - l;
+                entry.ping = m - l;
                 clientConnection.disconnect(new TranslatableText("multiplayer.status.finished", new Object[0]));
             }
 
             @Override
-            public void onDisconnected(Text text) {
+            public void onDisconnected(Text reason) {
                 if (!this.sentQuery) {
-                    LOGGER.error("Can't ping {}: {}", (Object)serverInfo.address, (Object)text.getString());
-                    serverInfo.label = (Object)((Object)Formatting.DARK_RED) + I18n.translate("multiplayer.status.cannot_connect", new Object[0]);
-                    serverInfo.playerCountLabel = "";
-                    MultiplayerServerListPinger.this.ping(serverInfo);
+                    LOGGER.error("Can't ping {}: {}", (Object)entry.address, (Object)reason.getString());
+                    entry.label = (Object)((Object)Formatting.DARK_RED) + I18n.translate("multiplayer.status.cannot_connect", new Object[0]);
+                    entry.playerCountLabel = "";
+                    MultiplayerServerListPinger.this.ping(entry);
                 }
             }
 

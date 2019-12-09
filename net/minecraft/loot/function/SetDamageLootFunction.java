@@ -22,24 +22,24 @@ extends ConditionalLootFunction {
     private static final Logger LOGGER = LogManager.getLogger();
     private final UniformLootTableRange durabilityRange;
 
-    private SetDamageLootFunction(LootCondition[] lootConditions, UniformLootTableRange uniformLootTableRange) {
-        super(lootConditions);
-        this.durabilityRange = uniformLootTableRange;
+    private SetDamageLootFunction(LootCondition[] contents, UniformLootTableRange durabilityRange) {
+        super(contents);
+        this.durabilityRange = durabilityRange;
     }
 
     @Override
-    public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-        if (itemStack.isDamageable()) {
-            float f = 1.0f - this.durabilityRange.nextFloat(lootContext.getRandom());
-            itemStack.setDamage(MathHelper.floor(f * (float)itemStack.getMaxDamage()));
+    public ItemStack process(ItemStack stack, LootContext context) {
+        if (stack.isDamageable()) {
+            float f = 1.0f - this.durabilityRange.nextFloat(context.getRandom());
+            stack.setDamage(MathHelper.floor(f * (float)stack.getMaxDamage()));
         } else {
-            LOGGER.warn("Couldn't set damage of loot item {}", (Object)itemStack);
+            LOGGER.warn("Couldn't set damage of loot item {}", (Object)stack);
         }
-        return itemStack;
+        return stack;
     }
 
-    public static ConditionalLootFunction.Builder<?> builder(UniformLootTableRange uniformLootTableRange) {
-        return SetDamageLootFunction.builder((LootCondition[] lootConditions) -> new SetDamageLootFunction((LootCondition[])lootConditions, uniformLootTableRange));
+    public static ConditionalLootFunction.Builder<?> builder(UniformLootTableRange durabilityRange) {
+        return SetDamageLootFunction.builder((LootCondition[] conditions) -> new SetDamageLootFunction((LootCondition[])conditions, durabilityRange));
     }
 
     public static class Factory
@@ -60,8 +60,8 @@ extends ConditionalLootFunction {
         }
 
         @Override
-        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
+        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions) {
+            return this.fromJson(json, context, conditions);
         }
     }
 }

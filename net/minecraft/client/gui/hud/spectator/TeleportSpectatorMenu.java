@@ -33,8 +33,8 @@ SpectatorMenuCommand {
         this(ORDERING.sortedCopy(MinecraftClient.getInstance().getNetworkHandler().getPlayerList()));
     }
 
-    public TeleportSpectatorMenu(Collection<PlayerListEntry> collection) {
-        for (PlayerListEntry playerListEntry : ORDERING.sortedCopy(collection)) {
+    public TeleportSpectatorMenu(Collection<PlayerListEntry> entries) {
+        for (PlayerListEntry playerListEntry : ORDERING.sortedCopy(entries)) {
             if (playerListEntry.getGameMode() == GameMode.SPECTATOR) continue;
             this.elements.add(new TeleportToSpecificPlayerSpectatorCommand(playerListEntry.getProfile()));
         }
@@ -51,8 +51,8 @@ SpectatorMenuCommand {
     }
 
     @Override
-    public void use(SpectatorMenu spectatorMenu) {
-        spectatorMenu.selectElement(this);
+    public void use(SpectatorMenu menu) {
+        menu.selectElement(this);
     }
 
     @Override
@@ -61,7 +61,7 @@ SpectatorMenuCommand {
     }
 
     @Override
-    public void renderIcon(float f, int i) {
+    public void renderIcon(float brightness, int alpha) {
         MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEX);
         DrawableHelper.blit(0, 0, 0.0f, 0.0f, 16, 16, 256, 256);
     }

@@ -15,8 +15,8 @@ public enum StairShape implements StringIdentifiable
 
     private final String name;
 
-    private StairShape(String string2) {
-        this.name = string2;
+    private StairShape(String name) {
+        this.name = name;
     }
 
     public String toString() {

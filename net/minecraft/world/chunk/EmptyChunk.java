@@ -34,18 +34,18 @@ extends WorldChunk {
     }
 
     @Override
-    public BlockState getBlockState(BlockPos blockPos) {
+    public BlockState getBlockState(BlockPos pos) {
         return Blocks.VOID_AIR.getDefaultState();
     }
 
     @Override
     @Nullable
-    public BlockState setBlockState(BlockPos blockPos, BlockState blockState, boolean bl) {
+    public BlockState setBlockState(BlockPos pos, BlockState state, boolean bl) {
         return null;
     }
 
     @Override
-    public FluidState getFluidState(BlockPos blockPos) {
+    public FluidState getFluidState(BlockPos pos) {
         return Fluids.EMPTY.getDefaultState();
     }
 
@@ -56,7 +56,7 @@ extends WorldChunk {
     }
 
     @Override
-    public int getLuminance(BlockPos blockPos) {
+    public int getLuminance(BlockPos pos) {
         return 0;
     }
 
@@ -74,7 +74,7 @@ extends WorldChunk {
 
     @Override
     @Nullable
-    public BlockEntity getBlockEntity(BlockPos blockPos, WorldChunk.CreationType creationType) {
+    public BlockEntity getBlockEntity(BlockPos pos, WorldChunk.CreationType creationType) {
         return null;
     }
 
@@ -83,7 +83,7 @@ extends WorldChunk {
     }
 
     @Override
-    public void setBlockEntity(BlockPos blockPos, BlockEntity blockEntity) {
+    public void setBlockEntity(BlockPos pos, BlockEntity blockEntity) {
     }
 
     @Override
@@ -95,11 +95,11 @@ extends WorldChunk {
     }
 
     @Override
-    public void getEntities(@Nullable Entity entity, Box box, List<Entity> list, Predicate<? super Entity> predicate) {
+    public void getEntities(@Nullable Entity except, Box box, List<Entity> entityList, Predicate<? super Entity> predicate) {
     }
 
     @Override
-    public <T extends Entity> void getEntities(Class<? extends T> class_, Box box, List<T> list, Predicate<? super T> predicate) {
+    public <T extends Entity> void getEntities(Class<? extends T> entityClass, Box box, List<T> result, Predicate<? super T> predicate) {
     }
 
     @Override

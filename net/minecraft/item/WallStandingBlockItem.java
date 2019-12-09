@@ -19,22 +19,22 @@ public class WallStandingBlockItem
 extends BlockItem {
     protected final Block wallBlock;
 
-    public WallStandingBlockItem(Block block, Block block2, Item.Settings settings) {
-        super(block, settings);
-        this.wallBlock = block2;
+    public WallStandingBlockItem(Block standingBlock, Block wallBlock, Item.Settings settings) {
+        super(standingBlock, settings);
+        this.wallBlock = wallBlock;
     }
 
     @Override
     @Nullable
-    protected BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-        BlockState blockState = this.wallBlock.getPlacementState(itemPlacementContext);
+    protected BlockState getPlacementState(ItemPlacementContext context) {
+        BlockState blockState = this.wallBlock.getPlacementState(context);
         BlockState blockState2 = null;
-        World worldView = itemPlacementContext.getWorld();
-        BlockPos blockPos = itemPlacementContext.getBlockPos();
-        for (Direction direction : itemPlacementContext.getPlacementDirections()) {
+        World worldView = context.getWorld();
+        BlockPos blockPos = context.getBlockPos();
+        for (Direction direction : context.getPlacementDirections()) {
             BlockState blockState3;
             if (direction == Direction.UP) continue;
-            BlockState blockState4 = blockState3 = direction == Direction.DOWN ? this.getBlock().getPlacementState(itemPlacementContext) : blockState;
+            BlockState blockState4 = blockState3 = direction == Direction.DOWN ? this.getBlock().getPlacementState(context) : blockState;
             if (blockState3 == null || !blockState3.canPlaceAt(worldView, blockPos)) continue;
             blockState2 = blockState3;
             break;

@@ -24,11 +24,11 @@ public class LootContextTypes {
     public static final LootContextType GENERIC = LootContextTypes.register("generic", builder -> builder.require(LootContextParameters.THIS_ENTITY).require(LootContextParameters.LAST_DAMAGE_PLAYER).require(LootContextParameters.DAMAGE_SOURCE).require(LootContextParameters.KILLER_ENTITY).require(LootContextParameters.DIRECT_KILLER_ENTITY).require(LootContextParameters.POSITION).require(LootContextParameters.BLOCK_STATE).require(LootContextParameters.BLOCK_ENTITY).require(LootContextParameters.TOOL).require(LootContextParameters.EXPLOSION_RADIUS));
     public static final LootContextType BLOCK = LootContextTypes.register("block", builder -> builder.require(LootContextParameters.BLOCK_STATE).require(LootContextParameters.POSITION).require(LootContextParameters.TOOL).allow(LootContextParameters.THIS_ENTITY).allow(LootContextParameters.BLOCK_ENTITY).allow(LootContextParameters.EXPLOSION_RADIUS));
 
-    private static LootContextType register(String string, Consumer<LootContextType.Builder> consumer) {
+    private static LootContextType register(String name, Consumer<LootContextType.Builder> type) {
         LootContextType.Builder builder = new LootContextType.Builder();
-        consumer.accept(builder);
+        type.accept(builder);
         LootContextType lootContextType = builder.build();
-        Identifier identifier = new Identifier(string);
+        Identifier identifier = new Identifier(name);
         LootContextType lootContextType2 = MAP.put(identifier, lootContextType);
         if (lootContextType2 != null) {
             throw new IllegalStateException("Loot table parameter set " + identifier + " is already registered");
@@ -37,13 +37,13 @@ public class LootContextTypes {
     }
 
     @Nullable
-    public static LootContextType get(Identifier identifier) {
-        return (LootContextType)MAP.get(identifier);
+    public static LootContextType get(Identifier id) {
+        return (LootContextType)MAP.get(id);
     }
 
     @Nullable
-    public static Identifier getId(LootContextType lootContextType) {
-        return (Identifier)MAP.inverse().get(lootContextType);
+    public static Identifier getId(LootContextType type) {
+        return (Identifier)MAP.inverse().get(type);
     }
 }
 

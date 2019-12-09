@@ -15,42 +15,42 @@ import net.minecraft.datafixers.fixes.EntityTransformFix;
 
 public class EntityHorseSplitFix
 extends EntityTransformFix {
-    public EntityHorseSplitFix(Schema schema, boolean bl) {
-        super("EntityHorseSplitFix", schema, bl);
+    public EntityHorseSplitFix(Schema outputSchema, boolean changesType) {
+        super("EntityHorseSplitFix", outputSchema, changesType);
     }
 
     @Override
-    protected Pair<String, Typed<?>> transform(String string, Typed<?> typed) {
+    protected Pair<String, Typed<?>> transform(String choice, Typed<?> typed) {
         Dynamic<?> dynamic = typed.get(DSL.remainderFinder());
-        if (Objects.equals("EntityHorse", string)) {
-            String string2;
+        if (Objects.equals("EntityHorse", choice)) {
+            String string;
             int i = dynamic.get("Type").asInt(0);
             switch (i) {
                 default: {
-                    string2 = "Horse";
+                    string = "Horse";
                     break;
                 }
                 case 1: {
-                    string2 = "Donkey";
+                    string = "Donkey";
                     break;
                 }
                 case 2: {
-                    string2 = "Mule";
+                    string = "Mule";
                     break;
                 }
                 case 3: {
-                    string2 = "ZombieHorse";
+                    string = "ZombieHorse";
                     break;
                 }
                 case 4: {
-                    string2 = "SkeletonHorse";
+                    string = "SkeletonHorse";
                 }
             }
             dynamic.remove("Type");
-            Type<?> type = this.getOutputSchema().findChoiceType(TypeReferences.ENTITY).types().get(string2);
-            return Pair.of(string2, type.readTyped(typed.write()).getSecond().orElseThrow(() -> new IllegalStateException("Could not parse the new horse")));
+            Type<?> type = this.getOutputSchema().findChoiceType(TypeReferences.ENTITY).types().get(string);
+            return Pair.of(string, type.readTyped(typed.write()).getSecond().orElseThrow(() -> new IllegalStateException("Could not parse the new horse")));
         }
-        return Pair.of(string, typed);
+        return Pair.of(choice, typed);
     }
 }
 

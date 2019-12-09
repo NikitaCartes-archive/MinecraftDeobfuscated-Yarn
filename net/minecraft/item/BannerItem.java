@@ -25,15 +25,15 @@ import org.jetbrains.annotations.Nullable;
 
 public class BannerItem
 extends WallStandingBlockItem {
-    public BannerItem(Block block, Block block2, Item.Settings settings) {
-        super(block, block2, settings);
-        Validate.isInstanceOf(AbstractBannerBlock.class, block);
-        Validate.isInstanceOf(AbstractBannerBlock.class, block2);
+    public BannerItem(Block standingBlock, Block wallBlock, Item.Settings settings) {
+        super(standingBlock, wallBlock, settings);
+        Validate.isInstanceOf(AbstractBannerBlock.class, standingBlock);
+        Validate.isInstanceOf(AbstractBannerBlock.class, wallBlock);
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static void appendBannerTooltip(ItemStack itemStack, List<Text> list) {
-        CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
+    public static void appendBannerTooltip(ItemStack stack, List<Text> tooltip) {
+        CompoundTag compoundTag = stack.getSubTag("BlockEntityTag");
         if (compoundTag == null || !compoundTag.contains("Patterns")) {
             return;
         }
@@ -43,7 +43,7 @@ extends WallStandingBlockItem {
             DyeColor dyeColor = DyeColor.byId(compoundTag2.getInt("Color"));
             BannerPattern bannerPattern = BannerPattern.byId(compoundTag2.getString("Pattern"));
             if (bannerPattern == null) continue;
-            list.add(new TranslatableText("block.minecraft.banner." + bannerPattern.getName() + '.' + dyeColor.getName(), new Object[0]).formatted(Formatting.GRAY));
+            tooltip.add(new TranslatableText("block.minecraft.banner." + bannerPattern.getName() + '.' + dyeColor.getName(), new Object[0]).formatted(Formatting.GRAY));
         }
     }
 
@@ -53,8 +53,8 @@ extends WallStandingBlockItem {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
-        BannerItem.appendBannerTooltip(itemStack, list);
+    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+        BannerItem.appendBannerTooltip(stack, tooltip);
     }
 }
 

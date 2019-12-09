@@ -66,8 +66,8 @@ public class EntitySelectorOptions {
     public static final DynamicCommandExceptionType INVALID_MODE_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("argument.entity.options.mode.invalid", object));
     public static final DynamicCommandExceptionType INVALID_TYPE_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("argument.entity.options.type.invalid", object));
 
-    private static void putOption(String string, SelectorHandler selectorHandler, Predicate<EntitySelectorReader> predicate, Text text) {
-        options.put(string, new SelectorOption(selectorHandler, predicate, text));
+    private static void putOption(String id, SelectorHandler handler, Predicate<EntitySelectorReader> condition, Text description) {
+        options.put(id, new SelectorOption(handler, condition, description));
     }
 
     public static void register() {
@@ -430,23 +430,23 @@ public class EntitySelectorOptions {
         }, entitySelectorReader -> true, new TranslatableText("argument.entity.options.predicate.description", new Object[0]));
     }
 
-    public static SelectorHandler getHandler(EntitySelectorReader entitySelectorReader, String string, int i) throws CommandSyntaxException {
-        SelectorOption selectorOption = options.get(string);
+    public static SelectorHandler getHandler(EntitySelectorReader reader, String option, int restoreCursor) throws CommandSyntaxException {
+        SelectorOption selectorOption = options.get(option);
         if (selectorOption != null) {
-            if (selectorOption.condition.test(entitySelectorReader)) {
+            if (selectorOption.condition.test(reader)) {
                 return selectorOption.handler;
             }
-            throw INAPPLICABLE_OPTION_EXCEPTION.createWithContext(entitySelectorReader.getReader(), string);
+            throw INAPPLICABLE_OPTION_EXCEPTION.createWithContext(reader.getReader(), option);
         }
-        entitySelectorReader.getReader().setCursor(i);
-        throw UNKNOWN_OPTION_EXCEPTION.createWithContext(entitySelectorReader.getReader(), string);
+        reader.getReader().setCursor(restoreCursor);
+        throw UNKNOWN_OPTION_EXCEPTION.createWithContext(reader.getReader(), option);
     }
 
-    public static void suggestOptions(EntitySelectorReader entitySelectorReader, SuggestionsBuilder suggestionsBuilder) {
-        String string = suggestionsBuilder.getRemaining().toLowerCase(Locale.ROOT);
+    public static void suggestOptions(EntitySelectorReader reader, SuggestionsBuilder suggestionBuilder) {
+        String string = suggestionBuilder.getRemaining().toLowerCase(Locale.ROOT);
         for (Map.Entry<String, SelectorOption> entry : options.entrySet()) {
-            if (!entry.getValue().condition.test(entitySelectorReader) || !entry.getKey().toLowerCase(Locale.ROOT).startsWith(string)) continue;
-            suggestionsBuilder.suggest(entry.getKey() + '=', (Message)entry.getValue().description);
+            if (!entry.getValue().condition.test(reader) || !entry.getKey().toLowerCase(Locale.ROOT).startsWith(string)) continue;
+            suggestionBuilder.suggest(entry.getKey() + '=', (Message)entry.getValue().description);
         }
     }
 
@@ -455,10 +455,10 @@ public class EntitySelectorOptions {
         public final Predicate<EntitySelectorReader> condition;
         public final Text description;
 
-        private SelectorOption(SelectorHandler selectorHandler, Predicate<EntitySelectorReader> predicate, Text text) {
-            this.handler = selectorHandler;
-            this.condition = predicate;
-            this.description = text;
+        private SelectorOption(SelectorHandler handler, Predicate<EntitySelectorReader> condition, Text description) {
+            this.handler = handler;
+            this.condition = condition;
+            this.description = description;
         }
     }
 

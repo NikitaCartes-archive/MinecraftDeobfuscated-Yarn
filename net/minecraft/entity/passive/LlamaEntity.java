@@ -89,22 +89,22 @@ implements RangedAttackMob {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag compoundTag) {
-        super.writeCustomDataToTag(compoundTag);
-        compoundTag.putInt("Variant", this.getVariant());
-        compoundTag.putInt("Strength", this.getStrength());
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putInt("Variant", this.getVariant());
+        tag.putInt("Strength", this.getStrength());
         if (!this.items.getInvStack(1).isEmpty()) {
-            compoundTag.put("DecorItem", this.items.getInvStack(1).toTag(new CompoundTag()));
+            tag.put("DecorItem", this.items.getInvStack(1).toTag(new CompoundTag()));
         }
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag compoundTag) {
-        this.setStrength(compoundTag.getInt("Strength"));
-        super.readCustomDataFromTag(compoundTag);
-        this.setVariant(compoundTag.getInt("Variant"));
-        if (compoundTag.contains("DecorItem", 10)) {
-            this.items.setInvStack(1, ItemStack.fromTag(compoundTag.getCompound("DecorItem")));
+    public void readCustomDataFromTag(CompoundTag tag) {
+        this.setStrength(tag.getInt("Strength"));
+        super.readCustomDataFromTag(tag);
+        this.setVariant(tag.getInt("Variant"));
+        if (tag.contains("DecorItem", 10)) {
+            this.items.setInvStack(1, ItemStack.fromTag(tag.getCompound("DecorItem")));
         }
         this.updateSaddle();
     }
@@ -156,14 +156,14 @@ implements RangedAttackMob {
     }
 
     @Override
-    public void updatePassengerPosition(Entity entity) {
-        if (!this.hasPassenger(entity)) {
+    public void updatePassengerPosition(Entity passenger) {
+        if (!this.hasPassenger(passenger)) {
             return;
         }
         float f = MathHelper.cos(this.bodyYaw * ((float)Math.PI / 180));
         float g = MathHelper.sin(this.bodyYaw * ((float)Math.PI / 180));
         float h = 0.3f;
-        entity.setPosition(this.getX() + (double)(0.3f * g), this.getY() + this.getMountedHeightOffset() + entity.getHeightOffset(), this.getZ() - (double)(0.3f * f));
+        passenger.setPosition(this.getX() + (double)(0.3f * g), this.getY() + this.getMountedHeightOffset() + passenger.getHeightOffset(), this.getZ() - (double)(0.3f * f));
     }
 
     @Override
@@ -177,23 +177,23 @@ implements RangedAttackMob {
     }
 
     @Override
-    protected boolean receiveFood(PlayerEntity playerEntity, ItemStack itemStack) {
+    protected boolean receiveFood(PlayerEntity player, ItemStack item) {
         int i = 0;
         int j = 0;
         float f = 0.0f;
         boolean bl = false;
-        Item item = itemStack.getItem();
-        if (item == Items.WHEAT) {
+        Item item2 = item.getItem();
+        if (item2 == Items.WHEAT) {
             i = 10;
             j = 3;
             f = 2.0f;
-        } else if (item == Blocks.HAY_BLOCK.asItem()) {
+        } else if (item2 == Blocks.HAY_BLOCK.asItem()) {
             i = 90;
             j = 6;
             f = 10.0f;
             if (this.isTame() && this.getBreedingAge() == 0 && this.canEat()) {
                 bl = true;
-                this.lovePlayer(playerEntity);
+                this.lovePlayer(player);
             }
         }
         if (this.getHealth() < this.getMaximumHealth() && f > 0.0f) {
@@ -226,7 +226,7 @@ implements RangedAttackMob {
 
     @Override
     @Nullable
-    public net.minecraft.entity.EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable net.minecraft.entity.EntityData entityData, @Nullable CompoundTag compoundTag) {
+    public net.minecraft.entity.EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable net.minecraft.entity.EntityData entityData, @Nullable CompoundTag entityTag) {
         int i;
         this.initializeStrength();
         if (entityData instanceof EntityData) {
@@ -236,7 +236,7 @@ implements RangedAttackMob {
             entityData = new EntityData(i);
         }
         this.setVariant(i);
-        return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+        return super.initialize(world, difficulty, spawnType, entityData, entityTag);
     }
 
     @Override
@@ -250,7 +250,7 @@ implements RangedAttackMob {
     }
 
     @Override
-    protected SoundEvent getHurtSound(DamageSource damageSource) {
+    protected SoundEvent getHurtSound(DamageSource source) {
         return SoundEvents.ENTITY_LLAMA_HURT;
     }
 
@@ -260,7 +260,7 @@ implements RangedAttackMob {
     }
 
     @Override
-    protected void playStepSound(BlockPos blockPos, BlockState blockState) {
+    protected void playStepSound(BlockPos pos, BlockState state) {
         this.playSound(SoundEvents.ENTITY_LLAMA_STEP, 0.15f, 1.0f);
     }
 
@@ -288,9 +288,9 @@ implements RangedAttackMob {
     }
 
     @Override
-    public boolean canEquip(ItemStack itemStack) {
-        Item item = itemStack.getItem();
-        return ItemTags.CARPETS.contains(item);
+    public boolean canEquip(ItemStack item) {
+        Item item2 = item.getItem();
+        return ItemTags.CARPETS.contains(item2);
     }
 
     @Override
@@ -317,13 +317,13 @@ implements RangedAttackMob {
         this.setCarpetColor(LlamaEntity.getColorFromCarpet(this.items.getInvStack(1)));
     }
 
-    private void setCarpetColor(@Nullable DyeColor dyeColor) {
-        this.dataTracker.set(CARPET_COLOR, dyeColor == null ? -1 : dyeColor.getId());
+    private void setCarpetColor(@Nullable DyeColor color) {
+        this.dataTracker.set(CARPET_COLOR, color == null ? -1 : color.getId());
     }
 
     @Nullable
-    private static DyeColor getColorFromCarpet(ItemStack itemStack) {
-        Block block = Block.getBlockFromItem(itemStack.getItem());
+    private static DyeColor getColorFromCarpet(ItemStack color) {
+        Block block = Block.getBlockFromItem(color.getItem());
         if (block instanceof CarpetBlock) {
             return ((CarpetBlock)block).getColor();
         }
@@ -342,8 +342,8 @@ implements RangedAttackMob {
     }
 
     @Override
-    public boolean canBreedWith(AnimalEntity animalEntity) {
-        return animalEntity != this && animalEntity instanceof LlamaEntity && this.canBreed() && ((LlamaEntity)animalEntity).canBreed();
+    public boolean canBreedWith(AnimalEntity other) {
+        return other != this && other instanceof LlamaEntity && this.canBreed() && ((LlamaEntity)other).canBreed();
     }
 
     @Override
@@ -364,11 +364,11 @@ implements RangedAttackMob {
         return EntityType.LLAMA.create(this.world);
     }
 
-    private void spitAt(LivingEntity livingEntity) {
+    private void spitAt(LivingEntity target) {
         LlamaSpitEntity llamaSpitEntity = new LlamaSpitEntity(this.world, this);
-        double d = livingEntity.getX() - this.getX();
-        double e = livingEntity.getBodyY(0.3333333333333333) - llamaSpitEntity.getY();
-        double f = livingEntity.getZ() - this.getZ();
+        double d = target.getX() - this.getX();
+        double e = target.getBodyY(0.3333333333333333) - llamaSpitEntity.getY();
+        double f = target.getZ() - this.getZ();
         float g = MathHelper.sqrt(d * d + f * f) * 0.2f;
         llamaSpitEntity.setVelocity(d, e + (double)g, f, 1.5f, 10.0f);
         this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_LLAMA_SPIT, this.getSoundCategory(), 1.0f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.2f);
@@ -381,12 +381,12 @@ implements RangedAttackMob {
     }
 
     @Override
-    public boolean handleFallDamage(float f, float g) {
-        int i = this.method_23329(f, g);
+    public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
+        int i = this.method_23329(fallDistance, damageMultiplier);
         if (i <= 0) {
             return false;
         }
-        if (f >= 6.0f) {
+        if (fallDistance >= 6.0f) {
             this.damage(DamageSource.FALL, i);
             if (this.hasPassengers()) {
                 for (Entity entity : this.getPassengersDeep()) {
@@ -441,19 +441,19 @@ implements RangedAttackMob {
     }
 
     @Override
-    public void attack(LivingEntity livingEntity, float f) {
-        this.spitAt(livingEntity);
+    public void attack(LivingEntity target, float f) {
+        this.spitAt(target);
     }
 
     @Override
-    public /* synthetic */ PassiveEntity createChild(PassiveEntity passiveEntity) {
-        return this.createChild(passiveEntity);
+    public /* synthetic */ PassiveEntity createChild(PassiveEntity mate) {
+        return this.createChild(mate);
     }
 
     static class ChaseWolvesGoal
     extends FollowTargetGoal<WolfEntity> {
-        public ChaseWolvesGoal(LlamaEntity llamaEntity) {
-            super(llamaEntity, WolfEntity.class, 16, false, true, livingEntity -> !((WolfEntity)livingEntity).isTamed());
+        public ChaseWolvesGoal(LlamaEntity llama) {
+            super(llama, WolfEntity.class, 16, false, true, livingEntity -> !((WolfEntity)livingEntity).isTamed());
         }
 
         @Override

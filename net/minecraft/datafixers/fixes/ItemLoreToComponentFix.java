@@ -18,8 +18,8 @@ import net.minecraft.text.Text;
 
 public class ItemLoreToComponentFix
 extends DataFix {
-    public ItemLoreToComponentFix(Schema schema, boolean bl) {
-        super(schema, bl);
+    public ItemLoreToComponentFix(Schema outputSchema, boolean changesType) {
+        super(outputSchema, changesType);
     }
 
     @Override
@@ -29,8 +29,8 @@ extends DataFix {
         return this.fixTypeEverywhereTyped("Item Lore componentize", type, typed2 -> typed2.updateTyped(opticFinder, typed -> typed.update(DSL.remainderFinder(), dynamic -> dynamic.update("display", dynamic2 -> dynamic2.update("Lore", dynamic -> DataFixUtils.orElse(dynamic.asStreamOpt().map(ItemLoreToComponentFix::fixLoreTags).map(dynamic::createList), dynamic))))));
     }
 
-    private static <T> Stream<Dynamic<T>> fixLoreTags(Stream<Dynamic<T>> stream) {
-        return stream.map(dynamic -> DataFixUtils.orElse(dynamic.asString().map(ItemLoreToComponentFix::componentize).map(dynamic::createString), dynamic));
+    private static <T> Stream<Dynamic<T>> fixLoreTags(Stream<Dynamic<T>> tags) {
+        return tags.map(dynamic -> DataFixUtils.orElse(dynamic.asString().map(ItemLoreToComponentFix::componentize).map(dynamic::createString), dynamic));
     }
 
     private static String componentize(String string) {

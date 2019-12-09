@@ -109,8 +109,8 @@ extends DataFix {
         hashMap.put("167", "minecraft:modified_badlands_plateau");
     });
 
-    public LevelDataGeneratorOptionsFix(Schema schema, boolean bl) {
-        super(schema, bl);
+    public LevelDataGeneratorOptionsFix(Schema outputSchema, boolean changesType) {
+        super(outputSchema, changesType);
     }
 
     @Override
@@ -133,27 +133,27 @@ extends DataFix {
         });
     }
 
-    private static <T> Dynamic<T> fixGeneratorOptions(String string, DynamicOps<T> dynamicOps) {
+    private static <T> Dynamic<T> fixGeneratorOptions(String generatorOptions, DynamicOps<T> ops) {
         List<Object> list;
-        Iterator<String> iterator = Splitter.on(';').split(string).iterator();
-        String string2 = "minecraft:plains";
+        Iterator<String> iterator = Splitter.on(';').split(generatorOptions).iterator();
+        String string = "minecraft:plains";
         HashMap map = Maps.newHashMap();
-        if (!string.isEmpty() && iterator.hasNext()) {
+        if (!generatorOptions.isEmpty() && iterator.hasNext()) {
             list = LevelDataGeneratorOptionsFix.parseFlatLayers(iterator.next());
             if (!list.isEmpty()) {
                 if (iterator.hasNext()) {
-                    string2 = NUMERICAL_IDS_TO_BIOME_IDS.getOrDefault(iterator.next(), "minecraft:plains");
+                    string = NUMERICAL_IDS_TO_BIOME_IDS.getOrDefault(iterator.next(), "minecraft:plains");
                 }
                 if (iterator.hasNext()) {
                     String[] strings;
-                    for (String string3 : strings = iterator.next().toLowerCase(Locale.ROOT).split(",")) {
+                    for (String string2 : strings = iterator.next().toLowerCase(Locale.ROOT).split(",")) {
                         String[] strings3;
-                        String[] strings2 = string3.split("\\(", 2);
+                        String[] strings2 = string2.split("\\(", 2);
                         if (strings2[0].isEmpty()) continue;
                         map.put(strings2[0], Maps.newHashMap());
                         if (strings2.length <= 1 || !strings2[1].endsWith(")") || strings2[1].length() <= 1) continue;
-                        for (String string4 : strings3 = strings2[1].substring(0, strings2[1].length() - 1).split(" ")) {
-                            String[] strings4 = string4.split("=", 2);
+                        for (String string3 : strings3 = strings2[1].substring(0, strings2[1].length() - 1).split(" ")) {
+                            String[] strings4 = string3.split("=", 2);
                             if (strings4.length != 2) continue;
                             ((Map)map.get(strings2[0])).put(strings4[0], strings4[1]);
                         }
@@ -169,15 +169,15 @@ extends DataFix {
             list.add(Pair.of(1, "minecraft:grass_block"));
             map.put("village", Maps.newHashMap());
         }
-        Object object = dynamicOps.createList(list.stream().map(pair -> dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("height"), dynamicOps.createInt((Integer)pair.getFirst()), dynamicOps.createString("block"), dynamicOps.createString((String)pair.getSecond())))));
-        Object object2 = dynamicOps.createMap(map.entrySet().stream().map(entry2 -> Pair.of(dynamicOps.createString(((String)entry2.getKey()).toLowerCase(Locale.ROOT)), dynamicOps.createMap(((Map)entry2.getValue()).entrySet().stream().map(entry -> Pair.of(dynamicOps.createString((String)entry.getKey()), dynamicOps.createString((String)entry.getValue()))).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond))))).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond)));
-        return new Dynamic<Object>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("layers"), object, dynamicOps.createString("biome"), dynamicOps.createString(string2), dynamicOps.createString("structures"), object2)));
+        Object object = ops.createList(list.stream().map(pair -> ops.createMap(ImmutableMap.of(ops.createString("height"), ops.createInt((Integer)pair.getFirst()), ops.createString("block"), ops.createString((String)pair.getSecond())))));
+        Object object2 = ops.createMap(map.entrySet().stream().map(entry2 -> Pair.of(ops.createString(((String)entry2.getKey()).toLowerCase(Locale.ROOT)), ops.createMap(((Map)entry2.getValue()).entrySet().stream().map(entry -> Pair.of(ops.createString((String)entry.getKey()), ops.createString((String)entry.getValue()))).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond))))).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond)));
+        return new Dynamic<Object>(ops, ops.createMap(ImmutableMap.of(ops.createString("layers"), object, ops.createString("biome"), ops.createString(string), ops.createString("structures"), object2)));
     }
 
     @Nullable
-    private static Pair<Integer, String> parseFlatLayer(String string) {
+    private static Pair<Integer, String> parseFlatLayer(String layer) {
         int i;
-        String[] strings = string.split("\\*", 2);
+        String[] strings = layer.split("\\*", 2);
         if (strings.length == 2) {
             try {
                 i = Integer.parseInt(strings[0]);
@@ -187,15 +187,15 @@ extends DataFix {
         } else {
             i = 1;
         }
-        String string2 = strings[strings.length - 1];
-        return Pair.of(i, string2);
+        String string = strings[strings.length - 1];
+        return Pair.of(i, string);
     }
 
-    private static List<Pair<Integer, String>> parseFlatLayers(String string) {
+    private static List<Pair<Integer, String>> parseFlatLayers(String layers) {
         String[] strings;
         ArrayList<Pair<Integer, String>> list = Lists.newArrayList();
-        for (String string2 : strings = string.split(",")) {
-            Pair<Integer, String> pair = LevelDataGeneratorOptionsFix.parseFlatLayer(string2);
+        for (String string : strings = layers.split(",")) {
+            Pair<Integer, String> pair = LevelDataGeneratorOptionsFix.parseFlatLayer(string);
             if (pair == null) {
                 return Collections.emptyList();
             }

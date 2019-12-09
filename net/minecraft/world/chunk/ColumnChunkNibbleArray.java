@@ -17,8 +17,8 @@ extends ChunkNibbleArray {
     }
 
     @Override
-    protected int getIndex(int i, int j, int k) {
-        return k << 4 | i;
+    protected int getIndex(int x, int y, int z) {
+        return z << 4 | x;
     }
 
     @Override

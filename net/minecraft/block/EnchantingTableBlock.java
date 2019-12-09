@@ -43,19 +43,19 @@ extends BlockWithEntity {
     }
 
     @Override
-    public boolean hasSidedTransparency(BlockState blockState) {
+    public boolean hasSidedTransparency(BlockState state) {
         return true;
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
         return SHAPE;
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-        super.randomDisplayTick(blockState, world, blockPos, random);
+    public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+        super.randomDisplayTick(state, world, pos, random);
         for (int i = -2; i <= 2; ++i) {
             block1: for (int j = -2; j <= 2; ++j) {
                 if (i > -2 && i < 2 && j == -1) {
@@ -63,55 +63,55 @@ extends BlockWithEntity {
                 }
                 if (random.nextInt(16) != 0) continue;
                 for (int k = 0; k <= 1; ++k) {
-                    BlockPos blockPos2 = blockPos.add(i, k, j);
-                    if (world.getBlockState(blockPos2).getBlock() != Blocks.BOOKSHELF) continue;
-                    if (!world.isAir(blockPos.add(i / 2, 0, j / 2))) continue block1;
-                    world.addParticle(ParticleTypes.ENCHANT, (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 2.0, (double)blockPos.getZ() + 0.5, (double)((float)i + random.nextFloat()) - 0.5, (float)k - random.nextFloat() - 1.0f, (double)((float)j + random.nextFloat()) - 0.5);
+                    BlockPos blockPos = pos.add(i, k, j);
+                    if (world.getBlockState(blockPos).getBlock() != Blocks.BOOKSHELF) continue;
+                    if (!world.isAir(pos.add(i / 2, 0, j / 2))) continue block1;
+                    world.addParticle(ParticleTypes.ENCHANT, (double)pos.getX() + 0.5, (double)pos.getY() + 2.0, (double)pos.getZ() + 0.5, (double)((float)i + random.nextFloat()) - 0.5, (float)k - random.nextFloat() - 1.0f, (double)((float)j + random.nextFloat()) - 0.5);
                 }
             }
         }
     }
 
     @Override
-    public BlockRenderType getRenderType(BlockState blockState) {
+    public BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.MODEL;
     }
 
     @Override
-    public BlockEntity createBlockEntity(BlockView blockView) {
+    public BlockEntity createBlockEntity(BlockView view) {
         return new EnchantingTableBlockEntity();
     }
 
     @Override
-    public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (world.isClient) {
             return ActionResult.SUCCESS;
         }
-        playerEntity.openContainer(blockState.createContainerProvider(world, blockPos));
+        player.openContainer(state.createContainerProvider(world, pos));
         return ActionResult.SUCCESS;
     }
 
     @Override
     @Nullable
-    public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
-        BlockEntity blockEntity = world.getBlockEntity(blockPos);
+    public NameableContainerProvider createContainerProvider(BlockState state, World world, BlockPos pos) {
+        BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof EnchantingTableBlockEntity) {
             Text text = ((Nameable)((Object)blockEntity)).getDisplayName();
-            return new ClientDummyContainerProvider((i, playerInventory, playerEntity) -> new EnchantingTableContainer(i, playerInventory, BlockContext.create(world, blockPos)), text);
+            return new ClientDummyContainerProvider((i, playerInventory, playerEntity) -> new EnchantingTableContainer(i, playerInventory, BlockContext.create(world, pos)), text);
         }
         return null;
     }
 
     @Override
-    public void onPlaced(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
+    public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
         BlockEntity blockEntity;
-        if (itemStack.hasCustomName() && (blockEntity = world.getBlockEntity(blockPos)) instanceof EnchantingTableBlockEntity) {
+        if (itemStack.hasCustomName() && (blockEntity = world.getBlockEntity(pos)) instanceof EnchantingTableBlockEntity) {
             ((EnchantingTableBlockEntity)blockEntity).setCustomName(itemStack.getName());
         }
     }
 
     @Override
-    public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+    public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
         return false;
     }
 }

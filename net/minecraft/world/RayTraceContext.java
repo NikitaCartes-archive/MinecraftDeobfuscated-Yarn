@@ -21,9 +21,9 @@ public class RayTraceContext {
     private final FluidHandling fluid;
     private final EntityContext entityPosition;
 
-    public RayTraceContext(Vec3d vec3d, Vec3d vec3d2, ShapeType shapeType, FluidHandling fluidHandling, Entity entity) {
-        this.start = vec3d;
-        this.end = vec3d2;
+    public RayTraceContext(Vec3d start, Vec3d end, ShapeType shapeType, FluidHandling fluidHandling, Entity entity) {
+        this.start = start;
+        this.end = end;
         this.shapeType = shapeType;
         this.fluid = fluidHandling;
         this.entityPosition = EntityContext.of(entity);

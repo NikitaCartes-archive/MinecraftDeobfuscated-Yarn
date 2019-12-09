@@ -60,64 +60,64 @@ extends BlockEntity {
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag compoundTag) {
-        super.toTag(compoundTag);
-        compoundTag.putString("name", this.getStructureName());
-        compoundTag.putString("author", this.author);
-        compoundTag.putString("metadata", this.metadata);
-        compoundTag.putInt("posX", this.offset.getX());
-        compoundTag.putInt("posY", this.offset.getY());
-        compoundTag.putInt("posZ", this.offset.getZ());
-        compoundTag.putInt("sizeX", this.size.getX());
-        compoundTag.putInt("sizeY", this.size.getY());
-        compoundTag.putInt("sizeZ", this.size.getZ());
-        compoundTag.putString("rotation", this.rotation.toString());
-        compoundTag.putString("mirror", this.mirror.toString());
-        compoundTag.putString("mode", this.mode.toString());
-        compoundTag.putBoolean("ignoreEntities", this.ignoreEntities);
-        compoundTag.putBoolean("powered", this.powered);
-        compoundTag.putBoolean("showair", this.showAir);
-        compoundTag.putBoolean("showboundingbox", this.showBoundingBox);
-        compoundTag.putFloat("integrity", this.integrity);
-        compoundTag.putLong("seed", this.seed);
-        return compoundTag;
+    public CompoundTag toTag(CompoundTag tag) {
+        super.toTag(tag);
+        tag.putString("name", this.getStructureName());
+        tag.putString("author", this.author);
+        tag.putString("metadata", this.metadata);
+        tag.putInt("posX", this.offset.getX());
+        tag.putInt("posY", this.offset.getY());
+        tag.putInt("posZ", this.offset.getZ());
+        tag.putInt("sizeX", this.size.getX());
+        tag.putInt("sizeY", this.size.getY());
+        tag.putInt("sizeZ", this.size.getZ());
+        tag.putString("rotation", this.rotation.toString());
+        tag.putString("mirror", this.mirror.toString());
+        tag.putString("mode", this.mode.toString());
+        tag.putBoolean("ignoreEntities", this.ignoreEntities);
+        tag.putBoolean("powered", this.powered);
+        tag.putBoolean("showair", this.showAir);
+        tag.putBoolean("showboundingbox", this.showBoundingBox);
+        tag.putFloat("integrity", this.integrity);
+        tag.putLong("seed", this.seed);
+        return tag;
     }
 
     @Override
-    public void fromTag(CompoundTag compoundTag) {
-        super.fromTag(compoundTag);
-        this.setStructureName(compoundTag.getString("name"));
-        this.author = compoundTag.getString("author");
-        this.metadata = compoundTag.getString("metadata");
-        int i = MathHelper.clamp(compoundTag.getInt("posX"), -32, 32);
-        int j = MathHelper.clamp(compoundTag.getInt("posY"), -32, 32);
-        int k = MathHelper.clamp(compoundTag.getInt("posZ"), -32, 32);
+    public void fromTag(CompoundTag tag) {
+        super.fromTag(tag);
+        this.setStructureName(tag.getString("name"));
+        this.author = tag.getString("author");
+        this.metadata = tag.getString("metadata");
+        int i = MathHelper.clamp(tag.getInt("posX"), -32, 32);
+        int j = MathHelper.clamp(tag.getInt("posY"), -32, 32);
+        int k = MathHelper.clamp(tag.getInt("posZ"), -32, 32);
         this.offset = new BlockPos(i, j, k);
-        int l = MathHelper.clamp(compoundTag.getInt("sizeX"), 0, 32);
-        int m = MathHelper.clamp(compoundTag.getInt("sizeY"), 0, 32);
-        int n = MathHelper.clamp(compoundTag.getInt("sizeZ"), 0, 32);
+        int l = MathHelper.clamp(tag.getInt("sizeX"), 0, 32);
+        int m = MathHelper.clamp(tag.getInt("sizeY"), 0, 32);
+        int n = MathHelper.clamp(tag.getInt("sizeZ"), 0, 32);
         this.size = new BlockPos(l, m, n);
         try {
-            this.rotation = BlockRotation.valueOf(compoundTag.getString("rotation"));
+            this.rotation = BlockRotation.valueOf(tag.getString("rotation"));
         } catch (IllegalArgumentException illegalArgumentException) {
             this.rotation = BlockRotation.NONE;
         }
         try {
-            this.mirror = BlockMirror.valueOf(compoundTag.getString("mirror"));
+            this.mirror = BlockMirror.valueOf(tag.getString("mirror"));
         } catch (IllegalArgumentException illegalArgumentException) {
             this.mirror = BlockMirror.NONE;
         }
         try {
-            this.mode = StructureBlockMode.valueOf(compoundTag.getString("mode"));
+            this.mode = StructureBlockMode.valueOf(tag.getString("mode"));
         } catch (IllegalArgumentException illegalArgumentException) {
             this.mode = StructureBlockMode.DATA;
         }
-        this.ignoreEntities = compoundTag.getBoolean("ignoreEntities");
-        this.powered = compoundTag.getBoolean("powered");
-        this.showAir = compoundTag.getBoolean("showair");
-        this.showBoundingBox = compoundTag.getBoolean("showboundingbox");
-        this.integrity = compoundTag.contains("integrity") ? compoundTag.getFloat("integrity") : 1.0f;
-        this.seed = compoundTag.getLong("seed");
+        this.ignoreEntities = tag.getBoolean("ignoreEntities");
+        this.powered = tag.getBoolean("powered");
+        this.showAir = tag.getBoolean("showair");
+        this.showBoundingBox = tag.getBoolean("showboundingbox");
+        this.integrity = tag.contains("integrity") ? tag.getFloat("integrity") : 1.0f;
+        this.seed = tag.getLong("seed");
         this.updateBlockMode();
     }
 
@@ -305,48 +305,48 @@ extends BlockEntity {
         return false;
     }
 
-    private List<StructureBlockBlockEntity> findCorners(List<StructureBlockBlockEntity> list) {
+    private List<StructureBlockBlockEntity> findCorners(List<StructureBlockBlockEntity> structureBlockEntities) {
         Predicate<StructureBlockBlockEntity> predicate = structureBlockBlockEntity -> structureBlockBlockEntity.mode == StructureBlockMode.CORNER && Objects.equals(this.structureName, structureBlockBlockEntity.structureName);
-        return list.stream().filter(predicate).collect(Collectors.toList());
+        return structureBlockEntities.stream().filter(predicate).collect(Collectors.toList());
     }
 
-    private List<StructureBlockBlockEntity> findStructureBlockEntities(BlockPos blockPos, BlockPos blockPos2) {
+    private List<StructureBlockBlockEntity> findStructureBlockEntities(BlockPos pos1, BlockPos pos2) {
         ArrayList<StructureBlockBlockEntity> list = Lists.newArrayList();
-        for (BlockPos blockPos3 : BlockPos.iterate(blockPos, blockPos2)) {
+        for (BlockPos blockPos : BlockPos.iterate(pos1, pos2)) {
             BlockEntity blockEntity;
-            BlockState blockState = this.world.getBlockState(blockPos3);
-            if (blockState.getBlock() != Blocks.STRUCTURE_BLOCK || (blockEntity = this.world.getBlockEntity(blockPos3)) == null || !(blockEntity instanceof StructureBlockBlockEntity)) continue;
+            BlockState blockState = this.world.getBlockState(blockPos);
+            if (blockState.getBlock() != Blocks.STRUCTURE_BLOCK || (blockEntity = this.world.getBlockEntity(blockPos)) == null || !(blockEntity instanceof StructureBlockBlockEntity)) continue;
             list.add((StructureBlockBlockEntity)blockEntity);
         }
         return list;
     }
 
-    private BlockBox makeBoundingBox(BlockPos blockPos, List<StructureBlockBlockEntity> list) {
+    private BlockBox makeBoundingBox(BlockPos center, List<StructureBlockBlockEntity> corners) {
         BlockBox blockBox;
-        if (list.size() > 1) {
-            BlockPos blockPos2 = list.get(0).getPos();
-            blockBox = new BlockBox(blockPos2, blockPos2);
-        } else {
+        if (corners.size() > 1) {
+            BlockPos blockPos = corners.get(0).getPos();
             blockBox = new BlockBox(blockPos, blockPos);
+        } else {
+            blockBox = new BlockBox(center, center);
         }
-        for (StructureBlockBlockEntity structureBlockBlockEntity : list) {
-            BlockPos blockPos3 = structureBlockBlockEntity.getPos();
-            if (blockPos3.getX() < blockBox.minX) {
-                blockBox.minX = blockPos3.getX();
-            } else if (blockPos3.getX() > blockBox.maxX) {
-                blockBox.maxX = blockPos3.getX();
+        for (StructureBlockBlockEntity structureBlockBlockEntity : corners) {
+            BlockPos blockPos2 = structureBlockBlockEntity.getPos();
+            if (blockPos2.getX() < blockBox.minX) {
+                blockBox.minX = blockPos2.getX();
+            } else if (blockPos2.getX() > blockBox.maxX) {
+                blockBox.maxX = blockPos2.getX();
             }
-            if (blockPos3.getY() < blockBox.minY) {
-                blockBox.minY = blockPos3.getY();
-            } else if (blockPos3.getY() > blockBox.maxY) {
-                blockBox.maxY = blockPos3.getY();
+            if (blockPos2.getY() < blockBox.minY) {
+                blockBox.minY = blockPos2.getY();
+            } else if (blockPos2.getY() > blockBox.maxY) {
+                blockBox.maxY = blockPos2.getY();
             }
-            if (blockPos3.getZ() < blockBox.minZ) {
-                blockBox.minZ = blockPos3.getZ();
+            if (blockPos2.getZ() < blockBox.minZ) {
+                blockBox.minZ = blockPos2.getZ();
                 continue;
             }
-            if (blockPos3.getZ() <= blockBox.maxZ) continue;
-            blockBox.maxZ = blockPos3.getZ();
+            if (blockPos2.getZ() <= blockBox.maxZ) continue;
+            blockBox.maxZ = blockPos2.getZ();
         }
         return blockBox;
     }
@@ -384,14 +384,14 @@ extends BlockEntity {
         return this.loadStructure(true);
     }
 
-    private static Random createRandom(long l) {
-        if (l == 0L) {
+    private static Random createRandom(long seed) {
+        if (seed == 0L) {
             return new Random(Util.getMeasuringTimeMs());
         }
-        return new Random(l);
+        return new Random(seed);
     }
 
-    public boolean loadStructure(boolean bl) {
+    public boolean loadStructure(boolean resizeDisabled) {
         Structure structure;
         if (this.mode != StructureBlockMode.LOAD || this.world.isClient || this.structureName == null) {
             return false;
@@ -406,23 +406,23 @@ extends BlockEntity {
         if (structure == null) {
             return false;
         }
-        return this.place(bl, structure);
+        return this.place(resizeDisabled, structure);
     }
 
-    public boolean place(boolean bl, Structure structure) {
+    public boolean place(boolean resizeDisabled, Structure structure) {
         BlockPos blockPos2;
-        boolean bl2;
+        boolean bl;
         BlockPos blockPos = this.getPos();
         if (!ChatUtil.isEmpty(structure.getAuthor())) {
             this.author = structure.getAuthor();
         }
-        if (!(bl2 = this.size.equals(blockPos2 = structure.getSize()))) {
+        if (!(bl = this.size.equals(blockPos2 = structure.getSize()))) {
             this.size = blockPos2;
             this.markDirty();
             BlockState blockState = this.world.getBlockState(blockPos);
             this.world.updateListeners(blockPos, blockState, blockState, 3);
         }
-        if (!bl || bl2) {
+        if (!resizeDisabled || bl) {
             StructurePlacementData structurePlacementData = new StructurePlacementData().setMirrored(this.mirror).setRotation(this.rotation).setIgnoreEntities(this.ignoreEntities).setChunkPosition(null);
             if (this.integrity < 1.0f) {
                 structurePlacementData.clearProcessors().addProcessor(new BlockRotStructureProcessor(MathHelper.clamp(this.integrity, 0.0f, 1.0f))).setRandom(StructureBlockBlockEntity.createRandom(this.seed));
@@ -478,8 +478,8 @@ extends BlockEntity {
         return this.showBoundingBox;
     }
 
-    public void setShowBoundingBox(boolean bl) {
-        this.showBoundingBox = bl;
+    public void setShowBoundingBox(boolean showBoundingBox) {
+        this.showBoundingBox = showBoundingBox;
     }
 
     public static enum Action {

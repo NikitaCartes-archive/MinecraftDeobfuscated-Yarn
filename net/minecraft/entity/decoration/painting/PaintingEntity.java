@@ -34,8 +34,8 @@ extends AbstractDecorationEntity {
         super((EntityType<? extends AbstractDecorationEntity>)entityType, world);
     }
 
-    public PaintingEntity(World world, BlockPos blockPos, Direction direction) {
-        super(EntityType.PAINTING, world, blockPos);
+    public PaintingEntity(World world, BlockPos pos, Direction direction) {
+        super(EntityType.PAINTING, world, pos);
         PaintingMotive paintingMotive;
         ArrayList<PaintingMotive> list = Lists.newArrayList();
         int i = 0;
@@ -69,15 +69,15 @@ extends AbstractDecorationEntity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag compoundTag) {
-        compoundTag.putString("Motive", Registry.MOTIVE.getId(this.motive).toString());
-        super.writeCustomDataToTag(compoundTag);
+    public void writeCustomDataToTag(CompoundTag tag) {
+        tag.putString("Motive", Registry.MOTIVE.getId(this.motive).toString());
+        super.writeCustomDataToTag(tag);
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag compoundTag) {
-        this.motive = Registry.MOTIVE.get(Identifier.tryParse(compoundTag.getString("Motive")));
-        super.readCustomDataFromTag(compoundTag);
+    public void readCustomDataFromTag(CompoundTag tag) {
+        this.motive = Registry.MOTIVE.get(Identifier.tryParse(tag.getString("Motive")));
+        super.readCustomDataFromTag(tag);
     }
 
     @Override
@@ -117,14 +117,14 @@ extends AbstractDecorationEntity {
     }
 
     @Override
-    public void setPositionAndAngles(double d, double e, double f, float g, float h) {
-        this.setPosition(d, e, f);
+    public void setPositionAndAngles(double x, double y, double z, float yaw, float pitch) {
+        this.setPosition(x, y, z);
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void updateTrackedPositionAndAngles(double d, double e, double f, float g, float h, int i, boolean bl) {
-        BlockPos blockPos = this.blockPos.add(d - this.getX(), e - this.getY(), f - this.getZ());
+    public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
+        BlockPos blockPos = this.blockPos.add(x - this.getX(), y - this.getY(), z - this.getZ());
         this.setPosition(blockPos.getX(), blockPos.getY(), blockPos.getZ());
     }
 

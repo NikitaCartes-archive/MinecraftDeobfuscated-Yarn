@@ -72,25 +72,25 @@ implements TutorialStepHandler {
     }
 
     @Override
-    public void onTarget(ClientWorld clientWorld, HitResult hitResult) {
+    public void onTarget(ClientWorld world, HitResult hitResult) {
         BlockState blockState;
-        if (hitResult.getType() == HitResult.Type.BLOCK && TREE_BLOCKS.contains((blockState = clientWorld.getBlockState(((BlockHitResult)hitResult).getBlockPos())).getBlock())) {
+        if (hitResult.getType() == HitResult.Type.BLOCK && TREE_BLOCKS.contains((blockState = world.getBlockState(((BlockHitResult)hitResult).getBlockPos())).getBlock())) {
             this.tutorialManager.setStep(TutorialStep.PUNCH_TREE);
         }
     }
 
     @Override
-    public void onSlotUpdate(ItemStack itemStack) {
+    public void onSlotUpdate(ItemStack stack) {
         for (Block block : TREE_BLOCKS) {
-            if (itemStack.getItem() != block.asItem()) continue;
+            if (stack.getItem() != block.asItem()) continue;
             this.tutorialManager.setStep(TutorialStep.CRAFT_PLANKS);
             return;
         }
     }
 
-    public static boolean hasBrokenTreeBlocks(ClientPlayerEntity clientPlayerEntity) {
+    public static boolean hasBrokenTreeBlocks(ClientPlayerEntity player) {
         for (Block block : TREE_BLOCKS) {
-            if (clientPlayerEntity.getStats().getStat(Stats.MINED.getOrCreateStat(block)) <= 0) continue;
+            if (player.getStats().getStat(Stats.MINED.getOrCreateStat(block)) <= 0) continue;
             return true;
         }
         return false;

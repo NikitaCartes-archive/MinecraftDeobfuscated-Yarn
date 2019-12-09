@@ -26,13 +26,13 @@ extends RavineCarver {
     }
 
     @Override
-    protected boolean isRegionUncarvable(Chunk chunk, int i, int j, int k, int l, int m, int n, int o, int p) {
+    protected boolean isRegionUncarvable(Chunk chunk, int mainChunkX, int mainChunkZ, int relMinX, int relMaxX, int minY, int maxY, int relMinZ, int relMaxZ) {
         return false;
     }
 
     @Override
-    protected boolean carveAtPoint(Chunk chunk, Function<BlockPos, Biome> function, BitSet bitSet, Random random, BlockPos.Mutable mutable, BlockPos.Mutable mutable2, BlockPos.Mutable mutable3, int i, int j, int k, int l, int m, int n, int o, int p, AtomicBoolean atomicBoolean) {
-        return UnderwaterCaveCarver.carveAtPoint(this, chunk, bitSet, random, mutable, i, j, k, l, m, n, o, p);
+    protected boolean carveAtPoint(Chunk chunk, Function<BlockPos, Biome> function, BitSet bitSet, Random random, BlockPos.Mutable mutable, BlockPos.Mutable mutable2, BlockPos.Mutable mutable3, int mainChunkX, int mainChunkZ, int i, int j, int k, int l, int m, int n, AtomicBoolean atomicBoolean) {
+        return UnderwaterCaveCarver.carveAtPoint(this, chunk, bitSet, random, mutable, mainChunkX, mainChunkZ, i, j, k, l, m, n);
     }
 }
 

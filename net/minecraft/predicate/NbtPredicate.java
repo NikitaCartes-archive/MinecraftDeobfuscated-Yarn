@@ -23,15 +23,15 @@ public class NbtPredicate {
     @Nullable
     private final CompoundTag tag;
 
-    public NbtPredicate(@Nullable CompoundTag compoundTag) {
-        this.tag = compoundTag;
+    public NbtPredicate(@Nullable CompoundTag tag) {
+        this.tag = tag;
     }
 
-    public boolean test(ItemStack itemStack) {
+    public boolean test(ItemStack stack) {
         if (this == ANY) {
             return true;
         }
-        return this.test(itemStack.getTag());
+        return this.test(stack.getTag());
     }
 
     public boolean test(Entity entity) {
@@ -55,13 +55,13 @@ public class NbtPredicate {
         return new JsonPrimitive(this.tag.toString());
     }
 
-    public static NbtPredicate fromJson(@Nullable JsonElement jsonElement) {
+    public static NbtPredicate fromJson(@Nullable JsonElement json) {
         CompoundTag compoundTag;
-        if (jsonElement == null || jsonElement.isJsonNull()) {
+        if (json == null || json.isJsonNull()) {
             return ANY;
         }
         try {
-            compoundTag = StringNbtReader.parse(JsonHelper.asString(jsonElement, "nbt"));
+            compoundTag = StringNbtReader.parse(JsonHelper.asString(json, "nbt"));
         } catch (CommandSyntaxException commandSyntaxException) {
             throw new JsonSyntaxException("Invalid nbt tag: " + commandSyntaxException.getMessage());
         }

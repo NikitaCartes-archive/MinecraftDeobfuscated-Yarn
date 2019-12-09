@@ -19,22 +19,22 @@ public class FireSmokeParticle
 extends SpriteBillboardParticle {
     private final SpriteProvider field_17868;
 
-    protected FireSmokeParticle(World world, double d, double e, double f, double g, double h, double i, float j, SpriteProvider spriteProvider) {
-        super(world, d, e, f, 0.0, 0.0, 0.0);
-        float k;
+    protected FireSmokeParticle(World world, double x, double y, double z, double d, double e, double f, float g, SpriteProvider spriteProvider) {
+        super(world, x, y, z, 0.0, 0.0, 0.0);
+        float h;
         this.field_17868 = spriteProvider;
         this.velocityX *= (double)0.1f;
         this.velocityY *= (double)0.1f;
         this.velocityZ *= (double)0.1f;
-        this.velocityX += g;
-        this.velocityY += h;
-        this.velocityZ += i;
-        this.colorRed = k = (float)(Math.random() * (double)0.3f);
-        this.colorGreen = k;
-        this.colorBlue = k;
-        this.scale *= 0.75f * j;
+        this.velocityX += d;
+        this.velocityY += e;
+        this.velocityZ += f;
+        this.colorRed = h = (float)(Math.random() * (double)0.3f);
+        this.colorGreen = h;
+        this.colorBlue = h;
+        this.scale *= 0.75f * g;
         this.maxAge = (int)(8.0 / (Math.random() * 0.8 + 0.2));
-        this.maxAge = (int)((float)this.maxAge * j);
+        this.maxAge = (int)((float)this.maxAge * g);
         this.maxAge = Math.max(this.maxAge, 1);
         this.setSpriteForAge(spriteProvider);
     }
@@ -45,8 +45,8 @@ extends SpriteBillboardParticle {
     }
 
     @Override
-    public float getSize(float f) {
-        return this.scale * MathHelper.clamp(((float)this.age + f) / (float)this.maxAge * 32.0f, 0.0f, 1.0f);
+    public float getSize(float tickDelta) {
+        return this.scale * MathHelper.clamp(((float)this.age + tickDelta) / (float)this.maxAge * 32.0f, 0.0f, 1.0f);
     }
 
     @Override

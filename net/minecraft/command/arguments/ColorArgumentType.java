@@ -30,8 +30,8 @@ implements ArgumentType<Formatting> {
         return new ColorArgumentType();
     }
 
-    public static Formatting getColor(CommandContext<ServerCommandSource> commandContext, String string) {
-        return commandContext.getArgument(string, Formatting.class);
+    public static Formatting getColor(CommandContext<ServerCommandSource> context, String name) {
+        return context.getArgument(name, Formatting.class);
     }
 
     @Override
@@ -45,8 +45,8 @@ implements ArgumentType<Formatting> {
     }
 
     @Override
-    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
-        return CommandSource.suggestMatching(Formatting.getNames(true, false), suggestionsBuilder);
+    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+        return CommandSource.suggestMatching(Formatting.getNames(true, false), builder);
     }
 
     @Override

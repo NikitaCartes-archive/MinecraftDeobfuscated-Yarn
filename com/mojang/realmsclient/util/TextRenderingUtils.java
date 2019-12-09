@@ -13,53 +13,53 @@ import net.fabricmc.api.Environment;
 
 @Environment(value=EnvType.CLIENT)
 public class TextRenderingUtils {
-    static List<String> lineBreak(String string) {
-        return Arrays.asList(string.split("\\n"));
+    static List<String> lineBreak(String text) {
+        return Arrays.asList(text.split("\\n"));
     }
 
-    public static List<Line> decompose(String string, LineSegment ... lineSegments) {
-        return TextRenderingUtils.decompose(string, Arrays.asList(lineSegments));
+    public static List<Line> decompose(String text, LineSegment ... links) {
+        return TextRenderingUtils.decompose(text, Arrays.asList(links));
     }
 
-    private static List<Line> decompose(String string, List<LineSegment> list) {
-        List<String> list2 = TextRenderingUtils.lineBreak(string);
-        return TextRenderingUtils.insertLinks(list2, list);
+    private static List<Line> decompose(String text, List<LineSegment> links) {
+        List<String> list = TextRenderingUtils.lineBreak(text);
+        return TextRenderingUtils.insertLinks(list, links);
     }
 
-    private static List<Line> insertLinks(List<String> list, List<LineSegment> list2) {
+    private static List<Line> insertLinks(List<String> lines, List<LineSegment> links) {
         int i = 0;
-        ArrayList<Line> list3 = Lists.newArrayList();
-        for (String string : list) {
-            ArrayList<LineSegment> list4 = Lists.newArrayList();
-            List<String> list5 = TextRenderingUtils.split(string, "%link");
-            for (String string2 : list5) {
+        ArrayList<Line> list = Lists.newArrayList();
+        for (String string : lines) {
+            ArrayList<LineSegment> list2 = Lists.newArrayList();
+            List<String> list3 = TextRenderingUtils.split(string, "%link");
+            for (String string2 : list3) {
                 if (string2.equals("%link")) {
-                    list4.add(list2.get(i++));
+                    list2.add(links.get(i++));
                     continue;
                 }
-                list4.add(LineSegment.text(string2));
+                list2.add(LineSegment.text(string2));
             }
-            list3.add(new Line(list4));
+            list.add(new Line(list2));
         }
-        return list3;
+        return list;
     }
 
-    public static List<String> split(String string, String string2) {
+    public static List<String> split(String line, String delimiter) {
         int j;
-        if (string2.isEmpty()) {
+        if (delimiter.isEmpty()) {
             throw new IllegalArgumentException("Delimiter cannot be the empty string");
         }
         ArrayList<String> list = Lists.newArrayList();
         int i = 0;
-        while ((j = string.indexOf(string2, i)) != -1) {
+        while ((j = line.indexOf(delimiter, i)) != -1) {
             if (j > i) {
-                list.add(string.substring(i, j));
+                list.add(line.substring(i, j));
             }
-            list.add(string2);
-            i = j + string2.length();
+            list.add(delimiter);
+            i = j + delimiter.length();
         }
-        if (i < string.length()) {
-            list.add(string.substring(i));
+        if (i < line.length()) {
+            list.add(line.substring(i));
         }
         return list;
     }
@@ -70,26 +70,26 @@ public class TextRenderingUtils {
         final String linkTitle;
         final String linkUrl;
 
-        private LineSegment(String string) {
-            this.fullText = string;
+        private LineSegment(String fullText) {
+            this.fullText = fullText;
             this.linkTitle = null;
             this.linkUrl = null;
         }
 
-        private LineSegment(String string, String string2, String string3) {
-            this.fullText = string;
-            this.linkTitle = string2;
-            this.linkUrl = string3;
+        private LineSegment(String fullText, String linkTitle, String linkUrl) {
+            this.fullText = fullText;
+            this.linkTitle = linkTitle;
+            this.linkUrl = linkUrl;
         }
 
-        public boolean equals(Object object) {
-            if (this == object) {
+        public boolean equals(Object o) {
+            if (this == o) {
                 return true;
             }
-            if (object == null || this.getClass() != object.getClass()) {
+            if (o == null || this.getClass() != o.getClass()) {
                 return false;
             }
-            LineSegment lineSegment = (LineSegment)object;
+            LineSegment lineSegment = (LineSegment)o;
             return Objects.equals(this.fullText, lineSegment.fullText) && Objects.equals(this.linkTitle, lineSegment.linkTitle) && Objects.equals(this.linkUrl, lineSegment.linkUrl);
         }
 
@@ -116,12 +116,12 @@ public class TextRenderingUtils {
             return this.linkUrl;
         }
 
-        public static LineSegment link(String string, String string2) {
-            return new LineSegment(null, string, string2);
+        public static LineSegment link(String linkTitle, String linkUrl) {
+            return new LineSegment(null, linkTitle, linkUrl);
         }
 
-        static LineSegment text(String string) {
-            return new LineSegment(string);
+        static LineSegment text(String fullText) {
+            return new LineSegment(fullText);
         }
     }
 
@@ -129,22 +129,22 @@ public class TextRenderingUtils {
     public static class Line {
         public final List<LineSegment> segments;
 
-        Line(List<LineSegment> list) {
-            this.segments = list;
+        Line(List<LineSegment> segments) {
+            this.segments = segments;
         }
 
         public String toString() {
             return "Line{segments=" + this.segments + '}';
         }
 
-        public boolean equals(Object object) {
-            if (this == object) {
+        public boolean equals(Object o) {
+            if (this == o) {
                 return true;
             }
-            if (object == null || this.getClass() != object.getClass()) {
+            if (o == null || this.getClass() != o.getClass()) {
                 return false;
             }
-            Line line = (Line)object;
+            Line line = (Line)o;
             return Objects.equals(this.segments, line.segments);
         }
 

@@ -15,9 +15,9 @@ public enum ChestType implements StringIdentifiable
     private final String name;
     private final int opposite;
 
-    private ChestType(String string2, int j) {
-        this.name = string2;
-        this.opposite = j;
+    private ChestType(String name, int opposite) {
+        this.name = name;
+        this.opposite = opposite;
     }
 
     @Override

@@ -13,8 +13,8 @@ public class MobVisibilityCache {
     private final List<Entity> visibleEntities = Lists.newArrayList();
     private final List<Entity> invisibleEntities = Lists.newArrayList();
 
-    public MobVisibilityCache(MobEntity mobEntity) {
-        this.owner = mobEntity;
+    public MobVisibilityCache(MobEntity owner) {
+        this.owner = owner;
     }
 
     public void clear() {

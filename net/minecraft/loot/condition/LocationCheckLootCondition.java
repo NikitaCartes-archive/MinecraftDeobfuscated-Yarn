@@ -19,9 +19,9 @@ implements LootCondition {
     private final LocationPredicate predicate;
     private final BlockPos offset;
 
-    public LocationCheckLootCondition(LocationPredicate locationPredicate, BlockPos blockPos) {
-        this.predicate = locationPredicate;
-        this.offset = blockPos;
+    public LocationCheckLootCondition(LocationPredicate predicate, BlockPos offset) {
+        this.predicate = predicate;
+        this.offset = offset;
     }
 
     @Override
@@ -30,13 +30,13 @@ implements LootCondition {
         return blockPos != null && this.predicate.test(lootContext.getWorld(), blockPos.getX() + this.offset.getX(), blockPos.getY() + this.offset.getY(), blockPos.getZ() + this.offset.getZ());
     }
 
-    public static LootCondition.Builder builder(LocationPredicate.Builder builder) {
-        return () -> new LocationCheckLootCondition(builder.build(), BlockPos.ORIGIN);
+    public static LootCondition.Builder builder(LocationPredicate.Builder predicateBuilder) {
+        return () -> new LocationCheckLootCondition(predicateBuilder.build(), BlockPos.ORIGIN);
     }
 
     @Override
-    public /* synthetic */ boolean test(Object object) {
-        return this.test((LootContext)object);
+    public /* synthetic */ boolean test(Object context) {
+        return this.test((LootContext)context);
     }
 
     public static class Factory
@@ -69,8 +69,8 @@ implements LootCondition {
         }
 
         @Override
-        public /* synthetic */ LootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            return this.fromJson(jsonObject, jsonDeserializationContext);
+        public /* synthetic */ LootCondition fromJson(JsonObject json, JsonDeserializationContext context) {
+            return this.fromJson(json, context);
         }
     }
 }

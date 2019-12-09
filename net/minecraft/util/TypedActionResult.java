@@ -9,9 +9,9 @@ public class TypedActionResult<T> {
     private final ActionResult result;
     private final T value;
 
-    public TypedActionResult(ActionResult actionResult, T object) {
-        this.result = actionResult;
-        this.value = object;
+    public TypedActionResult(ActionResult result, T value) {
+        this.result = result;
+        this.value = value;
     }
 
     public ActionResult getResult() {
@@ -22,20 +22,20 @@ public class TypedActionResult<T> {
         return this.value;
     }
 
-    public static <T> TypedActionResult<T> success(T object) {
-        return new TypedActionResult<T>(ActionResult.SUCCESS, object);
+    public static <T> TypedActionResult<T> success(T data) {
+        return new TypedActionResult<T>(ActionResult.SUCCESS, data);
     }
 
-    public static <T> TypedActionResult<T> consume(T object) {
-        return new TypedActionResult<T>(ActionResult.CONSUME, object);
+    public static <T> TypedActionResult<T> consume(T data) {
+        return new TypedActionResult<T>(ActionResult.CONSUME, data);
     }
 
-    public static <T> TypedActionResult<T> pass(T object) {
-        return new TypedActionResult<T>(ActionResult.PASS, object);
+    public static <T> TypedActionResult<T> pass(T data) {
+        return new TypedActionResult<T>(ActionResult.PASS, data);
     }
 
-    public static <T> TypedActionResult<T> fail(T object) {
-        return new TypedActionResult<T>(ActionResult.FAIL, object);
+    public static <T> TypedActionResult<T> fail(T data) {
+        return new TypedActionResult<T>(ActionResult.FAIL, data);
     }
 }
 

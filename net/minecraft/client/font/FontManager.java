@@ -132,13 +132,13 @@ implements AutoCloseable {
         }
 
         @Override
-        protected /* synthetic */ Object prepare(ResourceManager resourceManager, Profiler profiler) {
-            return this.prepare(resourceManager, profiler);
+        protected /* synthetic */ Object prepare(ResourceManager manager, Profiler profiler) {
+            return this.prepare(manager, profiler);
         }
     };
 
-    public FontManager(TextureManager textureManager, boolean bl) {
-        this.textureManager = textureManager;
+    public FontManager(TextureManager manager, boolean bl) {
+        this.textureManager = manager;
         this.forceUnicodeFont = bl;
     }
 
@@ -151,20 +151,20 @@ implements AutoCloseable {
         });
     }
 
-    public void setForceUnicodeFont(boolean bl, Executor executor, Executor executor2) {
-        if (bl == this.forceUnicodeFont) {
+    public void setForceUnicodeFont(boolean forceUnicodeFont, Executor prepareExecutor, Executor applyExecutor) {
+        if (forceUnicodeFont == this.forceUnicodeFont) {
             return;
         }
-        this.forceUnicodeFont = bl;
+        this.forceUnicodeFont = forceUnicodeFont;
         ResourceManager resourceManager = MinecraftClient.getInstance().getResourceManager();
         ResourceReloadListener.Synchronizer synchronizer = new ResourceReloadListener.Synchronizer(){
 
             @Override
-            public <T> CompletableFuture<T> whenPrepared(T object) {
-                return CompletableFuture.completedFuture(object);
+            public <T> CompletableFuture<T> whenPrepared(T preparedObject) {
+                return CompletableFuture.completedFuture(preparedObject);
             }
         };
-        this.resourceReloadListener.reload(synchronizer, resourceManager, DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, executor, executor2);
+        this.resourceReloadListener.reload(synchronizer, resourceManager, DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, prepareExecutor, applyExecutor);
     }
 
     public ResourceReloadListener getResourceReloadListener() {

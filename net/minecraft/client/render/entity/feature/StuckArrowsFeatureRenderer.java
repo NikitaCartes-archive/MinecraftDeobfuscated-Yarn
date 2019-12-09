@@ -28,19 +28,19 @@ extends StuckObjectsFeatureRenderer<T, M> {
     }
 
     @Override
-    protected int getObjectCount(T livingEntity) {
-        return ((LivingEntity)livingEntity).getStuckArrowCount();
+    protected int getObjectCount(T entity) {
+        return ((LivingEntity)entity).getStuckArrowCount();
     }
 
     @Override
-    protected void renderObject(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, Entity entity, float f, float g, float h, float j) {
-        float k = MathHelper.sqrt(f * f + h * h);
+    protected void renderObject(MatrixStack matrix, VertexConsumerProvider vertexConsumers, int i, Entity entity, float tickDelta, float f, float g, float h) {
+        float j = MathHelper.sqrt(tickDelta * tickDelta + g * g);
         this.field_20528 = new ArrowEntity(entity.world, entity.getX(), entity.getY(), entity.getZ());
-        this.field_20528.yaw = (float)(Math.atan2(f, h) * 57.2957763671875);
-        this.field_20528.pitch = (float)(Math.atan2(g, k) * 57.2957763671875);
+        this.field_20528.yaw = (float)(Math.atan2(tickDelta, g) * 57.2957763671875);
+        this.field_20528.pitch = (float)(Math.atan2(f, j) * 57.2957763671875);
         this.field_20528.prevYaw = this.field_20528.yaw;
         this.field_20528.prevPitch = this.field_20528.pitch;
-        this.field_17153.render(this.field_20528, 0.0, 0.0, 0.0, 0.0f, j, matrixStack, vertexConsumerProvider, i);
+        this.field_17153.render(this.field_20528, 0.0, 0.0, 0.0, 0.0f, h, matrix, vertexConsumers, i);
     }
 }
 

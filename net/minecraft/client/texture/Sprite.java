@@ -117,15 +117,15 @@ implements AutoCloseable {
         this.interpolation = animationResourceMetadata.shouldInterpolate() ? new Interpolation(info, i) : null;
     }
 
-    private void upload(int i) {
-        int j = this.frameXs[i] * this.info.width;
-        int k = this.frameYs[i] * this.info.height;
-        this.upload(j, k, this.images);
+    private void upload(int frame) {
+        int i = this.frameXs[frame] * this.info.width;
+        int j = this.frameYs[frame] * this.info.height;
+        this.upload(i, j, this.images);
     }
 
-    private void upload(int i, int j, NativeImage[] nativeImages) {
-        for (int k = 0; k < this.images.length; ++k) {
-            nativeImages[k].upload(k, this.x >> k, this.y >> k, i >> k, j >> k, this.info.width >> k, this.info.height >> k, this.images.length > 1, false);
+    private void upload(int frameX, int frameY, NativeImage[] output) {
+        for (int i = 0; i < this.images.length; ++i) {
+            output[i].upload(i, this.x >> i, this.y >> i, frameX >> i, frameY >> i, this.info.width >> i, this.info.height >> i, this.images.length > 1, false);
         }
     }
 
@@ -145,9 +145,9 @@ implements AutoCloseable {
         return this.uMax;
     }
 
-    public float getFrameU(double d) {
+    public float getFrameU(double frame) {
         float f = this.uMax - this.uMin;
-        return this.uMin + f * (float)d / 16.0f;
+        return this.uMin + f * (float)frame / 16.0f;
     }
 
     public float getMinV() {
@@ -158,9 +158,9 @@ implements AutoCloseable {
         return this.vMax;
     }
 
-    public float getFrameV(double d) {
+    public float getFrameV(double frame) {
         float f = this.vMax - this.vMin;
-        return this.vMin + f * (float)d / 16.0f;
+        return this.vMin + f * (float)frame / 16.0f;
     }
 
     public Identifier getId() {
@@ -191,8 +191,8 @@ implements AutoCloseable {
         return "TextureAtlasSprite{name='" + this.info.id + '\'' + ", frameCount=" + i + ", x=" + this.x + ", y=" + this.y + ", height=" + this.info.height + ", width=" + this.info.width + ", u0=" + this.uMin + ", u1=" + this.uMax + ", v0=" + this.vMin + ", v1=" + this.vMax + '}';
     }
 
-    public boolean isPixelTransparent(int i, int j, int k) {
-        return (this.images[0].getPixelRgba(j + this.frameXs[i] * this.info.width, k + this.frameYs[i] * this.info.height) >> 24 & 0xFF) == 0;
+    public boolean isPixelTransparent(int frame, int x, int y) {
+        return (this.images[0].getPixelRgba(x + this.frameXs[frame] * this.info.width, y + this.frameYs[frame] * this.info.height) >> 24 & 0xFF) == 0;
     }
 
     public void upload() {
@@ -242,13 +242,13 @@ implements AutoCloseable {
     implements AutoCloseable {
         private final NativeImage[] images;
 
-        private Interpolation(Info info, int i) {
-            this.images = new NativeImage[i + 1];
-            for (int j = 0; j < this.images.length; ++j) {
-                int k = info.width >> j;
-                int l = info.height >> j;
-                if (this.images[j] != null) continue;
-                this.images[j] = new NativeImage(k, l, false);
+        private Interpolation(Info info, int mipmap) {
+            this.images = new NativeImage[mipmap + 1];
+            for (int i = 0; i < this.images.length; ++i) {
+                int j = info.width >> i;
+                int k = info.height >> i;
+                if (this.images[i] != null) continue;
+                this.images[i] = new NativeImage(j, k, false);
             }
         }
 
@@ -300,11 +300,11 @@ implements AutoCloseable {
         private final int height;
         private final AnimationResourceMetadata animationData;
 
-        public Info(Identifier identifier, int i, int j, AnimationResourceMetadata animationResourceMetadata) {
-            this.id = identifier;
-            this.width = i;
-            this.height = j;
-            this.animationData = animationResourceMetadata;
+        public Info(Identifier id, int width, int height, AnimationResourceMetadata animationData) {
+            this.id = id;
+            this.width = width;
+            this.height = height;
+            this.animationData = animationData;
         }
 
         public Identifier getId() {

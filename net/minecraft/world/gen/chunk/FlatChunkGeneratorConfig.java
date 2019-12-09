@@ -214,22 +214,22 @@ extends ChunkGeneratorConfig {
 
     @Nullable
     @Environment(value=EnvType.CLIENT)
-    private static FlatChunkGeneratorLayer parseLayerString(String string, int i) {
+    private static FlatChunkGeneratorLayer parseLayerString(String string, int startY) {
         Block block;
-        int j;
+        int i;
         String[] strings = string.split("\\*", 2);
         if (strings.length == 2) {
             try {
-                j = Math.max(Integer.parseInt(strings[0]), 0);
+                i = Math.max(Integer.parseInt(strings[0]), 0);
             } catch (NumberFormatException numberFormatException) {
                 LOGGER.error("Error while parsing flat world string => {}", (Object)numberFormatException.getMessage());
                 return null;
             }
         } else {
-            j = 1;
+            i = 1;
         }
-        int k = Math.min(i + j, 256);
-        int l = k - i;
+        int j = Math.min(startY + i, 256);
+        int k = j - startY;
         try {
             block = FlatChunkGeneratorConfig.parseBlock(strings[strings.length - 1]);
         } catch (Exception exception) {
@@ -240,8 +240,8 @@ extends ChunkGeneratorConfig {
             LOGGER.error("Error while parsing flat world string => Unknown block, {}", (Object)strings[strings.length - 1]);
             return null;
         }
-        FlatChunkGeneratorLayer flatChunkGeneratorLayer = new FlatChunkGeneratorLayer(l, block);
-        flatChunkGeneratorLayer.setStartY(i);
+        FlatChunkGeneratorLayer flatChunkGeneratorLayer = new FlatChunkGeneratorLayer(k, block);
+        flatChunkGeneratorLayer.setStartY(startY);
         return flatChunkGeneratorLayer;
     }
 
@@ -329,41 +329,41 @@ extends ChunkGeneratorConfig {
     }
 
     @Environment(value=EnvType.CLIENT)
-    private void addStructure(String string) {
+    private void addStructure(String id) {
         HashMap map = Maps.newHashMap();
-        this.structures.put(string, map);
+        this.structures.put(id, map);
     }
 
     @Environment(value=EnvType.CLIENT)
-    private void setStructureOption(String string, String string2, String string3) {
-        this.structures.get(string).put(string2, string3);
-        if ("village".equals(string) && "distance".equals(string2)) {
-            this.villageDistance = MathHelper.parseInt(string3, this.villageDistance, 9);
+    private void setStructureOption(String structure, String key, String value) {
+        this.structures.get(structure).put(key, value);
+        if ("village".equals(structure) && "distance".equals(key)) {
+            this.villageDistance = MathHelper.parseInt(value, this.villageDistance, 9);
         }
-        if ("biome_1".equals(string) && "distance".equals(string2)) {
-            this.templeDistance = MathHelper.parseInt(string3, this.templeDistance, 9);
+        if ("biome_1".equals(structure) && "distance".equals(key)) {
+            this.templeDistance = MathHelper.parseInt(value, this.templeDistance, 9);
         }
-        if ("stronghold".equals(string)) {
-            if ("distance".equals(string2)) {
-                this.strongholdDistance = MathHelper.parseInt(string3, this.strongholdDistance, 1);
-            } else if ("count".equals(string2)) {
-                this.strongholdCount = MathHelper.parseInt(string3, this.strongholdCount, 1);
-            } else if ("spread".equals(string2)) {
-                this.strongholdSpread = MathHelper.parseInt(string3, this.strongholdSpread, 1);
+        if ("stronghold".equals(structure)) {
+            if ("distance".equals(key)) {
+                this.strongholdDistance = MathHelper.parseInt(value, this.strongholdDistance, 1);
+            } else if ("count".equals(key)) {
+                this.strongholdCount = MathHelper.parseInt(value, this.strongholdCount, 1);
+            } else if ("spread".equals(key)) {
+                this.strongholdSpread = MathHelper.parseInt(value, this.strongholdSpread, 1);
             }
         }
-        if ("oceanmonument".equals(string)) {
-            if ("separation".equals(string2)) {
-                this.oceanMonumentSeparation = MathHelper.parseInt(string3, this.oceanMonumentSeparation, 1);
-            } else if ("spacing".equals(string2)) {
-                this.oceanMonumentSpacing = MathHelper.parseInt(string3, this.oceanMonumentSpacing, 1);
+        if ("oceanmonument".equals(structure)) {
+            if ("separation".equals(key)) {
+                this.oceanMonumentSeparation = MathHelper.parseInt(value, this.oceanMonumentSeparation, 1);
+            } else if ("spacing".equals(key)) {
+                this.oceanMonumentSpacing = MathHelper.parseInt(value, this.oceanMonumentSpacing, 1);
             }
         }
-        if ("endcity".equals(string) && "distance".equals(string2)) {
-            this.endCityDistance = MathHelper.parseInt(string3, this.endCityDistance, 1);
+        if ("endcity".equals(structure) && "distance".equals(key)) {
+            this.endCityDistance = MathHelper.parseInt(value, this.endCityDistance, 1);
         }
-        if ("mansion".equals(string) && "distance".equals(string2)) {
-            this.mansionDistance = MathHelper.parseInt(string3, this.mansionDistance, 1);
+        if ("mansion".equals(structure) && "distance".equals(key)) {
+            this.mansionDistance = MathHelper.parseInt(value, this.mansionDistance, 1);
         }
     }
 
@@ -386,8 +386,8 @@ extends ChunkGeneratorConfig {
         return this.layerBlocks;
     }
 
-    public void removeLayerBlock(int i) {
-        this.layerBlocks[i] = null;
+    public void removeLayerBlock(int layer) {
+        this.layerBlocks[layer] = null;
     }
 }
 

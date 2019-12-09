@@ -33,10 +33,10 @@ import net.minecraft.world.IWorld;
 import org.jetbrains.annotations.Nullable;
 
 public class WoodlandMansionGenerator {
-    public static void addPieces(StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation, List<Piece> list, Random random) {
+    public static void addPieces(StructureManager manager, BlockPos pos, BlockRotation rotation, List<Piece> pieces, Random random) {
         MansionParameters mansionParameters = new MansionParameters(random);
-        LayoutGenerator layoutGenerator = new LayoutGenerator(structureManager, random);
-        layoutGenerator.generate(blockPos, blockRotation, list, mansionParameters);
+        LayoutGenerator layoutGenerator = new LayoutGenerator(manager, random);
+        layoutGenerator.generate(pos, rotation, pieces, mansionParameters);
     }
 
     static class ThirdFloorRoomPool
@@ -61,16 +61,16 @@ public class WoodlandMansionGenerator {
         }
 
         @Override
-        public String getMediumFunctionalRoom(Random random, boolean bl) {
-            if (bl) {
+        public String getMediumFunctionalRoom(Random random, boolean staircase) {
+            if (staircase) {
                 return "1x2_c_stairs";
             }
             return "1x2_c" + (random.nextInt(4) + 1);
         }
 
         @Override
-        public String getMediumGenericRoom(Random random, boolean bl) {
-            if (bl) {
+        public String getMediumGenericRoom(Random random, boolean staircase) {
+            if (staircase) {
                 return "1x2_d_stairs";
             }
             return "1x2_d" + (random.nextInt(5) + 1);
@@ -108,12 +108,12 @@ public class WoodlandMansionGenerator {
         }
 
         @Override
-        public String getMediumFunctionalRoom(Random random, boolean bl) {
+        public String getMediumFunctionalRoom(Random random, boolean staircase) {
             return "1x2_a" + (random.nextInt(9) + 1);
         }
 
         @Override
-        public String getMediumGenericRoom(Random random, boolean bl) {
+        public String getMediumGenericRoom(Random random, boolean staircase) {
             return "1x2_b" + (random.nextInt(5) + 1);
         }
 
@@ -449,23 +449,23 @@ public class WoodlandMansionGenerator {
         private int field_15446;
         private int field_15445;
 
-        public LayoutGenerator(StructureManager structureManager, Random random) {
-            this.manager = structureManager;
+        public LayoutGenerator(StructureManager manager, Random random) {
+            this.manager = manager;
             this.random = random;
         }
 
-        public void generate(BlockPos blockPos, BlockRotation blockRotation, List<Piece> list, MansionParameters mansionParameters) {
+        public void generate(BlockPos pos, BlockRotation rotation, List<Piece> pieces, MansionParameters mansionParameters) {
             int l;
             GenerationPiece generationPiece = new GenerationPiece();
-            generationPiece.position = blockPos;
-            generationPiece.rotation = blockRotation;
+            generationPiece.position = pos;
+            generationPiece.rotation = rotation;
             generationPiece.template = "wall_flat";
             GenerationPiece generationPiece2 = new GenerationPiece();
-            this.addEntrance(list, generationPiece);
+            this.addEntrance(pieces, generationPiece);
             generationPiece2.position = generationPiece.position.up(8);
             generationPiece2.rotation = generationPiece.rotation;
             generationPiece2.template = "wall_window";
-            if (!list.isEmpty()) {
+            if (!pieces.isEmpty()) {
                 // empty if block
             }
             class_3478 lv = mansionParameters.field_15440;
@@ -474,8 +474,8 @@ public class WoodlandMansionGenerator {
             this.field_15445 = mansionParameters.field_15441 + 1;
             int i = mansionParameters.field_15442 + 1;
             int j = mansionParameters.field_15441;
-            this.addRoof(list, generationPiece, lv, Direction.SOUTH, this.field_15446, this.field_15445, i, j);
-            this.addRoof(list, generationPiece2, lv, Direction.SOUTH, this.field_15446, this.field_15445, i, j);
+            this.addRoof(pieces, generationPiece, lv, Direction.SOUTH, this.field_15446, this.field_15445, i, j);
+            this.addRoof(pieces, generationPiece2, lv, Direction.SOUTH, this.field_15446, this.field_15445, i, j);
             GenerationPiece generationPiece3 = new GenerationPiece();
             generationPiece3.position = generationPiece.position.up(19);
             generationPiece3.rotation = generationPiece.rotation;
@@ -484,21 +484,21 @@ public class WoodlandMansionGenerator {
             for (int k = 0; k < lv2.field_15453 && !bl; ++k) {
                 for (l = lv2.field_15454 - 1; l >= 0 && !bl; --l) {
                     if (!MansionParameters.method_15047(lv2, l, k)) continue;
-                    generationPiece3.position = generationPiece3.position.offset(blockRotation.rotate(Direction.SOUTH), 8 + (k - this.field_15445) * 8);
-                    generationPiece3.position = generationPiece3.position.offset(blockRotation.rotate(Direction.EAST), (l - this.field_15446) * 8);
-                    this.method_15052(list, generationPiece3);
-                    this.addRoof(list, generationPiece3, lv2, Direction.SOUTH, l, k, l, k);
+                    generationPiece3.position = generationPiece3.position.offset(rotation.rotate(Direction.SOUTH), 8 + (k - this.field_15445) * 8);
+                    generationPiece3.position = generationPiece3.position.offset(rotation.rotate(Direction.EAST), (l - this.field_15446) * 8);
+                    this.method_15052(pieces, generationPiece3);
+                    this.addRoof(pieces, generationPiece3, lv2, Direction.SOUTH, l, k, l, k);
                     bl = true;
                 }
             }
-            this.method_15055(list, blockPos.up(16), blockRotation, lv, lv2);
-            this.method_15055(list, blockPos.up(27), blockRotation, lv2, null);
-            if (!list.isEmpty()) {
+            this.method_15055(pieces, pos.up(16), rotation, lv, lv2);
+            this.method_15055(pieces, pos.up(27), rotation, lv2, null);
+            if (!pieces.isEmpty()) {
                 // empty if block
             }
             RoomPool[] roomPools = new RoomPool[]{new FirstFloorRoomPool(), new SecondFloorRoomPool(), new ThirdFloorRoomPool()};
             for (l = 0; l < 3; ++l) {
-                BlockPos blockPos2 = blockPos.up(8 * l + (l == 2 ? 3 : 0));
+                BlockPos blockPos = pos.up(8 * l + (l == 2 ? 3 : 0));
                 class_3478 lv3 = mansionParameters.field_15443[l];
                 class_3478 lv4 = l == 2 ? lv2 : lv;
                 String string = l == 0 ? "carpet_south_1" : "carpet_south_2";
@@ -506,29 +506,29 @@ public class WoodlandMansionGenerator {
                 for (int m = 0; m < lv4.field_15453; ++m) {
                     for (int n = 0; n < lv4.field_15454; ++n) {
                         if (lv4.method_15066(n, m) != 1) continue;
-                        BlockPos blockPos3 = blockPos2.offset(blockRotation.rotate(Direction.SOUTH), 8 + (m - this.field_15445) * 8);
-                        blockPos3 = blockPos3.offset(blockRotation.rotate(Direction.EAST), (n - this.field_15446) * 8);
-                        list.add(new Piece(this.manager, "corridor_floor", blockPos3, blockRotation));
+                        BlockPos blockPos2 = blockPos.offset(rotation.rotate(Direction.SOUTH), 8 + (m - this.field_15445) * 8);
+                        blockPos2 = blockPos2.offset(rotation.rotate(Direction.EAST), (n - this.field_15446) * 8);
+                        pieces.add(new Piece(this.manager, "corridor_floor", blockPos2, rotation));
                         if (lv4.method_15066(n, m - 1) == 1 || (lv3.method_15066(n, m - 1) & 0x800000) == 0x800000) {
-                            list.add(new Piece(this.manager, "carpet_north", blockPos3.offset(blockRotation.rotate(Direction.EAST), 1).up(), blockRotation));
+                            pieces.add(new Piece(this.manager, "carpet_north", blockPos2.offset(rotation.rotate(Direction.EAST), 1).up(), rotation));
                         }
                         if (lv4.method_15066(n + 1, m) == 1 || (lv3.method_15066(n + 1, m) & 0x800000) == 0x800000) {
-                            list.add(new Piece(this.manager, "carpet_east", blockPos3.offset(blockRotation.rotate(Direction.SOUTH), 1).offset(blockRotation.rotate(Direction.EAST), 5).up(), blockRotation));
+                            pieces.add(new Piece(this.manager, "carpet_east", blockPos2.offset(rotation.rotate(Direction.SOUTH), 1).offset(rotation.rotate(Direction.EAST), 5).up(), rotation));
                         }
                         if (lv4.method_15066(n, m + 1) == 1 || (lv3.method_15066(n, m + 1) & 0x800000) == 0x800000) {
-                            list.add(new Piece(this.manager, string, blockPos3.offset(blockRotation.rotate(Direction.SOUTH), 5).offset(blockRotation.rotate(Direction.WEST), 1), blockRotation));
+                            pieces.add(new Piece(this.manager, string, blockPos2.offset(rotation.rotate(Direction.SOUTH), 5).offset(rotation.rotate(Direction.WEST), 1), rotation));
                         }
                         if (lv4.method_15066(n - 1, m) != 1 && (lv3.method_15066(n - 1, m) & 0x800000) != 0x800000) continue;
-                        list.add(new Piece(this.manager, string2, blockPos3.offset(blockRotation.rotate(Direction.WEST), 1).offset(blockRotation.rotate(Direction.NORTH), 1), blockRotation));
+                        pieces.add(new Piece(this.manager, string2, blockPos2.offset(rotation.rotate(Direction.WEST), 1).offset(rotation.rotate(Direction.NORTH), 1), rotation));
                     }
                 }
                 String string3 = l == 0 ? "indoors_wall_1" : "indoors_wall_2";
                 String string4 = l == 0 ? "indoors_door_1" : "indoors_door_2";
-                ArrayList<Direction> list2 = Lists.newArrayList();
+                ArrayList<Direction> list = Lists.newArrayList();
                 for (int o = 0; o < lv4.field_15453; ++o) {
                     for (int p = 0; p < lv4.field_15454; ++p) {
                         Direction direction3;
-                        BlockPos blockPos5;
+                        BlockPos blockPos4;
                         boolean bl2;
                         boolean bl3 = bl2 = l == 2 && lv4.method_15066(p, o) == 3;
                         if (lv4.method_15066(p, o) != 2 && !bl2) continue;
@@ -536,46 +536,46 @@ public class WoodlandMansionGenerator {
                         int r = q & 0xF0000;
                         int s = q & 0xFFFF;
                         bl2 = bl2 && (q & 0x800000) == 0x800000;
-                        list2.clear();
+                        list.clear();
                         if ((q & 0x200000) == 0x200000) {
                             for (Direction direction : Direction.Type.HORIZONTAL) {
                                 if (lv4.method_15066(p + direction.getOffsetX(), o + direction.getOffsetZ()) != 1) continue;
-                                list2.add(direction);
+                                list.add(direction);
                             }
                         }
                         Direction direction2 = null;
-                        if (!list2.isEmpty()) {
-                            direction2 = (Direction)list2.get(this.random.nextInt(list2.size()));
+                        if (!list.isEmpty()) {
+                            direction2 = (Direction)list.get(this.random.nextInt(list.size()));
                         } else if ((q & 0x100000) == 0x100000) {
                             direction2 = Direction.UP;
                         }
-                        BlockPos blockPos4 = blockPos2.offset(blockRotation.rotate(Direction.SOUTH), 8 + (o - this.field_15445) * 8);
-                        blockPos4 = blockPos4.offset(blockRotation.rotate(Direction.EAST), -1 + (p - this.field_15446) * 8);
+                        BlockPos blockPos3 = blockPos.offset(rotation.rotate(Direction.SOUTH), 8 + (o - this.field_15445) * 8);
+                        blockPos3 = blockPos3.offset(rotation.rotate(Direction.EAST), -1 + (p - this.field_15446) * 8);
                         if (MansionParameters.method_15047(lv4, p - 1, o) && !mansionParameters.method_15039(lv4, p - 1, o, l, s)) {
-                            list.add(new Piece(this.manager, direction2 == Direction.WEST ? string4 : string3, blockPos4, blockRotation));
+                            pieces.add(new Piece(this.manager, direction2 == Direction.WEST ? string4 : string3, blockPos3, rotation));
                         }
                         if (lv4.method_15066(p + 1, o) == 1 && !bl2) {
-                            blockPos5 = blockPos4.offset(blockRotation.rotate(Direction.EAST), 8);
-                            list.add(new Piece(this.manager, direction2 == Direction.EAST ? string4 : string3, blockPos5, blockRotation));
+                            blockPos4 = blockPos3.offset(rotation.rotate(Direction.EAST), 8);
+                            pieces.add(new Piece(this.manager, direction2 == Direction.EAST ? string4 : string3, blockPos4, rotation));
                         }
                         if (MansionParameters.method_15047(lv4, p, o + 1) && !mansionParameters.method_15039(lv4, p, o + 1, l, s)) {
-                            blockPos5 = blockPos4.offset(blockRotation.rotate(Direction.SOUTH), 7);
-                            blockPos5 = blockPos5.offset(blockRotation.rotate(Direction.EAST), 7);
-                            list.add(new Piece(this.manager, direction2 == Direction.SOUTH ? string4 : string3, blockPos5, blockRotation.rotate(BlockRotation.CLOCKWISE_90)));
+                            blockPos4 = blockPos3.offset(rotation.rotate(Direction.SOUTH), 7);
+                            blockPos4 = blockPos4.offset(rotation.rotate(Direction.EAST), 7);
+                            pieces.add(new Piece(this.manager, direction2 == Direction.SOUTH ? string4 : string3, blockPos4, rotation.rotate(BlockRotation.CLOCKWISE_90)));
                         }
                         if (lv4.method_15066(p, o - 1) == 1 && !bl2) {
-                            blockPos5 = blockPos4.offset(blockRotation.rotate(Direction.NORTH), 1);
-                            blockPos5 = blockPos5.offset(blockRotation.rotate(Direction.EAST), 7);
-                            list.add(new Piece(this.manager, direction2 == Direction.NORTH ? string4 : string3, blockPos5, blockRotation.rotate(BlockRotation.CLOCKWISE_90)));
+                            blockPos4 = blockPos3.offset(rotation.rotate(Direction.NORTH), 1);
+                            blockPos4 = blockPos4.offset(rotation.rotate(Direction.EAST), 7);
+                            pieces.add(new Piece(this.manager, direction2 == Direction.NORTH ? string4 : string3, blockPos4, rotation.rotate(BlockRotation.CLOCKWISE_90)));
                         }
                         if (r == 65536) {
-                            this.addSmallRoom(list, blockPos4, blockRotation, direction2, roomPools[l]);
+                            this.addSmallRoom(pieces, blockPos3, rotation, direction2, roomPools[l]);
                             continue;
                         }
                         if (r == 131072 && direction2 != null) {
                             direction3 = mansionParameters.method_15040(lv4, p, o, l, s);
                             boolean bl32 = (q & 0x400000) == 0x400000;
-                            this.addMediumRoom(list, blockPos4, blockRotation, direction3, direction2, roomPools[l], bl32);
+                            this.addMediumRoom(pieces, blockPos3, rotation, direction3, direction2, roomPools[l], bl32);
                             continue;
                         }
                         if (r == 262144 && direction2 != null && direction2 != Direction.UP) {
@@ -583,11 +583,11 @@ public class WoodlandMansionGenerator {
                             if (!mansionParameters.method_15039(lv4, p + direction3.getOffsetX(), o + direction3.getOffsetZ(), l, s)) {
                                 direction3 = direction3.getOpposite();
                             }
-                            this.addBigRoom(list, blockPos4, blockRotation, direction3, direction2, roomPools[l]);
+                            this.addBigRoom(pieces, blockPos3, rotation, direction3, direction2, roomPools[l]);
                             continue;
                         }
                         if (r != 262144 || direction2 != Direction.UP) continue;
-                        this.addBigSecretRoom(list, blockPos4, blockRotation, roomPools[l]);
+                        this.addBigSecretRoom(pieces, blockPos3, rotation, roomPools[l]);
                     }
                 }
             }
@@ -795,50 +795,50 @@ public class WoodlandMansionGenerator {
             list.add(new Piece(this.manager, string, blockPos3, blockRotation2));
         }
 
-        private void addMediumRoom(List<Piece> list, BlockPos blockPos, BlockRotation blockRotation, Direction direction, Direction direction2, RoomPool roomPool, boolean bl) {
+        private void addMediumRoom(List<Piece> list, BlockPos blockPos, BlockRotation blockRotation, Direction direction, Direction direction2, RoomPool roomPool, boolean staircase) {
             if (direction2 == Direction.EAST && direction == Direction.SOUTH) {
                 BlockPos blockPos2 = blockPos.offset(blockRotation.rotate(Direction.EAST), 1);
-                list.add(new Piece(this.manager, roomPool.getMediumFunctionalRoom(this.random, bl), blockPos2, blockRotation));
+                list.add(new Piece(this.manager, roomPool.getMediumFunctionalRoom(this.random, staircase), blockPos2, blockRotation));
             } else if (direction2 == Direction.EAST && direction == Direction.NORTH) {
                 BlockPos blockPos2 = blockPos.offset(blockRotation.rotate(Direction.EAST), 1);
                 blockPos2 = blockPos2.offset(blockRotation.rotate(Direction.SOUTH), 6);
-                list.add(new Piece(this.manager, roomPool.getMediumFunctionalRoom(this.random, bl), blockPos2, blockRotation, BlockMirror.LEFT_RIGHT));
+                list.add(new Piece(this.manager, roomPool.getMediumFunctionalRoom(this.random, staircase), blockPos2, blockRotation, BlockMirror.LEFT_RIGHT));
             } else if (direction2 == Direction.WEST && direction == Direction.NORTH) {
                 BlockPos blockPos2 = blockPos.offset(blockRotation.rotate(Direction.EAST), 7);
                 blockPos2 = blockPos2.offset(blockRotation.rotate(Direction.SOUTH), 6);
-                list.add(new Piece(this.manager, roomPool.getMediumFunctionalRoom(this.random, bl), blockPos2, blockRotation.rotate(BlockRotation.CLOCKWISE_180)));
+                list.add(new Piece(this.manager, roomPool.getMediumFunctionalRoom(this.random, staircase), blockPos2, blockRotation.rotate(BlockRotation.CLOCKWISE_180)));
             } else if (direction2 == Direction.WEST && direction == Direction.SOUTH) {
                 BlockPos blockPos2 = blockPos.offset(blockRotation.rotate(Direction.EAST), 7);
-                list.add(new Piece(this.manager, roomPool.getMediumFunctionalRoom(this.random, bl), blockPos2, blockRotation, BlockMirror.FRONT_BACK));
+                list.add(new Piece(this.manager, roomPool.getMediumFunctionalRoom(this.random, staircase), blockPos2, blockRotation, BlockMirror.FRONT_BACK));
             } else if (direction2 == Direction.SOUTH && direction == Direction.EAST) {
                 BlockPos blockPos2 = blockPos.offset(blockRotation.rotate(Direction.EAST), 1);
-                list.add(new Piece(this.manager, roomPool.getMediumFunctionalRoom(this.random, bl), blockPos2, blockRotation.rotate(BlockRotation.CLOCKWISE_90), BlockMirror.LEFT_RIGHT));
+                list.add(new Piece(this.manager, roomPool.getMediumFunctionalRoom(this.random, staircase), blockPos2, blockRotation.rotate(BlockRotation.CLOCKWISE_90), BlockMirror.LEFT_RIGHT));
             } else if (direction2 == Direction.SOUTH && direction == Direction.WEST) {
                 BlockPos blockPos2 = blockPos.offset(blockRotation.rotate(Direction.EAST), 7);
-                list.add(new Piece(this.manager, roomPool.getMediumFunctionalRoom(this.random, bl), blockPos2, blockRotation.rotate(BlockRotation.CLOCKWISE_90)));
+                list.add(new Piece(this.manager, roomPool.getMediumFunctionalRoom(this.random, staircase), blockPos2, blockRotation.rotate(BlockRotation.CLOCKWISE_90)));
             } else if (direction2 == Direction.NORTH && direction == Direction.WEST) {
                 BlockPos blockPos2 = blockPos.offset(blockRotation.rotate(Direction.EAST), 7);
                 blockPos2 = blockPos2.offset(blockRotation.rotate(Direction.SOUTH), 6);
-                list.add(new Piece(this.manager, roomPool.getMediumFunctionalRoom(this.random, bl), blockPos2, blockRotation.rotate(BlockRotation.CLOCKWISE_90), BlockMirror.FRONT_BACK));
+                list.add(new Piece(this.manager, roomPool.getMediumFunctionalRoom(this.random, staircase), blockPos2, blockRotation.rotate(BlockRotation.CLOCKWISE_90), BlockMirror.FRONT_BACK));
             } else if (direction2 == Direction.NORTH && direction == Direction.EAST) {
                 BlockPos blockPos2 = blockPos.offset(blockRotation.rotate(Direction.EAST), 1);
                 blockPos2 = blockPos2.offset(blockRotation.rotate(Direction.SOUTH), 6);
-                list.add(new Piece(this.manager, roomPool.getMediumFunctionalRoom(this.random, bl), blockPos2, blockRotation.rotate(BlockRotation.COUNTERCLOCKWISE_90)));
+                list.add(new Piece(this.manager, roomPool.getMediumFunctionalRoom(this.random, staircase), blockPos2, blockRotation.rotate(BlockRotation.COUNTERCLOCKWISE_90)));
             } else if (direction2 == Direction.SOUTH && direction == Direction.NORTH) {
                 BlockPos blockPos2 = blockPos.offset(blockRotation.rotate(Direction.EAST), 1);
                 blockPos2 = blockPos2.offset(blockRotation.rotate(Direction.NORTH), 8);
-                list.add(new Piece(this.manager, roomPool.getMediumGenericRoom(this.random, bl), blockPos2, blockRotation));
+                list.add(new Piece(this.manager, roomPool.getMediumGenericRoom(this.random, staircase), blockPos2, blockRotation));
             } else if (direction2 == Direction.NORTH && direction == Direction.SOUTH) {
                 BlockPos blockPos2 = blockPos.offset(blockRotation.rotate(Direction.EAST), 7);
                 blockPos2 = blockPos2.offset(blockRotation.rotate(Direction.SOUTH), 14);
-                list.add(new Piece(this.manager, roomPool.getMediumGenericRoom(this.random, bl), blockPos2, blockRotation.rotate(BlockRotation.CLOCKWISE_180)));
+                list.add(new Piece(this.manager, roomPool.getMediumGenericRoom(this.random, staircase), blockPos2, blockRotation.rotate(BlockRotation.CLOCKWISE_180)));
             } else if (direction2 == Direction.WEST && direction == Direction.EAST) {
                 BlockPos blockPos2 = blockPos.offset(blockRotation.rotate(Direction.EAST), 15);
-                list.add(new Piece(this.manager, roomPool.getMediumGenericRoom(this.random, bl), blockPos2, blockRotation.rotate(BlockRotation.CLOCKWISE_90)));
+                list.add(new Piece(this.manager, roomPool.getMediumGenericRoom(this.random, staircase), blockPos2, blockRotation.rotate(BlockRotation.CLOCKWISE_90)));
             } else if (direction2 == Direction.EAST && direction == Direction.WEST) {
                 BlockPos blockPos2 = blockPos.offset(blockRotation.rotate(Direction.WEST), 7);
                 blockPos2 = blockPos2.offset(blockRotation.rotate(Direction.SOUTH), 6);
-                list.add(new Piece(this.manager, roomPool.getMediumGenericRoom(this.random, bl), blockPos2, blockRotation.rotate(BlockRotation.COUNTERCLOCKWISE_90)));
+                list.add(new Piece(this.manager, roomPool.getMediumGenericRoom(this.random, staircase), blockPos2, blockRotation.rotate(BlockRotation.COUNTERCLOCKWISE_90)));
             } else if (direction2 == Direction.UP && direction == Direction.EAST) {
                 BlockPos blockPos2 = blockPos.offset(blockRotation.rotate(Direction.EAST), 15);
                 list.add(new Piece(this.manager, roomPool.getMediumSecretRoom(this.random), blockPos2, blockRotation.rotate(BlockRotation.CLOCKWISE_90)));
@@ -940,37 +940,37 @@ public class WoodlandMansionGenerator {
         }
 
         @Override
-        protected void toNbt(CompoundTag compoundTag) {
-            super.toNbt(compoundTag);
-            compoundTag.putString("Template", this.template);
-            compoundTag.putString("Rot", this.placementData.getRotation().name());
-            compoundTag.putString("Mi", this.placementData.getMirror().name());
+        protected void toNbt(CompoundTag tag) {
+            super.toNbt(tag);
+            tag.putString("Template", this.template);
+            tag.putString("Rot", this.placementData.getRotation().name());
+            tag.putString("Mi", this.placementData.getMirror().name());
         }
 
         @Override
-        protected void handleMetadata(String string, BlockPos blockPos, IWorld iWorld, Random random, BlockBox blockBox) {
-            if (string.startsWith("Chest")) {
+        protected void handleMetadata(String metadata, BlockPos pos, IWorld world, Random random, BlockBox boundingBox) {
+            if (metadata.startsWith("Chest")) {
                 BlockRotation blockRotation = this.placementData.getRotation();
                 BlockState blockState = Blocks.CHEST.getDefaultState();
-                if ("ChestWest".equals(string)) {
+                if ("ChestWest".equals(metadata)) {
                     blockState = (BlockState)blockState.with(ChestBlock.FACING, blockRotation.rotate(Direction.WEST));
-                } else if ("ChestEast".equals(string)) {
+                } else if ("ChestEast".equals(metadata)) {
                     blockState = (BlockState)blockState.with(ChestBlock.FACING, blockRotation.rotate(Direction.EAST));
-                } else if ("ChestSouth".equals(string)) {
+                } else if ("ChestSouth".equals(metadata)) {
                     blockState = (BlockState)blockState.with(ChestBlock.FACING, blockRotation.rotate(Direction.SOUTH));
-                } else if ("ChestNorth".equals(string)) {
+                } else if ("ChestNorth".equals(metadata)) {
                     blockState = (BlockState)blockState.with(ChestBlock.FACING, blockRotation.rotate(Direction.NORTH));
                 }
-                this.addChest(iWorld, blockBox, random, blockPos, LootTables.WOODLAND_MANSION_CHEST, blockState);
+                this.addChest(world, boundingBox, random, pos, LootTables.WOODLAND_MANSION_CHEST, blockState);
             } else {
                 IllagerEntity illagerEntity;
-                switch (string) {
+                switch (metadata) {
                     case "Mage": {
-                        illagerEntity = EntityType.EVOKER.create(iWorld.getWorld());
+                        illagerEntity = EntityType.EVOKER.create(world.getWorld());
                         break;
                     }
                     case "Warrior": {
-                        illagerEntity = EntityType.VINDICATOR.create(iWorld.getWorld());
+                        illagerEntity = EntityType.VINDICATOR.create(world.getWorld());
                         break;
                     }
                     default: {
@@ -978,10 +978,10 @@ public class WoodlandMansionGenerator {
                     }
                 }
                 illagerEntity.setPersistent();
-                illagerEntity.setPositionAndAngles(blockPos, 0.0f, 0.0f);
-                illagerEntity.initialize(iWorld, iWorld.getLocalDifficulty(new BlockPos(illagerEntity)), SpawnType.STRUCTURE, null, null);
-                iWorld.spawnEntity(illagerEntity);
-                iWorld.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 2);
+                illagerEntity.setPositionAndAngles(pos, 0.0f, 0.0f);
+                illagerEntity.initialize(world, world.getLocalDifficulty(new BlockPos(illagerEntity)), SpawnType.STRUCTURE, null, null);
+                world.spawnEntity(illagerEntity);
+                world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
             }
         }
     }

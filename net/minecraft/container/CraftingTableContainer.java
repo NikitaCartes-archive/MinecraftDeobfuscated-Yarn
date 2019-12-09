@@ -33,45 +33,45 @@ extends CraftingContainer<CraftingInventory> {
     private final BlockContext context;
     private final PlayerEntity player;
 
-    public CraftingTableContainer(int i, PlayerInventory playerInventory) {
-        this(i, playerInventory, BlockContext.EMPTY);
+    public CraftingTableContainer(int syncId, PlayerInventory playerInventory) {
+        this(syncId, playerInventory, BlockContext.EMPTY);
     }
 
-    public CraftingTableContainer(int i, PlayerInventory playerInventory, BlockContext blockContext) {
-        super(ContainerType.CRAFTING, i);
-        int k;
+    public CraftingTableContainer(int syncId, PlayerInventory playerInventory, BlockContext blockContext) {
+        super(ContainerType.CRAFTING, syncId);
         int j;
+        int i;
         this.context = blockContext;
         this.player = playerInventory.player;
         this.addSlot(new CraftingResultSlot(playerInventory.player, this.craftingInv, this.resultInv, 0, 124, 35));
-        for (j = 0; j < 3; ++j) {
-            for (k = 0; k < 3; ++k) {
-                this.addSlot(new Slot(this.craftingInv, k + j * 3, 30 + k * 18, 17 + j * 18));
+        for (i = 0; i < 3; ++i) {
+            for (j = 0; j < 3; ++j) {
+                this.addSlot(new Slot(this.craftingInv, j + i * 3, 30 + j * 18, 17 + i * 18));
             }
         }
-        for (j = 0; j < 3; ++j) {
-            for (k = 0; k < 9; ++k) {
-                this.addSlot(new Slot(playerInventory, k + j * 9 + 9, 8 + k * 18, 84 + j * 18));
+        for (i = 0; i < 3; ++i) {
+            for (j = 0; j < 9; ++j) {
+                this.addSlot(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
             }
         }
-        for (j = 0; j < 9; ++j) {
-            this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 142));
+        for (i = 0; i < 9; ++i) {
+            this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
         }
     }
 
-    protected static void updateResult(int i, World world, PlayerEntity playerEntity, CraftingInventory craftingInventory, CraftingResultInventory craftingResultInventory) {
+    protected static void updateResult(int syncId, World world, PlayerEntity player, CraftingInventory craftingInventory, CraftingResultInventory resultInventory) {
         CraftingRecipe craftingRecipe;
         if (world.isClient) {
             return;
         }
-        ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)playerEntity;
+        ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)player;
         ItemStack itemStack = ItemStack.EMPTY;
         Optional<CraftingRecipe> optional = world.getServer().getRecipeManager().getFirstMatch(RecipeType.CRAFTING, craftingInventory, world);
-        if (optional.isPresent() && craftingResultInventory.shouldCraftRecipe(world, serverPlayerEntity, craftingRecipe = optional.get())) {
+        if (optional.isPresent() && resultInventory.shouldCraftRecipe(world, serverPlayerEntity, craftingRecipe = optional.get())) {
             itemStack = craftingRecipe.craft(craftingInventory);
         }
-        craftingResultInventory.setInvStack(0, itemStack);
-        serverPlayerEntity.networkHandler.sendPacket(new GuiSlotUpdateS2CPacket(i, 0, itemStack));
+        resultInventory.setInvStack(0, itemStack);
+        serverPlayerEntity.networkHandler.sendPacket(new GuiSlotUpdateS2CPacket(syncId, 0, itemStack));
     }
 
     @Override
@@ -96,30 +96,30 @@ extends CraftingContainer<CraftingInventory> {
     }
 
     @Override
-    public void close(PlayerEntity playerEntity) {
-        super.close(playerEntity);
-        this.context.run((world, blockPos) -> this.dropInventory(playerEntity, (World)world, this.craftingInv));
+    public void close(PlayerEntity player) {
+        super.close(player);
+        this.context.run((world, blockPos) -> this.dropInventory(player, (World)world, this.craftingInv));
     }
 
     @Override
-    public boolean canUse(PlayerEntity playerEntity) {
-        return CraftingTableContainer.canUse(this.context, playerEntity, Blocks.CRAFTING_TABLE);
+    public boolean canUse(PlayerEntity player) {
+        return CraftingTableContainer.canUse(this.context, player, Blocks.CRAFTING_TABLE);
     }
 
     @Override
-    public ItemStack transferSlot(PlayerEntity playerEntity, int i) {
+    public ItemStack transferSlot(PlayerEntity player, int invSlot) {
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = (Slot)this.slotList.get(i);
+        Slot slot = (Slot)this.slotList.get(invSlot);
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();
             itemStack = itemStack2.copy();
-            if (i == 0) {
-                this.context.run((world, blockPos) -> itemStack2.getItem().onCraft(itemStack2, (World)world, playerEntity));
+            if (invSlot == 0) {
+                this.context.run((world, blockPos) -> itemStack2.getItem().onCraft(itemStack2, (World)world, player));
                 if (!this.insertItem(itemStack2, 10, 46, true)) {
                     return ItemStack.EMPTY;
                 }
                 slot.onStackChanged(itemStack2, itemStack);
-            } else if (i >= 10 && i < 46 ? !this.insertItem(itemStack2, 1, 10, false) && (i < 37 ? !this.insertItem(itemStack2, 37, 46, false) : !this.insertItem(itemStack2, 10, 37, false)) : !this.insertItem(itemStack2, 10, 46, false)) {
+            } else if (invSlot >= 10 && invSlot < 46 ? !this.insertItem(itemStack2, 1, 10, false) && (invSlot < 37 ? !this.insertItem(itemStack2, 37, 46, false) : !this.insertItem(itemStack2, 10, 37, false)) : !this.insertItem(itemStack2, 10, 46, false)) {
                 return ItemStack.EMPTY;
             }
             if (itemStack2.isEmpty()) {
@@ -130,17 +130,17 @@ extends CraftingContainer<CraftingInventory> {
             if (itemStack2.getCount() == itemStack.getCount()) {
                 return ItemStack.EMPTY;
             }
-            ItemStack itemStack3 = slot.onTakeItem(playerEntity, itemStack2);
-            if (i == 0) {
-                playerEntity.dropItem(itemStack3, false);
+            ItemStack itemStack3 = slot.onTakeItem(player, itemStack2);
+            if (invSlot == 0) {
+                player.dropItem(itemStack3, false);
             }
         }
         return itemStack;
     }
 
     @Override
-    public boolean canInsertIntoSlot(ItemStack itemStack, Slot slot) {
-        return slot.inventory != this.resultInv && super.canInsertIntoSlot(itemStack, slot);
+    public boolean canInsertIntoSlot(ItemStack stack, Slot slot) {
+        return slot.inventory != this.resultInv && super.canInsertIntoSlot(stack, slot);
     }
 
     @Override

@@ -84,11 +84,11 @@ extends AnimalEntity {
     private int field_6865;
     private EatGrassGoal eatGrassGoal;
 
-    private static float[] getDyedColor(DyeColor dyeColor) {
-        if (dyeColor == DyeColor.WHITE) {
+    private static float[] getDyedColor(DyeColor color) {
+        if (color == DyeColor.WHITE) {
             return new float[]{0.9019608f, 0.9019608f, 0.9019608f};
         }
-        float[] fs = dyeColor.getColorComponents();
+        float[] fs = color.getColorComponents();
         float f = 0.75f;
         return new float[]{fs[0] * 0.75f, fs[1] * 0.75f, fs[2] * 0.75f};
     }
@@ -201,11 +201,11 @@ extends AnimalEntity {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void handleStatus(byte b) {
-        if (b == 10) {
+    public void handleStatus(byte status) {
+        if (status == 10) {
             this.field_6865 = 40;
         } else {
-            super.handleStatus(b);
+            super.handleStatus(status);
         }
     }
 
@@ -236,16 +236,16 @@ extends AnimalEntity {
     }
 
     @Override
-    public boolean interactMob(PlayerEntity playerEntity2, Hand hand) {
-        ItemStack itemStack = playerEntity2.getStackInHand(hand);
+    public boolean interactMob(PlayerEntity player, Hand hand) {
+        ItemStack itemStack = player.getStackInHand(hand);
         if (itemStack.getItem() == Items.SHEARS && !this.isSheared() && !this.isBaby()) {
             this.dropItems();
             if (!this.world.isClient) {
-                itemStack.damage(1, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(hand));
+                itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
             }
             return true;
         }
-        return super.interactMob(playerEntity2, hand);
+        return super.interactMob(player, hand);
     }
 
     public void dropItems() {
@@ -262,17 +262,17 @@ extends AnimalEntity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag compoundTag) {
-        super.writeCustomDataToTag(compoundTag);
-        compoundTag.putBoolean("Sheared", this.isSheared());
-        compoundTag.putByte("Color", (byte)this.getColor().getId());
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putBoolean("Sheared", this.isSheared());
+        tag.putByte("Color", (byte)this.getColor().getId());
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag compoundTag) {
-        super.readCustomDataFromTag(compoundTag);
-        this.setSheared(compoundTag.getBoolean("Sheared"));
-        this.setColor(DyeColor.byId(compoundTag.getByte("Color")));
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        this.setSheared(tag.getBoolean("Sheared"));
+        this.setColor(DyeColor.byId(tag.getByte("Color")));
     }
 
     @Override
@@ -281,7 +281,7 @@ extends AnimalEntity {
     }
 
     @Override
-    protected SoundEvent getHurtSound(DamageSource damageSource) {
+    protected SoundEvent getHurtSound(DamageSource source) {
         return SoundEvents.ENTITY_SHEEP_HURT;
     }
 
@@ -291,7 +291,7 @@ extends AnimalEntity {
     }
 
     @Override
-    protected void playStepSound(BlockPos blockPos, BlockState blockState) {
+    protected void playStepSound(BlockPos pos, BlockState state) {
         this.playSound(SoundEvents.ENTITY_SHEEP_STEP, 0.15f, 1.0f);
     }
 
@@ -355,9 +355,9 @@ extends AnimalEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag) {
-        this.setColor(SheepEntity.generateDefaultColor(iWorld.getRandom()));
-        return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+        this.setColor(SheepEntity.generateDefaultColor(world.getRandom()));
+        return super.initialize(world, difficulty, spawnType, entityData, entityTag);
     }
 
     private DyeColor getChildColor(AnimalEntity animalEntity, AnimalEntity animalEntity2) {
@@ -371,7 +371,7 @@ extends AnimalEntity {
         CraftingInventory craftingInventory = new CraftingInventory(new Container(null, -1){
 
             @Override
-            public boolean canUse(PlayerEntity playerEntity) {
+            public boolean canUse(PlayerEntity player) {
                 return false;
             }
         }, 2, 1);
@@ -381,13 +381,13 @@ extends AnimalEntity {
     }
 
     @Override
-    protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
-        return 0.95f * entityDimensions.height;
+    protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
+        return 0.95f * dimensions.height;
     }
 
     @Override
-    public /* synthetic */ PassiveEntity createChild(PassiveEntity passiveEntity) {
-        return this.createChild(passiveEntity);
+    public /* synthetic */ PassiveEntity createChild(PassiveEntity mate) {
+        return this.createChild(mate);
     }
 }
 

@@ -22,24 +22,24 @@ public class LookControl {
         this.entity = mobEntity;
     }
 
-    public void lookAt(Vec3d vec3d) {
-        this.lookAt(vec3d.x, vec3d.y, vec3d.z);
+    public void lookAt(Vec3d direction) {
+        this.lookAt(direction.x, direction.y, direction.z);
     }
 
-    public void lookAt(Entity entity, float f, float g) {
-        this.lookAt(entity.getX(), LookControl.getLookingHeightFor(entity), entity.getZ(), f, g);
+    public void lookAt(Entity entity, float yawSpeed, float pitchSpeed) {
+        this.lookAt(entity.getX(), LookControl.getLookingHeightFor(entity), entity.getZ(), yawSpeed, pitchSpeed);
     }
 
-    public void lookAt(double d, double e, double f) {
-        this.lookAt(d, e, f, this.entity.getLookYawSpeed(), this.entity.getLookPitchSpeed());
+    public void lookAt(double x, double y, double z) {
+        this.lookAt(x, y, z, this.entity.getLookYawSpeed(), this.entity.getLookPitchSpeed());
     }
 
-    public void lookAt(double d, double e, double f, float g, float h) {
-        this.lookX = d;
-        this.lookY = e;
-        this.lookZ = f;
-        this.yawSpeed = g;
-        this.pitchSpeed = h;
+    public void lookAt(double x, double y, double z, float yawSpeed, float pitchSpeed) {
+        this.lookX = x;
+        this.lookY = y;
+        this.lookZ = z;
+        this.yawSpeed = yawSpeed;
+        this.pitchSpeed = pitchSpeed;
         this.active = true;
     }
 
@@ -93,10 +93,10 @@ public class LookControl {
         return (float)(MathHelper.atan2(e, d) * 57.2957763671875) - 90.0f;
     }
 
-    protected float changeAngle(float f, float g, float h) {
-        float i = MathHelper.subtractAngles(f, g);
-        float j = MathHelper.clamp(i, -h, h);
-        return f + j;
+    protected float changeAngle(float from, float to, float max) {
+        float f = MathHelper.subtractAngles(from, to);
+        float g = MathHelper.clamp(f, -max, max);
+        return from + g;
     }
 
     private static double getLookingHeightFor(Entity entity) {

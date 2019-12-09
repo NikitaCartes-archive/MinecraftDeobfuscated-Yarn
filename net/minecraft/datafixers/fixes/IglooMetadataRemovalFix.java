@@ -12,8 +12,8 @@ import net.minecraft.datafixers.TypeReferences;
 
 public class IglooMetadataRemovalFix
 extends DataFix {
-    public IglooMetadataRemovalFix(Schema schema, boolean bl) {
-        super(schema, bl);
+    public IglooMetadataRemovalFix(Schema outputSchema, boolean changesType) {
+        super(outputSchema, changesType);
     }
 
     @Override
@@ -23,20 +23,20 @@ extends DataFix {
         return this.writeFixAndRead("IglooMetadataRemovalFix", type, type2, IglooMetadataRemovalFix::removeMetadata);
     }
 
-    private static <T> Dynamic<T> removeMetadata(Dynamic<T> dynamic) {
-        boolean bl = dynamic.get("Children").asStreamOpt().map(stream -> stream.allMatch(IglooMetadataRemovalFix::isIgloo)).orElse(false);
+    private static <T> Dynamic<T> removeMetadata(Dynamic<T> tag) {
+        boolean bl = tag.get("Children").asStreamOpt().map(stream -> stream.allMatch(IglooMetadataRemovalFix::isIgloo)).orElse(false);
         if (bl) {
-            return dynamic.set("id", dynamic.createString("Igloo")).remove("Children");
+            return tag.set("id", tag.createString("Igloo")).remove("Children");
         }
-        return dynamic.update("Children", IglooMetadataRemovalFix::removeIgloos);
+        return tag.update("Children", IglooMetadataRemovalFix::removeIgloos);
     }
 
-    private static <T> Dynamic<T> removeIgloos(Dynamic<T> dynamic) {
-        return dynamic.asStreamOpt().map(stream -> stream.filter(dynamic -> !IglooMetadataRemovalFix.isIgloo(dynamic))).map(dynamic::createList).orElse(dynamic);
+    private static <T> Dynamic<T> removeIgloos(Dynamic<T> tag) {
+        return tag.asStreamOpt().map(stream -> stream.filter(dynamic -> !IglooMetadataRemovalFix.isIgloo(dynamic))).map(tag::createList).orElse(tag);
     }
 
-    private static boolean isIgloo(Dynamic<?> dynamic) {
-        return dynamic.get("id").asString("").equals("Iglu");
+    private static boolean isIgloo(Dynamic<?> tag) {
+        return tag.get("id").asString("").equals("Iglu");
     }
 }
 

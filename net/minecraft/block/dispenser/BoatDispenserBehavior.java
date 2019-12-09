@@ -23,32 +23,32 @@ extends ItemDispenserBehavior {
     }
 
     @Override
-    public ItemStack dispenseSilently(BlockPointer blockPointer, ItemStack itemStack) {
+    public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
         double g;
-        Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);
-        World world = blockPointer.getWorld();
-        double d = blockPointer.getX() + (double)((float)direction.getOffsetX() * 1.125f);
-        double e = blockPointer.getY() + (double)((float)direction.getOffsetY() * 1.125f);
-        double f = blockPointer.getZ() + (double)((float)direction.getOffsetZ() * 1.125f);
-        BlockPos blockPos = blockPointer.getBlockPos().offset(direction);
+        Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
+        World world = pointer.getWorld();
+        double d = pointer.getX() + (double)((float)direction.getOffsetX() * 1.125f);
+        double e = pointer.getY() + (double)((float)direction.getOffsetY() * 1.125f);
+        double f = pointer.getZ() + (double)((float)direction.getOffsetZ() * 1.125f);
+        BlockPos blockPos = pointer.getBlockPos().offset(direction);
         if (world.getFluidState(blockPos).matches(FluidTags.WATER)) {
             g = 1.0;
         } else if (world.getBlockState(blockPos).isAir() && world.getFluidState(blockPos.down()).matches(FluidTags.WATER)) {
             g = 0.0;
         } else {
-            return this.itemDispenser.dispense(blockPointer, itemStack);
+            return this.itemDispenser.dispense(pointer, stack);
         }
         BoatEntity boatEntity = new BoatEntity(world, d, e + g, f);
         boatEntity.setBoatType(this.boatType);
         boatEntity.yaw = direction.asRotation();
         world.spawnEntity(boatEntity);
-        itemStack.decrement(1);
-        return itemStack;
+        stack.decrement(1);
+        return stack;
     }
 
     @Override
-    protected void playSound(BlockPointer blockPointer) {
-        blockPointer.getWorld().playLevelEvent(1000, blockPointer.getBlockPos(), 0);
+    protected void playSound(BlockPointer pointer) {
+        pointer.getWorld().playLevelEvent(1000, pointer.getBlockPos(), 0);
     }
 }
 

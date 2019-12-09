@@ -43,17 +43,17 @@ extends ConditionalLootFunction {
     private static final Function<Entity, Tag> ENTITY_TAG_GETTER = NbtPredicate::entityToTag;
     private static final Function<BlockEntity, Tag> BLOCK_ENTITY_TAG_GETTER = blockEntity -> blockEntity.toTag(new CompoundTag());
 
-    private CopyNbtLootFunction(LootCondition[] lootConditions, Source source, List<Operation> list) {
-        super(lootConditions);
+    private CopyNbtLootFunction(LootCondition[] conditions, Source source, List<Operation> operations) {
+        super(conditions);
         this.source = source;
-        this.operations = ImmutableList.copyOf(list);
+        this.operations = ImmutableList.copyOf(operations);
     }
 
-    private static NbtPathArgumentType.NbtPath parseNbtPath(String string) {
+    private static NbtPathArgumentType.NbtPath parseNbtPath(String nbtPath) {
         try {
-            return new NbtPathArgumentType().parse(new StringReader(string));
+            return new NbtPathArgumentType().parse(new StringReader(nbtPath));
         } catch (CommandSyntaxException commandSyntaxException) {
-            throw new IllegalArgumentException("Failed to parse path " + string, commandSyntaxException);
+            throw new IllegalArgumentException("Failed to parse path " + nbtPath, commandSyntaxException);
         }
     }
 
@@ -63,12 +63,12 @@ extends ConditionalLootFunction {
     }
 
     @Override
-    public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-        Tag tag = this.source.getter.apply(lootContext);
+    public ItemStack process(ItemStack stack, LootContext context) {
+        Tag tag = this.source.getter.apply(context);
         if (tag != null) {
-            this.operations.forEach(operation -> operation.execute(itemStack::getOrCreateTag, tag));
+            this.operations.forEach(operation -> operation.execute(stack::getOrCreateTag, tag));
         }
-        return itemStack;
+        return stack;
     }
 
     public static Builder builder(Source source) {
@@ -111,8 +111,8 @@ extends ConditionalLootFunction {
         }
 
         @Override
-        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
+        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions) {
+            return this.fromJson(json, context, conditions);
         }
     }
 
@@ -126,21 +126,21 @@ extends ConditionalLootFunction {
         public final LootContextParameter<?> parameter;
         public final Function<LootContext, Tag> getter;
 
-        private <T> Source(String string2, LootContextParameter<T> lootContextParameter, Function<? super T, Tag> function) {
-            this.name = string2;
-            this.parameter = lootContextParameter;
-            this.getter = lootContext -> {
-                Object object = lootContext.get(lootContextParameter);
-                return object != null ? (Tag)function.apply((Object)object) : null;
+        private <T> Source(String name, LootContextParameter<T> parameter, Function<? super T, Tag> operator) {
+            this.name = name;
+            this.parameter = parameter;
+            this.getter = context -> {
+                Object object = context.get(parameter);
+                return object != null ? (Tag)operator.apply((Object)object) : null;
             };
         }
 
-        public static Source get(String string) {
+        public static Source get(String name) {
             for (Source source : Source.values()) {
-                if (!source.name.equals(string)) continue;
+                if (!source.name.equals(name)) continue;
                 return source;
             }
-            throw new IllegalArgumentException("Invalid tag source " + string);
+            throw new IllegalArgumentException("Invalid tag source " + name);
         }
     }
 
@@ -148,19 +148,19 @@ extends ConditionalLootFunction {
         REPLACE("replace"){
 
             @Override
-            public void merge(Tag tag, NbtPathArgumentType.NbtPath nbtPath, List<Tag> list) throws CommandSyntaxException {
-                nbtPath.put(tag, Iterables.getLast(list)::copy);
+            public void merge(Tag itemTag, NbtPathArgumentType.NbtPath tragetPath, List<Tag> sourceTags) throws CommandSyntaxException {
+                tragetPath.put(itemTag, Iterables.getLast(sourceTags)::copy);
             }
         }
         ,
         APPEND("append"){
 
             @Override
-            public void merge(Tag tag2, NbtPathArgumentType.NbtPath nbtPath, List<Tag> list) throws CommandSyntaxException {
-                List<Tag> list2 = nbtPath.getOrInit(tag2, ListTag::new);
-                list2.forEach(tag -> {
-                    if (tag instanceof ListTag) {
-                        list.forEach(tag2 -> ((ListTag)tag).add(tag2.copy()));
+            public void merge(Tag itemTag, NbtPathArgumentType.NbtPath tragetPath, List<Tag> sourceTags) throws CommandSyntaxException {
+                List<Tag> list = tragetPath.getOrInit(itemTag, ListTag::new);
+                list.forEach(foundTag -> {
+                    if (foundTag instanceof ListTag) {
+                        sourceTags.forEach(listTag -> ((ListTag)foundTag).add(listTag.copy()));
                     }
                 });
             }
@@ -169,13 +169,13 @@ extends ConditionalLootFunction {
         MERGE("merge"){
 
             @Override
-            public void merge(Tag tag2, NbtPathArgumentType.NbtPath nbtPath, List<Tag> list) throws CommandSyntaxException {
-                List<Tag> list2 = nbtPath.getOrInit(tag2, CompoundTag::new);
-                list2.forEach(tag -> {
-                    if (tag instanceof CompoundTag) {
-                        list.forEach(tag2 -> {
-                            if (tag2 instanceof CompoundTag) {
-                                ((CompoundTag)tag).copyFrom((CompoundTag)tag2);
+            public void merge(Tag itemTag, NbtPathArgumentType.NbtPath tragetPath, List<Tag> sourceTags) throws CommandSyntaxException {
+                List<Tag> list = tragetPath.getOrInit(itemTag, CompoundTag::new);
+                list.forEach(foundTag -> {
+                    if (foundTag instanceof CompoundTag) {
+                        sourceTags.forEach(compoundTag -> {
+                            if (compoundTag instanceof CompoundTag) {
+                                ((CompoundTag)foundTag).copyFrom((CompoundTag)compoundTag);
                             }
                         });
                     }
@@ -187,16 +187,16 @@ extends ConditionalLootFunction {
 
         public abstract void merge(Tag var1, NbtPathArgumentType.NbtPath var2, List<Tag> var3) throws CommandSyntaxException;
 
-        private Operator(String string2) {
-            this.name = string2;
+        private Operator(String name) {
+            this.name = name;
         }
 
-        public static Operator get(String string) {
+        public static Operator get(String name) {
             for (Operator operator : Operator.values()) {
-                if (!operator.name.equals(string)) continue;
+                if (!operator.name.equals(name)) continue;
                 return operator;
             }
-            throw new IllegalArgumentException("Invalid merge strategy" + string);
+            throw new IllegalArgumentException("Invalid merge strategy" + name);
         }
     }
 
@@ -209,13 +209,13 @@ extends ConditionalLootFunction {
             this.source = source;
         }
 
-        public Builder withOperation(String string, String string2, Operator operator) {
-            this.operations.add(new Operation(string, string2, operator));
+        public Builder withOperation(String source, String target, Operator operator) {
+            this.operations.add(new Operation(source, target, operator));
             return this;
         }
 
-        public Builder withOperation(String string, String string2) {
-            return this.withOperation(string, string2, Operator.REPLACE);
+        public Builder withOperation(String source, String target) {
+            return this.withOperation(source, target, Operator.REPLACE);
         }
 
         @Override
@@ -241,19 +241,19 @@ extends ConditionalLootFunction {
         private final NbtPathArgumentType.NbtPath parsedTargetPath;
         private final Operator operator;
 
-        private Operation(String string, String string2, Operator operator) {
-            this.sourcePath = string;
-            this.parsedSourcePath = CopyNbtLootFunction.parseNbtPath(string);
-            this.targetPath = string2;
-            this.parsedTargetPath = CopyNbtLootFunction.parseNbtPath(string2);
+        private Operation(String source, String target, Operator operator) {
+            this.sourcePath = source;
+            this.parsedSourcePath = CopyNbtLootFunction.parseNbtPath(source);
+            this.targetPath = target;
+            this.parsedTargetPath = CopyNbtLootFunction.parseNbtPath(target);
             this.operator = operator;
         }
 
-        public void execute(Supplier<Tag> supplier, Tag tag) {
+        public void execute(Supplier<Tag> itemTagTagGetter, Tag sourceEntityTag) {
             try {
-                List<Tag> list = this.parsedSourcePath.get(tag);
+                List<Tag> list = this.parsedSourcePath.get(sourceEntityTag);
                 if (!list.isEmpty()) {
-                    this.operator.merge(supplier.get(), this.parsedTargetPath, list);
+                    this.operator.merge(itemTagTagGetter.get(), this.parsedTargetPath, list);
                 }
             } catch (CommandSyntaxException commandSyntaxException) {
                 // empty catch block
@@ -268,10 +268,10 @@ extends ConditionalLootFunction {
             return jsonObject;
         }
 
-        public static Operation fromJson(JsonObject jsonObject) {
-            String string = JsonHelper.getString(jsonObject, "source");
-            String string2 = JsonHelper.getString(jsonObject, "target");
-            Operator operator = Operator.get(JsonHelper.getString(jsonObject, "op"));
+        public static Operation fromJson(JsonObject json) {
+            String string = JsonHelper.getString(json, "source");
+            String string2 = JsonHelper.getString(json, "target");
+            Operator operator = Operator.get(JsonHelper.getString(json, "op"));
             return new Operation(string, string2, operator);
         }
     }

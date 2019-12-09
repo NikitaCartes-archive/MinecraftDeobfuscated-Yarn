@@ -26,17 +26,17 @@ implements Closeable {
     private final boolean hasColor;
     private final Slot rootSlot;
 
-    public GlyphAtlasTexture(Identifier identifier, boolean bl) {
-        this.id = identifier;
-        this.hasColor = bl;
+    public GlyphAtlasTexture(Identifier id, boolean hasColor) {
+        this.id = id;
+        this.hasColor = hasColor;
         this.rootSlot = new Slot(0, 0, 256, 256);
-        TextureUtil.prepareImage(bl ? NativeImage.GLFormat.RGBA : NativeImage.GLFormat.INTENSITY, this.getGlId(), 256, 256);
-        this.field_21690 = RenderLayer.getText(identifier);
-        this.field_21691 = RenderLayer.getTextSeeThrough(identifier);
+        TextureUtil.prepareImage(hasColor ? NativeImage.GLFormat.RGBA : NativeImage.GLFormat.INTENSITY, this.getGlId(), 256, 256);
+        this.field_21690 = RenderLayer.getText(id);
+        this.field_21691 = RenderLayer.getTextSeeThrough(id);
     }
 
     @Override
-    public void load(ResourceManager resourceManager) {
+    public void load(ResourceManager manager) {
     }
 
     @Override
@@ -45,18 +45,18 @@ implements Closeable {
     }
 
     @Nullable
-    public GlyphRenderer getGlyphRenderer(RenderableGlyph renderableGlyph) {
-        if (renderableGlyph.hasColor() != this.hasColor) {
+    public GlyphRenderer getGlyphRenderer(RenderableGlyph glyph) {
+        if (glyph.hasColor() != this.hasColor) {
             return null;
         }
-        Slot slot = this.rootSlot.findSlotFor(renderableGlyph);
+        Slot slot = this.rootSlot.findSlotFor(glyph);
         if (slot != null) {
             this.bindTexture();
-            renderableGlyph.upload(slot.x, slot.y);
+            glyph.upload(slot.x, slot.y);
             float f = 256.0f;
             float g = 256.0f;
             float h = 0.01f;
-            return new GlyphRenderer(this.field_21690, this.field_21691, ((float)slot.x + 0.01f) / 256.0f, ((float)slot.x - 0.01f + (float)renderableGlyph.getWidth()) / 256.0f, ((float)slot.y + 0.01f) / 256.0f, ((float)slot.y - 0.01f + (float)renderableGlyph.getHeight()) / 256.0f, renderableGlyph.getXMin(), renderableGlyph.getXMax(), renderableGlyph.getYMin(), renderableGlyph.getYMax());
+            return new GlyphRenderer(this.field_21690, this.field_21691, ((float)slot.x + 0.01f) / 256.0f, ((float)slot.x - 0.01f + (float)glyph.getWidth()) / 256.0f, ((float)slot.y + 0.01f) / 256.0f, ((float)slot.y - 0.01f + (float)glyph.getHeight()) / 256.0f, glyph.getXMin(), glyph.getXMax(), glyph.getYMin(), glyph.getYMax());
         }
         return null;
     }
@@ -75,27 +75,27 @@ implements Closeable {
         private Slot subSlot2;
         private boolean isOccupied;
 
-        private Slot(int i, int j, int k, int l) {
-            this.x = i;
-            this.y = j;
-            this.width = k;
-            this.height = l;
+        private Slot(int x, int y, int width, int height) {
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
         }
 
         @Nullable
-        Slot findSlotFor(RenderableGlyph renderableGlyph) {
+        Slot findSlotFor(RenderableGlyph glyph) {
             if (this.subSlot1 != null && this.subSlot2 != null) {
-                Slot slot = this.subSlot1.findSlotFor(renderableGlyph);
+                Slot slot = this.subSlot1.findSlotFor(glyph);
                 if (slot == null) {
-                    slot = this.subSlot2.findSlotFor(renderableGlyph);
+                    slot = this.subSlot2.findSlotFor(glyph);
                 }
                 return slot;
             }
             if (this.isOccupied) {
                 return null;
             }
-            int i = renderableGlyph.getWidth();
-            int j = renderableGlyph.getHeight();
+            int i = glyph.getWidth();
+            int j = glyph.getHeight();
             if (i > this.width || j > this.height) {
                 return null;
             }
@@ -112,7 +112,7 @@ implements Closeable {
                 this.subSlot1 = new Slot(this.x, this.y, this.width, j);
                 this.subSlot2 = new Slot(this.x, this.y + j + 1, this.width, this.height - j - 1);
             }
-            return this.subSlot1.findSlotFor(renderableGlyph);
+            return this.subSlot1.findSlotFor(glyph);
         }
     }
 }

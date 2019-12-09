@@ -39,23 +39,23 @@ BiomeAccess.Storage {
 
     public BiomeAccess getBiomeAccess();
 
-    default public Biome getBiome(BlockPos blockPos) {
-        return this.getBiomeAccess().getBiome(blockPos);
+    default public Biome getBiome(BlockPos pos) {
+        return this.getBiomeAccess().getBiome(pos);
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    default public int getColor(BlockPos blockPos, ColorResolver colorResolver) {
-        return colorResolver.getColor(this.getBiome(blockPos), blockPos.getX(), blockPos.getZ());
+    default public int getColor(BlockPos pos, ColorResolver colorResolver) {
+        return colorResolver.getColor(this.getBiome(pos), pos.getX(), pos.getZ());
     }
 
     @Override
-    default public Biome getBiomeForNoiseGen(int i, int j, int k) {
-        Chunk chunk = this.getChunk(i >> 2, k >> 2, ChunkStatus.BIOMES, false);
+    default public Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
+        Chunk chunk = this.getChunk(biomeX >> 2, biomeZ >> 2, ChunkStatus.BIOMES, false);
         if (chunk != null && chunk.getBiomeArray() != null) {
-            return chunk.getBiomeArray().getBiomeForNoiseGen(i, j, k);
+            return chunk.getBiomeArray().getBiomeForNoiseGen(biomeX, biomeY, biomeZ);
         }
-        return this.getGeneratorStoredBiome(i, j, k);
+        return this.getGeneratorStoredBiome(biomeX, biomeY, biomeZ);
     }
 
     public Biome getGeneratorStoredBiome(int var1, int var2, int var3);
@@ -66,62 +66,62 @@ BiomeAccess.Storage {
 
     public Dimension getDimension();
 
-    default public BlockPos getTopPosition(Heightmap.Type type, BlockPos blockPos) {
-        return new BlockPos(blockPos.getX(), this.getTopY(type, blockPos.getX(), blockPos.getZ()), blockPos.getZ());
+    default public BlockPos getTopPosition(Heightmap.Type heightmap, BlockPos pos) {
+        return new BlockPos(pos.getX(), this.getTopY(heightmap, pos.getX(), pos.getZ()), pos.getZ());
     }
 
-    default public boolean isAir(BlockPos blockPos) {
-        return this.getBlockState(blockPos).isAir();
+    default public boolean isAir(BlockPos pos) {
+        return this.getBlockState(pos).isAir();
     }
 
-    default public boolean isSkyVisibleAllowingSea(BlockPos blockPos) {
-        if (blockPos.getY() >= this.getSeaLevel()) {
-            return this.isSkyVisible(blockPos);
+    default public boolean isSkyVisibleAllowingSea(BlockPos pos) {
+        if (pos.getY() >= this.getSeaLevel()) {
+            return this.isSkyVisible(pos);
         }
-        BlockPos blockPos2 = new BlockPos(blockPos.getX(), this.getSeaLevel(), blockPos.getZ());
-        if (!this.isSkyVisible(blockPos2)) {
+        BlockPos blockPos = new BlockPos(pos.getX(), this.getSeaLevel(), pos.getZ());
+        if (!this.isSkyVisible(blockPos)) {
             return false;
         }
-        blockPos2 = blockPos2.down();
-        while (blockPos2.getY() > blockPos.getY()) {
-            BlockState blockState = this.getBlockState(blockPos2);
-            if (blockState.getOpacity(this, blockPos2) > 0 && !blockState.getMaterial().isLiquid()) {
+        blockPos = blockPos.down();
+        while (blockPos.getY() > pos.getY()) {
+            BlockState blockState = this.getBlockState(blockPos);
+            if (blockState.getOpacity(this, blockPos) > 0 && !blockState.getMaterial().isLiquid()) {
                 return false;
             }
-            blockPos2 = blockPos2.down();
+            blockPos = blockPos.down();
         }
         return true;
     }
 
     @Deprecated
-    default public float getBrightness(BlockPos blockPos) {
-        return this.getDimension().getBrightness(this.getLightLevel(blockPos));
+    default public float getBrightness(BlockPos pos) {
+        return this.getDimension().getBrightness(this.getLightLevel(pos));
     }
 
-    default public int getStrongRedstonePower(BlockPos blockPos, Direction direction) {
-        return this.getBlockState(blockPos).getStrongRedstonePower(this, blockPos, direction);
+    default public int getStrongRedstonePower(BlockPos pos, Direction direction) {
+        return this.getBlockState(pos).getStrongRedstonePower(this, pos, direction);
     }
 
-    default public Chunk getChunk(BlockPos blockPos) {
-        return this.getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4);
+    default public Chunk getChunk(BlockPos pos) {
+        return this.getChunk(pos.getX() >> 4, pos.getZ() >> 4);
     }
 
-    default public Chunk getChunk(int i, int j) {
-        return this.getChunk(i, j, ChunkStatus.FULL, true);
+    default public Chunk getChunk(int chunkX, int chunkZ) {
+        return this.getChunk(chunkX, chunkZ, ChunkStatus.FULL, true);
     }
 
-    default public Chunk getChunk(int i, int j, ChunkStatus chunkStatus) {
-        return this.getChunk(i, j, chunkStatus, true);
+    default public Chunk getChunk(int chunkX, int chunkZ, ChunkStatus status) {
+        return this.getChunk(chunkX, chunkZ, status, true);
     }
 
     @Override
     @Nullable
-    default public BlockView getExistingChunk(int i, int j) {
-        return this.getChunk(i, j, ChunkStatus.EMPTY, false);
+    default public BlockView getExistingChunk(int chunkX, int chunkZ) {
+        return this.getChunk(chunkX, chunkZ, ChunkStatus.EMPTY, false);
     }
 
-    default public boolean isWater(BlockPos blockPos) {
-        return this.getFluidState(blockPos).matches(FluidTags.WATER);
+    default public boolean isWater(BlockPos pos) {
+        return this.getFluidState(pos).matches(FluidTags.WATER);
     }
 
     default public boolean containsFluid(Box box) {
@@ -146,38 +146,38 @@ BiomeAccess.Storage {
         return false;
     }
 
-    default public int getLightLevel(BlockPos blockPos) {
-        return this.getLightLevel(blockPos, this.getAmbientDarkness());
+    default public int getLightLevel(BlockPos pos) {
+        return this.getLightLevel(pos, this.getAmbientDarkness());
     }
 
-    default public int getLightLevel(BlockPos blockPos, int i) {
-        if (blockPos.getX() < -30000000 || blockPos.getZ() < -30000000 || blockPos.getX() >= 30000000 || blockPos.getZ() >= 30000000) {
+    default public int getLightLevel(BlockPos pos, int ambientDarkness) {
+        if (pos.getX() < -30000000 || pos.getZ() < -30000000 || pos.getX() >= 30000000 || pos.getZ() >= 30000000) {
             return 15;
         }
-        return this.getBaseLightLevel(blockPos, i);
+        return this.getBaseLightLevel(pos, ambientDarkness);
     }
 
     @Deprecated
-    default public boolean isChunkLoaded(BlockPos blockPos) {
-        return this.isChunkLoaded(blockPos.getX() >> 4, blockPos.getZ() >> 4);
+    default public boolean isChunkLoaded(BlockPos pos) {
+        return this.isChunkLoaded(pos.getX() >> 4, pos.getZ() >> 4);
     }
 
     @Deprecated
-    default public boolean isRegionLoaded(BlockPos blockPos, BlockPos blockPos2) {
-        return this.isRegionLoaded(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos2.getX(), blockPos2.getY(), blockPos2.getZ());
+    default public boolean isRegionLoaded(BlockPos min, BlockPos max) {
+        return this.isRegionLoaded(min.getX(), min.getY(), min.getZ(), max.getX(), max.getY(), max.getZ());
     }
 
     @Deprecated
-    default public boolean isRegionLoaded(int i, int j, int k, int l, int m, int n) {
-        if (m < 0 || j >= 256) {
+    default public boolean isRegionLoaded(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+        if (maxY < 0 || minY >= 256) {
             return false;
         }
-        k >>= 4;
-        l >>= 4;
-        n >>= 4;
-        for (int o = i >>= 4; o <= l; ++o) {
-            for (int p = k; p <= n; ++p) {
-                if (this.isChunkLoaded(o, p)) continue;
+        minZ >>= 4;
+        maxX >>= 4;
+        maxZ >>= 4;
+        for (int i = minX >>= 4; i <= maxX; ++i) {
+            for (int j = minZ; j <= maxZ; ++j) {
+                if (this.isChunkLoaded(i, j)) continue;
                 return false;
             }
         }

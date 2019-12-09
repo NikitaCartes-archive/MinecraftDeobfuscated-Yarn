@@ -278,8 +278,8 @@ public abstract class Option {
     });
     private final String key;
 
-    public Option(String string) {
-        this.key = string;
+    public Option(String key) {
+        this.key = key;
     }
 
     public abstract AbstractButtonWidget createButton(GameOptions var1, int var2, int var3, int var4);

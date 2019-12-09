@@ -338,12 +338,12 @@ extends DataFix {
         int2ObjectOpenHashMap.defaultReturnValue("minecraft:air");
     });
 
-    public ItemIdFix(Schema schema, boolean bl) {
-        super(schema, bl);
+    public ItemIdFix(Schema outputSchema, boolean changesType) {
+        super(outputSchema, changesType);
     }
 
-    public static String fromId(int i) {
-        return (String)NUMERICAL_ID_TO_STRING_ID_MAP.get(i);
+    public static String fromId(int id) {
+        return (String)NUMERICAL_ID_TO_STRING_ID_MAP.get(id);
     }
 
     @Override

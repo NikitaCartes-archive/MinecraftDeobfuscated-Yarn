@@ -13,20 +13,20 @@ import net.minecraft.util.math.Direction;
 
 public class DirectionProperty
 extends EnumProperty<Direction> {
-    protected DirectionProperty(String string, Collection<Direction> collection) {
-        super(string, Direction.class, collection);
+    protected DirectionProperty(String name, Collection<Direction> values) {
+        super(name, Direction.class, values);
     }
 
-    public static DirectionProperty of(String string, Predicate<Direction> predicate) {
-        return DirectionProperty.of(string, Arrays.stream(Direction.values()).filter(predicate).collect(Collectors.toList()));
+    public static DirectionProperty of(String name, Predicate<Direction> filter) {
+        return DirectionProperty.of(name, Arrays.stream(Direction.values()).filter(filter).collect(Collectors.toList()));
     }
 
-    public static DirectionProperty of(String string, Direction ... directions) {
-        return DirectionProperty.of(string, Lists.newArrayList(directions));
+    public static DirectionProperty of(String name, Direction ... values) {
+        return DirectionProperty.of(name, Lists.newArrayList(values));
     }
 
-    public static DirectionProperty of(String string, Collection<Direction> collection) {
-        return new DirectionProperty(string, collection);
+    public static DirectionProperty of(String name, Collection<Direction> values) {
+        return new DirectionProperty(name, values);
     }
 }
 

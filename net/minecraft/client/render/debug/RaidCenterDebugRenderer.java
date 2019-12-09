@@ -20,16 +20,16 @@ implements DebugRenderer.Renderer {
     private final MinecraftClient client;
     private Collection<BlockPos> raidCenters = Lists.newArrayList();
 
-    public RaidCenterDebugRenderer(MinecraftClient minecraftClient) {
-        this.client = minecraftClient;
+    public RaidCenterDebugRenderer(MinecraftClient client) {
+        this.client = client;
     }
 
-    public void setRaidCenters(Collection<BlockPos> collection) {
-        this.raidCenters = collection;
+    public void setRaidCenters(Collection<BlockPos> centers) {
+        this.raidCenters = centers;
     }
 
     @Override
-    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f) {
+    public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
         BlockPos blockPos = this.method_23125().getBlockPos();
         for (BlockPos blockPos2 : this.raidCenters) {
             if (!blockPos.isWithinDistance(blockPos2, 160.0)) continue;

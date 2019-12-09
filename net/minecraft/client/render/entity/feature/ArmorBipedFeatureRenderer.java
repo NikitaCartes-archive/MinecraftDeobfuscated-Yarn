@@ -19,29 +19,29 @@ extends ArmorFeatureRenderer<T, M, A> {
     }
 
     @Override
-    protected void setVisible(A bipedEntityModel, EquipmentSlot equipmentSlot) {
-        this.setInvisible(bipedEntityModel);
+    protected void setVisible(A bipedModel, EquipmentSlot equipmentSlot) {
+        this.setInvisible(bipedModel);
         switch (equipmentSlot) {
             case HEAD: {
-                ((BipedEntityModel)bipedEntityModel).head.visible = true;
-                ((BipedEntityModel)bipedEntityModel).helmet.visible = true;
+                ((BipedEntityModel)bipedModel).head.visible = true;
+                ((BipedEntityModel)bipedModel).helmet.visible = true;
                 break;
             }
             case CHEST: {
-                ((BipedEntityModel)bipedEntityModel).torso.visible = true;
-                ((BipedEntityModel)bipedEntityModel).rightArm.visible = true;
-                ((BipedEntityModel)bipedEntityModel).leftArm.visible = true;
+                ((BipedEntityModel)bipedModel).torso.visible = true;
+                ((BipedEntityModel)bipedModel).rightArm.visible = true;
+                ((BipedEntityModel)bipedModel).leftArm.visible = true;
                 break;
             }
             case LEGS: {
-                ((BipedEntityModel)bipedEntityModel).torso.visible = true;
-                ((BipedEntityModel)bipedEntityModel).rightLeg.visible = true;
-                ((BipedEntityModel)bipedEntityModel).leftLeg.visible = true;
+                ((BipedEntityModel)bipedModel).torso.visible = true;
+                ((BipedEntityModel)bipedModel).rightLeg.visible = true;
+                ((BipedEntityModel)bipedModel).leftLeg.visible = true;
                 break;
             }
             case FEET: {
-                ((BipedEntityModel)bipedEntityModel).rightLeg.visible = true;
-                ((BipedEntityModel)bipedEntityModel).leftLeg.visible = true;
+                ((BipedEntityModel)bipedModel).rightLeg.visible = true;
+                ((BipedEntityModel)bipedModel).leftLeg.visible = true;
             }
         }
     }

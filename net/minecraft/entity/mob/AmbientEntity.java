@@ -10,12 +10,12 @@ import net.minecraft.world.World;
 
 public abstract class AmbientEntity
 extends MobEntity {
-    protected AmbientEntity(EntityType<? extends AmbientEntity> entityType, World world) {
-        super((EntityType<? extends MobEntity>)entityType, world);
+    protected AmbientEntity(EntityType<? extends AmbientEntity> type, World world) {
+        super((EntityType<? extends MobEntity>)type, world);
     }
 
     @Override
-    public boolean canBeLeashedBy(PlayerEntity playerEntity) {
+    public boolean canBeLeashedBy(PlayerEntity player) {
         return false;
     }
 }

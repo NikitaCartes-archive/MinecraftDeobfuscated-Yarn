@@ -30,16 +30,16 @@ implements ArgumentType<PosArgument> {
     public static final SimpleCommandExceptionType INCOMPLETE_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.pos2d.incomplete", new Object[0]));
     private final boolean centerIntegers;
 
-    public Vec2ArgumentType(boolean bl) {
-        this.centerIntegers = bl;
+    public Vec2ArgumentType(boolean centerIntegers) {
+        this.centerIntegers = centerIntegers;
     }
 
     public static Vec2ArgumentType vec2() {
         return new Vec2ArgumentType(true);
     }
 
-    public static Vec2f getVec2(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
-        Vec3d vec3d = commandContext.getArgument(string, PosArgument.class).toAbsolutePos(commandContext.getSource());
+    public static Vec2f getVec2(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
+        Vec3d vec3d = context.getArgument(name, PosArgument.class).toAbsolutePos(context.getSource());
         return new Vec2f((float)vec3d.x, (float)vec3d.z);
     }
 
@@ -60,11 +60,11 @@ implements ArgumentType<PosArgument> {
     }
 
     @Override
-    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
-        if (commandContext.getSource() instanceof CommandSource) {
-            String string = suggestionsBuilder.getRemaining();
-            Collection<CommandSource.RelativePosition> collection = !string.isEmpty() && string.charAt(0) == '^' ? Collections.singleton(CommandSource.RelativePosition.ZERO_LOCAL) : ((CommandSource)commandContext.getSource()).getPositionSuggestions();
-            return CommandSource.suggestColumnPositions(string, collection, suggestionsBuilder, CommandManager.getCommandValidator(this::parse));
+    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+        if (context.getSource() instanceof CommandSource) {
+            String string = builder.getRemaining();
+            Collection<CommandSource.RelativePosition> collection = !string.isEmpty() && string.charAt(0) == '^' ? Collections.singleton(CommandSource.RelativePosition.ZERO_LOCAL) : ((CommandSource)context.getSource()).getPositionSuggestions();
+            return CommandSource.suggestColumnPositions(string, collection, builder, CommandManager.getCommandValidator(this::parse));
         }
         return Suggestions.empty();
     }

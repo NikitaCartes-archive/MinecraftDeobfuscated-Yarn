@@ -20,8 +20,8 @@ public class MatchToolLootCondition
 implements LootCondition {
     private final ItemPredicate predicate;
 
-    public MatchToolLootCondition(ItemPredicate itemPredicate) {
-        this.predicate = itemPredicate;
+    public MatchToolLootCondition(ItemPredicate predicate) {
+        this.predicate = predicate;
     }
 
     @Override
@@ -35,13 +35,13 @@ implements LootCondition {
         return itemStack != null && this.predicate.test(itemStack);
     }
 
-    public static LootCondition.Builder builder(ItemPredicate.Builder builder) {
-        return () -> new MatchToolLootCondition(builder.build());
+    public static LootCondition.Builder builder(ItemPredicate.Builder predicate) {
+        return () -> new MatchToolLootCondition(predicate.build());
     }
 
     @Override
-    public /* synthetic */ boolean test(Object object) {
-        return this.test((LootContext)object);
+    public /* synthetic */ boolean test(Object context) {
+        return this.test((LootContext)context);
     }
 
     public static class Factory
@@ -62,8 +62,8 @@ implements LootCondition {
         }
 
         @Override
-        public /* synthetic */ LootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            return this.fromJson(jsonObject, jsonDeserializationContext);
+        public /* synthetic */ LootCondition fromJson(JsonObject json, JsonDeserializationContext context) {
+            return this.fromJson(json, context);
         }
     }
 }

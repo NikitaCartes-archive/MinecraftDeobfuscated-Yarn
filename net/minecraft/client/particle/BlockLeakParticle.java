@@ -27,8 +27,8 @@ public class BlockLeakParticle
 extends SpriteBillboardParticle {
     private final Fluid fluid;
 
-    private BlockLeakParticle(World world, double d, double e, double f, Fluid fluid) {
-        super(world, d, e, f);
+    private BlockLeakParticle(World world, double x, double y, double z, Fluid fluid) {
+        super(world, x, y, z);
         this.setBoundingBoxSpacing(0.01f, 0.01f);
         this.gravityStrength = 0.06f;
         this.fluid = fluid;
@@ -40,11 +40,11 @@ extends SpriteBillboardParticle {
     }
 
     @Override
-    public int getColorMultiplier(float f) {
+    public int getColorMultiplier(float tint) {
         if (this.fluid.matches(FluidTags.LAVA)) {
             return 240;
         }
-        return super.getColorMultiplier(f);
+        return super.getColorMultiplier(tint);
     }
 
     @Override
@@ -295,9 +295,9 @@ extends SpriteBillboardParticle {
     extends Falling {
         protected final ParticleEffect nextParticle;
 
-        private ContinuousFalling(World world, double d, double e, double f, Fluid fluid, ParticleEffect particleEffect) {
-            super(world, d, e, f, fluid);
-            this.nextParticle = particleEffect;
+        private ContinuousFalling(World world, double x, double y, double z, Fluid fluid, ParticleEffect nextParticle) {
+            super(world, x, y, z, fluid);
+            this.nextParticle = nextParticle;
         }
 
         @Override
@@ -312,8 +312,8 @@ extends SpriteBillboardParticle {
     @Environment(value=EnvType.CLIENT)
     static class DrippingLava
     extends Dripping {
-        private DrippingLava(World world, double d, double e, double f, Fluid fluid, ParticleEffect particleEffect) {
-            super(world, d, e, f, fluid, particleEffect);
+        private DrippingLava(World world, double x, double y, double z, Fluid fluid, ParticleEffect nextParticle) {
+            super(world, x, y, z, fluid, nextParticle);
         }
 
         @Override
@@ -330,9 +330,9 @@ extends SpriteBillboardParticle {
     extends BlockLeakParticle {
         private final ParticleEffect nextParticle;
 
-        private Dripping(World world, double d, double e, double f, Fluid fluid, ParticleEffect particleEffect) {
-            super(world, d, e, f, fluid);
-            this.nextParticle = particleEffect;
+        private Dripping(World world, double x, double y, double z, Fluid fluid, ParticleEffect nextParticle) {
+            super(world, x, y, z, fluid);
+            this.nextParticle = nextParticle;
             this.gravityStrength *= 0.02f;
             this.maxAge = 40;
         }

@@ -22,12 +22,12 @@ public class BlockPattern {
     private final int height;
     private final int width;
 
-    public BlockPattern(Predicate<CachedBlockPosition>[][][] predicates) {
-        this.pattern = predicates;
-        this.depth = predicates.length;
+    public BlockPattern(Predicate<CachedBlockPosition>[][][] pattern) {
+        this.pattern = pattern;
+        this.depth = pattern.length;
         if (this.depth > 0) {
-            this.height = predicates[0].length;
-            this.width = this.height > 0 ? predicates[0][0].length : 0;
+            this.height = pattern[0].length;
+            this.width = this.height > 0 ? pattern[0][0].length : 0;
         } else {
             this.height = 0;
             this.width = 0;
@@ -47,16 +47,16 @@ public class BlockPattern {
     }
 
     @Nullable
-    private Result testTransform(BlockPos blockPos, Direction direction, Direction direction2, LoadingCache<BlockPos, CachedBlockPosition> loadingCache) {
+    private Result testTransform(BlockPos frontTopLeft, Direction forwards, Direction up, LoadingCache<BlockPos, CachedBlockPosition> loadingCache) {
         for (int i = 0; i < this.width; ++i) {
             for (int j = 0; j < this.height; ++j) {
                 for (int k = 0; k < this.depth; ++k) {
-                    if (this.pattern[k][j][i].test(loadingCache.getUnchecked(BlockPattern.translate(blockPos, direction, direction2, i, j, k)))) continue;
+                    if (this.pattern[k][j][i].test(loadingCache.getUnchecked(BlockPattern.translate(frontTopLeft, forwards, up, i, j, k)))) continue;
                     return null;
                 }
             }
         }
-        return new Result(blockPos, direction, direction2, loadingCache, this.width, this.height, this.depth);
+        return new Result(frontTopLeft, forwards, up, loadingCache, this.width, this.height, this.depth);
     }
 
     @Nullable
@@ -79,14 +79,14 @@ public class BlockPattern {
         return CacheBuilder.newBuilder().build(new BlockStateCacheLoader(worldView, bl));
     }
 
-    protected static BlockPos translate(BlockPos blockPos, Direction direction, Direction direction2, int i, int j, int k) {
-        if (direction == direction2 || direction == direction2.getOpposite()) {
+    protected static BlockPos translate(BlockPos pos, Direction forwards, Direction up, int offsetLeft, int offsetDown, int offsetForwards) {
+        if (forwards == up || forwards == up.getOpposite()) {
             throw new IllegalArgumentException("Invalid forwards & up combination");
         }
-        Vec3i vec3i = new Vec3i(direction.getOffsetX(), direction.getOffsetY(), direction.getOffsetZ());
-        Vec3i vec3i2 = new Vec3i(direction2.getOffsetX(), direction2.getOffsetY(), direction2.getOffsetZ());
+        Vec3i vec3i = new Vec3i(forwards.getOffsetX(), forwards.getOffsetY(), forwards.getOffsetZ());
+        Vec3i vec3i2 = new Vec3i(up.getOffsetX(), up.getOffsetY(), up.getOffsetZ());
         Vec3i vec3i3 = vec3i.crossProduct(vec3i2);
-        return blockPos.add(vec3i2.getX() * -j + vec3i3.getX() * i + vec3i.getX() * k, vec3i2.getY() * -j + vec3i3.getY() * i + vec3i.getY() * k, vec3i2.getZ() * -j + vec3i3.getZ() * i + vec3i.getZ() * k);
+        return pos.add(vec3i2.getX() * -offsetDown + vec3i3.getX() * offsetLeft + vec3i.getX() * offsetForwards, vec3i2.getY() * -offsetDown + vec3i3.getY() * offsetLeft + vec3i.getY() * offsetForwards, vec3i2.getZ() * -offsetDown + vec3i3.getZ() * offsetLeft + vec3i.getZ() * offsetForwards);
     }
 
     public static class TeleportTarget {
@@ -94,10 +94,10 @@ public class BlockPattern {
         public final Vec3d velocity;
         public final int yaw;
 
-        public TeleportTarget(Vec3d vec3d, Vec3d vec3d2, int i) {
-            this.pos = vec3d;
-            this.velocity = vec3d2;
-            this.yaw = i;
+        public TeleportTarget(Vec3d pos, Vec3d velocity, int yaw) {
+            this.pos = pos;
+            this.velocity = velocity;
+            this.yaw = yaw;
         }
     }
 
@@ -110,14 +110,14 @@ public class BlockPattern {
         private final int height;
         private final int depth;
 
-        public Result(BlockPos blockPos, Direction direction, Direction direction2, LoadingCache<BlockPos, CachedBlockPosition> loadingCache, int i, int j, int k) {
-            this.frontTopLeft = blockPos;
-            this.forwards = direction;
-            this.up = direction2;
+        public Result(BlockPos frontTopLeft, Direction forwards, Direction up, LoadingCache<BlockPos, CachedBlockPosition> loadingCache, int width, int height, int depth) {
+            this.frontTopLeft = frontTopLeft;
+            this.forwards = forwards;
+            this.up = up;
             this.cache = loadingCache;
-            this.width = i;
-            this.height = j;
-            this.depth = k;
+            this.width = width;
+            this.height = height;
+            this.depth = depth;
         }
 
         public BlockPos getFrontTopLeft() {

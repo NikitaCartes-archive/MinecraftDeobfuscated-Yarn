@@ -16,21 +16,21 @@ import net.minecraft.world.gen.feature.TreeFeatureConfig;
 
 public class JungleGroundBushFeature
 extends AbstractTreeFeature<TreeFeatureConfig> {
-    public JungleGroundBushFeature(Function<Dynamic<?>, ? extends TreeFeatureConfig> function) {
-        super(function);
+    public JungleGroundBushFeature(Function<Dynamic<?>, ? extends TreeFeatureConfig> configFactory) {
+        super(configFactory);
     }
 
     @Override
-    public boolean generate(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, Set<BlockPos> set, Set<BlockPos> set2, BlockBox blockBox, TreeFeatureConfig treeFeatureConfig) {
-        if (JungleGroundBushFeature.isNaturalDirtOrGrass(modifiableTestableWorld, blockPos = modifiableTestableWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos).down())) {
-            blockPos = blockPos.up();
-            this.setLogBlockState(modifiableTestableWorld, random, blockPos, set, blockBox, treeFeatureConfig);
+    public boolean generate(ModifiableTestableWorld world, Random random, BlockPos pos, Set<BlockPos> logPositions, Set<BlockPos> leavesPositions, BlockBox blockBox, TreeFeatureConfig config) {
+        if (JungleGroundBushFeature.isNaturalDirtOrGrass(world, pos = world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, pos).down())) {
+            pos = pos.up();
+            this.setLogBlockState(world, random, pos, logPositions, blockBox, config);
             for (int i = 0; i <= 2; ++i) {
                 int j = 2 - i;
                 for (int k = -j; k <= j; ++k) {
                     for (int l = -j; l <= j; ++l) {
                         if (Math.abs(k) == j && Math.abs(l) == j && random.nextInt(2) == 0) continue;
-                        this.setLeavesBlockState(modifiableTestableWorld, random, new BlockPos(k + blockPos.getX(), i + blockPos.getY(), l + blockPos.getZ()), set2, blockBox, treeFeatureConfig);
+                        this.setLeavesBlockState(world, random, new BlockPos(k + pos.getX(), i + pos.getY(), l + pos.getZ()), leavesPositions, blockBox, config);
                     }
                 }
             }

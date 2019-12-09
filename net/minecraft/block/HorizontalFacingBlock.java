@@ -19,13 +19,13 @@ extends Block {
     }
 
     @Override
-    public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
-        return (BlockState)blockState.with(FACING, blockRotation.rotate(blockState.get(FACING)));
+    public BlockState rotate(BlockState state, BlockRotation rotation) {
+        return (BlockState)state.with(FACING, rotation.rotate(state.get(FACING)));
     }
 
     @Override
-    public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
-        return blockState.rotate(blockMirror.getRotation(blockState.get(FACING)));
+    public BlockState mirror(BlockState state, BlockMirror mirror) {
+        return state.rotate(mirror.getRotation(state.get(FACING)));
     }
 }
 

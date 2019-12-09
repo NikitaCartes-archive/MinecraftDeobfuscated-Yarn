@@ -21,33 +21,33 @@ extends Item {
     }
 
     @Override
-    public boolean postMine(ItemStack itemStack, World world, BlockState blockState, BlockPos blockPos, LivingEntity livingEntity2) {
+    public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
         if (!world.isClient) {
-            itemStack.damage(1, livingEntity2, livingEntity -> livingEntity.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+            stack.damage(1, miner, e -> e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
         }
-        Block block = blockState.getBlock();
-        if (blockState.matches(BlockTags.LEAVES) || block == Blocks.COBWEB || block == Blocks.GRASS || block == Blocks.FERN || block == Blocks.DEAD_BUSH || block == Blocks.VINE || block == Blocks.TRIPWIRE || block.matches(BlockTags.WOOL)) {
+        Block block = state.getBlock();
+        if (state.matches(BlockTags.LEAVES) || block == Blocks.COBWEB || block == Blocks.GRASS || block == Blocks.FERN || block == Blocks.DEAD_BUSH || block == Blocks.VINE || block == Blocks.TRIPWIRE || block.matches(BlockTags.WOOL)) {
             return true;
         }
-        return super.postMine(itemStack, world, blockState, blockPos, livingEntity2);
+        return super.postMine(stack, world, state, pos, miner);
     }
 
     @Override
-    public boolean isEffectiveOn(BlockState blockState) {
-        Block block = blockState.getBlock();
+    public boolean isEffectiveOn(BlockState state) {
+        Block block = state.getBlock();
         return block == Blocks.COBWEB || block == Blocks.REDSTONE_WIRE || block == Blocks.TRIPWIRE;
     }
 
     @Override
-    public float getMiningSpeed(ItemStack itemStack, BlockState blockState) {
-        Block block = blockState.getBlock();
-        if (block == Blocks.COBWEB || blockState.matches(BlockTags.LEAVES)) {
+    public float getMiningSpeed(ItemStack stack, BlockState state) {
+        Block block = state.getBlock();
+        if (block == Blocks.COBWEB || state.matches(BlockTags.LEAVES)) {
             return 15.0f;
         }
         if (block.matches(BlockTags.WOOL)) {
             return 5.0f;
         }
-        return super.getMiningSpeed(itemStack, blockState);
+        return super.getMiningSpeed(stack, state);
     }
 }
 

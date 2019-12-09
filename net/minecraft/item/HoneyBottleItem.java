@@ -26,36 +26,36 @@ extends Item {
     }
 
     @Override
-    public ItemStack finishUsing(ItemStack itemStack, World world, LivingEntity livingEntity) {
-        super.finishUsing(itemStack, world, livingEntity);
-        if (livingEntity instanceof ServerPlayerEntity) {
-            ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity;
-            Criterions.CONSUME_ITEM.trigger(serverPlayerEntity, itemStack);
+    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
+        super.finishUsing(stack, world, user);
+        if (user instanceof ServerPlayerEntity) {
+            ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)user;
+            Criterions.CONSUME_ITEM.trigger(serverPlayerEntity, stack);
             serverPlayerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
         }
         if (!world.isClient) {
-            livingEntity.tryRemoveStatusEffect(StatusEffects.POISON);
+            user.tryRemoveStatusEffect(StatusEffects.POISON);
         }
-        if (itemStack.isEmpty()) {
+        if (stack.isEmpty()) {
             return new ItemStack(Items.GLASS_BOTTLE);
         }
-        if (livingEntity instanceof PlayerEntity && !((PlayerEntity)livingEntity).abilities.creativeMode) {
-            ItemStack itemStack2 = new ItemStack(Items.GLASS_BOTTLE);
-            PlayerEntity playerEntity = (PlayerEntity)livingEntity;
-            if (!playerEntity.inventory.insertStack(itemStack2)) {
-                playerEntity.dropItem(itemStack2, false);
+        if (user instanceof PlayerEntity && !((PlayerEntity)user).abilities.creativeMode) {
+            ItemStack itemStack = new ItemStack(Items.GLASS_BOTTLE);
+            PlayerEntity playerEntity = (PlayerEntity)user;
+            if (!playerEntity.inventory.insertStack(itemStack)) {
+                playerEntity.dropItem(itemStack, false);
             }
         }
-        return itemStack;
+        return stack;
     }
 
     @Override
-    public int getMaxUseTime(ItemStack itemStack) {
+    public int getMaxUseTime(ItemStack stack) {
         return 40;
     }
 
     @Override
-    public UseAction getUseAction(ItemStack itemStack) {
+    public UseAction getUseAction(ItemStack stack) {
         return UseAction.DRINK;
     }
 
@@ -70,9 +70,9 @@ extends Item {
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
-        playerEntity.setCurrentHand(hand);
-        return TypedActionResult.success(playerEntity.getStackInHand(hand));
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+        user.setCurrentHand(hand);
+        return TypedActionResult.success(user.getStackInHand(hand));
     }
 }
 

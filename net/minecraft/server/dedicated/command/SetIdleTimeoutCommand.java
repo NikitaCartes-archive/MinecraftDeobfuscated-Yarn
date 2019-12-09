@@ -15,10 +15,10 @@ public class SetIdleTimeoutCommand {
         commandDispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("setidletimeout").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))).then(CommandManager.argument("minutes", IntegerArgumentType.integer(0)).executes(commandContext -> SetIdleTimeoutCommand.execute((ServerCommandSource)commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "minutes")))));
     }
 
-    private static int execute(ServerCommandSource serverCommandSource, int i) {
-        serverCommandSource.getMinecraftServer().setPlayerIdleTimeout(i);
-        serverCommandSource.sendFeedback(new TranslatableText("commands.setidletimeout.success", i), true);
-        return i;
+    private static int execute(ServerCommandSource source, int minutes) {
+        source.getMinecraftServer().setPlayerIdleTimeout(minutes);
+        source.sendFeedback(new TranslatableText("commands.setidletimeout.success", minutes), true);
+        return minutes;
     }
 }
 

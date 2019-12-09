@@ -54,9 +54,9 @@ implements AutoCloseable {
         });
     }
 
-    public void setEnabledProfiles(Collection<T> collection) {
+    public void setEnabledProfiles(Collection<T> enabled) {
         this.enabled.clear();
-        this.enabled.addAll(collection);
+        this.enabled.addAll(enabled);
         for (ResourcePackProfile resourcePackProfile : this.profiles.values()) {
             if (!resourcePackProfile.isAlwaysEnabled() || this.enabled.contains(resourcePackProfile)) continue;
             resourcePackProfile.getInitialPosition().insert(this.enabled, resourcePackProfile, Functions.identity(), false);
@@ -78,12 +78,12 @@ implements AutoCloseable {
     }
 
     @Nullable
-    public T getProfile(String string) {
-        return (T)((ResourcePackProfile)this.profiles.get(string));
+    public T getProfile(String name) {
+        return (T)((ResourcePackProfile)this.profiles.get(name));
     }
 
-    public void registerProvider(ResourcePackProvider resourcePackProvider) {
-        this.providers.add(resourcePackProvider);
+    public void registerProvider(ResourcePackProvider provider) {
+        this.providers.add(provider);
     }
 
     @Override

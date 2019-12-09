@@ -19,21 +19,21 @@ extends CombinedEntry {
     }
 
     @Override
-    protected EntryCombiner combine(EntryCombiner[] entryCombiners) {
-        switch (entryCombiners.length) {
+    protected EntryCombiner combine(EntryCombiner[] children) {
+        switch (children.length) {
             case 0: {
                 return ALWAYS_FALSE;
             }
             case 1: {
-                return entryCombiners[0];
+                return children[0];
             }
             case 2: {
-                return entryCombiners[0].or(entryCombiners[1]);
+                return children[0].or(children[1]);
             }
         }
-        return (lootContext, consumer) -> {
-            for (EntryCombiner entryCombiner : entryCombiners) {
-                if (!entryCombiner.expand(lootContext, consumer)) continue;
+        return (context, lootChoiceExpander) -> {
+            for (EntryCombiner entryCombiner : children) {
+                if (!entryCombiner.expand(context, lootChoiceExpander)) continue;
                 return true;
             }
             return false;
@@ -49,16 +49,16 @@ extends CombinedEntry {
         }
     }
 
-    public static Builder builder(LootEntry.Builder<?> ... builders) {
-        return new Builder(builders);
+    public static Builder builder(LootEntry.Builder<?> ... children) {
+        return new Builder(children);
     }
 
     public static class Builder
     extends LootEntry.Builder<Builder> {
         private final List<LootEntry> children = Lists.newArrayList();
 
-        public Builder(LootEntry.Builder<?> ... builders) {
-            for (LootEntry.Builder<?> builder : builders) {
+        public Builder(LootEntry.Builder<?> ... children) {
+            for (LootEntry.Builder<?> builder : children) {
                 this.children.add(builder.build());
             }
         }

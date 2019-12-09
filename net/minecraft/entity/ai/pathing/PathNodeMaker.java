@@ -38,8 +38,8 @@ public abstract class PathNodeMaker {
         this.entity = null;
     }
 
-    protected PathNode getNode(int i, int j, int k) {
-        return this.pathNodeCache.computeIfAbsent(PathNode.hash(i, j, k), l -> new PathNode(i, j, k));
+    protected PathNode getNode(int x, int y, int z) {
+        return this.pathNodeCache.computeIfAbsent(PathNode.hash(x, y, z), l -> new PathNode(x, y, z));
     }
 
     public abstract PathNode getStart();
@@ -52,16 +52,16 @@ public abstract class PathNodeMaker {
 
     public abstract PathNodeType getNodeType(BlockView var1, int var2, int var3, int var4);
 
-    public void setCanEnterOpenDoors(boolean bl) {
-        this.canEnterOpenDoors = bl;
+    public void setCanEnterOpenDoors(boolean canEnterOpenDoors) {
+        this.canEnterOpenDoors = canEnterOpenDoors;
     }
 
-    public void setCanOpenDoors(boolean bl) {
-        this.canOpenDoors = bl;
+    public void setCanOpenDoors(boolean canOpenDoors) {
+        this.canOpenDoors = canOpenDoors;
     }
 
-    public void setCanSwim(boolean bl) {
-        this.canSwim = bl;
+    public void setCanSwim(boolean canSwim) {
+        this.canSwim = canSwim;
     }
 
     public boolean canEnterOpenDoors() {

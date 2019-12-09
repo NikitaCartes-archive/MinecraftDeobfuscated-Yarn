@@ -34,18 +34,18 @@ extends FacingBlock {
     }
 
     @Override
-    public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
-        return (BlockState)blockState.with(FACING, blockRotation.rotate(blockState.get(FACING)));
+    public BlockState rotate(BlockState state, BlockRotation rotation) {
+        return (BlockState)state.with(FACING, rotation.rotate(state.get(FACING)));
     }
 
     @Override
-    public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
-        return (BlockState)blockState.with(FACING, blockMirror.apply(blockState.get(FACING)));
+    public BlockState mirror(BlockState state, BlockMirror mirror) {
+        return (BlockState)state.with(FACING, mirror.apply(state.get(FACING)));
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-        switch (blockState.get(FACING).getAxis()) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+        switch (state.get(FACING).getAxis()) {
             default: {
                 return X_SHAPE;
             }
@@ -58,9 +58,9 @@ extends FacingBlock {
     }
 
     @Override
-    public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-        Direction direction = itemPlacementContext.getSide();
-        BlockState blockState = itemPlacementContext.getWorld().getBlockState(itemPlacementContext.getBlockPos().offset(direction.getOpposite()));
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        Direction direction = ctx.getSide();
+        BlockState blockState = ctx.getWorld().getBlockState(ctx.getBlockPos().offset(direction.getOpposite()));
         if (blockState.getBlock() == this && blockState.get(FACING) == direction) {
             return (BlockState)this.getDefaultState().with(FACING, direction.getOpposite());
         }
@@ -69,11 +69,11 @@ extends FacingBlock {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-        Direction direction = blockState.get(FACING);
-        double d = (double)blockPos.getX() + 0.55 - (double)(random.nextFloat() * 0.1f);
-        double e = (double)blockPos.getY() + 0.55 - (double)(random.nextFloat() * 0.1f);
-        double f = (double)blockPos.getZ() + 0.55 - (double)(random.nextFloat() * 0.1f);
+    public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+        Direction direction = state.get(FACING);
+        double d = (double)pos.getX() + 0.55 - (double)(random.nextFloat() * 0.1f);
+        double e = (double)pos.getY() + 0.55 - (double)(random.nextFloat() * 0.1f);
+        double f = (double)pos.getZ() + 0.55 - (double)(random.nextFloat() * 0.1f);
         double g = 0.4f - (random.nextFloat() + random.nextFloat()) * 0.4f;
         if (random.nextInt(5) == 0) {
             world.addParticle(ParticleTypes.END_ROD, d + (double)direction.getOffsetX() * g, e + (double)direction.getOffsetY() * g, f + (double)direction.getOffsetZ() * g, random.nextGaussian() * 0.005, random.nextGaussian() * 0.005, random.nextGaussian() * 0.005);
@@ -86,7 +86,7 @@ extends FacingBlock {
     }
 
     @Override
-    public PistonBehavior getPistonBehavior(BlockState blockState) {
+    public PistonBehavior getPistonBehavior(BlockState state) {
         return PistonBehavior.NORMAL;
     }
 }

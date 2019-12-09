@@ -11,8 +11,8 @@ public final class Timestamp
 implements DynamicSerializable {
     private final long time;
 
-    private Timestamp(long l) {
-        this.time = l;
+    private Timestamp(long time) {
+        this.time = time;
     }
 
     public long getTime() {
@@ -20,26 +20,26 @@ implements DynamicSerializable {
     }
 
     @Override
-    public <T> T serialize(DynamicOps<T> dynamicOps) {
-        return dynamicOps.createLong(this.time);
+    public <T> T serialize(DynamicOps<T> ops) {
+        return ops.createLong(this.time);
     }
 
     public static Timestamp of(Dynamic<?> dynamic) {
         return new Timestamp(dynamic.asNumber(0).longValue());
     }
 
-    public static Timestamp of(long l) {
-        return new Timestamp(l);
+    public static Timestamp of(long time) {
+        return new Timestamp(time);
     }
 
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (object == null || this.getClass() != object.getClass()) {
+        if (obj == null || this.getClass() != obj.getClass()) {
             return false;
         }
-        Timestamp timestamp = (Timestamp)object;
+        Timestamp timestamp = (Timestamp)obj;
         return this.time == timestamp.time;
     }
 

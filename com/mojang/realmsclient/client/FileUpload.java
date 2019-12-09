@@ -50,23 +50,23 @@ public class FileUpload {
     private CompletableFuture<UploadResult> uploadTask;
     private final RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout((int)TimeUnit.MINUTES.toMillis(10L)).setConnectTimeout((int)TimeUnit.SECONDS.toMillis(15L)).build();
 
-    public FileUpload(File file, long l, int i, UploadInfo uploadInfo, String string, String string2, String string3, UploadStatus uploadStatus) {
+    public FileUpload(File file, long worldId, int slotId, UploadInfo uploadInfo, String sessionId, String username, String clientVersion, UploadStatus uploadStatus) {
         this.file = file;
-        this.worldId = l;
-        this.slotId = i;
+        this.worldId = worldId;
+        this.slotId = slotId;
         this.uploadInfo = uploadInfo;
-        this.sessionId = string;
-        this.username = string2;
-        this.clientVersion = string3;
+        this.sessionId = sessionId;
+        this.username = username;
+        this.clientVersion = clientVersion;
         this.uploadStatus = uploadStatus;
     }
 
-    public void upload(Consumer<UploadResult> consumer) {
+    public void upload(Consumer<UploadResult> callback) {
         if (this.uploadTask != null) {
             return;
         }
         this.uploadTask = CompletableFuture.supplyAsync(() -> this.requestUpload(0));
-        this.uploadTask.thenAccept((Consumer)consumer);
+        this.uploadTask.thenAccept((Consumer)callback);
     }
 
     public void cancel() {
@@ -80,7 +80,7 @@ public class FileUpload {
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    private UploadResult requestUpload(int i) {
+    private UploadResult requestUpload(int currentAttempt) {
         UploadResult.Builder builder = new UploadResult.Builder();
         if (this.cancelled.get()) {
             return builder.build();
@@ -92,8 +92,8 @@ public class FileUpload {
             this.setupRequest(httpPost);
             CloseableHttpResponse httpResponse = closeableHttpClient.execute(httpPost);
             long l = this.getRetryDelaySeconds(httpResponse);
-            if (this.shouldRetry(l, i)) {
-                UploadResult uploadResult = this.retryUploadAfter(l, i);
+            if (this.shouldRetry(l, currentAttempt)) {
+                UploadResult uploadResult = this.retryUploadAfter(l, currentAttempt);
                 return uploadResult;
             }
             this.handleResponse(httpResponse, builder);
@@ -107,54 +107,54 @@ public class FileUpload {
         return builder.build();
     }
 
-    private void cleanup(HttpPost httpPost, CloseableHttpClient closeableHttpClient) {
-        httpPost.releaseConnection();
-        if (closeableHttpClient != null) {
+    private void cleanup(HttpPost request, CloseableHttpClient client) {
+        request.releaseConnection();
+        if (client != null) {
             try {
-                closeableHttpClient.close();
+                client.close();
             } catch (IOException iOException) {
                 LOGGER.error("Failed to close Realms upload client");
             }
         }
     }
 
-    private void setupRequest(HttpPost httpPost) throws FileNotFoundException {
-        httpPost.setHeader("Cookie", "sid=" + this.sessionId + ";token=" + this.uploadInfo.getToken() + ";user=" + this.username + ";version=" + this.clientVersion);
+    private void setupRequest(HttpPost request) throws FileNotFoundException {
+        request.setHeader("Cookie", "sid=" + this.sessionId + ";token=" + this.uploadInfo.getToken() + ";user=" + this.username + ";version=" + this.clientVersion);
         CustomInputStreamEntity customInputStreamEntity = new CustomInputStreamEntity((InputStream)new FileInputStream(this.file), this.file.length(), this.uploadStatus);
         customInputStreamEntity.setContentType("application/octet-stream");
-        httpPost.setEntity(customInputStreamEntity);
+        request.setEntity(customInputStreamEntity);
     }
 
-    private void handleResponse(HttpResponse httpResponse, UploadResult.Builder builder) throws IOException {
+    private void handleResponse(HttpResponse response, UploadResult.Builder uploadResultBuilder) throws IOException {
         String string;
-        int i = httpResponse.getStatusLine().getStatusCode();
+        int i = response.getStatusLine().getStatusCode();
         if (i == 401) {
-            LOGGER.debug("Realms server returned 401: " + httpResponse.getFirstHeader("WWW-Authenticate"));
+            LOGGER.debug("Realms server returned 401: " + response.getFirstHeader("WWW-Authenticate"));
         }
-        builder.withStatusCode(i);
-        if (httpResponse.getEntity() != null && (string = EntityUtils.toString(httpResponse.getEntity(), "UTF-8")) != null) {
+        uploadResultBuilder.withStatusCode(i);
+        if (response.getEntity() != null && (string = EntityUtils.toString(response.getEntity(), "UTF-8")) != null) {
             try {
                 JsonParser jsonParser = new JsonParser();
                 JsonElement jsonElement = jsonParser.parse(string).getAsJsonObject().get("errorMsg");
                 Optional<String> optional = Optional.ofNullable(jsonElement).map(JsonElement::getAsString);
-                builder.withErrorMessage(optional.orElse(null));
+                uploadResultBuilder.withErrorMessage(optional.orElse(null));
             } catch (Exception exception) {
                 // empty catch block
             }
         }
     }
 
-    private boolean shouldRetry(long l, int i) {
-        return l > 0L && i + 1 < 5;
+    private boolean shouldRetry(long retryDelaySeconds, int currentAttempt) {
+        return retryDelaySeconds > 0L && currentAttempt + 1 < 5;
     }
 
-    private UploadResult retryUploadAfter(long l, int i) throws InterruptedException {
-        Thread.sleep(Duration.ofSeconds(l).toMillis());
-        return this.requestUpload(i + 1);
+    private UploadResult retryUploadAfter(long retryDelaySeconds, int currentAttempt) throws InterruptedException {
+        Thread.sleep(Duration.ofSeconds(retryDelaySeconds).toMillis());
+        return this.requestUpload(currentAttempt + 1);
     }
 
-    private long getRetryDelaySeconds(HttpResponse httpResponse) {
-        return Optional.ofNullable(httpResponse.getFirstHeader("Retry-After")).map(Header::getValue).map(Long::valueOf).orElse(0L);
+    private long getRetryDelaySeconds(HttpResponse response) {
+        return Optional.ofNullable(response.getFirstHeader("Retry-After")).map(Header::getValue).map(Long::valueOf).orElse(0L);
     }
 
     public boolean isFinished() {
@@ -168,10 +168,10 @@ public class FileUpload {
         private final InputStream content;
         private final UploadStatus uploadStatus;
 
-        public CustomInputStreamEntity(InputStream inputStream, long l, UploadStatus uploadStatus) {
-            super(inputStream);
-            this.content = inputStream;
-            this.length = l;
+        public CustomInputStreamEntity(InputStream content, long length, UploadStatus uploadStatus) {
+            super(content);
+            this.content = content;
+            this.length = length;
             this.uploadStatus = uploadStatus;
         }
 
@@ -179,16 +179,16 @@ public class FileUpload {
          * WARNING - Removed try catching itself - possible behaviour change.
          */
         @Override
-        public void writeTo(OutputStream outputStream) throws IOException {
+        public void writeTo(OutputStream outstream) throws IOException {
             block7: {
-                Args.notNull(outputStream, "Output stream");
+                Args.notNull(outstream, "Output stream");
                 try (InputStream inputStream = this.content;){
                     int i;
                     byte[] bs = new byte[4096];
                     if (this.length < 0L) {
                         int i2;
                         while ((i2 = inputStream.read(bs)) != -1) {
-                            outputStream.write(bs, 0, i2);
+                            outstream.write(bs, 0, i2);
                             UploadStatus uploadStatus = this.uploadStatus;
                             Long.valueOf(uploadStatus.bytesWritten + (long)i2);
                             uploadStatus.bytesWritten = uploadStatus.bytesWritten;
@@ -200,11 +200,11 @@ public class FileUpload {
                         if (i == -1) {
                             break;
                         }
-                        outputStream.write(bs, 0, i);
+                        outstream.write(bs, 0, i);
                         UploadStatus uploadStatus = this.uploadStatus;
                         Long.valueOf(uploadStatus.bytesWritten + (long)i);
                         uploadStatus.bytesWritten = uploadStatus.bytesWritten;
-                        outputStream.flush();
+                        outstream.flush();
                     }
                 }
             }

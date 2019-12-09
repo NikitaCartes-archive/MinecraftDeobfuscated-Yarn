@@ -32,13 +32,13 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(entityPredicate, itemPredicate);
     }
 
-    public void handle(ServerPlayerEntity serverPlayerEntity, AbstractTraderEntity abstractTraderEntity, ItemStack itemStack) {
-        this.test(serverPlayerEntity.getAdvancementTracker(), conditions -> conditions.matches(serverPlayerEntity, abstractTraderEntity, itemStack));
+    public void handle(ServerPlayerEntity player, AbstractTraderEntity trader, ItemStack stack) {
+        this.test(player.getAdvancementTracker(), conditions -> conditions.matches(player, trader, stack));
     }
 
     @Override
-    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
+    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject obj, JsonDeserializationContext context) {
+        return this.conditionsFromJson(obj, context);
     }
 
     public static class Conditions
@@ -46,21 +46,21 @@ extends AbstractCriterion<Conditions> {
         private final EntityPredicate villager;
         private final ItemPredicate item;
 
-        public Conditions(EntityPredicate entityPredicate, ItemPredicate itemPredicate) {
+        public Conditions(EntityPredicate entity, ItemPredicate item) {
             super(ID);
-            this.villager = entityPredicate;
-            this.item = itemPredicate;
+            this.villager = entity;
+            this.item = item;
         }
 
         public static Conditions any() {
             return new Conditions(EntityPredicate.ANY, ItemPredicate.ANY);
         }
 
-        public boolean matches(ServerPlayerEntity serverPlayerEntity, AbstractTraderEntity abstractTraderEntity, ItemStack itemStack) {
-            if (!this.villager.test(serverPlayerEntity, abstractTraderEntity)) {
+        public boolean matches(ServerPlayerEntity player, AbstractTraderEntity trader, ItemStack stack) {
+            if (!this.villager.test(player, trader)) {
                 return false;
             }
-            return this.item.test(itemStack);
+            return this.item.test(stack);
         }
 
         @Override

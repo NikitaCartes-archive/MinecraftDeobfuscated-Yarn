@@ -30,43 +30,43 @@ public class BakedQuadFactory {
     private static final float MIN_SCALE = 1.0f / (float)Math.cos(0.3926991f) - 1.0f;
     private static final float MAX_SCALE = 1.0f / (float)Math.cos(0.7853981852531433) - 1.0f;
 
-    public BakedQuad bake(Vector3f vector3f, Vector3f vector3f2, ModelElementFace modelElementFace, Sprite sprite, Direction direction, ModelBakeSettings modelBakeSettings, @Nullable ModelRotation modelRotation, boolean bl, Identifier identifier) {
-        ModelElementTexture modelElementTexture = modelElementFace.textureData;
-        if (modelBakeSettings.isShaded()) {
-            modelElementTexture = BakedQuadFactory.uvLock(modelElementFace.textureData, direction, modelBakeSettings.getRotation(), identifier);
+    public BakedQuad bake(Vector3f from, Vector3f to, ModelElementFace face, Sprite texture, Direction side, ModelBakeSettings settings, @Nullable ModelRotation rotation, boolean shade, Identifier modelId) {
+        ModelElementTexture modelElementTexture = face.textureData;
+        if (settings.isShaded()) {
+            modelElementTexture = BakedQuadFactory.uvLock(face.textureData, side, settings.getRotation(), modelId);
         }
         float[] fs = new float[modelElementTexture.uvs.length];
         System.arraycopy(modelElementTexture.uvs, 0, fs, 0, fs.length);
-        float f = sprite.getAnimationFrameDelta();
+        float f = texture.getAnimationFrameDelta();
         float g = (modelElementTexture.uvs[0] + modelElementTexture.uvs[0] + modelElementTexture.uvs[2] + modelElementTexture.uvs[2]) / 4.0f;
         float h = (modelElementTexture.uvs[1] + modelElementTexture.uvs[1] + modelElementTexture.uvs[3] + modelElementTexture.uvs[3]) / 4.0f;
         modelElementTexture.uvs[0] = MathHelper.lerp(f, modelElementTexture.uvs[0], g);
         modelElementTexture.uvs[2] = MathHelper.lerp(f, modelElementTexture.uvs[2], g);
         modelElementTexture.uvs[1] = MathHelper.lerp(f, modelElementTexture.uvs[1], h);
         modelElementTexture.uvs[3] = MathHelper.lerp(f, modelElementTexture.uvs[3], h);
-        int[] is = this.packVertexData(modelElementTexture, sprite, direction, this.getPositionMatrix(vector3f, vector3f2), modelBakeSettings.getRotation(), modelRotation, bl);
-        Direction direction2 = BakedQuadFactory.decodeDirection(is);
+        int[] is = this.packVertexData(modelElementTexture, texture, side, this.getPositionMatrix(from, to), settings.getRotation(), rotation, shade);
+        Direction direction = BakedQuadFactory.decodeDirection(is);
         System.arraycopy(fs, 0, modelElementTexture.uvs, 0, fs.length);
-        if (modelRotation == null) {
-            this.encodeDirection(is, direction2);
+        if (rotation == null) {
+            this.encodeDirection(is, direction);
         }
-        return new BakedQuad(is, modelElementFace.tintIndex, direction2, sprite);
+        return new BakedQuad(is, face.tintIndex, direction, texture);
     }
 
-    public static ModelElementTexture uvLock(ModelElementTexture modelElementTexture, Direction direction, Rotation3 rotation3, Identifier identifier) {
+    public static ModelElementTexture uvLock(ModelElementTexture texture, Direction orientation, Rotation3 rotation, Identifier modelId) {
         float q;
         float p;
         float o;
         float n;
-        Matrix4f matrix4f = Rotation3Helper.uvLock(rotation3, direction, () -> "Unable to resolve UVLock for model: " + identifier).getMatrix();
-        float f = modelElementTexture.getU(modelElementTexture.getDirectionIndex(0));
-        float g = modelElementTexture.getV(modelElementTexture.getDirectionIndex(0));
+        Matrix4f matrix4f = Rotation3Helper.uvLock(rotation, orientation, () -> "Unable to resolve UVLock for model: " + modelId).getMatrix();
+        float f = texture.getU(texture.getDirectionIndex(0));
+        float g = texture.getV(texture.getDirectionIndex(0));
         Vector4f vector4f = new Vector4f(f / 16.0f, g / 16.0f, 0.0f, 1.0f);
         vector4f.transform(matrix4f);
         float h = 16.0f * vector4f.getX();
         float i = 16.0f * vector4f.getY();
-        float j = modelElementTexture.getU(modelElementTexture.getDirectionIndex(2));
-        float k = modelElementTexture.getV(modelElementTexture.getDirectionIndex(2));
+        float j = texture.getU(texture.getDirectionIndex(2));
+        float k = texture.getV(texture.getDirectionIndex(2));
         Vector4f vector4f2 = new Vector4f(j / 16.0f, k / 16.0f, 0.0f, 1.0f);
         vector4f2.transform(matrix4f);
         float l = 16.0f * vector4f2.getX();
@@ -85,7 +85,7 @@ public class BakedQuadFactory {
             p = m;
             q = i;
         }
-        float r = (float)Math.toRadians(modelElementTexture.rotation);
+        float r = (float)Math.toRadians(texture.rotation);
         Vector3f vector3f = new Vector3f(MathHelper.cos(r), MathHelper.sin(r), 0.0f);
         Matrix3f matrix3f = new Matrix3f(matrix4f);
         vector3f.transform(matrix3f);
@@ -93,10 +93,10 @@ public class BakedQuadFactory {
         return new ModelElementTexture(new float[]{n, p, o, q}, s);
     }
 
-    private int[] packVertexData(ModelElementTexture modelElementTexture, Sprite sprite, Direction direction, float[] fs, Rotation3 rotation3, @Nullable ModelRotation modelRotation, boolean bl) {
+    private int[] packVertexData(ModelElementTexture texture, Sprite sprite, Direction direction, float[] positionMatrix, Rotation3 orientation, @Nullable ModelRotation rotation, boolean shaded) {
         int[] is = new int[32];
         for (int i = 0; i < 4; ++i) {
-            this.packVertexData(is, i, direction, modelElementTexture, fs, sprite, rotation3, modelRotation, bl);
+            this.packVertexData(is, i, direction, texture, positionMatrix, sprite, orientation, rotation, shaded);
         }
         return is;
     }
@@ -127,95 +127,95 @@ public class BakedQuadFactory {
         return 1.0f;
     }
 
-    private float[] getPositionMatrix(Vector3f vector3f, Vector3f vector3f2) {
+    private float[] getPositionMatrix(Vector3f from, Vector3f to) {
         float[] fs = new float[Direction.values().length];
-        fs[CubeFace.DirectionIds.WEST] = vector3f.getX() / 16.0f;
-        fs[CubeFace.DirectionIds.DOWN] = vector3f.getY() / 16.0f;
-        fs[CubeFace.DirectionIds.NORTH] = vector3f.getZ() / 16.0f;
-        fs[CubeFace.DirectionIds.EAST] = vector3f2.getX() / 16.0f;
-        fs[CubeFace.DirectionIds.UP] = vector3f2.getY() / 16.0f;
-        fs[CubeFace.DirectionIds.SOUTH] = vector3f2.getZ() / 16.0f;
+        fs[CubeFace.DirectionIds.WEST] = from.getX() / 16.0f;
+        fs[CubeFace.DirectionIds.DOWN] = from.getY() / 16.0f;
+        fs[CubeFace.DirectionIds.NORTH] = from.getZ() / 16.0f;
+        fs[CubeFace.DirectionIds.EAST] = to.getX() / 16.0f;
+        fs[CubeFace.DirectionIds.UP] = to.getY() / 16.0f;
+        fs[CubeFace.DirectionIds.SOUTH] = to.getZ() / 16.0f;
         return fs;
     }
 
-    private void packVertexData(int[] is, int i, Direction direction, ModelElementTexture modelElementTexture, float[] fs, Sprite sprite, Rotation3 rotation3, @Nullable ModelRotation modelRotation, boolean bl) {
-        Direction direction2 = Direction.transform(rotation3.getMatrix(), direction);
-        int j = bl ? this.getLightmapCoordinate(direction2) : -1;
-        CubeFace.Corner corner = CubeFace.getFace(direction).getCorner(i);
-        Vector3f vector3f = new Vector3f(fs[corner.xSide], fs[corner.ySide], fs[corner.zSide]);
-        this.rotateVertex(vector3f, modelRotation);
-        this.transformVertex(vector3f, rotation3);
-        this.packVertexData(is, i, vector3f, j, sprite, modelElementTexture);
+    private void packVertexData(int[] vertices, int cornerIndex, Direction direction, ModelElementTexture texture, float[] positionMatrix, Sprite sprite, Rotation3 orientation, @Nullable ModelRotation rotation, boolean shaded) {
+        Direction direction2 = Direction.transform(orientation.getMatrix(), direction);
+        int i = shaded ? this.getLightmapCoordinate(direction2) : -1;
+        CubeFace.Corner corner = CubeFace.getFace(direction).getCorner(cornerIndex);
+        Vector3f vector3f = new Vector3f(positionMatrix[corner.xSide], positionMatrix[corner.ySide], positionMatrix[corner.zSide]);
+        this.rotateVertex(vector3f, rotation);
+        this.transformVertex(vector3f, orientation);
+        this.packVertexData(vertices, cornerIndex, vector3f, i, sprite, texture);
     }
 
-    private void packVertexData(int[] is, int i, Vector3f vector3f, int j, Sprite sprite, ModelElementTexture modelElementTexture) {
-        int k = i * 8;
-        is[k] = Float.floatToRawIntBits(vector3f.getX());
-        is[k + 1] = Float.floatToRawIntBits(vector3f.getY());
-        is[k + 2] = Float.floatToRawIntBits(vector3f.getZ());
-        is[k + 3] = j;
-        is[k + 4] = Float.floatToRawIntBits(sprite.getFrameU(modelElementTexture.getU(i)));
-        is[k + 4 + 1] = Float.floatToRawIntBits(sprite.getFrameV(modelElementTexture.getV(i)));
+    private void packVertexData(int[] vertices, int cornerIndex, Vector3f position, int brightness, Sprite sprite, ModelElementTexture texture) {
+        int i = cornerIndex * 8;
+        vertices[i] = Float.floatToRawIntBits(position.getX());
+        vertices[i + 1] = Float.floatToRawIntBits(position.getY());
+        vertices[i + 2] = Float.floatToRawIntBits(position.getZ());
+        vertices[i + 3] = brightness;
+        vertices[i + 4] = Float.floatToRawIntBits(sprite.getFrameU(texture.getU(cornerIndex)));
+        vertices[i + 4 + 1] = Float.floatToRawIntBits(sprite.getFrameV(texture.getV(cornerIndex)));
     }
 
-    private void rotateVertex(Vector3f vector3f, @Nullable ModelRotation modelRotation) {
-        Vector3f vector3f3;
+    private void rotateVertex(Vector3f vector, @Nullable ModelRotation rotation) {
         Vector3f vector3f2;
-        if (modelRotation == null) {
+        Vector3f vector3f;
+        if (rotation == null) {
             return;
         }
-        switch (modelRotation.axis) {
+        switch (rotation.axis) {
             case X: {
-                vector3f2 = new Vector3f(1.0f, 0.0f, 0.0f);
-                vector3f3 = new Vector3f(0.0f, 1.0f, 1.0f);
+                vector3f = new Vector3f(1.0f, 0.0f, 0.0f);
+                vector3f2 = new Vector3f(0.0f, 1.0f, 1.0f);
                 break;
             }
             case Y: {
-                vector3f2 = new Vector3f(0.0f, 1.0f, 0.0f);
-                vector3f3 = new Vector3f(1.0f, 0.0f, 1.0f);
+                vector3f = new Vector3f(0.0f, 1.0f, 0.0f);
+                vector3f2 = new Vector3f(1.0f, 0.0f, 1.0f);
                 break;
             }
             case Z: {
-                vector3f2 = new Vector3f(0.0f, 0.0f, 1.0f);
-                vector3f3 = new Vector3f(1.0f, 1.0f, 0.0f);
+                vector3f = new Vector3f(0.0f, 0.0f, 1.0f);
+                vector3f2 = new Vector3f(1.0f, 1.0f, 0.0f);
                 break;
             }
             default: {
                 throw new IllegalArgumentException("There are only 3 axes");
             }
         }
-        Quaternion quaternion = new Quaternion(vector3f2, modelRotation.angle, true);
-        if (modelRotation.rescale) {
-            if (Math.abs(modelRotation.angle) == 22.5f) {
-                vector3f3.scale(MIN_SCALE);
+        Quaternion quaternion = new Quaternion(vector3f, rotation.angle, true);
+        if (rotation.rescale) {
+            if (Math.abs(rotation.angle) == 22.5f) {
+                vector3f2.scale(MIN_SCALE);
             } else {
-                vector3f3.scale(MAX_SCALE);
+                vector3f2.scale(MAX_SCALE);
             }
-            vector3f3.add(1.0f, 1.0f, 1.0f);
+            vector3f2.add(1.0f, 1.0f, 1.0f);
         } else {
-            vector3f3.set(1.0f, 1.0f, 1.0f);
+            vector3f2.set(1.0f, 1.0f, 1.0f);
         }
-        this.transformVertex(vector3f, modelRotation.origin.copy(), new Matrix4f(quaternion), vector3f3);
+        this.transformVertex(vector, rotation.origin.copy(), new Matrix4f(quaternion), vector3f2);
     }
 
-    public void transformVertex(Vector3f vector3f, Rotation3 rotation3) {
-        if (rotation3 == Rotation3.identity()) {
+    public void transformVertex(Vector3f vertex, Rotation3 transformation) {
+        if (transformation == Rotation3.identity()) {
             return;
         }
-        this.transformVertex(vector3f, new Vector3f(0.5f, 0.5f, 0.5f), rotation3.getMatrix(), new Vector3f(1.0f, 1.0f, 1.0f));
+        this.transformVertex(vertex, new Vector3f(0.5f, 0.5f, 0.5f), transformation.getMatrix(), new Vector3f(1.0f, 1.0f, 1.0f));
     }
 
-    private void transformVertex(Vector3f vector3f, Vector3f vector3f2, Matrix4f matrix4f, Vector3f vector3f3) {
-        Vector4f vector4f = new Vector4f(vector3f.getX() - vector3f2.getX(), vector3f.getY() - vector3f2.getY(), vector3f.getZ() - vector3f2.getZ(), 1.0f);
-        vector4f.transform(matrix4f);
-        vector4f.multiplyComponentwise(vector3f3);
-        vector3f.set(vector4f.getX() + vector3f2.getX(), vector4f.getY() + vector3f2.getY(), vector4f.getZ() + vector3f2.getZ());
+    private void transformVertex(Vector3f vertex, Vector3f origin, Matrix4f transformationMatrix, Vector3f scale) {
+        Vector4f vector4f = new Vector4f(vertex.getX() - origin.getX(), vertex.getY() - origin.getY(), vertex.getZ() - origin.getZ(), 1.0f);
+        vector4f.transform(transformationMatrix);
+        vector4f.multiplyComponentwise(scale);
+        vertex.set(vector4f.getX() + origin.getX(), vector4f.getY() + origin.getY(), vector4f.getZ() + origin.getZ());
     }
 
-    public static Direction decodeDirection(int[] is) {
-        Vector3f vector3f = new Vector3f(Float.intBitsToFloat(is[0]), Float.intBitsToFloat(is[1]), Float.intBitsToFloat(is[2]));
-        Vector3f vector3f2 = new Vector3f(Float.intBitsToFloat(is[8]), Float.intBitsToFloat(is[9]), Float.intBitsToFloat(is[10]));
-        Vector3f vector3f3 = new Vector3f(Float.intBitsToFloat(is[16]), Float.intBitsToFloat(is[17]), Float.intBitsToFloat(is[18]));
+    public static Direction decodeDirection(int[] rotationMatrix) {
+        Vector3f vector3f = new Vector3f(Float.intBitsToFloat(rotationMatrix[0]), Float.intBitsToFloat(rotationMatrix[1]), Float.intBitsToFloat(rotationMatrix[2]));
+        Vector3f vector3f2 = new Vector3f(Float.intBitsToFloat(rotationMatrix[8]), Float.intBitsToFloat(rotationMatrix[9]), Float.intBitsToFloat(rotationMatrix[10]));
+        Vector3f vector3f3 = new Vector3f(Float.intBitsToFloat(rotationMatrix[16]), Float.intBitsToFloat(rotationMatrix[17]), Float.intBitsToFloat(rotationMatrix[18]));
         Vector3f vector3f4 = vector3f.copy();
         vector3f4.subtract(vector3f2);
         Vector3f vector3f5 = vector3f3.copy();
@@ -239,11 +239,11 @@ public class BakedQuadFactory {
         return direction;
     }
 
-    private void encodeDirection(int[] is, Direction direction) {
+    private void encodeDirection(int[] rotationMatrix, Direction direction) {
         float h;
         int j;
-        int[] js = new int[is.length];
-        System.arraycopy(is, 0, js, 0, is.length);
+        int[] is = new int[rotationMatrix.length];
+        System.arraycopy(rotationMatrix, 0, is, 0, rotationMatrix.length);
         float[] fs = new float[Direction.values().length];
         fs[CubeFace.DirectionIds.WEST] = 999.0f;
         fs[CubeFace.DirectionIds.DOWN] = 999.0f;
@@ -253,9 +253,9 @@ public class BakedQuadFactory {
         fs[CubeFace.DirectionIds.SOUTH] = -999.0f;
         for (int i = 0; i < 4; ++i) {
             j = 8 * i;
-            float f = Float.intBitsToFloat(js[j]);
-            float g = Float.intBitsToFloat(js[j + 1]);
-            h = Float.intBitsToFloat(js[j + 2]);
+            float f = Float.intBitsToFloat(is[j]);
+            float g = Float.intBitsToFloat(is[j + 1]);
+            h = Float.intBitsToFloat(is[j + 2]);
             if (f < fs[CubeFace.DirectionIds.WEST]) {
                 fs[CubeFace.DirectionIds.WEST] = f;
             }
@@ -281,17 +281,17 @@ public class BakedQuadFactory {
             h = fs[corner.xSide];
             float l = fs[corner.ySide];
             float m = fs[corner.zSide];
-            is[k] = Float.floatToRawIntBits(h);
-            is[k + 1] = Float.floatToRawIntBits(l);
-            is[k + 2] = Float.floatToRawIntBits(m);
+            rotationMatrix[k] = Float.floatToRawIntBits(h);
+            rotationMatrix[k + 1] = Float.floatToRawIntBits(l);
+            rotationMatrix[k + 2] = Float.floatToRawIntBits(m);
             for (int n = 0; n < 4; ++n) {
                 int o = 8 * n;
-                float p = Float.intBitsToFloat(js[o]);
-                float q = Float.intBitsToFloat(js[o + 1]);
-                float r = Float.intBitsToFloat(js[o + 2]);
+                float p = Float.intBitsToFloat(is[o]);
+                float q = Float.intBitsToFloat(is[o + 1]);
+                float r = Float.intBitsToFloat(is[o + 2]);
                 if (!MathHelper.approximatelyEquals(h, p) || !MathHelper.approximatelyEquals(l, q) || !MathHelper.approximatelyEquals(m, r)) continue;
-                is[k + 4] = js[o + 4];
-                is[k + 4 + 1] = js[o + 4 + 1];
+                rotationMatrix[k + 4] = is[o + 4];
+                rotationMatrix[k + 4 + 1] = is[o + 4 + 1];
             }
         }
     }

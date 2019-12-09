@@ -21,47 +21,47 @@ extends AbstractTreeFeature<T> {
         super(function);
     }
 
-    protected void generate(ModifiableTestableWorld modifiableTestableWorld, Random random, int i, BlockPos blockPos, int j, Set<BlockPos> set, BlockBox blockBox, BranchedTreeFeatureConfig branchedTreeFeatureConfig) {
-        for (int k = 0; k < i - j; ++k) {
-            this.setLogBlockState(modifiableTestableWorld, random, blockPos.up(k), set, blockBox, branchedTreeFeatureConfig);
+    protected void generate(ModifiableTestableWorld world, Random random, int height, BlockPos pos, int trunkTopOffset, Set<BlockPos> logPositions, BlockBox blockBox, BranchedTreeFeatureConfig config) {
+        for (int i = 0; i < height - trunkTopOffset; ++i) {
+            this.setLogBlockState(world, random, pos.up(i), logPositions, blockBox, config);
         }
     }
 
-    public Optional<BlockPos> findPositionToGenerate(ModifiableTestableWorld modifiableTestableWorld, int i, int j, int k, BlockPos blockPos, BranchedTreeFeatureConfig branchedTreeFeatureConfig) {
-        BlockPos blockPos2;
-        int m;
+    public Optional<BlockPos> findPositionToGenerate(ModifiableTestableWorld world, int height, int i, int j, BlockPos pos, BranchedTreeFeatureConfig config) {
+        BlockPos blockPos;
         int l;
-        if (!branchedTreeFeatureConfig.field_21593) {
-            l = modifiableTestableWorld.getTopPosition(Heightmap.Type.OCEAN_FLOOR, blockPos).getY();
-            m = modifiableTestableWorld.getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos).getY();
-            blockPos2 = new BlockPos(blockPos.getX(), l, blockPos.getZ());
-            if (m - l > branchedTreeFeatureConfig.maxWaterDepth) {
+        int k;
+        if (!config.field_21593) {
+            k = world.getTopPosition(Heightmap.Type.OCEAN_FLOOR, pos).getY();
+            l = world.getTopPosition(Heightmap.Type.WORLD_SURFACE, pos).getY();
+            blockPos = new BlockPos(pos.getX(), k, pos.getZ());
+            if (l - k > config.maxWaterDepth) {
                 return Optional.empty();
             }
         } else {
-            blockPos2 = blockPos;
+            blockPos = pos;
         }
-        if (blockPos2.getY() < 1 || blockPos2.getY() + i + 1 > 256) {
+        if (blockPos.getY() < 1 || blockPos.getY() + height + 1 > 256) {
             return Optional.empty();
         }
-        for (l = 0; l <= i + 1; ++l) {
-            m = branchedTreeFeatureConfig.foliagePlacer.method_23447(j, i, k, l);
+        for (k = 0; k <= height + 1; ++k) {
+            l = config.foliagePlacer.method_23447(i, height, j, k);
             BlockPos.Mutable mutable = new BlockPos.Mutable();
-            for (int n = -m; n <= m; ++n) {
-                for (int o = -m; o <= m; ++o) {
-                    if (l + blockPos2.getY() >= 0 && l + blockPos2.getY() < 256) {
-                        mutable.set(n + blockPos2.getX(), l + blockPos2.getY(), o + blockPos2.getZ());
-                        if (BranchedTreeFeature.canTreeReplace(modifiableTestableWorld, mutable) && (branchedTreeFeatureConfig.noVines || !BranchedTreeFeature.isLeaves(modifiableTestableWorld, mutable))) continue;
+            for (int m = -l; m <= l; ++m) {
+                for (int n = -l; n <= l; ++n) {
+                    if (k + blockPos.getY() >= 0 && k + blockPos.getY() < 256) {
+                        mutable.set(m + blockPos.getX(), k + blockPos.getY(), n + blockPos.getZ());
+                        if (BranchedTreeFeature.canTreeReplace(world, mutable) && (config.noVines || !BranchedTreeFeature.isLeaves(world, mutable))) continue;
                         return Optional.empty();
                     }
                     return Optional.empty();
                 }
             }
         }
-        if (!BranchedTreeFeature.isDirtOrGrass(modifiableTestableWorld, blockPos2.down()) || blockPos2.getY() >= 256 - i - 1) {
+        if (!BranchedTreeFeature.isDirtOrGrass(world, blockPos.down()) || blockPos.getY() >= 256 - height - 1) {
             return Optional.empty();
         }
-        return Optional.of(blockPos2);
+        return Optional.of(blockPos);
     }
 }
 

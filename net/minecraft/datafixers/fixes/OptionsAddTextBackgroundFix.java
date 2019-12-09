@@ -12,8 +12,8 @@ import net.minecraft.datafixers.TypeReferences;
 
 public class OptionsAddTextBackgroundFix
 extends DataFix {
-    public OptionsAddTextBackgroundFix(Schema schema, boolean bl) {
-        super(schema, bl);
+    public OptionsAddTextBackgroundFix(Schema outputSchema, boolean changesType) {
+        super(outputSchema, changesType);
     }
 
     @Override
@@ -21,9 +21,9 @@ extends DataFix {
         return this.fixTypeEverywhereTyped("OptionsAddTextBackgroundFix", this.getInputSchema().getType(TypeReferences.OPTIONS), typed -> typed.update(DSL.remainderFinder(), dynamic -> DataFixUtils.orElse(dynamic.get("chatOpacity").asString().map(string -> dynamic.set("textBackgroundOpacity", dynamic.createDouble(this.convertToTextBackgroundOpacity((String)string)))), dynamic)));
     }
 
-    private double convertToTextBackgroundOpacity(String string) {
+    private double convertToTextBackgroundOpacity(String chatOpacity) {
         try {
-            double d = 0.9 * Double.parseDouble(string) + 0.1;
+            double d = 0.9 * Double.parseDouble(chatOpacity) + 0.1;
             return d / 2.0;
         } catch (NumberFormatException numberFormatException) {
             return 0.5;

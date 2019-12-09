@@ -16,8 +16,8 @@ import net.minecraft.world.gen.feature.SpringFeatureConfig;
 
 public class SpringFeature
 extends Feature<SpringFeatureConfig> {
-    public SpringFeature(Function<Dynamic<?>, ? extends SpringFeatureConfig> function) {
-        super(function);
+    public SpringFeature(Function<Dynamic<?>, ? extends SpringFeatureConfig> configFactory) {
+        super(configFactory);
     }
 
     @Override

@@ -44,18 +44,18 @@ public abstract class StructurePiece {
     private final StructurePieceType type;
     private static final Set<Block> BLOCKS_NEEDING_POST_PROCESSING = ((ImmutableSet.Builder)((ImmutableSet.Builder)((ImmutableSet.Builder)((ImmutableSet.Builder)((ImmutableSet.Builder)((ImmutableSet.Builder)((ImmutableSet.Builder)((ImmutableSet.Builder)((ImmutableSet.Builder)((ImmutableSet.Builder)((ImmutableSet.Builder)ImmutableSet.builder().add(Blocks.NETHER_BRICK_FENCE)).add(Blocks.TORCH)).add(Blocks.WALL_TORCH)).add(Blocks.OAK_FENCE)).add(Blocks.SPRUCE_FENCE)).add(Blocks.DARK_OAK_FENCE)).add(Blocks.ACACIA_FENCE)).add(Blocks.BIRCH_FENCE)).add(Blocks.JUNGLE_FENCE)).add(Blocks.LADDER)).add(Blocks.IRON_BARS)).build();
 
-    protected StructurePiece(StructurePieceType structurePieceType, int i) {
-        this.type = structurePieceType;
+    protected StructurePiece(StructurePieceType type, int i) {
+        this.type = type;
         this.field_15316 = i;
     }
 
-    public StructurePiece(StructurePieceType structurePieceType, CompoundTag compoundTag) {
-        this(structurePieceType, compoundTag.getInt("GD"));
+    public StructurePiece(StructurePieceType type, CompoundTag tag) {
+        this(type, tag.getInt("GD"));
         int i;
-        if (compoundTag.contains("BB")) {
-            this.boundingBox = new BlockBox(compoundTag.getIntArray("BB"));
+        if (tag.contains("BB")) {
+            this.boundingBox = new BlockBox(tag.getIntArray("BB"));
         }
-        this.setOrientation((i = compoundTag.getInt("O")) == -1 ? null : Direction.fromHorizontal(i));
+        this.setOrientation((i = tag.getInt("O")) == -1 ? null : Direction.fromHorizontal(i));
     }
 
     public final CompoundTag getTag() {
@@ -185,81 +185,81 @@ public abstract class StructurePiece {
         return j;
     }
 
-    protected void addBlock(IWorld iWorld, BlockState blockState, int i, int j, int k, BlockBox blockBox) {
-        BlockPos blockPos = new BlockPos(this.applyXTransform(i, k), this.applyYTransform(j), this.applyZTransform(i, k));
+    protected void addBlock(IWorld world, BlockState block, int x, int y, int z, BlockBox blockBox) {
+        BlockPos blockPos = new BlockPos(this.applyXTransform(x, z), this.applyYTransform(y), this.applyZTransform(x, z));
         if (!blockBox.contains(blockPos)) {
             return;
         }
         if (this.mirror != BlockMirror.NONE) {
-            blockState = blockState.mirror(this.mirror);
+            block = block.mirror(this.mirror);
         }
         if (this.rotation != BlockRotation.NONE) {
-            blockState = blockState.rotate(this.rotation);
+            block = block.rotate(this.rotation);
         }
-        iWorld.setBlockState(blockPos, blockState, 2);
-        FluidState fluidState = iWorld.getFluidState(blockPos);
+        world.setBlockState(blockPos, block, 2);
+        FluidState fluidState = world.getFluidState(blockPos);
         if (!fluidState.isEmpty()) {
-            iWorld.getFluidTickScheduler().schedule(blockPos, fluidState.getFluid(), 0);
+            world.getFluidTickScheduler().schedule(blockPos, fluidState.getFluid(), 0);
         }
-        if (BLOCKS_NEEDING_POST_PROCESSING.contains(blockState.getBlock())) {
-            iWorld.getChunk(blockPos).markBlockForPostProcessing(blockPos);
+        if (BLOCKS_NEEDING_POST_PROCESSING.contains(block.getBlock())) {
+            world.getChunk(blockPos).markBlockForPostProcessing(blockPos);
         }
     }
 
-    protected BlockState getBlockAt(BlockView blockView, int i, int j, int k, BlockBox blockBox) {
-        int n;
-        int m;
-        int l = this.applyXTransform(i, k);
-        BlockPos blockPos = new BlockPos(l, m = this.applyYTransform(j), n = this.applyZTransform(i, k));
+    protected BlockState getBlockAt(BlockView blockView, int x, int y, int z, BlockBox blockBox) {
+        int k;
+        int j;
+        int i = this.applyXTransform(x, z);
+        BlockPos blockPos = new BlockPos(i, j = this.applyYTransform(y), k = this.applyZTransform(x, z));
         if (!blockBox.contains(blockPos)) {
             return Blocks.AIR.getDefaultState();
         }
         return blockView.getBlockState(blockPos);
     }
 
-    protected boolean isUnderSeaLevel(WorldView worldView, int i, int j, int k, BlockBox blockBox) {
-        int n;
-        int m;
-        int l = this.applyXTransform(i, k);
-        BlockPos blockPos = new BlockPos(l, m = this.applyYTransform(j + 1), n = this.applyZTransform(i, k));
+    protected boolean isUnderSeaLevel(WorldView worldView, int x, int z, int y, BlockBox blockBox) {
+        int k;
+        int j;
+        int i = this.applyXTransform(x, y);
+        BlockPos blockPos = new BlockPos(i, j = this.applyYTransform(z + 1), k = this.applyZTransform(x, y));
         if (!blockBox.contains(blockPos)) {
             return false;
         }
-        return m < worldView.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, l, n);
+        return j < worldView.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, i, k);
     }
 
-    protected void fill(IWorld iWorld, BlockBox blockBox, int i, int j, int k, int l, int m, int n) {
-        for (int o = j; o <= m; ++o) {
-            for (int p = i; p <= l; ++p) {
-                for (int q = k; q <= n; ++q) {
-                    this.addBlock(iWorld, Blocks.AIR.getDefaultState(), p, o, q, blockBox);
+    protected void fill(IWorld world, BlockBox bounds, int minX, int minY, int minZ, int maxX, int maxY, int i) {
+        for (int j = minY; j <= maxY; ++j) {
+            for (int k = minX; k <= maxX; ++k) {
+                for (int l = minZ; l <= i; ++l) {
+                    this.addBlock(world, Blocks.AIR.getDefaultState(), k, j, l, bounds);
                 }
             }
         }
     }
 
-    protected void fillWithOutline(IWorld iWorld, BlockBox blockBox, int i, int j, int k, int l, int m, int n, BlockState blockState, BlockState blockState2, boolean bl) {
+    protected void fillWithOutline(IWorld world, BlockBox blockBox, int i, int j, int k, int l, int m, int n, BlockState blockState, BlockState inside, boolean bl) {
         for (int o = j; o <= m; ++o) {
             for (int p = i; p <= l; ++p) {
                 for (int q = k; q <= n; ++q) {
-                    if (bl && this.getBlockAt(iWorld, p, o, q, blockBox).isAir()) continue;
+                    if (bl && this.getBlockAt(world, p, o, q, blockBox).isAir()) continue;
                     if (o == j || o == m || p == i || p == l || q == k || q == n) {
-                        this.addBlock(iWorld, blockState, p, o, q, blockBox);
+                        this.addBlock(world, blockState, p, o, q, blockBox);
                         continue;
                     }
-                    this.addBlock(iWorld, blockState2, p, o, q, blockBox);
+                    this.addBlock(world, inside, p, o, q, blockBox);
                 }
             }
         }
     }
 
-    protected void fillWithOutline(IWorld iWorld, BlockBox blockBox, int i, int j, int k, int l, int m, int n, boolean bl, Random random, BlockRandomizer blockRandomizer) {
-        for (int o = j; o <= m; ++o) {
-            for (int p = i; p <= l; ++p) {
-                for (int q = k; q <= n; ++q) {
-                    if (bl && this.getBlockAt(iWorld, p, o, q, blockBox).isAir()) continue;
-                    blockRandomizer.setBlock(random, p, o, q, o == j || o == m || p == i || p == l || q == k || q == n);
-                    this.addBlock(iWorld, blockRandomizer.getBlock(), p, o, q, blockBox);
+    protected void fillWithOutline(IWorld iWorld, BlockBox blockBox, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, boolean replaceBlocks, Random random, BlockRandomizer blockRandomizer) {
+        for (int i = minY; i <= maxY; ++i) {
+            for (int j = minX; j <= maxX; ++j) {
+                for (int k = minZ; k <= maxZ; ++k) {
+                    if (replaceBlocks && this.getBlockAt(iWorld, j, i, k, blockBox).isAir()) continue;
+                    blockRandomizer.setBlock(random, j, i, k, i == minY || i == maxY || j == minX || j == maxX || k == minZ || k == maxZ);
+                    this.addBlock(iWorld, blockRandomizer.getBlock(), j, i, k, blockBox);
                 }
             }
         }
@@ -280,48 +280,48 @@ public abstract class StructurePiece {
         }
     }
 
-    protected void addBlockWithRandomThreshold(IWorld iWorld, BlockBox blockBox, Random random, float f, int i, int j, int k, BlockState blockState) {
-        if (random.nextFloat() < f) {
-            this.addBlock(iWorld, blockState, i, j, k, blockBox);
+    protected void addBlockWithRandomThreshold(IWorld world, BlockBox bounds, Random random, float threshold, int x, int y, int z, BlockState blockState) {
+        if (random.nextFloat() < threshold) {
+            this.addBlock(world, blockState, x, y, z, bounds);
         }
     }
 
-    protected void method_14919(IWorld iWorld, BlockBox blockBox, int i, int j, int k, int l, int m, int n, BlockState blockState, boolean bl) {
-        float f = l - i + 1;
-        float g = m - j + 1;
-        float h = n - k + 1;
-        float o = (float)i + f / 2.0f;
-        float p = (float)k + h / 2.0f;
-        for (int q = j; q <= m; ++q) {
-            float r = (float)(q - j) / g;
-            for (int s = i; s <= l; ++s) {
-                float t = ((float)s - o) / (f * 0.5f);
-                for (int u = k; u <= n; ++u) {
-                    float w;
-                    float v = ((float)u - p) / (h * 0.5f);
-                    if (bl && this.getBlockAt(iWorld, s, q, u, blockBox).isAir() || !((w = t * t + r * r + v * v) <= 1.05f)) continue;
-                    this.addBlock(iWorld, blockState, s, q, u, blockBox);
+    protected void method_14919(IWorld world, BlockBox bounds, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, BlockState block, boolean bl) {
+        float f = maxX - minX + 1;
+        float g = maxY - minY + 1;
+        float h = maxZ - minZ + 1;
+        float i = (float)minX + f / 2.0f;
+        float j = (float)minZ + h / 2.0f;
+        for (int k = minY; k <= maxY; ++k) {
+            float l = (float)(k - minY) / g;
+            for (int m = minX; m <= maxX; ++m) {
+                float n = ((float)m - i) / (f * 0.5f);
+                for (int o = minZ; o <= maxZ; ++o) {
+                    float q;
+                    float p = ((float)o - j) / (h * 0.5f);
+                    if (bl && this.getBlockAt(world, m, k, o, bounds).isAir() || !((q = n * n + l * l + p * p) <= 1.05f)) continue;
+                    this.addBlock(world, block, m, k, o, bounds);
                 }
             }
         }
     }
 
-    protected void method_14936(IWorld iWorld, BlockState blockState, int i, int j, int k, BlockBox blockBox) {
-        int n;
-        int m;
-        int l = this.applyXTransform(i, k);
-        if (!blockBox.contains(new BlockPos(l, m = this.applyYTransform(j), n = this.applyZTransform(i, k)))) {
+    protected void method_14936(IWorld world, BlockState blockState, int x, int y, int z, BlockBox blockBox) {
+        int k;
+        int j;
+        int i = this.applyXTransform(x, z);
+        if (!blockBox.contains(new BlockPos(i, j = this.applyYTransform(y), k = this.applyZTransform(x, z)))) {
             return;
         }
-        while ((iWorld.isAir(new BlockPos(l, m, n)) || iWorld.getBlockState(new BlockPos(l, m, n)).getMaterial().isLiquid()) && m > 1) {
-            iWorld.setBlockState(new BlockPos(l, m, n), blockState, 2);
-            --m;
+        while ((world.isAir(new BlockPos(i, j, k)) || world.getBlockState(new BlockPos(i, j, k)).getMaterial().isLiquid()) && j > 1) {
+            world.setBlockState(new BlockPos(i, j, k), blockState, 2);
+            --j;
         }
     }
 
-    protected boolean addChest(IWorld iWorld, BlockBox blockBox, Random random, int i, int j, int k, Identifier identifier) {
-        BlockPos blockPos = new BlockPos(this.applyXTransform(i, k), this.applyYTransform(j), this.applyZTransform(i, k));
-        return this.addChest(iWorld, blockBox, random, blockPos, identifier, null);
+    protected boolean addChest(IWorld world, BlockBox boundingBox, Random random, int x, int y, int z, Identifier lootTableId) {
+        BlockPos blockPos = new BlockPos(this.applyXTransform(x, z), this.applyYTransform(y), this.applyZTransform(x, z));
+        return this.addChest(world, boundingBox, random, blockPos, lootTableId, null);
     }
 
     public static BlockState method_14916(BlockView blockView, BlockPos blockPos, BlockState blockState) {
@@ -360,36 +360,36 @@ public abstract class StructurePiece {
         return (BlockState)blockState.with(HorizontalFacingBlock.FACING, direction3);
     }
 
-    protected boolean addChest(IWorld iWorld, BlockBox blockBox, Random random, BlockPos blockPos, Identifier identifier, @Nullable BlockState blockState) {
-        if (!blockBox.contains(blockPos) || iWorld.getBlockState(blockPos).getBlock() == Blocks.CHEST) {
+    protected boolean addChest(IWorld world, BlockBox boundingBox, Random random, BlockPos pos, Identifier lootTableId, @Nullable BlockState block) {
+        if (!boundingBox.contains(pos) || world.getBlockState(pos).getBlock() == Blocks.CHEST) {
             return false;
         }
-        if (blockState == null) {
-            blockState = StructurePiece.method_14916(iWorld, blockPos, Blocks.CHEST.getDefaultState());
+        if (block == null) {
+            block = StructurePiece.method_14916(world, pos, Blocks.CHEST.getDefaultState());
         }
-        iWorld.setBlockState(blockPos, blockState, 2);
-        BlockEntity blockEntity = iWorld.getBlockEntity(blockPos);
+        world.setBlockState(pos, block, 2);
+        BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof ChestBlockEntity) {
-            ((ChestBlockEntity)blockEntity).setLootTable(identifier, random.nextLong());
+            ((ChestBlockEntity)blockEntity).setLootTable(lootTableId, random.nextLong());
         }
         return true;
     }
 
-    protected boolean addDispenser(IWorld iWorld, BlockBox blockBox, Random random, int i, int j, int k, Direction direction, Identifier identifier) {
-        BlockPos blockPos = new BlockPos(this.applyXTransform(i, k), this.applyYTransform(j), this.applyZTransform(i, k));
-        if (blockBox.contains(blockPos) && iWorld.getBlockState(blockPos).getBlock() != Blocks.DISPENSER) {
-            this.addBlock(iWorld, (BlockState)Blocks.DISPENSER.getDefaultState().with(DispenserBlock.FACING, direction), i, j, k, blockBox);
-            BlockEntity blockEntity = iWorld.getBlockEntity(blockPos);
+    protected boolean addDispenser(IWorld world, BlockBox boundingBox, Random random, int x, int y, int z, Direction facing, Identifier lootTbaleId) {
+        BlockPos blockPos = new BlockPos(this.applyXTransform(x, z), this.applyYTransform(y), this.applyZTransform(x, z));
+        if (boundingBox.contains(blockPos) && world.getBlockState(blockPos).getBlock() != Blocks.DISPENSER) {
+            this.addBlock(world, (BlockState)Blocks.DISPENSER.getDefaultState().with(DispenserBlock.FACING, facing), x, y, z, boundingBox);
+            BlockEntity blockEntity = world.getBlockEntity(blockPos);
             if (blockEntity instanceof DispenserBlockEntity) {
-                ((DispenserBlockEntity)blockEntity).setLootTable(identifier, random.nextLong());
+                ((DispenserBlockEntity)blockEntity).setLootTable(lootTbaleId, random.nextLong());
             }
             return true;
         }
         return false;
     }
 
-    public void translate(int i, int j, int k) {
-        this.boundingBox.offset(i, j, k);
+    public void translate(int x, int y, int z) {
+        this.boundingBox.offset(x, y, z);
     }
 
     @Nullable
@@ -397,13 +397,13 @@ public abstract class StructurePiece {
         return this.facing;
     }
 
-    public void setOrientation(@Nullable Direction direction) {
-        this.facing = direction;
-        if (direction == null) {
+    public void setOrientation(@Nullable Direction orientation) {
+        this.facing = orientation;
+        if (orientation == null) {
             this.rotation = BlockRotation.NONE;
             this.mirror = BlockMirror.NONE;
         } else {
-            switch (direction) {
+            switch (orientation) {
                 case SOUTH: {
                     this.mirror = BlockMirror.LEFT_RIGHT;
                     this.rotation = BlockRotation.NONE;

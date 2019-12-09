@@ -18,8 +18,8 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class ButtonListWidget
 extends ElementListWidget<ButtonEntry> {
-    public ButtonListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l, int m) {
-        super(minecraftClient, i, j, k, l, m);
+    public ButtonListWidget(MinecraftClient client, int width, int height, int top, int bottom, int itemHeight) {
+        super(client, width, height, top, bottom, itemHeight);
         this.centerListVertically = false;
     }
 
@@ -27,8 +27,8 @@ extends ElementListWidget<ButtonEntry> {
         return this.addEntry(ButtonEntry.create(this.minecraft.options, this.width, option));
     }
 
-    public void addOptionEntry(Option option, @Nullable Option option2) {
-        this.addEntry(ButtonEntry.create(this.minecraft.options, this.width, option, option2));
+    public void addOptionEntry(Option firstOption, @Nullable Option secondOption) {
+        this.addEntry(ButtonEntry.create(this.minecraft.options, this.width, firstOption, secondOption));
     }
 
     public void addAll(Option[] options) {
@@ -52,27 +52,27 @@ extends ElementListWidget<ButtonEntry> {
     extends ElementListWidget.Entry<ButtonEntry> {
         private final List<AbstractButtonWidget> buttons;
 
-        private ButtonEntry(List<AbstractButtonWidget> list) {
-            this.buttons = list;
+        private ButtonEntry(List<AbstractButtonWidget> buttons) {
+            this.buttons = buttons;
         }
 
-        public static ButtonEntry create(GameOptions gameOptions, int i, Option option) {
-            return new ButtonEntry(ImmutableList.of(option.createButton(gameOptions, i / 2 - 155, 0, 310)));
+        public static ButtonEntry create(GameOptions options, int width, Option option) {
+            return new ButtonEntry(ImmutableList.of(option.createButton(options, width / 2 - 155, 0, 310)));
         }
 
-        public static ButtonEntry create(GameOptions gameOptions, int i, Option option, @Nullable Option option2) {
-            AbstractButtonWidget abstractButtonWidget = option.createButton(gameOptions, i / 2 - 155, 0, 150);
-            if (option2 == null) {
+        public static ButtonEntry create(GameOptions options, int width, Option firstOption, @Nullable Option secondOption) {
+            AbstractButtonWidget abstractButtonWidget = firstOption.createButton(options, width / 2 - 155, 0, 150);
+            if (secondOption == null) {
                 return new ButtonEntry(ImmutableList.of(abstractButtonWidget));
             }
-            return new ButtonEntry(ImmutableList.of(abstractButtonWidget, option2.createButton(gameOptions, i / 2 - 155 + 160, 0, 150)));
+            return new ButtonEntry(ImmutableList.of(abstractButtonWidget, secondOption.createButton(options, width / 2 - 155 + 160, 0, 150)));
         }
 
         @Override
         public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
-            this.buttons.forEach(abstractButtonWidget -> {
-                abstractButtonWidget.y = j;
-                abstractButtonWidget.render(n, o, f);
+            this.buttons.forEach(button -> {
+                button.y = j;
+                button.render(n, o, f);
             });
         }
 

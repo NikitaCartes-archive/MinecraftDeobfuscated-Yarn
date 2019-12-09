@@ -15,11 +15,11 @@ import net.minecraft.world.World;
 @Environment(value=EnvType.CLIENT)
 public class EndRodParticle
 extends AnimatedParticle {
-    private EndRodParticle(World world, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
-        super(world, d, e, f, spriteProvider, -5.0E-4f);
-        this.velocityX = g;
-        this.velocityY = h;
-        this.velocityZ = i;
+    private EndRodParticle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
+        super(world, x, y, z, spriteProvider, -5.0E-4f);
+        this.velocityX = velocityX;
+        this.velocityY = velocityY;
+        this.velocityZ = velocityZ;
         this.scale *= 0.75f;
         this.maxAge = 60 + this.random.nextInt(12);
         this.setTargetColor(15916745);
@@ -27,8 +27,8 @@ extends AnimatedParticle {
     }
 
     @Override
-    public void move(double d, double e, double f) {
-        this.setBoundingBox(this.getBoundingBox().offset(d, e, f));
+    public void move(double dx, double dy, double dz) {
+        this.setBoundingBox(this.getBoundingBox().offset(dx, dy, dz));
         this.repositionFromBoundingBox();
     }
 

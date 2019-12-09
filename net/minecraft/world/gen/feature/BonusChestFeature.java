@@ -26,8 +26,8 @@ import net.minecraft.world.gen.feature.Feature;
 
 public class BonusChestFeature
 extends Feature<DefaultFeatureConfig> {
-    public BonusChestFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-        super(function);
+    public BonusChestFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
+        super(configFactory);
     }
 
     @Override

@@ -20,8 +20,8 @@ implements ClientChatListener {
     }
 
     @Override
-    public void onChatMessage(MessageType messageType, Text text) {
-        this.client.inGameHud.setOverlayMessage(text, false);
+    public void onChatMessage(MessageType messageType, Text message) {
+        this.client.inGameHud.setOverlayMessage(message, false);
     }
 }
 

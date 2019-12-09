@@ -52,9 +52,9 @@ public final class Rotation3 {
         return IDENTITY;
     }
 
-    public Rotation3 multiply(Rotation3 rotation3) {
+    public Rotation3 multiply(Rotation3 other) {
         Matrix4f matrix4f = this.getMatrix();
-        matrix4f.multiply(rotation3.getMatrix());
+        matrix4f.multiply(other.getMatrix());
         return new Rotation3(matrix4f);
     }
 

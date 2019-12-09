@@ -25,15 +25,15 @@ implements Packet<ServerPlayPacketListener> {
     }
 
     @Override
-    public void read(PacketByteBuf packetByteBuf) throws IOException {
-        this.primaryEffectId = packetByteBuf.readVarInt();
-        this.secondaryEffectId = packetByteBuf.readVarInt();
+    public void read(PacketByteBuf buf) throws IOException {
+        this.primaryEffectId = buf.readVarInt();
+        this.secondaryEffectId = buf.readVarInt();
     }
 
     @Override
-    public void write(PacketByteBuf packetByteBuf) throws IOException {
-        packetByteBuf.writeVarInt(this.primaryEffectId);
-        packetByteBuf.writeVarInt(this.secondaryEffectId);
+    public void write(PacketByteBuf buf) throws IOException {
+        buf.writeVarInt(this.primaryEffectId);
+        buf.writeVarInt(this.secondaryEffectId);
     }
 
     @Override

@@ -21,9 +21,9 @@ public final class EntityPredicates {
     public static final Predicate<Entity> EXCEPT_CREATIVE_OR_SPECTATOR = entity -> !(entity instanceof PlayerEntity) || !entity.isSpectator() && !((PlayerEntity)entity).isCreative();
     public static final Predicate<Entity> EXCEPT_SPECTATOR = entity -> !entity.isSpectator();
 
-    public static Predicate<Entity> maximumDistance(double d, double e, double f, double g) {
-        double h = g * g;
-        return entity -> entity != null && entity.squaredDistanceTo(d, e, f) <= h;
+    public static Predicate<Entity> maximumDistance(double x, double d, double e, double f) {
+        double g = f * f;
+        return entity -> entity != null && entity.squaredDistanceTo(x, d, e) <= g;
     }
 
     public static Predicate<Entity> canBePushedBy(Entity entity) {
@@ -86,8 +86,8 @@ public final class EntityPredicates {
         }
 
         @Override
-        public /* synthetic */ boolean test(@Nullable Object object) {
-            return this.test((Entity)object);
+        public /* synthetic */ boolean test(@Nullable Object context) {
+            return this.test((Entity)context);
         }
     }
 }

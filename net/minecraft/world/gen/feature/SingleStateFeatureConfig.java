@@ -14,13 +14,13 @@ public class SingleStateFeatureConfig
 implements FeatureConfig {
     public final BlockState state;
 
-    public SingleStateFeatureConfig(BlockState blockState) {
-        this.state = blockState;
+    public SingleStateFeatureConfig(BlockState state) {
+        this.state = state;
     }
 
     @Override
-    public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-        return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("state"), BlockState.serialize(dynamicOps, this.state).getValue())));
+    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("state"), BlockState.serialize(ops, this.state).getValue())));
     }
 
     public static <T> SingleStateFeatureConfig deserialize(Dynamic<T> dynamic) {

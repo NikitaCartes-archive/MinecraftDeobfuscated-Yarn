@@ -24,26 +24,26 @@ public class ItemScatterer {
         ItemScatterer.spawn(world, entity.getX(), entity.getY(), entity.getZ(), inventory);
     }
 
-    private static void spawn(World world, double d, double e, double f, Inventory inventory) {
+    private static void spawn(World world, double x, double y, double z, Inventory inventory) {
         for (int i = 0; i < inventory.getInvSize(); ++i) {
-            ItemScatterer.spawn(world, d, e, f, inventory.getInvStack(i));
+            ItemScatterer.spawn(world, x, y, z, inventory.getInvStack(i));
         }
     }
 
-    public static void spawn(World world, BlockPos blockPos, DefaultedList<ItemStack> defaultedList) {
-        defaultedList.forEach(itemStack -> ItemScatterer.spawn(world, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), itemStack));
+    public static void spawn(World world, BlockPos pos, DefaultedList<ItemStack> items) {
+        items.forEach(itemStack -> ItemScatterer.spawn(world, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), itemStack));
     }
 
-    public static void spawn(World world, double d, double e, double f, ItemStack itemStack) {
-        double g = EntityType.ITEM.getWidth();
-        double h = 1.0 - g;
-        double i = g / 2.0;
-        double j = Math.floor(d) + RANDOM.nextDouble() * h + i;
-        double k = Math.floor(e) + RANDOM.nextDouble() * h;
-        double l = Math.floor(f) + RANDOM.nextDouble() * h + i;
-        while (!itemStack.isEmpty()) {
-            ItemEntity itemEntity = new ItemEntity(world, j, k, l, itemStack.split(RANDOM.nextInt(21) + 10));
-            float m = 0.05f;
+    public static void spawn(World world, double x, double y, double z, ItemStack item) {
+        double d = EntityType.ITEM.getWidth();
+        double e = 1.0 - d;
+        double f = d / 2.0;
+        double g = Math.floor(x) + RANDOM.nextDouble() * e + f;
+        double h = Math.floor(y) + RANDOM.nextDouble() * e;
+        double i = Math.floor(z) + RANDOM.nextDouble() * e + f;
+        while (!item.isEmpty()) {
+            ItemEntity itemEntity = new ItemEntity(world, g, h, i, item.split(RANDOM.nextInt(21) + 10));
+            float j = 0.05f;
             itemEntity.setVelocity(RANDOM.nextGaussian() * (double)0.05f, RANDOM.nextGaussian() * (double)0.05f + (double)0.2f, RANDOM.nextGaussian() * (double)0.05f);
             world.spawnEntity(itemEntity);
         }

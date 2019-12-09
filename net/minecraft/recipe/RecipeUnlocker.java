@@ -17,16 +17,16 @@ public interface RecipeUnlocker {
     @Nullable
     public Recipe<?> getLastRecipe();
 
-    default public void unlockLastRecipe(PlayerEntity playerEntity) {
+    default public void unlockLastRecipe(PlayerEntity player) {
         Recipe<?> recipe = this.getLastRecipe();
         if (recipe != null && !recipe.isIgnoredInRecipeBook()) {
-            playerEntity.unlockRecipes(Collections.singleton(recipe));
+            player.unlockRecipes(Collections.singleton(recipe));
             this.setLastRecipe(null);
         }
     }
 
-    default public boolean shouldCraftRecipe(World world, ServerPlayerEntity serverPlayerEntity, Recipe<?> recipe) {
-        if (recipe.isIgnoredInRecipeBook() || !world.getGameRules().getBoolean(GameRules.DO_LIMITED_CRAFTING) || serverPlayerEntity.getRecipeBook().contains(recipe)) {
+    default public boolean shouldCraftRecipe(World world, ServerPlayerEntity player, Recipe<?> recipe) {
+        if (recipe.isIgnoredInRecipeBook() || !world.getGameRules().getBoolean(GameRules.DO_LIMITED_CRAFTING) || player.getRecipeBook().contains(recipe)) {
             this.setLastRecipe(recipe);
             return true;
         }

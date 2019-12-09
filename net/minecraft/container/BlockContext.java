@@ -13,30 +13,30 @@ public interface BlockContext {
     public static final BlockContext EMPTY = new BlockContext(){
 
         @Override
-        public <T> Optional<T> run(BiFunction<World, BlockPos, T> biFunction) {
+        public <T> Optional<T> run(BiFunction<World, BlockPos, T> function) {
             return Optional.empty();
         }
     };
 
-    public static BlockContext create(final World world, final BlockPos blockPos) {
+    public static BlockContext create(final World world2, final BlockPos world) {
         return new BlockContext(){
 
             @Override
-            public <T> Optional<T> run(BiFunction<World, BlockPos, T> biFunction) {
-                return Optional.of(biFunction.apply(world, blockPos));
+            public <T> Optional<T> run(BiFunction<World, BlockPos, T> function) {
+                return Optional.of(function.apply(world2, world));
             }
         };
     }
 
     public <T> Optional<T> run(BiFunction<World, BlockPos, T> var1);
 
-    default public <T> T run(BiFunction<World, BlockPos, T> biFunction, T object) {
-        return this.run(biFunction).orElse(object);
+    default public <T> T run(BiFunction<World, BlockPos, T> function, T defaultValue) {
+        return this.run(function).orElse(defaultValue);
     }
 
-    default public void run(BiConsumer<World, BlockPos> biConsumer) {
+    default public void run(BiConsumer<World, BlockPos> function) {
         this.run((World world, BlockPos blockPos) -> {
-            biConsumer.accept((World)world, (BlockPos)blockPos);
+            function.accept((World)world, (BlockPos)blockPos);
             return Optional.empty();
         });
     }

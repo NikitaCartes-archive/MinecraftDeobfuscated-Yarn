@@ -108,7 +108,7 @@ public class CommandManager {
     private static final Logger LOGGER = LogManager.getLogger();
     private final CommandDispatcher<ServerCommandSource> dispatcher = new CommandDispatcher();
 
-    public CommandManager(boolean bl2) {
+    public CommandManager(boolean isDedicatedServer) {
         AdvancementCommand.register(this.dispatcher);
         ExecuteCommand.register(this.dispatcher);
         BossBarCommand.register(this.dispatcher);
@@ -166,7 +166,7 @@ public class CommandManager {
         if (SharedConstants.isDevelopment) {
             TestCommand.register(this.dispatcher);
         }
-        if (bl2) {
+        if (isDedicatedServer) {
             BanIpCommand.register(this.dispatcher);
             BanListCommand.register(this.dispatcher);
             BanCommand.register(this.dispatcher);
@@ -188,25 +188,25 @@ public class CommandManager {
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    public int execute(ServerCommandSource serverCommandSource, String string) {
-        StringReader stringReader = new StringReader(string);
+    public int execute(ServerCommandSource commandSource, String command) {
+        StringReader stringReader = new StringReader(command);
         if (stringReader.canRead() && stringReader.peek() == '/') {
             stringReader.skip();
         }
-        serverCommandSource.getMinecraftServer().getProfiler().push(string);
+        commandSource.getMinecraftServer().getProfiler().push(command);
         try {
-            int n = this.dispatcher.execute(stringReader, serverCommandSource);
+            int n = this.dispatcher.execute(stringReader, commandSource);
             return n;
         } catch (CommandException commandException) {
-            serverCommandSource.sendError(commandException.getTextMessage());
+            commandSource.sendError(commandException.getTextMessage());
             int n = 0;
             return n;
         } catch (CommandSyntaxException commandSyntaxException) {
             int i;
-            serverCommandSource.sendError(Texts.toText(commandSyntaxException.getRawMessage()));
+            commandSource.sendError(Texts.toText(commandSyntaxException.getRawMessage()));
             if (commandSyntaxException.getInput() != null && commandSyntaxException.getCursor() >= 0) {
                 i = Math.min(commandSyntaxException.getInput().length(), commandSyntaxException.getCursor());
-                Text text = new LiteralText("").formatted(Formatting.GRAY).styled(style -> style.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, string)));
+                Text text = new LiteralText("").formatted(Formatting.GRAY).styled(style -> style.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command)));
                 if (i > 10) {
                     text.append("...");
                 }
@@ -216,44 +216,44 @@ public class CommandManager {
                     text.append(text2);
                 }
                 text.append(new TranslatableText("command.context.here", new Object[0]).formatted(Formatting.RED, Formatting.ITALIC));
-                serverCommandSource.sendError(text);
+                commandSource.sendError(text);
             }
             i = 0;
             return i;
         } catch (Exception exception) {
             LiteralText text3 = new LiteralText(exception.getMessage() == null ? exception.getClass().getName() : exception.getMessage());
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.error("Command exception: {}", (Object)string, (Object)exception);
+                LOGGER.error("Command exception: {}", (Object)command, (Object)exception);
                 StackTraceElement[] stackTraceElements = exception.getStackTrace();
                 for (int j = 0; j < Math.min(stackTraceElements.length, 3); ++j) {
                     text3.append("\n\n").append(stackTraceElements[j].getMethodName()).append("\n ").append(stackTraceElements[j].getFileName()).append(":").append(String.valueOf(stackTraceElements[j].getLineNumber()));
                 }
             }
-            serverCommandSource.sendError(new TranslatableText("command.failed", new Object[0]).styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text3))));
+            commandSource.sendError(new TranslatableText("command.failed", new Object[0]).styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text3))));
             if (SharedConstants.isDevelopment) {
-                serverCommandSource.sendError(new LiteralText(Util.getInnermostMessage(exception)));
-                LOGGER.error("'" + string + "' threw an exception", (Throwable)exception);
+                commandSource.sendError(new LiteralText(Util.getInnermostMessage(exception)));
+                LOGGER.error("'" + command + "' threw an exception", (Throwable)exception);
             }
             int n = 0;
             return n;
         } finally {
-            serverCommandSource.getMinecraftServer().getProfiler().pop();
+            commandSource.getMinecraftServer().getProfiler().pop();
         }
     }
 
-    public void sendCommandTree(ServerPlayerEntity serverPlayerEntity) {
+    public void sendCommandTree(ServerPlayerEntity player) {
         HashMap<CommandNode<ServerCommandSource>, CommandNode<CommandSource>> map = Maps.newHashMap();
         RootCommandNode<CommandSource> rootCommandNode = new RootCommandNode<CommandSource>();
         map.put(this.dispatcher.getRoot(), rootCommandNode);
-        this.makeTreeForSource(this.dispatcher.getRoot(), rootCommandNode, serverPlayerEntity.getCommandSource(), map);
-        serverPlayerEntity.networkHandler.sendPacket(new CommandTreeS2CPacket(rootCommandNode));
+        this.makeTreeForSource(this.dispatcher.getRoot(), rootCommandNode, player.getCommandSource(), map);
+        player.networkHandler.sendPacket(new CommandTreeS2CPacket(rootCommandNode));
     }
 
-    private void makeTreeForSource(CommandNode<ServerCommandSource> commandNode, CommandNode<CommandSource> commandNode2, ServerCommandSource serverCommandSource, Map<CommandNode<ServerCommandSource>, CommandNode<CommandSource>> map) {
-        for (CommandNode<ServerCommandSource> commandNode3 : commandNode.getChildren()) {
+    private void makeTreeForSource(CommandNode<ServerCommandSource> tree, CommandNode<CommandSource> result, ServerCommandSource source, Map<CommandNode<ServerCommandSource>, CommandNode<CommandSource>> resultNodes) {
+        for (CommandNode<ServerCommandSource> commandNode : tree.getChildren()) {
             RequiredArgumentBuilder requiredArgumentBuilder;
-            if (!commandNode3.canUse(serverCommandSource)) continue;
-            ArgumentBuilder<ServerCommandSource, ?> argumentBuilder = commandNode3.createBuilder();
+            if (!commandNode.canUse(source)) continue;
+            ArgumentBuilder<ServerCommandSource, ?> argumentBuilder = commandNode.createBuilder();
             argumentBuilder.requires(commandSource -> true);
             if (argumentBuilder.getCommand() != null) {
                 argumentBuilder.executes(commandContext -> 0);
@@ -262,13 +262,13 @@ public class CommandManager {
                 requiredArgumentBuilder.suggests(SuggestionProviders.getLocalProvider(requiredArgumentBuilder.getSuggestionsProvider()));
             }
             if (argumentBuilder.getRedirect() != null) {
-                argumentBuilder.redirect(map.get(argumentBuilder.getRedirect()));
+                argumentBuilder.redirect(resultNodes.get(argumentBuilder.getRedirect()));
             }
-            CommandNode<CommandSource> commandNode4 = argumentBuilder.build();
-            map.put(commandNode3, commandNode4);
-            commandNode2.addChild(commandNode4);
-            if (commandNode3.getChildren().isEmpty()) continue;
-            this.makeTreeForSource(commandNode3, commandNode4, serverCommandSource, map);
+            CommandNode<CommandSource> commandNode2 = argumentBuilder.build();
+            resultNodes.put(commandNode, commandNode2);
+            result.addChild(commandNode2);
+            if (commandNode.getChildren().isEmpty()) continue;
+            this.makeTreeForSource(commandNode, commandNode2, source, resultNodes);
         }
     }
 
@@ -276,8 +276,8 @@ public class CommandManager {
         return LiteralArgumentBuilder.literal(string);
     }
 
-    public static <T> RequiredArgumentBuilder<ServerCommandSource, T> argument(String string, ArgumentType<T> argumentType) {
-        return RequiredArgumentBuilder.argument(string, argumentType);
+    public static <T> RequiredArgumentBuilder<ServerCommandSource, T> argument(String name, ArgumentType<T> type) {
+        return RequiredArgumentBuilder.argument(name, type);
     }
 
     public static Predicate<String> getCommandValidator(CommandParser commandParser) {
@@ -296,17 +296,17 @@ public class CommandManager {
     }
 
     @Nullable
-    public static <S> CommandSyntaxException getException(ParseResults<S> parseResults) {
-        if (!parseResults.getReader().canRead()) {
+    public static <S> CommandSyntaxException getException(ParseResults<S> parse) {
+        if (!parse.getReader().canRead()) {
             return null;
         }
-        if (parseResults.getExceptions().size() == 1) {
-            return parseResults.getExceptions().values().iterator().next();
+        if (parse.getExceptions().size() == 1) {
+            return parse.getExceptions().values().iterator().next();
         }
-        if (parseResults.getContext().getRange().isEmpty()) {
-            return CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand().createWithContext(parseResults.getReader());
+        if (parse.getContext().getRange().isEmpty()) {
+            return CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand().createWithContext(parse.getReader());
         }
-        return CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument().createWithContext(parseResults.getReader());
+        return CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument().createWithContext(parse.getReader());
     }
 
     @FunctionalInterface

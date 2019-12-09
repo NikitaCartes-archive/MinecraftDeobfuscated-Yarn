@@ -19,8 +19,8 @@ public class LandingPhase
 extends AbstractPhase {
     private Vec3d field_7046;
 
-    public LandingPhase(EnderDragonEntity enderDragonEntity) {
-        super(enderDragonEntity);
+    public LandingPhase(EnderDragonEntity dragon) {
+        super(dragon);
     }
 
     @Override

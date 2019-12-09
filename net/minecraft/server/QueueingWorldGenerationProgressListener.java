@@ -18,19 +18,19 @@ implements WorldGenerationProgressListener {
     private final WorldGenerationProgressListener progressListener;
     private final TaskExecutor<Runnable> queue;
 
-    public QueueingWorldGenerationProgressListener(WorldGenerationProgressListener worldGenerationProgressListener, Executor executor) {
-        this.progressListener = worldGenerationProgressListener;
+    public QueueingWorldGenerationProgressListener(WorldGenerationProgressListener progressListener, Executor executor) {
+        this.progressListener = progressListener;
         this.queue = TaskExecutor.create(executor, "progressListener");
     }
 
     @Override
-    public void start(ChunkPos chunkPos) {
-        this.queue.send(() -> this.progressListener.start(chunkPos));
+    public void start(ChunkPos spawnPos) {
+        this.queue.send(() -> this.progressListener.start(spawnPos));
     }
 
     @Override
-    public void setChunkStatus(ChunkPos chunkPos, @Nullable ChunkStatus chunkStatus) {
-        this.queue.send(() -> this.progressListener.setChunkStatus(chunkPos, chunkStatus));
+    public void setChunkStatus(ChunkPos pos, @Nullable ChunkStatus status) {
+        this.queue.send(() -> this.progressListener.setChunkStatus(pos, status));
     }
 
     @Override

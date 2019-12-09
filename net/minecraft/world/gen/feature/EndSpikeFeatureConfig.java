@@ -21,15 +21,15 @@ implements FeatureConfig {
     @Nullable
     private final BlockPos crystalBeamTarget;
 
-    public EndSpikeFeatureConfig(boolean bl, List<EndSpikeFeature.Spike> list, @Nullable BlockPos blockPos) {
-        this.crystalInvulnerable = bl;
-        this.spikes = list;
-        this.crystalBeamTarget = blockPos;
+    public EndSpikeFeatureConfig(boolean crystalInvulnerable, List<EndSpikeFeature.Spike> spikes, @Nullable BlockPos crystalBeamTarget) {
+        this.crystalInvulnerable = crystalInvulnerable;
+        this.spikes = spikes;
+        this.crystalBeamTarget = crystalBeamTarget;
     }
 
     @Override
-    public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-        return new Dynamic<Object>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("crystalInvulnerable"), dynamicOps.createBoolean(this.crystalInvulnerable), dynamicOps.createString("spikes"), dynamicOps.createList(this.spikes.stream().map(spike -> spike.serialize(dynamicOps).getValue())), dynamicOps.createString("crystalBeamTarget"), this.crystalBeamTarget == null ? dynamicOps.createList(Stream.empty()) : dynamicOps.createList(IntStream.of(this.crystalBeamTarget.getX(), this.crystalBeamTarget.getY(), this.crystalBeamTarget.getZ()).mapToObj(dynamicOps::createInt)))));
+    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+        return new Dynamic<Object>(ops, ops.createMap(ImmutableMap.of(ops.createString("crystalInvulnerable"), ops.createBoolean(this.crystalInvulnerable), ops.createString("spikes"), ops.createList(this.spikes.stream().map(spike -> spike.serialize(ops).getValue())), ops.createString("crystalBeamTarget"), this.crystalBeamTarget == null ? ops.createList(Stream.empty()) : ops.createList(IntStream.of(this.crystalBeamTarget.getX(), this.crystalBeamTarget.getY(), this.crystalBeamTarget.getZ()).mapToObj(ops::createInt)))));
     }
 
     public static <T> EndSpikeFeatureConfig deserialize(Dynamic<T> dynamic2) {

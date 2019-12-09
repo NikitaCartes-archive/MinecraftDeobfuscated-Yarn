@@ -26,10 +26,10 @@ public class Channel {
         this.executor = executor;
     }
 
-    public SourceManager createSource(SoundEngine.RunMode runMode) {
+    public SourceManager createSource(SoundEngine.RunMode mode) {
         SourceManager sourceManager = new SourceManager();
         this.executor.execute(() -> {
-            Source source = this.soundEngine.createSource(runMode);
+            Source source = this.soundEngine.createSource(mode);
             if (source != null) {
                 sourceManager.source = source;
                 this.sources.add(sourceManager);
@@ -69,10 +69,10 @@ public class Channel {
             return this.stopped;
         }
 
-        public void run(Consumer<Source> consumer) {
+        public void run(Consumer<Source> action) {
             Channel.this.executor.execute(() -> {
                 if (this.source != null) {
-                    consumer.accept(this.source);
+                    action.accept(this.source);
                 }
             });
         }

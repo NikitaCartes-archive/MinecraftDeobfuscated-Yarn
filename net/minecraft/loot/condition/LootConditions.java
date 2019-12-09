@@ -39,71 +39,71 @@ public class LootConditions {
     private static final Map<Identifier, LootCondition.Factory<?>> byId = Maps.newHashMap();
     private static final Map<Class<? extends LootCondition>, LootCondition.Factory<?>> byClass = Maps.newHashMap();
 
-    public static <T extends LootCondition> void register(LootCondition.Factory<? extends T> factory) {
-        Identifier identifier = factory.getId();
-        Class<T> class_ = factory.getConditionClass();
+    public static <T extends LootCondition> void register(LootCondition.Factory<? extends T> condition) {
+        Identifier identifier = condition.getId();
+        Class<T> class_ = condition.getConditionClass();
         if (byId.containsKey(identifier)) {
             throw new IllegalArgumentException("Can't re-register item condition name " + identifier);
         }
         if (byClass.containsKey(class_)) {
             throw new IllegalArgumentException("Can't re-register item condition class " + class_.getName());
         }
-        byId.put(identifier, factory);
-        byClass.put(class_, factory);
+        byId.put(identifier, condition);
+        byClass.put(class_, condition);
     }
 
-    public static LootCondition.Factory<?> get(Identifier identifier) {
-        LootCondition.Factory<?> factory = byId.get(identifier);
+    public static LootCondition.Factory<?> get(Identifier id) {
+        LootCondition.Factory<?> factory = byId.get(id);
         if (factory == null) {
-            throw new IllegalArgumentException("Unknown loot item condition '" + identifier + "'");
+            throw new IllegalArgumentException("Unknown loot item condition '" + id + "'");
         }
         return factory;
     }
 
-    public static <T extends LootCondition> LootCondition.Factory<T> getFactory(T lootCondition) {
-        LootCondition.Factory<?> factory = byClass.get(lootCondition.getClass());
+    public static <T extends LootCondition> LootCondition.Factory<T> getFactory(T condition) {
+        LootCondition.Factory<?> factory = byClass.get(condition.getClass());
         if (factory == null) {
-            throw new IllegalArgumentException("Unknown loot item condition " + lootCondition);
+            throw new IllegalArgumentException("Unknown loot item condition " + condition);
         }
         return factory;
     }
 
-    public static <T> Predicate<T> joinAnd(Predicate<T>[] predicates) {
-        switch (predicates.length) {
+    public static <T> Predicate<T> joinAnd(Predicate<T>[] predicates2) {
+        switch (predicates2.length) {
             case 0: {
-                return object -> true;
+                return predicates -> true;
             }
             case 1: {
-                return predicates[0];
+                return predicates2[0];
             }
             case 2: {
-                return predicates[0].and(predicates[1]);
+                return predicates2[0].and(predicates2[1]);
             }
         }
-        return object -> {
-            for (Predicate predicate : predicates) {
-                if (predicate.test(object)) continue;
+        return operand -> {
+            for (Predicate predicate : predicates2) {
+                if (predicate.test(operand)) continue;
                 return false;
             }
             return true;
         };
     }
 
-    public static <T> Predicate<T> joinOr(Predicate<T>[] predicates) {
-        switch (predicates.length) {
+    public static <T> Predicate<T> joinOr(Predicate<T>[] predicates2) {
+        switch (predicates2.length) {
             case 0: {
-                return object -> false;
+                return predicates -> false;
             }
             case 1: {
-                return predicates[0];
+                return predicates2[0];
             }
             case 2: {
-                return predicates[0].or(predicates[1]);
+                return predicates2[0].or(predicates2[1]);
             }
         }
-        return object -> {
-            for (Predicate predicate : predicates) {
-                if (!predicate.test(object)) continue;
+        return operand -> {
+            for (Predicate predicate : predicates2) {
+                if (!predicate.test(operand)) continue;
                 return true;
             }
             return false;
@@ -155,13 +155,13 @@ public class LootConditions {
         }
 
         @Override
-        public /* synthetic */ JsonElement serialize(Object object, Type type, JsonSerializationContext jsonSerializationContext) {
-            return this.serialize((LootCondition)object, type, jsonSerializationContext);
+        public /* synthetic */ JsonElement serialize(Object condition, Type unused, JsonSerializationContext context) {
+            return this.serialize((LootCondition)condition, unused, context);
         }
 
         @Override
-        public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.deserialize(jsonElement, type, jsonDeserializationContext);
+        public /* synthetic */ Object deserialize(JsonElement json, Type unused, JsonDeserializationContext context) throws JsonParseException {
+            return this.deserialize(json, unused, context);
         }
     }
 }

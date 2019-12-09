@@ -21,8 +21,8 @@ import net.minecraft.world.gen.feature.Feature;
 
 public abstract class CoralFeature
 extends Feature<DefaultFeatureConfig> {
-    public CoralFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-        super(function);
+    public CoralFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
+        super(configFactory);
     }
 
     @Override
@@ -33,23 +33,23 @@ extends Feature<DefaultFeatureConfig> {
 
     protected abstract boolean spawnCoral(IWorld var1, Random var2, BlockPos var3, BlockState var4);
 
-    protected boolean spawnCoralPiece(IWorld iWorld, Random random, BlockPos blockPos, BlockState blockState) {
-        BlockPos blockPos2 = blockPos.up();
-        BlockState blockState2 = iWorld.getBlockState(blockPos);
-        if (blockState2.getBlock() != Blocks.WATER && !blockState2.matches(BlockTags.CORALS) || iWorld.getBlockState(blockPos2).getBlock() != Blocks.WATER) {
+    protected boolean spawnCoralPiece(IWorld world, Random random, BlockPos pos, BlockState state) {
+        BlockPos blockPos = pos.up();
+        BlockState blockState = world.getBlockState(pos);
+        if (blockState.getBlock() != Blocks.WATER && !blockState.matches(BlockTags.CORALS) || world.getBlockState(blockPos).getBlock() != Blocks.WATER) {
             return false;
         }
-        iWorld.setBlockState(blockPos, blockState, 3);
+        world.setBlockState(pos, state, 3);
         if (random.nextFloat() < 0.25f) {
-            iWorld.setBlockState(blockPos2, BlockTags.CORALS.getRandom(random).getDefaultState(), 2);
+            world.setBlockState(blockPos, BlockTags.CORALS.getRandom(random).getDefaultState(), 2);
         } else if (random.nextFloat() < 0.05f) {
-            iWorld.setBlockState(blockPos2, (BlockState)Blocks.SEA_PICKLE.getDefaultState().with(SeaPickleBlock.PICKLES, random.nextInt(4) + 1), 2);
+            world.setBlockState(blockPos, (BlockState)Blocks.SEA_PICKLE.getDefaultState().with(SeaPickleBlock.PICKLES, random.nextInt(4) + 1), 2);
         }
         for (Direction direction : Direction.Type.HORIZONTAL) {
-            BlockPos blockPos3;
-            if (!(random.nextFloat() < 0.2f) || iWorld.getBlockState(blockPos3 = blockPos.offset(direction)).getBlock() != Blocks.WATER) continue;
-            BlockState blockState3 = (BlockState)BlockTags.WALL_CORALS.getRandom(random).getDefaultState().with(DeadCoralWallFanBlock.FACING, direction);
-            iWorld.setBlockState(blockPos3, blockState3, 2);
+            BlockPos blockPos2;
+            if (!(random.nextFloat() < 0.2f) || world.getBlockState(blockPos2 = pos.offset(direction)).getBlock() != Blocks.WATER) continue;
+            BlockState blockState2 = (BlockState)BlockTags.WALL_CORALS.getRandom(random).getDefaultState().with(DeadCoralWallFanBlock.FACING, direction);
+            world.setBlockState(blockPos2, blockState2, 2);
         }
         return true;
     }

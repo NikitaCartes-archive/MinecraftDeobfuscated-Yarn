@@ -29,10 +29,10 @@ extends Item {
 
             @Override
             @Environment(value=EnvType.CLIENT)
-            public float call(ItemStack itemStack, @Nullable World world, @Nullable LivingEntity livingEntity) {
+            public float call(ItemStack stack, @Nullable World world, @Nullable LivingEntity user) {
                 Entity entity;
-                boolean bl = livingEntity != null;
-                Entity entity2 = entity = bl ? livingEntity : itemStack.getFrame();
+                boolean bl = user != null;
+                Entity entity2 = entity = bl ? user : stack.getFrame();
                 if (world == null && entity != null) {
                     world = entity.world;
                 }
@@ -45,12 +45,12 @@ extends Item {
             }
 
             @Environment(value=EnvType.CLIENT)
-            private double getTime(World world, double d) {
+            private double getTime(World world, double skyAngle) {
                 if (world.getTime() != this.lastTick) {
                     this.lastTick = world.getTime();
-                    double e = d - this.time;
-                    e = MathHelper.floorMod(e + 0.5, 1.0) - 0.5;
-                    this.step += e * 0.1;
+                    double d = skyAngle - this.time;
+                    d = MathHelper.floorMod(d + 0.5, 1.0) - 0.5;
+                    this.step += d * 0.1;
                     this.step *= 0.9;
                     this.time = MathHelper.floorMod(this.time + this.step, 1.0);
                 }

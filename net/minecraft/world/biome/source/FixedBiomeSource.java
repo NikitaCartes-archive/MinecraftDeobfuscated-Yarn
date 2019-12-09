@@ -18,27 +18,27 @@ public class FixedBiomeSource
 extends BiomeSource {
     private final Biome biome;
 
-    public FixedBiomeSource(FixedBiomeSourceConfig fixedBiomeSourceConfig) {
-        super(ImmutableSet.of(fixedBiomeSourceConfig.getBiome()));
-        this.biome = fixedBiomeSourceConfig.getBiome();
+    public FixedBiomeSource(FixedBiomeSourceConfig config) {
+        super(ImmutableSet.of(config.getBiome()));
+        this.biome = config.getBiome();
     }
 
     @Override
-    public Biome getBiomeForNoiseGen(int i, int j, int k) {
+    public Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
         return this.biome;
     }
 
     @Override
     @Nullable
-    public BlockPos locateBiome(int i, int j, int k, int l, List<Biome> list, Random random) {
+    public BlockPos locateBiome(int x, int y, int z, int radius, List<Biome> list, Random random) {
         if (list.contains(this.biome)) {
-            return new BlockPos(i - l + random.nextInt(l * 2 + 1), j, k - l + random.nextInt(l * 2 + 1));
+            return new BlockPos(x - radius + random.nextInt(radius * 2 + 1), y, z - radius + random.nextInt(radius * 2 + 1));
         }
         return null;
     }
 
     @Override
-    public Set<Biome> getBiomesInArea(int i, int j, int k, int l) {
+    public Set<Biome> getBiomesInArea(int x, int y, int z, int radius) {
         return Sets.newHashSet(this.biome);
     }
 }

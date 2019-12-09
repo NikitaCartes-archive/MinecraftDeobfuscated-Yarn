@@ -11,9 +11,9 @@ public class ToolItem
 extends Item {
     private final ToolMaterial material;
 
-    public ToolItem(ToolMaterial toolMaterial, Item.Settings settings) {
-        super(settings.maxDamageIfAbsent(toolMaterial.getDurability()));
-        this.material = toolMaterial;
+    public ToolItem(ToolMaterial material, Item.Settings settings) {
+        super(settings.maxDamageIfAbsent(material.getDurability()));
+        this.material = material;
     }
 
     public ToolMaterial getMaterial() {
@@ -26,8 +26,8 @@ extends Item {
     }
 
     @Override
-    public boolean canRepair(ItemStack itemStack, ItemStack itemStack2) {
-        return this.material.getRepairIngredient().test(itemStack2) || super.canRepair(itemStack, itemStack2);
+    public boolean canRepair(ItemStack stack, ItemStack ingredient) {
+        return this.material.getRepairIngredient().test(ingredient) || super.canRepair(stack, ingredient);
     }
 }
 

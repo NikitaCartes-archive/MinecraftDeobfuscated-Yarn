@@ -22,29 +22,29 @@ public class Box {
     public final double y2;
     public final double z2;
 
-    public Box(double d, double e, double f, double g, double h, double i) {
-        this.x1 = Math.min(d, g);
-        this.y1 = Math.min(e, h);
-        this.z1 = Math.min(f, i);
-        this.x2 = Math.max(d, g);
-        this.y2 = Math.max(e, h);
-        this.z2 = Math.max(f, i);
+    public Box(double x1, double y1, double z1, double x2, double y2, double z2) {
+        this.x1 = Math.min(x1, x2);
+        this.y1 = Math.min(y1, y2);
+        this.z1 = Math.min(z1, z2);
+        this.x2 = Math.max(x1, x2);
+        this.y2 = Math.max(y1, y2);
+        this.z2 = Math.max(z1, z2);
     }
 
-    public Box(BlockPos blockPos) {
-        this(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX() + 1, blockPos.getY() + 1, blockPos.getZ() + 1);
+    public Box(BlockPos pos) {
+        this(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1);
     }
 
-    public Box(BlockPos blockPos, BlockPos blockPos2) {
-        this(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos2.getX(), blockPos2.getY(), blockPos2.getZ());
+    public Box(BlockPos pos1, BlockPos pos2) {
+        this(pos1.getX(), pos1.getY(), pos1.getZ(), pos2.getX(), pos2.getY(), pos2.getZ());
     }
 
-    public Box(Vec3d vec3d, Vec3d vec3d2) {
-        this(vec3d.x, vec3d.y, vec3d.z, vec3d2.x, vec3d2.y, vec3d2.z);
+    public Box(Vec3d pos1, Vec3d pos2) {
+        this(pos1.x, pos1.y, pos1.z, pos2.x, pos2.y, pos2.z);
     }
 
-    public static Box from(BlockBox blockBox) {
-        return new Box(blockBox.minX, blockBox.minY, blockBox.minZ, blockBox.maxX + 1, blockBox.maxY + 1, blockBox.maxZ + 1);
+    public static Box from(BlockBox mutable) {
+        return new Box(mutable.minX, mutable.minY, mutable.minZ, mutable.maxX + 1, mutable.maxY + 1, mutable.maxZ + 1);
     }
 
     public double getMin(Direction.Axis axis) {
@@ -55,14 +55,14 @@ public class Box {
         return axis.choose(this.x2, this.y2, this.z2);
     }
 
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (!(object instanceof Box)) {
+        if (!(o instanceof Box)) {
             return false;
         }
-        Box box = (Box)object;
+        Box box = (Box)o;
         if (Double.compare(box.x1, this.x1) != 0) {
             return false;
         }
@@ -97,72 +97,72 @@ public class Box {
         return i;
     }
 
-    public Box shrink(double d, double e, double f) {
-        double g = this.x1;
-        double h = this.y1;
-        double i = this.z1;
-        double j = this.x2;
-        double k = this.y2;
-        double l = this.z2;
-        if (d < 0.0) {
-            g -= d;
-        } else if (d > 0.0) {
-            j -= d;
+    public Box shrink(double x, double y, double z) {
+        double d = this.x1;
+        double e = this.y1;
+        double f = this.z1;
+        double g = this.x2;
+        double h = this.y2;
+        double i = this.z2;
+        if (x < 0.0) {
+            d -= x;
+        } else if (x > 0.0) {
+            g -= x;
         }
-        if (e < 0.0) {
-            h -= e;
-        } else if (e > 0.0) {
-            k -= e;
+        if (y < 0.0) {
+            e -= y;
+        } else if (y > 0.0) {
+            h -= y;
         }
-        if (f < 0.0) {
-            i -= f;
-        } else if (f > 0.0) {
-            l -= f;
+        if (z < 0.0) {
+            f -= z;
+        } else if (z > 0.0) {
+            i -= z;
         }
-        return new Box(g, h, i, j, k, l);
+        return new Box(d, e, f, g, h, i);
     }
 
-    public Box stretch(Vec3d vec3d) {
-        return this.stretch(vec3d.x, vec3d.y, vec3d.z);
+    public Box stretch(Vec3d scale) {
+        return this.stretch(scale.x, scale.y, scale.z);
     }
 
-    public Box stretch(double d, double e, double f) {
-        double g = this.x1;
-        double h = this.y1;
-        double i = this.z1;
-        double j = this.x2;
-        double k = this.y2;
-        double l = this.z2;
-        if (d < 0.0) {
-            g += d;
-        } else if (d > 0.0) {
-            j += d;
+    public Box stretch(double x, double y, double z) {
+        double d = this.x1;
+        double e = this.y1;
+        double f = this.z1;
+        double g = this.x2;
+        double h = this.y2;
+        double i = this.z2;
+        if (x < 0.0) {
+            d += x;
+        } else if (x > 0.0) {
+            g += x;
         }
-        if (e < 0.0) {
-            h += e;
-        } else if (e > 0.0) {
-            k += e;
+        if (y < 0.0) {
+            e += y;
+        } else if (y > 0.0) {
+            h += y;
         }
-        if (f < 0.0) {
-            i += f;
-        } else if (f > 0.0) {
-            l += f;
+        if (z < 0.0) {
+            f += z;
+        } else if (z > 0.0) {
+            i += z;
         }
-        return new Box(g, h, i, j, k, l);
+        return new Box(d, e, f, g, h, i);
     }
 
-    public Box expand(double d, double e, double f) {
-        double g = this.x1 - d;
-        double h = this.y1 - e;
-        double i = this.z1 - f;
-        double j = this.x2 + d;
-        double k = this.y2 + e;
-        double l = this.z2 + f;
-        return new Box(g, h, i, j, k, l);
+    public Box expand(double x, double y, double z) {
+        double d = this.x1 - x;
+        double e = this.y1 - y;
+        double f = this.z1 - z;
+        double g = this.x2 + x;
+        double h = this.y2 + y;
+        double i = this.z2 + z;
+        return new Box(d, e, f, g, h, i);
     }
 
-    public Box expand(double d) {
-        return this.expand(d, d, d);
+    public Box expand(double value) {
+        return this.expand(value, value, value);
     }
 
     public Box intersection(Box box) {
@@ -185,8 +185,8 @@ public class Box {
         return new Box(d, e, f, g, h, i);
     }
 
-    public Box offset(double d, double e, double f) {
-        return new Box(this.x1 + d, this.y1 + e, this.z1 + f, this.x2 + d, this.y2 + e, this.z2 + f);
+    public Box offset(double x, double y, double z) {
+        return new Box(this.x1 + x, this.y1 + y, this.z1 + z, this.x2 + x, this.y2 + y, this.z2 + z);
     }
 
     public Box offset(BlockPos blockPos) {
@@ -201,21 +201,21 @@ public class Box {
         return this.intersects(box.x1, box.y1, box.z1, box.x2, box.y2, box.z2);
     }
 
-    public boolean intersects(double d, double e, double f, double g, double h, double i) {
-        return this.x1 < g && this.x2 > d && this.y1 < h && this.y2 > e && this.z1 < i && this.z2 > f;
+    public boolean intersects(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
+        return this.x1 < maxX && this.x2 > minX && this.y1 < maxY && this.y2 > minY && this.z1 < maxZ && this.z2 > minZ;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public boolean intersects(Vec3d vec3d, Vec3d vec3d2) {
-        return this.intersects(Math.min(vec3d.x, vec3d2.x), Math.min(vec3d.y, vec3d2.y), Math.min(vec3d.z, vec3d2.z), Math.max(vec3d.x, vec3d2.x), Math.max(vec3d.y, vec3d2.y), Math.max(vec3d.z, vec3d2.z));
+    public boolean intersects(Vec3d from, Vec3d to) {
+        return this.intersects(Math.min(from.x, to.x), Math.min(from.y, to.y), Math.min(from.z, to.z), Math.max(from.x, to.x), Math.max(from.y, to.y), Math.max(from.z, to.z));
     }
 
-    public boolean contains(Vec3d vec3d) {
-        return this.contains(vec3d.x, vec3d.y, vec3d.z);
+    public boolean contains(Vec3d vec) {
+        return this.contains(vec.x, vec.y, vec.z);
     }
 
-    public boolean contains(double d, double e, double f) {
-        return d >= this.x1 && d < this.x2 && e >= this.y1 && e < this.y2 && f >= this.z1 && f < this.z2;
+    public boolean contains(double x, double y, double z) {
+        return x >= this.x1 && x < this.x2 && y >= this.y1 && y < this.y2 && z >= this.z1 && z < this.z2;
     }
 
     public double getAverageSideLength() {
@@ -237,70 +237,70 @@ public class Box {
         return this.z2 - this.z1;
     }
 
-    public Box contract(double d) {
-        return this.expand(-d);
+    public Box contract(double value) {
+        return this.expand(-value);
     }
 
-    public Optional<Vec3d> rayTrace(Vec3d vec3d, Vec3d vec3d2) {
+    public Optional<Vec3d> rayTrace(Vec3d min, Vec3d max) {
         double[] ds = new double[]{1.0};
-        double d = vec3d2.x - vec3d.x;
-        double e = vec3d2.y - vec3d.y;
-        double f = vec3d2.z - vec3d.z;
-        Direction direction = Box.traceCollisionSide(this, vec3d, ds, null, d, e, f);
+        double d = max.x - min.x;
+        double e = max.y - min.y;
+        double f = max.z - min.z;
+        Direction direction = Box.traceCollisionSide(this, min, ds, null, d, e, f);
         if (direction == null) {
             return Optional.empty();
         }
         double g = ds[0];
-        return Optional.of(vec3d.add(g * d, g * e, g * f));
+        return Optional.of(min.add(g * d, g * e, g * f));
     }
 
     @Nullable
-    public static BlockHitResult rayTrace(Iterable<Box> iterable, Vec3d vec3d, Vec3d vec3d2, BlockPos blockPos) {
+    public static BlockHitResult rayTrace(Iterable<Box> boxes, Vec3d from, Vec3d to, BlockPos pos) {
         double[] ds = new double[]{1.0};
         Direction direction = null;
-        double d = vec3d2.x - vec3d.x;
-        double e = vec3d2.y - vec3d.y;
-        double f = vec3d2.z - vec3d.z;
-        for (Box box : iterable) {
-            direction = Box.traceCollisionSide(box.offset(blockPos), vec3d, ds, direction, d, e, f);
+        double d = to.x - from.x;
+        double e = to.y - from.y;
+        double f = to.z - from.z;
+        for (Box box : boxes) {
+            direction = Box.traceCollisionSide(box.offset(pos), from, ds, direction, d, e, f);
         }
         if (direction == null) {
             return null;
         }
         double g = ds[0];
-        return new BlockHitResult(vec3d.add(g * d, g * e, g * f), direction, blockPos, false);
+        return new BlockHitResult(from.add(g * d, g * e, g * f), direction, pos, false);
     }
 
     @Nullable
-    private static Direction traceCollisionSide(Box box, Vec3d vec3d, double[] ds, @Nullable Direction direction, double d, double e, double f) {
-        if (d > 1.0E-7) {
-            direction = Box.traceCollisionSide(ds, direction, d, e, f, box.x1, box.y1, box.y2, box.z1, box.z2, Direction.WEST, vec3d.x, vec3d.y, vec3d.z);
-        } else if (d < -1.0E-7) {
-            direction = Box.traceCollisionSide(ds, direction, d, e, f, box.x2, box.y1, box.y2, box.z1, box.z2, Direction.EAST, vec3d.x, vec3d.y, vec3d.z);
+    private static Direction traceCollisionSide(Box box, Vec3d intersectingVector, double[] traceDistanceResult, @Nullable Direction approachDirection, double xDelta, double yDelta, double zDelta) {
+        if (xDelta > 1.0E-7) {
+            approachDirection = Box.traceCollisionSide(traceDistanceResult, approachDirection, xDelta, yDelta, zDelta, box.x1, box.y1, box.y2, box.z1, box.z2, Direction.WEST, intersectingVector.x, intersectingVector.y, intersectingVector.z);
+        } else if (xDelta < -1.0E-7) {
+            approachDirection = Box.traceCollisionSide(traceDistanceResult, approachDirection, xDelta, yDelta, zDelta, box.x2, box.y1, box.y2, box.z1, box.z2, Direction.EAST, intersectingVector.x, intersectingVector.y, intersectingVector.z);
         }
-        if (e > 1.0E-7) {
-            direction = Box.traceCollisionSide(ds, direction, e, f, d, box.y1, box.z1, box.z2, box.x1, box.x2, Direction.DOWN, vec3d.y, vec3d.z, vec3d.x);
-        } else if (e < -1.0E-7) {
-            direction = Box.traceCollisionSide(ds, direction, e, f, d, box.y2, box.z1, box.z2, box.x1, box.x2, Direction.UP, vec3d.y, vec3d.z, vec3d.x);
+        if (yDelta > 1.0E-7) {
+            approachDirection = Box.traceCollisionSide(traceDistanceResult, approachDirection, yDelta, zDelta, xDelta, box.y1, box.z1, box.z2, box.x1, box.x2, Direction.DOWN, intersectingVector.y, intersectingVector.z, intersectingVector.x);
+        } else if (yDelta < -1.0E-7) {
+            approachDirection = Box.traceCollisionSide(traceDistanceResult, approachDirection, yDelta, zDelta, xDelta, box.y2, box.z1, box.z2, box.x1, box.x2, Direction.UP, intersectingVector.y, intersectingVector.z, intersectingVector.x);
         }
-        if (f > 1.0E-7) {
-            direction = Box.traceCollisionSide(ds, direction, f, d, e, box.z1, box.x1, box.x2, box.y1, box.y2, Direction.NORTH, vec3d.z, vec3d.x, vec3d.y);
-        } else if (f < -1.0E-7) {
-            direction = Box.traceCollisionSide(ds, direction, f, d, e, box.z2, box.x1, box.x2, box.y1, box.y2, Direction.SOUTH, vec3d.z, vec3d.x, vec3d.y);
+        if (zDelta > 1.0E-7) {
+            approachDirection = Box.traceCollisionSide(traceDistanceResult, approachDirection, zDelta, xDelta, yDelta, box.z1, box.x1, box.x2, box.y1, box.y2, Direction.NORTH, intersectingVector.z, intersectingVector.x, intersectingVector.y);
+        } else if (zDelta < -1.0E-7) {
+            approachDirection = Box.traceCollisionSide(traceDistanceResult, approachDirection, zDelta, xDelta, yDelta, box.z2, box.x1, box.x2, box.y1, box.y2, Direction.SOUTH, intersectingVector.z, intersectingVector.x, intersectingVector.y);
         }
-        return direction;
+        return approachDirection;
     }
 
     @Nullable
-    private static Direction traceCollisionSide(double[] ds, @Nullable Direction direction, double d, double e, double f, double g, double h, double i, double j, double k, Direction direction2, double l, double m, double n) {
-        double o = (g - l) / d;
-        double p = m + o * e;
-        double q = n + o * f;
-        if (0.0 < o && o < ds[0] && h - 1.0E-7 < p && p < i + 1.0E-7 && j - 1.0E-7 < q && q < k + 1.0E-7) {
-            ds[0] = o;
-            return direction2;
+    private static Direction traceCollisionSide(double[] traceDistanceResult, @Nullable Direction approachDirection, double xDelta, double yDelta, double zDelta, double begin, double minX, double maxX, double minZ, double maxZ, Direction resultDirection, double startX, double startY, double startZ) {
+        double d = (begin - startX) / xDelta;
+        double e = startY + d * yDelta;
+        double f = startZ + d * zDelta;
+        if (0.0 < d && d < traceDistanceResult[0] && minX - 1.0E-7 < e && e < maxX + 1.0E-7 && minZ - 1.0E-7 < f && f < maxZ + 1.0E-7) {
+            traceDistanceResult[0] = d;
+            return resultDirection;
         }
-        return direction;
+        return approachDirection;
     }
 
     public String toString() {

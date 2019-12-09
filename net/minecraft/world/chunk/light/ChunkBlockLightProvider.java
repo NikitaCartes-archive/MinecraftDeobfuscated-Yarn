@@ -26,10 +26,10 @@ extends ChunkLightProvider<BlockLightStorage.Data, BlockLightStorage> {
         super(chunkProvider, LightType.BLOCK, new BlockLightStorage(chunkProvider));
     }
 
-    private int getLightSourceLuminance(long l) {
-        int i = BlockPos.unpackLongX(l);
-        int j = BlockPos.unpackLongY(l);
-        int k = BlockPos.unpackLongZ(l);
+    private int getLightSourceLuminance(long blockPos) {
+        int i = BlockPos.unpackLongX(blockPos);
+        int j = BlockPos.unpackLongY(blockPos);
+        int k = BlockPos.unpackLongZ(blockPos);
         BlockView blockView = this.chunkProvider.getChunk(i >> 4, k >> 4);
         if (blockView != null) {
             return blockView.getLuminance(this.mutablePos.set(i, j, k));
@@ -38,81 +38,81 @@ extends ChunkLightProvider<BlockLightStorage.Data, BlockLightStorage> {
     }
 
     @Override
-    protected int getPropagatedLevel(long l, long m, int i) {
+    protected int getPropagatedLevel(long sourceId, long targetId, int level) {
         VoxelShape voxelShape2;
-        int n;
         int k;
-        if (m == Long.MAX_VALUE) {
+        int j;
+        if (targetId == Long.MAX_VALUE) {
             return 15;
         }
-        if (l == Long.MAX_VALUE) {
-            return i + 15 - this.getLightSourceLuminance(m);
+        if (sourceId == Long.MAX_VALUE) {
+            return level + 15 - this.getLightSourceLuminance(targetId);
         }
-        if (i >= 15) {
-            return i;
+        if (level >= 15) {
+            return level;
         }
-        int j = Integer.signum(BlockPos.unpackLongX(m) - BlockPos.unpackLongX(l));
-        Direction direction = Direction.fromVector(j, k = Integer.signum(BlockPos.unpackLongY(m) - BlockPos.unpackLongY(l)), n = Integer.signum(BlockPos.unpackLongZ(m) - BlockPos.unpackLongZ(l)));
+        int i = Integer.signum(BlockPos.unpackLongX(targetId) - BlockPos.unpackLongX(sourceId));
+        Direction direction = Direction.fromVector(i, j = Integer.signum(BlockPos.unpackLongY(targetId) - BlockPos.unpackLongY(sourceId)), k = Integer.signum(BlockPos.unpackLongZ(targetId) - BlockPos.unpackLongZ(sourceId)));
         if (direction == null) {
             return 15;
         }
         MutableInt mutableInt = new MutableInt();
-        BlockState blockState = this.getStateForLighting(m, mutableInt);
+        BlockState blockState = this.getStateForLighting(targetId, mutableInt);
         if (mutableInt.getValue() >= 15) {
             return 15;
         }
-        BlockState blockState2 = this.getStateForLighting(l, null);
-        VoxelShape voxelShape = this.getOpaqueShape(blockState2, l, direction);
-        if (VoxelShapes.unionCoversFullCube(voxelShape, voxelShape2 = this.getOpaqueShape(blockState, m, direction.getOpposite()))) {
+        BlockState blockState2 = this.getStateForLighting(sourceId, null);
+        VoxelShape voxelShape = this.getOpaqueShape(blockState2, sourceId, direction);
+        if (VoxelShapes.unionCoversFullCube(voxelShape, voxelShape2 = this.getOpaqueShape(blockState, targetId, direction.getOpposite()))) {
             return 15;
         }
-        return i + Math.max(1, mutableInt.getValue());
+        return level + Math.max(1, mutableInt.getValue());
     }
 
     @Override
-    protected void propagateLevel(long l, int i, boolean bl) {
-        long m = ChunkSectionPos.fromGlobalPos(l);
+    protected void propagateLevel(long id, int level, boolean decrease) {
+        long l = ChunkSectionPos.fromGlobalPos(id);
         for (Direction direction : DIRECTIONS) {
-            long n = BlockPos.offset(l, direction);
-            long o = ChunkSectionPos.fromGlobalPos(n);
-            if (m != o && !((BlockLightStorage)this.lightStorage).hasLight(o)) continue;
-            this.propagateLevel(l, n, i, bl);
+            long m = BlockPos.offset(id, direction);
+            long n = ChunkSectionPos.fromGlobalPos(m);
+            if (l != n && !((BlockLightStorage)this.lightStorage).hasLight(n)) continue;
+            this.propagateLevel(id, m, level, decrease);
         }
     }
 
     @Override
-    protected int recalculateLevel(long l, long m, int i) {
-        int j = i;
-        if (Long.MAX_VALUE != m) {
-            int k = this.getPropagatedLevel(Long.MAX_VALUE, l, 0);
-            if (j > k) {
-                j = k;
+    protected int recalculateLevel(long id, long excludedId, int maxLevel) {
+        int i = maxLevel;
+        if (Long.MAX_VALUE != excludedId) {
+            int j = this.getPropagatedLevel(Long.MAX_VALUE, id, 0);
+            if (i > j) {
+                i = j;
             }
-            if (j == 0) {
-                return j;
+            if (i == 0) {
+                return i;
             }
         }
-        long n = ChunkSectionPos.fromGlobalPos(l);
-        ChunkNibbleArray chunkNibbleArray = ((BlockLightStorage)this.lightStorage).getLightArray(n, true);
+        long l = ChunkSectionPos.fromGlobalPos(id);
+        ChunkNibbleArray chunkNibbleArray = ((BlockLightStorage)this.lightStorage).getLightArray(l, true);
         for (Direction direction : DIRECTIONS) {
-            long p;
+            long n;
             ChunkNibbleArray chunkNibbleArray2;
-            long o = BlockPos.offset(l, direction);
-            if (o == m || (chunkNibbleArray2 = n == (p = ChunkSectionPos.fromGlobalPos(o)) ? chunkNibbleArray : ((BlockLightStorage)this.lightStorage).getLightArray(p, true)) == null) continue;
-            int q = this.getPropagatedLevel(o, l, this.getCurrentLevelFromArray(chunkNibbleArray2, o));
-            if (j > q) {
-                j = q;
+            long m = BlockPos.offset(id, direction);
+            if (m == excludedId || (chunkNibbleArray2 = l == (n = ChunkSectionPos.fromGlobalPos(m)) ? chunkNibbleArray : ((BlockLightStorage)this.lightStorage).getLightArray(n, true)) == null) continue;
+            int k = this.getPropagatedLevel(m, id, this.getCurrentLevelFromArray(chunkNibbleArray2, m));
+            if (i > k) {
+                i = k;
             }
-            if (j != 0) continue;
-            return j;
+            if (i != 0) continue;
+            return i;
         }
-        return j;
+        return i;
     }
 
     @Override
-    public void addLightSource(BlockPos blockPos, int i) {
+    public void addLightSource(BlockPos pos, int level) {
         ((BlockLightStorage)this.lightStorage).updateAll();
-        this.updateLevel(Long.MAX_VALUE, blockPos.asLong(), 15 - i, true);
+        this.updateLevel(Long.MAX_VALUE, pos.asLong(), 15 - level, true);
     }
 }
 

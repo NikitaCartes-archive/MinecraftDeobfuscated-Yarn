@@ -35,13 +35,13 @@ extends ExplosiveProjectileEntity {
         super((EntityType<? extends ExplosiveProjectileEntity>)entityType, world);
     }
 
-    public WitherSkullEntity(World world, LivingEntity livingEntity, double d, double e, double f) {
-        super(EntityType.WITHER_SKULL, livingEntity, d, e, f, world);
+    public WitherSkullEntity(World world, LivingEntity owner, double directionX, double directionY, double directionZ) {
+        super(EntityType.WITHER_SKULL, owner, directionX, directionY, directionZ, world);
     }
 
     @Environment(value=EnvType.CLIENT)
-    public WitherSkullEntity(World world, double d, double e, double f, double g, double h, double i) {
-        super(EntityType.WITHER_SKULL, d, e, f, g, h, i, world);
+    public WitherSkullEntity(World world, double x, double y, double z, double directionX, double directionY, double directionZ) {
+        super(EntityType.WITHER_SKULL, x, y, z, directionX, directionY, directionZ, world);
     }
 
     @Override
@@ -55,11 +55,11 @@ extends ExplosiveProjectileEntity {
     }
 
     @Override
-    public float getEffectiveExplosionResistance(Explosion explosion, BlockView blockView, BlockPos blockPos, BlockState blockState, FluidState fluidState, float f) {
+    public float getEffectiveExplosionResistance(Explosion explosion, BlockView world, BlockPos pos, BlockState blockState, FluidState fluidState, float max) {
         if (this.isCharged() && WitherEntity.canDestroy(blockState)) {
-            return Math.min(0.8f, f);
+            return Math.min(0.8f, max);
         }
-        return f;
+        return max;
     }
 
     @Override
@@ -103,7 +103,7 @@ extends ExplosiveProjectileEntity {
     }
 
     @Override
-    public boolean damage(DamageSource damageSource, float f) {
+    public boolean damage(DamageSource source, float amount) {
         return false;
     }
 
@@ -116,8 +116,8 @@ extends ExplosiveProjectileEntity {
         return this.dataTracker.get(CHARGED);
     }
 
-    public void setCharged(boolean bl) {
-        this.dataTracker.set(CHARGED, bl);
+    public void setCharged(boolean charged) {
+        this.dataTracker.set(CHARGED, charged);
     }
 
     @Override

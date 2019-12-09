@@ -26,8 +26,8 @@ implements ArgumentType<TestFunction> {
     private static final Collection<String> EXAMPLES = Arrays.asList("techtests.piston", "techtests");
 
     @Override
-    public TestFunction parse(StringReader stringReader) throws CommandSyntaxException {
-        String string = stringReader.readUnquotedString();
+    public TestFunction parse(StringReader reader) throws CommandSyntaxException {
+        String string = reader.readUnquotedString();
         Optional<TestFunction> optional = TestFunctions.getTestFunction(string);
         if (optional.isPresent()) {
             return optional.get();
@@ -40,8 +40,8 @@ implements ArgumentType<TestFunction> {
         return new TestFunctionArgumentType();
     }
 
-    public static TestFunction getFunction(CommandContext<ServerCommandSource> commandContext, String string) {
-        return commandContext.getArgument(string, TestFunction.class);
+    public static TestFunction getFunction(CommandContext<ServerCommandSource> context, String name) {
+        return context.getArgument(name, TestFunction.class);
     }
 
     @Override

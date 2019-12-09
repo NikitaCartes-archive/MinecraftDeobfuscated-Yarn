@@ -23,12 +23,12 @@ extends Item {
     }
 
     @Override
-    public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
+    public ActionResult useOnBlock(ItemUsageContext context) {
         BlockPos blockPos;
-        World world = itemUsageContext.getWorld();
-        Block block = world.getBlockState(blockPos = itemUsageContext.getBlockPos()).getBlock();
+        World world = context.getWorld();
+        Block block = world.getBlockState(blockPos = context.getBlockPos()).getBlock();
         if (block.matches(BlockTags.FENCES)) {
-            PlayerEntity playerEntity = itemUsageContext.getPlayer();
+            PlayerEntity playerEntity = context.getPlayer();
             if (!world.isClient && playerEntity != null) {
                 LeadItem.attachHeldMobsToBlock(playerEntity, world, blockPos);
             }

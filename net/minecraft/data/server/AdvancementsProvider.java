@@ -55,8 +55,8 @@ implements DataProvider {
         }
     }
 
-    private static Path getOutput(Path path, Advancement advancement) {
-        return path.resolve("data/" + advancement.getId().getNamespace() + "/advancements/" + advancement.getId().getPath() + ".json");
+    private static Path getOutput(Path rootOutput, Advancement advancement) {
+        return rootOutput.resolve("data/" + advancement.getId().getNamespace() + "/advancements/" + advancement.getId().getPath() + ".json");
     }
 
     @Override

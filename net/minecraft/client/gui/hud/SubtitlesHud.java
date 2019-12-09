@@ -26,8 +26,8 @@ implements ListenerSoundInstance {
     private final List<SubtitleEntry> entries = Lists.newArrayList();
     private boolean enabled;
 
-    public SubtitlesHud(MinecraftClient minecraftClient) {
-        this.client = minecraftClient;
+    public SubtitlesHud(MinecraftClient client) {
+        this.client = client;
     }
 
     public void render() {
@@ -95,19 +95,19 @@ implements ListenerSoundInstance {
     }
 
     @Override
-    public void onSoundPlayed(SoundInstance soundInstance, WeightedSoundSet weightedSoundSet) {
-        if (weightedSoundSet.getSubtitle() == null) {
+    public void onSoundPlayed(SoundInstance sound, WeightedSoundSet soundSet) {
+        if (soundSet.getSubtitle() == null) {
             return;
         }
-        String string = weightedSoundSet.getSubtitle().asFormattedString();
+        String string = soundSet.getSubtitle().asFormattedString();
         if (!this.entries.isEmpty()) {
             for (SubtitleEntry subtitleEntry : this.entries) {
                 if (!subtitleEntry.getText().equals(string)) continue;
-                subtitleEntry.reset(new Vec3d(soundInstance.getX(), soundInstance.getY(), soundInstance.getZ()));
+                subtitleEntry.reset(new Vec3d(sound.getX(), sound.getY(), sound.getZ()));
                 return;
             }
         }
-        this.entries.add(new SubtitleEntry(string, new Vec3d(soundInstance.getX(), soundInstance.getY(), soundInstance.getZ())));
+        this.entries.add(new SubtitleEntry(string, new Vec3d(sound.getX(), sound.getY(), sound.getZ())));
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -116,9 +116,9 @@ implements ListenerSoundInstance {
         private long time;
         private Vec3d pos;
 
-        public SubtitleEntry(String string, Vec3d vec3d) {
-            this.text = string;
-            this.pos = vec3d;
+        public SubtitleEntry(String text, Vec3d pos) {
+            this.text = text;
+            this.pos = pos;
             this.time = Util.getMeasuringTimeMs();
         }
 
@@ -134,8 +134,8 @@ implements ListenerSoundInstance {
             return this.pos;
         }
 
-        public void reset(Vec3d vec3d) {
-            this.pos = vec3d;
+        public void reset(Vec3d pos) {
+            this.pos = pos;
             this.time = Util.getMeasuringTimeMs();
         }
     }

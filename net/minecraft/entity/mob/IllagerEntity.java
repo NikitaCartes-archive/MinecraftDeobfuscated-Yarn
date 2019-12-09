@@ -12,8 +12,8 @@ import net.minecraft.world.World;
 
 public abstract class IllagerEntity
 extends RaiderEntity {
-    protected IllagerEntity(EntityType<? extends IllagerEntity> entityType, World world) {
-        super((EntityType<? extends RaiderEntity>)entityType, world);
+    protected IllagerEntity(EntityType<? extends IllagerEntity> type, World world) {
+        super((EntityType<? extends RaiderEntity>)type, world);
     }
 
     @Override

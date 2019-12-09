@@ -28,10 +28,10 @@ implements RecipeBookProvider {
     private boolean narrow;
     private final Identifier background;
 
-    public AbstractFurnaceScreen(T abstractFurnaceContainer, AbstractFurnaceRecipeBookScreen abstractFurnaceRecipeBookScreen, PlayerInventory playerInventory, Text text, Identifier identifier) {
-        super(abstractFurnaceContainer, playerInventory, text);
-        this.recipeBook = abstractFurnaceRecipeBookScreen;
-        this.background = identifier;
+    public AbstractFurnaceScreen(T container, AbstractFurnaceRecipeBookScreen recipeBook, PlayerInventory inventory, Text title, Identifier background) {
+        super(container, inventory, title);
+        this.recipeBook = recipeBook;
+        this.background = background;
     }
 
     @Override
@@ -55,80 +55,80 @@ implements RecipeBookProvider {
     }
 
     @Override
-    public void render(int i, int j, float f) {
+    public void render(int mouseX, int mouseY, float delta) {
         this.renderBackground();
         if (this.recipeBook.isOpen() && this.narrow) {
-            this.drawBackground(f, i, j);
-            this.recipeBook.render(i, j, f);
+            this.drawBackground(delta, mouseX, mouseY);
+            this.recipeBook.render(mouseX, mouseY, delta);
         } else {
-            this.recipeBook.render(i, j, f);
-            super.render(i, j, f);
-            this.recipeBook.drawGhostSlots(this.x, this.y, true, f);
+            this.recipeBook.render(mouseX, mouseY, delta);
+            super.render(mouseX, mouseY, delta);
+            this.recipeBook.drawGhostSlots(this.x, this.y, true, delta);
         }
-        this.drawMouseoverTooltip(i, j);
-        this.recipeBook.drawTooltip(this.x, this.y, i, j);
+        this.drawMouseoverTooltip(mouseX, mouseY);
+        this.recipeBook.drawTooltip(this.x, this.y, mouseX, mouseY);
     }
 
     @Override
-    protected void drawForeground(int i, int j) {
+    protected void drawForeground(int mouseX, int mouseY) {
         String string = this.title.asFormattedString();
         this.font.draw(string, this.containerWidth / 2 - this.font.getStringWidth(string) / 2, 6.0f, 0x404040);
         this.font.draw(this.playerInventory.getDisplayName().asFormattedString(), 8.0f, this.containerHeight - 96 + 2, 0x404040);
     }
 
     @Override
-    protected void drawBackground(float f, int i, int j) {
-        int m;
+    protected void drawBackground(float delta, int mouseX, int mouseY) {
+        int k;
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.minecraft.getTextureManager().bindTexture(this.background);
-        int k = this.x;
-        int l = this.y;
-        this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);
+        int i = this.x;
+        int j = this.y;
+        this.blit(i, j, 0, 0, this.containerWidth, this.containerHeight);
         if (((AbstractFurnaceContainer)this.container).isBurning()) {
-            m = ((AbstractFurnaceContainer)this.container).getFuelProgress();
-            this.blit(k + 56, l + 36 + 12 - m, 176, 12 - m, 14, m + 1);
+            k = ((AbstractFurnaceContainer)this.container).getFuelProgress();
+            this.blit(i + 56, j + 36 + 12 - k, 176, 12 - k, 14, k + 1);
         }
-        m = ((AbstractFurnaceContainer)this.container).getCookProgress();
-        this.blit(k + 79, l + 34, 176, 14, m + 1, 16);
+        k = ((AbstractFurnaceContainer)this.container).getCookProgress();
+        this.blit(i + 79, j + 34, 176, 14, k + 1, 16);
     }
 
     @Override
-    public boolean mouseClicked(double d, double e, int i) {
-        if (this.recipeBook.mouseClicked(d, e, i)) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (this.recipeBook.mouseClicked(mouseX, mouseY, button)) {
             return true;
         }
         if (this.narrow && this.recipeBook.isOpen()) {
             return true;
         }
-        return super.mouseClicked(d, e, i);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
-    protected void onMouseClick(Slot slot, int i, int j, SlotActionType slotActionType) {
-        super.onMouseClick(slot, i, j, slotActionType);
+    protected void onMouseClick(Slot slot, int invSlot, int button, SlotActionType slotActionType) {
+        super.onMouseClick(slot, invSlot, button, slotActionType);
         this.recipeBook.slotClicked(slot);
     }
 
     @Override
-    public boolean keyPressed(int i, int j, int k) {
-        if (this.recipeBook.keyPressed(i, j, k)) {
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (this.recipeBook.keyPressed(keyCode, scanCode, modifiers)) {
             return false;
         }
-        return super.keyPressed(i, j, k);
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
-    protected boolean isClickOutsideBounds(double d, double e, int i, int j, int k) {
-        boolean bl = d < (double)i || e < (double)j || d >= (double)(i + this.containerWidth) || e >= (double)(j + this.containerHeight);
-        return this.recipeBook.isClickOutsideBounds(d, e, this.x, this.y, this.containerWidth, this.containerHeight, k) && bl;
+    protected boolean isClickOutsideBounds(double mouseX, double mouseY, int left, int top, int button) {
+        boolean bl = mouseX < (double)left || mouseY < (double)top || mouseX >= (double)(left + this.containerWidth) || mouseY >= (double)(top + this.containerHeight);
+        return this.recipeBook.isClickOutsideBounds(mouseX, mouseY, this.x, this.y, this.containerWidth, this.containerHeight, button) && bl;
     }
 
     @Override
-    public boolean charTyped(char c, int i) {
-        if (this.recipeBook.charTyped(c, i)) {
+    public boolean charTyped(char chr, int keyCode) {
+        if (this.recipeBook.charTyped(chr, keyCode)) {
             return true;
         }
-        return super.charTyped(c, i);
+        return super.charTyped(chr, keyCode);
     }
 
     @Override

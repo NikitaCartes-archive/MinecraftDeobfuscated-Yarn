@@ -46,8 +46,8 @@ Iterable<Text> {
 
     public Style getStyle();
 
-    default public Text append(String string) {
-        return this.append(new LiteralText(string));
+    default public Text append(String text) {
+        return this.append(new LiteralText(text));
     }
 
     public Text append(Text var1);
@@ -61,13 +61,13 @@ Iterable<Text> {
         return stringBuilder.toString();
     }
 
-    default public String asTruncatedString(int i) {
-        int j;
+    default public String asTruncatedString(int length) {
+        int i;
         StringBuilder stringBuilder = new StringBuilder();
         Iterator iterator = this.stream().iterator();
-        while (iterator.hasNext() && (j = i - stringBuilder.length()) > 0) {
+        while (iterator.hasNext() && (i = length - stringBuilder.length()) > 0) {
             String string = ((Text)iterator.next()).asString();
-            stringBuilder.append(string.length() <= j ? string : string.substring(0, j));
+            stringBuilder.append(string.length() <= i ? string : string.substring(0, i));
         }
         return stringBuilder.toString();
     }
@@ -120,14 +120,14 @@ Iterable<Text> {
         return text;
     }
 
-    default public Text styled(Consumer<Style> consumer) {
-        consumer.accept(this.getStyle());
+    default public Text styled(Consumer<Style> transformer) {
+        transformer.accept(this.getStyle());
         return this;
     }
 
-    default public Text formatted(Formatting ... formattings) {
-        for (Formatting formatting : formattings) {
-            this.formatted(formatting);
+    default public Text formatted(Formatting ... formatting) {
+        for (Formatting formatting2 : formatting) {
+            this.formatted(formatting2);
         }
         return this;
     }
@@ -282,12 +282,12 @@ Iterable<Text> {
             return var5_19;
         }
 
-        private void addStyle(Style style, JsonObject jsonObject, JsonSerializationContext jsonSerializationContext) {
-            JsonElement jsonElement = jsonSerializationContext.serialize(style);
+        private void addStyle(Style style, JsonObject json, JsonSerializationContext context) {
+            JsonElement jsonElement = context.serialize(style);
             if (jsonElement.isJsonObject()) {
-                JsonObject jsonObject2 = (JsonObject)jsonElement;
-                for (Map.Entry<String, JsonElement> entry : jsonObject2.entrySet()) {
-                    jsonObject.add(entry.getKey(), entry.getValue());
+                JsonObject jsonObject = (JsonObject)jsonElement;
+                for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
+                    json.add(entry.getKey(), entry.getValue());
                 }
             }
         }
@@ -373,48 +373,48 @@ Iterable<Text> {
         }
 
         @Nullable
-        public static Text fromJson(String string) {
-            return JsonHelper.deserialize(GSON, string, Text.class, false);
+        public static Text fromJson(String json) {
+            return JsonHelper.deserialize(GSON, json, Text.class, false);
         }
 
         @Nullable
-        public static Text fromJson(JsonElement jsonElement) {
-            return GSON.fromJson(jsonElement, Text.class);
+        public static Text fromJson(JsonElement json) {
+            return GSON.fromJson(json, Text.class);
         }
 
         @Nullable
-        public static Text fromLenientJson(String string) {
-            return JsonHelper.deserialize(GSON, string, Text.class, true);
+        public static Text fromLenientJson(String json) {
+            return JsonHelper.deserialize(GSON, json, Text.class, true);
         }
 
-        public static Text fromJson(com.mojang.brigadier.StringReader stringReader) {
+        public static Text fromJson(com.mojang.brigadier.StringReader reader) {
             try {
-                JsonReader jsonReader = new JsonReader(new StringReader(stringReader.getRemaining()));
+                JsonReader jsonReader = new JsonReader(new StringReader(reader.getRemaining()));
                 jsonReader.setLenient(false);
                 Text text = GSON.getAdapter(Text.class).read(jsonReader);
-                stringReader.setCursor(stringReader.getCursor() + Serializer.getPosition(jsonReader));
+                reader.setCursor(reader.getCursor() + Serializer.getPosition(jsonReader));
                 return text;
             } catch (IOException | StackOverflowError throwable) {
                 throw new JsonParseException(throwable);
             }
         }
 
-        private static int getPosition(JsonReader jsonReader) {
+        private static int getPosition(JsonReader reader) {
             try {
-                return JSON_READER_POS.getInt(jsonReader) - JSON_READER_LINE_START.getInt(jsonReader) + 1;
+                return JSON_READER_POS.getInt(reader) - JSON_READER_LINE_START.getInt(reader) + 1;
             } catch (IllegalAccessException illegalAccessException) {
                 throw new IllegalStateException("Couldn't read position of JsonReader", illegalAccessException);
             }
         }
 
         @Override
-        public /* synthetic */ JsonElement serialize(Object object, Type type, JsonSerializationContext jsonSerializationContext) {
-            return this.serialize((Text)object, type, jsonSerializationContext);
+        public /* synthetic */ JsonElement serialize(Object text, Type type, JsonSerializationContext context) {
+            return this.serialize((Text)text, type, context);
         }
 
         @Override
-        public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.deserialize(jsonElement, type, jsonDeserializationContext);
+        public /* synthetic */ Object deserialize(JsonElement json, Type type, JsonDeserializationContext context) throws JsonParseException {
+            return this.deserialize(json, type, context);
         }
     }
 }

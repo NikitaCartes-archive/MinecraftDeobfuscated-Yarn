@@ -13,8 +13,8 @@ import net.minecraft.datafixers.TypeReferences;
 
 public class OptionsLowerCaseLanguageFix
 extends DataFix {
-    public OptionsLowerCaseLanguageFix(Schema schema, boolean bl) {
-        super(schema, bl);
+    public OptionsLowerCaseLanguageFix(Schema outputSchema, boolean changesType) {
+        super(outputSchema, changesType);
     }
 
     @Override

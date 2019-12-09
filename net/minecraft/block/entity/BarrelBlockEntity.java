@@ -38,20 +38,20 @@ extends LootableContainerBlockEntity {
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag compoundTag) {
-        super.toTag(compoundTag);
-        if (!this.serializeLootTable(compoundTag)) {
-            Inventories.toTag(compoundTag, this.inventory);
+    public CompoundTag toTag(CompoundTag tag) {
+        super.toTag(tag);
+        if (!this.serializeLootTable(tag)) {
+            Inventories.toTag(tag, this.inventory);
         }
-        return compoundTag;
+        return tag;
     }
 
     @Override
-    public void fromTag(CompoundTag compoundTag) {
-        super.fromTag(compoundTag);
+    public void fromTag(CompoundTag tag) {
+        super.fromTag(tag);
         this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
-        if (!this.deserializeLootTable(compoundTag)) {
-            Inventories.fromTag(compoundTag, this.inventory);
+        if (!this.deserializeLootTable(tag)) {
+            Inventories.fromTag(tag, this.inventory);
         }
     }
 
@@ -66,8 +66,8 @@ extends LootableContainerBlockEntity {
     }
 
     @Override
-    protected void setInvStackList(DefaultedList<ItemStack> defaultedList) {
-        this.inventory = defaultedList;
+    protected void setInvStackList(DefaultedList<ItemStack> list) {
+        this.inventory = list;
     }
 
     @Override
@@ -81,8 +81,8 @@ extends LootableContainerBlockEntity {
     }
 
     @Override
-    public void onInvOpen(PlayerEntity playerEntity) {
-        if (!playerEntity.isSpectator()) {
+    public void onInvOpen(PlayerEntity player) {
+        if (!player.isSpectator()) {
             if (this.viewerCount < 0) {
                 this.viewerCount = 0;
             }
@@ -123,14 +123,14 @@ extends LootableContainerBlockEntity {
     }
 
     @Override
-    public void onInvClose(PlayerEntity playerEntity) {
-        if (!playerEntity.isSpectator()) {
+    public void onInvClose(PlayerEntity player) {
+        if (!player.isSpectator()) {
             --this.viewerCount;
         }
     }
 
-    private void setOpen(BlockState blockState, boolean bl) {
-        this.world.setBlockState(this.getPos(), (BlockState)blockState.with(BarrelBlock.OPEN, bl), 3);
+    private void setOpen(BlockState state, boolean open) {
+        this.world.setBlockState(this.getPos(), (BlockState)state.with(BarrelBlock.OPEN, open), 3);
     }
 
     private void playSound(BlockState blockState, SoundEvent soundEvent) {

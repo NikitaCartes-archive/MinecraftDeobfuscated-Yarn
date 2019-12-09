@@ -20,37 +20,37 @@ public class FishingRodItem
 extends Item {
     public FishingRodItem(Item.Settings settings) {
         super(settings);
-        this.addPropertyGetter(new Identifier("cast"), (itemStack, world, livingEntity) -> {
+        this.addPropertyGetter(new Identifier("cast"), (stack, world, entity) -> {
             boolean bl2;
-            if (livingEntity == null) {
+            if (entity == null) {
                 return 0.0f;
             }
-            boolean bl = livingEntity.getMainHandStack() == itemStack;
-            boolean bl3 = bl2 = livingEntity.getOffHandStack() == itemStack;
-            if (livingEntity.getMainHandStack().getItem() instanceof FishingRodItem) {
+            boolean bl = entity.getMainHandStack() == stack;
+            boolean bl3 = bl2 = entity.getOffHandStack() == stack;
+            if (entity.getMainHandStack().getItem() instanceof FishingRodItem) {
                 bl2 = false;
             }
-            return (bl || bl2) && livingEntity instanceof PlayerEntity && ((PlayerEntity)livingEntity).fishHook != null ? 1.0f : 0.0f;
+            return (bl || bl2) && entity instanceof PlayerEntity && ((PlayerEntity)entity).fishHook != null ? 1.0f : 0.0f;
         });
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity2, Hand hand) {
-        ItemStack itemStack = playerEntity2.getStackInHand(hand);
-        if (playerEntity2.fishHook != null) {
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+        ItemStack itemStack = user.getStackInHand(hand);
+        if (user.fishHook != null) {
             if (!world.isClient) {
-                int i = playerEntity2.fishHook.use(itemStack);
-                itemStack.damage(i, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(hand));
+                int i = user.fishHook.use(itemStack);
+                itemStack.damage(i, user, p -> p.sendToolBreakStatus(hand));
             }
-            world.playSound(null, playerEntity2.getX(), playerEntity2.getY(), playerEntity2.getZ(), SoundEvents.ENTITY_FISHING_BOBBER_RETRIEVE, SoundCategory.NEUTRAL, 1.0f, 0.4f / (RANDOM.nextFloat() * 0.4f + 0.8f));
+            world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_FISHING_BOBBER_RETRIEVE, SoundCategory.NEUTRAL, 1.0f, 0.4f / (RANDOM.nextFloat() * 0.4f + 0.8f));
         } else {
-            world.playSound(null, playerEntity2.getX(), playerEntity2.getY(), playerEntity2.getZ(), SoundEvents.ENTITY_FISHING_BOBBER_THROW, SoundCategory.NEUTRAL, 0.5f, 0.4f / (RANDOM.nextFloat() * 0.4f + 0.8f));
+            world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_FISHING_BOBBER_THROW, SoundCategory.NEUTRAL, 0.5f, 0.4f / (RANDOM.nextFloat() * 0.4f + 0.8f));
             if (!world.isClient) {
                 int i = EnchantmentHelper.getLure(itemStack);
                 int j = EnchantmentHelper.getLuckOfTheSea(itemStack);
-                world.spawnEntity(new FishingBobberEntity(playerEntity2, world, j, i));
+                world.spawnEntity(new FishingBobberEntity(user, world, j, i));
             }
-            playerEntity2.incrementStat(Stats.USED.getOrCreateStat(this));
+            user.incrementStat(Stats.USED.getOrCreateStat(this));
         }
         return TypedActionResult.success(itemStack);
     }

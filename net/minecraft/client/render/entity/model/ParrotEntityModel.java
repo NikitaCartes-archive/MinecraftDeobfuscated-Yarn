@@ -91,9 +91,9 @@ extends CompositeEntityModel<ParrotEntity> {
         this.getParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j));
     }
 
-    private void method_17111(Pose pose, int i, float f, float g, float h, float j, float k) {
-        this.head.pitch = k * ((float)Math.PI / 180);
-        this.head.yaw = j * ((float)Math.PI / 180);
+    private void method_17111(Pose pose, int age, float limbAngle, float limbDistance, float age2, float headYaw, float headPitch) {
+        this.head.pitch = headPitch * ((float)Math.PI / 180);
+        this.head.yaw = headYaw * ((float)Math.PI / 180);
         this.head.roll = 0.0f;
         this.head.pivotX = 0.0f;
         this.torso.pivotX = 0.0f;
@@ -105,41 +105,41 @@ extends CompositeEntityModel<ParrotEntity> {
                 break;
             }
             case PARTY: {
-                float l = MathHelper.cos(i);
-                float m = MathHelper.sin(i);
-                this.head.pivotX = l;
-                this.head.pivotY = 15.69f + m;
+                float f = MathHelper.cos(age);
+                float g = MathHelper.sin(age);
+                this.head.pivotX = f;
+                this.head.pivotY = 15.69f + g;
                 this.head.pitch = 0.0f;
                 this.head.yaw = 0.0f;
-                this.head.roll = MathHelper.sin(i) * 0.4f;
-                this.torso.pivotX = l;
-                this.torso.pivotY = 16.5f + m;
-                this.leftWing.roll = -0.0873f - h;
-                this.leftWing.pivotX = 1.5f + l;
-                this.leftWing.pivotY = 16.94f + m;
-                this.rightWing.roll = 0.0873f + h;
-                this.rightWing.pivotX = -1.5f + l;
-                this.rightWing.pivotY = 16.94f + m;
-                this.tail.pivotX = l;
-                this.tail.pivotY = 21.07f + m;
+                this.head.roll = MathHelper.sin(age) * 0.4f;
+                this.torso.pivotX = f;
+                this.torso.pivotY = 16.5f + g;
+                this.leftWing.roll = -0.0873f - age2;
+                this.leftWing.pivotX = 1.5f + f;
+                this.leftWing.pivotY = 16.94f + g;
+                this.rightWing.roll = 0.0873f + age2;
+                this.rightWing.pivotX = -1.5f + f;
+                this.rightWing.pivotY = 16.94f + g;
+                this.tail.pivotX = f;
+                this.tail.pivotY = 21.07f + g;
                 break;
             }
             case STANDING: {
-                this.leftLeg.pitch += MathHelper.cos(f * 0.6662f) * 1.4f * g;
-                this.rightLeg.pitch += MathHelper.cos(f * 0.6662f + (float)Math.PI) * 1.4f * g;
+                this.leftLeg.pitch += MathHelper.cos(limbAngle * 0.6662f) * 1.4f * limbDistance;
+                this.rightLeg.pitch += MathHelper.cos(limbAngle * 0.6662f + (float)Math.PI) * 1.4f * limbDistance;
             }
             default: {
-                float n = h * 0.3f;
-                this.head.pivotY = 15.69f + n;
-                this.tail.pitch = 1.015f + MathHelper.cos(f * 0.6662f) * 0.3f * g;
-                this.tail.pivotY = 21.07f + n;
-                this.torso.pivotY = 16.5f + n;
-                this.leftWing.roll = -0.0873f - h;
-                this.leftWing.pivotY = 16.94f + n;
-                this.rightWing.roll = 0.0873f + h;
-                this.rightWing.pivotY = 16.94f + n;
-                this.leftLeg.pivotY = 22.0f + n;
-                this.rightLeg.pivotY = 22.0f + n;
+                float h = age2 * 0.3f;
+                this.head.pivotY = 15.69f + h;
+                this.tail.pitch = 1.015f + MathHelper.cos(limbAngle * 0.6662f) * 0.3f * limbDistance;
+                this.tail.pivotY = 21.07f + h;
+                this.torso.pivotY = 16.5f + h;
+                this.leftWing.roll = -0.0873f - age2;
+                this.leftWing.pivotY = 16.94f + h;
+                this.rightWing.roll = 0.0873f + age2;
+                this.rightWing.pivotY = 16.94f + h;
+                this.leftLeg.pivotY = 22.0f + h;
+                this.rightLeg.pivotY = 22.0f + h;
             }
         }
     }

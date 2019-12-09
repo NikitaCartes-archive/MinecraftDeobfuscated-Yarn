@@ -32,10 +32,10 @@ extends ConditionalLootFunction {
     private final Block block;
     private final Set<Property<?>> properties;
 
-    private CopyStateFunction(LootCondition[] lootConditions, Block block, Set<Property<?>> set) {
+    private CopyStateFunction(LootCondition[] lootConditions, Block block, Set<Property<?>> properties) {
         super(lootConditions);
         this.block = block;
-        this.properties = set;
+        this.properties = properties;
     }
 
     @Override
@@ -44,11 +44,11 @@ extends ConditionalLootFunction {
     }
 
     @Override
-    protected ItemStack process(ItemStack itemStack, LootContext lootContext) {
-        BlockState blockState = lootContext.get(LootContextParameters.BLOCK_STATE);
+    protected ItemStack process(ItemStack stack, LootContext context) {
+        BlockState blockState = context.get(LootContextParameters.BLOCK_STATE);
         if (blockState != null) {
             CompoundTag compoundTag2;
-            CompoundTag compoundTag = itemStack.getOrCreateTag();
+            CompoundTag compoundTag = stack.getOrCreateTag();
             if (compoundTag.contains("BlockStateTag", 10)) {
                 compoundTag2 = compoundTag.getCompound("BlockStateTag");
             } else {
@@ -57,7 +57,7 @@ extends ConditionalLootFunction {
             }
             this.properties.stream().filter(blockState::contains).forEach(property -> compoundTag2.putString(property.getName(), CopyStateFunction.method_21893(blockState, property)));
         }
-        return itemStack;
+        return stack;
     }
 
     public static Builder getBuilder(Block block) {
@@ -98,8 +98,8 @@ extends ConditionalLootFunction {
         }
 
         @Override
-        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
+        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions) {
+            return this.fromJson(json, context, conditions);
         }
     }
 

@@ -46,12 +46,12 @@ implements AutoCloseable {
     private final DataFixer dataFixer;
     private final DataFixTypes dataFixType;
 
-    public SerializingRegionBasedStorage(File file, BiFunction<Runnable, Dynamic<?>, R> biFunction, Function<Runnable, R> function, DataFixer dataFixer, DataFixTypes dataFixTypes) {
-        this.deserializer = biFunction;
-        this.factory = function;
+    public SerializingRegionBasedStorage(File directory, BiFunction<Runnable, Dynamic<?>, R> deserializer, Function<Runnable, R> factory, DataFixer dataFixer, DataFixTypes dataFixType) {
+        this.deserializer = deserializer;
+        this.factory = factory;
         this.dataFixer = dataFixer;
-        this.dataFixType = dataFixTypes;
-        this.worker = new StorageIoWorker(new RegionBasedStorage(file), file.getName());
+        this.dataFixType = dataFixType;
+        this.worker = new StorageIoWorker(new RegionBasedStorage(directory), directory.getName());
     }
 
     protected void tick(BooleanSupplier booleanSupplier) {
@@ -62,38 +62,38 @@ implements AutoCloseable {
     }
 
     @Nullable
-    protected Optional<R> getIfLoaded(long l) {
-        return (Optional)this.loadedElements.get(l);
+    protected Optional<R> getIfLoaded(long pos) {
+        return (Optional)this.loadedElements.get(pos);
     }
 
-    protected Optional<R> get(long l) {
-        ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(l);
+    protected Optional<R> get(long pos) {
+        ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(pos);
         if (this.isPosInvalid(chunkSectionPos)) {
             return Optional.empty();
         }
-        Optional<R> optional = this.getIfLoaded(l);
+        Optional<R> optional = this.getIfLoaded(pos);
         if (optional != null) {
             return optional;
         }
         this.loadDataAt(chunkSectionPos.toChunkPos());
-        optional = this.getIfLoaded(l);
+        optional = this.getIfLoaded(pos);
         if (optional == null) {
             throw Util.throwOrPause(new IllegalStateException());
         }
         return optional;
     }
 
-    protected boolean isPosInvalid(ChunkSectionPos chunkSectionPos) {
-        return World.isHeightInvalid(ChunkSectionPos.getWorldCoord(chunkSectionPos.getSectionY()));
+    protected boolean isPosInvalid(ChunkSectionPos pos) {
+        return World.isHeightInvalid(ChunkSectionPos.getWorldCoord(pos.getSectionY()));
     }
 
-    protected R getOrCreate(long l) {
-        Optional<R> optional = this.get(l);
+    protected R getOrCreate(long pos) {
+        Optional<R> optional = this.get(pos);
         if (optional.isPresent()) {
             return (R)((DynamicSerializable)optional.get());
         }
-        DynamicSerializable dynamicSerializable = (DynamicSerializable)this.factory.apply(() -> this.onUpdate(l));
-        this.loadedElements.put(l, (Optional<R>)Optional.of(dynamicSerializable));
+        DynamicSerializable dynamicSerializable = (DynamicSerializable)this.factory.apply(() -> this.onUpdate(pos));
+        this.loadedElements.put(pos, (Optional<R>)Optional.of(dynamicSerializable));
         return (R)dynamicSerializable;
     }
 
@@ -159,16 +159,16 @@ implements AutoCloseable {
         return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("Sections"), dynamicOps.createMap(map), dynamicOps.createString("DataVersion"), dynamicOps.createInt(SharedConstants.getGameVersion().getWorldVersion()))));
     }
 
-    protected void onLoad(long l) {
+    protected void onLoad(long pos) {
     }
 
-    protected void onUpdate(long l) {
-        Optional optional = (Optional)this.loadedElements.get(l);
+    protected void onUpdate(long pos) {
+        Optional optional = (Optional)this.loadedElements.get(pos);
         if (optional == null || !optional.isPresent()) {
-            LOGGER.warn("No data for position: {}", (Object)ChunkSectionPos.from(l));
+            LOGGER.warn("No data for position: {}", (Object)ChunkSectionPos.from(pos));
             return;
         }
-        this.unsavedElements.add(l);
+        this.unsavedElements.add(pos);
     }
 
     private static int getDataVersion(Dynamic<?> dynamic) {

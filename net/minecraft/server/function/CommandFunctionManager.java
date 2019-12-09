@@ -52,8 +52,8 @@ implements SynchronousResourceReloadListener {
     private final List<CommandFunction> tickFunctions = Lists.newArrayList();
     private boolean needToRunLoadFunctions;
 
-    public CommandFunctionManager(MinecraftServer minecraftServer) {
-        this.server = minecraftServer;
+    public CommandFunctionManager(MinecraftServer server) {
+        this.server = server;
     }
 
     public Optional<CommandFunction> getFunction(Identifier identifier) {
@@ -96,20 +96,20 @@ implements SynchronousResourceReloadListener {
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    public int execute(CommandFunction commandFunction, ServerCommandSource serverCommandSource) {
+    public int execute(CommandFunction function, ServerCommandSource source) {
         int i = this.getMaxCommandChainLength();
         if (this.executing) {
             if (this.chain.size() + this.pending.size() < i) {
-                this.pending.add(new Entry(this, serverCommandSource, new CommandFunction.FunctionElement(commandFunction)));
+                this.pending.add(new Entry(this, source, new CommandFunction.FunctionElement(function)));
             }
             return 0;
         }
         try {
             this.executing = true;
             int j = 0;
-            CommandFunction.Element[] elements = commandFunction.getElements();
+            CommandFunction.Element[] elements = function.getElements();
             for (int k = elements.length - 1; k >= 0; --k) {
-                this.chain.push(new Entry(this, serverCommandSource, elements[k]));
+                this.chain.push(new Entry(this, source, elements[k]));
             }
             while (!this.chain.isEmpty()) {
                 try {
@@ -137,21 +137,21 @@ implements SynchronousResourceReloadListener {
     }
 
     @Override
-    public void apply(ResourceManager resourceManager) {
+    public void apply(ResourceManager manager) {
         this.idMap.clear();
         this.tickFunctions.clear();
-        Collection<Identifier> collection = resourceManager.findResources("functions", string -> string.endsWith(".mcfunction"));
+        Collection<Identifier> collection = manager.findResources("functions", string -> string.endsWith(".mcfunction"));
         ArrayList<CompletionStage> list2 = Lists.newArrayList();
         for (Identifier identifier : collection) {
             String string2 = identifier.getPath();
             Identifier identifier2 = new Identifier(identifier.getNamespace(), string2.substring(PATH_PREFIX_LENGTH, string2.length() - EXTENSION_LENGTH));
-            list2.add(((CompletableFuture)CompletableFuture.supplyAsync(() -> CommandFunctionManager.readLines(resourceManager, identifier), ResourceImpl.RESOURCE_IO_EXECUTOR).thenApplyAsync(list -> CommandFunction.create(identifier2, this, list), this.server.getWorkerExecutor())).handle((commandFunction, throwable) -> this.load((CommandFunction)commandFunction, (Throwable)throwable, identifier)));
+            list2.add(((CompletableFuture)CompletableFuture.supplyAsync(() -> CommandFunctionManager.readLines(manager, identifier), ResourceImpl.RESOURCE_IO_EXECUTOR).thenApplyAsync(list -> CommandFunction.create(identifier2, this, list), this.server.getWorkerExecutor())).handle((commandFunction, throwable) -> this.load((CommandFunction)commandFunction, (Throwable)throwable, identifier)));
         }
         CompletableFuture.allOf(list2.toArray(new CompletableFuture[0])).join();
         if (!this.idMap.isEmpty()) {
             LOGGER.info("Loaded {} custom command functions", (Object)this.idMap.size());
         }
-        this.tags.applyReload(this.tags.prepareReload(resourceManager, this.server.getWorkerExecutor()).join());
+        this.tags.applyReload(this.tags.prepareReload(manager, this.server.getWorkerExecutor()).join());
         this.tickFunctions.addAll(this.tags.getOrCreate(TICK_FUNCTION).values());
         this.needToRunLoadFunctions = true;
     }
@@ -160,16 +160,16 @@ implements SynchronousResourceReloadListener {
      * WARNING - Removed try catching itself - possible behaviour change.
      */
     @Nullable
-    private CommandFunction load(CommandFunction commandFunction, @Nullable Throwable throwable, Identifier identifier) {
-        if (throwable != null) {
-            LOGGER.error("Couldn't load function at {}", (Object)identifier, (Object)throwable);
+    private CommandFunction load(CommandFunction function, @Nullable Throwable exception, Identifier identifier) {
+        if (exception != null) {
+            LOGGER.error("Couldn't load function at {}", (Object)identifier, (Object)exception);
             return null;
         }
         Map<Identifier, CommandFunction> map = this.idMap;
         synchronized (map) {
-            this.idMap.put(commandFunction.getId(), commandFunction);
+            this.idMap.put(function.getId(), function);
         }
-        return commandFunction;
+        return function;
     }
 
     /*
@@ -203,9 +203,9 @@ implements SynchronousResourceReloadListener {
         private final ServerCommandSource source;
         private final CommandFunction.Element element;
 
-        public Entry(CommandFunctionManager commandFunctionManager, ServerCommandSource serverCommandSource, CommandFunction.Element element) {
-            this.manager = commandFunctionManager;
-            this.source = serverCommandSource;
+        public Entry(CommandFunctionManager manger, ServerCommandSource source, CommandFunction.Element element) {
+            this.manager = manger;
+            this.source = source;
             this.element = element;
         }
 

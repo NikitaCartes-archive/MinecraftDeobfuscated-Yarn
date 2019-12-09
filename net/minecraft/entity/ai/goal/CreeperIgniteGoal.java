@@ -13,8 +13,8 @@ extends Goal {
     private final CreeperEntity creeper;
     private LivingEntity target;
 
-    public CreeperIgniteGoal(CreeperEntity creeperEntity) {
-        this.creeper = creeperEntity;
+    public CreeperIgniteGoal(CreeperEntity creeper) {
+        this.creeper = creeper;
         this.setControls(EnumSet.of(Goal.Control.MOVE));
     }
 

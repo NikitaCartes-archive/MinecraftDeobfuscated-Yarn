@@ -13,8 +13,8 @@ import net.minecraft.datafixers.TypeReferences;
 
 public class EntityStringUuidFix
 extends DataFix {
-    public EntityStringUuidFix(Schema schema, boolean bl) {
-        super(schema, bl);
+    public EntityStringUuidFix(Schema outputSchema, boolean changesType) {
+        super(outputSchema, changesType);
     }
 
     @Override

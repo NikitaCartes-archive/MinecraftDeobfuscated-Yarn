@@ -36,52 +36,52 @@ public class BlockColors {
 
     public static BlockColors create() {
         BlockColors blockColors = new BlockColors();
-        blockColors.registerColorProvider((blockState, blockRenderView, blockPos, i) -> {
-            if (blockRenderView == null || blockPos == null) {
+        blockColors.registerColorProvider((state, view, pos, tintIndex) -> {
+            if (view == null || pos == null) {
                 return -1;
             }
-            return BiomeColors.getGrassColor(blockRenderView, blockState.get(ReplaceableTallPlantBlock.HALF) == DoubleBlockHalf.UPPER ? blockPos.down() : blockPos);
+            return BiomeColors.getGrassColor(view, state.get(ReplaceableTallPlantBlock.HALF) == DoubleBlockHalf.UPPER ? pos.down() : pos);
         }, Blocks.LARGE_FERN, Blocks.TALL_GRASS);
         blockColors.registerColorProperty(ReplaceableTallPlantBlock.HALF, Blocks.LARGE_FERN, Blocks.TALL_GRASS);
-        blockColors.registerColorProvider((blockState, blockRenderView, blockPos, i) -> {
-            if (blockRenderView == null || blockPos == null) {
+        blockColors.registerColorProvider((state, view, pos, tintIndex) -> {
+            if (view == null || pos == null) {
                 return GrassColors.getColor(0.5, 1.0);
             }
-            return BiomeColors.getGrassColor(blockRenderView, blockPos);
+            return BiomeColors.getGrassColor(view, pos);
         }, Blocks.GRASS_BLOCK, Blocks.FERN, Blocks.GRASS, Blocks.POTTED_FERN);
-        blockColors.registerColorProvider((blockState, blockRenderView, blockPos, i) -> FoliageColors.getSpruceColor(), Blocks.SPRUCE_LEAVES);
-        blockColors.registerColorProvider((blockState, blockRenderView, blockPos, i) -> FoliageColors.getBirchColor(), Blocks.BIRCH_LEAVES);
-        blockColors.registerColorProvider((blockState, blockRenderView, blockPos, i) -> {
-            if (blockRenderView == null || blockPos == null) {
+        blockColors.registerColorProvider((state, view, pos, tintIndex) -> FoliageColors.getSpruceColor(), Blocks.SPRUCE_LEAVES);
+        blockColors.registerColorProvider((state, view, pos, tintIndex) -> FoliageColors.getBirchColor(), Blocks.BIRCH_LEAVES);
+        blockColors.registerColorProvider((state, view, pos, tintIndex) -> {
+            if (view == null || pos == null) {
                 return FoliageColors.getDefaultColor();
             }
-            return BiomeColors.getFoliageColor(blockRenderView, blockPos);
+            return BiomeColors.getFoliageColor(view, pos);
         }, Blocks.OAK_LEAVES, Blocks.JUNGLE_LEAVES, Blocks.ACACIA_LEAVES, Blocks.DARK_OAK_LEAVES, Blocks.VINE);
-        blockColors.registerColorProvider((blockState, blockRenderView, blockPos, i) -> {
-            if (blockRenderView == null || blockPos == null) {
+        blockColors.registerColorProvider((state, view, pos, tintIndex) -> {
+            if (view == null || pos == null) {
                 return -1;
             }
-            return BiomeColors.getWaterColor(blockRenderView, blockPos);
+            return BiomeColors.getWaterColor(view, pos);
         }, Blocks.WATER, Blocks.BUBBLE_COLUMN, Blocks.CAULDRON);
-        blockColors.registerColorProvider((blockState, blockRenderView, blockPos, i) -> RedstoneWireBlock.getWireColor(blockState.get(RedstoneWireBlock.POWER)), Blocks.REDSTONE_WIRE);
+        blockColors.registerColorProvider((state, view, pos, tintIndex) -> RedstoneWireBlock.getWireColor(state.get(RedstoneWireBlock.POWER)), Blocks.REDSTONE_WIRE);
         blockColors.registerColorProperty(RedstoneWireBlock.POWER, Blocks.REDSTONE_WIRE);
-        blockColors.registerColorProvider((blockState, blockRenderView, blockPos, i) -> {
-            if (blockRenderView == null || blockPos == null) {
+        blockColors.registerColorProvider((state, view, pos, tintIndex) -> {
+            if (view == null || pos == null) {
                 return -1;
             }
-            return BiomeColors.getGrassColor(blockRenderView, blockPos);
+            return BiomeColors.getGrassColor(view, pos);
         }, Blocks.SUGAR_CANE);
-        blockColors.registerColorProvider((blockState, blockRenderView, blockPos, i) -> 14731036, Blocks.ATTACHED_MELON_STEM, Blocks.ATTACHED_PUMPKIN_STEM);
-        blockColors.registerColorProvider((blockState, blockRenderView, blockPos, i) -> {
-            int j = blockState.get(StemBlock.AGE);
-            int k = j * 32;
-            int l = 255 - j * 8;
-            int m = j * 4;
-            return k << 16 | l << 8 | m;
+        blockColors.registerColorProvider((state, view, pos, tintIndex) -> 14731036, Blocks.ATTACHED_MELON_STEM, Blocks.ATTACHED_PUMPKIN_STEM);
+        blockColors.registerColorProvider((state, view, pos, tintIndex) -> {
+            int i = state.get(StemBlock.AGE);
+            int j = i * 32;
+            int k = 255 - i * 8;
+            int l = i * 4;
+            return j << 16 | k << 8 | l;
         }, Blocks.MELON_STEM, Blocks.PUMPKIN_STEM);
         blockColors.registerColorProperty(StemBlock.AGE, Blocks.MELON_STEM, Blocks.PUMPKIN_STEM);
-        blockColors.registerColorProvider((blockState, blockRenderView, blockPos, i) -> {
-            if (blockRenderView == null || blockPos == null) {
+        blockColors.registerColorProvider((state, view, pos, tintIndex) -> {
+            if (view == null || pos == null) {
                 return 7455580;
             }
             return 2129968;
@@ -89,29 +89,29 @@ public class BlockColors {
         return blockColors;
     }
 
-    public int getColor(BlockState blockState, World world, BlockPos blockPos) {
-        BlockColorProvider blockColorProvider = this.providers.get(Registry.BLOCK.getRawId(blockState.getBlock()));
+    public int getColor(BlockState state, World world, BlockPos pos) {
+        BlockColorProvider blockColorProvider = this.providers.get(Registry.BLOCK.getRawId(state.getBlock()));
         if (blockColorProvider != null) {
-            return blockColorProvider.getColor(blockState, null, null, 0);
+            return blockColorProvider.getColor(state, null, null, 0);
         }
-        MaterialColor materialColor = blockState.getTopMaterialColor(world, blockPos);
+        MaterialColor materialColor = state.getTopMaterialColor(world, pos);
         return materialColor != null ? materialColor.color : -1;
     }
 
-    public int getColor(BlockState blockState, @Nullable BlockRenderView blockRenderView, @Nullable BlockPos blockPos, int i) {
-        BlockColorProvider blockColorProvider = this.providers.get(Registry.BLOCK.getRawId(blockState.getBlock()));
-        return blockColorProvider == null ? -1 : blockColorProvider.getColor(blockState, blockRenderView, blockPos, i);
+    public int getColor(BlockState state, @Nullable BlockRenderView view, @Nullable BlockPos pos, int tint) {
+        BlockColorProvider blockColorProvider = this.providers.get(Registry.BLOCK.getRawId(state.getBlock()));
+        return blockColorProvider == null ? -1 : blockColorProvider.getColor(state, view, pos, tint);
     }
 
-    public void registerColorProvider(BlockColorProvider blockColorProvider, Block ... blocks) {
+    public void registerColorProvider(BlockColorProvider provider, Block ... blocks) {
         for (Block block : blocks) {
-            this.providers.set(blockColorProvider, Registry.BLOCK.getRawId(block));
+            this.providers.set(provider, Registry.BLOCK.getRawId(block));
         }
     }
 
-    private void registerColorProperties(Set<Property<?>> set, Block ... blocks) {
+    private void registerColorProperties(Set<Property<?>> properties, Block ... blocks) {
         for (Block block : blocks) {
-            this.properties.put(block, set);
+            this.properties.put(block, properties);
         }
     }
 

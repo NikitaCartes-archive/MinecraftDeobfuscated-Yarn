@@ -55,8 +55,8 @@ public final class VoxelShapes {
         return FULL_CUBE;
     }
 
-    public static VoxelShape cuboid(double d, double e, double f, double g, double h, double i) {
-        return VoxelShapes.cuboid(new Box(d, e, f, g, h, i));
+    public static VoxelShape cuboid(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax) {
+        return VoxelShapes.cuboid(new Box(xMin, yMin, zMin, xMax, yMax, zMax));
     }
 
     public static VoxelShape cuboid(Box box) {
@@ -89,131 +89,131 @@ public final class VoxelShapes {
         return new SimpleVoxelShape(bitSetVoxelSet);
     }
 
-    private static int findRequiredBitResolution(double d, double e) {
-        if (d < -1.0E-7 || e > 1.0000001) {
+    private static int findRequiredBitResolution(double min, double max) {
+        if (min < -1.0E-7 || max > 1.0000001) {
             return -1;
         }
         for (int i = 0; i <= 3; ++i) {
             boolean bl2;
-            double f = d * (double)(1 << i);
-            double g = e * (double)(1 << i);
-            boolean bl = Math.abs(f - Math.floor(f)) < 1.0E-7;
-            boolean bl3 = bl2 = Math.abs(g - Math.floor(g)) < 1.0E-7;
+            double d = min * (double)(1 << i);
+            double e = max * (double)(1 << i);
+            boolean bl = Math.abs(d - Math.floor(d)) < 1.0E-7;
+            boolean bl3 = bl2 = Math.abs(e - Math.floor(e)) < 1.0E-7;
             if (!bl || !bl2) continue;
             return i;
         }
         return -1;
     }
 
-    protected static long lcm(int i, int j) {
-        return (long)i * (long)(j / IntMath.gcd(i, j));
+    protected static long lcm(int a, int b) {
+        return (long)a * (long)(b / IntMath.gcd(a, b));
     }
 
-    public static VoxelShape union(VoxelShape voxelShape, VoxelShape voxelShape2) {
-        return VoxelShapes.combineAndSimplify(voxelShape, voxelShape2, BooleanBiFunction.OR);
+    public static VoxelShape union(VoxelShape first, VoxelShape second) {
+        return VoxelShapes.combineAndSimplify(first, second, BooleanBiFunction.OR);
     }
 
-    public static VoxelShape union(VoxelShape voxelShape, VoxelShape ... voxelShapes) {
-        return Arrays.stream(voxelShapes).reduce(voxelShape, VoxelShapes::union);
+    public static VoxelShape union(VoxelShape first, VoxelShape ... others) {
+        return Arrays.stream(others).reduce(first, VoxelShapes::union);
     }
 
-    public static VoxelShape combineAndSimplify(VoxelShape voxelShape, VoxelShape voxelShape2, BooleanBiFunction booleanBiFunction) {
-        return VoxelShapes.combine(voxelShape, voxelShape2, booleanBiFunction).simplify();
+    public static VoxelShape combineAndSimplify(VoxelShape first, VoxelShape second, BooleanBiFunction function) {
+        return VoxelShapes.combine(first, second, function).simplify();
     }
 
-    public static VoxelShape combine(VoxelShape voxelShape, VoxelShape voxelShape2, BooleanBiFunction booleanBiFunction) {
-        if (booleanBiFunction.apply(false, false)) {
+    public static VoxelShape combine(VoxelShape one, VoxelShape two, BooleanBiFunction function) {
+        if (function.apply(false, false)) {
             throw Util.throwOrPause(new IllegalArgumentException());
         }
-        if (voxelShape == voxelShape2) {
-            return booleanBiFunction.apply(true, true) ? voxelShape : VoxelShapes.empty();
+        if (one == two) {
+            return function.apply(true, true) ? one : VoxelShapes.empty();
         }
-        boolean bl = booleanBiFunction.apply(true, false);
-        boolean bl2 = booleanBiFunction.apply(false, true);
-        if (voxelShape.isEmpty()) {
-            return bl2 ? voxelShape2 : VoxelShapes.empty();
+        boolean bl = function.apply(true, false);
+        boolean bl2 = function.apply(false, true);
+        if (one.isEmpty()) {
+            return bl2 ? two : VoxelShapes.empty();
         }
-        if (voxelShape2.isEmpty()) {
-            return bl ? voxelShape : VoxelShapes.empty();
+        if (two.isEmpty()) {
+            return bl ? one : VoxelShapes.empty();
         }
-        PairList pairList = VoxelShapes.createListPair(1, voxelShape.getPointPositions(Direction.Axis.X), voxelShape2.getPointPositions(Direction.Axis.X), bl, bl2);
-        PairList pairList2 = VoxelShapes.createListPair(pairList.getPairs().size() - 1, voxelShape.getPointPositions(Direction.Axis.Y), voxelShape2.getPointPositions(Direction.Axis.Y), bl, bl2);
-        PairList pairList3 = VoxelShapes.createListPair((pairList.getPairs().size() - 1) * (pairList2.getPairs().size() - 1), voxelShape.getPointPositions(Direction.Axis.Z), voxelShape2.getPointPositions(Direction.Axis.Z), bl, bl2);
-        BitSetVoxelSet bitSetVoxelSet = BitSetVoxelSet.combine(voxelShape.voxels, voxelShape2.voxels, pairList, pairList2, pairList3, booleanBiFunction);
+        PairList pairList = VoxelShapes.createListPair(1, one.getPointPositions(Direction.Axis.X), two.getPointPositions(Direction.Axis.X), bl, bl2);
+        PairList pairList2 = VoxelShapes.createListPair(pairList.getPairs().size() - 1, one.getPointPositions(Direction.Axis.Y), two.getPointPositions(Direction.Axis.Y), bl, bl2);
+        PairList pairList3 = VoxelShapes.createListPair((pairList.getPairs().size() - 1) * (pairList2.getPairs().size() - 1), one.getPointPositions(Direction.Axis.Z), two.getPointPositions(Direction.Axis.Z), bl, bl2);
+        BitSetVoxelSet bitSetVoxelSet = BitSetVoxelSet.combine(one.voxels, two.voxels, pairList, pairList2, pairList3, function);
         if (pairList instanceof FractionalPairList && pairList2 instanceof FractionalPairList && pairList3 instanceof FractionalPairList) {
             return new SimpleVoxelShape(bitSetVoxelSet);
         }
         return new ArrayVoxelShape((VoxelSet)bitSetVoxelSet, pairList.getPairs(), pairList2.getPairs(), pairList3.getPairs());
     }
 
-    public static boolean matchesAnywhere(VoxelShape voxelShape, VoxelShape voxelShape2, BooleanBiFunction booleanBiFunction) {
-        if (booleanBiFunction.apply(false, false)) {
+    public static boolean matchesAnywhere(VoxelShape shape1, VoxelShape shape2, BooleanBiFunction predicate) {
+        if (predicate.apply(false, false)) {
             throw Util.throwOrPause(new IllegalArgumentException());
         }
-        if (voxelShape == voxelShape2) {
-            return booleanBiFunction.apply(true, true);
+        if (shape1 == shape2) {
+            return predicate.apply(true, true);
         }
-        if (voxelShape.isEmpty()) {
-            return booleanBiFunction.apply(false, !voxelShape2.isEmpty());
+        if (shape1.isEmpty()) {
+            return predicate.apply(false, !shape2.isEmpty());
         }
-        if (voxelShape2.isEmpty()) {
-            return booleanBiFunction.apply(!voxelShape.isEmpty(), false);
+        if (shape2.isEmpty()) {
+            return predicate.apply(!shape1.isEmpty(), false);
         }
-        boolean bl = booleanBiFunction.apply(true, false);
-        boolean bl2 = booleanBiFunction.apply(false, true);
+        boolean bl = predicate.apply(true, false);
+        boolean bl2 = predicate.apply(false, true);
         for (Direction.Axis axis : AxisCycleDirection.AXES) {
-            if (voxelShape.getMaximum(axis) < voxelShape2.getMinimum(axis) - 1.0E-7) {
+            if (shape1.getMaximum(axis) < shape2.getMinimum(axis) - 1.0E-7) {
                 return bl || bl2;
             }
-            if (!(voxelShape2.getMaximum(axis) < voxelShape.getMinimum(axis) - 1.0E-7)) continue;
+            if (!(shape2.getMaximum(axis) < shape1.getMinimum(axis) - 1.0E-7)) continue;
             return bl || bl2;
         }
-        PairList pairList = VoxelShapes.createListPair(1, voxelShape.getPointPositions(Direction.Axis.X), voxelShape2.getPointPositions(Direction.Axis.X), bl, bl2);
-        PairList pairList2 = VoxelShapes.createListPair(pairList.getPairs().size() - 1, voxelShape.getPointPositions(Direction.Axis.Y), voxelShape2.getPointPositions(Direction.Axis.Y), bl, bl2);
-        PairList pairList3 = VoxelShapes.createListPair((pairList.getPairs().size() - 1) * (pairList2.getPairs().size() - 1), voxelShape.getPointPositions(Direction.Axis.Z), voxelShape2.getPointPositions(Direction.Axis.Z), bl, bl2);
-        return VoxelShapes.matchesAnywhere(pairList, pairList2, pairList3, voxelShape.voxels, voxelShape2.voxels, booleanBiFunction);
+        PairList pairList = VoxelShapes.createListPair(1, shape1.getPointPositions(Direction.Axis.X), shape2.getPointPositions(Direction.Axis.X), bl, bl2);
+        PairList pairList2 = VoxelShapes.createListPair(pairList.getPairs().size() - 1, shape1.getPointPositions(Direction.Axis.Y), shape2.getPointPositions(Direction.Axis.Y), bl, bl2);
+        PairList pairList3 = VoxelShapes.createListPair((pairList.getPairs().size() - 1) * (pairList2.getPairs().size() - 1), shape1.getPointPositions(Direction.Axis.Z), shape2.getPointPositions(Direction.Axis.Z), bl, bl2);
+        return VoxelShapes.matchesAnywhere(pairList, pairList2, pairList3, shape1.voxels, shape2.voxels, predicate);
     }
 
-    private static boolean matchesAnywhere(PairList pairList, PairList pairList2, PairList pairList3, VoxelSet voxelSet, VoxelSet voxelSet2, BooleanBiFunction booleanBiFunction) {
-        return !pairList.forEachPair((i, j, k2) -> pairList2.forEachPair((k, l, m2) -> pairList3.forEachPair((m, n, o) -> !booleanBiFunction.apply(voxelSet.inBoundsAndContains(i, k, m), voxelSet2.inBoundsAndContains(j, l, n)))));
+    private static boolean matchesAnywhere(PairList mergedX, PairList mergedY, PairList mergedZ, VoxelSet shape1, VoxelSet shape2, BooleanBiFunction predicate) {
+        return !mergedX.forEachPair((x1, x2, index1) -> mergedY.forEachPair((y1, y2, index2) -> mergedZ.forEachPair((z1, z2, index3) -> !predicate.apply(shape1.inBoundsAndContains(x1, y1, z1), shape2.inBoundsAndContains(x2, y2, z2)))));
     }
 
-    public static double calculateMaxOffset(Direction.Axis axis, Box box, Stream<VoxelShape> stream, double d) {
-        Iterator iterator = stream.iterator();
+    public static double calculateMaxOffset(Direction.Axis axis, Box box, Stream<VoxelShape> shapes, double maxDist) {
+        Iterator iterator = shapes.iterator();
         while (iterator.hasNext()) {
-            if (Math.abs(d) < 1.0E-7) {
+            if (Math.abs(maxDist) < 1.0E-7) {
                 return 0.0;
             }
-            d = ((VoxelShape)iterator.next()).calculateMaxDistance(axis, box, d);
+            maxDist = ((VoxelShape)iterator.next()).calculateMaxDistance(axis, box, maxDist);
         }
-        return d;
+        return maxDist;
     }
 
-    public static double calculatePushVelocity(Direction.Axis axis, Box box, WorldView worldView, double d, EntityContext entityContext, Stream<VoxelShape> stream) {
-        return VoxelShapes.calculatePushVelocity(box, worldView, d, entityContext, AxisCycleDirection.between(axis, Direction.Axis.Z), stream);
+    public static double calculatePushVelocity(Direction.Axis axis, Box box, WorldView world, double initial, EntityContext context, Stream<VoxelShape> shapes) {
+        return VoxelShapes.calculatePushVelocity(box, world, initial, context, AxisCycleDirection.between(axis, Direction.Axis.Z), shapes);
     }
 
-    private static double calculatePushVelocity(Box box, WorldView worldView, double d, EntityContext entityContext, AxisCycleDirection axisCycleDirection, Stream<VoxelShape> stream) {
+    private static double calculatePushVelocity(Box box, WorldView world, double initial, EntityContext context, AxisCycleDirection direction, Stream<VoxelShape> shapes) {
         if (box.getXLength() < 1.0E-6 || box.getYLength() < 1.0E-6 || box.getZLength() < 1.0E-6) {
-            return d;
+            return initial;
         }
-        if (Math.abs(d) < 1.0E-7) {
+        if (Math.abs(initial) < 1.0E-7) {
             return 0.0;
         }
-        AxisCycleDirection axisCycleDirection2 = axisCycleDirection.opposite();
-        Direction.Axis axis = axisCycleDirection2.cycle(Direction.Axis.X);
-        Direction.Axis axis2 = axisCycleDirection2.cycle(Direction.Axis.Y);
-        Direction.Axis axis3 = axisCycleDirection2.cycle(Direction.Axis.Z);
+        AxisCycleDirection axisCycleDirection = direction.opposite();
+        Direction.Axis axis = axisCycleDirection.cycle(Direction.Axis.X);
+        Direction.Axis axis2 = axisCycleDirection.cycle(Direction.Axis.Y);
+        Direction.Axis axis3 = axisCycleDirection.cycle(Direction.Axis.Z);
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         int i = MathHelper.floor(box.getMin(axis) - 1.0E-7) - 1;
         int j = MathHelper.floor(box.getMax(axis) + 1.0E-7) + 1;
         int k = MathHelper.floor(box.getMin(axis2) - 1.0E-7) - 1;
         int l = MathHelper.floor(box.getMax(axis2) + 1.0E-7) + 1;
-        double e = box.getMin(axis3) - 1.0E-7;
-        double f = box.getMax(axis3) + 1.0E-7;
-        boolean bl = d > 0.0;
+        double d = box.getMin(axis3) - 1.0E-7;
+        double e = box.getMax(axis3) + 1.0E-7;
+        boolean bl = initial > 0.0;
         int m = bl ? MathHelper.floor(box.getMax(axis3) - 1.0E-7) - 1 : MathHelper.floor(box.getMin(axis3) + 1.0E-7) + 1;
-        int n = VoxelShapes.clamp(d, e, f);
+        int n = VoxelShapes.clamp(initial, d, e);
         int o = bl ? 1 : -1;
         int p = m;
         while (bl ? p <= n : p >= n) {
@@ -230,117 +230,117 @@ public final class VoxelShapes {
                         ++s;
                     }
                     if (s >= 3) continue;
-                    mutable.set(axisCycleDirection2, q, r, p);
-                    BlockState blockState = worldView.getBlockState(mutable);
+                    mutable.set(axisCycleDirection, q, r, p);
+                    BlockState blockState = world.getBlockState(mutable);
                     if (s == 1 && !blockState.exceedsCube() || s == 2 && blockState.getBlock() != Blocks.MOVING_PISTON) continue;
-                    d = blockState.getCollisionShape(worldView, mutable, entityContext).calculateMaxDistance(axis3, box.offset(-mutable.getX(), -mutable.getY(), -mutable.getZ()), d);
-                    if (Math.abs(d) < 1.0E-7) {
+                    initial = blockState.getCollisionShape(world, mutable, context).calculateMaxDistance(axis3, box.offset(-mutable.getX(), -mutable.getY(), -mutable.getZ()), initial);
+                    if (Math.abs(initial) < 1.0E-7) {
                         return 0.0;
                     }
-                    n = VoxelShapes.clamp(d, e, f);
+                    n = VoxelShapes.clamp(initial, d, e);
                 }
             }
             p += o;
         }
-        double[] ds = new double[]{d};
-        stream.forEach(voxelShape -> {
+        double[] ds = new double[]{initial};
+        shapes.forEach(voxelShape -> {
             ds[0] = voxelShape.calculateMaxDistance(axis3, box, ds[0]);
         });
         return ds[0];
     }
 
-    private static int clamp(double d, double e, double f) {
-        return d > 0.0 ? MathHelper.floor(f + d) + 1 : MathHelper.floor(e + d) - 1;
+    private static int clamp(double value, double min, double max) {
+        return value > 0.0 ? MathHelper.floor(max + value) + 1 : MathHelper.floor(min + value) - 1;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static boolean isSideCovered(VoxelShape voxelShape, VoxelShape voxelShape2, Direction direction) {
-        if (voxelShape == VoxelShapes.fullCube() && voxelShape2 == VoxelShapes.fullCube()) {
+    public static boolean isSideCovered(VoxelShape shape, VoxelShape neighbor, Direction direction) {
+        if (shape == VoxelShapes.fullCube() && neighbor == VoxelShapes.fullCube()) {
             return true;
         }
-        if (voxelShape2.isEmpty()) {
+        if (neighbor.isEmpty()) {
             return false;
         }
         Direction.Axis axis = direction.getAxis();
         Direction.AxisDirection axisDirection = direction.getDirection();
-        VoxelShape voxelShape3 = axisDirection == Direction.AxisDirection.POSITIVE ? voxelShape : voxelShape2;
-        VoxelShape voxelShape4 = axisDirection == Direction.AxisDirection.POSITIVE ? voxelShape2 : voxelShape;
+        VoxelShape voxelShape = axisDirection == Direction.AxisDirection.POSITIVE ? shape : neighbor;
+        VoxelShape voxelShape2 = axisDirection == Direction.AxisDirection.POSITIVE ? neighbor : shape;
         BooleanBiFunction booleanBiFunction = axisDirection == Direction.AxisDirection.POSITIVE ? BooleanBiFunction.ONLY_FIRST : BooleanBiFunction.ONLY_SECOND;
-        return DoubleMath.fuzzyEquals(voxelShape3.getMaximum(axis), 1.0, 1.0E-7) && DoubleMath.fuzzyEquals(voxelShape4.getMinimum(axis), 0.0, 1.0E-7) && !VoxelShapes.matchesAnywhere(new SlicedVoxelShape(voxelShape3, axis, voxelShape3.voxels.getSize(axis) - 1), new SlicedVoxelShape(voxelShape4, axis, 0), booleanBiFunction);
+        return DoubleMath.fuzzyEquals(voxelShape.getMaximum(axis), 1.0, 1.0E-7) && DoubleMath.fuzzyEquals(voxelShape2.getMinimum(axis), 0.0, 1.0E-7) && !VoxelShapes.matchesAnywhere(new SlicedVoxelShape(voxelShape, axis, voxelShape.voxels.getSize(axis) - 1), new SlicedVoxelShape(voxelShape2, axis, 0), booleanBiFunction);
     }
 
-    public static VoxelShape extrudeFace(VoxelShape voxelShape, Direction direction) {
+    public static VoxelShape extrudeFace(VoxelShape shape, Direction direction) {
         int i;
         boolean bl;
-        if (voxelShape == VoxelShapes.fullCube()) {
+        if (shape == VoxelShapes.fullCube()) {
             return VoxelShapes.fullCube();
         }
         Direction.Axis axis = direction.getAxis();
         if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
-            bl = DoubleMath.fuzzyEquals(voxelShape.getMaximum(axis), 1.0, 1.0E-7);
-            i = voxelShape.voxels.getSize(axis) - 1;
+            bl = DoubleMath.fuzzyEquals(shape.getMaximum(axis), 1.0, 1.0E-7);
+            i = shape.voxels.getSize(axis) - 1;
         } else {
-            bl = DoubleMath.fuzzyEquals(voxelShape.getMinimum(axis), 0.0, 1.0E-7);
+            bl = DoubleMath.fuzzyEquals(shape.getMinimum(axis), 0.0, 1.0E-7);
             i = 0;
         }
         if (!bl) {
             return VoxelShapes.empty();
         }
-        return new SlicedVoxelShape(voxelShape, axis, i);
+        return new SlicedVoxelShape(shape, axis, i);
     }
 
-    public static boolean adjacentSidesCoverSquare(VoxelShape voxelShape, VoxelShape voxelShape2, Direction direction) {
-        VoxelShape voxelShape4;
-        if (voxelShape == VoxelShapes.fullCube() || voxelShape2 == VoxelShapes.fullCube()) {
+    public static boolean adjacentSidesCoverSquare(VoxelShape one, VoxelShape two, Direction direction) {
+        VoxelShape voxelShape2;
+        if (one == VoxelShapes.fullCube() || two == VoxelShapes.fullCube()) {
             return true;
         }
         Direction.Axis axis = direction.getAxis();
         Direction.AxisDirection axisDirection = direction.getDirection();
-        VoxelShape voxelShape3 = axisDirection == Direction.AxisDirection.POSITIVE ? voxelShape : voxelShape2;
-        VoxelShape voxelShape5 = voxelShape4 = axisDirection == Direction.AxisDirection.POSITIVE ? voxelShape2 : voxelShape;
-        if (!DoubleMath.fuzzyEquals(voxelShape3.getMaximum(axis), 1.0, 1.0E-7)) {
-            voxelShape3 = VoxelShapes.empty();
+        VoxelShape voxelShape = axisDirection == Direction.AxisDirection.POSITIVE ? one : two;
+        VoxelShape voxelShape3 = voxelShape2 = axisDirection == Direction.AxisDirection.POSITIVE ? two : one;
+        if (!DoubleMath.fuzzyEquals(voxelShape.getMaximum(axis), 1.0, 1.0E-7)) {
+            voxelShape = VoxelShapes.empty();
         }
-        if (!DoubleMath.fuzzyEquals(voxelShape4.getMinimum(axis), 0.0, 1.0E-7)) {
-            voxelShape4 = VoxelShapes.empty();
+        if (!DoubleMath.fuzzyEquals(voxelShape2.getMinimum(axis), 0.0, 1.0E-7)) {
+            voxelShape2 = VoxelShapes.empty();
         }
-        return !VoxelShapes.matchesAnywhere(VoxelShapes.fullCube(), VoxelShapes.combine(new SlicedVoxelShape(voxelShape3, axis, voxelShape3.voxels.getSize(axis) - 1), new SlicedVoxelShape(voxelShape4, axis, 0), BooleanBiFunction.OR), BooleanBiFunction.ONLY_FIRST);
+        return !VoxelShapes.matchesAnywhere(VoxelShapes.fullCube(), VoxelShapes.combine(new SlicedVoxelShape(voxelShape, axis, voxelShape.voxels.getSize(axis) - 1), new SlicedVoxelShape(voxelShape2, axis, 0), BooleanBiFunction.OR), BooleanBiFunction.ONLY_FIRST);
     }
 
-    public static boolean unionCoversFullCube(VoxelShape voxelShape, VoxelShape voxelShape2) {
-        if (voxelShape == VoxelShapes.fullCube() || voxelShape2 == VoxelShapes.fullCube()) {
+    public static boolean unionCoversFullCube(VoxelShape one, VoxelShape two) {
+        if (one == VoxelShapes.fullCube() || two == VoxelShapes.fullCube()) {
             return true;
         }
-        if (voxelShape.isEmpty() && voxelShape2.isEmpty()) {
+        if (one.isEmpty() && two.isEmpty()) {
             return false;
         }
-        return !VoxelShapes.matchesAnywhere(VoxelShapes.fullCube(), VoxelShapes.combine(voxelShape, voxelShape2, BooleanBiFunction.OR), BooleanBiFunction.ONLY_FIRST);
+        return !VoxelShapes.matchesAnywhere(VoxelShapes.fullCube(), VoxelShapes.combine(one, two, BooleanBiFunction.OR), BooleanBiFunction.ONLY_FIRST);
     }
 
     @VisibleForTesting
-    protected static PairList createListPair(int i, DoubleList doubleList, DoubleList doubleList2, boolean bl, boolean bl2) {
+    protected static PairList createListPair(int size, DoubleList first, DoubleList second, boolean includeFirst, boolean includeSecond) {
         long l;
-        int j = doubleList.size() - 1;
-        int k = doubleList2.size() - 1;
-        if (doubleList instanceof FractionalDoubleList && doubleList2 instanceof FractionalDoubleList && (long)i * (l = VoxelShapes.lcm(j, k)) <= 256L) {
-            return new FractionalPairList(j, k);
+        int i = first.size() - 1;
+        int j = second.size() - 1;
+        if (first instanceof FractionalDoubleList && second instanceof FractionalDoubleList && (long)size * (l = VoxelShapes.lcm(i, j)) <= 256L) {
+            return new FractionalPairList(i, j);
         }
-        if (doubleList.getDouble(j) < doubleList2.getDouble(0) - 1.0E-7) {
-            return new DisjointPairList(doubleList, doubleList2, false);
+        if (first.getDouble(i) < second.getDouble(0) - 1.0E-7) {
+            return new DisjointPairList(first, second, false);
         }
-        if (doubleList2.getDouble(k) < doubleList.getDouble(0) - 1.0E-7) {
-            return new DisjointPairList(doubleList2, doubleList, true);
+        if (second.getDouble(j) < first.getDouble(0) - 1.0E-7) {
+            return new DisjointPairList(second, first, true);
         }
-        if (j == k && Objects.equals(doubleList, doubleList2)) {
-            if (doubleList instanceof IdentityPairList) {
-                return (PairList)((Object)doubleList);
+        if (i == j && Objects.equals(first, second)) {
+            if (first instanceof IdentityPairList) {
+                return (PairList)((Object)first);
             }
-            if (doubleList2 instanceof IdentityPairList) {
-                return (PairList)((Object)doubleList2);
+            if (second instanceof IdentityPairList) {
+                return (PairList)((Object)second);
             }
-            return new IdentityPairList(doubleList);
+            return new IdentityPairList(first);
         }
-        return new SimplePairList(doubleList, doubleList2, bl, bl2);
+        return new SimplePairList(first, second, includeFirst, includeSecond);
     }
 
     public static interface BoxConsumer {

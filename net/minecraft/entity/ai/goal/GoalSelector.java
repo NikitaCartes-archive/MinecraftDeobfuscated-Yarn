@@ -40,8 +40,8 @@ public class GoalSelector {
         this.profiler = profiler;
     }
 
-    public void add(int i, Goal goal) {
-        this.goals.add(new WeightedGoal(i, goal));
+    public void add(int weight, Goal goal) {
+        this.goals.add(new WeightedGoal(weight, goal));
     }
 
     public void remove(Goal goal) {
@@ -90,8 +90,8 @@ public class GoalSelector {
         this.disabledControls.remove((Object)control);
     }
 
-    public void setControlEnabled(Goal.Control control, boolean bl) {
-        if (bl) {
+    public void setControlEnabled(Goal.Control control, boolean enabled) {
+        if (enabled) {
             this.enableControl(control);
         } else {
             this.disableControl(control);

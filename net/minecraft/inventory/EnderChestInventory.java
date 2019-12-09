@@ -49,27 +49,27 @@ extends BasicInventory {
     }
 
     @Override
-    public boolean canPlayerUseInv(PlayerEntity playerEntity) {
-        if (this.currentBlockEntity != null && !this.currentBlockEntity.canPlayerUse(playerEntity)) {
+    public boolean canPlayerUseInv(PlayerEntity player) {
+        if (this.currentBlockEntity != null && !this.currentBlockEntity.canPlayerUse(player)) {
             return false;
         }
-        return super.canPlayerUseInv(playerEntity);
+        return super.canPlayerUseInv(player);
     }
 
     @Override
-    public void onInvOpen(PlayerEntity playerEntity) {
+    public void onInvOpen(PlayerEntity player) {
         if (this.currentBlockEntity != null) {
             this.currentBlockEntity.onOpen();
         }
-        super.onInvOpen(playerEntity);
+        super.onInvOpen(player);
     }
 
     @Override
-    public void onInvClose(PlayerEntity playerEntity) {
+    public void onInvClose(PlayerEntity player) {
         if (this.currentBlockEntity != null) {
             this.currentBlockEntity.onClose();
         }
-        super.onInvClose(playerEntity);
+        super.onInvClose(player);
         this.currentBlockEntity = null;
     }
 }

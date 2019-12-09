@@ -54,11 +54,11 @@ import org.jetbrains.annotations.Nullable;
 public class Item
 implements ItemConvertible {
     public static final Map<Block, Item> BLOCK_ITEMS = Maps.newHashMap();
-    private static final ItemPropertyGetter DAMAGED_PROPERTY_GETTER = (itemStack, world, livingEntity) -> itemStack.isDamaged() ? 1.0f : 0.0f;
-    private static final ItemPropertyGetter DAMAGE_PROPERTY_GETTER = (itemStack, world, livingEntity) -> MathHelper.clamp((float)itemStack.getDamage() / (float)itemStack.getMaxDamage(), 0.0f, 1.0f);
-    private static final ItemPropertyGetter LEFTHANDED_PROPERTY_GETTER = (itemStack, world, livingEntity) -> livingEntity == null || livingEntity.getMainArm() == Arm.RIGHT ? 0.0f : 1.0f;
-    private static final ItemPropertyGetter COOLDOWN_PROPERTY_GETTER = (itemStack, world, livingEntity) -> livingEntity instanceof PlayerEntity ? ((PlayerEntity)livingEntity).getItemCooldownManager().getCooldownProgress(itemStack.getItem(), 0.0f) : 0.0f;
-    private static final ItemPropertyGetter CUSTOM_DATA_PROPERTY_GETTER = (itemStack, world, livingEntity) -> itemStack.hasTag() ? (float)itemStack.getTag().getInt("CustomModelData") : 0.0f;
+    private static final ItemPropertyGetter DAMAGED_PROPERTY_GETTER = (stack, world, entity) -> stack.isDamaged() ? 1.0f : 0.0f;
+    private static final ItemPropertyGetter DAMAGE_PROPERTY_GETTER = (stack, world, entity) -> MathHelper.clamp((float)stack.getDamage() / (float)stack.getMaxDamage(), 0.0f, 1.0f);
+    private static final ItemPropertyGetter LEFTHANDED_PROPERTY_GETTER = (stack, world, entity) -> entity == null || entity.getMainArm() == Arm.RIGHT ? 0.0f : 1.0f;
+    private static final ItemPropertyGetter COOLDOWN_PROPERTY_GETTER = (stack, world, entity) -> entity instanceof PlayerEntity ? ((PlayerEntity)entity).getItemCooldownManager().getCooldownProgress(stack.getItem(), 0.0f) : 0.0f;
+    private static final ItemPropertyGetter CUSTOM_DATA_PROPERTY_GETTER = (stack, world, entity) -> stack.hasTag() ? (float)stack.getTag().getInt("CustomModelData") : 0.0f;
     protected static final UUID ATTACK_DAMAGE_MODIFIER_UUID = UUID.fromString("CB3F55D3-645C-4F38-A497-9C13A33DB5CF");
     protected static final UUID ATTACK_SPEED_MODIFIER_UUID = UUID.fromString("FA233E1C-4180-4865-B01B-BCCE9785ACA3");
     protected static final Random RANDOM = new Random();
@@ -77,8 +77,8 @@ implements ItemConvertible {
         return item == null ? 0 : Registry.ITEM.getRawId(item);
     }
 
-    public static Item byRawId(int i) {
-        return Registry.ITEM.get(i);
+    public static Item byRawId(int id) {
+        return Registry.ITEM.get(id);
     }
 
     @Deprecated
@@ -102,13 +102,13 @@ implements ItemConvertible {
         }
     }
 
-    public void usageTick(World world, LivingEntity livingEntity, ItemStack itemStack, int i) {
+    public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
     }
 
     @Nullable
     @Environment(value=EnvType.CLIENT)
-    public ItemPropertyGetter getPropertyGetter(Identifier identifier) {
-        return this.propertyGetters.get(identifier);
+    public ItemPropertyGetter getPropertyGetter(Identifier id) {
+        return this.propertyGetters.get(id);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -116,11 +116,11 @@ implements ItemConvertible {
         return !this.propertyGetters.isEmpty();
     }
 
-    public boolean postProcessTag(CompoundTag compoundTag) {
+    public boolean postProcessTag(CompoundTag tag) {
         return false;
     }
 
-    public boolean canMine(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
+    public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
         return true;
     }
 
@@ -129,35 +129,35 @@ implements ItemConvertible {
         return this;
     }
 
-    public final void addPropertyGetter(Identifier identifier, ItemPropertyGetter itemPropertyGetter) {
-        this.propertyGetters.put(identifier, itemPropertyGetter);
+    public final void addPropertyGetter(Identifier id, ItemPropertyGetter property) {
+        this.propertyGetters.put(id, property);
     }
 
-    public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
+    public ActionResult useOnBlock(ItemUsageContext context) {
         return ActionResult.PASS;
     }
 
-    public float getMiningSpeed(ItemStack itemStack, BlockState blockState) {
+    public float getMiningSpeed(ItemStack stack, BlockState state) {
         return 1.0f;
     }
 
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         if (this.isFood()) {
-            ItemStack itemStack = playerEntity.getStackInHand(hand);
-            if (playerEntity.canConsume(this.getFoodComponent().isAlwaysEdible())) {
-                playerEntity.setCurrentHand(hand);
+            ItemStack itemStack = user.getStackInHand(hand);
+            if (user.canConsume(this.getFoodComponent().isAlwaysEdible())) {
+                user.setCurrentHand(hand);
                 return TypedActionResult.consume(itemStack);
             }
             return TypedActionResult.fail(itemStack);
         }
-        return TypedActionResult.pass(playerEntity.getStackInHand(hand));
+        return TypedActionResult.pass(user.getStackInHand(hand));
     }
 
-    public ItemStack finishUsing(ItemStack itemStack, World world, LivingEntity livingEntity) {
+    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
         if (this.isFood()) {
-            return livingEntity.eatFood(world, itemStack);
+            return user.eatFood(world, stack);
         }
-        return itemStack;
+        return stack;
     }
 
     public final int getMaxCount() {
@@ -172,19 +172,19 @@ implements ItemConvertible {
         return this.maxDamage > 0;
     }
 
-    public boolean postHit(ItemStack itemStack, LivingEntity livingEntity, LivingEntity livingEntity2) {
+    public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         return false;
     }
 
-    public boolean postMine(ItemStack itemStack, World world, BlockState blockState, BlockPos blockPos, LivingEntity livingEntity) {
+    public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
         return false;
     }
 
-    public boolean isEffectiveOn(BlockState blockState) {
+    public boolean isEffectiveOn(BlockState state) {
         return false;
     }
 
-    public boolean useOnEntity(ItemStack itemStack, PlayerEntity playerEntity, LivingEntity livingEntity, Hand hand) {
+    public boolean useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         return false;
     }
 
@@ -208,7 +208,7 @@ implements ItemConvertible {
         return this.getOrCreateTranslationKey();
     }
 
-    public String getTranslationKey(ItemStack itemStack) {
+    public String getTranslationKey(ItemStack stack) {
         return this.getTranslationKey();
     }
 
@@ -225,44 +225,44 @@ implements ItemConvertible {
         return this.recipeRemainder != null;
     }
 
-    public void inventoryTick(ItemStack itemStack, World world, Entity entity, int i, boolean bl) {
+    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
     }
 
-    public void onCraft(ItemStack itemStack, World world, PlayerEntity playerEntity) {
+    public void onCraft(ItemStack stack, World world, PlayerEntity player) {
     }
 
     public boolean isNetworkSynced() {
         return false;
     }
 
-    public UseAction getUseAction(ItemStack itemStack) {
-        return itemStack.getItem().isFood() ? UseAction.EAT : UseAction.NONE;
+    public UseAction getUseAction(ItemStack stack) {
+        return stack.getItem().isFood() ? UseAction.EAT : UseAction.NONE;
     }
 
-    public int getMaxUseTime(ItemStack itemStack) {
-        if (itemStack.getItem().isFood()) {
+    public int getMaxUseTime(ItemStack stack) {
+        if (stack.getItem().isFood()) {
             return this.getFoodComponent().isSnack() ? 16 : 32;
         }
         return 0;
     }
 
-    public void onStoppedUsing(ItemStack itemStack, World world, LivingEntity livingEntity, int i) {
+    public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
+    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
     }
 
-    public Text getName(ItemStack itemStack) {
-        return new TranslatableText(this.getTranslationKey(itemStack), new Object[0]);
+    public Text getName(ItemStack stack) {
+        return new TranslatableText(this.getTranslationKey(stack), new Object[0]);
     }
 
-    public boolean hasEnchantmentGlint(ItemStack itemStack) {
-        return itemStack.hasEnchantments();
+    public boolean hasEnchantmentGlint(ItemStack stack) {
+        return stack.hasEnchantments();
     }
 
-    public Rarity getRarity(ItemStack itemStack) {
-        if (!itemStack.hasEnchantments()) {
+    public Rarity getRarity(ItemStack stack) {
+        if (!stack.hasEnchantments()) {
             return this.rarity;
         }
         switch (this.rarity) {
@@ -277,14 +277,14 @@ implements ItemConvertible {
         return this.rarity;
     }
 
-    public boolean isEnchantable(ItemStack itemStack) {
+    public boolean isEnchantable(ItemStack stack) {
         return this.getMaxCount() == 1 && this.isDamageable();
     }
 
-    protected static HitResult rayTrace(World world, PlayerEntity playerEntity, RayTraceContext.FluidHandling fluidHandling) {
-        float f = playerEntity.pitch;
-        float g = playerEntity.yaw;
-        Vec3d vec3d = playerEntity.getCameraPosVec(1.0f);
+    protected static HitResult rayTrace(World world, PlayerEntity player, RayTraceContext.FluidHandling fluidHandling) {
+        float f = player.pitch;
+        float g = player.yaw;
+        Vec3d vec3d = player.getCameraPosVec(1.0f);
         float h = MathHelper.cos(-g * ((float)Math.PI / 180) - (float)Math.PI);
         float i = MathHelper.sin(-g * ((float)Math.PI / 180) - (float)Math.PI);
         float j = -MathHelper.cos(-f * ((float)Math.PI / 180));
@@ -294,22 +294,22 @@ implements ItemConvertible {
         float n = h * j;
         double d = 5.0;
         Vec3d vec3d2 = vec3d.add((double)l * 5.0, (double)m * 5.0, (double)n * 5.0);
-        return world.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.OUTLINE, fluidHandling, playerEntity));
+        return world.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.OUTLINE, fluidHandling, player));
     }
 
     public int getEnchantability() {
         return 0;
     }
 
-    public void appendStacks(ItemGroup itemGroup, DefaultedList<ItemStack> defaultedList) {
-        if (this.isIn(itemGroup)) {
-            defaultedList.add(new ItemStack(this));
+    public void appendStacks(ItemGroup group, DefaultedList<ItemStack> stacks) {
+        if (this.isIn(group)) {
+            stacks.add(new ItemStack(this));
         }
     }
 
-    protected boolean isIn(ItemGroup itemGroup) {
-        ItemGroup itemGroup2 = this.getGroup();
-        return itemGroup2 != null && (itemGroup == ItemGroup.SEARCH || itemGroup == itemGroup2);
+    protected boolean isIn(ItemGroup group) {
+        ItemGroup itemGroup = this.getGroup();
+        return itemGroup != null && (group == ItemGroup.SEARCH || group == itemGroup);
     }
 
     @Nullable
@@ -317,16 +317,16 @@ implements ItemConvertible {
         return this.group;
     }
 
-    public boolean canRepair(ItemStack itemStack, ItemStack itemStack2) {
+    public boolean canRepair(ItemStack stack, ItemStack ingredient) {
         return false;
     }
 
-    public Multimap<String, EntityAttributeModifier> getModifiers(EquipmentSlot equipmentSlot) {
+    public Multimap<String, EntityAttributeModifier> getModifiers(EquipmentSlot slot) {
         return HashMultimap.create();
     }
 
-    public boolean isUsedOnRelease(ItemStack itemStack) {
-        return itemStack.getItem() == Items.CROSSBOW;
+    public boolean isUsedOnRelease(ItemStack stack) {
+        return stack.getItem() == Items.CROSSBOW;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -368,31 +368,31 @@ implements ItemConvertible {
             return this;
         }
 
-        public Settings maxCount(int i) {
+        public Settings maxCount(int maxCount) {
             if (this.maxDamage > 0) {
                 throw new RuntimeException("Unable to have damage AND stack.");
             }
-            this.maxCount = i;
+            this.maxCount = maxCount;
             return this;
         }
 
-        public Settings maxDamageIfAbsent(int i) {
-            return this.maxDamage == 0 ? this.maxDamage(i) : this;
+        public Settings maxDamageIfAbsent(int maxDamage) {
+            return this.maxDamage == 0 ? this.maxDamage(maxDamage) : this;
         }
 
-        public Settings maxDamage(int i) {
-            this.maxDamage = i;
+        public Settings maxDamage(int maxDamage) {
+            this.maxDamage = maxDamage;
             this.maxCount = 1;
             return this;
         }
 
-        public Settings recipeRemainder(Item item) {
-            this.recipeRemainder = item;
+        public Settings recipeRemainder(Item recipeRemainder) {
+            this.recipeRemainder = recipeRemainder;
             return this;
         }
 
-        public Settings group(ItemGroup itemGroup) {
-            this.group = itemGroup;
+        public Settings group(ItemGroup group) {
+            this.group = group;
             return this;
         }
 

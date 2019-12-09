@@ -20,13 +20,13 @@ implements Packet<ServerPlayPacketListener> {
     }
 
     @Override
-    public void read(PacketByteBuf packetByteBuf) throws IOException {
-        this.status = packetByteBuf.readEnumConstant(Status.class);
+    public void read(PacketByteBuf buf) throws IOException {
+        this.status = buf.readEnumConstant(Status.class);
     }
 
     @Override
-    public void write(PacketByteBuf packetByteBuf) throws IOException {
-        packetByteBuf.writeEnumConstant(this.status);
+    public void write(PacketByteBuf buf) throws IOException {
+        buf.writeEnumConstant(this.status);
     }
 
     @Override

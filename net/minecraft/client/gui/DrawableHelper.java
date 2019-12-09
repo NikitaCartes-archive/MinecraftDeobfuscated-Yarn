@@ -41,50 +41,50 @@ public abstract class DrawableHelper {
         DrawableHelper.fill(i, j + 1, i + 1, k, l);
     }
 
-    public static void fill(int i, int j, int k, int l, int m) {
-        DrawableHelper.fill(Rotation3.identity().getMatrix(), i, j, k, l, m);
+    public static void fill(int x1, int y1, int x2, int y2, int color) {
+        DrawableHelper.fill(Rotation3.identity().getMatrix(), x1, y1, x2, y2, color);
     }
 
-    public static void fill(Matrix4f matrix4f, int i, int j, int k, int l, int m) {
-        int n;
-        if (i < k) {
-            n = i;
-            i = k;
-            k = n;
+    public static void fill(Matrix4f matrix4f, int x1, int y1, int x2, int y2, int color) {
+        int i;
+        if (x1 < x2) {
+            i = x1;
+            x1 = x2;
+            x2 = i;
         }
-        if (j < l) {
-            n = j;
-            j = l;
-            l = n;
+        if (y1 < y2) {
+            i = y1;
+            y1 = y2;
+            y2 = i;
         }
-        float f = (float)(m >> 24 & 0xFF) / 255.0f;
-        float g = (float)(m >> 16 & 0xFF) / 255.0f;
-        float h = (float)(m >> 8 & 0xFF) / 255.0f;
-        float o = (float)(m & 0xFF) / 255.0f;
+        float f = (float)(color >> 24 & 0xFF) / 255.0f;
+        float g = (float)(color >> 16 & 0xFF) / 255.0f;
+        float h = (float)(color >> 8 & 0xFF) / 255.0f;
+        float j = (float)(color & 0xFF) / 255.0f;
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         RenderSystem.enableBlend();
         RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
         bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
-        bufferBuilder.vertex(matrix4f, i, l, 0.0f).color(g, h, o, f).next();
-        bufferBuilder.vertex(matrix4f, k, l, 0.0f).color(g, h, o, f).next();
-        bufferBuilder.vertex(matrix4f, k, j, 0.0f).color(g, h, o, f).next();
-        bufferBuilder.vertex(matrix4f, i, j, 0.0f).color(g, h, o, f).next();
+        bufferBuilder.vertex(matrix4f, x1, y2, 0.0f).color(g, h, j, f).next();
+        bufferBuilder.vertex(matrix4f, x2, y2, 0.0f).color(g, h, j, f).next();
+        bufferBuilder.vertex(matrix4f, x2, y1, 0.0f).color(g, h, j, f).next();
+        bufferBuilder.vertex(matrix4f, x1, y1, 0.0f).color(g, h, j, f).next();
         bufferBuilder.end();
         BufferRenderer.draw(bufferBuilder);
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
     }
 
-    protected void fillGradient(int i, int j, int k, int l, int m, int n) {
-        float f = (float)(m >> 24 & 0xFF) / 255.0f;
-        float g = (float)(m >> 16 & 0xFF) / 255.0f;
-        float h = (float)(m >> 8 & 0xFF) / 255.0f;
-        float o = (float)(m & 0xFF) / 255.0f;
-        float p = (float)(n >> 24 & 0xFF) / 255.0f;
-        float q = (float)(n >> 16 & 0xFF) / 255.0f;
-        float r = (float)(n >> 8 & 0xFF) / 255.0f;
-        float s = (float)(n & 0xFF) / 255.0f;
+    protected void fillGradient(int top, int left, int right, int bottom, int color1, int color2) {
+        float f = (float)(color1 >> 24 & 0xFF) / 255.0f;
+        float g = (float)(color1 >> 16 & 0xFF) / 255.0f;
+        float h = (float)(color1 >> 8 & 0xFF) / 255.0f;
+        float i = (float)(color1 & 0xFF) / 255.0f;
+        float j = (float)(color2 >> 24 & 0xFF) / 255.0f;
+        float k = (float)(color2 >> 16 & 0xFF) / 255.0f;
+        float l = (float)(color2 >> 8 & 0xFF) / 255.0f;
+        float m = (float)(color2 & 0xFF) / 255.0f;
         RenderSystem.disableTexture();
         RenderSystem.enableBlend();
         RenderSystem.disableAlphaTest();
@@ -93,10 +93,10 @@ public abstract class DrawableHelper {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
-        bufferBuilder.vertex(k, j, this.blitOffset).color(g, h, o, f).next();
-        bufferBuilder.vertex(i, j, this.blitOffset).color(g, h, o, f).next();
-        bufferBuilder.vertex(i, l, this.blitOffset).color(q, r, s, p).next();
-        bufferBuilder.vertex(k, l, this.blitOffset).color(q, r, s, p).next();
+        bufferBuilder.vertex(right, left, this.blitOffset).color(g, h, i, f).next();
+        bufferBuilder.vertex(top, left, this.blitOffset).color(g, h, i, f).next();
+        bufferBuilder.vertex(top, bottom, this.blitOffset).color(k, l, m, j).next();
+        bufferBuilder.vertex(right, bottom, this.blitOffset).color(k, l, m, j).next();
         tessellator.draw();
         RenderSystem.shadeModel(7424);
         RenderSystem.disableBlend();
@@ -104,49 +104,49 @@ public abstract class DrawableHelper {
         RenderSystem.enableTexture();
     }
 
-    public void drawCenteredString(TextRenderer textRenderer, String string, int i, int j, int k) {
-        textRenderer.drawWithShadow(string, i - textRenderer.getStringWidth(string) / 2, j, k);
+    public void drawCenteredString(TextRenderer textRenderer, String str, int centerX, int y, int color) {
+        textRenderer.drawWithShadow(str, centerX - textRenderer.getStringWidth(str) / 2, y, color);
     }
 
-    public void drawRightAlignedString(TextRenderer textRenderer, String string, int i, int j, int k) {
-        textRenderer.drawWithShadow(string, i - textRenderer.getStringWidth(string), j, k);
+    public void drawRightAlignedString(TextRenderer textRenderer, String str, int rightX, int y, int color) {
+        textRenderer.drawWithShadow(str, rightX - textRenderer.getStringWidth(str), y, color);
     }
 
-    public void drawString(TextRenderer textRenderer, String string, int i, int j, int k) {
-        textRenderer.drawWithShadow(string, i, j, k);
+    public void drawString(TextRenderer textRenderer, String str, int x, int y, int color) {
+        textRenderer.drawWithShadow(str, x, y, color);
     }
 
-    public static void blit(int i, int j, int k, int l, int m, Sprite sprite) {
-        DrawableHelper.innerBlit(i, i + l, j, j + m, k, sprite.getMinU(), sprite.getMaxU(), sprite.getMinV(), sprite.getMaxV());
+    public static void blit(int x, int y, int z, int width, int height, Sprite sprite) {
+        DrawableHelper.innerBlit(x, x + width, y, y + height, z, sprite.getMinU(), sprite.getMaxU(), sprite.getMinV(), sprite.getMaxV());
     }
 
-    public void blit(int i, int j, int k, int l, int m, int n) {
-        DrawableHelper.blit(i, j, this.blitOffset, k, l, m, n, 256, 256);
+    public void blit(int x, int y, int u, int v, int width, int height) {
+        DrawableHelper.blit(x, y, this.blitOffset, u, v, width, height, 256, 256);
     }
 
-    public static void blit(int i, int j, int k, float f, float g, int l, int m, int n, int o) {
-        DrawableHelper.innerBlit(i, i + l, j, j + m, k, l, m, f, g, o, n);
+    public static void blit(int x, int y, int z, float u, float v, int width, int height, int texHeight, int texWidth) {
+        DrawableHelper.innerBlit(x, x + width, y, y + height, z, width, height, u, v, texWidth, texHeight);
     }
 
-    public static void blit(int i, int j, int k, int l, float f, float g, int m, int n, int o, int p) {
-        DrawableHelper.innerBlit(i, i + k, j, j + l, 0, m, n, f, g, o, p);
+    public static void blit(int x, int y, int width, int height, float u, float v, int uWidth, int vHeight, int texWidth, int texHeight) {
+        DrawableHelper.innerBlit(x, x + width, y, y + height, 0, uWidth, vHeight, u, v, texWidth, texHeight);
     }
 
-    public static void blit(int i, int j, float f, float g, int k, int l, int m, int n) {
-        DrawableHelper.blit(i, j, k, l, f, g, k, l, m, n);
+    public static void blit(int x, int y, float u, float v, int width, int height, int texWidth, int texHeight) {
+        DrawableHelper.blit(x, y, width, height, u, v, width, height, texWidth, texHeight);
     }
 
-    private static void innerBlit(int i, int j, int k, int l, int m, int n, int o, float f, float g, int p, int q) {
-        DrawableHelper.innerBlit(i, j, k, l, m, (f + 0.0f) / (float)p, (f + (float)n) / (float)p, (g + 0.0f) / (float)q, (g + (float)o) / (float)q);
+    private static void innerBlit(int xStart, int xEnd, int yStart, int yEnd, int z, int width, int height, float u, float v, int texWidth, int texHeight) {
+        DrawableHelper.innerBlit(xStart, xEnd, yStart, yEnd, z, (u + 0.0f) / (float)texWidth, (u + (float)width) / (float)texWidth, (v + 0.0f) / (float)texHeight, (v + (float)height) / (float)texHeight);
     }
 
-    protected static void innerBlit(int i, int j, int k, int l, int m, float f, float g, float h, float n) {
+    protected static void innerBlit(int xStart, int xEnd, int yStart, int yEnd, int z, float uStart, float uEnd, float vStart, float vEnd) {
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
-        bufferBuilder.vertex(i, l, m).texture(f, n).next();
-        bufferBuilder.vertex(j, l, m).texture(g, n).next();
-        bufferBuilder.vertex(j, k, m).texture(g, h).next();
-        bufferBuilder.vertex(i, k, m).texture(f, h).next();
+        bufferBuilder.vertex(xStart, yEnd, z).texture(uStart, vEnd).next();
+        bufferBuilder.vertex(xEnd, yEnd, z).texture(uEnd, vEnd).next();
+        bufferBuilder.vertex(xEnd, yStart, z).texture(uEnd, vStart).next();
+        bufferBuilder.vertex(xStart, yStart, z).texture(uStart, vStart).next();
         bufferBuilder.end();
         RenderSystem.enableAlphaTest();
         BufferRenderer.draw(bufferBuilder);

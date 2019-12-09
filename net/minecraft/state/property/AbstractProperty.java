@@ -12,9 +12,9 @@ implements Property<T> {
     private final String name;
     private Integer computedHashCode;
 
-    protected AbstractProperty(String string, Class<T> class_) {
-        this.type = class_;
-        this.name = string;
+    protected AbstractProperty(String name, Class<T> type) {
+        this.type = type;
+        this.name = name;
     }
 
     @Override
@@ -31,12 +31,12 @@ implements Property<T> {
         return MoreObjects.toStringHelper(this).add("name", this.name).add("clazz", this.type).add("values", this.getValues()).toString();
     }
 
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (object instanceof AbstractProperty) {
-            AbstractProperty abstractProperty = (AbstractProperty)object;
+        if (obj instanceof AbstractProperty) {
+            AbstractProperty abstractProperty = (AbstractProperty)obj;
             return this.type.equals(abstractProperty.type) && this.name.equals(abstractProperty.name);
         }
         return false;

@@ -21,8 +21,8 @@ public class DiffuseLighting {
         RenderSystem.disableColorMaterial();
     }
 
-    public static void enableForLevel(Matrix4f matrix4f) {
-        RenderSystem.setupLevelDiffuseLighting(matrix4f);
+    public static void enableForLevel(Matrix4f modelMatrix) {
+        RenderSystem.setupLevelDiffuseLighting(modelMatrix);
     }
 
     public static void disableGuiDepthLighting() {

@@ -19,19 +19,19 @@ extends LightStorage<Data> {
     }
 
     @Override
-    protected int getLight(long l) {
-        long m = ChunkSectionPos.fromGlobalPos(l);
-        ChunkNibbleArray chunkNibbleArray = this.getLightArray(m, false);
+    protected int getLight(long blockPos) {
+        long l = ChunkSectionPos.fromGlobalPos(blockPos);
+        ChunkNibbleArray chunkNibbleArray = this.getLightArray(l, false);
         if (chunkNibbleArray == null) {
             return 0;
         }
-        return chunkNibbleArray.get(ChunkSectionPos.getLocalCoord(BlockPos.unpackLongX(l)), ChunkSectionPos.getLocalCoord(BlockPos.unpackLongY(l)), ChunkSectionPos.getLocalCoord(BlockPos.unpackLongZ(l)));
+        return chunkNibbleArray.get(ChunkSectionPos.getLocalCoord(BlockPos.unpackLongX(blockPos)), ChunkSectionPos.getLocalCoord(BlockPos.unpackLongY(blockPos)), ChunkSectionPos.getLocalCoord(BlockPos.unpackLongZ(blockPos)));
     }
 
     public static final class Data
     extends ChunkToNibbleArrayMap<Data> {
-        public Data(Long2ObjectOpenHashMap<ChunkNibbleArray> long2ObjectOpenHashMap) {
-            super(long2ObjectOpenHashMap);
+        public Data(Long2ObjectOpenHashMap<ChunkNibbleArray> map) {
+            super(map);
         }
 
         @Override

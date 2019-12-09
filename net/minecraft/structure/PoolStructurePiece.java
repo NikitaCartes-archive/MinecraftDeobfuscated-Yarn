@@ -35,53 +35,53 @@ extends StructurePiece {
     private final List<JigsawJunction> junctions = Lists.newArrayList();
     private final StructureManager structureManager;
 
-    public PoolStructurePiece(StructurePieceType structurePieceType, StructureManager structureManager, StructurePoolElement structurePoolElement, BlockPos blockPos, int i, BlockRotation blockRotation, BlockBox blockBox) {
-        super(structurePieceType, 0);
-        this.structureManager = structureManager;
-        this.poolElement = structurePoolElement;
-        this.pos = blockPos;
-        this.groundLevelDelta = i;
-        this.rotation = blockRotation;
-        this.boundingBox = blockBox;
+    public PoolStructurePiece(StructurePieceType type, StructureManager manager, StructurePoolElement poolElement, BlockPos pos, int groundLevelDelta, BlockRotation rotation, BlockBox boundingBox) {
+        super(type, 0);
+        this.structureManager = manager;
+        this.poolElement = poolElement;
+        this.pos = pos;
+        this.groundLevelDelta = groundLevelDelta;
+        this.rotation = rotation;
+        this.boundingBox = boundingBox;
     }
 
-    public PoolStructurePiece(StructureManager structureManager, CompoundTag compoundTag, StructurePieceType structurePieceType) {
-        super(structurePieceType, compoundTag);
-        this.structureManager = structureManager;
-        this.pos = new BlockPos(compoundTag.getInt("PosX"), compoundTag.getInt("PosY"), compoundTag.getInt("PosZ"));
-        this.groundLevelDelta = compoundTag.getInt("ground_level_delta");
-        this.poolElement = DynamicDeserializer.deserialize(new Dynamic<CompoundTag>(NbtOps.INSTANCE, compoundTag.getCompound("pool_element")), Registry.STRUCTURE_POOL_ELEMENT, "element_type", EmptyPoolElement.INSTANCE);
-        this.rotation = BlockRotation.valueOf(compoundTag.getString("rotation"));
-        this.boundingBox = this.poolElement.getBoundingBox(structureManager, this.pos, this.rotation);
-        ListTag listTag = compoundTag.getList("junctions", 10);
+    public PoolStructurePiece(StructureManager manager, CompoundTag tag2, StructurePieceType type) {
+        super(type, tag2);
+        this.structureManager = manager;
+        this.pos = new BlockPos(tag2.getInt("PosX"), tag2.getInt("PosY"), tag2.getInt("PosZ"));
+        this.groundLevelDelta = tag2.getInt("ground_level_delta");
+        this.poolElement = DynamicDeserializer.deserialize(new Dynamic<CompoundTag>(NbtOps.INSTANCE, tag2.getCompound("pool_element")), Registry.STRUCTURE_POOL_ELEMENT, "element_type", EmptyPoolElement.INSTANCE);
+        this.rotation = BlockRotation.valueOf(tag2.getString("rotation"));
+        this.boundingBox = this.poolElement.getBoundingBox(manager, this.pos, this.rotation);
+        ListTag listTag = tag2.getList("junctions", 10);
         this.junctions.clear();
         listTag.forEach(tag -> this.junctions.add(JigsawJunction.deserialize(new Dynamic<Tag>(NbtOps.INSTANCE, (Tag)tag))));
     }
 
     @Override
-    protected void toNbt(CompoundTag compoundTag) {
-        compoundTag.putInt("PosX", this.pos.getX());
-        compoundTag.putInt("PosY", this.pos.getY());
-        compoundTag.putInt("PosZ", this.pos.getZ());
-        compoundTag.putInt("ground_level_delta", this.groundLevelDelta);
-        compoundTag.put("pool_element", this.poolElement.method_16755(NbtOps.INSTANCE).getValue());
-        compoundTag.putString("rotation", this.rotation.name());
+    protected void toNbt(CompoundTag tag) {
+        tag.putInt("PosX", this.pos.getX());
+        tag.putInt("PosY", this.pos.getY());
+        tag.putInt("PosZ", this.pos.getZ());
+        tag.putInt("ground_level_delta", this.groundLevelDelta);
+        tag.put("pool_element", this.poolElement.method_16755(NbtOps.INSTANCE).getValue());
+        tag.putString("rotation", this.rotation.name());
         ListTag listTag = new ListTag();
         for (JigsawJunction jigsawJunction : this.junctions) {
             listTag.add(jigsawJunction.serialize(NbtOps.INSTANCE).getValue());
         }
-        compoundTag.put("junctions", listTag);
+        tag.put("junctions", listTag);
     }
 
     @Override
-    public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
-        return this.poolElement.generate(this.structureManager, iWorld, chunkGenerator, this.pos, this.rotation, blockBox, random);
+    public boolean generate(IWorld world, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
+        return this.poolElement.generate(this.structureManager, world, chunkGenerator, this.pos, this.rotation, blockBox, random);
     }
 
     @Override
-    public void translate(int i, int j, int k) {
-        super.translate(i, j, k);
-        this.pos = this.pos.add(i, j, k);
+    public void translate(int x, int y, int z) {
+        super.translate(x, y, z);
+        this.pos = this.pos.add(x, y, z);
     }
 
     @Override
@@ -105,8 +105,8 @@ extends StructurePiece {
         return this.groundLevelDelta;
     }
 
-    public void addJunction(JigsawJunction jigsawJunction) {
-        this.junctions.add(jigsawJunction);
+    public void addJunction(JigsawJunction junction) {
+        this.junctions.add(junction);
     }
 
     public List<JigsawJunction> getJunctions() {

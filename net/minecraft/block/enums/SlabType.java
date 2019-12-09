@@ -13,8 +13,8 @@ public enum SlabType implements StringIdentifiable
 
     private final String name;
 
-    private SlabType(String string2) {
-        this.name = string2;
+    private SlabType(String name) {
+        this.name = name;
     }
 
     public String toString() {

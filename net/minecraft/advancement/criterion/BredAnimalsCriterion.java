@@ -33,13 +33,13 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(entityPredicate, entityPredicate2, entityPredicate3);
     }
 
-    public void trigger(ServerPlayerEntity serverPlayerEntity, AnimalEntity animalEntity, @Nullable AnimalEntity animalEntity2, @Nullable PassiveEntity passiveEntity) {
-        this.test(serverPlayerEntity.getAdvancementTracker(), conditions -> conditions.matches(serverPlayerEntity, animalEntity, animalEntity2, passiveEntity));
+    public void trigger(ServerPlayerEntity player, AnimalEntity parent, @Nullable AnimalEntity partner, @Nullable PassiveEntity child) {
+        this.test(player.getAdvancementTracker(), conditions -> conditions.matches(player, parent, partner, child));
     }
 
     @Override
-    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
+    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject obj, JsonDeserializationContext context) {
+        return this.conditionsFromJson(obj, context);
     }
 
     public static class Conditions
@@ -48,11 +48,11 @@ extends AbstractCriterion<Conditions> {
         private final EntityPredicate partner;
         private final EntityPredicate child;
 
-        public Conditions(EntityPredicate entityPredicate, EntityPredicate entityPredicate2, EntityPredicate entityPredicate3) {
+        public Conditions(EntityPredicate parent, EntityPredicate partner, EntityPredicate child) {
             super(ID);
-            this.parent = entityPredicate;
-            this.partner = entityPredicate2;
-            this.child = entityPredicate3;
+            this.parent = parent;
+            this.partner = partner;
+            this.child = child;
         }
 
         public static Conditions any() {
@@ -63,11 +63,11 @@ extends AbstractCriterion<Conditions> {
             return new Conditions(builder.build(), EntityPredicate.ANY, EntityPredicate.ANY);
         }
 
-        public boolean matches(ServerPlayerEntity serverPlayerEntity, AnimalEntity animalEntity, @Nullable AnimalEntity animalEntity2, @Nullable PassiveEntity passiveEntity) {
-            if (!this.child.test(serverPlayerEntity, passiveEntity)) {
+        public boolean matches(ServerPlayerEntity player, AnimalEntity parent, @Nullable AnimalEntity partner, @Nullable PassiveEntity child) {
+            if (!this.child.test(player, child)) {
                 return false;
             }
-            return this.parent.test(serverPlayerEntity, animalEntity) && this.partner.test(serverPlayerEntity, animalEntity2) || this.parent.test(serverPlayerEntity, animalEntity2) && this.partner.test(serverPlayerEntity, animalEntity);
+            return this.parent.test(player, parent) && this.partner.test(player, partner) || this.parent.test(player, partner) && this.partner.test(player, parent);
         }
 
         @Override

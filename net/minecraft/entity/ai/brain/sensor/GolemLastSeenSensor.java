@@ -25,8 +25,8 @@ extends Sensor<LivingEntity> {
     }
 
     @Override
-    protected void sense(ServerWorld serverWorld, LivingEntity livingEntity) {
-        GolemLastSeenSensor.senseIronGolem(serverWorld.getTime(), livingEntity);
+    protected void sense(ServerWorld world, LivingEntity entity) {
+        GolemLastSeenSensor.senseIronGolem(world.getTime(), entity);
     }
 
     @Override
@@ -34,15 +34,15 @@ extends Sensor<LivingEntity> {
         return ImmutableSet.of(MemoryModuleType.MOBS);
     }
 
-    public static void senseIronGolem(long l, LivingEntity livingEntity2) {
-        Brain<?> brain = livingEntity2.getBrain();
+    public static void senseIronGolem(long time, LivingEntity entity) {
+        Brain<?> brain = entity.getBrain();
         Optional<List<LivingEntity>> optional = brain.getOptionalMemory(MemoryModuleType.MOBS);
         if (!optional.isPresent()) {
             return;
         }
         boolean bl = optional.get().stream().anyMatch(livingEntity -> livingEntity.getType().equals(EntityType.IRON_GOLEM));
         if (bl) {
-            brain.putMemory(MemoryModuleType.GOLEM_LAST_SEEN_TIME, l);
+            brain.putMemory(MemoryModuleType.GOLEM_LAST_SEEN_TIME, time);
         }
     }
 }

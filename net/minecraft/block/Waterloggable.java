@@ -18,16 +18,16 @@ public interface Waterloggable
 extends FluidDrainable,
 FluidFillable {
     @Override
-    default public boolean canFillWithFluid(BlockView blockView, BlockPos blockPos, BlockState blockState, Fluid fluid) {
-        return blockState.get(Properties.WATERLOGGED) == false && fluid == Fluids.WATER;
+    default public boolean canFillWithFluid(BlockView view, BlockPos pos, BlockState state, Fluid fluid) {
+        return state.get(Properties.WATERLOGGED) == false && fluid == Fluids.WATER;
     }
 
     @Override
-    default public boolean tryFillWithFluid(IWorld iWorld, BlockPos blockPos, BlockState blockState, FluidState fluidState) {
-        if (!blockState.get(Properties.WATERLOGGED).booleanValue() && fluidState.getFluid() == Fluids.WATER) {
-            if (!iWorld.isClient()) {
-                iWorld.setBlockState(blockPos, (BlockState)blockState.with(Properties.WATERLOGGED, true), 3);
-                iWorld.getFluidTickScheduler().schedule(blockPos, fluidState.getFluid(), fluidState.getFluid().getTickRate(iWorld));
+    default public boolean tryFillWithFluid(IWorld world, BlockPos pos, BlockState state, FluidState fluidState) {
+        if (!state.get(Properties.WATERLOGGED).booleanValue() && fluidState.getFluid() == Fluids.WATER) {
+            if (!world.isClient()) {
+                world.setBlockState(pos, (BlockState)state.with(Properties.WATERLOGGED, true), 3);
+                world.getFluidTickScheduler().schedule(pos, fluidState.getFluid(), fluidState.getFluid().getTickRate(world));
             }
             return true;
         }
@@ -35,9 +35,9 @@ FluidFillable {
     }
 
     @Override
-    default public Fluid tryDrainFluid(IWorld iWorld, BlockPos blockPos, BlockState blockState) {
-        if (blockState.get(Properties.WATERLOGGED).booleanValue()) {
-            iWorld.setBlockState(blockPos, (BlockState)blockState.with(Properties.WATERLOGGED, false), 3);
+    default public Fluid tryDrainFluid(IWorld world, BlockPos pos, BlockState state) {
+        if (state.get(Properties.WATERLOGGED).booleanValue()) {
+            world.setBlockState(pos, (BlockState)state.with(Properties.WATERLOGGED, false), 3);
             return Fluids.WATER;
         }
         return Fluids.EMPTY;

@@ -26,27 +26,27 @@ implements Toast {
     }
 
     @Override
-    public Toast.Visibility draw(ToastManager toastManager, long l) {
+    public Toast.Visibility draw(ToastManager manager, long currentTime) {
         if (this.justUpdated) {
-            this.startTime = l;
+            this.startTime = currentTime;
             this.justUpdated = false;
         }
         if (this.recipes.isEmpty()) {
             return Toast.Visibility.HIDE;
         }
-        toastManager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
+        manager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
         RenderSystem.color3f(1.0f, 1.0f, 1.0f);
-        toastManager.blit(0, 0, 0, 32, 160, 32);
-        toastManager.getGame().textRenderer.draw(I18n.translate("recipe.toast.title", new Object[0]), 30.0f, 7.0f, -11534256);
-        toastManager.getGame().textRenderer.draw(I18n.translate("recipe.toast.description", new Object[0]), 30.0f, 18.0f, -16777216);
-        Recipe<?> recipe = this.recipes.get((int)(l / (5000L / (long)this.recipes.size()) % (long)this.recipes.size()));
+        manager.blit(0, 0, 0, 32, 160, 32);
+        manager.getGame().textRenderer.draw(I18n.translate("recipe.toast.title", new Object[0]), 30.0f, 7.0f, -11534256);
+        manager.getGame().textRenderer.draw(I18n.translate("recipe.toast.description", new Object[0]), 30.0f, 18.0f, -16777216);
+        Recipe<?> recipe = this.recipes.get((int)(currentTime / (5000L / (long)this.recipes.size()) % (long)this.recipes.size()));
         ItemStack itemStack = recipe.getRecipeKindIcon();
         RenderSystem.pushMatrix();
         RenderSystem.scalef(0.6f, 0.6f, 1.0f);
-        toastManager.getGame().getItemRenderer().renderGuiItem(null, itemStack, 3, 3);
+        manager.getGame().getItemRenderer().renderGuiItem(null, itemStack, 3, 3);
         RenderSystem.popMatrix();
-        toastManager.getGame().getItemRenderer().renderGuiItem(null, recipe.getOutput(), 8, 8);
-        return l - this.startTime >= 5000L ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
+        manager.getGame().getItemRenderer().renderGuiItem(null, recipe.getOutput(), 8, 8);
+        return currentTime - this.startTime >= 5000L ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
     }
 
     public void addRecipe(Recipe<?> recipe) {

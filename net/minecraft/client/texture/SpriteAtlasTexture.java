@@ -65,7 +65,7 @@ implements TextureTickListener {
     }
 
     @Override
-    public void load(ResourceManager resourceManager) throws IOException {
+    public void load(ResourceManager manager) throws IOException {
     }
 
     public void upload(Data data) {
@@ -90,35 +90,35 @@ implements TextureTickListener {
         }
     }
 
-    public Data stitch(ResourceManager resourceManager, Stream<Identifier> stream, Profiler profiler, int i) {
-        int m;
+    public Data stitch(ResourceManager resourceManager, Stream<Identifier> idStream, Profiler profiler, int mipmapLevel) {
+        int l;
         profiler.push("preparing");
-        Set<Identifier> set = stream.peek(identifier -> {
+        Set<Identifier> set = idStream.peek(identifier -> {
             if (identifier == null) {
                 throw new IllegalArgumentException("Location cannot be null!");
             }
         }).collect(Collectors.toSet());
-        int j = this.maxTextureSize;
-        TextureStitcher textureStitcher = new TextureStitcher(j, j, i);
-        int k = Integer.MAX_VALUE;
-        int l = 1 << i;
+        int i = this.maxTextureSize;
+        TextureStitcher textureStitcher = new TextureStitcher(i, i, mipmapLevel);
+        int j = Integer.MAX_VALUE;
+        int k = 1 << mipmapLevel;
         profiler.swap("extracting_frames");
         for (Sprite.Info info2 : this.loadSprites(resourceManager, set)) {
-            k = Math.min(k, Math.min(info2.getWidth(), info2.getHeight()));
-            m = Math.min(Integer.lowestOneBit(info2.getWidth()), Integer.lowestOneBit(info2.getHeight()));
-            if (m < l) {
-                LOGGER.warn("Texture {} with size {}x{} limits mip level from {} to {}", (Object)info2.getId(), (Object)info2.getWidth(), (Object)info2.getHeight(), (Object)MathHelper.log2(l), (Object)MathHelper.log2(m));
-                l = m;
+            j = Math.min(j, Math.min(info2.getWidth(), info2.getHeight()));
+            l = Math.min(Integer.lowestOneBit(info2.getWidth()), Integer.lowestOneBit(info2.getHeight()));
+            if (l < k) {
+                LOGGER.warn("Texture {} with size {}x{} limits mip level from {} to {}", (Object)info2.getId(), (Object)info2.getWidth(), (Object)info2.getHeight(), (Object)MathHelper.log2(k), (Object)MathHelper.log2(l));
+                k = l;
             }
             textureStitcher.add(info2);
         }
-        int n = Math.min(k, l);
-        int o = MathHelper.log2(n);
-        if (o < i) {
-            LOGGER.warn("{}: dropping miplevel from {} to {}, because of minimum power of two: {}", (Object)this.id, (Object)i, (Object)o, (Object)n);
-            m = o;
+        int m = Math.min(j, k);
+        int n = MathHelper.log2(m);
+        if (n < mipmapLevel) {
+            LOGGER.warn("{}: dropping miplevel from {} to {}, because of minimum power of two: {}", (Object)this.id, (Object)mipmapLevel, (Object)n, (Object)m);
+            l = n;
         } else {
-            m = i;
+            l = mipmapLevel;
         }
         profiler.swap("register");
         textureStitcher.add(MissingSprite.getMissingInfo());
@@ -129,19 +129,19 @@ implements TextureTickListener {
             CrashReport crashReport = CrashReport.create(textureStitcherCannotFitException, "Stitching");
             CrashReportSection crashReportSection = crashReport.addElement("Stitcher");
             crashReportSection.add("Sprites", textureStitcherCannotFitException.getSprites().stream().map(info -> String.format("%s[%dx%d]", info.getId(), info.getWidth(), info.getHeight())).collect(Collectors.joining(",")));
-            crashReportSection.add("Max Texture Size", j);
+            crashReportSection.add("Max Texture Size", i);
             throw new CrashException(crashReport);
         }
         profiler.swap("loading");
-        List<Sprite> list = this.method_18161(resourceManager, textureStitcher, m);
+        List<Sprite> list = this.method_18161(resourceManager, textureStitcher, l);
         profiler.pop();
-        return new Data(set, textureStitcher.getWidth(), textureStitcher.getHeight(), m, list);
+        return new Data(set, textureStitcher.getWidth(), textureStitcher.getHeight(), l, list);
     }
 
-    private Collection<Sprite.Info> loadSprites(ResourceManager resourceManager, Set<Identifier> set) {
+    private Collection<Sprite.Info> loadSprites(ResourceManager resourceManager, Set<Identifier> ids) {
         ArrayList<CompletableFuture<Void>> list = Lists.newArrayList();
         ConcurrentLinkedQueue<Sprite.Info> concurrentLinkedQueue = new ConcurrentLinkedQueue<Sprite.Info>();
-        for (Identifier identifier : set) {
+        for (Identifier identifier : ids) {
             if (MissingSprite.getMissingSpriteId().equals(identifier)) continue;
             list.add(CompletableFuture.runAsync(() -> {
                 Sprite.Info info;
@@ -194,9 +194,9 @@ implements TextureTickListener {
      * Enabled aggressive exception aggregation
      */
     @Nullable
-    private Sprite loadSprite(ResourceManager resourceManager, Sprite.Info info, int i, int j, int k, int l, int m) {
+    private Sprite loadSprite(ResourceManager container, Sprite.Info info, int i, int j, int k, int l, int m) {
         Identifier identifier = this.getTexturePath(info.getId());
-        try (Resource resource = resourceManager.getResource(identifier);){
+        try (Resource resource = container.getResource(identifier);){
             NativeImage nativeImage = NativeImage.read(resource.getInputStream());
             Sprite sprite = new Sprite(this, info, k, i, j, l, m, nativeImage);
             return sprite;
@@ -229,8 +229,8 @@ implements TextureTickListener {
         }
     }
 
-    public Sprite getSprite(Identifier identifier) {
-        Sprite sprite = this.sprites.get(identifier);
+    public Sprite getSprite(Identifier id) {
+        Sprite sprite = this.sprites.get(id);
         if (sprite == null) {
             return this.sprites.get(MissingSprite.getMissingSpriteId());
         }
@@ -261,11 +261,11 @@ implements TextureTickListener {
         final int field_21795;
         final List<Sprite> sprites;
 
-        public Data(Set<Identifier> set, int i, int j, int k, List<Sprite> list) {
-            this.spriteIds = set;
-            this.width = i;
-            this.height = j;
-            this.field_21795 = k;
+        public Data(Set<Identifier> spriteIds, int width, int height, int i, List<Sprite> list) {
+            this.spriteIds = spriteIds;
+            this.width = width;
+            this.height = height;
+            this.field_21795 = i;
             this.sprites = list;
         }
     }

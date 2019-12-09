@@ -70,8 +70,8 @@ public class BlockTags {
     public static final Tag<Block> BEE_GROWABLES;
     public static final Tag<Block> PORTALS;
 
-    public static void setContainer(TagContainer<Block> tagContainer) {
-        container = tagContainer;
+    public static void setContainer(TagContainer<Block> container) {
+        BlockTags.container = container;
         ++latestVersion;
     }
 
@@ -79,8 +79,8 @@ public class BlockTags {
         return container;
     }
 
-    private static Tag<Block> register(String string) {
-        return new CachingTag(new Identifier(string));
+    private static Tag<Block> register(String id) {
+        return new CachingTag(new Identifier(id));
     }
 
     static {

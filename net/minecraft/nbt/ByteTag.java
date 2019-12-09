@@ -39,29 +39,29 @@ extends AbstractNumberTag {
         }
 
         @Override
-        public /* synthetic */ Tag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-            return this.read(dataInput, i, positionTracker);
+        public /* synthetic */ Tag read(DataInput input, int depth, PositionTracker tracker) throws IOException {
+            return this.read(input, depth, tracker);
         }
     };
     public static final ByteTag ZERO = ByteTag.of((byte)0);
     public static final ByteTag ONE = ByteTag.of((byte)1);
     private final byte value;
 
-    private ByteTag(byte b) {
-        this.value = b;
+    private ByteTag(byte value) {
+        this.value = value;
     }
 
-    public static ByteTag of(byte b) {
-        return Cache.VALUES[128 + b];
+    public static ByteTag of(byte value) {
+        return Cache.VALUES[128 + value];
     }
 
-    public static ByteTag of(boolean bl) {
-        return bl ? ONE : ZERO;
+    public static ByteTag of(boolean value) {
+        return value ? ONE : ZERO;
     }
 
     @Override
-    public void write(DataOutput dataOutput) throws IOException {
-        dataOutput.writeByte(this.value);
+    public void write(DataOutput output) throws IOException {
+        output.writeByte(this.value);
     }
 
     @Override
@@ -83,11 +83,11 @@ extends AbstractNumberTag {
         return this;
     }
 
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        return object instanceof ByteTag && this.value == ((ByteTag)object).value;
+        return o instanceof ByteTag && this.value == ((ByteTag)o).value;
     }
 
     public int hashCode() {
@@ -95,7 +95,7 @@ extends AbstractNumberTag {
     }
 
     @Override
-    public Text toText(String string, int i) {
+    public Text toText(String indent, int depth) {
         Text text = new LiteralText("b").formatted(RED);
         return new LiteralText(String.valueOf(this.value)).append(text).formatted(GOLD);
     }

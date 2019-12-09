@@ -40,11 +40,11 @@ public class DamageSourcePredicate {
         this.sourceEntity = entityPredicate2;
     }
 
-    public boolean test(ServerPlayerEntity serverPlayerEntity, DamageSource damageSource) {
-        return this.test(serverPlayerEntity.getServerWorld(), serverPlayerEntity.getPos(), damageSource);
+    public boolean test(ServerPlayerEntity player, DamageSource damageSource) {
+        return this.test(player.getServerWorld(), player.getPos(), damageSource);
     }
 
-    public boolean test(ServerWorld serverWorld, Vec3d vec3d, DamageSource damageSource) {
+    public boolean test(ServerWorld world, Vec3d pos, DamageSource damageSource) {
         if (this == EMPTY) {
             return true;
         }
@@ -72,17 +72,17 @@ public class DamageSourcePredicate {
         if (this.isLightning != null && this.isLightning != (damageSource == DamageSource.LIGHTNING_BOLT)) {
             return false;
         }
-        if (!this.directEntity.test(serverWorld, vec3d, damageSource.getSource())) {
+        if (!this.directEntity.test(world, pos, damageSource.getSource())) {
             return false;
         }
-        return this.sourceEntity.test(serverWorld, vec3d, damageSource.getAttacker());
+        return this.sourceEntity.test(world, pos, damageSource.getAttacker());
     }
 
-    public static DamageSourcePredicate deserialize(@Nullable JsonElement jsonElement) {
-        if (jsonElement == null || jsonElement.isJsonNull()) {
+    public static DamageSourcePredicate deserialize(@Nullable JsonElement element) {
+        if (element == null || element.isJsonNull()) {
             return EMPTY;
         }
-        JsonObject jsonObject = JsonHelper.asObject(jsonElement, "damage type");
+        JsonObject jsonObject = JsonHelper.asObject(element, "damage type");
         Boolean boolean_ = DamageSourcePredicate.getBoolean(jsonObject, "is_projectile");
         Boolean boolean2 = DamageSourcePredicate.getBoolean(jsonObject, "is_explosion");
         Boolean boolean3 = DamageSourcePredicate.getBoolean(jsonObject, "bypasses_armor");
@@ -97,8 +97,8 @@ public class DamageSourcePredicate {
     }
 
     @Nullable
-    private static Boolean getBoolean(JsonObject jsonObject, String string) {
-        return jsonObject.has(string) ? Boolean.valueOf(JsonHelper.getBoolean(jsonObject, string)) : null;
+    private static Boolean getBoolean(JsonObject obj, String name) {
+        return obj.has(name) ? Boolean.valueOf(JsonHelper.getBoolean(obj, name)) : null;
     }
 
     public JsonElement serialize() {
@@ -119,9 +119,9 @@ public class DamageSourcePredicate {
         return jsonObject;
     }
 
-    private void addProperty(JsonObject jsonObject, String string, @Nullable Boolean boolean_) {
+    private void addProperty(JsonObject json, String key, @Nullable Boolean boolean_) {
         if (boolean_ != null) {
-            jsonObject.addProperty(string, boolean_);
+            json.addProperty(key, boolean_);
         }
     }
 

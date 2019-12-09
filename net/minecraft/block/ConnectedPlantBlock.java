@@ -36,19 +36,19 @@ extends Block {
     });
     protected final VoxelShape[] CONNECTIONS_TO_SHAPE;
 
-    protected ConnectedPlantBlock(float f, Block.Settings settings) {
+    protected ConnectedPlantBlock(float radius, Block.Settings settings) {
         super(settings);
-        this.CONNECTIONS_TO_SHAPE = this.generateFacingsToShapeMap(f);
+        this.CONNECTIONS_TO_SHAPE = this.generateFacingsToShapeMap(radius);
     }
 
-    private VoxelShape[] generateFacingsToShapeMap(float f) {
-        float g = 0.5f - f;
-        float h = 0.5f + f;
-        VoxelShape voxelShape = Block.createCuboidShape(g * 16.0f, g * 16.0f, g * 16.0f, h * 16.0f, h * 16.0f, h * 16.0f);
+    private VoxelShape[] generateFacingsToShapeMap(float radius) {
+        float f = 0.5f - radius;
+        float g = 0.5f + radius;
+        VoxelShape voxelShape = Block.createCuboidShape(f * 16.0f, f * 16.0f, f * 16.0f, g * 16.0f, g * 16.0f, g * 16.0f);
         VoxelShape[] voxelShapes = new VoxelShape[FACINGS.length];
         for (int i = 0; i < FACINGS.length; ++i) {
             Direction direction = FACINGS[i];
-            voxelShapes[i] = VoxelShapes.cuboid(0.5 + Math.min((double)(-f), (double)direction.getOffsetX() * 0.5), 0.5 + Math.min((double)(-f), (double)direction.getOffsetY() * 0.5), 0.5 + Math.min((double)(-f), (double)direction.getOffsetZ() * 0.5), 0.5 + Math.max((double)f, (double)direction.getOffsetX() * 0.5), 0.5 + Math.max((double)f, (double)direction.getOffsetY() * 0.5), 0.5 + Math.max((double)f, (double)direction.getOffsetZ() * 0.5));
+            voxelShapes[i] = VoxelShapes.cuboid(0.5 + Math.min((double)(-radius), (double)direction.getOffsetX() * 0.5), 0.5 + Math.min((double)(-radius), (double)direction.getOffsetY() * 0.5), 0.5 + Math.min((double)(-radius), (double)direction.getOffsetZ() * 0.5), 0.5 + Math.max((double)radius, (double)direction.getOffsetX() * 0.5), 0.5 + Math.max((double)radius, (double)direction.getOffsetY() * 0.5), 0.5 + Math.max((double)radius, (double)direction.getOffsetZ() * 0.5));
         }
         VoxelShape[] voxelShapes2 = new VoxelShape[64];
         for (int j = 0; j < 64; ++j) {
@@ -63,19 +63,19 @@ extends Block {
     }
 
     @Override
-    public boolean isTranslucent(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+    public boolean isTranslucent(BlockState state, BlockView view, BlockPos pos) {
         return false;
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-        return this.CONNECTIONS_TO_SHAPE[this.getConnectionMask(blockState)];
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+        return this.CONNECTIONS_TO_SHAPE[this.getConnectionMask(state)];
     }
 
-    protected int getConnectionMask(BlockState blockState) {
+    protected int getConnectionMask(BlockState state) {
         int i = 0;
         for (int j = 0; j < FACINGS.length; ++j) {
-            if (!((Boolean)blockState.get(FACING_PROPERTIES.get(FACINGS[j]))).booleanValue()) continue;
+            if (!((Boolean)state.get(FACING_PROPERTIES.get(FACINGS[j]))).booleanValue()) continue;
             i |= 1 << j;
         }
         return i;

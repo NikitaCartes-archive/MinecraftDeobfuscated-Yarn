@@ -30,48 +30,48 @@ extends Particle {
     }
 
     @Override
-    public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float f) {
+    public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
         Quaternion quaternion;
         Vec3d vec3d = camera.getPos();
-        float g = (float)(MathHelper.lerp((double)f, this.prevPosX, this.x) - vec3d.getX());
-        float h = (float)(MathHelper.lerp((double)f, this.prevPosY, this.y) - vec3d.getY());
-        float i = (float)(MathHelper.lerp((double)f, this.prevPosZ, this.z) - vec3d.getZ());
+        float f = (float)(MathHelper.lerp((double)tickDelta, this.prevPosX, this.x) - vec3d.getX());
+        float g = (float)(MathHelper.lerp((double)tickDelta, this.prevPosY, this.y) - vec3d.getY());
+        float h = (float)(MathHelper.lerp((double)tickDelta, this.prevPosZ, this.z) - vec3d.getZ());
         if (this.angle == 0.0f) {
             quaternion = camera.getRotation();
         } else {
             quaternion = new Quaternion(camera.getRotation());
-            float j = MathHelper.lerp(f, this.prevAngle, this.angle);
-            quaternion.hamiltonProduct(Vector3f.POSITIVE_Z.getRadialQuaternion(j));
+            float i = MathHelper.lerp(tickDelta, this.prevAngle, this.angle);
+            quaternion.hamiltonProduct(Vector3f.POSITIVE_Z.getRadialQuaternion(i));
         }
         Vector3f vector3f = new Vector3f(-1.0f, -1.0f, 0.0f);
         vector3f.rotate(quaternion);
         Vector3f[] vector3fs = new Vector3f[]{new Vector3f(-1.0f, -1.0f, 0.0f), new Vector3f(-1.0f, 1.0f, 0.0f), new Vector3f(1.0f, 1.0f, 0.0f), new Vector3f(1.0f, -1.0f, 0.0f)};
-        float k = this.getSize(f);
-        for (int l = 0; l < 4; ++l) {
-            Vector3f vector3f2 = vector3fs[l];
+        float j = this.getSize(tickDelta);
+        for (int k = 0; k < 4; ++k) {
+            Vector3f vector3f2 = vector3fs[k];
             vector3f2.rotate(quaternion);
-            vector3f2.scale(k);
-            vector3f2.add(g, h, i);
+            vector3f2.scale(j);
+            vector3f2.add(f, g, h);
         }
-        float m = this.getMinU();
-        float n = this.getMaxU();
-        float o = this.getMinV();
-        float p = this.getMaxV();
-        int q = this.getColorMultiplier(f);
-        vertexConsumer.vertex(vector3fs[0].getX(), vector3fs[0].getY(), vector3fs[0].getZ()).texture(n, p).color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha).light(q).next();
-        vertexConsumer.vertex(vector3fs[1].getX(), vector3fs[1].getY(), vector3fs[1].getZ()).texture(n, o).color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha).light(q).next();
-        vertexConsumer.vertex(vector3fs[2].getX(), vector3fs[2].getY(), vector3fs[2].getZ()).texture(m, o).color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha).light(q).next();
-        vertexConsumer.vertex(vector3fs[3].getX(), vector3fs[3].getY(), vector3fs[3].getZ()).texture(m, p).color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha).light(q).next();
+        float l = this.getMinU();
+        float m = this.getMaxU();
+        float n = this.getMinV();
+        float o = this.getMaxV();
+        int p = this.getColorMultiplier(tickDelta);
+        vertexConsumer.vertex(vector3fs[0].getX(), vector3fs[0].getY(), vector3fs[0].getZ()).texture(m, o).color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha).light(p).next();
+        vertexConsumer.vertex(vector3fs[1].getX(), vector3fs[1].getY(), vector3fs[1].getZ()).texture(m, n).color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha).light(p).next();
+        vertexConsumer.vertex(vector3fs[2].getX(), vector3fs[2].getY(), vector3fs[2].getZ()).texture(l, n).color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha).light(p).next();
+        vertexConsumer.vertex(vector3fs[3].getX(), vector3fs[3].getY(), vector3fs[3].getZ()).texture(l, o).color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha).light(p).next();
     }
 
-    public float getSize(float f) {
+    public float getSize(float tickDelta) {
         return this.scale;
     }
 
     @Override
-    public Particle scale(float f) {
-        this.scale *= f;
-        return super.scale(f);
+    public Particle scale(float scale) {
+        this.scale *= scale;
+        return super.scale(scale);
     }
 
     protected abstract float getMinU();

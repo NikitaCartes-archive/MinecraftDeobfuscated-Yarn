@@ -29,13 +29,13 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(intRange);
     }
 
-    public void trigger(ServerPlayerEntity serverPlayerEntity, BeaconBlockEntity beaconBlockEntity) {
-        this.test(serverPlayerEntity.getAdvancementTracker(), conditions -> conditions.matches(beaconBlockEntity));
+    public void trigger(ServerPlayerEntity player, BeaconBlockEntity beacon) {
+        this.test(player.getAdvancementTracker(), conditions -> conditions.matches(beacon));
     }
 
     @Override
-    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
+    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject obj, JsonDeserializationContext context) {
+        return this.conditionsFromJson(obj, context);
     }
 
     public static class Conditions
@@ -51,8 +51,8 @@ extends AbstractCriterion<Conditions> {
             return new Conditions(intRange);
         }
 
-        public boolean matches(BeaconBlockEntity beaconBlockEntity) {
-            return this.level.test(beaconBlockEntity.getLevel());
+        public boolean matches(BeaconBlockEntity beacon) {
+            return this.level.test(beacon.getLevel());
         }
 
         @Override

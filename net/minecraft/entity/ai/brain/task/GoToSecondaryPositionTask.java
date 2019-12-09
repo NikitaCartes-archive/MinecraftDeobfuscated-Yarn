@@ -27,13 +27,13 @@ extends Task<VillagerEntity> {
     @Nullable
     private GlobalPos chosenPosition;
 
-    public GoToSecondaryPositionTask(MemoryModuleType<List<GlobalPos>> memoryModuleType, float f, int i, int j, MemoryModuleType<GlobalPos> memoryModuleType2) {
-        super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.REGISTERED, memoryModuleType, MemoryModuleState.VALUE_PRESENT, memoryModuleType2, MemoryModuleState.VALUE_PRESENT));
-        this.secondaryPositions = memoryModuleType;
-        this.speed = f;
-        this.completionRange = i;
-        this.primaryPositionActivationDistance = j;
-        this.primaryPosition = memoryModuleType2;
+    public GoToSecondaryPositionTask(MemoryModuleType<List<GlobalPos>> secondaryPositions, float speed, int completionRange, int primaryPositionActivationDistance, MemoryModuleType<GlobalPos> primaryPosition) {
+        super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.REGISTERED, secondaryPositions, MemoryModuleState.VALUE_PRESENT, primaryPosition, MemoryModuleState.VALUE_PRESENT));
+        this.secondaryPositions = secondaryPositions;
+        this.speed = speed;
+        this.completionRange = completionRange;
+        this.primaryPositionActivationDistance = primaryPositionActivationDistance;
+        this.primaryPosition = primaryPosition;
     }
 
     @Override

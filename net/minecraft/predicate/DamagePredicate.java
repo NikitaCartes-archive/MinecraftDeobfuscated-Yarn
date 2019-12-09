@@ -30,31 +30,31 @@ public class DamagePredicate {
         this.type = DamageSourcePredicate.EMPTY;
     }
 
-    public DamagePredicate(NumberRange.FloatRange floatRange, NumberRange.FloatRange floatRange2, EntityPredicate entityPredicate, @Nullable Boolean boolean_, DamageSourcePredicate damageSourcePredicate) {
-        this.dealt = floatRange;
-        this.taken = floatRange2;
-        this.sourceEntity = entityPredicate;
-        this.blocked = boolean_;
-        this.type = damageSourcePredicate;
+    public DamagePredicate(NumberRange.FloatRange dealt, NumberRange.FloatRange taken, EntityPredicate sourceEntity, @Nullable Boolean blocked, DamageSourcePredicate type) {
+        this.dealt = dealt;
+        this.taken = taken;
+        this.sourceEntity = sourceEntity;
+        this.blocked = blocked;
+        this.type = type;
     }
 
-    public boolean test(ServerPlayerEntity serverPlayerEntity, DamageSource damageSource, float f, float g, boolean bl) {
+    public boolean test(ServerPlayerEntity player, DamageSource source, float dealt, float taken, boolean blocked) {
         if (this == ANY) {
             return true;
         }
-        if (!this.dealt.test(f)) {
+        if (!this.dealt.test(dealt)) {
             return false;
         }
-        if (!this.taken.test(g)) {
+        if (!this.taken.test(taken)) {
             return false;
         }
-        if (!this.sourceEntity.test(serverPlayerEntity, damageSource.getAttacker())) {
+        if (!this.sourceEntity.test(player, source.getAttacker())) {
             return false;
         }
-        if (this.blocked != null && this.blocked != bl) {
+        if (this.blocked != null && this.blocked != blocked) {
             return false;
         }
-        return this.type.test(serverPlayerEntity, damageSource);
+        return this.type.test(player, source);
     }
 
     public static DamagePredicate deserialize(@Nullable JsonElement jsonElement) {
@@ -96,8 +96,8 @@ public class DamagePredicate {
             return new Builder();
         }
 
-        public Builder blocked(Boolean boolean_) {
-            this.blocked = boolean_;
+        public Builder blocked(Boolean blocked) {
+            this.blocked = blocked;
             return this;
         }
 

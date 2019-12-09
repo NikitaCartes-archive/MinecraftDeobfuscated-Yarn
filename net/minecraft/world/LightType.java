@@ -9,8 +9,8 @@ public enum LightType {
 
     public final int value;
 
-    private LightType(int j) {
-        this.value = j;
+    private LightType(int value) {
+        this.value = value;
     }
 }
 

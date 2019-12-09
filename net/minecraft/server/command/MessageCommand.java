@@ -18,18 +18,18 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 public class MessageCommand {
-    public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-        LiteralCommandNode<ServerCommandSource> literalCommandNode = commandDispatcher.register((LiteralArgumentBuilder)CommandManager.literal("msg").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("targets", EntityArgumentType.players()).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("message", MessageArgumentType.message()).executes(commandContext -> MessageCommand.execute((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), MessageArgumentType.getMessage(commandContext, "message"))))));
-        commandDispatcher.register((LiteralArgumentBuilder)CommandManager.literal("tell").redirect(literalCommandNode));
-        commandDispatcher.register((LiteralArgumentBuilder)CommandManager.literal("w").redirect(literalCommandNode));
+    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        LiteralCommandNode<ServerCommandSource> literalCommandNode = dispatcher.register((LiteralArgumentBuilder)CommandManager.literal("msg").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("targets", EntityArgumentType.players()).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("message", MessageArgumentType.message()).executes(commandContext -> MessageCommand.execute((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), MessageArgumentType.getMessage(commandContext, "message"))))));
+        dispatcher.register((LiteralArgumentBuilder)CommandManager.literal("tell").redirect(literalCommandNode));
+        dispatcher.register((LiteralArgumentBuilder)CommandManager.literal("w").redirect(literalCommandNode));
     }
 
-    private static int execute(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, Text text) {
-        for (ServerPlayerEntity serverPlayerEntity : collection) {
-            serverPlayerEntity.sendMessage(new TranslatableText("commands.message.display.incoming", serverCommandSource.getDisplayName(), text.deepCopy()).formatted(Formatting.GRAY, Formatting.ITALIC));
-            serverCommandSource.sendFeedback(new TranslatableText("commands.message.display.outgoing", serverPlayerEntity.getDisplayName(), text.deepCopy()).formatted(Formatting.GRAY, Formatting.ITALIC), false);
+    private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, Text message) {
+        for (ServerPlayerEntity serverPlayerEntity : targets) {
+            serverPlayerEntity.sendMessage(new TranslatableText("commands.message.display.incoming", source.getDisplayName(), message.deepCopy()).formatted(Formatting.GRAY, Formatting.ITALIC));
+            source.sendFeedback(new TranslatableText("commands.message.display.outgoing", serverPlayerEntity.getDisplayName(), message.deepCopy()).formatted(Formatting.GRAY, Formatting.ITALIC), false);
         }
-        return collection.size();
+        return targets.size();
     }
 }
 

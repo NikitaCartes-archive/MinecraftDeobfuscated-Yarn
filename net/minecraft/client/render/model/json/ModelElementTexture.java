@@ -20,38 +20,38 @@ public class ModelElementTexture {
     public float[] uvs;
     public final int rotation;
 
-    public ModelElementTexture(@Nullable float[] fs, int i) {
-        this.uvs = fs;
-        this.rotation = i;
+    public ModelElementTexture(@Nullable float[] uvs, int rotation) {
+        this.uvs = uvs;
+        this.rotation = rotation;
     }
 
-    public float getU(int i) {
+    public float getU(int rotation) {
         if (this.uvs == null) {
             throw new NullPointerException("uvs");
         }
-        int j = this.getRotatedUVIndex(i);
-        return this.uvs[j == 0 || j == 1 ? 0 : 2];
+        int i = this.getRotatedUVIndex(rotation);
+        return this.uvs[i == 0 || i == 1 ? 0 : 2];
     }
 
-    public float getV(int i) {
+    public float getV(int rotation) {
         if (this.uvs == null) {
             throw new NullPointerException("uvs");
         }
-        int j = this.getRotatedUVIndex(i);
-        return this.uvs[j == 0 || j == 3 ? 1 : 3];
+        int i = this.getRotatedUVIndex(rotation);
+        return this.uvs[i == 0 || i == 3 ? 1 : 3];
     }
 
-    private int getRotatedUVIndex(int i) {
-        return (i + this.rotation / 90) % 4;
+    private int getRotatedUVIndex(int rotation) {
+        return (rotation + this.rotation / 90) % 4;
     }
 
-    public int getDirectionIndex(int i) {
-        return (i + 4 - this.rotation / 90) % 4;
+    public int getDirectionIndex(int offset) {
+        return (offset + 4 - this.rotation / 90) % 4;
     }
 
-    public void setUvs(float[] fs) {
+    public void setUvs(float[] uvs) {
         if (this.uvs == null) {
-            this.uvs = fs;
+            this.uvs = uvs;
         }
     }
 
@@ -62,15 +62,15 @@ public class ModelElementTexture {
         }
 
         @Override
-        public ModelElementTexture deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            JsonObject jsonObject = jsonElement.getAsJsonObject();
+        public ModelElementTexture deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
+            JsonObject jsonObject = element.getAsJsonObject();
             float[] fs = this.deserializeUVs(jsonObject);
             int i = this.deserializeRotation(jsonObject);
             return new ModelElementTexture(fs, i);
         }
 
-        protected int deserializeRotation(JsonObject jsonObject) {
-            int i = JsonHelper.getInt(jsonObject, "rotation", 0);
+        protected int deserializeRotation(JsonObject object) {
+            int i = JsonHelper.getInt(object, "rotation", 0);
             if (i < 0 || i % 90 != 0 || i / 90 > 3) {
                 throw new JsonParseException("Invalid rotation " + i + " found, only 0/90/180/270 allowed");
             }
@@ -78,11 +78,11 @@ public class ModelElementTexture {
         }
 
         @Nullable
-        private float[] deserializeUVs(JsonObject jsonObject) {
-            if (!jsonObject.has("uv")) {
+        private float[] deserializeUVs(JsonObject object) {
+            if (!object.has("uv")) {
                 return null;
             }
-            JsonArray jsonArray = JsonHelper.getArray(jsonObject, "uv");
+            JsonArray jsonArray = JsonHelper.getArray(object, "uv");
             if (jsonArray.size() != 4) {
                 throw new JsonParseException("Expected 4 uv values, found: " + jsonArray.size());
             }
@@ -94,8 +94,8 @@ public class ModelElementTexture {
         }
 
         @Override
-        public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.deserialize(jsonElement, type, jsonDeserializationContext);
+        public /* synthetic */ Object deserialize(JsonElement functionJson, Type unused, JsonDeserializationContext context) throws JsonParseException {
+            return this.deserialize(functionJson, unused, context);
         }
     }
 }

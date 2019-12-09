@@ -18,37 +18,37 @@ public class BiomeColorCache {
     private final Long2ObjectLinkedOpenHashMap<int[]> colors = new Long2ObjectLinkedOpenHashMap(256, 0.25f);
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
-    public int getBiomeColor(BlockPos blockPos, IntSupplier intSupplier) {
+    public int getBiomeColor(BlockPos pos, IntSupplier colorFactory) {
         int o;
-        int i = blockPos.getX() >> 4;
-        int j = blockPos.getZ() >> 4;
+        int i = pos.getX() >> 4;
+        int j = pos.getZ() >> 4;
         Last last = this.last.get();
         if (last.x != i || last.z != j) {
             last.x = i;
             last.z = j;
             last.colors = this.getColorArray(i, j);
         }
-        int k = blockPos.getX() & 0xF;
-        int l = blockPos.getZ() & 0xF;
+        int k = pos.getX() & 0xF;
+        int l = pos.getZ() & 0xF;
         int m = l << 4 | k;
         int n = last.colors[m];
         if (n != -1) {
             return n;
         }
-        last.colors[m] = o = intSupplier.getAsInt();
+        last.colors[m] = o = colorFactory.getAsInt();
         return o;
     }
 
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    public void reset(int i, int j) {
+    public void reset(int chunkX, int chunkZ) {
         try {
             this.lock.writeLock().lock();
-            for (int k = -1; k <= 1; ++k) {
-                for (int l = -1; l <= 1; ++l) {
-                    long m = ChunkPos.toLong(i + k, j + l);
-                    this.colors.remove(m);
+            for (int i = -1; i <= 1; ++i) {
+                for (int j = -1; j <= 1; ++j) {
+                    long l = ChunkPos.toLong(chunkX + i, chunkZ + j);
+                    this.colors.remove(l);
                 }
             }
         } finally {
@@ -68,9 +68,9 @@ public class BiomeColorCache {
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    private int[] getColorArray(int i, int j) {
+    private int[] getColorArray(int chunkX, int chunkZ) {
         int[] is;
-        long l = ChunkPos.toLong(i, j);
+        long l = ChunkPos.toLong(chunkX, chunkZ);
         this.lock.readLock().lock();
         try {
             is = this.colors.get(l);

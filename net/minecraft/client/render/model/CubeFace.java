@@ -28,8 +28,8 @@ public enum CubeFace {
         this.corners = corners;
     }
 
-    public Corner getCorner(int i) {
-        return this.corners[i];
+    public Corner getCorner(int corner) {
+        return this.corners[corner];
     }
 
     static {
@@ -49,10 +49,10 @@ public enum CubeFace {
         public final int ySide;
         public final int zSide;
 
-        private Corner(int i, int j, int k) {
-            this.xSide = i;
-            this.ySide = j;
-            this.zSide = k;
+        private Corner(int x, int y, int z) {
+            this.xSide = x;
+            this.ySide = y;
+            this.zSide = z;
         }
     }
 

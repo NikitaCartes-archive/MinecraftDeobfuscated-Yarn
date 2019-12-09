@@ -23,8 +23,8 @@ implements Packet<ClientPlayPacketListener> {
     public SynchronizeRecipesS2CPacket() {
     }
 
-    public SynchronizeRecipesS2CPacket(Collection<Recipe<?>> collection) {
-        this.recipes = Lists.newArrayList(collection);
+    public SynchronizeRecipesS2CPacket(Collection<Recipe<?>> recipes) {
+        this.recipes = Lists.newArrayList(recipes);
     }
 
     @Override
@@ -33,19 +33,19 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Override
-    public void read(PacketByteBuf packetByteBuf) throws IOException {
+    public void read(PacketByteBuf buf) throws IOException {
         this.recipes = Lists.newArrayList();
-        int i = packetByteBuf.readVarInt();
+        int i = buf.readVarInt();
         for (int j = 0; j < i; ++j) {
-            this.recipes.add(SynchronizeRecipesS2CPacket.readRecipe(packetByteBuf));
+            this.recipes.add(SynchronizeRecipesS2CPacket.readRecipe(buf));
         }
     }
 
     @Override
-    public void write(PacketByteBuf packetByteBuf) throws IOException {
-        packetByteBuf.writeVarInt(this.recipes.size());
+    public void write(PacketByteBuf buf) throws IOException {
+        buf.writeVarInt(this.recipes.size());
         for (Recipe<?> recipe : this.recipes) {
-            SynchronizeRecipesS2CPacket.writeRecipe(recipe, packetByteBuf);
+            SynchronizeRecipesS2CPacket.writeRecipe(recipe, buf);
         }
     }
 
@@ -54,16 +54,16 @@ implements Packet<ClientPlayPacketListener> {
         return this.recipes;
     }
 
-    public static Recipe<?> readRecipe(PacketByteBuf packetByteBuf) {
-        Identifier identifier = packetByteBuf.readIdentifier();
-        Identifier identifier2 = packetByteBuf.readIdentifier();
-        return Registry.RECIPE_SERIALIZER.getOrEmpty(identifier).orElseThrow(() -> new IllegalArgumentException("Unknown recipe serializer " + identifier)).read(identifier2, packetByteBuf);
+    public static Recipe<?> readRecipe(PacketByteBuf buf) {
+        Identifier identifier = buf.readIdentifier();
+        Identifier identifier2 = buf.readIdentifier();
+        return Registry.RECIPE_SERIALIZER.getOrEmpty(identifier).orElseThrow(() -> new IllegalArgumentException("Unknown recipe serializer " + identifier)).read(identifier2, buf);
     }
 
-    public static <T extends Recipe<?>> void writeRecipe(T recipe, PacketByteBuf packetByteBuf) {
-        packetByteBuf.writeIdentifier(Registry.RECIPE_SERIALIZER.getId(recipe.getSerializer()));
-        packetByteBuf.writeIdentifier(recipe.getId());
-        recipe.getSerializer().write(packetByteBuf, recipe);
+    public static <T extends Recipe<?>> void writeRecipe(T recipe, PacketByteBuf buf) {
+        buf.writeIdentifier(Registry.RECIPE_SERIALIZER.getId(recipe.getSerializer()));
+        buf.writeIdentifier(recipe.getId());
+        recipe.getSerializer().write(buf, recipe);
     }
 }
 

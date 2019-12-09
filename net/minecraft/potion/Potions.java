@@ -53,8 +53,8 @@ public class Potions {
     public static final Potion SLOW_FALLING = Potions.register("slow_falling", new Potion(new StatusEffectInstance(StatusEffects.SLOW_FALLING, 1800)));
     public static final Potion LONG_SLOW_FALLING = Potions.register("long_slow_falling", new Potion("slow_falling", new StatusEffectInstance(StatusEffects.SLOW_FALLING, 4800)));
 
-    private static Potion register(String string, Potion potion) {
-        return Registry.register(Registry.POTION, string, potion);
+    private static Potion register(String name, Potion potion) {
+        return Registry.register(Registry.POTION, name, potion);
     }
 }
 

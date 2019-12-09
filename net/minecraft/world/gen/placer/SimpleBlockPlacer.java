@@ -30,8 +30,8 @@ extends BlockPlacer {
     }
 
     @Override
-    public <T> T serialize(DynamicOps<T> dynamicOps) {
-        return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("type"), dynamicOps.createString(Registry.BLOCK_PLACER_TYPE.getId(this.type).toString())))).getValue();
+    public <T> T serialize(DynamicOps<T> ops) {
+        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("type"), ops.createString(Registry.BLOCK_PLACER_TYPE.getId(this.type).toString())))).getValue();
     }
 }
 

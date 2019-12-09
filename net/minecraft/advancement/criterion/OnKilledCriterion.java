@@ -21,8 +21,8 @@ public class OnKilledCriterion
 extends AbstractCriterion<Conditions> {
     private final Identifier id;
 
-    public OnKilledCriterion(Identifier identifier) {
-        this.id = identifier;
+    public OnKilledCriterion(Identifier id) {
+        this.id = id;
     }
 
     @Override
@@ -35,13 +35,13 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(this.id, EntityPredicate.fromJson(jsonObject.get("entity")), DamageSourcePredicate.deserialize(jsonObject.get("killing_blow")));
     }
 
-    public void trigger(ServerPlayerEntity serverPlayerEntity, Entity entity, DamageSource damageSource) {
-        this.test(serverPlayerEntity.getAdvancementTracker(), conditions -> conditions.test(serverPlayerEntity, entity, damageSource));
+    public void trigger(ServerPlayerEntity player, Entity entity, DamageSource source) {
+        this.test(player.getAdvancementTracker(), conditions -> conditions.test(player, entity, source));
     }
 
     @Override
-    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
+    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject obj, JsonDeserializationContext context) {
+        return this.conditionsFromJson(obj, context);
     }
 
     public static class Conditions
@@ -49,10 +49,10 @@ extends AbstractCriterion<Conditions> {
         private final EntityPredicate entity;
         private final DamageSourcePredicate killingBlow;
 
-        public Conditions(Identifier identifier, EntityPredicate entityPredicate, DamageSourcePredicate damageSourcePredicate) {
-            super(identifier);
-            this.entity = entityPredicate;
-            this.killingBlow = damageSourcePredicate;
+        public Conditions(Identifier id, EntityPredicate entity, DamageSourcePredicate killingBlow) {
+            super(id);
+            this.entity = entity;
+            this.killingBlow = killingBlow;
         }
 
         public static Conditions createPlayerKilledEntity(EntityPredicate.Builder builder) {
@@ -71,11 +71,11 @@ extends AbstractCriterion<Conditions> {
             return new Conditions(Criterions.ENTITY_KILLED_PLAYER.id, EntityPredicate.ANY, DamageSourcePredicate.EMPTY);
         }
 
-        public boolean test(ServerPlayerEntity serverPlayerEntity, Entity entity, DamageSource damageSource) {
-            if (!this.killingBlow.test(serverPlayerEntity, damageSource)) {
+        public boolean test(ServerPlayerEntity player, Entity entity, DamageSource killingBlow) {
+            if (!this.killingBlow.test(player, killingBlow)) {
                 return false;
             }
-            return this.entity.test(serverPlayerEntity, entity);
+            return this.entity.test(player, entity);
         }
 
         @Override

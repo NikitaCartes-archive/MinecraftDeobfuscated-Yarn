@@ -39,34 +39,34 @@ extends AbstractSkullBlock {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-        return FACING_TO_SHAPE.get(blockState.get(FACING));
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+        return FACING_TO_SHAPE.get(state.get(FACING));
     }
 
     @Override
-    public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
         Direction[] directions;
         BlockState blockState = this.getDefaultState();
-        World blockView = itemPlacementContext.getWorld();
-        BlockPos blockPos = itemPlacementContext.getBlockPos();
-        for (Direction direction : directions = itemPlacementContext.getPlacementDirections()) {
+        World blockView = ctx.getWorld();
+        BlockPos blockPos = ctx.getBlockPos();
+        for (Direction direction : directions = ctx.getPlacementDirections()) {
             if (!direction.getAxis().isHorizontal()) continue;
             Direction direction2 = direction.getOpposite();
             blockState = (BlockState)blockState.with(FACING, direction2);
-            if (blockView.getBlockState(blockPos.offset(direction)).canReplace(itemPlacementContext)) continue;
+            if (blockView.getBlockState(blockPos.offset(direction)).canReplace(ctx)) continue;
             return blockState;
         }
         return null;
     }
 
     @Override
-    public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
-        return (BlockState)blockState.with(FACING, blockRotation.rotate(blockState.get(FACING)));
+    public BlockState rotate(BlockState state, BlockRotation rotation) {
+        return (BlockState)state.with(FACING, rotation.rotate(state.get(FACING)));
     }
 
     @Override
-    public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
-        return blockState.rotate(blockMirror.getRotation(blockState.get(FACING)));
+    public BlockState mirror(BlockState state, BlockMirror mirror) {
+        return state.rotate(mirror.getRotation(state.get(FACING)));
     }
 
     @Override

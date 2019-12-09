@@ -48,15 +48,15 @@ extends CaveCarver {
     }
 
     @Override
-    protected boolean carveAtPoint(Chunk chunk, Function<BlockPos, Biome> function, BitSet bitSet, Random random, BlockPos.Mutable mutable, BlockPos.Mutable mutable2, BlockPos.Mutable mutable3, int i, int j, int k, int l, int m, int n, int o, int p, AtomicBoolean atomicBoolean) {
-        int q = n | p << 4 | o << 8;
-        if (bitSet.get(q)) {
+    protected boolean carveAtPoint(Chunk chunk, Function<BlockPos, Biome> function, BitSet bitSet, Random random, BlockPos.Mutable mutable, BlockPos.Mutable mutable2, BlockPos.Mutable mutable3, int mainChunkX, int mainChunkZ, int i, int j, int k, int l, int m, int n, AtomicBoolean atomicBoolean) {
+        int o = l | n << 4 | m << 8;
+        if (bitSet.get(o)) {
             return false;
         }
-        bitSet.set(q);
-        mutable.set(l, o, m);
+        bitSet.set(o);
+        mutable.set(j, m, k);
         if (this.canAlwaysCarveBlock(chunk.getBlockState(mutable))) {
-            BlockState blockState = o <= 31 ? LAVA.getBlockState() : CAVE_AIR;
+            BlockState blockState = m <= 31 ? LAVA.getBlockState() : CAVE_AIR;
             chunk.setBlockState(mutable, blockState, false);
             return true;
         }

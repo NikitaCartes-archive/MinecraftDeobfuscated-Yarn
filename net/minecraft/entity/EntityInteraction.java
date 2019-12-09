@@ -10,11 +10,11 @@ public interface EntityInteraction {
     public static final EntityInteraction VILLAGER_KILLED = EntityInteraction.create("villager_killed");
     public static final EntityInteraction TRADE = EntityInteraction.create("trade");
 
-    public static EntityInteraction create(final String string) {
+    public static EntityInteraction create(final String key) {
         return new EntityInteraction(){
 
             public String toString() {
-                return string;
+                return key;
             }
         };
     }

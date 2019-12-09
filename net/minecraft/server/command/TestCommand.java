@@ -58,21 +58,21 @@ import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.Nullable;
 
 public class TestCommand {
-    public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-        commandDispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("test").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.literal("runthis").executes(commandContext -> TestCommand.executeRunThis((ServerCommandSource)commandContext.getSource())))).then(CommandManager.literal("runthese").executes(commandContext -> TestCommand.executeRunThese((ServerCommandSource)commandContext.getSource())))).then(CommandManager.literal("run").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("testName", TestFunctionArgumentType.testFunction()).executes(commandContext -> TestCommand.executeRun((ServerCommandSource)commandContext.getSource(), TestFunctionArgumentType.getFunction(commandContext, "testName")))))).then(((LiteralArgumentBuilder)CommandManager.literal("runall").executes(commandContext -> TestCommand.executeRunAll((ServerCommandSource)commandContext.getSource()))).then(CommandManager.argument("testClassName", TestClassArgumentType.method_22370()).executes(commandContext -> TestCommand.executeRunAll((ServerCommandSource)commandContext.getSource(), TestClassArgumentType.getTestClass(commandContext, "testClassName")))))).then(CommandManager.literal("export").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("testName", StringArgumentType.word()).executes(commandContext -> TestCommand.executeExport((ServerCommandSource)commandContext.getSource(), StringArgumentType.getString(commandContext, "testName")))))).then(CommandManager.literal("import").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("testName", StringArgumentType.word()).executes(commandContext -> TestCommand.executeImport((ServerCommandSource)commandContext.getSource(), StringArgumentType.getString(commandContext, "testName")))))).then(((LiteralArgumentBuilder)CommandManager.literal("pos").executes(commandContext -> TestCommand.executePos((ServerCommandSource)commandContext.getSource(), "pos"))).then(CommandManager.argument("var", StringArgumentType.word()).executes(commandContext -> TestCommand.executePos((ServerCommandSource)commandContext.getSource(), StringArgumentType.getString(commandContext, "var")))))).then(CommandManager.literal("create").then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)CommandManager.argument("testName", StringArgumentType.word()).executes(commandContext -> TestCommand.executeCreate((ServerCommandSource)commandContext.getSource(), StringArgumentType.getString(commandContext, "testName"), 5, 5, 5))).then(((RequiredArgumentBuilder)CommandManager.argument("width", IntegerArgumentType.integer()).executes(commandContext -> TestCommand.executeCreate((ServerCommandSource)commandContext.getSource(), StringArgumentType.getString(commandContext, "testName"), IntegerArgumentType.getInteger(commandContext, "width"), IntegerArgumentType.getInteger(commandContext, "width"), IntegerArgumentType.getInteger(commandContext, "width")))).then(CommandManager.argument("height", IntegerArgumentType.integer()).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("depth", IntegerArgumentType.integer()).executes(commandContext -> TestCommand.executeCreate((ServerCommandSource)commandContext.getSource(), StringArgumentType.getString(commandContext, "testName"), IntegerArgumentType.getInteger(commandContext, "width"), IntegerArgumentType.getInteger(commandContext, "height"), IntegerArgumentType.getInteger(commandContext, "depth"))))))))).then(((LiteralArgumentBuilder)CommandManager.literal("clearall").executes(commandContext -> TestCommand.executeClearAll((ServerCommandSource)commandContext.getSource(), 200))).then(CommandManager.argument("radius", IntegerArgumentType.integer()).executes(commandContext -> TestCommand.executeClearAll((ServerCommandSource)commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "radius"))))));
+    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("test").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.literal("runthis").executes(commandContext -> TestCommand.executeRunThis((ServerCommandSource)commandContext.getSource())))).then(CommandManager.literal("runthese").executes(commandContext -> TestCommand.executeRunThese((ServerCommandSource)commandContext.getSource())))).then(CommandManager.literal("run").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("testName", TestFunctionArgumentType.testFunction()).executes(commandContext -> TestCommand.executeRun((ServerCommandSource)commandContext.getSource(), TestFunctionArgumentType.getFunction(commandContext, "testName")))))).then(((LiteralArgumentBuilder)CommandManager.literal("runall").executes(commandContext -> TestCommand.executeRunAll((ServerCommandSource)commandContext.getSource()))).then(CommandManager.argument("testClassName", TestClassArgumentType.method_22370()).executes(commandContext -> TestCommand.executeRunAll((ServerCommandSource)commandContext.getSource(), TestClassArgumentType.getTestClass(commandContext, "testClassName")))))).then(CommandManager.literal("export").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("testName", StringArgumentType.word()).executes(commandContext -> TestCommand.executeExport((ServerCommandSource)commandContext.getSource(), StringArgumentType.getString(commandContext, "testName")))))).then(CommandManager.literal("import").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("testName", StringArgumentType.word()).executes(commandContext -> TestCommand.executeImport((ServerCommandSource)commandContext.getSource(), StringArgumentType.getString(commandContext, "testName")))))).then(((LiteralArgumentBuilder)CommandManager.literal("pos").executes(commandContext -> TestCommand.executePos((ServerCommandSource)commandContext.getSource(), "pos"))).then(CommandManager.argument("var", StringArgumentType.word()).executes(commandContext -> TestCommand.executePos((ServerCommandSource)commandContext.getSource(), StringArgumentType.getString(commandContext, "var")))))).then(CommandManager.literal("create").then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)CommandManager.argument("testName", StringArgumentType.word()).executes(commandContext -> TestCommand.executeCreate((ServerCommandSource)commandContext.getSource(), StringArgumentType.getString(commandContext, "testName"), 5, 5, 5))).then(((RequiredArgumentBuilder)CommandManager.argument("width", IntegerArgumentType.integer()).executes(commandContext -> TestCommand.executeCreate((ServerCommandSource)commandContext.getSource(), StringArgumentType.getString(commandContext, "testName"), IntegerArgumentType.getInteger(commandContext, "width"), IntegerArgumentType.getInteger(commandContext, "width"), IntegerArgumentType.getInteger(commandContext, "width")))).then(CommandManager.argument("height", IntegerArgumentType.integer()).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("depth", IntegerArgumentType.integer()).executes(commandContext -> TestCommand.executeCreate((ServerCommandSource)commandContext.getSource(), StringArgumentType.getString(commandContext, "testName"), IntegerArgumentType.getInteger(commandContext, "width"), IntegerArgumentType.getInteger(commandContext, "height"), IntegerArgumentType.getInteger(commandContext, "depth"))))))))).then(((LiteralArgumentBuilder)CommandManager.literal("clearall").executes(commandContext -> TestCommand.executeClearAll((ServerCommandSource)commandContext.getSource(), 200))).then(CommandManager.argument("radius", IntegerArgumentType.integer()).executes(commandContext -> TestCommand.executeClearAll((ServerCommandSource)commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "radius"))))));
     }
 
-    private static int executeCreate(ServerCommandSource serverCommandSource, String string, int i, int j, int k) {
-        if (i > 32 || j > 32 || k > 32) {
+    private static int executeCreate(ServerCommandSource source, String structure, int x, int y, int z) {
+        if (x > 32 || y > 32 || z > 32) {
             throw new IllegalArgumentException("The structure must be less than 32 blocks big in each axis");
         }
-        ServerWorld serverWorld = serverCommandSource.getWorld();
-        BlockPos blockPos = new BlockPos(serverCommandSource.getPosition());
-        BlockPos blockPos2 = new BlockPos(blockPos.getX(), serverCommandSource.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos).getY(), blockPos.getZ() + 3);
-        StructureTestUtil.createTestArea(string.toLowerCase(), blockPos2, new BlockPos(i, j, k), 2, serverWorld);
-        for (int l = 0; l < i; ++l) {
-            for (int m = 0; m < k; ++m) {
-                BlockPos blockPos3 = new BlockPos(blockPos2.getX() + l, blockPos2.getY() + 1, blockPos2.getZ() + m);
+        ServerWorld serverWorld = source.getWorld();
+        BlockPos blockPos = new BlockPos(source.getPosition());
+        BlockPos blockPos2 = new BlockPos(blockPos.getX(), source.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos).getY(), blockPos.getZ() + 3);
+        StructureTestUtil.createTestArea(structure.toLowerCase(), blockPos2, new BlockPos(x, y, z), 2, serverWorld);
+        for (int i = 0; i < x; ++i) {
+            for (int j = 0; j < z; ++j) {
+                BlockPos blockPos3 = new BlockPos(blockPos2.getX() + i, blockPos2.getY() + 1, blockPos2.getZ() + j);
                 Block block = Blocks.POLISHED_ANDESITE;
                 BlockStateArgument blockStateArgument = new BlockStateArgument(block.getDefaultState(), Collections.EMPTY_SET, null);
                 blockStateArgument.setBlockState(serverWorld, blockPos3, 2);
@@ -82,16 +82,16 @@ public class TestCommand {
         return 0;
     }
 
-    private static int executePos(ServerCommandSource serverCommandSource, String string) throws CommandSyntaxException {
+    private static int executePos(ServerCommandSource source, String string) throws CommandSyntaxException {
         ServerWorld serverWorld;
-        BlockHitResult blockHitResult = (BlockHitResult)serverCommandSource.getPlayer().rayTrace(10.0, 1.0f, false);
+        BlockHitResult blockHitResult = (BlockHitResult)source.getPlayer().rayTrace(10.0, 1.0f, false);
         BlockPos blockPos = blockHitResult.getBlockPos();
-        Optional<BlockPos> optional = StructureTestUtil.findContainingStructureBlock(blockPos, 15, serverWorld = serverCommandSource.getWorld());
+        Optional<BlockPos> optional = StructureTestUtil.findContainingStructureBlock(blockPos, 15, serverWorld = source.getWorld());
         if (!optional.isPresent()) {
             optional = StructureTestUtil.findContainingStructureBlock(blockPos, 200, serverWorld);
         }
         if (!optional.isPresent()) {
-            serverCommandSource.sendError(new LiteralText("Can't find a structure block that contains the targeted pos " + blockPos));
+            source.sendError(new LiteralText("Can't find a structure block that contains the targeted pos " + blockPos));
             return 0;
         }
         StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)serverWorld.getBlockEntity(optional.get());
@@ -99,15 +99,15 @@ public class TestCommand {
         String string2 = blockPos2.getX() + ", " + blockPos2.getY() + ", " + blockPos2.getZ();
         String string3 = structureBlockBlockEntity.getStructurePath();
         Text text = new LiteralText(string2).setStyle(new Style().setBold(true).setColor(Formatting.GREEN).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Click to copy to clipboard"))).setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, "final BlockPos " + string + " = new BlockPos(" + string2 + ");")));
-        serverCommandSource.sendFeedback(new LiteralText("Position relative to " + string3 + ": ").append(text), false);
+        source.sendFeedback(new LiteralText("Position relative to " + string3 + ": ").append(text), false);
         DebugRendererInfoManager.addGameTestMarker(serverWorld, new BlockPos(blockPos), string2, -2147418368, 10000);
         return 1;
     }
 
-    private static int executeRunThis(ServerCommandSource serverCommandSource) {
+    private static int executeRunThis(ServerCommandSource source) {
         ServerWorld serverWorld;
-        BlockPos blockPos = new BlockPos(serverCommandSource.getPosition());
-        BlockPos blockPos2 = StructureTestUtil.findNearestStructureBlock(blockPos, 15, serverWorld = serverCommandSource.getWorld());
+        BlockPos blockPos = new BlockPos(source.getPosition());
+        BlockPos blockPos2 = StructureTestUtil.findNearestStructureBlock(blockPos, 15, serverWorld = source.getWorld());
         if (blockPos2 == null) {
             TestCommand.sendMessage(serverWorld, "Couldn't find any structure block within 15 radius", Formatting.RED);
             return 0;
@@ -117,60 +117,60 @@ public class TestCommand {
         return 1;
     }
 
-    private static int executeRunThese(ServerCommandSource serverCommandSource) {
+    private static int executeRunThese(ServerCommandSource source) {
         ServerWorld serverWorld;
-        BlockPos blockPos2 = new BlockPos(serverCommandSource.getPosition());
-        Collection<BlockPos> collection = StructureTestUtil.findStructureBlocks(blockPos2, 200, serverWorld = serverCommandSource.getWorld());
+        BlockPos blockPos2 = new BlockPos(source.getPosition());
+        Collection<BlockPos> collection = StructureTestUtil.findStructureBlocks(blockPos2, 200, serverWorld = source.getWorld());
         if (collection.isEmpty()) {
             TestCommand.sendMessage(serverWorld, "Couldn't find any structure blocks within 200 block radius", Formatting.RED);
             return 1;
         }
         TestUtil.clearDebugMarkers(serverWorld);
-        TestCommand.sendMessage(serverCommandSource, "Running " + collection.size() + " tests...");
+        TestCommand.sendMessage(source, "Running " + collection.size() + " tests...");
         TestSet testSet = new TestSet();
         collection.forEach(blockPos -> TestCommand.run(serverWorld, blockPos, testSet));
         return 1;
     }
 
-    private static void run(ServerWorld serverWorld, BlockPos blockPos, @Nullable TestSet testSet) {
-        StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)serverWorld.getBlockEntity(blockPos);
+    private static void run(ServerWorld world, BlockPos pos, @Nullable TestSet tests) {
+        StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)world.getBlockEntity(pos);
         String string = structureBlockBlockEntity.getStructurePath();
         TestFunction testFunction = TestFunctions.getTestFunctionOrThrow(string);
-        GameTest gameTest = new GameTest(testFunction, blockPos, serverWorld);
-        if (testSet != null) {
-            testSet.add(gameTest);
-            gameTest.addListener(new Listener(serverWorld, testSet));
+        GameTest gameTest = new GameTest(testFunction, pos, world);
+        if (tests != null) {
+            tests.add(gameTest);
+            gameTest.addListener(new Listener(world, tests));
         }
-        TestCommand.setWorld(testFunction, serverWorld);
+        TestCommand.setWorld(testFunction, world);
         TestUtil.startTest(gameTest, TestManager.INSTANCE);
     }
 
-    private static void onCompletion(ServerWorld serverWorld, TestSet testSet) {
-        if (testSet.isDone()) {
-            TestCommand.sendMessage(serverWorld, "GameTest done! " + testSet.getTestCount() + " tests were run", Formatting.WHITE);
-            if (testSet.failed()) {
-                TestCommand.sendMessage(serverWorld, "" + testSet.getFailedRequiredTestCount() + " required tests failed :(", Formatting.RED);
+    private static void onCompletion(ServerWorld world, TestSet tests) {
+        if (tests.isDone()) {
+            TestCommand.sendMessage(world, "GameTest done! " + tests.getTestCount() + " tests were run", Formatting.WHITE);
+            if (tests.failed()) {
+                TestCommand.sendMessage(world, "" + tests.getFailedRequiredTestCount() + " required tests failed :(", Formatting.RED);
             } else {
-                TestCommand.sendMessage(serverWorld, "All required tests passed :)", Formatting.GREEN);
+                TestCommand.sendMessage(world, "All required tests passed :)", Formatting.GREEN);
             }
-            if (testSet.hasFailedOptionalTests()) {
-                TestCommand.sendMessage(serverWorld, "" + testSet.getFailedOptionalTestCount() + " optional tests failed", Formatting.GRAY);
+            if (tests.hasFailedOptionalTests()) {
+                TestCommand.sendMessage(world, "" + tests.getFailedOptionalTestCount() + " optional tests failed", Formatting.GRAY);
             }
         }
     }
 
-    private static int executeClearAll(ServerCommandSource serverCommandSource, int i) {
-        ServerWorld serverWorld = serverCommandSource.getWorld();
+    private static int executeClearAll(ServerCommandSource source, int radius) {
+        ServerWorld serverWorld = source.getWorld();
         TestUtil.clearDebugMarkers(serverWorld);
-        BlockPos blockPos = new BlockPos(serverCommandSource.getPosition().x, (double)serverCommandSource.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, new BlockPos(serverCommandSource.getPosition())).getY(), serverCommandSource.getPosition().z);
-        TestUtil.clearTests(serverWorld, blockPos, TestManager.INSTANCE, MathHelper.clamp(i, 0, 1024));
+        BlockPos blockPos = new BlockPos(source.getPosition().x, (double)source.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, new BlockPos(source.getPosition())).getY(), source.getPosition().z);
+        TestUtil.clearTests(serverWorld, blockPos, TestManager.INSTANCE, MathHelper.clamp(radius, 0, 1024));
         return 1;
     }
 
-    private static int executeRun(ServerCommandSource serverCommandSource, TestFunction testFunction) {
-        ServerWorld serverWorld = serverCommandSource.getWorld();
-        BlockPos blockPos = new BlockPos(serverCommandSource.getPosition());
-        BlockPos blockPos2 = new BlockPos(blockPos.getX(), serverCommandSource.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos).getY(), blockPos.getZ() + 3);
+    private static int executeRun(ServerCommandSource source, TestFunction testFunction) {
+        ServerWorld serverWorld = source.getWorld();
+        BlockPos blockPos = new BlockPos(source.getPosition());
+        BlockPos blockPos2 = new BlockPos(blockPos.getX(), source.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos).getY(), blockPos.getZ() + 3);
         TestUtil.clearDebugMarkers(serverWorld);
         TestCommand.setWorld(testFunction, serverWorld);
         GameTest gameTest = new GameTest(testFunction, blockPos2, serverWorld);
@@ -185,74 +185,74 @@ public class TestCommand {
         }
     }
 
-    private static int executeRunAll(ServerCommandSource serverCommandSource) {
-        TestUtil.clearDebugMarkers(serverCommandSource.getWorld());
-        TestCommand.run(serverCommandSource, TestFunctions.getTestFunctions());
+    private static int executeRunAll(ServerCommandSource source) {
+        TestUtil.clearDebugMarkers(source.getWorld());
+        TestCommand.run(source, TestFunctions.getTestFunctions());
         return 1;
     }
 
-    private static int executeRunAll(ServerCommandSource serverCommandSource, String string) {
-        Collection<TestFunction> collection = TestFunctions.getTestFunctions(string);
-        TestUtil.clearDebugMarkers(serverCommandSource.getWorld());
-        TestCommand.run(serverCommandSource, collection);
+    private static int executeRunAll(ServerCommandSource source, String testClass) {
+        Collection<TestFunction> collection = TestFunctions.getTestFunctions(testClass);
+        TestUtil.clearDebugMarkers(source.getWorld());
+        TestCommand.run(source, collection);
         return 1;
     }
 
-    private static void run(ServerCommandSource serverCommandSource, Collection<TestFunction> collection) {
-        BlockPos blockPos = new BlockPos(serverCommandSource.getPosition());
-        BlockPos blockPos2 = new BlockPos(blockPos.getX(), serverCommandSource.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos).getY(), blockPos.getZ() + 3);
-        ServerWorld serverWorld = serverCommandSource.getWorld();
-        TestCommand.sendMessage(serverCommandSource, "Running " + collection.size() + " tests...");
-        Collection<GameTest> collection2 = TestUtil.runTestFunctions(collection, blockPos2, serverWorld, TestManager.INSTANCE);
-        TestSet testSet = new TestSet(collection2);
+    private static void run(ServerCommandSource source, Collection<TestFunction> testFunctions) {
+        BlockPos blockPos = new BlockPos(source.getPosition());
+        BlockPos blockPos2 = new BlockPos(blockPos.getX(), source.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos).getY(), blockPos.getZ() + 3);
+        ServerWorld serverWorld = source.getWorld();
+        TestCommand.sendMessage(source, "Running " + testFunctions.size() + " tests...");
+        Collection<GameTest> collection = TestUtil.runTestFunctions(testFunctions, blockPos2, serverWorld, TestManager.INSTANCE);
+        TestSet testSet = new TestSet(collection);
         testSet.addListener(new Listener(serverWorld, testSet));
     }
 
-    private static void sendMessage(ServerCommandSource serverCommandSource, String string) {
-        serverCommandSource.sendFeedback(new LiteralText(string), false);
+    private static void sendMessage(ServerCommandSource source, String message) {
+        source.sendFeedback(new LiteralText(message), false);
     }
 
-    private static int executeExport(ServerCommandSource serverCommandSource, String string) {
+    private static int executeExport(ServerCommandSource source, String structure) {
         Path path = Paths.get(StructureTestUtil.testStructuresDirectoryName, new String[0]);
-        Identifier identifier = new Identifier("minecraft", string);
-        Path path2 = serverCommandSource.getWorld().getStructureManager().getStructurePath(identifier, ".nbt");
-        Path path3 = NbtProvider.method_10493(path2, string, path);
+        Identifier identifier = new Identifier("minecraft", structure);
+        Path path2 = source.getWorld().getStructureManager().getStructurePath(identifier, ".nbt");
+        Path path3 = NbtProvider.method_10493(path2, structure, path);
         if (path3 == null) {
-            TestCommand.sendMessage(serverCommandSource, "Failed to export " + path2);
+            TestCommand.sendMessage(source, "Failed to export " + path2);
             return 1;
         }
         try {
             Files.createDirectories(path3.getParent(), new FileAttribute[0]);
         } catch (IOException iOException) {
-            TestCommand.sendMessage(serverCommandSource, "Could not create folder " + path3.getParent());
+            TestCommand.sendMessage(source, "Could not create folder " + path3.getParent());
             iOException.printStackTrace();
             return 1;
         }
-        TestCommand.sendMessage(serverCommandSource, "Exported to " + path3.toAbsolutePath());
+        TestCommand.sendMessage(source, "Exported to " + path3.toAbsolutePath());
         return 0;
     }
 
-    private static int executeImport(ServerCommandSource serverCommandSource, String string) {
-        Path path = Paths.get(StructureTestUtil.testStructuresDirectoryName, string + ".snbt");
-        Identifier identifier = new Identifier("minecraft", string);
-        Path path2 = serverCommandSource.getWorld().getStructureManager().getStructurePath(identifier, ".nbt");
+    private static int executeImport(ServerCommandSource source, String structure) {
+        Path path = Paths.get(StructureTestUtil.testStructuresDirectoryName, structure + ".snbt");
+        Identifier identifier = new Identifier("minecraft", structure);
+        Path path2 = source.getWorld().getStructureManager().getStructurePath(identifier, ".nbt");
         try {
             BufferedReader bufferedReader = Files.newBufferedReader(path);
-            String string2 = IOUtils.toString(bufferedReader);
+            String string = IOUtils.toString(bufferedReader);
             Files.createDirectories(path2.getParent(), new FileAttribute[0]);
             OutputStream outputStream = Files.newOutputStream(path2, new OpenOption[0]);
-            NbtIo.writeCompressed(StringNbtReader.parse(string2), outputStream);
-            TestCommand.sendMessage(serverCommandSource, "Imported to " + path2.toAbsolutePath());
+            NbtIo.writeCompressed(StringNbtReader.parse(string), outputStream);
+            TestCommand.sendMessage(source, "Imported to " + path2.toAbsolutePath());
             return 0;
         } catch (CommandSyntaxException | IOException exception) {
-            System.err.println("Failed to load structure " + string);
+            System.err.println("Failed to load structure " + structure);
             exception.printStackTrace();
             return 1;
         }
     }
 
-    private static void sendMessage(ServerWorld serverWorld, String string, Formatting formatting) {
-        serverWorld.getPlayers(serverPlayerEntity -> true).forEach(serverPlayerEntity -> serverPlayerEntity.sendMessage(new LiteralText((Object)((Object)formatting) + string)));
+    private static void sendMessage(ServerWorld world, String message, Formatting formatting) {
+        world.getPlayers(serverPlayerEntity -> true).forEach(serverPlayerEntity -> serverPlayerEntity.sendMessage(new LiteralText((Object)((Object)formatting) + message)));
     }
 
     static class Listener
@@ -260,17 +260,17 @@ public class TestCommand {
         private final ServerWorld world;
         private final TestSet tests;
 
-        public Listener(ServerWorld serverWorld, TestSet testSet) {
-            this.world = serverWorld;
-            this.tests = testSet;
+        public Listener(ServerWorld world, TestSet tests) {
+            this.world = world;
+            this.tests = tests;
         }
 
         @Override
-        public void onStarted(GameTest gameTest) {
+        public void onStarted(GameTest test) {
         }
 
         @Override
-        public void onFailed(GameTest gameTest) {
+        public void onFailed(GameTest test) {
             TestCommand.onCompletion(this.world, this.tests);
         }
     }

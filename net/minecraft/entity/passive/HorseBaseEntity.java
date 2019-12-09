@@ -93,8 +93,8 @@ JumpingMount {
     protected boolean field_6964 = true;
     protected int soundTicks;
 
-    protected HorseBaseEntity(EntityType<? extends HorseBaseEntity> entityType, World world) {
-        super((EntityType<? extends AnimalEntity>)entityType, world);
+    protected HorseBaseEntity(EntityType<? extends HorseBaseEntity> type, World world) {
+        super((EntityType<? extends AnimalEntity>)type, world);
         this.stepHeight = 1.0f;
         this.method_6721();
     }
@@ -122,16 +122,16 @@ JumpingMount {
         this.dataTracker.startTracking(OWNER_UUID, Optional.empty());
     }
 
-    protected boolean getHorseFlag(int i) {
-        return (this.dataTracker.get(HORSE_FLAGS) & i) != 0;
+    protected boolean getHorseFlag(int bitmask) {
+        return (this.dataTracker.get(HORSE_FLAGS) & bitmask) != 0;
     }
 
-    protected void setHorseFlag(int i, boolean bl) {
+    protected void setHorseFlag(int bitmask, boolean flag) {
         byte b = this.dataTracker.get(HORSE_FLAGS);
-        if (bl) {
-            this.dataTracker.set(HORSE_FLAGS, (byte)(b | i));
+        if (flag) {
+            this.dataTracker.set(HORSE_FLAGS, (byte)(b | bitmask));
         } else {
-            this.dataTracker.set(HORSE_FLAGS, (byte)(b & ~i));
+            this.dataTracker.set(HORSE_FLAGS, (byte)(b & ~bitmask));
         }
     }
 
@@ -144,30 +144,30 @@ JumpingMount {
         return this.dataTracker.get(OWNER_UUID).orElse(null);
     }
 
-    public void setOwnerUuid(@Nullable UUID uUID) {
-        this.dataTracker.set(OWNER_UUID, Optional.ofNullable(uUID));
+    public void setOwnerUuid(@Nullable UUID uuid) {
+        this.dataTracker.set(OWNER_UUID, Optional.ofNullable(uuid));
     }
 
     public boolean isInAir() {
         return this.inAir;
     }
 
-    public void setTame(boolean bl) {
-        this.setHorseFlag(2, bl);
+    public void setTame(boolean tame) {
+        this.setHorseFlag(2, tame);
     }
 
-    public void setInAir(boolean bl) {
-        this.inAir = bl;
-    }
-
-    @Override
-    public boolean canBeLeashedBy(PlayerEntity playerEntity) {
-        return super.canBeLeashedBy(playerEntity) && this.getGroup() != EntityGroup.UNDEAD;
+    public void setInAir(boolean inAir) {
+        this.inAir = inAir;
     }
 
     @Override
-    protected void updateForLeashLength(float f) {
-        if (f > 6.0f && this.isEatingGrass()) {
+    public boolean canBeLeashedBy(PlayerEntity player) {
+        return super.canBeLeashedBy(player) && this.getGroup() != EntityGroup.UNDEAD;
+    }
+
+    @Override
+    protected void updateForLeashLength(float leashLength) {
+        if (leashLength > 6.0f && this.isEatingGrass()) {
             this.setEatingGrass(false);
         }
     }
@@ -196,23 +196,23 @@ JumpingMount {
         return this.temper;
     }
 
-    public void setTemper(int i) {
-        this.temper = i;
+    public void setTemper(int temper) {
+        this.temper = temper;
     }
 
-    public int addTemper(int i) {
-        int j = MathHelper.clamp(this.getTemper() + i, 0, this.getMaxTemper());
-        this.setTemper(j);
-        return j;
+    public int addTemper(int difference) {
+        int i = MathHelper.clamp(this.getTemper() + difference, 0, this.getMaxTemper());
+        this.setTemper(i);
+        return i;
     }
 
     @Override
-    public boolean damage(DamageSource damageSource, float f) {
-        Entity entity = damageSource.getAttacker();
+    public boolean damage(DamageSource source, float amount) {
+        Entity entity = source.getAttacker();
         if (this.hasPassengers() && entity != null && this.hasPassengerDeep(entity)) {
             return false;
         }
-        return super.damage(damageSource, f);
+        return super.damage(source, amount);
     }
 
     @Override
@@ -228,12 +228,12 @@ JumpingMount {
     }
 
     @Override
-    public boolean handleFallDamage(float f, float g) {
+    public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
         int i;
-        if (f > 1.0f) {
+        if (fallDistance > 1.0f) {
             this.playSound(SoundEvents.ENTITY_HORSE_LAND, 0.4f, 1.0f);
         }
-        if ((i = this.method_23329(f, g)) <= 0) {
+        if ((i = this.method_23329(fallDistance, damageMultiplier)) <= 0) {
             return false;
         }
         this.damage(DamageSource.FALL, i);
@@ -299,7 +299,7 @@ JumpingMount {
 
     @Override
     @Nullable
-    protected SoundEvent getHurtSound(DamageSource damageSource) {
+    protected SoundEvent getHurtSound(DamageSource source) {
         if (this.random.nextInt(3) == 0) {
             this.updateAnger();
         }
@@ -330,14 +330,14 @@ JumpingMount {
     }
 
     @Override
-    protected void playStepSound(BlockPos blockPos, BlockState blockState) {
-        if (blockState.getMaterial().isLiquid()) {
+    protected void playStepSound(BlockPos pos, BlockState state) {
+        if (state.getMaterial().isLiquid()) {
             return;
         }
-        BlockState blockState2 = this.world.getBlockState(blockPos.up());
-        BlockSoundGroup blockSoundGroup = blockState.getSoundGroup();
-        if (blockState2.getBlock() == Blocks.SNOW) {
-            blockSoundGroup = blockState2.getSoundGroup();
+        BlockState blockState = this.world.getBlockState(pos.up());
+        BlockSoundGroup blockSoundGroup = state.getSoundGroup();
+        if (blockState.getBlock() == Blocks.SNOW) {
+            blockSoundGroup = blockState.getSoundGroup();
         }
         if (this.hasPassengers() && this.field_6964) {
             ++this.soundTicks;
@@ -353,8 +353,8 @@ JumpingMount {
         }
     }
 
-    protected void playWalkSound(BlockSoundGroup blockSoundGroup) {
-        this.playSound(SoundEvents.ENTITY_HORSE_GALLOP, blockSoundGroup.getVolume() * 0.15f, blockSoundGroup.getPitch());
+    protected void playWalkSound(BlockSoundGroup group) {
+        this.playSound(SoundEvents.ENTITY_HORSE_GALLOP, group.getVolume() * 0.15f, group.getPitch());
     }
 
     @Override
@@ -384,48 +384,48 @@ JumpingMount {
         return 400;
     }
 
-    public void openInventory(PlayerEntity playerEntity) {
-        if (!this.world.isClient && (!this.hasPassengers() || this.hasPassenger(playerEntity)) && this.isTame()) {
-            playerEntity.openHorseInventory(this, this.items);
+    public void openInventory(PlayerEntity player) {
+        if (!this.world.isClient && (!this.hasPassengers() || this.hasPassenger(player)) && this.isTame()) {
+            player.openHorseInventory(this, this.items);
         }
     }
 
-    protected boolean receiveFood(PlayerEntity playerEntity, ItemStack itemStack) {
+    protected boolean receiveFood(PlayerEntity player, ItemStack item) {
         boolean bl = false;
         float f = 0.0f;
         int i = 0;
         int j = 0;
-        Item item = itemStack.getItem();
-        if (item == Items.WHEAT) {
+        Item item2 = item.getItem();
+        if (item2 == Items.WHEAT) {
             f = 2.0f;
             i = 20;
             j = 3;
-        } else if (item == Items.SUGAR) {
+        } else if (item2 == Items.SUGAR) {
             f = 1.0f;
             i = 30;
             j = 3;
-        } else if (item == Blocks.HAY_BLOCK.asItem()) {
+        } else if (item2 == Blocks.HAY_BLOCK.asItem()) {
             f = 20.0f;
             i = 180;
-        } else if (item == Items.APPLE) {
+        } else if (item2 == Items.APPLE) {
             f = 3.0f;
             i = 60;
             j = 3;
-        } else if (item == Items.GOLDEN_CARROT) {
+        } else if (item2 == Items.GOLDEN_CARROT) {
             f = 4.0f;
             i = 60;
             j = 5;
             if (this.isTame() && this.getBreedingAge() == 0 && !this.isInLove()) {
                 bl = true;
-                this.lovePlayer(playerEntity);
+                this.lovePlayer(player);
             }
-        } else if (item == Items.GOLDEN_APPLE || item == Items.ENCHANTED_GOLDEN_APPLE) {
+        } else if (item2 == Items.GOLDEN_APPLE || item2 == Items.ENCHANTED_GOLDEN_APPLE) {
             f = 10.0f;
             i = 240;
             j = 10;
             if (this.isTame() && this.getBreedingAge() == 0 && !this.isInLove()) {
                 bl = true;
-                this.lovePlayer(playerEntity);
+                this.lovePlayer(player);
             }
         }
         if (this.getHealth() < this.getMaximumHealth() && f > 0.0f) {
@@ -451,13 +451,13 @@ JumpingMount {
         return bl;
     }
 
-    protected void putPlayerOnBack(PlayerEntity playerEntity) {
+    protected void putPlayerOnBack(PlayerEntity player) {
         this.setEatingGrass(false);
         this.setAngry(false);
         if (!this.world.isClient) {
-            playerEntity.yaw = this.yaw;
-            playerEntity.pitch = this.pitch;
-            playerEntity.startRiding(this);
+            player.yaw = this.yaw;
+            player.pitch = this.pitch;
+            player.startRiding(this);
         }
     }
 
@@ -467,7 +467,7 @@ JumpingMount {
     }
 
     @Override
-    public boolean isBreedingItem(ItemStack itemStack) {
+    public boolean isBreedingItem(ItemStack stack) {
         return false;
     }
 
@@ -590,15 +590,15 @@ JumpingMount {
         }
     }
 
-    public void setEatingGrass(boolean bl) {
-        this.setHorseFlag(16, bl);
+    public void setEatingGrass(boolean eatingGrass) {
+        this.setHorseFlag(16, eatingGrass);
     }
 
-    public void setAngry(boolean bl) {
-        if (bl) {
+    public void setAngry(boolean angry) {
+        if (angry) {
             this.setEatingGrass(false);
         }
-        this.setHorseFlag(32, bl);
+        this.setHorseFlag(32, angry);
     }
 
     private void updateAnger() {
@@ -616,18 +616,18 @@ JumpingMount {
         }
     }
 
-    public boolean bondWithPlayer(PlayerEntity playerEntity) {
-        this.setOwnerUuid(playerEntity.getUuid());
+    public boolean bondWithPlayer(PlayerEntity player) {
+        this.setOwnerUuid(player.getUuid());
         this.setTame(true);
-        if (playerEntity instanceof ServerPlayerEntity) {
-            Criterions.TAME_ANIMAL.trigger((ServerPlayerEntity)playerEntity, this);
+        if (player instanceof ServerPlayerEntity) {
+            Criterions.TAME_ANIMAL.trigger((ServerPlayerEntity)player, this);
         }
         this.world.sendEntityStatus(this, (byte)7);
         return true;
     }
 
     @Override
-    public void travel(Vec3d vec3d) {
+    public void travel(Vec3d movementInput) {
         double e;
         double d;
         if (!this.isAlive()) {
@@ -635,7 +635,7 @@ JumpingMount {
         }
         if (!(this.hasPassengers() && this.canBeControlledByRider() && this.isSaddled())) {
             this.flyingSpeed = 0.02f;
-            super.travel(vec3d);
+            super.travel(movementInput);
             return;
         }
         LivingEntity livingEntity = (LivingEntity)this.getPrimaryPassenger();
@@ -656,8 +656,8 @@ JumpingMount {
         if (this.jumpStrength > 0.0f && !this.isInAir() && this.onGround) {
             d = this.getJumpStrength() * (double)this.jumpStrength * (double)this.getJumpVelocityMultiplier();
             e = this.hasStatusEffect(StatusEffects.JUMP_BOOST) ? d + (double)((float)(this.getStatusEffect(StatusEffects.JUMP_BOOST).getAmplifier() + 1) * 0.1f) : d;
-            Vec3d vec3d2 = this.getVelocity();
-            this.setVelocity(vec3d2.x, e, vec3d2.z);
+            Vec3d vec3d = this.getVelocity();
+            this.setVelocity(vec3d.x, e, vec3d.z);
             this.setInAir(true);
             this.velocityDirty = true;
             if (g > 0.0f) {
@@ -671,7 +671,7 @@ JumpingMount {
         this.flyingSpeed = this.getMovementSpeed() * 0.1f;
         if (this.isLogicalSideForUpdatingMovement()) {
             this.setMovementSpeed((float)this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
-            super.travel(new Vec3d(f, vec3d.y, g));
+            super.travel(new Vec3d(f, movementInput.y, g));
         } else if (livingEntity instanceof PlayerEntity) {
             this.setVelocity(Vec3d.ZERO);
         }
@@ -694,34 +694,34 @@ JumpingMount {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag compoundTag) {
-        super.writeCustomDataToTag(compoundTag);
-        compoundTag.putBoolean("EatingHaystack", this.isEatingGrass());
-        compoundTag.putBoolean("Bred", this.isBred());
-        compoundTag.putInt("Temper", this.getTemper());
-        compoundTag.putBoolean("Tame", this.isTame());
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putBoolean("EatingHaystack", this.isEatingGrass());
+        tag.putBoolean("Bred", this.isBred());
+        tag.putInt("Temper", this.getTemper());
+        tag.putBoolean("Tame", this.isTame());
         if (this.getOwnerUuid() != null) {
-            compoundTag.putString("OwnerUUID", this.getOwnerUuid().toString());
+            tag.putString("OwnerUUID", this.getOwnerUuid().toString());
         }
         if (!this.items.getInvStack(0).isEmpty()) {
-            compoundTag.put("SaddleItem", this.items.getInvStack(0).toTag(new CompoundTag()));
+            tag.put("SaddleItem", this.items.getInvStack(0).toTag(new CompoundTag()));
         }
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag compoundTag) {
+    public void readCustomDataFromTag(CompoundTag tag) {
         ItemStack itemStack;
         EntityAttributeInstance entityAttributeInstance;
         String string;
-        super.readCustomDataFromTag(compoundTag);
-        this.setEatingGrass(compoundTag.getBoolean("EatingHaystack"));
-        this.setBred(compoundTag.getBoolean("Bred"));
-        this.setTemper(compoundTag.getInt("Temper"));
-        this.setTame(compoundTag.getBoolean("Tame"));
-        if (compoundTag.contains("OwnerUUID", 8)) {
-            string = compoundTag.getString("OwnerUUID");
+        super.readCustomDataFromTag(tag);
+        this.setEatingGrass(tag.getBoolean("EatingHaystack"));
+        this.setBred(tag.getBoolean("Bred"));
+        this.setTemper(tag.getInt("Temper"));
+        this.setTame(tag.getBoolean("Tame"));
+        if (tag.contains("OwnerUUID", 8)) {
+            string = tag.getString("OwnerUUID");
         } else {
-            String string2 = compoundTag.getString("Owner");
+            String string2 = tag.getString("Owner");
             string = ServerConfigHandler.getPlayerUuidByName(this.getServer(), string2);
         }
         if (!string.isEmpty()) {
@@ -730,14 +730,14 @@ JumpingMount {
         if ((entityAttributeInstance = this.getAttributes().get("Speed")) != null) {
             this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(entityAttributeInstance.getBaseValue() * 0.25);
         }
-        if (compoundTag.contains("SaddleItem", 10) && (itemStack = ItemStack.fromTag(compoundTag.getCompound("SaddleItem"))).getItem() == Items.SADDLE) {
+        if (tag.contains("SaddleItem", 10) && (itemStack = ItemStack.fromTag(tag.getCompound("SaddleItem"))).getItem() == Items.SADDLE) {
             this.items.setInvStack(0, itemStack);
         }
         this.updateSaddle();
     }
 
     @Override
-    public boolean canBreedWith(AnimalEntity animalEntity) {
+    public boolean canBreedWith(AnimalEntity other) {
         return false;
     }
 
@@ -747,17 +747,17 @@ JumpingMount {
 
     @Override
     @Nullable
-    public PassiveEntity createChild(PassiveEntity passiveEntity) {
+    public PassiveEntity createChild(PassiveEntity mate) {
         return null;
     }
 
-    protected void setChildAttributes(PassiveEntity passiveEntity, HorseBaseEntity horseBaseEntity) {
-        double d = this.getAttributeInstance(EntityAttributes.MAX_HEALTH).getBaseValue() + passiveEntity.getAttributeInstance(EntityAttributes.MAX_HEALTH).getBaseValue() + (double)this.getChildHealthBonus();
-        horseBaseEntity.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(d / 3.0);
-        double e = this.getAttributeInstance(JUMP_STRENGTH).getBaseValue() + passiveEntity.getAttributeInstance(JUMP_STRENGTH).getBaseValue() + this.getChildJumpStrengthBonus();
-        horseBaseEntity.getAttributeInstance(JUMP_STRENGTH).setBaseValue(e / 3.0);
-        double f = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getBaseValue() + passiveEntity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getBaseValue() + this.getChildMovementSpeedBonus();
-        horseBaseEntity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(f / 3.0);
+    protected void setChildAttributes(PassiveEntity mate, HorseBaseEntity child) {
+        double d = this.getAttributeInstance(EntityAttributes.MAX_HEALTH).getBaseValue() + mate.getAttributeInstance(EntityAttributes.MAX_HEALTH).getBaseValue() + (double)this.getChildHealthBonus();
+        child.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(d / 3.0);
+        double e = this.getAttributeInstance(JUMP_STRENGTH).getBaseValue() + mate.getAttributeInstance(JUMP_STRENGTH).getBaseValue() + this.getChildJumpStrengthBonus();
+        child.getAttributeInstance(JUMP_STRENGTH).setBaseValue(e / 3.0);
+        double f = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getBaseValue() + mate.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getBaseValue() + this.getChildMovementSpeedBonus();
+        child.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(f / 3.0);
     }
 
     @Override
@@ -766,33 +766,33 @@ JumpingMount {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public float getEatingGrassAnimationProgress(float f) {
-        return MathHelper.lerp(f, this.lastEatingGrassAnimationProgress, this.eatingGrassAnimationProgress);
+    public float getEatingGrassAnimationProgress(float tickDelta) {
+        return MathHelper.lerp(tickDelta, this.lastEatingGrassAnimationProgress, this.eatingGrassAnimationProgress);
     }
 
     @Environment(value=EnvType.CLIENT)
-    public float getAngryAnimationProgress(float f) {
-        return MathHelper.lerp(f, this.lastAngryAnimationProgress, this.angryAnimationProgress);
+    public float getAngryAnimationProgress(float tickDelta) {
+        return MathHelper.lerp(tickDelta, this.lastAngryAnimationProgress, this.angryAnimationProgress);
     }
 
     @Environment(value=EnvType.CLIENT)
-    public float getEatingAnimationProgress(float f) {
-        return MathHelper.lerp(f, this.lastEatingAnimationProgress, this.eatingAnimationProgress);
+    public float getEatingAnimationProgress(float tickDelta) {
+        return MathHelper.lerp(tickDelta, this.lastEatingAnimationProgress, this.eatingAnimationProgress);
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void setJumpStrength(int i) {
+    public void setJumpStrength(int strength) {
         if (!this.isSaddled()) {
             return;
         }
-        if (i < 0) {
-            i = 0;
+        if (strength < 0) {
+            strength = 0;
         } else {
             this.jumping = true;
             this.updateAnger();
         }
-        this.jumpStrength = i >= 90 ? 1.0f : 0.4f + 0.4f * (float)i / 90.0f;
+        this.jumpStrength = strength >= 90 ? 1.0f : 0.4f + 0.4f * (float)strength / 90.0f;
     }
 
     @Override
@@ -801,7 +801,7 @@ JumpingMount {
     }
 
     @Override
-    public void startJumping(int i) {
+    public void startJumping(int height) {
         this.jumping = true;
         this.updateAnger();
     }
@@ -811,8 +811,8 @@ JumpingMount {
     }
 
     @Environment(value=EnvType.CLIENT)
-    protected void spawnPlayerReactionParticles(boolean bl) {
-        DefaultParticleType particleEffect = bl ? ParticleTypes.HEART : ParticleTypes.SMOKE;
+    protected void spawnPlayerReactionParticles(boolean positive) {
+        DefaultParticleType particleEffect = positive ? ParticleTypes.HEART : ParticleTypes.SMOKE;
         for (int i = 0; i < 7; ++i) {
             double d = this.random.nextGaussian() * 0.02;
             double e = this.random.nextGaussian() * 0.02;
@@ -823,21 +823,21 @@ JumpingMount {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void handleStatus(byte b) {
-        if (b == 7) {
+    public void handleStatus(byte status) {
+        if (status == 7) {
             this.spawnPlayerReactionParticles(true);
-        } else if (b == 6) {
+        } else if (status == 6) {
             this.spawnPlayerReactionParticles(false);
         } else {
-            super.handleStatus(b);
+            super.handleStatus(status);
         }
     }
 
     @Override
-    public void updatePassengerPosition(Entity entity) {
-        super.updatePassengerPosition(entity);
-        if (entity instanceof MobEntity) {
-            MobEntity mobEntity = (MobEntity)entity;
+    public void updatePassengerPosition(Entity passenger) {
+        super.updatePassengerPosition(passenger);
+        if (passenger instanceof MobEntity) {
+            MobEntity mobEntity = (MobEntity)passenger;
             this.bodyYaw = mobEntity.bodyYaw;
         }
         if (this.lastAngryAnimationProgress > 0.0f) {
@@ -845,9 +845,9 @@ JumpingMount {
             float g = MathHelper.cos(this.bodyYaw * ((float)Math.PI / 180));
             float h = 0.7f * this.lastAngryAnimationProgress;
             float i = 0.15f * this.lastAngryAnimationProgress;
-            entity.setPosition(this.getX() + (double)(h * f), this.getY() + this.getMountedHeightOffset() + entity.getHeightOffset() + (double)i, this.getZ() - (double)(h * g));
-            if (entity instanceof LivingEntity) {
-                ((LivingEntity)entity).bodyYaw = this.bodyYaw;
+            passenger.setPosition(this.getX() + (double)(h * f), this.getY() + this.getMountedHeightOffset() + passenger.getHeightOffset() + (double)i, this.getZ() - (double)(h * g));
+            if (passenger instanceof LivingEntity) {
+                ((LivingEntity)passenger).bodyYaw = this.bodyYaw;
             }
         }
     }
@@ -870,35 +870,35 @@ JumpingMount {
     }
 
     @Override
-    protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
-        return entityDimensions.height * 0.95f;
+    protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
+        return dimensions.height * 0.95f;
     }
 
     public boolean canEquip() {
         return false;
     }
 
-    public boolean canEquip(ItemStack itemStack) {
+    public boolean canEquip(ItemStack item) {
         return false;
     }
 
     @Override
-    public boolean equip(int i, ItemStack itemStack) {
-        int j = i - 400;
-        if (j >= 0 && j < 2 && j < this.items.getInvSize()) {
-            if (j == 0 && itemStack.getItem() != Items.SADDLE) {
+    public boolean equip(int slot, ItemStack item) {
+        int i = slot - 400;
+        if (i >= 0 && i < 2 && i < this.items.getInvSize()) {
+            if (i == 0 && item.getItem() != Items.SADDLE) {
                 return false;
             }
-            if (!(j != 1 || this.canEquip() && this.canEquip(itemStack))) {
+            if (!(i != 1 || this.canEquip() && this.canEquip(item))) {
                 return false;
             }
-            this.items.setInvStack(j, itemStack);
+            this.items.setInvStack(i, item);
             this.updateSaddle();
             return true;
         }
-        int k = i - 500 + 2;
-        if (k >= 2 && k < this.items.getInvSize()) {
-            this.items.setInvStack(k, itemStack);
+        int j = slot - 500 + 2;
+        if (j >= 2 && j < this.items.getInvSize()) {
+            this.items.setInvStack(j, item);
             return true;
         }
         return false;
@@ -915,12 +915,12 @@ JumpingMount {
 
     @Override
     @Nullable
-    public EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag) {
+    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         if (entityData == null) {
             entityData = new PassiveEntity.EntityData();
             ((PassiveEntity.EntityData)entityData).setBabyChance(0.2f);
         }
-        return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+        return super.initialize(world, difficulty, spawnType, entityData, entityTag);
     }
 }
 

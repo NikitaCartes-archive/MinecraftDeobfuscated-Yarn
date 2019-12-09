@@ -30,17 +30,17 @@ extends CompositeEntityModel<T> {
     }
 
     @Override
-    public void setAngles(T entity, float f, float g, float h, float i, float j) {
-        float k = f * 2.0f;
-        if (k > 1.0f) {
-            k = 1.0f;
+    public void setAngles(T entity, float limbAngle, float limbDistance, float customAngle, float headYaw, float headPitch) {
+        float f = limbAngle * 2.0f;
+        if (f > 1.0f) {
+            f = 1.0f;
         }
-        k = 1.0f - k * k * k;
-        this.field_3376.roll = (float)Math.PI - k * 0.35f * (float)Math.PI;
-        this.field_3375.roll = (float)Math.PI + k * 0.35f * (float)Math.PI;
+        f = 1.0f - f * f * f;
+        this.field_3376.roll = (float)Math.PI - f * 0.35f * (float)Math.PI;
+        this.field_3375.roll = (float)Math.PI + f * 0.35f * (float)Math.PI;
         this.field_3375.yaw = (float)Math.PI;
-        float l = (f + MathHelper.sin(f * 2.7f)) * 0.6f * 12.0f;
-        this.field_3375.pivotY = this.field_3376.pivotY = 24.0f - l;
+        float g = (limbAngle + MathHelper.sin(limbAngle * 2.7f)) * 0.6f * 12.0f;
+        this.field_3375.pivotY = this.field_3376.pivotY = 24.0f - g;
         this.field_3374.pivotY = this.field_3376.pivotY;
     }
 

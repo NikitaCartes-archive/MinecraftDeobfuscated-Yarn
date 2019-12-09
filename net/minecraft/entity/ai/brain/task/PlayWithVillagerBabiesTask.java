@@ -66,8 +66,8 @@ extends Task<MobEntityWithAi> {
         brain.putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityPosWrapper(livingEntity), 0.6f, 1));
     }
 
-    private Optional<LivingEntity> getVisibleMob(MobEntityWithAi mobEntityWithAi) {
-        return this.getVisibleVillagerBabies(mobEntityWithAi).stream().findAny();
+    private Optional<LivingEntity> getVisibleMob(MobEntityWithAi entity) {
+        return this.getVisibleVillagerBabies(entity).stream().findAny();
     }
 
     private Optional<LivingEntity> method_19588(MobEntityWithAi mobEntityWithAi) {
@@ -90,20 +90,20 @@ extends Task<MobEntityWithAi> {
     }
 
     @Nullable
-    private LivingEntity findVisibleVillagerBaby(LivingEntity livingEntity) {
-        return livingEntity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_VILLAGER_BABIES).get().stream().filter(livingEntity2 -> this.isInteractionTargetOf(livingEntity, (LivingEntity)livingEntity2)).findAny().orElse(null);
+    private LivingEntity findVisibleVillagerBaby(LivingEntity entity) {
+        return entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_VILLAGER_BABIES).get().stream().filter(livingEntity2 -> this.isInteractionTargetOf(entity, (LivingEntity)livingEntity2)).findAny().orElse(null);
     }
 
-    private boolean hasInteractionTarget(LivingEntity livingEntity) {
-        return livingEntity.getBrain().getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).isPresent();
+    private boolean hasInteractionTarget(LivingEntity entity) {
+        return entity.getBrain().getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).isPresent();
     }
 
-    private boolean isInteractionTargetOf(LivingEntity livingEntity, LivingEntity livingEntity22) {
-        return livingEntity22.getBrain().getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).filter(livingEntity2 -> livingEntity2 == livingEntity).isPresent();
+    private boolean isInteractionTargetOf(LivingEntity entity, LivingEntity other) {
+        return other.getBrain().getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).filter(livingEntity2 -> livingEntity2 == entity).isPresent();
     }
 
-    private boolean hasVisibleVillagerBabies(MobEntityWithAi mobEntityWithAi) {
-        return mobEntityWithAi.getBrain().hasMemoryModule(MemoryModuleType.VISIBLE_VILLAGER_BABIES);
+    private boolean hasVisibleVillagerBabies(MobEntityWithAi entity) {
+        return entity.getBrain().hasMemoryModule(MemoryModuleType.VISIBLE_VILLAGER_BABIES);
     }
 }
 

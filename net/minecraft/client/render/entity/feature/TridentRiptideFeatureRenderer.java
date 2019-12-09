@@ -24,8 +24,8 @@ extends FeatureRenderer<T, PlayerEntityModel<T>> {
     public static final Identifier TEXTURE = new Identifier("textures/entity/trident_riptide.png");
     private final ModelPart field_21012 = new ModelPart(64, 64, 0, 0);
 
-    public TridentRiptideFeatureRenderer(FeatureRendererContext<T, PlayerEntityModel<T>> featureRendererContext) {
-        super(featureRendererContext);
+    public TridentRiptideFeatureRenderer(FeatureRendererContext<T, PlayerEntityModel<T>> context) {
+        super(context);
         this.field_21012.addCuboid(-8.0f, -16.0f, -8.0f, 16.0f, 32.0f, 16.0f);
     }
 

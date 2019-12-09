@@ -18,25 +18,25 @@ import net.minecraft.world.dimension.DimensionType;
 public class DifficultyCommand {
     private static final DynamicCommandExceptionType FAILURE_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("commands.difficulty.failure", object));
 
-    public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
+    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal("difficulty");
         for (Difficulty difficulty : Difficulty.values()) {
             literalArgumentBuilder.then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.literal(difficulty.getName()).executes(commandContext -> DifficultyCommand.execute((ServerCommandSource)commandContext.getSource(), difficulty)));
         }
-        commandDispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)literalArgumentBuilder.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))).executes(commandContext -> {
+        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)literalArgumentBuilder.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))).executes(commandContext -> {
             Difficulty difficulty = ((ServerCommandSource)commandContext.getSource()).getWorld().getDifficulty();
             ((ServerCommandSource)commandContext.getSource()).sendFeedback(new TranslatableText("commands.difficulty.query", difficulty.getTranslatableName()), false);
             return difficulty.getId();
         }));
     }
 
-    public static int execute(ServerCommandSource serverCommandSource, Difficulty difficulty) throws CommandSyntaxException {
-        MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
+    public static int execute(ServerCommandSource source, Difficulty difficulty) throws CommandSyntaxException {
+        MinecraftServer minecraftServer = source.getMinecraftServer();
         if (minecraftServer.getWorld(DimensionType.OVERWORLD).getDifficulty() == difficulty) {
             throw FAILURE_EXCEPTION.create(difficulty.getName());
         }
         minecraftServer.setDifficulty(difficulty, true);
-        serverCommandSource.sendFeedback(new TranslatableText("commands.difficulty.success", difficulty.getTranslatableName()), true);
+        source.sendFeedback(new TranslatableText("commands.difficulty.success", difficulty.getTranslatableName()), true);
         return 0;
     }
 }

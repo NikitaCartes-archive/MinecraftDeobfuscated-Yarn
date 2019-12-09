@@ -67,23 +67,23 @@ implements IWorld {
     private final TickScheduler<Fluid> fluidTickScheduler = new MultiTickScheduler<Fluid>(blockPos -> this.getChunk((BlockPos)blockPos).getFluidTickScheduler());
     private final BiomeAccess biomeAccess;
 
-    public ChunkRegion(ServerWorld serverWorld, List<Chunk> list) {
-        int i = MathHelper.floor(Math.sqrt(list.size()));
-        if (i * i != list.size()) {
+    public ChunkRegion(ServerWorld world, List<Chunk> chunks) {
+        int i = MathHelper.floor(Math.sqrt(chunks.size()));
+        if (i * i != chunks.size()) {
             throw Util.throwOrPause(new IllegalStateException("Cache size is not a square."));
         }
-        ChunkPos chunkPos = list.get(list.size() / 2).getPos();
-        this.chunks = list;
+        ChunkPos chunkPos = chunks.get(chunks.size() / 2).getPos();
+        this.chunks = chunks;
         this.centerChunkX = chunkPos.x;
         this.centerChunkZ = chunkPos.z;
         this.width = i;
-        this.world = serverWorld;
-        this.seed = serverWorld.getSeed();
-        this.generatorSettings = serverWorld.getChunkManager().getChunkGenerator().getConfig();
-        this.seaLevel = serverWorld.getSeaLevel();
-        this.levelProperties = serverWorld.getLevelProperties();
-        this.random = serverWorld.getRandom();
-        this.dimension = serverWorld.getDimension();
+        this.world = world;
+        this.seed = world.getSeed();
+        this.generatorSettings = world.getChunkManager().getChunkGenerator().getConfig();
+        this.seaLevel = world.getSeaLevel();
+        this.levelProperties = world.getLevelProperties();
+        this.random = world.getRandom();
+        this.dimension = world.getDimension();
         this.biomeAccess = new BiomeAccess(this, LevelProperties.sha256Hash(this.seed), this.dimension.getType().getBiomeAccessType());
     }
 
@@ -96,58 +96,58 @@ implements IWorld {
     }
 
     @Override
-    public Chunk getChunk(int i, int j) {
-        return this.getChunk(i, j, ChunkStatus.EMPTY);
+    public Chunk getChunk(int chunkX, int chunkZ) {
+        return this.getChunk(chunkX, chunkZ, ChunkStatus.EMPTY);
     }
 
     @Override
     @Nullable
-    public Chunk getChunk(int i, int j, ChunkStatus chunkStatus, boolean bl) {
+    public Chunk getChunk(int chunkX, int chunkZ, ChunkStatus leastStatus, boolean create) {
         Chunk chunk;
-        if (this.isChunkLoaded(i, j)) {
+        if (this.isChunkLoaded(chunkX, chunkZ)) {
             ChunkPos chunkPos = this.chunks.get(0).getPos();
-            int k = i - chunkPos.x;
-            int l = j - chunkPos.z;
-            chunk = this.chunks.get(k + l * this.width);
-            if (chunk.getStatus().isAtLeast(chunkStatus)) {
+            int i = chunkX - chunkPos.x;
+            int j = chunkZ - chunkPos.z;
+            chunk = this.chunks.get(i + j * this.width);
+            if (chunk.getStatus().isAtLeast(leastStatus)) {
                 return chunk;
             }
         } else {
             chunk = null;
         }
-        if (!bl) {
+        if (!create) {
             return null;
         }
         Chunk chunk2 = this.chunks.get(0);
         Chunk chunk3 = this.chunks.get(this.chunks.size() - 1);
-        LOGGER.error("Requested chunk : {} {}", (Object)i, (Object)j);
+        LOGGER.error("Requested chunk : {} {}", (Object)chunkX, (Object)chunkZ);
         LOGGER.error("Region bounds : {} {} | {} {}", (Object)chunk2.getPos().x, (Object)chunk2.getPos().z, (Object)chunk3.getPos().x, (Object)chunk3.getPos().z);
         if (chunk != null) {
-            throw Util.throwOrPause(new RuntimeException(String.format("Chunk is not of correct status. Expecting %s, got %s | %s %s", chunkStatus, chunk.getStatus(), i, j)));
+            throw Util.throwOrPause(new RuntimeException(String.format("Chunk is not of correct status. Expecting %s, got %s | %s %s", leastStatus, chunk.getStatus(), chunkX, chunkZ)));
         }
-        throw Util.throwOrPause(new RuntimeException(String.format("We are asking a region for a chunk out of bound | %s %s", i, j)));
+        throw Util.throwOrPause(new RuntimeException(String.format("We are asking a region for a chunk out of bound | %s %s", chunkX, chunkZ)));
     }
 
     @Override
-    public boolean isChunkLoaded(int i, int j) {
+    public boolean isChunkLoaded(int chunkX, int chunkZ) {
         Chunk chunk = this.chunks.get(0);
         Chunk chunk2 = this.chunks.get(this.chunks.size() - 1);
-        return i >= chunk.getPos().x && i <= chunk2.getPos().x && j >= chunk.getPos().z && j <= chunk2.getPos().z;
+        return chunkX >= chunk.getPos().x && chunkX <= chunk2.getPos().x && chunkZ >= chunk.getPos().z && chunkZ <= chunk2.getPos().z;
     }
 
     @Override
-    public BlockState getBlockState(BlockPos blockPos) {
-        return this.getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4).getBlockState(blockPos);
+    public BlockState getBlockState(BlockPos pos) {
+        return this.getChunk(pos.getX() >> 4, pos.getZ() >> 4).getBlockState(pos);
     }
 
     @Override
-    public FluidState getFluidState(BlockPos blockPos) {
-        return this.getChunk(blockPos).getFluidState(blockPos);
+    public FluidState getFluidState(BlockPos pos) {
+        return this.getChunk(pos).getFluidState(pos);
     }
 
     @Override
     @Nullable
-    public PlayerEntity getClosestPlayer(double d, double e, double f, double g, Predicate<Entity> predicate) {
+    public PlayerEntity getClosestPlayer(double x, double y, double z, double maxDistance, Predicate<Entity> targetPredicate) {
         return null;
     }
 
@@ -162,8 +162,8 @@ implements IWorld {
     }
 
     @Override
-    public Biome getGeneratorStoredBiome(int i, int j, int k) {
-        return this.world.getGeneratorStoredBiome(i, j, k);
+    public Biome getGeneratorStoredBiome(int biomeX, int biomeY, int biomeZ) {
+        return this.world.getGeneratorStoredBiome(biomeX, biomeY, biomeZ);
     }
 
     @Override
@@ -172,30 +172,30 @@ implements IWorld {
     }
 
     @Override
-    public boolean breakBlock(BlockPos blockPos, boolean bl, @Nullable Entity entity) {
-        BlockState blockState = this.getBlockState(blockPos);
+    public boolean breakBlock(BlockPos pos, boolean drop, @Nullable Entity breakingEntity) {
+        BlockState blockState = this.getBlockState(pos);
         if (blockState.isAir()) {
             return false;
         }
-        if (bl) {
-            BlockEntity blockEntity = blockState.getBlock().hasBlockEntity() ? this.getBlockEntity(blockPos) : null;
-            Block.dropStacks(blockState, this.world, blockPos, blockEntity, entity, ItemStack.EMPTY);
+        if (drop) {
+            BlockEntity blockEntity = blockState.getBlock().hasBlockEntity() ? this.getBlockEntity(pos) : null;
+            Block.dropStacks(blockState, this.world, pos, blockEntity, breakingEntity, ItemStack.EMPTY);
         }
-        return this.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 3);
+        return this.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
     }
 
     @Override
     @Nullable
-    public BlockEntity getBlockEntity(BlockPos blockPos) {
-        Chunk chunk = this.getChunk(blockPos);
-        BlockEntity blockEntity = chunk.getBlockEntity(blockPos);
+    public BlockEntity getBlockEntity(BlockPos pos) {
+        Chunk chunk = this.getChunk(pos);
+        BlockEntity blockEntity = chunk.getBlockEntity(pos);
         if (blockEntity != null) {
             return blockEntity;
         }
-        CompoundTag compoundTag = chunk.getBlockEntityTagAt(blockPos);
+        CompoundTag compoundTag = chunk.getBlockEntityTagAt(pos);
         if (compoundTag != null) {
             if ("DUMMY".equals(compoundTag.getString("id"))) {
-                Block block = this.getBlockState(blockPos).getBlock();
+                Block block = this.getBlockState(pos).getBlock();
                 if (!(block instanceof BlockEntityProvider)) {
                     return null;
                 }
@@ -204,40 +204,40 @@ implements IWorld {
                 blockEntity = BlockEntity.createFromTag(compoundTag);
             }
             if (blockEntity != null) {
-                chunk.setBlockEntity(blockPos, blockEntity);
+                chunk.setBlockEntity(pos, blockEntity);
                 return blockEntity;
             }
         }
-        if (chunk.getBlockState(blockPos).getBlock() instanceof BlockEntityProvider) {
-            LOGGER.warn("Tried to access a block entity before it was created. {}", (Object)blockPos);
+        if (chunk.getBlockState(pos).getBlock() instanceof BlockEntityProvider) {
+            LOGGER.warn("Tried to access a block entity before it was created. {}", (Object)pos);
         }
         return null;
     }
 
     @Override
-    public boolean setBlockState(BlockPos blockPos, BlockState blockState, int i) {
+    public boolean setBlockState(BlockPos pos, BlockState state, int flags) {
         Block block;
-        Chunk chunk = this.getChunk(blockPos);
-        BlockState blockState2 = chunk.setBlockState(blockPos, blockState, false);
-        if (blockState2 != null) {
-            this.world.onBlockChanged(blockPos, blockState2, blockState);
+        Chunk chunk = this.getChunk(pos);
+        BlockState blockState = chunk.setBlockState(pos, state, false);
+        if (blockState != null) {
+            this.world.onBlockChanged(pos, blockState, state);
         }
-        if ((block = blockState.getBlock()).hasBlockEntity()) {
+        if ((block = state.getBlock()).hasBlockEntity()) {
             if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.LEVELCHUNK) {
-                chunk.setBlockEntity(blockPos, ((BlockEntityProvider)((Object)block)).createBlockEntity(this));
+                chunk.setBlockEntity(pos, ((BlockEntityProvider)((Object)block)).createBlockEntity(this));
             } else {
                 CompoundTag compoundTag = new CompoundTag();
-                compoundTag.putInt("x", blockPos.getX());
-                compoundTag.putInt("y", blockPos.getY());
-                compoundTag.putInt("z", blockPos.getZ());
+                compoundTag.putInt("x", pos.getX());
+                compoundTag.putInt("y", pos.getY());
+                compoundTag.putInt("z", pos.getZ());
                 compoundTag.putString("id", "DUMMY");
                 chunk.addPendingBlockEntityTag(compoundTag);
             }
-        } else if (blockState2 != null && blockState2.getBlock().hasBlockEntity()) {
-            chunk.removeBlockEntity(blockPos);
+        } else if (blockState != null && blockState.getBlock().hasBlockEntity()) {
+            chunk.removeBlockEntity(pos);
         }
-        if (blockState.shouldPostProcess(this, blockPos)) {
-            this.markBlockForPostProcessing(blockPos);
+        if (state.shouldPostProcess(this, pos)) {
+            this.markBlockForPostProcessing(pos);
         }
         return true;
     }
@@ -255,8 +255,8 @@ implements IWorld {
     }
 
     @Override
-    public boolean removeBlock(BlockPos blockPos, boolean bl) {
-        return this.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 3);
+    public boolean removeBlock(BlockPos pos, boolean move) {
+        return this.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
     }
 
     @Override
@@ -281,8 +281,8 @@ implements IWorld {
     }
 
     @Override
-    public LocalDifficulty getLocalDifficulty(BlockPos blockPos) {
-        if (!this.isChunkLoaded(blockPos.getX() >> 4, blockPos.getZ() >> 4)) {
+    public LocalDifficulty getLocalDifficulty(BlockPos pos) {
+        if (!this.isChunkLoaded(pos.getX() >> 4, pos.getZ() >> 4)) {
             throw new RuntimeException("We are asking a region for a chunk out of bound");
         }
         return new LocalDifficulty(this.world.getDifficulty(), this.world.getTimeOfDay(), 0L, this.world.getMoonSize());
@@ -319,24 +319,24 @@ implements IWorld {
     }
 
     @Override
-    public void updateNeighbors(BlockPos blockPos, Block block) {
+    public void updateNeighbors(BlockPos pos, Block block) {
     }
 
     @Override
-    public int getTopY(Heightmap.Type type, int i, int j) {
-        return this.getChunk(i >> 4, j >> 4).sampleHeightmap(type, i & 0xF, j & 0xF) + 1;
+    public int getTopY(Heightmap.Type heightmap, int x, int z) {
+        return this.getChunk(x >> 4, z >> 4).sampleHeightmap(heightmap, x & 0xF, z & 0xF) + 1;
     }
 
     @Override
-    public void playSound(@Nullable PlayerEntity playerEntity, BlockPos blockPos, SoundEvent soundEvent, SoundCategory soundCategory, float f, float g) {
+    public void playSound(@Nullable PlayerEntity player, BlockPos blockPos, SoundEvent soundEvent, SoundCategory soundCategory, float volume, float pitch) {
     }
 
     @Override
-    public void addParticle(ParticleEffect particleEffect, double d, double e, double f, double g, double h, double i) {
+    public void addParticle(ParticleEffect parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
     }
 
     @Override
-    public void playLevelEvent(@Nullable PlayerEntity playerEntity, int i, BlockPos blockPos, int j) {
+    public void playLevelEvent(@Nullable PlayerEntity player, int eventId, BlockPos blockPos, int data) {
     }
 
     @Override
@@ -351,17 +351,17 @@ implements IWorld {
     }
 
     @Override
-    public boolean testBlockState(BlockPos blockPos, Predicate<BlockState> predicate) {
-        return predicate.test(this.getBlockState(blockPos));
+    public boolean testBlockState(BlockPos blockPos, Predicate<BlockState> state) {
+        return state.test(this.getBlockState(blockPos));
     }
 
     @Override
-    public <T extends Entity> List<T> getEntities(Class<? extends T> class_, Box box, @Nullable Predicate<? super T> predicate) {
+    public <T extends Entity> List<T> getEntities(Class<? extends T> entityClass, Box box, @Nullable Predicate<? super T> predicate) {
         return Collections.emptyList();
     }
 
     @Override
-    public List<Entity> getEntities(@Nullable Entity entity, Box box, @Nullable Predicate<? super Entity> predicate) {
+    public List<Entity> getEntities(@Nullable Entity except, Box box, @Nullable Predicate<? super Entity> predicate) {
         return Collections.emptyList();
     }
 

@@ -99,16 +99,16 @@ implements Monster {
     }
 
     @Override
-    protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
-        return entityDimensions.height * 0.35f;
+    protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
+        return dimensions.height * 0.35f;
     }
 
     @Override
-    public void onTrackedDataSet(TrackedData<?> trackedData) {
-        if (SIZE.equals(trackedData)) {
+    public void onTrackedDataSet(TrackedData<?> data) {
+        if (SIZE.equals(data)) {
             this.onSizeChanged();
         }
-        super.onTrackedDataSet(trackedData);
+        super.onTrackedDataSet(data);
     }
 
     @Override
@@ -148,33 +148,33 @@ implements Monster {
     }
 
     @Override
-    public EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag) {
+    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         this.field_7312 = new BlockPos(this).up(5);
         this.setPhantomSize(0);
-        return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+        return super.initialize(world, difficulty, spawnType, entityData, entityTag);
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag compoundTag) {
-        super.readCustomDataFromTag(compoundTag);
-        if (compoundTag.contains("AX")) {
-            this.field_7312 = new BlockPos(compoundTag.getInt("AX"), compoundTag.getInt("AY"), compoundTag.getInt("AZ"));
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        if (tag.contains("AX")) {
+            this.field_7312 = new BlockPos(tag.getInt("AX"), tag.getInt("AY"), tag.getInt("AZ"));
         }
-        this.setPhantomSize(compoundTag.getInt("Size"));
+        this.setPhantomSize(tag.getInt("Size"));
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag compoundTag) {
-        super.writeCustomDataToTag(compoundTag);
-        compoundTag.putInt("AX", this.field_7312.getX());
-        compoundTag.putInt("AY", this.field_7312.getY());
-        compoundTag.putInt("AZ", this.field_7312.getZ());
-        compoundTag.putInt("Size", this.getPhantomSize());
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putInt("AX", this.field_7312.getX());
+        tag.putInt("AY", this.field_7312.getY());
+        tag.putInt("AZ", this.field_7312.getZ());
+        tag.putInt("Size", this.getPhantomSize());
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean shouldRender(double d) {
+    public boolean shouldRender(double distance) {
         return true;
     }
 
@@ -189,7 +189,7 @@ implements Monster {
     }
 
     @Override
-    protected SoundEvent getHurtSound(DamageSource damageSource) {
+    protected SoundEvent getHurtSound(DamageSource source) {
         return SoundEvents.ENTITY_PHANTOM_HURT;
     }
 
@@ -209,14 +209,14 @@ implements Monster {
     }
 
     @Override
-    public boolean canTarget(EntityType<?> entityType) {
+    public boolean canTarget(EntityType<?> type) {
         return true;
     }
 
     @Override
-    public EntityDimensions getDimensions(EntityPose entityPose) {
+    public EntityDimensions getDimensions(EntityPose pose) {
         int i = this.getPhantomSize();
-        EntityDimensions entityDimensions = super.getDimensions(entityPose);
+        EntityDimensions entityDimensions = super.getDimensions(pose);
         float f = (entityDimensions.width + 0.2f * (float)i) / entityDimensions.width;
         return entityDimensions.scaled(f);
     }
@@ -466,8 +466,8 @@ implements Monster {
     extends MoveControl {
         private float field_7331;
 
-        public PhantomMoveControl(MobEntity mobEntity) {
-            super(mobEntity);
+        public PhantomMoveControl(MobEntity owner) {
+            super(owner);
             this.field_7331 = 0.1f;
         }
 

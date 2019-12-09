@@ -47,14 +47,14 @@ NameableContainerProvider {
         }
 
         @Override
-        public ItemStack getInvStack(int i) {
-            return i == 0 ? LecternBlockEntity.this.book : ItemStack.EMPTY;
+        public ItemStack getInvStack(int slot) {
+            return slot == 0 ? LecternBlockEntity.this.book : ItemStack.EMPTY;
         }
 
         @Override
-        public ItemStack takeInvStack(int i, int j) {
-            if (i == 0) {
-                ItemStack itemStack = LecternBlockEntity.this.book.split(j);
+        public ItemStack takeInvStack(int slot, int amount) {
+            if (slot == 0) {
+                ItemStack itemStack = LecternBlockEntity.this.book.split(amount);
                 if (LecternBlockEntity.this.book.isEmpty()) {
                     LecternBlockEntity.this.onBookRemoved();
                 }
@@ -64,8 +64,8 @@ NameableContainerProvider {
         }
 
         @Override
-        public ItemStack removeInvStack(int i) {
-            if (i == 0) {
+        public ItemStack removeInvStack(int slot) {
+            if (slot == 0) {
                 ItemStack itemStack = LecternBlockEntity.this.book;
                 LecternBlockEntity.this.book = ItemStack.EMPTY;
                 LecternBlockEntity.this.onBookRemoved();
@@ -75,7 +75,7 @@ NameableContainerProvider {
         }
 
         @Override
-        public void setInvStack(int i, ItemStack itemStack) {
+        public void setInvStack(int slot, ItemStack stack) {
         }
 
         @Override
@@ -89,18 +89,18 @@ NameableContainerProvider {
         }
 
         @Override
-        public boolean canPlayerUseInv(PlayerEntity playerEntity) {
+        public boolean canPlayerUseInv(PlayerEntity player) {
             if (LecternBlockEntity.this.world.getBlockEntity(LecternBlockEntity.this.pos) != LecternBlockEntity.this) {
                 return false;
             }
-            if (playerEntity.squaredDistanceTo((double)LecternBlockEntity.this.pos.getX() + 0.5, (double)LecternBlockEntity.this.pos.getY() + 0.5, (double)LecternBlockEntity.this.pos.getZ() + 0.5) > 64.0) {
+            if (player.squaredDistanceTo((double)LecternBlockEntity.this.pos.getX() + 0.5, (double)LecternBlockEntity.this.pos.getY() + 0.5, (double)LecternBlockEntity.this.pos.getZ() + 0.5) > 64.0) {
                 return false;
             }
             return LecternBlockEntity.this.hasBook();
         }
 
         @Override
-        public boolean isValidInvStack(int i, ItemStack itemStack) {
+        public boolean isValidInvStack(int slot, ItemStack stack) {
             return false;
         }
 
@@ -111,14 +111,14 @@ NameableContainerProvider {
     private final PropertyDelegate propertyDelegate = new PropertyDelegate(){
 
         @Override
-        public int get(int i) {
-            return i == 0 ? LecternBlockEntity.this.currentPage : 0;
+        public int get(int key) {
+            return key == 0 ? LecternBlockEntity.this.currentPage : 0;
         }
 
         @Override
-        public void set(int i, int j) {
-            if (i == 0) {
-                LecternBlockEntity.this.setCurrentPage(j);
+        public void set(int key, int value) {
+            if (key == 0) {
+                LecternBlockEntity.this.setCurrentPage(value);
             }
         }
 
@@ -144,8 +144,8 @@ NameableContainerProvider {
         return item == Items.WRITABLE_BOOK || item == Items.WRITTEN_BOOK;
     }
 
-    public void setBook(ItemStack itemStack) {
-        this.setBook(itemStack, null);
+    public void setBook(ItemStack book) {
+        this.setBook(book, null);
     }
 
     private void onBookRemoved() {
@@ -154,17 +154,17 @@ NameableContainerProvider {
         LecternBlock.setHasBook(this.getWorld(), this.getPos(), this.getCachedState(), false);
     }
 
-    public void setBook(ItemStack itemStack, @Nullable PlayerEntity playerEntity) {
-        this.book = this.resolveBook(itemStack, playerEntity);
+    public void setBook(ItemStack book, @Nullable PlayerEntity player) {
+        this.book = this.resolveBook(book, player);
         this.currentPage = 0;
         this.pageCount = WrittenBookItem.getPageCount(this.book);
         this.markDirty();
     }
 
-    private void setCurrentPage(int i) {
-        int j = MathHelper.clamp(i, 0, this.pageCount - 1);
-        if (j != this.currentPage) {
-            this.currentPage = j;
+    private void setCurrentPage(int currentPage) {
+        int i = MathHelper.clamp(currentPage, 0, this.pageCount - 1);
+        if (i != this.currentPage) {
+            this.currentPage = i;
             this.markDirty();
             LecternBlock.setPowered(this.getWorld(), this.getPos(), this.getCachedState());
         }
@@ -179,25 +179,25 @@ NameableContainerProvider {
         return MathHelper.floor(f * 14.0f) + (this.hasBook() ? 1 : 0);
     }
 
-    private ItemStack resolveBook(ItemStack itemStack, @Nullable PlayerEntity playerEntity) {
-        if (this.world instanceof ServerWorld && itemStack.getItem() == Items.WRITTEN_BOOK) {
-            WrittenBookItem.resolve(itemStack, this.getCommandSource(playerEntity), playerEntity);
+    private ItemStack resolveBook(ItemStack book, @Nullable PlayerEntity player) {
+        if (this.world instanceof ServerWorld && book.getItem() == Items.WRITTEN_BOOK) {
+            WrittenBookItem.resolve(book, this.getCommandSource(player), player);
         }
-        return itemStack;
+        return book;
     }
 
-    private ServerCommandSource getCommandSource(@Nullable PlayerEntity playerEntity) {
+    private ServerCommandSource getCommandSource(@Nullable PlayerEntity player) {
         Text text;
         String string;
-        if (playerEntity == null) {
+        if (player == null) {
             string = "Lectern";
             text = new LiteralText("Lectern");
         } else {
-            string = playerEntity.getName().getString();
-            text = playerEntity.getDisplayName();
+            string = player.getName().getString();
+            text = player.getDisplayName();
         }
         Vec3d vec3d = new Vec3d((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5);
-        return new ServerCommandSource(CommandOutput.DUMMY, vec3d, Vec2f.ZERO, (ServerWorld)this.world, 2, string, text, this.world.getServer(), playerEntity);
+        return new ServerCommandSource(CommandOutput.DUMMY, vec3d, Vec2f.ZERO, (ServerWorld)this.world, 2, string, text, this.world.getServer(), player);
     }
 
     @Override
@@ -206,21 +206,21 @@ NameableContainerProvider {
     }
 
     @Override
-    public void fromTag(CompoundTag compoundTag) {
-        super.fromTag(compoundTag);
-        this.book = compoundTag.contains("Book", 10) ? this.resolveBook(ItemStack.fromTag(compoundTag.getCompound("Book")), null) : ItemStack.EMPTY;
+    public void fromTag(CompoundTag tag) {
+        super.fromTag(tag);
+        this.book = tag.contains("Book", 10) ? this.resolveBook(ItemStack.fromTag(tag.getCompound("Book")), null) : ItemStack.EMPTY;
         this.pageCount = WrittenBookItem.getPageCount(this.book);
-        this.currentPage = MathHelper.clamp(compoundTag.getInt("Page"), 0, this.pageCount - 1);
+        this.currentPage = MathHelper.clamp(tag.getInt("Page"), 0, this.pageCount - 1);
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag compoundTag) {
-        super.toTag(compoundTag);
+    public CompoundTag toTag(CompoundTag tag) {
+        super.toTag(tag);
         if (!this.getBook().isEmpty()) {
-            compoundTag.put("Book", this.getBook().toTag(new CompoundTag()));
-            compoundTag.putInt("Page", this.currentPage);
+            tag.put("Book", this.getBook().toTag(new CompoundTag()));
+            tag.putInt("Page", this.currentPage);
         }
-        return compoundTag;
+        return tag;
     }
 
     @Override
@@ -229,8 +229,8 @@ NameableContainerProvider {
     }
 
     @Override
-    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new LecternContainer(i, this.inventory, this.propertyDelegate);
+    public Container createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+        return new LecternContainer(syncId, this.inventory, this.propertyDelegate);
     }
 
     @Override

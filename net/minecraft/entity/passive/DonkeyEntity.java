@@ -33,27 +33,27 @@ extends AbstractDonkeyEntity {
     }
 
     @Override
-    protected SoundEvent getHurtSound(DamageSource damageSource) {
-        super.getHurtSound(damageSource);
+    protected SoundEvent getHurtSound(DamageSource source) {
+        super.getHurtSound(source);
         return SoundEvents.ENTITY_DONKEY_HURT;
     }
 
     @Override
-    public boolean canBreedWith(AnimalEntity animalEntity) {
-        if (animalEntity == this) {
+    public boolean canBreedWith(AnimalEntity other) {
+        if (other == this) {
             return false;
         }
-        if (animalEntity instanceof DonkeyEntity || animalEntity instanceof HorseEntity) {
-            return this.canBreed() && ((HorseBaseEntity)animalEntity).canBreed();
+        if (other instanceof DonkeyEntity || other instanceof HorseEntity) {
+            return this.canBreed() && ((HorseBaseEntity)other).canBreed();
         }
         return false;
     }
 
     @Override
-    public PassiveEntity createChild(PassiveEntity passiveEntity) {
-        EntityType<AbstractDonkeyEntity> entityType = passiveEntity instanceof HorseEntity ? EntityType.MULE : EntityType.DONKEY;
+    public PassiveEntity createChild(PassiveEntity mate) {
+        EntityType<AbstractDonkeyEntity> entityType = mate instanceof HorseEntity ? EntityType.MULE : EntityType.DONKEY;
         HorseBaseEntity horseBaseEntity = entityType.create(this.world);
-        this.setChildAttributes(passiveEntity, horseBaseEntity);
+        this.setChildAttributes(mate, horseBaseEntity);
         return horseBaseEntity;
     }
 }

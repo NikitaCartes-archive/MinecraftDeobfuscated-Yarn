@@ -23,7 +23,7 @@ extends Particle {
     }
 
     @Override
-    public final void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float f) {
+    public final void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
     }
 
     @Override

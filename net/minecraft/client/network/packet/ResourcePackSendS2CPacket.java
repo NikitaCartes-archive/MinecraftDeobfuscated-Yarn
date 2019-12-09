@@ -18,24 +18,24 @@ implements Packet<ClientPlayPacketListener> {
     public ResourcePackSendS2CPacket() {
     }
 
-    public ResourcePackSendS2CPacket(String string, String string2) {
-        this.url = string;
-        this.hash = string2;
-        if (string2.length() > 40) {
-            throw new IllegalArgumentException("Hash is too long (max 40, was " + string2.length() + ")");
+    public ResourcePackSendS2CPacket(String url, String hash) {
+        this.url = url;
+        this.hash = hash;
+        if (hash.length() > 40) {
+            throw new IllegalArgumentException("Hash is too long (max 40, was " + hash.length() + ")");
         }
     }
 
     @Override
-    public void read(PacketByteBuf packetByteBuf) throws IOException {
-        this.url = packetByteBuf.readString(Short.MAX_VALUE);
-        this.hash = packetByteBuf.readString(40);
+    public void read(PacketByteBuf buf) throws IOException {
+        this.url = buf.readString(Short.MAX_VALUE);
+        this.hash = buf.readString(40);
     }
 
     @Override
-    public void write(PacketByteBuf packetByteBuf) throws IOException {
-        packetByteBuf.writeString(this.url);
-        packetByteBuf.writeString(this.hash);
+    public void write(PacketByteBuf buf) throws IOException {
+        buf.writeString(this.url);
+        buf.writeString(this.hash);
     }
 
     @Override

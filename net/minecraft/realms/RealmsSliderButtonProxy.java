@@ -27,8 +27,8 @@ implements RealmsAbstractButtonProxy<RealmsSliderButton> {
     }
 
     @Override
-    public void active(boolean bl) {
-        this.active = bl;
+    public void active(boolean enabled) {
+        this.active = enabled;
     }
 
     @Override
@@ -37,13 +37,13 @@ implements RealmsAbstractButtonProxy<RealmsSliderButton> {
     }
 
     @Override
-    public void setVisible(boolean bl) {
-        this.visible = bl;
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 
     @Override
-    public void setMessage(String string) {
-        super.setMessage(string);
+    public void setMessage(String value) {
+        super.setMessage(value);
     }
 
     @Override
@@ -56,13 +56,13 @@ implements RealmsAbstractButtonProxy<RealmsSliderButton> {
     }
 
     @Override
-    public void onClick(double d, double e) {
-        this.button.onClick(d, e);
+    public void onClick(double mouseX, double mouseY) {
+        this.button.onClick(mouseX, mouseY);
     }
 
     @Override
-    public void onRelease(double d, double e) {
-        this.button.onRelease(d, e);
+    public void onRelease(double mouseX, double mouseY) {
+        this.button.onRelease(mouseX, mouseY);
     }
 
     @Override
@@ -84,8 +84,8 @@ implements RealmsAbstractButtonProxy<RealmsSliderButton> {
     }
 
     @Override
-    public void renderBg(MinecraftClient minecraftClient, int i, int j) {
-        super.renderBg(minecraftClient, i, j);
+    public void renderBg(MinecraftClient client, int mouseX, int mouseY) {
+        super.renderBg(client, mouseX, mouseY);
     }
 
     @Override
@@ -94,8 +94,8 @@ implements RealmsAbstractButtonProxy<RealmsSliderButton> {
     }
 
     @Override
-    public int getYImage(boolean bl) {
-        return this.button.getYImage(bl);
+    public int getYImage(boolean isHovered) {
+        return this.button.getYImage(isHovered);
     }
 
     public int getSuperYImage(boolean bl) {

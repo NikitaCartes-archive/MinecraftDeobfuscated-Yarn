@@ -47,9 +47,9 @@ extends CropBlock {
     }
 
     @Override
-    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (random.nextInt(3) != 0) {
-            super.scheduledTick(blockState, serverWorld, blockPos, random);
+            super.scheduledTick(state, world, pos, random);
         }
     }
 
@@ -64,8 +64,8 @@ extends CropBlock {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-        return AGE_TO_SHAPE[blockState.get(this.getAgeProperty())];
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+        return AGE_TO_SHAPE[state.get(this.getAgeProperty())];
     }
 }
 

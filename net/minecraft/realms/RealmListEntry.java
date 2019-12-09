@@ -14,7 +14,7 @@ extends AlwaysSelectedEntryListWidget.Entry<RealmListEntry> {
     public abstract void render(int var1, int var2, int var3, int var4, int var5, int var6, int var7, boolean var8, float var9);
 
     @Override
-    public boolean mouseClicked(double d, double e, int i) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
         return false;
     }
 }

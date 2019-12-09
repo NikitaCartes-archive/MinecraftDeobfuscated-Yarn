@@ -54,37 +54,37 @@ extends State<FluidState> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    default public boolean method_15756(BlockView blockView, BlockPos blockPos) {
+    default public boolean method_15756(BlockView view, BlockPos pos) {
         for (int i = -1; i <= 1; ++i) {
             for (int j = -1; j <= 1; ++j) {
-                BlockPos blockPos2 = blockPos.add(i, 0, j);
-                FluidState fluidState = blockView.getFluidState(blockPos2);
-                if (fluidState.getFluid().matchesType(this.getFluid()) || blockView.getBlockState(blockPos2).isFullOpaque(blockView, blockPos2)) continue;
+                BlockPos blockPos = pos.add(i, 0, j);
+                FluidState fluidState = view.getFluidState(blockPos);
+                if (fluidState.getFluid().matchesType(this.getFluid()) || view.getBlockState(blockPos).isFullOpaque(view, blockPos)) continue;
                 return true;
             }
         }
         return false;
     }
 
-    default public void onScheduledTick(World world, BlockPos blockPos) {
-        this.getFluid().onScheduledTick(world, blockPos, this);
+    default public void onScheduledTick(World world, BlockPos pos) {
+        this.getFluid().onScheduledTick(world, pos, this);
     }
 
     @Environment(value=EnvType.CLIENT)
-    default public void randomDisplayTick(World world, BlockPos blockPos, Random random) {
-        this.getFluid().randomDisplayTick(world, blockPos, this, random);
+    default public void randomDisplayTick(World world, BlockPos pos, Random random) {
+        this.getFluid().randomDisplayTick(world, pos, this, random);
     }
 
     default public boolean hasRandomTicks() {
         return this.getFluid().hasRandomTicks();
     }
 
-    default public void onRandomTick(World world, BlockPos blockPos, Random random) {
-        this.getFluid().onRandomTick(world, blockPos, this, random);
+    default public void onRandomTick(World world, BlockPos pos, Random random) {
+        this.getFluid().onRandomTick(world, pos, this, random);
     }
 
-    default public Vec3d getVelocity(BlockView blockView, BlockPos blockPos) {
-        return this.getFluid().getVelocity(blockView, blockPos, this);
+    default public Vec3d getVelocity(BlockView world, BlockPos pos) {
+        return this.getFluid().getVelocity(world, pos, this);
     }
 
     default public BlockState getBlockState() {
@@ -109,10 +109,10 @@ extends State<FluidState> {
         return this.getFluid().method_15777(this, blockView, blockPos, fluid, direction);
     }
 
-    public static <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps, FluidState fluidState) {
-        ImmutableMap<Property<?>, Comparable<?>> immutableMap = fluidState.getEntries();
-        Object object = immutableMap.isEmpty() ? dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("Name"), dynamicOps.createString(Registry.FLUID.getId(fluidState.getFluid()).toString()))) : dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("Name"), dynamicOps.createString(Registry.FLUID.getId(fluidState.getFluid()).toString()), dynamicOps.createString("Properties"), dynamicOps.createMap(immutableMap.entrySet().stream().map(entry -> Pair.of(dynamicOps.createString(((Property)entry.getKey()).getName()), dynamicOps.createString(State.nameValue((Property)entry.getKey(), (Comparable)entry.getValue())))).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond)))));
-        return new Dynamic<T>(dynamicOps, object);
+    public static <T> Dynamic<T> serialize(DynamicOps<T> ops, FluidState state) {
+        ImmutableMap<Property<?>, Comparable<?>> immutableMap = state.getEntries();
+        Object object = immutableMap.isEmpty() ? ops.createMap(ImmutableMap.of(ops.createString("Name"), ops.createString(Registry.FLUID.getId(state.getFluid()).toString()))) : ops.createMap(ImmutableMap.of(ops.createString("Name"), ops.createString(Registry.FLUID.getId(state.getFluid()).toString()), ops.createString("Properties"), ops.createMap(immutableMap.entrySet().stream().map(entry -> Pair.of(ops.createString(((Property)entry.getKey()).getName()), ops.createString(State.nameValue((Property)entry.getKey(), (Comparable)entry.getValue())))).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond)))));
+        return new Dynamic<T>(ops, object);
     }
 
     public static <T> FluidState deserialize(Dynamic<T> dynamic2) {

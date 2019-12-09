@@ -13,17 +13,17 @@ public class NameGenerator {
     private static final String[] PREFIX = new String[]{"Slim", "Far", "River", "Silly", "Fat", "Thin", "Fish", "Bat", "Dark", "Oak", "Sly", "Bush", "Zen", "Bark", "Cry", "Slack", "Soup", "Grim", "Hook"};
     private static final String[] SUFFIX = new String[]{"Fox", "Tail", "Jaw", "Whisper", "Twig", "Root", "Finder", "Nose", "Brow", "Blade", "Fry", "Seek", "Tooth", "Foot", "Leaf", "Stone", "Fall", "Face", "Tongue"};
 
-    public static String name(UUID uUID) {
-        Random random = NameGenerator.randomFromUuid(uUID);
+    public static String name(UUID uuid) {
+        Random random = NameGenerator.randomFromUuid(uuid);
         return NameGenerator.getRandom(random, PREFIX) + NameGenerator.getRandom(random, SUFFIX);
     }
 
-    private static String getRandom(Random random, String[] strings) {
-        return strings[random.nextInt(strings.length)];
+    private static String getRandom(Random random, String[] options) {
+        return options[random.nextInt(options.length)];
     }
 
-    private static Random randomFromUuid(UUID uUID) {
-        return new Random(uUID.hashCode() >> 2);
+    private static Random randomFromUuid(UUID uuid) {
+        return new Random(uuid.hashCode() >> 2);
     }
 }
 

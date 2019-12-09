@@ -14,9 +14,9 @@ extends PrintStream {
     protected static final Logger LOGGER = LogManager.getLogger();
     protected final String name;
 
-    public PrintStreamLogger(String string, OutputStream outputStream) {
+    public PrintStreamLogger(String name, OutputStream outputStream) {
         super(outputStream);
-        this.name = string;
+        this.name = name;
     }
 
     @Override

@@ -27,20 +27,20 @@ public class FluidPredicate {
     private final Fluid fluid;
     private final StatePredicate state;
 
-    public FluidPredicate(@Nullable Tag<Fluid> tag, @Nullable Fluid fluid, StatePredicate statePredicate) {
+    public FluidPredicate(@Nullable Tag<Fluid> tag, @Nullable Fluid fluid, StatePredicate state) {
         this.tag = tag;
         this.fluid = fluid;
-        this.state = statePredicate;
+        this.state = state;
     }
 
-    public boolean test(ServerWorld serverWorld, BlockPos blockPos) {
+    public boolean test(ServerWorld world, BlockPos pos) {
         if (this == ANY) {
             return true;
         }
-        if (!serverWorld.canSetBlock(blockPos)) {
+        if (!world.canSetBlock(pos)) {
             return false;
         }
-        FluidState fluidState = serverWorld.getFluidState(blockPos);
+        FluidState fluidState = world.getFluidState(pos);
         Fluid fluid = fluidState.getFluid();
         if (this.tag != null && !this.tag.contains(fluid)) {
             return false;
@@ -51,11 +51,11 @@ public class FluidPredicate {
         return this.state.test(fluidState);
     }
 
-    public static FluidPredicate fromJson(@Nullable JsonElement jsonElement) {
-        if (jsonElement == null || jsonElement.isJsonNull()) {
+    public static FluidPredicate fromJson(@Nullable JsonElement json) {
+        if (json == null || json.isJsonNull()) {
             return ANY;
         }
-        JsonObject jsonObject = JsonHelper.asObject(jsonElement, "fluid");
+        JsonObject jsonObject = JsonHelper.asObject(json, "fluid");
         Fluid fluid = null;
         if (jsonObject.has("fluid")) {
             Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "fluid"));

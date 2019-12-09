@@ -34,88 +34,88 @@ extends Block {
     }
 
     @Override
-    public boolean hasRandomTicks(BlockState blockState) {
-        return blockState.get(DISTANCE) == 7 && blockState.get(PERSISTENT) == false;
+    public boolean hasRandomTicks(BlockState state) {
+        return state.get(DISTANCE) == 7 && state.get(PERSISTENT) == false;
     }
 
     @Override
-    public void randomTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
-        if (!blockState.get(PERSISTENT).booleanValue() && blockState.get(DISTANCE) == 7) {
-            LeavesBlock.dropStacks(blockState, serverWorld, blockPos);
-            serverWorld.removeBlock(blockPos, false);
+    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        if (!state.get(PERSISTENT).booleanValue() && state.get(DISTANCE) == 7) {
+            LeavesBlock.dropStacks(state, world, pos);
+            world.removeBlock(pos, false);
         }
     }
 
     @Override
-    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
-        serverWorld.setBlockState(blockPos, LeavesBlock.updateDistanceFromLogs(blockState, serverWorld, blockPos), 3);
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        world.setBlockState(pos, LeavesBlock.updateDistanceFromLogs(state, world, pos), 3);
     }
 
     @Override
-    public int getOpacity(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+    public int getOpacity(BlockState state, BlockView view, BlockPos pos) {
         return 1;
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-        int i = LeavesBlock.getDistanceFromLog(blockState2) + 1;
-        if (i != 1 || blockState.get(DISTANCE) != i) {
-            iWorld.getBlockTickScheduler().schedule(blockPos, this, 1);
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+        int i = LeavesBlock.getDistanceFromLog(neighborState) + 1;
+        if (i != 1 || state.get(DISTANCE) != i) {
+            world.getBlockTickScheduler().schedule(pos, this, 1);
         }
-        return blockState;
+        return state;
     }
 
-    private static BlockState updateDistanceFromLogs(BlockState blockState, IWorld iWorld, BlockPos blockPos) {
+    private static BlockState updateDistanceFromLogs(BlockState state, IWorld world, BlockPos pos) {
         int i = 7;
         try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
             for (Direction direction : Direction.values()) {
-                pooledMutable.set(blockPos).setOffset(direction);
-                i = Math.min(i, LeavesBlock.getDistanceFromLog(iWorld.getBlockState(pooledMutable)) + 1);
+                pooledMutable.set(pos).setOffset(direction);
+                i = Math.min(i, LeavesBlock.getDistanceFromLog(world.getBlockState(pooledMutable)) + 1);
                 if (i != 1) continue;
                 break;
             }
         }
-        return (BlockState)blockState.with(DISTANCE, i);
+        return (BlockState)state.with(DISTANCE, i);
     }
 
-    private static int getDistanceFromLog(BlockState blockState) {
-        if (BlockTags.LOGS.contains(blockState.getBlock())) {
+    private static int getDistanceFromLog(BlockState state) {
+        if (BlockTags.LOGS.contains(state.getBlock())) {
             return 0;
         }
-        if (blockState.getBlock() instanceof LeavesBlock) {
-            return blockState.get(DISTANCE);
+        if (state.getBlock() instanceof LeavesBlock) {
+            return state.get(DISTANCE);
         }
         return 7;
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-        if (!world.hasRain(blockPos.up())) {
+    public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+        if (!world.hasRain(pos.up())) {
             return;
         }
         if (random.nextInt(15) != 1) {
             return;
         }
-        BlockPos blockPos2 = blockPos.down();
-        BlockState blockState2 = world.getBlockState(blockPos2);
-        if (blockState2.isOpaque() && blockState2.isSideSolidFullSquare(world, blockPos2, Direction.UP)) {
+        BlockPos blockPos = pos.down();
+        BlockState blockState = world.getBlockState(blockPos);
+        if (blockState.isOpaque() && blockState.isSideSolidFullSquare(world, blockPos, Direction.UP)) {
             return;
         }
-        double d = (float)blockPos.getX() + random.nextFloat();
-        double e = (double)blockPos.getY() - 0.05;
-        double f = (float)blockPos.getZ() + random.nextFloat();
+        double d = (float)pos.getX() + random.nextFloat();
+        double e = (double)pos.getY() - 0.05;
+        double f = (float)pos.getZ() + random.nextFloat();
         world.addParticle(ParticleTypes.DRIPPING_WATER, d, e, f, 0.0, 0.0, 0.0);
     }
 
     @Override
-    public boolean canSuffocate(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+    public boolean canSuffocate(BlockState state, BlockView view, BlockPos pos) {
         return false;
     }
 
     @Override
-    public boolean allowsSpawning(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
-        return entityType == EntityType.OCELOT || entityType == EntityType.PARROT;
+    public boolean allowsSpawning(BlockState state, BlockView view, BlockPos pos, EntityType<?> type) {
+        return type == EntityType.OCELOT || type == EntityType.PARROT;
     }
 
     @Override
@@ -124,8 +124,8 @@ extends Block {
     }
 
     @Override
-    public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-        return LeavesBlock.updateDistanceFromLogs((BlockState)this.getDefaultState().with(PERSISTENT, true), itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos());
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        return LeavesBlock.updateDistanceFromLogs((BlockState)this.getDefaultState().with(PERSISTENT, true), ctx.getWorld(), ctx.getBlockPos());
     }
 }
 

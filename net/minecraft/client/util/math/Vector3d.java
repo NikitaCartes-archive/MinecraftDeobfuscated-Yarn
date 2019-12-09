@@ -12,10 +12,10 @@ public class Vector3d {
     public double y;
     public double z;
 
-    public Vector3d(double d, double e, double f) {
-        this.x = d;
-        this.y = e;
-        this.z = f;
+    public Vector3d(double x, double y, double z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
 }
 

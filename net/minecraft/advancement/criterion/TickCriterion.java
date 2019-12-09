@@ -25,13 +25,13 @@ extends AbstractCriterion<Conditions> {
         return new Conditions();
     }
 
-    public void trigger(ServerPlayerEntity serverPlayerEntity) {
-        this.grant(serverPlayerEntity.getAdvancementTracker());
+    public void trigger(ServerPlayerEntity player) {
+        this.grant(player.getAdvancementTracker());
     }
 
     @Override
-    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
+    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject obj, JsonDeserializationContext context) {
+        return this.conditionsFromJson(obj, context);
     }
 
     public static class Conditions

@@ -36,15 +36,15 @@ implements PlayerSaveHandler {
     private final StructureManager structureManager;
     protected final DataFixer dataFixer;
 
-    public WorldSaveHandler(File file, String string, @Nullable MinecraftServer minecraftServer, DataFixer dataFixer) {
+    public WorldSaveHandler(File worldsDirectory, String worldName, @Nullable MinecraftServer server, DataFixer dataFixer) {
         this.dataFixer = dataFixer;
-        this.worldDir = new File(file, string);
+        this.worldDir = new File(worldsDirectory, worldName);
         this.worldDir.mkdirs();
         this.playerDataDir = new File(this.worldDir, "playerdata");
-        this.worldName = string;
-        if (minecraftServer != null) {
+        this.worldName = worldName;
+        if (server != null) {
             this.playerDataDir.mkdirs();
-            this.structureManager = new StructureManager(minecraftServer, this.worldDir, dataFixer);
+            this.structureManager = new StructureManager(server, this.worldDir, dataFixer);
         } else {
             this.structureManager = null;
         }

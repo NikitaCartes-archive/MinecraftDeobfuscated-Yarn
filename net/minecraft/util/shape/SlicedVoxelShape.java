@@ -16,14 +16,14 @@ extends VoxelShape {
     private final Direction.Axis axis;
     private static final DoubleList POINTS = new FractionalDoubleList(1);
 
-    public SlicedVoxelShape(VoxelShape voxelShape, Direction.Axis axis, int i) {
-        super(SlicedVoxelShape.createVoxelSet(voxelShape.voxels, axis, i));
-        this.shape = voxelShape;
+    public SlicedVoxelShape(VoxelShape shape, Direction.Axis axis, int sliceWidth) {
+        super(SlicedVoxelShape.createVoxelSet(shape.voxels, axis, sliceWidth));
+        this.shape = shape;
         this.axis = axis;
     }
 
-    private static VoxelSet createVoxelSet(VoxelSet voxelSet, Direction.Axis axis, int i) {
-        return new CroppedVoxelSet(voxelSet, axis.choose(i, 0, 0), axis.choose(0, i, 0), axis.choose(0, 0, i), axis.choose(i + 1, voxelSet.xSize, voxelSet.xSize), axis.choose(voxelSet.ySize, i + 1, voxelSet.ySize), axis.choose(voxelSet.zSize, voxelSet.zSize, i + 1));
+    private static VoxelSet createVoxelSet(VoxelSet voxelSet, Direction.Axis axis, int sliceWidth) {
+        return new CroppedVoxelSet(voxelSet, axis.choose(sliceWidth, 0, 0), axis.choose(0, sliceWidth, 0), axis.choose(0, 0, sliceWidth), axis.choose(sliceWidth + 1, voxelSet.xSize, voxelSet.xSize), axis.choose(voxelSet.ySize, sliceWidth + 1, voxelSet.ySize), axis.choose(voxelSet.zSize, voxelSet.zSize, sliceWidth + 1));
     }
 
     @Override

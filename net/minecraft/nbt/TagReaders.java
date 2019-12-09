@@ -21,11 +21,11 @@ import net.minecraft.nbt.TagReader;
 public class TagReaders {
     private static final TagReader<?>[] VALUES = new TagReader[]{EndTag.READER, ByteTag.READER, ShortTag.READER, IntTag.READER, LongTag.READER, FloatTag.READER, DoubleTag.READER, ByteArrayTag.READER, StringTag.READER, ListTag.READER, CompoundTag.READER, IntArrayTag.READER, LongArrayTag.READER};
 
-    public static TagReader<?> of(int i) {
-        if (i < 0 || i >= VALUES.length) {
-            return TagReader.createInvalid(i);
+    public static TagReader<?> of(int type) {
+        if (type < 0 || type >= VALUES.length) {
+            return TagReader.createInvalid(type);
         }
-        return VALUES[i];
+        return VALUES[type];
     }
 }
 

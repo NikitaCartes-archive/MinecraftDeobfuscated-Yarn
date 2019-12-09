@@ -30,8 +30,8 @@ extends Task<MobEntity> {
     private float field_18371;
     private int field_18964;
 
-    public WanderAroundTask(int i) {
-        super(ImmutableMap.of(MemoryModuleType.PATH, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_PRESENT), i);
+    public WanderAroundTask(int runTime) {
+        super(ImmutableMap.of(MemoryModuleType.PATH, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_PRESENT), runTime);
     }
 
     @Override
@@ -123,18 +123,18 @@ extends Task<MobEntity> {
     }
 
     @Override
-    protected /* synthetic */ boolean shouldKeepRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        return this.shouldKeepRunning(serverWorld, (MobEntity)livingEntity, l);
+    protected /* synthetic */ boolean shouldKeepRunning(ServerWorld world, LivingEntity entity, long time) {
+        return this.shouldKeepRunning(world, (MobEntity)entity, time);
     }
 
     @Override
-    protected /* synthetic */ void finishRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        this.finishRunning(serverWorld, (MobEntity)livingEntity, l);
+    protected /* synthetic */ void finishRunning(ServerWorld serverWorld, LivingEntity livingEntity, long time) {
+        this.finishRunning(serverWorld, (MobEntity)livingEntity, time);
     }
 
     @Override
-    protected /* synthetic */ void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        this.run(serverWorld, (MobEntity)livingEntity, l);
+    protected /* synthetic */ void run(ServerWorld world, LivingEntity entity, long time) {
+        this.run(world, (MobEntity)entity, time);
     }
 }
 

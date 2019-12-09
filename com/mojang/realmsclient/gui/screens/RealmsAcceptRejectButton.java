@@ -16,21 +16,21 @@ public abstract class RealmsAcceptRejectButton {
     public final int x;
     public final int y;
 
-    public RealmsAcceptRejectButton(int i, int j, int k, int l) {
-        this.width = i;
-        this.height = j;
-        this.x = k;
-        this.y = l;
+    public RealmsAcceptRejectButton(int width, int height, int x, int y) {
+        this.width = width;
+        this.height = height;
+        this.x = x;
+        this.y = y;
     }
 
-    public void render(int i, int j, int k, int l) {
-        int m = i + this.x;
-        int n = j + this.y;
+    public void render(int offsetX, int offsetY, int mouseX, int mouseY) {
+        int i = offsetX + this.x;
+        int j = offsetY + this.y;
         boolean bl = false;
-        if (k >= m && k <= m + this.width && l >= n && l <= n + this.height) {
+        if (mouseX >= i && mouseX <= i + this.width && mouseY >= j && mouseY <= j + this.height) {
             bl = true;
         }
-        this.render(m, n, bl);
+        this.render(i, j, bl);
     }
 
     protected abstract void render(int var1, int var2, boolean var3);
@@ -45,24 +45,24 @@ public abstract class RealmsAcceptRejectButton {
 
     public abstract void handleClick(int var1);
 
-    public static void render(List<RealmsAcceptRejectButton> list, RealmsObjectSelectionList realmsObjectSelectionList, int i, int j, int k, int l) {
-        for (RealmsAcceptRejectButton realmsAcceptRejectButton : list) {
-            if (realmsObjectSelectionList.getRowWidth() <= realmsAcceptRejectButton.getRight()) continue;
-            realmsAcceptRejectButton.render(i, j, k, l);
+    public static void render(List<RealmsAcceptRejectButton> buttons, RealmsObjectSelectionList selectionList, int offsetX, int offsetY, int mouseX, int mouseY) {
+        for (RealmsAcceptRejectButton realmsAcceptRejectButton : buttons) {
+            if (selectionList.getRowWidth() <= realmsAcceptRejectButton.getRight()) continue;
+            realmsAcceptRejectButton.render(offsetX, offsetY, mouseX, mouseY);
         }
     }
 
-    public static void handleClick(RealmsObjectSelectionList realmsObjectSelectionList, RealmListEntry realmListEntry, List<RealmsAcceptRejectButton> list, int i, double d, double e) {
-        int j;
-        if (i == 0 && (j = realmsObjectSelectionList.children().indexOf(realmListEntry)) > -1) {
-            realmsObjectSelectionList.selectItem(j);
-            int k = realmsObjectSelectionList.getRowLeft();
-            int l = realmsObjectSelectionList.getRowTop(j);
-            int m = (int)(d - (double)k);
-            int n = (int)(e - (double)l);
-            for (RealmsAcceptRejectButton realmsAcceptRejectButton : list) {
-                if (m < realmsAcceptRejectButton.x || m > realmsAcceptRejectButton.getRight() || n < realmsAcceptRejectButton.y || n > realmsAcceptRejectButton.getBottom()) continue;
-                realmsAcceptRejectButton.handleClick(j);
+    public static void handleClick(RealmsObjectSelectionList selectionList, RealmListEntry entry, List<RealmsAcceptRejectButton> buttons, int button, double mouseX, double mouseY) {
+        int i;
+        if (button == 0 && (i = selectionList.children().indexOf(entry)) > -1) {
+            selectionList.selectItem(i);
+            int j = selectionList.getRowLeft();
+            int k = selectionList.getRowTop(i);
+            int l = (int)(mouseX - (double)j);
+            int m = (int)(mouseY - (double)k);
+            for (RealmsAcceptRejectButton realmsAcceptRejectButton : buttons) {
+                if (l < realmsAcceptRejectButton.x || l > realmsAcceptRejectButton.getRight() || m < realmsAcceptRejectButton.y || m > realmsAcceptRejectButton.getBottom()) continue;
+                realmsAcceptRejectButton.handleClick(i);
             }
         }
     }

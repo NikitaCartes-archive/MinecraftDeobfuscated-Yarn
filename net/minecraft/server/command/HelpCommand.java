@@ -18,19 +18,19 @@ import net.minecraft.text.TranslatableText;
 public class HelpCommand {
     private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.help.failed", new Object[0]));
 
-    public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-        commandDispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("help").executes(commandContext -> {
-            Map map = commandDispatcher.getSmartUsage(commandDispatcher.getRoot(), (ServerCommandSource)commandContext.getSource());
+    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("help").executes(commandContext -> {
+            Map map = dispatcher.getSmartUsage(dispatcher.getRoot(), (ServerCommandSource)commandContext.getSource());
             for (String string : map.values()) {
                 ((ServerCommandSource)commandContext.getSource()).sendFeedback(new LiteralText("/" + string), false);
             }
             return map.size();
         })).then(CommandManager.argument("command", StringArgumentType.greedyString()).executes(commandContext -> {
-            ParseResults parseResults = commandDispatcher.parse(StringArgumentType.getString(commandContext, "command"), (ServerCommandSource)commandContext.getSource());
+            ParseResults parseResults = dispatcher.parse(StringArgumentType.getString(commandContext, "command"), (ServerCommandSource)commandContext.getSource());
             if (parseResults.getContext().getNodes().isEmpty()) {
                 throw FAILED_EXCEPTION.create();
             }
-            Map map = commandDispatcher.getSmartUsage(Iterables.getLast(parseResults.getContext().getNodes()).getNode(), (ServerCommandSource)commandContext.getSource());
+            Map map = dispatcher.getSmartUsage(Iterables.getLast(parseResults.getContext().getNodes()).getNode(), (ServerCommandSource)commandContext.getSource());
             for (String string : map.values()) {
                 ((ServerCommandSource)commandContext.getSource()).sendFeedback(new LiteralText("/" + parseResults.getReader().getString() + " " + string), false);
             }

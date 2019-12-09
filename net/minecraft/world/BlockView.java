@@ -25,8 +25,8 @@ public interface BlockView {
 
     public FluidState getFluidState(BlockPos var1);
 
-    default public int getLuminance(BlockPos blockPos) {
-        return this.getBlockState(blockPos).getLuminance();
+    default public int getLuminance(BlockPos pos) {
+        return this.getBlockState(pos).getLuminance();
     }
 
     default public int getMaxLightLevel() {
@@ -37,8 +37,8 @@ public interface BlockView {
         return 256;
     }
 
-    default public BlockHitResult rayTrace(RayTraceContext rayTraceContext2) {
-        return BlockView.rayTrace(rayTraceContext2, (rayTraceContext, blockPos) -> {
+    default public BlockHitResult rayTrace(RayTraceContext context) {
+        return BlockView.rayTrace(context, (rayTraceContext, blockPos) -> {
             BlockState blockState = this.getBlockState((BlockPos)blockPos);
             FluidState fluidState = this.getFluidState((BlockPos)blockPos);
             Vec3d vec3d = rayTraceContext.getStart();
@@ -57,22 +57,22 @@ public interface BlockView {
     }
 
     @Nullable
-    default public BlockHitResult rayTraceBlock(Vec3d vec3d, Vec3d vec3d2, BlockPos blockPos, VoxelShape voxelShape, BlockState blockState) {
+    default public BlockHitResult rayTraceBlock(Vec3d start, Vec3d end, BlockPos pos, VoxelShape shape, BlockState state) {
         BlockHitResult blockHitResult2;
-        BlockHitResult blockHitResult = voxelShape.rayTrace(vec3d, vec3d2, blockPos);
-        if (blockHitResult != null && (blockHitResult2 = blockState.getRayTraceShape(this, blockPos).rayTrace(vec3d, vec3d2, blockPos)) != null && blockHitResult2.getPos().subtract(vec3d).lengthSquared() < blockHitResult.getPos().subtract(vec3d).lengthSquared()) {
+        BlockHitResult blockHitResult = shape.rayTrace(start, end, pos);
+        if (blockHitResult != null && (blockHitResult2 = state.getRayTraceShape(this, pos).rayTrace(start, end, pos)) != null && blockHitResult2.getPos().subtract(start).lengthSquared() < blockHitResult.getPos().subtract(start).lengthSquared()) {
             return blockHitResult.withSide(blockHitResult2.getSide());
         }
         return blockHitResult;
     }
 
-    public static <T> T rayTrace(RayTraceContext rayTraceContext, BiFunction<RayTraceContext, BlockPos, T> biFunction, Function<RayTraceContext, T> function) {
+    public static <T> T rayTrace(RayTraceContext rayTraceContext, BiFunction<RayTraceContext, BlockPos, T> context, Function<RayTraceContext, T> blockRaytracer) {
         int l;
         int k;
         Vec3d vec3d2;
         Vec3d vec3d = rayTraceContext.getStart();
         if (vec3d.equals(vec3d2 = rayTraceContext.getEnd())) {
-            return function.apply(rayTraceContext);
+            return blockRaytracer.apply(rayTraceContext);
         }
         double d = MathHelper.lerp(-1.0E-7, vec3d2.x, vec3d.x);
         double e = MathHelper.lerp(-1.0E-7, vec3d2.y, vec3d.y);
@@ -82,7 +82,7 @@ public interface BlockView {
         double i = MathHelper.lerp(-1.0E-7, vec3d.z, vec3d2.z);
         int j = MathHelper.floor(g);
         BlockPos.Mutable mutable = new BlockPos.Mutable(j, k = MathHelper.floor(h), l = MathHelper.floor(i));
-        T object = biFunction.apply(rayTraceContext, mutable);
+        T object = context.apply(rayTraceContext, mutable);
         if (object != null) {
             return object;
         }
@@ -115,10 +115,10 @@ public interface BlockView {
                 l += r;
                 x += u;
             }
-            if ((object2 = biFunction.apply(rayTraceContext, mutable.set(j, k, l))) == null) continue;
+            if ((object2 = context.apply(rayTraceContext, mutable.set(j, k, l))) == null) continue;
             return object2;
         }
-        return function.apply(rayTraceContext);
+        return blockRaytracer.apply(rayTraceContext);
     }
 }
 

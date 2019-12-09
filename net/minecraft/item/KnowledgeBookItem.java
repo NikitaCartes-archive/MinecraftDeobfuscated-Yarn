@@ -30,11 +30,11 @@ extends Item {
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
-        ItemStack itemStack = playerEntity.getStackInHand(hand);
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+        ItemStack itemStack = user.getStackInHand(hand);
         CompoundTag compoundTag = itemStack.getTag();
-        if (!playerEntity.abilities.creativeMode) {
-            playerEntity.setStackInHand(hand, ItemStack.EMPTY);
+        if (!user.abilities.creativeMode) {
+            user.setStackInHand(hand, ItemStack.EMPTY);
         }
         if (compoundTag == null || !compoundTag.contains("Recipes", 9)) {
             LOGGER.error("Tag not valid: {}", (Object)compoundTag);
@@ -53,8 +53,8 @@ extends Item {
                 }
                 list.add(optional.get());
             }
-            playerEntity.unlockRecipes(list);
-            playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
+            user.unlockRecipes(list);
+            user.incrementStat(Stats.USED.getOrCreateStat(this));
         }
         return TypedActionResult.success(itemStack);
     }

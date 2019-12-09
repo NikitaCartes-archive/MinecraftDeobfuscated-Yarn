@@ -16,13 +16,13 @@ public abstract class AbstractSkullBlock
 extends BlockWithEntity {
     private final SkullBlock.SkullType type;
 
-    public AbstractSkullBlock(SkullBlock.SkullType skullType, Block.Settings settings) {
+    public AbstractSkullBlock(SkullBlock.SkullType type, Block.Settings settings) {
         super(settings);
-        this.type = skullType;
+        this.type = type;
     }
 
     @Override
-    public BlockEntity createBlockEntity(BlockView blockView) {
+    public BlockEntity createBlockEntity(BlockView view) {
         return new SkullBlockEntity();
     }
 

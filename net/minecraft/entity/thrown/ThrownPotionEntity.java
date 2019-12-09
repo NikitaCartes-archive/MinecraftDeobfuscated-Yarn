@@ -59,8 +59,8 @@ implements FlyingItemEntity {
         super(EntityType.POTION, livingEntity, world);
     }
 
-    public ThrownPotionEntity(World world, double d, double e, double f) {
-        super(EntityType.POTION, d, e, f, world);
+    public ThrownPotionEntity(World world, double x, double y, double d) {
+        super(EntityType.POTION, x, y, d, world);
     }
 
     @Override
@@ -194,9 +194,9 @@ implements FlyingItemEntity {
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag compoundTag) {
-        super.readCustomDataFromTag(compoundTag);
-        ItemStack itemStack = ItemStack.fromTag(compoundTag.getCompound("Potion"));
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        ItemStack itemStack = ItemStack.fromTag(tag.getCompound("Potion"));
         if (itemStack.isEmpty()) {
             this.remove();
         } else {
@@ -205,16 +205,16 @@ implements FlyingItemEntity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag compoundTag) {
-        super.writeCustomDataToTag(compoundTag);
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
         ItemStack itemStack = this.getStack();
         if (!itemStack.isEmpty()) {
-            compoundTag.put("Potion", itemStack.toTag(new CompoundTag()));
+            tag.put("Potion", itemStack.toTag(new CompoundTag()));
         }
     }
 
-    private static boolean doesWaterHurt(LivingEntity livingEntity) {
-        return livingEntity instanceof EndermanEntity || livingEntity instanceof BlazeEntity;
+    private static boolean doesWaterHurt(LivingEntity entityHit) {
+        return entityHit instanceof EndermanEntity || entityHit instanceof BlazeEntity;
     }
 }
 

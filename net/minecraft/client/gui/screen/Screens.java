@@ -42,28 +42,28 @@ public class Screens {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Map<ContainerType<?>, Provider<?, ?>> PROVIDERS = Maps.newHashMap();
 
-    public static <T extends Container> void open(@Nullable ContainerType<T> containerType, MinecraftClient minecraftClient, int i, Text text) {
-        if (containerType == null) {
-            LOGGER.warn("Trying to open invalid screen with name: {}", (Object)text.getString());
+    public static <T extends Container> void open(@Nullable ContainerType<T> type, MinecraftClient client, int id, Text name) {
+        if (type == null) {
+            LOGGER.warn("Trying to open invalid screen with name: {}", (Object)name.getString());
             return;
         }
-        Provider<T, ?> provider = Screens.getProvider(containerType);
+        Provider<T, ?> provider = Screens.getProvider(type);
         if (provider == null) {
-            LOGGER.warn("Failed to create screen for menu type: {}", (Object)Registry.CONTAINER.getId(containerType));
+            LOGGER.warn("Failed to create screen for menu type: {}", (Object)Registry.CONTAINER.getId(type));
             return;
         }
-        provider.open(text, containerType, minecraftClient, i);
+        provider.open(name, type, client, id);
     }
 
     @Nullable
-    private static <T extends Container> Provider<T, ?> getProvider(ContainerType<T> containerType) {
-        return PROVIDERS.get(containerType);
+    private static <T extends Container> Provider<T, ?> getProvider(ContainerType<T> type) {
+        return PROVIDERS.get(type);
     }
 
-    private static <M extends Container, U extends Screen> void register(ContainerType<? extends M> containerType, Provider<M, U> provider) {
-        Provider<M, U> provider2 = PROVIDERS.put(containerType, provider);
+    private static <M extends Container, U extends Screen> void register(ContainerType<? extends M> type, Provider<M, U> provider) {
+        Provider<M, U> provider2 = PROVIDERS.put(type, provider);
         if (provider2 != null) {
-            throw new IllegalStateException("Duplicate registration for " + Registry.CONTAINER.getId(containerType));
+            throw new IllegalStateException("Duplicate registration for " + Registry.CONTAINER.getId(type));
         }
     }
 
@@ -105,10 +105,10 @@ public class Screens {
 
     @Environment(value=EnvType.CLIENT)
     static interface Provider<T extends Container, U extends Screen> {
-        default public void open(Text text, ContainerType<T> containerType, MinecraftClient minecraftClient, int i) {
-            U screen = this.create(containerType.create(i, minecraftClient.player.inventory), minecraftClient.player.inventory, text);
-            minecraftClient.player.container = ((ContainerProvider)screen).getContainer();
-            minecraftClient.openScreen((Screen)screen);
+        default public void open(Text name, ContainerType<T> type, MinecraftClient client, int id) {
+            U screen = this.create(type.create(id, client.player.inventory), client.player.inventory, name);
+            client.player.container = ((ContainerProvider)screen).getContainer();
+            client.openScreen((Screen)screen);
         }
 
         public U create(T var1, PlayerInventory var2, Text var3);

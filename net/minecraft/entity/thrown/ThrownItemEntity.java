@@ -26,21 +26,21 @@ extends ThrownEntity
 implements FlyingItemEntity {
     private static final TrackedData<ItemStack> ITEM = DataTracker.registerData(ThrownItemEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
 
-    public ThrownItemEntity(EntityType<? extends ThrownItemEntity> entityType, World world) {
-        super((EntityType<? extends ThrownEntity>)entityType, world);
+    public ThrownItemEntity(EntityType<? extends ThrownItemEntity> type, World world) {
+        super((EntityType<? extends ThrownEntity>)type, world);
     }
 
-    public ThrownItemEntity(EntityType<? extends ThrownItemEntity> entityType, double d, double e, double f, World world) {
-        super(entityType, d, e, f, world);
+    public ThrownItemEntity(EntityType<? extends ThrownItemEntity> type, double d, double e, double f, World world) {
+        super(type, d, e, f, world);
     }
 
-    public ThrownItemEntity(EntityType<? extends ThrownItemEntity> entityType, LivingEntity livingEntity, World world) {
-        super(entityType, livingEntity, world);
+    public ThrownItemEntity(EntityType<? extends ThrownItemEntity> type, LivingEntity owner, World world) {
+        super(type, owner, world);
     }
 
-    public void setItem(ItemStack itemStack2) {
-        if (itemStack2.getItem() != this.getDefaultItem() || itemStack2.hasTag()) {
-            this.getDataTracker().set(ITEM, Util.make(itemStack2.copy(), itemStack -> itemStack.setCount(1)));
+    public void setItem(ItemStack item) {
+        if (item.getItem() != this.getDefaultItem() || item.hasTag()) {
+            this.getDataTracker().set(ITEM, Util.make(item.copy(), itemStack -> itemStack.setCount(1)));
         }
     }
 
@@ -63,18 +63,18 @@ implements FlyingItemEntity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag compoundTag) {
-        super.writeCustomDataToTag(compoundTag);
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
         ItemStack itemStack = this.getItem();
         if (!itemStack.isEmpty()) {
-            compoundTag.put("Item", itemStack.toTag(new CompoundTag()));
+            tag.put("Item", itemStack.toTag(new CompoundTag()));
         }
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag compoundTag) {
-        super.readCustomDataFromTag(compoundTag);
-        ItemStack itemStack = ItemStack.fromTag(compoundTag.getCompound("Item"));
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        ItemStack itemStack = ItemStack.fromTag(tag.getCompound("Item"));
         this.setItem(itemStack);
     }
 }

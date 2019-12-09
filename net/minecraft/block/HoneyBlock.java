@@ -39,50 +39,50 @@ extends TransparentBlock {
     }
 
     @Override
-    public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+    public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
         return SHAPE;
     }
 
     @Override
-    public void onLandedUpon(World world, BlockPos blockPos, Entity entity, float f) {
+    public void onLandedUpon(World world, BlockPos pos, Entity entity, float distance) {
         entity.playSound(SoundEvents.BLOCK_HONEY_BLOCK_SLIDE, 1.0f, 1.0f);
         if (!world.isClient) {
             world.sendEntityStatus(entity, (byte)54);
         }
-        if (entity.handleFallDamage(f, 0.2f)) {
+        if (entity.handleFallDamage(distance, 0.2f)) {
             entity.playSound(this.soundGroup.getFallSound(), this.soundGroup.getVolume() * 0.5f, this.soundGroup.getPitch() * 0.75f);
         }
     }
 
     @Override
-    public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
-        if (this.isSliding(blockPos, entity)) {
-            this.triggerAdvancement(entity, blockPos);
+    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+        if (this.isSliding(pos, entity)) {
+            this.triggerAdvancement(entity, pos);
             this.updateSlidingVelocity(entity);
             this.addCollisionEffects(world, entity);
         }
-        super.onEntityCollision(blockState, world, blockPos, entity);
+        super.onEntityCollision(state, world, pos, entity);
     }
 
-    private boolean isSliding(BlockPos blockPos, Entity entity) {
+    private boolean isSliding(BlockPos pos, Entity entity) {
         if (entity.onGround) {
             return false;
         }
-        if (entity.getY() > (double)blockPos.getY() + 0.9375 - 1.0E-7) {
+        if (entity.getY() > (double)pos.getY() + 0.9375 - 1.0E-7) {
             return false;
         }
         if (entity.getVelocity().y >= -0.08) {
             return false;
         }
-        double d = Math.abs((double)blockPos.getX() + 0.5 - entity.getX());
-        double e = Math.abs((double)blockPos.getZ() + 0.5 - entity.getZ());
+        double d = Math.abs((double)pos.getX() + 0.5 - entity.getX());
+        double e = Math.abs((double)pos.getZ() + 0.5 - entity.getZ());
         double f = 0.4375 + (double)(entity.getWidth() / 2.0f);
         return d + 1.0E-7 > f || e + 1.0E-7 > f;
     }
 
-    private void triggerAdvancement(Entity entity, BlockPos blockPos) {
+    private void triggerAdvancement(Entity entity, BlockPos pos) {
         if (entity instanceof ServerPlayerEntity && entity.world.getTime() % 20L == 0L) {
-            Criterions.SLIDE_DOWN_BLOCK.test((ServerPlayerEntity)entity, entity.world.getBlockState(blockPos));
+            Criterions.SLIDE_DOWN_BLOCK.test((ServerPlayerEntity)entity, entity.world.getBlockState(pos));
         }
     }
 
@@ -119,12 +119,12 @@ extends TransparentBlock {
     }
 
     @Environment(value=EnvType.CLIENT)
-    private static void addParticles(Entity entity, int i) {
+    private static void addParticles(Entity entity, int count) {
         if (!entity.world.isClient) {
             return;
         }
         BlockState blockState = Blocks.HONEY_BLOCK.getDefaultState();
-        for (int j = 0; j < i; ++j) {
+        for (int i = 0; i < count; ++i) {
             entity.world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState), entity.getX(), entity.getY(), entity.getZ(), 0.0, 0.0, 0.0);
         }
     }

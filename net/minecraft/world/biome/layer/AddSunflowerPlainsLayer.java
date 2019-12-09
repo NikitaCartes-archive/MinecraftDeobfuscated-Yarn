@@ -16,11 +16,11 @@ public enum AddSunflowerPlainsLayer implements SouthEastSamplingLayer
     private static final int SUNFLOWER_PLAINS;
 
     @Override
-    public int sample(LayerRandomnessSource layerRandomnessSource, int i) {
-        if (layerRandomnessSource.nextInt(57) == 0 && i == PLAINS_ID) {
+    public int sample(LayerRandomnessSource context, int se) {
+        if (context.nextInt(57) == 0 && se == PLAINS_ID) {
             return SUNFLOWER_PLAINS;
         }
-        return i;
+        return se;
     }
 
     static {

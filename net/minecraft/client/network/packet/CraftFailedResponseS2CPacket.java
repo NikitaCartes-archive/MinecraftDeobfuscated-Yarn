@@ -20,8 +20,8 @@ implements Packet<ClientPlayPacketListener> {
     public CraftFailedResponseS2CPacket() {
     }
 
-    public CraftFailedResponseS2CPacket(int i, Recipe<?> recipe) {
-        this.syncId = i;
+    public CraftFailedResponseS2CPacket(int syncId, Recipe<?> recipe) {
+        this.syncId = syncId;
         this.recipeId = recipe.getId();
     }
 
@@ -36,15 +36,15 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Override
-    public void read(PacketByteBuf packetByteBuf) throws IOException {
-        this.syncId = packetByteBuf.readByte();
-        this.recipeId = packetByteBuf.readIdentifier();
+    public void read(PacketByteBuf buf) throws IOException {
+        this.syncId = buf.readByte();
+        this.recipeId = buf.readIdentifier();
     }
 
     @Override
-    public void write(PacketByteBuf packetByteBuf) throws IOException {
-        packetByteBuf.writeByte(this.syncId);
-        packetByteBuf.writeIdentifier(this.recipeId);
+    public void write(PacketByteBuf buf) throws IOException {
+        buf.writeByte(this.syncId);
+        buf.writeIdentifier(this.recipeId);
     }
 
     @Override

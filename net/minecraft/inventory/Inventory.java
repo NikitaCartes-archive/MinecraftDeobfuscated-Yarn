@@ -31,13 +31,13 @@ extends Clearable {
 
     public boolean canPlayerUseInv(PlayerEntity var1);
 
-    default public void onInvOpen(PlayerEntity playerEntity) {
+    default public void onInvOpen(PlayerEntity player) {
     }
 
-    default public void onInvClose(PlayerEntity playerEntity) {
+    default public void onInvClose(PlayerEntity player) {
     }
 
-    default public boolean isValidInvStack(int i, ItemStack itemStack) {
+    default public boolean isValidInvStack(int slot, ItemStack stack) {
         return true;
     }
 
@@ -51,10 +51,10 @@ extends Clearable {
         return i;
     }
 
-    default public boolean containsAnyInInv(Set<Item> set) {
+    default public boolean containsAnyInInv(Set<Item> items) {
         for (int i = 0; i < this.getInvSize(); ++i) {
             ItemStack itemStack = this.getInvStack(i);
-            if (!set.contains(itemStack.getItem()) || itemStack.getCount() <= 0) continue;
+            if (!items.contains(itemStack.getItem()) || itemStack.getCount() <= 0) continue;
             return true;
         }
         return false;

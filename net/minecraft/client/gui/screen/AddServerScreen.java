@@ -80,15 +80,15 @@ extends Screen {
     }
 
     @Override
-    public void resize(MinecraftClient minecraftClient, int i, int j) {
+    public void resize(MinecraftClient client, int width, int height) {
         String string = this.addressField.getText();
         String string2 = this.serverNameField.getText();
-        this.init(minecraftClient, i, j);
+        this.init(client, width, height);
         this.addressField.setText(string);
         this.serverNameField.setText(string2);
     }
 
-    private void onClose(String string) {
+    private void onClose(String text) {
         this.method_24183();
     }
 
@@ -116,14 +116,14 @@ extends Screen {
     }
 
     @Override
-    public void render(int i, int j, float f) {
+    public void render(int mouseX, int mouseY, float delta) {
         this.renderBackground();
         this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 17, 0xFFFFFF);
         this.drawString(this.font, I18n.translate("addServer.enterName", new Object[0]), this.width / 2 - 100, 53, 0xA0A0A0);
         this.drawString(this.font, I18n.translate("addServer.enterIp", new Object[0]), this.width / 2 - 100, 94, 0xA0A0A0);
-        this.serverNameField.render(i, j, f);
-        this.addressField.render(i, j, f);
-        super.render(i, j, f);
+        this.serverNameField.render(mouseX, mouseY, delta);
+        this.addressField.render(mouseX, mouseY, delta);
+        super.render(mouseX, mouseY, delta);
     }
 }
 

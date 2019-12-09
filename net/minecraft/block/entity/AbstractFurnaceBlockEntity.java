@@ -55,8 +55,8 @@ Tickable {
     protected final PropertyDelegate propertyDelegate = new PropertyDelegate(){
 
         @Override
-        public int get(int i) {
-            switch (i) {
+        public int get(int key) {
+            switch (key) {
                 case 0: {
                     return AbstractFurnaceBlockEntity.this.burnTime;
                 }
@@ -74,22 +74,22 @@ Tickable {
         }
 
         @Override
-        public void set(int i, int j) {
-            switch (i) {
+        public void set(int key, int value) {
+            switch (key) {
                 case 0: {
-                    AbstractFurnaceBlockEntity.this.burnTime = j;
+                    AbstractFurnaceBlockEntity.this.burnTime = value;
                     break;
                 }
                 case 1: {
-                    AbstractFurnaceBlockEntity.this.fuelTime = j;
+                    AbstractFurnaceBlockEntity.this.fuelTime = value;
                     break;
                 }
                 case 2: {
-                    AbstractFurnaceBlockEntity.this.cookTime = j;
+                    AbstractFurnaceBlockEntity.this.cookTime = value;
                     break;
                 }
                 case 3: {
-                    AbstractFurnaceBlockEntity.this.cookTimeTotal = j;
+                    AbstractFurnaceBlockEntity.this.cookTimeTotal = value;
                     break;
                 }
             }
@@ -173,14 +173,14 @@ Tickable {
         return map;
     }
 
-    private static void addFuel(Map<Item, Integer> map, Tag<Item> tag, int i) {
+    private static void addFuel(Map<Item, Integer> fuelTimes, Tag<Item> tag, int fuelTime) {
         for (Item item : tag.values()) {
-            map.put(item, i);
+            fuelTimes.put(item, fuelTime);
         }
     }
 
-    private static void addFuel(Map<Item, Integer> map, ItemConvertible itemConvertible, int i) {
-        map.put(itemConvertible.asItem(), i);
+    private static void addFuel(Map<Item, Integer> fuelTimes, ItemConvertible item, int fuelTime) {
+        fuelTimes.put(item.asItem(), fuelTime);
     }
 
     private boolean isBurning() {
@@ -188,37 +188,37 @@ Tickable {
     }
 
     @Override
-    public void fromTag(CompoundTag compoundTag) {
-        super.fromTag(compoundTag);
+    public void fromTag(CompoundTag tag) {
+        super.fromTag(tag);
         this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
-        Inventories.fromTag(compoundTag, this.inventory);
-        this.burnTime = compoundTag.getShort("BurnTime");
-        this.cookTime = compoundTag.getShort("CookTime");
-        this.cookTimeTotal = compoundTag.getShort("CookTimeTotal");
+        Inventories.fromTag(tag, this.inventory);
+        this.burnTime = tag.getShort("BurnTime");
+        this.cookTime = tag.getShort("CookTime");
+        this.cookTimeTotal = tag.getShort("CookTimeTotal");
         this.fuelTime = this.getFuelTime(this.inventory.get(1));
-        int i = compoundTag.getShort("RecipesUsedSize");
+        int i = tag.getShort("RecipesUsedSize");
         for (int j = 0; j < i; ++j) {
-            Identifier identifier = new Identifier(compoundTag.getString("RecipeLocation" + j));
-            int k = compoundTag.getInt("RecipeAmount" + j);
+            Identifier identifier = new Identifier(tag.getString("RecipeLocation" + j));
+            int k = tag.getInt("RecipeAmount" + j);
             this.recipesUsed.put(identifier, k);
         }
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag compoundTag) {
-        super.toTag(compoundTag);
-        compoundTag.putShort("BurnTime", (short)this.burnTime);
-        compoundTag.putShort("CookTime", (short)this.cookTime);
-        compoundTag.putShort("CookTimeTotal", (short)this.cookTimeTotal);
-        Inventories.toTag(compoundTag, this.inventory);
-        compoundTag.putShort("RecipesUsedSize", (short)this.recipesUsed.size());
+    public CompoundTag toTag(CompoundTag tag) {
+        super.toTag(tag);
+        tag.putShort("BurnTime", (short)this.burnTime);
+        tag.putShort("CookTime", (short)this.cookTime);
+        tag.putShort("CookTimeTotal", (short)this.cookTimeTotal);
+        Inventories.toTag(tag, this.inventory);
+        tag.putShort("RecipesUsedSize", (short)this.recipesUsed.size());
         int i = 0;
         for (Map.Entry<Identifier, Integer> entry : this.recipesUsed.entrySet()) {
-            compoundTag.putString("RecipeLocation" + i, entry.getKey().toString());
-            compoundTag.putInt("RecipeAmount" + i, entry.getValue());
+            tag.putString("RecipeLocation" + i, entry.getKey().toString());
+            tag.putInt("RecipeAmount" + i, entry.getValue());
             ++i;
         }
-        return compoundTag;
+        return tag;
     }
 
     @Override
@@ -312,11 +312,11 @@ Tickable {
         itemStack.decrement(1);
     }
 
-    protected int getFuelTime(ItemStack itemStack) {
-        if (itemStack.isEmpty()) {
+    protected int getFuelTime(ItemStack fuel) {
+        if (fuel.isEmpty()) {
             return 0;
         }
-        Item item = itemStack.getItem();
+        Item item = fuel.getItem();
         return AbstractFurnaceBlockEntity.createFuelTimeMap().getOrDefault(item, 0);
     }
 
@@ -324,30 +324,30 @@ Tickable {
         return this.world.getRecipeManager().getFirstMatch(this.recipeType, this, this.world).map(AbstractCookingRecipe::getCookTime).orElse(200);
     }
 
-    public static boolean canUseAsFuel(ItemStack itemStack) {
-        return AbstractFurnaceBlockEntity.createFuelTimeMap().containsKey(itemStack.getItem());
+    public static boolean canUseAsFuel(ItemStack stack) {
+        return AbstractFurnaceBlockEntity.createFuelTimeMap().containsKey(stack.getItem());
     }
 
     @Override
-    public int[] getInvAvailableSlots(Direction direction) {
-        if (direction == Direction.DOWN) {
+    public int[] getInvAvailableSlots(Direction side) {
+        if (side == Direction.DOWN) {
             return BOTTOM_SLOTS;
         }
-        if (direction == Direction.UP) {
+        if (side == Direction.UP) {
             return TOP_SLOTS;
         }
         return SIDE_SLOTS;
     }
 
     @Override
-    public boolean canInsertInvStack(int i, ItemStack itemStack, @Nullable Direction direction) {
-        return this.isValidInvStack(i, itemStack);
+    public boolean canInsertInvStack(int slot, ItemStack stack, @Nullable Direction dir) {
+        return this.isValidInvStack(slot, stack);
     }
 
     @Override
-    public boolean canExtractInvStack(int i, ItemStack itemStack, Direction direction) {
+    public boolean canExtractInvStack(int slot, ItemStack stack, Direction dir) {
         Item item;
-        return direction != Direction.DOWN || i != 1 || (item = itemStack.getItem()) == Items.WATER_BUCKET || item == Items.BUCKET;
+        return dir != Direction.DOWN || slot != 1 || (item = stack.getItem()) == Items.WATER_BUCKET || item == Items.BUCKET;
     }
 
     @Override
@@ -365,29 +365,29 @@ Tickable {
     }
 
     @Override
-    public ItemStack getInvStack(int i) {
-        return this.inventory.get(i);
+    public ItemStack getInvStack(int slot) {
+        return this.inventory.get(slot);
     }
 
     @Override
-    public ItemStack takeInvStack(int i, int j) {
-        return Inventories.splitStack(this.inventory, i, j);
+    public ItemStack takeInvStack(int slot, int amount) {
+        return Inventories.splitStack(this.inventory, slot, amount);
     }
 
     @Override
-    public ItemStack removeInvStack(int i) {
-        return Inventories.removeStack(this.inventory, i);
+    public ItemStack removeInvStack(int slot) {
+        return Inventories.removeStack(this.inventory, slot);
     }
 
     @Override
-    public void setInvStack(int i, ItemStack itemStack) {
-        ItemStack itemStack2 = this.inventory.get(i);
-        boolean bl = !itemStack.isEmpty() && itemStack.isItemEqualIgnoreDamage(itemStack2) && ItemStack.areTagsEqual(itemStack, itemStack2);
-        this.inventory.set(i, itemStack);
-        if (itemStack.getCount() > this.getInvMaxStackAmount()) {
-            itemStack.setCount(this.getInvMaxStackAmount());
+    public void setInvStack(int slot, ItemStack stack) {
+        ItemStack itemStack = this.inventory.get(slot);
+        boolean bl = !stack.isEmpty() && stack.isItemEqualIgnoreDamage(itemStack) && ItemStack.areTagsEqual(stack, itemStack);
+        this.inventory.set(slot, stack);
+        if (stack.getCount() > this.getInvMaxStackAmount()) {
+            stack.setCount(this.getInvMaxStackAmount());
         }
-        if (i == 0 && !bl) {
+        if (slot == 0 && !bl) {
             this.cookTimeTotal = this.getCookTime();
             this.cookTime = 0;
             this.markDirty();
@@ -395,21 +395,21 @@ Tickable {
     }
 
     @Override
-    public boolean canPlayerUseInv(PlayerEntity playerEntity) {
+    public boolean canPlayerUseInv(PlayerEntity player) {
         if (this.world.getBlockEntity(this.pos) != this) {
             return false;
         }
-        return playerEntity.squaredDistanceTo((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5) <= 64.0;
+        return player.squaredDistanceTo((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5) <= 64.0;
     }
 
     @Override
-    public boolean isValidInvStack(int i, ItemStack itemStack) {
-        if (i == 2) {
+    public boolean isValidInvStack(int slot, ItemStack stack) {
+        if (slot == 2) {
             return false;
         }
-        if (i == 1) {
-            ItemStack itemStack2 = this.inventory.get(1);
-            return AbstractFurnaceBlockEntity.canUseAsFuel(itemStack) || itemStack.getItem() == Items.BUCKET && itemStack2.getItem() != Items.BUCKET;
+        if (slot == 1) {
+            ItemStack itemStack = this.inventory.get(1);
+            return AbstractFurnaceBlockEntity.canUseAsFuel(stack) || stack.getItem() == Items.BUCKET && itemStack.getItem() != Items.BUCKET;
         }
         return true;
     }
@@ -433,36 +433,36 @@ Tickable {
     }
 
     @Override
-    public void unlockLastRecipe(PlayerEntity playerEntity) {
+    public void unlockLastRecipe(PlayerEntity player) {
     }
 
-    public void dropExperience(PlayerEntity playerEntity) {
+    public void dropExperience(PlayerEntity player) {
         ArrayList<Recipe<?>> list = Lists.newArrayList();
         for (Map.Entry<Identifier, Integer> entry : this.recipesUsed.entrySet()) {
-            playerEntity.world.getRecipeManager().get(entry.getKey()).ifPresent(recipe -> {
+            player.world.getRecipeManager().get(entry.getKey()).ifPresent(recipe -> {
                 list.add((Recipe<?>)recipe);
-                AbstractFurnaceBlockEntity.dropExperience(playerEntity, (Integer)entry.getValue(), ((AbstractCookingRecipe)recipe).getExperience());
+                AbstractFurnaceBlockEntity.dropExperience(player, (Integer)entry.getValue(), ((AbstractCookingRecipe)recipe).getExperience());
             });
         }
-        playerEntity.unlockRecipes(list);
+        player.unlockRecipes(list);
         this.recipesUsed.clear();
     }
 
-    private static void dropExperience(PlayerEntity playerEntity, int i, float f) {
-        int j;
-        if (f == 0.0f) {
-            i = 0;
-        } else if (f < 1.0f) {
-            j = MathHelper.floor((float)i * f);
-            if (j < MathHelper.ceil((float)i * f) && Math.random() < (double)((float)i * f - (float)j)) {
-                ++j;
+    private static void dropExperience(PlayerEntity player, int totalExperience, float experienceFraction) {
+        int i;
+        if (experienceFraction == 0.0f) {
+            totalExperience = 0;
+        } else if (experienceFraction < 1.0f) {
+            i = MathHelper.floor((float)totalExperience * experienceFraction);
+            if (i < MathHelper.ceil((float)totalExperience * experienceFraction) && Math.random() < (double)((float)totalExperience * experienceFraction - (float)i)) {
+                ++i;
             }
-            i = j;
+            totalExperience = i;
         }
-        while (i > 0) {
-            j = ExperienceOrbEntity.roundToOrbSize(i);
-            i -= j;
-            playerEntity.world.spawnEntity(new ExperienceOrbEntity(playerEntity.world, playerEntity.getX(), playerEntity.getY() + 0.5, playerEntity.getZ() + 0.5, j));
+        while (totalExperience > 0) {
+            i = ExperienceOrbEntity.roundToOrbSize(totalExperience);
+            totalExperience -= i;
+            player.world.spawnEntity(new ExperienceOrbEntity(player.world, player.getX(), player.getY() + 0.5, player.getZ() + 0.5, i));
         }
     }
 

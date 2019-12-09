@@ -17,8 +17,8 @@ import net.minecraft.world.gen.feature.MegaTreeFeatureConfig;
 
 public class DarkOakTreeFeature
 extends AbstractTreeFeature<MegaTreeFeatureConfig> {
-    public DarkOakTreeFeature(Function<Dynamic<?>, ? extends MegaTreeFeatureConfig> function) {
-        super(function);
+    public DarkOakTreeFeature(Function<Dynamic<?>, ? extends MegaTreeFeatureConfig> configFactory) {
+        super(configFactory);
     }
 
     @Override
@@ -114,22 +114,22 @@ extends AbstractTreeFeature<MegaTreeFeatureConfig> {
         return true;
     }
 
-    private boolean doesTreeFit(TestableWorld testableWorld, BlockPos blockPos, int i) {
-        int j = blockPos.getX();
-        int k = blockPos.getY();
-        int l = blockPos.getZ();
+    private boolean doesTreeFit(TestableWorld world, BlockPos pos, int treeHeight) {
+        int i = pos.getX();
+        int j = pos.getY();
+        int k = pos.getZ();
         BlockPos.Mutable mutable = new BlockPos.Mutable();
-        for (int m = 0; m <= i + 1; ++m) {
-            int n = 1;
-            if (m == 0) {
-                n = 0;
+        for (int l = 0; l <= treeHeight + 1; ++l) {
+            int m = 1;
+            if (l == 0) {
+                m = 0;
             }
-            if (m >= i - 1) {
-                n = 2;
+            if (l >= treeHeight - 1) {
+                m = 2;
             }
-            for (int o = -n; o <= n; ++o) {
-                for (int p = -n; p <= n; ++p) {
-                    if (DarkOakTreeFeature.canTreeReplace(testableWorld, mutable.set(j + o, k + m, l + p))) continue;
+            for (int n = -m; n <= m; ++n) {
+                for (int o = -m; o <= m; ++o) {
+                    if (DarkOakTreeFeature.canTreeReplace(world, mutable.set(i + n, j + l, k + o))) continue;
                     return false;
                 }
             }

@@ -32,16 +32,16 @@ implements DynamicSerializable {
     private final boolean hasSkyLight;
     private final BiomeAccessType biomeAccessType;
 
-    private static DimensionType register(String string, DimensionType dimensionType) {
-        return Registry.register(Registry.DIMENSION, dimensionType.id, string, dimensionType);
+    private static DimensionType register(String id, DimensionType dimension) {
+        return Registry.register(Registry.DIMENSION, dimension.id, id, dimension);
     }
 
-    protected DimensionType(int i, String string, String string2, BiFunction<World, DimensionType, ? extends Dimension> biFunction, boolean bl, BiomeAccessType biomeAccessType) {
-        this.id = i;
-        this.suffix = string;
-        this.saveDir = string2;
-        this.factory = biFunction;
-        this.hasSkyLight = bl;
+    protected DimensionType(int dimensionId, String suffix, String saveDir, BiFunction<World, DimensionType, ? extends Dimension> factory, boolean hasSkylight, BiomeAccessType biomeAccessType) {
+        this.id = dimensionId;
+        this.suffix = suffix;
+        this.saveDir = saveDir;
+        this.factory = factory;
+        this.hasSkyLight = hasSkylight;
         this.biomeAccessType = biomeAccessType;
     }
 
@@ -61,11 +61,11 @@ implements DynamicSerializable {
         return this.suffix;
     }
 
-    public File getSaveDirectory(File file) {
+    public File getSaveDirectory(File root) {
         if (this.saveDir.isEmpty()) {
-            return file;
+            return root;
         }
-        return new File(file, this.saveDir);
+        return new File(root, this.saveDir);
     }
 
     public Dimension create(World world) {
@@ -100,8 +100,8 @@ implements DynamicSerializable {
     }
 
     @Override
-    public <T> T serialize(DynamicOps<T> dynamicOps) {
-        return dynamicOps.createString(Registry.DIMENSION.getId(this).toString());
+    public <T> T serialize(DynamicOps<T> ops) {
+        return ops.createString(Registry.DIMENSION.getId(this).toString());
     }
 }
 

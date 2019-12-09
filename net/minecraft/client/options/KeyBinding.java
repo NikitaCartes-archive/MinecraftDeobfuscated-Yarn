@@ -45,10 +45,10 @@ implements Comparable<KeyBinding> {
         }
     }
 
-    public static void setKeyPressed(InputUtil.KeyCode keyCode, boolean bl) {
-        KeyBinding keyBinding = keysByCode.get(keyCode);
+    public static void setKeyPressed(InputUtil.KeyCode key, boolean pressed) {
+        KeyBinding keyBinding = keysByCode.get(key);
         if (keyBinding != null) {
-            keyBinding.setPressed(bl);
+            keyBinding.setPressed(pressed);
         }
     }
 
@@ -72,17 +72,17 @@ implements Comparable<KeyBinding> {
         }
     }
 
-    public KeyBinding(String string, int i, String string2) {
-        this(string, InputUtil.Type.KEYSYM, i, string2);
+    public KeyBinding(String id, int keyCode, String category) {
+        this(id, InputUtil.Type.KEYSYM, keyCode, category);
     }
 
-    public KeyBinding(String string, InputUtil.Type type, int i, String string2) {
-        this.id = string;
-        this.defaultKeyCode = this.keyCode = type.createFromCode(i);
-        this.category = string2;
-        keysById.put(string, this);
+    public KeyBinding(String id, InputUtil.Type type, int code, String category) {
+        this.id = id;
+        this.defaultKeyCode = this.keyCode = type.createFromCode(code);
+        this.category = category;
+        keysById.put(id, this);
         keysByCode.put(this.keyCode, this);
-        keyCategories.add(string2);
+        keyCategories.add(category);
     }
 
     public boolean isPressed() {
@@ -126,10 +126,10 @@ implements Comparable<KeyBinding> {
         return categoryOrderMap.get(this.category).compareTo(categoryOrderMap.get(keyBinding.category));
     }
 
-    public static Supplier<String> getLocalizedName(String string) {
-        KeyBinding keyBinding = keysById.get(string);
+    public static Supplier<String> getLocalizedName(String id) {
+        KeyBinding keyBinding = keysById.get(id);
         if (keyBinding == null) {
-            return () -> string;
+            return () -> id;
         }
         return keyBinding::getLocalizedName;
     }
@@ -142,15 +142,15 @@ implements Comparable<KeyBinding> {
         return this.keyCode.equals(InputUtil.UNKNOWN_KEYCODE);
     }
 
-    public boolean matchesKey(int i, int j) {
-        if (i == InputUtil.UNKNOWN_KEYCODE.getKeyCode()) {
-            return this.keyCode.getCategory() == InputUtil.Type.SCANCODE && this.keyCode.getKeyCode() == j;
+    public boolean matchesKey(int keyCode, int scanCode) {
+        if (keyCode == InputUtil.UNKNOWN_KEYCODE.getKeyCode()) {
+            return this.keyCode.getCategory() == InputUtil.Type.SCANCODE && this.keyCode.getKeyCode() == scanCode;
         }
-        return this.keyCode.getCategory() == InputUtil.Type.KEYSYM && this.keyCode.getKeyCode() == i;
+        return this.keyCode.getCategory() == InputUtil.Type.KEYSYM && this.keyCode.getKeyCode() == keyCode;
     }
 
-    public boolean matchesMouse(int i) {
-        return this.keyCode.getCategory() == InputUtil.Type.MOUSE && this.keyCode.getKeyCode() == i;
+    public boolean matchesMouse(int code) {
+        return this.keyCode.getCategory() == InputUtil.Type.MOUSE && this.keyCode.getKeyCode() == code;
     }
 
     public String getLocalizedName() {
@@ -182,8 +182,8 @@ implements Comparable<KeyBinding> {
         return this.keyCode.getName();
     }
 
-    public void setPressed(boolean bl) {
-        this.pressed = bl;
+    public void setPressed(boolean pressed) {
+        this.pressed = pressed;
     }
 
     @Override

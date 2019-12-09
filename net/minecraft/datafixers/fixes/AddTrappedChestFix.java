@@ -29,8 +29,8 @@ public class AddTrappedChestFix
 extends DataFix {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public AddTrappedChestFix(Schema schema, boolean bl) {
-        super(schema, bl);
+    public AddTrappedChestFix(Schema outputSchema, boolean changesType) {
+        super(outputSchema, changesType);
     }
 
     @Override
@@ -111,8 +111,8 @@ extends DataFix {
             return this.targets.isEmpty();
         }
 
-        public boolean isTarget(int i) {
-            return this.targets.contains(i);
+        public boolean isTarget(int index) {
+            return this.targets.contains(index);
         }
     }
 }

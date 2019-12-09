@@ -24,35 +24,35 @@ public class Transformation {
     public final Vector3f translation;
     public final Vector3f scale;
 
-    public Transformation(Vector3f vector3f, Vector3f vector3f2, Vector3f vector3f3) {
-        this.rotation = vector3f.copy();
-        this.translation = vector3f2.copy();
-        this.scale = vector3f3.copy();
+    public Transformation(Vector3f rotation, Vector3f translation, Vector3f scale) {
+        this.rotation = rotation.copy();
+        this.translation = translation.copy();
+        this.scale = scale.copy();
     }
 
-    public void apply(boolean bl, MatrixStack matrixStack) {
+    public void apply(boolean leftHanded, MatrixStack matrices) {
         if (this == NONE) {
             return;
         }
         float f = this.rotation.getX();
         float g = this.rotation.getY();
         float h = this.rotation.getZ();
-        if (bl) {
+        if (leftHanded) {
             g = -g;
             h = -h;
         }
-        int i = bl ? -1 : 1;
-        matrixStack.translate((float)i * this.translation.getX(), this.translation.getY(), this.translation.getZ());
-        matrixStack.multiply(new Quaternion(f, g, h, true));
-        matrixStack.scale(this.scale.getX(), this.scale.getY(), this.scale.getZ());
+        int i = leftHanded ? -1 : 1;
+        matrices.translate((float)i * this.translation.getX(), this.translation.getY(), this.translation.getZ());
+        matrices.multiply(new Quaternion(f, g, h, true));
+        matrices.scale(this.scale.getX(), this.scale.getY(), this.scale.getZ());
     }
 
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (this.getClass() == object.getClass()) {
-            Transformation transformation = (Transformation)object;
+        if (this.getClass() == o.getClass()) {
+            Transformation transformation = (Transformation)o;
             return this.rotation.equals(transformation.rotation) && this.scale.equals(transformation.scale) && this.translation.equals(transformation.translation);
         }
         return false;
@@ -87,24 +87,24 @@ public class Transformation {
             return new Transformation(vector3f, vector3f2, vector3f3);
         }
 
-        private Vector3f parseVector3f(JsonObject jsonObject, String string, Vector3f vector3f) {
-            if (!jsonObject.has(string)) {
-                return vector3f;
+        private Vector3f parseVector3f(JsonObject json, String key, Vector3f fallback) {
+            if (!json.has(key)) {
+                return fallback;
             }
-            JsonArray jsonArray = JsonHelper.getArray(jsonObject, string);
+            JsonArray jsonArray = JsonHelper.getArray(json, key);
             if (jsonArray.size() != 3) {
-                throw new JsonParseException("Expected 3 " + string + " values, found: " + jsonArray.size());
+                throw new JsonParseException("Expected 3 " + key + " values, found: " + jsonArray.size());
             }
             float[] fs = new float[3];
             for (int i = 0; i < fs.length; ++i) {
-                fs[i] = JsonHelper.asFloat(jsonArray.get(i), string + "[" + i + "]");
+                fs[i] = JsonHelper.asFloat(jsonArray.get(i), key + "[" + i + "]");
             }
             return new Vector3f(fs[0], fs[1], fs[2]);
         }
 
         @Override
-        public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.deserialize(jsonElement, type, jsonDeserializationContext);
+        public /* synthetic */ Object deserialize(JsonElement functionJson, Type unused, JsonDeserializationContext context) throws JsonParseException {
+            return this.deserialize(functionJson, unused, context);
         }
     }
 }

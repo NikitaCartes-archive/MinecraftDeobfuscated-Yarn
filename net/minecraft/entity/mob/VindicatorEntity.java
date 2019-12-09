@@ -99,10 +99,10 @@ extends IllagerEntity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag compoundTag) {
-        super.writeCustomDataToTag(compoundTag);
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
         if (this.isJohnny) {
-            compoundTag.putBoolean("Johnny", true);
+            tag.putBoolean("Johnny", true);
         }
     }
 
@@ -119,10 +119,10 @@ extends IllagerEntity {
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag compoundTag) {
-        super.readCustomDataFromTag(compoundTag);
-        if (compoundTag.contains("Johnny", 99)) {
-            this.isJohnny = compoundTag.getBoolean("Johnny");
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        if (tag.contains("Johnny", 99)) {
+            this.isJohnny = tag.getBoolean("Johnny");
         }
     }
 
@@ -133,36 +133,36 @@ extends IllagerEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag) {
-        EntityData entityData2 = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+        EntityData entityData2 = super.initialize(world, difficulty, spawnType, entityData, entityTag);
         ((MobNavigation)this.getNavigation()).setCanPathThroughDoors(true);
-        this.initEquipment(localDifficulty);
-        this.updateEnchantments(localDifficulty);
+        this.initEquipment(difficulty);
+        this.updateEnchantments(difficulty);
         return entityData2;
     }
 
     @Override
-    protected void initEquipment(LocalDifficulty localDifficulty) {
+    protected void initEquipment(LocalDifficulty difficulty) {
         if (this.getRaid() == null) {
             this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_AXE));
         }
     }
 
     @Override
-    public boolean isTeammate(Entity entity) {
-        if (super.isTeammate(entity)) {
+    public boolean isTeammate(Entity other) {
+        if (super.isTeammate(other)) {
             return true;
         }
-        if (entity instanceof LivingEntity && ((LivingEntity)entity).getGroup() == EntityGroup.ILLAGER) {
-            return this.getScoreboardTeam() == null && entity.getScoreboardTeam() == null;
+        if (other instanceof LivingEntity && ((LivingEntity)other).getGroup() == EntityGroup.ILLAGER) {
+            return this.getScoreboardTeam() == null && other.getScoreboardTeam() == null;
         }
         return false;
     }
 
     @Override
-    public void setCustomName(@Nullable Text text) {
-        super.setCustomName(text);
-        if (!this.isJohnny && text != null && text.getString().equals("Johnny")) {
+    public void setCustomName(@Nullable Text name) {
+        super.setCustomName(name);
+        if (!this.isJohnny && name != null && name.getString().equals("Johnny")) {
             this.isJohnny = true;
         }
     }
@@ -178,23 +178,23 @@ extends IllagerEntity {
     }
 
     @Override
-    protected SoundEvent getHurtSound(DamageSource damageSource) {
+    protected SoundEvent getHurtSound(DamageSource source) {
         return SoundEvents.ENTITY_VINDICATOR_HURT;
     }
 
     @Override
-    public void addBonusForWave(int i, boolean bl) {
-        boolean bl2;
+    public void addBonusForWave(int wave, boolean unused) {
+        boolean bl;
         ItemStack itemStack = new ItemStack(Items.IRON_AXE);
         Raid raid = this.getRaid();
-        int j = 1;
-        if (i > raid.getMaxWaves(Difficulty.NORMAL)) {
-            j = 2;
+        int i = 1;
+        if (wave > raid.getMaxWaves(Difficulty.NORMAL)) {
+            i = 2;
         }
-        boolean bl3 = bl2 = this.random.nextFloat() <= raid.getEnchantmentChance();
-        if (bl2) {
+        boolean bl2 = bl = this.random.nextFloat() <= raid.getEnchantmentChance();
+        if (bl) {
             HashMap<Enchantment, Integer> map = Maps.newHashMap();
-            map.put(Enchantments.SHARPNESS, j);
+            map.put(Enchantments.SHARPNESS, i);
             EnchantmentHelper.set(map, itemStack);
         }
         this.equipStack(EquipmentSlot.MAINHAND, itemStack);
@@ -202,8 +202,8 @@ extends IllagerEntity {
 
     static class FollowEntityGoal
     extends FollowTargetGoal<LivingEntity> {
-        public FollowEntityGoal(VindicatorEntity vindicatorEntity) {
-            super(vindicatorEntity, LivingEntity.class, 0, true, true, LivingEntity::method_6102);
+        public FollowEntityGoal(VindicatorEntity vindicator) {
+            super(vindicator, LivingEntity.class, 0, true, true, LivingEntity::method_6102);
         }
 
         @Override
@@ -246,17 +246,17 @@ extends IllagerEntity {
 
     class AttackGoal
     extends MeleeAttackGoal {
-        public AttackGoal(VindicatorEntity vindicatorEntity2) {
-            super(vindicatorEntity2, 1.0, false);
+        public AttackGoal(VindicatorEntity vindicator) {
+            super(vindicator, 1.0, false);
         }
 
         @Override
-        protected double getSquaredMaxAttackDistance(LivingEntity livingEntity) {
+        protected double getSquaredMaxAttackDistance(LivingEntity entity) {
             if (this.mob.getVehicle() instanceof RavagerEntity) {
                 float f = this.mob.getVehicle().getWidth() - 0.1f;
-                return f * 2.0f * (f * 2.0f) + livingEntity.getWidth();
+                return f * 2.0f * (f * 2.0f) + entity.getWidth();
             }
-            return super.getSquaredMaxAttackDistance(livingEntity);
+            return super.getSquaredMaxAttackDistance(entity);
         }
     }
 }

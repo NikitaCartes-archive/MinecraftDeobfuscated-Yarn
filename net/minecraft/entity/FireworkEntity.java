@@ -62,48 +62,48 @@ Projectile {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean shouldRender(double d) {
-        return d < 4096.0 && !this.wasShotByEntity();
+    public boolean shouldRender(double distance) {
+        return distance < 4096.0 && !this.wasShotByEntity();
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean shouldRender(double d, double e, double f) {
-        return super.shouldRender(d, e, f) && !this.wasShotByEntity();
+    public boolean shouldRender(double cameraX, double cameraY, double cameraZ) {
+        return super.shouldRender(cameraX, cameraY, cameraZ) && !this.wasShotByEntity();
     }
 
-    public FireworkEntity(World world, double d, double e, double f, ItemStack itemStack) {
+    public FireworkEntity(World world, double x, double y, double z, ItemStack item) {
         super(EntityType.FIREWORK_ROCKET, world);
         this.life = 0;
-        this.setPosition(d, e, f);
+        this.setPosition(x, y, z);
         int i = 1;
-        if (!itemStack.isEmpty() && itemStack.hasTag()) {
-            this.dataTracker.set(ITEM, itemStack.copy());
-            i += itemStack.getOrCreateSubTag("Fireworks").getByte("Flight");
+        if (!item.isEmpty() && item.hasTag()) {
+            this.dataTracker.set(ITEM, item.copy());
+            i += item.getOrCreateSubTag("Fireworks").getByte("Flight");
         }
         this.setVelocity(this.random.nextGaussian() * 0.001, 0.05, this.random.nextGaussian() * 0.001);
         this.lifeTime = 10 * i + this.random.nextInt(6) + this.random.nextInt(7);
     }
 
-    public FireworkEntity(World world, ItemStack itemStack, LivingEntity livingEntity) {
-        this(world, livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), itemStack);
-        this.dataTracker.set(SHOOTER_ENTITY_ID, OptionalInt.of(livingEntity.getEntityId()));
-        this.shooter = livingEntity;
+    public FireworkEntity(World world, ItemStack item, LivingEntity shooter) {
+        this(world, shooter.getX(), shooter.getY(), shooter.getZ(), item);
+        this.dataTracker.set(SHOOTER_ENTITY_ID, OptionalInt.of(shooter.getEntityId()));
+        this.shooter = shooter;
     }
 
-    public FireworkEntity(World world, ItemStack itemStack, double d, double e, double f, boolean bl) {
-        this(world, d, e, f, itemStack);
-        this.dataTracker.set(SHOT_AT_ANGLE, bl);
+    public FireworkEntity(World world, ItemStack item, double x, double y, double z, boolean shotAtAngle) {
+        this(world, x, y, z, item);
+        this.dataTracker.set(SHOT_AT_ANGLE, shotAtAngle);
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void setVelocityClient(double d, double e, double f) {
-        this.setVelocity(d, e, f);
+    public void setVelocityClient(double x, double y, double z) {
+        this.setVelocity(x, y, z);
         if (this.prevPitch == 0.0f && this.prevYaw == 0.0f) {
-            float g = MathHelper.sqrt(d * d + f * f);
-            this.yaw = (float)(MathHelper.atan2(d, f) * 57.2957763671875);
-            this.pitch = (float)(MathHelper.atan2(e, g) * 57.2957763671875);
+            float f = MathHelper.sqrt(x * x + z * z);
+            this.yaw = (float)(MathHelper.atan2(x, z) * 57.2957763671875);
+            this.pitch = (float)(MathHelper.atan2(y, f) * 57.2957763671875);
             this.prevYaw = this.yaw;
             this.prevPitch = this.pitch;
         }
@@ -242,8 +242,8 @@ Projectile {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void handleStatus(byte b) {
-        if (b == 17 && this.world.isClient) {
+    public void handleStatus(byte status) {
+        if (status == 17 && this.world.isClient) {
             if (!this.hasExplosionEffects()) {
                 for (int i = 0; i < this.random.nextInt(3) + 2; ++i) {
                     this.world.addParticle(ParticleTypes.POOF, this.getX(), this.getY(), this.getZ(), this.random.nextGaussian() * 0.05, 0.005, this.random.nextGaussian() * 0.05);
@@ -255,30 +255,30 @@ Projectile {
                 this.world.addFireworkParticle(this.getX(), this.getY(), this.getZ(), vec3d.x, vec3d.y, vec3d.z, compoundTag);
             }
         }
-        super.handleStatus(b);
+        super.handleStatus(status);
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag compoundTag) {
-        compoundTag.putInt("Life", this.life);
-        compoundTag.putInt("LifeTime", this.lifeTime);
+    public void writeCustomDataToTag(CompoundTag tag) {
+        tag.putInt("Life", this.life);
+        tag.putInt("LifeTime", this.lifeTime);
         ItemStack itemStack = this.dataTracker.get(ITEM);
         if (!itemStack.isEmpty()) {
-            compoundTag.put("FireworksItem", itemStack.toTag(new CompoundTag()));
+            tag.put("FireworksItem", itemStack.toTag(new CompoundTag()));
         }
-        compoundTag.putBoolean("ShotAtAngle", this.dataTracker.get(SHOT_AT_ANGLE));
+        tag.putBoolean("ShotAtAngle", this.dataTracker.get(SHOT_AT_ANGLE));
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag compoundTag) {
-        this.life = compoundTag.getInt("Life");
-        this.lifeTime = compoundTag.getInt("LifeTime");
-        ItemStack itemStack = ItemStack.fromTag(compoundTag.getCompound("FireworksItem"));
+    public void readCustomDataFromTag(CompoundTag tag) {
+        this.life = tag.getInt("Life");
+        this.lifeTime = tag.getInt("LifeTime");
+        ItemStack itemStack = ItemStack.fromTag(tag.getCompound("FireworksItem"));
         if (!itemStack.isEmpty()) {
             this.dataTracker.set(ITEM, itemStack);
         }
-        if (compoundTag.contains("ShotAtAngle")) {
-            this.dataTracker.set(SHOT_AT_ANGLE, compoundTag.getBoolean("ShotAtAngle"));
+        if (tag.contains("ShotAtAngle")) {
+            this.dataTracker.set(SHOT_AT_ANGLE, tag.getBoolean("ShotAtAngle"));
         }
     }
 
@@ -300,15 +300,15 @@ Projectile {
     }
 
     @Override
-    public void setVelocity(double d, double e, double f, float g, float h) {
-        float i = MathHelper.sqrt(d * d + e * e + f * f);
-        d /= (double)i;
-        e /= (double)i;
-        f /= (double)i;
-        d += this.random.nextGaussian() * (double)0.0075f * (double)h;
-        e += this.random.nextGaussian() * (double)0.0075f * (double)h;
-        f += this.random.nextGaussian() * (double)0.0075f * (double)h;
-        this.setVelocity(d *= (double)g, e *= (double)g, f *= (double)g);
+    public void setVelocity(double x, double y, double z, float speed, float divergence) {
+        float f = MathHelper.sqrt(x * x + y * y + z * z);
+        x /= (double)f;
+        y /= (double)f;
+        z /= (double)f;
+        x += this.random.nextGaussian() * (double)0.0075f * (double)divergence;
+        y += this.random.nextGaussian() * (double)0.0075f * (double)divergence;
+        z += this.random.nextGaussian() * (double)0.0075f * (double)divergence;
+        this.setVelocity(x *= (double)speed, y *= (double)speed, z *= (double)speed);
     }
 }
 

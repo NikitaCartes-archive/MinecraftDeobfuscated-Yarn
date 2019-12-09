@@ -30,7 +30,7 @@ extends Fluid {
     }
 
     @Override
-    public Vec3d getVelocity(BlockView blockView, BlockPos blockPos, FluidState fluidState) {
+    public Vec3d getVelocity(BlockView world, BlockPos pos, FluidState state) {
         return Vec3d.ZERO;
     }
 

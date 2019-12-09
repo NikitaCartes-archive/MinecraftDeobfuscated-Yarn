@@ -19,31 +19,31 @@ import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 
 public class CoralTreeFeature
 extends CoralFeature {
-    public CoralTreeFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-        super(function);
+    public CoralTreeFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
+        super(configFactory);
     }
 
     @Override
-    protected boolean spawnCoral(IWorld iWorld, Random random, BlockPos blockPos, BlockState blockState) {
-        BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos);
+    protected boolean spawnCoral(IWorld world, Random random, BlockPos pos, BlockState state) {
+        BlockPos.Mutable mutable = new BlockPos.Mutable(pos);
         int i = random.nextInt(3) + 1;
         for (int j = 0; j < i; ++j) {
-            if (!this.spawnCoralPiece(iWorld, random, mutable, blockState)) {
+            if (!this.spawnCoralPiece(world, random, mutable, state)) {
                 return true;
             }
             mutable.setOffset(Direction.UP);
         }
-        BlockPos blockPos2 = mutable.toImmutable();
+        BlockPos blockPos = mutable.toImmutable();
         int k = random.nextInt(3) + 2;
         ArrayList<Direction> list = Lists.newArrayList(Direction.Type.HORIZONTAL);
         Collections.shuffle(list, random);
         List list2 = list.subList(0, k);
         for (Direction direction : list2) {
-            mutable.set(blockPos2);
+            mutable.set(blockPos);
             mutable.setOffset(direction);
             int l = random.nextInt(5) + 2;
             int m = 0;
-            for (int n = 0; n < l && this.spawnCoralPiece(iWorld, random, mutable, blockState); ++n) {
+            for (int n = 0; n < l && this.spawnCoralPiece(world, random, mutable, state); ++n) {
                 mutable.setOffset(Direction.UP);
                 if (n != 0 && (++m < 2 || !(random.nextFloat() < 0.25f))) continue;
                 mutable.setOffset(direction);

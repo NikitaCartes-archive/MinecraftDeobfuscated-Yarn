@@ -28,9 +28,9 @@ implements LootCondition {
     private final Map<String, UniformLootTableRange> scores;
     private final LootContext.EntityTarget target;
 
-    private EntityScoresLootCondition(Map<String, UniformLootTableRange> map, LootContext.EntityTarget entityTarget) {
-        this.scores = ImmutableMap.copyOf(map);
-        this.target = entityTarget;
+    private EntityScoresLootCondition(Map<String, UniformLootTableRange> scores, LootContext.EntityTarget target) {
+        this.scores = ImmutableMap.copyOf(scores);
+        this.target = target;
     }
 
     @Override
@@ -52,21 +52,21 @@ implements LootCondition {
         return true;
     }
 
-    protected boolean entityScoreIsInRange(Entity entity, Scoreboard scoreboard, String string, UniformLootTableRange uniformLootTableRange) {
-        ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective(string);
+    protected boolean entityScoreIsInRange(Entity entity, Scoreboard scoreboard, String objective, UniformLootTableRange scoreRange) {
+        ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective(objective);
         if (scoreboardObjective == null) {
             return false;
         }
-        String string2 = entity.getEntityName();
-        if (!scoreboard.playerHasObjective(string2, scoreboardObjective)) {
+        String string = entity.getEntityName();
+        if (!scoreboard.playerHasObjective(string, scoreboardObjective)) {
             return false;
         }
-        return uniformLootTableRange.contains(scoreboard.getPlayerScore(string2, scoreboardObjective).getScore());
+        return scoreRange.contains(scoreboard.getPlayerScore(string, scoreboardObjective).getScore());
     }
 
     @Override
-    public /* synthetic */ boolean test(Object object) {
-        return this.test((LootContext)object);
+    public /* synthetic */ boolean test(Object context) {
+        return this.test((LootContext)context);
     }
 
     public static class Factory
@@ -96,8 +96,8 @@ implements LootCondition {
         }
 
         @Override
-        public /* synthetic */ LootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            return this.fromJson(jsonObject, jsonDeserializationContext);
+        public /* synthetic */ LootCondition fromJson(JsonObject json, JsonDeserializationContext context) {
+            return this.fromJson(json, context);
         }
     }
 }

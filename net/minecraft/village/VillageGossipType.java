@@ -23,17 +23,17 @@ public enum VillageGossipType {
     public final int shareDecrement;
     private static final Map<String, VillageGossipType> BY_KEY;
 
-    private VillageGossipType(String string2, int j, int k, int l, int m) {
-        this.key = string2;
-        this.multiplier = j;
-        this.maxValue = k;
-        this.decay = l;
-        this.shareDecrement = m;
+    private VillageGossipType(String key, int multiplier, int maxReputation, int decay, int shareDecrement) {
+        this.key = key;
+        this.multiplier = multiplier;
+        this.maxValue = maxReputation;
+        this.decay = decay;
+        this.shareDecrement = shareDecrement;
     }
 
     @Nullable
-    public static VillageGossipType byKey(String string) {
-        return BY_KEY.get(string);
+    public static VillageGossipType byKey(String key) {
+        return BY_KEY.get(key);
     }
 
     static {

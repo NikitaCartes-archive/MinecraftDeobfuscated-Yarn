@@ -43,10 +43,10 @@ extends RealmsScreen {
     private Subscription.SubscriptionType type;
     private final String PURCHASE_LINK = "https://aka.ms/ExtendJavaRealms";
 
-    public RealmsSubscriptionInfoScreen(RealmsScreen realmsScreen, RealmsServer realmsServer, RealmsScreen realmsScreen2) {
-        this.lastScreen = realmsScreen;
-        this.serverData = realmsServer;
-        this.mainScreen = realmsScreen2;
+    public RealmsSubscriptionInfoScreen(RealmsScreen lastScreen, RealmsServer serverData, RealmsScreen mainScreen) {
+        this.lastScreen = lastScreen;
+        this.serverData = serverData;
+        this.mainScreen = mainScreen;
         this.subscriptionTitle = RealmsSubscriptionInfoScreen.getLocalizedString("mco.configure.world.subscription.title");
         this.subscriptionStartLabelText = RealmsSubscriptionInfoScreen.getLocalizedString("mco.configure.world.subscription.start");
         this.timeLeftLabelText = RealmsSubscriptionInfoScreen.getLocalizedString("mco.configure.world.subscription.timeleft");
@@ -87,10 +87,10 @@ extends RealmsScreen {
         }
     }
 
-    private void getSubscription(long l) {
+    private void getSubscription(long worldId) {
         RealmsClient realmsClient = RealmsClient.createRealmsClient();
         try {
-            Subscription subscription = realmsClient.subscriptionFor(l);
+            Subscription subscription = realmsClient.subscriptionFor(worldId);
             this.daysLeft = subscription.daysLeft;
             this.startDate = this.localPresentation(subscription.startDate);
             this.type = subscription.type;
@@ -103,8 +103,8 @@ extends RealmsScreen {
     }
 
     @Override
-    public void confirmResult(boolean bl, int i) {
-        if (i == 1 && bl) {
+    public void confirmResult(boolean result, int id) {
+        if (id == 1 && result) {
             new Thread("Realms-delete-realm"){
 
                 @Override
@@ -126,9 +126,9 @@ extends RealmsScreen {
         Realms.setScreen(this);
     }
 
-    private String localPresentation(long l) {
+    private String localPresentation(long cetTime) {
         GregorianCalendar calendar = new GregorianCalendar(TimeZone.getDefault());
-        calendar.setTimeInMillis(l);
+        calendar.setTimeInMillis(cetTime);
         return DateFormat.getDateTimeInstance().format(calendar.getTime());
     }
 
@@ -138,54 +138,54 @@ extends RealmsScreen {
     }
 
     @Override
-    public boolean keyPressed(int i, int j, int k) {
-        if (i == 256) {
+    public boolean keyPressed(int eventKey, int scancode, int mods) {
+        if (eventKey == 256) {
             Realms.setScreen(this.lastScreen);
             return true;
         }
-        return super.keyPressed(i, j, k);
+        return super.keyPressed(eventKey, scancode, mods);
     }
 
     @Override
-    public void render(int i, int j, float f) {
+    public void render(int xm, int ym, float a) {
         this.renderBackground();
-        int k = this.width() / 2 - 100;
+        int i = this.width() / 2 - 100;
         this.drawCenteredString(this.subscriptionTitle, this.width() / 2, 17, 0xFFFFFF);
-        this.drawString(this.subscriptionStartLabelText, k, RealmsConstants.row(0), 0xA0A0A0);
-        this.drawString(this.startDate, k, RealmsConstants.row(1), 0xFFFFFF);
+        this.drawString(this.subscriptionStartLabelText, i, RealmsConstants.row(0), 0xA0A0A0);
+        this.drawString(this.startDate, i, RealmsConstants.row(1), 0xFFFFFF);
         if (this.type == Subscription.SubscriptionType.NORMAL) {
-            this.drawString(this.timeLeftLabelText, k, RealmsConstants.row(3), 0xA0A0A0);
+            this.drawString(this.timeLeftLabelText, i, RealmsConstants.row(3), 0xA0A0A0);
         } else if (this.type == Subscription.SubscriptionType.RECURRING) {
-            this.drawString(this.daysLeftLabelText, k, RealmsConstants.row(3), 0xA0A0A0);
+            this.drawString(this.daysLeftLabelText, i, RealmsConstants.row(3), 0xA0A0A0);
         }
-        this.drawString(this.daysLeftPresentation(this.daysLeft), k, RealmsConstants.row(4), 0xFFFFFF);
-        super.render(i, j, f);
+        this.drawString(this.daysLeftPresentation(this.daysLeft), i, RealmsConstants.row(4), 0xFFFFFF);
+        super.render(xm, ym, a);
     }
 
-    private String daysLeftPresentation(int i) {
-        if (i == -1 && this.serverData.expired) {
+    private String daysLeftPresentation(int daysLeft) {
+        if (daysLeft == -1 && this.serverData.expired) {
             return RealmsSubscriptionInfoScreen.getLocalizedString("mco.configure.world.subscription.expired");
         }
-        if (i <= 1) {
+        if (daysLeft <= 1) {
             return RealmsSubscriptionInfoScreen.getLocalizedString("mco.configure.world.subscription.less_than_a_day");
         }
-        int j = i / 30;
-        int k = i % 30;
+        int i = daysLeft / 30;
+        int j = daysLeft % 30;
         StringBuilder stringBuilder = new StringBuilder();
-        if (j > 0) {
-            stringBuilder.append(j).append(" ");
-            if (j == 1) {
+        if (i > 0) {
+            stringBuilder.append(i).append(" ");
+            if (i == 1) {
                 stringBuilder.append(RealmsSubscriptionInfoScreen.getLocalizedString("mco.configure.world.subscription.month").toLowerCase(Locale.ROOT));
             } else {
                 stringBuilder.append(RealmsSubscriptionInfoScreen.getLocalizedString("mco.configure.world.subscription.months").toLowerCase(Locale.ROOT));
             }
         }
-        if (k > 0) {
+        if (j > 0) {
             if (stringBuilder.length() > 0) {
                 stringBuilder.append(", ");
             }
-            stringBuilder.append(k).append(" ");
-            if (k == 1) {
+            stringBuilder.append(j).append(" ");
+            if (j == 1) {
                 stringBuilder.append(RealmsSubscriptionInfoScreen.getLocalizedString("mco.configure.world.subscription.day").toLowerCase(Locale.ROOT));
             } else {
                 stringBuilder.append(RealmsSubscriptionInfoScreen.getLocalizedString("mco.configure.world.subscription.days").toLowerCase(Locale.ROOT));

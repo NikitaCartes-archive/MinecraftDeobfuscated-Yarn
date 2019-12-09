@@ -40,24 +40,24 @@ implements Nameable {
         super(BlockEntityType.BANNER);
     }
 
-    public BannerBlockEntity(DyeColor dyeColor) {
+    public BannerBlockEntity(DyeColor baseColor) {
         this();
-        this.baseColor = dyeColor;
+        this.baseColor = baseColor;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void readFrom(ItemStack itemStack, DyeColor dyeColor) {
+    public void readFrom(ItemStack stack, DyeColor baseColor) {
         this.patternListTag = null;
-        CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
+        CompoundTag compoundTag = stack.getSubTag("BlockEntityTag");
         if (compoundTag != null && compoundTag.contains("Patterns", 9)) {
             this.patternListTag = compoundTag.getList("Patterns", 10).copy();
         }
-        this.baseColor = dyeColor;
+        this.baseColor = baseColor;
         this.patterns = null;
         this.patternColors = null;
         this.patternCacheKey = "";
         this.patternListTagRead = true;
-        this.customName = itemStack.hasCustomName() ? itemStack.getName() : null;
+        this.customName = stack.hasCustomName() ? stack.getName() : null;
     }
 
     @Override
@@ -74,30 +74,30 @@ implements Nameable {
         return this.customName;
     }
 
-    public void setCustomName(Text text) {
-        this.customName = text;
+    public void setCustomName(Text customName) {
+        this.customName = customName;
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag compoundTag) {
-        super.toTag(compoundTag);
+    public CompoundTag toTag(CompoundTag tag) {
+        super.toTag(tag);
         if (this.patternListTag != null) {
-            compoundTag.put("Patterns", this.patternListTag);
+            tag.put("Patterns", this.patternListTag);
         }
         if (this.customName != null) {
-            compoundTag.putString("CustomName", Text.Serializer.toJson(this.customName));
+            tag.putString("CustomName", Text.Serializer.toJson(this.customName));
         }
-        return compoundTag;
+        return tag;
     }
 
     @Override
-    public void fromTag(CompoundTag compoundTag) {
-        super.fromTag(compoundTag);
-        if (compoundTag.contains("CustomName", 8)) {
-            this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
+    public void fromTag(CompoundTag tag) {
+        super.fromTag(tag);
+        if (tag.contains("CustomName", 8)) {
+            this.customName = Text.Serializer.fromJson(tag.getString("CustomName"));
         }
         this.baseColor = this.hasWorld() ? ((AbstractBannerBlock)this.getCachedState().getBlock()).getColor() : null;
-        this.patternListTag = compoundTag.getList("Patterns", 10);
+        this.patternListTag = tag.getList("Patterns", 10);
         this.patterns = null;
         this.patternColors = null;
         this.patternCacheKey = null;
@@ -115,8 +115,8 @@ implements Nameable {
         return this.toTag(new CompoundTag());
     }
 
-    public static int getPatternCount(ItemStack itemStack) {
-        CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
+    public static int getPatternCount(ItemStack stack) {
+        CompoundTag compoundTag = stack.getSubTag("BlockEntityTag");
         if (compoundTag != null && compoundTag.contains("Patterns")) {
             return compoundTag.getList("Patterns", 10).size();
         }
@@ -167,8 +167,8 @@ implements Nameable {
         }
     }
 
-    public static void loadFromItemStack(ItemStack itemStack) {
-        CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
+    public static void loadFromItemStack(ItemStack stack) {
+        CompoundTag compoundTag = stack.getSubTag("BlockEntityTag");
         if (compoundTag == null || !compoundTag.contains("Patterns", 9)) {
             return;
         }
@@ -178,7 +178,7 @@ implements Nameable {
         }
         listTag.remove(listTag.size() - 1);
         if (listTag.isEmpty()) {
-            itemStack.removeSubTag("BlockEntityTag");
+            stack.removeSubTag("BlockEntityTag");
         }
     }
 

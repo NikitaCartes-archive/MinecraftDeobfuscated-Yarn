@@ -28,17 +28,17 @@ extends RealmsButton {
     private int animTick;
     private State state;
 
-    public RealmsWorldSlotButton(int i, int j, int k, int l, Supplier<RealmsServer> supplier, Consumer<String> consumer, int m, int n, Listener listener) {
-        super(m, i, j, k, l, "");
-        this.serverDataProvider = supplier;
-        this.slotIndex = n;
-        this.toolTipSetter = consumer;
+    public RealmsWorldSlotButton(int x, int y, int width, int height, Supplier<RealmsServer> serverDataProvider, Consumer<String> toolTipSetter, int id, int slotIndex, Listener listener) {
+        super(id, x, y, width, height, "");
+        this.serverDataProvider = serverDataProvider;
+        this.slotIndex = slotIndex;
+        this.toolTipSetter = toolTipSetter;
         this.listener = listener;
     }
 
     @Override
-    public void render(int i, int j, float f) {
-        super.render(i, j, f);
+    public void render(int xm, int ym, float a) {
+        super.render(xm, ym, a);
     }
 
     @Override
@@ -97,51 +97,51 @@ extends RealmsButton {
     }
 
     @Override
-    public void renderButton(int i, int j, float f) {
+    public void renderButton(int mouseX, int mouseY, float a) {
         if (this.state == null) {
             return;
         }
         RealmsButtonProxy realmsButtonProxy = this.getProxy();
-        this.drawSlotFrame(realmsButtonProxy.x, realmsButtonProxy.y, i, j, this.state.isCurrentlyActiveSlot, this.state.slotName, this.slotIndex, this.state.imageId, this.state.image, this.state.empty, this.state.minigame, this.state.action, this.state.actionPrompt);
+        this.drawSlotFrame(realmsButtonProxy.x, realmsButtonProxy.y, mouseX, mouseY, this.state.isCurrentlyActiveSlot, this.state.slotName, this.slotIndex, this.state.imageId, this.state.image, this.state.empty, this.state.minigame, this.state.action, this.state.actionPrompt);
     }
 
-    private void drawSlotFrame(int i, int j, int k, int l, boolean bl, String string, int m, long n, @Nullable String string2, boolean bl2, boolean bl3, Action action, @Nullable String string3) {
-        boolean bl5;
-        boolean bl4 = this.getProxy().isHovered();
-        if (this.getProxy().isMouseOver(k, l) && string3 != null) {
-            this.toolTipSetter.accept(string3);
+    private void drawSlotFrame(int x, int y, int xm, int ym, boolean currentlyActiveSlot, String text, int i, long imageId, @Nullable String image, boolean empty, boolean minigame, Action action, @Nullable String actionPrompt) {
+        boolean bl2;
+        boolean bl = this.getProxy().isHovered();
+        if (this.getProxy().isMouseOver(xm, ym) && actionPrompt != null) {
+            this.toolTipSetter.accept(actionPrompt);
         }
-        if (bl3) {
-            RealmsTextureManager.bindWorldTemplate(String.valueOf(n), string2);
-        } else if (bl2) {
+        if (minigame) {
+            RealmsTextureManager.bindWorldTemplate(String.valueOf(imageId), image);
+        } else if (empty) {
             Realms.bind("realms:textures/gui/realms/empty_frame.png");
-        } else if (string2 != null && n != -1L) {
-            RealmsTextureManager.bindWorldTemplate(String.valueOf(n), string2);
-        } else if (m == 1) {
+        } else if (image != null && imageId != -1L) {
+            RealmsTextureManager.bindWorldTemplate(String.valueOf(imageId), image);
+        } else if (i == 1) {
             Realms.bind("textures/gui/title/background/panorama_0.png");
-        } else if (m == 2) {
+        } else if (i == 2) {
             Realms.bind("textures/gui/title/background/panorama_2.png");
-        } else if (m == 3) {
+        } else if (i == 3) {
             Realms.bind("textures/gui/title/background/panorama_3.png");
         }
-        if (bl) {
+        if (currentlyActiveSlot) {
             float f = 0.85f + 0.15f * RealmsMth.cos((float)this.animTick * 0.2f);
             RenderSystem.color4f(f, f, f, 1.0f);
         } else {
             RenderSystem.color4f(0.56f, 0.56f, 0.56f, 1.0f);
         }
-        RealmsScreen.blit(i + 3, j + 3, 0.0f, 0.0f, 74, 74, 74, 74);
+        RealmsScreen.blit(x + 3, y + 3, 0.0f, 0.0f, 74, 74, 74, 74);
         Realms.bind("realms:textures/gui/realms/slot_frame.png");
-        boolean bl6 = bl5 = bl4 && action != Action.NOTHING;
-        if (bl5) {
+        boolean bl3 = bl2 = bl && action != Action.NOTHING;
+        if (bl2) {
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        } else if (bl) {
+        } else if (currentlyActiveSlot) {
             RenderSystem.color4f(0.8f, 0.8f, 0.8f, 1.0f);
         } else {
             RenderSystem.color4f(0.56f, 0.56f, 0.56f, 1.0f);
         }
-        RealmsScreen.blit(i, j, 0.0f, 0.0f, 80, 80, 80, 80);
-        this.drawCenteredString(string, i + 40, j + 66, 0xFFFFFF);
+        RealmsScreen.blit(x, y, 0.0f, 0.0f, 80, 80, 80, 80);
+        this.drawCenteredString(text, x + 40, y + 66, 0xFFFFFF);
     }
 
     @Override
@@ -160,15 +160,15 @@ extends RealmsButton {
         public final Action action;
         final String actionPrompt;
 
-        State(boolean bl, String string, long l, @Nullable String string2, boolean bl2, boolean bl3, Action action, @Nullable String string3) {
-            this.isCurrentlyActiveSlot = bl;
-            this.slotName = string;
-            this.imageId = l;
-            this.image = string2;
-            this.empty = bl2;
-            this.minigame = bl3;
+        State(boolean isCurrentlyActiveSlot, String slotName, long imageId, @Nullable String image, boolean empty, boolean minigame, Action action, @Nullable String actionPrompt) {
+            this.isCurrentlyActiveSlot = isCurrentlyActiveSlot;
+            this.slotName = slotName;
+            this.imageId = imageId;
+            this.image = image;
+            this.empty = empty;
+            this.minigame = minigame;
             this.action = action;
-            this.actionPrompt = string3;
+            this.actionPrompt = actionPrompt;
         }
     }
 

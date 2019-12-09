@@ -31,26 +31,26 @@ implements ParticleEffect {
         }
 
         @Override
-        public /* synthetic */ ParticleEffect read(ParticleType particleType, PacketByteBuf packetByteBuf) {
-            return this.read(particleType, packetByteBuf);
+        public /* synthetic */ ParticleEffect read(ParticleType type, PacketByteBuf buf) {
+            return this.read(type, buf);
         }
 
         @Override
-        public /* synthetic */ ParticleEffect read(ParticleType particleType, StringReader stringReader) throws CommandSyntaxException {
-            return this.read(particleType, stringReader);
+        public /* synthetic */ ParticleEffect read(ParticleType type, StringReader reader) throws CommandSyntaxException {
+            return this.read(type, reader);
         }
     };
     private final ParticleType<BlockStateParticleEffect> type;
     private final BlockState blockState;
 
-    public BlockStateParticleEffect(ParticleType<BlockStateParticleEffect> particleType, BlockState blockState) {
-        this.type = particleType;
+    public BlockStateParticleEffect(ParticleType<BlockStateParticleEffect> type, BlockState blockState) {
+        this.type = type;
         this.blockState = blockState;
     }
 
     @Override
-    public void write(PacketByteBuf packetByteBuf) {
-        packetByteBuf.writeVarInt(Block.STATE_IDS.getId(this.blockState));
+    public void write(PacketByteBuf buf) {
+        buf.writeVarInt(Block.STATE_IDS.getId(this.blockState));
     }
 
     @Override

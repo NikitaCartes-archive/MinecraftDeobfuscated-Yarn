@@ -21,8 +21,8 @@ extends FishEntity {
     private SchoolingFishEntity leader;
     private int groupSize = 1;
 
-    public SchoolingFishEntity(EntityType<? extends SchoolingFishEntity> entityType, World world) {
-        super((EntityType<? extends FishEntity>)entityType, world);
+    public SchoolingFishEntity(EntityType<? extends SchoolingFishEntity> type, World world) {
+        super((EntityType<? extends FishEntity>)type, world);
     }
 
     @Override
@@ -49,10 +49,10 @@ extends FishEntity {
         return this.leader != null && this.leader.isAlive();
     }
 
-    public SchoolingFishEntity joinGroupOf(SchoolingFishEntity schoolingFishEntity) {
-        this.leader = schoolingFishEntity;
-        schoolingFishEntity.increaseGroupSize();
-        return schoolingFishEntity;
+    public SchoolingFishEntity joinGroupOf(SchoolingFishEntity groupLeader) {
+        this.leader = groupLeader;
+        groupLeader.increaseGroupSize();
+        return groupLeader;
     }
 
     public void leaveGroup() {
@@ -95,14 +95,14 @@ extends FishEntity {
         }
     }
 
-    public void pullInOtherFish(Stream<SchoolingFishEntity> stream) {
-        stream.limit(this.getMaxGroupSize() - this.groupSize).filter(schoolingFishEntity -> schoolingFishEntity != this).forEach(schoolingFishEntity -> schoolingFishEntity.joinGroupOf(this));
+    public void pullInOtherFish(Stream<SchoolingFishEntity> fish) {
+        fish.limit(this.getMaxGroupSize() - this.groupSize).filter(schoolingFishEntity -> schoolingFishEntity != this).forEach(schoolingFishEntity -> schoolingFishEntity.joinGroupOf(this));
     }
 
     @Override
     @Nullable
-    public EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag) {
-        super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+        super.initialize(world, difficulty, spawnType, entityData, entityTag);
         if (entityData == null) {
             entityData = new Data(this);
         } else {
@@ -115,8 +115,8 @@ extends FishEntity {
     implements EntityData {
         public final SchoolingFishEntity leader;
 
-        public Data(SchoolingFishEntity schoolingFishEntity) {
-            this.leader = schoolingFishEntity;
+        public Data(SchoolingFishEntity leader) {
+            this.leader = leader;
         }
     }
 }

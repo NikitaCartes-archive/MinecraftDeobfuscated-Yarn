@@ -191,8 +191,8 @@ implements ResourceReloadListener {
         this.registerFactory(ParticleTypes.FALLING_NECTAR, BlockLeakParticle.FallingNectarFactory::new);
     }
 
-    private <T extends ParticleEffect> void registerFactory(ParticleType<T> particleType, ParticleFactory<T> particleFactory) {
-        this.factories.put(Registry.PARTICLE_TYPE.getRawId(particleType), (ParticleFactory<?>)particleFactory);
+    private <T extends ParticleEffect> void registerFactory(ParticleType<T> type, ParticleFactory<T> factory) {
+        this.factories.put(Registry.PARTICLE_TYPE.getRawId(type), (ParticleFactory<?>)factory);
     }
 
     private <T extends ParticleEffect> void registerFactory(ParticleType<T> particleType, SpriteAwareFactory<T> spriteAwareFactory) {
@@ -202,69 +202,69 @@ implements ResourceReloadListener {
     }
 
     @Override
-    public CompletableFuture<Void> reload(ResourceReloadListener.Synchronizer synchronizer, ResourceManager resourceManager, Profiler profiler, Profiler profiler2, Executor executor, Executor executor2) {
+    public CompletableFuture<Void> reload(ResourceReloadListener.Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor) {
         ConcurrentMap map = Maps.newConcurrentMap();
-        CompletableFuture[] completableFutures = (CompletableFuture[])Registry.PARTICLE_TYPE.getIds().stream().map(identifier -> CompletableFuture.runAsync(() -> this.loadTextureList(resourceManager, (Identifier)identifier, map), executor)).toArray(CompletableFuture[]::new);
+        CompletableFuture[] completableFutures = (CompletableFuture[])Registry.PARTICLE_TYPE.getIds().stream().map(identifier -> CompletableFuture.runAsync(() -> this.loadTextureList(manager, (Identifier)identifier, map), prepareExecutor)).toArray(CompletableFuture[]::new);
         return ((CompletableFuture)((CompletableFuture)CompletableFuture.allOf(completableFutures).thenApplyAsync(void_ -> {
-            profiler.startTick();
-            profiler.push("stitching");
-            SpriteAtlasTexture.Data data = this.particleAtlasTexture.stitch(resourceManager, map.values().stream().flatMap(Collection::stream), profiler, 0);
-            profiler.pop();
-            profiler.endTick();
+            prepareProfiler.startTick();
+            prepareProfiler.push("stitching");
+            SpriteAtlasTexture.Data data = this.particleAtlasTexture.stitch(manager, map.values().stream().flatMap(Collection::stream), prepareProfiler, 0);
+            prepareProfiler.pop();
+            prepareProfiler.endTick();
             return data;
-        }, executor)).thenCompose(synchronizer::whenPrepared)).thenAcceptAsync(data -> {
+        }, prepareExecutor)).thenCompose(synchronizer::whenPrepared)).thenAcceptAsync(data -> {
             this.particles.clear();
-            profiler2.startTick();
-            profiler2.push("upload");
+            applyProfiler.startTick();
+            applyProfiler.push("upload");
             this.particleAtlasTexture.upload((SpriteAtlasTexture.Data)data);
-            profiler2.swap("bindSpriteSets");
+            applyProfiler.swap("bindSpriteSets");
             Sprite sprite = this.particleAtlasTexture.getSprite(MissingSprite.getMissingSpriteId());
             map.forEach((identifier, list) -> {
                 ImmutableList<Sprite> immutableList = list.isEmpty() ? ImmutableList.of(sprite) : list.stream().map(this.particleAtlasTexture::getSprite).collect(ImmutableList.toImmutableList());
                 this.spriteAwareFactories.get(identifier).setSprites(immutableList);
             });
-            profiler2.pop();
-            profiler2.endTick();
-        }, executor2);
+            applyProfiler.pop();
+            applyProfiler.endTick();
+        }, applyExecutor);
     }
 
     public void clearAtlas() {
         this.particleAtlasTexture.clear();
     }
 
-    private void loadTextureList(ResourceManager resourceManager, Identifier identifier2, Map<Identifier, List<Identifier>> map) {
-        Identifier identifier22 = new Identifier(identifier2.getNamespace(), "particles/" + identifier2.getPath() + ".json");
-        try (Resource resource = resourceManager.getResource(identifier22);
+    private void loadTextureList(ResourceManager resourceManager, Identifier id, Map<Identifier, List<Identifier>> result) {
+        Identifier identifier2 = new Identifier(id.getNamespace(), "particles/" + id.getPath() + ".json");
+        try (Resource resource = resourceManager.getResource(identifier2);
              InputStreamReader reader = new InputStreamReader(resource.getInputStream(), Charsets.UTF_8);){
             ParticleTextureData particleTextureData = ParticleTextureData.load(JsonHelper.deserialize(reader));
             List<Identifier> list = particleTextureData.getTextureList();
-            boolean bl = this.spriteAwareFactories.containsKey(identifier2);
+            boolean bl = this.spriteAwareFactories.containsKey(id);
             if (list == null) {
                 if (bl) {
-                    throw new IllegalStateException("Missing texture list for particle " + identifier2);
+                    throw new IllegalStateException("Missing texture list for particle " + id);
                 }
             } else {
                 if (!bl) {
-                    throw new IllegalStateException("Redundant texture list for particle " + identifier2);
+                    throw new IllegalStateException("Redundant texture list for particle " + id);
                 }
-                map.put(identifier2, list.stream().map(identifier -> new Identifier(identifier.getNamespace(), "particle/" + identifier.getPath())).collect(Collectors.toList()));
+                result.put(id, list.stream().map(identifier -> new Identifier(identifier.getNamespace(), "particle/" + identifier.getPath())).collect(Collectors.toList()));
             }
         } catch (IOException iOException) {
-            throw new IllegalStateException("Failed to load description for particle " + identifier2, iOException);
+            throw new IllegalStateException("Failed to load description for particle " + id, iOException);
         }
     }
 
-    public void addEmitter(Entity entity, ParticleEffect particleEffect) {
-        this.newEmitterParticles.add(new EmitterParticle(this.world, entity, particleEffect));
+    public void addEmitter(Entity entity, ParticleEffect parameters) {
+        this.newEmitterParticles.add(new EmitterParticle(this.world, entity, parameters));
     }
 
-    public void addEmitter(Entity entity, ParticleEffect particleEffect, int i) {
-        this.newEmitterParticles.add(new EmitterParticle(this.world, entity, particleEffect, i));
+    public void addEmitter(Entity entity, ParticleEffect parameters, int maxAge) {
+        this.newEmitterParticles.add(new EmitterParticle(this.world, entity, parameters, maxAge));
     }
 
     @Nullable
-    public Particle addParticle(ParticleEffect particleEffect, double d, double e, double f, double g, double h, double i) {
-        Particle particle = this.createParticle(particleEffect, d, e, f, g, h, i);
+    public Particle addParticle(ParticleEffect parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
+        Particle particle = this.createParticle(parameters, x, y, z, velocityX, velocityY, velocityZ);
         if (particle != null) {
             this.addParticle(particle);
             return particle;
@@ -273,12 +273,12 @@ implements ResourceReloadListener {
     }
 
     @Nullable
-    private <T extends ParticleEffect> Particle createParticle(T particleEffect, double d, double e, double f, double g, double h, double i) {
-        ParticleFactory particleFactory = (ParticleFactory)this.factories.get(Registry.PARTICLE_TYPE.getRawId(particleEffect.getType()));
+    private <T extends ParticleEffect> Particle createParticle(T parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
+        ParticleFactory particleFactory = (ParticleFactory)this.factories.get(Registry.PARTICLE_TYPE.getRawId(parameters.getType()));
         if (particleFactory == null) {
             return null;
         }
-        return particleFactory.createParticle(particleEffect, this.world, d, e, f, g, h, i);
+        return particleFactory.createParticle(parameters, this.world, x, y, z, velocityX, velocityY, velocityZ);
     }
 
     public void addParticle(Particle particle) {
@@ -374,11 +374,11 @@ implements ResourceReloadListener {
         this.newEmitterParticles.clear();
     }
 
-    public void addBlockBreakParticles(BlockPos blockPos, BlockState blockState) {
-        if (blockState.isAir()) {
+    public void addBlockBreakParticles(BlockPos pos, BlockState state) {
+        if (state.isAir()) {
             return;
         }
-        VoxelShape voxelShape = blockState.getOutlineShape(this.world, blockPos);
+        VoxelShape voxelShape = state.getOutlineShape(this.world, pos);
         double d2 = 0.25;
         voxelShape.forEachBox((d, e, f, g, h, i) -> {
             double j = Math.min(1.0, g - d);
@@ -396,7 +396,7 @@ implements ResourceReloadListener {
                         double v = s * j + d;
                         double w = t * k + e;
                         double x = u * l + f;
-                        this.addParticle(new BlockCrackParticle(this.world, (double)blockPos.getX() + v, (double)blockPos.getY() + w, (double)blockPos.getZ() + x, s - 0.5, t - 0.5, u - 0.5, blockState).setBlockPos(blockPos));
+                        this.addParticle(new BlockCrackParticle(this.world, (double)pos.getX() + v, (double)pos.getY() + w, (double)pos.getZ() + x, s - 0.5, t - 0.5, u - 0.5, state).setBlockPos(pos));
                     }
                 }
             }
@@ -459,8 +459,8 @@ implements ResourceReloadListener {
             return this.sprites.get(random.nextInt(this.sprites.size()));
         }
 
-        public void setSprites(List<Sprite> list) {
-            this.sprites = ImmutableList.copyOf(list);
+        public void setSprites(List<Sprite> sprites) {
+            this.sprites = ImmutableList.copyOf(sprites);
         }
     }
 

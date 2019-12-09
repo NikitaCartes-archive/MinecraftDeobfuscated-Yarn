@@ -26,18 +26,18 @@ implements Packet<ClientQueryPacketListener> {
     public QueryResponseS2CPacket() {
     }
 
-    public QueryResponseS2CPacket(ServerMetadata serverMetadata) {
-        this.metadata = serverMetadata;
+    public QueryResponseS2CPacket(ServerMetadata metadata) {
+        this.metadata = metadata;
     }
 
     @Override
-    public void read(PacketByteBuf packetByteBuf) throws IOException {
-        this.metadata = JsonHelper.deserialize(GSON, packetByteBuf.readString(Short.MAX_VALUE), ServerMetadata.class);
+    public void read(PacketByteBuf buf) throws IOException {
+        this.metadata = JsonHelper.deserialize(GSON, buf.readString(Short.MAX_VALUE), ServerMetadata.class);
     }
 
     @Override
-    public void write(PacketByteBuf packetByteBuf) throws IOException {
-        packetByteBuf.writeString(GSON.toJson(this.metadata));
+    public void write(PacketByteBuf buf) throws IOException {
+        buf.writeString(GSON.toJson(this.metadata));
     }
 
     @Override

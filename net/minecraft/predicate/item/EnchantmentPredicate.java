@@ -63,11 +63,11 @@ public class EnchantmentPredicate {
         return jsonObject;
     }
 
-    public static EnchantmentPredicate deserialize(@Nullable JsonElement jsonElement) {
-        if (jsonElement == null || jsonElement.isJsonNull()) {
+    public static EnchantmentPredicate deserialize(@Nullable JsonElement el) {
+        if (el == null || el.isJsonNull()) {
             return ANY;
         }
-        JsonObject jsonObject = JsonHelper.asObject(jsonElement, "enchantment");
+        JsonObject jsonObject = JsonHelper.asObject(el, "enchantment");
         Enchantment enchantment = null;
         if (jsonObject.has("enchantment")) {
             Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "enchantment"));
@@ -77,11 +77,11 @@ public class EnchantmentPredicate {
         return new EnchantmentPredicate(enchantment, intRange);
     }
 
-    public static EnchantmentPredicate[] deserializeAll(@Nullable JsonElement jsonElement) {
-        if (jsonElement == null || jsonElement.isJsonNull()) {
+    public static EnchantmentPredicate[] deserializeAll(@Nullable JsonElement el) {
+        if (el == null || el.isJsonNull()) {
             return ARRAY_OF_ANY;
         }
-        JsonArray jsonArray = JsonHelper.asArray(jsonElement, "enchantments");
+        JsonArray jsonArray = JsonHelper.asArray(el, "enchantments");
         EnchantmentPredicate[] enchantmentPredicates = new EnchantmentPredicate[jsonArray.size()];
         for (int i = 0; i < enchantmentPredicates.length; ++i) {
             enchantmentPredicates[i] = EnchantmentPredicate.deserialize(jsonArray.get(i));

@@ -30,19 +30,19 @@ public abstract class EntityRenderer<T extends Entity> {
         this.renderManager = entityRenderDispatcher;
     }
 
-    public final int getLight(T entity, float f) {
-        return LightmapTextureManager.pack(this.getBlockLight(entity, f), ((Entity)entity).world.getLightLevel(LightType.SKY, new BlockPos(((Entity)entity).getCameraPosVec(f))));
+    public final int getLight(T entity, float tickDelta) {
+        return LightmapTextureManager.pack(this.getBlockLight(entity, tickDelta), ((Entity)entity).world.getLightLevel(LightType.SKY, new BlockPos(((Entity)entity).getCameraPosVec(tickDelta))));
     }
 
-    protected int getBlockLight(T entity, float f) {
+    protected int getBlockLight(T entity, float tickDelta) {
         if (((Entity)entity).isOnFire()) {
             return 15;
         }
-        return ((Entity)entity).world.getLightLevel(LightType.BLOCK, new BlockPos(((Entity)entity).getCameraPosVec(f)));
+        return ((Entity)entity).world.getLightLevel(LightType.BLOCK, new BlockPos(((Entity)entity).getCameraPosVec(tickDelta)));
     }
 
-    public boolean shouldRender(T entity, Frustum frustum, double d, double e, double f) {
-        if (!((Entity)entity).shouldRender(d, e, f)) {
+    public boolean shouldRender(T entity, Frustum visibleRegion, double cameraX, double cameraY, double cameraZ) {
+        if (!((Entity)entity).shouldRender(cameraX, cameraY, cameraZ)) {
             return false;
         }
         if (((Entity)entity).ignoreCameraFrustum) {
@@ -52,18 +52,18 @@ public abstract class EntityRenderer<T extends Entity> {
         if (box.isValid() || box.getAverageSideLength() == 0.0) {
             box = new Box(((Entity)entity).getX() - 2.0, ((Entity)entity).getY() - 2.0, ((Entity)entity).getZ() - 2.0, ((Entity)entity).getX() + 2.0, ((Entity)entity).getY() + 2.0, ((Entity)entity).getZ() + 2.0);
         }
-        return frustum.isVisible(box);
+        return visibleRegion.isVisible(box);
     }
 
-    public Vec3d getPositionOffset(T entity, float f) {
+    public Vec3d getPositionOffset(T entity, float tickDelta) {
         return Vec3d.ZERO;
     }
 
-    public void render(T entity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+    public void render(T entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
         if (!this.hasLabel(entity)) {
             return;
         }
-        this.renderLabelIfPresent(entity, ((Entity)entity).getDisplayName().asFormattedString(), matrixStack, vertexConsumerProvider, i);
+        this.renderLabelIfPresent(entity, ((Entity)entity).getDisplayName().asFormattedString(), matrices, vertexConsumers, light);
     }
 
     protected boolean hasLabel(T entity) {

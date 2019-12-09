@@ -10,14 +10,14 @@ public class IdentityPairList
 implements PairList {
     private final DoubleList merged;
 
-    public IdentityPairList(DoubleList doubleList) {
-        this.merged = doubleList;
+    public IdentityPairList(DoubleList values) {
+        this.merged = values;
     }
 
     @Override
-    public boolean forEachPair(PairList.Consumer consumer) {
+    public boolean forEachPair(PairList.Consumer predicate) {
         for (int i = 0; i <= this.merged.size(); ++i) {
-            if (consumer.merge(i, i, i)) continue;
+            if (predicate.merge(i, i, i)) continue;
             return false;
         }
         return true;

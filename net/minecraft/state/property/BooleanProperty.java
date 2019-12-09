@@ -12,8 +12,8 @@ public class BooleanProperty
 extends AbstractProperty<Boolean> {
     private final ImmutableSet<Boolean> values = ImmutableSet.of(Boolean.valueOf(true), Boolean.valueOf(false));
 
-    protected BooleanProperty(String string) {
-        super(string, Boolean.class);
+    protected BooleanProperty(String name) {
+        super(name, Boolean.class);
     }
 
     @Override
@@ -21,14 +21,14 @@ extends AbstractProperty<Boolean> {
         return this.values;
     }
 
-    public static BooleanProperty of(String string) {
-        return new BooleanProperty(string);
+    public static BooleanProperty of(String name) {
+        return new BooleanProperty(name);
     }
 
     @Override
-    public Optional<Boolean> parse(String string) {
-        if ("true".equals(string) || "false".equals(string)) {
-            return Optional.of(Boolean.valueOf(string));
+    public Optional<Boolean> parse(String name) {
+        if ("true".equals(name) || "false".equals(name)) {
+            return Optional.of(Boolean.valueOf(name));
         }
         return Optional.empty();
     }
@@ -39,12 +39,12 @@ extends AbstractProperty<Boolean> {
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (object instanceof BooleanProperty && super.equals(object)) {
-            BooleanProperty booleanProperty = (BooleanProperty)object;
+        if (o instanceof BooleanProperty && super.equals(o)) {
+            BooleanProperty booleanProperty = (BooleanProperty)o;
             return this.values.equals(booleanProperty.values);
         }
         return false;

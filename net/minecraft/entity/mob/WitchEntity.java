@@ -87,7 +87,7 @@ implements RangedAttackMob {
     }
 
     @Override
-    protected SoundEvent getHurtSound(DamageSource damageSource) {
+    protected SoundEvent getHurtSound(DamageSource source) {
         return SoundEvents.ENTITY_WITCH_HURT;
     }
 
@@ -96,8 +96,8 @@ implements RangedAttackMob {
         return SoundEvents.ENTITY_WITCH_DEATH;
     }
 
-    public void setDrinking(boolean bl) {
-        this.getDataTracker().set(DRINKING, bl);
+    public void setDrinking(boolean drinking) {
+        this.getDataTracker().set(DRINKING, drinking);
     }
 
     public boolean isDrinking() {
@@ -168,47 +168,47 @@ implements RangedAttackMob {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void handleStatus(byte b) {
-        if (b == 15) {
+    public void handleStatus(byte status) {
+        if (status == 15) {
             for (int i = 0; i < this.random.nextInt(35) + 10; ++i) {
                 this.world.addParticle(ParticleTypes.WITCH, this.getX() + this.random.nextGaussian() * (double)0.13f, this.getBoundingBox().y2 + 0.5 + this.random.nextGaussian() * (double)0.13f, this.getZ() + this.random.nextGaussian() * (double)0.13f, 0.0, 0.0, 0.0);
             }
         } else {
-            super.handleStatus(b);
+            super.handleStatus(status);
         }
     }
 
     @Override
-    protected float applyEnchantmentsToDamage(DamageSource damageSource, float f) {
-        f = super.applyEnchantmentsToDamage(damageSource, f);
-        if (damageSource.getAttacker() == this) {
-            f = 0.0f;
+    protected float applyEnchantmentsToDamage(DamageSource source, float amount) {
+        amount = super.applyEnchantmentsToDamage(source, amount);
+        if (source.getAttacker() == this) {
+            amount = 0.0f;
         }
-        if (damageSource.getMagic()) {
-            f = (float)((double)f * 0.15);
+        if (source.getMagic()) {
+            amount = (float)((double)amount * 0.15);
         }
-        return f;
+        return amount;
     }
 
     @Override
-    public void attack(LivingEntity livingEntity, float f) {
+    public void attack(LivingEntity target, float f) {
         if (this.isDrinking()) {
             return;
         }
-        Vec3d vec3d = livingEntity.getVelocity();
-        double d = livingEntity.getX() + vec3d.x - this.getX();
-        double e = livingEntity.getEyeY() - (double)1.1f - this.getY();
-        double g = livingEntity.getZ() + vec3d.z - this.getZ();
+        Vec3d vec3d = target.getVelocity();
+        double d = target.getX() + vec3d.x - this.getX();
+        double e = target.getEyeY() - (double)1.1f - this.getY();
+        double g = target.getZ() + vec3d.z - this.getZ();
         float h = MathHelper.sqrt(d * d + g * g);
         Potion potion = Potions.HARMING;
-        if (livingEntity instanceof RaiderEntity) {
-            potion = livingEntity.getHealth() <= 4.0f ? Potions.HEALING : Potions.REGENERATION;
+        if (target instanceof RaiderEntity) {
+            potion = target.getHealth() <= 4.0f ? Potions.HEALING : Potions.REGENERATION;
             this.setTarget(null);
-        } else if (h >= 8.0f && !livingEntity.hasStatusEffect(StatusEffects.SLOWNESS)) {
+        } else if (h >= 8.0f && !target.hasStatusEffect(StatusEffects.SLOWNESS)) {
             potion = Potions.SLOWNESS;
-        } else if (livingEntity.getHealth() >= 8.0f && !livingEntity.hasStatusEffect(StatusEffects.POISON)) {
+        } else if (target.getHealth() >= 8.0f && !target.hasStatusEffect(StatusEffects.POISON)) {
             potion = Potions.POISON;
-        } else if (h <= 3.0f && !livingEntity.hasStatusEffect(StatusEffects.WEAKNESS) && this.random.nextFloat() < 0.25f) {
+        } else if (h <= 3.0f && !target.hasStatusEffect(StatusEffects.WEAKNESS) && this.random.nextFloat() < 0.25f) {
             potion = Potions.WEAKNESS;
         }
         ThrownPotionEntity thrownPotionEntity = new ThrownPotionEntity(this.world, this);
@@ -220,12 +220,12 @@ implements RangedAttackMob {
     }
 
     @Override
-    protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+    protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
         return 1.62f;
     }
 
     @Override
-    public void addBonusForWave(int i, boolean bl) {
+    public void addBonusForWave(int wave, boolean unused) {
     }
 
     @Override

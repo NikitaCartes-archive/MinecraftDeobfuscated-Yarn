@@ -20,23 +20,23 @@ public class CloudParticle
 extends SpriteBillboardParticle {
     private final SpriteProvider field_17862;
 
-    private CloudParticle(World world, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
-        super(world, d, e, f, 0.0, 0.0, 0.0);
-        float k;
+    private CloudParticle(World world, double x, double y, double z, double d, double e, double f, SpriteProvider spriteProvider) {
+        super(world, x, y, z, 0.0, 0.0, 0.0);
+        float h;
         this.field_17862 = spriteProvider;
-        float j = 2.5f;
+        float g = 2.5f;
         this.velocityX *= (double)0.1f;
         this.velocityY *= (double)0.1f;
         this.velocityZ *= (double)0.1f;
-        this.velocityX += g;
-        this.velocityY += h;
-        this.velocityZ += i;
-        this.colorRed = k = 1.0f - (float)(Math.random() * (double)0.3f);
-        this.colorGreen = k;
-        this.colorBlue = k;
+        this.velocityX += d;
+        this.velocityY += e;
+        this.velocityZ += f;
+        this.colorRed = h = 1.0f - (float)(Math.random() * (double)0.3f);
+        this.colorGreen = h;
+        this.colorBlue = h;
         this.scale *= 1.875f;
-        int l = (int)(8.0 / (Math.random() * 0.8 + 0.3));
-        this.maxAge = (int)Math.max((float)l * 2.5f, 1.0f);
+        int i = (int)(8.0 / (Math.random() * 0.8 + 0.3));
+        this.maxAge = (int)Math.max((float)i * 2.5f, 1.0f);
         this.collidesWithWorld = false;
         this.setSpriteForAge(spriteProvider);
     }
@@ -47,8 +47,8 @@ extends SpriteBillboardParticle {
     }
 
     @Override
-    public float getSize(float f) {
-        return this.scale * MathHelper.clamp(((float)this.age + f) / (float)this.maxAge * 32.0f, 0.0f, 1.0f);
+    public float getSize(float tickDelta) {
+        return this.scale * MathHelper.clamp(((float)this.age + tickDelta) / (float)this.maxAge * 32.0f, 0.0f, 1.0f);
     }
 
     @Override

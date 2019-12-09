@@ -18,8 +18,8 @@ extends AbstractPhase {
     private Vec3d field_7041;
     private int ticks;
 
-    public DyingPhase(EnderDragonEntity enderDragonEntity) {
-        super(enderDragonEntity);
+    public DyingPhase(EnderDragonEntity dragon) {
+        super(dragon);
     }
 
     @Override

@@ -40,10 +40,10 @@ extends Screen {
     private SuperflatLayersListWidget layers;
     private ButtonWidget widgetButtonRemoveLayer;
 
-    public CustomizeFlatLevelScreen(CreateWorldScreen createWorldScreen, CompoundTag compoundTag) {
+    public CustomizeFlatLevelScreen(CreateWorldScreen parent, CompoundTag generatorOptions) {
         super(new TranslatableText("createWorld.customize.flat.title", new Object[0]));
-        this.parent = createWorldScreen;
-        this.setConfigTag(compoundTag);
+        this.parent = parent;
+        this.setConfigTag(generatorOptions);
     }
 
     public String getConfigString() {
@@ -54,12 +54,12 @@ extends Screen {
         return (CompoundTag)this.config.toDynamic(NbtOps.INSTANCE).getValue();
     }
 
-    public void setConfigString(String string) {
-        this.config = FlatChunkGeneratorConfig.fromString(string);
+    public void setConfigString(String config) {
+        this.config = FlatChunkGeneratorConfig.fromString(config);
     }
 
-    public void setConfigTag(CompoundTag compoundTag) {
-        this.config = FlatChunkGeneratorConfig.fromDynamic(new Dynamic<CompoundTag>(NbtOps.INSTANCE, compoundTag));
+    public void setConfigTag(CompoundTag config) {
+        this.config = FlatChunkGeneratorConfig.fromDynamic(new Dynamic<CompoundTag>(NbtOps.INSTANCE, config));
     }
 
     @Override
@@ -115,14 +115,14 @@ extends Screen {
     }
 
     @Override
-    public void render(int i, int j, float f) {
+    public void render(int mouseX, int mouseY, float delta) {
         this.renderBackground();
-        this.layers.render(i, j, f);
+        this.layers.render(mouseX, mouseY, delta);
         this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 8, 0xFFFFFF);
-        int k = this.width / 2 - 92 - 16;
-        this.drawString(this.font, this.tileText, k, 32, 0xFFFFFF);
-        this.drawString(this.font, this.heightText, k + 2 + 213 - this.font.getStringWidth(this.heightText), 32, 0xFFFFFF);
-        super.render(i, j, f);
+        int i = this.width / 2 - 92 - 16;
+        this.drawString(this.font, this.tileText, i, 32, 0xFFFFFF);
+        this.drawString(this.font, this.heightText, i + 2 + 213 - this.font.getStringWidth(this.heightText), 32, 0xFFFFFF);
+        super.render(mouseX, mouseY, delta);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -206,8 +206,8 @@ extends Screen {
             }
 
             @Override
-            public boolean mouseClicked(double d, double e, int i) {
-                if (i == 0) {
+            public boolean mouseClicked(double mouseX, double mouseY, int button) {
+                if (button == 0) {
                     SuperflatLayersListWidget.this.setSelected(this);
                     CustomizeFlatLevelScreen.this.method_2145();
                     return true;

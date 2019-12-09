@@ -34,7 +34,7 @@ implements SpectatorMenuCommand {
     }
 
     @Override
-    public void use(SpectatorMenu spectatorMenu) {
+    public void use(SpectatorMenu menu) {
         MinecraftClient.getInstance().getNetworkHandler().sendPacket(new SpectatorTeleportC2SPacket(this.gameProfile.getId()));
     }
 
@@ -44,9 +44,9 @@ implements SpectatorMenuCommand {
     }
 
     @Override
-    public void renderIcon(float f, int i) {
+    public void renderIcon(float brightness, int alpha) {
         MinecraftClient.getInstance().getTextureManager().bindTexture(this.skinId);
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, (float)i / 255.0f);
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, (float)alpha / 255.0f);
         DrawableHelper.blit(2, 2, 12, 12, 8.0f, 8.0f, 8, 8, 64, 64);
         DrawableHelper.blit(2, 2, 12, 12, 40.0f, 8.0f, 8, 8, 64, 64);
     }

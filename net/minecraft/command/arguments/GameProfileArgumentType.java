@@ -64,17 +64,17 @@ implements ArgumentType<GameProfileArgument> {
     }
 
     @Override
-    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder2) {
-        if (commandContext.getSource() instanceof CommandSource) {
-            StringReader stringReader = new StringReader(suggestionsBuilder2.getInput());
-            stringReader.setCursor(suggestionsBuilder2.getStart());
+    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+        if (context.getSource() instanceof CommandSource) {
+            StringReader stringReader = new StringReader(builder.getInput());
+            stringReader.setCursor(builder.getStart());
             EntitySelectorReader entitySelectorReader = new EntitySelectorReader(stringReader);
             try {
                 entitySelectorReader.read();
             } catch (CommandSyntaxException commandSyntaxException) {
                 // empty catch block
             }
-            return entitySelectorReader.listSuggestions(suggestionsBuilder2, (SuggestionsBuilder suggestionsBuilder) -> CommandSource.suggestMatching(((CommandSource)commandContext.getSource()).getPlayerNames(), suggestionsBuilder));
+            return entitySelectorReader.listSuggestions(builder, (SuggestionsBuilder suggestionsBuilder) -> CommandSource.suggestMatching(((CommandSource)context.getSource()).getPlayerNames(), suggestionsBuilder));
         }
         return Suggestions.empty();
     }

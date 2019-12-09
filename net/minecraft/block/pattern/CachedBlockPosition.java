@@ -18,10 +18,10 @@ public class CachedBlockPosition {
     private BlockEntity blockEntity;
     private boolean cachedEntity;
 
-    public CachedBlockPosition(WorldView worldView, BlockPos blockPos, boolean bl) {
+    public CachedBlockPosition(WorldView worldView, BlockPos pos, boolean forceLoad) {
         this.world = worldView;
-        this.pos = blockPos.toImmutable();
-        this.forceLoad = bl;
+        this.pos = pos.toImmutable();
+        this.forceLoad = forceLoad;
     }
 
     public BlockState getBlockState() {
@@ -48,8 +48,8 @@ public class CachedBlockPosition {
         return this.pos;
     }
 
-    public static Predicate<CachedBlockPosition> matchesBlockState(Predicate<BlockState> predicate) {
-        return cachedBlockPosition -> cachedBlockPosition != null && predicate.test(cachedBlockPosition.getBlockState());
+    public static Predicate<CachedBlockPosition> matchesBlockState(Predicate<BlockState> state) {
+        return cachedBlockPosition -> cachedBlockPosition != null && state.test(cachedBlockPosition.getBlockState());
     }
 }
 

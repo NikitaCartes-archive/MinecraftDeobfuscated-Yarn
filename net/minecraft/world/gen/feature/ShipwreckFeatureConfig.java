@@ -12,13 +12,13 @@ public class ShipwreckFeatureConfig
 implements FeatureConfig {
     public final boolean isBeached;
 
-    public ShipwreckFeatureConfig(boolean bl) {
-        this.isBeached = bl;
+    public ShipwreckFeatureConfig(boolean isBeached) {
+        this.isBeached = isBeached;
     }
 
     @Override
-    public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-        return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("is_beached"), dynamicOps.createBoolean(this.isBeached))));
+    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("is_beached"), ops.createBoolean(this.isBeached))));
     }
 
     public static <T> ShipwreckFeatureConfig deserialize(Dynamic<T> dynamic) {

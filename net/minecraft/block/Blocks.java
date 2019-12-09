@@ -874,8 +874,8 @@ public class Blocks {
     public static final Block HONEY_BLOCK = Blocks.register("honey_block", new HoneyBlock(Block.Settings.of(Material.CLAY, MaterialColor.ORANGE).velocityMultiplier(0.4f).jumpVelocityMultiplier(0.5f).nonOpaque().sounds(BlockSoundGroup.field_21214)));
     public static final Block HONEYCOMB_BLOCK = Blocks.register("honeycomb_block", new Block(Block.Settings.of(Material.CLAY, MaterialColor.ORANGE).strength(0.6f).sounds(BlockSoundGroup.CORAL)));
 
-    private static Block register(String string, Block block) {
-        return Registry.register(Registry.BLOCK, string, block);
+    private static Block register(String id, Block block) {
+        return Registry.register(Registry.BLOCK, id, block);
     }
 
     static {

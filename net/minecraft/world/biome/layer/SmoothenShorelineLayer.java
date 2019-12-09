@@ -12,17 +12,17 @@ public enum SmoothenShorelineLayer implements CrossSamplingLayer
 
 
     @Override
-    public int sample(LayerRandomnessSource layerRandomnessSource, int i, int j, int k, int l, int m) {
+    public int sample(LayerRandomnessSource context, int n, int e, int s, int w, int center) {
         boolean bl2;
-        boolean bl = j == l;
-        boolean bl3 = bl2 = i == k;
+        boolean bl = e == w;
+        boolean bl3 = bl2 = n == s;
         if (bl == bl2) {
             if (bl) {
-                return layerRandomnessSource.nextInt(2) == 0 ? l : i;
+                return context.nextInt(2) == 0 ? w : n;
             }
-            return m;
+            return center;
         }
-        return bl ? l : i;
+        return bl ? w : n;
     }
 }
 

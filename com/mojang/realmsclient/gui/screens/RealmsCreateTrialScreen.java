@@ -22,8 +22,8 @@ extends RealmsScreen {
     private boolean initialized;
     private RealmsButton createButton;
 
-    public RealmsCreateTrialScreen(RealmsMainScreen realmsMainScreen) {
-        this.lastScreen = realmsMainScreen;
+    public RealmsCreateTrialScreen(RealmsMainScreen lastScreen) {
+        this.lastScreen = lastScreen;
     }
 
     @Override
@@ -72,14 +72,14 @@ extends RealmsScreen {
     }
 
     @Override
-    public boolean charTyped(char c, int i) {
+    public boolean charTyped(char character, int mods) {
         this.createButton.active(this.valid());
         return false;
     }
 
     @Override
-    public boolean keyPressed(int i, int j, int k) {
-        switch (i) {
+    public boolean keyPressed(int eventKey, int scancode, int mods) {
+        switch (eventKey) {
             case 256: {
                 Realms.setScreen(this.lastScreen);
                 return true;
@@ -103,18 +103,18 @@ extends RealmsScreen {
     }
 
     @Override
-    public void render(int i, int j, float f) {
+    public void render(int xm, int ym, float a) {
         this.renderBackground();
         this.drawCenteredString(RealmsCreateTrialScreen.getLocalizedString("mco.trial.title"), this.width() / 2, 11, 0xFFFFFF);
         this.drawString(RealmsCreateTrialScreen.getLocalizedString("mco.configure.world.name"), this.width() / 2 - 100, 52, 0xA0A0A0);
         this.drawString(RealmsCreateTrialScreen.getLocalizedString("mco.configure.world.description"), this.width() / 2 - 100, 102, 0xA0A0A0);
         if (this.nameBox != null) {
-            this.nameBox.render(i, j, f);
+            this.nameBox.render(xm, ym, a);
         }
         if (this.descriptionBox != null) {
-            this.descriptionBox.render(i, j, f);
+            this.descriptionBox.render(xm, ym, a);
         }
-        super.render(i, j, f);
+        super.render(xm, ym, a);
     }
 }
 

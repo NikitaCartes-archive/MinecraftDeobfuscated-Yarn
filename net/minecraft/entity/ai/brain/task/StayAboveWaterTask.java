@@ -14,10 +14,10 @@ extends Task<MobEntity> {
     private final float minWaterHeight;
     private final float chance;
 
-    public StayAboveWaterTask(float f, float g) {
+    public StayAboveWaterTask(float minWaterHeight, float chance) {
         super(ImmutableMap.of());
-        this.minWaterHeight = f;
-        this.chance = g;
+        this.minWaterHeight = minWaterHeight;
+        this.chance = chance;
     }
 
     @Override
@@ -38,13 +38,13 @@ extends Task<MobEntity> {
     }
 
     @Override
-    protected /* synthetic */ boolean shouldKeepRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        return this.shouldKeepRunning(serverWorld, (MobEntity)livingEntity, l);
+    protected /* synthetic */ boolean shouldKeepRunning(ServerWorld world, LivingEntity entity, long time) {
+        return this.shouldKeepRunning(world, (MobEntity)entity, time);
     }
 
     @Override
-    protected /* synthetic */ void keepRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        this.keepRunning(serverWorld, (MobEntity)livingEntity, l);
+    protected /* synthetic */ void keepRunning(ServerWorld world, LivingEntity entity, long time) {
+        this.keepRunning(world, (MobEntity)entity, time);
     }
 }
 

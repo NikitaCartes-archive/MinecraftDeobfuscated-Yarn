@@ -20,8 +20,8 @@ extends ChannelInboundHandlerAdapter {
     private static final Logger LOGGER = LogManager.getLogger();
     private final ServerNetworkIo networkIo;
 
-    public LegacyQueryHandler(ServerNetworkIo serverNetworkIo) {
-        this.networkIo = serverNetworkIo;
+    public LegacyQueryHandler(ServerNetworkIo networkIo) {
+        this.networkIo = networkIo;
     }
 
     /*
@@ -89,14 +89,14 @@ extends ChannelInboundHandlerAdapter {
         }
     }
 
-    private void reply(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf) {
-        channelHandlerContext.pipeline().firstContext().writeAndFlush(byteBuf).addListener(ChannelFutureListener.CLOSE);
+    private void reply(ChannelHandlerContext ctx, ByteBuf buf) {
+        ctx.pipeline().firstContext().writeAndFlush(buf).addListener(ChannelFutureListener.CLOSE);
     }
 
-    private ByteBuf toBuffer(String string) {
+    private ByteBuf toBuffer(String s) {
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeByte(255);
-        char[] cs = string.toCharArray();
+        char[] cs = s.toCharArray();
         byteBuf.writeShort(cs.length);
         for (char c : cs) {
             byteBuf.writeChar(c);

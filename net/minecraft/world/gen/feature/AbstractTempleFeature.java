@@ -17,8 +17,8 @@ import net.minecraft.world.gen.feature.StructureFeature;
 
 public abstract class AbstractTempleFeature<C extends FeatureConfig>
 extends StructureFeature<C> {
-    public AbstractTempleFeature(Function<Dynamic<?>, ? extends C> function) {
-        super(function);
+    public AbstractTempleFeature(Function<Dynamic<?>, ? extends C> configFactory) {
+        super(configFactory);
     }
 
     @Override
@@ -38,9 +38,9 @@ extends StructureFeature<C> {
     }
 
     @Override
-    public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int i, int j, Biome biome) {
-        ChunkPos chunkPos = this.getStart(chunkGenerator, random, i, j, 0, 0);
-        return i == chunkPos.x && j == chunkPos.z && chunkGenerator.hasStructure(biome, this);
+    public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int chunkZ, int i, Biome biome) {
+        ChunkPos chunkPos = this.getStart(chunkGenerator, random, chunkZ, i, 0, 0);
+        return chunkZ == chunkPos.x && i == chunkPos.z && chunkGenerator.hasStructure(biome, this);
     }
 
     protected int getSpacing(ChunkGenerator<?> chunkGenerator) {

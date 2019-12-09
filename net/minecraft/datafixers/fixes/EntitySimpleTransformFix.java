@@ -12,13 +12,13 @@ import net.minecraft.datafixers.fixes.EntityTransformFix;
 
 public abstract class EntitySimpleTransformFix
 extends EntityTransformFix {
-    public EntitySimpleTransformFix(String string, Schema schema, boolean bl) {
-        super(string, schema, bl);
+    public EntitySimpleTransformFix(String name, Schema oldSchema, boolean bl) {
+        super(name, oldSchema, bl);
     }
 
     @Override
-    protected Pair<String, Typed<?>> transform(String string, Typed<?> typed) {
-        Pair<String, Dynamic<?>> pair = this.transform(string, typed.getOrCreate(DSL.remainderFinder()));
+    protected Pair<String, Typed<?>> transform(String choice, Typed<?> typed) {
+        Pair<String, Dynamic<?>> pair = this.transform(choice, typed.getOrCreate(DSL.remainderFinder()));
         return Pair.of(pair.getFirst(), typed.set(DSL.remainderFinder(), pair.getSecond()));
     }
 

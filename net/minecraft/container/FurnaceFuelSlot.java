@@ -13,14 +13,14 @@ public class FurnaceFuelSlot
 extends Slot {
     private final AbstractFurnaceContainer container;
 
-    public FurnaceFuelSlot(AbstractFurnaceContainer abstractFurnaceContainer, Inventory inventory, int i, int j, int k) {
-        super(inventory, i, j, k);
+    public FurnaceFuelSlot(AbstractFurnaceContainer abstractFurnaceContainer, Inventory inventory, int invSlot, int xPosition, int yPosition) {
+        super(inventory, invSlot, xPosition, yPosition);
         this.container = abstractFurnaceContainer;
     }
 
     @Override
-    public boolean canInsert(ItemStack itemStack) {
-        return this.container.isFuel(itemStack) || FurnaceFuelSlot.isBucket(itemStack);
+    public boolean canInsert(ItemStack stack) {
+        return this.container.isFuel(stack) || FurnaceFuelSlot.isBucket(stack);
     }
 
     @Override
@@ -28,8 +28,8 @@ extends Slot {
         return FurnaceFuelSlot.isBucket(itemStack) ? 1 : super.getMaxStackAmount(itemStack);
     }
 
-    public static boolean isBucket(ItemStack itemStack) {
-        return itemStack.getItem() == Items.BUCKET;
+    public static boolean isBucket(ItemStack stack) {
+        return stack.getItem() == Items.BUCKET;
     }
 }
 

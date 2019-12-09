@@ -38,9 +38,9 @@ extends PlayerManager {
     }
 
     @Override
-    public void setWhitelistEnabled(boolean bl) {
-        super.setWhitelistEnabled(bl);
-        this.getServer().setUseWhitelist(bl);
+    public void setWhitelistEnabled(boolean whitelistEnabled) {
+        super.setWhitelistEnabled(whitelistEnabled);
+        this.getServer().setUseWhitelist(whitelistEnabled);
     }
 
     @Override

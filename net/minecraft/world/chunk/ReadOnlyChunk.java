@@ -35,26 +35,26 @@ public class ReadOnlyChunk
 extends ProtoChunk {
     private final WorldChunk wrapped;
 
-    public ReadOnlyChunk(WorldChunk worldChunk) {
-        super(worldChunk.getPos(), UpgradeData.NO_UPGRADE_DATA);
-        this.wrapped = worldChunk;
+    public ReadOnlyChunk(WorldChunk wrapped) {
+        super(wrapped.getPos(), UpgradeData.NO_UPGRADE_DATA);
+        this.wrapped = wrapped;
     }
 
     @Override
     @Nullable
-    public BlockEntity getBlockEntity(BlockPos blockPos) {
-        return this.wrapped.getBlockEntity(blockPos);
+    public BlockEntity getBlockEntity(BlockPos pos) {
+        return this.wrapped.getBlockEntity(pos);
     }
 
     @Override
     @Nullable
-    public BlockState getBlockState(BlockPos blockPos) {
-        return this.wrapped.getBlockState(blockPos);
+    public BlockState getBlockState(BlockPos pos) {
+        return this.wrapped.getBlockState(pos);
     }
 
     @Override
-    public FluidState getFluidState(BlockPos blockPos) {
-        return this.wrapped.getFluidState(blockPos);
+    public FluidState getFluidState(BlockPos pos) {
+        return this.wrapped.getFluidState(pos);
     }
 
     @Override
@@ -64,12 +64,12 @@ extends ProtoChunk {
 
     @Override
     @Nullable
-    public BlockState setBlockState(BlockPos blockPos, BlockState blockState, boolean bl) {
+    public BlockState setBlockState(BlockPos pos, BlockState state, boolean bl) {
         return null;
     }
 
     @Override
-    public void setBlockEntity(BlockPos blockPos, BlockEntity blockEntity) {
+    public void setBlockEntity(BlockPos pos, BlockEntity blockEntity) {
     }
 
     @Override
@@ -92,7 +92,7 @@ extends ProtoChunk {
     }
 
     @Override
-    public void setHeightmap(Heightmap.Type type, long[] ls) {
+    public void setHeightmap(Heightmap.Type type, long[] heightmap) {
     }
 
     private Heightmap.Type transformHeightmapType(Heightmap.Type type) {
@@ -106,8 +106,8 @@ extends ProtoChunk {
     }
 
     @Override
-    public int sampleHeightmap(Heightmap.Type type, int i, int j) {
-        return this.wrapped.sampleHeightmap(this.transformHeightmapType(type), i, j);
+    public int sampleHeightmap(Heightmap.Type type, int x, int z) {
+        return this.wrapped.sampleHeightmap(this.transformHeightmapType(type), x, z);
     }
 
     @Override
@@ -116,17 +116,17 @@ extends ProtoChunk {
     }
 
     @Override
-    public void setLastSaveTime(long l) {
+    public void setLastSaveTime(long lastSaveTime) {
     }
 
     @Override
     @Nullable
-    public StructureStart getStructureStart(String string) {
-        return this.wrapped.getStructureStart(string);
+    public StructureStart getStructureStart(String structure) {
+        return this.wrapped.getStructureStart(structure);
     }
 
     @Override
-    public void setStructureStart(String string, StructureStart structureStart) {
+    public void setStructureStart(String structure, StructureStart start) {
     }
 
     @Override
@@ -139,12 +139,12 @@ extends ProtoChunk {
     }
 
     @Override
-    public LongSet getStructureReferences(String string) {
-        return this.wrapped.getStructureReferences(string);
+    public LongSet getStructureReferences(String structure) {
+        return this.wrapped.getStructureReferences(structure);
     }
 
     @Override
-    public void addStructureReference(String string, long l) {
+    public void addStructureReference(String structure, long reference) {
     }
 
     @Override
@@ -153,7 +153,7 @@ extends ProtoChunk {
     }
 
     @Override
-    public void setStructureReferences(Map<String, LongSet> map) {
+    public void setStructureReferences(Map<String, LongSet> structureReferences) {
     }
 
     @Override
@@ -162,7 +162,7 @@ extends ProtoChunk {
     }
 
     @Override
-    public void setShouldSave(boolean bl) {
+    public void setShouldSave(boolean shouldSave) {
     }
 
     @Override
@@ -189,8 +189,8 @@ extends ProtoChunk {
 
     @Override
     @Nullable
-    public CompoundTag getBlockEntityTagAt(BlockPos blockPos) {
-        return this.wrapped.getBlockEntityTagAt(blockPos);
+    public CompoundTag getBlockEntityTagAt(BlockPos pos) {
+        return this.wrapped.getBlockEntityTagAt(pos);
     }
 
     @Override
@@ -233,8 +233,8 @@ extends ProtoChunk {
     }
 
     @Override
-    public void setLightOn(boolean bl) {
-        this.wrapped.setLightOn(bl);
+    public void setLightOn(boolean lightOn) {
+        this.wrapped.setLightOn(lightOn);
     }
 
     @Override

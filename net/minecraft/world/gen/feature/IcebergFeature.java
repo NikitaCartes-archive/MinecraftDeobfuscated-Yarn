@@ -21,8 +21,8 @@ import net.minecraft.world.gen.feature.SingleStateFeatureConfig;
 
 public class IcebergFeature
 extends Feature<SingleStateFeatureConfig> {
-    public IcebergFeature(Function<Dynamic<?>, ? extends SingleStateFeatureConfig> function) {
-        super(function);
+    public IcebergFeature(Function<Dynamic<?>, ? extends SingleStateFeatureConfig> configFactory) {
+        super(configFactory);
     }
 
     @Override
@@ -122,9 +122,9 @@ extends Feature<SingleStateFeatureConfig> {
         }
     }
 
-    private void clearSnowAbove(IWorld iWorld, BlockPos blockPos) {
-        if (iWorld.getBlockState(blockPos.up()).getBlock() == Blocks.SNOW) {
-            this.setBlockState(iWorld, blockPos.up(), Blocks.AIR.getDefaultState());
+    private void clearSnowAbove(IWorld world, BlockPos pos) {
+        if (world.getBlockState(pos.up()).getBlock() == Blocks.SNOW) {
+            this.setBlockState(world, pos.up(), Blocks.AIR.getDefaultState());
         }
     }
 
@@ -200,32 +200,32 @@ extends Feature<SingleStateFeatureConfig> {
         return block == Blocks.PACKED_ICE || block == Blocks.SNOW_BLOCK || block == Blocks.BLUE_ICE;
     }
 
-    private boolean isAirBelow(BlockView blockView, BlockPos blockPos) {
-        return blockView.getBlockState(blockPos.down()).getMaterial() == Material.AIR;
+    private boolean isAirBelow(BlockView world, BlockPos pos) {
+        return world.getBlockState(pos.down()).getMaterial() == Material.AIR;
     }
 
-    private void method_13418(IWorld iWorld, BlockPos blockPos, int i, int j, boolean bl, int k) {
+    private void method_13418(IWorld world, BlockPos pos, int i, int j, boolean bl, int k) {
         int l = bl ? k : i / 2;
         for (int m = -l; m <= l; ++m) {
             for (int n = -l; n <= l; ++n) {
                 for (int o = 0; o <= j; ++o) {
-                    BlockPos blockPos2 = blockPos.add(m, o, n);
-                    Block block = iWorld.getBlockState(blockPos2).getBlock();
+                    BlockPos blockPos = pos.add(m, o, n);
+                    Block block = world.getBlockState(blockPos).getBlock();
                     if (!this.isSnowyOrIcy(block) && block != Blocks.SNOW) continue;
-                    if (this.isAirBelow(iWorld, blockPos2)) {
-                        this.setBlockState(iWorld, blockPos2, Blocks.AIR.getDefaultState());
-                        this.setBlockState(iWorld, blockPos2.up(), Blocks.AIR.getDefaultState());
+                    if (this.isAirBelow(world, blockPos)) {
+                        this.setBlockState(world, blockPos, Blocks.AIR.getDefaultState());
+                        this.setBlockState(world, blockPos.up(), Blocks.AIR.getDefaultState());
                         continue;
                     }
                     if (!this.isSnowyOrIcy(block)) continue;
-                    Block[] blocks = new Block[]{iWorld.getBlockState(blockPos2.west()).getBlock(), iWorld.getBlockState(blockPos2.east()).getBlock(), iWorld.getBlockState(blockPos2.north()).getBlock(), iWorld.getBlockState(blockPos2.south()).getBlock()};
+                    Block[] blocks = new Block[]{world.getBlockState(blockPos.west()).getBlock(), world.getBlockState(blockPos.east()).getBlock(), world.getBlockState(blockPos.north()).getBlock(), world.getBlockState(blockPos.south()).getBlock()};
                     int p = 0;
                     for (Block block2 : blocks) {
                         if (this.isSnowyOrIcy(block2)) continue;
                         ++p;
                     }
                     if (p < 3) continue;
-                    this.setBlockState(iWorld, blockPos2, Blocks.AIR.getDefaultState());
+                    this.setBlockState(world, blockPos, Blocks.AIR.getDefaultState());
                 }
             }
         }

@@ -26,9 +26,9 @@ extends RealmsScreen {
     private RealmsEditBox nameEdit;
     private RealmsLabel titleLabel;
 
-    public RealmsSettingsScreen(RealmsConfigureWorldScreen realmsConfigureWorldScreen, RealmsServer realmsServer) {
-        this.configureWorldScreen = realmsConfigureWorldScreen;
-        this.serverData = realmsServer;
+    public RealmsSettingsScreen(RealmsConfigureWorldScreen configureWorldScreen, RealmsServer serverData) {
+        this.configureWorldScreen = configureWorldScreen;
+        this.serverData = serverData;
     }
 
     @Override
@@ -94,10 +94,10 @@ extends RealmsScreen {
     }
 
     @Override
-    public void confirmResult(boolean bl, int i) {
-        switch (i) {
+    public void confirmResult(boolean result, int id) {
+        switch (id) {
             case 5: {
-                if (bl) {
+                if (result) {
                     this.configureWorldScreen.closeTheWorld(this);
                     break;
                 }
@@ -107,25 +107,25 @@ extends RealmsScreen {
     }
 
     @Override
-    public boolean keyPressed(int i, int j, int k) {
-        switch (i) {
+    public boolean keyPressed(int eventKey, int scancode, int mods) {
+        switch (eventKey) {
             case 256: {
                 Realms.setScreen(this.configureWorldScreen);
                 return true;
             }
         }
-        return super.keyPressed(i, j, k);
+        return super.keyPressed(eventKey, scancode, mods);
     }
 
     @Override
-    public void render(int i, int j, float f) {
+    public void render(int xm, int ym, float a) {
         this.renderBackground();
         this.titleLabel.render(this);
         this.drawString(RealmsSettingsScreen.getLocalizedString("mco.configure.world.name"), this.width() / 2 - 106, RealmsConstants.row(3), 0xA0A0A0);
         this.drawString(RealmsSettingsScreen.getLocalizedString("mco.configure.world.description"), this.width() / 2 - 106, RealmsConstants.row(7), 0xA0A0A0);
-        this.nameEdit.render(i, j, f);
-        this.descEdit.render(i, j, f);
-        super.render(i, j, f);
+        this.nameEdit.render(xm, ym, a);
+        this.descEdit.render(xm, ym, a);
+        super.render(xm, ym, a);
     }
 
     public void save() {

@@ -903,34 +903,34 @@ implements ResourcePack {
     }
 
     @Override
-    public InputStream openRoot(String string) throws IOException {
-        return this.parent.openRoot(string);
+    public InputStream openRoot(String fileName) throws IOException {
+        return this.parent.openRoot(fileName);
     }
 
     @Override
-    public InputStream open(ResourceType resourceType, Identifier identifier) throws IOException {
-        return this.parent.open(resourceType, this.getRedirectedId(identifier));
+    public InputStream open(ResourceType type, Identifier id) throws IOException {
+        return this.parent.open(type, this.getRedirectedId(id));
     }
 
     @Override
-    public Collection<Identifier> findResources(ResourceType resourceType, String string, String string2, int i, Predicate<String> predicate) {
+    public Collection<Identifier> findResources(ResourceType type, String namespace, String prefix, int maxDepth, Predicate<String> pathFilter) {
         return Collections.emptyList();
     }
 
     @Override
-    public boolean contains(ResourceType resourceType, Identifier identifier) {
-        return this.parent.contains(resourceType, this.getRedirectedId(identifier));
+    public boolean contains(ResourceType type, Identifier id) {
+        return this.parent.contains(type, this.getRedirectedId(id));
     }
 
     @Override
-    public Set<String> getNamespaces(ResourceType resourceType) {
-        return this.parent.getNamespaces(resourceType);
+    public Set<String> getNamespaces(ResourceType type) {
+        return this.parent.getNamespaces(type);
     }
 
     @Override
     @Nullable
-    public <T> T parseMetadata(ResourceMetadataReader<T> resourceMetadataReader) throws IOException {
-        return this.parent.parseMetadata(resourceMetadataReader);
+    public <T> T parseMetadata(ResourceMetadataReader<T> metaReader) throws IOException {
+        return this.parent.parseMetadata(metaReader);
     }
 
     @Override

@@ -27,8 +27,8 @@ extends SpriteBillboardParticle {
     private final float field_17884;
     private final float field_17885;
 
-    public BlockCrackParticle(World world, double d, double e, double f, double g, double h, double i, BlockState blockState) {
-        super(world, d, e, f, g, h, i);
+    public BlockCrackParticle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, BlockState blockState) {
+        super(world, x, y, z, velocityX, velocityY, velocityZ);
         this.blockState = blockState;
         this.setSprite(MinecraftClient.getInstance().getBlockRenderManager().getModels().getSprite(blockState));
         this.gravityStrength = 1.0f;
@@ -92,8 +92,8 @@ extends SpriteBillboardParticle {
     }
 
     @Override
-    public int getColorMultiplier(float f) {
-        int i = super.getColorMultiplier(f);
+    public int getColorMultiplier(float tint) {
+        int i = super.getColorMultiplier(tint);
         int j = 0;
         if (this.world.isChunkLoaded(this.blockPos)) {
             j = WorldRenderer.getLightmapCoordinates(this.world, this.blockPos);

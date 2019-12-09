@@ -49,16 +49,16 @@ extends Entity {
         super(entityType, world);
     }
 
-    public ItemEntity(World world, double d, double e, double f) {
+    public ItemEntity(World world, double x, double y, double z) {
         this((EntityType<? extends ItemEntity>)EntityType.ITEM, world);
-        this.setPosition(d, e, f);
+        this.setPosition(x, y, z);
         this.yaw = this.random.nextFloat() * 360.0f;
         this.setVelocity(this.random.nextDouble() * 0.2 - 0.1, 0.2, this.random.nextDouble() * 0.2 - 0.1);
     }
 
-    public ItemEntity(World world, double d, double e, double f, ItemStack itemStack) {
-        this(world, d, e, f);
-        this.setStack(itemStack);
+    public ItemEntity(World world, double x, double y, double z, ItemStack stack) {
+        this(world, x, y, z);
+        this.setStack(stack);
     }
 
     @Override
@@ -157,16 +157,16 @@ extends Entity {
         return this.isAlive() && this.pickupDelay != Short.MAX_VALUE && this.age != Short.MIN_VALUE && this.age < 6000 && itemStack.getCount() < itemStack.getMaxCount();
     }
 
-    private void tryMerge(ItemEntity itemEntity) {
+    private void tryMerge(ItemEntity other) {
         ItemStack itemStack = this.getStack();
-        ItemStack itemStack2 = itemEntity.getStack();
-        if (!Objects.equals(this.getOwner(), itemEntity.getOwner()) || !ItemEntity.method_24017(itemStack, itemStack2)) {
+        ItemStack itemStack2 = other.getStack();
+        if (!Objects.equals(this.getOwner(), other.getOwner()) || !ItemEntity.method_24017(itemStack, itemStack2)) {
             return;
         }
         if (itemStack2.getCount() < itemStack.getCount()) {
-            ItemEntity.merge(this, itemStack, itemEntity, itemStack2);
+            ItemEntity.merge(this, itemStack, other, itemStack2);
         } else {
-            ItemEntity.merge(itemEntity, itemStack2, this, itemStack);
+            ItemEntity.merge(other, itemStack2, this, itemStack);
         }
     }
 
@@ -196,30 +196,30 @@ extends Entity {
         itemEntity.setStack(itemStack3);
     }
 
-    private static void merge(ItemEntity itemEntity, ItemStack itemStack, ItemEntity itemEntity2, ItemStack itemStack2) {
-        ItemEntity.method_24016(itemEntity, itemStack, itemStack2);
-        itemEntity.pickupDelay = Math.max(itemEntity.pickupDelay, itemEntity2.pickupDelay);
-        itemEntity.age = Math.min(itemEntity.age, itemEntity2.age);
-        if (itemStack2.isEmpty()) {
-            itemEntity2.remove();
+    private static void merge(ItemEntity targetEntity, ItemStack targetStack, ItemEntity sourceEntity, ItemStack sourceStack) {
+        ItemEntity.method_24016(targetEntity, targetStack, sourceStack);
+        targetEntity.pickupDelay = Math.max(targetEntity.pickupDelay, sourceEntity.pickupDelay);
+        targetEntity.age = Math.min(targetEntity.age, sourceEntity.age);
+        if (sourceStack.isEmpty()) {
+            sourceEntity.remove();
         }
     }
 
     @Override
-    protected void burn(int i) {
-        this.damage(DamageSource.IN_FIRE, i);
+    protected void burn(int time) {
+        this.damage(DamageSource.IN_FIRE, time);
     }
 
     @Override
-    public boolean damage(DamageSource damageSource, float f) {
-        if (this.isInvulnerableTo(damageSource)) {
+    public boolean damage(DamageSource source, float amount) {
+        if (this.isInvulnerableTo(source)) {
             return false;
         }
-        if (!this.getStack().isEmpty() && this.getStack().getItem() == Items.NETHER_STAR && damageSource.isExplosive()) {
+        if (!this.getStack().isEmpty() && this.getStack().getItem() == Items.NETHER_STAR && source.isExplosive()) {
             return false;
         }
         this.scheduleVelocityUpdate();
-        this.health = (int)((float)this.health - f);
+        this.health = (int)((float)this.health - amount);
         if (this.health <= 0) {
             this.remove();
         }
@@ -227,56 +227,56 @@ extends Entity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag compoundTag) {
-        compoundTag.putShort("Health", (short)this.health);
-        compoundTag.putShort("Age", (short)this.age);
-        compoundTag.putShort("PickupDelay", (short)this.pickupDelay);
+    public void writeCustomDataToTag(CompoundTag tag) {
+        tag.putShort("Health", (short)this.health);
+        tag.putShort("Age", (short)this.age);
+        tag.putShort("PickupDelay", (short)this.pickupDelay);
         if (this.getThrower() != null) {
-            compoundTag.put("Thrower", NbtHelper.fromUuid(this.getThrower()));
+            tag.put("Thrower", NbtHelper.fromUuid(this.getThrower()));
         }
         if (this.getOwner() != null) {
-            compoundTag.put("Owner", NbtHelper.fromUuid(this.getOwner()));
+            tag.put("Owner", NbtHelper.fromUuid(this.getOwner()));
         }
         if (!this.getStack().isEmpty()) {
-            compoundTag.put("Item", this.getStack().toTag(new CompoundTag()));
+            tag.put("Item", this.getStack().toTag(new CompoundTag()));
         }
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag compoundTag) {
-        this.health = compoundTag.getShort("Health");
-        this.age = compoundTag.getShort("Age");
-        if (compoundTag.contains("PickupDelay")) {
-            this.pickupDelay = compoundTag.getShort("PickupDelay");
+    public void readCustomDataFromTag(CompoundTag tag) {
+        this.health = tag.getShort("Health");
+        this.age = tag.getShort("Age");
+        if (tag.contains("PickupDelay")) {
+            this.pickupDelay = tag.getShort("PickupDelay");
         }
-        if (compoundTag.contains("Owner", 10)) {
-            this.owner = NbtHelper.toUuid(compoundTag.getCompound("Owner"));
+        if (tag.contains("Owner", 10)) {
+            this.owner = NbtHelper.toUuid(tag.getCompound("Owner"));
         }
-        if (compoundTag.contains("Thrower", 10)) {
-            this.thrower = NbtHelper.toUuid(compoundTag.getCompound("Thrower"));
+        if (tag.contains("Thrower", 10)) {
+            this.thrower = NbtHelper.toUuid(tag.getCompound("Thrower"));
         }
-        CompoundTag compoundTag2 = compoundTag.getCompound("Item");
-        this.setStack(ItemStack.fromTag(compoundTag2));
+        CompoundTag compoundTag = tag.getCompound("Item");
+        this.setStack(ItemStack.fromTag(compoundTag));
         if (this.getStack().isEmpty()) {
             this.remove();
         }
     }
 
     @Override
-    public void onPlayerCollision(PlayerEntity playerEntity) {
+    public void onPlayerCollision(PlayerEntity player) {
         if (this.world.isClient) {
             return;
         }
         ItemStack itemStack = this.getStack();
         Item item = itemStack.getItem();
         int i = itemStack.getCount();
-        if (this.pickupDelay == 0 && (this.owner == null || this.owner.equals(playerEntity.getUuid())) && playerEntity.inventory.insertStack(itemStack)) {
-            playerEntity.sendPickup(this, i);
+        if (this.pickupDelay == 0 && (this.owner == null || this.owner.equals(player.getUuid())) && player.inventory.insertStack(itemStack)) {
+            player.sendPickup(this, i);
             if (itemStack.isEmpty()) {
                 this.remove();
                 itemStack.setCount(i);
             }
-            playerEntity.increaseStat(Stats.PICKED_UP.getOrCreateStat(item), i);
+            player.increaseStat(Stats.PICKED_UP.getOrCreateStat(item), i);
         }
     }
 
@@ -296,8 +296,8 @@ extends Entity {
 
     @Override
     @Nullable
-    public Entity changeDimension(DimensionType dimensionType) {
-        Entity entity = super.changeDimension(dimensionType);
+    public Entity changeDimension(DimensionType newDimension) {
+        Entity entity = super.changeDimension(newDimension);
         if (!this.world.isClient && entity instanceof ItemEntity) {
             ((ItemEntity)entity).tryMerge();
         }
@@ -308,8 +308,8 @@ extends Entity {
         return this.getDataTracker().get(STACK);
     }
 
-    public void setStack(ItemStack itemStack) {
-        this.getDataTracker().set(STACK, itemStack);
+    public void setStack(ItemStack stack) {
+        this.getDataTracker().set(STACK, stack);
     }
 
     @Nullable
@@ -317,8 +317,8 @@ extends Entity {
         return this.owner;
     }
 
-    public void setOwner(@Nullable UUID uUID) {
-        this.owner = uUID;
+    public void setOwner(@Nullable UUID uuid) {
+        this.owner = uuid;
     }
 
     @Nullable
@@ -326,8 +326,8 @@ extends Entity {
         return this.thrower;
     }
 
-    public void setThrower(@Nullable UUID uUID) {
-        this.thrower = uUID;
+    public void setThrower(@Nullable UUID uuid) {
+        this.thrower = uuid;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -347,8 +347,8 @@ extends Entity {
         this.pickupDelay = Short.MAX_VALUE;
     }
 
-    public void setPickupDelay(int i) {
-        this.pickupDelay = i;
+    public void setPickupDelay(int pickupDelay) {
+        this.pickupDelay = pickupDelay;
     }
 
     public boolean cannotPickup() {

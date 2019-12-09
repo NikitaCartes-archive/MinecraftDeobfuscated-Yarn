@@ -27,10 +27,10 @@ extends ConditionalLootFunction {
     private final UniformLootTableRange countRange;
     private final int limit;
 
-    private LootingEnchantLootFunction(LootCondition[] lootConditions, UniformLootTableRange uniformLootTableRange, int i) {
-        super(lootConditions);
-        this.countRange = uniformLootTableRange;
-        this.limit = i;
+    private LootingEnchantLootFunction(LootCondition[] conditions, UniformLootTableRange countRange, int limit) {
+        super(conditions);
+        this.countRange = countRange;
+        this.limit = limit;
     }
 
     @Override
@@ -43,24 +43,24 @@ extends ConditionalLootFunction {
     }
 
     @Override
-    public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-        Entity entity = lootContext.get(LootContextParameters.KILLER_ENTITY);
+    public ItemStack process(ItemStack stack, LootContext context) {
+        Entity entity = context.get(LootContextParameters.KILLER_ENTITY);
         if (entity instanceof LivingEntity) {
             int i = EnchantmentHelper.getLooting((LivingEntity)entity);
             if (i == 0) {
-                return itemStack;
+                return stack;
             }
-            float f = (float)i * this.countRange.nextFloat(lootContext.getRandom());
-            itemStack.increment(Math.round(f));
-            if (this.hasLimit() && itemStack.getCount() > this.limit) {
-                itemStack.setCount(this.limit);
+            float f = (float)i * this.countRange.nextFloat(context.getRandom());
+            stack.increment(Math.round(f));
+            if (this.hasLimit() && stack.getCount() > this.limit) {
+                stack.setCount(this.limit);
             }
         }
-        return itemStack;
+        return stack;
     }
 
-    public static Builder builder(UniformLootTableRange uniformLootTableRange) {
-        return new Builder(uniformLootTableRange);
+    public static Builder builder(UniformLootTableRange countRange) {
+        return new Builder(countRange);
     }
 
     public static class Factory
@@ -85,8 +85,8 @@ extends ConditionalLootFunction {
         }
 
         @Override
-        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
+        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions) {
+            return this.fromJson(json, context, conditions);
         }
     }
 
@@ -95,8 +95,8 @@ extends ConditionalLootFunction {
         private final UniformLootTableRange countRange;
         private int limit = 0;
 
-        public Builder(UniformLootTableRange uniformLootTableRange) {
-            this.countRange = uniformLootTableRange;
+        public Builder(UniformLootTableRange countRange) {
+            this.countRange = countRange;
         }
 
         @Override
@@ -104,8 +104,8 @@ extends ConditionalLootFunction {
             return this;
         }
 
-        public Builder withLimit(int i) {
-            this.limit = i;
+        public Builder withLimit(int limit) {
+            this.limit = limit;
             return this;
         }
 

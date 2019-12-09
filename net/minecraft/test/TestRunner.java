@@ -33,16 +33,16 @@ public class TestRunner {
     private BlockPos.Mutable reusablePos;
     private int sizeZ = 0;
 
-    public TestRunner(Collection<GameTestBatch> collection, BlockPos blockPos, ServerWorld serverWorld, TestManager testManager) {
-        this.reusablePos = new BlockPos.Mutable(blockPos);
-        this.pos = blockPos;
-        this.world = serverWorld;
+    public TestRunner(Collection<GameTestBatch> batches, BlockPos pos, ServerWorld world, TestManager testManager) {
+        this.reusablePos = new BlockPos.Mutable(pos);
+        this.pos = pos;
+        this.world = world;
         this.testManager = testManager;
-        collection.forEach(gameTestBatch -> {
+        batches.forEach(gameTestBatch -> {
             ArrayList<GameTest> collection = Lists.newArrayList();
             Collection<TestFunction> collection2 = gameTestBatch.getTestFunctions();
             for (TestFunction testFunction : collection2) {
-                GameTest gameTest = new GameTest(testFunction, serverWorld);
+                GameTest gameTest = new GameTest(testFunction, world);
                 collection.add(gameTest);
                 this.tests.add(gameTest);
             }
@@ -58,10 +58,10 @@ public class TestRunner {
         this.runBatch(0);
     }
 
-    private void runBatch(int i) {
-        this.currentBatchIndex = i;
+    private void runBatch(int index) {
+        this.currentBatchIndex = index;
         this.currentBatchTests = new TestSet();
-        if (i >= this.batches.size()) {
+        if (index >= this.batches.size()) {
             return;
         }
         Pair<GameTestBatch, Collection<GameTest>> pair = this.batches.get(this.currentBatchIndex);
@@ -76,19 +76,19 @@ public class TestRunner {
             this.currentBatchTests.addListener(new TestListener(){
 
                 @Override
-                public void onStarted(GameTest gameTest) {
+                public void onStarted(GameTest test) {
                 }
 
                 @Override
-                public void onFailed(GameTest gameTest) {
-                    TestRunner.this.onTestCompleted(gameTest);
+                public void onFailed(GameTest test) {
+                    TestRunner.this.onTestCompleted(test);
                 }
             });
             TestUtil.startTest(gameTest, this.testManager);
         });
     }
 
-    private void onTestCompleted(GameTest gameTest) {
+    private void onTestCompleted(GameTest test) {
         if (this.currentBatchTests.isDone()) {
             this.runBatch(this.currentBatchIndex + 1);
         }

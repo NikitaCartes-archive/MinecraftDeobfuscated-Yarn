@@ -9,8 +9,8 @@ import net.minecraft.client.render.VertexConsumer;
 
 @Environment(value=EnvType.CLIENT)
 public class VertexConsumers {
-    public static VertexConsumer dual(VertexConsumer vertexConsumer, VertexConsumer vertexConsumer2) {
-        return new Dual(vertexConsumer, vertexConsumer2);
+    public static VertexConsumer dual(VertexConsumer first, VertexConsumer second) {
+        return new Dual(first, second);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -19,60 +19,60 @@ public class VertexConsumers {
         private final VertexConsumer first;
         private final VertexConsumer second;
 
-        public Dual(VertexConsumer vertexConsumer, VertexConsumer vertexConsumer2) {
-            if (vertexConsumer == vertexConsumer2) {
+        public Dual(VertexConsumer first, VertexConsumer second) {
+            if (first == second) {
                 throw new IllegalArgumentException("Duplicate delegates");
             }
-            this.first = vertexConsumer;
-            this.second = vertexConsumer2;
+            this.first = first;
+            this.second = second;
         }
 
         @Override
-        public VertexConsumer vertex(double d, double e, double f) {
-            this.first.vertex(d, e, f);
-            this.second.vertex(d, e, f);
+        public VertexConsumer vertex(double x, double y, double z) {
+            this.first.vertex(x, y, z);
+            this.second.vertex(x, y, z);
             return this;
         }
 
         @Override
-        public VertexConsumer color(int i, int j, int k, int l) {
-            this.first.color(i, j, k, l);
-            this.second.color(i, j, k, l);
+        public VertexConsumer color(int red, int green, int blue, int alpha) {
+            this.first.color(red, green, blue, alpha);
+            this.second.color(red, green, blue, alpha);
             return this;
         }
 
         @Override
-        public VertexConsumer texture(float f, float g) {
-            this.first.texture(f, g);
-            this.second.texture(f, g);
+        public VertexConsumer texture(float u, float v) {
+            this.first.texture(u, v);
+            this.second.texture(u, v);
             return this;
         }
 
         @Override
-        public VertexConsumer overlay(int i, int j) {
-            this.first.overlay(i, j);
-            this.second.overlay(i, j);
+        public VertexConsumer overlay(int u, int v) {
+            this.first.overlay(u, v);
+            this.second.overlay(u, v);
             return this;
         }
 
         @Override
-        public VertexConsumer light(int i, int j) {
-            this.first.light(i, j);
-            this.second.light(i, j);
+        public VertexConsumer light(int u, int v) {
+            this.first.light(u, v);
+            this.second.light(u, v);
             return this;
         }
 
         @Override
-        public VertexConsumer normal(float f, float g, float h) {
-            this.first.normal(f, g, h);
-            this.second.normal(f, g, h);
+        public VertexConsumer normal(float x, float y, float z) {
+            this.first.normal(x, y, z);
+            this.second.normal(x, y, z);
             return this;
         }
 
         @Override
-        public void vertex(float f, float g, float h, float i, float j, float k, float l, float m, float n, int o, int p, float q, float r, float s) {
-            this.first.vertex(f, g, h, i, j, k, l, m, n, o, p, q, r, s);
-            this.second.vertex(f, g, h, i, j, k, l, m, n, o, p, q, r, s);
+        public void vertex(float x, float y, float z, float red, float green, float blue, float alpha, float u, float v, int overlay, int light, float normalX, float normalY, float normalZ) {
+            this.first.vertex(x, y, z, red, green, blue, alpha, u, v, overlay, light, normalX, normalY, normalZ);
+            this.second.vertex(x, y, z, red, green, blue, alpha, u, v, overlay, light, normalX, normalY, normalZ);
         }
 
         @Override

@@ -26,17 +26,17 @@ public class Tag<T> {
     private final Set<T> values;
     private final Collection<Entry<T>> entries;
 
-    public Tag(Identifier identifier) {
-        this.id = identifier;
+    public Tag(Identifier id) {
+        this.id = id;
         this.values = Collections.emptySet();
         this.entries = Collections.emptyList();
     }
 
-    public Tag(Identifier identifier, Collection<Entry<T>> collection, boolean bl) {
-        this.id = identifier;
-        this.values = bl ? Sets.newLinkedHashSet() : Sets.newHashSet();
-        this.entries = collection;
-        for (Entry<T> entry : collection) {
+    public Tag(Identifier id, Collection<Entry<T>> entries, boolean ordered) {
+        this.id = id;
+        this.values = ordered ? Sets.newLinkedHashSet() : Sets.newHashSet();
+        this.entries = entries;
+        for (Entry<T> entry : entries) {
             entry.build(this.values);
         }
     }
@@ -52,8 +52,8 @@ public class Tag<T> {
         return jsonObject;
     }
 
-    public boolean contains(T object) {
-        return this.values.contains(object);
+    public boolean contains(T entry) {
+        return this.values.contains(entry);
     }
 
     public Collection<T> values() {

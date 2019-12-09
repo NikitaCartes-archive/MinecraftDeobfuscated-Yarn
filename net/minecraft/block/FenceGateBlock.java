@@ -47,97 +47,97 @@ extends HorizontalFacingBlock {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-        if (blockState.get(IN_WALL).booleanValue()) {
-            return blockState.get(FACING).getAxis() == Direction.Axis.X ? IN_WALL_X_AXIS_SHAPE : IN_WALL_Z_AXIS_SHAPE;
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+        if (state.get(IN_WALL).booleanValue()) {
+            return state.get(FACING).getAxis() == Direction.Axis.X ? IN_WALL_X_AXIS_SHAPE : IN_WALL_Z_AXIS_SHAPE;
         }
-        return blockState.get(FACING).getAxis() == Direction.Axis.X ? X_AXIS_SHAPE : Z_AXIS_SHAPE;
+        return state.get(FACING).getAxis() == Direction.Axis.X ? X_AXIS_SHAPE : Z_AXIS_SHAPE;
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-        Direction.Axis axis = direction.getAxis();
-        if (blockState.get(FACING).rotateYClockwise().getAxis() == axis) {
-            boolean bl = this.isWall(blockState2) || this.isWall(iWorld.getBlockState(blockPos.offset(direction.getOpposite())));
-            return (BlockState)blockState.with(IN_WALL, bl);
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+        Direction.Axis axis = facing.getAxis();
+        if (state.get(FACING).rotateYClockwise().getAxis() == axis) {
+            boolean bl = this.isWall(neighborState) || this.isWall(world.getBlockState(pos.offset(facing.getOpposite())));
+            return (BlockState)state.with(IN_WALL, bl);
         }
-        return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+        return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
     }
 
     @Override
-    public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-        if (blockState.get(OPEN).booleanValue()) {
+    public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+        if (state.get(OPEN).booleanValue()) {
             return VoxelShapes.empty();
         }
-        return blockState.get(FACING).getAxis() == Direction.Axis.Z ? Z_AXIS_COLLISION_SHAPE : X_AXIS_COLLISION_SHAPE;
+        return state.get(FACING).getAxis() == Direction.Axis.Z ? Z_AXIS_COLLISION_SHAPE : X_AXIS_COLLISION_SHAPE;
     }
 
     @Override
-    public VoxelShape getCullingShape(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-        if (blockState.get(IN_WALL).booleanValue()) {
-            return blockState.get(FACING).getAxis() == Direction.Axis.X ? IN_WALL_X_AXIS_CULL_SHAPE : IN_WALL_Z_AXIS_CULL_SHAPE;
+    public VoxelShape getCullingShape(BlockState state, BlockView view, BlockPos pos) {
+        if (state.get(IN_WALL).booleanValue()) {
+            return state.get(FACING).getAxis() == Direction.Axis.X ? IN_WALL_X_AXIS_CULL_SHAPE : IN_WALL_Z_AXIS_CULL_SHAPE;
         }
-        return blockState.get(FACING).getAxis() == Direction.Axis.X ? X_AXIS_CULL_SHAPE : Z_AXIS_CULL_SHAPE;
+        return state.get(FACING).getAxis() == Direction.Axis.X ? X_AXIS_CULL_SHAPE : Z_AXIS_CULL_SHAPE;
     }
 
     @Override
-    public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
-        switch (blockPlacementEnvironment) {
+    public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+        switch (env) {
             case LAND: {
-                return blockState.get(OPEN);
+                return world.get(OPEN);
             }
             case WATER: {
                 return false;
             }
             case AIR: {
-                return blockState.get(OPEN);
+                return world.get(OPEN);
             }
         }
         return false;
     }
 
     @Override
-    public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-        World world = itemPlacementContext.getWorld();
-        BlockPos blockPos = itemPlacementContext.getBlockPos();
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        World world = ctx.getWorld();
+        BlockPos blockPos = ctx.getBlockPos();
         boolean bl = world.isReceivingRedstonePower(blockPos);
-        Direction direction = itemPlacementContext.getPlayerFacing();
+        Direction direction = ctx.getPlayerFacing();
         Direction.Axis axis = direction.getAxis();
         boolean bl2 = axis == Direction.Axis.Z && (this.isWall(world.getBlockState(blockPos.west())) || this.isWall(world.getBlockState(blockPos.east()))) || axis == Direction.Axis.X && (this.isWall(world.getBlockState(blockPos.north())) || this.isWall(world.getBlockState(blockPos.south())));
         return (BlockState)((BlockState)((BlockState)((BlockState)this.getDefaultState().with(FACING, direction)).with(OPEN, bl)).with(POWERED, bl)).with(IN_WALL, bl2);
     }
 
-    private boolean isWall(BlockState blockState) {
-        return blockState.getBlock().matches(BlockTags.WALLS);
+    private boolean isWall(BlockState state) {
+        return state.getBlock().matches(BlockTags.WALLS);
     }
 
     @Override
-    public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-        if (blockState.get(OPEN).booleanValue()) {
-            blockState = (BlockState)blockState.with(OPEN, false);
-            world.setBlockState(blockPos, blockState, 10);
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        if (state.get(OPEN).booleanValue()) {
+            state = (BlockState)state.with(OPEN, false);
+            world.setBlockState(pos, state, 10);
         } else {
-            Direction direction = playerEntity.getHorizontalFacing();
-            if (blockState.get(FACING) == direction.getOpposite()) {
-                blockState = (BlockState)blockState.with(FACING, direction);
+            Direction direction = player.getHorizontalFacing();
+            if (state.get(FACING) == direction.getOpposite()) {
+                state = (BlockState)state.with(FACING, direction);
             }
-            blockState = (BlockState)blockState.with(OPEN, true);
-            world.setBlockState(blockPos, blockState, 10);
+            state = (BlockState)state.with(OPEN, true);
+            world.setBlockState(pos, state, 10);
         }
-        world.playLevelEvent(playerEntity, blockState.get(OPEN) != false ? 1008 : 1014, blockPos, 0);
+        world.playLevelEvent(player, state.get(OPEN) != false ? 1008 : 1014, pos, 0);
         return ActionResult.SUCCESS;
     }
 
     @Override
-    public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
+    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos neighborPos, boolean moved) {
         if (world.isClient) {
             return;
         }
-        boolean bl2 = world.isReceivingRedstonePower(blockPos);
-        if (blockState.get(POWERED) != bl2) {
-            world.setBlockState(blockPos, (BlockState)((BlockState)blockState.with(POWERED, bl2)).with(OPEN, bl2), 2);
-            if (blockState.get(OPEN) != bl2) {
-                world.playLevelEvent(null, bl2 ? 1008 : 1014, blockPos, 0);
+        boolean bl = world.isReceivingRedstonePower(pos);
+        if (state.get(POWERED) != bl) {
+            world.setBlockState(pos, (BlockState)((BlockState)state.with(POWERED, bl)).with(OPEN, bl), 2);
+            if (state.get(OPEN) != bl) {
+                world.playLevelEvent(null, bl ? 1008 : 1014, pos, 0);
             }
         }
     }
@@ -147,8 +147,8 @@ extends HorizontalFacingBlock {
         builder.add(FACING, OPEN, POWERED, IN_WALL);
     }
 
-    public static boolean canWallConnect(BlockState blockState, Direction direction) {
-        return blockState.get(FACING).getAxis() == direction.rotateYClockwise().getAxis();
+    public static boolean canWallConnect(BlockState state, Direction side) {
+        return state.get(FACING).getAxis() == side.rotateYClockwise().getAxis();
     }
 }
 

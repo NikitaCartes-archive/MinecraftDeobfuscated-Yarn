@@ -9,7 +9,7 @@ public interface CommandOutput {
     public static final CommandOutput DUMMY = new CommandOutput(){
 
         @Override
-        public void sendMessage(Text text) {
+        public void sendMessage(Text message) {
         }
 
         @Override

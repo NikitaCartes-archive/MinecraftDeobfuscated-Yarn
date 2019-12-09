@@ -35,28 +35,28 @@ implements DebugRenderer.Renderer {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f) {
+    public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
         RenderSystem.pushMatrix();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.disableTexture();
-        BlockPos blockPos = new BlockPos(d, 0.0, f);
+        BlockPos blockPos = new BlockPos(cameraX, 0.0, cameraZ);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
         for (Map.Entry<BlockPos, BlockPos> entry : this.field_4507.entrySet()) {
             BlockPos blockPos2 = entry.getKey();
             BlockPos blockPos3 = entry.getValue();
-            float g = (float)(blockPos3.getX() * 128 % 256) / 256.0f;
-            float h = (float)(blockPos3.getY() * 128 % 256) / 256.0f;
-            float i = (float)(blockPos3.getZ() * 128 % 256) / 256.0f;
-            float j = this.field_4508.get(blockPos2).floatValue();
+            float f = (float)(blockPos3.getX() * 128 % 256) / 256.0f;
+            float g = (float)(blockPos3.getY() * 128 % 256) / 256.0f;
+            float h = (float)(blockPos3.getZ() * 128 % 256) / 256.0f;
+            float i = this.field_4508.get(blockPos2).floatValue();
             if (!blockPos.isWithinDistance(blockPos2, 160.0)) continue;
-            WorldRenderer.drawBox(bufferBuilder, (double)((float)blockPos2.getX() + 0.5f) - d - (double)j, (double)((float)blockPos2.getY() + 0.5f) - e - (double)j, (double)((float)blockPos2.getZ() + 0.5f) - f - (double)j, (double)((float)blockPos2.getX() + 0.5f) - d + (double)j, (double)((float)blockPos2.getY() + 0.5f) - e + (double)j, (double)((float)blockPos2.getZ() + 0.5f) - f + (double)j, g, h, i, 0.5f);
+            WorldRenderer.drawBox(bufferBuilder, (double)((float)blockPos2.getX() + 0.5f) - cameraX - (double)i, (double)((float)blockPos2.getY() + 0.5f) - cameraY - (double)i, (double)((float)blockPos2.getZ() + 0.5f) - cameraZ - (double)i, (double)((float)blockPos2.getX() + 0.5f) - cameraX + (double)i, (double)((float)blockPos2.getY() + 0.5f) - cameraY + (double)i, (double)((float)blockPos2.getZ() + 0.5f) - cameraZ + (double)i, f, g, h, 0.5f);
         }
         for (BlockPos blockPos4 : this.field_4506) {
             if (!blockPos.isWithinDistance(blockPos4, 160.0)) continue;
-            WorldRenderer.drawBox(bufferBuilder, (double)blockPos4.getX() - d, (double)blockPos4.getY() - e, (double)blockPos4.getZ() - f, (double)((float)blockPos4.getX() + 1.0f) - d, (double)((float)blockPos4.getY() + 1.0f) - e, (double)((float)blockPos4.getZ() + 1.0f) - f, 1.0f, 1.0f, 1.0f, 1.0f);
+            WorldRenderer.drawBox(bufferBuilder, (double)blockPos4.getX() - cameraX, (double)blockPos4.getY() - cameraY, (double)blockPos4.getZ() - cameraZ, (double)((float)blockPos4.getX() + 1.0f) - cameraX, (double)((float)blockPos4.getY() + 1.0f) - cameraY, (double)((float)blockPos4.getZ() + 1.0f) - cameraZ, 1.0f, 1.0f, 1.0f, 1.0f);
         }
         tessellator.draw();
         RenderSystem.enableDepthTest();

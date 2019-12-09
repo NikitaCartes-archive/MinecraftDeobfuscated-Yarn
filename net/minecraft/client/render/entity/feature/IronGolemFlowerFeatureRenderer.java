@@ -20,8 +20,8 @@ import net.minecraft.entity.passive.IronGolemEntity;
 @Environment(value=EnvType.CLIENT)
 public class IronGolemFlowerFeatureRenderer
 extends FeatureRenderer<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> {
-    public IronGolemFlowerFeatureRenderer(FeatureRendererContext<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> featureRendererContext) {
-        super(featureRendererContext);
+    public IronGolemFlowerFeatureRenderer(FeatureRendererContext<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> context) {
+        super(context);
     }
 
     @Override

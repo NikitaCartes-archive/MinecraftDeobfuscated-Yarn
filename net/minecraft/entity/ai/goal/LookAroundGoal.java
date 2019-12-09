@@ -14,8 +14,8 @@ extends Goal {
     private double deltaZ;
     private int lookTime;
 
-    public LookAroundGoal(MobEntity mobEntity) {
-        this.mob = mobEntity;
+    public LookAroundGoal(MobEntity mob) {
+        this.mob = mob;
         this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
     }
 

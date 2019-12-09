@@ -39,13 +39,13 @@ extends ConditionalLootFunction {
     private final int searchRadius;
     private final boolean skipExistingChunks;
 
-    private ExplorationMapLootFunction(LootCondition[] lootConditions, String string, MapIcon.Type type, byte b, int i, boolean bl) {
-        super(lootConditions);
-        this.destination = string;
-        this.decoration = type;
-        this.zoom = b;
-        this.searchRadius = i;
-        this.skipExistingChunks = bl;
+    private ExplorationMapLootFunction(LootCondition[] conditions, String destination, MapIcon.Type decoration, byte zoom, int searchRadius, boolean skipExistingChunks) {
+        super(conditions);
+        this.destination = destination;
+        this.decoration = decoration;
+        this.zoom = zoom;
+        this.searchRadius = searchRadius;
+        this.skipExistingChunks = skipExistingChunks;
     }
 
     @Override
@@ -54,21 +54,21 @@ extends ConditionalLootFunction {
     }
 
     @Override
-    public ItemStack process(ItemStack itemStack, LootContext lootContext) {
+    public ItemStack process(ItemStack stack, LootContext context) {
         ServerWorld serverWorld;
         BlockPos blockPos2;
-        if (itemStack.getItem() != Items.MAP) {
+        if (stack.getItem() != Items.MAP) {
+            return stack;
+        }
+        BlockPos blockPos = context.get(LootContextParameters.POSITION);
+        if (blockPos != null && (blockPos2 = (serverWorld = context.getWorld()).locateStructure(this.destination, blockPos, this.searchRadius, this.skipExistingChunks)) != null) {
+            ItemStack itemStack = FilledMapItem.createMap(serverWorld, blockPos2.getX(), blockPos2.getZ(), this.zoom, true, true);
+            FilledMapItem.fillExplorationMap(serverWorld, itemStack);
+            MapState.addDecorationsTag(itemStack, blockPos2, "+", this.decoration);
+            itemStack.setCustomName(new TranslatableText("filled_map." + this.destination.toLowerCase(Locale.ROOT), new Object[0]));
             return itemStack;
         }
-        BlockPos blockPos = lootContext.get(LootContextParameters.POSITION);
-        if (blockPos != null && (blockPos2 = (serverWorld = lootContext.getWorld()).locateStructure(this.destination, blockPos, this.searchRadius, this.skipExistingChunks)) != null) {
-            ItemStack itemStack2 = FilledMapItem.createMap(serverWorld, blockPos2.getX(), blockPos2.getZ(), this.zoom, true, true);
-            FilledMapItem.fillExplorationMap(serverWorld, itemStack2);
-            MapState.addDecorationsTag(itemStack2, blockPos2, "+", this.decoration);
-            itemStack2.setCustomName(new TranslatableText("filled_map." + this.destination.toLowerCase(Locale.ROOT), new Object[0]));
-            return itemStack2;
-        }
-        return itemStack;
+        return stack;
     }
 
     public static Builder create() {
@@ -119,8 +119,8 @@ extends ConditionalLootFunction {
         }
 
         @Override
-        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
+        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions) {
+            return this.fromJson(json, context, conditions);
         }
     }
 
@@ -137,23 +137,23 @@ extends ConditionalLootFunction {
             return this;
         }
 
-        public Builder withDestination(String string) {
-            this.destination = string;
+        public Builder withDestination(String destination) {
+            this.destination = destination;
             return this;
         }
 
-        public Builder withDecoration(MapIcon.Type type) {
-            this.decoration = type;
+        public Builder withDecoration(MapIcon.Type decoration) {
+            this.decoration = decoration;
             return this;
         }
 
-        public Builder withZoom(byte b) {
-            this.zoom = b;
+        public Builder withZoom(byte zoom) {
+            this.zoom = zoom;
             return this;
         }
 
-        public Builder withSkipExistingChunks(boolean bl) {
-            this.skipExistingChunks = bl;
+        public Builder withSkipExistingChunks(boolean skipExistingChunks) {
+            this.skipExistingChunks = skipExistingChunks;
             return this;
         }
 

@@ -24,9 +24,9 @@ implements LootCondition {
     private final EntityPredicate predicate;
     private final LootContext.EntityTarget entity;
 
-    private EntityPropertiesLootCondition(EntityPredicate entityPredicate, LootContext.EntityTarget entityTarget) {
-        this.predicate = entityPredicate;
-        this.entity = entityTarget;
+    private EntityPropertiesLootCondition(EntityPredicate predicate, LootContext.EntityTarget entity) {
+        this.predicate = predicate;
+        this.entity = entity;
     }
 
     @Override
@@ -41,17 +41,17 @@ implements LootCondition {
         return this.predicate.test(lootContext.getWorld(), blockPos != null ? new Vec3d(blockPos) : null, entity);
     }
 
-    public static LootCondition.Builder create(LootContext.EntityTarget entityTarget) {
-        return EntityPropertiesLootCondition.builder(entityTarget, EntityPredicate.Builder.create());
+    public static LootCondition.Builder create(LootContext.EntityTarget entity) {
+        return EntityPropertiesLootCondition.builder(entity, EntityPredicate.Builder.create());
     }
 
-    public static LootCondition.Builder builder(LootContext.EntityTarget entityTarget, EntityPredicate.Builder builder) {
-        return () -> new EntityPropertiesLootCondition(builder.build(), entityTarget);
+    public static LootCondition.Builder builder(LootContext.EntityTarget entity, EntityPredicate.Builder predicateBuilder) {
+        return () -> new EntityPropertiesLootCondition(predicateBuilder.build(), entity);
     }
 
     @Override
-    public /* synthetic */ boolean test(Object object) {
-        return this.test((LootContext)object);
+    public /* synthetic */ boolean test(Object context) {
+        return this.test((LootContext)context);
     }
 
     public static class Factory
@@ -73,8 +73,8 @@ implements LootCondition {
         }
 
         @Override
-        public /* synthetic */ LootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            return this.fromJson(jsonObject, jsonDeserializationContext);
+        public /* synthetic */ LootCondition fromJson(JsonObject json, JsonDeserializationContext context) {
+            return this.fromJson(json, context);
         }
     }
 }

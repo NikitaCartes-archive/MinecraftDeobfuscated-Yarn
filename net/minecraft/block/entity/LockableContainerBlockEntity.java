@@ -32,26 +32,26 @@ Nameable {
     }
 
     @Override
-    public void fromTag(CompoundTag compoundTag) {
-        super.fromTag(compoundTag);
-        this.lock = ContainerLock.deserialize(compoundTag);
-        if (compoundTag.contains("CustomName", 8)) {
-            this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
+    public void fromTag(CompoundTag tag) {
+        super.fromTag(tag);
+        this.lock = ContainerLock.deserialize(tag);
+        if (tag.contains("CustomName", 8)) {
+            this.customName = Text.Serializer.fromJson(tag.getString("CustomName"));
         }
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag compoundTag) {
-        super.toTag(compoundTag);
-        this.lock.serialize(compoundTag);
+    public CompoundTag toTag(CompoundTag tag) {
+        super.toTag(tag);
+        this.lock.serialize(tag);
         if (this.customName != null) {
-            compoundTag.putString("CustomName", Text.Serializer.toJson(this.customName));
+            tag.putString("CustomName", Text.Serializer.toJson(this.customName));
         }
-        return compoundTag;
+        return tag;
     }
 
-    public void setCustomName(Text text) {
-        this.customName = text;
+    public void setCustomName(Text customName) {
+        this.customName = customName;
     }
 
     @Override
@@ -75,24 +75,24 @@ Nameable {
 
     protected abstract Text getContainerName();
 
-    public boolean checkUnlocked(PlayerEntity playerEntity) {
-        return LockableContainerBlockEntity.checkUnlocked(playerEntity, this.lock, this.getDisplayName());
+    public boolean checkUnlocked(PlayerEntity player) {
+        return LockableContainerBlockEntity.checkUnlocked(player, this.lock, this.getDisplayName());
     }
 
-    public static boolean checkUnlocked(PlayerEntity playerEntity, ContainerLock containerLock, Text text) {
-        if (playerEntity.isSpectator() || containerLock.isEmpty(playerEntity.getMainHandStack())) {
+    public static boolean checkUnlocked(PlayerEntity player, ContainerLock lock, Text containerName) {
+        if (player.isSpectator() || lock.isEmpty(player.getMainHandStack())) {
             return true;
         }
-        playerEntity.addChatMessage(new TranslatableText("container.isLocked", text), true);
-        playerEntity.playSound(SoundEvents.BLOCK_CHEST_LOCKED, SoundCategory.BLOCKS, 1.0f, 1.0f);
+        player.addChatMessage(new TranslatableText("container.isLocked", containerName), true);
+        player.playSound(SoundEvents.BLOCK_CHEST_LOCKED, SoundCategory.BLOCKS, 1.0f, 1.0f);
         return false;
     }
 
     @Override
     @Nullable
-    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+    public Container createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
         if (this.checkUnlocked(playerEntity)) {
-            return this.createContainer(i, playerInventory);
+            return this.createContainer(syncId, playerInventory);
         }
         return null;
     }

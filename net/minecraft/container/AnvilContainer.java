@@ -49,22 +49,22 @@ extends Container {
     private String newItemName;
     private final PlayerEntity player;
 
-    public AnvilContainer(int i, PlayerInventory playerInventory) {
-        this(i, playerInventory, BlockContext.EMPTY);
+    public AnvilContainer(int syncId, PlayerInventory inventory) {
+        this(syncId, inventory, BlockContext.EMPTY);
     }
 
-    public AnvilContainer(int i, PlayerInventory playerInventory, final BlockContext blockContext) {
-        super(ContainerType.ANVIL, i);
-        int j;
+    public AnvilContainer(int syncId, PlayerInventory inventory, final BlockContext blockContext) {
+        super(ContainerType.ANVIL, syncId);
+        int i;
         this.context = blockContext;
-        this.player = playerInventory.player;
+        this.player = inventory.player;
         this.addProperty(this.levelCost);
         this.addSlot(new Slot(this.inventory, 0, 27, 47));
         this.addSlot(new Slot(this.inventory, 1, 76, 47));
         this.addSlot(new Slot(this.result, 2, 134, 47){
 
             @Override
-            public boolean canInsert(ItemStack itemStack) {
+            public boolean canInsert(ItemStack stack) {
                 return false;
             }
 
@@ -74,16 +74,16 @@ extends Container {
             }
 
             @Override
-            public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
-                if (!playerEntity.abilities.creativeMode) {
-                    playerEntity.addExperienceLevels(-AnvilContainer.this.levelCost.get());
+            public ItemStack onTakeItem(PlayerEntity player, ItemStack stack) {
+                if (!player.abilities.creativeMode) {
+                    player.addExperienceLevels(-AnvilContainer.this.levelCost.get());
                 }
                 AnvilContainer.this.inventory.setInvStack(0, ItemStack.EMPTY);
                 if (AnvilContainer.this.repairItemUsage > 0) {
-                    ItemStack itemStack2 = AnvilContainer.this.inventory.getInvStack(1);
-                    if (!itemStack2.isEmpty() && itemStack2.getCount() > AnvilContainer.this.repairItemUsage) {
-                        itemStack2.decrement(AnvilContainer.this.repairItemUsage);
-                        AnvilContainer.this.inventory.setInvStack(1, itemStack2);
+                    ItemStack itemStack = AnvilContainer.this.inventory.getInvStack(1);
+                    if (!itemStack.isEmpty() && itemStack.getCount() > AnvilContainer.this.repairItemUsage) {
+                        itemStack.decrement(AnvilContainer.this.repairItemUsage);
+                        AnvilContainer.this.inventory.setInvStack(1, itemStack);
                     } else {
                         AnvilContainer.this.inventory.setInvStack(1, ItemStack.EMPTY);
                     }
@@ -93,7 +93,7 @@ extends Container {
                 AnvilContainer.this.levelCost.set(0);
                 blockContext.run((world, blockPos) -> {
                     BlockState blockState = world.getBlockState((BlockPos)blockPos);
-                    if (!playerEntity.abilities.creativeMode && blockState.matches(BlockTags.ANVIL) && playerEntity.getRandom().nextFloat() < 0.12f) {
+                    if (!playerEntity.abilities.creativeMode && blockState.matches(BlockTags.ANVIL) && player.getRandom().nextFloat() < 0.12f) {
                         BlockState blockState2 = AnvilBlock.getLandingState(blockState);
                         if (blockState2 == null) {
                             world.removeBlock((BlockPos)blockPos, false);
@@ -106,16 +106,16 @@ extends Container {
                         world.playLevelEvent(1030, (BlockPos)blockPos, 0);
                     }
                 });
-                return itemStack;
+                return stack;
             }
         });
-        for (j = 0; j < 3; ++j) {
-            for (int k = 0; k < 9; ++k) {
-                this.addSlot(new Slot(playerInventory, k + j * 9 + 9, 8 + k * 18, 84 + j * 18));
+        for (i = 0; i < 3; ++i) {
+            for (int j = 0; j < 9; ++j) {
+                this.addSlot(new Slot(inventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
             }
         }
-        for (j = 0; j < 9; ++j) {
-            this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 142));
+        for (i = 0; i < 9; ++i) {
+            this.addSlot(new Slot(inventory, i, 8 + i * 18, 142));
         }
     }
 
@@ -275,39 +275,39 @@ extends Container {
         this.sendContentUpdates();
     }
 
-    public static int getNextCost(int i) {
-        return i * 2 + 1;
+    public static int getNextCost(int cost) {
+        return cost * 2 + 1;
     }
 
     @Override
-    public void close(PlayerEntity playerEntity) {
-        super.close(playerEntity);
-        this.context.run((world, blockPos) -> this.dropInventory(playerEntity, (World)world, this.inventory));
+    public void close(PlayerEntity player) {
+        super.close(player);
+        this.context.run((world, blockPos) -> this.dropInventory(player, (World)world, this.inventory));
     }
 
     @Override
-    public boolean canUse(PlayerEntity playerEntity) {
+    public boolean canUse(PlayerEntity player) {
         return this.context.run((world, blockPos) -> {
             if (!world.getBlockState((BlockPos)blockPos).matches(BlockTags.ANVIL)) {
                 return false;
             }
-            return playerEntity.squaredDistanceTo((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5) <= 64.0;
+            return player.squaredDistanceTo((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5) <= 64.0;
         }, true);
     }
 
     @Override
-    public ItemStack transferSlot(PlayerEntity playerEntity, int i) {
+    public ItemStack transferSlot(PlayerEntity player, int invSlot) {
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = (Slot)this.slotList.get(i);
+        Slot slot = (Slot)this.slotList.get(invSlot);
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();
             itemStack = itemStack2.copy();
-            if (i == 2) {
+            if (invSlot == 2) {
                 if (!this.insertItem(itemStack2, 3, 39, true)) {
                     return ItemStack.EMPTY;
                 }
                 slot.onStackChanged(itemStack2, itemStack);
-            } else if (i == 0 || i == 1 ? !this.insertItem(itemStack2, 3, 39, false) : i >= 3 && i < 39 && !this.insertItem(itemStack2, 0, 2, false)) {
+            } else if (invSlot == 0 || invSlot == 1 ? !this.insertItem(itemStack2, 3, 39, false) : invSlot >= 3 && invSlot < 39 && !this.insertItem(itemStack2, 0, 2, false)) {
                 return ItemStack.EMPTY;
             }
             if (itemStack2.isEmpty()) {
@@ -318,7 +318,7 @@ extends Container {
             if (itemStack2.getCount() == itemStack.getCount()) {
                 return ItemStack.EMPTY;
             }
-            slot.onTakeItem(playerEntity, itemStack2);
+            slot.onTakeItem(player, itemStack2);
         }
         return itemStack;
     }

@@ -48,23 +48,23 @@ extends ChoiceFix {
         }
 
         @Override
-        public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.deserialize(jsonElement, type, jsonDeserializationContext);
+        public /* synthetic */ Object deserialize(JsonElement functionJson, Type unused, JsonDeserializationContext context) throws JsonParseException {
+            return this.deserialize(functionJson, unused, context);
         }
     }).create();
 
-    public BlockEntitySignTextStrictJsonFix(Schema schema, boolean bl) {
-        super(schema, bl, "BlockEntitySignTextStrictJsonFix", TypeReferences.BLOCK_ENTITY, "Sign");
+    public BlockEntitySignTextStrictJsonFix(Schema outputSchema, boolean changesType) {
+        super(outputSchema, changesType, "BlockEntitySignTextStrictJsonFix", TypeReferences.BLOCK_ENTITY, "Sign");
     }
 
-    private Dynamic<?> fix(Dynamic<?> dynamic, String string) {
-        String string2 = dynamic.get(string).asString("");
+    private Dynamic<?> fix(Dynamic<?> tag, String lineName) {
+        String string = tag.get(lineName).asString("");
         Text text = null;
-        if ("null".equals(string2) || StringUtils.isEmpty(string2)) {
+        if ("null".equals(string) || StringUtils.isEmpty(string)) {
             text = new LiteralText("");
-        } else if (string2.charAt(0) == '\"' && string2.charAt(string2.length() - 1) == '\"' || string2.charAt(0) == '{' && string2.charAt(string2.length() - 1) == '}') {
+        } else if (string.charAt(0) == '\"' && string.charAt(string.length() - 1) == '\"' || string.charAt(0) == '{' && string.charAt(string.length() - 1) == '}') {
             try {
-                text = JsonHelper.deserialize(GSON, string2, Text.class, true);
+                text = JsonHelper.deserialize(GSON, string, Text.class, true);
                 if (text == null) {
                     text = new LiteralText("");
                 }
@@ -73,25 +73,25 @@ extends ChoiceFix {
             }
             if (text == null) {
                 try {
-                    text = Text.Serializer.fromJson(string2);
+                    text = Text.Serializer.fromJson(string);
                 } catch (JsonParseException jsonParseException) {
                     // empty catch block
                 }
             }
             if (text == null) {
                 try {
-                    text = Text.Serializer.fromLenientJson(string2);
+                    text = Text.Serializer.fromLenientJson(string);
                 } catch (JsonParseException jsonParseException) {
                     // empty catch block
                 }
             }
             if (text == null) {
-                text = new LiteralText(string2);
+                text = new LiteralText(string);
             }
         } else {
-            text = new LiteralText(string2);
+            text = new LiteralText(string);
         }
-        return dynamic.set(string, dynamic.createString(Text.Serializer.toJson(text)));
+        return tag.set(lineName, tag.createString(Text.Serializer.toJson(text)));
     }
 
     @Override

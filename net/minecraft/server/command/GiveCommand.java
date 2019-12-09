@@ -23,18 +23,18 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.TranslatableText;
 
 public class GiveCommand {
-    public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-        commandDispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("give").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))).then(CommandManager.argument("targets", EntityArgumentType.players()).then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)CommandManager.argument("item", ItemStackArgumentType.itemStack()).executes(commandContext -> GiveCommand.execute((ServerCommandSource)commandContext.getSource(), ItemStackArgumentType.getItemStackArgument(commandContext, "item"), EntityArgumentType.getPlayers(commandContext, "targets"), 1))).then(CommandManager.argument("count", IntegerArgumentType.integer(1)).executes(commandContext -> GiveCommand.execute((ServerCommandSource)commandContext.getSource(), ItemStackArgumentType.getItemStackArgument(commandContext, "item"), EntityArgumentType.getPlayers(commandContext, "targets"), IntegerArgumentType.getInteger(commandContext, "count")))))));
+    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("give").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))).then(CommandManager.argument("targets", EntityArgumentType.players()).then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)CommandManager.argument("item", ItemStackArgumentType.itemStack()).executes(commandContext -> GiveCommand.execute((ServerCommandSource)commandContext.getSource(), ItemStackArgumentType.getItemStackArgument(commandContext, "item"), EntityArgumentType.getPlayers(commandContext, "targets"), 1))).then(CommandManager.argument("count", IntegerArgumentType.integer(1)).executes(commandContext -> GiveCommand.execute((ServerCommandSource)commandContext.getSource(), ItemStackArgumentType.getItemStackArgument(commandContext, "item"), EntityArgumentType.getPlayers(commandContext, "targets"), IntegerArgumentType.getInteger(commandContext, "count")))))));
     }
 
-    private static int execute(ServerCommandSource serverCommandSource, ItemStackArgument itemStackArgument, Collection<ServerPlayerEntity> collection, int i) throws CommandSyntaxException {
-        for (ServerPlayerEntity serverPlayerEntity : collection) {
-            int j = i;
-            while (j > 0) {
+    private static int execute(ServerCommandSource source, ItemStackArgument item, Collection<ServerPlayerEntity> targets, int count) throws CommandSyntaxException {
+        for (ServerPlayerEntity serverPlayerEntity : targets) {
+            int i = count;
+            while (i > 0) {
                 ItemEntity itemEntity;
-                int k = Math.min(itemStackArgument.getItem().getMaxCount(), j);
-                j -= k;
-                ItemStack itemStack = itemStackArgument.createStack(k, false);
+                int j = Math.min(item.getItem().getMaxCount(), i);
+                i -= j;
+                ItemStack itemStack = item.createStack(j, false);
                 boolean bl = serverPlayerEntity.inventory.insertStack(itemStack);
                 if (!bl || !itemStack.isEmpty()) {
                     itemEntity = serverPlayerEntity.dropItem(itemStack, false);
@@ -52,12 +52,12 @@ public class GiveCommand {
                 serverPlayerEntity.playerContainer.sendContentUpdates();
             }
         }
-        if (collection.size() == 1) {
-            serverCommandSource.sendFeedback(new TranslatableText("commands.give.success.single", i, itemStackArgument.createStack(i, false).toHoverableText(), collection.iterator().next().getDisplayName()), true);
+        if (targets.size() == 1) {
+            source.sendFeedback(new TranslatableText("commands.give.success.single", count, item.createStack(count, false).toHoverableText(), targets.iterator().next().getDisplayName()), true);
         } else {
-            serverCommandSource.sendFeedback(new TranslatableText("commands.give.success.single", i, itemStackArgument.createStack(i, false).toHoverableText(), collection.size()), true);
+            source.sendFeedback(new TranslatableText("commands.give.success.single", count, item.createStack(count, false).toHoverableText(), targets.size()), true);
         }
-        return collection.size();
+        return targets.size();
     }
 }
 

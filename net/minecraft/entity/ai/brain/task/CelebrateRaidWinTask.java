@@ -28,8 +28,8 @@ extends Task<VillagerEntity> {
     @Nullable
     private Raid raid;
 
-    public CelebrateRaidWinTask(int i, int j) {
-        super(ImmutableMap.of(), i, j);
+    public CelebrateRaidWinTask(int minRunTime, int maxRunTime) {
+        super(ImmutableMap.of(), minRunTime, maxRunTime);
     }
 
     @Override
@@ -65,12 +65,12 @@ extends Task<VillagerEntity> {
         }
     }
 
-    private ItemStack createFirework(DyeColor dyeColor, int i) {
+    private ItemStack createFirework(DyeColor color, int flight) {
         ItemStack itemStack = new ItemStack(Items.FIREWORK_ROCKET, 1);
         ItemStack itemStack2 = new ItemStack(Items.FIREWORK_STAR);
         CompoundTag compoundTag = itemStack2.getOrCreateSubTag("Explosion");
         ArrayList<Integer> list = Lists.newArrayList();
-        list.add(dyeColor.getFireworkColor());
+        list.add(color.getFireworkColor());
         compoundTag.putIntArray("Colors", list);
         compoundTag.putByte("Type", (byte)FireworkItem.Type.BURST.getId());
         CompoundTag compoundTag2 = itemStack.getOrCreateSubTag("Fireworks");
@@ -79,7 +79,7 @@ extends Task<VillagerEntity> {
         if (compoundTag3 != null) {
             listTag.add(compoundTag3);
         }
-        compoundTag2.putByte("Flight", (byte)i);
+        compoundTag2.putByte("Flight", (byte)flight);
         if (!listTag.isEmpty()) {
             compoundTag2.put("Explosions", listTag);
         }
@@ -87,18 +87,18 @@ extends Task<VillagerEntity> {
     }
 
     @Override
-    protected /* synthetic */ boolean shouldKeepRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        return this.shouldKeepRunning(serverWorld, (VillagerEntity)livingEntity, l);
+    protected /* synthetic */ boolean shouldKeepRunning(ServerWorld world, LivingEntity entity, long time) {
+        return this.shouldKeepRunning(world, (VillagerEntity)entity, time);
     }
 
     @Override
-    protected /* synthetic */ void finishRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        this.finishRunning(serverWorld, (VillagerEntity)livingEntity, l);
+    protected /* synthetic */ void finishRunning(ServerWorld serverWorld, LivingEntity livingEntity, long time) {
+        this.finishRunning(serverWorld, (VillagerEntity)livingEntity, time);
     }
 
     @Override
-    protected /* synthetic */ void keepRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        this.keepRunning(serverWorld, (VillagerEntity)livingEntity, l);
+    protected /* synthetic */ void keepRunning(ServerWorld world, LivingEntity entity, long time) {
+        this.keepRunning(world, (VillagerEntity)entity, time);
     }
 }
 

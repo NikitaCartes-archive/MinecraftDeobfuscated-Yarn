@@ -51,21 +51,21 @@ implements ArgumentType<ItemPredicateArgument> {
         };
     }
 
-    public static Predicate<ItemStack> getItemPredicate(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
-        return commandContext.getArgument(string, ItemPredicateArgument.class).create(commandContext);
+    public static Predicate<ItemStack> getItemPredicate(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
+        return context.getArgument(name, ItemPredicateArgument.class).create(context);
     }
 
     @Override
-    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
-        StringReader stringReader = new StringReader(suggestionsBuilder.getInput());
-        stringReader.setCursor(suggestionsBuilder.getStart());
+    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+        StringReader stringReader = new StringReader(builder.getInput());
+        stringReader.setCursor(builder.getStart());
         ItemStringReader itemStringReader = new ItemStringReader(stringReader, true);
         try {
             itemStringReader.consume();
         } catch (CommandSyntaxException commandSyntaxException) {
             // empty catch block
         }
-        return itemStringReader.getSuggestions(suggestionsBuilder);
+        return itemStringReader.getSuggestions(builder);
     }
 
     @Override
@@ -95,8 +95,8 @@ implements ArgumentType<ItemPredicateArgument> {
         }
 
         @Override
-        public /* synthetic */ boolean test(Object object) {
-            return this.test((ItemStack)object);
+        public /* synthetic */ boolean test(Object context) {
+            return this.test((ItemStack)context);
         }
     }
 

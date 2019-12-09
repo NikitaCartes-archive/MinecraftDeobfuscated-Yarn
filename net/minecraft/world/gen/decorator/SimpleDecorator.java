@@ -21,8 +21,8 @@ extends Decorator<DC> {
     }
 
     @Override
-    public final Stream<BlockPos> getPositions(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, DC decoratorConfig, BlockPos blockPos) {
-        return this.getPositions(random, decoratorConfig, blockPos);
+    public final Stream<BlockPos> getPositions(IWorld world, ChunkGenerator<? extends ChunkGeneratorConfig> generator, Random random, DC config, BlockPos pos) {
+        return this.getPositions(random, config, pos);
     }
 
     protected abstract Stream<BlockPos> getPositions(Random var1, DC var2, BlockPos var3);

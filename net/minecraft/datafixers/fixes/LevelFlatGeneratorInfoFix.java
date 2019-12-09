@@ -28,8 +28,8 @@ extends DataFix {
     private static final Splitter SPLIT_ON_ASTERISK = Splitter.on('*').limit(2);
     private static final Splitter SPLIT_ON_COLON = Splitter.on(':').limit(3);
 
-    public LevelFlatGeneratorInfoFix(Schema schema, boolean bl) {
-        super(schema, bl);
+    public LevelFlatGeneratorInfoFix(Schema outputSchema, boolean changesType) {
+        super(outputSchema, changesType);
     }
 
     @Override
@@ -37,35 +37,35 @@ extends DataFix {
         return this.fixTypeEverywhereTyped("LevelFlatGeneratorInfoFix", this.getInputSchema().getType(TypeReferences.LEVEL), typed -> typed.update(DSL.remainderFinder(), this::fixGeneratorOptions));
     }
 
-    private Dynamic<?> fixGeneratorOptions(Dynamic<?> dynamic2) {
-        if (dynamic2.get("generatorName").asString("").equalsIgnoreCase("flat")) {
-            return dynamic2.update("generatorOptions", dynamic -> DataFixUtils.orElse(dynamic.asString().map(this::fixFlatGeneratorOptions).map(dynamic::createString), dynamic));
+    private Dynamic<?> fixGeneratorOptions(Dynamic<?> tag) {
+        if (tag.get("generatorName").asString("").equalsIgnoreCase("flat")) {
+            return tag.update("generatorOptions", dynamic -> DataFixUtils.orElse(dynamic.asString().map(this::fixFlatGeneratorOptions).map(dynamic::createString), dynamic));
         }
-        return dynamic2;
+        return tag;
     }
 
     @VisibleForTesting
-    String fixFlatGeneratorOptions(String string2) {
-        String string3;
+    String fixFlatGeneratorOptions(String generatorOptions) {
+        String string2;
         int i;
-        if (string2.isEmpty()) {
+        if (generatorOptions.isEmpty()) {
             return "minecraft:bedrock,2*minecraft:dirt,minecraft:grass_block;1;village";
         }
-        Iterator<String> iterator = SPLIT_ON_SEMICOLON.split(string2).iterator();
-        String string22 = iterator.next();
+        Iterator<String> iterator = SPLIT_ON_SEMICOLON.split(generatorOptions).iterator();
+        String string3 = iterator.next();
         if (iterator.hasNext()) {
-            i = NumberUtils.toInt(string22, 0);
-            string3 = iterator.next();
+            i = NumberUtils.toInt(string3, 0);
+            string2 = iterator.next();
         } else {
             i = 0;
-            string3 = string22;
+            string2 = string3;
         }
         if (i < 0 || i > 3) {
             return "minecraft:bedrock,2*minecraft:dirt,minecraft:grass_block;1;village";
         }
         StringBuilder stringBuilder = new StringBuilder();
         Splitter splitter = i < 3 ? SPLIT_ON_LOWER_X : SPLIT_ON_ASTERISK;
-        stringBuilder.append(StreamSupport.stream(SPLIT_ON_COMMA.split(string3).spliterator(), false).map(string -> {
+        stringBuilder.append(StreamSupport.stream(SPLIT_ON_COMMA.split(string2).spliterator(), false).map(string -> {
             String string2;
             int j;
             List<String> list = splitter.splitToList((CharSequence)string);

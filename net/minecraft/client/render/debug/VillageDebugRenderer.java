@@ -64,21 +64,21 @@ implements DebugRenderer.Renderer {
         this.pointsOfInterest.remove(blockPos);
     }
 
-    public void setFreeTicketCount(BlockPos blockPos, int i) {
-        PointOfInterest pointOfInterest = this.pointsOfInterest.get(blockPos);
+    public void setFreeTicketCount(BlockPos pos, int freeTicketCount) {
+        PointOfInterest pointOfInterest = this.pointsOfInterest.get(pos);
         if (pointOfInterest == null) {
-            LOGGER.warn("Strange, setFreeTicketCount was called for an unknown POI: " + blockPos);
+            LOGGER.warn("Strange, setFreeTicketCount was called for an unknown POI: " + pos);
             return;
         }
-        pointOfInterest.freeTicketCount = i;
+        pointOfInterest.freeTicketCount = freeTicketCount;
     }
 
-    public void addSection(ChunkSectionPos chunkSectionPos) {
-        this.sections.add(chunkSectionPos);
+    public void addSection(ChunkSectionPos pos) {
+        this.sections.add(pos);
     }
 
-    public void removeSection(ChunkSectionPos chunkSectionPos) {
-        this.sections.remove(chunkSectionPos);
+    public void removeSection(ChunkSectionPos pos) {
+        this.sections.remove(pos);
     }
 
     public void addBrain(Brain brain) {
@@ -86,12 +86,12 @@ implements DebugRenderer.Renderer {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f) {
+    public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
         RenderSystem.pushMatrix();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.disableTexture();
-        this.method_23135(d, e, f);
+        this.method_23135(cameraX, cameraY, cameraZ);
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
         RenderSystem.popMatrix();
@@ -128,28 +128,28 @@ implements DebugRenderer.Renderer {
         });
     }
 
-    private static void drawSection(ChunkSectionPos chunkSectionPos) {
+    private static void drawSection(ChunkSectionPos pos) {
         float f = 1.0f;
-        BlockPos blockPos = chunkSectionPos.getCenterPos();
+        BlockPos blockPos = pos.getCenterPos();
         BlockPos blockPos2 = blockPos.add(-1.0, -1.0, -1.0);
         BlockPos blockPos3 = blockPos.add(1.0, 1.0, 1.0);
         DebugRenderer.drawBox(blockPos2, blockPos3, 0.2f, 1.0f, 0.2f, 0.15f);
     }
 
-    private static void drawPointOfInterest(BlockPos blockPos) {
+    private static void drawPointOfInterest(BlockPos pos) {
         float f = 0.05f;
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        DebugRenderer.drawBox(blockPos, 0.05f, 0.2f, 0.2f, 1.0f, 0.3f);
+        DebugRenderer.drawBox(pos, 0.05f, 0.2f, 0.2f, 1.0f, 0.3f);
     }
 
-    private void drawGhostPointOfInterest(BlockPos blockPos, List<String> list) {
+    private void drawGhostPointOfInterest(BlockPos pos, List<String> brains) {
         float f = 0.05f;
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        DebugRenderer.drawBox(blockPos, 0.05f, 0.2f, 0.2f, 1.0f, 0.3f);
-        VillageDebugRenderer.drawString("" + list, blockPos, 0, -256);
-        VillageDebugRenderer.drawString("Ghost POI", blockPos, 1, -65536);
+        DebugRenderer.drawBox(pos, 0.05f, 0.2f, 0.2f, 1.0f, 0.3f);
+        VillageDebugRenderer.drawString("" + brains, pos, 0, -256);
+        VillageDebugRenderer.drawString("Ghost POI", pos, 1, -65536);
     }
 
     private void drawPointOfInterestInfo(PointOfInterest pointOfInterest) {
@@ -163,13 +163,13 @@ implements DebugRenderer.Renderer {
         VillageDebugRenderer.drawString(pointOfInterest.field_18932, pointOfInterest, ++i, -1);
     }
 
-    private void drawPath(Brain brain, double d, double e, double f) {
+    private void drawPath(Brain brain, double cameraX, double cameraY, double cameraZ) {
         if (brain.path != null) {
-            PathfindingDebugRenderer.drawPath(brain.path, 0.5f, false, false, d, e, f);
+            PathfindingDebugRenderer.drawPath(brain.path, 0.5f, false, false, cameraX, cameraY, cameraZ);
         }
     }
 
-    private void drawBrain(Brain brain, double d, double e, double f) {
+    private void drawBrain(Brain brain, double cameraX, double cameraY, double cameraZ) {
         boolean bl = this.isTargeted(brain);
         int i = 0;
         VillageDebugRenderer.drawString(brain.pos, i, brain.field_19328, -1, 0.03f);
@@ -215,33 +215,33 @@ implements DebugRenderer.Renderer {
             }
         }
         if (bl) {
-            this.drawPath(brain, d, e, f);
+            this.drawPath(brain, cameraX, cameraY, cameraZ);
         }
     }
 
-    private static void drawString(String string, PointOfInterest pointOfInterest, int i, int j) {
+    private static void drawString(String string, PointOfInterest pointOfInterest, int offsetY, int color) {
         BlockPos blockPos = pointOfInterest.pos;
-        VillageDebugRenderer.drawString(string, blockPos, i, j);
+        VillageDebugRenderer.drawString(string, blockPos, offsetY, color);
     }
 
-    private static void drawString(String string, BlockPos blockPos, int i, int j) {
+    private static void drawString(String string, BlockPos pos, int offsetY, int color) {
         double d = 1.3;
         double e = 0.2;
-        double f = (double)blockPos.getX() + 0.5;
-        double g = (double)blockPos.getY() + 1.3 + (double)i * 0.2;
-        double h = (double)blockPos.getZ() + 0.5;
-        DebugRenderer.drawString(string, f, g, h, j, 0.02f, true, 0.0f, true);
+        double f = (double)pos.getX() + 0.5;
+        double g = (double)pos.getY() + 1.3 + (double)offsetY * 0.2;
+        double h = (double)pos.getZ() + 0.5;
+        DebugRenderer.drawString(string, f, g, h, color, 0.02f, true, 0.0f, true);
     }
 
-    private static void drawString(Position position, int i, String string, int j, float f) {
+    private static void drawString(Position pos, int offsetY, String string, int color, float size) {
         double d = 2.4;
         double e = 0.25;
-        BlockPos blockPos = new BlockPos(position);
-        double g = (double)blockPos.getX() + 0.5;
-        double h = position.getY() + 2.4 + (double)i * 0.25;
-        double k = (double)blockPos.getZ() + 0.5;
-        float l = 0.5f;
-        DebugRenderer.drawString(string, g, h, k, j, f, false, 0.5f, true);
+        BlockPos blockPos = new BlockPos(pos);
+        double f = (double)blockPos.getX() + 0.5;
+        double g = pos.getY() + 2.4 + (double)offsetY * 0.25;
+        double h = (double)blockPos.getZ() + 0.5;
+        float i = 0.5f;
+        DebugRenderer.drawString(string, f, g, h, color, size, false, 0.5f, true);
     }
 
     private Set<String> getVillagerNames(PointOfInterest pointOfInterest) {
@@ -259,8 +259,8 @@ implements DebugRenderer.Renderer {
         return blockPos.isWithinDistance(blockPos2, 30.0);
     }
 
-    private Collection<UUID> getBrains(BlockPos blockPos) {
-        return this.brains.values().stream().filter(brain -> ((Brain)brain).isPointOfInterest(blockPos)).map(Brain::getUuid).collect(Collectors.toSet());
+    private Collection<UUID> getBrains(BlockPos pointOfInterest) {
+        return this.brains.values().stream().filter(brain -> ((Brain)brain).isPointOfInterest(pointOfInterest)).map(Brain::getUuid).collect(Collectors.toSet());
     }
 
     private Map<BlockPos, List<String>> getGhostPointsOfInterest() {
@@ -302,16 +302,16 @@ implements DebugRenderer.Renderer {
         public final List<String> field_19375 = Lists.newArrayList();
         public final Set<BlockPos> pointsOfInterest = Sets.newHashSet();
 
-        public Brain(UUID uUID, int i, String string, String string2, int j, Position position, String string3, @Nullable Path path, boolean bl) {
-            this.uuid = uUID;
+        public Brain(UUID uuid, int i, String string, String profession, int xp, Position pos, String string2, @Nullable Path path, boolean wantsGolem) {
+            this.uuid = uuid;
             this.field_18924 = i;
             this.field_19328 = string;
-            this.profession = string2;
-            this.xp = j;
-            this.pos = position;
-            this.field_19372 = string3;
+            this.profession = profession;
+            this.xp = xp;
+            this.pos = pos;
+            this.field_19372 = string2;
             this.path = path;
-            this.wantsGolem = bl;
+            this.wantsGolem = wantsGolem;
         }
 
         private boolean isPointOfInterest(BlockPos blockPos) {

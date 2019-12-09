@@ -30,8 +30,8 @@ import net.minecraft.world.gen.feature.StructureFeature;
 
 public class WoodlandMansionFeature
 extends StructureFeature<DefaultFeatureConfig> {
-    public WoodlandMansionFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-        super(function);
+    public WoodlandMansionFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
+        super(configFactory);
     }
 
     @Override
@@ -51,10 +51,10 @@ extends StructureFeature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int i, int j, Biome biome) {
-        ChunkPos chunkPos = this.getStart(chunkGenerator, random, i, j, 0, 0);
-        if (i == chunkPos.x && j == chunkPos.z) {
-            Set<Biome> set = chunkGenerator.getBiomeSource().getBiomesInArea(i * 16 + 9, chunkGenerator.getSeaLevel(), j * 16 + 9, 32);
+    public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int chunkZ, int i, Biome biome) {
+        ChunkPos chunkPos = this.getStart(chunkGenerator, random, chunkZ, i, 0, 0);
+        if (chunkZ == chunkPos.x && i == chunkPos.z) {
+            Set<Biome> set = chunkGenerator.getBiomeSource().getBiomesInArea(chunkZ * 16 + 9, chunkGenerator.getSeaLevel(), i * 16 + 9, 32);
             for (Biome biome2 : set) {
                 if (chunkGenerator.hasStructure(biome2, this)) continue;
                 return false;
@@ -81,34 +81,34 @@ extends StructureFeature<DefaultFeatureConfig> {
 
     public static class Start
     extends StructureStart {
-        public Start(StructureFeature<?> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
-            super(structureFeature, i, j, blockBox, k, l);
+        public Start(StructureFeature<?> structureFeature, int chunkX, int chunkZ, BlockBox blockBox, int i, long l) {
+            super(structureFeature, chunkX, chunkZ, blockBox, i, l);
         }
 
         @Override
-        public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
+        public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
             BlockRotation blockRotation = BlockRotation.values()[this.random.nextInt(BlockRotation.values().length)];
-            int k = 5;
-            int l = 5;
+            int i = 5;
+            int j = 5;
             if (blockRotation == BlockRotation.CLOCKWISE_90) {
-                k = -5;
+                i = -5;
             } else if (blockRotation == BlockRotation.CLOCKWISE_180) {
-                k = -5;
-                l = -5;
+                i = -5;
+                j = -5;
             } else if (blockRotation == BlockRotation.COUNTERCLOCKWISE_90) {
-                l = -5;
+                j = -5;
             }
-            int m = (i << 4) + 7;
-            int n = (j << 4) + 7;
-            int o = chunkGenerator.getHeightInGround(m, n, Heightmap.Type.WORLD_SURFACE_WG);
-            int p = chunkGenerator.getHeightInGround(m, n + l, Heightmap.Type.WORLD_SURFACE_WG);
-            int q = chunkGenerator.getHeightInGround(m + k, n, Heightmap.Type.WORLD_SURFACE_WG);
-            int r = chunkGenerator.getHeightInGround(m + k, n + l, Heightmap.Type.WORLD_SURFACE_WG);
-            int s = Math.min(Math.min(o, p), Math.min(q, r));
-            if (s < 60) {
+            int k = (x << 4) + 7;
+            int l = (z << 4) + 7;
+            int m = chunkGenerator.getHeightInGround(k, l, Heightmap.Type.WORLD_SURFACE_WG);
+            int n = chunkGenerator.getHeightInGround(k, l + j, Heightmap.Type.WORLD_SURFACE_WG);
+            int o = chunkGenerator.getHeightInGround(k + i, l, Heightmap.Type.WORLD_SURFACE_WG);
+            int p = chunkGenerator.getHeightInGround(k + i, l + j, Heightmap.Type.WORLD_SURFACE_WG);
+            int q = Math.min(Math.min(m, n), Math.min(o, p));
+            if (q < 60) {
                 return;
             }
-            BlockPos blockPos = new BlockPos(i * 16 + 8, s + 1, j * 16 + 8);
+            BlockPos blockPos = new BlockPos(x * 16 + 8, q + 1, z * 16 + 8);
             LinkedList<WoodlandMansionGenerator.Piece> list = Lists.newLinkedList();
             WoodlandMansionGenerator.addPieces(structureManager, blockPos, blockRotation, list, this.random);
             this.children.addAll(list);
@@ -116,14 +116,14 @@ extends StructureFeature<DefaultFeatureConfig> {
         }
 
         @Override
-        public void generateStructure(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
-            super.generateStructure(iWorld, chunkGenerator, random, blockBox, chunkPos);
+        public void generateStructure(IWorld world, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
+            super.generateStructure(world, chunkGenerator, random, blockBox, chunkPos);
             int i = this.boundingBox.minY;
             for (int j = blockBox.minX; j <= blockBox.maxX; ++j) {
                 for (int k = blockBox.minZ; k <= blockBox.maxZ; ++k) {
                     BlockPos blockPos2;
                     BlockPos blockPos = new BlockPos(j, i, k);
-                    if (iWorld.isAir(blockPos) || !this.boundingBox.contains(blockPos)) continue;
+                    if (world.isAir(blockPos) || !this.boundingBox.contains(blockPos)) continue;
                     boolean bl = false;
                     for (StructurePiece structurePiece : this.children) {
                         if (!structurePiece.getBoundingBox().contains(blockPos)) continue;
@@ -131,8 +131,8 @@ extends StructureFeature<DefaultFeatureConfig> {
                         break;
                     }
                     if (!bl) continue;
-                    for (int l = i - 1; l > 1 && (iWorld.isAir(blockPos2 = new BlockPos(j, l, k)) || iWorld.getBlockState(blockPos2).getMaterial().isLiquid()); --l) {
-                        iWorld.setBlockState(blockPos2, Blocks.COBBLESTONE.getDefaultState(), 2);
+                    for (int l = i - 1; l > 1 && (world.isAir(blockPos2 = new BlockPos(j, l, k)) || world.getBlockState(blockPos2).getMaterial().isLiquid()); --l) {
+                        world.setBlockState(blockPos2, Blocks.COBBLESTONE.getDefaultState(), 2);
                     }
                 }
             }

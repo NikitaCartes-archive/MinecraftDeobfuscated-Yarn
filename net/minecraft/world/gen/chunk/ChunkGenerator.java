@@ -44,11 +44,11 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
     protected final BiomeSource biomeSource;
     protected final C config;
 
-    public ChunkGenerator(IWorld iWorld, BiomeSource biomeSource, C chunkGeneratorConfig) {
-        this.world = iWorld;
-        this.seed = iWorld.getSeed();
+    public ChunkGenerator(IWorld world, BiomeSource biomeSource, C config) {
+        this.world = world;
+        this.seed = world.getSeed();
         this.biomeSource = biomeSource;
-        this.config = chunkGeneratorConfig;
+        this.config = config;
     }
 
     public void populateBiomes(Chunk chunk) {
@@ -56,8 +56,8 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
         ((ProtoChunk)chunk).method_22405(new BiomeArray(chunkPos, this.biomeSource));
     }
 
-    protected Biome getDecorationBiome(BiomeAccess biomeAccess, BlockPos blockPos) {
-        return biomeAccess.getBiome(blockPos);
+    protected Biome getDecorationBiome(BiomeAccess biomeAccess, BlockPos pos) {
+        return biomeAccess.getBiome(pos);
     }
 
     public void carve(BiomeAccess biomeAccess, Chunk chunk, GenerationStep.Carver carver) {
@@ -84,26 +84,26 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
     }
 
     @Nullable
-    public BlockPos locateStructure(World world, String string, BlockPos blockPos, int i, boolean bl) {
-        StructureFeature structureFeature = (StructureFeature)Feature.STRUCTURES.get(string.toLowerCase(Locale.ROOT));
+    public BlockPos locateStructure(World world, String id, BlockPos center, int radius, boolean skipExistingChunks) {
+        StructureFeature structureFeature = (StructureFeature)Feature.STRUCTURES.get(id.toLowerCase(Locale.ROOT));
         if (structureFeature != null) {
-            return structureFeature.locateStructure(world, this, blockPos, i, bl);
+            return structureFeature.locateStructure(world, this, center, radius, skipExistingChunks);
         }
         return null;
     }
 
-    public void generateFeatures(ChunkRegion chunkRegion) {
-        int i = chunkRegion.getCenterChunkX();
-        int j = chunkRegion.getCenterChunkZ();
+    public void generateFeatures(ChunkRegion region) {
+        int i = region.getCenterChunkX();
+        int j = region.getCenterChunkZ();
         int k = i * 16;
         int l = j * 16;
         BlockPos blockPos = new BlockPos(k, 0, l);
-        Biome biome = this.getDecorationBiome(chunkRegion.getBiomeAccess(), blockPos.add(8, 8, 8));
+        Biome biome = this.getDecorationBiome(region.getBiomeAccess(), blockPos.add(8, 8, 8));
         ChunkRandom chunkRandom = new ChunkRandom();
-        long m = chunkRandom.setSeed(chunkRegion.getSeed(), k, l);
+        long m = chunkRandom.setSeed(region.getSeed(), k, l);
         for (GenerationStep.Feature feature : GenerationStep.Feature.values()) {
             try {
-                biome.generateFeatureStep(feature, this, chunkRegion, m, chunkRandom, blockPos);
+                biome.generateFeatureStep(feature, this, region, m, chunkRandom, blockPos);
             } catch (Exception exception) {
                 CrashReport crashReport = CrashReport.create(exception, "Biome decoration");
                 crashReport.addElement("Generation").add("CenterX", i).add("CenterZ", j).add("Step", (Object)feature).add("Seed", m).add("Biome", Registry.BIOME.getId(biome));
@@ -114,7 +114,7 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
 
     public abstract void buildSurface(ChunkRegion var1, Chunk var2);
 
-    public void populateEntities(ChunkRegion chunkRegion) {
+    public void populateEntities(ChunkRegion region) {
     }
 
     public C getConfig() {
@@ -123,7 +123,7 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
 
     public abstract int getSpawnHeight();
 
-    public void spawnEntities(ServerWorld serverWorld, boolean bl, boolean bl2) {
+    public void spawnEntities(ServerWorld serverWorld, boolean spawnMonsters, boolean spawnAnimals) {
     }
 
     public boolean hasStructure(Biome biome, StructureFeature<? extends FeatureConfig> structureFeature) {
@@ -147,8 +147,8 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
         return 256;
     }
 
-    public List<Biome.SpawnEntry> getEntitySpawnList(EntityCategory entityCategory, BlockPos blockPos) {
-        return this.world.getBiome(blockPos).getEntitySpawnList(entityCategory);
+    public List<Biome.SpawnEntry> getEntitySpawnList(EntityCategory category, BlockPos pos) {
+        return this.world.getBiome(pos).getEntitySpawnList(category);
     }
 
     public void setStructureStarts(BiomeAccess biomeAccess, Chunk chunk, ChunkGenerator<?> chunkGenerator, StructureManager structureManager) {
@@ -169,7 +169,7 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
         }
     }
 
-    public void addStructureReferences(IWorld iWorld, Chunk chunk) {
+    public void addStructureReferences(IWorld world, Chunk chunk) {
         int i = 8;
         int j = chunk.getPos().x;
         int k = chunk.getPos().z;
@@ -178,11 +178,11 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
         for (int n = j - 8; n <= j + 8; ++n) {
             for (int o = k - 8; o <= k + 8; ++o) {
                 long p = ChunkPos.toLong(n, o);
-                for (Map.Entry<String, StructureStart> entry : iWorld.getChunk(n, o).getStructureStarts().entrySet()) {
+                for (Map.Entry<String, StructureStart> entry : world.getChunk(n, o).getStructureStarts().entrySet()) {
                     StructureStart structureStart = entry.getValue();
                     if (structureStart == StructureStart.DEFAULT || !structureStart.getBoundingBox().intersectsXZ(l, m, l + 15, m + 15)) continue;
                     chunk.addStructureReference(entry.getKey(), p);
-                    DebugRendererInfoManager.sendStructureStart(iWorld, structureStart);
+                    DebugRendererInfoManager.sendStructureStart(world, structureStart);
                 }
             }
         }

@@ -28,9 +28,9 @@ implements Comparable<Identifier> {
     protected final String namespace;
     protected final String path;
 
-    protected Identifier(String[] strings) {
-        this.namespace = StringUtils.isEmpty(strings[0]) ? "minecraft" : strings[0];
-        this.path = strings[1];
+    protected Identifier(String[] id) {
+        this.namespace = StringUtils.isEmpty(id[0]) ? "minecraft" : id[0];
+        this.path = id[1];
         if (!Identifier.isNamespaceValid(this.namespace)) {
             throw new InvalidIdentifierException("Non [a-z0-9_.-] character in namespace of location: " + this.namespace + ':' + this.path);
         }
@@ -47,26 +47,26 @@ implements Comparable<Identifier> {
         this(new String[]{string, string2});
     }
 
-    public static Identifier splitOn(String string, char c) {
-        return new Identifier(Identifier.split(string, c));
+    public static Identifier splitOn(String id, char delimiter) {
+        return new Identifier(Identifier.split(id, delimiter));
     }
 
     @Nullable
-    public static Identifier tryParse(String string) {
+    public static Identifier tryParse(String id) {
         try {
-            return new Identifier(string);
+            return new Identifier(id);
         } catch (InvalidIdentifierException invalidIdentifierException) {
             return null;
         }
     }
 
-    protected static String[] split(String string, char c) {
-        String[] strings = new String[]{"minecraft", string};
-        int i = string.indexOf(c);
+    protected static String[] split(String id, char delimiter) {
+        String[] strings = new String[]{"minecraft", id};
+        int i = id.indexOf(delimiter);
         if (i >= 0) {
-            strings[1] = string.substring(i + 1, string.length());
+            strings[1] = id.substring(i + 1, id.length());
             if (i >= 1) {
-                strings[0] = string.substring(0, i);
+                strings[0] = id.substring(0, i);
             }
         }
         return strings;
@@ -108,17 +108,17 @@ implements Comparable<Identifier> {
         return i;
     }
 
-    public static Identifier fromCommandInput(StringReader stringReader) throws CommandSyntaxException {
-        int i = stringReader.getCursor();
-        while (stringReader.canRead() && Identifier.isCharValid(stringReader.peek())) {
-            stringReader.skip();
+    public static Identifier fromCommandInput(StringReader reader) throws CommandSyntaxException {
+        int i = reader.getCursor();
+        while (reader.canRead() && Identifier.isCharValid(reader.peek())) {
+            reader.skip();
         }
-        String string = stringReader.getString().substring(i, stringReader.getCursor());
+        String string = reader.getString().substring(i, reader.getCursor());
         try {
             return new Identifier(string);
         } catch (InvalidIdentifierException invalidIdentifierException) {
-            stringReader.setCursor(i);
-            throw COMMAND_EXCEPTION.createWithContext(stringReader);
+            reader.setCursor(i);
+            throw COMMAND_EXCEPTION.createWithContext(reader);
         }
     }
 
@@ -126,17 +126,17 @@ implements Comparable<Identifier> {
         return c >= '0' && c <= '9' || c >= 'a' && c <= 'z' || c == '_' || c == ':' || c == '/' || c == '.' || c == '-';
     }
 
-    private static boolean isPathValid(String string) {
-        return string.chars().allMatch(i -> i == 95 || i == 45 || i >= 97 && i <= 122 || i >= 48 && i <= 57 || i == 47 || i == 46);
+    private static boolean isPathValid(String path) {
+        return path.chars().allMatch(c -> c == 95 || c == 45 || c >= 97 && c <= 122 || c >= 48 && c <= 57 || c == 47 || c == 46);
     }
 
-    private static boolean isNamespaceValid(String string) {
-        return string.chars().allMatch(i -> i == 95 || i == 45 || i >= 97 && i <= 122 || i >= 48 && i <= 57 || i == 46);
+    private static boolean isNamespaceValid(String namespace) {
+        return namespace.chars().allMatch(c -> c == 95 || c == 45 || c >= 97 && c <= 122 || c >= 48 && c <= 57 || c == 46);
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static boolean isValid(String string) {
-        String[] strings = Identifier.split(string, ':');
+    public static boolean isValid(String id) {
+        String[] strings = Identifier.split(id, ':');
         return Identifier.isNamespaceValid(StringUtils.isEmpty(strings[0]) ? "minecraft" : strings[0]) && Identifier.isPathValid(strings[1]);
     }
 

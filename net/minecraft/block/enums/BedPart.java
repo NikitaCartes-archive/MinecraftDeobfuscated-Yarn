@@ -12,8 +12,8 @@ public enum BedPart implements StringIdentifiable
 
     private final String name;
 
-    private BedPart(String string2) {
-        this.name = string2;
+    private BedPart(String name) {
+        this.name = name;
     }
 
     public String toString() {

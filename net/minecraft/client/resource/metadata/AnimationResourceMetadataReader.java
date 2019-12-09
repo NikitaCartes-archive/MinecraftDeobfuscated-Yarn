@@ -53,19 +53,19 @@ implements ResourceMetadataReader<AnimationResourceMetadata> {
         return new AnimationResourceMetadata(list, k, j, i, bl);
     }
 
-    private AnimationFrameResourceMetadata readFrameMetadata(int i, JsonElement jsonElement) {
-        if (jsonElement.isJsonPrimitive()) {
-            return new AnimationFrameResourceMetadata(JsonHelper.asInt(jsonElement, "frames[" + i + "]"));
+    private AnimationFrameResourceMetadata readFrameMetadata(int frame, JsonElement json) {
+        if (json.isJsonPrimitive()) {
+            return new AnimationFrameResourceMetadata(JsonHelper.asInt(json, "frames[" + frame + "]"));
         }
-        if (jsonElement.isJsonObject()) {
-            JsonObject jsonObject = JsonHelper.asObject(jsonElement, "frames[" + i + "]");
-            int j = JsonHelper.getInt(jsonObject, "time", -1);
+        if (json.isJsonObject()) {
+            JsonObject jsonObject = JsonHelper.asObject(json, "frames[" + frame + "]");
+            int i = JsonHelper.getInt(jsonObject, "time", -1);
             if (jsonObject.has("time")) {
-                Validate.inclusiveBetween(1L, Integer.MAX_VALUE, j, "Invalid frame time");
+                Validate.inclusiveBetween(1L, Integer.MAX_VALUE, i, "Invalid frame time");
             }
-            int k = JsonHelper.getInt(jsonObject, "index");
-            Validate.inclusiveBetween(0L, Integer.MAX_VALUE, k, "Invalid frame index");
-            return new AnimationFrameResourceMetadata(k, j);
+            int j = JsonHelper.getInt(jsonObject, "index");
+            Validate.inclusiveBetween(0L, Integer.MAX_VALUE, j, "Invalid frame index");
+            return new AnimationFrameResourceMetadata(j, i);
         }
         return null;
     }
@@ -76,8 +76,8 @@ implements ResourceMetadataReader<AnimationResourceMetadata> {
     }
 
     @Override
-    public /* synthetic */ Object fromJson(JsonObject jsonObject) {
-        return this.fromJson(jsonObject);
+    public /* synthetic */ Object fromJson(JsonObject json) {
+        return this.fromJson(json);
     }
 }
 

@@ -28,28 +28,28 @@ extends AbstractFurnaceBlock {
     }
 
     @Override
-    public BlockEntity createBlockEntity(BlockView blockView) {
+    public BlockEntity createBlockEntity(BlockView view) {
         return new SmokerBlockEntity();
     }
 
     @Override
-    protected void openContainer(World world, BlockPos blockPos, PlayerEntity playerEntity) {
-        BlockEntity blockEntity = world.getBlockEntity(blockPos);
+    protected void openContainer(World world, BlockPos pos, PlayerEntity player) {
+        BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof SmokerBlockEntity) {
-            playerEntity.openContainer((NameableContainerProvider)((Object)blockEntity));
-            playerEntity.incrementStat(Stats.INTERACT_WITH_SMOKER);
+            player.openContainer((NameableContainerProvider)((Object)blockEntity));
+            player.incrementStat(Stats.INTERACT_WITH_SMOKER);
         }
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-        if (!blockState.get(LIT).booleanValue()) {
+    public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+        if (!state.get(LIT).booleanValue()) {
             return;
         }
-        double d = (double)blockPos.getX() + 0.5;
-        double e = blockPos.getY();
-        double f = (double)blockPos.getZ() + 0.5;
+        double d = (double)pos.getX() + 0.5;
+        double e = pos.getY();
+        double f = (double)pos.getZ() + 0.5;
         if (random.nextDouble() < 0.1) {
             world.playSound(d, e, f, SoundEvents.BLOCK_SMOKER_SMOKE, SoundCategory.BLOCKS, 1.0f, 1.0f, false);
         }

@@ -16,9 +16,9 @@ extends RealmsScreen {
     private final RealmsScreen lastScreen;
     private final boolean outdated;
 
-    public RealmsClientOutdatedScreen(RealmsScreen realmsScreen, boolean bl) {
-        this.lastScreen = realmsScreen;
-        this.outdated = bl;
+    public RealmsClientOutdatedScreen(RealmsScreen lastScreen, boolean outdated) {
+        this.lastScreen = lastScreen;
+        this.outdated = outdated;
     }
 
     @Override
@@ -33,25 +33,25 @@ extends RealmsScreen {
     }
 
     @Override
-    public void render(int i, int j, float f) {
+    public void render(int xm, int ym, float a) {
         this.renderBackground();
         String string = RealmsClientOutdatedScreen.getLocalizedString(this.outdated ? "mco.client.outdated.title" : "mco.client.incompatible.title");
         this.drawCenteredString(string, this.width() / 2, RealmsConstants.row(3), 0xFF0000);
-        int k = this.outdated ? 2 : 3;
-        for (int l = 0; l < k; ++l) {
-            String string2 = RealmsClientOutdatedScreen.getLocalizedString((this.outdated ? "mco.client.outdated.msg.line" : "mco.client.incompatible.msg.line") + (l + 1));
-            this.drawCenteredString(string2, this.width() / 2, RealmsConstants.row(5) + l * 12, 0xFFFFFF);
+        int i = this.outdated ? 2 : 3;
+        for (int j = 0; j < i; ++j) {
+            String string2 = RealmsClientOutdatedScreen.getLocalizedString((this.outdated ? "mco.client.outdated.msg.line" : "mco.client.incompatible.msg.line") + (j + 1));
+            this.drawCenteredString(string2, this.width() / 2, RealmsConstants.row(5) + j * 12, 0xFFFFFF);
         }
-        super.render(i, j, f);
+        super.render(xm, ym, a);
     }
 
     @Override
-    public boolean keyPressed(int i, int j, int k) {
-        if (i == 257 || i == 335 || i == 256) {
+    public boolean keyPressed(int eventKey, int scancode, int mods) {
+        if (eventKey == 257 || eventKey == 335 || eventKey == 256) {
             Realms.setScreen(this.lastScreen);
             return true;
         }
-        return super.keyPressed(i, j, k);
+        return super.keyPressed(eventKey, scancode, mods);
     }
 }
 

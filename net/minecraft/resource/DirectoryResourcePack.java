@@ -38,33 +38,33 @@ extends AbstractFileResourcePack {
         super(file);
     }
 
-    public static boolean isValidPath(File file, String string) throws IOException {
-        String string2 = file.getCanonicalPath();
+    public static boolean isValidPath(File file, String filename) throws IOException {
+        String string = file.getCanonicalPath();
         if (IS_WINDOWS) {
-            string2 = BACKSLASH_MATCHER.replaceFrom((CharSequence)string2, '/');
+            string = BACKSLASH_MATCHER.replaceFrom((CharSequence)string, '/');
         }
-        return string2.endsWith(string);
+        return string.endsWith(filename);
     }
 
     @Override
-    protected InputStream openFile(String string) throws IOException {
-        File file = this.getFile(string);
+    protected InputStream openFile(String name) throws IOException {
+        File file = this.getFile(name);
         if (file == null) {
-            throw new ResourceNotFoundException(this.base, string);
+            throw new ResourceNotFoundException(this.base, name);
         }
         return new FileInputStream(file);
     }
 
     @Override
-    protected boolean containsFile(String string) {
-        return this.getFile(string) != null;
+    protected boolean containsFile(String name) {
+        return this.getFile(name) != null;
     }
 
     @Nullable
-    private File getFile(String string) {
+    private File getFile(String name) {
         try {
-            File file = new File(this.base, string);
-            if (file.isFile() && DirectoryResourcePack.isValidPath(file, string)) {
+            File file = new File(this.base, name);
+            if (file.isFile() && DirectoryResourcePack.isValidPath(file, name)) {
                 return file;
             }
         } catch (IOException iOException) {
@@ -74,9 +74,9 @@ extends AbstractFileResourcePack {
     }
 
     @Override
-    public Set<String> getNamespaces(ResourceType resourceType) {
+    public Set<String> getNamespaces(ResourceType type) {
         HashSet<String> set = Sets.newHashSet();
-        File file = new File(this.base, resourceType.getDirectory());
+        File file = new File(this.base, type.getDirectory());
         File[] files = file.listFiles(DirectoryFileFilter.DIRECTORY);
         if (files != null) {
             for (File file2 : files) {
@@ -96,25 +96,25 @@ extends AbstractFileResourcePack {
     }
 
     @Override
-    public Collection<Identifier> findResources(ResourceType resourceType, String string, String string2, int i, Predicate<String> predicate) {
-        File file = new File(this.base, resourceType.getDirectory());
+    public Collection<Identifier> findResources(ResourceType type, String namespace, String prefix, int maxDepth, Predicate<String> pathFilter) {
+        File file = new File(this.base, type.getDirectory());
         ArrayList<Identifier> list = Lists.newArrayList();
-        this.findFiles(new File(new File(file, string), string2), i, string, list, string2 + "/", predicate);
+        this.findFiles(new File(new File(file, namespace), prefix), maxDepth, namespace, list, prefix + "/", pathFilter);
         return list;
     }
 
-    private void findFiles(File file, int i, String string, List<Identifier> list, String string2, Predicate<String> predicate) {
+    private void findFiles(File file, int maxDepth, String namespace, List<Identifier> found, String prefix, Predicate<String> pathFilter) {
         File[] files = file.listFiles();
         if (files != null) {
             for (File file2 : files) {
                 if (file2.isDirectory()) {
-                    if (i <= 0) continue;
-                    this.findFiles(file2, i - 1, string, list, string2 + file2.getName() + "/", predicate);
+                    if (maxDepth <= 0) continue;
+                    this.findFiles(file2, maxDepth - 1, namespace, found, prefix + file2.getName() + "/", pathFilter);
                     continue;
                 }
-                if (file2.getName().endsWith(".mcmeta") || !predicate.test(file2.getName())) continue;
+                if (file2.getName().endsWith(".mcmeta") || !pathFilter.test(file2.getName())) continue;
                 try {
-                    list.add(new Identifier(string, string2 + file2.getName()));
+                    found.add(new Identifier(namespace, prefix + file2.getName()));
                 } catch (InvalidIdentifierException invalidIdentifierException) {
                     LOGGER.error(invalidIdentifierException.getMessage());
                 }

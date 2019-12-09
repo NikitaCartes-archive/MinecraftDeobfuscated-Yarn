@@ -43,15 +43,15 @@ extends IdentifierSearchableContainer<T> {
     }
 
     @Override
-    public List<T> findAll(String string) {
-        int i = string.indexOf(58);
+    public List<T> findAll(String text) {
+        int i = text.indexOf(58);
         if (i < 0) {
-            return this.byText.findAll(string);
+            return this.byText.findAll(text);
         }
-        List list = this.byNamespace.findAll(string.substring(0, i).trim());
-        String string2 = string.substring(i + 1).trim();
-        List list2 = this.byPath.findAll(string2);
-        List<T> list3 = this.byText.findAll(string2);
+        List list = this.byNamespace.findAll(text.substring(0, i).trim());
+        String string = text.substring(i + 1).trim();
+        List list2 = this.byPath.findAll(string);
+        List<T> list3 = this.byText.findAll(string);
         return Lists.newArrayList(new IdentifierSearchableContainer.Iterator(list.iterator(), new Iterator(list2.iterator(), list3.iterator(), this::compare), this::compare));
     }
 

@@ -10,8 +10,8 @@ import net.fabricmc.api.Environment;
 public interface Glyph {
     public float getAdvance();
 
-    default public float getAdvance(boolean bl) {
-        return this.getAdvance() + (bl ? this.getBoldOffset() : 0.0f);
+    default public float getAdvance(boolean isBold) {
+        return this.getAdvance() + (isBold ? this.getBoldOffset() : 0.0f);
     }
 
     default public float getBearingX() {

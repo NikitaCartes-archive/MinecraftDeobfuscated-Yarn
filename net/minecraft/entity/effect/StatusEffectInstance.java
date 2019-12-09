@@ -29,25 +29,25 @@ implements Comparable<StatusEffectInstance> {
         this(statusEffect, 0, 0);
     }
 
-    public StatusEffectInstance(StatusEffect statusEffect, int i) {
-        this(statusEffect, i, 0);
+    public StatusEffectInstance(StatusEffect type, int i) {
+        this(type, i, 0);
     }
 
-    public StatusEffectInstance(StatusEffect statusEffect, int i, int j) {
-        this(statusEffect, i, j, false, true);
+    public StatusEffectInstance(StatusEffect type, int duration, int i) {
+        this(type, duration, i, false, true);
     }
 
-    public StatusEffectInstance(StatusEffect statusEffect, int i, int j, boolean bl, boolean bl2) {
-        this(statusEffect, i, j, bl, bl2, bl2);
+    public StatusEffectInstance(StatusEffect effect, int duration, int amplifier, boolean bl, boolean showParticles) {
+        this(effect, duration, amplifier, bl, showParticles, showParticles);
     }
 
-    public StatusEffectInstance(StatusEffect statusEffect, int i, int j, boolean bl, boolean bl2, boolean bl3) {
-        this.type = statusEffect;
-        this.duration = i;
-        this.amplifier = j;
-        this.ambient = bl;
-        this.showParticles = bl2;
-        this.showIcon = bl3;
+    public StatusEffectInstance(StatusEffect type, int duration, int amplifier, boolean ambient, boolean showParticles, boolean showIcon) {
+        this.type = type;
+        this.duration = duration;
+        this.amplifier = amplifier;
+        this.ambient = ambient;
+        this.showParticles = showParticles;
+        this.showIcon = showIcon;
     }
 
     public StatusEffectInstance(StatusEffectInstance statusEffectInstance) {
@@ -149,12 +149,12 @@ implements Comparable<StatusEffectInstance> {
         return string;
     }
 
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (object instanceof StatusEffectInstance) {
-            StatusEffectInstance statusEffectInstance = (StatusEffectInstance)object;
+        if (o instanceof StatusEffectInstance) {
+            StatusEffectInstance statusEffectInstance = (StatusEffectInstance)o;
             return this.duration == statusEffectInstance.duration && this.amplifier == statusEffectInstance.amplifier && this.splash == statusEffectInstance.splash && this.ambient == statusEffectInstance.ambient && this.type.equals(statusEffectInstance.type);
         }
         return false;
@@ -179,22 +179,22 @@ implements Comparable<StatusEffectInstance> {
         return compoundTag;
     }
 
-    public static StatusEffectInstance deserialize(CompoundTag compoundTag) {
-        byte i = compoundTag.getByte("Id");
+    public static StatusEffectInstance deserialize(CompoundTag tag) {
+        byte i = tag.getByte("Id");
         StatusEffect statusEffect = StatusEffect.byRawId(i);
         if (statusEffect == null) {
             return null;
         }
-        byte j = compoundTag.getByte("Amplifier");
-        int k = compoundTag.getInt("Duration");
-        boolean bl = compoundTag.getBoolean("Ambient");
+        byte j = tag.getByte("Amplifier");
+        int k = tag.getInt("Duration");
+        boolean bl = tag.getBoolean("Ambient");
         boolean bl2 = true;
-        if (compoundTag.contains("ShowParticles", 1)) {
-            bl2 = compoundTag.getBoolean("ShowParticles");
+        if (tag.contains("ShowParticles", 1)) {
+            bl2 = tag.getBoolean("ShowParticles");
         }
         boolean bl3 = bl2;
-        if (compoundTag.contains("ShowIcon", 1)) {
-            bl3 = compoundTag.getBoolean("ShowIcon");
+        if (tag.contains("ShowIcon", 1)) {
+            bl3 = tag.getBoolean("ShowIcon");
         }
         return new StatusEffectInstance(statusEffect, k, j < 0 ? (byte)0 : j, bl, bl2, bl3);
     }

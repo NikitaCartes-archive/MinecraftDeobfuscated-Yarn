@@ -21,19 +21,19 @@ implements WorldGenerationProgressListener {
     private long startTime;
     private long nextMessageTime = Long.MAX_VALUE;
 
-    public WorldGenerationProgressLogger(int i) {
-        int j = i * 2 + 1;
-        this.totalCount = j * j;
+    public WorldGenerationProgressLogger(int radius) {
+        int i = radius * 2 + 1;
+        this.totalCount = i * i;
     }
 
     @Override
-    public void start(ChunkPos chunkPos) {
+    public void start(ChunkPos spawnPos) {
         this.startTime = this.nextMessageTime = Util.getMeasuringTimeMs();
     }
 
     @Override
-    public void setChunkStatus(ChunkPos chunkPos, @Nullable ChunkStatus chunkStatus) {
-        if (chunkStatus == ChunkStatus.FULL) {
+    public void setChunkStatus(ChunkPos pos, @Nullable ChunkStatus status) {
+        if (status == ChunkStatus.FULL) {
             ++this.generatedCount;
         }
         int i = this.getProgressPercentage();

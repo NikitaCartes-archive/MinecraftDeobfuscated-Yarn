@@ -17,8 +17,8 @@ public abstract class PersistentState {
     private final String key;
     private boolean dirty;
 
-    public PersistentState(String string) {
-        this.key = string;
+    public PersistentState(String key) {
+        this.key = key;
     }
 
     public abstract void fromTag(CompoundTag var1);
@@ -29,8 +29,8 @@ public abstract class PersistentState {
         this.setDirty(true);
     }
 
-    public void setDirty(boolean bl) {
-        this.dirty = bl;
+    public void setDirty(boolean dirty) {
+        this.dirty = dirty;
     }
 
     public boolean isDirty() {

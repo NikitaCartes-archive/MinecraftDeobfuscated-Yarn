@@ -25,15 +25,15 @@ extends AbstractTexture {
     private static final Logger LOGGER = LogManager.getLogger();
     protected final Identifier location;
 
-    public ResourceTexture(Identifier identifier) {
-        this.location = identifier;
+    public ResourceTexture(Identifier location) {
+        this.location = location;
     }
 
     @Override
-    public void load(ResourceManager resourceManager) throws IOException {
+    public void load(ResourceManager manager) throws IOException {
         boolean bl2;
         boolean bl;
-        TextureData textureData = this.loadTextureData(resourceManager);
+        TextureData textureData = this.loadTextureData(manager);
         textureData.checkException();
         TextureResourceMetadata textureResourceMetadata = textureData.getMetadata();
         if (textureResourceMetadata != null) {
@@ -70,16 +70,16 @@ extends AbstractTexture {
         @Nullable
         private final IOException exception;
 
-        public TextureData(IOException iOException) {
-            this.exception = iOException;
+        public TextureData(IOException exception) {
+            this.exception = exception;
             this.metadata = null;
             this.image = null;
         }
 
-        public TextureData(@Nullable TextureResourceMetadata textureResourceMetadata, NativeImage nativeImage) {
+        public TextureData(@Nullable TextureResourceMetadata metadata, NativeImage image) {
             this.exception = null;
-            this.metadata = textureResourceMetadata;
-            this.image = nativeImage;
+            this.metadata = metadata;
+            this.image = image;
         }
 
         /*

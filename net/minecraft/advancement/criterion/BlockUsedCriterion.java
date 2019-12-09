@@ -24,8 +24,8 @@ public class BlockUsedCriterion
 extends AbstractCriterion<Conditions> {
     private final Identifier id;
 
-    public BlockUsedCriterion(Identifier identifier) {
-        this.id = identifier;
+    public BlockUsedCriterion(Identifier id) {
+        this.id = id;
     }
 
     @Override
@@ -41,14 +41,14 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(this.id, blockPredicate, statePredicate, itemPredicate);
     }
 
-    public void test(ServerPlayerEntity serverPlayerEntity, BlockPos blockPos, ItemStack itemStack) {
-        BlockState blockState = serverPlayerEntity.getServerWorld().getBlockState(blockPos);
-        this.test(serverPlayerEntity.getAdvancementTracker(), conditions -> conditions.test(blockState, serverPlayerEntity.getServerWorld(), blockPos, itemStack));
+    public void test(ServerPlayerEntity player, BlockPos pos, ItemStack stack) {
+        BlockState blockState = player.getServerWorld().getBlockState(pos);
+        this.test(player.getAdvancementTracker(), conditions -> conditions.test(blockState, player.getServerWorld(), pos, stack));
     }
 
     @Override
-    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
+    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject obj, JsonDeserializationContext context) {
+        return this.conditionsFromJson(obj, context);
     }
 
     public static class Conditions
@@ -57,25 +57,25 @@ extends AbstractCriterion<Conditions> {
         private final StatePredicate state;
         private final ItemPredicate item;
 
-        public Conditions(Identifier identifier, BlockPredicate blockPredicate, StatePredicate statePredicate, ItemPredicate itemPredicate) {
-            super(identifier);
-            this.block = blockPredicate;
-            this.state = statePredicate;
-            this.item = itemPredicate;
+        public Conditions(Identifier id, BlockPredicate block, StatePredicate state, ItemPredicate item) {
+            super(id);
+            this.block = block;
+            this.state = state;
+            this.item = item;
         }
 
-        public static Conditions create(BlockPredicate.Builder builder, ItemPredicate.Builder builder2) {
-            return new Conditions(Criterions.SAFELY_HARVEST_HONEY.id, builder.build(), StatePredicate.ANY, builder2.build());
+        public static Conditions create(BlockPredicate.Builder blockPredicateBuilder, ItemPredicate.Builder itemPredicateBuilder) {
+            return new Conditions(Criterions.SAFELY_HARVEST_HONEY.id, blockPredicateBuilder.build(), StatePredicate.ANY, itemPredicateBuilder.build());
         }
 
-        public boolean test(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, ItemStack itemStack) {
-            if (!this.block.test(serverWorld, blockPos)) {
+        public boolean test(BlockState state, ServerWorld world, BlockPos pos, ItemStack stack) {
+            if (!this.block.test(world, pos)) {
                 return false;
             }
-            if (!this.state.test(blockState)) {
+            if (!this.state.test(state)) {
                 return false;
             }
-            return this.item.test(itemStack);
+            return this.item.test(stack);
         }
 
         @Override

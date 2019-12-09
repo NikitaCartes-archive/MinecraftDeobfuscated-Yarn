@@ -124,10 +124,10 @@ public abstract class RenderPhase {
     protected static final Target OUTLINE_TARGET = new Target("outline_target", () -> MinecraftClient.getInstance().worldRenderer.getEntityOutlinesFramebuffer().beginWrite(false), () -> MinecraftClient.getInstance().getFramebuffer().beginWrite(false));
     protected static final LineWidth FULL_LINEWIDTH = new LineWidth(OptionalDouble.of(1.0));
 
-    public RenderPhase(String string, Runnable runnable, Runnable runnable2) {
-        this.name = string;
-        this.beginAction = runnable;
-        this.endAction = runnable2;
+    public RenderPhase(String name, Runnable beginAction, Runnable endAction) {
+        this.name = name;
+        this.beginAction = beginAction;
+        this.endAction = endAction;
     }
 
     public void startDrawing() {
@@ -153,16 +153,16 @@ public abstract class RenderPhase {
         return this.name.hashCode();
     }
 
-    private static void setupGlintTexturing(float f) {
+    private static void setupGlintTexturing(float scale) {
         RenderSystem.matrixMode(5890);
         RenderSystem.pushMatrix();
         RenderSystem.loadIdentity();
         long l = Util.getMeasuringTimeMs() * 8L;
-        float g = (float)(l % 110000L) / 110000.0f;
-        float h = (float)(l % 30000L) / 30000.0f;
-        RenderSystem.translatef(-g, h, 0.0f);
+        float f = (float)(l % 110000L) / 110000.0f;
+        float g = (float)(l % 30000L) / 30000.0f;
+        RenderSystem.translatef(-f, g, 0.0f);
         RenderSystem.rotatef(10.0f, 0.0f, 0.0f, 1.0f);
-        RenderSystem.scalef(f, f, f);
+        RenderSystem.scalef(scale, scale, scale);
         RenderSystem.matrixMode(5888);
     }
 
@@ -238,24 +238,24 @@ public abstract class RenderPhase {
         private final boolean color;
         private final boolean depth;
 
-        public WriteMaskState(boolean bl, boolean bl2) {
+        public WriteMaskState(boolean color, boolean depth) {
             super("write_mask_state", () -> {
-                if (!bl2) {
-                    RenderSystem.depthMask(bl2);
+                if (!depth) {
+                    RenderSystem.depthMask(depth);
                 }
-                if (!bl) {
-                    RenderSystem.colorMask(bl, bl, bl, bl);
+                if (!color) {
+                    RenderSystem.colorMask(color, color, color, color);
                 }
             }, () -> {
-                if (!bl2) {
+                if (!depth) {
                     RenderSystem.depthMask(true);
                 }
-                if (!bl) {
+                if (!color) {
                     RenderSystem.colorMask(true, true, true, true);
                 }
             });
-            this.color = bl;
-            this.depth = bl2;
+            this.color = color;
+            this.depth = depth;
         }
 
         @Override
@@ -281,19 +281,19 @@ public abstract class RenderPhase {
     extends RenderPhase {
         private final int func;
 
-        public DepthTest(int i) {
+        public DepthTest(int func) {
             super("depth_test", () -> {
-                if (i != 519) {
+                if (func != 519) {
                     RenderSystem.enableDepthTest();
-                    RenderSystem.depthFunc(i);
+                    RenderSystem.depthFunc(func);
                 }
             }, () -> {
-                if (i != 519) {
+                if (func != 519) {
                     RenderSystem.disableDepthTest();
                     RenderSystem.depthFunc(515);
                 }
             });
-            this.func = i;
+            this.func = func;
         }
 
         @Override
@@ -317,64 +317,64 @@ public abstract class RenderPhase {
     @Environment(value=EnvType.CLIENT)
     public static class Cull
     extends Toggleable {
-        public Cull(boolean bl) {
+        public Cull(boolean culling) {
             super("cull", () -> {
-                if (bl) {
+                if (culling) {
                     RenderSystem.enableCull();
                 }
             }, () -> {
-                if (bl) {
+                if (culling) {
                     RenderSystem.disableCull();
                 }
-            }, bl);
+            }, culling);
         }
     }
 
     @Environment(value=EnvType.CLIENT)
     public static class DiffuseLighting
     extends Toggleable {
-        public DiffuseLighting(boolean bl) {
+        public DiffuseLighting(boolean guiLighting) {
             super("diffuse_lighting", () -> {
-                if (bl) {
+                if (guiLighting) {
                     net.minecraft.client.render.DiffuseLighting.enable();
                 }
             }, () -> {
-                if (bl) {
+                if (guiLighting) {
                     net.minecraft.client.render.DiffuseLighting.disable();
                 }
-            }, bl);
+            }, guiLighting);
         }
     }
 
     @Environment(value=EnvType.CLIENT)
     public static class Overlay
     extends Toggleable {
-        public Overlay(boolean bl) {
+        public Overlay(boolean overlayColor) {
             super("overlay", () -> {
-                if (bl) {
+                if (overlayColor) {
                     MinecraftClient.getInstance().gameRenderer.getOverlayTexture().setupOverlayColor();
                 }
             }, () -> {
-                if (bl) {
+                if (overlayColor) {
                     MinecraftClient.getInstance().gameRenderer.getOverlayTexture().teardownOverlayColor();
                 }
-            }, bl);
+            }, overlayColor);
         }
     }
 
     @Environment(value=EnvType.CLIENT)
     public static class Lightmap
     extends Toggleable {
-        public Lightmap(boolean bl) {
+        public Lightmap(boolean lightmap) {
             super("lightmap", () -> {
-                if (bl) {
+                if (lightmap) {
                     MinecraftClient.getInstance().gameRenderer.getLightmapTextureManager().enable();
                 }
             }, () -> {
-                if (bl) {
+                if (lightmap) {
                     MinecraftClient.getInstance().gameRenderer.getLightmapTextureManager().disable();
                 }
-            }, bl);
+            }, lightmap);
         }
     }
 
@@ -411,16 +411,16 @@ public abstract class RenderPhase {
     extends Texturing {
         private final int layer;
 
-        public PortalTexturing(int i) {
+        public PortalTexturing(int layer) {
             super("portal_texturing", () -> {
                 RenderSystem.matrixMode(5890);
                 RenderSystem.pushMatrix();
                 RenderSystem.loadIdentity();
                 RenderSystem.translatef(0.5f, 0.5f, 0.0f);
                 RenderSystem.scalef(0.5f, 0.5f, 1.0f);
-                RenderSystem.translatef(17.0f / (float)i, (2.0f + (float)i / 1.5f) * ((float)(Util.getMeasuringTimeMs() % 800000L) / 800000.0f), 0.0f);
-                RenderSystem.rotatef(((float)(i * i) * 4321.0f + (float)i * 9.0f) * 2.0f, 0.0f, 0.0f, 1.0f);
-                RenderSystem.scalef(4.5f - (float)i / 4.0f, 4.5f - (float)i / 4.0f, 1.0f);
+                RenderSystem.translatef(17.0f / (float)layer, (2.0f + (float)layer / 1.5f) * ((float)(Util.getMeasuringTimeMs() % 800000L) / 800000.0f), 0.0f);
+                RenderSystem.rotatef(((float)(layer * layer) * 4321.0f + (float)layer * 9.0f) * 2.0f, 0.0f, 0.0f, 1.0f);
+                RenderSystem.scalef(4.5f - (float)layer / 4.0f, 4.5f - (float)layer / 4.0f, 1.0f);
                 RenderSystem.mulTextureByProjModelView();
                 RenderSystem.matrixMode(5888);
                 RenderSystem.setupEndPortalTexGen();
@@ -430,7 +430,7 @@ public abstract class RenderPhase {
                 RenderSystem.matrixMode(5888);
                 RenderSystem.clearTexGen();
             });
-            this.layer = i;
+            this.layer = layer;
         }
 
         @Override
@@ -457,20 +457,20 @@ public abstract class RenderPhase {
         private final float x;
         private final float y;
 
-        public OffsetTexturing(float f, float g) {
+        public OffsetTexturing(float x, float y) {
             super("offset_texturing", () -> {
                 RenderSystem.matrixMode(5890);
                 RenderSystem.pushMatrix();
                 RenderSystem.loadIdentity();
-                RenderSystem.translatef(f, g, 0.0f);
+                RenderSystem.translatef(x, y, 0.0f);
                 RenderSystem.matrixMode(5888);
             }, () -> {
                 RenderSystem.matrixMode(5890);
                 RenderSystem.popMatrix();
                 RenderSystem.matrixMode(5888);
             });
-            this.x = f;
-            this.y = g;
+            this.x = x;
+            this.y = y;
         }
 
         @Override
@@ -506,16 +506,16 @@ public abstract class RenderPhase {
         private final boolean bilinear;
         private final boolean mipmap;
 
-        public Texture(Identifier identifier, boolean bl, boolean bl2) {
+        public Texture(Identifier id, boolean bilinear, boolean mipmap) {
             super("texture", () -> {
                 RenderSystem.enableTexture();
                 TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
-                textureManager.bindTexture(identifier);
-                textureManager.getTexture(identifier).setFilter(bl, bl2);
+                textureManager.bindTexture(id);
+                textureManager.getTexture(id).setFilter(bilinear, mipmap);
             }, () -> {});
-            this.id = Optional.of(identifier);
-            this.bilinear = bl;
-            this.mipmap = bl2;
+            this.id = Optional.of(id);
+            this.bilinear = bilinear;
+            this.mipmap = mipmap;
         }
 
         public Texture() {
@@ -552,9 +552,9 @@ public abstract class RenderPhase {
     extends RenderPhase {
         private final boolean smooth;
 
-        public ShadeModel(boolean bl) {
-            super("shade_model", () -> RenderSystem.shadeModel(bl ? 7425 : 7424), () -> RenderSystem.shadeModel(7424));
-            this.smooth = bl;
+        public ShadeModel(boolean smooth) {
+            super("shade_model", () -> RenderSystem.shadeModel(smooth ? 7425 : 7424), () -> RenderSystem.shadeModel(7424));
+            this.smooth = smooth;
         }
 
         @Override
@@ -580,11 +580,11 @@ public abstract class RenderPhase {
     extends RenderPhase {
         private final float alpha;
 
-        public Alpha(float f) {
+        public Alpha(float alpha) {
             super("alpha", () -> {
-                if (f > 0.0f) {
+                if (alpha > 0.0f) {
                     RenderSystem.enableAlphaTest();
-                    RenderSystem.alphaFunc(516, f);
+                    RenderSystem.alphaFunc(516, alpha);
                 } else {
                     RenderSystem.disableAlphaTest();
                 }
@@ -592,7 +592,7 @@ public abstract class RenderPhase {
                 RenderSystem.disableAlphaTest();
                 RenderSystem.defaultAlphaFunc();
             });
-            this.alpha = f;
+            this.alpha = alpha;
         }
 
         @Override

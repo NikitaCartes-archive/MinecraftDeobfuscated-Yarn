@@ -24,18 +24,18 @@ extends ThrownItemEntity {
         super((EntityType<? extends ThrownItemEntity>)entityType, world);
     }
 
-    public ThrownEggEntity(World world, LivingEntity livingEntity) {
-        super((EntityType<? extends ThrownItemEntity>)EntityType.EGG, livingEntity, world);
+    public ThrownEggEntity(World world, LivingEntity thrower) {
+        super((EntityType<? extends ThrownItemEntity>)EntityType.EGG, thrower, world);
     }
 
-    public ThrownEggEntity(World world, double d, double e, double f) {
-        super((EntityType<? extends ThrownItemEntity>)EntityType.EGG, d, e, f, world);
+    public ThrownEggEntity(World world, double x, double y, double z) {
+        super((EntityType<? extends ThrownItemEntity>)EntityType.EGG, x, y, z, world);
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void handleStatus(byte b) {
-        if (b == 3) {
+    public void handleStatus(byte status) {
+        if (status == 3) {
             double d = 0.08;
             for (int i = 0; i < 8; ++i) {
                 this.world.addParticle(new ItemStackParticleEffect(ParticleTypes.ITEM, this.getStack()), this.getX(), this.getY(), this.getZ(), ((double)this.random.nextFloat() - 0.5) * 0.08, ((double)this.random.nextFloat() - 0.5) * 0.08, ((double)this.random.nextFloat() - 0.5) * 0.08);

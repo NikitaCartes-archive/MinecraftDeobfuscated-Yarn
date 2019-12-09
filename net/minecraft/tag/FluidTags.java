@@ -16,8 +16,8 @@ public class FluidTags {
     public static final Tag<Fluid> WATER;
     public static final Tag<Fluid> LAVA;
 
-    public static void setContainer(TagContainer<Fluid> tagContainer) {
-        container = tagContainer;
+    public static void setContainer(TagContainer<Fluid> container) {
+        FluidTags.container = container;
         ++latestVersion;
     }
 
@@ -25,8 +25,8 @@ public class FluidTags {
         return container;
     }
 
-    private static Tag<Fluid> register(String string) {
-        return new CachingTag(new Identifier(string));
+    private static Tag<Fluid> register(String id) {
+        return new CachingTag(new Identifier(id));
     }
 
     static {

@@ -9,10 +9,10 @@ import net.minecraft.world.biome.layer.util.LayerSampleContext;
 import net.minecraft.world.biome.layer.util.LayerSampler;
 
 public interface InitLayer {
-    default public <R extends LayerSampler> LayerFactory<R> create(LayerSampleContext<R> layerSampleContext) {
-        return () -> layerSampleContext.createSampler((i, j) -> {
-            layerSampleContext.initSeed(i, j);
-            return this.sample(layerSampleContext, i, j);
+    default public <R extends LayerSampler> LayerFactory<R> create(LayerSampleContext<R> context) {
+        return () -> context.createSampler((x, z) -> {
+            context.initSeed(x, z);
+            return this.sample(context, x, z);
         });
     }
 

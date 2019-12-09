@@ -36,9 +36,9 @@ implements BakedModel {
     protected final ModelItemPropertyOverrideList itemPropertyOverrides;
     private final Map<BlockState, BitSet> stateCache = new Object2ObjectOpenCustomHashMap<BlockState, BitSet>(Util.identityHashStrategy());
 
-    public MultipartBakedModel(List<Pair<Predicate<BlockState>, BakedModel>> list) {
-        this.components = list;
-        BakedModel bakedModel = list.iterator().next().getRight();
+    public MultipartBakedModel(List<Pair<Predicate<BlockState>, BakedModel>> components) {
+        this.components = components;
+        BakedModel bakedModel = components.iterator().next().getRight();
         this.ambientOcclusion = bakedModel.useAmbientOcclusion();
         this.depthGui = bakedModel.hasDepthInGui();
         this.sprite = bakedModel.getSprite();
@@ -47,25 +47,25 @@ implements BakedModel {
     }
 
     @Override
-    public List<BakedQuad> getQuads(@Nullable BlockState blockState, @Nullable Direction direction, Random random) {
-        if (blockState == null) {
+    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction face, Random random) {
+        if (state == null) {
             return Collections.emptyList();
         }
-        BitSet bitSet = this.stateCache.get(blockState);
+        BitSet bitSet = this.stateCache.get(state);
         if (bitSet == null) {
             bitSet = new BitSet();
             for (int i = 0; i < this.components.size(); ++i) {
                 Pair<Predicate<BlockState>, BakedModel> pair = this.components.get(i);
-                if (!pair.getLeft().test(blockState)) continue;
+                if (!pair.getLeft().test(state)) continue;
                 bitSet.set(i);
             }
-            this.stateCache.put(blockState, bitSet);
+            this.stateCache.put(state, bitSet);
         }
         ArrayList<BakedQuad> list = Lists.newArrayList();
         long l = random.nextLong();
         for (int j = 0; j < bitSet.length(); ++j) {
             if (!bitSet.get(j)) continue;
-            list.addAll(this.components.get(j).getRight().getQuads(blockState, direction, new Random(l)));
+            list.addAll(this.components.get(j).getRight().getQuads(state, face, new Random(l)));
         }
         return list;
     }
@@ -104,8 +104,8 @@ implements BakedModel {
     public static class Builder {
         private final List<Pair<Predicate<BlockState>, BakedModel>> components = Lists.newArrayList();
 
-        public void addComponent(Predicate<BlockState> predicate, BakedModel bakedModel) {
-            this.components.add(Pair.of(predicate, bakedModel));
+        public void addComponent(Predicate<BlockState> predicate, BakedModel model) {
+            this.components.add(Pair.of(predicate, model));
         }
 
         public BakedModel build() {

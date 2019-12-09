@@ -19,15 +19,15 @@ extends PlantBlock {
     private final StatusEffect effectInStew;
     private final int effectInStewDuration;
 
-    public FlowerBlock(StatusEffect statusEffect, int i, Block.Settings settings) {
+    public FlowerBlock(StatusEffect suspiciousStewEffect, int effectDuration, Block.Settings settings) {
         super(settings);
-        this.effectInStew = statusEffect;
-        this.effectInStewDuration = statusEffect.isInstant() ? i : i * 20;
+        this.effectInStew = suspiciousStewEffect;
+        this.effectInStewDuration = suspiciousStewEffect.isInstant() ? effectDuration : effectDuration * 20;
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-        Vec3d vec3d = blockState.getOffsetPos(blockView, blockPos);
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+        Vec3d vec3d = state.getOffsetPos(view, pos);
         return SHAPE.offset(vec3d.x, vec3d.y, vec3d.z);
     }
 

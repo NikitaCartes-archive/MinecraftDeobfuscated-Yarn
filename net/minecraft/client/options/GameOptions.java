@@ -175,32 +175,32 @@ public class GameOptions {
     public NarratorOption narrator = NarratorOption.OFF;
     public String language = "en_us";
 
-    public GameOptions(MinecraftClient minecraftClient, File file) {
-        this.client = minecraftClient;
-        this.optionsFile = new File(file, "options.txt");
-        if (minecraftClient.is64Bit() && Runtime.getRuntime().maxMemory() >= 1000000000L) {
+    public GameOptions(MinecraftClient client, File optionsFile) {
+        this.client = client;
+        this.optionsFile = new File(optionsFile, "options.txt");
+        if (client.is64Bit() && Runtime.getRuntime().maxMemory() >= 1000000000L) {
             Option.RENDER_DISTANCE.setMax(32.0f);
         } else {
             Option.RENDER_DISTANCE.setMax(16.0f);
         }
-        this.viewDistance = minecraftClient.is64Bit() ? 12 : 8;
+        this.viewDistance = client.is64Bit() ? 12 : 8;
         this.load();
     }
 
-    public float getTextBackgroundOpacity(float f) {
-        return this.backgroundForChatOnly ? f : (float)this.textBackgroundOpacity;
+    public float getTextBackgroundOpacity(float fallback) {
+        return this.backgroundForChatOnly ? fallback : (float)this.textBackgroundOpacity;
     }
 
-    public int getTextBackgroundColor(float f) {
-        return (int)(this.getTextBackgroundOpacity(f) * 255.0f) << 24 & 0xFF000000;
+    public int getTextBackgroundColor(float fallbackOpacity) {
+        return (int)(this.getTextBackgroundOpacity(fallbackOpacity) * 255.0f) << 24 & 0xFF000000;
     }
 
-    public int getTextBackgroundColor(int i) {
-        return this.backgroundForChatOnly ? i : (int)(this.textBackgroundOpacity * 255.0) << 24 & 0xFF000000;
+    public int getTextBackgroundColor(int fallbackColor) {
+        return this.backgroundForChatOnly ? fallbackColor : (int)(this.textBackgroundOpacity * 255.0) << 24 & 0xFF000000;
     }
 
-    public void setKeyCode(KeyBinding keyBinding, InputUtil.KeyCode keyCode) {
-        keyBinding.setKeyCode(keyCode);
+    public void setKeyCode(KeyBinding key, InputUtil.KeyCode code) {
+        key.setKeyCode(code);
         this.write();
     }
 
@@ -456,14 +456,14 @@ public class GameOptions {
         }
     }
 
-    private CompoundTag update(CompoundTag compoundTag) {
+    private CompoundTag update(CompoundTag tag) {
         int i = 0;
         try {
-            i = Integer.parseInt(compoundTag.getString("version"));
+            i = Integer.parseInt(tag.getString("version"));
         } catch (RuntimeException runtimeException) {
             // empty catch block
         }
-        return NbtHelper.update(this.client.getDataFixer(), DataFixTypes.OPTIONS, compoundTag, i);
+        return NbtHelper.update(this.client.getDataFixer(), DataFixTypes.OPTIONS, tag, i);
     }
 
     private static float parseFloat(String string) {
@@ -567,16 +567,16 @@ public class GameOptions {
         this.onPlayerModelPartChange();
     }
 
-    public float getSoundVolume(SoundCategory soundCategory) {
-        if (this.soundVolumeLevels.containsKey((Object)soundCategory)) {
-            return this.soundVolumeLevels.get((Object)soundCategory).floatValue();
+    public float getSoundVolume(SoundCategory category) {
+        if (this.soundVolumeLevels.containsKey((Object)category)) {
+            return this.soundVolumeLevels.get((Object)category).floatValue();
         }
         return 1.0f;
     }
 
-    public void setSoundVolume(SoundCategory soundCategory, float f) {
-        this.soundVolumeLevels.put(soundCategory, Float.valueOf(f));
-        this.client.getSoundManager().updateSoundVolume(soundCategory, f);
+    public void setSoundVolume(SoundCategory category, float volume) {
+        this.soundVolumeLevels.put(category, Float.valueOf(volume));
+        this.client.getSoundManager().updateSoundVolume(category, volume);
     }
 
     public void onPlayerModelPartChange() {
@@ -593,20 +593,20 @@ public class GameOptions {
         return ImmutableSet.copyOf(this.enabledPlayerModelParts);
     }
 
-    public void setPlayerModelPart(PlayerModelPart playerModelPart, boolean bl) {
-        if (bl) {
-            this.enabledPlayerModelParts.add(playerModelPart);
+    public void setPlayerModelPart(PlayerModelPart part, boolean enabled) {
+        if (enabled) {
+            this.enabledPlayerModelParts.add(part);
         } else {
-            this.enabledPlayerModelParts.remove((Object)playerModelPart);
+            this.enabledPlayerModelParts.remove((Object)part);
         }
         this.onPlayerModelPartChange();
     }
 
-    public void togglePlayerModelPart(PlayerModelPart playerModelPart) {
-        if (this.getEnabledPlayerModelParts().contains((Object)playerModelPart)) {
-            this.enabledPlayerModelParts.remove((Object)playerModelPart);
+    public void togglePlayerModelPart(PlayerModelPart part) {
+        if (this.getEnabledPlayerModelParts().contains((Object)part)) {
+            this.enabledPlayerModelParts.remove((Object)part);
         } else {
-            this.enabledPlayerModelParts.add(playerModelPart);
+            this.enabledPlayerModelParts.add(part);
         }
         this.onPlayerModelPartChange();
     }
@@ -622,15 +622,15 @@ public class GameOptions {
         return this.useNativeTransport;
     }
 
-    public void addResourcePackProfilesToManager(ResourcePackManager<ClientResourcePackProfile> resourcePackManager) {
-        resourcePackManager.scanPacks();
+    public void addResourcePackProfilesToManager(ResourcePackManager<ClientResourcePackProfile> manager) {
+        manager.scanPacks();
         LinkedHashSet<ClientResourcePackProfile> set = Sets.newLinkedHashSet();
         Iterator<String> iterator = this.resourcePacks.iterator();
         while (iterator.hasNext()) {
             String string = iterator.next();
-            ClientResourcePackProfile clientResourcePackProfile = resourcePackManager.getProfile(string);
+            ClientResourcePackProfile clientResourcePackProfile = manager.getProfile(string);
             if (clientResourcePackProfile == null && !string.startsWith("file/")) {
-                clientResourcePackProfile = resourcePackManager.getProfile("file/" + string);
+                clientResourcePackProfile = manager.getProfile("file/" + string);
             }
             if (clientResourcePackProfile == null) {
                 LOGGER.warn("Removed resource pack {} from options because it doesn't seem to exist anymore", (Object)string);
@@ -649,7 +649,7 @@ public class GameOptions {
             }
             set.add(clientResourcePackProfile);
         }
-        resourcePackManager.setEnabledProfiles(set);
+        manager.setEnabledProfiles(set);
     }
 }
 

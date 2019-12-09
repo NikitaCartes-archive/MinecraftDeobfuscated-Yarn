@@ -22,33 +22,33 @@ extends SnowyBlock {
         super(settings);
     }
 
-    private static boolean canSurvive(BlockState blockState, WorldView worldView, BlockPos blockPos) {
-        BlockPos blockPos2 = blockPos.up();
-        BlockState blockState2 = worldView.getBlockState(blockPos2);
-        if (blockState2.getBlock() == Blocks.SNOW && blockState2.get(SnowBlock.LAYERS) == 1) {
+    private static boolean canSurvive(BlockState state, WorldView worldView, BlockPos pos) {
+        BlockPos blockPos = pos.up();
+        BlockState blockState = worldView.getBlockState(blockPos);
+        if (blockState.getBlock() == Blocks.SNOW && blockState.get(SnowBlock.LAYERS) == 1) {
             return true;
         }
-        int i = ChunkLightProvider.getRealisticOpacity(worldView, blockState, blockPos, blockState2, blockPos2, Direction.UP, blockState2.getOpacity(worldView, blockPos2));
+        int i = ChunkLightProvider.getRealisticOpacity(worldView, state, pos, blockState, blockPos, Direction.UP, blockState.getOpacity(worldView, blockPos));
         return i < worldView.getMaxLightLevel();
     }
 
-    private static boolean canSpread(BlockState blockState, WorldView worldView, BlockPos blockPos) {
-        BlockPos blockPos2 = blockPos.up();
-        return SpreadableBlock.canSurvive(blockState, worldView, blockPos) && !worldView.getFluidState(blockPos2).matches(FluidTags.WATER);
+    private static boolean canSpread(BlockState state, WorldView worldView, BlockPos pos) {
+        BlockPos blockPos = pos.up();
+        return SpreadableBlock.canSurvive(state, worldView, pos) && !worldView.getFluidState(blockPos).matches(FluidTags.WATER);
     }
 
     @Override
-    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
-        if (!SpreadableBlock.canSurvive(blockState, serverWorld, blockPos)) {
-            serverWorld.setBlockState(blockPos, Blocks.DIRT.getDefaultState());
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        if (!SpreadableBlock.canSurvive(state, world, pos)) {
+            world.setBlockState(pos, Blocks.DIRT.getDefaultState());
             return;
         }
-        if (serverWorld.getLightLevel(blockPos.up()) >= 9) {
-            BlockState blockState2 = this.getDefaultState();
+        if (world.getLightLevel(pos.up()) >= 9) {
+            BlockState blockState = this.getDefaultState();
             for (int i = 0; i < 4; ++i) {
-                BlockPos blockPos2 = blockPos.add(random.nextInt(3) - 1, random.nextInt(5) - 3, random.nextInt(3) - 1);
-                if (serverWorld.getBlockState(blockPos2).getBlock() != Blocks.DIRT || !SpreadableBlock.canSpread(blockState2, serverWorld, blockPos2)) continue;
-                serverWorld.setBlockState(blockPos2, (BlockState)blockState2.with(SNOWY, serverWorld.getBlockState(blockPos2.up()).getBlock() == Blocks.SNOW));
+                BlockPos blockPos = pos.add(random.nextInt(3) - 1, random.nextInt(5) - 3, random.nextInt(3) - 1);
+                if (world.getBlockState(blockPos).getBlock() != Blocks.DIRT || !SpreadableBlock.canSpread(blockState, world, blockPos)) continue;
+                world.setBlockState(blockPos, (BlockState)blockState.with(SNOWY, world.getBlockState(blockPos.up()).getBlock() == Blocks.SNOW));
             }
         }
     }

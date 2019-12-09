@@ -25,13 +25,13 @@ extends Task<VillagerEntity> {
     private final int field_18385;
     private final int maxRunTime;
 
-    public VillagerWalkTowardsTask(MemoryModuleType<GlobalPos> memoryModuleType, float f, int i, int j, int k) {
-        super(ImmutableMap.of(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleState.REGISTERED, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT, memoryModuleType, MemoryModuleState.VALUE_PRESENT));
-        this.destination = memoryModuleType;
-        this.speed = f;
-        this.completionRange = i;
-        this.field_18385 = j;
-        this.maxRunTime = k;
+    public VillagerWalkTowardsTask(MemoryModuleType<GlobalPos> destination, float speed, int completionRange, int i, int maxRunTime) {
+        super(ImmutableMap.of(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleState.REGISTERED, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT, destination, MemoryModuleState.VALUE_PRESENT));
+        this.destination = destination;
+        this.speed = speed;
+        this.completionRange = completionRange;
+        this.field_18385 = i;
+        this.maxRunTime = maxRunTime;
     }
 
     private void method_21722(VillagerEntity villagerEntity, long l) {
@@ -65,10 +65,10 @@ extends Task<VillagerEntity> {
         });
     }
 
-    private boolean shouldGiveUp(ServerWorld serverWorld, VillagerEntity villagerEntity) {
-        Optional<Long> optional = villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
+    private boolean shouldGiveUp(ServerWorld world, VillagerEntity villager) {
+        Optional<Long> optional = villager.getBrain().getOptionalMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
         if (optional.isPresent()) {
-            return serverWorld.getTime() - optional.get() > (long)this.maxRunTime;
+            return world.getTime() - optional.get() > (long)this.maxRunTime;
         }
         return false;
     }
@@ -77,8 +77,8 @@ extends Task<VillagerEntity> {
         return globalPos.getDimension() != serverWorld.getDimension().getType() || globalPos.getPos().getManhattanDistance(new BlockPos(villagerEntity)) > this.field_18385;
     }
 
-    private boolean reachedDestination(ServerWorld serverWorld, VillagerEntity villagerEntity, GlobalPos globalPos) {
-        return globalPos.getDimension() == serverWorld.getDimension().getType() && globalPos.getPos().getManhattanDistance(new BlockPos(villagerEntity)) <= this.completionRange;
+    private boolean reachedDestination(ServerWorld world, VillagerEntity villager, GlobalPos pos) {
+        return pos.getDimension() == world.getDimension().getType() && pos.getPos().getManhattanDistance(new BlockPos(villager)) <= this.completionRange;
     }
 }
 

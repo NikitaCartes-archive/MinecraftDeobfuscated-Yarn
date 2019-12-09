@@ -25,23 +25,23 @@ extends AbstractTexture {
     private static final Logger LOGGER = LogManager.getLogger();
     public final List<String> locations;
 
-    public LayeredTexture(String ... strings) {
-        this.locations = Lists.newArrayList(strings);
+    public LayeredTexture(String ... locations) {
+        this.locations = Lists.newArrayList(locations);
         if (this.locations.isEmpty()) {
             throw new IllegalStateException("Layered texture with no layers.");
         }
     }
 
     @Override
-    public void load(ResourceManager resourceManager) throws IOException {
+    public void load(ResourceManager manager) throws IOException {
         Iterator<String> iterator = this.locations.iterator();
         String string = iterator.next();
-        try (Resource resource = resourceManager.getResource(new Identifier(string));){
+        try (Resource resource = manager.getResource(new Identifier(string));){
             NativeImage nativeImage = NativeImage.read(resource.getInputStream());
             while (iterator.hasNext()) {
                 String string2 = iterator.next();
                 if (string2 == null) continue;
-                Resource resource2 = resourceManager.getResource(new Identifier(string2));
+                Resource resource2 = manager.getResource(new Identifier(string2));
                 Throwable throwable = null;
                 try {
                     NativeImage nativeImage2 = NativeImage.read(resource2.getInputStream());

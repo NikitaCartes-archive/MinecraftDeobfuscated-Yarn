@@ -14,19 +14,19 @@ public class StickyKeyBinding
 extends KeyBinding {
     private final BooleanSupplier toggleGetter;
 
-    public StickyKeyBinding(String string, int i, String string2, BooleanSupplier booleanSupplier) {
-        super(string, InputUtil.Type.KEYSYM, i, string2);
-        this.toggleGetter = booleanSupplier;
+    public StickyKeyBinding(String id, int code, String category, BooleanSupplier toggleGetter) {
+        super(id, InputUtil.Type.KEYSYM, code, category);
+        this.toggleGetter = toggleGetter;
     }
 
     @Override
-    public void setPressed(boolean bl) {
+    public void setPressed(boolean pressed) {
         if (this.toggleGetter.getAsBoolean()) {
-            if (bl) {
+            if (pressed) {
                 super.setPressed(!this.isPressed());
             }
         } else {
-            super.setPressed(bl);
+            super.setPressed(pressed);
         }
     }
 }

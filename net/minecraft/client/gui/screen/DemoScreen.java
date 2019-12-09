@@ -47,18 +47,18 @@ extends Screen {
     }
 
     @Override
-    public void render(int i, int j, float f) {
+    public void render(int mouseX, int mouseY, float delta) {
         this.renderBackground();
-        int k = (this.width - 248) / 2 + 10;
-        int l = (this.height - 166) / 2 + 8;
-        this.font.draw(this.title.asFormattedString(), k, l, 0x1F1F1F);
+        int i = (this.width - 248) / 2 + 10;
+        int j = (this.height - 166) / 2 + 8;
+        this.font.draw(this.title.asFormattedString(), i, j, 0x1F1F1F);
         GameOptions gameOptions = this.minecraft.options;
-        this.font.draw(I18n.translate("demo.help.movementShort", gameOptions.keyForward.getLocalizedName(), gameOptions.keyLeft.getLocalizedName(), gameOptions.keyBack.getLocalizedName(), gameOptions.keyRight.getLocalizedName()), k, l += 12, 0x4F4F4F);
-        this.font.draw(I18n.translate("demo.help.movementMouse", new Object[0]), k, l + 12, 0x4F4F4F);
-        this.font.draw(I18n.translate("demo.help.jump", gameOptions.keyJump.getLocalizedName()), k, l + 24, 0x4F4F4F);
-        this.font.draw(I18n.translate("demo.help.inventory", gameOptions.keyInventory.getLocalizedName()), k, l + 36, 0x4F4F4F);
-        this.font.drawTrimmed(I18n.translate("demo.help.fullWrapped", new Object[0]), k, l + 68, 218, 0x1F1F1F);
-        super.render(i, j, f);
+        this.font.draw(I18n.translate("demo.help.movementShort", gameOptions.keyForward.getLocalizedName(), gameOptions.keyLeft.getLocalizedName(), gameOptions.keyBack.getLocalizedName(), gameOptions.keyRight.getLocalizedName()), i, j += 12, 0x4F4F4F);
+        this.font.draw(I18n.translate("demo.help.movementMouse", new Object[0]), i, j + 12, 0x4F4F4F);
+        this.font.draw(I18n.translate("demo.help.jump", gameOptions.keyJump.getLocalizedName()), i, j + 24, 0x4F4F4F);
+        this.font.draw(I18n.translate("demo.help.inventory", gameOptions.keyInventory.getLocalizedName()), i, j + 36, 0x4F4F4F);
+        this.font.drawTrimmed(I18n.translate("demo.help.fullWrapped", new Object[0]), i, j + 68, 218, 0x1F1F1F);
+        super.render(mouseX, mouseY, delta);
     }
 }
 

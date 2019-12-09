@@ -21,9 +21,9 @@ implements LootTableRange {
     private final int n;
     private final float p;
 
-    public BinomialLootTableRange(int i, float f) {
-        this.n = i;
-        this.p = f;
+    public BinomialLootTableRange(int n, float p) {
+        this.n = n;
+        this.p = p;
     }
 
     @Override
@@ -36,8 +36,8 @@ implements LootTableRange {
         return i;
     }
 
-    public static BinomialLootTableRange create(int i, float f) {
-        return new BinomialLootTableRange(i, f);
+    public static BinomialLootTableRange create(int n, float p) {
+        return new BinomialLootTableRange(n, p);
     }
 
     @Override
@@ -65,13 +65,13 @@ implements LootTableRange {
         }
 
         @Override
-        public /* synthetic */ JsonElement serialize(Object object, Type type, JsonSerializationContext jsonSerializationContext) {
-            return this.serialize((BinomialLootTableRange)object, type, jsonSerializationContext);
+        public /* synthetic */ JsonElement serialize(Object range, Type unused, JsonSerializationContext context) {
+            return this.serialize((BinomialLootTableRange)range, unused, context);
         }
 
         @Override
-        public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.deserialize(jsonElement, type, jsonDeserializationContext);
+        public /* synthetic */ Object deserialize(JsonElement json, Type unused, JsonDeserializationContext context) throws JsonParseException {
+            return this.deserialize(json, unused, context);
         }
     }
 }

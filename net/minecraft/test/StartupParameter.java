@@ -8,8 +8,8 @@ import net.minecraft.test.GameTest;
 public class StartupParameter {
     private final GameTest test;
 
-    public StartupParameter(GameTest gameTest) {
-        this.test = gameTest;
+    public StartupParameter(GameTest test) {
+        this.test = test;
     }
 }
 

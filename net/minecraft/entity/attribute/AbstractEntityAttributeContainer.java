@@ -22,24 +22,24 @@ public abstract class AbstractEntityAttributeContainer {
     protected final Multimap<EntityAttribute, EntityAttribute> attributeHierarchy = HashMultimap.create();
 
     @Nullable
-    public EntityAttributeInstance get(EntityAttribute entityAttribute) {
-        return this.instancesByKey.get(entityAttribute);
+    public EntityAttributeInstance get(EntityAttribute attribute) {
+        return this.instancesByKey.get(attribute);
     }
 
     @Nullable
-    public EntityAttributeInstance get(String string) {
-        return this.instancesById.get(string);
+    public EntityAttributeInstance get(String name) {
+        return this.instancesById.get(name);
     }
 
-    public EntityAttributeInstance register(EntityAttribute entityAttribute) {
-        if (this.instancesById.containsKey(entityAttribute.getId())) {
+    public EntityAttributeInstance register(EntityAttribute attribute) {
+        if (this.instancesById.containsKey(attribute.getId())) {
             throw new IllegalArgumentException("Attribute is already registered!");
         }
-        EntityAttributeInstance entityAttributeInstance = this.createInstance(entityAttribute);
-        this.instancesById.put(entityAttribute.getId(), entityAttributeInstance);
-        this.instancesByKey.put(entityAttribute, entityAttributeInstance);
-        for (EntityAttribute entityAttribute2 = entityAttribute.getParent(); entityAttribute2 != null; entityAttribute2 = entityAttribute2.getParent()) {
-            this.attributeHierarchy.put(entityAttribute2, entityAttribute);
+        EntityAttributeInstance entityAttributeInstance = this.createInstance(attribute);
+        this.instancesById.put(attribute.getId(), entityAttributeInstance);
+        this.instancesByKey.put(attribute, entityAttributeInstance);
+        for (EntityAttribute entityAttribute = attribute.getParent(); entityAttribute != null; entityAttribute = entityAttribute.getParent()) {
+            this.attributeHierarchy.put(entityAttribute, attribute);
         }
         return entityAttributeInstance;
     }
@@ -50,19 +50,19 @@ public abstract class AbstractEntityAttributeContainer {
         return this.instancesById.values();
     }
 
-    public void add(EntityAttributeInstance entityAttributeInstance) {
+    public void add(EntityAttributeInstance instance) {
     }
 
-    public void removeAll(Multimap<String, EntityAttributeModifier> multimap) {
-        for (Map.Entry<String, EntityAttributeModifier> entry : multimap.entries()) {
+    public void removeAll(Multimap<String, EntityAttributeModifier> modifiers) {
+        for (Map.Entry<String, EntityAttributeModifier> entry : modifiers.entries()) {
             EntityAttributeInstance entityAttributeInstance = this.get(entry.getKey());
             if (entityAttributeInstance == null) continue;
             entityAttributeInstance.removeModifier(entry.getValue());
         }
     }
 
-    public void replaceAll(Multimap<String, EntityAttributeModifier> multimap) {
-        for (Map.Entry<String, EntityAttributeModifier> entry : multimap.entries()) {
+    public void replaceAll(Multimap<String, EntityAttributeModifier> modifiers) {
+        for (Map.Entry<String, EntityAttributeModifier> entry : modifiers.entries()) {
             EntityAttributeInstance entityAttributeInstance = this.get(entry.getKey());
             if (entityAttributeInstance == null) continue;
             entityAttributeInstance.removeModifier(entry.getValue());

@@ -25,21 +25,21 @@ public enum FontType {
     private final String id;
     private final Function<JsonObject, FontLoader> loaderFactory;
 
-    private FontType(String string2, Function<JsonObject, FontLoader> function) {
-        this.id = string2;
-        this.loaderFactory = function;
+    private FontType(String id, Function<JsonObject, FontLoader> factory) {
+        this.id = id;
+        this.loaderFactory = factory;
     }
 
-    public static FontType byId(String string) {
-        FontType fontType = REGISTRY.get(string);
+    public static FontType byId(String id) {
+        FontType fontType = REGISTRY.get(id);
         if (fontType == null) {
-            throw new IllegalArgumentException("Invalid type: " + string);
+            throw new IllegalArgumentException("Invalid type: " + id);
         }
         return fontType;
     }
 
-    public FontLoader createLoader(JsonObject jsonObject) {
-        return this.loaderFactory.apply(jsonObject);
+    public FontLoader createLoader(JsonObject json) {
+        return this.loaderFactory.apply(json);
     }
 
     static {

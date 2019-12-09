@@ -153,8 +153,8 @@ extends SimpleChannelInboundHandler<Packet<?>> {
         }
     }
 
-    private static <T extends PacketListener> void handlePacket(Packet<T> packet, PacketListener packetListener) {
-        packet.apply(packetListener);
+    private static <T extends PacketListener> void handlePacket(Packet<T> packet, PacketListener listener) {
+        packet.apply(listener);
     }
 
     public void setPacketListener(PacketListener packetListener) {
@@ -167,16 +167,16 @@ extends SimpleChannelInboundHandler<Packet<?>> {
         this.send(packet, null);
     }
 
-    public void send(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> genericFutureListener) {
+    public void send(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> listener) {
         if (this.isOpen()) {
             this.sendQueuedPackets();
-            this.sendImmediately(packet, genericFutureListener);
+            this.sendImmediately(packet, listener);
         } else {
-            this.packetQueue.add(new PacketWrapper(packet, genericFutureListener));
+            this.packetQueue.add(new PacketWrapper(packet, listener));
         }
     }
 
-    private void sendImmediately(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> genericFutureListener) {
+    private void sendImmediately(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> listener) {
         NetworkState networkState = NetworkState.getPacketHandlerState(packet);
         NetworkState networkState2 = this.channel.attr(ATTR_KEY_PROTOCOL).get();
         ++this.packetsSentCounter;
@@ -189,8 +189,8 @@ extends SimpleChannelInboundHandler<Packet<?>> {
                 this.setState(networkState);
             }
             ChannelFuture channelFuture = this.channel.writeAndFlush(packet);
-            if (genericFutureListener != null) {
-                channelFuture.addListener(genericFutureListener);
+            if (listener != null) {
+                channelFuture.addListener(listener);
             }
             channelFuture.addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
         } else {
@@ -199,8 +199,8 @@ extends SimpleChannelInboundHandler<Packet<?>> {
                     this.setState(networkState);
                 }
                 ChannelFuture channelFuture = this.channel.writeAndFlush(packet);
-                if (genericFutureListener != null) {
-                    channelFuture.addListener(genericFutureListener);
+                if (listener != null) {
+                    channelFuture.addListener(listener);
                 }
                 channelFuture.addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
             });
@@ -246,10 +246,10 @@ extends SimpleChannelInboundHandler<Packet<?>> {
         return this.address;
     }
 
-    public void disconnect(Text text) {
+    public void disconnect(Text disconnectReason) {
         if (this.channel.isOpen()) {
             this.channel.close().awaitUninterruptibly();
-            this.disconnectReason = text;
+            this.disconnectReason = disconnectReason;
         }
     }
 
@@ -258,11 +258,11 @@ extends SimpleChannelInboundHandler<Packet<?>> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static ClientConnection connect(InetAddress inetAddress, int i, boolean bl) {
+    public static ClientConnection connect(InetAddress address, int port, boolean shouldUseNativeTransport) {
         Lazy<MultithreadEventLoopGroup> lazy;
         Class class_;
         final ClientConnection clientConnection = new ClientConnection(NetworkSide.CLIENTBOUND);
-        if (Epoll.isAvailable() && bl) {
+        if (Epoll.isAvailable() && shouldUseNativeTransport) {
             class_ = EpollSocketChannel.class;
             lazy = CLIENT_IO_GROUP_EPOLL;
         } else {
@@ -280,12 +280,12 @@ extends SimpleChannelInboundHandler<Packet<?>> {
                 }
                 channel.pipeline().addLast("timeout", (ChannelHandler)new ReadTimeoutHandler(30)).addLast("splitter", (ChannelHandler)new SplitterHandler()).addLast("decoder", (ChannelHandler)new DecoderHandler(NetworkSide.CLIENTBOUND)).addLast("prepender", (ChannelHandler)new SizePrepender()).addLast("encoder", (ChannelHandler)new PacketEncoder(NetworkSide.SERVERBOUND)).addLast("packet_handler", (ChannelHandler)clientConnection);
             }
-        })).channel(class_)).connect(inetAddress, i).syncUninterruptibly();
+        })).channel(class_)).connect(address, port).syncUninterruptibly();
         return clientConnection;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static ClientConnection connect(SocketAddress socketAddress) {
+    public static ClientConnection connect(SocketAddress address) {
         final ClientConnection clientConnection = new ClientConnection(NetworkSide.CLIENTBOUND);
         ((Bootstrap)((Bootstrap)((Bootstrap)new Bootstrap().group(CLIENT_IO_GROUP_LOCAL.get())).handler(new ChannelInitializer<Channel>(){
 
@@ -293,7 +293,7 @@ extends SimpleChannelInboundHandler<Packet<?>> {
             protected void initChannel(Channel channel) throws Exception {
                 channel.pipeline().addLast("packet_handler", (ChannelHandler)clientConnection);
             }
-        })).channel(LocalChannel.class)).connect(socketAddress).syncUninterruptibly();
+        })).channel(LocalChannel.class)).connect(address).syncUninterruptibly();
         return clientConnection;
     }
 

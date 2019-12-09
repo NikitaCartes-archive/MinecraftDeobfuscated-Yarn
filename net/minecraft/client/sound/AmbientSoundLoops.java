@@ -47,9 +47,9 @@ public class AmbientSoundLoops {
     extends MovingSoundInstance {
         private final ClientPlayerEntity player;
 
-        protected MusicLoop(ClientPlayerEntity clientPlayerEntity, SoundEvent soundEvent) {
+        protected MusicLoop(ClientPlayerEntity player, SoundEvent soundEvent) {
             super(soundEvent, SoundCategory.AMBIENT);
-            this.player = clientPlayerEntity;
+            this.player = player;
             this.repeat = false;
             this.repeatDelay = 0;
             this.volume = 1.0f;

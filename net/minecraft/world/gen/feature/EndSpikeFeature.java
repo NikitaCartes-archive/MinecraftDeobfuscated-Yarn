@@ -36,8 +36,8 @@ public class EndSpikeFeature
 extends Feature<EndSpikeFeatureConfig> {
     private static final LoadingCache<Long, List<Spike>> CACHE = CacheBuilder.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).build(new SpikeCache());
 
-    public EndSpikeFeature(Function<Dynamic<?>, ? extends EndSpikeFeatureConfig> function) {
-        super(function);
+    public EndSpikeFeature(Function<Dynamic<?>, ? extends EndSpikeFeatureConfig> configFactory) {
+        super(configFactory);
     }
 
     public static List<Spike> getSpikes(IWorld iWorld) {
@@ -59,15 +59,15 @@ extends Feature<EndSpikeFeatureConfig> {
         return true;
     }
 
-    private void generateSpike(IWorld iWorld, Random random, EndSpikeFeatureConfig endSpikeFeatureConfig, Spike spike) {
+    private void generateSpike(IWorld world, Random random, EndSpikeFeatureConfig config, Spike spike) {
         int i = spike.getRadius();
         for (BlockPos blockPos : BlockPos.iterate(new BlockPos(spike.getCenterX() - i, 0, spike.getCenterZ() - i), new BlockPos(spike.getCenterX() + i, spike.getHeight() + 10, spike.getCenterZ() + i))) {
             if (blockPos.getSquaredDistance(spike.getCenterX(), blockPos.getY(), spike.getCenterZ(), false) <= (double)(i * i + 1) && blockPos.getY() < spike.getHeight()) {
-                this.setBlockState(iWorld, blockPos, Blocks.OBSIDIAN.getDefaultState());
+                this.setBlockState(world, blockPos, Blocks.OBSIDIAN.getDefaultState());
                 continue;
             }
             if (blockPos.getY() <= 65) continue;
-            this.setBlockState(iWorld, blockPos, Blocks.AIR.getDefaultState());
+            this.setBlockState(world, blockPos, Blocks.AIR.getDefaultState());
         }
         if (spike.isGuarded()) {
             int j = -2;
@@ -85,17 +85,17 @@ extends Feature<EndSpikeFeatureConfig> {
                         boolean bl42 = m == -2 || m == 2 || bl3;
                         boolean bl5 = n == -2 || n == 2 || bl3;
                         BlockState blockState = (BlockState)((BlockState)((BlockState)((BlockState)Blocks.IRON_BARS.getDefaultState().with(PaneBlock.NORTH, bl42 && n != -2)).with(PaneBlock.SOUTH, bl42 && n != 2)).with(PaneBlock.WEST, bl5 && m != -2)).with(PaneBlock.EAST, bl5 && m != 2);
-                        this.setBlockState(iWorld, mutable.set(spike.getCenterX() + m, spike.getHeight() + o, spike.getCenterZ() + n), blockState);
+                        this.setBlockState(world, mutable.set(spike.getCenterX() + m, spike.getHeight() + o, spike.getCenterZ() + n), blockState);
                     }
                 }
             }
         }
-        EnderCrystalEntity enderCrystalEntity = EntityType.END_CRYSTAL.create(iWorld.getWorld());
-        enderCrystalEntity.setBeamTarget(endSpikeFeatureConfig.getPos());
-        enderCrystalEntity.setInvulnerable(endSpikeFeatureConfig.isCrystalInvulerable());
+        EnderCrystalEntity enderCrystalEntity = EntityType.END_CRYSTAL.create(world.getWorld());
+        enderCrystalEntity.setBeamTarget(config.getPos());
+        enderCrystalEntity.setInvulnerable(config.isCrystalInvulerable());
         enderCrystalEntity.setPositionAndAngles((float)spike.getCenterX() + 0.5f, spike.getHeight() + 1, (float)spike.getCenterZ() + 0.5f, random.nextFloat() * 360.0f, 0.0f);
-        iWorld.spawnEntity(enderCrystalEntity);
-        this.setBlockState(iWorld, new BlockPos(spike.getCenterX(), spike.getHeight(), spike.getCenterZ()), Blocks.BEDROCK.getDefaultState());
+        world.spawnEntity(enderCrystalEntity);
+        this.setBlockState(world, new BlockPos(spike.getCenterX(), spike.getHeight(), spike.getCenterZ()), Blocks.BEDROCK.getDefaultState());
     }
 
     static class SpikeCache
@@ -134,17 +134,17 @@ extends Feature<EndSpikeFeatureConfig> {
         private final boolean guarded;
         private final Box boundingBox;
 
-        public Spike(int i, int j, int k, int l, boolean bl) {
-            this.centerX = i;
-            this.centerZ = j;
-            this.radius = k;
-            this.height = l;
+        public Spike(int centerX, int centerZ, int radius, int height, boolean bl) {
+            this.centerX = centerX;
+            this.centerZ = centerZ;
+            this.radius = radius;
+            this.height = height;
             this.guarded = bl;
-            this.boundingBox = new Box(i - k, 0.0, j - k, i + k, 256.0, j + k);
+            this.boundingBox = new Box(centerX - radius, 0.0, centerZ - radius, centerX + radius, 256.0, centerZ + radius);
         }
 
-        public boolean isInChunk(BlockPos blockPos) {
-            return blockPos.getX() >> 4 == this.centerX >> 4 && blockPos.getZ() >> 4 == this.centerZ >> 4;
+        public boolean isInChunk(BlockPos pos) {
+            return pos.getX() >> 4 == this.centerX >> 4 && pos.getZ() >> 4 == this.centerZ >> 4;
         }
 
         public int getCenterX() {

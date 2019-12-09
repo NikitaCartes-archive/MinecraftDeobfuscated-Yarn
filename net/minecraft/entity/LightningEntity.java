@@ -33,14 +33,14 @@ extends Entity {
     @Nullable
     private ServerPlayerEntity channeller;
 
-    public LightningEntity(World world, double d, double e, double f, boolean bl) {
+    public LightningEntity(World world, double x, double y, double z, boolean cosmetic) {
         super(EntityType.LIGHTNING_BOLT, world);
         this.ignoreCameraFrustum = true;
-        this.setPositionAndAngles(d, e, f, 0.0f, 0.0f);
+        this.setPositionAndAngles(x, y, z, 0.0f, 0.0f);
         this.ambientTick = 2;
         this.seed = this.random.nextLong();
         this.remainingActions = this.random.nextInt(3) + 1;
-        this.cosmetic = bl;
+        this.cosmetic = cosmetic;
         Difficulty difficulty = world.getDifficulty();
         if (difficulty == Difficulty.NORMAL || difficulty == Difficulty.HARD) {
             this.spawnFire(4);
@@ -52,8 +52,8 @@ extends Entity {
         return SoundCategory.WEATHER;
     }
 
-    public void setChanneller(@Nullable ServerPlayerEntity serverPlayerEntity) {
-        this.channeller = serverPlayerEntity;
+    public void setChanneller(@Nullable ServerPlayerEntity channeller) {
+        this.channeller = channeller;
     }
 
     @Override
@@ -90,7 +90,7 @@ extends Entity {
         }
     }
 
-    private void spawnFire(int i) {
+    private void spawnFire(int spreadAttempts) {
         if (this.cosmetic || this.world.isClient || !this.world.getGameRules().getBoolean(GameRules.DO_FIRE_TICK)) {
             return;
         }
@@ -99,7 +99,7 @@ extends Entity {
         if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {
             this.world.setBlockState(blockPos, blockState);
         }
-        for (int j = 0; j < i; ++j) {
+        for (int i = 0; i < spreadAttempts; ++i) {
             BlockPos blockPos2 = blockPos.add(this.random.nextInt(3) - 1, this.random.nextInt(3) - 1, this.random.nextInt(3) - 1);
             if (!this.world.getBlockState(blockPos2).isAir() || !blockState.canPlaceAt(this.world, blockPos2)) continue;
             this.world.setBlockState(blockPos2, blockState);
@@ -108,9 +108,9 @@ extends Entity {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean shouldRender(double d) {
-        double e = 64.0 * LightningEntity.getRenderDistanceMultiplier();
-        return d < e * e;
+    public boolean shouldRender(double distance) {
+        double d = 64.0 * LightningEntity.getRenderDistanceMultiplier();
+        return distance < d * d;
     }
 
     @Override
@@ -118,11 +118,11 @@ extends Entity {
     }
 
     @Override
-    protected void readCustomDataFromTag(CompoundTag compoundTag) {
+    protected void readCustomDataFromTag(CompoundTag tag) {
     }
 
     @Override
-    protected void writeCustomDataToTag(CompoundTag compoundTag) {
+    protected void writeCustomDataToTag(CompoundTag tag) {
     }
 
     @Override

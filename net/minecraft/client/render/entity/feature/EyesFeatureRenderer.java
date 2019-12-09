@@ -24,9 +24,9 @@ extends FeatureRenderer<T, M> {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T entity, float f, float g, float h, float j, float k, float l) {
-        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.getEyesTexture());
-        ((Model)this.getContextModel()).render(matrixStack, vertexConsumer, 0xF00000, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f, 1.0f);
+    public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T entity, float limbAngle, float limbDistance, float tickDelta, float customAngle, float headYaw, float headPitch) {
+        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(this.getEyesTexture());
+        ((Model)this.getContextModel()).render(matrices, vertexConsumer, 0xF00000, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f, 1.0f);
     }
 
     public abstract RenderLayer getEyesTexture();

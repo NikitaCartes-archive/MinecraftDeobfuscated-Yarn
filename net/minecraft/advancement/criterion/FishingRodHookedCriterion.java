@@ -35,13 +35,13 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(itemPredicate, entityPredicate, itemPredicate2);
     }
 
-    public void trigger(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, FishingBobberEntity fishingBobberEntity, Collection<ItemStack> collection) {
-        this.test(serverPlayerEntity.getAdvancementTracker(), conditions -> conditions.matches(serverPlayerEntity, itemStack, fishingBobberEntity, collection));
+    public void trigger(ServerPlayerEntity player, ItemStack rodStack, FishingBobberEntity bobber, Collection<ItemStack> fishingLoots) {
+        this.test(player.getAdvancementTracker(), conditions -> conditions.matches(player, rodStack, bobber, fishingLoots));
     }
 
     @Override
-    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
+    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject obj, JsonDeserializationContext context) {
+        return this.conditionsFromJson(obj, context);
     }
 
     public static class Conditions
@@ -50,32 +50,32 @@ extends AbstractCriterion<Conditions> {
         private final EntityPredicate hookedEntity;
         private final ItemPredicate caughtItem;
 
-        public Conditions(ItemPredicate itemPredicate, EntityPredicate entityPredicate, ItemPredicate itemPredicate2) {
+        public Conditions(ItemPredicate rod, EntityPredicate bobber, ItemPredicate item) {
             super(ID);
-            this.rod = itemPredicate;
-            this.hookedEntity = entityPredicate;
-            this.caughtItem = itemPredicate2;
+            this.rod = rod;
+            this.hookedEntity = bobber;
+            this.caughtItem = item;
         }
 
-        public static Conditions create(ItemPredicate itemPredicate, EntityPredicate entityPredicate, ItemPredicate itemPredicate2) {
-            return new Conditions(itemPredicate, entityPredicate, itemPredicate2);
+        public static Conditions create(ItemPredicate rod, EntityPredicate bobber, ItemPredicate item) {
+            return new Conditions(rod, bobber, item);
         }
 
-        public boolean matches(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, FishingBobberEntity fishingBobberEntity, Collection<ItemStack> collection) {
-            if (!this.rod.test(itemStack)) {
+        public boolean matches(ServerPlayerEntity player, ItemStack rodStack, FishingBobberEntity bobber, Collection<ItemStack> fishingLoots) {
+            if (!this.rod.test(rodStack)) {
                 return false;
             }
-            if (!this.hookedEntity.test(serverPlayerEntity, fishingBobberEntity.hookedEntity)) {
+            if (!this.hookedEntity.test(player, bobber.hookedEntity)) {
                 return false;
             }
             if (this.caughtItem != ItemPredicate.ANY) {
                 ItemEntity itemEntity;
                 boolean bl = false;
-                if (fishingBobberEntity.hookedEntity instanceof ItemEntity && this.caughtItem.test((itemEntity = (ItemEntity)fishingBobberEntity.hookedEntity).getStack())) {
+                if (bobber.hookedEntity instanceof ItemEntity && this.caughtItem.test((itemEntity = (ItemEntity)bobber.hookedEntity).getStack())) {
                     bl = true;
                 }
-                for (ItemStack itemStack2 : collection) {
-                    if (!this.caughtItem.test(itemStack2)) continue;
+                for (ItemStack itemStack : fishingLoots) {
+                    if (!this.caughtItem.test(itemStack)) continue;
                     bl = true;
                     break;
                 }

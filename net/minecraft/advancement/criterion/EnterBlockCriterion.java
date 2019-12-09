@@ -33,29 +33,29 @@ extends AbstractCriterion<Conditions> {
         Block block = EnterBlockCriterion.getBlock(jsonObject);
         StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("state"));
         if (block != null) {
-            statePredicate.check(block.getStateManager(), string -> {
-                throw new JsonSyntaxException("Block " + block + " has no property " + string);
+            statePredicate.check(block.getStateManager(), name -> {
+                throw new JsonSyntaxException("Block " + block + " has no property " + name);
             });
         }
         return new Conditions(block, statePredicate);
     }
 
     @Nullable
-    private static Block getBlock(JsonObject jsonObject) {
-        if (jsonObject.has("block")) {
-            Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "block"));
+    private static Block getBlock(JsonObject obj) {
+        if (obj.has("block")) {
+            Identifier identifier = new Identifier(JsonHelper.getString(obj, "block"));
             return (Block)Registry.BLOCK.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown block type '" + identifier + "'"));
         }
         return null;
     }
 
-    public void trigger(ServerPlayerEntity serverPlayerEntity, BlockState blockState) {
-        this.test(serverPlayerEntity.getAdvancementTracker(), conditions -> conditions.matches(blockState));
+    public void trigger(ServerPlayerEntity player, BlockState state) {
+        this.test(player.getAdvancementTracker(), conditions -> conditions.matches(state));
     }
 
     @Override
-    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
+    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject obj, JsonDeserializationContext context) {
+        return this.conditionsFromJson(obj, context);
     }
 
     public static class Conditions
@@ -63,10 +63,10 @@ extends AbstractCriterion<Conditions> {
         private final Block block;
         private final StatePredicate state;
 
-        public Conditions(@Nullable Block block, StatePredicate statePredicate) {
+        public Conditions(@Nullable Block block, StatePredicate state) {
             super(ID);
             this.block = block;
-            this.state = statePredicate;
+            this.state = state;
         }
 
         public static Conditions block(Block block) {
@@ -83,11 +83,11 @@ extends AbstractCriterion<Conditions> {
             return jsonObject;
         }
 
-        public boolean matches(BlockState blockState) {
-            if (this.block != null && blockState.getBlock() != this.block) {
+        public boolean matches(BlockState state) {
+            if (this.block != null && state.getBlock() != this.block) {
                 return false;
             }
-            return this.state.test(blockState);
+            return this.state.test(state);
         }
     }
 }

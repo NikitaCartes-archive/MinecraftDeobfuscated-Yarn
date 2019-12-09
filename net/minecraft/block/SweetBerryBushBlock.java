@@ -47,37 +47,37 @@ implements Fertilizable {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public ItemStack getPickStack(BlockView blockView, BlockPos blockPos, BlockState blockState) {
+    public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
         return new ItemStack(Items.SWEET_BERRIES);
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-        if (blockState.get(AGE) == 0) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+        if (state.get(AGE) == 0) {
             return SMALL_SHAPE;
         }
-        if (blockState.get(AGE) < 3) {
+        if (state.get(AGE) < 3) {
             return LARGE_SHAPE;
         }
-        return super.getOutlineShape(blockState, blockView, blockPos, entityContext);
+        return super.getOutlineShape(state, view, pos, ePos);
     }
 
     @Override
-    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
-        super.scheduledTick(blockState, serverWorld, blockPos, random);
-        int i = blockState.get(AGE);
-        if (i < 3 && random.nextInt(5) == 0 && serverWorld.getBaseLightLevel(blockPos.up(), 0) >= 9) {
-            serverWorld.setBlockState(blockPos, (BlockState)blockState.with(AGE, i + 1), 2);
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        super.scheduledTick(state, world, pos, random);
+        int i = state.get(AGE);
+        if (i < 3 && random.nextInt(5) == 0 && world.getBaseLightLevel(pos.up(), 0) >= 9) {
+            world.setBlockState(pos, (BlockState)state.with(AGE, i + 1), 2);
         }
     }
 
     @Override
-    public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
+    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
         if (!(entity instanceof LivingEntity) || entity.getType() == EntityType.FOX || entity.getType() == EntityType.BEE) {
             return;
         }
-        entity.slowMovement(blockState, new Vec3d(0.8f, 0.75, 0.8f));
-        if (!(world.isClient || blockState.get(AGE) <= 0 || entity.lastRenderX == entity.getX() && entity.lastRenderZ == entity.getZ())) {
+        entity.slowMovement(state, new Vec3d(0.8f, 0.75, 0.8f));
+        if (!(world.isClient || state.get(AGE) <= 0 || entity.lastRenderX == entity.getX() && entity.lastRenderZ == entity.getZ())) {
             double d = Math.abs(entity.getX() - entity.lastRenderX);
             double e = Math.abs(entity.getZ() - entity.lastRenderZ);
             if (d >= (double)0.003f || e >= (double)0.003f) {
@@ -87,21 +87,21 @@ implements Fertilizable {
     }
 
     @Override
-    public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         boolean bl;
-        int i = blockState.get(AGE);
+        int i = state.get(AGE);
         boolean bl2 = bl = i == 3;
-        if (!bl && playerEntity.getStackInHand(hand).getItem() == Items.BONE_MEAL) {
+        if (!bl && player.getStackInHand(hand).getItem() == Items.BONE_MEAL) {
             return ActionResult.PASS;
         }
         if (i > 1) {
             int j = 1 + world.random.nextInt(2);
-            SweetBerryBushBlock.dropStack(world, blockPos, new ItemStack(Items.SWEET_BERRIES, j + (bl ? 1 : 0)));
-            world.playSound(null, blockPos, SoundEvents.ITEM_SWEET_BERRIES_PICK_FROM_BUSH, SoundCategory.BLOCKS, 1.0f, 0.8f + world.random.nextFloat() * 0.4f);
-            world.setBlockState(blockPos, (BlockState)blockState.with(AGE, 1), 2);
+            SweetBerryBushBlock.dropStack(world, pos, new ItemStack(Items.SWEET_BERRIES, j + (bl ? 1 : 0)));
+            world.playSound(null, pos, SoundEvents.ITEM_SWEET_BERRIES_PICK_FROM_BUSH, SoundCategory.BLOCKS, 1.0f, 0.8f + world.random.nextFloat() * 0.4f);
+            world.setBlockState(pos, (BlockState)state.with(AGE, 1), 2);
             return ActionResult.SUCCESS;
         }
-        return super.onUse(blockState, world, blockPos, playerEntity, hand, blockHitResult);
+        return super.onUse(state, world, pos, player, hand, hit);
     }
 
     @Override
@@ -110,19 +110,19 @@ implements Fertilizable {
     }
 
     @Override
-    public boolean isFertilizable(BlockView blockView, BlockPos blockPos, BlockState blockState, boolean bl) {
-        return blockState.get(AGE) < 3;
+    public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
+        return state.get(AGE) < 3;
     }
 
     @Override
-    public boolean canGrow(World world, Random random, BlockPos blockPos, BlockState blockState) {
+    public boolean canGrow(World world, Random random, BlockPos pos, BlockState state) {
         return true;
     }
 
     @Override
-    public void grow(ServerWorld serverWorld, Random random, BlockPos blockPos, BlockState blockState) {
-        int i = Math.min(3, blockState.get(AGE) + 1);
-        serverWorld.setBlockState(blockPos, (BlockState)blockState.with(AGE, i), 2);
+    public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
+        int i = Math.min(3, state.get(AGE) + 1);
+        world.setBlockState(pos, (BlockState)state.with(AGE, i), 2);
     }
 }
 

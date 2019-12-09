@@ -23,8 +23,8 @@ extends DrawableHelper {
     private final Entry<?>[] visibleEntries = new Entry[5];
     private final Deque<Toast> toastQueue = Queues.newArrayDeque();
 
-    public ToastManager(MinecraftClient minecraftClient) {
-        this.client = minecraftClient;
+    public ToastManager(MinecraftClient client) {
+        this.client = client;
     }
 
     public void draw() {
@@ -42,13 +42,13 @@ extends DrawableHelper {
     }
 
     @Nullable
-    public <T extends Toast> T getToast(Class<? extends T> class_, Object object) {
+    public <T extends Toast> T getToast(Class<? extends T> toastClass, Object type) {
         for (Entry<?> entry : this.visibleEntries) {
-            if (entry == null || !class_.isAssignableFrom(entry.getInstance().getClass()) || !entry.getInstance().getType().equals(object)) continue;
+            if (entry == null || !toastClass.isAssignableFrom(entry.getInstance().getClass()) || !entry.getInstance().getType().equals(type)) continue;
             return (T)entry.getInstance();
         }
         for (Toast toast : this.toastQueue) {
-            if (!class_.isAssignableFrom(toast.getClass()) || !toast.getType().equals(object)) continue;
+            if (!toastClass.isAssignableFrom(toast.getClass()) || !toast.getType().equals(type)) continue;
             return (T)toast;
         }
         return null;
@@ -76,7 +76,7 @@ extends DrawableHelper {
         final /* synthetic */ ToastManager field_2245;
 
         private Entry(T toast) {
-            this.field_2245 = toastManager;
+            this.field_2245 = instance;
             this.instance = toast;
         }
 
@@ -84,8 +84,8 @@ extends DrawableHelper {
             return this.instance;
         }
 
-        private float getDissapearProgress(long l) {
-            float f = MathHelper.clamp((float)(l - this.field_2243) / 600.0f, 0.0f, 1.0f);
+        private float getDissapearProgress(long time) {
+            float f = MathHelper.clamp((float)(time - this.field_2243) / 600.0f, 0.0f, 1.0f);
             f *= f;
             if (this.visibility == Toast.Visibility.HIDE) {
                 return 1.0f - f;
@@ -93,7 +93,7 @@ extends DrawableHelper {
             return f;
         }
 
-        public boolean draw(int i, int j) {
+        public boolean draw(int x, int y) {
             long l = Util.getMeasuringTimeMs();
             if (this.field_2243 == -1L) {
                 this.field_2243 = l;
@@ -103,7 +103,7 @@ extends DrawableHelper {
                 this.field_2242 = l;
             }
             RenderSystem.pushMatrix();
-            RenderSystem.translatef((float)i - 160.0f * this.getDissapearProgress(l), j * 32, 800 + j);
+            RenderSystem.translatef((float)x - 160.0f * this.getDissapearProgress(l), y * 32, 800 + y);
             Toast.Visibility visibility = this.instance.draw(this.field_2245, l - this.field_2242);
             RenderSystem.popMatrix();
             if (visibility != this.visibility) {

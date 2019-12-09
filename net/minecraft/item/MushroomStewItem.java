@@ -17,10 +17,10 @@ extends Item {
     }
 
     @Override
-    public ItemStack finishUsing(ItemStack itemStack, World world, LivingEntity livingEntity) {
-        ItemStack itemStack2 = super.finishUsing(itemStack, world, livingEntity);
-        if (livingEntity instanceof PlayerEntity && ((PlayerEntity)livingEntity).abilities.creativeMode) {
-            return itemStack2;
+    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
+        ItemStack itemStack = super.finishUsing(stack, world, user);
+        if (user instanceof PlayerEntity && ((PlayerEntity)user).abilities.creativeMode) {
+            return itemStack;
         }
         return new ItemStack(Items.BOWL);
     }

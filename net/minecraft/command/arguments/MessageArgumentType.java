@@ -26,8 +26,8 @@ implements ArgumentType<MessageFormat> {
         return new MessageArgumentType();
     }
 
-    public static Text getMessage(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
-        return commandContext.getArgument(string, MessageFormat.class).format(commandContext.getSource(), commandContext.getSource().hasPermissionLevel(2));
+    public static Text getMessage(CommandContext<ServerCommandSource> command, String name) throws CommandSyntaxException {
+        return command.getArgument(name, MessageFormat.class).format(command.getSource(), command.getSource().hasPermissionLevel(2));
     }
 
     @Override

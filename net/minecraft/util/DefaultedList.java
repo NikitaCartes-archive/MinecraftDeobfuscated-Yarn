@@ -20,48 +20,48 @@ extends AbstractList<E> {
         return new DefaultedList<E>();
     }
 
-    public static <E> DefaultedList<E> ofSize(int i, E object) {
-        Validate.notNull(object);
-        Object[] objects = new Object[i];
-        Arrays.fill(objects, object);
-        return new DefaultedList<Object>(Arrays.asList(objects), object);
+    public static <E> DefaultedList<E> ofSize(int size, E defaultValue) {
+        Validate.notNull(defaultValue);
+        Object[] objects = new Object[size];
+        Arrays.fill(objects, defaultValue);
+        return new DefaultedList<Object>(Arrays.asList(objects), defaultValue);
     }
 
     @SafeVarargs
-    public static <E> DefaultedList<E> copyOf(E object, E ... objects) {
-        return new DefaultedList<E>(Arrays.asList(objects), object);
+    public static <E> DefaultedList<E> copyOf(E defaultValue, E ... values) {
+        return new DefaultedList<E>(Arrays.asList(values), defaultValue);
     }
 
     protected DefaultedList() {
         this(Lists.newArrayList(), null);
     }
 
-    protected DefaultedList(List<E> list, @Nullable E object) {
-        this.delegate = list;
-        this.initialElement = object;
+    protected DefaultedList(List<E> delegate, @Nullable E initialElement) {
+        this.delegate = delegate;
+        this.initialElement = initialElement;
     }
 
     @Override
     @NotNull
-    public E get(int i) {
-        return this.delegate.get(i);
+    public E get(int index) {
+        return this.delegate.get(index);
     }
 
     @Override
-    public E set(int i, E object) {
-        Validate.notNull(object);
-        return this.delegate.set(i, object);
+    public E set(int index, E element) {
+        Validate.notNull(element);
+        return this.delegate.set(index, element);
     }
 
     @Override
-    public void add(int i, E object) {
-        Validate.notNull(object);
-        this.delegate.add(i, object);
+    public void add(int value, E element) {
+        Validate.notNull(element);
+        this.delegate.add(value, element);
     }
 
     @Override
-    public E remove(int i) {
-        return this.delegate.remove(i);
+    public E remove(int index) {
+        return this.delegate.remove(index);
     }
 
     @Override

@@ -77,7 +77,7 @@ implements AutoCloseable {
         RenderSystem.activeTexture(33984);
     }
 
-    public void update(float f) {
+    public void update(float delta) {
         if (!this.isDirty) {
             return;
         }
@@ -87,58 +87,58 @@ implements AutoCloseable {
         if (clientWorld == null) {
             return;
         }
-        float g = clientWorld.method_23783(1.0f);
-        float h = clientWorld.getLightningTicksLeft() > 0 ? 1.0f : g * 0.95f + 0.05f;
-        float i = this.client.player.method_3140();
-        float j = this.client.player.hasStatusEffect(StatusEffects.NIGHT_VISION) ? GameRenderer.getNightVisionStrength(this.client.player, f) : (i > 0.0f && this.client.player.hasStatusEffect(StatusEffects.CONDUIT_POWER) ? i : 0.0f);
-        Vector3f vector3f = new Vector3f(g, g, 1.0f);
+        float f = clientWorld.method_23783(1.0f);
+        float g = clientWorld.getLightningTicksLeft() > 0 ? 1.0f : f * 0.95f + 0.05f;
+        float h = this.client.player.method_3140();
+        float i = this.client.player.hasStatusEffect(StatusEffects.NIGHT_VISION) ? GameRenderer.getNightVisionStrength(this.client.player, delta) : (h > 0.0f && this.client.player.hasStatusEffect(StatusEffects.CONDUIT_POWER) ? h : 0.0f);
+        Vector3f vector3f = new Vector3f(f, f, 1.0f);
         vector3f.multiplyComponentwise(new Vector3f(1.0f, 1.0f, 1.0f), 0.35f);
-        float k = this.field_21528 + 1.5f;
+        float j = this.field_21528 + 1.5f;
         Vector3f vector3f2 = new Vector3f();
-        for (int l = 0; l < 16; ++l) {
-            for (int m = 0; m < 16; ++m) {
-                float t;
-                Vector3f vector3f4;
+        for (int k = 0; k < 16; ++k) {
+            for (int l = 0; l < 16; ++l) {
                 float s;
-                float o;
-                float n = this.getBrightness(clientWorld, l) * h;
-                float p = o = this.getBrightness(clientWorld, m) * k;
-                float q = o * ((o * 0.6f + 0.4f) * 0.6f + 0.4f);
-                float r = o * (o * o * 0.6f + 0.4f);
-                vector3f2.set(p, q, r);
+                Vector3f vector3f4;
+                float r;
+                float n;
+                float m = this.getBrightness(clientWorld, k) * g;
+                float o = n = this.getBrightness(clientWorld, l) * j;
+                float p = n * ((n * 0.6f + 0.4f) * 0.6f + 0.4f);
+                float q = n * (n * n * 0.6f + 0.4f);
+                vector3f2.set(o, p, q);
                 if (clientWorld.dimension.getType() == DimensionType.THE_END) {
                     vector3f2.multiplyComponentwise(new Vector3f(0.99f, 1.12f, 1.0f), 0.25f);
                 } else {
                     Vector3f vector3f3 = vector3f.copy();
-                    vector3f3.scale(n);
+                    vector3f3.scale(m);
                     vector3f2.add(vector3f3);
                     vector3f2.multiplyComponentwise(new Vector3f(0.75f, 0.75f, 0.75f), 0.04f);
-                    if (this.worldRenderer.getSkyDarkness(f) > 0.0f) {
-                        s = this.worldRenderer.getSkyDarkness(f);
+                    if (this.worldRenderer.getSkyDarkness(delta) > 0.0f) {
+                        r = this.worldRenderer.getSkyDarkness(delta);
                         vector3f4 = vector3f2.copy();
                         vector3f4.piecewiseMultiply(0.7f, 0.6f, 0.6f);
-                        vector3f2.multiplyComponentwise(vector3f4, s);
+                        vector3f2.multiplyComponentwise(vector3f4, r);
                     }
                 }
                 vector3f2.clamp(0.0f, 1.0f);
-                if (j > 0.0f && (t = Math.max(vector3f2.getX(), Math.max(vector3f2.getY(), vector3f2.getZ()))) < 1.0f) {
-                    s = 1.0f / t;
+                if (i > 0.0f && (s = Math.max(vector3f2.getX(), Math.max(vector3f2.getY(), vector3f2.getZ()))) < 1.0f) {
+                    r = 1.0f / s;
                     vector3f4 = vector3f2.copy();
-                    vector3f4.scale(s);
-                    vector3f2.multiplyComponentwise(vector3f4, j);
+                    vector3f4.scale(r);
+                    vector3f2.multiplyComponentwise(vector3f4, i);
                 }
-                t = (float)this.client.options.gamma;
+                s = (float)this.client.options.gamma;
                 Vector3f vector3f5 = vector3f2.copy();
                 vector3f5.modify(this::method_23795);
-                vector3f2.multiplyComponentwise(vector3f5, t);
+                vector3f2.multiplyComponentwise(vector3f5, s);
                 vector3f2.multiplyComponentwise(new Vector3f(0.75f, 0.75f, 0.75f), 0.04f);
                 vector3f2.clamp(0.0f, 1.0f);
                 vector3f2.scale(255.0f);
-                int u = 255;
-                int v = (int)vector3f2.getX();
-                int w = (int)vector3f2.getY();
-                int x = (int)vector3f2.getZ();
-                this.image.setPixelRgba(m, l, 0xFF000000 | x << 16 | w << 8 | v);
+                int t = 255;
+                int u = (int)vector3f2.getX();
+                int v = (int)vector3f2.getY();
+                int w = (int)vector3f2.getZ();
+                this.image.setPixelRgba(l, k, 0xFF000000 | w << 16 | v << 8 | u);
             }
         }
         this.texture.upload();
@@ -154,16 +154,16 @@ implements AutoCloseable {
         return world.dimension.getBrightness(i);
     }
 
-    public static int pack(int i, int j) {
-        return i << 4 | j << 20;
+    public static int pack(int block, int sky) {
+        return block << 4 | sky << 20;
     }
 
-    public static int getBlockLightCoordinates(int i) {
-        return i >> 4 & 0xFFFF;
+    public static int getBlockLightCoordinates(int light) {
+        return light >> 4 & 0xFFFF;
     }
 
-    public static int getSkyLightCoordinates(int i) {
-        return i >> 20 & 0xFFFF;
+    public static int getSkyLightCoordinates(int light) {
+        return light >> 20 & 0xFFFF;
     }
 }
 

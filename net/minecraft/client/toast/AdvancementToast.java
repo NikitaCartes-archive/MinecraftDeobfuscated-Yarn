@@ -28,41 +28,41 @@ implements Toast {
     }
 
     @Override
-    public Toast.Visibility draw(ToastManager toastManager, long l) {
-        toastManager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
+    public Toast.Visibility draw(ToastManager manager, long currentTime) {
+        manager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
         RenderSystem.color3f(1.0f, 1.0f, 1.0f);
         AdvancementDisplay advancementDisplay = this.advancement.getDisplay();
-        toastManager.blit(0, 0, 0, 0, 160, 32);
+        manager.blit(0, 0, 0, 0, 160, 32);
         if (advancementDisplay != null) {
             int i;
-            List<String> list = toastManager.getGame().textRenderer.wrapStringToWidthAsList(advancementDisplay.getTitle().asFormattedString(), 125);
+            List<String> list = manager.getGame().textRenderer.wrapStringToWidthAsList(advancementDisplay.getTitle().asFormattedString(), 125);
             int n = i = advancementDisplay.getFrame() == AdvancementFrame.CHALLENGE ? 0xFF88FF : 0xFFFF00;
             if (list.size() == 1) {
-                toastManager.getGame().textRenderer.draw(I18n.translate("advancements.toast." + advancementDisplay.getFrame().getId(), new Object[0]), 30.0f, 7.0f, i | 0xFF000000);
-                toastManager.getGame().textRenderer.draw(advancementDisplay.getTitle().asFormattedString(), 30.0f, 18.0f, -1);
+                manager.getGame().textRenderer.draw(I18n.translate("advancements.toast." + advancementDisplay.getFrame().getId(), new Object[0]), 30.0f, 7.0f, i | 0xFF000000);
+                manager.getGame().textRenderer.draw(advancementDisplay.getTitle().asFormattedString(), 30.0f, 18.0f, -1);
             } else {
                 int j = 1500;
                 float f = 300.0f;
-                if (l < 1500L) {
-                    int k = MathHelper.floor(MathHelper.clamp((float)(1500L - l) / 300.0f, 0.0f, 1.0f) * 255.0f) << 24 | 0x4000000;
-                    toastManager.getGame().textRenderer.draw(I18n.translate("advancements.toast." + advancementDisplay.getFrame().getId(), new Object[0]), 30.0f, 11.0f, i | k);
+                if (currentTime < 1500L) {
+                    int k = MathHelper.floor(MathHelper.clamp((float)(1500L - currentTime) / 300.0f, 0.0f, 1.0f) * 255.0f) << 24 | 0x4000000;
+                    manager.getGame().textRenderer.draw(I18n.translate("advancements.toast." + advancementDisplay.getFrame().getId(), new Object[0]), 30.0f, 11.0f, i | k);
                 } else {
-                    int k = MathHelper.floor(MathHelper.clamp((float)(l - 1500L) / 300.0f, 0.0f, 1.0f) * 252.0f) << 24 | 0x4000000;
-                    int m = 16 - list.size() * toastManager.getGame().textRenderer.fontHeight / 2;
+                    int k = MathHelper.floor(MathHelper.clamp((float)(currentTime - 1500L) / 300.0f, 0.0f, 1.0f) * 252.0f) << 24 | 0x4000000;
+                    int l = 16 - list.size() * manager.getGame().textRenderer.fontHeight / 2;
                     for (String string : list) {
-                        toastManager.getGame().textRenderer.draw(string, 30.0f, m, 0xFFFFFF | k);
-                        m += toastManager.getGame().textRenderer.fontHeight;
+                        manager.getGame().textRenderer.draw(string, 30.0f, l, 0xFFFFFF | k);
+                        l += manager.getGame().textRenderer.fontHeight;
                     }
                 }
             }
-            if (!this.soundPlayed && l > 0L) {
+            if (!this.soundPlayed && currentTime > 0L) {
                 this.soundPlayed = true;
                 if (advancementDisplay.getFrame() == AdvancementFrame.CHALLENGE) {
-                    toastManager.getGame().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 1.0f));
+                    manager.getGame().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 1.0f));
                 }
             }
-            toastManager.getGame().getItemRenderer().renderGuiItem(null, advancementDisplay.getIcon(), 8, 8);
-            return l >= 5000L ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
+            manager.getGame().getItemRenderer().renderGuiItem(null, advancementDisplay.getIcon(), 8, 8);
+            return currentTime >= 5000L ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
         }
         return Toast.Visibility.HIDE;
     }

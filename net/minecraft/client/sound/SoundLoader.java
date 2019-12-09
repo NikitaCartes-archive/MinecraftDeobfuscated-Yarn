@@ -30,8 +30,8 @@ public class SoundLoader {
         this.resourceManager = resourceManager;
     }
 
-    public CompletableFuture<StaticSound> loadStatic(Identifier identifier2) {
-        return this.loadedSounds.computeIfAbsent(identifier2, identifier -> CompletableFuture.supplyAsync(() -> {
+    public CompletableFuture<StaticSound> loadStatic(Identifier id) {
+        return this.loadedSounds.computeIfAbsent(id, identifier -> CompletableFuture.supplyAsync(() -> {
             /*
              * This method has failed to decompile.  When submitting a bug report, please provide this stack trace, and (if you hold appropriate legal rights) the relevant class file.
              * 
@@ -97,10 +97,10 @@ public class SoundLoader {
         }, Util.getServerWorkerExecutor()));
     }
 
-    public CompletableFuture<AudioStream> loadStreamed(Identifier identifier) {
+    public CompletableFuture<AudioStream> loadStreamed(Identifier id) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                Resource resource = this.resourceManager.getResource(identifier);
+                Resource resource = this.resourceManager.getResource(id);
                 InputStream inputStream = resource.getInputStream();
                 return new OggAudioStream(inputStream);
             } catch (IOException iOException) {
@@ -114,8 +114,8 @@ public class SoundLoader {
         this.loadedSounds.clear();
     }
 
-    public CompletableFuture<?> loadStatic(Collection<Sound> collection) {
-        return CompletableFuture.allOf((CompletableFuture[])collection.stream().map(sound -> this.loadStatic(sound.getLocation())).toArray(CompletableFuture[]::new));
+    public CompletableFuture<?> loadStatic(Collection<Sound> sounds) {
+        return CompletableFuture.allOf((CompletableFuture[])sounds.stream().map(sound -> this.loadStatic(sound.getLocation())).toArray(CompletableFuture[]::new));
     }
 }
 

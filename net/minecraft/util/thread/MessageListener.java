@@ -17,28 +17,28 @@ extends AutoCloseable {
     default public void close() {
     }
 
-    default public <Source> CompletableFuture<Source> ask(Function<? super MessageListener<Source>, ? extends Msg> function) {
+    default public <Source> CompletableFuture<Source> ask(Function<? super MessageListener<Source>, ? extends Msg> messageProvider) {
         CompletableFuture completableFuture = new CompletableFuture();
-        Msg object = function.apply(MessageListener.create("ask future procesor handle", completableFuture::complete));
+        Msg object = messageProvider.apply(MessageListener.create("ask future procesor handle", completableFuture::complete));
         this.send(object);
         return completableFuture;
     }
 
-    public static <Msg> MessageListener<Msg> create(final String string, final Consumer<Msg> consumer) {
+    public static <Msg> MessageListener<Msg> create(final String name, final Consumer<Msg> action) {
         return new MessageListener<Msg>(){
 
             @Override
             public String getName() {
-                return string;
+                return name;
             }
 
             @Override
-            public void send(Msg object) {
-                consumer.accept(object);
+            public void send(Msg message) {
+                action.accept(message);
             }
 
             public String toString() {
-                return string;
+                return name;
             }
         };
     }

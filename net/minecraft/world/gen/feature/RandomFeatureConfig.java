@@ -22,10 +22,10 @@ implements FeatureConfig {
     }
 
     @Override
-    public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-        Object object = dynamicOps.createList(this.features.stream().map(randomFeatureEntry -> randomFeatureEntry.serialize(dynamicOps).getValue()));
-        T object2 = this.defaultFeature.serialize(dynamicOps).getValue();
-        return new Dynamic<Object>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("features"), object, dynamicOps.createString("default"), object2)));
+    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+        Object object = ops.createList(this.features.stream().map(randomFeatureEntry -> randomFeatureEntry.serialize(ops).getValue()));
+        T object2 = this.defaultFeature.serialize(ops).getValue();
+        return new Dynamic<Object>(ops, ops.createMap(ImmutableMap.of(ops.createString("features"), object, ops.createString("default"), object2)));
     }
 
     public static <T> RandomFeatureConfig deserialize(Dynamic<T> dynamic) {

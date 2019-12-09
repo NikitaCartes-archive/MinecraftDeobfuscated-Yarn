@@ -75,22 +75,22 @@ public class LootEntries {
             return jsonObject;
         }
 
-        private static LootEntry.Serializer<LootEntry> getSerializer(Class<?> class_) {
-            LootEntry.Serializer serializer = (LootEntry.Serializer)classSerializers.get(class_);
+        private static LootEntry.Serializer<LootEntry> getSerializer(Class<?> clazz) {
+            LootEntry.Serializer serializer = (LootEntry.Serializer)classSerializers.get(clazz);
             if (serializer == null) {
-                throw new JsonParseException("Unknown item type: " + class_);
+                throw new JsonParseException("Unknown item type: " + clazz);
             }
             return serializer;
         }
 
         @Override
-        public /* synthetic */ JsonElement serialize(Object object, Type type, JsonSerializationContext jsonSerializationContext) {
-            return this.serialize((LootEntry)object, type, jsonSerializationContext);
+        public /* synthetic */ JsonElement serialize(Object entry, Type unused, JsonSerializationContext context) {
+            return this.serialize((LootEntry)entry, unused, context);
         }
 
         @Override
-        public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.deserialize(jsonElement, type, jsonDeserializationContext);
+        public /* synthetic */ Object deserialize(JsonElement json, Type unused, JsonDeserializationContext context) throws JsonParseException {
+            return this.deserialize(json, unused, context);
         }
     }
 }

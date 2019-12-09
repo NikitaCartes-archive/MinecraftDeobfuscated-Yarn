@@ -43,82 +43,82 @@ extends SurfaceChunkGenerator<OverworldChunkGeneratorConfig> {
     private final CatSpawner catSpawner = new CatSpawner();
     private final ZombieSiegeManager zombieSiegeManager = new ZombieSiegeManager();
 
-    public OverworldChunkGenerator(IWorld iWorld, BiomeSource biomeSource, OverworldChunkGeneratorConfig overworldChunkGeneratorConfig) {
-        super(iWorld, biomeSource, 4, 8, 256, overworldChunkGeneratorConfig, true);
+    public OverworldChunkGenerator(IWorld world, BiomeSource biomeSource, OverworldChunkGeneratorConfig config) {
+        super(world, biomeSource, 4, 8, 256, config, true);
         this.random.consume(2620);
         this.noiseSampler = new OctavePerlinNoiseSampler(this.random, 15, 0);
-        this.amplified = iWorld.getLevelProperties().getGeneratorType() == LevelGeneratorType.AMPLIFIED;
+        this.amplified = world.getLevelProperties().getGeneratorType() == LevelGeneratorType.AMPLIFIED;
     }
 
     @Override
-    public void populateEntities(ChunkRegion chunkRegion) {
-        int i = chunkRegion.getCenterChunkX();
-        int j = chunkRegion.getCenterChunkZ();
-        Biome biome = chunkRegion.getBiome(new ChunkPos(i, j).getCenterBlockPos());
+    public void populateEntities(ChunkRegion region) {
+        int i = region.getCenterChunkX();
+        int j = region.getCenterChunkZ();
+        Biome biome = region.getBiome(new ChunkPos(i, j).getCenterBlockPos());
         ChunkRandom chunkRandom = new ChunkRandom();
-        chunkRandom.setSeed(chunkRegion.getSeed(), i << 4, j << 4);
-        SpawnHelper.populateEntities(chunkRegion, biome, i, j, chunkRandom);
+        chunkRandom.setSeed(region.getSeed(), i << 4, j << 4);
+        SpawnHelper.populateEntities(region, biome, i, j, chunkRandom);
     }
 
     @Override
-    protected void sampleNoiseColumn(double[] ds, int i, int j) {
+    protected void sampleNoiseColumn(double[] buffer, int x, int z) {
         double d = 684.412f;
         double e = 684.412f;
         double f = 8.555149841308594;
         double g = 4.277574920654297;
-        int k = -10;
-        int l = 3;
-        this.sampleNoiseColumn(ds, i, j, 684.412f, 684.412f, 8.555149841308594, 4.277574920654297, 3, -10);
+        int i = -10;
+        int j = 3;
+        this.sampleNoiseColumn(buffer, x, z, 684.412f, 684.412f, 8.555149841308594, 4.277574920654297, 3, -10);
     }
 
     @Override
-    protected double computeNoiseFalloff(double d, double e, int i) {
-        double f = 8.5;
-        double g = ((double)i - (8.5 + d * 8.5 / 8.0 * 4.0)) * 12.0 * 128.0 / 256.0 / e;
-        if (g < 0.0) {
-            g *= 4.0;
+    protected double computeNoiseFalloff(double depth, double scale, int y) {
+        double d = 8.5;
+        double e = ((double)y - (8.5 + depth * 8.5 / 8.0 * 4.0)) * 12.0 * 128.0 / 256.0 / scale;
+        if (e < 0.0) {
+            e *= 4.0;
         }
-        return g;
+        return e;
     }
 
     @Override
-    protected double[] computeNoiseRange(int i, int j) {
+    protected double[] computeNoiseRange(int x, int z) {
         double[] ds = new double[2];
         float f = 0.0f;
         float g = 0.0f;
         float h = 0.0f;
-        int k = 2;
-        int l = this.getSeaLevel();
-        float m = this.biomeSource.getBiomeForNoiseGen(i, l, j).getDepth();
-        for (int n = -2; n <= 2; ++n) {
-            for (int o = -2; o <= 2; ++o) {
-                Biome biome = this.biomeSource.getBiomeForNoiseGen(i + n, l, j + o);
-                float p = biome.getDepth();
-                float q = biome.getScale();
-                if (this.amplified && p > 0.0f) {
-                    p = 1.0f + p * 2.0f;
-                    q = 1.0f + q * 4.0f;
+        int i = 2;
+        int j = this.getSeaLevel();
+        float k = this.biomeSource.getBiomeForNoiseGen(x, j, z).getDepth();
+        for (int l = -2; l <= 2; ++l) {
+            for (int m = -2; m <= 2; ++m) {
+                Biome biome = this.biomeSource.getBiomeForNoiseGen(x + l, j, z + m);
+                float n = biome.getDepth();
+                float o = biome.getScale();
+                if (this.amplified && n > 0.0f) {
+                    n = 1.0f + n * 2.0f;
+                    o = 1.0f + o * 4.0f;
                 }
-                float r = BIOME_WEIGHT_TABLE[n + 2 + (o + 2) * 5] / (p + 2.0f);
-                if (biome.getDepth() > m) {
-                    r /= 2.0f;
+                float p = BIOME_WEIGHT_TABLE[l + 2 + (m + 2) * 5] / (n + 2.0f);
+                if (biome.getDepth() > k) {
+                    p /= 2.0f;
                 }
-                f += q * r;
-                g += p * r;
-                h += r;
+                f += o * p;
+                g += n * p;
+                h += p;
             }
         }
         f /= h;
         g /= h;
         f = f * 0.9f + 0.1f;
         g = (g * 4.0f - 1.0f) / 8.0f;
-        ds[0] = (double)g + this.sampleNoise(i, j);
+        ds[0] = (double)g + this.sampleNoise(x, z);
         ds[1] = f;
         return ds;
     }
 
-    private double sampleNoise(int i, int j) {
-        double d = this.noiseSampler.sample(i * 200, 10.0, j * 200, 1.0, 0.0, true) * 65535.0 / 8000.0;
+    private double sampleNoise(int x, int y) {
+        double d = this.noiseSampler.sample(x * 200, 10.0, y * 200, 1.0, 0.0, true) * 65535.0 / 8000.0;
         if (d < 0.0) {
             d = -d * 0.3;
         }
@@ -134,31 +134,31 @@ extends SurfaceChunkGenerator<OverworldChunkGeneratorConfig> {
     }
 
     @Override
-    public List<Biome.SpawnEntry> getEntitySpawnList(EntityCategory entityCategory, BlockPos blockPos) {
-        if (Feature.SWAMP_HUT.method_14029(this.world, blockPos)) {
-            if (entityCategory == EntityCategory.MONSTER) {
+    public List<Biome.SpawnEntry> getEntitySpawnList(EntityCategory category, BlockPos pos) {
+        if (Feature.SWAMP_HUT.method_14029(this.world, pos)) {
+            if (category == EntityCategory.MONSTER) {
                 return Feature.SWAMP_HUT.getMonsterSpawns();
             }
-            if (entityCategory == EntityCategory.CREATURE) {
+            if (category == EntityCategory.CREATURE) {
                 return Feature.SWAMP_HUT.getCreatureSpawns();
             }
-        } else if (entityCategory == EntityCategory.MONSTER) {
-            if (Feature.PILLAGER_OUTPOST.isApproximatelyInsideStructure(this.world, blockPos)) {
+        } else if (category == EntityCategory.MONSTER) {
+            if (Feature.PILLAGER_OUTPOST.isApproximatelyInsideStructure(this.world, pos)) {
                 return Feature.PILLAGER_OUTPOST.getMonsterSpawns();
             }
-            if (Feature.OCEAN_MONUMENT.isApproximatelyInsideStructure(this.world, blockPos)) {
+            if (Feature.OCEAN_MONUMENT.isApproximatelyInsideStructure(this.world, pos)) {
                 return Feature.OCEAN_MONUMENT.getMonsterSpawns();
             }
         }
-        return super.getEntitySpawnList(entityCategory, blockPos);
+        return super.getEntitySpawnList(category, pos);
     }
 
     @Override
-    public void spawnEntities(ServerWorld serverWorld, boolean bl, boolean bl2) {
-        this.phantomSpawner.spawn(serverWorld, bl, bl2);
-        this.pillagerSpawner.spawn(serverWorld, bl, bl2);
-        this.catSpawner.spawn(serverWorld, bl, bl2);
-        this.zombieSiegeManager.tick(serverWorld, bl, bl2);
+    public void spawnEntities(ServerWorld serverWorld, boolean spawnMonsters, boolean spawnAnimals) {
+        this.phantomSpawner.spawn(serverWorld, spawnMonsters, spawnAnimals);
+        this.pillagerSpawner.spawn(serverWorld, spawnMonsters, spawnAnimals);
+        this.catSpawner.spawn(serverWorld, spawnMonsters, spawnAnimals);
+        this.zombieSiegeManager.tick(serverWorld, spawnMonsters, spawnAnimals);
     }
 
     @Override

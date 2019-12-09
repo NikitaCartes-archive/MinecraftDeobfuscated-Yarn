@@ -31,9 +31,9 @@ extends RealmsScreen {
     private boolean onLink;
     private final String realmsToSUrl = "https://minecraft.net/realms/terms";
 
-    public RealmsTermsScreen(RealmsScreen realmsScreen, RealmsMainScreen realmsMainScreen, RealmsServer realmsServer) {
-        this.lastScreen = realmsScreen;
-        this.mainScreen = realmsMainScreen;
+    public RealmsTermsScreen(RealmsScreen lastScreen, RealmsMainScreen mainScreen, RealmsServer realmsServer) {
+        this.lastScreen = lastScreen;
+        this.mainScreen = mainScreen;
         this.realmsServer = realmsServer;
     }
 
@@ -66,12 +66,12 @@ extends RealmsScreen {
     }
 
     @Override
-    public boolean keyPressed(int i, int j, int k) {
-        if (i == 256) {
+    public boolean keyPressed(int eventKey, int scancode, int mods) {
+        if (eventKey == 256) {
             Realms.setScreen(this.lastScreen);
             return true;
         }
-        return super.keyPressed(i, j, k);
+        return super.keyPressed(eventKey, scancode, mods);
     }
 
     private void agreedToTos() {
@@ -87,33 +87,33 @@ extends RealmsScreen {
     }
 
     @Override
-    public boolean mouseClicked(double d, double e, int i) {
+    public boolean mouseClicked(double x, double y, int buttonNum) {
         if (this.onLink) {
             Realms.setClipboard("https://minecraft.net/realms/terms");
             RealmsUtil.browseTo("https://minecraft.net/realms/terms");
             return true;
         }
-        return super.mouseClicked(d, e, i);
+        return super.mouseClicked(x, y, buttonNum);
     }
 
     @Override
-    public void render(int i, int j, float f) {
+    public void render(int xm, int ym, float a) {
         this.renderBackground();
         this.drawCenteredString(RealmsTermsScreen.getLocalizedString("mco.terms.title"), this.width() / 2, 17, 0xFFFFFF);
         this.drawString(RealmsTermsScreen.getLocalizedString("mco.terms.sentence.1"), this.width() / 2 - 120, RealmsConstants.row(5), 0xFFFFFF);
-        int k = this.fontWidth(RealmsTermsScreen.getLocalizedString("mco.terms.sentence.1"));
-        int l = this.width() / 2 - 121 + k;
-        int m = RealmsConstants.row(5);
-        int n = l + this.fontWidth("mco.terms.sentence.2") + 1;
-        int o = m + 1 + this.fontLineHeight();
-        if (l <= i && i <= n && m <= j && j <= o) {
+        int i = this.fontWidth(RealmsTermsScreen.getLocalizedString("mco.terms.sentence.1"));
+        int j = this.width() / 2 - 121 + i;
+        int k = RealmsConstants.row(5);
+        int l = j + this.fontWidth("mco.terms.sentence.2") + 1;
+        int m = k + 1 + this.fontLineHeight();
+        if (j <= xm && xm <= l && k <= ym && ym <= m) {
             this.onLink = true;
-            this.drawString(" " + RealmsTermsScreen.getLocalizedString("mco.terms.sentence.2"), this.width() / 2 - 120 + k, RealmsConstants.row(5), 7107012);
+            this.drawString(" " + RealmsTermsScreen.getLocalizedString("mco.terms.sentence.2"), this.width() / 2 - 120 + i, RealmsConstants.row(5), 7107012);
         } else {
             this.onLink = false;
-            this.drawString(" " + RealmsTermsScreen.getLocalizedString("mco.terms.sentence.2"), this.width() / 2 - 120 + k, RealmsConstants.row(5), 0x3366BB);
+            this.drawString(" " + RealmsTermsScreen.getLocalizedString("mco.terms.sentence.2"), this.width() / 2 - 120 + i, RealmsConstants.row(5), 0x3366BB);
         }
-        super.render(i, j, f);
+        super.render(xm, ym, a);
     }
 }
 

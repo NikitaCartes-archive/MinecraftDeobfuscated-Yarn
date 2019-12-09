@@ -25,44 +25,44 @@ extends AbstractPressurePlateBlock {
     public static final BooleanProperty POWERED = Properties.POWERED;
     private final ActivationRule type;
 
-    protected PressurePlateBlock(ActivationRule activationRule, Block.Settings settings) {
+    protected PressurePlateBlock(ActivationRule type, Block.Settings settings) {
         super(settings);
         this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(POWERED, false));
-        this.type = activationRule;
+        this.type = type;
     }
 
     @Override
-    protected int getRedstoneOutput(BlockState blockState) {
-        return blockState.get(POWERED) != false ? 15 : 0;
+    protected int getRedstoneOutput(BlockState state) {
+        return state.get(POWERED) != false ? 15 : 0;
     }
 
     @Override
-    protected BlockState setRedstoneOutput(BlockState blockState, int i) {
-        return (BlockState)blockState.with(POWERED, i > 0);
+    protected BlockState setRedstoneOutput(BlockState state, int rsOut) {
+        return (BlockState)state.with(POWERED, rsOut > 0);
     }
 
     @Override
-    protected void playPressSound(IWorld iWorld, BlockPos blockPos) {
+    protected void playPressSound(IWorld world, BlockPos pos) {
         if (this.material == Material.WOOD) {
-            iWorld.playSound(null, blockPos, SoundEvents.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 0.3f, 0.8f);
+            world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 0.3f, 0.8f);
         } else {
-            iWorld.playSound(null, blockPos, SoundEvents.BLOCK_STONE_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 0.3f, 0.6f);
+            world.playSound(null, pos, SoundEvents.BLOCK_STONE_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 0.3f, 0.6f);
         }
     }
 
     @Override
-    protected void playDepressSound(IWorld iWorld, BlockPos blockPos) {
+    protected void playDepressSound(IWorld world, BlockPos pos) {
         if (this.material == Material.WOOD) {
-            iWorld.playSound(null, blockPos, SoundEvents.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_OFF, SoundCategory.BLOCKS, 0.3f, 0.7f);
+            world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_OFF, SoundCategory.BLOCKS, 0.3f, 0.7f);
         } else {
-            iWorld.playSound(null, blockPos, SoundEvents.BLOCK_STONE_PRESSURE_PLATE_CLICK_OFF, SoundCategory.BLOCKS, 0.3f, 0.5f);
+            world.playSound(null, pos, SoundEvents.BLOCK_STONE_PRESSURE_PLATE_CLICK_OFF, SoundCategory.BLOCKS, 0.3f, 0.5f);
         }
     }
 
     @Override
-    protected int getRedstoneOutput(World world, BlockPos blockPos) {
+    protected int getRedstoneOutput(World world, BlockPos pos) {
         List<Entity> list;
-        Box box = BOX.offset(blockPos);
+        Box box = BOX.offset(pos);
         switch (this.type) {
             case EVERYTHING: {
                 list = world.getEntities(null, box);

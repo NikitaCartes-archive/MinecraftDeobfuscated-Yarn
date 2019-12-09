@@ -18,24 +18,24 @@ import net.minecraft.datafixers.TypeReferences;
 
 public class MobSpawnerEntityIdentifiersFix
 extends DataFix {
-    public MobSpawnerEntityIdentifiersFix(Schema schema, boolean bl) {
-        super(schema, bl);
+    public MobSpawnerEntityIdentifiersFix(Schema outputSchema, boolean changesType) {
+        super(outputSchema, changesType);
     }
 
-    private Dynamic<?> fixSpawner(Dynamic<?> dynamic2) {
+    private Dynamic<?> fixSpawner(Dynamic<?> tag) {
         Optional<Stream<Dynamic<?>>> optional2;
-        if (!"MobSpawner".equals(dynamic2.get("id").asString(""))) {
-            return dynamic2;
+        if (!"MobSpawner".equals(tag.get("id").asString(""))) {
+            return tag;
         }
-        Optional<String> optional = dynamic2.get("EntityId").asString();
+        Optional<String> optional = tag.get("EntityId").asString();
         if (optional.isPresent()) {
-            Dynamic dynamic22 = DataFixUtils.orElse(dynamic2.get("SpawnData").get(), dynamic2.emptyMap());
-            dynamic22 = dynamic22.set("id", dynamic22.createString(optional.get().isEmpty() ? "Pig" : optional.get()));
-            dynamic2 = dynamic2.set("SpawnData", dynamic22);
-            dynamic2 = dynamic2.remove("EntityId");
+            Dynamic dynamic2 = DataFixUtils.orElse(tag.get("SpawnData").get(), tag.emptyMap());
+            dynamic2 = dynamic2.set("id", dynamic2.createString(optional.get().isEmpty() ? "Pig" : optional.get()));
+            tag = tag.set("SpawnData", dynamic2);
+            tag = tag.remove("EntityId");
         }
-        if ((optional2 = dynamic2.get("SpawnPotentials").asStreamOpt()).isPresent()) {
-            dynamic2 = dynamic2.set("SpawnPotentials", dynamic2.createList(optional2.get().map(dynamic -> {
+        if ((optional2 = tag.get("SpawnPotentials").asStreamOpt()).isPresent()) {
+            tag = tag.set("SpawnPotentials", tag.createList(optional2.get().map(dynamic -> {
                 Optional<String> optional = dynamic.get("Type").asString();
                 if (optional.isPresent()) {
                     Dynamic dynamic2 = DataFixUtils.orElse(dynamic.get("Properties").get(), dynamic.emptyMap()).set("id", dynamic.createString(optional.get()));
@@ -44,7 +44,7 @@ extends DataFix {
                 return dynamic;
             })));
         }
-        return dynamic2;
+        return tag;
     }
 
     @Override

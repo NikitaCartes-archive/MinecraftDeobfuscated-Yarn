@@ -43,41 +43,41 @@ extends Block {
     }
 
     @Override
-    public boolean hasSidedTransparency(BlockState blockState) {
+    public boolean hasSidedTransparency(BlockState state) {
         return true;
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-        return blockState.get(EYE) != false ? FRAME_WITH_EYE_SHAPE : FRAME_SHAPE;
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+        return state.get(EYE) != false ? FRAME_WITH_EYE_SHAPE : FRAME_SHAPE;
     }
 
     @Override
-    public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-        return (BlockState)((BlockState)this.getDefaultState().with(FACING, itemPlacementContext.getPlayerFacing().getOpposite())).with(EYE, false);
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        return (BlockState)((BlockState)this.getDefaultState().with(FACING, ctx.getPlayerFacing().getOpposite())).with(EYE, false);
     }
 
     @Override
-    public boolean hasComparatorOutput(BlockState blockState) {
+    public boolean hasComparatorOutput(BlockState state) {
         return true;
     }
 
     @Override
-    public int getComparatorOutput(BlockState blockState, World world, BlockPos blockPos) {
-        if (blockState.get(EYE).booleanValue()) {
+    public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+        if (state.get(EYE).booleanValue()) {
             return 15;
         }
         return 0;
     }
 
     @Override
-    public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
-        return (BlockState)blockState.with(FACING, blockRotation.rotate(blockState.get(FACING)));
+    public BlockState rotate(BlockState state, BlockRotation rotation) {
+        return (BlockState)state.with(FACING, rotation.rotate(state.get(FACING)));
     }
 
     @Override
-    public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
-        return blockState.rotate(blockMirror.getRotation(blockState.get(FACING)));
+    public BlockState mirror(BlockState state, BlockMirror mirror) {
+        return state.rotate(mirror.getRotation(state.get(FACING)));
     }
 
     @Override
@@ -93,7 +93,7 @@ extends Block {
     }
 
     @Override
-    public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+    public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
         return false;
     }
 }

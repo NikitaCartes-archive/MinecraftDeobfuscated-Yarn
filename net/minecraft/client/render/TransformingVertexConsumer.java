@@ -68,41 +68,41 @@ extends FixedColorVertexConsumer {
     }
 
     @Override
-    public VertexConsumer vertex(double d, double e, double f) {
-        this.x = (float)d;
-        this.y = (float)e;
-        this.z = (float)f;
+    public VertexConsumer vertex(double x, double y, double z) {
+        this.x = (float)x;
+        this.y = (float)y;
+        this.z = (float)z;
         return this;
     }
 
     @Override
-    public VertexConsumer color(int i, int j, int k, int l) {
+    public VertexConsumer color(int red, int green, int blue, int alpha) {
         return this;
     }
 
     @Override
-    public VertexConsumer texture(float f, float g) {
+    public VertexConsumer texture(float u, float v) {
         return this;
     }
 
     @Override
-    public VertexConsumer overlay(int i, int j) {
-        this.u1 = i;
-        this.v1 = j;
+    public VertexConsumer overlay(int u, int v) {
+        this.u1 = u;
+        this.v1 = v;
         return this;
     }
 
     @Override
-    public VertexConsumer light(int i, int j) {
-        this.light = i | j << 16;
+    public VertexConsumer light(int u, int v) {
+        this.light = u | v << 16;
         return this;
     }
 
     @Override
-    public VertexConsumer normal(float f, float g, float h) {
-        this.normalX = f;
-        this.normalY = g;
-        this.normalZ = h;
+    public VertexConsumer normal(float x, float y, float z) {
+        this.normalX = x;
+        this.normalY = y;
+        this.normalZ = z;
         return this;
     }
 }

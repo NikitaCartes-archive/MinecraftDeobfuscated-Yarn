@@ -42,24 +42,24 @@ implements Drawable {
     protected int headerHeight;
     private boolean scrolling;
 
-    public ListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l, int m) {
-        this.minecraft = minecraftClient;
-        this.width = i;
-        this.height = j;
-        this.top = k;
-        this.bottom = l;
-        this.itemHeight = m;
+    public ListWidget(MinecraftClient client, int width, int height, int top, int bottom, int itemHeight) {
+        this.minecraft = client;
+        this.width = width;
+        this.height = height;
+        this.top = top;
+        this.bottom = bottom;
+        this.itemHeight = itemHeight;
         this.left = 0;
-        this.right = i;
+        this.right = width;
     }
 
-    public void updateSize(int i, int j, int k, int l) {
-        this.width = i;
-        this.height = j;
-        this.top = k;
-        this.bottom = l;
+    public void updateSize(int width, int height, int y, int bottom) {
+        this.width = width;
+        this.height = height;
+        this.top = y;
+        this.bottom = bottom;
         this.left = 0;
-        this.right = i;
+        this.right = width;
     }
 
     public void setRenderSelection(boolean bl) {
@@ -89,7 +89,7 @@ implements Drawable {
         return Collections.emptyList();
     }
 
-    protected boolean selectItem(int i, int j, double d, double e) {
+    protected boolean selectItem(int index, int button, double mouseX, double mouseY) {
         return true;
     }
 
@@ -101,7 +101,7 @@ implements Drawable {
 
     protected abstract void renderBackground();
 
-    protected void updateItemPosition(int i, int j, int k, float f) {
+    protected void updateItemPosition(int index, int i, int j, float f) {
     }
 
     protected abstract void renderItem(int var1, int var2, int var3, int var4, int var5, int var6, float var7);
@@ -143,46 +143,46 @@ implements Drawable {
         return (int)this.scroll;
     }
 
-    public boolean isMouseInList(double d, double e) {
-        return e >= (double)this.top && e <= (double)this.bottom && d >= (double)this.left && d <= (double)this.right;
+    public boolean isMouseInList(double mouseX, double mouseY) {
+        return mouseY >= (double)this.top && mouseY <= (double)this.bottom && mouseX >= (double)this.left && mouseX <= (double)this.right;
     }
 
     public int getScrollBottom() {
         return (int)this.scroll - this.height - this.headerHeight;
     }
 
-    public void scroll(int i) {
-        this.scroll += (double)i;
+    public void scroll(int amount) {
+        this.scroll += (double)amount;
         this.capYPosition();
         this.yDrag = -2;
     }
 
     @Override
-    public void render(int i, int j, float f) {
+    public void render(int mouseX, int mouseY, float delta) {
         if (!this.visible) {
             return;
         }
         this.renderBackground();
-        int k = this.getScrollbarPosition();
-        int l = k + 6;
+        int i = this.getScrollbarPosition();
+        int j = i + 6;
         this.capYPosition();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         this.minecraft.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        float g = 32.0f;
+        float f = 32.0f;
         bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
         bufferBuilder.vertex(this.left, this.bottom, 0.0).texture((float)this.left / 32.0f, (float)(this.bottom + (int)this.scroll) / 32.0f).color(32, 32, 32, 255).next();
         bufferBuilder.vertex(this.right, this.bottom, 0.0).texture((float)this.right / 32.0f, (float)(this.bottom + (int)this.scroll) / 32.0f).color(32, 32, 32, 255).next();
         bufferBuilder.vertex(this.right, this.top, 0.0).texture((float)this.right / 32.0f, (float)(this.top + (int)this.scroll) / 32.0f).color(32, 32, 32, 255).next();
         bufferBuilder.vertex(this.left, this.top, 0.0).texture((float)this.left / 32.0f, (float)(this.top + (int)this.scroll) / 32.0f).color(32, 32, 32, 255).next();
         tessellator.draw();
-        int m = this.left + this.width / 2 - this.getRowWidth() / 2 + 2;
-        int n = this.top + 4 - (int)this.scroll;
+        int k = this.left + this.width / 2 - this.getRowWidth() / 2 + 2;
+        int l = this.top + 4 - (int)this.scroll;
         if (this.renderHeader) {
-            this.renderHeader(m, n, tessellator);
+            this.renderHeader(k, l, tessellator);
         }
-        this.renderList(m, n, i, j, f);
+        this.renderList(k, l, mouseX, mouseY, delta);
         RenderSystem.disableDepthTest();
         this.renderHoleBackground(0, this.top, 255, 255);
         this.renderHoleBackground(this.bottom, this.height, 255, 255);
@@ -191,7 +191,7 @@ implements Drawable {
         RenderSystem.disableAlphaTest();
         RenderSystem.shadeModel(7425);
         RenderSystem.disableTexture();
-        int o = 4;
+        int m = 4;
         bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
         bufferBuilder.vertex(this.left, this.top + 4, 0.0).texture(0.0f, 1.0f).color(0, 0, 0, 0).next();
         bufferBuilder.vertex(this.right, this.top + 4, 0.0).texture(1.0f, 1.0f).color(0, 0, 0, 0).next();
@@ -204,33 +204,33 @@ implements Drawable {
         bufferBuilder.vertex(this.right, this.bottom - 4, 0.0).texture(1.0f, 0.0f).color(0, 0, 0, 0).next();
         bufferBuilder.vertex(this.left, this.bottom - 4, 0.0).texture(0.0f, 0.0f).color(0, 0, 0, 0).next();
         tessellator.draw();
-        int p = this.getMaxScroll();
-        if (p > 0) {
-            int q = (int)((float)((this.bottom - this.top) * (this.bottom - this.top)) / (float)this.getMaxPosition());
-            int r = (int)this.scroll * (this.bottom - this.top - (q = MathHelper.clamp(q, 32, this.bottom - this.top - 8))) / p + this.top;
-            if (r < this.top) {
-                r = this.top;
+        int n = this.getMaxScroll();
+        if (n > 0) {
+            int o = (int)((float)((this.bottom - this.top) * (this.bottom - this.top)) / (float)this.getMaxPosition());
+            int p = (int)this.scroll * (this.bottom - this.top - (o = MathHelper.clamp(o, 32, this.bottom - this.top - 8))) / n + this.top;
+            if (p < this.top) {
+                p = this.top;
             }
             bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
-            bufferBuilder.vertex(k, this.bottom, 0.0).texture(0.0f, 1.0f).color(0, 0, 0, 255).next();
-            bufferBuilder.vertex(l, this.bottom, 0.0).texture(1.0f, 1.0f).color(0, 0, 0, 255).next();
-            bufferBuilder.vertex(l, this.top, 0.0).texture(1.0f, 0.0f).color(0, 0, 0, 255).next();
-            bufferBuilder.vertex(k, this.top, 0.0).texture(0.0f, 0.0f).color(0, 0, 0, 255).next();
+            bufferBuilder.vertex(i, this.bottom, 0.0).texture(0.0f, 1.0f).color(0, 0, 0, 255).next();
+            bufferBuilder.vertex(j, this.bottom, 0.0).texture(1.0f, 1.0f).color(0, 0, 0, 255).next();
+            bufferBuilder.vertex(j, this.top, 0.0).texture(1.0f, 0.0f).color(0, 0, 0, 255).next();
+            bufferBuilder.vertex(i, this.top, 0.0).texture(0.0f, 0.0f).color(0, 0, 0, 255).next();
             tessellator.draw();
             bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
-            bufferBuilder.vertex(k, r + q, 0.0).texture(0.0f, 1.0f).color(128, 128, 128, 255).next();
-            bufferBuilder.vertex(l, r + q, 0.0).texture(1.0f, 1.0f).color(128, 128, 128, 255).next();
-            bufferBuilder.vertex(l, r, 0.0).texture(1.0f, 0.0f).color(128, 128, 128, 255).next();
-            bufferBuilder.vertex(k, r, 0.0).texture(0.0f, 0.0f).color(128, 128, 128, 255).next();
+            bufferBuilder.vertex(i, p + o, 0.0).texture(0.0f, 1.0f).color(128, 128, 128, 255).next();
+            bufferBuilder.vertex(j, p + o, 0.0).texture(1.0f, 1.0f).color(128, 128, 128, 255).next();
+            bufferBuilder.vertex(j, p, 0.0).texture(1.0f, 0.0f).color(128, 128, 128, 255).next();
+            bufferBuilder.vertex(i, p, 0.0).texture(0.0f, 0.0f).color(128, 128, 128, 255).next();
             tessellator.draw();
             bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
-            bufferBuilder.vertex(k, r + q - 1, 0.0).texture(0.0f, 1.0f).color(192, 192, 192, 255).next();
-            bufferBuilder.vertex(l - 1, r + q - 1, 0.0).texture(1.0f, 1.0f).color(192, 192, 192, 255).next();
-            bufferBuilder.vertex(l - 1, r, 0.0).texture(1.0f, 0.0f).color(192, 192, 192, 255).next();
-            bufferBuilder.vertex(k, r, 0.0).texture(0.0f, 0.0f).color(192, 192, 192, 255).next();
+            bufferBuilder.vertex(i, p + o - 1, 0.0).texture(0.0f, 1.0f).color(192, 192, 192, 255).next();
+            bufferBuilder.vertex(j - 1, p + o - 1, 0.0).texture(1.0f, 1.0f).color(192, 192, 192, 255).next();
+            bufferBuilder.vertex(j - 1, p, 0.0).texture(1.0f, 0.0f).color(192, 192, 192, 255).next();
+            bufferBuilder.vertex(i, p, 0.0).texture(0.0f, 0.0f).color(192, 192, 192, 255).next();
             tessellator.draw();
         }
-        this.renderDecorations(i, j);
+        this.renderDecorations(mouseX, mouseY);
         RenderSystem.enableTexture();
         RenderSystem.shadeModel(7424);
         RenderSystem.enableAlphaTest();
@@ -242,19 +242,19 @@ implements Drawable {
     }
 
     @Override
-    public boolean mouseClicked(double d, double e, int i) {
-        this.updateScrollingState(d, e, i);
-        if (!this.isVisible() || !this.isMouseInList(d, e)) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        this.updateScrollingState(mouseX, mouseY, button);
+        if (!this.isVisible() || !this.isMouseInList(mouseX, mouseY)) {
             return false;
         }
-        int j = this.getItemAtPosition(d, e);
-        if (j == -1 && i == 0) {
-            this.clickedHeader((int)(d - (double)(this.left + this.width / 2 - this.getRowWidth() / 2)), (int)(e - (double)this.top) + (int)this.scroll - 4);
+        int i = this.getItemAtPosition(mouseX, mouseY);
+        if (i == -1 && button == 0) {
+            this.clickedHeader((int)(mouseX - (double)(this.left + this.width / 2 - this.getRowWidth() / 2)), (int)(mouseY - (double)this.top) + (int)this.scroll - 4);
             return true;
         }
-        if (j != -1 && this.selectItem(j, i, d, e)) {
-            if (this.children().size() > j) {
-                this.setFocused(this.children().get(j));
+        if (i != -1 && this.selectItem(i, button, mouseX, mouseY)) {
+            if (this.children().size() > i) {
+                this.setFocused(this.children().get(i));
             }
             this.setDragging(true);
             return true;
@@ -263,63 +263,63 @@ implements Drawable {
     }
 
     @Override
-    public boolean mouseReleased(double d, double e, int i) {
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
         if (this.getFocused() != null) {
-            this.getFocused().mouseReleased(d, e, i);
+            this.getFocused().mouseReleased(mouseX, mouseY, button);
         }
         return false;
     }
 
     @Override
-    public boolean mouseDragged(double d, double e, int i, double f, double g) {
-        if (super.mouseDragged(d, e, i, f, g)) {
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        if (super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
             return true;
         }
-        if (!this.isVisible() || i != 0 || !this.scrolling) {
+        if (!this.isVisible() || button != 0 || !this.scrolling) {
             return false;
         }
-        if (e < (double)this.top) {
+        if (mouseY < (double)this.top) {
             this.scroll = 0.0;
-        } else if (e > (double)this.bottom) {
+        } else if (mouseY > (double)this.bottom) {
             this.scroll = this.getMaxScroll();
         } else {
-            double h = this.getMaxScroll();
-            if (h < 1.0) {
-                h = 1.0;
+            double d = this.getMaxScroll();
+            if (d < 1.0) {
+                d = 1.0;
             }
-            int j = (int)((float)((this.bottom - this.top) * (this.bottom - this.top)) / (float)this.getMaxPosition());
-            double k = h / (double)(this.bottom - this.top - (j = MathHelper.clamp(j, 32, this.bottom - this.top - 8)));
-            if (k < 1.0) {
-                k = 1.0;
+            int i = (int)((float)((this.bottom - this.top) * (this.bottom - this.top)) / (float)this.getMaxPosition());
+            double e = d / (double)(this.bottom - this.top - (i = MathHelper.clamp(i, 32, this.bottom - this.top - 8)));
+            if (e < 1.0) {
+                e = 1.0;
             }
-            this.scroll += g * k;
+            this.scroll += deltaY * e;
             this.capYPosition();
         }
         return true;
     }
 
     @Override
-    public boolean mouseScrolled(double d, double e, double f) {
+    public boolean mouseScrolled(double d, double e, double amount) {
         if (!this.isVisible()) {
             return false;
         }
-        this.scroll -= f * (double)this.itemHeight / 2.0;
+        this.scroll -= amount * (double)this.itemHeight / 2.0;
         return true;
     }
 
     @Override
-    public boolean keyPressed(int i, int j, int k) {
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (!this.isVisible()) {
             return false;
         }
-        if (super.keyPressed(i, j, k)) {
+        if (super.keyPressed(keyCode, scanCode, modifiers)) {
             return true;
         }
-        if (i == 264) {
+        if (keyCode == 264) {
             this.moveSelection(1);
             return true;
         }
-        if (i == 265) {
+        if (keyCode == 265) {
             this.moveSelection(-1);
             return true;
         }
@@ -330,54 +330,54 @@ implements Drawable {
     }
 
     @Override
-    public boolean charTyped(char c, int i) {
+    public boolean charTyped(char chr, int keyCode) {
         if (!this.isVisible()) {
             return false;
         }
-        return super.charTyped(c, i);
+        return super.charTyped(chr, keyCode);
     }
 
     @Override
-    public boolean isMouseOver(double d, double e) {
-        return this.isMouseInList(d, e);
+    public boolean isMouseOver(double mouseX, double mouseY) {
+        return this.isMouseInList(mouseX, mouseY);
     }
 
     public int getRowWidth() {
         return 220;
     }
 
-    protected void renderList(int i, int j, int k, int l, float f) {
-        int m = this.getItemCount();
+    protected void renderList(int x, int y, int mouseX, int mouseY, float f) {
+        int i = this.getItemCount();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
-        for (int n = 0; n < m; ++n) {
-            int o = j + n * this.itemHeight + this.headerHeight;
-            int p = this.itemHeight - 4;
-            if (o > this.bottom || o + p < this.top) {
-                this.updateItemPosition(n, i, o, f);
+        for (int j = 0; j < i; ++j) {
+            int k = y + j * this.itemHeight + this.headerHeight;
+            int l = this.itemHeight - 4;
+            if (k > this.bottom || k + l < this.top) {
+                this.updateItemPosition(j, x, k, f);
             }
-            if (this.renderSelection && this.isSelectedItem(n)) {
-                int q = this.left + this.width / 2 - this.getRowWidth() / 2;
-                int r = this.left + this.width / 2 + this.getRowWidth() / 2;
+            if (this.renderSelection && this.isSelectedItem(j)) {
+                int m = this.left + this.width / 2 - this.getRowWidth() / 2;
+                int n = this.left + this.width / 2 + this.getRowWidth() / 2;
                 RenderSystem.disableTexture();
                 float g = this.isFocused() ? 1.0f : 0.5f;
                 RenderSystem.color4f(g, g, g, 1.0f);
                 bufferBuilder.begin(7, VertexFormats.POSITION);
-                bufferBuilder.vertex(q, o + p + 2, 0.0).next();
-                bufferBuilder.vertex(r, o + p + 2, 0.0).next();
-                bufferBuilder.vertex(r, o - 2, 0.0).next();
-                bufferBuilder.vertex(q, o - 2, 0.0).next();
+                bufferBuilder.vertex(m, k + l + 2, 0.0).next();
+                bufferBuilder.vertex(n, k + l + 2, 0.0).next();
+                bufferBuilder.vertex(n, k - 2, 0.0).next();
+                bufferBuilder.vertex(m, k - 2, 0.0).next();
                 tessellator.draw();
                 RenderSystem.color4f(0.0f, 0.0f, 0.0f, 1.0f);
                 bufferBuilder.begin(7, VertexFormats.POSITION);
-                bufferBuilder.vertex(q + 1, o + p + 1, 0.0).next();
-                bufferBuilder.vertex(r - 1, o + p + 1, 0.0).next();
-                bufferBuilder.vertex(r - 1, o - 1, 0.0).next();
-                bufferBuilder.vertex(q + 1, o - 1, 0.0).next();
+                bufferBuilder.vertex(m + 1, k + l + 1, 0.0).next();
+                bufferBuilder.vertex(n - 1, k + l + 1, 0.0).next();
+                bufferBuilder.vertex(n - 1, k - 1, 0.0).next();
+                bufferBuilder.vertex(m + 1, k - 1, 0.0).next();
                 tessellator.draw();
                 RenderSystem.enableTexture();
             }
-            this.renderItem(n, i, o, p, k, l, f);
+            this.renderItem(j, x, k, l, mouseX, mouseY, f);
         }
     }
 
@@ -403,9 +403,9 @@ implements Drawable {
         tessellator.draw();
     }
 
-    public void setLeftPos(int i) {
-        this.left = i;
-        this.right = i + this.width;
+    public void setLeftPos(int x) {
+        this.left = x;
+        this.right = x + this.width;
     }
 
     public int getItemHeight() {

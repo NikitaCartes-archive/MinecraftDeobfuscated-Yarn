@@ -85,28 +85,28 @@ extends EntityModel<T> {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k) {
+    public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
         if (this.child) {
-            float l = 2.0f;
-            matrixStack.push();
-            float m = 0.7f;
-            matrixStack.scale(0.71428573f, 0.64935064f, 0.7936508f);
-            matrixStack.translate(0.0, 1.3125, 0.22f);
-            this.head.render(matrixStack, vertexConsumer, i, j, f, g, h, k);
-            matrixStack.pop();
-            matrixStack.push();
-            float n = 1.1f;
-            matrixStack.scale(0.625f, 0.45454544f, 0.45454544f);
-            matrixStack.translate(0.0, 2.0625, 0.0);
-            this.torso.render(matrixStack, vertexConsumer, i, j, f, g, h, k);
-            matrixStack.pop();
-            matrixStack.push();
-            matrixStack.scale(0.45454544f, 0.41322312f, 0.45454544f);
-            matrixStack.translate(0.0, 2.0625, 0.0);
-            ImmutableList.of(this.rightBackLeg, this.leftBackLeg, this.rightFrontLeg, this.leftFrontLeg, this.rightChest, this.leftChest).forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, f, g, h, k));
-            matrixStack.pop();
+            float f = 2.0f;
+            matrices.push();
+            float g = 0.7f;
+            matrices.scale(0.71428573f, 0.64935064f, 0.7936508f);
+            matrices.translate(0.0, 1.3125, 0.22f);
+            this.head.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+            matrices.pop();
+            matrices.push();
+            float h = 1.1f;
+            matrices.scale(0.625f, 0.45454544f, 0.45454544f);
+            matrices.translate(0.0, 2.0625, 0.0);
+            this.torso.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+            matrices.pop();
+            matrices.push();
+            matrices.scale(0.45454544f, 0.41322312f, 0.45454544f);
+            matrices.translate(0.0, 2.0625, 0.0);
+            ImmutableList.of(this.rightBackLeg, this.leftBackLeg, this.rightFrontLeg, this.leftFrontLeg, this.rightChest, this.leftChest).forEach(modelPart -> modelPart.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha));
+            matrices.pop();
         } else {
-            ImmutableList.of(this.head, this.torso, this.rightBackLeg, this.leftBackLeg, this.rightFrontLeg, this.leftFrontLeg, this.rightChest, this.leftChest).forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, f, g, h, k));
+            ImmutableList.of(this.head, this.torso, this.rightBackLeg, this.leftBackLeg, this.rightFrontLeg, this.leftFrontLeg, this.rightChest, this.leftChest).forEach(modelPart -> modelPart.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha));
         }
     }
 }

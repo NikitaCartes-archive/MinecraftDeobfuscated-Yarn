@@ -14,22 +14,22 @@ public class MultiTickScheduler<T>
 implements TickScheduler<T> {
     private final Function<BlockPos, TickScheduler<T>> mapper;
 
-    public MultiTickScheduler(Function<BlockPos, TickScheduler<T>> function) {
-        this.mapper = function;
+    public MultiTickScheduler(Function<BlockPos, TickScheduler<T>> mapper) {
+        this.mapper = mapper;
     }
 
     @Override
-    public boolean isScheduled(BlockPos blockPos, T object) {
-        return this.mapper.apply(blockPos).isScheduled(blockPos, object);
+    public boolean isScheduled(BlockPos pos, T object) {
+        return this.mapper.apply(pos).isScheduled(pos, object);
     }
 
     @Override
-    public void schedule(BlockPos blockPos, T object, int i, TickPriority tickPriority) {
-        this.mapper.apply(blockPos).schedule(blockPos, object, i, tickPriority);
+    public void schedule(BlockPos pos, T object, int delay, TickPriority priority) {
+        this.mapper.apply(pos).schedule(pos, object, delay, priority);
     }
 
     @Override
-    public boolean isTicking(BlockPos blockPos, T object) {
+    public boolean isTicking(BlockPos pos, T object) {
         return false;
     }
 

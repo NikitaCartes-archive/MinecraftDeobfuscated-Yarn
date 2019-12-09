@@ -31,19 +31,19 @@ extends Item {
     }
 
     @Override
-    public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
-        World world = itemUsageContext.getWorld();
-        BlockPos blockPos = itemUsageContext.getBlockPos();
-        BlockPos blockPos2 = blockPos.offset(itemUsageContext.getSide());
-        if (BoneMealItem.useOnFertilizable(itemUsageContext.getStack(), world, blockPos)) {
+    public ActionResult useOnBlock(ItemUsageContext context) {
+        World world = context.getWorld();
+        BlockPos blockPos = context.getBlockPos();
+        BlockPos blockPos2 = blockPos.offset(context.getSide());
+        if (BoneMealItem.useOnFertilizable(context.getStack(), world, blockPos)) {
             if (!world.isClient) {
                 world.playLevelEvent(2005, blockPos, 0);
             }
             return ActionResult.SUCCESS;
         }
         BlockState blockState = world.getBlockState(blockPos);
-        boolean bl = blockState.isSideSolidFullSquare(world, blockPos, itemUsageContext.getSide());
-        if (bl && BoneMealItem.useOnGround(itemUsageContext.getStack(), world, blockPos2, itemUsageContext.getSide())) {
+        boolean bl = blockState.isSideSolidFullSquare(world, blockPos, context.getSide());
+        if (bl && BoneMealItem.useOnGround(context.getStack(), world, blockPos2, context.getSide())) {
             if (!world.isClient) {
                 world.playLevelEvent(2005, blockPos2, 0);
             }
@@ -52,22 +52,22 @@ extends Item {
         return ActionResult.PASS;
     }
 
-    public static boolean useOnFertilizable(ItemStack itemStack, World world, BlockPos blockPos) {
+    public static boolean useOnFertilizable(ItemStack stack, World world, BlockPos pos) {
         Fertilizable fertilizable;
-        BlockState blockState = world.getBlockState(blockPos);
-        if (blockState.getBlock() instanceof Fertilizable && (fertilizable = (Fertilizable)((Object)blockState.getBlock())).isFertilizable(world, blockPos, blockState, world.isClient)) {
+        BlockState blockState = world.getBlockState(pos);
+        if (blockState.getBlock() instanceof Fertilizable && (fertilizable = (Fertilizable)((Object)blockState.getBlock())).isFertilizable(world, pos, blockState, world.isClient)) {
             if (world instanceof ServerWorld) {
-                if (fertilizable.canGrow(world, world.random, blockPos, blockState)) {
-                    fertilizable.grow((ServerWorld)world, world.random, blockPos, blockState);
+                if (fertilizable.canGrow(world, world.random, pos, blockState)) {
+                    fertilizable.grow((ServerWorld)world, world.random, pos, blockState);
                 }
-                itemStack.decrement(1);
+                stack.decrement(1);
             }
             return true;
         }
         return false;
     }
 
-    public static boolean useOnGround(ItemStack itemStack, World world, BlockPos blockPos, @Nullable Direction direction) {
+    public static boolean useOnGround(ItemStack stack, World world, BlockPos blockPos, @Nullable Direction facing) {
         if (world.getBlockState(blockPos).getBlock() != Blocks.WATER || world.getFluidState(blockPos).getLevel() != 8) {
             return false;
         }
@@ -85,8 +85,8 @@ extends Item {
                 if (world.getBlockState(blockPos2).isFullCube(world, blockPos2)) continue block0;
             }
             if (biome == Biomes.WARM_OCEAN || biome == Biomes.DEEP_WARM_OCEAN) {
-                if (i == 0 && direction != null && direction.getAxis().isHorizontal()) {
-                    blockState = (BlockState)BlockTags.WALL_CORALS.getRandom(world.random).getDefaultState().with(DeadCoralWallFanBlock.FACING, direction);
+                if (i == 0 && facing != null && facing.getAxis().isHorizontal()) {
+                    blockState = (BlockState)BlockTags.WALL_CORALS.getRandom(world.random).getDefaultState().with(DeadCoralWallFanBlock.FACING, facing);
                 } else if (RANDOM.nextInt(4) == 0) {
                     blockState = BlockTags.UNDERWATER_BONEMEALS.getRandom(RANDOM).getDefaultState();
                 }
@@ -105,24 +105,24 @@ extends Item {
             if (blockState2.getBlock() != Blocks.SEAGRASS || RANDOM.nextInt(10) != 0) continue;
             ((Fertilizable)((Object)Blocks.SEAGRASS)).grow((ServerWorld)world, RANDOM, blockPos2, blockState2);
         }
-        itemStack.decrement(1);
+        stack.decrement(1);
         return true;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static void createParticles(IWorld iWorld, BlockPos blockPos, int i) {
+    public static void createParticles(IWorld world, BlockPos pos, int count) {
         BlockState blockState;
-        if (i == 0) {
-            i = 15;
+        if (count == 0) {
+            count = 15;
         }
-        if ((blockState = iWorld.getBlockState(blockPos)).isAir()) {
+        if ((blockState = world.getBlockState(pos)).isAir()) {
             return;
         }
-        for (int j = 0; j < i; ++j) {
+        for (int i = 0; i < count; ++i) {
             double d = RANDOM.nextGaussian() * 0.02;
             double e = RANDOM.nextGaussian() * 0.02;
             double f = RANDOM.nextGaussian() * 0.02;
-            iWorld.addParticle(ParticleTypes.HAPPY_VILLAGER, (float)blockPos.getX() + RANDOM.nextFloat(), (double)blockPos.getY() + (double)RANDOM.nextFloat() * blockState.getOutlineShape(iWorld, blockPos).getMaximum(Direction.Axis.Y), (float)blockPos.getZ() + RANDOM.nextFloat(), d, e, f);
+            world.addParticle(ParticleTypes.HAPPY_VILLAGER, (float)pos.getX() + RANDOM.nextFloat(), (double)pos.getY() + (double)RANDOM.nextFloat() * blockState.getOutlineShape(world, pos).getMaximum(Direction.Axis.Y), (float)pos.getZ() + RANDOM.nextFloat(), d, e, f);
         }
     }
 }

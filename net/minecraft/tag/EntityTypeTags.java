@@ -18,8 +18,8 @@ public class EntityTypeTags {
     public static final Tag<EntityType<?>> BEEHIVE_INHABITORS;
     public static final Tag<EntityType<?>> ARROWS;
 
-    public static void setContainer(TagContainer<EntityType<?>> tagContainer) {
-        container = tagContainer;
+    public static void setContainer(TagContainer<EntityType<?>> container) {
+        EntityTypeTags.container = container;
         ++latestVersion;
     }
 
@@ -27,8 +27,8 @@ public class EntityTypeTags {
         return container;
     }
 
-    private static Tag<EntityType<?>> register(String string) {
-        return new CachingTag(new Identifier(string));
+    private static Tag<EntityType<?>> register(String id) {
+        return new CachingTag(new Identifier(id));
     }
 
     static {

@@ -18,18 +18,18 @@ implements Packet<ServerPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public TeleportConfirmC2SPacket(int i) {
-        this.teleportId = i;
+    public TeleportConfirmC2SPacket(int teleportId) {
+        this.teleportId = teleportId;
     }
 
     @Override
-    public void read(PacketByteBuf packetByteBuf) throws IOException {
-        this.teleportId = packetByteBuf.readVarInt();
+    public void read(PacketByteBuf buf) throws IOException {
+        this.teleportId = buf.readVarInt();
     }
 
     @Override
-    public void write(PacketByteBuf packetByteBuf) throws IOException {
-        packetByteBuf.writeVarInt(this.teleportId);
+    public void write(PacketByteBuf buf) throws IOException {
+        buf.writeVarInt(this.teleportId);
     }
 
     @Override

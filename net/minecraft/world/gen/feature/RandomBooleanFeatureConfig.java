@@ -20,8 +20,8 @@ implements FeatureConfig {
     }
 
     @Override
-    public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-        return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("feature_true"), this.featureTrue.serialize(dynamicOps).getValue(), dynamicOps.createString("feature_false"), this.featureFalse.serialize(dynamicOps).getValue())));
+    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("feature_true"), this.featureTrue.serialize(ops).getValue(), ops.createString("feature_false"), this.featureFalse.serialize(ops).getValue())));
     }
 
     public static <T> RandomBooleanFeatureConfig deserialize(Dynamic<T> dynamic) {

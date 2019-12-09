@@ -49,65 +49,65 @@ implements ResourcePack {
     public static final Identifier IRON_GOLEM_TEXTURE = new Identifier("textures/entity/iron_golem.png");
     private final ResourcePack parent;
 
-    public Format4ResourcePack(ResourcePack resourcePack) {
-        this.parent = resourcePack;
+    public Format4ResourcePack(ResourcePack parent) {
+        this.parent = parent;
     }
 
     @Override
-    public InputStream openRoot(String string) throws IOException {
-        return this.parent.openRoot(string);
+    public InputStream openRoot(String fileName) throws IOException {
+        return this.parent.openRoot(fileName);
     }
 
     @Override
-    public boolean contains(ResourceType resourceType, Identifier identifier) {
-        if (!"minecraft".equals(identifier.getNamespace())) {
-            return this.parent.contains(resourceType, identifier);
+    public boolean contains(ResourceType type, Identifier id) {
+        if (!"minecraft".equals(id.getNamespace())) {
+            return this.parent.contains(type, id);
         }
-        String string = identifier.getPath();
+        String string = id.getPath();
         if ("textures/misc/enchanted_item_glint.png".equals(string)) {
             return false;
         }
         if ("textures/entity/iron_golem/iron_golem.png".equals(string)) {
-            return this.parent.contains(resourceType, IRON_GOLEM_TEXTURE);
+            return this.parent.contains(type, IRON_GOLEM_TEXTURE);
         }
         if ("textures/entity/conduit/wind.png".equals(string) || "textures/entity/conduit/wind_vertical.png".equals(string)) {
             return false;
         }
         if (SHIELD_PATTERN_TEXTURES.contains(string)) {
-            return this.parent.contains(resourceType, OLD_SHIELD_BASE_TEXTURE) && this.parent.contains(resourceType, identifier);
+            return this.parent.contains(type, OLD_SHIELD_BASE_TEXTURE) && this.parent.contains(type, id);
         }
         if (BANNER_PATTERN_TEXTURES.contains(string)) {
-            return this.parent.contains(resourceType, OLD_BANNER_BASE_TEXTURE) && this.parent.contains(resourceType, identifier);
+            return this.parent.contains(type, OLD_BANNER_BASE_TEXTURE) && this.parent.contains(type, id);
         }
         Pair<ChestType, Identifier> pair = NEW_TO_OLD_CHEST_TEXTURES.get(string);
-        if (pair != null && this.parent.contains(resourceType, pair.getSecond())) {
+        if (pair != null && this.parent.contains(type, pair.getSecond())) {
             return true;
         }
-        return this.parent.contains(resourceType, identifier);
+        return this.parent.contains(type, id);
     }
 
     @Override
-    public InputStream open(ResourceType resourceType, Identifier identifier) throws IOException {
-        if (!"minecraft".equals(identifier.getNamespace())) {
-            return this.parent.open(resourceType, identifier);
+    public InputStream open(ResourceType type, Identifier id) throws IOException {
+        if (!"minecraft".equals(id.getNamespace())) {
+            return this.parent.open(type, id);
         }
-        String string = identifier.getPath();
+        String string = id.getPath();
         if ("textures/entity/iron_golem/iron_golem.png".equals(string)) {
-            return this.parent.open(resourceType, IRON_GOLEM_TEXTURE);
+            return this.parent.open(type, IRON_GOLEM_TEXTURE);
         }
         if (SHIELD_PATTERN_TEXTURES.contains(string)) {
-            InputStream inputStream = Format4ResourcePack.openCroppedStream(this.parent.open(resourceType, OLD_SHIELD_BASE_TEXTURE), this.parent.open(resourceType, identifier), 64, 2, 2, 12, 22);
+            InputStream inputStream = Format4ResourcePack.openCroppedStream(this.parent.open(type, OLD_SHIELD_BASE_TEXTURE), this.parent.open(type, id), 64, 2, 2, 12, 22);
             if (inputStream != null) {
                 return inputStream;
             }
         } else if (BANNER_PATTERN_TEXTURES.contains(string)) {
-            InputStream inputStream = Format4ResourcePack.openCroppedStream(this.parent.open(resourceType, OLD_BANNER_BASE_TEXTURE), this.parent.open(resourceType, identifier), 64, 0, 0, 42, 41);
+            InputStream inputStream = Format4ResourcePack.openCroppedStream(this.parent.open(type, OLD_BANNER_BASE_TEXTURE), this.parent.open(type, id), 64, 0, 0, 42, 41);
             if (inputStream != null) {
                 return inputStream;
             }
         } else {
             if ("textures/entity/enderdragon/dragon.png".equals(string) || "textures/entity/enderdragon/dragon_exploding.png".equals(string)) {
-                try (NativeImage nativeImage = NativeImage.read(this.parent.open(resourceType, identifier));){
+                try (NativeImage nativeImage = NativeImage.read(this.parent.open(type, id));){
                     int i = nativeImage.getWidth() / 256;
                     for (int j = 88 * i; j < 200 * i; ++j) {
                         for (int k = 56 * i; k < 112 * i; ++k) {
@@ -119,12 +119,12 @@ implements ResourcePack {
                 }
             }
             if ("textures/entity/conduit/closed_eye.png".equals(string) || "textures/entity/conduit/open_eye.png".equals(string)) {
-                return Format4ResourcePack.method_24199(this.parent.open(resourceType, identifier));
+                return Format4ResourcePack.method_24199(this.parent.open(type, id));
             }
             Pair<ChestType, Identifier> pair = NEW_TO_OLD_CHEST_TEXTURES.get(string);
             if (pair != null) {
                 ChestType chestType = pair.getFirst();
-                InputStream inputStream2 = this.parent.open(resourceType, pair.getSecond());
+                InputStream inputStream2 = this.parent.open(type, pair.getSecond());
                 if (chestType == ChestType.SINGLE) {
                     return Format4ResourcePack.cropSingleChestTexture(inputStream2);
                 }
@@ -136,7 +136,7 @@ implements ResourcePack {
                 }
             }
         }
-        return this.parent.open(resourceType, identifier);
+        return this.parent.open(type, id);
     }
 
     /*
@@ -391,19 +391,19 @@ implements ResourcePack {
     }
 
     @Override
-    public Collection<Identifier> findResources(ResourceType resourceType, String string, String string2, int i, Predicate<String> predicate) {
-        return this.parent.findResources(resourceType, string, string2, i, predicate);
+    public Collection<Identifier> findResources(ResourceType type, String namespace, String prefix, int maxDepth, Predicate<String> pathFilter) {
+        return this.parent.findResources(type, namespace, prefix, maxDepth, pathFilter);
     }
 
     @Override
-    public Set<String> getNamespaces(ResourceType resourceType) {
-        return this.parent.getNamespaces(resourceType);
+    public Set<String> getNamespaces(ResourceType type) {
+        return this.parent.getNamespaces(type);
     }
 
     @Override
     @Nullable
-    public <T> T parseMetadata(ResourceMetadataReader<T> resourceMetadataReader) throws IOException {
-        return this.parent.parseMetadata(resourceMetadataReader);
+    public <T> T parseMetadata(ResourceMetadataReader<T> metaReader) throws IOException {
+        return this.parent.parseMetadata(metaReader);
     }
 
     @Override
@@ -416,7 +416,7 @@ implements ResourcePack {
         this.parent.close();
     }
 
-    private static void loadBytes(NativeImage nativeImage, NativeImage nativeImage2, int i, int j, int k, int l, int m, int n, int o, boolean bl, boolean bl2) {
+    private static void loadBytes(NativeImage source, NativeImage target, int i, int j, int k, int l, int m, int n, int o, boolean bl, boolean bl2) {
         n *= o;
         m *= o;
         k *= o;
@@ -425,7 +425,7 @@ implements ResourcePack {
         j *= o;
         for (int p = 0; p < n; ++p) {
             for (int q = 0; q < m; ++q) {
-                nativeImage2.setPixelRgba(k + q, l + p, nativeImage.getPixelRgba(i + (bl ? m - 1 - q : q), j + (bl2 ? n - 1 - p : p)));
+                target.setPixelRgba(k + q, l + p, source.getPixelRgba(i + (bl ? m - 1 - q : q), j + (bl2 ? n - 1 - p : p)));
             }
         }
     }

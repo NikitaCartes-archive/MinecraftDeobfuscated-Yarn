@@ -18,19 +18,19 @@ public class WeightedPicker {
         return i;
     }
 
-    public static <T extends Entry> T getRandom(Random random, List<T> list, int i) {
-        if (i <= 0) {
+    public static <T extends Entry> T getRandom(Random random, List<T> list, int weightSum) {
+        if (weightSum <= 0) {
             throw Util.throwOrPause(new IllegalArgumentException());
         }
-        int j = random.nextInt(i);
-        return WeightedPicker.getAt(list, j);
+        int i = random.nextInt(weightSum);
+        return WeightedPicker.getAt(list, i);
     }
 
-    public static <T extends Entry> T getAt(List<T> list, int i) {
-        int k = list.size();
-        for (int j = 0; j < k; ++j) {
-            Entry entry = (Entry)list.get(j);
-            if ((i -= entry.weight) >= 0) continue;
+    public static <T extends Entry> T getAt(List<T> list, int pos) {
+        int j = list.size();
+        for (int i = 0; i < j; ++i) {
+            Entry entry = (Entry)list.get(i);
+            if ((pos -= entry.weight) >= 0) continue;
             return (T)entry;
         }
         return null;

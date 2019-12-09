@@ -12,11 +12,11 @@ public class BlockAction {
     private final int type;
     private final int data;
 
-    public BlockAction(BlockPos blockPos, Block block, int i, int j) {
-        this.pos = blockPos;
+    public BlockAction(BlockPos pos, Block block, int type, int data) {
+        this.pos = pos;
         this.block = block;
-        this.type = i;
-        this.data = j;
+        this.type = type;
+        this.data = data;
     }
 
     public BlockPos getPos() {
@@ -35,9 +35,9 @@ public class BlockAction {
         return this.data;
     }
 
-    public boolean equals(Object object) {
-        if (object instanceof BlockAction) {
-            BlockAction blockAction = (BlockAction)object;
+    public boolean equals(Object o) {
+        if (o instanceof BlockAction) {
+            BlockAction blockAction = (BlockAction)o;
             return this.pos.equals(blockAction.pos) && this.type == blockAction.type && this.data == blockAction.data && this.block == blockAction.block;
         }
         return false;

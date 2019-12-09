@@ -110,12 +110,12 @@ public abstract class Decorator<DC extends DecoratorConfig> {
     public static final Decorator<NopeDecoratorConfig> END_GATEWAY = Decorator.register("end_gateway", new EndGatewayDecorator((Function<Dynamic<?>, ? extends NopeDecoratorConfig>)((Function<Dynamic<?>, NopeDecoratorConfig>)NopeDecoratorConfig::deserialize)));
     private final Function<Dynamic<?>, ? extends DC> configDeserializer;
 
-    private static <T extends DecoratorConfig, G extends Decorator<T>> G register(String string, G decorator) {
-        return (G)Registry.register(Registry.DECORATOR, string, decorator);
+    private static <T extends DecoratorConfig, G extends Decorator<T>> G register(String registryName, G decorator) {
+        return (G)Registry.register(Registry.DECORATOR, registryName, decorator);
     }
 
-    public Decorator(Function<Dynamic<?>, ? extends DC> function) {
-        this.configDeserializer = function;
+    public Decorator(Function<Dynamic<?>, ? extends DC> configDeserializer) {
+        this.configDeserializer = configDeserializer;
     }
 
     public DC deserialize(Dynamic<?> dynamic) {
@@ -126,10 +126,10 @@ public abstract class Decorator<DC extends DecoratorConfig> {
         return new ConfiguredDecorator<DC>(this, decoratorConfig);
     }
 
-    protected <FC extends FeatureConfig, F extends Feature<FC>> boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos2, DC decoratorConfig, ConfiguredFeature<FC, F> configuredFeature) {
+    protected <FC extends FeatureConfig, F extends Feature<FC>> boolean generate(IWorld world, ChunkGenerator<? extends ChunkGeneratorConfig> generator, Random random, BlockPos pos, DC decoratorConfig, ConfiguredFeature<FC, F> configuredFeature) {
         AtomicBoolean atomicBoolean = new AtomicBoolean(false);
-        this.getPositions(iWorld, chunkGenerator, random, decoratorConfig, blockPos2).forEach(blockPos -> {
-            boolean bl = configuredFeature.generate(iWorld, (ChunkGenerator<ChunkGeneratorConfig>)chunkGenerator, random, (BlockPos)blockPos);
+        this.getPositions(world, generator, random, decoratorConfig, pos).forEach(blockPos -> {
+            boolean bl = configuredFeature.generate(world, (ChunkGenerator<ChunkGeneratorConfig>)generator, random, (BlockPos)blockPos);
             atomicBoolean.set(atomicBoolean.get() || bl);
         });
         return atomicBoolean.get();

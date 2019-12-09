@@ -30,20 +30,20 @@ public class EntityAttributes {
     public static final EntityAttribute ARMOR_TOUGHNESS = new ClampedEntityAttribute(null, "generic.armorToughness", 0.0, 0.0, 20.0).setTracked(true);
     public static final EntityAttribute LUCK = new ClampedEntityAttribute(null, "generic.luck", 0.0, -1024.0, 1024.0).setTracked(true);
 
-    public static ListTag toTag(AbstractEntityAttributeContainer abstractEntityAttributeContainer) {
+    public static ListTag toTag(AbstractEntityAttributeContainer container) {
         ListTag listTag = new ListTag();
-        for (EntityAttributeInstance entityAttributeInstance : abstractEntityAttributeContainer.values()) {
+        for (EntityAttributeInstance entityAttributeInstance : container.values()) {
             listTag.add(EntityAttributes.toTag(entityAttributeInstance));
         }
         return listTag;
     }
 
-    private static CompoundTag toTag(EntityAttributeInstance entityAttributeInstance) {
+    private static CompoundTag toTag(EntityAttributeInstance instance) {
         CompoundTag compoundTag = new CompoundTag();
-        EntityAttribute entityAttribute = entityAttributeInstance.getAttribute();
+        EntityAttribute entityAttribute = instance.getAttribute();
         compoundTag.putString("Name", entityAttribute.getId());
-        compoundTag.putDouble("Base", entityAttributeInstance.getBaseValue());
-        Set<EntityAttributeModifier> collection = entityAttributeInstance.getModifiers();
+        compoundTag.putDouble("Base", instance.getBaseValue());
+        Set<EntityAttributeModifier> collection = instance.getModifiers();
         if (collection != null && !collection.isEmpty()) {
             ListTag listTag = new ListTag();
             for (EntityAttributeModifier entityAttributeModifier : collection) {
@@ -55,19 +55,19 @@ public class EntityAttributes {
         return compoundTag;
     }
 
-    public static CompoundTag toTag(EntityAttributeModifier entityAttributeModifier) {
+    public static CompoundTag toTag(EntityAttributeModifier modifier) {
         CompoundTag compoundTag = new CompoundTag();
-        compoundTag.putString("Name", entityAttributeModifier.getName());
-        compoundTag.putDouble("Amount", entityAttributeModifier.getAmount());
-        compoundTag.putInt("Operation", entityAttributeModifier.getOperation().getId());
-        compoundTag.putUuid("UUID", entityAttributeModifier.getId());
+        compoundTag.putString("Name", modifier.getName());
+        compoundTag.putDouble("Amount", modifier.getAmount());
+        compoundTag.putInt("Operation", modifier.getOperation().getId());
+        compoundTag.putUuid("UUID", modifier.getId());
         return compoundTag;
     }
 
-    public static void fromTag(AbstractEntityAttributeContainer abstractEntityAttributeContainer, ListTag listTag) {
-        for (int i = 0; i < listTag.size(); ++i) {
-            CompoundTag compoundTag = listTag.getCompound(i);
-            EntityAttributeInstance entityAttributeInstance = abstractEntityAttributeContainer.get(compoundTag.getString("Name"));
+    public static void fromTag(AbstractEntityAttributeContainer container, ListTag tag) {
+        for (int i = 0; i < tag.size(); ++i) {
+            CompoundTag compoundTag = tag.getCompound(i);
+            EntityAttributeInstance entityAttributeInstance = container.get(compoundTag.getString("Name"));
             if (entityAttributeInstance == null) {
                 LOGGER.warn("Ignoring unknown attribute '{}'", (Object)compoundTag.getString("Name"));
                 continue;
@@ -76,28 +76,28 @@ public class EntityAttributes {
         }
     }
 
-    private static void fromTag(EntityAttributeInstance entityAttributeInstance, CompoundTag compoundTag) {
-        entityAttributeInstance.setBaseValue(compoundTag.getDouble("Base"));
-        if (compoundTag.contains("Modifiers", 9)) {
-            ListTag listTag = compoundTag.getList("Modifiers", 10);
+    private static void fromTag(EntityAttributeInstance instance, CompoundTag tag) {
+        instance.setBaseValue(tag.getDouble("Base"));
+        if (tag.contains("Modifiers", 9)) {
+            ListTag listTag = tag.getList("Modifiers", 10);
             for (int i = 0; i < listTag.size(); ++i) {
                 EntityAttributeModifier entityAttributeModifier = EntityAttributes.createFromTag(listTag.getCompound(i));
                 if (entityAttributeModifier == null) continue;
-                EntityAttributeModifier entityAttributeModifier2 = entityAttributeInstance.getModifier(entityAttributeModifier.getId());
+                EntityAttributeModifier entityAttributeModifier2 = instance.getModifier(entityAttributeModifier.getId());
                 if (entityAttributeModifier2 != null) {
-                    entityAttributeInstance.removeModifier(entityAttributeModifier2);
+                    instance.removeModifier(entityAttributeModifier2);
                 }
-                entityAttributeInstance.addModifier(entityAttributeModifier);
+                instance.addModifier(entityAttributeModifier);
             }
         }
     }
 
     @Nullable
-    public static EntityAttributeModifier createFromTag(CompoundTag compoundTag) {
-        UUID uUID = compoundTag.getUuid("UUID");
+    public static EntityAttributeModifier createFromTag(CompoundTag tag) {
+        UUID uUID = tag.getUuid("UUID");
         try {
-            EntityAttributeModifier.Operation operation = EntityAttributeModifier.Operation.fromId(compoundTag.getInt("Operation"));
-            return new EntityAttributeModifier(uUID, compoundTag.getString("Name"), compoundTag.getDouble("Amount"), operation);
+            EntityAttributeModifier.Operation operation = EntityAttributeModifier.Operation.fromId(tag.getInt("Operation"));
+            return new EntityAttributeModifier(uUID, tag.getString("Name"), tag.getDouble("Amount"), operation);
         } catch (Exception exception) {
             LOGGER.warn("Unable to create attribute: {}", (Object)exception.getMessage());
             return null;

@@ -31,13 +31,13 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(entityPredicate, entityPredicate2);
     }
 
-    public void trigger(ServerPlayerEntity serverPlayerEntity, ZombieEntity zombieEntity, VillagerEntity villagerEntity) {
-        this.test(serverPlayerEntity.getAdvancementTracker(), conditions -> conditions.matches(serverPlayerEntity, zombieEntity, villagerEntity));
+    public void trigger(ServerPlayerEntity player, ZombieEntity zombie, VillagerEntity villager) {
+        this.test(player.getAdvancementTracker(), conditions -> conditions.matches(player, zombie, villager));
     }
 
     @Override
-    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
+    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject obj, JsonDeserializationContext context) {
+        return this.conditionsFromJson(obj, context);
     }
 
     public static class Conditions
@@ -45,21 +45,21 @@ extends AbstractCriterion<Conditions> {
         private final EntityPredicate zombie;
         private final EntityPredicate villager;
 
-        public Conditions(EntityPredicate entityPredicate, EntityPredicate entityPredicate2) {
+        public Conditions(EntityPredicate zombie, EntityPredicate villager) {
             super(ID);
-            this.zombie = entityPredicate;
-            this.villager = entityPredicate2;
+            this.zombie = zombie;
+            this.villager = villager;
         }
 
         public static Conditions any() {
             return new Conditions(EntityPredicate.ANY, EntityPredicate.ANY);
         }
 
-        public boolean matches(ServerPlayerEntity serverPlayerEntity, ZombieEntity zombieEntity, VillagerEntity villagerEntity) {
-            if (!this.zombie.test(serverPlayerEntity, zombieEntity)) {
+        public boolean matches(ServerPlayerEntity player, ZombieEntity zombie, VillagerEntity villager) {
+            if (!this.zombie.test(player, zombie)) {
                 return false;
             }
-            return this.villager.test(serverPlayerEntity, villagerEntity);
+            return this.villager.test(player, villager);
         }
 
         @Override

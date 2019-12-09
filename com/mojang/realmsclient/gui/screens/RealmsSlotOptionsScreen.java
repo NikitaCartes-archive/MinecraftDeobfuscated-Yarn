@@ -49,11 +49,11 @@ extends RealmsScreen {
     private RealmsLabel titleLabel;
     private RealmsLabel field_20502;
 
-    public RealmsSlotOptionsScreen(RealmsConfigureWorldScreen realmsConfigureWorldScreen, RealmsWorldOptions realmsWorldOptions, RealmsServer.WorldType worldType, int i) {
+    public RealmsSlotOptionsScreen(RealmsConfigureWorldScreen realmsConfigureWorldScreen, RealmsWorldOptions options, RealmsServer.WorldType worldType, int activeSlot) {
         this.parent = realmsConfigureWorldScreen;
-        this.options = realmsWorldOptions;
+        this.options = options;
         this.worldType = worldType;
-        this.activeSlot = i;
+        this.activeSlot = activeSlot;
     }
 
     @Override
@@ -67,14 +67,14 @@ extends RealmsScreen {
     }
 
     @Override
-    public boolean keyPressed(int i, int j, int k) {
-        switch (i) {
+    public boolean keyPressed(int eventKey, int scancode, int mods) {
+        switch (eventKey) {
             case 256: {
                 Realms.setScreen(this.parent);
                 return true;
             }
         }
-        return super.keyPressed(i, j, k);
+        return super.keyPressed(eventKey, scancode, mods);
     }
 
     @Override
@@ -264,7 +264,7 @@ extends RealmsScreen {
     }
 
     @Override
-    public void render(int i, int j, float f) {
+    public void render(int xm, int ym, float a) {
         this.renderBackground();
         String string = RealmsSlotOptionsScreen.getLocalizedString("mco.configure.world.edit.slot.name");
         this.drawString(string, this.column1_x + this.column_width / 2 - this.fontWidth(string) / 2, RealmsConstants.row(0) - 5, 0xFFFFFF);
@@ -272,8 +272,8 @@ extends RealmsScreen {
         if (this.field_20502 != null) {
             this.field_20502.render(this);
         }
-        this.nameEdit.render(i, j, f);
-        super.render(i, j, f);
+        this.nameEdit.render(xm, ym, a);
+        super.render(xm, ym, a);
     }
 
     private String getSlotName() {
@@ -294,8 +294,8 @@ extends RealmsScreen {
     @Environment(value=EnvType.CLIENT)
     class SettingsSlider
     extends RealmsSliderButton {
-        public SettingsSlider(int i, int j, int k, int l, int m, float f, float g) {
-            super(i, j, k, l, m, f, g);
+        public SettingsSlider(int id, int x, int y, int width, int currentValue, float minValue, float maxValue) {
+            super(id, x, y, width, currentValue, minValue, maxValue);
         }
 
         @Override

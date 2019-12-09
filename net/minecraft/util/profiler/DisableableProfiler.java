@@ -25,8 +25,8 @@ implements Profiler {
     private final ProfilerControllerImpl controller = new ProfilerControllerImpl();
     private final ProfilerControllerImpl field_16271 = new ProfilerControllerImpl();
 
-    public DisableableProfiler(IntSupplier intSupplier) {
-        this.tickSupplier = intSupplier;
+    public DisableableProfiler(IntSupplier tickSupplier) {
+        this.tickSupplier = tickSupplier;
     }
 
     public ProfilerController getController() {

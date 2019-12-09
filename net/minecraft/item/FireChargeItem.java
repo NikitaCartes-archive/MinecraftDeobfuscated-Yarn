@@ -22,9 +22,9 @@ extends Item {
     }
 
     @Override
-    public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
-        World world = itemUsageContext.getWorld();
-        BlockPos blockPos = itemUsageContext.getBlockPos();
+    public ActionResult useOnBlock(ItemUsageContext context) {
+        World world = context.getWorld();
+        BlockPos blockPos = context.getBlockPos();
         BlockState blockState = world.getBlockState(blockPos);
         boolean bl = false;
         if (blockState.getBlock() == Blocks.CAMPFIRE) {
@@ -33,20 +33,20 @@ extends Item {
                 world.setBlockState(blockPos, (BlockState)blockState.with(CampfireBlock.LIT, true));
                 bl = true;
             }
-        } else if (world.getBlockState(blockPos = blockPos.offset(itemUsageContext.getSide())).isAir()) {
+        } else if (world.getBlockState(blockPos = blockPos.offset(context.getSide())).isAir()) {
             this.playUseSound(world, blockPos);
             world.setBlockState(blockPos, ((FireBlock)Blocks.FIRE).getStateForPosition(world, blockPos));
             bl = true;
         }
         if (bl) {
-            itemUsageContext.getStack().decrement(1);
+            context.getStack().decrement(1);
             return ActionResult.SUCCESS;
         }
         return ActionResult.FAIL;
     }
 
-    private void playUseSound(World world, BlockPos blockPos) {
-        world.playSound(null, blockPos, SoundEvents.ITEM_FIRECHARGE_USE, SoundCategory.BLOCKS, 1.0f, (RANDOM.nextFloat() - RANDOM.nextFloat()) * 0.2f + 1.0f);
+    private void playUseSound(World world, BlockPos pos) {
+        world.playSound(null, pos, SoundEvents.ITEM_FIRECHARGE_USE, SoundCategory.BLOCKS, 1.0f, (RANDOM.nextFloat() - RANDOM.nextFloat()) * 0.2f + 1.0f);
     }
 }
 

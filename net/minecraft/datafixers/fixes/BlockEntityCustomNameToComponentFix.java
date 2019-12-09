@@ -15,8 +15,8 @@ import net.minecraft.datafixers.fixes.EntityCustomNameToComponentFix;
 
 public class BlockEntityCustomNameToComponentFix
 extends DataFix {
-    public BlockEntityCustomNameToComponentFix(Schema schema, boolean bl) {
-        super(schema, bl);
+    public BlockEntityCustomNameToComponentFix(Schema outputSchema, boolean changesType) {
+        super(outputSchema, changesType);
     }
 
     @Override

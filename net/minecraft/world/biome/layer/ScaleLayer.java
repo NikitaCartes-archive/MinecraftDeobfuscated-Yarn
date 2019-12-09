@@ -13,46 +13,46 @@ public enum ScaleLayer implements ParentedLayer
     FUZZY{
 
         @Override
-        protected int sample(LayerSampleContext<?> layerSampleContext, int i, int j, int k, int l) {
-            return layerSampleContext.choose(i, j, k, l);
+        protected int sample(LayerSampleContext<?> context, int i, int j, int k, int l) {
+            return context.choose(i, j, k, l);
         }
     };
 
 
     @Override
-    public int transformX(int i) {
-        return i >> 1;
+    public int transformX(int x) {
+        return x >> 1;
     }
 
     @Override
-    public int transformZ(int i) {
-        return i >> 1;
+    public int transformZ(int y) {
+        return y >> 1;
     }
 
     @Override
-    public int sample(LayerSampleContext<?> layerSampleContext, LayerSampler layerSampler, int i, int j) {
-        int k = layerSampler.sample(this.transformX(i), this.transformZ(j));
-        layerSampleContext.initSeed(i >> 1 << 1, j >> 1 << 1);
-        int l = i & 1;
-        int m = j & 1;
-        if (l == 0 && m == 0) {
-            return k;
+    public int sample(LayerSampleContext<?> context, LayerSampler parent, int x, int z) {
+        int i = parent.sample(this.transformX(x), this.transformZ(z));
+        context.initSeed(x >> 1 << 1, z >> 1 << 1);
+        int j = x & 1;
+        int k = z & 1;
+        if (j == 0 && k == 0) {
+            return i;
         }
-        int n = layerSampler.sample(this.transformX(i), this.transformZ(j + 1));
-        int o = layerSampleContext.choose(k, n);
-        if (l == 0 && m == 1) {
+        int l = parent.sample(this.transformX(x), this.transformZ(z + 1));
+        int m = context.choose(i, l);
+        if (j == 0 && k == 1) {
+            return m;
+        }
+        int n = parent.sample(this.transformX(x + 1), this.transformZ(z));
+        int o = context.choose(i, n);
+        if (j == 1 && k == 0) {
             return o;
         }
-        int p = layerSampler.sample(this.transformX(i + 1), this.transformZ(j));
-        int q = layerSampleContext.choose(k, p);
-        if (l == 1 && m == 0) {
-            return q;
-        }
-        int r = layerSampler.sample(this.transformX(i + 1), this.transformZ(j + 1));
-        return this.sample(layerSampleContext, k, p, n, r);
+        int p = parent.sample(this.transformX(x + 1), this.transformZ(z + 1));
+        return this.sample(context, i, n, l, p);
     }
 
-    protected int sample(LayerSampleContext<?> layerSampleContext, int i, int j, int k, int l) {
+    protected int sample(LayerSampleContext<?> context, int i, int j, int k, int l) {
         if (j == k && k == l) {
             return j;
         }
@@ -83,7 +83,7 @@ public enum ScaleLayer implements ParentedLayer
         if (k == l && i != j) {
             return k;
         }
-        return layerSampleContext.choose(i, j, k, l);
+        return context.choose(i, j, k, l);
     }
 }
 

@@ -32,17 +32,17 @@ implements AutoCloseable {
     private boolean active = true;
     private CompletableFuture<Void> future = new CompletableFuture();
 
-    StorageIoWorker(RegionBasedStorage regionBasedStorage, String string) {
-        this.storage = regionBasedStorage;
+    StorageIoWorker(RegionBasedStorage storage, String name) {
+        this.storage = storage;
         this.thread = new Thread(this::work);
-        this.thread.setName(string + " IO worker");
+        this.thread.setName(name + " IO worker");
         this.thread.start();
     }
 
-    public CompletableFuture<Void> setResult(ChunkPos chunkPos, CompoundTag compoundTag) {
+    public CompletableFuture<Void> setResult(ChunkPos pos, CompoundTag nbt) {
         return this.run(completableFuture -> () -> {
-            Result result = this.results.computeIfAbsent(chunkPos, chunkPos -> new Result());
-            result.nbt = compoundTag;
+            Result result = this.results.computeIfAbsent(pos, chunkPos -> new Result());
+            result.nbt = nbt;
             result.future.whenComplete((void_, throwable) -> {
                 if (throwable != null) {
                     completableFuture.completeExceptionally((Throwable)throwable);
@@ -54,17 +54,17 @@ implements AutoCloseable {
     }
 
     @Nullable
-    public CompoundTag getNbt(ChunkPos chunkPos) throws IOException {
+    public CompoundTag getNbt(ChunkPos pos) throws IOException {
         CompletableFuture completableFuture2 = this.run(completableFuture -> () -> {
-            Result result = this.results.get(chunkPos);
+            Result result = this.results.get(pos);
             if (result != null) {
                 completableFuture.complete(result.nbt);
             } else {
                 try {
-                    CompoundTag compoundTag = this.storage.getTagAt(chunkPos);
+                    CompoundTag compoundTag = this.storage.getTagAt(pos);
                     completableFuture.complete(compoundTag);
                 } catch (Exception exception) {
-                    LOGGER.warn("Failed to read chunk {}", (Object)chunkPos, (Object)exception);
+                    LOGGER.warn("Failed to read chunk {}", (Object)pos, (Object)exception);
                     completableFuture.completeExceptionally(exception);
                 }
             }
@@ -93,9 +93,9 @@ implements AutoCloseable {
         });
     }
 
-    private <T> CompletableFuture<T> run(Function<CompletableFuture<T>, Runnable> function) {
+    private <T> CompletableFuture<T> run(Function<CompletableFuture<T>, Runnable> taskFactory) {
         CompletableFuture completableFuture = new CompletableFuture();
-        this.tasks.add(function.apply(completableFuture));
+        this.tasks.add(taskFactory.apply(completableFuture));
         LockSupport.unpark(this.thread);
         return completableFuture;
     }
@@ -135,12 +135,12 @@ implements AutoCloseable {
         this.results.clear();
     }
 
-    private void write(ChunkPos chunkPos, Result result) {
+    private void write(ChunkPos pos, Result result) {
         try {
-            this.storage.write(chunkPos, result.nbt);
+            this.storage.write(pos, result.nbt);
             result.future.complete(null);
         } catch (Exception exception) {
-            LOGGER.error("Failed to store chunk {}", (Object)chunkPos, (Object)exception);
+            LOGGER.error("Failed to store chunk {}", (Object)pos, (Object)exception);
             result.future.completeExceptionally(exception);
         }
     }

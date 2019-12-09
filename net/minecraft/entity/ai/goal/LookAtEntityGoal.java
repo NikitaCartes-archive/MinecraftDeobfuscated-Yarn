@@ -22,17 +22,17 @@ extends Goal {
     protected final Class<? extends LivingEntity> targetType;
     protected final TargetPredicate targetPredicate;
 
-    public LookAtEntityGoal(MobEntity mobEntity, Class<? extends LivingEntity> class_, float f) {
-        this(mobEntity, class_, f, 0.02f);
+    public LookAtEntityGoal(MobEntity mob, Class<? extends LivingEntity> targetType, float range) {
+        this(mob, targetType, range, 0.02f);
     }
 
-    public LookAtEntityGoal(MobEntity mobEntity, Class<? extends LivingEntity> class_, float f, float g) {
-        this.mob = mobEntity;
-        this.targetType = class_;
-        this.range = f;
-        this.chance = g;
+    public LookAtEntityGoal(MobEntity mob, Class<? extends LivingEntity> targetType, float range, float chance) {
+        this.mob = mob;
+        this.targetType = targetType;
+        this.range = range;
+        this.chance = chance;
         this.setControls(EnumSet.of(Goal.Control.LOOK));
-        this.targetPredicate = class_ == PlayerEntity.class ? new TargetPredicate().setBaseMaxDistance(f).includeTeammates().includeInvulnerable().ignoreEntityTargetRules().setPredicate(livingEntity -> EntityPredicates.rides(mobEntity).test((Entity)livingEntity)) : new TargetPredicate().setBaseMaxDistance(f).includeTeammates().includeInvulnerable().ignoreEntityTargetRules();
+        this.targetPredicate = targetType == PlayerEntity.class ? new TargetPredicate().setBaseMaxDistance(range).includeTeammates().includeInvulnerable().ignoreEntityTargetRules().setPredicate(livingEntity -> EntityPredicates.rides(mob).test((Entity)livingEntity)) : new TargetPredicate().setBaseMaxDistance(range).includeTeammates().includeInvulnerable().ignoreEntityTargetRules();
     }
 
     @Override

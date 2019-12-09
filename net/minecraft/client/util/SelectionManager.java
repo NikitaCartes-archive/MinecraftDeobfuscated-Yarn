@@ -24,12 +24,12 @@ public class SelectionManager {
     private int selectionStart;
     private int selectionEnd;
 
-    public SelectionManager(MinecraftClient minecraftClient, Supplier<String> supplier, Consumer<String> consumer, int i) {
-        this.client = minecraftClient;
-        this.fontRenderer = minecraftClient.textRenderer;
-        this.stringGetter = supplier;
-        this.stringSetter = consumer;
-        this.maxLength = i;
+    public SelectionManager(MinecraftClient client, Supplier<String> getter, Consumer<String> setter, int maxLength) {
+        this.client = client;
+        this.fontRenderer = client.textRenderer;
+        this.stringGetter = getter;
+        this.stringSetter = setter;
+        this.maxLength = maxLength;
         this.moveCaretToEnd();
     }
 
@@ -53,28 +53,28 @@ public class SelectionManager {
         }
     }
 
-    public boolean handleSpecialKey(int i) {
+    public boolean handleSpecialKey(int keyCode) {
         String string = this.stringGetter.get();
-        if (Screen.isSelectAll(i)) {
+        if (Screen.isSelectAll(keyCode)) {
             this.selectionEnd = 0;
             this.selectionStart = string.length();
             return true;
         }
-        if (Screen.isCopy(i)) {
+        if (Screen.isCopy(keyCode)) {
             this.client.keyboard.setClipboard(this.getSelectedText());
             return true;
         }
-        if (Screen.isPaste(i)) {
+        if (Screen.isPaste(keyCode)) {
             this.insert(SharedConstants.stripInvalidChars(Formatting.strip(this.client.keyboard.getClipboard().replaceAll("\\r", ""))));
             this.selectionEnd = this.selectionStart;
             return true;
         }
-        if (Screen.isCut(i)) {
+        if (Screen.isCut(keyCode)) {
             this.client.keyboard.setClipboard(this.getSelectedText());
             this.deleteSelectedText();
             return true;
         }
-        if (i == 259) {
+        if (keyCode == 259) {
             if (!string.isEmpty()) {
                 if (this.selectionEnd != this.selectionStart) {
                     this.deleteSelectedText();
@@ -86,7 +86,7 @@ public class SelectionManager {
             }
             return true;
         }
-        if (i == 261) {
+        if (keyCode == 261) {
             if (!string.isEmpty()) {
                 if (this.selectionEnd != this.selectionStart) {
                     this.deleteSelectedText();
@@ -97,30 +97,30 @@ public class SelectionManager {
             }
             return true;
         }
-        if (i == 263) {
-            int j = this.fontRenderer.isRightToLeft() ? 1 : -1;
-            this.selectionStart = Screen.hasControlDown() ? this.fontRenderer.findWordEdge(string, j, this.selectionStart, true) : Math.max(0, Math.min(string.length(), this.selectionStart + j));
+        if (keyCode == 263) {
+            int i = this.fontRenderer.isRightToLeft() ? 1 : -1;
+            this.selectionStart = Screen.hasControlDown() ? this.fontRenderer.findWordEdge(string, i, this.selectionStart, true) : Math.max(0, Math.min(string.length(), this.selectionStart + i));
             if (!Screen.hasShiftDown()) {
                 this.selectionEnd = this.selectionStart;
             }
             return true;
         }
-        if (i == 262) {
-            int j = this.fontRenderer.isRightToLeft() ? -1 : 1;
-            this.selectionStart = Screen.hasControlDown() ? this.fontRenderer.findWordEdge(string, j, this.selectionStart, true) : Math.max(0, Math.min(string.length(), this.selectionStart + j));
+        if (keyCode == 262) {
+            int i = this.fontRenderer.isRightToLeft() ? -1 : 1;
+            this.selectionStart = Screen.hasControlDown() ? this.fontRenderer.findWordEdge(string, i, this.selectionStart, true) : Math.max(0, Math.min(string.length(), this.selectionStart + i));
             if (!Screen.hasShiftDown()) {
                 this.selectionEnd = this.selectionStart;
             }
             return true;
         }
-        if (i == 268) {
+        if (keyCode == 268) {
             this.selectionStart = 0;
             if (!Screen.hasShiftDown()) {
                 this.selectionEnd = this.selectionStart;
             }
             return true;
         }
-        if (i == 269) {
+        if (keyCode == 269) {
             this.selectionStart = this.stringGetter.get().length();
             if (!Screen.hasShiftDown()) {
                 this.selectionEnd = this.selectionStart;

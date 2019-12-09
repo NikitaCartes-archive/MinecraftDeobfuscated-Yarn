@@ -17,9 +17,9 @@ public abstract class EntityTransformFix
 extends DataFix {
     protected final String name;
 
-    public EntityTransformFix(String string, Schema schema, boolean bl) {
-        super(schema, bl);
-        this.name = string;
+    public EntityTransformFix(String name, Schema outputSchema, boolean changesType) {
+        super(outputSchema, changesType);
+        this.name = name;
     }
 
     @Override

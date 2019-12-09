@@ -39,8 +39,8 @@ extends EntityNavigation {
     }
 
     @Override
-    public Path findPathTo(Entity entity, int i) {
-        return this.findPathTo(new BlockPos(entity), i);
+    public Path findPathTo(Entity entity, int distance) {
+        return this.findPathTo(new BlockPos(entity), distance);
     }
 
     @Override
@@ -70,73 +70,73 @@ extends EntityNavigation {
     }
 
     @Override
-    protected boolean canPathDirectlyThrough(Vec3d vec3d, Vec3d vec3d2, int i, int j, int k) {
-        int l = MathHelper.floor(vec3d.x);
-        int m = MathHelper.floor(vec3d.y);
-        int n = MathHelper.floor(vec3d.z);
-        double d = vec3d2.x - vec3d.x;
-        double e = vec3d2.y - vec3d.y;
-        double f = vec3d2.z - vec3d.z;
+    protected boolean canPathDirectlyThrough(Vec3d origin, Vec3d target, int sizeX, int sizeY, int sizeZ) {
+        int i = MathHelper.floor(origin.x);
+        int j = MathHelper.floor(origin.y);
+        int k = MathHelper.floor(origin.z);
+        double d = target.x - origin.x;
+        double e = target.y - origin.y;
+        double f = target.z - origin.z;
         double g = d * d + e * e + f * f;
         if (g < 1.0E-8) {
             return false;
         }
         double h = 1.0 / Math.sqrt(g);
-        double o = 1.0 / Math.abs(d *= h);
-        double p = 1.0 / Math.abs(e *= h);
-        double q = 1.0 / Math.abs(f *= h);
-        double r = (double)l - vec3d.x;
-        double s = (double)m - vec3d.y;
-        double t = (double)n - vec3d.z;
+        double l = 1.0 / Math.abs(d *= h);
+        double m = 1.0 / Math.abs(e *= h);
+        double n = 1.0 / Math.abs(f *= h);
+        double o = (double)i - origin.x;
+        double p = (double)j - origin.y;
+        double q = (double)k - origin.z;
         if (d >= 0.0) {
-            r += 1.0;
+            o += 1.0;
         }
         if (e >= 0.0) {
-            s += 1.0;
+            p += 1.0;
         }
         if (f >= 0.0) {
-            t += 1.0;
+            q += 1.0;
         }
-        r /= d;
-        s /= e;
-        t /= f;
-        int u = d < 0.0 ? -1 : 1;
-        int v = e < 0.0 ? -1 : 1;
-        int w = f < 0.0 ? -1 : 1;
-        int x = MathHelper.floor(vec3d2.x);
-        int y = MathHelper.floor(vec3d2.y);
-        int z = MathHelper.floor(vec3d2.z);
-        int aa = x - l;
-        int ab = y - m;
-        int ac = z - n;
-        while (aa * u > 0 || ab * v > 0 || ac * w > 0) {
-            if (r < t && r <= s) {
-                r += o;
-                aa = x - (l += u);
+        o /= d;
+        p /= e;
+        q /= f;
+        int r = d < 0.0 ? -1 : 1;
+        int s = e < 0.0 ? -1 : 1;
+        int t = f < 0.0 ? -1 : 1;
+        int u = MathHelper.floor(target.x);
+        int v = MathHelper.floor(target.y);
+        int w = MathHelper.floor(target.z);
+        int x = u - i;
+        int y = v - j;
+        int z = w - k;
+        while (x * r > 0 || y * s > 0 || z * t > 0) {
+            if (o < q && o <= p) {
+                o += l;
+                x = u - (i += r);
                 continue;
             }
-            if (s < r && s <= t) {
-                s += p;
-                ab = y - (m += v);
+            if (p < o && p <= q) {
+                p += m;
+                y = v - (j += s);
                 continue;
             }
-            t += q;
-            ac = z - (n += w);
+            q += n;
+            z = w - (k += t);
         }
         return true;
     }
 
-    public void setCanPathThroughDoors(boolean bl) {
-        this.nodeMaker.setCanOpenDoors(bl);
+    public void setCanPathThroughDoors(boolean canPathThroughDoors) {
+        this.nodeMaker.setCanOpenDoors(canPathThroughDoors);
     }
 
-    public void setCanEnterOpenDoors(boolean bl) {
-        this.nodeMaker.setCanEnterOpenDoors(bl);
+    public void setCanEnterOpenDoors(boolean canEnterOpenDoors) {
+        this.nodeMaker.setCanEnterOpenDoors(canEnterOpenDoors);
     }
 
     @Override
-    public boolean isValidPosition(BlockPos blockPos) {
-        return this.world.getBlockState(blockPos).hasSolidTopSurface(this.world, blockPos, this.entity);
+    public boolean isValidPosition(BlockPos pos) {
+        return this.world.getBlockState(pos).hasSolidTopSurface(this.world, pos, this.entity);
     }
 }
 

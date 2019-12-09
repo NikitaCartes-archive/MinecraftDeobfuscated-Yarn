@@ -92,40 +92,40 @@ extends Entity {
     @Environment(value=EnvType.CLIENT)
     private double clientZVelocity;
 
-    protected AbstractMinecartEntity(EntityType<?> entityType, World world) {
-        super(entityType, world);
+    protected AbstractMinecartEntity(EntityType<?> type, World world) {
+        super(type, world);
         this.inanimate = true;
     }
 
-    protected AbstractMinecartEntity(EntityType<?> entityType, World world, double d, double e, double f) {
-        this(entityType, world);
-        this.setPosition(d, e, f);
+    protected AbstractMinecartEntity(EntityType<?> type, World world, double x, double y, double z) {
+        this(type, world);
+        this.setPosition(x, y, z);
         this.setVelocity(Vec3d.ZERO);
-        this.prevX = d;
-        this.prevY = e;
-        this.prevZ = f;
+        this.prevX = x;
+        this.prevY = y;
+        this.prevZ = z;
     }
 
-    public static AbstractMinecartEntity create(World world, double d, double e, double f, Type type) {
+    public static AbstractMinecartEntity create(World world, double x, double y, double z, Type type) {
         if (type == Type.CHEST) {
-            return new ChestMinecartEntity(world, d, e, f);
+            return new ChestMinecartEntity(world, x, y, z);
         }
         if (type == Type.FURNACE) {
-            return new FurnaceMinecartEntity(world, d, e, f);
+            return new FurnaceMinecartEntity(world, x, y, z);
         }
         if (type == Type.TNT) {
-            return new TntMinecartEntity(world, d, e, f);
+            return new TntMinecartEntity(world, x, y, z);
         }
         if (type == Type.SPAWNER) {
-            return new SpawnerMinecartEntity(world, d, e, f);
+            return new SpawnerMinecartEntity(world, x, y, z);
         }
         if (type == Type.HOPPER) {
-            return new HopperMinecartEntity(world, d, e, f);
+            return new HopperMinecartEntity(world, x, y, z);
         }
         if (type == Type.COMMAND_BLOCK) {
-            return new CommandBlockMinecartEntity(world, d, e, f);
+            return new CommandBlockMinecartEntity(world, x, y, z);
         }
-        return new MinecartEntity(world, d, e, f);
+        return new MinecartEntity(world, x, y, z);
     }
 
     @Override
@@ -145,9 +145,9 @@ extends Entity {
 
     @Override
     @Nullable
-    public Box getHardCollisionBox(Entity entity) {
-        if (entity.isPushable()) {
-            return entity.getBoundingBox();
+    public Box getHardCollisionBox(Entity collidingEntity) {
+        if (collidingEntity.isPushable()) {
+            return collidingEntity.getBoundingBox();
         }
         return null;
     }
@@ -163,23 +163,23 @@ extends Entity {
     }
 
     @Override
-    public boolean damage(DamageSource damageSource, float f) {
+    public boolean damage(DamageSource source, float amount) {
         boolean bl;
         if (this.world.isClient || this.removed) {
             return true;
         }
-        if (this.isInvulnerableTo(damageSource)) {
+        if (this.isInvulnerableTo(source)) {
             return false;
         }
         this.setDamageWobbleSide(-this.getDamageWobbleSide());
         this.setDamageWobbleTicks(10);
         this.scheduleVelocityUpdate();
-        this.setDamageWobbleStrength(this.getDamageWobbleStrength() + f * 10.0f);
-        boolean bl2 = bl = damageSource.getAttacker() instanceof PlayerEntity && ((PlayerEntity)damageSource.getAttacker()).abilities.creativeMode;
+        this.setDamageWobbleStrength(this.getDamageWobbleStrength() + amount * 10.0f);
+        boolean bl2 = bl = source.getAttacker() instanceof PlayerEntity && ((PlayerEntity)source.getAttacker()).abilities.creativeMode;
         if (bl || this.getDamageWobbleStrength() > 40.0f) {
             this.removeAllPassengers();
             if (!bl || this.hasCustomName()) {
-                this.dropItems(damageSource);
+                this.dropItems(source);
             } else {
                 this.remove();
             }
@@ -309,7 +309,7 @@ extends Entity {
         return 0.4;
     }
 
-    public void onActivatorRail(int i, int j, int k, boolean bl) {
+    public void onActivatorRail(int x, int y, int z, boolean powered) {
     }
 
     protected void moveOffRail() {
@@ -325,7 +325,7 @@ extends Entity {
         }
     }
 
-    protected void moveOnRail(BlockPos blockPos, BlockState blockState) {
+    protected void moveOnRail(BlockPos pos, BlockState state) {
         double w;
         Vec3d vec3d5;
         double u;
@@ -337,17 +337,17 @@ extends Entity {
         double e = this.getY();
         double f = this.getZ();
         Vec3d vec3d = this.method_7508(d, e, f);
-        e = blockPos.getY();
+        e = pos.getY();
         boolean bl = false;
         boolean bl2 = false;
-        AbstractRailBlock abstractRailBlock = (AbstractRailBlock)blockState.getBlock();
+        AbstractRailBlock abstractRailBlock = (AbstractRailBlock)state.getBlock();
         if (abstractRailBlock == Blocks.POWERED_RAIL) {
-            bl = blockState.get(PoweredRailBlock.POWERED);
+            bl = state.get(PoweredRailBlock.POWERED);
             bl2 = !bl;
         }
         double g = 0.0078125;
         Vec3d vec3d2 = this.getVelocity();
-        RailShape railShape = blockState.get(abstractRailBlock.getShapeProperty());
+        RailShape railShape = state.get(abstractRailBlock.getShapeProperty());
         switch (railShape) {
             case ASCENDING_EAST: {
                 this.setVelocity(vec3d2.add(-0.0078125, 0.0, 0.0));
@@ -402,16 +402,16 @@ extends Entity {
                 this.setVelocity(this.getVelocity().multiply(0.5, 0.0, 0.5));
             }
         }
-        double o = (double)blockPos.getX() + 0.5 + (double)vec3i.getX() * 0.5;
-        double p = (double)blockPos.getZ() + 0.5 + (double)vec3i.getZ() * 0.5;
-        double q = (double)blockPos.getX() + 0.5 + (double)vec3i2.getX() * 0.5;
-        double r = (double)blockPos.getZ() + 0.5 + (double)vec3i2.getZ() * 0.5;
+        double o = (double)pos.getX() + 0.5 + (double)vec3i.getX() * 0.5;
+        double p = (double)pos.getZ() + 0.5 + (double)vec3i.getZ() * 0.5;
+        double q = (double)pos.getX() + 0.5 + (double)vec3i2.getX() * 0.5;
+        double r = (double)pos.getZ() + 0.5 + (double)vec3i2.getZ() * 0.5;
         h = q - o;
         i = r - p;
         if (h == 0.0) {
-            s = f - (double)blockPos.getZ();
+            s = f - (double)pos.getZ();
         } else if (i == 0.0) {
-            s = d - (double)blockPos.getX();
+            s = d - (double)pos.getX();
         } else {
             t = d - o;
             u = f - p;
@@ -424,9 +424,9 @@ extends Entity {
         u = this.getMaxOffRailSpeed();
         vec3d2 = this.getVelocity();
         this.move(MovementType.SELF, new Vec3d(MathHelper.clamp(t * vec3d2.x, -u, u), 0.0, MathHelper.clamp(t * vec3d2.z, -u, u)));
-        if (vec3i.getY() != 0 && MathHelper.floor(this.getX()) - blockPos.getX() == vec3i.getX() && MathHelper.floor(this.getZ()) - blockPos.getZ() == vec3i.getZ()) {
+        if (vec3i.getY() != 0 && MathHelper.floor(this.getX()) - pos.getX() == vec3i.getX() && MathHelper.floor(this.getZ()) - pos.getZ() == vec3i.getZ()) {
             this.setPosition(this.getX(), this.getY() + (double)vec3i.getY(), this.getZ());
-        } else if (vec3i2.getY() != 0 && MathHelper.floor(this.getX()) - blockPos.getX() == vec3i2.getX() && MathHelper.floor(this.getZ()) - blockPos.getZ() == vec3i2.getZ()) {
+        } else if (vec3i2.getY() != 0 && MathHelper.floor(this.getX()) - pos.getX() == vec3i2.getX() && MathHelper.floor(this.getZ()) - pos.getZ() == vec3i2.getZ()) {
             this.setPosition(this.getX(), this.getY() + (double)vec3i2.getY(), this.getZ());
         }
         this.applySlowdown();
@@ -442,10 +442,10 @@ extends Entity {
         }
         int x = MathHelper.floor(this.getX());
         int y = MathHelper.floor(this.getZ());
-        if (x != blockPos.getX() || y != blockPos.getZ()) {
+        if (x != pos.getX() || y != pos.getZ()) {
             vec3d5 = this.getVelocity();
             w = Math.sqrt(AbstractMinecartEntity.squaredHorizontalLength(vec3d5));
-            this.setVelocity(w * (double)(x - blockPos.getX()), vec3d5.y, w * (double)(y - blockPos.getZ()));
+            this.setVelocity(w * (double)(x - pos.getX()), vec3d5.y, w * (double)(y - pos.getZ()));
         }
         if (bl) {
             vec3d5 = this.getVelocity();
@@ -458,15 +458,15 @@ extends Entity {
                 double aa = vec3d6.x;
                 double ab = vec3d6.z;
                 if (railShape == RailShape.EAST_WEST) {
-                    if (this.willHitBlockAt(blockPos.west())) {
+                    if (this.willHitBlockAt(pos.west())) {
                         aa = 0.02;
-                    } else if (this.willHitBlockAt(blockPos.east())) {
+                    } else if (this.willHitBlockAt(pos.east())) {
                         aa = -0.02;
                     }
                 } else if (railShape == RailShape.NORTH_SOUTH) {
-                    if (this.willHitBlockAt(blockPos.north())) {
+                    if (this.willHitBlockAt(pos.north())) {
                         ab = 0.02;
-                    } else if (this.willHitBlockAt(blockPos.south())) {
+                    } else if (this.willHitBlockAt(pos.south())) {
                         ab = -0.02;
                     }
                 } else {
@@ -477,8 +477,8 @@ extends Entity {
         }
     }
 
-    private boolean willHitBlockAt(BlockPos blockPos) {
-        return this.world.getBlockState(blockPos).isSimpleFullBlock(this.world, blockPos);
+    private boolean willHitBlockAt(BlockPos pos) {
+        return this.world.getBlockState(pos).isSimpleFullBlock(this.world, pos);
     }
 
     protected void applySlowdown() {
@@ -575,19 +575,19 @@ extends Entity {
     }
 
     @Override
-    protected void readCustomDataFromTag(CompoundTag compoundTag) {
-        if (compoundTag.getBoolean("CustomDisplayTile")) {
-            this.setCustomBlock(NbtHelper.toBlockState(compoundTag.getCompound("DisplayState")));
-            this.setCustomBlockOffset(compoundTag.getInt("DisplayOffset"));
+    protected void readCustomDataFromTag(CompoundTag tag) {
+        if (tag.getBoolean("CustomDisplayTile")) {
+            this.setCustomBlock(NbtHelper.toBlockState(tag.getCompound("DisplayState")));
+            this.setCustomBlockOffset(tag.getInt("DisplayOffset"));
         }
     }
 
     @Override
-    protected void writeCustomDataToTag(CompoundTag compoundTag) {
+    protected void writeCustomDataToTag(CompoundTag tag) {
         if (this.hasCustomBlock()) {
-            compoundTag.putBoolean("CustomDisplayTile", true);
-            compoundTag.put("DisplayState", NbtHelper.fromBlockState(this.getContainedBlock()));
-            compoundTag.putInt("DisplayOffset", this.getBlockOffset());
+            tag.putBoolean("CustomDisplayTile", true);
+            tag.put("DisplayState", NbtHelper.fromBlockState(this.getContainedBlock()));
+            tag.putInt("DisplayOffset", this.getBlockOffset());
         }
     }
 
@@ -657,22 +657,22 @@ extends Entity {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void updateTrackedPositionAndAngles(double d, double e, double f, float g, float h, int i, boolean bl) {
-        this.clientX = d;
-        this.clientY = e;
-        this.clientZ = f;
-        this.clientYaw = g;
-        this.clientPitch = h;
-        this.clientInterpolationSteps = i + 2;
+    public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
+        this.clientX = x;
+        this.clientY = y;
+        this.clientZ = z;
+        this.clientYaw = yaw;
+        this.clientPitch = pitch;
+        this.clientInterpolationSteps = interpolationSteps + 2;
         this.setVelocity(this.clientXVelocity, this.clientYVelocity, this.clientZVelocity);
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void setVelocityClient(double d, double e, double f) {
-        this.clientXVelocity = d;
-        this.clientYVelocity = e;
-        this.clientZVelocity = f;
+    public void setVelocityClient(double x, double y, double z) {
+        this.clientXVelocity = x;
+        this.clientYVelocity = y;
+        this.clientZVelocity = z;
         this.setVelocity(this.clientXVelocity, this.clientYVelocity, this.clientZVelocity);
     }
 
@@ -684,16 +684,16 @@ extends Entity {
         return this.dataTracker.get(DAMAGE_WOBBLE_STRENGTH).floatValue();
     }
 
-    public void setDamageWobbleTicks(int i) {
-        this.dataTracker.set(DAMAGE_WOBBLE_TICKS, i);
+    public void setDamageWobbleTicks(int wobbleTicks) {
+        this.dataTracker.set(DAMAGE_WOBBLE_TICKS, wobbleTicks);
     }
 
     public int getDamageWobbleTicks() {
         return this.dataTracker.get(DAMAGE_WOBBLE_TICKS);
     }
 
-    public void setDamageWobbleSide(int i) {
-        this.dataTracker.set(DAMAGE_WOBBLE_SIDE, i);
+    public void setDamageWobbleSide(int wobbleSide) {
+        this.dataTracker.set(DAMAGE_WOBBLE_SIDE, wobbleSide);
     }
 
     public int getDamageWobbleSide() {

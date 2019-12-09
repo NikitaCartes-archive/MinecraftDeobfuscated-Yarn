@@ -53,8 +53,8 @@ public class ContainerType<T extends Container> {
     public static final ContainerType<StonecutterContainer> STONECUTTER = ContainerType.register("stonecutter", StonecutterContainer::new);
     private final Factory<T> factory;
 
-    private static <T extends Container> ContainerType<T> register(String string, Factory<T> factory) {
-        return Registry.register(Registry.CONTAINER, string, new ContainerType<T>(factory));
+    private static <T extends Container> ContainerType<T> register(String id, Factory<T> factory) {
+        return Registry.register(Registry.CONTAINER, id, new ContainerType<T>(factory));
     }
 
     private ContainerType(Factory<T> factory) {
@@ -62,8 +62,8 @@ public class ContainerType<T extends Container> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public T create(int i, PlayerInventory playerInventory) {
-        return this.factory.create(i, playerInventory);
+    public T create(int syncId, PlayerInventory playerInventory) {
+        return this.factory.create(syncId, playerInventory);
     }
 
     static interface Factory<T extends Container> {

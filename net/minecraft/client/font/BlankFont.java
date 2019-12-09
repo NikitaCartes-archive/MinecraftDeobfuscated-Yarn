@@ -15,7 +15,7 @@ public class BlankFont
 implements Font {
     @Override
     @Nullable
-    public RenderableGlyph getGlyph(char c) {
+    public RenderableGlyph getGlyph(char character) {
         return BlankGlyph.INSTANCE;
     }
 }

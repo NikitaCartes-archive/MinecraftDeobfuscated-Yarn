@@ -21,8 +21,8 @@ import org.jetbrains.annotations.Nullable;
 public class AdvancementCriterion {
     private final CriterionConditions conditions;
 
-    public AdvancementCriterion(CriterionConditions criterionConditions) {
-        this.conditions = criterionConditions;
+    public AdvancementCriterion(CriterionConditions conditions) {
+        this.conditions = conditions;
     }
 
     public AdvancementCriterion() {
@@ -32,42 +32,42 @@ public class AdvancementCriterion {
     public void serialize(PacketByteBuf packetByteBuf) {
     }
 
-    public static AdvancementCriterion deserialize(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "trigger"));
+    public static AdvancementCriterion deserialize(JsonObject obj, JsonDeserializationContext context) {
+        Identifier identifier = new Identifier(JsonHelper.getString(obj, "trigger"));
         Criterion criterion = Criterions.getById(identifier);
         if (criterion == null) {
             throw new JsonSyntaxException("Invalid criterion trigger: " + identifier);
         }
-        Object criterionConditions = criterion.conditionsFromJson(JsonHelper.getObject(jsonObject, "conditions", new JsonObject()), jsonDeserializationContext);
+        Object criterionConditions = criterion.conditionsFromJson(JsonHelper.getObject(obj, "conditions", new JsonObject()), context);
         return new AdvancementCriterion((CriterionConditions)criterionConditions);
     }
 
-    public static AdvancementCriterion createNew(PacketByteBuf packetByteBuf) {
+    public static AdvancementCriterion createNew(PacketByteBuf buf) {
         return new AdvancementCriterion();
     }
 
-    public static Map<String, AdvancementCriterion> fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+    public static Map<String, AdvancementCriterion> fromJson(JsonObject obj, JsonDeserializationContext context) {
         HashMap<String, AdvancementCriterion> map = Maps.newHashMap();
-        for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
-            map.put(entry.getKey(), AdvancementCriterion.deserialize(JsonHelper.asObject(entry.getValue(), "criterion"), jsonDeserializationContext));
+        for (Map.Entry<String, JsonElement> entry : obj.entrySet()) {
+            map.put(entry.getKey(), AdvancementCriterion.deserialize(JsonHelper.asObject(entry.getValue(), "criterion"), context));
         }
         return map;
     }
 
-    public static Map<String, AdvancementCriterion> fromPacket(PacketByteBuf packetByteBuf) {
+    public static Map<String, AdvancementCriterion> fromPacket(PacketByteBuf buf) {
         HashMap<String, AdvancementCriterion> map = Maps.newHashMap();
-        int i = packetByteBuf.readVarInt();
+        int i = buf.readVarInt();
         for (int j = 0; j < i; ++j) {
-            map.put(packetByteBuf.readString(Short.MAX_VALUE), AdvancementCriterion.createNew(packetByteBuf));
+            map.put(buf.readString(Short.MAX_VALUE), AdvancementCriterion.createNew(buf));
         }
         return map;
     }
 
-    public static void serialize(Map<String, AdvancementCriterion> map, PacketByteBuf packetByteBuf) {
-        packetByteBuf.writeVarInt(map.size());
-        for (Map.Entry<String, AdvancementCriterion> entry : map.entrySet()) {
-            packetByteBuf.writeString(entry.getKey());
-            entry.getValue().serialize(packetByteBuf);
+    public static void serialize(Map<String, AdvancementCriterion> criteria, PacketByteBuf buf) {
+        buf.writeVarInt(criteria.size());
+        for (Map.Entry<String, AdvancementCriterion> entry : criteria.entrySet()) {
+            buf.writeString(entry.getKey());
+            entry.getValue().serialize(buf);
         }
     }
 

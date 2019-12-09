@@ -17,21 +17,21 @@ import net.minecraft.world.WorldView;
 
 public abstract class MobEntityWithAi
 extends MobEntity {
-    protected MobEntityWithAi(EntityType<? extends MobEntityWithAi> entityType, World world) {
-        super((EntityType<? extends MobEntity>)entityType, world);
+    protected MobEntityWithAi(EntityType<? extends MobEntityWithAi> type, World world) {
+        super((EntityType<? extends MobEntity>)type, world);
     }
 
-    public float getPathfindingFavor(BlockPos blockPos) {
-        return this.getPathfindingFavor(blockPos, this.world);
+    public float getPathfindingFavor(BlockPos pos) {
+        return this.getPathfindingFavor(pos, this.world);
     }
 
-    public float getPathfindingFavor(BlockPos blockPos, WorldView worldView) {
+    public float getPathfindingFavor(BlockPos pos, WorldView worldView) {
         return 0.0f;
     }
 
     @Override
-    public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-        return this.getPathfindingFavor(new BlockPos(this), iWorld) >= 0.0f;
+    public boolean canSpawn(IWorld world, SpawnType spawnType) {
+        return this.getPathfindingFavor(new BlockPos(this), world) >= 0.0f;
     }
 
     public boolean isNavigating() {
@@ -73,7 +73,7 @@ extends MobEntity {
         return 1.0;
     }
 
-    protected void updateForLeashLength(float f) {
+    protected void updateForLeashLength(float leashLength) {
     }
 }
 

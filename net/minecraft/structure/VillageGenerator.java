@@ -24,13 +24,13 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.VillageFeatureConfig;
 
 public class VillageGenerator {
-    public static void addPieces(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, BlockPos blockPos, List<StructurePiece> list, ChunkRandom chunkRandom, VillageFeatureConfig villageFeatureConfig) {
+    public static void addPieces(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, BlockPos pos, List<StructurePiece> pieces, ChunkRandom random, VillageFeatureConfig config) {
         PlainsVillageData.initialize();
         SnowyVillageData.initialize();
         SavannaVillageData.initialize();
         DesertVillageData.initialize();
         TaigaVillageData.initialize();
-        StructurePoolBasedGenerator.addPieces(villageFeatureConfig.startPool, villageFeatureConfig.size, Piece::new, chunkGenerator, structureManager, blockPos, list, chunkRandom);
+        StructurePoolBasedGenerator.addPieces(config.startPool, config.size, Piece::new, chunkGenerator, structureManager, pos, pieces, random);
     }
 
     public static class Piece

@@ -36,17 +36,17 @@ public class ChunkOcclusionDataBuilder {
     });
     private int openCount = 4096;
 
-    public void markClosed(BlockPos blockPos) {
-        this.closed.set(ChunkOcclusionDataBuilder.pack(blockPos), true);
+    public void markClosed(BlockPos pos) {
+        this.closed.set(ChunkOcclusionDataBuilder.pack(pos), true);
         --this.openCount;
     }
 
-    private static int pack(BlockPos blockPos) {
-        return ChunkOcclusionDataBuilder.pack(blockPos.getX() & 0xF, blockPos.getY() & 0xF, blockPos.getZ() & 0xF);
+    private static int pack(BlockPos pos) {
+        return ChunkOcclusionDataBuilder.pack(pos.getX() & 0xF, pos.getY() & 0xF, pos.getZ() & 0xF);
     }
 
-    private static int pack(int i, int j, int k) {
-        return i << 0 | j << 8 | k << 4;
+    private static int pack(int x, int y, int z) {
+        return x << 0 | y << 8 | z << 4;
     }
 
     public ChunkOcclusionData build() {
@@ -64,86 +64,86 @@ public class ChunkOcclusionDataBuilder {
         return chunkOcclusionData;
     }
 
-    public Set<Direction> getOpenFaces(BlockPos blockPos) {
-        return this.getOpenFaces(ChunkOcclusionDataBuilder.pack(blockPos));
+    public Set<Direction> getOpenFaces(BlockPos pos) {
+        return this.getOpenFaces(ChunkOcclusionDataBuilder.pack(pos));
     }
 
-    private Set<Direction> getOpenFaces(int i) {
+    private Set<Direction> getOpenFaces(int pos) {
         EnumSet<Direction> set = EnumSet.noneOf(Direction.class);
         IntArrayFIFOQueue intPriorityQueue = new IntArrayFIFOQueue();
-        intPriorityQueue.enqueue(i);
-        this.closed.set(i, true);
+        intPriorityQueue.enqueue(pos);
+        this.closed.set(pos, true);
         while (!intPriorityQueue.isEmpty()) {
-            int j = intPriorityQueue.dequeueInt();
-            this.addEdgeFaces(j, set);
+            int i = intPriorityQueue.dequeueInt();
+            this.addEdgeFaces(i, set);
             for (Direction direction : DIRECTIONS) {
-                int k = this.offset(j, direction);
-                if (k < 0 || this.closed.get(k)) continue;
-                this.closed.set(k, true);
-                intPriorityQueue.enqueue(k);
+                int j = this.offset(i, direction);
+                if (j < 0 || this.closed.get(j)) continue;
+                this.closed.set(j, true);
+                intPriorityQueue.enqueue(j);
             }
         }
         return set;
     }
 
-    private void addEdgeFaces(int i, Set<Direction> set) {
-        int j = i >> 0 & 0xF;
+    private void addEdgeFaces(int pos, Set<Direction> openFaces) {
+        int i = pos >> 0 & 0xF;
+        if (i == 0) {
+            openFaces.add(Direction.WEST);
+        } else if (i == 15) {
+            openFaces.add(Direction.EAST);
+        }
+        int j = pos >> 8 & 0xF;
         if (j == 0) {
-            set.add(Direction.WEST);
+            openFaces.add(Direction.DOWN);
         } else if (j == 15) {
-            set.add(Direction.EAST);
+            openFaces.add(Direction.UP);
         }
-        int k = i >> 8 & 0xF;
+        int k = pos >> 4 & 0xF;
         if (k == 0) {
-            set.add(Direction.DOWN);
+            openFaces.add(Direction.NORTH);
         } else if (k == 15) {
-            set.add(Direction.UP);
-        }
-        int l = i >> 4 & 0xF;
-        if (l == 0) {
-            set.add(Direction.NORTH);
-        } else if (l == 15) {
-            set.add(Direction.SOUTH);
+            openFaces.add(Direction.SOUTH);
         }
     }
 
-    private int offset(int i, Direction direction) {
+    private int offset(int pos, Direction direction) {
         switch (direction) {
             case DOWN: {
-                if ((i >> 8 & 0xF) == 0) {
+                if ((pos >> 8 & 0xF) == 0) {
                     return -1;
                 }
-                return i - STEP_Y;
+                return pos - STEP_Y;
             }
             case UP: {
-                if ((i >> 8 & 0xF) == 15) {
+                if ((pos >> 8 & 0xF) == 15) {
                     return -1;
                 }
-                return i + STEP_Y;
+                return pos + STEP_Y;
             }
             case NORTH: {
-                if ((i >> 4 & 0xF) == 0) {
+                if ((pos >> 4 & 0xF) == 0) {
                     return -1;
                 }
-                return i - STEP_Z;
+                return pos - STEP_Z;
             }
             case SOUTH: {
-                if ((i >> 4 & 0xF) == 15) {
+                if ((pos >> 4 & 0xF) == 15) {
                     return -1;
                 }
-                return i + STEP_Z;
+                return pos + STEP_Z;
             }
             case WEST: {
-                if ((i >> 0 & 0xF) == 0) {
+                if ((pos >> 0 & 0xF) == 0) {
                     return -1;
                 }
-                return i - STEP_X;
+                return pos - STEP_X;
             }
             case EAST: {
-                if ((i >> 0 & 0xF) == 15) {
+                if ((pos >> 0 & 0xF) == 15) {
                     return -1;
                 }
-                return i + STEP_X;
+                return pos + STEP_X;
             }
         }
         return -1;

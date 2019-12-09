@@ -40,59 +40,59 @@ implements Projectile {
     private Entity field_7637;
     private int field_7638;
 
-    protected ThrownEntity(EntityType<? extends ThrownEntity> entityType, World world) {
-        super(entityType, world);
+    protected ThrownEntity(EntityType<? extends ThrownEntity> type, World world) {
+        super(type, world);
     }
 
-    protected ThrownEntity(EntityType<? extends ThrownEntity> entityType, double d, double e, double f, World world) {
-        this(entityType, world);
-        this.setPosition(d, e, f);
+    protected ThrownEntity(EntityType<? extends ThrownEntity> type, double x, double y, double z, World world) {
+        this(type, world);
+        this.setPosition(x, y, z);
     }
 
-    protected ThrownEntity(EntityType<? extends ThrownEntity> entityType, LivingEntity livingEntity, World world) {
-        this(entityType, livingEntity.getX(), livingEntity.getEyeY() - (double)0.1f, livingEntity.getZ(), world);
-        this.owner = livingEntity;
-        this.ownerUuid = livingEntity.getUuid();
+    protected ThrownEntity(EntityType<? extends ThrownEntity> type, LivingEntity owner, World world) {
+        this(type, owner.getX(), owner.getEyeY() - (double)0.1f, owner.getZ(), world);
+        this.owner = owner;
+        this.ownerUuid = owner.getUuid();
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean shouldRender(double d) {
-        double e = this.getBoundingBox().getAverageSideLength() * 4.0;
-        if (Double.isNaN(e)) {
-            e = 4.0;
+    public boolean shouldRender(double distance) {
+        double d = this.getBoundingBox().getAverageSideLength() * 4.0;
+        if (Double.isNaN(d)) {
+            d = 4.0;
         }
-        return d < (e *= 64.0) * e;
+        return distance < (d *= 64.0) * d;
     }
 
-    public void setProperties(Entity entity, float f, float g, float h, float i, float j) {
-        float k = -MathHelper.sin(g * ((float)Math.PI / 180)) * MathHelper.cos(f * ((float)Math.PI / 180));
-        float l = -MathHelper.sin((f + h) * ((float)Math.PI / 180));
-        float m = MathHelper.cos(g * ((float)Math.PI / 180)) * MathHelper.cos(f * ((float)Math.PI / 180));
-        this.setVelocity(k, l, m, i, j);
-        Vec3d vec3d = entity.getVelocity();
-        this.setVelocity(this.getVelocity().add(vec3d.x, entity.onGround ? 0.0 : vec3d.y, vec3d.z));
+    public void setProperties(Entity user, float pitch, float yaw, float f, float g, float h) {
+        float i = -MathHelper.sin(yaw * ((float)Math.PI / 180)) * MathHelper.cos(pitch * ((float)Math.PI / 180));
+        float j = -MathHelper.sin((pitch + f) * ((float)Math.PI / 180));
+        float k = MathHelper.cos(yaw * ((float)Math.PI / 180)) * MathHelper.cos(pitch * ((float)Math.PI / 180));
+        this.setVelocity(i, j, k, g, h);
+        Vec3d vec3d = user.getVelocity();
+        this.setVelocity(this.getVelocity().add(vec3d.x, user.onGround ? 0.0 : vec3d.y, vec3d.z));
     }
 
     @Override
-    public void setVelocity(double d, double e, double f, float g, float h) {
-        Vec3d vec3d = new Vec3d(d, e, f).normalize().add(this.random.nextGaussian() * (double)0.0075f * (double)h, this.random.nextGaussian() * (double)0.0075f * (double)h, this.random.nextGaussian() * (double)0.0075f * (double)h).multiply(g);
+    public void setVelocity(double x, double y, double z, float speed, float divergence) {
+        Vec3d vec3d = new Vec3d(x, y, z).normalize().add(this.random.nextGaussian() * (double)0.0075f * (double)divergence, this.random.nextGaussian() * (double)0.0075f * (double)divergence, this.random.nextGaussian() * (double)0.0075f * (double)divergence).multiply(speed);
         this.setVelocity(vec3d);
-        float i = MathHelper.sqrt(ThrownEntity.squaredHorizontalLength(vec3d));
+        float f = MathHelper.sqrt(ThrownEntity.squaredHorizontalLength(vec3d));
         this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875);
-        this.pitch = (float)(MathHelper.atan2(vec3d.y, i) * 57.2957763671875);
+        this.pitch = (float)(MathHelper.atan2(vec3d.y, f) * 57.2957763671875);
         this.prevYaw = this.yaw;
         this.prevPitch = this.pitch;
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void setVelocityClient(double d, double e, double f) {
-        this.setVelocity(d, e, f);
+    public void setVelocityClient(double x, double y, double z) {
+        this.setVelocity(x, y, z);
         if (this.prevPitch == 0.0f && this.prevYaw == 0.0f) {
-            float g = MathHelper.sqrt(d * d + f * f);
-            this.yaw = (float)(MathHelper.atan2(d, f) * 57.2957763671875);
-            this.pitch = (float)(MathHelper.atan2(e, g) * 57.2957763671875);
+            float f = MathHelper.sqrt(x * x + z * z);
+            this.yaw = (float)(MathHelper.atan2(x, z) * 57.2957763671875);
+            this.pitch = (float)(MathHelper.atan2(y, f) * 57.2957763671875);
             this.prevYaw = this.yaw;
             this.prevPitch = this.pitch;
         }
@@ -176,27 +176,27 @@ implements Projectile {
     protected abstract void onCollision(HitResult var1);
 
     @Override
-    public void writeCustomDataToTag(CompoundTag compoundTag) {
-        compoundTag.putInt("xTile", this.blockX);
-        compoundTag.putInt("yTile", this.blockY);
-        compoundTag.putInt("zTile", this.blockZ);
-        compoundTag.putByte("shake", (byte)this.shake);
-        compoundTag.putBoolean("inGround", this.inGround);
+    public void writeCustomDataToTag(CompoundTag tag) {
+        tag.putInt("xTile", this.blockX);
+        tag.putInt("yTile", this.blockY);
+        tag.putInt("zTile", this.blockZ);
+        tag.putByte("shake", (byte)this.shake);
+        tag.putBoolean("inGround", this.inGround);
         if (this.ownerUuid != null) {
-            compoundTag.put("owner", NbtHelper.fromUuid(this.ownerUuid));
+            tag.put("owner", NbtHelper.fromUuid(this.ownerUuid));
         }
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag compoundTag) {
-        this.blockX = compoundTag.getInt("xTile");
-        this.blockY = compoundTag.getInt("yTile");
-        this.blockZ = compoundTag.getInt("zTile");
-        this.shake = compoundTag.getByte("shake") & 0xFF;
-        this.inGround = compoundTag.getBoolean("inGround");
+    public void readCustomDataFromTag(CompoundTag tag) {
+        this.blockX = tag.getInt("xTile");
+        this.blockY = tag.getInt("yTile");
+        this.blockZ = tag.getInt("zTile");
+        this.shake = tag.getByte("shake") & 0xFF;
+        this.inGround = tag.getBoolean("inGround");
         this.owner = null;
-        if (compoundTag.contains("owner", 10)) {
-            this.ownerUuid = NbtHelper.toUuid(compoundTag.getCompound("owner"));
+        if (tag.contains("owner", 10)) {
+            this.ownerUuid = NbtHelper.toUuid(tag.getCompound("owner"));
         }
     }
 

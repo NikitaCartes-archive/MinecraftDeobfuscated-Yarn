@@ -24,8 +24,8 @@ import net.minecraft.world.gen.feature.StructureFeature;
 
 public class OceanRuinFeature
 extends AbstractTempleFeature<OceanRuinFeatureConfig> {
-    public OceanRuinFeature(Function<Dynamic<?>, ? extends OceanRuinFeatureConfig> function) {
-        super(function);
+    public OceanRuinFeature(Function<Dynamic<?>, ? extends OceanRuinFeatureConfig> configFactory) {
+        super(configFactory);
     }
 
     @Override
@@ -73,8 +73,8 @@ extends AbstractTempleFeature<OceanRuinFeatureConfig> {
             return this.name;
         }
 
-        public static BiomeType byName(String string) {
-            return nameMap.get(string);
+        public static BiomeType byName(String name) {
+            return nameMap.get(name);
         }
 
         static {
@@ -84,16 +84,16 @@ extends AbstractTempleFeature<OceanRuinFeatureConfig> {
 
     public static class Start
     extends StructureStart {
-        public Start(StructureFeature<?> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
-            super(structureFeature, i, j, blockBox, k, l);
+        public Start(StructureFeature<?> structureFeature, int chunkX, int chunkZ, BlockBox blockBox, int i, long l) {
+            super(structureFeature, chunkX, chunkZ, blockBox, i, l);
         }
 
         @Override
-        public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
+        public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
             OceanRuinFeatureConfig oceanRuinFeatureConfig = chunkGenerator.getStructureConfig(biome, Feature.OCEAN_RUIN);
-            int k = i * 16;
-            int l = j * 16;
-            BlockPos blockPos = new BlockPos(k, 90, l);
+            int i = x * 16;
+            int j = z * 16;
+            BlockPos blockPos = new BlockPos(i, 90, j);
             BlockRotation blockRotation = BlockRotation.values()[this.random.nextInt(BlockRotation.values().length)];
             OceanRuinGenerator.addPieces(structureManager, blockPos, blockRotation, this.children, this.random, oceanRuinFeatureConfig);
             this.setBoundingBoxFromChildren();

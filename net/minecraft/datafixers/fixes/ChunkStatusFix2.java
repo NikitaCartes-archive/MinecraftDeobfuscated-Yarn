@@ -20,8 +20,8 @@ public class ChunkStatusFix2
 extends DataFix {
     private static final Map<String, String> statusMap = ImmutableMap.builder().put("structure_references", "empty").put("biomes", "empty").put("base", "surface").put("carved", "carvers").put("liquid_carved", "liquid_carvers").put("decorated", "features").put("lighted", "light").put("mobs_spawned", "spawn").put("finalized", "heightmaps").put("fullchunk", "full").build();
 
-    public ChunkStatusFix2(Schema schema, boolean bl) {
-        super(schema, bl);
+    public ChunkStatusFix2(Schema outputSchema, boolean changesType) {
+        super(outputSchema, changesType);
     }
 
     @Override

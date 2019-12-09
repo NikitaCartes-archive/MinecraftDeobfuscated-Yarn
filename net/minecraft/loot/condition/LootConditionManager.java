@@ -39,8 +39,8 @@ extends JsonDataLoader {
     }
 
     @Nullable
-    public LootCondition get(Identifier identifier) {
-        return this.conditions.get(identifier);
+    public LootCondition get(Identifier id) {
+        return this.conditions.get(id);
     }
 
     @Override

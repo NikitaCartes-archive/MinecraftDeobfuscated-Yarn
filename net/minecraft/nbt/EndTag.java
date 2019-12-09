@@ -38,8 +38,8 @@ implements Tag {
         }
 
         @Override
-        public /* synthetic */ Tag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-            return this.read(dataInput, i, positionTracker);
+        public /* synthetic */ Tag read(DataInput input, int depth, PositionTracker tracker) throws IOException {
+            return this.read(input, depth, tracker);
         }
     };
     public static final EndTag INSTANCE = new EndTag();
@@ -48,7 +48,7 @@ implements Tag {
     }
 
     @Override
-    public void write(DataOutput dataOutput) throws IOException {
+    public void write(DataOutput output) throws IOException {
     }
 
     @Override
@@ -71,7 +71,7 @@ implements Tag {
     }
 
     @Override
-    public Text toText(String string, int i) {
+    public Text toText(String indent, int depth) {
         return new LiteralText("");
     }
 

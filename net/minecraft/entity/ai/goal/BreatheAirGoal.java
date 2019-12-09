@@ -20,8 +20,8 @@ public class BreatheAirGoal
 extends Goal {
     private final MobEntityWithAi mob;
 
-    public BreatheAirGoal(MobEntityWithAi mobEntityWithAi) {
-        this.mob = mobEntityWithAi;
+    public BreatheAirGoal(MobEntityWithAi mob) {
+        this.mob = mob;
         this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
     }
 
@@ -66,9 +66,9 @@ extends Goal {
         this.mob.move(MovementType.SELF, this.mob.getVelocity());
     }
 
-    private boolean isAirPos(WorldView worldView, BlockPos blockPos) {
-        BlockState blockState = worldView.getBlockState(blockPos);
-        return (worldView.getFluidState(blockPos).isEmpty() || blockState.getBlock() == Blocks.BUBBLE_COLUMN) && blockState.canPlaceAtSide(worldView, blockPos, BlockPlacementEnvironment.LAND);
+    private boolean isAirPos(WorldView worldView, BlockPos pos) {
+        BlockState blockState = worldView.getBlockState(pos);
+        return (worldView.getFluidState(pos).isEmpty() || blockState.getBlock() == Blocks.BUBBLE_COLUMN) && blockState.canPlaceAtSide(worldView, pos, BlockPlacementEnvironment.LAND);
     }
 }
 

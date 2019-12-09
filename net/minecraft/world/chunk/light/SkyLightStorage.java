@@ -34,45 +34,45 @@ extends LightStorage<Data> {
     }
 
     @Override
-    protected int getLight(long l) {
-        long m = ChunkSectionPos.fromGlobalPos(l);
-        int i = ChunkSectionPos.getY(m);
+    protected int getLight(long blockPos) {
+        long l = ChunkSectionPos.fromGlobalPos(blockPos);
+        int i = ChunkSectionPos.getY(l);
         Data data = (Data)this.uncachedLightArrays;
-        int j = data.topArraySectionY.get(ChunkSectionPos.withZeroZ(m));
+        int j = data.topArraySectionY.get(ChunkSectionPos.withZeroZ(l));
         if (j == data.defaultTopArraySectionY || i >= j) {
             return 15;
         }
-        ChunkNibbleArray chunkNibbleArray = this.getLightArray(data, m);
+        ChunkNibbleArray chunkNibbleArray = this.getLightArray(data, l);
         if (chunkNibbleArray == null) {
-            l = BlockPos.removeChunkSectionLocalY(l);
+            blockPos = BlockPos.removeChunkSectionLocalY(blockPos);
             while (chunkNibbleArray == null) {
-                m = ChunkSectionPos.offset(m, Direction.UP);
+                l = ChunkSectionPos.offset(l, Direction.UP);
                 if (++i >= j) {
                     return 15;
                 }
-                l = BlockPos.add(l, 0, 16, 0);
-                chunkNibbleArray = this.getLightArray(data, m);
+                blockPos = BlockPos.add(blockPos, 0, 16, 0);
+                chunkNibbleArray = this.getLightArray(data, l);
             }
         }
-        return chunkNibbleArray.get(ChunkSectionPos.getLocalCoord(BlockPos.unpackLongX(l)), ChunkSectionPos.getLocalCoord(BlockPos.unpackLongY(l)), ChunkSectionPos.getLocalCoord(BlockPos.unpackLongZ(l)));
+        return chunkNibbleArray.get(ChunkSectionPos.getLocalCoord(BlockPos.unpackLongX(blockPos)), ChunkSectionPos.getLocalCoord(BlockPos.unpackLongY(blockPos)), ChunkSectionPos.getLocalCoord(BlockPos.unpackLongZ(blockPos)));
     }
 
     @Override
-    protected void onLightArrayCreated(long l) {
-        int i = ChunkSectionPos.getY(l);
+    protected void onLightArrayCreated(long blockPos) {
+        int i = ChunkSectionPos.getY(blockPos);
         if (((Data)this.lightArrays).defaultTopArraySectionY > i) {
             ((Data)this.lightArrays).defaultTopArraySectionY = i;
             ((Data)this.lightArrays).topArraySectionY.defaultReturnValue(((Data)this.lightArrays).defaultTopArraySectionY);
         }
-        long m = ChunkSectionPos.withZeroZ(l);
-        int j = ((Data)this.lightArrays).topArraySectionY.get(m);
+        long l = ChunkSectionPos.withZeroZ(blockPos);
+        int j = ((Data)this.lightArrays).topArraySectionY.get(l);
         if (j < i + 1) {
-            ((Data)this.lightArrays).topArraySectionY.put(m, i + 1);
-            if (this.lightEnabled.contains(m)) {
-                this.method_20810(l);
+            ((Data)this.lightArrays).topArraySectionY.put(l, i + 1);
+            if (this.lightEnabled.contains(l)) {
+                this.method_20810(blockPos);
                 if (j > ((Data)this.lightArrays).defaultTopArraySectionY) {
-                    long n = ChunkSectionPos.asLong(ChunkSectionPos.getX(l), j - 1, ChunkSectionPos.getZ(l));
-                    this.method_20809(n);
+                    long m = ChunkSectionPos.asLong(ChunkSectionPos.getX(blockPos), j - 1, ChunkSectionPos.getZ(blockPos));
+                    this.method_20809(m);
                 }
                 this.checkForUpdates();
             }
@@ -142,31 +142,31 @@ extends LightStorage<Data> {
     }
 
     @Override
-    protected ChunkNibbleArray createLightArray(long l) {
+    protected ChunkNibbleArray createLightArray(long pos) {
         ChunkNibbleArray chunkNibbleArray2;
-        ChunkNibbleArray chunkNibbleArray = (ChunkNibbleArray)this.lightArraysToAdd.get(l);
+        ChunkNibbleArray chunkNibbleArray = (ChunkNibbleArray)this.lightArraysToAdd.get(pos);
         if (chunkNibbleArray != null) {
             return chunkNibbleArray;
         }
-        long m = ChunkSectionPos.offset(l, Direction.UP);
-        int i = ((Data)this.lightArrays).topArraySectionY.get(ChunkSectionPos.withZeroZ(l));
-        if (i == ((Data)this.lightArrays).defaultTopArraySectionY || ChunkSectionPos.getY(m) >= i) {
+        long l = ChunkSectionPos.offset(pos, Direction.UP);
+        int i = ((Data)this.lightArrays).topArraySectionY.get(ChunkSectionPos.withZeroZ(pos));
+        if (i == ((Data)this.lightArrays).defaultTopArraySectionY || ChunkSectionPos.getY(l) >= i) {
             return new ChunkNibbleArray();
         }
-        while ((chunkNibbleArray2 = this.getLightArray(m, true)) == null) {
-            m = ChunkSectionPos.offset(m, Direction.UP);
+        while ((chunkNibbleArray2 = this.getLightArray(l, true)) == null) {
+            l = ChunkSectionPos.offset(l, Direction.UP);
         }
         return new ChunkNibbleArray(new ColumnChunkNibbleArray(chunkNibbleArray2, 0).asByteArray());
     }
 
     @Override
-    protected void updateLightArrays(ChunkLightProvider<Data, ?> chunkLightProvider, boolean bl, boolean bl2) {
+    protected void updateLightArrays(ChunkLightProvider<Data, ?> lightProvider, boolean doSkylight, boolean skipEdgeLightPropagation) {
         int j;
         int i;
         long l;
         LongIterator longIterator;
-        super.updateLightArrays(chunkLightProvider, bl, bl2);
-        if (!bl) {
+        super.updateLightArrays(lightProvider, doSkylight, skipEdgeLightPropagation);
+        if (!doSkylight) {
             return;
         }
         if (!this.pendingSkylightUpdates.isEmpty()) {
@@ -178,7 +178,7 @@ extends LightStorage<Data> {
                 if (i == 2 || this.field_15816.contains(l) || !this.field_15820.add(l)) continue;
                 if (i == 1) {
                     long n;
-                    this.removeChunkData(chunkLightProvider, l);
+                    this.removeChunkData(lightProvider, l);
                     if (this.field_15802.add(l)) {
                         ((Data)this.lightArrays).replaceWithCopy(l);
                     }
@@ -214,7 +214,7 @@ extends LightStorage<Data> {
                                         r = BlockPos.asLong(j + 16, k + o, m + p);
                                     }
                                 }
-                                chunkLightProvider.updateLevel(q, r, chunkLightProvider.getPropagatedLevel(q, r, 0), true);
+                                lightProvider.updateLevel(q, r, lightProvider.getPropagatedLevel(q, r, 0), true);
                             }
                         }
                     }
@@ -222,7 +222,7 @@ extends LightStorage<Data> {
                         for (int t = 0; t < 16; ++t) {
                             long u = BlockPos.asLong(ChunkSectionPos.getWorldCoord(ChunkSectionPos.getX(l)) + s, ChunkSectionPos.getWorldCoord(ChunkSectionPos.getY(l)), ChunkSectionPos.getWorldCoord(ChunkSectionPos.getZ(l)) + t);
                             n = BlockPos.asLong(ChunkSectionPos.getWorldCoord(ChunkSectionPos.getX(l)) + s, ChunkSectionPos.getWorldCoord(ChunkSectionPos.getY(l)) - 1, ChunkSectionPos.getWorldCoord(ChunkSectionPos.getZ(l)) + t);
-                            chunkLightProvider.updateLevel(u, n, chunkLightProvider.getPropagatedLevel(u, n, 0), true);
+                            lightProvider.updateLevel(u, n, lightProvider.getPropagatedLevel(u, n, 0), true);
                         }
                     }
                     continue;
@@ -230,7 +230,7 @@ extends LightStorage<Data> {
                 for (j = 0; j < 16; ++j) {
                     for (k = 0; k < 16; ++k) {
                         long v = BlockPos.asLong(ChunkSectionPos.getWorldCoord(ChunkSectionPos.getX(l)) + j, ChunkSectionPos.getWorldCoord(ChunkSectionPos.getY(l)) + 16 - 1, ChunkSectionPos.getWorldCoord(ChunkSectionPos.getZ(l)) + k);
-                        chunkLightProvider.updateLevel(Long.MAX_VALUE, v, 0, true);
+                        lightProvider.updateLevel(Long.MAX_VALUE, v, 0, true);
                     }
                 }
             }
@@ -244,7 +244,7 @@ extends LightStorage<Data> {
                 for (i = 0; i < 16; ++i) {
                     for (j = 0; j < 16; ++j) {
                         long w = BlockPos.asLong(ChunkSectionPos.getWorldCoord(ChunkSectionPos.getX(l)) + i, ChunkSectionPos.getWorldCoord(ChunkSectionPos.getY(l)) + 16 - 1, ChunkSectionPos.getWorldCoord(ChunkSectionPos.getZ(l)) + j);
-                        chunkLightProvider.updateLevel(Long.MAX_VALUE, w, 15, false);
+                        lightProvider.updateLevel(Long.MAX_VALUE, w, 15, false);
                     }
                 }
             }
@@ -253,8 +253,8 @@ extends LightStorage<Data> {
         this.hasSkyLightUpdates = false;
     }
 
-    protected boolean isAboveMinimumHeight(int i) {
-        return i >= ((Data)this.lightArrays).defaultTopArraySectionY;
+    protected boolean isAboveMinimumHeight(int blockY) {
+        return blockY >= ((Data)this.lightArrays).defaultTopArraySectionY;
     }
 
     protected boolean method_15565(long l) {
@@ -271,15 +271,15 @@ extends LightStorage<Data> {
         return ChunkSectionPos.getWorldCoord(j) == i + 16;
     }
 
-    protected boolean isAboveTopmostLightArray(long l) {
-        long m = ChunkSectionPos.withZeroZ(l);
-        int i = ((Data)this.lightArrays).topArraySectionY.get(m);
-        return i == ((Data)this.lightArrays).defaultTopArraySectionY || ChunkSectionPos.getY(l) >= i;
+    protected boolean isAboveTopmostLightArray(long pos) {
+        long l = ChunkSectionPos.withZeroZ(pos);
+        int i = ((Data)this.lightArrays).topArraySectionY.get(l);
+        return i == ((Data)this.lightArrays).defaultTopArraySectionY || ChunkSectionPos.getY(pos) >= i;
     }
 
-    protected boolean isLightEnabled(long l) {
-        long m = ChunkSectionPos.withZeroZ(l);
-        return this.lightEnabled.contains(m);
+    protected boolean isLightEnabled(long sectionPos) {
+        long l = ChunkSectionPos.withZeroZ(sectionPos);
+        return this.lightEnabled.contains(l);
     }
 
     public static final class Data

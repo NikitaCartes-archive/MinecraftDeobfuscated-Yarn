@@ -60,8 +60,8 @@ public interface RecipeSerializer<T extends Recipe<?>> {
 
     public void write(PacketByteBuf var1, T var2);
 
-    public static <S extends RecipeSerializer<T>, T extends Recipe<?>> S register(String string, S recipeSerializer) {
-        return (S)Registry.register(Registry.RECIPE_SERIALIZER, string, recipeSerializer);
+    public static <S extends RecipeSerializer<T>, T extends Recipe<?>> S register(String id, S serializer) {
+        return (S)Registry.register(Registry.RECIPE_SERIALIZER, id, serializer);
     }
 }
 

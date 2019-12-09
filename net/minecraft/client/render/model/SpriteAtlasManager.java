@@ -23,12 +23,12 @@ implements AutoCloseable {
         this.atlases = collection.stream().collect(Collectors.toMap(SpriteAtlasTexture::getId, Function.identity()));
     }
 
-    public SpriteAtlasTexture getAtlas(Identifier identifier) {
-        return this.atlases.get(identifier);
+    public SpriteAtlasTexture getAtlas(Identifier id) {
+        return this.atlases.get(id);
     }
 
-    public Sprite getSprite(SpriteIdentifier spriteIdentifier) {
-        return this.atlases.get(spriteIdentifier.getAtlasId()).getSprite(spriteIdentifier.getTextureId());
+    public Sprite getSprite(SpriteIdentifier id) {
+        return this.atlases.get(id.getAtlasId()).getSprite(id.getTextureId());
     }
 
     @Override

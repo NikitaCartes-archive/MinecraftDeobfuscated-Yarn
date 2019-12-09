@@ -46,25 +46,25 @@ public class LootPool {
     private final LootTableRange rollsRange;
     private final UniformLootTableRange bonusRollsRange;
 
-    private LootPool(LootEntry[] lootEntrys, LootCondition[] lootConditions, LootFunction[] lootFunctions, LootTableRange lootTableRange, UniformLootTableRange uniformLootTableRange) {
-        this.entries = lootEntrys;
-        this.conditions = lootConditions;
-        this.predicate = LootConditions.joinAnd(lootConditions);
-        this.functions = lootFunctions;
-        this.javaFunctions = LootFunctions.join(lootFunctions);
-        this.rollsRange = lootTableRange;
-        this.bonusRollsRange = uniformLootTableRange;
+    private LootPool(LootEntry[] entries, LootCondition[] conditions, LootFunction[] functions, LootTableRange rollsRange, UniformLootTableRange bonusRollsRange) {
+        this.entries = entries;
+        this.conditions = conditions;
+        this.predicate = LootConditions.joinAnd(conditions);
+        this.functions = functions;
+        this.javaFunctions = LootFunctions.join(functions);
+        this.rollsRange = rollsRange;
+        this.bonusRollsRange = bonusRollsRange;
     }
 
-    private void supplyOnce(Consumer<ItemStack> consumer, LootContext lootContext) {
-        Random random = lootContext.getRandom();
+    private void supplyOnce(Consumer<ItemStack> itemDropper, LootContext context) {
+        Random random = context.getRandom();
         ArrayList<LootChoice> list = Lists.newArrayList();
         MutableInt mutableInt = new MutableInt();
         for (LootEntry lootEntry : this.entries) {
-            lootEntry.expand(lootContext, lootChoice -> {
-                int i = lootChoice.getWeight(lootContext.getLuck());
+            lootEntry.expand(context, choice -> {
+                int i = choice.getWeight(context.getLuck());
                 if (i > 0) {
-                    list.add(lootChoice);
+                    list.add(choice);
                     mutableInt.add(i);
                 }
             });
@@ -74,26 +74,26 @@ public class LootPool {
             return;
         }
         if (i == 1) {
-            ((LootChoice)list.get(0)).drop(consumer, lootContext);
+            ((LootChoice)list.get(0)).drop(itemDropper, context);
             return;
         }
         int j = random.nextInt(mutableInt.intValue());
-        for (LootChoice lootChoice2 : list) {
-            if ((j -= lootChoice2.getWeight(lootContext.getLuck())) >= 0) continue;
-            lootChoice2.drop(consumer, lootContext);
+        for (LootChoice lootChoice : list) {
+            if ((j -= lootChoice.getWeight(context.getLuck())) >= 0) continue;
+            lootChoice.drop(itemDropper, context);
             return;
         }
     }
 
-    public void drop(Consumer<ItemStack> consumer, LootContext lootContext) {
-        if (!this.predicate.test(lootContext)) {
+    public void drop(Consumer<ItemStack> itemDropper, LootContext context) {
+        if (!this.predicate.test(context)) {
             return;
         }
-        Consumer<ItemStack> consumer2 = LootFunction.apply(this.javaFunctions, consumer, lootContext);
-        Random random = lootContext.getRandom();
-        int i = this.rollsRange.next(random) + MathHelper.floor(this.bonusRollsRange.nextFloat(random) * lootContext.getLuck());
+        Consumer<ItemStack> consumer = LootFunction.apply(this.javaFunctions, itemDropper, context);
+        Random random = context.getRandom();
+        int i = this.rollsRange.next(random) + MathHelper.floor(this.bonusRollsRange.nextFloat(random) * context.getLuck());
         for (int j = 0; j < i; ++j) {
-            this.supplyOnce(consumer2, lootContext);
+            this.supplyOnce(consumer, context);
         }
     }
 
@@ -146,13 +146,13 @@ public class LootPool {
         }
 
         @Override
-        public /* synthetic */ JsonElement serialize(Object object, Type type, JsonSerializationContext jsonSerializationContext) {
-            return this.serialize((LootPool)object, type, jsonSerializationContext);
+        public /* synthetic */ JsonElement serialize(Object entry, Type unused, JsonSerializationContext context) {
+            return this.serialize((LootPool)entry, unused, context);
         }
 
         @Override
-        public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.deserialize(jsonElement, type, jsonDeserializationContext);
+        public /* synthetic */ Object deserialize(JsonElement json, Type unused, JsonDeserializationContext context) throws JsonParseException {
+            return this.deserialize(json, unused, context);
         }
     }
 
@@ -165,8 +165,8 @@ public class LootPool {
         private LootTableRange rollsRange = new UniformLootTableRange(1.0f);
         private UniformLootTableRange bonusRollsRange = new UniformLootTableRange(0.0f, 0.0f);
 
-        public Builder withRolls(LootTableRange lootTableRange) {
-            this.rollsRange = lootTableRange;
+        public Builder withRolls(LootTableRange rollsRange) {
+            this.rollsRange = rollsRange;
             return this;
         }
 
@@ -175,8 +175,8 @@ public class LootPool {
             return this;
         }
 
-        public Builder withEntry(LootEntry.Builder<?> builder) {
-            this.entries.add(builder.build());
+        public Builder withEntry(LootEntry.Builder<?> entryBuilder) {
+            this.entries.add(entryBuilder.build());
             return this;
         }
 
@@ -205,8 +205,8 @@ public class LootPool {
         }
 
         @Override
-        public /* synthetic */ Object withFunction(LootFunction.Builder builder) {
-            return this.withFunction(builder);
+        public /* synthetic */ Object withFunction(LootFunction.Builder lootFunctionBuilder) {
+            return this.withFunction(lootFunctionBuilder);
         }
 
         @Override

@@ -19,19 +19,19 @@ extends NoRenderParticle {
     private final int maxEmitterAge;
     private final ParticleEffect parameters;
 
-    public EmitterParticle(World world, Entity entity, ParticleEffect particleEffect) {
-        this(world, entity, particleEffect, 3);
+    public EmitterParticle(World world, Entity entity, ParticleEffect parameters) {
+        this(world, entity, parameters, 3);
     }
 
     public EmitterParticle(World world, Entity entity, ParticleEffect particleEffect, int i) {
         this(world, entity, particleEffect, i, entity.getVelocity());
     }
 
-    private EmitterParticle(World world, Entity entity, ParticleEffect particleEffect, int i, Vec3d vec3d) {
+    private EmitterParticle(World world, Entity entity, ParticleEffect parameters, int maxEmitterAge, Vec3d vec3d) {
         super(world, entity.getX(), entity.getBodyY(0.5), entity.getZ(), vec3d.x, vec3d.y, vec3d.z);
         this.entity = entity;
-        this.maxEmitterAge = i;
-        this.parameters = particleEffect;
+        this.maxEmitterAge = maxEmitterAge;
+        this.parameters = parameters;
         this.tick();
     }
 

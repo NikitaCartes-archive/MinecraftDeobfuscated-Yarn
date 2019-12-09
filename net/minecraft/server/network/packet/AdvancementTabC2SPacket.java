@@ -22,9 +22,9 @@ implements Packet<ServerPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public AdvancementTabC2SPacket(Action action, @Nullable Identifier identifier) {
+    public AdvancementTabC2SPacket(Action action, @Nullable Identifier tab) {
         this.action = action;
-        this.tabToOpen = identifier;
+        this.tabToOpen = tab;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -38,18 +38,18 @@ implements Packet<ServerPlayPacketListener> {
     }
 
     @Override
-    public void read(PacketByteBuf packetByteBuf) throws IOException {
-        this.action = packetByteBuf.readEnumConstant(Action.class);
+    public void read(PacketByteBuf buf) throws IOException {
+        this.action = buf.readEnumConstant(Action.class);
         if (this.action == Action.OPENED_TAB) {
-            this.tabToOpen = packetByteBuf.readIdentifier();
+            this.tabToOpen = buf.readIdentifier();
         }
     }
 
     @Override
-    public void write(PacketByteBuf packetByteBuf) throws IOException {
-        packetByteBuf.writeEnumConstant(this.action);
+    public void write(PacketByteBuf buf) throws IOException {
+        buf.writeEnumConstant(this.action);
         if (this.action == Action.OPENED_TAB) {
-            packetByteBuf.writeIdentifier(this.tabToOpen);
+            buf.writeIdentifier(this.tabToOpen);
         }
     }
 

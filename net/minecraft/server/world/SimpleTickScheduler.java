@@ -33,17 +33,17 @@ implements TickScheduler<T> {
     }
 
     @Override
-    public boolean isScheduled(BlockPos blockPos, T object) {
+    public boolean isScheduled(BlockPos pos, T object) {
         return false;
     }
 
     @Override
-    public void schedule(BlockPos blockPos, T object, int i, TickPriority tickPriority) {
-        this.scheduledTicks.add(new ScheduledTick<T>(blockPos, object, i, tickPriority));
+    public void schedule(BlockPos pos, T object, int delay, TickPriority priority) {
+        this.scheduledTicks.add(new ScheduledTick<T>(pos, object, delay, priority));
     }
 
     @Override
-    public boolean isTicking(BlockPos blockPos, T object) {
+    public boolean isTicking(BlockPos pos, T object) {
         return false;
     }
 
@@ -56,14 +56,14 @@ implements TickScheduler<T> {
         return this.scheduledTicks.stream();
     }
 
-    public ListTag toNbt(long l) {
-        return ServerTickScheduler.serializeScheduledTicks(this.identifierProvider, this.scheduledTicks, l);
+    public ListTag toNbt(long time) {
+        return ServerTickScheduler.serializeScheduledTicks(this.identifierProvider, this.scheduledTicks, time);
     }
 
-    public static <T> SimpleTickScheduler<T> fromNbt(ListTag listTag, Function<T, Identifier> function, Function<Identifier, T> function2) {
+    public static <T> SimpleTickScheduler<T> fromNbt(ListTag ticks, Function<T, Identifier> function, Function<Identifier, T> function2) {
         HashSet<ScheduledTick<T>> set = Sets.newHashSet();
-        for (int i = 0; i < listTag.size(); ++i) {
-            CompoundTag compoundTag = listTag.getCompound(i);
+        for (int i = 0; i < ticks.size(); ++i) {
+            CompoundTag compoundTag = ticks.getCompound(i);
             T object = function2.apply(new Identifier(compoundTag.getString("i")));
             if (object == null) continue;
             set.add(new ScheduledTick<T>(new BlockPos(compoundTag.getInt("x"), compoundTag.getInt("y"), compoundTag.getInt("z")), object, compoundTag.getInt("t"), TickPriority.byIndex(compoundTag.getInt("p"))));

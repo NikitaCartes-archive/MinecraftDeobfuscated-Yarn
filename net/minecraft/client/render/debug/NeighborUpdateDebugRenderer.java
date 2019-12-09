@@ -28,31 +28,31 @@ implements DebugRenderer.Renderer {
     private final MinecraftClient client;
     private final Map<Long, Map<BlockPos, Integer>> neighborUpdates = Maps.newTreeMap(Ordering.natural().reverse());
 
-    NeighborUpdateDebugRenderer(MinecraftClient minecraftClient) {
-        this.client = minecraftClient;
+    NeighborUpdateDebugRenderer(MinecraftClient client) {
+        this.client = client;
     }
 
-    public void addNeighborUpdate(long l, BlockPos blockPos) {
+    public void addNeighborUpdate(long time, BlockPos pos) {
         Integer integer;
-        Map<BlockPos, Integer> map = this.neighborUpdates.get(l);
+        Map<BlockPos, Integer> map = this.neighborUpdates.get(time);
         if (map == null) {
             map = Maps.newHashMap();
-            this.neighborUpdates.put(l, map);
+            this.neighborUpdates.put(time, map);
         }
-        if ((integer = map.get(blockPos)) == null) {
+        if ((integer = map.get(pos)) == null) {
             integer = 0;
         }
-        map.put(blockPos, integer + 1);
+        map.put(pos, integer + 1);
     }
 
     @Override
-    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f) {
+    public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
         long l = this.client.world.getTime();
         int i = 200;
-        double g = 0.0025;
+        double d = 0.0025;
         HashSet<BlockPos> set = Sets.newHashSet();
         HashMap<BlockPos, Integer> map = Maps.newHashMap();
-        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getLines());
+        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getLines());
         Iterator<Map.Entry<Long, Map<BlockPos, Integer>>> iterator = this.neighborUpdates.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<Long, Map<BlockPos, Integer>> entry = iterator.next();
@@ -67,7 +67,7 @@ implements DebugRenderer.Renderer {
                 BlockPos blockPos = entry2.getKey();
                 Integer integer = entry2.getValue();
                 if (!set.add(blockPos)) continue;
-                Box box = new Box(BlockPos.ORIGIN).expand(0.002).contract(0.0025 * (double)m).offset(blockPos.getX(), blockPos.getY(), blockPos.getZ()).offset(-d, -e, -f);
+                Box box = new Box(BlockPos.ORIGIN).expand(0.002).contract(0.0025 * (double)m).offset(blockPos.getX(), blockPos.getY(), blockPos.getZ()).offset(-cameraX, -cameraY, -cameraZ);
                 WorldRenderer.drawBox(vertexConsumer, box.x1, box.y1, box.z1, box.x2, box.y2, box.z2, 1.0f, 1.0f, 1.0f, 1.0f);
                 map.put(blockPos, integer);
             }

@@ -30,18 +30,18 @@ import org.jetbrains.annotations.Nullable;
 public class DebugRendererInfoManager {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public static void addGameTestMarker(ServerWorld serverWorld, BlockPos blockPos, String string, int i, int j) {
+    public static void addGameTestMarker(ServerWorld world, BlockPos pos, String message, int color, int duration) {
         PacketByteBuf packetByteBuf = new PacketByteBuf(Unpooled.buffer());
-        packetByteBuf.writeBlockPos(blockPos);
-        packetByteBuf.writeInt(i);
-        packetByteBuf.writeString(string);
-        packetByteBuf.writeInt(j);
-        DebugRendererInfoManager.method_22319(serverWorld, packetByteBuf, CustomPayloadS2CPacket.DEBUG_GAME_TEST_ADD_MARKER);
+        packetByteBuf.writeBlockPos(pos);
+        packetByteBuf.writeInt(color);
+        packetByteBuf.writeString(message);
+        packetByteBuf.writeInt(duration);
+        DebugRendererInfoManager.method_22319(world, packetByteBuf, CustomPayloadS2CPacket.DEBUG_GAME_TEST_ADD_MARKER);
     }
 
-    public static void clearGameTestMarkers(ServerWorld serverWorld) {
+    public static void clearGameTestMarkers(ServerWorld world) {
         PacketByteBuf packetByteBuf = new PacketByteBuf(Unpooled.buffer());
-        DebugRendererInfoManager.method_22319(serverWorld, packetByteBuf, CustomPayloadS2CPacket.DEBUG_GAME_TEST_CLEAR);
+        DebugRendererInfoManager.method_22319(world, packetByteBuf, CustomPayloadS2CPacket.DEBUG_GAME_TEST_CLEAR);
     }
 
     public static void method_19775(ServerWorld serverWorld, ChunkPos chunkPos) {
@@ -65,10 +65,10 @@ public class DebugRendererInfoManager {
     public static void sendStructureStart(IWorld iWorld, StructureStart structureStart) {
     }
 
-    public static void sendGoalSelector(World world, MobEntity mobEntity, GoalSelector goalSelector) {
+    public static void sendGoalSelector(World world, MobEntity mob, GoalSelector goalSelector) {
     }
 
-    public static void sendRaids(ServerWorld serverWorld, Collection<Raid> collection) {
+    public static void sendRaids(ServerWorld server, Collection<Raid> raids) {
     }
 
     public static void sendVillagerAiDebugData(LivingEntity livingEntity) {

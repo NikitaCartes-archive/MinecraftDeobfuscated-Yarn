@@ -21,24 +21,24 @@ implements BlockEntityProvider {
     }
 
     @Override
-    public BlockRenderType getRenderType(BlockState blockState) {
+    public BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.INVISIBLE;
     }
 
     @Override
-    public boolean onBlockAction(BlockState blockState, World world, BlockPos blockPos, int i, int j) {
-        super.onBlockAction(blockState, world, blockPos, i, j);
-        BlockEntity blockEntity = world.getBlockEntity(blockPos);
+    public boolean onBlockAction(BlockState state, World world, BlockPos pos, int type, int data) {
+        super.onBlockAction(state, world, pos, type, data);
+        BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity == null) {
             return false;
         }
-        return blockEntity.onBlockAction(i, j);
+        return blockEntity.onBlockAction(type, data);
     }
 
     @Override
     @Nullable
-    public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
-        BlockEntity blockEntity = world.getBlockEntity(blockPos);
+    public NameableContainerProvider createContainerProvider(BlockState state, World world, BlockPos pos) {
+        BlockEntity blockEntity = world.getBlockEntity(pos);
         return blockEntity instanceof NameableContainerProvider ? (NameableContainerProvider)((Object)blockEntity) : null;
     }
 }

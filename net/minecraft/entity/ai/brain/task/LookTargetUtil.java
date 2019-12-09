@@ -68,9 +68,9 @@ public class LookTargetUtil {
         livingEntity.world.spawnEntity(itemEntity);
     }
 
-    public static ChunkSectionPos getPosClosestToOccupiedPointOfInterest(ServerWorld serverWorld, ChunkSectionPos chunkSectionPos2, int i) {
-        int j = serverWorld.getOccupiedPointOfInterestDistance(chunkSectionPos2);
-        return ChunkSectionPos.stream(chunkSectionPos2, i).filter(chunkSectionPos -> serverWorld.getOccupiedPointOfInterestDistance((ChunkSectionPos)chunkSectionPos) < j).min(Comparator.comparingInt(serverWorld::getOccupiedPointOfInterestDistance)).orElse(chunkSectionPos2);
+    public static ChunkSectionPos getPosClosestToOccupiedPointOfInterest(ServerWorld world, ChunkSectionPos center, int radius) {
+        int i = world.getOccupiedPointOfInterestDistance(center);
+        return ChunkSectionPos.stream(center, radius).filter(chunkSectionPos -> world.getOccupiedPointOfInterestDistance((ChunkSectionPos)chunkSectionPos) < i).min(Comparator.comparingInt(world::getOccupiedPointOfInterestDistance)).orElse(center);
     }
 }
 

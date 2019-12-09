@@ -15,16 +15,16 @@ implements DecoratorConfig {
     public final int topOffset;
     public final int top;
 
-    public ChanceRangeDecoratorConfig(float f, int i, int j, int k) {
-        this.chance = f;
-        this.bottomOffset = i;
-        this.topOffset = j;
-        this.top = k;
+    public ChanceRangeDecoratorConfig(float chance, int bottomOffset, int topOffset, int top) {
+        this.chance = chance;
+        this.bottomOffset = bottomOffset;
+        this.topOffset = topOffset;
+        this.top = top;
     }
 
     @Override
-    public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-        return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("chance"), dynamicOps.createFloat(this.chance), dynamicOps.createString("bottom_offset"), dynamicOps.createInt(this.bottomOffset), dynamicOps.createString("top_offset"), dynamicOps.createInt(this.topOffset), dynamicOps.createString("top"), dynamicOps.createInt(this.top))));
+    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("chance"), ops.createFloat(this.chance), ops.createString("bottom_offset"), ops.createInt(this.bottomOffset), ops.createString("top_offset"), ops.createInt(this.topOffset), ops.createString("top"), ops.createInt(this.top))));
     }
 
     public static ChanceRangeDecoratorConfig deserialize(Dynamic<?> dynamic) {

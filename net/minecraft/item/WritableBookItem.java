@@ -27,32 +27,32 @@ extends Item {
     }
 
     @Override
-    public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
+    public ActionResult useOnBlock(ItemUsageContext context) {
         BlockPos blockPos;
-        World world = itemUsageContext.getWorld();
-        BlockState blockState = world.getBlockState(blockPos = itemUsageContext.getBlockPos());
+        World world = context.getWorld();
+        BlockState blockState = world.getBlockState(blockPos = context.getBlockPos());
         if (blockState.getBlock() == Blocks.LECTERN) {
-            return LecternBlock.putBookIfAbsent(world, blockPos, blockState, itemUsageContext.getStack()) ? ActionResult.SUCCESS : ActionResult.PASS;
+            return LecternBlock.putBookIfAbsent(world, blockPos, blockState, context.getStack()) ? ActionResult.SUCCESS : ActionResult.PASS;
         }
         return ActionResult.PASS;
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
-        ItemStack itemStack = playerEntity.getStackInHand(hand);
-        playerEntity.openEditBookScreen(itemStack, hand);
-        playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+        ItemStack itemStack = user.getStackInHand(hand);
+        user.openEditBookScreen(itemStack, hand);
+        user.incrementStat(Stats.USED.getOrCreateStat(this));
         return TypedActionResult.success(itemStack);
     }
 
-    public static boolean isValid(@Nullable CompoundTag compoundTag) {
-        if (compoundTag == null) {
+    public static boolean isValid(@Nullable CompoundTag tag) {
+        if (tag == null) {
             return false;
         }
-        if (!compoundTag.contains("pages", 9)) {
+        if (!tag.contains("pages", 9)) {
             return false;
         }
-        ListTag listTag = compoundTag.getList("pages", 8);
+        ListTag listTag = tag.getList("pages", 8);
         for (int i = 0; i < listTag.size(); ++i) {
             String string = listTag.getString(i);
             if (string.length() <= Short.MAX_VALUE) continue;

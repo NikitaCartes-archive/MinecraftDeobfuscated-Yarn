@@ -20,27 +20,27 @@ public interface TagReader<T extends Tag> {
 
     public String getCommandFeedbackName();
 
-    public static TagReader<EndTag> createInvalid(final int i) {
+    public static TagReader<EndTag> createInvalid(final int type) {
         return new TagReader<EndTag>(){
 
             @Override
-            public EndTag read(DataInput dataInput, int i2, PositionTracker positionTracker) throws IOException {
-                throw new IllegalArgumentException("Invalid tag id: " + i);
+            public EndTag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+                throw new IllegalArgumentException("Invalid tag id: " + type);
             }
 
             @Override
             public String getCrashReportName() {
-                return "INVALID[" + i + "]";
+                return "INVALID[" + type + "]";
             }
 
             @Override
             public String getCommandFeedbackName() {
-                return "UNKNOWN_" + i;
+                return "UNKNOWN_" + type;
             }
 
             @Override
-            public /* synthetic */ Tag read(DataInput dataInput, int i2, PositionTracker positionTracker) throws IOException {
-                return this.read(dataInput, i2, positionTracker);
+            public /* synthetic */ Tag read(DataInput input, int depth, PositionTracker tracker) throws IOException {
+                return this.read(input, depth, tracker);
             }
         };
     }

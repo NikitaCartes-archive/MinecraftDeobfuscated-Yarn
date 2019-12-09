@@ -23,22 +23,22 @@ public class MatrixStack {
         arrayDeque.add(new Entry(matrix4f, matrix3f));
     });
 
-    public void translate(double d, double e, double f) {
+    public void translate(double x, double y, double z) {
         Entry entry = this.stack.getLast();
-        entry.modelMatrix.multiply(Matrix4f.method_24021((float)d, (float)e, (float)f));
+        entry.modelMatrix.multiply(Matrix4f.method_24021((float)x, (float)y, (float)z));
     }
 
-    public void scale(float f, float g, float h) {
+    public void scale(float x, float y, float z) {
         Entry entry = this.stack.getLast();
-        entry.modelMatrix.multiply(Matrix4f.method_24019(f, g, h));
-        if (f == g && g == h) {
+        entry.modelMatrix.multiply(Matrix4f.method_24019(x, y, z));
+        if (x == y && y == z) {
             return;
         }
-        float i = 1.0f / f;
-        float j = 1.0f / g;
-        float k = 1.0f / h;
-        float l = MathHelper.fastInverseCbrt(i * j * k);
-        entry.normalMatrix.multiply(Matrix3f.method_23963(l * i, l * j, l * k));
+        float f = 1.0f / x;
+        float g = 1.0f / y;
+        float h = 1.0f / z;
+        float i = MathHelper.fastInverseCbrt(f * g * h);
+        entry.normalMatrix.multiply(Matrix3f.method_23963(i * f, i * g, i * h));
     }
 
     public void multiply(Quaternion quaternion) {

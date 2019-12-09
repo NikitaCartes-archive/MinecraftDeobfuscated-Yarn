@@ -23,13 +23,13 @@ implements Packet<ServerPlayPacketListener> {
     }
 
     @Override
-    public void read(PacketByteBuf packetByteBuf) throws IOException {
-        this.tradeId = packetByteBuf.readVarInt();
+    public void read(PacketByteBuf buf) throws IOException {
+        this.tradeId = buf.readVarInt();
     }
 
     @Override
-    public void write(PacketByteBuf packetByteBuf) throws IOException {
-        packetByteBuf.writeVarInt(this.tradeId);
+    public void write(PacketByteBuf buf) throws IOException {
+        buf.writeVarInt(this.tradeId);
     }
 
     @Override

@@ -23,18 +23,18 @@ implements LootTableRange {
     private final float min;
     private final float max;
 
-    public UniformLootTableRange(float f, float g) {
-        this.min = f;
-        this.max = g;
+    public UniformLootTableRange(float min, float max) {
+        this.min = min;
+        this.max = max;
     }
 
-    public UniformLootTableRange(float f) {
-        this.min = f;
-        this.max = f;
+    public UniformLootTableRange(float value) {
+        this.min = value;
+        this.max = value;
     }
 
-    public static UniformLootTableRange between(float f, float g) {
-        return new UniformLootTableRange(f, g);
+    public static UniformLootTableRange between(float min, float max) {
+        return new UniformLootTableRange(min, max);
     }
 
     public float getMinValue() {
@@ -54,8 +54,8 @@ implements LootTableRange {
         return MathHelper.nextFloat(random, this.min, this.max);
     }
 
-    public boolean contains(int i) {
-        return (float)i <= this.max && (float)i >= this.min;
+    public boolean contains(int value) {
+        return (float)value <= this.max && (float)value >= this.min;
     }
 
     @Override
@@ -89,13 +89,13 @@ implements LootTableRange {
         }
 
         @Override
-        public /* synthetic */ JsonElement serialize(Object object, Type type, JsonSerializationContext jsonSerializationContext) {
-            return this.serialize((UniformLootTableRange)object, type, jsonSerializationContext);
+        public /* synthetic */ JsonElement serialize(Object entry, Type unused, JsonSerializationContext context) {
+            return this.serialize((UniformLootTableRange)entry, unused, context);
         }
 
         @Override
-        public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.deserialize(jsonElement, type, jsonDeserializationContext);
+        public /* synthetic */ Object deserialize(JsonElement json, Type unused, JsonDeserializationContext context) throws JsonParseException {
+            return this.deserialize(json, unused, context);
         }
     }
 }

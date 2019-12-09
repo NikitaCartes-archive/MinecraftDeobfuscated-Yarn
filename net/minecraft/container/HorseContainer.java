@@ -20,20 +20,20 @@ extends Container {
     private final Inventory playerInv;
     private final HorseBaseEntity entity;
 
-    public HorseContainer(int i, PlayerInventory playerInventory, Inventory inventory, final HorseBaseEntity horseBaseEntity) {
-        super(null, i);
-        int m;
+    public HorseContainer(int syncId, PlayerInventory playerInventory, Inventory inventory, final HorseBaseEntity horseBaseEntity) {
+        super(null, syncId);
         int l;
+        int k;
         this.playerInv = inventory;
         this.entity = horseBaseEntity;
-        int j = 3;
+        int i = 3;
         inventory.onInvOpen(playerInventory.player);
-        int k = -18;
+        int j = -18;
         this.addSlot(new Slot(inventory, 0, 8, 18){
 
             @Override
-            public boolean canInsert(ItemStack itemStack) {
-                return itemStack.getItem() == Items.SADDLE && !this.hasStack() && horseBaseEntity.canBeSaddled();
+            public boolean canInsert(ItemStack stack) {
+                return stack.getItem() == Items.SADDLE && !this.hasStack() && horseBaseEntity.canBeSaddled();
             }
 
             @Override
@@ -45,8 +45,8 @@ extends Container {
         this.addSlot(new Slot(inventory, 1, 8, 36){
 
             @Override
-            public boolean canInsert(ItemStack itemStack) {
-                return horseBaseEntity.canEquip(itemStack);
+            public boolean canInsert(ItemStack stack) {
+                return horseBaseEntity.canEquip(stack);
             }
 
             @Override
@@ -61,37 +61,37 @@ extends Container {
             }
         });
         if (horseBaseEntity instanceof AbstractDonkeyEntity && ((AbstractDonkeyEntity)horseBaseEntity).hasChest()) {
-            for (l = 0; l < 3; ++l) {
-                for (m = 0; m < ((AbstractDonkeyEntity)horseBaseEntity).method_6702(); ++m) {
-                    this.addSlot(new Slot(inventory, 2 + m + l * ((AbstractDonkeyEntity)horseBaseEntity).method_6702(), 80 + m * 18, 18 + l * 18));
+            for (k = 0; k < 3; ++k) {
+                for (l = 0; l < ((AbstractDonkeyEntity)horseBaseEntity).method_6702(); ++l) {
+                    this.addSlot(new Slot(inventory, 2 + l + k * ((AbstractDonkeyEntity)horseBaseEntity).method_6702(), 80 + l * 18, 18 + k * 18));
                 }
             }
         }
-        for (l = 0; l < 3; ++l) {
-            for (m = 0; m < 9; ++m) {
-                this.addSlot(new Slot(playerInventory, m + l * 9 + 9, 8 + m * 18, 102 + l * 18 + -18));
+        for (k = 0; k < 3; ++k) {
+            for (l = 0; l < 9; ++l) {
+                this.addSlot(new Slot(playerInventory, l + k * 9 + 9, 8 + l * 18, 102 + k * 18 + -18));
             }
         }
-        for (l = 0; l < 9; ++l) {
-            this.addSlot(new Slot(playerInventory, l, 8 + l * 18, 142));
+        for (k = 0; k < 9; ++k) {
+            this.addSlot(new Slot(playerInventory, k, 8 + k * 18, 142));
         }
     }
 
     @Override
-    public boolean canUse(PlayerEntity playerEntity) {
-        return this.playerInv.canPlayerUseInv(playerEntity) && this.entity.isAlive() && this.entity.distanceTo(playerEntity) < 8.0f;
+    public boolean canUse(PlayerEntity player) {
+        return this.playerInv.canPlayerUseInv(player) && this.entity.isAlive() && this.entity.distanceTo(player) < 8.0f;
     }
 
     @Override
-    public ItemStack transferSlot(PlayerEntity playerEntity, int i) {
+    public ItemStack transferSlot(PlayerEntity player, int invSlot) {
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = (Slot)this.slotList.get(i);
+        Slot slot = (Slot)this.slotList.get(invSlot);
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();
             itemStack = itemStack2.copy();
-            int j = this.playerInv.getInvSize();
-            if (i < j) {
-                if (!this.insertItem(itemStack2, j, this.slotList.size(), true)) {
+            int i = this.playerInv.getInvSize();
+            if (invSlot < i) {
+                if (!this.insertItem(itemStack2, i, this.slotList.size(), true)) {
                     return ItemStack.EMPTY;
                 }
             } else if (this.getSlot(1).canInsert(itemStack2) && !this.getSlot(1).hasStack()) {
@@ -102,12 +102,12 @@ extends Container {
                 if (!this.insertItem(itemStack2, 0, 1, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (j <= 2 || !this.insertItem(itemStack2, 2, j, false)) {
-                int l;
-                int k = j;
-                int m = l = k + 27;
-                int n = m + 9;
-                if (i >= m && i < n ? !this.insertItem(itemStack2, k, l, false) : (i >= k && i < l ? !this.insertItem(itemStack2, m, n, false) : !this.insertItem(itemStack2, m, l, false))) {
+            } else if (i <= 2 || !this.insertItem(itemStack2, 2, i, false)) {
+                int k;
+                int j = i;
+                int l = k = j + 27;
+                int m = l + 9;
+                if (invSlot >= l && invSlot < m ? !this.insertItem(itemStack2, j, k, false) : (invSlot >= j && invSlot < k ? !this.insertItem(itemStack2, l, m, false) : !this.insertItem(itemStack2, l, k, false))) {
                     return ItemStack.EMPTY;
                 }
                 return ItemStack.EMPTY;
@@ -122,9 +122,9 @@ extends Container {
     }
 
     @Override
-    public void close(PlayerEntity playerEntity) {
-        super.close(playerEntity);
-        this.playerInv.onInvClose(playerEntity);
+    public void close(PlayerEntity player) {
+        super.close(player);
+        this.playerInv.onInvClose(player);
     }
 }
 

@@ -15,12 +15,12 @@ import org.jetbrains.annotations.Nullable;
 
 public class BannedPlayerEntry
 extends BanEntry<GameProfile> {
-    public BannedPlayerEntry(GameProfile gameProfile) {
-        this(gameProfile, (Date)null, (String)null, (Date)null, (String)null);
+    public BannedPlayerEntry(GameProfile profile) {
+        this(profile, (Date)null, (String)null, (Date)null, (String)null);
     }
 
-    public BannedPlayerEntry(GameProfile gameProfile, @Nullable Date date, @Nullable String string, @Nullable Date date2, @Nullable String string2) {
-        super(gameProfile, date, string, date2, string2);
+    public BannedPlayerEntry(GameProfile profile, @Nullable Date created, @Nullable String source, @Nullable Date expiry, @Nullable String reason) {
+        super(profile, created, source, expiry, reason);
     }
 
     public BannedPlayerEntry(JsonObject jsonObject) {
@@ -43,18 +43,18 @@ extends BanEntry<GameProfile> {
         return new LiteralText(gameProfile.getName() != null ? gameProfile.getName() : Objects.toString(gameProfile.getId(), "(Unknown)"));
     }
 
-    private static GameProfile getProfileFromJson(JsonObject jsonObject) {
+    private static GameProfile getProfileFromJson(JsonObject json) {
         UUID uUID;
-        if (!jsonObject.has("uuid") || !jsonObject.has("name")) {
+        if (!json.has("uuid") || !json.has("name")) {
             return null;
         }
-        String string = jsonObject.get("uuid").getAsString();
+        String string = json.get("uuid").getAsString();
         try {
             uUID = UUID.fromString(string);
         } catch (Throwable throwable) {
             return null;
         }
-        return new GameProfile(uUID, jsonObject.get("name").getAsString());
+        return new GameProfile(uUID, json.get("name").getAsString());
     }
 }
 

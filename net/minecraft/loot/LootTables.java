@@ -83,15 +83,15 @@ public class LootTables {
     public static final Identifier HERO_OF_THE_VILLAGE_TOOLSMITH_GIFT_GAMEPLAY = LootTables.register("gameplay/hero_of_the_village/toolsmith_gift");
     public static final Identifier HERO_OF_THE_VILLAGE_WEAPONSMITH_GIFT_GAMEPLAY = LootTables.register("gameplay/hero_of_the_village/weaponsmith_gift");
 
-    private static Identifier register(String string) {
-        return LootTables.registerLootTable(new Identifier(string));
+    private static Identifier register(String id) {
+        return LootTables.registerLootTable(new Identifier(id));
     }
 
-    private static Identifier registerLootTable(Identifier identifier) {
-        if (LOOT_TABLES.add(identifier)) {
-            return identifier;
+    private static Identifier registerLootTable(Identifier id) {
+        if (LOOT_TABLES.add(id)) {
+            return id;
         }
-        throw new IllegalArgumentException(identifier + " is already a registered built-in loot table");
+        throw new IllegalArgumentException(id + " is already a registered built-in loot table");
     }
 
     public static Set<Identifier> getAll() {

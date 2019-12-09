@@ -10,45 +10,45 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 
 public interface DyeableItem {
-    default public boolean hasColor(ItemStack itemStack) {
-        CompoundTag compoundTag = itemStack.getSubTag("display");
+    default public boolean hasColor(ItemStack stack) {
+        CompoundTag compoundTag = stack.getSubTag("display");
         return compoundTag != null && compoundTag.contains("color", 99);
     }
 
-    default public int getColor(ItemStack itemStack) {
-        CompoundTag compoundTag = itemStack.getSubTag("display");
+    default public int getColor(ItemStack stack) {
+        CompoundTag compoundTag = stack.getSubTag("display");
         if (compoundTag != null && compoundTag.contains("color", 99)) {
             return compoundTag.getInt("color");
         }
         return 10511680;
     }
 
-    default public void removeColor(ItemStack itemStack) {
-        CompoundTag compoundTag = itemStack.getSubTag("display");
+    default public void removeColor(ItemStack stack) {
+        CompoundTag compoundTag = stack.getSubTag("display");
         if (compoundTag != null && compoundTag.contains("color")) {
             compoundTag.remove("color");
         }
     }
 
-    default public void setColor(ItemStack itemStack, int i) {
-        itemStack.getOrCreateSubTag("display").putInt("color", i);
+    default public void setColor(ItemStack stack, int color) {
+        stack.getOrCreateSubTag("display").putInt("color", color);
     }
 
-    public static ItemStack blendAndSetColor(ItemStack itemStack, List<DyeItem> list) {
+    public static ItemStack blendAndSetColor(ItemStack stack, List<DyeItem> colors) {
         int n;
         float h;
-        ItemStack itemStack2 = ItemStack.EMPTY;
+        ItemStack itemStack = ItemStack.EMPTY;
         int[] is = new int[3];
         int i = 0;
         int j = 0;
         DyeableItem dyeableItem = null;
-        Item item = itemStack.getItem();
+        Item item = stack.getItem();
         if (item instanceof DyeableItem) {
             dyeableItem = (DyeableItem)((Object)item);
-            itemStack2 = itemStack.copy();
-            itemStack2.setCount(1);
-            if (dyeableItem.hasColor(itemStack)) {
-                int k = dyeableItem.getColor(itemStack2);
+            itemStack = stack.copy();
+            itemStack.setCount(1);
+            if (dyeableItem.hasColor(stack)) {
+                int k = dyeableItem.getColor(itemStack);
                 float f = (float)(k >> 16 & 0xFF) / 255.0f;
                 float g = (float)(k >> 8 & 0xFF) / 255.0f;
                 h = (float)(k & 0xFF) / 255.0f;
@@ -58,7 +58,7 @@ public interface DyeableItem {
                 is[2] = (int)((float)is[2] + h * 255.0f);
                 ++j;
             }
-            for (DyeItem dyeItem : list) {
+            for (DyeItem dyeItem : colors) {
                 float[] fs = dyeItem.getColor().getColorComponents();
                 int l = (int)(fs[0] * 255.0f);
                 int m = (int)(fs[1] * 255.0f);
@@ -84,8 +84,8 @@ public interface DyeableItem {
         n = k;
         n = (n << 8) + o;
         n = (n << 8) + p;
-        dyeableItem.setColor(itemStack2, n);
-        return itemStack2;
+        dyeableItem.setColor(itemStack, n);
+        return itemStack;
     }
 }
 

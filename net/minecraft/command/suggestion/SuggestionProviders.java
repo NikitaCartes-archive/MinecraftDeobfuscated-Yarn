@@ -27,28 +27,28 @@ public class SuggestionProviders {
     public static final SuggestionProvider<ServerCommandSource> AVAILABLE_SOUNDS = SuggestionProviders.register(new Identifier("available_sounds"), (commandContext, suggestionsBuilder) -> CommandSource.suggestIdentifiers(((CommandSource)commandContext.getSource()).getSoundIds(), suggestionsBuilder));
     public static final SuggestionProvider<ServerCommandSource> SUMMONABLE_ENTITIES = SuggestionProviders.register(new Identifier("summonable_entities"), (commandContext, suggestionsBuilder) -> CommandSource.suggestFromIdentifier(Registry.ENTITY_TYPE.stream().filter(EntityType::isSummonable), suggestionsBuilder, EntityType::getId, entityType -> new TranslatableText(Util.createTranslationKey("entity", EntityType.getId(entityType)), new Object[0])));
 
-    public static <S extends CommandSource> SuggestionProvider<S> register(Identifier identifier, SuggestionProvider<CommandSource> suggestionProvider) {
-        if (REGISTRY.containsKey(identifier)) {
-            throw new IllegalArgumentException("A command suggestion provider is already registered with the name " + identifier);
+    public static <S extends CommandSource> SuggestionProvider<S> register(Identifier name, SuggestionProvider<CommandSource> provider) {
+        if (REGISTRY.containsKey(name)) {
+            throw new IllegalArgumentException("A command suggestion provider is already registered with the name " + name);
         }
-        REGISTRY.put(identifier, suggestionProvider);
-        return new LocalProvider(identifier, suggestionProvider);
+        REGISTRY.put(name, provider);
+        return new LocalProvider(name, provider);
     }
 
-    public static SuggestionProvider<CommandSource> byId(Identifier identifier) {
-        return REGISTRY.getOrDefault(identifier, ASK_SERVER);
+    public static SuggestionProvider<CommandSource> byId(Identifier name) {
+        return REGISTRY.getOrDefault(name, ASK_SERVER);
     }
 
-    public static Identifier computeName(SuggestionProvider<CommandSource> suggestionProvider) {
-        if (suggestionProvider instanceof LocalProvider) {
-            return ((LocalProvider)suggestionProvider).name;
+    public static Identifier computeName(SuggestionProvider<CommandSource> provider) {
+        if (provider instanceof LocalProvider) {
+            return ((LocalProvider)provider).name;
         }
         return ASK_SERVER_NAME;
     }
 
-    public static SuggestionProvider<CommandSource> getLocalProvider(SuggestionProvider<CommandSource> suggestionProvider) {
-        if (suggestionProvider instanceof LocalProvider) {
-            return suggestionProvider;
+    public static SuggestionProvider<CommandSource> getLocalProvider(SuggestionProvider<CommandSource> provider) {
+        if (provider instanceof LocalProvider) {
+            return provider;
         }
         return ASK_SERVER;
     }
@@ -58,9 +58,9 @@ public class SuggestionProviders {
         private final SuggestionProvider<CommandSource> provider;
         private final Identifier name;
 
-        public LocalProvider(Identifier identifier, SuggestionProvider<CommandSource> suggestionProvider) {
+        public LocalProvider(Identifier name, SuggestionProvider<CommandSource> suggestionProvider) {
             this.provider = suggestionProvider;
-            this.name = identifier;
+            this.name = name;
         }
 
         @Override

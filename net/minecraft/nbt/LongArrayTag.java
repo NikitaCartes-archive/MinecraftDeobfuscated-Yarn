@@ -46,22 +46,22 @@ extends AbstractListTag<LongTag> {
         }
 
         @Override
-        public /* synthetic */ Tag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-            return this.read(dataInput, i, positionTracker);
+        public /* synthetic */ Tag read(DataInput input, int depth, PositionTracker tracker) throws IOException {
+            return this.read(input, depth, tracker);
         }
     };
     private long[] value;
 
-    public LongArrayTag(long[] ls) {
-        this.value = ls;
+    public LongArrayTag(long[] value) {
+        this.value = value;
     }
 
-    public LongArrayTag(LongSet longSet) {
-        this.value = longSet.toLongArray();
+    public LongArrayTag(LongSet value) {
+        this.value = value.toLongArray();
     }
 
-    public LongArrayTag(List<Long> list) {
-        this(LongArrayTag.toArray(list));
+    public LongArrayTag(List<Long> value) {
+        this(LongArrayTag.toArray(value));
     }
 
     private static long[] toArray(List<Long> list) {
@@ -74,10 +74,10 @@ extends AbstractListTag<LongTag> {
     }
 
     @Override
-    public void write(DataOutput dataOutput) throws IOException {
-        dataOutput.writeInt(this.value.length);
+    public void write(DataOutput output) throws IOException {
+        output.writeInt(this.value.length);
         for (long l : this.value) {
-            dataOutput.writeLong(l);
+            output.writeLong(l);
         }
     }
 
@@ -110,11 +110,11 @@ extends AbstractListTag<LongTag> {
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        return object instanceof LongArrayTag && Arrays.equals(this.value, ((LongArrayTag)object).value);
+        return o instanceof LongArrayTag && Arrays.equals(this.value, ((LongArrayTag)o).value);
     }
 
     @Override
@@ -123,13 +123,13 @@ extends AbstractListTag<LongTag> {
     }
 
     @Override
-    public Text toText(String string, int i) {
+    public Text toText(String indent, int depth) {
         Text text = new LiteralText("L").formatted(RED);
         Text text2 = new LiteralText("[").append(text).append(";");
-        for (int j = 0; j < this.value.length; ++j) {
-            Text text3 = new LiteralText(String.valueOf(this.value[j])).formatted(GOLD);
+        for (int i = 0; i < this.value.length; ++i) {
+            Text text3 = new LiteralText(String.valueOf(this.value[i])).formatted(GOLD);
             text2.append(" ").append(text3).append(text);
-            if (j == this.value.length - 1) continue;
+            if (i == this.value.length - 1) continue;
             text2.append(",");
         }
         text2.append("]");
@@ -162,18 +162,18 @@ extends AbstractListTag<LongTag> {
     }
 
     @Override
-    public boolean setTag(int i, Tag tag) {
+    public boolean setTag(int index, Tag tag) {
         if (tag instanceof AbstractNumberTag) {
-            this.value[i] = ((AbstractNumberTag)tag).getLong();
+            this.value[index] = ((AbstractNumberTag)tag).getLong();
             return true;
         }
         return false;
     }
 
     @Override
-    public boolean addTag(int i, Tag tag) {
+    public boolean addTag(int index, Tag tag) {
         if (tag instanceof AbstractNumberTag) {
-            this.value = ArrayUtils.add(this.value, i, ((AbstractNumberTag)tag).getLong());
+            this.value = ArrayUtils.add(this.value, index, ((AbstractNumberTag)tag).getLong());
             return true;
         }
         return false;
@@ -216,13 +216,13 @@ extends AbstractListTag<LongTag> {
     }
 
     @Override
-    public /* synthetic */ void add(int i, Object object) {
-        this.method_10531(i, (LongTag)object);
+    public /* synthetic */ void add(int value, Object object) {
+        this.method_10531(value, (LongTag)object);
     }
 
     @Override
-    public /* synthetic */ Object set(int i, Object object) {
-        return this.set(i, (LongTag)object);
+    public /* synthetic */ Object set(int index, Object object) {
+        return this.set(index, (LongTag)object);
     }
 
     @Override

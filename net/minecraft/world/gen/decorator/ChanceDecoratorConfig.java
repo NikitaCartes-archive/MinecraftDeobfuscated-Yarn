@@ -12,13 +12,13 @@ public class ChanceDecoratorConfig
 implements DecoratorConfig {
     public final int chance;
 
-    public ChanceDecoratorConfig(int i) {
-        this.chance = i;
+    public ChanceDecoratorConfig(int chance) {
+        this.chance = chance;
     }
 
     @Override
-    public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-        return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("chance"), dynamicOps.createInt(this.chance))));
+    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("chance"), ops.createInt(this.chance))));
     }
 
     public static ChanceDecoratorConfig deserialize(Dynamic<?> dynamic) {

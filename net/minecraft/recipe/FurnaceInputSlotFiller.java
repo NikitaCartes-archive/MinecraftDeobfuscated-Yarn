@@ -23,7 +23,7 @@ extends InputSlotFiller<C> {
     }
 
     @Override
-    protected void fillInputSlots(Recipe<C> recipe, boolean bl) {
+    protected void fillInputSlots(Recipe<C> recipe, boolean craftAll) {
         ItemStack itemStack;
         this.slotMatchesRecipe = this.craftingContainer.matches(recipe);
         int i = this.recipeFinder.countRecipeCrafts(recipe, null);
@@ -31,7 +31,7 @@ extends InputSlotFiller<C> {
             return;
         }
         IntArrayList intList = new IntArrayList();
-        int j = this.getAmountToFill(bl, i, this.slotMatchesRecipe);
+        int j = this.getAmountToFill(craftAll, i, this.slotMatchesRecipe);
         if (!this.recipeFinder.findRecipe(recipe, intList, j)) {
             return;
         }
@@ -48,18 +48,18 @@ extends InputSlotFiller<C> {
         super.returnInputs();
     }
 
-    protected void fillInputSlot(int i, IntList intList) {
-        IntListIterator iterator = intList.iterator();
+    protected void fillInputSlot(int limit, IntList inputs) {
+        IntListIterator iterator = inputs.iterator();
         Slot slot = this.craftingContainer.getSlot(0);
         ItemStack itemStack = RecipeFinder.getStackFromId((Integer)iterator.next());
         if (itemStack.isEmpty()) {
             return;
         }
-        int j = Math.min(itemStack.getMaxCount(), i);
+        int i = Math.min(itemStack.getMaxCount(), limit);
         if (this.slotMatchesRecipe) {
-            j -= slot.getStack().getCount();
+            i -= slot.getStack().getCount();
         }
-        for (int k = 0; k < j; ++k) {
+        for (int j = 0; j < i; ++j) {
             this.fillInputSlot(slot, itemStack);
         }
     }

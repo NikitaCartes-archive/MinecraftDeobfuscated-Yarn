@@ -38,21 +38,21 @@ extends AbstractCriterion<Conditions> {
     }
 
     @Nullable
-    private static Block getBlock(JsonObject jsonObject) {
-        if (jsonObject.has("block")) {
-            Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "block"));
+    private static Block getBlock(JsonObject root) {
+        if (root.has("block")) {
+            Identifier identifier = new Identifier(JsonHelper.getString(root, "block"));
             return (Block)Registry.BLOCK.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown block type '" + identifier + "'"));
         }
         return null;
     }
 
-    public void test(ServerPlayerEntity serverPlayerEntity, Block block, ItemStack itemStack, int i) {
-        this.test(serverPlayerEntity.getAdvancementTracker(), conditions -> conditions.test(block, itemStack, i));
+    public void test(ServerPlayerEntity player, Block block, ItemStack stack, int beeCount) {
+        this.test(player.getAdvancementTracker(), conditions -> conditions.test(block, stack, beeCount));
     }
 
     @Override
-    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
+    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject obj, JsonDeserializationContext context) {
+        return this.conditionsFromJson(obj, context);
     }
 
     public static class Conditions
@@ -61,25 +61,25 @@ extends AbstractCriterion<Conditions> {
         private final ItemPredicate item;
         private final NumberRange.IntRange beeCount;
 
-        public Conditions(Block block, ItemPredicate itemPredicate, NumberRange.IntRange intRange) {
+        public Conditions(Block block, ItemPredicate item, NumberRange.IntRange beeCount) {
             super(ID);
             this.block = block;
-            this.item = itemPredicate;
-            this.beeCount = intRange;
+            this.item = item;
+            this.beeCount = beeCount;
         }
 
-        public static Conditions create(Block block, ItemPredicate.Builder builder, NumberRange.IntRange intRange) {
-            return new Conditions(block, builder.build(), intRange);
+        public static Conditions create(Block block, ItemPredicate.Builder itemPredicateBuilder, NumberRange.IntRange beeCountRange) {
+            return new Conditions(block, itemPredicateBuilder.build(), beeCountRange);
         }
 
-        public boolean test(Block block, ItemStack itemStack, int i) {
+        public boolean test(Block block, ItemStack stack, int count) {
             if (this.block != null && block != this.block) {
                 return false;
             }
-            if (!this.item.test(itemStack)) {
+            if (!this.item.test(stack)) {
                 return false;
             }
-            return this.beeCount.test(i);
+            return this.beeCount.test(count);
         }
 
         @Override

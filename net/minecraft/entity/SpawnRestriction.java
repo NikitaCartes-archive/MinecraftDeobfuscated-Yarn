@@ -42,26 +42,26 @@ import org.jetbrains.annotations.Nullable;
 public class SpawnRestriction {
     private static final Map<EntityType<?>, Entry> RESTRICTIONS = Maps.newHashMap();
 
-    private static <T extends MobEntity> void register(EntityType<T> entityType, Location location, Heightmap.Type type, SpawnPredicate<T> spawnPredicate) {
-        Entry entry = RESTRICTIONS.put(entityType, new Entry(type, location, spawnPredicate));
+    private static <T extends MobEntity> void register(EntityType<T> type, Location location, Heightmap.Type heightmapType, SpawnPredicate<T> predicate) {
+        Entry entry = RESTRICTIONS.put(type, new Entry(heightmapType, location, predicate));
         if (entry != null) {
-            throw new IllegalStateException("Duplicate registration for type " + Registry.ENTITY_TYPE.getId(entityType));
+            throw new IllegalStateException("Duplicate registration for type " + Registry.ENTITY_TYPE.getId(type));
         }
     }
 
-    public static Location getLocation(EntityType<?> entityType) {
-        Entry entry = RESTRICTIONS.get(entityType);
+    public static Location getLocation(EntityType<?> type) {
+        Entry entry = RESTRICTIONS.get(type);
         return entry == null ? Location.NO_RESTRICTIONS : entry.location;
     }
 
-    public static Heightmap.Type getHeightmapType(@Nullable EntityType<?> entityType) {
-        Entry entry = RESTRICTIONS.get(entityType);
+    public static Heightmap.Type getHeightmapType(@Nullable EntityType<?> type) {
+        Entry entry = RESTRICTIONS.get(type);
         return entry == null ? Heightmap.Type.MOTION_BLOCKING_NO_LEAVES : entry.heightmapType;
     }
 
-    public static <T extends Entity> boolean canSpawn(EntityType<T> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-        Entry entry = RESTRICTIONS.get(entityType);
-        return entry == null || entry.predicate.test(entityType, iWorld, spawnType, blockPos, random);
+    public static <T extends Entity> boolean canSpawn(EntityType<T> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
+        Entry entry = RESTRICTIONS.get(type);
+        return entry == null || entry.predicate.test(type, world, spawnType, pos, random);
     }
 
     static {
@@ -143,10 +143,10 @@ public class SpawnRestriction {
         private final Location location;
         private final SpawnPredicate<?> predicate;
 
-        public Entry(Heightmap.Type type, Location location, SpawnPredicate<?> spawnPredicate) {
-            this.heightmapType = type;
+        public Entry(Heightmap.Type heightmapType, Location location, SpawnPredicate<?> predicate) {
+            this.heightmapType = heightmapType;
             this.location = location;
-            this.predicate = spawnPredicate;
+            this.predicate = predicate;
         }
     }
 

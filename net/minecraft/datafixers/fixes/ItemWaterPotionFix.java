@@ -17,8 +17,8 @@ import net.minecraft.datafixers.TypeReferences;
 
 public class ItemWaterPotionFix
 extends DataFix {
-    public ItemWaterPotionFix(Schema schema, boolean bl) {
-        super(schema, bl);
+    public ItemWaterPotionFix(Schema outputSchema, boolean changesType) {
+        super(outputSchema, changesType);
     }
 
     @Override

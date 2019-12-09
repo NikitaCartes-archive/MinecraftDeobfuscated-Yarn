@@ -23,50 +23,50 @@ public class BuriedTreasureGenerator {
 
     public static class Piece
     extends StructurePiece {
-        public Piece(BlockPos blockPos) {
+        public Piece(BlockPos pos) {
             super(StructurePieceType.BURIED_TREASURE, 0);
-            this.boundingBox = new BlockBox(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX(), blockPos.getY(), blockPos.getZ());
+            this.boundingBox = new BlockBox(pos.getX(), pos.getY(), pos.getZ(), pos.getX(), pos.getY(), pos.getZ());
         }
 
-        public Piece(StructureManager structureManager, CompoundTag compoundTag) {
-            super(StructurePieceType.BURIED_TREASURE, compoundTag);
-        }
-
-        @Override
-        protected void toNbt(CompoundTag compoundTag) {
+        public Piece(StructureManager manager, CompoundTag tag) {
+            super(StructurePieceType.BURIED_TREASURE, tag);
         }
 
         @Override
-        public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
-            int i = iWorld.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, this.boundingBox.minX, this.boundingBox.minZ);
+        protected void toNbt(CompoundTag tag) {
+        }
+
+        @Override
+        public boolean generate(IWorld world, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
+            int i = world.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, this.boundingBox.minX, this.boundingBox.minZ);
             BlockPos.Mutable mutable = new BlockPos.Mutable(this.boundingBox.minX, i, this.boundingBox.minZ);
             while (mutable.getY() > 0) {
-                BlockState blockState = iWorld.getBlockState(mutable);
-                BlockState blockState2 = iWorld.getBlockState((BlockPos)mutable.down());
+                BlockState blockState = world.getBlockState(mutable);
+                BlockState blockState2 = world.getBlockState((BlockPos)mutable.down());
                 if (blockState2 == Blocks.SANDSTONE.getDefaultState() || blockState2 == Blocks.STONE.getDefaultState() || blockState2 == Blocks.ANDESITE.getDefaultState() || blockState2 == Blocks.GRANITE.getDefaultState() || blockState2 == Blocks.DIORITE.getDefaultState()) {
                     BlockState blockState3 = blockState.isAir() || this.isLiquid(blockState) ? Blocks.SAND.getDefaultState() : blockState;
                     for (Direction direction : Direction.values()) {
                         BlockPos blockPos = mutable.offset(direction);
-                        BlockState blockState4 = iWorld.getBlockState(blockPos);
+                        BlockState blockState4 = world.getBlockState(blockPos);
                         if (!blockState4.isAir() && !this.isLiquid(blockState4)) continue;
                         BlockPos blockPos2 = blockPos.down();
-                        BlockState blockState5 = iWorld.getBlockState(blockPos2);
+                        BlockState blockState5 = world.getBlockState(blockPos2);
                         if ((blockState5.isAir() || this.isLiquid(blockState5)) && direction != Direction.UP) {
-                            iWorld.setBlockState(blockPos, blockState2, 3);
+                            world.setBlockState(blockPos, blockState2, 3);
                             continue;
                         }
-                        iWorld.setBlockState(blockPos, blockState3, 3);
+                        world.setBlockState(blockPos, blockState3, 3);
                     }
                     this.boundingBox = new BlockBox(mutable.getX(), mutable.getY(), mutable.getZ(), mutable.getX(), mutable.getY(), mutable.getZ());
-                    return this.addChest(iWorld, blockBox, random, mutable, LootTables.BURIED_TREASURE_CHEST, null);
+                    return this.addChest(world, blockBox, random, mutable, LootTables.BURIED_TREASURE_CHEST, null);
                 }
                 mutable.setOffset(0, -1, 0);
             }
             return false;
         }
 
-        private boolean isLiquid(BlockState blockState) {
-            return blockState == Blocks.WATER.getDefaultState() || blockState == Blocks.LAVA.getDefaultState();
+        private boolean isLiquid(BlockState state) {
+            return state == Blocks.WATER.getDefaultState() || state == Blocks.LAVA.getDefaultState();
         }
     }
 }

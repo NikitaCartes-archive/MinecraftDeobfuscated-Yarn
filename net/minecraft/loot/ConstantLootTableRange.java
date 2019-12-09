@@ -20,8 +20,8 @@ public final class ConstantLootTableRange
 implements LootTableRange {
     private final int value;
 
-    public ConstantLootTableRange(int i) {
-        this.value = i;
+    public ConstantLootTableRange(int value) {
+        this.value = value;
     }
 
     @Override
@@ -34,8 +34,8 @@ implements LootTableRange {
         return CONSTANT;
     }
 
-    public static ConstantLootTableRange create(int i) {
-        return new ConstantLootTableRange(i);
+    public static ConstantLootTableRange create(int value) {
+        return new ConstantLootTableRange(value);
     }
 
     public static class Serializer
@@ -52,13 +52,13 @@ implements LootTableRange {
         }
 
         @Override
-        public /* synthetic */ JsonElement serialize(Object object, Type type, JsonSerializationContext jsonSerializationContext) {
-            return this.serialize((ConstantLootTableRange)object, type, jsonSerializationContext);
+        public /* synthetic */ JsonElement serialize(Object range, Type unused, JsonSerializationContext context) {
+            return this.serialize((ConstantLootTableRange)range, unused, context);
         }
 
         @Override
-        public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.deserialize(jsonElement, type, jsonDeserializationContext);
+        public /* synthetic */ Object deserialize(JsonElement json, Type unused, JsonDeserializationContext context) throws JsonParseException {
+            return this.deserialize(json, unused, context);
         }
     }
 }

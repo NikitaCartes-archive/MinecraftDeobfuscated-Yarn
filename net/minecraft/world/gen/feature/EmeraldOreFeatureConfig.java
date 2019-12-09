@@ -15,14 +15,14 @@ implements FeatureConfig {
     public final BlockState target;
     public final BlockState state;
 
-    public EmeraldOreFeatureConfig(BlockState blockState, BlockState blockState2) {
-        this.target = blockState;
-        this.state = blockState2;
+    public EmeraldOreFeatureConfig(BlockState target, BlockState state) {
+        this.target = target;
+        this.state = state;
     }
 
     @Override
-    public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-        return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("target"), BlockState.serialize(dynamicOps, this.target).getValue(), dynamicOps.createString("state"), BlockState.serialize(dynamicOps, this.state).getValue())));
+    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("target"), BlockState.serialize(ops, this.target).getValue(), ops.createString("state"), BlockState.serialize(ops, this.state).getValue())));
     }
 
     public static <T> EmeraldOreFeatureConfig deserialize(Dynamic<T> dynamic) {

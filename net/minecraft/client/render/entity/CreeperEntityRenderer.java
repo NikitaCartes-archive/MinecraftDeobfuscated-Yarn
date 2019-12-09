@@ -52,8 +52,8 @@ extends MobEntityRenderer<CreeperEntity, CreeperEntityModel<CreeperEntity>> {
     }
 
     @Override
-    protected /* synthetic */ float getWhiteOverlayProgress(LivingEntity livingEntity, float f) {
-        return this.getWhiteOverlayProgress((CreeperEntity)livingEntity, f);
+    protected /* synthetic */ float getWhiteOverlayProgress(LivingEntity entity, float tickDelta) {
+        return this.getWhiteOverlayProgress((CreeperEntity)entity, tickDelta);
     }
 }
 

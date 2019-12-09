@@ -24,35 +24,35 @@ public class ClearCommand {
     private static final DynamicCommandExceptionType FAILED_SINGLE_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("clear.failed.single", object));
     private static final DynamicCommandExceptionType FAILED_MULTIPLE_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("clear.failed.multiple", object));
 
-    public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-        commandDispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("clear").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))).executes(commandContext -> ClearCommand.execute((ServerCommandSource)commandContext.getSource(), Collections.singleton(((ServerCommandSource)commandContext.getSource()).getPlayer()), itemStack -> true, -1))).then(((RequiredArgumentBuilder)CommandManager.argument("targets", EntityArgumentType.players()).executes(commandContext -> ClearCommand.execute((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), itemStack -> true, -1))).then(((RequiredArgumentBuilder)CommandManager.argument("item", ItemPredicateArgumentType.itemPredicate()).executes(commandContext -> ClearCommand.execute((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), ItemPredicateArgumentType.getItemPredicate(commandContext, "item"), -1))).then(CommandManager.argument("maxCount", IntegerArgumentType.integer(0)).executes(commandContext -> ClearCommand.execute((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), ItemPredicateArgumentType.getItemPredicate(commandContext, "item"), IntegerArgumentType.getInteger(commandContext, "maxCount")))))));
+    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("clear").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))).executes(commandContext -> ClearCommand.execute((ServerCommandSource)commandContext.getSource(), Collections.singleton(((ServerCommandSource)commandContext.getSource()).getPlayer()), itemStack -> true, -1))).then(((RequiredArgumentBuilder)CommandManager.argument("targets", EntityArgumentType.players()).executes(commandContext -> ClearCommand.execute((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), itemStack -> true, -1))).then(((RequiredArgumentBuilder)CommandManager.argument("item", ItemPredicateArgumentType.itemPredicate()).executes(commandContext -> ClearCommand.execute((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), ItemPredicateArgumentType.getItemPredicate(commandContext, "item"), -1))).then(CommandManager.argument("maxCount", IntegerArgumentType.integer(0)).executes(commandContext -> ClearCommand.execute((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), ItemPredicateArgumentType.getItemPredicate(commandContext, "item"), IntegerArgumentType.getInteger(commandContext, "maxCount")))))));
     }
 
-    private static int execute(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, Predicate<ItemStack> predicate, int i) throws CommandSyntaxException {
-        int j = 0;
-        for (ServerPlayerEntity serverPlayerEntity : collection) {
-            j += serverPlayerEntity.inventory.method_7369(predicate, i);
+    private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, Predicate<ItemStack> item, int maxCount) throws CommandSyntaxException {
+        int i = 0;
+        for (ServerPlayerEntity serverPlayerEntity : targets) {
+            i += serverPlayerEntity.inventory.method_7369(item, maxCount);
             serverPlayerEntity.container.sendContentUpdates();
             serverPlayerEntity.method_14241();
         }
-        if (j == 0) {
-            if (collection.size() == 1) {
-                throw FAILED_SINGLE_EXCEPTION.create(collection.iterator().next().getName().asFormattedString());
-            }
-            throw FAILED_MULTIPLE_EXCEPTION.create(collection.size());
-        }
         if (i == 0) {
-            if (collection.size() == 1) {
-                serverCommandSource.sendFeedback(new TranslatableText("commands.clear.test.single", j, collection.iterator().next().getDisplayName()), true);
-            } else {
-                serverCommandSource.sendFeedback(new TranslatableText("commands.clear.test.multiple", j, collection.size()), true);
+            if (targets.size() == 1) {
+                throw FAILED_SINGLE_EXCEPTION.create(targets.iterator().next().getName().asFormattedString());
             }
-        } else if (collection.size() == 1) {
-            serverCommandSource.sendFeedback(new TranslatableText("commands.clear.success.single", j, collection.iterator().next().getDisplayName()), true);
-        } else {
-            serverCommandSource.sendFeedback(new TranslatableText("commands.clear.success.multiple", j, collection.size()), true);
+            throw FAILED_MULTIPLE_EXCEPTION.create(targets.size());
         }
-        return j;
+        if (maxCount == 0) {
+            if (targets.size() == 1) {
+                source.sendFeedback(new TranslatableText("commands.clear.test.single", i, targets.iterator().next().getDisplayName()), true);
+            } else {
+                source.sendFeedback(new TranslatableText("commands.clear.test.multiple", i, targets.size()), true);
+            }
+        } else if (targets.size() == 1) {
+            source.sendFeedback(new TranslatableText("commands.clear.success.single", i, targets.iterator().next().getDisplayName()), true);
+        } else {
+            source.sendFeedback(new TranslatableText("commands.clear.success.multiple", i, targets.size()), true);
+        }
+        return i;
     }
 }
 

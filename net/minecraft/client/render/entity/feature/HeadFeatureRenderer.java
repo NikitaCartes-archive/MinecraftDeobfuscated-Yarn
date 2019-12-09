@@ -33,8 +33,8 @@ import org.apache.commons.lang3.StringUtils;
 @Environment(value=EnvType.CLIENT)
 public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>>
 extends FeatureRenderer<T, M> {
-    public HeadFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext) {
-        super(featureRendererContext);
+    public HeadFeatureRenderer(FeatureRendererContext<T, M> context) {
+        super(context);
     }
 
     @Override

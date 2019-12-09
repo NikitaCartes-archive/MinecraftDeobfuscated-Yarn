@@ -41,8 +41,8 @@ ModifiableTestableWorld {
         return Dimension.MOON_PHASE_TO_SIZE[this.getDimension().getMoonPhase(this.getLevelProperties().getTimeOfDay())];
     }
 
-    default public float getSkyAngle(float f) {
-        return this.getDimension().getSkyAngle(this.getLevelProperties().getTimeOfDay(), f);
+    default public float getSkyAngle(float tickDelta) {
+        return this.getDimension().getSkyAngle(this.getLevelProperties().getTimeOfDay(), tickDelta);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -67,8 +67,8 @@ ModifiableTestableWorld {
     public ChunkManager getChunkManager();
 
     @Override
-    default public boolean isChunkLoaded(int i, int j) {
-        return this.getChunkManager().isChunkLoaded(i, j);
+    default public boolean isChunkLoaded(int chunkX, int chunkZ) {
+        return this.getChunkManager().isChunkLoaded(chunkX, chunkZ);
     }
 
     public Random getRandom();
@@ -84,18 +84,18 @@ ModifiableTestableWorld {
 
     public void playLevelEvent(@Nullable PlayerEntity var1, int var2, BlockPos var3, int var4);
 
-    default public void playLevelEvent(int i, BlockPos blockPos, int j) {
-        this.playLevelEvent(null, i, blockPos, j);
+    default public void playLevelEvent(int eventId, BlockPos blockPos, int data) {
+        this.playLevelEvent(null, eventId, blockPos, data);
     }
 
     @Override
-    default public Stream<VoxelShape> getEntityCollisions(@Nullable Entity entity, Box box, Set<Entity> set) {
-        return EntityView.super.getEntityCollisions(entity, box, set);
+    default public Stream<VoxelShape> getEntityCollisions(@Nullable Entity entity, Box box, Set<Entity> excluded) {
+        return EntityView.super.getEntityCollisions(entity, box, excluded);
     }
 
     @Override
-    default public boolean intersectsEntities(@Nullable Entity entity, VoxelShape voxelShape) {
-        return EntityView.super.intersectsEntities(entity, voxelShape);
+    default public boolean intersectsEntities(@Nullable Entity except, VoxelShape shape) {
+        return EntityView.super.intersectsEntities(except, shape);
     }
 
     @Override

@@ -62,13 +62,13 @@ extends AbstractMinecartEntity {
     }
 
     @Override
-    public boolean damage(DamageSource damageSource, float f) {
+    public boolean damage(DamageSource source, float amount) {
         ProjectileEntity projectileEntity;
-        Entity entity = damageSource.getSource();
+        Entity entity = source.getSource();
         if (entity instanceof ProjectileEntity && (projectileEntity = (ProjectileEntity)entity).isOnFire()) {
             this.explode(projectileEntity.getVelocity().lengthSquared());
         }
-        return super.damage(damageSource, f);
+        return super.damage(source, amount);
     }
 
     @Override
@@ -99,28 +99,28 @@ extends AbstractMinecartEntity {
     }
 
     @Override
-    public boolean handleFallDamage(float f, float g) {
-        if (f >= 3.0f) {
-            float h = f / 10.0f;
-            this.explode(h * h);
+    public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
+        if (fallDistance >= 3.0f) {
+            float f = fallDistance / 10.0f;
+            this.explode(f * f);
         }
-        return super.handleFallDamage(f, g);
+        return super.handleFallDamage(fallDistance, damageMultiplier);
     }
 
     @Override
-    public void onActivatorRail(int i, int j, int k, boolean bl) {
-        if (bl && this.fuseTicks < 0) {
+    public void onActivatorRail(int x, int y, int z, boolean powered) {
+        if (powered && this.fuseTicks < 0) {
             this.prime();
         }
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void handleStatus(byte b) {
-        if (b == 10) {
+    public void handleStatus(byte status) {
+        if (status == 10) {
             this.prime();
         } else {
-            super.handleStatus(b);
+            super.handleStatus(status);
         }
     }
 
@@ -144,33 +144,33 @@ extends AbstractMinecartEntity {
     }
 
     @Override
-    public float getEffectiveExplosionResistance(Explosion explosion, BlockView blockView, BlockPos blockPos, BlockState blockState, FluidState fluidState, float f) {
-        if (this.isPrimed() && (blockState.matches(BlockTags.RAILS) || blockView.getBlockState(blockPos.up()).matches(BlockTags.RAILS))) {
+    public float getEffectiveExplosionResistance(Explosion explosion, BlockView world, BlockPos pos, BlockState blockState, FluidState fluidState, float max) {
+        if (this.isPrimed() && (blockState.matches(BlockTags.RAILS) || world.getBlockState(pos.up()).matches(BlockTags.RAILS))) {
             return 0.0f;
         }
-        return super.getEffectiveExplosionResistance(explosion, blockView, blockPos, blockState, fluidState, f);
+        return super.getEffectiveExplosionResistance(explosion, world, pos, blockState, fluidState, max);
     }
 
     @Override
-    public boolean canExplosionDestroyBlock(Explosion explosion, BlockView blockView, BlockPos blockPos, BlockState blockState, float f) {
-        if (this.isPrimed() && (blockState.matches(BlockTags.RAILS) || blockView.getBlockState(blockPos.up()).matches(BlockTags.RAILS))) {
+    public boolean canExplosionDestroyBlock(Explosion explosion, BlockView world, BlockPos pos, BlockState state, float explosionPower) {
+        if (this.isPrimed() && (state.matches(BlockTags.RAILS) || world.getBlockState(pos.up()).matches(BlockTags.RAILS))) {
             return false;
         }
-        return super.canExplosionDestroyBlock(explosion, blockView, blockPos, blockState, f);
+        return super.canExplosionDestroyBlock(explosion, world, pos, state, explosionPower);
     }
 
     @Override
-    protected void readCustomDataFromTag(CompoundTag compoundTag) {
-        super.readCustomDataFromTag(compoundTag);
-        if (compoundTag.contains("TNTFuse", 99)) {
-            this.fuseTicks = compoundTag.getInt("TNTFuse");
+    protected void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        if (tag.contains("TNTFuse", 99)) {
+            this.fuseTicks = tag.getInt("TNTFuse");
         }
     }
 
     @Override
-    protected void writeCustomDataToTag(CompoundTag compoundTag) {
-        super.writeCustomDataToTag(compoundTag);
-        compoundTag.putInt("TNTFuse", this.fuseTicks);
+    protected void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putInt("TNTFuse", this.fuseTicks);
     }
 }
 

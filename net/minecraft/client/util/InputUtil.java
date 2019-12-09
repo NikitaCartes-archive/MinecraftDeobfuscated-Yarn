@@ -35,31 +35,31 @@ public class InputUtil {
         return Type.KEYSYM.createFromCode(i);
     }
 
-    public static KeyCode fromName(String string) {
-        if (KeyCode.NAMES.containsKey(string)) {
-            return (KeyCode)KeyCode.NAMES.get(string);
+    public static KeyCode fromName(String s) {
+        if (KeyCode.NAMES.containsKey(s)) {
+            return (KeyCode)KeyCode.NAMES.get(s);
         }
         for (Type type : Type.values()) {
-            if (!string.startsWith(type.name)) continue;
-            String string2 = string.substring(type.name.length() + 1);
-            return type.createFromCode(Integer.parseInt(string2));
+            if (!s.startsWith(type.name)) continue;
+            String string = s.substring(type.name.length() + 1);
+            return type.createFromCode(Integer.parseInt(string));
         }
-        throw new IllegalArgumentException("Unknown key name: " + string);
+        throw new IllegalArgumentException("Unknown key name: " + s);
     }
 
-    public static boolean isKeyPressed(long l, int i) {
-        return GLFW.glfwGetKey(l, i) == 1;
+    public static boolean isKeyPressed(long handle, int i) {
+        return GLFW.glfwGetKey(handle, i) == 1;
     }
 
-    public static void setKeyboardCallbacks(long l, GLFWKeyCallbackI gLFWKeyCallbackI, GLFWCharModsCallbackI gLFWCharModsCallbackI) {
-        GLFW.glfwSetKeyCallback(l, gLFWKeyCallbackI);
-        GLFW.glfwSetCharModsCallback(l, gLFWCharModsCallbackI);
+    public static void setKeyboardCallbacks(long handle, GLFWKeyCallbackI gLFWKeyCallbackI, GLFWCharModsCallbackI gLFWCharModsCallbackI) {
+        GLFW.glfwSetKeyCallback(handle, gLFWKeyCallbackI);
+        GLFW.glfwSetCharModsCallback(handle, gLFWCharModsCallbackI);
     }
 
-    public static void setMouseCallbacks(long l, GLFWCursorPosCallbackI gLFWCursorPosCallbackI, GLFWMouseButtonCallbackI gLFWMouseButtonCallbackI, GLFWScrollCallbackI gLFWScrollCallbackI) {
-        GLFW.glfwSetCursorPosCallback(l, gLFWCursorPosCallbackI);
-        GLFW.glfwSetMouseButtonCallback(l, gLFWMouseButtonCallbackI);
-        GLFW.glfwSetScrollCallback(l, gLFWScrollCallbackI);
+    public static void setMouseCallbacks(long handle, GLFWCursorPosCallbackI gLFWCursorPosCallbackI, GLFWMouseButtonCallbackI gLFWMouseButtonCallbackI, GLFWScrollCallbackI gLFWScrollCallbackI) {
+        GLFW.glfwSetCursorPosCallback(handle, gLFWCursorPosCallbackI);
+        GLFW.glfwSetMouseButtonCallback(handle, gLFWMouseButtonCallbackI);
+        GLFW.glfwSetScrollCallback(handle, gLFWScrollCallbackI);
     }
 
     public static void setCursorParameters(long l, int i, double d, double e) {
@@ -75,9 +75,9 @@ public class InputUtil {
         }
     }
 
-    public static void setRawMouseMotionMode(long l, boolean bl) {
+    public static void setRawMouseMotionMode(long window, boolean value) {
         if (InputUtil.isRawMouseMotionSupported()) {
-            GLFW.glfwSetInputMode(l, GLFW_RAW_MOUSE_MOTION, bl ? 1 : 0);
+            GLFW.glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, value ? 1 : 0);
         }
     }
 
@@ -116,11 +116,11 @@ public class InputUtil {
         private final int keyCode;
         private static final Map<String, KeyCode> NAMES = Maps.newHashMap();
 
-        private KeyCode(String string, Type type, int i) {
-            this.name = string;
+        private KeyCode(String keyName, Type type, int i) {
+            this.name = keyName;
             this.type = type;
             this.keyCode = i;
-            NAMES.put(string, this);
+            NAMES.put(keyName, this);
         }
 
         public Type getCategory() {
@@ -135,14 +135,14 @@ public class InputUtil {
             return this.name;
         }
 
-        public boolean equals(Object object) {
-            if (this == object) {
+        public boolean equals(Object o) {
+            if (this == o) {
                 return true;
             }
-            if (object == null || this.getClass() != object.getClass()) {
+            if (o == null || this.getClass() != o.getClass()) {
                 return false;
             }
-            KeyCode keyCode = (KeyCode)object;
+            KeyCode keyCode = (KeyCode)o;
             return this.keyCode == keyCode.keyCode && this.type == keyCode.type;
         }
 
@@ -165,9 +165,9 @@ public class InputUtil {
         private final Int2ObjectMap<KeyCode> map = new Int2ObjectOpenHashMap<KeyCode>();
         private final String name;
 
-        private static void mapKey(Type type, String string, int i) {
-            KeyCode keyCode = new KeyCode(string, type, i);
-            type.map.put(i, keyCode);
+        private static void mapKey(Type type, String name, int keyCode) {
+            KeyCode keyCode2 = new KeyCode(name, type, keyCode);
+            type.map.put(keyCode, keyCode2);
         }
 
         private Type(String string2) {

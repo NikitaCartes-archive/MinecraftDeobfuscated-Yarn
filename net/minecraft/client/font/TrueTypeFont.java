@@ -32,18 +32,18 @@ implements Font {
     private final float scaleFactor;
     private final float ascent;
 
-    public TrueTypeFont(STBTTFontinfo sTBTTFontinfo, float f, float g, float h, float i2, String string) {
-        this.info = sTBTTFontinfo;
-        this.oversample = g;
-        string.chars().forEach(i -> this.excludedCharacters.add((char)(i & 0xFFFF)));
-        this.shiftX = h * g;
-        this.shiftY = i2 * g;
-        this.scaleFactor = STBTruetype.stbtt_ScaleForPixelHeight(sTBTTFontinfo, f * g);
+    public TrueTypeFont(STBTTFontinfo info, float size, float oversample, float shiftX, float shiftY, String excludedCharacters) {
+        this.info = info;
+        this.oversample = oversample;
+        excludedCharacters.chars().forEach(i -> this.excludedCharacters.add((char)(i & 0xFFFF)));
+        this.shiftX = shiftX * oversample;
+        this.shiftY = shiftY * oversample;
+        this.scaleFactor = STBTruetype.stbtt_ScaleForPixelHeight(info, size * oversample);
         try (MemoryStack memoryStack = MemoryStack.stackPush();){
             IntBuffer intBuffer = memoryStack.mallocInt(1);
             IntBuffer intBuffer2 = memoryStack.mallocInt(1);
             IntBuffer intBuffer3 = memoryStack.mallocInt(1);
-            STBTruetype.stbtt_GetFontVMetrics(sTBTTFontinfo, intBuffer, intBuffer2, intBuffer3);
+            STBTruetype.stbtt_GetFontVMetrics(info, intBuffer, intBuffer2, intBuffer3);
             this.ascent = (float)intBuffer.get(0) * this.scaleFactor;
         }
     }
@@ -79,9 +79,9 @@ implements Font {
         }
     }
 
-    public static STBTTFontinfo getSTBTTFontInfo(ByteBuffer byteBuffer) throws IOException {
+    public static STBTTFontinfo getSTBTTFontInfo(ByteBuffer font) throws IOException {
         STBTTFontinfo sTBTTFontinfo = STBTTFontinfo.create();
-        if (!STBTruetype.stbtt_InitFont(sTBTTFontinfo, byteBuffer)) {
+        if (!STBTruetype.stbtt_InitFont(sTBTTFontinfo, font)) {
             throw new IOException("Invalid ttf");
         }
         return sTBTTFontinfo;
@@ -89,8 +89,8 @@ implements Font {
 
     @Override
     @Nullable
-    public /* synthetic */ RenderableGlyph getGlyph(char c) {
-        return this.getGlyph(c);
+    public /* synthetic */ RenderableGlyph getGlyph(char character) {
+        return this.getGlyph(character);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -103,13 +103,13 @@ implements Font {
         private final float advance;
         private final int glyphIndex;
 
-        private TtfGlyph(int i, int j, int k, int l, float f, float g, int m) {
-            this.width = j - i;
-            this.height = k - l;
-            this.advance = f / TrueTypeFont.this.oversample;
-            this.bearingX = (g + (float)i + TrueTypeFont.this.shiftX) / TrueTypeFont.this.oversample;
-            this.ascent = (TrueTypeFont.this.ascent - (float)k + TrueTypeFont.this.shiftY) / TrueTypeFont.this.oversample;
-            this.glyphIndex = m;
+        private TtfGlyph(int xMin, int xMax, int yMax, int yMin, float advance, float bearing, int index) {
+            this.width = xMax - xMin;
+            this.height = yMax - yMin;
+            this.advance = advance / TrueTypeFont.this.oversample;
+            this.bearingX = (bearing + (float)xMin + TrueTypeFont.this.shiftX) / TrueTypeFont.this.oversample;
+            this.ascent = (TrueTypeFont.this.ascent - (float)yMax + TrueTypeFont.this.shiftY) / TrueTypeFont.this.oversample;
+            this.glyphIndex = index;
         }
 
         @Override
@@ -143,10 +143,10 @@ implements Font {
         }
 
         @Override
-        public void upload(int i, int j) {
+        public void upload(int x, int y) {
             NativeImage nativeImage = new NativeImage(NativeImage.Format.LUMINANCE, this.width, this.height, false);
             nativeImage.makeGlyphBitmapSubpixel(TrueTypeFont.this.info, this.glyphIndex, this.width, this.height, TrueTypeFont.this.scaleFactor, TrueTypeFont.this.scaleFactor, TrueTypeFont.this.shiftX, TrueTypeFont.this.shiftY, 0, 0);
-            nativeImage.upload(0, i, j, 0, 0, this.width, this.height, false, true);
+            nativeImage.upload(0, x, y, 0, 0, this.width, this.height, false, true);
         }
 
         @Override

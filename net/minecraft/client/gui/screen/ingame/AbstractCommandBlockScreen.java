@@ -71,9 +71,9 @@ extends Screen {
     }
 
     @Override
-    public void resize(MinecraftClient minecraftClient, int i, int j) {
+    public void resize(MinecraftClient client, int width, int height) {
         String string = this.consoleCommandTextField.getText();
-        this.init(minecraftClient, i, j);
+        this.init(client, width, height);
         this.consoleCommandTextField.setText(string);
         this.commandSuggestor.refresh();
     }
@@ -115,14 +115,14 @@ extends Screen {
     }
 
     @Override
-    public boolean keyPressed(int i, int j, int k) {
-        if (this.commandSuggestor.keyPressed(i, j, k)) {
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (this.commandSuggestor.keyPressed(keyCode, scanCode, modifiers)) {
             return true;
         }
-        if (super.keyPressed(i, j, k)) {
+        if (super.keyPressed(keyCode, scanCode, modifiers)) {
             return true;
         }
-        if (i == 257 || i == 335) {
+        if (keyCode == 257 || keyCode == 335) {
             this.commitAndClose();
             return true;
         }
@@ -130,34 +130,34 @@ extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double d, double e, double f) {
-        if (this.commandSuggestor.mouseScrolled(f)) {
+    public boolean mouseScrolled(double d, double e, double amount) {
+        if (this.commandSuggestor.mouseScrolled(amount)) {
             return true;
         }
-        return super.mouseScrolled(d, e, f);
+        return super.mouseScrolled(d, e, amount);
     }
 
     @Override
-    public boolean mouseClicked(double d, double e, int i) {
-        if (this.commandSuggestor.mouseClicked(d, e, i)) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (this.commandSuggestor.mouseClicked(mouseX, mouseY, button)) {
             return true;
         }
-        return super.mouseClicked(d, e, i);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
-    public void render(int i, int j, float f) {
+    public void render(int mouseX, int mouseY, float delta) {
         this.renderBackground();
         this.drawCenteredString(this.font, I18n.translate("advMode.setCommand", new Object[0]), this.width / 2, 20, 0xFFFFFF);
         this.drawString(this.font, I18n.translate("advMode.command", new Object[0]), this.width / 2 - 150, 40, 0xA0A0A0);
-        this.consoleCommandTextField.render(i, j, f);
-        int k = 75;
+        this.consoleCommandTextField.render(mouseX, mouseY, delta);
+        int i = 75;
         if (!this.previousOutputTextField.getText().isEmpty()) {
-            this.drawString(this.font, I18n.translate("advMode.previousOutput", new Object[0]), this.width / 2 - 150, (k += 5 * this.font.fontHeight + 1 + this.getTrackOutputButtonHeight() - 135) + 4, 0xA0A0A0);
-            this.previousOutputTextField.render(i, j, f);
+            this.drawString(this.font, I18n.translate("advMode.previousOutput", new Object[0]), this.width / 2 - 150, (i += 5 * this.font.fontHeight + 1 + this.getTrackOutputButtonHeight() - 135) + 4, 0xA0A0A0);
+            this.previousOutputTextField.render(mouseX, mouseY, delta);
         }
-        super.render(i, j, f);
-        this.commandSuggestor.render(i, j);
+        super.render(mouseX, mouseY, delta);
+        this.commandSuggestor.render(mouseX, mouseY);
     }
 }
 

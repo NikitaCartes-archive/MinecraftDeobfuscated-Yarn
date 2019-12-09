@@ -31,10 +31,10 @@ implements AutoCloseable {
     private final List<Integer> samplerHeights = Lists.newArrayList();
     private Matrix4f projectionMatrix;
 
-    public PostProcessShader(ResourceManager resourceManager, String string, Framebuffer framebuffer, Framebuffer framebuffer2) throws IOException {
-        this.program = new JsonGlProgram(resourceManager, string);
-        this.input = framebuffer;
-        this.output = framebuffer2;
+    public PostProcessShader(ResourceManager resourceManager, String programName, Framebuffer input, Framebuffer output) throws IOException {
+        this.program = new JsonGlProgram(resourceManager, programName);
+        this.input = input;
+        this.output = output;
     }
 
     @Override
@@ -42,22 +42,22 @@ implements AutoCloseable {
         this.program.close();
     }
 
-    public void addAuxTarget(String string, Object object, int i, int j) {
-        this.samplerNames.add(this.samplerNames.size(), string);
-        this.samplerValues.add(this.samplerValues.size(), object);
-        this.samplerWidths.add(this.samplerWidths.size(), i);
-        this.samplerHeights.add(this.samplerHeights.size(), j);
+    public void addAuxTarget(String name, Object target, int width, int height) {
+        this.samplerNames.add(this.samplerNames.size(), name);
+        this.samplerValues.add(this.samplerValues.size(), target);
+        this.samplerWidths.add(this.samplerWidths.size(), width);
+        this.samplerHeights.add(this.samplerHeights.size(), height);
     }
 
-    public void setProjectionMatrix(Matrix4f matrix4f) {
-        this.projectionMatrix = matrix4f;
+    public void setProjectionMatrix(Matrix4f projectionMatrix) {
+        this.projectionMatrix = projectionMatrix;
     }
 
-    public void render(float f) {
+    public void render(float time) {
         this.input.endWrite();
-        float g = this.output.textureWidth;
-        float h = this.output.textureHeight;
-        RenderSystem.viewport(0, 0, (int)g, (int)h);
+        float f = this.output.textureWidth;
+        float g = this.output.textureHeight;
+        RenderSystem.viewport(0, 0, (int)f, (int)g);
         this.program.bindSampler("DiffuseSampler", this.input);
         for (int i = 0; i < this.samplerValues.size(); ++i) {
             this.program.bindSampler(this.samplerNames.get(i), this.samplerValues.get(i));
@@ -65,8 +65,8 @@ implements AutoCloseable {
         }
         this.program.getUniformByNameOrDummy("ProjMat").set(this.projectionMatrix);
         this.program.getUniformByNameOrDummy("InSize").set(this.input.textureWidth, this.input.textureHeight);
-        this.program.getUniformByNameOrDummy("OutSize").set(g, h);
-        this.program.getUniformByNameOrDummy("Time").set(f);
+        this.program.getUniformByNameOrDummy("OutSize").set(f, g);
+        this.program.getUniformByNameOrDummy("Time").set(time);
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
         this.program.getUniformByNameOrDummy("ScreenSize").set(minecraftClient.getWindow().getFramebufferWidth(), minecraftClient.getWindow().getFramebufferHeight());
         this.program.enable();
@@ -76,9 +76,9 @@ implements AutoCloseable {
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
         bufferBuilder.vertex(0.0, 0.0, 500.0).color(255, 255, 255, 255).next();
-        bufferBuilder.vertex(g, 0.0, 500.0).color(255, 255, 255, 255).next();
-        bufferBuilder.vertex(g, h, 500.0).color(255, 255, 255, 255).next();
-        bufferBuilder.vertex(0.0, h, 500.0).color(255, 255, 255, 255).next();
+        bufferBuilder.vertex(f, 0.0, 500.0).color(255, 255, 255, 255).next();
+        bufferBuilder.vertex(f, g, 500.0).color(255, 255, 255, 255).next();
+        bufferBuilder.vertex(0.0, g, 500.0).color(255, 255, 255, 255).next();
         bufferBuilder.end();
         BufferRenderer.draw(bufferBuilder);
         RenderSystem.depthMask(true);

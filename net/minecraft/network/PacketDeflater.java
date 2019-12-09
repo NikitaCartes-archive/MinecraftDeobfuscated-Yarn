@@ -41,8 +41,8 @@ extends MessageToByteEncoder<ByteBuf> {
         }
     }
 
-    public void setCompressionThreshold(int i) {
-        this.compressionThreshold = i;
+    public void setCompressionThreshold(int compressionThreshold) {
+        this.compressionThreshold = compressionThreshold;
     }
 
     @Override

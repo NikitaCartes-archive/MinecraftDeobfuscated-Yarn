@@ -20,14 +20,14 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class DrownedEntityModel<T extends ZombieEntity>
 extends ZombieEntityModel<T> {
-    public DrownedEntityModel(float f, float g, int i, int j) {
-        super(f, g, i, j);
+    public DrownedEntityModel(float scale, float f, int textureWidth, int i) {
+        super(scale, f, textureWidth, i);
         this.rightArm = new ModelPart(this, 32, 48);
-        this.rightArm.addCuboid(-3.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, f);
-        this.rightArm.setPivot(-5.0f, 2.0f + g, 0.0f);
+        this.rightArm.addCuboid(-3.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, scale);
+        this.rightArm.setPivot(-5.0f, 2.0f + f, 0.0f);
         this.rightLeg = new ModelPart(this, 16, 48);
-        this.rightLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, f);
-        this.rightLeg.setPivot(-1.9f, 12.0f + g, 0.0f);
+        this.rightLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, scale);
+        this.rightLeg.setPivot(-1.9f, 12.0f + f, 0.0f);
     }
 
     public DrownedEntityModel(float f, boolean bl) {

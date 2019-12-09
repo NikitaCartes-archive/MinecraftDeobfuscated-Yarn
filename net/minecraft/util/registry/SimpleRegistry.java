@@ -30,41 +30,41 @@ extends MutableRegistry<T> {
     private int nextId;
 
     @Override
-    public <V extends T> V set(int i, Identifier identifier, V object) {
-        this.indexedEntries.put(object, i);
-        Validate.notNull(identifier);
-        Validate.notNull(object);
+    public <V extends T> V set(int rawId, Identifier id, V entry) {
+        this.indexedEntries.put(entry, rawId);
+        Validate.notNull(id);
+        Validate.notNull(entry);
         this.randomEntries = null;
-        if (this.entries.containsKey(identifier)) {
-            LOGGER.debug("Adding duplicate key '{}' to registry", (Object)identifier);
+        if (this.entries.containsKey(id)) {
+            LOGGER.debug("Adding duplicate key '{}' to registry", (Object)id);
         }
-        this.entries.put(identifier, object);
-        if (this.nextId <= i) {
-            this.nextId = i + 1;
+        this.entries.put(id, entry);
+        if (this.nextId <= rawId) {
+            this.nextId = rawId + 1;
         }
-        return object;
+        return entry;
     }
 
     @Override
-    public <V extends T> V add(Identifier identifier, V object) {
-        return this.set(this.nextId, identifier, object);
+    public <V extends T> V add(Identifier id, V entry) {
+        return this.set(this.nextId, id, entry);
     }
 
     @Override
     @Nullable
-    public Identifier getId(T object) {
-        return (Identifier)this.entries.inverse().get(object);
+    public Identifier getId(T entry) {
+        return (Identifier)this.entries.inverse().get(entry);
     }
 
     @Override
-    public int getRawId(@Nullable T object) {
-        return this.indexedEntries.getId(object);
+    public int getRawId(@Nullable T entry) {
+        return this.indexedEntries.getId(entry);
     }
 
     @Override
     @Nullable
-    public T get(int i) {
-        return this.indexedEntries.get(i);
+    public T get(int index) {
+        return this.indexedEntries.get(index);
     }
 
     @Override
@@ -74,13 +74,13 @@ extends MutableRegistry<T> {
 
     @Override
     @Nullable
-    public T get(@Nullable Identifier identifier) {
-        return (T)this.entries.get(identifier);
+    public T get(@Nullable Identifier id) {
+        return (T)this.entries.get(id);
     }
 
     @Override
-    public Optional<T> getOrEmpty(@Nullable Identifier identifier) {
-        return Optional.ofNullable(this.entries.get(identifier));
+    public Optional<T> getOrEmpty(@Nullable Identifier id) {
+        return Optional.ofNullable(this.entries.get(id));
     }
 
     @Override
@@ -108,8 +108,8 @@ extends MutableRegistry<T> {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean containsId(Identifier identifier) {
-        return this.entries.containsKey(identifier);
+    public boolean containsId(Identifier id) {
+        return this.entries.containsKey(id);
     }
 }
 

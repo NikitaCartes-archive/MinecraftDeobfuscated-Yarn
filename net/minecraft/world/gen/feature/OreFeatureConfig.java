@@ -22,15 +22,15 @@ implements FeatureConfig {
     public final int size;
     public final BlockState state;
 
-    public OreFeatureConfig(Target target, BlockState blockState, int i) {
-        this.size = i;
-        this.state = blockState;
+    public OreFeatureConfig(Target target, BlockState state, int size) {
+        this.size = size;
+        this.state = state;
         this.target = target;
     }
 
     @Override
-    public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-        return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("size"), dynamicOps.createInt(this.size), dynamicOps.createString("target"), dynamicOps.createString(this.target.getName()), dynamicOps.createString("state"), BlockState.serialize(dynamicOps, this.state).getValue())));
+    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("size"), ops.createInt(this.size), ops.createString("target"), ops.createString(this.target.getName()), ops.createString("state"), BlockState.serialize(ops, this.state).getValue())));
     }
 
     public static OreFeatureConfig deserialize(Dynamic<?> dynamic) {
@@ -54,8 +54,8 @@ implements FeatureConfig {
         private final String name;
         private final Predicate<BlockState> predicate;
 
-        private Target(String string2, Predicate<BlockState> predicate) {
-            this.name = string2;
+        private Target(String name, Predicate<BlockState> predicate) {
+            this.name = name;
             this.predicate = predicate;
         }
 
@@ -63,8 +63,8 @@ implements FeatureConfig {
             return this.name;
         }
 
-        public static Target byName(String string) {
-            return nameMap.get(string);
+        public static Target byName(String name) {
+            return nameMap.get(name);
         }
 
         public Predicate<BlockState> getCondition() {

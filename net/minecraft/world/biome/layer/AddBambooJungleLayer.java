@@ -16,11 +16,11 @@ public enum AddBambooJungleLayer implements SouthEastSamplingLayer
     private static final int BAMBOO_JUNGLE_ID;
 
     @Override
-    public int sample(LayerRandomnessSource layerRandomnessSource, int i) {
-        if (layerRandomnessSource.nextInt(10) == 0 && i == JUNGLE_ID) {
+    public int sample(LayerRandomnessSource context, int se) {
+        if (context.nextInt(10) == 0 && se == JUNGLE_ID) {
             return BAMBOO_JUNGLE_ID;
         }
-        return i;
+        return se;
     }
 
     static {

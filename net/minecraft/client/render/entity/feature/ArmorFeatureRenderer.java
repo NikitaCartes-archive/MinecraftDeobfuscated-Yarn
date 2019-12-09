@@ -74,9 +74,9 @@ extends FeatureRenderer<T, M> {
         }
     }
 
-    private void renderArmorParts(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, ArmorItem armorItem, boolean bl, A bipedEntityModel, boolean bl2, float f, float g, float h, @Nullable String string) {
-        VertexConsumer vertexConsumer = ItemRenderer.getArmorVertexConsumer(vertexConsumerProvider, RenderLayer.getEntityCutoutNoCull(this.getArmorTexture(armorItem, bl2, string)), false, bl);
-        ((AnimalModel)bipedEntityModel).render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, f, g, h, 1.0f);
+    private void renderArmorParts(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, ArmorItem armorItem, boolean renderGlint, A bipedEntityModel, boolean lowerParts, float r, float g, float b, @Nullable String textureSuffix) {
+        VertexConsumer vertexConsumer = ItemRenderer.getArmorVertexConsumer(vertexConsumerProvider, RenderLayer.getEntityCutoutNoCull(this.getArmorTexture(armorItem, lowerParts, textureSuffix)), false, renderGlint);
+        ((AnimalModel)bipedEntityModel).render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, r, g, b, 1.0f);
     }
 
     public A getArmor(EquipmentSlot equipmentSlot) {
@@ -87,9 +87,9 @@ extends FeatureRenderer<T, M> {
         return equipmentSlot == EquipmentSlot.LEGS;
     }
 
-    private Identifier getArmorTexture(ArmorItem armorItem, boolean bl, @Nullable String string) {
-        String string2 = "textures/models/armor/" + armorItem.getMaterial().getName() + "_layer_" + (bl ? 2 : 1) + (string == null ? "" : "_" + string) + ".png";
-        return ARMOR_TEXTURE_CACHE.computeIfAbsent(string2, Identifier::new);
+    private Identifier getArmorTexture(ArmorItem armorItem, boolean lowerParts, @Nullable String suffix) {
+        String string = "textures/models/armor/" + armorItem.getMaterial().getName() + "_layer_" + (lowerParts ? 2 : 1) + (suffix == null ? "" : "_" + suffix) + ".png";
+        return ARMOR_TEXTURE_CACHE.computeIfAbsent(string, Identifier::new);
     }
 
     protected abstract void setVisible(A var1, EquipmentSlot var2);

@@ -33,31 +33,31 @@ extends Container {
     @Environment(value=EnvType.CLIENT)
     private boolean canRefreshTrades;
 
-    public MerchantContainer(int i, PlayerInventory playerInventory) {
-        this(i, playerInventory, new SimpleTrader(playerInventory.player));
+    public MerchantContainer(int syncId, PlayerInventory playerInventory) {
+        this(syncId, playerInventory, new SimpleTrader(playerInventory.player));
     }
 
-    public MerchantContainer(int i, PlayerInventory playerInventory, Trader trader) {
-        super(ContainerType.MERCHANT, i);
-        int j;
+    public MerchantContainer(int syncId, PlayerInventory playerInventory, Trader trader) {
+        super(ContainerType.MERCHANT, syncId);
+        int i;
         this.trader = trader;
         this.traderInventory = new TraderInventory(trader);
         this.addSlot(new Slot(this.traderInventory, 0, 136, 37));
         this.addSlot(new Slot(this.traderInventory, 1, 162, 37));
         this.addSlot(new TradeOutputSlot(playerInventory.player, trader, this.traderInventory, 2, 220, 37));
-        for (j = 0; j < 3; ++j) {
-            for (int k = 0; k < 9; ++k) {
-                this.addSlot(new Slot(playerInventory, k + j * 9 + 9, 108 + k * 18, 84 + j * 18));
+        for (i = 0; i < 3; ++i) {
+            for (int j = 0; j < 9; ++j) {
+                this.addSlot(new Slot(playerInventory, j + i * 9 + 9, 108 + j * 18, 84 + i * 18));
             }
         }
-        for (j = 0; j < 9; ++j) {
-            this.addSlot(new Slot(playerInventory, j, 108 + j * 18, 142));
+        for (i = 0; i < 9; ++i) {
+            this.addSlot(new Slot(playerInventory, i, 108 + i * 18, 142));
         }
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void setCanLevel(boolean bl) {
-        this.levelled = bl;
+    public void setCanLevel(boolean canLevel) {
+        this.levelled = canLevel;
     }
 
     @Override
@@ -66,13 +66,13 @@ extends Container {
         super.onContentChanged(inventory);
     }
 
-    public void setRecipeIndex(int i) {
-        this.traderInventory.setRecipeIndex(i);
+    public void setRecipeIndex(int index) {
+        this.traderInventory.setRecipeIndex(index);
     }
 
     @Override
-    public boolean canUse(PlayerEntity playerEntity) {
-        return this.trader.getCurrentCustomer() == playerEntity;
+    public boolean canUse(PlayerEntity player) {
+        return this.trader.getCurrentCustomer() == player;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -86,8 +86,8 @@ extends Container {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void setExperienceFromServer(int i) {
-        this.trader.setExperienceFromServer(i);
+    public void setExperienceFromServer(int experience) {
+        this.trader.setExperienceFromServer(experience);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -96,13 +96,13 @@ extends Container {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void setLevelProgress(int i) {
-        this.levelProgress = i;
+    public void setLevelProgress(int porgress) {
+        this.levelProgress = porgress;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void setRefreshTrades(boolean bl) {
-        this.canRefreshTrades = bl;
+    public void setRefreshTrades(boolean refreshable) {
+        this.canRefreshTrades = refreshable;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -111,24 +111,24 @@ extends Container {
     }
 
     @Override
-    public boolean canInsertIntoSlot(ItemStack itemStack, Slot slot) {
+    public boolean canInsertIntoSlot(ItemStack stack, Slot slot) {
         return false;
     }
 
     @Override
-    public ItemStack transferSlot(PlayerEntity playerEntity, int i) {
+    public ItemStack transferSlot(PlayerEntity player, int invSlot) {
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = (Slot)this.slotList.get(i);
+        Slot slot = (Slot)this.slotList.get(invSlot);
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();
             itemStack = itemStack2.copy();
-            if (i == 2) {
+            if (invSlot == 2) {
                 if (!this.insertItem(itemStack2, 3, 39, true)) {
                     return ItemStack.EMPTY;
                 }
                 slot.onStackChanged(itemStack2, itemStack);
                 this.playYesSound();
-            } else if (i == 0 || i == 1 ? !this.insertItem(itemStack2, 3, 39, false) : (i >= 3 && i < 30 ? !this.insertItem(itemStack2, 30, 39, false) : i >= 30 && i < 39 && !this.insertItem(itemStack2, 3, 30, false))) {
+            } else if (invSlot == 0 || invSlot == 1 ? !this.insertItem(itemStack2, 3, 39, false) : (invSlot >= 3 && invSlot < 30 ? !this.insertItem(itemStack2, 30, 39, false) : invSlot >= 30 && invSlot < 39 && !this.insertItem(itemStack2, 3, 30, false))) {
                 return ItemStack.EMPTY;
             }
             if (itemStack2.isEmpty()) {
@@ -139,7 +139,7 @@ extends Container {
             if (itemStack2.getCount() == itemStack.getCount()) {
                 return ItemStack.EMPTY;
             }
-            slot.onTakeItem(playerEntity, itemStack2);
+            slot.onTakeItem(player, itemStack2);
         }
         return itemStack;
     }
@@ -152,29 +152,29 @@ extends Container {
     }
 
     @Override
-    public void close(PlayerEntity playerEntity) {
-        super.close(playerEntity);
+    public void close(PlayerEntity player) {
+        super.close(player);
         this.trader.setCurrentCustomer(null);
         if (this.trader.getTraderWorld().isClient) {
             return;
         }
-        if (!playerEntity.isAlive() || playerEntity instanceof ServerPlayerEntity && ((ServerPlayerEntity)playerEntity).method_14239()) {
+        if (!player.isAlive() || player instanceof ServerPlayerEntity && ((ServerPlayerEntity)player).method_14239()) {
             ItemStack itemStack = this.traderInventory.removeInvStack(0);
             if (!itemStack.isEmpty()) {
-                playerEntity.dropItem(itemStack, false);
+                player.dropItem(itemStack, false);
             }
             if (!(itemStack = this.traderInventory.removeInvStack(1)).isEmpty()) {
-                playerEntity.dropItem(itemStack, false);
+                player.dropItem(itemStack, false);
             }
         } else {
-            playerEntity.inventory.offerOrDrop(playerEntity.world, this.traderInventory.removeInvStack(0));
-            playerEntity.inventory.offerOrDrop(playerEntity.world, this.traderInventory.removeInvStack(1));
+            player.inventory.offerOrDrop(player.world, this.traderInventory.removeInvStack(0));
+            player.inventory.offerOrDrop(player.world, this.traderInventory.removeInvStack(1));
         }
     }
 
-    public void switchTo(int i) {
+    public void switchTo(int recipeIndex) {
         ItemStack itemStack2;
-        if (this.getRecipes().size() <= i) {
+        if (this.getRecipes().size() <= recipeIndex) {
             return;
         }
         ItemStack itemStack = this.traderInventory.getInvStack(0);
@@ -191,33 +191,33 @@ extends Container {
             this.traderInventory.setInvStack(1, itemStack2);
         }
         if (this.traderInventory.getInvStack(0).isEmpty() && this.traderInventory.getInvStack(1).isEmpty()) {
-            ItemStack itemStack3 = ((TradeOffer)this.getRecipes().get(i)).getAdjustedFirstBuyItem();
+            ItemStack itemStack3 = ((TradeOffer)this.getRecipes().get(recipeIndex)).getAdjustedFirstBuyItem();
             this.autofill(0, itemStack3);
-            ItemStack itemStack4 = ((TradeOffer)this.getRecipes().get(i)).getSecondBuyItem();
+            ItemStack itemStack4 = ((TradeOffer)this.getRecipes().get(recipeIndex)).getSecondBuyItem();
             this.autofill(1, itemStack4);
         }
     }
 
-    private void autofill(int i, ItemStack itemStack) {
-        if (!itemStack.isEmpty()) {
-            for (int j = 3; j < 39; ++j) {
-                ItemStack itemStack2 = ((Slot)this.slotList.get(j)).getStack();
-                if (itemStack2.isEmpty() || !this.equals(itemStack, itemStack2)) continue;
-                ItemStack itemStack3 = this.traderInventory.getInvStack(i);
-                int k = itemStack3.isEmpty() ? 0 : itemStack3.getCount();
-                int l = Math.min(itemStack.getMaxCount() - k, itemStack2.getCount());
-                ItemStack itemStack4 = itemStack2.copy();
-                int m = k + l;
-                itemStack2.decrement(l);
-                itemStack4.setCount(m);
-                this.traderInventory.setInvStack(i, itemStack4);
-                if (m >= itemStack.getMaxCount()) break;
+    private void autofill(int slot, ItemStack stack) {
+        if (!stack.isEmpty()) {
+            for (int i = 3; i < 39; ++i) {
+                ItemStack itemStack = ((Slot)this.slotList.get(i)).getStack();
+                if (itemStack.isEmpty() || !this.equals(stack, itemStack)) continue;
+                ItemStack itemStack2 = this.traderInventory.getInvStack(slot);
+                int j = itemStack2.isEmpty() ? 0 : itemStack2.getCount();
+                int k = Math.min(stack.getMaxCount() - j, itemStack.getCount());
+                ItemStack itemStack3 = itemStack.copy();
+                int l = j + k;
+                itemStack.decrement(k);
+                itemStack3.setCount(l);
+                this.traderInventory.setInvStack(slot, itemStack3);
+                if (l >= stack.getMaxCount()) break;
             }
         }
     }
 
-    private boolean equals(ItemStack itemStack, ItemStack itemStack2) {
-        return itemStack.getItem() == itemStack2.getItem() && ItemStack.areTagsEqual(itemStack, itemStack2);
+    private boolean equals(ItemStack itemStack, ItemStack otherItemStack) {
+        return itemStack.getItem() == otherItemStack.getItem() && ItemStack.areTagsEqual(itemStack, otherItemStack);
     }
 
     @Environment(value=EnvType.CLIENT)

@@ -31,30 +31,30 @@ extends StuckObjectsFeatureRenderer<T, M> {
     }
 
     @Override
-    protected int getObjectCount(T livingEntity) {
-        return ((LivingEntity)livingEntity).getStingerCount();
+    protected int getObjectCount(T entity) {
+        return ((LivingEntity)entity).getStingerCount();
     }
 
     @Override
-    protected void renderObject(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, Entity entity, float f, float g, float h, float j) {
-        float k = MathHelper.sqrt(f * f + h * h);
-        float l = (float)(Math.atan2(f, h) * 57.2957763671875);
-        float m = (float)(Math.atan2(g, k) * 57.2957763671875);
-        matrixStack.translate(0.0, 0.0, 0.0);
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(l - 90.0f));
-        matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(m));
-        float n = 0.0f;
-        float o = 0.125f;
-        float p = 0.0f;
-        float q = 0.0625f;
-        float r = 0.03125f;
-        matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(45.0f));
-        matrixStack.scale(0.03125f, 0.03125f, 0.03125f);
-        matrixStack.translate(2.5, 0.0, 0.0);
-        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(field_20529));
-        for (int s = 0; s < 4; ++s) {
-            matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0f));
-            MatrixStack.Entry entry = matrixStack.peek();
+    protected void renderObject(MatrixStack matrix, VertexConsumerProvider vertexConsumers, int i, Entity entity, float tickDelta, float f, float g, float h) {
+        float j = MathHelper.sqrt(tickDelta * tickDelta + g * g);
+        float k = (float)(Math.atan2(tickDelta, g) * 57.2957763671875);
+        float l = (float)(Math.atan2(f, j) * 57.2957763671875);
+        matrix.translate(0.0, 0.0, 0.0);
+        matrix.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(k - 90.0f));
+        matrix.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(l));
+        float m = 0.0f;
+        float n = 0.125f;
+        float o = 0.0f;
+        float p = 0.0625f;
+        float q = 0.03125f;
+        matrix.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(45.0f));
+        matrix.scale(0.03125f, 0.03125f, 0.03125f);
+        matrix.translate(2.5, 0.0, 0.0);
+        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(field_20529));
+        for (int r = 0; r < 4; ++r) {
+            matrix.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0f));
+            MatrixStack.Entry entry = matrix.peek();
             Matrix4f matrix4f = entry.getModel();
             Matrix3f matrix3f = entry.getNormal();
             StuckStingersFeatureRenderer.method_23295(vertexConsumer, matrix4f, matrix3f, -4.5f, -1, 0.0f, 0.0f, i);

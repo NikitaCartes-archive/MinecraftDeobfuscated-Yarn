@@ -12,8 +12,8 @@ import net.minecraft.datafixers.fixes.BlockStateFlattening;
 
 public class BlockStateStructureTemplateFix
 extends DataFix {
-    public BlockStateStructureTemplateFix(Schema schema, boolean bl) {
-        super(schema, bl);
+    public BlockStateStructureTemplateFix(Schema outputSchema, boolean changesType) {
+        super(outputSchema, changesType);
     }
 
     @Override

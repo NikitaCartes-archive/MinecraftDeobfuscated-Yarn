@@ -32,13 +32,13 @@ extends BlockView {
     @Nullable
     public BlockView getExistingChunk(int var1, int var2);
 
-    default public boolean intersectsEntities(@Nullable Entity entity, VoxelShape voxelShape) {
+    default public boolean intersectsEntities(@Nullable Entity except, VoxelShape shape) {
         return true;
     }
 
-    default public boolean canPlace(BlockState blockState, BlockPos blockPos, EntityContext entityContext) {
-        VoxelShape voxelShape = blockState.getCollisionShape(this, blockPos, entityContext);
-        return voxelShape.isEmpty() || this.intersectsEntities(null, voxelShape.offset(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
+    default public boolean canPlace(BlockState state, BlockPos pos, EntityContext context) {
+        VoxelShape voxelShape = state.getCollisionShape(this, pos, context);
+        return voxelShape.isEmpty() || this.intersectsEntities(null, voxelShape.offset(pos.getX(), pos.getY(), pos.getZ()));
     }
 
     default public boolean intersectsEntities(Entity entity) {
@@ -57,16 +57,16 @@ extends BlockView {
         return this.doesNotCollide(entity, box, Collections.emptySet());
     }
 
-    default public boolean doesNotCollide(@Nullable Entity entity, Box box, Set<Entity> set) {
-        return this.getCollisions(entity, box, set).allMatch(VoxelShape::isEmpty);
+    default public boolean doesNotCollide(@Nullable Entity entity, Box entityBoundingBox, Set<Entity> otherEntities) {
+        return this.getCollisions(entity, entityBoundingBox, otherEntities).allMatch(VoxelShape::isEmpty);
     }
 
-    default public Stream<VoxelShape> getEntityCollisions(@Nullable Entity entity, Box box, Set<Entity> set) {
+    default public Stream<VoxelShape> getEntityCollisions(@Nullable Entity entity, Box box, Set<Entity> excluded) {
         return Stream.empty();
     }
 
-    default public Stream<VoxelShape> getCollisions(@Nullable Entity entity, Box box, Set<Entity> set) {
-        return Streams.concat(this.getBlockCollisions(entity, box), this.getEntityCollisions(entity, box, set));
+    default public Stream<VoxelShape> getCollisions(@Nullable Entity entity, Box box, Set<Entity> excluded) {
+        return Streams.concat(this.getBlockCollisions(entity, box), this.getEntityCollisions(entity, box, excluded));
     }
 
     default public Stream<VoxelShape> getBlockCollisions(final @Nullable Entity entity, Box box) {

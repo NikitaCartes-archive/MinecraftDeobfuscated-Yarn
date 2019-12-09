@@ -69,8 +69,8 @@ public class FireworksSparkParticle {
     @Environment(value=EnvType.CLIENT)
     public static class Flash
     extends SpriteBillboardParticle {
-        private Flash(World world, double d, double e, double f) {
-            super(world, d, e, f);
+        private Flash(World x, double y, double d, double e) {
+            super(x, y, d, e);
             this.maxAge = 4;
         }
 
@@ -80,14 +80,14 @@ public class FireworksSparkParticle {
         }
 
         @Override
-        public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float f) {
-            this.setColorAlpha(0.6f - ((float)this.age + f - 1.0f) * 0.25f * 0.5f);
-            super.buildGeometry(vertexConsumer, camera, f);
+        public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
+            this.setColorAlpha(0.6f - ((float)this.age + tickDelta - 1.0f) * 0.25f * 0.5f);
+            super.buildGeometry(vertexConsumer, camera, tickDelta);
         }
 
         @Override
-        public float getSize(float f) {
-            return 7.1f * MathHelper.sin(((float)this.age + f - 1.0f) * 0.25f * (float)Math.PI);
+        public float getSize(float tickDelta) {
+            return 7.1f * MathHelper.sin(((float)this.age + tickDelta - 1.0f) * 0.25f * (float)Math.PI);
         }
     }
 
@@ -102,29 +102,29 @@ public class FireworksSparkParticle {
         private float field_3799;
         private boolean field_3802;
 
-        private Explosion(World world, double d, double e, double f, double g, double h, double i, ParticleManager particleManager, SpriteProvider spriteProvider) {
+        private Explosion(World world, double d, double e, double f, double velocityX, double velocityY, double velocityZ, ParticleManager particleManager, SpriteProvider spriteProvider) {
             super(world, d, e, f, spriteProvider, -0.004f);
-            this.velocityX = g;
-            this.velocityY = h;
-            this.velocityZ = i;
+            this.velocityX = velocityX;
+            this.velocityY = velocityY;
+            this.velocityZ = velocityZ;
             this.particleManager = particleManager;
             this.scale *= 0.75f;
             this.maxAge = 48 + this.random.nextInt(12);
             this.setSpriteForAge(spriteProvider);
         }
 
-        public void setTrail(boolean bl) {
-            this.trail = bl;
+        public void setTrail(boolean trail) {
+            this.trail = trail;
         }
 
-        public void setFlicker(boolean bl) {
-            this.flicker = bl;
+        public void setFlicker(boolean flicker) {
+            this.flicker = flicker;
         }
 
         @Override
-        public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float f) {
+        public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
             if (!this.flicker || this.age < this.maxAge / 3 || (this.age + this.maxAge) / 3 % 2 == 0) {
-                super.buildGeometry(vertexConsumer, camera, f);
+                super.buildGeometry(vertexConsumer, camera, tickDelta);
             }
         }
 
@@ -156,22 +156,22 @@ public class FireworksSparkParticle {
         private ListTag explosions;
         private boolean flicker;
 
-        public FireworkParticle(World world, double d, double e, double f, double g, double h, double i, ParticleManager particleManager, @Nullable CompoundTag compoundTag) {
-            super(world, d, e, f);
-            this.velocityX = g;
-            this.velocityY = h;
-            this.velocityZ = i;
+        public FireworkParticle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, ParticleManager particleManager, @Nullable CompoundTag tag) {
+            super(world, x, y, z);
+            this.velocityX = velocityX;
+            this.velocityY = velocityY;
+            this.velocityZ = velocityZ;
             this.particleManager = particleManager;
             this.maxAge = 8;
-            if (compoundTag != null) {
-                this.explosions = compoundTag.getList("Explosions", 10);
+            if (tag != null) {
+                this.explosions = tag.getList("Explosions", 10);
                 if (this.explosions.isEmpty()) {
                     this.explosions = null;
                 } else {
                     this.maxAge = this.explosions.size() * 2 - 1;
-                    for (int j = 0; j < this.explosions.size(); ++j) {
-                        CompoundTag compoundTag2 = this.explosions.getCompound(j);
-                        if (!compoundTag2.getBoolean("Flicker")) continue;
+                    for (int i = 0; i < this.explosions.size(); ++i) {
+                        CompoundTag compoundTag = this.explosions.getCompound(i);
+                        if (!compoundTag.getBoolean("Flicker")) continue;
                         this.flicker = true;
                         this.maxAge += 15;
                         break;
@@ -254,73 +254,73 @@ public class FireworksSparkParticle {
             return minecraftClient.gameRenderer.getCamera().getPos().squaredDistanceTo(this.x, this.y, this.z) >= 256.0;
         }
 
-        private void addExplosionParticle(double d, double e, double f, double g, double h, double i, int[] is, int[] js, boolean bl, boolean bl2) {
-            Explosion explosion = (Explosion)this.particleManager.addParticle(ParticleTypes.FIREWORK, d, e, f, g, h, i);
-            explosion.setTrail(bl);
-            explosion.setFlicker(bl2);
+        private void addExplosionParticle(double x, double y, double z, double velocityX, double velocityY, double velocityZ, int[] colors, int[] fadeColors, boolean trail, boolean flicker) {
+            Explosion explosion = (Explosion)this.particleManager.addParticle(ParticleTypes.FIREWORK, x, y, z, velocityX, velocityY, velocityZ);
+            explosion.setTrail(trail);
+            explosion.setFlicker(flicker);
             explosion.setColorAlpha(0.99f);
-            int j = this.random.nextInt(is.length);
-            explosion.setColor(is[j]);
-            if (js.length > 0) {
-                explosion.setTargetColor(js[this.random.nextInt(js.length)]);
+            int i = this.random.nextInt(colors.length);
+            explosion.setColor(colors[i]);
+            if (fadeColors.length > 0) {
+                explosion.setTargetColor(fadeColors[this.random.nextInt(fadeColors.length)]);
             }
         }
 
-        private void explodeBall(double d, int i, int[] is, int[] js, boolean bl, boolean bl2) {
-            double e = this.x;
-            double f = this.y;
-            double g = this.z;
-            for (int j = -i; j <= i; ++j) {
-                for (int k = -i; k <= i; ++k) {
-                    for (int l = -i; l <= i; ++l) {
-                        double h = (double)k + (this.random.nextDouble() - this.random.nextDouble()) * 0.5;
-                        double m = (double)j + (this.random.nextDouble() - this.random.nextDouble()) * 0.5;
-                        double n = (double)l + (this.random.nextDouble() - this.random.nextDouble()) * 0.5;
-                        double o = (double)MathHelper.sqrt(h * h + m * m + n * n) / d + this.random.nextGaussian() * 0.05;
-                        this.addExplosionParticle(e, f, g, h / o, m / o, n / o, is, js, bl, bl2);
-                        if (j == -i || j == i || k == -i || k == i) continue;
-                        l += i * 2 - 1;
+        private void explodeBall(double size, int amount, int[] colors, int[] fadeColors, boolean trail, boolean flicker) {
+            double d = this.x;
+            double e = this.y;
+            double f = this.z;
+            for (int i = -amount; i <= amount; ++i) {
+                for (int j = -amount; j <= amount; ++j) {
+                    for (int k = -amount; k <= amount; ++k) {
+                        double g = (double)j + (this.random.nextDouble() - this.random.nextDouble()) * 0.5;
+                        double h = (double)i + (this.random.nextDouble() - this.random.nextDouble()) * 0.5;
+                        double l = (double)k + (this.random.nextDouble() - this.random.nextDouble()) * 0.5;
+                        double m = (double)MathHelper.sqrt(g * g + h * h + l * l) / size + this.random.nextGaussian() * 0.05;
+                        this.addExplosionParticle(d, e, f, g / m, h / m, l / m, colors, fadeColors, trail, flicker);
+                        if (i == -amount || i == amount || j == -amount || j == amount) continue;
+                        k += amount * 2 - 1;
                     }
                 }
             }
         }
 
-        private void explodeStar(double d, double[][] ds, int[] is, int[] js, boolean bl, boolean bl2, boolean bl3) {
-            double e = ds[0][0];
-            double f = ds[0][1];
-            this.addExplosionParticle(this.x, this.y, this.z, e * d, f * d, 0.0, is, js, bl, bl2);
-            float g = this.random.nextFloat() * (float)Math.PI;
-            double h = bl3 ? 0.034 : 0.34;
+        private void explodeStar(double size, double[][] pattern, int[] colors, int[] fadeColors, boolean trail, boolean flicker, boolean keepShape) {
+            double d = pattern[0][0];
+            double e = pattern[0][1];
+            this.addExplosionParticle(this.x, this.y, this.z, d * size, e * size, 0.0, colors, fadeColors, trail, flicker);
+            float f = this.random.nextFloat() * (float)Math.PI;
+            double g = keepShape ? 0.034 : 0.34;
             for (int i = 0; i < 3; ++i) {
-                double j = (double)g + (double)((float)i * (float)Math.PI) * h;
+                double h = (double)f + (double)((float)i * (float)Math.PI) * g;
+                double j = d;
                 double k = e;
-                double l = f;
-                for (int m = 1; m < ds.length; ++m) {
-                    double n = ds[m][0];
-                    double o = ds[m][1];
-                    for (double p = 0.25; p <= 1.0; p += 0.25) {
-                        double q = MathHelper.lerp(p, k, n) * d;
-                        double r = MathHelper.lerp(p, l, o) * d;
-                        double s = q * Math.sin(j);
-                        q *= Math.cos(j);
-                        for (double t = -1.0; t <= 1.0; t += 2.0) {
-                            this.addExplosionParticle(this.x, this.y, this.z, q * t, r, s * t, is, js, bl, bl2);
+                for (int l = 1; l < pattern.length; ++l) {
+                    double m = pattern[l][0];
+                    double n = pattern[l][1];
+                    for (double o = 0.25; o <= 1.0; o += 0.25) {
+                        double p = MathHelper.lerp(o, j, m) * size;
+                        double q = MathHelper.lerp(o, k, n) * size;
+                        double r = p * Math.sin(h);
+                        p *= Math.cos(h);
+                        for (double s = -1.0; s <= 1.0; s += 2.0) {
+                            this.addExplosionParticle(this.x, this.y, this.z, p * s, q, r * s, colors, fadeColors, trail, flicker);
                         }
                     }
+                    j = m;
                     k = n;
-                    l = o;
                 }
             }
         }
 
-        private void explodeBurst(int[] is, int[] js, boolean bl, boolean bl2) {
+        private void explodeBurst(int[] colors, int[] fadeColors, boolean trail, boolean flocker) {
             double d = this.random.nextGaussian() * 0.05;
             double e = this.random.nextGaussian() * 0.05;
             for (int i = 0; i < 70; ++i) {
                 double f = this.velocityX * 0.5 + this.random.nextGaussian() * 0.15 + d;
                 double g = this.velocityZ * 0.5 + this.random.nextGaussian() * 0.15 + e;
                 double h = this.velocityY * 0.5 + this.random.nextDouble() * 0.5;
-                this.addExplosionParticle(this.x, this.y, this.z, f, h, g, is, js, bl, bl2);
+                this.addExplosionParticle(this.x, this.y, this.z, f, h, g, colors, fadeColors, trail, flocker);
             }
         }
     }

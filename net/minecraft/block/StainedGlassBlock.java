@@ -13,9 +13,9 @@ extends AbstractGlassBlock
 implements ColoredBlock {
     private final DyeColor color;
 
-    public StainedGlassBlock(DyeColor dyeColor, Block.Settings settings) {
+    public StainedGlassBlock(DyeColor color, Block.Settings settings) {
         super(settings);
-        this.color = dyeColor;
+        this.color = color;
     }
 
     @Override

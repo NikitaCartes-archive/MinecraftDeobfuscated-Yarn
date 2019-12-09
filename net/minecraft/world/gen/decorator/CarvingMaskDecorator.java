@@ -20,8 +20,8 @@ import net.minecraft.world.gen.decorator.Decorator;
 
 public class CarvingMaskDecorator
 extends Decorator<CarvingMaskDecoratorConfig> {
-    public CarvingMaskDecorator(Function<Dynamic<?>, ? extends CarvingMaskDecoratorConfig> function) {
-        super(function);
+    public CarvingMaskDecorator(Function<Dynamic<?>, ? extends CarvingMaskDecoratorConfig> configDeserializer) {
+        super(configDeserializer);
     }
 
     @Override

@@ -18,8 +18,8 @@ import net.minecraft.text.Text;
 
 public class TeamDisplayNameFix
 extends DataFix {
-    public TeamDisplayNameFix(Schema schema, boolean bl) {
-        super(schema, bl);
+    public TeamDisplayNameFix(Schema outputSchema, boolean changesType) {
+        super(outputSchema, changesType);
     }
 
     @Override

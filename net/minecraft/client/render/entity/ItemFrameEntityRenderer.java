@@ -37,8 +37,8 @@ extends EntityRenderer<ItemFrameEntity> {
     private final MinecraftClient client = MinecraftClient.getInstance();
     private final ItemRenderer itemRenderer;
 
-    public ItemFrameEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, ItemRenderer itemRenderer) {
-        super(entityRenderDispatcher);
+    public ItemFrameEntityRenderer(EntityRenderDispatcher renderManager, ItemRenderer itemRenderer) {
+        super(renderManager);
         this.itemRenderer = itemRenderer;
     }
 
@@ -110,8 +110,8 @@ extends EntityRenderer<ItemFrameEntity> {
     }
 
     @Override
-    public /* synthetic */ Vec3d getPositionOffset(Entity entity, float f) {
-        return this.getPositionOffset((ItemFrameEntity)entity, f);
+    public /* synthetic */ Vec3d getPositionOffset(Entity entity, float tickDelta) {
+        return this.getPositionOffset((ItemFrameEntity)entity, tickDelta);
     }
 }
 

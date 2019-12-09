@@ -34,13 +34,13 @@ extends CraftingContainer<Inventory> {
     protected final World world;
     private final RecipeType<? extends AbstractCookingRecipe> recipeType;
 
-    protected AbstractFurnaceContainer(ContainerType<?> containerType, RecipeType<? extends AbstractCookingRecipe> recipeType, int i, PlayerInventory playerInventory) {
-        this(containerType, recipeType, i, playerInventory, new BasicInventory(3), new ArrayPropertyDelegate(4));
+    protected AbstractFurnaceContainer(ContainerType<?> containerType, RecipeType<? extends AbstractCookingRecipe> recipeType, int syncId, PlayerInventory playerInventory) {
+        this(containerType, recipeType, syncId, playerInventory, new BasicInventory(3), new ArrayPropertyDelegate(4));
     }
 
-    protected AbstractFurnaceContainer(ContainerType<?> containerType, RecipeType<? extends AbstractCookingRecipe> recipeType, int i, PlayerInventory playerInventory, Inventory inventory, PropertyDelegate propertyDelegate) {
-        super(containerType, i);
-        int j;
+    protected AbstractFurnaceContainer(ContainerType<?> containerType, RecipeType<? extends AbstractCookingRecipe> recipeType, int syncId, PlayerInventory playerInventory, Inventory inventory, PropertyDelegate propertyDelegate) {
+        super(containerType, syncId);
+        int i;
         this.recipeType = recipeType;
         AbstractFurnaceContainer.checkContainerSize(inventory, 3);
         AbstractFurnaceContainer.checkContainerDataCount(propertyDelegate, 4);
@@ -50,13 +50,13 @@ extends CraftingContainer<Inventory> {
         this.addSlot(new Slot(inventory, 0, 56, 17));
         this.addSlot(new FurnaceFuelSlot(this, inventory, 1, 56, 53));
         this.addSlot(new FurnaceOutputSlot(playerInventory.player, inventory, 2, 116, 35));
-        for (j = 0; j < 3; ++j) {
-            for (int k = 0; k < 9; ++k) {
-                this.addSlot(new Slot(playerInventory, k + j * 9 + 9, 8 + k * 18, 84 + j * 18));
+        for (i = 0; i < 3; ++i) {
+            for (int j = 0; j < 9; ++j) {
+                this.addSlot(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
             }
         }
-        for (j = 0; j < 9; ++j) {
-            this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 142));
+        for (i = 0; i < 9; ++i) {
+            this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
         }
         this.addProperties(propertyDelegate);
     }
@@ -105,23 +105,23 @@ extends CraftingContainer<Inventory> {
     }
 
     @Override
-    public boolean canUse(PlayerEntity playerEntity) {
-        return this.inventory.canPlayerUseInv(playerEntity);
+    public boolean canUse(PlayerEntity player) {
+        return this.inventory.canPlayerUseInv(player);
     }
 
     @Override
-    public ItemStack transferSlot(PlayerEntity playerEntity, int i) {
+    public ItemStack transferSlot(PlayerEntity player, int invSlot) {
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = (Slot)this.slotList.get(i);
+        Slot slot = (Slot)this.slotList.get(invSlot);
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();
             itemStack = itemStack2.copy();
-            if (i == 2) {
+            if (invSlot == 2) {
                 if (!this.insertItem(itemStack2, 3, 39, true)) {
                     return ItemStack.EMPTY;
                 }
                 slot.onStackChanged(itemStack2, itemStack);
-            } else if (i == 1 || i == 0 ? !this.insertItem(itemStack2, 3, 39, false) : (this.isSmeltable(itemStack2) ? !this.insertItem(itemStack2, 0, 1, false) : (this.isFuel(itemStack2) ? !this.insertItem(itemStack2, 1, 2, false) : (i >= 3 && i < 30 ? !this.insertItem(itemStack2, 30, 39, false) : i >= 30 && i < 39 && !this.insertItem(itemStack2, 3, 30, false))))) {
+            } else if (invSlot == 1 || invSlot == 0 ? !this.insertItem(itemStack2, 3, 39, false) : (this.isSmeltable(itemStack2) ? !this.insertItem(itemStack2, 0, 1, false) : (this.isFuel(itemStack2) ? !this.insertItem(itemStack2, 1, 2, false) : (invSlot >= 3 && invSlot < 30 ? !this.insertItem(itemStack2, 30, 39, false) : invSlot >= 30 && invSlot < 39 && !this.insertItem(itemStack2, 3, 30, false))))) {
                 return ItemStack.EMPTY;
             }
             if (itemStack2.isEmpty()) {
@@ -132,7 +132,7 @@ extends CraftingContainer<Inventory> {
             if (itemStack2.getCount() == itemStack.getCount()) {
                 return ItemStack.EMPTY;
             }
-            slot.onTakeItem(playerEntity, itemStack2);
+            slot.onTakeItem(player, itemStack2);
         }
         return itemStack;
     }

@@ -13,10 +13,10 @@ implements Comparable<ChunkTicket<?>> {
     private final T argument;
     private long location;
 
-    protected ChunkTicket(ChunkTicketType<T> chunkTicketType, int i, T object) {
-        this.type = chunkTicketType;
-        this.level = i;
-        this.argument = object;
+    protected ChunkTicket(ChunkTicketType<T> type, int level, T argument) {
+        this.type = type;
+        this.level = level;
+        this.argument = argument;
     }
 
     @Override
@@ -32,14 +32,14 @@ implements Comparable<ChunkTicket<?>> {
         return this.type.getArgumentComparator().compare(this.argument, chunkTicket.argument);
     }
 
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (!(object instanceof ChunkTicket)) {
+        if (!(obj instanceof ChunkTicket)) {
             return false;
         }
-        ChunkTicket chunkTicket = (ChunkTicket)object;
+        ChunkTicket chunkTicket = (ChunkTicket)obj;
         return this.level == chunkTicket.level && Objects.equals(this.type, chunkTicket.type) && Objects.equals(this.argument, chunkTicket.argument);
     }
 

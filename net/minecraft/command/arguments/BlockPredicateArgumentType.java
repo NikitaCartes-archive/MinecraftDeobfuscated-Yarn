@@ -57,21 +57,21 @@ implements ArgumentType<BlockPredicate> {
         };
     }
 
-    public static Predicate<CachedBlockPosition> getBlockPredicate(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
-        return commandContext.getArgument(string, BlockPredicate.class).create(commandContext.getSource().getMinecraftServer().getTagManager());
+    public static Predicate<CachedBlockPosition> getBlockPredicate(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
+        return context.getArgument(name, BlockPredicate.class).create(context.getSource().getMinecraftServer().getTagManager());
     }
 
     @Override
-    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
-        StringReader stringReader = new StringReader(suggestionsBuilder.getInput());
-        stringReader.setCursor(suggestionsBuilder.getStart());
+    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+        StringReader stringReader = new StringReader(builder.getInput());
+        stringReader.setCursor(builder.getStart());
         BlockArgumentParser blockArgumentParser = new BlockArgumentParser(stringReader, true);
         try {
             blockArgumentParser.parse(true);
         } catch (CommandSyntaxException commandSyntaxException) {
             // empty catch block
         }
-        return blockArgumentParser.getSuggestions(suggestionsBuilder);
+        return blockArgumentParser.getSuggestions(builder);
     }
 
     @Override
@@ -91,10 +91,10 @@ implements ArgumentType<BlockPredicate> {
         private final CompoundTag nbt;
         private final Map<String, String> properties;
 
-        private TagPredicate(Tag<Block> tag, Map<String, String> map, @Nullable CompoundTag compoundTag) {
+        private TagPredicate(Tag<Block> tag, Map<String, String> map, @Nullable CompoundTag nbt) {
             this.tag = tag;
             this.properties = map;
-            this.nbt = compoundTag;
+            this.nbt = nbt;
         }
 
         @Override
@@ -135,15 +135,15 @@ implements ArgumentType<BlockPredicate> {
         @Nullable
         private final CompoundTag nbt;
 
-        public StatePredicate(BlockState blockState, Set<Property<?>> set, @Nullable CompoundTag compoundTag) {
-            this.state = blockState;
-            this.properties = set;
-            this.nbt = compoundTag;
+        public StatePredicate(BlockState state, Set<Property<?>> properties, @Nullable CompoundTag nbt) {
+            this.state = state;
+            this.properties = properties;
+            this.nbt = nbt;
         }
 
         @Override
-        public boolean test(CachedBlockPosition cachedBlockPosition) {
-            BlockState blockState = cachedBlockPosition.getBlockState();
+        public boolean test(CachedBlockPosition pos) {
+            BlockState blockState = pos.getBlockState();
             if (blockState.getBlock() != this.state.getBlock()) {
                 return false;
             }
@@ -152,7 +152,7 @@ implements ArgumentType<BlockPredicate> {
                 return false;
             }
             if (this.nbt != null) {
-                BlockEntity blockEntity = cachedBlockPosition.getBlockEntity();
+                BlockEntity blockEntity = pos.getBlockEntity();
                 return blockEntity != null && NbtHelper.matches(this.nbt, blockEntity.toTag(new CompoundTag()), true);
             }
             return true;

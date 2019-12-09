@@ -64,28 +64,28 @@ public final class Matrix3f {
         return matrix3f;
     }
 
-    public Matrix3f(Matrix4f matrix4f) {
-        this.a00 = matrix4f.a00;
-        this.a01 = matrix4f.a01;
-        this.a02 = matrix4f.a02;
-        this.a10 = matrix4f.a10;
-        this.a11 = matrix4f.a11;
-        this.a12 = matrix4f.a12;
-        this.a20 = matrix4f.a20;
-        this.a21 = matrix4f.a21;
-        this.a22 = matrix4f.a22;
+    public Matrix3f(Matrix4f source) {
+        this.a00 = source.a00;
+        this.a01 = source.a01;
+        this.a02 = source.a02;
+        this.a10 = source.a10;
+        this.a11 = source.a11;
+        this.a12 = source.a12;
+        this.a20 = source.a20;
+        this.a21 = source.a21;
+        this.a22 = source.a22;
     }
 
-    public Matrix3f(Matrix3f matrix3f) {
-        this.a00 = matrix3f.a00;
-        this.a01 = matrix3f.a01;
-        this.a02 = matrix3f.a02;
-        this.a10 = matrix3f.a10;
-        this.a11 = matrix3f.a11;
-        this.a12 = matrix3f.a12;
-        this.a20 = matrix3f.a20;
-        this.a21 = matrix3f.a21;
-        this.a22 = matrix3f.a22;
+    public Matrix3f(Matrix3f source) {
+        this.a00 = source.a00;
+        this.a01 = source.a01;
+        this.a02 = source.a02;
+        this.a10 = source.a10;
+        this.a11 = source.a11;
+        this.a12 = source.a12;
+        this.a20 = source.a20;
+        this.a21 = source.a21;
+        this.a22 = source.a22;
     }
 
     private static Pair<Float, Float> method_22849(float f, float g, float h) {
@@ -291,16 +291,16 @@ public final class Matrix3f {
         return i;
     }
 
-    public void load(Matrix3f matrix3f) {
-        this.a00 = matrix3f.a00;
-        this.a01 = matrix3f.a01;
-        this.a02 = matrix3f.a02;
-        this.a10 = matrix3f.a10;
-        this.a11 = matrix3f.a11;
-        this.a12 = matrix3f.a12;
-        this.a20 = matrix3f.a20;
-        this.a21 = matrix3f.a21;
-        this.a22 = matrix3f.a22;
+    public void load(Matrix3f source) {
+        this.a00 = source.a00;
+        this.a01 = source.a01;
+        this.a02 = source.a02;
+        this.a10 = source.a10;
+        this.a11 = source.a11;
+        this.a12 = source.a12;
+        this.a20 = source.a20;
+        this.a21 = source.a21;
+        this.a22 = source.a22;
     }
 
     public String toString() {
@@ -371,16 +371,16 @@ public final class Matrix3f {
         return false;
     }
 
-    public void multiply(Matrix3f matrix3f) {
-        float f = this.a00 * matrix3f.a00 + this.a01 * matrix3f.a10 + this.a02 * matrix3f.a20;
-        float g = this.a00 * matrix3f.a01 + this.a01 * matrix3f.a11 + this.a02 * matrix3f.a21;
-        float h = this.a00 * matrix3f.a02 + this.a01 * matrix3f.a12 + this.a02 * matrix3f.a22;
-        float i = this.a10 * matrix3f.a00 + this.a11 * matrix3f.a10 + this.a12 * matrix3f.a20;
-        float j = this.a10 * matrix3f.a01 + this.a11 * matrix3f.a11 + this.a12 * matrix3f.a21;
-        float k = this.a10 * matrix3f.a02 + this.a11 * matrix3f.a12 + this.a12 * matrix3f.a22;
-        float l = this.a20 * matrix3f.a00 + this.a21 * matrix3f.a10 + this.a22 * matrix3f.a20;
-        float m = this.a20 * matrix3f.a01 + this.a21 * matrix3f.a11 + this.a22 * matrix3f.a21;
-        float n = this.a20 * matrix3f.a02 + this.a21 * matrix3f.a12 + this.a22 * matrix3f.a22;
+    public void multiply(Matrix3f other) {
+        float f = this.a00 * other.a00 + this.a01 * other.a10 + this.a02 * other.a20;
+        float g = this.a00 * other.a01 + this.a01 * other.a11 + this.a02 * other.a21;
+        float h = this.a00 * other.a02 + this.a01 * other.a12 + this.a02 * other.a22;
+        float i = this.a10 * other.a00 + this.a11 * other.a10 + this.a12 * other.a20;
+        float j = this.a10 * other.a01 + this.a11 * other.a11 + this.a12 * other.a21;
+        float k = this.a10 * other.a02 + this.a11 * other.a12 + this.a12 * other.a22;
+        float l = this.a20 * other.a00 + this.a21 * other.a10 + this.a22 * other.a20;
+        float m = this.a20 * other.a01 + this.a21 * other.a11 + this.a22 * other.a21;
+        float n = this.a20 * other.a02 + this.a21 * other.a12 + this.a22 * other.a22;
         this.a00 = f;
         this.a01 = g;
         this.a02 = h;
@@ -396,16 +396,16 @@ public final class Matrix3f {
         this.multiply(new Matrix3f(quaternion));
     }
 
-    public void multiply(float f) {
-        this.a00 *= f;
-        this.a01 *= f;
-        this.a02 *= f;
-        this.a10 *= f;
-        this.a11 *= f;
-        this.a12 *= f;
-        this.a20 *= f;
-        this.a21 *= f;
-        this.a22 *= f;
+    public void multiply(float scalar) {
+        this.a00 *= scalar;
+        this.a01 *= scalar;
+        this.a02 *= scalar;
+        this.a10 *= scalar;
+        this.a11 *= scalar;
+        this.a12 *= scalar;
+        this.a20 *= scalar;
+        this.a21 *= scalar;
+        this.a22 *= scalar;
     }
 
     public Matrix3f copy() {

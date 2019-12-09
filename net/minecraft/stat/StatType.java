@@ -22,12 +22,12 @@ implements Iterable<Stat<T>> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public boolean hasStat(T object) {
-        return this.stats.containsKey(object);
+    public boolean hasStat(T key) {
+        return this.stats.containsKey(key);
     }
 
-    public Stat<T> getOrCreateStat(T object2, StatFormatter statFormatter) {
-        return this.stats.computeIfAbsent(object2, object -> new Stat<Object>(this, object, statFormatter));
+    public Stat<T> getOrCreateStat(T key, StatFormatter formatter) {
+        return this.stats.computeIfAbsent(key, object -> new Stat<Object>(this, object, formatter));
     }
 
     public Registry<T> getRegistry() {
@@ -39,8 +39,8 @@ implements Iterable<Stat<T>> {
         return this.stats.values().iterator();
     }
 
-    public Stat<T> getOrCreateStat(T object) {
-        return this.getOrCreateStat(object, StatFormatter.DEFAULT);
+    public Stat<T> getOrCreateStat(T key) {
+        return this.getOrCreateStat(key, StatFormatter.DEFAULT);
     }
 
     @Environment(value=EnvType.CLIENT)

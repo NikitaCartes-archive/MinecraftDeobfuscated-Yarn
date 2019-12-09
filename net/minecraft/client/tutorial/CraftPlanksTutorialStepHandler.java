@@ -65,16 +65,16 @@ implements TutorialStepHandler {
     }
 
     @Override
-    public void onSlotUpdate(ItemStack itemStack) {
-        Item item = itemStack.getItem();
+    public void onSlotUpdate(ItemStack stack) {
+        Item item = stack.getItem();
         if (ItemTags.PLANKS.contains(item)) {
             this.manager.setStep(TutorialStep.NONE);
         }
     }
 
-    public static boolean hasCrafted(ClientPlayerEntity clientPlayerEntity, Tag<Item> tag) {
+    public static boolean hasCrafted(ClientPlayerEntity player, Tag<Item> tag) {
         for (Item item : tag.values()) {
-            if (clientPlayerEntity.getStats().getStat(Stats.CRAFTED.getOrCreateStat(item)) <= 0) continue;
+            if (player.getStats().getStat(Stats.CRAFTED.getOrCreateStat(item)) <= 0) continue;
             return true;
         }
         return false;

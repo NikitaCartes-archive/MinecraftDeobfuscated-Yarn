@@ -23,29 +23,29 @@ extends Block {
     }
 
     @Override
-    public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
+    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
         if (world.getDimension().doesWaterVaporize()) {
-            world.setBlockState(blockPos, Blocks.SPONGE.getDefaultState(), 3);
-            world.playLevelEvent(2009, blockPos, 0);
-            world.playSound(null, blockPos, SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 1.0f, (1.0f + world.getRandom().nextFloat() * 0.2f) * 0.7f);
+            world.setBlockState(pos, Blocks.SPONGE.getDefaultState(), 3);
+            world.playLevelEvent(2009, pos, 0);
+            world.playSound(null, pos, SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 1.0f, (1.0f + world.getRandom().nextFloat() * 0.2f) * 0.7f);
         }
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+    public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
         Direction direction = Direction.random(random);
         if (direction == Direction.UP) {
             return;
         }
-        BlockPos blockPos2 = blockPos.offset(direction);
-        BlockState blockState2 = world.getBlockState(blockPos2);
-        if (blockState.isOpaque() && blockState2.isSideSolidFullSquare(world, blockPos2, direction.getOpposite())) {
+        BlockPos blockPos = pos.offset(direction);
+        BlockState blockState = world.getBlockState(blockPos);
+        if (state.isOpaque() && blockState.isSideSolidFullSquare(world, blockPos, direction.getOpposite())) {
             return;
         }
-        double d = blockPos.getX();
-        double e = blockPos.getY();
-        double f = blockPos.getZ();
+        double d = pos.getX();
+        double e = pos.getY();
+        double f = pos.getZ();
         if (direction == Direction.DOWN) {
             e -= 0.05;
             d += random.nextDouble();

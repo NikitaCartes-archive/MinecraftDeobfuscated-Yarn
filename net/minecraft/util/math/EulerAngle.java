@@ -11,14 +11,14 @@ public class EulerAngle {
     protected final float yaw;
     protected final float roll;
 
-    public EulerAngle(float f, float g, float h) {
-        this.pitch = Float.isInfinite(f) || Float.isNaN(f) ? 0.0f : f % 360.0f;
-        this.yaw = Float.isInfinite(g) || Float.isNaN(g) ? 0.0f : g % 360.0f;
-        this.roll = Float.isInfinite(h) || Float.isNaN(h) ? 0.0f : h % 360.0f;
+    public EulerAngle(float pitch, float yaw, float roll) {
+        this.pitch = Float.isInfinite(pitch) || Float.isNaN(pitch) ? 0.0f : pitch % 360.0f;
+        this.yaw = Float.isInfinite(yaw) || Float.isNaN(yaw) ? 0.0f : yaw % 360.0f;
+        this.roll = Float.isInfinite(roll) || Float.isNaN(roll) ? 0.0f : roll % 360.0f;
     }
 
-    public EulerAngle(ListTag listTag) {
-        this(listTag.getFloat(0), listTag.getFloat(1), listTag.getFloat(2));
+    public EulerAngle(ListTag serialized) {
+        this(serialized.getFloat(0), serialized.getFloat(1), serialized.getFloat(2));
     }
 
     public ListTag serialize() {
@@ -29,11 +29,11 @@ public class EulerAngle {
         return listTag;
     }
 
-    public boolean equals(Object object) {
-        if (!(object instanceof EulerAngle)) {
+    public boolean equals(Object o) {
+        if (!(o instanceof EulerAngle)) {
             return false;
         }
-        EulerAngle eulerAngle = (EulerAngle)object;
+        EulerAngle eulerAngle = (EulerAngle)o;
         return this.pitch == eulerAngle.pitch && this.yaw == eulerAngle.yaw && this.roll == eulerAngle.roll;
     }
 

@@ -50,9 +50,9 @@ extends Biome {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public int getGrassColorAt(double d, double e) {
-        double f = FOLIAGE_NOISE.sample(d * 0.0225, e * 0.0225, false);
-        if (f < -0.1) {
+    public int getGrassColorAt(double x, double z) {
+        double d = FOLIAGE_NOISE.sample(x * 0.0225, z * 0.0225, false);
+        if (d < -0.1) {
             return 5011004;
         }
         return 6975545;

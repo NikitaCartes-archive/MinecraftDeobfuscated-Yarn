@@ -121,8 +121,8 @@ extends BaseFluid {
     }
 
     @Override
-    protected void beforeBreakingBlock(IWorld iWorld, BlockPos blockPos, BlockState blockState) {
-        this.method_15818(iWorld, blockPos);
+    protected void beforeBreakingBlock(IWorld world, BlockPos pos, BlockState state) {
+        this.method_15818(world, pos);
     }
 
     @Override
@@ -156,9 +156,9 @@ extends BaseFluid {
     }
 
     @Override
-    public int getNextTickDelay(World world, BlockPos blockPos, FluidState fluidState, FluidState fluidState2) {
+    public int getNextTickDelay(World world, BlockPos pos, FluidState oldState, FluidState newState) {
         int i = this.getTickRate(world);
-        if (!(fluidState.isEmpty() || fluidState2.isEmpty() || fluidState.get(FALLING).booleanValue() || fluidState2.get(FALLING).booleanValue() || !(fluidState2.getHeight(world, blockPos) > fluidState.getHeight(world, blockPos)) || world.getRandom().nextInt(4) == 0)) {
+        if (!(oldState.isEmpty() || newState.isEmpty() || oldState.get(FALLING).booleanValue() || newState.get(FALLING).booleanValue() || !(newState.getHeight(world, pos) > oldState.getHeight(world, pos)) || world.getRandom().nextInt(4) == 0)) {
             i *= 4;
         }
         return i;
@@ -174,18 +174,18 @@ extends BaseFluid {
     }
 
     @Override
-    protected void flow(IWorld iWorld, BlockPos blockPos, BlockState blockState, Direction direction, FluidState fluidState) {
+    protected void flow(IWorld world, BlockPos pos, BlockState state, Direction direction, FluidState fluidState) {
         if (direction == Direction.DOWN) {
-            FluidState fluidState2 = iWorld.getFluidState(blockPos);
+            FluidState fluidState2 = world.getFluidState(pos);
             if (this.matches(FluidTags.LAVA) && fluidState2.matches(FluidTags.WATER)) {
-                if (blockState.getBlock() instanceof FluidBlock) {
-                    iWorld.setBlockState(blockPos, Blocks.STONE.getDefaultState(), 3);
+                if (state.getBlock() instanceof FluidBlock) {
+                    world.setBlockState(pos, Blocks.STONE.getDefaultState(), 3);
                 }
-                this.method_15818(iWorld, blockPos);
+                this.method_15818(world, pos);
                 return;
             }
         }
-        super.flow(iWorld, blockPos, blockState, direction, fluidState);
+        super.flow(world, pos, state, direction, fluidState);
     }
 
     @Override

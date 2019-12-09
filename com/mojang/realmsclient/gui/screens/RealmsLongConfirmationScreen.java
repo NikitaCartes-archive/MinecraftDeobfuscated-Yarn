@@ -24,13 +24,13 @@ extends RealmsScreen {
     protected final int id;
     private final boolean yesNoQuestion;
 
-    public RealmsLongConfirmationScreen(RealmsConfirmResultListener realmsConfirmResultListener, Type type, String string, String string2, boolean bl, int i) {
-        this.listener = realmsConfirmResultListener;
-        this.id = i;
+    public RealmsLongConfirmationScreen(RealmsConfirmResultListener listener, Type type, String line2, String line3, boolean yesNoQuestion, int id) {
+        this.listener = listener;
+        this.id = id;
         this.type = type;
-        this.line2 = string;
-        this.line3 = string2;
-        this.yesNoQuestion = bl;
+        this.line2 = line2;
+        this.line3 = line3;
+        this.yesNoQuestion = yesNoQuestion;
         this.yesButton = RealmsLongConfirmationScreen.getLocalizedString("gui.yes");
         this.noButton = RealmsLongConfirmationScreen.getLocalizedString("gui.no");
         this.okButton = RealmsLongConfirmationScreen.getLocalizedString("mco.gui.ok");
@@ -66,21 +66,21 @@ extends RealmsScreen {
     }
 
     @Override
-    public boolean keyPressed(int i, int j, int k) {
-        if (i == 256) {
+    public boolean keyPressed(int eventKey, int scancode, int mods) {
+        if (eventKey == 256) {
             this.listener.confirmResult(false, this.id);
             return true;
         }
-        return super.keyPressed(i, j, k);
+        return super.keyPressed(eventKey, scancode, mods);
     }
 
     @Override
-    public void render(int i, int j, float f) {
+    public void render(int xm, int ym, float a) {
         this.renderBackground();
         this.drawCenteredString(this.type.text, this.width() / 2, RealmsConstants.row(2), this.type.colorCode);
         this.drawCenteredString(this.line2, this.width() / 2, RealmsConstants.row(4), 0xFFFFFF);
         this.drawCenteredString(this.line3, this.width() / 2, RealmsConstants.row(6), 0xFFFFFF);
-        super.render(i, j, f);
+        super.render(xm, ym, a);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -91,9 +91,9 @@ extends RealmsScreen {
         public final int colorCode;
         public final String text;
 
-        private Type(String string2, int j) {
-            this.text = string2;
-            this.colorCode = j;
+        private Type(String text, int colorCode) {
+            this.text = text;
+            this.colorCode = colorCode;
         }
     }
 }

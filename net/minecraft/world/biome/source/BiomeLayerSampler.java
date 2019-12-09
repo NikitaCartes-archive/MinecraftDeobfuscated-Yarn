@@ -21,20 +21,20 @@ public class BiomeLayerSampler {
         this.sampler = layerFactory.make();
     }
 
-    private Biome getBiome(int i) {
-        Biome biome = (Biome)Registry.BIOME.get(i);
+    private Biome getBiome(int id) {
+        Biome biome = (Biome)Registry.BIOME.get(id);
         if (biome == null) {
             if (SharedConstants.isDevelopment) {
-                throw Util.throwOrPause(new IllegalStateException("Unknown biome id: " + i));
+                throw Util.throwOrPause(new IllegalStateException("Unknown biome id: " + id));
             }
-            LOGGER.warn("Unknown biome id: ", (Object)i);
+            LOGGER.warn("Unknown biome id: ", (Object)id);
             return Biomes.DEFAULT;
         }
         return biome;
     }
 
-    public Biome sample(int i, int j) {
-        return this.getBiome(this.sampler.sample(i, j));
+    public Biome sample(int x, int y) {
+        return this.getBiome(this.sampler.sample(x, y));
     }
 }
 

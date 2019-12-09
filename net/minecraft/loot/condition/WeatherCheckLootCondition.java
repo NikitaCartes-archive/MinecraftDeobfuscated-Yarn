@@ -20,9 +20,9 @@ implements LootCondition {
     @Nullable
     private final Boolean thundering;
 
-    private WeatherCheckLootCondition(@Nullable Boolean boolean_, @Nullable Boolean boolean2) {
-        this.raining = boolean_;
-        this.thundering = boolean2;
+    private WeatherCheckLootCondition(@Nullable Boolean raining, @Nullable Boolean thundering) {
+        this.raining = raining;
+        this.thundering = thundering;
     }
 
     @Override
@@ -35,8 +35,8 @@ implements LootCondition {
     }
 
     @Override
-    public /* synthetic */ boolean test(Object object) {
-        return this.test((LootContext)object);
+    public /* synthetic */ boolean test(Object context) {
+        return this.test((LootContext)context);
     }
 
     public static class Factory
@@ -59,8 +59,8 @@ implements LootCondition {
         }
 
         @Override
-        public /* synthetic */ LootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            return this.fromJson(jsonObject, jsonDeserializationContext);
+        public /* synthetic */ LootCondition fromJson(JsonObject json, JsonDeserializationContext context) {
+            return this.fromJson(json, context);
         }
     }
 }

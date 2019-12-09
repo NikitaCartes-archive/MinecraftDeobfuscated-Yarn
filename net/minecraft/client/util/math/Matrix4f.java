@@ -31,23 +31,23 @@ public final class Matrix4f {
     public Matrix4f() {
     }
 
-    public Matrix4f(Matrix4f matrix4f) {
-        this.a00 = matrix4f.a00;
-        this.a01 = matrix4f.a01;
-        this.a02 = matrix4f.a02;
-        this.a03 = matrix4f.a03;
-        this.a10 = matrix4f.a10;
-        this.a11 = matrix4f.a11;
-        this.a12 = matrix4f.a12;
-        this.a13 = matrix4f.a13;
-        this.a20 = matrix4f.a20;
-        this.a21 = matrix4f.a21;
-        this.a22 = matrix4f.a22;
-        this.a23 = matrix4f.a23;
-        this.a30 = matrix4f.a30;
-        this.a31 = matrix4f.a31;
-        this.a32 = matrix4f.a32;
-        this.a33 = matrix4f.a33;
+    public Matrix4f(Matrix4f source) {
+        this.a00 = source.a00;
+        this.a01 = source.a01;
+        this.a02 = source.a02;
+        this.a03 = source.a03;
+        this.a10 = source.a10;
+        this.a11 = source.a11;
+        this.a12 = source.a12;
+        this.a13 = source.a13;
+        this.a20 = source.a20;
+        this.a21 = source.a21;
+        this.a22 = source.a22;
+        this.a23 = source.a23;
+        this.a30 = source.a30;
+        this.a31 = source.a31;
+        this.a32 = source.a32;
+        this.a33 = source.a33;
     }
 
     public Matrix4f(Quaternion quaternion) {
@@ -76,14 +76,14 @@ public final class Matrix4f {
         this.a12 = 2.0f * (n - p);
     }
 
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (object == null || this.getClass() != object.getClass()) {
+        if (o == null || this.getClass() != o.getClass()) {
             return false;
         }
-        Matrix4f matrix4f = (Matrix4f)object;
+        Matrix4f matrix4f = (Matrix4f)o;
         return Float.compare(matrix4f.a00, this.a00) == 0 && Float.compare(matrix4f.a01, this.a01) == 0 && Float.compare(matrix4f.a02, this.a02) == 0 && Float.compare(matrix4f.a03, this.a03) == 0 && Float.compare(matrix4f.a10, this.a10) == 0 && Float.compare(matrix4f.a11, this.a11) == 0 && Float.compare(matrix4f.a12, this.a12) == 0 && Float.compare(matrix4f.a13, this.a13) == 0 && Float.compare(matrix4f.a20, this.a20) == 0 && Float.compare(matrix4f.a21, this.a21) == 0 && Float.compare(matrix4f.a22, this.a22) == 0 && Float.compare(matrix4f.a23, this.a23) == 0 && Float.compare(matrix4f.a30, this.a30) == 0 && Float.compare(matrix4f.a31, this.a31) == 0 && Float.compare(matrix4f.a32, this.a32) == 0 && Float.compare(matrix4f.a33, this.a33) == 0;
     }
 
@@ -107,8 +107,8 @@ public final class Matrix4f {
         return i;
     }
 
-    private static int pack(int i, int j) {
-        return j * 4 + i;
+    private static int pack(int x, int y) {
+        return y * 4 + x;
     }
 
     public String toString() {
@@ -265,23 +265,23 @@ public final class Matrix4f {
         return false;
     }
 
-    public void multiply(Matrix4f matrix4f) {
-        float f = this.a00 * matrix4f.a00 + this.a01 * matrix4f.a10 + this.a02 * matrix4f.a20 + this.a03 * matrix4f.a30;
-        float g = this.a00 * matrix4f.a01 + this.a01 * matrix4f.a11 + this.a02 * matrix4f.a21 + this.a03 * matrix4f.a31;
-        float h = this.a00 * matrix4f.a02 + this.a01 * matrix4f.a12 + this.a02 * matrix4f.a22 + this.a03 * matrix4f.a32;
-        float i = this.a00 * matrix4f.a03 + this.a01 * matrix4f.a13 + this.a02 * matrix4f.a23 + this.a03 * matrix4f.a33;
-        float j = this.a10 * matrix4f.a00 + this.a11 * matrix4f.a10 + this.a12 * matrix4f.a20 + this.a13 * matrix4f.a30;
-        float k = this.a10 * matrix4f.a01 + this.a11 * matrix4f.a11 + this.a12 * matrix4f.a21 + this.a13 * matrix4f.a31;
-        float l = this.a10 * matrix4f.a02 + this.a11 * matrix4f.a12 + this.a12 * matrix4f.a22 + this.a13 * matrix4f.a32;
-        float m = this.a10 * matrix4f.a03 + this.a11 * matrix4f.a13 + this.a12 * matrix4f.a23 + this.a13 * matrix4f.a33;
-        float n = this.a20 * matrix4f.a00 + this.a21 * matrix4f.a10 + this.a22 * matrix4f.a20 + this.a23 * matrix4f.a30;
-        float o = this.a20 * matrix4f.a01 + this.a21 * matrix4f.a11 + this.a22 * matrix4f.a21 + this.a23 * matrix4f.a31;
-        float p = this.a20 * matrix4f.a02 + this.a21 * matrix4f.a12 + this.a22 * matrix4f.a22 + this.a23 * matrix4f.a32;
-        float q = this.a20 * matrix4f.a03 + this.a21 * matrix4f.a13 + this.a22 * matrix4f.a23 + this.a23 * matrix4f.a33;
-        float r = this.a30 * matrix4f.a00 + this.a31 * matrix4f.a10 + this.a32 * matrix4f.a20 + this.a33 * matrix4f.a30;
-        float s = this.a30 * matrix4f.a01 + this.a31 * matrix4f.a11 + this.a32 * matrix4f.a21 + this.a33 * matrix4f.a31;
-        float t = this.a30 * matrix4f.a02 + this.a31 * matrix4f.a12 + this.a32 * matrix4f.a22 + this.a33 * matrix4f.a32;
-        float u = this.a30 * matrix4f.a03 + this.a31 * matrix4f.a13 + this.a32 * matrix4f.a23 + this.a33 * matrix4f.a33;
+    public void multiply(Matrix4f matrix) {
+        float f = this.a00 * matrix.a00 + this.a01 * matrix.a10 + this.a02 * matrix.a20 + this.a03 * matrix.a30;
+        float g = this.a00 * matrix.a01 + this.a01 * matrix.a11 + this.a02 * matrix.a21 + this.a03 * matrix.a31;
+        float h = this.a00 * matrix.a02 + this.a01 * matrix.a12 + this.a02 * matrix.a22 + this.a03 * matrix.a32;
+        float i = this.a00 * matrix.a03 + this.a01 * matrix.a13 + this.a02 * matrix.a23 + this.a03 * matrix.a33;
+        float j = this.a10 * matrix.a00 + this.a11 * matrix.a10 + this.a12 * matrix.a20 + this.a13 * matrix.a30;
+        float k = this.a10 * matrix.a01 + this.a11 * matrix.a11 + this.a12 * matrix.a21 + this.a13 * matrix.a31;
+        float l = this.a10 * matrix.a02 + this.a11 * matrix.a12 + this.a12 * matrix.a22 + this.a13 * matrix.a32;
+        float m = this.a10 * matrix.a03 + this.a11 * matrix.a13 + this.a12 * matrix.a23 + this.a13 * matrix.a33;
+        float n = this.a20 * matrix.a00 + this.a21 * matrix.a10 + this.a22 * matrix.a20 + this.a23 * matrix.a30;
+        float o = this.a20 * matrix.a01 + this.a21 * matrix.a11 + this.a22 * matrix.a21 + this.a23 * matrix.a31;
+        float p = this.a20 * matrix.a02 + this.a21 * matrix.a12 + this.a22 * matrix.a22 + this.a23 * matrix.a32;
+        float q = this.a20 * matrix.a03 + this.a21 * matrix.a13 + this.a22 * matrix.a23 + this.a23 * matrix.a33;
+        float r = this.a30 * matrix.a00 + this.a31 * matrix.a10 + this.a32 * matrix.a20 + this.a33 * matrix.a30;
+        float s = this.a30 * matrix.a01 + this.a31 * matrix.a11 + this.a32 * matrix.a21 + this.a33 * matrix.a31;
+        float t = this.a30 * matrix.a02 + this.a31 * matrix.a12 + this.a32 * matrix.a22 + this.a33 * matrix.a32;
+        float u = this.a30 * matrix.a03 + this.a31 * matrix.a13 + this.a32 * matrix.a23 + this.a33 * matrix.a33;
         this.a00 = f;
         this.a01 = g;
         this.a02 = h;
@@ -304,53 +304,53 @@ public final class Matrix4f {
         this.multiply(new Matrix4f(quaternion));
     }
 
-    public void multiply(float f) {
-        this.a00 *= f;
-        this.a01 *= f;
-        this.a02 *= f;
-        this.a03 *= f;
-        this.a10 *= f;
-        this.a11 *= f;
-        this.a12 *= f;
-        this.a13 *= f;
-        this.a20 *= f;
-        this.a21 *= f;
-        this.a22 *= f;
-        this.a23 *= f;
-        this.a30 *= f;
-        this.a31 *= f;
-        this.a32 *= f;
-        this.a33 *= f;
+    public void multiply(float scalar) {
+        this.a00 *= scalar;
+        this.a01 *= scalar;
+        this.a02 *= scalar;
+        this.a03 *= scalar;
+        this.a10 *= scalar;
+        this.a11 *= scalar;
+        this.a12 *= scalar;
+        this.a13 *= scalar;
+        this.a20 *= scalar;
+        this.a21 *= scalar;
+        this.a22 *= scalar;
+        this.a23 *= scalar;
+        this.a30 *= scalar;
+        this.a31 *= scalar;
+        this.a32 *= scalar;
+        this.a33 *= scalar;
     }
 
-    public static Matrix4f viewboxMatrix(double d, float f, float g, float h) {
-        float i = (float)(1.0 / Math.tan(d * 0.01745329238474369 / 2.0));
+    public static Matrix4f viewboxMatrix(double fov, float aspectRatio, float cameraDepth, float viewDistance) {
+        float f = (float)(1.0 / Math.tan(fov * 0.01745329238474369 / 2.0));
         Matrix4f matrix4f = new Matrix4f();
-        matrix4f.a00 = i / f;
-        matrix4f.a11 = i;
-        matrix4f.a22 = (h + g) / (g - h);
+        matrix4f.a00 = f / aspectRatio;
+        matrix4f.a11 = f;
+        matrix4f.a22 = (viewDistance + cameraDepth) / (cameraDepth - viewDistance);
         matrix4f.a32 = -1.0f;
-        matrix4f.a23 = 2.0f * h * g / (g - h);
+        matrix4f.a23 = 2.0f * viewDistance * cameraDepth / (cameraDepth - viewDistance);
         return matrix4f;
     }
 
-    public static Matrix4f projectionMatrix(float f, float g, float h, float i) {
+    public static Matrix4f projectionMatrix(float width, float height, float nearPlane, float farPlane) {
         Matrix4f matrix4f = new Matrix4f();
-        matrix4f.a00 = 2.0f / f;
-        matrix4f.a11 = 2.0f / g;
-        float j = i - h;
-        matrix4f.a22 = -2.0f / j;
+        matrix4f.a00 = 2.0f / width;
+        matrix4f.a11 = 2.0f / height;
+        float f = farPlane - nearPlane;
+        matrix4f.a22 = -2.0f / f;
         matrix4f.a33 = 1.0f;
         matrix4f.a03 = -1.0f;
         matrix4f.a13 = -1.0f;
-        matrix4f.a23 = -(i + h) / j;
+        matrix4f.a23 = -(farPlane + nearPlane) / f;
         return matrix4f;
     }
 
-    public void addToLastColumn(Vector3f vector3f) {
-        this.a03 += vector3f.getX();
-        this.a13 += vector3f.getY();
-        this.a23 += vector3f.getZ();
+    public void addToLastColumn(Vector3f vector) {
+        this.a03 += vector.getX();
+        this.a13 += vector.getY();
+        this.a23 += vector.getZ();
     }
 
     public Matrix4f copy() {

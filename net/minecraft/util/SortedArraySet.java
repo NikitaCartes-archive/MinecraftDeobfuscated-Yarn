@@ -16,28 +16,28 @@ extends AbstractSet<T> {
     private T[] elements;
     private int size;
 
-    private SortedArraySet(int i, Comparator<T> comparator) {
+    private SortedArraySet(int initialCapacity, Comparator<T> comparator) {
         this.comparator = comparator;
-        if (i < 0) {
-            throw new IllegalArgumentException("Initial capacity (" + i + ") is negative");
+        if (initialCapacity < 0) {
+            throw new IllegalArgumentException("Initial capacity (" + initialCapacity + ") is negative");
         }
-        this.elements = SortedArraySet.cast(new Object[i]);
+        this.elements = SortedArraySet.cast(new Object[initialCapacity]);
     }
 
-    public static <T extends Comparable<T>> SortedArraySet<T> create(int i) {
-        return new SortedArraySet(i, Comparator.naturalOrder());
+    public static <T extends Comparable<T>> SortedArraySet<T> create(int initialCapacity) {
+        return new SortedArraySet(initialCapacity, Comparator.naturalOrder());
     }
 
-    private static <T> T[] cast(Object[] objects) {
-        return objects;
+    private static <T> T[] cast(Object[] array) {
+        return array;
     }
 
     private int binarySearch(T object) {
         return Arrays.binarySearch(this.elements, 0, this.size, object, this.comparator);
     }
 
-    private static int insertionPoint(int i) {
-        return -i - 1;
+    private static int insertionPoint(int binarySearchResult) {
+        return -binarySearchResult - 1;
     }
 
     @Override
@@ -51,39 +51,39 @@ extends AbstractSet<T> {
         return true;
     }
 
-    private void ensureCapacity(int i) {
-        if (i <= this.elements.length) {
+    private void ensureCapacity(int minCapacity) {
+        if (minCapacity <= this.elements.length) {
             return;
         }
         if (this.elements != ObjectArrays.DEFAULT_EMPTY_ARRAY) {
-            i = (int)Math.max(Math.min((long)this.elements.length + (long)(this.elements.length >> 1), 0x7FFFFFF7L), (long)i);
-        } else if (i < 10) {
-            i = 10;
+            minCapacity = (int)Math.max(Math.min((long)this.elements.length + (long)(this.elements.length >> 1), 0x7FFFFFF7L), (long)minCapacity);
+        } else if (minCapacity < 10) {
+            minCapacity = 10;
         }
-        Object[] objects = new Object[i];
+        Object[] objects = new Object[minCapacity];
         System.arraycopy(this.elements, 0, objects, 0, this.size);
         this.elements = SortedArraySet.cast(objects);
     }
 
-    private void add(T object, int i) {
+    private void add(T object, int index) {
         this.ensureCapacity(this.size + 1);
-        if (i != this.size) {
-            System.arraycopy(this.elements, i, this.elements, i + 1, this.size - i);
+        if (index != this.size) {
+            System.arraycopy(this.elements, index, this.elements, index + 1, this.size - index);
         }
-        this.elements[i] = object;
+        this.elements[index] = object;
         ++this.size;
     }
 
-    private void remove(int i) {
+    private void remove(int index) {
         --this.size;
-        if (i != this.size) {
-            System.arraycopy(this.elements, i + 1, this.elements, i, this.size - i);
+        if (index != this.size) {
+            System.arraycopy(this.elements, index + 1, this.elements, index, this.size - index);
         }
         this.elements[this.size] = null;
     }
 
-    private T get(int i) {
-        return this.elements[i];
+    private T get(int index) {
+        return this.elements[index];
     }
 
     public T addAndGet(T object) {

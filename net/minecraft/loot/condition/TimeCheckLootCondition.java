@@ -20,9 +20,9 @@ implements LootCondition {
     private final Long period;
     private final UniformLootTableRange value;
 
-    private TimeCheckLootCondition(@Nullable Long long_, UniformLootTableRange uniformLootTableRange) {
-        this.period = long_;
-        this.value = uniformLootTableRange;
+    private TimeCheckLootCondition(@Nullable Long period, UniformLootTableRange value) {
+        this.period = period;
+        this.value = value;
     }
 
     @Override
@@ -60,8 +60,8 @@ implements LootCondition {
         }
 
         @Override
-        public /* synthetic */ LootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            return this.fromJson(jsonObject, jsonDeserializationContext);
+        public /* synthetic */ LootCondition fromJson(JsonObject json, JsonDeserializationContext context) {
+            return this.fromJson(json, context);
         }
     }
 }

@@ -99,25 +99,25 @@ extends EntityModel<T> {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k) {
+    public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
         if (this.child) {
-            float l = 1.5f;
-            matrixStack.push();
-            matrixStack.scale(0.56666666f, 0.56666666f, 0.56666666f);
-            matrixStack.translate(0.0, 1.375, 0.125);
-            ImmutableList.of(this.head, this.leftEar, this.rightEar, this.nose).forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, f, g, h, k));
-            matrixStack.pop();
-            matrixStack.push();
-            matrixStack.scale(0.4f, 0.4f, 0.4f);
-            matrixStack.translate(0.0, 2.25, 0.0);
-            ImmutableList.of(this.leftFoot, this.rightFoot, this.leftBackLeg, this.rightBackLeg, this.torso, this.leftFrontLeg, this.rightFrontLeg, this.tail).forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, f, g, h, k));
-            matrixStack.pop();
+            float f = 1.5f;
+            matrices.push();
+            matrices.scale(0.56666666f, 0.56666666f, 0.56666666f);
+            matrices.translate(0.0, 1.375, 0.125);
+            ImmutableList.of(this.head, this.leftEar, this.rightEar, this.nose).forEach(modelPart -> modelPart.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha));
+            matrices.pop();
+            matrices.push();
+            matrices.scale(0.4f, 0.4f, 0.4f);
+            matrices.translate(0.0, 2.25, 0.0);
+            ImmutableList.of(this.leftFoot, this.rightFoot, this.leftBackLeg, this.rightBackLeg, this.torso, this.leftFrontLeg, this.rightFrontLeg, this.tail).forEach(modelPart -> modelPart.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha));
+            matrices.pop();
         } else {
-            matrixStack.push();
-            matrixStack.scale(0.6f, 0.6f, 0.6f);
-            matrixStack.translate(0.0, 1.0, 0.0);
-            ImmutableList.of(this.leftFoot, this.rightFoot, this.leftBackLeg, this.rightBackLeg, this.torso, this.leftFrontLeg, this.rightFrontLeg, this.head, this.rightEar, this.leftEar, this.tail, this.nose, new ModelPart[0]).forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, f, g, h, k));
-            matrixStack.pop();
+            matrices.push();
+            matrices.scale(0.6f, 0.6f, 0.6f);
+            matrices.translate(0.0, 1.0, 0.0);
+            ImmutableList.of(this.leftFoot, this.rightFoot, this.leftBackLeg, this.rightBackLeg, this.torso, this.leftFrontLeg, this.rightFrontLeg, this.head, this.rightEar, this.leftEar, this.tail, this.nose, new ModelPart[0]).forEach(modelPart -> modelPart.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha));
+            matrices.pop();
         }
     }
 

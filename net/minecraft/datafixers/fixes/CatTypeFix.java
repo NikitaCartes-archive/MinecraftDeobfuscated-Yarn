@@ -12,15 +12,15 @@ import net.minecraft.datafixers.fixes.ChoiceFix;
 
 public class CatTypeFix
 extends ChoiceFix {
-    public CatTypeFix(Schema schema, boolean bl) {
-        super(schema, bl, "CatTypeFix", TypeReferences.ENTITY, "minecraft:cat");
+    public CatTypeFix(Schema outputSchema, boolean changesType) {
+        super(outputSchema, changesType, "CatTypeFix", TypeReferences.ENTITY, "minecraft:cat");
     }
 
-    public Dynamic<?> fixCatTypeData(Dynamic<?> dynamic) {
-        if (dynamic.get("CatType").asInt(0) == 9) {
-            return dynamic.set("CatType", dynamic.createInt(10));
+    public Dynamic<?> fixCatTypeData(Dynamic<?> tag) {
+        if (tag.get("CatType").asInt(0) == 9) {
+            return tag.set("CatType", tag.createInt(10));
         }
-        return dynamic;
+        return tag;
     }
 
     @Override

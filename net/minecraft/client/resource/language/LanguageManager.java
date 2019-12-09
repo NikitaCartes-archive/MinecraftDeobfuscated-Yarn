@@ -54,12 +54,12 @@ implements SynchronousResourceReloadListener {
     }
 
     @Override
-    public void apply(ResourceManager resourceManager) {
+    public void apply(ResourceManager manager) {
         ArrayList<String> list = Lists.newArrayList("en_us");
         if (!"en_us".equals(this.currentLanguageCode)) {
             list.add(this.currentLanguageCode);
         }
-        STORAGE.load(resourceManager, list);
+        STORAGE.load(manager, list);
         Language.load(LanguageManager.STORAGE.translations);
     }
 
@@ -80,8 +80,8 @@ implements SynchronousResourceReloadListener {
         return Sets.newTreeSet(this.languageDefs.values());
     }
 
-    public LanguageDefinition getLanguage(String string) {
-        return this.languageDefs.get(string);
+    public LanguageDefinition getLanguage(String code) {
+        return this.languageDefs.get(code);
     }
 }
 

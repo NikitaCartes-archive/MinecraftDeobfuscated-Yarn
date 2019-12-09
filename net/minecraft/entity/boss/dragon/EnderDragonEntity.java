@@ -426,9 +426,9 @@ implements Monster {
     }
 
     @Override
-    public boolean damage(DamageSource damageSource, float f) {
-        if (damageSource instanceof EntityDamageSource && ((EntityDamageSource)damageSource).method_5549()) {
-            this.damagePart(this.partBody, damageSource, f);
+    public boolean damage(DamageSource source, float amount) {
+        if (source instanceof EntityDamageSource && ((EntityDamageSource)source).method_5549()) {
+            this.damagePart(this.partBody, source, amount);
         }
         return false;
     }
@@ -642,16 +642,16 @@ implements Monster {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag compoundTag) {
-        super.writeCustomDataToTag(compoundTag);
-        compoundTag.putInt("DragonPhase", this.phaseManager.getCurrent().getType().getTypeId());
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putInt("DragonPhase", this.phaseManager.getCurrent().getType().getTypeId());
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag compoundTag) {
-        super.readCustomDataFromTag(compoundTag);
-        if (compoundTag.contains("DragonPhase")) {
-            this.phaseManager.setPhase(PhaseType.getFromId(compoundTag.getInt("DragonPhase")));
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        if (tag.contains("DragonPhase")) {
+            this.phaseManager.setPhase(PhaseType.getFromId(tag.getInt("DragonPhase")));
         }
     }
 
@@ -679,7 +679,7 @@ implements Monster {
     }
 
     @Override
-    protected SoundEvent getHurtSound(DamageSource damageSource) {
+    protected SoundEvent getHurtSound(DamageSource source) {
         return SoundEvents.ENTITY_ENDER_DRAGON_HURT;
     }
 
@@ -728,20 +728,20 @@ implements Monster {
         return vec3d;
     }
 
-    public void crystalDestroyed(EnderCrystalEntity enderCrystalEntity, BlockPos blockPos, DamageSource damageSource) {
-        PlayerEntity playerEntity = damageSource.getAttacker() instanceof PlayerEntity ? (PlayerEntity)damageSource.getAttacker() : this.world.getClosestPlayer(CLOSE_PLAYER_PREDICATE, blockPos.getX(), blockPos.getY(), blockPos.getZ());
-        if (enderCrystalEntity == this.connectedCrystal) {
+    public void crystalDestroyed(EnderCrystalEntity crystal, BlockPos pos, DamageSource source) {
+        PlayerEntity playerEntity = source.getAttacker() instanceof PlayerEntity ? (PlayerEntity)source.getAttacker() : this.world.getClosestPlayer(CLOSE_PLAYER_PREDICATE, pos.getX(), pos.getY(), pos.getZ());
+        if (crystal == this.connectedCrystal) {
             this.damagePart(this.partHead, DamageSource.explosion(playerEntity), 10.0f);
         }
-        this.phaseManager.getCurrent().crystalDestroyed(enderCrystalEntity, blockPos, damageSource, playerEntity);
+        this.phaseManager.getCurrent().crystalDestroyed(crystal, pos, source, playerEntity);
     }
 
     @Override
-    public void onTrackedDataSet(TrackedData<?> trackedData) {
-        if (PHASE_TYPE.equals(trackedData) && this.world.isClient) {
+    public void onTrackedDataSet(TrackedData<?> data) {
+        if (PHASE_TYPE.equals(data) && this.world.isClient) {
             this.phaseManager.setPhase(PhaseType.getFromId(this.getDataTracker().get(PHASE_TYPE)));
         }
-        super.onTrackedDataSet(trackedData);
+        super.onTrackedDataSet(data);
     }
 
     public PhaseManager getPhaseManager() {
@@ -754,7 +754,7 @@ implements Monster {
     }
 
     @Override
-    public boolean addStatusEffect(StatusEffectInstance statusEffectInstance) {
+    public boolean addStatusEffect(StatusEffectInstance effect) {
         return false;
     }
 

@@ -17,18 +17,18 @@ import net.minecraft.world.World;
 @Environment(value=EnvType.CLIENT)
 public class DamageParticle
 extends SpriteBillboardParticle {
-    private DamageParticle(World world, double d, double e, double f, double g, double h, double i) {
-        super(world, d, e, f, 0.0, 0.0, 0.0);
-        float j;
+    private DamageParticle(World world, double x, double y, double z, double d, double e, double f) {
+        super(world, x, y, z, 0.0, 0.0, 0.0);
+        float g;
         this.velocityX *= (double)0.1f;
         this.velocityY *= (double)0.1f;
         this.velocityZ *= (double)0.1f;
-        this.velocityX += g * 0.4;
-        this.velocityY += h * 0.4;
-        this.velocityZ += i * 0.4;
-        this.colorRed = j = (float)(Math.random() * (double)0.3f + (double)0.6f);
-        this.colorGreen = j;
-        this.colorBlue = j;
+        this.velocityX += d * 0.4;
+        this.velocityY += e * 0.4;
+        this.velocityZ += f * 0.4;
+        this.colorRed = g = (float)(Math.random() * (double)0.3f + (double)0.6f);
+        this.colorGreen = g;
+        this.colorBlue = g;
         this.scale *= 0.75f;
         this.maxAge = Math.max((int)(6.0 / (Math.random() * 0.8 + 0.6)), 1);
         this.collidesWithWorld = false;
@@ -36,8 +36,8 @@ extends SpriteBillboardParticle {
     }
 
     @Override
-    public float getSize(float f) {
-        return this.scale * MathHelper.clamp(((float)this.age + f) / (float)this.maxAge * 32.0f, 0.0f, 1.0f);
+    public float getSize(float tickDelta) {
+        return this.scale * MathHelper.clamp(((float)this.age + tickDelta) / (float)this.maxAge * 32.0f, 0.0f, 1.0f);
     }
 
     @Override

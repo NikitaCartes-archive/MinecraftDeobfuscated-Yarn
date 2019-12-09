@@ -21,24 +21,24 @@ extends SpriteBillboardParticle {
     private float targetColorBlue;
     private boolean changesColor;
 
-    protected AnimatedParticle(World world, double d, double e, double f, SpriteProvider spriteProvider, float g) {
-        super(world, d, e, f);
+    protected AnimatedParticle(World world, double x, double y, double z, SpriteProvider spriteProvider, float upwardsAcceleration) {
+        super(world, x, y, z);
         this.spriteProvider = spriteProvider;
-        this.upwardsAcceleration = g;
+        this.upwardsAcceleration = upwardsAcceleration;
     }
 
-    public void setColor(int i) {
-        float f = (float)((i & 0xFF0000) >> 16) / 255.0f;
-        float g = (float)((i & 0xFF00) >> 8) / 255.0f;
-        float h = (float)((i & 0xFF) >> 0) / 255.0f;
-        float j = 1.0f;
+    public void setColor(int rgbHex) {
+        float f = (float)((rgbHex & 0xFF0000) >> 16) / 255.0f;
+        float g = (float)((rgbHex & 0xFF00) >> 8) / 255.0f;
+        float h = (float)((rgbHex & 0xFF) >> 0) / 255.0f;
+        float i = 1.0f;
         this.setColor(f * 1.0f, g * 1.0f, h * 1.0f);
     }
 
-    public void setTargetColor(int i) {
-        this.targetColorRed = (float)((i & 0xFF0000) >> 16) / 255.0f;
-        this.targetColorGreen = (float)((i & 0xFF00) >> 8) / 255.0f;
-        this.targetColorBlue = (float)((i & 0xFF) >> 0) / 255.0f;
+    public void setTargetColor(int rgbHex) {
+        this.targetColorRed = (float)((rgbHex & 0xFF0000) >> 16) / 255.0f;
+        this.targetColorGreen = (float)((rgbHex & 0xFF00) >> 8) / 255.0f;
+        this.targetColorBlue = (float)((rgbHex & 0xFF) >> 0) / 255.0f;
         this.changesColor = true;
     }
 
@@ -77,12 +77,12 @@ extends SpriteBillboardParticle {
     }
 
     @Override
-    public int getColorMultiplier(float f) {
+    public int getColorMultiplier(float tint) {
         return 0xF000F0;
     }
 
-    protected void setResistance(float f) {
-        this.resistance = f;
+    protected void setResistance(float resistance) {
+        this.resistance = resistance;
     }
 }
 

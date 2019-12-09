@@ -11,9 +11,9 @@ public class ClickEvent {
     private final Action action;
     private final String value;
 
-    public ClickEvent(Action action, String string) {
+    public ClickEvent(Action action, String value) {
         this.action = action;
-        this.value = string;
+        this.value = value;
     }
 
     public Action getAction() {
@@ -24,14 +24,14 @@ public class ClickEvent {
         return this.value;
     }
 
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (object == null || this.getClass() != object.getClass()) {
+        if (obj == null || this.getClass() != obj.getClass()) {
             return false;
         }
-        ClickEvent clickEvent = (ClickEvent)object;
+        ClickEvent clickEvent = (ClickEvent)obj;
         if (this.action != clickEvent.action) {
             return false;
         }
@@ -60,9 +60,9 @@ public class ClickEvent {
         private final boolean userDefinable;
         private final String name;
 
-        private Action(String string2, boolean bl) {
-            this.name = string2;
-            this.userDefinable = bl;
+        private Action(String name, boolean userDefinable) {
+            this.name = name;
+            this.userDefinable = userDefinable;
         }
 
         public boolean isUserDefinable() {
@@ -73,12 +73,12 @@ public class ClickEvent {
             return this.name;
         }
 
-        public static Action byName(String string) {
-            return BY_NAME.get(string);
+        public static Action byName(String name) {
+            return BY_NAME.get(name);
         }
 
         static {
-            BY_NAME = Arrays.stream(Action.values()).collect(Collectors.toMap(Action::getName, action -> action));
+            BY_NAME = Arrays.stream(Action.values()).collect(Collectors.toMap(Action::getName, a -> a));
         }
     }
 }

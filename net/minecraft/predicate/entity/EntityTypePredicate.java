@@ -35,11 +35,11 @@ public abstract class EntityTypePredicate {
 
     public abstract JsonElement toJson();
 
-    public static EntityTypePredicate deserialize(@Nullable JsonElement jsonElement) {
-        if (jsonElement == null || jsonElement.isJsonNull()) {
+    public static EntityTypePredicate deserialize(@Nullable JsonElement element) {
+        if (element == null || element.isJsonNull()) {
             return ANY;
         }
-        String string = JsonHelper.asString(jsonElement, "type");
+        String string = JsonHelper.asString(element, "type");
         if (string.startsWith("#")) {
             Identifier identifier = new Identifier(string.substring(1));
             Tag<EntityType<?>> tag = EntityTypeTags.getContainer().getOrCreate(identifier);
@@ -50,8 +50,8 @@ public abstract class EntityTypePredicate {
         return new Single(entityType);
     }
 
-    public static EntityTypePredicate create(EntityType<?> entityType) {
-        return new Single(entityType);
+    public static EntityTypePredicate create(EntityType<?> type) {
+        return new Single(type);
     }
 
     public static EntityTypePredicate create(Tag<EntityType<?>> tag) {

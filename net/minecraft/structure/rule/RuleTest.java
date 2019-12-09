@@ -22,8 +22,8 @@ extends DynamicDeserializer<AbstractRuleTest> {
     public static final RuleTest RANDOM_BLOCK_MATCH = RuleTest.register("random_block_match", RandomBlockMatchRuleTest::new);
     public static final RuleTest RANDOM_BLOCKSTATE_MATCH = RuleTest.register("random_blockstate_match", RandomBlockStateMatchRuleTest::new);
 
-    public static RuleTest register(String string, RuleTest ruleTest) {
-        return Registry.register(Registry.RULE_TEST, string, ruleTest);
+    public static RuleTest register(String id, RuleTest test) {
+        return Registry.register(Registry.RULE_TEST, id, test);
     }
 }
 

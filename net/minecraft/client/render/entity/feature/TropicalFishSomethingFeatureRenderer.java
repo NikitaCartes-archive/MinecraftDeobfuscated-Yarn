@@ -21,8 +21,8 @@ extends FeatureRenderer<TropicalFishEntity, EntityModel<TropicalFishEntity>> {
     private final TropicalFishEntityModelA<TropicalFishEntity> modelA = new TropicalFishEntityModelA(0.008f);
     private final TropicalFishEntityModelB<TropicalFishEntity> modelB = new TropicalFishEntityModelB(0.008f);
 
-    public TropicalFishSomethingFeatureRenderer(FeatureRendererContext<TropicalFishEntity, EntityModel<TropicalFishEntity>> featureRendererContext) {
-        super(featureRendererContext);
+    public TropicalFishSomethingFeatureRenderer(FeatureRendererContext<TropicalFishEntity, EntityModel<TropicalFishEntity>> context) {
+        super(context);
     }
 
     @Override

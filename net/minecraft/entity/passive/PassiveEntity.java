@@ -28,12 +28,12 @@ extends MobEntityWithAi {
     protected int forcedAge;
     protected int happyTicksRemaining;
 
-    protected PassiveEntity(EntityType<? extends PassiveEntity> entityType, World world) {
-        super((EntityType<? extends MobEntityWithAi>)entityType, world);
+    protected PassiveEntity(EntityType<? extends PassiveEntity> type, World world) {
+        super((EntityType<? extends MobEntityWithAi>)type, world);
     }
 
     @Override
-    public net.minecraft.entity.EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable net.minecraft.entity.EntityData entityData, @Nullable CompoundTag compoundTag) {
+    public net.minecraft.entity.EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable net.minecraft.entity.EntityData entityData, @Nullable CompoundTag entityTag) {
         EntityData entityData2;
         if (entityData == null) {
             entityData = new EntityData();
@@ -42,18 +42,18 @@ extends MobEntityWithAi {
             this.setBreedingAge(-24000);
         }
         entityData2.countSpawned();
-        return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+        return super.initialize(world, difficulty, spawnType, entityData, entityTag);
     }
 
     @Nullable
     public abstract PassiveEntity createChild(PassiveEntity var1);
 
-    protected void onPlayerSpawnedChild(PlayerEntity playerEntity, PassiveEntity passiveEntity) {
+    protected void onPlayerSpawnedChild(PlayerEntity player, PassiveEntity child) {
     }
 
     @Override
-    public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
-        ItemStack itemStack = playerEntity.getStackInHand(hand);
+    public boolean interactMob(PlayerEntity player, Hand hand) {
+        ItemStack itemStack = player.getStackInHand(hand);
         Item item = itemStack.getItem();
         if (item instanceof SpawnEggItem && ((SpawnEggItem)item).isOfSameEntityType(itemStack.getTag(), this.getType())) {
             PassiveEntity passiveEntity;
@@ -64,8 +64,8 @@ extends MobEntityWithAi {
                 if (itemStack.hasCustomName()) {
                     passiveEntity.setCustomName(itemStack.getName());
                 }
-                this.onPlayerSpawnedChild(playerEntity, passiveEntity);
-                if (!playerEntity.abilities.creativeMode) {
+                this.onPlayerSpawnedChild(player, passiveEntity);
+                if (!player.abilities.creativeMode) {
                     itemStack.decrement(1);
                 }
             }
@@ -87,16 +87,16 @@ extends MobEntityWithAi {
         return this.breedingAge;
     }
 
-    public void growUp(int i, boolean bl) {
-        int j;
-        int k = j = this.getBreedingAge();
-        if ((j += i * 20) > 0) {
-            j = 0;
+    public void growUp(int age, boolean overGrow) {
+        int i;
+        int j = i = this.getBreedingAge();
+        if ((i += age * 20) > 0) {
+            i = 0;
         }
-        int l = j - k;
-        this.setBreedingAge(j);
-        if (bl) {
-            this.forcedAge += l;
+        int k = i - j;
+        this.setBreedingAge(i);
+        if (overGrow) {
+            this.forcedAge += k;
             if (this.happyTicksRemaining == 0) {
                 this.happyTicksRemaining = 40;
             }
@@ -106,39 +106,39 @@ extends MobEntityWithAi {
         }
     }
 
-    public void growUp(int i) {
-        this.growUp(i, false);
+    public void growUp(int age) {
+        this.growUp(age, false);
     }
 
-    public void setBreedingAge(int i) {
-        int j = this.breedingAge;
-        this.breedingAge = i;
-        if (j < 0 && i >= 0 || j >= 0 && i < 0) {
-            this.dataTracker.set(CHILD, i < 0);
+    public void setBreedingAge(int age) {
+        int i = this.breedingAge;
+        this.breedingAge = age;
+        if (i < 0 && age >= 0 || i >= 0 && age < 0) {
+            this.dataTracker.set(CHILD, age < 0);
             this.onGrowUp();
         }
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag compoundTag) {
-        super.writeCustomDataToTag(compoundTag);
-        compoundTag.putInt("Age", this.getBreedingAge());
-        compoundTag.putInt("ForcedAge", this.forcedAge);
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putInt("Age", this.getBreedingAge());
+        tag.putInt("ForcedAge", this.forcedAge);
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag compoundTag) {
-        super.readCustomDataFromTag(compoundTag);
-        this.setBreedingAge(compoundTag.getInt("Age"));
-        this.forcedAge = compoundTag.getInt("ForcedAge");
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        this.setBreedingAge(tag.getInt("Age"));
+        this.forcedAge = tag.getInt("ForcedAge");
     }
 
     @Override
-    public void onTrackedDataSet(TrackedData<?> trackedData) {
-        if (CHILD.equals(trackedData)) {
+    public void onTrackedDataSet(TrackedData<?> data) {
+        if (CHILD.equals(data)) {
             this.calculateDimensions();
         }
-        super.onTrackedDataSet(trackedData);
+        super.onTrackedDataSet(data);
     }
 
     @Override
@@ -187,16 +187,16 @@ extends MobEntityWithAi {
             return this.babyAllowed;
         }
 
-        public void setBabyAllowed(boolean bl) {
-            this.babyAllowed = bl;
+        public void setBabyAllowed(boolean babyAllowed) {
+            this.babyAllowed = babyAllowed;
         }
 
         public float getBabyChance() {
             return this.babyChance;
         }
 
-        public void setBabyChance(float f) {
-            this.babyChance = f;
+        public void setBabyChance(float babyChance) {
+            this.babyChance = babyChance;
         }
     }
 }

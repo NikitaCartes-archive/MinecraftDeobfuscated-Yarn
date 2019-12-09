@@ -97,16 +97,16 @@ public class ChunkStatus {
         return serverLightingProvider.light(chunk, bl).thenApply(Either::left);
     }
 
-    private static ChunkStatus register(String string, @Nullable ChunkStatus chunkStatus, int i, EnumSet<Heightmap.Type> enumSet, ChunkType chunkType, SimpleTask simpleTask) {
-        return ChunkStatus.register(string, chunkStatus, i, enumSet, chunkType, (Task)simpleTask);
+    private static ChunkStatus register(String id, @Nullable ChunkStatus previous, int taskMargin, EnumSet<Heightmap.Type> heightMapTypes, ChunkType chunkType, SimpleTask task) {
+        return ChunkStatus.register(id, previous, taskMargin, heightMapTypes, chunkType, (Task)task);
     }
 
-    private static ChunkStatus register(String string, @Nullable ChunkStatus chunkStatus, int i, EnumSet<Heightmap.Type> enumSet, ChunkType chunkType, Task task) {
-        return ChunkStatus.register(string, chunkStatus, i, enumSet, chunkType, task, STATUS_BUMP_NO_GEN_TASK);
+    private static ChunkStatus register(String id, @Nullable ChunkStatus previous, int taskMargin, EnumSet<Heightmap.Type> heightMapTypes, ChunkType chunkType, Task task) {
+        return ChunkStatus.register(id, previous, taskMargin, heightMapTypes, chunkType, task, STATUS_BUMP_NO_GEN_TASK);
     }
 
-    private static ChunkStatus register(String string, @Nullable ChunkStatus chunkStatus, int i, EnumSet<Heightmap.Type> enumSet, ChunkType chunkType, Task task, NoGenTask noGenTask) {
-        return Registry.register(Registry.CHUNK_STATUS, string, new ChunkStatus(string, chunkStatus, i, enumSet, chunkType, task, noGenTask));
+    private static ChunkStatus register(String id, @Nullable ChunkStatus previous, int taskMargin, EnumSet<Heightmap.Type> heightMapTypes, ChunkType chunkType, Task task, NoGenTask noGenTask) {
+        return Registry.register(Registry.CHUNK_STATUS, id, new ChunkStatus(id, previous, taskMargin, heightMapTypes, chunkType, task, noGenTask));
     }
 
     public static List<ChunkStatus> createOrderedList() {
@@ -124,33 +124,33 @@ public class ChunkStatus {
         return chunk.getStatus().isAtLeast(chunkStatus) && chunk.isLightOn();
     }
 
-    public static ChunkStatus getTargetGenerationStatus(int i) {
-        if (i >= DISTANCE_TO_TARGET_GENERATION_STATUS.size()) {
+    public static ChunkStatus getTargetGenerationStatus(int distance) {
+        if (distance >= DISTANCE_TO_TARGET_GENERATION_STATUS.size()) {
             return EMPTY;
         }
-        if (i < 0) {
+        if (distance < 0) {
             return FULL;
         }
-        return DISTANCE_TO_TARGET_GENERATION_STATUS.get(i);
+        return DISTANCE_TO_TARGET_GENERATION_STATUS.get(distance);
     }
 
     public static int getMaxTargetGenerationRadius() {
         return DISTANCE_TO_TARGET_GENERATION_STATUS.size();
     }
 
-    public static int getTargetGenerationRadius(ChunkStatus chunkStatus) {
-        return STATUS_TO_TARGET_GENERATION_RADIUS.getInt(chunkStatus.getIndex());
+    public static int getTargetGenerationRadius(ChunkStatus status) {
+        return STATUS_TO_TARGET_GENERATION_RADIUS.getInt(status.getIndex());
     }
 
-    ChunkStatus(String string, @Nullable ChunkStatus chunkStatus, int i, EnumSet<Heightmap.Type> enumSet, ChunkType chunkType, Task task, NoGenTask noGenTask) {
-        this.id = string;
-        this.previous = chunkStatus == null ? this : chunkStatus;
+    ChunkStatus(String id, @Nullable ChunkStatus previous, int taskMargin, EnumSet<Heightmap.Type> heightMapTypes, ChunkType chunkType, Task task, NoGenTask noGenTask) {
+        this.id = id;
+        this.previous = previous == null ? this : previous;
         this.task = task;
         this.noGenTask = noGenTask;
-        this.taskMargin = i;
+        this.taskMargin = taskMargin;
         this.chunkType = chunkType;
-        this.heightMapTypes = enumSet;
-        this.index = chunkStatus == null ? 0 : chunkStatus.getIndex() + 1;
+        this.heightMapTypes = heightMapTypes;
+        this.index = previous == null ? 0 : previous.getIndex() + 1;
     }
 
     public int getIndex() {
@@ -181,16 +181,16 @@ public class ChunkStatus {
         return this.chunkType;
     }
 
-    public static ChunkStatus get(String string) {
-        return Registry.CHUNK_STATUS.get(Identifier.tryParse(string));
+    public static ChunkStatus get(String id) {
+        return Registry.CHUNK_STATUS.get(Identifier.tryParse(id));
     }
 
     public EnumSet<Heightmap.Type> getHeightmapTypes() {
         return this.heightMapTypes;
     }
 
-    public boolean isAtLeast(ChunkStatus chunkStatus) {
-        return this.getIndex() >= chunkStatus.getIndex();
+    public boolean isAtLeast(ChunkStatus chunk) {
+        return this.getIndex() >= chunk.getIndex();
     }
 
     public String toString() {
@@ -206,11 +206,11 @@ public class ChunkStatus {
     static interface SimpleTask
     extends Task {
         @Override
-        default public CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> doWork(ChunkStatus chunkStatus, ServerWorld serverWorld, ChunkGenerator<?> chunkGenerator, StructureManager structureManager, ServerLightingProvider serverLightingProvider, Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> function, List<Chunk> list, Chunk chunk) {
-            if (!chunk.getStatus().isAtLeast(chunkStatus)) {
-                this.doWork(serverWorld, chunkGenerator, list, chunk);
+        default public CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> doWork(ChunkStatus targetStatus, ServerWorld serverWorld, ChunkGenerator<?> generator, StructureManager structureManager, ServerLightingProvider serverLightingProvider, Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> function, List<Chunk> list, Chunk chunk) {
+            if (!chunk.getStatus().isAtLeast(targetStatus)) {
+                this.doWork(serverWorld, generator, list, chunk);
                 if (chunk instanceof ProtoChunk) {
-                    ((ProtoChunk)chunk).setStatus(chunkStatus);
+                    ((ProtoChunk)chunk).setStatus(targetStatus);
                 }
             }
             return CompletableFuture.completedFuture(Either.left(chunk));

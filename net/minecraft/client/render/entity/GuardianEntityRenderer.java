@@ -53,11 +53,11 @@ extends MobEntityRenderer<GuardianEntity, GuardianEntityModel> {
         return false;
     }
 
-    private Vec3d fromLerpedPosition(LivingEntity livingEntity, double d, float f) {
-        double e = MathHelper.lerp((double)f, livingEntity.lastRenderX, livingEntity.getX());
-        double g = MathHelper.lerp((double)f, livingEntity.lastRenderY, livingEntity.getY()) + d;
-        double h = MathHelper.lerp((double)f, livingEntity.lastRenderZ, livingEntity.getZ());
-        return new Vec3d(e, g, h);
+    private Vec3d fromLerpedPosition(LivingEntity entity, double yOffset, float delta) {
+        double d = MathHelper.lerp((double)delta, entity.lastRenderX, entity.getX());
+        double e = MathHelper.lerp((double)delta, entity.lastRenderY, entity.getY()) + yOffset;
+        double f = MathHelper.lerp((double)delta, entity.lastRenderZ, entity.getZ());
+        return new Vec3d(d, e, f);
     }
 
     @Override

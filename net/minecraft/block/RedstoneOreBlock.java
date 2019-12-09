@@ -35,74 +35,74 @@ extends Block {
     }
 
     @Override
-    public int getLuminance(BlockState blockState) {
-        return blockState.get(LIT) != false ? super.getLuminance(blockState) : 0;
+    public int getLuminance(BlockState state) {
+        return state.get(LIT) != false ? super.getLuminance(state) : 0;
     }
 
     @Override
-    public void onBlockBreakStart(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
-        RedstoneOreBlock.light(blockState, world, blockPos);
-        super.onBlockBreakStart(blockState, world, blockPos, playerEntity);
+    public void onBlockBreakStart(BlockState state, World world, BlockPos pos, PlayerEntity player) {
+        RedstoneOreBlock.light(state, world, pos);
+        super.onBlockBreakStart(state, world, pos, player);
     }
 
     @Override
-    public void onSteppedOn(World world, BlockPos blockPos, Entity entity) {
-        RedstoneOreBlock.light(world.getBlockState(blockPos), world, blockPos);
-        super.onSteppedOn(world, blockPos, entity);
+    public void onSteppedOn(World world, BlockPos pos, Entity entity) {
+        RedstoneOreBlock.light(world.getBlockState(pos), world, pos);
+        super.onSteppedOn(world, pos, entity);
     }
 
     @Override
-    public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (world.isClient) {
-            RedstoneOreBlock.spawnParticles(world, blockPos);
+            RedstoneOreBlock.spawnParticles(world, pos);
             return ActionResult.SUCCESS;
         }
-        RedstoneOreBlock.light(blockState, world, blockPos);
+        RedstoneOreBlock.light(state, world, pos);
         return ActionResult.PASS;
     }
 
-    private static void light(BlockState blockState, World world, BlockPos blockPos) {
-        RedstoneOreBlock.spawnParticles(world, blockPos);
-        if (!blockState.get(LIT).booleanValue()) {
-            world.setBlockState(blockPos, (BlockState)blockState.with(LIT, true), 3);
+    private static void light(BlockState state, World world, BlockPos pos) {
+        RedstoneOreBlock.spawnParticles(world, pos);
+        if (!state.get(LIT).booleanValue()) {
+            world.setBlockState(pos, (BlockState)state.with(LIT, true), 3);
         }
     }
 
     @Override
-    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
-        if (blockState.get(LIT).booleanValue()) {
-            serverWorld.setBlockState(blockPos, (BlockState)blockState.with(LIT, false), 3);
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        if (state.get(LIT).booleanValue()) {
+            world.setBlockState(pos, (BlockState)state.with(LIT, false), 3);
         }
     }
 
     @Override
-    public void onStacksDropped(BlockState blockState, World world, BlockPos blockPos, ItemStack itemStack) {
-        super.onStacksDropped(blockState, world, blockPos, itemStack);
-        if (EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, itemStack) == 0) {
+    public void onStacksDropped(BlockState state, World world, BlockPos pos, ItemStack stack) {
+        super.onStacksDropped(state, world, pos, stack);
+        if (EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, stack) == 0) {
             int i = 1 + world.random.nextInt(5);
-            this.dropExperience(world, blockPos, i);
+            this.dropExperience(world, pos, i);
         }
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-        if (blockState.get(LIT).booleanValue()) {
-            RedstoneOreBlock.spawnParticles(world, blockPos);
+    public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+        if (state.get(LIT).booleanValue()) {
+            RedstoneOreBlock.spawnParticles(world, pos);
         }
     }
 
-    private static void spawnParticles(World world, BlockPos blockPos) {
+    private static void spawnParticles(World world, BlockPos pos) {
         double d = 0.5625;
         Random random = world.random;
         for (Direction direction : Direction.values()) {
-            BlockPos blockPos2 = blockPos.offset(direction);
-            if (world.getBlockState(blockPos2).isFullOpaque(world, blockPos2)) continue;
+            BlockPos blockPos = pos.offset(direction);
+            if (world.getBlockState(blockPos).isFullOpaque(world, blockPos)) continue;
             Direction.Axis axis = direction.getAxis();
             double e = axis == Direction.Axis.X ? 0.5 + 0.5625 * (double)direction.getOffsetX() : (double)random.nextFloat();
             double f = axis == Direction.Axis.Y ? 0.5 + 0.5625 * (double)direction.getOffsetY() : (double)random.nextFloat();
             double g = axis == Direction.Axis.Z ? 0.5 + 0.5625 * (double)direction.getOffsetZ() : (double)random.nextFloat();
-            world.addParticle(DustParticleEffect.RED, (double)blockPos.getX() + e, (double)blockPos.getY() + f, (double)blockPos.getZ() + g, 0.0, 0.0, 0.0);
+            world.addParticle(DustParticleEffect.RED, (double)pos.getX() + e, (double)pos.getY() + f, (double)pos.getZ() + g, 0.0, 0.0, 0.0);
         }
     }
 

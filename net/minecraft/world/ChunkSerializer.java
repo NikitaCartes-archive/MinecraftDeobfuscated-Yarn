@@ -288,48 +288,48 @@ public class ChunkSerializer {
         return compoundTag;
     }
 
-    public static ChunkStatus.ChunkType getChunkType(@Nullable CompoundTag compoundTag) {
+    public static ChunkStatus.ChunkType getChunkType(@Nullable CompoundTag tag) {
         ChunkStatus chunkStatus;
-        if (compoundTag != null && (chunkStatus = ChunkStatus.get(compoundTag.getCompound("Level").getString("Status"))) != null) {
+        if (tag != null && (chunkStatus = ChunkStatus.get(tag.getCompound("Level").getString("Status"))) != null) {
             return chunkStatus.getChunkType();
         }
         return ChunkStatus.ChunkType.PROTOCHUNK;
     }
 
-    private static void writeEntities(CompoundTag compoundTag, WorldChunk worldChunk) {
-        ListTag listTag = compoundTag.getList("Entities", 10);
-        World world = worldChunk.getWorld();
+    private static void writeEntities(CompoundTag tag, WorldChunk chunk) {
+        ListTag listTag = tag.getList("Entities", 10);
+        World world = chunk.getWorld();
         for (int i = 0; i < listTag.size(); ++i) {
-            CompoundTag compoundTag2 = listTag.getCompound(i);
-            EntityType.loadEntityWithPassengers(compoundTag2, world, entity -> {
-                worldChunk.addEntity((Entity)entity);
+            CompoundTag compoundTag = listTag.getCompound(i);
+            EntityType.loadEntityWithPassengers(compoundTag, world, entity -> {
+                chunk.addEntity((Entity)entity);
                 return entity;
             });
-            worldChunk.setUnsaved(true);
+            chunk.setUnsaved(true);
         }
-        ListTag listTag2 = compoundTag.getList("TileEntities", 10);
+        ListTag listTag2 = tag.getList("TileEntities", 10);
         for (int j = 0; j < listTag2.size(); ++j) {
-            CompoundTag compoundTag3 = listTag2.getCompound(j);
-            boolean bl = compoundTag3.getBoolean("keepPacked");
+            CompoundTag compoundTag2 = listTag2.getCompound(j);
+            boolean bl = compoundTag2.getBoolean("keepPacked");
             if (bl) {
-                worldChunk.addPendingBlockEntityTag(compoundTag3);
+                chunk.addPendingBlockEntityTag(compoundTag2);
                 continue;
             }
-            BlockEntity blockEntity = BlockEntity.createFromTag(compoundTag3);
+            BlockEntity blockEntity = BlockEntity.createFromTag(compoundTag2);
             if (blockEntity == null) continue;
-            worldChunk.addBlockEntity(blockEntity);
+            chunk.addBlockEntity(blockEntity);
         }
     }
 
-    private static CompoundTag writeStructures(ChunkPos chunkPos, Map<String, StructureStart> map, Map<String, LongSet> map2) {
+    private static CompoundTag writeStructures(ChunkPos pos, Map<String, StructureStart> structureStarts, Map<String, LongSet> structureReferences) {
         CompoundTag compoundTag = new CompoundTag();
         CompoundTag compoundTag2 = new CompoundTag();
-        for (Map.Entry<String, StructureStart> entry : map.entrySet()) {
-            compoundTag2.put(entry.getKey(), entry.getValue().toTag(chunkPos.x, chunkPos.z));
+        for (Map.Entry<String, StructureStart> entry : structureStarts.entrySet()) {
+            compoundTag2.put(entry.getKey(), entry.getValue().toTag(pos.x, pos.z));
         }
         compoundTag.put("Starts", compoundTag2);
         CompoundTag compoundTag3 = new CompoundTag();
-        for (Map.Entry<String, LongSet> entry2 : map2.entrySet()) {
+        for (Map.Entry<String, LongSet> entry2 : structureReferences.entrySet()) {
             compoundTag3.put(entry2.getKey(), new LongArrayTag(entry2.getValue()));
         }
         compoundTag.put("References", compoundTag3);
@@ -361,9 +361,9 @@ public class ChunkSerializer {
         return map;
     }
 
-    public static ListTag toNbt(ShortList[] shortLists) {
+    public static ListTag toNbt(ShortList[] lists) {
         ListTag listTag = new ListTag();
-        for (ShortList shortList : shortLists) {
+        for (ShortList shortList : lists) {
             ListTag listTag2 = new ListTag();
             if (shortList != null) {
                 for (Short short_ : shortList) {

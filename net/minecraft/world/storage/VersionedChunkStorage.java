@@ -31,24 +31,24 @@ implements AutoCloseable {
         this.worker = new StorageIoWorker(new RegionBasedStorage(file), "chunk");
     }
 
-    public CompoundTag updateChunkTag(DimensionType dimensionType, Supplier<PersistentStateManager> supplier, CompoundTag compoundTag) {
-        int i = VersionedChunkStorage.getDataVersion(compoundTag);
+    public CompoundTag updateChunkTag(DimensionType dimensionType, Supplier<PersistentStateManager> persistentStateManagerFactory, CompoundTag tag) {
+        int i = VersionedChunkStorage.getDataVersion(tag);
         int j = 1493;
-        if (i < 1493 && (compoundTag = NbtHelper.update(this.dataFixer, DataFixTypes.CHUNK, compoundTag, i, 1493)).getCompound("Level").getBoolean("hasLegacyStructureData")) {
+        if (i < 1493 && (tag = NbtHelper.update(this.dataFixer, DataFixTypes.CHUNK, tag, i, 1493)).getCompound("Level").getBoolean("hasLegacyStructureData")) {
             if (this.featureUpdater == null) {
-                this.featureUpdater = FeatureUpdater.create(dimensionType, supplier.get());
+                this.featureUpdater = FeatureUpdater.create(dimensionType, persistentStateManagerFactory.get());
             }
-            compoundTag = this.featureUpdater.getUpdatedReferences(compoundTag);
+            tag = this.featureUpdater.getUpdatedReferences(tag);
         }
-        compoundTag = NbtHelper.update(this.dataFixer, DataFixTypes.CHUNK, compoundTag, Math.max(1493, i));
+        tag = NbtHelper.update(this.dataFixer, DataFixTypes.CHUNK, tag, Math.max(1493, i));
         if (i < SharedConstants.getGameVersion().getWorldVersion()) {
-            compoundTag.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
+            tag.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
         }
-        return compoundTag;
+        return tag;
     }
 
-    public static int getDataVersion(CompoundTag compoundTag) {
-        return compoundTag.contains("DataVersion", 99) ? compoundTag.getInt("DataVersion") : -1;
+    public static int getDataVersion(CompoundTag tag) {
+        return tag.contains("DataVersion", 99) ? tag.getInt("DataVersion") : -1;
     }
 
     @Nullable

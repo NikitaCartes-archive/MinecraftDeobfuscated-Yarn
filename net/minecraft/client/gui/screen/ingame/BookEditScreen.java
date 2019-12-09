@@ -165,7 +165,7 @@ extends Screen {
         }
     }
 
-    private void finalizeBook(boolean bl) {
+    private void finalizeBook(boolean signBook) {
         if (!this.dirty) {
             return;
         }
@@ -175,11 +175,11 @@ extends Screen {
         if (!this.pages.isEmpty()) {
             this.itemStack.putSubTag("pages", listTag);
         }
-        if (bl) {
+        if (signBook) {
             this.itemStack.putSubTag("author", StringTag.of(this.player.getGameProfile().getName()));
             this.itemStack.putSubTag("title", StringTag.of(this.title.trim()));
         }
-        this.minecraft.getNetworkHandler().sendPacket(new BookUpdateC2SPacket(this.itemStack, bl, this.hand));
+        this.minecraft.getNetworkHandler().sendPacket(new BookUpdateC2SPacket(this.itemStack, signBook, this.hand));
     }
 
     private void appendNewPage() {
@@ -191,59 +191,59 @@ extends Screen {
     }
 
     @Override
-    public boolean keyPressed(int i, int j, int k) {
-        if (super.keyPressed(i, j, k)) {
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (super.keyPressed(keyCode, scanCode, modifiers)) {
             return true;
         }
         if (this.signing) {
-            return this.keyPressedSignMode(i, j, k);
+            return this.keyPressedSignMode(keyCode, scanCode, modifiers);
         }
-        return this.keyPressedEditMode(i, j, k);
+        return this.keyPressedEditMode(keyCode, scanCode, modifiers);
     }
 
     @Override
-    public boolean charTyped(char c, int i) {
-        if (super.charTyped(c, i)) {
+    public boolean charTyped(char chr, int keyCode) {
+        if (super.charTyped(chr, keyCode)) {
             return true;
         }
         if (this.signing) {
-            if (this.title.length() < 16 && SharedConstants.isValidChar(c)) {
-                this.title = this.title + Character.toString(c);
+            if (this.title.length() < 16 && SharedConstants.isValidChar(chr)) {
+                this.title = this.title + Character.toString(chr);
                 this.updateButtons();
                 this.dirty = true;
                 return true;
             }
             return false;
         }
-        if (SharedConstants.isValidChar(c)) {
-            this.writeString(Character.toString(c));
+        if (SharedConstants.isValidChar(chr)) {
+            this.writeString(Character.toString(chr));
             return true;
         }
         return false;
     }
 
-    private boolean keyPressedEditMode(int i, int j, int k) {
+    private boolean keyPressedEditMode(int keyCode, int scanCode, int modifiers) {
         String string = this.getCurrentPageContent();
-        if (Screen.isSelectAll(i)) {
+        if (Screen.isSelectAll(keyCode)) {
             this.highlightTo = 0;
             this.cursorIndex = string.length();
             return true;
         }
-        if (Screen.isCopy(i)) {
+        if (Screen.isCopy(keyCode)) {
             this.minecraft.keyboard.setClipboard(this.getHighlightedText());
             return true;
         }
-        if (Screen.isPaste(i)) {
+        if (Screen.isPaste(keyCode)) {
             this.writeString(this.stripFromatting(Formatting.strip(this.minecraft.keyboard.getClipboard().replaceAll("\\r", ""))));
             this.highlightTo = this.cursorIndex;
             return true;
         }
-        if (Screen.isCut(i)) {
+        if (Screen.isCut(keyCode)) {
             this.minecraft.keyboard.setClipboard(this.getHighlightedText());
             this.removeHighlightedText();
             return true;
         }
-        switch (i) {
+        switch (keyCode) {
             case 259: {
                 this.applyBackspaceKey(string);
                 return true;
@@ -293,55 +293,55 @@ extends Screen {
         return false;
     }
 
-    private void applyBackspaceKey(String string) {
-        if (!string.isEmpty()) {
+    private void applyBackspaceKey(String content) {
+        if (!content.isEmpty()) {
             if (this.highlightTo != this.cursorIndex) {
                 this.removeHighlightedText();
             } else if (this.cursorIndex > 0) {
-                String string2 = new StringBuilder(string).deleteCharAt(Math.max(0, this.cursorIndex - 1)).toString();
-                this.setPageContent(string2);
+                String string = new StringBuilder(content).deleteCharAt(Math.max(0, this.cursorIndex - 1)).toString();
+                this.setPageContent(string);
                 this.highlightTo = this.cursorIndex = Math.max(0, this.cursorIndex - 1);
             }
         }
     }
 
-    private void applyDeleteKey(String string) {
-        if (!string.isEmpty()) {
+    private void applyDeleteKey(String content) {
+        if (!content.isEmpty()) {
             if (this.highlightTo != this.cursorIndex) {
                 this.removeHighlightedText();
-            } else if (this.cursorIndex < string.length()) {
-                String string2 = new StringBuilder(string).deleteCharAt(Math.max(0, this.cursorIndex)).toString();
-                this.setPageContent(string2);
+            } else if (this.cursorIndex < content.length()) {
+                String string = new StringBuilder(content).deleteCharAt(Math.max(0, this.cursorIndex)).toString();
+                this.setPageContent(string);
             }
         }
     }
 
-    private void applyLeftArrowKey(String string) {
+    private void applyLeftArrowKey(String content) {
         int i = this.font.isRightToLeft() ? 1 : -1;
-        this.cursorIndex = Screen.hasControlDown() ? this.font.findWordEdge(string, i, this.cursorIndex, true) : Math.max(0, this.cursorIndex + i);
+        this.cursorIndex = Screen.hasControlDown() ? this.font.findWordEdge(content, i, this.cursorIndex, true) : Math.max(0, this.cursorIndex + i);
         if (!Screen.hasShiftDown()) {
             this.highlightTo = this.cursorIndex;
         }
     }
 
-    private void applyRightArrowKey(String string) {
+    private void applyRightArrowKey(String content) {
         int i = this.font.isRightToLeft() ? -1 : 1;
-        this.cursorIndex = Screen.hasControlDown() ? this.font.findWordEdge(string, i, this.cursorIndex, true) : Math.min(string.length(), this.cursorIndex + i);
+        this.cursorIndex = Screen.hasControlDown() ? this.font.findWordEdge(content, i, this.cursorIndex, true) : Math.min(content.length(), this.cursorIndex + i);
         if (!Screen.hasShiftDown()) {
             this.highlightTo = this.cursorIndex;
         }
     }
 
-    private void applyUpArrowKey(String string) {
-        if (!string.isEmpty()) {
-            Position position = this.getCursorPositionForIndex(string, this.cursorIndex);
+    private void applyUpArrowKey(String content) {
+        if (!content.isEmpty()) {
+            Position position = this.getCursorPositionForIndex(content, this.cursorIndex);
             if (position.y == 0) {
                 this.cursorIndex = 0;
                 if (!Screen.hasShiftDown()) {
                     this.highlightTo = this.cursorIndex;
                 }
             } else {
-                int i = this.getCharacterCountInFrontOfCursor(string, new Position(position.x + this.getCharWidthInString(string, this.cursorIndex) / 3, position.y - this.font.fontHeight));
+                int i = this.getCharacterCountInFrontOfCursor(content, new Position(position.x + this.getCharWidthInString(content, this.cursorIndex) / 3, position.y - this.font.fontHeight));
                 if (i >= 0) {
                     this.cursorIndex = i;
                     if (!Screen.hasShiftDown()) {
@@ -352,17 +352,17 @@ extends Screen {
         }
     }
 
-    private void applyDownArrowKey(String string) {
-        if (!string.isEmpty()) {
-            Position position = this.getCursorPositionForIndex(string, this.cursorIndex);
-            int i = this.font.getStringBoundedHeight(string + "" + (Object)((Object)Formatting.BLACK) + "_", 114);
+    private void applyDownArrowKey(String content) {
+        if (!content.isEmpty()) {
+            Position position = this.getCursorPositionForIndex(content, this.cursorIndex);
+            int i = this.font.getStringBoundedHeight(content + "" + (Object)((Object)Formatting.BLACK) + "_", 114);
             if (position.y + this.font.fontHeight == i) {
-                this.cursorIndex = string.length();
+                this.cursorIndex = content.length();
                 if (!Screen.hasShiftDown()) {
                     this.highlightTo = this.cursorIndex;
                 }
             } else {
-                int j = this.getCharacterCountInFrontOfCursor(string, new Position(position.x + this.getCharWidthInString(string, this.cursorIndex) / 3, position.y + this.font.fontHeight));
+                int j = this.getCharacterCountInFrontOfCursor(content, new Position(position.x + this.getCharWidthInString(content, this.cursorIndex) / 3, position.y + this.font.fontHeight));
                 if (j >= 0) {
                     this.cursorIndex = j;
                     if (!Screen.hasShiftDown()) {
@@ -373,15 +373,15 @@ extends Screen {
         }
     }
 
-    private void moveCursorToTop(String string) {
-        this.cursorIndex = this.getCharacterCountInFrontOfCursor(string, new Position(0, this.getCursorPositionForIndex(string, this.cursorIndex).y));
+    private void moveCursorToTop(String content) {
+        this.cursorIndex = this.getCharacterCountInFrontOfCursor(content, new Position(0, this.getCursorPositionForIndex(content, this.cursorIndex).y));
         if (!Screen.hasShiftDown()) {
             this.highlightTo = this.cursorIndex;
         }
     }
 
-    private void moveCursorToBottom(String string) {
-        this.cursorIndex = this.getCharacterCountInFrontOfCursor(string, new Position(113, this.getCursorPositionForIndex(string, this.cursorIndex).y));
+    private void moveCursorToBottom(String content) {
+        this.cursorIndex = this.getCharacterCountInFrontOfCursor(content, new Position(113, this.getCursorPositionForIndex(content, this.cursorIndex).y));
         if (!Screen.hasShiftDown()) {
             this.highlightTo = this.cursorIndex;
         }
@@ -399,12 +399,12 @@ extends Screen {
         this.setPageContent(string2);
     }
 
-    private int getCharWidthInString(String string, int i) {
-        return (int)this.font.getCharWidth(string.charAt(MathHelper.clamp(i, 0, string.length() - 1)));
+    private int getCharWidthInString(String string, int index) {
+        return (int)this.font.getCharWidth(string.charAt(MathHelper.clamp(index, 0, string.length() - 1)));
     }
 
-    private boolean keyPressedSignMode(int i, int j, int k) {
-        switch (i) {
+    private boolean keyPressedSignMode(int keyCode, int scanCode, int modifiers) {
+        switch (keyCode) {
             case 259: {
                 if (!this.title.isEmpty()) {
                     this.title = this.title.substring(0, this.title.length() - 1);
@@ -431,9 +431,9 @@ extends Screen {
         return "";
     }
 
-    private void setPageContent(String string) {
+    private void setPageContent(String newContent) {
         if (this.currentPage >= 0 && this.currentPage < this.pages.size()) {
-            this.pages.set(this.currentPage, string);
+            this.pages.set(this.currentPage, newContent);
             this.dirty = true;
         }
     }
@@ -453,33 +453,33 @@ extends Screen {
     }
 
     @Override
-    public void render(int i, int j, float f) {
+    public void render(int mouseX, int mouseY, float delta) {
         this.renderBackground();
         this.setFocused(null);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.minecraft.getTextureManager().bindTexture(BookScreen.BOOK_TEXTURE);
-        int k = (this.width - 192) / 2;
-        int l = 2;
-        this.blit(k, 2, 0, 0, 192, 192);
+        int i = (this.width - 192) / 2;
+        int j = 2;
+        this.blit(i, 2, 0, 0, 192, 192);
         if (this.signing) {
             String string = this.title;
             string = this.tickCounter / 6 % 2 == 0 ? string + "" + (Object)((Object)Formatting.BLACK) + "_" : string + "" + (Object)((Object)Formatting.GRAY) + "_";
             String string2 = I18n.translate("book.editTitle", new Object[0]);
-            int m = this.getStringWidth(string2);
-            this.font.draw(string2, k + 36 + (114 - m) / 2, 34.0f, 0);
-            int n = this.getStringWidth(string);
-            this.font.draw(string, k + 36 + (114 - n) / 2, 50.0f, 0);
+            int k = this.getStringWidth(string2);
+            this.font.draw(string2, i + 36 + (114 - k) / 2, 34.0f, 0);
+            int l = this.getStringWidth(string);
+            this.font.draw(string, i + 36 + (114 - l) / 2, 50.0f, 0);
             String string3 = I18n.translate("book.byAuthor", this.player.getName().getString());
-            int o = this.getStringWidth(string3);
-            this.font.draw((Object)((Object)Formatting.DARK_GRAY) + string3, k + 36 + (114 - o) / 2, 60.0f, 0);
+            int m = this.getStringWidth(string3);
+            this.font.draw((Object)((Object)Formatting.DARK_GRAY) + string3, i + 36 + (114 - m) / 2, 60.0f, 0);
             String string4 = I18n.translate("book.finalizeWarning", new Object[0]);
-            this.font.drawTrimmed(string4, k + 36, 82, 114, 0);
+            this.font.drawTrimmed(string4, i + 36, 82, 114, 0);
         } else {
             String string = I18n.translate("book.pageIndicator", this.currentPage + 1, this.countPages());
             String string2 = this.getCurrentPageContent();
-            int m = this.getStringWidth(string);
-            this.font.draw(string, k - m + 192 - 44, 18.0f, 0);
-            this.font.drawTrimmed(string2, k + 36, 32, 114, 0);
+            int k = this.getStringWidth(string);
+            this.font.draw(string, i - k + 192 - 44, 18.0f, 0);
+            this.font.drawTrimmed(string2, i + 36, 32, 114, 0);
             this.drawHighlight(string2);
             if (this.tickCounter / 6 % 2 == 0) {
                 Position position = this.getCursorPositionForIndex(string2, this.cursorIndex);
@@ -495,15 +495,15 @@ extends Screen {
                 }
             }
         }
-        super.render(i, j, f);
+        super.render(mouseX, mouseY, delta);
     }
 
     private int getStringWidth(String string) {
         return this.font.getStringWidth(this.font.isRightToLeft() ? this.font.mirror(string) : string);
     }
 
-    private int getCharacterCountForWidth(String string, int i) {
-        return this.font.getCharacterCountForWidth(string, i);
+    private int getCharacterCountForWidth(String string, int width) {
+        return this.font.getCharacterCountForWidth(string, width);
     }
 
     private String getHighlightedText() {
@@ -513,31 +513,31 @@ extends Screen {
         return string.substring(i, j);
     }
 
-    private void drawHighlight(String string) {
+    private void drawHighlight(String content) {
         if (this.highlightTo == this.cursorIndex) {
             return;
         }
         int i = Math.min(this.cursorIndex, this.highlightTo);
         int j = Math.max(this.cursorIndex, this.highlightTo);
-        String string2 = string.substring(i, j);
-        int k = this.font.findWordEdge(string, 1, j, true);
-        String string3 = string.substring(i, k);
-        Position position = this.getCursorPositionForIndex(string, i);
+        String string = content.substring(i, j);
+        int k = this.font.findWordEdge(content, 1, j, true);
+        String string2 = content.substring(i, k);
+        Position position = this.getCursorPositionForIndex(content, i);
         Position position2 = new Position(position.x, position.y + this.font.fontHeight);
-        while (!string2.isEmpty()) {
-            int l = this.getCharacterCountForWidth(string3, 114 - position.x);
-            if (string2.length() <= l) {
-                position2.x = position.x + this.getStringWidth(string2);
+        while (!string.isEmpty()) {
+            int l = this.getCharacterCountForWidth(string2, 114 - position.x);
+            if (string.length() <= l) {
+                position2.x = position.x + this.getStringWidth(string);
                 this.drawHighlightRect(position, position2);
                 break;
             }
-            l = Math.min(l, string2.length() - 1);
-            String string4 = string2.substring(0, l);
-            char c = string2.charAt(l);
+            l = Math.min(l, string.length() - 1);
+            String string3 = string.substring(0, l);
+            char c = string.charAt(l);
             boolean bl = c == ' ' || c == '\n';
-            string2 = Formatting.getFormatAtEnd(string4) + string2.substring(l + (bl ? 1 : 0));
-            string3 = Formatting.getFormatAtEnd(string4) + string3.substring(l + (bl ? 1 : 0));
-            position2.x = position.x + this.getStringWidth(string4 + " ");
+            string = Formatting.getFormatAtEnd(string3) + string.substring(l + (bl ? 1 : 0));
+            string2 = Formatting.getFormatAtEnd(string3) + string2.substring(l + (bl ? 1 : 0));
+            position2.x = position.x + this.getStringWidth(string3 + " ");
             this.drawHighlightRect(position, position2);
             position.x = 0;
             position.y = position.y + this.font.fontHeight;
@@ -545,18 +545,18 @@ extends Screen {
         }
     }
 
-    private void drawHighlightRect(Position position, Position position2) {
-        Position position3 = new Position(position.x, position.y);
-        Position position4 = new Position(position2.x, position2.y);
+    private void drawHighlightRect(Position position1, Position position2) {
+        Position position = new Position(position1.x, position1.y);
+        Position position3 = new Position(position2.x, position2.y);
         if (this.font.isRightToLeft()) {
+            this.localizePosition(position);
             this.localizePosition(position3);
-            this.localizePosition(position4);
-            int i = position4.x;
-            position4.x = position3.x;
-            position3.x = i;
+            int i = position3.x;
+            position3.x = position.x;
+            position.x = i;
         }
+        this.translateRelativePositionToGlPosition(position);
         this.translateRelativePositionToGlPosition(position3);
-        this.translateRelativePositionToGlPosition(position4);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         RenderSystem.color4f(0.0f, 0.0f, 255.0f, 255.0f);
@@ -564,39 +564,39 @@ extends Screen {
         RenderSystem.enableColorLogicOp();
         RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
         bufferBuilder.begin(7, VertexFormats.POSITION);
-        bufferBuilder.vertex(position3.x, position4.y, 0.0).next();
-        bufferBuilder.vertex(position4.x, position4.y, 0.0).next();
-        bufferBuilder.vertex(position4.x, position3.y, 0.0).next();
+        bufferBuilder.vertex(position.x, position3.y, 0.0).next();
         bufferBuilder.vertex(position3.x, position3.y, 0.0).next();
+        bufferBuilder.vertex(position3.x, position.y, 0.0).next();
+        bufferBuilder.vertex(position.x, position.y, 0.0).next();
         tessellator.draw();
         RenderSystem.disableColorLogicOp();
         RenderSystem.enableTexture();
     }
 
-    private Position getCursorPositionForIndex(String string, int i) {
+    private Position getCursorPositionForIndex(String content, int index) {
         Position position = new Position();
+        int i = 0;
         int j = 0;
-        int k = 0;
-        String string2 = string;
-        while (!string2.isEmpty()) {
-            String string3;
-            int l = this.getCharacterCountForWidth(string2, 114);
-            if (string2.length() <= l) {
-                string3 = string2.substring(0, Math.min(Math.max(i - k, 0), string2.length()));
+        String string = content;
+        while (!string.isEmpty()) {
+            String string2;
+            int k = this.getCharacterCountForWidth(string, 114);
+            if (string.length() <= k) {
+                string2 = string.substring(0, Math.min(Math.max(index - j, 0), string.length()));
+                position.x = position.x + this.getStringWidth(string2);
+                break;
+            }
+            string2 = string.substring(0, k);
+            char c = string.charAt(k);
+            boolean bl = c == ' ' || c == '\n';
+            string = Formatting.getFormatAtEnd(string2) + string.substring(k + (bl ? 1 : 0));
+            if ((i += string2.length() + (bl ? 1 : 0)) - 1 >= index) {
+                String string3 = string2.substring(0, Math.min(Math.max(index - j, 0), string2.length()));
                 position.x = position.x + this.getStringWidth(string3);
                 break;
             }
-            string3 = string2.substring(0, l);
-            char c = string2.charAt(l);
-            boolean bl = c == ' ' || c == '\n';
-            string2 = Formatting.getFormatAtEnd(string3) + string2.substring(l + (bl ? 1 : 0));
-            if ((j += string3.length() + (bl ? 1 : 0)) - 1 >= i) {
-                String string4 = string3.substring(0, Math.min(Math.max(i - k, 0), string3.length()));
-                position.x = position.x + this.getStringWidth(string4);
-                break;
-            }
             position.y = position.y + this.font.fontHeight;
-            k = j;
+            j = i;
         }
         return position;
     }
@@ -617,18 +617,18 @@ extends Screen {
         position.y = position.y + 32;
     }
 
-    private int getCharacterCountForStringWidth(String string, int i) {
-        if (i < 0) {
+    private int getCharacterCountForStringWidth(String string, int width) {
+        if (width < 0) {
             return 0;
         }
         float f = 0.0f;
         boolean bl = false;
         String string2 = string + " ";
-        for (int j = 0; j < string2.length(); ++j) {
-            char c = string2.charAt(j);
+        for (int i = 0; i < string2.length(); ++i) {
+            char c = string2.charAt(i);
             float g = this.font.getCharWidth(c);
-            if (c == '\u00a7' && j < string2.length() - 1) {
-                if ((c = string2.charAt(++j)) == 'l' || c == 'L') {
+            if (c == '\u00a7' && i < string2.length() - 1) {
+                if ((c = string2.charAt(++i)) == 'l' || c == 'L') {
                     bl = true;
                 } else if (c == 'r' || c == 'R') {
                     bl = false;
@@ -640,92 +640,92 @@ extends Screen {
             if (bl && g > 0.0f) {
                 f += 1.0f;
             }
-            if (!((float)i >= h) || !((float)i < f)) continue;
-            return j;
+            if (!((float)width >= h) || !((float)width < f)) continue;
+            return i;
         }
-        if ((float)i >= f) {
+        if ((float)width >= f) {
             return string2.length() - 1;
         }
         return -1;
     }
 
-    private int getCharacterCountInFrontOfCursor(String string, Position position) {
+    private int getCharacterCountInFrontOfCursor(String content, Position cursorPosition) {
         int i = 16 * this.font.fontHeight;
-        if (position.y > i) {
+        if (cursorPosition.y > i) {
             return -1;
         }
         int j = Integer.MIN_VALUE;
         int k = this.font.fontHeight;
         int l = 0;
-        String string2 = string;
-        while (!string2.isEmpty() && j < i) {
-            int m = this.getCharacterCountForWidth(string2, 114);
-            if (m < string2.length()) {
-                String string3 = string2.substring(0, m);
-                if (position.y >= j && position.y < k) {
-                    int n = this.getCharacterCountForStringWidth(string3, position.x);
+        String string = content;
+        while (!string.isEmpty() && j < i) {
+            int m = this.getCharacterCountForWidth(string, 114);
+            if (m < string.length()) {
+                String string2 = string.substring(0, m);
+                if (cursorPosition.y >= j && cursorPosition.y < k) {
+                    int n = this.getCharacterCountForStringWidth(string2, cursorPosition.x);
                     return n < 0 ? -1 : l + n;
                 }
-                char c = string2.charAt(m);
+                char c = string.charAt(m);
                 boolean bl = c == ' ' || c == '\n';
-                string2 = Formatting.getFormatAtEnd(string3) + string2.substring(m + (bl ? 1 : 0));
-                l += string3.length() + (bl ? 1 : 0);
-            } else if (position.y >= j && position.y < k) {
-                int o = this.getCharacterCountForStringWidth(string2, position.x);
+                string = Formatting.getFormatAtEnd(string2) + string.substring(m + (bl ? 1 : 0));
+                l += string2.length() + (bl ? 1 : 0);
+            } else if (cursorPosition.y >= j && cursorPosition.y < k) {
+                int o = this.getCharacterCountForStringWidth(string, cursorPosition.x);
                 return o < 0 ? -1 : l + o;
             }
             j = k;
             k += this.font.fontHeight;
         }
-        return string.length();
+        return content.length();
     }
 
     @Override
-    public boolean mouseClicked(double d, double e, int i) {
-        if (i == 0) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (button == 0) {
             long l = Util.getMeasuringTimeMs();
             String string = this.getCurrentPageContent();
             if (!string.isEmpty()) {
-                Position position = new Position((int)d, (int)e);
+                Position position = new Position((int)mouseX, (int)mouseY);
                 this.translateGlPositionToRelativePosition(position);
                 this.localizePosition(position);
-                int j = this.getCharacterCountInFrontOfCursor(string, position);
-                if (j >= 0) {
-                    if (j == this.lastClickIndex && l - this.lastClickTime < 250L) {
+                int i = this.getCharacterCountInFrontOfCursor(string, position);
+                if (i >= 0) {
+                    if (i == this.lastClickIndex && l - this.lastClickTime < 250L) {
                         if (this.highlightTo == this.cursorIndex) {
-                            this.highlightTo = this.font.findWordEdge(string, -1, j, false);
-                            this.cursorIndex = this.font.findWordEdge(string, 1, j, false);
+                            this.highlightTo = this.font.findWordEdge(string, -1, i, false);
+                            this.cursorIndex = this.font.findWordEdge(string, 1, i, false);
                         } else {
                             this.highlightTo = 0;
                             this.cursorIndex = this.getCurrentPageContent().length();
                         }
                     } else {
-                        this.cursorIndex = j;
+                        this.cursorIndex = i;
                         if (!Screen.hasShiftDown()) {
                             this.highlightTo = this.cursorIndex;
                         }
                     }
                 }
-                this.lastClickIndex = j;
+                this.lastClickIndex = i;
             }
             this.lastClickTime = l;
         }
-        return super.mouseClicked(d, e, i);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
-    public boolean mouseDragged(double d, double e, int i, double f, double g) {
-        if (i == 0 && this.currentPage >= 0 && this.currentPage < this.pages.size()) {
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        if (button == 0 && this.currentPage >= 0 && this.currentPage < this.pages.size()) {
             String string = this.pages.get(this.currentPage);
-            Position position = new Position((int)d, (int)e);
+            Position position = new Position((int)mouseX, (int)mouseY);
             this.translateGlPositionToRelativePosition(position);
             this.localizePosition(position);
-            int j = this.getCharacterCountInFrontOfCursor(string, position);
-            if (j >= 0) {
-                this.cursorIndex = j;
+            int i = this.getCharacterCountInFrontOfCursor(string, position);
+            if (i >= 0) {
+                this.cursorIndex = i;
             }
         }
-        return super.mouseDragged(d, e, i, f, g);
+        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -736,9 +736,9 @@ extends Screen {
         Position() {
         }
 
-        Position(int i, int j) {
-            this.x = i;
-            this.y = j;
+        Position(int x, int y) {
+            this.x = x;
+            this.y = y;
         }
     }
 }

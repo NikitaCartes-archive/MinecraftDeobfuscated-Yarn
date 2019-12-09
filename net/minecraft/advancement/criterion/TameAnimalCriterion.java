@@ -29,34 +29,34 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(entityPredicate);
     }
 
-    public void trigger(ServerPlayerEntity serverPlayerEntity, AnimalEntity animalEntity) {
-        this.test(serverPlayerEntity.getAdvancementTracker(), conditions -> conditions.matches(serverPlayerEntity, animalEntity));
+    public void trigger(ServerPlayerEntity player, AnimalEntity entity) {
+        this.test(player.getAdvancementTracker(), conditions -> conditions.matches(player, entity));
     }
 
     @Override
-    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
+    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject obj, JsonDeserializationContext context) {
+        return this.conditionsFromJson(obj, context);
     }
 
     public static class Conditions
     extends AbstractCriterionConditions {
         private final EntityPredicate entity;
 
-        public Conditions(EntityPredicate entityPredicate) {
+        public Conditions(EntityPredicate entity) {
             super(ID);
-            this.entity = entityPredicate;
+            this.entity = entity;
         }
 
         public static Conditions any() {
             return new Conditions(EntityPredicate.ANY);
         }
 
-        public static Conditions create(EntityPredicate entityPredicate) {
-            return new Conditions(entityPredicate);
+        public static Conditions create(EntityPredicate entity) {
+            return new Conditions(entity);
         }
 
-        public boolean matches(ServerPlayerEntity serverPlayerEntity, AnimalEntity animalEntity) {
-            return this.entity.test(serverPlayerEntity, animalEntity);
+        public boolean matches(ServerPlayerEntity player, AnimalEntity entity) {
+            return this.entity.test(player, entity);
         }
 
         @Override

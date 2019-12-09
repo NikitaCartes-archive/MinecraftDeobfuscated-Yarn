@@ -22,14 +22,14 @@ extends SpriteBillboardParticle {
     private final float field_17783;
     private final float field_17784;
 
-    private CrackParticle(World world, double d, double e, double f, double g, double h, double i, ItemStack itemStack) {
-        this(world, d, e, f, itemStack);
+    private CrackParticle(World world, double x, double y, double z, double d, double e, double f, ItemStack itemStack) {
+        this(world, x, y, z, itemStack);
         this.velocityX *= (double)0.1f;
         this.velocityY *= (double)0.1f;
         this.velocityZ *= (double)0.1f;
-        this.velocityX += g;
-        this.velocityY += h;
-        this.velocityZ += i;
+        this.velocityX += d;
+        this.velocityY += e;
+        this.velocityZ += f;
     }
 
     @Override

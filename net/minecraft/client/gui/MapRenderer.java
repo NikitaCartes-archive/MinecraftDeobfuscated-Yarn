@@ -66,9 +66,9 @@ implements AutoCloseable {
     }
 
     @Nullable
-    public MapState getState(@Nullable MapTexture mapTexture) {
-        if (mapTexture != null) {
-            return mapTexture.mapState;
+    public MapState getState(@Nullable MapTexture texture) {
+        if (texture != null) {
+            return texture.mapState;
         }
         return null;
     }

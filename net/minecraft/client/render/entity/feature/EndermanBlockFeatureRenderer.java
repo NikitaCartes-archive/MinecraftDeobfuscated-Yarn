@@ -19,8 +19,8 @@ import net.minecraft.entity.mob.EndermanEntity;
 @Environment(value=EnvType.CLIENT)
 public class EndermanBlockFeatureRenderer
 extends FeatureRenderer<EndermanEntity, EndermanEntityModel<EndermanEntity>> {
-    public EndermanBlockFeatureRenderer(FeatureRendererContext<EndermanEntity, EndermanEntityModel<EndermanEntity>> featureRendererContext) {
-        super(featureRendererContext);
+    public EndermanBlockFeatureRenderer(FeatureRendererContext<EndermanEntity, EndermanEntityModel<EndermanEntity>> context) {
+        super(context);
     }
 
     @Override

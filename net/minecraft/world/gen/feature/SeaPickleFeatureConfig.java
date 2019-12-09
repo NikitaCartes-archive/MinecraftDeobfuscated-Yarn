@@ -12,13 +12,13 @@ public class SeaPickleFeatureConfig
 implements FeatureConfig {
     public final int count;
 
-    public SeaPickleFeatureConfig(int i) {
-        this.count = i;
+    public SeaPickleFeatureConfig(int count) {
+        this.count = count;
     }
 
     @Override
-    public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-        return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("count"), dynamicOps.createInt(this.count))));
+    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("count"), ops.createInt(this.count))));
     }
 
     public static <T> SeaPickleFeatureConfig deserialize(Dynamic<T> dynamic) {

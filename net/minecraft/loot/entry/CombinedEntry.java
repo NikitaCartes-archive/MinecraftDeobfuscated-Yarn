@@ -21,10 +21,10 @@ extends LootEntry {
     protected final LootEntry[] children;
     private final EntryCombiner predicate;
 
-    protected CombinedEntry(LootEntry[] lootEntrys, LootCondition[] lootConditions) {
-        super(lootConditions);
-        this.children = lootEntrys;
-        this.predicate = this.combine(lootEntrys);
+    protected CombinedEntry(LootEntry[] children, LootCondition[] conditions) {
+        super(conditions);
+        this.children = children;
+        this.predicate = this.combine(children);
     }
 
     @Override
@@ -48,12 +48,12 @@ extends LootEntry {
         return this.predicate.expand(lootContext, consumer);
     }
 
-    public static <T extends CombinedEntry> Serializer<T> createSerializer(Identifier identifier, Class<T> class_, final Factory<T> factory) {
-        return new Serializer<T>(identifier, class_){
+    public static <T extends CombinedEntry> Serializer<T> createSerializer(Identifier id, Class<T> type, final Factory<T> entry) {
+        return new Serializer<T>(id, type){
 
             @Override
-            protected T fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootEntry[] lootEntrys, LootCondition[] lootConditions) {
-                return factory.create(lootEntrys, lootConditions);
+            protected T fromJson(JsonObject json, JsonDeserializationContext context, LootEntry[] children, LootCondition[] conditions) {
+                return entry.create(children, conditions);
             }
         };
     }
@@ -78,8 +78,8 @@ extends LootEntry {
         protected abstract T fromJson(JsonObject var1, JsonDeserializationContext var2, LootEntry[] var3, LootCondition[] var4);
 
         @Override
-        public /* synthetic */ LootEntry fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
+        public /* synthetic */ LootEntry fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions) {
+            return this.fromJson(json, context, conditions);
         }
     }
 

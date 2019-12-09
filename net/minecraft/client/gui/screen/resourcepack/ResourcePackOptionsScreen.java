@@ -28,8 +28,8 @@ extends GameOptionsScreen {
     private SelectedResourcePackListWidget enabledPacks;
     private boolean dirty;
 
-    public ResourcePackOptionsScreen(Screen screen, GameOptions gameOptions) {
-        super(screen, gameOptions, new TranslatableText("resourcePack.title", new Object[0]));
+    public ResourcePackOptionsScreen(Screen parent, GameOptions gameOptions) {
+        super(parent, gameOptions, new TranslatableText("resourcePack.title", new Object[0]));
     }
 
     @Override
@@ -91,30 +91,30 @@ extends GameOptionsScreen {
         }
     }
 
-    public void enable(ResourcePackListWidget.ResourcePackEntry resourcePackEntry) {
-        this.availablePacks.children().remove(resourcePackEntry);
-        resourcePackEntry.enable(this.enabledPacks);
+    public void enable(ResourcePackListWidget.ResourcePackEntry resourcePack) {
+        this.availablePacks.children().remove(resourcePack);
+        resourcePack.enable(this.enabledPacks);
         this.markDirty();
     }
 
-    public void disable(ResourcePackListWidget.ResourcePackEntry resourcePackEntry) {
-        this.enabledPacks.children().remove(resourcePackEntry);
-        this.availablePacks.add(resourcePackEntry);
+    public void disable(ResourcePackListWidget.ResourcePackEntry resourcePack) {
+        this.enabledPacks.children().remove(resourcePack);
+        this.availablePacks.add(resourcePack);
         this.markDirty();
     }
 
-    public boolean isEnabled(ResourcePackListWidget.ResourcePackEntry resourcePackEntry) {
-        return this.enabledPacks.children().contains(resourcePackEntry);
+    public boolean isEnabled(ResourcePackListWidget.ResourcePackEntry resourcePack) {
+        return this.enabledPacks.children().contains(resourcePack);
     }
 
     @Override
-    public void render(int i, int j, float f) {
+    public void render(int mouseX, int mouseY, float delta) {
         this.renderDirtBackground(0);
-        this.availablePacks.render(i, j, f);
-        this.enabledPacks.render(i, j, f);
+        this.availablePacks.render(mouseX, mouseY, delta);
+        this.enabledPacks.render(mouseX, mouseY, delta);
         this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 16, 0xFFFFFF);
         this.drawCenteredString(this.font, I18n.translate("resourcePack.folderInfo", new Object[0]), this.width / 2 - 77, this.height - 26, 0x808080);
-        super.render(i, j, f);
+        super.render(mouseX, mouseY, delta);
     }
 
     public void markDirty() {

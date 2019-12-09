@@ -23,8 +23,8 @@ implements Packet<ClientPlayPacketListener> {
     public StatisticsS2CPacket() {
     }
 
-    public StatisticsS2CPacket(Object2IntMap<Stat<?>> object2IntMap) {
-        this.stats = object2IntMap;
+    public StatisticsS2CPacket(Object2IntMap<Stat<?>> stats) {
+        this.stats = stats;
     }
 
     @Override
@@ -33,28 +33,28 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Override
-    public void read(PacketByteBuf packetByteBuf) throws IOException {
-        int i = packetByteBuf.readVarInt();
+    public void read(PacketByteBuf buf) throws IOException {
+        int i = buf.readVarInt();
         this.stats = new Object2IntOpenHashMap(i);
         for (int j = 0; j < i; ++j) {
-            this.readStat((StatType)Registry.STAT_TYPE.get(packetByteBuf.readVarInt()), packetByteBuf);
+            this.readStat((StatType)Registry.STAT_TYPE.get(buf.readVarInt()), buf);
         }
     }
 
-    private <T> void readStat(StatType<T> statType, PacketByteBuf packetByteBuf) {
+    private <T> void readStat(StatType<T> type, PacketByteBuf packetByteBuf) {
         int i = packetByteBuf.readVarInt();
         int j = packetByteBuf.readVarInt();
-        this.stats.put((Stat<?>)statType.getOrCreateStat(statType.getRegistry().get(i)), j);
+        this.stats.put((Stat<?>)type.getOrCreateStat(type.getRegistry().get(i)), j);
     }
 
     @Override
-    public void write(PacketByteBuf packetByteBuf) throws IOException {
-        packetByteBuf.writeVarInt(this.stats.size());
+    public void write(PacketByteBuf buf) throws IOException {
+        buf.writeVarInt(this.stats.size());
         for (Object2IntMap.Entry entry : this.stats.object2IntEntrySet()) {
             Stat stat = (Stat)entry.getKey();
-            packetByteBuf.writeVarInt(Registry.STAT_TYPE.getRawId(stat.getType()));
-            packetByteBuf.writeVarInt(this.getStatId(stat));
-            packetByteBuf.writeVarInt(entry.getIntValue());
+            buf.writeVarInt(Registry.STAT_TYPE.getRawId(stat.getType()));
+            buf.writeVarInt(this.getStatId(stat));
+            buf.writeVarInt(entry.getIntValue());
         }
     }
 

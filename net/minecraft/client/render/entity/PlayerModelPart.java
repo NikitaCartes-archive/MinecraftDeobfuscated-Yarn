@@ -23,11 +23,11 @@ public enum PlayerModelPart {
     private final String name;
     private final Text optionName;
 
-    private PlayerModelPart(int j, String string2) {
-        this.id = j;
-        this.bitFlag = 1 << j;
-        this.name = string2;
-        this.optionName = new TranslatableText("options.modelPart." + string2, new Object[0]);
+    private PlayerModelPart(int id, String name) {
+        this.id = id;
+        this.bitFlag = 1 << id;
+        this.name = name;
+        this.optionName = new TranslatableText("options.modelPart." + name, new Object[0]);
     }
 
     public int getBitFlag() {

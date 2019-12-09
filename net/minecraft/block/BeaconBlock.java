@@ -35,37 +35,37 @@ implements ColoredBlock {
     }
 
     @Override
-    public BlockEntity createBlockEntity(BlockView blockView) {
+    public BlockEntity createBlockEntity(BlockView view) {
         return new BeaconBlockEntity();
     }
 
     @Override
-    public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (world.isClient) {
             return ActionResult.SUCCESS;
         }
-        BlockEntity blockEntity = world.getBlockEntity(blockPos);
+        BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof BeaconBlockEntity) {
-            playerEntity.openContainer((BeaconBlockEntity)blockEntity);
-            playerEntity.incrementStat(Stats.INTERACT_WITH_BEACON);
+            player.openContainer((BeaconBlockEntity)blockEntity);
+            player.incrementStat(Stats.INTERACT_WITH_BEACON);
         }
         return ActionResult.SUCCESS;
     }
 
     @Override
-    public boolean isSimpleFullBlock(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+    public boolean isSimpleFullBlock(BlockState state, BlockView view, BlockPos pos) {
         return false;
     }
 
     @Override
-    public BlockRenderType getRenderType(BlockState blockState) {
+    public BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.MODEL;
     }
 
     @Override
-    public void onPlaced(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
+    public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
         BlockEntity blockEntity;
-        if (itemStack.hasCustomName() && (blockEntity = world.getBlockEntity(blockPos)) instanceof BeaconBlockEntity) {
+        if (itemStack.hasCustomName() && (blockEntity = world.getBlockEntity(pos)) instanceof BeaconBlockEntity) {
             ((BeaconBlockEntity)blockEntity).setCustomName(itemStack.getName());
         }
     }

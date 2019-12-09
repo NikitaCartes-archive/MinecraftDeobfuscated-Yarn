@@ -58,22 +58,22 @@ implements ResourcePackProvider {
     @Nullable
     private ClientResourcePackProfile serverContainer;
 
-    public ClientBuiltinResourcePackProvider(File file, ResourceIndex resourceIndex) {
-        this.serverPacksRoot = file;
-        this.index = resourceIndex;
-        this.pack = new DefaultClientResourcePack(resourceIndex);
+    public ClientBuiltinResourcePackProvider(File serverPacksRoot, ResourceIndex index) {
+        this.serverPacksRoot = serverPacksRoot;
+        this.index = index;
+        this.pack = new DefaultClientResourcePack(index);
     }
 
     @Override
-    public <T extends ResourcePackProfile> void register(Map<String, T> map, ResourcePackProfile.Factory<T> factory) {
+    public <T extends ResourcePackProfile> void register(Map<String, T> registry, ResourcePackProfile.Factory<T> factory) {
         T resourcePackProfile2;
         File file;
         T resourcePackProfile = ResourcePackProfile.of("vanilla", true, () -> this.pack, factory, ResourcePackProfile.InsertionPosition.BOTTOM);
         if (resourcePackProfile != null) {
-            map.put("vanilla", resourcePackProfile);
+            registry.put("vanilla", resourcePackProfile);
         }
         if (this.serverContainer != null) {
-            map.put("server", this.serverContainer);
+            registry.put("server", this.serverContainer);
         }
         if ((file = this.index.getResource(new Identifier("resourcepacks/programmer_art.zip"))) != null && file.isFile() && (resourcePackProfile2 = ResourcePackProfile.of("programer_art", false, () -> new ZipResourcePack(file){
 
@@ -82,7 +82,7 @@ implements ResourcePackProvider {
                 return "Programmer Art";
             }
         }, factory, ResourcePackProfile.InsertionPosition.TOP)) != null) {
-            map.put("programer_art", resourcePackProfile2);
+            registry.put("programer_art", resourcePackProfile2);
         }
     }
 
@@ -163,23 +163,23 @@ implements ResourcePackProvider {
         }
     }
 
-    private boolean verifyFile(String string, File file) {
+    private boolean verifyFile(String expectedSha1, File rfile) {
         try {
-            String string2;
-            try (FileInputStream fileInputStream = new FileInputStream(file);){
-                string2 = DigestUtils.sha1Hex(fileInputStream);
+            String string;
+            try (FileInputStream fileInputStream = new FileInputStream(rfile);){
+                string = DigestUtils.sha1Hex(fileInputStream);
             }
-            if (string.isEmpty()) {
-                LOGGER.info("Found file {} without verification hash", (Object)file);
+            if (expectedSha1.isEmpty()) {
+                LOGGER.info("Found file {} without verification hash", (Object)rfile);
                 return true;
             }
-            if (string2.toLowerCase(Locale.ROOT).equals(string.toLowerCase(Locale.ROOT))) {
-                LOGGER.info("Found file {} matching requested hash {}", (Object)file, (Object)string);
+            if (string.toLowerCase(Locale.ROOT).equals(expectedSha1.toLowerCase(Locale.ROOT))) {
+                LOGGER.info("Found file {} matching requested hash {}", (Object)rfile, (Object)expectedSha1);
                 return true;
             }
-            LOGGER.warn("File {} had wrong hash (expected {}, found {}).", (Object)file, (Object)string, (Object)string2);
+            LOGGER.warn("File {} had wrong hash (expected {}, found {}).", (Object)rfile, (Object)expectedSha1, (Object)string);
         } catch (IOException iOException) {
-            LOGGER.warn("File {} couldn't be hashed.", (Object)file, (Object)iOException);
+            LOGGER.warn("File {} couldn't be hashed.", (Object)rfile, (Object)iOException);
         }
         return false;
     }
@@ -199,11 +199,11 @@ implements ResourcePackProvider {
         }
     }
 
-    public CompletableFuture<Void> loadServerPack(File file) {
+    public CompletableFuture<Void> loadServerPack(File packZip) {
         PackResourceMetadata packResourceMetadata = null;
         NativeImage nativeImage = null;
         String string = null;
-        try (ZipResourcePack zipResourcePack = new ZipResourcePack(file);){
+        try (ZipResourcePack zipResourcePack = new ZipResourcePack(packZip);){
             packResourceMetadata = zipResourcePack.parseMetadata(PackResourceMetadata.READER);
             try (InputStream inputStream = zipResourcePack.openRoot("pack.png");){
                 nativeImage = NativeImage.read(inputStream);
@@ -214,10 +214,10 @@ implements ResourcePackProvider {
             string = iOException.getMessage();
         }
         if (string != null) {
-            return Util.completeExceptionally(new RuntimeException(String.format("Invalid resourcepack at %s: %s", file, string)));
+            return Util.completeExceptionally(new RuntimeException(String.format("Invalid resourcepack at %s: %s", packZip, string)));
         }
-        LOGGER.info("Applying server pack {}", (Object)file);
-        this.serverContainer = new ClientResourcePackProfile("server", true, () -> new ZipResourcePack(file), new TranslatableText("resourcePack.server.name", new Object[0]), packResourceMetadata.getDescription(), ResourcePackCompatibility.from(packResourceMetadata.getPackFormat()), ResourcePackProfile.InsertionPosition.TOP, true, nativeImage);
+        LOGGER.info("Applying server pack {}", (Object)packZip);
+        this.serverContainer = new ClientResourcePackProfile("server", true, () -> new ZipResourcePack(packZip), new TranslatableText("resourcePack.server.name", new Object[0]), packResourceMetadata.getDescription(), ResourcePackCompatibility.from(packResourceMetadata.getPackFormat()), ResourcePackProfile.InsertionPosition.TOP, true, nativeImage);
         return MinecraftClient.getInstance().reloadResourcesConcurrently();
     }
 }

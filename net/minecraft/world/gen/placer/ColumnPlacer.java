@@ -20,10 +20,10 @@ extends BlockPlacer {
     private final int minSize;
     private final int extraSize;
 
-    public ColumnPlacer(int i, int j) {
+    public ColumnPlacer(int minSize, int extraSize) {
         super(BlockPlacerType.COLUMN_PLACER);
-        this.minSize = i;
-        this.extraSize = j;
+        this.minSize = minSize;
+        this.extraSize = extraSize;
     }
 
     public <T> ColumnPlacer(Dynamic<T> dynamic) {
@@ -41,8 +41,8 @@ extends BlockPlacer {
     }
 
     @Override
-    public <T> T serialize(DynamicOps<T> dynamicOps) {
-        return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("type"), dynamicOps.createString(Registry.BLOCK_PLACER_TYPE.getId(this.type).toString()), dynamicOps.createString("min_size"), dynamicOps.createInt(this.minSize), dynamicOps.createString("extra_size"), dynamicOps.createInt(this.extraSize)))).getValue();
+    public <T> T serialize(DynamicOps<T> ops) {
+        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("type"), ops.createString(Registry.BLOCK_PLACER_TYPE.getId(this.type).toString()), ops.createString("min_size"), ops.createInt(this.minSize), ops.createString("extra_size"), ops.createInt(this.extraSize)))).getValue();
     }
 }
 

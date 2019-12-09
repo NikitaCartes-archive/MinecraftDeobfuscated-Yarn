@@ -17,7 +17,7 @@ extends Closeable {
     }
 
     @Nullable
-    default public RenderableGlyph getGlyph(char c) {
+    default public RenderableGlyph getGlyph(char character) {
         return null;
     }
 }

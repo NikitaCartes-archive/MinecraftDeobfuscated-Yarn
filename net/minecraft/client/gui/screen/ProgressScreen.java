@@ -58,7 +58,7 @@ implements ProgressListener {
     }
 
     @Override
-    public void render(int i, int j, float f) {
+    public void render(int mouseX, int mouseY, float delta) {
         if (this.done) {
             if (!this.minecraft.isConnectedToRealms()) {
                 this.minecraft.openScreen(null);
@@ -70,7 +70,7 @@ implements ProgressListener {
         if (!Objects.equals(this.task, "") && this.progress != 0) {
             this.drawCenteredString(this.font, this.task + " " + this.progress + "%", this.width / 2, 90, 0xFFFFFF);
         }
-        super.render(i, j, f);
+        super.render(mouseX, mouseY, delta);
     }
 }
 

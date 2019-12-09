@@ -22,9 +22,9 @@ extends Goal {
     private final World world;
     private int timer;
 
-    public EatGrassGoal(MobEntity mobEntity) {
-        this.mob = mobEntity;
-        this.world = mobEntity.world;
+    public EatGrassGoal(MobEntity mob) {
+        this.mob = mob;
+        this.world = mob.world;
         this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK, Goal.Control.JUMP));
     }
 

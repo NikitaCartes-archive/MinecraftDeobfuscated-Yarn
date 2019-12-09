@@ -33,21 +33,21 @@ public class WhitelistCommand {
         }).executes(commandContext -> WhitelistCommand.executeAdd((ServerCommandSource)commandContext.getSource(), GameProfileArgumentType.getProfileArgument(commandContext, "targets")))))).then(CommandManager.literal("remove").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("targets", GameProfileArgumentType.gameProfile()).suggests((commandContext, suggestionsBuilder) -> CommandSource.suggestMatching(((ServerCommandSource)commandContext.getSource()).getMinecraftServer().getPlayerManager().getWhitelistedNames(), suggestionsBuilder)).executes(commandContext -> WhitelistCommand.executeRemove((ServerCommandSource)commandContext.getSource(), GameProfileArgumentType.getProfileArgument(commandContext, "targets")))))).then(CommandManager.literal("reload").executes(commandContext -> WhitelistCommand.executeReload((ServerCommandSource)commandContext.getSource()))));
     }
 
-    private static int executeReload(ServerCommandSource serverCommandSource) {
-        serverCommandSource.getMinecraftServer().getPlayerManager().reloadWhitelist();
-        serverCommandSource.sendFeedback(new TranslatableText("commands.whitelist.reloaded", new Object[0]), true);
-        serverCommandSource.getMinecraftServer().kickNonWhitelistedPlayers(serverCommandSource);
+    private static int executeReload(ServerCommandSource source) {
+        source.getMinecraftServer().getPlayerManager().reloadWhitelist();
+        source.sendFeedback(new TranslatableText("commands.whitelist.reloaded", new Object[0]), true);
+        source.getMinecraftServer().kickNonWhitelistedPlayers(source);
         return 1;
     }
 
-    private static int executeAdd(ServerCommandSource serverCommandSource, Collection<GameProfile> collection) throws CommandSyntaxException {
-        Whitelist whitelist = serverCommandSource.getMinecraftServer().getPlayerManager().getWhitelist();
+    private static int executeAdd(ServerCommandSource source, Collection<GameProfile> targets) throws CommandSyntaxException {
+        Whitelist whitelist = source.getMinecraftServer().getPlayerManager().getWhitelist();
         int i = 0;
-        for (GameProfile gameProfile : collection) {
+        for (GameProfile gameProfile : targets) {
             if (whitelist.isAllowed(gameProfile)) continue;
             WhitelistEntry whitelistEntry = new WhitelistEntry(gameProfile);
             whitelist.add(whitelistEntry);
-            serverCommandSource.sendFeedback(new TranslatableText("commands.whitelist.add.success", Texts.toText(gameProfile)), true);
+            source.sendFeedback(new TranslatableText("commands.whitelist.add.success", Texts.toText(gameProfile)), true);
             ++i;
         }
         if (i == 0) {
@@ -56,50 +56,50 @@ public class WhitelistCommand {
         return i;
     }
 
-    private static int executeRemove(ServerCommandSource serverCommandSource, Collection<GameProfile> collection) throws CommandSyntaxException {
-        Whitelist whitelist = serverCommandSource.getMinecraftServer().getPlayerManager().getWhitelist();
+    private static int executeRemove(ServerCommandSource source, Collection<GameProfile> targets) throws CommandSyntaxException {
+        Whitelist whitelist = source.getMinecraftServer().getPlayerManager().getWhitelist();
         int i = 0;
-        for (GameProfile gameProfile : collection) {
+        for (GameProfile gameProfile : targets) {
             if (!whitelist.isAllowed(gameProfile)) continue;
             WhitelistEntry whitelistEntry = new WhitelistEntry(gameProfile);
             whitelist.removeEntry(whitelistEntry);
-            serverCommandSource.sendFeedback(new TranslatableText("commands.whitelist.remove.success", Texts.toText(gameProfile)), true);
+            source.sendFeedback(new TranslatableText("commands.whitelist.remove.success", Texts.toText(gameProfile)), true);
             ++i;
         }
         if (i == 0) {
             throw REMOVE_FAILED_EXCEPTION.create();
         }
-        serverCommandSource.getMinecraftServer().kickNonWhitelistedPlayers(serverCommandSource);
+        source.getMinecraftServer().kickNonWhitelistedPlayers(source);
         return i;
     }
 
-    private static int executeOn(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
-        PlayerManager playerManager = serverCommandSource.getMinecraftServer().getPlayerManager();
+    private static int executeOn(ServerCommandSource source) throws CommandSyntaxException {
+        PlayerManager playerManager = source.getMinecraftServer().getPlayerManager();
         if (playerManager.isWhitelistEnabled()) {
             throw ALREADY_ON_EXCEPTION.create();
         }
         playerManager.setWhitelistEnabled(true);
-        serverCommandSource.sendFeedback(new TranslatableText("commands.whitelist.enabled", new Object[0]), true);
-        serverCommandSource.getMinecraftServer().kickNonWhitelistedPlayers(serverCommandSource);
+        source.sendFeedback(new TranslatableText("commands.whitelist.enabled", new Object[0]), true);
+        source.getMinecraftServer().kickNonWhitelistedPlayers(source);
         return 1;
     }
 
-    private static int executeOff(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
-        PlayerManager playerManager = serverCommandSource.getMinecraftServer().getPlayerManager();
+    private static int executeOff(ServerCommandSource source) throws CommandSyntaxException {
+        PlayerManager playerManager = source.getMinecraftServer().getPlayerManager();
         if (!playerManager.isWhitelistEnabled()) {
             throw ALREADY_OFF_EXCEPTION.create();
         }
         playerManager.setWhitelistEnabled(false);
-        serverCommandSource.sendFeedback(new TranslatableText("commands.whitelist.disabled", new Object[0]), true);
+        source.sendFeedback(new TranslatableText("commands.whitelist.disabled", new Object[0]), true);
         return 1;
     }
 
-    private static int executeList(ServerCommandSource serverCommandSource) {
-        CharSequence[] strings = serverCommandSource.getMinecraftServer().getPlayerManager().getWhitelistedNames();
+    private static int executeList(ServerCommandSource source) {
+        CharSequence[] strings = source.getMinecraftServer().getPlayerManager().getWhitelistedNames();
         if (strings.length == 0) {
-            serverCommandSource.sendFeedback(new TranslatableText("commands.whitelist.none", new Object[0]), false);
+            source.sendFeedback(new TranslatableText("commands.whitelist.none", new Object[0]), false);
         } else {
-            serverCommandSource.sendFeedback(new TranslatableText("commands.whitelist.list", strings.length, String.join((CharSequence)", ", strings)), false);
+            source.sendFeedback(new TranslatableText("commands.whitelist.list", strings.length, String.join((CharSequence)", ", strings)), false);
         }
         return strings.length;
     }

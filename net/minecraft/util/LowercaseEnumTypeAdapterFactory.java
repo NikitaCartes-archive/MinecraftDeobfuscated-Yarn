@@ -52,11 +52,11 @@ implements TypeAdapterFactory {
         };
     }
 
-    private String getKey(Object object) {
-        if (object instanceof Enum) {
-            return ((Enum)object).name().toLowerCase(Locale.ROOT);
+    private String getKey(Object o) {
+        if (o instanceof Enum) {
+            return ((Enum)o).name().toLowerCase(Locale.ROOT);
         }
-        return object.toString().toLowerCase(Locale.ROOT);
+        return o.toString().toLowerCase(Locale.ROOT);
     }
 }
 

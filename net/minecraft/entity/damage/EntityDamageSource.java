@@ -19,8 +19,8 @@ extends DamageSource {
     protected final Entity source;
     private boolean field_5880;
 
-    public EntityDamageSource(String string, @Nullable Entity entity) {
-        super(string);
+    public EntityDamageSource(String name, @Nullable Entity entity) {
+        super(name);
         this.source = entity;
     }
 

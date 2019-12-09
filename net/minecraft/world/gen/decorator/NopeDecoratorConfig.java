@@ -10,8 +10,8 @@ import net.minecraft.world.gen.decorator.DecoratorConfig;
 public class NopeDecoratorConfig
 implements DecoratorConfig {
     @Override
-    public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-        return new Dynamic<T>(dynamicOps, dynamicOps.emptyMap());
+    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+        return new Dynamic<T>(ops, ops.emptyMap());
     }
 
     public static NopeDecoratorConfig deserialize(Dynamic<?> dynamic) {

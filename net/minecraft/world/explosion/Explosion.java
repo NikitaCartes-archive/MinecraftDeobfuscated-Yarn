@@ -60,29 +60,29 @@ public class Explosion {
     private final Map<PlayerEntity, Vec3d> affectedPlayers = Maps.newHashMap();
 
     @Environment(value=EnvType.CLIENT)
-    public Explosion(World world, @Nullable Entity entity, double d, double e, double f, float g, List<BlockPos> list) {
-        this(world, entity, d, e, f, g, false, DestructionType.DESTROY, list);
+    public Explosion(World world, @Nullable Entity entity, double x, double y, double z, float power, List<BlockPos> affectedBlocks) {
+        this(world, entity, x, y, z, power, false, DestructionType.DESTROY, affectedBlocks);
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Explosion(World world, @Nullable Entity entity, double d, double e, double f, float g, boolean bl, DestructionType destructionType, List<BlockPos> list) {
-        this(world, entity, d, e, f, g, bl, destructionType);
-        this.affectedBlocks.addAll(list);
+    public Explosion(World world, @Nullable Entity entity, double x, double y, double z, float power, boolean createFire, DestructionType destructionType, List<BlockPos> affectedBlocks) {
+        this(world, entity, x, y, z, power, createFire, destructionType);
+        this.affectedBlocks.addAll(affectedBlocks);
     }
 
-    public Explosion(World world, @Nullable Entity entity, double d, double e, double f, float g, boolean bl, DestructionType destructionType) {
+    public Explosion(World world, @Nullable Entity entity, double x, double y, double z, float power, boolean createFire, DestructionType blockDestructionType) {
         this.world = world;
         this.entity = entity;
-        this.power = g;
-        this.x = d;
-        this.y = e;
-        this.z = f;
-        this.createFire = bl;
-        this.blockDestructionType = destructionType;
+        this.power = power;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.createFire = createFire;
+        this.blockDestructionType = blockDestructionType;
         this.damageSource = DamageSource.explosion(this);
     }
 
-    public static float getExposure(Vec3d vec3d, Entity entity) {
+    public static float getExposure(Vec3d source, Entity entity) {
         Box box = entity.getBoundingBox();
         double d = 1.0 / ((box.x2 - box.x1) * 2.0 + 1.0);
         double e = 1.0 / ((box.y2 - box.y1) * 2.0 + 1.0);
@@ -103,8 +103,8 @@ public class Explosion {
                     double p;
                     double o;
                     double n = MathHelper.lerp((double)k, box.x1, box.x2);
-                    Vec3d vec3d2 = new Vec3d(n + g, o = MathHelper.lerp((double)l, box.y1, box.y2), (p = MathHelper.lerp((double)m, box.z1, box.z2)) + h);
-                    if (entity.world.rayTrace(new RayTraceContext(vec3d2, vec3d, RayTraceContext.ShapeType.OUTLINE, RayTraceContext.FluidHandling.NONE, entity)).getType() == HitResult.Type.MISS) {
+                    Vec3d vec3d = new Vec3d(n + g, o = MathHelper.lerp((double)l, box.y1, box.y2), (p = MathHelper.lerp((double)m, box.z1, box.z2)) + h);
+                    if (entity.world.rayTrace(new RayTraceContext(vec3d, source, RayTraceContext.ShapeType.OUTLINE, RayTraceContext.FluidHandling.NONE, entity)).getType() == HitResult.Type.MISS) {
                         ++i;
                     }
                     ++j;

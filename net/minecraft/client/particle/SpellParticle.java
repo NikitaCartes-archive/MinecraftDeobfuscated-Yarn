@@ -20,11 +20,11 @@ extends SpriteBillboardParticle {
     private static final Random RANDOM = new Random();
     private final SpriteProvider spriteProvider;
 
-    private SpellParticle(World world, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
-        super(world, d, e, f, 0.5 - RANDOM.nextDouble(), h, 0.5 - RANDOM.nextDouble());
+    private SpellParticle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
+        super(world, x, y, z, 0.5 - RANDOM.nextDouble(), velocityY, 0.5 - RANDOM.nextDouble());
         this.spriteProvider = spriteProvider;
         this.velocityY *= (double)0.2f;
-        if (g == 0.0 && i == 0.0) {
+        if (velocityX == 0.0 && velocityZ == 0.0) {
             this.velocityX *= (double)0.1f;
             this.velocityZ *= (double)0.1f;
         }

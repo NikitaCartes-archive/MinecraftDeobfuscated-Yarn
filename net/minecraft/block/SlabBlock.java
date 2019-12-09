@@ -41,8 +41,8 @@ implements Waterloggable {
     }
 
     @Override
-    public boolean hasSidedTransparency(BlockState blockState) {
-        return blockState.get(TYPE) != SlabType.DOUBLE;
+    public boolean hasSidedTransparency(BlockState state) {
+        return state.get(TYPE) != SlabType.DOUBLE;
     }
 
     @Override
@@ -51,8 +51,8 @@ implements Waterloggable {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-        SlabType slabType = blockState.get(TYPE);
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+        SlabType slabType = state.get(TYPE);
         switch (slabType) {
             case DOUBLE: {
                 return VoxelShapes.fullCube();
@@ -66,31 +66,31 @@ implements Waterloggable {
 
     @Override
     @Nullable
-    public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-        BlockPos blockPos = itemPlacementContext.getBlockPos();
-        BlockState blockState = itemPlacementContext.getWorld().getBlockState(blockPos);
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        BlockPos blockPos = ctx.getBlockPos();
+        BlockState blockState = ctx.getWorld().getBlockState(blockPos);
         if (blockState.getBlock() == this) {
             return (BlockState)((BlockState)blockState.with(TYPE, SlabType.DOUBLE)).with(WATERLOGGED, false);
         }
-        FluidState fluidState = itemPlacementContext.getWorld().getFluidState(blockPos);
+        FluidState fluidState = ctx.getWorld().getFluidState(blockPos);
         BlockState blockState2 = (BlockState)((BlockState)this.getDefaultState().with(TYPE, SlabType.BOTTOM)).with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
-        Direction direction = itemPlacementContext.getSide();
-        if (direction == Direction.DOWN || direction != Direction.UP && itemPlacementContext.getHitPos().y - (double)blockPos.getY() > 0.5) {
+        Direction direction = ctx.getSide();
+        if (direction == Direction.DOWN || direction != Direction.UP && ctx.getHitPos().y - (double)blockPos.getY() > 0.5) {
             return (BlockState)blockState2.with(TYPE, SlabType.TOP);
         }
         return blockState2;
     }
 
     @Override
-    public boolean canReplace(BlockState blockState, ItemPlacementContext itemPlacementContext) {
-        ItemStack itemStack = itemPlacementContext.getStack();
-        SlabType slabType = blockState.get(TYPE);
+    public boolean canReplace(BlockState state, ItemPlacementContext ctx) {
+        ItemStack itemStack = ctx.getStack();
+        SlabType slabType = state.get(TYPE);
         if (slabType == SlabType.DOUBLE || itemStack.getItem() != this.asItem()) {
             return false;
         }
-        if (itemPlacementContext.canReplaceExisting()) {
-            boolean bl = itemPlacementContext.getHitPos().y - (double)itemPlacementContext.getBlockPos().getY() > 0.5;
-            Direction direction = itemPlacementContext.getSide();
+        if (ctx.canReplaceExisting()) {
+            boolean bl = ctx.getHitPos().y - (double)ctx.getBlockPos().getY() > 0.5;
+            Direction direction = ctx.getSide();
             if (slabType == SlabType.BOTTOM) {
                 return direction == Direction.UP || bl && direction.getAxis().isHorizontal();
             }
@@ -100,45 +100,45 @@ implements Waterloggable {
     }
 
     @Override
-    public FluidState getFluidState(BlockState blockState) {
-        if (blockState.get(WATERLOGGED).booleanValue()) {
+    public FluidState getFluidState(BlockState state) {
+        if (state.get(WATERLOGGED).booleanValue()) {
             return Fluids.WATER.getStill(false);
         }
-        return super.getFluidState(blockState);
+        return super.getFluidState(state);
     }
 
     @Override
-    public boolean tryFillWithFluid(IWorld iWorld, BlockPos blockPos, BlockState blockState, FluidState fluidState) {
-        if (blockState.get(TYPE) != SlabType.DOUBLE) {
-            return Waterloggable.super.tryFillWithFluid(iWorld, blockPos, blockState, fluidState);
+    public boolean tryFillWithFluid(IWorld world, BlockPos pos, BlockState state, FluidState fluidState) {
+        if (state.get(TYPE) != SlabType.DOUBLE) {
+            return Waterloggable.super.tryFillWithFluid(world, pos, state, fluidState);
         }
         return false;
     }
 
     @Override
-    public boolean canFillWithFluid(BlockView blockView, BlockPos blockPos, BlockState blockState, Fluid fluid) {
-        if (blockState.get(TYPE) != SlabType.DOUBLE) {
-            return Waterloggable.super.canFillWithFluid(blockView, blockPos, blockState, fluid);
+    public boolean canFillWithFluid(BlockView view, BlockPos pos, BlockState state, Fluid fluid) {
+        if (state.get(TYPE) != SlabType.DOUBLE) {
+            return Waterloggable.super.canFillWithFluid(view, pos, state, fluid);
         }
         return false;
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-        if (blockState.get(WATERLOGGED).booleanValue()) {
-            iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+        if (state.get(WATERLOGGED).booleanValue()) {
+            world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
-        return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+        return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
     }
 
     @Override
-    public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
-        switch (blockPlacementEnvironment) {
+    public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+        switch (env) {
             case LAND: {
                 return false;
             }
             case WATER: {
-                return blockView.getFluidState(blockPos).matches(FluidTags.WATER);
+                return view.getFluidState(pos).matches(FluidTags.WATER);
             }
             case AIR: {
                 return false;

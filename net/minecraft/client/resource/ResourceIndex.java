@@ -37,32 +37,32 @@ public class ResourceIndex {
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    public ResourceIndex(File file, String string) {
-        File file2 = new File(file, "objects");
-        File file3 = new File(file, "indexes/" + string + ".json");
+    public ResourceIndex(File directory, String indexName) {
+        File file = new File(directory, "objects");
+        File file2 = new File(directory, "indexes/" + indexName + ".json");
         BufferedReader bufferedReader = null;
         try {
-            bufferedReader = Files.newReader(file3, StandardCharsets.UTF_8);
+            bufferedReader = Files.newReader(file2, StandardCharsets.UTF_8);
             JsonObject jsonObject = JsonHelper.deserialize(bufferedReader);
             JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "objects", null);
             if (jsonObject2 != null) {
                 for (Map.Entry<String, JsonElement> entry : jsonObject2.entrySet()) {
                     JsonObject jsonObject3 = (JsonObject)entry.getValue();
-                    String string2 = entry.getKey();
-                    String[] strings = string2.split("/", 2);
-                    String string3 = JsonHelper.getString(jsonObject3, "hash");
-                    File file4 = new File(file2, string3.substring(0, 2) + "/" + string3);
+                    String string = entry.getKey();
+                    String[] strings = string.split("/", 2);
+                    String string2 = JsonHelper.getString(jsonObject3, "hash");
+                    File file3 = new File(file, string2.substring(0, 2) + "/" + string2);
                     if (strings.length == 1) {
-                        this.index.put(strings[0], file4);
+                        this.index.put(strings[0], file3);
                         continue;
                     }
-                    this.field_21556.put(new Identifier(strings[0], strings[1]), file4);
+                    this.field_21556.put(new Identifier(strings[0], strings[1]), file3);
                 }
             }
         } catch (JsonParseException jsonParseException) {
-            LOGGER.error("Unable to parse resource index file: {}", (Object)file3);
+            LOGGER.error("Unable to parse resource index file: {}", (Object)file2);
         } catch (FileNotFoundException fileNotFoundException) {
-            LOGGER.error("Can't find the resource index file: {}", (Object)file3);
+            LOGGER.error("Can't find the resource index file: {}", (Object)file2);
         } finally {
             IOUtils.closeQuietly(bufferedReader);
         }
@@ -74,8 +74,8 @@ public class ResourceIndex {
     }
 
     @Nullable
-    public File findFile(String string) {
-        return this.index.get(string);
+    public File findFile(String path) {
+        return this.index.get(path);
     }
 
     public Collection<Identifier> getFilesRecursively(String string, String string2, int i, Predicate<String> predicate) {

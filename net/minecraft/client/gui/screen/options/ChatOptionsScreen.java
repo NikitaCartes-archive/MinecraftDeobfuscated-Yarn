@@ -21,8 +21,8 @@ extends GameOptionsScreen {
     private static final Option[] OPTIONS = new Option[]{Option.VISIBILITY, Option.CHAT_COLOR, Option.CHAT_LINKS, Option.CHAT_LINKS_PROMPT, Option.CHAT_OPACITY, Option.TEXT_BACKGROUND_OPACITY, Option.CHAT_SCALE, Option.CHAT_WIDTH, Option.CHAT_HEIGHT_FOCUSED, Option.SATURATION, Option.REDUCED_DEBUG_INFO, Option.AUTO_SUGGESTIONS, Option.NARRATOR};
     private AbstractButtonWidget narratorOptionButton;
 
-    public ChatOptionsScreen(Screen screen, GameOptions gameOptions) {
-        super(screen, gameOptions, new TranslatableText("options.chat.title", new Object[0]));
+    public ChatOptionsScreen(Screen parent, GameOptions options) {
+        super(parent, options, new TranslatableText("options.chat.title", new Object[0]));
     }
 
     @Override
@@ -42,10 +42,10 @@ extends GameOptionsScreen {
     }
 
     @Override
-    public void render(int i, int j, float f) {
+    public void render(int mouseX, int mouseY, float delta) {
         this.renderBackground();
         this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, 0xFFFFFF);
-        super.render(i, j, f);
+        super.render(mouseX, mouseY, delta);
     }
 
     public void setNarratorMessage() {

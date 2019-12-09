@@ -36,16 +36,16 @@ public class PhaseType<T extends Phase> {
     private final int id;
     private final String name;
 
-    private PhaseType(int i, Class<? extends Phase> class_, String string) {
-        this.id = i;
-        this.phaseClass = class_;
-        this.name = string;
+    private PhaseType(int id, Class<? extends Phase> phaseClass, String name) {
+        this.id = id;
+        this.phaseClass = phaseClass;
+        this.name = name;
     }
 
-    public Phase create(EnderDragonEntity enderDragonEntity) {
+    public Phase create(EnderDragonEntity dragon) {
         try {
             Constructor<Phase> constructor = this.getConstructor();
-            return constructor.newInstance(enderDragonEntity);
+            return constructor.newInstance(dragon);
         } catch (Exception exception) {
             throw new Error(exception);
         }
@@ -63,19 +63,19 @@ public class PhaseType<T extends Phase> {
         return this.name + " (#" + this.id + ")";
     }
 
-    public static PhaseType<?> getFromId(int i) {
-        if (i < 0 || i >= types.length) {
+    public static PhaseType<?> getFromId(int id) {
+        if (id < 0 || id >= types.length) {
             return HOLDING_PATTERN;
         }
-        return types[i];
+        return types[id];
     }
 
     public static int count() {
         return types.length;
     }
 
-    private static <T extends Phase> PhaseType<T> register(Class<T> class_, String string) {
-        PhaseType<T> phaseType = new PhaseType<T>(types.length, class_, string);
+    private static <T extends Phase> PhaseType<T> register(Class<T> phaseClass, String name) {
+        PhaseType<T> phaseType = new PhaseType<T>(types.length, phaseClass, name);
         types = Arrays.copyOf(types, types.length + 1);
         PhaseType.types[phaseType.getTypeId()] = phaseType;
         return phaseType;

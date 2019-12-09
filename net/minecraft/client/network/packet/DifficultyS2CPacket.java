@@ -19,9 +19,9 @@ implements Packet<ClientPlayPacketListener> {
     public DifficultyS2CPacket() {
     }
 
-    public DifficultyS2CPacket(Difficulty difficulty, boolean bl) {
+    public DifficultyS2CPacket(Difficulty difficulty, boolean difficultyLocked) {
         this.difficulty = difficulty;
-        this.difficultyLocked = bl;
+        this.difficultyLocked = difficultyLocked;
     }
 
     @Override
@@ -30,15 +30,15 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Override
-    public void read(PacketByteBuf packetByteBuf) throws IOException {
-        this.difficulty = Difficulty.byOrdinal(packetByteBuf.readUnsignedByte());
-        this.difficultyLocked = packetByteBuf.readBoolean();
+    public void read(PacketByteBuf buf) throws IOException {
+        this.difficulty = Difficulty.byOrdinal(buf.readUnsignedByte());
+        this.difficultyLocked = buf.readBoolean();
     }
 
     @Override
-    public void write(PacketByteBuf packetByteBuf) throws IOException {
-        packetByteBuf.writeByte(this.difficulty.getId());
-        packetByteBuf.writeBoolean(this.difficultyLocked);
+    public void write(PacketByteBuf buf) throws IOException {
+        buf.writeByte(this.difficulty.getId());
+        buf.writeBoolean(this.difficultyLocked);
     }
 
     @Environment(value=EnvType.CLIENT)

@@ -22,8 +22,8 @@ public class CopyNameLootFunction
 extends ConditionalLootFunction {
     private final Source source;
 
-    private CopyNameLootFunction(LootCondition[] lootConditions, Source source) {
-        super(lootConditions);
+    private CopyNameLootFunction(LootCondition[] conditions, Source source) {
+        super(conditions);
         this.source = source;
     }
 
@@ -33,17 +33,17 @@ extends ConditionalLootFunction {
     }
 
     @Override
-    public ItemStack process(ItemStack itemStack, LootContext lootContext) {
+    public ItemStack process(ItemStack stack, LootContext context) {
         Nameable nameable;
-        Object object = lootContext.get(this.source.parameter);
+        Object object = context.get(this.source.parameter);
         if (object instanceof Nameable && (nameable = (Nameable)object).hasCustomName()) {
-            itemStack.setCustomName(nameable.getDisplayName());
+            stack.setCustomName(nameable.getDisplayName());
         }
-        return itemStack;
+        return stack;
     }
 
     public static ConditionalLootFunction.Builder<?> builder(Source source) {
-        return CopyNameLootFunction.builder((LootCondition[] lootConditions) -> new CopyNameLootFunction((LootCondition[])lootConditions, source));
+        return CopyNameLootFunction.builder((LootCondition[] conditions) -> new CopyNameLootFunction((LootCondition[])conditions, source));
     }
 
     public static class Factory
@@ -65,8 +65,8 @@ extends ConditionalLootFunction {
         }
 
         @Override
-        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
+        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions) {
+            return this.fromJson(json, context, conditions);
         }
     }
 
@@ -79,17 +79,17 @@ extends ConditionalLootFunction {
         public final String name;
         public final LootContextParameter<?> parameter;
 
-        private Source(String string2, LootContextParameter<?> lootContextParameter) {
-            this.name = string2;
-            this.parameter = lootContextParameter;
+        private Source(String name, LootContextParameter<?> parameter) {
+            this.name = name;
+            this.parameter = parameter;
         }
 
-        public static Source get(String string) {
+        public static Source get(String name) {
             for (Source source : Source.values()) {
-                if (!source.name.equals(string)) continue;
+                if (!source.name.equals(name)) continue;
                 return source;
             }
-            throw new IllegalArgumentException("Invalid name source " + string);
+            throw new IllegalArgumentException("Invalid name source " + name);
         }
     }
 }

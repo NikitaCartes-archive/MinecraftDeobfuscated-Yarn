@@ -52,19 +52,19 @@ public class StatusEffects {
     public static final StatusEffect BAD_OMEN = StatusEffects.register(31, "bad_omen", new StatusEffect(StatusEffectType.NEUTRAL, 745784){
 
         @Override
-        public boolean canApplyUpdateEffect(int i, int j) {
+        public boolean canApplyUpdateEffect(int duration, int i) {
             return true;
         }
 
         @Override
-        public void applyUpdateEffect(LivingEntity livingEntity, int i) {
-            if (livingEntity instanceof ServerPlayerEntity && !livingEntity.isSpectator()) {
-                ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity;
+        public void applyUpdateEffect(LivingEntity entity, int i) {
+            if (entity instanceof ServerPlayerEntity && !entity.isSpectator()) {
+                ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
                 ServerWorld serverWorld = serverPlayerEntity.getServerWorld();
                 if (serverWorld.getDifficulty() == Difficulty.PEACEFUL) {
                     return;
                 }
-                if (serverWorld.isNearOccupiedPointOfInterest(new BlockPos(livingEntity))) {
+                if (serverWorld.isNearOccupiedPointOfInterest(new BlockPos(entity))) {
                     serverWorld.getRaidManager().startRaid(serverPlayerEntity);
                 }
             }

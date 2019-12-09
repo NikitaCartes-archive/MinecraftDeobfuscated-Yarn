@@ -23,8 +23,8 @@ extends GameOptionsScreen {
     private ButtonListWidget buttonList;
     private static final Option[] OPTIONS = new Option[]{Option.SENSITIVITY, Option.INVERT_MOUSE, Option.MOUSE_WHEEL_SENSITIVITY, Option.DISCRETE_MOUSE_SCROLL, Option.TOUCHSCREEN};
 
-    public MouseOptionsScreen(Screen screen, GameOptions gameOptions) {
-        super(screen, gameOptions, new TranslatableText("options.mouse_settings.title", new Object[0]));
+    public MouseOptionsScreen(Screen parent, GameOptions gameOptions) {
+        super(parent, gameOptions, new TranslatableText("options.mouse_settings.title", new Object[0]));
     }
 
     @Override
@@ -43,11 +43,11 @@ extends GameOptionsScreen {
     }
 
     @Override
-    public void render(int i, int j, float f) {
+    public void render(int mouseX, int mouseY, float delta) {
         this.renderBackground();
-        this.buttonList.render(i, j, f);
+        this.buttonList.render(mouseX, mouseY, delta);
         this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 5, 0xFFFFFF);
-        super.render(i, j, f);
+        super.render(mouseX, mouseY, delta);
     }
 }
 

@@ -31,9 +31,9 @@ extends SinglePreparationResourceReloadListener<Map<Identifier, JsonObject>> {
     private final Gson gson;
     private final String dataType;
 
-    public JsonDataLoader(Gson gson, String string) {
+    public JsonDataLoader(Gson gson, String dataType) {
         this.gson = gson;
-        this.dataType = string;
+        this.dataType = dataType;
     }
 
     @Override
@@ -113,8 +113,8 @@ extends SinglePreparationResourceReloadListener<Map<Identifier, JsonObject>> {
     }
 
     @Override
-    protected /* synthetic */ Object prepare(ResourceManager resourceManager, Profiler profiler) {
-        return this.prepare(resourceManager, profiler);
+    protected /* synthetic */ Object prepare(ResourceManager manager, Profiler profiler) {
+        return this.prepare(manager, profiler);
     }
 }
 

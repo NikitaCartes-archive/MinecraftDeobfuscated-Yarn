@@ -22,23 +22,23 @@ public abstract class ChunkManager
 implements ChunkProvider,
 AutoCloseable {
     @Nullable
-    public WorldChunk getWorldChunk(int i, int j, boolean bl) {
-        return (WorldChunk)this.getChunk(i, j, ChunkStatus.FULL, bl);
+    public WorldChunk getWorldChunk(int chunkX, int chunkZ, boolean create) {
+        return (WorldChunk)this.getChunk(chunkX, chunkZ, ChunkStatus.FULL, create);
     }
 
     @Nullable
-    public WorldChunk getWorldChunk(int i, int j) {
-        return this.getWorldChunk(i, j, false);
+    public WorldChunk getWorldChunk(int chunkX, int chunkZ) {
+        return this.getWorldChunk(chunkX, chunkZ, false);
     }
 
     @Override
     @Nullable
-    public BlockView getChunk(int i, int j) {
-        return this.getChunk(i, j, ChunkStatus.EMPTY, false);
+    public BlockView getChunk(int chunkX, int chunkZ) {
+        return this.getChunk(chunkX, chunkZ, ChunkStatus.EMPTY, false);
     }
 
-    public boolean isChunkLoaded(int i, int j) {
-        return this.getChunk(i, j, ChunkStatus.FULL, false) != null;
+    public boolean isChunkLoaded(int x, int z) {
+        return this.getChunk(x, z, ChunkStatus.FULL, false) != null;
     }
 
     @Nullable
@@ -55,21 +55,21 @@ AutoCloseable {
 
     public abstract LightingProvider getLightingProvider();
 
-    public void setMobSpawnOptions(boolean bl, boolean bl2) {
+    public void setMobSpawnOptions(boolean spawnMonsters, boolean spawnAnimals) {
     }
 
-    public void setChunkForced(ChunkPos chunkPos, boolean bl) {
+    public void setChunkForced(ChunkPos pos, boolean forced) {
     }
 
     public boolean shouldTickEntity(Entity entity) {
         return true;
     }
 
-    public boolean shouldTickChunk(ChunkPos chunkPos) {
+    public boolean shouldTickChunk(ChunkPos pos) {
         return true;
     }
 
-    public boolean shouldTickBlock(BlockPos blockPos) {
+    public boolean shouldTickBlock(BlockPos pos) {
         return true;
     }
 }

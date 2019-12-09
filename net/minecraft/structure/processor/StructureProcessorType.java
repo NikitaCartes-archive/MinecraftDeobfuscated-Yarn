@@ -22,8 +22,8 @@ extends DynamicDeserializer<StructureProcessor> {
     public static final StructureProcessorType RULE = StructureProcessorType.register("rule", RuleStructureProcessor::new);
     public static final StructureProcessorType NOP = StructureProcessorType.register("nop", dynamic -> NopStructureProcessor.INSTANCE);
 
-    public static StructureProcessorType register(String string, StructureProcessorType structureProcessorType) {
-        return Registry.register(Registry.STRUCTURE_PROCESSOR, string, structureProcessorType);
+    public static StructureProcessorType register(String id, StructureProcessorType processor) {
+        return Registry.register(Registry.STRUCTURE_PROCESSOR, id, processor);
     }
 }
 

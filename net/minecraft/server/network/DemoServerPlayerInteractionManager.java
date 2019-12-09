@@ -71,12 +71,12 @@ extends ServerPlayerInteractionManager {
     }
 
     @Override
-    public void processBlockBreakingAction(BlockPos blockPos, PlayerActionC2SPacket.Action action, Direction direction, int i) {
+    public void processBlockBreakingAction(BlockPos pos, PlayerActionC2SPacket.Action action, Direction direction, int worldHeight) {
         if (this.demoEnded) {
             this.sendDemoReminder();
             return;
         }
-        super.processBlockBreakingAction(blockPos, action, direction, i);
+        super.processBlockBreakingAction(pos, action, direction, worldHeight);
     }
 
     @Override
@@ -89,12 +89,12 @@ extends ServerPlayerInteractionManager {
     }
 
     @Override
-    public ActionResult interactBlock(PlayerEntity playerEntity, World world, ItemStack itemStack, Hand hand, BlockHitResult blockHitResult) {
+    public ActionResult interactBlock(PlayerEntity player, World world, ItemStack stack, Hand hand, BlockHitResult hitResult) {
         if (this.demoEnded) {
             this.sendDemoReminder();
             return ActionResult.PASS;
         }
-        return super.interactBlock(playerEntity, world, itemStack, hand, blockHitResult);
+        return super.interactBlock(player, world, stack, hand, hitResult);
     }
 }
 

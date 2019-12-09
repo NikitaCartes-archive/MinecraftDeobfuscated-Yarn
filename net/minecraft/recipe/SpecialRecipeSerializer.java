@@ -19,17 +19,17 @@ implements RecipeSerializer<T> {
     }
 
     @Override
-    public T read(Identifier identifier, JsonObject jsonObject) {
-        return (T)((Recipe)this.id.apply(identifier));
+    public T read(Identifier id, JsonObject json) {
+        return (T)((Recipe)this.id.apply(id));
     }
 
     @Override
-    public T read(Identifier identifier, PacketByteBuf packetByteBuf) {
-        return (T)((Recipe)this.id.apply(identifier));
+    public T read(Identifier id, PacketByteBuf buf) {
+        return (T)((Recipe)this.id.apply(id));
     }
 
     @Override
-    public void write(PacketByteBuf packetByteBuf, T recipe) {
+    public void write(PacketByteBuf buf, T recipe) {
     }
 }
 

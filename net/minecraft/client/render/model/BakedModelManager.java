@@ -35,15 +35,15 @@ implements AutoCloseable {
     private BakedModel missingModel;
     private Object2IntMap<BlockState> stateLookup;
 
-    public BakedModelManager(TextureManager textureManager, BlockColors blockColors, int i) {
+    public BakedModelManager(TextureManager textureManager, BlockColors colorMap, int mipmap) {
         this.textureManager = textureManager;
-        this.colorMap = blockColors;
-        this.mipmap = i;
+        this.colorMap = colorMap;
+        this.mipmap = mipmap;
         this.blockModelCache = new BlockModels(this);
     }
 
-    public BakedModel getModel(ModelIdentifier modelIdentifier) {
-        return this.models.getOrDefault(modelIdentifier, this.missingModel);
+    public BakedModel getModel(ModelIdentifier id) {
+        return this.models.getOrDefault(id, this.missingModel);
     }
 
     public BakedModel getMissingModel() {
@@ -76,16 +76,16 @@ implements AutoCloseable {
         profiler.endTick();
     }
 
-    public boolean shouldRerender(BlockState blockState, BlockState blockState2) {
+    public boolean shouldRerender(BlockState from, BlockState to) {
         int j;
-        if (blockState == blockState2) {
+        if (from == to) {
             return false;
         }
-        int i = this.stateLookup.getInt(blockState);
-        if (i != -1 && i == (j = this.stateLookup.getInt(blockState2))) {
+        int i = this.stateLookup.getInt(from);
+        if (i != -1 && i == (j = this.stateLookup.getInt(to))) {
             FluidState fluidState2;
-            FluidState fluidState = blockState.getFluidState();
-            return fluidState != (fluidState2 = blockState2.getFluidState());
+            FluidState fluidState = from.getFluidState();
+            return fluidState != (fluidState2 = to.getFluidState());
         }
         return true;
     }
@@ -104,8 +104,8 @@ implements AutoCloseable {
     }
 
     @Override
-    protected /* synthetic */ Object prepare(ResourceManager resourceManager, Profiler profiler) {
-        return this.prepare(resourceManager, profiler);
+    protected /* synthetic */ Object prepare(ResourceManager manager, Profiler profiler) {
+        return this.prepare(manager, profiler);
     }
 }
 

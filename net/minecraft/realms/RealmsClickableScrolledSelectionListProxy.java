@@ -26,13 +26,13 @@ extends ListWidget {
     }
 
     @Override
-    public boolean selectItem(int i, int j, double d, double e) {
-        return this.realmsClickableScrolledSelectionList.selectItem(i, j, d, e);
+    public boolean selectItem(int index, int button, double mouseX, double mouseY) {
+        return this.realmsClickableScrolledSelectionList.selectItem(index, button, mouseX, mouseY);
     }
 
     @Override
-    public boolean isSelectedItem(int i) {
-        return this.realmsClickableScrolledSelectionList.isSelectedItem(i);
+    public boolean isSelectedItem(int index) {
+        return this.realmsClickableScrolledSelectionList.isSelectedItem(index);
     }
 
     @Override
@@ -41,8 +41,8 @@ extends ListWidget {
     }
 
     @Override
-    public void renderItem(int i, int j, int k, int l, int m, int n, float f) {
-        this.realmsClickableScrolledSelectionList.renderItem(i, j, k, l, m, n);
+    public void renderItem(int index, int y, int i, int j, int k, int l, float f) {
+        this.realmsClickableScrolledSelectionList.renderItem(index, y, i, j, k, l);
     }
 
     public int getWidth() {
@@ -64,32 +64,32 @@ extends ListWidget {
     }
 
     @Override
-    public boolean mouseScrolled(double d, double e, double f) {
-        if (this.realmsClickableScrolledSelectionList.mouseScrolled(d, e, f)) {
+    public boolean mouseScrolled(double d, double e, double amount) {
+        if (this.realmsClickableScrolledSelectionList.mouseScrolled(d, e, amount)) {
             return true;
         }
-        return super.mouseScrolled(d, e, f);
+        return super.mouseScrolled(d, e, amount);
     }
 
     @Override
-    public boolean mouseClicked(double d, double e, int i) {
-        if (this.realmsClickableScrolledSelectionList.mouseClicked(d, e, i)) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (this.realmsClickableScrolledSelectionList.mouseClicked(mouseX, mouseY, button)) {
             return true;
         }
-        return super.mouseClicked(d, e, i);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
-    public boolean mouseReleased(double d, double e, int i) {
-        return this.realmsClickableScrolledSelectionList.mouseReleased(d, e, i);
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        return this.realmsClickableScrolledSelectionList.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override
-    public boolean mouseDragged(double d, double e, int i, double f, double g) {
-        if (this.realmsClickableScrolledSelectionList.mouseDragged(d, e, i, f, g)) {
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        if (this.realmsClickableScrolledSelectionList.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
             return true;
         }
-        return super.mouseDragged(d, e, i, f, g);
+        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
     }
 
     public void renderSelected(int i, int j, int k, Tezzelator tezzelator) {
@@ -97,18 +97,18 @@ extends ListWidget {
     }
 
     @Override
-    public void renderList(int i, int j, int k, int l, float f) {
-        int m = this.getItemCount();
-        for (int n = 0; n < m; ++n) {
-            int o = j + n * this.itemHeight + this.headerHeight;
-            int p = this.itemHeight - 4;
-            if (o > this.bottom || o + p < this.top) {
-                this.updateItemPosition(n, i, o, f);
+    public void renderList(int x, int y, int mouseX, int mouseY, float f) {
+        int i = this.getItemCount();
+        for (int j = 0; j < i; ++j) {
+            int k = y + j * this.itemHeight + this.headerHeight;
+            int l = this.itemHeight - 4;
+            if (k > this.bottom || k + l < this.top) {
+                this.updateItemPosition(j, x, k, f);
             }
-            if (this.renderSelection && this.isSelectedItem(n)) {
-                this.renderSelected(this.width, o, p, Tezzelator.instance);
+            if (this.renderSelection && this.isSelectedItem(j)) {
+                this.renderSelected(this.width, k, l, Tezzelator.instance);
             }
-            this.renderItem(n, i, o, p, k, l, f);
+            this.renderItem(j, x, k, l, mouseX, mouseY, f);
         }
     }
 

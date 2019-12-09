@@ -21,9 +21,9 @@ implements Predicate<ItemStack> {
     @Nullable
     private final CompoundTag tag;
 
-    public ItemStackArgument(Item item, @Nullable CompoundTag compoundTag) {
+    public ItemStackArgument(Item item, @Nullable CompoundTag tag) {
         this.item = item;
-        this.tag = compoundTag;
+        this.tag = tag;
     }
 
     public Item getItem() {
@@ -35,12 +35,12 @@ implements Predicate<ItemStack> {
         return itemStack.getItem() == this.item && NbtHelper.matches(this.tag, itemStack.getTag(), true);
     }
 
-    public ItemStack createStack(int i, boolean bl) throws CommandSyntaxException {
-        ItemStack itemStack = new ItemStack(this.item, i);
+    public ItemStack createStack(int amount, boolean checkOverstack) throws CommandSyntaxException {
+        ItemStack itemStack = new ItemStack(this.item, amount);
         if (this.tag != null) {
             itemStack.setTag(this.tag);
         }
-        if (bl && i > itemStack.getMaxCount()) {
+        if (checkOverstack && amount > itemStack.getMaxCount()) {
             throw OVERSTACKED_EXCEPTION.create(Registry.ITEM.getId(this.item), itemStack.getMaxCount());
         }
         return itemStack;

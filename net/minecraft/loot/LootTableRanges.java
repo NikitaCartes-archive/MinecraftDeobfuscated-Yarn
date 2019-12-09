@@ -21,23 +21,23 @@ import net.minecraft.util.JsonHelper;
 public class LootTableRanges {
     private static final Map<Identifier, Class<? extends LootTableRange>> types = Maps.newHashMap();
 
-    public static LootTableRange fromJson(JsonElement jsonElement, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-        if (jsonElement.isJsonPrimitive()) {
-            return (LootTableRange)jsonDeserializationContext.deserialize(jsonElement, (Type)((Object)ConstantLootTableRange.class));
+    public static LootTableRange fromJson(JsonElement json, JsonDeserializationContext context) throws JsonParseException {
+        if (json.isJsonPrimitive()) {
+            return (LootTableRange)context.deserialize(json, (Type)((Object)ConstantLootTableRange.class));
         }
-        JsonObject jsonObject = jsonElement.getAsJsonObject();
+        JsonObject jsonObject = json.getAsJsonObject();
         String string = JsonHelper.getString(jsonObject, "type", LootTableRange.UNIFORM.toString());
         Class<? extends LootTableRange> class_ = types.get(new Identifier(string));
         if (class_ == null) {
             throw new JsonParseException("Unknown generator: " + string);
         }
-        return (LootTableRange)jsonDeserializationContext.deserialize(jsonObject, class_);
+        return (LootTableRange)context.deserialize(jsonObject, class_);
     }
 
-    public static JsonElement toJson(LootTableRange lootTableRange, JsonSerializationContext jsonSerializationContext) {
-        JsonElement jsonElement = jsonSerializationContext.serialize(lootTableRange);
+    public static JsonElement toJson(LootTableRange range, JsonSerializationContext context) {
+        JsonElement jsonElement = context.serialize(range);
         if (jsonElement.isJsonObject()) {
-            jsonElement.getAsJsonObject().addProperty("type", lootTableRange.getType().toString());
+            jsonElement.getAsJsonObject().addProperty("type", range.getType().toString());
         }
         return jsonElement;
     }

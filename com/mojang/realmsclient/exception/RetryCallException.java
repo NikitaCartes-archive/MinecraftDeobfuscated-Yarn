@@ -12,9 +12,9 @@ public class RetryCallException
 extends RealmsServiceException {
     public final int delaySeconds;
 
-    public RetryCallException(int i) {
+    public RetryCallException(int delaySeconds) {
         super(503, "Retry operation", -1, "");
-        this.delaySeconds = i < 0 || i > 120 ? 5 : i;
+        this.delaySeconds = delaySeconds < 0 || delaySeconds > 120 ? 5 : delaySeconds;
     }
 }
 

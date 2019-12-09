@@ -27,48 +27,48 @@ public class ShieldItem
 extends Item {
     public ShieldItem(Item.Settings settings) {
         super(settings);
-        this.addPropertyGetter(new Identifier("blocking"), (itemStack, world, livingEntity) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0f : 0.0f);
+        this.addPropertyGetter(new Identifier("blocking"), (stack, world, entity) -> entity != null && entity.isUsingItem() && entity.getActiveItem() == stack ? 1.0f : 0.0f);
         DispenserBlock.registerBehavior(this, ArmorItem.DISPENSER_BEHAVIOR);
     }
 
     @Override
-    public String getTranslationKey(ItemStack itemStack) {
-        if (itemStack.getSubTag("BlockEntityTag") != null) {
-            return this.getTranslationKey() + '.' + ShieldItem.getColor(itemStack).getName();
+    public String getTranslationKey(ItemStack stack) {
+        if (stack.getSubTag("BlockEntityTag") != null) {
+            return this.getTranslationKey() + '.' + ShieldItem.getColor(stack).getName();
         }
-        return super.getTranslationKey(itemStack);
+        return super.getTranslationKey(stack);
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
-        BannerItem.appendBannerTooltip(itemStack, list);
+    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+        BannerItem.appendBannerTooltip(stack, tooltip);
     }
 
     @Override
-    public UseAction getUseAction(ItemStack itemStack) {
+    public UseAction getUseAction(ItemStack stack) {
         return UseAction.BLOCK;
     }
 
     @Override
-    public int getMaxUseTime(ItemStack itemStack) {
+    public int getMaxUseTime(ItemStack stack) {
         return 72000;
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
-        ItemStack itemStack = playerEntity.getStackInHand(hand);
-        playerEntity.setCurrentHand(hand);
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+        ItemStack itemStack = user.getStackInHand(hand);
+        user.setCurrentHand(hand);
         return TypedActionResult.consume(itemStack);
     }
 
     @Override
-    public boolean canRepair(ItemStack itemStack, ItemStack itemStack2) {
-        return ItemTags.PLANKS.contains(itemStack2.getItem()) || super.canRepair(itemStack, itemStack2);
+    public boolean canRepair(ItemStack stack, ItemStack ingredient) {
+        return ItemTags.PLANKS.contains(ingredient.getItem()) || super.canRepair(stack, ingredient);
     }
 
-    public static DyeColor getColor(ItemStack itemStack) {
-        return DyeColor.byId(itemStack.getOrCreateSubTag("BlockEntityTag").getInt("Base"));
+    public static DyeColor getColor(ItemStack stack) {
+        return DyeColor.byId(stack.getOrCreateSubTag("BlockEntityTag").getInt("Base"));
     }
 }
 

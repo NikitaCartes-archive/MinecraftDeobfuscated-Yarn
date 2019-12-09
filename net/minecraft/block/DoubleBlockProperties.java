@@ -14,29 +14,29 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
 
 public class DoubleBlockProperties {
-    public static <S extends BlockEntity> PropertySource<S> toPropertySource(BlockEntityType<S> blockEntityType, Function<BlockState, Type> function, Function<BlockState, Direction> function2, DirectionProperty directionProperty, BlockState blockState, IWorld iWorld, BlockPos blockPos, BiPredicate<IWorld, BlockPos> biPredicate) {
+    public static <S extends BlockEntity> PropertySource<S> toPropertySource(BlockEntityType<S> blockEntityType, Function<BlockState, Type> typeMapper, Function<BlockState, Direction> function, DirectionProperty directionProperty, BlockState state, IWorld world, BlockPos pos, BiPredicate<IWorld, BlockPos> fallbackTester) {
         Type type2;
         boolean bl2;
-        S blockEntity = blockEntityType.get(iWorld, blockPos);
+        S blockEntity = blockEntityType.get(world, pos);
         if (blockEntity == null) {
             return PropertyRetriever::getFallback;
         }
-        if (biPredicate.test(iWorld, blockPos)) {
+        if (fallbackTester.test(world, pos)) {
             return PropertyRetriever::getFallback;
         }
-        Type type = function.apply(blockState);
+        Type type = typeMapper.apply(state);
         boolean bl = type == Type.SINGLE;
         boolean bl3 = bl2 = type == Type.FIRST;
         if (bl) {
             return new PropertySource.Single<S>(blockEntity);
         }
-        BlockPos blockPos2 = blockPos.offset(function2.apply(blockState));
-        BlockState blockState2 = iWorld.getBlockState(blockPos2);
-        if (blockState2.getBlock() == blockState.getBlock() && (type2 = function.apply(blockState2)) != Type.SINGLE && type != type2 && blockState2.get(directionProperty) == blockState.get(directionProperty)) {
-            if (biPredicate.test(iWorld, blockPos2)) {
+        BlockPos blockPos = pos.offset(function.apply(state));
+        BlockState blockState = world.getBlockState(blockPos);
+        if (blockState.getBlock() == state.getBlock() && (type2 = typeMapper.apply(blockState)) != Type.SINGLE && type != type2 && blockState.get(directionProperty) == state.get(directionProperty)) {
+            if (fallbackTester.test(world, blockPos)) {
                 return PropertyRetriever::getFallback;
             }
-            S blockEntity2 = blockEntityType.get(iWorld, blockPos2);
+            S blockEntity2 = blockEntityType.get(world, blockPos);
             if (blockEntity2 != null) {
                 S blockEntity3 = bl2 ? blockEntity : blockEntity2;
                 S blockEntity4 = bl2 ? blockEntity2 : blockEntity;
@@ -53,8 +53,8 @@ public class DoubleBlockProperties {
         implements PropertySource<S> {
             private final S single;
 
-            public Single(S object) {
-                this.single = object;
+            public Single(S single) {
+                this.single = single;
             }
 
             @Override
@@ -68,9 +68,9 @@ public class DoubleBlockProperties {
             private final S first;
             private final S second;
 
-            public Pair(S object, S object2) {
-                this.first = object;
-                this.second = object2;
+            public Pair(S first, S second) {
+                this.first = first;
+                this.second = second;
             }
 
             @Override

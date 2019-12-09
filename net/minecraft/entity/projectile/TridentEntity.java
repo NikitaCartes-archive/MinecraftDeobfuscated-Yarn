@@ -41,16 +41,16 @@ extends ProjectileEntity {
         super((EntityType<? extends ProjectileEntity>)entityType, world);
     }
 
-    public TridentEntity(World world, LivingEntity livingEntity, ItemStack itemStack) {
-        super(EntityType.TRIDENT, livingEntity, world);
-        this.tridentStack = itemStack.copy();
-        this.dataTracker.set(LOYALTY, (byte)EnchantmentHelper.getLoyalty(itemStack));
-        this.dataTracker.set(field_21514, itemStack.hasEnchantmentGlint());
+    public TridentEntity(World world, LivingEntity owner, ItemStack item) {
+        super(EntityType.TRIDENT, owner, world);
+        this.tridentStack = item.copy();
+        this.dataTracker.set(LOYALTY, (byte)EnchantmentHelper.getLoyalty(item));
+        this.dataTracker.set(field_21514, item.hasEnchantmentGlint());
     }
 
     @Environment(value=EnvType.CLIENT)
-    public TridentEntity(World world, double d, double e, double f) {
-        super(EntityType.TRIDENT, d, e, f, world);
+    public TridentEntity(World world, double x, double y, double z) {
+        super(EntityType.TRIDENT, x, y, z, world);
     }
 
     @Override
@@ -111,11 +111,11 @@ extends ProjectileEntity {
 
     @Override
     @Nullable
-    protected EntityHitResult getEntityCollision(Vec3d vec3d, Vec3d vec3d2) {
+    protected EntityHitResult getEntityCollision(Vec3d currentPosition, Vec3d nextPosition) {
         if (this.dealtDamage) {
             return null;
         }
-        return super.getEntityCollision(vec3d, vec3d2);
+        return super.getEntityCollision(currentPosition, nextPosition);
     }
 
     @Override
@@ -162,29 +162,29 @@ extends ProjectileEntity {
     }
 
     @Override
-    public void onPlayerCollision(PlayerEntity playerEntity) {
+    public void onPlayerCollision(PlayerEntity player) {
         Entity entity = this.getOwner();
-        if (entity != null && entity.getUuid() != playerEntity.getUuid()) {
+        if (entity != null && entity.getUuid() != player.getUuid()) {
             return;
         }
-        super.onPlayerCollision(playerEntity);
+        super.onPlayerCollision(player);
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag compoundTag) {
-        super.readCustomDataFromTag(compoundTag);
-        if (compoundTag.contains("Trident", 10)) {
-            this.tridentStack = ItemStack.fromTag(compoundTag.getCompound("Trident"));
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        if (tag.contains("Trident", 10)) {
+            this.tridentStack = ItemStack.fromTag(tag.getCompound("Trident"));
         }
-        this.dealtDamage = compoundTag.getBoolean("DealtDamage");
+        this.dealtDamage = tag.getBoolean("DealtDamage");
         this.dataTracker.set(LOYALTY, (byte)EnchantmentHelper.getLoyalty(this.tridentStack));
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag compoundTag) {
-        super.writeCustomDataToTag(compoundTag);
-        compoundTag.put("Trident", this.tridentStack.toTag(new CompoundTag()));
-        compoundTag.putBoolean("DealtDamage", this.dealtDamage);
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.put("Trident", this.tridentStack.toTag(new CompoundTag()));
+        tag.putBoolean("DealtDamage", this.dealtDamage);
     }
 
     @Override
@@ -202,7 +202,7 @@ extends ProjectileEntity {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean shouldRender(double d, double e, double f) {
+    public boolean shouldRender(double cameraX, double cameraY, double cameraZ) {
         return true;
     }
 }

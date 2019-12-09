@@ -153,16 +153,16 @@ extends SinglePreparationResourceReloadListener<SoundList> {
         return this.sounds.keySet();
     }
 
-    public void playNextTick(TickableSoundInstance tickableSoundInstance) {
-        this.soundSystem.playNextTick(tickableSoundInstance);
+    public void playNextTick(TickableSoundInstance sound) {
+        this.soundSystem.playNextTick(sound);
     }
 
-    public void play(SoundInstance soundInstance) {
-        this.soundSystem.play(soundInstance);
+    public void play(SoundInstance sound) {
+        this.soundSystem.play(sound);
     }
 
-    public void play(SoundInstance soundInstance, int i) {
-        this.soundSystem.play(soundInstance, i);
+    public void play(SoundInstance sound, int delay) {
+        this.soundSystem.play(sound, delay);
     }
 
     public void updateListenerPosition(Camera camera) {
@@ -189,11 +189,11 @@ extends SinglePreparationResourceReloadListener<SoundList> {
         this.soundSystem.resumeAll();
     }
 
-    public void updateSoundVolume(SoundCategory soundCategory, float f) {
-        if (soundCategory == SoundCategory.MASTER && f <= 0.0f) {
+    public void updateSoundVolume(SoundCategory category, float volume) {
+        if (category == SoundCategory.MASTER && volume <= 0.0f) {
             this.stopAll();
         }
-        this.soundSystem.updateSoundVolume(soundCategory, f);
+        this.soundSystem.updateSoundVolume(category, volume);
     }
 
     public void stop(SoundInstance soundInstance) {
@@ -221,8 +221,8 @@ extends SinglePreparationResourceReloadListener<SoundList> {
     }
 
     @Override
-    protected /* synthetic */ Object prepare(ResourceManager resourceManager, Profiler profiler) {
-        return this.prepare(resourceManager, profiler);
+    protected /* synthetic */ Object prepare(ResourceManager manager, Profiler profiler) {
+        return this.prepare(manager, profiler);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -232,23 +232,23 @@ extends SinglePreparationResourceReloadListener<SoundList> {
         protected SoundList() {
         }
 
-        private void register(Identifier identifier, SoundEntry soundEntry, ResourceManager resourceManager) {
+        private void register(Identifier id, SoundEntry entry, ResourceManager resourceManager) {
             boolean bl;
-            WeightedSoundSet weightedSoundSet = this.loadedSounds.get(identifier);
+            WeightedSoundSet weightedSoundSet = this.loadedSounds.get(id);
             boolean bl2 = bl = weightedSoundSet == null;
-            if (bl || soundEntry.canReplace()) {
+            if (bl || entry.canReplace()) {
                 if (!bl) {
-                    LOGGER.debug("Replaced sound event location {}", (Object)identifier);
+                    LOGGER.debug("Replaced sound event location {}", (Object)id);
                 }
-                weightedSoundSet = new WeightedSoundSet(identifier, soundEntry.getSubtitle());
-                this.loadedSounds.put(identifier, weightedSoundSet);
+                weightedSoundSet = new WeightedSoundSet(id, entry.getSubtitle());
+                this.loadedSounds.put(id, weightedSoundSet);
             }
-            block4: for (final Sound sound : soundEntry.getSounds()) {
+            block4: for (final Sound sound : entry.getSounds()) {
                 SoundContainer<Sound> soundContainer;
-                final Identifier identifier2 = sound.getIdentifier();
+                final Identifier identifier = sound.getIdentifier();
                 switch (sound.getRegistrationType()) {
                     case FILE: {
-                        if (!SoundManager.isSoundResourcePresent(sound, identifier, resourceManager)) continue block4;
+                        if (!SoundManager.isSoundResourcePresent(sound, id, resourceManager)) continue block4;
                         soundContainer = sound;
                         break;
                     }
@@ -257,13 +257,13 @@ extends SinglePreparationResourceReloadListener<SoundList> {
 
                             @Override
                             public int getWeight() {
-                                WeightedSoundSet weightedSoundSet = (WeightedSoundSet)loadedSounds.get(identifier2);
+                                WeightedSoundSet weightedSoundSet = (WeightedSoundSet)loadedSounds.get(identifier);
                                 return weightedSoundSet == null ? 0 : weightedSoundSet.getWeight();
                             }
 
                             @Override
                             public Sound getSound() {
-                                WeightedSoundSet weightedSoundSet = (WeightedSoundSet)loadedSounds.get(identifier2);
+                                WeightedSoundSet weightedSoundSet = (WeightedSoundSet)loadedSounds.get(identifier);
                                 if (weightedSoundSet == null) {
                                     return MISSING_SOUND;
                                 }
@@ -273,7 +273,7 @@ extends SinglePreparationResourceReloadListener<SoundList> {
 
                             @Override
                             public void preload(SoundSystem soundSystem) {
-                                WeightedSoundSet weightedSoundSet = (WeightedSoundSet)loadedSounds.get(identifier2);
+                                WeightedSoundSet weightedSoundSet = (WeightedSoundSet)loadedSounds.get(identifier);
                                 if (weightedSoundSet == null) {
                                     return;
                                 }

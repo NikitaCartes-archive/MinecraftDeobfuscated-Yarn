@@ -19,12 +19,12 @@ extends Item {
     }
 
     @Override
-    public boolean useOnEntity(ItemStack itemStack, PlayerEntity playerEntity, LivingEntity livingEntity, Hand hand) {
+    public boolean useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         PigEntity pigEntity;
-        if (livingEntity instanceof PigEntity && (pigEntity = (PigEntity)livingEntity).isAlive() && !pigEntity.isSaddled() && !pigEntity.isBaby()) {
+        if (entity instanceof PigEntity && (pigEntity = (PigEntity)entity).isAlive() && !pigEntity.isSaddled() && !pigEntity.isBaby()) {
             pigEntity.setSaddled(true);
-            pigEntity.world.playSound(playerEntity, pigEntity.getX(), pigEntity.getY(), pigEntity.getZ(), SoundEvents.ENTITY_PIG_SADDLE, SoundCategory.NEUTRAL, 0.5f, 1.0f);
-            itemStack.decrement(1);
+            pigEntity.world.playSound(user, pigEntity.getX(), pigEntity.getY(), pigEntity.getZ(), SoundEvents.ENTITY_PIG_SADDLE, SoundCategory.NEUTRAL, 0.5f, 1.0f);
+            stack.decrement(1);
             return true;
         }
         return false;

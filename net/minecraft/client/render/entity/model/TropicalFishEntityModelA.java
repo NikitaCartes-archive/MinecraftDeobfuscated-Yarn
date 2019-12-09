@@ -49,12 +49,12 @@ extends TintableCompositeModel<T> {
     }
 
     @Override
-    public void setAngles(T entity, float f, float g, float h, float i, float j) {
-        float k = 1.0f;
+    public void setAngles(T entity, float limbAngle, float limbDistance, float customAngle, float headYaw, float headPitch) {
+        float f = 1.0f;
         if (!((Entity)entity).isInsideWater()) {
-            k = 1.5f;
+            f = 1.5f;
         }
-        this.field_3591.yaw = -k * 0.45f * MathHelper.sin(0.6f * h);
+        this.field_3591.yaw = -f * 0.45f * MathHelper.sin(0.6f * customAngle);
     }
 }
 

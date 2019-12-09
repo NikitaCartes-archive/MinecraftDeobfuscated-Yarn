@@ -18,18 +18,18 @@ implements Packet<ClientPlayPacketListener> {
     public DisconnectS2CPacket() {
     }
 
-    public DisconnectS2CPacket(Text text) {
-        this.reason = text;
+    public DisconnectS2CPacket(Text reason) {
+        this.reason = reason;
     }
 
     @Override
-    public void read(PacketByteBuf packetByteBuf) throws IOException {
-        this.reason = packetByteBuf.readText();
+    public void read(PacketByteBuf buf) throws IOException {
+        this.reason = buf.readText();
     }
 
     @Override
-    public void write(PacketByteBuf packetByteBuf) throws IOException {
-        packetByteBuf.writeText(this.reason);
+    public void write(PacketByteBuf buf) throws IOException {
+        buf.writeText(this.reason);
     }
 
     @Override

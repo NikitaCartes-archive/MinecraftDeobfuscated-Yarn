@@ -11,8 +11,8 @@ import net.minecraft.util.math.BlockPos;
 
 public class RunAroundAfterRaidTask
 extends FindWalkTargetTask {
-    public RunAroundAfterRaidTask(float f) {
-        super(f);
+    public RunAroundAfterRaidTask(float walkSpeed) {
+        super(walkSpeed);
     }
 
     @Override

@@ -12,12 +12,12 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class GolemEntity
 extends MobEntityWithAi {
-    protected GolemEntity(EntityType<? extends GolemEntity> entityType, World world) {
-        super((EntityType<? extends MobEntityWithAi>)entityType, world);
+    protected GolemEntity(EntityType<? extends GolemEntity> type, World world) {
+        super((EntityType<? extends MobEntityWithAi>)type, world);
     }
 
     @Override
-    public boolean handleFallDamage(float f, float g) {
+    public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
         return false;
     }
 
@@ -29,7 +29,7 @@ extends MobEntityWithAi {
 
     @Override
     @Nullable
-    protected SoundEvent getHurtSound(DamageSource damageSource) {
+    protected SoundEvent getHurtSound(DamageSource source) {
         return null;
     }
 
@@ -45,7 +45,7 @@ extends MobEntityWithAi {
     }
 
     @Override
-    public boolean canImmediatelyDespawn(double d) {
+    public boolean canImmediatelyDespawn(double distanceSquared) {
         return false;
     }
 }

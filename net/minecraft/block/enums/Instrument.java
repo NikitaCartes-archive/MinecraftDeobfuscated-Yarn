@@ -34,9 +34,9 @@ public enum Instrument implements StringIdentifiable
     private final String name;
     private final SoundEvent sound;
 
-    private Instrument(String string2, SoundEvent soundEvent) {
-        this.name = string2;
-        this.sound = soundEvent;
+    private Instrument(String name, SoundEvent sound) {
+        this.name = name;
+        this.sound = sound;
     }
 
     @Override
@@ -48,8 +48,8 @@ public enum Instrument implements StringIdentifiable
         return this.sound;
     }
 
-    public static Instrument fromBlockState(BlockState blockState) {
-        Block block = blockState.getBlock();
+    public static Instrument fromBlockState(BlockState state) {
+        Block block = state.getBlock();
         if (block == Blocks.CLAY) {
             return FLUTE;
         }
@@ -83,7 +83,7 @@ public enum Instrument implements StringIdentifiable
         if (block == Blocks.GLOWSTONE) {
             return PLING;
         }
-        Material material = blockState.getMaterial();
+        Material material = state.getMaterial();
         if (material == Material.STONE) {
             return BASEDRUM;
         }

@@ -27,7 +27,7 @@ implements Packet<ClientPlayPacketListener> {
         this(damageTracker, type, new LiteralText(""));
     }
 
-    public CombatEventS2CPacket(DamageTracker damageTracker, Type type, Text text) {
+    public CombatEventS2CPacket(DamageTracker damageTracker, Type type, Text deathMessage) {
         this.type = type;
         LivingEntity livingEntity = damageTracker.getBiggestAttacker();
         switch (type) {
@@ -39,34 +39,34 @@ implements Packet<ClientPlayPacketListener> {
             case ENTITY_DIED: {
                 this.entityId = damageTracker.getEntity().getEntityId();
                 this.attackerEntityId = livingEntity == null ? -1 : livingEntity.getEntityId();
-                this.deathMessage = text;
+                this.deathMessage = deathMessage;
             }
         }
     }
 
     @Override
-    public void read(PacketByteBuf packetByteBuf) throws IOException {
-        this.type = packetByteBuf.readEnumConstant(Type.class);
+    public void read(PacketByteBuf buf) throws IOException {
+        this.type = buf.readEnumConstant(Type.class);
         if (this.type == Type.END_COMBAT) {
-            this.timeSinceLastAttack = packetByteBuf.readVarInt();
-            this.attackerEntityId = packetByteBuf.readInt();
+            this.timeSinceLastAttack = buf.readVarInt();
+            this.attackerEntityId = buf.readInt();
         } else if (this.type == Type.ENTITY_DIED) {
-            this.entityId = packetByteBuf.readVarInt();
-            this.attackerEntityId = packetByteBuf.readInt();
-            this.deathMessage = packetByteBuf.readText();
+            this.entityId = buf.readVarInt();
+            this.attackerEntityId = buf.readInt();
+            this.deathMessage = buf.readText();
         }
     }
 
     @Override
-    public void write(PacketByteBuf packetByteBuf) throws IOException {
-        packetByteBuf.writeEnumConstant(this.type);
+    public void write(PacketByteBuf buf) throws IOException {
+        buf.writeEnumConstant(this.type);
         if (this.type == Type.END_COMBAT) {
-            packetByteBuf.writeVarInt(this.timeSinceLastAttack);
-            packetByteBuf.writeInt(this.attackerEntityId);
+            buf.writeVarInt(this.timeSinceLastAttack);
+            buf.writeInt(this.attackerEntityId);
         } else if (this.type == Type.ENTITY_DIED) {
-            packetByteBuf.writeVarInt(this.entityId);
-            packetByteBuf.writeInt(this.attackerEntityId);
-            packetByteBuf.writeText(this.deathMessage);
+            buf.writeVarInt(this.entityId);
+            buf.writeInt(this.attackerEntityId);
+            buf.writeText(this.deathMessage);
         }
     }
 

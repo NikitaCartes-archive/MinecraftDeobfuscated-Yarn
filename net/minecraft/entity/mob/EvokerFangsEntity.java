@@ -33,21 +33,21 @@ extends Entity {
         super(entityType, world);
     }
 
-    public EvokerFangsEntity(World world, double d, double e, double f, float g, int i, LivingEntity livingEntity) {
+    public EvokerFangsEntity(World world, double x, double y, double z, float f, int warmup, LivingEntity owner) {
         this((EntityType<? extends EvokerFangsEntity>)EntityType.EVOKER_FANGS, world);
-        this.warmup = i;
-        this.setOwner(livingEntity);
-        this.yaw = g * 57.295776f;
-        this.setPosition(d, e, f);
+        this.warmup = warmup;
+        this.setOwner(owner);
+        this.yaw = f * 57.295776f;
+        this.setPosition(x, y, z);
     }
 
     @Override
     protected void initDataTracker() {
     }
 
-    public void setOwner(@Nullable LivingEntity livingEntity) {
-        this.owner = livingEntity;
-        this.ownerUuid = livingEntity == null ? null : livingEntity.getUuid();
+    public void setOwner(@Nullable LivingEntity owner) {
+        this.owner = owner;
+        this.ownerUuid = owner == null ? null : owner.getUuid();
     }
 
     @Nullable
@@ -60,18 +60,18 @@ extends Entity {
     }
 
     @Override
-    protected void readCustomDataFromTag(CompoundTag compoundTag) {
-        this.warmup = compoundTag.getInt("Warmup");
-        if (compoundTag.containsUuid("OwnerUUID")) {
-            this.ownerUuid = compoundTag.getUuid("OwnerUUID");
+    protected void readCustomDataFromTag(CompoundTag tag) {
+        this.warmup = tag.getInt("Warmup");
+        if (tag.containsUuid("OwnerUUID")) {
+            this.ownerUuid = tag.getUuid("OwnerUUID");
         }
     }
 
     @Override
-    protected void writeCustomDataToTag(CompoundTag compoundTag) {
-        compoundTag.putInt("Warmup", this.warmup);
+    protected void writeCustomDataToTag(CompoundTag tag) {
+        tag.putInt("Warmup", this.warmup);
         if (this.ownerUuid != null) {
-            compoundTag.putUuid("OwnerUUID", this.ownerUuid);
+            tag.putUuid("OwnerUUID", this.ownerUuid);
         }
     }
 
@@ -110,26 +110,26 @@ extends Entity {
         }
     }
 
-    private void damage(LivingEntity livingEntity) {
-        LivingEntity livingEntity2 = this.getOwner();
-        if (!livingEntity.isAlive() || livingEntity.isInvulnerable() || livingEntity == livingEntity2) {
+    private void damage(LivingEntity target) {
+        LivingEntity livingEntity = this.getOwner();
+        if (!target.isAlive() || target.isInvulnerable() || target == livingEntity) {
             return;
         }
-        if (livingEntity2 == null) {
-            livingEntity.damage(DamageSource.MAGIC, 6.0f);
+        if (livingEntity == null) {
+            target.damage(DamageSource.MAGIC, 6.0f);
         } else {
-            if (livingEntity2.isTeammate(livingEntity)) {
+            if (livingEntity.isTeammate(target)) {
                 return;
             }
-            livingEntity.damage(DamageSource.magic(this, livingEntity2), 6.0f);
+            target.damage(DamageSource.magic(this, livingEntity), 6.0f);
         }
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void handleStatus(byte b) {
-        super.handleStatus(b);
-        if (b == 4) {
+    public void handleStatus(byte status) {
+        super.handleStatus(status);
+        if (status == 4) {
             this.hasAttacked = true;
             if (!this.isSilent()) {
                 this.world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_EVOKER_FANGS_ATTACK, this.getSoundCategory(), 1.0f, this.random.nextFloat() * 0.2f + 0.85f, false);
@@ -138,7 +138,7 @@ extends Entity {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public float getAnimationProgress(float f) {
+    public float getAnimationProgress(float tickDelta) {
         if (!this.hasAttacked) {
             return 0.0f;
         }
@@ -146,7 +146,7 @@ extends Entity {
         if (i <= 0) {
             return 1.0f;
         }
-        return 1.0f - ((float)i - f) / 20.0f;
+        return 1.0f - ((float)i - tickDelta) / 20.0f;
     }
 
     @Override

@@ -23,12 +23,12 @@ extends AbstractFireballEntity {
         super((EntityType<? extends AbstractFireballEntity>)entityType, world);
     }
 
-    public SmallFireballEntity(World world, LivingEntity livingEntity, double d, double e, double f) {
-        super((EntityType<? extends AbstractFireballEntity>)EntityType.SMALL_FIREBALL, livingEntity, d, e, f, world);
+    public SmallFireballEntity(World world, LivingEntity owner, double velocityX, double velocityY, double velocityZ) {
+        super((EntityType<? extends AbstractFireballEntity>)EntityType.SMALL_FIREBALL, owner, velocityX, velocityY, velocityZ, world);
     }
 
-    public SmallFireballEntity(World world, double d, double e, double f, double g, double h, double i) {
-        super((EntityType<? extends AbstractFireballEntity>)EntityType.SMALL_FIREBALL, d, e, f, g, h, i, world);
+    public SmallFireballEntity(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
+        super((EntityType<? extends AbstractFireballEntity>)EntityType.SMALL_FIREBALL, x, y, z, velocityX, velocityY, velocityZ, world);
     }
 
     @Override
@@ -62,7 +62,7 @@ extends AbstractFireballEntity {
     }
 
     @Override
-    public boolean damage(DamageSource damageSource, float f) {
+    public boolean damage(DamageSource source, float amount) {
         return false;
     }
 }

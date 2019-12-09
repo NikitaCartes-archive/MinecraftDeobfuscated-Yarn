@@ -26,36 +26,36 @@ extends HorizontalFacingBlock {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
-        return WallMountedBlock.canPlaceAt(worldView, blockPos, WallMountedBlock.getDirection(blockState).getOpposite());
+    public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+        return WallMountedBlock.canPlaceAt(world, pos, WallMountedBlock.getDirection(state).getOpposite());
     }
 
-    public static boolean canPlaceAt(WorldView worldView, BlockPos blockPos, Direction direction) {
-        BlockPos blockPos2 = blockPos.offset(direction);
-        return worldView.getBlockState(blockPos2).isSideSolidFullSquare(worldView, blockPos2, direction.getOpposite());
+    public static boolean canPlaceAt(WorldView worldView, BlockPos pos, Direction direction) {
+        BlockPos blockPos = pos.offset(direction);
+        return worldView.getBlockState(blockPos).isSideSolidFullSquare(worldView, blockPos, direction.getOpposite());
     }
 
     @Override
     @Nullable
-    public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-        for (Direction direction : itemPlacementContext.getPlacementDirections()) {
-            BlockState blockState = direction.getAxis() == Direction.Axis.Y ? (BlockState)((BlockState)this.getDefaultState().with(FACE, direction == Direction.UP ? WallMountLocation.CEILING : WallMountLocation.FLOOR)).with(FACING, itemPlacementContext.getPlayerFacing()) : (BlockState)((BlockState)this.getDefaultState().with(FACE, WallMountLocation.WALL)).with(FACING, direction.getOpposite());
-            if (!blockState.canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos())) continue;
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        for (Direction direction : ctx.getPlacementDirections()) {
+            BlockState blockState = direction.getAxis() == Direction.Axis.Y ? (BlockState)((BlockState)this.getDefaultState().with(FACE, direction == Direction.UP ? WallMountLocation.CEILING : WallMountLocation.FLOOR)).with(FACING, ctx.getPlayerFacing()) : (BlockState)((BlockState)this.getDefaultState().with(FACE, WallMountLocation.WALL)).with(FACING, direction.getOpposite());
+            if (!blockState.canPlaceAt(ctx.getWorld(), ctx.getBlockPos())) continue;
             return blockState;
         }
         return null;
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-        if (WallMountedBlock.getDirection(blockState).getOpposite() == direction && !blockState.canPlaceAt(iWorld, blockPos)) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+        if (WallMountedBlock.getDirection(state).getOpposite() == facing && !state.canPlaceAt(world, pos)) {
             return Blocks.AIR.getDefaultState();
         }
-        return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+        return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
     }
 
-    protected static Direction getDirection(BlockState blockState) {
-        switch (blockState.get(FACE)) {
+    protected static Direction getDirection(BlockState state) {
+        switch (state.get(FACE)) {
             case CEILING: {
                 return Direction.DOWN;
             }
@@ -63,7 +63,7 @@ extends HorizontalFacingBlock {
                 return Direction.UP;
             }
         }
-        return blockState.get(FACING);
+        return state.get(FACING);
     }
 }
 

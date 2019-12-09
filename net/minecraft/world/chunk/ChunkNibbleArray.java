@@ -24,16 +24,16 @@ public class ChunkNibbleArray {
         this.byteArray = new byte[i];
     }
 
-    public int get(int i, int j, int k) {
-        return this.get(this.getIndex(i, j, k));
+    public int get(int x, int y, int z) {
+        return this.get(this.getIndex(x, y, z));
     }
 
-    public void set(int i, int j, int k, int l) {
-        this.set(this.getIndex(i, j, k), l);
+    public void set(int x, int y, int z, int value) {
+        this.set(this.getIndex(x, y, z), value);
     }
 
-    protected int getIndex(int i, int j, int k) {
-        return j << 8 | k << 4 | i;
+    protected int getIndex(int x, int y, int z) {
+        return y << 8 | z << 4 | x;
     }
 
     private int get(int i) {
@@ -47,20 +47,20 @@ public class ChunkNibbleArray {
         return this.byteArray[j] >> 4 & 0xF;
     }
 
-    private void set(int i, int j) {
+    private void set(int index, int value) {
         if (this.byteArray == null) {
             this.byteArray = new byte[2048];
         }
-        int k = this.divideByTwo(i);
-        this.byteArray[k] = this.isEven(i) ? (byte)(this.byteArray[k] & 0xF0 | j & 0xF) : (byte)(this.byteArray[k] & 0xF | (j & 0xF) << 4);
+        int i = this.divideByTwo(index);
+        this.byteArray[i] = this.isEven(index) ? (byte)(this.byteArray[i] & 0xF0 | value & 0xF) : (byte)(this.byteArray[i] & 0xF | (value & 0xF) << 4);
     }
 
-    private boolean isEven(int i) {
-        return (i & 1) == 0;
+    private boolean isEven(int n) {
+        return (n & 1) == 0;
     }
 
-    private int divideByTwo(int i) {
-        return i >> 1;
+    private int divideByTwo(int n) {
+        return n >> 1;
     }
 
     public byte[] asByteArray() {

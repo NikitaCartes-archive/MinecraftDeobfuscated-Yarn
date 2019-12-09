@@ -22,11 +22,11 @@ public class Session {
     private final String accessToken;
     private final AccountType accountType;
 
-    public Session(String string, String string2, String string3, String string4) {
-        this.username = string;
-        this.uuid = string2;
-        this.accessToken = string3;
-        this.accountType = AccountType.byName(string4);
+    public Session(String username, String uuid, String accessToken, String accountType) {
+        this.username = username;
+        this.uuid = uuid;
+        this.accessToken = accessToken;
+        this.accountType = AccountType.byName(accountType);
     }
 
     public String getSessionId() {
@@ -62,8 +62,8 @@ public class Session {
         private static final Map<String, AccountType> BY_NAME;
         private final String name;
 
-        private AccountType(String string2) {
-            this.name = string2;
+        private AccountType(String name) {
+            this.name = name;
         }
 
         @Nullable

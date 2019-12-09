@@ -14,14 +14,14 @@ implements FeatureConfig {
     public final Identifier startPool;
     public final int size;
 
-    public VillageFeatureConfig(String string, int i) {
-        this.startPool = new Identifier(string);
-        this.size = i;
+    public VillageFeatureConfig(String startPool, int size) {
+        this.startPool = new Identifier(startPool);
+        this.size = size;
     }
 
     @Override
-    public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-        return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("start_pool"), dynamicOps.createString(this.startPool.toString()), dynamicOps.createString("size"), dynamicOps.createInt(this.size))));
+    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("start_pool"), ops.createString(this.startPool.toString()), ops.createString("size"), ops.createInt(this.size))));
     }
 
     public static <T> VillageFeatureConfig deserialize(Dynamic<T> dynamic) {

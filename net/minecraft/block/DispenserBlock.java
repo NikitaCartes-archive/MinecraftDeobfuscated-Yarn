@@ -53,8 +53,8 @@ extends BlockWithEntity {
     public static final BooleanProperty TRIGGERED = Properties.TRIGGERED;
     private static final Map<Item, DispenserBehavior> BEHAVIORS = Util.make(new Object2ObjectOpenHashMap(), object2ObjectOpenHashMap -> object2ObjectOpenHashMap.defaultReturnValue(new ItemDispenserBehavior()));
 
-    public static void registerBehavior(ItemConvertible itemConvertible, DispenserBehavior dispenserBehavior) {
-        BEHAVIORS.put(itemConvertible.asItem(), dispenserBehavior);
+    public static void registerBehavior(ItemConvertible provider, DispenserBehavior behavior) {
+        BEHAVIORS.put(provider.asItem(), behavior);
     }
 
     protected DispenserBlock(Block.Settings settings) {
@@ -68,28 +68,28 @@ extends BlockWithEntity {
     }
 
     @Override
-    public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (world.isClient) {
             return ActionResult.SUCCESS;
         }
-        BlockEntity blockEntity = world.getBlockEntity(blockPos);
+        BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof DispenserBlockEntity) {
-            playerEntity.openContainer((DispenserBlockEntity)blockEntity);
+            player.openContainer((DispenserBlockEntity)blockEntity);
             if (blockEntity instanceof DropperBlockEntity) {
-                playerEntity.incrementStat(Stats.INSPECT_DROPPER);
+                player.incrementStat(Stats.INSPECT_DROPPER);
             } else {
-                playerEntity.incrementStat(Stats.INSPECT_DISPENSER);
+                player.incrementStat(Stats.INSPECT_DISPENSER);
             }
         }
         return ActionResult.SUCCESS;
     }
 
-    protected void dispense(World world, BlockPos blockPos) {
-        BlockPointerImpl blockPointerImpl = new BlockPointerImpl(world, blockPos);
+    protected void dispense(World world, BlockPos pos) {
+        BlockPointerImpl blockPointerImpl = new BlockPointerImpl(world, pos);
         DispenserBlockEntity dispenserBlockEntity = (DispenserBlockEntity)blockPointerImpl.getBlockEntity();
         int i = dispenserBlockEntity.chooseNonEmptySlot();
         if (i < 0) {
-            world.playLevelEvent(1001, blockPos, 0);
+            world.playLevelEvent(1001, pos, 0);
             return;
         }
         ItemStack itemStack = dispenserBlockEntity.getInvStack(i);
@@ -99,89 +99,89 @@ extends BlockWithEntity {
         }
     }
 
-    protected DispenserBehavior getBehaviorForItem(ItemStack itemStack) {
-        return BEHAVIORS.get(itemStack.getItem());
+    protected DispenserBehavior getBehaviorForItem(ItemStack stack) {
+        return BEHAVIORS.get(stack.getItem());
     }
 
     @Override
-    public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
-        boolean bl2 = world.isReceivingRedstonePower(blockPos) || world.isReceivingRedstonePower(blockPos.up());
-        boolean bl3 = blockState.get(TRIGGERED);
-        if (bl2 && !bl3) {
-            world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world));
-            world.setBlockState(blockPos, (BlockState)blockState.with(TRIGGERED, true), 4);
-        } else if (!bl2 && bl3) {
-            world.setBlockState(blockPos, (BlockState)blockState.with(TRIGGERED, false), 4);
+    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos neighborPos, boolean moved) {
+        boolean bl = world.isReceivingRedstonePower(pos) || world.isReceivingRedstonePower(pos.up());
+        boolean bl2 = state.get(TRIGGERED);
+        if (bl && !bl2) {
+            world.getBlockTickScheduler().schedule(pos, this, this.getTickRate(world));
+            world.setBlockState(pos, (BlockState)state.with(TRIGGERED, true), 4);
+        } else if (!bl && bl2) {
+            world.setBlockState(pos, (BlockState)state.with(TRIGGERED, false), 4);
         }
     }
 
     @Override
-    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
-        this.dispense(serverWorld, blockPos);
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        this.dispense(world, pos);
     }
 
     @Override
-    public BlockEntity createBlockEntity(BlockView blockView) {
+    public BlockEntity createBlockEntity(BlockView view) {
         return new DispenserBlockEntity();
     }
 
     @Override
-    public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-        return (BlockState)this.getDefaultState().with(FACING, itemPlacementContext.getPlayerLookDirection().getOpposite());
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        return (BlockState)this.getDefaultState().with(FACING, ctx.getPlayerLookDirection().getOpposite());
     }
 
     @Override
-    public void onPlaced(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
+    public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
         BlockEntity blockEntity;
-        if (itemStack.hasCustomName() && (blockEntity = world.getBlockEntity(blockPos)) instanceof DispenserBlockEntity) {
+        if (itemStack.hasCustomName() && (blockEntity = world.getBlockEntity(pos)) instanceof DispenserBlockEntity) {
             ((DispenserBlockEntity)blockEntity).setCustomName(itemStack.getName());
         }
     }
 
     @Override
-    public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
-        if (blockState.getBlock() == blockState2.getBlock()) {
+    public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (state.getBlock() == newState.getBlock()) {
             return;
         }
-        BlockEntity blockEntity = world.getBlockEntity(blockPos);
+        BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof DispenserBlockEntity) {
-            ItemScatterer.spawn(world, blockPos, (Inventory)((DispenserBlockEntity)blockEntity));
-            world.updateHorizontalAdjacent(blockPos, this);
+            ItemScatterer.spawn(world, pos, (Inventory)((DispenserBlockEntity)blockEntity));
+            world.updateHorizontalAdjacent(pos, this);
         }
-        super.onBlockRemoved(blockState, world, blockPos, blockState2, bl);
+        super.onBlockRemoved(state, world, pos, newState, moved);
     }
 
-    public static Position getOutputLocation(BlockPointer blockPointer) {
-        Direction direction = blockPointer.getBlockState().get(FACING);
-        double d = blockPointer.getX() + 0.7 * (double)direction.getOffsetX();
-        double e = blockPointer.getY() + 0.7 * (double)direction.getOffsetY();
-        double f = blockPointer.getZ() + 0.7 * (double)direction.getOffsetZ();
+    public static Position getOutputLocation(BlockPointer pointer) {
+        Direction direction = pointer.getBlockState().get(FACING);
+        double d = pointer.getX() + 0.7 * (double)direction.getOffsetX();
+        double e = pointer.getY() + 0.7 * (double)direction.getOffsetY();
+        double f = pointer.getZ() + 0.7 * (double)direction.getOffsetZ();
         return new PositionImpl(d, e, f);
     }
 
     @Override
-    public boolean hasComparatorOutput(BlockState blockState) {
+    public boolean hasComparatorOutput(BlockState state) {
         return true;
     }
 
     @Override
-    public int getComparatorOutput(BlockState blockState, World world, BlockPos blockPos) {
-        return Container.calculateComparatorOutput(world.getBlockEntity(blockPos));
+    public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+        return Container.calculateComparatorOutput(world.getBlockEntity(pos));
     }
 
     @Override
-    public BlockRenderType getRenderType(BlockState blockState) {
+    public BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.MODEL;
     }
 
     @Override
-    public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
-        return (BlockState)blockState.with(FACING, blockRotation.rotate(blockState.get(FACING)));
+    public BlockState rotate(BlockState state, BlockRotation rotation) {
+        return (BlockState)state.with(FACING, rotation.rotate(state.get(FACING)));
     }
 
     @Override
-    public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
-        return blockState.rotate(blockMirror.getRotation(blockState.get(FACING)));
+    public BlockState mirror(BlockState state, BlockMirror mirror) {
+        return state.rotate(mirror.getRotation(state.get(FACING)));
     }
 
     @Override

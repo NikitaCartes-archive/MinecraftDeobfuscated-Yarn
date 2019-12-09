@@ -15,8 +15,8 @@ import net.minecraft.datafixers.TypeReferences;
 
 public class HeightmapRenamingFix
 extends DataFix {
-    public HeightmapRenamingFix(Schema schema, boolean bl) {
-        super(schema, bl);
+    public HeightmapRenamingFix(Schema outputSchema, boolean changesType) {
+        super(outputSchema, changesType);
     }
 
     @Override
@@ -26,35 +26,35 @@ extends DataFix {
         return this.fixTypeEverywhereTyped("HeightmapRenamingFix", type, typed2 -> typed2.updateTyped(opticFinder, typed -> typed.update(DSL.remainderFinder(), this::renameHeightmapTags)));
     }
 
-    private Dynamic<?> renameHeightmapTags(Dynamic<?> dynamic) {
+    private Dynamic<?> renameHeightmapTags(Dynamic<?> tag) {
         Optional<Dynamic<?>> optional5;
         Optional<Dynamic<?>> optional4;
         Optional<Dynamic<?>> optional3;
-        Optional<Dynamic<?>> optional = dynamic.get("Heightmaps").get();
+        Optional<Dynamic<?>> optional = tag.get("Heightmaps").get();
         if (!optional.isPresent()) {
-            return dynamic;
+            return tag;
         }
-        Dynamic<?> dynamic2 = optional.get();
-        Optional<Dynamic<?>> optional2 = dynamic2.get("LIQUID").get();
+        Dynamic<?> dynamic = optional.get();
+        Optional<Dynamic<?>> optional2 = dynamic.get("LIQUID").get();
         if (optional2.isPresent()) {
-            dynamic2 = dynamic2.remove("LIQUID");
-            dynamic2 = dynamic2.set("WORLD_SURFACE_WG", optional2.get());
+            dynamic = dynamic.remove("LIQUID");
+            dynamic = dynamic.set("WORLD_SURFACE_WG", optional2.get());
         }
-        if ((optional3 = dynamic2.get("SOLID").get()).isPresent()) {
-            dynamic2 = dynamic2.remove("SOLID");
-            dynamic2 = dynamic2.set("OCEAN_FLOOR_WG", optional3.get());
-            dynamic2 = dynamic2.set("OCEAN_FLOOR", optional3.get());
+        if ((optional3 = dynamic.get("SOLID").get()).isPresent()) {
+            dynamic = dynamic.remove("SOLID");
+            dynamic = dynamic.set("OCEAN_FLOOR_WG", optional3.get());
+            dynamic = dynamic.set("OCEAN_FLOOR", optional3.get());
         }
-        if ((optional4 = dynamic2.get("LIGHT").get()).isPresent()) {
-            dynamic2 = dynamic2.remove("LIGHT");
-            dynamic2 = dynamic2.set("LIGHT_BLOCKING", optional4.get());
+        if ((optional4 = dynamic.get("LIGHT").get()).isPresent()) {
+            dynamic = dynamic.remove("LIGHT");
+            dynamic = dynamic.set("LIGHT_BLOCKING", optional4.get());
         }
-        if ((optional5 = dynamic2.get("RAIN").get()).isPresent()) {
-            dynamic2 = dynamic2.remove("RAIN");
-            dynamic2 = dynamic2.set("MOTION_BLOCKING", optional5.get());
-            dynamic2 = dynamic2.set("MOTION_BLOCKING_NO_LEAVES", optional5.get());
+        if ((optional5 = dynamic.get("RAIN").get()).isPresent()) {
+            dynamic = dynamic.remove("RAIN");
+            dynamic = dynamic.set("MOTION_BLOCKING", optional5.get());
+            dynamic = dynamic.set("MOTION_BLOCKING_NO_LEAVES", optional5.get());
         }
-        return dynamic.set("Heightmaps", dynamic2);
+        return tag.set("Heightmaps", dynamic);
     }
 }
 

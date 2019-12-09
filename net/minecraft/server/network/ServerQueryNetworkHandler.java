@@ -26,7 +26,7 @@ implements ServerQueryPacketListener {
     }
 
     @Override
-    public void onDisconnected(Text text) {
+    public void onDisconnected(Text reason) {
     }
 
     @Override

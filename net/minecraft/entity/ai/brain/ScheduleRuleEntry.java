@@ -7,9 +7,9 @@ public class ScheduleRuleEntry {
     private final int startTime;
     private final float priority;
 
-    public ScheduleRuleEntry(int i, float f) {
-        this.startTime = i;
-        this.priority = f;
+    public ScheduleRuleEntry(int startTime, float priority) {
+        this.startTime = startTime;
+        this.priority = priority;
     }
 
     public int getStartTime() {

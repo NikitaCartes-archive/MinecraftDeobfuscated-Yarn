@@ -16,16 +16,16 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 public class KickCommand {
-    public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-        commandDispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("kick").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))).then(((RequiredArgumentBuilder)CommandManager.argument("targets", EntityArgumentType.players()).executes(commandContext -> KickCommand.execute((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), new TranslatableText("multiplayer.disconnect.kicked", new Object[0])))).then(CommandManager.argument("reason", MessageArgumentType.message()).executes(commandContext -> KickCommand.execute((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), MessageArgumentType.getMessage(commandContext, "reason"))))));
+    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("kick").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))).then(((RequiredArgumentBuilder)CommandManager.argument("targets", EntityArgumentType.players()).executes(commandContext -> KickCommand.execute((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), new TranslatableText("multiplayer.disconnect.kicked", new Object[0])))).then(CommandManager.argument("reason", MessageArgumentType.message()).executes(commandContext -> KickCommand.execute((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), MessageArgumentType.getMessage(commandContext, "reason"))))));
     }
 
-    private static int execute(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, Text text) {
-        for (ServerPlayerEntity serverPlayerEntity : collection) {
-            serverPlayerEntity.networkHandler.disconnect(text);
-            serverCommandSource.sendFeedback(new TranslatableText("commands.kick.success", serverPlayerEntity.getDisplayName(), text), true);
+    private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, Text reason) {
+        for (ServerPlayerEntity serverPlayerEntity : targets) {
+            serverPlayerEntity.networkHandler.disconnect(reason);
+            source.sendFeedback(new TranslatableText("commands.kick.success", serverPlayerEntity.getDisplayName(), reason), true);
         }
-        return collection.size();
+        return targets.size();
     }
 }
 

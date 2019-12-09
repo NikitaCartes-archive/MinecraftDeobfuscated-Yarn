@@ -10,17 +10,17 @@ import net.minecraft.entity.EquipmentSlot;
 
 public class PiercingEnchantment
 extends Enchantment {
-    public PiercingEnchantment(Enchantment.Weight weight, EquipmentSlot ... equipmentSlots) {
-        super(weight, EnchantmentTarget.CROSSBOW, equipmentSlots);
+    public PiercingEnchantment(Enchantment.Weight weight, EquipmentSlot ... slotTypes) {
+        super(weight, EnchantmentTarget.CROSSBOW, slotTypes);
     }
 
     @Override
-    public int getMinimumPower(int i) {
-        return 1 + (i - 1) * 10;
+    public int getMinimumPower(int level) {
+        return 1 + (level - 1) * 10;
     }
 
     @Override
-    public int getMaximumPower(int i) {
+    public int getMaximumPower(int level) {
         return 50;
     }
 
@@ -30,8 +30,8 @@ extends Enchantment {
     }
 
     @Override
-    public boolean differs(Enchantment enchantment) {
-        return super.differs(enchantment) && enchantment != Enchantments.MULTISHOT;
+    public boolean differs(Enchantment other) {
+        return super.differs(other) && other != Enchantments.MULTISHOT;
     }
 }
 

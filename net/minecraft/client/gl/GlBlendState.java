@@ -19,26 +19,26 @@ public class GlBlendState {
     private final boolean separateBlend;
     private final boolean blendDisabled;
 
-    private GlBlendState(boolean bl, boolean bl2, int i, int j, int k, int l, int m) {
-        this.separateBlend = bl;
-        this.srcRgb = i;
-        this.dstRgb = j;
-        this.srcAlpha = k;
-        this.dstAlpha = l;
-        this.blendDisabled = bl2;
-        this.func = m;
+    private GlBlendState(boolean separateBlend, boolean blendDisabled, int srcRgb, int dstRgb, int srcAlpha, int dstAlpha, int func) {
+        this.separateBlend = separateBlend;
+        this.srcRgb = srcRgb;
+        this.dstRgb = dstRgb;
+        this.srcAlpha = srcAlpha;
+        this.dstAlpha = dstAlpha;
+        this.blendDisabled = blendDisabled;
+        this.func = func;
     }
 
     public GlBlendState() {
         this(false, true, 1, 0, 1, 0, 32774);
     }
 
-    public GlBlendState(int i, int j, int k) {
-        this(false, false, i, j, i, j, k);
+    public GlBlendState(int srcRgb, int dstRgb, int func) {
+        this(false, false, srcRgb, dstRgb, srcRgb, dstRgb, func);
     }
 
-    public GlBlendState(int i, int j, int k, int l, int m) {
-        this(true, false, i, j, k, l, m);
+    public GlBlendState(int srcRgb, int dstRgb, int srcAlpha, int dstAlpha, int func) {
+        this(true, false, srcRgb, dstRgb, srcAlpha, dstAlpha, func);
     }
 
     public void enable() {
@@ -61,14 +61,14 @@ public class GlBlendState {
         }
     }
 
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (!(object instanceof GlBlendState)) {
+        if (!(o instanceof GlBlendState)) {
             return false;
         }
-        GlBlendState glBlendState = (GlBlendState)object;
+        GlBlendState glBlendState = (GlBlendState)o;
         if (this.func != glBlendState.func) {
             return false;
         }

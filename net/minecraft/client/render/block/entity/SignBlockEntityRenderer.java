@@ -104,9 +104,9 @@ extends BlockEntityRenderer<SignBlockEntity> {
         }
 
         @Override
-        public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k) {
-            this.field.render(matrixStack, vertexConsumer, i, j, f, g, h, k);
-            this.foot.render(matrixStack, vertexConsumer, i, j, f, g, h, k);
+        public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
+            this.field.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+            this.foot.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
         }
     }
 }

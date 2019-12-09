@@ -20,9 +20,9 @@ public abstract class AbstractChestBlock<E extends BlockEntity>
 extends BlockWithEntity {
     protected final Supplier<BlockEntityType<? extends E>> entityTypeRetriever;
 
-    protected AbstractChestBlock(Block.Settings settings, Supplier<BlockEntityType<? extends E>> supplier) {
+    protected AbstractChestBlock(Block.Settings settings, Supplier<BlockEntityType<? extends E>> entityTypeSupplier) {
         super(settings);
-        this.entityTypeRetriever = supplier;
+        this.entityTypeRetriever = entityTypeSupplier;
     }
 
     @Environment(value=EnvType.CLIENT)

@@ -61,7 +61,7 @@ extends AnimalEntity {
     }
 
     @Override
-    protected SoundEvent getHurtSound(DamageSource damageSource) {
+    protected SoundEvent getHurtSound(DamageSource source) {
         return SoundEvents.ENTITY_COW_HURT;
     }
 
@@ -71,7 +71,7 @@ extends AnimalEntity {
     }
 
     @Override
-    protected void playStepSound(BlockPos blockPos, BlockState blockState) {
+    protected void playStepSound(BlockPos pos, BlockState state) {
         this.playSound(SoundEvents.ENTITY_COW_STEP, 0.15f, 1.0f);
     }
 
@@ -81,19 +81,19 @@ extends AnimalEntity {
     }
 
     @Override
-    public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
-        ItemStack itemStack = playerEntity.getStackInHand(hand);
-        if (itemStack.getItem() == Items.BUCKET && !playerEntity.abilities.creativeMode && !this.isBaby()) {
-            playerEntity.playSound(SoundEvents.ENTITY_COW_MILK, 1.0f, 1.0f);
+    public boolean interactMob(PlayerEntity player, Hand hand) {
+        ItemStack itemStack = player.getStackInHand(hand);
+        if (itemStack.getItem() == Items.BUCKET && !player.abilities.creativeMode && !this.isBaby()) {
+            player.playSound(SoundEvents.ENTITY_COW_MILK, 1.0f, 1.0f);
             itemStack.decrement(1);
             if (itemStack.isEmpty()) {
-                playerEntity.setStackInHand(hand, new ItemStack(Items.MILK_BUCKET));
-            } else if (!playerEntity.inventory.insertStack(new ItemStack(Items.MILK_BUCKET))) {
-                playerEntity.dropItem(new ItemStack(Items.MILK_BUCKET), false);
+                player.setStackInHand(hand, new ItemStack(Items.MILK_BUCKET));
+            } else if (!player.inventory.insertStack(new ItemStack(Items.MILK_BUCKET))) {
+                player.dropItem(new ItemStack(Items.MILK_BUCKET), false);
             }
             return true;
         }
-        return super.interactMob(playerEntity, hand);
+        return super.interactMob(player, hand);
     }
 
     @Override
@@ -102,16 +102,16 @@ extends AnimalEntity {
     }
 
     @Override
-    protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+    protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
         if (this.isBaby()) {
-            return entityDimensions.height * 0.95f;
+            return dimensions.height * 0.95f;
         }
         return 1.3f;
     }
 
     @Override
-    public /* synthetic */ PassiveEntity createChild(PassiveEntity passiveEntity) {
-        return this.createChild(passiveEntity);
+    public /* synthetic */ PassiveEntity createChild(PassiveEntity mate) {
+        return this.createChild(mate);
     }
 }
 

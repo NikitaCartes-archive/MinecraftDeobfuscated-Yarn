@@ -100,10 +100,10 @@ extends HostileEntity {
     }
 
     @Override
-    public void setTarget(@Nullable LivingEntity livingEntity) {
-        super.setTarget(livingEntity);
+    public void setTarget(@Nullable LivingEntity target) {
+        super.setTarget(target);
         EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
-        if (livingEntity == null) {
+        if (target == null) {
             this.ageWhenTargetSet = 0;
             this.dataTracker.set(ANGRY, false);
             this.dataTracker.set(field_20618, false);
@@ -135,49 +135,49 @@ extends HostileEntity {
     }
 
     @Override
-    public void onTrackedDataSet(TrackedData<?> trackedData) {
-        if (ANGRY.equals(trackedData) && this.method_22330() && this.world.isClient) {
+    public void onTrackedDataSet(TrackedData<?> data) {
+        if (ANGRY.equals(data) && this.method_22330() && this.world.isClient) {
             this.playAngrySound();
         }
-        super.onTrackedDataSet(trackedData);
+        super.onTrackedDataSet(data);
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag compoundTag) {
-        super.writeCustomDataToTag(compoundTag);
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
         BlockState blockState = this.getCarriedBlock();
         if (blockState != null) {
-            compoundTag.put("carriedBlockState", NbtHelper.fromBlockState(blockState));
+            tag.put("carriedBlockState", NbtHelper.fromBlockState(blockState));
         }
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag compoundTag) {
-        super.readCustomDataFromTag(compoundTag);
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
         BlockState blockState = null;
-        if (compoundTag.contains("carriedBlockState", 10) && (blockState = NbtHelper.toBlockState(compoundTag.getCompound("carriedBlockState"))).isAir()) {
+        if (tag.contains("carriedBlockState", 10) && (blockState = NbtHelper.toBlockState(tag.getCompound("carriedBlockState"))).isAir()) {
             blockState = null;
         }
         this.setCarriedBlock(blockState);
     }
 
-    private boolean isPlayerStaring(PlayerEntity playerEntity) {
-        ItemStack itemStack = playerEntity.inventory.armor.get(3);
+    private boolean isPlayerStaring(PlayerEntity player) {
+        ItemStack itemStack = player.inventory.armor.get(3);
         if (itemStack.getItem() == Blocks.CARVED_PUMPKIN.asItem()) {
             return false;
         }
-        Vec3d vec3d = playerEntity.getRotationVec(1.0f).normalize();
-        Vec3d vec3d2 = new Vec3d(this.getX() - playerEntity.getX(), this.getEyeY() - playerEntity.getEyeY(), this.getZ() - playerEntity.getZ());
+        Vec3d vec3d = player.getRotationVec(1.0f).normalize();
+        Vec3d vec3d2 = new Vec3d(this.getX() - player.getX(), this.getEyeY() - player.getEyeY(), this.getZ() - player.getZ());
         double d = vec3d2.length();
         double e = vec3d.dotProduct(vec3d2 = vec3d2.normalize());
         if (e > 1.0 - 0.025 / d) {
-            return playerEntity.canSee(this);
+            return player.canSee(this);
         }
         return false;
     }
 
     @Override
-    protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+    protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
         return 2.55f;
     }
 
@@ -225,8 +225,8 @@ extends HostileEntity {
         return this.teleport(e, f, g);
     }
 
-    private boolean teleport(double d, double e, double f) {
-        BlockPos.Mutable mutable = new BlockPos.Mutable(d, e, f);
+    private boolean teleport(double x, double y, double z) {
+        BlockPos.Mutable mutable = new BlockPos.Mutable(x, y, z);
         while (mutable.getY() > 0 && !this.world.getBlockState(mutable).getMaterial().blocksMovement()) {
             mutable.setOffset(Direction.DOWN);
         }
@@ -236,7 +236,7 @@ extends HostileEntity {
         if (!bl || bl2) {
             return false;
         }
-        boolean bl3 = this.teleport(d, e, f, true);
+        boolean bl3 = this.teleport(x, y, z, true);
         if (bl3) {
             this.world.playSound(null, this.prevX, this.prevY, this.prevZ, SoundEvents.ENTITY_ENDERMAN_TELEPORT, this.getSoundCategory(), 1.0f, 1.0f);
             this.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.0f);
@@ -250,7 +250,7 @@ extends HostileEntity {
     }
 
     @Override
-    protected SoundEvent getHurtSound(DamageSource damageSource) {
+    protected SoundEvent getHurtSound(DamageSource source) {
         return SoundEvents.ENTITY_ENDERMAN_HURT;
     }
 
@@ -260,8 +260,8 @@ extends HostileEntity {
     }
 
     @Override
-    protected void dropEquipment(DamageSource damageSource, int i, boolean bl) {
-        super.dropEquipment(damageSource, i, bl);
+    protected void dropEquipment(DamageSource source, int lootingMultiplier, boolean allowDrops) {
+        super.dropEquipment(source, lootingMultiplier, allowDrops);
         BlockState blockState = this.getCarriedBlock();
         if (blockState != null) {
             this.dropItem(blockState.getBlock());
@@ -278,19 +278,19 @@ extends HostileEntity {
     }
 
     @Override
-    public boolean damage(DamageSource damageSource, float f) {
-        if (this.isInvulnerableTo(damageSource)) {
+    public boolean damage(DamageSource source, float amount) {
+        if (this.isInvulnerableTo(source)) {
             return false;
         }
-        if (damageSource instanceof ProjectileDamageSource || damageSource == DamageSource.FIREWORKS) {
+        if (source instanceof ProjectileDamageSource || source == DamageSource.FIREWORKS) {
             for (int i = 0; i < 64; ++i) {
                 if (!this.teleportRandomly()) continue;
                 return true;
             }
             return false;
         }
-        boolean bl = super.damage(damageSource, f);
-        if (!this.world.isClient() && damageSource.bypassesArmor() && this.random.nextInt(10) != 0) {
+        boolean bl = super.damage(source, amount);
+        if (!this.world.isClient() && source.bypassesArmor() && this.random.nextInt(10) != 0) {
             this.teleportRandomly();
         }
         return bl;
@@ -312,8 +312,8 @@ extends HostileEntity {
     extends Goal {
         private final EndermanEntity enderman;
 
-        public PickUpBlockGoal(EndermanEntity endermanEntity) {
-            this.enderman = endermanEntity;
+        public PickUpBlockGoal(EndermanEntity enderman) {
+            this.enderman = enderman;
         }
 
         @Override
@@ -352,8 +352,8 @@ extends HostileEntity {
     extends Goal {
         private final EndermanEntity enderman;
 
-        public PlaceBlockGoal(EndermanEntity endermanEntity) {
-            this.enderman = endermanEntity;
+        public PlaceBlockGoal(EndermanEntity enderman) {
+            this.enderman = enderman;
         }
 
         @Override
@@ -395,8 +395,8 @@ extends HostileEntity {
         private final EndermanEntity enderman;
         private LivingEntity field_21513;
 
-        public ChasePlayerGoal(EndermanEntity endermanEntity) {
-            this.enderman = endermanEntity;
+        public ChasePlayerGoal(EndermanEntity enderman) {
+            this.enderman = enderman;
             this.setControls(EnumSet.of(Goal.Control.JUMP, Goal.Control.MOVE));
         }
 
@@ -433,10 +433,10 @@ extends HostileEntity {
         private final TargetPredicate staringPlayerPredicate;
         private final TargetPredicate validTargetPredicate = new TargetPredicate().includeHidden();
 
-        public TeleportTowardsPlayerGoal(EndermanEntity endermanEntity) {
-            super((MobEntity)endermanEntity, PlayerEntity.class, false);
-            this.enderman = endermanEntity;
-            this.staringPlayerPredicate = new TargetPredicate().setBaseMaxDistance(this.getFollowRange()).setPredicate(livingEntity -> endermanEntity.isPlayerStaring((PlayerEntity)livingEntity));
+        public TeleportTowardsPlayerGoal(EndermanEntity enderman) {
+            super((MobEntity)enderman, PlayerEntity.class, false);
+            this.enderman = enderman;
+            this.staringPlayerPredicate = new TargetPredicate().setBaseMaxDistance(this.getFollowRange()).setPredicate(playerEntity -> enderman.isPlayerStaring((PlayerEntity)playerEntity));
         }
 
         @Override

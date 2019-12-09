@@ -13,15 +13,15 @@ public abstract class TameableShoulderEntity
 extends TameableEntity {
     private int ticks;
 
-    protected TameableShoulderEntity(EntityType<? extends TameableShoulderEntity> entityType, World world) {
-        super((EntityType<? extends TameableEntity>)entityType, world);
+    protected TameableShoulderEntity(EntityType<? extends TameableShoulderEntity> type, World world) {
+        super((EntityType<? extends TameableEntity>)type, world);
     }
 
-    public boolean mountOnto(ServerPlayerEntity serverPlayerEntity) {
+    public boolean mountOnto(ServerPlayerEntity player) {
         CompoundTag compoundTag = new CompoundTag();
         compoundTag.putString("id", this.getSavedEntityId());
         this.toTag(compoundTag);
-        if (serverPlayerEntity.addShoulderEntity(compoundTag)) {
+        if (player.addShoulderEntity(compoundTag)) {
             this.remove();
             return true;
         }

@@ -54,7 +54,7 @@ extends Biome {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public int getGrassColorAt(double d, double e) {
+    public int getGrassColorAt(double x, double z) {
         return 9470285;
     }
 }

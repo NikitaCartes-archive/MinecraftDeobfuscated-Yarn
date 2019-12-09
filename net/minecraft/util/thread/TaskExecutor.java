@@ -23,14 +23,14 @@ Runnable {
     private final Executor executor;
     private final String name;
 
-    public static TaskExecutor<Runnable> create(Executor executor, String string) {
-        return new TaskExecutor<Runnable>(new TaskQueue.Simple(new ConcurrentLinkedQueue()), executor, string);
+    public static TaskExecutor<Runnable> create(Executor executor, String name) {
+        return new TaskExecutor<Runnable>(new TaskQueue.Simple(new ConcurrentLinkedQueue()), executor, name);
     }
 
-    public TaskExecutor(TaskQueue<? super T, ? extends Runnable> taskQueue, Executor executor, String string) {
+    public TaskExecutor(TaskQueue<? super T, ? extends Runnable> queue, Executor executor, String name) {
         this.executor = executor;
-        this.queue = taskQueue;
-        this.name = string;
+        this.queue = queue;
+        this.name = name;
     }
 
     private boolean unpause() {
@@ -89,8 +89,8 @@ Runnable {
     }
 
     @Override
-    public void send(T object) {
-        this.queue.add(object);
+    public void send(T message) {
+        this.queue.add(message);
         this.execute();
     }
 
@@ -108,9 +108,9 @@ Runnable {
         }
     }
 
-    private int runWhile(Int2BooleanFunction int2BooleanFunction) {
+    private int runWhile(Int2BooleanFunction condition) {
         int i = 0;
-        while (int2BooleanFunction.get(i) && this.runNext()) {
+        while (condition.get(i) && this.runNext()) {
             ++i;
         }
         return i;

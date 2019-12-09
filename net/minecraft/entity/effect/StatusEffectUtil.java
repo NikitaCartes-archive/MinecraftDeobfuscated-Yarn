@@ -13,11 +13,11 @@ import net.minecraft.util.math.MathHelper;
 
 public final class StatusEffectUtil {
     @Environment(value=EnvType.CLIENT)
-    public static String durationToString(StatusEffectInstance statusEffectInstance, float f) {
-        if (statusEffectInstance.isPermanent()) {
+    public static String durationToString(StatusEffectInstance effect, float multiplier) {
+        if (effect.isPermanent()) {
             return "**:**";
         }
-        int i = MathHelper.floor((float)statusEffectInstance.getDuration() * f);
+        int i = MathHelper.floor((float)effect.getDuration() * multiplier);
         return ChatUtil.ticksToString(i);
     }
 

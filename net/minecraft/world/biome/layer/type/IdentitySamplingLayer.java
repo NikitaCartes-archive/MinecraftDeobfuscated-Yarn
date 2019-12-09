@@ -15,8 +15,8 @@ IdentityCoordinateTransformer {
     public int sample(LayerRandomnessSource var1, int var2);
 
     @Override
-    default public int sample(LayerSampleContext<?> layerSampleContext, LayerSampler layerSampler, int i, int j) {
-        return this.sample(layerSampleContext, layerSampler.sample(this.transformX(i), this.transformZ(j)));
+    default public int sample(LayerSampleContext<?> context, LayerSampler parent, int x, int z) {
+        return this.sample(context, parent.sample(this.transformX(x), this.transformZ(z)));
     }
 }
 

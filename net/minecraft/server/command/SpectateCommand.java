@@ -22,22 +22,22 @@ public class SpectateCommand {
     private static final SimpleCommandExceptionType SPECTATE_SELF_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.spectate.self", new Object[0]));
     private static final DynamicCommandExceptionType NOT_SPECTATOR_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("commands.spectate.not_spectator", object));
 
-    public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-        commandDispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("spectate").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))).executes(commandContext -> SpectateCommand.execute((ServerCommandSource)commandContext.getSource(), null, ((ServerCommandSource)commandContext.getSource()).getPlayer()))).then(((RequiredArgumentBuilder)CommandManager.argument("target", EntityArgumentType.entity()).executes(commandContext -> SpectateCommand.execute((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getEntity(commandContext, "target"), ((ServerCommandSource)commandContext.getSource()).getPlayer()))).then(CommandManager.argument("player", EntityArgumentType.player()).executes(commandContext -> SpectateCommand.execute((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getEntity(commandContext, "target"), EntityArgumentType.getPlayer(commandContext, "player"))))));
+    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("spectate").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))).executes(commandContext -> SpectateCommand.execute((ServerCommandSource)commandContext.getSource(), null, ((ServerCommandSource)commandContext.getSource()).getPlayer()))).then(((RequiredArgumentBuilder)CommandManager.argument("target", EntityArgumentType.entity()).executes(commandContext -> SpectateCommand.execute((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getEntity(commandContext, "target"), ((ServerCommandSource)commandContext.getSource()).getPlayer()))).then(CommandManager.argument("player", EntityArgumentType.player()).executes(commandContext -> SpectateCommand.execute((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getEntity(commandContext, "target"), EntityArgumentType.getPlayer(commandContext, "player"))))));
     }
 
-    private static int execute(ServerCommandSource serverCommandSource, @Nullable Entity entity, ServerPlayerEntity serverPlayerEntity) throws CommandSyntaxException {
-        if (serverPlayerEntity == entity) {
+    private static int execute(ServerCommandSource source, @Nullable Entity entity, ServerPlayerEntity player) throws CommandSyntaxException {
+        if (player == entity) {
             throw SPECTATE_SELF_EXCEPTION.create();
         }
-        if (serverPlayerEntity.interactionManager.getGameMode() != GameMode.SPECTATOR) {
-            throw NOT_SPECTATOR_EXCEPTION.create(serverPlayerEntity.getDisplayName());
+        if (player.interactionManager.getGameMode() != GameMode.SPECTATOR) {
+            throw NOT_SPECTATOR_EXCEPTION.create(player.getDisplayName());
         }
-        serverPlayerEntity.setCameraEntity(entity);
+        player.setCameraEntity(entity);
         if (entity != null) {
-            serverCommandSource.sendFeedback(new TranslatableText("commands.spectate.success.started", entity.getDisplayName()), false);
+            source.sendFeedback(new TranslatableText("commands.spectate.success.started", entity.getDisplayName()), false);
         } else {
-            serverCommandSource.sendFeedback(new TranslatableText("commands.spectate.success.stopped", new Object[0]), false);
+            source.sendFeedback(new TranslatableText("commands.spectate.success.stopped", new Object[0]), false);
         }
         return 1;
     }

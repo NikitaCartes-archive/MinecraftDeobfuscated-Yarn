@@ -26,8 +26,8 @@ import net.minecraft.world.LightType;
 @Environment(value=EnvType.CLIENT)
 public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityModel<T>>
 extends LivingEntityRenderer<T, M> {
-    public MobEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, M entityModel, float f) {
-        super(entityRenderDispatcher, entityModel, f);
+    public MobEntityRenderer(EntityRenderDispatcher renderManager, M model, float f) {
+        super(renderManager, model, f);
     }
 
     @Override

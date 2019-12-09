@@ -26,8 +26,8 @@ extends IllagerEntity {
     protected int spellTicks;
     private Spell spell = Spell.NONE;
 
-    protected SpellcastingIllagerEntity(EntityType<? extends SpellcastingIllagerEntity> entityType, World world) {
-        super((EntityType<? extends IllagerEntity>)entityType, world);
+    protected SpellcastingIllagerEntity(EntityType<? extends SpellcastingIllagerEntity> type, World world) {
+        super((EntityType<? extends IllagerEntity>)type, world);
     }
 
     @Override
@@ -37,15 +37,15 @@ extends IllagerEntity {
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag compoundTag) {
-        super.readCustomDataFromTag(compoundTag);
-        this.spellTicks = compoundTag.getInt("SpellTicks");
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        this.spellTicks = tag.getInt("SpellTicks");
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag compoundTag) {
-        super.writeCustomDataToTag(compoundTag);
-        compoundTag.putInt("SpellTicks", this.spellTicks);
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putInt("SpellTicks", this.spellTicks);
     }
 
     @Override
@@ -120,14 +120,14 @@ extends IllagerEntity {
         private final int id;
         private final double[] particleVelocity;
 
-        private Spell(int j, double d, double e, double f) {
-            this.id = j;
-            this.particleVelocity = new double[]{d, e, f};
+        private Spell(int id, double particleVelocityX, double particleVelocityY, double particleVelocityZ) {
+            this.id = id;
+            this.particleVelocity = new double[]{particleVelocityX, particleVelocityY, particleVelocityZ};
         }
 
-        public static Spell byId(int i) {
+        public static Spell byId(int id) {
             for (Spell spell : Spell.values()) {
-                if (i != spell.id) continue;
+                if (id != spell.id) continue;
                 return spell;
             }
             return NONE;

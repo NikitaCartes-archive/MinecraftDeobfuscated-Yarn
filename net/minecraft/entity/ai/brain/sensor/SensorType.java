@@ -39,8 +39,8 @@ public class SensorType<U extends Sensor<?>> {
         return (U)((Sensor)this.factory.get());
     }
 
-    private static <U extends Sensor<?>> SensorType<U> register(String string, Supplier<U> supplier) {
-        return Registry.register(Registry.SENSOR_TYPE, new Identifier(string), new SensorType<U>(supplier));
+    private static <U extends Sensor<?>> SensorType<U> register(String id, Supplier<U> supplier) {
+        return Registry.register(Registry.SENSOR_TYPE, new Identifier(id), new SensorType<U>(supplier));
     }
 }
 

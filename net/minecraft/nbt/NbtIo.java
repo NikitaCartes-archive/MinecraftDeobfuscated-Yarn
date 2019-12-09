@@ -30,26 +30,26 @@ import net.minecraft.util.crash.CrashReportSection;
 import org.jetbrains.annotations.Nullable;
 
 public class NbtIo {
-    public static CompoundTag readCompressed(InputStream inputStream) throws IOException {
-        try (DataInputStream dataInputStream = new DataInputStream(new BufferedInputStream(new GZIPInputStream(inputStream)));){
+    public static CompoundTag readCompressed(InputStream stream) throws IOException {
+        try (DataInputStream dataInputStream = new DataInputStream(new BufferedInputStream(new GZIPInputStream(stream)));){
             CompoundTag compoundTag = NbtIo.read(dataInputStream, PositionTracker.DEFAULT);
             return compoundTag;
         }
     }
 
-    public static void writeCompressed(CompoundTag compoundTag, OutputStream outputStream) throws IOException {
-        try (DataOutputStream dataOutputStream = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(outputStream)));){
-            NbtIo.write(compoundTag, (DataOutput)dataOutputStream);
+    public static void writeCompressed(CompoundTag tag, OutputStream stream) throws IOException {
+        try (DataOutputStream dataOutputStream = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(stream)));){
+            NbtIo.write(tag, (DataOutput)dataOutputStream);
         }
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static void safeWrite(CompoundTag compoundTag, File file) throws IOException {
+    public static void safeWrite(CompoundTag tag, File file) throws IOException {
         File file2 = new File(file.getAbsolutePath() + "_tmp");
         if (file2.exists()) {
             file2.delete();
         }
-        NbtIo.write(compoundTag, file2);
+        NbtIo.write(tag, file2);
         if (file.exists()) {
             file.delete();
         }
@@ -60,9 +60,9 @@ public class NbtIo {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static void write(CompoundTag compoundTag, File file) throws IOException {
+    public static void write(CompoundTag tag, File file) throws IOException {
         try (DataOutputStream dataOutputStream = new DataOutputStream(new FileOutputStream(file));){
-            NbtIo.write(compoundTag, (DataOutput)dataOutputStream);
+            NbtIo.write(tag, (DataOutput)dataOutputStream);
         }
     }
 
@@ -78,39 +78,39 @@ public class NbtIo {
         }
     }
 
-    public static CompoundTag read(DataInputStream dataInputStream) throws IOException {
-        return NbtIo.read(dataInputStream, PositionTracker.DEFAULT);
+    public static CompoundTag read(DataInputStream stream) throws IOException {
+        return NbtIo.read(stream, PositionTracker.DEFAULT);
     }
 
-    public static CompoundTag read(DataInput dataInput, PositionTracker positionTracker) throws IOException {
-        Tag tag = NbtIo.read(dataInput, 0, positionTracker);
+    public static CompoundTag read(DataInput input, PositionTracker trakcer) throws IOException {
+        Tag tag = NbtIo.read(input, 0, trakcer);
         if (tag instanceof CompoundTag) {
             return (CompoundTag)tag;
         }
         throw new IOException("Root tag must be a named compound tag");
     }
 
-    public static void write(CompoundTag compoundTag, DataOutput dataOutput) throws IOException {
-        NbtIo.write((Tag)compoundTag, dataOutput);
+    public static void write(CompoundTag tag, DataOutput output) throws IOException {
+        NbtIo.write((Tag)tag, output);
     }
 
-    private static void write(Tag tag, DataOutput dataOutput) throws IOException {
-        dataOutput.writeByte(tag.getType());
+    private static void write(Tag tag, DataOutput output) throws IOException {
+        output.writeByte(tag.getType());
         if (tag.getType() == 0) {
             return;
         }
-        dataOutput.writeUTF("");
-        tag.write(dataOutput);
+        output.writeUTF("");
+        tag.write(output);
     }
 
-    private static Tag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-        byte b = dataInput.readByte();
+    private static Tag read(DataInput input, int depth, PositionTracker tracker) throws IOException {
+        byte b = input.readByte();
         if (b == 0) {
             return EndTag.INSTANCE;
         }
-        dataInput.readUTF();
+        input.readUTF();
         try {
-            return TagReaders.of(b).read(dataInput, i, positionTracker);
+            return TagReaders.of(b).read(input, depth, tracker);
         } catch (IOException iOException) {
             CrashReport crashReport = CrashReport.create(iOException, "Loading NBT data");
             CrashReportSection crashReportSection = crashReport.addElement("NBT Tag");

@@ -18,9 +18,9 @@ public abstract class BlockNameFix
 extends DataFix {
     private final String name;
 
-    public BlockNameFix(Schema schema, String string) {
-        super(schema, false);
-        this.name = string;
+    public BlockNameFix(Schema oldSchema, String name) {
+        super(oldSchema, false);
+        this.name = name;
     }
 
     @Override
@@ -43,12 +43,12 @@ extends DataFix {
 
     protected abstract String rename(String var1);
 
-    public static DataFix create(Schema schema, String string, final Function<String, String> function) {
-        return new BlockNameFix(schema, string){
+    public static DataFix create(Schema oldSchema, String name, final Function<String, String> rename) {
+        return new BlockNameFix(oldSchema, name){
 
             @Override
-            protected String rename(String string) {
-                return (String)function.apply(string);
+            protected String rename(String oldName) {
+                return (String)rename.apply(oldName);
             }
         };
     }

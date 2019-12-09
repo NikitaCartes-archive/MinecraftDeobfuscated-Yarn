@@ -42,77 +42,77 @@ extends Item {
     }
 
     @Override
-    public ItemStack finishUsing(ItemStack itemStack, World world, LivingEntity livingEntity) {
+    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
         PlayerEntity playerEntity;
-        PlayerEntity playerEntity2 = playerEntity = livingEntity instanceof PlayerEntity ? (PlayerEntity)livingEntity : null;
+        PlayerEntity playerEntity2 = playerEntity = user instanceof PlayerEntity ? (PlayerEntity)user : null;
         if (playerEntity instanceof ServerPlayerEntity) {
-            Criterions.CONSUME_ITEM.trigger((ServerPlayerEntity)playerEntity, itemStack);
+            Criterions.CONSUME_ITEM.trigger((ServerPlayerEntity)playerEntity, stack);
         }
         if (!world.isClient) {
-            List<StatusEffectInstance> list = PotionUtil.getPotionEffects(itemStack);
+            List<StatusEffectInstance> list = PotionUtil.getPotionEffects(stack);
             for (StatusEffectInstance statusEffectInstance : list) {
                 if (statusEffectInstance.getEffectType().isInstant()) {
-                    statusEffectInstance.getEffectType().applyInstantEffect(playerEntity, playerEntity, livingEntity, statusEffectInstance.getAmplifier(), 1.0);
+                    statusEffectInstance.getEffectType().applyInstantEffect(playerEntity, playerEntity, user, statusEffectInstance.getAmplifier(), 1.0);
                     continue;
                 }
-                livingEntity.addStatusEffect(new StatusEffectInstance(statusEffectInstance));
+                user.addStatusEffect(new StatusEffectInstance(statusEffectInstance));
             }
         }
         if (playerEntity != null) {
             playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
             if (!playerEntity.abilities.creativeMode) {
-                itemStack.decrement(1);
+                stack.decrement(1);
             }
         }
         if (playerEntity == null || !playerEntity.abilities.creativeMode) {
-            if (itemStack.isEmpty()) {
+            if (stack.isEmpty()) {
                 return new ItemStack(Items.GLASS_BOTTLE);
             }
             if (playerEntity != null) {
                 playerEntity.inventory.insertStack(new ItemStack(Items.GLASS_BOTTLE));
             }
         }
-        return itemStack;
+        return stack;
     }
 
     @Override
-    public int getMaxUseTime(ItemStack itemStack) {
+    public int getMaxUseTime(ItemStack stack) {
         return 32;
     }
 
     @Override
-    public UseAction getUseAction(ItemStack itemStack) {
+    public UseAction getUseAction(ItemStack stack) {
         return UseAction.DRINK;
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
-        playerEntity.setCurrentHand(hand);
-        return TypedActionResult.success(playerEntity.getStackInHand(hand));
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+        user.setCurrentHand(hand);
+        return TypedActionResult.success(user.getStackInHand(hand));
     }
 
     @Override
-    public String getTranslationKey(ItemStack itemStack) {
-        return PotionUtil.getPotion(itemStack).getName(this.getTranslationKey() + ".effect.");
+    public String getTranslationKey(ItemStack stack) {
+        return PotionUtil.getPotion(stack).getName(this.getTranslationKey() + ".effect.");
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
-        PotionUtil.buildTooltip(itemStack, list, 1.0f);
+    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+        PotionUtil.buildTooltip(stack, tooltip, 1.0f);
     }
 
     @Override
-    public boolean hasEnchantmentGlint(ItemStack itemStack) {
-        return super.hasEnchantmentGlint(itemStack) || !PotionUtil.getPotionEffects(itemStack).isEmpty();
+    public boolean hasEnchantmentGlint(ItemStack stack) {
+        return super.hasEnchantmentGlint(stack) || !PotionUtil.getPotionEffects(stack).isEmpty();
     }
 
     @Override
-    public void appendStacks(ItemGroup itemGroup, DefaultedList<ItemStack> defaultedList) {
-        if (this.isIn(itemGroup)) {
+    public void appendStacks(ItemGroup group, DefaultedList<ItemStack> stacks) {
+        if (this.isIn(group)) {
             for (Potion potion : Registry.POTION) {
                 if (potion == Potions.EMPTY) continue;
-                defaultedList.add(PotionUtil.setPotion(new ItemStack(this), potion));
+                stacks.add(PotionUtil.setPotion(new ItemStack(this), potion));
             }
         }
     }

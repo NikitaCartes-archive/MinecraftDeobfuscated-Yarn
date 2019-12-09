@@ -26,8 +26,8 @@ extends GameOptionsScreen {
     private ControlsListWidget keyBindingListWidget;
     private ButtonWidget resetButton;
 
-    public ControlsOptionsScreen(Screen screen, GameOptions gameOptions) {
-        super(screen, gameOptions, new TranslatableText("controls.title", new Object[0]));
+    public ControlsOptionsScreen(Screen parent, GameOptions options) {
+        super(parent, options, new TranslatableText("controls.title", new Object[0]));
     }
 
     @Override
@@ -46,36 +46,36 @@ extends GameOptionsScreen {
     }
 
     @Override
-    public boolean mouseClicked(double d, double e, int i) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (this.focusedBinding != null) {
-            this.gameOptions.setKeyCode(this.focusedBinding, InputUtil.Type.MOUSE.createFromCode(i));
+            this.gameOptions.setKeyCode(this.focusedBinding, InputUtil.Type.MOUSE.createFromCode(button));
             this.focusedBinding = null;
             KeyBinding.updateKeysByCode();
             return true;
         }
-        return super.mouseClicked(d, e, i);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
-    public boolean keyPressed(int i, int j, int k) {
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (this.focusedBinding != null) {
-            if (i == 256) {
+            if (keyCode == 256) {
                 this.gameOptions.setKeyCode(this.focusedBinding, InputUtil.UNKNOWN_KEYCODE);
             } else {
-                this.gameOptions.setKeyCode(this.focusedBinding, InputUtil.getKeyCode(i, j));
+                this.gameOptions.setKeyCode(this.focusedBinding, InputUtil.getKeyCode(keyCode, scanCode));
             }
             this.focusedBinding = null;
             this.time = Util.getMeasuringTimeMs();
             KeyBinding.updateKeysByCode();
             return true;
         }
-        return super.keyPressed(i, j, k);
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
-    public void render(int i, int j, float f) {
+    public void render(int mouseX, int mouseY, float delta) {
         this.renderBackground();
-        this.keyBindingListWidget.render(i, j, f);
+        this.keyBindingListWidget.render(mouseX, mouseY, delta);
         this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 8, 0xFFFFFF);
         boolean bl = false;
         for (KeyBinding keyBinding : this.gameOptions.keysAll) {
@@ -84,7 +84,7 @@ extends GameOptionsScreen {
             break;
         }
         this.resetButton.active = bl;
-        super.render(i, j, f);
+        super.render(mouseX, mouseY, delta);
     }
 }
 

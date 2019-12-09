@@ -36,9 +36,9 @@ extends Screen {
     private LockButtonWidget lockDifficultyButton;
     private Difficulty difficulty;
 
-    public SettingsScreen(Screen screen, GameOptions gameOptions) {
+    public SettingsScreen(Screen parent, GameOptions gameOptions) {
         super(new TranslatableText("options.title", new Object[0]));
-        this.parent = screen;
+        this.parent = parent;
         this.settings = gameOptions;
     }
 
@@ -89,9 +89,9 @@ extends Screen {
         return new TranslatableText("options.difficulty", new Object[0]).append(": ").append(difficulty.getTranslatableName()).asFormattedString();
     }
 
-    private void lockDifficulty(boolean bl) {
+    private void lockDifficulty(boolean difficultyLocked) {
         this.minecraft.openScreen(this);
-        if (bl && this.minecraft.world != null) {
+        if (difficultyLocked && this.minecraft.world != null) {
             this.minecraft.getNetworkHandler().sendPacket(new UpdateDifficultyLockC2SPacket(true));
             this.lockDifficultyButton.setLocked(true);
             this.lockDifficultyButton.active = false;
@@ -105,10 +105,10 @@ extends Screen {
     }
 
     @Override
-    public void render(int i, int j, float f) {
+    public void render(int mouseX, int mouseY, float delta) {
         this.renderBackground();
         this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 15, 0xFFFFFF);
-        super.render(i, j, f);
+        super.render(mouseX, mouseY, delta);
     }
 }
 

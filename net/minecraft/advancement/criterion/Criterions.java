@@ -85,17 +85,17 @@ public class Criterions {
     public static final SlideDownBlockCriterion SLIDE_DOWN_BLOCK = Criterions.register(new SlideDownBlockCriterion());
     public static final BeeNestDestroyedCriterion BEE_NEST_DESTROYED = Criterions.register(new BeeNestDestroyedCriterion());
 
-    private static <T extends Criterion<?>> T register(T criterion) {
-        if (VALUES.containsKey(criterion.getId())) {
-            throw new IllegalArgumentException("Duplicate criterion id " + criterion.getId());
+    private static <T extends Criterion<?>> T register(T object) {
+        if (VALUES.containsKey(object.getId())) {
+            throw new IllegalArgumentException("Duplicate criterion id " + object.getId());
         }
-        VALUES.put(criterion.getId(), criterion);
-        return criterion;
+        VALUES.put(object.getId(), object);
+        return object;
     }
 
     @Nullable
-    public static <T extends CriterionConditions> Criterion<T> getById(Identifier identifier) {
-        return VALUES.get(identifier);
+    public static <T extends CriterionConditions> Criterion<T> getById(Identifier id) {
+        return VALUES.get(id);
     }
 
     public static Iterable<? extends Criterion<?>> getAllCriterions() {

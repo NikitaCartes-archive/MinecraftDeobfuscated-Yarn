@@ -58,15 +58,15 @@ public class ServerNetworkIo {
     private final List<ChannelFuture> channels = Collections.synchronizedList(Lists.newArrayList());
     private final List<ClientConnection> connections = Collections.synchronizedList(Lists.newArrayList());
 
-    public ServerNetworkIo(MinecraftServer minecraftServer) {
-        this.server = minecraftServer;
+    public ServerNetworkIo(MinecraftServer server) {
+        this.server = server;
         this.active = true;
     }
 
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    public void bind(@Nullable InetAddress inetAddress, int i) throws IOException {
+    public void bind(@Nullable InetAddress address, int port) throws IOException {
         List<ChannelFuture> list = this.channels;
         synchronized (list) {
             Lazy<MultithreadEventLoopGroup> lazy;
@@ -95,7 +95,7 @@ public class ServerNetworkIo {
                     channel.pipeline().addLast("packet_handler", (ChannelHandler)clientConnection);
                     clientConnection.setPacketListener(new ServerHandshakeNetworkHandler(ServerNetworkIo.this.server, clientConnection));
                 }
-            }).group(lazy.get()).localAddress(inetAddress, i)).bind().syncUninterruptibly());
+            }).group(lazy.get()).localAddress(address, port)).bind().syncUninterruptibly());
         }
     }
 

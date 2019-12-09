@@ -14,16 +14,16 @@ extends EntityRenameFix {
     public static final Map<String, String> BLOCKS = ImmutableMap.builder().put("minecraft:portal", "minecraft:nether_portal").put("minecraft:oak_bark", "minecraft:oak_wood").put("minecraft:spruce_bark", "minecraft:spruce_wood").put("minecraft:birch_bark", "minecraft:birch_wood").put("minecraft:jungle_bark", "minecraft:jungle_wood").put("minecraft:acacia_bark", "minecraft:acacia_wood").put("minecraft:dark_oak_bark", "minecraft:dark_oak_wood").put("minecraft:stripped_oak_bark", "minecraft:stripped_oak_wood").put("minecraft:stripped_spruce_bark", "minecraft:stripped_spruce_wood").put("minecraft:stripped_birch_bark", "minecraft:stripped_birch_wood").put("minecraft:stripped_jungle_bark", "minecraft:stripped_jungle_wood").put("minecraft:stripped_acacia_bark", "minecraft:stripped_acacia_wood").put("minecraft:stripped_dark_oak_bark", "minecraft:stripped_dark_oak_wood").put("minecraft:mob_spawner", "minecraft:spawner").build();
     public static final Map<String, String> ITEMS = ImmutableMap.builder().putAll(BLOCKS).put("minecraft:clownfish", "minecraft:tropical_fish").put("minecraft:chorus_fruit_popped", "minecraft:popped_chorus_fruit").put("minecraft:evocation_illager_spawn_egg", "minecraft:evoker_spawn_egg").put("minecraft:vindication_illager_spawn_egg", "minecraft:vindicator_spawn_egg").build();
 
-    public EntityTheRenameningBlock(Schema schema, boolean bl) {
-        super("EntityTheRenameningBlock", schema, bl);
+    public EntityTheRenameningBlock(Schema outputSchema, boolean changesType) {
+        super("EntityTheRenameningBlock", outputSchema, changesType);
     }
 
     @Override
-    protected String rename(String string) {
-        if (string.startsWith("minecraft:bred_")) {
-            string = "minecraft:" + string.substring("minecraft:bred_".length());
+    protected String rename(String oldName) {
+        if (oldName.startsWith("minecraft:bred_")) {
+            oldName = "minecraft:" + oldName.substring("minecraft:bred_".length());
         }
-        return ENTITIES.getOrDefault(string, string);
+        return ENTITIES.getOrDefault(oldName, oldName);
     }
 }
 

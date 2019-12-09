@@ -128,8 +128,8 @@ implements FeatureRendererContext<T, M> {
         super.render(livingEntity, f, g, matrixStack, vertexConsumerProvider, i);
     }
 
-    public static int getOverlay(LivingEntity livingEntity, float f) {
-        return OverlayTexture.packUv(OverlayTexture.getU(f), OverlayTexture.getV(livingEntity.hurtTime > 0 || livingEntity.deathTime > 0));
+    public static int getOverlay(LivingEntity entity, float whiteOverlayProgress) {
+        return OverlayTexture.packUv(OverlayTexture.getU(whiteOverlayProgress), OverlayTexture.getV(entity.hurtTime > 0 || entity.deathTime > 0));
     }
 
     protected boolean method_4056(T livingEntity, boolean bl) {
@@ -154,50 +154,50 @@ implements FeatureRendererContext<T, M> {
         return 0.0f;
     }
 
-    protected void setupTransforms(T livingEntity, MatrixStack matrixStack, float f, float g, float h) {
+    protected void setupTransforms(T entity, MatrixStack matrixStack, float f, float g, float h) {
         String string;
-        EntityPose entityPose = ((Entity)livingEntity).getPose();
+        EntityPose entityPose = ((Entity)entity).getPose();
         if (entityPose != EntityPose.SLEEPING) {
             matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f - g));
         }
-        if (((LivingEntity)livingEntity).deathTime > 0) {
-            float i = ((float)((LivingEntity)livingEntity).deathTime + h - 1.0f) / 20.0f * 1.6f;
+        if (((LivingEntity)entity).deathTime > 0) {
+            float i = ((float)((LivingEntity)entity).deathTime + h - 1.0f) / 20.0f * 1.6f;
             if ((i = MathHelper.sqrt(i)) > 1.0f) {
                 i = 1.0f;
             }
-            matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(i * this.getLyingAngle(livingEntity)));
-        } else if (((LivingEntity)livingEntity).isUsingRiptide()) {
-            matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0f - ((LivingEntity)livingEntity).pitch));
-            matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(((float)((LivingEntity)livingEntity).age + h) * -75.0f));
+            matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(i * this.getLyingAngle(entity)));
+        } else if (((LivingEntity)entity).isUsingRiptide()) {
+            matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0f - ((LivingEntity)entity).pitch));
+            matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(((float)((LivingEntity)entity).age + h) * -75.0f));
         } else if (entityPose == EntityPose.SLEEPING) {
-            Direction direction = ((LivingEntity)livingEntity).getSleepingDirection();
+            Direction direction = ((LivingEntity)entity).getSleepingDirection();
             float j = direction != null ? LivingEntityRenderer.getYaw(direction) : g;
             matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(j));
-            matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(this.getLyingAngle(livingEntity)));
+            matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(this.getLyingAngle(entity)));
             matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(270.0f));
-        } else if ((((Entity)livingEntity).hasCustomName() || livingEntity instanceof PlayerEntity) && ("Dinnerbone".equals(string = Formatting.strip(((Entity)livingEntity).getName().getString())) || "Grumm".equals(string)) && (!(livingEntity instanceof PlayerEntity) || ((PlayerEntity)livingEntity).isPartVisible(PlayerModelPart.CAPE))) {
-            matrixStack.translate(0.0, ((Entity)livingEntity).getHeight() + 0.1f, 0.0);
+        } else if ((((Entity)entity).hasCustomName() || entity instanceof PlayerEntity) && ("Dinnerbone".equals(string = Formatting.strip(((Entity)entity).getName().getString())) || "Grumm".equals(string)) && (!(entity instanceof PlayerEntity) || ((PlayerEntity)entity).isPartVisible(PlayerModelPart.CAPE))) {
+            matrixStack.translate(0.0, ((Entity)entity).getHeight() + 0.1f, 0.0);
             matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0f));
         }
     }
 
-    protected float getHandSwingProgress(T livingEntity, float f) {
-        return ((LivingEntity)livingEntity).getHandSwingProgress(f);
+    protected float getHandSwingProgress(T entity, float tickDelta) {
+        return ((LivingEntity)entity).getHandSwingProgress(tickDelta);
     }
 
-    protected float getCustomAngle(T livingEntity, float f) {
-        return (float)((LivingEntity)livingEntity).age + f;
+    protected float getCustomAngle(T entity, float tickDelta) {
+        return (float)((LivingEntity)entity).age + tickDelta;
     }
 
     protected float getLyingAngle(T livingEntity) {
         return 90.0f;
     }
 
-    protected float getWhiteOverlayProgress(T livingEntity, float f) {
+    protected float getWhiteOverlayProgress(T entity, float tickDelta) {
         return 0.0f;
     }
 
-    protected void scale(T livingEntity, MatrixStack matrixStack, float f) {
+    protected void scale(T entity, MatrixStack matrixStack, float f) {
     }
 
     @Override

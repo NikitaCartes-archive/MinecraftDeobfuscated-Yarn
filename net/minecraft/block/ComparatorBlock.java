@@ -42,53 +42,53 @@ implements BlockEntityProvider {
     }
 
     @Override
-    protected int getUpdateDelayInternal(BlockState blockState) {
+    protected int getUpdateDelayInternal(BlockState state) {
         return 2;
     }
 
     @Override
-    protected int getOutputLevel(BlockView blockView, BlockPos blockPos, BlockState blockState) {
-        BlockEntity blockEntity = blockView.getBlockEntity(blockPos);
+    protected int getOutputLevel(BlockView view, BlockPos pos, BlockState state) {
+        BlockEntity blockEntity = view.getBlockEntity(pos);
         if (blockEntity instanceof ComparatorBlockEntity) {
             return ((ComparatorBlockEntity)blockEntity).getOutputSignal();
         }
         return 0;
     }
 
-    private int calculateOutputSignal(World world, BlockPos blockPos, BlockState blockState) {
-        if (blockState.get(MODE) == ComparatorMode.SUBTRACT) {
-            return Math.max(this.getPower(world, blockPos, blockState) - this.getMaxInputLevelSides(world, blockPos, blockState), 0);
+    private int calculateOutputSignal(World world, BlockPos pos, BlockState state) {
+        if (state.get(MODE) == ComparatorMode.SUBTRACT) {
+            return Math.max(this.getPower(world, pos, state) - this.getMaxInputLevelSides(world, pos, state), 0);
         }
-        return this.getPower(world, blockPos, blockState);
+        return this.getPower(world, pos, state);
     }
 
     @Override
-    protected boolean hasPower(World world, BlockPos blockPos, BlockState blockState) {
-        int i = this.getPower(world, blockPos, blockState);
+    protected boolean hasPower(World world, BlockPos pos, BlockState state) {
+        int i = this.getPower(world, pos, state);
         if (i == 0) {
             return false;
         }
-        int j = this.getMaxInputLevelSides(world, blockPos, blockState);
+        int j = this.getMaxInputLevelSides(world, pos, state);
         if (i > j) {
             return true;
         }
-        return i == j && blockState.get(MODE) == ComparatorMode.COMPARE;
+        return i == j && state.get(MODE) == ComparatorMode.COMPARE;
     }
 
     @Override
-    protected int getPower(World world, BlockPos blockPos, BlockState blockState) {
-        int i = super.getPower(world, blockPos, blockState);
-        Direction direction = blockState.get(FACING);
-        BlockPos blockPos2 = blockPos.offset(direction);
-        BlockState blockState2 = world.getBlockState(blockPos2);
-        if (blockState2.hasComparatorOutput()) {
-            i = blockState2.getComparatorOutput(world, blockPos2);
-        } else if (i < 15 && blockState2.isSimpleFullBlock(world, blockPos2)) {
+    protected int getPower(World world, BlockPos pos, BlockState state) {
+        int i = super.getPower(world, pos, state);
+        Direction direction = state.get(FACING);
+        BlockPos blockPos = pos.offset(direction);
+        BlockState blockState = world.getBlockState(blockPos);
+        if (blockState.hasComparatorOutput()) {
+            i = blockState.getComparatorOutput(world, blockPos);
+        } else if (i < 15 && blockState.isSimpleFullBlock(world, blockPos)) {
             ItemFrameEntity itemFrameEntity;
-            blockState2 = world.getBlockState(blockPos2 = blockPos2.offset(direction));
-            if (blockState2.hasComparatorOutput()) {
-                i = blockState2.getComparatorOutput(world, blockPos2);
-            } else if (blockState2.isAir() && (itemFrameEntity = this.getAttachedItemFrame(world, direction, blockPos2)) != null) {
+            blockState = world.getBlockState(blockPos = blockPos.offset(direction));
+            if (blockState.hasComparatorOutput()) {
+                i = blockState.getComparatorOutput(world, blockPos);
+            } else if (blockState.isAir() && (itemFrameEntity = this.getAttachedItemFrame(world, direction, blockPos)) != null) {
                 i = itemFrameEntity.getComparatorPower();
             }
         }
@@ -96,8 +96,8 @@ implements BlockEntityProvider {
     }
 
     @Nullable
-    private ItemFrameEntity getAttachedItemFrame(World world, Direction direction, BlockPos blockPos) {
-        List<ItemFrameEntity> list = world.getEntities(ItemFrameEntity.class, new Box(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX() + 1, blockPos.getY() + 1, blockPos.getZ() + 1), itemFrameEntity -> itemFrameEntity != null && itemFrameEntity.getHorizontalFacing() == direction);
+    private ItemFrameEntity getAttachedItemFrame(World world, Direction facing, BlockPos pos) {
+        List<ItemFrameEntity> list = world.getEntities(ItemFrameEntity.class, new Box(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1), itemFrameEntity -> itemFrameEntity != null && itemFrameEntity.getHorizontalFacing() == facing);
         if (list.size() == 1) {
             return list.get(0);
         }
@@ -105,67 +105,67 @@ implements BlockEntityProvider {
     }
 
     @Override
-    public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-        if (!playerEntity.abilities.allowModifyWorld) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        if (!player.abilities.allowModifyWorld) {
             return ActionResult.PASS;
         }
-        float f = (blockState = (BlockState)blockState.cycle(MODE)).get(MODE) == ComparatorMode.SUBTRACT ? 0.55f : 0.5f;
-        world.playSound(playerEntity, blockPos, SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.BLOCKS, 0.3f, f);
-        world.setBlockState(blockPos, blockState, 2);
-        this.update(world, blockPos, blockState);
+        float f = (state = (BlockState)state.cycle(MODE)).get(MODE) == ComparatorMode.SUBTRACT ? 0.55f : 0.5f;
+        world.playSound(player, pos, SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.BLOCKS, 0.3f, f);
+        world.setBlockState(pos, state, 2);
+        this.update(world, pos, state);
         return ActionResult.SUCCESS;
     }
 
     @Override
-    protected void updatePowered(World world, BlockPos blockPos, BlockState blockState) {
+    protected void updatePowered(World world, BlockPos pos, BlockState state) {
         int j;
-        if (world.getBlockTickScheduler().isTicking(blockPos, this)) {
+        if (world.getBlockTickScheduler().isTicking(pos, this)) {
             return;
         }
-        int i = this.calculateOutputSignal(world, blockPos, blockState);
-        BlockEntity blockEntity = world.getBlockEntity(blockPos);
+        int i = this.calculateOutputSignal(world, pos, state);
+        BlockEntity blockEntity = world.getBlockEntity(pos);
         int n = j = blockEntity instanceof ComparatorBlockEntity ? ((ComparatorBlockEntity)blockEntity).getOutputSignal() : 0;
-        if (i != j || blockState.get(POWERED).booleanValue() != this.hasPower(world, blockPos, blockState)) {
-            TickPriority tickPriority = this.isTargetNotAligned(world, blockPos, blockState) ? TickPriority.HIGH : TickPriority.NORMAL;
-            world.getBlockTickScheduler().schedule(blockPos, this, 2, tickPriority);
+        if (i != j || state.get(POWERED).booleanValue() != this.hasPower(world, pos, state)) {
+            TickPriority tickPriority = this.isTargetNotAligned(world, pos, state) ? TickPriority.HIGH : TickPriority.NORMAL;
+            world.getBlockTickScheduler().schedule(pos, this, 2, tickPriority);
         }
     }
 
-    private void update(World world, BlockPos blockPos, BlockState blockState) {
-        int i = this.calculateOutputSignal(world, blockPos, blockState);
-        BlockEntity blockEntity = world.getBlockEntity(blockPos);
+    private void update(World world, BlockPos pos, BlockState state) {
+        int i = this.calculateOutputSignal(world, pos, state);
+        BlockEntity blockEntity = world.getBlockEntity(pos);
         int j = 0;
         if (blockEntity instanceof ComparatorBlockEntity) {
             ComparatorBlockEntity comparatorBlockEntity = (ComparatorBlockEntity)blockEntity;
             j = comparatorBlockEntity.getOutputSignal();
             comparatorBlockEntity.setOutputSignal(i);
         }
-        if (j != i || blockState.get(MODE) == ComparatorMode.COMPARE) {
-            boolean bl = this.hasPower(world, blockPos, blockState);
-            boolean bl2 = blockState.get(POWERED);
+        if (j != i || state.get(MODE) == ComparatorMode.COMPARE) {
+            boolean bl = this.hasPower(world, pos, state);
+            boolean bl2 = state.get(POWERED);
             if (bl2 && !bl) {
-                world.setBlockState(blockPos, (BlockState)blockState.with(POWERED, false), 2);
+                world.setBlockState(pos, (BlockState)state.with(POWERED, false), 2);
             } else if (!bl2 && bl) {
-                world.setBlockState(blockPos, (BlockState)blockState.with(POWERED, true), 2);
+                world.setBlockState(pos, (BlockState)state.with(POWERED, true), 2);
             }
-            this.updateTarget(world, blockPos, blockState);
+            this.updateTarget(world, pos, state);
         }
     }
 
     @Override
-    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
-        this.update(serverWorld, blockPos, blockState);
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        this.update(world, pos, state);
     }
 
     @Override
-    public boolean onBlockAction(BlockState blockState, World world, BlockPos blockPos, int i, int j) {
-        super.onBlockAction(blockState, world, blockPos, i, j);
-        BlockEntity blockEntity = world.getBlockEntity(blockPos);
-        return blockEntity != null && blockEntity.onBlockAction(i, j);
+    public boolean onBlockAction(BlockState state, World world, BlockPos pos, int type, int data) {
+        super.onBlockAction(state, world, pos, type, data);
+        BlockEntity blockEntity = world.getBlockEntity(pos);
+        return blockEntity != null && blockEntity.onBlockAction(type, data);
     }
 
     @Override
-    public BlockEntity createBlockEntity(BlockView blockView) {
+    public BlockEntity createBlockEntity(BlockView view) {
         return new ComparatorBlockEntity();
     }
 

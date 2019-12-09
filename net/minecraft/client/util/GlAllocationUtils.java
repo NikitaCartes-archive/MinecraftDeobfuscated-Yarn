@@ -11,12 +11,12 @@ import net.fabricmc.api.Environment;
 
 @Environment(value=EnvType.CLIENT)
 public class GlAllocationUtils {
-    public static synchronized ByteBuffer allocateByteBuffer(int i) {
-        return ByteBuffer.allocateDirect(i).order(ByteOrder.nativeOrder());
+    public static synchronized ByteBuffer allocateByteBuffer(int size) {
+        return ByteBuffer.allocateDirect(size).order(ByteOrder.nativeOrder());
     }
 
-    public static FloatBuffer allocateFloatBuffer(int i) {
-        return GlAllocationUtils.allocateByteBuffer(i << 2).asFloatBuffer();
+    public static FloatBuffer allocateFloatBuffer(int size) {
+        return GlAllocationUtils.allocateByteBuffer(size << 2).asFloatBuffer();
     }
 }
 

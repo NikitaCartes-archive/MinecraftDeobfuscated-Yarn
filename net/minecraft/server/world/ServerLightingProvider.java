@@ -39,11 +39,11 @@ implements AutoCloseable {
     private volatile int taskBatchSize = 5;
     private final AtomicBoolean field_18812 = new AtomicBoolean();
 
-    public ServerLightingProvider(ChunkProvider chunkProvider, ThreadedAnvilChunkStorage threadedAnvilChunkStorage, boolean bl, TaskExecutor<Runnable> taskExecutor, MessageListener<ChunkTaskPrioritySystem.Task<Runnable>> messageListener) {
+    public ServerLightingProvider(ChunkProvider chunkProvider, ThreadedAnvilChunkStorage chunkStorage, boolean bl, TaskExecutor<Runnable> processor, MessageListener<ChunkTaskPrioritySystem.Task<Runnable>> executor) {
         super(chunkProvider, true, bl);
-        this.chunkStorage = threadedAnvilChunkStorage;
-        this.executor = messageListener;
-        this.processor = taskExecutor;
+        this.chunkStorage = chunkStorage;
+        this.executor = executor;
+        this.processor = processor;
     }
 
     @Override
@@ -51,44 +51,44 @@ implements AutoCloseable {
     }
 
     @Override
-    public int doLightUpdates(int i, boolean bl, boolean bl2) {
+    public int doLightUpdates(int maxUpdateCount, boolean doSkylight, boolean skipEdgeLightPropagation) {
         throw Util.throwOrPause(new UnsupportedOperationException("Ran authomatically on a different thread!"));
     }
 
     @Override
-    public void addLightSource(BlockPos blockPos, int i) {
+    public void addLightSource(BlockPos pos, int level) {
         throw Util.throwOrPause(new UnsupportedOperationException("Ran authomatically on a different thread!"));
     }
 
     @Override
-    public void checkBlock(BlockPos blockPos) {
-        BlockPos blockPos2 = blockPos.toImmutable();
-        this.enqueue(blockPos.getX() >> 4, blockPos.getZ() >> 4, Stage.POST_UPDATE, Util.debugRunnable(() -> super.checkBlock(blockPos2), () -> "checkBlock " + blockPos2));
+    public void checkBlock(BlockPos pos) {
+        BlockPos blockPos = pos.toImmutable();
+        this.enqueue(pos.getX() >> 4, pos.getZ() >> 4, Stage.POST_UPDATE, Util.debugRunnable(() -> super.checkBlock(blockPos), () -> "checkBlock " + blockPos));
     }
 
-    protected void updateChunkStatus(ChunkPos chunkPos) {
-        this.enqueue(chunkPos.x, chunkPos.z, () -> 0, Stage.PRE_UPDATE, Util.debugRunnable(() -> {
+    protected void updateChunkStatus(ChunkPos pos) {
+        this.enqueue(pos.x, pos.z, () -> 0, Stage.PRE_UPDATE, Util.debugRunnable(() -> {
             int i;
-            super.setRetainData(chunkPos, false);
-            super.setLightEnabled(chunkPos, false);
+            super.setRetainData(pos, false);
+            super.setLightEnabled(pos, false);
             for (i = -1; i < 17; ++i) {
-                super.queueData(LightType.BLOCK, ChunkSectionPos.from(chunkPos, i), null);
-                super.queueData(LightType.SKY, ChunkSectionPos.from(chunkPos, i), null);
+                super.queueData(LightType.BLOCK, ChunkSectionPos.from(pos, i), null);
+                super.queueData(LightType.SKY, ChunkSectionPos.from(pos, i), null);
             }
             for (i = 0; i < 16; ++i) {
-                super.updateSectionStatus(ChunkSectionPos.from(chunkPos, i), true);
+                super.updateSectionStatus(ChunkSectionPos.from(pos, i), true);
             }
-        }, () -> "updateChunkStatus " + chunkPos + " " + true));
+        }, () -> "updateChunkStatus " + pos + " " + true));
     }
 
     @Override
-    public void updateSectionStatus(ChunkSectionPos chunkSectionPos, boolean bl) {
-        this.enqueue(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), () -> 0, Stage.PRE_UPDATE, Util.debugRunnable(() -> super.updateSectionStatus(chunkSectionPos, bl), () -> "updateSectionStatus " + chunkSectionPos + " " + bl));
+    public void updateSectionStatus(ChunkSectionPos pos, boolean status) {
+        this.enqueue(pos.getSectionX(), pos.getSectionZ(), () -> 0, Stage.PRE_UPDATE, Util.debugRunnable(() -> super.updateSectionStatus(pos, status), () -> "updateSectionStatus " + pos + " " + status));
     }
 
     @Override
-    public void setLightEnabled(ChunkPos chunkPos, boolean bl) {
-        this.enqueue(chunkPos.x, chunkPos.z, Stage.PRE_UPDATE, Util.debugRunnable(() -> super.setLightEnabled(chunkPos, bl), () -> "enableLight " + chunkPos + " " + bl));
+    public void setLightEnabled(ChunkPos pos, boolean lightEnabled) {
+        this.enqueue(pos.x, pos.z, Stage.PRE_UPDATE, Util.debugRunnable(() -> super.setLightEnabled(pos, lightEnabled), () -> "enableLight " + pos + " " + lightEnabled));
     }
 
     @Override
@@ -96,22 +96,22 @@ implements AutoCloseable {
         this.enqueue(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), () -> 0, Stage.PRE_UPDATE, Util.debugRunnable(() -> super.queueData(lightType, chunkSectionPos, chunkNibbleArray), () -> "queueData " + chunkSectionPos));
     }
 
-    private void enqueue(int i, int j, Stage stage, Runnable runnable) {
-        this.enqueue(i, j, this.chunkStorage.getCompletedLevelSupplier(ChunkPos.toLong(i, j)), stage, runnable);
+    private void enqueue(int x, int z, Stage stage, Runnable task) {
+        this.enqueue(x, z, this.chunkStorage.getCompletedLevelSupplier(ChunkPos.toLong(x, z)), stage, task);
     }
 
-    private void enqueue(int i, int j, IntSupplier intSupplier, Stage stage, Runnable runnable) {
+    private void enqueue(int x, int z, IntSupplier completedLevelSupplier, Stage stage, Runnable task) {
         this.executor.send(ChunkTaskPrioritySystem.createMessage(() -> {
-            this.pendingTasks.add(Pair.of(stage, runnable));
+            this.pendingTasks.add(Pair.of(stage, task));
             if (this.pendingTasks.size() >= this.taskBatchSize) {
                 this.runTasks();
             }
-        }, ChunkPos.toLong(i, j), intSupplier));
+        }, ChunkPos.toLong(x, z), completedLevelSupplier));
     }
 
     @Override
-    public void setRetainData(ChunkPos chunkPos, boolean bl) {
-        this.enqueue(chunkPos.x, chunkPos.z, () -> 0, Stage.PRE_UPDATE, Util.debugRunnable(() -> super.setRetainData(chunkPos, bl), () -> "retainData " + chunkPos));
+    public void setRetainData(ChunkPos pos, boolean retainData) {
+        this.enqueue(pos.x, pos.z, () -> 0, Stage.PRE_UPDATE, Util.debugRunnable(() -> super.setRetainData(pos, retainData), () -> "retainData " + pos));
     }
 
     public CompletableFuture<Chunk> light(Chunk chunk, boolean bl) {
@@ -167,8 +167,8 @@ implements AutoCloseable {
         }
     }
 
-    public void setTaskBatchSize(int i) {
-        this.taskBatchSize = i;
+    public void setTaskBatchSize(int taskBatchSize) {
+        this.taskBatchSize = taskBatchSize;
     }
 
     static enum Stage {

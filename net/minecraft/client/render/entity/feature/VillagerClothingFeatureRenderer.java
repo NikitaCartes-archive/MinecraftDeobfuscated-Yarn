@@ -81,13 +81,13 @@ implements SynchronousResourceReloadListener {
         }
     }
 
-    private Identifier findTexture(String string, Identifier identifier) {
-        return new Identifier(identifier.getNamespace(), "textures/entity/" + this.entityType + "/" + string + "/" + identifier.getPath() + ".png");
+    private Identifier findTexture(String keyType, Identifier keyId) {
+        return new Identifier(keyId.getNamespace(), "textures/entity/" + this.entityType + "/" + keyType + "/" + keyId.getPath() + ".png");
     }
 
-    public <K> VillagerResourceMetadata.HatType getHatType(Object2ObjectMap<K, VillagerResourceMetadata.HatType> object2ObjectMap, String string, DefaultedRegistry<K> defaultedRegistry, K object) {
-        return object2ObjectMap.computeIfAbsent(object, object2 -> {
-            try (Resource resource = this.resourceManager.getResource(this.findTexture(string, defaultedRegistry.getId(object)));){
+    public <K> VillagerResourceMetadata.HatType getHatType(Object2ObjectMap<K, VillagerResourceMetadata.HatType> hatLookUp, String keyType, DefaultedRegistry<K> registry, K key) {
+        return hatLookUp.computeIfAbsent(key, object2 -> {
+            try (Resource resource = this.resourceManager.getResource(this.findTexture(keyType, registry.getId(key)));){
                 VillagerResourceMetadata villagerResourceMetadata = resource.getMetadata(VillagerResourceMetadata.READER);
                 if (villagerResourceMetadata == null) return VillagerResourceMetadata.HatType.NONE;
                 VillagerResourceMetadata.HatType hatType = villagerResourceMetadata.getHatType();
@@ -100,7 +100,7 @@ implements SynchronousResourceReloadListener {
     }
 
     @Override
-    public void apply(ResourceManager resourceManager) {
+    public void apply(ResourceManager manager) {
         this.professionToHat.clear();
         this.villagerTypeToHat.clear();
     }

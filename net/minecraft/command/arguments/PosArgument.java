@@ -13,8 +13,8 @@ public interface PosArgument {
 
     public Vec2f toAbsoluteRotation(ServerCommandSource var1);
 
-    default public BlockPos toAbsoluteBlockPos(ServerCommandSource serverCommandSource) {
-        return new BlockPos(this.toAbsolutePos(serverCommandSource));
+    default public BlockPos toAbsoluteBlockPos(ServerCommandSource source) {
+        return new BlockPos(this.toAbsolutePos(source));
     }
 
     public boolean isXRelative();

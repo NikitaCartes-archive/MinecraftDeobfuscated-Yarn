@@ -23,8 +23,8 @@ extends StorageMinecartEntity {
         super(entityType, world);
     }
 
-    public ChestMinecartEntity(World world, double d, double e, double f) {
-        super(EntityType.CHEST_MINECART, d, e, f, world);
+    public ChestMinecartEntity(World world, double x, double y, double z) {
+        super(EntityType.CHEST_MINECART, x, y, z, world);
     }
 
     @Override
@@ -56,8 +56,8 @@ extends StorageMinecartEntity {
     }
 
     @Override
-    public Container getContainer(int i, PlayerInventory playerInventory) {
-        return GenericContainer.createGeneric9x3(i, playerInventory, this);
+    public Container getContainer(int syncId, PlayerInventory playerInventory) {
+        return GenericContainer.createGeneric9x3(syncId, playerInventory, this);
     }
 }
 

@@ -32,13 +32,13 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(damagePredicate, entityPredicate);
     }
 
-    public void trigger(ServerPlayerEntity serverPlayerEntity, Entity entity, DamageSource damageSource, float f, float g, boolean bl) {
-        this.test(serverPlayerEntity.getAdvancementTracker(), conditions -> conditions.matches(serverPlayerEntity, entity, damageSource, f, g, bl));
+    public void trigger(ServerPlayerEntity player, Entity entity, DamageSource source, float dealt, float taken, boolean blocked) {
+        this.test(player.getAdvancementTracker(), conditions -> conditions.matches(player, entity, source, dealt, taken, blocked));
     }
 
     @Override
-    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
+    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject obj, JsonDeserializationContext context) {
+        return this.conditionsFromJson(obj, context);
     }
 
     public static class Conditions
@@ -46,21 +46,21 @@ extends AbstractCriterion<Conditions> {
         private final DamagePredicate damage;
         private final EntityPredicate entity;
 
-        public Conditions(DamagePredicate damagePredicate, EntityPredicate entityPredicate) {
+        public Conditions(DamagePredicate damage, EntityPredicate entity) {
             super(ID);
-            this.damage = damagePredicate;
-            this.entity = entityPredicate;
+            this.damage = damage;
+            this.entity = entity;
         }
 
         public static Conditions create(DamagePredicate.Builder builder) {
             return new Conditions(builder.build(), EntityPredicate.ANY);
         }
 
-        public boolean matches(ServerPlayerEntity serverPlayerEntity, Entity entity, DamageSource damageSource, float f, float g, boolean bl) {
-            if (!this.damage.test(serverPlayerEntity, damageSource, f, g, bl)) {
+        public boolean matches(ServerPlayerEntity player, Entity entity, DamageSource source, float dealt, float taken, boolean blocked) {
+            if (!this.damage.test(player, source, dealt, taken, blocked)) {
                 return false;
             }
-            return this.entity.test(serverPlayerEntity, entity);
+            return this.entity.test(player, entity);
         }
 
         @Override

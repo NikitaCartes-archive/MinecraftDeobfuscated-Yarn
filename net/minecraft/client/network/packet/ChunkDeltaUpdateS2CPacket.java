@@ -32,22 +32,22 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Override
-    public void read(PacketByteBuf packetByteBuf) throws IOException {
-        this.chunkPos = new ChunkPos(packetByteBuf.readInt(), packetByteBuf.readInt());
-        this.records = new ChunkDeltaRecord[packetByteBuf.readVarInt()];
+    public void read(PacketByteBuf buf) throws IOException {
+        this.chunkPos = new ChunkPos(buf.readInt(), buf.readInt());
+        this.records = new ChunkDeltaRecord[buf.readVarInt()];
         for (int i = 0; i < this.records.length; ++i) {
-            this.records[i] = new ChunkDeltaRecord(packetByteBuf.readShort(), Block.STATE_IDS.get(packetByteBuf.readVarInt()));
+            this.records[i] = new ChunkDeltaRecord(buf.readShort(), Block.STATE_IDS.get(buf.readVarInt()));
         }
     }
 
     @Override
-    public void write(PacketByteBuf packetByteBuf) throws IOException {
-        packetByteBuf.writeInt(this.chunkPos.x);
-        packetByteBuf.writeInt(this.chunkPos.z);
-        packetByteBuf.writeVarInt(this.records.length);
+    public void write(PacketByteBuf buf) throws IOException {
+        buf.writeInt(this.chunkPos.x);
+        buf.writeInt(this.chunkPos.z);
+        buf.writeVarInt(this.records.length);
         for (ChunkDeltaRecord chunkDeltaRecord : this.records) {
-            packetByteBuf.writeShort(chunkDeltaRecord.getPosShort());
-            packetByteBuf.writeVarInt(Block.getRawIdFromState(chunkDeltaRecord.getState()));
+            buf.writeShort(chunkDeltaRecord.getPosShort());
+            buf.writeVarInt(Block.getRawIdFromState(chunkDeltaRecord.getState()));
         }
     }
 
@@ -65,13 +65,13 @@ implements Packet<ClientPlayPacketListener> {
         private final short pos;
         private final BlockState state;
 
-        public ChunkDeltaRecord(short s, BlockState blockState) {
-            this.pos = s;
-            this.state = blockState;
+        public ChunkDeltaRecord(short pos, BlockState state) {
+            this.pos = pos;
+            this.state = state;
         }
 
-        public ChunkDeltaRecord(short s, WorldChunk worldChunk) {
-            this.pos = s;
+        public ChunkDeltaRecord(short pos, WorldChunk worldChunk) {
+            this.pos = pos;
             this.state = worldChunk.getBlockState(this.getBlockPos());
         }
 

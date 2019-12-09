@@ -60,8 +60,8 @@ extends HorseBaseEntity {
     }
 
     @Override
-    protected SoundEvent getHurtSound(DamageSource damageSource) {
-        super.getHurtSound(damageSource);
+    protected SoundEvent getHurtSound(DamageSource source) {
+        super.getHurtSound(source);
         return SoundEvents.ENTITY_SKELETON_HORSE_HURT;
     }
 
@@ -84,11 +84,11 @@ extends HorseBaseEntity {
     }
 
     @Override
-    protected void playSwimSound(float f) {
+    protected void playSwimSound(float volume) {
         if (this.onGround) {
             super.playSwimSound(0.3f);
         } else {
-            super.playSwimSound(Math.min(0.1f, f * 25.0f));
+            super.playSwimSound(Math.min(0.1f, volume * 25.0f));
         }
     }
 
@@ -120,17 +120,17 @@ extends HorseBaseEntity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag compoundTag) {
-        super.writeCustomDataToTag(compoundTag);
-        compoundTag.putBoolean("SkeletonTrap", this.isTrapped());
-        compoundTag.putInt("SkeletonTrapTime", this.trapTime);
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putBoolean("SkeletonTrap", this.isTrapped());
+        tag.putInt("SkeletonTrapTime", this.trapTime);
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag compoundTag) {
-        super.readCustomDataFromTag(compoundTag);
-        this.setTrapped(compoundTag.getBoolean("SkeletonTrap"));
-        this.trapTime = compoundTag.getInt("SkeletonTrapTime");
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        this.setTrapped(tag.getBoolean("SkeletonTrap"));
+        this.trapTime = tag.getInt("SkeletonTrapTime");
     }
 
     @Override
@@ -147,12 +147,12 @@ extends HorseBaseEntity {
         return this.trapped;
     }
 
-    public void setTrapped(boolean bl) {
-        if (bl == this.trapped) {
+    public void setTrapped(boolean trapped) {
+        if (trapped == this.trapped) {
             return;
         }
-        this.trapped = bl;
-        if (bl) {
+        this.trapped = trapped;
+        if (trapped) {
             this.goalSelector.add(1, this.field_7003);
         } else {
             this.goalSelector.remove(this.field_7003);
@@ -161,39 +161,39 @@ extends HorseBaseEntity {
 
     @Override
     @Nullable
-    public PassiveEntity createChild(PassiveEntity passiveEntity) {
+    public PassiveEntity createChild(PassiveEntity mate) {
         return EntityType.SKELETON_HORSE.create(this.world);
     }
 
     @Override
-    public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
-        ItemStack itemStack = playerEntity.getStackInHand(hand);
+    public boolean interactMob(PlayerEntity player, Hand hand) {
+        ItemStack itemStack = player.getStackInHand(hand);
         if (itemStack.getItem() instanceof SpawnEggItem) {
-            return super.interactMob(playerEntity, hand);
+            return super.interactMob(player, hand);
         }
         if (!this.isTame()) {
             return false;
         }
         if (this.isBaby()) {
-            return super.interactMob(playerEntity, hand);
+            return super.interactMob(player, hand);
         }
-        if (playerEntity.shouldCancelInteraction()) {
-            this.openInventory(playerEntity);
+        if (player.shouldCancelInteraction()) {
+            this.openInventory(player);
             return true;
         }
         if (this.hasPassengers()) {
-            return super.interactMob(playerEntity, hand);
+            return super.interactMob(player, hand);
         }
         if (!itemStack.isEmpty()) {
             if (itemStack.getItem() == Items.SADDLE && !this.isSaddled()) {
-                this.openInventory(playerEntity);
+                this.openInventory(player);
                 return true;
             }
-            if (itemStack.useOnEntity(playerEntity, this, hand)) {
+            if (itemStack.useOnEntity(player, this, hand)) {
                 return true;
             }
         }
-        this.putPlayerOnBack(playerEntity);
+        this.putPlayerOnBack(player);
         return true;
     }
 }

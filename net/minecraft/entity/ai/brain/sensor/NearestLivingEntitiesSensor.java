@@ -20,12 +20,12 @@ extends Sensor<LivingEntity> {
     private static final TargetPredicate CLOSE_ENTITY_PREDICATE = new TargetPredicate().setBaseMaxDistance(16.0).includeTeammates().ignoreEntityTargetRules().includeHidden();
 
     @Override
-    protected void sense(ServerWorld serverWorld, LivingEntity livingEntity) {
-        List<LivingEntity> list = serverWorld.getEntities(LivingEntity.class, livingEntity.getBoundingBox().expand(16.0, 16.0, 16.0), livingEntity2 -> livingEntity2 != livingEntity && livingEntity2.isAlive());
-        list.sort(Comparator.comparingDouble(livingEntity::squaredDistanceTo));
-        Brain<?> brain = livingEntity.getBrain();
+    protected void sense(ServerWorld world, LivingEntity entity) {
+        List<LivingEntity> list = world.getEntities(LivingEntity.class, entity.getBoundingBox().expand(16.0, 16.0, 16.0), livingEntity2 -> livingEntity2 != entity && livingEntity2.isAlive());
+        list.sort(Comparator.comparingDouble(entity::squaredDistanceTo));
+        Brain<?> brain = entity.getBrain();
         brain.putMemory(MemoryModuleType.MOBS, list);
-        brain.putMemory(MemoryModuleType.VISIBLE_MOBS, list.stream().filter(livingEntity2 -> CLOSE_ENTITY_PREDICATE.test(livingEntity, (LivingEntity)livingEntity2)).filter(livingEntity::canSee).collect(Collectors.toList()));
+        brain.putMemory(MemoryModuleType.VISIBLE_MOBS, list.stream().filter(livingEntity2 -> CLOSE_ENTITY_PREDICATE.test(entity, (LivingEntity)livingEntity2)).filter(entity::canSee).collect(Collectors.toList()));
     }
 
     @Override

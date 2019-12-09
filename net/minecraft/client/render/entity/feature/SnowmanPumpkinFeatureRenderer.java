@@ -21,8 +21,8 @@ import net.minecraft.item.ItemStack;
 @Environment(value=EnvType.CLIENT)
 public class SnowmanPumpkinFeatureRenderer
 extends FeatureRenderer<SnowGolemEntity, SnowmanEntityModel<SnowGolemEntity>> {
-    public SnowmanPumpkinFeatureRenderer(FeatureRendererContext<SnowGolemEntity, SnowmanEntityModel<SnowGolemEntity>> featureRendererContext) {
-        super(featureRendererContext);
+    public SnowmanPumpkinFeatureRenderer(FeatureRendererContext<SnowGolemEntity, SnowmanEntityModel<SnowGolemEntity>> context) {
+        super(context);
     }
 
     @Override

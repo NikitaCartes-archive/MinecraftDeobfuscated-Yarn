@@ -23,19 +23,19 @@ public interface TutorialStepHandler {
     default public void onMovement(Input input) {
     }
 
-    default public void onMouseUpdate(double d, double e) {
+    default public void onMouseUpdate(double deltaX, double deltaY) {
     }
 
-    default public void onTarget(ClientWorld clientWorld, HitResult hitResult) {
+    default public void onTarget(ClientWorld world, HitResult hitResult) {
     }
 
-    default public void onBlockAttacked(ClientWorld clientWorld, BlockPos blockPos, BlockState blockState, float f) {
+    default public void onBlockAttacked(ClientWorld client, BlockPos pos, BlockState state, float f) {
     }
 
     default public void onInventoryOpened() {
     }
 
-    default public void onSlotUpdate(ItemStack itemStack) {
+    default public void onSlotUpdate(ItemStack stack) {
     }
 }
 

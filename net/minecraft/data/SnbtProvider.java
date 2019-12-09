@@ -69,8 +69,8 @@ implements DataProvider {
         return "SNBT -> NBT";
     }
 
-    private String getFileName(Path path, Path path2) {
-        String string = path.relativize(path2).toString().replaceAll("\\\\", "/");
+    private String getFileName(Path root, Path file) {
+        String string = root.relativize(file).toString().replaceAll("\\\\", "/");
         return string.substring(0, string.length() - ".snbt".length());
     }
 
@@ -80,20 +80,20 @@ implements DataProvider {
      * Enabled aggressive exception aggregation
      */
     @Nullable
-    private CompressedData toCompressedNbt(Path path, String string) {
+    private CompressedData toCompressedNbt(Path path, String name) {
         try (BufferedReader bufferedReader = Files.newBufferedReader(path);){
-            String string2 = IOUtils.toString(bufferedReader);
+            String string = IOUtils.toString(bufferedReader);
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            NbtIo.writeCompressed(this.write(string, StringNbtReader.parse(string2)), byteArrayOutputStream);
+            NbtIo.writeCompressed(this.write(name, StringNbtReader.parse(string)), byteArrayOutputStream);
             byte[] bs = byteArrayOutputStream.toByteArray();
-            String string3 = SHA1.hashBytes(bs).toString();
-            CompressedData compressedData = new CompressedData(string, bs, string3);
+            String string2 = SHA1.hashBytes(bs).toString();
+            CompressedData compressedData = new CompressedData(name, bs, string2);
             return compressedData;
         } catch (CommandSyntaxException commandSyntaxException) {
-            LOGGER.error("Couldn't convert {} from SNBT to NBT at {} as it's invalid SNBT", (Object)string, (Object)path, (Object)commandSyntaxException);
+            LOGGER.error("Couldn't convert {} from SNBT to NBT at {} as it's invalid SNBT", (Object)name, (Object)path, (Object)commandSyntaxException);
             return null;
         } catch (IOException iOException) {
-            LOGGER.error("Couldn't convert {} from SNBT to NBT at {}", (Object)string, (Object)path, (Object)iOException);
+            LOGGER.error("Couldn't convert {} from SNBT to NBT at {}", (Object)name, (Object)path, (Object)iOException);
         }
         return null;
     }

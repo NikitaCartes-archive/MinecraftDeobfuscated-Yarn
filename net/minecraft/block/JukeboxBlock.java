@@ -35,30 +35,30 @@ extends BlockWithEntity {
     }
 
     @Override
-    public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-        if (blockState.get(HAS_RECORD).booleanValue()) {
-            this.removeRecord(world, blockPos);
-            blockState = (BlockState)blockState.with(HAS_RECORD, false);
-            world.setBlockState(blockPos, blockState, 2);
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        if (state.get(HAS_RECORD).booleanValue()) {
+            this.removeRecord(world, pos);
+            state = (BlockState)state.with(HAS_RECORD, false);
+            world.setBlockState(pos, state, 2);
             return ActionResult.SUCCESS;
         }
         return ActionResult.PASS;
     }
 
-    public void setRecord(IWorld iWorld, BlockPos blockPos, BlockState blockState, ItemStack itemStack) {
-        BlockEntity blockEntity = iWorld.getBlockEntity(blockPos);
+    public void setRecord(IWorld world, BlockPos pos, BlockState state, ItemStack stack) {
+        BlockEntity blockEntity = world.getBlockEntity(pos);
         if (!(blockEntity instanceof JukeboxBlockEntity)) {
             return;
         }
-        ((JukeboxBlockEntity)blockEntity).setRecord(itemStack.copy());
-        iWorld.setBlockState(blockPos, (BlockState)blockState.with(HAS_RECORD, true), 2);
+        ((JukeboxBlockEntity)blockEntity).setRecord(stack.copy());
+        world.setBlockState(pos, (BlockState)state.with(HAS_RECORD, true), 2);
     }
 
-    private void removeRecord(World world, BlockPos blockPos) {
+    private void removeRecord(World world, BlockPos pos) {
         if (world.isClient) {
             return;
         }
-        BlockEntity blockEntity = world.getBlockEntity(blockPos);
+        BlockEntity blockEntity = world.getBlockEntity(pos);
         if (!(blockEntity instanceof JukeboxBlockEntity)) {
             return;
         }
@@ -67,41 +67,41 @@ extends BlockWithEntity {
         if (itemStack.isEmpty()) {
             return;
         }
-        world.playLevelEvent(1010, blockPos, 0);
+        world.playLevelEvent(1010, pos, 0);
         jukeboxBlockEntity.clear();
         float f = 0.7f;
         double d = (double)(world.random.nextFloat() * 0.7f) + (double)0.15f;
         double e = (double)(world.random.nextFloat() * 0.7f) + 0.06000000238418579 + 0.6;
         double g = (double)(world.random.nextFloat() * 0.7f) + (double)0.15f;
         ItemStack itemStack2 = itemStack.copy();
-        ItemEntity itemEntity = new ItemEntity(world, (double)blockPos.getX() + d, (double)blockPos.getY() + e, (double)blockPos.getZ() + g, itemStack2);
+        ItemEntity itemEntity = new ItemEntity(world, (double)pos.getX() + d, (double)pos.getY() + e, (double)pos.getZ() + g, itemStack2);
         itemEntity.setToDefaultPickupDelay();
         world.spawnEntity(itemEntity);
     }
 
     @Override
-    public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
-        if (blockState.getBlock() == blockState2.getBlock()) {
+    public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (state.getBlock() == newState.getBlock()) {
             return;
         }
-        this.removeRecord(world, blockPos);
-        super.onBlockRemoved(blockState, world, blockPos, blockState2, bl);
+        this.removeRecord(world, pos);
+        super.onBlockRemoved(state, world, pos, newState, moved);
     }
 
     @Override
-    public BlockEntity createBlockEntity(BlockView blockView) {
+    public BlockEntity createBlockEntity(BlockView view) {
         return new JukeboxBlockEntity();
     }
 
     @Override
-    public boolean hasComparatorOutput(BlockState blockState) {
+    public boolean hasComparatorOutput(BlockState state) {
         return true;
     }
 
     @Override
-    public int getComparatorOutput(BlockState blockState, World world, BlockPos blockPos) {
+    public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
         Item item;
-        BlockEntity blockEntity = world.getBlockEntity(blockPos);
+        BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof JukeboxBlockEntity && (item = ((JukeboxBlockEntity)blockEntity).getRecord().getItem()) instanceof MusicDiscItem) {
             return ((MusicDiscItem)item).getComparatorOutput();
         }
@@ -109,7 +109,7 @@ extends BlockWithEntity {
     }
 
     @Override
-    public BlockRenderType getRenderType(BlockState blockState) {
+    public BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.MODEL;
     }
 

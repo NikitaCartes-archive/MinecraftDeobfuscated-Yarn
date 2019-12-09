@@ -17,9 +17,9 @@ public abstract class BossBar {
     protected boolean dragonMusic;
     protected boolean thickenFog;
 
-    public BossBar(UUID uUID, Text text, Color color, Style style) {
-        this.uuid = uUID;
-        this.name = text;
+    public BossBar(UUID uuid, Text name, Color color, Style style) {
+        this.uuid = uuid;
+        this.name = name;
         this.color = color;
         this.style = style;
         this.percent = 1.0f;
@@ -33,16 +33,16 @@ public abstract class BossBar {
         return this.name;
     }
 
-    public void setName(Text text) {
-        this.name = text;
+    public void setName(Text name) {
+        this.name = name;
     }
 
     public float getPercent() {
         return this.percent;
     }
 
-    public void setPercent(float f) {
-        this.percent = f;
+    public void setPercent(float percentage) {
+        this.percent = percentage;
     }
 
     public Color getColor() {
@@ -65,8 +65,8 @@ public abstract class BossBar {
         return this.darkenSky;
     }
 
-    public BossBar setDarkenSky(boolean bl) {
-        this.darkenSky = bl;
+    public BossBar setDarkenSky(boolean darkenSky) {
+        this.darkenSky = darkenSky;
         return this;
     }
 
@@ -74,13 +74,13 @@ public abstract class BossBar {
         return this.dragonMusic;
     }
 
-    public BossBar setDragonMusic(boolean bl) {
-        this.dragonMusic = bl;
+    public BossBar setDragonMusic(boolean dragonMusic) {
+        this.dragonMusic = dragonMusic;
         return this;
     }
 
-    public BossBar setThickenFog(boolean bl) {
-        this.thickenFog = bl;
+    public BossBar setThickenFog(boolean thickenFog) {
+        this.thickenFog = thickenFog;
         return this;
     }
 
@@ -97,17 +97,17 @@ public abstract class BossBar {
 
         private final String name;
 
-        private Style(String string2) {
-            this.name = string2;
+        private Style(String name) {
+            this.name = name;
         }
 
         public String getName() {
             return this.name;
         }
 
-        public static Style byName(String string) {
+        public static Style byName(String name) {
             for (Style style : Style.values()) {
-                if (!style.name.equals(string)) continue;
+                if (!style.name.equals(name)) continue;
                 return style;
             }
             return PROGRESS;
@@ -126,9 +126,9 @@ public abstract class BossBar {
         private final String name;
         private final Formatting format;
 
-        private Color(String string2, Formatting formatting) {
-            this.name = string2;
-            this.format = formatting;
+        private Color(String name, Formatting format) {
+            this.name = name;
+            this.format = format;
         }
 
         public Formatting getTextFormat() {
@@ -139,9 +139,9 @@ public abstract class BossBar {
             return this.name;
         }
 
-        public static Color byName(String string) {
+        public static Color byName(String name) {
             for (Color color : Color.values()) {
-                if (!color.name.equals(string)) continue;
+                if (!color.name.equals(name)) continue;
                 return color;
             }
             return WHITE;

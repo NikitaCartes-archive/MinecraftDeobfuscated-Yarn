@@ -31,12 +31,12 @@ public class WorldBorder {
     private int maxWorldBorderRadius = 29999984;
     private Area area = new StaticArea(6.0E7);
 
-    public boolean contains(BlockPos blockPos) {
-        return (double)(blockPos.getX() + 1) > this.getBoundWest() && (double)blockPos.getX() < this.getBoundEast() && (double)(blockPos.getZ() + 1) > this.getBoundNorth() && (double)blockPos.getZ() < this.getBoundSouth();
+    public boolean contains(BlockPos pos) {
+        return (double)(pos.getX() + 1) > this.getBoundWest() && (double)pos.getX() < this.getBoundEast() && (double)(pos.getZ() + 1) > this.getBoundNorth() && (double)pos.getZ() < this.getBoundSouth();
     }
 
-    public boolean contains(ChunkPos chunkPos) {
-        return (double)chunkPos.getEndX() > this.getBoundWest() && (double)chunkPos.getStartX() < this.getBoundEast() && (double)chunkPos.getEndZ() > this.getBoundNorth() && (double)chunkPos.getStartZ() < this.getBoundSouth();
+    public boolean contains(ChunkPos pos) {
+        return (double)pos.getEndX() > this.getBoundWest() && (double)pos.getStartX() < this.getBoundEast() && (double)pos.getEndZ() > this.getBoundNorth() && (double)pos.getStartZ() < this.getBoundSouth();
     }
 
     public boolean contains(Box box) {
@@ -51,14 +51,14 @@ public class WorldBorder {
         return this.area.asVoxelShape();
     }
 
-    public double getDistanceInsideBorder(double d, double e) {
-        double f = e - this.getBoundNorth();
-        double g = this.getBoundSouth() - e;
-        double h = d - this.getBoundWest();
-        double i = this.getBoundEast() - d;
-        double j = Math.min(h, i);
-        j = Math.min(j, f);
-        return Math.min(j, g);
+    public double getDistanceInsideBorder(double x, double z) {
+        double d = z - this.getBoundNorth();
+        double e = this.getBoundSouth() - z;
+        double f = x - this.getBoundWest();
+        double g = this.getBoundEast() - x;
+        double h = Math.min(f, g);
+        h = Math.min(h, d);
+        return Math.min(h, e);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -90,12 +90,12 @@ public class WorldBorder {
         return this.centerZ;
     }
 
-    public void setCenter(double d, double e) {
-        this.centerX = d;
-        this.centerZ = e;
+    public void setCenter(double x, double z) {
+        this.centerX = x;
+        this.centerZ = z;
         this.area.onCenterChanged();
         for (WorldBorderListener worldBorderListener : this.getListeners()) {
-            worldBorderListener.onCenterChanged(this, d, e);
+            worldBorderListener.onCenterChanged(this, x, z);
         }
     }
 
@@ -111,17 +111,17 @@ public class WorldBorder {
         return this.area.getTargetSize();
     }
 
-    public void setSize(double d) {
-        this.area = new StaticArea(d);
+    public void setSize(double size) {
+        this.area = new StaticArea(size);
         for (WorldBorderListener worldBorderListener : this.getListeners()) {
-            worldBorderListener.onSizeChange(this, d);
+            worldBorderListener.onSizeChange(this, size);
         }
     }
 
-    public void interpolateSize(double d, double e, long l) {
-        this.area = d == e ? new StaticArea(e) : new MovingArea(d, e, l);
+    public void interpolateSize(double fromSize, double toSize, long time) {
+        this.area = fromSize == toSize ? new StaticArea(toSize) : new MovingArea(fromSize, toSize, time);
         for (WorldBorderListener worldBorderListener : this.getListeners()) {
-            worldBorderListener.onInterpolateSize(this, d, e, l);
+            worldBorderListener.onInterpolateSize(this, fromSize, toSize, time);
         }
     }
 
@@ -129,8 +129,8 @@ public class WorldBorder {
         return Lists.newArrayList(this.listeners);
     }
 
-    public void addListener(WorldBorderListener worldBorderListener) {
-        this.listeners.add(worldBorderListener);
+    public void addListener(WorldBorderListener listener) {
+        this.listeners.add(listener);
     }
 
     public void setMaxWorldBorderRadius(int i) {
@@ -146,10 +146,10 @@ public class WorldBorder {
         return this.buffer;
     }
 
-    public void setBuffer(double d) {
-        this.buffer = d;
+    public void setBuffer(double buffer) {
+        this.buffer = buffer;
         for (WorldBorderListener worldBorderListener : this.getListeners()) {
-            worldBorderListener.onSafeZoneChanged(this, d);
+            worldBorderListener.onSafeZoneChanged(this, buffer);
         }
     }
 
@@ -157,10 +157,10 @@ public class WorldBorder {
         return this.damagePerBlock;
     }
 
-    public void setDamagePerBlock(double d) {
-        this.damagePerBlock = d;
+    public void setDamagePerBlock(double damagePerBlock) {
+        this.damagePerBlock = damagePerBlock;
         for (WorldBorderListener worldBorderListener : this.getListeners()) {
-            worldBorderListener.onDamagePerBlockChanged(this, d);
+            worldBorderListener.onDamagePerBlockChanged(this, damagePerBlock);
         }
     }
 
@@ -173,10 +173,10 @@ public class WorldBorder {
         return this.warningTime;
     }
 
-    public void setWarningTime(int i) {
-        this.warningTime = i;
+    public void setWarningTime(int warningTime) {
+        this.warningTime = warningTime;
         for (WorldBorderListener worldBorderListener : this.getListeners()) {
-            worldBorderListener.onWarningTimeChanged(this, i);
+            worldBorderListener.onWarningTimeChanged(this, warningTime);
         }
     }
 
@@ -184,10 +184,10 @@ public class WorldBorder {
         return this.warningBlocks;
     }
 
-    public void setWarningBlocks(int i) {
-        this.warningBlocks = i;
+    public void setWarningBlocks(int warningBlocks) {
+        this.warningBlocks = warningBlocks;
         for (WorldBorderListener worldBorderListener : this.getListeners()) {
-            worldBorderListener.onWarningBlocksChanged(this, i);
+            worldBorderListener.onWarningBlocksChanged(this, warningBlocks);
         }
     }
 
@@ -318,12 +318,12 @@ public class WorldBorder {
         private final long timeStart;
         private final double timeDuration;
 
-        private MovingArea(double d, double e, long l) {
-            this.oldSize = d;
-            this.newSize = e;
-            this.timeDuration = l;
+        private MovingArea(double oldSize, double newSize, long duration) {
+            this.oldSize = oldSize;
+            this.newSize = newSize;
+            this.timeDuration = duration;
             this.timeStart = Util.getMeasuringTimeMs();
-            this.timeEnd = this.timeStart + l;
+            this.timeEnd = this.timeStart + duration;
         }
 
         @Override

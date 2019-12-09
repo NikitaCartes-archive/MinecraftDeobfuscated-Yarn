@@ -15,9 +15,9 @@ public class FatalErrorScreen
 extends Screen {
     private final String message;
 
-    public FatalErrorScreen(Text text, String string) {
+    public FatalErrorScreen(Text text, String message) {
         super(text);
-        this.message = string;
+        this.message = message;
     }
 
     @Override
@@ -27,11 +27,11 @@ extends Screen {
     }
 
     @Override
-    public void render(int i, int j, float f) {
+    public void render(int mouseX, int mouseY, float delta) {
         this.fillGradient(0, 0, this.width, this.height, -12574688, -11530224);
         this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 90, 0xFFFFFF);
         this.drawCenteredString(this.font, this.message, this.width / 2, 110, 0xFFFFFF);
-        super.render(i, j, f);
+        super.render(mouseX, mouseY, delta);
     }
 
     @Override

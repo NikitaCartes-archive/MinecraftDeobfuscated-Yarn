@@ -25,11 +25,11 @@ extends ValueObject {
     private String uploadEndpoint = "";
     private int port;
 
-    public static UploadInfo parse(String string) {
+    public static UploadInfo parse(String json) {
         UploadInfo uploadInfo = new UploadInfo();
         try {
             JsonParser jsonParser = new JsonParser();
-            JsonObject jsonObject = jsonParser.parse(string).getAsJsonObject();
+            JsonObject jsonObject = jsonParser.parse(json).getAsJsonObject();
             uploadInfo.worldClosed = JsonUtils.getBooleanOr("worldClosed", jsonObject, false);
             uploadInfo.token = JsonUtils.getStringOr("token", jsonObject, null);
             uploadInfo.uploadEndpoint = JsonUtils.getStringOr("uploadEndpoint", jsonObject, null);
@@ -52,8 +52,8 @@ extends ValueObject {
         return this.worldClosed;
     }
 
-    public void setToken(String string) {
-        this.token = string;
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public int getPort() {

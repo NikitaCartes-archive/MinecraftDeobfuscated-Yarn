@@ -23,16 +23,16 @@ extends AbstractClientPlayerEntity {
     }
 
     @Override
-    public boolean shouldRender(double d) {
-        double e = this.getBoundingBox().getAverageSideLength() * 10.0;
-        if (Double.isNaN(e)) {
-            e = 1.0;
+    public boolean shouldRender(double distance) {
+        double d = this.getBoundingBox().getAverageSideLength() * 10.0;
+        if (Double.isNaN(d)) {
+            d = 1.0;
         }
-        return d < (e *= 64.0 * OtherClientPlayerEntity.getRenderDistanceMultiplier()) * e;
+        return distance < (d *= 64.0 * OtherClientPlayerEntity.getRenderDistanceMultiplier()) * d;
     }
 
     @Override
-    public boolean damage(DamageSource damageSource, float f) {
+    public boolean damage(DamageSource source, float amount) {
         return true;
     }
 
@@ -85,8 +85,8 @@ extends AbstractClientPlayerEntity {
     }
 
     @Override
-    public void sendMessage(Text text) {
-        MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(text);
+    public void sendMessage(Text message) {
+        MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(message);
     }
 }
 

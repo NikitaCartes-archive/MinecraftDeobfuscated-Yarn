@@ -14,19 +14,19 @@ import org.jetbrains.annotations.Nullable;
 public class ComplexRecipeJsonFactory {
     private final SpecialRecipeSerializer<?> serializer;
 
-    public ComplexRecipeJsonFactory(SpecialRecipeSerializer<?> specialRecipeSerializer) {
-        this.serializer = specialRecipeSerializer;
+    public ComplexRecipeJsonFactory(SpecialRecipeSerializer<?> serializer) {
+        this.serializer = serializer;
     }
 
-    public static ComplexRecipeJsonFactory create(SpecialRecipeSerializer<?> specialRecipeSerializer) {
-        return new ComplexRecipeJsonFactory(specialRecipeSerializer);
+    public static ComplexRecipeJsonFactory create(SpecialRecipeSerializer<?> serializer) {
+        return new ComplexRecipeJsonFactory(serializer);
     }
 
-    public void offerTo(Consumer<RecipeJsonProvider> consumer, final String string) {
-        consumer.accept(new RecipeJsonProvider(){
+    public void offerTo(Consumer<RecipeJsonProvider> exporter, final String recipeId) {
+        exporter.accept(new RecipeJsonProvider(){
 
             @Override
-            public void serialize(JsonObject jsonObject) {
+            public void serialize(JsonObject json) {
             }
 
             @Override
@@ -36,7 +36,7 @@ public class ComplexRecipeJsonFactory {
 
             @Override
             public Identifier getRecipeId() {
-                return new Identifier(string);
+                return new Identifier(recipeId);
             }
 
             @Override

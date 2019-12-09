@@ -21,8 +21,8 @@ implements RecipeSerializer<T> {
     private final int cookingTime;
     private final RecipeFactory<T> recipeFactory;
 
-    public CookingRecipeSerializer(RecipeFactory<T> recipeFactory, int i) {
-        this.cookingTime = i;
+    public CookingRecipeSerializer(RecipeFactory<T> recipeFactory, int cookingTime) {
+        this.cookingTime = cookingTime;
         this.recipeFactory = recipeFactory;
     }
 
@@ -59,13 +59,13 @@ implements RecipeSerializer<T> {
     }
 
     @Override
-    public /* synthetic */ Recipe read(Identifier identifier, PacketByteBuf packetByteBuf) {
-        return this.read(identifier, packetByteBuf);
+    public /* synthetic */ Recipe read(Identifier id, PacketByteBuf buf) {
+        return this.read(id, buf);
     }
 
     @Override
-    public /* synthetic */ Recipe read(Identifier identifier, JsonObject jsonObject) {
-        return this.read(identifier, jsonObject);
+    public /* synthetic */ Recipe read(Identifier id, JsonObject json) {
+        return this.read(id, json);
     }
 
     static interface RecipeFactory<T extends AbstractCookingRecipe> {

@@ -22,8 +22,8 @@ public class ServerList {
     private final MinecraftClient client;
     private final List<ServerInfo> servers = Lists.newArrayList();
 
-    public ServerList(MinecraftClient minecraftClient) {
-        this.client = minecraftClient;
+    public ServerList(MinecraftClient client) {
+        this.client = client;
         this.loadFile();
     }
 
@@ -73,24 +73,24 @@ public class ServerList {
         return this.servers.size();
     }
 
-    public void swapEntries(int i, int j) {
-        ServerInfo serverInfo = this.get(i);
-        this.servers.set(i, this.get(j));
-        this.servers.set(j, serverInfo);
+    public void swapEntries(int index1, int i) {
+        ServerInfo serverInfo = this.get(index1);
+        this.servers.set(index1, this.get(i));
+        this.servers.set(i, serverInfo);
         this.saveFile();
     }
 
-    public void set(int i, ServerInfo serverInfo) {
-        this.servers.set(i, serverInfo);
+    public void set(int index, ServerInfo serverInfo) {
+        this.servers.set(index, serverInfo);
     }
 
-    public static void updateServerListEntry(ServerInfo serverInfo) {
+    public static void updateServerListEntry(ServerInfo e) {
         ServerList serverList = new ServerList(MinecraftClient.getInstance());
         serverList.loadFile();
         for (int i = 0; i < serverList.size(); ++i) {
-            ServerInfo serverInfo2 = serverList.get(i);
-            if (!serverInfo2.name.equals(serverInfo.name) || !serverInfo2.address.equals(serverInfo.address)) continue;
-            serverList.set(i, serverInfo);
+            ServerInfo serverInfo = serverList.get(i);
+            if (!serverInfo.name.equals(e.name) || !serverInfo.address.equals(e.address)) continue;
+            serverList.set(i, e);
             break;
         }
         serverList.saveFile();

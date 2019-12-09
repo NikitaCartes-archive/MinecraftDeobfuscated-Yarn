@@ -25,14 +25,14 @@ implements ParsableText {
     @Nullable
     private final EntitySelector selector;
 
-    public SelectorText(String string) {
-        this.pattern = string;
+    public SelectorText(String pattern) {
+        this.pattern = pattern;
         EntitySelector entitySelector = null;
         try {
-            EntitySelectorReader entitySelectorReader = new EntitySelectorReader(new StringReader(string));
+            EntitySelectorReader entitySelectorReader = new EntitySelectorReader(new StringReader(pattern));
             entitySelector = entitySelectorReader.read();
         } catch (CommandSyntaxException commandSyntaxException) {
-            LOGGER.warn("Invalid selector component: {}", (Object)string, (Object)commandSyntaxException.getMessage());
+            LOGGER.warn("Invalid selector component: {}", (Object)pattern, (Object)commandSyntaxException.getMessage());
         }
         this.selector = entitySelector;
     }
@@ -42,11 +42,11 @@ implements ParsableText {
     }
 
     @Override
-    public Text parse(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity, int i) throws CommandSyntaxException {
-        if (serverCommandSource == null || this.selector == null) {
+    public Text parse(@Nullable ServerCommandSource source, @Nullable Entity sender, int depth) throws CommandSyntaxException {
+        if (source == null || this.selector == null) {
             return new LiteralText("");
         }
-        return EntitySelector.getNames(this.selector.getEntities(serverCommandSource));
+        return EntitySelector.getNames(this.selector.getEntities(source));
     }
 
     @Override
@@ -60,13 +60,13 @@ implements ParsableText {
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (object instanceof SelectorText) {
-            SelectorText selectorText = (SelectorText)object;
-            return this.pattern.equals(selectorText.pattern) && super.equals(object);
+        if (o instanceof SelectorText) {
+            SelectorText selectorText = (SelectorText)o;
+            return this.pattern.equals(selectorText.pattern) && super.equals(o);
         }
         return false;
     }

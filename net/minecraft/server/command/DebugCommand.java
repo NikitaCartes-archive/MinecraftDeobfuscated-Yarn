@@ -37,23 +37,23 @@ public class DebugCommand {
     @Nullable
     private static final FileSystemProvider field_20310 = FileSystemProvider.installedProviders().stream().filter(fileSystemProvider -> fileSystemProvider.getScheme().equalsIgnoreCase("jar")).findFirst().orElse(null);
 
-    public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-        commandDispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("debug").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))).then(CommandManager.literal("start").executes(commandContext -> DebugCommand.executeStart((ServerCommandSource)commandContext.getSource())))).then(CommandManager.literal("stop").executes(commandContext -> DebugCommand.executeStop((ServerCommandSource)commandContext.getSource())))).then(CommandManager.literal("report").executes(commandContext -> DebugCommand.createDebugReport((ServerCommandSource)commandContext.getSource()))));
+    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("debug").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))).then(CommandManager.literal("start").executes(commandContext -> DebugCommand.executeStart((ServerCommandSource)commandContext.getSource())))).then(CommandManager.literal("stop").executes(commandContext -> DebugCommand.executeStop((ServerCommandSource)commandContext.getSource())))).then(CommandManager.literal("report").executes(commandContext -> DebugCommand.createDebugReport((ServerCommandSource)commandContext.getSource()))));
     }
 
-    private static int executeStart(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
-        MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
+    private static int executeStart(ServerCommandSource source) throws CommandSyntaxException {
+        MinecraftServer minecraftServer = source.getMinecraftServer();
         DisableableProfiler disableableProfiler = minecraftServer.getProfiler();
         if (disableableProfiler.getController().isEnabled()) {
             throw ALREADYRUNNING_EXCEPTION.create();
         }
         minecraftServer.enableProfiler();
-        serverCommandSource.sendFeedback(new TranslatableText("commands.debug.started", "Started the debug profiler. Type '/debug stop' to stop it."), true);
+        source.sendFeedback(new TranslatableText("commands.debug.started", "Started the debug profiler. Type '/debug stop' to stop it."), true);
         return 0;
     }
 
-    private static int executeStop(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
-        MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
+    private static int executeStop(ServerCommandSource source) throws CommandSyntaxException {
+        MinecraftServer minecraftServer = source.getMinecraftServer();
         DisableableProfiler disableableProfiler = minecraftServer.getProfiler();
         if (!disableableProfiler.getController().isEnabled()) {
             throw NORUNNING_EXCPETION.create();
@@ -63,12 +63,12 @@ public class DebugCommand {
         profileResult.saveToFile(file);
         float f = (float)profileResult.getTimeSpan() / 1.0E9f;
         float g = (float)profileResult.getTickSpan() / f;
-        serverCommandSource.sendFeedback(new TranslatableText("commands.debug.stopped", String.format(Locale.ROOT, "%.2f", Float.valueOf(f)), profileResult.getTickSpan(), String.format("%.2f", Float.valueOf(g))), true);
+        source.sendFeedback(new TranslatableText("commands.debug.stopped", String.format(Locale.ROOT, "%.2f", Float.valueOf(f)), profileResult.getTickSpan(), String.format("%.2f", Float.valueOf(g))), true);
         return MathHelper.floor(g);
     }
 
-    private static int createDebugReport(ServerCommandSource serverCommandSource) {
-        MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
+    private static int createDebugReport(ServerCommandSource source) {
+        MinecraftServer minecraftServer = source.getMinecraftServer();
         String string = "debug-report-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date());
         try {
             Path path = minecraftServer.getFile("debug").toPath();
@@ -82,11 +82,11 @@ public class DebugCommand {
                     minecraftServer.dump(fileSystem.getPath("/", new String[0]));
                 }
             }
-            serverCommandSource.sendFeedback(new TranslatableText("commands.debug.reportSaved", string), false);
+            source.sendFeedback(new TranslatableText("commands.debug.reportSaved", string), false);
             return 1;
         } catch (IOException iOException) {
             logger.error("Failed to save debug dump", (Throwable)iOException);
-            serverCommandSource.sendError(new TranslatableText("commands.debug.reportFailed", new Object[0]));
+            source.sendError(new TranslatableText("commands.debug.reportFailed", new Object[0]));
             return 0;
         }
     }

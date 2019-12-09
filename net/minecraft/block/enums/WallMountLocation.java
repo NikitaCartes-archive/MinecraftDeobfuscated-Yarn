@@ -13,8 +13,8 @@ public enum WallMountLocation implements StringIdentifiable
 
     private final String name;
 
-    private WallMountLocation(String string2) {
-        this.name = string2;
+    private WallMountLocation(String name) {
+        this.name = name;
     }
 
     @Override

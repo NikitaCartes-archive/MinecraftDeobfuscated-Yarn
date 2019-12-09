@@ -12,8 +12,8 @@ import net.minecraft.text.TranslatableText;
 @Environment(value=EnvType.CLIENT)
 public class AvailableResourcePackListWidget
 extends ResourcePackListWidget {
-    public AvailableResourcePackListWidget(MinecraftClient minecraftClient, int i, int j) {
-        super(minecraftClient, i, j, new TranslatableText("resourcePack.available.title", new Object[0]));
+    public AvailableResourcePackListWidget(MinecraftClient client, int width, int height) {
+        super(client, width, height, new TranslatableText("resourcePack.available.title", new Object[0]));
     }
 }
 

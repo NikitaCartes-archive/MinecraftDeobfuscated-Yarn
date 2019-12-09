@@ -34,8 +34,8 @@ extends RecipeBook {
     private final Map<RecipeBookGroup, List<RecipeResultCollection>> resultsByGroup = Maps.newHashMap();
     private final List<RecipeResultCollection> orderedResults = Lists.newArrayList();
 
-    public ClientRecipeBook(RecipeManager recipeManager) {
-        this.manager = recipeManager;
+    public ClientRecipeBook(RecipeManager manager) {
+        this.manager = manager;
     }
 
     public void reload() {
@@ -60,19 +60,19 @@ extends RecipeBook {
         }
     }
 
-    private RecipeResultCollection addGroup(RecipeBookGroup recipeBookGroup2) {
+    private RecipeResultCollection addGroup(RecipeBookGroup group) {
         RecipeResultCollection recipeResultCollection = new RecipeResultCollection();
         this.orderedResults.add(recipeResultCollection);
-        this.resultsByGroup.computeIfAbsent(recipeBookGroup2, recipeBookGroup -> Lists.newArrayList()).add(recipeResultCollection);
-        if (recipeBookGroup2 == RecipeBookGroup.FURNACE_BLOCKS || recipeBookGroup2 == RecipeBookGroup.FURNACE_FOOD || recipeBookGroup2 == RecipeBookGroup.FURNACE_MISC) {
+        this.resultsByGroup.computeIfAbsent(group, recipeBookGroup -> Lists.newArrayList()).add(recipeResultCollection);
+        if (group == RecipeBookGroup.FURNACE_BLOCKS || group == RecipeBookGroup.FURNACE_FOOD || group == RecipeBookGroup.FURNACE_MISC) {
             this.addGroupResults(RecipeBookGroup.FURNACE_SEARCH, recipeResultCollection);
-        } else if (recipeBookGroup2 == RecipeBookGroup.BLAST_FURNACE_BLOCKS || recipeBookGroup2 == RecipeBookGroup.BLAST_FURNACE_MISC) {
+        } else if (group == RecipeBookGroup.BLAST_FURNACE_BLOCKS || group == RecipeBookGroup.BLAST_FURNACE_MISC) {
             this.addGroupResults(RecipeBookGroup.BLAST_FURNACE_SEARCH, recipeResultCollection);
-        } else if (recipeBookGroup2 == RecipeBookGroup.SMOKER_FOOD) {
+        } else if (group == RecipeBookGroup.SMOKER_FOOD) {
             this.addGroupResults(RecipeBookGroup.SMOKER_SEARCH, recipeResultCollection);
-        } else if (recipeBookGroup2 == RecipeBookGroup.STONECUTTER) {
+        } else if (group == RecipeBookGroup.STONECUTTER) {
             this.addGroupResults(RecipeBookGroup.STONECUTTER, recipeResultCollection);
-        } else if (recipeBookGroup2 == RecipeBookGroup.CAMPFIRE) {
+        } else if (group == RecipeBookGroup.CAMPFIRE) {
             this.addGroupResults(RecipeBookGroup.CAMPFIRE, recipeResultCollection);
         } else {
             this.addGroupResults(RecipeBookGroup.SEARCH, recipeResultCollection);
@@ -80,8 +80,8 @@ extends RecipeBook {
         return recipeResultCollection;
     }
 
-    private void addGroupResults(RecipeBookGroup recipeBookGroup2, RecipeResultCollection recipeResultCollection) {
-        this.resultsByGroup.computeIfAbsent(recipeBookGroup2, recipeBookGroup -> Lists.newArrayList()).add(recipeResultCollection);
+    private void addGroupResults(RecipeBookGroup group, RecipeResultCollection results) {
+        this.resultsByGroup.computeIfAbsent(group, recipeBookGroup -> Lists.newArrayList()).add(results);
     }
 
     private static RecipeBookGroup getGroupForRecipe(Recipe<?> recipe) {

@@ -52,46 +52,46 @@ extends AbstractButtonWidget {
         return this.results;
     }
 
-    public void setPos(int i, int j) {
-        this.x = i;
-        this.y = j;
+    public void setPos(int x, int y) {
+        this.x = x;
+        this.y = y;
     }
 
     @Override
-    public void renderButton(int i, int j, float f) {
+    public void renderButton(int mouseX, int mouseY, float delta) {
         boolean bl;
         if (!Screen.hasControlDown()) {
-            this.time += f;
+            this.time += delta;
         }
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
         minecraftClient.getTextureManager().bindTexture(BG_TEX);
-        int k = 29;
+        int i = 29;
         if (!this.results.hasCraftableRecipes()) {
-            k += 25;
+            i += 25;
         }
-        int l = 206;
+        int j = 206;
         if (this.results.getResults(this.recipeBook.isFilteringCraftable(this.craftingContainer)).size() > 1) {
-            l += 25;
+            j += 25;
         }
         boolean bl2 = bl = this.bounce > 0.0f;
         if (bl) {
-            float g = 1.0f + 0.1f * (float)Math.sin(this.bounce / 15.0f * (float)Math.PI);
+            float f = 1.0f + 0.1f * (float)Math.sin(this.bounce / 15.0f * (float)Math.PI);
             RenderSystem.pushMatrix();
             RenderSystem.translatef(this.x + 8, this.y + 12, 0.0f);
-            RenderSystem.scalef(g, g, 1.0f);
+            RenderSystem.scalef(f, f, 1.0f);
             RenderSystem.translatef(-(this.x + 8), -(this.y + 12), 0.0f);
-            this.bounce -= f;
+            this.bounce -= delta;
         }
-        this.blit(this.x, this.y, k, l, this.width, this.height);
+        this.blit(this.x, this.y, i, j, this.width, this.height);
         List<Recipe<?>> list = this.getResults();
         this.currentResultIndex = MathHelper.floor(this.time / 30.0f) % list.size();
         ItemStack itemStack = list.get(this.currentResultIndex).getOutput();
-        int m = 4;
+        int k = 4;
         if (this.results.hasSingleOutput() && this.getResults().size() > 1) {
-            minecraftClient.getItemRenderer().renderGuiItem(itemStack, this.x + m + 1, this.y + m + 1);
-            --m;
+            minecraftClient.getItemRenderer().renderGuiItem(itemStack, this.x + k + 1, this.y + k + 1);
+            --k;
         }
-        minecraftClient.getItemRenderer().renderGuiItem(itemStack, this.x + m, this.y + m);
+        minecraftClient.getItemRenderer().renderGuiItem(itemStack, this.x + k, this.y + k);
         if (bl) {
             RenderSystem.popMatrix();
         }

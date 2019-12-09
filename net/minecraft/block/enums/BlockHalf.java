@@ -12,8 +12,8 @@ public enum BlockHalf implements StringIdentifiable
 
     private final String name;
 
-    private BlockHalf(String string2) {
-        this.name = string2;
+    private BlockHalf(String name) {
+        this.name = name;
     }
 
     public String toString() {

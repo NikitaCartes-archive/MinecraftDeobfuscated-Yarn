@@ -23,10 +23,10 @@ public class RealmsPersistence {
         }
     }
 
-    public static void writeFile(RealmsPersistenceData realmsPersistenceData) {
+    public static void writeFile(RealmsPersistenceData data) {
         File file = new File(Realms.getGameDirectoryPath(), "realms_persistence.json");
         Gson gson = new Gson();
-        String string = gson.toJson(realmsPersistenceData);
+        String string = gson.toJson(data);
         try {
             FileUtils.writeStringToFile(file, string);
         } catch (IOException iOException) {

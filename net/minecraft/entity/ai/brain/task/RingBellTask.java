@@ -22,18 +22,18 @@ extends Task<LivingEntity> {
     }
 
     @Override
-    protected boolean shouldRun(ServerWorld serverWorld, LivingEntity livingEntity) {
-        return serverWorld.random.nextFloat() > 0.95f;
+    protected boolean shouldRun(ServerWorld world, LivingEntity entity) {
+        return world.random.nextFloat() > 0.95f;
     }
 
     @Override
-    protected void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
+    protected void run(ServerWorld world, LivingEntity entity, long time) {
         BlockState blockState;
-        Brain<?> brain = livingEntity.getBrain();
+        Brain<?> brain = entity.getBrain();
         BlockPos blockPos = brain.getOptionalMemory(MemoryModuleType.MEETING_POINT).get().getPos();
-        if (blockPos.isWithinDistance(new BlockPos(livingEntity), 3.0) && (blockState = serverWorld.getBlockState(blockPos)).getBlock() == Blocks.BELL) {
+        if (blockPos.isWithinDistance(new BlockPos(entity), 3.0) && (blockState = world.getBlockState(blockPos)).getBlock() == Blocks.BELL) {
             BellBlock bellBlock = (BellBlock)blockState.getBlock();
-            bellBlock.ring(serverWorld, blockPos, null);
+            bellBlock.ring(world, blockPos, null);
         }
     }
 }

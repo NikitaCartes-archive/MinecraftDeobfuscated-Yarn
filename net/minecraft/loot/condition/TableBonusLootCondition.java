@@ -25,9 +25,9 @@ implements LootCondition {
     private final Enchantment enchantment;
     private final float[] chances;
 
-    private TableBonusLootCondition(Enchantment enchantment, float[] fs) {
+    private TableBonusLootCondition(Enchantment enchantment, float[] chances) {
         this.enchantment = enchantment;
-        this.chances = fs;
+        this.chances = chances;
     }
 
     @Override
@@ -43,13 +43,13 @@ implements LootCondition {
         return lootContext.getRandom().nextFloat() < f;
     }
 
-    public static LootCondition.Builder builder(Enchantment enchantment, float ... fs) {
-        return () -> new TableBonusLootCondition(enchantment, fs);
+    public static LootCondition.Builder builder(Enchantment enchantment, float ... chances) {
+        return () -> new TableBonusLootCondition(enchantment, chances);
     }
 
     @Override
-    public /* synthetic */ boolean test(Object object) {
-        return this.test((LootContext)object);
+    public /* synthetic */ boolean test(Object context) {
+        return this.test((LootContext)context);
     }
 
     public static class Factory
@@ -73,8 +73,8 @@ implements LootCondition {
         }
 
         @Override
-        public /* synthetic */ LootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            return this.fromJson(jsonObject, jsonDeserializationContext);
+        public /* synthetic */ LootCondition fromJson(JsonObject json, JsonDeserializationContext context) {
+            return this.fromJson(json, context);
         }
     }
 }

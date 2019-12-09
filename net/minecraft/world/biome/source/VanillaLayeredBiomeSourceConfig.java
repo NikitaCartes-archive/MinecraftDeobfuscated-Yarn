@@ -19,8 +19,8 @@ implements BiomeSourceConfig {
         this.generatorType = levelProperties.getGeneratorType();
     }
 
-    public VanillaLayeredBiomeSourceConfig setGeneratorSettings(OverworldChunkGeneratorConfig overworldChunkGeneratorConfig) {
-        this.generatorSettings = overworldChunkGeneratorConfig;
+    public VanillaLayeredBiomeSourceConfig setGeneratorSettings(OverworldChunkGeneratorConfig generatorSettings) {
+        this.generatorSettings = generatorSettings;
         return this;
     }
 

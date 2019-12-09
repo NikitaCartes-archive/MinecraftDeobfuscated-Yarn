@@ -38,8 +38,8 @@ implements RecipeBookProvider {
     private boolean isNarrow;
     private boolean isMouseDown;
 
-    public InventoryScreen(PlayerEntity playerEntity) {
-        super(playerEntity.playerContainer, playerEntity.inventory, new TranslatableText("container.crafting", new Object[0]));
+    public InventoryScreen(PlayerEntity player) {
+        super(player.playerContainer, player.inventory, new TranslatableText("container.crafting", new Object[0]));
         this.passEvents = true;
     }
 
@@ -75,112 +75,112 @@ implements RecipeBookProvider {
     }
 
     @Override
-    protected void drawForeground(int i, int j) {
+    protected void drawForeground(int mouseX, int mouseY) {
         this.font.draw(this.title.asFormattedString(), 97.0f, 8.0f, 0x404040);
     }
 
     @Override
-    public void render(int i, int j, float f) {
+    public void render(int mouseX, int mouseY, float delta) {
         this.renderBackground();
         boolean bl = this.offsetGuiForEffects = !this.recipeBook.isOpen();
         if (this.recipeBook.isOpen() && this.isNarrow) {
-            this.drawBackground(f, i, j);
-            this.recipeBook.render(i, j, f);
+            this.drawBackground(delta, mouseX, mouseY);
+            this.recipeBook.render(mouseX, mouseY, delta);
         } else {
-            this.recipeBook.render(i, j, f);
-            super.render(i, j, f);
-            this.recipeBook.drawGhostSlots(this.x, this.y, false, f);
+            this.recipeBook.render(mouseX, mouseY, delta);
+            super.render(mouseX, mouseY, delta);
+            this.recipeBook.drawGhostSlots(this.x, this.y, false, delta);
         }
-        this.drawMouseoverTooltip(i, j);
-        this.recipeBook.drawTooltip(this.x, this.y, i, j);
-        this.mouseX = i;
-        this.mouseY = j;
+        this.drawMouseoverTooltip(mouseX, mouseY);
+        this.recipeBook.drawTooltip(this.x, this.y, mouseX, mouseY);
+        this.mouseX = mouseX;
+        this.mouseY = mouseY;
         this.focusOn(this.recipeBook);
     }
 
     @Override
-    protected void drawBackground(float f, int i, int j) {
+    protected void drawBackground(float delta, int mouseX, int mouseY) {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.minecraft.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
-        int k = this.x;
-        int l = this.y;
-        this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);
-        InventoryScreen.drawEntity(k + 51, l + 75, 30, (float)(k + 51) - this.mouseX, (float)(l + 75 - 50) - this.mouseY, this.minecraft.player);
+        int i = this.x;
+        int j = this.y;
+        this.blit(i, j, 0, 0, this.containerWidth, this.containerHeight);
+        InventoryScreen.drawEntity(i + 51, j + 75, 30, (float)(i + 51) - this.mouseX, (float)(j + 75 - 50) - this.mouseY, this.minecraft.player);
     }
 
-    public static void drawEntity(int i, int j, int k, float f, float g, LivingEntity livingEntity) {
-        float h = (float)Math.atan(f / 40.0f);
-        float l = (float)Math.atan(g / 40.0f);
+    public static void drawEntity(int x, int y, int size, float mouseX, float mouseY, LivingEntity entity) {
+        float f = (float)Math.atan(mouseX / 40.0f);
+        float g = (float)Math.atan(mouseY / 40.0f);
         RenderSystem.pushMatrix();
-        RenderSystem.translatef(i, j, 1050.0f);
+        RenderSystem.translatef(x, y, 1050.0f);
         RenderSystem.scalef(1.0f, 1.0f, -1.0f);
         MatrixStack matrixStack = new MatrixStack();
         matrixStack.translate(0.0, 0.0, 1000.0);
-        matrixStack.scale(k, k, k);
+        matrixStack.scale(size, size, size);
         Quaternion quaternion = Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0f);
-        Quaternion quaternion2 = Vector3f.POSITIVE_X.getDegreesQuaternion(l * 20.0f);
+        Quaternion quaternion2 = Vector3f.POSITIVE_X.getDegreesQuaternion(g * 20.0f);
         quaternion.hamiltonProduct(quaternion2);
         matrixStack.multiply(quaternion);
-        float m = livingEntity.bodyYaw;
-        float n = livingEntity.yaw;
-        float o = livingEntity.pitch;
-        float p = livingEntity.prevHeadYaw;
-        float q = livingEntity.headYaw;
-        livingEntity.bodyYaw = 180.0f + h * 20.0f;
-        livingEntity.yaw = 180.0f + h * 40.0f;
-        livingEntity.pitch = -l * 20.0f;
-        livingEntity.headYaw = livingEntity.yaw;
-        livingEntity.prevHeadYaw = livingEntity.yaw;
+        float h = entity.bodyYaw;
+        float i = entity.yaw;
+        float j = entity.pitch;
+        float k = entity.prevHeadYaw;
+        float l = entity.headYaw;
+        entity.bodyYaw = 180.0f + f * 20.0f;
+        entity.yaw = 180.0f + f * 40.0f;
+        entity.pitch = -g * 20.0f;
+        entity.headYaw = entity.yaw;
+        entity.prevHeadYaw = entity.yaw;
         EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderManager();
         quaternion2.conjugate();
         entityRenderDispatcher.setRotation(quaternion2);
         entityRenderDispatcher.setRenderShadows(false);
         VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
-        entityRenderDispatcher.render(livingEntity, 0.0, 0.0, 0.0, 0.0f, 1.0f, matrixStack, immediate, 0xF000F0);
+        entityRenderDispatcher.render(entity, 0.0, 0.0, 0.0, 0.0f, 1.0f, matrixStack, immediate, 0xF000F0);
         immediate.draw();
         entityRenderDispatcher.setRenderShadows(true);
-        livingEntity.bodyYaw = m;
-        livingEntity.yaw = n;
-        livingEntity.pitch = o;
-        livingEntity.prevHeadYaw = p;
-        livingEntity.headYaw = q;
+        entity.bodyYaw = h;
+        entity.yaw = i;
+        entity.pitch = j;
+        entity.prevHeadYaw = k;
+        entity.headYaw = l;
         RenderSystem.popMatrix();
     }
 
     @Override
-    protected boolean isPointWithinBounds(int i, int j, int k, int l, double d, double e) {
-        return (!this.isNarrow || !this.recipeBook.isOpen()) && super.isPointWithinBounds(i, j, k, l, d, e);
+    protected boolean isPointWithinBounds(int xPosition, int yPosition, int width, int height, double pointX, double pointY) {
+        return (!this.isNarrow || !this.recipeBook.isOpen()) && super.isPointWithinBounds(xPosition, yPosition, width, height, pointX, pointY);
     }
 
     @Override
-    public boolean mouseClicked(double d, double e, int i) {
-        if (this.recipeBook.mouseClicked(d, e, i)) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (this.recipeBook.mouseClicked(mouseX, mouseY, button)) {
             return true;
         }
         if (this.isNarrow && this.recipeBook.isOpen()) {
             return false;
         }
-        return super.mouseClicked(d, e, i);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
-    public boolean mouseReleased(double d, double e, int i) {
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
         if (this.isMouseDown) {
             this.isMouseDown = false;
             return true;
         }
-        return super.mouseReleased(d, e, i);
+        return super.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override
-    protected boolean isClickOutsideBounds(double d, double e, int i, int j, int k) {
-        boolean bl = d < (double)i || e < (double)j || d >= (double)(i + this.containerWidth) || e >= (double)(j + this.containerHeight);
-        return this.recipeBook.isClickOutsideBounds(d, e, this.x, this.y, this.containerWidth, this.containerHeight, k) && bl;
+    protected boolean isClickOutsideBounds(double mouseX, double mouseY, int left, int top, int button) {
+        boolean bl = mouseX < (double)left || mouseY < (double)top || mouseX >= (double)(left + this.containerWidth) || mouseY >= (double)(top + this.containerHeight);
+        return this.recipeBook.isClickOutsideBounds(mouseX, mouseY, this.x, this.y, this.containerWidth, this.containerHeight, button) && bl;
     }
 
     @Override
-    protected void onMouseClick(Slot slot, int i, int j, SlotActionType slotActionType) {
-        super.onMouseClick(slot, i, j, slotActionType);
+    protected void onMouseClick(Slot slot, int invSlot, int button, SlotActionType slotActionType) {
+        super.onMouseClick(slot, invSlot, button, slotActionType);
         this.recipeBook.slotClicked(slot);
     }
 

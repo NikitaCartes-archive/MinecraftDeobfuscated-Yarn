@@ -96,19 +96,19 @@ public class FeatureUpdater {
         return compoundTag;
     }
 
-    private boolean needsUpdate(int i, int j, String string) {
+    private boolean needsUpdate(int chunkX, int chunkZ, String id) {
         if (!this.needsUpdate) {
             return false;
         }
-        return this.featureIdToChunkTag.get(string) != null && this.updateStates.get(OLD_TO_NEW.get(string)).contains(ChunkPos.toLong(i, j));
+        return this.featureIdToChunkTag.get(id) != null && this.updateStates.get(OLD_TO_NEW.get(id)).contains(ChunkPos.toLong(chunkX, chunkZ));
     }
 
-    private boolean needsUpdate(int i, int j) {
+    private boolean needsUpdate(int chunkX, int chunkZ) {
         if (!this.needsUpdate) {
             return false;
         }
         for (String string : this.field_17659) {
-            if (this.featureIdToChunkTag.get(string) == null || !this.updateStates.get(OLD_TO_NEW.get(string)).isRemaining(ChunkPos.toLong(i, j))) continue;
+            if (this.featureIdToChunkTag.get(string) == null || !this.updateStates.get(OLD_TO_NEW.get(string)).isRemaining(ChunkPos.toLong(chunkX, chunkZ))) continue;
             return true;
         }
         return false;

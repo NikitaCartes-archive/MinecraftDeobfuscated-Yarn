@@ -27,27 +27,27 @@ extends Block {
     }
 
     @Override
-    public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
-        world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world));
+    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
+        world.getBlockTickScheduler().schedule(pos, this, this.getTickRate(world));
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-        iWorld.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(iWorld));
-        return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+        world.getBlockTickScheduler().schedule(pos, this, this.getTickRate(world));
+        return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
     }
 
     @Override
-    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
-        if (!FallingBlock.canFallThrough(serverWorld.getBlockState(blockPos.down())) || blockPos.getY() < 0) {
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        if (!FallingBlock.canFallThrough(world.getBlockState(pos.down())) || pos.getY() < 0) {
             return;
         }
-        FallingBlockEntity fallingBlockEntity = new FallingBlockEntity(serverWorld, (double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5, serverWorld.getBlockState(blockPos));
+        FallingBlockEntity fallingBlockEntity = new FallingBlockEntity(world, (double)pos.getX() + 0.5, pos.getY(), (double)pos.getZ() + 0.5, world.getBlockState(pos));
         this.configureFallingBlockEntity(fallingBlockEntity);
-        serverWorld.spawnEntity(fallingBlockEntity);
+        world.spawnEntity(fallingBlockEntity);
     }
 
-    protected void configureFallingBlockEntity(FallingBlockEntity fallingBlockEntity) {
+    protected void configureFallingBlockEntity(FallingBlockEntity entity) {
     }
 
     @Override
@@ -55,32 +55,32 @@ extends Block {
         return 2;
     }
 
-    public static boolean canFallThrough(BlockState blockState) {
-        Block block = blockState.getBlock();
-        Material material = blockState.getMaterial();
-        return blockState.isAir() || block == Blocks.FIRE || material.isLiquid() || material.isReplaceable();
+    public static boolean canFallThrough(BlockState state) {
+        Block block = state.getBlock();
+        Material material = state.getMaterial();
+        return state.isAir() || block == Blocks.FIRE || material.isLiquid() || material.isReplaceable();
     }
 
-    public void onLanding(World world, BlockPos blockPos, BlockState blockState, BlockState blockState2) {
+    public void onLanding(World world, BlockPos pos, BlockState fallingBlockState, BlockState currentStateInPos) {
     }
 
-    public void onDestroyedOnLanding(World world, BlockPos blockPos) {
+    public void onDestroyedOnLanding(World world, BlockPos pos) {
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-        BlockPos blockPos2;
-        if (random.nextInt(16) == 0 && FallingBlock.canFallThrough(world.getBlockState(blockPos2 = blockPos.down()))) {
-            double d = (double)blockPos.getX() + (double)random.nextFloat();
-            double e = (double)blockPos.getY() - 0.05;
-            double f = (double)blockPos.getZ() + (double)random.nextFloat();
-            world.addParticle(new BlockStateParticleEffect(ParticleTypes.FALLING_DUST, blockState), d, e, f, 0.0, 0.0, 0.0);
+    public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+        BlockPos blockPos;
+        if (random.nextInt(16) == 0 && FallingBlock.canFallThrough(world.getBlockState(blockPos = pos.down()))) {
+            double d = (double)pos.getX() + (double)random.nextFloat();
+            double e = (double)pos.getY() - 0.05;
+            double f = (double)pos.getZ() + (double)random.nextFloat();
+            world.addParticle(new BlockStateParticleEffect(ParticleTypes.FALLING_DUST, state), d, e, f, 0.0, 0.0, 0.0);
         }
     }
 
     @Environment(value=EnvType.CLIENT)
-    public int getColor(BlockState blockState) {
+    public int getColor(BlockState state) {
         return -16777216;
     }
 }

@@ -18,8 +18,8 @@ import net.minecraft.world.World;
 @Environment(value=EnvType.CLIENT)
 public class WaterSuspendParticle
 extends SpriteBillboardParticle {
-    private WaterSuspendParticle(World world, double d, double e, double f) {
-        super(world, d, e - 0.125, f);
+    private WaterSuspendParticle(World world, double x, double y, double z) {
+        super(world, x, y - 0.125, z);
         this.colorRed = 0.4f;
         this.colorGreen = 0.4f;
         this.colorBlue = 0.7f;

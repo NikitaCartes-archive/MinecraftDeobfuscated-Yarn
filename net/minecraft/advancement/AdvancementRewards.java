@@ -36,10 +36,10 @@ public class AdvancementRewards {
     private final Identifier[] recipes;
     private final CommandFunction.LazyContainer function;
 
-    public AdvancementRewards(int i, Identifier[] identifiers, Identifier[] identifiers2, CommandFunction.LazyContainer lazyContainer) {
-        this.experience = i;
-        this.loot = identifiers;
-        this.recipes = identifiers2;
+    public AdvancementRewards(int experience, Identifier[] loot, Identifier[] recipes, CommandFunction.LazyContainer lazyContainer) {
+        this.experience = experience;
+        this.loot = loot;
+        this.recipes = recipes;
         this.function = lazyContainer;
     }
 
@@ -110,21 +110,21 @@ public class AdvancementRewards {
         @Nullable
         private Identifier function;
 
-        public static Builder experience(int i) {
-            return new Builder().setExperience(i);
+        public static Builder experience(int experience) {
+            return new Builder().setExperience(experience);
         }
 
-        public Builder setExperience(int i) {
-            this.experience += i;
+        public Builder setExperience(int experience) {
+            this.experience += experience;
             return this;
         }
 
-        public static Builder recipe(Identifier identifier) {
-            return new Builder().addRecipe(identifier);
+        public static Builder recipe(Identifier recipe) {
+            return new Builder().addRecipe(recipe);
         }
 
-        public Builder addRecipe(Identifier identifier) {
-            this.recipes.add(identifier);
+        public Builder addRecipe(Identifier recipe) {
+            this.recipes.add(recipe);
             return this;
         }
 
@@ -154,8 +154,8 @@ public class AdvancementRewards {
         }
 
         @Override
-        public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.deserialize(jsonElement, type, jsonDeserializationContext);
+        public /* synthetic */ Object deserialize(JsonElement functionJson, Type unused, JsonDeserializationContext context) throws JsonParseException {
+            return this.deserialize(functionJson, unused, context);
         }
     }
 }

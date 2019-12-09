@@ -18,8 +18,8 @@ public class Fluids {
     public static final BaseFluid FLOWING_LAVA = Fluids.register("flowing_lava", new LavaFluid.Flowing());
     public static final BaseFluid LAVA = Fluids.register("lava", new LavaFluid.Still());
 
-    private static <T extends Fluid> T register(String string, T fluid) {
-        return (T)Registry.register(Registry.FLUID, string, fluid);
+    private static <T extends Fluid> T register(String id, T value) {
+        return (T)Registry.register(Registry.FLUID, id, value);
     }
 
     static {

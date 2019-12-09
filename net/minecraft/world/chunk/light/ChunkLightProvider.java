@@ -37,33 +37,33 @@ implements ChunkLightingView {
     private final long[] cachedChunkPositions = new long[2];
     private final BlockView[] cachedChunks = new BlockView[2];
 
-    public ChunkLightProvider(ChunkProvider chunkProvider, LightType lightType, S lightStorage) {
+    public ChunkLightProvider(ChunkProvider chunkProvider, LightType type, S lightStorage) {
         super(16, 256, 8192);
         this.chunkProvider = chunkProvider;
-        this.type = lightType;
+        this.type = type;
         this.lightStorage = lightStorage;
         this.clearChunkCache();
     }
 
     @Override
-    protected void resetLevel(long l) {
+    protected void resetLevel(long id) {
         ((LightStorage)this.lightStorage).updateAll();
-        if (((LightStorage)this.lightStorage).hasLight(ChunkSectionPos.fromGlobalPos(l))) {
-            super.resetLevel(l);
+        if (((LightStorage)this.lightStorage).hasLight(ChunkSectionPos.fromGlobalPos(id))) {
+            super.resetLevel(id);
         }
     }
 
     @Nullable
-    private BlockView getChunk(int i, int j) {
-        long l = ChunkPos.toLong(i, j);
-        for (int k = 0; k < 2; ++k) {
-            if (l != this.cachedChunkPositions[k]) continue;
-            return this.cachedChunks[k];
+    private BlockView getChunk(int chunkX, int chunkZ) {
+        long l = ChunkPos.toLong(chunkX, chunkZ);
+        for (int i = 0; i < 2; ++i) {
+            if (l != this.cachedChunkPositions[i]) continue;
+            return this.cachedChunks[i];
         }
-        BlockView blockView = this.chunkProvider.getChunk(i, j);
-        for (int m = 1; m > 0; --m) {
-            this.cachedChunkPositions[m] = this.cachedChunkPositions[m - 1];
-            this.cachedChunks[m] = this.cachedChunks[m - 1];
+        BlockView blockView = this.chunkProvider.getChunk(chunkX, chunkZ);
+        for (int j = 1; j > 0; --j) {
+            this.cachedChunkPositions[j] = this.cachedChunkPositions[j - 1];
+            this.cachedChunks[j] = this.cachedChunks[j - 1];
         }
         this.cachedChunkPositions[0] = l;
         this.cachedChunks[0] = blockView;
@@ -75,24 +75,24 @@ implements ChunkLightingView {
         Arrays.fill(this.cachedChunks, null);
     }
 
-    protected BlockState getStateForLighting(long l, @Nullable MutableInt mutableInt) {
+    protected BlockState getStateForLighting(long pos, @Nullable MutableInt mutableInt) {
         boolean bl;
         int j;
-        if (l == Long.MAX_VALUE) {
+        if (pos == Long.MAX_VALUE) {
             if (mutableInt != null) {
                 mutableInt.setValue(0);
             }
             return Blocks.AIR.getDefaultState();
         }
-        int i = ChunkSectionPos.getSectionCoord(BlockPos.unpackLongX(l));
-        BlockView blockView = this.getChunk(i, j = ChunkSectionPos.getSectionCoord(BlockPos.unpackLongZ(l)));
+        int i = ChunkSectionPos.getSectionCoord(BlockPos.unpackLongX(pos));
+        BlockView blockView = this.getChunk(i, j = ChunkSectionPos.getSectionCoord(BlockPos.unpackLongZ(pos)));
         if (blockView == null) {
             if (mutableInt != null) {
                 mutableInt.setValue(16);
             }
             return Blocks.BEDROCK.getDefaultState();
         }
-        this.reusableBlockPos.set(l);
+        this.reusableBlockPos.set(pos);
         BlockState blockState = blockView.getBlockState(this.reusableBlockPos);
         boolean bl2 = bl = blockState.isOpaque() && blockState.hasSidedTransparency();
         if (mutableInt != null) {
@@ -101,55 +101,55 @@ implements ChunkLightingView {
         return bl ? blockState : Blocks.AIR.getDefaultState();
     }
 
-    protected VoxelShape getOpaqueShape(BlockState blockState, long l, Direction direction) {
-        return blockState.isOpaque() ? blockState.getCullingFace(this.chunkProvider.getWorld(), this.reusableBlockPos.set(l), direction) : VoxelShapes.empty();
+    protected VoxelShape getOpaqueShape(BlockState world, long pos, Direction facing) {
+        return world.isOpaque() ? world.getCullingFace(this.chunkProvider.getWorld(), this.reusableBlockPos.set(pos), facing) : VoxelShapes.empty();
     }
 
-    public static int getRealisticOpacity(BlockView blockView, BlockState blockState, BlockPos blockPos, BlockState blockState2, BlockPos blockPos2, Direction direction, int i) {
+    public static int getRealisticOpacity(BlockView world, BlockState state1, BlockPos pos1, BlockState state2, BlockPos pos2, Direction direction, int opacity2) {
         VoxelShape voxelShape2;
         boolean bl2;
-        boolean bl = blockState.isOpaque() && blockState.hasSidedTransparency();
-        boolean bl3 = bl2 = blockState2.isOpaque() && blockState2.hasSidedTransparency();
+        boolean bl = state1.isOpaque() && state1.hasSidedTransparency();
+        boolean bl3 = bl2 = state2.isOpaque() && state2.hasSidedTransparency();
         if (!bl && !bl2) {
-            return i;
+            return opacity2;
         }
-        VoxelShape voxelShape = bl ? blockState.getCullingShape(blockView, blockPos) : VoxelShapes.empty();
-        VoxelShape voxelShape3 = voxelShape2 = bl2 ? blockState2.getCullingShape(blockView, blockPos2) : VoxelShapes.empty();
+        VoxelShape voxelShape = bl ? state1.getCullingShape(world, pos1) : VoxelShapes.empty();
+        VoxelShape voxelShape3 = voxelShape2 = bl2 ? state2.getCullingShape(world, pos2) : VoxelShapes.empty();
         if (VoxelShapes.adjacentSidesCoverSquare(voxelShape, voxelShape2, direction)) {
             return 16;
         }
-        return i;
+        return opacity2;
     }
 
     @Override
-    protected boolean isMarker(long l) {
-        return l == Long.MAX_VALUE;
+    protected boolean isMarker(long id) {
+        return id == Long.MAX_VALUE;
     }
 
     @Override
-    protected int recalculateLevel(long l, long m, int i) {
+    protected int recalculateLevel(long id, long excludedId, int maxLevel) {
         return 0;
     }
 
     @Override
-    protected int getLevel(long l) {
-        if (l == Long.MAX_VALUE) {
+    protected int getLevel(long id) {
+        if (id == Long.MAX_VALUE) {
             return 0;
         }
-        return 15 - ((LightStorage)this.lightStorage).get(l);
+        return 15 - ((LightStorage)this.lightStorage).get(id);
     }
 
-    protected int getCurrentLevelFromArray(ChunkNibbleArray chunkNibbleArray, long l) {
-        return 15 - chunkNibbleArray.get(ChunkSectionPos.getLocalCoord(BlockPos.unpackLongX(l)), ChunkSectionPos.getLocalCoord(BlockPos.unpackLongY(l)), ChunkSectionPos.getLocalCoord(BlockPos.unpackLongZ(l)));
-    }
-
-    @Override
-    protected void setLevel(long l, int i) {
-        ((LightStorage)this.lightStorage).set(l, Math.min(15, 15 - i));
+    protected int getCurrentLevelFromArray(ChunkNibbleArray array, long blockPos) {
+        return 15 - array.get(ChunkSectionPos.getLocalCoord(BlockPos.unpackLongX(blockPos)), ChunkSectionPos.getLocalCoord(BlockPos.unpackLongY(blockPos)), ChunkSectionPos.getLocalCoord(BlockPos.unpackLongZ(blockPos)));
     }
 
     @Override
-    protected int getPropagatedLevel(long l, long m, int i) {
+    protected void setLevel(long id, int level) {
+        ((LightStorage)this.lightStorage).set(id, Math.min(15, 15 - level));
+    }
+
+    @Override
+    protected int getPropagatedLevel(long sourceId, long targetId, int level) {
         return 0;
     }
 
@@ -157,34 +157,34 @@ implements ChunkLightingView {
         return this.hasPendingUpdates() || ((LevelPropagator)this.lightStorage).hasPendingUpdates() || ((LightStorage)this.lightStorage).hasLightUpdates();
     }
 
-    public int doLightUpdates(int i, boolean bl, boolean bl2) {
+    public int doLightUpdates(int maxSteps, boolean doSkylight, boolean skipEdgeLightPropagation) {
         if (!this.field_15794) {
-            if (((LevelPropagator)this.lightStorage).hasPendingUpdates() && (i = ((LevelPropagator)this.lightStorage).applyPendingUpdates(i)) == 0) {
-                return i;
+            if (((LevelPropagator)this.lightStorage).hasPendingUpdates() && (maxSteps = ((LevelPropagator)this.lightStorage).applyPendingUpdates(maxSteps)) == 0) {
+                return maxSteps;
             }
-            ((LightStorage)this.lightStorage).updateLightArrays(this, bl, bl2);
+            ((LightStorage)this.lightStorage).updateLightArrays(this, doSkylight, skipEdgeLightPropagation);
         }
         this.field_15794 = true;
         if (this.hasPendingUpdates()) {
-            i = this.applyPendingUpdates(i);
+            maxSteps = this.applyPendingUpdates(maxSteps);
             this.clearChunkCache();
-            if (i == 0) {
-                return i;
+            if (maxSteps == 0) {
+                return maxSteps;
             }
         }
         this.field_15794 = false;
         ((LightStorage)this.lightStorage).notifyChunkProvider();
-        return i;
+        return maxSteps;
     }
 
-    protected void setLightArray(long l, @Nullable ChunkNibbleArray chunkNibbleArray) {
-        ((LightStorage)this.lightStorage).setLightArray(l, chunkNibbleArray);
+    protected void setLightArray(long pos, @Nullable ChunkNibbleArray lightArray) {
+        ((LightStorage)this.lightStorage).setLightArray(pos, lightArray);
     }
 
     @Override
     @Nullable
-    public ChunkNibbleArray getLightArray(ChunkSectionPos chunkSectionPos) {
-        return ((LightStorage)this.lightStorage).getLightArray(chunkSectionPos.asLong());
+    public ChunkNibbleArray getLightArray(ChunkSectionPos pos) {
+        return ((LightStorage)this.lightStorage).getLightArray(pos.asLong());
     }
 
     @Override
@@ -197,30 +197,30 @@ implements ChunkLightingView {
         return "" + ((LightStorage)this.lightStorage).getLevel(l);
     }
 
-    public void checkBlock(BlockPos blockPos) {
-        long l = blockPos.asLong();
+    public void checkBlock(BlockPos pos) {
+        long l = pos.asLong();
         this.resetLevel(l);
         for (Direction direction : DIRECTIONS) {
             this.resetLevel(BlockPos.offset(l, direction));
         }
     }
 
-    public void addLightSource(BlockPos blockPos, int i) {
+    public void addLightSource(BlockPos pos, int level) {
     }
 
     @Override
-    public void updateSectionStatus(ChunkSectionPos chunkSectionPos, boolean bl) {
-        ((LightStorage)this.lightStorage).updateSectionStatus(chunkSectionPos.asLong(), bl);
+    public void updateSectionStatus(ChunkSectionPos pos, boolean status) {
+        ((LightStorage)this.lightStorage).updateSectionStatus(pos.asLong(), status);
     }
 
-    public void setLightEnabled(ChunkPos chunkPos, boolean bl) {
-        long l = ChunkSectionPos.withZeroZ(ChunkSectionPos.asLong(chunkPos.x, 0, chunkPos.z));
-        ((LightStorage)this.lightStorage).setLightEnabled(l, bl);
+    public void setLightEnabled(ChunkPos pos, boolean lightEnabled) {
+        long l = ChunkSectionPos.withZeroZ(ChunkSectionPos.asLong(pos.x, 0, pos.z));
+        ((LightStorage)this.lightStorage).setLightEnabled(l, lightEnabled);
     }
 
-    public void setRetainData(ChunkPos chunkPos, boolean bl) {
-        long l = ChunkSectionPos.withZeroZ(ChunkSectionPos.asLong(chunkPos.x, 0, chunkPos.z));
-        ((LightStorage)this.lightStorage).setRetainData(l, bl);
+    public void setRetainData(ChunkPos pos, boolean retainData) {
+        long l = ChunkSectionPos.withZeroZ(ChunkSectionPos.asLong(pos.x, 0, pos.z));
+        ((LightStorage)this.lightStorage).setRetainData(l, retainData);
     }
 }
 

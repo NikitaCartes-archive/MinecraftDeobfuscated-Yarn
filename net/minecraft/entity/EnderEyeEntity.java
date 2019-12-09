@@ -42,15 +42,15 @@ implements FlyingItemEntity {
         super(entityType, world);
     }
 
-    public EnderEyeEntity(World world, double d, double e, double f) {
+    public EnderEyeEntity(World world, double x, double y, double z) {
         this((EntityType<? extends EnderEyeEntity>)EntityType.EYE_OF_ENDER, world);
         this.useCount = 0;
-        this.setPosition(d, e, f);
+        this.setPosition(x, y, z);
     }
 
-    public void setItem(ItemStack itemStack2) {
-        if (itemStack2.getItem() != Items.ENDER_EYE || itemStack2.hasTag()) {
-            this.getDataTracker().set(ITEM, Util.make(itemStack2.copy(), itemStack -> itemStack.setCount(1)));
+    public void setItem(ItemStack stack2) {
+        if (stack2.getItem() != Items.ENDER_EYE || stack2.hasTag()) {
+            this.getDataTracker().set(ITEM, Util.make(stack2.copy(), stack -> stack.setCount(1)));
         }
     }
 
@@ -71,19 +71,19 @@ implements FlyingItemEntity {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean shouldRender(double d) {
-        double e = this.getBoundingBox().getAverageSideLength() * 4.0;
-        if (Double.isNaN(e)) {
-            e = 4.0;
+    public boolean shouldRender(double distance) {
+        double d = this.getBoundingBox().getAverageSideLength() * 4.0;
+        if (Double.isNaN(d)) {
+            d = 4.0;
         }
-        return d < (e *= 64.0) * e;
+        return distance < (d *= 64.0) * d;
     }
 
-    public void moveTowards(BlockPos blockPos) {
+    public void moveTowards(BlockPos pos) {
         double g;
-        double d = blockPos.getX();
-        int i = blockPos.getY();
-        double e = blockPos.getZ();
+        double d = pos.getX();
+        int i = pos.getY();
+        double e = pos.getZ();
         double f = d - this.getX();
         float h = MathHelper.sqrt(f * f + (g = e - this.getZ()) * g);
         if (h > 12.0f) {
@@ -101,12 +101,12 @@ implements FlyingItemEntity {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void setVelocityClient(double d, double e, double f) {
-        this.setVelocity(d, e, f);
+    public void setVelocityClient(double x, double y, double z) {
+        this.setVelocity(x, y, z);
         if (this.prevPitch == 0.0f && this.prevYaw == 0.0f) {
-            float g = MathHelper.sqrt(d * d + f * f);
-            this.yaw = (float)(MathHelper.atan2(d, f) * 57.2957763671875);
-            this.pitch = (float)(MathHelper.atan2(e, g) * 57.2957763671875);
+            float f = MathHelper.sqrt(x * x + z * z);
+            this.yaw = (float)(MathHelper.atan2(x, z) * 57.2957763671875);
+            this.pitch = (float)(MathHelper.atan2(y, f) * 57.2957763671875);
             this.prevYaw = this.yaw;
             this.prevPitch = this.pitch;
         }
@@ -177,16 +177,16 @@ implements FlyingItemEntity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag compoundTag) {
+    public void writeCustomDataToTag(CompoundTag tag) {
         ItemStack itemStack = this.getTrackedItem();
         if (!itemStack.isEmpty()) {
-            compoundTag.put("Item", itemStack.toTag(new CompoundTag()));
+            tag.put("Item", itemStack.toTag(new CompoundTag()));
         }
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag compoundTag) {
-        ItemStack itemStack = ItemStack.fromTag(compoundTag.getCompound("Item"));
+    public void readCustomDataFromTag(CompoundTag tag) {
+        ItemStack itemStack = ItemStack.fromTag(tag.getCompound("Item"));
         this.setItem(itemStack);
     }
 

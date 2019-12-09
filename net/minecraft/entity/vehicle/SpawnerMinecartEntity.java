@@ -19,8 +19,8 @@ extends AbstractMinecartEntity {
     private final MobSpawnerLogic logic = new MobSpawnerLogic(){
 
         @Override
-        public void sendStatus(int i) {
-            SpawnerMinecartEntity.this.world.sendEntityStatus(SpawnerMinecartEntity.this, (byte)i);
+        public void sendStatus(int status) {
+            SpawnerMinecartEntity.this.world.sendEntityStatus(SpawnerMinecartEntity.this, (byte)status);
         }
 
         @Override
@@ -38,8 +38,8 @@ extends AbstractMinecartEntity {
         super(entityType, world);
     }
 
-    public SpawnerMinecartEntity(World world, double d, double e, double f) {
-        super(EntityType.SPAWNER_MINECART, world, d, e, f);
+    public SpawnerMinecartEntity(World world, double x, double y, double z) {
+        super(EntityType.SPAWNER_MINECART, world, x, y, z);
     }
 
     @Override
@@ -53,21 +53,21 @@ extends AbstractMinecartEntity {
     }
 
     @Override
-    protected void readCustomDataFromTag(CompoundTag compoundTag) {
-        super.readCustomDataFromTag(compoundTag);
-        this.logic.deserialize(compoundTag);
+    protected void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        this.logic.deserialize(tag);
     }
 
     @Override
-    protected void writeCustomDataToTag(CompoundTag compoundTag) {
-        super.writeCustomDataToTag(compoundTag);
-        this.logic.serialize(compoundTag);
+    protected void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        this.logic.serialize(tag);
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void handleStatus(byte b) {
-        this.logic.method_8275(b);
+    public void handleStatus(byte status) {
+        this.logic.method_8275(status);
     }
 
     @Override

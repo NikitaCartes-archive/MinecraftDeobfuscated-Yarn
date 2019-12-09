@@ -72,14 +72,14 @@ extends Task<VillagerEntity> {
         return immutableSet.stream().filter(item -> !immutableSet2.contains(item)).collect(Collectors.toSet());
     }
 
-    private static void giveHalfOfStack(VillagerEntity villagerEntity, Set<Item> set, LivingEntity livingEntity) {
-        BasicInventory basicInventory = villagerEntity.getInventory();
+    private static void giveHalfOfStack(VillagerEntity villager, Set<Item> validItems, LivingEntity target) {
+        BasicInventory basicInventory = villager.getInventory();
         ItemStack itemStack = ItemStack.EMPTY;
         for (int i = 0; i < basicInventory.getInvSize(); ++i) {
             int j;
             Item item;
             ItemStack itemStack2 = basicInventory.getInvStack(i);
-            if (itemStack2.isEmpty() || !set.contains(item = itemStack2.getItem())) continue;
+            if (itemStack2.isEmpty() || !validItems.contains(item = itemStack2.getItem())) continue;
             if (itemStack2.getCount() > itemStack2.getMaxCount() / 2) {
                 j = itemStack2.getCount() / 2;
             } else {
@@ -91,28 +91,28 @@ extends Task<VillagerEntity> {
             break;
         }
         if (!itemStack.isEmpty()) {
-            LookTargetUtil.give(villagerEntity, itemStack, livingEntity);
+            LookTargetUtil.give(villager, itemStack, target);
         }
     }
 
     @Override
-    protected /* synthetic */ boolean shouldKeepRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        return this.shouldKeepRunning(serverWorld, (VillagerEntity)livingEntity, l);
+    protected /* synthetic */ boolean shouldKeepRunning(ServerWorld world, LivingEntity entity, long time) {
+        return this.shouldKeepRunning(world, (VillagerEntity)entity, time);
     }
 
     @Override
-    protected /* synthetic */ void finishRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        this.finishRunning(serverWorld, (VillagerEntity)livingEntity, l);
+    protected /* synthetic */ void finishRunning(ServerWorld serverWorld, LivingEntity livingEntity, long time) {
+        this.finishRunning(serverWorld, (VillagerEntity)livingEntity, time);
     }
 
     @Override
-    protected /* synthetic */ void keepRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        this.keepRunning(serverWorld, (VillagerEntity)livingEntity, l);
+    protected /* synthetic */ void keepRunning(ServerWorld world, LivingEntity entity, long time) {
+        this.keepRunning(world, (VillagerEntity)entity, time);
     }
 
     @Override
-    protected /* synthetic */ void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        this.run(serverWorld, (VillagerEntity)livingEntity, l);
+    protected /* synthetic */ void run(ServerWorld world, LivingEntity entity, long time) {
+        this.run(world, (VillagerEntity)entity, time);
     }
 }
 

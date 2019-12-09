@@ -38,15 +38,15 @@ public class IglooGenerator {
     private static final Map<Identifier, BlockPos> field_14408 = ImmutableMap.of(TOP_TEMPLATE, new BlockPos(3, 5, 5), MIDDLE_TEMPLATE, new BlockPos(1, 3, 1), BOTTOM_TEMPLATE, new BlockPos(3, 6, 7));
     private static final Map<Identifier, BlockPos> field_14406 = ImmutableMap.of(TOP_TEMPLATE, BlockPos.ORIGIN, MIDDLE_TEMPLATE, new BlockPos(2, -3, 4), BOTTOM_TEMPLATE, new BlockPos(0, -3, -2));
 
-    public static void addPieces(StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation, List<StructurePiece> list, Random random, DefaultFeatureConfig defaultFeatureConfig) {
+    public static void addPieces(StructureManager manager, BlockPos pos, BlockRotation rotation, List<StructurePiece> pieces, Random random, DefaultFeatureConfig defaultConfig) {
         if (random.nextDouble() < 0.5) {
             int i = random.nextInt(8) + 4;
-            list.add(new Piece(structureManager, BOTTOM_TEMPLATE, blockPos, blockRotation, i * 3));
+            pieces.add(new Piece(manager, BOTTOM_TEMPLATE, pos, rotation, i * 3));
             for (int j = 0; j < i - 1; ++j) {
-                list.add(new Piece(structureManager, MIDDLE_TEMPLATE, blockPos, blockRotation, j * 3));
+                pieces.add(new Piece(manager, MIDDLE_TEMPLATE, pos, rotation, j * 3));
             }
         }
-        list.add(new Piece(structureManager, TOP_TEMPLATE, blockPos, blockRotation, 0));
+        pieces.add(new Piece(manager, TOP_TEMPLATE, pos, rotation, 0));
     }
 
     public static class Piece
@@ -54,60 +54,60 @@ public class IglooGenerator {
         private final Identifier template;
         private final BlockRotation rotation;
 
-        public Piece(StructureManager structureManager, Identifier identifier, BlockPos blockPos, BlockRotation blockRotation, int i) {
+        public Piece(StructureManager manager, Identifier identifier, BlockPos pos, BlockRotation rotation, int yOffset) {
             super(StructurePieceType.IGLOO, 0);
             this.template = identifier;
-            BlockPos blockPos2 = (BlockPos)field_14406.get(identifier);
-            this.pos = blockPos.add(blockPos2.getX(), blockPos2.getY() - i, blockPos2.getZ());
-            this.rotation = blockRotation;
-            this.initializeStructureData(structureManager);
+            BlockPos blockPos = (BlockPos)field_14406.get(identifier);
+            this.pos = pos.add(blockPos.getX(), blockPos.getY() - yOffset, blockPos.getZ());
+            this.rotation = rotation;
+            this.initializeStructureData(manager);
         }
 
-        public Piece(StructureManager structureManager, CompoundTag compoundTag) {
-            super(StructurePieceType.IGLOO, compoundTag);
-            this.template = new Identifier(compoundTag.getString("Template"));
-            this.rotation = BlockRotation.valueOf(compoundTag.getString("Rot"));
-            this.initializeStructureData(structureManager);
+        public Piece(StructureManager manager, CompoundTag tag) {
+            super(StructurePieceType.IGLOO, tag);
+            this.template = new Identifier(tag.getString("Template"));
+            this.rotation = BlockRotation.valueOf(tag.getString("Rot"));
+            this.initializeStructureData(manager);
         }
 
-        private void initializeStructureData(StructureManager structureManager) {
-            Structure structure = structureManager.getStructureOrBlank(this.template);
+        private void initializeStructureData(StructureManager manager) {
+            Structure structure = manager.getStructureOrBlank(this.template);
             StructurePlacementData structurePlacementData = new StructurePlacementData().setRotation(this.rotation).setMirrored(BlockMirror.NONE).setPosition((BlockPos)field_14408.get(this.template)).addProcessor(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS);
             this.setStructureData(structure, this.pos, structurePlacementData);
         }
 
         @Override
-        protected void toNbt(CompoundTag compoundTag) {
-            super.toNbt(compoundTag);
-            compoundTag.putString("Template", this.template.toString());
-            compoundTag.putString("Rot", this.rotation.name());
+        protected void toNbt(CompoundTag tag) {
+            super.toNbt(tag);
+            tag.putString("Template", this.template.toString());
+            tag.putString("Rot", this.rotation.name());
         }
 
         @Override
-        protected void handleMetadata(String string, BlockPos blockPos, IWorld iWorld, Random random, BlockBox blockBox) {
-            if (!"chest".equals(string)) {
+        protected void handleMetadata(String metadata, BlockPos pos, IWorld world, Random random, BlockBox boundingBox) {
+            if (!"chest".equals(metadata)) {
                 return;
             }
-            iWorld.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 3);
-            BlockEntity blockEntity = iWorld.getBlockEntity(blockPos.down());
+            world.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
+            BlockEntity blockEntity = world.getBlockEntity(pos.down());
             if (blockEntity instanceof ChestBlockEntity) {
                 ((ChestBlockEntity)blockEntity).setLootTable(LootTables.IGLOO_CHEST_CHEST, random.nextLong());
             }
         }
 
         @Override
-        public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
+        public boolean generate(IWorld world, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
             BlockPos blockPos4;
             BlockState blockState;
             StructurePlacementData structurePlacementData = new StructurePlacementData().setRotation(this.rotation).setMirrored(BlockMirror.NONE).setPosition((BlockPos)field_14408.get(this.template)).addProcessor(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS);
             BlockPos blockPos = (BlockPos)field_14406.get(this.template);
             BlockPos blockPos2 = this.pos.add(Structure.method_15171(structurePlacementData, new BlockPos(3 - blockPos.getX(), 0, 0 - blockPos.getZ())));
-            int i = iWorld.getTopY(Heightmap.Type.WORLD_SURFACE_WG, blockPos2.getX(), blockPos2.getZ());
+            int i = world.getTopY(Heightmap.Type.WORLD_SURFACE_WG, blockPos2.getX(), blockPos2.getZ());
             BlockPos blockPos3 = this.pos;
             this.pos = this.pos.add(0, i - 90 - 1, 0);
-            boolean bl = super.generate(iWorld, chunkGenerator, random, blockBox, chunkPos);
-            if (this.template.equals(TOP_TEMPLATE) && !(blockState = iWorld.getBlockState((blockPos4 = this.pos.add(Structure.method_15171(structurePlacementData, new BlockPos(3, 0, 5)))).down())).isAir() && blockState.getBlock() != Blocks.LADDER) {
-                iWorld.setBlockState(blockPos4, Blocks.SNOW_BLOCK.getDefaultState(), 3);
+            boolean bl = super.generate(world, chunkGenerator, random, blockBox, chunkPos);
+            if (this.template.equals(TOP_TEMPLATE) && !(blockState = world.getBlockState((blockPos4 = this.pos.add(Structure.method_15171(structurePlacementData, new BlockPos(3, 0, 5)))).down())).isAir() && blockState.getBlock() != Blocks.LADDER) {
+                world.setBlockState(blockPos4, Blocks.SNOW_BLOCK.getDefaultState(), 3);
             }
             this.pos = blockPos3;
             return bl;

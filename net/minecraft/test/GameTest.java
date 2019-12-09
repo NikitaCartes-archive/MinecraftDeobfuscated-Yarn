@@ -42,9 +42,9 @@ public class GameTest {
         this.ticksLeft = testFunction.getTickLimit();
     }
 
-    public GameTest(TestFunction testFunction, BlockPos blockPos, ServerWorld serverWorld) {
-        this(testFunction, serverWorld);
-        this.setPos(blockPos);
+    public GameTest(TestFunction testFunction, BlockPos pos, ServerWorld world) {
+        this(testFunction, world);
+        this.setPos(pos);
     }
 
     void setPos(BlockPos blockPos) {
@@ -168,8 +168,8 @@ public class GameTest {
         return this.getStructurePath();
     }
 
-    public void addListener(TestListener testListener) {
-        this.listeners.add(testListener);
+    public void addListener(TestListener listener) {
+        this.listeners.add(listener);
     }
 
     public void init(int i) {

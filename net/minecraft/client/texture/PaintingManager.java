@@ -27,8 +27,8 @@ extends SpriteAtlasHolder {
         return Stream.concat(Registry.MOTIVE.getIds().stream(), Stream.of(PAINTING_BACK_ID));
     }
 
-    public Sprite getPaintingSprite(PaintingMotive paintingMotive) {
-        return this.getSprite(Registry.MOTIVE.getId(paintingMotive));
+    public Sprite getPaintingSprite(PaintingMotive motive) {
+        return this.getSprite(Registry.MOTIVE.getId(motive));
     }
 
     public Sprite getBackSprite() {

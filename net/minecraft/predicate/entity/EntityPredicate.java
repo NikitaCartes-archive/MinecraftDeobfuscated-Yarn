@@ -43,24 +43,24 @@ public class EntityPredicate {
     @Nullable
     private final Identifier catType;
 
-    private EntityPredicate(EntityTypePredicate entityTypePredicate, DistancePredicate distancePredicate, LocationPredicate locationPredicate, EntityEffectPredicate entityEffectPredicate, NbtPredicate nbtPredicate, EntityFlagsPredicate entityFlagsPredicate, EntityEquipmentPredicate entityEquipmentPredicate, PlayerPredicate playerPredicate, @Nullable String string, @Nullable Identifier identifier) {
-        this.type = entityTypePredicate;
-        this.distance = distancePredicate;
-        this.location = locationPredicate;
-        this.effects = entityEffectPredicate;
-        this.nbt = nbtPredicate;
-        this.flags = entityFlagsPredicate;
-        this.equipment = entityEquipmentPredicate;
-        this.player = playerPredicate;
-        this.team = string;
-        this.catType = identifier;
+    private EntityPredicate(EntityTypePredicate type, DistancePredicate distance, LocationPredicate location, EntityEffectPredicate effects, NbtPredicate nbt, EntityFlagsPredicate flags, EntityEquipmentPredicate equipment, PlayerPredicate player, @Nullable String team, @Nullable Identifier catType) {
+        this.type = type;
+        this.distance = distance;
+        this.location = location;
+        this.effects = effects;
+        this.nbt = nbt;
+        this.flags = flags;
+        this.equipment = equipment;
+        this.player = player;
+        this.team = team;
+        this.catType = catType;
     }
 
-    public boolean test(ServerPlayerEntity serverPlayerEntity, @Nullable Entity entity) {
-        return this.test(serverPlayerEntity.getServerWorld(), serverPlayerEntity.getPos(), entity);
+    public boolean test(ServerPlayerEntity player, @Nullable Entity entity) {
+        return this.test(player.getServerWorld(), player.getPos(), entity);
     }
 
-    public boolean test(ServerWorld serverWorld, @Nullable Vec3d vec3d, @Nullable Entity entity) {
+    public boolean test(ServerWorld world, @Nullable Vec3d pos, @Nullable Entity entity) {
         AbstractTeam abstractTeam;
         if (this == ANY) {
             return true;
@@ -71,10 +71,10 @@ public class EntityPredicate {
         if (!this.type.matches(entity.getType())) {
             return false;
         }
-        if (vec3d == null ? this.distance != DistancePredicate.ANY : !this.distance.test(vec3d.x, vec3d.y, vec3d.z, entity.getX(), entity.getY(), entity.getZ())) {
+        if (pos == null ? this.distance != DistancePredicate.ANY : !this.distance.test(pos.x, pos.y, pos.z, entity.getX(), entity.getY(), entity.getZ())) {
             return false;
         }
-        if (!this.location.test(serverWorld, entity.getX(), entity.getY(), entity.getZ())) {
+        if (!this.location.test(world, entity.getX(), entity.getY(), entity.getZ())) {
             return false;
         }
         if (!this.effects.test(entity)) {
@@ -98,11 +98,11 @@ public class EntityPredicate {
         return this.catType == null || entity instanceof CatEntity && ((CatEntity)entity).getTexture().equals(this.catType);
     }
 
-    public static EntityPredicate fromJson(@Nullable JsonElement jsonElement) {
-        if (jsonElement == null || jsonElement.isJsonNull()) {
+    public static EntityPredicate fromJson(@Nullable JsonElement el) {
+        if (el == null || el.isJsonNull()) {
             return ANY;
         }
-        JsonObject jsonObject = JsonHelper.asObject(jsonElement, "entity");
+        JsonObject jsonObject = JsonHelper.asObject(el, "entity");
         EntityTypePredicate entityTypePredicate = EntityTypePredicate.deserialize(jsonObject.get("type"));
         DistancePredicate distancePredicate = DistancePredicate.deserialize(jsonObject.get("distance"));
         LocationPredicate locationPredicate = LocationPredicate.fromJson(jsonObject.get("location"));
@@ -116,11 +116,11 @@ public class EntityPredicate {
         return new Builder().type(entityTypePredicate).distance(distancePredicate).location(locationPredicate).effects(entityEffectPredicate).nbt(nbtPredicate).flags(entityFlagsPredicate).equipment(entityEquipmentPredicate).player(playerPredicate).team(string).catType(identifier).build();
     }
 
-    public static EntityPredicate[] fromJsonArray(@Nullable JsonElement jsonElement) {
-        if (jsonElement == null || jsonElement.isJsonNull()) {
+    public static EntityPredicate[] fromJsonArray(@Nullable JsonElement element) {
+        if (element == null || element.isJsonNull()) {
             return EMPTY;
         }
-        JsonArray jsonArray = JsonHelper.asArray(jsonElement, "entities");
+        JsonArray jsonArray = JsonHelper.asArray(element, "entities");
         EntityPredicate[] entityPredicates = new EntityPredicate[jsonArray.size()];
         for (int i = 0; i < jsonArray.size(); ++i) {
             entityPredicates[i] = EntityPredicate.fromJson(jsonArray.get(i));
@@ -148,12 +148,12 @@ public class EntityPredicate {
         return jsonObject;
     }
 
-    public static JsonElement serializeAll(EntityPredicate[] entityPredicates) {
-        if (entityPredicates == EMPTY) {
+    public static JsonElement serializeAll(EntityPredicate[] predicates) {
+        if (predicates == EMPTY) {
             return JsonNull.INSTANCE;
         }
         JsonArray jsonArray = new JsonArray();
-        for (EntityPredicate entityPredicate : entityPredicates) {
+        for (EntityPredicate entityPredicate : predicates) {
             JsonElement jsonElement = entityPredicate.serialize();
             if (jsonElement.isJsonNull()) continue;
             jsonArray.add(jsonElement);

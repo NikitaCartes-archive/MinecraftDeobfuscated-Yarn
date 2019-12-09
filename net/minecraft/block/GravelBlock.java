@@ -17,7 +17,7 @@ extends FallingBlock {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public int getColor(BlockState blockState) {
+    public int getColor(BlockState state) {
         return -8356741;
     }
 }

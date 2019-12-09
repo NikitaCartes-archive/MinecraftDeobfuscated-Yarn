@@ -55,8 +55,8 @@ implements ArgumentType<Identifier> {
         return lootCondition;
     }
 
-    public static Identifier getIdentifier(CommandContext<ServerCommandSource> commandContext, String string) {
-        return commandContext.getArgument(string, Identifier.class);
+    public static Identifier getIdentifier(CommandContext<ServerCommandSource> context, String name) {
+        return context.getArgument(name, Identifier.class);
     }
 
     @Override

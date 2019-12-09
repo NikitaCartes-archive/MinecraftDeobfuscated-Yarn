@@ -43,8 +43,8 @@ implements AutoCloseable {
         this.fontStorage = fontStorage;
     }
 
-    public void setFonts(List<Font> list) {
-        this.fontStorage.setFonts(list);
+    public void setFonts(List<Font> fonts) {
+        this.fontStorage.setFonts(fonts);
     }
 
     @Override
@@ -52,163 +52,163 @@ implements AutoCloseable {
         this.fontStorage.close();
     }
 
-    public int drawWithShadow(String string, float f, float g, int i) {
+    public int drawWithShadow(String text, float x, float y, int color) {
         RenderSystem.enableAlphaTest();
-        return this.draw(string, f, g, i, Rotation3.identity().getMatrix(), true);
+        return this.draw(text, x, y, color, Rotation3.identity().getMatrix(), true);
     }
 
-    public int draw(String string, float f, float g, int i) {
+    public int draw(String text, float x, float y, int color) {
         RenderSystem.enableAlphaTest();
-        return this.draw(string, f, g, i, Rotation3.identity().getMatrix(), false);
+        return this.draw(text, x, y, color, Rotation3.identity().getMatrix(), false);
     }
 
-    public String mirror(String string) {
+    public String mirror(String text) {
         try {
-            Bidi bidi = new Bidi(new ArabicShaping(8).shape(string), 127);
+            Bidi bidi = new Bidi(new ArabicShaping(8).shape(text), 127);
             bidi.setReorderingMode(0);
             return bidi.writeReordered(2);
         } catch (ArabicShapingException arabicShapingException) {
-            return string;
+            return text;
         }
     }
 
-    private int draw(String string, float f, float g, int i, Matrix4f matrix4f, boolean bl) {
-        if (string == null) {
+    private int draw(String text, float x, float y, int color, Matrix4f matrix, boolean shadow) {
+        if (text == null) {
             return 0;
         }
         VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-        int j = this.draw(string, f, g, i, bl, matrix4f, immediate, false, 0, 0xF000F0);
+        int i = this.draw(text, x, y, color, shadow, matrix, immediate, false, 0, 0xF000F0);
         immediate.draw();
-        return j;
+        return i;
     }
 
-    public int draw(String string, float f, float g, int i, boolean bl, Matrix4f matrix4f, VertexConsumerProvider vertexConsumerProvider, boolean bl2, int j, int k) {
-        return this.drawInternal(string, f, g, i, bl, matrix4f, vertexConsumerProvider, bl2, j, k);
+    public int draw(String text, float x, float y, int color, boolean shadow, Matrix4f matrix, VertexConsumerProvider vertexConsumerProvider, boolean seeThrough, int backgroundColor, int light) {
+        return this.drawInternal(text, x, y, color, shadow, matrix, vertexConsumerProvider, seeThrough, backgroundColor, light);
     }
 
-    private int drawInternal(String string, float f, float g, int i, boolean bl, Matrix4f matrix4f, VertexConsumerProvider vertexConsumerProvider, boolean bl2, int j, int k) {
+    private int drawInternal(String text, float x, float y, int color, boolean shadow, Matrix4f matrix, VertexConsumerProvider vertexConsumerProvider, boolean seeThrough, int backgroundColor, int light) {
         if (this.rightToLeft) {
-            string = this.mirror(string);
+            text = this.mirror(text);
         }
-        if ((i & 0xFC000000) == 0) {
-            i |= 0xFF000000;
+        if ((color & 0xFC000000) == 0) {
+            color |= 0xFF000000;
         }
-        if (bl) {
-            this.drawLayer(string, f, g, i, true, matrix4f, vertexConsumerProvider, bl2, j, k);
+        if (shadow) {
+            this.drawLayer(text, x, y, color, true, matrix, vertexConsumerProvider, seeThrough, backgroundColor, light);
         }
-        Matrix4f matrix4f2 = matrix4f.copy();
-        matrix4f2.addToLastColumn(new Vector3f(0.0f, 0.0f, 0.001f));
-        f = this.drawLayer(string, f, g, i, false, matrix4f2, vertexConsumerProvider, bl2, j, k);
-        return (int)f + (bl ? 1 : 0);
+        Matrix4f matrix4f = matrix.copy();
+        matrix4f.addToLastColumn(new Vector3f(0.0f, 0.0f, 0.001f));
+        x = this.drawLayer(text, x, y, color, false, matrix4f, vertexConsumerProvider, seeThrough, backgroundColor, light);
+        return (int)x + (shadow ? 1 : 0);
     }
 
-    private float drawLayer(String string, float f, float g, int i, boolean bl, Matrix4f matrix4f, VertexConsumerProvider vertexConsumerProvider, boolean bl2, int j, int k) {
-        float h = bl ? 0.25f : 1.0f;
-        float l = (float)(i >> 16 & 0xFF) / 255.0f * h;
-        float m = (float)(i >> 8 & 0xFF) / 255.0f * h;
-        float n = (float)(i & 0xFF) / 255.0f * h;
-        float o = f;
-        float p = l;
-        float q = m;
-        float r = n;
-        float s = (float)(i >> 24 & 0xFF) / 255.0f;
+    private float drawLayer(String text, float x, float y, int color, boolean shadow, Matrix4f matrix, VertexConsumerProvider vertexConsumerProvider, boolean seeThrough, int underlineColor, int light) {
+        float f = shadow ? 0.25f : 1.0f;
+        float g = (float)(color >> 16 & 0xFF) / 255.0f * f;
+        float h = (float)(color >> 8 & 0xFF) / 255.0f * f;
+        float i = (float)(color & 0xFF) / 255.0f * f;
+        float j = x;
+        float k = g;
+        float l = h;
+        float m = i;
+        float n = (float)(color >> 24 & 0xFF) / 255.0f;
+        boolean bl = false;
+        boolean bl2 = false;
         boolean bl3 = false;
         boolean bl4 = false;
         boolean bl5 = false;
-        boolean bl6 = false;
-        boolean bl7 = false;
         ArrayList<GlyphRenderer.Rectangle> list = Lists.newArrayList();
-        for (int t = 0; t < string.length(); ++t) {
-            float w;
-            float v;
+        for (int o = 0; o < text.length(); ++o) {
+            float r;
+            float q;
             GlyphRenderer glyphRenderer;
-            char c = string.charAt(t);
-            if (c == '\u00a7' && t + 1 < string.length()) {
-                Formatting formatting = Formatting.byCode(string.charAt(t + 1));
+            char c = text.charAt(o);
+            if (c == '\u00a7' && o + 1 < text.length()) {
+                Formatting formatting = Formatting.byCode(text.charAt(o + 1));
                 if (formatting != null) {
                     if (formatting.affectsGlyphWidth()) {
-                        bl3 = false;
-                        bl4 = false;
-                        bl7 = false;
-                        bl6 = false;
+                        bl = false;
+                        bl2 = false;
                         bl5 = false;
-                        p = l;
-                        q = m;
-                        r = n;
+                        bl4 = false;
+                        bl3 = false;
+                        k = g;
+                        l = h;
+                        m = i;
                     }
                     if (formatting.getColorValue() != null) {
-                        int u = formatting.getColorValue();
-                        p = (float)(u >> 16 & 0xFF) / 255.0f * h;
-                        q = (float)(u >> 8 & 0xFF) / 255.0f * h;
-                        r = (float)(u & 0xFF) / 255.0f * h;
+                        int p = formatting.getColorValue();
+                        k = (float)(p >> 16 & 0xFF) / 255.0f * f;
+                        l = (float)(p >> 8 & 0xFF) / 255.0f * f;
+                        m = (float)(p & 0xFF) / 255.0f * f;
                     } else if (formatting == Formatting.OBFUSCATED) {
-                        bl3 = true;
+                        bl = true;
                     } else if (formatting == Formatting.BOLD) {
-                        bl4 = true;
+                        bl2 = true;
                     } else if (formatting == Formatting.STRIKETHROUGH) {
-                        bl7 = true;
-                    } else if (formatting == Formatting.UNDERLINE) {
-                        bl6 = true;
-                    } else if (formatting == Formatting.ITALIC) {
                         bl5 = true;
+                    } else if (formatting == Formatting.UNDERLINE) {
+                        bl4 = true;
+                    } else if (formatting == Formatting.ITALIC) {
+                        bl3 = true;
                     }
                 }
-                ++t;
+                ++o;
                 continue;
             }
             Glyph glyph = this.fontStorage.getGlyph(c);
-            GlyphRenderer glyphRenderer2 = glyphRenderer = bl3 && c != ' ' ? this.fontStorage.getObfuscatedGlyphRenderer(glyph) : this.fontStorage.getGlyphRenderer(c);
+            GlyphRenderer glyphRenderer2 = glyphRenderer = bl && c != ' ' ? this.fontStorage.getObfuscatedGlyphRenderer(glyph) : this.fontStorage.getGlyphRenderer(c);
             if (!(glyphRenderer instanceof EmptyGlyphRenderer)) {
-                v = bl4 ? glyph.getBoldOffset() : 0.0f;
-                w = bl ? glyph.getShadowOffset() : 0.0f;
-                VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(glyphRenderer.method_24045(bl2));
-                this.drawGlyph(glyphRenderer, bl4, bl5, v, o + w, g + w, matrix4f, vertexConsumer, p, q, r, s, k);
+                q = bl2 ? glyph.getBoldOffset() : 0.0f;
+                r = shadow ? glyph.getShadowOffset() : 0.0f;
+                VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(glyphRenderer.method_24045(seeThrough));
+                this.drawGlyph(glyphRenderer, bl2, bl3, q, j + r, y + r, matrix, vertexConsumer, k, l, m, n, light);
             }
-            v = glyph.getAdvance(bl4);
-            float f2 = w = bl ? 1.0f : 0.0f;
-            if (bl7) {
-                list.add(new GlyphRenderer.Rectangle(o + w - 1.0f, g + w + 4.5f, o + w + v, g + w + 4.5f - 1.0f, -0.01f, p, q, r, s));
+            q = glyph.getAdvance(bl2);
+            float f2 = r = shadow ? 1.0f : 0.0f;
+            if (bl5) {
+                list.add(new GlyphRenderer.Rectangle(j + r - 1.0f, y + r + 4.5f, j + r + q, y + r + 4.5f - 1.0f, -0.01f, k, l, m, n));
             }
-            if (bl6) {
-                list.add(new GlyphRenderer.Rectangle(o + w - 1.0f, g + w + 9.0f, o + w + v, g + w + 9.0f - 1.0f, -0.01f, p, q, r, s));
+            if (bl4) {
+                list.add(new GlyphRenderer.Rectangle(j + r - 1.0f, y + r + 9.0f, j + r + q, y + r + 9.0f - 1.0f, -0.01f, k, l, m, n));
             }
-            o += v;
+            j += q;
         }
-        if (j != 0) {
-            float x = (float)(j >> 24 & 0xFF) / 255.0f;
-            float y = (float)(j >> 16 & 0xFF) / 255.0f;
-            float z = (float)(j >> 8 & 0xFF) / 255.0f;
-            float aa = (float)(j & 0xFF) / 255.0f;
-            list.add(new GlyphRenderer.Rectangle(f - 1.0f, g + 9.0f, o + 1.0f, g - 1.0f, 0.01f, y, z, aa, x));
+        if (underlineColor != 0) {
+            float s = (float)(underlineColor >> 24 & 0xFF) / 255.0f;
+            float t = (float)(underlineColor >> 16 & 0xFF) / 255.0f;
+            float u = (float)(underlineColor >> 8 & 0xFF) / 255.0f;
+            float v = (float)(underlineColor & 0xFF) / 255.0f;
+            list.add(new GlyphRenderer.Rectangle(x - 1.0f, y + 9.0f, j + 1.0f, y - 1.0f, 0.01f, t, u, v, s));
         }
         if (!list.isEmpty()) {
             GlyphRenderer glyphRenderer2 = this.fontStorage.getRectangleRenderer();
-            VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(glyphRenderer2.method_24045(bl2));
+            VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(glyphRenderer2.method_24045(seeThrough));
             for (GlyphRenderer.Rectangle rectangle : list) {
-                glyphRenderer2.drawRectangle(rectangle, matrix4f, vertexConsumer2, k);
+                glyphRenderer2.drawRectangle(rectangle, matrix, vertexConsumer2, light);
             }
         }
-        return o;
+        return j;
     }
 
-    private void drawGlyph(GlyphRenderer glyphRenderer, boolean bl, boolean bl2, float f, float g, float h, Matrix4f matrix4f, VertexConsumer vertexConsumer, float i, float j, float k, float l, int m) {
-        glyphRenderer.draw(bl2, g, h, matrix4f, vertexConsumer, i, j, k, l, m);
-        if (bl) {
-            glyphRenderer.draw(bl2, g + f, h, matrix4f, vertexConsumer, i, j, k, l, m);
+    private void drawGlyph(GlyphRenderer glyphRenderer, boolean bold, boolean italic, float weight, float x, float y, Matrix4f matrix, VertexConsumer vertexConsumer, float red, float green, float blue, float alpha, int light) {
+        glyphRenderer.draw(italic, x, y, matrix, vertexConsumer, red, green, blue, alpha, light);
+        if (bold) {
+            glyphRenderer.draw(italic, x + weight, y, matrix, vertexConsumer, red, green, blue, alpha, light);
         }
     }
 
-    public int getStringWidth(String string) {
-        if (string == null) {
+    public int getStringWidth(String text) {
+        if (text == null) {
             return 0;
         }
         float f = 0.0f;
         boolean bl = false;
-        for (int i = 0; i < string.length(); ++i) {
-            char c = string.charAt(i);
-            if (c == '\u00a7' && i < string.length() - 1) {
+        for (int i = 0; i < text.length(); ++i) {
+            char c = text.charAt(i);
+            if (c == '\u00a7' && i < text.length() - 1) {
                 Formatting formatting;
-                if ((formatting = Formatting.byCode(string.charAt(++i))) == Formatting.BOLD) {
+                if ((formatting = Formatting.byCode(text.charAt(++i))) == Formatting.BOLD) {
                     bl = true;
                     continue;
                 }
@@ -221,44 +221,44 @@ implements AutoCloseable {
         return MathHelper.ceil(f);
     }
 
-    public float getCharWidth(char c) {
-        if (c == '\u00a7') {
+    public float getCharWidth(char character) {
+        if (character == '\u00a7') {
             return 0.0f;
         }
-        return this.fontStorage.getGlyph(c).getAdvance(false);
+        return this.fontStorage.getGlyph(character).getAdvance(false);
     }
 
-    public String trimToWidth(String string, int i) {
-        return this.trimToWidth(string, i, false);
+    public String trimToWidth(String text, int width) {
+        return this.trimToWidth(text, width, false);
     }
 
-    public String trimToWidth(String string, int i, boolean bl) {
+    public String trimToWidth(String text, int width, boolean rightToLeft) {
         StringBuilder stringBuilder = new StringBuilder();
         float f = 0.0f;
-        int j = bl ? string.length() - 1 : 0;
-        int k = bl ? -1 : 1;
+        int i = rightToLeft ? text.length() - 1 : 0;
+        int j = rightToLeft ? -1 : 1;
+        boolean bl = false;
         boolean bl2 = false;
-        boolean bl3 = false;
-        for (int l = j; l >= 0 && l < string.length() && f < (float)i; l += k) {
-            char c = string.charAt(l);
-            if (bl2) {
-                bl2 = false;
+        for (int k = i; k >= 0 && k < text.length() && f < (float)width; k += j) {
+            char c = text.charAt(k);
+            if (bl) {
+                bl = false;
                 Formatting formatting = Formatting.byCode(c);
                 if (formatting == Formatting.BOLD) {
-                    bl3 = true;
+                    bl2 = true;
                 } else if (formatting != null && formatting.affectsGlyphWidth()) {
-                    bl3 = false;
+                    bl2 = false;
                 }
             } else if (c == '\u00a7') {
-                bl2 = true;
+                bl = true;
             } else {
                 f += this.getCharWidth(c);
-                if (bl3) {
+                if (bl2) {
                     f += 1.0f;
                 }
             }
-            if (f > (float)i) break;
-            if (bl) {
+            if (f > (float)width) break;
+            if (rightToLeft) {
                 stringBuilder.insert(0, c);
                 continue;
             }
@@ -267,75 +267,75 @@ implements AutoCloseable {
         return stringBuilder.toString();
     }
 
-    private String trimEndNewlines(String string) {
-        while (string != null && string.endsWith("\n")) {
-            string = string.substring(0, string.length() - 1);
+    private String trimEndNewlines(String text) {
+        while (text != null && text.endsWith("\n")) {
+            text = text.substring(0, text.length() - 1);
+        }
+        return text;
+    }
+
+    public void drawTrimmed(String text, int x, int y, int maxWidth, int color) {
+        text = this.trimEndNewlines(text);
+        this.drawWrapped(text, x, y, maxWidth, color);
+    }
+
+    private void drawWrapped(String text, int x, int y, int maxWidth, int color) {
+        List<String> list = this.wrapStringToWidthAsList(text, maxWidth);
+        Matrix4f matrix4f = Rotation3.identity().getMatrix();
+        for (String string : list) {
+            float f = x;
+            if (this.rightToLeft) {
+                int i = this.getStringWidth(this.mirror(string));
+                f += (float)(maxWidth - i);
+            }
+            this.draw(string, f, y, color, matrix4f, false);
+            y += 9;
+        }
+    }
+
+    public int getStringBoundedHeight(String text, int maxWidth) {
+        return 9 * this.wrapStringToWidthAsList(text, maxWidth).size();
+    }
+
+    public void setRightToLeft(boolean rightToLeft) {
+        this.rightToLeft = rightToLeft;
+    }
+
+    public List<String> wrapStringToWidthAsList(String text, int width) {
+        return Arrays.asList(this.wrapStringToWidth(text, width).split("\n"));
+    }
+
+    public String wrapStringToWidth(String text, int width) {
+        String string = "";
+        while (!text.isEmpty()) {
+            int i = this.getCharacterCountForWidth(text, width);
+            if (text.length() <= i) {
+                return string + text;
+            }
+            String string2 = text.substring(0, i);
+            char c = text.charAt(i);
+            boolean bl = c == ' ' || c == '\n';
+            text = Formatting.getFormatAtEnd(string2) + text.substring(i + (bl ? 1 : 0));
+            string = string + string2 + "\n";
         }
         return string;
     }
 
-    public void drawTrimmed(String string, int i, int j, int k, int l) {
-        string = this.trimEndNewlines(string);
-        this.drawWrapped(string, i, j, k, l);
-    }
-
-    private void drawWrapped(String string, int i, int j, int k, int l) {
-        List<String> list = this.wrapStringToWidthAsList(string, k);
-        Matrix4f matrix4f = Rotation3.identity().getMatrix();
-        for (String string2 : list) {
-            float f = i;
-            if (this.rightToLeft) {
-                int m = this.getStringWidth(this.mirror(string2));
-                f += (float)(k - m);
-            }
-            this.draw(string2, f, j, l, matrix4f, false);
-            j += 9;
-        }
-    }
-
-    public int getStringBoundedHeight(String string, int i) {
-        return 9 * this.wrapStringToWidthAsList(string, i).size();
-    }
-
-    public void setRightToLeft(boolean bl) {
-        this.rightToLeft = bl;
-    }
-
-    public List<String> wrapStringToWidthAsList(String string, int i) {
-        return Arrays.asList(this.wrapStringToWidth(string, i).split("\n"));
-    }
-
-    public String wrapStringToWidth(String string, int i) {
-        String string2 = "";
-        while (!string.isEmpty()) {
-            int j = this.getCharacterCountForWidth(string, i);
-            if (string.length() <= j) {
-                return string2 + string;
-            }
-            String string3 = string.substring(0, j);
-            char c = string.charAt(j);
-            boolean bl = c == ' ' || c == '\n';
-            string = Formatting.getFormatAtEnd(string3) + string.substring(j + (bl ? 1 : 0));
-            string2 = string2 + string3 + "\n";
-        }
-        return string2;
-    }
-
-    public int getCharacterCountForWidth(String string, int i) {
-        int l;
-        int j = Math.max(1, i);
-        int k = string.length();
+    public int getCharacterCountForWidth(String text, int offset) {
+        int k;
+        int i = Math.max(1, offset);
+        int j = text.length();
         float f = 0.0f;
-        int m = -1;
+        int l = -1;
         boolean bl = false;
         boolean bl2 = true;
-        for (l = 0; l < k; ++l) {
-            char c = string.charAt(l);
+        for (k = 0; k < j; ++k) {
+            char c = text.charAt(k);
             switch (c) {
                 case '\u00a7': {
                     Formatting formatting;
-                    if (l >= k - 1) break;
-                    if ((formatting = Formatting.byCode(string.charAt(++l))) == Formatting.BOLD) {
+                    if (k >= j - 1) break;
+                    if ((formatting = Formatting.byCode(text.charAt(++k))) == Formatting.BOLD) {
                         bl = true;
                         break;
                     }
@@ -344,11 +344,11 @@ implements AutoCloseable {
                     break;
                 }
                 case '\n': {
-                    --l;
+                    --k;
                     break;
                 }
                 case ' ': {
-                    m = l;
+                    l = k;
                 }
                 default: {
                     if (f != 0.0f) {
@@ -360,47 +360,47 @@ implements AutoCloseable {
                 }
             }
             if (c == '\n') {
-                m = ++l;
+                l = ++k;
                 break;
             }
-            if (!(f > (float)j)) continue;
+            if (!(f > (float)i)) continue;
             if (!bl2) break;
-            ++l;
+            ++k;
             break;
         }
-        if (l != k && m != -1 && m < l) {
-            return m;
-        }
-        return l;
-    }
-
-    public int findWordEdge(String string, int i, int j, boolean bl) {
-        int k = j;
-        boolean bl2 = i < 0;
-        int l = Math.abs(i);
-        for (int m = 0; m < l; ++m) {
-            if (bl2) {
-                while (bl && k > 0 && (string.charAt(k - 1) == ' ' || string.charAt(k - 1) == '\n')) {
-                    --k;
-                }
-                while (k > 0 && string.charAt(k - 1) != ' ' && string.charAt(k - 1) != '\n') {
-                    --k;
-                }
-                continue;
-            }
-            int n = string.length();
-            int o = string.indexOf(32, k);
-            int p = string.indexOf(10, k);
-            k = o == -1 && p == -1 ? -1 : (o != -1 && p != -1 ? Math.min(o, p) : (o != -1 ? o : p));
-            if (k == -1) {
-                k = n;
-                continue;
-            }
-            while (bl && k < n && (string.charAt(k) == ' ' || string.charAt(k) == '\n')) {
-                ++k;
-            }
+        if (k != j && l != -1 && l < k) {
+            return l;
         }
         return k;
+    }
+
+    public int findWordEdge(String text, int direction, int position, boolean skipWhitespaceToRightOfWord) {
+        int i = position;
+        boolean bl = direction < 0;
+        int j = Math.abs(direction);
+        for (int k = 0; k < j; ++k) {
+            if (bl) {
+                while (skipWhitespaceToRightOfWord && i > 0 && (text.charAt(i - 1) == ' ' || text.charAt(i - 1) == '\n')) {
+                    --i;
+                }
+                while (i > 0 && text.charAt(i - 1) != ' ' && text.charAt(i - 1) != '\n') {
+                    --i;
+                }
+                continue;
+            }
+            int l = text.length();
+            int m = text.indexOf(32, i);
+            int n = text.indexOf(10, i);
+            i = m == -1 && n == -1 ? -1 : (m != -1 && n != -1 ? Math.min(m, n) : (m != -1 ? m : n));
+            if (i == -1) {
+                i = l;
+                continue;
+            }
+            while (skipWhitespaceToRightOfWord && i < l && (text.charAt(i) == ' ' || text.charAt(i) == '\n')) {
+                ++i;
+            }
+        }
+        return i;
     }
 
     public boolean isRightToLeft() {

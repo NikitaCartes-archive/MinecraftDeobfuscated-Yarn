@@ -26,8 +26,8 @@ extends AbstractPhase {
     private LivingEntity field_7062;
     private boolean field_7058;
 
-    public StrafePlayerPhase(EnderDragonEntity enderDragonEntity) {
-        super(enderDragonEntity);
+    public StrafePlayerPhase(EnderDragonEntity dragon) {
+        super(dragon);
     }
 
     @Override

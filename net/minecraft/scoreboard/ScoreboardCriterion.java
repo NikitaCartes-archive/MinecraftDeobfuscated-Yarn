@@ -31,30 +31,30 @@ public class ScoreboardCriterion {
     private final boolean readOnly;
     private final RenderType criterionType;
 
-    public ScoreboardCriterion(String string) {
-        this(string, false, RenderType.INTEGER);
+    public ScoreboardCriterion(String name) {
+        this(name, false, RenderType.INTEGER);
     }
 
-    protected ScoreboardCriterion(String string, boolean bl, RenderType renderType) {
-        this.name = string;
-        this.readOnly = bl;
+    protected ScoreboardCriterion(String name, boolean readOnly, RenderType renderType) {
+        this.name = name;
+        this.readOnly = readOnly;
         this.criterionType = renderType;
-        OBJECTIVES.put(string, this);
+        OBJECTIVES.put(name, this);
     }
 
-    public static Optional<ScoreboardCriterion> createStatCriterion(String string) {
-        if (OBJECTIVES.containsKey(string)) {
-            return Optional.of(OBJECTIVES.get(string));
+    public static Optional<ScoreboardCriterion> createStatCriterion(String name) {
+        if (OBJECTIVES.containsKey(name)) {
+            return Optional.of(OBJECTIVES.get(name));
         }
-        int i = string.indexOf(58);
+        int i = name.indexOf(58);
         if (i < 0) {
             return Optional.empty();
         }
-        return Registry.STAT_TYPE.getOrEmpty(Identifier.splitOn(string.substring(0, i), '.')).flatMap(statType -> ScoreboardCriterion.createStatCriterion(statType, Identifier.splitOn(string.substring(i + 1), '.')));
+        return Registry.STAT_TYPE.getOrEmpty(Identifier.splitOn(name.substring(0, i), '.')).flatMap(statType -> ScoreboardCriterion.createStatCriterion(statType, Identifier.splitOn(name.substring(i + 1), '.')));
     }
 
-    private static <T> Optional<ScoreboardCriterion> createStatCriterion(StatType<T> statType, Identifier identifier) {
-        return statType.getRegistry().getOrEmpty(identifier).map(statType::getOrCreateStat);
+    private static <T> Optional<ScoreboardCriterion> createStatCriterion(StatType<T> statType, Identifier id) {
+        return statType.getRegistry().getOrEmpty(id).map(statType::getOrCreateStat);
     }
 
     public String getName() {
@@ -76,16 +76,16 @@ public class ScoreboardCriterion {
         private final String name;
         private static final Map<String, RenderType> CRITERION_TYPES;
 
-        private RenderType(String string2) {
-            this.name = string2;
+        private RenderType(String name) {
+            this.name = name;
         }
 
         public String getName() {
             return this.name;
         }
 
-        public static RenderType getType(String string) {
-            return CRITERION_TYPES.getOrDefault(string, INTEGER);
+        public static RenderType getType(String name) {
+            return CRITERION_TYPES.getOrDefault(name, INTEGER);
         }
 
         static {

@@ -8,20 +8,20 @@ public class AlphaChunkDataArray {
     private final int zOffset;
     private final int xOffset;
 
-    public AlphaChunkDataArray(byte[] bs, int i) {
-        this.data = bs;
-        this.zOffset = i;
-        this.xOffset = i + 4;
+    public AlphaChunkDataArray(byte[] data, int yCoordinateBits) {
+        this.data = data;
+        this.zOffset = yCoordinateBits;
+        this.xOffset = yCoordinateBits + 4;
     }
 
-    public int get(int i, int j, int k) {
-        int l = i << this.xOffset | k << this.zOffset | j;
-        int m = l >> 1;
-        int n = l & 1;
-        if (n == 0) {
-            return this.data[m] & 0xF;
+    public int get(int x, int y, int z) {
+        int i = x << this.xOffset | z << this.zOffset | y;
+        int j = i >> 1;
+        int k = i & 1;
+        if (k == 0) {
+            return this.data[j] & 0xF;
         }
-        return this.data[m] >> 4 & 0xF;
+        return this.data[j] >> 4 & 0xF;
     }
 }
 

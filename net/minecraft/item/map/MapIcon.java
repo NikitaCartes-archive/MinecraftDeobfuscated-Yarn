@@ -17,11 +17,11 @@ public class MapIcon {
     private byte rotation;
     private final Text text;
 
-    public MapIcon(Type type, byte b, byte c, byte d, @Nullable Text text) {
+    public MapIcon(Type type, byte x, byte z, byte rotation, @Nullable Text text) {
         this.type = type;
-        this.x = b;
-        this.z = c;
-        this.rotation = d;
+        this.x = x;
+        this.z = z;
+        this.rotation = rotation;
         this.text = text;
     }
 
@@ -56,14 +56,14 @@ public class MapIcon {
         return this.text;
     }
 
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (!(object instanceof MapIcon)) {
+        if (!(o instanceof MapIcon)) {
             return false;
         }
-        MapIcon mapIcon = (MapIcon)object;
+        MapIcon mapIcon = (MapIcon)o;
         if (this.type != mapIcon.type) {
             return false;
         }
@@ -121,13 +121,13 @@ public class MapIcon {
         private final boolean alwaysRender;
         private final int tintColor;
 
-        private Type(boolean bl) {
-            this(bl, -1);
+        private Type(boolean renderNotHeld) {
+            this(renderNotHeld, -1);
         }
 
-        private Type(boolean bl, int j) {
-            this.alwaysRender = bl;
-            this.tintColor = j;
+        private Type(boolean alwaysRender, int tintColor) {
+            this.alwaysRender = alwaysRender;
+            this.tintColor = tintColor;
         }
 
         public byte getId() {
@@ -147,8 +147,8 @@ public class MapIcon {
             return this.tintColor;
         }
 
-        public static Type byId(byte b) {
-            return Type.values()[MathHelper.clamp(b, 0, Type.values().length - 1)];
+        public static Type byId(byte id) {
+            return Type.values()[MathHelper.clamp(id, 0, Type.values().length - 1)];
         }
     }
 }

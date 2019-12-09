@@ -13,8 +13,8 @@ public enum BambooLeaves implements StringIdentifiable
 
     private final String name;
 
-    private BambooLeaves(String string2) {
-        this.name = string2;
+    private BambooLeaves(String name) {
+        this.name = name;
     }
 
     public String toString() {

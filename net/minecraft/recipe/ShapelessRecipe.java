@@ -29,11 +29,11 @@ implements CraftingRecipe {
     private final ItemStack output;
     private final DefaultedList<Ingredient> input;
 
-    public ShapelessRecipe(Identifier identifier, String string, ItemStack itemStack, DefaultedList<Ingredient> defaultedList) {
-        this.id = identifier;
-        this.group = string;
-        this.output = itemStack;
-        this.input = defaultedList;
+    public ShapelessRecipe(Identifier id, String group, ItemStack output, DefaultedList<Ingredient> input) {
+        this.id = id;
+        this.group = group;
+        this.output = output;
+        this.input = input;
     }
 
     @Override
@@ -82,8 +82,8 @@ implements CraftingRecipe {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean fits(int i, int j) {
-        return i * j >= this.input.size();
+    public boolean fits(int width, int height) {
+        return width * height >= this.input.size();
     }
 
     public static class Serializer
@@ -102,10 +102,10 @@ implements CraftingRecipe {
             return new ShapelessRecipe(identifier, string, itemStack, defaultedList);
         }
 
-        private static DefaultedList<Ingredient> getIngredients(JsonArray jsonArray) {
+        private static DefaultedList<Ingredient> getIngredients(JsonArray json) {
             DefaultedList<Ingredient> defaultedList = DefaultedList.of();
-            for (int i = 0; i < jsonArray.size(); ++i) {
-                Ingredient ingredient = Ingredient.fromJson(jsonArray.get(i));
+            for (int i = 0; i < json.size(); ++i) {
+                Ingredient ingredient = Ingredient.fromJson(json.get(i));
                 if (ingredient.isEmpty()) continue;
                 defaultedList.add(ingredient);
             }
@@ -135,13 +135,13 @@ implements CraftingRecipe {
         }
 
         @Override
-        public /* synthetic */ Recipe read(Identifier identifier, PacketByteBuf packetByteBuf) {
-            return this.read(identifier, packetByteBuf);
+        public /* synthetic */ Recipe read(Identifier id, PacketByteBuf buf) {
+            return this.read(id, buf);
         }
 
         @Override
-        public /* synthetic */ Recipe read(Identifier identifier, JsonObject jsonObject) {
-            return this.read(identifier, jsonObject);
+        public /* synthetic */ Recipe read(Identifier id, JsonObject json) {
+            return this.read(id, json);
         }
     }
 }

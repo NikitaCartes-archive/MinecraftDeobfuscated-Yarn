@@ -25,16 +25,16 @@ extends Task<LivingEntity> {
     }
 
     @Override
-    protected boolean shouldRun(ServerWorld serverWorld, LivingEntity livingEntity2) {
-        Brain<?> brain = livingEntity2.getBrain();
+    protected boolean shouldRun(ServerWorld world, LivingEntity entity) {
+        Brain<?> brain = entity.getBrain();
         Optional<GlobalPos> optional = brain.getOptionalMemory(MemoryModuleType.MEETING_POINT);
-        return serverWorld.getRandom().nextInt(100) == 0 && optional.isPresent() && Objects.equals(serverWorld.getDimension().getType(), optional.get().getDimension()) && optional.get().getPos().isWithinDistance(livingEntity2.getPos(), 4.0) && brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get().stream().anyMatch(livingEntity -> EntityType.VILLAGER.equals(livingEntity.getType()));
+        return world.getRandom().nextInt(100) == 0 && optional.isPresent() && Objects.equals(world.getDimension().getType(), optional.get().getDimension()) && optional.get().getPos().isWithinDistance(entity.getPos(), 4.0) && brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get().stream().anyMatch(livingEntity -> EntityType.VILLAGER.equals(livingEntity.getType()));
     }
 
     @Override
-    protected void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        Brain<?> brain = livingEntity.getBrain();
-        brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).ifPresent(list -> list.stream().filter(livingEntity -> EntityType.VILLAGER.equals(livingEntity.getType())).filter(livingEntity2 -> livingEntity2.squaredDistanceTo(livingEntity) <= 32.0).findFirst().ifPresent(livingEntity -> {
+    protected void run(ServerWorld world, LivingEntity entity, long time) {
+        Brain<?> brain = entity.getBrain();
+        brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).ifPresent(list -> list.stream().filter(livingEntity -> EntityType.VILLAGER.equals(livingEntity.getType())).filter(livingEntity2 -> livingEntity2.squaredDistanceTo(entity) <= 32.0).findFirst().ifPresent(livingEntity -> {
             brain.putMemory(MemoryModuleType.INTERACTION_TARGET, livingEntity);
             brain.putMemory(MemoryModuleType.LOOK_TARGET, new EntityPosWrapper((Entity)livingEntity));
             brain.putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityPosWrapper((Entity)livingEntity), 0.3f, 1));

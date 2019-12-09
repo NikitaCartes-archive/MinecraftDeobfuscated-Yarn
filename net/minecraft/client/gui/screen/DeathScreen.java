@@ -28,10 +28,10 @@ extends Screen {
     private final Text message;
     private final boolean isHardcore;
 
-    public DeathScreen(@Nullable Text text, boolean bl) {
-        super(new TranslatableText(bl ? "deathScreen.title.hardcore" : "deathScreen.title", new Object[0]));
-        this.message = text;
-        this.isHardcore = bl;
+    public DeathScreen(@Nullable Text message, boolean isHardcore) {
+        super(new TranslatableText(isHardcore ? "deathScreen.title.hardcore" : "deathScreen.title", new Object[0]));
+        this.message = message;
+        this.isHardcore = isHardcore;
     }
 
     @Override
@@ -63,8 +63,8 @@ extends Screen {
         return false;
     }
 
-    private void onConfirmQuit(boolean bl) {
-        if (bl) {
+    private void onConfirmQuit(boolean quit) {
+        if (quit) {
             this.method_22364();
         } else {
             this.minecraft.player.requestRespawn();
@@ -81,7 +81,7 @@ extends Screen {
     }
 
     @Override
-    public void render(int i, int j, float f) {
+    public void render(int mouseX, int mouseY, float delta) {
         Text text;
         this.fillGradient(0, 0, this.width, this.height, 0x60500000, -1602211792);
         RenderSystem.pushMatrix();
@@ -92,39 +92,39 @@ extends Screen {
             this.drawCenteredString(this.font, this.message.asFormattedString(), this.width / 2, 85, 0xFFFFFF);
         }
         this.drawCenteredString(this.font, I18n.translate("deathScreen.score", new Object[0]) + ": " + (Object)((Object)Formatting.YELLOW) + this.minecraft.player.getScore(), this.width / 2, 100, 0xFFFFFF);
-        if (this.message != null && j > 85 && j < 85 + this.font.fontHeight && (text = this.getTextComponentUnderMouse(i)) != null && text.getStyle().getHoverEvent() != null) {
-            this.renderComponentHoverEffect(text, i, j);
+        if (this.message != null && mouseY > 85 && mouseY < 85 + this.font.fontHeight && (text = this.getTextComponentUnderMouse(mouseX)) != null && text.getStyle().getHoverEvent() != null) {
+            this.renderComponentHoverEffect(text, mouseX, mouseY);
         }
-        super.render(i, j, f);
+        super.render(mouseX, mouseY, delta);
     }
 
     @Nullable
-    public Text getTextComponentUnderMouse(int i) {
+    public Text getTextComponentUnderMouse(int mouseX) {
         if (this.message == null) {
             return null;
         }
-        int j = this.minecraft.textRenderer.getStringWidth(this.message.asFormattedString());
-        int k = this.width / 2 - j / 2;
-        int l = this.width / 2 + j / 2;
-        int m = k;
-        if (i < k || i > l) {
+        int i = this.minecraft.textRenderer.getStringWidth(this.message.asFormattedString());
+        int j = this.width / 2 - i / 2;
+        int k = this.width / 2 + i / 2;
+        int l = j;
+        if (mouseX < j || mouseX > k) {
             return null;
         }
         for (Text text : this.message) {
-            if ((m += this.minecraft.textRenderer.getStringWidth(Texts.getRenderChatMessage(text.asString(), false))) <= i) continue;
+            if ((l += this.minecraft.textRenderer.getStringWidth(Texts.getRenderChatMessage(text.asString(), false))) <= mouseX) continue;
             return text;
         }
         return null;
     }
 
     @Override
-    public boolean mouseClicked(double d, double e, int i) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
         Text text;
-        if (this.message != null && e > 85.0 && e < (double)(85 + this.font.fontHeight) && (text = this.getTextComponentUnderMouse((int)d)) != null && text.getStyle().getClickEvent() != null && text.getStyle().getClickEvent().getAction() == ClickEvent.Action.OPEN_URL) {
+        if (this.message != null && mouseY > 85.0 && mouseY < (double)(85 + this.font.fontHeight) && (text = this.getTextComponentUnderMouse((int)mouseX)) != null && text.getStyle().getClickEvent() != null && text.getStyle().getClickEvent().getAction() == ClickEvent.Action.OPEN_URL) {
             this.handleComponentClicked(text);
             return false;
         }
-        return super.mouseClicked(d, e, i);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override

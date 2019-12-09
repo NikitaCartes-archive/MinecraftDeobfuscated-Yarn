@@ -14,9 +14,9 @@ extends ValueObject {
     private final String regionName;
     private final int ping;
 
-    public RegionPingResult(String string, int i) {
-        this.regionName = string;
-        this.ping = i;
+    public RegionPingResult(String regionName, int ping) {
+        this.regionName = regionName;
+        this.ping = ping;
     }
 
     public int ping() {

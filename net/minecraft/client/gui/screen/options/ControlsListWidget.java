@@ -25,10 +25,10 @@ extends ElementListWidget<Entry> {
     private final ControlsOptionsScreen gui;
     private int maxKeyNameLength;
 
-    public ControlsListWidget(ControlsOptionsScreen controlsOptionsScreen, MinecraftClient minecraftClient) {
-        super(minecraftClient, controlsOptionsScreen.width + 45, controlsOptionsScreen.height, 43, controlsOptionsScreen.height - 32, 20);
-        this.gui = controlsOptionsScreen;
-        Object[] keyBindings = ArrayUtils.clone(minecraftClient.options.keysAll);
+    public ControlsListWidget(ControlsOptionsScreen gui, MinecraftClient client) {
+        super(client, gui.width + 45, gui.height, 43, gui.height - 32, 20);
+        this.gui = gui;
+        Object[] keyBindings = ArrayUtils.clone(client.options.keysAll);
         Arrays.sort(keyBindings);
         String string = null;
         for (Object keyBinding : keyBindings) {
@@ -38,7 +38,7 @@ extends ElementListWidget<Entry> {
                 string = string2;
                 this.addEntry(new CategoryEntry(string2));
             }
-            if ((i = minecraftClient.textRenderer.getStringWidth(I18n.translate(((KeyBinding)keyBinding).getId(), new Object[0]))) > this.maxKeyNameLength) {
+            if ((i = client.textRenderer.getStringWidth(I18n.translate(((KeyBinding)keyBinding).getId(), new Object[0]))) > this.maxKeyNameLength) {
                 this.maxKeyNameLength = i;
             }
             this.addEntry(new KeyBindingEntry((KeyBinding)keyBinding));
@@ -63,23 +63,23 @@ extends ElementListWidget<Entry> {
         private final ButtonWidget editButton;
         private final ButtonWidget resetButton;
 
-        private KeyBindingEntry(final KeyBinding keyBinding) {
-            this.binding = keyBinding;
-            this.bindingName = I18n.translate(keyBinding.getId(), new Object[0]);
+        private KeyBindingEntry(final KeyBinding binding) {
+            this.binding = binding;
+            this.bindingName = I18n.translate(binding.getId(), new Object[0]);
             this.editButton = new ButtonWidget(0, 0, 75, 20, this.bindingName, buttonWidget -> {
-                ((ControlsListWidget)ControlsListWidget.this).gui.focusedBinding = keyBinding;
+                ((ControlsListWidget)ControlsListWidget.this).gui.focusedBinding = binding;
             }){
 
                 @Override
                 protected String getNarrationMessage() {
-                    if (keyBinding.isNotBound()) {
+                    if (binding.isNotBound()) {
                         return I18n.translate("narrator.controls.unbound", KeyBindingEntry.this.bindingName);
                     }
                     return I18n.translate("narrator.controls.bound", KeyBindingEntry.this.bindingName, super.getNarrationMessage());
                 }
             };
             this.resetButton = new ButtonWidget(0, 0, 50, 20, I18n.translate("controls.reset", new Object[0]), buttonWidget -> {
-                ((ControlsListWidget)ControlsListWidget.this).minecraft.options.setKeyCode(keyBinding, keyBinding.getDefaultKeyCode());
+                ((ControlsListWidget)ControlsListWidget.this).minecraft.options.setKeyCode(binding, binding.getDefaultKeyCode());
                 KeyBinding.updateKeysByCode();
             }){
 
@@ -123,16 +123,16 @@ extends ElementListWidget<Entry> {
         }
 
         @Override
-        public boolean mouseClicked(double d, double e, int i) {
-            if (this.editButton.mouseClicked(d, e, i)) {
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            if (this.editButton.mouseClicked(mouseX, mouseY, button)) {
                 return true;
             }
-            return this.resetButton.mouseClicked(d, e, i);
+            return this.resetButton.mouseClicked(mouseX, mouseY, button);
         }
 
         @Override
-        public boolean mouseReleased(double d, double e, int i) {
-            return this.editButton.mouseReleased(d, e, i) || this.resetButton.mouseReleased(d, e, i);
+        public boolean mouseReleased(double mouseX, double mouseY, int button) {
+            return this.editButton.mouseReleased(mouseX, mouseY, button) || this.resetButton.mouseReleased(mouseX, mouseY, button);
         }
     }
 

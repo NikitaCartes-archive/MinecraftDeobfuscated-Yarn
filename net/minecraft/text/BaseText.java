@@ -53,12 +53,12 @@ implements Text {
         return Streams.concat(Stream.of(this), this.siblings.stream().flatMap(Text::stream));
     }
 
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (object instanceof BaseText) {
-            BaseText baseText = (BaseText)object;
+        if (obj instanceof BaseText) {
+            BaseText baseText = (BaseText)obj;
             return this.siblings.equals(baseText.siblings) && this.getStyle().equals(baseText.getStyle());
         }
         return false;

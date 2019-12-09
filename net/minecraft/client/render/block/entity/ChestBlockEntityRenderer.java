@@ -80,7 +80,7 @@ extends BlockEntityRenderer<T> {
     }
 
     @Override
-    public void render(T blockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
+    public void render(T blockEntity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         World world = ((BlockEntity)blockEntity).getWorld();
         boolean bl = world != null;
         BlockState blockState = bl ? ((BlockEntity)blockEntity).getCachedState() : (BlockState)Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.SOUTH);
@@ -91,28 +91,28 @@ extends BlockEntityRenderer<T> {
         }
         AbstractChestBlock abstractChestBlock = (AbstractChestBlock)block;
         boolean bl2 = chestType != ChestType.SINGLE;
-        matrixStack.push();
-        float g = blockState.get(ChestBlock.FACING).asRotation();
-        matrixStack.translate(0.5, 0.5, 0.5);
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-g));
-        matrixStack.translate(-0.5, -0.5, -0.5);
+        matrices.push();
+        float f = blockState.get(ChestBlock.FACING).asRotation();
+        matrices.translate(0.5, 0.5, 0.5);
+        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-f));
+        matrices.translate(-0.5, -0.5, -0.5);
         DoubleBlockProperties.PropertySource<Object> propertySource = bl ? abstractChestBlock.getBlockEntitySource(blockState, world, ((BlockEntity)blockEntity).getPos(), true) : DoubleBlockProperties.PropertyRetriever::getFallback;
-        float h = propertySource.apply(ChestBlock.getAnimationProgressRetriever((ChestAnimationProgress)blockEntity)).get(f);
-        h = 1.0f - h;
-        h = 1.0f - h * h * h;
-        int k = ((Int2IntFunction)propertySource.apply(new LightmapCoordinatesRetriever())).applyAsInt(i);
+        float g = propertySource.apply(ChestBlock.getAnimationProgressRetriever((ChestAnimationProgress)blockEntity)).get(tickDelta);
+        g = 1.0f - g;
+        g = 1.0f - g * g * g;
+        int i = ((Int2IntFunction)propertySource.apply(new LightmapCoordinatesRetriever())).applyAsInt(light);
         SpriteIdentifier spriteIdentifier = TexturedRenderLayers.getChestTexture(blockEntity, chestType, this.isChristmas);
-        VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityCutout);
+        VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumers, RenderLayer::getEntityCutout);
         if (bl2) {
             if (chestType == ChestType.LEFT) {
-                this.method_22749(matrixStack, vertexConsumer, this.field_21479, this.field_21481, this.field_21480, h, k, j);
+                this.method_22749(matrices, vertexConsumer, this.field_21479, this.field_21481, this.field_21480, g, i, overlay);
             } else {
-                this.method_22749(matrixStack, vertexConsumer, this.field_20820, this.field_20822, this.field_20821, h, k, j);
+                this.method_22749(matrices, vertexConsumer, this.field_20820, this.field_20822, this.field_20821, g, i, overlay);
             }
         } else {
-            this.method_22749(matrixStack, vertexConsumer, this.field_20817, this.field_20819, this.field_20818, h, k, j);
+            this.method_22749(matrices, vertexConsumer, this.field_20817, this.field_20819, this.field_20818, g, i, overlay);
         }
-        matrixStack.pop();
+        matrices.pop();
     }
 
     private void method_22749(MatrixStack matrixStack, VertexConsumer vertexConsumer, ModelPart modelPart, ModelPart modelPart2, ModelPart modelPart3, float f, int i, int j) {

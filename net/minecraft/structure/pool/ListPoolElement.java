@@ -51,24 +51,24 @@ extends StructurePoolElement {
     }
 
     @Override
-    public List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation, Random random) {
-        return this.elements.get(0).getStructureBlockInfos(structureManager, blockPos, blockRotation, random);
+    public List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager structureManager, BlockPos pos, BlockRotation rotation, Random random) {
+        return this.elements.get(0).getStructureBlockInfos(structureManager, pos, rotation, random);
     }
 
     @Override
-    public BlockBox getBoundingBox(StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation) {
+    public BlockBox getBoundingBox(StructureManager structureManager, BlockPos pos, BlockRotation rotation) {
         BlockBox blockBox = BlockBox.empty();
         for (StructurePoolElement structurePoolElement : this.elements) {
-            BlockBox blockBox2 = structurePoolElement.getBoundingBox(structureManager, blockPos, blockRotation);
+            BlockBox blockBox2 = structurePoolElement.getBoundingBox(structureManager, pos, rotation);
             blockBox.encompass(blockBox2);
         }
         return blockBox;
     }
 
     @Override
-    public boolean generate(StructureManager structureManager, IWorld iWorld, ChunkGenerator<?> chunkGenerator, BlockPos blockPos, BlockRotation blockRotation, BlockBox blockBox, Random random) {
+    public boolean generate(StructureManager structureManager, IWorld world, ChunkGenerator<?> chunkGenerator, BlockPos blockPos, BlockRotation blockRotation, BlockBox blockBox, Random random) {
         for (StructurePoolElement structurePoolElement : this.elements) {
-            if (structurePoolElement.generate(structureManager, iWorld, chunkGenerator, blockPos, blockRotation, blockBox, random)) continue;
+            if (structurePoolElement.generate(structureManager, world, chunkGenerator, blockPos, blockRotation, blockBox, random)) continue;
             return false;
         }
         return true;

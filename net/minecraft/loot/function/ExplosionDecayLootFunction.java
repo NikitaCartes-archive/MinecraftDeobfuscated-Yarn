@@ -15,25 +15,25 @@ import net.minecraft.util.Identifier;
 
 public class ExplosionDecayLootFunction
 extends ConditionalLootFunction {
-    private ExplosionDecayLootFunction(LootCondition[] lootConditions) {
-        super(lootConditions);
+    private ExplosionDecayLootFunction(LootCondition[] conditions) {
+        super(conditions);
     }
 
     @Override
-    public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-        Float float_ = lootContext.get(LootContextParameters.EXPLOSION_RADIUS);
+    public ItemStack process(ItemStack stack, LootContext context) {
+        Float float_ = context.get(LootContextParameters.EXPLOSION_RADIUS);
         if (float_ != null) {
-            Random random = lootContext.getRandom();
+            Random random = context.getRandom();
             float f = 1.0f / float_.floatValue();
-            int i = itemStack.getCount();
+            int i = stack.getCount();
             int j = 0;
             for (int k = 0; k < i; ++k) {
                 if (!(random.nextFloat() <= f)) continue;
                 ++j;
             }
-            itemStack.setCount(j);
+            stack.setCount(j);
         }
-        return itemStack;
+        return stack;
     }
 
     public static ConditionalLootFunction.Builder<?> builder() {
@@ -52,8 +52,8 @@ extends ConditionalLootFunction {
         }
 
         @Override
-        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
+        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions) {
+            return this.fromJson(json, context, conditions);
         }
     }
 }

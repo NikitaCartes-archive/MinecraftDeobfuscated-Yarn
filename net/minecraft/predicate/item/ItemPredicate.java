@@ -56,63 +56,63 @@ public class ItemPredicate {
         this.nbt = NbtPredicate.ANY;
     }
 
-    public ItemPredicate(@Nullable Tag<Item> tag, @Nullable Item item, NumberRange.IntRange intRange, NumberRange.IntRange intRange2, EnchantmentPredicate[] enchantmentPredicates, EnchantmentPredicate[] enchantmentPredicates2, @Nullable Potion potion, NbtPredicate nbtPredicate) {
+    public ItemPredicate(@Nullable Tag<Item> tag, @Nullable Item item, NumberRange.IntRange count, NumberRange.IntRange durability, EnchantmentPredicate[] enchantments, EnchantmentPredicate[] storedEnchantments, @Nullable Potion potion, NbtPredicate nbt) {
         this.tag = tag;
         this.item = item;
-        this.count = intRange;
-        this.durability = intRange2;
-        this.enchantments = enchantmentPredicates;
-        this.storedEnchantments = enchantmentPredicates2;
+        this.count = count;
+        this.durability = durability;
+        this.enchantments = enchantments;
+        this.storedEnchantments = storedEnchantments;
         this.potion = potion;
-        this.nbt = nbtPredicate;
+        this.nbt = nbt;
     }
 
-    public boolean test(ItemStack itemStack) {
+    public boolean test(ItemStack stack) {
         Map<Enchantment, Integer> map;
         if (this == ANY) {
             return true;
         }
-        if (this.tag != null && !this.tag.contains(itemStack.getItem())) {
+        if (this.tag != null && !this.tag.contains(stack.getItem())) {
             return false;
         }
-        if (this.item != null && itemStack.getItem() != this.item) {
+        if (this.item != null && stack.getItem() != this.item) {
             return false;
         }
-        if (!this.count.test(itemStack.getCount())) {
+        if (!this.count.test(stack.getCount())) {
             return false;
         }
-        if (!this.durability.isDummy() && !itemStack.isDamageable()) {
+        if (!this.durability.isDummy() && !stack.isDamageable()) {
             return false;
         }
-        if (!this.durability.test(itemStack.getMaxDamage() - itemStack.getDamage())) {
+        if (!this.durability.test(stack.getMaxDamage() - stack.getDamage())) {
             return false;
         }
-        if (!this.nbt.test(itemStack)) {
+        if (!this.nbt.test(stack)) {
             return false;
         }
         if (this.enchantments.length > 0) {
-            map = EnchantmentHelper.getEnchantments(itemStack.getEnchantments());
+            map = EnchantmentHelper.getEnchantments(stack.getEnchantments());
             for (EnchantmentPredicate enchantmentPredicate : this.enchantments) {
                 if (enchantmentPredicate.test(map)) continue;
                 return false;
             }
         }
         if (this.storedEnchantments.length > 0) {
-            map = EnchantmentHelper.getEnchantments(EnchantedBookItem.getEnchantmentTag(itemStack));
+            map = EnchantmentHelper.getEnchantments(EnchantedBookItem.getEnchantmentTag(stack));
             for (EnchantmentPredicate enchantmentPredicate : this.storedEnchantments) {
                 if (enchantmentPredicate.test(map)) continue;
                 return false;
             }
         }
-        Potion potion = PotionUtil.getPotion(itemStack);
+        Potion potion = PotionUtil.getPotion(stack);
         return this.potion == null || this.potion == potion;
     }
 
-    public static ItemPredicate fromJson(@Nullable JsonElement jsonElement) {
-        if (jsonElement == null || jsonElement.isJsonNull()) {
+    public static ItemPredicate fromJson(@Nullable JsonElement el) {
+        if (el == null || el.isJsonNull()) {
             return ANY;
         }
-        JsonObject jsonObject = JsonHelper.asObject(jsonElement, "item");
+        JsonObject jsonObject = JsonHelper.asObject(el, "item");
         NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("count"));
         NumberRange.IntRange intRange2 = NumberRange.IntRange.fromJson(jsonObject.get("durability"));
         if (jsonObject.has("data")) {
@@ -177,11 +177,11 @@ public class ItemPredicate {
         return jsonObject;
     }
 
-    public static ItemPredicate[] deserializeAll(@Nullable JsonElement jsonElement) {
-        if (jsonElement == null || jsonElement.isJsonNull()) {
+    public static ItemPredicate[] deserializeAll(@Nullable JsonElement el) {
+        if (el == null || el.isJsonNull()) {
             return new ItemPredicate[0];
         }
-        JsonArray jsonArray = JsonHelper.asArray(jsonElement, "items");
+        JsonArray jsonArray = JsonHelper.asArray(el, "items");
         ItemPredicate[] itemPredicates = new ItemPredicate[jsonArray.size()];
         for (int i = 0; i < itemPredicates.length; ++i) {
             itemPredicates[i] = ItemPredicate.fromJson(jsonArray.get(i));
@@ -219,13 +219,13 @@ public class ItemPredicate {
             return this;
         }
 
-        public Builder nbt(CompoundTag compoundTag) {
-            this.nbt = new NbtPredicate(compoundTag);
+        public Builder nbt(CompoundTag nbt) {
+            this.nbt = new NbtPredicate(nbt);
             return this;
         }
 
-        public Builder enchantment(EnchantmentPredicate enchantmentPredicate) {
-            this.enchantments.add(enchantmentPredicate);
+        public Builder enchantment(EnchantmentPredicate enchantment) {
+            this.enchantments.add(enchantment);
             return this;
         }
 

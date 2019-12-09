@@ -31,14 +31,14 @@ implements Comparable<AdvancementProgress> {
     private final Map<String, CriterionProgress> criteriaProgresses = Maps.newHashMap();
     private String[][] requirements = new String[0][];
 
-    public void init(Map<String, AdvancementCriterion> map, String[][] strings) {
-        Set<String> set = map.keySet();
+    public void init(Map<String, AdvancementCriterion> criteria, String[][] requirements) {
+        Set<String> set = criteria.keySet();
         this.criteriaProgresses.entrySet().removeIf(entry -> !set.contains(entry.getKey()));
         for (String string : set) {
             if (this.criteriaProgresses.containsKey(string)) continue;
             this.criteriaProgresses.put(string, new CriterionProgress());
         }
-        this.requirements = strings;
+        this.requirements = requirements;
     }
 
     public boolean isDone() {
@@ -97,11 +97,11 @@ implements Comparable<AdvancementProgress> {
         }
     }
 
-    public static AdvancementProgress fromPacket(PacketByteBuf packetByteBuf) {
+    public static AdvancementProgress fromPacket(PacketByteBuf buf) {
         AdvancementProgress advancementProgress = new AdvancementProgress();
-        int i = packetByteBuf.readVarInt();
+        int i = buf.readVarInt();
         for (int j = 0; j < i; ++j) {
-            advancementProgress.criteriaProgresses.put(packetByteBuf.readString(Short.MAX_VALUE), CriterionProgress.fromPacket(packetByteBuf));
+            advancementProgress.criteriaProgresses.put(buf.readString(Short.MAX_VALUE), CriterionProgress.fromPacket(buf));
         }
         return advancementProgress;
     }
@@ -233,13 +233,13 @@ implements Comparable<AdvancementProgress> {
         }
 
         @Override
-        public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.deserialize(jsonElement, type, jsonDeserializationContext);
+        public /* synthetic */ Object deserialize(JsonElement functionJson, Type unused, JsonDeserializationContext context) throws JsonParseException {
+            return this.deserialize(functionJson, unused, context);
         }
 
         @Override
-        public /* synthetic */ JsonElement serialize(Object object, Type type, JsonSerializationContext jsonSerializationContext) {
-            return this.serialize((AdvancementProgress)object, type, jsonSerializationContext);
+        public /* synthetic */ JsonElement serialize(Object entry, Type unused, JsonSerializationContext context) {
+            return this.serialize((AdvancementProgress)entry, unused, context);
         }
     }
 }

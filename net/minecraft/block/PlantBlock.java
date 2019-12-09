@@ -19,36 +19,36 @@ extends Block {
         super(settings);
     }
 
-    protected boolean canPlantOnTop(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-        Block block = blockState.getBlock();
+    protected boolean canPlantOnTop(BlockState floor, BlockView view, BlockPos pos) {
+        Block block = floor.getBlock();
         return block == Blocks.GRASS_BLOCK || block == Blocks.DIRT || block == Blocks.COARSE_DIRT || block == Blocks.PODZOL || block == Blocks.FARMLAND;
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-        if (!blockState.canPlaceAt(iWorld, blockPos)) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+        if (!state.canPlaceAt(world, pos)) {
             return Blocks.AIR.getDefaultState();
         }
-        return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+        return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
-        BlockPos blockPos2 = blockPos.down();
-        return this.canPlantOnTop(worldView.getBlockState(blockPos2), worldView, blockPos2);
+    public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+        BlockPos blockPos = pos.down();
+        return this.canPlantOnTop(world.getBlockState(blockPos), world, blockPos);
     }
 
     @Override
-    public boolean isTranslucent(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+    public boolean isTranslucent(BlockState state, BlockView view, BlockPos pos) {
         return true;
     }
 
     @Override
-    public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
-        if (blockPlacementEnvironment == BlockPlacementEnvironment.AIR && !this.collidable) {
+    public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+        if (env == BlockPlacementEnvironment.AIR && !this.collidable) {
             return true;
         }
-        return super.canPlaceAtSide(blockState, blockView, blockPos, blockPlacementEnvironment);
+        return super.canPlaceAtSide(world, view, pos, env);
     }
 }
 

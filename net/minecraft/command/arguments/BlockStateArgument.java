@@ -22,10 +22,10 @@ implements Predicate<CachedBlockPosition> {
     @Nullable
     private final CompoundTag data;
 
-    public BlockStateArgument(BlockState blockState, Set<Property<?>> set, @Nullable CompoundTag compoundTag) {
-        this.state = blockState;
-        this.properties = set;
-        this.data = compoundTag;
+    public BlockStateArgument(BlockState state, Set<Property<?>> properties, @Nullable CompoundTag data) {
+        this.state = state;
+        this.properties = properties;
+        this.data = data;
     }
 
     public BlockState getBlockState() {
@@ -65,8 +65,8 @@ implements Predicate<CachedBlockPosition> {
     }
 
     @Override
-    public /* synthetic */ boolean test(Object object) {
-        return this.test((CachedBlockPosition)object);
+    public /* synthetic */ boolean test(Object context) {
+        return this.test((CachedBlockPosition)context);
     }
 }
 

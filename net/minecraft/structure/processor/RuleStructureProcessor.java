@@ -34,7 +34,7 @@ extends StructureProcessor {
 
     @Override
     @Nullable
-    public Structure.StructureBlockInfo process(WorldView worldView, BlockPos blockPos, Structure.StructureBlockInfo structureBlockInfo, Structure.StructureBlockInfo structureBlockInfo2, StructurePlacementData structurePlacementData) {
+    public Structure.StructureBlockInfo process(WorldView worldView, BlockPos pos, Structure.StructureBlockInfo structureBlockInfo, Structure.StructureBlockInfo structureBlockInfo2, StructurePlacementData placementData) {
         Random random = new Random(MathHelper.hashCode(structureBlockInfo2.pos));
         BlockState blockState = worldView.getBlockState(structureBlockInfo2.pos);
         for (StructureProcessorRule structureProcessorRule : this.rules) {

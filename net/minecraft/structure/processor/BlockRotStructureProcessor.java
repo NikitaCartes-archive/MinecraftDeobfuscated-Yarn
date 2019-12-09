@@ -19,8 +19,8 @@ public class BlockRotStructureProcessor
 extends StructureProcessor {
     private final float integrity;
 
-    public BlockRotStructureProcessor(float f) {
-        this.integrity = f;
+    public BlockRotStructureProcessor(float integrity) {
+        this.integrity = integrity;
     }
 
     public BlockRotStructureProcessor(Dynamic<?> dynamic) {
@@ -29,8 +29,8 @@ extends StructureProcessor {
 
     @Override
     @Nullable
-    public Structure.StructureBlockInfo process(WorldView worldView, BlockPos blockPos, Structure.StructureBlockInfo structureBlockInfo, Structure.StructureBlockInfo structureBlockInfo2, StructurePlacementData structurePlacementData) {
-        Random random = structurePlacementData.getRandom(structureBlockInfo2.pos);
+    public Structure.StructureBlockInfo process(WorldView worldView, BlockPos pos, Structure.StructureBlockInfo structureBlockInfo, Structure.StructureBlockInfo structureBlockInfo2, StructurePlacementData placementData) {
+        Random random = placementData.getRandom(structureBlockInfo2.pos);
         if (this.integrity >= 1.0f || random.nextFloat() <= this.integrity) {
             return structureBlockInfo2;
         }

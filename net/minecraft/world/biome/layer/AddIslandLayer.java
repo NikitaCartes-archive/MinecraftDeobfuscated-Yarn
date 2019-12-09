@@ -13,11 +13,11 @@ public enum AddIslandLayer implements CrossSamplingLayer
 
 
     @Override
-    public int sample(LayerRandomnessSource layerRandomnessSource, int i, int j, int k, int l, int m) {
-        if (BiomeLayers.isShallowOcean(m) && BiomeLayers.isShallowOcean(i) && BiomeLayers.isShallowOcean(j) && BiomeLayers.isShallowOcean(l) && BiomeLayers.isShallowOcean(k) && layerRandomnessSource.nextInt(2) == 0) {
+    public int sample(LayerRandomnessSource context, int n, int e, int s, int w, int center) {
+        if (BiomeLayers.isShallowOcean(center) && BiomeLayers.isShallowOcean(n) && BiomeLayers.isShallowOcean(e) && BiomeLayers.isShallowOcean(w) && BiomeLayers.isShallowOcean(s) && context.nextInt(2) == 0) {
             return 1;
         }
-        return m;
+        return center;
     }
 }
 

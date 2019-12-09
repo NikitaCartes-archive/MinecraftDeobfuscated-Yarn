@@ -45,70 +45,70 @@ extends BlockWithEntity {
     }
 
     @Override
-    public BlockRenderType getRenderType(BlockState blockState) {
+    public BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.MODEL;
     }
 
     @Override
-    public BlockEntity createBlockEntity(BlockView blockView) {
+    public BlockEntity createBlockEntity(BlockView view) {
         return new BrewingStandBlockEntity();
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
         return SHAPE;
     }
 
     @Override
-    public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (world.isClient) {
             return ActionResult.SUCCESS;
         }
-        BlockEntity blockEntity = world.getBlockEntity(blockPos);
+        BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof BrewingStandBlockEntity) {
-            playerEntity.openContainer((BrewingStandBlockEntity)blockEntity);
-            playerEntity.incrementStat(Stats.INTERACT_WITH_BREWINGSTAND);
+            player.openContainer((BrewingStandBlockEntity)blockEntity);
+            player.incrementStat(Stats.INTERACT_WITH_BREWINGSTAND);
         }
         return ActionResult.SUCCESS;
     }
 
     @Override
-    public void onPlaced(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
+    public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
         BlockEntity blockEntity;
-        if (itemStack.hasCustomName() && (blockEntity = world.getBlockEntity(blockPos)) instanceof BrewingStandBlockEntity) {
+        if (itemStack.hasCustomName() && (blockEntity = world.getBlockEntity(pos)) instanceof BrewingStandBlockEntity) {
             ((BrewingStandBlockEntity)blockEntity).setCustomName(itemStack.getName());
         }
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-        double d = (double)blockPos.getX() + 0.4 + (double)random.nextFloat() * 0.2;
-        double e = (double)blockPos.getY() + 0.7 + (double)random.nextFloat() * 0.3;
-        double f = (double)blockPos.getZ() + 0.4 + (double)random.nextFloat() * 0.2;
+    public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+        double d = (double)pos.getX() + 0.4 + (double)random.nextFloat() * 0.2;
+        double e = (double)pos.getY() + 0.7 + (double)random.nextFloat() * 0.3;
+        double f = (double)pos.getZ() + 0.4 + (double)random.nextFloat() * 0.2;
         world.addParticle(ParticleTypes.SMOKE, d, e, f, 0.0, 0.0, 0.0);
     }
 
     @Override
-    public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
-        if (blockState.getBlock() == blockState2.getBlock()) {
+    public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (state.getBlock() == newState.getBlock()) {
             return;
         }
-        BlockEntity blockEntity = world.getBlockEntity(blockPos);
+        BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof BrewingStandBlockEntity) {
-            ItemScatterer.spawn(world, blockPos, (Inventory)((BrewingStandBlockEntity)blockEntity));
+            ItemScatterer.spawn(world, pos, (Inventory)((BrewingStandBlockEntity)blockEntity));
         }
-        super.onBlockRemoved(blockState, world, blockPos, blockState2, bl);
+        super.onBlockRemoved(state, world, pos, newState, moved);
     }
 
     @Override
-    public boolean hasComparatorOutput(BlockState blockState) {
+    public boolean hasComparatorOutput(BlockState state) {
         return true;
     }
 
     @Override
-    public int getComparatorOutput(BlockState blockState, World world, BlockPos blockPos) {
-        return Container.calculateComparatorOutput(world.getBlockEntity(blockPos));
+    public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+        return Container.calculateComparatorOutput(world.getBlockEntity(pos));
     }
 
     @Override
@@ -117,7 +117,7 @@ extends BlockWithEntity {
     }
 
     @Override
-    public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+    public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
         return false;
     }
 }

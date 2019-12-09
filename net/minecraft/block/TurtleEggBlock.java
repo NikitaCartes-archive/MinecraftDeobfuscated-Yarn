@@ -43,70 +43,70 @@ extends Block {
     }
 
     @Override
-    public void onSteppedOn(World world, BlockPos blockPos, Entity entity) {
-        this.tryBreakEgg(world, blockPos, entity, 100);
-        super.onSteppedOn(world, blockPos, entity);
+    public void onSteppedOn(World world, BlockPos pos, Entity entity) {
+        this.tryBreakEgg(world, pos, entity, 100);
+        super.onSteppedOn(world, pos, entity);
     }
 
     @Override
-    public void onLandedUpon(World world, BlockPos blockPos, Entity entity, float f) {
+    public void onLandedUpon(World world, BlockPos pos, Entity entity, float distance) {
         if (!(entity instanceof ZombieEntity)) {
-            this.tryBreakEgg(world, blockPos, entity, 3);
+            this.tryBreakEgg(world, pos, entity, 3);
         }
-        super.onLandedUpon(world, blockPos, entity, f);
+        super.onLandedUpon(world, pos, entity, distance);
     }
 
-    private void tryBreakEgg(World world, BlockPos blockPos, Entity entity, int i) {
+    private void tryBreakEgg(World world, BlockPos pos, Entity entity, int inverseChance) {
         if (!this.breaksEgg(world, entity)) {
-            super.onSteppedOn(world, blockPos, entity);
+            super.onSteppedOn(world, pos, entity);
             return;
         }
-        if (!world.isClient && world.random.nextInt(i) == 0) {
-            this.breakEgg(world, blockPos, world.getBlockState(blockPos));
+        if (!world.isClient && world.random.nextInt(inverseChance) == 0) {
+            this.breakEgg(world, pos, world.getBlockState(pos));
         }
     }
 
-    private void breakEgg(World world, BlockPos blockPos, BlockState blockState) {
-        world.playSound(null, blockPos, SoundEvents.ENTITY_TURTLE_EGG_BREAK, SoundCategory.BLOCKS, 0.7f, 0.9f + world.random.nextFloat() * 0.2f);
-        int i = blockState.get(EGGS);
+    private void breakEgg(World world, BlockPos pos, BlockState state) {
+        world.playSound(null, pos, SoundEvents.ENTITY_TURTLE_EGG_BREAK, SoundCategory.BLOCKS, 0.7f, 0.9f + world.random.nextFloat() * 0.2f);
+        int i = state.get(EGGS);
         if (i <= 1) {
-            world.breakBlock(blockPos, false);
+            world.breakBlock(pos, false);
         } else {
-            world.setBlockState(blockPos, (BlockState)blockState.with(EGGS, i - 1), 2);
-            world.playLevelEvent(2001, blockPos, Block.getRawIdFromState(blockState));
+            world.setBlockState(pos, (BlockState)state.with(EGGS, i - 1), 2);
+            world.playLevelEvent(2001, pos, Block.getRawIdFromState(state));
         }
     }
 
     @Override
-    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
-        if (this.shouldHatchProgress(serverWorld) && this.isSand(serverWorld, blockPos)) {
-            int i = blockState.get(HATCH);
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        if (this.shouldHatchProgress(world) && this.isSand(world, pos)) {
+            int i = state.get(HATCH);
             if (i < 2) {
-                serverWorld.playSound(null, blockPos, SoundEvents.ENTITY_TURTLE_EGG_CRACK, SoundCategory.BLOCKS, 0.7f, 0.9f + random.nextFloat() * 0.2f);
-                serverWorld.setBlockState(blockPos, (BlockState)blockState.with(HATCH, i + 1), 2);
+                world.playSound(null, pos, SoundEvents.ENTITY_TURTLE_EGG_CRACK, SoundCategory.BLOCKS, 0.7f, 0.9f + random.nextFloat() * 0.2f);
+                world.setBlockState(pos, (BlockState)state.with(HATCH, i + 1), 2);
             } else {
-                serverWorld.playSound(null, blockPos, SoundEvents.ENTITY_TURTLE_EGG_HATCH, SoundCategory.BLOCKS, 0.7f, 0.9f + random.nextFloat() * 0.2f);
-                serverWorld.removeBlock(blockPos, false);
-                for (int j = 0; j < blockState.get(EGGS); ++j) {
-                    serverWorld.playLevelEvent(2001, blockPos, Block.getRawIdFromState(blockState));
-                    TurtleEntity turtleEntity = EntityType.TURTLE.create(serverWorld);
+                world.playSound(null, pos, SoundEvents.ENTITY_TURTLE_EGG_HATCH, SoundCategory.BLOCKS, 0.7f, 0.9f + random.nextFloat() * 0.2f);
+                world.removeBlock(pos, false);
+                for (int j = 0; j < state.get(EGGS); ++j) {
+                    world.playLevelEvent(2001, pos, Block.getRawIdFromState(state));
+                    TurtleEntity turtleEntity = EntityType.TURTLE.create(world);
                     turtleEntity.setBreedingAge(-24000);
-                    turtleEntity.setHomePos(blockPos);
-                    turtleEntity.setPositionAndAngles((double)blockPos.getX() + 0.3 + (double)j * 0.2, blockPos.getY(), (double)blockPos.getZ() + 0.3, 0.0f, 0.0f);
-                    serverWorld.spawnEntity(turtleEntity);
+                    turtleEntity.setHomePos(pos);
+                    turtleEntity.setPositionAndAngles((double)pos.getX() + 0.3 + (double)j * 0.2, pos.getY(), (double)pos.getZ() + 0.3, 0.0f, 0.0f);
+                    world.spawnEntity(turtleEntity);
                 }
             }
         }
     }
 
-    private boolean isSand(BlockView blockView, BlockPos blockPos) {
-        return blockView.getBlockState(blockPos.down()).getBlock() == Blocks.SAND;
+    private boolean isSand(BlockView world, BlockPos pos) {
+        return world.getBlockState(pos.down()).getBlock() == Blocks.SAND;
     }
 
     @Override
-    public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
-        if (this.isSand(world, blockPos) && !world.isClient) {
-            world.playLevelEvent(2005, blockPos, 0);
+    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
+        if (this.isSand(world, pos) && !world.isClient) {
+            world.playLevelEvent(2005, pos, 0);
         }
     }
 
@@ -119,32 +119,32 @@ extends Block {
     }
 
     @Override
-    public void afterBreak(World world, PlayerEntity playerEntity, BlockPos blockPos, BlockState blockState, @Nullable BlockEntity blockEntity, ItemStack itemStack) {
-        super.afterBreak(world, playerEntity, blockPos, blockState, blockEntity, itemStack);
-        this.breakEgg(world, blockPos, blockState);
+    public void afterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack stack) {
+        super.afterBreak(world, player, pos, state, blockEntity, stack);
+        this.breakEgg(world, pos, state);
     }
 
     @Override
-    public boolean canReplace(BlockState blockState, ItemPlacementContext itemPlacementContext) {
-        if (itemPlacementContext.getStack().getItem() == this.asItem() && blockState.get(EGGS) < 4) {
+    public boolean canReplace(BlockState state, ItemPlacementContext ctx) {
+        if (ctx.getStack().getItem() == this.asItem() && state.get(EGGS) < 4) {
             return true;
         }
-        return super.canReplace(blockState, itemPlacementContext);
+        return super.canReplace(state, ctx);
     }
 
     @Override
     @Nullable
-    public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-        BlockState blockState = itemPlacementContext.getWorld().getBlockState(itemPlacementContext.getBlockPos());
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        BlockState blockState = ctx.getWorld().getBlockState(ctx.getBlockPos());
         if (blockState.getBlock() == this) {
             return (BlockState)blockState.with(EGGS, Math.min(4, blockState.get(EGGS) + 1));
         }
-        return super.getPlacementState(itemPlacementContext);
+        return super.getPlacementState(ctx);
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-        if (blockState.get(EGGS) > 1) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+        if (state.get(EGGS) > 1) {
             return LARGE_SHAPE;
         }
         return SMALL_SHAPE;

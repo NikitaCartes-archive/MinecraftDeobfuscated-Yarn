@@ -12,13 +12,13 @@ public class CountDecoratorConfig
 implements DecoratorConfig {
     public final int count;
 
-    public CountDecoratorConfig(int i) {
-        this.count = i;
+    public CountDecoratorConfig(int count) {
+        this.count = count;
     }
 
     @Override
-    public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-        return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("count"), dynamicOps.createInt(this.count))));
+    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("count"), ops.createInt(this.count))));
     }
 
     public static CountDecoratorConfig deserialize(Dynamic<?> dynamic) {

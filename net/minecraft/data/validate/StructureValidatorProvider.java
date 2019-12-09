@@ -13,23 +13,23 @@ import net.minecraft.structure.Structure;
 public class StructureValidatorProvider
 implements SnbtProvider.Tweaker {
     @Override
-    public CompoundTag write(String string, CompoundTag compoundTag) {
-        if (string.startsWith("data/minecraft/structures/")) {
-            return StructureValidatorProvider.update(StructureValidatorProvider.addDataVersion(compoundTag));
+    public CompoundTag write(String name, CompoundTag nbt) {
+        if (name.startsWith("data/minecraft/structures/")) {
+            return StructureValidatorProvider.update(StructureValidatorProvider.addDataVersion(nbt));
         }
-        return compoundTag;
+        return nbt;
     }
 
-    private static CompoundTag addDataVersion(CompoundTag compoundTag) {
-        if (!compoundTag.contains("DataVersion", 99)) {
-            compoundTag.putInt("DataVersion", 500);
+    private static CompoundTag addDataVersion(CompoundTag nbt) {
+        if (!nbt.contains("DataVersion", 99)) {
+            nbt.putInt("DataVersion", 500);
         }
-        return compoundTag;
+        return nbt;
     }
 
-    private static CompoundTag update(CompoundTag compoundTag) {
+    private static CompoundTag update(CompoundTag nbt) {
         Structure structure = new Structure();
-        structure.fromTag(NbtHelper.update(Schemas.getFixer(), DataFixTypes.STRUCTURE, compoundTag, compoundTag.getInt("DataVersion")));
+        structure.fromTag(NbtHelper.update(Schemas.getFixer(), DataFixTypes.STRUCTURE, nbt, nbt.getInt("DataVersion")));
         return structure.toTag(new CompoundTag());
     }
 }

@@ -20,12 +20,12 @@ extends Container {
     private final Inventory inventory;
     private final PropertyDelegate propertyDelegate;
 
-    public LecternContainer(int i) {
-        this(i, new BasicInventory(1), new ArrayPropertyDelegate(1));
+    public LecternContainer(int syncId) {
+        this(syncId, new BasicInventory(1), new ArrayPropertyDelegate(1));
     }
 
-    public LecternContainer(int i, Inventory inventory, PropertyDelegate propertyDelegate) {
-        super(ContainerType.LECTERN, i);
+    public LecternContainer(int syncId, Inventory inventory, PropertyDelegate propertyDelegate) {
+        super(ContainerType.LECTERN, syncId);
         LecternContainer.checkContainerSize(inventory, 1);
         LecternContainer.checkContainerDataCount(propertyDelegate, 1);
         this.inventory = inventory;
@@ -42,31 +42,31 @@ extends Container {
     }
 
     @Override
-    public boolean onButtonClick(PlayerEntity playerEntity, int i) {
-        if (i >= 100) {
-            int j = i - 100;
-            this.setProperties(0, j);
+    public boolean onButtonClick(PlayerEntity player, int id) {
+        if (id >= 100) {
+            int i = id - 100;
+            this.setProperties(0, i);
             return true;
         }
-        switch (i) {
+        switch (id) {
             case 2: {
-                int j = this.propertyDelegate.get(0);
-                this.setProperties(0, j + 1);
+                int i = this.propertyDelegate.get(0);
+                this.setProperties(0, i + 1);
                 return true;
             }
             case 1: {
-                int j = this.propertyDelegate.get(0);
-                this.setProperties(0, j - 1);
+                int i = this.propertyDelegate.get(0);
+                this.setProperties(0, i - 1);
                 return true;
             }
             case 3: {
-                if (!playerEntity.canModifyWorld()) {
+                if (!player.canModifyWorld()) {
                     return false;
                 }
                 ItemStack itemStack = this.inventory.removeInvStack(0);
                 this.inventory.markDirty();
-                if (!playerEntity.inventory.insertStack(itemStack)) {
-                    playerEntity.dropItem(itemStack, false);
+                if (!player.inventory.insertStack(itemStack)) {
+                    player.dropItem(itemStack, false);
                 }
                 return true;
             }
@@ -75,14 +75,14 @@ extends Container {
     }
 
     @Override
-    public void setProperties(int i, int j) {
-        super.setProperties(i, j);
+    public void setProperties(int pos, int propertyId) {
+        super.setProperties(pos, propertyId);
         this.sendContentUpdates();
     }
 
     @Override
-    public boolean canUse(PlayerEntity playerEntity) {
-        return this.inventory.canPlayerUseInv(playerEntity);
+    public boolean canUse(PlayerEntity player) {
+        return this.inventory.canPlayerUseInv(player);
     }
 
     @Environment(value=EnvType.CLIENT)

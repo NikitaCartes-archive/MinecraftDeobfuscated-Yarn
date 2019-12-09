@@ -13,30 +13,30 @@ extends LayerRandomnessSource {
 
     public R createSampler(LayerOperator var1);
 
-    default public R createSampler(LayerOperator layerOperator, R layerSampler) {
-        return this.createSampler(layerOperator);
+    default public R createSampler(LayerOperator operator, R parent) {
+        return this.createSampler(operator);
     }
 
-    default public R createSampler(LayerOperator layerOperator, R layerSampler, R layerSampler2) {
-        return this.createSampler(layerOperator);
+    default public R createSampler(LayerOperator operator, R layerSampler, R layerSampler2) {
+        return this.createSampler(operator);
     }
 
-    default public int choose(int i, int j) {
-        return this.nextInt(2) == 0 ? i : j;
+    default public int choose(int a, int b) {
+        return this.nextInt(2) == 0 ? a : b;
     }
 
-    default public int choose(int i, int j, int k, int l) {
-        int m = this.nextInt(4);
-        if (m == 0) {
-            return i;
+    default public int choose(int a, int b, int c, int d) {
+        int i = this.nextInt(4);
+        if (i == 0) {
+            return a;
         }
-        if (m == 1) {
-            return j;
+        if (i == 1) {
+            return b;
         }
-        if (m == 2) {
-            return k;
+        if (i == 2) {
+            return c;
         }
-        return l;
+        return d;
     }
 }
 

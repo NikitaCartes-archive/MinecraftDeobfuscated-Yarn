@@ -20,11 +20,11 @@ extends SpriteBillboardParticle {
     private boolean field_3792;
     private final SpriteProvider field_17793;
 
-    private DragonBreathParticle(World world, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
-        super(world, d, e, f);
-        this.velocityX = g;
-        this.velocityY = h;
-        this.velocityZ = i;
+    private DragonBreathParticle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
+        super(world, x, y, z);
+        this.velocityX = velocityX;
+        this.velocityY = velocityY;
+        this.velocityZ = velocityZ;
         this.colorRed = MathHelper.nextFloat(this.random, 0.7176471f, 0.8745098f);
         this.colorGreen = MathHelper.nextFloat(this.random, 0.0f, 0.0f);
         this.colorBlue = MathHelper.nextFloat(this.random, 0.8235294f, 0.9764706f);
@@ -71,8 +71,8 @@ extends SpriteBillboardParticle {
     }
 
     @Override
-    public float getSize(float f) {
-        return this.scale * MathHelper.clamp(((float)this.age + f) / (float)this.maxAge * 32.0f, 0.0f, 1.0f);
+    public float getSize(float tickDelta) {
+        return this.scale * MathHelper.clamp(((float)this.age + tickDelta) / (float)this.maxAge * 32.0f, 0.0f, 1.0f);
     }
 
     @Environment(value=EnvType.CLIENT)

@@ -16,9 +16,9 @@ extends SeekSkyTask {
     }
 
     @Override
-    protected boolean shouldRun(ServerWorld serverWorld, LivingEntity livingEntity) {
-        Raid raid = serverWorld.getRaidAt(new BlockPos(livingEntity));
-        return raid != null && raid.hasWon() && super.shouldRun(serverWorld, livingEntity);
+    protected boolean shouldRun(ServerWorld world, LivingEntity entity) {
+        Raid raid = world.getRaidAt(new BlockPos(entity));
+        return raid != null && raid.hasWon() && super.shouldRun(world, entity);
     }
 }
 

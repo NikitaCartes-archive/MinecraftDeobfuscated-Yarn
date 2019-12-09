@@ -23,12 +23,12 @@ extends FoliagePlacer {
     }
 
     @Override
-    public void generate(ModifiableTestableWorld modifiableTestableWorld, Random random, BranchedTreeFeatureConfig branchedTreeFeatureConfig, int i, int j, int k, BlockPos blockPos, Set<BlockPos> set) {
+    public void generate(ModifiableTestableWorld world, Random random, BranchedTreeFeatureConfig config, int i, int j, int k, BlockPos pos, Set<BlockPos> positions) {
         int l = random.nextInt(2);
         int m = 1;
         int n = 0;
         for (int o = i; o >= j; --o) {
-            this.generate(modifiableTestableWorld, random, branchedTreeFeatureConfig, i, blockPos, o, l, set);
+            this.generate(world, random, config, i, pos, o, l, positions);
             if (l >= m) {
                 l = n;
                 n = 1;
@@ -40,7 +40,7 @@ extends FoliagePlacer {
     }
 
     @Override
-    public int getRadius(Random random, int i, int j, BranchedTreeFeatureConfig branchedTreeFeatureConfig) {
+    public int getRadius(Random random, int i, int j, BranchedTreeFeatureConfig config) {
         return this.radius + random.nextInt(this.randomRadius + 1);
     }
 

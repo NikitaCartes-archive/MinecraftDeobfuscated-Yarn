@@ -70,11 +70,11 @@ extends AlwaysSelectedEntryListWidget<E> {
     }
 
     @Override
-    public boolean mouseScrolled(double d, double e, double f) {
-        if (this.realmsObjectSelectionList.mouseScrolled(d, e, f)) {
+    public boolean mouseScrolled(double d, double e, double amount) {
+        if (this.realmsObjectSelectionList.mouseScrolled(d, e, amount)) {
             return true;
         }
-        return super.mouseScrolled(d, e, f);
+        return super.mouseScrolled(d, e, amount);
     }
 
     @Override
@@ -83,24 +83,24 @@ extends AlwaysSelectedEntryListWidget<E> {
     }
 
     @Override
-    public boolean mouseClicked(double d, double e, int i) {
-        if (this.realmsObjectSelectionList.mouseClicked(d, e, i)) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (this.realmsObjectSelectionList.mouseClicked(mouseX, mouseY, button)) {
             return true;
         }
-        return RealmsObjectSelectionListProxy.super.mouseClicked(d, e, i);
+        return RealmsObjectSelectionListProxy.super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
-    public boolean mouseReleased(double d, double e, int i) {
-        return this.realmsObjectSelectionList.mouseReleased(d, e, i);
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        return this.realmsObjectSelectionList.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override
-    public boolean mouseDragged(double d, double e, int i, double f, double g) {
-        if (this.realmsObjectSelectionList.mouseDragged(d, e, i, f, g)) {
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        if (this.realmsObjectSelectionList.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
             return true;
         }
-        return super.mouseDragged(d, e, i, f, g);
+        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
     }
 
     @Override
@@ -140,11 +140,11 @@ extends AlwaysSelectedEntryListWidget<E> {
     }
 
     @Override
-    public boolean keyPressed(int i, int j, int k) {
-        if (super.keyPressed(i, j, k)) {
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (super.keyPressed(keyCode, scanCode, modifiers)) {
             return true;
         }
-        return this.realmsObjectSelectionList.keyPressed(i, j, k);
+        return this.realmsObjectSelectionList.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override

@@ -16,11 +16,11 @@ extends DataFix {
     private final String choiceName;
     private final DSL.TypeReference type;
 
-    public ChoiceFix(Schema schema, boolean bl, String string, DSL.TypeReference typeReference, String string2) {
-        super(schema, bl);
-        this.name = string;
-        this.type = typeReference;
-        this.choiceName = string2;
+    public ChoiceFix(Schema outputSchema, boolean changesType, String name, DSL.TypeReference type, String choiceName) {
+        super(outputSchema, changesType);
+        this.name = name;
+        this.type = type;
+        this.choiceName = choiceName;
     }
 
     @Override

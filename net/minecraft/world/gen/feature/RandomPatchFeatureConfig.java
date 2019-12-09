@@ -34,25 +34,25 @@ implements FeatureConfig {
     public final boolean project;
     public final boolean needsWater;
 
-    private RandomPatchFeatureConfig(StateProvider stateProvider, BlockPlacer blockPlacer, Set<Block> set, Set<BlockState> set2, int i, int j, int k, int l, boolean bl, boolean bl2, boolean bl3) {
+    private RandomPatchFeatureConfig(StateProvider stateProvider, BlockPlacer blockPlacer, Set<Block> whitelist, Set<BlockState> blacklist, int tries, int spreadX, int spreadY, int spreadZ, boolean canReplace, boolean project, boolean needsWater) {
         this.stateProvider = stateProvider;
         this.blockPlacer = blockPlacer;
-        this.whitelist = set;
-        this.blacklist = set2;
-        this.tries = i;
-        this.spreadX = j;
-        this.spreadY = k;
-        this.spreadZ = l;
-        this.canReplace = bl;
-        this.project = bl2;
-        this.needsWater = bl3;
+        this.whitelist = whitelist;
+        this.blacklist = blacklist;
+        this.tries = tries;
+        this.spreadX = spreadX;
+        this.spreadY = spreadY;
+        this.spreadZ = spreadZ;
+        this.canReplace = canReplace;
+        this.project = project;
+        this.needsWater = needsWater;
     }
 
     @Override
-    public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
+    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
         ImmutableMap.Builder<T, T> builder = ImmutableMap.builder();
-        builder.put(dynamicOps.createString("state_provider"), this.stateProvider.serialize(dynamicOps)).put(dynamicOps.createString("block_placer"), this.blockPlacer.serialize(dynamicOps)).put(dynamicOps.createString("whitelist"), dynamicOps.createList(this.whitelist.stream().map(block -> BlockState.serialize(dynamicOps, block.getDefaultState()).getValue()))).put(dynamicOps.createString("blacklist"), dynamicOps.createList(this.blacklist.stream().map(blockState -> BlockState.serialize(dynamicOps, blockState).getValue()))).put(dynamicOps.createString("tries"), dynamicOps.createInt(this.tries)).put(dynamicOps.createString("xspread"), dynamicOps.createInt(this.spreadX)).put(dynamicOps.createString("yspread"), dynamicOps.createInt(this.spreadY)).put(dynamicOps.createString("zspread"), dynamicOps.createInt(this.spreadZ)).put(dynamicOps.createString("can_replace"), dynamicOps.createBoolean(this.canReplace)).put(dynamicOps.createString("project"), dynamicOps.createBoolean(this.project)).put(dynamicOps.createString("need_water"), dynamicOps.createBoolean(this.needsWater));
-        return new Dynamic<T>(dynamicOps, dynamicOps.createMap(builder.build()));
+        builder.put(ops.createString("state_provider"), this.stateProvider.serialize(ops)).put(ops.createString("block_placer"), this.blockPlacer.serialize(ops)).put(ops.createString("whitelist"), ops.createList(this.whitelist.stream().map(block -> BlockState.serialize(ops, block.getDefaultState()).getValue()))).put(ops.createString("blacklist"), ops.createList(this.blacklist.stream().map(blockState -> BlockState.serialize(ops, blockState).getValue()))).put(ops.createString("tries"), ops.createInt(this.tries)).put(ops.createString("xspread"), ops.createInt(this.spreadX)).put(ops.createString("yspread"), ops.createInt(this.spreadY)).put(ops.createString("zspread"), ops.createInt(this.spreadZ)).put(ops.createString("can_replace"), ops.createBoolean(this.canReplace)).put(ops.createString("project"), ops.createBoolean(this.project)).put(ops.createString("need_water"), ops.createBoolean(this.needsWater));
+        return new Dynamic<T>(ops, ops.createMap(builder.build()));
     }
 
     public static <T> RandomPatchFeatureConfig deserialize(Dynamic<T> dynamic) {
@@ -79,33 +79,33 @@ implements FeatureConfig {
             this.blockPlacer = blockPlacer;
         }
 
-        public Builder whitelist(Set<Block> set) {
-            this.whitelist = set;
+        public Builder whitelist(Set<Block> whitelist) {
+            this.whitelist = whitelist;
             return this;
         }
 
-        public Builder blacklist(Set<BlockState> set) {
-            this.blacklist = set;
+        public Builder blacklist(Set<BlockState> blacklist) {
+            this.blacklist = blacklist;
             return this;
         }
 
-        public Builder tries(int i) {
-            this.tries = i;
+        public Builder tries(int tries) {
+            this.tries = tries;
             return this;
         }
 
-        public Builder spreadX(int i) {
-            this.spreadX = i;
+        public Builder spreadX(int spreadX) {
+            this.spreadX = spreadX;
             return this;
         }
 
-        public Builder spreadY(int i) {
-            this.spreadY = i;
+        public Builder spreadY(int spreadY) {
+            this.spreadY = spreadY;
             return this;
         }
 
-        public Builder spreadZ(int i) {
-            this.spreadZ = i;
+        public Builder spreadZ(int spreadZ) {
+            this.spreadZ = spreadZ;
             return this;
         }
 

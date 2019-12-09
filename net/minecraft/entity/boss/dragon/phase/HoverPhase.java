@@ -13,8 +13,8 @@ public class HoverPhase
 extends AbstractPhase {
     private Vec3d field_7042;
 
-    public HoverPhase(EnderDragonEntity enderDragonEntity) {
-        super(enderDragonEntity);
+    public HoverPhase(EnderDragonEntity dragon) {
+        super(dragon);
     }
 
     @Override

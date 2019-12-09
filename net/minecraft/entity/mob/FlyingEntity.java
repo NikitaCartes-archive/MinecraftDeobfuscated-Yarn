@@ -14,27 +14,27 @@ import net.minecraft.world.World;
 
 public abstract class FlyingEntity
 extends MobEntity {
-    protected FlyingEntity(EntityType<? extends FlyingEntity> entityType, World world) {
-        super((EntityType<? extends MobEntity>)entityType, world);
+    protected FlyingEntity(EntityType<? extends FlyingEntity> type, World world) {
+        super((EntityType<? extends MobEntity>)type, world);
     }
 
     @Override
-    public boolean handleFallDamage(float f, float g) {
+    public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
         return false;
     }
 
     @Override
-    protected void fall(double d, boolean bl, BlockState blockState, BlockPos blockPos) {
+    protected void fall(double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition) {
     }
 
     @Override
-    public void travel(Vec3d vec3d) {
+    public void travel(Vec3d movementInput) {
         if (this.isInsideWater()) {
-            this.updateVelocity(0.02f, vec3d);
+            this.updateVelocity(0.02f, movementInput);
             this.move(MovementType.SELF, this.getVelocity());
             this.setVelocity(this.getVelocity().multiply(0.8f));
         } else if (this.isInLava()) {
-            this.updateVelocity(0.02f, vec3d);
+            this.updateVelocity(0.02f, movementInput);
             this.move(MovementType.SELF, this.getVelocity());
             this.setVelocity(this.getVelocity().multiply(0.5));
         } else {
@@ -47,7 +47,7 @@ extends MobEntity {
             if (this.onGround) {
                 f = this.world.getBlockState(new BlockPos(this.getX(), this.getY() - 1.0, this.getZ())).getBlock().getSlipperiness() * 0.91f;
             }
-            this.updateVelocity(this.onGround ? 0.1f * g : 0.02f, vec3d);
+            this.updateVelocity(this.onGround ? 0.1f * g : 0.02f, movementInput);
             this.move(MovementType.SELF, this.getVelocity());
             this.setVelocity(this.getVelocity().multiply(f));
         }

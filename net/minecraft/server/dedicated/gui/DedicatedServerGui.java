@@ -73,8 +73,8 @@ extends JComponent {
         return dedicatedServerGui;
     }
 
-    private DedicatedServerGui(MinecraftDedicatedServer minecraftDedicatedServer) {
-        this.server = minecraftDedicatedServer;
+    private DedicatedServerGui(MinecraftDedicatedServer server) {
+        this.server = server;
         this.setPreferredSize(new Dimension(854, 480));
         this.setLayout(new BorderLayout());
         try {
@@ -85,8 +85,8 @@ extends JComponent {
         }
     }
 
-    public void addStopTask(Runnable runnable) {
-        this.stopTasks.add(runnable);
+    public void addStopTask(Runnable task) {
+        this.stopTasks.add(task);
     }
 
     private JComponent createStatsPanel() {
@@ -154,15 +154,15 @@ extends JComponent {
         this.stopTasks.forEach(Runnable::run);
     }
 
-    public void appendToConsole(JTextArea jTextArea, JScrollPane jScrollPane, String string) {
+    public void appendToConsole(JTextArea textArea, JScrollPane scrollPane, String string) {
         if (!SwingUtilities.isEventDispatchThread()) {
-            SwingUtilities.invokeLater(() -> this.appendToConsole(jTextArea, jScrollPane, string));
+            SwingUtilities.invokeLater(() -> this.appendToConsole(textArea, scrollPane, string));
             return;
         }
-        Document document = jTextArea.getDocument();
-        JScrollBar jScrollBar = jScrollPane.getVerticalScrollBar();
+        Document document = textArea.getDocument();
+        JScrollBar jScrollBar = scrollPane.getVerticalScrollBar();
         boolean bl = false;
-        if (jScrollPane.getViewport().getView() == jTextArea) {
+        if (scrollPane.getViewport().getView() == textArea) {
             bl = (double)jScrollBar.getValue() + jScrollBar.getSize().getHeight() + (double)(FONT_MONOSPACE.getSize() * 4) > (double)jScrollBar.getMaximum();
         }
         try {

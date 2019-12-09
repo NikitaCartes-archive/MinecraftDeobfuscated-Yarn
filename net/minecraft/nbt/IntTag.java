@@ -39,26 +39,26 @@ extends AbstractNumberTag {
         }
 
         @Override
-        public /* synthetic */ Tag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-            return this.read(dataInput, i, positionTracker);
+        public /* synthetic */ Tag read(DataInput input, int depth, PositionTracker tracker) throws IOException {
+            return this.read(input, depth, tracker);
         }
     };
     private final int value;
 
-    private IntTag(int i) {
-        this.value = i;
+    private IntTag(int value) {
+        this.value = value;
     }
 
-    public static IntTag of(int i) {
-        if (i >= -128 && i <= 1024) {
-            return Cache.VALUES[i + 128];
+    public static IntTag of(int value) {
+        if (value >= -128 && value <= 1024) {
+            return Cache.VALUES[value + 128];
         }
-        return new IntTag(i);
+        return new IntTag(value);
     }
 
     @Override
-    public void write(DataOutput dataOutput) throws IOException {
-        dataOutput.writeInt(this.value);
+    public void write(DataOutput output) throws IOException {
+        output.writeInt(this.value);
     }
 
     @Override
@@ -80,11 +80,11 @@ extends AbstractNumberTag {
         return this;
     }
 
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        return object instanceof IntTag && this.value == ((IntTag)object).value;
+        return o instanceof IntTag && this.value == ((IntTag)o).value;
     }
 
     public int hashCode() {
@@ -92,7 +92,7 @@ extends AbstractNumberTag {
     }
 
     @Override
-    public Text toText(String string, int i) {
+    public Text toText(String indent, int depth) {
         return new LiteralText(String.valueOf(this.value)).formatted(GOLD);
     }
 

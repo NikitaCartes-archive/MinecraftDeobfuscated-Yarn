@@ -16,8 +16,8 @@ import net.minecraft.datafixers.fixes.ChoiceFix;
 
 public class EntityHorseSaddleFix
 extends ChoiceFix {
-    public EntityHorseSaddleFix(Schema schema, boolean bl) {
-        super(schema, bl, "EntityHorseSaddleFix", TypeReferences.ENTITY, "EntityHorse");
+    public EntityHorseSaddleFix(Schema outputSchema, boolean changesType) {
+        super(outputSchema, changesType, "EntityHorseSaddleFix", TypeReferences.ENTITY, "EntityHorse");
     }
 
     @Override

@@ -26,9 +26,9 @@ implements LootFunction {
     protected final LootCondition[] conditions;
     private final Predicate<LootContext> predicate;
 
-    protected ConditionalLootFunction(LootCondition[] lootConditions) {
-        this.conditions = lootConditions;
-        this.predicate = LootConditions.joinAnd(lootConditions);
+    protected ConditionalLootFunction(LootCondition[] conditions) {
+        this.conditions = conditions;
+        this.predicate = LootConditions.joinAnd(conditions);
     }
 
     @Override
@@ -39,20 +39,20 @@ implements LootFunction {
     protected abstract ItemStack process(ItemStack var1, LootContext var2);
 
     @Override
-    public void check(LootTableReporter lootTableReporter) {
-        LootFunction.super.check(lootTableReporter);
+    public void check(LootTableReporter reporter) {
+        LootFunction.super.check(reporter);
         for (int i = 0; i < this.conditions.length; ++i) {
-            this.conditions[i].check(lootTableReporter.makeChild(".conditions[" + i + "]"));
+            this.conditions[i].check(reporter.makeChild(".conditions[" + i + "]"));
         }
     }
 
-    protected static Builder<?> builder(Function<LootCondition[], LootFunction> function) {
-        return new Joiner(function);
+    protected static Builder<?> builder(Function<LootCondition[], LootFunction> joiner) {
+        return new Joiner(joiner);
     }
 
     @Override
-    public /* synthetic */ Object apply(Object object, Object object2) {
-        return this.apply((ItemStack)object, (LootContext)object2);
+    public /* synthetic */ Object apply(Object itemStack, Object context) {
+        return this.apply((ItemStack)itemStack, (LootContext)context);
     }
 
     public static abstract class Factory<T extends ConditionalLootFunction>
@@ -77,8 +77,8 @@ implements LootFunction {
         public abstract T fromJson(JsonObject var1, JsonDeserializationContext var2, LootCondition[] var3);
 
         @Override
-        public /* synthetic */ LootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            return this.fromJson(jsonObject, jsonDeserializationContext);
+        public /* synthetic */ LootFunction fromJson(JsonObject json, JsonDeserializationContext context) {
+            return this.fromJson(json, context);
         }
     }
 
@@ -86,8 +86,8 @@ implements LootFunction {
     extends Builder<Joiner> {
         private final Function<LootCondition[], LootFunction> joiner;
 
-        public Joiner(Function<LootCondition[], LootFunction> function) {
-            this.joiner = function;
+        public Joiner(Function<LootCondition[], LootFunction> joiner) {
+            this.joiner = joiner;
         }
 
         @Override

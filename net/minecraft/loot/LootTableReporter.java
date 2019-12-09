@@ -49,52 +49,52 @@ public class LootTableReporter {
         return this.name;
     }
 
-    public void report(String string) {
-        this.messages.put(this.getContext(), string);
+    public void report(String message) {
+        this.messages.put(this.getContext(), message);
     }
 
-    public LootTableReporter makeChild(String string) {
-        return new LootTableReporter(this.messages, () -> this.getContext() + string, this.contextType, this.conditionGetter, this.conditions, this.supplierGetter, this.suppliers);
+    public LootTableReporter makeChild(String name) {
+        return new LootTableReporter(this.messages, () -> this.getContext() + name, this.contextType, this.conditionGetter, this.conditions, this.supplierGetter, this.suppliers);
     }
 
-    public LootTableReporter withSupplier(String string, Identifier identifier) {
-        ImmutableCollection immutableSet = ((ImmutableSet.Builder)((ImmutableSet.Builder)ImmutableSet.builder().addAll(this.suppliers)).add(identifier)).build();
-        return new LootTableReporter(this.messages, () -> this.getContext() + string, this.contextType, this.conditionGetter, this.conditions, this.supplierGetter, (Set<Identifier>)((Object)immutableSet));
+    public LootTableReporter withSupplier(String name, Identifier id) {
+        ImmutableCollection immutableSet = ((ImmutableSet.Builder)((ImmutableSet.Builder)ImmutableSet.builder().addAll(this.suppliers)).add(id)).build();
+        return new LootTableReporter(this.messages, () -> this.getContext() + name, this.contextType, this.conditionGetter, this.conditions, this.supplierGetter, (Set<Identifier>)((Object)immutableSet));
     }
 
-    public LootTableReporter withCondition(String string, Identifier identifier) {
-        ImmutableCollection immutableSet = ((ImmutableSet.Builder)((ImmutableSet.Builder)ImmutableSet.builder().addAll(this.conditions)).add(identifier)).build();
-        return new LootTableReporter(this.messages, () -> this.getContext() + string, this.contextType, this.conditionGetter, (Set<Identifier>)((Object)immutableSet), this.supplierGetter, this.suppliers);
+    public LootTableReporter withCondition(String name, Identifier id) {
+        ImmutableCollection immutableSet = ((ImmutableSet.Builder)((ImmutableSet.Builder)ImmutableSet.builder().addAll(this.conditions)).add(id)).build();
+        return new LootTableReporter(this.messages, () -> this.getContext() + name, this.contextType, this.conditionGetter, (Set<Identifier>)((Object)immutableSet), this.supplierGetter, this.suppliers);
     }
 
-    public boolean hasSupplier(Identifier identifier) {
-        return this.suppliers.contains(identifier);
+    public boolean hasSupplier(Identifier id) {
+        return this.suppliers.contains(id);
     }
 
-    public boolean hasCondition(Identifier identifier) {
-        return this.conditions.contains(identifier);
+    public boolean hasCondition(Identifier id) {
+        return this.conditions.contains(id);
     }
 
     public Multimap<String, String> getMessages() {
         return ImmutableMultimap.copyOf(this.messages);
     }
 
-    public void checkContext(LootContextAware lootContextAware) {
-        this.contextType.check(this, lootContextAware);
+    public void checkContext(LootContextAware contextAware) {
+        this.contextType.check(this, contextAware);
     }
 
     @Nullable
-    public LootTable getSupplier(Identifier identifier) {
-        return this.supplierGetter.apply(identifier);
+    public LootTable getSupplier(Identifier id) {
+        return this.supplierGetter.apply(id);
     }
 
     @Nullable
-    public LootCondition getCondition(Identifier identifier) {
-        return this.conditionGetter.apply(identifier);
+    public LootCondition getCondition(Identifier id) {
+        return this.conditionGetter.apply(id);
     }
 
-    public LootTableReporter withContextType(LootContextType lootContextType) {
-        return new LootTableReporter(this.messages, this.nameFactory, lootContextType, this.conditionGetter, this.conditions, this.supplierGetter, this.suppliers);
+    public LootTableReporter withContextType(LootContextType contextType) {
+        return new LootTableReporter(this.messages, this.nameFactory, contextType, this.conditionGetter, this.conditions, this.supplierGetter, this.suppliers);
     }
 }
 

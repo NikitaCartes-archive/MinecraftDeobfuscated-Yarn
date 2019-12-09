@@ -36,44 +36,44 @@ ChunkHolder.LevelUpdateListener {
     private final Set<MessageListener<?>> actors;
     private final TaskExecutor<TaskQueue.PrioritizedTask> sorter;
 
-    public ChunkTaskPrioritySystem(List<MessageListener<?>> list, Executor executor, int i) {
-        this.queues = list.stream().collect(Collectors.toMap(Function.identity(), messageListener -> new LevelPrioritizedQueue(messageListener.getName() + "_queue", i)));
-        this.actors = Sets.newHashSet(list);
+    public ChunkTaskPrioritySystem(List<MessageListener<?>> actors, Executor executor, int maxQueues) {
+        this.queues = actors.stream().collect(Collectors.toMap(Function.identity(), messageListener -> new LevelPrioritizedQueue(messageListener.getName() + "_queue", maxQueues)));
+        this.actors = Sets.newHashSet(actors);
         this.sorter = new TaskExecutor<TaskQueue.PrioritizedTask>(new TaskQueue.Prioritized(4), executor, "sorter");
     }
 
-    public static Task<Runnable> createMessage(Runnable runnable, long l, IntSupplier intSupplier) {
+    public static Task<Runnable> createMessage(Runnable runnable, long pos, IntSupplier lastLevelUpdatedToProvider) {
         return new Task<Runnable>(messageListener -> () -> {
             runnable.run();
             messageListener.send(Unit.INSTANCE);
-        }, l, intSupplier);
+        }, pos, lastLevelUpdatedToProvider);
     }
 
-    public static Task<Runnable> createMessage(ChunkHolder chunkHolder, Runnable runnable) {
-        return ChunkTaskPrioritySystem.createMessage(runnable, chunkHolder.getPos().toLong(), chunkHolder::getCompletedLevel);
+    public static Task<Runnable> createMessage(ChunkHolder holder, Runnable runnable) {
+        return ChunkTaskPrioritySystem.createMessage(runnable, holder.getPos().toLong(), holder::getCompletedLevel);
     }
 
-    public static SorterMessage createSorterMessage(Runnable runnable, long l, boolean bl) {
-        return new SorterMessage(runnable, l, bl);
+    public static SorterMessage createSorterMessage(Runnable runnable, long pos, boolean bl) {
+        return new SorterMessage(runnable, pos, bl);
     }
 
-    public <T> MessageListener<Task<T>> createExecutor(MessageListener<T> messageListener, boolean bl) {
+    public <T> MessageListener<Task<T>> createExecutor(MessageListener<T> executor, boolean bl) {
         return (MessageListener)this.sorter.ask(messageListener2 -> new TaskQueue.PrioritizedTask(0, () -> {
-            this.getQueue(messageListener);
-            messageListener2.send(MessageListener.create("chunk priority sorter around " + messageListener.getName(), task -> this.execute(messageListener, ((Task)task).function, ((Task)task).pos, ((Task)task).lastLevelUpdatedToProvider, bl)));
+            this.getQueue(executor);
+            messageListener2.send(MessageListener.create("chunk priority sorter around " + executor.getName(), task -> this.execute(executor, ((Task)task).function, ((Task)task).pos, ((Task)task).lastLevelUpdatedToProvider, bl)));
         })).join();
     }
 
-    public MessageListener<SorterMessage> createSorterExecutor(MessageListener<Runnable> messageListener) {
-        return (MessageListener)this.sorter.ask(messageListener2 -> new TaskQueue.PrioritizedTask(0, () -> messageListener2.send(MessageListener.create("chunk priority sorter around " + messageListener.getName(), sorterMessage -> this.sort(messageListener, ((SorterMessage)sorterMessage).pos, ((SorterMessage)sorterMessage).runnable, ((SorterMessage)sorterMessage).field_17451))))).join();
+    public MessageListener<SorterMessage> createSorterExecutor(MessageListener<Runnable> executor) {
+        return (MessageListener)this.sorter.ask(messageListener2 -> new TaskQueue.PrioritizedTask(0, () -> messageListener2.send(MessageListener.create("chunk priority sorter around " + executor.getName(), sorterMessage -> this.sort(executor, ((SorterMessage)sorterMessage).pos, ((SorterMessage)sorterMessage).runnable, ((SorterMessage)sorterMessage).field_17451))))).join();
     }
 
     @Override
-    public void updateLevel(ChunkPos chunkPos, IntSupplier intSupplier, int i, IntConsumer intConsumer) {
+    public void updateLevel(ChunkPos pos, IntSupplier levelGetter, int targetLevel, IntConsumer levelSetter) {
         this.sorter.send(new TaskQueue.PrioritizedTask(0, () -> {
-            int j = intSupplier.getAsInt();
-            this.queues.values().forEach(levelPrioritizedQueue -> levelPrioritizedQueue.updateLevel(j, chunkPos, i));
-            intConsumer.accept(i);
+            int j = levelGetter.getAsInt();
+            this.queues.values().forEach(levelPrioritizedQueue -> levelPrioritizedQueue.updateLevel(j, pos, targetLevel));
+            levelSetter.accept(targetLevel);
         }));
     }
 
@@ -88,38 +88,38 @@ ChunkHolder.LevelUpdateListener {
         }));
     }
 
-    private <T> void execute(MessageListener<T> messageListener, Function<MessageListener<Unit>, T> function, long l, IntSupplier intSupplier, boolean bl) {
+    private <T> void execute(MessageListener<T> actor, Function<MessageListener<Unit>, T> function, long l, IntSupplier lastLevelUpdatedToProvider, boolean bl) {
         this.sorter.send(new TaskQueue.PrioritizedTask(2, () -> {
-            LevelPrioritizedQueue levelPrioritizedQueue = this.getQueue(messageListener);
-            int i = intSupplier.getAsInt();
+            LevelPrioritizedQueue levelPrioritizedQueue = this.getQueue(actor);
+            int i = lastLevelUpdatedToProvider.getAsInt();
             levelPrioritizedQueue.add(Optional.of(function), l, i);
             if (bl) {
                 levelPrioritizedQueue.add(Optional.empty(), l, i);
             }
-            if (this.actors.remove(messageListener)) {
-                this.method_17630(levelPrioritizedQueue, messageListener);
+            if (this.actors.remove(actor)) {
+                this.method_17630(levelPrioritizedQueue, actor);
             }
         }));
     }
 
-    private <T> void method_17630(LevelPrioritizedQueue<Function<MessageListener<Unit>, T>> levelPrioritizedQueue, MessageListener<T> messageListener) {
+    private <T> void method_17630(LevelPrioritizedQueue<Function<MessageListener<Unit>, T>> levelPrioritizedQueue, MessageListener<T> actor) {
         this.sorter.send(new TaskQueue.PrioritizedTask(3, () -> {
             Stream<Either<Either, Runnable>> stream = levelPrioritizedQueue.poll();
             if (stream == null) {
-                this.actors.add(messageListener);
+                this.actors.add(actor);
             } else {
-                Util.combine(stream.map(either -> either.map(messageListener::ask, runnable -> {
+                Util.combine(stream.map(either -> either.map(actor::ask, runnable -> {
                     runnable.run();
                     return CompletableFuture.completedFuture(Unit.INSTANCE);
-                })).collect(Collectors.toList())).thenAccept(list -> this.method_17630(levelPrioritizedQueue, messageListener));
+                })).collect(Collectors.toList())).thenAccept(list -> this.method_17630(levelPrioritizedQueue, actor));
             }
         }));
     }
 
-    private <T> LevelPrioritizedQueue<Function<MessageListener<Unit>, T>> getQueue(MessageListener<T> messageListener) {
-        LevelPrioritizedQueue<Function<MessageListener<Unit>, T>> levelPrioritizedQueue = this.queues.get(messageListener);
+    private <T> LevelPrioritizedQueue<Function<MessageListener<Unit>, T>> getQueue(MessageListener<T> actor) {
+        LevelPrioritizedQueue<Function<MessageListener<Unit>, T>> levelPrioritizedQueue = this.queues.get(actor);
         if (levelPrioritizedQueue == null) {
-            throw Util.throwOrPause(new IllegalArgumentException("No queue for: " + messageListener));
+            throw Util.throwOrPause(new IllegalArgumentException("No queue for: " + actor));
         }
         return levelPrioritizedQueue;
     }
@@ -139,9 +139,9 @@ ChunkHolder.LevelUpdateListener {
         private final long pos;
         private final boolean field_17451;
 
-        private SorterMessage(Runnable runnable, long l, boolean bl) {
+        private SorterMessage(Runnable runnable, long pos, boolean bl) {
             this.runnable = runnable;
-            this.pos = l;
+            this.pos = pos;
             this.field_17451 = bl;
         }
     }
@@ -151,10 +151,10 @@ ChunkHolder.LevelUpdateListener {
         private final long pos;
         private final IntSupplier lastLevelUpdatedToProvider;
 
-        private Task(Function<MessageListener<Unit>, T> function, long l, IntSupplier intSupplier) {
+        private Task(Function<MessageListener<Unit>, T> function, long pos, IntSupplier lastLevelUpdatedToProvider) {
             this.function = function;
-            this.pos = l;
-            this.lastLevelUpdatedToProvider = intSupplier;
+            this.pos = pos;
+            this.lastLevelUpdatedToProvider = lastLevelUpdatedToProvider;
         }
     }
 }

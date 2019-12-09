@@ -45,7 +45,7 @@ public class Main {
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    public static void main(String[] strings) {
+    public static void main(String[] args) {
         Thread thread2;
         MinecraftClient minecraftClient;
         OptionParser optionParser = new OptionParser();
@@ -76,7 +76,7 @@ public class Main {
         ArgumentAcceptingOptionSpec<String> optionSpec21 = optionParser.accepts("userType").withRequiredArg().defaultsTo("legacy", (String[])new String[0]);
         ArgumentAcceptingOptionSpec<String> optionSpec22 = optionParser.accepts("versionType").withRequiredArg().defaultsTo("release", (String[])new String[0]);
         NonOptionArgumentSpec<String> optionSpec23 = optionParser.nonOptions();
-        OptionSet optionSet = optionParser.parse(strings);
+        OptionSet optionSet = optionParser.parse(args);
         List<String> list = optionSet.valuesOf(optionSpec23);
         if (!list.isEmpty()) {
             System.out.println("Completely ignored arguments: " + list);
@@ -191,8 +191,8 @@ public class Main {
         }
     }
 
-    private static OptionalInt toOptional(@Nullable Integer integer) {
-        return integer != null ? OptionalInt.of(integer) : OptionalInt.empty();
+    private static OptionalInt toOptional(@Nullable Integer i) {
+        return i != null ? OptionalInt.of(i) : OptionalInt.empty();
     }
 
     @Nullable
@@ -209,8 +209,8 @@ public class Main {
         }
     }
 
-    private static boolean isNotNullOrEmpty(@Nullable String string) {
-        return string != null && !string.isEmpty();
+    private static boolean isNotNullOrEmpty(@Nullable String s) {
+        return s != null && !s.isEmpty();
     }
 
     static {

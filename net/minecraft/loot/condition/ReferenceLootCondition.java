@@ -19,22 +19,22 @@ implements LootCondition {
     private static final Logger LOGGER = LogManager.getLogger();
     private final Identifier id;
 
-    public ReferenceLootCondition(Identifier identifier) {
-        this.id = identifier;
+    public ReferenceLootCondition(Identifier id) {
+        this.id = id;
     }
 
     @Override
-    public void check(LootTableReporter lootTableReporter) {
-        if (lootTableReporter.hasCondition(this.id)) {
-            lootTableReporter.report("Condition " + this.id + " is recursively called");
+    public void check(LootTableReporter reporter) {
+        if (reporter.hasCondition(this.id)) {
+            reporter.report("Condition " + this.id + " is recursively called");
             return;
         }
-        LootCondition.super.check(lootTableReporter);
-        LootCondition lootCondition = lootTableReporter.getCondition(this.id);
+        LootCondition.super.check(reporter);
+        LootCondition lootCondition = reporter.getCondition(this.id);
         if (lootCondition == null) {
-            lootTableReporter.report("Unknown condition table called " + this.id);
+            reporter.report("Unknown condition table called " + this.id);
         } else {
-            lootCondition.check(lootTableReporter.withSupplier(".{" + this.id + "}", this.id));
+            lootCondition.check(reporter.withSupplier(".{" + this.id + "}", this.id));
         }
     }
 
@@ -57,8 +57,8 @@ implements LootCondition {
     }
 
     @Override
-    public /* synthetic */ boolean test(Object object) {
-        return this.test((LootContext)object);
+    public /* synthetic */ boolean test(Object context) {
+        return this.test((LootContext)context);
     }
 
     public static class Factory
@@ -79,8 +79,8 @@ implements LootCondition {
         }
 
         @Override
-        public /* synthetic */ LootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            return this.fromJson(jsonObject, jsonDeserializationContext);
+        public /* synthetic */ LootCondition fromJson(JsonObject json, JsonDeserializationContext context) {
+            return this.fromJson(json, context);
         }
     }
 }

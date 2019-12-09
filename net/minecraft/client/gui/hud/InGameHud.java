@@ -112,24 +112,24 @@ extends DrawableHelper {
     private int scaledHeight;
     private final Map<MessageType, List<ClientChatListener>> listeners = Maps.newHashMap();
 
-    public InGameHud(MinecraftClient minecraftClient) {
-        this.client = minecraftClient;
-        this.itemRenderer = minecraftClient.getItemRenderer();
-        this.debugHud = new DebugHud(minecraftClient);
-        this.spectatorHud = new SpectatorHud(minecraftClient);
-        this.chatHud = new ChatHud(minecraftClient);
-        this.playerListHud = new PlayerListHud(minecraftClient, this);
-        this.bossBarHud = new BossBarHud(minecraftClient);
-        this.subtitlesHud = new SubtitlesHud(minecraftClient);
+    public InGameHud(MinecraftClient client) {
+        this.client = client;
+        this.itemRenderer = client.getItemRenderer();
+        this.debugHud = new DebugHud(client);
+        this.spectatorHud = new SpectatorHud(client);
+        this.chatHud = new ChatHud(client);
+        this.playerListHud = new PlayerListHud(client, this);
+        this.bossBarHud = new BossBarHud(client);
+        this.subtitlesHud = new SubtitlesHud(client);
         for (MessageType messageType : MessageType.values()) {
             this.listeners.put(messageType, Lists.newArrayList());
         }
         NarratorManager clientChatListener = NarratorManager.INSTANCE;
-        this.listeners.get((Object)MessageType.CHAT).add(new ChatListenerHud(minecraftClient));
+        this.listeners.get((Object)MessageType.CHAT).add(new ChatListenerHud(client));
         this.listeners.get((Object)MessageType.CHAT).add(clientChatListener);
-        this.listeners.get((Object)MessageType.SYSTEM).add(new ChatListenerHud(minecraftClient));
+        this.listeners.get((Object)MessageType.SYSTEM).add(new ChatListenerHud(client));
         this.listeners.get((Object)MessageType.SYSTEM).add(clientChatListener);
-        this.listeners.get((Object)MessageType.GAME_INFO).add(new GameInfoChatListener(minecraftClient));
+        this.listeners.get((Object)MessageType.GAME_INFO).add(new GameInfoChatListener(client));
         this.setDefaultTitleFade();
     }
 
@@ -139,9 +139,9 @@ extends DrawableHelper {
         this.titleFadeOutTicks = 20;
     }
 
-    public void render(float f) {
+    public void render(float tickDelta) {
         int j;
-        float g;
+        float f;
         this.scaledWidth = this.client.getWindow().getScaledWidth();
         this.scaledHeight = this.client.getWindow().getScaledHeight();
         TextRenderer textRenderer = this.getFontRenderer();
@@ -156,13 +156,13 @@ extends DrawableHelper {
         if (this.client.options.perspective == 0 && itemStack.getItem() == Blocks.CARVED_PUMPKIN.asItem()) {
             this.renderPumpkinOverlay();
         }
-        if (!this.client.player.hasStatusEffect(StatusEffects.NAUSEA) && (g = MathHelper.lerp(f, this.client.player.lastNauseaStrength, this.client.player.nextNauseaStrength)) > 0.0f) {
-            this.renderPortalOverlay(g);
+        if (!this.client.player.hasStatusEffect(StatusEffects.NAUSEA) && (f = MathHelper.lerp(tickDelta, this.client.player.lastNauseaStrength, this.client.player.nextNauseaStrength)) > 0.0f) {
+            this.renderPortalOverlay(f);
         }
         if (this.client.interactionManager.getCurrentGameMode() == GameMode.SPECTATOR) {
-            this.spectatorHud.render(f);
+            this.spectatorHud.render(tickDelta);
         } else if (!this.client.options.hudHidden) {
-            this.renderHotbar(f);
+            this.renderHotbar(tickDelta);
         }
         if (!this.client.options.hudHidden) {
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -197,12 +197,12 @@ extends DrawableHelper {
             this.client.getProfiler().push("sleep");
             RenderSystem.disableDepthTest();
             RenderSystem.disableAlphaTest();
-            g = this.client.player.getSleepTimer();
-            float h = g / 100.0f;
-            if (h > 1.0f) {
-                h = 1.0f - (g - 100.0f) / 10.0f;
+            f = this.client.player.getSleepTimer();
+            float g = f / 100.0f;
+            if (g > 1.0f) {
+                g = 1.0f - (f - 100.0f) / 10.0f;
             }
-            j = (int)(220.0f * h) << 24 | 0x101020;
+            j = (int)(220.0f * g) << 24 | 0x101020;
             InGameHud.fill(0, 0, this.scaledWidth, this.scaledHeight, j);
             RenderSystem.enableAlphaTest();
             RenderSystem.enableDepthTest();
@@ -221,8 +221,8 @@ extends DrawableHelper {
             int l;
             if (this.overlayRemaining > 0) {
                 this.client.getProfiler().push("overlayMessage");
-                g = (float)this.overlayRemaining - f;
-                int k = (int)(g * 255.0f / 20.0f);
+                f = (float)this.overlayRemaining - tickDelta;
+                int k = (int)(f * 255.0f / 20.0f);
                 if (k > 255) {
                     k = 255;
                 }
@@ -233,7 +233,7 @@ extends DrawableHelper {
                     RenderSystem.defaultBlendFunc();
                     j = 0xFFFFFF;
                     if (this.overlayTinted) {
-                        j = MathHelper.hsvToRgb(g / 50.0f, 0.7f, 0.6f) & 0xFFFFFF;
+                        j = MathHelper.hsvToRgb(f / 50.0f, 0.7f, 0.6f) & 0xFFFFFF;
                     }
                     l = k << 24 & 0xFF000000;
                     this.drawTextBackground(textRenderer, -4, textRenderer.getStringWidth(this.overlayMessage));
@@ -245,14 +245,14 @@ extends DrawableHelper {
             }
             if (this.titleTotalTicks > 0) {
                 this.client.getProfiler().push("titleAndSubtitle");
-                g = (float)this.titleTotalTicks - f;
+                f = (float)this.titleTotalTicks - tickDelta;
                 int k = 255;
                 if (this.titleTotalTicks > this.titleFadeOutTicks + this.titleRemainTicks) {
-                    float m = (float)(this.titleFadeInTicks + this.titleRemainTicks + this.titleFadeOutTicks) - g;
-                    k = (int)(m * 255.0f / (float)this.titleFadeInTicks);
+                    float h = (float)(this.titleFadeInTicks + this.titleRemainTicks + this.titleFadeOutTicks) - f;
+                    k = (int)(h * 255.0f / (float)this.titleFadeInTicks);
                 }
                 if (this.titleTotalTicks <= this.titleFadeOutTicks) {
-                    k = (int)(g * 255.0f / (float)this.titleFadeOutTicks);
+                    k = (int)(f * 255.0f / (float)this.titleFadeOutTicks);
                 }
                 if ((k = MathHelper.clamp(k, 0, 255)) > 8) {
                     RenderSystem.pushMatrix();
@@ -269,9 +269,9 @@ extends DrawableHelper {
                     if (!this.subtitle.isEmpty()) {
                         RenderSystem.pushMatrix();
                         RenderSystem.scalef(2.0f, 2.0f, 2.0f);
-                        int n = textRenderer.getStringWidth(this.subtitle);
-                        this.drawTextBackground(textRenderer, 5, n);
-                        textRenderer.drawWithShadow(this.subtitle, -n / 2, 5.0f, 0xFFFFFF | j2);
+                        int m = textRenderer.getStringWidth(this.subtitle);
+                        this.drawTextBackground(textRenderer, 5, m);
+                        textRenderer.drawWithShadow(this.subtitle, -m / 2, 5.0f, 0xFFFFFF | j2);
                         RenderSystem.popMatrix();
                     }
                     RenderSystem.disableBlend();
@@ -311,11 +311,11 @@ extends DrawableHelper {
         RenderSystem.enableAlphaTest();
     }
 
-    private void drawTextBackground(TextRenderer textRenderer, int i, int j) {
-        int k = this.client.options.getTextBackgroundColor(0.0f);
-        if (k != 0) {
-            int l = -j / 2;
-            InGameHud.fill(l - 2, i - 2, l + j + 2, i + textRenderer.fontHeight + 2, k);
+    private void drawTextBackground(TextRenderer textRenderer, int y, int width) {
+        int i = this.client.options.getTextBackgroundColor(0.0f);
+        if (i != 0) {
+            int j = -width / 2;
+            InGameHud.fill(j - 2, y - 2, j + width + 2, y + textRenderer.fontHeight + 2, i);
         }
     }
 
@@ -624,11 +624,11 @@ extends DrawableHelper {
         return null;
     }
 
-    private int getHeartCount(LivingEntity livingEntity) {
-        if (livingEntity == null || !livingEntity.isLiving()) {
+    private int getHeartCount(LivingEntity entity) {
+        if (entity == null || !entity.isLiving()) {
             return 0;
         }
-        float f = livingEntity.getMaximumHealth();
+        float f = entity.getMaximumHealth();
         int i = (int)(f + 0.5f) / 2;
         if (i > 30) {
             i = 30;
@@ -636,8 +636,8 @@ extends DrawableHelper {
         return i;
     }
 
-    private int getHeartRows(int i) {
-        return (int)Math.ceil((double)i / 10.0);
+    private int getHeartRows(int heartCount) {
+        return (int)Math.ceil((double)heartCount / 10.0);
     }
 
     private void renderStatusBars() {

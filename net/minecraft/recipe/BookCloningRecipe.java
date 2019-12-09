@@ -100,8 +100,8 @@ extends SpecialCraftingRecipe {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean fits(int i, int j) {
-        return i >= 3 && j >= 3;
+    public boolean fits(int width, int height) {
+        return width >= 3 && height >= 3;
     }
 }
 

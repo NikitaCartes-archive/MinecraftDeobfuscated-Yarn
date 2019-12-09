@@ -10,13 +10,13 @@ import net.fabricmc.api.Environment;
 public class FoliageColors {
     private static int[] colorMap = new int[65536];
 
-    public static void setColorMap(int[] is) {
-        colorMap = is;
+    public static void setColorMap(int[] pixels) {
+        colorMap = pixels;
     }
 
-    public static int getColor(double d, double e) {
-        int i = (int)((1.0 - d) * 255.0);
-        int j = (int)((1.0 - (e *= d)) * 255.0);
+    public static int getColor(double temperature, double humidity) {
+        int i = (int)((1.0 - temperature) * 255.0);
+        int j = (int)((1.0 - (humidity *= temperature)) * 255.0);
         return colorMap[j << 8 | i];
     }
 

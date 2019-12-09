@@ -12,15 +12,15 @@ import net.minecraft.datafixers.fixes.ChoiceFix;
 
 public class EntityArmorStandSilentFix
 extends ChoiceFix {
-    public EntityArmorStandSilentFix(Schema schema, boolean bl) {
-        super(schema, bl, "EntityArmorStandSilentFix", TypeReferences.ENTITY, "ArmorStand");
+    public EntityArmorStandSilentFix(Schema outputSchema, boolean changesType) {
+        super(outputSchema, changesType, "EntityArmorStandSilentFix", TypeReferences.ENTITY, "ArmorStand");
     }
 
-    public Dynamic<?> fixSilent(Dynamic<?> dynamic) {
-        if (dynamic.get("Silent").asBoolean(false) && !dynamic.get("Marker").asBoolean(false)) {
-            return dynamic.remove("Silent");
+    public Dynamic<?> fixSilent(Dynamic<?> tag) {
+        if (tag.get("Silent").asBoolean(false) && !tag.get("Marker").asBoolean(false)) {
+            return tag.remove("Silent");
         }
-        return dynamic;
+        return tag;
     }
 
     @Override

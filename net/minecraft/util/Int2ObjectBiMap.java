@@ -33,11 +33,11 @@ implements IndexedIterable<K> {
 
     @Override
     @Nullable
-    public K get(int i) {
-        if (i < 0 || i >= this.idToValues.length) {
+    public K get(int index) {
+        if (index < 0 || index >= this.idToValues.length) {
             return null;
         }
-        return this.idToValues[i];
+        return this.idToValues[index];
     }
 
     private int getIdFromIndex(int i) {

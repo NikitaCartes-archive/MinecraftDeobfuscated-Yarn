@@ -27,8 +27,8 @@ extends RealmsScreen {
     String[] difficulties = new String[]{RealmsBackupInfoScreen.getLocalizedString("options.difficulty.peaceful"), RealmsBackupInfoScreen.getLocalizedString("options.difficulty.easy"), RealmsBackupInfoScreen.getLocalizedString("options.difficulty.normal"), RealmsBackupInfoScreen.getLocalizedString("options.difficulty.hard")};
     String[] gameModes = new String[]{RealmsBackupInfoScreen.getLocalizedString("selectWorld.gameMode.survival"), RealmsBackupInfoScreen.getLocalizedString("selectWorld.gameMode.creative"), RealmsBackupInfoScreen.getLocalizedString("selectWorld.gameMode.adventure")};
 
-    public RealmsBackupInfoScreen(RealmsScreen realmsScreen, Backup backup) {
-        this.lastScreen = realmsScreen;
+    public RealmsBackupInfoScreen(RealmsScreen lastScreen, Backup backup) {
+        this.lastScreen = lastScreen;
         this.backup = backup;
         if (backup.changeList != null) {
             for (Map.Entry<String, String> entry : backup.changeList.entrySet()) {
@@ -62,44 +62,44 @@ extends RealmsScreen {
     }
 
     @Override
-    public boolean keyPressed(int i, int j, int k) {
-        if (i == 256) {
+    public boolean keyPressed(int eventKey, int scancode, int mods) {
+        if (eventKey == 256) {
             Realms.setScreen(this.lastScreen);
             return true;
         }
-        return super.keyPressed(i, j, k);
+        return super.keyPressed(eventKey, scancode, mods);
     }
 
     @Override
-    public void render(int i, int j, float f) {
+    public void render(int xm, int ym, float a) {
         this.renderBackground();
         this.drawCenteredString("Changes from last backup", this.width() / 2, 10, 0xFFFFFF);
-        this.backupInfoList.render(i, j, f);
-        super.render(i, j, f);
+        this.backupInfoList.render(xm, ym, a);
+        super.render(xm, ym, a);
     }
 
-    private String checkForSpecificMetadata(String string, String string2) {
-        String string3 = string.toLowerCase(Locale.ROOT);
-        if (string3.contains("game") && string3.contains("mode")) {
-            return this.gameModeMetadata(string2);
+    private String checkForSpecificMetadata(String key, String value) {
+        String string = key.toLowerCase(Locale.ROOT);
+        if (string.contains("game") && string.contains("mode")) {
+            return this.gameModeMetadata(value);
         }
-        if (string3.contains("game") && string3.contains("difficulty")) {
-            return this.gameDifficultyMetadata(string2);
+        if (string.contains("game") && string.contains("difficulty")) {
+            return this.gameDifficultyMetadata(value);
         }
-        return string2;
+        return value;
     }
 
-    private String gameDifficultyMetadata(String string) {
+    private String gameDifficultyMetadata(String value) {
         try {
-            return this.difficulties[Integer.parseInt(string)];
+            return this.difficulties[Integer.parseInt(value)];
         } catch (Exception exception) {
             return "UNKNOWN";
         }
     }
 
-    private String gameModeMetadata(String string) {
+    private String gameModeMetadata(String value) {
         try {
-            return this.gameModes[Integer.parseInt(string)];
+            return this.gameModes[Integer.parseInt(value)];
         } catch (Exception exception) {
             return "UNKNOWN";
         }
@@ -118,7 +118,7 @@ extends RealmsScreen {
         }
 
         @Override
-        public boolean isSelectedItem(int i) {
+        public boolean isSelectedItem(int item) {
             return false;
         }
 
@@ -132,11 +132,11 @@ extends RealmsScreen {
         }
 
         @Override
-        public void renderItem(int i, int j, int k, int l, Tezzelator tezzelator, int m, int n) {
+        public void renderItem(int i, int x, int y, int h, Tezzelator t, int mouseX, int mouseY) {
             String string = (String)RealmsBackupInfoScreen.this.keys.get(i);
-            RealmsBackupInfoScreen.this.drawString(string, this.width() / 2 - 40, k, 0xA0A0A0);
+            RealmsBackupInfoScreen.this.drawString(string, this.width() / 2 - 40, y, 0xA0A0A0);
             String string2 = ((RealmsBackupInfoScreen)RealmsBackupInfoScreen.this).backup.changeList.get(string);
-            RealmsBackupInfoScreen.this.drawString(RealmsBackupInfoScreen.this.checkForSpecificMetadata(string, string2), this.width() / 2 - 40, k + 12, 0xFFFFFF);
+            RealmsBackupInfoScreen.this.drawString(RealmsBackupInfoScreen.this.checkForSpecificMetadata(string, string2), this.width() / 2 - 40, y + 12, 0xFFFFFF);
         }
     }
 }

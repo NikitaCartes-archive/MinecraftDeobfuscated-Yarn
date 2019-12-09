@@ -24,8 +24,8 @@ implements ParentElement {
     }
 
     @Override
-    public final void setDragging(boolean bl) {
-        this.isDragging = bl;
+    public final void setDragging(boolean dragging) {
+        this.isDragging = dragging;
     }
 
     @Override
@@ -35,8 +35,8 @@ implements ParentElement {
     }
 
     @Override
-    public void setFocused(@Nullable Element element) {
-        this.focused = element;
+    public void setFocused(@Nullable Element focused) {
+        this.focused = focused;
     }
 }
 

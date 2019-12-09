@@ -36,56 +36,56 @@ extends AbstractRedstoneGateBlock {
     }
 
     @Override
-    public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-        if (!playerEntity.abilities.allowModifyWorld) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        if (!player.abilities.allowModifyWorld) {
             return ActionResult.PASS;
         }
-        world.setBlockState(blockPos, (BlockState)blockState.cycle(DELAY), 3);
+        world.setBlockState(pos, (BlockState)state.cycle(DELAY), 3);
         return ActionResult.SUCCESS;
     }
 
     @Override
-    protected int getUpdateDelayInternal(BlockState blockState) {
-        return blockState.get(DELAY) * 2;
+    protected int getUpdateDelayInternal(BlockState state) {
+        return state.get(DELAY) * 2;
     }
 
     @Override
-    public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-        BlockState blockState = super.getPlacementState(itemPlacementContext);
-        return (BlockState)blockState.with(LOCKED, this.isLocked(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos(), blockState));
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        BlockState blockState = super.getPlacementState(ctx);
+        return (BlockState)blockState.with(LOCKED, this.isLocked(ctx.getWorld(), ctx.getBlockPos(), blockState));
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-        if (!iWorld.isClient() && direction.getAxis() != blockState.get(FACING).getAxis()) {
-            return (BlockState)blockState.with(LOCKED, this.isLocked(iWorld, blockPos, blockState));
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+        if (!world.isClient() && facing.getAxis() != state.get(FACING).getAxis()) {
+            return (BlockState)state.with(LOCKED, this.isLocked(world, pos, state));
         }
-        return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+        return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
     }
 
     @Override
-    public boolean isLocked(WorldView worldView, BlockPos blockPos, BlockState blockState) {
-        return this.getMaxInputLevelSides(worldView, blockPos, blockState) > 0;
+    public boolean isLocked(WorldView worldView, BlockPos pos, BlockState state) {
+        return this.getMaxInputLevelSides(worldView, pos, state) > 0;
     }
 
     @Override
-    protected boolean isValidInput(BlockState blockState) {
-        return RepeaterBlock.isRedstoneGate(blockState);
+    protected boolean isValidInput(BlockState state) {
+        return RepeaterBlock.isRedstoneGate(state);
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-        if (!blockState.get(POWERED).booleanValue()) {
+    public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+        if (!state.get(POWERED).booleanValue()) {
             return;
         }
-        Direction direction = blockState.get(FACING);
-        double d = (double)((float)blockPos.getX() + 0.5f) + (double)(random.nextFloat() - 0.5f) * 0.2;
-        double e = (double)((float)blockPos.getY() + 0.4f) + (double)(random.nextFloat() - 0.5f) * 0.2;
-        double f = (double)((float)blockPos.getZ() + 0.5f) + (double)(random.nextFloat() - 0.5f) * 0.2;
+        Direction direction = state.get(FACING);
+        double d = (double)((float)pos.getX() + 0.5f) + (double)(random.nextFloat() - 0.5f) * 0.2;
+        double e = (double)((float)pos.getY() + 0.4f) + (double)(random.nextFloat() - 0.5f) * 0.2;
+        double f = (double)((float)pos.getZ() + 0.5f) + (double)(random.nextFloat() - 0.5f) * 0.2;
         float g = -5.0f;
         if (random.nextBoolean()) {
-            g = blockState.get(DELAY) * 2 - 1;
+            g = state.get(DELAY) * 2 - 1;
         }
         double h = (g /= 16.0f) * (float)direction.getOffsetX();
         double i = g * (float)direction.getOffsetZ();

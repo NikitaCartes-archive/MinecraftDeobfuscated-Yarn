@@ -32,27 +32,27 @@ extends Item {
     private final int comparatorOutput;
     private final SoundEvent sound;
 
-    protected MusicDiscItem(int i, SoundEvent soundEvent, Item.Settings settings) {
+    protected MusicDiscItem(int comparatorOutput, SoundEvent sound, Item.Settings settings) {
         super(settings);
-        this.comparatorOutput = i;
-        this.sound = soundEvent;
+        this.comparatorOutput = comparatorOutput;
+        this.sound = sound;
         MUSIC_DISCS.put(this.sound, this);
     }
 
     @Override
-    public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
+    public ActionResult useOnBlock(ItemUsageContext context) {
         BlockPos blockPos;
-        World world = itemUsageContext.getWorld();
-        BlockState blockState = world.getBlockState(blockPos = itemUsageContext.getBlockPos());
+        World world = context.getWorld();
+        BlockState blockState = world.getBlockState(blockPos = context.getBlockPos());
         if (blockState.getBlock() != Blocks.JUKEBOX || blockState.get(JukeboxBlock.HAS_RECORD).booleanValue()) {
             return ActionResult.PASS;
         }
-        ItemStack itemStack = itemUsageContext.getStack();
+        ItemStack itemStack = context.getStack();
         if (!world.isClient) {
             ((JukeboxBlock)Blocks.JUKEBOX).setRecord(world, blockPos, blockState, itemStack);
             world.playLevelEvent(null, 1010, blockPos, Item.getRawId(this));
             itemStack.decrement(1);
-            PlayerEntity playerEntity = itemUsageContext.getPlayer();
+            PlayerEntity playerEntity = context.getPlayer();
             if (playerEntity != null) {
                 playerEntity.incrementStat(Stats.PLAY_RECORD);
             }
@@ -66,8 +66,8 @@ extends Item {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
-        list.add(this.getDescription().formatted(Formatting.GRAY));
+    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+        tooltip.add(this.getDescription().formatted(Formatting.GRAY));
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -77,8 +77,8 @@ extends Item {
 
     @Nullable
     @Environment(value=EnvType.CLIENT)
-    public static MusicDiscItem bySound(SoundEvent soundEvent) {
-        return MUSIC_DISCS.get(soundEvent);
+    public static MusicDiscItem bySound(SoundEvent sound) {
+        return MUSIC_DISCS.get(sound);
     }
 
     @Environment(value=EnvType.CLIENT)

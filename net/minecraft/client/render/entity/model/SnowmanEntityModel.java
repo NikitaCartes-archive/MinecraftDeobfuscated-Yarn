@@ -41,20 +41,20 @@ extends CompositeEntityModel<T> {
     }
 
     @Override
-    public void setAngles(T entity, float f, float g, float h, float i, float j) {
-        this.topSnowball.yaw = i * ((float)Math.PI / 180);
-        this.topSnowball.pitch = j * ((float)Math.PI / 180);
-        this.middleSnowball.yaw = i * ((float)Math.PI / 180) * 0.25f;
-        float k = MathHelper.sin(this.middleSnowball.yaw);
-        float l = MathHelper.cos(this.middleSnowball.yaw);
+    public void setAngles(T entity, float limbAngle, float limbDistance, float customAngle, float headYaw, float headPitch) {
+        this.topSnowball.yaw = headYaw * ((float)Math.PI / 180);
+        this.topSnowball.pitch = headPitch * ((float)Math.PI / 180);
+        this.middleSnowball.yaw = headYaw * ((float)Math.PI / 180) * 0.25f;
+        float f = MathHelper.sin(this.middleSnowball.yaw);
+        float g = MathHelper.cos(this.middleSnowball.yaw);
         this.leftArm.roll = 1.0f;
         this.rightArm.roll = -1.0f;
         this.leftArm.yaw = 0.0f + this.middleSnowball.yaw;
         this.rightArm.yaw = (float)Math.PI + this.middleSnowball.yaw;
-        this.leftArm.pivotX = l * 5.0f;
-        this.leftArm.pivotZ = -k * 5.0f;
-        this.rightArm.pivotX = -l * 5.0f;
-        this.rightArm.pivotZ = k * 5.0f;
+        this.leftArm.pivotX = g * 5.0f;
+        this.leftArm.pivotZ = -f * 5.0f;
+        this.rightArm.pivotX = -g * 5.0f;
+        this.rightArm.pivotZ = f * 5.0f;
     }
 
     @Override

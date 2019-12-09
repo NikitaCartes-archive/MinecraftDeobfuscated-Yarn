@@ -14,13 +14,13 @@ implements CarverConfig,
 FeatureConfig {
     public final float probability;
 
-    public ProbabilityConfig(float f) {
-        this.probability = f;
+    public ProbabilityConfig(float probability) {
+        this.probability = probability;
     }
 
     @Override
-    public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-        return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("probability"), dynamicOps.createFloat(this.probability))));
+    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("probability"), ops.createFloat(this.probability))));
     }
 
     public static <T> ProbabilityConfig deserialize(Dynamic<T> dynamic) {

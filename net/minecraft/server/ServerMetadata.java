@@ -47,8 +47,8 @@ public class ServerMetadata {
         this.version = version;
     }
 
-    public void setFavicon(String string) {
-        this.favicon = string;
+    public void setFavicon(String favicon) {
+        this.favicon = favicon;
     }
 
     public String getFavicon() {
@@ -101,8 +101,8 @@ public class ServerMetadata {
         }
 
         @Override
-        public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.deserialize(jsonElement, type, jsonDeserializationContext);
+        public /* synthetic */ Object deserialize(JsonElement functionJson, Type unused, JsonDeserializationContext context) throws JsonParseException {
+            return this.deserialize(functionJson, unused, context);
         }
     }
 
@@ -110,9 +110,9 @@ public class ServerMetadata {
         private final String gameVersion;
         private final int protocolVersion;
 
-        public Version(String string, int i) {
-            this.gameVersion = string;
-            this.protocolVersion = i;
+        public Version(String gameVersion, int protocolVersion) {
+            this.gameVersion = gameVersion;
+            this.protocolVersion = protocolVersion;
         }
 
         public String getGameVersion() {
@@ -141,8 +141,8 @@ public class ServerMetadata {
             }
 
             @Override
-            public /* synthetic */ JsonElement serialize(Object object, Type type, JsonSerializationContext jsonSerializationContext) {
-                return this.serialize((Version)object, type, jsonSerializationContext);
+            public /* synthetic */ JsonElement serialize(Object entry, Type unused, JsonSerializationContext context) {
+                return this.serialize((Version)entry, unused, context);
             }
 
             @Override
@@ -157,9 +157,9 @@ public class ServerMetadata {
         private final int online;
         private GameProfile[] sample;
 
-        public Players(int i, int j) {
-            this.max = i;
-            this.online = j;
+        public Players(int max, int online) {
+            this.max = max;
+            this.online = online;
         }
 
         public int getPlayerLimit() {
@@ -174,8 +174,8 @@ public class ServerMetadata {
             return this.sample;
         }
 
-        public void setSample(GameProfile[] gameProfiles) {
-            this.sample = gameProfiles;
+        public void setSample(GameProfile[] sample) {
+            this.sample = sample;
         }
 
         public static class Deserializer
@@ -218,8 +218,8 @@ public class ServerMetadata {
             }
 
             @Override
-            public /* synthetic */ JsonElement serialize(Object object, Type type, JsonSerializationContext jsonSerializationContext) {
-                return this.serialize((Players)object, type, jsonSerializationContext);
+            public /* synthetic */ JsonElement serialize(Object entry, Type unused, JsonSerializationContext context) {
+                return this.serialize((Players)entry, unused, context);
             }
 
             @Override

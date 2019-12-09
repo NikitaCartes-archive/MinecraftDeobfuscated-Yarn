@@ -55,8 +55,8 @@ public class UserCache {
     private final File cacheFile;
     private static final ParameterizedType ENTRY_LIST_TYPE;
 
-    public UserCache(GameProfileRepository gameProfileRepository, File file) {
-        this.profileRepository = gameProfileRepository;
+    public UserCache(GameProfileRepository profileRepository, File file) {
+        this.profileRepository = profileRepository;
         this.cacheFile = file;
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeHierarchyAdapter(Entry.class, new JsonConverter());
@@ -64,31 +64,31 @@ public class UserCache {
         this.load();
     }
 
-    private static GameProfile findProfileByName(GameProfileRepository gameProfileRepository, String string) {
+    private static GameProfile findProfileByName(GameProfileRepository repository, String name) {
         final GameProfile[] gameProfiles = new GameProfile[1];
         ProfileLookupCallback profileLookupCallback = new ProfileLookupCallback(){
 
             @Override
-            public void onProfileLookupSucceeded(GameProfile gameProfile) {
-                gameProfiles[0] = gameProfile;
+            public void onProfileLookupSucceeded(GameProfile profile) {
+                gameProfiles[0] = profile;
             }
 
             @Override
-            public void onProfileLookupFailed(GameProfile gameProfile, Exception exception) {
+            public void onProfileLookupFailed(GameProfile profile, Exception exception) {
                 gameProfiles[0] = null;
             }
         };
-        gameProfileRepository.findProfilesByNames(new String[]{string}, Agent.MINECRAFT, profileLookupCallback);
+        repository.findProfilesByNames(new String[]{name}, Agent.MINECRAFT, profileLookupCallback);
         if (!UserCache.shouldUseRemote() && gameProfiles[0] == null) {
-            UUID uUID = PlayerEntity.getUuidFromProfile(new GameProfile(null, string));
-            GameProfile gameProfile = new GameProfile(uUID, string);
+            UUID uUID = PlayerEntity.getUuidFromProfile(new GameProfile(null, name));
+            GameProfile gameProfile = new GameProfile(uUID, name);
             profileLookupCallback.onProfileLookupSucceeded(gameProfile);
         }
         return gameProfiles[0];
     }
 
-    public static void setUseRemote(boolean bl) {
-        useRemote = bl;
+    public static void setUseRemote(boolean value) {
+        useRemote = value;
     }
 
     private static boolean shouldUseRemote() {
@@ -99,23 +99,23 @@ public class UserCache {
         this.add(gameProfile, null);
     }
 
-    private void add(GameProfile gameProfile, Date date) {
-        UUID uUID = gameProfile.getId();
+    private void add(GameProfile profile, Date date) {
+        UUID uUID = profile.getId();
         if (date == null) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(new Date());
             calendar.add(2, 1);
             date = calendar.getTime();
         }
-        Entry entry = new Entry(gameProfile, date);
+        Entry entry = new Entry(profile, date);
         if (this.byUuid.containsKey(uUID)) {
             Entry entry2 = this.byUuid.get(uUID);
             this.byName.remove(entry2.getProfile().getName().toLowerCase(Locale.ROOT));
-            this.byAccessTime.remove(gameProfile);
+            this.byAccessTime.remove(profile);
         }
-        this.byName.put(gameProfile.getName().toLowerCase(Locale.ROOT), entry);
+        this.byName.put(profile.getName().toLowerCase(Locale.ROOT), entry);
         this.byUuid.put(uUID, entry);
-        this.byAccessTime.addFirst(gameProfile);
+        this.byAccessTime.addFirst(profile);
         this.save();
     }
 
@@ -312,13 +312,13 @@ public class UserCache {
         }
 
         @Override
-        public /* synthetic */ JsonElement serialize(Object object, Type type, JsonSerializationContext jsonSerializationContext) {
-            return this.serialize((Entry)object, type, jsonSerializationContext);
+        public /* synthetic */ JsonElement serialize(Object entry, Type unused, JsonSerializationContext context) {
+            return this.serialize((Entry)entry, unused, context);
         }
 
         @Override
-        public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.deserialize(jsonElement, type, jsonDeserializationContext);
+        public /* synthetic */ Object deserialize(JsonElement functionJson, Type unused, JsonDeserializationContext context) throws JsonParseException {
+            return this.deserialize(functionJson, unused, context);
         }
     }
 }

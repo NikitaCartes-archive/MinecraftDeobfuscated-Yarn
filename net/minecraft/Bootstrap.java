@@ -52,12 +52,12 @@ public class Bootstrap {
         Bootstrap.setOutputStreams();
     }
 
-    private static <T> void collectMissingTranslations(Registry<T> registry, Function<T, String> function, Set<String> set) {
+    private static <T> void collectMissingTranslations(Registry<T> registry, Function<T, String> keyExtractor, Set<String> translationKeys) {
         Language language = Language.getInstance();
         registry.iterator().forEachRemaining(object -> {
-            String string = (String)function.apply(object);
+            String string = (String)keyExtractor.apply(object);
             if (!language.hasTranslation(string)) {
-                set.add(string);
+                translationKeys.add(string);
             }
         });
     }
@@ -93,8 +93,8 @@ public class Bootstrap {
         }
     }
 
-    public static void println(String string) {
-        SYSOUT.println(string);
+    public static void println(String str) {
+        SYSOUT.println(str);
     }
 
     static {

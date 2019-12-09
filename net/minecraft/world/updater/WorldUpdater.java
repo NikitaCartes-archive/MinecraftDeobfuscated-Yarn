@@ -56,9 +56,9 @@ public class WorldUpdater {
     private static final Pattern REGION_FILE_PATTERN = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.mca$");
     private final PersistentStateManager persistentStateManager;
 
-    public WorldUpdater(String string, LevelStorage levelStorage, LevelProperties levelProperties, boolean bl) {
+    public WorldUpdater(String string, LevelStorage levelStorage, LevelProperties levelProperties, boolean eraseCache) {
         this.levelName = levelProperties.getLevelName();
-        this.eraseCache = bl;
+        this.eraseCache = eraseCache;
         this.worldSaveHandler = levelStorage.createSaveHandler(string, null);
         this.worldSaveHandler.saveWorld(levelProperties);
         this.persistentStateManager = new PersistentStateManager(new File(DimensionType.OVERWORLD.getSaveDirectory(this.worldSaveHandler.getWorldDir()), "data"), this.worldSaveHandler.getDataFixer());

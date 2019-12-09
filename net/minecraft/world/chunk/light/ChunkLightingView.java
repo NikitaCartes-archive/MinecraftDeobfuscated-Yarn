@@ -23,7 +23,7 @@ extends LightingView {
 
         @Override
         @Nullable
-        public ChunkNibbleArray getLightArray(ChunkSectionPos chunkSectionPos) {
+        public ChunkNibbleArray getLightArray(ChunkSectionPos pos) {
             return null;
         }
 
@@ -33,7 +33,7 @@ extends LightingView {
         }
 
         @Override
-        public void updateSectionStatus(ChunkSectionPos chunkSectionPos, boolean bl) {
+        public void updateSectionStatus(ChunkSectionPos pos, boolean status) {
         }
     }
 }

@@ -103,18 +103,18 @@ Tickable {
         return this.animationStage;
     }
 
-    public Box getBoundingBox(BlockState blockState) {
-        return this.getBoundingBox(blockState.get(ShulkerBoxBlock.FACING));
+    public Box getBoundingBox(BlockState state) {
+        return this.getBoundingBox(state.get(ShulkerBoxBlock.FACING));
     }
 
-    public Box getBoundingBox(Direction direction) {
+    public Box getBoundingBox(Direction openDirection) {
         float f = this.getAnimationProgress(1.0f);
-        return VoxelShapes.fullCube().getBoundingBox().stretch(0.5f * f * (float)direction.getOffsetX(), 0.5f * f * (float)direction.getOffsetY(), 0.5f * f * (float)direction.getOffsetZ());
+        return VoxelShapes.fullCube().getBoundingBox().stretch(0.5f * f * (float)openDirection.getOffsetX(), 0.5f * f * (float)openDirection.getOffsetY(), 0.5f * f * (float)openDirection.getOffsetZ());
     }
 
-    private Box getCollisionBox(Direction direction) {
-        Direction direction2 = direction.getOpposite();
-        return this.getBoundingBox(direction).shrink(direction2.getOffsetX(), direction2.getOffsetY(), direction2.getOffsetZ());
+    private Box getCollisionBox(Direction facing) {
+        Direction direction = facing.getOpposite();
+        return this.getBoundingBox(facing).shrink(direction.getOffsetX(), direction.getOffsetY(), direction.getOffsetZ());
     }
 
     private void pushEntities() {
@@ -182,8 +182,8 @@ Tickable {
     }
 
     @Override
-    public void onInvOpen(PlayerEntity playerEntity) {
-        if (!playerEntity.isSpectator()) {
+    public void onInvOpen(PlayerEntity player) {
+        if (!player.isSpectator()) {
             if (this.viewerCount < 0) {
                 this.viewerCount = 0;
             }
@@ -196,8 +196,8 @@ Tickable {
     }
 
     @Override
-    public void onInvClose(PlayerEntity playerEntity) {
-        if (!playerEntity.isSpectator()) {
+    public void onInvClose(PlayerEntity player) {
+        if (!player.isSpectator()) {
             --this.viewerCount;
             this.world.addBlockAction(this.pos, this.getCachedState().getBlock(), 1, this.viewerCount);
             if (this.viewerCount <= 0) {
@@ -212,29 +212,29 @@ Tickable {
     }
 
     @Override
-    public void fromTag(CompoundTag compoundTag) {
-        super.fromTag(compoundTag);
-        this.deserializeInventory(compoundTag);
+    public void fromTag(CompoundTag tag) {
+        super.fromTag(tag);
+        this.deserializeInventory(tag);
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag compoundTag) {
-        super.toTag(compoundTag);
-        return this.serializeInventory(compoundTag);
+    public CompoundTag toTag(CompoundTag tag) {
+        super.toTag(tag);
+        return this.serializeInventory(tag);
     }
 
-    public void deserializeInventory(CompoundTag compoundTag) {
+    public void deserializeInventory(CompoundTag tag) {
         this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
-        if (!this.deserializeLootTable(compoundTag) && compoundTag.contains("Items", 9)) {
-            Inventories.fromTag(compoundTag, this.inventory);
+        if (!this.deserializeLootTable(tag) && tag.contains("Items", 9)) {
+            Inventories.fromTag(tag, this.inventory);
         }
     }
 
-    public CompoundTag serializeInventory(CompoundTag compoundTag) {
-        if (!this.serializeLootTable(compoundTag)) {
-            Inventories.toTag(compoundTag, this.inventory, false);
+    public CompoundTag serializeInventory(CompoundTag tag) {
+        if (!this.serializeLootTable(tag)) {
+            Inventories.toTag(tag, this.inventory, false);
         }
-        return compoundTag;
+        return tag;
     }
 
     @Override
@@ -243,22 +243,22 @@ Tickable {
     }
 
     @Override
-    protected void setInvStackList(DefaultedList<ItemStack> defaultedList) {
-        this.inventory = defaultedList;
+    protected void setInvStackList(DefaultedList<ItemStack> list) {
+        this.inventory = list;
     }
 
     @Override
-    public int[] getInvAvailableSlots(Direction direction) {
+    public int[] getInvAvailableSlots(Direction side) {
         return AVAILABLE_SLOTS;
     }
 
     @Override
-    public boolean canInsertInvStack(int i, ItemStack itemStack, @Nullable Direction direction) {
-        return !(Block.getBlockFromItem(itemStack.getItem()) instanceof ShulkerBoxBlock);
+    public boolean canInsertInvStack(int slot, ItemStack stack, @Nullable Direction dir) {
+        return !(Block.getBlockFromItem(stack.getItem()) instanceof ShulkerBoxBlock);
     }
 
     @Override
-    public boolean canExtractInvStack(int i, ItemStack itemStack, Direction direction) {
+    public boolean canExtractInvStack(int slot, ItemStack stack, Direction dir) {
         return true;
     }
 

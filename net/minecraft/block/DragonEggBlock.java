@@ -29,39 +29,39 @@ extends FallingBlock {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
         return SHAPE;
     }
 
     @Override
-    public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-        this.teleport(blockState, world, blockPos);
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        this.teleport(state, world, pos);
         return ActionResult.SUCCESS;
     }
 
     @Override
-    public void onBlockBreakStart(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
-        this.teleport(blockState, world, blockPos);
+    public void onBlockBreakStart(BlockState state, World world, BlockPos pos, PlayerEntity player) {
+        this.teleport(state, world, pos);
     }
 
-    private void teleport(BlockState blockState, World world, BlockPos blockPos) {
+    private void teleport(BlockState state, World world, BlockPos pos) {
         for (int i = 0; i < 1000; ++i) {
-            BlockPos blockPos2 = blockPos.add(world.random.nextInt(16) - world.random.nextInt(16), world.random.nextInt(8) - world.random.nextInt(8), world.random.nextInt(16) - world.random.nextInt(16));
-            if (!world.getBlockState(blockPos2).isAir()) continue;
+            BlockPos blockPos = pos.add(world.random.nextInt(16) - world.random.nextInt(16), world.random.nextInt(8) - world.random.nextInt(8), world.random.nextInt(16) - world.random.nextInt(16));
+            if (!world.getBlockState(blockPos).isAir()) continue;
             if (world.isClient) {
                 for (int j = 0; j < 128; ++j) {
                     double d = world.random.nextDouble();
                     float f = (world.random.nextFloat() - 0.5f) * 0.2f;
                     float g = (world.random.nextFloat() - 0.5f) * 0.2f;
                     float h = (world.random.nextFloat() - 0.5f) * 0.2f;
-                    double e = MathHelper.lerp(d, (double)blockPos2.getX(), (double)blockPos.getX()) + (world.random.nextDouble() - 0.5) + 0.5;
-                    double k = MathHelper.lerp(d, (double)blockPos2.getY(), (double)blockPos.getY()) + world.random.nextDouble() - 0.5;
-                    double l = MathHelper.lerp(d, (double)blockPos2.getZ(), (double)blockPos.getZ()) + (world.random.nextDouble() - 0.5) + 0.5;
+                    double e = MathHelper.lerp(d, (double)blockPos.getX(), (double)pos.getX()) + (world.random.nextDouble() - 0.5) + 0.5;
+                    double k = MathHelper.lerp(d, (double)blockPos.getY(), (double)pos.getY()) + world.random.nextDouble() - 0.5;
+                    double l = MathHelper.lerp(d, (double)blockPos.getZ(), (double)pos.getZ()) + (world.random.nextDouble() - 0.5) + 0.5;
                     world.addParticle(ParticleTypes.PORTAL, e, k, l, f, g, h);
                 }
             } else {
-                world.setBlockState(blockPos2, blockState, 2);
-                world.removeBlock(blockPos, false);
+                world.setBlockState(blockPos, state, 2);
+                world.removeBlock(pos, false);
             }
             return;
         }
@@ -73,7 +73,7 @@ extends FallingBlock {
     }
 
     @Override
-    public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+    public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
         return false;
     }
 }

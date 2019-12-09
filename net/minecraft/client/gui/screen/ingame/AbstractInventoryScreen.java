@@ -46,8 +46,8 @@ extends AbstractContainerScreen<T> {
     }
 
     @Override
-    public void render(int i, int j, float f) {
-        super.render(i, j, f);
+    public void render(int mouseX, int mouseY, float delta) {
+        super.render(mouseX, mouseY, delta);
         if (this.offsetGuiForEffects) {
             this.drawPotionEffects();
         }

@@ -18,8 +18,8 @@ implements CommandOutput {
     private final StringBuffer buffer = new StringBuffer();
     private final MinecraftServer server;
 
-    public ServerCommandOutput(MinecraftServer minecraftServer) {
-        this.server = minecraftServer;
+    public ServerCommandOutput(MinecraftServer server) {
+        this.server = server;
     }
 
     public void clear() {
@@ -36,8 +36,8 @@ implements CommandOutput {
     }
 
     @Override
-    public void sendMessage(Text text) {
-        this.buffer.append(text.getString());
+    public void sendMessage(Text message) {
+        this.buffer.append(message.getString());
     }
 
     @Override

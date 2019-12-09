@@ -25,8 +25,8 @@ extends SpriteAtlasHolder {
         return Registry.STATUS_EFFECT.getIds().stream();
     }
 
-    public Sprite getSprite(StatusEffect statusEffect) {
-        return this.getSprite(Registry.STATUS_EFFECT.getId(statusEffect));
+    public Sprite getSprite(StatusEffect effect) {
+        return this.getSprite(Registry.STATUS_EFFECT.getId(effect));
     }
 }
 

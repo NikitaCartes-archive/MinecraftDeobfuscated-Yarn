@@ -28,8 +28,8 @@ import net.minecraft.world.WorldView;
 public abstract class HostileEntity
 extends MobEntityWithAi
 implements Monster {
-    protected HostileEntity(EntityType<? extends HostileEntity> entityType, World world) {
-        super((EntityType<? extends MobEntityWithAi>)entityType, world);
+    protected HostileEntity(EntityType<? extends HostileEntity> type, World world) {
+        super((EntityType<? extends MobEntityWithAi>)type, world);
         this.experiencePoints = 5;
     }
 
@@ -68,15 +68,15 @@ implements Monster {
     }
 
     @Override
-    public boolean damage(DamageSource damageSource, float f) {
-        if (this.isInvulnerableTo(damageSource)) {
+    public boolean damage(DamageSource source, float amount) {
+        if (this.isInvulnerableTo(source)) {
             return false;
         }
-        return super.damage(damageSource, f);
+        return super.damage(source, amount);
     }
 
     @Override
-    protected SoundEvent getHurtSound(DamageSource damageSource) {
+    protected SoundEvent getHurtSound(DamageSource source) {
         return SoundEvents.ENTITY_HOSTILE_HURT;
     }
 
@@ -86,32 +86,32 @@ implements Monster {
     }
 
     @Override
-    protected SoundEvent getFallSound(int i) {
-        if (i > 4) {
+    protected SoundEvent getFallSound(int distance) {
+        if (distance > 4) {
             return SoundEvents.ENTITY_HOSTILE_BIG_FALL;
         }
         return SoundEvents.ENTITY_HOSTILE_SMALL_FALL;
     }
 
     @Override
-    public float getPathfindingFavor(BlockPos blockPos, WorldView worldView) {
-        return 0.5f - worldView.getBrightness(blockPos);
+    public float getPathfindingFavor(BlockPos pos, WorldView worldView) {
+        return 0.5f - worldView.getBrightness(pos);
     }
 
-    public static boolean isSpawnDark(IWorld iWorld, BlockPos blockPos, Random random) {
-        if (iWorld.getLightLevel(LightType.SKY, blockPos) > random.nextInt(32)) {
+    public static boolean isSpawnDark(IWorld world, BlockPos pos, Random random) {
+        if (world.getLightLevel(LightType.SKY, pos) > random.nextInt(32)) {
             return false;
         }
-        int i = iWorld.getWorld().isThundering() ? iWorld.getLightLevel(blockPos, 10) : iWorld.getLightLevel(blockPos);
+        int i = world.getWorld().isThundering() ? world.getLightLevel(pos, 10) : world.getLightLevel(pos);
         return i <= random.nextInt(8);
     }
 
-    public static boolean canSpawnInDark(EntityType<? extends HostileEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-        return iWorld.getDifficulty() != Difficulty.PEACEFUL && HostileEntity.isSpawnDark(iWorld, blockPos, random) && HostileEntity.canMobSpawn(entityType, iWorld, spawnType, blockPos, random);
+    public static boolean canSpawnInDark(EntityType<? extends HostileEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
+        return world.getDifficulty() != Difficulty.PEACEFUL && HostileEntity.isSpawnDark(world, pos, random) && HostileEntity.canMobSpawn(type, world, spawnType, pos, random);
     }
 
-    public static boolean canSpawnIgnoreLightLevel(EntityType<? extends HostileEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-        return iWorld.getDifficulty() != Difficulty.PEACEFUL && HostileEntity.canMobSpawn(entityType, iWorld, spawnType, blockPos, random);
+    public static boolean canSpawnIgnoreLightLevel(EntityType<? extends HostileEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
+        return world.getDifficulty() != Difficulty.PEACEFUL && HostileEntity.canMobSpawn(type, world, spawnType, pos, random);
     }
 
     @Override
@@ -125,7 +125,7 @@ implements Monster {
         return true;
     }
 
-    public boolean isAngryAt(PlayerEntity playerEntity) {
+    public boolean isAngryAt(PlayerEntity player) {
         return true;
     }
 

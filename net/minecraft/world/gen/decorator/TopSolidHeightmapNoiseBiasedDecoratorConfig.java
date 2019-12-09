@@ -16,16 +16,16 @@ implements DecoratorConfig {
     public final double noiseOffset;
     public final Heightmap.Type heightmap;
 
-    public TopSolidHeightmapNoiseBiasedDecoratorConfig(int i, double d, double e, Heightmap.Type type) {
-        this.noiseToCountRatio = i;
-        this.noiseFactor = d;
-        this.noiseOffset = e;
-        this.heightmap = type;
+    public TopSolidHeightmapNoiseBiasedDecoratorConfig(int noiseToCountRatio, double noiseFactor, double noiseOffset, Heightmap.Type heightmap) {
+        this.noiseToCountRatio = noiseToCountRatio;
+        this.noiseFactor = noiseFactor;
+        this.noiseOffset = noiseOffset;
+        this.heightmap = heightmap;
     }
 
     @Override
-    public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-        return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("noise_to_count_ratio"), dynamicOps.createInt(this.noiseToCountRatio), dynamicOps.createString("noise_factor"), dynamicOps.createDouble(this.noiseFactor), dynamicOps.createString("noise_offset"), dynamicOps.createDouble(this.noiseOffset), dynamicOps.createString("heightmap"), dynamicOps.createString(this.heightmap.getName()))));
+    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("noise_to_count_ratio"), ops.createInt(this.noiseToCountRatio), ops.createString("noise_factor"), ops.createDouble(this.noiseFactor), ops.createString("noise_offset"), ops.createDouble(this.noiseOffset), ops.createString("heightmap"), ops.createString(this.heightmap.getName()))));
     }
 
     public static TopSolidHeightmapNoiseBiasedDecoratorConfig deserialize(Dynamic<?> dynamic) {

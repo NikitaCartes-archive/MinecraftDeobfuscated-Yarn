@@ -50,8 +50,8 @@ public class PlayerAbilities {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void setFlySpeed(float f) {
-        this.flySpeed = f;
+    public void setFlySpeed(float flySpeed) {
+        this.flySpeed = flySpeed;
     }
 
     public float getWalkSpeed() {
@@ -59,8 +59,8 @@ public class PlayerAbilities {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void setWalkSpeed(float f) {
-        this.walkSpeed = f;
+    public void setWalkSpeed(float walkSpeed) {
+        this.walkSpeed = walkSpeed;
     }
 }
 

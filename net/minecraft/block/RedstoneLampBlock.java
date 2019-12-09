@@ -27,40 +27,40 @@ extends Block {
     }
 
     @Override
-    public int getLuminance(BlockState blockState) {
-        return blockState.get(LIT) != false ? super.getLuminance(blockState) : 0;
+    public int getLuminance(BlockState state) {
+        return state.get(LIT) != false ? super.getLuminance(state) : 0;
     }
 
     @Override
-    public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
-        super.onBlockAdded(blockState, world, blockPos, blockState2, bl);
+    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
+        super.onBlockAdded(state, world, pos, oldState, moved);
     }
 
     @Override
     @Nullable
-    public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-        return (BlockState)this.getDefaultState().with(LIT, itemPlacementContext.getWorld().isReceivingRedstonePower(itemPlacementContext.getBlockPos()));
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        return (BlockState)this.getDefaultState().with(LIT, ctx.getWorld().isReceivingRedstonePower(ctx.getBlockPos()));
     }
 
     @Override
-    public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
+    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos neighborPos, boolean moved) {
         if (world.isClient) {
             return;
         }
-        boolean bl2 = blockState.get(LIT);
-        if (bl2 != world.isReceivingRedstonePower(blockPos)) {
-            if (bl2) {
-                world.getBlockTickScheduler().schedule(blockPos, this, 4);
+        boolean bl = state.get(LIT);
+        if (bl != world.isReceivingRedstonePower(pos)) {
+            if (bl) {
+                world.getBlockTickScheduler().schedule(pos, this, 4);
             } else {
-                world.setBlockState(blockPos, (BlockState)blockState.cycle(LIT), 2);
+                world.setBlockState(pos, (BlockState)state.cycle(LIT), 2);
             }
         }
     }
 
     @Override
-    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
-        if (blockState.get(LIT).booleanValue() && !serverWorld.isReceivingRedstonePower(blockPos)) {
-            serverWorld.setBlockState(blockPos, (BlockState)blockState.cycle(LIT), 2);
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        if (state.get(LIT).booleanValue() && !world.isReceivingRedstonePower(pos)) {
+            world.setBlockState(pos, (BlockState)state.cycle(LIT), 2);
         }
     }
 
@@ -70,7 +70,7 @@ extends Block {
     }
 
     @Override
-    public boolean allowsSpawning(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
+    public boolean allowsSpawning(BlockState state, BlockView view, BlockPos pos, EntityType<?> type) {
         return true;
     }
 }

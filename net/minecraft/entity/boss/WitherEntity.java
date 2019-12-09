@@ -107,23 +107,23 @@ RangedAttackMob {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag compoundTag) {
-        super.writeCustomDataToTag(compoundTag);
-        compoundTag.putInt("Invul", this.getInvulnerableTimer());
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putInt("Invul", this.getInvulnerableTimer());
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag compoundTag) {
-        super.readCustomDataFromTag(compoundTag);
-        this.setInvulTimer(compoundTag.getInt("Invul"));
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        this.setInvulTimer(tag.getInt("Invul"));
         if (this.hasCustomName()) {
             this.bossBar.setName(this.getDisplayName());
         }
     }
 
     @Override
-    public void setCustomName(@Nullable Text text) {
-        super.setCustomName(text);
+    public void setCustomName(@Nullable Text name) {
+        super.setCustomName(name);
         this.bossBar.setName(this.getDisplayName());
     }
 
@@ -133,7 +133,7 @@ RangedAttackMob {
     }
 
     @Override
-    protected SoundEvent getHurtSound(DamageSource damageSource) {
+    protected SoundEvent getHurtSound(DamageSource source) {
         return SoundEvents.ENTITY_WITHER_HURT;
     }
 
@@ -309,8 +309,8 @@ RangedAttackMob {
         this.bossBar.setPercent(this.getHealth() / this.getMaximumHealth());
     }
 
-    public static boolean canDestroy(BlockState blockState) {
-        return !blockState.isAir() && !BlockTags.WITHER_IMMUNE.contains(blockState.getBlock());
+    public static boolean canDestroy(BlockState block) {
+        return !block.isAir() && !BlockTags.WITHER_IMMUNE.contains(block.getBlock());
     }
 
     public void method_6885() {
@@ -319,98 +319,98 @@ RangedAttackMob {
     }
 
     @Override
-    public void slowMovement(BlockState blockState, Vec3d vec3d) {
+    public void slowMovement(BlockState state, Vec3d multiplier) {
     }
 
     @Override
-    public void onStartedTrackingBy(ServerPlayerEntity serverPlayerEntity) {
-        super.onStartedTrackingBy(serverPlayerEntity);
-        this.bossBar.addPlayer(serverPlayerEntity);
+    public void onStartedTrackingBy(ServerPlayerEntity player) {
+        super.onStartedTrackingBy(player);
+        this.bossBar.addPlayer(player);
     }
 
     @Override
-    public void onStoppedTrackingBy(ServerPlayerEntity serverPlayerEntity) {
-        super.onStoppedTrackingBy(serverPlayerEntity);
-        this.bossBar.removePlayer(serverPlayerEntity);
+    public void onStoppedTrackingBy(ServerPlayerEntity player) {
+        super.onStoppedTrackingBy(player);
+        this.bossBar.removePlayer(player);
     }
 
-    private double getHeadX(int i) {
-        if (i <= 0) {
+    private double getHeadX(int headIndex) {
+        if (headIndex <= 0) {
             return this.getX();
         }
-        float f = (this.bodyYaw + (float)(180 * (i - 1))) * ((float)Math.PI / 180);
+        float f = (this.bodyYaw + (float)(180 * (headIndex - 1))) * ((float)Math.PI / 180);
         float g = MathHelper.cos(f);
         return this.getX() + (double)g * 1.3;
     }
 
-    private double getHeadY(int i) {
-        if (i <= 0) {
+    private double getHeadY(int headIndex) {
+        if (headIndex <= 0) {
             return this.getY() + 3.0;
         }
         return this.getY() + 2.2;
     }
 
-    private double getHeadZ(int i) {
-        if (i <= 0) {
+    private double getHeadZ(int headIndex) {
+        if (headIndex <= 0) {
             return this.getZ();
         }
-        float f = (this.bodyYaw + (float)(180 * (i - 1))) * ((float)Math.PI / 180);
+        float f = (this.bodyYaw + (float)(180 * (headIndex - 1))) * ((float)Math.PI / 180);
         float g = MathHelper.sin(f);
         return this.getZ() + (double)g * 1.3;
     }
 
-    private float getNextAngle(float f, float g, float h) {
-        float i = MathHelper.wrapDegrees(g - f);
-        if (i > h) {
-            i = h;
+    private float getNextAngle(float prevAngle, float desiredAngle, float maxDifference) {
+        float f = MathHelper.wrapDegrees(desiredAngle - prevAngle);
+        if (f > maxDifference) {
+            f = maxDifference;
         }
-        if (i < -h) {
-            i = -h;
+        if (f < -maxDifference) {
+            f = -maxDifference;
         }
-        return f + i;
+        return prevAngle + f;
     }
 
     private void method_6878(int i, LivingEntity livingEntity) {
         this.method_6877(i, livingEntity.getX(), livingEntity.getY() + (double)livingEntity.getStandingEyeHeight() * 0.5, livingEntity.getZ(), i == 0 && this.random.nextFloat() < 0.001f);
     }
 
-    private void method_6877(int i, double d, double e, double f, boolean bl) {
+    private void method_6877(int headIndex, double d, double e, double f, boolean bl) {
         this.world.playLevelEvent(null, 1024, new BlockPos(this), 0);
-        double g = this.getHeadX(i);
-        double h = this.getHeadY(i);
-        double j = this.getHeadZ(i);
-        double k = d - g;
-        double l = e - h;
-        double m = f - j;
-        WitherSkullEntity witherSkullEntity = new WitherSkullEntity(this.world, this, k, l, m);
+        double g = this.getHeadX(headIndex);
+        double h = this.getHeadY(headIndex);
+        double i = this.getHeadZ(headIndex);
+        double j = d - g;
+        double k = e - h;
+        double l = f - i;
+        WitherSkullEntity witherSkullEntity = new WitherSkullEntity(this.world, this, j, k, l);
         if (bl) {
             witherSkullEntity.setCharged(true);
         }
-        witherSkullEntity.setPos(g, h, j);
+        witherSkullEntity.setPos(g, h, i);
         this.world.spawnEntity(witherSkullEntity);
     }
 
     @Override
-    public void attack(LivingEntity livingEntity, float f) {
-        this.method_6878(0, livingEntity);
+    public void attack(LivingEntity target, float f) {
+        this.method_6878(0, target);
     }
 
     @Override
-    public boolean damage(DamageSource damageSource, float f) {
+    public boolean damage(DamageSource source, float amount) {
         Entity entity;
-        if (this.isInvulnerableTo(damageSource)) {
+        if (this.isInvulnerableTo(source)) {
             return false;
         }
-        if (damageSource == DamageSource.DROWN || damageSource.getAttacker() instanceof WitherEntity) {
+        if (source == DamageSource.DROWN || source.getAttacker() instanceof WitherEntity) {
             return false;
         }
-        if (this.getInvulnerableTimer() > 0 && damageSource != DamageSource.OUT_OF_WORLD) {
+        if (this.getInvulnerableTimer() > 0 && source != DamageSource.OUT_OF_WORLD) {
             return false;
         }
-        if (this.shouldRenderOverlay() && (entity = damageSource.getSource()) instanceof ProjectileEntity) {
+        if (this.shouldRenderOverlay() && (entity = source.getSource()) instanceof ProjectileEntity) {
             return false;
         }
-        entity = damageSource.getAttacker();
+        entity = source.getAttacker();
         if (entity != null && !(entity instanceof PlayerEntity) && entity instanceof LivingEntity && ((LivingEntity)entity).getGroup() == this.getGroup()) {
             return false;
         }
@@ -422,12 +422,12 @@ RangedAttackMob {
             int n = i++;
             this.field_7092[n] = this.field_7092[n] + 3;
         }
-        return super.damage(damageSource, f);
+        return super.damage(source, amount);
     }
 
     @Override
-    protected void dropEquipment(DamageSource damageSource, int i, boolean bl) {
-        super.dropEquipment(damageSource, i, bl);
+    protected void dropEquipment(DamageSource source, int lootingMultiplier, boolean allowDrops) {
+        super.dropEquipment(source, lootingMultiplier, allowDrops);
         ItemEntity itemEntity = this.dropItem(Items.NETHER_STAR);
         if (itemEntity != null) {
             itemEntity.setCovetedItem();
@@ -444,12 +444,12 @@ RangedAttackMob {
     }
 
     @Override
-    public boolean handleFallDamage(float f, float g) {
+    public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
         return false;
     }
 
     @Override
-    public boolean addStatusEffect(StatusEffectInstance statusEffectInstance) {
+    public boolean addStatusEffect(StatusEffectInstance effect) {
         return false;
     }
 
@@ -463,29 +463,29 @@ RangedAttackMob {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public float getHeadYaw(int i) {
-        return this.sideHeadYaws[i];
+    public float getHeadYaw(int headIndex) {
+        return this.sideHeadYaws[headIndex];
     }
 
     @Environment(value=EnvType.CLIENT)
-    public float getHeadPitch(int i) {
-        return this.sideHeadPitches[i];
+    public float getHeadPitch(int headIndex) {
+        return this.sideHeadPitches[headIndex];
     }
 
     public int getInvulnerableTimer() {
         return this.dataTracker.get(INVUL_TIMER);
     }
 
-    public void setInvulTimer(int i) {
-        this.dataTracker.set(INVUL_TIMER, i);
+    public void setInvulTimer(int ticks) {
+        this.dataTracker.set(INVUL_TIMER, ticks);
     }
 
-    public int getTrackedEntityId(int i) {
-        return this.dataTracker.get(TRACKED_ENTITY_IDS.get(i));
+    public int getTrackedEntityId(int headIndex) {
+        return this.dataTracker.get(TRACKED_ENTITY_IDS.get(headIndex));
     }
 
-    public void setTrackedEntityId(int i, int j) {
-        this.dataTracker.set(TRACKED_ENTITY_IDS.get(i), j);
+    public void setTrackedEntityId(int headIndex, int id) {
+        this.dataTracker.set(TRACKED_ENTITY_IDS.get(headIndex), id);
     }
 
     @Override
@@ -509,11 +509,11 @@ RangedAttackMob {
     }
 
     @Override
-    public boolean canHaveStatusEffect(StatusEffectInstance statusEffectInstance) {
-        if (statusEffectInstance.getEffectType() == StatusEffects.WITHER) {
+    public boolean canHaveStatusEffect(StatusEffectInstance effect) {
+        if (effect.getEffectType() == StatusEffects.WITHER) {
             return false;
         }
-        return super.canHaveStatusEffect(statusEffectInstance);
+        return super.canHaveStatusEffect(effect);
     }
 
     class DescendAtHalfHealthGoal

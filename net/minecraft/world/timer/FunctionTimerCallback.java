@@ -43,8 +43,8 @@ implements TimerCallback<MinecraftServer> {
         }
 
         @Override
-        public /* synthetic */ TimerCallback deserialize(CompoundTag compoundTag) {
-            return this.deserialize(compoundTag);
+        public /* synthetic */ TimerCallback deserialize(CompoundTag tag) {
+            return this.deserialize(tag);
         }
     }
 }

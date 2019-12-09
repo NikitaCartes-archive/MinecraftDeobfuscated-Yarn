@@ -9,8 +9,8 @@ public enum ResourceType {
 
     private final String directory;
 
-    private ResourceType(String string2) {
-        this.directory = string2;
+    private ResourceType(String name) {
+        this.directory = name;
     }
 
     public String getDirectory() {

@@ -20,42 +20,42 @@ extends AbstractCollection<T> {
     private final Class<T> elementType;
     private final List<T> allElements = Lists.newArrayList();
 
-    public TypeFilterableList(Class<T> class_) {
-        this.elementType = class_;
-        this.elementsByType.put(class_, this.allElements);
+    public TypeFilterableList(Class<T> elementType) {
+        this.elementType = elementType;
+        this.elementsByType.put(elementType, this.allElements);
     }
 
     @Override
-    public boolean add(T object) {
+    public boolean add(T e) {
         boolean bl = false;
         for (Map.Entry<Class<?>, List<T>> entry : this.elementsByType.entrySet()) {
-            if (!entry.getKey().isInstance(object)) continue;
-            bl |= entry.getValue().add(object);
+            if (!entry.getKey().isInstance(e)) continue;
+            bl |= entry.getValue().add(e);
         }
         return bl;
     }
 
     @Override
-    public boolean remove(Object object) {
+    public boolean remove(Object o) {
         boolean bl = false;
         for (Map.Entry<Class<?>, List<T>> entry : this.elementsByType.entrySet()) {
-            if (!entry.getKey().isInstance(object)) continue;
+            if (!entry.getKey().isInstance(o)) continue;
             List<T> list = entry.getValue();
-            bl |= list.remove(object);
+            bl |= list.remove(o);
         }
         return bl;
     }
 
     @Override
-    public boolean contains(Object object) {
-        return this.getAllOfType(object.getClass()).contains(object);
+    public boolean contains(Object o) {
+        return this.getAllOfType(o.getClass()).contains(o);
     }
 
-    public <S> Collection<S> getAllOfType(Class<S> class_2) {
-        if (!this.elementType.isAssignableFrom(class_2)) {
-            throw new IllegalArgumentException("Don't know how to search for " + class_2);
+    public <S> Collection<S> getAllOfType(Class<S> type) {
+        if (!this.elementType.isAssignableFrom(type)) {
+            throw new IllegalArgumentException("Don't know how to search for " + type);
         }
-        List list = this.elementsByType.computeIfAbsent(class_2, class_ -> this.allElements.stream().filter(class_::isInstance).collect(Collectors.toList()));
+        List list = this.elementsByType.computeIfAbsent(type, class_ -> this.allElements.stream().filter(class_::isInstance).collect(Collectors.toList()));
         return Collections.unmodifiableCollection(list);
     }
 

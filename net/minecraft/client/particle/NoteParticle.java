@@ -17,15 +17,15 @@ import net.minecraft.world.World;
 @Environment(value=EnvType.CLIENT)
 public class NoteParticle
 extends SpriteBillboardParticle {
-    private NoteParticle(World world, double d, double e, double f, double g) {
-        super(world, d, e, f, 0.0, 0.0, 0.0);
+    private NoteParticle(World world, double x, double y, double z, double d) {
+        super(world, x, y, z, 0.0, 0.0, 0.0);
         this.velocityX *= (double)0.01f;
         this.velocityY *= (double)0.01f;
         this.velocityZ *= (double)0.01f;
         this.velocityY += 0.2;
-        this.colorRed = Math.max(0.0f, MathHelper.sin(((float)g + 0.0f) * ((float)Math.PI * 2)) * 0.65f + 0.35f);
-        this.colorGreen = Math.max(0.0f, MathHelper.sin(((float)g + 0.33333334f) * ((float)Math.PI * 2)) * 0.65f + 0.35f);
-        this.colorBlue = Math.max(0.0f, MathHelper.sin(((float)g + 0.6666667f) * ((float)Math.PI * 2)) * 0.65f + 0.35f);
+        this.colorRed = Math.max(0.0f, MathHelper.sin(((float)d + 0.0f) * ((float)Math.PI * 2)) * 0.65f + 0.35f);
+        this.colorGreen = Math.max(0.0f, MathHelper.sin(((float)d + 0.33333334f) * ((float)Math.PI * 2)) * 0.65f + 0.35f);
+        this.colorBlue = Math.max(0.0f, MathHelper.sin(((float)d + 0.6666667f) * ((float)Math.PI * 2)) * 0.65f + 0.35f);
         this.scale *= 1.5f;
         this.maxAge = 6;
     }
@@ -36,8 +36,8 @@ extends SpriteBillboardParticle {
     }
 
     @Override
-    public float getSize(float f) {
-        return this.scale * MathHelper.clamp(((float)this.age + f) / (float)this.maxAge * 32.0f, 0.0f, 1.0f);
+    public float getSize(float tickDelta) {
+        return this.scale * MathHelper.clamp(((float)this.age + tickDelta) / (float)this.maxAge * 32.0f, 0.0f, 1.0f);
     }
 
     @Override

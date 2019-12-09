@@ -19,8 +19,8 @@ import net.minecraft.world.gen.feature.Feature;
 
 public class KelpFeature
 extends Feature<DefaultFeatureConfig> {
-    public KelpFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-        super(function);
+    public KelpFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
+        super(configFactory);
     }
 
     @Override

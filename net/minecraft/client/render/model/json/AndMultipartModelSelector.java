@@ -19,13 +19,13 @@ public class AndMultipartModelSelector
 implements MultipartModelSelector {
     private final Iterable<? extends MultipartModelSelector> selectors;
 
-    public AndMultipartModelSelector(Iterable<? extends MultipartModelSelector> iterable) {
-        this.selectors = iterable;
+    public AndMultipartModelSelector(Iterable<? extends MultipartModelSelector> selectors) {
+        this.selectors = selectors;
     }
 
     @Override
-    public Predicate<BlockState> getPredicate(StateManager<Block, BlockState> stateManager) {
-        List list = Streams.stream(this.selectors).map(multipartModelSelector -> multipartModelSelector.getPredicate(stateManager)).collect(Collectors.toList());
+    public Predicate<BlockState> getPredicate(StateManager<Block, BlockState> stateFactory) {
+        List list = Streams.stream(this.selectors).map(multipartModelSelector -> multipartModelSelector.getPredicate(stateFactory)).collect(Collectors.toList());
         return blockState -> list.stream().allMatch(predicate -> predicate.test(blockState));
     }
 }

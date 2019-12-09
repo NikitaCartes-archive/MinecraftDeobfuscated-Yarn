@@ -21,8 +21,8 @@ implements FeatureConfig {
     }
 
     @Override
-    public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-        return new Dynamic<Object>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("features"), dynamicOps.createList(this.features.stream().map(configuredFeature -> configuredFeature.serialize(dynamicOps).getValue())), dynamicOps.createString("count"), dynamicOps.createInt(this.count))));
+    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+        return new Dynamic<Object>(ops, ops.createMap(ImmutableMap.of(ops.createString("features"), ops.createList(this.features.stream().map(configuredFeature -> configuredFeature.serialize(ops).getValue())), ops.createString("count"), ops.createInt(this.count))));
     }
 
     public static <T> RandomRandomFeatureConfig deserialize(Dynamic<T> dynamic) {

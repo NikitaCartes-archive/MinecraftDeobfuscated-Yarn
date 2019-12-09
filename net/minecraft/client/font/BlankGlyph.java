@@ -37,8 +37,8 @@ public enum BlankGlyph implements RenderableGlyph
     }
 
     @Override
-    public void upload(int i, int j) {
-        IMAGE.upload(0, i, j, false);
+    public void upload(int x, int y) {
+        IMAGE.upload(0, x, y, false);
     }
 
     @Override

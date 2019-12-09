@@ -22,16 +22,16 @@ public class BanListCommand {
         })).then(CommandManager.literal("ips").executes(commandContext -> BanListCommand.execute((ServerCommandSource)commandContext.getSource(), ((ServerCommandSource)commandContext.getSource()).getMinecraftServer().getPlayerManager().getIpBanList().values())))).then(CommandManager.literal("players").executes(commandContext -> BanListCommand.execute((ServerCommandSource)commandContext.getSource(), ((ServerCommandSource)commandContext.getSource()).getMinecraftServer().getPlayerManager().getUserBanList().values()))));
     }
 
-    private static int execute(ServerCommandSource serverCommandSource, Collection<? extends BanEntry<?>> collection) {
-        if (collection.isEmpty()) {
-            serverCommandSource.sendFeedback(new TranslatableText("commands.banlist.none", new Object[0]), false);
+    private static int execute(ServerCommandSource source, Collection<? extends BanEntry<?>> targets) {
+        if (targets.isEmpty()) {
+            source.sendFeedback(new TranslatableText("commands.banlist.none", new Object[0]), false);
         } else {
-            serverCommandSource.sendFeedback(new TranslatableText("commands.banlist.list", collection.size()), false);
-            for (BanEntry<?> banEntry : collection) {
-                serverCommandSource.sendFeedback(new TranslatableText("commands.banlist.entry", banEntry.toText(), banEntry.getSource(), banEntry.getReason()), false);
+            source.sendFeedback(new TranslatableText("commands.banlist.list", targets.size()), false);
+            for (BanEntry<?> banEntry : targets) {
+                source.sendFeedback(new TranslatableText("commands.banlist.entry", banEntry.toText(), banEntry.getSource(), banEntry.getReason()), false);
             }
         }
-        return collection.size();
+        return targets.size();
     }
 }
 

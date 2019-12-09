@@ -47,22 +47,22 @@ public class TagContainer<T> {
     private final boolean ordered;
     private final String entryType;
 
-    public TagContainer(Function<Identifier, Optional<T>> function, String string, boolean bl, String string2) {
-        this.getter = function;
-        this.dataType = string;
-        this.ordered = bl;
-        this.entryType = string2;
+    public TagContainer(Function<Identifier, Optional<T>> getter, String dataType, boolean ordered, String entryType) {
+        this.getter = getter;
+        this.dataType = dataType;
+        this.ordered = ordered;
+        this.entryType = entryType;
     }
 
     @Nullable
-    public Tag<T> get(Identifier identifier) {
-        return this.entries.get(identifier);
+    public Tag<T> get(Identifier id) {
+        return this.entries.get(id);
     }
 
-    public Tag<T> getOrCreate(Identifier identifier) {
-        Tag<T> tag = this.entries.get(identifier);
+    public Tag<T> getOrCreate(Identifier id) {
+        Tag<T> tag = this.entries.get(id);
         if (tag == null) {
-            return new Tag(identifier);
+            return new Tag(id);
         }
         return tag;
     }
@@ -81,14 +81,14 @@ public class TagContainer<T> {
         return list;
     }
 
-    public CompletableFuture<Map<Identifier, Tag.Builder<T>>> prepareReload(ResourceManager resourceManager, Executor executor) {
+    public CompletableFuture<Map<Identifier, Tag.Builder<T>>> prepareReload(ResourceManager manager, Executor executor) {
         return CompletableFuture.supplyAsync(() -> {
             HashMap<Identifier, Tag.Builder> map = Maps.newHashMap();
-            for (Identifier identifier2 : resourceManager.findResources(this.dataType, string -> string.endsWith(".json"))) {
+            for (Identifier identifier2 : manager.findResources(this.dataType, string -> string.endsWith(".json"))) {
                 String string2 = identifier2.getPath();
                 Identifier identifier22 = new Identifier(identifier2.getNamespace(), string2.substring(this.dataType.length() + 1, string2.length() - JSON_EXTENSION_LENGTH));
                 try {
-                    for (Resource resource : resourceManager.getAllResources(identifier2)) {
+                    for (Resource resource : manager.getAllResources(identifier2)) {
                         try {
                             InputStream inputStream = resource.getInputStream();
                             Throwable throwable = null;
@@ -146,30 +146,30 @@ public class TagContainer<T> {
         }, executor);
     }
 
-    public void applyReload(Map<Identifier, Tag.Builder<T>> map) {
-        HashMap map2 = Maps.newHashMap();
-        while (!map.isEmpty()) {
+    public void applyReload(Map<Identifier, Tag.Builder<T>> preparedBuilders) {
+        HashMap map = Maps.newHashMap();
+        while (!preparedBuilders.isEmpty()) {
             boolean bl = false;
-            Iterator<Map.Entry<Identifier, Tag.Builder<T>>> iterator = map.entrySet().iterator();
+            Iterator<Map.Entry<Identifier, Tag.Builder<T>>> iterator = preparedBuilders.entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry<Identifier, Tag.Builder<T>> entry = iterator.next();
                 Tag.Builder builder2 = entry.getValue();
-                if (!builder2.applyTagGetter(map2::get)) continue;
+                if (!builder2.applyTagGetter(map::get)) continue;
                 bl = true;
                 Identifier identifier2 = entry.getKey();
-                map2.put(identifier2, builder2.build(identifier2));
+                map.put(identifier2, builder2.build(identifier2));
                 iterator.remove();
             }
             if (bl) continue;
-            map.forEach((identifier, builder) -> LOGGER.error("Couldn't load {} tag {} as it either references another tag that doesn't exist, or ultimately references itself", (Object)this.entryType, identifier));
+            preparedBuilders.forEach((identifier, builder) -> LOGGER.error("Couldn't load {} tag {} as it either references another tag that doesn't exist, or ultimately references itself", (Object)this.entryType, identifier));
             break;
         }
-        map.forEach((identifier, builder) -> map2.put((Identifier)identifier, builder.build((Identifier)identifier)));
-        this.setEntries(map2);
+        preparedBuilders.forEach((identifier, builder) -> map.put((Identifier)identifier, builder.build((Identifier)identifier)));
+        this.setEntries(map);
     }
 
-    protected void setEntries(Map<Identifier, Tag<T>> map) {
-        this.entries = ImmutableMap.copyOf(map);
+    protected void setEntries(Map<Identifier, Tag<T>> entries) {
+        this.entries = ImmutableMap.copyOf(entries);
     }
 
     public Map<Identifier, Tag<T>> getEntries() {

@@ -33,8 +33,8 @@ implements ArgumentType<PosArgument> {
         return new ColumnPosArgumentType();
     }
 
-    public static ColumnPos getColumnPos(CommandContext<ServerCommandSource> commandContext, String string) {
-        BlockPos blockPos = commandContext.getArgument(string, PosArgument.class).toAbsoluteBlockPos(commandContext.getSource());
+    public static ColumnPos getColumnPos(CommandContext<ServerCommandSource> context, String name) {
+        BlockPos blockPos = context.getArgument(name, PosArgument.class).toAbsoluteBlockPos(context.getSource());
         return new ColumnPos(blockPos.getX(), blockPos.getZ());
     }
 
@@ -55,11 +55,11 @@ implements ArgumentType<PosArgument> {
     }
 
     @Override
-    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
-        if (commandContext.getSource() instanceof CommandSource) {
-            String string = suggestionsBuilder.getRemaining();
-            Collection<CommandSource.RelativePosition> collection = !string.isEmpty() && string.charAt(0) == '^' ? Collections.singleton(CommandSource.RelativePosition.ZERO_LOCAL) : ((CommandSource)commandContext.getSource()).getBlockPositionSuggestions();
-            return CommandSource.suggestColumnPositions(string, collection, suggestionsBuilder, CommandManager.getCommandValidator(this::parse));
+    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+        if (context.getSource() instanceof CommandSource) {
+            String string = builder.getRemaining();
+            Collection<CommandSource.RelativePosition> collection = !string.isEmpty() && string.charAt(0) == '^' ? Collections.singleton(CommandSource.RelativePosition.ZERO_LOCAL) : ((CommandSource)context.getSource()).getBlockPositionSuggestions();
+            return CommandSource.suggestColumnPositions(string, collection, builder, CommandManager.getCommandValidator(this::parse));
         }
         return Suggestions.empty();
     }

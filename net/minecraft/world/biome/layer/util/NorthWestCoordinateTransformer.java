@@ -8,13 +8,13 @@ import net.minecraft.world.biome.layer.util.CoordinateTransformer;
 public interface NorthWestCoordinateTransformer
 extends CoordinateTransformer {
     @Override
-    default public int transformX(int i) {
-        return i - 1;
+    default public int transformX(int x) {
+        return x - 1;
     }
 
     @Override
-    default public int transformZ(int i) {
-        return i - 1;
+    default public int transformZ(int y) {
+        return y - 1;
     }
 }
 

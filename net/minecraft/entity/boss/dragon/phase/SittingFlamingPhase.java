@@ -20,8 +20,8 @@ extends AbstractSittingPhase {
     private int field_7052;
     private AreaEffectCloudEntity field_7051;
 
-    public SittingFlamingPhase(EnderDragonEntity enderDragonEntity) {
-        super(enderDragonEntity);
+    public SittingFlamingPhase(EnderDragonEntity dragon) {
+        super(dragon);
     }
 
     @Override

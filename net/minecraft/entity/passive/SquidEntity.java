@@ -66,8 +66,8 @@ extends WaterCreatureEntity {
     }
 
     @Override
-    protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
-        return entityDimensions.height * 0.5f;
+    protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
+        return dimensions.height * 0.5f;
     }
 
     @Override
@@ -76,7 +76,7 @@ extends WaterCreatureEntity {
     }
 
     @Override
-    protected SoundEvent getHurtSound(DamageSource damageSource) {
+    protected SoundEvent getHurtSound(DamageSource source) {
         return SoundEvents.ENTITY_SQUID_HURT;
     }
 
@@ -154,8 +154,8 @@ extends WaterCreatureEntity {
     }
 
     @Override
-    public boolean damage(DamageSource damageSource, float f) {
-        if (super.damage(damageSource, f) && this.getAttacker() != null) {
+    public boolean damage(DamageSource source, float amount) {
+        if (super.damage(source, amount) && this.getAttacker() != null) {
             this.squirt();
             return true;
         }
@@ -179,21 +179,21 @@ extends WaterCreatureEntity {
     }
 
     @Override
-    public void travel(Vec3d vec3d) {
+    public void travel(Vec3d movementInput) {
         this.move(MovementType.SELF, this.getVelocity());
     }
 
-    public static boolean canSpawn(EntityType<SquidEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-        return blockPos.getY() > 45 && blockPos.getY() < iWorld.getSeaLevel();
+    public static boolean canSpawn(EntityType<SquidEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
+        return pos.getY() > 45 && pos.getY() < world.getSeaLevel();
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void handleStatus(byte b) {
-        if (b == 19) {
+    public void handleStatus(byte status) {
+        if (status == 19) {
             this.field_6908 = 0.0f;
         } else {
-            super.handleStatus(b);
+            super.handleStatus(status);
         }
     }
 
@@ -265,8 +265,8 @@ extends WaterCreatureEntity {
     extends Goal {
         private final SquidEntity squid;
 
-        public SwimGoal(SquidEntity squidEntity2) {
-            this.squid = squidEntity2;
+        public SwimGoal(SquidEntity squid) {
+            this.squid = squid;
         }
 
         @Override

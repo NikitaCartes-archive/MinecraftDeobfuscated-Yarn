@@ -15,8 +15,8 @@ import net.minecraft.world.gen.feature.RandomBooleanFeatureConfig;
 
 public class RandomBooleanFeature
 extends Feature<RandomBooleanFeatureConfig> {
-    public RandomBooleanFeature(Function<Dynamic<?>, ? extends RandomBooleanFeatureConfig> function) {
-        super(function);
+    public RandomBooleanFeature(Function<Dynamic<?>, ? extends RandomBooleanFeatureConfig> configFactory) {
+        super(configFactory);
     }
 
     @Override

@@ -17,16 +17,16 @@ extends TreeFeatureConfig {
     public final int heightInterval;
     public final int crownHeight;
 
-    protected MegaTreeFeatureConfig(StateProvider stateProvider, StateProvider stateProvider2, List<TreeDecorator> list, int i, int j, int k) {
+    protected MegaTreeFeatureConfig(StateProvider stateProvider, StateProvider stateProvider2, List<TreeDecorator> list, int i, int heightInterval, int crownHeight) {
         super(stateProvider, stateProvider2, list, i);
-        this.heightInterval = j;
-        this.crownHeight = k;
+        this.heightInterval = heightInterval;
+        this.crownHeight = crownHeight;
     }
 
     @Override
-    public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-        Dynamic<T> dynamic = new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("height_interval"), dynamicOps.createInt(this.heightInterval), dynamicOps.createString("crown_height"), dynamicOps.createInt(this.crownHeight))));
-        return dynamic.merge(super.serialize(dynamicOps));
+    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+        Dynamic<T> dynamic = new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("height_interval"), ops.createInt(this.heightInterval), ops.createString("crown_height"), ops.createInt(this.crownHeight))));
+        return dynamic.merge(super.serialize(ops));
     }
 
     public static <T> MegaTreeFeatureConfig method_23408(Dynamic<T> dynamic) {
@@ -56,13 +56,13 @@ extends TreeFeatureConfig {
             return this;
         }
 
-        public Builder heightInterval(int i) {
-            this.heightInterval = i;
+        public Builder heightInterval(int heightInterval) {
+            this.heightInterval = heightInterval;
             return this;
         }
 
-        public Builder crownHeight(int i) {
-            this.crownHeight = i;
+        public Builder crownHeight(int crownHeight) {
+            this.crownHeight = crownHeight;
             return this;
         }
 
@@ -77,8 +77,8 @@ extends TreeFeatureConfig {
         }
 
         @Override
-        public /* synthetic */ TreeFeatureConfig.Builder baseHeight(int i) {
-            return this.baseHeight(i);
+        public /* synthetic */ TreeFeatureConfig.Builder baseHeight(int baseHeight) {
+            return this.baseHeight(baseHeight);
         }
     }
 }

@@ -28,9 +28,9 @@ public class ConfiguredFeature<FC extends FeatureConfig, F extends Feature<FC>> 
     public final F feature;
     public final FC config;
 
-    public ConfiguredFeature(F feature, FC featureConfig) {
+    public ConfiguredFeature(F feature, FC config) {
         this.feature = feature;
-        this.config = featureConfig;
+        this.config = config;
     }
 
     public ConfiguredFeature(F feature, Dynamic<?> dynamic) {
@@ -42,16 +42,16 @@ public class ConfiguredFeature<FC extends FeatureConfig, F extends Feature<FC>> 
         return feature.configure(new DecoratedFeatureConfig(this, configuredDecorator));
     }
 
-    public RandomFeatureEntry<FC> withChance(float f) {
-        return new RandomFeatureEntry(this, f);
+    public RandomFeatureEntry<FC> withChance(float chance) {
+        return new RandomFeatureEntry(this, chance);
     }
 
-    public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-        return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("name"), dynamicOps.createString(Registry.FEATURE.getId((Feature<?>)this.feature).toString()), dynamicOps.createString("config"), this.config.serialize(dynamicOps).getValue())));
+    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("name"), ops.createString(Registry.FEATURE.getId((Feature<?>)this.feature).toString()), ops.createString("config"), this.config.serialize(ops).getValue())));
     }
 
-    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos) {
-        return ((Feature)this.feature).generate(iWorld, chunkGenerator, random, blockPos, this.config);
+    public boolean generate(IWorld world, ChunkGenerator<? extends ChunkGeneratorConfig> generator, Random random, BlockPos blockPos) {
+        return ((Feature)this.feature).generate(world, generator, random, blockPos, this.config);
     }
 
     public static <T> ConfiguredFeature<?, ?> deserialize(Dynamic<T> dynamic) {

@@ -23,23 +23,23 @@ public class SkyLightDebugRenderer
 implements DebugRenderer.Renderer {
     private final MinecraftClient client;
 
-    public SkyLightDebugRenderer(MinecraftClient minecraftClient) {
-        this.client = minecraftClient;
+    public SkyLightDebugRenderer(MinecraftClient client) {
+        this.client = client;
     }
 
     @Override
-    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f) {
+    public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
         ClientWorld world = this.client.world;
         RenderSystem.pushMatrix();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.disableTexture();
-        BlockPos blockPos = new BlockPos(d, e, f);
+        BlockPos blockPos = new BlockPos(cameraX, cameraY, cameraZ);
         LongOpenHashSet longSet = new LongOpenHashSet();
         for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-10, -10, -10), blockPos.add(10, 10, 10))) {
             int i = world.getLightLevel(LightType.SKY, blockPos2);
-            float g = (float)(15 - i) / 15.0f * 0.5f + 0.16f;
-            int j = MathHelper.hsvToRgb(g, 0.9f, 0.9f);
+            float f = (float)(15 - i) / 15.0f * 0.5f + 0.16f;
+            int j = MathHelper.hsvToRgb(f, 0.9f, 0.9f);
             long l = ChunkSectionPos.fromGlobalPos(blockPos2.asLong());
             if (longSet.add(l)) {
                 DebugRenderer.drawString(((World)world).getChunkManager().getLightingProvider().method_22876(LightType.SKY, ChunkSectionPos.from(l)), ChunkSectionPos.getX(l) * 16 + 8, ChunkSectionPos.getY(l) * 16 + 8, ChunkSectionPos.getZ(l) * 16 + 8, 0xFF0000, 0.3f);

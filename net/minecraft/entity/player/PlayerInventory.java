@@ -43,8 +43,8 @@ Nameable {
     private ItemStack cursorStack = ItemStack.EMPTY;
     private int changeCount;
 
-    public PlayerInventory(PlayerEntity playerEntity) {
-        this.player = playerEntity;
+    public PlayerInventory(PlayerEntity player) {
+        this.player = player;
     }
 
     public ItemStack getMainHandStack() {
@@ -58,12 +58,12 @@ Nameable {
         return 9;
     }
 
-    private boolean canStackAddMore(ItemStack itemStack, ItemStack itemStack2) {
-        return !itemStack.isEmpty() && this.areItemsEqual(itemStack, itemStack2) && itemStack.isStackable() && itemStack.getCount() < itemStack.getMaxCount() && itemStack.getCount() < this.getInvMaxStackAmount();
+    private boolean canStackAddMore(ItemStack existingStack, ItemStack stack) {
+        return !existingStack.isEmpty() && this.areItemsEqual(existingStack, stack) && existingStack.isStackable() && existingStack.getCount() < existingStack.getMaxCount() && existingStack.getCount() < this.getInvMaxStackAmount();
     }
 
-    private boolean areItemsEqual(ItemStack itemStack, ItemStack itemStack2) {
-        return itemStack.getItem() == itemStack2.getItem() && ItemStack.areTagsEqual(itemStack, itemStack2);
+    private boolean areItemsEqual(ItemStack stack1, ItemStack stack2) {
+        return stack1.getItem() == stack2.getItem() && ItemStack.areTagsEqual(stack1, stack2);
     }
 
     public int getEmptySlot() {
@@ -93,21 +93,21 @@ Nameable {
         }
     }
 
-    public void swapSlotWithHotbar(int i) {
+    public void swapSlotWithHotbar(int hotbarSlot) {
         this.selectedSlot = this.getSwappableHotbarSlot();
         ItemStack itemStack = this.main.get(this.selectedSlot);
-        this.main.set(this.selectedSlot, this.main.get(i));
-        this.main.set(i, itemStack);
+        this.main.set(this.selectedSlot, this.main.get(hotbarSlot));
+        this.main.set(hotbarSlot, itemStack);
     }
 
-    public static boolean isValidHotbarIndex(int i) {
-        return i >= 0 && i < 9;
+    public static boolean isValidHotbarIndex(int slot) {
+        return slot >= 0 && slot < 9;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public int getSlotWithStack(ItemStack itemStack) {
+    public int getSlotWithStack(ItemStack stack) {
         for (int i = 0; i < this.main.size(); ++i) {
-            if (this.main.get(i).isEmpty() || !this.areItemsEqual(itemStack, this.main.get(i))) continue;
+            if (this.main.get(i).isEmpty() || !this.areItemsEqual(stack, this.main.get(i))) continue;
             return i;
         }
         return -1;
@@ -139,14 +139,14 @@ Nameable {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void scrollInHotbar(double d) {
-        if (d > 0.0) {
-            d = 1.0;
+    public void scrollInHotbar(double scrollAmount) {
+        if (scrollAmount > 0.0) {
+            scrollAmount = 1.0;
         }
-        if (d < 0.0) {
-            d = -1.0;
+        if (scrollAmount < 0.0) {
+            scrollAmount = -1.0;
         }
-        this.selectedSlot = (int)((double)this.selectedSlot - d);
+        this.selectedSlot = (int)((double)this.selectedSlot - scrollAmount);
         while (this.selectedSlot < 0) {
             this.selectedSlot += 9;
         }
@@ -187,52 +187,52 @@ Nameable {
         return j;
     }
 
-    private int addStack(ItemStack itemStack) {
-        int i = this.getOccupiedSlotWithRoomForStack(itemStack);
+    private int addStack(ItemStack stack) {
+        int i = this.getOccupiedSlotWithRoomForStack(stack);
         if (i == -1) {
             i = this.getEmptySlot();
         }
         if (i == -1) {
-            return itemStack.getCount();
+            return stack.getCount();
         }
-        return this.addStack(i, itemStack);
+        return this.addStack(i, stack);
     }
 
-    private int addStack(int i, ItemStack itemStack) {
-        int k;
-        Item item = itemStack.getItem();
-        int j = itemStack.getCount();
-        ItemStack itemStack2 = this.getInvStack(i);
-        if (itemStack2.isEmpty()) {
-            itemStack2 = new ItemStack(item, 0);
-            if (itemStack.hasTag()) {
-                itemStack2.setTag(itemStack.getTag().copy());
+    private int addStack(int slot, ItemStack stack) {
+        int j;
+        Item item = stack.getItem();
+        int i = stack.getCount();
+        ItemStack itemStack = this.getInvStack(slot);
+        if (itemStack.isEmpty()) {
+            itemStack = new ItemStack(item, 0);
+            if (stack.hasTag()) {
+                itemStack.setTag(stack.getTag().copy());
             }
-            this.setInvStack(i, itemStack2);
+            this.setInvStack(slot, itemStack);
         }
-        if ((k = j) > itemStack2.getMaxCount() - itemStack2.getCount()) {
-            k = itemStack2.getMaxCount() - itemStack2.getCount();
+        if ((j = i) > itemStack.getMaxCount() - itemStack.getCount()) {
+            j = itemStack.getMaxCount() - itemStack.getCount();
         }
-        if (k > this.getInvMaxStackAmount() - itemStack2.getCount()) {
-            k = this.getInvMaxStackAmount() - itemStack2.getCount();
+        if (j > this.getInvMaxStackAmount() - itemStack.getCount()) {
+            j = this.getInvMaxStackAmount() - itemStack.getCount();
         }
-        if (k == 0) {
-            return j;
+        if (j == 0) {
+            return i;
         }
-        itemStack2.increment(k);
-        itemStack2.setCooldown(5);
-        return j -= k;
+        itemStack.increment(j);
+        itemStack.setCooldown(5);
+        return i -= j;
     }
 
-    public int getOccupiedSlotWithRoomForStack(ItemStack itemStack) {
-        if (this.canStackAddMore(this.getInvStack(this.selectedSlot), itemStack)) {
+    public int getOccupiedSlotWithRoomForStack(ItemStack stack) {
+        if (this.canStackAddMore(this.getInvStack(this.selectedSlot), stack)) {
             return this.selectedSlot;
         }
-        if (this.canStackAddMore(this.getInvStack(40), itemStack)) {
+        if (this.canStackAddMore(this.getInvStack(40), stack)) {
             return 40;
         }
         for (int i = 0; i < this.main.size(); ++i) {
-            if (!this.canStackAddMore(this.main.get(i), itemStack)) continue;
+            if (!this.canStackAddMore(this.main.get(i), stack)) continue;
             return i;
         }
         return -1;
@@ -247,94 +247,94 @@ Nameable {
         }
     }
 
-    public boolean insertStack(ItemStack itemStack) {
-        return this.insertStack(-1, itemStack);
+    public boolean insertStack(ItemStack stack) {
+        return this.insertStack(-1, stack);
     }
 
-    public boolean insertStack(int i, ItemStack itemStack) {
-        if (itemStack.isEmpty()) {
+    public boolean insertStack(int slot, ItemStack stack) {
+        if (stack.isEmpty()) {
             return false;
         }
         try {
-            if (!itemStack.isDamaged()) {
-                int j;
+            if (!stack.isDamaged()) {
+                int i;
                 do {
-                    j = itemStack.getCount();
-                    if (i == -1) {
-                        itemStack.setCount(this.addStack(itemStack));
+                    i = stack.getCount();
+                    if (slot == -1) {
+                        stack.setCount(this.addStack(stack));
                         continue;
                     }
-                    itemStack.setCount(this.addStack(i, itemStack));
-                } while (!itemStack.isEmpty() && itemStack.getCount() < j);
-                if (itemStack.getCount() == j && this.player.abilities.creativeMode) {
-                    itemStack.setCount(0);
+                    stack.setCount(this.addStack(slot, stack));
+                } while (!stack.isEmpty() && stack.getCount() < i);
+                if (stack.getCount() == i && this.player.abilities.creativeMode) {
+                    stack.setCount(0);
                     return true;
                 }
-                return itemStack.getCount() < j;
+                return stack.getCount() < i;
             }
-            if (i == -1) {
-                i = this.getEmptySlot();
+            if (slot == -1) {
+                slot = this.getEmptySlot();
             }
-            if (i >= 0) {
-                this.main.set(i, itemStack.copy());
-                this.main.get(i).setCooldown(5);
-                itemStack.setCount(0);
+            if (slot >= 0) {
+                this.main.set(slot, stack.copy());
+                this.main.get(slot).setCooldown(5);
+                stack.setCount(0);
                 return true;
             }
             if (this.player.abilities.creativeMode) {
-                itemStack.setCount(0);
+                stack.setCount(0);
                 return true;
             }
             return false;
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Adding item to inventory");
             CrashReportSection crashReportSection = crashReport.addElement("Item being added");
-            crashReportSection.add("Item ID", Item.getRawId(itemStack.getItem()));
-            crashReportSection.add("Item data", itemStack.getDamage());
-            crashReportSection.add("Item name", () -> itemStack.getName().getString());
+            crashReportSection.add("Item ID", Item.getRawId(stack.getItem()));
+            crashReportSection.add("Item data", stack.getDamage());
+            crashReportSection.add("Item name", () -> stack.getName().getString());
             throw new CrashException(crashReport);
         }
     }
 
-    public void offerOrDrop(World world, ItemStack itemStack) {
+    public void offerOrDrop(World world, ItemStack stack) {
         if (world.isClient) {
             return;
         }
-        while (!itemStack.isEmpty()) {
-            int i = this.getOccupiedSlotWithRoomForStack(itemStack);
+        while (!stack.isEmpty()) {
+            int i = this.getOccupiedSlotWithRoomForStack(stack);
             if (i == -1) {
                 i = this.getEmptySlot();
             }
             if (i == -1) {
-                this.player.dropItem(itemStack, false);
+                this.player.dropItem(stack, false);
                 break;
             }
-            int j = itemStack.getMaxCount() - this.getInvStack(i).getCount();
-            if (!this.insertStack(i, itemStack.split(j))) continue;
+            int j = stack.getMaxCount() - this.getInvStack(i).getCount();
+            if (!this.insertStack(i, stack.split(j))) continue;
             ((ServerPlayerEntity)this.player).networkHandler.sendPacket(new GuiSlotUpdateS2CPacket(-2, i, this.getInvStack(i)));
         }
     }
 
     @Override
-    public ItemStack takeInvStack(int i, int j) {
+    public ItemStack takeInvStack(int slot, int amount) {
         DefaultedList<ItemStack> list = null;
         for (DefaultedList<ItemStack> defaultedList : this.combinedInventory) {
-            if (i < defaultedList.size()) {
+            if (slot < defaultedList.size()) {
                 list = defaultedList;
                 break;
             }
-            i -= defaultedList.size();
+            slot -= defaultedList.size();
         }
-        if (list != null && !((ItemStack)list.get(i)).isEmpty()) {
-            return Inventories.splitStack(list, i, j);
+        if (list != null && !((ItemStack)list.get(slot)).isEmpty()) {
+            return Inventories.splitStack(list, slot, amount);
         }
         return ItemStack.EMPTY;
     }
 
-    public void removeOne(ItemStack itemStack) {
+    public void removeOne(ItemStack stack) {
         block0: for (DefaultedList<ItemStack> defaultedList : this.combinedInventory) {
             for (int i = 0; i < defaultedList.size(); ++i) {
-                if (defaultedList.get(i) != itemStack) continue;
+                if (defaultedList.get(i) != stack) continue;
                 defaultedList.set(i, ItemStack.EMPTY);
                 continue block0;
             }
@@ -342,43 +342,43 @@ Nameable {
     }
 
     @Override
-    public ItemStack removeInvStack(int i) {
+    public ItemStack removeInvStack(int slot) {
         DefaultedList<ItemStack> defaultedList = null;
         for (DefaultedList<ItemStack> defaultedList2 : this.combinedInventory) {
-            if (i < defaultedList2.size()) {
+            if (slot < defaultedList2.size()) {
                 defaultedList = defaultedList2;
                 break;
             }
-            i -= defaultedList2.size();
+            slot -= defaultedList2.size();
         }
-        if (defaultedList != null && !((ItemStack)defaultedList.get(i)).isEmpty()) {
-            ItemStack itemStack = defaultedList.get(i);
-            defaultedList.set(i, ItemStack.EMPTY);
+        if (defaultedList != null && !((ItemStack)defaultedList.get(slot)).isEmpty()) {
+            ItemStack itemStack = defaultedList.get(slot);
+            defaultedList.set(slot, ItemStack.EMPTY);
             return itemStack;
         }
         return ItemStack.EMPTY;
     }
 
     @Override
-    public void setInvStack(int i, ItemStack itemStack) {
+    public void setInvStack(int slot, ItemStack stack) {
         DefaultedList<ItemStack> defaultedList = null;
         for (DefaultedList<ItemStack> defaultedList2 : this.combinedInventory) {
-            if (i < defaultedList2.size()) {
+            if (slot < defaultedList2.size()) {
                 defaultedList = defaultedList2;
                 break;
             }
-            i -= defaultedList2.size();
+            slot -= defaultedList2.size();
         }
         if (defaultedList != null) {
-            defaultedList.set(i, itemStack);
+            defaultedList.set(slot, stack);
         }
     }
 
-    public float getBlockBreakingSpeed(BlockState blockState) {
-        return this.main.get(this.selectedSlot).getMiningSpeed(blockState);
+    public float getBlockBreakingSpeed(BlockState block) {
+        return this.main.get(this.selectedSlot).getMiningSpeed(block);
     }
 
-    public ListTag serialize(ListTag listTag) {
+    public ListTag serialize(ListTag tag) {
         CompoundTag compoundTag;
         int i;
         for (i = 0; i < this.main.size(); ++i) {
@@ -386,31 +386,31 @@ Nameable {
             compoundTag = new CompoundTag();
             compoundTag.putByte("Slot", (byte)i);
             this.main.get(i).toTag(compoundTag);
-            listTag.add(compoundTag);
+            tag.add(compoundTag);
         }
         for (i = 0; i < this.armor.size(); ++i) {
             if (this.armor.get(i).isEmpty()) continue;
             compoundTag = new CompoundTag();
             compoundTag.putByte("Slot", (byte)(i + 100));
             this.armor.get(i).toTag(compoundTag);
-            listTag.add(compoundTag);
+            tag.add(compoundTag);
         }
         for (i = 0; i < this.offHand.size(); ++i) {
             if (this.offHand.get(i).isEmpty()) continue;
             compoundTag = new CompoundTag();
             compoundTag.putByte("Slot", (byte)(i + 150));
             this.offHand.get(i).toTag(compoundTag);
-            listTag.add(compoundTag);
+            tag.add(compoundTag);
         }
-        return listTag;
+        return tag;
     }
 
-    public void deserialize(ListTag listTag) {
+    public void deserialize(ListTag tag) {
         this.main.clear();
         this.armor.clear();
         this.offHand.clear();
-        for (int i = 0; i < listTag.size(); ++i) {
-            CompoundTag compoundTag = listTag.getCompound(i);
+        for (int i = 0; i < tag.size(); ++i) {
+            CompoundTag compoundTag = tag.getCompound(i);
             int j = compoundTag.getByte("Slot") & 0xFF;
             ItemStack itemStack = ItemStack.fromTag(compoundTag);
             if (itemStack.isEmpty()) continue;
@@ -450,16 +450,16 @@ Nameable {
     }
 
     @Override
-    public ItemStack getInvStack(int i) {
+    public ItemStack getInvStack(int slot) {
         DefaultedList<ItemStack> list = null;
         for (DefaultedList<ItemStack> defaultedList : this.combinedInventory) {
-            if (i < defaultedList.size()) {
+            if (slot < defaultedList.size()) {
                 list = defaultedList;
                 break;
             }
-            i -= defaultedList.size();
+            slot -= defaultedList.size();
         }
-        return list == null ? ItemStack.EMPTY : (ItemStack)list.get(i);
+        return list == null ? ItemStack.EMPTY : (ItemStack)list.get(slot);
     }
 
     @Override
@@ -472,22 +472,22 @@ Nameable {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public ItemStack getArmorStack(int i) {
-        return this.armor.get(i);
+    public ItemStack getArmorStack(int slot) {
+        return this.armor.get(slot);
     }
 
-    public void damageArmor(float f) {
-        if (f <= 0.0f) {
+    public void damageArmor(float armor) {
+        if (armor <= 0.0f) {
             return;
         }
-        if ((f /= 4.0f) < 1.0f) {
-            f = 1.0f;
+        if ((armor /= 4.0f) < 1.0f) {
+            armor = 1.0f;
         }
         for (int i = 0; i < this.armor.size(); ++i) {
             ItemStack itemStack = this.armor.get(i);
             if (!(itemStack.getItem() instanceof ArmorItem)) continue;
             int j = i;
-            itemStack.damage((int)f, this.player, playerEntity -> playerEntity.sendEquipmentBreakStatus(EquipmentSlot.fromTypeIndex(EquipmentSlot.Type.ARMOR, j)));
+            itemStack.damage((int)armor, this.player, playerEntity -> playerEntity.sendEquipmentBreakStatus(EquipmentSlot.fromTypeIndex(EquipmentSlot.Type.ARMOR, j)));
         }
     }
 
@@ -512,8 +512,8 @@ Nameable {
         return this.changeCount;
     }
 
-    public void setCursorStack(ItemStack itemStack) {
-        this.cursorStack = itemStack;
+    public void setCursorStack(ItemStack stack) {
+        this.cursorStack = stack;
     }
 
     public ItemStack getCursorStack() {
@@ -521,17 +521,17 @@ Nameable {
     }
 
     @Override
-    public boolean canPlayerUseInv(PlayerEntity playerEntity) {
+    public boolean canPlayerUseInv(PlayerEntity player) {
         if (this.player.removed) {
             return false;
         }
-        return !(playerEntity.squaredDistanceTo(this.player) > 64.0);
+        return !(player.squaredDistanceTo(this.player) > 64.0);
     }
 
-    public boolean contains(ItemStack itemStack) {
+    public boolean contains(ItemStack stack) {
         for (List list : this.combinedInventory) {
-            for (ItemStack itemStack2 : list) {
-                if (itemStack2.isEmpty() || !itemStack2.isItemEqualIgnoreDamage(itemStack)) continue;
+            for (ItemStack itemStack : list) {
+                if (itemStack.isEmpty() || !itemStack.isItemEqualIgnoreDamage(stack)) continue;
                 return true;
             }
         }
@@ -549,11 +549,11 @@ Nameable {
         return false;
     }
 
-    public void clone(PlayerInventory playerInventory) {
+    public void clone(PlayerInventory other) {
         for (int i = 0; i < this.getInvSize(); ++i) {
-            this.setInvStack(i, playerInventory.getInvStack(i));
+            this.setInvStack(i, other.getInvStack(i));
         }
-        this.selectedSlot = playerInventory.selectedSlot;
+        this.selectedSlot = other.selectedSlot;
     }
 
     @Override
@@ -563,9 +563,9 @@ Nameable {
         }
     }
 
-    public void populateRecipeFinder(RecipeFinder recipeFinder) {
+    public void populateRecipeFinder(RecipeFinder finder) {
         for (ItemStack itemStack : this.main) {
-            recipeFinder.addNormalItem(itemStack);
+            finder.addNormalItem(itemStack);
         }
     }
 }

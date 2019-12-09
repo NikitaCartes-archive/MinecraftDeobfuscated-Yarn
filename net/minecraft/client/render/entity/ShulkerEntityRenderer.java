@@ -84,8 +84,8 @@ extends MobEntityRenderer<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> {
     }
 
     @Override
-    public /* synthetic */ Vec3d getPositionOffset(Entity entity, float f) {
-        return this.getPositionOffset((ShulkerEntity)entity, f);
+    public /* synthetic */ Vec3d getPositionOffset(Entity entity, float tickDelta) {
+        return this.getPositionOffset((ShulkerEntity)entity, tickDelta);
     }
 }
 

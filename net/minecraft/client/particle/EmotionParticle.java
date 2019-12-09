@@ -17,8 +17,8 @@ import net.minecraft.world.World;
 @Environment(value=EnvType.CLIENT)
 public class EmotionParticle
 extends SpriteBillboardParticle {
-    private EmotionParticle(World world, double d, double e, double f) {
-        super(world, d, e, f, 0.0, 0.0, 0.0);
+    private EmotionParticle(World world, double x, double y, double z) {
+        super(world, x, y, z, 0.0, 0.0, 0.0);
         this.velocityX *= (double)0.01f;
         this.velocityY *= (double)0.01f;
         this.velocityZ *= (double)0.01f;
@@ -34,8 +34,8 @@ extends SpriteBillboardParticle {
     }
 
     @Override
-    public float getSize(float f) {
-        return this.scale * MathHelper.clamp(((float)this.age + f) / (float)this.maxAge * 32.0f, 0.0f, 1.0f);
+    public float getSize(float tickDelta) {
+        return this.scale * MathHelper.clamp(((float)this.age + tickDelta) / (float)this.maxAge * 32.0f, 0.0f, 1.0f);
     }
 
     @Override

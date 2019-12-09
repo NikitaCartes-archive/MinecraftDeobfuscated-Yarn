@@ -52,17 +52,17 @@ extends RealmsScreen {
     private boolean checked;
     private static final ReentrantLock downloadLock = new ReentrantLock();
 
-    public RealmsDownloadLatestWorldScreen(RealmsScreen realmsScreen, WorldDownload worldDownload, String string) {
-        this.lastScreen = realmsScreen;
-        this.worldName = string;
+    public RealmsDownloadLatestWorldScreen(RealmsScreen lastScreen, WorldDownload worldDownload, String worldName) {
+        this.lastScreen = lastScreen;
+        this.worldName = worldName;
         this.worldDownload = worldDownload;
         this.downloadStatus = new DownloadStatus();
         this.downloadTitle = RealmsDownloadLatestWorldScreen.getLocalizedString("mco.download.title");
         this.narrationRateLimiter = RateLimiter.create(0.1f);
     }
 
-    public void setConfirmationId(int i) {
-        this.confirmationId = i;
+    public void setConfirmationId(int confirmationId) {
+        this.confirmationId = confirmationId;
     }
 
     @Override
@@ -94,15 +94,15 @@ extends RealmsScreen {
     }
 
     @Override
-    public void confirmResult(boolean bl, int i) {
+    public void confirmResult(boolean result, int id) {
         this.checked = true;
         Realms.setScreen(this);
         this.downloadSave();
     }
 
-    private long getContentLength(String string) {
+    private long getContentLength(String downloadLink) {
         FileDownload fileDownload = new FileDownload();
-        return fileDownload.contentLength(string);
+        return fileDownload.contentLength(downloadLink);
     }
 
     @Override
@@ -126,13 +126,13 @@ extends RealmsScreen {
     }
 
     @Override
-    public boolean keyPressed(int i, int j, int k) {
-        if (i == 256) {
+    public boolean keyPressed(int eventKey, int scancode, int mods) {
+        if (eventKey == 256) {
             this.cancelled = true;
             this.backButtonClicked();
             return true;
         }
-        return super.keyPressed(i, j, k);
+        return super.keyPressed(eventKey, scancode, mods);
     }
 
     private void backButtonClicked() {
@@ -143,7 +143,7 @@ extends RealmsScreen {
     }
 
     @Override
-    public void render(int i, int j, float f) {
+    public void render(int xm, int ym, float a) {
         this.renderBackground();
         if (this.extracting && !this.finished) {
             this.status = RealmsDownloadLatestWorldScreen.getLocalizedString("mco.download.extracting");
@@ -160,7 +160,7 @@ extends RealmsScreen {
         if (this.field_20494 != null) {
             this.drawCenteredString(this.field_20494, this.width() / 2, 110, 0xFF0000);
         }
-        super.render(i, j, f);
+        super.render(xm, ym, a);
     }
 
     private void drawDots() {
@@ -210,32 +210,32 @@ extends RealmsScreen {
         }
     }
 
-    private void drawDownloadSpeed0(long l) {
-        if (l > 0L) {
+    private void drawDownloadSpeed0(long bytesPersSecond) {
+        if (bytesPersSecond > 0L) {
             int i = this.fontWidth(this.progress);
-            String string = "(" + RealmsDownloadLatestWorldScreen.humanReadableSpeed(l) + ")";
+            String string = "(" + RealmsDownloadLatestWorldScreen.humanReadableSpeed(bytesPersSecond) + ")";
             this.drawString(string, this.width() / 2 + i / 2 + 15, 84, 0xFFFFFF);
         }
     }
 
-    public static String humanReadableSpeed(long l) {
+    public static String humanReadableSpeed(long bytes) {
         int i = 1024;
-        if (l < 1024L) {
-            return l + " B/s";
+        if (bytes < 1024L) {
+            return bytes + " B/s";
         }
-        int j = (int)(Math.log(l) / Math.log(1024.0));
+        int j = (int)(Math.log(bytes) / Math.log(1024.0));
         String string = "KMGTPE".charAt(j - 1) + "";
-        return String.format(Locale.ROOT, "%.1f %sB/s", (double)l / Math.pow(1024.0, j), string);
+        return String.format(Locale.ROOT, "%.1f %sB/s", (double)bytes / Math.pow(1024.0, j), string);
     }
 
-    public static String humanReadableSize(long l) {
+    public static String humanReadableSize(long bytes) {
         int i = 1024;
-        if (l < 1024L) {
-            return l + " B";
+        if (bytes < 1024L) {
+            return bytes + " B";
         }
-        int j = (int)(Math.log(l) / Math.log(1024.0));
+        int j = (int)(Math.log(bytes) / Math.log(1024.0));
         String string = "KMGTPE".charAt(j - 1) + "";
-        return String.format(Locale.ROOT, "%.0f %sB", (double)l / Math.pow(1024.0, j), string);
+        return String.format(Locale.ROOT, "%.0f %sB", (double)bytes / Math.pow(1024.0, j), string);
     }
 
     private void downloadSave() {

@@ -17,18 +17,18 @@ implements EntityContext {
     protected static final EntityContext ABSENT = new EntityContextImpl(false, -1.7976931348623157E308, Items.AIR){
 
         @Override
-        public boolean isAbove(VoxelShape voxelShape, BlockPos blockPos, boolean bl) {
-            return bl;
+        public boolean isAbove(VoxelShape shape, BlockPos pos, boolean defaultValue) {
+            return defaultValue;
         }
     };
     private final boolean descending;
     private final double minY;
     private final Item heldItem;
 
-    protected EntityContextImpl(boolean bl, double d, Item item) {
-        this.descending = bl;
-        this.minY = d;
-        this.heldItem = item;
+    protected EntityContextImpl(boolean descending, double minY, Item heldItem) {
+        this.descending = descending;
+        this.minY = minY;
+        this.heldItem = heldItem;
     }
 
     @Deprecated
@@ -47,8 +47,8 @@ implements EntityContext {
     }
 
     @Override
-    public boolean isAbove(VoxelShape voxelShape, BlockPos blockPos, boolean bl) {
-        return this.minY > (double)blockPos.getY() + voxelShape.getMaximum(Direction.Axis.Y) - (double)1.0E-5f;
+    public boolean isAbove(VoxelShape shape, BlockPos pos, boolean defaultValue) {
+        return this.minY > (double)pos.getY() + shape.getMaximum(Direction.Axis.Y) - (double)1.0E-5f;
     }
 }
 

@@ -58,75 +58,75 @@ extends AbstractContainerScreen<LoomContainer> {
     }
 
     @Override
-    public void render(int i, int j, float f) {
-        super.render(i, j, f);
-        this.drawMouseoverTooltip(i, j);
+    public void render(int mouseX, int mouseY, float delta) {
+        super.render(mouseX, mouseY, delta);
+        this.drawMouseoverTooltip(mouseX, mouseY);
     }
 
     @Override
-    protected void drawForeground(int i, int j) {
+    protected void drawForeground(int mouseX, int mouseY) {
         this.font.draw(this.title.asFormattedString(), 8.0f, 4.0f, 0x404040);
         this.font.draw(this.playerInventory.getDisplayName().asFormattedString(), 8.0f, this.containerHeight - 96 + 2, 0x404040);
     }
 
     @Override
-    protected void drawBackground(float f, int i, int j) {
+    protected void drawBackground(float delta, int mouseX, int mouseY) {
         this.renderBackground();
         this.minecraft.getTextureManager().bindTexture(TEXTURE);
-        int k = this.x;
-        int l = this.y;
-        this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);
+        int i = this.x;
+        int j = this.y;
+        this.blit(i, j, 0, 0, this.containerWidth, this.containerHeight);
         Slot slot = ((LoomContainer)this.container).getBannerSlot();
         Slot slot2 = ((LoomContainer)this.container).getDyeSlot();
         Slot slot3 = ((LoomContainer)this.container).getPatternSlot();
         Slot slot4 = ((LoomContainer)this.container).getOutputSlot();
         if (!slot.hasStack()) {
-            this.blit(k + slot.xPosition, l + slot.yPosition, this.containerWidth, 0, 16, 16);
+            this.blit(i + slot.xPosition, j + slot.yPosition, this.containerWidth, 0, 16, 16);
         }
         if (!slot2.hasStack()) {
-            this.blit(k + slot2.xPosition, l + slot2.yPosition, this.containerWidth + 16, 0, 16, 16);
+            this.blit(i + slot2.xPosition, j + slot2.yPosition, this.containerWidth + 16, 0, 16, 16);
         }
         if (!slot3.hasStack()) {
-            this.blit(k + slot3.xPosition, l + slot3.yPosition, this.containerWidth + 32, 0, 16, 16);
+            this.blit(i + slot3.xPosition, j + slot3.yPosition, this.containerWidth + 32, 0, 16, 16);
         }
-        int m = (int)(41.0f * this.scrollPosition);
-        this.blit(k + 119, l + 13 + m, 232 + (this.canApplyDyePattern ? 0 : 12), 0, 12, 15);
+        int k = (int)(41.0f * this.scrollPosition);
+        this.blit(i + 119, j + 13 + k, 232 + (this.canApplyDyePattern ? 0 : 12), 0, 12, 15);
         if (this.preview != null && !this.hasTooManyPatterns) {
             RenderSystem.pushMatrix();
-            RenderSystem.translatef(k + 139, l + 52, 0.0f);
+            RenderSystem.translatef(i + 139, j + 52, 0.0f);
             RenderSystem.scalef(24.0f, -24.0f, 1.0f);
             this.preview.setPreview(true);
             BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.preview, new MatrixStack());
             this.preview.setPreview(false);
             RenderSystem.popMatrix();
         } else if (this.hasTooManyPatterns) {
-            this.blit(k + slot4.xPosition - 2, l + slot4.yPosition - 2, this.containerWidth, 17, 17, 16);
+            this.blit(i + slot4.xPosition - 2, j + slot4.yPosition - 2, this.containerWidth, 17, 17, 16);
         }
         if (this.canApplyDyePattern) {
-            int n = k + 60;
-            int o = l + 13;
-            int p = this.firstPatternButtonId + 16;
-            for (int q = this.firstPatternButtonId; q < p && q < BannerPattern.COUNT - 5; ++q) {
-                int r = q - this.firstPatternButtonId;
-                int s = n + r % 4 * 14;
-                int t = o + r / 4 * 14;
+            int l = i + 60;
+            int m = j + 13;
+            int n = this.firstPatternButtonId + 16;
+            for (int o = this.firstPatternButtonId; o < n && o < BannerPattern.COUNT - 5; ++o) {
+                int p = o - this.firstPatternButtonId;
+                int q = l + p % 4 * 14;
+                int r = m + p / 4 * 14;
                 this.minecraft.getTextureManager().bindTexture(TEXTURE);
-                int u = this.containerHeight;
-                if (q == ((LoomContainer)this.container).getSelectedPattern()) {
-                    u += 14;
-                } else if (i >= s && j >= t && i < s + 14 && j < t + 14) {
-                    u += 28;
+                int s = this.containerHeight;
+                if (o == ((LoomContainer)this.container).getSelectedPattern()) {
+                    s += 14;
+                } else if (mouseX >= q && mouseY >= r && mouseX < q + 14 && mouseY < r + 14) {
+                    s += 28;
                 }
-                this.blit(s, t, 0, u, 14, 14);
-                this.method_22692(q, s, t);
+                this.blit(q, r, 0, s, 14, 14);
+                this.method_22692(o, q, r);
             }
         } else if (this.canApplySpecialPattern) {
-            int n = k + 60;
-            int o = l + 13;
+            int l = i + 60;
+            int m = j + 13;
             this.minecraft.getTextureManager().bindTexture(TEXTURE);
-            this.blit(n, o, 0, this.containerHeight, 14, 14);
-            int p = ((LoomContainer)this.container).getSelectedPattern();
-            this.method_22692(p, n, o);
+            this.blit(l, m, 0, this.containerHeight, 14, 14);
+            int n = ((LoomContainer)this.container).getSelectedPattern();
+            this.method_22692(n, l, m);
         }
     }
 
@@ -155,53 +155,53 @@ extends AbstractContainerScreen<LoomContainer> {
     }
 
     @Override
-    public boolean mouseClicked(double d, double e, int i) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
         this.scrollbarClicked = false;
         if (this.canApplyDyePattern) {
-            int j = this.x + 60;
-            int k = this.y + 13;
-            int l = this.firstPatternButtonId + 16;
-            for (int m = this.firstPatternButtonId; m < l; ++m) {
-                int n = m - this.firstPatternButtonId;
-                double f = d - (double)(j + n % 4 * 14);
-                double g = e - (double)(k + n / 4 * 14);
-                if (!(f >= 0.0) || !(g >= 0.0) || !(f < 14.0) || !(g < 14.0) || !((LoomContainer)this.container).onButtonClick(this.minecraft.player, m)) continue;
+            int i = this.x + 60;
+            int j = this.y + 13;
+            int k = this.firstPatternButtonId + 16;
+            for (int l = this.firstPatternButtonId; l < k; ++l) {
+                int m = l - this.firstPatternButtonId;
+                double d = mouseX - (double)(i + m % 4 * 14);
+                double e = mouseY - (double)(j + m / 4 * 14);
+                if (!(d >= 0.0) || !(e >= 0.0) || !(d < 14.0) || !(e < 14.0) || !((LoomContainer)this.container).onButtonClick(this.minecraft.player, l)) continue;
                 MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_LOOM_SELECT_PATTERN, 1.0f));
-                this.minecraft.interactionManager.clickButton(((LoomContainer)this.container).syncId, m);
+                this.minecraft.interactionManager.clickButton(((LoomContainer)this.container).syncId, l);
                 return true;
             }
-            j = this.x + 119;
-            k = this.y + 9;
-            if (d >= (double)j && d < (double)(j + 12) && e >= (double)k && e < (double)(k + 56)) {
+            i = this.x + 119;
+            j = this.y + 9;
+            if (mouseX >= (double)i && mouseX < (double)(i + 12) && mouseY >= (double)j && mouseY < (double)(j + 56)) {
                 this.scrollbarClicked = true;
             }
         }
-        return super.mouseClicked(d, e, i);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
-    public boolean mouseDragged(double d, double e, int i, double f, double g) {
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
         if (this.scrollbarClicked && this.canApplyDyePattern) {
-            int j = this.y + 13;
-            int k = j + 56;
-            this.scrollPosition = ((float)e - (float)j - 7.5f) / ((float)(k - j) - 15.0f);
+            int i = this.y + 13;
+            int j = i + 56;
+            this.scrollPosition = ((float)mouseY - (float)i - 7.5f) / ((float)(j - i) - 15.0f);
             this.scrollPosition = MathHelper.clamp(this.scrollPosition, 0.0f, 1.0f);
-            int l = PATTERN_BUTTON_ROW_COUNT - 4;
-            int m = (int)((double)(this.scrollPosition * (float)l) + 0.5);
-            if (m < 0) {
-                m = 0;
+            int k = PATTERN_BUTTON_ROW_COUNT - 4;
+            int l = (int)((double)(this.scrollPosition * (float)k) + 0.5);
+            if (l < 0) {
+                l = 0;
             }
-            this.firstPatternButtonId = 1 + m * 4;
+            this.firstPatternButtonId = 1 + l * 4;
             return true;
         }
-        return super.mouseDragged(d, e, i, f, g);
+        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
     }
 
     @Override
-    public boolean mouseScrolled(double d, double e, double f) {
+    public boolean mouseScrolled(double d, double e, double amount) {
         if (this.canApplyDyePattern) {
             int i = PATTERN_BUTTON_ROW_COUNT - 4;
-            this.scrollPosition = (float)((double)this.scrollPosition - f / (double)i);
+            this.scrollPosition = (float)((double)this.scrollPosition - amount / (double)i);
             this.scrollPosition = MathHelper.clamp(this.scrollPosition, 0.0f, 1.0f);
             this.firstPatternButtonId = 1 + (int)((double)(this.scrollPosition * (float)i) + 0.5) * 4;
         }
@@ -209,8 +209,8 @@ extends AbstractContainerScreen<LoomContainer> {
     }
 
     @Override
-    protected boolean isClickOutsideBounds(double d, double e, int i, int j, int k) {
-        return d < (double)i || e < (double)j || d >= (double)(i + this.containerWidth) || e >= (double)(j + this.containerHeight);
+    protected boolean isClickOutsideBounds(double mouseX, double mouseY, int left, int top, int button) {
+        return mouseX < (double)left || mouseY < (double)top || mouseX >= (double)(left + this.containerWidth) || mouseY >= (double)(top + this.containerHeight);
     }
 
     private void onInventoryChanged() {

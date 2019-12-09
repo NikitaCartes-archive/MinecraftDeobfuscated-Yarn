@@ -22,19 +22,19 @@ public class FunctionCommand {
         return CommandSource.suggestIdentifiers(commandFunctionManager.getFunctions().keySet(), suggestionsBuilder);
     };
 
-    public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-        commandDispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("function").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))).then(CommandManager.argument("name", FunctionArgumentType.function()).suggests(SUGGESTION_PROVIDER).executes(commandContext -> FunctionCommand.execute((ServerCommandSource)commandContext.getSource(), FunctionArgumentType.getFunctions(commandContext, "name")))));
+    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("function").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))).then(CommandManager.argument("name", FunctionArgumentType.function()).suggests(SUGGESTION_PROVIDER).executes(commandContext -> FunctionCommand.execute((ServerCommandSource)commandContext.getSource(), FunctionArgumentType.getFunctions(commandContext, "name")))));
     }
 
-    private static int execute(ServerCommandSource serverCommandSource, Collection<CommandFunction> collection) {
+    private static int execute(ServerCommandSource source, Collection<CommandFunction> functions) {
         int i = 0;
-        for (CommandFunction commandFunction : collection) {
-            i += serverCommandSource.getMinecraftServer().getCommandFunctionManager().execute(commandFunction, serverCommandSource.withSilent().withMaxLevel(2));
+        for (CommandFunction commandFunction : functions) {
+            i += source.getMinecraftServer().getCommandFunctionManager().execute(commandFunction, source.withSilent().withMaxLevel(2));
         }
-        if (collection.size() == 1) {
-            serverCommandSource.sendFeedback(new TranslatableText("commands.function.success.single", i, collection.iterator().next().getId()), true);
+        if (functions.size() == 1) {
+            source.sendFeedback(new TranslatableText("commands.function.success.single", i, functions.iterator().next().getId()), true);
         } else {
-            serverCommandSource.sendFeedback(new TranslatableText("commands.function.success.multiple", i, collection.size()), true);
+            source.sendFeedback(new TranslatableText("commands.function.success.multiple", i, functions.size()), true);
         }
         return i;
     }

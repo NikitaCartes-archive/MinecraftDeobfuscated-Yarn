@@ -21,12 +21,12 @@ import org.apache.commons.lang3.StringUtils;
 
 public class ItemWrittenBookPagesStrictJsonFix
 extends DataFix {
-    public ItemWrittenBookPagesStrictJsonFix(Schema schema, boolean bl) {
-        super(schema, bl);
+    public ItemWrittenBookPagesStrictJsonFix(Schema outputSchema, boolean changesType) {
+        super(outputSchema, changesType);
     }
 
-    public Dynamic<?> fixBookPages(Dynamic<?> dynamic) {
-        return dynamic.update("pages", dynamic2 -> DataFixUtils.orElse(dynamic2.asStreamOpt().map(stream -> stream.map(dynamic -> {
+    public Dynamic<?> fixBookPages(Dynamic<?> tag) {
+        return tag.update("pages", dynamic2 -> DataFixUtils.orElse(dynamic2.asStreamOpt().map(stream -> stream.map(dynamic -> {
             if (!dynamic.asString().isPresent()) {
                 return dynamic;
             }
@@ -64,7 +64,7 @@ extends DataFix {
                 text = new LiteralText(string);
             }
             return dynamic.createString(Text.Serializer.toJson(text));
-        })).map(dynamic::createList), dynamic.emptyList()));
+        })).map(tag::createList), tag.emptyList()));
     }
 
     @Override

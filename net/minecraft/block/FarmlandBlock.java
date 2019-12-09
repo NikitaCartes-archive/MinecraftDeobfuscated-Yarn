@@ -45,75 +45,75 @@ extends Block {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-        if (direction == Direction.UP && !blockState.canPlaceAt(iWorld, blockPos)) {
-            iWorld.getBlockTickScheduler().schedule(blockPos, this, 1);
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+        if (facing == Direction.UP && !state.canPlaceAt(world, pos)) {
+            world.getBlockTickScheduler().schedule(pos, this, 1);
         }
-        return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+        return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
-        BlockState blockState2 = worldView.getBlockState(blockPos.up());
-        return !blockState2.getMaterial().isSolid() || blockState2.getBlock() instanceof FenceGateBlock || blockState2.getBlock() instanceof PistonExtensionBlock;
+    public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+        BlockState blockState = world.getBlockState(pos.up());
+        return !blockState.getMaterial().isSolid() || blockState.getBlock() instanceof FenceGateBlock || blockState.getBlock() instanceof PistonExtensionBlock;
     }
 
     @Override
-    public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-        if (!this.getDefaultState().canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos())) {
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        if (!this.getDefaultState().canPlaceAt(ctx.getWorld(), ctx.getBlockPos())) {
             return Blocks.DIRT.getDefaultState();
         }
-        return super.getPlacementState(itemPlacementContext);
+        return super.getPlacementState(ctx);
     }
 
     @Override
-    public boolean hasSidedTransparency(BlockState blockState) {
+    public boolean hasSidedTransparency(BlockState state) {
         return true;
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
         return SHAPE;
     }
 
     @Override
-    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
-        if (!blockState.canPlaceAt(serverWorld, blockPos)) {
-            FarmlandBlock.setToDirt(blockState, serverWorld, blockPos);
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        if (!state.canPlaceAt(world, pos)) {
+            FarmlandBlock.setToDirt(state, world, pos);
             return;
         }
-        int i = blockState.get(MOISTURE);
-        if (FarmlandBlock.isWaterNearby(serverWorld, blockPos) || serverWorld.hasRain(blockPos.up())) {
+        int i = state.get(MOISTURE);
+        if (FarmlandBlock.isWaterNearby(world, pos) || world.hasRain(pos.up())) {
             if (i < 7) {
-                serverWorld.setBlockState(blockPos, (BlockState)blockState.with(MOISTURE, 7), 2);
+                world.setBlockState(pos, (BlockState)state.with(MOISTURE, 7), 2);
             }
         } else if (i > 0) {
-            serverWorld.setBlockState(blockPos, (BlockState)blockState.with(MOISTURE, i - 1), 2);
-        } else if (!FarmlandBlock.hasCrop(serverWorld, blockPos)) {
-            FarmlandBlock.setToDirt(blockState, serverWorld, blockPos);
+            world.setBlockState(pos, (BlockState)state.with(MOISTURE, i - 1), 2);
+        } else if (!FarmlandBlock.hasCrop(world, pos)) {
+            FarmlandBlock.setToDirt(state, world, pos);
         }
     }
 
     @Override
-    public void onLandedUpon(World world, BlockPos blockPos, Entity entity, float f) {
-        if (!world.isClient && world.random.nextFloat() < f - 0.5f && entity instanceof LivingEntity && (entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) && entity.getWidth() * entity.getWidth() * entity.getHeight() > 0.512f) {
-            FarmlandBlock.setToDirt(world.getBlockState(blockPos), world, blockPos);
+    public void onLandedUpon(World world, BlockPos pos, Entity entity, float distance) {
+        if (!world.isClient && world.random.nextFloat() < distance - 0.5f && entity instanceof LivingEntity && (entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) && entity.getWidth() * entity.getWidth() * entity.getHeight() > 0.512f) {
+            FarmlandBlock.setToDirt(world.getBlockState(pos), world, pos);
         }
-        super.onLandedUpon(world, blockPos, entity, f);
+        super.onLandedUpon(world, pos, entity, distance);
     }
 
-    public static void setToDirt(BlockState blockState, World world, BlockPos blockPos) {
-        world.setBlockState(blockPos, FarmlandBlock.pushEntitiesUpBeforeBlockChange(blockState, Blocks.DIRT.getDefaultState(), world, blockPos));
+    public static void setToDirt(BlockState state, World world, BlockPos pos) {
+        world.setBlockState(pos, FarmlandBlock.pushEntitiesUpBeforeBlockChange(state, Blocks.DIRT.getDefaultState(), world, pos));
     }
 
-    private static boolean hasCrop(BlockView blockView, BlockPos blockPos) {
-        Block block = blockView.getBlockState(blockPos.up()).getBlock();
+    private static boolean hasCrop(BlockView world, BlockPos pos) {
+        Block block = world.getBlockState(pos.up()).getBlock();
         return block instanceof CropBlock || block instanceof StemBlock || block instanceof AttachedStemBlock;
     }
 
-    private static boolean isWaterNearby(WorldView worldView, BlockPos blockPos) {
-        for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-4, 0, -4), blockPos.add(4, 1, 4))) {
-            if (!worldView.getFluidState(blockPos2).matches(FluidTags.WATER)) continue;
+    private static boolean isWaterNearby(WorldView worldView, BlockPos pos) {
+        for (BlockPos blockPos : BlockPos.iterate(pos.add(-4, 0, -4), pos.add(4, 1, 4))) {
+            if (!worldView.getFluidState(blockPos).matches(FluidTags.WATER)) continue;
             return true;
         }
         return false;
@@ -125,13 +125,13 @@ extends Block {
     }
 
     @Override
-    public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+    public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
         return false;
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean hasInWallOverlay(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+    public boolean hasInWallOverlay(BlockState state, BlockView view, BlockPos pos) {
         return true;
     }
 }

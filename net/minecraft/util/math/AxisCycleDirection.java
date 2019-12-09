@@ -9,8 +9,8 @@ public enum AxisCycleDirection {
     NONE{
 
         @Override
-        public int choose(int i, int j, int k, Direction.Axis axis) {
-            return axis.choose(i, j, k);
+        public int choose(int x, int y, int z, Direction.Axis axis) {
+            return axis.choose(x, y, z);
         }
 
         @Override
@@ -27,8 +27,8 @@ public enum AxisCycleDirection {
     FORWARD{
 
         @Override
-        public int choose(int i, int j, int k, Direction.Axis axis) {
-            return axis.choose(k, i, j);
+        public int choose(int x, int y, int z, Direction.Axis axis) {
+            return axis.choose(z, x, y);
         }
 
         @Override
@@ -45,8 +45,8 @@ public enum AxisCycleDirection {
     BACKWARD{
 
         @Override
-        public int choose(int i, int j, int k, Direction.Axis axis) {
-            return axis.choose(j, k, i);
+        public int choose(int x, int y, int z, Direction.Axis axis) {
+            return axis.choose(y, z, x);
         }
 
         @Override
@@ -69,8 +69,8 @@ public enum AxisCycleDirection {
 
     public abstract AxisCycleDirection opposite();
 
-    public static AxisCycleDirection between(Direction.Axis axis, Direction.Axis axis2) {
-        return VALUES[Math.floorMod(axis2.ordinal() - axis.ordinal(), 3)];
+    public static AxisCycleDirection between(Direction.Axis from, Direction.Axis to) {
+        return VALUES[Math.floorMod(to.ordinal() - from.ordinal(), 3)];
     }
 
     static {

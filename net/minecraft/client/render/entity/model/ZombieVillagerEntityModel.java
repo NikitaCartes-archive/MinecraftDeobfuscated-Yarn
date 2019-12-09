@@ -83,10 +83,10 @@ implements ModelWithHat {
     }
 
     @Override
-    public void setHatVisible(boolean bl) {
-        this.head.visible = bl;
-        this.helmet.visible = bl;
-        this.hat.visible = bl;
+    public void setHatVisible(boolean visible) {
+        this.head.visible = visible;
+        this.helmet.visible = visible;
+        this.hat.visible = visible;
     }
 }
 

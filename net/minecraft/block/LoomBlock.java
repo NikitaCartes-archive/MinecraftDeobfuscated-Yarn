@@ -30,23 +30,23 @@ extends HorizontalFacingBlock {
     }
 
     @Override
-    public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (world.isClient) {
             return ActionResult.SUCCESS;
         }
-        playerEntity.openContainer(blockState.createContainerProvider(world, blockPos));
-        playerEntity.incrementStat(Stats.INTERACT_WITH_LOOM);
+        player.openContainer(state.createContainerProvider(world, pos));
+        player.incrementStat(Stats.INTERACT_WITH_LOOM);
         return ActionResult.SUCCESS;
     }
 
     @Override
-    public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
-        return new ClientDummyContainerProvider((i, playerInventory, playerEntity) -> new LoomContainer(i, playerInventory, BlockContext.create(world, blockPos)), CONTAINER_NAME);
+    public NameableContainerProvider createContainerProvider(BlockState state, World world, BlockPos pos) {
+        return new ClientDummyContainerProvider((i, playerInventory, playerEntity) -> new LoomContainer(i, playerInventory, BlockContext.create(world, pos)), CONTAINER_NAME);
     }
 
     @Override
-    public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-        return (BlockState)this.getDefaultState().with(FACING, itemPlacementContext.getPlayerFacing().getOpposite());
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        return (BlockState)this.getDefaultState().with(FACING, ctx.getPlayerFacing().getOpposite());
     }
 
     @Override

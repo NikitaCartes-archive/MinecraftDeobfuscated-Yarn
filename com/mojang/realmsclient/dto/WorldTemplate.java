@@ -25,18 +25,18 @@ extends ValueObject {
     public String recommendedPlayers;
     public WorldTemplateType type;
 
-    public static WorldTemplate parse(JsonObject jsonObject) {
+    public static WorldTemplate parse(JsonObject node) {
         WorldTemplate worldTemplate = new WorldTemplate();
         try {
-            worldTemplate.id = JsonUtils.getStringOr("id", jsonObject, "");
-            worldTemplate.name = JsonUtils.getStringOr("name", jsonObject, "");
-            worldTemplate.version = JsonUtils.getStringOr("version", jsonObject, "");
-            worldTemplate.author = JsonUtils.getStringOr("author", jsonObject, "");
-            worldTemplate.link = JsonUtils.getStringOr("link", jsonObject, "");
-            worldTemplate.image = JsonUtils.getStringOr("image", jsonObject, null);
-            worldTemplate.trailer = JsonUtils.getStringOr("trailer", jsonObject, "");
-            worldTemplate.recommendedPlayers = JsonUtils.getStringOr("recommendedPlayers", jsonObject, "");
-            worldTemplate.type = WorldTemplateType.valueOf(JsonUtils.getStringOr("type", jsonObject, WorldTemplateType.WORLD_TEMPLATE.name()));
+            worldTemplate.id = JsonUtils.getStringOr("id", node, "");
+            worldTemplate.name = JsonUtils.getStringOr("name", node, "");
+            worldTemplate.version = JsonUtils.getStringOr("version", node, "");
+            worldTemplate.author = JsonUtils.getStringOr("author", node, "");
+            worldTemplate.link = JsonUtils.getStringOr("link", node, "");
+            worldTemplate.image = JsonUtils.getStringOr("image", node, null);
+            worldTemplate.trailer = JsonUtils.getStringOr("trailer", node, "");
+            worldTemplate.recommendedPlayers = JsonUtils.getStringOr("recommendedPlayers", node, "");
+            worldTemplate.type = WorldTemplateType.valueOf(JsonUtils.getStringOr("type", node, WorldTemplateType.WORLD_TEMPLATE.name()));
         } catch (Exception exception) {
             LOGGER.error("Could not parse WorldTemplate: " + exception.getMessage());
         }

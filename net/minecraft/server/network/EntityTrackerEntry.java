@@ -61,11 +61,11 @@ public class EntityTrackerEntry {
     private boolean field_14051;
     private boolean lastOnGround;
 
-    public EntityTrackerEntry(ServerWorld serverWorld, Entity entity, int i, boolean bl, Consumer<Packet<?>> consumer) {
+    public EntityTrackerEntry(ServerWorld serverWorld, Entity entity, int tickInterval, boolean bl, Consumer<Packet<?>> consumer) {
         this.field_18258 = serverWorld;
         this.field_18259 = consumer;
         this.entity = entity;
-        this.tickInterval = i;
+        this.tickInterval = tickInterval;
         this.alwaysUpdateVelocity = bl;
         this.method_18761();
         this.lastYaw = MathHelper.floor(entity.yaw * 256.0f / 360.0f);
@@ -181,23 +181,23 @@ public class EntityTrackerEntry {
         serverPlayerEntity.onStartedTracking(this.entity);
     }
 
-    public void sendPackets(Consumer<Packet<?>> consumer) {
+    public void sendPackets(Consumer<Packet<?>> sender) {
         MobEntity mobEntity;
         if (this.entity.removed) {
             LOGGER.warn("Fetching packet for removed entity " + this.entity);
         }
         Packet<?> packet = this.entity.createSpawnPacket();
         this.lastHeadPitch = MathHelper.floor(this.entity.getHeadYaw() * 256.0f / 360.0f);
-        consumer.accept(packet);
+        sender.accept(packet);
         if (!this.entity.getDataTracker().isEmpty()) {
-            consumer.accept(new EntityTrackerUpdateS2CPacket(this.entity.getEntityId(), this.entity.getDataTracker(), true));
+            sender.accept(new EntityTrackerUpdateS2CPacket(this.entity.getEntityId(), this.entity.getDataTracker(), true));
         }
         boolean bl = this.alwaysUpdateVelocity;
         if (this.entity instanceof LivingEntity) {
             EquipmentSlot[] entityAttributeContainer = (EquipmentSlot[])((LivingEntity)this.entity).getAttributes();
             Collection<EntityAttributeInstance> collection = entityAttributeContainer.buildTrackedAttributesCollection();
             if (!collection.isEmpty()) {
-                consumer.accept(new EntityAttributesS2CPacket(this.entity.getEntityId(), collection));
+                sender.accept(new EntityAttributesS2CPacket(this.entity.getEntityId(), collection));
             }
             if (((LivingEntity)this.entity).isFallFlying()) {
                 bl = true;
@@ -205,29 +205,29 @@ public class EntityTrackerEntry {
         }
         this.field_18278 = this.entity.getVelocity();
         if (bl && !(packet instanceof MobSpawnS2CPacket)) {
-            consumer.accept(new EntityVelocityUpdateS2CPacket(this.entity.getEntityId(), this.field_18278));
+            sender.accept(new EntityVelocityUpdateS2CPacket(this.entity.getEntityId(), this.field_18278));
         }
         if (this.entity instanceof LivingEntity) {
             for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
                 ItemStack itemStack = ((LivingEntity)this.entity).getEquippedStack(equipmentSlot);
                 if (itemStack.isEmpty()) continue;
-                consumer.accept(new EntityEquipmentUpdateS2CPacket(this.entity.getEntityId(), equipmentSlot, itemStack));
+                sender.accept(new EntityEquipmentUpdateS2CPacket(this.entity.getEntityId(), equipmentSlot, itemStack));
             }
         }
         if (this.entity instanceof LivingEntity) {
             LivingEntity livingEntity = (LivingEntity)this.entity;
             for (StatusEffectInstance statusEffectInstance : livingEntity.getStatusEffects()) {
-                consumer.accept(new EntityPotionEffectS2CPacket(this.entity.getEntityId(), statusEffectInstance));
+                sender.accept(new EntityPotionEffectS2CPacket(this.entity.getEntityId(), statusEffectInstance));
             }
         }
         if (!this.entity.getPassengerList().isEmpty()) {
-            consumer.accept(new EntityPassengersSetS2CPacket(this.entity));
+            sender.accept(new EntityPassengersSetS2CPacket(this.entity));
         }
         if (this.entity.hasVehicle()) {
-            consumer.accept(new EntityPassengersSetS2CPacket(this.entity.getVehicle()));
+            sender.accept(new EntityPassengersSetS2CPacket(this.entity.getVehicle()));
         }
         if (this.entity instanceof MobEntity && (mobEntity = (MobEntity)this.entity).isLeashed()) {
-            consumer.accept(new EntityAttachS2CPacket(mobEntity, mobEntity.getHoldingEntity()));
+            sender.accept(new EntityAttachS2CPacket(mobEntity, mobEntity.getHoldingEntity()));
         }
     }
 

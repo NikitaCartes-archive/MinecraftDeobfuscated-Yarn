@@ -9,45 +9,45 @@ import net.minecraft.recipe.ShapedRecipe;
 import net.minecraft.util.math.MathHelper;
 
 public interface RecipeGridAligner<T> {
-    default public void alignRecipeToGrid(int i, int j, int k, Recipe<?> recipe, Iterator<T> iterator, int l) {
-        int m = i;
-        int n = j;
+    default public void alignRecipeToGrid(int gridWidth, int gridHeight, int gridOutputSlot, Recipe<?> recipe, Iterator<T> inputs, int amount) {
+        int i = gridWidth;
+        int j = gridHeight;
         if (recipe instanceof ShapedRecipe) {
             ShapedRecipe shapedRecipe = (ShapedRecipe)recipe;
-            m = shapedRecipe.getWidth();
-            n = shapedRecipe.getHeight();
+            i = shapedRecipe.getWidth();
+            j = shapedRecipe.getHeight();
         }
-        int o = 0;
-        block0: for (int p = 0; p < j; ++p) {
-            if (o == k) {
-                ++o;
+        int k = 0;
+        block0: for (int l = 0; l < gridHeight; ++l) {
+            if (k == gridOutputSlot) {
+                ++k;
             }
-            boolean bl = (float)n < (float)j / 2.0f;
-            int q = MathHelper.floor((float)j / 2.0f - (float)n / 2.0f);
-            if (bl && q > p) {
-                o += i;
-                ++p;
+            boolean bl = (float)j < (float)gridHeight / 2.0f;
+            int m = MathHelper.floor((float)gridHeight / 2.0f - (float)j / 2.0f);
+            if (bl && m > l) {
+                k += gridWidth;
+                ++l;
             }
-            for (int r = 0; r < i; ++r) {
+            for (int n = 0; n < gridWidth; ++n) {
                 boolean bl2;
-                if (!iterator.hasNext()) {
+                if (!inputs.hasNext()) {
                     return;
                 }
-                bl = (float)m < (float)i / 2.0f;
-                q = MathHelper.floor((float)i / 2.0f - (float)m / 2.0f);
-                int s = m;
-                boolean bl3 = bl2 = r < m;
+                bl = (float)i < (float)gridWidth / 2.0f;
+                m = MathHelper.floor((float)gridWidth / 2.0f - (float)i / 2.0f);
+                int o = i;
+                boolean bl3 = bl2 = n < i;
                 if (bl) {
-                    s = q + m;
-                    boolean bl4 = bl2 = q <= r && r < q + m;
+                    o = m + i;
+                    boolean bl4 = bl2 = m <= n && n < m + i;
                 }
                 if (bl2) {
-                    this.acceptAlignedInput(iterator, o, l, p, r);
-                } else if (s == r) {
-                    o += i - r;
+                    this.acceptAlignedInput(inputs, k, amount, l, n);
+                } else if (o == n) {
+                    k += gridWidth - n;
                     continue block0;
                 }
-                ++o;
+                ++k;
             }
         }
     }

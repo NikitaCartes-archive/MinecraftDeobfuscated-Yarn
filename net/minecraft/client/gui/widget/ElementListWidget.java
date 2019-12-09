@@ -46,13 +46,13 @@ extends EntryListWidget<E> {
         }
 
         @Override
-        public void setDragging(boolean bl) {
-            this.dragging = bl;
+        public void setDragging(boolean dragging) {
+            this.dragging = dragging;
         }
 
         @Override
-        public void setFocused(@Nullable Element element) {
-            this.focused = element;
+        public void setFocused(@Nullable Element focused) {
+            this.focused = focused;
         }
 
         @Override

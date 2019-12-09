@@ -99,60 +99,60 @@ public class TexturedRenderLayers {
         return ENTITY_TRANSLUCENT_CULL;
     }
 
-    public static void addDefaultTextures(Consumer<SpriteIdentifier> consumer) {
-        consumer.accept(SHULKER_TEXTURE_ID);
-        COLORED_SHULKER_BOXES_TEXTURES.forEach(consumer);
+    public static void addDefaultTextures(Consumer<SpriteIdentifier> adder) {
+        adder.accept(SHULKER_TEXTURE_ID);
+        COLORED_SHULKER_BOXES_TEXTURES.forEach(adder);
         for (BannerPattern bannerPattern : BannerPattern.values()) {
-            consumer.accept(new SpriteIdentifier(BANNER_PATTERNS_ATLAS_TEXTURE, bannerPattern.getSpriteId(true)));
-            consumer.accept(new SpriteIdentifier(SHIELD_PATTERNS_ATLAS_TEXTURE, bannerPattern.getSpriteId(false)));
+            adder.accept(new SpriteIdentifier(BANNER_PATTERNS_ATLAS_TEXTURE, bannerPattern.getSpriteId(true)));
+            adder.accept(new SpriteIdentifier(SHIELD_PATTERNS_ATLAS_TEXTURE, bannerPattern.getSpriteId(false)));
         }
-        WOOD_TYPE_TEXTURES.values().forEach(consumer);
+        WOOD_TYPE_TEXTURES.values().forEach(adder);
         for (SpriteIdentifier spriteIdentifier : BED_TEXTURES) {
-            consumer.accept(spriteIdentifier);
+            adder.accept(spriteIdentifier);
         }
-        consumer.accept(TRAPPED);
-        consumer.accept(TRAPPED_LEFT);
-        consumer.accept(TRAPPED_RIGHT);
-        consumer.accept(CHRISTMAS);
-        consumer.accept(CHRISTMAS_LEFT);
-        consumer.accept(CHRISTMAS_RIGHT);
-        consumer.accept(NORMAL);
-        consumer.accept(NORMAL_LEFT);
-        consumer.accept(NORMAL_RIGHT);
-        consumer.accept(ENDER);
+        adder.accept(TRAPPED);
+        adder.accept(TRAPPED_LEFT);
+        adder.accept(TRAPPED_RIGHT);
+        adder.accept(CHRISTMAS);
+        adder.accept(CHRISTMAS_LEFT);
+        adder.accept(CHRISTMAS_RIGHT);
+        adder.accept(NORMAL);
+        adder.accept(NORMAL_LEFT);
+        adder.accept(NORMAL_RIGHT);
+        adder.accept(ENDER);
     }
 
-    public static SpriteIdentifier getSignTextureId(SignType signType) {
-        return new SpriteIdentifier(SIGNS_ATLAS_TEXTURE, new Identifier("entity/signs/" + signType.getName()));
+    public static SpriteIdentifier getSignTextureId(SignType type) {
+        return new SpriteIdentifier(SIGNS_ATLAS_TEXTURE, new Identifier("entity/signs/" + type.getName()));
     }
 
-    private static SpriteIdentifier getChestTextureId(String string) {
-        return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, new Identifier("entity/chest/" + string));
+    private static SpriteIdentifier getChestTextureId(String variant) {
+        return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, new Identifier("entity/chest/" + variant));
     }
 
-    public static SpriteIdentifier getChestTexture(BlockEntity blockEntity, ChestType chestType, boolean bl) {
-        if (bl) {
-            return TexturedRenderLayers.getChestTexture(chestType, CHRISTMAS, CHRISTMAS_LEFT, CHRISTMAS_RIGHT);
+    public static SpriteIdentifier getChestTexture(BlockEntity blockEntity, ChestType type, boolean christmas) {
+        if (christmas) {
+            return TexturedRenderLayers.getChestTexture(type, CHRISTMAS, CHRISTMAS_LEFT, CHRISTMAS_RIGHT);
         }
         if (blockEntity instanceof TrappedChestBlockEntity) {
-            return TexturedRenderLayers.getChestTexture(chestType, TRAPPED, TRAPPED_LEFT, TRAPPED_RIGHT);
+            return TexturedRenderLayers.getChestTexture(type, TRAPPED, TRAPPED_LEFT, TRAPPED_RIGHT);
         }
         if (blockEntity instanceof EnderChestBlockEntity) {
             return ENDER;
         }
-        return TexturedRenderLayers.getChestTexture(chestType, NORMAL, NORMAL_LEFT, NORMAL_RIGHT);
+        return TexturedRenderLayers.getChestTexture(type, NORMAL, NORMAL_LEFT, NORMAL_RIGHT);
     }
 
-    private static SpriteIdentifier getChestTexture(ChestType chestType, SpriteIdentifier spriteIdentifier, SpriteIdentifier spriteIdentifier2, SpriteIdentifier spriteIdentifier3) {
-        switch (chestType) {
+    private static SpriteIdentifier getChestTexture(ChestType type, SpriteIdentifier single, SpriteIdentifier left, SpriteIdentifier right) {
+        switch (type) {
             case LEFT: {
-                return spriteIdentifier2;
+                return left;
             }
             case RIGHT: {
-                return spriteIdentifier3;
+                return right;
             }
         }
-        return spriteIdentifier;
+        return single;
     }
 }
 

@@ -37,37 +37,37 @@ extends HorizontalConnectedBlock {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-        if (blockState.get(UP).booleanValue()) {
-            return this.UP_OUTLINE_SHAPES[this.getShapeIndex(blockState)];
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+        if (state.get(UP).booleanValue()) {
+            return this.UP_OUTLINE_SHAPES[this.getShapeIndex(state)];
         }
-        return super.getOutlineShape(blockState, blockView, blockPos, entityContext);
+        return super.getOutlineShape(state, view, pos, ePos);
     }
 
     @Override
-    public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-        if (blockState.get(UP).booleanValue()) {
-            return this.UP_COLLISION_SHAPES[this.getShapeIndex(blockState)];
+    public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+        if (state.get(UP).booleanValue()) {
+            return this.UP_COLLISION_SHAPES[this.getShapeIndex(state)];
         }
-        return super.getCollisionShape(blockState, blockView, blockPos, entityContext);
+        return super.getCollisionShape(state, view, pos, ePos);
     }
 
     @Override
-    public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+    public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
         return false;
     }
 
-    private boolean shouldConnectTo(BlockState blockState, boolean bl, Direction direction) {
-        Block block = blockState.getBlock();
-        boolean bl2 = block.matches(BlockTags.WALLS) || block instanceof FenceGateBlock && FenceGateBlock.canWallConnect(blockState, direction);
-        return !WallBlock.canConnect(block) && bl || bl2;
+    private boolean shouldConnectTo(BlockState state, boolean faceFullSquare, Direction side) {
+        Block block = state.getBlock();
+        boolean bl = block.matches(BlockTags.WALLS) || block instanceof FenceGateBlock && FenceGateBlock.canWallConnect(state, side);
+        return !WallBlock.canConnect(block) && faceFullSquare || bl;
     }
 
     @Override
-    public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-        World worldView = itemPlacementContext.getWorld();
-        BlockPos blockPos = itemPlacementContext.getBlockPos();
-        FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        World worldView = ctx.getWorld();
+        BlockPos blockPos = ctx.getBlockPos();
+        FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
         BlockPos blockPos2 = blockPos.north();
         BlockPos blockPos3 = blockPos.east();
         BlockPos blockPos4 = blockPos.south();
@@ -85,20 +85,20 @@ extends HorizontalConnectedBlock {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-        if (blockState.get(WATERLOGGED).booleanValue()) {
-            iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+        if (state.get(WATERLOGGED).booleanValue()) {
+            world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
-        if (direction == Direction.DOWN) {
-            return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+        if (facing == Direction.DOWN) {
+            return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
         }
-        Direction direction2 = direction.getOpposite();
-        boolean bl = direction == Direction.NORTH ? this.shouldConnectTo(blockState2, blockState2.isSideSolidFullSquare(iWorld, blockPos2, direction2), direction2) : blockState.get(NORTH).booleanValue();
-        boolean bl2 = direction == Direction.EAST ? this.shouldConnectTo(blockState2, blockState2.isSideSolidFullSquare(iWorld, blockPos2, direction2), direction2) : blockState.get(EAST).booleanValue();
-        boolean bl3 = direction == Direction.SOUTH ? this.shouldConnectTo(blockState2, blockState2.isSideSolidFullSquare(iWorld, blockPos2, direction2), direction2) : blockState.get(SOUTH).booleanValue();
-        boolean bl4 = direction == Direction.WEST ? this.shouldConnectTo(blockState2, blockState2.isSideSolidFullSquare(iWorld, blockPos2, direction2), direction2) : blockState.get(WEST).booleanValue();
+        Direction direction = facing.getOpposite();
+        boolean bl = facing == Direction.NORTH ? this.shouldConnectTo(neighborState, neighborState.isSideSolidFullSquare(world, neighborPos, direction), direction) : state.get(NORTH).booleanValue();
+        boolean bl2 = facing == Direction.EAST ? this.shouldConnectTo(neighborState, neighborState.isSideSolidFullSquare(world, neighborPos, direction), direction) : state.get(EAST).booleanValue();
+        boolean bl3 = facing == Direction.SOUTH ? this.shouldConnectTo(neighborState, neighborState.isSideSolidFullSquare(world, neighborPos, direction), direction) : state.get(SOUTH).booleanValue();
+        boolean bl4 = facing == Direction.WEST ? this.shouldConnectTo(neighborState, neighborState.isSideSolidFullSquare(world, neighborPos, direction), direction) : state.get(WEST).booleanValue();
         boolean bl5 = !(bl && !bl2 && bl3 && !bl4 || !bl && bl2 && !bl3 && bl4);
-        return (BlockState)((BlockState)((BlockState)((BlockState)((BlockState)blockState.with(UP, bl5 || !iWorld.isAir(blockPos.up()))).with(NORTH, bl)).with(EAST, bl2)).with(SOUTH, bl3)).with(WEST, bl4);
+        return (BlockState)((BlockState)((BlockState)((BlockState)((BlockState)state.with(UP, bl5 || !world.isAir(pos.up()))).with(NORTH, bl)).with(EAST, bl2)).with(SOUTH, bl3)).with(WEST, bl4);
     }
 
     @Override

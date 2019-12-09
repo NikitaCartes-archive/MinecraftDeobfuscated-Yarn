@@ -68,13 +68,13 @@ extends CompositeEntityModel<T> {
     }
 
     @Override
-    public void setAngles(T entity, float f, float g, float h, float i, float j) {
-        this.body.pitch = j * ((float)Math.PI / 180);
-        this.body.yaw = i * ((float)Math.PI / 180);
+    public void setAngles(T entity, float limbAngle, float limbDistance, float customAngle, float headYaw, float headPitch) {
+        this.body.pitch = headPitch * ((float)Math.PI / 180);
+        this.body.yaw = headYaw * ((float)Math.PI / 180);
         if (Entity.squaredHorizontalLength(((Entity)entity).getVelocity()) > 1.0E-7) {
-            this.body.pitch += -0.05f + -0.05f * MathHelper.cos(h * 0.3f);
-            this.tail.pitch = -0.1f * MathHelper.cos(h * 0.3f);
-            this.flukes.pitch = -0.2f * MathHelper.cos(h * 0.3f);
+            this.body.pitch += -0.05f + -0.05f * MathHelper.cos(customAngle * 0.3f);
+            this.tail.pitch = -0.1f * MathHelper.cos(customAngle * 0.3f);
+            this.flukes.pitch = -0.2f * MathHelper.cos(customAngle * 0.3f);
         }
     }
 }

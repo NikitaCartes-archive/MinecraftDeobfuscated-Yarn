@@ -235,8 +235,8 @@ public abstract class MobSpawnerLogic {
         return false;
     }
 
-    public void setSpawnEntry(MobSpawnerEntry mobSpawnerEntry) {
-        this.spawnEntry = mobSpawnerEntry;
+    public void setSpawnEntry(MobSpawnerEntry spawnEntry) {
+        this.spawnEntry = spawnEntry;
     }
 
     public abstract void sendStatus(int var1);

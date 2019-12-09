@@ -13,8 +13,8 @@ public interface ModifiableWorld {
 
     public boolean removeBlock(BlockPos var1, boolean var2);
 
-    default public boolean breakBlock(BlockPos blockPos, boolean bl) {
-        return this.breakBlock(blockPos, bl, null);
+    default public boolean breakBlock(BlockPos pos, boolean drop) {
+        return this.breakBlock(pos, drop, null);
     }
 
     public boolean breakBlock(BlockPos var1, boolean var2, @Nullable Entity var3);

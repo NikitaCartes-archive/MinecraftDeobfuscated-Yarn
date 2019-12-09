@@ -51,26 +51,26 @@ implements Tickable {
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag compoundTag) {
-        super.toTag(compoundTag);
-        compoundTag.putLong("Age", this.age);
+    public CompoundTag toTag(CompoundTag tag) {
+        super.toTag(tag);
+        tag.putLong("Age", this.age);
         if (this.exitPortalPos != null) {
-            compoundTag.put("ExitPortal", NbtHelper.fromBlockPos(this.exitPortalPos));
+            tag.put("ExitPortal", NbtHelper.fromBlockPos(this.exitPortalPos));
         }
         if (this.exactTeleport) {
-            compoundTag.putBoolean("ExactTeleport", this.exactTeleport);
+            tag.putBoolean("ExactTeleport", this.exactTeleport);
         }
-        return compoundTag;
+        return tag;
     }
 
     @Override
-    public void fromTag(CompoundTag compoundTag) {
-        super.fromTag(compoundTag);
-        this.age = compoundTag.getLong("Age");
-        if (compoundTag.contains("ExitPortal", 10)) {
-            this.exitPortalPos = NbtHelper.toBlockPos(compoundTag.getCompound("ExitPortal"));
+    public void fromTag(CompoundTag tag) {
+        super.fromTag(tag);
+        this.age = tag.getLong("Age");
+        if (tag.contains("ExitPortal", 10)) {
+            this.exitPortalPos = NbtHelper.toBlockPos(tag.getCompound("ExitPortal"));
         }
-        this.exactTeleport = compoundTag.getBoolean("ExactTeleport");
+        this.exactTeleport = tag.getBoolean("ExactTeleport");
     }
 
     @Override
@@ -109,13 +109,13 @@ implements Tickable {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public float getRecentlyGeneratedBeamHeight(float f) {
-        return MathHelper.clamp(((float)this.age + f) / 200.0f, 0.0f, 1.0f);
+    public float getRecentlyGeneratedBeamHeight(float tickDelta) {
+        return MathHelper.clamp(((float)this.age + tickDelta) / 200.0f, 0.0f, 1.0f);
     }
 
     @Environment(value=EnvType.CLIENT)
-    public float getCooldownBeamHeight(float f) {
-        return 1.0f - MathHelper.clamp(((float)this.teleportCooldown - f) / 40.0f, 0.0f, 1.0f);
+    public float getCooldownBeamHeight(float tickDelta) {
+        return 1.0f - MathHelper.clamp(((float)this.teleportCooldown - tickDelta) / 40.0f, 0.0f, 1.0f);
     }
 
     @Override
@@ -197,25 +197,25 @@ implements Tickable {
         this.markDirty();
     }
 
-    private static BlockPos findExitPortalPos(BlockView blockView, BlockPos blockPos, int i, boolean bl) {
-        Vec3i blockPos2 = null;
-        for (int j = -i; j <= i; ++j) {
-            block1: for (int k = -i; k <= i; ++k) {
-                if (j == 0 && k == 0 && !bl) continue;
-                for (int l = 255; l > (blockPos2 == null ? 0 : blockPos2.getY()); --l) {
-                    BlockPos blockPos3 = new BlockPos(blockPos.getX() + j, l, blockPos.getZ() + k);
-                    BlockState blockState = blockView.getBlockState(blockPos3);
-                    if (!blockState.isFullCube(blockView, blockPos3) || !bl && blockState.getBlock() == Blocks.BEDROCK) continue;
-                    blockPos2 = blockPos3;
+    private static BlockPos findExitPortalPos(BlockView world, BlockPos pos, int searchRadius, boolean bl) {
+        Vec3i blockPos = null;
+        for (int i = -searchRadius; i <= searchRadius; ++i) {
+            block1: for (int j = -searchRadius; j <= searchRadius; ++j) {
+                if (i == 0 && j == 0 && !bl) continue;
+                for (int k = 255; k > (blockPos == null ? 0 : blockPos.getY()); --k) {
+                    BlockPos blockPos2 = new BlockPos(pos.getX() + i, k, pos.getZ() + j);
+                    BlockState blockState = world.getBlockState(blockPos2);
+                    if (!blockState.isFullCube(world, blockPos2) || !bl && blockState.getBlock() == Blocks.BEDROCK) continue;
+                    blockPos = blockPos2;
                     continue block1;
                 }
             }
         }
-        return blockPos2 == null ? blockPos : blockPos2;
+        return blockPos == null ? pos : blockPos;
     }
 
-    private static WorldChunk getChunk(World world, Vec3d vec3d) {
-        return world.getChunk(MathHelper.floor(vec3d.x / 16.0), MathHelper.floor(vec3d.z / 16.0));
+    private static WorldChunk getChunk(World world, Vec3d pos) {
+        return world.getChunk(MathHelper.floor(pos.x / 16.0), MathHelper.floor(pos.z / 16.0));
     }
 
     @Nullable

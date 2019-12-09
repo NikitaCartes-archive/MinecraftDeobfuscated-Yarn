@@ -22,14 +22,14 @@ implements SynchronousResourceReloadListener {
     private final Map<Key<?>, SearchableContainer<?>> instances = Maps.newHashMap();
 
     @Override
-    public void apply(ResourceManager resourceManager) {
+    public void apply(ResourceManager manager) {
         for (SearchableContainer<?> searchableContainer : this.instances.values()) {
             searchableContainer.reload();
         }
     }
 
-    public <T> void put(Key<T> key, SearchableContainer<T> searchableContainer) {
-        this.instances.put(key, searchableContainer);
+    public <T> void put(Key<T> key, SearchableContainer<T> value) {
+        this.instances.put(key, value);
     }
 
     public <T> SearchableContainer<T> get(Key<T> key) {

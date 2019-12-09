@@ -27,12 +27,12 @@ implements IndexedIterable<T> {
         this.idMap = new IdentityHashMap(i);
     }
 
-    public void set(T object, int i) {
-        this.idMap.put(object, i);
+    public void set(T value, int i) {
+        this.idMap.put(value, i);
         while (this.list.size() <= i) {
             this.list.add(null);
         }
-        this.list.set(i, object);
+        this.list.set(i, value);
         if (this.nextId <= i) {
             this.nextId = i + 1;
         }
@@ -49,9 +49,9 @@ implements IndexedIterable<T> {
 
     @Override
     @Nullable
-    public final T get(int i) {
-        if (i >= 0 && i < this.list.size()) {
-            return this.list.get(i);
+    public final T get(int index) {
+        if (index >= 0 && index < this.list.size()) {
+            return this.list.get(index);
         }
         return null;
     }

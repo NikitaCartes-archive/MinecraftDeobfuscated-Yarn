@@ -18,8 +18,8 @@ import net.minecraft.text.Text;
 
 public class ObjectiveDisplayNameFix
 extends DataFix {
-    public ObjectiveDisplayNameFix(Schema schema, boolean bl) {
-        super(schema, bl);
+    public ObjectiveDisplayNameFix(Schema outputSchema, boolean changesType) {
+        super(outputSchema, changesType);
     }
 
     @Override

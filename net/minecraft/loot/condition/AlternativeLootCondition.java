@@ -21,9 +21,9 @@ implements LootCondition {
     private final LootCondition[] terms;
     private final Predicate<LootContext> predicate;
 
-    private AlternativeLootCondition(LootCondition[] lootConditions) {
-        this.terms = lootConditions;
-        this.predicate = LootConditions.joinOr(lootConditions);
+    private AlternativeLootCondition(LootCondition[] terms) {
+        this.terms = terms;
+        this.predicate = LootConditions.joinOr(terms);
     }
 
     @Override
@@ -32,20 +32,20 @@ implements LootCondition {
     }
 
     @Override
-    public void check(LootTableReporter lootTableReporter) {
-        LootCondition.super.check(lootTableReporter);
+    public void check(LootTableReporter reporter) {
+        LootCondition.super.check(reporter);
         for (int i = 0; i < this.terms.length; ++i) {
-            this.terms[i].check(lootTableReporter.makeChild(".term[" + i + "]"));
+            this.terms[i].check(reporter.makeChild(".term[" + i + "]"));
         }
     }
 
-    public static Builder builder(LootCondition.Builder ... builders) {
-        return new Builder(builders);
+    public static Builder builder(LootCondition.Builder ... terms) {
+        return new Builder(terms);
     }
 
     @Override
-    public /* synthetic */ boolean test(Object object) {
-        return this.test((LootContext)object);
+    public /* synthetic */ boolean test(Object context) {
+        return this.test((LootContext)context);
     }
 
     public static class Factory
@@ -66,8 +66,8 @@ implements LootCondition {
         }
 
         @Override
-        public /* synthetic */ LootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            return this.fromJson(jsonObject, jsonDeserializationContext);
+        public /* synthetic */ LootCondition fromJson(JsonObject json, JsonDeserializationContext context) {
+            return this.fromJson(json, context);
         }
     }
 
@@ -75,15 +75,15 @@ implements LootCondition {
     implements LootCondition.Builder {
         private final List<LootCondition> terms = Lists.newArrayList();
 
-        public Builder(LootCondition.Builder ... builders) {
-            for (LootCondition.Builder builder : builders) {
+        public Builder(LootCondition.Builder ... terms) {
+            for (LootCondition.Builder builder : terms) {
                 this.terms.add(builder.build());
             }
         }
 
         @Override
-        public Builder withCondition(LootCondition.Builder builder) {
-            this.terms.add(builder.build());
+        public Builder withCondition(LootCondition.Builder condition) {
+            this.terms.add(condition.build());
             return this;
         }
 

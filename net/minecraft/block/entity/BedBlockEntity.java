@@ -37,8 +37,8 @@ extends BlockEntity {
         return this.color;
     }
 
-    public void setColor(DyeColor dyeColor) {
-        this.color = dyeColor;
+    public void setColor(DyeColor color) {
+        this.color = color;
     }
 }
 

@@ -97,18 +97,18 @@ implements Runnable {
         this.sockets.add(datagramSocket);
     }
 
-    protected boolean closeSocket(DatagramSocket datagramSocket, boolean bl) {
-        this.log("closeSocket: " + datagramSocket);
-        if (null == datagramSocket) {
+    protected boolean closeSocket(DatagramSocket socket, boolean bl) {
+        this.log("closeSocket: " + socket);
+        if (null == socket) {
             return false;
         }
         boolean bl2 = false;
-        if (!datagramSocket.isClosed()) {
-            datagramSocket.close();
+        if (!socket.isClosed()) {
+            socket.close();
             bl2 = true;
         }
         if (bl) {
-            this.sockets.remove(datagramSocket);
+            this.sockets.remove(socket);
         }
         return bl2;
     }
@@ -117,22 +117,22 @@ implements Runnable {
         return this.closeSocket(serverSocket, true);
     }
 
-    protected boolean closeSocket(ServerSocket serverSocket, boolean bl) {
-        this.log("closeSocket: " + serverSocket);
-        if (null == serverSocket) {
+    protected boolean closeSocket(ServerSocket socket, boolean bl) {
+        this.log("closeSocket: " + socket);
+        if (null == socket) {
             return false;
         }
         boolean bl2 = false;
         try {
-            if (!serverSocket.isClosed()) {
-                serverSocket.close();
+            if (!socket.isClosed()) {
+                socket.close();
                 bl2 = true;
             }
         } catch (IOException iOException) {
             this.warn("IO: " + iOException.getMessage());
         }
         if (bl) {
-            this.serverSockets.remove(serverSocket);
+            this.serverSockets.remove(socket);
         }
         return bl2;
     }

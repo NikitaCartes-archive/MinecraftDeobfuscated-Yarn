@@ -15,12 +15,12 @@ import net.minecraft.util.Identifier;
 
 public class EmptyEntry
 extends LeafEntry {
-    private EmptyEntry(int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
-        super(i, j, lootConditions, lootFunctions);
+    private EmptyEntry(int weight, int quality, LootCondition[] conditions, LootFunction[] functions) {
+        super(weight, quality, conditions, functions);
     }
 
     @Override
-    public void drop(Consumer<ItemStack> consumer, LootContext lootContext) {
+    public void drop(Consumer<ItemStack> itemDropper, LootContext context) {
     }
 
     public static LeafEntry.Builder<?> Serializer() {
@@ -39,8 +39,8 @@ extends LeafEntry {
         }
 
         @Override
-        protected /* synthetic */ LeafEntry fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
-            return this.fromJson(jsonObject, jsonDeserializationContext, i, j, lootConditions, lootFunctions);
+        protected /* synthetic */ LeafEntry fromJson(JsonObject entryJson, JsonDeserializationContext context, int weight, int quality, LootCondition[] conditions, LootFunction[] functions) {
+            return this.fromJson(entryJson, context, weight, quality, conditions, functions);
         }
     }
 }

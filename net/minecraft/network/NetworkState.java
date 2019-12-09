@@ -185,13 +185,13 @@ public enum NetworkState {
     }
 
     @Nullable
-    public Integer getPacketId(NetworkSide networkSide, Packet<?> packet) {
-        return this.packetHandlers.get((Object)networkSide).getId(packet.getClass());
+    public Integer getPacketId(NetworkSide side, Packet<?> packet) {
+        return this.packetHandlers.get((Object)side).getId(packet.getClass());
     }
 
     @Nullable
-    public Packet<?> getPacketHandler(NetworkSide networkSide, int i) {
-        return this.packetHandlers.get((Object)networkSide).createPacket(i);
+    public Packet<?> getPacketHandler(NetworkSide side, int i) {
+        return this.packetHandlers.get((Object)side).createPacket(i);
     }
 
     public int getId() {
@@ -199,15 +199,15 @@ public enum NetworkState {
     }
 
     @Nullable
-    public static NetworkState byId(int i) {
-        if (i < -1 || i > 2) {
+    public static NetworkState byId(int id) {
+        if (id < -1 || id > 2) {
             return null;
         }
-        return STATES[i - -1];
+        return STATES[id - -1];
     }
 
-    public static NetworkState getPacketHandlerState(Packet<?> packet) {
-        return HANDLER_STATE_MAP.get(packet.getClass());
+    public static NetworkState getPacketHandlerState(Packet<?> handler) {
+        return HANDLER_STATE_MAP.get(handler.getClass());
     }
 
     static {
@@ -234,8 +234,8 @@ public enum NetworkState {
         private PacketHandlerInitializer() {
         }
 
-        public <T extends PacketListener> PacketHandlerInitializer setup(NetworkSide networkSide, PacketHandler<T> packetHandler) {
-            this.packetHandlers.put(networkSide, packetHandler);
+        public <T extends PacketListener> PacketHandlerInitializer setup(NetworkSide side, PacketHandler<T> packetHandler) {
+            this.packetHandlers.put(side, packetHandler);
             return this;
         }
     }
@@ -247,27 +247,27 @@ public enum NetworkState {
         private PacketHandler() {
         }
 
-        public <P extends Packet<T>> PacketHandler<T> register(Class<P> class_, Supplier<P> supplier) {
+        public <P extends Packet<T>> PacketHandler<T> register(Class<P> type, Supplier<P> factory) {
             int i = this.packetFactories.size();
-            int j = this.packetIds.put((Class<Packet<T>>)class_, i);
+            int j = this.packetIds.put((Class<Packet<T>>)type, i);
             if (j != -1) {
-                String string = "Packet " + class_ + " is already registered to ID " + j;
+                String string = "Packet " + type + " is already registered to ID " + j;
                 LogManager.getLogger().fatal(string);
                 throw new IllegalArgumentException(string);
             }
-            this.packetFactories.add(supplier);
+            this.packetFactories.add(factory);
             return this;
         }
 
         @Nullable
-        public Integer getId(Class<?> class_) {
-            int i = this.packetIds.getInt(class_);
+        public Integer getId(Class<?> packet) {
+            int i = this.packetIds.getInt(packet);
             return i == -1 ? null : Integer.valueOf(i);
         }
 
         @Nullable
-        public Packet<?> createPacket(int i) {
-            Supplier<Packet<T>> supplier = this.packetFactories.get(i);
+        public Packet<?> createPacket(int id) {
+            Supplier<Packet<T>> supplier = this.packetFactories.get(id);
             return supplier != null ? supplier.get() : null;
         }
 

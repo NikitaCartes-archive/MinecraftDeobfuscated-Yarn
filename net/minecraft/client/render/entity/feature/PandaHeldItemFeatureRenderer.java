@@ -20,8 +20,8 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class PandaHeldItemFeatureRenderer
 extends FeatureRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
-    public PandaHeldItemFeatureRenderer(FeatureRendererContext<PandaEntity, PandaEntityModel<PandaEntity>> featureRendererContext) {
-        super(featureRendererContext);
+    public PandaHeldItemFeatureRenderer(FeatureRendererContext<PandaEntity, PandaEntityModel<PandaEntity>> context) {
+        super(context);
     }
 
     @Override

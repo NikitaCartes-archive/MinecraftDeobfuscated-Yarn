@@ -31,13 +31,13 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(dimensionType, dimensionType2);
     }
 
-    public void trigger(ServerPlayerEntity serverPlayerEntity, DimensionType dimensionType, DimensionType dimensionType2) {
-        this.test(serverPlayerEntity.getAdvancementTracker(), conditions -> conditions.matches(dimensionType, dimensionType2));
+    public void trigger(ServerPlayerEntity player, DimensionType from, DimensionType to) {
+        this.test(player.getAdvancementTracker(), conditions -> conditions.matches(from, to));
     }
 
     @Override
-    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
+    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject obj, JsonDeserializationContext context) {
+        return this.conditionsFromJson(obj, context);
     }
 
     public static class Conditions
@@ -47,21 +47,21 @@ extends AbstractCriterion<Conditions> {
         @Nullable
         private final DimensionType to;
 
-        public Conditions(@Nullable DimensionType dimensionType, @Nullable DimensionType dimensionType2) {
+        public Conditions(@Nullable DimensionType from, @Nullable DimensionType to) {
             super(ID);
-            this.from = dimensionType;
-            this.to = dimensionType2;
+            this.from = from;
+            this.to = to;
         }
 
-        public static Conditions to(DimensionType dimensionType) {
-            return new Conditions(null, dimensionType);
+        public static Conditions to(DimensionType to) {
+            return new Conditions(null, to);
         }
 
-        public boolean matches(DimensionType dimensionType, DimensionType dimensionType2) {
-            if (this.from != null && this.from != dimensionType) {
+        public boolean matches(DimensionType from, DimensionType to) {
+            if (this.from != null && this.from != from) {
                 return false;
             }
-            return this.to == null || this.to == dimensionType2;
+            return this.to == null || this.to == to;
         }
 
         @Override

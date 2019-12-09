@@ -48,17 +48,17 @@ public class UpgradeData {
     private UpgradeData() {
     }
 
-    public UpgradeData(CompoundTag compoundTag) {
+    public UpgradeData(CompoundTag tag) {
         this();
-        if (compoundTag.contains("Indices", 10)) {
-            CompoundTag compoundTag2 = compoundTag.getCompound("Indices");
+        if (tag.contains("Indices", 10)) {
+            CompoundTag compoundTag = tag.getCompound("Indices");
             for (int i = 0; i < this.indices.length; ++i) {
                 String string = String.valueOf(i);
-                if (!compoundTag2.contains(string, 11)) continue;
-                this.indices[i] = compoundTag2.getIntArray(string);
+                if (!compoundTag.contains(string, 11)) continue;
+                this.indices[i] = compoundTag.getIntArray(string);
             }
         }
-        int j = compoundTag.getInt("Sides");
+        int j = tag.getInt("Sides");
         for (EightWayDirection eightWayDirection : EightWayDirection.values()) {
             if ((j & 1 << eightWayDirection.ordinal()) == 0) continue;
             this.sides.add(eightWayDirection);

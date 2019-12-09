@@ -52,8 +52,8 @@ public class Keyboard {
     private long debugCrashElapsedTime = -1L;
     private boolean switchF3State;
 
-    public Keyboard(MinecraftClient minecraftClient) {
-        this.client = minecraftClient;
+    public Keyboard(MinecraftClient client) {
+        this.client = client;
     }
 
     private void debugWarn(String string, Object ... objects) {
@@ -64,11 +64,11 @@ public class Keyboard {
         this.client.inGameHud.getChatHud().addMessage(new LiteralText("").append(new TranslatableText("debug.prefix", new Object[0]).formatted(Formatting.RED, Formatting.BOLD)).append(" ").append(new TranslatableText(string, objects)));
     }
 
-    private boolean processF3(int i) {
+    private boolean processF3(int key) {
         if (this.debugCrashStartTime > 0L && this.debugCrashStartTime < Util.getMeasuringTimeMs() - 100L) {
             return true;
         }
-        switch (i) {
+        switch (key) {
             case 65: {
                 this.client.worldRenderer.reload();
                 this.debugWarn("debug.reload_chunks.message", new Object[0]);
@@ -239,9 +239,9 @@ public class Keyboard {
         this.setClipboard(string2);
     }
 
-    public void onKey(long l, int i, int j, int k, int m) {
+    public void onKey(long window, int key, int scancode, int i, int j) {
         boolean bl;
-        if (l != this.client.getWindow().getHandle()) {
+        if (window != this.client.getWindow().getHandle()) {
             return;
         }
         if (this.debugCrashStartTime > 0L) {
@@ -255,13 +255,13 @@ public class Keyboard {
             this.debugCrashElapsedTime = 0L;
         }
         Screen parentElement = this.client.currentScreen;
-        if (!(k != 1 || this.client.currentScreen instanceof ControlsOptionsScreen && ((ControlsOptionsScreen)parentElement).time > Util.getMeasuringTimeMs() - 20L)) {
-            if (this.client.options.keyFullscreen.matchesKey(i, j)) {
+        if (!(i != 1 || this.client.currentScreen instanceof ControlsOptionsScreen && ((ControlsOptionsScreen)parentElement).time > Util.getMeasuringTimeMs() - 20L)) {
+            if (this.client.options.keyFullscreen.matchesKey(key, scancode)) {
                 this.client.getWindow().toggleFullscreen();
                 this.client.options.fullscreen = this.client.getWindow().isFullscreen();
                 return;
             }
-            if (this.client.options.keyScreenshot.matchesKey(i, j)) {
+            if (this.client.options.keyScreenshot.matchesKey(key, scancode)) {
                 if (Screen.hasControlDown()) {
                     // empty if block
                 }
@@ -270,7 +270,7 @@ public class Keyboard {
             }
         }
         boolean bl2 = bl = parentElement == null || !(parentElement.getFocused() instanceof TextFieldWidget) || !((TextFieldWidget)parentElement.getFocused()).isActive();
-        if (k != 0 && i == 66 && Screen.hasControlDown() && bl) {
+        if (i != 0 && key == 66 && Screen.hasControlDown() && bl) {
             Option.NARRATOR.cycle(this.client.options, 1);
             if (parentElement instanceof ChatOptionsScreen) {
                 ((ChatOptionsScreen)parentElement).setNarratorMessage();
@@ -282,10 +282,10 @@ public class Keyboard {
         if (parentElement != null) {
             boolean[] bls = new boolean[]{false};
             Screen.wrapScreenError(() -> {
-                if (k == 1 || k == 2 && this.repeatEvents) {
-                    bls[0] = parentElement.keyPressed(i, j, m);
-                } else if (k == 0) {
-                    bls[0] = parentElement.keyReleased(i, j, m);
+                if (i == 1 || i == 2 && this.repeatEvents) {
+                    bls[0] = parentElement.keyPressed(key, scancode, j);
+                } else if (i == 0) {
+                    bls[0] = parentElement.keyReleased(key, scancode, j);
                 }
             }, "keyPressed event handler", parentElement.getClass().getCanonicalName());
             if (bls[0]) {
@@ -293,10 +293,10 @@ public class Keyboard {
             }
         }
         if (this.client.currentScreen == null || this.client.currentScreen.passEvents) {
-            InputUtil.KeyCode keyCode = InputUtil.getKeyCode(i, j);
-            if (k == 0) {
+            InputUtil.KeyCode keyCode = InputUtil.getKeyCode(key, scancode);
+            if (i == 0) {
                 KeyBinding.setKeyPressed(keyCode, false);
-                if (i == 292) {
+                if (key == 292) {
                     if (this.switchF3State) {
                         this.switchF3State = false;
                     } else {
@@ -306,18 +306,18 @@ public class Keyboard {
                     }
                 }
             } else {
-                if (i == 293 && this.client.gameRenderer != null) {
+                if (key == 293 && this.client.gameRenderer != null) {
                     this.client.gameRenderer.toggleShadersEnabled();
                 }
                 boolean bl22 = false;
                 if (this.client.currentScreen == null) {
-                    if (i == 256) {
+                    if (key == 256) {
                         boolean bl3 = InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 292);
                         this.client.openPauseMenu(bl3);
                     }
-                    bl22 = InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 292) && this.processF3(i);
+                    bl22 = InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 292) && this.processF3(key);
                     this.switchF3State |= bl22;
-                    if (i == 290) {
+                    if (key == 290) {
                         boolean bl3 = this.client.options.hudHidden = !this.client.options.hudHidden;
                     }
                 }
@@ -328,20 +328,20 @@ public class Keyboard {
                     KeyBinding.onKeyPressed(keyCode);
                 }
                 if (this.client.options.debugProfilerEnabled) {
-                    if (i == 48) {
+                    if (key == 48) {
                         this.client.handleProfilerKeyPress(0);
                     }
-                    for (int n = 0; n < 9; ++n) {
-                        if (i != 49 + n) continue;
-                        this.client.handleProfilerKeyPress(n + 1);
+                    for (int k = 0; k < 9; ++k) {
+                        if (key != 49 + k) continue;
+                        this.client.handleProfilerKeyPress(k + 1);
                     }
                 }
             }
         }
     }
 
-    private void onChar(long l, int i, int j) {
-        if (l != this.client.getWindow().getHandle()) {
+    private void onChar(long window, int i, int j) {
+        if (window != this.client.getWindow().getHandle()) {
             return;
         }
         Screen element = this.client.currentScreen;
@@ -357,8 +357,8 @@ public class Keyboard {
         }
     }
 
-    public void enableRepeatEvents(boolean bl) {
-        this.repeatEvents = bl;
+    public void enableRepeatEvents(boolean repeatEvents) {
+        this.repeatEvents = repeatEvents;
     }
 
     public void setup(long l2) {

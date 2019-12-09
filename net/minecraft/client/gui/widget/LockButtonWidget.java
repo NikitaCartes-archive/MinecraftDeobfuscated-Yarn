@@ -15,8 +15,8 @@ public class LockButtonWidget
 extends ButtonWidget {
     private boolean locked;
 
-    public LockButtonWidget(int i, int j, ButtonWidget.PressAction pressAction) {
-        super(i, j, 20, 20, I18n.translate("narrator.button.difficulty_lock", new Object[0]), pressAction);
+    public LockButtonWidget(int x, int y, ButtonWidget.PressAction pressAction) {
+        super(x, y, 20, 20, I18n.translate("narrator.button.difficulty_lock", new Object[0]), pressAction);
     }
 
     @Override
@@ -33,7 +33,7 @@ extends ButtonWidget {
     }
 
     @Override
-    public void renderButton(int i, int j, float f) {
+    public void renderButton(int mouseX, int mouseY, float delta) {
         MinecraftClient.getInstance().getTextureManager().bindTexture(ButtonWidget.WIDGETS_LOCATION);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         IconLocation iconLocation = !this.active ? (this.locked ? IconLocation.LOCKED_DISABLED : IconLocation.UNLOCKED_DISABLED) : (this.isHovered() ? (this.locked ? IconLocation.LOCKED_HOVER : IconLocation.UNLOCKED_HOVER) : (this.locked ? IconLocation.LOCKED : IconLocation.UNLOCKED));

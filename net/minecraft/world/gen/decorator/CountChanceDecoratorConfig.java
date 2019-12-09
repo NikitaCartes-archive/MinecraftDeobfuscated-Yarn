@@ -13,14 +13,14 @@ implements DecoratorConfig {
     public final int count;
     public final float chance;
 
-    public CountChanceDecoratorConfig(int i, float f) {
-        this.count = i;
-        this.chance = f;
+    public CountChanceDecoratorConfig(int count, float chance) {
+        this.count = count;
+        this.chance = chance;
     }
 
     @Override
-    public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-        return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("count"), dynamicOps.createInt(this.count), dynamicOps.createString("chance"), dynamicOps.createFloat(this.chance))));
+    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("count"), ops.createInt(this.count), ops.createString("chance"), ops.createFloat(this.chance))));
     }
 
     public static CountChanceDecoratorConfig deserialize(Dynamic<?> dynamic) {

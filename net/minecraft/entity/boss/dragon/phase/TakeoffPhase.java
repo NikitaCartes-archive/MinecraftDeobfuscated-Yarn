@@ -19,8 +19,8 @@ extends AbstractPhase {
     private Path field_7054;
     private Vec3d field_7055;
 
-    public TakeoffPhase(EnderDragonEntity enderDragonEntity) {
-        super(enderDragonEntity);
+    public TakeoffPhase(EnderDragonEntity dragon) {
+        super(dragon);
     }
 
     @Override

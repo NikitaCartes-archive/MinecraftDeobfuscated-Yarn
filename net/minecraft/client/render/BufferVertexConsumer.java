@@ -23,19 +23,19 @@ extends VertexConsumer {
     public void putFloat(int var1, float var2);
 
     @Override
-    default public VertexConsumer vertex(double d, double e, double f) {
+    default public VertexConsumer vertex(double x, double y, double z) {
         if (this.getCurrentElement().getFormat() != VertexFormatElement.Format.FLOAT) {
             throw new IllegalStateException();
         }
-        this.putFloat(0, (float)d);
-        this.putFloat(4, (float)e);
-        this.putFloat(8, (float)f);
+        this.putFloat(0, (float)x);
+        this.putFloat(4, (float)y);
+        this.putFloat(8, (float)z);
         this.nextElement();
         return this;
     }
 
     @Override
-    default public VertexConsumer color(int i, int j, int k, int l) {
+    default public VertexConsumer color(int red, int green, int blue, int alpha) {
         VertexFormatElement vertexFormatElement = this.getCurrentElement();
         if (vertexFormatElement.getType() != VertexFormatElement.Type.COLOR) {
             return this;
@@ -43,16 +43,16 @@ extends VertexConsumer {
         if (vertexFormatElement.getFormat() != VertexFormatElement.Format.UBYTE) {
             throw new IllegalStateException();
         }
-        this.putByte(0, (byte)i);
-        this.putByte(1, (byte)j);
-        this.putByte(2, (byte)k);
-        this.putByte(3, (byte)l);
+        this.putByte(0, (byte)red);
+        this.putByte(1, (byte)green);
+        this.putByte(2, (byte)blue);
+        this.putByte(3, (byte)alpha);
         this.nextElement();
         return this;
     }
 
     @Override
-    default public VertexConsumer texture(float f, float g) {
+    default public VertexConsumer texture(float u, float v) {
         VertexFormatElement vertexFormatElement = this.getCurrentElement();
         if (vertexFormatElement.getType() != VertexFormatElement.Type.UV || vertexFormatElement.getIndex() != 0) {
             return this;
@@ -60,38 +60,38 @@ extends VertexConsumer {
         if (vertexFormatElement.getFormat() != VertexFormatElement.Format.FLOAT) {
             throw new IllegalStateException();
         }
-        this.putFloat(0, f);
-        this.putFloat(4, g);
+        this.putFloat(0, u);
+        this.putFloat(4, v);
         this.nextElement();
         return this;
     }
 
     @Override
-    default public VertexConsumer overlay(int i, int j) {
-        return this.texture((short)i, (short)j, 1);
+    default public VertexConsumer overlay(int u, int v) {
+        return this.texture((short)u, (short)v, 1);
     }
 
     @Override
-    default public VertexConsumer light(int i, int j) {
-        return this.texture((short)i, (short)j, 2);
+    default public VertexConsumer light(int u, int v) {
+        return this.texture((short)u, (short)v, 2);
     }
 
-    default public VertexConsumer texture(short s, short t, int i) {
+    default public VertexConsumer texture(short u, short v, int index) {
         VertexFormatElement vertexFormatElement = this.getCurrentElement();
-        if (vertexFormatElement.getType() != VertexFormatElement.Type.UV || vertexFormatElement.getIndex() != i) {
+        if (vertexFormatElement.getType() != VertexFormatElement.Type.UV || vertexFormatElement.getIndex() != index) {
             return this;
         }
         if (vertexFormatElement.getFormat() != VertexFormatElement.Format.SHORT) {
             throw new IllegalStateException();
         }
-        this.putShort(0, s);
-        this.putShort(2, t);
+        this.putShort(0, u);
+        this.putShort(2, v);
         this.nextElement();
         return this;
     }
 
     @Override
-    default public VertexConsumer normal(float f, float g, float h) {
+    default public VertexConsumer normal(float x, float y, float z) {
         VertexFormatElement vertexFormatElement = this.getCurrentElement();
         if (vertexFormatElement.getType() != VertexFormatElement.Type.NORMAL) {
             return this;
@@ -99,9 +99,9 @@ extends VertexConsumer {
         if (vertexFormatElement.getFormat() != VertexFormatElement.Format.BYTE) {
             throw new IllegalStateException();
         }
-        this.putByte(0, BufferVertexConsumer.method_24212(f));
-        this.putByte(1, BufferVertexConsumer.method_24212(g));
-        this.putByte(2, BufferVertexConsumer.method_24212(h));
+        this.putByte(0, BufferVertexConsumer.method_24212(x));
+        this.putByte(1, BufferVertexConsumer.method_24212(y));
+        this.putByte(2, BufferVertexConsumer.method_24212(z));
         this.nextElement();
         return this;
     }

@@ -30,27 +30,27 @@ extends TreeFeatureConfig {
     public final int maxWaterDepth;
     public final boolean noVines;
 
-    protected BranchedTreeFeatureConfig(StateProvider stateProvider, StateProvider stateProvider2, FoliagePlacer foliagePlacer, List<TreeDecorator> list, int i, int j, int k, int l, int m, int n, int o, int p, int q, int r, boolean bl) {
-        super(stateProvider, stateProvider2, list, i);
+    protected BranchedTreeFeatureConfig(StateProvider trunkProvider, StateProvider leavesProvider, FoliagePlacer foliagePlacer, List<TreeDecorator> treeDecorators, int baseHeight, int heightRandA, int heightRandB, int trunkHeight, int trunkHeightRandom, int trunkTopOffset, int trunkTopOffsetRandom, int foliageHeight, int foliageHeightRandom, int maxWaterDepth, boolean noVines) {
+        super(trunkProvider, leavesProvider, treeDecorators, baseHeight);
         this.foliagePlacer = foliagePlacer;
-        this.heightRandA = j;
-        this.heightRandB = k;
-        this.trunkHeight = l;
-        this.trunkHeightRandom = m;
-        this.trunkTopOffset = n;
-        this.trunkTopOffsetRandom = o;
-        this.foliageHeight = p;
-        this.foliageHeightRandom = q;
-        this.maxWaterDepth = r;
-        this.noVines = bl;
+        this.heightRandA = heightRandA;
+        this.heightRandB = heightRandB;
+        this.trunkHeight = trunkHeight;
+        this.trunkHeightRandom = trunkHeightRandom;
+        this.trunkTopOffset = trunkTopOffset;
+        this.trunkTopOffsetRandom = trunkTopOffsetRandom;
+        this.foliageHeight = foliageHeight;
+        this.foliageHeightRandom = foliageHeightRandom;
+        this.maxWaterDepth = maxWaterDepth;
+        this.noVines = noVines;
     }
 
     @Override
-    public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
+    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
         ImmutableMap.Builder<T, T> builder = ImmutableMap.builder();
-        builder.put(dynamicOps.createString("foliage_placer"), this.foliagePlacer.serialize(dynamicOps)).put(dynamicOps.createString("height_rand_a"), dynamicOps.createInt(this.heightRandA)).put(dynamicOps.createString("height_rand_b"), dynamicOps.createInt(this.heightRandB)).put(dynamicOps.createString("trunk_height"), dynamicOps.createInt(this.trunkHeight)).put(dynamicOps.createString("trunk_height_random"), dynamicOps.createInt(this.trunkHeightRandom)).put(dynamicOps.createString("trunk_top_offset"), dynamicOps.createInt(this.trunkTopOffset)).put(dynamicOps.createString("trunk_top_offset_random"), dynamicOps.createInt(this.trunkTopOffsetRandom)).put(dynamicOps.createString("foliage_height"), dynamicOps.createInt(this.foliageHeight)).put(dynamicOps.createString("foliage_height_random"), dynamicOps.createInt(this.foliageHeightRandom)).put(dynamicOps.createString("max_water_depth"), dynamicOps.createInt(this.maxWaterDepth)).put(dynamicOps.createString("ignore_vines"), dynamicOps.createBoolean(this.noVines));
-        Dynamic<T> dynamic = new Dynamic<T>(dynamicOps, dynamicOps.createMap(builder.build()));
-        return dynamic.merge(super.serialize(dynamicOps));
+        builder.put(ops.createString("foliage_placer"), this.foliagePlacer.serialize(ops)).put(ops.createString("height_rand_a"), ops.createInt(this.heightRandA)).put(ops.createString("height_rand_b"), ops.createInt(this.heightRandB)).put(ops.createString("trunk_height"), ops.createInt(this.trunkHeight)).put(ops.createString("trunk_height_random"), ops.createInt(this.trunkHeightRandom)).put(ops.createString("trunk_top_offset"), ops.createInt(this.trunkTopOffset)).put(ops.createString("trunk_top_offset_random"), ops.createInt(this.trunkTopOffsetRandom)).put(ops.createString("foliage_height"), ops.createInt(this.foliageHeight)).put(ops.createString("foliage_height_random"), ops.createInt(this.foliageHeightRandom)).put(ops.createString("max_water_depth"), ops.createInt(this.maxWaterDepth)).put(ops.createString("ignore_vines"), ops.createBoolean(this.noVines));
+        Dynamic<T> dynamic = new Dynamic<T>(ops, ops.createMap(builder.build()));
+        return dynamic.merge(super.serialize(ops));
     }
 
     public static <T> BranchedTreeFeatureConfig deserialize2(Dynamic<T> dynamic) {
@@ -75,13 +75,13 @@ extends TreeFeatureConfig {
         private int maxWaterDepth;
         private boolean noVines;
 
-        public Builder(StateProvider stateProvider, StateProvider stateProvider2, FoliagePlacer foliagePlacer) {
-            super(stateProvider, stateProvider2);
+        public Builder(StateProvider trunkProvider, StateProvider leavesProvider, FoliagePlacer foliagePlacer) {
+            super(trunkProvider, leavesProvider);
             this.foliagePlacer = foliagePlacer;
         }
 
-        public Builder treeDecorators(List<TreeDecorator> list) {
-            this.treeDecorators = list;
+        public Builder treeDecorators(List<TreeDecorator> treeDecorators) {
+            this.treeDecorators = treeDecorators;
             return this;
         }
 
@@ -91,48 +91,48 @@ extends TreeFeatureConfig {
             return this;
         }
 
-        public Builder heightRandA(int i) {
-            this.heightRandA = i;
+        public Builder heightRandA(int heightRandA) {
+            this.heightRandA = heightRandA;
             return this;
         }
 
-        public Builder heightRandB(int i) {
-            this.heightRandB = i;
+        public Builder heightRandB(int heightRandB) {
+            this.heightRandB = heightRandB;
             return this;
         }
 
-        public Builder trunkHeight(int i) {
-            this.trunkHeight = i;
+        public Builder trunkHeight(int trunkHeight) {
+            this.trunkHeight = trunkHeight;
             return this;
         }
 
-        public Builder trunkHeightRandom(int i) {
-            this.trunkHeightRandom = i;
+        public Builder trunkHeightRandom(int trunkHeightRandom) {
+            this.trunkHeightRandom = trunkHeightRandom;
             return this;
         }
 
-        public Builder trunkTopOffset(int i) {
-            this.trunkTopOffset = i;
+        public Builder trunkTopOffset(int trunkTopOffset) {
+            this.trunkTopOffset = trunkTopOffset;
             return this;
         }
 
-        public Builder trunkTopOffsetRandom(int i) {
-            this.trunkTopOffsetRandom = i;
+        public Builder trunkTopOffsetRandom(int trunkTopOffsetRandom) {
+            this.trunkTopOffsetRandom = trunkTopOffsetRandom;
             return this;
         }
 
-        public Builder foliageHeight(int i) {
-            this.foliageHeight = i;
+        public Builder foliageHeight(int foliageHeight) {
+            this.foliageHeight = foliageHeight;
             return this;
         }
 
-        public Builder foliageHeightRandom(int i) {
-            this.foliageHeightRandom = i;
+        public Builder foliageHeightRandom(int foliageHeightRandom) {
+            this.foliageHeightRandom = foliageHeightRandom;
             return this;
         }
 
-        public Builder maxWaterDepth(int i) {
-            this.maxWaterDepth = i;
+        public Builder maxWaterDepth(int maxWaterDepth) {
+            this.maxWaterDepth = maxWaterDepth;
             return this;
         }
 
@@ -152,8 +152,8 @@ extends TreeFeatureConfig {
         }
 
         @Override
-        public /* synthetic */ TreeFeatureConfig.Builder baseHeight(int i) {
-            return this.baseHeight(i);
+        public /* synthetic */ TreeFeatureConfig.Builder baseHeight(int baseHeight) {
+            return this.baseHeight(baseHeight);
         }
     }
 }

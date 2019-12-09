@@ -32,13 +32,13 @@ implements DataCommandObject {
         }
 
         @Override
-        public DataCommandObject getObject(CommandContext<ServerCommandSource> commandContext) {
-            return new StorageDataObject(StorageDataObject.of(commandContext), IdentifierArgumentType.getIdentifier(commandContext, this.field_20859));
+        public DataCommandObject getObject(CommandContext<ServerCommandSource> context) {
+            return new StorageDataObject(StorageDataObject.of(context), IdentifierArgumentType.getIdentifier(context, this.field_20859));
         }
 
         @Override
-        public ArgumentBuilder<ServerCommandSource, ?> addArgumentsToBuilder(ArgumentBuilder<ServerCommandSource, ?> argumentBuilder, Function<ArgumentBuilder<ServerCommandSource, ?>, ArgumentBuilder<ServerCommandSource, ?>> function) {
-            return argumentBuilder.then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.literal("storage").then(function.apply(CommandManager.argument(this.field_20859, IdentifierArgumentType.identifier()).suggests(SUGGESTION_PROVIDER))));
+        public ArgumentBuilder<ServerCommandSource, ?> addArgumentsToBuilder(ArgumentBuilder<ServerCommandSource, ?> argument, Function<ArgumentBuilder<ServerCommandSource, ?>, ArgumentBuilder<ServerCommandSource, ?>> argumentAdder) {
+            return argument.then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.literal("storage").then(argumentAdder.apply(CommandManager.argument(this.field_20859, IdentifierArgumentType.identifier()).suggests(SUGGESTION_PROVIDER))));
         }
     };
     private final DataCommandStorage storage;
@@ -48,14 +48,14 @@ implements DataCommandObject {
         return commandContext.getSource().getMinecraftServer().getDataCommandStorage();
     }
 
-    private StorageDataObject(DataCommandStorage dataCommandStorage, Identifier identifier) {
-        this.storage = dataCommandStorage;
-        this.id = identifier;
+    private StorageDataObject(DataCommandStorage storage, Identifier id) {
+        this.storage = storage;
+        this.id = id;
     }
 
     @Override
-    public void setTag(CompoundTag compoundTag) {
-        this.storage.set(this.id, compoundTag);
+    public void setTag(CompoundTag tag) {
+        this.storage.set(this.id, tag);
     }
 
     @Override
@@ -74,8 +74,8 @@ implements DataCommandObject {
     }
 
     @Override
-    public Text feedbackGet(NbtPathArgumentType.NbtPath nbtPath, double d, int i) {
-        return new TranslatableText("commands.data.storage.get", nbtPath, this.id, String.format(Locale.ROOT, "%.2f", d), i);
+    public Text feedbackGet(NbtPathArgumentType.NbtPath nbtPath, double scale, int result) {
+        return new TranslatableText("commands.data.storage.get", nbtPath, this.id, String.format(Locale.ROOT, "%.2f", scale), result);
     }
 }
 

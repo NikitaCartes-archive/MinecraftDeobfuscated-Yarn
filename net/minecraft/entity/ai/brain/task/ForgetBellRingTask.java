@@ -27,20 +27,20 @@ extends Task<LivingEntity> {
     }
 
     @Override
-    protected void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
+    protected void run(ServerWorld world, LivingEntity entity, long time) {
         boolean bl;
-        Brain<?> brain = livingEntity.getBrain();
+        Brain<?> brain = entity.getBrain();
         Optional<Long> optional = brain.getOptionalMemory(MemoryModuleType.HEARD_BELL_TIME);
-        boolean bl2 = bl = optional.get() + 300L <= l;
+        boolean bl2 = bl = optional.get() + 300L <= time;
         if (this.field_19001 > this.field_19000 || bl) {
             brain.forget(MemoryModuleType.HEARD_BELL_TIME);
             brain.forget(MemoryModuleType.HIDING_PLACE);
-            brain.refreshActivities(serverWorld.getTimeOfDay(), serverWorld.getTime());
+            brain.refreshActivities(world.getTimeOfDay(), world.getTime());
             this.field_19001 = 0;
             return;
         }
         BlockPos blockPos = brain.getOptionalMemory(MemoryModuleType.HIDING_PLACE).get().getPos();
-        if (blockPos.isWithinDistance(new BlockPos(livingEntity), (double)(this.field_19154 + 1))) {
+        if (blockPos.isWithinDistance(new BlockPos(entity), (double)(this.field_19154 + 1))) {
             ++this.field_19001;
         }
     }

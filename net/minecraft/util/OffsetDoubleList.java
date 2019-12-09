@@ -11,14 +11,14 @@ extends AbstractDoubleList {
     private final DoubleList oldList;
     private final double offset;
 
-    public OffsetDoubleList(DoubleList doubleList, double d) {
-        this.oldList = doubleList;
-        this.offset = d;
+    public OffsetDoubleList(DoubleList oldList, double offset) {
+        this.oldList = oldList;
+        this.offset = offset;
     }
 
     @Override
-    public double getDouble(int i) {
-        return this.oldList.getDouble(i) + this.offset;
+    public double getDouble(int position) {
+        return this.oldList.getDouble(position) + this.offset;
     }
 
     @Override

@@ -9,8 +9,8 @@ public class TrackedData<T> {
     private final int id;
     private final TrackedDataHandler<T> dataType;
 
-    public TrackedData(int i, TrackedDataHandler<T> trackedDataHandler) {
-        this.id = i;
+    public TrackedData(int id, TrackedDataHandler<T> trackedDataHandler) {
+        this.id = id;
         this.dataType = trackedDataHandler;
     }
 
@@ -22,14 +22,14 @@ public class TrackedData<T> {
         return this.dataType;
     }
 
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (object == null || this.getClass() != object.getClass()) {
+        if (o == null || this.getClass() != o.getClass()) {
             return false;
         }
-        TrackedData trackedData = (TrackedData)object;
+        TrackedData trackedData = (TrackedData)o;
         return this.id == trackedData.id;
     }
 

@@ -33,18 +33,18 @@ implements Packet<ClientPlayPacketListener> {
     public MobSpawnS2CPacket() {
     }
 
-    public MobSpawnS2CPacket(LivingEntity livingEntity) {
-        this.id = livingEntity.getEntityId();
-        this.uuid = livingEntity.getUuid();
-        this.entityTypeId = Registry.ENTITY_TYPE.getRawId(livingEntity.getType());
-        this.x = livingEntity.getX();
-        this.y = livingEntity.getY();
-        this.z = livingEntity.getZ();
-        this.yaw = (byte)(livingEntity.yaw * 256.0f / 360.0f);
-        this.pitch = (byte)(livingEntity.pitch * 256.0f / 360.0f);
-        this.headYaw = (byte)(livingEntity.headYaw * 256.0f / 360.0f);
+    public MobSpawnS2CPacket(LivingEntity entity) {
+        this.id = entity.getEntityId();
+        this.uuid = entity.getUuid();
+        this.entityTypeId = Registry.ENTITY_TYPE.getRawId(entity.getType());
+        this.x = entity.getX();
+        this.y = entity.getY();
+        this.z = entity.getZ();
+        this.yaw = (byte)(entity.yaw * 256.0f / 360.0f);
+        this.pitch = (byte)(entity.pitch * 256.0f / 360.0f);
+        this.headYaw = (byte)(entity.headYaw * 256.0f / 360.0f);
         double d = 3.9;
-        Vec3d vec3d = livingEntity.getVelocity();
+        Vec3d vec3d = entity.getVelocity();
         double e = MathHelper.clamp(vec3d.x, -3.9, 3.9);
         double f = MathHelper.clamp(vec3d.y, -3.9, 3.9);
         double g = MathHelper.clamp(vec3d.z, -3.9, 3.9);
@@ -54,35 +54,35 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Override
-    public void read(PacketByteBuf packetByteBuf) throws IOException {
-        this.id = packetByteBuf.readVarInt();
-        this.uuid = packetByteBuf.readUuid();
-        this.entityTypeId = packetByteBuf.readVarInt();
-        this.x = packetByteBuf.readDouble();
-        this.y = packetByteBuf.readDouble();
-        this.z = packetByteBuf.readDouble();
-        this.yaw = packetByteBuf.readByte();
-        this.pitch = packetByteBuf.readByte();
-        this.headYaw = packetByteBuf.readByte();
-        this.velocityX = packetByteBuf.readShort();
-        this.velocityY = packetByteBuf.readShort();
-        this.velocityZ = packetByteBuf.readShort();
+    public void read(PacketByteBuf buf) throws IOException {
+        this.id = buf.readVarInt();
+        this.uuid = buf.readUuid();
+        this.entityTypeId = buf.readVarInt();
+        this.x = buf.readDouble();
+        this.y = buf.readDouble();
+        this.z = buf.readDouble();
+        this.yaw = buf.readByte();
+        this.pitch = buf.readByte();
+        this.headYaw = buf.readByte();
+        this.velocityX = buf.readShort();
+        this.velocityY = buf.readShort();
+        this.velocityZ = buf.readShort();
     }
 
     @Override
-    public void write(PacketByteBuf packetByteBuf) throws IOException {
-        packetByteBuf.writeVarInt(this.id);
-        packetByteBuf.writeUuid(this.uuid);
-        packetByteBuf.writeVarInt(this.entityTypeId);
-        packetByteBuf.writeDouble(this.x);
-        packetByteBuf.writeDouble(this.y);
-        packetByteBuf.writeDouble(this.z);
-        packetByteBuf.writeByte(this.yaw);
-        packetByteBuf.writeByte(this.pitch);
-        packetByteBuf.writeByte(this.headYaw);
-        packetByteBuf.writeShort(this.velocityX);
-        packetByteBuf.writeShort(this.velocityY);
-        packetByteBuf.writeShort(this.velocityZ);
+    public void write(PacketByteBuf buf) throws IOException {
+        buf.writeVarInt(this.id);
+        buf.writeUuid(this.uuid);
+        buf.writeVarInt(this.entityTypeId);
+        buf.writeDouble(this.x);
+        buf.writeDouble(this.y);
+        buf.writeDouble(this.z);
+        buf.writeByte(this.yaw);
+        buf.writeByte(this.pitch);
+        buf.writeByte(this.headYaw);
+        buf.writeShort(this.velocityX);
+        buf.writeShort(this.velocityY);
+        buf.writeShort(this.velocityZ);
     }
 
     @Override

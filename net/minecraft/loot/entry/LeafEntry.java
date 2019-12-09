@@ -33,17 +33,17 @@ extends LootEntry {
     private final LootChoice choice = new Choice(){
 
         @Override
-        public void drop(Consumer<ItemStack> consumer, LootContext lootContext) {
-            LeafEntry.this.drop(LootFunction.apply(LeafEntry.this.compiledFunctions, consumer, lootContext), lootContext);
+        public void drop(Consumer<ItemStack> itemDropper, LootContext context) {
+            LeafEntry.this.drop(LootFunction.apply(LeafEntry.this.compiledFunctions, itemDropper, context), context);
         }
     };
 
-    protected LeafEntry(int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
-        super(lootConditions);
-        this.weight = i;
-        this.quality = j;
-        this.functions = lootFunctions;
-        this.compiledFunctions = LootFunctions.join(lootFunctions);
+    protected LeafEntry(int weight, int quality, LootCondition[] conditions, LootFunction[] functions) {
+        super(conditions);
+        this.weight = weight;
+        this.quality = quality;
+        this.functions = functions;
+        this.compiledFunctions = LootFunctions.join(functions);
     }
 
     @Override
@@ -99,8 +99,8 @@ extends LootEntry {
         protected abstract T fromJson(JsonObject var1, JsonDeserializationContext var2, int var3, int var4, LootCondition[] var5, LootFunction[] var6);
 
         @Override
-        public /* synthetic */ LootEntry fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
+        public /* synthetic */ LootEntry fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions) {
+            return this.fromJson(json, context, conditions);
         }
     }
 
@@ -150,19 +150,19 @@ extends LootEntry {
             return this.functions.toArray(new LootFunction[0]);
         }
 
-        public T setWeight(int i) {
-            this.weight = i;
+        public T setWeight(int weight) {
+            this.weight = weight;
             return (T)((Builder)this.getThisBuilder());
         }
 
-        public T setQuality(int i) {
-            this.quality = i;
+        public T setQuality(int quality) {
+            this.quality = quality;
             return (T)((Builder)this.getThisBuilder());
         }
 
         @Override
-        public /* synthetic */ Object withFunction(LootFunction.Builder builder) {
-            return this.withFunction(builder);
+        public /* synthetic */ Object withFunction(LootFunction.Builder lootFunctionBuilder) {
+            return this.withFunction(lootFunctionBuilder);
         }
     }
 
@@ -172,8 +172,8 @@ extends LootEntry {
         }
 
         @Override
-        public int getWeight(float f) {
-            return Math.max(MathHelper.floor((float)LeafEntry.this.weight + (float)LeafEntry.this.quality * f), 0);
+        public int getWeight(float luck) {
+            return Math.max(MathHelper.floor((float)LeafEntry.this.weight + (float)LeafEntry.this.quality * luck), 0);
         }
     }
 }

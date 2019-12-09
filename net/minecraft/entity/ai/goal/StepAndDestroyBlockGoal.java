@@ -30,10 +30,10 @@ extends MoveToTargetPosGoal {
     private final MobEntity stepAndDestroyMob;
     private int counter;
 
-    public StepAndDestroyBlockGoal(Block block, MobEntityWithAi mobEntityWithAi, double d, int i) {
-        super(mobEntityWithAi, d, 24, i);
-        this.targetBlock = block;
-        this.stepAndDestroyMob = mobEntityWithAi;
+    public StepAndDestroyBlockGoal(Block targetBlock, MobEntityWithAi mob, double speed, int maxYDifference) {
+        super(mob, speed, 24, maxYDifference);
+        this.targetBlock = targetBlock;
+        this.stepAndDestroyMob = mob;
     }
 
     @Override
@@ -72,10 +72,10 @@ extends MoveToTargetPosGoal {
         this.counter = 0;
     }
 
-    public void tickStepping(IWorld iWorld, BlockPos blockPos) {
+    public void tickStepping(IWorld world, BlockPos pos) {
     }
 
-    public void onDestroyBlock(World world, BlockPos blockPos) {
+    public void onDestroyBlock(World world, BlockPos pos) {
     }
 
     @Override
@@ -120,23 +120,23 @@ extends MoveToTargetPosGoal {
     }
 
     @Nullable
-    private BlockPos tweakToProperPos(BlockPos blockPos, BlockView blockView) {
+    private BlockPos tweakToProperPos(BlockPos pos, BlockView view) {
         BlockPos[] blockPoss;
-        if (blockView.getBlockState(blockPos).getBlock() == this.targetBlock) {
-            return blockPos;
+        if (view.getBlockState(pos).getBlock() == this.targetBlock) {
+            return pos;
         }
-        for (BlockPos blockPos2 : blockPoss = new BlockPos[]{blockPos.down(), blockPos.west(), blockPos.east(), blockPos.north(), blockPos.south(), blockPos.down().down()}) {
-            if (blockView.getBlockState(blockPos2).getBlock() != this.targetBlock) continue;
-            return blockPos2;
+        for (BlockPos blockPos : blockPoss = new BlockPos[]{pos.down(), pos.west(), pos.east(), pos.north(), pos.south(), pos.down().down()}) {
+            if (view.getBlockState(blockPos).getBlock() != this.targetBlock) continue;
+            return blockPos;
         }
         return null;
     }
 
     @Override
-    protected boolean isTargetPos(WorldView worldView, BlockPos blockPos) {
-        Chunk chunk = worldView.getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4, ChunkStatus.FULL, false);
+    protected boolean isTargetPos(WorldView worldView, BlockPos pos) {
+        Chunk chunk = worldView.getChunk(pos.getX() >> 4, pos.getZ() >> 4, ChunkStatus.FULL, false);
         if (chunk != null) {
-            return chunk.getBlockState(blockPos).getBlock() == this.targetBlock && chunk.getBlockState(blockPos.up()).isAir() && chunk.getBlockState(blockPos.up(2)).isAir();
+            return chunk.getBlockState(pos).getBlock() == this.targetBlock && chunk.getBlockState(pos.up()).isAir() && chunk.getBlockState(pos.up(2)).isAir();
         }
         return false;
     }

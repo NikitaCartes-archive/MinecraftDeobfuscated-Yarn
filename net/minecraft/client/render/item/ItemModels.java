@@ -24,24 +24,24 @@ public class ItemModels {
     private final Int2ObjectMap<BakedModel> models = new Int2ObjectOpenHashMap<BakedModel>(256);
     private final BakedModelManager modelManager;
 
-    public ItemModels(BakedModelManager bakedModelManager) {
-        this.modelManager = bakedModelManager;
+    public ItemModels(BakedModelManager modelManager) {
+        this.modelManager = modelManager;
     }
 
     public Sprite getSprite(ItemConvertible itemConvertible) {
         return this.getSprite(new ItemStack(itemConvertible));
     }
 
-    public Sprite getSprite(ItemStack itemStack) {
-        BakedModel bakedModel = this.getModel(itemStack);
-        if (bakedModel == this.modelManager.getMissingModel() && itemStack.getItem() instanceof BlockItem) {
-            return this.modelManager.getBlockModels().getSprite(((BlockItem)itemStack.getItem()).getBlock().getDefaultState());
+    public Sprite getSprite(ItemStack stack) {
+        BakedModel bakedModel = this.getModel(stack);
+        if (bakedModel == this.modelManager.getMissingModel() && stack.getItem() instanceof BlockItem) {
+            return this.modelManager.getBlockModels().getSprite(((BlockItem)stack.getItem()).getBlock().getDefaultState());
         }
         return bakedModel.getSprite();
     }
 
-    public BakedModel getModel(ItemStack itemStack) {
-        BakedModel bakedModel = this.getModel(itemStack.getItem());
+    public BakedModel getModel(ItemStack stack) {
+        BakedModel bakedModel = this.getModel(stack.getItem());
         return bakedModel == null ? this.modelManager.getMissingModel() : bakedModel;
     }
 
@@ -54,8 +54,8 @@ public class ItemModels {
         return Item.getRawId(item);
     }
 
-    public void putModel(Item item, ModelIdentifier modelIdentifier) {
-        this.modelIds.put(ItemModels.getModelId(item), modelIdentifier);
+    public void putModel(Item item, ModelIdentifier modelId) {
+        this.modelIds.put(ItemModels.getModelId(item), modelId);
     }
 
     public BakedModelManager getModelManager() {

@@ -35,8 +35,8 @@ extends SchoolingFishEntity {
     public static final int[] COMMON_VARIANTS = new int[]{TropicalFishEntity.toVariant(Variety.STRIPEY, DyeColor.ORANGE, DyeColor.GRAY), TropicalFishEntity.toVariant(Variety.FLOPPER, DyeColor.GRAY, DyeColor.GRAY), TropicalFishEntity.toVariant(Variety.FLOPPER, DyeColor.GRAY, DyeColor.BLUE), TropicalFishEntity.toVariant(Variety.CLAYFISH, DyeColor.WHITE, DyeColor.GRAY), TropicalFishEntity.toVariant(Variety.SUNSTREAK, DyeColor.BLUE, DyeColor.GRAY), TropicalFishEntity.toVariant(Variety.KOB, DyeColor.ORANGE, DyeColor.WHITE), TropicalFishEntity.toVariant(Variety.SPOTTY, DyeColor.PINK, DyeColor.LIGHT_BLUE), TropicalFishEntity.toVariant(Variety.BLOCKFISH, DyeColor.PURPLE, DyeColor.YELLOW), TropicalFishEntity.toVariant(Variety.CLAYFISH, DyeColor.WHITE, DyeColor.RED), TropicalFishEntity.toVariant(Variety.SPOTTY, DyeColor.WHITE, DyeColor.YELLOW), TropicalFishEntity.toVariant(Variety.GLITTER, DyeColor.WHITE, DyeColor.GRAY), TropicalFishEntity.toVariant(Variety.CLAYFISH, DyeColor.WHITE, DyeColor.ORANGE), TropicalFishEntity.toVariant(Variety.DASHER, DyeColor.CYAN, DyeColor.PINK), TropicalFishEntity.toVariant(Variety.BRINELY, DyeColor.LIME, DyeColor.LIGHT_BLUE), TropicalFishEntity.toVariant(Variety.BETTY, DyeColor.RED, DyeColor.WHITE), TropicalFishEntity.toVariant(Variety.SNOOPER, DyeColor.GRAY, DyeColor.RED), TropicalFishEntity.toVariant(Variety.BLOCKFISH, DyeColor.RED, DyeColor.WHITE), TropicalFishEntity.toVariant(Variety.FLOPPER, DyeColor.WHITE, DyeColor.YELLOW), TropicalFishEntity.toVariant(Variety.KOB, DyeColor.RED, DyeColor.WHITE), TropicalFishEntity.toVariant(Variety.SUNSTREAK, DyeColor.GRAY, DyeColor.WHITE), TropicalFishEntity.toVariant(Variety.DASHER, DyeColor.CYAN, DyeColor.YELLOW), TropicalFishEntity.toVariant(Variety.FLOPPER, DyeColor.YELLOW, DyeColor.YELLOW)};
     private boolean commonSpawn = true;
 
-    private static int toVariant(Variety variety, DyeColor dyeColor, DyeColor dyeColor2) {
-        return variety.getShape() & 0xFF | (variety.getPattern() & 0xFF) << 8 | (dyeColor.getId() & 0xFF) << 16 | (dyeColor2.getId() & 0xFF) << 24;
+    private static int toVariant(Variety variety, DyeColor baseColor, DyeColor patternColor) {
+        return variety.getShape() & 0xFF | (variety.getPattern() & 0xFF) << 8 | (baseColor.getId() & 0xFF) << 16 | (patternColor.getId() & 0xFF) << 24;
     }
 
     public TropicalFishEntity(EntityType<? extends TropicalFishEntity> entityType, World world) {
@@ -44,25 +44,25 @@ extends SchoolingFishEntity {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static String getToolTipForVariant(int i) {
-        return "entity.minecraft.tropical_fish.predefined." + i;
+    public static String getToolTipForVariant(int variant) {
+        return "entity.minecraft.tropical_fish.predefined." + variant;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static DyeColor getBaseDyeColor(int i) {
-        return DyeColor.byId(TropicalFishEntity.getBaseDyeColorIndex(i));
+    public static DyeColor getBaseDyeColor(int variant) {
+        return DyeColor.byId(TropicalFishEntity.getBaseDyeColorIndex(variant));
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static DyeColor getPatternDyeColor(int i) {
-        return DyeColor.byId(TropicalFishEntity.getPatternDyeColorIndex(i));
+    public static DyeColor getPatternDyeColor(int variant) {
+        return DyeColor.byId(TropicalFishEntity.getPatternDyeColorIndex(variant));
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static String getTranslationKey(int i) {
-        int j = TropicalFishEntity.getShape(i);
-        int k = TropicalFishEntity.getPattern(i);
-        return "entity.minecraft.tropical_fish.type." + Variety.getTranslateKey(j, k);
+    public static String getTranslationKey(int variant) {
+        int i = TropicalFishEntity.getShape(variant);
+        int j = TropicalFishEntity.getPattern(variant);
+        return "entity.minecraft.tropical_fish.type." + Variety.getTranslateKey(i, j);
     }
 
     @Override
@@ -72,23 +72,23 @@ extends SchoolingFishEntity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag compoundTag) {
-        super.writeCustomDataToTag(compoundTag);
-        compoundTag.putInt("Variant", this.getVariant());
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putInt("Variant", this.getVariant());
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag compoundTag) {
-        super.readCustomDataFromTag(compoundTag);
-        this.setVariant(compoundTag.getInt("Variant"));
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        this.setVariant(tag.getInt("Variant"));
     }
 
-    public void setVariant(int i) {
-        this.dataTracker.set(VARIANT, i);
+    public void setVariant(int variant) {
+        this.dataTracker.set(VARIANT, variant);
     }
 
     @Override
-    public boolean spawnsTooManyForEachTry(int i) {
+    public boolean spawnsTooManyForEachTry(int count) {
         return !this.commonSpawn;
     }
 
@@ -97,9 +97,9 @@ extends SchoolingFishEntity {
     }
 
     @Override
-    protected void copyDataToStack(ItemStack itemStack) {
-        super.copyDataToStack(itemStack);
-        CompoundTag compoundTag = itemStack.getOrCreateTag();
+    protected void copyDataToStack(ItemStack stack) {
+        super.copyDataToStack(stack);
+        CompoundTag compoundTag = stack.getOrCreateTag();
         compoundTag.putInt("BucketVariantTag", this.getVariant());
     }
 
@@ -119,7 +119,7 @@ extends SchoolingFishEntity {
     }
 
     @Override
-    protected SoundEvent getHurtSound(DamageSource damageSource) {
+    protected SoundEvent getHurtSound(DamageSource source) {
         return SoundEvents.ENTITY_TROPICAL_FISH_HURT;
     }
 
@@ -129,8 +129,8 @@ extends SchoolingFishEntity {
     }
 
     @Environment(value=EnvType.CLIENT)
-    private static int getBaseDyeColorIndex(int i) {
-        return (i & 0xFF0000) >> 16;
+    private static int getBaseDyeColorIndex(int variant) {
+        return (variant & 0xFF0000) >> 16;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -139,8 +139,8 @@ extends SchoolingFishEntity {
     }
 
     @Environment(value=EnvType.CLIENT)
-    private static int getPatternDyeColorIndex(int i) {
-        return (i & 0xFF000000) >> 24;
+    private static int getPatternDyeColorIndex(int variant) {
+        return (variant & 0xFF000000) >> 24;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -149,8 +149,8 @@ extends SchoolingFishEntity {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static int getShape(int i) {
-        return Math.min(i & 0xFF, 1);
+    public static int getShape(int variant) {
+        return Math.min(variant & 0xFF, 1);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -159,8 +159,8 @@ extends SchoolingFishEntity {
     }
 
     @Environment(value=EnvType.CLIENT)
-    private static int getPattern(int i) {
-        return Math.min((i & 0xFF00) >> 8, 5);
+    private static int getPattern(int variant) {
+        return Math.min((variant & 0xFF00) >> 8, 5);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -178,14 +178,14 @@ extends SchoolingFishEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag) {
+    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         int l;
         int k;
         int j;
         int i;
-        entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
-        if (compoundTag != null && compoundTag.contains("BucketVariantTag", 3)) {
-            this.setVariant(compoundTag.getInt("BucketVariantTag"));
+        entityData = super.initialize(world, difficulty, spawnType, entityData, entityTag);
+        if (entityTag != null && entityTag.contains("BucketVariantTag", 3)) {
+            this.setVariant(entityTag.getInt("BucketVariantTag"));
             return entityData;
         }
         if (entityData instanceof Data) {
@@ -219,12 +219,12 @@ extends SchoolingFishEntity {
         private final int baseColor;
         private final int patternColor;
 
-        private Data(TropicalFishEntity tropicalFishEntity, int i, int j, int k, int l) {
-            super(tropicalFishEntity);
-            this.shape = i;
-            this.pattern = j;
-            this.baseColor = k;
-            this.patternColor = l;
+        private Data(TropicalFishEntity leader, int shape, int pattern, int baseColor, int patternColor) {
+            super(leader);
+            this.shape = shape;
+            this.pattern = pattern;
+            this.baseColor = baseColor;
+            this.patternColor = patternColor;
         }
     }
 
@@ -246,9 +246,9 @@ extends SchoolingFishEntity {
         private final int pattern;
         private static final Variety[] VALUES;
 
-        private Variety(int j, int k) {
-            this.shape = j;
-            this.pattern = k;
+        private Variety(int shape, int pattern) {
+            this.shape = shape;
+            this.pattern = pattern;
         }
 
         public int getShape() {
@@ -260,8 +260,8 @@ extends SchoolingFishEntity {
         }
 
         @Environment(value=EnvType.CLIENT)
-        public static String getTranslateKey(int i, int j) {
-            return VALUES[j + 6 * i].getTranslationKey();
+        public static String getTranslateKey(int shape, int pattern) {
+            return VALUES[pattern + 6 * shape].getTranslationKey();
         }
 
         @Environment(value=EnvType.CLIENT)

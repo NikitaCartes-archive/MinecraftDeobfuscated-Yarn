@@ -17,8 +17,8 @@ public class SpiderEyesFeatureRenderer<T extends Entity, M extends SpiderEntityM
 extends EyesFeatureRenderer<T, M> {
     private static final RenderLayer SKIN = RenderLayer.getEyes(new Identifier("textures/entity/spider_eyes.png"));
 
-    public SpiderEyesFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext) {
-        super(featureRendererContext);
+    public SpiderEyesFeatureRenderer(FeatureRendererContext<T, M> context) {
+        super(context);
     }
 
     @Override

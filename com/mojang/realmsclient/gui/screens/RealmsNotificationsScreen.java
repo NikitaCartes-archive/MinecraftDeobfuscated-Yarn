@@ -26,7 +26,7 @@ extends RealmsScreen {
     private static boolean hasUnreadNews;
     private static final List<RealmsDataFetcher.Task> tasks;
 
-    public RealmsNotificationsScreen(RealmsScreen realmsScreen) {
+    public RealmsNotificationsScreen(RealmsScreen lastScreen) {
     }
 
     @Override
@@ -86,51 +86,51 @@ extends RealmsScreen {
     }
 
     @Override
-    public void render(int i, int j, float f) {
+    public void render(int xm, int ym, float a) {
         if (validClient) {
-            this.drawIcons(i, j);
+            this.drawIcons(xm, ym);
         }
-        super.render(i, j, f);
+        super.render(xm, ym, a);
     }
 
     @Override
-    public boolean mouseClicked(double d, double e, int i) {
-        return super.mouseClicked(d, e, i);
+    public boolean mouseClicked(double xm, double ym, int button) {
+        return super.mouseClicked(xm, ym, button);
     }
 
-    private void drawIcons(int i, int j) {
-        int k = this.numberOfPendingInvites;
-        int l = 24;
-        int m = this.height() / 4 + 48;
-        int n = this.width() / 2 + 80;
-        int o = m + 48 + 2;
-        int p = 0;
+    private void drawIcons(int xm, int ym) {
+        int i = this.numberOfPendingInvites;
+        int j = 24;
+        int k = this.height() / 4 + 48;
+        int l = this.width() / 2 + 80;
+        int m = k + 48 + 2;
+        int n = 0;
         if (hasUnreadNews) {
             RealmsScreen.bind("realms:textures/gui/realms/news_notification_mainscreen.png");
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             RenderSystem.pushMatrix();
             RenderSystem.scalef(0.4f, 0.4f, 0.4f);
-            RealmsScreen.blit((int)((double)(n + 2 - p) * 2.5), (int)((double)o * 2.5), 0.0f, 0.0f, 40, 40, 40, 40);
+            RealmsScreen.blit((int)((double)(l + 2 - n) * 2.5), (int)((double)m * 2.5), 0.0f, 0.0f, 40, 40, 40, 40);
             RenderSystem.popMatrix();
-            p += 14;
+            n += 14;
         }
-        if (k != 0) {
+        if (i != 0) {
             RealmsScreen.bind("realms:textures/gui/realms/invite_icon.png");
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             RenderSystem.pushMatrix();
-            RealmsScreen.blit(n - p, o - 6, 0.0f, 0.0f, 15, 25, 31, 25);
+            RealmsScreen.blit(l - n, m - 6, 0.0f, 0.0f, 15, 25, 31, 25);
             RenderSystem.popMatrix();
-            p += 16;
+            n += 16;
         }
         if (trialAvailable) {
             RealmsScreen.bind("realms:textures/gui/realms/trial_icon.png");
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             RenderSystem.pushMatrix();
-            int q = 0;
+            int o = 0;
             if ((System.currentTimeMillis() / 800L & 1L) == 1L) {
-                q = 8;
+                o = 8;
             }
-            RealmsScreen.blit(n + 4 - p, o + 4, 0.0f, q, 8, 8, 8, 16);
+            RealmsScreen.blit(l + 4 - n, m + 4, 0.0f, o, 8, 8, 8, 16);
             RenderSystem.popMatrix();
         }
     }

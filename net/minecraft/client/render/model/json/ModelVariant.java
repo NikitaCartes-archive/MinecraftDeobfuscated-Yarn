@@ -26,11 +26,11 @@ implements ModelBakeSettings {
     private final boolean uvLock;
     private final int weight;
 
-    public ModelVariant(Identifier identifier, Rotation3 rotation3, boolean bl, int i) {
-        this.location = identifier;
+    public ModelVariant(Identifier location, Rotation3 rotation3, boolean uvLock, int weight) {
+        this.location = location;
         this.rotation = rotation3;
-        this.uvLock = bl;
-        this.weight = i;
+        this.uvLock = uvLock;
+        this.weight = weight;
     }
 
     public Identifier getLocation() {
@@ -55,12 +55,12 @@ implements ModelBakeSettings {
         return "Variant{modelLocation=" + this.location + ", rotation=" + this.rotation + ", uvLock=" + this.uvLock + ", weight=" + this.weight + '}';
     }
 
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (object instanceof ModelVariant) {
-            ModelVariant modelVariant = (ModelVariant)object;
+        if (o instanceof ModelVariant) {
+            ModelVariant modelVariant = (ModelVariant)o;
             return this.location.equals(modelVariant.location) && Objects.equals(this.rotation, modelVariant.rotation) && this.uvLock == modelVariant.uvLock && this.weight == modelVariant.weight;
         }
         return false;
@@ -87,26 +87,26 @@ implements ModelBakeSettings {
             return new ModelVariant(identifier, modelRotation.getRotation(), bl, i);
         }
 
-        private boolean deserializeUvLock(JsonObject jsonObject) {
-            return JsonHelper.getBoolean(jsonObject, "uvlock", false);
+        private boolean deserializeUvLock(JsonObject object) {
+            return JsonHelper.getBoolean(object, "uvlock", false);
         }
 
-        protected ModelRotation deserializeRotation(JsonObject jsonObject) {
+        protected ModelRotation deserializeRotation(JsonObject object) {
             int j;
-            int i = JsonHelper.getInt(jsonObject, "x", 0);
-            ModelRotation modelRotation = ModelRotation.get(i, j = JsonHelper.getInt(jsonObject, "y", 0));
+            int i = JsonHelper.getInt(object, "x", 0);
+            ModelRotation modelRotation = ModelRotation.get(i, j = JsonHelper.getInt(object, "y", 0));
             if (modelRotation == null) {
                 throw new JsonParseException("Invalid BlockModelRotation x: " + i + ", y: " + j);
             }
             return modelRotation;
         }
 
-        protected Identifier deserializeModel(JsonObject jsonObject) {
-            return new Identifier(JsonHelper.getString(jsonObject, "model"));
+        protected Identifier deserializeModel(JsonObject object) {
+            return new Identifier(JsonHelper.getString(object, "model"));
         }
 
-        protected int deserializeWeight(JsonObject jsonObject) {
-            int i = JsonHelper.getInt(jsonObject, "weight", 1);
+        protected int deserializeWeight(JsonObject object) {
+            int i = JsonHelper.getInt(object, "weight", 1);
             if (i < 1) {
                 throw new JsonParseException("Invalid weight " + i + " found, expected integer >= 1");
             }
@@ -114,8 +114,8 @@ implements ModelBakeSettings {
         }
 
         @Override
-        public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.deserialize(jsonElement, type, jsonDeserializationContext);
+        public /* synthetic */ Object deserialize(JsonElement functionJson, Type unused, JsonDeserializationContext context) throws JsonParseException {
+            return this.deserialize(functionJson, unused, context);
         }
     }
 }

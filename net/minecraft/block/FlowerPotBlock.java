@@ -33,45 +33,45 @@ extends Block {
     protected static final VoxelShape SHAPE = Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 6.0, 11.0);
     private final Block content;
 
-    public FlowerPotBlock(Block block, Block.Settings settings) {
+    public FlowerPotBlock(Block content, Block.Settings settings) {
         super(settings);
-        this.content = block;
-        CONTENT_TO_POTTED.put(block, this);
+        this.content = content;
+        CONTENT_TO_POTTED.put(content, this);
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
         return SHAPE;
     }
 
     @Override
-    public BlockRenderType getRenderType(BlockState blockState) {
+    public BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.MODEL;
     }
 
     @Override
-    public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         boolean bl2;
-        ItemStack itemStack = playerEntity.getStackInHand(hand);
+        ItemStack itemStack = player.getStackInHand(hand);
         Item item = itemStack.getItem();
         Block block = item instanceof BlockItem ? CONTENT_TO_POTTED.getOrDefault(((BlockItem)item).getBlock(), Blocks.AIR) : Blocks.AIR;
         boolean bl = block == Blocks.AIR;
         boolean bl3 = bl2 = this.content == Blocks.AIR;
         if (bl != bl2) {
             if (bl2) {
-                world.setBlockState(blockPos, block.getDefaultState(), 3);
-                playerEntity.incrementStat(Stats.POT_FLOWER);
-                if (!playerEntity.abilities.creativeMode) {
+                world.setBlockState(pos, block.getDefaultState(), 3);
+                player.incrementStat(Stats.POT_FLOWER);
+                if (!player.abilities.creativeMode) {
                     itemStack.decrement(1);
                 }
             } else {
                 ItemStack itemStack2 = new ItemStack(this.content);
                 if (itemStack.isEmpty()) {
-                    playerEntity.setStackInHand(hand, itemStack2);
-                } else if (!playerEntity.giveItemStack(itemStack2)) {
-                    playerEntity.dropItem(itemStack2, false);
+                    player.setStackInHand(hand, itemStack2);
+                } else if (!player.giveItemStack(itemStack2)) {
+                    player.dropItem(itemStack2, false);
                 }
-                world.setBlockState(blockPos, Blocks.FLOWER_POT.getDefaultState(), 3);
+                world.setBlockState(pos, Blocks.FLOWER_POT.getDefaultState(), 3);
             }
             return ActionResult.SUCCESS;
         }
@@ -80,19 +80,19 @@ extends Block {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public ItemStack getPickStack(BlockView blockView, BlockPos blockPos, BlockState blockState) {
+    public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
         if (this.content == Blocks.AIR) {
-            return super.getPickStack(blockView, blockPos, blockState);
+            return super.getPickStack(world, pos, state);
         }
         return new ItemStack(this.content);
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-        if (direction == Direction.DOWN && !blockState.canPlaceAt(iWorld, blockPos)) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+        if (facing == Direction.DOWN && !state.canPlaceAt(world, pos)) {
             return Blocks.AIR.getDefaultState();
         }
-        return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+        return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
     }
 
     public Block getContent() {

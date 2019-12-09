@@ -46,36 +46,36 @@ extends ToggleButtonWidget {
     }
 
     @Override
-    public void renderButton(int i, int j, float f) {
+    public void renderButton(int mouseX, int mouseY, float delta) {
         if (this.bounce > 0.0f) {
-            float g = 1.0f + 0.1f * (float)Math.sin(this.bounce / 15.0f * (float)Math.PI);
+            float f = 1.0f + 0.1f * (float)Math.sin(this.bounce / 15.0f * (float)Math.PI);
             RenderSystem.pushMatrix();
             RenderSystem.translatef(this.x + 8, this.y + 12, 0.0f);
-            RenderSystem.scalef(1.0f, g, 1.0f);
+            RenderSystem.scalef(1.0f, f, 1.0f);
             RenderSystem.translatef(-(this.x + 8), -(this.y + 12), 0.0f);
         }
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
         minecraftClient.getTextureManager().bindTexture(this.texture);
         RenderSystem.disableDepthTest();
-        int k = this.u;
-        int l = this.v;
+        int i = this.u;
+        int j = this.v;
         if (this.toggled) {
-            k += this.pressedUOffset;
+            i += this.pressedUOffset;
         }
         if (this.isHovered()) {
-            l += this.hoverVOffset;
+            j += this.hoverVOffset;
         }
-        int m = this.x;
+        int k = this.x;
         if (this.toggled) {
-            m -= 2;
+            k -= 2;
         }
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        this.blit(m, this.y, k, l, this.width, this.height);
+        this.blit(k, this.y, i, j, this.width, this.height);
         RenderSystem.enableDepthTest();
         this.renderIcons(minecraftClient.getItemRenderer());
         if (this.bounce > 0.0f) {
             RenderSystem.popMatrix();
-            this.bounce -= f;
+            this.bounce -= delta;
         }
     }
 

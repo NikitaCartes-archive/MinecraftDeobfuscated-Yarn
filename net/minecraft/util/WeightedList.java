@@ -34,12 +34,12 @@ public class WeightedList<U> {
         }));
     }
 
-    public <T> T serialize(DynamicOps<T> dynamicOps, Function<U, Dynamic<T>> function) {
-        return (T)dynamicOps.createList(this.streamEntries().map(entry -> dynamicOps.createMap(ImmutableMap.builder().put(dynamicOps.createString("data"), ((Dynamic)function.apply(entry.getElement())).getValue()).put(dynamicOps.createString("weight"), dynamicOps.createInt(entry.getWeight())).build())));
+    public <T> T serialize(DynamicOps<T> ops, Function<U, Dynamic<T>> entrySerializer) {
+        return (T)ops.createList(this.streamEntries().map(entry -> ops.createMap(ImmutableMap.builder().put(ops.createString("data"), ((Dynamic)entrySerializer.apply(entry.getElement())).getValue()).put(ops.createString("weight"), ops.createInt(entry.getWeight())).build())));
     }
 
-    public WeightedList<U> add(U object, int i) {
-        this.entries.add(new Entry(object, i));
+    public WeightedList<U> add(U item, int weight) {
+        this.entries.add(new Entry(item, weight));
         return this;
     }
 
@@ -74,17 +74,17 @@ public class WeightedList<U> {
         private final int weight;
         private double shuffledOrder;
 
-        private Entry(T object, int i) {
-            this.weight = i;
-            this.item = object;
+        private Entry(T item, int weight) {
+            this.weight = weight;
+            this.item = item;
         }
 
         private double getShuffledOrder() {
             return this.shuffledOrder;
         }
 
-        private void setShuffledOrder(float f) {
-            this.shuffledOrder = -Math.pow(f, 1.0f / (float)this.weight);
+        private void setShuffledOrder(float random) {
+            this.shuffledOrder = -Math.pow(random, 1.0f / (float)this.weight);
         }
 
         public T getElement() {

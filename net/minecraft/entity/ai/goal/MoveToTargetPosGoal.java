@@ -22,16 +22,16 @@ extends Goal {
     private final int maxYDifference;
     protected int lowestY;
 
-    public MoveToTargetPosGoal(MobEntityWithAi mobEntityWithAi, double d, int i) {
-        this(mobEntityWithAi, d, i, 1);
+    public MoveToTargetPosGoal(MobEntityWithAi mob, double speed, int range) {
+        this(mob, speed, range, 1);
     }
 
-    public MoveToTargetPosGoal(MobEntityWithAi mobEntityWithAi, double d, int i, int j) {
-        this.mob = mobEntityWithAi;
-        this.speed = d;
-        this.range = i;
+    public MoveToTargetPosGoal(MobEntityWithAi mob, double speed, int range, int maxYDifference) {
+        this.mob = mob;
+        this.speed = speed;
+        this.range = range;
         this.lowestY = 0;
-        this.maxYDifference = j;
+        this.maxYDifference = maxYDifference;
         this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.JUMP));
     }
 
@@ -45,8 +45,8 @@ extends Goal {
         return this.findTargetPos();
     }
 
-    protected int getInterval(MobEntityWithAi mobEntityWithAi) {
-        return 200 + mobEntityWithAi.getRandom().nextInt(200);
+    protected int getInterval(MobEntityWithAi mob) {
+        return 200 + mob.getRandom().nextInt(200);
     }
 
     @Override

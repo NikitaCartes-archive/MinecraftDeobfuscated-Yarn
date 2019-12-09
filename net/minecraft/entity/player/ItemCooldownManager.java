@@ -19,12 +19,12 @@ public class ItemCooldownManager {
         return this.getCooldownProgress(item, 0.0f) > 0.0f;
     }
 
-    public float getCooldownProgress(Item item, float f) {
+    public float getCooldownProgress(Item item, float partialTicks) {
         Entry entry = this.entries.get(item);
         if (entry != null) {
-            float g = entry.endTick - entry.startTick;
-            float h = (float)entry.endTick - ((float)this.tick + f);
-            return MathHelper.clamp(h / g, 0.0f, 1.0f);
+            float f = entry.endTick - entry.startTick;
+            float g = (float)entry.endTick - ((float)this.tick + partialTicks);
+            return MathHelper.clamp(g / f, 0.0f, 1.0f);
         }
         return 0.0f;
     }
@@ -42,9 +42,9 @@ public class ItemCooldownManager {
         }
     }
 
-    public void set(Item item, int i) {
-        this.entries.put(item, new Entry(this.tick, this.tick + i));
-        this.onCooldownUpdate(item, i);
+    public void set(Item item, int duration) {
+        this.entries.put(item, new Entry(this.tick, this.tick + duration));
+        this.onCooldownUpdate(item, duration);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -63,9 +63,9 @@ public class ItemCooldownManager {
         private final int startTick;
         private final int endTick;
 
-        private Entry(int i, int j) {
-            this.startTick = i;
-            this.endTick = j;
+        private Entry(int startTick, int endTick) {
+            this.startTick = startTick;
+            this.endTick = endTick;
         }
     }
 }

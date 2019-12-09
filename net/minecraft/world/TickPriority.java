@@ -14,16 +14,16 @@ public enum TickPriority {
 
     private final int index;
 
-    private TickPriority(int j) {
-        this.index = j;
+    private TickPriority(int index) {
+        this.index = index;
     }
 
-    public static TickPriority byIndex(int i) {
+    public static TickPriority byIndex(int index) {
         for (TickPriority tickPriority : TickPriority.values()) {
-            if (tickPriority.index != i) continue;
+            if (tickPriority.index != index) continue;
             return tickPriority;
         }
-        if (i < TickPriority.EXTREMELY_HIGH.index) {
+        if (index < TickPriority.EXTREMELY_HIGH.index) {
             return EXTREMELY_HIGH;
         }
         return EXTREMELY_LOW;

@@ -121,16 +121,16 @@ extends HostileEntity {
         return this.dataTracker.get(SPIKES_RETRACTED);
     }
 
-    private void setSpikesRetracted(boolean bl) {
-        this.dataTracker.set(SPIKES_RETRACTED, bl);
+    private void setSpikesRetracted(boolean retracted) {
+        this.dataTracker.set(SPIKES_RETRACTED, retracted);
     }
 
     public int getWarmupTime() {
         return 80;
     }
 
-    private void setBeamTarget(int i) {
-        this.dataTracker.set(BEAM_TARGET_ID, i);
+    private void setBeamTarget(int progress) {
+        this.dataTracker.set(BEAM_TARGET_ID, progress);
     }
 
     public boolean hasBeamTarget() {
@@ -157,9 +157,9 @@ extends HostileEntity {
     }
 
     @Override
-    public void onTrackedDataSet(TrackedData<?> trackedData) {
-        super.onTrackedDataSet(trackedData);
-        if (BEAM_TARGET_ID.equals(trackedData)) {
+    public void onTrackedDataSet(TrackedData<?> data) {
+        super.onTrackedDataSet(data);
+        if (BEAM_TARGET_ID.equals(data)) {
             this.beamTicks = 0;
             this.cachedBeamTarget = null;
         }
@@ -176,7 +176,7 @@ extends HostileEntity {
     }
 
     @Override
-    protected SoundEvent getHurtSound(DamageSource damageSource) {
+    protected SoundEvent getHurtSound(DamageSource source) {
         return this.isInsideWaterOrBubbleColumn() ? SoundEvents.ENTITY_GUARDIAN_HURT : SoundEvents.ENTITY_GUARDIAN_HURT_LAND;
     }
 
@@ -191,16 +191,16 @@ extends HostileEntity {
     }
 
     @Override
-    protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
-        return entityDimensions.height * 0.5f;
+    protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
+        return dimensions.height * 0.5f;
     }
 
     @Override
-    public float getPathfindingFavor(BlockPos blockPos, WorldView worldView) {
-        if (worldView.getFluidState(blockPos).matches(FluidTags.WATER)) {
-            return 10.0f + worldView.getBrightness(blockPos) - 0.5f;
+    public float getPathfindingFavor(BlockPos pos, WorldView worldView) {
+        if (worldView.getFluidState(pos).matches(FluidTags.WATER)) {
+            return 10.0f + worldView.getBrightness(pos) - 0.5f;
         }
-        return super.getPathfindingFavor(blockPos, worldView);
+        return super.getPathfindingFavor(pos, worldView);
     }
 
     @Override
@@ -271,17 +271,17 @@ extends HostileEntity {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public float getSpikesExtension(float f) {
-        return MathHelper.lerp(f, this.prevSpikesExtension, this.spikesExtension);
+    public float getSpikesExtension(float tickDelta) {
+        return MathHelper.lerp(tickDelta, this.prevSpikesExtension, this.spikesExtension);
     }
 
     @Environment(value=EnvType.CLIENT)
-    public float getTailAngle(float f) {
-        return MathHelper.lerp(f, this.prevTailAngle, this.tailAngle);
+    public float getTailAngle(float tickDelta) {
+        return MathHelper.lerp(tickDelta, this.prevTailAngle, this.tailAngle);
     }
 
-    public float getBeamProgress(float f) {
-        return ((float)this.beamTicks + f) / (float)this.getWarmupTime();
+    public float getBeamProgress(float tickDelta) {
+        return ((float)this.beamTicks + tickDelta) / (float)this.getWarmupTime();
     }
 
     @Override
@@ -289,22 +289,22 @@ extends HostileEntity {
         return worldView.intersectsEntities(this);
     }
 
-    public static boolean canSpawn(EntityType<? extends GuardianEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-        return !(random.nextInt(20) != 0 && iWorld.isSkyVisibleAllowingSea(blockPos) || iWorld.getDifficulty() == Difficulty.PEACEFUL || spawnType != SpawnType.SPAWNER && !iWorld.getFluidState(blockPos).matches(FluidTags.WATER));
+    public static boolean canSpawn(EntityType<? extends GuardianEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
+        return !(random.nextInt(20) != 0 && world.isSkyVisibleAllowingSea(pos) || world.getDifficulty() == Difficulty.PEACEFUL || spawnType != SpawnType.SPAWNER && !world.getFluidState(pos).matches(FluidTags.WATER));
     }
 
     @Override
-    public boolean damage(DamageSource damageSource, float f) {
-        if (!this.areSpikesRetracted() && !damageSource.getMagic() && damageSource.getSource() instanceof LivingEntity) {
-            LivingEntity livingEntity = (LivingEntity)damageSource.getSource();
-            if (!damageSource.isExplosive()) {
+    public boolean damage(DamageSource source, float amount) {
+        if (!this.areSpikesRetracted() && !source.getMagic() && source.getSource() instanceof LivingEntity) {
+            LivingEntity livingEntity = (LivingEntity)source.getSource();
+            if (!source.isExplosive()) {
                 livingEntity.damage(DamageSource.thorns(this), 2.0f);
             }
         }
         if (this.wanderGoal != null) {
             this.wanderGoal.ignoreChanceOnce();
         }
-        return super.damage(damageSource, f);
+        return super.damage(source, amount);
     }
 
     @Override
@@ -313,16 +313,16 @@ extends HostileEntity {
     }
 
     @Override
-    public void travel(Vec3d vec3d) {
+    public void travel(Vec3d movementInput) {
         if (this.canMoveVoluntarily() && this.isInsideWater()) {
-            this.updateVelocity(0.1f, vec3d);
+            this.updateVelocity(0.1f, movementInput);
             this.move(MovementType.SELF, this.getVelocity());
             this.setVelocity(this.getVelocity().multiply(0.9));
             if (!this.areSpikesRetracted() && this.getTarget() == null) {
                 this.setVelocity(this.getVelocity().add(0.0, -0.005, 0.0));
             }
         } else {
-            super.travel(vec3d);
+            super.travel(movementInput);
         }
     }
 
@@ -330,9 +330,9 @@ extends HostileEntity {
     extends MoveControl {
         private final GuardianEntity guardian;
 
-        public GuardianMoveControl(GuardianEntity guardianEntity) {
-            super(guardianEntity);
-            this.guardian = guardianEntity;
+        public GuardianMoveControl(GuardianEntity guardian) {
+            super(guardian);
+            this.guardian = guardian;
         }
 
         @Override
@@ -380,9 +380,9 @@ extends HostileEntity {
         private int beamTicks;
         private final boolean elder;
 
-        public FireBeamGoal(GuardianEntity guardianEntity) {
-            this.guardian = guardianEntity;
-            this.elder = guardianEntity instanceof ElderGuardianEntity;
+        public FireBeamGoal(GuardianEntity guardian) {
+            this.guardian = guardian;
+            this.elder = guardian instanceof ElderGuardianEntity;
             this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
         }
 
@@ -445,8 +445,8 @@ extends HostileEntity {
     implements Predicate<LivingEntity> {
         private final GuardianEntity owner;
 
-        public GuardianTargetPredicate(GuardianEntity guardianEntity) {
-            this.owner = guardianEntity;
+        public GuardianTargetPredicate(GuardianEntity owner) {
+            this.owner = owner;
         }
 
         @Override
@@ -455,8 +455,8 @@ extends HostileEntity {
         }
 
         @Override
-        public /* synthetic */ boolean test(@Nullable Object object) {
-            return this.test((LivingEntity)object);
+        public /* synthetic */ boolean test(@Nullable Object context) {
+            return this.test((LivingEntity)context);
         }
     }
 }

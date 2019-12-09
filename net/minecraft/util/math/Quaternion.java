@@ -15,58 +15,58 @@ public final class Quaternion {
     private float field_21584;
     private float a;
 
-    public Quaternion(float f, float g, float h, float i) {
-        this.field_21582 = f;
-        this.field_21583 = g;
-        this.field_21584 = h;
-        this.a = i;
+    public Quaternion(float b, float c, float d, float a) {
+        this.field_21582 = b;
+        this.field_21583 = c;
+        this.field_21584 = d;
+        this.a = a;
     }
 
-    public Quaternion(Vector3f vector3f, float f, boolean bl) {
-        if (bl) {
-            f *= (float)Math.PI / 180;
+    public Quaternion(Vector3f axis, float rotationAngle, boolean degrees) {
+        if (degrees) {
+            rotationAngle *= (float)Math.PI / 180;
         }
-        float g = Quaternion.sin(f / 2.0f);
-        this.field_21582 = vector3f.getX() * g;
-        this.field_21583 = vector3f.getY() * g;
-        this.field_21584 = vector3f.getZ() * g;
-        this.a = Quaternion.cos(f / 2.0f);
+        float f = Quaternion.sin(rotationAngle / 2.0f);
+        this.field_21582 = axis.getX() * f;
+        this.field_21583 = axis.getY() * f;
+        this.field_21584 = axis.getZ() * f;
+        this.a = Quaternion.cos(rotationAngle / 2.0f);
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Quaternion(float f, float g, float h, boolean bl) {
-        if (bl) {
-            f *= (float)Math.PI / 180;
-            g *= (float)Math.PI / 180;
-            h *= (float)Math.PI / 180;
+    public Quaternion(float x, float y, float z, boolean degrees) {
+        if (degrees) {
+            x *= (float)Math.PI / 180;
+            y *= (float)Math.PI / 180;
+            z *= (float)Math.PI / 180;
         }
-        float i = Quaternion.sin(0.5f * f);
-        float j = Quaternion.cos(0.5f * f);
-        float k = Quaternion.sin(0.5f * g);
-        float l = Quaternion.cos(0.5f * g);
-        float m = Quaternion.sin(0.5f * h);
-        float n = Quaternion.cos(0.5f * h);
-        this.field_21582 = i * l * n + j * k * m;
-        this.field_21583 = j * k * n - i * l * m;
-        this.field_21584 = i * k * n + j * l * m;
-        this.a = j * l * n - i * k * m;
+        float f = Quaternion.sin(0.5f * x);
+        float g = Quaternion.cos(0.5f * x);
+        float h = Quaternion.sin(0.5f * y);
+        float i = Quaternion.cos(0.5f * y);
+        float j = Quaternion.sin(0.5f * z);
+        float k = Quaternion.cos(0.5f * z);
+        this.field_21582 = f * i * k + g * h * j;
+        this.field_21583 = g * h * k - f * i * j;
+        this.field_21584 = f * h * k + g * i * j;
+        this.a = g * i * k - f * h * j;
     }
 
-    public Quaternion(Quaternion quaternion) {
-        this.field_21582 = quaternion.field_21582;
-        this.field_21583 = quaternion.field_21583;
-        this.field_21584 = quaternion.field_21584;
-        this.a = quaternion.a;
+    public Quaternion(Quaternion other) {
+        this.field_21582 = other.field_21582;
+        this.field_21583 = other.field_21583;
+        this.field_21584 = other.field_21584;
+        this.a = other.a;
     }
 
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (object == null || this.getClass() != object.getClass()) {
+        if (o == null || this.getClass() != o.getClass()) {
             return false;
         }
-        Quaternion quaternion = (Quaternion)object;
+        Quaternion quaternion = (Quaternion)o;
         if (Float.compare(quaternion.field_21582, this.field_21582) != 0) {
             return false;
         }
@@ -112,15 +112,15 @@ public final class Quaternion {
         return this.a;
     }
 
-    public void hamiltonProduct(Quaternion quaternion) {
+    public void hamiltonProduct(Quaternion other) {
         float f = this.getB();
         float g = this.getC();
         float h = this.getD();
         float i = this.getA();
-        float j = quaternion.getB();
-        float k = quaternion.getC();
-        float l = quaternion.getD();
-        float m = quaternion.getA();
+        float j = other.getB();
+        float k = other.getC();
+        float l = other.getD();
+        float m = other.getA();
         this.field_21582 = i * j + f * m + g * l - h * k;
         this.field_21583 = i * k - f * l + g * m + h * j;
         this.field_21584 = i * l + f * k - g * j + h * m;
@@ -128,11 +128,11 @@ public final class Quaternion {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void scale(float f) {
-        this.field_21582 *= f;
-        this.field_21583 *= f;
-        this.field_21584 *= f;
-        this.a *= f;
+    public void scale(float scale) {
+        this.field_21582 *= scale;
+        this.field_21583 *= scale;
+        this.field_21584 *= scale;
+        this.a *= scale;
     }
 
     public void conjugate() {
@@ -142,19 +142,19 @@ public final class Quaternion {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void set(float f, float g, float h, float i) {
-        this.field_21582 = f;
-        this.field_21583 = g;
-        this.field_21584 = h;
-        this.a = i;
+    public void set(float a, float b, float c, float d) {
+        this.field_21582 = a;
+        this.field_21583 = b;
+        this.field_21584 = c;
+        this.a = d;
     }
 
-    private static float cos(float f) {
-        return (float)Math.cos(f);
+    private static float cos(float value) {
+        return (float)Math.cos(value);
     }
 
-    private static float sin(float f) {
-        return (float)Math.sin(f);
+    private static float sin(float value) {
+        return (float)Math.sin(value);
     }
 
     @Environment(value=EnvType.CLIENT)

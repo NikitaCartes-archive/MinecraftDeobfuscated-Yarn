@@ -32,14 +32,14 @@ extends Item {
 
             @Override
             @Environment(value=EnvType.CLIENT)
-            public float call(ItemStack itemStack, @Nullable World world, @Nullable LivingEntity livingEntity) {
+            public float call(ItemStack stack, @Nullable World world, @Nullable LivingEntity user) {
                 double f;
                 Entity entity;
-                if (livingEntity == null && !itemStack.isInFrame()) {
+                if (user == null && !stack.isInFrame()) {
                     return 0.0f;
                 }
-                boolean bl = livingEntity != null;
-                Entity entity2 = entity = bl ? livingEntity : itemStack.getFrame();
+                boolean bl = user != null;
+                Entity entity2 = entity = bl ? user : stack.getFrame();
                 if (world == null) {
                     world = entity.world;
                 }
@@ -58,12 +58,12 @@ extends Item {
             }
 
             @Environment(value=EnvType.CLIENT)
-            private double getAngle(World world, double d) {
+            private double getAngle(World world, double entityYaw) {
                 if (world.getTime() != this.lastTick) {
                     this.lastTick = world.getTime();
-                    double e = d - this.angle;
-                    e = MathHelper.floorMod(e + 0.5, 1.0) - 0.5;
-                    this.step += e * 0.1;
+                    double d = entityYaw - this.angle;
+                    d = MathHelper.floorMod(d + 0.5, 1.0) - 0.5;
+                    this.step += d * 0.1;
                     this.step *= 0.8;
                     this.angle = MathHelper.floorMod(this.angle + this.step, 1.0);
                 }
@@ -71,13 +71,13 @@ extends Item {
             }
 
             @Environment(value=EnvType.CLIENT)
-            private double getYaw(ItemFrameEntity itemFrameEntity) {
-                return MathHelper.wrapDegrees(180 + itemFrameEntity.getHorizontalFacing().getHorizontal() * 90);
+            private double getYaw(ItemFrameEntity entity) {
+                return MathHelper.wrapDegrees(180 + entity.getHorizontalFacing().getHorizontal() * 90);
             }
 
             @Environment(value=EnvType.CLIENT)
-            private double getAngleToSpawn(IWorld iWorld, Entity entity) {
-                BlockPos blockPos = iWorld.getSpawnPos();
+            private double getAngleToSpawn(IWorld world, Entity entity) {
+                BlockPos blockPos = world.getSpawnPos();
                 return Math.atan2((double)blockPos.getZ() - entity.getZ(), (double)blockPos.getX() - entity.getX());
             }
         });

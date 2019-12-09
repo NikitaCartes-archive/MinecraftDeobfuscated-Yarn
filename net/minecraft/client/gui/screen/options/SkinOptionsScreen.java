@@ -18,8 +18,8 @@ import net.minecraft.text.TranslatableText;
 @Environment(value=EnvType.CLIENT)
 public class SkinOptionsScreen
 extends GameOptionsScreen {
-    public SkinOptionsScreen(Screen screen, GameOptions gameOptions) {
-        super(screen, gameOptions, new TranslatableText("options.skinCustomisation.title", new Object[0]));
+    public SkinOptionsScreen(Screen parent, GameOptions gameOptions) {
+        super(parent, gameOptions, new TranslatableText("options.skinCustomisation.title", new Object[0]));
     }
 
     @Override
@@ -45,15 +45,15 @@ extends GameOptionsScreen {
     }
 
     @Override
-    public void render(int i, int j, float f) {
+    public void render(int mouseX, int mouseY, float delta) {
         this.renderBackground();
         this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, 0xFFFFFF);
-        super.render(i, j, f);
+        super.render(mouseX, mouseY, delta);
     }
 
-    private String getPlayerModelPartDisplayString(PlayerModelPart playerModelPart) {
-        String string = this.gameOptions.getEnabledPlayerModelParts().contains((Object)playerModelPart) ? I18n.translate("options.on", new Object[0]) : I18n.translate("options.off", new Object[0]);
-        return playerModelPart.getOptionName().asFormattedString() + ": " + string;
+    private String getPlayerModelPartDisplayString(PlayerModelPart part) {
+        String string = this.gameOptions.getEnabledPlayerModelParts().contains((Object)part) ? I18n.translate("options.on", new Object[0]) : I18n.translate("options.off", new Object[0]);
+        return part.getOptionName().asFormattedString() + ": " + string;
     }
 }
 

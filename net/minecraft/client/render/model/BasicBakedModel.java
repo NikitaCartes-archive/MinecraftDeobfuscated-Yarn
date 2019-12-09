@@ -31,19 +31,19 @@ implements BakedModel {
     protected final ModelTransformation transformation;
     protected final ModelItemPropertyOverrideList itemPropertyOverrides;
 
-    public BasicBakedModel(List<BakedQuad> list, Map<Direction, List<BakedQuad>> map, boolean bl, boolean bl2, Sprite sprite, ModelTransformation modelTransformation, ModelItemPropertyOverrideList modelItemPropertyOverrideList) {
-        this.quads = list;
-        this.faceQuads = map;
-        this.usesAo = bl;
-        this.depthInGui = bl2;
+    public BasicBakedModel(List<BakedQuad> quads, Map<Direction, List<BakedQuad>> faceQuads, boolean usesAo, boolean is3dInGui, Sprite sprite, ModelTransformation transformation, ModelItemPropertyOverrideList itemPropertyOverrides) {
+        this.quads = quads;
+        this.faceQuads = faceQuads;
+        this.usesAo = usesAo;
+        this.depthInGui = is3dInGui;
         this.sprite = sprite;
-        this.transformation = modelTransformation;
-        this.itemPropertyOverrides = modelItemPropertyOverrideList;
+        this.transformation = transformation;
+        this.itemPropertyOverrides = itemPropertyOverrides;
     }
 
     @Override
-    public List<BakedQuad> getQuads(@Nullable BlockState blockState, @Nullable Direction direction, Random random) {
-        return direction == null ? this.quads : this.faceQuads.get(direction);
+    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction face, Random random) {
+        return face == null ? this.quads : this.faceQuads.get(face);
     }
 
     @Override
@@ -86,27 +86,27 @@ implements BakedModel {
         private final boolean depthInGui;
         private final ModelTransformation transformation;
 
-        public Builder(JsonUnbakedModel jsonUnbakedModel, ModelItemPropertyOverrideList modelItemPropertyOverrideList) {
-            this(jsonUnbakedModel.useAmbientOcclusion(), jsonUnbakedModel.hasDepthInGui(), jsonUnbakedModel.getTransformations(), modelItemPropertyOverrideList);
+        public Builder(JsonUnbakedModel unbakedModel, ModelItemPropertyOverrideList itemPropertyOverrides) {
+            this(unbakedModel.useAmbientOcclusion(), unbakedModel.hasDepthInGui(), unbakedModel.getTransformations(), itemPropertyOverrides);
         }
 
-        private Builder(boolean bl, boolean bl2, ModelTransformation modelTransformation, ModelItemPropertyOverrideList modelItemPropertyOverrideList) {
+        private Builder(boolean usesAo, boolean depthInGui, ModelTransformation transformation, ModelItemPropertyOverrideList itemPropertyOverrides) {
             for (Direction direction : Direction.values()) {
                 this.faceQuads.put(direction, Lists.newArrayList());
             }
-            this.itemPropertyOverrides = modelItemPropertyOverrideList;
-            this.usesAo = bl;
-            this.depthInGui = bl2;
-            this.transformation = modelTransformation;
+            this.itemPropertyOverrides = itemPropertyOverrides;
+            this.usesAo = usesAo;
+            this.depthInGui = depthInGui;
+            this.transformation = transformation;
         }
 
-        public Builder addQuad(Direction direction, BakedQuad bakedQuad) {
-            this.faceQuads.get(direction).add(bakedQuad);
+        public Builder addQuad(Direction side, BakedQuad quad) {
+            this.faceQuads.get(side).add(quad);
             return this;
         }
 
-        public Builder addQuad(BakedQuad bakedQuad) {
-            this.quads.add(bakedQuad);
+        public Builder addQuad(BakedQuad quad) {
+            this.quads.add(quad);
             return this;
         }
 

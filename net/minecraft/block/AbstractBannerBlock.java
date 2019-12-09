@@ -22,9 +22,9 @@ public abstract class AbstractBannerBlock
 extends BlockWithEntity {
     private final DyeColor color;
 
-    protected AbstractBannerBlock(DyeColor dyeColor, Block.Settings settings) {
+    protected AbstractBannerBlock(DyeColor color, Block.Settings settings) {
         super(settings);
-        this.color = dyeColor;
+        this.color = color;
     }
 
     @Override
@@ -33,26 +33,26 @@ extends BlockWithEntity {
     }
 
     @Override
-    public BlockEntity createBlockEntity(BlockView blockView) {
+    public BlockEntity createBlockEntity(BlockView view) {
         return new BannerBlockEntity(this.color);
     }
 
     @Override
-    public void onPlaced(World world, BlockPos blockPos, BlockState blockState, @Nullable LivingEntity livingEntity, ItemStack itemStack) {
+    public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
         BlockEntity blockEntity;
-        if (itemStack.hasCustomName() && (blockEntity = world.getBlockEntity(blockPos)) instanceof BannerBlockEntity) {
+        if (itemStack.hasCustomName() && (blockEntity = world.getBlockEntity(pos)) instanceof BannerBlockEntity) {
             ((BannerBlockEntity)blockEntity).setCustomName(itemStack.getName());
         }
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public ItemStack getPickStack(BlockView blockView, BlockPos blockPos, BlockState blockState) {
-        BlockEntity blockEntity = blockView.getBlockEntity(blockPos);
+    public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+        BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof BannerBlockEntity) {
-            return ((BannerBlockEntity)blockEntity).getPickStack(blockState);
+            return ((BannerBlockEntity)blockEntity).getPickStack(state);
         }
-        return super.getPickStack(blockView, blockPos, blockState);
+        return super.getPickStack(world, pos, state);
     }
 
     public DyeColor getColor() {

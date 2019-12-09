@@ -38,13 +38,13 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(entityPredicates, intRange);
     }
 
-    public void trigger(ServerPlayerEntity serverPlayerEntity, Collection<Entity> collection, int i) {
-        this.test(serverPlayerEntity.getAdvancementTracker(), conditions -> conditions.matches(serverPlayerEntity, collection, i));
+    public void trigger(ServerPlayerEntity player, Collection<Entity> victims, int amount) {
+        this.test(player.getAdvancementTracker(), conditions -> conditions.matches(player, victims, amount));
     }
 
     @Override
-    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
+    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject obj, JsonDeserializationContext context) {
+        return this.conditionsFromJson(obj, context);
     }
 
     public static class Conditions
@@ -52,9 +52,9 @@ extends AbstractCriterion<Conditions> {
         private final EntityPredicate[] victims;
         private final NumberRange.IntRange uniqueEntityTypes;
 
-        public Conditions(EntityPredicate[] entityPredicates, NumberRange.IntRange intRange) {
+        public Conditions(EntityPredicate[] victims, NumberRange.IntRange intRange) {
             super(ID);
-            this.victims = entityPredicates;
+            this.victims = victims;
             this.uniqueEntityTypes = intRange;
         }
 
@@ -72,15 +72,15 @@ extends AbstractCriterion<Conditions> {
             return new Conditions(entityPredicates, intRange);
         }
 
-        public boolean matches(ServerPlayerEntity serverPlayerEntity, Collection<Entity> collection, int i) {
+        public boolean matches(ServerPlayerEntity player, Collection<Entity> victims, int amount) {
             if (this.victims.length > 0) {
-                ArrayList<Entity> list = Lists.newArrayList(collection);
+                ArrayList<Entity> list = Lists.newArrayList(victims);
                 for (EntityPredicate entityPredicate : this.victims) {
                     boolean bl = false;
                     Iterator iterator = list.iterator();
                     while (iterator.hasNext()) {
                         Entity entity = (Entity)iterator.next();
-                        if (!entityPredicate.test(serverPlayerEntity, entity)) continue;
+                        if (!entityPredicate.test(player, entity)) continue;
                         iterator.remove();
                         bl = true;
                         break;
@@ -91,10 +91,10 @@ extends AbstractCriterion<Conditions> {
             }
             if (this.uniqueEntityTypes != NumberRange.IntRange.ANY) {
                 HashSet<EntityType<?>> set = Sets.newHashSet();
-                for (Entity entity2 : collection) {
+                for (Entity entity2 : victims) {
                     set.add(entity2.getType());
                 }
-                return this.uniqueEntityTypes.test(set.size()) && this.uniqueEntityTypes.test(i);
+                return this.uniqueEntityTypes.test(set.size()) && this.uniqueEntityTypes.test(amount);
             }
             return true;
         }

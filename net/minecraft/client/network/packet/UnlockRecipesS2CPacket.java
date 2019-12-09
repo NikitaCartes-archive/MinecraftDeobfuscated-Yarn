@@ -28,14 +28,14 @@ implements Packet<ClientPlayPacketListener> {
     public UnlockRecipesS2CPacket() {
     }
 
-    public UnlockRecipesS2CPacket(Action action, Collection<Identifier> collection, Collection<Identifier> collection2, boolean bl, boolean bl2, boolean bl3, boolean bl4) {
+    public UnlockRecipesS2CPacket(Action action, Collection<Identifier> recipeIdsToChange, Collection<Identifier> recipeIdsToInit, boolean guiOpen, boolean filteringCraftable, boolean furnaceGuiOpen, boolean furnaceFilteringCraftable) {
         this.action = action;
-        this.recipeIdsToChange = ImmutableList.copyOf(collection);
-        this.recipeIdsToInit = ImmutableList.copyOf(collection2);
-        this.guiOpen = bl;
-        this.filteringCraftable = bl2;
-        this.furnaceGuiOpen = bl3;
-        this.furnaceFilteringCraftable = bl4;
+        this.recipeIdsToChange = ImmutableList.copyOf(recipeIdsToChange);
+        this.recipeIdsToInit = ImmutableList.copyOf(recipeIdsToInit);
+        this.guiOpen = guiOpen;
+        this.filteringCraftable = filteringCraftable;
+        this.furnaceGuiOpen = furnaceGuiOpen;
+        this.furnaceFilteringCraftable = furnaceFilteringCraftable;
     }
 
     @Override
@@ -44,42 +44,42 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Override
-    public void read(PacketByteBuf packetByteBuf) throws IOException {
+    public void read(PacketByteBuf buf) throws IOException {
         int j;
-        this.action = packetByteBuf.readEnumConstant(Action.class);
-        this.guiOpen = packetByteBuf.readBoolean();
-        this.filteringCraftable = packetByteBuf.readBoolean();
-        this.furnaceGuiOpen = packetByteBuf.readBoolean();
-        this.furnaceFilteringCraftable = packetByteBuf.readBoolean();
-        int i = packetByteBuf.readVarInt();
+        this.action = buf.readEnumConstant(Action.class);
+        this.guiOpen = buf.readBoolean();
+        this.filteringCraftable = buf.readBoolean();
+        this.furnaceGuiOpen = buf.readBoolean();
+        this.furnaceFilteringCraftable = buf.readBoolean();
+        int i = buf.readVarInt();
         this.recipeIdsToChange = Lists.newArrayList();
         for (j = 0; j < i; ++j) {
-            this.recipeIdsToChange.add(packetByteBuf.readIdentifier());
+            this.recipeIdsToChange.add(buf.readIdentifier());
         }
         if (this.action == Action.INIT) {
-            i = packetByteBuf.readVarInt();
+            i = buf.readVarInt();
             this.recipeIdsToInit = Lists.newArrayList();
             for (j = 0; j < i; ++j) {
-                this.recipeIdsToInit.add(packetByteBuf.readIdentifier());
+                this.recipeIdsToInit.add(buf.readIdentifier());
             }
         }
     }
 
     @Override
-    public void write(PacketByteBuf packetByteBuf) throws IOException {
-        packetByteBuf.writeEnumConstant(this.action);
-        packetByteBuf.writeBoolean(this.guiOpen);
-        packetByteBuf.writeBoolean(this.filteringCraftable);
-        packetByteBuf.writeBoolean(this.furnaceGuiOpen);
-        packetByteBuf.writeBoolean(this.furnaceFilteringCraftable);
-        packetByteBuf.writeVarInt(this.recipeIdsToChange.size());
+    public void write(PacketByteBuf buf) throws IOException {
+        buf.writeEnumConstant(this.action);
+        buf.writeBoolean(this.guiOpen);
+        buf.writeBoolean(this.filteringCraftable);
+        buf.writeBoolean(this.furnaceGuiOpen);
+        buf.writeBoolean(this.furnaceFilteringCraftable);
+        buf.writeVarInt(this.recipeIdsToChange.size());
         for (Identifier identifier : this.recipeIdsToChange) {
-            packetByteBuf.writeIdentifier(identifier);
+            buf.writeIdentifier(identifier);
         }
         if (this.action == Action.INIT) {
-            packetByteBuf.writeVarInt(this.recipeIdsToInit.size());
+            buf.writeVarInt(this.recipeIdsToInit.size());
             for (Identifier identifier : this.recipeIdsToInit) {
-                packetByteBuf.writeIdentifier(identifier);
+                buf.writeIdentifier(identifier);
             }
         }
     }

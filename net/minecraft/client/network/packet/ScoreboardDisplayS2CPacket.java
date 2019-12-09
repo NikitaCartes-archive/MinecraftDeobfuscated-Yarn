@@ -21,21 +21,21 @@ implements Packet<ClientPlayPacketListener> {
     public ScoreboardDisplayS2CPacket() {
     }
 
-    public ScoreboardDisplayS2CPacket(int i, @Nullable ScoreboardObjective scoreboardObjective) {
-        this.slot = i;
+    public ScoreboardDisplayS2CPacket(int slot, @Nullable ScoreboardObjective scoreboardObjective) {
+        this.slot = slot;
         this.name = scoreboardObjective == null ? "" : scoreboardObjective.getName();
     }
 
     @Override
-    public void read(PacketByteBuf packetByteBuf) throws IOException {
-        this.slot = packetByteBuf.readByte();
-        this.name = packetByteBuf.readString(16);
+    public void read(PacketByteBuf buf) throws IOException {
+        this.slot = buf.readByte();
+        this.name = buf.readString(16);
     }
 
     @Override
-    public void write(PacketByteBuf packetByteBuf) throws IOException {
-        packetByteBuf.writeByte(this.slot);
-        packetByteBuf.writeString(this.name);
+    public void write(PacketByteBuf buf) throws IOException {
+        buf.writeByte(this.slot);
+        buf.writeString(this.name);
     }
 
     @Override

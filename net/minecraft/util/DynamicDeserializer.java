@@ -14,16 +14,16 @@ public interface DynamicDeserializer<T> {
 
     public T deserialize(Dynamic<?> var1);
 
-    public static <T, V, U extends DynamicDeserializer<V>> V deserialize(Dynamic<T> dynamic, Registry<U> registry, String string, V object) {
-        Object object2;
-        DynamicDeserializer dynamicDeserializer = (DynamicDeserializer)registry.get(new Identifier(dynamic.get(string).asString("")));
+    public static <T, V, U extends DynamicDeserializer<V>> V deserialize(Dynamic<T> dynamic2, Registry<U> dynamic, String registry, V typeFieldName) {
+        Object object;
+        DynamicDeserializer dynamicDeserializer = (DynamicDeserializer)dynamic.get(new Identifier(dynamic2.get(registry).asString("")));
         if (dynamicDeserializer != null) {
-            object2 = dynamicDeserializer.deserialize(dynamic);
+            object = dynamicDeserializer.deserialize(dynamic2);
         } else {
-            LOGGER.error("Unknown type {}, replacing with {}", (Object)dynamic.get(string).asString(""), (Object)object);
-            object2 = object;
+            LOGGER.error("Unknown type {}, replacing with {}", (Object)dynamic2.get(registry).asString(""), (Object)typeFieldName);
+            object = typeFieldName;
         }
-        return (V)object2;
+        return (V)object;
     }
 }
 

@@ -32,10 +32,10 @@ extends ConditionalLootFunction {
     @Nullable
     private final LootContext.EntityTarget entity;
 
-    private SetNameLootFunction(LootCondition[] lootConditions, @Nullable Text text, @Nullable LootContext.EntityTarget entityTarget) {
-        super(lootConditions);
-        this.name = text;
-        this.entity = entityTarget;
+    private SetNameLootFunction(LootCondition[] conditions, @Nullable Text name, @Nullable LootContext.EntityTarget entity) {
+        super(conditions);
+        this.name = name;
+        this.entity = entity;
     }
 
     @Override
@@ -43,28 +43,28 @@ extends ConditionalLootFunction {
         return this.entity != null ? ImmutableSet.of(this.entity.getParameter()) : ImmutableSet.of();
     }
 
-    public static UnaryOperator<Text> applySourceEntity(LootContext lootContext, @Nullable LootContext.EntityTarget entityTarget) {
+    public static UnaryOperator<Text> applySourceEntity(LootContext context, @Nullable LootContext.EntityTarget sourceEntity) {
         Entity entity;
-        if (entityTarget != null && (entity = lootContext.get(entityTarget.getParameter())) != null) {
+        if (sourceEntity != null && (entity = context.get(sourceEntity.getParameter())) != null) {
             ServerCommandSource serverCommandSource = entity.getCommandSource().withLevel(2);
-            return text -> {
+            return textComponent -> {
                 try {
-                    return Texts.parse(serverCommandSource, text, entity, 0);
+                    return Texts.parse(serverCommandSource, textComponent, entity, 0);
                 } catch (CommandSyntaxException commandSyntaxException) {
                     LOGGER.warn("Failed to resolve text component", (Throwable)commandSyntaxException);
-                    return text;
+                    return textComponent;
                 }
             };
         }
-        return text -> text;
+        return textComponent -> textComponent;
     }
 
     @Override
-    public ItemStack process(ItemStack itemStack, LootContext lootContext) {
+    public ItemStack process(ItemStack stack, LootContext context) {
         if (this.name != null) {
-            itemStack.setCustomName((Text)SetNameLootFunction.applySourceEntity(lootContext, this.entity).apply(this.name));
+            stack.setCustomName((Text)SetNameLootFunction.applySourceEntity(context, this.entity).apply(this.name));
         }
-        return itemStack;
+        return stack;
     }
 
     public static class Factory
@@ -92,8 +92,8 @@ extends ConditionalLootFunction {
         }
 
         @Override
-        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
+        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions) {
+            return this.fromJson(json, context, conditions);
         }
     }
 }

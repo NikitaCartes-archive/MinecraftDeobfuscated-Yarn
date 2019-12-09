@@ -67,9 +67,9 @@ public class SoundSystem {
     private final List<TickableSoundInstance> soundsToPlayNextTick = Lists.newArrayList();
     private final List<Sound> preloadedSounds = Lists.newArrayList();
 
-    public SoundSystem(SoundManager soundManager, GameOptions gameOptions, ResourceManager resourceManager) {
-        this.loader = soundManager;
-        this.settings = gameOptions;
+    public SoundSystem(SoundManager loader, GameOptions settings, ResourceManager resourceManager) {
+        this.loader = loader;
+        this.settings = settings;
         this.soundLoader = new SoundLoader(resourceManager);
     }
 
@@ -108,12 +108,12 @@ public class SoundSystem {
         return this.settings.getSoundVolume(soundCategory);
     }
 
-    public void updateSoundVolume(SoundCategory soundCategory, float f) {
+    public void updateSoundVolume(SoundCategory soundCategory, float volume) {
         if (!this.started) {
             return;
         }
         if (soundCategory == SoundCategory.MASTER) {
-            this.listener.setVolume(f);
+            this.listener.setVolume(volume);
             return;
         }
         this.sources.forEach((soundInstance, sourceManager) -> {
@@ -319,8 +319,8 @@ public class SoundSystem {
         }
     }
 
-    public void playNextTick(TickableSoundInstance tickableSoundInstance) {
-        this.soundsToPlayNextTick.add(tickableSoundInstance);
+    public void playNextTick(TickableSoundInstance sound) {
+        this.soundsToPlayNextTick.add(sound);
     }
 
     public void addPreloadedSound(Sound sound) {
@@ -347,8 +347,8 @@ public class SoundSystem {
         }
     }
 
-    public void play(SoundInstance soundInstance, int i) {
-        this.startTicks.put(soundInstance, this.ticks + i);
+    public void play(SoundInstance sound, int delay) {
+        this.startTicks.put(sound, this.ticks + delay);
     }
 
     public void updateListenerPosition(Camera camera) {

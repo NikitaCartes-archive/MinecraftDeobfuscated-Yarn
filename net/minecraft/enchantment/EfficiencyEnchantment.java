@@ -11,18 +11,18 @@ import net.minecraft.item.Items;
 
 public class EfficiencyEnchantment
 extends Enchantment {
-    protected EfficiencyEnchantment(Enchantment.Weight weight, EquipmentSlot ... equipmentSlots) {
-        super(weight, EnchantmentTarget.DIGGER, equipmentSlots);
+    protected EfficiencyEnchantment(Enchantment.Weight weight, EquipmentSlot ... slotTypes) {
+        super(weight, EnchantmentTarget.DIGGER, slotTypes);
     }
 
     @Override
-    public int getMinimumPower(int i) {
-        return 1 + 10 * (i - 1);
+    public int getMinimumPower(int level) {
+        return 1 + 10 * (level - 1);
     }
 
     @Override
-    public int getMaximumPower(int i) {
-        return super.getMinimumPower(i) + 50;
+    public int getMaximumPower(int level) {
+        return super.getMinimumPower(level) + 50;
     }
 
     @Override
@@ -31,11 +31,11 @@ extends Enchantment {
     }
 
     @Override
-    public boolean isAcceptableItem(ItemStack itemStack) {
-        if (itemStack.getItem() == Items.SHEARS) {
+    public boolean isAcceptableItem(ItemStack stack) {
+        if (stack.getItem() == Items.SHEARS) {
             return true;
         }
-        return super.isAcceptableItem(itemStack);
+        return super.isAcceptableItem(stack);
     }
 }
 

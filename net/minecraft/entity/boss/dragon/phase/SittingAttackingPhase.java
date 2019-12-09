@@ -12,8 +12,8 @@ public class SittingAttackingPhase
 extends AbstractSittingPhase {
     private int ticks;
 
-    public SittingAttackingPhase(EnderDragonEntity enderDragonEntity) {
-        super(enderDragonEntity);
+    public SittingAttackingPhase(EnderDragonEntity dragon) {
+        super(dragon);
     }
 
     @Override

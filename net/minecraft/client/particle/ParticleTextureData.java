@@ -19,8 +19,8 @@ public class ParticleTextureData {
     @Nullable
     private final List<Identifier> textureList;
 
-    private ParticleTextureData(@Nullable List<Identifier> list) {
-        this.textureList = list;
+    private ParticleTextureData(@Nullable List<Identifier> textureList) {
+        this.textureList = textureList;
     }
 
     @Nullable

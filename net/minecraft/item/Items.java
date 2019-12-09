@@ -990,27 +990,27 @@ public class Items {
         return Items.register(new BlockItem(block, new Item.Settings()));
     }
 
-    private static Item register(Block block, ItemGroup itemGroup) {
-        return Items.register(new BlockItem(block, new Item.Settings().group(itemGroup)));
+    private static Item register(Block block, ItemGroup group) {
+        return Items.register(new BlockItem(block, new Item.Settings().group(group)));
     }
 
-    private static Item register(BlockItem blockItem) {
-        return Items.register(blockItem.getBlock(), (Item)blockItem);
+    private static Item register(BlockItem item) {
+        return Items.register(item.getBlock(), (Item)item);
     }
 
-    protected static Item register(Block block, Item item) {
-        return Items.register(Registry.BLOCK.getId(block), item);
+    protected static Item register(Block block, Item iem) {
+        return Items.register(Registry.BLOCK.getId(block), iem);
     }
 
-    private static Item register(String string, Item item) {
-        return Items.register(new Identifier(string), item);
+    private static Item register(String id, Item item) {
+        return Items.register(new Identifier(id), item);
     }
 
-    private static Item register(Identifier identifier, Item item) {
+    private static Item register(Identifier id, Item item) {
         if (item instanceof BlockItem) {
             ((BlockItem)item).appendBlocks(Item.BLOCK_ITEMS, item);
         }
-        return Registry.register(Registry.ITEM, identifier, item);
+        return Registry.register(Registry.ITEM, id, item);
     }
 }
 

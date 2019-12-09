@@ -61,8 +61,8 @@ implements Monster {
         return this.dataTracker.get(SHOOTING);
     }
 
-    public void setShooting(boolean bl) {
-        this.dataTracker.set(SHOOTING, bl);
+    public void setShooting(boolean shooting) {
+        this.dataTracker.set(SHOOTING, shooting);
     }
 
     public int getFireballStrength() {
@@ -75,15 +75,15 @@ implements Monster {
     }
 
     @Override
-    public boolean damage(DamageSource damageSource, float f) {
-        if (this.isInvulnerableTo(damageSource)) {
+    public boolean damage(DamageSource source, float amount) {
+        if (this.isInvulnerableTo(source)) {
             return false;
         }
-        if (damageSource.getSource() instanceof FireballEntity && damageSource.getAttacker() instanceof PlayerEntity) {
-            super.damage(damageSource, 1000.0f);
+        if (source.getSource() instanceof FireballEntity && source.getAttacker() instanceof PlayerEntity) {
+            super.damage(source, 1000.0f);
             return true;
         }
-        return super.damage(damageSource, f);
+        return super.damage(source, amount);
     }
 
     @Override
@@ -110,7 +110,7 @@ implements Monster {
     }
 
     @Override
-    protected SoundEvent getHurtSound(DamageSource damageSource) {
+    protected SoundEvent getHurtSound(DamageSource source) {
         return SoundEvents.ENTITY_GHAST_HURT;
     }
 
@@ -124,8 +124,8 @@ implements Monster {
         return 10.0f;
     }
 
-    public static boolean canSpawn(EntityType<GhastEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-        return iWorld.getDifficulty() != Difficulty.PEACEFUL && random.nextInt(20) == 0 && GhastEntity.canMobSpawn(entityType, iWorld, spawnType, blockPos, random);
+    public static boolean canSpawn(EntityType<GhastEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
+        return world.getDifficulty() != Difficulty.PEACEFUL && random.nextInt(20) == 0 && GhastEntity.canMobSpawn(type, world, spawnType, pos, random);
     }
 
     @Override
@@ -134,21 +134,21 @@ implements Monster {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag compoundTag) {
-        super.writeCustomDataToTag(compoundTag);
-        compoundTag.putInt("ExplosionPower", this.fireballStrength);
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putInt("ExplosionPower", this.fireballStrength);
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag compoundTag) {
-        super.readCustomDataFromTag(compoundTag);
-        if (compoundTag.contains("ExplosionPower", 99)) {
-            this.fireballStrength = compoundTag.getInt("ExplosionPower");
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        if (tag.contains("ExplosionPower", 99)) {
+            this.fireballStrength = tag.getInt("ExplosionPower");
         }
     }
 
     @Override
-    protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+    protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
         return 2.6f;
     }
 
@@ -157,8 +157,8 @@ implements Monster {
         private final GhastEntity ghast;
         public int cooldown;
 
-        public ShootFireballGoal(GhastEntity ghastEntity) {
-            this.ghast = ghastEntity;
+        public ShootFireballGoal(GhastEntity ghast) {
+            this.ghast = ghast;
         }
 
         @Override
@@ -210,8 +210,8 @@ implements Monster {
     extends Goal {
         private final GhastEntity ghast;
 
-        public LookAtTargetGoal(GhastEntity ghastEntity) {
-            this.ghast = ghastEntity;
+        public LookAtTargetGoal(GhastEntity ghast) {
+            this.ghast = ghast;
             this.setControls(EnumSet.of(Goal.Control.LOOK));
         }
 
@@ -241,8 +241,8 @@ implements Monster {
     extends Goal {
         private final GhastEntity ghast;
 
-        public FlyRandomlyGoal(GhastEntity ghastEntity) {
-            this.ghast = ghastEntity;
+        public FlyRandomlyGoal(GhastEntity ghast) {
+            this.ghast = ghast;
             this.setControls(EnumSet.of(Goal.Control.MOVE));
         }
 

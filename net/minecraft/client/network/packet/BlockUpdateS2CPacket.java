@@ -22,21 +22,21 @@ implements Packet<ClientPlayPacketListener> {
     public BlockUpdateS2CPacket() {
     }
 
-    public BlockUpdateS2CPacket(BlockView blockView, BlockPos blockPos) {
-        this.pos = blockPos;
-        this.state = blockView.getBlockState(blockPos);
+    public BlockUpdateS2CPacket(BlockView world, BlockPos pos) {
+        this.pos = pos;
+        this.state = world.getBlockState(pos);
     }
 
     @Override
-    public void read(PacketByteBuf packetByteBuf) throws IOException {
-        this.pos = packetByteBuf.readBlockPos();
-        this.state = Block.STATE_IDS.get(packetByteBuf.readVarInt());
+    public void read(PacketByteBuf buf) throws IOException {
+        this.pos = buf.readBlockPos();
+        this.state = Block.STATE_IDS.get(buf.readVarInt());
     }
 
     @Override
-    public void write(PacketByteBuf packetByteBuf) throws IOException {
-        packetByteBuf.writeBlockPos(this.pos);
-        packetByteBuf.writeVarInt(Block.getRawIdFromState(this.state));
+    public void write(PacketByteBuf buf) throws IOException {
+        buf.writeBlockPos(this.pos);
+        buf.writeVarInt(Block.getRawIdFromState(this.state));
     }
 
     @Override

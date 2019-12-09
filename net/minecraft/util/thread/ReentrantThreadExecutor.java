@@ -9,8 +9,8 @@ public abstract class ReentrantThreadExecutor<R extends Runnable>
 extends ThreadExecutor<R> {
     private int runningTasks;
 
-    public ReentrantThreadExecutor(String string) {
-        super(string);
+    public ReentrantThreadExecutor(String name) {
+        super(name);
     }
 
     @Override
@@ -23,10 +23,10 @@ extends ThreadExecutor<R> {
     }
 
     @Override
-    protected void executeTask(R runnable) {
+    protected void executeTask(R task) {
         ++this.runningTasks;
         try {
-            super.executeTask(runnable);
+            super.executeTask(task);
         } finally {
             --this.runningTasks;
         }

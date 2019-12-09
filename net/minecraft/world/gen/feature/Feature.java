@@ -210,24 +210,24 @@ public abstract class Feature<FC extends FeatureConfig> {
     public static final List<StructureFeature<?>> JIGSAW_STRUCTURES = ImmutableList.of(PILLAGER_OUTPOST, VILLAGE);
     private final Function<Dynamic<?>, ? extends FC> configDeserializer;
 
-    private static <C extends FeatureConfig, F extends Feature<C>> F register(String string, F feature) {
-        return (F)Registry.register(Registry.FEATURE, string, feature);
+    private static <C extends FeatureConfig, F extends Feature<C>> F register(String name, F feature) {
+        return (F)Registry.register(Registry.FEATURE, name, feature);
     }
 
-    public Feature(Function<Dynamic<?>, ? extends FC> function) {
-        this.configDeserializer = function;
+    public Feature(Function<Dynamic<?>, ? extends FC> configDeserializer) {
+        this.configDeserializer = configDeserializer;
     }
 
-    public ConfiguredFeature<FC, ?> configure(FC featureConfig) {
-        return new ConfiguredFeature<FC, Feature>(this, featureConfig);
+    public ConfiguredFeature<FC, ?> configure(FC config) {
+        return new ConfiguredFeature<FC, Feature>(this, config);
     }
 
     public FC deserializeConfig(Dynamic<?> dynamic) {
         return (FC)((FeatureConfig)this.configDeserializer.apply(dynamic));
     }
 
-    protected void setBlockState(ModifiableWorld modifiableWorld, BlockPos blockPos, BlockState blockState) {
-        modifiableWorld.setBlockState(blockPos, blockState, 3);
+    protected void setBlockState(ModifiableWorld world, BlockPos pos, BlockState state) {
+        world.setBlockState(pos, state, 3);
     }
 
     public abstract boolean generate(IWorld var1, ChunkGenerator<? extends ChunkGeneratorConfig> var2, Random var3, BlockPos var4, FC var5);

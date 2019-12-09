@@ -21,8 +21,8 @@ public class CommandFunction {
     private final Element[] elements;
     private final Identifier id;
 
-    public CommandFunction(Identifier identifier, Element[] elements) {
-        this.id = identifier;
+    public CommandFunction(Identifier id, Element[] elements) {
+        this.id = id;
         this.elements = elements;
     }
 
@@ -34,11 +34,11 @@ public class CommandFunction {
         return this.elements;
     }
 
-    public static CommandFunction create(Identifier identifier, CommandFunctionManager commandFunctionManager, List<String> list) {
-        ArrayList<CommandElement> list2 = Lists.newArrayListWithCapacity(list.size());
-        for (int i = 0; i < list.size(); ++i) {
+    public static CommandFunction create(Identifier id, CommandFunctionManager commandFunctionManager, List<String> fileLines) {
+        ArrayList<CommandElement> list = Lists.newArrayListWithCapacity(fileLines.size());
+        for (int i = 0; i < fileLines.size(); ++i) {
             int j = i + 1;
-            String string = list.get(i).trim();
+            String string = fileLines.get(i).trim();
             StringReader stringReader = new StringReader(string);
             if (!stringReader.canRead() || stringReader.peek() == '#') continue;
             if (stringReader.peek() == '/') {
@@ -54,13 +54,13 @@ public class CommandFunction {
                 if (parseResults.getReader().canRead()) {
                     throw CommandManager.getException(parseResults);
                 }
-                list2.add(new CommandElement(parseResults));
+                list.add(new CommandElement(parseResults));
                 continue;
             } catch (CommandSyntaxException commandSyntaxException) {
                 throw new IllegalArgumentException("Whilst parsing command on line " + j + ": " + commandSyntaxException.getMessage());
             }
         }
-        return new CommandFunction(identifier, list2.toArray(new Element[0]));
+        return new CommandFunction(id, list.toArray(new Element[0]));
     }
 
     public static class LazyContainer {
@@ -70,8 +70,8 @@ public class CommandFunction {
         private boolean initialized;
         private Optional<CommandFunction> function = Optional.empty();
 
-        public LazyContainer(@Nullable Identifier identifier) {
-            this.id = identifier;
+        public LazyContainer(@Nullable Identifier id) {
+            this.id = id;
         }
 
         public LazyContainer(CommandFunction commandFunction) {

@@ -29,27 +29,27 @@ extends MiningToolItem {
     private static final Set<Block> EFFECTIVE_BLOCKS = Sets.newHashSet(Blocks.CLAY, Blocks.DIRT, Blocks.COARSE_DIRT, Blocks.PODZOL, Blocks.FARMLAND, Blocks.GRASS_BLOCK, Blocks.GRAVEL, Blocks.MYCELIUM, Blocks.SAND, Blocks.RED_SAND, Blocks.SNOW_BLOCK, Blocks.SNOW, Blocks.SOUL_SAND, Blocks.GRASS_PATH, Blocks.WHITE_CONCRETE_POWDER, Blocks.ORANGE_CONCRETE_POWDER, Blocks.MAGENTA_CONCRETE_POWDER, Blocks.LIGHT_BLUE_CONCRETE_POWDER, Blocks.YELLOW_CONCRETE_POWDER, Blocks.LIME_CONCRETE_POWDER, Blocks.PINK_CONCRETE_POWDER, Blocks.GRAY_CONCRETE_POWDER, Blocks.LIGHT_GRAY_CONCRETE_POWDER, Blocks.CYAN_CONCRETE_POWDER, Blocks.PURPLE_CONCRETE_POWDER, Blocks.BLUE_CONCRETE_POWDER, Blocks.BROWN_CONCRETE_POWDER, Blocks.GREEN_CONCRETE_POWDER, Blocks.RED_CONCRETE_POWDER, Blocks.BLACK_CONCRETE_POWDER);
     protected static final Map<Block, BlockState> PATH_BLOCKSTATES = Maps.newHashMap(ImmutableMap.of(Blocks.GRASS_BLOCK, Blocks.GRASS_PATH.getDefaultState()));
 
-    public ShovelItem(ToolMaterial toolMaterial, float f, float g, Item.Settings settings) {
-        super(f, g, toolMaterial, EFFECTIVE_BLOCKS, settings);
+    public ShovelItem(ToolMaterial material, float attackDamage, float attackSpeed, Item.Settings settings) {
+        super(attackDamage, attackSpeed, material, EFFECTIVE_BLOCKS, settings);
     }
 
     @Override
-    public boolean isEffectiveOn(BlockState blockState) {
-        Block block = blockState.getBlock();
+    public boolean isEffectiveOn(BlockState state) {
+        Block block = state.getBlock();
         return block == Blocks.SNOW || block == Blocks.SNOW_BLOCK;
     }
 
     @Override
-    public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
-        World world = itemUsageContext.getWorld();
-        BlockPos blockPos = itemUsageContext.getBlockPos();
+    public ActionResult useOnBlock(ItemUsageContext context) {
+        World world = context.getWorld();
+        BlockPos blockPos = context.getBlockPos();
         BlockState blockState = world.getBlockState(blockPos);
-        if (itemUsageContext.getSide() != Direction.DOWN) {
-            PlayerEntity playerEntity2 = itemUsageContext.getPlayer();
+        if (context.getSide() != Direction.DOWN) {
+            PlayerEntity playerEntity = context.getPlayer();
             BlockState blockState2 = PATH_BLOCKSTATES.get(blockState.getBlock());
             BlockState blockState3 = null;
             if (blockState2 != null && world.getBlockState(blockPos.up()).isAir()) {
-                world.playSound(playerEntity2, blockPos, SoundEvents.ITEM_SHOVEL_FLATTEN, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                world.playSound(playerEntity, blockPos, SoundEvents.ITEM_SHOVEL_FLATTEN, SoundCategory.BLOCKS, 1.0f, 1.0f);
                 blockState3 = blockState2;
             } else if (blockState.getBlock() instanceof CampfireBlock && blockState.get(CampfireBlock.LIT).booleanValue()) {
                 world.playLevelEvent(null, 1009, blockPos, 0);
@@ -58,8 +58,8 @@ extends MiningToolItem {
             if (blockState3 != null) {
                 if (!world.isClient) {
                     world.setBlockState(blockPos, blockState3, 11);
-                    if (playerEntity2 != null) {
-                        itemUsageContext.getStack().damage(1, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(itemUsageContext.getHand()));
+                    if (playerEntity != null) {
+                        context.getStack().damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
                     }
                 }
                 return ActionResult.SUCCESS;

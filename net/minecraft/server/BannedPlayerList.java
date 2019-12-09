@@ -42,8 +42,8 @@ extends ServerConfigList<GameProfile, BannedPlayerEntry> {
     }
 
     @Override
-    protected /* synthetic */ String toString(Object object) {
-        return this.toString((GameProfile)object);
+    protected /* synthetic */ String toString(Object profile) {
+        return this.toString((GameProfile)profile);
     }
 }
 

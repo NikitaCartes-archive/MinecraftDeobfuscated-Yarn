@@ -27,15 +27,15 @@ implements Packet<ServerPlayPacketListener> {
     }
 
     @Override
-    public void read(PacketByteBuf packetByteBuf) throws IOException {
-        this.hand = packetByteBuf.readEnumConstant(Hand.class);
-        this.field_17602 = packetByteBuf.readBlockHitResult();
+    public void read(PacketByteBuf buf) throws IOException {
+        this.hand = buf.readEnumConstant(Hand.class);
+        this.field_17602 = buf.readBlockHitResult();
     }
 
     @Override
-    public void write(PacketByteBuf packetByteBuf) throws IOException {
-        packetByteBuf.writeEnumConstant(this.hand);
-        packetByteBuf.writeBlockHitResult(this.field_17602);
+    public void write(PacketByteBuf buf) throws IOException {
+        buf.writeEnumConstant(this.hand);
+        buf.writeBlockHitResult(this.field_17602);
     }
 
     @Override

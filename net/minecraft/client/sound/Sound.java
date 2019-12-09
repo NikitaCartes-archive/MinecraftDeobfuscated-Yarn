@@ -21,15 +21,15 @@ implements SoundContainer<Sound> {
     private final boolean preload;
     private final int attenuation;
 
-    public Sound(String string, float f, float g, int i, RegistrationType registrationType, boolean bl, boolean bl2, int j) {
-        this.id = new Identifier(string);
-        this.volume = f;
-        this.pitch = g;
-        this.weight = i;
+    public Sound(String id, float volume, float pitch, int weight, RegistrationType registrationType, boolean stream, boolean preload, int attenuation) {
+        this.id = new Identifier(id);
+        this.volume = volume;
+        this.pitch = pitch;
+        this.weight = weight;
         this.registrationType = registrationType;
-        this.stream = bl;
-        this.preload = bl2;
-        this.attenuation = j;
+        this.stream = stream;
+        this.preload = preload;
+        this.attenuation = attenuation;
     }
 
     public Identifier getIdentifier() {
@@ -93,8 +93,8 @@ implements SoundContainer<Sound> {
 
         private final String name;
 
-        private RegistrationType(String string2) {
-            this.name = string2;
+        private RegistrationType(String name) {
+            this.name = name;
         }
 
         public static RegistrationType getByName(String string) {

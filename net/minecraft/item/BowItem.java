@@ -27,75 +27,75 @@ public class BowItem
 extends RangedWeaponItem {
     public BowItem(Item.Settings settings) {
         super(settings);
-        this.addPropertyGetter(new Identifier("pull"), (itemStack, world, livingEntity) -> {
-            if (livingEntity == null) {
+        this.addPropertyGetter(new Identifier("pull"), (stack, world, entity) -> {
+            if (entity == null) {
                 return 0.0f;
             }
-            if (livingEntity.getActiveItem().getItem() != Items.BOW) {
+            if (entity.getActiveItem().getItem() != Items.BOW) {
                 return 0.0f;
             }
-            return (float)(itemStack.getMaxUseTime() - livingEntity.getItemUseTimeLeft()) / 20.0f;
+            return (float)(stack.getMaxUseTime() - entity.getItemUseTimeLeft()) / 20.0f;
         });
-        this.addPropertyGetter(new Identifier("pulling"), (itemStack, world, livingEntity) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0f : 0.0f);
+        this.addPropertyGetter(new Identifier("pulling"), (stack, world, entity) -> entity != null && entity.isUsingItem() && entity.getActiveItem() == stack ? 1.0f : 0.0f);
     }
 
     @Override
-    public void onStoppedUsing(ItemStack itemStack, World world, LivingEntity livingEntity, int i) {
+    public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
         boolean bl2;
-        int j;
+        int i;
         float f;
-        if (!(livingEntity instanceof PlayerEntity)) {
+        if (!(user instanceof PlayerEntity)) {
             return;
         }
-        PlayerEntity playerEntity = (PlayerEntity)livingEntity;
-        boolean bl = playerEntity.abilities.creativeMode || EnchantmentHelper.getLevel(Enchantments.INFINITY, itemStack) > 0;
-        ItemStack itemStack2 = playerEntity.getArrowType(itemStack);
-        if (itemStack2.isEmpty() && !bl) {
+        PlayerEntity playerEntity = (PlayerEntity)user;
+        boolean bl = playerEntity.abilities.creativeMode || EnchantmentHelper.getLevel(Enchantments.INFINITY, stack) > 0;
+        ItemStack itemStack = playerEntity.getArrowType(stack);
+        if (itemStack.isEmpty() && !bl) {
             return;
         }
-        if (itemStack2.isEmpty()) {
-            itemStack2 = new ItemStack(Items.ARROW);
+        if (itemStack.isEmpty()) {
+            itemStack = new ItemStack(Items.ARROW);
         }
-        if ((double)(f = BowItem.getPullProgress(j = this.getMaxUseTime(itemStack) - i)) < 0.1) {
+        if ((double)(f = BowItem.getPullProgress(i = this.getMaxUseTime(stack) - remainingUseTicks)) < 0.1) {
             return;
         }
-        boolean bl3 = bl2 = bl && itemStack2.getItem() == Items.ARROW;
+        boolean bl3 = bl2 = bl && itemStack.getItem() == Items.ARROW;
         if (!world.isClient) {
-            int l;
             int k;
-            ArrowItem arrowItem = (ArrowItem)(itemStack2.getItem() instanceof ArrowItem ? itemStack2.getItem() : Items.ARROW);
-            ProjectileEntity projectileEntity = arrowItem.createArrow(world, itemStack2, playerEntity);
+            int j;
+            ArrowItem arrowItem = (ArrowItem)(itemStack.getItem() instanceof ArrowItem ? itemStack.getItem() : Items.ARROW);
+            ProjectileEntity projectileEntity = arrowItem.createArrow(world, itemStack, playerEntity);
             projectileEntity.setProperties(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0f, f * 3.0f, 1.0f);
             if (f == 1.0f) {
                 projectileEntity.setCritical(true);
             }
-            if ((k = EnchantmentHelper.getLevel(Enchantments.POWER, itemStack)) > 0) {
-                projectileEntity.setDamage(projectileEntity.getDamage() + (double)k * 0.5 + 0.5);
+            if ((j = EnchantmentHelper.getLevel(Enchantments.POWER, stack)) > 0) {
+                projectileEntity.setDamage(projectileEntity.getDamage() + (double)j * 0.5 + 0.5);
             }
-            if ((l = EnchantmentHelper.getLevel(Enchantments.PUNCH, itemStack)) > 0) {
-                projectileEntity.setPunch(l);
+            if ((k = EnchantmentHelper.getLevel(Enchantments.PUNCH, stack)) > 0) {
+                projectileEntity.setPunch(k);
             }
-            if (EnchantmentHelper.getLevel(Enchantments.FLAME, itemStack) > 0) {
+            if (EnchantmentHelper.getLevel(Enchantments.FLAME, stack) > 0) {
                 projectileEntity.setOnFireFor(100);
             }
-            itemStack.damage(1, playerEntity, playerEntity2 -> playerEntity2.sendToolBreakStatus(playerEntity.getActiveHand()));
-            if (bl2 || playerEntity.abilities.creativeMode && (itemStack2.getItem() == Items.SPECTRAL_ARROW || itemStack2.getItem() == Items.TIPPED_ARROW)) {
+            stack.damage(1, playerEntity, p -> p.sendToolBreakStatus(playerEntity.getActiveHand()));
+            if (bl2 || playerEntity.abilities.creativeMode && (itemStack.getItem() == Items.SPECTRAL_ARROW || itemStack.getItem() == Items.TIPPED_ARROW)) {
                 projectileEntity.pickupType = ProjectileEntity.PickupPermission.CREATIVE_ONLY;
             }
             world.spawnEntity(projectileEntity);
         }
         world.playSound(null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0f, 1.0f / (RANDOM.nextFloat() * 0.4f + 1.2f) + f * 0.5f);
         if (!bl2 && !playerEntity.abilities.creativeMode) {
-            itemStack2.decrement(1);
-            if (itemStack2.isEmpty()) {
-                playerEntity.inventory.removeOne(itemStack2);
+            itemStack.decrement(1);
+            if (itemStack.isEmpty()) {
+                playerEntity.inventory.removeOne(itemStack);
             }
         }
         playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
     }
 
-    public static float getPullProgress(int i) {
-        float f = (float)i / 20.0f;
+    public static float getPullProgress(int useTicks) {
+        float f = (float)useTicks / 20.0f;
         if ((f = (f * f + f * 2.0f) / 3.0f) > 1.0f) {
             f = 1.0f;
         }
@@ -103,22 +103,22 @@ extends RangedWeaponItem {
     }
 
     @Override
-    public int getMaxUseTime(ItemStack itemStack) {
+    public int getMaxUseTime(ItemStack stack) {
         return 72000;
     }
 
     @Override
-    public UseAction getUseAction(ItemStack itemStack) {
+    public UseAction getUseAction(ItemStack stack) {
         return UseAction.BOW;
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         boolean bl;
-        ItemStack itemStack = playerEntity.getStackInHand(hand);
-        boolean bl2 = bl = !playerEntity.getArrowType(itemStack).isEmpty();
-        if (playerEntity.abilities.creativeMode || bl) {
-            playerEntity.setCurrentHand(hand);
+        ItemStack itemStack = user.getStackInHand(hand);
+        boolean bl2 = bl = !user.getArrowType(itemStack).isEmpty();
+        if (user.abilities.creativeMode || bl) {
+            user.setCurrentHand(hand);
             return TypedActionResult.consume(itemStack);
         }
         return TypedActionResult.fail(itemStack);

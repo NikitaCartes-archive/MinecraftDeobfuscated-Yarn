@@ -37,10 +37,10 @@ extends Screen {
     private TextFieldWidget levelNameTextField;
     private final String levelName;
 
-    public EditWorldScreen(BooleanConsumer booleanConsumer, String string) {
+    public EditWorldScreen(BooleanConsumer callback, String levelName) {
         super(new TranslatableText("selectWorld.edit.title", new Object[0]));
-        this.callback = booleanConsumer;
-        this.levelName = string;
+        this.callback = callback;
+        this.levelName = levelName;
     }
 
     @Override
@@ -97,9 +97,9 @@ extends Screen {
     }
 
     @Override
-    public void resize(MinecraftClient minecraftClient, int i, int j) {
+    public void resize(MinecraftClient client, int width, int height) {
         String string = this.levelNameTextField.getText();
-        this.init(minecraftClient, i, j);
+        this.init(client, width, height);
         this.levelNameTextField.setText(string);
     }
 
@@ -114,14 +114,14 @@ extends Screen {
         this.callback.accept(true);
     }
 
-    public static void backupLevel(LevelStorage levelStorage, String string) {
+    public static void backupLevel(LevelStorage level, String name) {
         BaseText text2;
         TranslatableText text;
         ToastManager toastManager = MinecraftClient.getInstance().getToastManager();
         long l = 0L;
         IOException iOException = null;
         try {
-            l = levelStorage.backupLevel(string);
+            l = level.backupLevel(name);
         } catch (IOException iOException2) {
             iOException = iOException2;
         }
@@ -129,19 +129,19 @@ extends Screen {
             text = new TranslatableText("selectWorld.edit.backupFailed", new Object[0]);
             text2 = new LiteralText(iOException.getMessage());
         } else {
-            text = new TranslatableText("selectWorld.edit.backupCreated", string);
+            text = new TranslatableText("selectWorld.edit.backupCreated", name);
             text2 = new TranslatableText("selectWorld.edit.backupSize", MathHelper.ceil((double)l / 1048576.0));
         }
         toastManager.add(new SystemToast(SystemToast.Type.WORLD_BACKUP, text, text2));
     }
 
     @Override
-    public void render(int i, int j, float f) {
+    public void render(int mouseX, int mouseY, float delta) {
         this.renderBackground();
         this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, 0xFFFFFF);
         this.drawString(this.font, I18n.translate("selectWorld.enterName", new Object[0]), this.width / 2 - 100, 40, 0xA0A0A0);
-        this.levelNameTextField.render(i, j, f);
-        super.render(i, j, f);
+        this.levelNameTextField.render(mouseX, mouseY, delta);
+        super.render(mouseX, mouseY, delta);
     }
 }
 

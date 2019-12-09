@@ -73,27 +73,27 @@ extends BlockEntityRenderer<BedBlockEntity> {
         }
     }
 
-    private void method_3558(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, boolean bl, Direction direction, SpriteIdentifier spriteIdentifier, int i, int j, boolean bl2) {
+    private void method_3558(MatrixStack matrix, VertexConsumerProvider vertexConsumerProvider, boolean bl, Direction direction, SpriteIdentifier spriteIdentifier, int light, int overlay, boolean bl2) {
         this.field_20813.visible = bl;
         this.field_20814.visible = !bl;
         this.field_20815[0].visible = !bl;
         this.field_20815[1].visible = bl;
         this.field_20815[2].visible = !bl;
         this.field_20815[3].visible = bl;
-        matrixStack.push();
-        matrixStack.translate(0.0, 0.5625, bl2 ? -1.0 : 0.0);
-        matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0f));
-        matrixStack.translate(0.5, 0.5, 0.5);
-        matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0f + direction.asRotation()));
-        matrixStack.translate(-0.5, -0.5, -0.5);
+        matrix.push();
+        matrix.translate(0.0, 0.5625, bl2 ? -1.0 : 0.0);
+        matrix.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0f));
+        matrix.translate(0.5, 0.5, 0.5);
+        matrix.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0f + direction.asRotation()));
+        matrix.translate(-0.5, -0.5, -0.5);
         VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntitySolid);
-        this.field_20813.render(matrixStack, vertexConsumer, i, j);
-        this.field_20814.render(matrixStack, vertexConsumer, i, j);
-        this.field_20815[0].render(matrixStack, vertexConsumer, i, j);
-        this.field_20815[1].render(matrixStack, vertexConsumer, i, j);
-        this.field_20815[2].render(matrixStack, vertexConsumer, i, j);
-        this.field_20815[3].render(matrixStack, vertexConsumer, i, j);
-        matrixStack.pop();
+        this.field_20813.render(matrix, vertexConsumer, light, overlay);
+        this.field_20814.render(matrix, vertexConsumer, light, overlay);
+        this.field_20815[0].render(matrix, vertexConsumer, light, overlay);
+        this.field_20815[1].render(matrix, vertexConsumer, light, overlay);
+        this.field_20815[2].render(matrix, vertexConsumer, light, overlay);
+        this.field_20815[3].render(matrix, vertexConsumer, light, overlay);
+        matrix.pop();
     }
 }
 

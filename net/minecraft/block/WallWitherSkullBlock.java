@@ -21,8 +21,8 @@ extends WallSkullBlock {
     }
 
     @Override
-    public void onPlaced(World world, BlockPos blockPos, BlockState blockState, @Nullable LivingEntity livingEntity, ItemStack itemStack) {
-        Blocks.WITHER_SKELETON_SKULL.onPlaced(world, blockPos, blockState, livingEntity, itemStack);
+    public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
+        Blocks.WITHER_SKELETON_SKULL.onPlaced(world, pos, state, placer, itemStack);
     }
 }
 

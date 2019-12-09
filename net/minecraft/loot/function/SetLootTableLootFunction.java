@@ -21,38 +21,38 @@ extends ConditionalLootFunction {
     private final Identifier id;
     private final long seed;
 
-    private SetLootTableLootFunction(LootCondition[] lootConditions, Identifier identifier, long l) {
-        super(lootConditions);
-        this.id = identifier;
-        this.seed = l;
+    private SetLootTableLootFunction(LootCondition[] conditions, Identifier id, long seed) {
+        super(conditions);
+        this.id = id;
+        this.seed = seed;
     }
 
     @Override
-    public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-        if (itemStack.isEmpty()) {
-            return itemStack;
+    public ItemStack process(ItemStack stack, LootContext context) {
+        if (stack.isEmpty()) {
+            return stack;
         }
         CompoundTag compoundTag = new CompoundTag();
         compoundTag.putString("LootTable", this.id.toString());
         if (this.seed != 0L) {
             compoundTag.putLong("LootTableSeed", this.seed);
         }
-        itemStack.getOrCreateTag().put("BlockEntityTag", compoundTag);
-        return itemStack;
+        stack.getOrCreateTag().put("BlockEntityTag", compoundTag);
+        return stack;
     }
 
     @Override
-    public void check(LootTableReporter lootTableReporter) {
-        if (lootTableReporter.hasSupplier(this.id)) {
-            lootTableReporter.report("Table " + this.id + " is recursively called");
+    public void check(LootTableReporter reporter) {
+        if (reporter.hasSupplier(this.id)) {
+            reporter.report("Table " + this.id + " is recursively called");
             return;
         }
-        super.check(lootTableReporter);
-        LootTable lootTable = lootTableReporter.getSupplier(this.id);
+        super.check(reporter);
+        LootTable lootTable = reporter.getSupplier(this.id);
         if (lootTable == null) {
-            lootTableReporter.report("Unknown loot table called " + this.id);
+            reporter.report("Unknown loot table called " + this.id);
         } else {
-            lootTable.check(lootTableReporter.withSupplier("->{" + this.id + "}", this.id));
+            lootTable.check(reporter.withSupplier("->{" + this.id + "}", this.id));
         }
     }
 
@@ -79,8 +79,8 @@ extends ConditionalLootFunction {
         }
 
         @Override
-        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
+        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions) {
+            return this.fromJson(json, context, conditions);
         }
     }
 }

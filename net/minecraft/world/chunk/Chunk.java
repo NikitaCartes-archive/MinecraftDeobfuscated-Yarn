@@ -139,11 +139,11 @@ StructureHolder {
 
     public long getInhabitedTime();
 
-    public static ShortList getList(ShortList[] shortLists, int i) {
-        if (shortLists[i] == null) {
-            shortLists[i] = new ShortArrayList();
+    public static ShortList getList(ShortList[] lists, int index) {
+        if (lists[index] == null) {
+            lists[index] = new ShortArrayList();
         }
-        return shortLists[i];
+        return lists[index];
     }
 
     public boolean isLightOn();

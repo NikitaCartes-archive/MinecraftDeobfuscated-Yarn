@@ -13,14 +13,14 @@ import net.minecraft.datafixers.fixes.ChoiceFix;
 
 public class BlockEntityBannerColorFix
 extends ChoiceFix {
-    public BlockEntityBannerColorFix(Schema schema, boolean bl) {
-        super(schema, bl, "BlockEntityBannerColorFix", TypeReferences.BLOCK_ENTITY, "minecraft:banner");
+    public BlockEntityBannerColorFix(Schema outputSchema, boolean changesType) {
+        super(outputSchema, changesType, "BlockEntityBannerColorFix", TypeReferences.BLOCK_ENTITY, "minecraft:banner");
     }
 
-    public Dynamic<?> fixBannerColor(Dynamic<?> dynamic2) {
-        dynamic2 = dynamic2.update("Base", dynamic -> dynamic.createInt(15 - dynamic.asInt(0)));
-        dynamic2 = dynamic2.update("Patterns", dynamic -> DataFixUtils.orElse(dynamic.asStreamOpt().map(stream -> stream.map(dynamic2 -> dynamic2.update("Color", dynamic -> dynamic.createInt(15 - dynamic.asInt(0))))).map(dynamic::createList), dynamic));
-        return dynamic2;
+    public Dynamic<?> fixBannerColor(Dynamic<?> tag2) {
+        tag2 = tag2.update("Base", tag -> tag.createInt(15 - tag.asInt(0)));
+        tag2 = tag2.update("Patterns", dynamic -> DataFixUtils.orElse(dynamic.asStreamOpt().map(stream -> stream.map(dynamic -> dynamic.update("Color", tag -> tag.createInt(15 - tag.asInt(0))))).map(dynamic::createList), dynamic));
+        return tag2;
     }
 
     @Override

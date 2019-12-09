@@ -21,19 +21,19 @@ public class SetNbtLootFunction
 extends ConditionalLootFunction {
     private final CompoundTag tag;
 
-    private SetNbtLootFunction(LootCondition[] lootConditions, CompoundTag compoundTag) {
-        super(lootConditions);
-        this.tag = compoundTag;
+    private SetNbtLootFunction(LootCondition[] conditions, CompoundTag tag) {
+        super(conditions);
+        this.tag = tag;
     }
 
     @Override
-    public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-        itemStack.getOrCreateTag().copyFrom(this.tag);
-        return itemStack;
+    public ItemStack process(ItemStack stack, LootContext context) {
+        stack.getOrCreateTag().copyFrom(this.tag);
+        return stack;
     }
 
-    public static ConditionalLootFunction.Builder<?> builder(CompoundTag compoundTag) {
-        return SetNbtLootFunction.builder((LootCondition[] lootConditions) -> new SetNbtLootFunction((LootCondition[])lootConditions, compoundTag));
+    public static ConditionalLootFunction.Builder<?> builder(CompoundTag tag) {
+        return SetNbtLootFunction.builder((LootCondition[] conditions) -> new SetNbtLootFunction((LootCondition[])conditions, tag));
     }
 
     public static class Builder
@@ -59,8 +59,8 @@ extends ConditionalLootFunction {
         }
 
         @Override
-        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
+        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions) {
+            return this.fromJson(json, context, conditions);
         }
     }
 }

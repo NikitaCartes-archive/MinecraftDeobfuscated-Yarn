@@ -34,11 +34,11 @@ extends ConditionalLootFunction {
     @Nullable
     private final LootContext.EntityTarget entity;
 
-    public SetLoreLootFunction(LootCondition[] lootConditions, boolean bl, List<Text> list, @Nullable LootContext.EntityTarget entityTarget) {
-        super(lootConditions);
-        this.replace = bl;
-        this.lore = ImmutableList.copyOf(list);
-        this.entity = entityTarget;
+    public SetLoreLootFunction(LootCondition[] conditions, boolean replace, List<Text> lore, @Nullable LootContext.EntityTarget entity) {
+        super(conditions);
+        this.replace = replace;
+        this.lore = ImmutableList.copyOf(lore);
+        this.entity = entity;
     }
 
     @Override
@@ -47,33 +47,33 @@ extends ConditionalLootFunction {
     }
 
     @Override
-    public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-        ListTag listTag = this.getLoreForMerge(itemStack, !this.lore.isEmpty());
+    public ItemStack process(ItemStack stack, LootContext context) {
+        ListTag listTag = this.getLoreForMerge(stack, !this.lore.isEmpty());
         if (listTag != null) {
             if (this.replace) {
                 listTag.clear();
             }
-            UnaryOperator<Text> unaryOperator = SetNameLootFunction.applySourceEntity(lootContext, this.entity);
+            UnaryOperator<Text> unaryOperator = SetNameLootFunction.applySourceEntity(context, this.entity);
             this.lore.stream().map(unaryOperator).map(Text.Serializer::toJson).map(StringTag::of).forEach(listTag::add);
         }
-        return itemStack;
+        return stack;
     }
 
     @Nullable
-    private ListTag getLoreForMerge(ItemStack itemStack, boolean bl) {
+    private ListTag getLoreForMerge(ItemStack stack, boolean otherLoreExists) {
         CompoundTag compoundTag2;
         CompoundTag compoundTag;
-        if (itemStack.hasTag()) {
-            compoundTag = itemStack.getTag();
-        } else if (bl) {
+        if (stack.hasTag()) {
+            compoundTag = stack.getTag();
+        } else if (otherLoreExists) {
             compoundTag = new CompoundTag();
-            itemStack.setTag(compoundTag);
+            stack.setTag(compoundTag);
         } else {
             return null;
         }
         if (compoundTag.contains("display", 10)) {
             compoundTag2 = compoundTag.getCompound("display");
-        } else if (bl) {
+        } else if (otherLoreExists) {
             compoundTag2 = new CompoundTag();
             compoundTag.put("display", compoundTag2);
         } else {
@@ -82,7 +82,7 @@ extends ConditionalLootFunction {
         if (compoundTag2.contains("Lore", 9)) {
             return compoundTag2.getList("Lore", 8);
         }
-        if (bl) {
+        if (otherLoreExists) {
             ListTag listTag = new ListTag();
             compoundTag2.put("Lore", listTag);
             return listTag;
@@ -119,8 +119,8 @@ extends ConditionalLootFunction {
         }
 
         @Override
-        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
+        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions) {
+            return this.fromJson(json, context, conditions);
         }
     }
 }

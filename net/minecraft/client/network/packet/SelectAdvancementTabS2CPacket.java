@@ -20,8 +20,8 @@ implements Packet<ClientPlayPacketListener> {
     public SelectAdvancementTabS2CPacket() {
     }
 
-    public SelectAdvancementTabS2CPacket(@Nullable Identifier identifier) {
-        this.tabId = identifier;
+    public SelectAdvancementTabS2CPacket(@Nullable Identifier tabId) {
+        this.tabId = tabId;
     }
 
     @Override
@@ -30,17 +30,17 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Override
-    public void read(PacketByteBuf packetByteBuf) throws IOException {
-        if (packetByteBuf.readBoolean()) {
-            this.tabId = packetByteBuf.readIdentifier();
+    public void read(PacketByteBuf buf) throws IOException {
+        if (buf.readBoolean()) {
+            this.tabId = buf.readIdentifier();
         }
     }
 
     @Override
-    public void write(PacketByteBuf packetByteBuf) throws IOException {
-        packetByteBuf.writeBoolean(this.tabId != null);
+    public void write(PacketByteBuf buf) throws IOException {
+        buf.writeBoolean(this.tabId != null);
         if (this.tabId != null) {
-            packetByteBuf.writeIdentifier(this.tabId);
+            buf.writeIdentifier(this.tabId);
         }
     }
 

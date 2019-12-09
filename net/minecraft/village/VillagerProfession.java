@@ -38,11 +38,11 @@ public class VillagerProfession {
     @Nullable
     private final SoundEvent field_20633;
 
-    private VillagerProfession(String string, PointOfInterestType pointOfInterestType, ImmutableSet<Item> immutableSet, ImmutableSet<Block> immutableSet2, @Nullable SoundEvent soundEvent) {
-        this.id = string;
-        this.workStation = pointOfInterestType;
-        this.gatherableItems = immutableSet;
-        this.secondaryJobSites = immutableSet2;
+    private VillagerProfession(String id, PointOfInterestType workStation, ImmutableSet<Item> gatherableItems, ImmutableSet<Block> secondaryJobSites, @Nullable SoundEvent soundEvent) {
+        this.id = id;
+        this.workStation = workStation;
+        this.gatherableItems = gatherableItems;
+        this.secondaryJobSites = secondaryJobSites;
         this.field_20633 = soundEvent;
     }
 
@@ -67,8 +67,8 @@ public class VillagerProfession {
         return this.id;
     }
 
-    static VillagerProfession register(String string, PointOfInterestType pointOfInterestType, @Nullable SoundEvent soundEvent) {
-        return VillagerProfession.register(string, pointOfInterestType, ImmutableSet.of(), ImmutableSet.of(), soundEvent);
+    static VillagerProfession register(String key, PointOfInterestType pointOfInterestType, @Nullable SoundEvent soundEvent) {
+        return VillagerProfession.register(key, pointOfInterestType, ImmutableSet.of(), ImmutableSet.of(), soundEvent);
     }
 
     static VillagerProfession register(String string, PointOfInterestType pointOfInterestType, ImmutableSet<Item> immutableSet, ImmutableSet<Block> immutableSet2, @Nullable SoundEvent soundEvent) {

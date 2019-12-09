@@ -58,30 +58,30 @@ extends Screen {
     }
 
     @Override
-    public void render(int i, int j, float f) {
+    public void render(int mouseX, int mouseY, float delta) {
         this.renderBackground();
         this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, 0xFFFFFF);
-        int k = this.width / 2 - 150;
-        int l = this.width / 2 + 150;
-        int m = this.height / 4 + 100;
-        int n = m + 10;
-        this.drawCenteredString(this.font, this.updater.getStatus().asFormattedString(), this.width / 2, m - this.font.fontHeight - 2, 0xA0A0A0);
+        int i = this.width / 2 - 150;
+        int j = this.width / 2 + 150;
+        int k = this.height / 4 + 100;
+        int l = k + 10;
+        this.drawCenteredString(this.font, this.updater.getStatus().asFormattedString(), this.width / 2, k - this.font.fontHeight - 2, 0xA0A0A0);
         if (this.updater.getTotalChunkCount() > 0) {
-            OptimizeWorldScreen.fill(k - 1, m - 1, l + 1, n + 1, -16777216);
-            this.drawString(this.font, I18n.translate("optimizeWorld.info.converted", this.updater.getUpgradedChunkCount()), k, 40, 0xA0A0A0);
-            this.drawString(this.font, I18n.translate("optimizeWorld.info.skipped", this.updater.getSkippedChunkCount()), k, 40 + this.font.fontHeight + 3, 0xA0A0A0);
-            this.drawString(this.font, I18n.translate("optimizeWorld.info.total", this.updater.getTotalChunkCount()), k, 40 + (this.font.fontHeight + 3) * 2, 0xA0A0A0);
-            int o = 0;
+            OptimizeWorldScreen.fill(i - 1, k - 1, j + 1, l + 1, -16777216);
+            this.drawString(this.font, I18n.translate("optimizeWorld.info.converted", this.updater.getUpgradedChunkCount()), i, 40, 0xA0A0A0);
+            this.drawString(this.font, I18n.translate("optimizeWorld.info.skipped", this.updater.getSkippedChunkCount()), i, 40 + this.font.fontHeight + 3, 0xA0A0A0);
+            this.drawString(this.font, I18n.translate("optimizeWorld.info.total", this.updater.getTotalChunkCount()), i, 40 + (this.font.fontHeight + 3) * 2, 0xA0A0A0);
+            int m = 0;
             for (DimensionType dimensionType : DimensionType.getAll()) {
-                int p = MathHelper.floor(this.updater.getProgress(dimensionType) * (float)(l - k));
-                OptimizeWorldScreen.fill(k + o, m, k + o + p, n, DIMENSION_COLORS.getInt(dimensionType));
-                o += p;
+                int n = MathHelper.floor(this.updater.getProgress(dimensionType) * (float)(j - i));
+                OptimizeWorldScreen.fill(i + m, k, i + m + n, l, DIMENSION_COLORS.getInt(dimensionType));
+                m += n;
             }
-            int q = this.updater.getUpgradedChunkCount() + this.updater.getSkippedChunkCount();
-            this.drawCenteredString(this.font, q + " / " + this.updater.getTotalChunkCount(), this.width / 2, m + 2 * this.font.fontHeight + 2, 0xA0A0A0);
-            this.drawCenteredString(this.font, MathHelper.floor(this.updater.getProgress() * 100.0f) + "%", this.width / 2, m + (n - m) / 2 - this.font.fontHeight / 2, 0xA0A0A0);
+            int o = this.updater.getUpgradedChunkCount() + this.updater.getSkippedChunkCount();
+            this.drawCenteredString(this.font, o + " / " + this.updater.getTotalChunkCount(), this.width / 2, k + 2 * this.font.fontHeight + 2, 0xA0A0A0);
+            this.drawCenteredString(this.font, MathHelper.floor(this.updater.getProgress() * 100.0f) + "%", this.width / 2, k + (l - k) / 2 - this.font.fontHeight / 2, 0xA0A0A0);
         }
-        super.render(i, j, f);
+        super.render(mouseX, mouseY, delta);
     }
 }
 

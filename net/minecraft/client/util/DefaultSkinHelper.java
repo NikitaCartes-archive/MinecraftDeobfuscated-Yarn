@@ -17,22 +17,22 @@ public class DefaultSkinHelper {
         return STEVE_SKIN;
     }
 
-    public static Identifier getTexture(UUID uUID) {
-        if (DefaultSkinHelper.shouldUseSlimModel(uUID)) {
+    public static Identifier getTexture(UUID uuid) {
+        if (DefaultSkinHelper.shouldUseSlimModel(uuid)) {
             return ALEX_SKIN;
         }
         return STEVE_SKIN;
     }
 
-    public static String getModel(UUID uUID) {
-        if (DefaultSkinHelper.shouldUseSlimModel(uUID)) {
+    public static String getModel(UUID uuid) {
+        if (DefaultSkinHelper.shouldUseSlimModel(uuid)) {
             return "slim";
         }
         return "default";
     }
 
-    private static boolean shouldUseSlimModel(UUID uUID) {
-        return (uUID.hashCode() & 1) == 1;
+    private static boolean shouldUseSlimModel(UUID uuid) {
+        return (uuid.hashCode() & 1) == 1;
     }
 }
 

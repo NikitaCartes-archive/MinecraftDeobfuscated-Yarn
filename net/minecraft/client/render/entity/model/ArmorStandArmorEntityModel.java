@@ -15,8 +15,8 @@ extends BipedEntityModel<ArmorStandEntity> {
         this(f, 64, 32);
     }
 
-    protected ArmorStandArmorEntityModel(float f, int i, int j) {
-        super(f, 0.0f, i, j);
+    protected ArmorStandArmorEntityModel(float scale, int textureWidth, int textureHeight) {
+        super(scale, 0.0f, textureWidth, textureHeight);
     }
 
     @Override

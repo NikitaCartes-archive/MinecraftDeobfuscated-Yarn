@@ -26,7 +26,7 @@ public abstract class StructureStart {
     public static final StructureStart DEFAULT = new StructureStart((StructureFeature)Feature.MINESHAFT, 0, 0, BlockBox.empty(), 0, 0L){
 
         @Override
-        public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
+        public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
         }
     };
     private final StructureFeature<?> feature;
@@ -37,13 +37,13 @@ public abstract class StructureStart {
     private int references;
     protected final ChunkRandom random;
 
-    public StructureStart(StructureFeature<?> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
+    public StructureStart(StructureFeature<?> structureFeature, int chunkX, int chunkZ, BlockBox blockBox, int i, long l) {
         this.feature = structureFeature;
-        this.chunkX = i;
-        this.chunkZ = j;
-        this.references = k;
+        this.chunkX = chunkX;
+        this.chunkZ = chunkZ;
+        this.references = i;
         this.random = new ChunkRandom();
-        this.random.setStructureSeed(l, i, j);
+        this.random.setStructureSeed(l, chunkX, chunkZ);
         this.boundingBox = blockBox;
     }
 
@@ -60,13 +60,13 @@ public abstract class StructureStart {
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    public void generateStructure(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
+    public void generateStructure(IWorld world, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
         List<StructurePiece> list = this.children;
         synchronized (list) {
             Iterator<StructurePiece> iterator = this.children.iterator();
             while (iterator.hasNext()) {
                 StructurePiece structurePiece = iterator.next();
-                if (!structurePiece.getBoundingBox().intersects(blockBox) || structurePiece.generate(iWorld, chunkGenerator, random, blockBox, chunkPos)) continue;
+                if (!structurePiece.getBoundingBox().intersects(blockBox) || structurePiece.generate(world, chunkGenerator, random, blockBox, chunkPos)) continue;
                 iterator.remove();
             }
             this.setBoundingBoxFromChildren();
@@ -83,15 +83,15 @@ public abstract class StructureStart {
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    public CompoundTag toTag(int i, int j) {
+    public CompoundTag toTag(int chunkX, int chunkZ) {
         CompoundTag compoundTag = new CompoundTag();
         if (!this.hasChildren()) {
             compoundTag.putString("id", "INVALID");
             return compoundTag;
         }
         compoundTag.putString("id", Registry.STRUCTURE_FEATURE.getId(this.getFeature()).toString());
-        compoundTag.putInt("ChunkX", i);
-        compoundTag.putInt("ChunkZ", j);
+        compoundTag.putInt("ChunkX", chunkX);
+        compoundTag.putInt("ChunkZ", chunkZ);
         compoundTag.putInt("references", this.references);
         compoundTag.put("BB", this.boundingBox.toNbt());
         ListTag listTag = new ListTag();

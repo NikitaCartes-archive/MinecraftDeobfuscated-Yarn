@@ -18,8 +18,8 @@ extends StatusEffect {
     }
 
     @Override
-    public boolean canApplyUpdateEffect(int i, int j) {
-        return i >= 1;
+    public boolean canApplyUpdateEffect(int duration, int i) {
+        return duration >= 1;
     }
 }
 

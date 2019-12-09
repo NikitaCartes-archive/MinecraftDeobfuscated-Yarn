@@ -10,8 +10,8 @@ public class AbstractCriterionConditions
 implements CriterionConditions {
     private final Identifier id;
 
-    public AbstractCriterionConditions(Identifier identifier) {
-        this.id = identifier;
+    public AbstractCriterionConditions(Identifier id) {
+        this.id = id;
     }
 
     @Override

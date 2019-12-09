@@ -9,8 +9,8 @@ import net.fabricmc.api.Environment;
 @Environment(value=EnvType.CLIENT)
 public class RealmsHttpException
 extends RuntimeException {
-    public RealmsHttpException(String string, Exception exception) {
-        super(string, exception);
+    public RealmsHttpException(String s, Exception e) {
+        super(s, e);
     }
 }
 

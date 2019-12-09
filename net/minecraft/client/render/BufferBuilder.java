@@ -46,50 +46,50 @@ implements BufferVertexConsumer {
     private boolean field_21595;
     private boolean building;
 
-    public BufferBuilder(int i) {
-        this.buffer = GlAllocationUtils.allocateByteBuffer(i * 4);
+    public BufferBuilder(int initialCapacity) {
+        this.buffer = GlAllocationUtils.allocateByteBuffer(initialCapacity * 4);
     }
 
     protected void grow() {
         this.grow(this.format.getVertexSize());
     }
 
-    private void grow(int i) {
-        if (this.elementOffset + i <= this.buffer.capacity()) {
+    private void grow(int size) {
+        if (this.elementOffset + size <= this.buffer.capacity()) {
             return;
         }
-        int j = this.buffer.capacity();
-        int k = j + BufferBuilder.roundBufferSize(i);
-        LOGGER.debug("Needed to grow BufferBuilder buffer: Old size {} bytes, new size {} bytes.", (Object)j, (Object)k);
-        ByteBuffer byteBuffer = GlAllocationUtils.allocateByteBuffer(k);
+        int i = this.buffer.capacity();
+        int j = i + BufferBuilder.roundBufferSize(size);
+        LOGGER.debug("Needed to grow BufferBuilder buffer: Old size {} bytes, new size {} bytes.", (Object)i, (Object)j);
+        ByteBuffer byteBuffer = GlAllocationUtils.allocateByteBuffer(j);
         this.buffer.position(0);
         byteBuffer.put(this.buffer);
         byteBuffer.rewind();
         this.buffer = byteBuffer;
     }
 
-    private static int roundBufferSize(int i) {
-        int k;
-        int j = 0x200000;
-        if (i == 0) {
-            return j;
-        }
-        if (i < 0) {
-            j *= -1;
-        }
-        if ((k = i % j) == 0) {
+    private static int roundBufferSize(int amount) {
+        int j;
+        int i = 0x200000;
+        if (amount == 0) {
             return i;
         }
-        return i + j - k;
+        if (amount < 0) {
+            i *= -1;
+        }
+        if ((j = amount % i) == 0) {
+            return amount;
+        }
+        return amount + i - j;
     }
 
-    public void sortQuads(float f, float g, float h) {
+    public void sortQuads(float cameraX, float cameraY, float cameraZ) {
         this.buffer.clear();
         FloatBuffer floatBuffer = this.buffer.asFloatBuffer();
         int i2 = this.vertexCount / 4;
         float[] fs = new float[i2];
         for (int j2 = 0; j2 < i2; ++j2) {
-            fs[j2] = BufferBuilder.getDistanceSq(floatBuffer, f, g, h, this.format.getVertexSizeInteger(), this.buildStart / 4 + j2 * this.format.getVertexSize());
+            fs[j2] = BufferBuilder.getDistanceSq(floatBuffer, cameraX, cameraY, cameraZ, this.format.getVertexSizeInteger(), this.buildStart / 4 + j2 * this.format.getVertexSize());
         }
         int[] is = new int[i2];
         for (int k = 0; k < is.length; ++k) {
@@ -140,23 +140,23 @@ implements BufferVertexConsumer {
         return new State(byteBuffer, this.format);
     }
 
-    private static float getDistanceSq(FloatBuffer floatBuffer, float f, float g, float h, int i, int j) {
-        float k = floatBuffer.get(j + i * 0 + 0);
-        float l = floatBuffer.get(j + i * 0 + 1);
-        float m = floatBuffer.get(j + i * 0 + 2);
-        float n = floatBuffer.get(j + i * 1 + 0);
-        float o = floatBuffer.get(j + i * 1 + 1);
-        float p = floatBuffer.get(j + i * 1 + 2);
-        float q = floatBuffer.get(j + i * 2 + 0);
-        float r = floatBuffer.get(j + i * 2 + 1);
-        float s = floatBuffer.get(j + i * 2 + 2);
-        float t = floatBuffer.get(j + i * 3 + 0);
-        float u = floatBuffer.get(j + i * 3 + 1);
-        float v = floatBuffer.get(j + i * 3 + 2);
-        float w = (k + n + q + t) * 0.25f - f;
-        float x = (l + o + r + u) * 0.25f - g;
-        float y = (m + p + s + v) * 0.25f - h;
-        return w * w + x * x + y * y;
+    private static float getDistanceSq(FloatBuffer buffer, float x, float y, float z, int i, int j) {
+        float f = buffer.get(j + i * 0 + 0);
+        float g = buffer.get(j + i * 0 + 1);
+        float h = buffer.get(j + i * 0 + 2);
+        float k = buffer.get(j + i * 1 + 0);
+        float l = buffer.get(j + i * 1 + 1);
+        float m = buffer.get(j + i * 1 + 2);
+        float n = buffer.get(j + i * 2 + 0);
+        float o = buffer.get(j + i * 2 + 1);
+        float p = buffer.get(j + i * 2 + 2);
+        float q = buffer.get(j + i * 3 + 0);
+        float r = buffer.get(j + i * 3 + 1);
+        float s = buffer.get(j + i * 3 + 2);
+        float t = (f + k + n + q) * 0.25f - x;
+        float u = (g + l + o + r) * 0.25f - y;
+        float v = (h + m + p + s) * 0.25f - z;
+        return t * t + u * u + v * v;
     }
 
     public void restoreState(State state) {
@@ -173,14 +173,14 @@ implements BufferVertexConsumer {
         this.elementOffset = this.buildStart + this.vertexCount * vertexFormat.getVertexSize();
     }
 
-    public void begin(int i, VertexFormat vertexFormat) {
+    public void begin(int drawMode, VertexFormat format) {
         if (this.building) {
             throw new IllegalStateException("Already building!");
         }
         this.building = true;
-        this.drawMode = i;
-        this.method_23918(vertexFormat);
-        this.currentElement = (VertexFormatElement)vertexFormat.getElements().get(0);
+        this.drawMode = drawMode;
+        this.method_23918(format);
+        this.currentElement = (VertexFormatElement)format.getElements().get(0);
         this.currentElementId = 0;
         this.buffer.clear();
     }
@@ -209,18 +209,18 @@ implements BufferVertexConsumer {
     }
 
     @Override
-    public void putByte(int i, byte b) {
-        this.buffer.put(this.elementOffset + i, b);
+    public void putByte(int index, byte value) {
+        this.buffer.put(this.elementOffset + index, value);
     }
 
     @Override
-    public void putShort(int i, short s) {
-        this.buffer.putShort(this.elementOffset + i, s);
+    public void putShort(int index, short value) {
+        this.buffer.putShort(this.elementOffset + index, value);
     }
 
     @Override
-    public void putFloat(int i, float f) {
-        this.buffer.putFloat(this.elementOffset + i, f);
+    public void putFloat(int index, float value) {
+        this.buffer.putFloat(this.elementOffset + index, value);
     }
 
     @Override
@@ -248,46 +248,46 @@ implements BufferVertexConsumer {
     }
 
     @Override
-    public VertexConsumer color(int i, int j, int k, int l) {
+    public VertexConsumer color(int red, int green, int blue, int alpha) {
         if (this.colorFixed) {
             throw new IllegalStateException();
         }
-        return BufferVertexConsumer.super.color(i, j, k, l);
+        return BufferVertexConsumer.super.color(red, green, blue, alpha);
     }
 
     @Override
-    public void vertex(float f, float g, float h, float i, float j, float k, float l, float m, float n, int o, int p, float q, float r, float s) {
+    public void vertex(float x, float y, float z, float red, float green, float blue, float alpha, float u, float v, int overlay, int light, float normalX, float normalY, float normalZ) {
         if (this.colorFixed) {
             throw new IllegalStateException();
         }
         if (this.field_21594) {
-            int t;
-            this.putFloat(0, f);
-            this.putFloat(4, g);
-            this.putFloat(8, h);
-            this.putByte(12, (byte)(i * 255.0f));
-            this.putByte(13, (byte)(j * 255.0f));
-            this.putByte(14, (byte)(k * 255.0f));
-            this.putByte(15, (byte)(l * 255.0f));
-            this.putFloat(16, m);
-            this.putFloat(20, n);
+            int i;
+            this.putFloat(0, x);
+            this.putFloat(4, y);
+            this.putFloat(8, z);
+            this.putByte(12, (byte)(red * 255.0f));
+            this.putByte(13, (byte)(green * 255.0f));
+            this.putByte(14, (byte)(blue * 255.0f));
+            this.putByte(15, (byte)(alpha * 255.0f));
+            this.putFloat(16, u);
+            this.putFloat(20, v);
             if (this.field_21595) {
-                this.putShort(24, (short)(o & 0xFFFF));
-                this.putShort(26, (short)(o >> 16 & 0xFFFF));
-                t = 28;
+                this.putShort(24, (short)(overlay & 0xFFFF));
+                this.putShort(26, (short)(overlay >> 16 & 0xFFFF));
+                i = 28;
             } else {
-                t = 24;
+                i = 24;
             }
-            this.putShort(t + 0, (short)(p & 0xFFFF));
-            this.putShort(t + 2, (short)(p >> 16 & 0xFFFF));
-            this.putByte(t + 4, BufferVertexConsumer.method_24212(q));
-            this.putByte(t + 5, BufferVertexConsumer.method_24212(r));
-            this.putByte(t + 6, BufferVertexConsumer.method_24212(s));
-            this.elementOffset += t + 8;
+            this.putShort(i + 0, (short)(light & 0xFFFF));
+            this.putShort(i + 2, (short)(light >> 16 & 0xFFFF));
+            this.putByte(i + 4, BufferVertexConsumer.method_24212(normalX));
+            this.putByte(i + 5, BufferVertexConsumer.method_24212(normalY));
+            this.putByte(i + 6, BufferVertexConsumer.method_24212(normalZ));
+            this.elementOffset += i + 8;
             this.next();
             return;
         }
-        super.vertex(f, g, h, i, j, k, l, m, n, o, p, q, r, s);
+        super.vertex(x, y, z, red, green, blue, alpha, u, v, overlay, light, normalX, normalY, normalZ);
     }
 
     public Pair<DrawArrayParameters, ByteBuffer> popData() {
@@ -336,10 +336,10 @@ implements BufferVertexConsumer {
         private final int count;
         private final int mode;
 
-        private DrawArrayParameters(VertexFormat vertexFormat, int i, int j) {
+        private DrawArrayParameters(VertexFormat vertexFormat, int count, int mode) {
             this.vertexFormat = vertexFormat;
-            this.count = i;
-            this.mode = j;
+            this.count = count;
+            this.mode = mode;
         }
 
         public VertexFormat getVertexFormat() {
@@ -360,9 +360,9 @@ implements BufferVertexConsumer {
         private final ByteBuffer buffer;
         private final VertexFormat format;
 
-        private State(ByteBuffer byteBuffer, VertexFormat vertexFormat) {
-            this.buffer = byteBuffer;
-            this.format = vertexFormat;
+        private State(ByteBuffer buffer, VertexFormat format) {
+            this.buffer = buffer;
+            this.format = format;
         }
     }
 }

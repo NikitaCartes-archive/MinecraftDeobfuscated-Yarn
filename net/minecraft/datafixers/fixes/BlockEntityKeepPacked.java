@@ -12,12 +12,12 @@ import net.minecraft.datafixers.fixes.ChoiceFix;
 
 public class BlockEntityKeepPacked
 extends ChoiceFix {
-    public BlockEntityKeepPacked(Schema schema, boolean bl) {
-        super(schema, bl, "BlockEntityKeepPacked", TypeReferences.BLOCK_ENTITY, "DUMMY");
+    public BlockEntityKeepPacked(Schema outputSchema, boolean changesType) {
+        super(outputSchema, changesType, "BlockEntityKeepPacked", TypeReferences.BLOCK_ENTITY, "DUMMY");
     }
 
-    private static Dynamic<?> keepPacked(Dynamic<?> dynamic) {
-        return dynamic.set("keepPacked", dynamic.createBoolean(true));
+    private static Dynamic<?> keepPacked(Dynamic<?> tag) {
+        return tag.set("keepPacked", tag.createBoolean(true));
     }
 
     @Override

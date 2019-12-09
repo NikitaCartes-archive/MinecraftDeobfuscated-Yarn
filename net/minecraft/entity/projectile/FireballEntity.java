@@ -26,12 +26,12 @@ extends AbstractFireballEntity {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public FireballEntity(World world, double d, double e, double f, double g, double h, double i) {
-        super((EntityType<? extends AbstractFireballEntity>)EntityType.FIREBALL, d, e, f, g, h, i, world);
+    public FireballEntity(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
+        super((EntityType<? extends AbstractFireballEntity>)EntityType.FIREBALL, x, y, z, velocityX, velocityY, velocityZ, world);
     }
 
-    public FireballEntity(World world, LivingEntity livingEntity, double d, double e, double f) {
-        super((EntityType<? extends AbstractFireballEntity>)EntityType.FIREBALL, livingEntity, d, e, f, world);
+    public FireballEntity(World world, LivingEntity owner, double velocityX, double velocityY, double velocityZ) {
+        super((EntityType<? extends AbstractFireballEntity>)EntityType.FIREBALL, owner, velocityX, velocityY, velocityZ, world);
     }
 
     @Override
@@ -50,16 +50,16 @@ extends AbstractFireballEntity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag compoundTag) {
-        super.writeCustomDataToTag(compoundTag);
-        compoundTag.putInt("ExplosionPower", this.explosionPower);
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putInt("ExplosionPower", this.explosionPower);
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag compoundTag) {
-        super.readCustomDataFromTag(compoundTag);
-        if (compoundTag.contains("ExplosionPower", 99)) {
-            this.explosionPower = compoundTag.getInt("ExplosionPower");
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        if (tag.contains("ExplosionPower", 99)) {
+            this.explosionPower = tag.getInt("ExplosionPower");
         }
     }
 }

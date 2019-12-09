@@ -41,26 +41,26 @@ extends AbstractNumberTag {
         }
 
         @Override
-        public /* synthetic */ Tag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-            return this.read(dataInput, i, positionTracker);
+        public /* synthetic */ Tag read(DataInput input, int depth, PositionTracker tracker) throws IOException {
+            return this.read(input, depth, tracker);
         }
     };
     private final double value;
 
-    private DoubleTag(double d) {
-        this.value = d;
+    private DoubleTag(double value) {
+        this.value = value;
     }
 
-    public static DoubleTag of(double d) {
-        if (d == 0.0) {
+    public static DoubleTag of(double value) {
+        if (value == 0.0) {
             return ZERO;
         }
-        return new DoubleTag(d);
+        return new DoubleTag(value);
     }
 
     @Override
-    public void write(DataOutput dataOutput) throws IOException {
-        dataOutput.writeDouble(this.value);
+    public void write(DataOutput output) throws IOException {
+        output.writeDouble(this.value);
     }
 
     @Override
@@ -82,11 +82,11 @@ extends AbstractNumberTag {
         return this;
     }
 
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        return object instanceof DoubleTag && this.value == ((DoubleTag)object).value;
+        return o instanceof DoubleTag && this.value == ((DoubleTag)o).value;
     }
 
     public int hashCode() {
@@ -95,7 +95,7 @@ extends AbstractNumberTag {
     }
 
     @Override
-    public Text toText(String string, int i) {
+    public Text toText(String indent, int depth) {
         Text text = new LiteralText("d").formatted(RED);
         return new LiteralText(String.valueOf(this.value)).append(text).formatted(GOLD);
     }

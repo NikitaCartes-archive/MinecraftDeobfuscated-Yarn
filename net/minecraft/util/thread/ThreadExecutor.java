@@ -24,8 +24,8 @@ Executor {
     private final Queue<R> tasks = Queues.newConcurrentLinkedQueue();
     private int executionsInProgress;
 
-    protected ThreadExecutor(String string) {
-        this.name = string;
+    protected ThreadExecutor(String name) {
+        this.name = name;
     }
 
     protected abstract R createTask(Runnable var1);
@@ -52,11 +52,11 @@ Executor {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public <V> CompletableFuture<V> submit(Supplier<V> supplier) {
+    public <V> CompletableFuture<V> submit(Supplier<V> task) {
         if (this.shouldExecuteAsync()) {
-            return CompletableFuture.supplyAsync(supplier, this);
+            return CompletableFuture.supplyAsync(task, this);
         }
-        return CompletableFuture.completedFuture(supplier.get());
+        return CompletableFuture.completedFuture(task.get());
     }
 
     private CompletableFuture<Void> submitAsync(Runnable runnable) {
@@ -66,11 +66,11 @@ Executor {
         }, this);
     }
 
-    public CompletableFuture<Void> submit(Runnable runnable) {
+    public CompletableFuture<Void> submit(Runnable task) {
         if (this.shouldExecuteAsync()) {
-            return this.submitAsync(runnable);
+            return this.submitAsync(task);
         }
-        runnable.run();
+        task.run();
         return CompletableFuture.completedFuture(null);
     }
 
@@ -119,10 +119,10 @@ Executor {
         return true;
     }
 
-    public void runTasks(BooleanSupplier booleanSupplier) {
+    public void runTasks(BooleanSupplier stopCondition) {
         ++this.executionsInProgress;
         try {
-            while (!booleanSupplier.getAsBoolean()) {
+            while (!stopCondition.getAsBoolean()) {
                 if (this.runTask()) continue;
                 this.waitForTasks();
             }
@@ -136,17 +136,17 @@ Executor {
         LockSupport.parkNanos("waiting for tasks", 100000L);
     }
 
-    protected void executeTask(R runnable) {
+    protected void executeTask(R task) {
         try {
-            runnable.run();
+            task.run();
         } catch (Exception exception) {
             LOGGER.fatal("Error executing task on {}", (Object)this.getName(), (Object)exception);
         }
     }
 
     @Override
-    public /* synthetic */ void send(Object object) {
-        this.send((R)((Runnable)object));
+    public /* synthetic */ void send(Object message) {
+        this.send((R)((Runnable)message));
     }
 }
 

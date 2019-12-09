@@ -326,32 +326,32 @@ WindowEventHandler {
     private CompletableFuture<Void> resourceReloadFuture;
     private String openProfilerSection = "root";
 
-    public MinecraftClient(RunArgs runArgs) {
+    public MinecraftClient(RunArgs args) {
         super("Client");
         int i;
         String string;
         instance = this;
-        this.runDirectory = runArgs.directories.runDir;
-        File file = runArgs.directories.assetDir;
-        this.resourcePackDir = runArgs.directories.resourcePackDir;
-        this.gameVersion = runArgs.game.version;
-        this.versionType = runArgs.game.versionType;
-        this.sessionPropertyMap = runArgs.network.profileProperties;
-        this.builtinPackProvider = new ClientBuiltinResourcePackProvider(new File(this.runDirectory, "server-resource-packs"), runArgs.directories.getResourceIndex());
+        this.runDirectory = args.directories.runDir;
+        File file = args.directories.assetDir;
+        this.resourcePackDir = args.directories.resourcePackDir;
+        this.gameVersion = args.game.version;
+        this.versionType = args.game.versionType;
+        this.sessionPropertyMap = args.network.profileProperties;
+        this.builtinPackProvider = new ClientBuiltinResourcePackProvider(new File(this.runDirectory, "server-resource-packs"), args.directories.getResourceIndex());
         this.resourcePackManager = new ResourcePackManager<ClientResourcePackProfile>(MinecraftClient::createResourcePackProfile);
         this.resourcePackManager.registerProvider(this.builtinPackProvider);
         this.resourcePackManager.registerProvider(new FileResourcePackProvider(this.resourcePackDir));
-        this.netProxy = runArgs.network.netProxy;
+        this.netProxy = args.network.netProxy;
         this.sessionService = new YggdrasilAuthenticationService(this.netProxy, UUID.randomUUID().toString()).createMinecraftSessionService();
-        this.session = runArgs.network.session;
+        this.session = args.network.session;
         LOGGER.info("Setting user: {}", (Object)this.session.getUsername());
         LOGGER.debug("(Session ID is {})", (Object)this.session.getSessionId());
-        this.isDemo = runArgs.game.demo;
+        this.isDemo = args.game.demo;
         this.is64Bit = MinecraftClient.checkIs64Bit();
         this.server = null;
-        if (runArgs.autoConnect.serverAddress != null) {
-            string = runArgs.autoConnect.serverAddress;
-            i = runArgs.autoConnect.serverPort;
+        if (args.autoConnect.serverAddress != null) {
+            string = args.autoConnect.serverAddress;
+            i = args.autoConnect.serverPort;
         } else {
             string = null;
             i = 0;
@@ -367,7 +367,7 @@ WindowEventHandler {
         this.creativeHotbarStorage = new HotbarStorage(this.runDirectory, this.dataFixer);
         this.startTimerHackThread();
         LOGGER.info("Backend library: {}", (Object)RenderSystem.getBackendDescription());
-        WindowSettings windowSettings = this.options.overrideHeight > 0 && this.options.overrideWidth > 0 ? new WindowSettings(this.options.overrideWidth, this.options.overrideHeight, runArgs.windowSettings.fullscreenWidth, runArgs.windowSettings.fullscreenHeight, runArgs.windowSettings.fullscreen) : runArgs.windowSettings;
+        WindowSettings windowSettings = this.options.overrideHeight > 0 && this.options.overrideWidth > 0 ? new WindowSettings(this.options.overrideWidth, this.options.overrideHeight, args.windowSettings.fullscreenWidth, args.windowSettings.fullscreenHeight, args.windowSettings.fullscreen) : args.windowSettings;
         Util.nanoTimeSupplier = RenderSystem.initBackendSystem();
         this.windowProvider = new WindowProvider(this);
         this.window = this.windowProvider.createWindow(windowSettings, this.options.fullscreenResolution, "Minecraft " + SharedConstants.getGameVersion().getName());
@@ -532,7 +532,7 @@ WindowEventHandler {
         this.searchManager.put(SearchManager.RECIPE_OUTPUT, textSearchableContainer2);
     }
 
-    private void handleGlErrorByDisableVsync(int i, long l) {
+    private void handleGlErrorByDisableVsync(int error, long description) {
         this.options.enableVsync = false;
         this.options.write();
     }
@@ -738,8 +738,8 @@ WindowEventHandler {
         }
     }
 
-    private void render(boolean bl) {
-        boolean bl2;
+    private void render(boolean tick) {
+        boolean bl;
         int i;
         Runnable runnable;
         this.window.setPhase("Pre render");
@@ -756,14 +756,14 @@ WindowEventHandler {
         while ((runnable = this.renderTaskQueue.poll()) != null) {
             runnable.run();
         }
-        if (bl) {
+        if (tick) {
             this.renderTickCounter.beginRenderTick(Util.getMeasuringTimeMs());
             this.profiler.push("scheduledExecutables");
             this.runTasks();
             this.profiler.pop();
         }
         this.profiler.push("tick");
-        if (bl) {
+        if (tick) {
             for (i = 0; i < Math.min(10, this.renderTickCounter.ticksThisFrame); ++i) {
                 this.tick();
             }
@@ -783,7 +783,7 @@ WindowEventHandler {
         this.profiler.pop();
         if (!this.skipGameRender) {
             this.profiler.swap("gameRenderer");
-            this.gameRenderer.render(this.paused ? this.pausedTickDelta : this.renderTickCounter.tickDelta, l, bl);
+            this.gameRenderer.render(this.paused ? this.pausedTickDelta : this.renderTickCounter.tickDelta, l, tick);
             this.profiler.swap("toasts");
             this.toastManager.draw();
             this.profiler.pop();
@@ -812,14 +812,14 @@ WindowEventHandler {
         this.profiler.pop();
         this.window.setPhase("Post render");
         ++this.fpsCounter;
-        boolean bl3 = bl2 = this.isIntegratedServerRunning() && (this.currentScreen != null && this.currentScreen.isPauseScreen() || this.overlay != null && this.overlay.pausesGame()) && !this.server.isRemote();
-        if (this.paused != bl2) {
+        boolean bl2 = bl = this.isIntegratedServerRunning() && (this.currentScreen != null && this.currentScreen.isPauseScreen() || this.overlay != null && this.overlay.pausesGame()) && !this.server.isRemote();
+        if (this.paused != bl) {
             if (this.paused) {
                 this.pausedTickDelta = this.renderTickCounter.tickDelta;
             } else {
                 this.renderTickCounter.tickDelta = this.pausedTickDelta;
             }
-            this.paused = bl2;
+            this.paused = bl;
         }
         long m = Util.getMeasuringTimeNano();
         this.metricsData.pushSample(m - this.lastMetricsSampleTime);
@@ -882,23 +882,23 @@ WindowEventHandler {
         System.gc();
     }
 
-    void handleProfilerKeyPress(int i) {
+    void handleProfilerKeyPress(int digit) {
         ProfileResult profileResult = this.profiler.getController().getResults();
         List<ProfilerTiming> list = profileResult.getTimings(this.openProfilerSection);
         if (list.isEmpty()) {
             return;
         }
         ProfilerTiming profilerTiming = list.remove(0);
-        if (i == 0) {
-            int j;
-            if (!profilerTiming.name.isEmpty() && (j = this.openProfilerSection.lastIndexOf(30)) >= 0) {
-                this.openProfilerSection = this.openProfilerSection.substring(0, j);
+        if (digit == 0) {
+            int i;
+            if (!profilerTiming.name.isEmpty() && (i = this.openProfilerSection.lastIndexOf(30)) >= 0) {
+                this.openProfilerSection = this.openProfilerSection.substring(0, i);
             }
-        } else if (--i < list.size() && !"unspecified".equals(list.get((int)i).name)) {
+        } else if (--digit < list.size() && !"unspecified".equals(list.get((int)digit).name)) {
             if (!this.openProfilerSection.isEmpty()) {
                 this.openProfilerSection = this.openProfilerSection + '\u001e';
             }
-            this.openProfilerSection = this.openProfilerSection + list.get((int)i).name;
+            this.openProfilerSection = this.openProfilerSection + list.get((int)digit).name;
         }
     }
 
@@ -1320,12 +1320,12 @@ WindowEventHandler {
         this.handleBlockBreaking(this.currentScreen == null && this.options.keyAttack.isPressed() && this.mouse.isCursorLocked());
     }
 
-    public void startIntegratedServer(String string, String string2, @Nullable LevelInfo levelInfo) {
+    public void startIntegratedServer(String name, String displayName, @Nullable LevelInfo levelInfo) {
         this.disconnect();
-        WorldSaveHandler worldSaveHandler = this.levelStorage.createSaveHandler(string, null);
+        WorldSaveHandler worldSaveHandler = this.levelStorage.createSaveHandler(name, null);
         LevelProperties levelProperties = worldSaveHandler.readProperties();
         if (levelProperties == null && levelInfo != null) {
-            levelProperties = new LevelProperties(levelInfo, string);
+            levelProperties = new LevelProperties(levelInfo, name);
             worldSaveHandler.saveWorld(levelProperties);
         }
         if (levelInfo == null) {
@@ -1340,7 +1340,7 @@ WindowEventHandler {
             SkullBlockEntity.setUserCache(userCache);
             SkullBlockEntity.setSessionService(minecraftSessionService);
             UserCache.setUseRemote(false);
-            this.server = new IntegratedServer(this, string, string2, levelInfo, yggdrasilAuthenticationService, minecraftSessionService, gameProfileRepository, userCache, i -> {
+            this.server = new IntegratedServer(this, name, displayName, levelInfo, yggdrasilAuthenticationService, minecraftSessionService, gameProfileRepository, userCache, i -> {
                 WorldGenerationProgressTracker worldGenerationProgressTracker = new WorldGenerationProgressTracker(i + 0);
                 worldGenerationProgressTracker.start();
                 this.worldGenProgressTracker.set(worldGenerationProgressTracker);
@@ -1351,8 +1351,8 @@ WindowEventHandler {
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Starting integrated server");
             CrashReportSection crashReportSection = crashReport.addElement("Starting integrated server");
-            crashReportSection.add("Level ID", string);
-            crashReportSection.add("Level Name", string2);
+            crashReportSection.add("Level ID", name);
+            crashReportSection.add("Level Name", displayName);
             throw new CrashException(crashReport);
         }
         while (this.worldGenProgressTracker.get() == null) {
@@ -1570,33 +1570,33 @@ WindowEventHandler {
         }
     }
 
-    private ItemStack addBlockEntityNbt(ItemStack itemStack, BlockEntity blockEntity) {
+    private ItemStack addBlockEntityNbt(ItemStack stack, BlockEntity blockEntity) {
         CompoundTag compoundTag = blockEntity.toTag(new CompoundTag());
-        if (itemStack.getItem() instanceof SkullItem && compoundTag.contains("Owner")) {
+        if (stack.getItem() instanceof SkullItem && compoundTag.contains("Owner")) {
             CompoundTag compoundTag2 = compoundTag.getCompound("Owner");
-            itemStack.getOrCreateTag().put("SkullOwner", compoundTag2);
-            return itemStack;
+            stack.getOrCreateTag().put("SkullOwner", compoundTag2);
+            return stack;
         }
-        itemStack.putSubTag("BlockEntityTag", compoundTag);
+        stack.putSubTag("BlockEntityTag", compoundTag);
         CompoundTag compoundTag2 = new CompoundTag();
         ListTag listTag = new ListTag();
         listTag.add(StringTag.of("\"(+NBT)\""));
         compoundTag2.put("Lore", listTag);
-        itemStack.putSubTag("display", compoundTag2);
-        return itemStack;
+        stack.putSubTag("display", compoundTag2);
+        return stack;
     }
 
-    public CrashReport addDetailsToCrashReport(CrashReport crashReport) {
-        MinecraftClient.addSystemDetailsToCrashReport(this.languageManager, this.gameVersion, this.options, crashReport);
+    public CrashReport addDetailsToCrashReport(CrashReport report) {
+        MinecraftClient.addSystemDetailsToCrashReport(this.languageManager, this.gameVersion, this.options, report);
         if (this.world != null) {
-            this.world.addDetailsToCrashReport(crashReport);
+            this.world.addDetailsToCrashReport(report);
         }
-        return crashReport;
+        return report;
     }
 
-    public static void addSystemDetailsToCrashReport(@Nullable LanguageManager languageManager, String string, @Nullable GameOptions gameOptions, CrashReport crashReport) {
-        CrashReportSection crashReportSection = crashReport.getSystemDetailsSection();
-        crashReportSection.add("Launched Version", () -> string);
+    public static void addSystemDetailsToCrashReport(@Nullable LanguageManager languageManager, String version, @Nullable GameOptions options, CrashReport report) {
+        CrashReportSection crashReportSection = report.getSystemDetailsSection();
+        crashReportSection.add("Launched Version", () -> version);
         crashReportSection.add("Backend library", RenderSystem::getBackendDescription);
         crashReportSection.add("Backend API", RenderSystem::getApiDescription);
         crashReportSection.add("GL Caps", RenderSystem::getCapsString);
@@ -1612,7 +1612,7 @@ WindowEventHandler {
             return "Probably not. Jar signature remains and client brand is untouched.";
         });
         crashReportSection.add("Type", "Client (map_client.txt)");
-        if (gameOptions != null) {
+        if (options != null) {
             crashReportSection.add("Resource Packs", () -> {
                 StringBuilder stringBuilder = new StringBuilder();
                 for (String string : gameOptions.resourcePacks) {
@@ -1817,7 +1817,7 @@ WindowEventHandler {
     }
 
     @Override
-    protected boolean canExecute(Runnable runnable) {
+    protected boolean canExecute(Runnable task) {
         return true;
     }
 
@@ -1849,8 +1849,8 @@ WindowEventHandler {
         return this.connectedToRealms;
     }
 
-    public void setConnectedToRealms(boolean bl) {
-        this.connectedToRealms = bl;
+    public void setConnectedToRealms(boolean connectedToRealms) {
+        this.connectedToRealms = connectedToRealms;
     }
 
     public DataFixer getDataFixer() {
@@ -1906,8 +1906,8 @@ WindowEventHandler {
     }
 
     @Override
-    public void onWindowFocusChanged(boolean bl) {
-        this.windowFocused = bl;
+    public void onWindowFocusChanged(boolean focused) {
+        this.windowFocused = focused;
     }
 
     public Profiler getProfiler() {
@@ -1959,8 +1959,8 @@ WindowEventHandler {
         return () -> new Format4ResourcePack((ResourcePack)supplier.get());
     }
 
-    public void resetMipmapLevels(int i) {
-        this.bakedModelManager.resetMipmapLevels(i);
+    public void resetMipmapLevels(int mipmapLevels) {
+        this.bakedModelManager.resetMipmapLevels(mipmapLevels);
     }
 
     static {

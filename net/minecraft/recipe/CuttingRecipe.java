@@ -27,13 +27,13 @@ implements Recipe<Inventory> {
     protected final Identifier id;
     protected final String group;
 
-    public CuttingRecipe(RecipeType<?> recipeType, RecipeSerializer<?> recipeSerializer, Identifier identifier, String string, Ingredient ingredient, ItemStack itemStack) {
-        this.type = recipeType;
-        this.serializer = recipeSerializer;
-        this.id = identifier;
-        this.group = string;
-        this.input = ingredient;
-        this.output = itemStack;
+    public CuttingRecipe(RecipeType<?> type, RecipeSerializer<?> serializer, Identifier id, String group, Ingredient input, ItemStack output) {
+        this.type = type;
+        this.serializer = serializer;
+        this.id = id;
+        this.group = group;
+        this.input = input;
+        this.output = output;
     }
 
     @Override
@@ -71,12 +71,12 @@ implements Recipe<Inventory> {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean fits(int i, int j) {
+    public boolean fits(int width, int height) {
         return true;
     }
 
     @Override
-    public ItemStack craft(Inventory inventory) {
+    public ItemStack craft(Inventory inv) {
         return this.output.copy();
     }
 
@@ -114,13 +114,13 @@ implements Recipe<Inventory> {
         }
 
         @Override
-        public /* synthetic */ Recipe read(Identifier identifier, PacketByteBuf packetByteBuf) {
-            return this.read(identifier, packetByteBuf);
+        public /* synthetic */ Recipe read(Identifier id, PacketByteBuf buf) {
+            return this.read(id, buf);
         }
 
         @Override
-        public /* synthetic */ Recipe read(Identifier identifier, JsonObject jsonObject) {
-            return this.read(identifier, jsonObject);
+        public /* synthetic */ Recipe read(Identifier id, JsonObject json) {
+            return this.read(id, json);
         }
 
         static interface RecipeFactory<T extends CuttingRecipe> {

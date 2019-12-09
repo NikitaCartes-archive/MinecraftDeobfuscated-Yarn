@@ -19,8 +19,8 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public abstract class StuckObjectsFeatureRenderer<T extends LivingEntity, M extends PlayerEntityModel<T>>
 extends FeatureRenderer<T, M> {
-    public StuckObjectsFeatureRenderer(LivingEntityRenderer<T, M> livingEntityRenderer) {
-        super(livingEntityRenderer);
+    public StuckObjectsFeatureRenderer(LivingEntityRenderer<T, M> entityRenderer) {
+        super(entityRenderer);
     }
 
     protected abstract int getObjectCount(T var1);

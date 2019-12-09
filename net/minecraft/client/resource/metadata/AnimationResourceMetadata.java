@@ -30,12 +30,12 @@ public class AnimationResourceMetadata {
     private final int defaultFrameTime;
     private final boolean interpolate;
 
-    public AnimationResourceMetadata(List<AnimationFrameResourceMetadata> list, int i, int j, int k, boolean bl) {
-        this.frames = list;
-        this.width = i;
-        this.height = j;
-        this.defaultFrameTime = k;
-        this.interpolate = bl;
+    public AnimationResourceMetadata(List<AnimationFrameResourceMetadata> frames, int width, int height, int defaultFrameTime, boolean interpolate) {
+        this.frames = frames;
+        this.width = width;
+        this.height = height;
+        this.defaultFrameTime = defaultFrameTime;
+        this.interpolate = interpolate;
     }
 
     private static boolean method_24142(int i, int j) {
@@ -86,20 +86,20 @@ public class AnimationResourceMetadata {
         return this.interpolate;
     }
 
-    private AnimationFrameResourceMetadata getFrame(int i) {
-        return this.frames.get(i);
+    private AnimationFrameResourceMetadata getFrame(int frameIndex) {
+        return this.frames.get(frameIndex);
     }
 
-    public int getFrameTime(int i) {
-        AnimationFrameResourceMetadata animationFrameResourceMetadata = this.getFrame(i);
+    public int getFrameTime(int frameIndex) {
+        AnimationFrameResourceMetadata animationFrameResourceMetadata = this.getFrame(frameIndex);
         if (animationFrameResourceMetadata.usesDefaultFrameTime()) {
             return this.defaultFrameTime;
         }
         return animationFrameResourceMetadata.getTime();
     }
 
-    public int getFrameIndex(int i) {
-        return this.frames.get(i).getIndex();
+    public int getFrameIndex(int frameIndex) {
+        return this.frames.get(frameIndex).getIndex();
     }
 
     public Set<Integer> getFrameIndexSet() {

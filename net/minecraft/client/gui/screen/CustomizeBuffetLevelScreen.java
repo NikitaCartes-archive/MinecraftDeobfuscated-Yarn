@@ -36,10 +36,10 @@ extends Screen {
     private int biomeListLength;
     private ButtonWidget confirmButton;
 
-    public CustomizeBuffetLevelScreen(CreateWorldScreen createWorldScreen, CompoundTag compoundTag) {
+    public CustomizeBuffetLevelScreen(CreateWorldScreen parent, CompoundTag generatorOptionsTag) {
         super(new TranslatableText("createWorld.customize.buffet.title", new Object[0]));
-        this.parent = createWorldScreen;
-        this.generatorOptionsTag = compoundTag;
+        this.parent = parent;
+        this.generatorOptionsTag = generatorOptionsTag;
     }
 
     @Override
@@ -109,13 +109,13 @@ extends Screen {
     }
 
     @Override
-    public void render(int i, int j, float f) {
+    public void render(int mouseX, int mouseY, float delta) {
         this.renderDirtBackground(0);
-        this.biomeSelectionList.render(i, j, f);
+        this.biomeSelectionList.render(mouseX, mouseY, delta);
         this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 8, 0xFFFFFF);
         this.drawCenteredString(this.font, I18n.translate("createWorld.customize.buffet.generator", new Object[0]), this.width / 2, 30, 0xA0A0A0);
         this.drawCenteredString(this.font, I18n.translate("createWorld.customize.buffet.biome", new Object[0]), this.width / 2, 68, 0xA0A0A0);
-        super.render(i, j, f);
+        super.render(mouseX, mouseY, delta);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -155,8 +155,8 @@ extends Screen {
         extends AlwaysSelectedEntryListWidget.Entry<BuffetBiomeItem> {
             private final Identifier biome;
 
-            public BuffetBiomeItem(Identifier identifier) {
-                this.biome = identifier;
+            public BuffetBiomeItem(Identifier biome) {
+                this.biome = biome;
             }
 
             @Override
@@ -165,8 +165,8 @@ extends Screen {
             }
 
             @Override
-            public boolean mouseClicked(double d, double e, int i) {
-                if (i == 0) {
+            public boolean mouseClicked(double mouseX, double mouseY, int button) {
+                if (button == 0) {
                     BuffetBiomesListWidget.this.setSelected(this);
                     CustomizeBuffetLevelScreen.this.refreshConfirmButton();
                     return true;

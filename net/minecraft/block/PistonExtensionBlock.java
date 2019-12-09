@@ -50,55 +50,55 @@ extends BlockWithEntity {
 
     @Override
     @Nullable
-    public BlockEntity createBlockEntity(BlockView blockView) {
+    public BlockEntity createBlockEntity(BlockView view) {
         return null;
     }
 
-    public static BlockEntity createBlockEntityPiston(BlockState blockState, Direction direction, boolean bl, boolean bl2) {
-        return new PistonBlockEntity(blockState, direction, bl, bl2);
+    public static BlockEntity createBlockEntityPiston(BlockState pushedBlock, Direction dir, boolean extending, boolean bl) {
+        return new PistonBlockEntity(pushedBlock, dir, extending, bl);
     }
 
     @Override
-    public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
-        if (blockState.getBlock() == blockState2.getBlock()) {
+    public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (state.getBlock() == newState.getBlock()) {
             return;
         }
-        BlockEntity blockEntity = world.getBlockEntity(blockPos);
+        BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof PistonBlockEntity) {
             ((PistonBlockEntity)blockEntity).finish();
         }
     }
 
     @Override
-    public void onBroken(IWorld iWorld, BlockPos blockPos, BlockState blockState) {
-        BlockPos blockPos2 = blockPos.offset(blockState.get(FACING).getOpposite());
-        BlockState blockState2 = iWorld.getBlockState(blockPos2);
-        if (blockState2.getBlock() instanceof PistonBlock && blockState2.get(PistonBlock.EXTENDED).booleanValue()) {
-            iWorld.removeBlock(blockPos2, false);
+    public void onBroken(IWorld world, BlockPos pos, BlockState state) {
+        BlockPos blockPos = pos.offset(state.get(FACING).getOpposite());
+        BlockState blockState = world.getBlockState(blockPos);
+        if (blockState.getBlock() instanceof PistonBlock && blockState.get(PistonBlock.EXTENDED).booleanValue()) {
+            world.removeBlock(blockPos, false);
         }
     }
 
     @Override
-    public boolean isSimpleFullBlock(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+    public boolean isSimpleFullBlock(BlockState state, BlockView view, BlockPos pos) {
         return false;
     }
 
     @Override
-    public boolean canSuffocate(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+    public boolean canSuffocate(BlockState state, BlockView view, BlockPos pos) {
         return false;
     }
 
     @Override
-    public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-        if (!world.isClient && world.getBlockEntity(blockPos) == null) {
-            world.removeBlock(blockPos, false);
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        if (!world.isClient && world.getBlockEntity(pos) == null) {
+            world.removeBlock(pos, false);
             return ActionResult.CONSUME;
         }
         return ActionResult.PASS;
     }
 
     @Override
-    public List<ItemStack> getDroppedStacks(BlockState blockState, LootContext.Builder builder) {
+    public List<ItemStack> getDroppedStacks(BlockState state, LootContext.Builder builder) {
         PistonBlockEntity pistonBlockEntity = this.getPistonBlockEntity(builder.getWorld(), builder.get(LootContextParameters.POSITION));
         if (pistonBlockEntity == null) {
             return Collections.emptyList();
@@ -107,22 +107,22 @@ extends BlockWithEntity {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
         return VoxelShapes.empty();
     }
 
     @Override
-    public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-        PistonBlockEntity pistonBlockEntity = this.getPistonBlockEntity(blockView, blockPos);
+    public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+        PistonBlockEntity pistonBlockEntity = this.getPistonBlockEntity(view, pos);
         if (pistonBlockEntity != null) {
-            return pistonBlockEntity.getCollisionShape(blockView, blockPos);
+            return pistonBlockEntity.getCollisionShape(view, pos);
         }
         return VoxelShapes.empty();
     }
 
     @Nullable
-    private PistonBlockEntity getPistonBlockEntity(BlockView blockView, BlockPos blockPos) {
-        BlockEntity blockEntity = blockView.getBlockEntity(blockPos);
+    private PistonBlockEntity getPistonBlockEntity(BlockView world, BlockPos pos) {
+        BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof PistonBlockEntity) {
             return (PistonBlockEntity)blockEntity;
         }
@@ -131,18 +131,18 @@ extends BlockWithEntity {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public ItemStack getPickStack(BlockView blockView, BlockPos blockPos, BlockState blockState) {
+    public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
         return ItemStack.EMPTY;
     }
 
     @Override
-    public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
-        return (BlockState)blockState.with(FACING, blockRotation.rotate(blockState.get(FACING)));
+    public BlockState rotate(BlockState state, BlockRotation rotation) {
+        return (BlockState)state.with(FACING, rotation.rotate(state.get(FACING)));
     }
 
     @Override
-    public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
-        return blockState.rotate(blockMirror.getRotation(blockState.get(FACING)));
+    public BlockState mirror(BlockState state, BlockMirror mirror) {
+        return state.rotate(mirror.getRotation(state.get(FACING)));
     }
 
     @Override
@@ -151,7 +151,7 @@ extends BlockWithEntity {
     }
 
     @Override
-    public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+    public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
         return false;
     }
 }

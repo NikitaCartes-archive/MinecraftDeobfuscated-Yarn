@@ -30,57 +30,57 @@ public class Texts {
         return new LiteralText("").append(text).setStyle(style.deepCopy());
     }
 
-    public static Text parse(@Nullable ServerCommandSource serverCommandSource, Text text, @Nullable Entity entity, int i) throws CommandSyntaxException {
-        if (i > 100) {
+    public static Text parse(@Nullable ServerCommandSource source, Text text, @Nullable Entity sender, int depth) throws CommandSyntaxException {
+        if (depth > 100) {
             return text;
         }
-        Text text2 = text instanceof ParsableText ? ((ParsableText)((Object)text)).parse(serverCommandSource, entity, ++i) : text.copy();
+        Text text2 = text instanceof ParsableText ? ((ParsableText)((Object)text)).parse(source, sender, ++depth) : text.copy();
         for (Text text3 : text.getSiblings()) {
-            text2.append(Texts.parse(serverCommandSource, text3, entity, i));
+            text2.append(Texts.parse(source, text3, sender, depth));
         }
         return Texts.setStyleIfAbsent(text2, text.getStyle());
     }
 
-    public static Text toText(GameProfile gameProfile) {
-        if (gameProfile.getName() != null) {
-            return new LiteralText(gameProfile.getName());
+    public static Text toText(GameProfile profile) {
+        if (profile.getName() != null) {
+            return new LiteralText(profile.getName());
         }
-        if (gameProfile.getId() != null) {
-            return new LiteralText(gameProfile.getId().toString());
+        if (profile.getId() != null) {
+            return new LiteralText(profile.getId().toString());
         }
         return new LiteralText("(unknown)");
     }
 
-    public static Text joinOrdered(Collection<String> collection) {
-        return Texts.joinOrdered(collection, string -> new LiteralText((String)string).formatted(Formatting.GREEN));
+    public static Text joinOrdered(Collection<String> strings) {
+        return Texts.joinOrdered(strings, string -> new LiteralText((String)string).formatted(Formatting.GREEN));
     }
 
-    public static <T extends Comparable<T>> Text joinOrdered(Collection<T> collection, Function<T, Text> function) {
-        if (collection.isEmpty()) {
+    public static <T extends Comparable<T>> Text joinOrdered(Collection<T> elements, Function<T, Text> transformer) {
+        if (elements.isEmpty()) {
             return new LiteralText("");
         }
-        if (collection.size() == 1) {
-            return function.apply(collection.iterator().next());
+        if (elements.size() == 1) {
+            return transformer.apply(elements.iterator().next());
         }
-        ArrayList<T> list = Lists.newArrayList(collection);
+        ArrayList<T> list = Lists.newArrayList(elements);
         list.sort(Comparable::compareTo);
-        return Texts.join(list, function);
+        return Texts.join(list, transformer);
     }
 
-    public static <T> Text join(Collection<T> collection, Function<T, Text> function) {
-        if (collection.isEmpty()) {
+    public static <T> Text join(Collection<T> elements, Function<T, Text> transformer) {
+        if (elements.isEmpty()) {
             return new LiteralText("");
         }
-        if (collection.size() == 1) {
-            return function.apply(collection.iterator().next());
+        if (elements.size() == 1) {
+            return transformer.apply(elements.iterator().next());
         }
         LiteralText text = new LiteralText("");
         boolean bl = true;
-        for (T object : collection) {
+        for (T object : elements) {
             if (!bl) {
                 text.append(new LiteralText(", ").formatted(Formatting.GRAY));
             }
-            text.append(function.apply(object));
+            text.append(transformer.apply(object));
             bl = false;
         }
         return text;

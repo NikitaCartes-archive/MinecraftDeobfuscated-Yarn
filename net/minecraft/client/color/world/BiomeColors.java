@@ -20,16 +20,16 @@ public class BiomeColors {
         return blockRenderView.getColor(blockPos, colorResolver);
     }
 
-    public static int getGrassColor(BlockRenderView blockRenderView, BlockPos blockPos) {
-        return BiomeColors.getColor(blockRenderView, blockPos, GRASS_COLOR);
+    public static int getGrassColor(BlockRenderView view, BlockPos pos) {
+        return BiomeColors.getColor(view, pos, GRASS_COLOR);
     }
 
-    public static int getFoliageColor(BlockRenderView blockRenderView, BlockPos blockPos) {
-        return BiomeColors.getColor(blockRenderView, blockPos, FOLIAGE_COLOR);
+    public static int getFoliageColor(BlockRenderView view, BlockPos pos) {
+        return BiomeColors.getColor(view, pos, FOLIAGE_COLOR);
     }
 
-    public static int getWaterColor(BlockRenderView blockRenderView, BlockPos blockPos) {
-        return BiomeColors.getColor(blockRenderView, blockPos, WATER_COLOR);
+    public static int getWaterColor(BlockRenderView view, BlockPos pos) {
+        return BiomeColors.getColor(view, pos, WATER_COLOR);
     }
 }
 

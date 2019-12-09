@@ -28,20 +28,20 @@ public class ModelItemOverride {
     private final Identifier modelId;
     private final Map<Identifier, Float> minPropertyValues;
 
-    public ModelItemOverride(Identifier identifier, Map<Identifier, Float> map) {
-        this.modelId = identifier;
-        this.minPropertyValues = map;
+    public ModelItemOverride(Identifier modelId, Map<Identifier, Float> minPropertyValues) {
+        this.modelId = modelId;
+        this.minPropertyValues = minPropertyValues;
     }
 
     public Identifier getModelId() {
         return this.modelId;
     }
 
-    boolean matches(ItemStack itemStack, @Nullable World world, @Nullable LivingEntity livingEntity) {
-        Item item = itemStack.getItem();
+    boolean matches(ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
+        Item item = stack.getItem();
         for (Map.Entry<Identifier, Float> entry : this.minPropertyValues.entrySet()) {
             ItemPropertyGetter itemPropertyGetter = item.getPropertyGetter(entry.getKey());
-            if (itemPropertyGetter != null && !(itemPropertyGetter.call(itemStack, world, livingEntity) < entry.getValue().floatValue())) continue;
+            if (itemPropertyGetter != null && !(itemPropertyGetter.call(stack, world, entity) < entry.getValue().floatValue())) continue;
             return false;
         }
         return true;
@@ -54,25 +54,25 @@ public class ModelItemOverride {
         }
 
         @Override
-        public ModelItemOverride deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            JsonObject jsonObject = jsonElement.getAsJsonObject();
+        public ModelItemOverride deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
+            JsonObject jsonObject = element.getAsJsonObject();
             Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "model"));
             Map<Identifier, Float> map = this.deserializeMinPropertyValues(jsonObject);
             return new ModelItemOverride(identifier, map);
         }
 
-        protected Map<Identifier, Float> deserializeMinPropertyValues(JsonObject jsonObject) {
+        protected Map<Identifier, Float> deserializeMinPropertyValues(JsonObject object) {
             LinkedHashMap<Identifier, Float> map = Maps.newLinkedHashMap();
-            JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "predicate");
-            for (Map.Entry<String, JsonElement> entry : jsonObject2.entrySet()) {
+            JsonObject jsonObject = JsonHelper.getObject(object, "predicate");
+            for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
                 map.put(new Identifier(entry.getKey()), Float.valueOf(JsonHelper.asFloat(entry.getValue(), entry.getKey())));
             }
             return map;
         }
 
         @Override
-        public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.deserialize(jsonElement, type, jsonDeserializationContext);
+        public /* synthetic */ Object deserialize(JsonElement functionJson, Type unused, JsonDeserializationContext context) throws JsonParseException {
+            return this.deserialize(functionJson, unused, context);
         }
     }
 }

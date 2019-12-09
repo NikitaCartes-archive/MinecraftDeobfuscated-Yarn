@@ -26,15 +26,15 @@ extends Item {
         private final ItemDispenserBehavior defaultBehavior = new ItemDispenserBehavior();
 
         @Override
-        public ItemStack dispenseSilently(BlockPointer blockPointer, ItemStack itemStack) {
+        public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
             double g;
             RailShape railShape;
-            Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);
-            World world = blockPointer.getWorld();
-            double d = blockPointer.getX() + (double)direction.getOffsetX() * 1.125;
-            double e = Math.floor(blockPointer.getY()) + (double)direction.getOffsetY();
-            double f = blockPointer.getZ() + (double)direction.getOffsetZ() * 1.125;
-            BlockPos blockPos = blockPointer.getBlockPos().offset(direction);
+            Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
+            World world = pointer.getWorld();
+            double d = pointer.getX() + (double)direction.getOffsetX() * 1.125;
+            double e = Math.floor(pointer.getY()) + (double)direction.getOffsetY();
+            double f = pointer.getZ() + (double)direction.getOffsetZ() * 1.125;
+            BlockPos blockPos = pointer.getBlockPos().offset(direction);
             BlockState blockState = world.getBlockState(blockPos);
             RailShape railShape2 = railShape = blockState.getBlock() instanceof AbstractRailBlock ? blockState.get(((AbstractRailBlock)blockState.getBlock()).getShapeProperty()) : RailShape.NORTH_SOUTH;
             if (blockState.matches(BlockTags.RAILS)) {
@@ -45,20 +45,20 @@ extends Item {
                 RailShape railShape3 = railShape22 = blockState2.getBlock() instanceof AbstractRailBlock ? blockState2.get(((AbstractRailBlock)blockState2.getBlock()).getShapeProperty()) : RailShape.NORTH_SOUTH;
                 g = direction == Direction.DOWN || !railShape22.isAscending() ? -0.9 : -0.4;
             } else {
-                return this.defaultBehavior.dispense(blockPointer, itemStack);
+                return this.defaultBehavior.dispense(pointer, stack);
             }
-            AbstractMinecartEntity abstractMinecartEntity = AbstractMinecartEntity.create(world, d, e + g, f, ((MinecartItem)itemStack.getItem()).type);
-            if (itemStack.hasCustomName()) {
-                abstractMinecartEntity.setCustomName(itemStack.getName());
+            AbstractMinecartEntity abstractMinecartEntity = AbstractMinecartEntity.create(world, d, e + g, f, ((MinecartItem)stack.getItem()).type);
+            if (stack.hasCustomName()) {
+                abstractMinecartEntity.setCustomName(stack.getName());
             }
             world.spawnEntity(abstractMinecartEntity);
-            itemStack.decrement(1);
-            return itemStack;
+            stack.decrement(1);
+            return stack;
         }
 
         @Override
-        protected void playSound(BlockPointer blockPointer) {
-            blockPointer.getWorld().playLevelEvent(1000, blockPointer.getBlockPos(), 0);
+        protected void playSound(BlockPointer pointer) {
+            pointer.getWorld().playLevelEvent(1000, pointer.getBlockPos(), 0);
         }
     };
     private final AbstractMinecartEntity.Type type;
@@ -70,14 +70,14 @@ extends Item {
     }
 
     @Override
-    public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
+    public ActionResult useOnBlock(ItemUsageContext context) {
         BlockPos blockPos;
-        World world = itemUsageContext.getWorld();
-        BlockState blockState = world.getBlockState(blockPos = itemUsageContext.getBlockPos());
+        World world = context.getWorld();
+        BlockState blockState = world.getBlockState(blockPos = context.getBlockPos());
         if (!blockState.matches(BlockTags.RAILS)) {
             return ActionResult.FAIL;
         }
-        ItemStack itemStack = itemUsageContext.getStack();
+        ItemStack itemStack = context.getStack();
         if (!world.isClient) {
             RailShape railShape = blockState.getBlock() instanceof AbstractRailBlock ? blockState.get(((AbstractRailBlock)blockState.getBlock()).getShapeProperty()) : RailShape.NORTH_SOUTH;
             double d = 0.0;

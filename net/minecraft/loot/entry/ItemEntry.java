@@ -22,18 +22,18 @@ public class ItemEntry
 extends LeafEntry {
     private final Item item;
 
-    private ItemEntry(Item item, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
-        super(i, j, lootConditions, lootFunctions);
+    private ItemEntry(Item item, int weight, int quality, LootCondition[] conditions, LootFunction[] functions) {
+        super(weight, quality, conditions, functions);
         this.item = item;
     }
 
     @Override
-    public void drop(Consumer<ItemStack> consumer, LootContext lootContext) {
-        consumer.accept(new ItemStack(this.item));
+    public void drop(Consumer<ItemStack> itemDropper, LootContext context) {
+        itemDropper.accept(new ItemStack(this.item));
     }
 
-    public static LeafEntry.Builder<?> builder(ItemConvertible itemConvertible) {
-        return ItemEntry.builder((int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) -> new ItemEntry(itemConvertible.asItem(), i, j, lootConditions, lootFunctions));
+    public static LeafEntry.Builder<?> builder(ItemConvertible itemProvider) {
+        return ItemEntry.builder((int weight, int quality, LootCondition[] conditions, LootFunction[] functions) -> new ItemEntry(itemProvider.asItem(), weight, quality, conditions, functions));
     }
 
     public static class Serializer
@@ -59,8 +59,8 @@ extends LeafEntry {
         }
 
         @Override
-        protected /* synthetic */ LeafEntry fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
-            return this.fromJson(jsonObject, jsonDeserializationContext, i, j, lootConditions, lootFunctions);
+        protected /* synthetic */ LeafEntry fromJson(JsonObject entryJson, JsonDeserializationContext context, int weight, int quality, LootCondition[] conditions, LootFunction[] functions) {
+            return this.fromJson(entryJson, context, weight, quality, conditions, functions);
         }
     }
 }

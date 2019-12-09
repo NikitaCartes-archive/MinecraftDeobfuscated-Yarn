@@ -70,21 +70,21 @@ Tickable {
     }
 
     @Override
-    public void fromTag(CompoundTag compoundTag) {
-        super.fromTag(compoundTag);
+    public void fromTag(CompoundTag tag) {
+        super.fromTag(tag);
         this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
-        if (!this.deserializeLootTable(compoundTag)) {
-            Inventories.fromTag(compoundTag, this.inventory);
+        if (!this.deserializeLootTable(tag)) {
+            Inventories.fromTag(tag, this.inventory);
         }
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag compoundTag) {
-        super.toTag(compoundTag);
-        if (!this.serializeLootTable(compoundTag)) {
-            Inventories.toTag(compoundTag, this.inventory);
+    public CompoundTag toTag(CompoundTag tag) {
+        super.toTag(tag);
+        if (!this.serializeLootTable(tag)) {
+            Inventories.toTag(tag, this.inventory);
         }
-        return compoundTag;
+        return tag;
     }
 
     @Override
@@ -115,23 +115,23 @@ Tickable {
         }
     }
 
-    public static int tickViewerCount(World world, LockableContainerBlockEntity lockableContainerBlockEntity, int i, int j, int k, int l, int m) {
-        if (!world.isClient && m != 0 && (i + j + k + l) % 200 == 0) {
-            m = ChestBlockEntity.countViewers(world, lockableContainerBlockEntity, j, k, l);
+    public static int tickViewerCount(World world, LockableContainerBlockEntity blockEntity, int ticksOpen, int x, int y, int z, int viewerCount) {
+        if (!world.isClient && viewerCount != 0 && (ticksOpen + x + y + z) % 200 == 0) {
+            viewerCount = ChestBlockEntity.countViewers(world, blockEntity, x, y, z);
         }
-        return m;
+        return viewerCount;
     }
 
-    public static int countViewers(World world, LockableContainerBlockEntity lockableContainerBlockEntity, int i, int j, int k) {
-        int l = 0;
+    public static int countViewers(World world, LockableContainerBlockEntity container, int ticksOpen, int x, int y) {
+        int i = 0;
         float f = 5.0f;
-        List<PlayerEntity> list = world.getNonSpectatingEntities(PlayerEntity.class, new Box((float)i - 5.0f, (float)j - 5.0f, (float)k - 5.0f, (float)(i + 1) + 5.0f, (float)(j + 1) + 5.0f, (float)(k + 1) + 5.0f));
+        List<PlayerEntity> list = world.getNonSpectatingEntities(PlayerEntity.class, new Box((float)ticksOpen - 5.0f, (float)x - 5.0f, (float)y - 5.0f, (float)(ticksOpen + 1) + 5.0f, (float)(x + 1) + 5.0f, (float)(y + 1) + 5.0f));
         for (PlayerEntity playerEntity : list) {
             Inventory inventory;
-            if (!(playerEntity.container instanceof GenericContainer) || (inventory = ((GenericContainer)playerEntity.container).getInventory()) != lockableContainerBlockEntity && (!(inventory instanceof DoubleInventory) || !((DoubleInventory)inventory).isPart(lockableContainerBlockEntity))) continue;
-            ++l;
+            if (!(playerEntity.container instanceof GenericContainer) || (inventory = ((GenericContainer)playerEntity.container).getInventory()) != container && (!(inventory instanceof DoubleInventory) || !((DoubleInventory)inventory).isPart(container))) continue;
+            ++i;
         }
-        return l;
+        return i;
     }
 
     private void playSound(SoundEvent soundEvent) {
@@ -160,8 +160,8 @@ Tickable {
     }
 
     @Override
-    public void onInvOpen(PlayerEntity playerEntity) {
-        if (!playerEntity.isSpectator()) {
+    public void onInvOpen(PlayerEntity player) {
+        if (!player.isSpectator()) {
             if (this.viewerCount < 0) {
                 this.viewerCount = 0;
             }
@@ -171,8 +171,8 @@ Tickable {
     }
 
     @Override
-    public void onInvClose(PlayerEntity playerEntity) {
-        if (!playerEntity.isSpectator()) {
+    public void onInvClose(PlayerEntity player) {
+        if (!player.isSpectator()) {
             --this.viewerCount;
             this.onInvOpenOrClose();
         }
@@ -192,8 +192,8 @@ Tickable {
     }
 
     @Override
-    protected void setInvStackList(DefaultedList<ItemStack> defaultedList) {
-        this.inventory = defaultedList;
+    protected void setInvStackList(DefaultedList<ItemStack> list) {
+        this.inventory = list;
     }
 
     @Override
@@ -202,19 +202,19 @@ Tickable {
         return MathHelper.lerp(f, this.lastAnimationAngle, this.animationAngle);
     }
 
-    public static int getPlayersLookingInChestCount(BlockView blockView, BlockPos blockPos) {
+    public static int getPlayersLookingInChestCount(BlockView world, BlockPos pos) {
         BlockEntity blockEntity;
-        BlockState blockState = blockView.getBlockState(blockPos);
-        if (blockState.getBlock().hasBlockEntity() && (blockEntity = blockView.getBlockEntity(blockPos)) instanceof ChestBlockEntity) {
+        BlockState blockState = world.getBlockState(pos);
+        if (blockState.getBlock().hasBlockEntity() && (blockEntity = world.getBlockEntity(pos)) instanceof ChestBlockEntity) {
             return ((ChestBlockEntity)blockEntity).viewerCount;
         }
         return 0;
     }
 
-    public static void copyInventory(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
-        DefaultedList<ItemStack> defaultedList = chestBlockEntity.getInvStackList();
-        chestBlockEntity.setInvStackList(chestBlockEntity2.getInvStackList());
-        chestBlockEntity2.setInvStackList(defaultedList);
+    public static void copyInventory(ChestBlockEntity from, ChestBlockEntity to) {
+        DefaultedList<ItemStack> defaultedList = from.getInvStackList();
+        from.setInvStackList(to.getInvStackList());
+        to.setInvStackList(defaultedList);
     }
 
     @Override

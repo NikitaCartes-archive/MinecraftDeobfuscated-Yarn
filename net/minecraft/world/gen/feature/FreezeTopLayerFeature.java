@@ -21,8 +21,8 @@ import net.minecraft.world.gen.feature.Feature;
 
 public class FreezeTopLayerFeature
 extends Feature<DefaultFeatureConfig> {
-    public FreezeTopLayerFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-        super(function);
+    public FreezeTopLayerFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
+        super(configFactory);
     }
 
     @Override

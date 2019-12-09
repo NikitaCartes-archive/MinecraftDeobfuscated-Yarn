@@ -32,9 +32,9 @@ extends PlayerEntity {
     public float elytraRoll;
     public final ClientWorld clientWorld;
 
-    public AbstractClientPlayerEntity(ClientWorld clientWorld, GameProfile gameProfile) {
-        super(clientWorld, gameProfile);
-        this.clientWorld = clientWorld;
+    public AbstractClientPlayerEntity(ClientWorld world, GameProfile profile) {
+        super(world, profile);
+        this.clientWorld = world;
     }
 
     @Override
@@ -87,18 +87,18 @@ extends PlayerEntity {
         return playerListEntry == null ? null : playerListEntry.getElytraTexture();
     }
 
-    public static PlayerSkinTexture loadSkin(Identifier identifier, String string) {
+    public static PlayerSkinTexture loadSkin(Identifier id, String playerName) {
         TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
-        AbstractTexture abstractTexture = textureManager.getTexture(identifier);
+        AbstractTexture abstractTexture = textureManager.getTexture(id);
         if (abstractTexture == null) {
-            abstractTexture = new PlayerSkinTexture(null, String.format("http://skins.minecraft.net/MinecraftSkins/%s.png", ChatUtil.stripTextFormat(string)), DefaultSkinHelper.getTexture(AbstractClientPlayerEntity.getOfflinePlayerUuid(string)), true, null);
-            textureManager.registerTexture(identifier, abstractTexture);
+            abstractTexture = new PlayerSkinTexture(null, String.format("http://skins.minecraft.net/MinecraftSkins/%s.png", ChatUtil.stripTextFormat(playerName)), DefaultSkinHelper.getTexture(AbstractClientPlayerEntity.getOfflinePlayerUuid(playerName)), true, null);
+            textureManager.registerTexture(id, abstractTexture);
         }
         return (PlayerSkinTexture)abstractTexture;
     }
 
-    public static Identifier getSkinId(String string) {
-        return new Identifier("skins/" + Hashing.sha1().hashUnencodedChars(ChatUtil.stripTextFormat(string)));
+    public static Identifier getSkinId(String playerName) {
+        return new Identifier("skins/" + Hashing.sha1().hashUnencodedChars(ChatUtil.stripTextFormat(playerName)));
     }
 
     public String getModel() {

@@ -30,9 +30,9 @@ public class BeehiveTreeDecorator
 extends TreeDecorator {
     private final float chance;
 
-    public BeehiveTreeDecorator(float f) {
+    public BeehiveTreeDecorator(float chance) {
         super(TreeDecoratorType.BEEHIVE);
-        this.chance = f;
+        this.chance = chance;
     }
 
     public <T> BeehiveTreeDecorator(Dynamic<T> dynamic) {
@@ -40,7 +40,7 @@ extends TreeDecorator {
     }
 
     @Override
-    public void generate(IWorld iWorld, Random random, List<BlockPos> list, List<BlockPos> list2, Set<BlockPos> set, BlockBox blockBox) {
+    public void generate(IWorld world, Random random, List<BlockPos> list, List<BlockPos> list2, Set<BlockPos> set, BlockBox box) {
         if (random.nextFloat() >= this.chance) {
             return;
         }
@@ -49,25 +49,25 @@ extends TreeDecorator {
         List list3 = list.stream().filter(blockPos -> blockPos.getY() == i).collect(Collectors.toList());
         BlockPos blockPos2 = (BlockPos)list3.get(random.nextInt(list3.size()));
         BlockPos blockPos22 = blockPos2.offset(direction);
-        if (!AbstractTreeFeature.isAir(iWorld, blockPos22) || !AbstractTreeFeature.isAir(iWorld, blockPos22.offset(Direction.SOUTH))) {
+        if (!AbstractTreeFeature.isAir(world, blockPos22) || !AbstractTreeFeature.isAir(world, blockPos22.offset(Direction.SOUTH))) {
             return;
         }
         BlockState blockState = (BlockState)Blocks.BEE_NEST.getDefaultState().with(BeehiveBlock.FACING, Direction.SOUTH);
-        this.method_23470(iWorld, blockPos22, blockState, set, blockBox);
-        BlockEntity blockEntity = iWorld.getBlockEntity(blockPos22);
+        this.method_23470(world, blockPos22, blockState, set, box);
+        BlockEntity blockEntity = world.getBlockEntity(blockPos22);
         if (blockEntity instanceof BeehiveBlockEntity) {
             BeehiveBlockEntity beehiveBlockEntity = (BeehiveBlockEntity)blockEntity;
             int j = 2 + random.nextInt(2);
             for (int k = 0; k < j; ++k) {
-                BeeEntity beeEntity = new BeeEntity((EntityType<? extends BeeEntity>)EntityType.BEE, iWorld.getWorld());
+                BeeEntity beeEntity = new BeeEntity((EntityType<? extends BeeEntity>)EntityType.BEE, world.getWorld());
                 beehiveBlockEntity.tryEnterHive(beeEntity, false, random.nextInt(599));
             }
         }
     }
 
     @Override
-    public <T> T serialize(DynamicOps<T> dynamicOps) {
-        return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("type"), dynamicOps.createString(Registry.TREE_DECORATOR_TYPE.getId(this.field_21319).toString()), dynamicOps.createString("probability"), dynamicOps.createFloat(this.chance)))).getValue();
+    public <T> T serialize(DynamicOps<T> ops) {
+        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("type"), ops.createString(Registry.TREE_DECORATOR_TYPE.getId(this.field_21319).toString()), ops.createString("probability"), ops.createFloat(this.chance)))).getValue();
     }
 }
 

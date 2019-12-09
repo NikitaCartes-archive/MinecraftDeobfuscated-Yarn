@@ -27,10 +27,10 @@ extends Goal {
     protected final int field_6504 = 20;
     private long field_19200;
 
-    public MeleeAttackGoal(MobEntityWithAi mobEntityWithAi, double d, boolean bl) {
-        this.mob = mobEntityWithAi;
-        this.speed = d;
-        this.pauseWhenMobIdle = bl;
+    public MeleeAttackGoal(MobEntityWithAi mob, double speed, boolean pauseWhenMobIdle) {
+        this.mob = mob;
+        this.speed = speed;
+        this.pauseWhenMobIdle = pauseWhenMobIdle;
         this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
     }
 
@@ -114,17 +114,17 @@ extends Goal {
         this.attack(livingEntity, d);
     }
 
-    protected void attack(LivingEntity livingEntity, double d) {
-        double e = this.getSquaredMaxAttackDistance(livingEntity);
-        if (d <= e && this.ticksUntilAttack <= 0) {
+    protected void attack(LivingEntity target, double squaredDistance) {
+        double d = this.getSquaredMaxAttackDistance(target);
+        if (squaredDistance <= d && this.ticksUntilAttack <= 0) {
             this.ticksUntilAttack = 20;
             this.mob.swingHand(Hand.MAIN_HAND);
-            this.mob.tryAttack(livingEntity);
+            this.mob.tryAttack(target);
         }
     }
 
-    protected double getSquaredMaxAttackDistance(LivingEntity livingEntity) {
-        return this.mob.getWidth() * 2.0f * (this.mob.getWidth() * 2.0f) + livingEntity.getWidth();
+    protected double getSquaredMaxAttackDistance(LivingEntity entity) {
+        return this.mob.getWidth() * 2.0f * (this.mob.getWidth() * 2.0f) + entity.getWidth();
     }
 }
 

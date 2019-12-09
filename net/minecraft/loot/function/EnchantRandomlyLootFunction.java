@@ -36,41 +36,41 @@ extends ConditionalLootFunction {
     private static final Logger LOGGER = LogManager.getLogger();
     private final List<Enchantment> enchantments;
 
-    private EnchantRandomlyLootFunction(LootCondition[] lootConditions, Collection<Enchantment> collection) {
-        super(lootConditions);
-        this.enchantments = ImmutableList.copyOf(collection);
+    private EnchantRandomlyLootFunction(LootCondition[] conditions, Collection<Enchantment> enchantments) {
+        super(conditions);
+        this.enchantments = ImmutableList.copyOf(enchantments);
     }
 
     @Override
-    public ItemStack process(ItemStack itemStack, LootContext lootContext) {
+    public ItemStack process(ItemStack stack, LootContext context) {
         Enchantment enchantment2;
-        Random random = lootContext.getRandom();
+        Random random = context.getRandom();
         if (this.enchantments.isEmpty()) {
             ArrayList<Enchantment> list = Lists.newArrayList();
             for (Enchantment enchantment : Registry.ENCHANTMENT) {
-                if (itemStack.getItem() != Items.BOOK && !enchantment.isAcceptableItem(itemStack)) continue;
+                if (stack.getItem() != Items.BOOK && !enchantment.isAcceptableItem(stack)) continue;
                 list.add(enchantment);
             }
             if (list.isEmpty()) {
-                LOGGER.warn("Couldn't find a compatible enchantment for {}", (Object)itemStack);
-                return itemStack;
+                LOGGER.warn("Couldn't find a compatible enchantment for {}", (Object)stack);
+                return stack;
             }
             enchantment2 = (Enchantment)list.get(random.nextInt(list.size()));
         } else {
             enchantment2 = this.enchantments.get(random.nextInt(this.enchantments.size()));
         }
         int i = MathHelper.nextInt(random, enchantment2.getMinimumLevel(), enchantment2.getMaximumLevel());
-        if (itemStack.getItem() == Items.BOOK) {
-            itemStack = new ItemStack(Items.ENCHANTED_BOOK);
-            EnchantedBookItem.addEnchantment(itemStack, new InfoEnchantment(enchantment2, i));
+        if (stack.getItem() == Items.BOOK) {
+            stack = new ItemStack(Items.ENCHANTED_BOOK);
+            EnchantedBookItem.addEnchantment(stack, new InfoEnchantment(enchantment2, i));
         } else {
-            itemStack.addEnchantment(enchantment2, i);
+            stack.addEnchantment(enchantment2, i);
         }
-        return itemStack;
+        return stack;
     }
 
     public static ConditionalLootFunction.Builder<?> builder() {
-        return EnchantRandomlyLootFunction.builder(lootConditions -> new EnchantRandomlyLootFunction((LootCondition[])lootConditions, (Collection<Enchantment>)ImmutableList.of()));
+        return EnchantRandomlyLootFunction.builder(conditions -> new EnchantRandomlyLootFunction((LootCondition[])conditions, (Collection<Enchantment>)ImmutableList.of()));
     }
 
     public static class Factory
@@ -110,8 +110,8 @@ extends ConditionalLootFunction {
         }
 
         @Override
-        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
+        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions) {
+            return this.fromJson(json, context, conditions);
         }
     }
 }

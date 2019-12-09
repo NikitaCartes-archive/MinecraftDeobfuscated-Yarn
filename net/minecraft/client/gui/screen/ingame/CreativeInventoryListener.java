@@ -25,12 +25,12 @@ implements ContainerListener {
     }
 
     @Override
-    public void onContainerSlotUpdate(Container container, int i, ItemStack itemStack) {
-        this.client.interactionManager.clickCreativeStack(itemStack, i);
+    public void onContainerSlotUpdate(Container container, int slotId, ItemStack itemStack) {
+        this.client.interactionManager.clickCreativeStack(itemStack, slotId);
     }
 
     @Override
-    public void onContainerPropertyUpdate(Container container, int i, int j) {
+    public void onContainerPropertyUpdate(Container container, int propertyId, int i) {
     }
 }
 

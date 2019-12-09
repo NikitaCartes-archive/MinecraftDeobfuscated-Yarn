@@ -30,28 +30,28 @@ extends AbstractSkullBlock {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
         return SHAPE;
     }
 
     @Override
-    public VoxelShape getCullingShape(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+    public VoxelShape getCullingShape(BlockState state, BlockView view, BlockPos pos) {
         return VoxelShapes.empty();
     }
 
     @Override
-    public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-        return (BlockState)this.getDefaultState().with(ROTATION, MathHelper.floor((double)(itemPlacementContext.getPlayerYaw() * 16.0f / 360.0f) + 0.5) & 0xF);
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        return (BlockState)this.getDefaultState().with(ROTATION, MathHelper.floor((double)(ctx.getPlayerYaw() * 16.0f / 360.0f) + 0.5) & 0xF);
     }
 
     @Override
-    public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
-        return (BlockState)blockState.with(ROTATION, blockRotation.rotate(blockState.get(ROTATION), 16));
+    public BlockState rotate(BlockState state, BlockRotation rotation) {
+        return (BlockState)state.with(ROTATION, rotation.rotate(state.get(ROTATION), 16));
     }
 
     @Override
-    public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
-        return (BlockState)blockState.with(ROTATION, blockMirror.mirror(blockState.get(ROTATION), 16));
+    public BlockState mirror(BlockState state, BlockMirror mirror) {
+        return (BlockState)state.with(ROTATION, mirror.mirror(state.get(ROTATION), 16));
     }
 
     @Override

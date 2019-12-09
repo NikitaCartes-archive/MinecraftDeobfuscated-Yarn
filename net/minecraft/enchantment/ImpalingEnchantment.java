@@ -10,18 +10,18 @@ import net.minecraft.entity.EquipmentSlot;
 
 public class ImpalingEnchantment
 extends Enchantment {
-    public ImpalingEnchantment(Enchantment.Weight weight, EquipmentSlot ... equipmentSlots) {
-        super(weight, EnchantmentTarget.TRIDENT, equipmentSlots);
+    public ImpalingEnchantment(Enchantment.Weight weight, EquipmentSlot ... slotTypes) {
+        super(weight, EnchantmentTarget.TRIDENT, slotTypes);
     }
 
     @Override
-    public int getMinimumPower(int i) {
-        return 1 + (i - 1) * 8;
+    public int getMinimumPower(int level) {
+        return 1 + (level - 1) * 8;
     }
 
     @Override
-    public int getMaximumPower(int i) {
-        return this.getMinimumPower(i) + 20;
+    public int getMaximumPower(int level) {
+        return this.getMinimumPower(level) + 20;
     }
 
     @Override
@@ -30,9 +30,9 @@ extends Enchantment {
     }
 
     @Override
-    public float getAttackDamage(int i, EntityGroup entityGroup) {
-        if (entityGroup == EntityGroup.AQUATIC) {
-            return (float)i * 2.5f;
+    public float getAttackDamage(int level, EntityGroup group) {
+        if (group == EntityGroup.AQUATIC) {
+            return (float)level * 2.5f;
         }
         return 0.0f;
     }

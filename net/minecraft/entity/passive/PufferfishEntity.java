@@ -58,28 +58,28 @@ extends FishEntity {
         return this.dataTracker.get(PUFF_STATE);
     }
 
-    public void setPuffState(int i) {
-        this.dataTracker.set(PUFF_STATE, i);
+    public void setPuffState(int puffState) {
+        this.dataTracker.set(PUFF_STATE, puffState);
     }
 
     @Override
-    public void onTrackedDataSet(TrackedData<?> trackedData) {
-        if (PUFF_STATE.equals(trackedData)) {
+    public void onTrackedDataSet(TrackedData<?> data) {
+        if (PUFF_STATE.equals(data)) {
             this.calculateDimensions();
         }
-        super.onTrackedDataSet(trackedData);
+        super.onTrackedDataSet(data);
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag compoundTag) {
-        super.writeCustomDataToTag(compoundTag);
-        compoundTag.putInt("PuffState", this.getPuffState());
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putInt("PuffState", this.getPuffState());
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag compoundTag) {
-        super.readCustomDataFromTag(compoundTag);
-        this.setPuffState(compoundTag.getInt("PuffState"));
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        this.setPuffState(tag.getInt("PuffState"));
     }
 
     @Override
@@ -131,20 +131,20 @@ extends FishEntity {
         }
     }
 
-    private void sting(MobEntity mobEntity) {
+    private void sting(MobEntity mob) {
         int i = this.getPuffState();
-        if (mobEntity.damage(DamageSource.mob(this), 1 + i)) {
-            mobEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 60 * i, 0));
+        if (mob.damage(DamageSource.mob(this), 1 + i)) {
+            mob.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 60 * i, 0));
             this.playSound(SoundEvents.ENTITY_PUFFER_FISH_STING, 1.0f, 1.0f);
         }
     }
 
     @Override
-    public void onPlayerCollision(PlayerEntity playerEntity) {
+    public void onPlayerCollision(PlayerEntity player) {
         int i = this.getPuffState();
-        if (playerEntity instanceof ServerPlayerEntity && i > 0 && playerEntity.damage(DamageSource.mob(this), 1 + i)) {
-            ((ServerPlayerEntity)playerEntity).networkHandler.sendPacket(new GameStateChangeS2CPacket(9, 0.0f));
-            playerEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 60 * i, 0));
+        if (player instanceof ServerPlayerEntity && i > 0 && player.damage(DamageSource.mob(this), 1 + i)) {
+            ((ServerPlayerEntity)player).networkHandler.sendPacket(new GameStateChangeS2CPacket(9, 0.0f));
+            player.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 60 * i, 0));
         }
     }
 
@@ -159,7 +159,7 @@ extends FishEntity {
     }
 
     @Override
-    protected SoundEvent getHurtSound(DamageSource damageSource) {
+    protected SoundEvent getHurtSound(DamageSource source) {
         return SoundEvents.ENTITY_PUFFER_FISH_HURT;
     }
 
@@ -169,12 +169,12 @@ extends FishEntity {
     }
 
     @Override
-    public EntityDimensions getDimensions(EntityPose entityPose) {
-        return super.getDimensions(entityPose).scaled(PufferfishEntity.getScaleForPuffState(this.getPuffState()));
+    public EntityDimensions getDimensions(EntityPose pose) {
+        return super.getDimensions(pose).scaled(PufferfishEntity.getScaleForPuffState(this.getPuffState()));
     }
 
-    private static float getScaleForPuffState(int i) {
-        switch (i) {
+    private static float getScaleForPuffState(int puffState) {
+        switch (puffState) {
             case 1: {
                 return 0.7f;
             }
@@ -189,8 +189,8 @@ extends FishEntity {
     extends Goal {
         private final PufferfishEntity pufferfish;
 
-        public InflateGoal(PufferfishEntity pufferfishEntity) {
-            this.pufferfish = pufferfishEntity;
+        public InflateGoal(PufferfishEntity pufferfish) {
+            this.pufferfish = pufferfish;
         }
 
         @Override

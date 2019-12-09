@@ -23,17 +23,17 @@ implements FeatureConfig {
     public final int holeCount;
     public final Set<Block> validBlocks;
 
-    public SpringFeatureConfig(FluidState fluidState, boolean bl, int i, int j, Set<Block> set) {
-        this.state = fluidState;
-        this.requiresBlockBelow = bl;
-        this.rockCount = i;
-        this.holeCount = j;
-        this.validBlocks = set;
+    public SpringFeatureConfig(FluidState state, boolean requiresBlockBelow, int rockCount, int holeCount, Set<Block> validBlocks) {
+        this.state = state;
+        this.requiresBlockBelow = requiresBlockBelow;
+        this.rockCount = rockCount;
+        this.holeCount = holeCount;
+        this.validBlocks = validBlocks;
     }
 
     @Override
-    public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-        return new Dynamic<Object>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("state"), FluidState.serialize(dynamicOps, this.state).getValue(), dynamicOps.createString("requires_block_below"), dynamicOps.createBoolean(this.requiresBlockBelow), dynamicOps.createString("rock_count"), dynamicOps.createInt(this.rockCount), dynamicOps.createString("hole_count"), dynamicOps.createInt(this.holeCount), dynamicOps.createString("valid_blocks"), dynamicOps.createList(this.validBlocks.stream().map(Registry.BLOCK::getId).map(Identifier::toString).map(dynamicOps::createString)))));
+    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+        return new Dynamic<Object>(ops, ops.createMap(ImmutableMap.of(ops.createString("state"), FluidState.serialize(ops, this.state).getValue(), ops.createString("requires_block_below"), ops.createBoolean(this.requiresBlockBelow), ops.createString("rock_count"), ops.createInt(this.rockCount), ops.createString("hole_count"), ops.createInt(this.holeCount), ops.createString("valid_blocks"), ops.createList(this.validBlocks.stream().map(Registry.BLOCK::getId).map(Identifier::toString).map(ops::createString)))));
     }
 
     public static <T> SpringFeatureConfig deserialize(Dynamic<T> dynamic2) {

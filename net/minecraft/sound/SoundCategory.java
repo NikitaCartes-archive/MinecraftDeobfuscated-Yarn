@@ -23,8 +23,8 @@ public enum SoundCategory {
     private static final Map<String, SoundCategory> NAME_MAP;
     private final String name;
 
-    private SoundCategory(String string2) {
-        this.name = string2;
+    private SoundCategory(String name) {
+        this.name = name;
     }
 
     public String getName() {

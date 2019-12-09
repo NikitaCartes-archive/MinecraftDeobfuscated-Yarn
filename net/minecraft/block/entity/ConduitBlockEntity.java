@@ -58,18 +58,18 @@ implements Tickable {
     }
 
     @Override
-    public void fromTag(CompoundTag compoundTag) {
-        super.fromTag(compoundTag);
-        this.targetUuid = compoundTag.contains("target_uuid") ? NbtHelper.toUuid(compoundTag.getCompound("target_uuid")) : null;
+    public void fromTag(CompoundTag tag) {
+        super.fromTag(tag);
+        this.targetUuid = tag.contains("target_uuid") ? NbtHelper.toUuid(tag.getCompound("target_uuid")) : null;
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag compoundTag) {
-        super.toTag(compoundTag);
+    public CompoundTag toTag(CompoundTag tag) {
+        super.toTag(tag);
         if (this.targetEntity != null) {
-            compoundTag.put("target_uuid", NbtHelper.fromUuid(this.targetEntity.getUuid()));
+            tag.put("target_uuid", NbtHelper.fromUuid(this.targetEntity.getUuid()));
         }
-        return compoundTag;
+        return tag;
     }
 
     @Override
@@ -249,20 +249,20 @@ implements Tickable {
         return this.eyeOpen;
     }
 
-    private void setActive(boolean bl) {
-        if (bl != this.active) {
-            this.playSound(bl ? SoundEvents.BLOCK_CONDUIT_ACTIVATE : SoundEvents.BLOCK_CONDUIT_DEACTIVATE);
+    private void setActive(boolean active) {
+        if (active != this.active) {
+            this.playSound(active ? SoundEvents.BLOCK_CONDUIT_ACTIVATE : SoundEvents.BLOCK_CONDUIT_DEACTIVATE);
         }
-        this.active = bl;
+        this.active = active;
     }
 
-    private void setEyeOpen(boolean bl) {
-        this.eyeOpen = bl;
+    private void setEyeOpen(boolean eyeOpen) {
+        this.eyeOpen = eyeOpen;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public float getRotation(float f) {
-        return (this.ticksActive + f) * -0.0375f;
+    public float getRotation(float tickDelta) {
+        return (this.ticksActive + tickDelta) * -0.0375f;
     }
 
     public void playSound(SoundEvent soundEvent) {

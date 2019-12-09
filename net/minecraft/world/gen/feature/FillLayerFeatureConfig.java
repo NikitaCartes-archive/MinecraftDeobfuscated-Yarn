@@ -15,14 +15,14 @@ implements FeatureConfig {
     public final int height;
     public final BlockState state;
 
-    public FillLayerFeatureConfig(int i, BlockState blockState) {
-        this.height = i;
-        this.state = blockState;
+    public FillLayerFeatureConfig(int height, BlockState state) {
+        this.height = height;
+        this.state = state;
     }
 
     @Override
-    public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-        return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("height"), dynamicOps.createInt(this.height), dynamicOps.createString("state"), BlockState.serialize(dynamicOps, this.state).getValue())));
+    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("height"), ops.createInt(this.height), ops.createString("state"), BlockState.serialize(ops, this.state).getValue())));
     }
 
     public static <T> FillLayerFeatureConfig deserialize(Dynamic<T> dynamic) {

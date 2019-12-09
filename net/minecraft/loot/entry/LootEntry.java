@@ -23,9 +23,9 @@ implements EntryCombiner {
     protected final LootCondition[] conditions;
     private final Predicate<LootContext> conditionPredicate;
 
-    protected LootEntry(LootCondition[] lootConditions) {
-        this.conditions = lootConditions;
-        this.conditionPredicate = LootConditions.joinAnd(lootConditions);
+    protected LootEntry(LootCondition[] conditions) {
+        this.conditions = conditions;
+        this.conditionPredicate = LootConditions.joinAnd(conditions);
     }
 
     public void check(LootTableReporter lootTableReporter) {
@@ -34,17 +34,17 @@ implements EntryCombiner {
         }
     }
 
-    protected final boolean test(LootContext lootContext) {
-        return this.conditionPredicate.test(lootContext);
+    protected final boolean test(LootContext context) {
+        return this.conditionPredicate.test(context);
     }
 
     public static abstract class Serializer<T extends LootEntry> {
         private final Identifier id;
         private final Class<T> type;
 
-        protected Serializer(Identifier identifier, Class<T> class_) {
-            this.id = identifier;
-            this.type = class_;
+        protected Serializer(Identifier id, Class<T> type) {
+            this.id = id;
+            this.type = type;
         }
 
         public Identifier getIdentifier() {

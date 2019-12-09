@@ -20,33 +20,33 @@ implements Toast {
     private long startTime;
     private boolean justUpdated;
 
-    public SystemToast(Type type, Text text, @Nullable Text text2) {
+    public SystemToast(Type type, Text title, @Nullable Text description) {
         this.type = type;
-        this.title = text.getString();
-        this.description = text2 == null ? null : text2.getString();
+        this.title = title.getString();
+        this.description = description == null ? null : description.getString();
     }
 
     @Override
-    public Toast.Visibility draw(ToastManager toastManager, long l) {
+    public Toast.Visibility draw(ToastManager manager, long currentTime) {
         if (this.justUpdated) {
-            this.startTime = l;
+            this.startTime = currentTime;
             this.justUpdated = false;
         }
-        toastManager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
+        manager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
         RenderSystem.color3f(1.0f, 1.0f, 1.0f);
-        toastManager.blit(0, 0, 0, 64, 160, 32);
+        manager.blit(0, 0, 0, 64, 160, 32);
         if (this.description == null) {
-            toastManager.getGame().textRenderer.draw(this.title, 18.0f, 12.0f, -256);
+            manager.getGame().textRenderer.draw(this.title, 18.0f, 12.0f, -256);
         } else {
-            toastManager.getGame().textRenderer.draw(this.title, 18.0f, 7.0f, -256);
-            toastManager.getGame().textRenderer.draw(this.description, 18.0f, 18.0f, -1);
+            manager.getGame().textRenderer.draw(this.title, 18.0f, 7.0f, -256);
+            manager.getGame().textRenderer.draw(this.description, 18.0f, 18.0f, -1);
         }
-        return l - this.startTime < 5000L ? Toast.Visibility.SHOW : Toast.Visibility.HIDE;
+        return currentTime - this.startTime < 5000L ? Toast.Visibility.SHOW : Toast.Visibility.HIDE;
     }
 
-    public void setContent(Text text, @Nullable Text text2) {
-        this.title = text.getString();
-        this.description = text2 == null ? null : text2.getString();
+    public void setContent(Text title, @Nullable Text description) {
+        this.title = title.getString();
+        this.description = description == null ? null : description.getString();
         this.justUpdated = true;
     }
 
@@ -54,12 +54,12 @@ implements Toast {
         return this.type;
     }
 
-    public static void show(ToastManager toastManager, Type type, Text text, @Nullable Text text2) {
+    public static void show(ToastManager toastManager, Type type, Text title, @Nullable Text description) {
         SystemToast systemToast = toastManager.getToast(SystemToast.class, (Object)type);
         if (systemToast == null) {
-            toastManager.add(new SystemToast(type, text, text2));
+            toastManager.add(new SystemToast(type, title, description));
         } else {
-            systemToast.setContent(text, text2);
+            systemToast.setContent(title, description);
         }
     }
 

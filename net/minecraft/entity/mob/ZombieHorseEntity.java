@@ -51,46 +51,46 @@ extends HorseBaseEntity {
     }
 
     @Override
-    protected SoundEvent getHurtSound(DamageSource damageSource) {
-        super.getHurtSound(damageSource);
+    protected SoundEvent getHurtSound(DamageSource source) {
+        super.getHurtSound(source);
         return SoundEvents.ENTITY_ZOMBIE_HORSE_HURT;
     }
 
     @Override
     @Nullable
-    public PassiveEntity createChild(PassiveEntity passiveEntity) {
+    public PassiveEntity createChild(PassiveEntity mate) {
         return EntityType.ZOMBIE_HORSE.create(this.world);
     }
 
     @Override
-    public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
-        ItemStack itemStack = playerEntity.getStackInHand(hand);
+    public boolean interactMob(PlayerEntity player, Hand hand) {
+        ItemStack itemStack = player.getStackInHand(hand);
         if (itemStack.getItem() instanceof SpawnEggItem) {
-            return super.interactMob(playerEntity, hand);
+            return super.interactMob(player, hand);
         }
         if (!this.isTame()) {
             return false;
         }
         if (this.isBaby()) {
-            return super.interactMob(playerEntity, hand);
+            return super.interactMob(player, hand);
         }
-        if (playerEntity.shouldCancelInteraction()) {
-            this.openInventory(playerEntity);
+        if (player.shouldCancelInteraction()) {
+            this.openInventory(player);
             return true;
         }
         if (this.hasPassengers()) {
-            return super.interactMob(playerEntity, hand);
+            return super.interactMob(player, hand);
         }
         if (!itemStack.isEmpty()) {
             if (!this.isSaddled() && itemStack.getItem() == Items.SADDLE) {
-                this.openInventory(playerEntity);
+                this.openInventory(player);
                 return true;
             }
-            if (itemStack.useOnEntity(playerEntity, this, hand)) {
+            if (itemStack.useOnEntity(player, this, hand)) {
                 return true;
             }
         }
-        this.putPlayerOnBack(playerEntity);
+        this.putPlayerOnBack(player);
         return true;
     }
 

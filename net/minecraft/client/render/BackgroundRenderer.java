@@ -159,53 +159,53 @@ public class BackgroundRenderer {
         RenderSystem.fogMode(GlStateManager.FogMode.EXP2);
     }
 
-    public static void applyFog(Camera camera, FogType fogType, float f, boolean bl) {
-        boolean bl2;
+    public static void applyFog(Camera camera, FogType fogType, float viewDistance, boolean thickFog) {
+        boolean bl;
         FluidState fluidState = camera.getSubmergedFluidState();
         Entity entity = camera.getFocusedEntity();
-        boolean bl3 = bl2 = fluidState.getFluid() != Fluids.EMPTY;
-        if (bl2) {
-            float g = 1.0f;
+        boolean bl2 = bl = fluidState.getFluid() != Fluids.EMPTY;
+        if (bl) {
+            float f = 1.0f;
             if (fluidState.matches(FluidTags.WATER)) {
-                g = 0.05f;
+                f = 0.05f;
                 if (entity instanceof ClientPlayerEntity) {
                     ClientPlayerEntity clientPlayerEntity = (ClientPlayerEntity)entity;
-                    g -= clientPlayerEntity.method_3140() * clientPlayerEntity.method_3140() * 0.03f;
+                    f -= clientPlayerEntity.method_3140() * clientPlayerEntity.method_3140() * 0.03f;
                     Biome biome = clientPlayerEntity.world.getBiome(new BlockPos(clientPlayerEntity));
                     if (biome == Biomes.SWAMP || biome == Biomes.SWAMP_HILLS) {
-                        g += 0.005f;
+                        f += 0.005f;
                     }
                 }
             } else if (fluidState.matches(FluidTags.LAVA)) {
-                g = 2.0f;
+                f = 2.0f;
             }
-            RenderSystem.fogDensity(g);
+            RenderSystem.fogDensity(f);
             RenderSystem.fogMode(GlStateManager.FogMode.EXP2);
         } else {
-            float j;
-            float g;
+            float h;
+            float f;
             if (entity instanceof LivingEntity && ((LivingEntity)entity).hasStatusEffect(StatusEffects.BLINDNESS)) {
                 int i = ((LivingEntity)entity).getStatusEffect(StatusEffects.BLINDNESS).getDuration();
-                float h = MathHelper.lerp(Math.min(1.0f, (float)i / 20.0f), f, 5.0f);
+                float g = MathHelper.lerp(Math.min(1.0f, (float)i / 20.0f), viewDistance, 5.0f);
                 if (fogType == FogType.FOG_SKY) {
-                    g = 0.0f;
-                    j = h * 0.8f;
+                    f = 0.0f;
+                    h = g * 0.8f;
                 } else {
-                    g = h * 0.25f;
-                    j = h;
+                    f = g * 0.25f;
+                    h = g;
                 }
-            } else if (bl) {
-                g = f * 0.05f;
-                j = Math.min(f, 192.0f) * 0.5f;
+            } else if (thickFog) {
+                f = viewDistance * 0.05f;
+                h = Math.min(viewDistance, 192.0f) * 0.5f;
             } else if (fogType == FogType.FOG_SKY) {
-                g = 0.0f;
-                j = f;
+                f = 0.0f;
+                h = viewDistance;
             } else {
-                g = f * 0.75f;
-                j = f;
+                f = viewDistance * 0.75f;
+                h = viewDistance;
             }
-            RenderSystem.fogStart(g);
-            RenderSystem.fogEnd(j);
+            RenderSystem.fogStart(f);
+            RenderSystem.fogEnd(h);
             RenderSystem.fogMode(GlStateManager.FogMode.LINEAR);
             RenderSystem.setupNvFogDistance();
         }

@@ -29,30 +29,30 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(damagePredicate);
     }
 
-    public void trigger(ServerPlayerEntity serverPlayerEntity, DamageSource damageSource, float f, float g, boolean bl) {
-        this.test(serverPlayerEntity.getAdvancementTracker(), conditions -> conditions.matches(serverPlayerEntity, damageSource, f, g, bl));
+    public void trigger(ServerPlayerEntity player, DamageSource source, float dealt, float taken, boolean blocked) {
+        this.test(player.getAdvancementTracker(), conditions -> conditions.matches(player, source, dealt, taken, blocked));
     }
 
     @Override
-    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
+    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject obj, JsonDeserializationContext context) {
+        return this.conditionsFromJson(obj, context);
     }
 
     public static class Conditions
     extends AbstractCriterionConditions {
         private final DamagePredicate damage;
 
-        public Conditions(DamagePredicate damagePredicate) {
+        public Conditions(DamagePredicate damage) {
             super(ID);
-            this.damage = damagePredicate;
+            this.damage = damage;
         }
 
         public static Conditions create(DamagePredicate.Builder builder) {
             return new Conditions(builder.build());
         }
 
-        public boolean matches(ServerPlayerEntity serverPlayerEntity, DamageSource damageSource, float f, float g, boolean bl) {
-            return this.damage.test(serverPlayerEntity, damageSource, f, g, bl);
+        public boolean matches(ServerPlayerEntity player, DamageSource source, float dealt, float taken, boolean blocked) {
+            return this.damage.test(player, source, dealt, taken, blocked);
         }
 
         @Override

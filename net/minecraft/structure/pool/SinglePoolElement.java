@@ -39,8 +39,8 @@ extends StructurePoolElement {
     protected final ImmutableList<StructureProcessor> processors;
 
     @Deprecated
-    public SinglePoolElement(String string, List<StructureProcessor> list) {
-        this(string, list, StructurePool.Projection.RIGID);
+    public SinglePoolElement(String location, List<StructureProcessor> processors) {
+        this(location, processors, StructurePool.Projection.RIGID);
     }
 
     public SinglePoolElement(String string, List<StructureProcessor> list, StructurePool.Projection projection) {
@@ -73,27 +73,27 @@ extends StructurePoolElement {
     }
 
     @Override
-    public List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation, Random random) {
+    public List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager structureManager, BlockPos pos, BlockRotation rotation, Random random) {
         Structure structure = structureManager.getStructureOrBlank(this.location);
-        List<Structure.StructureBlockInfo> list = structure.method_15165(blockPos, new StructurePlacementData().setRotation(blockRotation), Blocks.JIGSAW, true);
+        List<Structure.StructureBlockInfo> list = structure.method_15165(pos, new StructurePlacementData().setRotation(rotation), Blocks.JIGSAW, true);
         Collections.shuffle(list, random);
         return list;
     }
 
     @Override
-    public BlockBox getBoundingBox(StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation) {
+    public BlockBox getBoundingBox(StructureManager structureManager, BlockPos pos, BlockRotation rotation) {
         Structure structure = structureManager.getStructureOrBlank(this.location);
-        return structure.calculateBoundingBox(new StructurePlacementData().setRotation(blockRotation), blockPos);
+        return structure.calculateBoundingBox(new StructurePlacementData().setRotation(rotation), pos);
     }
 
     @Override
-    public boolean generate(StructureManager structureManager, IWorld iWorld, ChunkGenerator<?> chunkGenerator, BlockPos blockPos, BlockRotation blockRotation, BlockBox blockBox, Random random) {
+    public boolean generate(StructureManager structureManager, IWorld world, ChunkGenerator<?> chunkGenerator, BlockPos blockPos, BlockRotation blockRotation, BlockBox blockBox, Random random) {
         StructurePlacementData structurePlacementData;
         Structure structure = structureManager.getStructureOrBlank(this.location);
-        if (structure.method_15172(iWorld, blockPos, structurePlacementData = this.method_16616(blockRotation, blockBox), 18)) {
-            List<Structure.StructureBlockInfo> list = Structure.process(iWorld, blockPos, structurePlacementData, this.method_16614(structureManager, blockPos, blockRotation, false));
+        if (structure.method_15172(world, blockPos, structurePlacementData = this.method_16616(blockRotation, blockBox), 18)) {
+            List<Structure.StructureBlockInfo> list = Structure.process(world, blockPos, structurePlacementData, this.method_16614(structureManager, blockPos, blockRotation, false));
             for (Structure.StructureBlockInfo structureBlockInfo : list) {
-                this.method_16756(iWorld, structureBlockInfo, blockPos, blockRotation, random, blockBox);
+                this.method_16756(world, structureBlockInfo, blockPos, blockRotation, random, blockBox);
             }
             return true;
         }

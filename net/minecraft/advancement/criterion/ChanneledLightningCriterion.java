@@ -30,33 +30,33 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(entityPredicates);
     }
 
-    public void trigger(ServerPlayerEntity serverPlayerEntity, Collection<? extends Entity> collection) {
-        this.test(serverPlayerEntity.getAdvancementTracker(), conditions -> conditions.matches(serverPlayerEntity, collection));
+    public void trigger(ServerPlayerEntity player, Collection<? extends Entity> victims) {
+        this.test(player.getAdvancementTracker(), conditions -> conditions.matches(player, victims));
     }
 
     @Override
-    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
+    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject obj, JsonDeserializationContext context) {
+        return this.conditionsFromJson(obj, context);
     }
 
     public static class Conditions
     extends AbstractCriterionConditions {
         private final EntityPredicate[] victims;
 
-        public Conditions(EntityPredicate[] entityPredicates) {
+        public Conditions(EntityPredicate[] victims) {
             super(ID);
-            this.victims = entityPredicates;
+            this.victims = victims;
         }
 
-        public static Conditions create(EntityPredicate ... entityPredicates) {
-            return new Conditions(entityPredicates);
+        public static Conditions create(EntityPredicate ... victims) {
+            return new Conditions(victims);
         }
 
-        public boolean matches(ServerPlayerEntity serverPlayerEntity, Collection<? extends Entity> collection) {
+        public boolean matches(ServerPlayerEntity player, Collection<? extends Entity> victims) {
             for (EntityPredicate entityPredicate : this.victims) {
                 boolean bl = false;
-                for (Entity entity : collection) {
-                    if (!entityPredicate.test(serverPlayerEntity, entity)) continue;
+                for (Entity entity : victims) {
+                    if (!entityPredicate.test(player, entity)) continue;
                     bl = true;
                     break;
                 }

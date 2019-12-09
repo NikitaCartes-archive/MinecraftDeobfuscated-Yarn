@@ -20,8 +20,8 @@ public class Schedule {
     public static final Schedule VILLAGER_DEFAULT = Schedule.register("villager_default").withActivity(10, Activity.IDLE).withActivity(2000, Activity.WORK).withActivity(9000, Activity.MEET).withActivity(11000, Activity.IDLE).withActivity(12000, Activity.REST).build();
     private final Map<Activity, ScheduleRule> scheduleRules = Maps.newHashMap();
 
-    protected static ScheduleBuilder register(String string) {
-        Schedule schedule = Registry.register(Registry.SCHEDULE, string, new Schedule());
+    protected static ScheduleBuilder register(String id) {
+        Schedule schedule = Registry.register(Registry.SCHEDULE, id, new Schedule());
         return new ScheduleBuilder(schedule);
     }
 
@@ -39,8 +39,8 @@ public class Schedule {
         return this.scheduleRules.entrySet().stream().filter(entry -> entry.getKey() != activity).map(Map.Entry::getValue).collect(Collectors.toList());
     }
 
-    public Activity getActivityForTime(int i) {
-        return this.scheduleRules.entrySet().stream().max(Comparator.comparingDouble(entry -> ((ScheduleRule)entry.getValue()).getPriority(i))).map(Map.Entry::getKey).orElse(Activity.IDLE);
+    public Activity getActivityForTime(int time) {
+        return this.scheduleRules.entrySet().stream().max(Comparator.comparingDouble(entry -> ((ScheduleRule)entry.getValue()).getPriority(time))).map(Map.Entry::getKey).orElse(Activity.IDLE);
     }
 }
 

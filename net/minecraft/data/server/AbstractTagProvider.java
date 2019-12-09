@@ -36,8 +36,8 @@ implements DataProvider {
     protected final Registry<T> registry;
     protected final Map<Tag<T>, Tag.Builder<T>> field_11481 = Maps.newLinkedHashMap();
 
-    protected AbstractTagProvider(DataGenerator dataGenerator, Registry<T> registry) {
-        this.root = dataGenerator;
+    protected AbstractTagProvider(DataGenerator root, Registry<T> registry) {
+        this.root = root;
         this.registry = registry;
     }
 

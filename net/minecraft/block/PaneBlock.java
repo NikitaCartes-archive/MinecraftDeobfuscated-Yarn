@@ -26,10 +26,10 @@ extends HorizontalConnectedBlock {
     }
 
     @Override
-    public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-        World blockView = itemPlacementContext.getWorld();
-        BlockPos blockPos = itemPlacementContext.getBlockPos();
-        FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        World blockView = ctx.getWorld();
+        BlockPos blockPos = ctx.getBlockPos();
+        FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
         BlockPos blockPos2 = blockPos.north();
         BlockPos blockPos3 = blockPos.south();
         BlockPos blockPos4 = blockPos.west();
@@ -42,32 +42,32 @@ extends HorizontalConnectedBlock {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-        if (blockState.get(WATERLOGGED).booleanValue()) {
-            iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+        if (state.get(WATERLOGGED).booleanValue()) {
+            world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
-        if (direction.getAxis().isHorizontal()) {
-            return (BlockState)blockState.with((Property)FACING_PROPERTIES.get(direction), this.connectsTo(blockState2, blockState2.isSideSolidFullSquare(iWorld, blockPos2, direction.getOpposite())));
+        if (facing.getAxis().isHorizontal()) {
+            return (BlockState)state.with((Property)FACING_PROPERTIES.get(facing), this.connectsTo(neighborState, neighborState.isSideSolidFullSquare(world, neighborPos, facing.getOpposite())));
         }
-        return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+        return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean isSideInvisible(BlockState blockState, BlockState blockState2, Direction direction) {
-        if (blockState2.getBlock() == this) {
-            if (!direction.getAxis().isHorizontal()) {
+    public boolean isSideInvisible(BlockState state, BlockState neighbor, Direction facing) {
+        if (neighbor.getBlock() == this) {
+            if (!facing.getAxis().isHorizontal()) {
                 return true;
             }
-            if (((Boolean)blockState.get((Property)FACING_PROPERTIES.get(direction))).booleanValue() && ((Boolean)blockState2.get((Property)FACING_PROPERTIES.get(direction.getOpposite()))).booleanValue()) {
+            if (((Boolean)state.get((Property)FACING_PROPERTIES.get(facing))).booleanValue() && ((Boolean)neighbor.get((Property)FACING_PROPERTIES.get(facing.getOpposite()))).booleanValue()) {
                 return true;
             }
         }
-        return super.isSideInvisible(blockState, blockState2, direction);
+        return super.isSideInvisible(state, neighbor, facing);
     }
 
-    public final boolean connectsTo(BlockState blockState, boolean bl) {
-        Block block = blockState.getBlock();
+    public final boolean connectsTo(BlockState state, boolean bl) {
+        Block block = state.getBlock();
         return !PaneBlock.canConnect(block) && bl || block instanceof PaneBlock;
     }
 

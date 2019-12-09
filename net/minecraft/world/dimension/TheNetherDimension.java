@@ -24,15 +24,15 @@ public class TheNetherDimension
 extends Dimension {
     private static final Vec3d field_21216 = new Vec3d(0.2f, 0.03f, 0.03f);
 
-    public TheNetherDimension(World world, DimensionType dimensionType) {
-        super(world, dimensionType, 0.1f);
+    public TheNetherDimension(World world, DimensionType type) {
+        super(world, type, 0.1f);
         this.waterVaporizes = true;
         this.isNether = true;
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public Vec3d getFogColor(float f, float g) {
+    public Vec3d getFogColor(float skyAngle, float tickDelta) {
         return field_21216;
     }
 
@@ -51,18 +51,18 @@ extends Dimension {
 
     @Override
     @Nullable
-    public BlockPos getSpawningBlockInChunk(ChunkPos chunkPos, boolean bl) {
+    public BlockPos getSpawningBlockInChunk(ChunkPos chunkPos, boolean checkMobSpawnValidity) {
         return null;
     }
 
     @Override
     @Nullable
-    public BlockPos getTopSpawningBlockPosition(int i, int j, boolean bl) {
+    public BlockPos getTopSpawningBlockPosition(int x, int z, boolean checkMobSpawnValidity) {
         return null;
     }
 
     @Override
-    public float getSkyAngle(long l, float f) {
+    public float getSkyAngle(long timeOfDay, float tickDelta) {
         return 0.5f;
     }
 
@@ -73,7 +73,7 @@ extends Dimension {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean isFogThick(int i, int j) {
+    public boolean isFogThick(int x, int z) {
         return true;
     }
 

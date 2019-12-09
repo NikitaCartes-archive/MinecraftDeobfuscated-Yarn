@@ -31,22 +31,22 @@ public class BlockPredicate {
     private final StatePredicate state;
     private final NbtPredicate nbt;
 
-    public BlockPredicate(@Nullable Tag<Block> tag, @Nullable Block block, StatePredicate statePredicate, NbtPredicate nbtPredicate) {
+    public BlockPredicate(@Nullable Tag<Block> tag, @Nullable Block block, StatePredicate state, NbtPredicate nbt) {
         this.tag = tag;
         this.block = block;
-        this.state = statePredicate;
-        this.nbt = nbtPredicate;
+        this.state = state;
+        this.nbt = nbt;
     }
 
-    public boolean test(ServerWorld serverWorld, BlockPos blockPos) {
+    public boolean test(ServerWorld world, BlockPos pos) {
         BlockEntity blockEntity;
         if (this == ANY) {
             return true;
         }
-        if (!serverWorld.canSetBlock(blockPos)) {
+        if (!world.canSetBlock(pos)) {
             return false;
         }
-        BlockState blockState = serverWorld.getBlockState(blockPos);
+        BlockState blockState = world.getBlockState(pos);
         Block block = blockState.getBlock();
         if (this.tag != null && !this.tag.contains(block)) {
             return false;
@@ -57,14 +57,14 @@ public class BlockPredicate {
         if (!this.state.test(blockState)) {
             return false;
         }
-        return this.nbt == NbtPredicate.ANY || (blockEntity = serverWorld.getBlockEntity(blockPos)) != null && this.nbt.test(blockEntity.toTag(new CompoundTag()));
+        return this.nbt == NbtPredicate.ANY || (blockEntity = world.getBlockEntity(pos)) != null && this.nbt.test(blockEntity.toTag(new CompoundTag()));
     }
 
-    public static BlockPredicate fromJson(@Nullable JsonElement jsonElement) {
-        if (jsonElement == null || jsonElement.isJsonNull()) {
+    public static BlockPredicate fromJson(@Nullable JsonElement json) {
+        if (json == null || json.isJsonNull()) {
             return ANY;
         }
-        JsonObject jsonObject = JsonHelper.asObject(jsonElement, "block");
+        JsonObject jsonObject = JsonHelper.asObject(json, "block");
         NbtPredicate nbtPredicate = NbtPredicate.fromJson(jsonObject.get("nbt"));
         Block block = null;
         if (jsonObject.has("block")) {

@@ -35,9 +35,9 @@ implements ProfileResult {
     private final int endTick;
     private final int field_19383;
 
-    public ProfileResultImpl(Map<String, Long> map, Map<String, Long> map2, long l, int i, long m, int j) {
-        this.timings = map;
-        this.field_19382 = map2;
+    public ProfileResultImpl(Map<String, Long> timings, Map<String, Long> map, long l, int i, long m, int j) {
+        this.timings = timings;
+        this.field_19382 = map;
         this.startTime = l;
         this.startTick = i;
         this.endTime = m;
@@ -46,19 +46,19 @@ implements ProfileResult {
     }
 
     @Override
-    public List<ProfilerTiming> getTimings(String string) {
-        String string2 = string;
+    public List<ProfilerTiming> getTimings(String parentTiming) {
+        String string = parentTiming;
         long l = this.timings.containsKey("root") ? this.timings.get("root") : 0L;
-        long m = this.timings.getOrDefault(string, -1L);
-        long n = this.field_19382.getOrDefault(string, 0L);
+        long m = this.timings.getOrDefault(parentTiming, -1L);
+        long n = this.field_19382.getOrDefault(parentTiming, 0L);
         ArrayList<ProfilerTiming> list = Lists.newArrayList();
-        if (!string.isEmpty()) {
-            string = string + '\u001e';
+        if (!parentTiming.isEmpty()) {
+            parentTiming = parentTiming + '\u001e';
         }
         long o = 0L;
-        for (String string3 : this.timings.keySet()) {
-            if (string3.length() <= string.length() || !string3.startsWith(string) || string3.indexOf(30, string.length() + 1) >= 0) continue;
-            o += this.timings.get(string3).longValue();
+        for (String string2 : this.timings.keySet()) {
+            if (string2.length() <= parentTiming.length() || !string2.startsWith(parentTiming) || string2.indexOf(30, parentTiming.length() + 1) >= 0) continue;
+            o += this.timings.get(string2).longValue();
         }
         float f = o;
         if (o < m) {
@@ -69,23 +69,23 @@ implements ProfileResult {
         }
         HashSet<String> set = Sets.newHashSet(this.timings.keySet());
         set.addAll(this.field_19382.keySet());
-        for (String string4 : set) {
-            if (string4.length() <= string.length() || !string4.startsWith(string) || string4.indexOf(30, string.length() + 1) >= 0) continue;
-            long p = this.timings.getOrDefault(string4, 0L);
+        for (String string3 : set) {
+            if (string3.length() <= parentTiming.length() || !string3.startsWith(parentTiming) || string3.indexOf(30, parentTiming.length() + 1) >= 0) continue;
+            long p = this.timings.getOrDefault(string3, 0L);
             double d = (double)p * 100.0 / (double)o;
             double e = (double)p * 100.0 / (double)l;
-            String string5 = string4.substring(string.length());
-            long q = this.field_19382.getOrDefault(string4, 0L);
-            list.add(new ProfilerTiming(string5, d, e, q));
+            String string4 = string3.substring(parentTiming.length());
+            long q = this.field_19382.getOrDefault(string3, 0L);
+            list.add(new ProfilerTiming(string4, d, e, q));
         }
-        for (String string4 : this.timings.keySet()) {
-            this.timings.put(string4, this.timings.get(string4) * 999L / 1000L);
+        for (String string3 : this.timings.keySet()) {
+            this.timings.put(string3, this.timings.get(string3) * 999L / 1000L);
         }
         if ((float)o > f) {
             list.add(new ProfilerTiming("unspecified", (double)((float)o - f) * 100.0 / (double)o, (double)((float)o - f) * 100.0 / (double)l, n));
         }
         Collections.sort(list);
-        list.add(0, new ProfilerTiming(string2, 100.0, (double)o * 100.0 / (double)l, n));
+        list.add(0, new ProfilerTiming(string, 100.0, (double)o * 100.0 / (double)l, n));
         return list;
     }
 
@@ -137,40 +137,40 @@ implements ProfileResult {
         return bl;
     }
 
-    protected String asString(long l, int i) {
+    protected String asString(long timeSpan, int tickSpan) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("---- Minecraft Profiler Results ----\n");
         stringBuilder.append("// ");
         stringBuilder.append(ProfileResultImpl.generateWittyComment());
         stringBuilder.append("\n\n");
         stringBuilder.append("Version: ").append(SharedConstants.getGameVersion().getId()).append('\n');
-        stringBuilder.append("Time span: ").append(l / 1000000L).append(" ms\n");
-        stringBuilder.append("Tick span: ").append(i).append(" ticks\n");
-        stringBuilder.append("// This is approximately ").append(String.format(Locale.ROOT, "%.2f", Float.valueOf((float)i / ((float)l / 1.0E9f)))).append(" ticks per second. It should be ").append(20).append(" ticks per second\n\n");
+        stringBuilder.append("Time span: ").append(timeSpan / 1000000L).append(" ms\n");
+        stringBuilder.append("Tick span: ").append(tickSpan).append(" ticks\n");
+        stringBuilder.append("// This is approximately ").append(String.format(Locale.ROOT, "%.2f", Float.valueOf((float)tickSpan / ((float)timeSpan / 1.0E9f)))).append(" ticks per second. It should be ").append(20).append(" ticks per second\n\n");
         stringBuilder.append("--- BEGIN PROFILE DUMP ---\n\n");
         this.appendTiming(0, "root", stringBuilder);
         stringBuilder.append("--- END PROFILE DUMP ---\n\n");
         return stringBuilder.toString();
     }
 
-    private void appendTiming(int i, String string, StringBuilder stringBuilder) {
-        List<ProfilerTiming> list = this.getTimings(string);
+    private void appendTiming(int level, String name, StringBuilder sb) {
+        List<ProfilerTiming> list = this.getTimings(name);
         if (list.size() < 3) {
             return;
         }
-        for (int j = 1; j < list.size(); ++j) {
-            ProfilerTiming profilerTiming = list.get(j);
-            stringBuilder.append(String.format("[%02d] ", i));
-            for (int k = 0; k < i; ++k) {
-                stringBuilder.append("|   ");
+        for (int i = 1; i < list.size(); ++i) {
+            ProfilerTiming profilerTiming = list.get(i);
+            sb.append(String.format("[%02d] ", level));
+            for (int j = 0; j < level; ++j) {
+                sb.append("|   ");
             }
-            stringBuilder.append(profilerTiming.name).append('(').append(profilerTiming.field_19384).append('/').append(String.format(Locale.ROOT, "%.0f", Float.valueOf((float)profilerTiming.field_19384 / (float)this.field_19383))).append(')').append(" - ").append(String.format(Locale.ROOT, "%.2f", profilerTiming.parentSectionUsagePercentage)).append("%/").append(String.format(Locale.ROOT, "%.2f", profilerTiming.totalUsagePercentage)).append("%\n");
+            sb.append(profilerTiming.name).append('(').append(profilerTiming.field_19384).append('/').append(String.format(Locale.ROOT, "%.0f", Float.valueOf((float)profilerTiming.field_19384 / (float)this.field_19383))).append(')').append(" - ").append(String.format(Locale.ROOT, "%.2f", profilerTiming.parentSectionUsagePercentage)).append("%/").append(String.format(Locale.ROOT, "%.2f", profilerTiming.totalUsagePercentage)).append("%\n");
             if ("unspecified".equals(profilerTiming.name)) continue;
             try {
-                this.appendTiming(i + 1, string + '\u001e' + profilerTiming.name, stringBuilder);
+                this.appendTiming(level + 1, name + '\u001e' + profilerTiming.name, sb);
                 continue;
             } catch (Exception exception) {
-                stringBuilder.append("[[ EXCEPTION ").append(exception).append(" ]]");
+                sb.append("[[ EXCEPTION ").append(exception).append(" ]]");
             }
         }
     }

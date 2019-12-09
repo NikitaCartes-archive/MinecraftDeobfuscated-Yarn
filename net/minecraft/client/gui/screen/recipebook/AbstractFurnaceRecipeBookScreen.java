@@ -49,9 +49,9 @@ extends RecipeBookWidget {
     protected abstract boolean isGuiOpen();
 
     @Override
-    protected void setOpen(boolean bl) {
-        this.setGuiOpen(bl);
-        if (!bl) {
+    protected void setOpen(boolean opened) {
+        this.setGuiOpen(opened);
+        if (!opened) {
             this.recipesArea.hideAlternates();
         }
         this.sendBookDataPacket();
@@ -80,12 +80,12 @@ extends RecipeBookWidget {
     }
 
     @Override
-    public void showGhostRecipe(Recipe<?> recipe, List<Slot> list) {
+    public void showGhostRecipe(Recipe<?> recipe, List<Slot> slots) {
         ItemStack itemStack = recipe.getOutput();
         this.ghostSlots.setRecipe(recipe);
-        this.ghostSlots.addSlot(Ingredient.ofStacks(itemStack), list.get((int)2).xPosition, list.get((int)2).yPosition);
+        this.ghostSlots.addSlot(Ingredient.ofStacks(itemStack), slots.get((int)2).xPosition, slots.get((int)2).yPosition);
         DefaultedList<Ingredient> defaultedList = recipe.getPreviewInputs();
-        this.outputSlot = list.get(1);
+        this.outputSlot = slots.get(1);
         if (this.fuels == null) {
             this.fuels = this.getAllowedFuels();
         }
@@ -98,7 +98,7 @@ extends RecipeBookWidget {
             }
             Ingredient ingredient = (Ingredient)iterator.next();
             if (ingredient.isEmpty()) continue;
-            Slot slot = list.get(i);
+            Slot slot = slots.get(i);
             this.ghostSlots.addSlot(ingredient, slot.xPosition, slot.yPosition);
         }
     }
@@ -106,20 +106,20 @@ extends RecipeBookWidget {
     protected abstract Set<Item> getAllowedFuels();
 
     @Override
-    public void drawGhostSlots(int i, int j, boolean bl, float f) {
-        super.drawGhostSlots(i, j, bl, f);
+    public void drawGhostSlots(int left, int top, boolean bl, float lastFrameDuration) {
+        super.drawGhostSlots(left, top, bl, lastFrameDuration);
         if (this.outputSlot == null) {
             return;
         }
         if (!Screen.hasControlDown()) {
-            this.frameTime += f;
+            this.frameTime += lastFrameDuration;
         }
-        int k = this.outputSlot.xPosition + i;
-        int l = this.outputSlot.yPosition + j;
-        DrawableHelper.fill(k, l, k + 16, l + 16, 0x30FF0000);
-        this.client.getItemRenderer().renderGuiItem(this.client.player, this.getItem().getStackForRender(), k, l);
+        int i = this.outputSlot.xPosition + left;
+        int j = this.outputSlot.yPosition + top;
+        DrawableHelper.fill(i, j, i + 16, j + 16, 0x30FF0000);
+        this.client.getItemRenderer().renderGuiItem(this.client.player, this.getItem().getStackForRender(), i, j);
         RenderSystem.depthFunc(516);
-        DrawableHelper.fill(k, l, k + 16, l + 16, 0x30FFFFFF);
+        DrawableHelper.fill(i, j, i + 16, j + 16, 0x30FFFFFF);
         RenderSystem.depthFunc(515);
     }
 

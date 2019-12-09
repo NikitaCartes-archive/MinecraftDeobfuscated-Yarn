@@ -35,10 +35,10 @@ extends Item {
     }
 
     @Override
-    public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
+    public ActionResult useOnBlock(ItemUsageContext context) {
         BlockPos blockPos;
-        World world = itemUsageContext.getWorld();
-        BlockState blockState = world.getBlockState(blockPos = itemUsageContext.getBlockPos());
+        World world = context.getWorld();
+        BlockState blockState = world.getBlockState(blockPos = context.getBlockPos());
         if (blockState.getBlock() != Blocks.END_PORTAL_FRAME || blockState.get(EndPortalFrameBlock.EYE).booleanValue()) {
             return ActionResult.PASS;
         }
@@ -49,7 +49,7 @@ extends Item {
         Block.pushEntitiesUpBeforeBlockChange(blockState, blockState2, world, blockPos);
         world.setBlockState(blockPos, blockState2, 2);
         world.updateHorizontalAdjacent(blockPos, Blocks.END_PORTAL_FRAME);
-        itemUsageContext.getStack().decrement(1);
+        context.getStack().decrement(1);
         world.playLevelEvent(1503, blockPos, 0);
         BlockPattern.Result result = EndPortalFrameBlock.getCompletedFramePattern().searchAround(world, blockPos);
         if (result != null) {
@@ -65,29 +65,29 @@ extends Item {
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         BlockPos blockPos;
-        ItemStack itemStack = playerEntity.getStackInHand(hand);
-        HitResult hitResult = EnderEyeItem.rayTrace(world, playerEntity, RayTraceContext.FluidHandling.NONE);
+        ItemStack itemStack = user.getStackInHand(hand);
+        HitResult hitResult = EnderEyeItem.rayTrace(world, user, RayTraceContext.FluidHandling.NONE);
         if (hitResult.getType() == HitResult.Type.BLOCK && world.getBlockState(((BlockHitResult)hitResult).getBlockPos()).getBlock() == Blocks.END_PORTAL_FRAME) {
             return TypedActionResult.pass(itemStack);
         }
-        playerEntity.setCurrentHand(hand);
-        if (world instanceof ServerWorld && (blockPos = ((ServerWorld)world).getChunkManager().getChunkGenerator().locateStructure(world, "Stronghold", new BlockPos(playerEntity), 100, false)) != null) {
-            EnderEyeEntity enderEyeEntity = new EnderEyeEntity(world, playerEntity.getX(), playerEntity.getBodyY(0.5), playerEntity.getZ());
+        user.setCurrentHand(hand);
+        if (world instanceof ServerWorld && (blockPos = ((ServerWorld)world).getChunkManager().getChunkGenerator().locateStructure(world, "Stronghold", new BlockPos(user), 100, false)) != null) {
+            EnderEyeEntity enderEyeEntity = new EnderEyeEntity(world, user.getX(), user.getBodyY(0.5), user.getZ());
             enderEyeEntity.setItem(itemStack);
             enderEyeEntity.moveTowards(blockPos);
             world.spawnEntity(enderEyeEntity);
-            if (playerEntity instanceof ServerPlayerEntity) {
-                Criterions.USED_ENDER_EYE.trigger((ServerPlayerEntity)playerEntity, blockPos);
+            if (user instanceof ServerPlayerEntity) {
+                Criterions.USED_ENDER_EYE.trigger((ServerPlayerEntity)user, blockPos);
             }
-            world.playSound(null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_ENDER_EYE_LAUNCH, SoundCategory.NEUTRAL, 0.5f, 0.4f / (RANDOM.nextFloat() * 0.4f + 0.8f));
-            world.playLevelEvent(null, 1003, new BlockPos(playerEntity), 0);
-            if (!playerEntity.abilities.creativeMode) {
+            world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_ENDER_EYE_LAUNCH, SoundCategory.NEUTRAL, 0.5f, 0.4f / (RANDOM.nextFloat() * 0.4f + 0.8f));
+            world.playLevelEvent(null, 1003, new BlockPos(user), 0);
+            if (!user.abilities.creativeMode) {
                 itemStack.decrement(1);
             }
-            playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
-            playerEntity.swingHand(hand, true);
+            user.incrementStat(Stats.USED.getOrCreateStat(this));
+            user.swingHand(hand, true);
             return TypedActionResult.success(itemStack);
         }
         return TypedActionResult.consume(itemStack);

@@ -31,15 +31,15 @@ public class Heightmap {
         this.chunk = chunk;
     }
 
-    public static void populateHeightmaps(Chunk chunk, Set<Type> set) {
-        int i = set.size();
+    public static void populateHeightmaps(Chunk chunk, Set<Type> types) {
+        int i = types.size();
         ObjectArrayList objectList = new ObjectArrayList(i);
         Iterator objectListIterator = objectList.iterator();
         int j = chunk.getHighestNonEmptySectionYOffset() + 16;
         try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
             for (int k = 0; k < 16; ++k) {
                 block10: for (int l = 0; l < 16; ++l) {
-                    for (Type type : set) {
+                    for (Type type : types) {
                         objectList.add(chunk.getHeightmap(type));
                     }
                     for (int m = j - 1; m >= 0; --m) {
@@ -60,52 +60,52 @@ public class Heightmap {
         }
     }
 
-    public boolean trackUpdate(int i, int j, int k, BlockState blockState) {
-        int l = this.get(i, k);
-        if (j <= l - 2) {
+    public boolean trackUpdate(int x, int y, int z, BlockState state) {
+        int i = this.get(x, z);
+        if (y <= i - 2) {
             return false;
         }
-        if (this.blockPredicate.test(blockState)) {
-            if (j >= l) {
-                this.set(i, k, j + 1);
+        if (this.blockPredicate.test(state)) {
+            if (y >= i) {
+                this.set(x, z, y + 1);
                 return true;
             }
-        } else if (l - 1 == j) {
+        } else if (i - 1 == y) {
             BlockPos.Mutable mutable = new BlockPos.Mutable();
-            for (int m = j - 1; m >= 0; --m) {
-                mutable.set(i, m, k);
+            for (int j = y - 1; j >= 0; --j) {
+                mutable.set(x, j, z);
                 if (!this.blockPredicate.test(this.chunk.getBlockState(mutable))) continue;
-                this.set(i, k, m + 1);
+                this.set(x, z, j + 1);
                 return true;
             }
-            this.set(i, k, 0);
+            this.set(x, z, 0);
             return true;
         }
         return false;
     }
 
-    public int get(int i, int j) {
-        return this.get(Heightmap.toIndex(i, j));
+    public int get(int x, int z) {
+        return this.get(Heightmap.toIndex(x, z));
     }
 
-    private int get(int i) {
-        return this.storage.get(i);
+    private int get(int index) {
+        return this.storage.get(index);
     }
 
-    private void set(int i, int j, int k) {
-        this.storage.set(Heightmap.toIndex(i, j), k);
+    private void set(int x, int z, int height) {
+        this.storage.set(Heightmap.toIndex(x, z), height);
     }
 
-    public void setTo(long[] ls) {
-        System.arraycopy(ls, 0, this.storage.getStorage(), 0, ls.length);
+    public void setTo(long[] heightmap) {
+        System.arraycopy(heightmap, 0, this.storage.getStorage(), 0, heightmap.length);
     }
 
     public long[] asLongArray() {
         return this.storage.getStorage();
     }
 
-    private static int toIndex(int i, int j) {
-        return i + j * 16;
+    private static int toIndex(int x, int z) {
+        return x + z * 16;
     }
 
     static /* synthetic */ Predicate method_16683() {
@@ -129,10 +129,10 @@ public class Heightmap {
         private final Predicate<BlockState> blockPredicate;
         private static final Map<String, Type> BY_NAME;
 
-        private Type(String string2, Purpose purpose, Predicate<BlockState> predicate) {
-            this.name = string2;
+        private Type(String name, Purpose purpose, Predicate<BlockState> blockPredicate) {
+            this.name = name;
             this.purpose = purpose;
-            this.blockPredicate = predicate;
+            this.blockPredicate = blockPredicate;
         }
 
         public String getName() {
@@ -148,8 +148,8 @@ public class Heightmap {
             return this.purpose != Purpose.WORLDGEN;
         }
 
-        public static Type byName(String string) {
-            return BY_NAME.get(string);
+        public static Type byName(String name) {
+            return BY_NAME.get(name);
         }
 
         public Predicate<BlockState> getBlockPredicate() {

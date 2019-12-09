@@ -32,23 +32,23 @@ extends ToolItem {
     private final float attackSpeed;
     protected static final Map<Block, BlockState> TILLED_BLOCKS = Maps.newHashMap(ImmutableMap.of(Blocks.GRASS_BLOCK, Blocks.FARMLAND.getDefaultState(), Blocks.GRASS_PATH, Blocks.FARMLAND.getDefaultState(), Blocks.DIRT, Blocks.FARMLAND.getDefaultState(), Blocks.COARSE_DIRT, Blocks.DIRT.getDefaultState()));
 
-    public HoeItem(ToolMaterial toolMaterial, float f, Item.Settings settings) {
-        super(toolMaterial, settings);
-        this.attackSpeed = f;
+    public HoeItem(ToolMaterial material, float attackSpeed, Item.Settings settings) {
+        super(material, settings);
+        this.attackSpeed = attackSpeed;
     }
 
     @Override
-    public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
+    public ActionResult useOnBlock(ItemUsageContext context) {
         BlockState blockState;
-        World world = itemUsageContext.getWorld();
-        BlockPos blockPos = itemUsageContext.getBlockPos();
-        if (itemUsageContext.getSide() != Direction.DOWN && world.getBlockState(blockPos.up()).isAir() && (blockState = TILLED_BLOCKS.get(world.getBlockState(blockPos).getBlock())) != null) {
-            PlayerEntity playerEntity2 = itemUsageContext.getPlayer();
-            world.playSound(playerEntity2, blockPos, SoundEvents.ITEM_HOE_TILL, SoundCategory.BLOCKS, 1.0f, 1.0f);
+        World world = context.getWorld();
+        BlockPos blockPos = context.getBlockPos();
+        if (context.getSide() != Direction.DOWN && world.getBlockState(blockPos.up()).isAir() && (blockState = TILLED_BLOCKS.get(world.getBlockState(blockPos).getBlock())) != null) {
+            PlayerEntity playerEntity = context.getPlayer();
+            world.playSound(playerEntity, blockPos, SoundEvents.ITEM_HOE_TILL, SoundCategory.BLOCKS, 1.0f, 1.0f);
             if (!world.isClient) {
                 world.setBlockState(blockPos, blockState, 11);
-                if (playerEntity2 != null) {
-                    itemUsageContext.getStack().damage(1, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(itemUsageContext.getHand()));
+                if (playerEntity != null) {
+                    context.getStack().damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
                 }
             }
             return ActionResult.SUCCESS;
@@ -57,15 +57,15 @@ extends ToolItem {
     }
 
     @Override
-    public boolean postHit(ItemStack itemStack, LivingEntity livingEntity2, LivingEntity livingEntity22) {
-        itemStack.damage(1, livingEntity22, livingEntity -> livingEntity.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+    public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        stack.damage(1, attacker, e -> e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
         return true;
     }
 
     @Override
-    public Multimap<String, EntityAttributeModifier> getModifiers(EquipmentSlot equipmentSlot) {
-        Multimap<String, EntityAttributeModifier> multimap = super.getModifiers(equipmentSlot);
-        if (equipmentSlot == EquipmentSlot.MAINHAND) {
+    public Multimap<String, EntityAttributeModifier> getModifiers(EquipmentSlot slot) {
+        Multimap<String, EntityAttributeModifier> multimap = super.getModifiers(slot);
+        if (slot == EquipmentSlot.MAINHAND) {
             multimap.put(EntityAttributes.ATTACK_DAMAGE.getId(), new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_UUID, "Weapon modifier", 0.0, EntityAttributeModifier.Operation.ADDITION));
             multimap.put(EntityAttributes.ATTACK_SPEED.getId(), new EntityAttributeModifier(ATTACK_SPEED_MODIFIER_UUID, "Weapon modifier", (double)this.attackSpeed, EntityAttributeModifier.Operation.ADDITION));
         }

@@ -28,12 +28,12 @@ implements ArgumentType<String> {
         return new TeamArgumentType();
     }
 
-    public static Team getTeam(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
-        String string2 = commandContext.getArgument(string, String.class);
-        ServerScoreboard scoreboard = commandContext.getSource().getMinecraftServer().getScoreboard();
-        Team team = scoreboard.getTeam(string2);
+    public static Team getTeam(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
+        String string = context.getArgument(name, String.class);
+        ServerScoreboard scoreboard = context.getSource().getMinecraftServer().getScoreboard();
+        Team team = scoreboard.getTeam(string);
         if (team == null) {
-            throw UNKNOWN_TEAM_EXCEPTION.create(string2);
+            throw UNKNOWN_TEAM_EXCEPTION.create(string);
         }
         return team;
     }
@@ -44,9 +44,9 @@ implements ArgumentType<String> {
     }
 
     @Override
-    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
-        if (commandContext.getSource() instanceof CommandSource) {
-            return CommandSource.suggestMatching(((CommandSource)commandContext.getSource()).getTeamNames(), suggestionsBuilder);
+    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+        if (context.getSource() instanceof CommandSource) {
+            return CommandSource.suggestMatching(((CommandSource)context.getSource()).getTeamNames(), builder);
         }
         return Suggestions.empty();
     }

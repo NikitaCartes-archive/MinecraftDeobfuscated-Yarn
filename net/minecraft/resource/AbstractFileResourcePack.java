@@ -27,70 +27,70 @@ implements ResourcePack {
     private static final Logger LOGGER = LogManager.getLogger();
     protected final File base;
 
-    public AbstractFileResourcePack(File file) {
-        this.base = file;
+    public AbstractFileResourcePack(File base) {
+        this.base = base;
     }
 
-    private static String getFilename(ResourceType resourceType, Identifier identifier) {
-        return String.format("%s/%s/%s", resourceType.getDirectory(), identifier.getNamespace(), identifier.getPath());
+    private static String getFilename(ResourceType type, Identifier id) {
+        return String.format("%s/%s/%s", type.getDirectory(), id.getNamespace(), id.getPath());
     }
 
-    protected static String relativize(File file, File file2) {
-        return file.toURI().relativize(file2.toURI()).getPath();
-    }
-
-    @Override
-    public InputStream open(ResourceType resourceType, Identifier identifier) throws IOException {
-        return this.openFile(AbstractFileResourcePack.getFilename(resourceType, identifier));
+    protected static String relativize(File base, File target) {
+        return base.toURI().relativize(target.toURI()).getPath();
     }
 
     @Override
-    public boolean contains(ResourceType resourceType, Identifier identifier) {
-        return this.containsFile(AbstractFileResourcePack.getFilename(resourceType, identifier));
+    public InputStream open(ResourceType type, Identifier id) throws IOException {
+        return this.openFile(AbstractFileResourcePack.getFilename(type, id));
+    }
+
+    @Override
+    public boolean contains(ResourceType type, Identifier id) {
+        return this.containsFile(AbstractFileResourcePack.getFilename(type, id));
     }
 
     protected abstract InputStream openFile(String var1) throws IOException;
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public InputStream openRoot(String string) throws IOException {
-        if (string.contains("/") || string.contains("\\")) {
+    public InputStream openRoot(String fileName) throws IOException {
+        if (fileName.contains("/") || fileName.contains("\\")) {
             throw new IllegalArgumentException("Root resources can only be filenames, not paths (no / allowed!)");
         }
-        return this.openFile(string);
+        return this.openFile(fileName);
     }
 
     protected abstract boolean containsFile(String var1);
 
-    protected void warnNonLowercaseNamespace(String string) {
-        LOGGER.warn("ResourcePack: ignored non-lowercase namespace: {} in {}", (Object)string, (Object)this.base);
+    protected void warnNonLowercaseNamespace(String namespace) {
+        LOGGER.warn("ResourcePack: ignored non-lowercase namespace: {} in {}", (Object)namespace, (Object)this.base);
     }
 
     @Override
     @Nullable
-    public <T> T parseMetadata(ResourceMetadataReader<T> resourceMetadataReader) throws IOException {
+    public <T> T parseMetadata(ResourceMetadataReader<T> metaReader) throws IOException {
         try (InputStream inputStream = this.openFile("pack.mcmeta");){
-            T t = AbstractFileResourcePack.parseMetadata(resourceMetadataReader, inputStream);
+            T t = AbstractFileResourcePack.parseMetadata(metaReader, inputStream);
             return t;
         }
     }
 
     @Nullable
-    public static <T> T parseMetadata(ResourceMetadataReader<T> resourceMetadataReader, InputStream inputStream) {
+    public static <T> T parseMetadata(ResourceMetadataReader<T> metaReader, InputStream inputStream) {
         JsonObject jsonObject;
         try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));){
             jsonObject = JsonHelper.deserialize(bufferedReader);
         } catch (JsonParseException | IOException exception) {
-            LOGGER.error("Couldn't load {} metadata", (Object)resourceMetadataReader.getKey(), (Object)exception);
+            LOGGER.error("Couldn't load {} metadata", (Object)metaReader.getKey(), (Object)exception);
             return null;
         }
-        if (!jsonObject.has(resourceMetadataReader.getKey())) {
+        if (!jsonObject.has(metaReader.getKey())) {
             return null;
         }
         try {
-            return resourceMetadataReader.fromJson(JsonHelper.getObject(jsonObject, resourceMetadataReader.getKey()));
+            return metaReader.fromJson(JsonHelper.getObject(jsonObject, metaReader.getKey()));
         } catch (JsonParseException jsonParseException) {
-            LOGGER.error("Couldn't load {} metadata", (Object)resourceMetadataReader.getKey(), (Object)jsonParseException);
+            LOGGER.error("Couldn't load {} metadata", (Object)metaReader.getKey(), (Object)jsonParseException);
             return null;
         }
     }

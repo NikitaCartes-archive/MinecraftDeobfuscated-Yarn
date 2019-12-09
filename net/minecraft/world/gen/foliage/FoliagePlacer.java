@@ -22,10 +22,10 @@ implements DynamicSerializable {
     protected final int randomRadius;
     protected final FoliagePlacerType<?> type;
 
-    public FoliagePlacer(int i, int j, FoliagePlacerType<?> foliagePlacerType) {
-        this.radius = i;
-        this.randomRadius = j;
-        this.type = foliagePlacerType;
+    public FoliagePlacer(int radius, int randomRadius, FoliagePlacerType<?> type) {
+        this.radius = radius;
+        this.randomRadius = randomRadius;
+        this.type = type;
     }
 
     public abstract void generate(ModifiableTestableWorld var1, Random var2, BranchedTreeFeatureConfig var3, int var4, int var5, int var6, BlockPos var7, Set<BlockPos> var8);
@@ -55,10 +55,10 @@ implements DynamicSerializable {
     }
 
     @Override
-    public <T> T serialize(DynamicOps<T> dynamicOps) {
+    public <T> T serialize(DynamicOps<T> ops) {
         ImmutableMap.Builder<T, T> builder = ImmutableMap.builder();
-        builder.put(dynamicOps.createString("type"), dynamicOps.createString(Registry.FOLIAGE_PLACER_TYPE.getId(this.type).toString())).put(dynamicOps.createString("radius"), dynamicOps.createInt(this.radius)).put(dynamicOps.createString("radius_random"), dynamicOps.createInt(this.randomRadius));
-        return new Dynamic<T>(dynamicOps, dynamicOps.createMap(builder.build())).getValue();
+        builder.put(ops.createString("type"), ops.createString(Registry.FOLIAGE_PLACER_TYPE.getId(this.type).toString())).put(ops.createString("radius"), ops.createInt(this.radius)).put(ops.createString("radius_random"), ops.createInt(this.randomRadius));
+        return new Dynamic<T>(ops, ops.createMap(builder.build())).getValue();
     }
 }
 

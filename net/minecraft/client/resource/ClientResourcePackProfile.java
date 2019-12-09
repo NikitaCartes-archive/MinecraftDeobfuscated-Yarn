@@ -27,10 +27,10 @@ extends ResourcePackProfile {
     @Nullable
     private Identifier iconId;
 
-    public ClientResourcePackProfile(String string, boolean bl, Supplier<ResourcePack> supplier, ResourcePack resourcePack, PackResourceMetadata packResourceMetadata, ResourcePackProfile.InsertionPosition insertionPosition) {
-        super(string, bl, supplier, resourcePack, packResourceMetadata, insertionPosition);
+    public ClientResourcePackProfile(String name, boolean notSorting, Supplier<ResourcePack> packCreator, ResourcePack pack, PackResourceMetadata metadata, ResourcePackProfile.InsertionPosition direction) {
+        super(name, notSorting, packCreator, pack, metadata, direction);
         NativeImage nativeImage = null;
-        try (InputStream inputStream = resourcePack.openRoot("pack.png");){
+        try (InputStream inputStream = pack.openRoot("pack.png");){
             nativeImage = NativeImage.read(inputStream);
         } catch (IOException | IllegalArgumentException exception) {
             // empty catch block
@@ -38,16 +38,16 @@ extends ResourcePackProfile {
         this.icon = nativeImage;
     }
 
-    public ClientResourcePackProfile(String string, boolean bl, Supplier<ResourcePack> supplier, Text text, Text text2, ResourcePackCompatibility resourcePackCompatibility, ResourcePackProfile.InsertionPosition insertionPosition, boolean bl2, @Nullable NativeImage nativeImage) {
-        super(string, bl, supplier, text, text2, resourcePackCompatibility, insertionPosition, bl2);
-        this.icon = nativeImage;
+    public ClientResourcePackProfile(String name, boolean alwaysEnabled, Supplier<ResourcePack> packFactory, Text displayName, Text description, ResourcePackCompatibility compatibility, ResourcePackProfile.InsertionPosition insertionPosition, boolean pinned, @Nullable NativeImage icon) {
+        super(name, alwaysEnabled, packFactory, displayName, description, compatibility, insertionPosition, pinned);
+        this.icon = icon;
     }
 
-    public void drawIcon(TextureManager textureManager) {
+    public void drawIcon(TextureManager manager) {
         if (this.iconId == null) {
-            this.iconId = this.icon == null ? new Identifier("textures/misc/unknown_pack.png") : textureManager.registerDynamicTexture("texturepackicon", new NativeImageBackedTexture(this.icon));
+            this.iconId = this.icon == null ? new Identifier("textures/misc/unknown_pack.png") : manager.registerDynamicTexture("texturepackicon", new NativeImageBackedTexture(this.icon));
         }
-        textureManager.bindTexture(this.iconId);
+        manager.bindTexture(this.iconId);
     }
 
     @Override

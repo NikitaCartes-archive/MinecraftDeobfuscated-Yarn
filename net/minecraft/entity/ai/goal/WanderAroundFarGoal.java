@@ -17,9 +17,9 @@ extends WanderAroundGoal {
         this(mobEntityWithAi, d, 0.001f);
     }
 
-    public WanderAroundFarGoal(MobEntityWithAi mobEntityWithAi, double d, float f) {
-        super(mobEntityWithAi, d);
-        this.probability = f;
+    public WanderAroundFarGoal(MobEntityWithAi mob, double speed, float probabiliity) {
+        super(mob, speed);
+        this.probability = probabiliity;
     }
 
     @Override

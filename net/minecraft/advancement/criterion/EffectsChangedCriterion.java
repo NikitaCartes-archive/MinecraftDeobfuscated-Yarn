@@ -28,30 +28,30 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(entityEffectPredicate);
     }
 
-    public void trigger(ServerPlayerEntity serverPlayerEntity) {
-        this.test(serverPlayerEntity.getAdvancementTracker(), conditions -> conditions.matches(serverPlayerEntity));
+    public void trigger(ServerPlayerEntity player) {
+        this.test(player.getAdvancementTracker(), conditions -> conditions.matches(player));
     }
 
     @Override
-    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
+    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject obj, JsonDeserializationContext context) {
+        return this.conditionsFromJson(obj, context);
     }
 
     public static class Conditions
     extends AbstractCriterionConditions {
         private final EntityEffectPredicate effects;
 
-        public Conditions(EntityEffectPredicate entityEffectPredicate) {
+        public Conditions(EntityEffectPredicate effects) {
             super(ID);
-            this.effects = entityEffectPredicate;
+            this.effects = effects;
         }
 
-        public static Conditions create(EntityEffectPredicate entityEffectPredicate) {
-            return new Conditions(entityEffectPredicate);
+        public static Conditions create(EntityEffectPredicate effects) {
+            return new Conditions(effects);
         }
 
-        public boolean matches(ServerPlayerEntity serverPlayerEntity) {
-            return this.effects.test(serverPlayerEntity);
+        public boolean matches(ServerPlayerEntity player) {
+            return this.effects.test(player);
         }
 
         @Override

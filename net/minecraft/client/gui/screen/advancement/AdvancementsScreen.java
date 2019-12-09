@@ -59,132 +59,132 @@ implements ClientAdvancementManager.Listener {
     }
 
     @Override
-    public boolean mouseClicked(double d, double e, int i) {
-        if (i == 0) {
-            int j = (this.width - 252) / 2;
-            int k = (this.height - 140) / 2;
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (button == 0) {
+            int i = (this.width - 252) / 2;
+            int j = (this.height - 140) / 2;
             for (AdvancementTab advancementTab : this.tabs.values()) {
-                if (!advancementTab.isClickOnTab(j, k, d, e)) continue;
+                if (!advancementTab.isClickOnTab(i, j, mouseX, mouseY)) continue;
                 this.advancementHandler.selectTab(advancementTab.getRoot(), true);
                 break;
             }
         }
-        return super.mouseClicked(d, e, i);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
-    public boolean keyPressed(int i, int j, int k) {
-        if (this.minecraft.options.keyAdvancements.matchesKey(i, j)) {
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (this.minecraft.options.keyAdvancements.matchesKey(keyCode, scanCode)) {
             this.minecraft.openScreen(null);
             this.minecraft.mouse.lockCursor();
             return true;
         }
-        return super.keyPressed(i, j, k);
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
-    public void render(int i, int j, float f) {
-        int k = (this.width - 252) / 2;
-        int l = (this.height - 140) / 2;
+    public void render(int mouseX, int mouseY, float delta) {
+        int i = (this.width - 252) / 2;
+        int j = (this.height - 140) / 2;
         this.renderBackground();
-        this.drawAdvancementTree(i, j, k, l);
-        this.drawWidgets(k, l);
-        this.drawWidgetTooltip(i, j, k, l);
+        this.drawAdvancementTree(mouseX, mouseY, i, j);
+        this.drawWidgets(i, j);
+        this.drawWidgetTooltip(mouseX, mouseY, i, j);
     }
 
     @Override
-    public boolean mouseDragged(double d, double e, int i, double f, double g) {
-        if (i != 0) {
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        if (button != 0) {
             this.movingTab = false;
             return false;
         }
         if (!this.movingTab) {
             this.movingTab = true;
         } else if (this.selectedTab != null) {
-            this.selectedTab.move(f, g);
+            this.selectedTab.move(deltaX, deltaY);
         }
         return true;
     }
 
-    private void drawAdvancementTree(int i, int j, int k, int l) {
+    private void drawAdvancementTree(int mouseX, int mouseY, int x, int i) {
         AdvancementTab advancementTab = this.selectedTab;
         if (advancementTab == null) {
-            AdvancementsScreen.fill(k + 9, l + 18, k + 9 + 234, l + 18 + 113, -16777216);
+            AdvancementsScreen.fill(x + 9, i + 18, x + 9 + 234, i + 18 + 113, -16777216);
             String string = I18n.translate("advancements.empty", new Object[0]);
-            int m = this.font.getStringWidth(string);
-            this.font.draw(string, k + 9 + 117 - m / 2, l + 18 + 56 - this.font.fontHeight / 2, -1);
-            this.font.draw(":(", k + 9 + 117 - this.font.getStringWidth(":(") / 2, l + 18 + 113 - this.font.fontHeight, -1);
+            int j = this.font.getStringWidth(string);
+            this.font.draw(string, x + 9 + 117 - j / 2, i + 18 + 56 - this.font.fontHeight / 2, -1);
+            this.font.draw(":(", x + 9 + 117 - this.font.getStringWidth(":(") / 2, i + 18 + 113 - this.font.fontHeight, -1);
             return;
         }
         RenderSystem.pushMatrix();
-        RenderSystem.translatef(k + 9, l + 18, 0.0f);
+        RenderSystem.translatef(x + 9, i + 18, 0.0f);
         advancementTab.render();
         RenderSystem.popMatrix();
         RenderSystem.depthFunc(515);
         RenderSystem.disableDepthTest();
     }
 
-    public void drawWidgets(int i, int j) {
+    public void drawWidgets(int x, int i) {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.enableBlend();
         this.minecraft.getTextureManager().bindTexture(WINDOW_TEXTURE);
-        this.blit(i, j, 0, 0, 252, 140);
+        this.blit(x, i, 0, 0, 252, 140);
         if (this.tabs.size() > 1) {
             this.minecraft.getTextureManager().bindTexture(TABS_TEXTURE);
             for (AdvancementTab advancementTab : this.tabs.values()) {
-                advancementTab.drawBackground(i, j, advancementTab == this.selectedTab);
+                advancementTab.drawBackground(x, i, advancementTab == this.selectedTab);
             }
             RenderSystem.enableRescaleNormal();
             RenderSystem.defaultBlendFunc();
             for (AdvancementTab advancementTab : this.tabs.values()) {
-                advancementTab.drawIcon(i, j, this.itemRenderer);
+                advancementTab.drawIcon(x, i, this.itemRenderer);
             }
             RenderSystem.disableBlend();
         }
-        this.font.draw(I18n.translate("gui.advancements", new Object[0]), i + 8, j + 6, 0x404040);
+        this.font.draw(I18n.translate("gui.advancements", new Object[0]), x + 8, i + 6, 0x404040);
     }
 
-    private void drawWidgetTooltip(int i, int j, int k, int l) {
+    private void drawWidgetTooltip(int mouseX, int mouseY, int x, int y) {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         if (this.selectedTab != null) {
             RenderSystem.pushMatrix();
             RenderSystem.enableDepthTest();
-            RenderSystem.translatef(k + 9, l + 18, 400.0f);
-            this.selectedTab.drawWidgetTooltip(i - k - 9, j - l - 18, k, l);
+            RenderSystem.translatef(x + 9, y + 18, 400.0f);
+            this.selectedTab.drawWidgetTooltip(mouseX - x - 9, mouseY - y - 18, x, y);
             RenderSystem.disableDepthTest();
             RenderSystem.popMatrix();
         }
         if (this.tabs.size() > 1) {
             for (AdvancementTab advancementTab : this.tabs.values()) {
-                if (!advancementTab.isClickOnTab(k, l, i, j)) continue;
-                this.renderTooltip(advancementTab.getTitle(), i, j);
+                if (!advancementTab.isClickOnTab(x, y, mouseX, mouseY)) continue;
+                this.renderTooltip(advancementTab.getTitle(), mouseX, mouseY);
             }
         }
     }
 
     @Override
-    public void onRootAdded(Advancement advancement) {
-        AdvancementTab advancementTab = AdvancementTab.create(this.minecraft, this, this.tabs.size(), advancement);
+    public void onRootAdded(Advancement root) {
+        AdvancementTab advancementTab = AdvancementTab.create(this.minecraft, this, this.tabs.size(), root);
         if (advancementTab == null) {
             return;
         }
-        this.tabs.put(advancement, advancementTab);
+        this.tabs.put(root, advancementTab);
     }
 
     @Override
-    public void onRootRemoved(Advancement advancement) {
+    public void onRootRemoved(Advancement root) {
     }
 
     @Override
-    public void onDependentAdded(Advancement advancement) {
-        AdvancementTab advancementTab = this.getTab(advancement);
+    public void onDependentAdded(Advancement dependent) {
+        AdvancementTab advancementTab = this.getTab(dependent);
         if (advancementTab != null) {
-            advancementTab.addAdvancement(advancement);
+            advancementTab.addAdvancement(dependent);
         }
     }
 
     @Override
-    public void onDependentRemoved(Advancement advancement) {
+    public void onDependentRemoved(Advancement dependent) {
     }
 
     @Override

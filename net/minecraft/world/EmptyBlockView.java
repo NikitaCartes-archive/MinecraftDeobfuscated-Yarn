@@ -19,17 +19,17 @@ public enum EmptyBlockView implements BlockView
 
     @Override
     @Nullable
-    public BlockEntity getBlockEntity(BlockPos blockPos) {
+    public BlockEntity getBlockEntity(BlockPos pos) {
         return null;
     }
 
     @Override
-    public BlockState getBlockState(BlockPos blockPos) {
+    public BlockState getBlockState(BlockPos pos) {
         return Blocks.AIR.getDefaultState();
     }
 
     @Override
-    public FluidState getFluidState(BlockPos blockPos) {
+    public FluidState getFluidState(BlockPos pos) {
         return Fluids.EMPTY.getDefaultState();
     }
 }

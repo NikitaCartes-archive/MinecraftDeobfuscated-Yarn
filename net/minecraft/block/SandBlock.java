@@ -13,14 +13,14 @@ public class SandBlock
 extends FallingBlock {
     private final int color;
 
-    public SandBlock(int i, Block.Settings settings) {
+    public SandBlock(int color, Block.Settings settings) {
         super(settings);
-        this.color = i;
+        this.color = color;
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public int getColor(BlockState blockState) {
+    public int getColor(BlockState state) {
         return this.color;
     }
 }

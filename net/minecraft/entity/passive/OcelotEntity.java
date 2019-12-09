@@ -70,21 +70,21 @@ extends AnimalEntity {
         return this.dataTracker.get(TRUSTING);
     }
 
-    private void setTrusting(boolean bl) {
-        this.dataTracker.set(TRUSTING, bl);
+    private void setTrusting(boolean trusting) {
+        this.dataTracker.set(TRUSTING, trusting);
         this.updateFleeing();
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag compoundTag) {
-        super.writeCustomDataToTag(compoundTag);
-        compoundTag.putBoolean("Trusting", this.isTrusting());
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putBoolean("Trusting", this.isTrusting());
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag compoundTag) {
-        super.readCustomDataFromTag(compoundTag);
-        this.setTrusting(compoundTag.getBoolean("Trusting"));
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        this.setTrusting(tag.getBoolean("Trusting"));
     }
 
     @Override
@@ -128,7 +128,7 @@ extends AnimalEntity {
     }
 
     @Override
-    public boolean canImmediatelyDespawn(double d) {
+    public boolean canImmediatelyDespawn(double distanceSquared) {
         return !this.isTrusting() && this.age > 2400;
     }
 
@@ -141,7 +141,7 @@ extends AnimalEntity {
     }
 
     @Override
-    public boolean handleFallDamage(float f, float g) {
+    public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
         return false;
     }
 
@@ -157,7 +157,7 @@ extends AnimalEntity {
     }
 
     @Override
-    protected SoundEvent getHurtSound(DamageSource damageSource) {
+    protected SoundEvent getHurtSound(DamageSource source) {
         return SoundEvents.ENTITY_OCELOT_HURT;
     }
 
@@ -171,23 +171,23 @@ extends AnimalEntity {
     }
 
     @Override
-    public boolean tryAttack(Entity entity) {
-        return entity.damage(DamageSource.mob(this), this.method_22329());
+    public boolean tryAttack(Entity target) {
+        return target.damage(DamageSource.mob(this), this.method_22329());
     }
 
     @Override
-    public boolean damage(DamageSource damageSource, float f) {
-        if (this.isInvulnerableTo(damageSource)) {
+    public boolean damage(DamageSource source, float amount) {
+        if (this.isInvulnerableTo(source)) {
             return false;
         }
-        return super.damage(damageSource, f);
+        return super.damage(source, amount);
     }
 
     @Override
-    public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
-        ItemStack itemStack = playerEntity.getStackInHand(hand);
-        if ((this.temptGoal == null || this.temptGoal.isActive()) && !this.isTrusting() && this.isBreedingItem(itemStack) && playerEntity.squaredDistanceTo(this) < 9.0) {
-            this.eat(playerEntity, itemStack);
+    public boolean interactMob(PlayerEntity player, Hand hand) {
+        ItemStack itemStack = player.getStackInHand(hand);
+        if ((this.temptGoal == null || this.temptGoal.isActive()) && !this.isTrusting() && this.isBreedingItem(itemStack) && player.squaredDistanceTo(this) < 9.0) {
+            this.eat(player, itemStack);
             if (!this.world.isClient) {
                 if (this.random.nextInt(3) == 0) {
                     this.setTrusting(true);
@@ -200,24 +200,24 @@ extends AnimalEntity {
             }
             return true;
         }
-        return super.interactMob(playerEntity, hand);
+        return super.interactMob(player, hand);
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void handleStatus(byte b) {
-        if (b == 41) {
+    public void handleStatus(byte status) {
+        if (status == 41) {
             this.showEmoteParticle(true);
-        } else if (b == 40) {
+        } else if (status == 40) {
             this.showEmoteParticle(false);
         } else {
-            super.handleStatus(b);
+            super.handleStatus(status);
         }
     }
 
-    private void showEmoteParticle(boolean bl) {
+    private void showEmoteParticle(boolean positive) {
         DefaultParticleType particleEffect = ParticleTypes.HEART;
-        if (!bl) {
+        if (!positive) {
             particleEffect = ParticleTypes.SMOKE;
         }
         for (int i = 0; i < 7; ++i) {
@@ -244,11 +244,11 @@ extends AnimalEntity {
     }
 
     @Override
-    public boolean isBreedingItem(ItemStack itemStack) {
-        return TAMING_INGREDIENT.test(itemStack);
+    public boolean isBreedingItem(ItemStack stack) {
+        return TAMING_INGREDIENT.test(stack);
     }
 
-    public static boolean canSpawn(EntityType<OcelotEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+    public static boolean canSpawn(EntityType<OcelotEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
         return random.nextInt(3) != 0;
     }
 
@@ -270,26 +270,26 @@ extends AnimalEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag) {
+    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         if (entityData == null) {
             entityData = new PassiveEntity.EntityData();
             ((PassiveEntity.EntityData)entityData).setBabyChance(1.0f);
         }
-        return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+        return super.initialize(world, difficulty, spawnType, entityData, entityTag);
     }
 
     @Override
-    public /* synthetic */ PassiveEntity createChild(PassiveEntity passiveEntity) {
-        return this.createChild(passiveEntity);
+    public /* synthetic */ PassiveEntity createChild(PassiveEntity mate) {
+        return this.createChild(mate);
     }
 
     static class OcelotTemptGoal
     extends TemptGoal {
         private final OcelotEntity ocelot;
 
-        public OcelotTemptGoal(OcelotEntity ocelotEntity, double d, Ingredient ingredient, boolean bl) {
-            super((MobEntityWithAi)ocelotEntity, d, ingredient, bl);
-            this.ocelot = ocelotEntity;
+        public OcelotTemptGoal(OcelotEntity ocelot, double speed, Ingredient food, boolean canBeScared) {
+            super((MobEntityWithAi)ocelot, speed, food, canBeScared);
+            this.ocelot = ocelot;
         }
 
         @Override
@@ -302,9 +302,9 @@ extends AnimalEntity {
     extends FleeEntityGoal<T> {
         private final OcelotEntity ocelot;
 
-        public FleeGoal(OcelotEntity ocelotEntity, Class<T> class_, float f, double d, double e) {
-            super(ocelotEntity, class_, f, d, e, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR::test);
-            this.ocelot = ocelotEntity;
+        public FleeGoal(OcelotEntity ocelot, Class<T> fleeFromType, float distance, double slowSpeed, double fastSpeed) {
+            super(ocelot, fleeFromType, distance, slowSpeed, fastSpeed, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR::test);
+            this.ocelot = ocelot;
         }
 
         @Override

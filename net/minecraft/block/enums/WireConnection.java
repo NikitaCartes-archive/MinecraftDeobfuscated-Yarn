@@ -13,8 +13,8 @@ public enum WireConnection implements StringIdentifiable
 
     private final String name;
 
-    private WireConnection(String string2) {
-        this.name = string2;
+    private WireConnection(String name) {
+        this.name = name;
     }
 
     public String toString() {

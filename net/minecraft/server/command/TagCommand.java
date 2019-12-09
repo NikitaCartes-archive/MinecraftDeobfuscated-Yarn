@@ -25,68 +25,68 @@ public class TagCommand {
     private static final SimpleCommandExceptionType ADD_FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.tag.add.failed", new Object[0]));
     private static final SimpleCommandExceptionType REMOVE_FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.tag.remove.failed", new Object[0]));
 
-    public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-        commandDispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("tag").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))).then(((RequiredArgumentBuilder)((RequiredArgumentBuilder)CommandManager.argument("targets", EntityArgumentType.entities()).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.literal("add").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("name", StringArgumentType.word()).executes(commandContext -> TagCommand.executeAdd((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getEntities(commandContext, "targets"), StringArgumentType.getString(commandContext, "name")))))).then(CommandManager.literal("remove").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("name", StringArgumentType.word()).suggests((commandContext, suggestionsBuilder) -> CommandSource.suggestMatching(TagCommand.getTags(EntityArgumentType.getEntities(commandContext, "targets")), suggestionsBuilder)).executes(commandContext -> TagCommand.executeRemove((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getEntities(commandContext, "targets"), StringArgumentType.getString(commandContext, "name")))))).then(CommandManager.literal("list").executes(commandContext -> TagCommand.executeList((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getEntities(commandContext, "targets"))))));
+    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("tag").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))).then(((RequiredArgumentBuilder)((RequiredArgumentBuilder)CommandManager.argument("targets", EntityArgumentType.entities()).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.literal("add").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("name", StringArgumentType.word()).executes(commandContext -> TagCommand.executeAdd((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getEntities(commandContext, "targets"), StringArgumentType.getString(commandContext, "name")))))).then(CommandManager.literal("remove").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("name", StringArgumentType.word()).suggests((commandContext, suggestionsBuilder) -> CommandSource.suggestMatching(TagCommand.getTags(EntityArgumentType.getEntities(commandContext, "targets")), suggestionsBuilder)).executes(commandContext -> TagCommand.executeRemove((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getEntities(commandContext, "targets"), StringArgumentType.getString(commandContext, "name")))))).then(CommandManager.literal("list").executes(commandContext -> TagCommand.executeList((ServerCommandSource)commandContext.getSource(), EntityArgumentType.getEntities(commandContext, "targets"))))));
     }
 
-    private static Collection<String> getTags(Collection<? extends Entity> collection) {
+    private static Collection<String> getTags(Collection<? extends Entity> entities) {
         HashSet<String> set = Sets.newHashSet();
-        for (Entity entity : collection) {
+        for (Entity entity : entities) {
             set.addAll(entity.getScoreboardTags());
         }
         return set;
     }
 
-    private static int executeAdd(ServerCommandSource serverCommandSource, Collection<? extends Entity> collection, String string) throws CommandSyntaxException {
+    private static int executeAdd(ServerCommandSource source, Collection<? extends Entity> targets, String tag) throws CommandSyntaxException {
         int i = 0;
-        for (Entity entity : collection) {
-            if (!entity.addScoreboardTag(string)) continue;
+        for (Entity entity : targets) {
+            if (!entity.addScoreboardTag(tag)) continue;
             ++i;
         }
         if (i == 0) {
             throw ADD_FAILED_EXCEPTION.create();
         }
-        if (collection.size() == 1) {
-            serverCommandSource.sendFeedback(new TranslatableText("commands.tag.add.success.single", string, collection.iterator().next().getDisplayName()), true);
+        if (targets.size() == 1) {
+            source.sendFeedback(new TranslatableText("commands.tag.add.success.single", tag, targets.iterator().next().getDisplayName()), true);
         } else {
-            serverCommandSource.sendFeedback(new TranslatableText("commands.tag.add.success.multiple", string, collection.size()), true);
+            source.sendFeedback(new TranslatableText("commands.tag.add.success.multiple", tag, targets.size()), true);
         }
         return i;
     }
 
-    private static int executeRemove(ServerCommandSource serverCommandSource, Collection<? extends Entity> collection, String string) throws CommandSyntaxException {
+    private static int executeRemove(ServerCommandSource source, Collection<? extends Entity> targets, String tag) throws CommandSyntaxException {
         int i = 0;
-        for (Entity entity : collection) {
-            if (!entity.removeScoreboardTag(string)) continue;
+        for (Entity entity : targets) {
+            if (!entity.removeScoreboardTag(tag)) continue;
             ++i;
         }
         if (i == 0) {
             throw REMOVE_FAILED_EXCEPTION.create();
         }
-        if (collection.size() == 1) {
-            serverCommandSource.sendFeedback(new TranslatableText("commands.tag.remove.success.single", string, collection.iterator().next().getDisplayName()), true);
+        if (targets.size() == 1) {
+            source.sendFeedback(new TranslatableText("commands.tag.remove.success.single", tag, targets.iterator().next().getDisplayName()), true);
         } else {
-            serverCommandSource.sendFeedback(new TranslatableText("commands.tag.remove.success.multiple", string, collection.size()), true);
+            source.sendFeedback(new TranslatableText("commands.tag.remove.success.multiple", tag, targets.size()), true);
         }
         return i;
     }
 
-    private static int executeList(ServerCommandSource serverCommandSource, Collection<? extends Entity> collection) {
+    private static int executeList(ServerCommandSource source, Collection<? extends Entity> targets) {
         HashSet<String> set = Sets.newHashSet();
-        for (Entity entity : collection) {
+        for (Entity entity : targets) {
             set.addAll(entity.getScoreboardTags());
         }
-        if (collection.size() == 1) {
-            Entity entity2 = collection.iterator().next();
+        if (targets.size() == 1) {
+            Entity entity2 = targets.iterator().next();
             if (set.isEmpty()) {
-                serverCommandSource.sendFeedback(new TranslatableText("commands.tag.list.single.empty", entity2.getDisplayName()), false);
+                source.sendFeedback(new TranslatableText("commands.tag.list.single.empty", entity2.getDisplayName()), false);
             } else {
-                serverCommandSource.sendFeedback(new TranslatableText("commands.tag.list.single.success", entity2.getDisplayName(), set.size(), Texts.joinOrdered(set)), false);
+                source.sendFeedback(new TranslatableText("commands.tag.list.single.success", entity2.getDisplayName(), set.size(), Texts.joinOrdered(set)), false);
             }
         } else if (set.isEmpty()) {
-            serverCommandSource.sendFeedback(new TranslatableText("commands.tag.list.multiple.empty", collection.size()), false);
+            source.sendFeedback(new TranslatableText("commands.tag.list.multiple.empty", targets.size()), false);
         } else {
-            serverCommandSource.sendFeedback(new TranslatableText("commands.tag.list.multiple.success", collection.size(), set.size(), Texts.joinOrdered(set)), false);
+            source.sendFeedback(new TranslatableText("commands.tag.list.multiple.success", targets.size(), set.size(), Texts.joinOrdered(set)), false);
         }
         return set.size();
     }

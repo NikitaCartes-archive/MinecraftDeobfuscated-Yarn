@@ -11,13 +11,13 @@ import net.minecraft.world.biome.layer.util.LayerSampler;
 
 public interface MergingLayer
 extends CoordinateTransformer {
-    default public <R extends LayerSampler> LayerFactory<R> create(LayerSampleContext<R> layerSampleContext, LayerFactory<R> layerFactory, LayerFactory<R> layerFactory2) {
+    default public <R extends LayerSampler> LayerFactory<R> create(LayerSampleContext<R> context, LayerFactory<R> layer1, LayerFactory<R> layer2) {
         return () -> {
-            Object layerSampler = layerFactory.make();
-            Object layerSampler2 = layerFactory2.make();
-            return layerSampleContext.createSampler((i, j) -> {
-                layerSampleContext.initSeed(i, j);
-                return this.sample(layerSampleContext, (LayerSampler)layerSampler, (LayerSampler)layerSampler2, i, j);
+            Object layerSampler = layer1.make();
+            Object layerSampler2 = layer2.make();
+            return context.createSampler((i, j) -> {
+                context.initSeed(i, j);
+                return this.sample(context, (LayerSampler)layerSampler, (LayerSampler)layerSampler2, i, j);
             }, layerSampler, layerSampler2);
         };
     }

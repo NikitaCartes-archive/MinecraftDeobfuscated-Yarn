@@ -70,10 +70,10 @@ extends CompositeEntityModel<T> {
     }
 
     @Override
-    public void setAngles(T entity, float f, float g, float h, float i, float j) {
-        this.head.yaw = i * ((float)Math.PI / 180);
-        this.head.pitch = j * ((float)Math.PI / 180);
-        float k = 0.7853982f;
+    public void setAngles(T entity, float limbAngle, float limbDistance, float customAngle, float headYaw, float headPitch) {
+        this.head.yaw = headYaw * ((float)Math.PI / 180);
+        this.head.pitch = headPitch * ((float)Math.PI / 180);
+        float f = 0.7853982f;
         this.rightBackLeg.roll = -0.7853982f;
         this.leftBackLeg.roll = 0.7853982f;
         this.rightBackMiddleLeg.roll = -0.58119464f;
@@ -82,8 +82,8 @@ extends CompositeEntityModel<T> {
         this.leftFrontMiddleLeg.roll = 0.58119464f;
         this.rightFrontLeg.roll = -0.7853982f;
         this.leftFrontLeg.roll = 0.7853982f;
-        float l = -0.0f;
-        float m = 0.3926991f;
+        float g = -0.0f;
+        float h = 0.3926991f;
         this.rightBackLeg.yaw = 0.7853982f;
         this.leftBackLeg.yaw = -0.7853982f;
         this.rightBackMiddleLeg.yaw = 0.3926991f;
@@ -92,30 +92,30 @@ extends CompositeEntityModel<T> {
         this.leftFrontMiddleLeg.yaw = 0.3926991f;
         this.rightFrontLeg.yaw = -0.7853982f;
         this.leftFrontLeg.yaw = 0.7853982f;
-        float n = -(MathHelper.cos(f * 0.6662f * 2.0f + 0.0f) * 0.4f) * g;
-        float o = -(MathHelper.cos(f * 0.6662f * 2.0f + (float)Math.PI) * 0.4f) * g;
-        float p = -(MathHelper.cos(f * 0.6662f * 2.0f + 1.5707964f) * 0.4f) * g;
-        float q = -(MathHelper.cos(f * 0.6662f * 2.0f + 4.712389f) * 0.4f) * g;
-        float r = Math.abs(MathHelper.sin(f * 0.6662f + 0.0f) * 0.4f) * g;
-        float s = Math.abs(MathHelper.sin(f * 0.6662f + (float)Math.PI) * 0.4f) * g;
-        float t = Math.abs(MathHelper.sin(f * 0.6662f + 1.5707964f) * 0.4f) * g;
-        float u = Math.abs(MathHelper.sin(f * 0.6662f + 4.712389f) * 0.4f) * g;
-        this.rightBackLeg.yaw += n;
-        this.leftBackLeg.yaw += -n;
-        this.rightBackMiddleLeg.yaw += o;
-        this.leftBackMiddleLeg.yaw += -o;
-        this.rightFrontMiddleLeg.yaw += p;
-        this.leftFrontMiddleLeg.yaw += -p;
-        this.rightFrontLeg.yaw += q;
-        this.leftFrontLeg.yaw += -q;
-        this.rightBackLeg.roll += r;
-        this.leftBackLeg.roll += -r;
-        this.rightBackMiddleLeg.roll += s;
-        this.leftBackMiddleLeg.roll += -s;
-        this.rightFrontMiddleLeg.roll += t;
-        this.leftFrontMiddleLeg.roll += -t;
-        this.rightFrontLeg.roll += u;
-        this.leftFrontLeg.roll += -u;
+        float i = -(MathHelper.cos(limbAngle * 0.6662f * 2.0f + 0.0f) * 0.4f) * limbDistance;
+        float j = -(MathHelper.cos(limbAngle * 0.6662f * 2.0f + (float)Math.PI) * 0.4f) * limbDistance;
+        float k = -(MathHelper.cos(limbAngle * 0.6662f * 2.0f + 1.5707964f) * 0.4f) * limbDistance;
+        float l = -(MathHelper.cos(limbAngle * 0.6662f * 2.0f + 4.712389f) * 0.4f) * limbDistance;
+        float m = Math.abs(MathHelper.sin(limbAngle * 0.6662f + 0.0f) * 0.4f) * limbDistance;
+        float n = Math.abs(MathHelper.sin(limbAngle * 0.6662f + (float)Math.PI) * 0.4f) * limbDistance;
+        float o = Math.abs(MathHelper.sin(limbAngle * 0.6662f + 1.5707964f) * 0.4f) * limbDistance;
+        float p = Math.abs(MathHelper.sin(limbAngle * 0.6662f + 4.712389f) * 0.4f) * limbDistance;
+        this.rightBackLeg.yaw += i;
+        this.leftBackLeg.yaw += -i;
+        this.rightBackMiddleLeg.yaw += j;
+        this.leftBackMiddleLeg.yaw += -j;
+        this.rightFrontMiddleLeg.yaw += k;
+        this.leftFrontMiddleLeg.yaw += -k;
+        this.rightFrontLeg.yaw += l;
+        this.leftFrontLeg.yaw += -l;
+        this.rightBackLeg.roll += m;
+        this.leftBackLeg.roll += -m;
+        this.rightBackMiddleLeg.roll += n;
+        this.leftBackMiddleLeg.roll += -n;
+        this.rightFrontMiddleLeg.roll += o;
+        this.leftFrontMiddleLeg.roll += -o;
+        this.rightFrontLeg.roll += p;
+        this.leftFrontLeg.roll += -p;
     }
 }
 

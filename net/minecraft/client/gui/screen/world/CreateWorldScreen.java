@@ -57,9 +57,9 @@ extends Screen {
     private int generatorType;
     public CompoundTag generatorOptionsTag = new CompoundTag();
 
-    public CreateWorldScreen(Screen screen) {
+    public CreateWorldScreen(Screen parent) {
         super(new TranslatableText("selectWorld.create", new Object[0]));
-        this.parent = screen;
+        this.parent = parent;
         this.seed = "";
         this.levelName = I18n.translate("selectWorld.newWorld", new Object[0]);
     }
@@ -301,8 +301,8 @@ extends Screen {
         this.updateSettingsLabels();
     }
 
-    private void setMoreOptionsOpen(boolean bl) {
-        this.moreOptionsOpen = bl;
+    private void setMoreOptionsOpen(boolean moreOptionsOpen) {
+        this.moreOptionsOpen = moreOptionsOpen;
         this.gameModeSwitchButton.visible = !this.moreOptionsOpen;
         this.mapTypeSwitchButton.visible = this.moreOptionsOpen;
         if (LevelGeneratorType.TYPES[this.generatorType] == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
@@ -335,11 +335,11 @@ extends Screen {
     }
 
     @Override
-    public boolean keyPressed(int i, int j, int k) {
-        if (super.keyPressed(i, j, k)) {
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (super.keyPressed(keyCode, scanCode, modifiers)) {
             return true;
         }
-        if (i == 257 || i == 335) {
+        if (keyCode == 257 || keyCode == 335) {
             this.createLevel();
             return true;
         }
@@ -356,7 +356,7 @@ extends Screen {
     }
 
     @Override
-    public void render(int i, int j, float f) {
+    public void render(int mouseX, int mouseY, float delta) {
         this.renderBackground();
         this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, -1);
         if (this.moreOptionsOpen) {
@@ -368,18 +368,18 @@ extends Screen {
             if (this.enableCheatsButton.visible) {
                 this.drawString(this.font, I18n.translate("selectWorld.allowCommands.info", new Object[0]), this.width / 2 - 150, 172, -6250336);
             }
-            this.seedField.render(i, j, f);
+            this.seedField.render(mouseX, mouseY, delta);
             if (LevelGeneratorType.TYPES[this.generatorType].hasInfo()) {
                 this.font.drawTrimmed(I18n.translate(LevelGeneratorType.TYPES[this.generatorType].getInfoTranslationKey(), new Object[0]), this.mapTypeSwitchButton.x + 2, this.mapTypeSwitchButton.y + 22, this.mapTypeSwitchButton.getWidth(), 0xA0A0A0);
             }
         } else {
             this.drawString(this.font, I18n.translate("selectWorld.enterName", new Object[0]), this.width / 2 - 100, 47, -6250336);
             this.drawString(this.font, I18n.translate("selectWorld.resultFolder", new Object[0]) + " " + this.saveDirectoryName, this.width / 2 - 100, 85, -6250336);
-            this.levelNameField.render(i, j, f);
+            this.levelNameField.render(mouseX, mouseY, delta);
             this.drawCenteredString(this.font, this.firstGameModeDescriptionLine, this.width / 2, 137, -6250336);
             this.drawCenteredString(this.font, this.secondGameModeDescriptionLine, this.width / 2, 149, -6250336);
         }
-        super.render(i, j, f);
+        super.render(mouseX, mouseY, delta);
     }
 
     public void recreateLevel(LevelProperties levelProperties) {

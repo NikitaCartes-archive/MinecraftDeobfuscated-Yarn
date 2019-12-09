@@ -26,8 +26,8 @@ extends Feature<ProbabilityConfig> {
     private static final BlockState BAMBOO_TOP_2 = (BlockState)BAMBOO.with(BambooBlock.LEAVES, BambooLeaves.LARGE);
     private static final BlockState BAMBOO_TOP_3 = (BlockState)BAMBOO.with(BambooBlock.LEAVES, BambooLeaves.SMALL);
 
-    public BambooFeature(Function<Dynamic<?>, ? extends ProbabilityConfig> function) {
-        super(function);
+    public BambooFeature(Function<Dynamic<?>, ? extends ProbabilityConfig> configFactory) {
+        super(configFactory);
     }
 
     @Override

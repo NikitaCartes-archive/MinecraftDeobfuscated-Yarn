@@ -19,19 +19,19 @@ public class RedDustParticle
 extends SpriteBillboardParticle {
     private final SpriteProvider spriteProvider;
 
-    private RedDustParticle(World world, double d, double e, double f, double g, double h, double i, DustParticleEffect dustParticleEffect, SpriteProvider spriteProvider) {
-        super(world, d, e, f, g, h, i);
+    private RedDustParticle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, DustParticleEffect dustParticleEffect, SpriteProvider spriteProvider) {
+        super(world, x, y, z, velocityX, velocityY, velocityZ);
         this.spriteProvider = spriteProvider;
         this.velocityX *= (double)0.1f;
         this.velocityY *= (double)0.1f;
         this.velocityZ *= (double)0.1f;
-        float j = (float)Math.random() * 0.4f + 0.6f;
-        this.colorRed = ((float)(Math.random() * (double)0.2f) + 0.8f) * dustParticleEffect.getRed() * j;
-        this.colorGreen = ((float)(Math.random() * (double)0.2f) + 0.8f) * dustParticleEffect.getGreen() * j;
-        this.colorBlue = ((float)(Math.random() * (double)0.2f) + 0.8f) * dustParticleEffect.getBlue() * j;
+        float f = (float)Math.random() * 0.4f + 0.6f;
+        this.colorRed = ((float)(Math.random() * (double)0.2f) + 0.8f) * dustParticleEffect.getRed() * f;
+        this.colorGreen = ((float)(Math.random() * (double)0.2f) + 0.8f) * dustParticleEffect.getGreen() * f;
+        this.colorBlue = ((float)(Math.random() * (double)0.2f) + 0.8f) * dustParticleEffect.getBlue() * f;
         this.scale *= 0.75f * dustParticleEffect.getScale();
-        int k = (int)(8.0 / (Math.random() * 0.8 + 0.2));
-        this.maxAge = (int)Math.max((float)k * dustParticleEffect.getScale(), 1.0f);
+        int i = (int)(8.0 / (Math.random() * 0.8 + 0.2));
+        this.maxAge = (int)Math.max((float)i * dustParticleEffect.getScale(), 1.0f);
         this.setSpriteForAge(spriteProvider);
     }
 
@@ -41,8 +41,8 @@ extends SpriteBillboardParticle {
     }
 
     @Override
-    public float getSize(float f) {
-        return this.scale * MathHelper.clamp(((float)this.age + f) / (float)this.maxAge * 32.0f, 0.0f, 1.0f);
+    public float getSize(float tickDelta) {
+        return this.scale * MathHelper.clamp(((float)this.age + tickDelta) / (float)this.maxAge * 32.0f, 0.0f, 1.0f);
     }
 
     @Override

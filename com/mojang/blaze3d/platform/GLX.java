@@ -83,9 +83,9 @@ public class GLX {
         return longSupplier;
     }
 
-    public static void _setGlfwErrorCallback(GLFWErrorCallbackI gLFWErrorCallbackI) {
+    public static void _setGlfwErrorCallback(GLFWErrorCallbackI callback) {
         RenderSystem.assertThread(RenderSystem::isInInitPhase);
-        GLFWErrorCallback gLFWErrorCallback = GLFW.glfwSetErrorCallback(gLFWErrorCallbackI);
+        GLFWErrorCallback gLFWErrorCallback = GLFW.glfwSetErrorCallback(callback);
         if (gLFWErrorCallback != null) {
             gLFWErrorCallback.free();
         }
@@ -102,7 +102,7 @@ public class GLX {
         }
     }
 
-    public static void _init(int i, boolean bl) {
+    public static void _init(int debugVerbosity, boolean debugSync) {
         RenderSystem.assertThread(RenderSystem::isInInitPhase);
         GLCapabilities gLCapabilities = GL.getCapabilities();
         capsString = "Using framebuffer using " + GlStateManager.initFramebufferSupport(gLCapabilities);
@@ -112,7 +112,7 @@ public class GLX {
         } catch (Throwable throwable) {
             // empty catch block
         }
-        GlDebug.enableDebug(i, bl);
+        GlDebug.enableDebug(debugVerbosity, debugSync);
     }
 
     public static String _getCapsString() {
@@ -123,7 +123,7 @@ public class GLX {
         return cpuInfo == null ? "<unknown>" : cpuInfo;
     }
 
-    public static void _renderCrosshair(int i, boolean bl, boolean bl2, boolean bl3) {
+    public static void _renderCrosshair(int size, boolean drawX, boolean drawY, boolean drawZ) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         GlStateManager.disableTexture();
         GlStateManager.depthMask(false);
@@ -131,32 +131,32 @@ public class GLX {
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         GL11.glLineWidth(4.0f);
         bufferBuilder.begin(1, VertexFormats.POSITION_COLOR);
-        if (bl) {
+        if (drawX) {
             bufferBuilder.vertex(0.0, 0.0, 0.0).color(0, 0, 0, 255).next();
-            bufferBuilder.vertex(i, 0.0, 0.0).color(0, 0, 0, 255).next();
+            bufferBuilder.vertex(size, 0.0, 0.0).color(0, 0, 0, 255).next();
         }
-        if (bl2) {
+        if (drawY) {
             bufferBuilder.vertex(0.0, 0.0, 0.0).color(0, 0, 0, 255).next();
-            bufferBuilder.vertex(0.0, i, 0.0).color(0, 0, 0, 255).next();
+            bufferBuilder.vertex(0.0, size, 0.0).color(0, 0, 0, 255).next();
         }
-        if (bl3) {
+        if (drawZ) {
             bufferBuilder.vertex(0.0, 0.0, 0.0).color(0, 0, 0, 255).next();
-            bufferBuilder.vertex(0.0, 0.0, i).color(0, 0, 0, 255).next();
+            bufferBuilder.vertex(0.0, 0.0, size).color(0, 0, 0, 255).next();
         }
         tessellator.draw();
         GL11.glLineWidth(2.0f);
         bufferBuilder.begin(1, VertexFormats.POSITION_COLOR);
-        if (bl) {
+        if (drawX) {
             bufferBuilder.vertex(0.0, 0.0, 0.0).color(255, 0, 0, 255).next();
-            bufferBuilder.vertex(i, 0.0, 0.0).color(255, 0, 0, 255).next();
+            bufferBuilder.vertex(size, 0.0, 0.0).color(255, 0, 0, 255).next();
         }
-        if (bl2) {
+        if (drawY) {
             bufferBuilder.vertex(0.0, 0.0, 0.0).color(0, 255, 0, 255).next();
-            bufferBuilder.vertex(0.0, i, 0.0).color(0, 255, 0, 255).next();
+            bufferBuilder.vertex(0.0, size, 0.0).color(0, 255, 0, 255).next();
         }
-        if (bl3) {
+        if (drawZ) {
             bufferBuilder.vertex(0.0, 0.0, 0.0).color(127, 127, 255, 255).next();
-            bufferBuilder.vertex(0.0, 0.0, i).color(127, 127, 255, 255).next();
+            bufferBuilder.vertex(0.0, 0.0, size).color(127, 127, 255, 255).next();
         }
         tessellator.draw();
         GL11.glLineWidth(1.0f);
@@ -164,16 +164,16 @@ public class GLX {
         GlStateManager.enableTexture();
     }
 
-    public static String getErrorString(int i) {
-        return LOOKUP_MAP.get(i);
+    public static String getErrorString(int code) {
+        return LOOKUP_MAP.get(code);
     }
 
-    public static <T> T make(Supplier<T> supplier) {
-        return supplier.get();
+    public static <T> T make(Supplier<T> factory) {
+        return factory.get();
     }
 
-    public static <T> T make(T object, Consumer<T> consumer) {
-        consumer.accept(object);
+    public static <T> T make(T object, Consumer<T> initializer) {
+        initializer.accept(object);
         return object;
     }
 

@@ -11,8 +11,8 @@ import net.minecraft.world.TickPriority;
 public interface TickScheduler<T> {
     public boolean isScheduled(BlockPos var1, T var2);
 
-    default public void schedule(BlockPos blockPos, T object, int i) {
-        this.schedule(blockPos, object, i, TickPriority.NORMAL);
+    default public void schedule(BlockPos pos, T object, int delay) {
+        this.schedule(pos, object, delay, TickPriority.NORMAL);
     }
 
     public void schedule(BlockPos var1, T var2, int var3, TickPriority var4);

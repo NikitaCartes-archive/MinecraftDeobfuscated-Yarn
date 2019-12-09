@@ -19,8 +19,8 @@ public class LocationArrivalCriterion
 extends AbstractCriterion<Conditions> {
     private final Identifier id;
 
-    public LocationArrivalCriterion(Identifier identifier) {
-        this.id = identifier;
+    public LocationArrivalCriterion(Identifier id) {
+        this.id = id;
     }
 
     @Override
@@ -34,26 +34,26 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(this.id, locationPredicate);
     }
 
-    public void trigger(ServerPlayerEntity serverPlayerEntity) {
-        this.test(serverPlayerEntity.getAdvancementTracker(), conditions -> conditions.matches(serverPlayerEntity.getServerWorld(), serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ()));
+    public void trigger(ServerPlayerEntity player) {
+        this.test(player.getAdvancementTracker(), conditions -> conditions.matches(player.getServerWorld(), player.getX(), player.getY(), player.getZ()));
     }
 
     @Override
-    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
+    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject obj, JsonDeserializationContext context) {
+        return this.conditionsFromJson(obj, context);
     }
 
     public static class Conditions
     extends AbstractCriterionConditions {
         private final LocationPredicate location;
 
-        public Conditions(Identifier identifier, LocationPredicate locationPredicate) {
-            super(identifier);
-            this.location = locationPredicate;
+        public Conditions(Identifier id, LocationPredicate location) {
+            super(id);
+            this.location = location;
         }
 
-        public static Conditions create(LocationPredicate locationPredicate) {
-            return new Conditions(Criterions.LOCATION.id, locationPredicate);
+        public static Conditions create(LocationPredicate location) {
+            return new Conditions(Criterions.LOCATION.id, location);
         }
 
         public static Conditions createSleptInBed() {
@@ -64,8 +64,8 @@ extends AbstractCriterion<Conditions> {
             return new Conditions(Criterions.HERO_OF_THE_VILLAGE.id, LocationPredicate.ANY);
         }
 
-        public boolean matches(ServerWorld serverWorld, double d, double e, double f) {
-            return this.location.test(serverWorld, d, e, f);
+        public boolean matches(ServerWorld world, double x, double y, double z) {
+            return this.location.test(world, x, y, z);
         }
 
         @Override

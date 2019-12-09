@@ -35,7 +35,7 @@ extends TreeDecorator {
     }
 
     @Override
-    public void generate(IWorld iWorld, Random random, List<BlockPos> list, List<BlockPos> list2, Set<BlockPos> set, BlockBox blockBox) {
+    public void generate(IWorld world, Random random, List<BlockPos> list, List<BlockPos> list2, Set<BlockPos> set, BlockBox box) {
         if (random.nextFloat() >= this.field_21318) {
             return;
         }
@@ -44,16 +44,16 @@ extends TreeDecorator {
             for (Direction direction : Direction.Type.HORIZONTAL) {
                 Direction direction2;
                 BlockPos blockPos2;
-                if (!(random.nextFloat() <= 0.25f) || !AbstractTreeFeature.isAir(iWorld, blockPos2 = blockPos.add((direction2 = direction.getOpposite()).getOffsetX(), 0, direction2.getOffsetZ()))) continue;
+                if (!(random.nextFloat() <= 0.25f) || !AbstractTreeFeature.isAir(world, blockPos2 = blockPos.add((direction2 = direction.getOpposite()).getOffsetX(), 0, direction2.getOffsetZ()))) continue;
                 BlockState blockState = (BlockState)((BlockState)Blocks.COCOA.getDefaultState().with(CocoaBlock.AGE, random.nextInt(3))).with(CocoaBlock.FACING, direction);
-                this.method_23470(iWorld, blockPos2, blockState, set, blockBox);
+                this.method_23470(world, blockPos2, blockState, set, box);
             }
         });
     }
 
     @Override
-    public <T> T serialize(DynamicOps<T> dynamicOps) {
-        return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("type"), dynamicOps.createString(Registry.TREE_DECORATOR_TYPE.getId(this.field_21319).toString()), dynamicOps.createString("probability"), dynamicOps.createFloat(this.field_21318)))).getValue();
+    public <T> T serialize(DynamicOps<T> ops) {
+        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("type"), ops.createString(Registry.TREE_DECORATOR_TYPE.getId(this.field_21319).toString()), ops.createString("probability"), ops.createFloat(this.field_21318)))).getValue();
     }
 }
 

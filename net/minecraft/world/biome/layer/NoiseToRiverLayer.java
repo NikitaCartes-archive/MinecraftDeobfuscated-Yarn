@@ -15,19 +15,19 @@ public enum NoiseToRiverLayer implements CrossSamplingLayer
     public static final int RIVER_ID;
 
     @Override
-    public int sample(LayerRandomnessSource layerRandomnessSource, int i, int j, int k, int l, int m) {
-        int n = NoiseToRiverLayer.isValidForRiver(m);
-        if (n == NoiseToRiverLayer.isValidForRiver(l) && n == NoiseToRiverLayer.isValidForRiver(i) && n == NoiseToRiverLayer.isValidForRiver(j) && n == NoiseToRiverLayer.isValidForRiver(k)) {
+    public int sample(LayerRandomnessSource context, int n, int e, int s, int w, int center) {
+        int i = NoiseToRiverLayer.isValidForRiver(center);
+        if (i == NoiseToRiverLayer.isValidForRiver(w) && i == NoiseToRiverLayer.isValidForRiver(n) && i == NoiseToRiverLayer.isValidForRiver(e) && i == NoiseToRiverLayer.isValidForRiver(s)) {
             return -1;
         }
         return RIVER_ID;
     }
 
-    private static int isValidForRiver(int i) {
-        if (i >= 2) {
-            return 2 + (i & 1);
+    private static int isValidForRiver(int value) {
+        if (value >= 2) {
+            return 2 + (value & 1);
         }
-        return i;
+        return value;
     }
 
     static {

@@ -55,8 +55,8 @@ extends MobEntityRenderer<EndermanEntity, EndermanEntityModel<EndermanEntity>> {
     }
 
     @Override
-    public /* synthetic */ Vec3d getPositionOffset(Entity entity, float f) {
-        return this.getPositionOffset((EndermanEntity)entity, f);
+    public /* synthetic */ Vec3d getPositionOffset(Entity entity, float tickDelta) {
+        return this.getPositionOffset((EndermanEntity)entity, tickDelta);
     }
 }
 

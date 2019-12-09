@@ -18,21 +18,21 @@ implements PosArgument {
     private final CoordinateArgument y;
     private final CoordinateArgument z;
 
-    public DefaultPosArgument(CoordinateArgument coordinateArgument, CoordinateArgument coordinateArgument2, CoordinateArgument coordinateArgument3) {
-        this.x = coordinateArgument;
-        this.y = coordinateArgument2;
-        this.z = coordinateArgument3;
+    public DefaultPosArgument(CoordinateArgument x, CoordinateArgument y, CoordinateArgument z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
 
     @Override
-    public Vec3d toAbsolutePos(ServerCommandSource serverCommandSource) {
-        Vec3d vec3d = serverCommandSource.getPosition();
+    public Vec3d toAbsolutePos(ServerCommandSource source) {
+        Vec3d vec3d = source.getPosition();
         return new Vec3d(this.x.toAbsoluteCoordinate(vec3d.x), this.y.toAbsoluteCoordinate(vec3d.y), this.z.toAbsoluteCoordinate(vec3d.z));
     }
 
     @Override
-    public Vec2f toAbsoluteRotation(ServerCommandSource serverCommandSource) {
-        Vec2f vec2f = serverCommandSource.getRotation();
+    public Vec2f toAbsoluteRotation(ServerCommandSource source) {
+        Vec2f vec2f = source.getRotation();
         return new Vec2f((float)this.x.toAbsoluteCoordinate(vec2f.x), (float)this.y.toAbsoluteCoordinate(vec2f.y));
     }
 
@@ -51,14 +51,14 @@ implements PosArgument {
         return this.z.isRelative();
     }
 
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (!(object instanceof DefaultPosArgument)) {
+        if (!(o instanceof DefaultPosArgument)) {
             return false;
         }
-        DefaultPosArgument defaultPosArgument = (DefaultPosArgument)object;
+        DefaultPosArgument defaultPosArgument = (DefaultPosArgument)o;
         if (!this.x.equals(defaultPosArgument.x)) {
             return false;
         }
@@ -68,39 +68,39 @@ implements PosArgument {
         return this.z.equals(defaultPosArgument.z);
     }
 
-    public static DefaultPosArgument parse(StringReader stringReader) throws CommandSyntaxException {
-        int i = stringReader.getCursor();
-        CoordinateArgument coordinateArgument = CoordinateArgument.parse(stringReader);
-        if (!stringReader.canRead() || stringReader.peek() != ' ') {
-            stringReader.setCursor(i);
-            throw Vec3ArgumentType.INCOMPLETE_EXCEPTION.createWithContext(stringReader);
+    public static DefaultPosArgument parse(StringReader reader) throws CommandSyntaxException {
+        int i = reader.getCursor();
+        CoordinateArgument coordinateArgument = CoordinateArgument.parse(reader);
+        if (!reader.canRead() || reader.peek() != ' ') {
+            reader.setCursor(i);
+            throw Vec3ArgumentType.INCOMPLETE_EXCEPTION.createWithContext(reader);
         }
-        stringReader.skip();
-        CoordinateArgument coordinateArgument2 = CoordinateArgument.parse(stringReader);
-        if (!stringReader.canRead() || stringReader.peek() != ' ') {
-            stringReader.setCursor(i);
-            throw Vec3ArgumentType.INCOMPLETE_EXCEPTION.createWithContext(stringReader);
+        reader.skip();
+        CoordinateArgument coordinateArgument2 = CoordinateArgument.parse(reader);
+        if (!reader.canRead() || reader.peek() != ' ') {
+            reader.setCursor(i);
+            throw Vec3ArgumentType.INCOMPLETE_EXCEPTION.createWithContext(reader);
         }
-        stringReader.skip();
-        CoordinateArgument coordinateArgument3 = CoordinateArgument.parse(stringReader);
+        reader.skip();
+        CoordinateArgument coordinateArgument3 = CoordinateArgument.parse(reader);
         return new DefaultPosArgument(coordinateArgument, coordinateArgument2, coordinateArgument3);
     }
 
-    public static DefaultPosArgument parse(StringReader stringReader, boolean bl) throws CommandSyntaxException {
-        int i = stringReader.getCursor();
-        CoordinateArgument coordinateArgument = CoordinateArgument.parse(stringReader, bl);
-        if (!stringReader.canRead() || stringReader.peek() != ' ') {
-            stringReader.setCursor(i);
-            throw Vec3ArgumentType.INCOMPLETE_EXCEPTION.createWithContext(stringReader);
+    public static DefaultPosArgument parse(StringReader reader, boolean centerIntegers) throws CommandSyntaxException {
+        int i = reader.getCursor();
+        CoordinateArgument coordinateArgument = CoordinateArgument.parse(reader, centerIntegers);
+        if (!reader.canRead() || reader.peek() != ' ') {
+            reader.setCursor(i);
+            throw Vec3ArgumentType.INCOMPLETE_EXCEPTION.createWithContext(reader);
         }
-        stringReader.skip();
-        CoordinateArgument coordinateArgument2 = CoordinateArgument.parse(stringReader, false);
-        if (!stringReader.canRead() || stringReader.peek() != ' ') {
-            stringReader.setCursor(i);
-            throw Vec3ArgumentType.INCOMPLETE_EXCEPTION.createWithContext(stringReader);
+        reader.skip();
+        CoordinateArgument coordinateArgument2 = CoordinateArgument.parse(reader, false);
+        if (!reader.canRead() || reader.peek() != ' ') {
+            reader.setCursor(i);
+            throw Vec3ArgumentType.INCOMPLETE_EXCEPTION.createWithContext(reader);
         }
-        stringReader.skip();
-        CoordinateArgument coordinateArgument3 = CoordinateArgument.parse(stringReader, bl);
+        reader.skip();
+        CoordinateArgument coordinateArgument3 = CoordinateArgument.parse(reader, centerIntegers);
         return new DefaultPosArgument(coordinateArgument, coordinateArgument2, coordinateArgument3);
     }
 

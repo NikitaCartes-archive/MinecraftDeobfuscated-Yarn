@@ -28,26 +28,26 @@ public class ModelTransformation {
         this(Transformation.NONE, Transformation.NONE, Transformation.NONE, Transformation.NONE, Transformation.NONE, Transformation.NONE, Transformation.NONE, Transformation.NONE);
     }
 
-    public ModelTransformation(ModelTransformation modelTransformation) {
-        this.thirdPersonLeftHand = modelTransformation.thirdPersonLeftHand;
-        this.thirdPersonRightHand = modelTransformation.thirdPersonRightHand;
-        this.firstPersonLeftHand = modelTransformation.firstPersonLeftHand;
-        this.firstPersonRightHand = modelTransformation.firstPersonRightHand;
-        this.head = modelTransformation.head;
-        this.gui = modelTransformation.gui;
-        this.ground = modelTransformation.ground;
-        this.fixed = modelTransformation.fixed;
+    public ModelTransformation(ModelTransformation other) {
+        this.thirdPersonLeftHand = other.thirdPersonLeftHand;
+        this.thirdPersonRightHand = other.thirdPersonRightHand;
+        this.firstPersonLeftHand = other.firstPersonLeftHand;
+        this.firstPersonRightHand = other.firstPersonRightHand;
+        this.head = other.head;
+        this.gui = other.gui;
+        this.ground = other.ground;
+        this.fixed = other.fixed;
     }
 
-    public ModelTransformation(Transformation transformation, Transformation transformation2, Transformation transformation3, Transformation transformation4, Transformation transformation5, Transformation transformation6, Transformation transformation7, Transformation transformation8) {
-        this.thirdPersonLeftHand = transformation;
-        this.thirdPersonRightHand = transformation2;
-        this.firstPersonLeftHand = transformation3;
-        this.firstPersonRightHand = transformation4;
-        this.head = transformation5;
-        this.gui = transformation6;
-        this.ground = transformation7;
-        this.fixed = transformation8;
+    public ModelTransformation(Transformation thirdPersonLeftHand, Transformation thirdPersonRightHand, Transformation firstPersonLeftHand, Transformation firstPersonRightHand, Transformation head, Transformation gui, Transformation ground, Transformation fixed) {
+        this.thirdPersonLeftHand = thirdPersonLeftHand;
+        this.thirdPersonRightHand = thirdPersonRightHand;
+        this.firstPersonLeftHand = firstPersonLeftHand;
+        this.firstPersonRightHand = firstPersonRightHand;
+        this.head = head;
+        this.gui = gui;
+        this.ground = ground;
+        this.fixed = fixed;
     }
 
     public Transformation getTransformation(Type type) {
@@ -91,35 +91,35 @@ public class ModelTransformation {
         }
 
         @Override
-        public ModelTransformation deserialize(JsonElement jsonElement, java.lang.reflect.Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            JsonObject jsonObject = jsonElement.getAsJsonObject();
-            Transformation transformation = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "thirdperson_righthand");
-            Transformation transformation2 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "thirdperson_lefthand");
+        public ModelTransformation deserialize(JsonElement element, java.lang.reflect.Type type, JsonDeserializationContext context) throws JsonParseException {
+            JsonObject jsonObject = element.getAsJsonObject();
+            Transformation transformation = this.parseModelTransformation(context, jsonObject, "thirdperson_righthand");
+            Transformation transformation2 = this.parseModelTransformation(context, jsonObject, "thirdperson_lefthand");
             if (transformation2 == Transformation.NONE) {
                 transformation2 = transformation;
             }
-            Transformation transformation3 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "firstperson_righthand");
-            Transformation transformation4 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "firstperson_lefthand");
+            Transformation transformation3 = this.parseModelTransformation(context, jsonObject, "firstperson_righthand");
+            Transformation transformation4 = this.parseModelTransformation(context, jsonObject, "firstperson_lefthand");
             if (transformation4 == Transformation.NONE) {
                 transformation4 = transformation3;
             }
-            Transformation transformation5 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "head");
-            Transformation transformation6 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "gui");
-            Transformation transformation7 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "ground");
-            Transformation transformation8 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "fixed");
+            Transformation transformation5 = this.parseModelTransformation(context, jsonObject, "head");
+            Transformation transformation6 = this.parseModelTransformation(context, jsonObject, "gui");
+            Transformation transformation7 = this.parseModelTransformation(context, jsonObject, "ground");
+            Transformation transformation8 = this.parseModelTransformation(context, jsonObject, "fixed");
             return new ModelTransformation(transformation2, transformation, transformation4, transformation3, transformation5, transformation6, transformation7, transformation8);
         }
 
-        private Transformation parseModelTransformation(JsonDeserializationContext jsonDeserializationContext, JsonObject jsonObject, String string) {
-            if (jsonObject.has(string)) {
-                return (Transformation)jsonDeserializationContext.deserialize(jsonObject.get(string), (java.lang.reflect.Type)((Object)Transformation.class));
+        private Transformation parseModelTransformation(JsonDeserializationContext ctx, JsonObject json, String key) {
+            if (json.has(key)) {
+                return (Transformation)ctx.deserialize(json.get(key), (java.lang.reflect.Type)((Object)Transformation.class));
             }
             return Transformation.NONE;
         }
 
         @Override
-        public /* synthetic */ Object deserialize(JsonElement jsonElement, java.lang.reflect.Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.deserialize(jsonElement, type, jsonDeserializationContext);
+        public /* synthetic */ Object deserialize(JsonElement functionJson, java.lang.reflect.Type unused, JsonDeserializationContext context) throws JsonParseException {
+            return this.deserialize(functionJson, unused, context);
         }
     }
 

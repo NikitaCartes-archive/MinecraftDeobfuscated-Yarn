@@ -23,11 +23,11 @@ implements FeatureConfig {
     public final int baseHeight;
     public transient boolean field_21593;
 
-    protected TreeFeatureConfig(StateProvider stateProvider, StateProvider stateProvider2, List<TreeDecorator> list, int i) {
-        this.trunkProvider = stateProvider;
-        this.leavesProvider = stateProvider2;
-        this.decorators = list;
-        this.baseHeight = i;
+    protected TreeFeatureConfig(StateProvider trunkProvider, StateProvider leavesProvider, List<TreeDecorator> decorators, int baseHeight) {
+        this.trunkProvider = trunkProvider;
+        this.leavesProvider = leavesProvider;
+        this.decorators = decorators;
+        this.baseHeight = baseHeight;
     }
 
     public void method_23916() {
@@ -35,16 +35,16 @@ implements FeatureConfig {
     }
 
     @Override
-    public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
+    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
         ImmutableMap.Builder<T, T> builder = ImmutableMap.builder();
-        builder.put(dynamicOps.createString("trunk_provider"), this.trunkProvider.serialize(dynamicOps)).put(dynamicOps.createString("leaves_provider"), this.leavesProvider.serialize(dynamicOps)).put(dynamicOps.createString("decorators"), dynamicOps.createList(this.decorators.stream().map(treeDecorator -> treeDecorator.serialize(dynamicOps)))).put(dynamicOps.createString("base_height"), dynamicOps.createInt(this.baseHeight));
-        return new Dynamic<T>(dynamicOps, dynamicOps.createMap(builder.build()));
+        builder.put(ops.createString("trunk_provider"), this.trunkProvider.serialize(ops)).put(ops.createString("leaves_provider"), this.leavesProvider.serialize(ops)).put(ops.createString("decorators"), ops.createList(this.decorators.stream().map(treeDecorator -> treeDecorator.serialize(ops)))).put(ops.createString("base_height"), ops.createInt(this.baseHeight));
+        return new Dynamic<T>(ops, ops.createMap(builder.build()));
     }
 
-    public static <T> TreeFeatureConfig deserialize(Dynamic<T> dynamic2) {
-        StateProviderType<T> stateProviderType = Registry.BLOCK_STATE_PROVIDER_TYPE.get(new Identifier(dynamic2.get("trunk_provider").get("type").asString().orElseThrow(RuntimeException::new)));
-        StateProviderType<T> stateProviderType2 = Registry.BLOCK_STATE_PROVIDER_TYPE.get(new Identifier(dynamic2.get("leaves_provider").get("type").asString().orElseThrow(RuntimeException::new)));
-        return new TreeFeatureConfig((StateProvider)stateProviderType.deserialize(dynamic2.get("trunk_provider").orElseEmptyMap()), (StateProvider)stateProviderType2.deserialize(dynamic2.get("leaves_provider").orElseEmptyMap()), dynamic2.get("decorators").asList(dynamic -> Registry.TREE_DECORATOR_TYPE.get(new Identifier(dynamic.get("type").asString().orElseThrow(RuntimeException::new))).method_23472((Dynamic<?>)dynamic)), dynamic2.get("base_height").asInt(0));
+    public static <T> TreeFeatureConfig deserialize(Dynamic<T> configDeserializer) {
+        StateProviderType<T> stateProviderType = Registry.BLOCK_STATE_PROVIDER_TYPE.get(new Identifier(configDeserializer.get("trunk_provider").get("type").asString().orElseThrow(RuntimeException::new)));
+        StateProviderType<T> stateProviderType2 = Registry.BLOCK_STATE_PROVIDER_TYPE.get(new Identifier(configDeserializer.get("leaves_provider").get("type").asString().orElseThrow(RuntimeException::new)));
+        return new TreeFeatureConfig((StateProvider)stateProviderType.deserialize(configDeserializer.get("trunk_provider").orElseEmptyMap()), (StateProvider)stateProviderType2.deserialize(configDeserializer.get("leaves_provider").orElseEmptyMap()), configDeserializer.get("decorators").asList(dynamic -> Registry.TREE_DECORATOR_TYPE.get(new Identifier(dynamic.get("type").asString().orElseThrow(RuntimeException::new))).method_23472((Dynamic<?>)dynamic)), configDeserializer.get("base_height").asInt(0));
     }
 
     public static class Builder {
@@ -53,13 +53,13 @@ implements FeatureConfig {
         private List<TreeDecorator> decorators = Lists.newArrayList();
         private int baseHeight = 0;
 
-        public Builder(StateProvider stateProvider, StateProvider stateProvider2) {
-            this.trunkProvider = stateProvider;
-            this.leavesProvider = stateProvider2;
+        public Builder(StateProvider trunkProvider, StateProvider leavesProvider) {
+            this.trunkProvider = trunkProvider;
+            this.leavesProvider = leavesProvider;
         }
 
-        public Builder baseHeight(int i) {
-            this.baseHeight = i;
+        public Builder baseHeight(int baseHeight) {
+            this.baseHeight = baseHeight;
             return this;
         }
 

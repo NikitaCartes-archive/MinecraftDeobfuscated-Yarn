@@ -26,13 +26,13 @@ implements ParticleEffect {
         }
 
         @Override
-        public /* synthetic */ ParticleEffect read(ParticleType particleType, PacketByteBuf packetByteBuf) {
-            return this.read(particleType, packetByteBuf);
+        public /* synthetic */ ParticleEffect read(ParticleType type, PacketByteBuf buf) {
+            return this.read(type, buf);
         }
 
         @Override
-        public /* synthetic */ ParticleEffect read(ParticleType particleType, StringReader stringReader) throws CommandSyntaxException {
-            return this.read(particleType, stringReader);
+        public /* synthetic */ ParticleEffect read(ParticleType type, StringReader reader) throws CommandSyntaxException {
+            return this.read(type, reader);
         }
     };
 
@@ -45,7 +45,7 @@ implements ParticleEffect {
     }
 
     @Override
-    public void write(PacketByteBuf packetByteBuf) {
+    public void write(PacketByteBuf buf) {
     }
 
     @Override

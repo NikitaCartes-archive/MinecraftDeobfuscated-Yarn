@@ -13,8 +13,8 @@ public class KeyboardInput
 extends Input {
     private final GameOptions settings;
 
-    public KeyboardInput(GameOptions gameOptions) {
-        this.settings = gameOptions;
+    public KeyboardInput(GameOptions settings) {
+        this.settings = settings;
     }
 
     @Override

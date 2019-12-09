@@ -42,31 +42,31 @@ extends StructurePiece {
         this.pos = new BlockPos(compoundTag.getInt("TPX"), compoundTag.getInt("TPY"), compoundTag.getInt("TPZ"));
     }
 
-    protected void setStructureData(Structure structure, BlockPos blockPos, StructurePlacementData structurePlacementData) {
+    protected void setStructureData(Structure structure, BlockPos pos, StructurePlacementData placementData) {
         this.structure = structure;
         this.setOrientation(Direction.NORTH);
-        this.pos = blockPos;
-        this.placementData = structurePlacementData;
-        this.boundingBox = structure.calculateBoundingBox(structurePlacementData, blockPos);
+        this.pos = pos;
+        this.placementData = placementData;
+        this.boundingBox = structure.calculateBoundingBox(placementData, pos);
     }
 
     @Override
-    protected void toNbt(CompoundTag compoundTag) {
-        compoundTag.putInt("TPX", this.pos.getX());
-        compoundTag.putInt("TPY", this.pos.getY());
-        compoundTag.putInt("TPZ", this.pos.getZ());
+    protected void toNbt(CompoundTag tag) {
+        tag.putInt("TPX", this.pos.getX());
+        tag.putInt("TPY", this.pos.getY());
+        tag.putInt("TPZ", this.pos.getZ());
     }
 
     @Override
-    public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
+    public boolean generate(IWorld world, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
         this.placementData.setBoundingBox(blockBox);
         this.boundingBox = this.structure.calculateBoundingBox(this.placementData, this.pos);
-        if (this.structure.method_15172(iWorld, this.pos, this.placementData, 2)) {
+        if (this.structure.method_15172(world, this.pos, this.placementData, 2)) {
             List<Structure.StructureBlockInfo> list = this.structure.method_16445(this.pos, this.placementData, Blocks.STRUCTURE_BLOCK);
             for (Structure.StructureBlockInfo structureBlockInfo : list) {
                 StructureBlockMode structureBlockMode;
                 if (structureBlockInfo.tag == null || (structureBlockMode = StructureBlockMode.valueOf(structureBlockInfo.tag.getString("mode"))) != StructureBlockMode.DATA) continue;
-                this.handleMetadata(structureBlockInfo.tag.getString("metadata"), structureBlockInfo.pos, iWorld, random, blockBox);
+                this.handleMetadata(structureBlockInfo.tag.getString("metadata"), structureBlockInfo.pos, world, random, blockBox);
             }
             List<Structure.StructureBlockInfo> list2 = this.structure.method_16445(this.pos, this.placementData, Blocks.JIGSAW);
             for (Structure.StructureBlockInfo structureBlockInfo2 : list2) {
@@ -85,7 +85,7 @@ extends StructurePiece {
                 } catch (CommandSyntaxException commandSyntaxException) {
                     LOGGER.error("Error while parsing blockstate {} in jigsaw block @ {}", (Object)string, (Object)structureBlockInfo2.pos);
                 }
-                iWorld.setBlockState(structureBlockInfo2.pos, blockState, 3);
+                world.setBlockState(structureBlockInfo2.pos, blockState, 3);
             }
         }
         return true;
@@ -94,9 +94,9 @@ extends StructurePiece {
     protected abstract void handleMetadata(String var1, BlockPos var2, IWorld var3, Random var4, BlockBox var5);
 
     @Override
-    public void translate(int i, int j, int k) {
-        super.translate(i, j, k);
-        this.pos = this.pos.add(i, j, k);
+    public void translate(int x, int y, int z) {
+        super.translate(x, y, z);
+        this.pos = this.pos.add(x, y, z);
     }
 
     @Override

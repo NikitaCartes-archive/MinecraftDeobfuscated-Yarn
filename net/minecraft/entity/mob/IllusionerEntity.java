@@ -90,9 +90,9 @@ implements RangedAttackMob {
     }
 
     @Override
-    public EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag) {
+    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
-        return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+        return super.initialize(world, difficulty, spawnType, entityData, entityTag);
     }
 
     @Override
@@ -157,12 +157,12 @@ implements RangedAttackMob {
     }
 
     @Override
-    public boolean isTeammate(Entity entity) {
-        if (super.isTeammate(entity)) {
+    public boolean isTeammate(Entity other) {
+        if (super.isTeammate(other)) {
             return true;
         }
-        if (entity instanceof LivingEntity && ((LivingEntity)entity).getGroup() == EntityGroup.ILLAGER) {
-            return this.getScoreboardTeam() == null && entity.getScoreboardTeam() == null;
+        if (other instanceof LivingEntity && ((LivingEntity)other).getGroup() == EntityGroup.ILLAGER) {
+            return this.getScoreboardTeam() == null && other.getScoreboardTeam() == null;
         }
         return false;
     }
@@ -178,7 +178,7 @@ implements RangedAttackMob {
     }
 
     @Override
-    protected SoundEvent getHurtSound(DamageSource damageSource) {
+    protected SoundEvent getHurtSound(DamageSource source) {
         return SoundEvents.ENTITY_ILLUSIONER_HURT;
     }
 
@@ -188,16 +188,16 @@ implements RangedAttackMob {
     }
 
     @Override
-    public void addBonusForWave(int i, boolean bl) {
+    public void addBonusForWave(int wave, boolean unused) {
     }
 
     @Override
-    public void attack(LivingEntity livingEntity, float f) {
+    public void attack(LivingEntity target, float f) {
         ItemStack itemStack = this.getArrowType(this.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this, Items.BOW)));
         ProjectileEntity projectileEntity = ProjectileUtil.createArrowProjectile(this, itemStack, f);
-        double d = livingEntity.getX() - this.getX();
-        double e = livingEntity.getBodyY(0.3333333333333333) - projectileEntity.getY();
-        double g = livingEntity.getZ() - this.getZ();
+        double d = target.getX() - this.getX();
+        double e = target.getBodyY(0.3333333333333333) - projectileEntity.getY();
+        double g = target.getZ() - this.getZ();
         double h = MathHelper.sqrt(d * d + g * g);
         projectileEntity.setVelocity(d, e + h * (double)0.2f, g, 1.6f, 14 - this.world.getDifficulty().getId() * 4);
         this.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0f, 1.0f / (this.getRandom().nextFloat() * 0.4f + 0.8f));

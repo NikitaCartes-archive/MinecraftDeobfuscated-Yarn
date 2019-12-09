@@ -23,13 +23,13 @@ implements Packet<ServerPlayPacketListener> {
     }
 
     @Override
-    public void read(PacketByteBuf packetByteBuf) throws IOException {
-        this.selectedSlot = packetByteBuf.readShort();
+    public void read(PacketByteBuf buf) throws IOException {
+        this.selectedSlot = buf.readShort();
     }
 
     @Override
-    public void write(PacketByteBuf packetByteBuf) throws IOException {
-        packetByteBuf.writeShort(this.selectedSlot);
+    public void write(PacketByteBuf buf) throws IOException {
+        buf.writeShort(this.selectedSlot);
     }
 
     @Override

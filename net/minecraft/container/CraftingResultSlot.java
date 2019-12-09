@@ -18,40 +18,40 @@ extends Slot {
     private final PlayerEntity player;
     private int amount;
 
-    public CraftingResultSlot(PlayerEntity playerEntity, CraftingInventory craftingInventory, Inventory inventory, int i, int j, int k) {
-        super(inventory, i, j, k);
-        this.player = playerEntity;
-        this.craftingInv = craftingInventory;
+    public CraftingResultSlot(PlayerEntity player, CraftingInventory craftingInv, Inventory inventory, int invSlot, int xPosition, int yPosition) {
+        super(inventory, invSlot, xPosition, yPosition);
+        this.player = player;
+        this.craftingInv = craftingInv;
     }
 
     @Override
-    public boolean canInsert(ItemStack itemStack) {
+    public boolean canInsert(ItemStack stack) {
         return false;
     }
 
     @Override
-    public ItemStack takeStack(int i) {
+    public ItemStack takeStack(int amount) {
         if (this.hasStack()) {
-            this.amount += Math.min(i, this.getStack().getCount());
+            this.amount += Math.min(amount, this.getStack().getCount());
         }
-        return super.takeStack(i);
+        return super.takeStack(amount);
     }
 
     @Override
-    protected void onCrafted(ItemStack itemStack, int i) {
-        this.amount += i;
-        this.onCrafted(itemStack);
+    protected void onCrafted(ItemStack stack, int amount) {
+        this.amount += amount;
+        this.onCrafted(stack);
     }
 
     @Override
-    protected void onTake(int i) {
-        this.amount += i;
+    protected void onTake(int amount) {
+        this.amount += amount;
     }
 
     @Override
-    protected void onCrafted(ItemStack itemStack) {
+    protected void onCrafted(ItemStack stack) {
         if (this.amount > 0) {
-            itemStack.onCraft(this.player.world, this.player, this.amount);
+            stack.onCraft(this.player.world, this.player, this.amount);
         }
         if (this.inventory instanceof RecipeUnlocker) {
             ((RecipeUnlocker)((Object)this.inventory)).unlockLastRecipe(this.player);
@@ -60,30 +60,30 @@ extends Slot {
     }
 
     @Override
-    public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
-        this.onCrafted(itemStack);
-        DefaultedList<ItemStack> defaultedList = playerEntity.world.getRecipeManager().getRemainingStacks(RecipeType.CRAFTING, this.craftingInv, playerEntity.world);
+    public ItemStack onTakeItem(PlayerEntity player, ItemStack stack) {
+        this.onCrafted(stack);
+        DefaultedList<ItemStack> defaultedList = player.world.getRecipeManager().getRemainingStacks(RecipeType.CRAFTING, this.craftingInv, player.world);
         for (int i = 0; i < defaultedList.size(); ++i) {
-            ItemStack itemStack2 = this.craftingInv.getInvStack(i);
-            ItemStack itemStack3 = defaultedList.get(i);
-            if (!itemStack2.isEmpty()) {
+            ItemStack itemStack = this.craftingInv.getInvStack(i);
+            ItemStack itemStack2 = defaultedList.get(i);
+            if (!itemStack.isEmpty()) {
                 this.craftingInv.takeInvStack(i, 1);
-                itemStack2 = this.craftingInv.getInvStack(i);
+                itemStack = this.craftingInv.getInvStack(i);
             }
-            if (itemStack3.isEmpty()) continue;
-            if (itemStack2.isEmpty()) {
-                this.craftingInv.setInvStack(i, itemStack3);
+            if (itemStack2.isEmpty()) continue;
+            if (itemStack.isEmpty()) {
+                this.craftingInv.setInvStack(i, itemStack2);
                 continue;
             }
-            if (ItemStack.areItemsEqualIgnoreDamage(itemStack2, itemStack3) && ItemStack.areTagsEqual(itemStack2, itemStack3)) {
-                itemStack3.increment(itemStack2.getCount());
-                this.craftingInv.setInvStack(i, itemStack3);
+            if (ItemStack.areItemsEqualIgnoreDamage(itemStack, itemStack2) && ItemStack.areTagsEqual(itemStack, itemStack2)) {
+                itemStack2.increment(itemStack.getCount());
+                this.craftingInv.setInvStack(i, itemStack2);
                 continue;
             }
-            if (this.player.inventory.insertStack(itemStack3)) continue;
-            this.player.dropItem(itemStack3, false);
+            if (this.player.inventory.insertStack(itemStack2)) continue;
+            this.player.dropItem(itemStack2, false);
         }
-        return itemStack;
+        return stack;
     }
 }
 

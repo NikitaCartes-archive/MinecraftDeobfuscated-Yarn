@@ -29,46 +29,46 @@ extends Item {
     }
 
     @Override
-    public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
+    public ActionResult useOnBlock(ItemUsageContext context) {
         BlockPos blockPos;
-        PlayerEntity playerEntity2 = itemUsageContext.getPlayer();
-        World iWorld = itemUsageContext.getWorld();
-        BlockState blockState = iWorld.getBlockState(blockPos = itemUsageContext.getBlockPos());
+        PlayerEntity playerEntity = context.getPlayer();
+        World iWorld = context.getWorld();
+        BlockState blockState = iWorld.getBlockState(blockPos = context.getBlockPos());
         if (FlintAndSteelItem.isIgnitable(blockState)) {
-            iWorld.playSound(playerEntity2, blockPos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0f, RANDOM.nextFloat() * 0.4f + 0.8f);
+            iWorld.playSound(playerEntity, blockPos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0f, RANDOM.nextFloat() * 0.4f + 0.8f);
             iWorld.setBlockState(blockPos, (BlockState)blockState.with(Properties.LIT, true), 11);
-            if (playerEntity2 != null) {
-                itemUsageContext.getStack().damage(1, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(itemUsageContext.getHand()));
+            if (playerEntity != null) {
+                context.getStack().damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
             }
             return ActionResult.SUCCESS;
         }
-        BlockPos blockPos2 = blockPos.offset(itemUsageContext.getSide());
+        BlockPos blockPos2 = blockPos.offset(context.getSide());
         if (FlintAndSteelItem.canIgnite(iWorld.getBlockState(blockPos2), iWorld, blockPos2)) {
-            iWorld.playSound(playerEntity2, blockPos2, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0f, RANDOM.nextFloat() * 0.4f + 0.8f);
+            iWorld.playSound(playerEntity, blockPos2, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0f, RANDOM.nextFloat() * 0.4f + 0.8f);
             BlockState blockState2 = ((FireBlock)Blocks.FIRE).getStateForPosition(iWorld, blockPos2);
             iWorld.setBlockState(blockPos2, blockState2, 11);
-            ItemStack itemStack = itemUsageContext.getStack();
-            if (playerEntity2 instanceof ServerPlayerEntity) {
-                Criterions.PLACED_BLOCK.trigger((ServerPlayerEntity)playerEntity2, blockPos2, itemStack);
-                itemStack.damage(1, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(itemUsageContext.getHand()));
+            ItemStack itemStack = context.getStack();
+            if (playerEntity instanceof ServerPlayerEntity) {
+                Criterions.PLACED_BLOCK.trigger((ServerPlayerEntity)playerEntity, blockPos2, itemStack);
+                itemStack.damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
             }
             return ActionResult.SUCCESS;
         }
         return ActionResult.FAIL;
     }
 
-    public static boolean isIgnitable(BlockState blockState) {
-        return blockState.getBlock() == Blocks.CAMPFIRE && blockState.get(Properties.WATERLOGGED) == false && blockState.get(Properties.LIT) == false;
+    public static boolean isIgnitable(BlockState state) {
+        return state.getBlock() == Blocks.CAMPFIRE && state.get(Properties.WATERLOGGED) == false && state.get(Properties.LIT) == false;
     }
 
-    public static boolean canIgnite(BlockState blockState, IWorld iWorld, BlockPos blockPos) {
-        BlockState blockState2 = ((FireBlock)Blocks.FIRE).getStateForPosition(iWorld, blockPos);
+    public static boolean canIgnite(BlockState block, IWorld world, BlockPos pos) {
+        BlockState blockState = ((FireBlock)Blocks.FIRE).getStateForPosition(world, pos);
         boolean bl = false;
         for (Direction direction : Direction.Type.HORIZONTAL) {
-            if (iWorld.getBlockState(blockPos.offset(direction)).getBlock() != Blocks.OBSIDIAN || ((PortalBlock)Blocks.NETHER_PORTAL).createAreaHelper(iWorld, blockPos) == null) continue;
+            if (world.getBlockState(pos.offset(direction)).getBlock() != Blocks.OBSIDIAN || ((PortalBlock)Blocks.NETHER_PORTAL).createAreaHelper(world, pos) == null) continue;
             bl = true;
         }
-        return blockState.isAir() && (blockState2.canPlaceAt(iWorld, blockPos) || bl);
+        return block.isAir() && (blockState.canPlaceAt(world, pos) || bl);
     }
 }
 

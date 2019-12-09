@@ -13,8 +13,8 @@ extends Goal {
     private ServerPlayerEntity owner;
     private boolean mounted;
 
-    public SitOnOwnerShoulder(TameableShoulderEntity tameableShoulderEntity) {
-        this.tameable = tameableShoulderEntity;
+    public SitOnOwnerShoulder(TameableShoulderEntity tameable) {
+        this.tameable = tameable;
     }
 
     @Override

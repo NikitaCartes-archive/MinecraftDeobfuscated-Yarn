@@ -18,19 +18,19 @@ public class SetCountLootFunction
 extends ConditionalLootFunction {
     private final LootTableRange countRange;
 
-    private SetCountLootFunction(LootCondition[] lootConditions, LootTableRange lootTableRange) {
-        super(lootConditions);
-        this.countRange = lootTableRange;
+    private SetCountLootFunction(LootCondition[] conditions, LootTableRange countRange) {
+        super(conditions);
+        this.countRange = countRange;
     }
 
     @Override
-    public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-        itemStack.setCount(this.countRange.next(lootContext.getRandom()));
-        return itemStack;
+    public ItemStack process(ItemStack stack, LootContext context) {
+        stack.setCount(this.countRange.next(context.getRandom()));
+        return stack;
     }
 
-    public static ConditionalLootFunction.Builder<?> builder(LootTableRange lootTableRange) {
-        return SetCountLootFunction.builder((LootCondition[] lootConditions) -> new SetCountLootFunction((LootCondition[])lootConditions, lootTableRange));
+    public static ConditionalLootFunction.Builder<?> builder(LootTableRange countRange) {
+        return SetCountLootFunction.builder((LootCondition[] conditions) -> new SetCountLootFunction((LootCondition[])conditions, countRange));
     }
 
     public static class Factory
@@ -52,8 +52,8 @@ extends ConditionalLootFunction {
         }
 
         @Override
-        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
+        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions) {
+            return this.fromJson(json, context, conditions);
         }
     }
 }

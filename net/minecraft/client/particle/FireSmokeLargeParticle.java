@@ -15,8 +15,8 @@ import net.minecraft.world.World;
 @Environment(value=EnvType.CLIENT)
 public class FireSmokeLargeParticle
 extends FireSmokeParticle {
-    protected FireSmokeLargeParticle(World world, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
-        super(world, d, e, f, g, h, i, 2.5f, spriteProvider);
+    protected FireSmokeLargeParticle(World world, double x, double y, double z, double d, double e, double f, SpriteProvider spriteProvider) {
+        super(world, x, y, z, d, e, f, 2.5f, spriteProvider);
     }
 
     @Environment(value=EnvType.CLIENT)

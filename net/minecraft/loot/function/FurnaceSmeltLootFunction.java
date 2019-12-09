@@ -21,24 +21,24 @@ public class FurnaceSmeltLootFunction
 extends ConditionalLootFunction {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private FurnaceSmeltLootFunction(LootCondition[] lootConditions) {
-        super(lootConditions);
+    private FurnaceSmeltLootFunction(LootCondition[] conditions) {
+        super(conditions);
     }
 
     @Override
-    public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-        ItemStack itemStack2;
-        if (itemStack.isEmpty()) {
-            return itemStack;
+    public ItemStack process(ItemStack stack, LootContext context) {
+        ItemStack itemStack;
+        if (stack.isEmpty()) {
+            return stack;
         }
-        Optional<SmeltingRecipe> optional = lootContext.getWorld().getRecipeManager().getFirstMatch(RecipeType.SMELTING, new BasicInventory(itemStack), lootContext.getWorld());
-        if (optional.isPresent() && !(itemStack2 = optional.get().getOutput()).isEmpty()) {
-            ItemStack itemStack3 = itemStack2.copy();
-            itemStack3.setCount(itemStack.getCount());
-            return itemStack3;
+        Optional<SmeltingRecipe> optional = context.getWorld().getRecipeManager().getFirstMatch(RecipeType.SMELTING, new BasicInventory(stack), context.getWorld());
+        if (optional.isPresent() && !(itemStack = optional.get().getOutput()).isEmpty()) {
+            ItemStack itemStack2 = itemStack.copy();
+            itemStack2.setCount(stack.getCount());
+            return itemStack2;
         }
-        LOGGER.warn("Couldn't smelt {} because there is no smelting recipe", (Object)itemStack);
-        return itemStack;
+        LOGGER.warn("Couldn't smelt {} because there is no smelting recipe", (Object)stack);
+        return stack;
     }
 
     public static ConditionalLootFunction.Builder<?> builder() {
@@ -57,8 +57,8 @@ extends ConditionalLootFunction {
         }
 
         @Override
-        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
+        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions) {
+            return this.fromJson(json, context, conditions);
         }
     }
 }

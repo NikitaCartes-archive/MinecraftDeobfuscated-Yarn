@@ -13,9 +13,9 @@ public class LanServerInfo {
     private final String addressPort;
     private long lastTimeMillis;
 
-    public LanServerInfo(String string, String string2) {
-        this.motd = string;
-        this.addressPort = string2;
+    public LanServerInfo(String motd, String string) {
+        this.motd = motd;
+        this.addressPort = string;
         this.lastTimeMillis = Util.getMeasuringTimeMs();
     }
 

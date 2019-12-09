@@ -155,8 +155,8 @@ public class EntityRenderDispatcher {
     private boolean renderShadows = true;
     private boolean renderHitboxes;
 
-    public <E extends Entity> int getLight(E entity, float f) {
-        return this.getRenderer(entity).getLight(entity, f);
+    public <E extends Entity> int getLight(E entity, float tickDelta) {
+        return this.getRenderer(entity).getLight(entity, tickDelta);
     }
 
     private <T extends Entity> void register(EntityType<T> entityType, EntityRenderer<? super T> entityRenderer) {
@@ -294,66 +294,66 @@ public class EntityRenderDispatcher {
         return this.renderers.get(entity.getType());
     }
 
-    public void configure(World world, Camera camera, Entity entity) {
+    public void configure(World world, Camera camera, Entity targetedEntity) {
         this.world = world;
         this.camera = camera;
         this.rotation = camera.getRotation();
-        this.targetedEntity = entity;
+        this.targetedEntity = targetedEntity;
     }
 
-    public void setRotation(Quaternion quaternion) {
-        this.rotation = quaternion;
+    public void setRotation(Quaternion rotation) {
+        this.rotation = rotation;
     }
 
-    public void setRenderShadows(boolean bl) {
-        this.renderShadows = bl;
+    public void setRenderShadows(boolean value) {
+        this.renderShadows = value;
     }
 
-    public void setRenderHitboxes(boolean bl) {
-        this.renderHitboxes = bl;
+    public void setRenderHitboxes(boolean value) {
+        this.renderHitboxes = value;
     }
 
     public boolean shouldRenderHitboxes() {
         return this.renderHitboxes;
     }
 
-    public <E extends Entity> boolean shouldRender(E entity, Frustum frustum, double d, double e, double f) {
+    public <E extends Entity> boolean shouldRender(E entity, Frustum frustum, double cameraX, double cameraY, double cameraZ) {
         EntityRenderer<E> entityRenderer = this.getRenderer(entity);
-        return entityRenderer.shouldRender(entity, frustum, d, e, f);
+        return entityRenderer.shouldRender(entity, frustum, cameraX, cameraY, cameraZ);
     }
 
-    public <E extends Entity> void render(E entity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+    public <E extends Entity> void render(E entity, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
         EntityRenderer<E> entityRenderer = this.getRenderer(entity);
         try {
-            double m;
-            float n;
-            Vec3d vec3d = entityRenderer.getPositionOffset(entity, h);
-            double j = d + vec3d.getX();
-            double k = e + vec3d.getY();
-            double l = f + vec3d.getZ();
-            matrixStack.push();
-            matrixStack.translate(j, k, l);
-            entityRenderer.render(entity, g, h, matrixStack, vertexConsumerProvider, i);
+            double g;
+            float h;
+            Vec3d vec3d = entityRenderer.getPositionOffset(entity, tickDelta);
+            double d = x + vec3d.getX();
+            double e = y + vec3d.getY();
+            double f = z + vec3d.getZ();
+            matrices.push();
+            matrices.translate(d, e, f);
+            entityRenderer.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
             if (entity.doesRenderOnFire()) {
-                this.renderFire(matrixStack, vertexConsumerProvider, entity);
+                this.renderFire(matrices, vertexConsumers, entity);
             }
-            matrixStack.translate(-vec3d.getX(), -vec3d.getY(), -vec3d.getZ());
-            if (this.gameOptions.entityShadows && this.renderShadows && entityRenderer.shadowSize > 0.0f && !entity.isInvisible() && (n = (float)((1.0 - (m = this.getSquaredDistanceToCamera(entity.getX(), entity.getY(), entity.getZ())) / 256.0) * (double)entityRenderer.shadowDarkness)) > 0.0f) {
-                EntityRenderDispatcher.renderShadow(matrixStack, vertexConsumerProvider, entity, n, h, this.world, entityRenderer.shadowSize);
+            matrices.translate(-vec3d.getX(), -vec3d.getY(), -vec3d.getZ());
+            if (this.gameOptions.entityShadows && this.renderShadows && entityRenderer.shadowSize > 0.0f && !entity.isInvisible() && (h = (float)((1.0 - (g = this.getSquaredDistanceToCamera(entity.getX(), entity.getY(), entity.getZ())) / 256.0) * (double)entityRenderer.shadowDarkness)) > 0.0f) {
+                EntityRenderDispatcher.renderShadow(matrices, vertexConsumers, entity, h, tickDelta, this.world, entityRenderer.shadowSize);
             }
             if (this.renderHitboxes && !entity.isInvisible() && !MinecraftClient.getInstance().hasReducedDebugInfo()) {
-                this.renderHitbox(matrixStack, vertexConsumerProvider.getBuffer(RenderLayer.getLines()), entity, h);
+                this.renderHitbox(matrices, vertexConsumers.getBuffer(RenderLayer.getLines()), entity, tickDelta);
             }
-            matrixStack.pop();
+            matrices.pop();
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Rendering entity in world");
             CrashReportSection crashReportSection = crashReport.addElement("Entity being rendered");
             entity.populateCrashReport(crashReportSection);
             CrashReportSection crashReportSection2 = crashReport.addElement("Renderer details");
             crashReportSection2.add("Assigned renderer", entityRenderer);
-            crashReportSection2.add("Location", CrashReportSection.createPositionString(d, e, f));
-            crashReportSection2.add("Rotation", Float.valueOf(g));
-            crashReportSection2.add("Delta", Float.valueOf(h));
+            crashReportSection2.add("Location", CrashReportSection.createPositionString(x, y, z));
+            crashReportSection2.add("Rotation", Float.valueOf(yaw));
+            crashReportSection2.add("Delta", Float.valueOf(tickDelta));
             throw new CrashException(crashReport);
         }
     }
@@ -390,22 +390,22 @@ public class EntityRenderDispatcher {
         WorldRenderer.drawBox(matrixStack, vertexConsumer, box, f, g, h, 1.0f);
     }
 
-    private void renderFire(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, Entity entity) {
+    private void renderFire(MatrixStack matrix, VertexConsumerProvider vertexConsumerProvider, Entity entity) {
         Sprite sprite = ModelLoader.FIRE_0.getSprite();
         Sprite sprite2 = ModelLoader.FIRE_1.getSprite();
-        matrixStack.push();
+        matrix.push();
         float f = entity.getWidth() * 1.4f;
-        matrixStack.scale(f, f, f);
+        matrix.scale(f, f, f);
         float g = 0.5f;
         float h = 0.0f;
         float i = entity.getHeight() / f;
         float j = 0.0f;
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-this.camera.getYaw()));
-        matrixStack.translate(0.0, 0.0, -0.3f + (float)((int)i) * 0.02f);
+        matrix.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-this.camera.getYaw()));
+        matrix.translate(0.0, 0.0, -0.3f + (float)((int)i) * 0.02f);
         float k = 0.0f;
         int l = 0;
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(TexturedRenderLayers.getEntityCutout());
-        MatrixStack.Entry entry = matrixStack.peek();
+        MatrixStack.Entry entry = matrix.peek();
         while (i > 0.0f) {
             Sprite sprite3 = l % 2 == 0 ? sprite : sprite2;
             float m = sprite3.getMinU();
@@ -427,77 +427,77 @@ public class EntityRenderDispatcher {
             k += 0.03f;
             ++l;
         }
-        matrixStack.pop();
+        matrix.pop();
     }
 
-    private static void fireVertex(MatrixStack.Entry entry, VertexConsumer vertexConsumer, float f, float g, float h, float i, float j) {
-        vertexConsumer.vertex(entry.getModel(), f, g, h).color(255, 255, 255, 255).texture(i, j).overlay(0, 10).light(240).normal(entry.getNormal(), 0.0f, 1.0f, 0.0f).next();
+    private static void fireVertex(MatrixStack.Entry matrix, VertexConsumer vertexConsumer, float x, float y, float z, float u, float v) {
+        vertexConsumer.vertex(matrix.getModel(), x, y, z).color(255, 255, 255, 255).texture(u, v).overlay(0, 10).light(240).normal(matrix.getNormal(), 0.0f, 1.0f, 0.0f).next();
     }
 
-    private static void renderShadow(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, Entity entity, float f, float g, WorldView worldView, float h) {
+    private static void renderShadow(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Entity entity, float darkness, float tickDelta, WorldView world, float size) {
         MobEntity mobEntity;
-        float i = h;
+        float f = size;
         if (entity instanceof MobEntity && (mobEntity = (MobEntity)entity).isBaby()) {
-            i *= 0.5f;
+            f *= 0.5f;
         }
-        double d = MathHelper.lerp((double)g, entity.lastRenderX, entity.getX());
-        double e = MathHelper.lerp((double)g, entity.lastRenderY, entity.getY());
-        double j = MathHelper.lerp((double)g, entity.lastRenderZ, entity.getZ());
-        int k = MathHelper.floor(d - (double)i);
-        int l = MathHelper.floor(d + (double)i);
-        int m = MathHelper.floor(e - (double)i);
-        int n = MathHelper.floor(e);
-        int o = MathHelper.floor(j - (double)i);
-        int p = MathHelper.floor(j + (double)i);
-        MatrixStack.Entry entry = matrixStack.peek();
-        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(SHADOW_LAYER);
-        for (BlockPos blockPos : BlockPos.iterate(new BlockPos(k, m, o), new BlockPos(l, n, p))) {
-            EntityRenderDispatcher.renderShadowPart(entry, vertexConsumer, worldView, blockPos, d, e, j, i, f);
+        double d = MathHelper.lerp((double)tickDelta, entity.lastRenderX, entity.getX());
+        double e = MathHelper.lerp((double)tickDelta, entity.lastRenderY, entity.getY());
+        double g = MathHelper.lerp((double)tickDelta, entity.lastRenderZ, entity.getZ());
+        int i = MathHelper.floor(d - (double)f);
+        int j = MathHelper.floor(d + (double)f);
+        int k = MathHelper.floor(e - (double)f);
+        int l = MathHelper.floor(e);
+        int m = MathHelper.floor(g - (double)f);
+        int n = MathHelper.floor(g + (double)f);
+        MatrixStack.Entry entry = matrices.peek();
+        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(SHADOW_LAYER);
+        for (BlockPos blockPos : BlockPos.iterate(new BlockPos(i, k, m), new BlockPos(j, l, n))) {
+            EntityRenderDispatcher.renderShadowPart(entry, vertexConsumer, world, blockPos, d, e, g, f, darkness);
         }
     }
 
-    private static void renderShadowPart(MatrixStack.Entry entry, VertexConsumer vertexConsumer, WorldView worldView, BlockPos blockPos, double d, double e, double f, float g, float h) {
-        BlockPos blockPos2 = blockPos.down();
-        BlockState blockState = worldView.getBlockState(blockPos2);
-        if (blockState.getRenderType() == BlockRenderType.INVISIBLE || worldView.getLightLevel(blockPos) <= 3) {
+    private static void renderShadowPart(MatrixStack.Entry matrix, VertexConsumer vertexConsumer, WorldView world, BlockPos pos, double x, double y, double z, float size, float darkness) {
+        BlockPos blockPos = pos.down();
+        BlockState blockState = world.getBlockState(blockPos);
+        if (blockState.getRenderType() == BlockRenderType.INVISIBLE || world.getLightLevel(pos) <= 3) {
             return;
         }
-        if (!blockState.isFullCube(worldView, blockPos2)) {
+        if (!blockState.isFullCube(world, blockPos)) {
             return;
         }
-        VoxelShape voxelShape = blockState.getOutlineShape(worldView, blockPos.down());
+        VoxelShape voxelShape = blockState.getOutlineShape(world, pos.down());
         if (voxelShape.isEmpty()) {
             return;
         }
-        float i = (float)(((double)h - (e - (double)blockPos.getY()) / 2.0) * 0.5 * (double)worldView.getBrightness(blockPos));
-        if (i >= 0.0f) {
-            if (i > 1.0f) {
-                i = 1.0f;
+        float f = (float)(((double)darkness - (y - (double)pos.getY()) / 2.0) * 0.5 * (double)world.getBrightness(pos));
+        if (f >= 0.0f) {
+            if (f > 1.0f) {
+                f = 1.0f;
             }
             Box box = voxelShape.getBoundingBox();
-            double j = (double)blockPos.getX() + box.x1;
-            double k = (double)blockPos.getX() + box.x2;
-            double l = (double)blockPos.getY() + box.y1;
-            double m = (double)blockPos.getZ() + box.z1;
-            double n = (double)blockPos.getZ() + box.z2;
-            float o = (float)(j - d);
-            float p = (float)(k - d);
-            float q = (float)(l - e + 0.015625);
-            float r = (float)(m - f);
-            float s = (float)(n - f);
-            float t = -o / 2.0f / g + 0.5f;
-            float u = -p / 2.0f / g + 0.5f;
-            float v = -r / 2.0f / g + 0.5f;
-            float w = -s / 2.0f / g + 0.5f;
-            EntityRenderDispatcher.shadowVertex(entry, vertexConsumer, i, o, q, r, t, v);
-            EntityRenderDispatcher.shadowVertex(entry, vertexConsumer, i, o, q, s, t, w);
-            EntityRenderDispatcher.shadowVertex(entry, vertexConsumer, i, p, q, s, u, w);
-            EntityRenderDispatcher.shadowVertex(entry, vertexConsumer, i, p, q, r, u, v);
+            double d = (double)pos.getX() + box.x1;
+            double e = (double)pos.getX() + box.x2;
+            double g = (double)pos.getY() + box.y1;
+            double h = (double)pos.getZ() + box.z1;
+            double i = (double)pos.getZ() + box.z2;
+            float j = (float)(d - x);
+            float k = (float)(e - x);
+            float l = (float)(g - y + 0.015625);
+            float m = (float)(h - z);
+            float n = (float)(i - z);
+            float o = -j / 2.0f / size + 0.5f;
+            float p = -k / 2.0f / size + 0.5f;
+            float q = -m / 2.0f / size + 0.5f;
+            float r = -n / 2.0f / size + 0.5f;
+            EntityRenderDispatcher.shadowVertex(matrix, vertexConsumer, f, j, l, m, o, q);
+            EntityRenderDispatcher.shadowVertex(matrix, vertexConsumer, f, j, l, n, o, r);
+            EntityRenderDispatcher.shadowVertex(matrix, vertexConsumer, f, k, l, n, p, r);
+            EntityRenderDispatcher.shadowVertex(matrix, vertexConsumer, f, k, l, m, p, q);
         }
     }
 
-    private static void shadowVertex(MatrixStack.Entry entry, VertexConsumer vertexConsumer, float f, float g, float h, float i, float j, float k) {
-        vertexConsumer.vertex(entry.getModel(), g, h, i).color(1.0f, 1.0f, 1.0f, f).texture(j, k).overlay(OverlayTexture.DEFAULT_UV).light(0xF000F0).normal(entry.getNormal(), 0.0f, 1.0f, 0.0f).next();
+    private static void shadowVertex(MatrixStack.Entry matrix, VertexConsumer vertexConsumer, float alpha, float x, float y, float z, float u, float v) {
+        vertexConsumer.vertex(matrix.getModel(), x, y, z).color(1.0f, 1.0f, 1.0f, alpha).texture(u, v).overlay(OverlayTexture.DEFAULT_UV).light(0xF000F0).normal(matrix.getNormal(), 0.0f, 1.0f, 0.0f).next();
     }
 
     public void setWorld(@Nullable World world) {
@@ -511,8 +511,8 @@ public class EntityRenderDispatcher {
         return this.camera.getPos().squaredDistanceTo(entity.getPos());
     }
 
-    public double getSquaredDistanceToCamera(double d, double e, double f) {
-        return this.camera.getPos().squaredDistanceTo(d, e, f);
+    public double getSquaredDistanceToCamera(double x, double y, double z) {
+        return this.camera.getPos().squaredDistanceTo(x, y, z);
     }
 
     public Quaternion getRotation() {

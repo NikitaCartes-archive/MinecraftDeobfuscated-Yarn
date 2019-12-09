@@ -49,26 +49,26 @@ implements SynchronousResourceReloadListener {
         return this.models;
     }
 
-    public void renderDamage(BlockState blockState, BlockPos blockPos, BlockRenderView blockRenderView, MatrixStack matrixStack, VertexConsumer vertexConsumer) {
-        if (blockState.getRenderType() != BlockRenderType.MODEL) {
+    public void renderDamage(BlockState state, BlockPos pos, BlockRenderView world, MatrixStack matrix, VertexConsumer vertexConsumer) {
+        if (state.getRenderType() != BlockRenderType.MODEL) {
             return;
         }
-        BakedModel bakedModel = this.models.getModel(blockState);
-        long l = blockState.getRenderingSeed(blockPos);
-        this.blockModelRenderer.render(blockRenderView, bakedModel, blockState, blockPos, matrixStack, vertexConsumer, true, this.random, l, OverlayTexture.DEFAULT_UV);
+        BakedModel bakedModel = this.models.getModel(state);
+        long l = state.getRenderingSeed(pos);
+        this.blockModelRenderer.render(world, bakedModel, state, pos, matrix, vertexConsumer, true, this.random, l, OverlayTexture.DEFAULT_UV);
     }
 
-    public boolean renderBlock(BlockState blockState, BlockPos blockPos, BlockRenderView blockRenderView, MatrixStack matrixStack, VertexConsumer vertexConsumer, boolean bl, Random random) {
+    public boolean renderBlock(BlockState state, BlockPos pos, BlockRenderView world, MatrixStack matrix, VertexConsumer vertexConsumer, boolean cull, Random random) {
         try {
-            BlockRenderType blockRenderType = blockState.getRenderType();
+            BlockRenderType blockRenderType = state.getRenderType();
             if (blockRenderType != BlockRenderType.MODEL) {
                 return false;
             }
-            return this.blockModelRenderer.render(blockRenderView, this.getModel(blockState), blockState, blockPos, matrixStack, vertexConsumer, bl, random, blockState.getRenderingSeed(blockPos), OverlayTexture.DEFAULT_UV);
+            return this.blockModelRenderer.render(world, this.getModel(state), state, pos, matrix, vertexConsumer, cull, random, state.getRenderingSeed(pos), OverlayTexture.DEFAULT_UV);
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Tesselating block in world");
             CrashReportSection crashReportSection = crashReport.addElement("Block being tesselated");
-            CrashReportSection.addBlockInfo(crashReportSection, blockPos, blockState);
+            CrashReportSection.addBlockInfo(crashReportSection, pos, state);
             throw new CrashException(crashReport);
         }
     }
@@ -88,33 +88,33 @@ implements SynchronousResourceReloadListener {
         return this.blockModelRenderer;
     }
 
-    public BakedModel getModel(BlockState blockState) {
-        return this.models.getModel(blockState);
+    public BakedModel getModel(BlockState state) {
+        return this.models.getModel(state);
     }
 
-    public void renderBlockAsEntity(BlockState blockState, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
-        BlockRenderType blockRenderType = blockState.getRenderType();
+    public void renderBlockAsEntity(BlockState state, MatrixStack matrixStack, VertexConsumerProvider vertexConsumer, int light, int overlay) {
+        BlockRenderType blockRenderType = state.getRenderType();
         if (blockRenderType == BlockRenderType.INVISIBLE) {
             return;
         }
         switch (blockRenderType) {
             case MODEL: {
-                BakedModel bakedModel = this.getModel(blockState);
-                int k = this.blockColors.getColor(blockState, null, null, 0);
-                float f = (float)(k >> 16 & 0xFF) / 255.0f;
-                float g = (float)(k >> 8 & 0xFF) / 255.0f;
-                float h = (float)(k & 0xFF) / 255.0f;
-                this.blockModelRenderer.render(matrixStack.peek(), vertexConsumerProvider.getBuffer(RenderLayers.getEntityBlockLayer(blockState)), blockState, bakedModel, f, g, h, i, j);
+                BakedModel bakedModel = this.getModel(state);
+                int i = this.blockColors.getColor(state, null, null, 0);
+                float f = (float)(i >> 16 & 0xFF) / 255.0f;
+                float g = (float)(i >> 8 & 0xFF) / 255.0f;
+                float h = (float)(i & 0xFF) / 255.0f;
+                this.blockModelRenderer.render(matrixStack.peek(), vertexConsumer.getBuffer(RenderLayers.getEntityBlockLayer(state)), state, bakedModel, f, g, h, light, overlay);
                 break;
             }
             case ENTITYBLOCK_ANIMATED: {
-                BuiltinModelItemRenderer.INSTANCE.render(new ItemStack(blockState.getBlock()), matrixStack, vertexConsumerProvider, i, j);
+                BuiltinModelItemRenderer.INSTANCE.render(new ItemStack(state.getBlock()), matrixStack, vertexConsumer, light, overlay);
             }
         }
     }
 
     @Override
-    public void apply(ResourceManager resourceManager) {
+    public void apply(ResourceManager manager) {
         this.fluidRenderer.onResourceReload();
     }
 }

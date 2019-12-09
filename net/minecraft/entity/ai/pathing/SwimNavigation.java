@@ -21,8 +21,8 @@ public class SwimNavigation
 extends EntityNavigation {
     private boolean field_6689;
 
-    public SwimNavigation(MobEntity mobEntity, World world) {
-        super(mobEntity, world);
+    public SwimNavigation(MobEntity entity, World world) {
+        super(entity, world);
     }
 
     @Override
@@ -123,18 +123,18 @@ extends EntityNavigation {
     }
 
     @Override
-    protected boolean canPathDirectlyThrough(Vec3d vec3d, Vec3d vec3d2, int i, int j, int k) {
-        Vec3d vec3d3 = new Vec3d(vec3d2.x, vec3d2.y + (double)this.entity.getHeight() * 0.5, vec3d2.z);
-        return this.world.rayTrace(new RayTraceContext(vec3d, vec3d3, RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, this.entity)).getType() == HitResult.Type.MISS;
+    protected boolean canPathDirectlyThrough(Vec3d origin, Vec3d target, int sizeX, int sizeY, int sizeZ) {
+        Vec3d vec3d = new Vec3d(target.x, target.y + (double)this.entity.getHeight() * 0.5, target.z);
+        return this.world.rayTrace(new RayTraceContext(origin, vec3d, RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, this.entity)).getType() == HitResult.Type.MISS;
     }
 
     @Override
-    public boolean isValidPosition(BlockPos blockPos) {
-        return !this.world.getBlockState(blockPos).isFullOpaque(this.world, blockPos);
+    public boolean isValidPosition(BlockPos pos) {
+        return !this.world.getBlockState(pos).isFullOpaque(this.world, pos);
     }
 
     @Override
-    public void setCanSwim(boolean bl) {
+    public void setCanSwim(boolean canSwim) {
     }
 }
 

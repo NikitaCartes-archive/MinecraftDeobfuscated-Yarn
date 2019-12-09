@@ -18,17 +18,17 @@ implements FeatureConfig {
     public final StateProvider stemProvider;
     public final int capSize;
 
-    public HugeMushroomFeatureConfig(StateProvider stateProvider, StateProvider stateProvider2, int i) {
-        this.capProvider = stateProvider;
-        this.stemProvider = stateProvider2;
-        this.capSize = i;
+    public HugeMushroomFeatureConfig(StateProvider capProvider, StateProvider stemProvider, int capSize) {
+        this.capProvider = capProvider;
+        this.stemProvider = stemProvider;
+        this.capSize = capSize;
     }
 
     @Override
-    public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
+    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
         ImmutableMap.Builder<T, T> builder = ImmutableMap.builder();
-        builder.put(dynamicOps.createString("cap_provider"), this.capProvider.serialize(dynamicOps)).put(dynamicOps.createString("stem_provider"), this.stemProvider.serialize(dynamicOps)).put(dynamicOps.createString("foliage_radius"), dynamicOps.createInt(this.capSize));
-        return new Dynamic<T>(dynamicOps, dynamicOps.createMap(builder.build()));
+        builder.put(ops.createString("cap_provider"), this.capProvider.serialize(ops)).put(ops.createString("stem_provider"), this.stemProvider.serialize(ops)).put(ops.createString("foliage_radius"), ops.createInt(this.capSize));
+        return new Dynamic<T>(ops, ops.createMap(builder.build()));
     }
 
     public static <T> HugeMushroomFeatureConfig deserialize(Dynamic<T> dynamic) {

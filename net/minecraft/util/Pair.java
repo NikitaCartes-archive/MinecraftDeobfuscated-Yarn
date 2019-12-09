@@ -7,9 +7,9 @@ public class Pair<A, B> {
     private A left;
     private B right;
 
-    public Pair(A object, B object2) {
-        this.left = object;
-        this.right = object2;
+    public Pair(A left, B right) {
+        this.left = left;
+        this.right = right;
     }
 
     public A getLeft() {

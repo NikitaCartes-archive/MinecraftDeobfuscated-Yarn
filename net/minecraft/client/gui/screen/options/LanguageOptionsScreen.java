@@ -29,8 +29,8 @@ extends GameOptionsScreen {
     private OptionButtonWidget forceUnicodeButton;
     private ButtonWidget doneButton;
 
-    public LanguageOptionsScreen(Screen screen, GameOptions gameOptions, LanguageManager languageManager) {
-        super(screen, gameOptions, new TranslatableText("options.language", new Object[0]));
+    public LanguageOptionsScreen(Screen parent, GameOptions options, LanguageManager languageManager) {
+        super(parent, options, new TranslatableText("options.language", new Object[0]));
         this.languageManager = languageManager;
     }
 
@@ -61,18 +61,18 @@ extends GameOptionsScreen {
     }
 
     @Override
-    public void render(int i, int j, float f) {
-        this.languageSelectionList.render(i, j, f);
+    public void render(int mouseX, int mouseY, float delta) {
+        this.languageSelectionList.render(mouseX, mouseY, delta);
         this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 16, 0xFFFFFF);
         this.drawCenteredString(this.font, "(" + I18n.translate("options.languageWarning", new Object[0]) + ")", this.width / 2, this.height - 56, 0x808080);
-        super.render(i, j, f);
+        super.render(mouseX, mouseY, delta);
     }
 
     @Environment(value=EnvType.CLIENT)
     class LanguageSelectionListWidget
     extends AlwaysSelectedEntryListWidget<LanguageEntry> {
-        public LanguageSelectionListWidget(MinecraftClient minecraftClient) {
-            super(minecraftClient, LanguageOptionsScreen.this.width, LanguageOptionsScreen.this.height, 32, LanguageOptionsScreen.this.height - 65 + 4, 18);
+        public LanguageSelectionListWidget(MinecraftClient client) {
+            super(client, LanguageOptionsScreen.this.width, LanguageOptionsScreen.this.height, 32, LanguageOptionsScreen.this.height - 65 + 4, 18);
             for (LanguageDefinition languageDefinition : LanguageOptionsScreen.this.languageManager.getAllLanguages()) {
                 LanguageEntry languageEntry = new LanguageEntry(languageDefinition);
                 this.addEntry(languageEntry);
@@ -134,8 +134,8 @@ extends GameOptionsScreen {
             }
 
             @Override
-            public boolean mouseClicked(double d, double e, int i) {
-                if (i == 0) {
+            public boolean mouseClicked(double mouseX, double mouseY, int button) {
+                if (button == 0) {
                     this.onPressed();
                     return true;
                 }

@@ -16,11 +16,11 @@ public enum AddMushroomIslandLayer implements DiagonalCrossSamplingLayer
     private static final int MUSHROOM_FIELDS_ID;
 
     @Override
-    public int sample(LayerRandomnessSource layerRandomnessSource, int i, int j, int k, int l, int m) {
-        if (BiomeLayers.isShallowOcean(m) && BiomeLayers.isShallowOcean(l) && BiomeLayers.isShallowOcean(i) && BiomeLayers.isShallowOcean(k) && BiomeLayers.isShallowOcean(j) && layerRandomnessSource.nextInt(100) == 0) {
+    public int sample(LayerRandomnessSource context, int sw, int se, int ne, int nw, int center) {
+        if (BiomeLayers.isShallowOcean(center) && BiomeLayers.isShallowOcean(nw) && BiomeLayers.isShallowOcean(sw) && BiomeLayers.isShallowOcean(ne) && BiomeLayers.isShallowOcean(se) && context.nextInt(100) == 0) {
             return MUSHROOM_FIELDS_ID;
         }
-        return m;
+        return center;
     }
 
     static {

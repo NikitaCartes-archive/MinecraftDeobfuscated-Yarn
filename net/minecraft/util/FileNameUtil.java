@@ -21,34 +21,34 @@ public class FileNameUtil {
     private static final Pattern RESERVED_WINDOWS_NAMES = Pattern.compile(".*\\.|(?:COM|CLOCK\\$|CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(?:\\..*)?", 2);
 
     @Environment(value=EnvType.CLIENT)
-    public static String getNextUniqueName(Path path, String string, String string2) throws IOException {
+    public static String getNextUniqueName(Path path, String name, String extension) throws IOException {
         for (char c : SharedConstants.INVALID_CHARS_LEVEL_NAME) {
-            string = string.replace(c, '_');
+            name = name.replace(c, '_');
         }
-        if (RESERVED_WINDOWS_NAMES.matcher(string = string.replaceAll("[./\"]", "_")).matches()) {
-            string = "_" + string + "_";
+        if (RESERVED_WINDOWS_NAMES.matcher(name = name.replaceAll("[./\"]", "_")).matches()) {
+            name = "_" + name + "_";
         }
-        Matcher matcher = FILE_NAME_WITH_COUNT.matcher(string);
+        Matcher matcher = FILE_NAME_WITH_COUNT.matcher(name);
         int i = 0;
         if (matcher.matches()) {
-            string = matcher.group("name");
+            name = matcher.group("name");
             i = Integer.parseInt(matcher.group("count"));
         }
-        if (string.length() > 255 - string2.length()) {
-            string = string.substring(0, 255 - string2.length());
+        if (name.length() > 255 - extension.length()) {
+            name = name.substring(0, 255 - extension.length());
         }
         while (true) {
-            String string3 = string;
+            String string = name;
             if (i != 0) {
-                String string4 = " (" + i + ")";
-                int j = 255 - string4.length();
-                if (string3.length() > j) {
-                    string3 = string3.substring(0, j);
+                String string2 = " (" + i + ")";
+                int j = 255 - string2.length();
+                if (string.length() > j) {
+                    string = string.substring(0, j);
                 }
-                string3 = string3 + string4;
+                string = string + string2;
             }
-            string3 = string3 + string2;
-            Path path2 = path.resolve(string3);
+            string = string + extension;
+            Path path2 = path.resolve(string);
             try {
                 Path path3 = Files.createDirectory(path2, new FileAttribute[0]);
                 Files.deleteIfExists(path3);
@@ -74,11 +74,11 @@ public class FileNameUtil {
         return true;
     }
 
-    public static Path getResourcePath(Path path, String string, String string2) {
-        String string3 = string + string2;
-        Path path2 = Paths.get(string3, new String[0]);
-        if (path2.endsWith(string2)) {
-            throw new InvalidPathException(string3, "empty resource name");
+    public static Path getResourcePath(Path path, String resourceName, String extension) {
+        String string = resourceName + extension;
+        Path path2 = Paths.get(string, new String[0]);
+        if (path2.endsWith(extension)) {
+            throw new InvalidPathException(string, "empty resource name");
         }
         return path.resolve(path2);
     }

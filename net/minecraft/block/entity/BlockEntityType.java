@@ -117,9 +117,9 @@ public class BlockEntityType<T extends BlockEntity> {
         return Registry.register(Registry.BLOCK_ENTITY, string, builder.build(type));
     }
 
-    public BlockEntityType(Supplier<? extends T> supplier, Set<Block> set, Type<?> type) {
+    public BlockEntityType(Supplier<? extends T> supplier, Set<Block> blocks, Type<?> type) {
         this.supplier = supplier;
-        this.blocks = set;
+        this.blocks = blocks;
         this.type = type;
     }
 
@@ -133,8 +133,8 @@ public class BlockEntityType<T extends BlockEntity> {
     }
 
     @Nullable
-    public T get(BlockView blockView, BlockPos blockPos) {
-        BlockEntity blockEntity = blockView.getBlockEntity(blockPos);
+    public T get(BlockView world, BlockPos pos) {
+        BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity == null || blockEntity.getType() != this) {
             return null;
         }
@@ -145,9 +145,9 @@ public class BlockEntityType<T extends BlockEntity> {
         private final Supplier<? extends T> supplier;
         private final Set<Block> blocks;
 
-        private Builder(Supplier<? extends T> supplier, Set<Block> set) {
+        private Builder(Supplier<? extends T> supplier, Set<Block> blocks) {
             this.supplier = supplier;
-            this.blocks = set;
+            this.blocks = blocks;
         }
 
         public static <T extends BlockEntity> Builder<T> create(Supplier<? extends T> supplier, Block ... blocks) {

@@ -14,67 +14,67 @@ public class PackedIntegerArray {
     private final long maxValue;
     private final int size;
 
-    public PackedIntegerArray(int i, int j) {
-        this(i, j, new long[MathHelper.roundUp(j * i, 64) / 64]);
+    public PackedIntegerArray(int elementBits, int size) {
+        this(elementBits, size, new long[MathHelper.roundUp(size * elementBits, 64) / 64]);
     }
 
-    public PackedIntegerArray(int i, int j, long[] ls) {
-        Validate.inclusiveBetween(1L, 32L, i);
-        this.size = j;
-        this.elementBits = i;
-        this.storage = ls;
-        this.maxValue = (1L << i) - 1L;
-        int k = MathHelper.roundUp(j * i, 64) / 64;
-        if (ls.length != k) {
-            throw Util.throwOrPause(new RuntimeException("Invalid length given for storage, got: " + ls.length + " but expected: " + k));
+    public PackedIntegerArray(int elementBits, int size, long[] storage) {
+        Validate.inclusiveBetween(1L, 32L, elementBits);
+        this.size = size;
+        this.elementBits = elementBits;
+        this.storage = storage;
+        this.maxValue = (1L << elementBits) - 1L;
+        int i = MathHelper.roundUp(size * elementBits, 64) / 64;
+        if (storage.length != i) {
+            throw Util.throwOrPause(new RuntimeException("Invalid length given for storage, got: " + storage.length + " but expected: " + i));
         }
     }
 
-    public int setAndGetOldValue(int i, int j) {
-        Validate.inclusiveBetween(0L, this.size - 1, i);
-        Validate.inclusiveBetween(0L, this.maxValue, j);
-        int k = i * this.elementBits;
-        int l = k >> 6;
-        int m = (i + 1) * this.elementBits - 1 >> 6;
-        int n = k ^ l << 6;
-        int o = 0;
-        o |= (int)(this.storage[l] >>> n & this.maxValue);
-        this.storage[l] = this.storage[l] & (this.maxValue << n ^ 0xFFFFFFFFFFFFFFFFL) | ((long)j & this.maxValue) << n;
-        if (l != m) {
-            int p = 64 - n;
-            int q = this.elementBits - p;
-            o |= (int)(this.storage[m] << p & this.maxValue);
-            this.storage[m] = this.storage[m] >>> q << q | ((long)j & this.maxValue) >> p;
+    public int setAndGetOldValue(int index, int value) {
+        Validate.inclusiveBetween(0L, this.size - 1, index);
+        Validate.inclusiveBetween(0L, this.maxValue, value);
+        int i = index * this.elementBits;
+        int j = i >> 6;
+        int k = (index + 1) * this.elementBits - 1 >> 6;
+        int l = i ^ j << 6;
+        int m = 0;
+        m |= (int)(this.storage[j] >>> l & this.maxValue);
+        this.storage[j] = this.storage[j] & (this.maxValue << l ^ 0xFFFFFFFFFFFFFFFFL) | ((long)value & this.maxValue) << l;
+        if (j != k) {
+            int n = 64 - l;
+            int o = this.elementBits - n;
+            m |= (int)(this.storage[k] << n & this.maxValue);
+            this.storage[k] = this.storage[k] >>> o << o | ((long)value & this.maxValue) >> n;
         }
-        return o;
+        return m;
     }
 
-    public void set(int i, int j) {
-        Validate.inclusiveBetween(0L, this.size - 1, i);
-        Validate.inclusiveBetween(0L, this.maxValue, j);
-        int k = i * this.elementBits;
-        int l = k >> 6;
-        int m = (i + 1) * this.elementBits - 1 >> 6;
-        int n = k ^ l << 6;
-        this.storage[l] = this.storage[l] & (this.maxValue << n ^ 0xFFFFFFFFFFFFFFFFL) | ((long)j & this.maxValue) << n;
-        if (l != m) {
-            int o = 64 - n;
-            int p = this.elementBits - o;
-            this.storage[m] = this.storage[m] >>> p << p | ((long)j & this.maxValue) >> o;
+    public void set(int index, int value) {
+        Validate.inclusiveBetween(0L, this.size - 1, index);
+        Validate.inclusiveBetween(0L, this.maxValue, value);
+        int i = index * this.elementBits;
+        int j = i >> 6;
+        int k = (index + 1) * this.elementBits - 1 >> 6;
+        int l = i ^ j << 6;
+        this.storage[j] = this.storage[j] & (this.maxValue << l ^ 0xFFFFFFFFFFFFFFFFL) | ((long)value & this.maxValue) << l;
+        if (j != k) {
+            int m = 64 - l;
+            int n = this.elementBits - m;
+            this.storage[k] = this.storage[k] >>> n << n | ((long)value & this.maxValue) >> m;
         }
     }
 
-    public int get(int i) {
-        Validate.inclusiveBetween(0L, this.size - 1, i);
-        int j = i * this.elementBits;
-        int k = j >> 6;
-        int l = (i + 1) * this.elementBits - 1 >> 6;
-        int m = j ^ k << 6;
-        if (k == l) {
-            return (int)(this.storage[k] >>> m & this.maxValue);
+    public int get(int index) {
+        Validate.inclusiveBetween(0L, this.size - 1, index);
+        int i = index * this.elementBits;
+        int j = i >> 6;
+        int k = (index + 1) * this.elementBits - 1 >> 6;
+        int l = i ^ j << 6;
+        if (j == k) {
+            return (int)(this.storage[j] >>> l & this.maxValue);
         }
-        int n = 64 - m;
-        return (int)((this.storage[k] >>> m | this.storage[l] << n) & this.maxValue);
+        int m = 64 - l;
+        return (int)((this.storage[j] >>> l | this.storage[k] << m) & this.maxValue);
     }
 
     public long[] getStorage() {
@@ -89,7 +89,7 @@ public class PackedIntegerArray {
         return this.elementBits;
     }
 
-    public void forEach(IntConsumer intConsumer) {
+    public void forEach(IntConsumer consumer) {
         int i = this.storage.length;
         if (i == 0) {
             return;
@@ -108,11 +108,11 @@ public class PackedIntegerArray {
                 j = o;
             }
             if (o == p) {
-                intConsumer.accept((int)(l >>> q & this.maxValue));
+                consumer.accept((int)(l >>> q & this.maxValue));
                 continue;
             }
             int r = 64 - q;
-            intConsumer.accept((int)((l >>> q | m << r) & this.maxValue));
+            consumer.accept((int)((l >>> q | m << r) & this.maxValue));
         }
     }
 }

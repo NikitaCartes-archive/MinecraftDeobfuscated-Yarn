@@ -21,10 +21,10 @@ implements FeatureConfig {
     }
 
     @Override
-    public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
+    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
         ImmutableMap.Builder<T, T> builder = ImmutableMap.builder();
-        builder.put(dynamicOps.createString("state_provider"), this.field_21229.serialize(dynamicOps));
-        return new Dynamic<T>(dynamicOps, dynamicOps.createMap(builder.build()));
+        builder.put(ops.createString("state_provider"), this.field_21229.serialize(ops));
+        return new Dynamic<T>(ops, ops.createMap(builder.build()));
     }
 
     public static <T> BlockPileFeatureConfig method_23406(Dynamic<T> dynamic) {

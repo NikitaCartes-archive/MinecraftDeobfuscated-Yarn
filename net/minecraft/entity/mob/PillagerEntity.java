@@ -112,20 +112,20 @@ RangedAttackMob {
     }
 
     @Override
-    public void setCharging(boolean bl) {
-        this.dataTracker.set(CHARGING, bl);
+    public void setCharging(boolean charging) {
+        this.dataTracker.set(CHARGING, charging);
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag compoundTag) {
-        super.writeCustomDataToTag(compoundTag);
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
         ListTag listTag = new ListTag();
         for (int i = 0; i < this.inventory.getInvSize(); ++i) {
             ItemStack itemStack = this.inventory.getInvStack(i);
             if (itemStack.isEmpty()) continue;
             listTag.add(itemStack.toTag(new CompoundTag()));
         }
-        compoundTag.put("Inventory", listTag);
+        tag.put("Inventory", listTag);
     }
 
     @Override
@@ -144,9 +144,9 @@ RangedAttackMob {
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag compoundTag) {
-        super.readCustomDataFromTag(compoundTag);
-        ListTag listTag = compoundTag.getList("Inventory", 10);
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        ListTag listTag = tag.getList("Inventory", 10);
         for (int i = 0; i < listTag.size(); ++i) {
             ItemStack itemStack = ItemStack.fromTag(listTag.getCompound(i));
             if (itemStack.isEmpty()) continue;
@@ -156,12 +156,12 @@ RangedAttackMob {
     }
 
     @Override
-    public float getPathfindingFavor(BlockPos blockPos, WorldView worldView) {
-        Block block = worldView.getBlockState(blockPos.down()).getBlock();
+    public float getPathfindingFavor(BlockPos pos, WorldView worldView) {
+        Block block = worldView.getBlockState(pos.down()).getBlock();
         if (block == Blocks.GRASS_BLOCK || block == Blocks.SAND) {
             return 10.0f;
         }
-        return 0.5f - worldView.getBrightness(blockPos);
+        return 0.5f - worldView.getBrightness(pos);
     }
 
     @Override
@@ -171,14 +171,14 @@ RangedAttackMob {
 
     @Override
     @Nullable
-    public EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag) {
-        this.initEquipment(localDifficulty);
-        this.updateEnchantments(localDifficulty);
-        return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+        this.initEquipment(difficulty);
+        this.updateEnchantments(difficulty);
+        return super.initialize(world, difficulty, spawnType, entityData, entityTag);
     }
 
     @Override
-    protected void initEquipment(LocalDifficulty localDifficulty) {
+    protected void initEquipment(LocalDifficulty difficulty) {
         ItemStack itemStack = new ItemStack(Items.CROSSBOW);
         if (this.random.nextInt(300) == 0) {
             HashMap<Enchantment, Integer> map = Maps.newHashMap();
@@ -189,12 +189,12 @@ RangedAttackMob {
     }
 
     @Override
-    public boolean isTeammate(Entity entity) {
-        if (super.isTeammate(entity)) {
+    public boolean isTeammate(Entity other) {
+        if (super.isTeammate(other)) {
             return true;
         }
-        if (entity instanceof LivingEntity && ((LivingEntity)entity).getGroup() == EntityGroup.ILLAGER) {
-            return this.getScoreboardTeam() == null && entity.getScoreboardTeam() == null;
+        if (other instanceof LivingEntity && ((LivingEntity)other).getGroup() == EntityGroup.ILLAGER) {
+            return this.getScoreboardTeam() == null && other.getScoreboardTeam() == null;
         }
         return false;
     }
@@ -210,12 +210,12 @@ RangedAttackMob {
     }
 
     @Override
-    protected SoundEvent getHurtSound(DamageSource damageSource) {
+    protected SoundEvent getHurtSound(DamageSource source) {
         return SoundEvents.ENTITY_PILLAGER_HURT;
     }
 
     @Override
-    public void attack(LivingEntity livingEntity, float f) {
+    public void attack(LivingEntity target, float f) {
         Hand hand = ProjectileUtil.getHandPossiblyHolding(this, Items.CROSSBOW);
         ItemStack itemStack = this.getStackInHand(hand);
         if (this.isHolding(Items.CROSSBOW)) {
@@ -225,13 +225,13 @@ RangedAttackMob {
     }
 
     @Override
-    public void shoot(LivingEntity livingEntity, ItemStack itemStack, Projectile projectile, float f) {
+    public void shoot(LivingEntity target, ItemStack crossbow, Projectile projectile, float multiShotSpray) {
         Entity entity = (Entity)((Object)projectile);
-        double d = livingEntity.getX() - this.getX();
-        double e = livingEntity.getZ() - this.getZ();
-        double g = MathHelper.sqrt(d * d + e * e);
-        double h = livingEntity.getBodyY(0.3333333333333333) - entity.getY() + g * (double)0.2f;
-        Vector3f vector3f = this.getProjectileVelocity(new Vec3d(d, h, e), f);
+        double d = target.getX() - this.getX();
+        double e = target.getZ() - this.getZ();
+        double f = MathHelper.sqrt(d * d + e * e);
+        double g = target.getBodyY(0.3333333333333333) - entity.getY() + f * (double)0.2f;
+        Vector3f vector3f = this.getProjectileVelocity(new Vec3d(d, g, e), multiShotSpray);
         projectile.setVelocity(vector3f.getX(), vector3f.getY(), vector3f.getZ(), 1.6f, 14 - this.world.getDifficulty().getId() * 4);
         this.playSound(SoundEvents.ITEM_CROSSBOW_SHOOT, 1.0f, 1.0f / (this.getRandom().nextFloat() * 0.4f + 0.8f));
     }
@@ -252,16 +252,16 @@ RangedAttackMob {
     }
 
     @Override
-    protected void loot(ItemEntity itemEntity) {
-        ItemStack itemStack = itemEntity.getStack();
+    protected void loot(ItemEntity item) {
+        ItemStack itemStack = item.getStack();
         if (itemStack.getItem() instanceof BannerItem) {
-            super.loot(itemEntity);
+            super.loot(item);
         } else {
-            Item item = itemStack.getItem();
-            if (this.method_7111(item)) {
+            Item item2 = itemStack.getItem();
+            if (this.method_7111(item2)) {
                 ItemStack itemStack2 = this.inventory.add(itemStack);
                 if (itemStack2.isEmpty()) {
-                    itemEntity.remove();
+                    item.remove();
                 } else {
                     itemStack.setCount(itemStack2.getCount());
                 }
@@ -274,29 +274,29 @@ RangedAttackMob {
     }
 
     @Override
-    public boolean equip(int i, ItemStack itemStack) {
-        if (super.equip(i, itemStack)) {
+    public boolean equip(int slot, ItemStack item) {
+        if (super.equip(slot, item)) {
             return true;
         }
-        int j = i - 300;
-        if (j >= 0 && j < this.inventory.getInvSize()) {
-            this.inventory.setInvStack(j, itemStack);
+        int i = slot - 300;
+        if (i >= 0 && i < this.inventory.getInvSize()) {
+            this.inventory.setInvStack(i, item);
             return true;
         }
         return false;
     }
 
     @Override
-    public void addBonusForWave(int i, boolean bl) {
-        boolean bl2;
+    public void addBonusForWave(int wave, boolean unused) {
+        boolean bl;
         Raid raid = this.getRaid();
-        boolean bl3 = bl2 = this.random.nextFloat() <= raid.getEnchantmentChance();
-        if (bl2) {
+        boolean bl2 = bl = this.random.nextFloat() <= raid.getEnchantmentChance();
+        if (bl) {
             ItemStack itemStack = new ItemStack(Items.CROSSBOW);
             HashMap<Enchantment, Integer> map = Maps.newHashMap();
-            if (i > raid.getMaxWaves(Difficulty.NORMAL)) {
+            if (wave > raid.getMaxWaves(Difficulty.NORMAL)) {
                 map.put(Enchantments.QUICK_CHARGE, 2);
-            } else if (i > raid.getMaxWaves(Difficulty.EASY)) {
+            } else if (wave > raid.getMaxWaves(Difficulty.EASY)) {
                 map.put(Enchantments.QUICK_CHARGE, 1);
             }
             map.put(Enchantments.MULTISHOT, 1);

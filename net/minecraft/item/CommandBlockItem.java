@@ -19,9 +19,9 @@ extends BlockItem {
 
     @Override
     @Nullable
-    protected BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-        PlayerEntity playerEntity = itemPlacementContext.getPlayer();
-        return playerEntity == null || playerEntity.isCreativeLevelTwoOp() ? super.getPlacementState(itemPlacementContext) : null;
+    protected BlockState getPlacementState(ItemPlacementContext context) {
+        PlayerEntity playerEntity = context.getPlayer();
+        return playerEntity == null || playerEntity.isCreativeLevelTwoOp() ? super.getPlacementState(context) : null;
     }
 }
 

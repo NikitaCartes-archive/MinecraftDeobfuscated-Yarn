@@ -30,18 +30,18 @@ extends Task<LivingEntity> {
     }
 
     @Override
-    protected void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        Brain<?> brain = livingEntity.getBrain();
+    protected void run(ServerWorld world, LivingEntity entity, long time) {
+        Brain<?> brain = entity.getBrain();
         Path path = brain.getOptionalMemory(MemoryModuleType.PATH).get();
         List<GlobalPos> list = brain.getOptionalMemory(MemoryModuleType.INTERACTABLE_DOORS).get();
         List<BlockPos> list2 = path.getNodes().stream().map(pathNode -> new BlockPos(pathNode.x, pathNode.y, pathNode.z)).collect(Collectors.toList());
-        Set<BlockPos> set = this.getDoorsOnPath(serverWorld, list, list2);
+        Set<BlockPos> set = this.getDoorsOnPath(world, list, list2);
         int i = path.getCurrentNodeIndex() - 1;
-        this.method_21698(serverWorld, list2, set, i, livingEntity, brain);
+        this.method_21698(world, list2, set, i, entity, brain);
     }
 
-    private Set<BlockPos> getDoorsOnPath(ServerWorld serverWorld, List<GlobalPos> list, List<BlockPos> list2) {
-        return list.stream().filter(globalPos -> globalPos.getDimension() == serverWorld.getDimension().getType()).map(GlobalPos::getPos).filter(list2::contains).collect(Collectors.toSet());
+    private Set<BlockPos> getDoorsOnPath(ServerWorld world, List<GlobalPos> doors, List<BlockPos> path) {
+        return doors.stream().filter(globalPos -> globalPos.getDimension() == world.getDimension().getType()).map(GlobalPos::getPos).filter(path::contains).collect(Collectors.toSet());
     }
 
     private void method_21698(ServerWorld serverWorld, List<BlockPos> list, Set<BlockPos> set, int i, LivingEntity livingEntity, Brain<?> brain) {

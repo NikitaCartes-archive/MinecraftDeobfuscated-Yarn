@@ -26,8 +26,8 @@ public class MoveControl {
     protected float sidewaysMovement;
     protected State state = State.WAIT;
 
-    public MoveControl(MobEntity mobEntity) {
-        this.entity = mobEntity;
+    public MoveControl(MobEntity entity) {
+        this.entity = entity;
     }
 
     public boolean isMoving() {
@@ -38,20 +38,20 @@ public class MoveControl {
         return this.speed;
     }
 
-    public void moveTo(double d, double e, double f, double g) {
-        this.targetX = d;
-        this.targetY = e;
-        this.targetZ = f;
-        this.speed = g;
+    public void moveTo(double x, double y, double z, double speed) {
+        this.targetX = x;
+        this.targetY = y;
+        this.targetZ = z;
+        this.speed = speed;
         if (this.state != State.JUMPING) {
             this.state = State.MOVE_TO;
         }
     }
 
-    public void strafeTo(float f, float g) {
+    public void strafeTo(float forward, float sideways) {
         this.state = State.STRAFE;
-        this.forwardMovement = f;
-        this.sidewaysMovement = g;
+        this.forwardMovement = forward;
+        this.sidewaysMovement = sideways;
         this.speed = 0.25;
     }
 
@@ -112,21 +112,21 @@ public class MoveControl {
         }
     }
 
-    protected float changeAngle(float f, float g, float h) {
-        float j;
-        float i = MathHelper.wrapDegrees(g - f);
-        if (i > h) {
-            i = h;
+    protected float changeAngle(float from, float to, float max) {
+        float g;
+        float f = MathHelper.wrapDegrees(to - from);
+        if (f > max) {
+            f = max;
         }
-        if (i < -h) {
-            i = -h;
+        if (f < -max) {
+            f = -max;
         }
-        if ((j = f + i) < 0.0f) {
-            j += 360.0f;
-        } else if (j > 360.0f) {
-            j -= 360.0f;
+        if ((g = from + f) < 0.0f) {
+            g += 360.0f;
+        } else if (g > 360.0f) {
+            g -= 360.0f;
         }
-        return j;
+        return g;
     }
 
     public double getTargetX() {

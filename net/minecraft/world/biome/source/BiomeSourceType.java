@@ -25,17 +25,17 @@ public class BiomeSourceType<C extends BiomeSourceConfig, T extends BiomeSource>
     private final Function<C, T> biomeSource;
     private final Function<LevelProperties, C> config;
 
-    private static <C extends BiomeSourceConfig, T extends BiomeSource> BiomeSourceType<C, T> register(String string, Function<C, T> function, Function<LevelProperties, C> function2) {
-        return Registry.register(Registry.BIOME_SOURCE_TYPE, string, new BiomeSourceType<C, T>(function, function2));
+    private static <C extends BiomeSourceConfig, T extends BiomeSource> BiomeSourceType<C, T> register(String id, Function<C, T> biomeSource, Function<LevelProperties, C> function) {
+        return Registry.register(Registry.BIOME_SOURCE_TYPE, id, new BiomeSourceType<C, T>(biomeSource, function));
     }
 
-    private BiomeSourceType(Function<C, T> function, Function<LevelProperties, C> function2) {
-        this.biomeSource = function;
-        this.config = function2;
+    private BiomeSourceType(Function<C, T> biomeSource, Function<LevelProperties, C> function) {
+        this.biomeSource = biomeSource;
+        this.config = function;
     }
 
-    public T applyConfig(C biomeSourceConfig) {
-        return (T)((BiomeSource)this.biomeSource.apply(biomeSourceConfig));
+    public T applyConfig(C config) {
+        return (T)((BiomeSource)this.biomeSource.apply(config));
     }
 
     public C getConfig(LevelProperties levelProperties) {

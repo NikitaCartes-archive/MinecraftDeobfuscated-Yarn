@@ -113,18 +113,18 @@ extends ByteBuf {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public long[] readLongArray(@Nullable long[] ls, int i) {
+    public long[] readLongArray(@Nullable long[] toArray, int i) {
         int j = this.readVarInt();
-        if (ls == null || ls.length != j) {
+        if (toArray == null || toArray.length != j) {
             if (j > i) {
                 throw new DecoderException("LongArray with size " + j + " is bigger than allowed " + i);
             }
-            ls = new long[j];
+            toArray = new long[j];
         }
-        for (int k = 0; k < ls.length; ++k) {
-            ls[k] = this.readLong();
+        for (int k = 0; k < toArray.length; ++k) {
+            toArray[k] = this.readLong();
         }
-        return ls;
+        return toArray;
     }
 
     public BlockPos readBlockPos() {

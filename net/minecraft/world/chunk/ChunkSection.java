@@ -25,24 +25,24 @@ public class ChunkSection {
     private short nonEmptyFluidCount;
     private final PalettedContainer<BlockState> container;
 
-    public ChunkSection(int i) {
-        this(i, 0, 0, 0);
+    public ChunkSection(int yOffset) {
+        this(yOffset, 0, 0, 0);
     }
 
-    public ChunkSection(int i, short s, short t, short u) {
-        this.yOffset = i;
-        this.nonEmptyBlockCount = s;
-        this.randomTickableBlockCount = t;
-        this.nonEmptyFluidCount = u;
+    public ChunkSection(int yOffset, short nonEmptyBlockCount, short randomTickableBlockCount, short nonEmptyFluidCount) {
+        this.yOffset = yOffset;
+        this.nonEmptyBlockCount = nonEmptyBlockCount;
+        this.randomTickableBlockCount = randomTickableBlockCount;
+        this.nonEmptyFluidCount = nonEmptyFluidCount;
         this.container = new PalettedContainer<BlockState>(palette, Block.STATE_IDS, NbtHelper::toBlockState, NbtHelper::fromBlockState, Blocks.AIR.getDefaultState());
     }
 
-    public BlockState getBlockState(int i, int j, int k) {
-        return this.container.get(i, j, k);
+    public BlockState getBlockState(int x, int y, int z) {
+        return this.container.get(x, y, z);
     }
 
-    public FluidState getFluidState(int i, int j, int k) {
-        return this.container.get(i, j, k).getFluidState();
+    public FluidState getFluidState(int x, int y, int z) {
+        return this.container.get(x, y, z).getFluidState();
     }
 
     public void lock() {
@@ -53,41 +53,41 @@ public class ChunkSection {
         this.container.unlock();
     }
 
-    public BlockState setBlockState(int i, int j, int k, BlockState blockState) {
-        return this.setBlockState(i, j, k, blockState, true);
+    public BlockState setBlockState(int x, int y, int z, BlockState state) {
+        return this.setBlockState(x, y, z, state, true);
     }
 
-    public BlockState setBlockState(int i, int j, int k, BlockState blockState, boolean bl) {
-        BlockState blockState2 = bl ? this.container.setSync(i, j, k, blockState) : this.container.set(i, j, k, blockState);
-        FluidState fluidState = blockState2.getFluidState();
-        FluidState fluidState2 = blockState.getFluidState();
-        if (!blockState2.isAir()) {
+    public BlockState setBlockState(int x, int y, int z, BlockState state, boolean lock) {
+        BlockState blockState = lock ? this.container.setSync(x, y, z, state) : this.container.set(x, y, z, state);
+        FluidState fluidState = blockState.getFluidState();
+        FluidState fluidState2 = state.getFluidState();
+        if (!blockState.isAir()) {
             this.nonEmptyBlockCount = (short)(this.nonEmptyBlockCount - 1);
-            if (blockState2.hasRandomTicks()) {
+            if (blockState.hasRandomTicks()) {
                 this.randomTickableBlockCount = (short)(this.randomTickableBlockCount - 1);
             }
         }
         if (!fluidState.isEmpty()) {
             this.nonEmptyFluidCount = (short)(this.nonEmptyFluidCount - 1);
         }
-        if (!blockState.isAir()) {
+        if (!state.isAir()) {
             this.nonEmptyBlockCount = (short)(this.nonEmptyBlockCount + 1);
-            if (blockState.hasRandomTicks()) {
+            if (state.hasRandomTicks()) {
                 this.randomTickableBlockCount = (short)(this.randomTickableBlockCount + 1);
             }
         }
         if (!fluidState2.isEmpty()) {
             this.nonEmptyFluidCount = (short)(this.nonEmptyFluidCount + 1);
         }
-        return blockState2;
+        return blockState;
     }
 
     public boolean isEmpty() {
         return this.nonEmptyBlockCount == 0;
     }
 
-    public static boolean isEmpty(@Nullable ChunkSection chunkSection) {
-        return chunkSection == WorldChunk.EMPTY_SECTION || chunkSection.isEmpty();
+    public static boolean isEmpty(@Nullable ChunkSection section) {
+        return section == WorldChunk.EMPTY_SECTION || section.isEmpty();
     }
 
     public boolean hasRandomTicks() {

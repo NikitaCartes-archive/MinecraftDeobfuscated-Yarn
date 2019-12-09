@@ -43,34 +43,34 @@ Element {
     protected long nextNarration = Long.MAX_VALUE;
     private boolean focused;
 
-    public AbstractButtonWidget(int i, int j, String string) {
-        this(i, j, 200, 20, string);
+    public AbstractButtonWidget(int x, int y, String text) {
+        this(x, y, 200, 20, text);
     }
 
-    public AbstractButtonWidget(int i, int j, int k, int l, String string) {
-        this.x = i;
-        this.y = j;
-        this.width = k;
-        this.height = l;
-        this.message = string;
+    public AbstractButtonWidget(int x, int y, int width, int height, String message) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.message = message;
     }
 
-    protected int getYImage(boolean bl) {
+    protected int getYImage(boolean isHovered) {
         int i = 1;
         if (!this.active) {
             i = 0;
-        } else if (bl) {
+        } else if (isHovered) {
             i = 2;
         }
         return i;
     }
 
     @Override
-    public void render(int i, int j, float f) {
+    public void render(int mouseX, int mouseY, float delta) {
         if (!this.visible) {
             return;
         }
-        boolean bl = this.isHovered = i >= this.x && j >= this.y && i < this.x + this.width && j < this.y + this.height;
+        boolean bl = this.isHovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
         if (this.wasHovered != this.isHovered()) {
             if (this.isHovered()) {
                 if (this.focused) {
@@ -83,7 +83,7 @@ Element {
             }
         }
         if (this.visible) {
-            this.renderButton(i, j, f);
+            this.renderButton(mouseX, mouseY, delta);
         }
         this.narrate();
         this.wasHovered = this.isHovered();
@@ -104,52 +104,52 @@ Element {
         return I18n.translate("gui.narrate.button", this.getMessage());
     }
 
-    public void renderButton(int i, int j, float f) {
+    public void renderButton(int mouseX, int mouseY, float delta) {
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
         TextRenderer textRenderer = minecraftClient.textRenderer;
         minecraftClient.getTextureManager().bindTexture(WIDGETS_LOCATION);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, this.alpha);
-        int k = this.getYImage(this.isHovered());
+        int i = this.getYImage(this.isHovered());
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
-        this.blit(this.x, this.y, 0, 46 + k * 20, this.width / 2, this.height);
-        this.blit(this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + k * 20, this.width / 2, this.height);
-        this.renderBg(minecraftClient, i, j);
-        int l = this.active ? 0xFFFFFF : 0xA0A0A0;
-        this.drawCenteredString(textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, l | MathHelper.ceil(this.alpha * 255.0f) << 24);
+        this.blit(this.x, this.y, 0, 46 + i * 20, this.width / 2, this.height);
+        this.blit(this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
+        this.renderBg(minecraftClient, mouseX, mouseY);
+        int j = this.active ? 0xFFFFFF : 0xA0A0A0;
+        this.drawCenteredString(textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | MathHelper.ceil(this.alpha * 255.0f) << 24);
     }
 
-    protected void renderBg(MinecraftClient minecraftClient, int i, int j) {
+    protected void renderBg(MinecraftClient client, int mouseX, int mouseY) {
     }
 
-    public void onClick(double d, double e) {
+    public void onClick(double mouseX, double mouseY) {
     }
 
-    public void onRelease(double d, double e) {
+    public void onRelease(double mouseX, double mouseY) {
     }
 
-    protected void onDrag(double d, double e, double f, double g) {
+    protected void onDrag(double mouseX, double mouseY, double deltaX, double deltaY) {
     }
 
     @Override
-    public boolean mouseClicked(double d, double e, int i) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
         boolean bl;
         if (!this.active || !this.visible) {
             return false;
         }
-        if (this.isValidClickButton(i) && (bl = this.clicked(d, e))) {
+        if (this.isValidClickButton(button) && (bl = this.clicked(mouseX, mouseY))) {
             this.playDownSound(MinecraftClient.getInstance().getSoundManager());
-            this.onClick(d, e);
+            this.onClick(mouseX, mouseY);
             return true;
         }
         return false;
     }
 
     @Override
-    public boolean mouseReleased(double d, double e, int i) {
-        if (this.isValidClickButton(i)) {
-            this.onRelease(d, e);
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (this.isValidClickButton(button)) {
+            this.onRelease(mouseX, mouseY);
             return true;
         }
         return false;
@@ -160,16 +160,16 @@ Element {
     }
 
     @Override
-    public boolean mouseDragged(double d, double e, int i, double f, double g) {
-        if (this.isValidClickButton(i)) {
-            this.onDrag(d, e, f, g);
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        if (this.isValidClickButton(button)) {
+            this.onDrag(mouseX, mouseY, deltaX, deltaY);
             return true;
         }
         return false;
     }
 
-    protected boolean clicked(double d, double e) {
-        return this.active && this.visible && d >= (double)this.x && e >= (double)this.y && d < (double)(this.x + this.width) && e < (double)(this.y + this.height);
+    protected boolean clicked(double mouseX, double mouseY) {
+        return this.active && this.visible && mouseX >= (double)this.x && mouseY >= (double)this.y && mouseX < (double)(this.x + this.width) && mouseY < (double)(this.y + this.height);
     }
 
     public boolean isHovered() {
@@ -190,11 +190,11 @@ Element {
     }
 
     @Override
-    public boolean isMouseOver(double d, double e) {
-        return this.active && this.visible && d >= (double)this.x && e >= (double)this.y && d < (double)(this.x + this.width) && e < (double)(this.y + this.height);
+    public boolean isMouseOver(double mouseX, double mouseY) {
+        return this.active && this.visible && mouseX >= (double)this.x && mouseY >= (double)this.y && mouseX < (double)(this.x + this.width) && mouseY < (double)(this.y + this.height);
     }
 
-    public void renderToolTip(int i, int j) {
+    public void renderToolTip(int mouseX, int mouseY) {
     }
 
     public void playDownSound(SoundManager soundManager) {
@@ -205,19 +205,19 @@ Element {
         return this.width;
     }
 
-    public void setWidth(int i) {
-        this.width = i;
+    public void setWidth(int value) {
+        this.width = value;
     }
 
-    public void setAlpha(float f) {
-        this.alpha = f;
+    public void setAlpha(float value) {
+        this.alpha = value;
     }
 
-    public void setMessage(String string) {
-        if (!Objects.equals(string, this.message)) {
+    public void setMessage(String value) {
+        if (!Objects.equals(value, this.message)) {
             this.queueNarration(250);
         }
-        this.message = string;
+        this.message = value;
     }
 
     public void queueNarration(int i) {
@@ -232,8 +232,8 @@ Element {
         return this.focused;
     }
 
-    protected void setFocused(boolean bl) {
-        this.focused = bl;
+    protected void setFocused(boolean focused) {
+        this.focused = focused;
     }
 }
 

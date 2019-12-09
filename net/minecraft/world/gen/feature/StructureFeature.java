@@ -35,44 +35,44 @@ public abstract class StructureFeature<C extends FeatureConfig>
 extends Feature<C> {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public StructureFeature(Function<Dynamic<?>, ? extends C> function) {
-        super(function);
+    public StructureFeature(Function<Dynamic<?>, ? extends C> configFactory) {
+        super(configFactory);
     }
 
     @Override
-    public ConfiguredFeature<C, ? extends StructureFeature<C>> configure(C featureConfig) {
-        return new ConfiguredFeature<C, StructureFeature>(this, featureConfig);
+    public ConfiguredFeature<C, ? extends StructureFeature<C>> configure(C config) {
+        return new ConfiguredFeature<C, StructureFeature>(this, config);
     }
 
     @Override
-    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, C featureConfig) {
-        if (!iWorld.getLevelProperties().hasStructures()) {
+    public boolean generate(IWorld world, ChunkGenerator<? extends ChunkGeneratorConfig> generator, Random random, BlockPos pos, C config) {
+        if (!world.getLevelProperties().hasStructures()) {
             return false;
         }
-        int i = blockPos.getX() >> 4;
-        int j = blockPos.getZ() >> 4;
+        int i = pos.getX() >> 4;
+        int j = pos.getZ() >> 4;
         int k = i << 4;
         int l = j << 4;
         boolean bl = false;
-        for (Long long_ : iWorld.getChunk(i, j).getStructureReferences(this.getName())) {
+        for (Long long_ : world.getChunk(i, j).getStructureReferences(this.getName())) {
             ChunkPos chunkPos = new ChunkPos(long_);
-            StructureStart structureStart = iWorld.getChunk(chunkPos.x, chunkPos.z).getStructureStart(this.getName());
+            StructureStart structureStart = world.getChunk(chunkPos.x, chunkPos.z).getStructureStart(this.getName());
             if (structureStart == null || structureStart == StructureStart.DEFAULT) continue;
-            structureStart.generateStructure(iWorld, chunkGenerator, random, new BlockBox(k, l, k + 15, l + 15), new ChunkPos(i, j));
+            structureStart.generateStructure(world, generator, random, new BlockBox(k, l, k + 15, l + 15), new ChunkPos(i, j));
             bl = true;
         }
         return bl;
     }
 
-    protected StructureStart isInsideStructure(IWorld iWorld, BlockPos blockPos, boolean bl) {
-        List<StructureStart> list = this.getStructureStarts(iWorld, blockPos.getX() >> 4, blockPos.getZ() >> 4);
+    protected StructureStart isInsideStructure(IWorld world, BlockPos pos, boolean exact) {
+        List<StructureStart> list = this.getStructureStarts(world, pos.getX() >> 4, pos.getZ() >> 4);
         for (StructureStart structureStart : list) {
-            if (!structureStart.hasChildren() || !structureStart.getBoundingBox().contains(blockPos)) continue;
-            if (!bl) {
+            if (!structureStart.hasChildren() || !structureStart.getBoundingBox().contains(pos)) continue;
+            if (!exact) {
                 return structureStart;
             }
             for (StructurePiece structurePiece : structureStart.getChildren()) {
-                if (!structurePiece.getBoundingBox().contains(blockPos)) continue;
+                if (!structurePiece.getBoundingBox().contains(pos)) continue;
                 return structureStart;
             }
         }
@@ -88,7 +88,7 @@ extends Feature<C> {
     }
 
     @Nullable
-    public BlockPos locateStructure(World world, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, BlockPos blockPos, int i, boolean bl) {
+    public BlockPos locateStructure(World world, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, BlockPos blockPos, int i, boolean skipExistingChunks) {
         if (!chunkGenerator.getBiomeSource().hasStructureFeature(this)) {
             return null;
         }
@@ -97,19 +97,19 @@ extends Feature<C> {
         ChunkRandom chunkRandom = new ChunkRandom();
         block0: for (int l = 0; l <= i; ++l) {
             for (int m = -l; m <= l; ++m) {
-                boolean bl2 = m == -l || m == l;
+                boolean bl = m == -l || m == l;
                 for (int n = -l; n <= l; ++n) {
-                    boolean bl3;
-                    boolean bl4 = bl3 = n == -l || n == l;
-                    if (!bl2 && !bl3) continue;
+                    boolean bl2;
+                    boolean bl3 = bl2 = n == -l || n == l;
+                    if (!bl && !bl2) continue;
                     ChunkPos chunkPos = this.getStart(chunkGenerator, chunkRandom, j, k, m, n);
                     StructureStart structureStart = world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_STARTS).getStructureStart(this.getName());
                     if (structureStart != null && structureStart.hasChildren()) {
-                        if (bl && structureStart.isInExistingChunk()) {
+                        if (skipExistingChunks && structureStart.isInExistingChunk()) {
                             structureStart.incrementReferences();
                             return structureStart.getPos();
                         }
-                        if (!bl) {
+                        if (!skipExistingChunks) {
                             return structureStart.getPos();
                         }
                     }
@@ -121,13 +121,13 @@ extends Feature<C> {
         return null;
     }
 
-    private List<StructureStart> getStructureStarts(IWorld iWorld, int i, int j) {
+    private List<StructureStart> getStructureStarts(IWorld world, int chunkX, int chunkZ) {
         ArrayList<StructureStart> list = Lists.newArrayList();
-        Chunk chunk = iWorld.getChunk(i, j, ChunkStatus.STRUCTURE_REFERENCES);
+        Chunk chunk = world.getChunk(chunkX, chunkZ, ChunkStatus.STRUCTURE_REFERENCES);
         LongIterator longIterator = chunk.getStructureReferences(this.getName()).iterator();
         while (longIterator.hasNext()) {
             long l = longIterator.nextLong();
-            Chunk structureHolder = iWorld.getChunk(ChunkPos.getPackedX(l), ChunkPos.getPackedZ(l), ChunkStatus.STRUCTURE_STARTS);
+            Chunk structureHolder = world.getChunk(ChunkPos.getPackedX(l), ChunkPos.getPackedZ(l), ChunkStatus.STRUCTURE_STARTS);
             StructureStart structureStart = structureHolder.getStructureStart(this.getName());
             if (structureStart == null) continue;
             list.add(structureStart);

@@ -34,30 +34,30 @@ extends Entity {
     public double posY;
     public double posZ;
 
-    protected ExplosiveProjectileEntity(EntityType<? extends ExplosiveProjectileEntity> entityType, World world) {
-        super(entityType, world);
+    protected ExplosiveProjectileEntity(EntityType<? extends ExplosiveProjectileEntity> type, World world) {
+        super(type, world);
     }
 
-    public ExplosiveProjectileEntity(EntityType<? extends ExplosiveProjectileEntity> entityType, double d, double e, double f, double g, double h, double i, World world) {
-        this(entityType, world);
-        this.setPositionAndAngles(d, e, f, this.yaw, this.pitch);
-        this.setPosition(d, e, f);
-        double j = MathHelper.sqrt(g * g + h * h + i * i);
-        this.posX = g / j * 0.1;
-        this.posY = h / j * 0.1;
-        this.posZ = i / j * 0.1;
+    public ExplosiveProjectileEntity(EntityType<? extends ExplosiveProjectileEntity> type, double x, double y, double z, double directionX, double directionY, double directionZ, World world) {
+        this(type, world);
+        this.setPositionAndAngles(x, y, z, this.yaw, this.pitch);
+        this.setPosition(x, y, z);
+        double d = MathHelper.sqrt(directionX * directionX + directionY * directionY + directionZ * directionZ);
+        this.posX = directionX / d * 0.1;
+        this.posY = directionY / d * 0.1;
+        this.posZ = directionZ / d * 0.1;
     }
 
-    public ExplosiveProjectileEntity(EntityType<? extends ExplosiveProjectileEntity> entityType, LivingEntity livingEntity, double d, double e, double f, World world) {
-        this(entityType, world);
-        this.owner = livingEntity;
-        this.setPositionAndAngles(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), livingEntity.yaw, livingEntity.pitch);
+    public ExplosiveProjectileEntity(EntityType<? extends ExplosiveProjectileEntity> type, LivingEntity owner, double directionX, double directionY, double directionZ, World world) {
+        this(type, world);
+        this.owner = owner;
+        this.setPositionAndAngles(owner.getX(), owner.getY(), owner.getZ(), owner.yaw, owner.pitch);
         this.updatePosition();
         this.setVelocity(Vec3d.ZERO);
-        double g = MathHelper.sqrt((d += this.random.nextGaussian() * 0.4) * d + (e += this.random.nextGaussian() * 0.4) * e + (f += this.random.nextGaussian() * 0.4) * f);
-        this.posX = d / g * 0.1;
-        this.posY = e / g * 0.1;
-        this.posZ = f / g * 0.1;
+        double d = MathHelper.sqrt((directionX += this.random.nextGaussian() * 0.4) * directionX + (directionY += this.random.nextGaussian() * 0.4) * directionY + (directionZ += this.random.nextGaussian() * 0.4) * directionZ);
+        this.posX = directionX / d * 0.1;
+        this.posY = directionY / d * 0.1;
+        this.posZ = directionZ / d * 0.1;
     }
 
     @Override
@@ -66,12 +66,12 @@ extends Entity {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean shouldRender(double d) {
-        double e = this.getBoundingBox().getAverageSideLength() * 4.0;
-        if (Double.isNaN(e)) {
-            e = 4.0;
+    public boolean shouldRender(double distance) {
+        double d = this.getBoundingBox().getAverageSideLength() * 4.0;
+        if (Double.isNaN(d)) {
+            d = 4.0;
         }
-        return d < (e *= 64.0) * e;
+        return distance < (d *= 64.0) * d;
     }
 
     @Override
@@ -129,24 +129,24 @@ extends Entity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag compoundTag) {
+    public void writeCustomDataToTag(CompoundTag tag) {
         Vec3d vec3d = this.getVelocity();
-        compoundTag.put("direction", this.toListTag(vec3d.x, vec3d.y, vec3d.z));
-        compoundTag.put("power", this.toListTag(this.posX, this.posY, this.posZ));
-        compoundTag.putInt("life", this.life);
+        tag.put("direction", this.toListTag(vec3d.x, vec3d.y, vec3d.z));
+        tag.put("power", this.toListTag(this.posX, this.posY, this.posZ));
+        tag.putInt("life", this.life);
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag compoundTag) {
+    public void readCustomDataFromTag(CompoundTag tag) {
         ListTag listTag;
-        if (compoundTag.contains("power", 9) && (listTag = compoundTag.getList("power", 6)).size() == 3) {
+        if (tag.contains("power", 9) && (listTag = tag.getList("power", 6)).size() == 3) {
             this.posX = listTag.getDouble(0);
             this.posY = listTag.getDouble(1);
             this.posZ = listTag.getDouble(2);
         }
-        this.life = compoundTag.getInt("life");
-        if (compoundTag.contains("direction", 9) && compoundTag.getList("direction", 6).size() == 3) {
-            listTag = compoundTag.getList("direction", 6);
+        this.life = tag.getInt("life");
+        if (tag.contains("direction", 9) && tag.getList("direction", 6).size() == 3) {
+            listTag = tag.getList("direction", 6);
             this.setVelocity(listTag.getDouble(0), listTag.getDouble(1), listTag.getDouble(2));
         } else {
             this.remove();
@@ -164,19 +164,19 @@ extends Entity {
     }
 
     @Override
-    public boolean damage(DamageSource damageSource, float f) {
-        if (this.isInvulnerableTo(damageSource)) {
+    public boolean damage(DamageSource source, float amount) {
+        if (this.isInvulnerableTo(source)) {
             return false;
         }
         this.scheduleVelocityUpdate();
-        if (damageSource.getAttacker() != null) {
-            Vec3d vec3d = damageSource.getAttacker().getRotationVector();
+        if (source.getAttacker() != null) {
+            Vec3d vec3d = source.getAttacker().getRotationVector();
             this.setVelocity(vec3d);
             this.posX = vec3d.x * 0.1;
             this.posY = vec3d.y * 0.1;
             this.posZ = vec3d.z * 0.1;
-            if (damageSource.getAttacker() instanceof LivingEntity) {
-                this.owner = (LivingEntity)damageSource.getAttacker();
+            if (source.getAttacker() instanceof LivingEntity) {
+                this.owner = (LivingEntity)source.getAttacker();
             }
             return true;
         }

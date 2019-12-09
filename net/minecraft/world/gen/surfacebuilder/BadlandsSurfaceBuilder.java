@@ -99,29 +99,29 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
     }
 
     @Override
-    public void initSeed(long l) {
-        if (this.seed != l || this.layerBlocks == null) {
-            this.initLayerBlocks(l);
+    public void initSeed(long seed) {
+        if (this.seed != seed || this.layerBlocks == null) {
+            this.initLayerBlocks(seed);
         }
-        if (this.seed != l || this.heightCutoffNoise == null || this.heightNoise == null) {
-            ChunkRandom chunkRandom = new ChunkRandom(l);
+        if (this.seed != seed || this.heightCutoffNoise == null || this.heightNoise == null) {
+            ChunkRandom chunkRandom = new ChunkRandom(seed);
             this.heightCutoffNoise = new OctaveSimplexNoiseSampler(chunkRandom, 3, 0);
             this.heightNoise = new OctaveSimplexNoiseSampler(chunkRandom, 0, 0);
         }
-        this.seed = l;
+        this.seed = seed;
     }
 
-    protected void initLayerBlocks(long l) {
-        int p;
+    protected void initLayerBlocks(long seed) {
         int o;
         int n;
         int m;
+        int l;
         int k;
         int j;
         int i;
         this.layerBlocks = new BlockState[64];
         Arrays.fill(this.layerBlocks, TERACOTTA);
-        ChunkRandom chunkRandom = new ChunkRandom(l);
+        ChunkRandom chunkRandom = new ChunkRandom(seed);
         this.layerNoise = new OctaveSimplexNoiseSampler(chunkRandom, 0, 0);
         for (i = 0; i < 64; ++i) {
             if ((i += chunkRandom.nextInt(5) + 1) >= 64) continue;
@@ -130,46 +130,46 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
         i = chunkRandom.nextInt(4) + 2;
         for (j = 0; j < i; ++j) {
             k = chunkRandom.nextInt(3) + 1;
-            m = chunkRandom.nextInt(64);
-            for (n = 0; m + n < 64 && n < k; ++n) {
-                this.layerBlocks[m + n] = YELLOW_TERACOTTA;
+            l = chunkRandom.nextInt(64);
+            for (m = 0; l + m < 64 && m < k; ++m) {
+                this.layerBlocks[l + m] = YELLOW_TERACOTTA;
             }
         }
         j = chunkRandom.nextInt(4) + 2;
         for (k = 0; k < j; ++k) {
-            m = chunkRandom.nextInt(3) + 2;
-            n = chunkRandom.nextInt(64);
-            for (o = 0; n + o < 64 && o < m; ++o) {
-                this.layerBlocks[n + o] = BROWN_TERACOTTA;
+            l = chunkRandom.nextInt(3) + 2;
+            m = chunkRandom.nextInt(64);
+            for (n = 0; m + n < 64 && n < l; ++n) {
+                this.layerBlocks[m + n] = BROWN_TERACOTTA;
             }
         }
         k = chunkRandom.nextInt(4) + 2;
-        for (m = 0; m < k; ++m) {
-            n = chunkRandom.nextInt(3) + 1;
-            o = chunkRandom.nextInt(64);
-            for (p = 0; o + p < 64 && p < n; ++p) {
-                this.layerBlocks[o + p] = RED_TERACOTTA;
+        for (l = 0; l < k; ++l) {
+            m = chunkRandom.nextInt(3) + 1;
+            n = chunkRandom.nextInt(64);
+            for (o = 0; n + o < 64 && o < m; ++o) {
+                this.layerBlocks[n + o] = RED_TERACOTTA;
             }
         }
-        m = chunkRandom.nextInt(3) + 3;
-        n = 0;
-        for (o = 0; o < m; ++o) {
-            p = 1;
-            n += chunkRandom.nextInt(16) + 4;
-            for (int q = 0; n + q < 64 && q < 1; ++q) {
-                this.layerBlocks[n + q] = WHITE_TERACOTTA;
-                if (n + q > 1 && chunkRandom.nextBoolean()) {
-                    this.layerBlocks[n + q - 1] = LIGHT_GRAY_TERACOTTA;
+        l = chunkRandom.nextInt(3) + 3;
+        m = 0;
+        for (n = 0; n < l; ++n) {
+            o = 1;
+            m += chunkRandom.nextInt(16) + 4;
+            for (int p = 0; m + p < 64 && p < 1; ++p) {
+                this.layerBlocks[m + p] = WHITE_TERACOTTA;
+                if (m + p > 1 && chunkRandom.nextBoolean()) {
+                    this.layerBlocks[m + p - 1] = LIGHT_GRAY_TERACOTTA;
                 }
-                if (n + q >= 63 || !chunkRandom.nextBoolean()) continue;
-                this.layerBlocks[n + q + 1] = LIGHT_GRAY_TERACOTTA;
+                if (m + p >= 63 || !chunkRandom.nextBoolean()) continue;
+                this.layerBlocks[m + p + 1] = LIGHT_GRAY_TERACOTTA;
             }
         }
     }
 
-    protected BlockState calculateLayerBlockState(int i, int j, int k) {
-        int l = (int)Math.round(this.layerNoise.sample((double)i / 512.0, (double)k / 512.0, false) * 2.0);
-        return this.layerBlocks[(j + l + 64) % 64];
+    protected BlockState calculateLayerBlockState(int x, int y, int z) {
+        int i = (int)Math.round(this.layerNoise.sample((double)x / 512.0, (double)z / 512.0, false) * 2.0);
+        return this.layerBlocks[(y + i + 64) % 64];
     }
 }
 

@@ -45,47 +45,47 @@ public class LootTable {
     private final LootFunction[] functions;
     private final BiFunction<ItemStack, LootContext, ItemStack> combinedFunction;
 
-    private LootTable(LootContextType lootContextType, LootPool[] lootPools, LootFunction[] lootFunctions) {
-        this.type = lootContextType;
-        this.pools = lootPools;
-        this.functions = lootFunctions;
-        this.combinedFunction = LootFunctions.join(lootFunctions);
+    private LootTable(LootContextType type, LootPool[] pools, LootFunction[] functions) {
+        this.type = type;
+        this.pools = pools;
+        this.functions = functions;
+        this.combinedFunction = LootFunctions.join(functions);
     }
 
-    public static Consumer<ItemStack> limitedConsumer(Consumer<ItemStack> consumer) {
-        return itemStack -> {
-            if (itemStack.getCount() < itemStack.getMaxCount()) {
-                consumer.accept((ItemStack)itemStack);
+    public static Consumer<ItemStack> limitedConsumer(Consumer<ItemStack> itemDropper) {
+        return stack -> {
+            if (stack.getCount() < stack.getMaxCount()) {
+                itemDropper.accept((ItemStack)stack);
             } else {
-                ItemStack itemStack2;
-                for (int i = itemStack.getCount(); i > 0; i -= itemStack2.getCount()) {
-                    itemStack2 = itemStack.copy();
-                    itemStack2.setCount(Math.min(itemStack.getMaxCount(), i));
-                    consumer.accept(itemStack2);
+                ItemStack itemStack;
+                for (int i = stack.getCount(); i > 0; i -= itemStack.getCount()) {
+                    itemStack = stack.copy();
+                    itemStack.setCount(Math.min(stack.getMaxCount(), i));
+                    itemDropper.accept(itemStack);
                 }
             }
         };
     }
 
-    public void drop(LootContext lootContext, Consumer<ItemStack> consumer) {
-        if (lootContext.addDrop(this)) {
-            Consumer<ItemStack> consumer2 = LootFunction.apply(this.combinedFunction, consumer, lootContext);
+    public void drop(LootContext context, Consumer<ItemStack> itemDropper) {
+        if (context.addDrop(this)) {
+            Consumer<ItemStack> consumer = LootFunction.apply(this.combinedFunction, itemDropper, context);
             for (LootPool lootPool : this.pools) {
-                lootPool.drop(consumer2, lootContext);
+                lootPool.drop(consumer, context);
             }
-            lootContext.removeDrop(this);
+            context.removeDrop(this);
         } else {
             LOGGER.warn("Detected infinite loop in loot tables");
         }
     }
 
-    public void dropLimited(LootContext lootContext, Consumer<ItemStack> consumer) {
-        this.drop(lootContext, LootTable.limitedConsumer(consumer));
+    public void dropLimited(LootContext context, Consumer<ItemStack> dropItemConsumer) {
+        this.drop(context, LootTable.limitedConsumer(dropItemConsumer));
     }
 
-    public List<ItemStack> getDrops(LootContext lootContext) {
+    public List<ItemStack> getDrops(LootContext context) {
         ArrayList<ItemStack> list = Lists.newArrayList();
-        this.dropLimited(lootContext, list::add);
+        this.dropLimited(context, list::add);
         return list;
     }
 
@@ -93,19 +93,19 @@ public class LootTable {
         return this.type;
     }
 
-    public void check(LootTableReporter lootTableReporter) {
+    public void check(LootTableReporter reporter) {
         int i;
         for (i = 0; i < this.pools.length; ++i) {
-            this.pools[i].check(lootTableReporter.makeChild(".pools[" + i + "]"));
+            this.pools[i].check(reporter.makeChild(".pools[" + i + "]"));
         }
         for (i = 0; i < this.functions.length; ++i) {
-            this.functions[i].check(lootTableReporter.makeChild(".functions[" + i + "]"));
+            this.functions[i].check(reporter.makeChild(".functions[" + i + "]"));
         }
     }
 
-    public void supplyInventory(Inventory inventory, LootContext lootContext) {
-        List<ItemStack> list = this.getDrops(lootContext);
-        Random random = lootContext.getRandom();
+    public void supplyInventory(Inventory inventory, LootContext context) {
+        List<ItemStack> list = this.getDrops(context);
+        Random random = context.getRandom();
         List<Integer> list2 = this.getFreeSlots(inventory, random);
         this.shuffle(list, list2.size(), random);
         for (ItemStack itemStack : list) {
@@ -121,9 +121,9 @@ public class LootTable {
         }
     }
 
-    private void shuffle(List<ItemStack> list, int i, Random random) {
-        ArrayList<ItemStack> list2 = Lists.newArrayList();
-        Iterator<ItemStack> iterator = list.iterator();
+    private void shuffle(List<ItemStack> drops, int freeSlots, Random random) {
+        ArrayList<ItemStack> list = Lists.newArrayList();
+        Iterator<ItemStack> iterator = drops.iterator();
         while (iterator.hasNext()) {
             ItemStack itemStack = iterator.next();
             if (itemStack.isEmpty()) {
@@ -131,26 +131,26 @@ public class LootTable {
                 continue;
             }
             if (itemStack.getCount() <= 1) continue;
-            list2.add(itemStack);
+            list.add(itemStack);
             iterator.remove();
         }
-        while (i - list.size() - list2.size() > 0 && !list2.isEmpty()) {
-            ItemStack itemStack2 = (ItemStack)list2.remove(MathHelper.nextInt(random, 0, list2.size() - 1));
-            int j = MathHelper.nextInt(random, 1, itemStack2.getCount() / 2);
-            ItemStack itemStack3 = itemStack2.split(j);
+        while (freeSlots - drops.size() - list.size() > 0 && !list.isEmpty()) {
+            ItemStack itemStack2 = (ItemStack)list.remove(MathHelper.nextInt(random, 0, list.size() - 1));
+            int i = MathHelper.nextInt(random, 1, itemStack2.getCount() / 2);
+            ItemStack itemStack3 = itemStack2.split(i);
             if (itemStack2.getCount() > 1 && random.nextBoolean()) {
-                list2.add(itemStack2);
-            } else {
                 list.add(itemStack2);
+            } else {
+                drops.add(itemStack2);
             }
             if (itemStack3.getCount() > 1 && random.nextBoolean()) {
-                list2.add(itemStack3);
+                list.add(itemStack3);
                 continue;
             }
-            list.add(itemStack3);
+            drops.add(itemStack3);
         }
-        list.addAll(list2);
-        Collections.shuffle(list, random);
+        drops.addAll(list);
+        Collections.shuffle(drops, random);
     }
 
     private List<Integer> getFreeSlots(Inventory inventory, Random random) {
@@ -204,13 +204,13 @@ public class LootTable {
         }
 
         @Override
-        public /* synthetic */ JsonElement serialize(Object object, Type type, JsonSerializationContext jsonSerializationContext) {
-            return this.serialize((LootTable)object, type, jsonSerializationContext);
+        public /* synthetic */ JsonElement serialize(Object supplier, Type unused, JsonSerializationContext context) {
+            return this.serialize((LootTable)supplier, unused, context);
         }
 
         @Override
-        public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.deserialize(jsonElement, type, jsonDeserializationContext);
+        public /* synthetic */ Object deserialize(JsonElement json, Type unused, JsonDeserializationContext context) throws JsonParseException {
+            return this.deserialize(json, unused, context);
         }
     }
 
@@ -220,13 +220,13 @@ public class LootTable {
         private final List<LootFunction> functions = Lists.newArrayList();
         private LootContextType type = GENERIC;
 
-        public Builder withPool(LootPool.Builder builder) {
-            this.pools.add(builder.build());
+        public Builder withPool(LootPool.Builder poolBuilder) {
+            this.pools.add(poolBuilder.build());
             return this;
         }
 
-        public Builder withType(LootContextType lootContextType) {
-            this.type = lootContextType;
+        public Builder withType(LootContextType context) {
+            this.type = context;
             return this;
         }
 
@@ -251,8 +251,8 @@ public class LootTable {
         }
 
         @Override
-        public /* synthetic */ Object withFunction(LootFunction.Builder builder) {
-            return this.withFunction(builder);
+        public /* synthetic */ Object withFunction(LootFunction.Builder lootFunctionBuilder) {
+            return this.withFunction(lootFunctionBuilder);
         }
     }
 }

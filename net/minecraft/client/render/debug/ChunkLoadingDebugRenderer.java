@@ -38,12 +38,12 @@ implements DebugRenderer.Renderer {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f) {
-        double g = Util.getMeasuringTimeNano();
-        if (g - this.lastUpdateTime > 3.0E9) {
-            this.lastUpdateTime = g;
+    public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
+        double d = Util.getMeasuringTimeNano();
+        if (d - this.lastUpdateTime > 3.0E9) {
+            this.lastUpdateTime = d;
             IntegratedServer integratedServer = this.client.getServer();
-            this.loadingData = integratedServer != null ? new ChunkLoadingStatus(integratedServer, d, f) : null;
+            this.loadingData = integratedServer != null ? new ChunkLoadingStatus(integratedServer, cameraX, cameraZ) : null;
         }
         if (this.loadingData != null) {
             RenderSystem.enableBlend();
@@ -52,7 +52,7 @@ implements DebugRenderer.Renderer {
             RenderSystem.disableTexture();
             RenderSystem.depthMask(false);
             Map map = this.loadingData.serverStates.getNow(null);
-            double h = this.client.gameRenderer.getCamera().getPos().y * 0.85;
+            double e = this.client.gameRenderer.getCamera().getPos().y * 0.85;
             for (Map.Entry entry : this.loadingData.clientStates.entrySet()) {
                 ChunkPos chunkPos = (ChunkPos)entry.getKey();
                 String string = (String)entry.getValue();
@@ -62,7 +62,7 @@ implements DebugRenderer.Renderer {
                 String[] strings = string.split("\n");
                 int i = 0;
                 for (String string2 : strings) {
-                    DebugRenderer.drawString(string2, (chunkPos.x << 4) + 8, h + (double)i, (chunkPos.z << 4) + 8, -1, 0.15f);
+                    DebugRenderer.drawString(string2, (chunkPos.x << 4) + 8, e + (double)i, (chunkPos.z << 4) + 8, -1, 0.15f);
                     i -= 2;
                 }
             }

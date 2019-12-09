@@ -48,8 +48,8 @@ public class FoodComponents {
     public static final FoodComponent SWEET_BERRIES = new FoodComponent.Builder().hunger(2).saturationModifier(0.1f).build();
     public static final FoodComponent TROPICAL_FISH = new FoodComponent.Builder().hunger(1).saturationModifier(0.1f).build();
 
-    private static FoodComponent create(int i) {
-        return new FoodComponent.Builder().hunger(i).saturationModifier(0.6f).build();
+    private static FoodComponent create(int hunger) {
+        return new FoodComponent.Builder().hunger(hunger).saturationModifier(0.6f).build();
     }
 }
 

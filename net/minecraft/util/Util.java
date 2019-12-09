@@ -69,11 +69,11 @@ public class Util {
         return property.name((Comparable)object);
     }
 
-    public static String createTranslationKey(String string, @Nullable Identifier identifier) {
-        if (identifier == null) {
-            return string + ".unregistered_sadface";
+    public static String createTranslationKey(String type, @Nullable Identifier id) {
+        if (id == null) {
+            return type + ".unregistered_sadface";
         }
-        return string + '.' + identifier.getNamespace() + '.' + identifier.getPath().replace('/', '.');
+        return type + '.' + id.getNamespace() + '.' + id.getPath().replace('/', '.');
     }
 
     public static long getMeasuringTimeMs() {
@@ -212,12 +212,12 @@ public class Util {
         return object2;
     }
 
-    public static <T> T make(Supplier<T> supplier) {
-        return supplier.get();
+    public static <T> T make(Supplier<T> factory) {
+        return factory.get();
     }
 
-    public static <T> T make(T object, Consumer<T> consumer) {
-        consumer.accept(object);
+    public static <T> T make(T object, Consumer<T> initializer) {
+        initializer.accept(object);
         return object;
     }
 
@@ -225,22 +225,22 @@ public class Util {
         return IdentityHashStrategy.INSTANCE;
     }
 
-    public static <V> CompletableFuture<List<V>> combine(List<? extends CompletableFuture<? extends V>> list) {
-        ArrayList list2 = Lists.newArrayListWithCapacity(list.size());
-        CompletableFuture[] completableFutures = new CompletableFuture[list.size()];
+    public static <V> CompletableFuture<List<V>> combine(List<? extends CompletableFuture<? extends V>> futures) {
+        ArrayList list = Lists.newArrayListWithCapacity(futures.size());
+        CompletableFuture[] completableFutures = new CompletableFuture[futures.size()];
         CompletableFuture completableFuture = new CompletableFuture();
-        list.forEach(completableFuture2 -> {
-            int i = list2.size();
-            list2.add(null);
+        futures.forEach(completableFuture2 -> {
+            int i = list.size();
+            list.add(null);
             completableFutures[i] = completableFuture2.whenComplete((object, throwable) -> {
                 if (throwable != null) {
                     completableFuture.completeExceptionally((Throwable)throwable);
                 } else {
-                    list2.set(i, object);
+                    list.set(i, object);
                 }
             });
         });
-        return CompletableFuture.allOf(completableFutures).applyToEither((CompletionStage)completableFuture, void_ -> list2);
+        return CompletableFuture.allOf(completableFutures).applyToEither((CompletionStage)completableFuture, void_ -> list);
     }
 
     public static <T> Stream<T> stream(Optional<? extends T> optional) {
@@ -256,41 +256,41 @@ public class Util {
         return optional;
     }
 
-    public static Runnable debugRunnable(Runnable runnable, Supplier<String> supplier) {
+    public static Runnable debugRunnable(Runnable runnable, Supplier<String> messageSupplier) {
         return runnable;
     }
 
-    public static Optional<UUID> readUuid(String string, Dynamic<?> dynamic) {
-        return dynamic.get(string + "Most").asNumber().flatMap(number -> dynamic.get(string + "Least").asNumber().map(number2 -> new UUID(number.longValue(), number2.longValue())));
+    public static Optional<UUID> readUuid(String name, Dynamic<?> dynamic) {
+        return dynamic.get(name + "Most").asNumber().flatMap(number -> dynamic.get(name + "Least").asNumber().map(number2 -> new UUID(number.longValue(), number2.longValue())));
     }
 
-    public static <T> Dynamic<T> writeUuid(String string, UUID uUID, Dynamic<T> dynamic) {
-        return dynamic.set(string + "Most", dynamic.createLong(uUID.getMostSignificantBits())).set(string + "Least", dynamic.createLong(uUID.getLeastSignificantBits()));
+    public static <T> Dynamic<T> writeUuid(String name, UUID uuid, Dynamic<T> dynamic) {
+        return dynamic.set(name + "Most", dynamic.createLong(uuid.getMostSignificantBits())).set(name + "Least", dynamic.createLong(uuid.getLeastSignificantBits()));
     }
 
-    public static <T extends Throwable> T throwOrPause(T throwable) {
+    public static <T extends Throwable> T throwOrPause(T t) {
         if (SharedConstants.isDevelopment) {
-            LOGGER.error("Trying to throw a fatal exception, pausing in IDE", throwable);
+            LOGGER.error("Trying to throw a fatal exception, pausing in IDE", t);
             try {
                 while (true) {
                     Thread.sleep(1000L);
                     LOGGER.error("paused");
                 }
             } catch (InterruptedException interruptedException) {
-                return throwable;
+                return t;
             }
         }
-        return throwable;
+        return t;
     }
 
-    public static String getInnermostMessage(Throwable throwable) {
-        if (throwable.getCause() != null) {
-            return Util.getInnermostMessage(throwable.getCause());
+    public static String getInnermostMessage(Throwable t) {
+        if (t.getCause() != null) {
+            return Util.getInnermostMessage(t.getCause());
         }
-        if (throwable.getMessage() != null) {
-            return throwable.getMessage();
+        if (t.getMessage() != null) {
+            return t.getMessage();
         }
-        return throwable.toString();
+        return t.toString();
     }
 
     static enum IdentityHashStrategy implements Hash.Strategy<Object>
@@ -316,8 +316,8 @@ public class Util {
 
             @Override
             @Environment(value=EnvType.CLIENT)
-            protected String[] getURLOpenCommand(URL uRL) {
-                return new String[]{"rundll32", "url.dll,FileProtocolHandler", uRL.toString()};
+            protected String[] getURLOpenCommand(URL url) {
+                return new String[]{"rundll32", "url.dll,FileProtocolHandler", url.toString()};
             }
         }
         ,
@@ -325,8 +325,8 @@ public class Util {
 
             @Override
             @Environment(value=EnvType.CLIENT)
-            protected String[] getURLOpenCommand(URL uRL) {
-                return new String[]{"open", uRL.toString()};
+            protected String[] getURLOpenCommand(URL url) {
+                return new String[]{"open", url.toString()};
             }
         }
         ,
@@ -334,9 +334,9 @@ public class Util {
 
 
         @Environment(value=EnvType.CLIENT)
-        public void open(URL uRL) {
+        public void open(URL url) {
             try {
-                Process process = AccessController.doPrivileged(() -> Runtime.getRuntime().exec(this.getURLOpenCommand(uRL)));
+                Process process = AccessController.doPrivileged(() -> Runtime.getRuntime().exec(this.getURLOpenCommand(url)));
                 for (String string : IOUtils.readLines(process.getErrorStream())) {
                     LOGGER.error(string);
                 }
@@ -344,7 +344,7 @@ public class Util {
                 process.getErrorStream().close();
                 process.getOutputStream().close();
             } catch (IOException | PrivilegedActionException exception) {
-                LOGGER.error("Couldn't open url '{}'", (Object)uRL, (Object)exception);
+                LOGGER.error("Couldn't open url '{}'", (Object)url, (Object)exception);
             }
         }
 
@@ -367,9 +367,9 @@ public class Util {
         }
 
         @Environment(value=EnvType.CLIENT)
-        protected String[] getURLOpenCommand(URL uRL) {
-            String string = uRL.toString();
-            if ("file".equals(uRL.getProtocol())) {
+        protected String[] getURLOpenCommand(URL url) {
+            String string = url.toString();
+            if ("file".equals(url.getProtocol())) {
                 string = string.replace("file:", "file://");
             }
             return new String[]{"xdg-open", string};

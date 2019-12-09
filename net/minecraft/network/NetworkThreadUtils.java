@@ -18,9 +18,9 @@ public class NetworkThreadUtils {
         NetworkThreadUtils.forceMainThread(packet, packetListener, serverWorld.getServer());
     }
 
-    public static <T extends PacketListener> void forceMainThread(Packet<T> packet, T packetListener, ThreadExecutor<?> threadExecutor) throws OffThreadException {
-        if (!threadExecutor.isOnThread()) {
-            threadExecutor.execute(() -> {
+    public static <T extends PacketListener> void forceMainThread(Packet<T> packet, T packetListener, ThreadExecutor<?> thread) throws OffThreadException {
+        if (!thread.isOnThread()) {
+            thread.execute(() -> {
                 if (packetListener.getConnection().isOpen()) {
                     packet.apply(packetListener);
                 } else {

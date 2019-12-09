@@ -40,26 +40,26 @@ extends SkullBlock {
     }
 
     @Override
-    public void onPlaced(World world, BlockPos blockPos, BlockState blockState, @Nullable LivingEntity livingEntity, ItemStack itemStack) {
-        super.onPlaced(world, blockPos, blockState, livingEntity, itemStack);
-        BlockEntity blockEntity = world.getBlockEntity(blockPos);
+    public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
+        super.onPlaced(world, pos, state, placer, itemStack);
+        BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof SkullBlockEntity) {
-            WitherSkullBlock.onPlaced(world, blockPos, (SkullBlockEntity)blockEntity);
+            WitherSkullBlock.onPlaced(world, pos, (SkullBlockEntity)blockEntity);
         }
     }
 
-    public static void onPlaced(World world, BlockPos blockPos, SkullBlockEntity skullBlockEntity) {
+    public static void onPlaced(World world, BlockPos pos, SkullBlockEntity blockEntity) {
         boolean bl;
         if (world.isClient) {
             return;
         }
-        Block block = skullBlockEntity.getCachedState().getBlock();
+        Block block = blockEntity.getCachedState().getBlock();
         boolean bl2 = bl = block == Blocks.WITHER_SKELETON_SKULL || block == Blocks.WITHER_SKELETON_WALL_SKULL;
-        if (!bl || blockPos.getY() < 2 || world.getDifficulty() == Difficulty.PEACEFUL) {
+        if (!bl || pos.getY() < 2 || world.getDifficulty() == Difficulty.PEACEFUL) {
             return;
         }
         BlockPattern blockPattern = WitherSkullBlock.getWitherBossPattern();
-        BlockPattern.Result result = blockPattern.searchAround(world, blockPos);
+        BlockPattern.Result result = blockPattern.searchAround(world, pos);
         if (result == null) {
             return;
         }
@@ -71,8 +71,8 @@ extends SkullBlock {
             }
         }
         WitherEntity witherEntity = EntityType.WITHER.create(world);
-        BlockPos blockPos2 = result.translate(1, 2, 0).getBlockPos();
-        witherEntity.setPositionAndAngles((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.55, (double)blockPos2.getZ() + 0.5, result.getForwards().getAxis() == Direction.Axis.X ? 0.0f : 90.0f, 0.0f);
+        BlockPos blockPos = result.translate(1, 2, 0).getBlockPos();
+        witherEntity.setPositionAndAngles((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.55, (double)blockPos.getZ() + 0.5, result.getForwards().getAxis() == Direction.Axis.X ? 0.0f : 90.0f, 0.0f);
         witherEntity.bodyYaw = result.getForwards().getAxis() == Direction.Axis.X ? 0.0f : 90.0f;
         witherEntity.method_6885();
         for (ServerPlayerEntity serverPlayerEntity : world.getNonSpectatingEntities(ServerPlayerEntity.class, witherEntity.getBoundingBox().expand(50.0))) {
@@ -86,9 +86,9 @@ extends SkullBlock {
         }
     }
 
-    public static boolean canDispense(World world, BlockPos blockPos, ItemStack itemStack) {
-        if (itemStack.getItem() == Items.WITHER_SKELETON_SKULL && blockPos.getY() >= 2 && world.getDifficulty() != Difficulty.PEACEFUL && !world.isClient) {
-            return WitherSkullBlock.getWitherDispenserPattern().searchAround(world, blockPos) != null;
+    public static boolean canDispense(World world, BlockPos pos, ItemStack stack) {
+        if (stack.getItem() == Items.WITHER_SKELETON_SKULL && pos.getY() >= 2 && world.getDifficulty() != Difficulty.PEACEFUL && !world.isClient) {
+            return WitherSkullBlock.getWitherDispenserPattern().searchAround(world, pos) != null;
         }
         return false;
     }

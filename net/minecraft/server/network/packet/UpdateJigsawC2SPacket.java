@@ -23,27 +23,27 @@ implements Packet<ServerPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public UpdateJigsawC2SPacket(BlockPos blockPos, Identifier identifier, Identifier identifier2, String string) {
-        this.pos = blockPos;
-        this.attachmentType = identifier;
-        this.targetPool = identifier2;
-        this.finalState = string;
+    public UpdateJigsawC2SPacket(BlockPos pos, Identifier attachmentType, Identifier targetPool, String finalState) {
+        this.pos = pos;
+        this.attachmentType = attachmentType;
+        this.targetPool = targetPool;
+        this.finalState = finalState;
     }
 
     @Override
-    public void read(PacketByteBuf packetByteBuf) throws IOException {
-        this.pos = packetByteBuf.readBlockPos();
-        this.attachmentType = packetByteBuf.readIdentifier();
-        this.targetPool = packetByteBuf.readIdentifier();
-        this.finalState = packetByteBuf.readString(Short.MAX_VALUE);
+    public void read(PacketByteBuf buf) throws IOException {
+        this.pos = buf.readBlockPos();
+        this.attachmentType = buf.readIdentifier();
+        this.targetPool = buf.readIdentifier();
+        this.finalState = buf.readString(Short.MAX_VALUE);
     }
 
     @Override
-    public void write(PacketByteBuf packetByteBuf) throws IOException {
-        packetByteBuf.writeBlockPos(this.pos);
-        packetByteBuf.writeIdentifier(this.attachmentType);
-        packetByteBuf.writeIdentifier(this.targetPool);
-        packetByteBuf.writeString(this.finalState);
+    public void write(PacketByteBuf buf) throws IOException {
+        buf.writeBlockPos(this.pos);
+        buf.writeIdentifier(this.attachmentType);
+        buf.writeIdentifier(this.targetPool);
+        buf.writeString(this.finalState);
     }
 
     @Override

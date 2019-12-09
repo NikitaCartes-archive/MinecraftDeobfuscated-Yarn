@@ -40,11 +40,11 @@ extends ChunkManager {
     private volatile ClientChunkMap chunks;
     private final ClientWorld world;
 
-    public ClientChunkManager(ClientWorld clientWorld, int i) {
-        this.world = clientWorld;
-        this.emptyChunk = new EmptyChunk((World)clientWorld, new ChunkPos(0, 0));
-        this.lightingProvider = new LightingProvider(this, true, clientWorld.getDimension().hasSkyLight());
-        this.chunks = new ClientChunkMap(ClientChunkManager.getChunkMapRadius(i));
+    public ClientChunkManager(ClientWorld world, int loadDistance) {
+        this.world = world;
+        this.emptyChunk = new EmptyChunk((World)world, new ChunkPos(0, 0));
+        this.lightingProvider = new LightingProvider(this, true, world.getDimension().hasSkyLight());
+        this.chunks = new ClientChunkMap(ClientChunkManager.getChunkMapRadius(loadDistance));
     }
 
     @Override
@@ -52,22 +52,22 @@ extends ChunkManager {
         return this.lightingProvider;
     }
 
-    private static boolean positionEquals(@Nullable WorldChunk worldChunk, int i, int j) {
-        if (worldChunk == null) {
+    private static boolean positionEquals(@Nullable WorldChunk chunk, int x, int y) {
+        if (chunk == null) {
             return false;
         }
-        ChunkPos chunkPos = worldChunk.getPos();
-        return chunkPos.x == i && chunkPos.z == j;
+        ChunkPos chunkPos = chunk.getPos();
+        return chunkPos.x == x && chunkPos.z == y;
     }
 
-    public void unload(int i, int j) {
-        if (!this.chunks.isInRadius(i, j)) {
+    public void unload(int chunkX, int chunkZ) {
+        if (!this.chunks.isInRadius(chunkX, chunkZ)) {
             return;
         }
-        int k = this.chunks.getIndex(i, j);
-        WorldChunk worldChunk = this.chunks.getChunk(k);
-        if (ClientChunkManager.positionEquals(worldChunk, i, j)) {
-            this.chunks.compareAndSet(k, worldChunk, null);
+        int i = this.chunks.getIndex(chunkX, chunkZ);
+        WorldChunk worldChunk = this.chunks.getChunk(i);
+        if (ClientChunkManager.positionEquals(worldChunk, chunkX, chunkZ)) {
+            this.chunks.compareAndSet(i, worldChunk, null);
         }
     }
 
@@ -123,20 +123,20 @@ extends ChunkManager {
     public void tick(BooleanSupplier booleanSupplier) {
     }
 
-    public void setChunkMapCenter(int i, int j) {
-        this.chunks.centerChunkX = i;
-        this.chunks.centerChunkZ = j;
+    public void setChunkMapCenter(int x, int z) {
+        this.chunks.centerChunkX = x;
+        this.chunks.centerChunkZ = z;
     }
 
-    public void updateLoadDistance(int i) {
-        int k;
-        int j = this.chunks.radius;
-        if (j != (k = ClientChunkManager.getChunkMapRadius(i))) {
-            ClientChunkMap clientChunkMap = new ClientChunkMap(k);
+    public void updateLoadDistance(int loadDistance) {
+        int j;
+        int i = this.chunks.radius;
+        if (i != (j = ClientChunkManager.getChunkMapRadius(loadDistance))) {
+            ClientChunkMap clientChunkMap = new ClientChunkMap(j);
             clientChunkMap.centerChunkX = this.chunks.centerChunkX;
             clientChunkMap.centerChunkZ = this.chunks.centerChunkZ;
-            for (int l = 0; l < this.chunks.chunks.length(); ++l) {
-                WorldChunk worldChunk = (WorldChunk)this.chunks.chunks.get(l);
+            for (int k = 0; k < this.chunks.chunks.length(); ++k) {
+                WorldChunk worldChunk = (WorldChunk)this.chunks.chunks.get(k);
                 if (worldChunk == null) continue;
                 ChunkPos chunkPos = worldChunk.getPos();
                 if (!clientChunkMap.isInRadius(chunkPos.x, chunkPos.z)) continue;
@@ -146,8 +146,8 @@ extends ChunkManager {
         }
     }
 
-    private static int getChunkMapRadius(int i) {
-        return Math.max(2, i) + 3;
+    private static int getChunkMapRadius(int loadDistance) {
+        return Math.max(2, loadDistance) + 3;
     }
 
     @Override
@@ -160,18 +160,18 @@ extends ChunkManager {
     }
 
     @Override
-    public void onLightUpdate(LightType lightType, ChunkSectionPos chunkSectionPos) {
+    public void onLightUpdate(LightType type, ChunkSectionPos chunkSectionPos) {
         MinecraftClient.getInstance().worldRenderer.scheduleBlockRender(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionY(), chunkSectionPos.getSectionZ());
     }
 
     @Override
-    public boolean shouldTickBlock(BlockPos blockPos) {
-        return this.isChunkLoaded(blockPos.getX() >> 4, blockPos.getZ() >> 4);
+    public boolean shouldTickBlock(BlockPos pos) {
+        return this.isChunkLoaded(pos.getX() >> 4, pos.getZ() >> 4);
     }
 
     @Override
-    public boolean shouldTickChunk(ChunkPos chunkPos) {
-        return this.isChunkLoaded(chunkPos.x, chunkPos.z);
+    public boolean shouldTickChunk(ChunkPos pos) {
+        return this.isChunkLoaded(pos.x, pos.z);
     }
 
     @Override
@@ -181,8 +181,8 @@ extends ChunkManager {
 
     @Override
     @Nullable
-    public /* synthetic */ Chunk getChunk(int i, int j, ChunkStatus chunkStatus, boolean bl) {
-        return this.getChunk(i, j, chunkStatus, bl);
+    public /* synthetic */ Chunk getChunk(int x, int z, ChunkStatus leastStatus, boolean create) {
+        return this.getChunk(x, z, leastStatus, create);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -194,42 +194,42 @@ extends ChunkManager {
         private volatile int centerChunkZ;
         private int loadedChunkCount;
 
-        private ClientChunkMap(int i) {
-            this.radius = i;
-            this.diameter = i * 2 + 1;
+        private ClientChunkMap(int loadDistance) {
+            this.radius = loadDistance;
+            this.diameter = loadDistance * 2 + 1;
             this.chunks = new AtomicReferenceArray(this.diameter * this.diameter);
         }
 
-        private int getIndex(int i, int j) {
-            return Math.floorMod(j, this.diameter) * this.diameter + Math.floorMod(i, this.diameter);
+        private int getIndex(int chunkX, int chunkZ) {
+            return Math.floorMod(chunkZ, this.diameter) * this.diameter + Math.floorMod(chunkX, this.diameter);
         }
 
-        protected void set(int i, @Nullable WorldChunk worldChunk) {
-            WorldChunk worldChunk2 = this.chunks.getAndSet(i, worldChunk);
-            if (worldChunk2 != null) {
-                --this.loadedChunkCount;
-                ClientChunkManager.this.world.unloadBlockEntities(worldChunk2);
-            }
+        protected void set(int index, @Nullable WorldChunk chunk) {
+            WorldChunk worldChunk = this.chunks.getAndSet(index, chunk);
             if (worldChunk != null) {
+                --this.loadedChunkCount;
+                ClientChunkManager.this.world.unloadBlockEntities(worldChunk);
+            }
+            if (chunk != null) {
                 ++this.loadedChunkCount;
             }
         }
 
-        protected WorldChunk compareAndSet(int i, WorldChunk worldChunk, @Nullable WorldChunk worldChunk2) {
-            if (this.chunks.compareAndSet(i, worldChunk, worldChunk2) && worldChunk2 == null) {
+        protected WorldChunk compareAndSet(int index, WorldChunk expect, @Nullable WorldChunk update) {
+            if (this.chunks.compareAndSet(index, expect, update) && update == null) {
                 --this.loadedChunkCount;
             }
-            ClientChunkManager.this.world.unloadBlockEntities(worldChunk);
-            return worldChunk;
+            ClientChunkManager.this.world.unloadBlockEntities(expect);
+            return expect;
         }
 
-        private boolean isInRadius(int i, int j) {
-            return Math.abs(i - this.centerChunkX) <= this.radius && Math.abs(j - this.centerChunkZ) <= this.radius;
+        private boolean isInRadius(int chunkX, int chunkZ) {
+            return Math.abs(chunkX - this.centerChunkX) <= this.radius && Math.abs(chunkZ - this.centerChunkZ) <= this.radius;
         }
 
         @Nullable
-        protected WorldChunk getChunk(int i) {
-            return this.chunks.get(i);
+        protected WorldChunk getChunk(int index) {
+            return this.chunks.get(index);
         }
     }
 }

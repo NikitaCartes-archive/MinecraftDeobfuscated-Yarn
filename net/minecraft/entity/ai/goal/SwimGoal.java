@@ -11,10 +11,10 @@ public class SwimGoal
 extends Goal {
     private final MobEntity mob;
 
-    public SwimGoal(MobEntity mobEntity) {
-        this.mob = mobEntity;
+    public SwimGoal(MobEntity mob) {
+        this.mob = mob;
         this.setControls(EnumSet.of(Goal.Control.JUMP));
-        mobEntity.getNavigation().setCanSwim(true);
+        mob.getNavigation().setCanSwim(true);
     }
 
     @Override

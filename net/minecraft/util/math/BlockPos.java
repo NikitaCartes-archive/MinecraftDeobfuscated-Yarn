@@ -44,28 +44,28 @@ implements DynamicSerializable {
     private static final int BIT_SHIFT_Z;
     private static final int BIT_SHIFT_X;
 
-    public BlockPos(int i, int j, int k) {
-        super(i, j, k);
+    public BlockPos(int x, int y, int i) {
+        super(x, y, i);
     }
 
-    public BlockPos(double d, double e, double f) {
-        super(d, e, f);
+    public BlockPos(double x, double d, double e) {
+        super(x, d, e);
     }
 
     public BlockPos(Entity entity) {
         this(entity.getX(), entity.getY(), entity.getZ());
     }
 
-    public BlockPos(Vec3d vec3d) {
-        this(vec3d.x, vec3d.y, vec3d.z);
+    public BlockPos(Vec3d pos) {
+        this(pos.x, pos.y, pos.z);
     }
 
-    public BlockPos(Position position) {
-        this(position.getX(), position.getY(), position.getZ());
+    public BlockPos(Position pos) {
+        this(pos.getX(), pos.getY(), pos.getZ());
     }
 
-    public BlockPos(Vec3i vec3i) {
-        this(vec3i.getX(), vec3i.getY(), vec3i.getZ());
+    public BlockPos(Vec3i pos) {
+        this(pos.getX(), pos.getY(), pos.getZ());
     }
 
     public static <T> BlockPos deserialize(Dynamic<T> dynamic) {
@@ -82,77 +82,77 @@ implements DynamicSerializable {
     }
 
     @Override
-    public <T> T serialize(DynamicOps<T> dynamicOps) {
-        return dynamicOps.createIntList(IntStream.of(this.getX(), this.getY(), this.getZ()));
+    public <T> T serialize(DynamicOps<T> ops) {
+        return ops.createIntList(IntStream.of(this.getX(), this.getY(), this.getZ()));
     }
 
-    public static long offset(long l, Direction direction) {
-        return BlockPos.add(l, direction.getOffsetX(), direction.getOffsetY(), direction.getOffsetZ());
+    public static long offset(long value, Direction direction) {
+        return BlockPos.add(value, direction.getOffsetX(), direction.getOffsetY(), direction.getOffsetZ());
     }
 
-    public static long add(long l, int i, int j, int k) {
-        return BlockPos.asLong(BlockPos.unpackLongX(l) + i, BlockPos.unpackLongY(l) + j, BlockPos.unpackLongZ(l) + k);
+    public static long add(long value, int x, int y, int z) {
+        return BlockPos.asLong(BlockPos.unpackLongX(value) + x, BlockPos.unpackLongY(value) + y, BlockPos.unpackLongZ(value) + z);
     }
 
-    public static int unpackLongX(long l) {
-        return (int)(l << 64 - BIT_SHIFT_X - SIZE_BITS_X >> 64 - SIZE_BITS_X);
+    public static int unpackLongX(long x) {
+        return (int)(x << 64 - BIT_SHIFT_X - SIZE_BITS_X >> 64 - SIZE_BITS_X);
     }
 
-    public static int unpackLongY(long l) {
-        return (int)(l << 64 - SIZE_BITS_Y >> 64 - SIZE_BITS_Y);
+    public static int unpackLongY(long y) {
+        return (int)(y << 64 - SIZE_BITS_Y >> 64 - SIZE_BITS_Y);
     }
 
-    public static int unpackLongZ(long l) {
-        return (int)(l << 64 - BIT_SHIFT_Z - SIZE_BITS_Z >> 64 - SIZE_BITS_Z);
+    public static int unpackLongZ(long z) {
+        return (int)(z << 64 - BIT_SHIFT_Z - SIZE_BITS_Z >> 64 - SIZE_BITS_Z);
     }
 
-    public static BlockPos fromLong(long l) {
-        return new BlockPos(BlockPos.unpackLongX(l), BlockPos.unpackLongY(l), BlockPos.unpackLongZ(l));
+    public static BlockPos fromLong(long value) {
+        return new BlockPos(BlockPos.unpackLongX(value), BlockPos.unpackLongY(value), BlockPos.unpackLongZ(value));
     }
 
-    public static long asLong(int i, int j, int k) {
+    public static long asLong(int x, int y, int z) {
         long l = 0L;
-        l |= ((long)i & BITS_X) << BIT_SHIFT_X;
-        l |= ((long)j & BITS_Y) << 0;
-        return l |= ((long)k & BITS_Z) << BIT_SHIFT_Z;
+        l |= ((long)x & BITS_X) << BIT_SHIFT_X;
+        l |= ((long)y & BITS_Y) << 0;
+        return l |= ((long)z & BITS_Z) << BIT_SHIFT_Z;
     }
 
-    public static long removeChunkSectionLocalY(long l) {
-        return l & 0xFFFFFFFFFFFFFFF0L;
+    public static long removeChunkSectionLocalY(long y) {
+        return y & 0xFFFFFFFFFFFFFFF0L;
     }
 
     public long asLong() {
         return BlockPos.asLong(this.getX(), this.getY(), this.getZ());
     }
 
-    public BlockPos add(double d, double e, double f) {
-        if (d == 0.0 && e == 0.0 && f == 0.0) {
+    public BlockPos add(double x, double y, double z) {
+        if (x == 0.0 && y == 0.0 && z == 0.0) {
             return this;
         }
-        return new BlockPos((double)this.getX() + d, (double)this.getY() + e, (double)this.getZ() + f);
+        return new BlockPos((double)this.getX() + x, (double)this.getY() + y, (double)this.getZ() + z);
     }
 
-    public BlockPos add(int i, int j, int k) {
-        if (i == 0 && j == 0 && k == 0) {
+    public BlockPos add(int x, int y, int z) {
+        if (x == 0 && y == 0 && z == 0) {
             return this;
         }
-        return new BlockPos(this.getX() + i, this.getY() + j, this.getZ() + k);
+        return new BlockPos(this.getX() + x, this.getY() + y, this.getZ() + z);
     }
 
-    public BlockPos add(Vec3i vec3i) {
-        return this.add(vec3i.getX(), vec3i.getY(), vec3i.getZ());
+    public BlockPos add(Vec3i pos) {
+        return this.add(pos.getX(), pos.getY(), pos.getZ());
     }
 
-    public BlockPos subtract(Vec3i vec3i) {
-        return this.add(-vec3i.getX(), -vec3i.getY(), -vec3i.getZ());
+    public BlockPos subtract(Vec3i pos) {
+        return this.add(-pos.getX(), -pos.getY(), -pos.getZ());
     }
 
     public BlockPos up() {
         return this.offset(Direction.UP);
     }
 
-    public BlockPos up(int i) {
-        return this.offset(Direction.UP, i);
+    public BlockPos up(int distance) {
+        return this.offset(Direction.UP, distance);
     }
 
     @Override
@@ -161,40 +161,40 @@ implements DynamicSerializable {
     }
 
     @Override
-    public BlockPos down(int i) {
-        return this.offset(Direction.DOWN, i);
+    public BlockPos down(int distance) {
+        return this.offset(Direction.DOWN, distance);
     }
 
     public BlockPos north() {
         return this.offset(Direction.NORTH);
     }
 
-    public BlockPos north(int i) {
-        return this.offset(Direction.NORTH, i);
+    public BlockPos north(int distance) {
+        return this.offset(Direction.NORTH, distance);
     }
 
     public BlockPos south() {
         return this.offset(Direction.SOUTH);
     }
 
-    public BlockPos south(int i) {
-        return this.offset(Direction.SOUTH, i);
+    public BlockPos south(int distance) {
+        return this.offset(Direction.SOUTH, distance);
     }
 
     public BlockPos west() {
         return this.offset(Direction.WEST);
     }
 
-    public BlockPos west(int i) {
-        return this.offset(Direction.WEST, i);
+    public BlockPos west(int distance) {
+        return this.offset(Direction.WEST, distance);
     }
 
     public BlockPos east() {
         return this.offset(Direction.EAST);
     }
 
-    public BlockPos east(int i) {
-        return this.offset(Direction.EAST, i);
+    public BlockPos east(int distance) {
+        return this.offset(Direction.EAST, distance);
     }
 
     public BlockPos offset(Direction direction) {
@@ -209,8 +209,8 @@ implements DynamicSerializable {
         return new BlockPos(this.getX() + direction.getOffsetX() * i, this.getY() + direction.getOffsetY() * i, this.getZ() + direction.getOffsetZ() * i);
     }
 
-    public BlockPos rotate(BlockRotation blockRotation) {
-        switch (blockRotation) {
+    public BlockPos rotate(BlockRotation rotation) {
+        switch (rotation) {
             default: {
                 return this;
             }
@@ -226,33 +226,33 @@ implements DynamicSerializable {
     }
 
     @Override
-    public BlockPos crossProduct(Vec3i vec3i) {
-        return new BlockPos(this.getY() * vec3i.getZ() - this.getZ() * vec3i.getY(), this.getZ() * vec3i.getX() - this.getX() * vec3i.getZ(), this.getX() * vec3i.getY() - this.getY() * vec3i.getX());
+    public BlockPos crossProduct(Vec3i pos) {
+        return new BlockPos(this.getY() * pos.getZ() - this.getZ() * pos.getY(), this.getZ() * pos.getX() - this.getX() * pos.getZ(), this.getX() * pos.getY() - this.getY() * pos.getX());
     }
 
     public BlockPos toImmutable() {
         return this;
     }
 
-    public static Iterable<BlockPos> iterate(BlockPos blockPos, BlockPos blockPos2) {
-        return BlockPos.iterate(Math.min(blockPos.getX(), blockPos2.getX()), Math.min(blockPos.getY(), blockPos2.getY()), Math.min(blockPos.getZ(), blockPos2.getZ()), Math.max(blockPos.getX(), blockPos2.getX()), Math.max(blockPos.getY(), blockPos2.getY()), Math.max(blockPos.getZ(), blockPos2.getZ()));
+    public static Iterable<BlockPos> iterate(BlockPos pos1, BlockPos pos2) {
+        return BlockPos.iterate(Math.min(pos1.getX(), pos2.getX()), Math.min(pos1.getY(), pos2.getY()), Math.min(pos1.getZ(), pos2.getZ()), Math.max(pos1.getX(), pos2.getX()), Math.max(pos1.getY(), pos2.getY()), Math.max(pos1.getZ(), pos2.getZ()));
     }
 
-    public static Stream<BlockPos> stream(BlockPos blockPos, BlockPos blockPos2) {
-        return BlockPos.stream(Math.min(blockPos.getX(), blockPos2.getX()), Math.min(blockPos.getY(), blockPos2.getY()), Math.min(blockPos.getZ(), blockPos2.getZ()), Math.max(blockPos.getX(), blockPos2.getX()), Math.max(blockPos.getY(), blockPos2.getY()), Math.max(blockPos.getZ(), blockPos2.getZ()));
+    public static Stream<BlockPos> stream(BlockPos pos1, BlockPos pos2) {
+        return BlockPos.stream(Math.min(pos1.getX(), pos2.getX()), Math.min(pos1.getY(), pos2.getY()), Math.min(pos1.getZ(), pos2.getZ()), Math.max(pos1.getX(), pos2.getX()), Math.max(pos1.getY(), pos2.getY()), Math.max(pos1.getZ(), pos2.getZ()));
     }
 
     public static Stream<BlockPos> method_23627(BlockBox blockBox) {
         return BlockPos.stream(Math.min(blockBox.minX, blockBox.maxX), Math.min(blockBox.minY, blockBox.maxY), Math.min(blockBox.minZ, blockBox.maxZ), Math.max(blockBox.minX, blockBox.maxX), Math.max(blockBox.minY, blockBox.maxY), Math.max(blockBox.minZ, blockBox.maxZ));
     }
 
-    public static Stream<BlockPos> stream(final int i, final int j, final int k, final int l, final int m, final int n) {
-        return StreamSupport.stream(new Spliterators.AbstractSpliterator<BlockPos>((long)((l - i + 1) * (m - j + 1) * (n - k + 1)), 64){
+    public static Stream<BlockPos> stream(final int minX, final int minY, final int minZ, final int maxX, final int maxY, final int maxZ) {
+        return StreamSupport.stream(new Spliterators.AbstractSpliterator<BlockPos>((long)((maxX - minX + 1) * (maxY - minY + 1) * (maxZ - minZ + 1)), 64){
             final CuboidBlockIterator connector;
             final Mutable position;
             {
-                super(l2, i2);
-                this.connector = new CuboidBlockIterator(i, j, k, l, m, n);
+                super(l, i);
+                this.connector = new CuboidBlockIterator(minX, minY, minZ, maxX, maxY, maxZ);
                 this.position = new Mutable();
             }
 
@@ -267,12 +267,12 @@ implements DynamicSerializable {
         }, false);
     }
 
-    public static Iterable<BlockPos> iterate(final int i, final int j, final int k, final int l, final int m, final int n) {
+    public static Iterable<BlockPos> iterate(final int minX, final int maxX, final int minY, final int maxY, final int minZ, final int maxZ) {
         return () -> new AbstractIterator<BlockPos>(){
             final CuboidBlockIterator iterator;
             final Mutable pos;
             {
-                this.iterator = new CuboidBlockIterator(i, j, k, l, m, n);
+                this.iterator = new CuboidBlockIterator(minX, maxX, minY, maxY, minZ, maxZ);
                 this.pos = new Mutable();
             }
 
@@ -289,8 +289,8 @@ implements DynamicSerializable {
     }
 
     @Override
-    public /* synthetic */ Vec3i crossProduct(Vec3i vec3i) {
-        return this.crossProduct(vec3i);
+    public /* synthetic */ Vec3i crossProduct(Vec3i vec) {
+        return this.crossProduct(vec);
     }
 
     @Override
@@ -328,8 +328,8 @@ implements DynamicSerializable {
         private boolean free;
         private static final List<PooledMutable> POOL = Lists.newArrayList();
 
-        private PooledMutable(int i, int j, int k) {
-            super(i, j, k);
+        private PooledMutable(int x, int y, int z) {
+            super(x, y, z);
         }
 
         public static PooledMutable get() {
@@ -340,24 +340,24 @@ implements DynamicSerializable {
             return PooledMutable.get(entity.getX(), entity.getY(), entity.getZ());
         }
 
-        public static PooledMutable get(double d, double e, double f) {
-            return PooledMutable.get(MathHelper.floor(d), MathHelper.floor(e), MathHelper.floor(f));
+        public static PooledMutable get(double x, double y, double z) {
+            return PooledMutable.get(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z));
         }
 
         /*
          * WARNING - Removed try catching itself - possible behaviour change.
          */
-        public static PooledMutable get(int i, int j, int k) {
+        public static PooledMutable get(int x, int y, int z) {
             List<PooledMutable> list = POOL;
             synchronized (list) {
                 PooledMutable pooledMutable;
                 if (!POOL.isEmpty() && (pooledMutable = POOL.remove(POOL.size() - 1)) != null && pooledMutable.free) {
                     pooledMutable.free = false;
-                    pooledMutable.set(i, j, k);
+                    pooledMutable.set(x, y, z);
                     return pooledMutable;
                 }
             }
-            return new PooledMutable(i, j, k);
+            return new PooledMutable(x, y, z);
         }
 
         @Override
@@ -410,13 +410,13 @@ implements DynamicSerializable {
         }
 
         @Override
-        public /* synthetic */ Mutable setOffset(int i, int j, int k) {
-            return this.setOffset(i, j, k);
+        public /* synthetic */ Mutable setOffset(int x, int y, int z) {
+            return this.setOffset(x, y, z);
         }
 
         @Override
-        public /* synthetic */ Mutable setOffset(Direction direction, int i) {
-            return this.setOffset(direction, i);
+        public /* synthetic */ Mutable setOffset(Direction direction, int distance) {
+            return this.setOffset(direction, distance);
         }
 
         @Override
@@ -425,13 +425,13 @@ implements DynamicSerializable {
         }
 
         @Override
-        public /* synthetic */ Mutable set(Vec3i vec3i) {
-            return this.set(vec3i);
+        public /* synthetic */ Mutable set(Vec3i pos) {
+            return this.set(pos);
         }
 
         @Override
-        public /* synthetic */ Mutable set(double d, double e, double f) {
-            return this.set(d, e, f);
+        public /* synthetic */ Mutable set(double x, double y, double z) {
+            return this.set(x, y, z);
         }
 
         @Override
@@ -440,8 +440,8 @@ implements DynamicSerializable {
         }
 
         @Override
-        public /* synthetic */ Mutable set(int i, int j, int k) {
-            return this.set(i, j, k);
+        public /* synthetic */ Mutable set(int x, int y, int z) {
+            return this.set(x, y, z);
         }
     }
 
@@ -455,15 +455,15 @@ implements DynamicSerializable {
             this(0, 0, 0);
         }
 
-        public Mutable(BlockPos blockPos) {
-            this(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+        public Mutable(BlockPos pos) {
+            this(pos.getX(), pos.getY(), pos.getZ());
         }
 
-        public Mutable(int i, int j, int k) {
+        public Mutable(int y, int z, int i) {
             super(0, 0, 0);
-            this.x = i;
-            this.y = j;
-            this.z = k;
+            this.x = y;
+            this.y = z;
+            this.z = i;
         }
 
         public Mutable(double d, double e, double f) {
@@ -475,13 +475,13 @@ implements DynamicSerializable {
         }
 
         @Override
-        public BlockPos add(double d, double e, double f) {
-            return super.add(d, e, f).toImmutable();
+        public BlockPos add(double x, double y, double z) {
+            return super.add(x, y, z).toImmutable();
         }
 
         @Override
-        public BlockPos add(int i, int j, int k) {
-            return super.add(i, j, k).toImmutable();
+        public BlockPos add(int x, int y, int z) {
+            return super.add(x, y, z).toImmutable();
         }
 
         @Override
@@ -490,8 +490,8 @@ implements DynamicSerializable {
         }
 
         @Override
-        public BlockPos rotate(BlockRotation blockRotation) {
-            return super.rotate(blockRotation).toImmutable();
+        public BlockPos rotate(BlockRotation rotation) {
+            return super.rotate(rotation).toImmutable();
         }
 
         @Override
@@ -509,10 +509,10 @@ implements DynamicSerializable {
             return this.z;
         }
 
-        public Mutable set(int i, int j, int k) {
-            this.x = i;
-            this.y = j;
-            this.z = k;
+        public Mutable set(int x, int y, int z) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
             return this;
         }
 
@@ -520,44 +520,44 @@ implements DynamicSerializable {
             return this.set(entity.getX(), entity.getY(), entity.getZ());
         }
 
-        public Mutable set(double d, double e, double f) {
-            return this.set(MathHelper.floor(d), MathHelper.floor(e), MathHelper.floor(f));
+        public Mutable set(double x, double y, double z) {
+            return this.set(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z));
         }
 
-        public Mutable set(Vec3i vec3i) {
-            return this.set(vec3i.getX(), vec3i.getY(), vec3i.getZ());
+        public Mutable set(Vec3i pos) {
+            return this.set(pos.getX(), pos.getY(), pos.getZ());
         }
 
-        public Mutable set(long l) {
-            return this.set(Mutable.unpackLongX(l), Mutable.unpackLongY(l), Mutable.unpackLongZ(l));
+        public Mutable set(long pos) {
+            return this.set(Mutable.unpackLongX(pos), Mutable.unpackLongY(pos), Mutable.unpackLongZ(pos));
         }
 
-        public Mutable set(AxisCycleDirection axisCycleDirection, int i, int j, int k) {
-            return this.set(axisCycleDirection.choose(i, j, k, Direction.Axis.X), axisCycleDirection.choose(i, j, k, Direction.Axis.Y), axisCycleDirection.choose(i, j, k, Direction.Axis.Z));
+        public Mutable set(AxisCycleDirection axis, int x, int y, int z) {
+            return this.set(axis.choose(x, y, z, Direction.Axis.X), axis.choose(x, y, z, Direction.Axis.Y), axis.choose(x, y, z, Direction.Axis.Z));
         }
 
         public Mutable setOffset(Direction direction) {
             return this.setOffset(direction, 1);
         }
 
-        public Mutable setOffset(Direction direction, int i) {
-            return this.set(this.x + direction.getOffsetX() * i, this.y + direction.getOffsetY() * i, this.z + direction.getOffsetZ() * i);
+        public Mutable setOffset(Direction direction, int distance) {
+            return this.set(this.x + direction.getOffsetX() * distance, this.y + direction.getOffsetY() * distance, this.z + direction.getOffsetZ() * distance);
         }
 
-        public Mutable setOffset(int i, int j, int k) {
-            return this.set(this.x + i, this.y + j, this.z + k);
+        public Mutable setOffset(int x, int y, int z) {
+            return this.set(this.x + x, this.y + y, this.z + z);
         }
 
-        public void setX(int i) {
-            this.x = i;
+        public void setX(int x) {
+            this.x = x;
         }
 
-        public void setY(int i) {
-            this.y = i;
+        public void setY(int y) {
+            this.y = y;
         }
 
-        public void setZ(int i) {
-            this.z = i;
+        public void setZ(int z) {
+            this.z = z;
         }
 
         @Override
@@ -566,8 +566,8 @@ implements DynamicSerializable {
         }
 
         @Override
-        public /* synthetic */ Vec3i crossProduct(Vec3i vec3i) {
-            return super.crossProduct(vec3i);
+        public /* synthetic */ Vec3i crossProduct(Vec3i vec) {
+            return super.crossProduct(vec);
         }
 
         @Override

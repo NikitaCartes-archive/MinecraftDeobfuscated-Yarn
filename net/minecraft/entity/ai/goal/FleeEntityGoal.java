@@ -30,25 +30,25 @@ extends Goal {
     protected final Predicate<LivingEntity> field_6388;
     private final TargetPredicate withinRangePredicate;
 
-    public FleeEntityGoal(MobEntityWithAi mobEntityWithAi, Class<T> class_, float f, double d, double e) {
-        this(mobEntityWithAi, class_, livingEntity -> true, f, d, e, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR::test);
+    public FleeEntityGoal(MobEntityWithAi mob, Class<T> fleeFromType, float distance, double slowSpeed, double fastSpeed) {
+        this(mob, fleeFromType, livingEntity -> true, distance, slowSpeed, fastSpeed, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR::test);
     }
 
-    public FleeEntityGoal(MobEntityWithAi mobEntityWithAi, Class<T> class_, Predicate<LivingEntity> predicate, float f, double d, double e, Predicate<LivingEntity> predicate2) {
-        this.mob = mobEntityWithAi;
-        this.classToFleeFrom = class_;
+    public FleeEntityGoal(MobEntityWithAi mob, Class<T> fleeFromType, Predicate<LivingEntity> predicate, float distance, double slowSpeed, double fastSpeed, Predicate<LivingEntity> predicate2) {
+        this.mob = mob;
+        this.classToFleeFrom = fleeFromType;
         this.field_6393 = predicate;
-        this.fleeDistance = f;
-        this.slowSpeed = d;
-        this.fastSpeed = e;
+        this.fleeDistance = distance;
+        this.slowSpeed = slowSpeed;
+        this.fastSpeed = fastSpeed;
         this.field_6388 = predicate2;
-        this.fleeingEntityNavigation = mobEntityWithAi.getNavigation();
+        this.fleeingEntityNavigation = mob.getNavigation();
         this.setControls(EnumSet.of(Goal.Control.MOVE));
-        this.withinRangePredicate = new TargetPredicate().setBaseMaxDistance(f).setPredicate(predicate2.and(predicate));
+        this.withinRangePredicate = new TargetPredicate().setBaseMaxDistance(distance).setPredicate(predicate2.and(predicate));
     }
 
-    public FleeEntityGoal(MobEntityWithAi mobEntityWithAi, Class<T> class_, float f, double d, double e, Predicate<LivingEntity> predicate) {
-        this(mobEntityWithAi, class_, livingEntity -> true, f, d, e, predicate);
+    public FleeEntityGoal(MobEntityWithAi fleeingEntity, Class<T> classToFleeFrom, float fleeDistance, double fleeSlowSpeed, double fleeFastSpeed, Predicate<LivingEntity> predicate) {
+        this(fleeingEntity, classToFleeFrom, livingEntity -> true, fleeDistance, fleeSlowSpeed, fleeFastSpeed, predicate);
     }
 
     @Override

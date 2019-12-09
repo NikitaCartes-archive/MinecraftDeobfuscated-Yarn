@@ -15,8 +15,8 @@ public class RandomChanceLootCondition
 implements LootCondition {
     private final float chance;
 
-    private RandomChanceLootCondition(float f) {
-        this.chance = f;
+    private RandomChanceLootCondition(float chance) {
+        this.chance = chance;
     }
 
     @Override
@@ -24,13 +24,13 @@ implements LootCondition {
         return lootContext.getRandom().nextFloat() < this.chance;
     }
 
-    public static LootCondition.Builder builder(float f) {
-        return () -> new RandomChanceLootCondition(f);
+    public static LootCondition.Builder builder(float chance) {
+        return () -> new RandomChanceLootCondition(chance);
     }
 
     @Override
-    public /* synthetic */ boolean test(Object object) {
-        return this.test((LootContext)object);
+    public /* synthetic */ boolean test(Object context) {
+        return this.test((LootContext)context);
     }
 
     public static class Factory
@@ -50,8 +50,8 @@ implements LootCondition {
         }
 
         @Override
-        public /* synthetic */ LootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            return this.fromJson(jsonObject, jsonDeserializationContext);
+        public /* synthetic */ LootCondition fromJson(JsonObject json, JsonDeserializationContext context) {
+            return this.fromJson(json, context);
         }
     }
 }

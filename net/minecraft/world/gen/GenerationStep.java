@@ -16,8 +16,8 @@ public class GenerationStep {
         private static final Map<String, Carver> BY_NAME;
         private final String name;
 
-        private Carver(String string2) {
-            this.name = string2;
+        private Carver(String name) {
+            this.name = name;
         }
 
         public String getName() {
@@ -42,8 +42,8 @@ public class GenerationStep {
         private static final Map<String, Feature> BY_NAME;
         private final String name;
 
-        private Feature(String string2) {
-            this.name = string2;
+        private Feature(String name) {
+            this.name = name;
         }
 
         public String getName() {

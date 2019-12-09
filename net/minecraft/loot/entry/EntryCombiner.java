@@ -15,14 +15,14 @@ interface EntryCombiner {
 
     public boolean expand(LootContext var1, Consumer<LootChoice> var2);
 
-    default public EntryCombiner and(EntryCombiner entryCombiner) {
-        Objects.requireNonNull(entryCombiner);
-        return (lootContext, consumer) -> this.expand(lootContext, consumer) && entryCombiner.expand(lootContext, consumer);
+    default public EntryCombiner and(EntryCombiner other) {
+        Objects.requireNonNull(other);
+        return (context, lootChoiceExpander) -> this.expand(context, lootChoiceExpander) && other.expand(context, lootChoiceExpander);
     }
 
-    default public EntryCombiner or(EntryCombiner entryCombiner) {
-        Objects.requireNonNull(entryCombiner);
-        return (lootContext, consumer) -> this.expand(lootContext, consumer) || entryCombiner.expand(lootContext, consumer);
+    default public EntryCombiner or(EntryCombiner other) {
+        Objects.requireNonNull(other);
+        return (context, lootChoiceExpander) -> this.expand(context, lootChoiceExpander) || other.expand(context, lootChoiceExpander);
     }
 }
 

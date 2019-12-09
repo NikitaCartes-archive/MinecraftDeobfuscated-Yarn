@@ -19,13 +19,13 @@ public class SignType {
     public static final SignType DARK_OAK = SignType.register(new SignType("dark_oak"));
     private final String name;
 
-    protected SignType(String string) {
-        this.name = string;
+    protected SignType(String name) {
+        this.name = name;
     }
 
-    private static SignType register(SignType signType) {
-        VALUES.add(signType);
-        return signType;
+    private static SignType register(SignType type) {
+        VALUES.add(type);
+        return type;
     }
 
     @Environment(value=EnvType.CLIENT)

@@ -33,13 +33,13 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(locationPredicate, locationPredicate2, distancePredicate);
     }
 
-    public void trigger(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d) {
-        this.test(serverPlayerEntity.getAdvancementTracker(), conditions -> conditions.matches(serverPlayerEntity.getServerWorld(), vec3d, serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ()));
+    public void trigger(ServerPlayerEntity player, Vec3d enteredPos) {
+        this.test(player.getAdvancementTracker(), conditions -> conditions.matches(player.getServerWorld(), enteredPos, player.getX(), player.getY(), player.getZ()));
     }
 
     @Override
-    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
+    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject obj, JsonDeserializationContext context) {
+        return this.conditionsFromJson(obj, context);
     }
 
     public static class Conditions
@@ -48,25 +48,25 @@ extends AbstractCriterion<Conditions> {
         private final LocationPredicate exitedPos;
         private final DistancePredicate distance;
 
-        public Conditions(LocationPredicate locationPredicate, LocationPredicate locationPredicate2, DistancePredicate distancePredicate) {
+        public Conditions(LocationPredicate entered, LocationPredicate exited, DistancePredicate distance) {
             super(ID);
-            this.enteredPos = locationPredicate;
-            this.exitedPos = locationPredicate2;
-            this.distance = distancePredicate;
+            this.enteredPos = entered;
+            this.exitedPos = exited;
+            this.distance = distance;
         }
 
-        public static Conditions distance(DistancePredicate distancePredicate) {
-            return new Conditions(LocationPredicate.ANY, LocationPredicate.ANY, distancePredicate);
+        public static Conditions distance(DistancePredicate distance) {
+            return new Conditions(LocationPredicate.ANY, LocationPredicate.ANY, distance);
         }
 
-        public boolean matches(ServerWorld serverWorld, Vec3d vec3d, double d, double e, double f) {
-            if (!this.enteredPos.test(serverWorld, vec3d.x, vec3d.y, vec3d.z)) {
+        public boolean matches(ServerWorld world, Vec3d enteredPos, double exitedPosX, double exitedPosY, double exitedPosZ) {
+            if (!this.enteredPos.test(world, enteredPos.x, enteredPos.y, enteredPos.z)) {
                 return false;
             }
-            if (!this.exitedPos.test(serverWorld, d, e, f)) {
+            if (!this.exitedPos.test(world, exitedPosX, exitedPosY, exitedPosZ)) {
                 return false;
             }
-            return this.distance.test(vec3d.x, vec3d.y, vec3d.z, d, e, f);
+            return this.distance.test(enteredPos.x, enteredPos.y, enteredPos.z, exitedPosX, exitedPosY, exitedPosZ);
         }
 
         @Override

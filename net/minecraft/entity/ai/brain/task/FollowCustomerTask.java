@@ -19,9 +19,9 @@ public class FollowCustomerTask
 extends Task<VillagerEntity> {
     private final float speed;
 
-    public FollowCustomerTask(float f) {
+    public FollowCustomerTask(float speed) {
         super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED), Integer.MAX_VALUE);
-        this.speed = f;
+        this.speed = speed;
     }
 
     @Override
@@ -53,30 +53,30 @@ extends Task<VillagerEntity> {
     }
 
     @Override
-    protected boolean isTimeLimitExceeded(long l) {
+    protected boolean isTimeLimitExceeded(long time) {
         return false;
     }
 
-    private void update(VillagerEntity villagerEntity) {
-        EntityPosWrapper entityPosWrapper = new EntityPosWrapper(villagerEntity.getCurrentCustomer());
-        Brain<VillagerEntity> brain = villagerEntity.getBrain();
+    private void update(VillagerEntity villager) {
+        EntityPosWrapper entityPosWrapper = new EntityPosWrapper(villager.getCurrentCustomer());
+        Brain<VillagerEntity> brain = villager.getBrain();
         brain.putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(entityPosWrapper, this.speed, 2));
         brain.putMemory(MemoryModuleType.LOOK_TARGET, entityPosWrapper);
     }
 
     @Override
-    protected /* synthetic */ boolean shouldKeepRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        return this.shouldKeepRunning(serverWorld, (VillagerEntity)livingEntity, l);
+    protected /* synthetic */ boolean shouldKeepRunning(ServerWorld world, LivingEntity entity, long time) {
+        return this.shouldKeepRunning(world, (VillagerEntity)entity, time);
     }
 
     @Override
-    protected /* synthetic */ void finishRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        this.finishRunning(serverWorld, (VillagerEntity)livingEntity, l);
+    protected /* synthetic */ void finishRunning(ServerWorld serverWorld, LivingEntity livingEntity, long time) {
+        this.finishRunning(serverWorld, (VillagerEntity)livingEntity, time);
     }
 
     @Override
-    protected /* synthetic */ void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        this.run(serverWorld, (VillagerEntity)livingEntity, l);
+    protected /* synthetic */ void run(ServerWorld world, LivingEntity entity, long time) {
+        this.run(world, (VillagerEntity)entity, time);
     }
 }
 

@@ -20,16 +20,16 @@ implements Consumer<ModelPart> {
     public int textureWidth = 64;
     public int textureHeight = 32;
 
-    public Model(Function<Identifier, RenderLayer> function) {
-        this.layerFactory = function;
+    public Model(Function<Identifier, RenderLayer> layerFactory) {
+        this.layerFactory = layerFactory;
     }
 
     @Override
     public void accept(ModelPart modelPart) {
     }
 
-    public final RenderLayer getLayer(Identifier identifier) {
-        return this.layerFactory.apply(identifier);
+    public final RenderLayer getLayer(Identifier texture) {
+        return this.layerFactory.apply(texture);
     }
 
     public abstract void render(MatrixStack var1, VertexConsumer var2, int var3, int var4, float var5, float var6, float var7, float var8);

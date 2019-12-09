@@ -54,8 +54,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class OverworldDimension
 extends Dimension {
-    public OverworldDimension(World world, DimensionType dimensionType) {
-        super(world, dimensionType, 0.0f);
+    public OverworldDimension(World world, DimensionType type) {
+        super(world, type, 0.0f);
     }
 
     @Override
@@ -165,10 +165,10 @@ extends Dimension {
 
     @Override
     @Nullable
-    public BlockPos getSpawningBlockInChunk(ChunkPos chunkPos, boolean bl) {
+    public BlockPos getSpawningBlockInChunk(ChunkPos chunkPos, boolean checkMobSpawnValidity) {
         for (int i = chunkPos.getStartX(); i <= chunkPos.getEndX(); ++i) {
             for (int j = chunkPos.getStartZ(); j <= chunkPos.getEndZ(); ++j) {
-                BlockPos blockPos = this.getTopSpawningBlockPosition(i, j, bl);
+                BlockPos blockPos = this.getTopSpawningBlockPosition(i, j, checkMobSpawnValidity);
                 if (blockPos == null) continue;
                 return blockPos;
             }
@@ -178,23 +178,23 @@ extends Dimension {
 
     @Override
     @Nullable
-    public BlockPos getTopSpawningBlockPosition(int i, int j, boolean bl) {
-        BlockPos.Mutable mutable = new BlockPos.Mutable(i, 0, j);
+    public BlockPos getTopSpawningBlockPosition(int x, int z, boolean checkMobSpawnValidity) {
+        BlockPos.Mutable mutable = new BlockPos.Mutable(x, 0, z);
         Biome biome = this.world.getBiome(mutable);
         BlockState blockState = biome.getSurfaceConfig().getTopMaterial();
-        if (bl && !blockState.getBlock().matches(BlockTags.VALID_SPAWN)) {
+        if (checkMobSpawnValidity && !blockState.getBlock().matches(BlockTags.VALID_SPAWN)) {
             return null;
         }
-        WorldChunk worldChunk = this.world.getChunk(i >> 4, j >> 4);
-        int k = worldChunk.sampleHeightmap(Heightmap.Type.MOTION_BLOCKING, i & 0xF, j & 0xF);
-        if (k < 0) {
+        WorldChunk worldChunk = this.world.getChunk(x >> 4, z >> 4);
+        int i = worldChunk.sampleHeightmap(Heightmap.Type.MOTION_BLOCKING, x & 0xF, z & 0xF);
+        if (i < 0) {
             return null;
         }
-        if (worldChunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE, i & 0xF, j & 0xF) > worldChunk.sampleHeightmap(Heightmap.Type.OCEAN_FLOOR, i & 0xF, j & 0xF)) {
+        if (worldChunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE, x & 0xF, z & 0xF) > worldChunk.sampleHeightmap(Heightmap.Type.OCEAN_FLOOR, x & 0xF, z & 0xF)) {
             return null;
         }
-        for (int l = k + 1; l >= 0; --l) {
-            mutable.set(i, l, j);
+        for (int j = i + 1; j >= 0; --j) {
+            mutable.set(x, j, z);
             BlockState blockState2 = this.world.getBlockState(mutable);
             if (!blockState2.getFluidState().isEmpty()) break;
             if (!blockState2.equals(blockState)) continue;
@@ -204,8 +204,8 @@ extends Dimension {
     }
 
     @Override
-    public float getSkyAngle(long l, float f) {
-        double d = MathHelper.fractionalPart((double)l / 24000.0 - 0.25);
+    public float getSkyAngle(long timeOfDay, float tickDelta) {
+        double d = MathHelper.fractionalPart((double)timeOfDay / 24000.0 - 0.25);
         double e = 0.5 - Math.cos(d * Math.PI) / 2.0;
         return (float)(d * 2.0 + e) / 3.0f;
     }
@@ -217,13 +217,13 @@ extends Dimension {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public Vec3d getFogColor(float f, float g) {
-        float h = MathHelper.cos(f * ((float)Math.PI * 2)) * 2.0f + 0.5f;
-        h = MathHelper.clamp(h, 0.0f, 1.0f);
-        float i = 0.7529412f;
-        float j = 0.84705883f;
-        float k = 1.0f;
-        return new Vec3d(i *= h * 0.94f + 0.06f, j *= h * 0.94f + 0.06f, k *= h * 0.91f + 0.09f);
+    public Vec3d getFogColor(float skyAngle, float tickDelta) {
+        float f = MathHelper.cos(skyAngle * ((float)Math.PI * 2)) * 2.0f + 0.5f;
+        f = MathHelper.clamp(f, 0.0f, 1.0f);
+        float g = 0.7529412f;
+        float h = 0.84705883f;
+        float i = 1.0f;
+        return new Vec3d(g *= f * 0.94f + 0.06f, h *= f * 0.94f + 0.06f, i *= f * 0.91f + 0.09f);
     }
 
     @Override
@@ -233,7 +233,7 @@ extends Dimension {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean isFogThick(int i, int j) {
+    public boolean isFogThick(int x, int z) {
         return false;
     }
 }

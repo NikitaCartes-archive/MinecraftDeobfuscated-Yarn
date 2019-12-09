@@ -22,8 +22,8 @@ implements Tickable {
     private final MobSpawnerLogic logic = new MobSpawnerLogic(){
 
         @Override
-        public void sendStatus(int i) {
-            MobSpawnerBlockEntity.this.world.addBlockAction(MobSpawnerBlockEntity.this.pos, Blocks.SPAWNER, i, 0);
+        public void sendStatus(int status) {
+            MobSpawnerBlockEntity.this.world.addBlockAction(MobSpawnerBlockEntity.this.pos, Blocks.SPAWNER, status, 0);
         }
 
         @Override
@@ -37,8 +37,8 @@ implements Tickable {
         }
 
         @Override
-        public void setSpawnEntry(MobSpawnerEntry mobSpawnerEntry) {
-            super.setSpawnEntry(mobSpawnerEntry);
+        public void setSpawnEntry(MobSpawnerEntry spawnEntry) {
+            super.setSpawnEntry(spawnEntry);
             if (this.getWorld() != null) {
                 BlockState blockState = this.getWorld().getBlockState(this.getPos());
                 this.getWorld().updateListeners(MobSpawnerBlockEntity.this.pos, blockState, blockState, 4);
@@ -51,16 +51,16 @@ implements Tickable {
     }
 
     @Override
-    public void fromTag(CompoundTag compoundTag) {
-        super.fromTag(compoundTag);
-        this.logic.deserialize(compoundTag);
+    public void fromTag(CompoundTag tag) {
+        super.fromTag(tag);
+        this.logic.deserialize(tag);
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag compoundTag) {
-        super.toTag(compoundTag);
-        this.logic.serialize(compoundTag);
-        return compoundTag;
+    public CompoundTag toTag(CompoundTag tag) {
+        super.toTag(tag);
+        this.logic.serialize(tag);
+        return tag;
     }
 
     @Override

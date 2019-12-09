@@ -17,8 +17,8 @@ import net.minecraft.world.gen.feature.Feature;
 
 public class DiskFeature
 extends Feature<DiskFeatureConfig> {
-    public DiskFeature(Function<Dynamic<?>, ? extends DiskFeatureConfig> function) {
-        super(function);
+    public DiskFeature(Function<Dynamic<?>, ? extends DiskFeatureConfig> configFactory) {
+        super(configFactory);
     }
 
     @Override

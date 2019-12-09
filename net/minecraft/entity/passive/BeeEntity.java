@@ -108,8 +108,8 @@ implements Flutterer {
     private MoveToFlowerGoal moveToFlowerGoal;
     private int ticksInsideWater;
 
-    public BeeEntity(EntityType<? extends BeeEntity> entityType, World world) {
-        super((EntityType<? extends AnimalEntity>)entityType, world);
+    public BeeEntity(EntityType<? extends BeeEntity> type, World world) {
+        super((EntityType<? extends AnimalEntity>)type, world);
         this.moveControl = new FlightMoveControl(this, 20, true);
         this.lookControl = new BeeLookControl(this);
         this.setPathfindingPenalty(PathNodeType.WATER, -1.0f);
@@ -125,8 +125,8 @@ implements Flutterer {
     }
 
     @Override
-    public float getPathfindingFavor(BlockPos blockPos, WorldView worldView) {
-        if (worldView.getBlockState(blockPos).isAir()) {
+    public float getPathfindingFavor(BlockPos pos, WorldView worldView) {
+        if (worldView.getBlockState(pos).isAir()) {
             return 10.0f;
         }
         return 0.0f;
@@ -154,45 +154,45 @@ implements Flutterer {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag compoundTag) {
-        super.writeCustomDataToTag(compoundTag);
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
         if (this.hasHive()) {
-            compoundTag.put("HivePos", NbtHelper.fromBlockPos(this.getHivePos()));
+            tag.put("HivePos", NbtHelper.fromBlockPos(this.getHivePos()));
         }
         if (this.hasFlower()) {
-            compoundTag.put("FlowerPos", NbtHelper.fromBlockPos(this.getFlowerPos()));
+            tag.put("FlowerPos", NbtHelper.fromBlockPos(this.getFlowerPos()));
         }
-        compoundTag.putBoolean("HasNectar", this.hasNectar());
-        compoundTag.putBoolean("HasStung", this.hasStung());
-        compoundTag.putInt("TicksSincePollination", this.ticksSincePollination);
-        compoundTag.putInt("CannotEnterHiveTicks", this.cannotEnterHiveTicks);
-        compoundTag.putInt("CropsGrownSincePollination", this.cropsGrownSincePollination);
-        compoundTag.putInt("Anger", this.getAnger());
+        tag.putBoolean("HasNectar", this.hasNectar());
+        tag.putBoolean("HasStung", this.hasStung());
+        tag.putInt("TicksSincePollination", this.ticksSincePollination);
+        tag.putInt("CannotEnterHiveTicks", this.cannotEnterHiveTicks);
+        tag.putInt("CropsGrownSincePollination", this.cropsGrownSincePollination);
+        tag.putInt("Anger", this.getAnger());
         if (this.targetPlayer != null) {
-            compoundTag.putString("HurtBy", this.targetPlayer.toString());
+            tag.putString("HurtBy", this.targetPlayer.toString());
         } else {
-            compoundTag.putString("HurtBy", "");
+            tag.putString("HurtBy", "");
         }
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag compoundTag) {
+    public void readCustomDataFromTag(CompoundTag tag) {
         this.hivePos = null;
-        if (compoundTag.contains("HivePos")) {
-            this.hivePos = NbtHelper.toBlockPos(compoundTag.getCompound("HivePos"));
+        if (tag.contains("HivePos")) {
+            this.hivePos = NbtHelper.toBlockPos(tag.getCompound("HivePos"));
         }
         this.flowerPos = null;
-        if (compoundTag.contains("FlowerPos")) {
-            this.flowerPos = NbtHelper.toBlockPos(compoundTag.getCompound("FlowerPos"));
+        if (tag.contains("FlowerPos")) {
+            this.flowerPos = NbtHelper.toBlockPos(tag.getCompound("FlowerPos"));
         }
-        super.readCustomDataFromTag(compoundTag);
-        this.setHasNectar(compoundTag.getBoolean("HasNectar"));
-        this.setHasStung(compoundTag.getBoolean("HasStung"));
-        this.setAnger(compoundTag.getInt("Anger"));
-        this.ticksSincePollination = compoundTag.getInt("TicksSincePollination");
-        this.cannotEnterHiveTicks = compoundTag.getInt("CannotEnterHiveTicks");
-        this.cropsGrownSincePollination = compoundTag.getInt("NumCropsGrownSincePollination");
-        String string = compoundTag.getString("HurtBy");
+        super.readCustomDataFromTag(tag);
+        this.setHasNectar(tag.getBoolean("HasNectar"));
+        this.setHasStung(tag.getBoolean("HasStung"));
+        this.setAnger(tag.getInt("Anger"));
+        this.ticksSincePollination = tag.getInt("TicksSincePollination");
+        this.cannotEnterHiveTicks = tag.getInt("CannotEnterHiveTicks");
+        this.cropsGrownSincePollination = tag.getInt("NumCropsGrownSincePollination");
+        String string = tag.getString("HurtBy");
         if (!string.isEmpty()) {
             this.targetPlayer = UUID.fromString(string);
             PlayerEntity playerEntity = this.world.getPlayerByUuid(this.targetPlayer);
@@ -205,12 +205,12 @@ implements Flutterer {
     }
 
     @Override
-    public boolean tryAttack(Entity entity) {
-        boolean bl = entity.damage(DamageSource.sting(this), (int)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue());
+    public boolean tryAttack(Entity target) {
+        boolean bl = target.damage(DamageSource.sting(this), (int)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue());
         if (bl) {
-            this.dealDamage(this, entity);
-            if (entity instanceof LivingEntity) {
-                ((LivingEntity)entity).setStingerCount(((LivingEntity)entity).getStingerCount() + 1);
+            this.dealDamage(this, target);
+            if (target instanceof LivingEntity) {
+                ((LivingEntity)target).setStingerCount(((LivingEntity)target).getStingerCount() + 1);
                 int i = 0;
                 if (this.world.getDifficulty() == Difficulty.NORMAL) {
                     i = 10;
@@ -218,7 +218,7 @@ implements Flutterer {
                     i = 18;
                 }
                 if (i > 0) {
-                    ((LivingEntity)entity).addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, i * 20, 0));
+                    ((LivingEntity)target).addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, i * 20, 0));
                 }
             }
             this.setHasStung(true);
@@ -239,16 +239,16 @@ implements Flutterer {
         this.updateBodyPitch();
     }
 
-    private void addParticle(World world, double d, double e, double f, double g, double h, ParticleEffect particleEffect) {
-        world.addParticle(particleEffect, MathHelper.lerp(world.random.nextDouble(), d, e), h, MathHelper.lerp(world.random.nextDouble(), f, g), 0.0, 0.0, 0.0);
+    private void addParticle(World world, double lastX, double x, double lastZ, double z, double y, ParticleEffect effect) {
+        world.addParticle(effect, MathHelper.lerp(world.random.nextDouble(), lastX, x), y, MathHelper.lerp(world.random.nextDouble(), lastZ, z), 0.0, 0.0, 0.0);
     }
 
-    private void startMovingTo(BlockPos blockPos) {
+    private void startMovingTo(BlockPos pos) {
         Vec3d vec3d2;
-        Vec3d vec3d = new Vec3d(blockPos);
+        Vec3d vec3d = new Vec3d(pos);
         int i = 0;
-        BlockPos blockPos2 = new BlockPos(this);
-        int j = (int)vec3d.y - blockPos2.getY();
+        BlockPos blockPos = new BlockPos(this);
+        int j = (int)vec3d.y - blockPos.getY();
         if (j > 2) {
             i = 4;
         } else if (j < -2) {
@@ -256,7 +256,7 @@ implements Flutterer {
         }
         int k = 6;
         int l = 8;
-        int m = blockPos2.getManhattanDistance(blockPos);
+        int m = blockPos.getManhattanDistance(pos);
         if (m < 15) {
             k = m / 2;
             l = m / 2;
@@ -277,8 +277,8 @@ implements Flutterer {
         return this.flowerPos != null;
     }
 
-    public void setFlowerPos(BlockPos blockPos) {
-        this.flowerPos = blockPos;
+    public void setFlowerPos(BlockPos pos) {
+        this.flowerPos = pos;
     }
 
     private boolean failedPollinatingTooLong() {
@@ -293,13 +293,13 @@ implements Flutterer {
         return bl && !this.isHiveNearFire();
     }
 
-    public void setCannotEnterHiveTicks(int i) {
-        this.cannotEnterHiveTicks = i;
+    public void setCannotEnterHiveTicks(int ticks) {
+        this.cannotEnterHiveTicks = ticks;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public float getBodyPitch(float f) {
-        return MathHelper.lerp(f, this.lastPitch, this.currentPitch);
+    public float getBodyPitch(float tickDelta) {
+        return MathHelper.lerp(tickDelta, this.lastPitch, this.currentPitch);
     }
 
     private void updateBodyPitch() {
@@ -308,10 +308,10 @@ implements Flutterer {
     }
 
     @Override
-    public void setAttacker(@Nullable LivingEntity livingEntity) {
-        super.setAttacker(livingEntity);
-        if (livingEntity != null) {
-            this.targetPlayer = livingEntity.getUuid();
+    public void setAttacker(@Nullable LivingEntity attacker) {
+        super.setAttacker(attacker);
+        if (attacker != null) {
+            this.targetPlayer = attacker.getUuid();
         }
     }
 
@@ -361,12 +361,12 @@ implements Flutterer {
         return this.dataTracker.get(anger);
     }
 
-    private void setAnger(int i) {
-        this.dataTracker.set(anger, i);
+    private void setAnger(int ticks) {
+        this.dataTracker.set(anger, ticks);
     }
 
-    private boolean doesHiveHaveSpace(BlockPos blockPos) {
-        BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
+    private boolean doesHiveHaveSpace(BlockPos pos) {
+        BlockEntity blockEntity = this.world.getBlockEntity(pos);
         if (blockEntity instanceof BeehiveBlockEntity) {
             return !((BeehiveBlockEntity)blockEntity).isFullOfBees();
         }
@@ -433,43 +433,43 @@ implements Flutterer {
         return this.getBeeFlag(8);
     }
 
-    private void setHasNectar(boolean bl) {
-        if (bl) {
+    private void setHasNectar(boolean hasNectar) {
+        if (hasNectar) {
             this.resetPollinationTicks();
         }
-        this.setBeeFlag(8, bl);
+        this.setBeeFlag(8, hasNectar);
     }
 
     public boolean hasStung() {
         return this.getBeeFlag(4);
     }
 
-    private void setHasStung(boolean bl) {
-        this.setBeeFlag(4, bl);
+    private void setHasStung(boolean hasStung) {
+        this.setBeeFlag(4, hasStung);
     }
 
     private boolean isNearTarget() {
         return this.getBeeFlag(2);
     }
 
-    private void setNearTarget(boolean bl) {
-        this.setBeeFlag(2, bl);
+    private void setNearTarget(boolean nearTarget) {
+        this.setBeeFlag(2, nearTarget);
     }
 
-    private boolean isTooFar(BlockPos blockPos) {
-        return !this.isWithinDistance(blockPos, 48);
+    private boolean isTooFar(BlockPos pos) {
+        return !this.isWithinDistance(pos, 48);
     }
 
-    private void setBeeFlag(int i, boolean bl) {
-        if (bl) {
-            this.dataTracker.set(multipleByteTracker, (byte)(this.dataTracker.get(multipleByteTracker) | i));
+    private void setBeeFlag(int bit, boolean value) {
+        if (value) {
+            this.dataTracker.set(multipleByteTracker, (byte)(this.dataTracker.get(multipleByteTracker) | bit));
         } else {
-            this.dataTracker.set(multipleByteTracker, (byte)(this.dataTracker.get(multipleByteTracker) & ~i));
+            this.dataTracker.set(multipleByteTracker, (byte)(this.dataTracker.get(multipleByteTracker) & ~bit));
         }
     }
 
-    private boolean getBeeFlag(int i) {
-        return (this.dataTracker.get(multipleByteTracker) & i) != 0;
+    private boolean getBeeFlag(int location) {
+        return (this.dataTracker.get(multipleByteTracker) & location) != 0;
     }
 
     @Override
@@ -488,8 +488,8 @@ implements Flutterer {
         BirdNavigation birdNavigation = new BirdNavigation(this, world){
 
             @Override
-            public boolean isValidPosition(BlockPos blockPos) {
-                return !this.world.getBlockState(blockPos.down()).isAir();
+            public boolean isValidPosition(BlockPos pos) {
+                return !this.world.getBlockState(pos.down()).isAir();
             }
 
             @Override
@@ -507,16 +507,16 @@ implements Flutterer {
     }
 
     @Override
-    public boolean isBreedingItem(ItemStack itemStack) {
-        return itemStack.getItem().isIn(ItemTags.FLOWERS);
+    public boolean isBreedingItem(ItemStack stack) {
+        return stack.getItem().isIn(ItemTags.FLOWERS);
     }
 
-    private boolean isFlowers(BlockPos blockPos) {
-        return this.world.canSetBlock(blockPos) && this.world.getBlockState(blockPos).getBlock().matches(BlockTags.FLOWERS);
+    private boolean isFlowers(BlockPos pos) {
+        return this.world.canSetBlock(pos) && this.world.getBlockState(pos).getBlock().matches(BlockTags.FLOWERS);
     }
 
     @Override
-    protected void playStepSound(BlockPos blockPos, BlockState blockState) {
+    protected void playStepSound(BlockPos pos, BlockState state) {
     }
 
     @Override
@@ -525,7 +525,7 @@ implements Flutterer {
     }
 
     @Override
-    protected SoundEvent getHurtSound(DamageSource damageSource) {
+    protected SoundEvent getHurtSound(DamageSource source) {
         return SoundEvents.ENTITY_BEE_HURT;
     }
 
@@ -545,20 +545,20 @@ implements Flutterer {
     }
 
     @Override
-    protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+    protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
         if (this.isBaby()) {
-            return entityDimensions.height * 0.5f;
+            return dimensions.height * 0.5f;
         }
-        return entityDimensions.height * 0.5f;
+        return dimensions.height * 0.5f;
     }
 
     @Override
-    public boolean handleFallDamage(float f, float g) {
+    public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
         return false;
     }
 
     @Override
-    protected void fall(double d, boolean bl, BlockState blockState, BlockPos blockPos) {
+    protected void fall(double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition) {
     }
 
     @Override
@@ -571,25 +571,25 @@ implements Flutterer {
         this.resetCropCounter();
     }
 
-    public boolean setBeeAttacker(Entity entity) {
+    public boolean setBeeAttacker(Entity attacker) {
         this.setAnger(400 + this.random.nextInt(400));
-        if (entity instanceof LivingEntity) {
-            this.setAttacker((LivingEntity)entity);
+        if (attacker instanceof LivingEntity) {
+            this.setAttacker((LivingEntity)attacker);
         }
         return true;
     }
 
     @Override
-    public boolean damage(DamageSource damageSource, float f) {
-        if (this.isInvulnerableTo(damageSource)) {
+    public boolean damage(DamageSource source, float amount) {
+        if (this.isInvulnerableTo(source)) {
             return false;
         }
-        Entity entity = damageSource.getAttacker();
+        Entity entity = source.getAttacker();
         if (!this.world.isClient && entity instanceof PlayerEntity && !((PlayerEntity)entity).isCreative() && this.canSee(entity) && !this.isAiDisabled()) {
             this.pollinateGoal.cancel();
             this.setBeeAttacker(entity);
         }
-        return super.damage(damageSource, f);
+        return super.damage(source, amount);
     }
 
     @Override
@@ -598,17 +598,17 @@ implements Flutterer {
     }
 
     @Override
-    protected void swimUpward(Tag<Fluid> tag) {
+    protected void swimUpward(Tag<Fluid> fluid) {
         this.setVelocity(this.getVelocity().add(0.0, 0.01, 0.0));
     }
 
-    private boolean isWithinDistance(BlockPos blockPos, int i) {
-        return blockPos.isWithinDistance(new BlockPos(this), (double)i);
+    private boolean isWithinDistance(BlockPos pos, int distance) {
+        return pos.isWithinDistance(new BlockPos(this), (double)distance);
     }
 
     @Override
-    public /* synthetic */ PassiveEntity createChild(PassiveEntity passiveEntity) {
-        return this.createChild(passiveEntity);
+    public /* synthetic */ PassiveEntity createChild(PassiveEntity mate) {
+        return this.createChild(mate);
     }
 
     class EnterHiveGoal
@@ -647,8 +647,8 @@ implements Flutterer {
 
     class StingGoal
     extends MeleeAttackGoal {
-        StingGoal(MobEntityWithAi mobEntityWithAi, double d, boolean bl) {
-            super(mobEntityWithAi, d, bl);
+        StingGoal(MobEntityWithAi mob, double speed, boolean bl) {
+            super(mob, speed, bl);
         }
 
         @Override
@@ -914,20 +914,20 @@ implements Flutterer {
             return this.findFlower(this.flowerPredicate, 5.0);
         }
 
-        private Optional<BlockPos> findFlower(Predicate<BlockState> predicate, double d) {
+        private Optional<BlockPos> findFlower(Predicate<BlockState> predicate, double searchDistance) {
             BlockPos blockPos = new BlockPos(BeeEntity.this);
             BlockPos.Mutable mutable = new BlockPos.Mutable();
             int i = 0;
-            while ((double)i <= d) {
+            while ((double)i <= searchDistance) {
                 int j = 0;
-                while ((double)j < d) {
+                while ((double)j < searchDistance) {
                     int k = 0;
                     while (k <= j) {
                         int l;
                         int n = l = k < j && k > -j ? j : 0;
                         while (l <= j) {
                             mutable.set(blockPos).setOffset(k, i - 1, l);
-                            if (blockPos.isWithinDistance(mutable, d) && predicate.test(BeeEntity.this.world.getBlockState(mutable))) {
+                            if (blockPos.isWithinDistance(mutable, searchDistance) && predicate.test(BeeEntity.this.world.getBlockState(mutable))) {
                                 return Optional.of(mutable);
                             }
                             l = l > 0 ? -l : 1 - l;
@@ -944,8 +944,8 @@ implements Flutterer {
 
     class BeeLookControl
     extends LookControl {
-        BeeLookControl(MobEntity mobEntity) {
-            super(mobEntity);
+        BeeLookControl(MobEntity entity) {
+            super(entity);
         }
 
         @Override
@@ -1087,18 +1087,18 @@ implements Flutterer {
             BeeEntity.this.startMovingTo(BeeEntity.this.hivePos);
         }
 
-        private boolean startMovingToFar(BlockPos blockPos) {
+        private boolean startMovingToFar(BlockPos pos) {
             BeeEntity.this.navigation.setRangeMultiplier(10.0f);
-            BeeEntity.this.navigation.startMovingTo(blockPos.getX(), blockPos.getY(), blockPos.getZ(), 1.0);
+            BeeEntity.this.navigation.startMovingTo(pos.getX(), pos.getY(), pos.getZ(), 1.0);
             return BeeEntity.this.navigation.getCurrentPath() != null && BeeEntity.this.navigation.getCurrentPath().reachesTarget();
         }
 
-        private boolean isPossibleHive(BlockPos blockPos) {
-            return this.possibleHives.contains(blockPos);
+        private boolean isPossibleHive(BlockPos pos) {
+            return this.possibleHives.contains(pos);
         }
 
-        private void addPossibleHive(BlockPos blockPos) {
-            this.possibleHives.add(blockPos);
+        private void addPossibleHive(BlockPos pos) {
+            this.possibleHives.add(pos);
             while (this.possibleHives.size() > 3) {
                 this.possibleHives.remove(0);
             }
@@ -1120,12 +1120,12 @@ implements Flutterer {
             BeeEntity.this.ticksLeftToFindHive = 200;
         }
 
-        private boolean isCloseEnough(BlockPos blockPos) {
-            if (BeeEntity.this.isWithinDistance(blockPos, 2)) {
+        private boolean isCloseEnough(BlockPos pos) {
+            if (BeeEntity.this.isWithinDistance(pos, 2)) {
                 return true;
             }
             Path path = BeeEntity.this.navigation.getCurrentPath();
-            return path != null && path.getTarget().equals(blockPos) && path.reachesTarget() && path.isFinished();
+            return path != null && path.getTarget().equals(pos) && path.reachesTarget() && path.isFinished();
         }
     }
 
@@ -1193,8 +1193,8 @@ implements Flutterer {
 
     static class BeeFollowTargetGoal
     extends FollowTargetGoal<PlayerEntity> {
-        BeeFollowTargetGoal(BeeEntity beeEntity) {
-            super((MobEntity)beeEntity, PlayerEntity.class, true);
+        BeeFollowTargetGoal(BeeEntity bee) {
+            super((MobEntity)bee, PlayerEntity.class, true);
         }
 
         @Override
@@ -1220,14 +1220,14 @@ implements Flutterer {
 
     class BeeRevengeGoal
     extends RevengeGoal {
-        BeeRevengeGoal(BeeEntity beeEntity2) {
-            super(beeEntity2, new Class[0]);
+        BeeRevengeGoal(BeeEntity bee) {
+            super(bee, new Class[0]);
         }
 
         @Override
-        protected void setMobEntityTarget(MobEntity mobEntity, LivingEntity livingEntity) {
-            if (mobEntity instanceof BeeEntity && this.mob.canSee(livingEntity) && ((BeeEntity)mobEntity).setBeeAttacker(livingEntity)) {
-                mobEntity.setTarget(livingEntity);
+        protected void setMobEntityTarget(MobEntity mob, LivingEntity target) {
+            if (mob instanceof BeeEntity && this.mob.canSee(target) && ((BeeEntity)mob).setBeeAttacker(target)) {
+                mob.setTarget(target);
             }
         }
     }

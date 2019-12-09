@@ -250,8 +250,8 @@ public class RenderLayers {
     });
     private static boolean fancyGraphics;
 
-    public static RenderLayer getBlockLayer(BlockState blockState) {
-        Block block = blockState.getBlock();
+    public static RenderLayer getBlockLayer(BlockState state) {
+        Block block = state.getBlock();
         if (block instanceof LeavesBlock) {
             return fancyGraphics ? RenderLayer.getCutoutMipped() : RenderLayer.getSolid();
         }
@@ -262,16 +262,16 @@ public class RenderLayers {
         return RenderLayer.getSolid();
     }
 
-    public static RenderLayer getEntityBlockLayer(BlockState blockState) {
-        RenderLayer renderLayer = RenderLayers.getBlockLayer(blockState);
+    public static RenderLayer getEntityBlockLayer(BlockState state) {
+        RenderLayer renderLayer = RenderLayers.getBlockLayer(state);
         if (renderLayer == RenderLayer.getTranslucent()) {
             return TexturedRenderLayers.getEntityTranslucent();
         }
         return TexturedRenderLayers.getEntityCutout();
     }
 
-    public static RenderLayer getItemLayer(ItemStack itemStack) {
-        Item item = itemStack.getItem();
+    public static RenderLayer getItemLayer(ItemStack stack) {
+        Item item = stack.getItem();
         if (item instanceof BlockItem) {
             Block block = ((BlockItem)item).getBlock();
             return RenderLayers.getEntityBlockLayer(block.getDefaultState());
@@ -279,16 +279,16 @@ public class RenderLayers {
         return TexturedRenderLayers.getEntityTranslucent();
     }
 
-    public static RenderLayer getFluidLayer(FluidState fluidState) {
-        RenderLayer renderLayer = FLUIDS.get(fluidState.getFluid());
+    public static RenderLayer getFluidLayer(FluidState state) {
+        RenderLayer renderLayer = FLUIDS.get(state.getFluid());
         if (renderLayer != null) {
             return renderLayer;
         }
         return RenderLayer.getSolid();
     }
 
-    public static void setFancyGraphics(boolean bl) {
-        fancyGraphics = bl;
+    public static void setFancyGraphics(boolean fancyGraphics) {
+        RenderLayers.fancyGraphics = fancyGraphics;
     }
 }
 

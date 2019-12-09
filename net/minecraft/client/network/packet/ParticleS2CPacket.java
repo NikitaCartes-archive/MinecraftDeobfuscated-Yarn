@@ -30,9 +30,9 @@ implements Packet<ClientPlayPacketListener> {
     public ParticleS2CPacket() {
     }
 
-    public <T extends ParticleEffect> ParticleS2CPacket(T particleEffect, boolean bl, double d, double e, double f, float g, float h, float i, float j, int k) {
-        this.parameters = particleEffect;
-        this.longDistance = bl;
+    public <T extends ParticleEffect> ParticleS2CPacket(T parameters, boolean longDistance, double d, double e, double f, float g, float h, float i, float j, int k) {
+        this.parameters = parameters;
+        this.longDistance = longDistance;
         this.x = d;
         this.y = e;
         this.z = f;
@@ -44,40 +44,40 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Override
-    public void read(PacketByteBuf packetByteBuf) throws IOException {
-        ParticleType particleType = (ParticleType)Registry.PARTICLE_TYPE.get(packetByteBuf.readInt());
+    public void read(PacketByteBuf buf) throws IOException {
+        ParticleType particleType = (ParticleType)Registry.PARTICLE_TYPE.get(buf.readInt());
         if (particleType == null) {
             particleType = ParticleTypes.BARRIER;
         }
-        this.longDistance = packetByteBuf.readBoolean();
-        this.x = packetByteBuf.readDouble();
-        this.y = packetByteBuf.readDouble();
-        this.z = packetByteBuf.readDouble();
-        this.offsetX = packetByteBuf.readFloat();
-        this.offsetY = packetByteBuf.readFloat();
-        this.offsetZ = packetByteBuf.readFloat();
-        this.speed = packetByteBuf.readFloat();
-        this.count = packetByteBuf.readInt();
-        this.parameters = this.readParticleParameters(packetByteBuf, particleType);
+        this.longDistance = buf.readBoolean();
+        this.x = buf.readDouble();
+        this.y = buf.readDouble();
+        this.z = buf.readDouble();
+        this.offsetX = buf.readFloat();
+        this.offsetY = buf.readFloat();
+        this.offsetZ = buf.readFloat();
+        this.speed = buf.readFloat();
+        this.count = buf.readInt();
+        this.parameters = this.readParticleParameters(buf, particleType);
     }
 
-    private <T extends ParticleEffect> T readParticleParameters(PacketByteBuf packetByteBuf, ParticleType<T> particleType) {
-        return particleType.getParametersFactory().read(particleType, packetByteBuf);
+    private <T extends ParticleEffect> T readParticleParameters(PacketByteBuf buf, ParticleType<T> type) {
+        return type.getParametersFactory().read(type, buf);
     }
 
     @Override
-    public void write(PacketByteBuf packetByteBuf) throws IOException {
-        packetByteBuf.writeInt(Registry.PARTICLE_TYPE.getRawId(this.parameters.getType()));
-        packetByteBuf.writeBoolean(this.longDistance);
-        packetByteBuf.writeDouble(this.x);
-        packetByteBuf.writeDouble(this.y);
-        packetByteBuf.writeDouble(this.z);
-        packetByteBuf.writeFloat(this.offsetX);
-        packetByteBuf.writeFloat(this.offsetY);
-        packetByteBuf.writeFloat(this.offsetZ);
-        packetByteBuf.writeFloat(this.speed);
-        packetByteBuf.writeInt(this.count);
-        this.parameters.write(packetByteBuf);
+    public void write(PacketByteBuf buf) throws IOException {
+        buf.writeInt(Registry.PARTICLE_TYPE.getRawId(this.parameters.getType()));
+        buf.writeBoolean(this.longDistance);
+        buf.writeDouble(this.x);
+        buf.writeDouble(this.y);
+        buf.writeDouble(this.z);
+        buf.writeFloat(this.offsetX);
+        buf.writeFloat(this.offsetY);
+        buf.writeFloat(this.offsetZ);
+        buf.writeFloat(this.speed);
+        buf.writeInt(this.count);
+        this.parameters.write(buf);
     }
 
     @Environment(value=EnvType.CLIENT)

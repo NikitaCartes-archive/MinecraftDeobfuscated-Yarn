@@ -25,10 +25,10 @@ extends EntityRenderer<T> {
     private final float scale;
     private final boolean field_21745;
 
-    public FlyingItemEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, ItemRenderer itemRenderer, float f, boolean bl) {
-        super(entityRenderDispatcher);
+    public FlyingItemEntityRenderer(EntityRenderDispatcher renderManager, ItemRenderer itemRenderer, float scale, boolean bl) {
+        super(renderManager);
         this.item = itemRenderer;
-        this.scale = f;
+        this.scale = scale;
         this.field_21745 = bl;
     }
 
@@ -37,19 +37,19 @@ extends EntityRenderer<T> {
     }
 
     @Override
-    protected int getBlockLight(T entity, float f) {
-        return this.field_21745 ? 15 : super.getBlockLight(entity, f);
+    protected int getBlockLight(T entity, float tickDelta) {
+        return this.field_21745 ? 15 : super.getBlockLight(entity, tickDelta);
     }
 
     @Override
-    public void render(T entity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
-        matrixStack.push();
-        matrixStack.scale(this.scale, this.scale, this.scale);
-        matrixStack.multiply(this.renderManager.getRotation());
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
-        this.item.renderItem(((FlyingItemEntity)entity).getStack(), ModelTransformation.Type.GROUND, i, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider);
-        matrixStack.pop();
-        super.render(entity, f, g, matrixStack, vertexConsumerProvider, i);
+    public void render(T entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+        matrices.push();
+        matrices.scale(this.scale, this.scale, this.scale);
+        matrices.multiply(this.renderManager.getRotation());
+        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
+        this.item.renderItem(((FlyingItemEntity)entity).getStack(), ModelTransformation.Type.GROUND, light, OverlayTexture.DEFAULT_UV, matrices, vertexConsumers);
+        matrices.pop();
+        super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
     }
 
     @Override

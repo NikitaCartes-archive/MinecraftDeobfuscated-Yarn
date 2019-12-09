@@ -90,9 +90,9 @@ implements SkinOverlayOwner {
     }
 
     @Override
-    public boolean handleFallDamage(float f, float g) {
-        boolean bl = super.handleFallDamage(f, g);
-        this.currentFuseTime = (int)((float)this.currentFuseTime + f * 1.5f);
+    public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
+        boolean bl = super.handleFallDamage(fallDistance, damageMultiplier);
+        this.currentFuseTime = (int)((float)this.currentFuseTime + fallDistance * 1.5f);
         if (this.currentFuseTime > this.fuseTime - 5) {
             this.currentFuseTime = this.fuseTime - 5;
         }
@@ -108,27 +108,27 @@ implements SkinOverlayOwner {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag compoundTag) {
-        super.writeCustomDataToTag(compoundTag);
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
         if (this.dataTracker.get(CHARGED).booleanValue()) {
-            compoundTag.putBoolean("powered", true);
+            tag.putBoolean("powered", true);
         }
-        compoundTag.putShort("Fuse", (short)this.fuseTime);
-        compoundTag.putByte("ExplosionRadius", (byte)this.explosionRadius);
-        compoundTag.putBoolean("ignited", this.getIgnited());
+        tag.putShort("Fuse", (short)this.fuseTime);
+        tag.putByte("ExplosionRadius", (byte)this.explosionRadius);
+        tag.putBoolean("ignited", this.getIgnited());
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag compoundTag) {
-        super.readCustomDataFromTag(compoundTag);
-        this.dataTracker.set(CHARGED, compoundTag.getBoolean("powered"));
-        if (compoundTag.contains("Fuse", 99)) {
-            this.fuseTime = compoundTag.getShort("Fuse");
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        this.dataTracker.set(CHARGED, tag.getBoolean("powered"));
+        if (tag.contains("Fuse", 99)) {
+            this.fuseTime = tag.getShort("Fuse");
         }
-        if (compoundTag.contains("ExplosionRadius", 99)) {
-            this.explosionRadius = compoundTag.getByte("ExplosionRadius");
+        if (tag.contains("ExplosionRadius", 99)) {
+            this.explosionRadius = tag.getByte("ExplosionRadius");
         }
-        if (compoundTag.getBoolean("ignited")) {
+        if (tag.getBoolean("ignited")) {
             this.setIgnited();
         }
     }
@@ -157,7 +157,7 @@ implements SkinOverlayOwner {
     }
 
     @Override
-    protected SoundEvent getHurtSound(DamageSource damageSource) {
+    protected SoundEvent getHurtSound(DamageSource source) {
         return SoundEvents.ENTITY_CREEPER_HURT;
     }
 
@@ -167,10 +167,10 @@ implements SkinOverlayOwner {
     }
 
     @Override
-    protected void dropEquipment(DamageSource damageSource, int i, boolean bl) {
+    protected void dropEquipment(DamageSource source, int lootingMultiplier, boolean allowDrops) {
         CreeperEntity creeperEntity;
-        super.dropEquipment(damageSource, i, bl);
-        Entity entity = damageSource.getAttacker();
+        super.dropEquipment(source, lootingMultiplier, allowDrops);
+        Entity entity = source.getAttacker();
         if (entity != this && entity instanceof CreeperEntity && (creeperEntity = (CreeperEntity)entity).shouldDropHead()) {
             creeperEntity.onHeadDropped();
             this.dropItem(Items.CREEPER_HEAD);
@@ -178,7 +178,7 @@ implements SkinOverlayOwner {
     }
 
     @Override
-    public boolean tryAttack(Entity entity) {
+    public boolean tryAttack(Entity target) {
         return true;
     }
 
@@ -188,36 +188,36 @@ implements SkinOverlayOwner {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public float getClientFuseTime(float f) {
-        return MathHelper.lerp(f, this.lastFuseTime, this.currentFuseTime) / (float)(this.fuseTime - 2);
+    public float getClientFuseTime(float timeDelta) {
+        return MathHelper.lerp(timeDelta, this.lastFuseTime, this.currentFuseTime) / (float)(this.fuseTime - 2);
     }
 
     public int getFuseSpeed() {
         return this.dataTracker.get(FUSE_SPEED);
     }
 
-    public void setFuseSpeed(int i) {
-        this.dataTracker.set(FUSE_SPEED, i);
+    public void setFuseSpeed(int fuseSpeed) {
+        this.dataTracker.set(FUSE_SPEED, fuseSpeed);
     }
 
     @Override
-    public void onStruckByLightning(LightningEntity lightningEntity) {
-        super.onStruckByLightning(lightningEntity);
+    public void onStruckByLightning(LightningEntity lightning) {
+        super.onStruckByLightning(lightning);
         this.dataTracker.set(CHARGED, true);
     }
 
     @Override
-    protected boolean interactMob(PlayerEntity playerEntity2, Hand hand) {
-        ItemStack itemStack = playerEntity2.getStackInHand(hand);
+    protected boolean interactMob(PlayerEntity player, Hand hand) {
+        ItemStack itemStack = player.getStackInHand(hand);
         if (itemStack.getItem() == Items.FLINT_AND_STEEL) {
-            this.world.playSound(playerEntity2, this.getX(), this.getY(), this.getZ(), SoundEvents.ITEM_FLINTANDSTEEL_USE, this.getSoundCategory(), 1.0f, this.random.nextFloat() * 0.4f + 0.8f);
+            this.world.playSound(player, this.getX(), this.getY(), this.getZ(), SoundEvents.ITEM_FLINTANDSTEEL_USE, this.getSoundCategory(), 1.0f, this.random.nextFloat() * 0.4f + 0.8f);
             if (!this.world.isClient) {
                 this.setIgnited();
-                itemStack.damage(1, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(hand));
+                itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
             }
             return true;
         }
-        return super.interactMob(playerEntity2, hand);
+        return super.interactMob(player, hand);
     }
 
     private void explode() {

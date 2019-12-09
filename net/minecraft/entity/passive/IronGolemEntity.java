@@ -92,8 +92,8 @@ extends GolemEntity {
     }
 
     @Override
-    protected int getNextAirUnderwater(int i) {
-        return i;
+    protected int getNextAirUnderwater(int air) {
+        return air;
     }
 
     @Override
@@ -123,26 +123,26 @@ extends GolemEntity {
     }
 
     @Override
-    public boolean canTarget(EntityType<?> entityType) {
-        if (this.isPlayerCreated() && entityType == EntityType.PLAYER) {
+    public boolean canTarget(EntityType<?> type) {
+        if (this.isPlayerCreated() && type == EntityType.PLAYER) {
             return false;
         }
-        if (entityType == EntityType.CREEPER) {
+        if (type == EntityType.CREEPER) {
             return false;
         }
-        return super.canTarget(entityType);
+        return super.canTarget(type);
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag compoundTag) {
-        super.writeCustomDataToTag(compoundTag);
-        compoundTag.putBoolean("PlayerCreated", this.isPlayerCreated());
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putBoolean("PlayerCreated", this.isPlayerCreated());
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag compoundTag) {
-        super.readCustomDataFromTag(compoundTag);
-        this.setPlayerCreated(compoundTag.getBoolean("PlayerCreated"));
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        this.setPlayerCreated(tag.getBoolean("PlayerCreated"));
     }
 
     private float getAttackDamage() {
@@ -150,24 +150,24 @@ extends GolemEntity {
     }
 
     @Override
-    public boolean tryAttack(Entity entity) {
+    public boolean tryAttack(Entity target) {
         this.field_6762 = 10;
         this.world.sendEntityStatus(this, (byte)4);
         float f = this.getAttackDamage();
         float g = f > 0.0f ? f / 2.0f + (float)this.random.nextInt((int)f) : 0.0f;
-        boolean bl = entity.damage(DamageSource.mob(this), g);
+        boolean bl = target.damage(DamageSource.mob(this), g);
         if (bl) {
-            entity.setVelocity(entity.getVelocity().add(0.0, 0.4f, 0.0));
-            this.dealDamage(this, entity);
+            target.setVelocity(target.getVelocity().add(0.0, 0.4f, 0.0));
+            this.dealDamage(this, target);
         }
         this.playSound(SoundEvents.ENTITY_IRON_GOLEM_ATTACK, 1.0f, 1.0f);
         return bl;
     }
 
     @Override
-    public boolean damage(DamageSource damageSource, float f) {
+    public boolean damage(DamageSource source, float amount) {
         Crack crack = this.getCrack();
-        boolean bl = super.damage(damageSource, f);
+        boolean bl = super.damage(source, amount);
         if (bl && this.getCrack() != crack) {
             this.playSound(SoundEvents.ENTITY_IRON_GOLEM_DAMAGE, 1.0f, 1.0f);
         }
@@ -180,16 +180,16 @@ extends GolemEntity {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void handleStatus(byte b) {
-        if (b == 4) {
+    public void handleStatus(byte status) {
+        if (status == 4) {
             this.field_6762 = 10;
             this.playSound(SoundEvents.ENTITY_IRON_GOLEM_ATTACK, 1.0f, 1.0f);
-        } else if (b == 11) {
+        } else if (status == 11) {
             this.field_6759 = 400;
-        } else if (b == 34) {
+        } else if (status == 34) {
             this.field_6759 = 0;
         } else {
-            super.handleStatus(b);
+            super.handleStatus(status);
         }
     }
 
@@ -209,7 +209,7 @@ extends GolemEntity {
     }
 
     @Override
-    protected SoundEvent getHurtSound(DamageSource damageSource) {
+    protected SoundEvent getHurtSound(DamageSource source) {
         return SoundEvents.ENTITY_IRON_GOLEM_HURT;
     }
 
@@ -219,8 +219,8 @@ extends GolemEntity {
     }
 
     @Override
-    protected boolean interactMob(PlayerEntity playerEntity, Hand hand) {
-        ItemStack itemStack = playerEntity.getStackInHand(hand);
+    protected boolean interactMob(PlayerEntity player, Hand hand) {
+        ItemStack itemStack = player.getStackInHand(hand);
         Item item = itemStack.getItem();
         if (item != Items.IRON_INGOT) {
             return false;
@@ -232,14 +232,14 @@ extends GolemEntity {
         }
         float g = 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.2f;
         this.playSound(SoundEvents.ENTITY_IRON_GOLEM_REPAIR, 1.0f, g);
-        if (!playerEntity.abilities.creativeMode) {
+        if (!player.abilities.creativeMode) {
             itemStack.decrement(1);
         }
         return true;
     }
 
     @Override
-    protected void playStepSound(BlockPos blockPos, BlockState blockState) {
+    protected void playStepSound(BlockPos pos, BlockState state) {
         this.playSound(SoundEvents.ENTITY_IRON_GOLEM_STEP, 1.0f, 1.0f);
     }
 
@@ -262,8 +262,8 @@ extends GolemEntity {
     }
 
     @Override
-    public void onDeath(DamageSource damageSource) {
-        super.onDeath(damageSource);
+    public void onDeath(DamageSource source) {
+        super.onDeath(source);
     }
 
     @Override
@@ -296,9 +296,9 @@ extends GolemEntity {
             this.maxHealthFraction = f;
         }
 
-        public static Crack from(float f) {
+        public static Crack from(float healthFraction) {
             for (Crack crack : VALUES) {
-                if (!(f < crack.maxHealthFraction)) continue;
+                if (!(healthFraction < crack.maxHealthFraction)) continue;
                 return crack;
             }
             return NONE;

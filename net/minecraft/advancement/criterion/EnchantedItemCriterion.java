@@ -31,13 +31,13 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(itemPredicate, intRange);
     }
 
-    public void trigger(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, int i) {
-        this.test(serverPlayerEntity.getAdvancementTracker(), conditions -> conditions.matches(itemStack, i));
+    public void trigger(ServerPlayerEntity player, ItemStack stack, int levels) {
+        this.test(player.getAdvancementTracker(), conditions -> conditions.matches(stack, levels));
     }
 
     @Override
-    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
+    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject obj, JsonDeserializationContext context) {
+        return this.conditionsFromJson(obj, context);
     }
 
     public static class Conditions
@@ -45,9 +45,9 @@ extends AbstractCriterion<Conditions> {
         private final ItemPredicate item;
         private final NumberRange.IntRange levels;
 
-        public Conditions(ItemPredicate itemPredicate, NumberRange.IntRange intRange) {
+        public Conditions(ItemPredicate item, NumberRange.IntRange intRange) {
             super(ID);
-            this.item = itemPredicate;
+            this.item = item;
             this.levels = intRange;
         }
 
@@ -55,11 +55,11 @@ extends AbstractCriterion<Conditions> {
             return new Conditions(ItemPredicate.ANY, NumberRange.IntRange.ANY);
         }
 
-        public boolean matches(ItemStack itemStack, int i) {
-            if (!this.item.test(itemStack)) {
+        public boolean matches(ItemStack stack, int levels) {
+            if (!this.item.test(stack)) {
                 return false;
             }
-            return this.levels.test(i);
+            return this.levels.test(levels);
         }
 
         @Override

@@ -29,8 +29,8 @@ implements ArgumentType<Enchantment> {
         return new ItemEnchantmentArgumentType();
     }
 
-    public static Enchantment getEnchantment(CommandContext<ServerCommandSource> commandContext, String string) {
-        return commandContext.getArgument(string, Enchantment.class);
+    public static Enchantment getEnchantment(CommandContext<ServerCommandSource> context, String name) {
+        return context.getArgument(name, Enchantment.class);
     }
 
     @Override
@@ -40,8 +40,8 @@ implements ArgumentType<Enchantment> {
     }
 
     @Override
-    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
-        return CommandSource.suggestIdentifiers(Registry.ENCHANTMENT.getIds(), suggestionsBuilder);
+    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+        return CommandSource.suggestIdentifiers(Registry.ENCHANTMENT.getIds(), builder);
     }
 
     @Override

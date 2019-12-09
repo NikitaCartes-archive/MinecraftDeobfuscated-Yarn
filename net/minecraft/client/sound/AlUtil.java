@@ -15,8 +15,8 @@ import org.lwjgl.openal.ALC10;
 public class AlUtil {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private static String getErrorMessage(int i) {
-        switch (i) {
+    private static String getErrorMessage(int errorCode) {
+        switch (errorCode) {
             case 40961: {
                 return "Invalid name parameter.";
             }
@@ -36,17 +36,17 @@ public class AlUtil {
         return "An unrecognized error occurred.";
     }
 
-    static boolean checkErrors(String string) {
+    static boolean checkErrors(String sectionName) {
         int i = AL10.alGetError();
         if (i != 0) {
-            LOGGER.error("{}: {}", (Object)string, (Object)AlUtil.getErrorMessage(i));
+            LOGGER.error("{}: {}", (Object)sectionName, (Object)AlUtil.getErrorMessage(i));
             return true;
         }
         return false;
     }
 
-    private static String getAlcErrorMessage(int i) {
-        switch (i) {
+    private static String getAlcErrorMessage(int errorCode) {
+        switch (errorCode) {
             case 40961: {
                 return "Invalid device.";
             }
@@ -66,19 +66,19 @@ public class AlUtil {
         return "An unrecognized error occurred.";
     }
 
-    static boolean checkAlcErrors(long l, String string) {
-        int i = ALC10.alcGetError(l);
+    static boolean checkAlcErrors(long deviceHandle, String sectionName) {
+        int i = ALC10.alcGetError(deviceHandle);
         if (i != 0) {
-            LOGGER.error("{}{}: {}", (Object)string, (Object)l, (Object)AlUtil.getAlcErrorMessage(i));
+            LOGGER.error("{}{}: {}", (Object)sectionName, (Object)deviceHandle, (Object)AlUtil.getAlcErrorMessage(i));
             return true;
         }
         return false;
     }
 
-    static int getFormatId(AudioFormat audioFormat) {
-        AudioFormat.Encoding encoding = audioFormat.getEncoding();
-        int i = audioFormat.getChannels();
-        int j = audioFormat.getSampleSizeInBits();
+    static int getFormatId(AudioFormat format) {
+        AudioFormat.Encoding encoding = format.getEncoding();
+        int i = format.getChannels();
+        int j = format.getSampleSizeInBits();
         if (encoding.equals(AudioFormat.Encoding.PCM_UNSIGNED) || encoding.equals(AudioFormat.Encoding.PCM_SIGNED)) {
             if (i == 1) {
                 if (j == 8) {
@@ -96,7 +96,7 @@ public class AlUtil {
                 }
             }
         }
-        throw new IllegalArgumentException("Invalid audio format: " + audioFormat);
+        throw new IllegalArgumentException("Invalid audio format: " + format);
     }
 }
 

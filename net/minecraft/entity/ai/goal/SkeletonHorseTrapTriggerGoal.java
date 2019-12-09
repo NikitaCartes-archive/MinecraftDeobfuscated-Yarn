@@ -22,8 +22,8 @@ public class SkeletonHorseTrapTriggerGoal
 extends Goal {
     private final SkeletonHorseEntity skeletonHorse;
 
-    public SkeletonHorseTrapTriggerGoal(SkeletonHorseEntity skeletonHorseEntity) {
-        this.skeletonHorse = skeletonHorseEntity;
+    public SkeletonHorseTrapTriggerGoal(SkeletonHorseEntity skeletonHorse) {
+        this.skeletonHorse = skeletonHorse;
     }
 
     @Override
@@ -60,10 +60,10 @@ extends Goal {
         return skeletonHorseEntity;
     }
 
-    private SkeletonEntity getSkeleton(LocalDifficulty localDifficulty, HorseBaseEntity horseBaseEntity) {
-        SkeletonEntity skeletonEntity = EntityType.SKELETON.create(horseBaseEntity.world);
-        skeletonEntity.initialize(horseBaseEntity.world, localDifficulty, SpawnType.TRIGGERED, null, null);
-        skeletonEntity.setPosition(horseBaseEntity.getX(), horseBaseEntity.getY(), horseBaseEntity.getZ());
+    private SkeletonEntity getSkeleton(LocalDifficulty localDifficulty, HorseBaseEntity vehicle) {
+        SkeletonEntity skeletonEntity = EntityType.SKELETON.create(vehicle.world);
+        skeletonEntity.initialize(vehicle.world, localDifficulty, SpawnType.TRIGGERED, null, null);
+        skeletonEntity.setPosition(vehicle.getX(), vehicle.getY(), vehicle.getZ());
         skeletonEntity.timeUntilRegen = 60;
         skeletonEntity.setPersistent();
         if (skeletonEntity.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {

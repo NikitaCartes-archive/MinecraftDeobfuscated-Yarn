@@ -18,16 +18,16 @@ public interface State<C> {
 
     public ImmutableMap<Property<?>, Comparable<?>> getEntries();
 
-    public static <T extends Comparable<T>> String nameValue(Property<T> property, Comparable<?> comparable) {
-        return property.name(comparable);
+    public static <T extends Comparable<T>> String nameValue(Property<T> property, Comparable<?> value) {
+        return property.name(value);
     }
 
-    public static <S extends State<S>, T extends Comparable<T>> S tryRead(S state, Property<T> property, String string, String string2, String string3) {
-        Optional<T> optional = property.parse(string3);
+    public static <S extends State<S>, T extends Comparable<T>> S tryRead(S state, Property<T> property, String propertyName, String input, String valueName) {
+        Optional<T> optional = property.parse(valueName);
         if (optional.isPresent()) {
             return (S)((State)state.with(property, (Comparable)((Comparable)optional.get())));
         }
-        LOGGER.warn("Unable to read property: {} with value: {} for input: {}", (Object)string, (Object)string3, (Object)string2);
+        LOGGER.warn("Unable to read property: {} with value: {} for input: {}", (Object)propertyName, (Object)valueName, (Object)input);
         return state;
     }
 }

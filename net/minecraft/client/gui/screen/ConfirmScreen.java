@@ -28,12 +28,12 @@ extends Screen {
         this(booleanConsumer, text, text2, I18n.translate("gui.yes", new Object[0]), I18n.translate("gui.no", new Object[0]));
     }
 
-    public ConfirmScreen(BooleanConsumer booleanConsumer, Text text, Text text2, String string, String string2) {
+    public ConfirmScreen(BooleanConsumer callback, Text text, Text message, String yesTranslated, String noTranslated) {
         super(text);
-        this.callback = booleanConsumer;
-        this.message = text2;
-        this.yesTranslated = string;
-        this.noTranslated = string2;
+        this.callback = callback;
+        this.message = message;
+        this.yesTranslated = yesTranslated;
+        this.noTranslated = noTranslated;
     }
 
     @Override
@@ -51,15 +51,15 @@ extends Screen {
     }
 
     @Override
-    public void render(int i, int j, float f) {
+    public void render(int mouseX, int mouseY, float delta) {
         this.renderBackground();
         this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 70, 0xFFFFFF);
-        int k = 90;
+        int i = 90;
         for (String string : this.messageSplit) {
-            this.drawCenteredString(this.font, string, this.width / 2, k, 0xFFFFFF);
-            k += this.font.fontHeight;
+            this.drawCenteredString(this.font, string, this.width / 2, i, 0xFFFFFF);
+            i += this.font.fontHeight;
         }
-        super.render(i, j, f);
+        super.render(mouseX, mouseY, delta);
     }
 
     public void disableButtons(int i) {
@@ -85,12 +85,12 @@ extends Screen {
     }
 
     @Override
-    public boolean keyPressed(int i, int j, int k) {
-        if (i == 256) {
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == 256) {
             this.callback.accept(false);
             return true;
         }
-        return super.keyPressed(i, j, k);
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 }
 

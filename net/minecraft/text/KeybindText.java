@@ -10,12 +10,12 @@ import net.minecraft.text.Text;
 
 public class KeybindText
 extends BaseText {
-    public static Function<String, Supplier<String>> i18n = string -> () -> string;
+    public static Function<String, Supplier<String>> i18n = key -> () -> key;
     private final String key;
     private Supplier<String> name;
 
-    public KeybindText(String string) {
-        this.key = string;
+    public KeybindText(String key) {
+        this.key = key;
     }
 
     @Override
@@ -32,13 +32,13 @@ extends BaseText {
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (object instanceof KeybindText) {
-            KeybindText keybindText = (KeybindText)object;
-            return this.key.equals(keybindText.key) && super.equals(object);
+        if (o instanceof KeybindText) {
+            KeybindText keybindText = (KeybindText)o;
+            return this.key.equals(keybindText.key) && super.equals(o);
         }
         return false;
     }

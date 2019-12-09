@@ -78,7 +78,7 @@ public abstract class SurfaceBuilder<C extends SurfaceConfig> {
 
     public abstract void generate(Random var1, Chunk var2, Biome var3, int var4, int var5, int var6, double var7, BlockState var9, BlockState var10, int var11, long var12, C var14);
 
-    public void initSeed(long l) {
+    public void initSeed(long seed) {
     }
 }
 

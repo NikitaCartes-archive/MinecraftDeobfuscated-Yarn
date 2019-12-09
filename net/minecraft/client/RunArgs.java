@@ -22,10 +22,10 @@ public class RunArgs {
     public final Game game;
     public final AutoConnect autoConnect;
 
-    public RunArgs(Network network, WindowSettings windowSettings, Directories directories, Game game, AutoConnect autoConnect) {
+    public RunArgs(Network network, WindowSettings windowSettings, Directories dirs, Game game, AutoConnect autoConnect) {
         this.network = network;
         this.windowSettings = windowSettings;
-        this.directories = directories;
+        this.directories = dirs;
         this.game = game;
         this.autoConnect = autoConnect;
     }
@@ -36,9 +36,9 @@ public class RunArgs {
         public final String serverAddress;
         public final int serverPort;
 
-        public AutoConnect(@Nullable String string, int i) {
-            this.serverAddress = string;
-            this.serverPort = i;
+        public AutoConnect(@Nullable String serverAddress, int serverPort) {
+            this.serverAddress = serverAddress;
+            this.serverPort = serverPort;
         }
     }
 
@@ -50,11 +50,11 @@ public class RunArgs {
         @Nullable
         public final String assetIndex;
 
-        public Directories(File file, File file2, File file3, @Nullable String string) {
-            this.runDir = file;
-            this.resourcePackDir = file2;
-            this.assetDir = file3;
-            this.assetIndex = string;
+        public Directories(File runDir, File resPackDir, File assetDir, @Nullable String assetIndex) {
+            this.runDir = runDir;
+            this.resourcePackDir = resPackDir;
+            this.assetDir = assetDir;
+            this.assetIndex = assetIndex;
         }
 
         public ResourceIndex getResourceIndex() {
@@ -69,10 +69,10 @@ public class RunArgs {
         public final PropertyMap profileProperties;
         public final Proxy netProxy;
 
-        public Network(Session session, PropertyMap propertyMap, PropertyMap propertyMap2, Proxy proxy) {
+        public Network(Session session, PropertyMap propertyMap, PropertyMap profileProperties, Proxy proxy) {
             this.session = session;
             this.field_3298 = propertyMap;
-            this.profileProperties = propertyMap2;
+            this.profileProperties = profileProperties;
             this.netProxy = proxy;
         }
     }
@@ -83,10 +83,10 @@ public class RunArgs {
         public final String version;
         public final String versionType;
 
-        public Game(boolean bl, String string, String string2) {
-            this.demo = bl;
-            this.version = string;
-            this.versionType = string2;
+        public Game(boolean demo, String version, String versionType) {
+            this.demo = demo;
+            this.version = version;
+            this.versionType = versionType;
         }
     }
 }

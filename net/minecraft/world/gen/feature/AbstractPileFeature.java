@@ -18,8 +18,8 @@ import net.minecraft.world.gen.feature.Feature;
 
 public class AbstractPileFeature
 extends Feature<BlockPileFeatureConfig> {
-    public AbstractPileFeature(Function<Dynamic<?>, ? extends BlockPileFeatureConfig> function) {
-        super(function);
+    public AbstractPileFeature(Function<Dynamic<?>, ? extends BlockPileFeatureConfig> configFactory) {
+        super(configFactory);
     }
 
     @Override
@@ -42,18 +42,18 @@ extends Feature<BlockPileFeatureConfig> {
         return true;
     }
 
-    private boolean canPlacePileBlock(IWorld iWorld, BlockPos blockPos, Random random) {
-        BlockPos blockPos2 = blockPos.down();
-        BlockState blockState = iWorld.getBlockState(blockPos2);
+    private boolean canPlacePileBlock(IWorld world, BlockPos pos, Random random) {
+        BlockPos blockPos = pos.down();
+        BlockState blockState = world.getBlockState(blockPos);
         if (blockState.getBlock() == Blocks.GRASS_PATH) {
             return random.nextBoolean();
         }
-        return blockState.isSideSolidFullSquare(iWorld, blockPos2, Direction.UP);
+        return blockState.isSideSolidFullSquare(world, blockPos, Direction.UP);
     }
 
-    private void addPileBlock(IWorld iWorld, BlockPos blockPos, Random random, BlockPileFeatureConfig blockPileFeatureConfig) {
-        if (iWorld.isAir(blockPos) && this.canPlacePileBlock(iWorld, blockPos, random)) {
-            iWorld.setBlockState(blockPos, blockPileFeatureConfig.field_21229.getBlockState(random, blockPos), 4);
+    private void addPileBlock(IWorld world, BlockPos pos, Random random, BlockPileFeatureConfig blockPileFeatureConfig) {
+        if (world.isAir(pos) && this.canPlacePileBlock(world, pos, random)) {
+            world.setBlockState(pos, blockPileFeatureConfig.field_21229.getBlockState(random, pos), 4);
         }
     }
 }

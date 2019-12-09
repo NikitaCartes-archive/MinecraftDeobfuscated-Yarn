@@ -13,8 +13,8 @@ extends Goal {
     private final TameableEntity tameable;
     private boolean enabledWithOwner;
 
-    public SitGoal(TameableEntity tameableEntity) {
-        this.tameable = tameableEntity;
+    public SitGoal(TameableEntity tameable) {
+        this.tameable = tameable;
         this.setControls(EnumSet.of(Goal.Control.JUMP, Goal.Control.MOVE));
     }
 
@@ -55,8 +55,8 @@ extends Goal {
         this.tameable.setSitting(false);
     }
 
-    public void setEnabledWithOwner(boolean bl) {
-        this.enabledWithOwner = bl;
+    public void setEnabledWithOwner(boolean enabledWithOwner) {
+        this.enabledWithOwner = enabledWithOwner;
     }
 }
 

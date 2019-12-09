@@ -101,11 +101,11 @@ public class EntityEffectPredicate {
         @Nullable
         private final Boolean visible;
 
-        public EffectData(NumberRange.IntRange intRange, NumberRange.IntRange intRange2, @Nullable Boolean boolean_, @Nullable Boolean boolean2) {
-            this.amplifier = intRange;
-            this.duration = intRange2;
-            this.ambient = boolean_;
-            this.visible = boolean2;
+        public EffectData(NumberRange.IntRange amplifier, NumberRange.IntRange duration, @Nullable Boolean ambient, @Nullable Boolean boolean_) {
+            this.amplifier = amplifier;
+            this.duration = duration;
+            this.ambient = ambient;
+            this.visible = boolean_;
         }
 
         public EffectData() {
@@ -137,11 +137,11 @@ public class EntityEffectPredicate {
             return jsonObject;
         }
 
-        public static EffectData deserialize(JsonObject jsonObject) {
-            NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("amplifier"));
-            NumberRange.IntRange intRange2 = NumberRange.IntRange.fromJson(jsonObject.get("duration"));
-            Boolean boolean_ = jsonObject.has("ambient") ? Boolean.valueOf(JsonHelper.getBoolean(jsonObject, "ambient")) : null;
-            Boolean boolean2 = jsonObject.has("visible") ? Boolean.valueOf(JsonHelper.getBoolean(jsonObject, "visible")) : null;
+        public static EffectData deserialize(JsonObject json) {
+            NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(json.get("amplifier"));
+            NumberRange.IntRange intRange2 = NumberRange.IntRange.fromJson(json.get("duration"));
+            Boolean boolean_ = json.has("ambient") ? Boolean.valueOf(JsonHelper.getBoolean(json, "ambient")) : null;
+            Boolean boolean2 = json.has("visible") ? Boolean.valueOf(JsonHelper.getBoolean(json, "visible")) : null;
             return new EffectData(intRange, intRange2, boolean_, boolean2);
         }
     }

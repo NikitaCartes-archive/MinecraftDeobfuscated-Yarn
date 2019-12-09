@@ -10,17 +10,17 @@ import net.minecraft.entity.EquipmentSlot;
 
 public class RiptideEnchantment
 extends Enchantment {
-    public RiptideEnchantment(Enchantment.Weight weight, EquipmentSlot ... equipmentSlots) {
-        super(weight, EnchantmentTarget.TRIDENT, equipmentSlots);
+    public RiptideEnchantment(Enchantment.Weight weight, EquipmentSlot ... slotTypes) {
+        super(weight, EnchantmentTarget.TRIDENT, slotTypes);
     }
 
     @Override
-    public int getMinimumPower(int i) {
-        return 10 + i * 7;
+    public int getMinimumPower(int level) {
+        return 10 + level * 7;
     }
 
     @Override
-    public int getMaximumPower(int i) {
+    public int getMaximumPower(int level) {
         return 50;
     }
 
@@ -30,8 +30,8 @@ extends Enchantment {
     }
 
     @Override
-    public boolean differs(Enchantment enchantment) {
-        return super.differs(enchantment) && enchantment != Enchantments.LOYALTY && enchantment != Enchantments.CHANNELING;
+    public boolean differs(Enchantment other) {
+        return super.differs(other) && other != Enchantments.LOYALTY && other != Enchantments.CHANNELING;
     }
 }
 

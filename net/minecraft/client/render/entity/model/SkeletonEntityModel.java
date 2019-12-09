@@ -23,22 +23,22 @@ extends BipedEntityModel<T> {
         this(0.0f, false);
     }
 
-    public SkeletonEntityModel(float f, boolean bl) {
-        super(f);
-        if (!bl) {
+    public SkeletonEntityModel(float stretch, boolean isClothing) {
+        super(stretch);
+        if (!isClothing) {
             this.rightArm = new ModelPart(this, 40, 16);
-            this.rightArm.addCuboid(-1.0f, -2.0f, -1.0f, 2.0f, 12.0f, 2.0f, f);
+            this.rightArm.addCuboid(-1.0f, -2.0f, -1.0f, 2.0f, 12.0f, 2.0f, stretch);
             this.rightArm.setPivot(-5.0f, 2.0f, 0.0f);
             this.leftArm = new ModelPart(this, 40, 16);
             this.leftArm.mirror = true;
-            this.leftArm.addCuboid(-1.0f, -2.0f, -1.0f, 2.0f, 12.0f, 2.0f, f);
+            this.leftArm.addCuboid(-1.0f, -2.0f, -1.0f, 2.0f, 12.0f, 2.0f, stretch);
             this.leftArm.setPivot(5.0f, 2.0f, 0.0f);
             this.rightLeg = new ModelPart(this, 0, 16);
-            this.rightLeg.addCuboid(-1.0f, 0.0f, -1.0f, 2.0f, 12.0f, 2.0f, f);
+            this.rightLeg.addCuboid(-1.0f, 0.0f, -1.0f, 2.0f, 12.0f, 2.0f, stretch);
             this.rightLeg.setPivot(-2.0f, 12.0f, 0.0f);
             this.leftLeg = new ModelPart(this, 0, 16);
             this.leftLeg.mirror = true;
-            this.leftLeg.addCuboid(-1.0f, 0.0f, -1.0f, 2.0f, 12.0f, 2.0f, f);
+            this.leftLeg.addCuboid(-1.0f, 0.0f, -1.0f, 2.0f, 12.0f, 2.0f, stretch);
             this.leftLeg.setPivot(2.0f, 12.0f, 0.0f);
         }
     }

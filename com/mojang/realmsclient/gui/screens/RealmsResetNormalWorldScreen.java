@@ -30,13 +30,13 @@ extends RealmsScreen {
     private RealmsButton generateStructuresButton;
     private String buttonTitle = RealmsResetNormalWorldScreen.getLocalizedString("mco.backup.button.reset");
 
-    public RealmsResetNormalWorldScreen(RealmsResetWorldScreen realmsResetWorldScreen) {
-        this.lastScreen = realmsResetWorldScreen;
+    public RealmsResetNormalWorldScreen(RealmsResetWorldScreen lastScreen) {
+        this.lastScreen = lastScreen;
     }
 
-    public RealmsResetNormalWorldScreen(RealmsResetWorldScreen realmsResetWorldScreen, String string) {
-        this(realmsResetWorldScreen);
-        this.buttonTitle = string;
+    public RealmsResetNormalWorldScreen(RealmsResetWorldScreen lastScreen, String buttonTitle) {
+        this(lastScreen);
+        this.buttonTitle = buttonTitle;
     }
 
     @Override
@@ -98,12 +98,12 @@ extends RealmsScreen {
     }
 
     @Override
-    public boolean keyPressed(int i, int j, int k) {
-        if (i == 256) {
+    public boolean keyPressed(int eventKey, int scancode, int mods) {
+        if (eventKey == 256) {
             Realms.setScreen(this.lastScreen);
             return true;
         }
-        return super.keyPressed(i, j, k);
+        return super.keyPressed(eventKey, scancode, mods);
     }
 
     private void onReset() {
@@ -111,12 +111,12 @@ extends RealmsScreen {
     }
 
     @Override
-    public void render(int i, int j, float f) {
+    public void render(int xm, int ym, float a) {
         this.renderBackground();
         this.titleLabel.render(this);
         this.drawString(RealmsResetNormalWorldScreen.getLocalizedString("mco.reset.world.seed"), this.width() / 2 - 100, RealmsConstants.row(1), 0xA0A0A0);
-        this.seedEdit.render(i, j, f);
-        super.render(i, j, f);
+        this.seedEdit.render(xm, ym, a);
+        super.render(xm, ym, a);
     }
 
     private String levelTypeTitle() {

@@ -32,13 +32,13 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(itemPredicate, intRange, intRange2);
     }
 
-    public void trigger(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, int i) {
-        this.test(serverPlayerEntity.getAdvancementTracker(), conditions -> conditions.matches(itemStack, i));
+    public void trigger(ServerPlayerEntity player, ItemStack stack, int damage) {
+        this.test(player.getAdvancementTracker(), conditions -> conditions.matches(stack, damage));
     }
 
     @Override
-    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
+    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject obj, JsonDeserializationContext context) {
+        return this.conditionsFromJson(obj, context);
     }
 
     public static class Conditions
@@ -47,25 +47,25 @@ extends AbstractCriterion<Conditions> {
         private final NumberRange.IntRange durability;
         private final NumberRange.IntRange delta;
 
-        public Conditions(ItemPredicate itemPredicate, NumberRange.IntRange intRange, NumberRange.IntRange intRange2) {
+        public Conditions(ItemPredicate item, NumberRange.IntRange intRange, NumberRange.IntRange intRange2) {
             super(ID);
-            this.item = itemPredicate;
+            this.item = item;
             this.durability = intRange;
             this.delta = intRange2;
         }
 
-        public static Conditions create(ItemPredicate itemPredicate, NumberRange.IntRange intRange) {
-            return new Conditions(itemPredicate, intRange, NumberRange.IntRange.ANY);
+        public static Conditions create(ItemPredicate item, NumberRange.IntRange intRange) {
+            return new Conditions(item, intRange, NumberRange.IntRange.ANY);
         }
 
-        public boolean matches(ItemStack itemStack, int i) {
-            if (!this.item.test(itemStack)) {
+        public boolean matches(ItemStack stack, int damage) {
+            if (!this.item.test(stack)) {
                 return false;
             }
-            if (!this.durability.test(itemStack.getMaxDamage() - i)) {
+            if (!this.durability.test(stack.getMaxDamage() - damage)) {
                 return false;
             }
-            return this.delta.test(itemStack.getDamage() - i);
+            return this.delta.test(stack.getDamage() - damage);
         }
 
         @Override

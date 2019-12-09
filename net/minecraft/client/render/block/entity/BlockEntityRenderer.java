@@ -14,8 +14,8 @@ import net.minecraft.client.util.math.MatrixStack;
 public abstract class BlockEntityRenderer<T extends BlockEntity> {
     protected final BlockEntityRenderDispatcher dispatcher;
 
-    public BlockEntityRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher) {
-        this.dispatcher = blockEntityRenderDispatcher;
+    public BlockEntityRenderer(BlockEntityRenderDispatcher dispatcher) {
+        this.dispatcher = dispatcher;
     }
 
     public abstract void render(T var1, float var2, MatrixStack var3, VertexConsumerProvider var4, int var5, int var6);

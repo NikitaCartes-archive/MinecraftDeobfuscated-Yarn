@@ -174,24 +174,24 @@ extends World {
     @Nullable
     private final WanderingTraderManager wanderingTraderManager;
 
-    public ServerWorld(MinecraftServer minecraftServer, Executor executor, WorldSaveHandler worldSaveHandler, LevelProperties levelProperties, DimensionType dimensionType, Profiler profiler, WorldGenerationProgressListener worldGenerationProgressListener) {
-        super(levelProperties, dimensionType, (world, dimension) -> new ServerChunkManager((ServerWorld)world, worldSaveHandler.getWorldDir(), worldSaveHandler.getDataFixer(), worldSaveHandler.getStructureManager(), executor, dimension.createChunkGenerator(), minecraftServer.getPlayerManager().getViewDistance(), worldGenerationProgressListener, () -> minecraftServer.getWorld(DimensionType.OVERWORLD).getPersistentStateManager()), profiler, false);
+    public ServerWorld(MinecraftServer server, Executor workerExecutor, WorldSaveHandler worldSaveHandler, LevelProperties properties, DimensionType dimensionType, Profiler profiler, WorldGenerationProgressListener worldGenerationProgressListener) {
+        super(properties, dimensionType, (world, dimension) -> new ServerChunkManager((ServerWorld)world, worldSaveHandler.getWorldDir(), worldSaveHandler.getDataFixer(), worldSaveHandler.getStructureManager(), workerExecutor, dimension.createChunkGenerator(), server.getPlayerManager().getViewDistance(), worldGenerationProgressListener, () -> server.getWorld(DimensionType.OVERWORLD).getPersistentStateManager()), profiler, false);
         this.worldSaveHandler = worldSaveHandler;
-        this.server = minecraftServer;
+        this.server = server;
         this.portalForcer = new PortalForcer(this);
         this.calculateAmbientDarkness();
         this.initWeatherGradients();
-        this.getWorldBorder().setMaxWorldBorderRadius(minecraftServer.getMaxWorldBorderRadius());
+        this.getWorldBorder().setMaxWorldBorderRadius(server.getMaxWorldBorderRadius());
         this.raidManager = this.getPersistentStateManager().getOrCreate(() -> new RaidManager(this), RaidManager.nameFor(this.dimension));
-        if (!minecraftServer.isSinglePlayer()) {
-            this.getLevelProperties().setGameMode(minecraftServer.getDefaultGameMode());
+        if (!server.isSinglePlayer()) {
+            this.getLevelProperties().setGameMode(server.getDefaultGameMode());
         }
         this.wanderingTraderManager = this.dimension.getType() == DimensionType.OVERWORLD ? new WanderingTraderManager(this) : null;
     }
 
     @Override
-    public Biome getGeneratorStoredBiome(int i, int j, int k) {
-        return this.getChunkManager().getChunkGenerator().getBiomeSource().getBiomeForNoiseGen(i, j, k);
+    public Biome getGeneratorStoredBiome(int biomeX, int biomeY, int biomeZ) {
+        return this.getChunkManager().getChunkGenerator().getBiomeSource().getBiomeForNoiseGen(biomeX, biomeY, biomeZ);
     }
 
     public void tick(BooleanSupplier booleanSupplier) {
@@ -358,15 +358,15 @@ extends World {
         this.players.stream().filter(LivingEntity::isSleeping).collect(Collectors.toList()).forEach(serverPlayerEntity -> serverPlayerEntity.wakeUp(false, false));
     }
 
-    public void tickChunk(WorldChunk worldChunk, int i) {
+    public void tickChunk(WorldChunk chunk, int randomTickSpeed) {
         BlockPos blockPos;
-        ChunkPos chunkPos = worldChunk.getPos();
+        ChunkPos chunkPos = chunk.getPos();
         boolean bl = this.isRaining();
-        int j = chunkPos.getStartX();
-        int k = chunkPos.getStartZ();
+        int i = chunkPos.getStartX();
+        int j = chunkPos.getStartZ();
         Profiler profiler = this.getProfiler();
         profiler.push("thunder");
-        if (bl && this.isThundering() && this.random.nextInt(100000) == 0 && this.hasRain(blockPos = this.method_18210(this.getRandomPosInChunk(j, 0, k, 15)))) {
+        if (bl && this.isThundering() && this.random.nextInt(100000) == 0 && this.hasRain(blockPos = this.method_18210(this.getRandomPosInChunk(i, 0, j, 15)))) {
             boolean bl2;
             LocalDifficulty localDifficulty = this.getLocalDifficulty(blockPos);
             boolean bl3 = bl2 = this.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING) && this.random.nextDouble() < (double)localDifficulty.getLocalDifficulty() * 0.01;
@@ -381,7 +381,7 @@ extends World {
         }
         profiler.swap("iceandsnow");
         if (this.random.nextInt(16) == 0) {
-            blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, this.getRandomPosInChunk(j, 0, k, 15));
+            blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, this.getRandomPosInChunk(i, 0, j, 15));
             BlockPos blockPos2 = blockPos.down();
             Biome biome = this.getBiome(blockPos);
             if (biome.canSetSnow(this, blockPos2)) {
@@ -395,15 +395,15 @@ extends World {
             }
         }
         profiler.swap("tickBlocks");
-        if (i > 0) {
-            for (ChunkSection chunkSection : worldChunk.getSectionArray()) {
+        if (randomTickSpeed > 0) {
+            for (ChunkSection chunkSection : chunk.getSectionArray()) {
                 if (chunkSection == WorldChunk.EMPTY_SECTION || !chunkSection.hasRandomTicks()) continue;
-                int l = chunkSection.getYOffset();
-                for (int m = 0; m < i; ++m) {
+                int k = chunkSection.getYOffset();
+                for (int l = 0; l < randomTickSpeed; ++l) {
                     FluidState fluidState;
-                    BlockPos blockPos3 = this.getRandomPosInChunk(j, l, k, 15);
+                    BlockPos blockPos3 = this.getRandomPosInChunk(i, k, j, 15);
                     profiler.push("randomTick");
-                    BlockState blockState = chunkSection.getBlockState(blockPos3.getX() - j, blockPos3.getY() - l, blockPos3.getZ() - k);
+                    BlockState blockState = chunkSection.getBlockState(blockPos3.getX() - i, blockPos3.getY() - k, blockPos3.getZ() - j);
                     if (blockState.hasRandomTicks()) {
                         blockState.randomTick(this, blockPos3, this.random);
                     }
@@ -417,17 +417,17 @@ extends World {
         profiler.pop();
     }
 
-    protected BlockPos method_18210(BlockPos blockPos) {
-        BlockPos blockPos2 = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos);
-        Box box = new Box(blockPos2, new BlockPos(blockPos2.getX(), this.getHeight(), blockPos2.getZ())).expand(3.0);
+    protected BlockPos method_18210(BlockPos pos) {
+        BlockPos blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, pos);
+        Box box = new Box(blockPos, new BlockPos(blockPos.getX(), this.getHeight(), blockPos.getZ())).expand(3.0);
         List<LivingEntity> list = this.getEntities(LivingEntity.class, box, (? super T livingEntity) -> livingEntity != null && livingEntity.isAlive() && this.isSkyVisible(livingEntity.getBlockPos()));
         if (!list.isEmpty()) {
             return list.get(this.random.nextInt(list.size())).getBlockPos();
         }
-        if (blockPos2.getY() == -1) {
-            blockPos2 = blockPos2.up(2);
+        if (blockPos.getY() == -1) {
+            blockPos = blockPos.up(2);
         }
-        return blockPos2;
+        return blockPos;
     }
 
     public boolean isInsideTick() {
@@ -485,17 +485,17 @@ extends World {
         this.idleTimeout = 0;
     }
 
-    private void tickFluid(ScheduledTick<Fluid> scheduledTick) {
-        FluidState fluidState = this.getFluidState(scheduledTick.pos);
-        if (fluidState.getFluid() == scheduledTick.getObject()) {
-            fluidState.onScheduledTick(this, scheduledTick.pos);
+    private void tickFluid(ScheduledTick<Fluid> tick) {
+        FluidState fluidState = this.getFluidState(tick.pos);
+        if (fluidState.getFluid() == tick.getObject()) {
+            fluidState.onScheduledTick(this, tick.pos);
         }
     }
 
-    private void tickBlock(ScheduledTick<Block> scheduledTick) {
-        BlockState blockState = this.getBlockState(scheduledTick.pos);
-        if (blockState.getBlock() == scheduledTick.getObject()) {
-            blockState.scheduledTick(this, scheduledTick.pos, this.random);
+    private void tickBlock(ScheduledTick<Block> tick) {
+        BlockState blockState = this.getBlockState(tick.pos);
+        if (blockState.getBlock() == tick.getObject()) {
+            blockState.scheduledTick(this, tick.pos, this.random);
         }
     }
 
@@ -562,8 +562,8 @@ extends World {
     }
 
     @Override
-    public boolean canPlayerModifyAt(PlayerEntity playerEntity, BlockPos blockPos) {
-        return !this.server.isSpawnProtected(this, blockPos, playerEntity) && this.getWorldBorder().contains(blockPos);
+    public boolean canPlayerModifyAt(PlayerEntity player, BlockPos pos) {
+        return !this.server.isSpawnProtected(this, pos, player) && this.getWorldBorder().contains(pos);
     }
 
     public void init(LevelInfo levelInfo) {
@@ -625,9 +625,9 @@ extends World {
         return this.dimension.getForcedSpawnPoint();
     }
 
-    public void save(@Nullable ProgressListener progressListener, boolean bl, boolean bl2) throws SessionLockException {
+    public void save(@Nullable ProgressListener progressListener, boolean flush, boolean bl) throws SessionLockException {
         ServerChunkManager serverChunkManager = this.getChunkManager();
-        if (bl2) {
+        if (bl) {
             return;
         }
         if (progressListener != null) {
@@ -637,7 +637,7 @@ extends World {
         if (progressListener != null) {
             progressListener.method_15414(new TranslatableText("menu.savingChunks", new Object[0]));
         }
-        serverChunkManager.save(bl);
+        serverChunkManager.save(flush);
     }
 
     protected void saveLevel() throws SessionLockException {
@@ -711,38 +711,38 @@ extends World {
         this.checkChunk(entity);
     }
 
-    public void onPlayerTeleport(ServerPlayerEntity serverPlayerEntity) {
-        this.addPlayer(serverPlayerEntity);
-        this.checkChunk(serverPlayerEntity);
+    public void onPlayerTeleport(ServerPlayerEntity player) {
+        this.addPlayer(player);
+        this.checkChunk(player);
     }
 
-    public void onPlayerChangeDimension(ServerPlayerEntity serverPlayerEntity) {
-        this.addPlayer(serverPlayerEntity);
-        this.checkChunk(serverPlayerEntity);
+    public void onPlayerChangeDimension(ServerPlayerEntity player) {
+        this.addPlayer(player);
+        this.checkChunk(player);
     }
 
-    public void onPlayerConnected(ServerPlayerEntity serverPlayerEntity) {
-        this.addPlayer(serverPlayerEntity);
+    public void onPlayerConnected(ServerPlayerEntity player) {
+        this.addPlayer(player);
     }
 
-    public void onPlayerRespawned(ServerPlayerEntity serverPlayerEntity) {
-        this.addPlayer(serverPlayerEntity);
+    public void onPlayerRespawned(ServerPlayerEntity player) {
+        this.addPlayer(player);
     }
 
-    private void addPlayer(ServerPlayerEntity serverPlayerEntity) {
-        Entity entity = this.entitiesByUuid.get(serverPlayerEntity.getUuid());
+    private void addPlayer(ServerPlayerEntity player) {
+        Entity entity = this.entitiesByUuid.get(player.getUuid());
         if (entity != null) {
-            LOGGER.warn("Force-added player with duplicate UUID {}", (Object)serverPlayerEntity.getUuid().toString());
+            LOGGER.warn("Force-added player with duplicate UUID {}", (Object)player.getUuid().toString());
             entity.detach();
             this.removePlayer((ServerPlayerEntity)entity);
         }
-        this.players.add(serverPlayerEntity);
+        this.players.add(player);
         this.updatePlayersSleeping();
-        Chunk chunk = this.getChunk(MathHelper.floor(serverPlayerEntity.getX() / 16.0), MathHelper.floor(serverPlayerEntity.getZ() / 16.0), ChunkStatus.FULL, true);
+        Chunk chunk = this.getChunk(MathHelper.floor(player.getX() / 16.0), MathHelper.floor(player.getZ() / 16.0), ChunkStatus.FULL, true);
         if (chunk instanceof WorldChunk) {
-            chunk.addEntity(serverPlayerEntity);
+            chunk.addEntity(player);
         }
-        this.loadEntityUnchecked(serverPlayerEntity);
+        this.loadEntityUnchecked(player);
     }
 
     private boolean addEntity(Entity entity) {
@@ -779,9 +779,9 @@ extends World {
         return true;
     }
 
-    public void unloadEntities(WorldChunk worldChunk) {
-        this.unloadedBlockEntities.addAll(worldChunk.getBlockEntities().values());
-        for (TypeFilterableList<Entity> typeFilterableList : worldChunk.getEntitySectionArray()) {
+    public void unloadEntities(WorldChunk chunk) {
+        this.unloadedBlockEntities.addAll(chunk.getBlockEntities().values());
+        for (TypeFilterableList<Entity> typeFilterableList : chunk.getEntitySectionArray()) {
             for (Entity entity : typeFilterableList) {
                 if (entity instanceof ServerPlayerEntity) continue;
                 if (this.ticking) {
@@ -845,9 +845,9 @@ extends World {
         }
     }
 
-    public void removePlayer(ServerPlayerEntity serverPlayerEntity) {
-        serverPlayerEntity.remove();
-        this.removeEntity(serverPlayerEntity);
+    public void removePlayer(ServerPlayerEntity player) {
+        player.remove();
+        this.removeEntity(player);
         this.updatePlayersSleeping();
     }
 
@@ -857,53 +857,53 @@ extends World {
     }
 
     @Override
-    public void setBlockBreakingInfo(int i, BlockPos blockPos, int j) {
+    public void setBlockBreakingInfo(int entityId, BlockPos pos, int progress) {
         for (ServerPlayerEntity serverPlayerEntity : this.server.getPlayerManager().getPlayerList()) {
             double f;
             double e;
             double d;
-            if (serverPlayerEntity == null || serverPlayerEntity.world != this || serverPlayerEntity.getEntityId() == i || !((d = (double)blockPos.getX() - serverPlayerEntity.getX()) * d + (e = (double)blockPos.getY() - serverPlayerEntity.getY()) * e + (f = (double)blockPos.getZ() - serverPlayerEntity.getZ()) * f < 1024.0)) continue;
-            serverPlayerEntity.networkHandler.sendPacket(new BlockBreakingProgressS2CPacket(i, blockPos, j));
+            if (serverPlayerEntity == null || serverPlayerEntity.world != this || serverPlayerEntity.getEntityId() == entityId || !((d = (double)pos.getX() - serverPlayerEntity.getX()) * d + (e = (double)pos.getY() - serverPlayerEntity.getY()) * e + (f = (double)pos.getZ() - serverPlayerEntity.getZ()) * f < 1024.0)) continue;
+            serverPlayerEntity.networkHandler.sendPacket(new BlockBreakingProgressS2CPacket(entityId, pos, progress));
         }
     }
 
     @Override
-    public void playSound(@Nullable PlayerEntity playerEntity, double d, double e, double f, SoundEvent soundEvent, SoundCategory soundCategory, float g, float h) {
-        this.server.getPlayerManager().sendToAround(playerEntity, d, e, f, g > 1.0f ? (double)(16.0f * g) : 16.0, this.dimension.getType(), new PlaySoundS2CPacket(soundEvent, soundCategory, d, e, f, g, h));
+    public void playSound(@Nullable PlayerEntity player, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch) {
+        this.server.getPlayerManager().sendToAround(player, x, y, z, volume > 1.0f ? (double)(16.0f * volume) : 16.0, this.dimension.getType(), new PlaySoundS2CPacket(sound, category, x, y, z, volume, pitch));
     }
 
     @Override
-    public void playSoundFromEntity(@Nullable PlayerEntity playerEntity, Entity entity, SoundEvent soundEvent, SoundCategory soundCategory, float f, float g) {
-        this.server.getPlayerManager().sendToAround(playerEntity, entity.getX(), entity.getY(), entity.getZ(), f > 1.0f ? (double)(16.0f * f) : 16.0, this.dimension.getType(), new PlaySoundFromEntityS2CPacket(soundEvent, soundCategory, entity, f, g));
+    public void playSoundFromEntity(@Nullable PlayerEntity playerEntity, Entity entity, SoundEvent soundEvent, SoundCategory soundCategory, float volume, float pitch) {
+        this.server.getPlayerManager().sendToAround(playerEntity, entity.getX(), entity.getY(), entity.getZ(), volume > 1.0f ? (double)(16.0f * volume) : 16.0, this.dimension.getType(), new PlaySoundFromEntityS2CPacket(soundEvent, soundCategory, entity, volume, pitch));
     }
 
     @Override
-    public void playGlobalEvent(int i, BlockPos blockPos, int j) {
-        this.server.getPlayerManager().sendToAll(new WorldEventS2CPacket(i, blockPos, j, true));
+    public void playGlobalEvent(int type, BlockPos pos, int data) {
+        this.server.getPlayerManager().sendToAll(new WorldEventS2CPacket(type, pos, data, true));
     }
 
     @Override
-    public void playLevelEvent(@Nullable PlayerEntity playerEntity, int i, BlockPos blockPos, int j) {
-        this.server.getPlayerManager().sendToAround(playerEntity, blockPos.getX(), blockPos.getY(), blockPos.getZ(), 64.0, this.dimension.getType(), new WorldEventS2CPacket(i, blockPos, j, false));
+    public void playLevelEvent(@Nullable PlayerEntity player, int eventId, BlockPos blockPos, int data) {
+        this.server.getPlayerManager().sendToAround(player, blockPos.getX(), blockPos.getY(), blockPos.getZ(), 64.0, this.dimension.getType(), new WorldEventS2CPacket(eventId, blockPos, data, false));
     }
 
     @Override
-    public void updateListeners(BlockPos blockPos, BlockState blockState, BlockState blockState2, int i) {
-        this.getChunkManager().markForUpdate(blockPos);
-        VoxelShape voxelShape = blockState.getCollisionShape(this, blockPos);
-        VoxelShape voxelShape2 = blockState2.getCollisionShape(this, blockPos);
+    public void updateListeners(BlockPos pos, BlockState oldState, BlockState newState, int flags) {
+        this.getChunkManager().markForUpdate(pos);
+        VoxelShape voxelShape = oldState.getCollisionShape(this, pos);
+        VoxelShape voxelShape2 = newState.getCollisionShape(this, pos);
         if (!VoxelShapes.matchesAnywhere(voxelShape, voxelShape2, BooleanBiFunction.NOT_SAME)) {
             return;
         }
         for (EntityNavigation entityNavigation : this.entityNavigations) {
             if (entityNavigation.shouldRecalculatePath()) continue;
-            entityNavigation.method_18053(blockPos);
+            entityNavigation.method_18053(pos);
         }
     }
 
     @Override
-    public void sendEntityStatus(Entity entity, byte b) {
-        this.getChunkManager().sendToNearbyPlayers(entity, new EntityStatusS2CPacket(entity, b));
+    public void sendEntityStatus(Entity entity, byte status) {
+        this.getChunkManager().sendToNearbyPlayers(entity, new EntityStatusS2CPacket(entity, status));
     }
 
     @Override
@@ -912,8 +912,8 @@ extends World {
     }
 
     @Override
-    public Explosion createExplosion(@Nullable Entity entity, @Nullable DamageSource damageSource, double d, double e, double f, float g, boolean bl, Explosion.DestructionType destructionType) {
-        Explosion explosion = new Explosion(this, entity, d, e, f, g, bl, destructionType);
+    public Explosion createExplosion(@Nullable Entity entity, @Nullable DamageSource damageSource, double x, double y, double z, float power, boolean createFire, Explosion.DestructionType destructionType) {
+        Explosion explosion = new Explosion(this, entity, x, y, z, power, createFire, destructionType);
         if (damageSource != null) {
             explosion.setDamageSource(damageSource);
         }
@@ -923,15 +923,15 @@ extends World {
             explosion.clearAffectedBlocks();
         }
         for (ServerPlayerEntity serverPlayerEntity : this.players) {
-            if (!(serverPlayerEntity.squaredDistanceTo(d, e, f) < 4096.0)) continue;
-            serverPlayerEntity.networkHandler.sendPacket(new ExplosionS2CPacket(d, e, f, g, explosion.getAffectedBlocks(), explosion.getAffectedPlayers().get(serverPlayerEntity)));
+            if (!(serverPlayerEntity.squaredDistanceTo(x, y, z) < 4096.0)) continue;
+            serverPlayerEntity.networkHandler.sendPacket(new ExplosionS2CPacket(x, y, z, power, explosion.getAffectedBlocks(), explosion.getAffectedPlayers().get(serverPlayerEntity)));
         }
         return explosion;
     }
 
     @Override
-    public void addBlockAction(BlockPos blockPos, Block block, int i, int j) {
-        this.pendingBlockActions.add(new BlockAction(blockPos, block, i, j));
+    public void addBlockAction(BlockPos pos, Block block, int type, int data) {
+        this.pendingBlockActions.add(new BlockAction(pos, block, type, data));
     }
 
     private void sendBlockActions() {
@@ -972,29 +972,29 @@ extends World {
         return this.worldSaveHandler.getStructureManager();
     }
 
-    public <T extends ParticleEffect> int spawnParticles(T particleEffect, double d, double e, double f, int i, double g, double h, double j, double k) {
-        ParticleS2CPacket particleS2CPacket = new ParticleS2CPacket(particleEffect, false, d, e, f, (float)g, (float)h, (float)j, (float)k, i);
-        int l = 0;
-        for (int m = 0; m < this.players.size(); ++m) {
-            ServerPlayerEntity serverPlayerEntity = this.players.get(m);
-            if (!this.sendToPlayerIfNearby(serverPlayerEntity, false, d, e, f, particleS2CPacket)) continue;
-            ++l;
+    public <T extends ParticleEffect> int spawnParticles(T particle, double x, double y, double z, int count, double deltaX, double deltaY, double deltaZ, double speed) {
+        ParticleS2CPacket particleS2CPacket = new ParticleS2CPacket(particle, false, x, y, z, (float)deltaX, (float)deltaY, (float)deltaZ, (float)speed, count);
+        int i = 0;
+        for (int j = 0; j < this.players.size(); ++j) {
+            ServerPlayerEntity serverPlayerEntity = this.players.get(j);
+            if (!this.sendToPlayerIfNearby(serverPlayerEntity, false, x, y, z, particleS2CPacket)) continue;
+            ++i;
         }
-        return l;
+        return i;
     }
 
-    public <T extends ParticleEffect> boolean spawnParticles(ServerPlayerEntity serverPlayerEntity, T particleEffect, boolean bl, double d, double e, double f, int i, double g, double h, double j, double k) {
-        ParticleS2CPacket packet = new ParticleS2CPacket(particleEffect, bl, d, e, f, (float)g, (float)h, (float)j, (float)k, i);
-        return this.sendToPlayerIfNearby(serverPlayerEntity, bl, d, e, f, packet);
+    public <T extends ParticleEffect> boolean spawnParticles(ServerPlayerEntity viewer, T particle, boolean force, double x, double y, double z, int count, double deltaX, double deltaY, double deltaZ, double speed) {
+        ParticleS2CPacket packet = new ParticleS2CPacket(particle, force, x, y, z, (float)deltaX, (float)deltaY, (float)deltaZ, (float)speed, count);
+        return this.sendToPlayerIfNearby(viewer, force, x, y, z, packet);
     }
 
-    private boolean sendToPlayerIfNearby(ServerPlayerEntity serverPlayerEntity, boolean bl, double d, double e, double f, Packet<?> packet) {
-        if (serverPlayerEntity.getServerWorld() != this) {
+    private boolean sendToPlayerIfNearby(ServerPlayerEntity player, boolean force, double x, double y, double z, Packet<?> packet) {
+        if (player.getServerWorld() != this) {
             return false;
         }
-        BlockPos blockPos = serverPlayerEntity.getBlockPos();
-        if (blockPos.isWithinDistance(new Vec3d(d, e, f), bl ? 512.0 : 32.0)) {
-            serverPlayerEntity.networkHandler.sendPacket(packet);
+        BlockPos blockPos = player.getBlockPos();
+        if (blockPos.isWithinDistance(new Vec3d(x, y, z), force ? 512.0 : 32.0)) {
+            player.networkHandler.sendPacket(packet);
             return true;
         }
         return false;
@@ -1002,8 +1002,8 @@ extends World {
 
     @Override
     @Nullable
-    public Entity getEntityById(int i) {
-        return (Entity)this.entitiesById.get(i);
+    public Entity getEntityById(int id) {
+        return (Entity)this.entitiesById.get(id);
     }
 
     @Nullable
@@ -1027,9 +1027,9 @@ extends World {
     }
 
     @Override
-    public void setTime(long l) {
-        super.setTime(l);
-        this.properties.getScheduledEvents().processEvents(this.server, l);
+    public void setTime(long time) {
+        super.setTime(time);
+        this.properties.getScheduledEvents().processEvents(this.server, time);
     }
 
     @Override
@@ -1051,8 +1051,8 @@ extends World {
 
     @Override
     @Nullable
-    public MapState getMapState(String string) {
-        return this.getServer().getWorld(DimensionType.OVERWORLD).getPersistentStateManager().get(() -> new MapState(string), string);
+    public MapState getMapState(String id) {
+        return this.getServer().getWorld(DimensionType.OVERWORLD).getPersistentStateManager().get(() -> new MapState(id), id);
     }
 
     @Override
@@ -1066,11 +1066,11 @@ extends World {
     }
 
     @Override
-    public void setSpawnPos(BlockPos blockPos) {
+    public void setSpawnPos(BlockPos pos) {
         ChunkPos chunkPos = new ChunkPos(new BlockPos(this.properties.getSpawnX(), 0, this.properties.getSpawnZ()));
-        super.setSpawnPos(blockPos);
+        super.setSpawnPos(pos);
         this.getChunkManager().removeTicket(ChunkTicketType.START, chunkPos, 11, Unit.INSTANCE);
-        this.getChunkManager().addTicket(ChunkTicketType.START, new ChunkPos(blockPos), 11, Unit.INSTANCE);
+        this.getChunkManager().addTicket(ChunkTicketType.START, new ChunkPos(pos), 11, Unit.INSTANCE);
     }
 
     public LongSet getForcedChunks() {
@@ -1078,24 +1078,24 @@ extends World {
         return forcedChunkState != null ? LongSets.unmodifiable(forcedChunkState.getChunks()) : LongSets.EMPTY_SET;
     }
 
-    public boolean setChunkForced(int i, int j, boolean bl) {
-        boolean bl2;
+    public boolean setChunkForced(int x, int z, boolean forced) {
+        boolean bl;
         ForcedChunkState forcedChunkState = this.getPersistentStateManager().getOrCreate(ForcedChunkState::new, "chunks");
-        ChunkPos chunkPos = new ChunkPos(i, j);
+        ChunkPos chunkPos = new ChunkPos(x, z);
         long l = chunkPos.toLong();
-        if (bl) {
-            bl2 = forcedChunkState.getChunks().add(l);
-            if (bl2) {
-                this.getChunk(i, j);
+        if (forced) {
+            bl = forcedChunkState.getChunks().add(l);
+            if (bl) {
+                this.getChunk(x, z);
             }
         } else {
-            bl2 = forcedChunkState.getChunks().remove(l);
+            bl = forcedChunkState.getChunks().remove(l);
         }
-        forcedChunkState.setDirty(bl2);
-        if (bl2) {
-            this.getChunkManager().setChunkForced(chunkPos, bl);
+        forcedChunkState.setDirty(bl);
+        if (bl) {
+            this.getChunkManager().setChunkForced(chunkPos, forced);
         }
-        return bl2;
+        return bl;
     }
 
     public List<ServerPlayerEntity> getPlayers() {
@@ -1103,20 +1103,20 @@ extends World {
     }
 
     @Override
-    public void onBlockChanged(BlockPos blockPos, BlockState blockState, BlockState blockState2) {
+    public void onBlockChanged(BlockPos pos, BlockState oldBlock, BlockState newBlock) {
         Optional<PointOfInterestType> optional2;
-        Optional<PointOfInterestType> optional = PointOfInterestType.from(blockState);
-        if (Objects.equals(optional, optional2 = PointOfInterestType.from(blockState2))) {
+        Optional<PointOfInterestType> optional = PointOfInterestType.from(oldBlock);
+        if (Objects.equals(optional, optional2 = PointOfInterestType.from(newBlock))) {
             return;
         }
-        BlockPos blockPos2 = blockPos.toImmutable();
+        BlockPos blockPos = pos.toImmutable();
         optional.ifPresent(pointOfInterestType -> this.getServer().execute(() -> {
-            this.getPointOfInterestStorage().remove(blockPos2);
-            DebugRendererInfoManager.method_19777(this, blockPos2);
+            this.getPointOfInterestStorage().remove(blockPos);
+            DebugRendererInfoManager.method_19777(this, blockPos);
         }));
         optional2.ifPresent(pointOfInterestType -> this.getServer().execute(() -> {
-            this.getPointOfInterestStorage().add(blockPos2, (PointOfInterestType)pointOfInterestType);
-            DebugRendererInfoManager.method_19776(this, blockPos2);
+            this.getPointOfInterestStorage().add(blockPos, (PointOfInterestType)pointOfInterestType);
+            DebugRendererInfoManager.method_19776(this, blockPos);
         }));
     }
 
@@ -1124,23 +1124,23 @@ extends World {
         return this.getChunkManager().getPointOfInterestStorage();
     }
 
-    public boolean isNearOccupiedPointOfInterest(BlockPos blockPos) {
-        return this.isNearOccupiedPointOfInterest(blockPos, 1);
+    public boolean isNearOccupiedPointOfInterest(BlockPos pos) {
+        return this.isNearOccupiedPointOfInterest(pos, 1);
     }
 
     public boolean isNearOccupiedPointOfInterest(ChunkSectionPos chunkSectionPos) {
         return this.isNearOccupiedPointOfInterest(chunkSectionPos.getCenterPos());
     }
 
-    public boolean isNearOccupiedPointOfInterest(BlockPos blockPos, int i) {
-        if (i > 6) {
+    public boolean isNearOccupiedPointOfInterest(BlockPos pos, int maxDistance) {
+        if (maxDistance > 6) {
             return false;
         }
-        return this.getOccupiedPointOfInterestDistance(ChunkSectionPos.from(blockPos)) <= i;
+        return this.getOccupiedPointOfInterestDistance(ChunkSectionPos.from(pos)) <= maxDistance;
     }
 
-    public int getOccupiedPointOfInterestDistance(ChunkSectionPos chunkSectionPos) {
-        return this.getPointOfInterestStorage().getDistanceFromNearestOccupied(chunkSectionPos);
+    public int getOccupiedPointOfInterestDistance(ChunkSectionPos pos) {
+        return this.getPointOfInterestStorage().getDistanceFromNearestOccupied(pos);
     }
 
     public RaidManager getRaidManager() {
@@ -1148,16 +1148,16 @@ extends World {
     }
 
     @Nullable
-    public Raid getRaidAt(BlockPos blockPos) {
-        return this.raidManager.getRaidAt(blockPos, 9216);
+    public Raid getRaidAt(BlockPos pos) {
+        return this.raidManager.getRaidAt(pos, 9216);
     }
 
-    public boolean hasRaidAt(BlockPos blockPos) {
-        return this.getRaidAt(blockPos) != null;
+    public boolean hasRaidAt(BlockPos pos) {
+        return this.getRaidAt(pos) != null;
     }
 
-    public void handleInteraction(EntityInteraction entityInteraction, Entity entity, InteractionObserver interactionObserver) {
-        interactionObserver.onInteractionWith(entityInteraction, entity);
+    public void handleInteraction(EntityInteraction interaction, Entity entity, InteractionObserver observer) {
+        observer.onInteractionWith(interaction, entity);
     }
 
     public void method_21625(Path path) throws IOException {

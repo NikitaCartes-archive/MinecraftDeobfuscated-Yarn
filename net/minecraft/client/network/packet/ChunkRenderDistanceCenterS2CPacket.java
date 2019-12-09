@@ -18,21 +18,21 @@ implements Packet<ClientPlayPacketListener> {
     public ChunkRenderDistanceCenterS2CPacket() {
     }
 
-    public ChunkRenderDistanceCenterS2CPacket(int i, int j) {
-        this.chunkX = i;
-        this.chunkZ = j;
+    public ChunkRenderDistanceCenterS2CPacket(int x, int z) {
+        this.chunkX = x;
+        this.chunkZ = z;
     }
 
     @Override
-    public void read(PacketByteBuf packetByteBuf) throws IOException {
-        this.chunkX = packetByteBuf.readVarInt();
-        this.chunkZ = packetByteBuf.readVarInt();
+    public void read(PacketByteBuf buf) throws IOException {
+        this.chunkX = buf.readVarInt();
+        this.chunkZ = buf.readVarInt();
     }
 
     @Override
-    public void write(PacketByteBuf packetByteBuf) throws IOException {
-        packetByteBuf.writeVarInt(this.chunkX);
-        packetByteBuf.writeVarInt(this.chunkZ);
+    public void write(PacketByteBuf buf) throws IOException {
+        buf.writeVarInt(this.chunkX);
+        buf.writeVarInt(this.chunkZ);
     }
 
     @Override

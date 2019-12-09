@@ -37,14 +37,14 @@ implements DynamicSerializable {
         return this.pos;
     }
 
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (object == null || this.getClass() != object.getClass()) {
+        if (o == null || this.getClass() != o.getClass()) {
             return false;
         }
-        GlobalPos globalPos = (GlobalPos)object;
+        GlobalPos globalPos = (GlobalPos)o;
         return Objects.equals(this.dimension, globalPos.dimension) && Objects.equals(this.pos, globalPos.pos);
     }
 
@@ -53,8 +53,8 @@ implements DynamicSerializable {
     }
 
     @Override
-    public <T> T serialize(DynamicOps<T> dynamicOps) {
-        return dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("dimension"), this.dimension.serialize(dynamicOps), dynamicOps.createString("pos"), this.pos.serialize(dynamicOps)));
+    public <T> T serialize(DynamicOps<T> ops) {
+        return ops.createMap(ImmutableMap.of(ops.createString("dimension"), this.dimension.serialize(ops), ops.createString("pos"), this.pos.serialize(ops)));
     }
 
     public String toString() {

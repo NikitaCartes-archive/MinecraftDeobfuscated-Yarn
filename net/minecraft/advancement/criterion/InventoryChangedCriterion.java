@@ -43,13 +43,13 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(intRange, intRange2, intRange3, itemPredicates);
     }
 
-    public void trigger(ServerPlayerEntity serverPlayerEntity, PlayerInventory playerInventory) {
-        this.test(serverPlayerEntity.getAdvancementTracker(), conditions -> conditions.matches(playerInventory));
+    public void trigger(ServerPlayerEntity player, PlayerInventory inventory) {
+        this.test(player.getAdvancementTracker(), conditions -> conditions.matches(inventory));
     }
 
     @Override
-    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
+    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject obj, JsonDeserializationContext context) {
+        return this.conditionsFromJson(obj, context);
     }
 
     public static class Conditions
@@ -59,22 +59,22 @@ extends AbstractCriterion<Conditions> {
         private final NumberRange.IntRange empty;
         private final ItemPredicate[] items;
 
-        public Conditions(NumberRange.IntRange intRange, NumberRange.IntRange intRange2, NumberRange.IntRange intRange3, ItemPredicate[] itemPredicates) {
+        public Conditions(NumberRange.IntRange intRange, NumberRange.IntRange intRange2, NumberRange.IntRange intRange3, ItemPredicate[] items) {
             super(ID);
             this.occupied = intRange;
             this.full = intRange2;
             this.empty = intRange3;
-            this.items = itemPredicates;
+            this.items = items;
         }
 
-        public static Conditions items(ItemPredicate ... itemPredicates) {
-            return new Conditions(NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, itemPredicates);
+        public static Conditions items(ItemPredicate ... items) {
+            return new Conditions(NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, items);
         }
 
-        public static Conditions items(ItemConvertible ... itemConvertibles) {
-            ItemPredicate[] itemPredicates = new ItemPredicate[itemConvertibles.length];
-            for (int i = 0; i < itemConvertibles.length; ++i) {
-                itemPredicates[i] = new ItemPredicate(null, itemConvertibles[i].asItem(), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, EnchantmentPredicate.ARRAY_OF_ANY, EnchantmentPredicate.ARRAY_OF_ANY, null, NbtPredicate.ANY);
+        public static Conditions items(ItemConvertible ... items) {
+            ItemPredicate[] itemPredicates = new ItemPredicate[items.length];
+            for (int i = 0; i < items.length; ++i) {
+                itemPredicates[i] = new ItemPredicate(null, items[i].asItem(), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, EnchantmentPredicate.ARRAY_OF_ANY, EnchantmentPredicate.ARRAY_OF_ANY, null, NbtPredicate.ANY);
             }
             return Conditions.items(itemPredicates);
         }
@@ -99,13 +99,13 @@ extends AbstractCriterion<Conditions> {
             return jsonObject;
         }
 
-        public boolean matches(PlayerInventory playerInventory) {
+        public boolean matches(PlayerInventory inventory) {
             int i = 0;
             int j = 0;
             int k = 0;
             ArrayList<ItemPredicate> list = Lists.newArrayList(this.items);
-            for (int l = 0; l < playerInventory.getInvSize(); ++l) {
-                ItemStack itemStack = playerInventory.getInvStack(l);
+            for (int l = 0; l < inventory.getInvSize(); ++l) {
+                ItemStack itemStack = inventory.getInvStack(l);
                 if (itemStack.isEmpty()) {
                     ++j;
                     continue;

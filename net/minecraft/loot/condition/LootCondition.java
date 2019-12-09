@@ -22,9 +22,9 @@ Predicate<LootContext> {
         private final Identifier id;
         private final Class<T> conditionClass;
 
-        protected Factory(Identifier identifier, Class<T> class_) {
-            this.id = identifier;
-            this.conditionClass = class_;
+        protected Factory(Identifier id, Class<T> clazz) {
+            this.id = id;
+            this.conditionClass = clazz;
         }
 
         public Identifier getId() {
@@ -48,8 +48,8 @@ Predicate<LootContext> {
             return InvertedLootCondition.builder(this);
         }
 
-        default public AlternativeLootCondition.Builder withCondition(Builder builder) {
-            return AlternativeLootCondition.builder(this, builder);
+        default public AlternativeLootCondition.Builder withCondition(Builder condition) {
+            return AlternativeLootCondition.builder(this, condition);
         }
     }
 }

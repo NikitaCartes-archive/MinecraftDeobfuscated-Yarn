@@ -23,8 +23,8 @@ public class ShoulderParrotFeatureRenderer<T extends PlayerEntity>
 extends FeatureRenderer<T, PlayerEntityModel<T>> {
     private final ParrotEntityModel model = new ParrotEntityModel();
 
-    public ShoulderParrotFeatureRenderer(FeatureRendererContext<T, PlayerEntityModel<T>> featureRendererContext) {
-        super(featureRendererContext);
+    public ShoulderParrotFeatureRenderer(FeatureRendererContext<T, PlayerEntityModel<T>> context) {
+        super(context);
     }
 
     @Override

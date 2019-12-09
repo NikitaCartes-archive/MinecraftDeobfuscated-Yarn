@@ -25,12 +25,12 @@ extends Item {
     }
 
     @Override
-    public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
+    public ActionResult useOnBlock(ItemUsageContext context) {
         double f;
         double e;
         BlockPos blockPos;
-        World world = itemUsageContext.getWorld();
-        BlockState blockState = world.getBlockState(blockPos = itemUsageContext.getBlockPos());
+        World world = context.getWorld();
+        BlockState blockState = world.getBlockState(blockPos = context.getBlockPos());
         if (blockState.getBlock() != Blocks.OBSIDIAN && blockState.getBlock() != Blocks.BEDROCK) {
             return ActionResult.FAIL;
         }
@@ -52,12 +52,12 @@ extends Item {
                 enderDragonFight.respawnDragon();
             }
         }
-        itemUsageContext.getStack().decrement(1);
+        context.getStack().decrement(1);
         return ActionResult.SUCCESS;
     }
 
     @Override
-    public boolean hasEnchantmentGlint(ItemStack itemStack) {
+    public boolean hasEnchantmentGlint(ItemStack stack) {
         return true;
     }
 }

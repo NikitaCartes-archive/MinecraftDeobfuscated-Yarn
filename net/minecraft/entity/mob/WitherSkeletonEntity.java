@@ -42,7 +42,7 @@ extends AbstractSkeletonEntity {
     }
 
     @Override
-    protected SoundEvent getHurtSound(DamageSource damageSource) {
+    protected SoundEvent getHurtSound(DamageSource source) {
         return SoundEvents.ENTITY_WITHER_SKELETON_HURT;
     }
 
@@ -57,10 +57,10 @@ extends AbstractSkeletonEntity {
     }
 
     @Override
-    protected void dropEquipment(DamageSource damageSource, int i, boolean bl) {
+    protected void dropEquipment(DamageSource source, int lootingMultiplier, boolean allowDrops) {
         CreeperEntity creeperEntity;
-        super.dropEquipment(damageSource, i, bl);
-        Entity entity = damageSource.getAttacker();
+        super.dropEquipment(source, lootingMultiplier, allowDrops);
+        Entity entity = source.getAttacker();
         if (entity instanceof CreeperEntity && (creeperEntity = (CreeperEntity)entity).shouldDropHead()) {
             creeperEntity.onHeadDropped();
             this.dropItem(Items.WITHER_SKELETON_SKULL);
@@ -68,52 +68,52 @@ extends AbstractSkeletonEntity {
     }
 
     @Override
-    protected void initEquipment(LocalDifficulty localDifficulty) {
+    protected void initEquipment(LocalDifficulty difficulty) {
         this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.STONE_SWORD));
     }
 
     @Override
-    protected void updateEnchantments(LocalDifficulty localDifficulty) {
+    protected void updateEnchantments(LocalDifficulty difficulty) {
     }
 
     @Override
     @Nullable
-    public EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag) {
-        EntityData entityData2 = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+        EntityData entityData2 = super.initialize(world, difficulty, spawnType, entityData, entityTag);
         this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(4.0);
         this.updateAttackType();
         return entityData2;
     }
 
     @Override
-    protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+    protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
         return 2.1f;
     }
 
     @Override
-    public boolean tryAttack(Entity entity) {
-        if (!super.tryAttack(entity)) {
+    public boolean tryAttack(Entity target) {
+        if (!super.tryAttack(target)) {
             return false;
         }
-        if (entity instanceof LivingEntity) {
-            ((LivingEntity)entity).addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 200));
+        if (target instanceof LivingEntity) {
+            ((LivingEntity)target).addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 200));
         }
         return true;
     }
 
     @Override
-    protected ProjectileEntity createArrowProjectile(ItemStack itemStack, float f) {
-        ProjectileEntity projectileEntity = super.createArrowProjectile(itemStack, f);
+    protected ProjectileEntity createArrowProjectile(ItemStack arrow, float f) {
+        ProjectileEntity projectileEntity = super.createArrowProjectile(arrow, f);
         projectileEntity.setOnFireFor(100);
         return projectileEntity;
     }
 
     @Override
-    public boolean canHaveStatusEffect(StatusEffectInstance statusEffectInstance) {
-        if (statusEffectInstance.getEffectType() == StatusEffects.WITHER) {
+    public boolean canHaveStatusEffect(StatusEffectInstance effect) {
+        if (effect.getEffectType() == StatusEffects.WITHER) {
             return false;
         }
-        return super.canHaveStatusEffect(statusEffectInstance);
+        return super.canHaveStatusEffect(effect);
     }
 }
 

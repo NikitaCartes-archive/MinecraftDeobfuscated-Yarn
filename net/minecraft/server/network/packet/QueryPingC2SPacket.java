@@ -23,13 +23,13 @@ implements Packet<ServerQueryPacketListener> {
     }
 
     @Override
-    public void read(PacketByteBuf packetByteBuf) throws IOException {
-        this.startTime = packetByteBuf.readLong();
+    public void read(PacketByteBuf buf) throws IOException {
+        this.startTime = buf.readLong();
     }
 
     @Override
-    public void write(PacketByteBuf packetByteBuf) throws IOException {
-        packetByteBuf.writeLong(this.startTime);
+    public void write(PacketByteBuf buf) throws IOException {
+        buf.writeLong(this.startTime);
     }
 
     @Override

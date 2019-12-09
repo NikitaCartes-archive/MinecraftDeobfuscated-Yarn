@@ -37,8 +37,8 @@ public class CrashReport {
     private boolean hasStackTrace = true;
     private StackTraceElement[] stackTrace = new StackTraceElement[0];
 
-    public CrashReport(String string, Throwable throwable) {
-        this.message = string;
+    public CrashReport(String message, Throwable throwable) {
+        this.message = message;
         this.cause = throwable;
         this.fillSystemDetails();
     }
@@ -192,33 +192,33 @@ public class CrashReport {
         return this.systemDetailsSection;
     }
 
-    public CrashReportSection addElement(String string) {
-        return this.addElement(string, 1);
+    public CrashReportSection addElement(String name) {
+        return this.addElement(name, 1);
     }
 
-    public CrashReportSection addElement(String string, int i) {
-        CrashReportSection crashReportSection = new CrashReportSection(this, string);
+    public CrashReportSection addElement(String name, int ignoredStackTraceCallCount) {
+        CrashReportSection crashReportSection = new CrashReportSection(this, name);
         if (this.hasStackTrace) {
-            int j = crashReportSection.initStackTrace(i);
+            int i = crashReportSection.initStackTrace(ignoredStackTraceCallCount);
             StackTraceElement[] stackTraceElements = this.cause.getStackTrace();
             StackTraceElement stackTraceElement = null;
             StackTraceElement stackTraceElement2 = null;
-            int k = stackTraceElements.length - j;
-            if (k < 0) {
-                System.out.println("Negative index in crash report handler (" + stackTraceElements.length + "/" + j + ")");
+            int j = stackTraceElements.length - i;
+            if (j < 0) {
+                System.out.println("Negative index in crash report handler (" + stackTraceElements.length + "/" + i + ")");
             }
-            if (stackTraceElements != null && 0 <= k && k < stackTraceElements.length) {
-                stackTraceElement = stackTraceElements[k];
-                if (stackTraceElements.length + 1 - j < stackTraceElements.length) {
-                    stackTraceElement2 = stackTraceElements[stackTraceElements.length + 1 - j];
+            if (stackTraceElements != null && 0 <= j && j < stackTraceElements.length) {
+                stackTraceElement = stackTraceElements[j];
+                if (stackTraceElements.length + 1 - i < stackTraceElements.length) {
+                    stackTraceElement2 = stackTraceElements[stackTraceElements.length + 1 - i];
                 }
             }
             this.hasStackTrace = crashReportSection.method_584(stackTraceElement, stackTraceElement2);
-            if (j > 0 && !this.otherSections.isEmpty()) {
+            if (i > 0 && !this.otherSections.isEmpty()) {
                 CrashReportSection crashReportSection2 = this.otherSections.get(this.otherSections.size() - 1);
-                crashReportSection2.trimStackTraceEnd(j);
-            } else if (stackTraceElements != null && stackTraceElements.length >= j && 0 <= k && k < stackTraceElements.length) {
-                this.stackTrace = new StackTraceElement[k];
+                crashReportSection2.trimStackTraceEnd(i);
+            } else if (stackTraceElements != null && stackTraceElements.length >= i && 0 <= j && j < stackTraceElements.length) {
+                this.stackTrace = new StackTraceElement[j];
                 System.arraycopy(stackTraceElements, 0, this.stackTrace, 0, this.stackTrace.length);
             } else {
                 this.hasStackTrace = false;
@@ -237,11 +237,11 @@ public class CrashReport {
         }
     }
 
-    public static CrashReport create(Throwable throwable, String string) {
-        while (throwable instanceof CompletionException && throwable.getCause() != null) {
-            throwable = throwable.getCause();
+    public static CrashReport create(Throwable cause, String title) {
+        while (cause instanceof CompletionException && cause.getCause() != null) {
+            cause = cause.getCause();
         }
-        CrashReport crashReport = throwable instanceof CrashException ? ((CrashException)throwable).getReport() : new CrashReport(string, throwable);
+        CrashReport crashReport = cause instanceof CrashException ? ((CrashException)cause).getReport() : new CrashReport(title, cause);
         return crashReport;
     }
 }

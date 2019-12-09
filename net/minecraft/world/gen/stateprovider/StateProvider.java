@@ -13,8 +13,8 @@ public abstract class StateProvider
 implements DynamicSerializable {
     protected final StateProviderType<?> stateProvider;
 
-    protected StateProvider(StateProviderType<?> stateProviderType) {
-        this.stateProvider = stateProviderType;
+    protected StateProvider(StateProviderType<?> stateProvider) {
+        this.stateProvider = stateProvider;
     }
 
     public abstract BlockState getBlockState(Random var1, BlockPos var2);

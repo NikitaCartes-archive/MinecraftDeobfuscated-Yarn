@@ -17,11 +17,11 @@ import net.minecraft.world.World;
 @Environment(value=EnvType.CLIENT)
 public class FlameParticle
 extends SpriteBillboardParticle {
-    private FlameParticle(World world, double d, double e, double f, double g, double h, double i) {
-        super(world, d, e, f, g, h, i);
-        this.velocityX = this.velocityX * (double)0.01f + g;
-        this.velocityY = this.velocityY * (double)0.01f + h;
-        this.velocityZ = this.velocityZ * (double)0.01f + i;
+    private FlameParticle(World world, double x, double y, double z, double d, double e, double f) {
+        super(world, x, y, z, d, e, f);
+        this.velocityX = this.velocityX * (double)0.01f + d;
+        this.velocityY = this.velocityY * (double)0.01f + e;
+        this.velocityZ = this.velocityZ * (double)0.01f + f;
         this.x += (double)((this.random.nextFloat() - this.random.nextFloat()) * 0.05f);
         this.y += (double)((this.random.nextFloat() - this.random.nextFloat()) * 0.05f);
         this.z += (double)((this.random.nextFloat() - this.random.nextFloat()) * 0.05f);
@@ -34,25 +34,25 @@ extends SpriteBillboardParticle {
     }
 
     @Override
-    public void move(double d, double e, double f) {
-        this.setBoundingBox(this.getBoundingBox().offset(d, e, f));
+    public void move(double dx, double dy, double dz) {
+        this.setBoundingBox(this.getBoundingBox().offset(dx, dy, dz));
         this.repositionFromBoundingBox();
     }
 
     @Override
-    public float getSize(float f) {
-        float g = ((float)this.age + f) / (float)this.maxAge;
-        return this.scale * (1.0f - g * g * 0.5f);
+    public float getSize(float tickDelta) {
+        float f = ((float)this.age + tickDelta) / (float)this.maxAge;
+        return this.scale * (1.0f - f * f * 0.5f);
     }
 
     @Override
-    public int getColorMultiplier(float f) {
-        float g = ((float)this.age + f) / (float)this.maxAge;
-        g = MathHelper.clamp(g, 0.0f, 1.0f);
-        int i = super.getColorMultiplier(f);
+    public int getColorMultiplier(float tint) {
+        float f = ((float)this.age + tint) / (float)this.maxAge;
+        f = MathHelper.clamp(f, 0.0f, 1.0f);
+        int i = super.getColorMultiplier(tint);
         int j = i & 0xFF;
         int k = i >> 16 & 0xFF;
-        if ((j += (int)(g * 15.0f * 16.0f)) > 240) {
+        if ((j += (int)(f * 15.0f * 16.0f)) > 240) {
             j = 240;
         }
         return j | k << 16;

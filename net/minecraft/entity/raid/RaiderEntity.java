@@ -60,8 +60,8 @@ extends PatrolEntity {
     private boolean ableToJoinRaid;
     private int outOfRaidCounter;
 
-    protected RaiderEntity(EntityType<? extends RaiderEntity> entityType, World world) {
-        super((EntityType<? extends PatrolEntity>)entityType, world);
+    protected RaiderEntity(EntityType<? extends RaiderEntity> type, World world) {
+        super((EntityType<? extends PatrolEntity>)type, world);
     }
 
     @Override
@@ -85,8 +85,8 @@ extends PatrolEntity {
         return this.ableToJoinRaid;
     }
 
-    public void setAbleToJoinRaid(boolean bl) {
-        this.ableToJoinRaid = bl;
+    public void setAbleToJoinRaid(boolean ableToJoinRaid) {
+        this.ableToJoinRaid = ableToJoinRaid;
     }
 
     @Override
@@ -116,9 +116,9 @@ extends PatrolEntity {
     }
 
     @Override
-    public void onDeath(DamageSource damageSource) {
+    public void onDeath(DamageSource source) {
         if (this.world instanceof ServerWorld) {
-            Entity entity = damageSource.getAttacker();
+            Entity entity = source.getAttacker();
             Raid raid = this.getRaid();
             if (raid != null) {
                 if (this.isPatrolLeader()) {
@@ -159,7 +159,7 @@ extends PatrolEntity {
                 }
             }
         }
-        super.onDeath(damageSource);
+        super.onDeath(source);
     }
 
     @Override
@@ -180,8 +180,8 @@ extends PatrolEntity {
         return this.getRaid() != null && this.getRaid().isActive();
     }
 
-    public void setWave(int i) {
-        this.wave = i;
+    public void setWave(int wave) {
+        this.wave = wave;
     }
 
     public int getWave() {
@@ -193,28 +193,28 @@ extends PatrolEntity {
         return this.dataTracker.get(CELEBRATING);
     }
 
-    public void setCelebrating(boolean bl) {
-        this.dataTracker.set(CELEBRATING, bl);
+    public void setCelebrating(boolean celebrating) {
+        this.dataTracker.set(CELEBRATING, celebrating);
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag compoundTag) {
-        super.writeCustomDataToTag(compoundTag);
-        compoundTag.putInt("Wave", this.wave);
-        compoundTag.putBoolean("CanJoinRaid", this.ableToJoinRaid);
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putInt("Wave", this.wave);
+        tag.putBoolean("CanJoinRaid", this.ableToJoinRaid);
         if (this.raid != null) {
-            compoundTag.putInt("RaidId", this.raid.getRaidId());
+            tag.putInt("RaidId", this.raid.getRaidId());
         }
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag compoundTag) {
-        super.readCustomDataFromTag(compoundTag);
-        this.wave = compoundTag.getInt("Wave");
-        this.ableToJoinRaid = compoundTag.getBoolean("CanJoinRaid");
-        if (compoundTag.contains("RaidId", 3)) {
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        this.wave = tag.getInt("Wave");
+        this.ableToJoinRaid = tag.getBoolean("CanJoinRaid");
+        if (tag.contains("RaidId", 3)) {
             if (this.world instanceof ServerWorld) {
-                this.raid = ((ServerWorld)this.world).getRaidManager().getRaid(compoundTag.getInt("RaidId"));
+                this.raid = ((ServerWorld)this.world).getRaidManager().getRaid(tag.getInt("RaidId"));
             }
             if (this.raid != null) {
                 this.raid.addToWave(this.wave, this, false);
@@ -226,9 +226,9 @@ extends PatrolEntity {
     }
 
     @Override
-    protected void loot(ItemEntity itemEntity) {
+    protected void loot(ItemEntity item) {
         boolean bl;
-        ItemStack itemStack = itemEntity.getStack();
+        ItemStack itemStack = item.getStack();
         boolean bl2 = bl = this.hasActiveRaid() && this.getRaid().getCaptain(this.getWave()) != null;
         if (this.hasActiveRaid() && !bl && ItemStack.areEqualIgnoreDamage(itemStack, Raid.getOminousBanner())) {
             EquipmentSlot equipmentSlot = EquipmentSlot.HEAD;
@@ -238,19 +238,19 @@ extends PatrolEntity {
                 this.dropStack(itemStack2);
             }
             this.equipStack(equipmentSlot, itemStack);
-            this.sendPickup(itemEntity, itemStack.getCount());
-            itemEntity.remove();
+            this.sendPickup(item, itemStack.getCount());
+            item.remove();
             this.getRaid().setWaveCaptain(this.getWave(), this);
             this.setPatrolLeader(true);
         } else {
-            super.loot(itemEntity);
+            super.loot(item);
         }
     }
 
     @Override
-    public boolean canImmediatelyDespawn(double d) {
+    public boolean canImmediatelyDespawn(double distanceSquared) {
         if (this.getRaid() == null) {
-            return super.canImmediatelyDespawn(d);
+            return super.canImmediatelyDespawn(distanceSquared);
         }
         return false;
     }
@@ -264,23 +264,23 @@ extends PatrolEntity {
         return this.outOfRaidCounter;
     }
 
-    public void setOutOfRaidCounter(int i) {
-        this.outOfRaidCounter = i;
+    public void setOutOfRaidCounter(int counter) {
+        this.outOfRaidCounter = counter;
     }
 
     @Override
-    public boolean damage(DamageSource damageSource, float f) {
+    public boolean damage(DamageSource source, float amount) {
         if (this.hasActiveRaid()) {
             this.getRaid().updateBar();
         }
-        return super.damage(damageSource, f);
+        return super.damage(source, amount);
     }
 
     @Override
     @Nullable
-    public EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag) {
+    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         this.setAbleToJoinRaid(this.getType() != EntityType.WITCH || spawnType != SpawnType.NATURAL);
-        return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+        return super.initialize(world, difficulty, spawnType, entityData, entityTag);
     }
 
     public abstract SoundEvent getCelebratingSound();
@@ -294,10 +294,10 @@ extends PatrolEntity {
         private final int distance;
         private boolean finished;
 
-        public AttackHomeGoal(RaiderEntity raiderEntity, double d, int i) {
-            this.raider = raiderEntity;
-            this.speed = d;
-            this.distance = i;
+        public AttackHomeGoal(RaiderEntity raider, double speed, int distance) {
+            this.raider = raider;
+            this.speed = speed;
+            this.distance = distance;
             this.setControls(EnumSet.of(Goal.Control.MOVE));
         }
 
@@ -361,9 +361,9 @@ extends PatrolEntity {
             }
         }
 
-        private boolean canLootHome(BlockPos blockPos) {
-            for (BlockPos blockPos2 : this.lastHomes) {
-                if (!Objects.equals(blockPos, blockPos2)) continue;
+        private boolean canLootHome(BlockPos pos) {
+            for (BlockPos blockPos : this.lastHomes) {
+                if (!Objects.equals(pos, blockPos)) continue;
                 return false;
             }
             return true;
@@ -382,9 +382,9 @@ extends PatrolEntity {
         private final float squaredDistance;
         public final TargetPredicate closeRaiderPredicate = new TargetPredicate().setBaseMaxDistance(8.0).ignoreEntityTargetRules().includeInvulnerable().includeTeammates().includeHidden().ignoreDistanceScalingFactor();
 
-        public PatrolApproachGoal(IllagerEntity illagerEntity, float f) {
-            this.raider = illagerEntity;
-            this.squaredDistance = f * f;
+        public PatrolApproachGoal(IllagerEntity illager, float distance) {
+            this.raider = illager;
+            this.squaredDistance = distance * distance;
             this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
         }
 
@@ -440,8 +440,8 @@ extends PatrolEntity {
     extends Goal {
         private final RaiderEntity raider;
 
-        CelebrateGoal(RaiderEntity raiderEntity2) {
-            this.raider = raiderEntity2;
+        CelebrateGoal(RaiderEntity raider) {
+            this.raider = raider;
             this.setControls(EnumSet.of(Goal.Control.MOVE));
         }
 
@@ -480,9 +480,9 @@ extends PatrolEntity {
         private final T actor;
         final /* synthetic */ RaiderEntity field_16604;
 
-        public PickupBannerAsLeaderGoal(T raiderEntity2) {
+        public PickupBannerAsLeaderGoal(T actor) {
             this.field_16604 = raiderEntity;
-            this.actor = raiderEntity2;
+            this.actor = actor;
             this.setControls(EnumSet.of(Goal.Control.MOVE));
         }
 

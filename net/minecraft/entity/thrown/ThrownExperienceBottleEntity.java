@@ -21,12 +21,12 @@ extends ThrownItemEntity {
         super((EntityType<? extends ThrownItemEntity>)entityType, world);
     }
 
-    public ThrownExperienceBottleEntity(World world, LivingEntity livingEntity) {
-        super((EntityType<? extends ThrownItemEntity>)EntityType.EXPERIENCE_BOTTLE, livingEntity, world);
+    public ThrownExperienceBottleEntity(World world, LivingEntity owner) {
+        super((EntityType<? extends ThrownItemEntity>)EntityType.EXPERIENCE_BOTTLE, owner, world);
     }
 
-    public ThrownExperienceBottleEntity(World world, double d, double e, double f) {
-        super((EntityType<? extends ThrownItemEntity>)EntityType.EXPERIENCE_BOTTLE, d, e, f, world);
+    public ThrownExperienceBottleEntity(World world, double x, double y, double z) {
+        super((EntityType<? extends ThrownItemEntity>)EntityType.EXPERIENCE_BOTTLE, x, y, z, world);
     }
 
     @Override

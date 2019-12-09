@@ -52,7 +52,7 @@ extends HostileEntity {
     }
 
     @Override
-    protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+    protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
         return 0.1f;
     }
 
@@ -75,7 +75,7 @@ extends HostileEntity {
     }
 
     @Override
-    protected SoundEvent getHurtSound(DamageSource damageSource) {
+    protected SoundEvent getHurtSound(DamageSource source) {
         return SoundEvents.ENTITY_ENDERMITE_HURT;
     }
 
@@ -85,22 +85,22 @@ extends HostileEntity {
     }
 
     @Override
-    protected void playStepSound(BlockPos blockPos, BlockState blockState) {
+    protected void playStepSound(BlockPos pos, BlockState state) {
         this.playSound(SoundEvents.ENTITY_ENDERMITE_STEP, 0.15f, 1.0f);
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag compoundTag) {
-        super.readCustomDataFromTag(compoundTag);
-        this.lifeTime = compoundTag.getInt("Lifetime");
-        this.playerSpawned = compoundTag.getBoolean("PlayerSpawned");
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        this.lifeTime = tag.getInt("Lifetime");
+        this.playerSpawned = tag.getBoolean("PlayerSpawned");
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag compoundTag) {
-        super.writeCustomDataToTag(compoundTag);
-        compoundTag.putInt("Lifetime", this.lifeTime);
-        compoundTag.putBoolean("PlayerSpawned", this.playerSpawned);
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putInt("Lifetime", this.lifeTime);
+        tag.putBoolean("PlayerSpawned", this.playerSpawned);
     }
 
     @Override
@@ -110,9 +110,9 @@ extends HostileEntity {
     }
 
     @Override
-    public void setYaw(float f) {
-        this.yaw = f;
-        super.setYaw(f);
+    public void setYaw(float yaw) {
+        this.yaw = yaw;
+        super.setYaw(yaw);
     }
 
     @Override
@@ -124,8 +124,8 @@ extends HostileEntity {
         return this.playerSpawned;
     }
 
-    public void setPlayerSpawned(boolean bl) {
-        this.playerSpawned = bl;
+    public void setPlayerSpawned(boolean playerSpawned) {
+        this.playerSpawned = playerSpawned;
     }
 
     @Override
@@ -145,9 +145,9 @@ extends HostileEntity {
         }
     }
 
-    public static boolean canSpawn(EntityType<EndermiteEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-        if (EndermiteEntity.canSpawnIgnoreLightLevel(entityType, iWorld, spawnType, blockPos, random)) {
-            PlayerEntity playerEntity = iWorld.getClosestPlayer((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, 5.0, true);
+    public static boolean canSpawn(EntityType<EndermiteEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
+        if (EndermiteEntity.canSpawnIgnoreLightLevel(type, world, spawnType, pos, random)) {
+            PlayerEntity playerEntity = world.getClosestPlayer((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, 5.0, true);
             return playerEntity == null;
         }
         return false;

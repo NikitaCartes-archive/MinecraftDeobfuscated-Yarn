@@ -26,21 +26,21 @@ implements DebugRenderer.Renderer {
     private double lastUpdateTime = Double.MIN_VALUE;
     private List<VoxelShape> collisions = Collections.emptyList();
 
-    public CollisionDebugRenderer(MinecraftClient minecraftClient) {
-        this.client = minecraftClient;
+    public CollisionDebugRenderer(MinecraftClient client) {
+        this.client = client;
     }
 
     @Override
-    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f) {
-        double g = Util.getMeasuringTimeNano();
-        if (g - this.lastUpdateTime > 1.0E8) {
-            this.lastUpdateTime = g;
+    public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
+        double d = Util.getMeasuringTimeNano();
+        if (d - this.lastUpdateTime > 1.0E8) {
+            this.lastUpdateTime = d;
             Entity entity = this.client.gameRenderer.getCamera().getFocusedEntity();
             this.collisions = entity.world.getCollisions(entity, entity.getBoundingBox().expand(6.0), Collections.emptySet()).collect(Collectors.toList());
         }
-        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getLines());
+        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getLines());
         for (VoxelShape voxelShape : this.collisions) {
-            WorldRenderer.method_22983(matrixStack, vertexConsumer, voxelShape, -d, -e, -f, 1.0f, 1.0f, 1.0f, 1.0f);
+            WorldRenderer.method_22983(matrices, vertexConsumer, voxelShape, -cameraX, -cameraY, -cameraZ, 1.0f, 1.0f, 1.0f, 1.0f);
         }
     }
 }

@@ -98,19 +98,19 @@ extends RaiderEntity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag compoundTag) {
-        super.writeCustomDataToTag(compoundTag);
-        compoundTag.putInt("AttackTick", this.attackTick);
-        compoundTag.putInt("StunTick", this.stunTick);
-        compoundTag.putInt("RoarTick", this.roarTick);
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        tag.putInt("AttackTick", this.attackTick);
+        tag.putInt("StunTick", this.stunTick);
+        tag.putInt("RoarTick", this.roarTick);
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag compoundTag) {
-        super.readCustomDataFromTag(compoundTag);
-        this.attackTick = compoundTag.getInt("AttackTick");
-        this.stunTick = compoundTag.getInt("StunTick");
-        this.roarTick = compoundTag.getInt("RoarTick");
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        this.attackTick = tag.getInt("AttackTick");
+        this.stunTick = tag.getInt("StunTick");
+        this.roarTick = tag.getInt("RoarTick");
     }
 
     @Override
@@ -215,17 +215,17 @@ extends RaiderEntity {
     }
 
     @Override
-    protected void knockback(LivingEntity livingEntity) {
+    protected void knockback(LivingEntity target) {
         if (this.roarTick == 0) {
             if (this.random.nextDouble() < 0.5) {
                 this.stunTick = 40;
                 this.playSound(SoundEvents.ENTITY_RAVAGER_STUNNED, 1.0f, 1.0f);
                 this.world.sendEntityStatus(this, (byte)39);
-                livingEntity.pushAwayFrom(this);
+                target.pushAwayFrom(this);
             } else {
-                this.knockBack(livingEntity);
+                this.knockBack(target);
             }
-            livingEntity.velocityModified = true;
+            target.velocityModified = true;
         }
     }
 
@@ -257,14 +257,14 @@ extends RaiderEntity {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void handleStatus(byte b) {
-        if (b == 4) {
+    public void handleStatus(byte status) {
+        if (status == 4) {
             this.attackTick = 10;
             this.playSound(SoundEvents.ENTITY_RAVAGER_ATTACK, 1.0f, 1.0f);
-        } else if (b == 39) {
+        } else if (status == 39) {
             this.stunTick = 40;
         }
-        super.handleStatus(b);
+        super.handleStatus(status);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -283,11 +283,11 @@ extends RaiderEntity {
     }
 
     @Override
-    public boolean tryAttack(Entity entity) {
+    public boolean tryAttack(Entity target) {
         this.attackTick = 10;
         this.world.sendEntityStatus(this, (byte)4);
         this.playSound(SoundEvents.ENTITY_RAVAGER_ATTACK, 1.0f, 1.0f);
-        return super.tryAttack(entity);
+        return super.tryAttack(target);
     }
 
     @Override
@@ -297,7 +297,7 @@ extends RaiderEntity {
     }
 
     @Override
-    protected SoundEvent getHurtSound(DamageSource damageSource) {
+    protected SoundEvent getHurtSound(DamageSource source) {
         return SoundEvents.ENTITY_RAVAGER_HURT;
     }
 
@@ -307,7 +307,7 @@ extends RaiderEntity {
     }
 
     @Override
-    protected void playStepSound(BlockPos blockPos, BlockState blockState) {
+    protected void playStepSound(BlockPos pos, BlockState state) {
         this.playSound(SoundEvents.ENTITY_RAVAGER_STEP, 0.15f, 1.0f);
     }
 
@@ -317,7 +317,7 @@ extends RaiderEntity {
     }
 
     @Override
-    public void addBonusForWave(int i, boolean bl) {
+    public void addBonusForWave(int wave, boolean unused) {
     }
 
     @Override
@@ -331,18 +331,18 @@ extends RaiderEntity {
         }
 
         @Override
-        protected PathNodeType adjustNodeType(BlockView blockView, boolean bl, boolean bl2, BlockPos blockPos, PathNodeType pathNodeType) {
-            if (pathNodeType == PathNodeType.LEAVES) {
+        protected PathNodeType adjustNodeType(BlockView world, boolean canOpenDoors, boolean canEnterOpenDoors, BlockPos pos, PathNodeType type) {
+            if (type == PathNodeType.LEAVES) {
                 return PathNodeType.OPEN;
             }
-            return super.adjustNodeType(blockView, bl, bl2, blockPos, pathNodeType);
+            return super.adjustNodeType(world, canOpenDoors, canEnterOpenDoors, pos, type);
         }
     }
 
     static class Navigation
     extends MobNavigation {
-        public Navigation(MobEntity mobEntity, World world) {
-            super(mobEntity, world);
+        public Navigation(MobEntity world, World world2) {
+            super(world, world2);
         }
 
         @Override
@@ -359,9 +359,9 @@ extends RaiderEntity {
         }
 
         @Override
-        protected double getSquaredMaxAttackDistance(LivingEntity livingEntity) {
+        protected double getSquaredMaxAttackDistance(LivingEntity entity) {
             float f = RavagerEntity.this.getWidth() - 0.1f;
-            return f * 2.0f * (f * 2.0f) + livingEntity.getWidth();
+            return f * 2.0f * (f * 2.0f) + entity.getWidth();
         }
     }
 }

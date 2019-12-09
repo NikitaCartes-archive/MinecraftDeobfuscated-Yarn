@@ -18,8 +18,8 @@ extends NoRenderParticle {
     private int age_;
     private final int maxAge_;
 
-    private ExplosionEmitterParticle(World world, double d, double e, double f) {
-        super(world, d, e, f, 0.0, 0.0, 0.0);
+    private ExplosionEmitterParticle(World world, double x, double y, double z) {
+        super(world, x, y, z, 0.0, 0.0, 0.0);
         this.maxAge_ = 8;
     }
 

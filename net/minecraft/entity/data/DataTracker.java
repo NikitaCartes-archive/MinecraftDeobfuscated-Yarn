@@ -42,26 +42,26 @@ public class DataTracker {
         this.trackedEntity = entity;
     }
 
-    public static <T> TrackedData<T> registerData(Class<? extends Entity> class_, TrackedDataHandler<T> trackedDataHandler) {
+    public static <T> TrackedData<T> registerData(Class<? extends Entity> entityClass, TrackedDataHandler<T> dataHandler) {
         int i;
         if (LOGGER.isDebugEnabled()) {
             try {
-                Class<?> class2 = Class.forName(Thread.currentThread().getStackTrace()[2].getClassName());
-                if (!class2.equals(class_)) {
-                    LOGGER.debug("defineId called for: {} from {}", (Object)class_, (Object)class2, (Object)new RuntimeException());
+                Class<?> class_ = Class.forName(Thread.currentThread().getStackTrace()[2].getClassName());
+                if (!class_.equals(entityClass)) {
+                    LOGGER.debug("defineId called for: {} from {}", (Object)entityClass, (Object)class_, (Object)new RuntimeException());
                 }
-            } catch (ClassNotFoundException class2) {
+            } catch (ClassNotFoundException class_) {
                 // empty catch block
             }
         }
-        if (trackedEntities.containsKey(class_)) {
-            i = trackedEntities.get(class_) + 1;
+        if (trackedEntities.containsKey(entityClass)) {
+            i = trackedEntities.get(entityClass) + 1;
         } else {
             int j = 0;
-            Class<? extends Entity> class3 = class_;
-            while (class3 != Entity.class) {
-                if (!trackedEntities.containsKey(class3 = class3.getSuperclass())) continue;
-                j = trackedEntities.get(class3) + 1;
+            Class<? extends Entity> class2 = entityClass;
+            while (class2 != Entity.class) {
+                if (!trackedEntities.containsKey(class2 = class2.getSuperclass())) continue;
+                j = trackedEntities.get(class2) + 1;
                 break;
             }
             i = j;
@@ -69,22 +69,22 @@ public class DataTracker {
         if (i > 254) {
             throw new IllegalArgumentException("Data value id is too big with " + i + "! (Max is " + 254 + ")");
         }
-        trackedEntities.put(class_, i);
-        return trackedDataHandler.create(i);
+        trackedEntities.put(entityClass, i);
+        return dataHandler.create(i);
     }
 
-    public <T> void startTracking(TrackedData<T> trackedData, T object) {
-        int i = trackedData.getId();
+    public <T> void startTracking(TrackedData<T> key, T initialValue) {
+        int i = key.getId();
         if (i > 254) {
             throw new IllegalArgumentException("Data value id is too big with " + i + "! (Max is " + 254 + ")");
         }
         if (this.entries.containsKey(i)) {
             throw new IllegalArgumentException("Duplicate id value for " + i + "!");
         }
-        if (TrackedDataHandlerRegistry.getId(trackedData.getType()) < 0) {
-            throw new IllegalArgumentException("Unregistered serializer " + trackedData.getType() + " for " + i + "!");
+        if (TrackedDataHandlerRegistry.getId(key.getType()) < 0) {
+            throw new IllegalArgumentException("Unregistered serializer " + key.getType() + " for " + i + "!");
         }
-        this.addTrackedData(trackedData, object);
+        this.addTrackedData(key, initialValue);
     }
 
     private <T> void addTrackedData(TrackedData<T> trackedData, T object) {
@@ -115,11 +115,11 @@ public class DataTracker {
         return this.getEntry(trackedData).get();
     }
 
-    public <T> void set(TrackedData<T> trackedData, T object) {
-        Entry<T> entry = this.getEntry(trackedData);
+    public <T> void set(TrackedData<T> key, T object) {
+        Entry<T> entry = this.getEntry(key);
         if (ObjectUtils.notEqual(object, entry.get())) {
             entry.set(object);
-            this.trackedEntity.onTrackedDataSet(trackedData);
+            this.trackedEntity.onTrackedDataSet(key);
             entry.setDirty(true);
             this.dirty = true;
         }
@@ -244,9 +244,9 @@ public class DataTracker {
         private T value;
         private boolean dirty;
 
-        public Entry(TrackedData<T> trackedData, T object) {
-            this.data = trackedData;
-            this.value = object;
+        public Entry(TrackedData<T> data, T value) {
+            this.data = data;
+            this.value = value;
             this.dirty = true;
         }
 
@@ -254,8 +254,8 @@ public class DataTracker {
             return this.data;
         }
 
-        public void set(T object) {
-            this.value = object;
+        public void set(T value) {
+            this.value = value;
         }
 
         public T get() {
@@ -266,8 +266,8 @@ public class DataTracker {
             return this.dirty;
         }
 
-        public void setDirty(boolean bl) {
-            this.dirty = bl;
+        public void setDirty(boolean dirty) {
+            this.dirty = dirty;
         }
 
         public Entry<T> copy() {

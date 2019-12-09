@@ -18,18 +18,18 @@ implements Packet<ServerPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public PickFromInventoryC2SPacket(int i) {
-        this.slot = i;
+    public PickFromInventoryC2SPacket(int slot) {
+        this.slot = slot;
     }
 
     @Override
-    public void read(PacketByteBuf packetByteBuf) throws IOException {
-        this.slot = packetByteBuf.readVarInt();
+    public void read(PacketByteBuf buf) throws IOException {
+        this.slot = buf.readVarInt();
     }
 
     @Override
-    public void write(PacketByteBuf packetByteBuf) throws IOException {
-        packetByteBuf.writeVarInt(this.slot);
+    public void write(PacketByteBuf buf) throws IOException {
+        buf.writeVarInt(this.slot);
     }
 
     @Override

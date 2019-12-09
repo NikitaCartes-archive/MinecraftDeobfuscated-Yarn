@@ -33,28 +33,28 @@ extends Block {
     }
 
     @Override
-    public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-        World blockView = itemPlacementContext.getWorld();
-        BlockPos blockPos = itemPlacementContext.getBlockPos();
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        World blockView = ctx.getWorld();
+        BlockPos blockPos = ctx.getBlockPos();
         return (BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.getDefaultState().with(DOWN, this != blockView.getBlockState(blockPos.down()).getBlock())).with(UP, this != blockView.getBlockState(blockPos.up()).getBlock())).with(NORTH, this != blockView.getBlockState(blockPos.north()).getBlock())).with(EAST, this != blockView.getBlockState(blockPos.east()).getBlock())).with(SOUTH, this != blockView.getBlockState(blockPos.south()).getBlock())).with(WEST, this != blockView.getBlockState(blockPos.west()).getBlock());
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-        if (blockState2.getBlock() == this) {
-            return (BlockState)blockState.with(FACING_PROPERTIES.get(direction), false);
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+        if (neighborState.getBlock() == this) {
+            return (BlockState)state.with(FACING_PROPERTIES.get(facing), false);
         }
-        return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+        return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
     }
 
     @Override
-    public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
-        return (BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)blockState.with(FACING_PROPERTIES.get(blockRotation.rotate(Direction.NORTH)), blockState.get(NORTH))).with(FACING_PROPERTIES.get(blockRotation.rotate(Direction.SOUTH)), blockState.get(SOUTH))).with(FACING_PROPERTIES.get(blockRotation.rotate(Direction.EAST)), blockState.get(EAST))).with(FACING_PROPERTIES.get(blockRotation.rotate(Direction.WEST)), blockState.get(WEST))).with(FACING_PROPERTIES.get(blockRotation.rotate(Direction.UP)), blockState.get(UP))).with(FACING_PROPERTIES.get(blockRotation.rotate(Direction.DOWN)), blockState.get(DOWN));
+    public BlockState rotate(BlockState state, BlockRotation rotation) {
+        return (BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)state.with(FACING_PROPERTIES.get(rotation.rotate(Direction.NORTH)), state.get(NORTH))).with(FACING_PROPERTIES.get(rotation.rotate(Direction.SOUTH)), state.get(SOUTH))).with(FACING_PROPERTIES.get(rotation.rotate(Direction.EAST)), state.get(EAST))).with(FACING_PROPERTIES.get(rotation.rotate(Direction.WEST)), state.get(WEST))).with(FACING_PROPERTIES.get(rotation.rotate(Direction.UP)), state.get(UP))).with(FACING_PROPERTIES.get(rotation.rotate(Direction.DOWN)), state.get(DOWN));
     }
 
     @Override
-    public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
-        return (BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)blockState.with(FACING_PROPERTIES.get(blockMirror.apply(Direction.NORTH)), blockState.get(NORTH))).with(FACING_PROPERTIES.get(blockMirror.apply(Direction.SOUTH)), blockState.get(SOUTH))).with(FACING_PROPERTIES.get(blockMirror.apply(Direction.EAST)), blockState.get(EAST))).with(FACING_PROPERTIES.get(blockMirror.apply(Direction.WEST)), blockState.get(WEST))).with(FACING_PROPERTIES.get(blockMirror.apply(Direction.UP)), blockState.get(UP))).with(FACING_PROPERTIES.get(blockMirror.apply(Direction.DOWN)), blockState.get(DOWN));
+    public BlockState mirror(BlockState state, BlockMirror mirror) {
+        return (BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)state.with(FACING_PROPERTIES.get(mirror.apply(Direction.NORTH)), state.get(NORTH))).with(FACING_PROPERTIES.get(mirror.apply(Direction.SOUTH)), state.get(SOUTH))).with(FACING_PROPERTIES.get(mirror.apply(Direction.EAST)), state.get(EAST))).with(FACING_PROPERTIES.get(mirror.apply(Direction.WEST)), state.get(WEST))).with(FACING_PROPERTIES.get(mirror.apply(Direction.UP)), state.get(UP))).with(FACING_PROPERTIES.get(mirror.apply(Direction.DOWN)), state.get(DOWN));
     }
 
     @Override

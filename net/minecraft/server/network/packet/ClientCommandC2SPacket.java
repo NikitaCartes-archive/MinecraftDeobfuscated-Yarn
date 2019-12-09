@@ -33,17 +33,17 @@ implements Packet<ServerPlayPacketListener> {
     }
 
     @Override
-    public void read(PacketByteBuf packetByteBuf) throws IOException {
-        this.entityId = packetByteBuf.readVarInt();
-        this.mode = packetByteBuf.readEnumConstant(Mode.class);
-        this.mountJumpHeight = packetByteBuf.readVarInt();
+    public void read(PacketByteBuf buf) throws IOException {
+        this.entityId = buf.readVarInt();
+        this.mode = buf.readEnumConstant(Mode.class);
+        this.mountJumpHeight = buf.readVarInt();
     }
 
     @Override
-    public void write(PacketByteBuf packetByteBuf) throws IOException {
-        packetByteBuf.writeVarInt(this.entityId);
-        packetByteBuf.writeEnumConstant(this.mode);
-        packetByteBuf.writeVarInt(this.mountJumpHeight);
+    public void write(PacketByteBuf buf) throws IOException {
+        buf.writeVarInt(this.entityId);
+        buf.writeEnumConstant(this.mode);
+        buf.writeVarInt(this.mountJumpHeight);
     }
 
     @Override

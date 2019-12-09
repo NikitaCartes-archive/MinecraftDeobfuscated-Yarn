@@ -30,90 +30,90 @@ public class WorldBorderCommand {
     private static final SimpleCommandExceptionType DAMAGE_BUFFER_FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.worldborder.damage.buffer.failed", new Object[0]));
     private static final SimpleCommandExceptionType DAMAGE_AMOUNT_FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.worldborder.damage.amount.failed", new Object[0]));
 
-    public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-        commandDispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("worldborder").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))).then(CommandManager.literal("add").then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)CommandManager.argument("distance", FloatArgumentType.floatArg(-6.0E7f, 6.0E7f)).executes(commandContext -> WorldBorderCommand.executeSet((ServerCommandSource)commandContext.getSource(), ((ServerCommandSource)commandContext.getSource()).getWorld().getWorldBorder().getSize() + (double)FloatArgumentType.getFloat(commandContext, "distance"), 0L))).then(CommandManager.argument("time", IntegerArgumentType.integer(0)).executes(commandContext -> WorldBorderCommand.executeSet((ServerCommandSource)commandContext.getSource(), ((ServerCommandSource)commandContext.getSource()).getWorld().getWorldBorder().getSize() + (double)FloatArgumentType.getFloat(commandContext, "distance"), ((ServerCommandSource)commandContext.getSource()).getWorld().getWorldBorder().getTargetRemainingTime() + (long)IntegerArgumentType.getInteger(commandContext, "time") * 1000L)))))).then(CommandManager.literal("set").then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)CommandManager.argument("distance", FloatArgumentType.floatArg(-6.0E7f, 6.0E7f)).executes(commandContext -> WorldBorderCommand.executeSet((ServerCommandSource)commandContext.getSource(), FloatArgumentType.getFloat(commandContext, "distance"), 0L))).then(CommandManager.argument("time", IntegerArgumentType.integer(0)).executes(commandContext -> WorldBorderCommand.executeSet((ServerCommandSource)commandContext.getSource(), FloatArgumentType.getFloat(commandContext, "distance"), (long)IntegerArgumentType.getInteger(commandContext, "time") * 1000L)))))).then(CommandManager.literal("center").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("pos", Vec2ArgumentType.vec2()).executes(commandContext -> WorldBorderCommand.executeCenter((ServerCommandSource)commandContext.getSource(), Vec2ArgumentType.getVec2(commandContext, "pos")))))).then(((LiteralArgumentBuilder)CommandManager.literal("damage").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.literal("amount").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("damagePerBlock", FloatArgumentType.floatArg(0.0f)).executes(commandContext -> WorldBorderCommand.executeDamage((ServerCommandSource)commandContext.getSource(), FloatArgumentType.getFloat(commandContext, "damagePerBlock")))))).then(CommandManager.literal("buffer").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("distance", FloatArgumentType.floatArg(0.0f)).executes(commandContext -> WorldBorderCommand.executeBuffer((ServerCommandSource)commandContext.getSource(), FloatArgumentType.getFloat(commandContext, "distance"))))))).then(CommandManager.literal("get").executes(commandContext -> WorldBorderCommand.executeGet((ServerCommandSource)commandContext.getSource())))).then(((LiteralArgumentBuilder)CommandManager.literal("warning").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.literal("distance").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("distance", IntegerArgumentType.integer(0)).executes(commandContext -> WorldBorderCommand.executeWarningDistance((ServerCommandSource)commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "distance")))))).then(CommandManager.literal("time").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("time", IntegerArgumentType.integer(0)).executes(commandContext -> WorldBorderCommand.executeWarningTime((ServerCommandSource)commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "time")))))));
+    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("worldborder").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))).then(CommandManager.literal("add").then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)CommandManager.argument("distance", FloatArgumentType.floatArg(-6.0E7f, 6.0E7f)).executes(commandContext -> WorldBorderCommand.executeSet((ServerCommandSource)commandContext.getSource(), ((ServerCommandSource)commandContext.getSource()).getWorld().getWorldBorder().getSize() + (double)FloatArgumentType.getFloat(commandContext, "distance"), 0L))).then(CommandManager.argument("time", IntegerArgumentType.integer(0)).executes(commandContext -> WorldBorderCommand.executeSet((ServerCommandSource)commandContext.getSource(), ((ServerCommandSource)commandContext.getSource()).getWorld().getWorldBorder().getSize() + (double)FloatArgumentType.getFloat(commandContext, "distance"), ((ServerCommandSource)commandContext.getSource()).getWorld().getWorldBorder().getTargetRemainingTime() + (long)IntegerArgumentType.getInteger(commandContext, "time") * 1000L)))))).then(CommandManager.literal("set").then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)CommandManager.argument("distance", FloatArgumentType.floatArg(-6.0E7f, 6.0E7f)).executes(commandContext -> WorldBorderCommand.executeSet((ServerCommandSource)commandContext.getSource(), FloatArgumentType.getFloat(commandContext, "distance"), 0L))).then(CommandManager.argument("time", IntegerArgumentType.integer(0)).executes(commandContext -> WorldBorderCommand.executeSet((ServerCommandSource)commandContext.getSource(), FloatArgumentType.getFloat(commandContext, "distance"), (long)IntegerArgumentType.getInteger(commandContext, "time") * 1000L)))))).then(CommandManager.literal("center").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("pos", Vec2ArgumentType.vec2()).executes(commandContext -> WorldBorderCommand.executeCenter((ServerCommandSource)commandContext.getSource(), Vec2ArgumentType.getVec2(commandContext, "pos")))))).then(((LiteralArgumentBuilder)CommandManager.literal("damage").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.literal("amount").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("damagePerBlock", FloatArgumentType.floatArg(0.0f)).executes(commandContext -> WorldBorderCommand.executeDamage((ServerCommandSource)commandContext.getSource(), FloatArgumentType.getFloat(commandContext, "damagePerBlock")))))).then(CommandManager.literal("buffer").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("distance", FloatArgumentType.floatArg(0.0f)).executes(commandContext -> WorldBorderCommand.executeBuffer((ServerCommandSource)commandContext.getSource(), FloatArgumentType.getFloat(commandContext, "distance"))))))).then(CommandManager.literal("get").executes(commandContext -> WorldBorderCommand.executeGet((ServerCommandSource)commandContext.getSource())))).then(((LiteralArgumentBuilder)CommandManager.literal("warning").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.literal("distance").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("distance", IntegerArgumentType.integer(0)).executes(commandContext -> WorldBorderCommand.executeWarningDistance((ServerCommandSource)commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "distance")))))).then(CommandManager.literal("time").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("time", IntegerArgumentType.integer(0)).executes(commandContext -> WorldBorderCommand.executeWarningTime((ServerCommandSource)commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "time")))))));
     }
 
-    private static int executeBuffer(ServerCommandSource serverCommandSource, float f) throws CommandSyntaxException {
-        WorldBorder worldBorder = serverCommandSource.getWorld().getWorldBorder();
-        if (worldBorder.getBuffer() == (double)f) {
+    private static int executeBuffer(ServerCommandSource source, float distance) throws CommandSyntaxException {
+        WorldBorder worldBorder = source.getWorld().getWorldBorder();
+        if (worldBorder.getBuffer() == (double)distance) {
             throw DAMAGE_BUFFER_FAILED_EXCEPTION.create();
         }
-        worldBorder.setBuffer(f);
-        serverCommandSource.sendFeedback(new TranslatableText("commands.worldborder.damage.buffer.success", String.format(Locale.ROOT, "%.2f", Float.valueOf(f))), true);
-        return (int)f;
+        worldBorder.setBuffer(distance);
+        source.sendFeedback(new TranslatableText("commands.worldborder.damage.buffer.success", String.format(Locale.ROOT, "%.2f", Float.valueOf(distance))), true);
+        return (int)distance;
     }
 
-    private static int executeDamage(ServerCommandSource serverCommandSource, float f) throws CommandSyntaxException {
-        WorldBorder worldBorder = serverCommandSource.getWorld().getWorldBorder();
-        if (worldBorder.getDamagePerBlock() == (double)f) {
+    private static int executeDamage(ServerCommandSource source, float damagePerBlock) throws CommandSyntaxException {
+        WorldBorder worldBorder = source.getWorld().getWorldBorder();
+        if (worldBorder.getDamagePerBlock() == (double)damagePerBlock) {
             throw DAMAGE_AMOUNT_FAILED_EXCEPTION.create();
         }
-        worldBorder.setDamagePerBlock(f);
-        serverCommandSource.sendFeedback(new TranslatableText("commands.worldborder.damage.amount.success", String.format(Locale.ROOT, "%.2f", Float.valueOf(f))), true);
-        return (int)f;
+        worldBorder.setDamagePerBlock(damagePerBlock);
+        source.sendFeedback(new TranslatableText("commands.worldborder.damage.amount.success", String.format(Locale.ROOT, "%.2f", Float.valueOf(damagePerBlock))), true);
+        return (int)damagePerBlock;
     }
 
-    private static int executeWarningTime(ServerCommandSource serverCommandSource, int i) throws CommandSyntaxException {
-        WorldBorder worldBorder = serverCommandSource.getWorld().getWorldBorder();
-        if (worldBorder.getWarningTime() == i) {
+    private static int executeWarningTime(ServerCommandSource source, int time) throws CommandSyntaxException {
+        WorldBorder worldBorder = source.getWorld().getWorldBorder();
+        if (worldBorder.getWarningTime() == time) {
             throw WARNING_TIME_FAILED_EXCEPTION.create();
         }
-        worldBorder.setWarningTime(i);
-        serverCommandSource.sendFeedback(new TranslatableText("commands.worldborder.warning.time.success", i), true);
-        return i;
+        worldBorder.setWarningTime(time);
+        source.sendFeedback(new TranslatableText("commands.worldborder.warning.time.success", time), true);
+        return time;
     }
 
-    private static int executeWarningDistance(ServerCommandSource serverCommandSource, int i) throws CommandSyntaxException {
-        WorldBorder worldBorder = serverCommandSource.getWorld().getWorldBorder();
-        if (worldBorder.getWarningBlocks() == i) {
+    private static int executeWarningDistance(ServerCommandSource source, int distance) throws CommandSyntaxException {
+        WorldBorder worldBorder = source.getWorld().getWorldBorder();
+        if (worldBorder.getWarningBlocks() == distance) {
             throw WARNING_DISTANCE_FAILED_EXCEPTION.create();
         }
-        worldBorder.setWarningBlocks(i);
-        serverCommandSource.sendFeedback(new TranslatableText("commands.worldborder.warning.distance.success", i), true);
-        return i;
+        worldBorder.setWarningBlocks(distance);
+        source.sendFeedback(new TranslatableText("commands.worldborder.warning.distance.success", distance), true);
+        return distance;
     }
 
-    private static int executeGet(ServerCommandSource serverCommandSource) {
-        double d = serverCommandSource.getWorld().getWorldBorder().getSize();
-        serverCommandSource.sendFeedback(new TranslatableText("commands.worldborder.get", String.format(Locale.ROOT, "%.0f", d)), false);
+    private static int executeGet(ServerCommandSource source) {
+        double d = source.getWorld().getWorldBorder().getSize();
+        source.sendFeedback(new TranslatableText("commands.worldborder.get", String.format(Locale.ROOT, "%.0f", d)), false);
         return MathHelper.floor(d + 0.5);
     }
 
-    private static int executeCenter(ServerCommandSource serverCommandSource, Vec2f vec2f) throws CommandSyntaxException {
-        WorldBorder worldBorder = serverCommandSource.getWorld().getWorldBorder();
-        if (worldBorder.getCenterX() == (double)vec2f.x && worldBorder.getCenterZ() == (double)vec2f.y) {
+    private static int executeCenter(ServerCommandSource source, Vec2f pos) throws CommandSyntaxException {
+        WorldBorder worldBorder = source.getWorld().getWorldBorder();
+        if (worldBorder.getCenterX() == (double)pos.x && worldBorder.getCenterZ() == (double)pos.y) {
             throw CENTER_FAILED_EXCEPTION.create();
         }
-        worldBorder.setCenter(vec2f.x, vec2f.y);
-        serverCommandSource.sendFeedback(new TranslatableText("commands.worldborder.center.success", String.format(Locale.ROOT, "%.2f", Float.valueOf(vec2f.x)), String.format("%.2f", Float.valueOf(vec2f.y))), true);
+        worldBorder.setCenter(pos.x, pos.y);
+        source.sendFeedback(new TranslatableText("commands.worldborder.center.success", String.format(Locale.ROOT, "%.2f", Float.valueOf(pos.x)), String.format("%.2f", Float.valueOf(pos.y))), true);
         return 0;
     }
 
-    private static int executeSet(ServerCommandSource serverCommandSource, double d, long l) throws CommandSyntaxException {
-        WorldBorder worldBorder = serverCommandSource.getWorld().getWorldBorder();
-        double e = worldBorder.getSize();
-        if (e == d) {
+    private static int executeSet(ServerCommandSource source, double distance, long time) throws CommandSyntaxException {
+        WorldBorder worldBorder = source.getWorld().getWorldBorder();
+        double d = worldBorder.getSize();
+        if (d == distance) {
             throw SET_FAILED_NOCHANGE_EXCEPTION.create();
         }
-        if (d < 1.0) {
+        if (distance < 1.0) {
             throw SET_FAILED_SMALL_EXCEPTION.create();
         }
-        if (d > 6.0E7) {
+        if (distance > 6.0E7) {
             throw SET_FAILED_BIG_EXCEPTION.create();
         }
-        if (l > 0L) {
-            worldBorder.interpolateSize(e, d, l);
-            if (d > e) {
-                serverCommandSource.sendFeedback(new TranslatableText("commands.worldborder.set.grow", String.format(Locale.ROOT, "%.1f", d), Long.toString(l / 1000L)), true);
+        if (time > 0L) {
+            worldBorder.interpolateSize(d, distance, time);
+            if (distance > d) {
+                source.sendFeedback(new TranslatableText("commands.worldborder.set.grow", String.format(Locale.ROOT, "%.1f", distance), Long.toString(time / 1000L)), true);
             } else {
-                serverCommandSource.sendFeedback(new TranslatableText("commands.worldborder.set.shrink", String.format(Locale.ROOT, "%.1f", d), Long.toString(l / 1000L)), true);
+                source.sendFeedback(new TranslatableText("commands.worldborder.set.shrink", String.format(Locale.ROOT, "%.1f", distance), Long.toString(time / 1000L)), true);
             }
         } else {
-            worldBorder.setSize(d);
-            serverCommandSource.sendFeedback(new TranslatableText("commands.worldborder.set.immediate", String.format(Locale.ROOT, "%.1f", d)), true);
+            worldBorder.setSize(distance);
+            source.sendFeedback(new TranslatableText("commands.worldborder.set.immediate", String.format(Locale.ROOT, "%.1f", distance)), true);
         }
-        return (int)(d - e);
+        return (int)(distance - d);
     }
 }
 

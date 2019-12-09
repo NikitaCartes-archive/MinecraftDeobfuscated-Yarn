@@ -49,25 +49,25 @@ public enum Formatting {
     @Nullable
     private final Integer colorValue;
 
-    private static String sanitize(String string) {
-        return string.toLowerCase(Locale.ROOT).replaceAll("[^a-z]", "");
+    private static String sanitize(String name) {
+        return name.toLowerCase(Locale.ROOT).replaceAll("[^a-z]", "");
     }
 
-    private Formatting(String string2, @Nullable char c, int j, Integer integer) {
-        this(string2, c, false, j, integer);
+    private Formatting(String name, @Nullable char code, int colorIndex, Integer colorValue) {
+        this(name, code, false, colorIndex, colorValue);
     }
 
-    private Formatting(String string2, char c, boolean bl) {
-        this(string2, c, bl, -1, null);
+    private Formatting(String name, char code, boolean modifier) {
+        this(name, code, modifier, -1, null);
     }
 
-    private Formatting(String string2, char c, @Nullable boolean bl, int j, Integer integer) {
-        this.name = string2;
-        this.code = c;
-        this.modifier = bl;
-        this.colorIndex = j;
-        this.colorValue = integer;
-        this.stringValue = "\u00a7" + c;
+    private Formatting(String name, char code, @Nullable boolean modifier, int colorIndex, Integer colorValue) {
+        this.name = name;
+        this.code = code;
+        this.modifier = modifier;
+        this.colorIndex = colorIndex;
+        this.colorValue = colorValue;
+        this.stringValue = "\u00a7" + code;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -124,20 +124,20 @@ public enum Formatting {
     }
 
     @Nullable
-    public static Formatting byName(@Nullable String string) {
-        if (string == null) {
+    public static Formatting byName(@Nullable String name) {
+        if (name == null) {
             return null;
         }
-        return BY_NAME.get(Formatting.sanitize(string));
+        return BY_NAME.get(Formatting.sanitize(name));
     }
 
     @Nullable
-    public static Formatting byColorIndex(int i) {
-        if (i < 0) {
+    public static Formatting byColorIndex(int colorIndex) {
+        if (colorIndex < 0) {
             return RESET;
         }
         for (Formatting formatting : Formatting.values()) {
-            if (formatting.getColorIndex() != i) continue;
+            if (formatting.getColorIndex() != colorIndex) continue;
             return formatting;
         }
         return null;
@@ -145,26 +145,26 @@ public enum Formatting {
 
     @Nullable
     @Environment(value=EnvType.CLIENT)
-    public static Formatting byCode(char c) {
-        char d = Character.toString(c).toLowerCase(Locale.ROOT).charAt(0);
+    public static Formatting byCode(char code) {
+        char c = Character.toString(code).toLowerCase(Locale.ROOT).charAt(0);
         for (Formatting formatting : Formatting.values()) {
-            if (formatting.code != d) continue;
+            if (formatting.code != c) continue;
             return formatting;
         }
         return null;
     }
 
-    public static Collection<String> getNames(boolean bl, boolean bl2) {
+    public static Collection<String> getNames(boolean colors, boolean modifiers) {
         ArrayList<String> list = Lists.newArrayList();
         for (Formatting formatting : Formatting.values()) {
-            if (formatting.isColor() && !bl || formatting.isModifier() && !bl2) continue;
+            if (formatting.isColor() && !colors || formatting.isModifier() && !modifiers) continue;
             list.add(formatting.getName());
         }
         return list;
     }
 
     static {
-        BY_NAME = Arrays.stream(Formatting.values()).collect(Collectors.toMap(formatting -> Formatting.sanitize(formatting.name), formatting -> formatting));
+        BY_NAME = Arrays.stream(Formatting.values()).collect(Collectors.toMap(f -> Formatting.sanitize(f.name), f -> f));
         FORMATTING_CODE_PATTERN = Pattern.compile("(?i)\u00a7[0-9A-FK-OR]");
     }
 }

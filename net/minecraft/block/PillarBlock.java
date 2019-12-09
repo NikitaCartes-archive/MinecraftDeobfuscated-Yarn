@@ -22,22 +22,22 @@ extends Block {
     }
 
     @Override
-    public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
-        switch (blockRotation) {
+    public BlockState rotate(BlockState state, BlockRotation rotation) {
+        switch (rotation) {
             case COUNTERCLOCKWISE_90: 
             case CLOCKWISE_90: {
-                switch (blockState.get(AXIS)) {
+                switch (state.get(AXIS)) {
                     case X: {
-                        return (BlockState)blockState.with(AXIS, Direction.Axis.Z);
+                        return (BlockState)state.with(AXIS, Direction.Axis.Z);
                     }
                     case Z: {
-                        return (BlockState)blockState.with(AXIS, Direction.Axis.X);
+                        return (BlockState)state.with(AXIS, Direction.Axis.X);
                     }
                 }
-                return blockState;
+                return state;
             }
         }
-        return blockState;
+        return state;
     }
 
     @Override
@@ -46,8 +46,8 @@ extends Block {
     }
 
     @Override
-    public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-        return (BlockState)this.getDefaultState().with(AXIS, itemPlacementContext.getSide().getAxis());
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        return (BlockState)this.getDefaultState().with(AXIS, ctx.getSide().getAxis());
     }
 }
 

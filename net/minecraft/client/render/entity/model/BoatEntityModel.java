@@ -71,23 +71,23 @@ extends CompositeEntityModel<BoatEntity> {
         return this.bottom;
     }
 
-    protected ModelPart makePaddle(boolean bl) {
-        ModelPart modelPart = new ModelPart(this, 62, bl ? 0 : 20).setTextureSize(128, 64);
+    protected ModelPart makePaddle(boolean isLeft) {
+        ModelPart modelPart = new ModelPart(this, 62, isLeft ? 0 : 20).setTextureSize(128, 64);
         int i = 20;
         int j = 7;
         int k = 6;
         float f = -5.0f;
         modelPart.addCuboid(-1.0f, 0.0f, -5.0f, 2.0f, 2.0f, 18.0f);
-        modelPart.addCuboid(bl ? -1.001f : 0.001f, -3.0f, 8.0f, 1.0f, 6.0f, 7.0f);
+        modelPart.addCuboid(isLeft ? -1.001f : 0.001f, -3.0f, 8.0f, 1.0f, 6.0f, 7.0f);
         return modelPart;
     }
 
-    protected void setPaddleAngle(BoatEntity boatEntity, int i, float f) {
-        float g = boatEntity.interpolatePaddlePhase(i, f);
-        ModelPart modelPart = this.paddles[i];
-        modelPart.pitch = (float)MathHelper.clampedLerp(-1.0471975803375244, -0.2617993950843811, (MathHelper.sin(-g) + 1.0f) / 2.0f);
-        modelPart.yaw = (float)MathHelper.clampedLerp(-0.7853981852531433, 0.7853981852531433, (MathHelper.sin(-g + 1.0f) + 1.0f) / 2.0f);
-        if (i == 1) {
+    protected void setPaddleAngle(BoatEntity boat, int paddle, float angle) {
+        float f = boat.interpolatePaddlePhase(paddle, angle);
+        ModelPart modelPart = this.paddles[paddle];
+        modelPart.pitch = (float)MathHelper.clampedLerp(-1.0471975803375244, -0.2617993950843811, (MathHelper.sin(-f) + 1.0f) / 2.0f);
+        modelPart.yaw = (float)MathHelper.clampedLerp(-0.7853981852531433, 0.7853981852531433, (MathHelper.sin(-f + 1.0f) + 1.0f) / 2.0f);
+        if (paddle == 1) {
             modelPart.yaw = (float)Math.PI - modelPart.yaw;
         }
     }

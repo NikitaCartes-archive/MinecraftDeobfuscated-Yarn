@@ -33,8 +33,8 @@ extends Item {
     public static final DispenserBehavior DISPENSER_BEHAVIOR = new ItemDispenserBehavior(){
 
         @Override
-        protected ItemStack dispenseSilently(BlockPointer blockPointer, ItemStack itemStack) {
-            return ArmorItem.dispenseArmor(blockPointer, itemStack) ? itemStack : super.dispenseSilently(blockPointer, itemStack);
+        protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
+            return ArmorItem.dispenseArmor(pointer, stack) ? stack : super.dispenseSilently(pointer, stack);
         }
     };
     protected final EquipmentSlot slot;
@@ -42,16 +42,16 @@ extends Item {
     protected final float toughness;
     protected final ArmorMaterial type;
 
-    public static boolean dispenseArmor(BlockPointer blockPointer, ItemStack itemStack) {
-        BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING));
-        List<Entity> list = blockPointer.getWorld().getEntities(LivingEntity.class, new Box(blockPos), EntityPredicates.EXCEPT_SPECTATOR.and(new EntityPredicates.CanPickup(itemStack)));
+    public static boolean dispenseArmor(BlockPointer pointer, ItemStack armor) {
+        BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
+        List<Entity> list = pointer.getWorld().getEntities(LivingEntity.class, new Box(blockPos), EntityPredicates.EXCEPT_SPECTATOR.and(new EntityPredicates.CanPickup(armor)));
         if (list.isEmpty()) {
             return false;
         }
         LivingEntity livingEntity = (LivingEntity)list.get(0);
-        EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
-        ItemStack itemStack2 = itemStack.split(1);
-        livingEntity.equipStack(equipmentSlot, itemStack2);
+        EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(armor);
+        ItemStack itemStack = armor.split(1);
+        livingEntity.equipStack(equipmentSlot, itemStack);
         if (livingEntity instanceof MobEntity) {
             ((MobEntity)livingEntity).setEquipmentDropChance(equipmentSlot, 2.0f);
             ((MobEntity)livingEntity).setPersistent();
@@ -59,12 +59,12 @@ extends Item {
         return true;
     }
 
-    public ArmorItem(ArmorMaterial armorMaterial, EquipmentSlot equipmentSlot, Item.Settings settings) {
-        super(settings.maxDamageIfAbsent(armorMaterial.getDurability(equipmentSlot)));
-        this.type = armorMaterial;
-        this.slot = equipmentSlot;
-        this.protection = armorMaterial.getProtectionAmount(equipmentSlot);
-        this.toughness = armorMaterial.getToughness();
+    public ArmorItem(ArmorMaterial material, EquipmentSlot slot, Item.Settings settings) {
+        super(settings.maxDamageIfAbsent(material.getDurability(slot)));
+        this.type = material;
+        this.slot = slot;
+        this.protection = material.getProtectionAmount(slot);
+        this.toughness = material.getToughness();
         DispenserBlock.registerBehavior(this, DISPENSER_BEHAVIOR);
     }
 
@@ -82,17 +82,17 @@ extends Item {
     }
 
     @Override
-    public boolean canRepair(ItemStack itemStack, ItemStack itemStack2) {
-        return this.type.getRepairIngredient().test(itemStack2) || super.canRepair(itemStack, itemStack2);
+    public boolean canRepair(ItemStack stack, ItemStack ingredient) {
+        return this.type.getRepairIngredient().test(ingredient) || super.canRepair(stack, ingredient);
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
-        ItemStack itemStack = playerEntity.getStackInHand(hand);
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+        ItemStack itemStack = user.getStackInHand(hand);
         EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
-        ItemStack itemStack2 = playerEntity.getEquippedStack(equipmentSlot);
+        ItemStack itemStack2 = user.getEquippedStack(equipmentSlot);
         if (itemStack2.isEmpty()) {
-            playerEntity.equipStack(equipmentSlot, itemStack.copy());
+            user.equipStack(equipmentSlot, itemStack.copy());
             itemStack.setCount(0);
             return TypedActionResult.success(itemStack);
         }
@@ -100,11 +100,11 @@ extends Item {
     }
 
     @Override
-    public Multimap<String, EntityAttributeModifier> getModifiers(EquipmentSlot equipmentSlot) {
-        Multimap<String, EntityAttributeModifier> multimap = super.getModifiers(equipmentSlot);
-        if (equipmentSlot == this.slot) {
-            multimap.put(EntityAttributes.ARMOR.getId(), new EntityAttributeModifier(MODIFIERS[equipmentSlot.getEntitySlotId()], "Armor modifier", (double)this.protection, EntityAttributeModifier.Operation.ADDITION));
-            multimap.put(EntityAttributes.ARMOR_TOUGHNESS.getId(), new EntityAttributeModifier(MODIFIERS[equipmentSlot.getEntitySlotId()], "Armor toughness", (double)this.toughness, EntityAttributeModifier.Operation.ADDITION));
+    public Multimap<String, EntityAttributeModifier> getModifiers(EquipmentSlot slot) {
+        Multimap<String, EntityAttributeModifier> multimap = super.getModifiers(slot);
+        if (slot == this.slot) {
+            multimap.put(EntityAttributes.ARMOR.getId(), new EntityAttributeModifier(MODIFIERS[slot.getEntitySlotId()], "Armor modifier", (double)this.protection, EntityAttributeModifier.Operation.ADDITION));
+            multimap.put(EntityAttributes.ARMOR_TOUGHNESS.getId(), new EntityAttributeModifier(MODIFIERS[slot.getEntitySlotId()], "Armor toughness", (double)this.toughness, EntityAttributeModifier.Operation.ADDITION));
         }
         return multimap;
     }

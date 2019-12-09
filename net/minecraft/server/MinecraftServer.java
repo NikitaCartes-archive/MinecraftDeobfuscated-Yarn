@@ -244,18 +244,18 @@ Runnable {
     @Nullable
     private String serverId;
 
-    public MinecraftServer(File file, Proxy proxy, DataFixer dataFixer, CommandManager commandManager, YggdrasilAuthenticationService yggdrasilAuthenticationService, MinecraftSessionService minecraftSessionService, GameProfileRepository gameProfileRepository, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory, String string) {
+    public MinecraftServer(File gameDir, Proxy proxy, DataFixer dataFixer, CommandManager commandManager, YggdrasilAuthenticationService authService, MinecraftSessionService sessionService, GameProfileRepository gameProfileRepository, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory, String levelName) {
         super("Server");
         this.proxy = proxy;
         this.commandManager = commandManager;
-        this.authService = yggdrasilAuthenticationService;
-        this.sessionService = minecraftSessionService;
+        this.authService = authService;
+        this.sessionService = sessionService;
         this.gameProfileRepo = gameProfileRepository;
         this.userCache = userCache;
-        this.gameDir = file;
+        this.gameDir = gameDir;
         this.networkIo = new ServerNetworkIo(this);
         this.worldGenerationProgressListenerFactory = worldGenerationProgressListenerFactory;
-        this.levelStorage = new LevelStorage(file.toPath(), file.toPath().resolve("../backups"), dataFixer);
+        this.levelStorage = new LevelStorage(gameDir.toPath(), gameDir.toPath().resolve("../backups"), dataFixer);
         this.dataFixer = dataFixer;
         this.dataManager.registerListener(this.tagManager);
         this.dataManager.registerListener(this.predicateManager);
@@ -264,7 +264,7 @@ Runnable {
         this.dataManager.registerListener(this.commandFunctionManager);
         this.dataManager.registerListener(this.advancementLoader);
         this.workerExecutor = Util.getServerWorkerExecutor();
-        this.levelName = string;
+        this.levelName = levelName;
     }
 
     private void initScoreboard(PersistentStateManager persistentStateManager) {
@@ -338,30 +338,30 @@ Runnable {
         }
     }
 
-    protected synchronized void setLoadingStage(Text text) {
-        this.loadingStage = text;
+    protected synchronized void setLoadingStage(Text loadingStage) {
+        this.loadingStage = loadingStage;
     }
 
-    protected void loadWorld(String string, String string2, long l, LevelGeneratorType levelGeneratorType, JsonElement jsonElement) {
+    protected void loadWorld(String name, String serverName, long seed, LevelGeneratorType generatorType, JsonElement generatorSettings) {
         LevelInfo levelInfo;
-        this.upgradeWorld(string);
+        this.upgradeWorld(name);
         this.setLoadingStage(new TranslatableText("menu.loadingLevel", new Object[0]));
-        WorldSaveHandler worldSaveHandler = this.getLevelStorage().createSaveHandler(string, this);
+        WorldSaveHandler worldSaveHandler = this.getLevelStorage().createSaveHandler(name, this);
         this.loadWorldResourcePack(this.getLevelName(), worldSaveHandler);
         LevelProperties levelProperties = worldSaveHandler.readProperties();
         if (levelProperties == null) {
             if (this.isDemo()) {
                 levelInfo = DEMO_LEVEL_INFO;
             } else {
-                levelInfo = new LevelInfo(l, this.getDefaultGameMode(), this.shouldGenerateStructures(), this.isHardcore(), levelGeneratorType);
-                levelInfo.setGeneratorOptions(jsonElement);
+                levelInfo = new LevelInfo(seed, this.getDefaultGameMode(), this.shouldGenerateStructures(), this.isHardcore(), generatorType);
+                levelInfo.setGeneratorOptions(generatorSettings);
                 if (this.bonusChest) {
                     levelInfo.setBonusChest();
                 }
             }
-            levelProperties = new LevelProperties(levelInfo, string2);
+            levelProperties = new LevelProperties(levelInfo, serverName);
         } else {
-            levelProperties.setLevelName(string2);
+            levelProperties.setLevelName(serverName);
             levelInfo = new LevelInfo(levelProperties);
         }
         this.loadWorldDataPacks(worldSaveHandler.getWorldDir(), levelProperties);
@@ -371,24 +371,24 @@ Runnable {
         this.prepareStartRegion(worldGenerationProgressListener);
     }
 
-    protected void createWorlds(WorldSaveHandler worldSaveHandler, LevelProperties levelProperties, LevelInfo levelInfo, WorldGenerationProgressListener worldGenerationProgressListener) {
+    protected void createWorlds(WorldSaveHandler worldSaveHandler, LevelProperties properties, LevelInfo levelInfo, WorldGenerationProgressListener worldGenerationProgressListener) {
         if (this.isDemo()) {
-            levelProperties.loadLevelInfo(DEMO_LEVEL_INFO);
+            properties.loadLevelInfo(DEMO_LEVEL_INFO);
         }
-        ServerWorld serverWorld = new ServerWorld(this, this.workerExecutor, worldSaveHandler, levelProperties, DimensionType.OVERWORLD, this.profiler, worldGenerationProgressListener);
+        ServerWorld serverWorld = new ServerWorld(this, this.workerExecutor, worldSaveHandler, properties, DimensionType.OVERWORLD, this.profiler, worldGenerationProgressListener);
         this.worlds.put(DimensionType.OVERWORLD, serverWorld);
         PersistentStateManager persistentStateManager = serverWorld.getPersistentStateManager();
         this.initScoreboard(persistentStateManager);
         this.dataCommandStorage = new DataCommandStorage(persistentStateManager);
-        serverWorld.getWorldBorder().load(levelProperties);
+        serverWorld.getWorldBorder().load(properties);
         ServerWorld serverWorld2 = this.getWorld(DimensionType.OVERWORLD);
-        if (!levelProperties.isInitialized()) {
+        if (!properties.isInitialized()) {
             try {
                 serverWorld2.init(levelInfo);
-                if (levelProperties.getGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
-                    this.setToDebugWorldProperties(levelProperties);
+                if (properties.getGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
+                    this.setToDebugWorldProperties(properties);
                 }
-                levelProperties.setInitialized(true);
+                properties.setInitialized(true);
             } catch (Throwable throwable) {
                 CrashReport crashReport = CrashReport.create(throwable, "Exception initializing level");
                 try {
@@ -398,11 +398,11 @@ Runnable {
                 }
                 throw new CrashException(crashReport);
             }
-            levelProperties.setInitialized(true);
+            properties.setInitialized(true);
         }
         this.getPlayerManager().setMainWorld(serverWorld2);
-        if (levelProperties.getCustomBossEvents() != null) {
-            this.getBossBarManager().fromTag(levelProperties.getCustomBossEvents());
+        if (properties.getCustomBossEvents() != null) {
+            this.getBossBarManager().fromTag(properties.getCustomBossEvents());
         }
         for (DimensionType dimensionType : DimensionType.getAll()) {
             if (dimensionType == DimensionType.OVERWORLD) continue;
@@ -410,23 +410,23 @@ Runnable {
         }
     }
 
-    private void setToDebugWorldProperties(LevelProperties levelProperties) {
-        levelProperties.setStructures(false);
-        levelProperties.setCommandsAllowed(true);
-        levelProperties.setRaining(false);
-        levelProperties.setThundering(false);
-        levelProperties.setClearWeatherTime(1000000000);
-        levelProperties.setTimeOfDay(6000L);
-        levelProperties.setGameMode(GameMode.SPECTATOR);
-        levelProperties.setHardcore(false);
-        levelProperties.setDifficulty(Difficulty.PEACEFUL);
-        levelProperties.setDifficultyLocked(true);
-        levelProperties.getGameRules().get(GameRules.DO_DAYLIGHT_CYCLE).set(false, this);
+    private void setToDebugWorldProperties(LevelProperties properties) {
+        properties.setStructures(false);
+        properties.setCommandsAllowed(true);
+        properties.setRaining(false);
+        properties.setThundering(false);
+        properties.setClearWeatherTime(1000000000);
+        properties.setTimeOfDay(6000L);
+        properties.setGameMode(GameMode.SPECTATOR);
+        properties.setHardcore(false);
+        properties.setDifficulty(Difficulty.PEACEFUL);
+        properties.setDifficultyLocked(true);
+        properties.getGameRules().get(GameRules.DO_DAYLIGHT_CYCLE).set(false, this);
     }
 
-    protected void loadWorldDataPacks(File file, LevelProperties levelProperties) {
+    protected void loadWorldDataPacks(File worldDir, LevelProperties levelProperties) {
         this.dataPackManager.registerProvider(new VanillaDataPackProvider());
-        this.fileDataPackProvider = new FileResourcePackProvider(new File(file, "datapacks"));
+        this.fileDataPackProvider = new FileResourcePackProvider(new File(worldDir, "datapacks"));
         this.dataPackManager.registerProvider(this.fileDataPackProvider);
         this.dataPackManager.scanPacks();
         ArrayList<ResourcePackProfile> list = Lists.newArrayList();
@@ -476,13 +476,13 @@ Runnable {
         serverChunkManager.getLightingProvider().setTaskBatchSize(5);
     }
 
-    protected void loadWorldResourcePack(String string, WorldSaveHandler worldSaveHandler) {
+    protected void loadWorldResourcePack(String worldName, WorldSaveHandler worldSaveHandler) {
         File file = new File(worldSaveHandler.getWorldDir(), "resources.zip");
         if (file.isFile()) {
             try {
-                this.setResourcePack("level://" + URLEncoder.encode(string, StandardCharsets.UTF_8.toString()) + "/" + "resources.zip", "");
+                this.setResourcePack("level://" + URLEncoder.encode(worldName, StandardCharsets.UTF_8.toString()) + "/" + "resources.zip", "");
             } catch (UnsupportedEncodingException unsupportedEncodingException) {
-                LOGGER.warn("Something went wrong url encoding {}", (Object)string);
+                LOGGER.warn("Something went wrong url encoding {}", (Object)worldName);
             }
         }
     }
@@ -560,8 +560,8 @@ Runnable {
         return this.serverIp;
     }
 
-    public void setServerIp(String string) {
-        this.serverIp = string;
+    public void setServerIp(String serverIp) {
+        this.serverIp = serverIp;
     }
 
     public boolean isRunning() {
@@ -681,7 +681,7 @@ Runnable {
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    public void setFavicon(ServerMetadata serverMetadata) {
+    public void setFavicon(ServerMetadata metadata) {
         File file = this.getFile("server-icon.png");
         if (!file.exists()) {
             file = this.getLevelStorage().resolveFile(this.getLevelName(), "icon.png");
@@ -694,7 +694,7 @@ Runnable {
                 Validate.validState(bufferedImage.getHeight() == 64, "Must be 64 pixels high", new Object[0]);
                 ImageIO.write((RenderedImage)bufferedImage, "PNG", new ByteBufOutputStream(byteBuf));
                 ByteBuffer byteBuffer = Base64.getEncoder().encode(byteBuf.nioBuffer());
-                serverMetadata.setFavicon("data:image/png;base64," + StandardCharsets.UTF_8.decode(byteBuffer));
+                metadata.setFavicon("data:image/png;base64," + StandardCharsets.UTF_8.decode(byteBuffer));
             } catch (Exception exception) {
                 LOGGER.error("Couldn't load server icon", (Throwable)exception);
             } finally {
@@ -806,11 +806,11 @@ Runnable {
         return true;
     }
 
-    public void addServerGuiTickable(Runnable runnable) {
-        this.serverGuiTickables.add(runnable);
+    public void addServerGuiTickable(Runnable tickable) {
+        this.serverGuiTickables.add(tickable);
     }
 
-    public static void main(String[] strings) {
+    public static void main(String[] args) {
         OptionParser optionParser = new OptionParser();
         OptionSpecBuilder optionSpec = optionParser.accepts("nogui");
         OptionSpecBuilder optionSpec2 = optionParser.accepts("initSettings", "Initializes 'server.properties' and 'eula.txt', then quits");
@@ -827,7 +827,7 @@ Runnable {
         NonOptionArgumentSpec<String> optionSpec13 = optionParser.nonOptions();
         try {
             boolean bl;
-            OptionSet optionSet = optionParser.parse(strings);
+            OptionSet optionSet = optionParser.parse(args);
             if (optionSet.has(optionSpec7)) {
                 optionParser.printHelpOn(System.err);
                 return;
@@ -880,16 +880,16 @@ Runnable {
         }
     }
 
-    protected void setServerId(String string) {
-        this.serverId = string;
+    protected void setServerId(String serverId) {
+        this.serverId = serverId;
     }
 
     protected void setForceWorldUpgrade(boolean bl) {
         this.forceWorldUpgrade = bl;
     }
 
-    protected void setEraseCache(boolean bl) {
-        this.eraseCache = bl;
+    protected void setEraseCache(boolean eraseCache) {
+        this.eraseCache = eraseCache;
     }
 
     public void start() {
@@ -982,8 +982,8 @@ Runnable {
     }
 
     @Override
-    public void sendMessage(Text text) {
-        LOGGER.info(text.getString());
+    public void sendMessage(Text message) {
+        LOGGER.info(message.getString());
     }
 
     public KeyPair getKeyPair() {
@@ -994,16 +994,16 @@ Runnable {
         return this.serverPort;
     }
 
-    public void setServerPort(int i) {
-        this.serverPort = i;
+    public void setServerPort(int serverPort) {
+        this.serverPort = serverPort;
     }
 
     public String getUserName() {
         return this.userName;
     }
 
-    public void setUserName(String string) {
-        this.userName = string;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public boolean isSinglePlayer() {
@@ -1015,8 +1015,8 @@ Runnable {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void setServerName(String string) {
-        this.displayName = string;
+    public void setServerName(String serverName) {
+        this.displayName = serverName;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -1048,17 +1048,17 @@ Runnable {
         this.getPlayerManager().getPlayerList().forEach(this::sendDifficulty);
     }
 
-    public void setDifficultyLocked(boolean bl) {
+    public void setDifficultyLocked(boolean locked) {
         for (ServerWorld serverWorld : this.getWorlds()) {
             LevelProperties levelProperties = serverWorld.getLevelProperties();
-            levelProperties.setDifficultyLocked(bl);
+            levelProperties.setDifficultyLocked(locked);
         }
         this.getPlayerManager().getPlayerList().forEach(this::sendDifficulty);
     }
 
-    private void sendDifficulty(ServerPlayerEntity serverPlayerEntity) {
-        LevelProperties levelProperties = serverPlayerEntity.getServerWorld().getLevelProperties();
-        serverPlayerEntity.networkHandler.sendPacket(new DifficultyS2CPacket(levelProperties.getDifficulty(), levelProperties.isDifficultyLocked()));
+    private void sendDifficulty(ServerPlayerEntity player) {
+        LevelProperties levelProperties = player.getServerWorld().getLevelProperties();
+        player.networkHandler.sendPacket(new DifficultyS2CPacket(levelProperties.getDifficulty(), levelProperties.isDifficultyLocked()));
     }
 
     protected boolean isMonsterSpawningEnabled() {
@@ -1069,12 +1069,12 @@ Runnable {
         return this.demo;
     }
 
-    public void setDemo(boolean bl) {
-        this.demo = bl;
+    public void setDemo(boolean demo) {
+        this.demo = demo;
     }
 
-    public void setBonusChest(boolean bl) {
-        this.bonusChest = bl;
+    public void setBonusChest(boolean bonusChest) {
+        this.bonusChest = bonusChest;
     }
 
     public LevelStorage getLevelStorage() {
@@ -1089,9 +1089,9 @@ Runnable {
         return this.resourcePackHash;
     }
 
-    public void setResourcePack(String string, String string2) {
-        this.resourcePackUrl = string;
-        this.resourcePackHash = string2;
+    public void setResourcePack(String url, String hash) {
+        this.resourcePackUrl = url;
+        this.resourcePackHash = hash;
     }
 
     @Override
@@ -1130,24 +1130,24 @@ Runnable {
         return this.onlineMode;
     }
 
-    public void setOnlineMode(boolean bl) {
-        this.onlineMode = bl;
+    public void setOnlineMode(boolean onlineMode) {
+        this.onlineMode = onlineMode;
     }
 
     public boolean shouldPreventProxyConnections() {
         return this.preventProxyConnections;
     }
 
-    public void setPreventProxyConnections(boolean bl) {
-        this.preventProxyConnections = bl;
+    public void setPreventProxyConnections(boolean preventProxyConnections) {
+        this.preventProxyConnections = preventProxyConnections;
     }
 
     public boolean shouldSpawnAnimals() {
         return this.spawnAnimals;
     }
 
-    public void setSpawnAnimals(boolean bl) {
-        this.spawnAnimals = bl;
+    public void setSpawnAnimals(boolean spawnAnimals) {
+        this.spawnAnimals = spawnAnimals;
     }
 
     public boolean shouldSpawnNpcs() {
@@ -1156,24 +1156,24 @@ Runnable {
 
     public abstract boolean isUsingNativeTransport();
 
-    public void setSpawnNpcs(boolean bl) {
-        this.spawnNpcs = bl;
+    public void setSpawnNpcs(boolean spawnNpcs) {
+        this.spawnNpcs = spawnNpcs;
     }
 
     public boolean isPvpEnabled() {
         return this.pvpEnabled;
     }
 
-    public void setPvpEnabled(boolean bl) {
-        this.pvpEnabled = bl;
+    public void setPvpEnabled(boolean pvpEnabled) {
+        this.pvpEnabled = pvpEnabled;
     }
 
     public boolean isFlightEnabled() {
         return this.flightEnabled;
     }
 
-    public void setFlightEnabled(boolean bl) {
-        this.flightEnabled = bl;
+    public void setFlightEnabled(boolean flightEnabled) {
+        this.flightEnabled = flightEnabled;
     }
 
     public abstract boolean areCommandBlocksEnabled();
@@ -1182,16 +1182,16 @@ Runnable {
         return this.motd;
     }
 
-    public void setMotd(String string) {
-        this.motd = string;
+    public void setMotd(String motd) {
+        this.motd = motd;
     }
 
     public int getWorldHeight() {
         return this.worldHeight;
     }
 
-    public void setWorldHeight(int i) {
-        this.worldHeight = i;
+    public void setWorldHeight(int worldHeight) {
+        this.worldHeight = worldHeight;
     }
 
     public boolean isStopped() {
@@ -1251,8 +1251,8 @@ Runnable {
         return false;
     }
 
-    public void setForceGameMode(boolean bl) {
-        this.forceGameMode = bl;
+    public void setForceGameMode(boolean forceGameMode) {
+        this.forceGameMode = forceGameMode;
     }
 
     public boolean shouldForceGameMode() {
@@ -1263,8 +1263,8 @@ Runnable {
         return this.playerIdleTimeout;
     }
 
-    public void setPlayerIdleTimeout(int i) {
-        this.playerIdleTimeout = i;
+    public void setPlayerIdleTimeout(int playerIdleTimeout) {
+        this.playerIdleTimeout = playerIdleTimeout;
     }
 
     public MinecraftSessionService getSessionService() {
@@ -1313,9 +1313,9 @@ Runnable {
         return this.dataFixer;
     }
 
-    public int getSpawnRadius(@Nullable ServerWorld serverWorld) {
-        if (serverWorld != null) {
-            return serverWorld.getGameRules().getInt(GameRules.SPAWN_RADIUS);
+    public int getSpawnRadius(@Nullable ServerWorld world) {
+        if (world != null) {
+            return world.getGameRules().getInt(GameRules.SPAWN_RADIUS);
         }
         return 10;
     }
@@ -1367,11 +1367,11 @@ Runnable {
         });
     }
 
-    public void kickNonWhitelistedPlayers(ServerCommandSource serverCommandSource) {
+    public void kickNonWhitelistedPlayers(ServerCommandSource source) {
         if (!this.isWhitelistEnabled()) {
             return;
         }
-        PlayerManager playerManager = serverCommandSource.getMinecraftServer().getPlayerManager();
+        PlayerManager playerManager = source.getMinecraftServer().getPlayerManager();
         Whitelist whitelist = playerManager.getWhitelist();
         if (!whitelist.isEnabled()) {
             return;
@@ -1448,21 +1448,21 @@ Runnable {
         return this.whitelistEnabled;
     }
 
-    public void setWhitelistEnabled(boolean bl) {
-        this.whitelistEnabled = bl;
+    public void setWhitelistEnabled(boolean whitelistEnabled) {
+        this.whitelistEnabled = whitelistEnabled;
     }
 
     public float getTickTime() {
         return this.tickTime;
     }
 
-    public int getPermissionLevel(GameProfile gameProfile) {
-        if (this.getPlayerManager().isOperator(gameProfile)) {
-            OperatorEntry operatorEntry = (OperatorEntry)this.getPlayerManager().getOpList().get(gameProfile);
+    public int getPermissionLevel(GameProfile profile) {
+        if (this.getPlayerManager().isOperator(profile)) {
+            OperatorEntry operatorEntry = (OperatorEntry)this.getPlayerManager().getOpList().get(profile);
             if (operatorEntry != null) {
                 return operatorEntry.getPermissionLevel();
             }
-            if (this.isOwner(gameProfile)) {
+            if (this.isOwner(profile)) {
                 return 4;
             }
             if (this.isSinglePlayer()) {
@@ -1527,8 +1527,8 @@ Runnable {
             GameRules.forEachType(new GameRules.RuleTypeConsumer(){
 
                 @Override
-                public <T extends GameRules.Rule<T>> void accept(GameRules.RuleKey<T> ruleKey, GameRules.RuleType<T> ruleType) {
-                    list.add(String.format("%s=%s\n", ruleKey.getName(), ((GameRules.Rule)gameRules.get(ruleKey)).toString()));
+                public <T extends GameRules.Rule<T>> void accept(GameRules.RuleKey<T> key, GameRules.RuleType<T> type) {
+                    list.add(String.format("%s=%s\n", key.getName(), ((GameRules.Rule)gameRules.get(key)).toString()));
                 }
             });
             for (String string : list) {
@@ -1565,8 +1565,8 @@ Runnable {
     }
 
     @Override
-    public /* synthetic */ boolean canExecute(Runnable runnable) {
-        return this.canExecute((ServerTask)runnable);
+    public /* synthetic */ boolean canExecute(Runnable task) {
+        return this.canExecute((ServerTask)task);
     }
 
     @Override

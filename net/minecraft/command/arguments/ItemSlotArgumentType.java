@@ -61,13 +61,13 @@ implements ArgumentType<Integer> {
         return new ItemSlotArgumentType();
     }
 
-    public static int getItemSlot(CommandContext<ServerCommandSource> commandContext, String string) {
-        return commandContext.getArgument(string, Integer.class);
+    public static int getItemSlot(CommandContext<ServerCommandSource> context, String name) {
+        return context.getArgument(name, Integer.class);
     }
 
     @Override
-    public Integer parse(StringReader stringReader) throws CommandSyntaxException {
-        String string = stringReader.readUnquotedString();
+    public Integer parse(StringReader reader) throws CommandSyntaxException {
+        String string = reader.readUnquotedString();
         if (!slotNamesToSlotCommandId.containsKey(string)) {
             throw UNKNOWN_SLOT_EXCEPTION.create(string);
         }
@@ -75,8 +75,8 @@ implements ArgumentType<Integer> {
     }
 
     @Override
-    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
-        return CommandSource.suggestMatching(slotNamesToSlotCommandId.keySet(), suggestionsBuilder);
+    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+        return CommandSource.suggestMatching(slotNamesToSlotCommandId.keySet(), builder);
     }
 
     @Override

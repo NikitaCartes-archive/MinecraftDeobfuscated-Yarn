@@ -17,11 +17,11 @@ extends Block {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean isSideInvisible(BlockState blockState, BlockState blockState2, Direction direction) {
-        if (blockState2.getBlock() == this) {
+    public boolean isSideInvisible(BlockState state, BlockState neighbor, Direction facing) {
+        if (neighbor.getBlock() == this) {
             return true;
         }
-        return super.isSideInvisible(blockState, blockState2, direction);
+        return super.isSideInvisible(state, neighbor, facing);
     }
 }
 

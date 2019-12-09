@@ -31,13 +31,13 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(distancePredicate, intRange);
     }
 
-    public void trigger(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d, int i) {
-        this.test(serverPlayerEntity.getAdvancementTracker(), conditions -> conditions.matches(serverPlayerEntity, vec3d, i));
+    public void trigger(ServerPlayerEntity player, Vec3d startPos, int duration) {
+        this.test(player.getAdvancementTracker(), conditions -> conditions.matches(player, startPos, duration));
     }
 
     @Override
-    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
+    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject obj, JsonDeserializationContext context) {
+        return this.conditionsFromJson(obj, context);
     }
 
     public static class Conditions
@@ -45,21 +45,21 @@ extends AbstractCriterion<Conditions> {
         private final DistancePredicate distance;
         private final NumberRange.IntRange duration;
 
-        public Conditions(DistancePredicate distancePredicate, NumberRange.IntRange intRange) {
+        public Conditions(DistancePredicate distance, NumberRange.IntRange intRange) {
             super(ID);
-            this.distance = distancePredicate;
+            this.distance = distance;
             this.duration = intRange;
         }
 
-        public static Conditions create(DistancePredicate distancePredicate) {
-            return new Conditions(distancePredicate, NumberRange.IntRange.ANY);
+        public static Conditions create(DistancePredicate distance) {
+            return new Conditions(distance, NumberRange.IntRange.ANY);
         }
 
-        public boolean matches(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d, int i) {
-            if (!this.distance.test(vec3d.x, vec3d.y, vec3d.z, serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ())) {
+        public boolean matches(ServerPlayerEntity player, Vec3d startPos, int duration) {
+            if (!this.distance.test(startPos.x, startPos.y, startPos.z, player.getX(), player.getY(), player.getZ())) {
                 return false;
             }
-            return this.duration.test(i);
+            return this.duration.test(duration);
         }
 
         @Override

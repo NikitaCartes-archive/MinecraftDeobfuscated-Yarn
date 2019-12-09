@@ -138,8 +138,8 @@ public class SoundEngine {
     }
 
     @Nullable
-    public Source createSource(RunMode runMode) {
-        return (runMode == RunMode.STREAMING ? this.staticSources : this.streamingSources).createSource();
+    public Source createSource(RunMode mode) {
+        return (mode == RunMode.STREAMING ? this.staticSources : this.streamingSources).createSource();
     }
 
     public void release(Source source) {
@@ -158,8 +158,8 @@ public class SoundEngine {
         private final int maxSourceCount;
         private final Set<Source> sources = Sets.newIdentityHashSet();
 
-        public SourceSetImpl(int i) {
-            this.maxSourceCount = i;
+        public SourceSetImpl(int maxSourceCount) {
+            this.maxSourceCount = maxSourceCount;
         }
 
         @Override

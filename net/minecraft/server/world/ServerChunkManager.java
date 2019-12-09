@@ -76,7 +76,7 @@ extends ChunkManager {
     private final ChunkStatus[] chunkStatusCache = new ChunkStatus[4];
     private final Chunk[] chunkCache = new Chunk[4];
 
-    public ServerChunkManager(ServerWorld serverWorld, File file, DataFixer dataFixer, StructureManager structureManager, Executor executor, ChunkGenerator<?> chunkGenerator, int i, WorldGenerationProgressListener worldGenerationProgressListener, Supplier<PersistentStateManager> supplier) {
+    public ServerChunkManager(ServerWorld serverWorld, File file, DataFixer dataFixer, StructureManager structureManager, Executor workerExecutor, ChunkGenerator<?> chunkGenerator, int i, WorldGenerationProgressListener worldGenerationProgressListener, Supplier<PersistentStateManager> supplier) {
         this.world = serverWorld;
         this.mainThreadExecutor = new MainThreadExecutor(serverWorld);
         this.chunkGenerator = chunkGenerator;
@@ -85,7 +85,7 @@ extends ChunkManager {
         File file3 = new File(file2, "data");
         file3.mkdirs();
         this.persistentStateManager = new PersistentStateManager(file3, dataFixer);
-        this.threadedAnvilChunkStorage = new ThreadedAnvilChunkStorage(serverWorld, file, dataFixer, structureManager, executor, this.mainThreadExecutor, this, this.getChunkGenerator(), worldGenerationProgressListener, supplier, i);
+        this.threadedAnvilChunkStorage = new ThreadedAnvilChunkStorage(serverWorld, file, dataFixer, structureManager, workerExecutor, this.mainThreadExecutor, this, this.getChunkGenerator(), worldGenerationProgressListener, supplier, i);
         this.lightProvider = this.threadedAnvilChunkStorage.getLightProvider();
         this.ticketManager = this.threadedAnvilChunkStorage.getTicketManager();
         this.initChunkCaches();
@@ -97,8 +97,8 @@ extends ChunkManager {
     }
 
     @Nullable
-    private ChunkHolder getChunkHolder(long l) {
-        return this.threadedAnvilChunkStorage.getChunkHolder(l);
+    private ChunkHolder getChunkHolder(long pos) {
+        return this.threadedAnvilChunkStorage.getChunkHolder(pos);
     }
 
     public int getTotalChunksLoadedCount() {
@@ -118,38 +118,38 @@ extends ChunkManager {
 
     @Override
     @Nullable
-    public Chunk getChunk(int i, int j, ChunkStatus chunkStatus, boolean bl) {
+    public Chunk getChunk(int x, int z, ChunkStatus leastStatus, boolean create) {
         Chunk chunk2;
         if (Thread.currentThread() != this.serverThread) {
-            return CompletableFuture.supplyAsync(() -> this.getChunk(i, j, chunkStatus, bl), this.mainThreadExecutor).join();
+            return CompletableFuture.supplyAsync(() -> this.getChunk(x, z, leastStatus, create), this.mainThreadExecutor).join();
         }
-        long l = ChunkPos.toLong(i, j);
-        for (int k = 0; k < 4; ++k) {
-            if (l != this.chunkPosCache[k] || chunkStatus != this.chunkStatusCache[k] || (chunk2 = this.chunkCache[k]) == null && bl) continue;
+        long l = ChunkPos.toLong(x, z);
+        for (int i = 0; i < 4; ++i) {
+            if (l != this.chunkPosCache[i] || leastStatus != this.chunkStatusCache[i] || (chunk2 = this.chunkCache[i]) == null && create) continue;
             return chunk2;
         }
-        CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = this.getChunkFuture(i, j, chunkStatus, bl);
+        CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = this.getChunkFuture(x, z, leastStatus, create);
         this.mainThreadExecutor.runTasks(completableFuture::isDone);
         chunk2 = completableFuture.join().map(chunk -> chunk, unloaded -> {
-            if (bl) {
+            if (create) {
                 throw Util.throwOrPause(new IllegalStateException("Chunk not there when requested: " + unloaded));
             }
             return null;
         });
-        this.method_21738(l, chunk2, chunkStatus);
+        this.method_21738(l, chunk2, leastStatus);
         return chunk2;
     }
 
     @Override
     @Nullable
-    public WorldChunk getWorldChunk(int i, int j) {
+    public WorldChunk getWorldChunk(int chunkX, int chunkZ) {
         if (Thread.currentThread() != this.serverThread) {
             return null;
         }
-        long l = ChunkPos.toLong(i, j);
-        for (int k = 0; k < 4; ++k) {
-            if (l != this.chunkPosCache[k] || this.chunkStatusCache[k] != ChunkStatus.FULL) continue;
-            Chunk chunk = this.chunkCache[k];
+        long l = ChunkPos.toLong(chunkX, chunkZ);
+        for (int i = 0; i < 4; ++i) {
+            if (l != this.chunkPosCache[i] || this.chunkStatusCache[i] != ChunkStatus.FULL) continue;
+            Chunk chunk = this.chunkCache[i];
             return chunk instanceof WorldChunk ? (WorldChunk)chunk : null;
         }
         ChunkHolder chunkHolder = this.getChunkHolder(l);
@@ -177,70 +177,70 @@ extends ChunkManager {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> getChunkFutureSyncOnMainThread(int i, int j, ChunkStatus chunkStatus, boolean bl) {
+    public CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> getChunkFutureSyncOnMainThread(int chunkX, int chunkZ, ChunkStatus leastStatus, boolean create) {
         CompletionStage<Either<Chunk, ChunkHolder.Unloaded>> completableFuture2;
-        boolean bl2;
-        boolean bl3 = bl2 = Thread.currentThread() == this.serverThread;
-        if (bl2) {
-            completableFuture2 = this.getChunkFuture(i, j, chunkStatus, bl);
+        boolean bl;
+        boolean bl2 = bl = Thread.currentThread() == this.serverThread;
+        if (bl) {
+            completableFuture2 = this.getChunkFuture(chunkX, chunkZ, leastStatus, create);
             this.mainThreadExecutor.runTasks(() -> completableFuture2.isDone());
         } else {
-            completableFuture2 = CompletableFuture.supplyAsync(() -> this.getChunkFuture(i, j, chunkStatus, bl), this.mainThreadExecutor).thenCompose(completableFuture -> completableFuture);
+            completableFuture2 = CompletableFuture.supplyAsync(() -> this.getChunkFuture(chunkX, chunkZ, leastStatus, create), this.mainThreadExecutor).thenCompose(completableFuture -> completableFuture);
         }
         return completableFuture2;
     }
 
-    private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> getChunkFuture(int i, int j, ChunkStatus chunkStatus, boolean bl) {
-        ChunkPos chunkPos = new ChunkPos(i, j);
+    private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> getChunkFuture(int chunkX, int chunkZ, ChunkStatus leastStatus, boolean create) {
+        ChunkPos chunkPos = new ChunkPos(chunkX, chunkZ);
         long l = chunkPos.toLong();
-        int k = 33 + ChunkStatus.getTargetGenerationRadius(chunkStatus);
+        int i = 33 + ChunkStatus.getTargetGenerationRadius(leastStatus);
         ChunkHolder chunkHolder = this.getChunkHolder(l);
-        if (bl) {
-            this.ticketManager.addTicketWithLevel(ChunkTicketType.UNKNOWN, chunkPos, k, chunkPos);
-            if (this.isMissingForLevel(chunkHolder, k)) {
+        if (create) {
+            this.ticketManager.addTicketWithLevel(ChunkTicketType.UNKNOWN, chunkPos, i, chunkPos);
+            if (this.isMissingForLevel(chunkHolder, i)) {
                 Profiler profiler = this.world.getProfiler();
                 profiler.push("chunkLoad");
                 this.tick();
                 chunkHolder = this.getChunkHolder(l);
                 profiler.pop();
-                if (this.isMissingForLevel(chunkHolder, k)) {
+                if (this.isMissingForLevel(chunkHolder, i)) {
                     throw Util.throwOrPause(new IllegalStateException("No chunk holder after ticket has been added"));
                 }
             }
         }
-        if (this.isMissingForLevel(chunkHolder, k)) {
+        if (this.isMissingForLevel(chunkHolder, i)) {
             return ChunkHolder.UNLOADED_CHUNK_FUTURE;
         }
-        return chunkHolder.createFuture(chunkStatus, this.threadedAnvilChunkStorage);
+        return chunkHolder.createFuture(leastStatus, this.threadedAnvilChunkStorage);
     }
 
-    private boolean isMissingForLevel(@Nullable ChunkHolder chunkHolder, int i) {
-        return chunkHolder == null || chunkHolder.getLevel() > i;
-    }
-
-    @Override
-    public boolean isChunkLoaded(int i, int j) {
-        int k;
-        ChunkHolder chunkHolder = this.getChunkHolder(new ChunkPos(i, j).toLong());
-        return !this.isMissingForLevel(chunkHolder, k = 33 + ChunkStatus.getTargetGenerationRadius(ChunkStatus.FULL));
+    private boolean isMissingForLevel(@Nullable ChunkHolder holder, int maxLevel) {
+        return holder == null || holder.getLevel() > maxLevel;
     }
 
     @Override
-    public BlockView getChunk(int i, int j) {
-        long l = ChunkPos.toLong(i, j);
+    public boolean isChunkLoaded(int x, int z) {
+        int i;
+        ChunkHolder chunkHolder = this.getChunkHolder(new ChunkPos(x, z).toLong());
+        return !this.isMissingForLevel(chunkHolder, i = 33 + ChunkStatus.getTargetGenerationRadius(ChunkStatus.FULL));
+    }
+
+    @Override
+    public BlockView getChunk(int chunkX, int chunkZ) {
+        long l = ChunkPos.toLong(chunkX, chunkZ);
         ChunkHolder chunkHolder = this.getChunkHolder(l);
         if (chunkHolder == null) {
             return null;
         }
-        int k = CHUNK_STATUSES.size() - 1;
+        int i = CHUNK_STATUSES.size() - 1;
         while (true) {
             ChunkStatus chunkStatus;
             Optional<Chunk> optional;
-            if ((optional = chunkHolder.getFuture(chunkStatus = CHUNK_STATUSES.get(k)).getNow(ChunkHolder.UNLOADED_CHUNK).left()).isPresent()) {
+            if ((optional = chunkHolder.getFuture(chunkStatus = CHUNK_STATUSES.get(i)).getNow(ChunkHolder.UNLOADED_CHUNK).left()).isPresent()) {
                 return optional.get();
             }
             if (chunkStatus == ChunkStatus.LIGHT.getPrevious()) break;
-            --k;
+            --i;
         }
         return null;
     }
@@ -271,13 +271,13 @@ extends ChunkManager {
     }
 
     @Override
-    public boolean shouldTickChunk(ChunkPos chunkPos) {
-        return this.method_20585(chunkPos.toLong(), ChunkHolder::getEntityTickingFuture);
+    public boolean shouldTickChunk(ChunkPos pos) {
+        return this.method_20585(pos.toLong(), ChunkHolder::getEntityTickingFuture);
     }
 
     @Override
-    public boolean shouldTickBlock(BlockPos blockPos) {
-        long l = ChunkPos.toLong(blockPos.getX() >> 4, blockPos.getZ() >> 4);
+    public boolean shouldTickBlock(BlockPos pos) {
+        long l = ChunkPos.toLong(pos.getX() >> 4, pos.getZ() >> 4);
         return this.method_20585(l, ChunkHolder::getTickingFuture);
     }
 
@@ -286,8 +286,8 @@ extends ChunkManager {
         return this.method_20585(l, ChunkHolder::method_20725);
     }
 
-    private boolean method_20585(long l, Function<ChunkHolder, CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>>> function) {
-        ChunkHolder chunkHolder = this.getChunkHolder(l);
+    private boolean method_20585(long pos, Function<ChunkHolder, CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>>> function) {
+        ChunkHolder chunkHolder = this.getChunkHolder(pos);
         if (chunkHolder == null) {
             return false;
         }
@@ -295,9 +295,9 @@ extends ChunkManager {
         return either.left().isPresent();
     }
 
-    public void save(boolean bl) {
+    public void save(boolean flush) {
         this.tick();
-        this.threadedAnvilChunkStorage.save(bl);
+        this.threadedAnvilChunkStorage.save(flush);
     }
 
     @Override
@@ -391,21 +391,21 @@ extends ChunkManager {
         return this.threadedAnvilChunkStorage.getLoadedChunkCount();
     }
 
-    public void markForUpdate(BlockPos blockPos) {
+    public void markForUpdate(BlockPos pos) {
         int j;
-        int i = blockPos.getX() >> 4;
-        ChunkHolder chunkHolder = this.getChunkHolder(ChunkPos.toLong(i, j = blockPos.getZ() >> 4));
+        int i = pos.getX() >> 4;
+        ChunkHolder chunkHolder = this.getChunkHolder(ChunkPos.toLong(i, j = pos.getZ() >> 4));
         if (chunkHolder != null) {
-            chunkHolder.markForBlockUpdate(blockPos.getX() & 0xF, blockPos.getY(), blockPos.getZ() & 0xF);
+            chunkHolder.markForBlockUpdate(pos.getX() & 0xF, pos.getY(), pos.getZ() & 0xF);
         }
     }
 
     @Override
-    public void onLightUpdate(LightType lightType, ChunkSectionPos chunkSectionPos) {
+    public void onLightUpdate(LightType type, ChunkSectionPos chunkSectionPos) {
         this.mainThreadExecutor.execute(() -> {
             ChunkHolder chunkHolder = this.getChunkHolder(chunkSectionPos.toChunkPos().toLong());
             if (chunkHolder != null) {
-                chunkHolder.markForLightUpdate(lightType, chunkSectionPos.getSectionY());
+                chunkHolder.markForLightUpdate(type, chunkSectionPos.getSectionY());
             }
         });
     }
@@ -419,12 +419,12 @@ extends ChunkManager {
     }
 
     @Override
-    public void setChunkForced(ChunkPos chunkPos, boolean bl) {
-        this.ticketManager.setChunkForced(chunkPos, bl);
+    public void setChunkForced(ChunkPos pos, boolean forced) {
+        this.ticketManager.setChunkForced(pos, forced);
     }
 
-    public void updateCameraPosition(ServerPlayerEntity serverPlayerEntity) {
-        this.threadedAnvilChunkStorage.updateCameraPosition(serverPlayerEntity);
+    public void updateCameraPosition(ServerPlayerEntity player) {
+        this.threadedAnvilChunkStorage.updateCameraPosition(player);
     }
 
     public void unloadEntity(Entity entity) {
@@ -443,14 +443,14 @@ extends ChunkManager {
         this.threadedAnvilChunkStorage.sendToOtherNearbyPlayers(entity, packet);
     }
 
-    public void applyViewDistance(int i) {
-        this.threadedAnvilChunkStorage.setViewDistance(i);
+    public void applyViewDistance(int watchDistance) {
+        this.threadedAnvilChunkStorage.setViewDistance(watchDistance);
     }
 
     @Override
-    public void setMobSpawnOptions(boolean bl, boolean bl2) {
-        this.spawnMonsters = bl;
-        this.spawnAnimals = bl2;
+    public void setMobSpawnOptions(boolean spawnMonsters, boolean spawnAnimals) {
+        this.spawnMonsters = spawnMonsters;
+        this.spawnAnimals = spawnAnimals;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -488,7 +488,7 @@ extends ChunkManager {
         }
 
         @Override
-        protected boolean canExecute(Runnable runnable) {
+        protected boolean canExecute(Runnable task) {
             return true;
         }
 

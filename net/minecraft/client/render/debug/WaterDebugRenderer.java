@@ -21,12 +21,12 @@ public class WaterDebugRenderer
 implements DebugRenderer.Renderer {
     private final MinecraftClient client;
 
-    public WaterDebugRenderer(MinecraftClient minecraftClient) {
-        this.client = minecraftClient;
+    public WaterDebugRenderer(MinecraftClient client) {
+        this.client = client;
     }
 
     @Override
-    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f) {
+    public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
         FluidState fluidState;
         BlockPos blockPos = this.client.player.getBlockPos();
         World worldView = this.client.player.world;
@@ -38,8 +38,8 @@ implements DebugRenderer.Renderer {
         for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-10, -10, -10), blockPos.add(10, 10, 10))) {
             fluidState = worldView.getFluidState(blockPos2);
             if (!fluidState.matches(FluidTags.WATER)) continue;
-            double g = (float)blockPos2.getY() + fluidState.getHeight(worldView, blockPos2);
-            DebugRenderer.drawBox(new Box((float)blockPos2.getX() + 0.01f, (float)blockPos2.getY() + 0.01f, (float)blockPos2.getZ() + 0.01f, (float)blockPos2.getX() + 0.99f, g, (float)blockPos2.getZ() + 0.99f).offset(-d, -e, -f), 1.0f, 1.0f, 1.0f, 0.2f);
+            double d = (float)blockPos2.getY() + fluidState.getHeight(worldView, blockPos2);
+            DebugRenderer.drawBox(new Box((float)blockPos2.getX() + 0.01f, (float)blockPos2.getY() + 0.01f, (float)blockPos2.getZ() + 0.01f, (float)blockPos2.getX() + 0.99f, d, (float)blockPos2.getZ() + 0.99f).offset(-cameraX, -cameraY, -cameraZ), 1.0f, 1.0f, 1.0f, 0.2f);
         }
         for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-10, -10, -10), blockPos.add(10, 10, 10))) {
             fluidState = worldView.getFluidState(blockPos2);

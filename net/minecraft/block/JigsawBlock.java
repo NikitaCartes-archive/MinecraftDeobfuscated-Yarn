@@ -37,33 +37,33 @@ implements BlockEntityProvider {
     }
 
     @Override
-    public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
-        return (BlockState)blockState.with(FACING, blockRotation.rotate(blockState.get(FACING)));
+    public BlockState rotate(BlockState state, BlockRotation rotation) {
+        return (BlockState)state.with(FACING, rotation.rotate(state.get(FACING)));
     }
 
     @Override
-    public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-        return (BlockState)this.getDefaultState().with(FACING, itemPlacementContext.getSide());
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        return (BlockState)this.getDefaultState().with(FACING, ctx.getSide());
     }
 
     @Override
     @Nullable
-    public BlockEntity createBlockEntity(BlockView blockView) {
+    public BlockEntity createBlockEntity(BlockView view) {
         return new JigsawBlockEntity();
     }
 
     @Override
-    public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-        BlockEntity blockEntity = world.getBlockEntity(blockPos);
-        if (blockEntity instanceof JigsawBlockEntity && playerEntity.isCreativeLevelTwoOp()) {
-            playerEntity.openJigsawScreen((JigsawBlockEntity)blockEntity);
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        BlockEntity blockEntity = world.getBlockEntity(pos);
+        if (blockEntity instanceof JigsawBlockEntity && player.isCreativeLevelTwoOp()) {
+            player.openJigsawScreen((JigsawBlockEntity)blockEntity);
             return ActionResult.SUCCESS;
         }
         return ActionResult.PASS;
     }
 
-    public static boolean attachmentMatches(Structure.StructureBlockInfo structureBlockInfo, Structure.StructureBlockInfo structureBlockInfo2) {
-        return structureBlockInfo.state.get(FACING) == structureBlockInfo2.state.get(FACING).getOpposite() && structureBlockInfo.tag.getString("attachement_type").equals(structureBlockInfo2.tag.getString("attachement_type"));
+    public static boolean attachmentMatches(Structure.StructureBlockInfo info1, Structure.StructureBlockInfo info2) {
+        return info1.state.get(FACING) == info2.state.get(FACING).getOpposite() && info1.tag.getString("attachement_type").equals(info2.tag.getString("attachement_type"));
     }
 }
 

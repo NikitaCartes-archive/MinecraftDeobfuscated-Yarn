@@ -16,8 +16,8 @@ extends AbstractSoundInstance
 implements TickableSoundInstance {
     protected boolean done;
 
-    protected MovingSoundInstance(SoundEvent soundEvent, SoundCategory soundCategory) {
-        super(soundEvent, soundCategory);
+    protected MovingSoundInstance(SoundEvent sound, SoundCategory soundCategory) {
+        super(sound, soundCategory);
     }
 
     @Override

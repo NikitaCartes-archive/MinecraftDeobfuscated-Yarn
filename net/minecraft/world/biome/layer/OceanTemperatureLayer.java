@@ -14,9 +14,9 @@ public enum OceanTemperatureLayer implements InitLayer
 
 
     @Override
-    public int sample(LayerRandomnessSource layerRandomnessSource, int i, int j) {
-        PerlinNoiseSampler perlinNoiseSampler = layerRandomnessSource.getNoiseSampler();
-        double d = perlinNoiseSampler.sample((double)i / 8.0, (double)j / 8.0, 0.0, 0.0, 0.0);
+    public int sample(LayerRandomnessSource context, int x, int y) {
+        PerlinNoiseSampler perlinNoiseSampler = context.getNoiseSampler();
+        double d = perlinNoiseSampler.sample((double)x / 8.0, (double)y / 8.0, 0.0, 0.0, 0.0);
         if (d > 0.4) {
             return BiomeLayers.WARM_OCEAN_ID;
         }

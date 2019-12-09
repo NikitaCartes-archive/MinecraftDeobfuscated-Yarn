@@ -49,30 +49,30 @@ extends Container {
     };
     private final CraftingResultInventory field_19173 = new CraftingResultInventory();
 
-    public StonecutterContainer(int i, PlayerInventory playerInventory) {
-        this(i, playerInventory, BlockContext.EMPTY);
+    public StonecutterContainer(int syncId, PlayerInventory playerInventory) {
+        this(syncId, playerInventory, BlockContext.EMPTY);
     }
 
-    public StonecutterContainer(int i, PlayerInventory playerInventory, final BlockContext blockContext) {
-        super(ContainerType.STONECUTTER, i);
-        int j;
+    public StonecutterContainer(int syncId, PlayerInventory playerInventory, final BlockContext blockContext) {
+        super(ContainerType.STONECUTTER, syncId);
+        int i;
         this.context = blockContext;
         this.world = playerInventory.player.world;
         this.inputSlot = this.addSlot(new Slot(this.inventory, 0, 20, 33));
         this.outputSlot = this.addSlot(new Slot(this.field_19173, 1, 143, 33){
 
             @Override
-            public boolean canInsert(ItemStack itemStack) {
+            public boolean canInsert(ItemStack stack) {
                 return false;
             }
 
             @Override
-            public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
-                ItemStack itemStack2 = StonecutterContainer.this.inputSlot.takeStack(1);
-                if (!itemStack2.isEmpty()) {
+            public ItemStack onTakeItem(PlayerEntity player, ItemStack stack) {
+                ItemStack itemStack = StonecutterContainer.this.inputSlot.takeStack(1);
+                if (!itemStack.isEmpty()) {
                     StonecutterContainer.this.populateResult();
                 }
-                itemStack.getItem().onCraft(itemStack, playerEntity.world, playerEntity);
+                stack.getItem().onCraft(stack, player.world, player);
                 blockContext.run((world, blockPos) -> {
                     long l = world.getTime();
                     if (StonecutterContainer.this.lastTakeTime != l) {
@@ -80,16 +80,16 @@ extends Container {
                         StonecutterContainer.this.lastTakeTime = l;
                     }
                 });
-                return super.onTakeItem(playerEntity, itemStack);
+                return super.onTakeItem(player, stack);
             }
         });
-        for (j = 0; j < 3; ++j) {
-            for (int k = 0; k < 9; ++k) {
-                this.addSlot(new Slot(playerInventory, k + j * 9 + 9, 8 + k * 18, 84 + j * 18));
+        for (i = 0; i < 3; ++i) {
+            for (int j = 0; j < 9; ++j) {
+                this.addSlot(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
             }
         }
-        for (j = 0; j < 9; ++j) {
-            this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 142));
+        for (i = 0; i < 9; ++i) {
+            this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
         }
         this.addProperty(this.selectedRecipe);
     }
@@ -115,14 +115,14 @@ extends Container {
     }
 
     @Override
-    public boolean canUse(PlayerEntity playerEntity) {
-        return StonecutterContainer.canUse(this.context, playerEntity, Blocks.STONECUTTER);
+    public boolean canUse(PlayerEntity player) {
+        return StonecutterContainer.canUse(this.context, player, Blocks.STONECUTTER);
     }
 
     @Override
-    public boolean onButtonClick(PlayerEntity playerEntity, int i) {
-        if (i >= 0 && i < this.availableRecipes.size()) {
-            this.selectedRecipe.set(i);
+    public boolean onButtonClick(PlayerEntity player, int id) {
+        if (id >= 0 && id < this.availableRecipes.size()) {
+            this.selectedRecipe.set(id);
             this.populateResult();
         }
         return true;
@@ -167,25 +167,25 @@ extends Container {
     }
 
     @Override
-    public boolean canInsertIntoSlot(ItemStack itemStack, Slot slot) {
-        return slot.inventory != this.field_19173 && super.canInsertIntoSlot(itemStack, slot);
+    public boolean canInsertIntoSlot(ItemStack stack, Slot slot) {
+        return slot.inventory != this.field_19173 && super.canInsertIntoSlot(stack, slot);
     }
 
     @Override
-    public ItemStack transferSlot(PlayerEntity playerEntity, int i) {
+    public ItemStack transferSlot(PlayerEntity player, int invSlot) {
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = (Slot)this.slotList.get(i);
+        Slot slot = (Slot)this.slotList.get(invSlot);
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();
             Item item = itemStack2.getItem();
             itemStack = itemStack2.copy();
-            if (i == 1) {
-                item.onCraft(itemStack2, playerEntity.world, playerEntity);
+            if (invSlot == 1) {
+                item.onCraft(itemStack2, player.world, player);
                 if (!this.insertItem(itemStack2, 2, 38, true)) {
                     return ItemStack.EMPTY;
                 }
                 slot.onStackChanged(itemStack2, itemStack);
-            } else if (i == 0 ? !this.insertItem(itemStack2, 2, 38, false) : (this.world.getRecipeManager().getFirstMatch(RecipeType.STONECUTTING, new BasicInventory(itemStack2), this.world).isPresent() ? !this.insertItem(itemStack2, 0, 1, false) : (i >= 2 && i < 29 ? !this.insertItem(itemStack2, 29, 38, false) : i >= 29 && i < 38 && !this.insertItem(itemStack2, 2, 29, false)))) {
+            } else if (invSlot == 0 ? !this.insertItem(itemStack2, 2, 38, false) : (this.world.getRecipeManager().getFirstMatch(RecipeType.STONECUTTING, new BasicInventory(itemStack2), this.world).isPresent() ? !this.insertItem(itemStack2, 0, 1, false) : (invSlot >= 2 && invSlot < 29 ? !this.insertItem(itemStack2, 29, 38, false) : invSlot >= 29 && invSlot < 38 && !this.insertItem(itemStack2, 2, 29, false)))) {
                 return ItemStack.EMPTY;
             }
             if (itemStack2.isEmpty()) {
@@ -195,17 +195,17 @@ extends Container {
             if (itemStack2.getCount() == itemStack.getCount()) {
                 return ItemStack.EMPTY;
             }
-            slot.onTakeItem(playerEntity, itemStack2);
+            slot.onTakeItem(player, itemStack2);
             this.sendContentUpdates();
         }
         return itemStack;
     }
 
     @Override
-    public void close(PlayerEntity playerEntity) {
-        super.close(playerEntity);
+    public void close(PlayerEntity player) {
+        super.close(player);
         this.field_19173.removeInvStack(1);
-        this.context.run((world, blockPos) -> this.dropInventory(playerEntity, playerEntity.world, this.inventory));
+        this.context.run((world, blockPos) -> this.dropInventory(player, playerEntity.world, this.inventory));
     }
 }
 

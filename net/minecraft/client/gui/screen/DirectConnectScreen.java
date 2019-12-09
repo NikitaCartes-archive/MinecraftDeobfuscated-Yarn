@@ -53,16 +53,16 @@ extends Screen {
         this.addressField.setMaxLength(128);
         this.addressField.setSelected(true);
         this.addressField.setText(this.minecraft.options.lastServer);
-        this.addressField.setChangedListener(string -> this.onAddressFieldChanged());
+        this.addressField.setChangedListener(text -> this.onAddressFieldChanged());
         this.children.add(this.addressField);
         this.setInitialFocus(this.addressField);
         this.onAddressFieldChanged();
     }
 
     @Override
-    public void resize(MinecraftClient minecraftClient, int i, int j) {
+    public void resize(MinecraftClient client, int width, int height) {
         String string = this.addressField.getText();
-        this.init(minecraftClient, i, j);
+        this.init(client, width, height);
         this.addressField.setText(string);
     }
 
@@ -89,12 +89,12 @@ extends Screen {
     }
 
     @Override
-    public void render(int i, int j, float f) {
+    public void render(int mouseX, int mouseY, float delta) {
         this.renderBackground();
         this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, 0xFFFFFF);
         this.drawString(this.font, I18n.translate("addServer.enterIp", new Object[0]), this.width / 2 - 100, 100, 0xA0A0A0);
-        this.addressField.render(i, j, f);
-        super.render(i, j, f);
+        this.addressField.render(mouseX, mouseY, delta);
+        super.render(mouseX, mouseY, delta);
     }
 }
 

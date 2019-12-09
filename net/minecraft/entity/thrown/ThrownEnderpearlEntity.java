@@ -36,14 +36,14 @@ extends ThrownItemEntity {
         super((EntityType<? extends ThrownItemEntity>)entityType, world);
     }
 
-    public ThrownEnderpearlEntity(World world, LivingEntity livingEntity) {
-        super((EntityType<? extends ThrownItemEntity>)EntityType.ENDER_PEARL, livingEntity, world);
-        this.owner = livingEntity;
+    public ThrownEnderpearlEntity(World world, LivingEntity owner) {
+        super((EntityType<? extends ThrownItemEntity>)EntityType.ENDER_PEARL, owner, world);
+        this.owner = owner;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public ThrownEnderpearlEntity(World world, double d, double e, double f) {
-        super((EntityType<? extends ThrownItemEntity>)EntityType.ENDER_PEARL, d, e, f, world);
+    public ThrownEnderpearlEntity(World world, double x, double y, double z) {
+        super((EntityType<? extends ThrownItemEntity>)EntityType.ENDER_PEARL, x, y, z, world);
     }
 
     @Override
@@ -116,11 +116,11 @@ extends ThrownItemEntity {
 
     @Override
     @Nullable
-    public Entity changeDimension(DimensionType dimensionType) {
-        if (this.owner.dimension != dimensionType) {
+    public Entity changeDimension(DimensionType newDimension) {
+        if (this.owner.dimension != newDimension) {
             this.owner = null;
         }
-        return super.changeDimension(dimensionType);
+        return super.changeDimension(newDimension);
     }
 }
 

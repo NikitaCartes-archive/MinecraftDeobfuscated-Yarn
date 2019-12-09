@@ -28,18 +28,18 @@ extends BlockItem {
 
     @Override
     @Nullable
-    public ItemPlacementContext getPlacementContext(ItemPlacementContext itemPlacementContext) {
-        BlockPos blockPos = itemPlacementContext.getBlockPos();
-        World world = itemPlacementContext.getWorld();
+    public ItemPlacementContext getPlacementContext(ItemPlacementContext context) {
+        BlockPos blockPos = context.getBlockPos();
+        World world = context.getWorld();
         BlockState blockState = world.getBlockState(blockPos);
         Block block = this.getBlock();
         if (blockState.getBlock() == block) {
-            Direction direction = itemPlacementContext.shouldCancelInteraction() ? (itemPlacementContext.hitsInsideBlock() ? itemPlacementContext.getSide().getOpposite() : itemPlacementContext.getSide()) : (itemPlacementContext.getSide() == Direction.UP ? itemPlacementContext.getPlayerFacing() : Direction.UP);
+            Direction direction = context.shouldCancelInteraction() ? (context.hitsInsideBlock() ? context.getSide().getOpposite() : context.getSide()) : (context.getSide() == Direction.UP ? context.getPlayerFacing() : Direction.UP);
             int i = 0;
             BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos).setOffset(direction);
             while (i < 7) {
                 if (!world.isClient && !World.isValid(mutable)) {
-                    PlayerEntity playerEntity = itemPlacementContext.getPlayer();
+                    PlayerEntity playerEntity = context.getPlayer();
                     int j = world.getHeight();
                     if (!(playerEntity instanceof ServerPlayerEntity) || mutable.getY() < j) break;
                     ChatMessageS2CPacket chatMessageS2CPacket = new ChatMessageS2CPacket(new TranslatableText("build.tooHigh", j).formatted(Formatting.RED), MessageType.GAME_INFO);
@@ -48,8 +48,8 @@ extends BlockItem {
                 }
                 blockState = world.getBlockState(mutable);
                 if (blockState.getBlock() != this.getBlock()) {
-                    if (!blockState.canReplace(itemPlacementContext)) break;
-                    return ItemPlacementContext.offset(itemPlacementContext, mutable, direction);
+                    if (!blockState.canReplace(context)) break;
+                    return ItemPlacementContext.offset(context, mutable, direction);
                 }
                 mutable.setOffset(direction);
                 if (!direction.getAxis().isHorizontal()) continue;
@@ -60,7 +60,7 @@ extends BlockItem {
         if (ScaffoldingBlock.calculateDistance(world, blockPos) == 7) {
             return null;
         }
-        return itemPlacementContext;
+        return context;
     }
 
     @Override
