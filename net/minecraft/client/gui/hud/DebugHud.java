@@ -29,7 +29,6 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.Rotation3;
@@ -95,29 +94,24 @@ extends DrawableHelper {
     public void render() {
         this.client.getProfiler().push("debug");
         RenderSystem.pushMatrix();
-        RenderSystem.translatef(0.0f, 0.0f, -100.0f);
-        RenderSystem.scalef(1.0f, 1.0f, -1.0f);
         Entity entity = this.client.getCameraEntity();
         this.blockHit = entity.rayTrace(20.0, 0.0f, false);
         this.fluidHit = entity.rayTrace(20.0, 0.0f, true);
-        VertexConsumerProvider.Immediate immediate = this.client.getBufferBuilders().getEntityVertexConsumers();
-        Matrix4f matrix4f = Rotation3.identity().getMatrix();
-        this.renderLeftText(matrix4f, immediate);
-        this.renderRightText(matrix4f, immediate);
+        this.renderLeftText();
+        this.renderRightText();
+        RenderSystem.popMatrix();
         if (this.client.options.debugTpsEnabled) {
             int i = this.client.getWindow().getScaledWidth();
-            this.drawMetricsData(matrix4f, immediate, this.client.getMetricsData(), 0, i / 2, true);
+            this.drawMetricsData(this.client.getMetricsData(), 0, i / 2, true);
             IntegratedServer integratedServer = this.client.getServer();
             if (integratedServer != null) {
-                this.drawMetricsData(matrix4f, immediate, integratedServer.getMetricsData(), i - Math.min(i / 2, 240), i / 2, false);
+                this.drawMetricsData(integratedServer.getMetricsData(), i - Math.min(i / 2, 240), i / 2, false);
             }
         }
-        immediate.draw();
-        RenderSystem.popMatrix();
         this.client.getProfiler().pop();
     }
 
-    protected void renderLeftText(Matrix4f matrix4f, VertexConsumerProvider.Immediate immediate) {
+    protected void renderLeftText() {
         List<String> list = this.getLeftText();
         list.add("");
         boolean bl = this.client.getServer() != null;
@@ -126,22 +120,26 @@ extends DrawableHelper {
         for (int i = 0; i < list.size(); ++i) {
             String string = list.get(i);
             if (Strings.isNullOrEmpty(string)) continue;
-            int j = this.fontRenderer.fontHeight + 1;
-            int k = 2 + j * i;
-            this.fontRenderer.draw(string, 2.0f, k, 0xE0E0E0, false, matrix4f, immediate, false, -1873784752, 0xF000F0);
+            int j = this.fontRenderer.fontHeight;
+            int k = this.fontRenderer.getStringWidth(string);
+            int l = 2;
+            int m = 2 + j * i;
+            DebugHud.fill(1, m - 1, 2 + k + 1, m + j - 1, -1873784752);
+            this.fontRenderer.draw(string, 2.0f, m, 0xE0E0E0);
         }
     }
 
-    protected void renderRightText(Matrix4f matrix4f, VertexConsumerProvider.Immediate immediate) {
+    protected void renderRightText() {
         List<String> list = this.getRightText();
         for (int i = 0; i < list.size(); ++i) {
             String string = list.get(i);
             if (Strings.isNullOrEmpty(string)) continue;
-            int j = this.fontRenderer.fontHeight + 1;
+            int j = this.fontRenderer.fontHeight;
             int k = this.fontRenderer.getStringWidth(string);
             int l = this.client.getWindow().getScaledWidth() - 2 - k;
             int m = 2 + j * i;
-            this.fontRenderer.draw(string, l, m, 0xE0E0E0, false, matrix4f, immediate, false, -1873784752, 0xF000F0);
+            DebugHud.fill(l - 1, m - 1, l + k + 1, m + j - 1, -1873784752);
+            this.fontRenderer.draw(string, l, m, 0xE0E0E0);
         }
     }
 
@@ -359,9 +357,9 @@ extends DrawableHelper {
         return property.getName() + ": " + string;
     }
 
-    private void drawMetricsData(Matrix4f matrix4f, VertexConsumerProvider.Immediate immediate, MetricsData metricsData, int i, int j, boolean bl) {
-        int y;
+    private void drawMetricsData(MetricsData metricsData, int i, int j, boolean bl) {
         int t;
+        RenderSystem.disableDepthTest();
         int k = metricsData.getStartIndex();
         int l = metricsData.getCurrentIndex();
         long[] ls = metricsData.getSamples();
@@ -380,19 +378,18 @@ extends DrawableHelper {
             q += (long)u;
         }
         t = this.client.getWindow().getScaledHeight();
-        Matrix4f matrix4f2 = matrix4f.copy();
-        matrix4f2.multiply(Matrix4f.method_24021(0.0f, 0.0f, 100.0f));
-        DebugHud.fill(matrix4f2, i, t - 60, i + p, t, -1873784752);
+        DebugHud.fill(i, t - 60, i + p, t, -1873784752);
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         RenderSystem.enableBlend();
         RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
         bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
+        Matrix4f matrix4f = Rotation3.identity().getMatrix();
         while (m != l) {
             int v = metricsData.method_15248(ls[m], bl ? 30 : 60, bl ? 60 : 20);
             int w = bl ? 100 : 60;
             int x = this.getMetricsLineColor(MathHelper.clamp(v, 0, w), 0, w / 2, w);
-            y = x >> 24 & 0xFF;
+            int y = x >> 24 & 0xFF;
             int z = x >> 16 & 0xFF;
             int aa = x >> 8 & 0xFF;
             int ab = x & 0xFF;
@@ -408,12 +405,15 @@ extends DrawableHelper {
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
         if (bl) {
-            this.fontRenderer.draw("60 FPS", i + 2, t - 30 + 2, 0xE0E0E0, false, matrix4f, immediate, false, -1873784752, 0xF000F0);
+            DebugHud.fill(i + 1, t - 30 + 1, i + 14, t - 30 + 10, -1873784752);
+            this.fontRenderer.draw("60 FPS", i + 2, t - 30 + 2, 0xE0E0E0);
             this.hLine(i, i + p - 1, t - 30, -1);
-            this.fontRenderer.draw("30 FPS", i + 2, t - 60 + 2, 0xE0E0E0, false, matrix4f, immediate, false, -1873784752, 0xF000F0);
+            DebugHud.fill(i + 1, t - 60 + 1, i + 14, t - 60 + 10, -1873784752);
+            this.fontRenderer.draw("30 FPS", i + 2, t - 60 + 2, 0xE0E0E0);
             this.hLine(i, i + p - 1, t - 60, -1);
         } else {
-            this.fontRenderer.draw("20 TPS", i + 2, t - 60 + 2, 0xE0E0E0, false, matrix4f, immediate, false, -1873784752, 0xF000F0);
+            DebugHud.fill(i + 1, t - 60 + 1, i + 14, t - 60 + 10, -1873784752);
+            this.fontRenderer.draw("20 TPS", i + 2, t - 60 + 2, 0xE0E0E0);
             this.hLine(i, i + p - 1, t - 60, -1);
         }
         this.hLine(i, i + p - 1, t - 1, -1);
@@ -425,10 +425,10 @@ extends DrawableHelper {
         String string = r + " ms min";
         String string2 = q / (long)p + " ms avg";
         String string3 = s + " ms max";
-        y = t - 60 - this.fontRenderer.fontHeight;
-        this.fontRenderer.draw(string, i + 2, y, 0xE0E0E0, false, matrix4f, immediate, false, -1873784752, 0xF000F0);
-        this.fontRenderer.draw(string2, i + p / 2 - this.fontRenderer.getStringWidth(string2) / 2, y, 0xE0E0E0, false, matrix4f, immediate, false, -1873784752, 0xF000F0);
-        this.fontRenderer.draw(string3, i + p - this.fontRenderer.getStringWidth(string3), y, 0xE0E0E0, false, matrix4f, immediate, false, -1873784752, 0xF000F0);
+        this.fontRenderer.drawWithShadow(string, i + 2, t - 60 - this.fontRenderer.fontHeight, 0xE0E0E0);
+        this.fontRenderer.drawWithShadow(string2, i + p / 2 - this.fontRenderer.getStringWidth(string2) / 2, t - 60 - this.fontRenderer.fontHeight, 0xE0E0E0);
+        this.fontRenderer.drawWithShadow(string3, i + p - this.fontRenderer.getStringWidth(string3), t - 60 - this.fontRenderer.fontHeight, 0xE0E0E0);
+        RenderSystem.enableDepthTest();
     }
 
     private int getMetricsLineColor(int i, int j, int k, int l) {

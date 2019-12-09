@@ -66,7 +66,7 @@ extends BadlandsSurfaceBuilder {
                             chunk.setBlockState(mutable, Blocks.GRASS_BLOCK.getDefaultState(), false);
                         }
                     } else if (s > l + 3 + p) {
-                        BlockState blockState6 = s < 64 || s > 127 ? ORANGE_TERRACOTTA : (bl ? TERRACOTTA : this.method_15207(i, s, j));
+                        BlockState blockState6 = s < 64 || s > 127 ? ORANGE_TERRACOTTA : (bl ? TERRACOTTA : this.calculateLayerBlockState(i, s, j));
                         chunk.setBlockState(mutable, blockState6, false);
                     } else {
                         chunk.setBlockState(mutable, biome.getSurfaceConfig().getTopMaterial(), false);
@@ -83,7 +83,7 @@ extends BadlandsSurfaceBuilder {
                 if (bl2) {
                     chunk.setBlockState(mutable, ORANGE_TERRACOTTA, false);
                 } else {
-                    chunk.setBlockState(mutable, this.method_15207(i, s, j), false);
+                    chunk.setBlockState(mutable, this.calculateLayerBlockState(i, s, j), false);
                 }
             }
             ++r;

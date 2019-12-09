@@ -5,8 +5,8 @@ package net.minecraft.world.biome.layer;
 
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.biome.layer.BiomeLayers;
 import net.minecraft.world.biome.layer.type.DiagonalCrossSamplingLayer;
-import net.minecraft.world.biome.layer.util.BiomeLayers;
 import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
 
 public enum AddMushroomIslandLayer implements DiagonalCrossSamplingLayer

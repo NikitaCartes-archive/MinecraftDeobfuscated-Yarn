@@ -8,11 +8,11 @@ import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import net.minecraft.world.gen.decorator.DecoratorConfig;
 
-public class LakeDecoratorConfig
+public class ChanceDecoratorConfig
 implements DecoratorConfig {
     public final int chance;
 
-    public LakeDecoratorConfig(int i) {
+    public ChanceDecoratorConfig(int i) {
         this.chance = i;
     }
 
@@ -21,9 +21,9 @@ implements DecoratorConfig {
         return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("chance"), dynamicOps.createInt(this.chance))));
     }
 
-    public static LakeDecoratorConfig deserialize(Dynamic<?> dynamic) {
+    public static ChanceDecoratorConfig deserialize(Dynamic<?> dynamic) {
         int i = dynamic.get("chance").asInt(0);
-        return new LakeDecoratorConfig(i);
+        return new ChanceDecoratorConfig(i);
     }
 }
 

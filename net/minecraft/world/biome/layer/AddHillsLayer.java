@@ -6,8 +6,8 @@ package net.minecraft.world.biome.layer;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.biome.layer.BiomeLayers;
 import net.minecraft.world.biome.layer.type.MergingLayer;
-import net.minecraft.world.biome.layer.util.BiomeLayers;
 import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
 import net.minecraft.world.biome.layer.util.LayerSampler;
 import net.minecraft.world.biome.layer.util.NorthWestCoordinateTransformer;
@@ -57,7 +57,7 @@ NorthWestCoordinateTransformer
         }
         int m = (l - 2) % 29;
         if (!(BiomeLayers.isShallowOcean(k) || l < 2 || m != 1 || (biome = (Biome)Registry.BIOME.get(k)) != null && biome.hasParent())) {
-            Biome biome2 = Biome.getParentBiome(biome);
+            Biome biome2 = Biome.getModifiedBiome(biome);
             return biome2 == null ? k : Registry.BIOME.getRawId(biome2);
         }
         if (layerRandomnessSource.nextInt(3) == 0 || m == 0) {
@@ -102,7 +102,7 @@ NorthWestCoordinateTransformer
                 int n2 = n = layerRandomnessSource.nextInt(2) == 0 ? PLAINS_ID : FOREST_ID;
             }
             if (m == 0 && n != k) {
-                Biome biome2 = Biome.getParentBiome((Biome)Registry.BIOME.get(n));
+                Biome biome2 = Biome.getModifiedBiome((Biome)Registry.BIOME.get(n));
                 int n3 = n = biome2 == null ? k : Registry.BIOME.getRawId(biome2);
             }
             if (n != k) {

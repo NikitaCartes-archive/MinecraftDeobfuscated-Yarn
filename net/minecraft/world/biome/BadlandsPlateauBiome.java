@@ -47,7 +47,7 @@ extends Biome {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public int getFoliageColorAt() {
+    public int getFoliageColor() {
         return 10387789;
     }
 

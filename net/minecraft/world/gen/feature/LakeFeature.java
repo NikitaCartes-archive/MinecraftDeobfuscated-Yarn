@@ -17,19 +17,19 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
-import net.minecraft.world.gen.feature.BushFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.SingleStateFeatureConfig;
 
 public class LakeFeature
-extends Feature<BushFeatureConfig> {
+extends Feature<SingleStateFeatureConfig> {
     private static final BlockState CAVE_AIR = Blocks.CAVE_AIR.getDefaultState();
 
-    public LakeFeature(Function<Dynamic<?>, ? extends BushFeatureConfig> function) {
+    public LakeFeature(Function<Dynamic<?>, ? extends SingleStateFeatureConfig> function) {
         super(function);
     }
 
     @Override
-    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, BushFeatureConfig bushFeatureConfig) {
+    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, SingleStateFeatureConfig singleStateFeatureConfig) {
         int t;
         int j;
         while (blockPos.getY() > 5 && iWorld.isAir(blockPos)) {
@@ -75,7 +75,7 @@ extends Feature<BushFeatureConfig> {
                     if (t >= 4 && material.isLiquid()) {
                         return false;
                     }
-                    if (t >= 4 || material.isSolid() || iWorld.getBlockState(blockPos.add(j, t, s)) == bushFeatureConfig.state) continue;
+                    if (t >= 4 || material.isSolid() || iWorld.getBlockState(blockPos.add(j, t, s)) == singleStateFeatureConfig.state) continue;
                     return false;
                 }
             }
@@ -84,7 +84,7 @@ extends Feature<BushFeatureConfig> {
             for (int s = 0; s < 16; ++s) {
                 for (t = 0; t < 8; ++t) {
                     if (!bls[(j * 16 + s) * 8 + t]) continue;
-                    iWorld.setBlockState(blockPos.add(j, t, s), t >= 4 ? CAVE_AIR : bushFeatureConfig.state, 2);
+                    iWorld.setBlockState(blockPos.add(j, t, s), t >= 4 ? CAVE_AIR : singleStateFeatureConfig.state, 2);
                 }
             }
         }
@@ -102,7 +102,7 @@ extends Feature<BushFeatureConfig> {
                 }
             }
         }
-        if (bushFeatureConfig.state.getMaterial() == Material.LAVA) {
+        if (singleStateFeatureConfig.state.getMaterial() == Material.LAVA) {
             for (j = 0; j < 16; ++j) {
                 for (int s = 0; s < 16; ++s) {
                     for (t = 0; t < 8; ++t) {
@@ -114,7 +114,7 @@ extends Feature<BushFeatureConfig> {
                 }
             }
         }
-        if (bushFeatureConfig.state.getMaterial() == Material.WATER) {
+        if (singleStateFeatureConfig.state.getMaterial() == Material.WATER) {
             for (j = 0; j < 16; ++j) {
                 for (int s = 0; s < 16; ++s) {
                     t = 4;

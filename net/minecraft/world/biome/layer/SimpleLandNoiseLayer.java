@@ -3,8 +3,8 @@
  */
 package net.minecraft.world.biome.layer;
 
+import net.minecraft.world.biome.layer.BiomeLayers;
 import net.minecraft.world.biome.layer.type.IdentitySamplingLayer;
-import net.minecraft.world.biome.layer.util.BiomeLayers;
 import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
 
 public enum SimpleLandNoiseLayer implements IdentitySamplingLayer

@@ -12,18 +12,18 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
+import net.minecraft.world.gen.decorator.ChanceDecoratorConfig;
 import net.minecraft.world.gen.decorator.Decorator;
-import net.minecraft.world.gen.decorator.LakeDecoratorConfig;
 
 public class IcebergDecorator
-extends Decorator<LakeDecoratorConfig> {
-    public IcebergDecorator(Function<Dynamic<?>, ? extends LakeDecoratorConfig> function) {
+extends Decorator<ChanceDecoratorConfig> {
+    public IcebergDecorator(Function<Dynamic<?>, ? extends ChanceDecoratorConfig> function) {
         super(function);
     }
 
     @Override
-    public Stream<BlockPos> getPositions(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, LakeDecoratorConfig lakeDecoratorConfig, BlockPos blockPos) {
-        if (random.nextFloat() < 1.0f / (float)lakeDecoratorConfig.chance) {
+    public Stream<BlockPos> getPositions(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, ChanceDecoratorConfig chanceDecoratorConfig, BlockPos blockPos) {
+        if (random.nextFloat() < 1.0f / (float)chanceDecoratorConfig.chance) {
             int i = random.nextInt(8) + 4 + blockPos.getX();
             int j = random.nextInt(8) + 4 + blockPos.getZ();
             int k = iWorld.getTopY(Heightmap.Type.MOTION_BLOCKING, i, j);

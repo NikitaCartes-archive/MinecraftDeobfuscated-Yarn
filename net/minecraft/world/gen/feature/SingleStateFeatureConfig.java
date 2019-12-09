@@ -10,11 +10,11 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.world.gen.feature.FeatureConfig;
 
-public class BushFeatureConfig
+public class SingleStateFeatureConfig
 implements FeatureConfig {
     public final BlockState state;
 
-    public BushFeatureConfig(BlockState blockState) {
+    public SingleStateFeatureConfig(BlockState blockState) {
         this.state = blockState;
     }
 
@@ -23,9 +23,9 @@ implements FeatureConfig {
         return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("state"), BlockState.serialize(dynamicOps, this.state).getValue())));
     }
 
-    public static <T> BushFeatureConfig deserialize(Dynamic<T> dynamic) {
+    public static <T> SingleStateFeatureConfig deserialize(Dynamic<T> dynamic) {
         BlockState blockState = dynamic.get("state").map(BlockState::deserialize).orElse(Blocks.AIR.getDefaultState());
-        return new BushFeatureConfig(blockState);
+        return new SingleStateFeatureConfig(blockState);
     }
 }
 

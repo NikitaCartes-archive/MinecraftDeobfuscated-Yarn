@@ -16,17 +16,17 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
-import net.minecraft.world.gen.feature.BushFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.SingleStateFeatureConfig;
 
 public class IcebergFeature
-extends Feature<BushFeatureConfig> {
-    public IcebergFeature(Function<Dynamic<?>, ? extends BushFeatureConfig> function) {
+extends Feature<SingleStateFeatureConfig> {
+    public IcebergFeature(Function<Dynamic<?>, ? extends SingleStateFeatureConfig> function) {
         super(function);
     }
 
     @Override
-    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, BushFeatureConfig bushFeatureConfig) {
+    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, SingleStateFeatureConfig singleStateFeatureConfig) {
         boolean bl3;
         int s;
         int r;
@@ -35,7 +35,7 @@ extends Feature<BushFeatureConfig> {
         int l;
         blockPos = new BlockPos(blockPos.getX(), iWorld.getSeaLevel(), blockPos.getZ());
         boolean bl = random.nextDouble() > 0.7;
-        BlockState blockState = bushFeatureConfig.state;
+        BlockState blockState = singleStateFeatureConfig.state;
         double d = random.nextDouble() * 2.0 * Math.PI;
         int i = 11 - random.nextInt(5);
         int j = 3 + random.nextInt(3);

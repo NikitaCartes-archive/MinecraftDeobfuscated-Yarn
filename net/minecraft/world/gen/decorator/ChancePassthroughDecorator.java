@@ -8,18 +8,18 @@ import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.gen.decorator.LakeDecoratorConfig;
+import net.minecraft.world.gen.decorator.ChanceDecoratorConfig;
 import net.minecraft.world.gen.decorator.SimpleDecorator;
 
 public class ChancePassthroughDecorator
-extends SimpleDecorator<LakeDecoratorConfig> {
-    public ChancePassthroughDecorator(Function<Dynamic<?>, ? extends LakeDecoratorConfig> function) {
+extends SimpleDecorator<ChanceDecoratorConfig> {
+    public ChancePassthroughDecorator(Function<Dynamic<?>, ? extends ChanceDecoratorConfig> function) {
         super(function);
     }
 
     @Override
-    public Stream<BlockPos> getPositions(Random random, LakeDecoratorConfig lakeDecoratorConfig, BlockPos blockPos) {
-        if (random.nextFloat() < 1.0f / (float)lakeDecoratorConfig.chance) {
+    public Stream<BlockPos> getPositions(Random random, ChanceDecoratorConfig chanceDecoratorConfig, BlockPos blockPos) {
+        if (random.nextFloat() < 1.0f / (float)chanceDecoratorConfig.chance) {
             return Stream.of(blockPos);
         }
         return Stream.empty();

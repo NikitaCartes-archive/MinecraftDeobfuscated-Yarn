@@ -28,11 +28,11 @@ extends BadlandsSurfaceBuilder {
     @Override
     public void generate(Random random, Chunk chunk, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, long m, TernarySurfaceConfig ternarySurfaceConfig) {
         double e = 0.0;
-        double f = Math.min(Math.abs(d), this.field_15623.sample((double)i * 0.25, (double)j * 0.25, false) * 15.0);
+        double f = Math.min(Math.abs(d), this.heightCutoffNoise.sample((double)i * 0.25, (double)j * 0.25, false) * 15.0);
         if (f > 0.0) {
             double g = 0.001953125;
             e = f * f * 2.5;
-            double h = Math.abs(this.field_15618.sample((double)i * 0.001953125, (double)j * 0.001953125, false));
+            double h = Math.abs(this.heightNoise.sample((double)i * 0.001953125, (double)j * 0.001953125, false));
             double n = Math.ceil(h * 50.0) + 14.0;
             if (e > n) {
                 e = n;
@@ -74,7 +74,7 @@ extends BadlandsSurfaceBuilder {
                 r = q + Math.max(0, s - l);
                 if (s >= l - 1) {
                     if (s > l + 3 + q) {
-                        BlockState blockState6 = s < 64 || s > 127 ? ORANGE_TERRACOTTA : (bl ? TERACOTTA : this.method_15207(i, s, j));
+                        BlockState blockState6 = s < 64 || s > 127 ? ORANGE_TERRACOTTA : (bl ? TERACOTTA : this.calculateLayerBlockState(i, s, j));
                         chunk.setBlockState(mutable, blockState6, false);
                         continue;
                     }
@@ -94,7 +94,7 @@ extends BadlandsSurfaceBuilder {
                 chunk.setBlockState(mutable, ORANGE_TERRACOTTA, false);
                 continue;
             }
-            chunk.setBlockState(mutable, this.method_15207(i, s, j), false);
+            chunk.setBlockState(mutable, this.calculateLayerBlockState(i, s, j), false);
         }
     }
 }
