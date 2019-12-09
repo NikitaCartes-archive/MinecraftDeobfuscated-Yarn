@@ -81,8 +81,8 @@ public final class DarkForestBiome extends Biome {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public int getGrassColorAt(double d, double e) {
-		int i = super.getGrassColorAt(d, e);
+	public int getGrassColorAt(double x, double z) {
+		int i = super.getGrassColorAt(x, z);
 		return (i & 16711422) + 2634762 >> 1;
 	}
 }

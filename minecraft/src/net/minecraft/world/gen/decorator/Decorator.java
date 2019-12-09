@@ -37,17 +37,17 @@ public abstract class Decorator<DC extends DecoratorConfig> {
 	public static final Decorator<NoiseHeightmapDecoratorConfig> NOISE_HEIGHTMAP_DOUBLE = register(
 		"noise_heightmap_double", new NoiseHeightmapDoubleDecorator(NoiseHeightmapDecoratorConfig::deserialize)
 	);
-	public static final Decorator<LakeDecoratorConfig> CHANCE_HEIGHTMAP = register(
-		"chance_heightmap", new ChanceHeightmapDecorator(LakeDecoratorConfig::deserialize)
+	public static final Decorator<ChanceDecoratorConfig> CHANCE_HEIGHTMAP = register(
+		"chance_heightmap", new ChanceHeightmapDecorator(ChanceDecoratorConfig::deserialize)
 	);
-	public static final Decorator<LakeDecoratorConfig> CHANCE_HEIGHTMAP_DOUBLE = register(
-		"chance_heightmap_double", new ChanceHeightmapDoubleDecorator(LakeDecoratorConfig::deserialize)
+	public static final Decorator<ChanceDecoratorConfig> CHANCE_HEIGHTMAP_DOUBLE = register(
+		"chance_heightmap_double", new ChanceHeightmapDoubleDecorator(ChanceDecoratorConfig::deserialize)
 	);
-	public static final Decorator<LakeDecoratorConfig> CHANCE_PASSTHROUGH = register(
-		"chance_passthrough", new ChancePassthroughDecorator(LakeDecoratorConfig::deserialize)
+	public static final Decorator<ChanceDecoratorConfig> CHANCE_PASSTHROUGH = register(
+		"chance_passthrough", new ChancePassthroughDecorator(ChanceDecoratorConfig::deserialize)
 	);
-	public static final Decorator<LakeDecoratorConfig> CHANCE_TOP_SOLID_HEIGHTMAP = register(
-		"chance_top_solid_heightmap", new ChanceTopSolidHeightmapDecorator(LakeDecoratorConfig::deserialize)
+	public static final Decorator<ChanceDecoratorConfig> CHANCE_TOP_SOLID_HEIGHTMAP = register(
+		"chance_top_solid_heightmap", new ChanceTopSolidHeightmapDecorator(ChanceDecoratorConfig::deserialize)
 	);
 	public static final Decorator<CountExtraChanceDecoratorConfig> COUNT_EXTRA_HEIGHTMAP = register(
 		"count_extra_heightmap", new CountExtraHeightmapDecorator(CountExtraChanceDecoratorConfig::deserialize)
@@ -90,11 +90,11 @@ public abstract class Decorator<DC extends DecoratorConfig> {
 	public static final Decorator<CountDecoratorConfig> HELL_FIRE = register("hell_fire", new HellFireDecorator(CountDecoratorConfig::deserialize));
 	public static final Decorator<CountDecoratorConfig> MAGMA = register("magma", new MagmaDecorator(CountDecoratorConfig::deserialize));
 	public static final Decorator<NopeDecoratorConfig> EMERALD_ORE = register("emerald_ore", new EmeraldOreDecorator(NopeDecoratorConfig::deserialize));
-	public static final Decorator<LakeDecoratorConfig> LAVA_LAKE = register("lava_lake", new LavaLakeDecorator(LakeDecoratorConfig::deserialize));
-	public static final Decorator<LakeDecoratorConfig> WATER_LAKE = register("water_lake", new WaterLakeDecorator(LakeDecoratorConfig::deserialize));
-	public static final Decorator<LakeDecoratorConfig> DUNGEONS = register("dungeons", new DungeonsDecorator(LakeDecoratorConfig::deserialize));
+	public static final Decorator<ChanceDecoratorConfig> LAVA_LAKE = register("lava_lake", new LavaLakeDecorator(ChanceDecoratorConfig::deserialize));
+	public static final Decorator<ChanceDecoratorConfig> WATER_LAKE = register("water_lake", new WaterLakeDecorator(ChanceDecoratorConfig::deserialize));
+	public static final Decorator<ChanceDecoratorConfig> DUNGEONS = register("dungeons", new DungeonsDecorator(ChanceDecoratorConfig::deserialize));
 	public static final Decorator<NopeDecoratorConfig> DARK_OAK_TREE = register("dark_oak_tree", new DarkOakTreeDecorator(NopeDecoratorConfig::deserialize));
-	public static final Decorator<LakeDecoratorConfig> ICEBERG = register("iceberg", new IcebergDecorator(LakeDecoratorConfig::deserialize));
+	public static final Decorator<ChanceDecoratorConfig> ICEBERG = register("iceberg", new IcebergDecorator(ChanceDecoratorConfig::deserialize));
 	public static final Decorator<CountDecoratorConfig> LIGHT_GEM_CHANCE = register(
 		"light_gem_chance", new LightGemChanceDecorator(CountDecoratorConfig::deserialize)
 	);

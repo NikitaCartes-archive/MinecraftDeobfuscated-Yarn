@@ -5,8 +5,8 @@ import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.GenerationStep;
+import net.minecraft.world.gen.decorator.ChanceDecoratorConfig;
 import net.minecraft.world.gen.decorator.Decorator;
-import net.minecraft.world.gen.decorator.LakeDecoratorConfig;
 import net.minecraft.world.gen.decorator.TopSolidHeightmapNoiseBiasedDecoratorConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
@@ -71,7 +71,7 @@ public class WarmOceanBiome extends Biome {
 			GenerationStep.Feature.VEGETAL_DECORATION,
 			Feature.SEA_PICKLE
 				.configure(new SeaPickleFeatureConfig(20))
-				.createDecoratedFeature(Decorator.CHANCE_TOP_SOLID_HEIGHTMAP.configure(new LakeDecoratorConfig(16)))
+				.createDecoratedFeature(Decorator.CHANCE_TOP_SOLID_HEIGHTMAP.configure(new ChanceDecoratorConfig(16)))
 		);
 		DefaultBiomeFeatures.addFrozenTopLayer(this);
 		this.addSpawn(EntityCategory.WATER_CREATURE, new Biome.SpawnEntry(EntityType.SQUID, 10, 4, 4));

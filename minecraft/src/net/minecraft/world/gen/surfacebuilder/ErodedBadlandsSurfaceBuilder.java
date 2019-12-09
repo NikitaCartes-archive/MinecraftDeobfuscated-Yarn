@@ -35,10 +35,10 @@ public class ErodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 		TernarySurfaceConfig ternarySurfaceConfig
 	) {
 		double e = 0.0;
-		double f = Math.min(Math.abs(d), this.field_15623.sample((double)i * 0.25, (double)j * 0.25, false) * 15.0);
+		double f = Math.min(Math.abs(d), this.heightCutoffNoise.sample((double)i * 0.25, (double)j * 0.25, false) * 15.0);
 		if (f > 0.0) {
 			double g = 0.001953125;
-			double h = Math.abs(this.field_15618.sample((double)i * 0.001953125, (double)j * 0.001953125, false));
+			double h = Math.abs(this.heightNoise.sample((double)i * 0.001953125, (double)j * 0.001953125, false));
 			e = f * f * 2.5;
 			double n = Math.ceil(h * 50.0) + 14.0;
 			if (e > n) {
@@ -91,7 +91,7 @@ public class ErodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 							} else if (bl) {
 								blockState6 = TERACOTTA;
 							} else {
-								blockState6 = this.method_15207(i, s, j);
+								blockState6 = this.calculateLayerBlockState(i, s, j);
 							}
 
 							chunk.setBlockState(mutable, blockState6, false);
@@ -126,7 +126,7 @@ public class ErodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 					if (bl2) {
 						chunk.setBlockState(mutable, ORANGE_TERRACOTTA, false);
 					} else {
-						chunk.setBlockState(mutable, this.method_15207(i, s, j), false);
+						chunk.setBlockState(mutable, this.calculateLayerBlockState(i, s, j), false);
 					}
 				}
 			}

@@ -87,7 +87,7 @@ public class WoodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 							} else if (bl) {
 								blockState6 = TERRACOTTA;
 							} else {
-								blockState6 = this.method_15207(i, s, j);
+								blockState6 = this.calculateLayerBlockState(i, s, j);
 							}
 
 							chunk.setBlockState(mutable, blockState6, false);
@@ -97,7 +97,7 @@ public class WoodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 						if (bl2) {
 							chunk.setBlockState(mutable, ORANGE_TERRACOTTA, false);
 						} else {
-							chunk.setBlockState(mutable, this.method_15207(i, s, j), false);
+							chunk.setBlockState(mutable, this.calculateLayerBlockState(i, s, j), false);
 						}
 					}
 
