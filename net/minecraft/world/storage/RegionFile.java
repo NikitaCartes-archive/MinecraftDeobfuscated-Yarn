@@ -278,6 +278,9 @@ implements AutoCloseable {
         return pos.getRegionRelativeX() + pos.getRegionRelativeZ() * 32;
     }
 
+    /*
+     * WARNING - Removed try catching itself - possible behaviour change.
+     */
     @Override
     public void close() throws IOException {
         try {
@@ -286,7 +289,11 @@ implements AutoCloseable {
             try {
                 this.writeHeader();
             } finally {
-                this.channel.close();
+                try {
+                    this.channel.force(true);
+                } finally {
+                    this.channel.close();
+                }
             }
         }
     }

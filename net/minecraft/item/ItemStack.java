@@ -460,6 +460,9 @@ public final class ItemStack {
 
     public void setTag(@Nullable CompoundTag tag) {
         this.tag = tag;
+        if (this.getItem().isDamageable()) {
+            this.setDamage(this.getDamage());
+        }
     }
 
     public Text getName() {

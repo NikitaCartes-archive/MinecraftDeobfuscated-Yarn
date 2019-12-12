@@ -303,9 +303,12 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
 
     @Override
     public void close() throws IOException {
-        this.chunkTaskPrioritySystem.close();
-        this.pointOfInterestStorage.close();
-        super.close();
+        try {
+            this.chunkTaskPrioritySystem.close();
+            this.pointOfInterestStorage.close();
+        } finally {
+            super.close();
+        }
     }
 
     protected void save(boolean flush) {

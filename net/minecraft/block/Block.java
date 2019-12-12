@@ -125,7 +125,7 @@ implements ItemConvertible {
     @Nullable
     private Item cachedItem;
     private static final ThreadLocal<Object2ByteLinkedOpenHashMap<NeighborGroup>> FACE_CULL_MAP = ThreadLocal.withInitial(() -> {
-        Object2ByteLinkedOpenHashMap<NeighborGroup> object2ByteLinkedOpenHashMap = new Object2ByteLinkedOpenHashMap<NeighborGroup>(200){
+        Object2ByteLinkedOpenHashMap<NeighborGroup> object2ByteLinkedOpenHashMap = new Object2ByteLinkedOpenHashMap<NeighborGroup>(2048, 0.25f){
 
             @Override
             protected void rehash(int i) {
@@ -364,7 +364,7 @@ implements ItemConvertible {
             VoxelShape voxelShape = state.getCullingFace(view, pos, facing);
             VoxelShape voxelShape2 = blockState.getCullingFace(view, blockPos, facing.getOpposite());
             boolean bl = VoxelShapes.matchesAnywhere(voxelShape, voxelShape2, BooleanBiFunction.ONLY_FIRST);
-            if (object2ByteLinkedOpenHashMap.size() == 200) {
+            if (object2ByteLinkedOpenHashMap.size() == 2048) {
                 object2ByteLinkedOpenHashMap.removeLastByte();
             }
             object2ByteLinkedOpenHashMap.putAndMoveToFirst(neighborGroup, (byte)(bl ? 1 : 0));

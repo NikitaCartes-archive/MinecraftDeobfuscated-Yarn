@@ -408,7 +408,9 @@ VillagerDataContainer {
         this.lastRestockTime = tag.getLong("LastRestock");
         this.lastGossipDecayTime = tag.getLong("LastGossipDecay");
         this.setCanPickUpLoot(true);
-        this.reinitializeBrain((ServerWorld)this.world);
+        if (this.world instanceof ServerWorld) {
+            this.reinitializeBrain((ServerWorld)this.world);
+        }
         this.restocksToday = tag.getInt("RestocksToday");
     }
 
