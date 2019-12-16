@@ -41,8 +41,8 @@ public interface FluidState extends State<FluidState> {
 		return this.getFluid().getHeight(this, blockView, blockPos);
 	}
 
-	default float method_20785() {
-		return this.getFluid().method_20784(this);
+	default float getHeight() {
+		return this.getFluid().getHeight(this);
 	}
 
 	default int getLevel() {

@@ -2,10 +2,10 @@ package net.minecraft.block.entity;
 
 import javax.annotation.Nullable;
 import net.minecraft.container.Container;
-import net.minecraft.container.ContainerLock;
 import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.ContainerLock;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundCategory;
@@ -15,7 +15,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Nameable;
 
 public abstract class LockableContainerBlockEntity extends BlockEntity implements Inventory, NameableContainerProvider, Nameable {
-	private ContainerLock lock = ContainerLock.NONE;
+	private ContainerLock lock = ContainerLock.EMPTY;
 	private Text customName;
 
 	protected LockableContainerBlockEntity(BlockEntityType<?> blockEntityType) {
@@ -25,7 +25,7 @@ public abstract class LockableContainerBlockEntity extends BlockEntity implement
 	@Override
 	public void fromTag(CompoundTag tag) {
 		super.fromTag(tag);
-		this.lock = ContainerLock.deserialize(tag);
+		this.lock = ContainerLock.fromTag(tag);
 		if (tag.contains("CustomName", 8)) {
 			this.customName = Text.Serializer.fromJson(tag.getString("CustomName"));
 		}
@@ -34,7 +34,7 @@ public abstract class LockableContainerBlockEntity extends BlockEntity implement
 	@Override
 	public CompoundTag toTag(CompoundTag tag) {
 		super.toTag(tag);
-		this.lock.serialize(tag);
+		this.lock.toTag(tag);
 		if (this.customName != null) {
 			tag.putString("CustomName", Text.Serializer.toJson(this.customName));
 		}
@@ -69,7 +69,7 @@ public abstract class LockableContainerBlockEntity extends BlockEntity implement
 	}
 
 	public static boolean checkUnlocked(PlayerEntity player, ContainerLock lock, Text containerName) {
-		if (!player.isSpectator() && !lock.isEmpty(player.getMainHandStack())) {
+		if (!player.isSpectator() && !lock.canOpen(player.getMainHandStack())) {
 			player.addChatMessage(new TranslatableText("container.isLocked", containerName), true);
 			player.playSound(SoundEvents.BLOCK_CHEST_LOCKED, SoundCategory.BLOCKS, 1.0F, 1.0F);
 			return false;

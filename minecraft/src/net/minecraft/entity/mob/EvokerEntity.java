@@ -229,10 +229,10 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 		public void tick() {
 			if (EvokerEntity.this.getTarget() != null) {
 				EvokerEntity.this.getLookControl()
-					.lookAt(EvokerEntity.this.getTarget(), (float)EvokerEntity.this.method_5986(), (float)EvokerEntity.this.getLookPitchSpeed());
+					.lookAt(EvokerEntity.this.getTarget(), (float)EvokerEntity.this.getBodyYawSpeed(), (float)EvokerEntity.this.getLookPitchSpeed());
 			} else if (EvokerEntity.this.getWololoTarget() != null) {
 				EvokerEntity.this.getLookControl()
-					.lookAt(EvokerEntity.this.getWololoTarget(), (float)EvokerEntity.this.method_5986(), (float)EvokerEntity.this.getLookPitchSpeed());
+					.lookAt(EvokerEntity.this.getWololoTarget(), (float)EvokerEntity.this.getBodyYawSpeed(), (float)EvokerEntity.this.getLookPitchSpeed());
 			}
 		}
 	}

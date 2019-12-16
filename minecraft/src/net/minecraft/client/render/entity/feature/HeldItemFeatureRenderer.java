@@ -33,8 +33,8 @@ public class HeldItemFeatureRenderer<T extends LivingEntity, M extends EntityMod
 				matrixStack.scale(0.5F, 0.5F, 0.5F);
 			}
 
-			this.renderItem(livingEntity, itemStack2, ModelTransformation.Type.THIRD_PERSON_RIGHT_HAND, Arm.RIGHT, matrixStack, vertexConsumerProvider, i);
-			this.renderItem(livingEntity, itemStack, ModelTransformation.Type.THIRD_PERSON_LEFT_HAND, Arm.LEFT, matrixStack, vertexConsumerProvider, i);
+			this.renderItem(livingEntity, itemStack2, ModelTransformation.Mode.THIRD_PERSON_RIGHT_HAND, Arm.RIGHT, matrixStack, vertexConsumerProvider, i);
+			this.renderItem(livingEntity, itemStack, ModelTransformation.Mode.THIRD_PERSON_LEFT_HAND, Arm.LEFT, matrixStack, vertexConsumerProvider, i);
 			matrixStack.pop();
 		}
 	}
@@ -42,7 +42,7 @@ public class HeldItemFeatureRenderer<T extends LivingEntity, M extends EntityMod
 	private void renderItem(
 		LivingEntity livingEntity,
 		ItemStack itemStack,
-		ModelTransformation.Type type,
+		ModelTransformation.Mode mode,
 		Arm arm,
 		MatrixStack matrixStack,
 		VertexConsumerProvider vertexConsumerProvider,
@@ -55,7 +55,7 @@ public class HeldItemFeatureRenderer<T extends LivingEntity, M extends EntityMod
 			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
 			boolean bl = arm == Arm.LEFT;
 			matrixStack.translate((double)((float)(bl ? -1 : 1) / 16.0F), 0.125, -0.625);
-			MinecraftClient.getInstance().getHeldItemRenderer().renderItem(livingEntity, itemStack, type, bl, matrixStack, vertexConsumerProvider, i);
+			MinecraftClient.getInstance().getHeldItemRenderer().renderItem(livingEntity, itemStack, mode, bl, matrixStack, vertexConsumerProvider, i);
 			matrixStack.pop();
 		}
 	}

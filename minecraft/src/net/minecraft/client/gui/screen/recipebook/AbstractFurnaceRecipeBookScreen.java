@@ -106,8 +106,8 @@ public abstract class AbstractFurnaceRecipeBookScreen extends RecipeBookWidget {
 	protected abstract Set<Item> getAllowedFuels();
 
 	@Override
-	public void drawGhostSlots(int left, int top, boolean bl, float lastFrameDuration) {
-		super.drawGhostSlots(left, top, bl, lastFrameDuration);
+	public void drawGhostSlots(int left, int top, boolean isBig, float lastFrameDuration) {
+		super.drawGhostSlots(left, top, isBig, lastFrameDuration);
 		if (this.outputSlot != null) {
 			if (!Screen.hasControlDown()) {
 				this.frameTime += lastFrameDuration;

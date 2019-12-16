@@ -46,10 +46,10 @@ public class LoomScreen extends AbstractContainerScreen<LoomContainer> {
 	private boolean scrollbarClicked;
 	private int firstPatternButtonId = 1;
 
-	public LoomScreen(LoomContainer loomContainer, PlayerInventory playerInventory, Text text) {
-		super(loomContainer, playerInventory, text);
+	public LoomScreen(LoomContainer container, PlayerInventory inventory, Text title) {
+		super(container, inventory, title);
 		this.field_21694 = BannerBlockEntityRenderer.createField();
-		loomContainer.setInventoryChangeListener(this::onInventoryChanged);
+		container.setInventoryChangeListener(this::onInventoryChanged);
 	}
 
 	@Override

@@ -11,8 +11,8 @@ public class GameOptionsScreen extends Screen {
 	protected final Screen parent;
 	protected final GameOptions gameOptions;
 
-	public GameOptionsScreen(Screen parent, GameOptions gameOptions, Text text) {
-		super(text);
+	public GameOptionsScreen(Screen parent, GameOptions gameOptions, Text title) {
+		super(title);
 		this.parent = parent;
 		this.gameOptions = gameOptions;
 	}

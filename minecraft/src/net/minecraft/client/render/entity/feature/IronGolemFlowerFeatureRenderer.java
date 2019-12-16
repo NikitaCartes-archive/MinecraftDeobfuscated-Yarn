@@ -30,7 +30,7 @@ public class IronGolemFlowerFeatureRenderer extends FeatureRenderer<IronGolemEnt
 		float k,
 		float l
 	) {
-		if (ironGolemEntity.method_6502() != 0) {
+		if (ironGolemEntity.getLookingAtVillagerTicks() != 0) {
 			matrixStack.push();
 			ModelPart modelPart = this.getContextModel().getRightArm();
 			modelPart.rotate(matrixStack);

@@ -290,7 +290,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		return this.isSneaking();
 	}
 
-	protected boolean method_21825() {
+	protected boolean clipAtLedge() {
 		return this.isSneaking();
 	}
 
@@ -384,7 +384,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public int getMaxPortalTime() {
+	public int getMaxNetherPortalTime() {
 		return this.abilities.invulnerable ? 1 : 80;
 	}
 
@@ -404,7 +404,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public int getDefaultPortalCooldown() {
+	public int getDefaultNetherPortalCooldown() {
 		return 10;
 	}
 
@@ -1004,7 +1004,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	protected Vec3d adjustMovementForSneaking(Vec3d movement, MovementType type) {
-		if ((type == MovementType.SELF || type == MovementType.PLAYER) && this.onGround && this.method_21825()) {
+		if ((type == MovementType.SELF || type == MovementType.PLAYER) && this.onGround && this.clipAtLedge()) {
 			double d = movement.x;
 			double e = movement.z;
 			double f = 0.05;

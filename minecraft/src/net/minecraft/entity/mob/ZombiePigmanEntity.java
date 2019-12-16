@@ -118,8 +118,8 @@ public class ZombiePigmanEntity extends ZombieEntity {
 	}
 
 	@Override
-	public boolean canSpawn(WorldView worldView) {
-		return worldView.intersectsEntities(this) && !worldView.containsFluid(this.getBoundingBox());
+	public boolean canSpawn(WorldView world) {
+		return world.intersectsEntities(this) && !world.containsFluid(this.getBoundingBox());
 	}
 
 	@Override

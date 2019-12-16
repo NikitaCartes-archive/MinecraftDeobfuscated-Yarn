@@ -149,8 +149,8 @@ public abstract class LavaFluid extends BaseFluid {
 	}
 
 	@Override
-	public int getLevelDecreasePerBlock(WorldView worldView) {
-		return worldView.getDimension().doesWaterVaporize() ? 1 : 2;
+	public int getLevelDecreasePerBlock(WorldView view) {
+		return view.getDimension().doesWaterVaporize() ? 1 : 2;
 	}
 
 	@Override

@@ -12,7 +12,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.datafixers.NbtOps;
+import net.minecraft.datafixer.NbtOps;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.FileNameUtil;
@@ -441,9 +441,9 @@ public class CreateWorldScreen extends Screen {
 		private final String translationSuffix;
 		private final GameMode defaultGameMode;
 
-		private Mode(String string2, GameMode gameMode) {
-			this.translationSuffix = string2;
-			this.defaultGameMode = gameMode;
+		private Mode(String translationSuffix, GameMode defaultGameMode) {
+			this.translationSuffix = translationSuffix;
+			this.defaultGameMode = defaultGameMode;
 		}
 	}
 }

@@ -14,8 +14,8 @@ public class BrewingStandScreen extends AbstractContainerScreen<BrewingStandCont
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/brewing_stand.png");
 	private static final int[] BUBBLE_PROGRESS = new int[]{29, 24, 20, 16, 11, 6, 0};
 
-	public BrewingStandScreen(BrewingStandContainer brewingStandContainer, PlayerInventory playerInventory, Text text) {
-		super(brewingStandContainer, playerInventory, text);
+	public BrewingStandScreen(BrewingStandContainer container, PlayerInventory playerInventory, Text title) {
+		super(container, playerInventory, title);
 	}
 
 	@Override

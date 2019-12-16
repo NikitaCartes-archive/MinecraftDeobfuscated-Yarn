@@ -103,7 +103,7 @@ public abstract class WaterFluid extends BaseFluid {
 	}
 
 	@Override
-	public int getLevelDecreasePerBlock(WorldView worldView) {
+	public int getLevelDecreasePerBlock(WorldView view) {
 		return 1;
 	}
 

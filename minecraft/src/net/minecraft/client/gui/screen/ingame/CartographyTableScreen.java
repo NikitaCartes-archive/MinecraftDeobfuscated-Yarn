@@ -21,8 +21,8 @@ import net.minecraft.util.Identifier;
 public class CartographyTableScreen extends AbstractContainerScreen<CartographyTableContainer> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/cartography_table.png");
 
-	public CartographyTableScreen(CartographyTableContainer atl2, PlayerInventory inventory, Text title) {
-		super(atl2, inventory, title);
+	public CartographyTableScreen(CartographyTableContainer container, PlayerInventory inventory, Text title) {
+		super(container, inventory, title);
 	}
 
 	@Override

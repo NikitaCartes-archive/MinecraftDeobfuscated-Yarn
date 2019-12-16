@@ -27,13 +27,13 @@ public class ItemModelGenerator {
 				break;
 			}
 
-			SpriteIdentifier spriteIdentifier = blockModel.method_24077(string);
+			SpriteIdentifier spriteIdentifier = blockModel.resolveSprite(string);
 			map.put(string, Either.left(spriteIdentifier));
 			Sprite sprite = (Sprite)textureGetter.apply(spriteIdentifier);
 			list.addAll(this.addLayerElements(i, string, sprite));
 		}
 
-		map.put("particle", blockModel.textureExists("particle") ? Either.left(blockModel.method_24077("particle")) : (Either)map.get("layer0"));
+		map.put("particle", blockModel.textureExists("particle") ? Either.left(blockModel.resolveSprite("particle")) : (Either)map.get("layer0"));
 		JsonUnbakedModel jsonUnbakedModel = new JsonUnbakedModel(null, list, map, false, false, blockModel.getTransformations(), blockModel.getOverrides());
 		jsonUnbakedModel.id = blockModel.id;
 		return jsonUnbakedModel;

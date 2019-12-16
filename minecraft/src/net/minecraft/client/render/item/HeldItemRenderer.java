@@ -30,8 +30,8 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class HeldItemRenderer {
-	private static final RenderLayer field_21807 = RenderLayer.getText(new Identifier("textures/map/map_background.png"));
-	private static final RenderLayer field_21808 = RenderLayer.getText(new Identifier("textures/map/map_background_checkerboard.png"));
+	private static final RenderLayer MAP_BACKGROUND = RenderLayer.getText(new Identifier("textures/map/map_background.png"));
+	private static final RenderLayer MAP_BACKGROUND_CHECKERBOARD = RenderLayer.getText(new Identifier("textures/map/map_background_checkerboard.png"));
 	private final MinecraftClient client;
 	private ItemStack mainHand = ItemStack.EMPTY;
 	private ItemStack offHand = ItemStack.EMPTY;
@@ -51,14 +51,14 @@ public class HeldItemRenderer {
 	public void renderItem(
 		LivingEntity entity,
 		ItemStack stack,
-		ModelTransformation.Type transformationType,
+		ModelTransformation.Mode renderMode,
 		boolean leftHanded,
 		MatrixStack matrices,
 		VertexConsumerProvider vertexConsumers,
 		int light
 	) {
 		if (!stack.isEmpty()) {
-			this.itemRenderer.renderItem(entity, stack, transformationType, leftHanded, matrices, vertexConsumers, entity.world, light, OverlayTexture.DEFAULT_UV);
+			this.itemRenderer.renderItem(entity, stack, renderMode, leftHanded, matrices, vertexConsumers, entity.world, light, OverlayTexture.DEFAULT_UV);
 		}
 	}
 
@@ -143,7 +143,7 @@ public class HeldItemRenderer {
 		matrices.translate(-0.5, -0.5, 0.0);
 		matrices.scale(0.0078125F, 0.0078125F, 0.0078125F);
 		MapState mapState = FilledMapItem.getOrCreateMapState(stack, this.client.world);
-		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(mapState == null ? field_21807 : field_21808);
+		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(mapState == null ? MAP_BACKGROUND : MAP_BACKGROUND_CHECKERBOARD);
 		Matrix4f matrix4f = matrices.peek().getModel();
 		vertexConsumer.vertex(matrix4f, -7.0F, 135.0F, 0.0F).color(255, 255, 255, 255).texture(0.0F, 1.0F).light(swingProgress).next();
 		vertexConsumer.vertex(matrix4f, 135.0F, 135.0F, 0.0F).color(255, 255, 255, 255).texture(1.0F, 1.0F).light(swingProgress).next();
@@ -332,7 +332,7 @@ public class HeldItemRenderer {
 			this.renderItem(
 				player,
 				item,
-				bl3 ? ModelTransformation.Type.FIRST_PERSON_RIGHT_HAND : ModelTransformation.Type.FIRST_PERSON_LEFT_HAND,
+				bl3 ? ModelTransformation.Mode.FIRST_PERSON_RIGHT_HAND : ModelTransformation.Mode.FIRST_PERSON_LEFT_HAND,
 				!bl3,
 				matrices,
 				vertexConsumers,
@@ -420,7 +420,7 @@ public class HeldItemRenderer {
 			this.renderItem(
 				player,
 				item,
-				bl2 ? ModelTransformation.Type.FIRST_PERSON_RIGHT_HAND : ModelTransformation.Type.FIRST_PERSON_LEFT_HAND,
+				bl2 ? ModelTransformation.Mode.FIRST_PERSON_RIGHT_HAND : ModelTransformation.Mode.FIRST_PERSON_LEFT_HAND,
 				!bl2,
 				matrices,
 				vertexConsumers,

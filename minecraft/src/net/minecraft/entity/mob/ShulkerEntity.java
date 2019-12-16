@@ -464,7 +464,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	}
 
 	@Override
-	public int method_5986() {
+	public int getBodyYawSpeed() {
 		return 180;
 	}
 

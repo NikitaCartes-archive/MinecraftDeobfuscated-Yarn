@@ -152,10 +152,10 @@ public class SnbtProvider implements DataProvider {
 		private final byte[] bytes;
 		private final String sha1;
 
-		public CompressedData(String string, byte[] bs, String string2) {
-			this.name = string;
-			this.bytes = bs;
-			this.sha1 = string2;
+		public CompressedData(String name, byte[] bytes, String sha1) {
+			this.name = name;
+			this.bytes = bytes;
+			this.sha1 = sha1;
 		}
 	}
 

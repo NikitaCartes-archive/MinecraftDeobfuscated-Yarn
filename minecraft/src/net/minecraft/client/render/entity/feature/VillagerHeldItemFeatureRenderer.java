@@ -27,7 +27,7 @@ public class VillagerHeldItemFeatureRenderer<T extends LivingEntity, M extends E
 		ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.MAINHAND);
 		MinecraftClient.getInstance()
 			.getHeldItemRenderer()
-			.renderItem(livingEntity, itemStack, ModelTransformation.Type.GROUND, false, matrixStack, vertexConsumerProvider, i);
+			.renderItem(livingEntity, itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i);
 		matrixStack.pop();
 	}
 }

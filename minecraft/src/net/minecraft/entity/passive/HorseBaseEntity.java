@@ -239,7 +239,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 			this.playSound(SoundEvents.ENTITY_HORSE_LAND, 0.4F, 1.0F);
 		}
 
-		int i = this.method_23329(fallDistance, damageMultiplier);
+		int i = this.computeFallDamage(fallDistance, damageMultiplier);
 		if (i <= 0) {
 			return false;
 		} else {
@@ -250,14 +250,14 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 				}
 			}
 
-			this.method_23328();
+			this.playBlockFallSound();
 			return true;
 		}
 	}
 
 	@Override
-	protected int method_23329(float f, float g) {
-		return MathHelper.ceil((f * 0.5F - 3.0F) * g);
+	protected int computeFallDamage(float fallDistance, float damageMultiplier) {
+		return MathHelper.ceil((fallDistance * 0.5F - 3.0F) * damageMultiplier);
 	}
 
 	protected int getInventorySize() {

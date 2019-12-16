@@ -24,8 +24,8 @@ public class MerchantScreen extends AbstractContainerScreen<MerchantContainer> {
 	private int indexStartOffset;
 	private boolean scrolling;
 
-	public MerchantScreen(MerchantContainer merchantContainer, PlayerInventory playerInventory, Text text) {
-		super(merchantContainer, playerInventory, text);
+	public MerchantScreen(MerchantContainer container, PlayerInventory inventory, Text title) {
+		super(container, inventory, title);
 		this.containerWidth = 276;
 	}
 

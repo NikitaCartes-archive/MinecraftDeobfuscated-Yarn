@@ -28,9 +28,9 @@ public class OptimizeWorldScreen extends Screen {
 	private final BooleanConsumer callback;
 	private final WorldUpdater updater;
 
-	public OptimizeWorldScreen(BooleanConsumer booleanConsumer, String string, LevelStorage levelStorage, boolean bl) {
+	public OptimizeWorldScreen(BooleanConsumer callback, String string, LevelStorage levelStorage, boolean bl) {
 		super(new TranslatableText("optimizeWorld.title", levelStorage.getLevelProperties(string).getLevelName()));
-		this.callback = booleanConsumer;
+		this.callback = callback;
 		this.updater = new WorldUpdater(string, levelStorage, levelStorage.getLevelProperties(string), bl);
 	}
 

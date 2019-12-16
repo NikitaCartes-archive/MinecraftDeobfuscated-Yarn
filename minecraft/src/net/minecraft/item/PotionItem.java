@@ -88,7 +88,7 @@ public class PotionItem extends Item {
 
 	@Override
 	public String getTranslationKey(ItemStack stack) {
-		return PotionUtil.getPotion(stack).getName(this.getTranslationKey() + ".effect.");
+		return PotionUtil.getPotion(stack).finishTranslationKey(this.getTranslationKey() + ".effect.");
 	}
 
 	@Environment(EnvType.CLIENT)

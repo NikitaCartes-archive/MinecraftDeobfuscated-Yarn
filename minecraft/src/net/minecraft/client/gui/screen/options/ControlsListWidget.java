@@ -58,8 +58,8 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 		private final String name;
 		private final int nameWidth;
 
-		public CategoryEntry(String string) {
-			this.name = I18n.translate(string);
+		public CategoryEntry(String translationKey) {
+			this.name = I18n.translate(translationKey);
 			this.nameWidth = ControlsListWidget.this.minecraft.textRenderer.getStringWidth(this.name);
 		}
 

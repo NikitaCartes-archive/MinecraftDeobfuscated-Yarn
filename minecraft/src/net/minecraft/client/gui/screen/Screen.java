@@ -247,7 +247,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		}
 	}
 
-	protected void insertText(String text, boolean bl) {
+	protected void insertText(String text, boolean override) {
 	}
 
 	public boolean handleComponentClicked(Text text) {

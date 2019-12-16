@@ -12,8 +12,8 @@ import net.minecraft.util.Identifier;
 public class GrindstoneScreen extends AbstractContainerScreen<GrindstoneContainer> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/grindstone.png");
 
-	public GrindstoneScreen(GrindstoneContainer grindstoneContainer, PlayerInventory playerInventory, Text text) {
-		super(grindstoneContainer, playerInventory, text);
+	public GrindstoneScreen(GrindstoneContainer container, PlayerInventory inventory, Text title) {
+		super(container, inventory, title);
 	}
 
 	@Override

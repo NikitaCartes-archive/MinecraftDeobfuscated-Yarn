@@ -19,12 +19,12 @@ public class ConfirmScreen extends Screen {
 	private int buttonEnableTimer;
 	protected final BooleanConsumer callback;
 
-	public ConfirmScreen(BooleanConsumer booleanConsumer, Text text, Text text2) {
-		this(booleanConsumer, text, text2, I18n.translate("gui.yes"), I18n.translate("gui.no"));
+	public ConfirmScreen(BooleanConsumer callback, Text title, Text message) {
+		this(callback, title, message, I18n.translate("gui.yes"), I18n.translate("gui.no"));
 	}
 
-	public ConfirmScreen(BooleanConsumer callback, Text text, Text message, String yesTranslated, String noTranslated) {
-		super(text);
+	public ConfirmScreen(BooleanConsumer callback, Text title, Text message, String yesTranslated, String noTranslated) {
+		super(title);
 		this.callback = callback;
 		this.message = message;
 		this.yesTranslated = yesTranslated;

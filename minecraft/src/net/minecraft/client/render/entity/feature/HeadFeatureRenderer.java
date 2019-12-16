@@ -84,7 +84,7 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 
 				MinecraftClient.getInstance()
 					.getHeldItemRenderer()
-					.renderItem(livingEntity, itemStack, ModelTransformation.Type.HEAD, false, matrixStack, vertexConsumerProvider, i);
+					.renderItem(livingEntity, itemStack, ModelTransformation.Mode.HEAD, false, matrixStack, vertexConsumerProvider, i);
 			}
 
 			matrixStack.pop();

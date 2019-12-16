@@ -3,18 +3,18 @@ package net.minecraft.entity.ai.goal;
 import net.minecraft.entity.mob.MobEntity;
 
 public class LongDoorInteractGoal extends DoorInteractGoal {
-	private final boolean field_19004;
+	private final boolean delayedClose;
 	private int ticksLeft;
 
-	public LongDoorInteractGoal(MobEntity mob, boolean bl) {
+	public LongDoorInteractGoal(MobEntity mob, boolean delayedClose) {
 		super(mob);
 		this.mob = mob;
-		this.field_19004 = bl;
+		this.delayedClose = delayedClose;
 	}
 
 	@Override
 	public boolean shouldContinue() {
-		return this.field_19004 && this.ticksLeft > 0 && super.shouldContinue();
+		return this.delayedClose && this.ticksLeft > 0 && super.shouldContinue();
 	}
 
 	@Override

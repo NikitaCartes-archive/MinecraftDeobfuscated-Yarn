@@ -34,7 +34,7 @@ public class CampfireBlockEntityRenderer extends BlockEntityRenderer<CampfireBlo
 				matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0F));
 				matrixStack.translate(-0.3125, -0.3125, 0.0);
 				matrixStack.scale(0.375F, 0.375F, 0.375F);
-				MinecraftClient.getInstance().getItemRenderer().renderItem(itemStack, ModelTransformation.Type.FIXED, i, j, matrixStack, vertexConsumerProvider);
+				MinecraftClient.getInstance().getItemRenderer().renderItem(itemStack, ModelTransformation.Mode.FIXED, i, j, matrixStack, vertexConsumerProvider);
 				matrixStack.pop();
 			}
 		}
