@@ -23,7 +23,6 @@ import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.container.BeaconContainer;
 import net.minecraft.container.BlockContext;
 import net.minecraft.container.Container;
-import net.minecraft.container.ContainerLock;
 import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.container.PropertyDelegate;
 import net.minecraft.entity.effect.StatusEffect;
@@ -31,6 +30,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.ContainerLock;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
@@ -60,7 +60,7 @@ Tickable {
     private StatusEffect secondary;
     @Nullable
     private Text customName;
-    private ContainerLock lock = ContainerLock.NONE;
+    private ContainerLock lock = ContainerLock.EMPTY;
     private final PropertyDelegate propertyDelegate = new PropertyDelegate(){
 
         @Override
@@ -281,7 +281,7 @@ Tickable {
         if (tag.contains("CustomName", 8)) {
             this.customName = Text.Serializer.fromJson(tag.getString("CustomName"));
         }
-        this.lock = ContainerLock.deserialize(tag);
+        this.lock = ContainerLock.fromTag(tag);
     }
 
     @Override
@@ -293,7 +293,7 @@ Tickable {
         if (this.customName != null) {
             tag.putString("CustomName", Text.Serializer.toJson(this.customName));
         }
-        this.lock.serialize(tag);
+        this.lock.toTag(tag);
         return tag;
     }
 

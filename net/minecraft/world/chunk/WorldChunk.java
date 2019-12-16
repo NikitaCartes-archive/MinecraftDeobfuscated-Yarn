@@ -640,12 +640,12 @@ implements Chunk {
             }
             this.postProcessingLists[i].clear();
         }
-        this.method_20530();
+        this.disableTickSchedulers();
         for (BlockPos blockPos2 : Sets.newHashSet(this.pendingBlockEntityTags.keySet())) {
             this.getBlockEntity(blockPos2);
         }
         this.pendingBlockEntityTags.clear();
-        this.upgradeData.method_12356(this);
+        this.upgradeData.upgrade(this);
     }
 
     @Nullable
@@ -681,7 +681,7 @@ implements Chunk {
         return this.postProcessingLists;
     }
 
-    public void method_20530() {
+    public void disableTickSchedulers() {
         if (this.blockTickScheduler instanceof ChunkTickScheduler) {
             ((ChunkTickScheduler)this.blockTickScheduler).tick(this.world.getBlockTickScheduler(), blockPos -> this.getBlockState((BlockPos)blockPos).getBlock());
             this.blockTickScheduler = DummyClientTickScheduler.get();
@@ -698,13 +698,13 @@ implements Chunk {
         }
     }
 
-    public void method_20471(ServerWorld serverWorld) {
+    public void enableTickSchedulers(ServerWorld world) {
         if (this.blockTickScheduler == DummyClientTickScheduler.get()) {
-            this.blockTickScheduler = new SimpleTickScheduler<Block>(Registry.BLOCK::getId, ((ServerTickScheduler)serverWorld.getBlockTickScheduler()).getScheduledTicksInChunk(this.pos, true, false));
+            this.blockTickScheduler = new SimpleTickScheduler<Block>(Registry.BLOCK::getId, ((ServerTickScheduler)world.getBlockTickScheduler()).getScheduledTicksInChunk(this.pos, true, false));
             this.setShouldSave(true);
         }
         if (this.fluidTickScheduler == DummyClientTickScheduler.get()) {
-            this.fluidTickScheduler = new SimpleTickScheduler<Fluid>(Registry.FLUID::getId, ((ServerTickScheduler)serverWorld.getFluidTickScheduler()).getScheduledTicksInChunk(this.pos, true, false));
+            this.fluidTickScheduler = new SimpleTickScheduler<Fluid>(Registry.FLUID::getId, ((ServerTickScheduler)world.getFluidTickScheduler()).getScheduledTicksInChunk(this.pos, true, false));
             this.setShouldSave(true);
         }
     }

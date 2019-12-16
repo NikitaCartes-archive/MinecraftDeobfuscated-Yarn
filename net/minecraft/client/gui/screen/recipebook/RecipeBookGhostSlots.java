@@ -51,7 +51,7 @@ public class RecipeBookGhostSlots {
         this.recipe = recipe;
     }
 
-    public void draw(MinecraftClient client, int x, int y, boolean bl, float lastFrameDuration) {
+    public void draw(MinecraftClient client, int x, int y, boolean isBig, float lastFrameDuration) {
         if (!Screen.hasControlDown()) {
             this.time += lastFrameDuration;
         }
@@ -59,7 +59,7 @@ public class RecipeBookGhostSlots {
             GhostInputSlot ghostInputSlot = this.slots.get(i);
             int j = ghostInputSlot.getX() + x;
             int k = ghostInputSlot.getY() + y;
-            if (i == 0 && bl) {
+            if (i == 0 && isBig) {
                 DrawableHelper.fill(j - 4, k - 4, j + 20, k + 20, 0x30FF0000);
             } else {
                 DrawableHelper.fill(j, k, j + 16, k + 16, 0x30FF0000);

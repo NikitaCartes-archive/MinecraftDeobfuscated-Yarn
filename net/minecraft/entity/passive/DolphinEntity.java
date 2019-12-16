@@ -213,7 +213,7 @@ extends WaterCreatureEntity {
     }
 
     @Override
-    public int method_5986() {
+    public int getBodyYawSpeed() {
         return 1;
     }
 
@@ -446,7 +446,7 @@ extends WaterCreatureEntity {
                     this.field_6753 = true;
                     return;
                 }
-                this.dolphin.getLookControl().lookAt(vec3d2.x, vec3d2.y, vec3d2.z, this.dolphin.method_5986() + 20, this.dolphin.getLookPitchSpeed());
+                this.dolphin.getLookControl().lookAt(vec3d2.x, vec3d2.y, vec3d2.z, this.dolphin.getBodyYawSpeed() + 20, this.dolphin.getLookPitchSpeed());
                 this.dolphin.getNavigation().startMovingTo(vec3d2.x, vec3d2.y, vec3d2.z, 1.3);
                 if (world.random.nextInt(80) == 0) {
                     world.sendEntityStatus(this.dolphin, (byte)38);
@@ -494,7 +494,7 @@ extends WaterCreatureEntity {
 
         @Override
         public void tick() {
-            this.dolphin.getLookControl().lookAt(this.closestPlayer, this.dolphin.method_5986() + 20, this.dolphin.getLookPitchSpeed());
+            this.dolphin.getLookControl().lookAt(this.closestPlayer, this.dolphin.getBodyYawSpeed() + 20, this.dolphin.getLookPitchSpeed());
             if (this.dolphin.squaredDistanceTo(this.closestPlayer) < 6.25) {
                 this.dolphin.getNavigation().stop();
             } else {

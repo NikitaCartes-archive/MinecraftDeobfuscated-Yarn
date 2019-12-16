@@ -11,7 +11,7 @@ import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.datafixers.NbtOps;
+import net.minecraft.datafixer.NbtOps;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityInteraction;
@@ -154,7 +154,7 @@ implements VillagerDataContainer {
         this.converter = uuid;
         this.conversionTimer = delay;
         this.getDataTracker().set(CONVERTING, true);
-        this.tryRemoveStatusEffect(StatusEffects.WEAKNESS);
+        this.removeStatusEffect(StatusEffects.WEAKNESS);
         this.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, delay, Math.min(this.world.getDifficulty().getId() - 1, 0)));
         this.world.sendEntityStatus(this, (byte)16);
     }

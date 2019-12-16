@@ -365,9 +365,9 @@ extends SpellcastingIllagerEntity {
         @Override
         public void tick() {
             if (EvokerEntity.this.getTarget() != null) {
-                EvokerEntity.this.getLookControl().lookAt(EvokerEntity.this.getTarget(), EvokerEntity.this.method_5986(), EvokerEntity.this.getLookPitchSpeed());
+                EvokerEntity.this.getLookControl().lookAt(EvokerEntity.this.getTarget(), EvokerEntity.this.getBodyYawSpeed(), EvokerEntity.this.getLookPitchSpeed());
             } else if (EvokerEntity.this.getWololoTarget() != null) {
-                EvokerEntity.this.getLookControl().lookAt(EvokerEntity.this.getWololoTarget(), EvokerEntity.this.method_5986(), EvokerEntity.this.getLookPitchSpeed());
+                EvokerEntity.this.getLookControl().lookAt(EvokerEntity.this.getWololoTarget(), EvokerEntity.this.getBodyYawSpeed(), EvokerEntity.this.getLookPitchSpeed());
             }
         }
     }

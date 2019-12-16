@@ -310,14 +310,14 @@ extends PathNodeMaker {
 
     @Override
     public PathNodeType getNodeType(BlockView world, int x, int y, int z) {
-        return LandPathNodeMaker.method_23476(world, x, y, z);
+        return LandPathNodeMaker.getPathNodeType(world, x, y, z);
     }
 
-    public static PathNodeType method_23476(BlockView blockView, int i, int j, int k) {
-        PathNodeType pathNodeType = LandPathNodeMaker.getBasicPathNodeType(blockView, i, j, k);
-        if (pathNodeType == PathNodeType.OPEN && j >= 1) {
-            Block block = blockView.getBlockState(new BlockPos(i, j - 1, k)).getBlock();
-            PathNodeType pathNodeType2 = LandPathNodeMaker.getBasicPathNodeType(blockView, i, j - 1, k);
+    public static PathNodeType getPathNodeType(BlockView world, int x, int y, int z) {
+        PathNodeType pathNodeType = LandPathNodeMaker.getBasicPathNodeType(world, x, y, z);
+        if (pathNodeType == PathNodeType.OPEN && y >= 1) {
+            Block block = world.getBlockState(new BlockPos(x, y - 1, z)).getBlock();
+            PathNodeType pathNodeType2 = LandPathNodeMaker.getBasicPathNodeType(world, x, y - 1, z);
             PathNodeType pathNodeType3 = pathNodeType = pathNodeType2 == PathNodeType.WALKABLE || pathNodeType2 == PathNodeType.OPEN || pathNodeType2 == PathNodeType.WATER || pathNodeType2 == PathNodeType.LAVA ? PathNodeType.OPEN : PathNodeType.WALKABLE;
             if (pathNodeType2 == PathNodeType.DAMAGE_FIRE || block == Blocks.MAGMA_BLOCK || block == Blocks.CAMPFIRE) {
                 pathNodeType = PathNodeType.DAMAGE_FIRE;
@@ -333,7 +333,7 @@ extends PathNodeMaker {
             }
         }
         if (pathNodeType == PathNodeType.WALKABLE) {
-            pathNodeType = LandPathNodeMaker.method_59(blockView, i, j, k, pathNodeType);
+            pathNodeType = LandPathNodeMaker.method_59(world, x, y, z, pathNodeType);
         }
         return pathNodeType;
     }

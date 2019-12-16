@@ -30,7 +30,7 @@ implements ArgumentType<DimensionType> {
     @Override
     public DimensionType parse(StringReader stringReader) throws CommandSyntaxException {
         Identifier identifier = Identifier.fromCommandInput(stringReader);
-        return Registry.DIMENSION.getOrEmpty(identifier).orElseThrow(() -> INVALID_DIMENSION_EXCEPTION.create(identifier));
+        return Registry.DIMENSION_TYPE.getOrEmpty(identifier).orElseThrow(() -> INVALID_DIMENSION_EXCEPTION.create(identifier));
     }
 
     @Override

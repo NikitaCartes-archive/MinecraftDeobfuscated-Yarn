@@ -8,6 +8,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import java.lang.reflect.Type;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.model.json.Transformation;
@@ -25,7 +26,7 @@ public class ModelTransformation {
     public final Transformation fixed;
 
     private ModelTransformation() {
-        this(Transformation.NONE, Transformation.NONE, Transformation.NONE, Transformation.NONE, Transformation.NONE, Transformation.NONE, Transformation.NONE, Transformation.NONE);
+        this(Transformation.IDENTITY, Transformation.IDENTITY, Transformation.IDENTITY, Transformation.IDENTITY, Transformation.IDENTITY, Transformation.IDENTITY, Transformation.IDENTITY, Transformation.IDENTITY);
     }
 
     public ModelTransformation(ModelTransformation other) {
@@ -50,8 +51,8 @@ public class ModelTransformation {
         this.fixed = fixed;
     }
 
-    public Transformation getTransformation(Type type) {
-        switch (type) {
+    public Transformation getTransformation(Mode renderMode) {
+        switch (renderMode) {
             case THIRD_PERSON_LEFT_HAND: {
                 return this.thirdPersonLeftHand;
             }
@@ -77,11 +78,11 @@ public class ModelTransformation {
                 return this.fixed;
             }
         }
-        return Transformation.NONE;
+        return Transformation.IDENTITY;
     }
 
-    public boolean isTransformationDefined(Type type) {
-        return this.getTransformation(type) != Transformation.NONE;
+    public boolean isTransformationDefined(Mode renderMode) {
+        return this.getTransformation(renderMode) != Transformation.IDENTITY;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -91,16 +92,16 @@ public class ModelTransformation {
         }
 
         @Override
-        public ModelTransformation deserialize(JsonElement element, java.lang.reflect.Type type, JsonDeserializationContext context) throws JsonParseException {
+        public ModelTransformation deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
             JsonObject jsonObject = element.getAsJsonObject();
             Transformation transformation = this.parseModelTransformation(context, jsonObject, "thirdperson_righthand");
             Transformation transformation2 = this.parseModelTransformation(context, jsonObject, "thirdperson_lefthand");
-            if (transformation2 == Transformation.NONE) {
+            if (transformation2 == Transformation.IDENTITY) {
                 transformation2 = transformation;
             }
             Transformation transformation3 = this.parseModelTransformation(context, jsonObject, "firstperson_righthand");
             Transformation transformation4 = this.parseModelTransformation(context, jsonObject, "firstperson_lefthand");
-            if (transformation4 == Transformation.NONE) {
+            if (transformation4 == Transformation.IDENTITY) {
                 transformation4 = transformation3;
             }
             Transformation transformation5 = this.parseModelTransformation(context, jsonObject, "head");
@@ -112,19 +113,19 @@ public class ModelTransformation {
 
         private Transformation parseModelTransformation(JsonDeserializationContext ctx, JsonObject json, String key) {
             if (json.has(key)) {
-                return (Transformation)ctx.deserialize(json.get(key), (java.lang.reflect.Type)((Object)Transformation.class));
+                return (Transformation)ctx.deserialize(json.get(key), (Type)((Object)Transformation.class));
             }
-            return Transformation.NONE;
+            return Transformation.IDENTITY;
         }
 
         @Override
-        public /* synthetic */ Object deserialize(JsonElement functionJson, java.lang.reflect.Type unused, JsonDeserializationContext context) throws JsonParseException {
+        public /* synthetic */ Object deserialize(JsonElement functionJson, Type unused, JsonDeserializationContext context) throws JsonParseException {
             return this.deserialize(functionJson, unused, context);
         }
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static enum Type {
+    public static enum Mode {
         NONE,
         THIRD_PERSON_LEFT_HAND,
         THIRD_PERSON_RIGHT_HAND,

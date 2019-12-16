@@ -11,7 +11,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.MinecraftVersion;
 import net.minecraft.command.TranslatableBuiltInExceptions;
-import net.minecraft.datafixers.schemas.SchemaIdentifierNormalize;
+import net.minecraft.datafixer.schema.SchemaIdentifierNormalize;
 
 public class SharedConstants {
     public static final ResourceLeakDetector.Level RESOURCE_LEAK_DETECTOR_DISABLED = ResourceLeakDetector.Level.DISABLED;

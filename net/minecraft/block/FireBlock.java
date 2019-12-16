@@ -13,7 +13,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ConnectedPlantBlock;
-import net.minecraft.block.PortalBlock;
+import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.block.TntBlock;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
@@ -232,7 +232,7 @@ extends Block {
         if (oldState.getBlock() == state.getBlock()) {
             return;
         }
-        if ((world.dimension.getType() == DimensionType.OVERWORLD || world.dimension.getType() == DimensionType.THE_NETHER) && ((PortalBlock)Blocks.NETHER_PORTAL).createPortalAt(world, pos)) {
+        if ((world.dimension.getType() == DimensionType.OVERWORLD || world.dimension.getType() == DimensionType.THE_NETHER) && ((NetherPortalBlock)Blocks.NETHER_PORTAL).createPortalAt(world, pos)) {
             return;
         }
         if (!state.canPlaceAt(world, pos)) {

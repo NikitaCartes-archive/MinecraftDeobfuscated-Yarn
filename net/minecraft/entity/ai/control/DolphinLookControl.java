@@ -9,11 +9,11 @@ import net.minecraft.util.math.MathHelper;
 
 public class DolphinLookControl
 extends LookControl {
-    private final int field_6357;
+    private final int maxYawDifference;
 
-    public DolphinLookControl(MobEntity entity, int i) {
+    public DolphinLookControl(MobEntity entity, int maxYawDifference) {
         super(entity);
-        this.field_6357 = i;
+        this.maxYawDifference = maxYawDifference;
     }
 
     @Override
@@ -29,9 +29,9 @@ extends LookControl {
             this.entity.headYaw = this.changeAngle(this.entity.headYaw, this.entity.bodyYaw, this.yawSpeed);
         }
         float f = MathHelper.wrapDegrees(this.entity.headYaw - this.entity.bodyYaw);
-        if (f < (float)(-this.field_6357)) {
+        if (f < (float)(-this.maxYawDifference)) {
             this.entity.bodyYaw -= 4.0f;
-        } else if (f > (float)this.field_6357) {
+        } else if (f > (float)this.maxYawDifference) {
             this.entity.bodyYaw += 4.0f;
         }
     }

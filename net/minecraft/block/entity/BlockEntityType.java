@@ -45,8 +45,8 @@ import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.block.entity.SmokerBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.block.entity.TrappedChestBlockEntity;
-import net.minecraft.datafixers.Schemas;
-import net.minecraft.datafixers.TypeReferences;
+import net.minecraft.datafixer.Schemas;
+import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
@@ -96,7 +96,7 @@ public class BlockEntityType<T extends BlockEntity> {
 
     @Nullable
     public static Identifier getId(BlockEntityType<?> blockEntityType) {
-        return Registry.BLOCK_ENTITY.getId(blockEntityType);
+        return Registry.BLOCK_ENTITY_TYPE.getId(blockEntityType);
     }
 
     private static <T extends BlockEntity> BlockEntityType<T> create(String string, Builder<T> builder) {
@@ -114,7 +114,7 @@ public class BlockEntityType<T extends BlockEntity> {
         if (((Builder)builder).blocks.isEmpty()) {
             LOGGER.warn("Block entity type {} requires at least one valid block to be defined!", (Object)string);
         }
-        return Registry.register(Registry.BLOCK_ENTITY, string, builder.build(type));
+        return Registry.register(Registry.BLOCK_ENTITY_TYPE, string, builder.build(type));
     }
 
     public BlockEntityType(Supplier<? extends T> supplier, Set<Block> blocks, Type<?> type) {

@@ -100,7 +100,7 @@ extends MinecraftServer {
     }
 
     @Override
-    public void tick(BooleanSupplier booleanSupplier) {
+    public void tick(BooleanSupplier shouldKeepTicking) {
         boolean bl = this.field_5524;
         this.field_5524 = MinecraftClient.getInstance().getNetworkHandler() != null && MinecraftClient.getInstance().isPaused();
         DisableableProfiler disableableProfiler = this.getProfiler();
@@ -114,7 +114,7 @@ extends MinecraftServer {
         if (this.field_5524) {
             return;
         }
-        super.tick(booleanSupplier);
+        super.tick(shouldKeepTicking);
         int i = Math.max(2, this.client.options.viewDistance + -1);
         if (i != this.getPlayerManager().getViewDistance()) {
             LOGGER.info("Changing view distance to {}, from {}", (Object)i, (Object)this.getPlayerManager().getViewDistance());

@@ -37,7 +37,7 @@ extends FeatureRenderer<DolphinEntity, DolphinEntityModel<DolphinEntity>> {
             matrixStack.translate(0.0, 1.0f + o * 0.8f, -1.0f + o * 0.2f);
         }
         ItemStack itemStack = bl ? dolphinEntity.getMainHandStack() : dolphinEntity.getOffHandStack();
-        MinecraftClient.getInstance().getHeldItemRenderer().renderItem(dolphinEntity, itemStack, ModelTransformation.Type.GROUND, false, matrixStack, vertexConsumerProvider, i);
+        MinecraftClient.getInstance().getHeldItemRenderer().renderItem(dolphinEntity, itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i);
         matrixStack.pop();
     }
 }

@@ -63,12 +63,12 @@ extends CompositeEntityModel<T> {
 
     @Override
     public void animateModel(T ironGolemEntity, float f, float g, float h) {
-        int i = ((IronGolemEntity)ironGolemEntity).method_6501();
+        int i = ((IronGolemEntity)ironGolemEntity).getAttackTicksLeft();
         if (i > 0) {
             this.rightArm.pitch = -2.0f + 1.5f * this.method_2810((float)i - h, 10.0f);
             this.leftArm.pitch = -2.0f + 1.5f * this.method_2810((float)i - h, 10.0f);
         } else {
-            int j = ((IronGolemEntity)ironGolemEntity).method_6502();
+            int j = ((IronGolemEntity)ironGolemEntity).getLookingAtVillagerTicks();
             if (j > 0) {
                 this.rightArm.pitch = -0.8f + 0.025f * this.method_2810(j, 70.0f);
                 this.leftArm.pitch = 0.0f;

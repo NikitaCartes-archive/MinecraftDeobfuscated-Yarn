@@ -15,20 +15,20 @@ extends DoorInteractGoal {
     private final Predicate<Difficulty> difficultySufficientPredicate;
     protected int breakProgress;
     protected int prevBreakProgress = -1;
-    protected int field_16596 = -1;
+    protected int maxProgress = -1;
 
     public BreakDoorGoal(MobEntity mob, Predicate<Difficulty> difficultySufficientPredicate) {
         super(mob);
         this.difficultySufficientPredicate = difficultySufficientPredicate;
     }
 
-    public BreakDoorGoal(MobEntity mob, int i, Predicate<Difficulty> difficultySufficientPredicate) {
+    public BreakDoorGoal(MobEntity mob, int maxProgress, Predicate<Difficulty> difficultySufficientPredicate) {
         this(mob, difficultySufficientPredicate);
-        this.field_16596 = i;
+        this.maxProgress = maxProgress;
     }
 
-    protected int method_16462() {
-        return Math.max(240, this.field_16596);
+    protected int getMaxProgress() {
+        return Math.max(240, this.maxProgress);
     }
 
     @Override
@@ -39,7 +39,7 @@ extends DoorInteractGoal {
         if (!this.mob.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
             return false;
         }
-        return this.isDifficultySufficient(this.mob.world.getDifficulty()) && !this.method_6256();
+        return this.isDifficultySufficient(this.mob.world.getDifficulty()) && !this.isDoorOpen();
     }
 
     @Override
@@ -50,7 +50,7 @@ extends DoorInteractGoal {
 
     @Override
     public boolean shouldContinue() {
-        return this.breakProgress <= this.method_16462() && !this.method_6256() && this.doorPos.isWithinDistance(this.mob.getPos(), 2.0) && this.isDifficultySufficient(this.mob.world.getDifficulty());
+        return this.breakProgress <= this.getMaxProgress() && !this.isDoorOpen() && this.doorPos.isWithinDistance(this.mob.getPos(), 2.0) && this.isDifficultySufficient(this.mob.world.getDifficulty());
     }
 
     @Override
@@ -69,12 +69,12 @@ extends DoorInteractGoal {
             }
         }
         ++this.breakProgress;
-        int i = (int)((float)this.breakProgress / (float)this.method_16462() * 10.0f);
+        int i = (int)((float)this.breakProgress / (float)this.getMaxProgress() * 10.0f);
         if (i != this.prevBreakProgress) {
             this.mob.world.setBlockBreakingInfo(this.mob.getEntityId(), this.doorPos, i);
             this.prevBreakProgress = i;
         }
-        if (this.breakProgress == this.method_16462() && this.isDifficultySufficient(this.mob.world.getDifficulty())) {
+        if (this.breakProgress == this.getMaxProgress() && this.isDifficultySufficient(this.mob.world.getDifficulty())) {
             this.mob.world.removeBlock(this.doorPos, false);
             this.mob.world.playLevelEvent(1021, this.doorPos, 0);
             this.mob.world.playLevelEvent(2001, this.doorPos, Block.getRawIdFromState(this.mob.world.getBlockState(this.doorPos)));

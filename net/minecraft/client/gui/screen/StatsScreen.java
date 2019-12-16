@@ -209,9 +209,9 @@ implements StatsListener {
         protected StatType<?> selectedStatType;
         protected int field_18760;
 
-        public ItemStatsListWidget(MinecraftClient minecraftClient) {
+        public ItemStatsListWidget(MinecraftClient client) {
             boolean bl;
-            super(minecraftClient, StatsScreen.this.width, StatsScreen.this.height, 32, StatsScreen.this.height - 64, 20);
+            super(client, StatsScreen.this.width, StatsScreen.this.height, 32, StatsScreen.this.height - 64, 20);
             this.HEADER_ICON_SPRITE_INDICES = new int[]{3, 4, 1, 2, 5, 6};
             this.selectedHeaderColumn = -1;
             this.comparator = new ItemComparator();

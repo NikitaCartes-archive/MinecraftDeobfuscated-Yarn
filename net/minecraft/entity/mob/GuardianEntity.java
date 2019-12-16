@@ -285,8 +285,8 @@ extends HostileEntity {
     }
 
     @Override
-    public boolean canSpawn(WorldView worldView) {
-        return worldView.intersectsEntities(this);
+    public boolean canSpawn(WorldView world) {
+        return world.intersectsEntities(this);
     }
 
     public static boolean canSpawn(EntityType<? extends GuardianEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {

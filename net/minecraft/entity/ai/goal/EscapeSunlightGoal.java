@@ -46,10 +46,10 @@ extends Goal {
         if (!this.mob.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
             return false;
         }
-        return this.method_18250();
+        return this.targetShadedPos();
     }
 
-    protected boolean method_18250() {
+    protected boolean targetShadedPos() {
         Vec3d vec3d = this.locateShadedPos();
         if (vec3d == null) {
             return false;

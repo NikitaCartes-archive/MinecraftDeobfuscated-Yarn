@@ -25,12 +25,12 @@ public class MatrixStack {
 
     public void translate(double x, double y, double z) {
         Entry entry = this.stack.getLast();
-        entry.modelMatrix.multiply(Matrix4f.method_24021((float)x, (float)y, (float)z));
+        entry.modelMatrix.multiply(Matrix4f.translate((float)x, (float)y, (float)z));
     }
 
     public void scale(float x, float y, float z) {
         Entry entry = this.stack.getLast();
-        entry.modelMatrix.multiply(Matrix4f.method_24019(x, y, z));
+        entry.modelMatrix.multiply(Matrix4f.scale(x, y, z));
         if (x == y && y == z) {
             return;
         }
@@ -38,7 +38,7 @@ public class MatrixStack {
         float g = 1.0f / y;
         float h = 1.0f / z;
         float i = MathHelper.fastInverseCbrt(f * g * h);
-        entry.normalMatrix.multiply(Matrix3f.method_23963(i * f, i * g, i * h));
+        entry.normalMatrix.multiply(Matrix3f.scale(i * f, i * g, i * h));
     }
 
     public void multiply(Quaternion quaternion) {

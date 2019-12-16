@@ -35,9 +35,9 @@ public class Rotation3Helper {
     });
 
     public static Rotation3 setupUvLock(Rotation3 rotation3) {
-        Matrix4f matrix4f = Matrix4f.method_24021(0.5f, 0.5f, 0.5f);
+        Matrix4f matrix4f = Matrix4f.translate(0.5f, 0.5f, 0.5f);
         matrix4f.multiply(rotation3.getMatrix());
-        matrix4f.multiply(Matrix4f.method_24021(-0.5f, -0.5f, -0.5f));
+        matrix4f.multiply(Matrix4f.translate(-0.5f, -0.5f, -0.5f));
         return new Rotation3(matrix4f);
     }
 

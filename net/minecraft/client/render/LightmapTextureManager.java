@@ -92,7 +92,7 @@ implements AutoCloseable {
         float h = this.client.player.method_3140();
         float i = this.client.player.hasStatusEffect(StatusEffects.NIGHT_VISION) ? GameRenderer.getNightVisionStrength(this.client.player, delta) : (h > 0.0f && this.client.player.hasStatusEffect(StatusEffects.CONDUIT_POWER) ? h : 0.0f);
         Vector3f vector3f = new Vector3f(f, f, 1.0f);
-        vector3f.multiplyComponentwise(new Vector3f(1.0f, 1.0f, 1.0f), 0.35f);
+        vector3f.lerp(new Vector3f(1.0f, 1.0f, 1.0f), 0.35f);
         float j = this.field_21528 + 1.5f;
         Vector3f vector3f2 = new Vector3f();
         for (int k = 0; k < 16; ++k) {
@@ -107,17 +107,17 @@ implements AutoCloseable {
                 float q = n * (n * n * 0.6f + 0.4f);
                 vector3f2.set(o, p, q);
                 if (clientWorld.dimension.getType() == DimensionType.THE_END) {
-                    vector3f2.multiplyComponentwise(new Vector3f(0.99f, 1.12f, 1.0f), 0.25f);
+                    vector3f2.lerp(new Vector3f(0.99f, 1.12f, 1.0f), 0.25f);
                 } else {
                     Vector3f vector3f3 = vector3f.copy();
                     vector3f3.scale(m);
                     vector3f2.add(vector3f3);
-                    vector3f2.multiplyComponentwise(new Vector3f(0.75f, 0.75f, 0.75f), 0.04f);
+                    vector3f2.lerp(new Vector3f(0.75f, 0.75f, 0.75f), 0.04f);
                     if (this.worldRenderer.getSkyDarkness(delta) > 0.0f) {
                         r = this.worldRenderer.getSkyDarkness(delta);
                         vector3f4 = vector3f2.copy();
-                        vector3f4.piecewiseMultiply(0.7f, 0.6f, 0.6f);
-                        vector3f2.multiplyComponentwise(vector3f4, r);
+                        vector3f4.multiplyComponentwise(0.7f, 0.6f, 0.6f);
+                        vector3f2.lerp(vector3f4, r);
                     }
                 }
                 vector3f2.clamp(0.0f, 1.0f);
@@ -125,13 +125,13 @@ implements AutoCloseable {
                     r = 1.0f / s;
                     vector3f4 = vector3f2.copy();
                     vector3f4.scale(r);
-                    vector3f2.multiplyComponentwise(vector3f4, i);
+                    vector3f2.lerp(vector3f4, i);
                 }
                 s = (float)this.client.options.gamma;
                 Vector3f vector3f5 = vector3f2.copy();
                 vector3f5.modify(this::method_23795);
-                vector3f2.multiplyComponentwise(vector3f5, s);
-                vector3f2.multiplyComponentwise(new Vector3f(0.75f, 0.75f, 0.75f), 0.04f);
+                vector3f2.lerp(vector3f5, s);
+                vector3f2.lerp(new Vector3f(0.75f, 0.75f, 0.75f), 0.04f);
                 vector3f2.clamp(0.0f, 1.0f);
                 vector3f2.scale(255.0f);
                 int t = 255;

@@ -146,8 +146,8 @@ extends AnimalModel<T> {
     @Override
     public void animateModel(T horseBaseEntity, float f, float g, float h) {
         super.animateModel(horseBaseEntity, f, g, h);
-        float i = MathHelper.method_22859(((HorseBaseEntity)horseBaseEntity).prevBodyYaw, ((HorseBaseEntity)horseBaseEntity).bodyYaw, h);
-        float j = MathHelper.method_22859(((HorseBaseEntity)horseBaseEntity).prevHeadYaw, ((HorseBaseEntity)horseBaseEntity).headYaw, h);
+        float i = MathHelper.lerpAngle(((HorseBaseEntity)horseBaseEntity).prevBodyYaw, ((HorseBaseEntity)horseBaseEntity).bodyYaw, h);
+        float j = MathHelper.lerpAngle(((HorseBaseEntity)horseBaseEntity).prevHeadYaw, ((HorseBaseEntity)horseBaseEntity).headYaw, h);
         float k = MathHelper.lerp(h, ((HorseBaseEntity)horseBaseEntity).prevPitch, ((HorseBaseEntity)horseBaseEntity).pitch);
         float l = j - i;
         float m = k * ((float)Math.PI / 180);

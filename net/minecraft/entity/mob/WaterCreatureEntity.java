@@ -30,8 +30,8 @@ extends MobEntityWithAi {
     }
 
     @Override
-    public boolean canSpawn(WorldView worldView) {
-        return worldView.intersectsEntities(this);
+    public boolean canSpawn(WorldView world) {
+        return world.intersectsEntities(this);
     }
 
     @Override

@@ -7,7 +7,7 @@ import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FireBlock;
-import net.minecraft.block.PortalBlock;
+import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -65,7 +65,7 @@ extends Item {
         BlockState blockState = ((FireBlock)Blocks.FIRE).getStateForPosition(world, pos);
         boolean bl = false;
         for (Direction direction : Direction.Type.HORIZONTAL) {
-            if (world.getBlockState(pos.offset(direction)).getBlock() != Blocks.OBSIDIAN || ((PortalBlock)Blocks.NETHER_PORTAL).createAreaHelper(world, pos) == null) continue;
+            if (world.getBlockState(pos.offset(direction)).getBlock() != Blocks.OBSIDIAN || ((NetherPortalBlock)Blocks.NETHER_PORTAL).createAreaHelper(world, pos) == null) continue;
             bl = true;
         }
         return block.isAir() && (blockState.canPlaceAt(world, pos) || bl);

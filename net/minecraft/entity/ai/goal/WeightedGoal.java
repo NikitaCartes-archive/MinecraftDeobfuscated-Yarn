@@ -61,8 +61,8 @@ extends Goal {
     }
 
     @Override
-    public void setControls(EnumSet<Goal.Control> enumSet) {
-        this.goal.setControls(enumSet);
+    public void setControls(EnumSet<Goal.Control> controls) {
+        this.goal.setControls(controls);
     }
 
     @Override

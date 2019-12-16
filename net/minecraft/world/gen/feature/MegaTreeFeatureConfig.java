@@ -29,7 +29,7 @@ extends TreeFeatureConfig {
         return dynamic.merge(super.serialize(ops));
     }
 
-    public static <T> MegaTreeFeatureConfig method_23408(Dynamic<T> dynamic) {
+    public static <T> MegaTreeFeatureConfig deserialize(Dynamic<T> dynamic) {
         TreeFeatureConfig treeFeatureConfig = TreeFeatureConfig.deserialize(dynamic);
         return new MegaTreeFeatureConfig(treeFeatureConfig.trunkProvider, treeFeatureConfig.leavesProvider, treeFeatureConfig.decorators, treeFeatureConfig.baseHeight, dynamic.get("height_interval").asInt(0), dynamic.get("crown_height").asInt(0));
     }

@@ -31,8 +31,8 @@ extends Task<LivingEntity> {
         this.shouldRunPredicate = shouldRunPredicate;
     }
 
-    public FindInteractionTargetTask(EntityType<?> entityType, int i) {
-        this(entityType, i, livingEntity -> true, livingEntity -> true);
+    public FindInteractionTargetTask(EntityType<?> entityType, int maxDistance) {
+        this(entityType, maxDistance, livingEntity -> true, livingEntity -> true);
     }
 
     @Override

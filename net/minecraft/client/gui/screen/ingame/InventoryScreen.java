@@ -198,7 +198,7 @@ implements RecipeBookProvider {
     }
 
     @Override
-    public RecipeBookWidget getRecipeBookGui() {
+    public RecipeBookWidget getRecipeBookWidget() {
         return this.recipeBook;
     }
 }

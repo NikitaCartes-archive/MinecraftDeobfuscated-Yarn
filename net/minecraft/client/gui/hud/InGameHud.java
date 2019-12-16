@@ -394,7 +394,7 @@ extends DrawableHelper {
             if (this.client.isDemo()) {
                 l += 15;
             }
-            if (statusEffect.method_5573()) {
+            if (statusEffect.isBeneficial()) {
                 k -= 25 * ++i;
             } else {
                 k -= 25 * ++j;

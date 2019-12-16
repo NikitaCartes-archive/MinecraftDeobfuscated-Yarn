@@ -157,7 +157,7 @@ public class PotionUtil {
                 if (!map.isEmpty()) {
                     for (Map.Entry<EntityAttribute, EntityAttributeModifier> entry : map.entrySet()) {
                         EntityAttributeModifier entityAttributeModifier = entry.getValue();
-                        EntityAttributeModifier entityAttributeModifier2 = new EntityAttributeModifier(entityAttributeModifier.getName(), statusEffect.method_5563(statusEffectInstance.getAmplifier(), entityAttributeModifier), entityAttributeModifier.getOperation());
+                        EntityAttributeModifier entityAttributeModifier2 = new EntityAttributeModifier(entityAttributeModifier.getName(), statusEffect.adjustModifierAmount(statusEffectInstance.getAmplifier(), entityAttributeModifier), entityAttributeModifier.getOperation());
                         list3.add(new Pair<String, EntityAttributeModifier>(entry.getKey().getId(), entityAttributeModifier2));
                     }
                 }

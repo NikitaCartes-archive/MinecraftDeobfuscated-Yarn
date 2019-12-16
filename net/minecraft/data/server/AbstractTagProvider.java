@@ -34,7 +34,7 @@ implements DataProvider {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     protected final DataGenerator root;
     protected final Registry<T> registry;
-    protected final Map<Tag<T>, Tag.Builder<T>> field_11481 = Maps.newLinkedHashMap();
+    protected final Map<Tag<T>, Tag.Builder<T>> tagBuilders = Maps.newLinkedHashMap();
 
     protected AbstractTagProvider(DataGenerator root, Registry<T> registry) {
         this.root = root;
@@ -45,10 +45,10 @@ implements DataProvider {
 
     @Override
     public void run(DataCache dataCache) {
-        this.field_11481.clear();
+        this.tagBuilders.clear();
         this.configure();
         TagContainer tagContainer = new TagContainer(identifier -> Optional.empty(), "", false, "generated");
-        Map map = this.field_11481.entrySet().stream().collect(Collectors.toMap(entry -> ((Tag)entry.getKey()).getId(), Map.Entry::getValue));
+        Map map = this.tagBuilders.entrySet().stream().collect(Collectors.toMap(entry -> ((Tag)entry.getKey()).getId(), Map.Entry::getValue));
         tagContainer.applyReload(map);
         tagContainer.getEntries().forEach((identifier, tag) -> {
             JsonObject jsonObject = tag.toJson(this.registry::getId);
@@ -67,15 +67,15 @@ implements DataProvider {
                 LOGGER.error("Couldn't save tags to {}", (Object)path, (Object)iOException);
             }
         });
-        this.method_10511(tagContainer);
+        this.setContainer(tagContainer);
     }
 
-    protected abstract void method_10511(TagContainer<T> var1);
+    protected abstract void setContainer(TagContainer<T> var1);
 
     protected abstract Path getOutput(Identifier var1);
 
-    protected Tag.Builder<T> method_10512(Tag<T> tag2) {
-        return this.field_11481.computeIfAbsent(tag2, tag -> Tag.Builder.create());
+    protected Tag.Builder<T> getOrCreateTagBuilder(Tag<T> tag2) {
+        return this.tagBuilders.computeIfAbsent(tag2, tag -> Tag.Builder.create());
     }
 }
 

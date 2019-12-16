@@ -40,8 +40,8 @@ public class UpgradeData {
     private static final Logger LOGGER = LogManager.getLogger();
     public static final UpgradeData NO_UPGRADE_DATA = new UpgradeData();
     private static final EightWayDirection[] EIGHT_WAYS = EightWayDirection.values();
-    private final EnumSet<EightWayDirection> sides = EnumSet.noneOf(EightWayDirection.class);
-    private final int[][] indices = new int[16][];
+    private final EnumSet<EightWayDirection> sidesToUpgrade = EnumSet.noneOf(EightWayDirection.class);
+    private final int[][] centerIndicesToUpgrade = new int[16][];
     private static final Map<Block, Logic> BLOCK_TO_LOGIC = new IdentityHashMap<Block, Logic>();
     private static final Set<Logic> CALLBACK_LOGICS = Sets.newHashSet();
 
@@ -52,34 +52,34 @@ public class UpgradeData {
         this();
         if (tag.contains("Indices", 10)) {
             CompoundTag compoundTag = tag.getCompound("Indices");
-            for (int i = 0; i < this.indices.length; ++i) {
+            for (int i = 0; i < this.centerIndicesToUpgrade.length; ++i) {
                 String string = String.valueOf(i);
                 if (!compoundTag.contains(string, 11)) continue;
-                this.indices[i] = compoundTag.getIntArray(string);
+                this.centerIndicesToUpgrade[i] = compoundTag.getIntArray(string);
             }
         }
         int j = tag.getInt("Sides");
         for (EightWayDirection eightWayDirection : EightWayDirection.values()) {
             if ((j & 1 << eightWayDirection.ordinal()) == 0) continue;
-            this.sides.add(eightWayDirection);
+            this.sidesToUpgrade.add(eightWayDirection);
         }
     }
 
-    public void method_12356(WorldChunk worldChunk) {
-        this.method_12348(worldChunk);
+    public void upgrade(WorldChunk chunk) {
+        this.upgradeCenter(chunk);
         for (EightWayDirection eightWayDirection : EIGHT_WAYS) {
-            UpgradeData.method_12352(worldChunk, eightWayDirection);
+            UpgradeData.upgradeSide(chunk, eightWayDirection);
         }
-        World world = worldChunk.getWorld();
+        World world = chunk.getWorld();
         CALLBACK_LOGICS.forEach(logic -> logic.postUpdate(world));
     }
 
-    private static void method_12352(WorldChunk worldChunk, EightWayDirection eightWayDirection) {
-        World world = worldChunk.getWorld();
-        if (!worldChunk.getUpgradeData().sides.remove((Object)eightWayDirection)) {
+    private static void upgradeSide(WorldChunk chunk, EightWayDirection side) {
+        World world = chunk.getWorld();
+        if (!chunk.getUpgradeData().sidesToUpgrade.remove((Object)side)) {
             return;
         }
-        Set<Direction> set = eightWayDirection.getDirections();
+        Set<Direction> set = side.getDirections();
         boolean i = false;
         int j = 15;
         boolean bl = set.contains(Direction.EAST);
@@ -87,7 +87,7 @@ public class UpgradeData {
         boolean bl3 = set.contains(Direction.SOUTH);
         boolean bl4 = set.contains(Direction.NORTH);
         boolean bl5 = set.size() == 1;
-        ChunkPos chunkPos = worldChunk.getPos();
+        ChunkPos chunkPos = chunk.getPos();
         int k = chunkPos.getStartX() + (bl5 && (bl4 || bl3) ? 1 : (bl2 ? 0 : 15));
         int l = chunkPos.getStartX() + (bl5 && (bl4 || bl3) ? 14 : (bl2 ? 0 : 15));
         int m = chunkPos.getStartZ() + (bl5 && (bl || bl2) ? 1 : (bl4 ? 0 : 15));
@@ -99,26 +99,26 @@ public class UpgradeData {
             BlockState blockState2 = blockState = world.getBlockState(blockPos);
             for (Direction direction : directions) {
                 mutable.set(blockPos).setOffset(direction);
-                blockState2 = UpgradeData.method_12351(blockState2, direction, world, blockPos, mutable);
+                blockState2 = UpgradeData.applyAdjacentBlock(blockState2, direction, world, blockPos, mutable);
             }
             Block.replaceBlock(blockState, blockState2, world, blockPos, 18);
         }
     }
 
-    private static BlockState method_12351(BlockState blockState, Direction direction, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-        return BLOCK_TO_LOGIC.getOrDefault(blockState.getBlock(), BulitinLogic.DEFAULT).getUpdatedState(blockState, direction, iWorld.getBlockState(blockPos2), iWorld, blockPos, blockPos2);
+    private static BlockState applyAdjacentBlock(BlockState oldState, Direction dir, IWorld world, BlockPos currentPos, BlockPos otherPos) {
+        return BLOCK_TO_LOGIC.getOrDefault(oldState.getBlock(), BulitinLogic.DEFAULT).getUpdatedState(oldState, dir, world.getBlockState(otherPos), world, currentPos, otherPos);
     }
 
-    private void method_12348(WorldChunk worldChunk) {
+    private void upgradeCenter(WorldChunk chunk) {
         try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();
              BlockPos.PooledMutable pooledMutable2 = BlockPos.PooledMutable.get();){
             int i;
-            ChunkPos chunkPos = worldChunk.getPos();
-            World iWorld = worldChunk.getWorld();
+            ChunkPos chunkPos = chunk.getPos();
+            World iWorld = chunk.getWorld();
             for (i = 0; i < 16; ++i) {
-                ChunkSection chunkSection = worldChunk.getSectionArray()[i];
-                int[] is = this.indices[i];
-                this.indices[i] = null;
+                ChunkSection chunkSection = chunk.getSectionArray()[i];
+                int[] is = this.centerIndicesToUpgrade[i];
+                this.centerIndicesToUpgrade[i] = null;
                 if (chunkSection == null || is == null || is.length <= 0) continue;
                 Direction[] directions = Direction.values();
                 PalettedContainer<BlockState> palettedContainer = chunkSection.getContainer();
@@ -132,42 +132,42 @@ public class UpgradeData {
                     for (Direction direction : directions) {
                         pooledMutable2.set(pooledMutable).setOffset(direction);
                         if (pooledMutable.getX() >> 4 != chunkPos.x || pooledMutable.getZ() >> 4 != chunkPos.z) continue;
-                        blockState2 = UpgradeData.method_12351(blockState2, direction, iWorld, pooledMutable, pooledMutable2);
+                        blockState2 = UpgradeData.applyAdjacentBlock(blockState2, direction, iWorld, pooledMutable, pooledMutable2);
                     }
                     Block.replaceBlock(blockState, blockState2, iWorld, pooledMutable, 18);
                 }
             }
-            for (i = 0; i < this.indices.length; ++i) {
-                if (this.indices[i] != null) {
+            for (i = 0; i < this.centerIndicesToUpgrade.length; ++i) {
+                if (this.centerIndicesToUpgrade[i] != null) {
                     LOGGER.warn("Discarding update data for section {} for chunk ({} {})", (Object)i, (Object)chunkPos.x, (Object)chunkPos.z);
                 }
-                this.indices[i] = null;
+                this.centerIndicesToUpgrade[i] = null;
             }
         }
     }
 
-    public boolean method_12349() {
-        for (int[] is : this.indices) {
+    public boolean isDone() {
+        for (int[] is : this.centerIndicesToUpgrade) {
             if (is == null) continue;
             return false;
         }
-        return this.sides.isEmpty();
+        return this.sidesToUpgrade.isEmpty();
     }
 
     public CompoundTag toTag() {
         int i;
         CompoundTag compoundTag = new CompoundTag();
         CompoundTag compoundTag2 = new CompoundTag();
-        for (i = 0; i < this.indices.length; ++i) {
+        for (i = 0; i < this.centerIndicesToUpgrade.length; ++i) {
             String string = String.valueOf(i);
-            if (this.indices[i] == null || this.indices[i].length == 0) continue;
-            compoundTag2.putIntArray(string, this.indices[i]);
+            if (this.centerIndicesToUpgrade[i] == null || this.centerIndicesToUpgrade[i].length == 0) continue;
+            compoundTag2.putIntArray(string, this.centerIndicesToUpgrade[i]);
         }
         if (!compoundTag2.isEmpty()) {
             compoundTag.put("Indices", compoundTag2);
         }
         i = 0;
-        for (EightWayDirection eightWayDirection : this.sides) {
+        for (EightWayDirection eightWayDirection : this.sidesToUpgrade) {
             i |= 1 << eightWayDirection.ordinal();
         }
         compoundTag.putByte("Sides", (byte)i);
@@ -235,7 +235,7 @@ public class UpgradeData {
             }
 
             @Override
-            public void postUpdate(IWorld iWorld) {
+            public void postUpdate(IWorld world) {
                 BlockPos.Mutable mutable = new BlockPos.Mutable();
                 List<ObjectSet<BlockPos>> list = this.distanceToPositions.get();
                 for (int i = 2; i < list.size(); ++i) {
@@ -243,13 +243,13 @@ public class UpgradeData {
                     ObjectSet<BlockPos> objectSet = list.get(j);
                     ObjectSet<BlockPos> objectSet2 = list.get(i);
                     for (BlockPos blockPos : objectSet) {
-                        BlockState blockState = iWorld.getBlockState(blockPos);
+                        BlockState blockState = world.getBlockState(blockPos);
                         if (blockState.get(Properties.DISTANCE_1_7) < j) continue;
-                        iWorld.setBlockState(blockPos, (BlockState)blockState.with(Properties.DISTANCE_1_7, j), 18);
+                        world.setBlockState(blockPos, (BlockState)blockState.with(Properties.DISTANCE_1_7, j), 18);
                         if (i == 7) continue;
                         for (Direction direction : DIRECTIONS) {
                             mutable.set(blockPos).setOffset(direction);
-                            BlockState blockState2 = iWorld.getBlockState(mutable);
+                            BlockState blockState2 = world.getBlockState(mutable);
                             if (!blockState2.contains(Properties.DISTANCE_1_7) || blockState.get(Properties.DISTANCE_1_7) <= i) continue;
                             objectSet2.add(mutable.toImmutable());
                         }
@@ -296,7 +296,7 @@ public class UpgradeData {
     public static interface Logic {
         public BlockState getUpdatedState(BlockState var1, Direction var2, BlockState var3, IWorld var4, BlockPos var5, BlockPos var6);
 
-        default public void postUpdate(IWorld iWorld) {
+        default public void postUpdate(IWorld world) {
         }
     }
 }

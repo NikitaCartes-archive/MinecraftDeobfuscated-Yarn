@@ -51,8 +51,8 @@ extends Task<LivingEntity> {
         return null;
     }
 
-    public static boolean isSkyVisible(ServerWorld world, LivingEntity livingEntity, BlockPos blockPos) {
-        return world.isSkyVisible(blockPos) && (double)world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos).getY() <= livingEntity.getY();
+    public static boolean isSkyVisible(ServerWorld world, LivingEntity entity, BlockPos pos) {
+        return world.isSkyVisible(pos) && (double)world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, pos).getY() <= entity.getY();
     }
 }
 

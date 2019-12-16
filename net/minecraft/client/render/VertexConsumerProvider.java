@@ -17,12 +17,12 @@ import net.minecraft.client.render.VertexConsumer;
 
 @Environment(value=EnvType.CLIENT)
 public interface VertexConsumerProvider {
-    public static Immediate immediate(BufferBuilder builder) {
-        return VertexConsumerProvider.immediate(ImmutableMap.of(), builder);
+    public static Immediate immediate(BufferBuilder buffer) {
+        return VertexConsumerProvider.immediate(ImmutableMap.of(), buffer);
     }
 
-    public static Immediate immediate(Map<RenderLayer, BufferBuilder> map, BufferBuilder layerBuffers) {
-        return new Immediate(layerBuffers, map);
+    public static Immediate immediate(Map<RenderLayer, BufferBuilder> layerBuffers, BufferBuilder fallbackBuffer) {
+        return new Immediate(fallbackBuffer, layerBuffers);
     }
 
     public VertexConsumer getBuffer(RenderLayer var1);
@@ -35,9 +35,9 @@ public interface VertexConsumerProvider {
         protected Optional<RenderLayer> currentLayer = Optional.empty();
         protected final Set<BufferBuilder> activeConsumers = Sets.newHashSet();
 
-        protected Immediate(BufferBuilder layerBuffers, Map<RenderLayer, BufferBuilder> map) {
-            this.fallbackBuffer = layerBuffers;
-            this.layerBuffers = map;
+        protected Immediate(BufferBuilder fallbackBuffer, Map<RenderLayer, BufferBuilder> layerBuffers) {
+            this.fallbackBuffer = fallbackBuffer;
+            this.layerBuffers = layerBuffers;
         }
 
         @Override

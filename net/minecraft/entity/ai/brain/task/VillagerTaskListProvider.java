@@ -28,6 +28,7 @@ import net.minecraft.entity.ai.brain.task.GatherItemsVillagerTask;
 import net.minecraft.entity.ai.brain.task.GiveGiftsToHeroTask;
 import net.minecraft.entity.ai.brain.task.GoToIfNearbyTask;
 import net.minecraft.entity.ai.brain.task.GoToNearbyEntityTask;
+import net.minecraft.entity.ai.brain.task.GoToNearbyPositionTask;
 import net.minecraft.entity.ai.brain.task.GoToPointOfInterestTask;
 import net.minecraft.entity.ai.brain.task.GoToSecondaryPositionTask;
 import net.minecraft.entity.ai.brain.task.GoToWorkTask;
@@ -62,10 +63,9 @@ import net.minecraft.entity.ai.brain.task.WakeUpTask;
 import net.minecraft.entity.ai.brain.task.WalkHomeTask;
 import net.minecraft.entity.ai.brain.task.WanderAroundTask;
 import net.minecraft.entity.ai.brain.task.WanderIndoorsTask;
-import net.minecraft.entity.ai.tasks.GoToNearbyPositionTask;
 import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.village.PointOfInterestType;
 import net.minecraft.village.VillagerProfession;
+import net.minecraft.world.poi.PointOfInterestType;
 
 public class VillagerTaskListProvider {
     public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> createCoreTasks(VillagerProfession profession, float f) {

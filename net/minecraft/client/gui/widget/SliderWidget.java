@@ -23,10 +23,10 @@ extends AbstractButtonWidget {
         this(MinecraftClient.getInstance().options, x, y, width, height, progress);
     }
 
-    protected SliderWidget(GameOptions gameOptions, int x, int y, int width, int height, double progress) {
+    protected SliderWidget(GameOptions options, int x, int y, int width, int height, double value) {
         super(x, y, width, height, "");
-        this.options = gameOptions;
-        this.value = progress;
+        this.options = options;
+        this.value = value;
     }
 
     @Override

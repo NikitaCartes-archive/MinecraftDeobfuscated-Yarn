@@ -8,7 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.function.Supplier;
 import net.minecraft.SharedConstants;
-import net.minecraft.datafixers.DataFixTypes;
+import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.math.ChunkPos;

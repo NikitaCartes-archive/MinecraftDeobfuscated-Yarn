@@ -21,13 +21,13 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.village.PointOfInterest;
-import net.minecraft.village.PointOfInterestStorage;
-import net.minecraft.village.PointOfInterestType;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.poi.PointOfInterest;
+import net.minecraft.world.poi.PointOfInterestStorage;
+import net.minecraft.world.poi.PointOfInterestType;
 import org.jetbrains.annotations.Nullable;
 
 public class RaidManager
@@ -114,7 +114,7 @@ extends PersistentState {
         } else if (raid.getBadOmenLevel() < raid.getMaxAcceptableBadOmenLevel()) {
             bl = true;
         } else {
-            player.tryRemoveStatusEffect(StatusEffects.BAD_OMEN);
+            player.removeStatusEffect(StatusEffects.BAD_OMEN);
             player.networkHandler.sendPacket(new EntityStatusS2CPacket(player, 43));
         }
         if (bl) {

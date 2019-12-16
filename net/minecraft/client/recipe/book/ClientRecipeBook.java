@@ -124,17 +124,17 @@ extends RecipeBook {
         return RecipeBookGroup.MISC;
     }
 
-    public static List<RecipeBookGroup> getGroupsForContainer(CraftingContainer<?> craftingContainer) {
-        if (craftingContainer instanceof CraftingTableContainer || craftingContainer instanceof PlayerContainer) {
+    public static List<RecipeBookGroup> getGroupsForContainer(CraftingContainer<?> container) {
+        if (container instanceof CraftingTableContainer || container instanceof PlayerContainer) {
             return Lists.newArrayList(RecipeBookGroup.SEARCH, RecipeBookGroup.EQUIPMENT, RecipeBookGroup.BUILDING_BLOCKS, RecipeBookGroup.MISC, RecipeBookGroup.REDSTONE);
         }
-        if (craftingContainer instanceof FurnaceContainer) {
+        if (container instanceof FurnaceContainer) {
             return Lists.newArrayList(RecipeBookGroup.FURNACE_SEARCH, RecipeBookGroup.FURNACE_FOOD, RecipeBookGroup.FURNACE_BLOCKS, RecipeBookGroup.FURNACE_MISC);
         }
-        if (craftingContainer instanceof BlastFurnaceContainer) {
+        if (container instanceof BlastFurnaceContainer) {
             return Lists.newArrayList(RecipeBookGroup.BLAST_FURNACE_SEARCH, RecipeBookGroup.BLAST_FURNACE_BLOCKS, RecipeBookGroup.BLAST_FURNACE_MISC);
         }
-        if (craftingContainer instanceof SmokerContainer) {
+        if (container instanceof SmokerContainer) {
             return Lists.newArrayList(RecipeBookGroup.SMOKER_SEARCH, RecipeBookGroup.SMOKER_FOOD);
         }
         return Lists.newArrayList();
@@ -144,8 +144,8 @@ extends RecipeBook {
         return this.orderedResults;
     }
 
-    public List<RecipeResultCollection> getResultsForGroup(RecipeBookGroup recipeBookGroup) {
-        return this.resultsByGroup.getOrDefault((Object)recipeBookGroup, Collections.emptyList());
+    public List<RecipeResultCollection> getResultsForGroup(RecipeBookGroup category) {
+        return this.resultsByGroup.getOrDefault((Object)category, Collections.emptyList());
     }
 }
 

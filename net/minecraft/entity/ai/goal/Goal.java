@@ -27,9 +27,9 @@ public abstract class Goal {
     public void tick() {
     }
 
-    public void setControls(EnumSet<Control> enumSet) {
+    public void setControls(EnumSet<Control> controls) {
         this.controls.clear();
-        this.controls.addAll(enumSet);
+        this.controls.addAll(controls);
     }
 
     public String toString() {

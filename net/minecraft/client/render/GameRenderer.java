@@ -611,7 +611,7 @@ SynchronousResourceReloadListener {
         matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(6.0f * MathHelper.cos(f * 8.0f)));
         matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(6.0f * MathHelper.cos(f * 8.0f)));
         VertexConsumerProvider.Immediate immediate = this.buffers.getEntityVertexConsumers();
-        this.client.getItemRenderer().renderItem(this.floatingItem, ModelTransformation.Type.FIXED, 0xF000F0, OverlayTexture.DEFAULT_UV, matrixStack, immediate);
+        this.client.getItemRenderer().renderItem(this.floatingItem, ModelTransformation.Mode.FIXED, 0xF000F0, OverlayTexture.DEFAULT_UV, matrixStack, immediate);
         matrixStack.pop();
         immediate.draw();
         RenderSystem.popAttributes();

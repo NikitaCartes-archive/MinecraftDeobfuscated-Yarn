@@ -45,8 +45,8 @@ extends State<FluidState> {
         return this.getFluid().getHeight(this, blockView, blockPos);
     }
 
-    default public float method_20785() {
-        return this.getFluid().method_20784(this);
+    default public float getHeight() {
+        return this.getFluid().getHeight(this);
     }
 
     default public int getLevel() {

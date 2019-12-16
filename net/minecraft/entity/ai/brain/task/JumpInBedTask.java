@@ -123,8 +123,8 @@ extends Task<MobEntity> {
     }
 
     @Override
-    protected /* synthetic */ void finishRunning(ServerWorld serverWorld, LivingEntity livingEntity, long time) {
-        this.finishRunning(serverWorld, (MobEntity)livingEntity, time);
+    protected /* synthetic */ void finishRunning(ServerWorld world, LivingEntity entity, long time) {
+        this.finishRunning(world, (MobEntity)entity, time);
     }
 }
 

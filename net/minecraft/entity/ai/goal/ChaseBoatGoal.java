@@ -18,7 +18,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class ChaseBoatGoal
 extends Goal {
-    private int field_6428;
+    private int updateCountdownTicks;
     private final MobEntityWithAi mob;
     private LivingEntity passenger;
     private ChaseBoatState state;
@@ -58,7 +58,7 @@ extends Goal {
             this.passenger = (LivingEntity)boatEntity.getPrimaryPassenger();
             break;
         }
-        this.field_6428 = 0;
+        this.updateCountdownTicks = 0;
         this.state = ChaseBoatState.GO_TO_BOAT;
     }
 
@@ -74,16 +74,16 @@ extends Goal {
         float f = this.state == ChaseBoatState.GO_IN_BOAT_DIRECTION ? (bl ? 0.17999999f : 0.0f) : 0.135f;
         this.mob.updateVelocity(f, new Vec3d(this.mob.sidewaysSpeed, this.mob.upwardSpeed, this.mob.forwardSpeed));
         this.mob.move(MovementType.SELF, this.mob.getVelocity());
-        if (--this.field_6428 > 0) {
+        if (--this.updateCountdownTicks > 0) {
             return;
         }
-        this.field_6428 = 10;
+        this.updateCountdownTicks = 10;
         if (this.state == ChaseBoatState.GO_TO_BOAT) {
             BlockPos blockPos = new BlockPos(this.passenger).offset(this.passenger.getHorizontalFacing().getOpposite());
             blockPos = blockPos.add(0, -1, 0);
             this.mob.getNavigation().startMovingTo(blockPos.getX(), blockPos.getY(), blockPos.getZ(), 1.0);
             if (this.mob.distanceTo(this.passenger) < 4.0f) {
-                this.field_6428 = 0;
+                this.updateCountdownTicks = 0;
                 this.state = ChaseBoatState.GO_IN_BOAT_DIRECTION;
             }
         } else if (this.state == ChaseBoatState.GO_IN_BOAT_DIRECTION) {
@@ -91,7 +91,7 @@ extends Goal {
             BlockPos blockPos2 = new BlockPos(this.passenger).offset(direction, 10);
             this.mob.getNavigation().startMovingTo(blockPos2.getX(), blockPos2.getY() - 1, blockPos2.getZ(), 1.0);
             if (this.mob.distanceTo(this.passenger) > 12.0f) {
-                this.field_6428 = 0;
+                this.updateCountdownTicks = 0;
                 this.state = ChaseBoatState.GO_TO_BOAT;
             }
         }

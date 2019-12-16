@@ -90,7 +90,7 @@ implements TutorialStepHandler {
 
     public static boolean hasBrokenTreeBlocks(ClientPlayerEntity player) {
         for (Block block : TREE_BLOCKS) {
-            if (player.getStats().getStat(Stats.MINED.getOrCreateStat(block)) <= 0) continue;
+            if (player.getStatHandler().getStat(Stats.MINED.getOrCreateStat(block)) <= 0) continue;
             return true;
         }
         return false;

@@ -190,8 +190,8 @@ implements RangedAttackMob {
     }
 
     @Override
-    public boolean canSpawn(WorldView worldView) {
-        return worldView.intersectsEntities(this);
+    public boolean canSpawn(WorldView world) {
+        return world.intersectsEntities(this);
     }
 
     public boolean method_7012(@Nullable LivingEntity livingEntity) {
@@ -398,12 +398,12 @@ implements RangedAttackMob {
         }
 
         @Override
-        protected boolean isTargetPos(WorldView worldView, BlockPos pos) {
+        protected boolean isTargetPos(WorldView world, BlockPos pos) {
             BlockPos blockPos = pos.up();
-            if (!worldView.isAir(blockPos) || !worldView.isAir(blockPos.up())) {
+            if (!world.isAir(blockPos) || !world.isAir(blockPos.up())) {
                 return false;
             }
-            return worldView.getBlockState(pos).hasSolidTopSurface(worldView, pos, this.drowned);
+            return world.getBlockState(pos).hasSolidTopSurface(world, pos, this.drowned);
         }
 
         @Override

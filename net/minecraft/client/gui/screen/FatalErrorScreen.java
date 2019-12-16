@@ -15,8 +15,8 @@ public class FatalErrorScreen
 extends Screen {
     private final String message;
 
-    public FatalErrorScreen(Text text, String message) {
-        super(text);
+    public FatalErrorScreen(Text title, String message) {
+        super(title);
         this.message = message;
     }
 

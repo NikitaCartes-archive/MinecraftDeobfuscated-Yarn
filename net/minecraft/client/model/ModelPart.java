@@ -216,7 +216,7 @@ public class ModelPart {
             }
             this.direction = direction.getUnitVector();
             if (flip) {
-                this.direction.piecewiseMultiply(-1.0f, 1.0f, 1.0f);
+                this.direction.multiplyComponentwise(-1.0f, 1.0f, 1.0f);
             }
         }
     }

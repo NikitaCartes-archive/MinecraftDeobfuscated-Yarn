@@ -33,7 +33,7 @@ implements DataProvider {
     public void run(DataCache dataCache) throws IOException {
         Path path2 = this.root.getOutput();
         for (Path path22 : this.root.getInputs()) {
-            Files.walk(path22, new FileVisitOption[0]).filter(path -> path.toString().endsWith(".nbt")).forEach(path3 -> NbtProvider.method_10493(path3, this.method_10496(path22, (Path)path3), path2));
+            Files.walk(path22, new FileVisitOption[0]).filter(path -> path.toString().endsWith(".nbt")).forEach(path3 -> NbtProvider.convertNbtToSnbt(path3, this.getLocation(path22, (Path)path3), path2));
         }
     }
 
@@ -42,26 +42,26 @@ implements DataProvider {
         return "NBT to SNBT";
     }
 
-    private String method_10496(Path path, Path path2) {
-        String string = path.relativize(path2).toString().replaceAll("\\\\", "/");
+    private String getLocation(Path targetPath, Path rootPath) {
+        String string = targetPath.relativize(rootPath).toString().replaceAll("\\\\", "/");
         return string.substring(0, string.length() - ".nbt".length());
     }
 
     @Nullable
-    public static Path method_10493(Path path, String string, Path path2) {
+    public static Path convertNbtToSnbt(Path inputPath, String location, Path outputPath) {
         try {
-            CompoundTag compoundTag = NbtIo.readCompressed(Files.newInputStream(path, new OpenOption[0]));
+            CompoundTag compoundTag = NbtIo.readCompressed(Files.newInputStream(inputPath, new OpenOption[0]));
             Text text = compoundTag.toText("    ", 0);
-            String string2 = text.getString() + "\n";
-            Path path3 = path2.resolve(string + ".snbt");
-            Files.createDirectories(path3.getParent(), new FileAttribute[0]);
-            try (BufferedWriter bufferedWriter = Files.newBufferedWriter(path3, new OpenOption[0]);){
-                bufferedWriter.write(string2);
+            String string = text.getString() + "\n";
+            Path path = outputPath.resolve(location + ".snbt");
+            Files.createDirectories(path.getParent(), new FileAttribute[0]);
+            try (BufferedWriter bufferedWriter = Files.newBufferedWriter(path, new OpenOption[0]);){
+                bufferedWriter.write(string);
             }
-            LOGGER.info("Converted {} from NBT to SNBT", (Object)string);
-            return path3;
+            LOGGER.info("Converted {} from NBT to SNBT", (Object)location);
+            return path;
         } catch (IOException iOException) {
-            LOGGER.error("Couldn't convert {} from NBT to SNBT at {}", (Object)string, (Object)path, (Object)iOException);
+            LOGGER.error("Couldn't convert {} from NBT to SNBT at {}", (Object)location, (Object)inputPath, (Object)iOException);
             return null;
         }
     }

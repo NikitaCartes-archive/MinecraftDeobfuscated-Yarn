@@ -37,22 +37,22 @@ extends Task<LivingEntity> {
         List<BlockPos> list2 = path.getNodes().stream().map(pathNode -> new BlockPos(pathNode.x, pathNode.y, pathNode.z)).collect(Collectors.toList());
         Set<BlockPos> set = this.getDoorsOnPath(world, list, list2);
         int i = path.getCurrentNodeIndex() - 1;
-        this.method_21698(world, list2, set, i, entity, brain);
+        this.findAndCloseOpenedDoors(world, list2, set, i, entity, brain);
     }
 
     private Set<BlockPos> getDoorsOnPath(ServerWorld world, List<GlobalPos> doors, List<BlockPos> path) {
         return doors.stream().filter(globalPos -> globalPos.getDimension() == world.getDimension().getType()).map(GlobalPos::getPos).filter(path::contains).collect(Collectors.toSet());
     }
 
-    private void method_21698(ServerWorld serverWorld, List<BlockPos> list, Set<BlockPos> set, int i, LivingEntity livingEntity, Brain<?> brain) {
-        set.forEach(blockPos -> {
-            int j = list.indexOf(blockPos);
-            BlockState blockState = serverWorld.getBlockState((BlockPos)blockPos);
+    private void findAndCloseOpenedDoors(ServerWorld world, List<BlockPos> path, Set<BlockPos> doors, int lastNodeIndex, LivingEntity entity, Brain<?> brain) {
+        doors.forEach(blockPos -> {
+            int j = path.indexOf(blockPos);
+            BlockState blockState = world.getBlockState((BlockPos)blockPos);
             Block block = blockState.getBlock();
             if (BlockTags.WOODEN_DOORS.contains(block) && block instanceof DoorBlock) {
-                boolean bl = j >= i;
-                ((DoorBlock)block).setOpen(serverWorld, (BlockPos)blockPos, bl);
-                GlobalPos globalPos = GlobalPos.create(serverWorld.getDimension().getType(), blockPos);
+                boolean bl = j >= lastNodeIndex;
+                ((DoorBlock)block).setOpen(world, (BlockPos)blockPos, bl);
+                GlobalPos globalPos = GlobalPos.create(world.getDimension().getType(), blockPos);
                 if (!brain.getOptionalMemory(MemoryModuleType.OPENED_DOORS).isPresent() && bl) {
                     brain.putMemory(MemoryModuleType.OPENED_DOORS, Sets.newHashSet(globalPos));
                 } else {
@@ -66,24 +66,24 @@ extends Task<LivingEntity> {
                 }
             }
         });
-        OpenDoorsTask.method_21697(serverWorld, list, i, livingEntity, brain);
+        OpenDoorsTask.closeOpenedDoors(world, path, lastNodeIndex, entity, brain);
     }
 
-    public static void method_21697(ServerWorld serverWorld, List<BlockPos> list, int i, LivingEntity livingEntity, Brain<?> brain) {
+    public static void closeOpenedDoors(ServerWorld world, List<BlockPos> path, int currentPathIndex, LivingEntity entity, Brain<?> brain) {
         brain.getOptionalMemory(MemoryModuleType.OPENED_DOORS).ifPresent(set -> {
             Iterator iterator = set.iterator();
             while (iterator.hasNext()) {
                 GlobalPos globalPos = (GlobalPos)iterator.next();
                 BlockPos blockPos = globalPos.getPos();
-                int j = list.indexOf(blockPos);
-                if (serverWorld.getDimension().getType() != globalPos.getDimension()) {
+                int j = path.indexOf(blockPos);
+                if (world.getDimension().getType() != globalPos.getDimension()) {
                     iterator.remove();
                     continue;
                 }
-                BlockState blockState = serverWorld.getBlockState(blockPos);
+                BlockState blockState = world.getBlockState(blockPos);
                 Block block = blockState.getBlock();
-                if (!BlockTags.WOODEN_DOORS.contains(block) || !(block instanceof DoorBlock) || j >= i || !blockPos.isWithinDistance(livingEntity.getPos(), 4.0)) continue;
-                ((DoorBlock)block).setOpen(serverWorld, blockPos, false);
+                if (!BlockTags.WOODEN_DOORS.contains(block) || !(block instanceof DoorBlock) || j >= currentPathIndex || !blockPos.isWithinDistance(entity.getPos(), 4.0)) continue;
+                ((DoorBlock)block).setOpen(world, blockPos, false);
                 iterator.remove();
             }
         });

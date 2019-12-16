@@ -24,16 +24,16 @@ import net.minecraft.util.Util;
 @Environment(value=EnvType.CLIENT)
 public class GameMenuScreen
 extends Screen {
-    private final boolean field_19319;
+    private final boolean showMenu;
 
-    public GameMenuScreen(boolean bl) {
-        super(bl ? new TranslatableText("menu.game", new Object[0]) : new TranslatableText("menu.paused", new Object[0]));
-        this.field_19319 = bl;
+    public GameMenuScreen(boolean showMenu) {
+        super(showMenu ? new TranslatableText("menu.game", new Object[0]) : new TranslatableText("menu.paused", new Object[0]));
+        this.showMenu = showMenu;
     }
 
     @Override
     protected void init() {
-        if (this.field_19319) {
+        if (this.showMenu) {
             this.initWidgets();
         }
     }
@@ -46,7 +46,7 @@ extends Screen {
             this.minecraft.mouse.lockCursor();
         }));
         this.addButton(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 48 + -16, 98, 20, I18n.translate("gui.advancements", new Object[0]), buttonWidget -> this.minecraft.openScreen(new AdvancementsScreen(this.minecraft.player.networkHandler.getAdvancementHandler()))));
-        this.addButton(new ButtonWidget(this.width / 2 + 4, this.height / 4 + 48 + -16, 98, 20, I18n.translate("gui.stats", new Object[0]), buttonWidget -> this.minecraft.openScreen(new StatsScreen(this, this.minecraft.player.getStats()))));
+        this.addButton(new ButtonWidget(this.width / 2 + 4, this.height / 4 + 48 + -16, 98, 20, I18n.translate("gui.stats", new Object[0]), buttonWidget -> this.minecraft.openScreen(new StatsScreen(this, this.minecraft.player.getStatHandler()))));
         String string = SharedConstants.getGameVersion().isStable() ? "https://aka.ms/javafeedback?ref=game" : "https://aka.ms/snapshotfeedback?ref=game";
         this.addButton(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 72 + -16, 98, 20, I18n.translate("menu.sendFeedback", new Object[0]), buttonWidget -> this.minecraft.openScreen(new ConfirmChatLinkScreen(bl -> {
             if (bl) {
@@ -94,7 +94,7 @@ extends Screen {
 
     @Override
     public void render(int mouseX, int mouseY, float delta) {
-        if (this.field_19319) {
+        if (this.showMenu) {
             this.renderBackground();
             this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 40, 0xFFFFFF);
         } else {

@@ -372,7 +372,7 @@ AutoCloseable {
         boolean bl;
         if (this.iteratingTickingBlockEntities) {
             Supplier[] supplierArray = new Supplier[2];
-            supplierArray[0] = () -> Registry.BLOCK_ENTITY.getId(blockEntity.getType());
+            supplierArray[0] = () -> Registry.BLOCK_ENTITY_TYPE.getId(blockEntity.getType());
             supplierArray[1] = blockEntity::getPos;
             LOGGER.error("Adding block entity while ticking: {} @ {}", supplierArray);
         }

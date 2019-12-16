@@ -239,7 +239,7 @@ implements Drawable {
         }
     }
 
-    protected void insertText(String text, boolean bl) {
+    protected void insertText(String text, boolean override) {
     }
 
     public boolean handleComponentClicked(Text text) {

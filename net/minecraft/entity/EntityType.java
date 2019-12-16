@@ -12,8 +12,8 @@ import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.datafixers.Schemas;
-import net.minecraft.datafixers.TypeReferences;
+import net.minecraft.datafixer.Schemas;
+import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.EnderEyeEntity;
 import net.minecraft.entity.Entity;
@@ -255,7 +255,7 @@ public class EntityType<T extends Entity> {
     private final boolean saveable;
     private final boolean summonable;
     private final boolean fireImmune;
-    private final boolean field_19423;
+    private final boolean spawnableFarFromPlayer;
     @Nullable
     private String translationKey;
     @Nullable
@@ -276,10 +276,10 @@ public class EntityType<T extends Entity> {
         return Registry.ENTITY_TYPE.getOrEmpty(Identifier.tryParse(id));
     }
 
-    public EntityType(EntityFactory<T> factory, EntityCategory category, boolean saveable, boolean summonable, boolean fireImmune, boolean bl, EntityDimensions dimensions) {
+    public EntityType(EntityFactory<T> factory, EntityCategory category, boolean saveable, boolean summonable, boolean fireImmune, boolean spawnableFarFromPlayer, EntityDimensions dimensions) {
         this.factory = factory;
         this.category = category;
-        this.field_19423 = bl;
+        this.spawnableFarFromPlayer = spawnableFarFromPlayer;
         this.saveable = saveable;
         this.summonable = summonable;
         this.fireImmune = fireImmune;
@@ -287,19 +287,19 @@ public class EntityType<T extends Entity> {
     }
 
     @Nullable
-    public Entity spawnFromItemStack(World world, @Nullable ItemStack stack, @Nullable PlayerEntity player, BlockPos pos, SpawnType spawnType, boolean bl, boolean bl2) {
-        return this.spawn(world, stack == null ? null : stack.getTag(), stack != null && stack.hasCustomName() ? stack.getName() : null, player, pos, spawnType, bl, bl2);
+    public Entity spawnFromItemStack(World world, @Nullable ItemStack stack, @Nullable PlayerEntity player, BlockPos pos, SpawnType spawnType, boolean alignPosition, boolean invertY) {
+        return this.spawn(world, stack == null ? null : stack.getTag(), stack != null && stack.hasCustomName() ? stack.getName() : null, player, pos, spawnType, alignPosition, invertY);
     }
 
     @Nullable
-    public T spawn(World world, @Nullable CompoundTag itemTag, @Nullable Text name, @Nullable PlayerEntity player, BlockPos pos, SpawnType spawnType, boolean bl, boolean bl2) {
-        T entity = this.create(world, itemTag, name, player, pos, spawnType, bl, bl2);
+    public T spawn(World world, @Nullable CompoundTag itemTag, @Nullable Text name, @Nullable PlayerEntity player, BlockPos pos, SpawnType spawnType, boolean alignPosition, boolean invertY) {
+        T entity = this.create(world, itemTag, name, player, pos, spawnType, alignPosition, invertY);
         world.spawnEntity((Entity)entity);
         return entity;
     }
 
     @Nullable
-    public T create(World world, @Nullable CompoundTag itemTag, @Nullable Text name, @Nullable PlayerEntity player, BlockPos pos, SpawnType spawnType, boolean alignPosition, boolean bl) {
+    public T create(World world, @Nullable CompoundTag itemTag, @Nullable Text name, @Nullable PlayerEntity player, BlockPos pos, SpawnType spawnType, boolean alignPosition, boolean invertY) {
         double d;
         T entity = this.create(world);
         if (entity == null) {
@@ -307,7 +307,7 @@ public class EntityType<T extends Entity> {
         }
         if (alignPosition) {
             ((Entity)entity).setPosition((double)pos.getX() + 0.5, pos.getY() + 1, (double)pos.getZ() + 0.5);
-            d = EntityType.getOriginY(world, pos, bl, ((Entity)entity).getBoundingBox());
+            d = EntityType.getOriginY(world, pos, invertY, ((Entity)entity).getBoundingBox());
         } else {
             d = 0.0;
         }
@@ -326,13 +326,13 @@ public class EntityType<T extends Entity> {
         return entity;
     }
 
-    protected static double getOriginY(WorldView worldView, BlockPos pos, boolean bl, Box boundingBox) {
+    protected static double getOriginY(WorldView worldView, BlockPos pos, boolean invertY, Box boundingBox) {
         Box box = new Box(pos);
-        if (bl) {
+        if (invertY) {
             box = box.stretch(0.0, -1.0, 0.0);
         }
         Stream<VoxelShape> stream = worldView.getCollisions(null, box, Collections.emptySet());
-        return 1.0 + VoxelShapes.calculateMaxOffset(Direction.Axis.Y, boundingBox, stream, bl ? -2.0 : -1.0);
+        return 1.0 + VoxelShapes.calculateMaxOffset(Direction.Axis.Y, boundingBox, stream, invertY ? -2.0 : -1.0);
     }
 
     public static void loadFromEntityTag(World world, @Nullable PlayerEntity player, @Nullable Entity entity, @Nullable CompoundTag itemTag) {
@@ -366,7 +366,7 @@ public class EntityType<T extends Entity> {
     }
 
     public boolean isSpawnableFarFromPlayer() {
-        return this.field_19423;
+        return this.spawnableFarFromPlayer;
     }
 
     public EntityCategory getCategory() {
@@ -517,13 +517,13 @@ public class EntityType<T extends Entity> {
         private boolean saveable = true;
         private boolean summonable = true;
         private boolean fireImmune;
-        private boolean field_19424;
+        private boolean spawnableFarFromPlayer;
         private EntityDimensions size = EntityDimensions.changing(0.6f, 1.8f);
 
         private Builder(EntityFactory<T> factory, EntityCategory category) {
             this.factory = factory;
             this.category = category;
-            this.field_19424 = category == EntityCategory.CREATURE || category == EntityCategory.MISC;
+            this.spawnableFarFromPlayer = category == EntityCategory.CREATURE || category == EntityCategory.MISC;
         }
 
         public static <T extends Entity> Builder<T> create(EntityFactory<T> factory, EntityCategory category) {
@@ -555,7 +555,7 @@ public class EntityType<T extends Entity> {
         }
 
         public Builder<T> spawnableFarFromPlayer() {
-            this.field_19424 = true;
+            this.spawnableFarFromPlayer = true;
             return this;
         }
 
@@ -570,7 +570,7 @@ public class EntityType<T extends Entity> {
                     LOGGER.warn("No data fixer registered for entity {}", (Object)id);
                 }
             }
-            return new EntityType<T>(this.factory, this.category, this.saveable, this.summonable, this.fireImmune, this.field_19424, this.size);
+            return new EntityType<T>(this.factory, this.category, this.saveable, this.summonable, this.fireImmune, this.spawnableFarFromPlayer, this.size);
         }
     }
 }

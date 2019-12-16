@@ -469,10 +469,10 @@ extends AnimalEntity {
         }
 
         @Override
-        protected boolean isTargetPos(WorldView worldView, BlockPos pos) {
+        protected boolean isTargetPos(WorldView world, BlockPos pos) {
             BlockState blockState;
-            Block block = worldView.getBlockState(pos).getBlock();
-            if (block == Blocks.FARMLAND && this.wantsCarrots && !this.field_6861 && (block = (blockState = worldView.getBlockState(pos = pos.up())).getBlock()) instanceof CarrotsBlock && ((CarrotsBlock)block).isMature(blockState)) {
+            Block block = world.getBlockState(pos).getBlock();
+            if (block == Blocks.FARMLAND && this.wantsCarrots && !this.field_6861 && (block = (blockState = world.getBlockState(pos = pos.up())).getBlock()) instanceof CarrotsBlock && ((CarrotsBlock)block).isMature(blockState)) {
                 this.field_6861 = true;
                 return true;
             }

@@ -11,8 +11,8 @@ public class BodyControl {
     private int activeTicks;
     private float lastHeadYaw;
 
-    public BodyControl(MobEntity mobEntity) {
-        this.entity = mobEntity;
+    public BodyControl(MobEntity entity) {
+        this.entity = entity;
     }
 
     public void tick() {
@@ -38,18 +38,18 @@ public class BodyControl {
     }
 
     private void rotateLook() {
-        this.entity.bodyYaw = MathHelper.method_20306(this.entity.bodyYaw, this.entity.headYaw, this.entity.method_5986());
+        this.entity.bodyYaw = MathHelper.capRotation(this.entity.bodyYaw, this.entity.headYaw, this.entity.getBodyYawSpeed());
     }
 
     private void rotateHead() {
-        this.entity.headYaw = MathHelper.method_20306(this.entity.headYaw, this.entity.bodyYaw, this.entity.method_5986());
+        this.entity.headYaw = MathHelper.capRotation(this.entity.headYaw, this.entity.bodyYaw, this.entity.getBodyYawSpeed());
     }
 
     private void rotateBody() {
         int i = this.activeTicks - 10;
         float f = MathHelper.clamp((float)i / 10.0f, 0.0f, 1.0f);
-        float g = (float)this.entity.method_5986() * (1.0f - f);
-        this.entity.bodyYaw = MathHelper.method_20306(this.entity.bodyYaw, this.entity.headYaw, g);
+        float g = (float)this.entity.getBodyYawSpeed() * (1.0f - f);
+        this.entity.bodyYaw = MathHelper.capRotation(this.entity.bodyYaw, this.entity.headYaw, g);
     }
 
     private boolean isIndependent() {

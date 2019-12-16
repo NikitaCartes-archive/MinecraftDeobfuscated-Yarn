@@ -34,7 +34,7 @@ extends Item {
             serverPlayerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
         }
         if (!world.isClient) {
-            user.tryRemoveStatusEffect(StatusEffects.POISON);
+            user.removeStatusEffect(StatusEffects.POISON);
         }
         if (stack.isEmpty()) {
             return new ItemStack(Items.GLASS_BOTTLE);

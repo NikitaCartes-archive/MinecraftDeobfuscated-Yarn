@@ -47,8 +47,8 @@ public class GlStateManager {
     private static final ClearState CLEAR = new ClearState();
     private static final StencilState STENCIL = new StencilState();
     private static final FloatBuffer colorBuffer = GlAllocationUtils.allocateFloatBuffer(4);
-    private static final Vector3f DIFFUSE_LIGHT_0_POSITION = Util.make(new Vector3f(0.2f, 1.0f, -0.7f), Vector3f::reciprocal);
-    private static final Vector3f DIFFUSE_LIGHT_1_POSITION = Util.make(new Vector3f(-0.2f, 1.0f, 0.7f), Vector3f::reciprocal);
+    private static final Vector3f DIFFUSE_LIGHT_0_POSITION = Util.make(new Vector3f(0.2f, 1.0f, -0.7f), Vector3f::normalize);
+    private static final Vector3f DIFFUSE_LIGHT_1_POSITION = Util.make(new Vector3f(-0.2f, 1.0f, 0.7f), Vector3f::normalize);
     private static int activeTexture;
     private static final Texture2DState[] TEXTURES;
     private static int modelShadeMode;
@@ -698,7 +698,7 @@ public class GlStateManager {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         Matrix4f matrix4f = new Matrix4f();
         matrix4f.loadIdentity();
-        matrix4f.multiply(Matrix4f.method_24019(1.0f, -1.0f, 1.0f));
+        matrix4f.multiply(Matrix4f.scale(1.0f, -1.0f, 1.0f));
         matrix4f.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-22.5f));
         matrix4f.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(135.0f));
         GlStateManager.setupLevelDiffuseLighting(matrix4f);
@@ -710,7 +710,7 @@ public class GlStateManager {
         matrix4f.loadIdentity();
         matrix4f.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(62.0f));
         matrix4f.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(185.5f));
-        matrix4f.multiply(Matrix4f.method_24019(1.0f, -1.0f, 1.0f));
+        matrix4f.multiply(Matrix4f.scale(1.0f, -1.0f, 1.0f));
         matrix4f.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-22.5f));
         matrix4f.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(135.0f));
         GlStateManager.setupLevelDiffuseLighting(matrix4f);

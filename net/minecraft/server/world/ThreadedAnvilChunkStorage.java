@@ -82,7 +82,6 @@ import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.thread.MessageListener;
 import net.minecraft.util.thread.TaskExecutor;
 import net.minecraft.util.thread.ThreadExecutor;
-import net.minecraft.village.PointOfInterestStorage;
 import net.minecraft.world.ChunkSerializer;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.PersistentStateManager;
@@ -95,6 +94,7 @@ import net.minecraft.world.chunk.ReadOnlyChunk;
 import net.minecraft.world.chunk.UpgradeData;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.storage.VersionedChunkStorage;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.apache.logging.log4j.LogManager;
@@ -109,7 +109,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     private final Long2ObjectLinkedOpenHashMap<ChunkHolder> currentChunkHolders = new Long2ObjectLinkedOpenHashMap();
     private volatile Long2ObjectLinkedOpenHashMap<ChunkHolder> chunkHolders = this.currentChunkHolders.clone();
     private final Long2ObjectLinkedOpenHashMap<ChunkHolder> field_18807 = new Long2ObjectLinkedOpenHashMap();
-    private final LongSet field_18307 = new LongOpenHashSet();
+    private final LongSet loadedChunks = new LongOpenHashSet();
     private final ServerWorld world;
     private final ServerLightingProvider serverLightingProvider;
     private final ThreadExecutor<Runnable> mainThreadExecutor;
@@ -340,13 +340,13 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         }
     }
 
-    protected void tick(BooleanSupplier booleanSupplier) {
+    protected void tick(BooleanSupplier shouldKeepTicking) {
         Profiler profiler = this.world.getProfiler();
         profiler.push("poi");
-        this.pointOfInterestStorage.tick(booleanSupplier);
+        this.pointOfInterestStorage.tick(shouldKeepTicking);
         profiler.swap("chunk_unload");
         if (!this.world.isSavingDisabled()) {
-            this.method_20605(booleanSupplier);
+            this.method_20605(shouldKeepTicking);
         }
         profiler.pop();
     }
@@ -384,7 +384,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                     ((WorldChunk)chunk).setLoadedToWorld(false);
                 }
                 this.save((Chunk)chunk);
-                if (this.field_18307.remove(l) && chunk instanceof WorldChunk) {
+                if (this.loadedChunks.remove(l) && chunk instanceof WorldChunk) {
                     WorldChunk worldChunk = (WorldChunk)chunk;
                     this.world.unloadEntities(worldChunk);
                 }
@@ -508,7 +508,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                 }
                 worldChunk.setLevelTypeProvider(() -> ChunkHolder.getLevelType(chunkHolder.getLevel()));
                 worldChunk.loadToWorld();
-                if (this.field_18307.add(chunkPos.toLong())) {
+                if (this.loadedChunks.add(chunkPos.toLong())) {
                     worldChunk.setLoadedToWorld(true);
                     this.world.addBlockEntities(worldChunk.getBlockEntities().values());
                     ArrayList<Entity> list = null;
@@ -551,7 +551,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> createBorderFuture(ChunkHolder chunkHolder) {
         return chunkHolder.createFuture(ChunkStatus.FULL, this).thenApplyAsync(either -> either.mapLeft(chunk -> {
             WorldChunk worldChunk = (WorldChunk)chunk;
-            worldChunk.method_20530();
+            worldChunk.disableTickSchedulers();
             return worldChunk;
         }), runnable -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(chunkHolder, runnable)));
     }
@@ -863,7 +863,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                 }
                 entityTracker.lastCameraPosition = chunkSectionPos2;
             }
-            entityTracker.entry.method_18756();
+            entityTracker.entry.tick();
         }
         if (!list.isEmpty()) {
             for (EntityTracker entityTracker : this.entityTrackers.values()) {
@@ -922,7 +922,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     }
 
     public CompletableFuture<Void> method_20576(WorldChunk worldChunk) {
-        return this.mainThreadExecutor.submit(() -> worldChunk.method_20471(this.world));
+        return this.mainThreadExecutor.submit(() -> worldChunk.enableTickSchedulers(this.world));
     }
 
     class EntityTracker {
@@ -975,30 +975,30 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             }
         }
 
-        public void updateCameraPosition(ServerPlayerEntity players) {
+        public void updateCameraPosition(ServerPlayerEntity player) {
             boolean bl;
-            if (players == this.entity) {
+            if (player == this.entity) {
                 return;
             }
-            Vec3d vec3d = players.getPos().subtract(this.entry.method_18759());
-            int i = Math.min(this.method_22844(), (ThreadedAnvilChunkStorage.this.watchDistance - 1) * 16);
-            boolean bl2 = bl = vec3d.x >= (double)(-i) && vec3d.x <= (double)i && vec3d.z >= (double)(-i) && vec3d.z <= (double)i && this.entity.canBeSpectated(players);
+            Vec3d vec3d = player.getPos().subtract(this.entry.getLastPos());
+            int i = Math.min(this.getMaxTrackDistance(), (ThreadedAnvilChunkStorage.this.watchDistance - 1) * 16);
+            boolean bl2 = bl = vec3d.x >= (double)(-i) && vec3d.x <= (double)i && vec3d.z >= (double)(-i) && vec3d.z <= (double)i && this.entity.canBeSpectated(player);
             if (bl) {
                 ChunkPos chunkPos;
                 ChunkHolder chunkHolder;
                 boolean bl22 = this.entity.teleporting;
                 if (!bl22 && (chunkHolder = ThreadedAnvilChunkStorage.this.getChunkHolder((chunkPos = new ChunkPos(this.entity.chunkX, this.entity.chunkZ)).toLong())) != null && chunkHolder.getWorldChunk() != null) {
-                    boolean bl3 = bl22 = ThreadedAnvilChunkStorage.getChebyshevDistance(chunkPos, players, false) <= ThreadedAnvilChunkStorage.this.watchDistance;
+                    boolean bl3 = bl22 = ThreadedAnvilChunkStorage.getChebyshevDistance(chunkPos, player, false) <= ThreadedAnvilChunkStorage.this.watchDistance;
                 }
-                if (bl22 && this.playersTracking.add(players)) {
-                    this.entry.startTracking(players);
+                if (bl22 && this.playersTracking.add(player)) {
+                    this.entry.startTracking(player);
                 }
-            } else if (this.playersTracking.remove(players)) {
-                this.entry.stopTracking(players);
+            } else if (this.playersTracking.remove(player)) {
+                this.entry.stopTracking(player);
             }
         }
 
-        private int method_22844() {
+        private int getMaxTrackDistance() {
             Collection<Entity> collection = this.entity.getPassengersDeep();
             int i = this.maxDistance;
             for (Entity entity : collection) {

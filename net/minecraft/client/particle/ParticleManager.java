@@ -30,7 +30,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.particle.BarrierParticle;
-import net.minecraft.client.particle.BlockCrackParticle;
+import net.minecraft.client.particle.BlockDustParticle;
 import net.minecraft.client.particle.BlockFallingDustParticle;
 import net.minecraft.client.particle.BlockLeakParticle;
 import net.minecraft.client.particle.BubbleColumnUpParticle;
@@ -130,7 +130,7 @@ implements ResourceReloadListener {
         this.registerFactory(ParticleTypes.AMBIENT_ENTITY_EFFECT, SpellParticle.EntityAmbientFactory::new);
         this.registerFactory(ParticleTypes.ANGRY_VILLAGER, EmotionParticle.AngryVillagerFactory::new);
         this.registerFactory(ParticleTypes.BARRIER, new BarrierParticle.Factory());
-        this.registerFactory(ParticleTypes.BLOCK, new BlockCrackParticle.Factory());
+        this.registerFactory(ParticleTypes.BLOCK, new BlockDustParticle.Factory());
         this.registerFactory(ParticleTypes.BUBBLE, BubbleColumnUpParticle.Factory::new);
         this.registerFactory(ParticleTypes.BUBBLE_COLUMN_UP, WaterBubbleParticle.Factory::new);
         this.registerFactory(ParticleTypes.BUBBLE_POP, BubblePopParticle.Factory::new);
@@ -396,7 +396,7 @@ implements ResourceReloadListener {
                         double v = s * j + d;
                         double w = t * k + e;
                         double x = u * l + f;
-                        this.addParticle(new BlockCrackParticle(this.world, (double)pos.getX() + v, (double)pos.getY() + w, (double)pos.getZ() + x, s - 0.5, t - 0.5, u - 0.5, state).setBlockPos(pos));
+                        this.addParticle(new BlockDustParticle(this.world, (double)pos.getX() + v, (double)pos.getY() + w, (double)pos.getZ() + x, s - 0.5, t - 0.5, u - 0.5, state).setBlockPos(pos));
                     }
                 }
             }
@@ -434,7 +434,7 @@ implements ResourceReloadListener {
         if (direction == Direction.EAST) {
             d = (double)i + box.x2 + (double)0.1f;
         }
-        this.addParticle(new BlockCrackParticle(this.world, d, e, g, 0.0, 0.0, 0.0, blockState).setBlockPos(blockPos).move(0.2f).scale(0.6f));
+        this.addParticle(new BlockDustParticle(this.world, d, e, g, 0.0, 0.0, 0.0, blockState).setBlockPos(blockPos).move(0.2f).scale(0.6f));
     }
 
     public String getDebugString() {

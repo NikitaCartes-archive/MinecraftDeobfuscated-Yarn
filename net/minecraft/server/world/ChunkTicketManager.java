@@ -53,7 +53,7 @@ public abstract class ChunkTicketManager {
     private final MessageListener<ChunkTaskPrioritySystem.SorterMessage> playerTicketThrottlerSorter;
     private final LongSet chunkPositions = new LongOpenHashSet();
     private final Executor mainThreadExecutor;
-    private long location;
+    private long age;
 
     protected ChunkTicketManager(Executor workerExecutor, Executor mainThreadExecutor) {
         ChunkTaskPrioritySystem chunkTaskPrioritySystem;
@@ -65,11 +65,11 @@ public abstract class ChunkTicketManager {
     }
 
     protected void purge() {
-        ++this.location;
+        ++this.age;
         ObjectIterator objectIterator = this.ticketsByPosition.long2ObjectEntrySet().fastIterator();
         while (objectIterator.hasNext()) {
             Long2ObjectMap.Entry entry = (Long2ObjectMap.Entry)objectIterator.next();
-            if (((SortedArraySet)entry.getValue()).removeIf(chunkTicket -> chunkTicket.method_20627(this.location))) {
+            if (((SortedArraySet)entry.getValue()).removeIf(chunkTicket -> chunkTicket.isExpired(this.age))) {
                 this.distanceFromTicketTracker.updateLevel(entry.getLongKey(), ChunkTicketManager.getLevel((SortedArraySet)entry.getValue()), false);
             }
             if (!((SortedArraySet)entry.getValue()).isEmpty()) continue;
@@ -124,7 +124,7 @@ public abstract class ChunkTicketManager {
         SortedArraySet<ChunkTicket<?>> sortedArraySet = this.getTicketSet(position);
         int i = ChunkTicketManager.getLevel(sortedArraySet);
         ChunkTicket<?> chunkTicket2 = sortedArraySet.addAndGet(chunkTicket);
-        chunkTicket2.method_23956(this.location);
+        chunkTicket2.setTickCreated(this.age);
         if (chunkTicket.getLevel() < i) {
             this.distanceFromTicketTracker.updateLevel(position, chunkTicket.getLevel(), true);
         }

@@ -237,7 +237,7 @@ extends Entity {
         if (this.getY() < -64.0) {
             this.destroy();
         }
-        this.tickPortal();
+        this.tickNetherPortal();
         if (this.world.isClient) {
             if (this.clientInterpolationSteps > 0) {
                 double d = this.getX() + (this.clientX - this.getX()) / (double)this.clientInterpolationSteps;

@@ -37,7 +37,7 @@ extends FeatureRenderer<SnowGolemEntity, SnowmanEntityModel<SnowGolemEntity>> {
         matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
         matrixStack.scale(0.625f, -0.625f, -0.625f);
         ItemStack itemStack = new ItemStack(Blocks.CARVED_PUMPKIN);
-        MinecraftClient.getInstance().getItemRenderer().renderItem(snowGolemEntity, itemStack, ModelTransformation.Type.HEAD, false, matrixStack, vertexConsumerProvider, snowGolemEntity.world, i, LivingEntityRenderer.getOverlay(snowGolemEntity, 0.0f));
+        MinecraftClient.getInstance().getItemRenderer().renderItem(snowGolemEntity, itemStack, ModelTransformation.Mode.HEAD, false, matrixStack, vertexConsumerProvider, snowGolemEntity.world, i, LivingEntityRenderer.getOverlay(snowGolemEntity, 0.0f));
         matrixStack.pop();
     }
 }

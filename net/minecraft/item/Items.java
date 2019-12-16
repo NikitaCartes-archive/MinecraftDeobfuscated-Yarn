@@ -238,20 +238,20 @@ public class Items {
     public static final Item PRISMARINE_SLAB = Items.register(Blocks.PRISMARINE_SLAB, ItemGroup.BUILDING_BLOCKS);
     public static final Item PRISMARINE_BRICK_SLAB = Items.register(Blocks.PRISMARINE_BRICK_SLAB, ItemGroup.BUILDING_BLOCKS);
     public static final Item DARK_PRISMARINE_SLAB = Items.register(Blocks.DARK_PRISMARINE_SLAB, ItemGroup.BUILDING_BLOCKS);
-    public static final Item field_20386 = Items.register(Blocks.SMOOTH_QUARTZ, ItemGroup.BUILDING_BLOCKS);
-    public static final Item field_20387 = Items.register(Blocks.SMOOTH_RED_SANDSTONE, ItemGroup.BUILDING_BLOCKS);
-    public static final Item field_20388 = Items.register(Blocks.SMOOTH_SANDSTONE, ItemGroup.BUILDING_BLOCKS);
-    public static final Item field_20389 = Items.register(Blocks.SMOOTH_STONE, ItemGroup.BUILDING_BLOCKS);
-    public static final Item field_20390 = Items.register(Blocks.BRICKS, ItemGroup.BUILDING_BLOCKS);
+    public static final Item SMOOTH_QUARTZ = Items.register(Blocks.SMOOTH_QUARTZ, ItemGroup.BUILDING_BLOCKS);
+    public static final Item SMOOTH_RED_SANDSTONE = Items.register(Blocks.SMOOTH_RED_SANDSTONE, ItemGroup.BUILDING_BLOCKS);
+    public static final Item SMOOTH_SANDSTONE = Items.register(Blocks.SMOOTH_SANDSTONE, ItemGroup.BUILDING_BLOCKS);
+    public static final Item SMOOTH_STONE = Items.register(Blocks.SMOOTH_STONE, ItemGroup.BUILDING_BLOCKS);
+    public static final Item BRICKS = Items.register(Blocks.BRICKS, ItemGroup.BUILDING_BLOCKS);
     public static final Item TNT = Items.register(Blocks.TNT, ItemGroup.REDSTONE);
     public static final Item BOOKSHELF = Items.register(Blocks.BOOKSHELF, ItemGroup.BUILDING_BLOCKS);
-    public static final Item field_20392 = Items.register(Blocks.MOSSY_COBBLESTONE, ItemGroup.BUILDING_BLOCKS);
+    public static final Item MOSSY_COBBLESTONE = Items.register(Blocks.MOSSY_COBBLESTONE, ItemGroup.BUILDING_BLOCKS);
     public static final Item OBSIDIAN = Items.register(Blocks.OBSIDIAN, ItemGroup.BUILDING_BLOCKS);
     public static final Item TORCH = Items.register(new WallStandingBlockItem(Blocks.TORCH, Blocks.WALL_TORCH, new Item.Settings().group(ItemGroup.DECORATIONS)));
     public static final Item END_ROD = Items.register(Blocks.END_ROD, ItemGroup.DECORATIONS);
     public static final Item CHORUS_PLANT = Items.register(Blocks.CHORUS_PLANT, ItemGroup.DECORATIONS);
     public static final Item CHORUS_FLOWER = Items.register(Blocks.CHORUS_FLOWER, ItemGroup.DECORATIONS);
-    public static final Item field_20393 = Items.register(Blocks.PURPUR_BLOCK, ItemGroup.BUILDING_BLOCKS);
+    public static final Item PURPUR_BLOCK = Items.register(Blocks.PURPUR_BLOCK, ItemGroup.BUILDING_BLOCKS);
     public static final Item PURPUR_PILLAR = Items.register(Blocks.PURPUR_PILLAR, ItemGroup.BUILDING_BLOCKS);
     public static final Item PURPUR_STAIRS = Items.register(Blocks.PURPUR_STAIRS, ItemGroup.BUILDING_BLOCKS);
     public static final Item SPAWNER = Items.register(Blocks.SPAWNER);
@@ -981,10 +981,10 @@ public class Items {
     public static final Item CAMPFIRE = Items.register(Blocks.CAMPFIRE, ItemGroup.DECORATIONS);
     public static final Item HONEYCOMB = Items.register("honeycomb", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
     public static final Item BEE_NEST = Items.register(Blocks.BEE_NEST, ItemGroup.DECORATIONS);
-    public static final Item BEE_HIVE = Items.register(Blocks.BEEHIVE, ItemGroup.DECORATIONS);
+    public static final Item BEEHIVE = Items.register(Blocks.BEEHIVE, ItemGroup.DECORATIONS);
     public static final Item HONEY_BOTTLE = Items.register("honey_bottle", (Item)new HoneyBottleItem(new Item.Settings().recipeRemainder(GLASS_BOTTLE).food(FoodComponents.HONEY_BOTTLE).group(ItemGroup.FOOD).maxCount(16)));
-    public static final Item field_21086 = Items.register(Blocks.HONEY_BLOCK, ItemGroup.DECORATIONS);
-    public static final Item field_21087 = Items.register(Blocks.HONEYCOMB_BLOCK, ItemGroup.DECORATIONS);
+    public static final Item HONEY_BLOCK = Items.register(Blocks.HONEY_BLOCK, ItemGroup.DECORATIONS);
+    public static final Item HONEYCOMB_BLOCK = Items.register(Blocks.HONEYCOMB_BLOCK, ItemGroup.DECORATIONS);
 
     private static Item register(Block block) {
         return Items.register(new BlockItem(block, new Item.Settings()));

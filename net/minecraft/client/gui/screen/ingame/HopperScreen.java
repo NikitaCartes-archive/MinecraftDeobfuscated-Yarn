@@ -17,8 +17,8 @@ public class HopperScreen
 extends AbstractContainerScreen<HopperContainer> {
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/hopper.png");
 
-    public HopperScreen(HopperContainer hopperContainer, PlayerInventory playerInventory, Text text) {
-        super(hopperContainer, playerInventory, text);
+    public HopperScreen(HopperContainer container, PlayerInventory inventory, Text title) {
+        super(container, inventory, title);
         this.passEvents = false;
         this.containerHeight = 133;
     }

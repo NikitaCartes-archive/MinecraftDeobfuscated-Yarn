@@ -59,11 +59,11 @@ extends AbstractCriterion<Conditions> {
         private final NumberRange.IntRange empty;
         private final ItemPredicate[] items;
 
-        public Conditions(NumberRange.IntRange intRange, NumberRange.IntRange intRange2, NumberRange.IntRange intRange3, ItemPredicate[] items) {
+        public Conditions(NumberRange.IntRange occupied, NumberRange.IntRange full, NumberRange.IntRange empty, ItemPredicate[] items) {
             super(ID);
-            this.occupied = intRange;
-            this.full = intRange2;
-            this.empty = intRange3;
+            this.occupied = occupied;
+            this.full = full;
+            this.empty = empty;
             this.items = items;
         }
 

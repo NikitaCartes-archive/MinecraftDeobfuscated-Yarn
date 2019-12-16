@@ -25,20 +25,20 @@ implements Comparable<StatusEffectInstance> {
     private boolean showParticles;
     private boolean showIcon;
 
-    public StatusEffectInstance(StatusEffect statusEffect) {
-        this(statusEffect, 0, 0);
+    public StatusEffectInstance(StatusEffect type) {
+        this(type, 0, 0);
     }
 
-    public StatusEffectInstance(StatusEffect type, int i) {
-        this(type, i, 0);
+    public StatusEffectInstance(StatusEffect type, int duration) {
+        this(type, duration, 0);
     }
 
-    public StatusEffectInstance(StatusEffect type, int duration, int i) {
-        this(type, duration, i, false, true);
+    public StatusEffectInstance(StatusEffect type, int duration, int amplifier) {
+        this(type, duration, amplifier, false, true);
     }
 
-    public StatusEffectInstance(StatusEffect effect, int duration, int amplifier, boolean bl, boolean showParticles) {
-        this(effect, duration, amplifier, bl, showParticles, showParticles);
+    public StatusEffectInstance(StatusEffect type, int duration, int amplifier, boolean ambient, boolean visible) {
+        this(type, duration, amplifier, ambient, visible, visible);
     }
 
     public StatusEffectInstance(StatusEffect type, int duration, int amplifier, boolean ambient, boolean showParticles, boolean showIcon) {
@@ -50,38 +50,38 @@ implements Comparable<StatusEffectInstance> {
         this.showIcon = showIcon;
     }
 
-    public StatusEffectInstance(StatusEffectInstance statusEffectInstance) {
-        this.type = statusEffectInstance.type;
-        this.duration = statusEffectInstance.duration;
-        this.amplifier = statusEffectInstance.amplifier;
-        this.ambient = statusEffectInstance.ambient;
-        this.showParticles = statusEffectInstance.showParticles;
-        this.showIcon = statusEffectInstance.showIcon;
+    public StatusEffectInstance(StatusEffectInstance that) {
+        this.type = that.type;
+        this.duration = that.duration;
+        this.amplifier = that.amplifier;
+        this.ambient = that.ambient;
+        this.showParticles = that.showParticles;
+        this.showIcon = that.showIcon;
     }
 
-    public boolean upgrade(StatusEffectInstance statusEffectInstance) {
-        if (this.type != statusEffectInstance.type) {
+    public boolean upgrade(StatusEffectInstance that) {
+        if (this.type != that.type) {
             LOGGER.warn("This method should only be called for matching effects!");
         }
         boolean bl = false;
-        if (statusEffectInstance.amplifier > this.amplifier) {
-            this.amplifier = statusEffectInstance.amplifier;
-            this.duration = statusEffectInstance.duration;
+        if (that.amplifier > this.amplifier) {
+            this.amplifier = that.amplifier;
+            this.duration = that.duration;
             bl = true;
-        } else if (statusEffectInstance.amplifier == this.amplifier && this.duration < statusEffectInstance.duration) {
-            this.duration = statusEffectInstance.duration;
-            bl = true;
-        }
-        if (!statusEffectInstance.ambient && this.ambient || bl) {
-            this.ambient = statusEffectInstance.ambient;
+        } else if (that.amplifier == this.amplifier && this.duration < that.duration) {
+            this.duration = that.duration;
             bl = true;
         }
-        if (statusEffectInstance.showParticles != this.showParticles) {
-            this.showParticles = statusEffectInstance.showParticles;
+        if (!that.ambient && this.ambient || bl) {
+            this.ambient = that.ambient;
             bl = true;
         }
-        if (statusEffectInstance.showIcon != this.showIcon) {
-            this.showIcon = statusEffectInstance.showIcon;
+        if (that.showParticles != this.showParticles) {
+            this.showParticles = that.showParticles;
+            bl = true;
+        }
+        if (that.showIcon != this.showIcon) {
+            this.showIcon = that.showIcon;
             bl = true;
         }
         return bl;
@@ -200,8 +200,8 @@ implements Comparable<StatusEffectInstance> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void setPermanent(boolean bl) {
-        this.permanent = bl;
+    public void setPermanent(boolean permanent) {
+        this.permanent = permanent;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -219,8 +219,8 @@ implements Comparable<StatusEffectInstance> {
     }
 
     @Override
-    public /* synthetic */ int compareTo(Object object) {
-        return this.compareTo((StatusEffectInstance)object);
+    public /* synthetic */ int compareTo(Object that) {
+        return this.compareTo((StatusEffectInstance)that);
     }
 }
 

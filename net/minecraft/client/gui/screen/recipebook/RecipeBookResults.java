@@ -9,7 +9,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.recipebook.AnimatedResultButton;
-import net.minecraft.client.gui.screen.recipebook.RecipeAlternatesWidget;
+import net.minecraft.client.gui.screen.recipebook.RecipeAlternativesWidget;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.gui.screen.recipebook.RecipeDisplayListener;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
@@ -22,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 public class RecipeBookResults {
     private final List<AnimatedResultButton> resultButtons = Lists.newArrayListWithCapacity(20);
     private AnimatedResultButton hoveredResultButton;
-    private final RecipeAlternatesWidget alternatesWidget = new RecipeAlternatesWidget();
+    private final RecipeAlternativesWidget alternatesWidget = new RecipeAlternativesWidget();
     private MinecraftClient client;
     private final List<RecipeDisplayListener> recipeDisplayListeners = Lists.newArrayList();
     private List<RecipeResultCollection> resultCollections;
@@ -151,7 +151,7 @@ public class RecipeBookResults {
                 this.lastClickedRecipe = animatedResultButton.currentRecipe();
                 this.resultCollection = animatedResultButton.getResultCollection();
             } else if (button == 1 && !this.alternatesWidget.isVisible() && !animatedResultButton.hasResults()) {
-                this.alternatesWidget.showAlternatesForResult(this.client, animatedResultButton.getResultCollection(), animatedResultButton.x, animatedResultButton.y, areaLeft + areaWidth / 2, areaTop + 13 + areaHeight / 2, animatedResultButton.getWidth());
+                this.alternatesWidget.showAlternativesForResult(this.client, animatedResultButton.getResultCollection(), animatedResultButton.x, animatedResultButton.y, areaLeft + areaWidth / 2, areaTop + 13 + areaHeight / 2, animatedResultButton.getWidth());
             }
             return true;
         }

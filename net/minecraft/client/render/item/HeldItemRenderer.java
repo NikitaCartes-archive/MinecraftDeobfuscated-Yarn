@@ -34,8 +34,8 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class HeldItemRenderer {
-    private static final RenderLayer field_21807 = RenderLayer.getText(new Identifier("textures/map/map_background.png"));
-    private static final RenderLayer field_21808 = RenderLayer.getText(new Identifier("textures/map/map_background_checkerboard.png"));
+    private static final RenderLayer MAP_BACKGROUND = RenderLayer.getText(new Identifier("textures/map/map_background.png"));
+    private static final RenderLayer MAP_BACKGROUND_CHECKERBOARD = RenderLayer.getText(new Identifier("textures/map/map_background_checkerboard.png"));
     private final MinecraftClient client;
     private ItemStack mainHand = ItemStack.EMPTY;
     private ItemStack offHand = ItemStack.EMPTY;
@@ -52,11 +52,11 @@ public class HeldItemRenderer {
         this.itemRenderer = client.getItemRenderer();
     }
 
-    public void renderItem(LivingEntity entity, ItemStack stack, ModelTransformation.Type transformationType, boolean leftHanded, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+    public void renderItem(LivingEntity entity, ItemStack stack, ModelTransformation.Mode renderMode, boolean leftHanded, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
         if (stack.isEmpty()) {
             return;
         }
-        this.itemRenderer.renderItem(entity, stack, transformationType, leftHanded, matrices, vertexConsumers, entity.world, light, OverlayTexture.DEFAULT_UV);
+        this.itemRenderer.renderItem(entity, stack, renderMode, leftHanded, matrices, vertexConsumers, entity.world, light, OverlayTexture.DEFAULT_UV);
     }
 
     private float getMapAngle(float tickDelta) {
@@ -134,7 +134,7 @@ public class HeldItemRenderer {
         matrices.translate(-0.5, -0.5, 0.0);
         matrices.scale(0.0078125f, 0.0078125f, 0.0078125f);
         MapState mapState = FilledMapItem.getOrCreateMapState(stack, this.client.world);
-        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(mapState == null ? field_21807 : field_21808);
+        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(mapState == null ? MAP_BACKGROUND : MAP_BACKGROUND_CHECKERBOARD);
         Matrix4f matrix4f = matrices.peek().getModel();
         vertexConsumer.vertex(matrix4f, -7.0f, 135.0f, 0.0f).color(255, 255, 255, 255).texture(0.0f, 1.0f).light(swingProgress).next();
         vertexConsumer.vertex(matrix4f, 135.0f, 135.0f, 0.0f).color(255, 255, 255, 255).texture(1.0f, 1.0f).light(swingProgress).next();
@@ -302,7 +302,7 @@ public class HeldItemRenderer {
                     matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion((float)i * 10.0f));
                 }
             }
-            this.renderItem(player, item, bl3 ? ModelTransformation.Type.FIRST_PERSON_RIGHT_HAND : ModelTransformation.Type.FIRST_PERSON_LEFT_HAND, !bl3, matrices, vertexConsumers, light);
+            this.renderItem(player, item, bl3 ? ModelTransformation.Mode.FIRST_PERSON_RIGHT_HAND : ModelTransformation.Mode.FIRST_PERSON_LEFT_HAND, !bl3, matrices, vertexConsumers, light);
         } else {
             boolean bl2;
             boolean bl3 = bl2 = arm == Arm.RIGHT;
@@ -384,7 +384,7 @@ public class HeldItemRenderer {
                 this.applyEquipOffset(matrices, arm, equipProgress);
                 this.applySwingOffset(matrices, arm, swingProgress);
             }
-            this.renderItem(player, item, bl2 ? ModelTransformation.Type.FIRST_PERSON_RIGHT_HAND : ModelTransformation.Type.FIRST_PERSON_LEFT_HAND, !bl2, matrices, vertexConsumers, light);
+            this.renderItem(player, item, bl2 ? ModelTransformation.Mode.FIRST_PERSON_RIGHT_HAND : ModelTransformation.Mode.FIRST_PERSON_LEFT_HAND, !bl2, matrices, vertexConsumers, light);
         }
         matrices.pop();
     }

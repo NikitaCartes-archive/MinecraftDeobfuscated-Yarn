@@ -20,13 +20,13 @@ extends ConfirmScreen {
     private final String link;
     private final boolean drawWarning;
 
-    public ConfirmChatLinkScreen(BooleanConsumer booleanConsumer, String link, boolean bl) {
-        super(booleanConsumer, new TranslatableText(bl ? "chat.link.confirmTrusted" : "chat.link.confirm", new Object[0]), new LiteralText(link));
-        this.yesTranslated = I18n.translate(bl ? "chat.link.open" : "gui.yes", new Object[0]);
-        this.noTranslated = I18n.translate(bl ? "gui.cancel" : "gui.no", new Object[0]);
+    public ConfirmChatLinkScreen(BooleanConsumer callback, String link, boolean trusted) {
+        super(callback, new TranslatableText(trusted ? "chat.link.confirmTrusted" : "chat.link.confirm", new Object[0]), new LiteralText(link));
+        this.yesTranslated = I18n.translate(trusted ? "chat.link.open" : "gui.yes", new Object[0]);
+        this.noTranslated = I18n.translate(trusted ? "gui.cancel" : "gui.no", new Object[0]);
         this.copy = I18n.translate("chat.copy", new Object[0]);
         this.warning = I18n.translate("chat.link.warning", new Object[0]);
-        this.drawWarning = !bl;
+        this.drawWarning = !trusted;
         this.link = link;
     }
 

@@ -126,7 +126,7 @@ implements Projectile {
         }
         if (hitResult.getType() != HitResult.Type.MISS) {
             if (hitResult.getType() == HitResult.Type.BLOCK && this.world.getBlockState(((BlockHitResult)hitResult).getBlockPos()).getBlock() == Blocks.NETHER_PORTAL) {
-                this.setInPortal(((BlockHitResult)hitResult).getBlockPos());
+                this.setInNetherPortal(((BlockHitResult)hitResult).getBlockPos());
             } else {
                 this.onCollision(hitResult);
             }

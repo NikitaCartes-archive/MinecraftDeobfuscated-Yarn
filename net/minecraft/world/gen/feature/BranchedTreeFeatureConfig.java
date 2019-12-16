@@ -53,7 +53,7 @@ extends TreeFeatureConfig {
         return dynamic.merge(super.serialize(ops));
     }
 
-    public static <T> BranchedTreeFeatureConfig deserialize2(Dynamic<T> dynamic) {
+    public static <T> BranchedTreeFeatureConfig deserialize(Dynamic<T> dynamic) {
         TreeFeatureConfig treeFeatureConfig = TreeFeatureConfig.deserialize(dynamic);
         FoliagePlacerType<T> foliagePlacerType = Registry.FOLIAGE_PLACER_TYPE.get(new Identifier(dynamic.get("foliage_placer").get("type").asString().orElseThrow(RuntimeException::new)));
         return new BranchedTreeFeatureConfig(treeFeatureConfig.trunkProvider, treeFeatureConfig.leavesProvider, (FoliagePlacer)foliagePlacerType.deserialize(dynamic.get("foliage_placer").orElseEmptyMap()), treeFeatureConfig.decorators, treeFeatureConfig.baseHeight, dynamic.get("height_rand_a").asInt(0), dynamic.get("height_rand_b").asInt(0), dynamic.get("trunk_height").asInt(-1), dynamic.get("trunk_height_random").asInt(0), dynamic.get("trunk_top_offset").asInt(0), dynamic.get("trunk_top_offset_random").asInt(0), dynamic.get("foliage_height").asInt(-1), dynamic.get("foliage_height_random").asInt(0), dynamic.get("max_water_depth").asInt(0), dynamic.get("ignore_vines").asBoolean(false));

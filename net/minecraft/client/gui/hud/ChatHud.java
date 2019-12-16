@@ -63,7 +63,7 @@ extends DrawableHelper {
         double e = this.client.options.chatOpacity * (double)0.9f + (double)0.1f;
         double f = this.client.options.textBackgroundOpacity;
         int l = 0;
-        Matrix4f matrix4f = Matrix4f.method_24021(0.0f, 0.0f, -100.0f);
+        Matrix4f matrix4f = Matrix4f.translate(0.0f, 0.0f, -100.0f);
         for (m = 0; m + this.scrolledLines < this.visibleMessages.size() && m < i; ++m) {
             ChatHudLine chatHudLine = this.visibleMessages.get(m + this.scrolledLines);
             if (chatHudLine == null || (n = ticks - chatHudLine.getCreationTick()) >= 200 && !bl) continue;

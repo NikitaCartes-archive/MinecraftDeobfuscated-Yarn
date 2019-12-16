@@ -41,12 +41,12 @@ extends Goal {
     @Override
     public void start() {
         this.lookCountdown = 400;
-        this.golem.method_6497(true);
+        this.golem.setLookingAtVillager(true);
     }
 
     @Override
     public void stop() {
-        this.golem.method_6497(false);
+        this.golem.setLookingAtVillager(false);
         this.targetVillager = null;
     }
 

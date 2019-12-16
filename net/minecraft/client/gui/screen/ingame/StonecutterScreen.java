@@ -27,9 +27,9 @@ extends AbstractContainerScreen<StonecutterContainer> {
     private int scrollOffset;
     private boolean canCraft;
 
-    public StonecutterScreen(StonecutterContainer stonecutterContainer, PlayerInventory playerInventory, Text text) {
-        super(stonecutterContainer, playerInventory, text);
-        stonecutterContainer.setContentsChangedListener(this::onInventoryChange);
+    public StonecutterScreen(StonecutterContainer container, PlayerInventory inventory, Text title) {
+        super(container, inventory, title);
+        container.setContentsChangedListener(this::onInventoryChange);
     }
 
     @Override
@@ -57,34 +57,34 @@ extends AbstractContainerScreen<StonecutterContainer> {
         int l = this.x + 52;
         int m = this.y + 14;
         int n = this.scrollOffset + 12;
-        this.method_17952(mouseX, mouseY, l, m, n);
-        this.method_17951(l, m, n);
+        this.renderRecipeBackground(mouseX, mouseY, l, m, n);
+        this.renderRecipeIcons(l, m, n);
     }
 
-    private void method_17952(int i, int j, int k, int l, int m) {
-        for (int n = this.scrollOffset; n < m && n < ((StonecutterContainer)this.container).getAvailableRecipeCount(); ++n) {
-            int o = n - this.scrollOffset;
-            int p = k + o % 4 * 16;
-            int q = o / 4;
-            int r = l + q * 18 + 2;
-            int s = this.containerHeight;
-            if (n == ((StonecutterContainer)this.container).getSelectedRecipe()) {
-                s += 18;
-            } else if (i >= p && j >= r && i < p + 16 && j < r + 18) {
-                s += 36;
+    private void renderRecipeBackground(int mouseX, int mouseY, int x, int y, int scrollOffset) {
+        for (int i = this.scrollOffset; i < scrollOffset && i < ((StonecutterContainer)this.container).getAvailableRecipeCount(); ++i) {
+            int j = i - this.scrollOffset;
+            int k = x + j % 4 * 16;
+            int l = j / 4;
+            int m = y + l * 18 + 2;
+            int n = this.containerHeight;
+            if (i == ((StonecutterContainer)this.container).getSelectedRecipe()) {
+                n += 18;
+            } else if (mouseX >= k && mouseY >= m && mouseX < k + 16 && mouseY < m + 18) {
+                n += 36;
             }
-            this.blit(p, r - 1, 0, s, 16, 18);
+            this.blit(k, m - 1, 0, n, 16, 18);
         }
     }
 
-    private void method_17951(int i, int j, int k) {
+    private void renderRecipeIcons(int x, int y, int scrollOffset) {
         List<StonecuttingRecipe> list = ((StonecutterContainer)this.container).getAvailableRecipes();
-        for (int l = this.scrollOffset; l < k && l < ((StonecutterContainer)this.container).getAvailableRecipeCount(); ++l) {
-            int m = l - this.scrollOffset;
-            int n = i + m % 4 * 16;
-            int o = m / 4;
-            int p = j + o * 18 + 2;
-            this.minecraft.getItemRenderer().renderGuiItem(list.get(l).getOutput(), n, p);
+        for (int i = this.scrollOffset; i < scrollOffset && i < ((StonecutterContainer)this.container).getAvailableRecipeCount(); ++i) {
+            int j = i - this.scrollOffset;
+            int k = x + j % 4 * 16;
+            int l = j / 4;
+            int m = y + l * 18 + 2;
+            this.minecraft.getItemRenderer().renderGuiItem(list.get(i).getOutput(), k, m);
         }
     }
 

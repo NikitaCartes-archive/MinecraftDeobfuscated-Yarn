@@ -56,11 +56,11 @@ public final class Matrix3f {
         this.a12 = 2.0f * (n - p);
     }
 
-    public static Matrix3f method_23963(float f, float g, float h) {
+    public static Matrix3f scale(float x, float y, float z) {
         Matrix3f matrix3f = new Matrix3f();
-        matrix3f.a00 = f;
-        matrix3f.a11 = g;
-        matrix3f.a22 = h;
+        matrix3f.a00 = x;
+        matrix3f.a11 = y;
+        matrix3f.a22 = z;
         return matrix3f;
     }
 
@@ -88,12 +88,12 @@ public final class Matrix3f {
         this.a22 = source.a22;
     }
 
-    private static Pair<Float, Float> method_22849(float f, float g, float h) {
-        float j = g;
-        float i = 2.0f * (f - h);
-        if (THREE_PLUS_TWO_SQRT_TWO * j * j < i * i) {
-            float k = MathHelper.fastInverseSqrt(j * j + i * i);
-            return Pair.of(Float.valueOf(k * j), Float.valueOf(k * i));
+    private static Pair<Float, Float> getSinAndCosOfRotation(float upperLeft, float diagonalAverage, float lowerRight) {
+        float g = diagonalAverage;
+        float f = 2.0f * (upperLeft - lowerRight);
+        if (THREE_PLUS_TWO_SQRT_TWO * g * g < f * f) {
+            float h = MathHelper.fastInverseSqrt(g * g + f * f);
+            return Pair.of(Float.valueOf(h * g), Float.valueOf(h * f));
         }
         return Pair.of(Float.valueOf(SIN_PI_OVER_EIGHT), Float.valueOf(COS_PI_OVER_EIGHT));
     }
@@ -123,7 +123,7 @@ public final class Matrix3f {
         Matrix3f matrix3f2 = new Matrix3f();
         Quaternion quaternion = Quaternion.IDENTITY.copy();
         if (matrix3f.a01 * matrix3f.a01 + matrix3f.a10 * matrix3f.a10 > 1.0E-6f) {
-            pair = Matrix3f.method_22849(matrix3f.a00, 0.5f * (matrix3f.a01 + matrix3f.a10), matrix3f.a11);
+            pair = Matrix3f.getSinAndCosOfRotation(matrix3f.a00, 0.5f * (matrix3f.a01 + matrix3f.a10), matrix3f.a11);
             float_ = pair.getFirst();
             float2 = pair.getSecond();
             quaternion2 = new Quaternion(0.0f, 0.0f, float_.floatValue(), float2.floatValue());
@@ -143,7 +143,7 @@ public final class Matrix3f {
             matrix3f.load(matrix3f2);
         }
         if (matrix3f.a02 * matrix3f.a02 + matrix3f.a20 * matrix3f.a20 > 1.0E-6f) {
-            pair = Matrix3f.method_22849(matrix3f.a00, 0.5f * (matrix3f.a02 + matrix3f.a20), matrix3f.a22);
+            pair = Matrix3f.getSinAndCosOfRotation(matrix3f.a00, 0.5f * (matrix3f.a02 + matrix3f.a20), matrix3f.a22);
             float i = -pair.getFirst().floatValue();
             float2 = pair.getSecond();
             quaternion2 = new Quaternion(0.0f, i, 0.0f, float2.floatValue());
@@ -163,7 +163,7 @@ public final class Matrix3f {
             matrix3f.load(matrix3f2);
         }
         if (matrix3f.a12 * matrix3f.a12 + matrix3f.a21 * matrix3f.a21 > 1.0E-6f) {
-            pair = Matrix3f.method_22849(matrix3f.a11, 0.5f * (matrix3f.a12 + matrix3f.a21), matrix3f.a22);
+            pair = Matrix3f.getSinAndCosOfRotation(matrix3f.a11, 0.5f * (matrix3f.a12 + matrix3f.a21), matrix3f.a22);
             float_ = pair.getFirst();
             float2 = pair.getSecond();
             quaternion2 = new Quaternion(float_.floatValue(), 0.0f, 0.0f, float2.floatValue());
@@ -197,7 +197,7 @@ public final class Matrix3f {
         this.a21 = f;
     }
 
-    public Triple<Quaternion, Vector3f, Quaternion> method_22853() {
+    public Triple<Quaternion, Vector3f, Quaternion> decomposeLinearTransformation() {
         Quaternion quaternion = Quaternion.IDENTITY.copy();
         Quaternion quaternion2 = Quaternion.IDENTITY.copy();
         Matrix3f matrix3f = this.copy();
@@ -339,7 +339,7 @@ public final class Matrix3f {
         this.a22 = 1.0f;
     }
 
-    public float method_23731() {
+    public float determinantAndAdjugate() {
         float f = this.a11 * this.a22 - this.a12 * this.a21;
         float g = -(this.a10 * this.a22 - this.a12 * this.a20);
         float h = this.a10 * this.a21 - this.a11 * this.a20;
@@ -362,8 +362,8 @@ public final class Matrix3f {
         return o;
     }
 
-    public boolean method_23732() {
-        float f = this.method_23731();
+    public boolean invert() {
+        float f = this.determinantAndAdjugate();
         if (Math.abs(f) > 1.0E-6f) {
             this.multiply(f);
             return true;

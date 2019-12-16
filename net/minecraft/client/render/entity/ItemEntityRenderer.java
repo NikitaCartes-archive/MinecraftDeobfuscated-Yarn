@@ -62,7 +62,7 @@ extends EntityRenderer<ItemEntity> {
         int k = this.getRenderedAmount(itemStack);
         float h = 0.25f;
         float l = MathHelper.sin(((float)itemEntity.getAge() + g) / 10.0f + itemEntity.hoverHeight) * 0.1f + 0.1f;
-        float m = bakedModel.getTransformation().getTransformation((ModelTransformation.Type)ModelTransformation.Type.GROUND).scale.getY();
+        float m = bakedModel.getTransformation().getTransformation((ModelTransformation.Mode)ModelTransformation.Mode.GROUND).scale.getY();
         matrixStack.translate(0.0, l + 0.25f * m, 0.0);
         float n = ((float)itemEntity.getAge() + g) / 20.0f + itemEntity.hoverHeight;
         matrixStack.multiply(Vector3f.POSITIVE_Y.getRadialQuaternion(n));
@@ -89,7 +89,7 @@ extends EntityRenderer<ItemEntity> {
                     matrixStack.translate(s, t, 0.0);
                 }
             }
-            this.itemRenderer.renderItem(itemStack, ModelTransformation.Type.GROUND, false, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV, bakedModel);
+            this.itemRenderer.renderItem(itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV, bakedModel);
             matrixStack.pop();
             if (bl) continue;
             matrixStack.translate(0.0f * o, 0.0f * p, 0.09375f * q);

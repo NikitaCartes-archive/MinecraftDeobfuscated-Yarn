@@ -122,7 +122,7 @@ import net.minecraft.client.network.packet.LightUpdateS2CPacket;
 import net.minecraft.client.network.packet.LookAtS2CPacket;
 import net.minecraft.client.network.packet.MapUpdateS2CPacket;
 import net.minecraft.client.network.packet.MobSpawnS2CPacket;
-import net.minecraft.client.network.packet.OpenContainerPacket;
+import net.minecraft.client.network.packet.OpenContainerS2CPacket;
 import net.minecraft.client.network.packet.OpenWrittenBookS2CPacket;
 import net.minecraft.client.network.packet.PaintingSpawnS2CPacket;
 import net.minecraft.client.network.packet.ParticleS2CPacket;
@@ -144,7 +144,7 @@ import net.minecraft.client.network.packet.ScoreboardObjectiveUpdateS2CPacket;
 import net.minecraft.client.network.packet.ScoreboardPlayerUpdateS2CPacket;
 import net.minecraft.client.network.packet.SelectAdvancementTabS2CPacket;
 import net.minecraft.client.network.packet.SetCameraEntityS2CPacket;
-import net.minecraft.client.network.packet.SetTradeOffersPacket;
+import net.minecraft.client.network.packet.SetTradeOffersS2CPacket;
 import net.minecraft.client.network.packet.SignEditorOpenS2CPacket;
 import net.minecraft.client.network.packet.StatisticsS2CPacket;
 import net.minecraft.client.network.packet.StopSoundS2CPacket;
@@ -915,7 +915,7 @@ implements ClientPlayPacketListener {
         this.world.finishRemovingEntities();
         String string = clientPlayerEntity.getServerBrand();
         this.client.cameraEntity = null;
-        ClientPlayerEntity clientPlayerEntity2 = this.client.interactionManager.createPlayer(this.world, clientPlayerEntity.getStats(), clientPlayerEntity.getRecipeBook());
+        ClientPlayerEntity clientPlayerEntity2 = this.client.interactionManager.createPlayer(this.world, clientPlayerEntity.getStatHandler(), clientPlayerEntity.getRecipeBook());
         clientPlayerEntity2.setEntityId(i);
         clientPlayerEntity2.dimension = dimensionType;
         this.client.player = clientPlayerEntity2;
@@ -959,7 +959,7 @@ implements ClientPlayPacketListener {
     }
 
     @Override
-    public void onOpenContainer(OpenContainerPacket packet) {
+    public void onOpenContainer(OpenContainerS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         Screens.open(packet.getContainerType(), this.client, packet.getSyncId(), packet.getName());
     }
@@ -1238,7 +1238,7 @@ implements ClientPlayPacketListener {
         for (Map.Entry<Stat<?>, Integer> entry : packet.getStatMap().entrySet()) {
             Stat<?> stat = entry.getKey();
             int i = entry.getValue();
-            this.client.player.getStats().setStat(this.client.player, stat, i);
+            this.client.player.getStatHandler().setStat(this.client.player, stat, i);
         }
         if (this.client.currentScreen instanceof StatsListener) {
             ((StatsListener)((Object)this.client.currentScreen)).onStatsReady();
@@ -1391,7 +1391,7 @@ implements ClientPlayPacketListener {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         Entity entity = packet.getEntity(this.world);
         if (entity instanceof LivingEntity) {
-            ((LivingEntity)entity).removeStatusEffect(packet.getEffectType());
+            ((LivingEntity)entity).removeStatusEffectInternal(packet.getEffectType());
         }
     }
 
@@ -1923,7 +1923,7 @@ implements ClientPlayPacketListener {
         }
         this.recipeManager.get(packet.getRecipeId()).ifPresent(recipe -> {
             if (this.client.currentScreen instanceof RecipeBookProvider) {
-                RecipeBookWidget recipeBookWidget = ((RecipeBookProvider)((Object)this.client.currentScreen)).getRecipeBookGui();
+                RecipeBookWidget recipeBookWidget = ((RecipeBookProvider)((Object)this.client.currentScreen)).getRecipeBookWidget();
                 recipeBookWidget.showGhostRecipe((Recipe<?>)recipe, container.slotList);
             }
         });
@@ -1946,7 +1946,7 @@ implements ClientPlayPacketListener {
     }
 
     @Override
-    public void onSetTradeOffers(SetTradeOffersPacket packet) {
+    public void onSetTradeOffers(SetTradeOffersS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         Container container = this.client.player.container;
         if (packet.getSyncId() == container.syncId && container instanceof MerchantContainer) {
@@ -1972,7 +1972,7 @@ implements ClientPlayPacketListener {
     }
 
     @Override
-    public void handlePlayerActionResponse(PlayerActionResponseS2CPacket packet) {
+    public void onPlayerActionResponse(PlayerActionResponseS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         this.client.interactionManager.processPlayerActionResponse(this.world, packet.getBlockPos(), packet.getBlockState(), packet.getAction(), packet.isApproved());
     }

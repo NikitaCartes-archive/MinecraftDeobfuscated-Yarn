@@ -113,8 +113,6 @@ import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.village.PointOfInterestStorage;
-import net.minecraft.village.PointOfInterestType;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.ForcedChunkState;
 import net.minecraft.world.GameRules;
@@ -145,6 +143,8 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.level.LevelGeneratorType;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
+import net.minecraft.world.poi.PointOfInterestStorage;
+import net.minecraft.world.poi.PointOfInterestType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -194,7 +194,7 @@ extends World {
         return this.getChunkManager().getChunkGenerator().getBiomeSource().getBiomeForNoiseGen(biomeX, biomeY, biomeZ);
     }
 
-    public void tick(BooleanSupplier booleanSupplier) {
+    public void tick(BooleanSupplier shouldKeepTicking) {
         boolean bl4;
         int j;
         Profiler profiler = this.getProfiler();
@@ -277,7 +277,7 @@ extends World {
         this.calculateAmbientDarkness();
         this.tickTime();
         profiler.swap("chunkSource");
-        this.getChunkManager().tick(booleanSupplier);
+        this.getChunkManager().tick(shouldKeepTicking);
         profiler.swap("tickPending");
         if (this.properties.getGeneratorType() != LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
             this.blockTickScheduler.tick();
@@ -1231,7 +1231,7 @@ extends World {
         CsvWriter csvWriter = CsvWriter.makeHeader().addColumn("x").addColumn("y").addColumn("z").addColumn("type").startBody(writer);
         for (BlockEntity blockEntity : this.blockEntities) {
             BlockPos blockPos = blockEntity.getPos();
-            csvWriter.printRow(blockPos.getX(), blockPos.getY(), blockPos.getZ(), Registry.BLOCK_ENTITY.getId(blockEntity.getType()));
+            csvWriter.printRow(blockPos.getX(), blockPos.getY(), blockPos.getZ(), Registry.BLOCK_ENTITY_TYPE.getId(blockEntity.getType()));
         }
     }
 

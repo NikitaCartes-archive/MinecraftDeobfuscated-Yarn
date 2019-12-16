@@ -35,7 +35,7 @@ extends FixedColorVertexConsumer {
         this.textureMatrix = entry.getModel().copy();
         this.textureMatrix.invert();
         this.normalMatrix = entry.getNormal().copy();
-        this.normalMatrix.method_23732();
+        this.normalMatrix.invert();
         this.init();
     }
 
@@ -58,9 +58,9 @@ extends FixedColorVertexConsumer {
         Direction direction = Direction.getFacing(vector3f.getX(), vector3f.getY(), vector3f.getZ());
         Vector4f vector4f = new Vector4f(this.x, this.y, this.z, 1.0f);
         vector4f.transform(this.textureMatrix);
-        vector4f.setQuarternion(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
-        vector4f.setQuarternion(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0f));
-        vector4f.setQuarternion(direction.getRotationQuaternion());
+        vector4f.rotate(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
+        vector4f.rotate(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0f));
+        vector4f.rotate(direction.getRotationQuaternion());
         float f = -vector4f.getX();
         float g = -vector4f.getY();
         this.vertexConsumer.vertex(this.x, this.y, this.z).color(1.0f, 1.0f, 1.0f, 1.0f).texture(f, g).overlay(this.u1, this.v1).light(this.light).normal(this.normalX, this.normalY, this.normalZ).next();

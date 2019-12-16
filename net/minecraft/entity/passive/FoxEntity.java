@@ -453,7 +453,7 @@ extends AnimalEntity {
         if (this.canMoveVoluntarily()) {
             boolean bl = this.isInsideWater();
             if (bl || this.getTarget() != null || this.world.isThundering()) {
-                this.wakeUp();
+                this.stopSleeping();
             }
             if (bl || this.isSleeping()) {
                 this.setSitting(false);
@@ -535,12 +535,11 @@ extends AnimalEntity {
     }
 
     @Override
-    protected int method_23329(float f, float g) {
-        return MathHelper.ceil((f - 5.0f) * g);
+    protected int computeFallDamage(float fallDistance, float damageMultiplier) {
+        return MathHelper.ceil((fallDistance - 5.0f) * damageMultiplier);
     }
 
-    @Override
-    private void wakeUp() {
+    private void stopSleeping() {
         this.setSleeping(false);
     }
 
@@ -757,7 +756,7 @@ extends AnimalEntity {
             if (!FoxEntity.this.isWalking()) {
                 Vec3d vec3d = FoxEntity.this.getVelocity();
                 if (vec3d.y * vec3d.y < (double)0.03f && FoxEntity.this.pitch != 0.0f) {
-                    FoxEntity.this.pitch = MathHelper.method_22859(FoxEntity.this.pitch, 0.0f, 0.2f);
+                    FoxEntity.this.pitch = MathHelper.lerpAngle(FoxEntity.this.pitch, 0.0f, 0.2f);
                 } else {
                     double d = Math.sqrt(Entity.squaredHorizontalLength(vec3d));
                     double e = Math.signum(-vec3d.y) * Math.acos(d / vec3d.length()) * 57.2957763671875;
@@ -894,8 +893,8 @@ extends AnimalEntity {
         }
 
         @Override
-        protected boolean isTargetPos(WorldView worldView, BlockPos pos) {
-            BlockState blockState = worldView.getBlockState(pos);
+        protected boolean isTargetPos(WorldView world, BlockPos pos) {
+            BlockState blockState = world.getBlockState(pos);
             return blockState.getBlock() == Blocks.SWEET_BERRY_BUSH && blockState.get(SweetBerryBushBlock.AGE) >= 2;
         }
 
@@ -990,7 +989,7 @@ extends AnimalEntity {
                 --this.counter;
                 this.chooseNewAngle();
             }
-            FoxEntity.this.getLookControl().lookAt(FoxEntity.this.getX() + this.lookX, FoxEntity.this.getEyeY(), FoxEntity.this.getZ() + this.lookZ, FoxEntity.this.method_5986(), FoxEntity.this.getLookPitchSpeed());
+            FoxEntity.this.getLookControl().lookAt(FoxEntity.this.getX() + this.lookX, FoxEntity.this.getEyeY(), FoxEntity.this.getZ() + this.lookZ, FoxEntity.this.getBodyYawSpeed(), FoxEntity.this.getLookPitchSpeed());
         }
 
         private void chooseNewAngle() {
@@ -1118,7 +1117,7 @@ extends AnimalEntity {
             }
             this.timer = 100;
             BlockPos blockPos = new BlockPos(this.mob);
-            return FoxEntity.this.world.isDay() && FoxEntity.this.world.isSkyVisible(blockPos) && !((ServerWorld)FoxEntity.this.world).isNearOccupiedPointOfInterest(blockPos) && this.method_18250();
+            return FoxEntity.this.world.isDay() && FoxEntity.this.world.isSkyVisible(blockPos) && !((ServerWorld)FoxEntity.this.world).isNearOccupiedPointOfInterest(blockPos) && this.targetShadedPos();
         }
 
         @Override
@@ -1165,7 +1164,7 @@ extends AnimalEntity {
             }
             FoxEntity.this.playSound(SoundEvents.ENTITY_FOX_AGGRO, 1.0f, 1.0f);
             FoxEntity.this.setAggressive(true);
-            FoxEntity.this.wakeUp();
+            FoxEntity.this.stopSleeping();
             super.start();
         }
     }
@@ -1275,7 +1274,7 @@ extends AnimalEntity {
                 FoxEntity.this.setRollingHead(true);
                 FoxEntity.this.setCrouching(true);
                 FoxEntity.this.getNavigation().stop();
-                FoxEntity.this.getLookControl().lookAt(livingEntity, FoxEntity.this.method_5986(), FoxEntity.this.getLookPitchSpeed());
+                FoxEntity.this.getLookControl().lookAt(livingEntity, FoxEntity.this.getBodyYawSpeed(), FoxEntity.this.getLookPitchSpeed());
             } else {
                 FoxEntity.this.setRollingHead(false);
                 FoxEntity.this.setCrouching(false);
@@ -1285,7 +1284,7 @@ extends AnimalEntity {
         @Override
         public void tick() {
             LivingEntity livingEntity = FoxEntity.this.getTarget();
-            FoxEntity.this.getLookControl().lookAt(livingEntity, FoxEntity.this.method_5986(), FoxEntity.this.getLookPitchSpeed());
+            FoxEntity.this.getLookControl().lookAt(livingEntity, FoxEntity.this.getBodyYawSpeed(), FoxEntity.this.getLookPitchSpeed());
             if (FoxEntity.this.squaredDistanceTo(livingEntity) <= 36.0) {
                 FoxEntity.this.setRollingHead(true);
                 FoxEntity.this.setCrouching(true);

@@ -19,7 +19,7 @@ import net.minecraft.util.math.Quaternion;
 
 @Environment(value=EnvType.CLIENT)
 public class Transformation {
-    public static final Transformation NONE = new Transformation(new Vector3f(), new Vector3f(), new Vector3f(1.0f, 1.0f, 1.0f));
+    public static final Transformation IDENTITY = new Transformation(new Vector3f(), new Vector3f(), new Vector3f(1.0f, 1.0f, 1.0f));
     public final Vector3f rotation;
     public final Vector3f translation;
     public final Vector3f scale;
@@ -31,7 +31,7 @@ public class Transformation {
     }
 
     public void apply(boolean leftHanded, MatrixStack matrices) {
-        if (this == NONE) {
+        if (this == IDENTITY) {
             return;
         }
         float f = this.rotation.getX();

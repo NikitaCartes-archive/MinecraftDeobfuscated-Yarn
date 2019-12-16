@@ -43,7 +43,7 @@ extends Screen {
         }));
         ButtonWidget buttonWidget2 = this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96, 200, 20, I18n.translate("deathScreen.titleScreen", new Object[0]), buttonWidget -> {
             if (this.isHardcore) {
-                this.method_22364();
+                this.quitLevel();
                 return;
             }
             ConfirmScreen confirmScreen = new ConfirmScreen(this::onConfirmQuit, new TranslatableText("deathScreen.quit.confirm", new Object[0]), new LiteralText(""), I18n.translate("deathScreen.titleScreen", new Object[0]), I18n.translate("deathScreen.respawn", new Object[0]));
@@ -65,14 +65,14 @@ extends Screen {
 
     private void onConfirmQuit(boolean quit) {
         if (quit) {
-            this.method_22364();
+            this.quitLevel();
         } else {
             this.minecraft.player.requestRespawn();
             this.minecraft.openScreen(null);
         }
     }
 
-    private void method_22364() {
+    private void quitLevel() {
         if (this.minecraft.world != null) {
             this.minecraft.world.disconnect();
         }

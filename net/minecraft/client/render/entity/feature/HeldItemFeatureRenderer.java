@@ -40,12 +40,12 @@ extends FeatureRenderer<T, M> {
             matrixStack.translate(0.0, 0.75, 0.0);
             matrixStack.scale(0.5f, 0.5f, 0.5f);
         }
-        this.renderItem((LivingEntity)livingEntity, itemStack2, ModelTransformation.Type.THIRD_PERSON_RIGHT_HAND, Arm.RIGHT, matrixStack, vertexConsumerProvider, i);
-        this.renderItem((LivingEntity)livingEntity, itemStack, ModelTransformation.Type.THIRD_PERSON_LEFT_HAND, Arm.LEFT, matrixStack, vertexConsumerProvider, i);
+        this.renderItem((LivingEntity)livingEntity, itemStack2, ModelTransformation.Mode.THIRD_PERSON_RIGHT_HAND, Arm.RIGHT, matrixStack, vertexConsumerProvider, i);
+        this.renderItem((LivingEntity)livingEntity, itemStack, ModelTransformation.Mode.THIRD_PERSON_LEFT_HAND, Arm.LEFT, matrixStack, vertexConsumerProvider, i);
         matrixStack.pop();
     }
 
-    private void renderItem(LivingEntity livingEntity, ItemStack itemStack, ModelTransformation.Type type, Arm arm, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+    private void renderItem(LivingEntity livingEntity, ItemStack itemStack, ModelTransformation.Mode mode, Arm arm, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         if (itemStack.isEmpty()) {
             return;
         }
@@ -55,7 +55,7 @@ extends FeatureRenderer<T, M> {
         matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
         boolean bl = arm == Arm.LEFT;
         matrixStack.translate((float)(bl ? -1 : 1) / 16.0f, 0.125, -0.625);
-        MinecraftClient.getInstance().getHeldItemRenderer().renderItem(livingEntity, itemStack, type, bl, matrixStack, vertexConsumerProvider, i);
+        MinecraftClient.getInstance().getHeldItemRenderer().renderItem(livingEntity, itemStack, mode, bl, matrixStack, vertexConsumerProvider, i);
         matrixStack.pop();
     }
 }

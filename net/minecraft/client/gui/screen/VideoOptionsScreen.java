@@ -36,7 +36,7 @@ extends GameOptionsScreen {
         this.children.add(this.list);
         this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, I18n.translate("gui.done", new Object[0]), button -> {
             this.minecraft.options.write();
-            this.minecraft.getWindow().method_4475();
+            this.minecraft.getWindow().applyVideoMode();
             this.minecraft.openScreen(this.parent);
         }));
     }

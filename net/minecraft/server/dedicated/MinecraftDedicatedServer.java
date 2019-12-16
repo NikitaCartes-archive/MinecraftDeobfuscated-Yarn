@@ -148,7 +148,7 @@ implements DedicatedServer {
         this.setMotd(serverPropertiesHandler.motd);
         this.setForceGameMode(serverPropertiesHandler.forceGameMode);
         super.setPlayerIdleTimeout(serverPropertiesHandler.playerIdleTimeout.get());
-        this.setWhitelistEnabled(serverPropertiesHandler.enforceWhitelist);
+        this.setEnforceWhitelist(serverPropertiesHandler.enforceWhitelist);
         this.defaultGameMode = serverPropertiesHandler.gameMode;
         LOGGER.info("Default game type: {}", (Object)this.defaultGameMode);
         InetAddress inetAddress = null;
@@ -318,8 +318,8 @@ implements DedicatedServer {
     }
 
     @Override
-    public void tickWorlds(BooleanSupplier booleanSupplier) {
-        super.tickWorlds(booleanSupplier);
+    public void tickWorlds(BooleanSupplier shouldKeepTicking) {
+        super.tickWorlds(shouldKeepTicking);
         this.executeQueuedCommands();
     }
 

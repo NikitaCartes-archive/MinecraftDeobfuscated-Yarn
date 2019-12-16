@@ -27,7 +27,7 @@ implements FeatureConfig {
         return new Dynamic<T>(ops, ops.createMap(builder.build()));
     }
 
-    public static <T> BlockPileFeatureConfig method_23406(Dynamic<T> dynamic) {
+    public static <T> BlockPileFeatureConfig deserialize(Dynamic<T> dynamic) {
         StateProviderType<T> stateProviderType = Registry.BLOCK_STATE_PROVIDER_TYPE.get(new Identifier(dynamic.get("state_provider").get("type").asString().orElseThrow(RuntimeException::new)));
         return new BlockPileFeatureConfig((StateProvider)stateProviderType.deserialize(dynamic.get("state_provider").orElseEmptyMap()));
     }

@@ -233,7 +233,7 @@ JumpingMount {
         if (fallDistance > 1.0f) {
             this.playSound(SoundEvents.ENTITY_HORSE_LAND, 0.4f, 1.0f);
         }
-        if ((i = this.method_23329(fallDistance, damageMultiplier)) <= 0) {
+        if ((i = this.computeFallDamage(fallDistance, damageMultiplier)) <= 0) {
             return false;
         }
         this.damage(DamageSource.FALL, i);
@@ -242,13 +242,13 @@ JumpingMount {
                 entity.damage(DamageSource.FALL, i);
             }
         }
-        this.method_23328();
+        this.playBlockFallSound();
         return true;
     }
 
     @Override
-    protected int method_23329(float f, float g) {
-        return MathHelper.ceil((f * 0.5f - 3.0f) * g);
+    protected int computeFallDamage(float fallDistance, float damageMultiplier) {
+        return MathHelper.ceil((fallDistance * 0.5f - 3.0f) * damageMultiplier);
     }
 
     protected int getInventorySize() {

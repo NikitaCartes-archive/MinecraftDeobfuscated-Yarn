@@ -26,7 +26,7 @@ extends FeatureRenderer<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> 
 
     @Override
     public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, IronGolemEntity ironGolemEntity, float f, float g, float h, float j, float k, float l) {
-        if (ironGolemEntity.method_6502() == 0) {
+        if (ironGolemEntity.getLookingAtVillagerTicks() == 0) {
             return;
         }
         matrixStack.push();

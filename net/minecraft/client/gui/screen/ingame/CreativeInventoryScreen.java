@@ -73,9 +73,9 @@ extends AbstractInventoryScreen<CreativeContainer> {
     private boolean lastClickOutsideBounds;
     private final Map<Identifier, Tag<Item>> searchResultTags = Maps.newTreeMap();
 
-    public CreativeInventoryScreen(PlayerEntity playerEntity) {
-        super(new CreativeContainer(playerEntity), playerEntity.inventory, new LiteralText(""));
-        playerEntity.container = this.container;
+    public CreativeInventoryScreen(PlayerEntity player) {
+        super(new CreativeContainer(player), player.inventory, new LiteralText(""));
+        player.container = this.container;
         this.passEvents = true;
         this.containerHeight = 136;
         this.containerWidth = 195;
@@ -711,8 +711,8 @@ extends AbstractInventoryScreen<CreativeContainer> {
     @Environment(value=EnvType.CLIENT)
     static class LockableSlot
     extends Slot {
-        public LockableSlot(Inventory invSlot, int xPosition, int i, int j) {
-            super(invSlot, xPosition, i, j);
+        public LockableSlot(Inventory invSlot, int xPosition, int yPosition, int i) {
+            super(invSlot, xPosition, yPosition, i);
         }
 
         @Override
@@ -729,8 +729,8 @@ extends AbstractInventoryScreen<CreativeContainer> {
     extends Slot {
         private final Slot slot;
 
-        public CreativeSlot(Slot slot, int i, int j, int k) {
-            super(slot.inventory, i, j, k);
+        public CreativeSlot(Slot slot, int invSlot, int x, int y) {
+            super(slot.inventory, invSlot, x, y);
             this.slot = slot;
         }
 

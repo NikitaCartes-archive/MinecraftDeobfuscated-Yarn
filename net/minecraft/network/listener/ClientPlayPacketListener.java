@@ -56,7 +56,7 @@ import net.minecraft.client.network.packet.LightUpdateS2CPacket;
 import net.minecraft.client.network.packet.LookAtS2CPacket;
 import net.minecraft.client.network.packet.MapUpdateS2CPacket;
 import net.minecraft.client.network.packet.MobSpawnS2CPacket;
-import net.minecraft.client.network.packet.OpenContainerPacket;
+import net.minecraft.client.network.packet.OpenContainerS2CPacket;
 import net.minecraft.client.network.packet.OpenWrittenBookS2CPacket;
 import net.minecraft.client.network.packet.PaintingSpawnS2CPacket;
 import net.minecraft.client.network.packet.ParticleS2CPacket;
@@ -78,7 +78,7 @@ import net.minecraft.client.network.packet.ScoreboardObjectiveUpdateS2CPacket;
 import net.minecraft.client.network.packet.ScoreboardPlayerUpdateS2CPacket;
 import net.minecraft.client.network.packet.SelectAdvancementTabS2CPacket;
 import net.minecraft.client.network.packet.SetCameraEntityS2CPacket;
-import net.minecraft.client.network.packet.SetTradeOffersPacket;
+import net.minecraft.client.network.packet.SetTradeOffersS2CPacket;
 import net.minecraft.client.network.packet.SignEditorOpenS2CPacket;
 import net.minecraft.client.network.packet.StatisticsS2CPacket;
 import net.minecraft.client.network.packet.StopSoundS2CPacket;
@@ -267,14 +267,14 @@ extends PacketListener {
 
     public void onOpenWrittenBook(OpenWrittenBookS2CPacket var1);
 
-    public void onOpenContainer(OpenContainerPacket var1);
+    public void onOpenContainer(OpenContainerS2CPacket var1);
 
-    public void onSetTradeOffers(SetTradeOffersPacket var1);
+    public void onSetTradeOffers(SetTradeOffersS2CPacket var1);
 
     public void onChunkLoadDistance(ChunkLoadDistanceS2CPacket var1);
 
     public void onChunkRenderDistanceCenter(ChunkRenderDistanceCenterS2CPacket var1);
 
-    public void handlePlayerActionResponse(PlayerActionResponseS2CPacket var1);
+    public void onPlayerActionResponse(PlayerActionResponseS2CPacket var1);
 }
 

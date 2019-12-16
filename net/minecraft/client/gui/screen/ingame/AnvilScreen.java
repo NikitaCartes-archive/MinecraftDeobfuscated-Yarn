@@ -102,17 +102,17 @@ implements ContainerListener {
         }
     }
 
-    private void onRenamed(String string) {
-        if (string.isEmpty()) {
+    private void onRenamed(String name) {
+        if (name.isEmpty()) {
             return;
         }
-        String string2 = string;
+        String string = name;
         Slot slot = ((AnvilContainer)this.container).getSlot(0);
-        if (slot != null && slot.hasStack() && !slot.getStack().hasCustomName() && string2.equals(slot.getStack().getName().getString())) {
-            string2 = "";
+        if (slot != null && slot.hasStack() && !slot.getStack().hasCustomName() && string.equals(slot.getStack().getName().getString())) {
+            string = "";
         }
-        ((AnvilContainer)this.container).setNewItemName(string2);
-        this.minecraft.player.networkHandler.sendPacket(new RenameItemC2SPacket(string2));
+        ((AnvilContainer)this.container).setNewItemName(string);
+        this.minecraft.player.networkHandler.sendPacket(new RenameItemC2SPacket(string));
     }
 
     @Override

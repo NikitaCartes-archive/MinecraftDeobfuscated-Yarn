@@ -53,9 +53,9 @@ extends Task<E> {
     }
 
     @Override
-    protected void finishRunning(ServerWorld serverWorld, E livingEntity, long time) {
-        this.tasks.stream().filter(task -> task.getStatus() == Task.Status.RUNNING).forEach(task -> task.stop(serverWorld, livingEntity, time));
-        this.memoriesToForgetWhenStopped.forEach(((LivingEntity)livingEntity).getBrain()::forget);
+    protected void finishRunning(ServerWorld world, E entity, long time) {
+        this.tasks.stream().filter(task -> task.getStatus() == Task.Status.RUNNING).forEach(task -> task.stop(world, entity, time));
+        this.memoriesToForgetWhenStopped.forEach(((LivingEntity)entity).getBrain()::forget);
     }
 
     @Override
@@ -89,14 +89,14 @@ extends Task<E> {
         ORDERED(weightedList -> {}),
         SHUFFLED(WeightedList::shuffle);
 
-        private final Consumer<WeightedList<?>> consumer;
+        private final Consumer<WeightedList<?>> listModifier;
 
-        private Order(Consumer<WeightedList<?>> consumer) {
-            this.consumer = consumer;
+        private Order(Consumer<WeightedList<?>> listModifier) {
+            this.listModifier = listModifier;
         }
 
         public void apply(WeightedList<?> list) {
-            this.consumer.accept(list);
+            this.listModifier.accept(list);
         }
     }
 }

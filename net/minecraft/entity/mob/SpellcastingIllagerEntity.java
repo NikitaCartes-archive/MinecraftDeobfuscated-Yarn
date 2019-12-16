@@ -223,7 +223,7 @@ extends IllagerEntity {
         @Override
         public void tick() {
             if (SpellcastingIllagerEntity.this.getTarget() != null) {
-                SpellcastingIllagerEntity.this.getLookControl().lookAt(SpellcastingIllagerEntity.this.getTarget(), SpellcastingIllagerEntity.this.method_5986(), SpellcastingIllagerEntity.this.getLookPitchSpeed());
+                SpellcastingIllagerEntity.this.getLookControl().lookAt(SpellcastingIllagerEntity.this.getTarget(), SpellcastingIllagerEntity.this.getBodyYawSpeed(), SpellcastingIllagerEntity.this.getLookPitchSpeed());
             }
         }
     }

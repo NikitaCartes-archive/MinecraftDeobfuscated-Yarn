@@ -54,14 +54,14 @@ extends MoveToTargetPosGoal {
     }
 
     @Override
-    protected boolean isTargetPos(WorldView worldView, BlockPos pos) {
-        if (!worldView.isAir(pos.up())) {
+    protected boolean isTargetPos(WorldView world, BlockPos pos) {
+        if (!world.isAir(pos.up())) {
             return false;
         }
-        BlockState blockState = worldView.getBlockState(pos);
+        BlockState blockState = world.getBlockState(pos);
         Block block = blockState.getBlock();
         if (block == Blocks.CHEST) {
-            return ChestBlockEntity.getPlayersLookingInChestCount(worldView, pos) < 1;
+            return ChestBlockEntity.getPlayersLookingInChestCount(world, pos) < 1;
         }
         if (block == Blocks.FURNACE && blockState.get(FurnaceBlock.LIT).booleanValue()) {
             return true;

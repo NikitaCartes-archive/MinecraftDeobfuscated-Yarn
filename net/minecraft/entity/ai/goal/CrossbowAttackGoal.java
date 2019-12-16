@@ -22,8 +22,8 @@ extends Goal {
     private Stage stage = Stage.UNCHARGED;
     private final double speed;
     private final float squaredRange;
-    private int field_6592;
-    private int field_16529;
+    private int seeingTargetTicker;
+    private int chargedTicksLeft;
 
     public CrossbowAttackGoal(T actor, double speed, float range) {
         this.actor = actor;
@@ -34,7 +34,7 @@ extends Goal {
 
     @Override
     public boolean canStart() {
-        return this.method_19996() && this.isEntityHoldingCrossbow();
+        return this.hasAliveTarget() && this.isEntityHoldingCrossbow();
     }
 
     private boolean isEntityHoldingCrossbow() {
@@ -43,10 +43,10 @@ extends Goal {
 
     @Override
     public boolean shouldContinue() {
-        return this.method_19996() && (this.canStart() || !((MobEntity)this.actor).getNavigation().isIdle()) && this.isEntityHoldingCrossbow();
+        return this.hasAliveTarget() && (this.canStart() || !((MobEntity)this.actor).getNavigation().isIdle()) && this.isEntityHoldingCrossbow();
     }
 
-    private boolean method_19996() {
+    private boolean hasAliveTarget() {
         return ((MobEntity)this.actor).getTarget() != null && ((MobEntity)this.actor).getTarget().isAlive();
     }
 
@@ -55,7 +55,7 @@ extends Goal {
         super.stop();
         ((MobEntity)this.actor).setAttacking(false);
         ((MobEntity)this.actor).setTarget(null);
-        this.field_6592 = 0;
+        this.seeingTargetTicker = 0;
         if (((LivingEntity)this.actor).isUsingItem()) {
             ((LivingEntity)this.actor).clearActiveItem();
             ((CrossbowUser)this.actor).setCharging(false);
@@ -72,13 +72,13 @@ extends Goal {
             return;
         }
         boolean bl = ((MobEntity)this.actor).getVisibilityCache().canSee(livingEntity);
-        boolean bl4 = bl2 = this.field_6592 > 0;
+        boolean bl4 = bl2 = this.seeingTargetTicker > 0;
         if (bl != bl2) {
-            this.field_6592 = 0;
+            this.seeingTargetTicker = 0;
         }
-        this.field_6592 = bl ? ++this.field_6592 : --this.field_6592;
+        this.seeingTargetTicker = bl ? ++this.seeingTargetTicker : --this.seeingTargetTicker;
         double d = ((Entity)this.actor).squaredDistanceTo(livingEntity);
-        boolean bl5 = bl3 = (d > (double)this.squaredRange || this.field_6592 < 5) && this.field_16529 == 0;
+        boolean bl5 = bl3 = (d > (double)this.squaredRange || this.seeingTargetTicker < 5) && this.chargedTicksLeft == 0;
         if (bl3) {
             ((MobEntity)this.actor).getNavigation().startMovingTo(livingEntity, this.isUncharged() ? this.speed : this.speed * 0.5);
         } else {
@@ -100,12 +100,12 @@ extends Goal {
             if ((i = ((LivingEntity)this.actor).getItemUseTime()) >= CrossbowItem.getPullTime(itemStack = ((LivingEntity)this.actor).getActiveItem())) {
                 ((LivingEntity)this.actor).stopUsingItem();
                 this.stage = Stage.CHARGED;
-                this.field_16529 = 20 + ((LivingEntity)this.actor).getRandom().nextInt(20);
+                this.chargedTicksLeft = 20 + ((LivingEntity)this.actor).getRandom().nextInt(20);
                 ((CrossbowUser)this.actor).setCharging(false);
             }
         } else if (this.stage == Stage.CHARGED) {
-            --this.field_16529;
-            if (this.field_16529 == 0) {
+            --this.chargedTicksLeft;
+            if (this.chargedTicksLeft == 0) {
                 this.stage = Stage.READY_TO_ATTACK;
             }
         } else if (this.stage == Stage.READY_TO_ATTACK && bl) {

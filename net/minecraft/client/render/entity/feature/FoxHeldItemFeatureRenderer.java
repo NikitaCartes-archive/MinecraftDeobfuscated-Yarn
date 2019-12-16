@@ -56,7 +56,7 @@ extends FeatureRenderer<FoxEntity, FoxEntityModel<FoxEntity>> {
             matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(90.0f));
         }
         ItemStack itemStack = foxEntity.getEquippedStack(EquipmentSlot.MAINHAND);
-        MinecraftClient.getInstance().getHeldItemRenderer().renderItem(foxEntity, itemStack, ModelTransformation.Type.GROUND, false, matrixStack, vertexConsumerProvider, i);
+        MinecraftClient.getInstance().getHeldItemRenderer().renderItem(foxEntity, itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i);
         matrixStack.pop();
     }
 }

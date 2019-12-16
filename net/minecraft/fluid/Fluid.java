@@ -86,7 +86,7 @@ public abstract class Fluid {
 
     public abstract float getHeight(FluidState var1, BlockView var2, BlockPos var3);
 
-    public abstract float method_20784(FluidState var1);
+    public abstract float getHeight(FluidState var1);
 
     protected abstract BlockState toBlockState(FluidState var1);
 

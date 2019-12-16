@@ -15,8 +15,8 @@ public class LockButtonWidget
 extends ButtonWidget {
     private boolean locked;
 
-    public LockButtonWidget(int x, int y, ButtonWidget.PressAction pressAction) {
-        super(x, y, 20, 20, I18n.translate("narrator.button.difficulty_lock", new Object[0]), pressAction);
+    public LockButtonWidget(int x, int y, ButtonWidget.PressAction action) {
+        super(x, y, 20, 20, I18n.translate("narrator.button.difficulty_lock", new Object[0]), action);
     }
 
     @Override
@@ -28,8 +28,8 @@ extends ButtonWidget {
         return this.locked;
     }
 
-    public void setLocked(boolean bl) {
-        this.locked = bl;
+    public void setLocked(boolean locked) {
+        this.locked = locked;
     }
 
     @Override

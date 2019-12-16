@@ -65,7 +65,7 @@ extends BlockEntityRenderer<ConduitBlockEntity> {
         matrixStack.push();
         matrixStack.translate(0.5, 0.3f + k * 0.2f, 0.5);
         Vector3f vector3f = new Vector3f(0.5f, 1.0f, 0.5f);
-        vector3f.reciprocal();
+        vector3f.normalize();
         matrixStack.multiply(new Quaternion(vector3f, h, true));
         this.field_20826.render(matrixStack, CAGE_TEX.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityCutoutNoCull), i, j);
         matrixStack.pop();

@@ -28,7 +28,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FenceGateBlock;
 import net.minecraft.block.HoneyBlock;
-import net.minecraft.block.PortalBlock;
+import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.client.network.packet.EntityS2CPacket;
@@ -187,13 +187,13 @@ CommandOutput {
     public long trackedZ;
     public boolean ignoreCameraFrustum;
     public boolean velocityDirty;
-    public int portalCooldown;
-    protected boolean inPortal;
-    protected int portalTime;
+    public int netherPortalCooldown;
+    protected boolean inNetherPortal;
+    protected int netherPortalTime;
     public DimensionType dimension;
-    protected BlockPos lastPortalPosition;
-    protected Vec3d lastPortalDirectionVector;
-    protected Direction lastPortalDirection;
+    protected BlockPos lastNetherPortalPosition;
+    protected Vec3d lastNetherPortalDirectionVector;
+    protected Direction lastNetherPortalDirection;
     private boolean invulnerable;
     protected UUID uuid = MathHelper.randomUuid(this.random);
     protected String uuidString = this.uuid.toString();
@@ -375,7 +375,7 @@ CommandOutput {
         this.prevHorizontalSpeed = this.horizontalSpeed;
         this.prevPitch = this.pitch;
         this.prevYaw = this.yaw;
-        this.tickPortal();
+        this.tickNetherPortal();
         this.attemptSprintingParticles();
         this.updateInWater();
         if (this.world.isClient) {
@@ -407,13 +407,13 @@ CommandOutput {
         this.world.getProfiler().pop();
     }
 
-    protected void tickPortalCooldown() {
-        if (this.portalCooldown > 0) {
-            --this.portalCooldown;
+    protected void tickNetherPortalCooldown() {
+        if (this.netherPortalCooldown > 0) {
+            --this.netherPortalCooldown;
         }
     }
 
-    public int getMaxPortalTime() {
+    public int getMaxNetherPortalTime() {
         return 1;
     }
 
@@ -1248,7 +1248,7 @@ CommandOutput {
             tag.putBoolean("OnGround", this.onGround);
             tag.putInt("Dimension", this.dimension.getRawId());
             tag.putBoolean("Invulnerable", this.invulnerable);
-            tag.putInt("PortalCooldown", this.portalCooldown);
+            tag.putInt("PortalCooldown", this.netherPortalCooldown);
             tag.putUuid("UUID", this.getUuid());
             Text text = this.getCustomName();
             if (text != null) {
@@ -1318,7 +1318,7 @@ CommandOutput {
                 this.dimension = DimensionType.byRawId(tag.getInt("Dimension"));
             }
             this.invulnerable = tag.getBoolean("Invulnerable");
-            this.portalCooldown = tag.getInt("PortalCooldown");
+            this.netherPortalCooldown = tag.getInt("PortalCooldown");
             if (tag.containsUuid("UUID")) {
                 this.uuid = tag.getUuid("UUID");
                 this.uuidString = this.uuid.toString();
@@ -1583,50 +1583,50 @@ CommandOutput {
         return Vec3d.fromPolar(this.getRotationClient());
     }
 
-    public void setInPortal(BlockPos pos) {
-        if (this.portalCooldown > 0) {
-            this.portalCooldown = this.getDefaultPortalCooldown();
+    public void setInNetherPortal(BlockPos pos) {
+        if (this.netherPortalCooldown > 0) {
+            this.netherPortalCooldown = this.getDefaultNetherPortalCooldown();
             return;
         }
-        if (!this.world.isClient && !pos.equals(this.lastPortalPosition)) {
-            this.lastPortalPosition = new BlockPos(pos);
-            PortalBlock cfr_ignored_0 = (PortalBlock)Blocks.NETHER_PORTAL;
-            BlockPattern.Result result = PortalBlock.findPortal(this.world, this.lastPortalPosition);
+        if (!this.world.isClient && !pos.equals(this.lastNetherPortalPosition)) {
+            this.lastNetherPortalPosition = new BlockPos(pos);
+            NetherPortalBlock cfr_ignored_0 = (NetherPortalBlock)Blocks.NETHER_PORTAL;
+            BlockPattern.Result result = NetherPortalBlock.findPortal(this.world, this.lastNetherPortalPosition);
             double d = result.getForwards().getAxis() == Direction.Axis.X ? (double)result.getFrontTopLeft().getZ() : (double)result.getFrontTopLeft().getX();
             double e = Math.abs(MathHelper.minusDiv((result.getForwards().getAxis() == Direction.Axis.X ? this.getZ() : this.getX()) - (double)(result.getForwards().rotateYClockwise().getDirection() == Direction.AxisDirection.NEGATIVE ? 1 : 0), d, d - (double)result.getWidth()));
             double f = MathHelper.minusDiv(this.getY() - 1.0, result.getFrontTopLeft().getY(), result.getFrontTopLeft().getY() - result.getHeight());
-            this.lastPortalDirectionVector = new Vec3d(e, f, 0.0);
-            this.lastPortalDirection = result.getForwards();
+            this.lastNetherPortalDirectionVector = new Vec3d(e, f, 0.0);
+            this.lastNetherPortalDirection = result.getForwards();
         }
-        this.inPortal = true;
+        this.inNetherPortal = true;
     }
 
-    protected void tickPortal() {
+    protected void tickNetherPortal() {
         if (!(this.world instanceof ServerWorld)) {
             return;
         }
-        int i = this.getMaxPortalTime();
-        if (this.inPortal) {
-            if (this.world.getServer().isNetherAllowed() && !this.hasVehicle() && this.portalTime++ >= i) {
+        int i = this.getMaxNetherPortalTime();
+        if (this.inNetherPortal) {
+            if (this.world.getServer().isNetherAllowed() && !this.hasVehicle() && this.netherPortalTime++ >= i) {
                 this.world.getProfiler().push("portal");
-                this.portalTime = i;
-                this.portalCooldown = this.getDefaultPortalCooldown();
+                this.netherPortalTime = i;
+                this.netherPortalCooldown = this.getDefaultNetherPortalCooldown();
                 this.changeDimension(this.world.dimension.getType() == DimensionType.THE_NETHER ? DimensionType.OVERWORLD : DimensionType.THE_NETHER);
                 this.world.getProfiler().pop();
             }
-            this.inPortal = false;
+            this.inNetherPortal = false;
         } else {
-            if (this.portalTime > 0) {
-                this.portalTime -= 4;
+            if (this.netherPortalTime > 0) {
+                this.netherPortalTime -= 4;
             }
-            if (this.portalTime < 0) {
-                this.portalTime = 0;
+            if (this.netherPortalTime < 0) {
+                this.netherPortalTime = 0;
             }
         }
-        this.tickPortalCooldown();
+        this.tickNetherPortalCooldown();
     }
 
-    public int getDefaultPortalCooldown() {
+    public int getDefaultNetherPortalCooldown() {
         return 300;
     }
 
@@ -1927,10 +1927,10 @@ CommandOutput {
         CompoundTag compoundTag = original.toTag(new CompoundTag());
         compoundTag.remove("Dimension");
         this.fromTag(compoundTag);
-        this.portalCooldown = original.portalCooldown;
-        this.lastPortalPosition = original.lastPortalPosition;
-        this.lastPortalDirectionVector = original.lastPortalDirectionVector;
-        this.lastPortalDirection = original.lastPortalDirection;
+        this.netherPortalCooldown = original.netherPortalCooldown;
+        this.lastNetherPortalPosition = original.lastNetherPortalPosition;
+        this.lastNetherPortalDirectionVector = original.lastNetherPortalDirectionVector;
+        this.lastNetherPortalDirection = original.lastNetherPortalDirection;
     }
 
     @Nullable
@@ -1970,9 +1970,9 @@ CommandOutput {
             double k = Math.min(2.9999872E7, serverWorld2.getWorldBorder().getBoundSouth() - 16.0);
             d = MathHelper.clamp(d, h, j);
             e = MathHelper.clamp(e, i, k);
-            Vec3d vec3d2 = this.getLastPortalDirectionVector();
+            Vec3d vec3d2 = this.getLastNetherPortalDirectionVector();
             blockPos = new BlockPos(d, this.getY(), e);
-            BlockPattern.TeleportTarget teleportTarget = serverWorld2.getPortalForcer().getPortal(blockPos, vec3d, this.getLastPortalDirection(), vec3d2.x, vec3d2.y, this instanceof PlayerEntity);
+            BlockPattern.TeleportTarget teleportTarget = serverWorld2.getPortalForcer().getPortal(blockPos, vec3d, this.getLastNetherPortalDirection(), vec3d2.x, vec3d2.y, this instanceof PlayerEntity);
             if (teleportTarget == null) {
                 return null;
             }
@@ -2012,12 +2012,12 @@ CommandOutput {
         return 3;
     }
 
-    public Vec3d getLastPortalDirectionVector() {
-        return this.lastPortalDirectionVector;
+    public Vec3d getLastNetherPortalDirectionVector() {
+        return this.lastNetherPortalDirectionVector;
     }
 
-    public Direction getLastPortalDirection() {
-        return this.lastPortalDirection;
+    public Direction getLastNetherPortalDirection() {
+        return this.lastNetherPortalDirection;
     }
 
     public boolean canAvoidTraps() {

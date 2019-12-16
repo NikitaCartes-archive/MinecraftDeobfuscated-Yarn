@@ -124,7 +124,7 @@ extends RaiderEntity {
     }
 
     @Override
-    public int method_5986() {
+    public int getBodyYawSpeed() {
         return 45;
     }
 
@@ -312,8 +312,8 @@ extends RaiderEntity {
     }
 
     @Override
-    public boolean canSpawn(WorldView worldView) {
-        return !worldView.containsFluid(this.getBoundingBox());
+    public boolean canSpawn(WorldView world) {
+        return !world.containsFluid(this.getBoundingBox());
     }
 
     @Override

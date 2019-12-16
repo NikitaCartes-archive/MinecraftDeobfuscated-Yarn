@@ -86,7 +86,7 @@ import org.jetbrains.annotations.Nullable;
 public class ClientPlayerEntity
 extends AbstractClientPlayerEntity {
     public final ClientPlayNetworkHandler networkHandler;
-    private final StatHandler stats;
+    private final StatHandler statHandler;
     private final ClientRecipeBook recipeBook;
     private final List<ClientPlayerTickable> tickables = Lists.newArrayList();
     private int clientPermissionLevel = 0;
@@ -125,7 +125,7 @@ extends AbstractClientPlayerEntity {
     public ClientPlayerEntity(MinecraftClient client, ClientWorld clientWorld, ClientPlayNetworkHandler clientPlayNetworkHandler, StatHandler statHandler, ClientRecipeBook clientRecipeBook) {
         super(clientWorld, clientPlayNetworkHandler.getProfile());
         this.networkHandler = clientPlayNetworkHandler;
-        this.stats = statHandler;
+        this.statHandler = statHandler;
         this.recipeBook = clientRecipeBook;
         this.client = client;
         this.dimension = DimensionType.OVERWORLD;
@@ -343,8 +343,8 @@ extends AbstractClientPlayerEntity {
         return this.serverBrand;
     }
 
-    public StatHandler getStats() {
-        return this.stats;
+    public StatHandler getStatHandler() {
+        return this.statHandler;
     }
 
     public ClientRecipeBook getRecipeBook() {
@@ -747,7 +747,7 @@ extends AbstractClientPlayerEntity {
 
     private void updateNausea() {
         this.lastNauseaStrength = this.nextNauseaStrength;
-        if (this.inPortal) {
+        if (this.inNetherPortal) {
             if (this.client.currentScreen != null && !this.client.currentScreen.isPauseScreen()) {
                 if (this.client.currentScreen instanceof AbstractContainerScreen) {
                     this.closeContainer();
@@ -761,7 +761,7 @@ extends AbstractClientPlayerEntity {
             if (this.nextNauseaStrength >= 1.0f) {
                 this.nextNauseaStrength = 1.0f;
             }
-            this.inPortal = false;
+            this.inNetherPortal = false;
         } else if (this.hasStatusEffect(StatusEffects.NAUSEA) && this.getStatusEffect(StatusEffects.NAUSEA).getDuration() > 60) {
             this.nextNauseaStrength += 0.006666667f;
             if (this.nextNauseaStrength > 1.0f) {
@@ -775,7 +775,7 @@ extends AbstractClientPlayerEntity {
                 this.nextNauseaStrength = 0.0f;
             }
         }
-        this.tickPortalCooldown();
+        this.tickNetherPortalCooldown();
     }
 
     @Override
@@ -795,12 +795,12 @@ extends AbstractClientPlayerEntity {
 
     @Override
     @Nullable
-    public StatusEffectInstance removeStatusEffect(@Nullable StatusEffect effect) {
-        if (effect == StatusEffects.NAUSEA) {
+    public StatusEffectInstance removeStatusEffectInternal(@Nullable StatusEffect type) {
+        if (type == StatusEffects.NAUSEA) {
             this.lastNauseaStrength = 0.0f;
             this.nextNauseaStrength = 0.0f;
         }
-        return super.removeStatusEffect(effect);
+        return super.removeStatusEffectInternal(type);
     }
 
     @Override
@@ -908,10 +908,15 @@ extends AbstractClientPlayerEntity {
     }
 
     private boolean method_22119() {
-        return this.getLastAutoJump() && this.field_3934 <= 0 && this.onGround && !this.method_21825() && !this.hasVehicle() && this.method_22120() && (double)this.getJumpVelocityMultiplier() >= 1.0;
+        return this.getLastAutoJump() && this.field_3934 <= 0 && this.onGround && !this.clipAtLedge() && !this.hasVehicle() && this.hasMovementInput() && (double)this.getJumpVelocityMultiplier() >= 1.0;
     }
 
-    private boolean method_22120() {
+    /**
+     * Returns whether the player has movement input.
+     * 
+     * @return True if the player has movement input, else false.
+     */
+    private boolean hasMovementInput() {
         Vec2f vec2f = this.input.getMovementInput();
         return vec2f.x != 0.0f || vec2f.y != 0.0f;
     }

@@ -19,7 +19,7 @@ import net.minecraft.util.registry.Registry;
 
 public class ItemListProvider
 implements DataProvider {
-    private static final Gson field_17170 = new GsonBuilder().setPrettyPrinting().create();
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private final DataGenerator root;
 
     public ItemListProvider(DataGenerator dataGenerator) {
@@ -29,12 +29,12 @@ implements DataProvider {
     @Override
     public void run(DataCache dataCache) throws IOException {
         JsonObject jsonObject = new JsonObject();
-        Registry.REGISTRIES.getIds().forEach(identifier -> jsonObject.add(identifier.toString(), ItemListProvider.method_17175((MutableRegistry)Registry.REGISTRIES.get((Identifier)identifier))));
+        Registry.REGISTRIES.getIds().forEach(identifier -> jsonObject.add(identifier.toString(), ItemListProvider.toJson((MutableRegistry)Registry.REGISTRIES.get((Identifier)identifier))));
         Path path = this.root.getOutput().resolve("reports/registries.json");
-        DataProvider.writeToPath(field_17170, dataCache, jsonObject, path);
+        DataProvider.writeToPath(GSON, dataCache, jsonObject, path);
     }
 
-    private static <T> JsonElement method_17175(MutableRegistry<T> mutableRegistry) {
+    private static <T> JsonElement toJson(MutableRegistry<T> mutableRegistry) {
         JsonObject jsonObject = new JsonObject();
         if (mutableRegistry instanceof DefaultedRegistry) {
             Identifier identifier = ((DefaultedRegistry)mutableRegistry).getDefaultId();

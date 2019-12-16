@@ -68,7 +68,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.network.packet.DifficultyS2CPacket;
 import net.minecraft.client.network.packet.WorldTimeUpdateS2CPacket;
 import net.minecraft.command.DataCommandStorage;
-import net.minecraft.datafixers.Schemas;
+import net.minecraft.datafixer.Schemas;
 import net.minecraft.entity.boss.BossBarManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.loot.LootManager;
@@ -236,7 +236,7 @@ Runnable {
     private final ServerAdvancementLoader advancementLoader = new ServerAdvancementLoader();
     private final CommandFunctionManager commandFunctionManager = new CommandFunctionManager(this);
     private final MetricsData metricsData = new MetricsData();
-    private boolean whitelistEnabled;
+    private boolean enforceWhitelist;
     private boolean forceWorldUpgrade;
     private boolean eraseCache;
     private float tickTime;
@@ -724,10 +724,10 @@ Runnable {
     protected void exit() {
     }
 
-    protected void tick(BooleanSupplier booleanSupplier) {
+    protected void tick(BooleanSupplier shouldKeepTicking) {
         long l = Util.getMeasuringTimeNano();
         ++this.ticks;
-        this.tickWorlds(booleanSupplier);
+        this.tickWorlds(shouldKeepTicking);
         if (l - this.lastPlayerSampleUpdate >= 5000000000L) {
             this.lastPlayerSampleUpdate = l;
             this.metadata.setPlayers(new ServerMetadata.Players(this.getMaxPlayerCount(), this.getCurrentPlayerCount()));
@@ -765,13 +765,13 @@ Runnable {
         this.profiler.pop();
     }
 
-    protected void tickWorlds(BooleanSupplier booleanSupplier) {
+    protected void tickWorlds(BooleanSupplier shouldKeepTicking) {
         this.profiler.push("commandFunctions");
         this.getCommandFunctionManager().tick();
         this.profiler.swap("levels");
         for (ServerWorld serverWorld : this.getWorlds()) {
             if (serverWorld.dimension.getType() != DimensionType.OVERWORLD && !this.isNetherAllowed()) continue;
-            this.profiler.push(() -> serverWorld.getLevelProperties().getLevelName() + " " + Registry.DIMENSION.getId(serverWorld.dimension.getType()));
+            this.profiler.push(() -> serverWorld.getLevelProperties().getLevelName() + " " + Registry.DIMENSION_TYPE.getId(serverWorld.dimension.getType()));
             if (this.ticks % 20 == 0) {
                 this.profiler.push("timeSync");
                 this.playerManager.sendToDimension(new WorldTimeUpdateS2CPacket(serverWorld.getTime(), serverWorld.getTimeOfDay(), serverWorld.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)), serverWorld.dimension.getType());
@@ -779,7 +779,7 @@ Runnable {
             }
             this.profiler.push("tick");
             try {
-                serverWorld.tick(booleanSupplier);
+                serverWorld.tick(shouldKeepTicking);
             } catch (Throwable throwable) {
                 CrashReport crashReport = CrashReport.create(throwable, "Exception ticking world");
                 serverWorld.addDetailsToCrashReport(crashReport);
@@ -1368,7 +1368,7 @@ Runnable {
     }
 
     public void kickNonWhitelistedPlayers(ServerCommandSource source) {
-        if (!this.isWhitelistEnabled()) {
+        if (!this.isEnforceWhitelist()) {
             return;
         }
         PlayerManager playerManager = source.getMinecraftServer().getPlayerManager();
@@ -1444,12 +1444,12 @@ Runnable {
         return this.bossBarManager;
     }
 
-    public boolean isWhitelistEnabled() {
-        return this.whitelistEnabled;
+    public boolean isEnforceWhitelist() {
+        return this.enforceWhitelist;
     }
 
-    public void setWhitelistEnabled(boolean whitelistEnabled) {
-        this.whitelistEnabled = whitelistEnabled;
+    public void setEnforceWhitelist(boolean whitelistEnabled) {
+        this.enforceWhitelist = whitelistEnabled;
     }
 
     public float getTickTime() {

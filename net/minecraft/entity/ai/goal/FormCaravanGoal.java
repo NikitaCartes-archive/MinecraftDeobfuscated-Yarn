@@ -88,7 +88,7 @@ extends Goal {
 
     @Override
     public void stop() {
-        this.llama.method_6797();
+        this.llama.stopFollowing();
         this.speed = 2.1;
     }
 
@@ -104,15 +104,15 @@ extends Goal {
         this.llama.getNavigation().startMovingTo(this.llama.getX() + vec3d.x, this.llama.getY() + vec3d.y, this.llama.getZ() + vec3d.z, this.speed);
     }
 
-    private boolean canFollow(LlamaEntity llamaEntity, int length) {
+    private boolean canFollow(LlamaEntity llama, int length) {
         if (length > 8) {
             return false;
         }
-        if (llamaEntity.isFollowing()) {
-            if (llamaEntity.getFollowing().isLeashed()) {
+        if (llama.isFollowing()) {
+            if (llama.getFollowing().isLeashed()) {
                 return true;
             }
-            return this.canFollow(llamaEntity.getFollowing(), ++length);
+            return this.canFollow(llama.getFollowing(), ++length);
         }
         return false;
     }

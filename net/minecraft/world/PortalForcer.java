@@ -10,7 +10,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.PortalBlock;
+import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -21,9 +21,9 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.village.PointOfInterest;
-import net.minecraft.village.PointOfInterestStorage;
-import net.minecraft.village.PointOfInterestType;
+import net.minecraft.world.poi.PointOfInterest;
+import net.minecraft.world.poi.PointOfInterestStorage;
+import net.minecraft.world.poi.PointOfInterestType;
 import org.jetbrains.annotations.Nullable;
 
 public class PortalForcer {
@@ -36,8 +36,8 @@ public class PortalForcer {
     }
 
     public boolean usePortal(Entity entity, float f) {
-        Vec3d vec3d = entity.getLastPortalDirectionVector();
-        Direction direction = entity.getLastPortalDirection();
+        Vec3d vec3d = entity.getLastNetherPortalDirectionVector();
+        Direction direction = entity.getLastNetherPortalDirection();
         BlockPattern.TeleportTarget teleportTarget = this.getPortal(new BlockPos(entity), entity.getVelocity(), direction, vec3d.x, vec3d.y, entity instanceof PlayerEntity);
         if (teleportTarget == null) {
             return false;
@@ -59,7 +59,7 @@ public class PortalForcer {
         return optional.map(pointOfInterest -> {
             BlockPos blockPos = pointOfInterest.getPos();
             this.world.getChunkManager().addTicket(ChunkTicketType.PORTAL, new ChunkPos(blockPos), 3, blockPos);
-            BlockPattern.Result result = PortalBlock.findPortal(this.world, blockPos);
+            BlockPattern.Result result = NetherPortalBlock.findPortal(this.world, blockPos);
             return result.getTeleportTarget(direction, blockPos, y, vec3d, x);
         }).orElse(null);
     }
@@ -194,7 +194,7 @@ public class PortalForcer {
                 this.world.setBlockState(mutable, Blocks.OBSIDIAN.getDefaultState(), 3);
             }
         }
-        BlockState blockState = (BlockState)Blocks.NETHER_PORTAL.getDefaultState().with(PortalBlock.AXIS, af == 0 ? Direction.Axis.Z : Direction.Axis.X);
+        BlockState blockState = (BlockState)Blocks.NETHER_PORTAL.getDefaultState().with(NetherPortalBlock.AXIS, af == 0 ? Direction.Axis.Z : Direction.Axis.X);
         for (u = 0; u < 2; ++u) {
             for (v = 0; v < 3; ++v) {
                 mutable.set(ad + u * af, ae + v, s + u * ag);

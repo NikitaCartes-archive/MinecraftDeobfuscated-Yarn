@@ -27,12 +27,12 @@ import net.minecraft.entity.Flutterer;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.control.FlightMoveControl;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
-import net.minecraft.entity.ai.goal.FlyAroundGoal;
+import net.minecraft.entity.ai.goal.FlyOntoTreeGoal;
 import net.minecraft.entity.ai.goal.FollowMobGoal;
 import net.minecraft.entity.ai.goal.FollowOwnerGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.SitGoal;
-import net.minecraft.entity.ai.goal.SitOnOwnerShoulder;
+import net.minecraft.entity.ai.goal.SitOnOwnerShoulderGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.pathing.BirdNavigation;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
@@ -152,8 +152,8 @@ implements Flutterer {
         this.goalSelector.add(1, new LookAtEntityGoal(this, PlayerEntity.class, 8.0f));
         this.goalSelector.add(2, this.sitGoal);
         this.goalSelector.add(2, new FollowOwnerGoal(this, 1.0, 5.0f, 1.0f, true));
-        this.goalSelector.add(2, new FlyAroundGoal(this, 1.0));
-        this.goalSelector.add(3, new SitOnOwnerShoulder(this));
+        this.goalSelector.add(2, new FlyOntoTreeGoal(this, 1.0));
+        this.goalSelector.add(3, new SitOnOwnerShoulderGoal(this));
         this.goalSelector.add(3, new FollowMobGoal(this, 1.0, 3.0f, 7.0f));
     }
 
