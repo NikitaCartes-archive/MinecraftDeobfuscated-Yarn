@@ -44,8 +44,8 @@ public class GlStateManager {
 	private static final GlStateManager.ClearState CLEAR = new GlStateManager.ClearState();
 	private static final GlStateManager.StencilState STENCIL = new GlStateManager.StencilState();
 	private static final FloatBuffer colorBuffer = GlAllocationUtils.allocateFloatBuffer(4);
-	private static final Vector3f DIFFUSE_LIGHT_0_POSITION = Util.make(new Vector3f(0.2F, 1.0F, -0.7F), Vector3f::reciprocal);
-	private static final Vector3f DIFFUSE_LIGHT_1_POSITION = Util.make(new Vector3f(-0.2F, 1.0F, 0.7F), Vector3f::reciprocal);
+	private static final Vector3f DIFFUSE_LIGHT_0_POSITION = Util.make(new Vector3f(0.2F, 1.0F, -0.7F), Vector3f::normalize);
+	private static final Vector3f DIFFUSE_LIGHT_1_POSITION = Util.make(new Vector3f(-0.2F, 1.0F, 0.7F), Vector3f::normalize);
 	private static int activeTexture;
 	private static final GlStateManager.Texture2DState[] TEXTURES = (GlStateManager.Texture2DState[])IntStream.range(0, 8)
 		.mapToObj(i -> new GlStateManager.Texture2DState())
@@ -672,7 +672,7 @@ public class GlStateManager {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		Matrix4f matrix4f = new Matrix4f();
 		matrix4f.loadIdentity();
-		matrix4f.multiply(Matrix4f.method_24019(1.0F, -1.0F, 1.0F));
+		matrix4f.multiply(Matrix4f.scale(1.0F, -1.0F, 1.0F));
 		matrix4f.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-22.5F));
 		matrix4f.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(135.0F));
 		setupLevelDiffuseLighting(matrix4f);
@@ -684,7 +684,7 @@ public class GlStateManager {
 		matrix4f.loadIdentity();
 		matrix4f.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(62.0F));
 		matrix4f.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(185.5F));
-		matrix4f.multiply(Matrix4f.method_24019(1.0F, -1.0F, 1.0F));
+		matrix4f.multiply(Matrix4f.scale(1.0F, -1.0F, 1.0F));
 		matrix4f.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-22.5F));
 		matrix4f.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(135.0F));
 		setupLevelDiffuseLighting(matrix4f);

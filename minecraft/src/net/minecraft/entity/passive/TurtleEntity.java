@@ -377,7 +377,7 @@ public class TurtleEntity extends AnimalEntity {
 
 		@Override
 		public void tick() {
-			this.turtle.getLookControl().lookAt(this.targetPlayer, (float)(this.turtle.method_5986() + 20), (float)this.turtle.getLookPitchSpeed());
+			this.turtle.getLookControl().lookAt(this.targetPlayer, (float)(this.turtle.getBodyYawSpeed() + 20), (float)this.turtle.getLookPitchSpeed());
 			if (this.turtle.squaredDistanceTo(this.targetPlayer) < 6.25) {
 				this.turtle.getNavigation().stop();
 			} else {
@@ -497,11 +497,11 @@ public class TurtleEntity extends AnimalEntity {
 		}
 
 		@Override
-		protected boolean isTargetPos(WorldView worldView, BlockPos pos) {
-			if (!worldView.isAir(pos.up())) {
+		protected boolean isTargetPos(WorldView world, BlockPos pos) {
+			if (!world.isAir(pos.up())) {
 				return false;
 			} else {
-				Block block = worldView.getBlockState(pos).getBlock();
+				Block block = world.getBlockState(pos).getBlock();
 				return block == Blocks.SAND;
 			}
 		}
@@ -739,8 +739,8 @@ public class TurtleEntity extends AnimalEntity {
 		}
 
 		@Override
-		protected boolean isTargetPos(WorldView worldView, BlockPos pos) {
-			Block block = worldView.getBlockState(pos).getBlock();
+		protected boolean isTargetPos(WorldView world, BlockPos pos) {
+			Block block = world.getBlockState(pos).getBlock();
 			return block == Blocks.WATER;
 		}
 	}

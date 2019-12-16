@@ -90,7 +90,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 
 	public void renderItem(
 		ItemStack stack,
-		ModelTransformation.Type transformationType,
+		ModelTransformation.Mode renderMode,
 		boolean leftHanded,
 		MatrixStack matrices,
 		VertexConsumerProvider vertexConsumers,
@@ -100,13 +100,13 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 	) {
 		if (!stack.isEmpty()) {
 			matrices.push();
-			boolean bl = transformationType == ModelTransformation.Type.GUI;
-			boolean bl2 = bl || transformationType == ModelTransformation.Type.GROUND || transformationType == ModelTransformation.Type.FIXED;
+			boolean bl = renderMode == ModelTransformation.Mode.GUI;
+			boolean bl2 = bl || renderMode == ModelTransformation.Mode.GROUND || renderMode == ModelTransformation.Mode.FIXED;
 			if (stack.getItem() == Items.TRIDENT && bl2) {
 				model = this.models.getModelManager().getModel(new ModelIdentifier("minecraft:trident#inventory"));
 			}
 
-			model.getTransformation().getTransformation(transformationType).apply(leftHanded, matrices);
+			model.getTransformation().getTransformation(renderMode).apply(leftHanded, matrices);
 			matrices.translate(-0.5, -0.5, -0.5);
 			if (!model.isBuiltin() && (stack.getItem() != Items.TRIDENT || bl2)) {
 				RenderLayer renderLayer = RenderLayers.getItemLayer(stack);
@@ -168,7 +168,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 	}
 
 	public void renderItem(
-		ItemStack stack, ModelTransformation.Type transformationType, int light, int overlay, MatrixStack matrices, VertexConsumerProvider vertexConsumers
+		ItemStack stack, ModelTransformation.Mode transformationType, int light, int overlay, MatrixStack matrices, VertexConsumerProvider vertexConsumers
 	) {
 		this.renderItem(null, stack, transformationType, false, matrices, vertexConsumers, null, light, overlay);
 	}
@@ -176,7 +176,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 	public void renderItem(
 		@Nullable LivingEntity entity,
 		ItemStack item,
-		ModelTransformation.Type transformationType,
+		ModelTransformation.Mode renderMode,
 		boolean leftHanded,
 		MatrixStack matrices,
 		VertexConsumerProvider vertexConsumers,
@@ -186,7 +186,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 	) {
 		if (!item.isEmpty()) {
 			BakedModel bakedModel = this.getHeldItemModel(item, world, entity);
-			this.renderItem(item, transformationType, leftHanded, matrices, vertexConsumers, light, overlay, bakedModel);
+			this.renderItem(item, renderMode, leftHanded, matrices, vertexConsumers, light, overlay, bakedModel);
 		}
 	}
 
@@ -216,7 +216,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 			DiffuseLighting.disableGuiDepthLighting();
 		}
 
-		this.renderItem(stack, ModelTransformation.Type.GUI, false, matrixStack, immediate, 15728880, OverlayTexture.DEFAULT_UV, model);
+		this.renderItem(stack, ModelTransformation.Mode.GUI, false, matrixStack, immediate, 15728880, OverlayTexture.DEFAULT_UV, model);
 		immediate.draw();
 		RenderSystem.enableDepthTest();
 		if (bl) {

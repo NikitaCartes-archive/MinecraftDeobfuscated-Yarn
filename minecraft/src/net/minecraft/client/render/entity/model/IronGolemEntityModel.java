@@ -56,12 +56,12 @@ public class IronGolemEntityModel<T extends IronGolemEntity> extends CompositeEn
 	}
 
 	public void animateModel(T ironGolemEntity, float f, float g, float h) {
-		int i = ironGolemEntity.method_6501();
+		int i = ironGolemEntity.getAttackTicksLeft();
 		if (i > 0) {
 			this.rightArm.pitch = -2.0F + 1.5F * this.method_2810((float)i - h, 10.0F);
 			this.leftArm.pitch = -2.0F + 1.5F * this.method_2810((float)i - h, 10.0F);
 		} else {
-			int j = ironGolemEntity.method_6502();
+			int j = ironGolemEntity.getLookingAtVillagerTicks();
 			if (j > 0) {
 				this.rightArm.pitch = -0.8F + 0.025F * this.method_2810((float)j, 70.0F);
 				this.leftArm.pitch = 0.0F;

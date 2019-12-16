@@ -14,7 +14,7 @@ import net.minecraft.recipe.book.RecipeBook;
 public class RecipeBookResults {
 	private final List<AnimatedResultButton> resultButtons = Lists.<AnimatedResultButton>newArrayListWithCapacity(20);
 	private AnimatedResultButton hoveredResultButton;
-	private final RecipeAlternatesWidget alternatesWidget = new RecipeAlternatesWidget();
+	private final RecipeAlternativesWidget alternatesWidget = new RecipeAlternativesWidget();
 	private MinecraftClient client;
 	private final List<RecipeDisplayListener> recipeDisplayListeners = Lists.<RecipeDisplayListener>newArrayList();
 	private List<RecipeResultCollection> resultCollections;
@@ -152,7 +152,7 @@ public class RecipeBookResults {
 						this.resultCollection = animatedResultButton.getResultCollection();
 					} else if (button == 1 && !this.alternatesWidget.isVisible() && !animatedResultButton.hasResults()) {
 						this.alternatesWidget
-							.showAlternatesForResult(
+							.showAlternativesForResult(
 								this.client,
 								animatedResultButton.getResultCollection(),
 								animatedResultButton.x,

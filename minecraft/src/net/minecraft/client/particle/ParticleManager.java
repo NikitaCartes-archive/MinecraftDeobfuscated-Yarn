@@ -87,7 +87,7 @@ public class ParticleManager implements ResourceReloadListener {
 		this.registerFactory(ParticleTypes.AMBIENT_ENTITY_EFFECT, SpellParticle.EntityAmbientFactory::new);
 		this.registerFactory(ParticleTypes.ANGRY_VILLAGER, EmotionParticle.AngryVillagerFactory::new);
 		this.registerFactory(ParticleTypes.BARRIER, new BarrierParticle.Factory());
-		this.registerFactory(ParticleTypes.BLOCK, new BlockCrackParticle.Factory());
+		this.registerFactory(ParticleTypes.BLOCK, new BlockDustParticle.Factory());
 		this.registerFactory(ParticleTypes.BUBBLE, BubbleColumnUpParticle.Factory::new);
 		this.registerFactory(ParticleTypes.BUBBLE_COLUMN_UP, WaterBubbleParticle.Factory::new);
 		this.registerFactory(ParticleTypes.BUBBLE_POP, BubblePopParticle.Factory::new);
@@ -430,7 +430,7 @@ public class ParticleManager implements ResourceReloadListener {
 								double w = t * k + e;
 								double x = u * l + f;
 								this.addParticle(
-									new BlockCrackParticle(this.world, (double)pos.getX() + v, (double)pos.getY() + w, (double)pos.getZ() + x, s - 0.5, t - 0.5, u - 0.5, state)
+									new BlockDustParticle(this.world, (double)pos.getX() + v, (double)pos.getY() + w, (double)pos.getZ() + x, s - 0.5, t - 0.5, u - 0.5, state)
 										.setBlockPos(pos)
 								);
 							}
@@ -476,7 +476,7 @@ public class ParticleManager implements ResourceReloadListener {
 				d = (double)i + box.x2 + 0.1F;
 			}
 
-			this.addParticle(new BlockCrackParticle(this.world, d, e, g, 0.0, 0.0, 0.0, blockState).setBlockPos(blockPos).move(0.2F).scale(0.6F));
+			this.addParticle(new BlockDustParticle(this.world, d, e, g, 0.0, 0.0, 0.0, blockState).setBlockPos(blockPos).move(0.2F).scale(0.6F));
 		}
 	}
 

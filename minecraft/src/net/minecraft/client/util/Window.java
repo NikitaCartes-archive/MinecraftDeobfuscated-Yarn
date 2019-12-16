@@ -42,7 +42,7 @@ public final class Window implements AutoCloseable {
 	private int windowedHeight;
 	private Optional<VideoMode> videoMode;
 	private boolean fullscreen;
-	private boolean field_5177;
+	private boolean currentFullscreen;
 	private int x;
 	private int y;
 	private int width;
@@ -72,7 +72,7 @@ public final class Window implements AutoCloseable {
 			this.videoMode = Optional.empty();
 		}
 
-		this.field_5177 = this.fullscreen = settings.fullscreen;
+		this.currentFullscreen = this.fullscreen = settings.fullscreen;
 		Monitor monitor = monitorTracker.getMonitor(GLFW.glfwGetPrimaryMonitor());
 		this.windowedWidth = this.width = settings.width > 0 ? settings.width : 1;
 		this.windowedHeight = this.height = settings.height > 0 ? settings.height : 1;
@@ -97,7 +97,7 @@ public final class Window implements AutoCloseable {
 
 		GLFW.glfwMakeContextCurrent(this.handle);
 		GL.createCapabilities();
-		this.method_4479();
+		this.updateWindowRegion();
 		this.updateFramebufferSize();
 		GLFW.glfwSetFramebufferSizeCallback(this.handle, this::onFramebufferSizeChanged);
 		GLFW.glfwSetWindowPosCallback(this.handle, this::onWindowPosChanged);
@@ -237,9 +237,9 @@ public final class Window implements AutoCloseable {
 		GLFW.glfwTerminate();
 	}
 
-	private void onWindowPosChanged(long l, int i, int j) {
-		this.x = i;
-		this.y = j;
+	private void onWindowPosChanged(long window, int x, int y) {
+		this.x = x;
+		this.y = y;
 	}
 
 	private void onFramebufferSizeChanged(long window, int width, int height) {
@@ -276,19 +276,19 @@ public final class Window implements AutoCloseable {
 		}
 	}
 
-	public void setFramerateLimit(int i) {
-		this.framerateLimit = i;
+	public void setFramerateLimit(int framerateLimit) {
+		this.framerateLimit = framerateLimit;
 	}
 
 	public int getFramerateLimit() {
 		return this.framerateLimit;
 	}
 
-	public void setFullscreen() {
+	public void swapBuffers() {
 		RenderSystem.flipFrame(this.handle);
-		if (this.fullscreen != this.field_5177) {
-			this.field_5177 = this.fullscreen;
-			this.method_4485(this.vsync);
+		if (this.fullscreen != this.currentFullscreen) {
+			this.currentFullscreen = this.fullscreen;
+			this.updateFullscreen(this.vsync);
 		}
 	}
 
@@ -304,15 +304,15 @@ public final class Window implements AutoCloseable {
 		}
 	}
 
-	public void method_4475() {
+	public void applyVideoMode() {
 		if (this.fullscreen && this.videoModeDirty) {
 			this.videoModeDirty = false;
-			this.method_4479();
+			this.updateWindowRegion();
 			this.eventHandler.onResolutionChanged();
 		}
 	}
 
-	private void method_4479() {
+	private void updateWindowRegion() {
 		RenderSystem.assertThread(RenderSystem::isInInitPhase);
 		boolean bl = GLFW.glfwGetWindowMonitor(this.handle) != 0L;
 		if (this.fullscreen) {
@@ -348,14 +348,14 @@ public final class Window implements AutoCloseable {
 		this.fullscreen = !this.fullscreen;
 	}
 
-	private void method_4485(boolean bl) {
+	private void updateFullscreen(boolean vsync) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 
 		try {
-			this.method_4479();
+			this.updateWindowRegion();
 			this.eventHandler.onResolutionChanged();
-			this.setVsync(bl);
-			this.setFullscreen();
+			this.setVsync(vsync);
+			this.swapBuffers();
 		} catch (Exception var3) {
 			LOGGER.error("Couldn't toggle fullscreen", (Throwable)var3);
 		}

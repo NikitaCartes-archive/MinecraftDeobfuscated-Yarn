@@ -6,7 +6,7 @@ import com.mojang.datafixers.types.DynamicOps;
 import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
-import net.minecraft.datafixers.NbtOps;
+import net.minecraft.datafixer.NbtOps;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.rule.AbstractRuleTest;
 import net.minecraft.structure.rule.AlwaysTrueRuleTest;

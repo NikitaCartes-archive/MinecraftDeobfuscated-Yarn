@@ -44,7 +44,7 @@ public class OpenDoorsTask extends Task<LivingEntity> {
 			.collect(Collectors.toList());
 		Set<BlockPos> set = this.getDoorsOnPath(world, list, list2);
 		int i = path.getCurrentNodeIndex() - 1;
-		this.method_21698(world, list2, set, i, entity, brain);
+		this.findAndCloseOpenedDoors(world, list2, set, i, entity, brain);
 	}
 
 	private Set<BlockPos> getDoorsOnPath(ServerWorld world, List<GlobalPos> doors, List<BlockPos> path) {
@@ -55,46 +55,46 @@ public class OpenDoorsTask extends Task<LivingEntity> {
 			.collect(Collectors.toSet());
 	}
 
-	private void method_21698(ServerWorld serverWorld, List<BlockPos> list, Set<BlockPos> set, int i, LivingEntity livingEntity, Brain<?> brain) {
-		set.forEach(blockPos -> {
-			int j = list.indexOf(blockPos);
-			BlockState blockState = serverWorld.getBlockState(blockPos);
+	private void findAndCloseOpenedDoors(ServerWorld world, List<BlockPos> path, Set<BlockPos> doors, int lastNodeIndex, LivingEntity entity, Brain<?> brain) {
+		doors.forEach(blockPos -> {
+			int j = path.indexOf(blockPos);
+			BlockState blockState = world.getBlockState(blockPos);
 			Block block = blockState.getBlock();
 			if (BlockTags.WOODEN_DOORS.contains(block) && block instanceof DoorBlock) {
-				boolean bl = j >= i;
-				((DoorBlock)block).setOpen(serverWorld, blockPos, bl);
-				GlobalPos globalPos = GlobalPos.create(serverWorld.getDimension().getType(), blockPos);
+				boolean bl = j >= lastNodeIndex;
+				((DoorBlock)block).setOpen(world, blockPos, bl);
+				GlobalPos globalPos = GlobalPos.create(world.getDimension().getType(), blockPos);
 				if (!brain.getOptionalMemory(MemoryModuleType.OPENED_DOORS).isPresent() && bl) {
 					brain.putMemory(MemoryModuleType.OPENED_DOORS, Sets.<GlobalPos>newHashSet(globalPos));
 				} else {
-					brain.getOptionalMemory(MemoryModuleType.OPENED_DOORS).ifPresent(setx -> {
+					brain.getOptionalMemory(MemoryModuleType.OPENED_DOORS).ifPresent(set -> {
 						if (bl) {
-							setx.add(globalPos);
+							set.add(globalPos);
 						} else {
-							setx.remove(globalPos);
+							set.remove(globalPos);
 						}
 					});
 				}
 			}
 		});
-		method_21697(serverWorld, list, i, livingEntity, brain);
+		closeOpenedDoors(world, path, lastNodeIndex, entity, brain);
 	}
 
-	public static void method_21697(ServerWorld serverWorld, List<BlockPos> list, int i, LivingEntity livingEntity, Brain<?> brain) {
+	public static void closeOpenedDoors(ServerWorld world, List<BlockPos> path, int currentPathIndex, LivingEntity entity, Brain<?> brain) {
 		brain.getOptionalMemory(MemoryModuleType.OPENED_DOORS).ifPresent(set -> {
 			Iterator<GlobalPos> iterator = set.iterator();
 
 			while (iterator.hasNext()) {
 				GlobalPos globalPos = (GlobalPos)iterator.next();
 				BlockPos blockPos = globalPos.getPos();
-				int j = list.indexOf(blockPos);
-				if (serverWorld.getDimension().getType() != globalPos.getDimension()) {
+				int j = path.indexOf(blockPos);
+				if (world.getDimension().getType() != globalPos.getDimension()) {
 					iterator.remove();
 				} else {
-					BlockState blockState = serverWorld.getBlockState(blockPos);
+					BlockState blockState = world.getBlockState(blockPos);
 					Block block = blockState.getBlock();
-					if (BlockTags.WOODEN_DOORS.contains(block) && block instanceof DoorBlock && j < i && blockPos.isWithinDistance(livingEntity.getPos(), 4.0)) {
-						((DoorBlock)block).setOpen(serverWorld, blockPos, false);
+					if (BlockTags.WOODEN_DOORS.contains(block) && block instanceof DoorBlock && j < currentPathIndex && blockPos.isWithinDistance(entity.getPos(), 4.0)) {
+						((DoorBlock)block).setOpen(world, blockPos, false);
 						iterator.remove();
 					}
 				}

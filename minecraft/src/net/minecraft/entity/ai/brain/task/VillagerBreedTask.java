@@ -12,10 +12,10 @@ import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.GlobalPos;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.village.PointOfInterestType;
+import net.minecraft.world.poi.PointOfInterestType;
 
 public class VillagerBreedTask extends Task<VillagerEntity> {
-	private long field_18368;
+	private long breedEndTime;
 
 	public VillagerBreedTask() {
 		super(
@@ -24,30 +24,30 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
-		return this.method_18972(villagerEntity);
+		return this.isReadyToBreed(villagerEntity);
 	}
 
 	protected boolean shouldKeepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		return l <= this.field_18368 && this.method_18972(villagerEntity);
+		return l <= this.breedEndTime && this.isReadyToBreed(villagerEntity);
 	}
 
 	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		VillagerEntity villagerEntity2 = this.method_19570(villagerEntity);
+		VillagerEntity villagerEntity2 = this.getBreedTarget(villagerEntity);
 		LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, villagerEntity2);
 		serverWorld.sendEntityStatus(villagerEntity2, (byte)18);
 		serverWorld.sendEntityStatus(villagerEntity, (byte)18);
 		int i = 275 + villagerEntity.getRandom().nextInt(50);
-		this.field_18368 = l + (long)i;
+		this.breedEndTime = l + (long)i;
 	}
 
 	protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		VillagerEntity villagerEntity2 = this.method_19570(villagerEntity);
+		VillagerEntity villagerEntity2 = this.getBreedTarget(villagerEntity);
 		if (!(villagerEntity.squaredDistanceTo(villagerEntity2) > 5.0)) {
 			LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, villagerEntity2);
-			if (l >= this.field_18368) {
+			if (l >= this.breedEndTime) {
 				villagerEntity.eatForBreeding();
 				villagerEntity2.eatForBreeding();
-				this.method_20643(serverWorld, villagerEntity, villagerEntity2);
+				this.goHome(serverWorld, villagerEntity, villagerEntity2);
 			} else if (villagerEntity.getRandom().nextInt(35) == 0) {
 				serverWorld.sendEntityStatus(villagerEntity2, (byte)12);
 				serverWorld.sendEntityStatus(villagerEntity, (byte)12);
@@ -55,18 +55,18 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 		}
 	}
 
-	private void method_20643(ServerWorld serverWorld, VillagerEntity villagerEntity, VillagerEntity villagerEntity2) {
-		Optional<BlockPos> optional = this.method_19573(serverWorld, villagerEntity);
+	private void goHome(ServerWorld world, VillagerEntity first, VillagerEntity second) {
+		Optional<BlockPos> optional = this.getReachableHome(world, first);
 		if (!optional.isPresent()) {
-			serverWorld.sendEntityStatus(villagerEntity2, (byte)13);
-			serverWorld.sendEntityStatus(villagerEntity, (byte)13);
+			world.sendEntityStatus(second, (byte)13);
+			world.sendEntityStatus(first, (byte)13);
 		} else {
-			Optional<VillagerEntity> optional2 = this.method_18970(villagerEntity, villagerEntity2);
+			Optional<VillagerEntity> optional2 = this.createChild(first, second);
 			if (optional2.isPresent()) {
-				this.method_19572(serverWorld, (VillagerEntity)optional2.get(), (BlockPos)optional.get());
+				this.setChildHome(world, (VillagerEntity)optional2.get(), (BlockPos)optional.get());
 			} else {
-				serverWorld.getPointOfInterestStorage().releaseTicket((BlockPos)optional.get());
-				DebugRendererInfoManager.sendPointOfInterest(serverWorld, (BlockPos)optional.get());
+				world.getPointOfInterestStorage().releaseTicket((BlockPos)optional.get());
+				DebugRendererInfoManager.sendPointOfInterest(world, (BlockPos)optional.get());
 			}
 		}
 	}
@@ -75,49 +75,47 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 		villagerEntity.getBrain().forget(MemoryModuleType.BREED_TARGET);
 	}
 
-	private VillagerEntity method_19570(VillagerEntity villagerEntity) {
-		return (VillagerEntity)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.BREED_TARGET).get();
+	private VillagerEntity getBreedTarget(VillagerEntity villager) {
+		return (VillagerEntity)villager.getBrain().getOptionalMemory(MemoryModuleType.BREED_TARGET).get();
 	}
 
-	private boolean method_18972(VillagerEntity villagerEntity) {
-		Brain<VillagerEntity> brain = villagerEntity.getBrain();
+	private boolean isReadyToBreed(VillagerEntity villager) {
+		Brain<VillagerEntity> brain = villager.getBrain();
 		if (!brain.getOptionalMemory(MemoryModuleType.BREED_TARGET).isPresent()) {
 			return false;
 		} else {
-			VillagerEntity villagerEntity2 = this.method_19570(villagerEntity);
-			return LookTargetUtil.canSee(brain, MemoryModuleType.BREED_TARGET, EntityType.VILLAGER)
-				&& villagerEntity.isReadyToBreed()
-				&& villagerEntity2.isReadyToBreed();
+			VillagerEntity villagerEntity = this.getBreedTarget(villager);
+			return LookTargetUtil.canSee(brain, MemoryModuleType.BREED_TARGET, EntityType.VILLAGER) && villager.isReadyToBreed() && villagerEntity.isReadyToBreed();
 		}
 	}
 
-	private Optional<BlockPos> method_19573(ServerWorld serverWorld, VillagerEntity villagerEntity) {
-		return serverWorld.getPointOfInterestStorage()
-			.getPosition(PointOfInterestType.HOME.getCompletionCondition(), blockPos -> this.method_20642(villagerEntity, blockPos), new BlockPos(villagerEntity), 48);
+	private Optional<BlockPos> getReachableHome(ServerWorld world, VillagerEntity villager) {
+		return world.getPointOfInterestStorage()
+			.getPosition(PointOfInterestType.HOME.getCompletionCondition(), blockPos -> this.canReachHome(villager, blockPos), new BlockPos(villager), 48);
 	}
 
-	private boolean method_20642(VillagerEntity villagerEntity, BlockPos blockPos) {
-		Path path = villagerEntity.getNavigation().findPathTo(blockPos, PointOfInterestType.HOME.method_21648());
+	private boolean canReachHome(VillagerEntity villager, BlockPos pos) {
+		Path path = villager.getNavigation().findPathTo(pos, PointOfInterestType.HOME.getSearchDistance());
 		return path != null && path.reachesTarget();
 	}
 
-	private Optional<VillagerEntity> method_18970(VillagerEntity villagerEntity, VillagerEntity villagerEntity2) {
-		VillagerEntity villagerEntity3 = villagerEntity.createChild(villagerEntity2);
-		if (villagerEntity3 == null) {
+	private Optional<VillagerEntity> createChild(VillagerEntity first, VillagerEntity second) {
+		VillagerEntity villagerEntity = first.createChild(second);
+		if (villagerEntity == null) {
 			return Optional.empty();
 		} else {
-			villagerEntity.setBreedingAge(6000);
-			villagerEntity2.setBreedingAge(6000);
-			villagerEntity3.setBreedingAge(-24000);
-			villagerEntity3.setPositionAndAngles(villagerEntity.getX(), villagerEntity.getY(), villagerEntity.getZ(), 0.0F, 0.0F);
-			villagerEntity.world.spawnEntity(villagerEntity3);
-			villagerEntity.world.sendEntityStatus(villagerEntity3, (byte)12);
-			return Optional.of(villagerEntity3);
+			first.setBreedingAge(6000);
+			second.setBreedingAge(6000);
+			villagerEntity.setBreedingAge(-24000);
+			villagerEntity.setPositionAndAngles(first.getX(), first.getY(), first.getZ(), 0.0F, 0.0F);
+			first.world.spawnEntity(villagerEntity);
+			first.world.sendEntityStatus(villagerEntity, (byte)12);
+			return Optional.of(villagerEntity);
 		}
 	}
 
-	private void method_19572(ServerWorld serverWorld, VillagerEntity villagerEntity, BlockPos blockPos) {
-		GlobalPos globalPos = GlobalPos.create(serverWorld.getDimension().getType(), blockPos);
-		villagerEntity.getBrain().putMemory(MemoryModuleType.HOME, globalPos);
+	private void setChildHome(ServerWorld world, VillagerEntity child, BlockPos pos) {
+		GlobalPos globalPos = GlobalPos.create(world.getDimension().getType(), pos);
+		child.getBrain().putMemory(MemoryModuleType.HOME, globalPos);
 	}
 }

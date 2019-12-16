@@ -15,16 +15,16 @@ public class Activity {
 	public static final Activity HIDE = register("hide");
 	private final String id;
 
-	private Activity(String string) {
-		this.id = string;
+	private Activity(String id) {
+		this.id = id;
 	}
 
 	public String getId() {
 		return this.id;
 	}
 
-	private static Activity register(String string) {
-		return Registry.register(Registry.ACTIVITY, string, new Activity(string));
+	private static Activity register(String id) {
+		return Registry.register(Registry.ACTIVITY, id, new Activity(id));
 	}
 
 	public String toString() {

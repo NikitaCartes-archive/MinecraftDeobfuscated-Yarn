@@ -47,7 +47,7 @@ public class PlayerActionResponseS2CPacket implements Packet<ClientPlayPacketLis
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.handlePlayerActionResponse(this);
+		clientPlayPacketListener.onPlayerActionResponse(this);
 	}
 
 	@Environment(EnvType.CLIENT)

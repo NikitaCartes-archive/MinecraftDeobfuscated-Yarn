@@ -18,11 +18,11 @@ import net.minecraft.util.math.Vec3d;
 
 public class WanderAroundTask extends Task<MobEntity> {
 	@Nullable
-	private Path field_18369;
+	private Path path;
 	@Nullable
-	private BlockPos field_18370;
-	private float field_18371;
-	private int field_18964;
+	private BlockPos lookTargetPos;
+	private float speed;
+	private int pathUpdateCountdownTicks;
 
 	public WanderAroundTask(int runTime) {
 		super(ImmutableMap.of(MemoryModuleType.PATH, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_PRESENT), runTime);
@@ -31,8 +31,8 @@ public class WanderAroundTask extends Task<MobEntity> {
 	protected boolean shouldRun(ServerWorld serverWorld, MobEntity mobEntity) {
 		Brain<?> brain = mobEntity.getBrain();
 		WalkTarget walkTarget = (WalkTarget)brain.getOptionalMemory(MemoryModuleType.WALK_TARGET).get();
-		if (!this.method_18980(mobEntity, walkTarget) && this.method_18977(mobEntity, walkTarget, serverWorld.getTime())) {
-			this.field_18370 = walkTarget.getLookTarget().getBlockPos();
+		if (!this.hasReached(mobEntity, walkTarget) && this.hasFinishedPath(mobEntity, walkTarget, serverWorld.getTime())) {
+			this.lookTargetPos = walkTarget.getLookTarget().getBlockPos();
 			return true;
 		} else {
 			brain.forget(MemoryModuleType.WALK_TARGET);
@@ -41,10 +41,10 @@ public class WanderAroundTask extends Task<MobEntity> {
 	}
 
 	protected boolean shouldKeepRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
-		if (this.field_18369 != null && this.field_18370 != null) {
+		if (this.path != null && this.lookTargetPos != null) {
 			Optional<WalkTarget> optional = mobEntity.getBrain().getOptionalMemory(MemoryModuleType.WALK_TARGET);
 			EntityNavigation entityNavigation = mobEntity.getNavigation();
-			return !entityNavigation.isIdle() && optional.isPresent() && !this.method_18980(mobEntity, (WalkTarget)optional.get());
+			return !entityNavigation.isIdle() && optional.isPresent() && !this.hasReached(mobEntity, (WalkTarget)optional.get());
 		} else {
 			return false;
 		}
@@ -54,63 +54,64 @@ public class WanderAroundTask extends Task<MobEntity> {
 		mobEntity.getNavigation().stop();
 		mobEntity.getBrain().forget(MemoryModuleType.WALK_TARGET);
 		mobEntity.getBrain().forget(MemoryModuleType.PATH);
-		this.field_18369 = null;
+		this.path = null;
 	}
 
 	protected void run(ServerWorld serverWorld, MobEntity mobEntity, long l) {
-		mobEntity.getBrain().putMemory(MemoryModuleType.PATH, this.field_18369);
-		mobEntity.getNavigation().startMovingAlong(this.field_18369, (double)this.field_18371);
-		this.field_18964 = serverWorld.getRandom().nextInt(10);
+		mobEntity.getBrain().putMemory(MemoryModuleType.PATH, this.path);
+		mobEntity.getNavigation().startMovingAlong(this.path, (double)this.speed);
+		this.pathUpdateCountdownTicks = serverWorld.getRandom().nextInt(10);
 	}
 
 	protected void keepRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
-		this.field_18964--;
-		if (this.field_18964 <= 0) {
+		this.pathUpdateCountdownTicks--;
+		if (this.pathUpdateCountdownTicks <= 0) {
 			Path path = mobEntity.getNavigation().getCurrentPath();
 			Brain<?> brain = mobEntity.getBrain();
-			if (this.field_18369 != path) {
-				this.field_18369 = path;
+			if (this.path != path) {
+				this.path = path;
 				brain.putMemory(MemoryModuleType.PATH, path);
 			}
 
-			if (path != null && this.field_18370 != null) {
+			if (path != null && this.lookTargetPos != null) {
 				WalkTarget walkTarget = (WalkTarget)brain.getOptionalMemory(MemoryModuleType.WALK_TARGET).get();
-				if (walkTarget.getLookTarget().getBlockPos().getSquaredDistance(this.field_18370) > 4.0 && this.method_18977(mobEntity, walkTarget, serverWorld.getTime())) {
-					this.field_18370 = walkTarget.getLookTarget().getBlockPos();
+				if (walkTarget.getLookTarget().getBlockPos().getSquaredDistance(this.lookTargetPos) > 4.0
+					&& this.hasFinishedPath(mobEntity, walkTarget, serverWorld.getTime())) {
+					this.lookTargetPos = walkTarget.getLookTarget().getBlockPos();
 					this.run(serverWorld, mobEntity, l);
 				}
 			}
 		}
 	}
 
-	private boolean method_18977(MobEntity mobEntity, WalkTarget walkTarget, long l) {
+	private boolean hasFinishedPath(MobEntity entity, WalkTarget walkTarget, long time) {
 		BlockPos blockPos = walkTarget.getLookTarget().getBlockPos();
-		this.field_18369 = mobEntity.getNavigation().findPathTo(blockPos, 0);
-		this.field_18371 = walkTarget.getSpeed();
-		if (!this.method_18980(mobEntity, walkTarget)) {
-			Brain<?> brain = mobEntity.getBrain();
-			boolean bl = this.field_18369 != null && this.field_18369.reachesTarget();
+		this.path = entity.getNavigation().findPathTo(blockPos, 0);
+		this.speed = walkTarget.getSpeed();
+		if (!this.hasReached(entity, walkTarget)) {
+			Brain<?> brain = entity.getBrain();
+			boolean bl = this.path != null && this.path.reachesTarget();
 			if (bl) {
 				brain.setMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, Optional.empty());
 			} else if (!brain.hasMemoryModule(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE)) {
-				brain.putMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, l);
+				brain.putMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, time);
 			}
 
-			if (this.field_18369 != null) {
+			if (this.path != null) {
 				return true;
 			}
 
-			Vec3d vec3d = TargetFinder.findTargetTowards((MobEntityWithAi)mobEntity, 10, 7, new Vec3d(blockPos));
+			Vec3d vec3d = TargetFinder.findTargetTowards((MobEntityWithAi)entity, 10, 7, new Vec3d(blockPos));
 			if (vec3d != null) {
-				this.field_18369 = mobEntity.getNavigation().findPathTo(vec3d.x, vec3d.y, vec3d.z, 0);
-				return this.field_18369 != null;
+				this.path = entity.getNavigation().findPathTo(vec3d.x, vec3d.y, vec3d.z, 0);
+				return this.path != null;
 			}
 		}
 
 		return false;
 	}
 
-	private boolean method_18980(MobEntity mobEntity, WalkTarget walkTarget) {
-		return walkTarget.getLookTarget().getBlockPos().getManhattanDistance(new BlockPos(mobEntity)) <= walkTarget.getCompletionRange();
+	private boolean hasReached(MobEntity entity, WalkTarget walkTarget) {
+		return walkTarget.getLookTarget().getBlockPos().getManhattanDistance(new BlockPos(entity)) <= walkTarget.getCompletionRange();
 	}
 }

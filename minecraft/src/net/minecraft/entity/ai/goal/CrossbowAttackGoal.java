@@ -15,8 +15,8 @@ public class CrossbowAttackGoal<T extends HostileEntity & RangedAttackMob & Cros
 	private CrossbowAttackGoal.Stage stage = CrossbowAttackGoal.Stage.UNCHARGED;
 	private final double speed;
 	private final float squaredRange;
-	private int field_6592;
-	private int field_16529;
+	private int seeingTargetTicker;
+	private int chargedTicksLeft;
 
 	public CrossbowAttackGoal(T actor, double speed, float range) {
 		this.actor = actor;
@@ -27,7 +27,7 @@ public class CrossbowAttackGoal<T extends HostileEntity & RangedAttackMob & Cros
 
 	@Override
 	public boolean canStart() {
-		return this.method_19996() && this.isEntityHoldingCrossbow();
+		return this.hasAliveTarget() && this.isEntityHoldingCrossbow();
 	}
 
 	private boolean isEntityHoldingCrossbow() {
@@ -36,10 +36,10 @@ public class CrossbowAttackGoal<T extends HostileEntity & RangedAttackMob & Cros
 
 	@Override
 	public boolean shouldContinue() {
-		return this.method_19996() && (this.canStart() || !this.actor.getNavigation().isIdle()) && this.isEntityHoldingCrossbow();
+		return this.hasAliveTarget() && (this.canStart() || !this.actor.getNavigation().isIdle()) && this.isEntityHoldingCrossbow();
 	}
 
-	private boolean method_19996() {
+	private boolean hasAliveTarget() {
 		return this.actor.getTarget() != null && this.actor.getTarget().isAlive();
 	}
 
@@ -48,7 +48,7 @@ public class CrossbowAttackGoal<T extends HostileEntity & RangedAttackMob & Cros
 		super.stop();
 		this.actor.setAttacking(false);
 		this.actor.setTarget(null);
-		this.field_6592 = 0;
+		this.seeingTargetTicker = 0;
 		if (this.actor.isUsingItem()) {
 			this.actor.clearActiveItem();
 			this.actor.setCharging(false);
@@ -61,19 +61,19 @@ public class CrossbowAttackGoal<T extends HostileEntity & RangedAttackMob & Cros
 		LivingEntity livingEntity = this.actor.getTarget();
 		if (livingEntity != null) {
 			boolean bl = this.actor.getVisibilityCache().canSee(livingEntity);
-			boolean bl2 = this.field_6592 > 0;
+			boolean bl2 = this.seeingTargetTicker > 0;
 			if (bl != bl2) {
-				this.field_6592 = 0;
+				this.seeingTargetTicker = 0;
 			}
 
 			if (bl) {
-				this.field_6592++;
+				this.seeingTargetTicker++;
 			} else {
-				this.field_6592--;
+				this.seeingTargetTicker--;
 			}
 
 			double d = this.actor.squaredDistanceTo(livingEntity);
-			boolean bl3 = (d > (double)this.squaredRange || this.field_6592 < 5) && this.field_16529 == 0;
+			boolean bl3 = (d > (double)this.squaredRange || this.seeingTargetTicker < 5) && this.chargedTicksLeft == 0;
 			if (bl3) {
 				this.actor.getNavigation().startMovingTo(livingEntity, this.isUncharged() ? this.speed : this.speed * 0.5);
 			} else {
@@ -97,12 +97,12 @@ public class CrossbowAttackGoal<T extends HostileEntity & RangedAttackMob & Cros
 				if (i >= CrossbowItem.getPullTime(itemStack)) {
 					this.actor.stopUsingItem();
 					this.stage = CrossbowAttackGoal.Stage.CHARGED;
-					this.field_16529 = 20 + this.actor.getRandom().nextInt(20);
+					this.chargedTicksLeft = 20 + this.actor.getRandom().nextInt(20);
 					this.actor.setCharging(false);
 				}
 			} else if (this.stage == CrossbowAttackGoal.Stage.CHARGED) {
-				this.field_16529--;
-				if (this.field_16529 == 0) {
+				this.chargedTicksLeft--;
+				if (this.chargedTicksLeft == 0) {
 					this.stage = CrossbowAttackGoal.Stage.READY_TO_ATTACK;
 				}
 			} else if (this.stage == CrossbowAttackGoal.Stage.READY_TO_ATTACK && bl) {

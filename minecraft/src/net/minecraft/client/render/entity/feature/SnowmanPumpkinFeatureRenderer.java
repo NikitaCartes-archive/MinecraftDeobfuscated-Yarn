@@ -44,7 +44,7 @@ public class SnowmanPumpkinFeatureRenderer extends FeatureRenderer<SnowGolemEnti
 				.renderItem(
 					snowGolemEntity,
 					itemStack,
-					ModelTransformation.Type.HEAD,
+					ModelTransformation.Mode.HEAD,
 					false,
 					matrixStack,
 					vertexConsumerProvider,

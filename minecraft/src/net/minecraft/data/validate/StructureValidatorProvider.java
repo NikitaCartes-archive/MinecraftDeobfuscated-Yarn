@@ -1,8 +1,8 @@
 package net.minecraft.data.validate;
 
 import net.minecraft.data.SnbtProvider;
-import net.minecraft.datafixers.DataFixTypes;
-import net.minecraft.datafixers.Schemas;
+import net.minecraft.datafixer.DataFixTypes;
+import net.minecraft.datafixer.Schemas;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.structure.Structure;

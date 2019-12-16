@@ -29,7 +29,7 @@ public class TransformingVertexConsumer extends FixedColorVertexConsumer {
 		this.textureMatrix = entry.getModel().copy();
 		this.textureMatrix.invert();
 		this.normalMatrix = entry.getNormal().copy();
-		this.normalMatrix.method_23732();
+		this.normalMatrix.invert();
 		this.init();
 	}
 
@@ -52,9 +52,9 @@ public class TransformingVertexConsumer extends FixedColorVertexConsumer {
 		Direction direction = Direction.getFacing(vector3f.getX(), vector3f.getY(), vector3f.getZ());
 		Vector4f vector4f = new Vector4f(this.x, this.y, this.z, 1.0F);
 		vector4f.transform(this.textureMatrix);
-		vector4f.setQuarternion(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
-		vector4f.setQuarternion(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0F));
-		vector4f.setQuarternion(direction.getRotationQuaternion());
+		vector4f.rotate(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
+		vector4f.rotate(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0F));
+		vector4f.rotate(direction.getRotationQuaternion());
 		float f = -vector4f.getX();
 		float g = -vector4f.getY();
 		this.vertexConsumer

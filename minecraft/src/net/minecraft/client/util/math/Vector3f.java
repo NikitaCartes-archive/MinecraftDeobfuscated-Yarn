@@ -72,7 +72,7 @@ public final class Vector3f {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void piecewiseMultiply(float x, float y, float z) {
+	public void multiplyComponentwise(float x, float y, float z) {
 		this.x *= x;
 		this.y *= y;
 		this.z *= z;
@@ -118,7 +118,7 @@ public final class Vector3f {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean reciprocal() {
+	public boolean normalize() {
 		float f = this.x * this.x + this.y * this.y + this.z * this.z;
 		if ((double)f < 1.0E-5) {
 			return false;
@@ -164,11 +164,11 @@ public final class Vector3f {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void multiplyComponentwise(Vector3f vector, float ratio) {
-		float f = 1.0F - ratio;
-		this.x = this.x * f + vector.x * ratio;
-		this.y = this.y * f + vector.y * ratio;
-		this.z = this.z * f + vector.z * ratio;
+	public void lerp(Vector3f vector, float delta) {
+		float f = 1.0F - delta;
+		this.x = this.x * f + vector.x * delta;
+		this.y = this.y * f + vector.y * delta;
+		this.z = this.z * f + vector.z * delta;
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -13,16 +13,16 @@ import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class GameMenuScreen extends Screen {
-	private final boolean field_19319;
+	private final boolean showMenu;
 
-	public GameMenuScreen(boolean bl) {
-		super(bl ? new TranslatableText("menu.game") : new TranslatableText("menu.paused"));
-		this.field_19319 = bl;
+	public GameMenuScreen(boolean showMenu) {
+		super(showMenu ? new TranslatableText("menu.game") : new TranslatableText("menu.paused"));
+		this.showMenu = showMenu;
 	}
 
 	@Override
 	protected void init() {
-		if (this.field_19319) {
+		if (this.showMenu) {
 			this.initWidgets();
 		}
 	}
@@ -51,7 +51,7 @@ public class GameMenuScreen extends Screen {
 				98,
 				20,
 				I18n.translate("gui.stats"),
-				buttonWidgetx -> this.minecraft.openScreen(new StatsScreen(this, this.minecraft.player.getStats()))
+				buttonWidgetx -> this.minecraft.openScreen(new StatsScreen(this, this.minecraft.player.getStatHandler()))
 			)
 		);
 		String string = SharedConstants.getGameVersion().isStable() ? "https://aka.ms/javafeedback?ref=game" : "https://aka.ms/snapshotfeedback?ref=game";
@@ -142,7 +142,7 @@ public class GameMenuScreen extends Screen {
 
 	@Override
 	public void render(int mouseX, int mouseY, float delta) {
-		if (this.field_19319) {
+		if (this.showMenu) {
 			this.renderBackground();
 			this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 40, 16777215);
 		} else {

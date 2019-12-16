@@ -11,12 +11,12 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public interface VertexConsumerProvider {
-	static VertexConsumerProvider.Immediate immediate(BufferBuilder builder) {
-		return immediate(ImmutableMap.of(), builder);
+	static VertexConsumerProvider.Immediate immediate(BufferBuilder buffer) {
+		return immediate(ImmutableMap.of(), buffer);
 	}
 
-	static VertexConsumerProvider.Immediate immediate(Map<RenderLayer, BufferBuilder> map, BufferBuilder layerBuffers) {
-		return new VertexConsumerProvider.Immediate(layerBuffers, map);
+	static VertexConsumerProvider.Immediate immediate(Map<RenderLayer, BufferBuilder> layerBuffers, BufferBuilder fallbackBuffer) {
+		return new VertexConsumerProvider.Immediate(fallbackBuffer, layerBuffers);
 	}
 
 	VertexConsumer getBuffer(RenderLayer layer);
@@ -28,9 +28,9 @@ public interface VertexConsumerProvider {
 		protected Optional<RenderLayer> currentLayer = Optional.empty();
 		protected final Set<BufferBuilder> activeConsumers = Sets.<BufferBuilder>newHashSet();
 
-		protected Immediate(BufferBuilder layerBuffers, Map<RenderLayer, BufferBuilder> map) {
-			this.fallbackBuffer = layerBuffers;
-			this.layerBuffers = map;
+		protected Immediate(BufferBuilder fallbackBuffer, Map<RenderLayer, BufferBuilder> layerBuffers) {
+			this.fallbackBuffer = fallbackBuffer;
+			this.layerBuffers = layerBuffers;
 		}
 
 		@Override

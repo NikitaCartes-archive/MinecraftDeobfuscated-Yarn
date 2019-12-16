@@ -217,7 +217,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 			this.destroy();
 		}
 
-		this.tickPortal();
+		this.tickNetherPortal();
 		if (this.world.isClient) {
 			if (this.clientInterpolationSteps > 0) {
 				double d = this.getX() + (this.clientX - this.getX()) / (double)this.clientInterpolationSteps;

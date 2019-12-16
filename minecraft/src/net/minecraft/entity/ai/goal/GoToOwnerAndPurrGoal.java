@@ -51,7 +51,7 @@ public class GoToOwnerAndPurrGoal extends MoveToTargetPosGoal {
 	}
 
 	@Override
-	protected boolean isTargetPos(WorldView worldView, BlockPos pos) {
-		return worldView.isAir(pos.up()) && worldView.getBlockState(pos).getBlock().matches(BlockTags.BEDS);
+	protected boolean isTargetPos(WorldView world, BlockPos pos) {
+		return world.isAir(pos.up()) && world.getBlockState(pos).getBlock().matches(BlockTags.BEDS);
 	}
 }

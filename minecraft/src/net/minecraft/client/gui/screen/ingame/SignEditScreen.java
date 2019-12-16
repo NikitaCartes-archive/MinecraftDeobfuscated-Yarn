@@ -39,9 +39,9 @@ public class SignEditScreen extends Screen {
 	private int currentRow;
 	private SelectionManager selectionManager;
 
-	public SignEditScreen(SignBlockEntity signBlockEntity) {
+	public SignEditScreen(SignBlockEntity sign) {
 		super(new TranslatableText("sign.edit"));
-		this.sign = signBlockEntity;
+		this.sign = sign;
 	}
 
 	@Override

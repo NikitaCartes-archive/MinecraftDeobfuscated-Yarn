@@ -247,8 +247,8 @@ public class StatsScreen extends Screen implements StatsListener {
 		protected StatType<?> selectedStatType;
 		protected int field_18760;
 
-		public ItemStatsListWidget(MinecraftClient minecraftClient) {
-			super(minecraftClient, StatsScreen.this.width, StatsScreen.this.height, 32, StatsScreen.this.height - 64, 20);
+		public ItemStatsListWidget(MinecraftClient client) {
+			super(client, StatsScreen.this.width, StatsScreen.this.height, 32, StatsScreen.this.height - 64, 20);
 			this.blockStatTypes = Lists.<StatType<Block>>newArrayList();
 			this.blockStatTypes.add(Stats.MINED);
 			this.itemStatTypes = Lists.<StatType<Item>>newArrayList(Stats.BROKEN, Stats.CRAFTED, Stats.USED, Stats.PICKED_UP, Stats.DROPPED);

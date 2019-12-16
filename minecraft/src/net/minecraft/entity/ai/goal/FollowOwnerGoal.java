@@ -17,22 +17,22 @@ public class FollowOwnerGoal extends Goal {
 	private final TameableEntity tameable;
 	private LivingEntity owner;
 	private final WorldView world;
-	private final double field_6442;
+	private final double speed;
 	private final EntityNavigation navigation;
-	private int field_6443;
+	private int updateCountdownTicks;
 	private final float maxDistance;
 	private final float minDistance;
-	private float field_6447;
-	private final boolean field_21078;
+	private float oldWaterPathfindingPenalty;
+	private final boolean leavesAllowed;
 
-	public FollowOwnerGoal(TameableEntity tameable, double speed, float minDistance, float maxDistance, boolean bl) {
+	public FollowOwnerGoal(TameableEntity tameable, double speed, float minDistance, float maxDistance, boolean leavesAllowed) {
 		this.tameable = tameable;
 		this.world = tameable.world;
-		this.field_6442 = speed;
+		this.speed = speed;
 		this.navigation = tameable.getNavigation();
 		this.minDistance = minDistance;
 		this.maxDistance = maxDistance;
-		this.field_21078 = bl;
+		this.leavesAllowed = leavesAllowed;
 		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 		if (!(tameable.getNavigation() instanceof MobNavigation) && !(tameable.getNavigation() instanceof BirdNavigation)) {
 			throw new IllegalArgumentException("Unsupported mob type for FollowOwnerGoal");
@@ -67,8 +67,8 @@ public class FollowOwnerGoal extends Goal {
 
 	@Override
 	public void start() {
-		this.field_6443 = 0;
-		this.field_6447 = this.tameable.getPathfindingPenalty(PathNodeType.WATER);
+		this.updateCountdownTicks = 0;
+		this.oldWaterPathfindingPenalty = this.tameable.getPathfindingPenalty(PathNodeType.WATER);
 		this.tameable.setPathfindingPenalty(PathNodeType.WATER, 0.0F);
 	}
 
@@ -76,66 +76,66 @@ public class FollowOwnerGoal extends Goal {
 	public void stop() {
 		this.owner = null;
 		this.navigation.stop();
-		this.tameable.setPathfindingPenalty(PathNodeType.WATER, this.field_6447);
+		this.tameable.setPathfindingPenalty(PathNodeType.WATER, this.oldWaterPathfindingPenalty);
 	}
 
 	@Override
 	public void tick() {
 		this.tameable.getLookControl().lookAt(this.owner, 10.0F, (float)this.tameable.getLookPitchSpeed());
-		if (--this.field_6443 <= 0) {
-			this.field_6443 = 10;
+		if (--this.updateCountdownTicks <= 0) {
+			this.updateCountdownTicks = 10;
 			if (!this.tameable.isLeashed() && !this.tameable.hasVehicle()) {
 				if (this.tameable.squaredDistanceTo(this.owner) >= 144.0) {
-					this.method_23345();
+					this.tryTeleport();
 				} else {
-					this.navigation.startMovingTo(this.owner, this.field_6442);
+					this.navigation.startMovingTo(this.owner, this.speed);
 				}
 			}
 		}
 	}
 
-	private void method_23345() {
+	private void tryTeleport() {
 		BlockPos blockPos = new BlockPos(this.owner);
 
 		for (int i = 0; i < 10; i++) {
-			int j = this.method_23342(-3, 3);
-			int k = this.method_23342(-1, 1);
-			int l = this.method_23342(-3, 3);
-			boolean bl = this.method_23343(blockPos.getX() + j, blockPos.getY() + k, blockPos.getZ() + l);
+			int j = this.getRandomInt(-3, 3);
+			int k = this.getRandomInt(-1, 1);
+			int l = this.getRandomInt(-3, 3);
+			boolean bl = this.tryTeleportTo(blockPos.getX() + j, blockPos.getY() + k, blockPos.getZ() + l);
 			if (bl) {
 				return;
 			}
 		}
 	}
 
-	private boolean method_23343(int i, int j, int k) {
-		if (Math.abs((double)i - this.owner.getX()) < 2.0 && Math.abs((double)k - this.owner.getZ()) < 2.0) {
+	private boolean tryTeleportTo(int x, int y, int z) {
+		if (Math.abs((double)x - this.owner.getX()) < 2.0 && Math.abs((double)z - this.owner.getZ()) < 2.0) {
 			return false;
-		} else if (!this.method_23344(new BlockPos(i, j, k))) {
+		} else if (!this.canTeleportTo(new BlockPos(x, y, z))) {
 			return false;
 		} else {
-			this.tameable.setPositionAndAngles((double)((float)i + 0.5F), (double)j, (double)((float)k + 0.5F), this.tameable.yaw, this.tameable.pitch);
+			this.tameable.setPositionAndAngles((double)((float)x + 0.5F), (double)y, (double)((float)z + 0.5F), this.tameable.yaw, this.tameable.pitch);
 			this.navigation.stop();
 			return true;
 		}
 	}
 
-	private boolean method_23344(BlockPos blockPos) {
-		PathNodeType pathNodeType = LandPathNodeMaker.method_23476(this.world, blockPos.getX(), blockPos.getY(), blockPos.getZ());
+	private boolean canTeleportTo(BlockPos pos) {
+		PathNodeType pathNodeType = LandPathNodeMaker.getPathNodeType(this.world, pos.getX(), pos.getY(), pos.getZ());
 		if (pathNodeType != PathNodeType.WALKABLE) {
 			return false;
 		} else {
-			BlockState blockState = this.world.getBlockState(blockPos.down());
-			if (!this.field_21078 && blockState.getBlock() instanceof LeavesBlock) {
+			BlockState blockState = this.world.getBlockState(pos.down());
+			if (!this.leavesAllowed && blockState.getBlock() instanceof LeavesBlock) {
 				return false;
 			} else {
-				BlockPos blockPos2 = blockPos.subtract(new BlockPos(this.tameable));
-				return this.world.doesNotCollide(this.tameable, this.tameable.getBoundingBox().offset(blockPos2));
+				BlockPos blockPos = pos.subtract(new BlockPos(this.tameable));
+				return this.world.doesNotCollide(this.tameable, this.tameable.getBoundingBox().offset(blockPos));
 			}
 		}
 	}
 
-	private int method_23342(int i, int j) {
-		return this.tameable.getRandom().nextInt(j - i + 1) + i;
+	private int getRandomInt(int min, int max) {
+		return this.tameable.getRandom().nextInt(max - min + 1) + min;
 	}
 }

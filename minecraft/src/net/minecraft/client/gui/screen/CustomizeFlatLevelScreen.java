@@ -15,7 +15,7 @@ import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.datafixers.NbtOps;
+import net.minecraft.datafixer.NbtOps;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -238,20 +238,20 @@ public class CustomizeFlatLevelScreen extends Screen {
 				}
 			}
 
-			private void method_19375(int i, int j, ItemStack itemStack) {
-				this.method_19373(i + 1, j + 1);
+			private void method_19375(int x, int y, ItemStack itemStack) {
+				this.method_19373(x + 1, y + 1);
 				RenderSystem.enableRescaleNormal();
 				if (!itemStack.isEmpty()) {
-					CustomizeFlatLevelScreen.this.itemRenderer.renderGuiItemIcon(itemStack, i + 2, j + 2);
+					CustomizeFlatLevelScreen.this.itemRenderer.renderGuiItemIcon(itemStack, x + 2, y + 2);
 				}
 
 				RenderSystem.disableRescaleNormal();
 			}
 
-			private void method_19373(int i, int j) {
+			private void method_19373(int x, int y) {
 				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 				SuperflatLayersListWidget.this.minecraft.getTextureManager().bindTexture(DrawableHelper.STATS_ICON_LOCATION);
-				DrawableHelper.blit(i, j, CustomizeFlatLevelScreen.this.getBlitOffset(), 0.0F, 0.0F, 18, 18, 128, 128);
+				DrawableHelper.blit(x, y, CustomizeFlatLevelScreen.this.getBlitOffset(), 0.0F, 0.0F, 18, 18, 128, 128);
 			}
 		}
 	}

@@ -33,7 +33,7 @@ import net.minecraft.client.network.packet.GuiUpdateS2CPacket;
 import net.minecraft.client.network.packet.HealthUpdateS2CPacket;
 import net.minecraft.client.network.packet.InventoryS2CPacket;
 import net.minecraft.client.network.packet.LookAtS2CPacket;
-import net.minecraft.client.network.packet.OpenContainerPacket;
+import net.minecraft.client.network.packet.OpenContainerS2CPacket;
 import net.minecraft.client.network.packet.OpenWrittenBookS2CPacket;
 import net.minecraft.client.network.packet.PlaySoundS2CPacket;
 import net.minecraft.client.network.packet.PlayerAbilitiesS2CPacket;
@@ -42,7 +42,7 @@ import net.minecraft.client.network.packet.PlayerSpawnS2CPacket;
 import net.minecraft.client.network.packet.RemoveEntityEffectS2CPacket;
 import net.minecraft.client.network.packet.ResourcePackSendS2CPacket;
 import net.minecraft.client.network.packet.SetCameraEntityS2CPacket;
-import net.minecraft.client.network.packet.SetTradeOffersPacket;
+import net.minecraft.client.network.packet.SetTradeOffersS2CPacket;
 import net.minecraft.client.network.packet.SignEditorOpenS2CPacket;
 import net.minecraft.client.network.packet.UnloadChunkS2CPacket;
 import net.minecraft.client.network.packet.WorldEventS2CPacket;
@@ -476,7 +476,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		if (livingEntity != null) {
 			this.incrementStat(Stats.KILLED_BY.getOrCreateStat(livingEntity.getType()));
 			livingEntity.updateKilledAdvancementCriterion(this, this.scoreAmount, source);
-			this.method_23733(livingEntity);
+			this.onKilledBy(livingEntity);
 		}
 
 		this.world.sendEntityStatus(this, (byte)3);
@@ -804,7 +804,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 				return OptionalInt.empty();
 			} else {
-				this.networkHandler.sendPacket(new OpenContainerPacket(container.syncId, container.getType(), nameableContainerProvider.getDisplayName()));
+				this.networkHandler.sendPacket(new OpenContainerS2CPacket(container.syncId, container.getType(), nameableContainerProvider.getDisplayName()));
 				container.addListener(this);
 				this.container = container;
 				return OptionalInt.of(this.containerSyncId);
@@ -814,7 +814,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	@Override
 	public void sendTradeOffers(int syncId, TraderOfferList offers, int levelProgress, int experience, boolean leveled, boolean refreshable) {
-		this.networkHandler.sendPacket(new SetTradeOffersPacket(syncId, offers, levelProgress, experience, leveled, refreshable));
+		this.networkHandler.sendPacket(new SetTradeOffersS2CPacket(syncId, offers, levelProgress, experience, leveled, refreshable));
 	}
 
 	@Override
@@ -996,9 +996,9 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			this.totalExperience = oldPlayer.totalExperience;
 			this.experienceProgress = oldPlayer.experienceProgress;
 			this.setScore(oldPlayer.getScore());
-			this.lastPortalPosition = oldPlayer.lastPortalPosition;
-			this.lastPortalDirectionVector = oldPlayer.lastPortalDirectionVector;
-			this.lastPortalDirection = oldPlayer.lastPortalDirection;
+			this.lastNetherPortalPosition = oldPlayer.lastNetherPortalPosition;
+			this.lastNetherPortalDirectionVector = oldPlayer.lastNetherPortalDirectionVector;
+			this.lastNetherPortalDirection = oldPlayer.lastNetherPortalDirection;
 		} else if (this.world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY) || oldPlayer.isSpectator()) {
 			this.inventory.clone(oldPlayer.inventory);
 			this.experienceLevel = oldPlayer.experienceLevel;
@@ -1205,9 +1205,9 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	protected void tickPortalCooldown() {
-		if (this.portalCooldown > 0 && !this.inTeleportationState) {
-			this.portalCooldown--;
+	protected void tickNetherPortalCooldown() {
+		if (this.netherPortalCooldown > 0 && !this.inTeleportationState) {
+			this.netherPortalCooldown--;
 		}
 	}
 

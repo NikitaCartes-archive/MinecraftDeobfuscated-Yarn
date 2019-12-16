@@ -7,9 +7,9 @@ import java.util.List;
 
 public class ScheduleRule {
 	private final List<ScheduleRuleEntry> entries = Lists.<ScheduleRuleEntry>newArrayList();
-	private int field_18613;
+	private int prioritizedEntryIndex;
 
-	public ScheduleRule withEntry(int startTime, float priority) {
+	public ScheduleRule add(int startTime, float priority) {
 		this.entries.add(new ScheduleRuleEntry(startTime, priority));
 		this.sort();
 		return this;
@@ -22,17 +22,17 @@ public class ScheduleRule {
 		});
 		this.entries.clear();
 		this.entries.addAll(int2ObjectSortedMap.values());
-		this.field_18613 = 0;
+		this.prioritizedEntryIndex = 0;
 	}
 
 	public float getPriority(int time) {
 		if (this.entries.size() <= 0) {
 			return 0.0F;
 		} else {
-			ScheduleRuleEntry scheduleRuleEntry = (ScheduleRuleEntry)this.entries.get(this.field_18613);
+			ScheduleRuleEntry scheduleRuleEntry = (ScheduleRuleEntry)this.entries.get(this.prioritizedEntryIndex);
 			ScheduleRuleEntry scheduleRuleEntry2 = (ScheduleRuleEntry)this.entries.get(this.entries.size() - 1);
 			boolean bl = time < scheduleRuleEntry.getStartTime();
-			int i = bl ? 0 : this.field_18613;
+			int i = bl ? 0 : this.prioritizedEntryIndex;
 			float f = bl ? scheduleRuleEntry2.getPriority() : scheduleRuleEntry.getPriority();
 
 			for (int j = i; j < this.entries.size(); j++) {
@@ -41,7 +41,7 @@ public class ScheduleRule {
 					break;
 				}
 
-				this.field_18613 = j;
+				this.prioritizedEntryIndex = j;
 				f = scheduleRuleEntry3.getPriority();
 			}
 

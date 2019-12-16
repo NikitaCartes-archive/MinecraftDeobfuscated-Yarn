@@ -28,7 +28,7 @@ public class HoneyBottleItem extends Item {
 		}
 
 		if (!world.isClient) {
-			user.tryRemoveStatusEffect(StatusEffects.POISON);
+			user.removeStatusEffect(StatusEffects.POISON);
 		}
 
 		if (stack.isEmpty()) {

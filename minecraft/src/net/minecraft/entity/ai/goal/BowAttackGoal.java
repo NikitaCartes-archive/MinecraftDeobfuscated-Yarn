@@ -14,10 +14,10 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttackMob> extends Go
 	private int attackInterval;
 	private final float squaredRange;
 	private int cooldown = -1;
-	private int field_6572;
-	private boolean field_6573;
-	private boolean field_6571;
-	private int field_6568 = -1;
+	private int targetSeeingTicker;
+	private boolean movingToLeft;
+	private boolean backward;
+	private int combatTicks = -1;
 
 	public BowAttackGoal(T actor, double speed, int attackInterval, float range) {
 		this.actor = actor;
@@ -55,7 +55,7 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttackMob> extends Go
 	public void stop() {
 		super.stop();
 		this.actor.setAttacking(false);
-		this.field_6572 = 0;
+		this.targetSeeingTicker = 0;
 		this.cooldown = -1;
 		this.actor.clearActiveItem();
 	}
@@ -66,52 +66,52 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttackMob> extends Go
 		if (livingEntity != null) {
 			double d = this.actor.squaredDistanceTo(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ());
 			boolean bl = this.actor.getVisibilityCache().canSee(livingEntity);
-			boolean bl2 = this.field_6572 > 0;
+			boolean bl2 = this.targetSeeingTicker > 0;
 			if (bl != bl2) {
-				this.field_6572 = 0;
+				this.targetSeeingTicker = 0;
 			}
 
 			if (bl) {
-				this.field_6572++;
+				this.targetSeeingTicker++;
 			} else {
-				this.field_6572--;
+				this.targetSeeingTicker--;
 			}
 
-			if (!(d > (double)this.squaredRange) && this.field_6572 >= 20) {
+			if (!(d > (double)this.squaredRange) && this.targetSeeingTicker >= 20) {
 				this.actor.getNavigation().stop();
-				this.field_6568++;
+				this.combatTicks++;
 			} else {
 				this.actor.getNavigation().startMovingTo(livingEntity, this.speed);
-				this.field_6568 = -1;
+				this.combatTicks = -1;
 			}
 
-			if (this.field_6568 >= 20) {
+			if (this.combatTicks >= 20) {
 				if ((double)this.actor.getRandom().nextFloat() < 0.3) {
-					this.field_6573 = !this.field_6573;
+					this.movingToLeft = !this.movingToLeft;
 				}
 
 				if ((double)this.actor.getRandom().nextFloat() < 0.3) {
-					this.field_6571 = !this.field_6571;
+					this.backward = !this.backward;
 				}
 
-				this.field_6568 = 0;
+				this.combatTicks = 0;
 			}
 
-			if (this.field_6568 > -1) {
+			if (this.combatTicks > -1) {
 				if (d > (double)(this.squaredRange * 0.75F)) {
-					this.field_6571 = false;
+					this.backward = false;
 				} else if (d < (double)(this.squaredRange * 0.25F)) {
-					this.field_6571 = true;
+					this.backward = true;
 				}
 
-				this.actor.getMoveControl().strafeTo(this.field_6571 ? -0.5F : 0.5F, this.field_6573 ? 0.5F : -0.5F);
+				this.actor.getMoveControl().strafeTo(this.backward ? -0.5F : 0.5F, this.movingToLeft ? 0.5F : -0.5F);
 				this.actor.lookAtEntity(livingEntity, 30.0F, 30.0F);
 			} else {
 				this.actor.getLookControl().lookAt(livingEntity, 30.0F, 30.0F);
 			}
 
 			if (this.actor.isUsingItem()) {
-				if (!bl && this.field_6572 < -60) {
+				if (!bl && this.targetSeeingTicker < -60) {
 					this.actor.clearActiveItem();
 				} else if (bl) {
 					int i = this.actor.getItemUseTime();
@@ -121,7 +121,7 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttackMob> extends Go
 						this.cooldown = this.attackInterval;
 					}
 				}
-			} else if (--this.cooldown <= 0 && this.field_6572 >= -60) {
+			} else if (--this.cooldown <= 0 && this.targetSeeingTicker >= -60) {
 				this.actor.setCurrentHand(ProjectileUtil.getHandPossiblyHolding(this.actor, Items.BOW));
 			}
 		}

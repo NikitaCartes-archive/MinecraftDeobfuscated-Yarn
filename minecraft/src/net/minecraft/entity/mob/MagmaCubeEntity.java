@@ -37,8 +37,8 @@ public class MagmaCubeEntity extends SlimeEntity {
 	}
 
 	@Override
-	public boolean canSpawn(WorldView worldView) {
-		return worldView.intersectsEntities(this) && !worldView.containsFluid(this.getBoundingBox());
+	public boolean canSpawn(WorldView world) {
+		return world.intersectsEntities(this) && !world.containsFluid(this.getBoundingBox());
 	}
 
 	@Override

@@ -119,7 +119,7 @@ public class CraftingTableScreen extends AbstractContainerScreen<CraftingTableCo
 	}
 
 	@Override
-	public RecipeBookWidget getRecipeBookGui() {
+	public RecipeBookWidget getRecipeBookWidget() {
 		return this.recipeBookGui;
 	}
 }

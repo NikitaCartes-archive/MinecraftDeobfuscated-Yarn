@@ -26,12 +26,12 @@ import net.minecraft.world.GameRules;
 
 public class FarmerVillagerTask extends Task<VillagerEntity> {
 	@Nullable
-	private BlockPos field_18858;
-	private boolean field_18859;
-	private boolean field_18860;
-	private long field_18861;
-	private int field_19239;
-	private final List<BlockPos> field_19351 = Lists.<BlockPos>newArrayList();
+	private BlockPos currentTarget;
+	private boolean ableToPlant;
+	private boolean ableToPickUpSeed;
+	private long nextResponseTime;
+	private int ticksRan;
+	private final List<BlockPos> targetPositions = Lists.<BlockPos>newArrayList();
 
 	public FarmerVillagerTask() {
 		super(
@@ -52,80 +52,80 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 		} else if (villagerEntity.getVillagerData().getProfession() != VillagerProfession.FARMER) {
 			return false;
 		} else {
-			this.field_18859 = villagerEntity.hasSeedToPlant();
-			this.field_18860 = false;
+			this.ableToPlant = villagerEntity.hasSeedToPlant();
+			this.ableToPickUpSeed = false;
 			BasicInventory basicInventory = villagerEntity.getInventory();
 			int i = basicInventory.getInvSize();
 
 			for (int j = 0; j < i; j++) {
 				ItemStack itemStack = basicInventory.getInvStack(j);
 				if (itemStack.isEmpty()) {
-					this.field_18860 = true;
+					this.ableToPickUpSeed = true;
 					break;
 				}
 
 				if (itemStack.getItem() == Items.WHEAT_SEEDS || itemStack.getItem() == Items.BEETROOT_SEEDS) {
-					this.field_18860 = true;
+					this.ableToPickUpSeed = true;
 					break;
 				}
 			}
 
 			BlockPos.Mutable mutable = new BlockPos.Mutable(villagerEntity);
-			this.field_19351.clear();
+			this.targetPositions.clear();
 
 			for (int k = -1; k <= 1; k++) {
 				for (int l = -1; l <= 1; l++) {
 					for (int m = -1; m <= 1; m++) {
 						mutable.set(villagerEntity.getX() + (double)k, villagerEntity.getY() + (double)l, villagerEntity.getZ() + (double)m);
-						if (this.method_20640(mutable, serverWorld)) {
-							this.field_19351.add(new BlockPos(mutable));
+						if (this.isSuitableTarget(mutable, serverWorld)) {
+							this.targetPositions.add(new BlockPos(mutable));
 						}
 					}
 				}
 			}
 
-			this.field_18858 = this.method_20641(serverWorld);
-			return (this.field_18859 || this.field_18860) && this.field_18858 != null;
+			this.currentTarget = this.chooseRandomTarget(serverWorld);
+			return (this.ableToPlant || this.ableToPickUpSeed) && this.currentTarget != null;
 		}
 	}
 
 	@Nullable
-	private BlockPos method_20641(ServerWorld serverWorld) {
-		return this.field_19351.isEmpty() ? null : (BlockPos)this.field_19351.get(serverWorld.getRandom().nextInt(this.field_19351.size()));
+	private BlockPos chooseRandomTarget(ServerWorld world) {
+		return this.targetPositions.isEmpty() ? null : (BlockPos)this.targetPositions.get(world.getRandom().nextInt(this.targetPositions.size()));
 	}
 
-	private boolean method_20640(BlockPos blockPos, ServerWorld serverWorld) {
-		BlockState blockState = serverWorld.getBlockState(blockPos);
+	private boolean isSuitableTarget(BlockPos pos, ServerWorld world) {
+		BlockState blockState = world.getBlockState(pos);
 		Block block = blockState.getBlock();
-		Block block2 = serverWorld.getBlockState(blockPos.down()).getBlock();
-		return block instanceof CropBlock && ((CropBlock)block).isMature(blockState) && this.field_18860
-			|| blockState.isAir() && block2 instanceof FarmlandBlock && this.field_18859;
+		Block block2 = world.getBlockState(pos.down()).getBlock();
+		return block instanceof CropBlock && ((CropBlock)block).isMature(blockState) && this.ableToPickUpSeed
+			|| blockState.isAir() && block2 instanceof FarmlandBlock && this.ableToPlant;
 	}
 
 	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		if (l > this.field_18861 && this.field_18858 != null) {
-			villagerEntity.getBrain().putMemory(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(this.field_18858));
-			villagerEntity.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(new BlockPosLookTarget(this.field_18858), 0.5F, 1));
+		if (l > this.nextResponseTime && this.currentTarget != null) {
+			villagerEntity.getBrain().putMemory(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(this.currentTarget));
+			villagerEntity.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(new BlockPosLookTarget(this.currentTarget), 0.5F, 1));
 		}
 	}
 
 	protected void finishRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		villagerEntity.getBrain().forget(MemoryModuleType.LOOK_TARGET);
 		villagerEntity.getBrain().forget(MemoryModuleType.WALK_TARGET);
-		this.field_19239 = 0;
-		this.field_18861 = l + 40L;
+		this.ticksRan = 0;
+		this.nextResponseTime = l + 40L;
 	}
 
 	protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		if (this.field_18858 != null && l > this.field_18861) {
-			BlockState blockState = serverWorld.getBlockState(this.field_18858);
+		if (this.currentTarget != null && l > this.nextResponseTime) {
+			BlockState blockState = serverWorld.getBlockState(this.currentTarget);
 			Block block = blockState.getBlock();
-			Block block2 = serverWorld.getBlockState(this.field_18858.down()).getBlock();
-			if (block instanceof CropBlock && ((CropBlock)block).isMature(blockState) && this.field_18860) {
-				serverWorld.breakBlock(this.field_18858, true, villagerEntity);
+			Block block2 = serverWorld.getBlockState(this.currentTarget.down()).getBlock();
+			if (block instanceof CropBlock && ((CropBlock)block).isMature(blockState) && this.ableToPickUpSeed) {
+				serverWorld.breakBlock(this.currentTarget, true, villagerEntity);
 			}
 
-			if (blockState.isAir() && block2 instanceof FarmlandBlock && this.field_18859) {
+			if (blockState.isAir() && block2 instanceof FarmlandBlock && this.ableToPlant) {
 				BasicInventory basicInventory = villagerEntity.getInventory();
 
 				for (int i = 0; i < basicInventory.getInvSize(); i++) {
@@ -133,16 +133,16 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 					boolean bl = false;
 					if (!itemStack.isEmpty()) {
 						if (itemStack.getItem() == Items.WHEAT_SEEDS) {
-							serverWorld.setBlockState(this.field_18858, Blocks.WHEAT.getDefaultState(), 3);
+							serverWorld.setBlockState(this.currentTarget, Blocks.WHEAT.getDefaultState(), 3);
 							bl = true;
 						} else if (itemStack.getItem() == Items.POTATO) {
-							serverWorld.setBlockState(this.field_18858, Blocks.POTATOES.getDefaultState(), 3);
+							serverWorld.setBlockState(this.currentTarget, Blocks.POTATOES.getDefaultState(), 3);
 							bl = true;
 						} else if (itemStack.getItem() == Items.CARROT) {
-							serverWorld.setBlockState(this.field_18858, Blocks.CARROTS.getDefaultState(), 3);
+							serverWorld.setBlockState(this.currentTarget, Blocks.CARROTS.getDefaultState(), 3);
 							bl = true;
 						} else if (itemStack.getItem() == Items.BEETROOT_SEEDS) {
-							serverWorld.setBlockState(this.field_18858, Blocks.BEETROOTS.getDefaultState(), 3);
+							serverWorld.setBlockState(this.currentTarget, Blocks.BEETROOTS.getDefaultState(), 3);
 							bl = true;
 						}
 					}
@@ -150,9 +150,9 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 					if (bl) {
 						serverWorld.playSound(
 							null,
-							(double)this.field_18858.getX(),
-							(double)this.field_18858.getY(),
-							(double)this.field_18858.getZ(),
+							(double)this.currentTarget.getX(),
+							(double)this.currentTarget.getY(),
+							(double)this.currentTarget.getZ(),
 							SoundEvents.ITEM_CROP_PLANT,
 							SoundCategory.BLOCKS,
 							1.0F,
@@ -168,20 +168,20 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 			}
 
 			if (block instanceof CropBlock && !((CropBlock)block).isMature(blockState)) {
-				this.field_19351.remove(this.field_18858);
-				this.field_18858 = this.method_20641(serverWorld);
-				if (this.field_18858 != null) {
-					this.field_18861 = l + 20L;
-					villagerEntity.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(new BlockPosLookTarget(this.field_18858), 0.5F, 1));
-					villagerEntity.getBrain().putMemory(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(this.field_18858));
+				this.targetPositions.remove(this.currentTarget);
+				this.currentTarget = this.chooseRandomTarget(serverWorld);
+				if (this.currentTarget != null) {
+					this.nextResponseTime = l + 20L;
+					villagerEntity.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(new BlockPosLookTarget(this.currentTarget), 0.5F, 1));
+					villagerEntity.getBrain().putMemory(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(this.currentTarget));
 				}
 			}
 		}
 
-		this.field_19239++;
+		this.ticksRan++;
 	}
 
 	protected boolean shouldKeepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		return this.field_19239 < 200;
+		return this.ticksRan < 200;
 	}
 }

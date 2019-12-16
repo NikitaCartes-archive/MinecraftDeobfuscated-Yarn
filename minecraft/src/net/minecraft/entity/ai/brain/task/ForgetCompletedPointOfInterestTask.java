@@ -14,15 +14,15 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.GlobalPos;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.village.PointOfInterestType;
+import net.minecraft.world.poi.PointOfInterestType;
 
 public class ForgetCompletedPointOfInterestTask extends Task<LivingEntity> {
 	private final MemoryModuleType<GlobalPos> memoryModule;
 	private final Predicate<PointOfInterestType> condition;
 
-	public ForgetCompletedPointOfInterestTask(PointOfInterestType pointOfInterestType, MemoryModuleType<GlobalPos> memoryModule) {
+	public ForgetCompletedPointOfInterestTask(PointOfInterestType poiType, MemoryModuleType<GlobalPos> memoryModule) {
 		super(ImmutableMap.of(memoryModule, MemoryModuleState.VALUE_PRESENT));
-		this.condition = pointOfInterestType.getCompletionCondition();
+		this.condition = poiType.getCompletionCondition();
 		this.memoryModule = memoryModule;
 	}
 
@@ -38,21 +38,21 @@ public class ForgetCompletedPointOfInterestTask extends Task<LivingEntity> {
 		GlobalPos globalPos = (GlobalPos)brain.getOptionalMemory(this.memoryModule).get();
 		BlockPos blockPos = globalPos.getPos();
 		ServerWorld serverWorld = world.getServer().getWorld(globalPos.getDimension());
-		if (this.method_20499(serverWorld, blockPos)) {
+		if (this.hasCompletedPointOfInterest(serverWorld, blockPos)) {
 			brain.forget(this.memoryModule);
-		} else if (this.method_20500(serverWorld, blockPos, entity)) {
+		} else if (this.isBedOccupiedByOthers(serverWorld, blockPos, entity)) {
 			brain.forget(this.memoryModule);
 			world.getPointOfInterestStorage().releaseTicket(blockPos);
 			DebugRendererInfoManager.sendPointOfInterest(world, blockPos);
 		}
 	}
 
-	private boolean method_20500(ServerWorld serverWorld, BlockPos blockPos, LivingEntity livingEntity) {
-		BlockState blockState = serverWorld.getBlockState(blockPos);
-		return blockState.getBlock().matches(BlockTags.BEDS) && (Boolean)blockState.get(BedBlock.OCCUPIED) && !livingEntity.isSleeping();
+	private boolean isBedOccupiedByOthers(ServerWorld world, BlockPos pos, LivingEntity entity) {
+		BlockState blockState = world.getBlockState(pos);
+		return blockState.getBlock().matches(BlockTags.BEDS) && (Boolean)blockState.get(BedBlock.OCCUPIED) && !entity.isSleeping();
 	}
 
-	private boolean method_20499(ServerWorld serverWorld, BlockPos blockPos) {
-		return !serverWorld.getPointOfInterestStorage().test(blockPos, this.condition);
+	private boolean hasCompletedPointOfInterest(ServerWorld world, BlockPos pos) {
+		return !world.getPointOfInterestStorage().test(pos, this.condition);
 	}
 }

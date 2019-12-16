@@ -80,7 +80,7 @@ import net.minecraft.world.dimension.DimensionType;
 @Environment(EnvType.CLIENT)
 public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	public final ClientPlayNetworkHandler networkHandler;
-	private final StatHandler stats;
+	private final StatHandler statHandler;
 	private final ClientRecipeBook recipeBook;
 	private final List<ClientPlayerTickable> tickables = Lists.<ClientPlayerTickable>newArrayList();
 	private int clientPermissionLevel = 0;
@@ -125,7 +125,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	) {
 		super(clientWorld, clientPlayNetworkHandler.getProfile());
 		this.networkHandler = clientPlayNetworkHandler;
-		this.stats = statHandler;
+		this.statHandler = statHandler;
 		this.recipeBook = clientRecipeBook;
 		this.client = client;
 		this.dimension = DimensionType.OVERWORLD;
@@ -352,8 +352,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		return this.serverBrand;
 	}
 
-	public StatHandler getStats() {
-		return this.stats;
+	public StatHandler getStatHandler() {
+		return this.statHandler;
 	}
 
 	public ClientRecipeBook getRecipeBook() {
@@ -788,7 +788,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	private void updateNausea() {
 		this.lastNauseaStrength = this.nextNauseaStrength;
-		if (this.inPortal) {
+		if (this.inNetherPortal) {
 			if (this.client.currentScreen != null && !this.client.currentScreen.isPauseScreen()) {
 				if (this.client.currentScreen instanceof AbstractContainerScreen) {
 					this.closeContainer();
@@ -806,7 +806,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 				this.nextNauseaStrength = 1.0F;
 			}
 
-			this.inPortal = false;
+			this.inNetherPortal = false;
 		} else if (this.hasStatusEffect(StatusEffects.NAUSEA) && this.getStatusEffect(StatusEffects.NAUSEA).getDuration() > 60) {
 			this.nextNauseaStrength += 0.006666667F;
 			if (this.nextNauseaStrength > 1.0F) {
@@ -822,7 +822,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			}
 		}
 
-		this.tickPortalCooldown();
+		this.tickNetherPortalCooldown();
 	}
 
 	@Override
@@ -842,13 +842,13 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	@Nullable
 	@Override
-	public StatusEffectInstance removeStatusEffect(@Nullable StatusEffect effect) {
-		if (effect == StatusEffects.NAUSEA) {
+	public StatusEffectInstance removeStatusEffectInternal(@Nullable StatusEffect type) {
+		if (type == StatusEffects.NAUSEA) {
 			this.lastNauseaStrength = 0.0F;
 			this.nextNauseaStrength = 0.0F;
 		}
 
-		return super.removeStatusEffect(effect);
+		return super.removeStatusEffectInternal(type);
 	}
 
 	@Override
@@ -966,13 +966,18 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		return this.getLastAutoJump()
 			&& this.field_3934 <= 0
 			&& this.onGround
-			&& !this.method_21825()
+			&& !this.clipAtLedge()
 			&& !this.hasVehicle()
-			&& this.method_22120()
+			&& this.hasMovementInput()
 			&& (double)this.getJumpVelocityMultiplier() >= 1.0;
 	}
 
-	private boolean method_22120() {
+	/**
+	 * Returns whether the player has movement input.
+	 * 
+	 * @return True if the player has movement input, else false.
+	 */
+	private boolean hasMovementInput() {
 		Vec2f vec2f = this.input.getMovementInput();
 		return vec2f.x != 0.0F || vec2f.y != 0.0F;
 	}

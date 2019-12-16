@@ -114,7 +114,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		this.minecraft.openScreen(null);
 	}
 
-	private void onCommandChanged(String string) {
+	private void onCommandChanged(String text) {
 		this.commandSuggestor.refresh();
 	}
 

@@ -29,7 +29,7 @@ import net.minecraft.client.network.packet.EntityEquipmentUpdateS2CPacket;
 import net.minecraft.client.network.packet.ItemPickupAnimationS2CPacket;
 import net.minecraft.client.network.packet.MobSpawnS2CPacket;
 import net.minecraft.command.arguments.EntityAnchorArgumentType;
-import net.minecraft.datafixers.NbtOps;
+import net.minecraft.datafixer.NbtOps;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.enchantment.FrostWalkerEnchantment;
@@ -755,13 +755,27 @@ public abstract class LivingEntity extends Entity {
 		return this.getGroup() == EntityGroup.UNDEAD;
 	}
 
+	/**
+	 * Removes a status effect from this entity without calling any listener.
+	 * 
+	 * <p> This method does not perform any cleanup or synchronization operation.
+	 * Under most circumstances, calling {@link net.minecraft.entity.LivingEntity
+	 */
 	@Nullable
-	public StatusEffectInstance removeStatusEffect(@Nullable StatusEffect effect) {
-		return (StatusEffectInstance)this.activeStatusEffects.remove(effect);
+	public StatusEffectInstance removeStatusEffectInternal(@Nullable StatusEffect type) {
+		return (StatusEffectInstance)this.activeStatusEffects.remove(type);
 	}
 
-	public boolean tryRemoveStatusEffect(StatusEffect effect) {
-		StatusEffectInstance statusEffectInstance = this.removeStatusEffect(effect);
+	/**
+	 * Removes a status effect from this entity.
+	 * 
+	 * <p> Calling this method will call cleanup methods on the status effect and trigger synchronization of effect particles with watching clients. If this entity is a player,
+	 * the change in the list of effects will also be synchronized with the corresponding client.
+	 * 
+	 * @return {@code true} if a {@link net.minecraft.entity.effect.StatusEffectInstance} with the given type was in effect before the removal.
+	 */
+	public boolean removeStatusEffect(StatusEffect type) {
+		StatusEffectInstance statusEffectInstance = this.removeStatusEffectInternal(type);
 		if (statusEffectInstance != null) {
 			this.onStatusEffectRemoved(statusEffectInstance);
 			return true;
@@ -1078,7 +1092,7 @@ public abstract class LivingEntity extends Entity {
 			this.getDamageTracker().update();
 			if (!this.world.isClient) {
 				this.drop(source);
-				this.method_23733(livingEntity);
+				this.onKilledBy(livingEntity);
 			}
 
 			this.world.sendEntityStatus(this, (byte)3);
@@ -1086,10 +1100,18 @@ public abstract class LivingEntity extends Entity {
 		}
 	}
 
-	protected void method_23733(@Nullable LivingEntity livingEntity) {
+	/**
+	 * Performs secondary effects after this mob has been killed.
+	 * 
+	 * <p> The default behaviour spawns a wither rose if {@code adversary} is a {@code WitherEntity}.
+	 * 
+	 * 
+	 * @param adversary the main adversary responsible for this entity's death
+	 */
+	protected void onKilledBy(@Nullable LivingEntity adversary) {
 		if (!this.world.isClient) {
 			boolean bl = false;
-			if (livingEntity instanceof WitherEntity) {
+			if (adversary instanceof WitherEntity) {
 				if (this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
 					BlockPos blockPos = new BlockPos(this);
 					BlockState blockState = Blocks.WITHER_ROSE.getDefaultState();
@@ -1123,13 +1145,13 @@ public abstract class LivingEntity extends Entity {
 		}
 
 		this.dropInventory();
-		this.method_23883();
+		this.dropXp();
 	}
 
 	protected void dropInventory() {
 	}
 
-	protected void method_23883() {
+	protected void dropXp() {
 		if (!this.world.isClient
 			&& (this.shouldAlwaysDropXp() || this.playerHitTimer > 0 && this.canDropLootAndXp() && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT))) {
 			int i = this.getCurrentExperience(this.attackingPlayer);
@@ -1237,10 +1259,10 @@ public abstract class LivingEntity extends Entity {
 	@Override
 	public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
 		boolean bl = super.handleFallDamage(fallDistance, damageMultiplier);
-		int i = this.method_23329(fallDistance, damageMultiplier);
+		int i = this.computeFallDamage(fallDistance, damageMultiplier);
 		if (i > 0) {
 			this.playSound(this.getFallSound(i), 1.0F, 1.0F);
-			this.method_23328();
+			this.playBlockFallSound();
 			this.damage(DamageSource.FALL, (float)i);
 			return true;
 		} else {
@@ -1248,13 +1270,13 @@ public abstract class LivingEntity extends Entity {
 		}
 	}
 
-	protected int method_23329(float f, float g) {
+	protected int computeFallDamage(float fallDistance, float damageMultiplier) {
 		StatusEffectInstance statusEffectInstance = this.getStatusEffect(StatusEffects.JUMP_BOOST);
-		float h = statusEffectInstance == null ? 0.0F : (float)(statusEffectInstance.getAmplifier() + 1);
-		return MathHelper.ceil((f - 3.0F - h) * g);
+		float f = statusEffectInstance == null ? 0.0F : (float)(statusEffectInstance.getAmplifier() + 1);
+		return MathHelper.ceil((fallDistance - 3.0F - f) * damageMultiplier);
 	}
 
-	protected void method_23328() {
+	protected void playBlockFallSound() {
 		if (!this.isSilent()) {
 			int i = MathHelper.floor(this.getX());
 			int j = MathHelper.floor(this.getY() - 0.2F);
@@ -1966,7 +1988,7 @@ public abstract class LivingEntity extends Entity {
 			double d = MathHelper.clamp(motion.x, -0.15F, 0.15F);
 			double e = MathHelper.clamp(motion.z, -0.15F, 0.15F);
 			double g = Math.max(motion.y, -0.15F);
-			if (g < 0.0 && this.getBlockState().getBlock() != Blocks.SCAFFOLDING && this.method_21754() && this instanceof PlayerEntity) {
+			if (g < 0.0 && this.getBlockState().getBlock() != Blocks.SCAFFOLDING && this.isHoldingOntoLadder() && this instanceof PlayerEntity) {
 				g = 0.0;
 			}
 
@@ -2349,7 +2371,7 @@ public abstract class LivingEntity extends Entity {
 	protected void attackLivingEntity(LivingEntity target) {
 	}
 
-	public void method_6018(int i) {
+	public void setPushCooldown(int i) {
 		this.pushCooldown = i;
 		if (!this.world.isClient) {
 			this.setLivingFlag(4, true);
@@ -2497,7 +2519,7 @@ public abstract class LivingEntity extends Entity {
 		if (this.isUsingItem()) {
 			if (ItemStack.areItemsEqual(this.getStackInHand(this.getActiveHand()), this.activeItemStack)) {
 				this.activeItemStack.usageTick(this.world, this, this.getItemUseTimeLeft());
-				if (this.method_22382()) {
+				if (this.shouldSpawnConsumptionEffects()) {
 					this.spawnConsumptionEffects(this.activeItemStack, 5);
 				}
 
@@ -2510,7 +2532,7 @@ public abstract class LivingEntity extends Entity {
 		}
 	}
 
-	private boolean method_22382() {
+	private boolean shouldSpawnConsumptionEffects() {
 		int i = this.getItemUseTimeLeft();
 		FoodComponent foodComponent = this.activeItemStack.getItem().getFoodComponent();
 		boolean bl = foodComponent != null && foodComponent.isSnack();
@@ -2658,7 +2680,11 @@ public abstract class LivingEntity extends Entity {
 		}
 	}
 
-	public boolean method_21754() {
+	/**
+	 * @return {@code true} if this entity should not lose height while in a climbing state
+	 * @see net.minecraft.entity.LivingEntity
+	 */
+	public boolean isHoldingOntoLadder() {
 		return this.isSneaking();
 	}
 

@@ -11,10 +11,10 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class DolphinJumpGoal extends DiveJumpingGoal {
-	private static final int[] field_6474 = new int[]{0, 1, 4, 5, 6, 7};
+	private static final int[] OFFSET_MULTIPLIERS = new int[]{0, 1, 4, 5, 6, 7};
 	private final DolphinEntity dolphin;
 	private final int chance;
-	private boolean field_6473;
+	private boolean inWater;
 
 	public DolphinJumpGoal(DolphinEntity dolphin, int chance) {
 		this.dolphin = dolphin;
@@ -31,8 +31,8 @@ public class DolphinJumpGoal extends DiveJumpingGoal {
 			int j = direction.getOffsetZ();
 			BlockPos blockPos = new BlockPos(this.dolphin);
 
-			for (int k : field_6474) {
-				if (!this.isWater(blockPos, i, j, k) || !this.isAir(blockPos, i, j, k)) {
+			for (int k : OFFSET_MULTIPLIERS) {
+				if (!this.isWater(blockPos, i, j, k) || !this.isAirAbove(blockPos, i, j, k)) {
 					return false;
 				}
 			}
@@ -41,13 +41,14 @@ public class DolphinJumpGoal extends DiveJumpingGoal {
 		}
 	}
 
-	private boolean isWater(BlockPos pos, int i, int j, int k) {
-		BlockPos blockPos = pos.add(i * k, 0, j * k);
+	private boolean isWater(BlockPos pos, int xOffset, int zOffset, int multiplier) {
+		BlockPos blockPos = pos.add(xOffset * multiplier, 0, zOffset * multiplier);
 		return this.dolphin.world.getFluidState(blockPos).matches(FluidTags.WATER) && !this.dolphin.world.getBlockState(blockPos).getMaterial().blocksMovement();
 	}
 
-	private boolean isAir(BlockPos pos, int i, int j, int k) {
-		return this.dolphin.world.getBlockState(pos.add(i * k, 1, j * k)).isAir() && this.dolphin.world.getBlockState(pos.add(i * k, 2, j * k)).isAir();
+	private boolean isAirAbove(BlockPos pos, int xOffset, int zOffset, int multiplier) {
+		return this.dolphin.world.getBlockState(pos.add(xOffset * multiplier, 1, zOffset * multiplier)).isAir()
+			&& this.dolphin.world.getBlockState(pos.add(xOffset * multiplier, 2, zOffset * multiplier)).isAir();
 	}
 
 	@Override
@@ -75,19 +76,19 @@ public class DolphinJumpGoal extends DiveJumpingGoal {
 
 	@Override
 	public void tick() {
-		boolean bl = this.field_6473;
+		boolean bl = this.inWater;
 		if (!bl) {
 			FluidState fluidState = this.dolphin.world.getFluidState(new BlockPos(this.dolphin));
-			this.field_6473 = fluidState.matches(FluidTags.WATER);
+			this.inWater = fluidState.matches(FluidTags.WATER);
 		}
 
-		if (this.field_6473 && !bl) {
+		if (this.inWater && !bl) {
 			this.dolphin.playSound(SoundEvents.ENTITY_DOLPHIN_JUMP, 1.0F, 1.0F);
 		}
 
 		Vec3d vec3d = this.dolphin.getVelocity();
 		if (vec3d.y * vec3d.y < 0.03F && this.dolphin.pitch != 0.0F) {
-			this.dolphin.pitch = MathHelper.method_22859(this.dolphin.pitch, 0.0F, 0.2F);
+			this.dolphin.pitch = MathHelper.lerpAngle(this.dolphin.pitch, 0.0F, 0.2F);
 		} else {
 			double d = Math.sqrt(Entity.squaredHorizontalLength(vec3d));
 			double e = Math.signum(-vec3d.y) * Math.acos(d / vec3d.length()) * 180.0F / (float)Math.PI;

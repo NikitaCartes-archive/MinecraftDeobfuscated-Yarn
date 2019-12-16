@@ -232,7 +232,7 @@ public class MathHelper {
 		return abs(subtractAngles(first, second));
 	}
 
-	public static float method_20306(float start, float end, float speed) {
+	public static float capRotation(float start, float end, float speed) {
 		float f = subtractAngles(start, end);
 		float g = clamp(f, -speed, speed);
 		return end - g;
@@ -538,18 +538,18 @@ public class MathHelper {
 	}
 
 	@Deprecated
-	public static float method_22859(float f, float g, float h) {
-		float i = g - f;
+	public static float lerpAngle(float start, float end, float delta) {
+		float f = end - start;
 
-		while (i < -180.0F) {
-			i += 360.0F;
+		while (f < -180.0F) {
+			f += 360.0F;
 		}
 
-		while (i >= 180.0F) {
-			i -= 360.0F;
+		while (f >= 180.0F) {
+			f -= 360.0F;
 		}
 
-		return f + h * i;
+		return start + delta * f;
 	}
 
 	@Deprecated

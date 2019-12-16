@@ -31,7 +31,7 @@ public class MegaTreeFeatureConfig extends TreeFeatureConfig {
 		return dynamic.merge(super.serialize(ops));
 	}
 
-	public static <T> MegaTreeFeatureConfig method_23408(Dynamic<T> dynamic) {
+	public static <T> MegaTreeFeatureConfig deserialize(Dynamic<T> dynamic) {
 		TreeFeatureConfig treeFeatureConfig = TreeFeatureConfig.deserialize(dynamic);
 		return new MegaTreeFeatureConfig(
 			treeFeatureConfig.trunkProvider,

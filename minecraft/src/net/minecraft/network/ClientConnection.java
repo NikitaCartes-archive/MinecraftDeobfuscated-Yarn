@@ -290,7 +290,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static ClientConnection connect(SocketAddress address) {
+	public static ClientConnection connectLocal(SocketAddress address) {
 		final ClientConnection clientConnection = new ClientConnection(NetworkSide.CLIENTBOUND);
 		new Bootstrap().group(CLIENT_IO_GROUP_LOCAL.get()).handler(new ChannelInitializer<Channel>() {
 			@Override

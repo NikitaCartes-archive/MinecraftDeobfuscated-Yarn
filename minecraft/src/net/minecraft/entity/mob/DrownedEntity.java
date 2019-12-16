@@ -165,8 +165,8 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 	}
 
 	@Override
-	public boolean canSpawn(WorldView worldView) {
-		return worldView.intersectsEntities(this);
+	public boolean canSpawn(WorldView world) {
+		return world.intersectsEntities(this);
 	}
 
 	public boolean method_7012(@Nullable LivingEntity livingEntity) {
@@ -326,9 +326,9 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 		}
 
 		@Override
-		protected boolean isTargetPos(WorldView worldView, BlockPos pos) {
+		protected boolean isTargetPos(WorldView world, BlockPos pos) {
 			BlockPos blockPos = pos.up();
-			return worldView.isAir(blockPos) && worldView.isAir(blockPos.up()) ? worldView.getBlockState(pos).hasSolidTopSurface(worldView, pos, this.drowned) : false;
+			return world.isAir(blockPos) && world.isAir(blockPos.up()) ? world.getBlockState(pos).hasSolidTopSurface(world, pos, this.drowned) : false;
 		}
 
 		@Override

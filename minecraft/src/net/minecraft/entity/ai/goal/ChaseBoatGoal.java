@@ -12,7 +12,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class ChaseBoatGoal extends Goal {
-	private int field_6428;
+	private int updateCountdownTicks;
 	private final MobEntityWithAi mob;
 	private LivingEntity passenger;
 	private ChaseBoatState state;
@@ -59,7 +59,7 @@ public class ChaseBoatGoal extends Goal {
 			}
 		}
 
-		this.field_6428 = 0;
+		this.updateCountdownTicks = 0;
 		this.state = ChaseBoatState.GO_TO_BOAT;
 	}
 
@@ -74,14 +74,14 @@ public class ChaseBoatGoal extends Goal {
 		float f = this.state == ChaseBoatState.GO_IN_BOAT_DIRECTION ? (bl ? 0.17999999F : 0.0F) : 0.135F;
 		this.mob.updateVelocity(f, new Vec3d((double)this.mob.sidewaysSpeed, (double)this.mob.upwardSpeed, (double)this.mob.forwardSpeed));
 		this.mob.move(MovementType.SELF, this.mob.getVelocity());
-		if (--this.field_6428 <= 0) {
-			this.field_6428 = 10;
+		if (--this.updateCountdownTicks <= 0) {
+			this.updateCountdownTicks = 10;
 			if (this.state == ChaseBoatState.GO_TO_BOAT) {
 				BlockPos blockPos = new BlockPos(this.passenger).offset(this.passenger.getHorizontalFacing().getOpposite());
 				blockPos = blockPos.add(0, -1, 0);
 				this.mob.getNavigation().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0);
 				if (this.mob.distanceTo(this.passenger) < 4.0F) {
-					this.field_6428 = 0;
+					this.updateCountdownTicks = 0;
 					this.state = ChaseBoatState.GO_IN_BOAT_DIRECTION;
 				}
 			} else if (this.state == ChaseBoatState.GO_IN_BOAT_DIRECTION) {
@@ -89,7 +89,7 @@ public class ChaseBoatGoal extends Goal {
 				BlockPos blockPos2 = new BlockPos(this.passenger).offset(direction, 10);
 				this.mob.getNavigation().startMovingTo((double)blockPos2.getX(), (double)(blockPos2.getY() - 1), (double)blockPos2.getZ(), 1.0);
 				if (this.mob.distanceTo(this.passenger) > 12.0F) {
-					this.field_6428 = 0;
+					this.updateCountdownTicks = 0;
 					this.state = ChaseBoatState.GO_TO_BOAT;
 				}
 			}

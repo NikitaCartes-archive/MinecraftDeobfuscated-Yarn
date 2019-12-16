@@ -12,8 +12,8 @@ public class WalkTarget {
 		this(new BlockPosLookTarget(pos), speed, completionRange);
 	}
 
-	public WalkTarget(Vec3d pos, float speedFactor, int completionRange) {
-		this(new BlockPosLookTarget(new BlockPos(pos)), speedFactor, completionRange);
+	public WalkTarget(Vec3d pos, float speed, int completionRange) {
+		this(new BlockPosLookTarget(new BlockPos(pos)), speed, completionRange);
 	}
 
 	public WalkTarget(LookTarget lookTarget, float speed, int completionRange) {

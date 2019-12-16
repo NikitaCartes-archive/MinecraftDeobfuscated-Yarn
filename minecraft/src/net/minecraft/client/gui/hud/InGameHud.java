@@ -411,7 +411,7 @@ public class InGameHud extends DrawableHelper {
 						l += 15;
 					}
 
-					if (statusEffect.method_5573()) {
+					if (statusEffect.isBeneficial()) {
 						i++;
 						k -= 25 * i;
 					} else {

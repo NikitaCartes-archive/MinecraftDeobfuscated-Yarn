@@ -24,15 +24,23 @@ import net.minecraft.util.Util;
 import net.minecraft.world.biome.Biomes;
 
 public class FishingLootTableGenerator implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
-	public static final LootCondition.Builder field_11346 = LocationCheckLootCondition.builder(LocationPredicate.Builder.create().biome(Biomes.JUNGLE));
-	public static final LootCondition.Builder field_11347 = LocationCheckLootCondition.builder(LocationPredicate.Builder.create().biome(Biomes.JUNGLE_HILLS));
-	public static final LootCondition.Builder field_11350 = LocationCheckLootCondition.builder(LocationPredicate.Builder.create().biome(Biomes.JUNGLE_EDGE));
-	public static final LootCondition.Builder field_11349 = LocationCheckLootCondition.builder(LocationPredicate.Builder.create().biome(Biomes.BAMBOO_JUNGLE));
-	public static final LootCondition.Builder field_11348 = LocationCheckLootCondition.builder(LocationPredicate.Builder.create().biome(Biomes.MODIFIED_JUNGLE));
-	public static final LootCondition.Builder field_11351 = LocationCheckLootCondition.builder(
+	public static final LootCondition.Builder NEEDS_JUNGLE_BIOME = LocationCheckLootCondition.builder(LocationPredicate.Builder.create().biome(Biomes.JUNGLE));
+	public static final LootCondition.Builder NEEDS_JUNGLE_HILLS_BIOME = LocationCheckLootCondition.builder(
+		LocationPredicate.Builder.create().biome(Biomes.JUNGLE_HILLS)
+	);
+	public static final LootCondition.Builder NEEDS_JUNGLE_EDGE_BIOME = LocationCheckLootCondition.builder(
+		LocationPredicate.Builder.create().biome(Biomes.JUNGLE_EDGE)
+	);
+	public static final LootCondition.Builder NEEDS_BAMBOO_JUNGLE_BIOME = LocationCheckLootCondition.builder(
+		LocationPredicate.Builder.create().biome(Biomes.BAMBOO_JUNGLE)
+	);
+	public static final LootCondition.Builder NEEDS_MODIFIED_JUNGLE_BIOME = LocationCheckLootCondition.builder(
+		LocationPredicate.Builder.create().biome(Biomes.MODIFIED_JUNGLE)
+	);
+	public static final LootCondition.Builder NEEDS_MODIFIED_JUNGLE_EDGE_BIOME = LocationCheckLootCondition.builder(
 		LocationPredicate.Builder.create().biome(Biomes.MODIFIED_JUNGLE_EDGE)
 	);
-	public static final LootCondition.Builder field_11352 = LocationCheckLootCondition.builder(
+	public static final LootCondition.Builder NEEDS_BAMBOO_JUNGLE_HILLS_BIOME = LocationCheckLootCondition.builder(
 		LocationPredicate.Builder.create().biome(Biomes.BAMBOO_JUNGLE_HILLS)
 	);
 
@@ -82,12 +90,12 @@ public class FishingLootTableGenerator implements Consumer<BiConsumer<Identifier
 						.withEntry(
 							ItemEntry.builder(Blocks.BAMBOO)
 								.withCondition(
-									field_11346.withCondition(field_11347)
-										.withCondition(field_11350)
-										.withCondition(field_11349)
-										.withCondition(field_11348)
-										.withCondition(field_11351)
-										.withCondition(field_11352)
+									NEEDS_JUNGLE_BIOME.withCondition(NEEDS_JUNGLE_HILLS_BIOME)
+										.withCondition(NEEDS_JUNGLE_EDGE_BIOME)
+										.withCondition(NEEDS_BAMBOO_JUNGLE_BIOME)
+										.withCondition(NEEDS_MODIFIED_JUNGLE_BIOME)
+										.withCondition(NEEDS_MODIFIED_JUNGLE_EDGE_BIOME)
+										.withCondition(NEEDS_BAMBOO_JUNGLE_HILLS_BIOME)
 								)
 								.setWeight(10)
 						)

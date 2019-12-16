@@ -24,7 +24,7 @@ public class BlockPosLookTarget implements LookTarget {
 	}
 
 	@Override
-	public boolean isSeenBy(LivingEntity livingEntity) {
+	public boolean isSeenBy(LivingEntity entity) {
 		return true;
 	}
 

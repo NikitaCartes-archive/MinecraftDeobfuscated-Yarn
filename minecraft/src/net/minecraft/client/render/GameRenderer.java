@@ -704,7 +704,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(6.0F * MathHelper.cos(f * 8.0F)));
 			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(6.0F * MathHelper.cos(f * 8.0F)));
 			VertexConsumerProvider.Immediate immediate = this.buffers.getEntityVertexConsumers();
-			this.client.getItemRenderer().renderItem(this.floatingItem, ModelTransformation.Type.FIXED, 15728880, OverlayTexture.DEFAULT_UV, matrixStack, immediate);
+			this.client.getItemRenderer().renderItem(this.floatingItem, ModelTransformation.Mode.FIXED, 15728880, OverlayTexture.DEFAULT_UV, matrixStack, immediate);
 			matrixStack.pop();
 			immediate.draw();
 			RenderSystem.popAttributes();

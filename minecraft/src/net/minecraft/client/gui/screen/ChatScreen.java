@@ -35,7 +35,7 @@ public class ChatScreen extends Screen {
 		this.chatField.setMaxLength(256);
 		this.chatField.setHasBorder(false);
 		this.chatField.setText(this.originalChatText);
-		this.chatField.setChangedListener(this::method_23945);
+		this.chatField.setChangedListener(this::onChatFieldUpdate);
 		this.children.add(this.chatField);
 		this.commandSuggestor = new CommandSuggestor(this.minecraft, this, this.chatField, this.font, false, false, 1, 10, true, -805306368);
 		this.commandSuggestor.refresh();
@@ -61,9 +61,9 @@ public class ChatScreen extends Screen {
 		this.chatField.tick();
 	}
 
-	private void method_23945(String string) {
-		String string2 = this.chatField.getText();
-		this.commandSuggestor.setWindowActive(!string2.equals(this.originalChatText));
+	private void onChatFieldUpdate(String chatText) {
+		String string = this.chatField.getText();
+		this.commandSuggestor.setWindowActive(!string.equals(this.originalChatText));
 		this.commandSuggestor.refresh();
 	}
 

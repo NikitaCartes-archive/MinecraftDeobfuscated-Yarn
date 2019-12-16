@@ -136,7 +136,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.criterion("slept_in_bed", LocationArrivalCriterion.Conditions.createSleptInBed())
 			.build(consumer, "adventure/sleep_in_bed");
-		Advancement advancement3 = this.method_10337(Advancement.Task.create())
+		Advancement advancement3 = this.requireListedBiomesVisited(Advancement.Task.create())
 			.parent(advancement2)
 			.display(
 				Items.DIAMOND_BOOTS,
@@ -164,7 +164,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.criterion("traded", VillagerTradeCriterion.Conditions.any())
 			.build(consumer, "adventure/trade");
-		Advancement advancement5 = this.method_10336(Advancement.Task.create())
+		Advancement advancement5 = this.requireListedMobsKilled(Advancement.Task.create())
 			.parent(advancement)
 			.display(
 				Items.IRON_SWORD,
@@ -178,7 +178,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.criteriaMerger(CriteriaMerger.OR)
 			.build(consumer, "adventure/kill_a_mob");
-		Advancement advancement6 = this.method_10336(Advancement.Task.create())
+		Advancement advancement6 = this.requireListedMobsKilled(Advancement.Task.create())
 			.parent(advancement5)
 			.display(
 				Items.DIAMOND_SWORD,
@@ -408,7 +408,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.build(consumer, "adventure/honey_block_slide");
 	}
 
-	private Advancement.Task method_10336(Advancement.Task task) {
+	private Advancement.Task requireListedMobsKilled(Advancement.Task task) {
 		for (EntityType<?> entityType : MONSTERS) {
 			task.criterion(
 				Registry.ENTITY_TYPE.getId(entityType).toString(), OnKilledCriterion.Conditions.createPlayerKilledEntity(EntityPredicate.Builder.create().type(entityType))
@@ -418,7 +418,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 		return task;
 	}
 
-	private Advancement.Task method_10337(Advancement.Task task) {
+	private Advancement.Task requireListedBiomesVisited(Advancement.Task task) {
 		for (Biome biome : BIOMES) {
 			task.criterion(Registry.BIOME.getId(biome).toString(), LocationArrivalCriterion.Conditions.create(LocationPredicate.biome(biome)));
 		}

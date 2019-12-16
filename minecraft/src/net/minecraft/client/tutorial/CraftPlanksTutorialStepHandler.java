@@ -71,7 +71,7 @@ public class CraftPlanksTutorialStepHandler implements TutorialStepHandler {
 
 	public static boolean hasCrafted(ClientPlayerEntity player, Tag<Item> tag) {
 		for (Item item : tag.values()) {
-			if (player.getStats().getStat(Stats.CRAFTED.getOrCreateStat(item)) > 0) {
+			if (player.getStatHandler().getStat(Stats.CRAFTED.getOrCreateStat(item)) > 0) {
 				return true;
 			}
 		}

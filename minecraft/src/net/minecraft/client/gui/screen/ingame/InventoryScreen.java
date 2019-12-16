@@ -194,7 +194,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerContainer> im
 	}
 
 	@Override
-	public RecipeBookWidget getRecipeBookGui() {
+	public RecipeBookWidget getRecipeBookWidget() {
 		return this.recipeBook;
 	}
 }

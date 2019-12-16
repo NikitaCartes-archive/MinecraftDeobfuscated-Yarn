@@ -15,23 +15,23 @@ import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.village.PointOfInterestStorage;
-import net.minecraft.village.PointOfInterestType;
+import net.minecraft.world.poi.PointOfInterestStorage;
+import net.minecraft.world.poi.PointOfInterestType;
 
 public class WalkHomeTask extends Task<LivingEntity> {
-	private final float field_20290;
-	private final Long2LongMap field_20291 = new Long2LongOpenHashMap();
-	private int field_20292;
-	private long lastRunTime;
+	private final float speed;
+	private final Long2LongMap positionToExpiry = new Long2LongOpenHashMap();
+	private int tries;
+	private long expiryTimeLimit;
 
 	public WalkHomeTask(float speed) {
 		super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.HOME, MemoryModuleState.VALUE_ABSENT));
-		this.field_20290 = speed;
+		this.speed = speed;
 	}
 
 	@Override
 	protected boolean shouldRun(ServerWorld world, LivingEntity entity) {
-		if (world.getTime() - this.lastRunTime < 20L) {
+		if (world.getTime() - this.expiryTimeLimit < 20L) {
 			return false;
 		} else {
 			MobEntityWithAi mobEntityWithAi = (MobEntityWithAi)entity;
@@ -45,34 +45,34 @@ public class WalkHomeTask extends Task<LivingEntity> {
 
 	@Override
 	protected void run(ServerWorld world, LivingEntity entity, long time) {
-		this.field_20292 = 0;
-		this.lastRunTime = world.getTime() + (long)world.getRandom().nextInt(20);
+		this.tries = 0;
+		this.expiryTimeLimit = world.getTime() + (long)world.getRandom().nextInt(20);
 		MobEntityWithAi mobEntityWithAi = (MobEntityWithAi)entity;
 		PointOfInterestStorage pointOfInterestStorage = world.getPointOfInterestStorage();
 		Predicate<BlockPos> predicate = blockPosx -> {
 			long l = blockPosx.asLong();
-			if (this.field_20291.containsKey(l)) {
+			if (this.positionToExpiry.containsKey(l)) {
 				return false;
-			} else if (++this.field_20292 >= 5) {
+			} else if (++this.tries >= 5) {
 				return false;
 			} else {
-				this.field_20291.put(l, this.lastRunTime + 40L);
+				this.positionToExpiry.put(l, this.expiryTimeLimit + 40L);
 				return true;
 			}
 		};
 		Stream<BlockPos> stream = pointOfInterestStorage.getPositions(
 			PointOfInterestType.HOME.getCompletionCondition(), predicate, new BlockPos(entity), 48, PointOfInterestStorage.OccupationStatus.ANY
 		);
-		Path path = mobEntityWithAi.getNavigation().findPathToAny(stream, PointOfInterestType.HOME.method_21648());
+		Path path = mobEntityWithAi.getNavigation().findPathToAny(stream, PointOfInterestType.HOME.getSearchDistance());
 		if (path != null && path.reachesTarget()) {
 			BlockPos blockPos = path.getTarget();
 			Optional<PointOfInterestType> optional = pointOfInterestStorage.getType(blockPos);
 			if (optional.isPresent()) {
-				entity.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(blockPos, this.field_20290, 1));
+				entity.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(blockPos, this.speed, 1));
 				DebugRendererInfoManager.sendPointOfInterest(world, blockPos);
 			}
-		} else if (this.field_20292 < 5) {
-			this.field_20291.long2LongEntrySet().removeIf(entry -> entry.getLongValue() < this.lastRunTime);
+		} else if (this.tries < 5) {
+			this.positionToExpiry.long2LongEntrySet().removeIf(entry -> entry.getLongValue() < this.expiryTimeLimit);
 		}
 	}
 }

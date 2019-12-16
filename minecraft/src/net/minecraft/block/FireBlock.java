@@ -244,7 +244,7 @@ public class FireBlock extends Block {
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
 		if (oldState.getBlock() != state.getBlock()) {
 			if (world.dimension.getType() != DimensionType.OVERWORLD && world.dimension.getType() != DimensionType.THE_NETHER
-				|| !((PortalBlock)Blocks.NETHER_PORTAL).createPortalAt(world, pos)) {
+				|| !((NetherPortalBlock)Blocks.NETHER_PORTAL).createPortalAt(world, pos)) {
 				if (!state.canPlaceAt(world, pos)) {
 					world.removeBlock(pos, false);
 				} else {

@@ -587,7 +587,9 @@ public class Blocks {
 	);
 	public static final Block NETHER_PORTAL = register(
 		"nether_portal",
-		new PortalBlock(Block.Settings.of(Material.PORTAL).noCollision().ticksRandomly().strength(-1.0F).sounds(BlockSoundGroup.GLASS).lightLevel(11).dropsNothing())
+		new NetherPortalBlock(
+			Block.Settings.of(Material.PORTAL).noCollision().ticksRandomly().strength(-1.0F).sounds(BlockSoundGroup.GLASS).lightLevel(11).dropsNothing()
+		)
 	);
 	public static final Block CARVED_PUMPKIN = register(
 		"carved_pumpkin", new CarvedPumpkinBlock(Block.Settings.of(Material.PUMPKIN, MaterialColor.ORANGE).strength(1.0F).sounds(BlockSoundGroup.WOOD))

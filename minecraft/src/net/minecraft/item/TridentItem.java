@@ -85,7 +85,7 @@ public class TridentItem extends Item {
 						k *= n / m;
 						l *= n / m;
 						playerEntity.addVelocity((double)h, (double)k, (double)l);
-						playerEntity.method_6018(20);
+						playerEntity.setPushCooldown(20);
 						if (playerEntity.onGround) {
 							float o = 1.1999999F;
 							playerEntity.move(MovementType.SELF, new Vec3d(0.0, 1.1999999F, 0.0));

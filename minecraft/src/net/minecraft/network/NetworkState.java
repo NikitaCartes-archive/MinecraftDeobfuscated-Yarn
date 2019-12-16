@@ -67,7 +67,7 @@ import net.minecraft.client.network.packet.LoginSuccessS2CPacket;
 import net.minecraft.client.network.packet.LookAtS2CPacket;
 import net.minecraft.client.network.packet.MapUpdateS2CPacket;
 import net.minecraft.client.network.packet.MobSpawnS2CPacket;
-import net.minecraft.client.network.packet.OpenContainerPacket;
+import net.minecraft.client.network.packet.OpenContainerS2CPacket;
 import net.minecraft.client.network.packet.OpenWrittenBookS2CPacket;
 import net.minecraft.client.network.packet.PaintingSpawnS2CPacket;
 import net.minecraft.client.network.packet.ParticleS2CPacket;
@@ -91,7 +91,7 @@ import net.minecraft.client.network.packet.ScoreboardObjectiveUpdateS2CPacket;
 import net.minecraft.client.network.packet.ScoreboardPlayerUpdateS2CPacket;
 import net.minecraft.client.network.packet.SelectAdvancementTabS2CPacket;
 import net.minecraft.client.network.packet.SetCameraEntityS2CPacket;
-import net.minecraft.client.network.packet.SetTradeOffersPacket;
+import net.minecraft.client.network.packet.SetTradeOffersS2CPacket;
 import net.minecraft.client.network.packet.SignEditorOpenS2CPacket;
 import net.minecraft.client.network.packet.StatisticsS2CPacket;
 import net.minecraft.client.network.packet.StopSoundS2CPacket;
@@ -210,14 +210,14 @@ public enum NetworkState {
 					.register(LightUpdateS2CPacket.class, LightUpdateS2CPacket::new)
 					.register(GameJoinS2CPacket.class, GameJoinS2CPacket::new)
 					.register(MapUpdateS2CPacket.class, MapUpdateS2CPacket::new)
-					.register(SetTradeOffersPacket.class, SetTradeOffersPacket::new)
+					.register(SetTradeOffersS2CPacket.class, SetTradeOffersS2CPacket::new)
 					.register(EntityS2CPacket.MoveRelative.class, EntityS2CPacket.MoveRelative::new)
 					.register(EntityS2CPacket.RotateAndMoveRelative.class, EntityS2CPacket.RotateAndMoveRelative::new)
 					.register(EntityS2CPacket.Rotate.class, EntityS2CPacket.Rotate::new)
 					.register(EntityS2CPacket.class, EntityS2CPacket::new)
 					.register(VehicleMoveS2CPacket.class, VehicleMoveS2CPacket::new)
 					.register(OpenWrittenBookS2CPacket.class, OpenWrittenBookS2CPacket::new)
-					.register(OpenContainerPacket.class, OpenContainerPacket::new)
+					.register(OpenContainerS2CPacket.class, OpenContainerS2CPacket::new)
 					.register(SignEditorOpenS2CPacket.class, SignEditorOpenS2CPacket::new)
 					.register(CraftFailedResponseS2CPacket.class, CraftFailedResponseS2CPacket::new)
 					.register(PlayerAbilitiesS2CPacket.class, PlayerAbilitiesS2CPacket::new)

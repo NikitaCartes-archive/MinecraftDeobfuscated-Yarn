@@ -192,7 +192,7 @@ public class Raid {
 			this.badOmenLevel = MathHelper.clamp(this.badOmenLevel, 0, this.getMaxAcceptableBadOmenLevel());
 		}
 
-		player.tryRemoveStatusEffect(StatusEffects.BAD_OMEN);
+		player.removeStatusEffect(StatusEffects.BAD_OMEN);
 	}
 
 	public void invalidate() {

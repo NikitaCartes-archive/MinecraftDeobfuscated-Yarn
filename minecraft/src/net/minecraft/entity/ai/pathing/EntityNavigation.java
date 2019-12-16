@@ -39,7 +39,7 @@ public abstract class EntityNavigation {
 	protected long lastRecalculateTime;
 	protected PathNodeMaker nodeMaker;
 	private BlockPos currentTarget;
-	private int field_20294;
+	private int currentDistance;
 	private float rangeMultiplier = 1.0F;
 	private final PathNodeNavigator pathNodeNavigator;
 
@@ -77,7 +77,7 @@ public abstract class EntityNavigation {
 		if (this.world.getTime() - this.lastRecalculateTime > 20L) {
 			if (this.currentTarget != null) {
 				this.currentPath = null;
-				this.currentPath = this.findPathTo(this.currentTarget, this.field_20294);
+				this.currentPath = this.findPathTo(this.currentTarget, this.currentDistance);
 				this.lastRecalculateTime = this.world.getTime();
 				this.shouldRecalculate = false;
 			}
@@ -126,7 +126,7 @@ public abstract class EntityNavigation {
 			this.world.getProfiler().pop();
 			if (path != null && path.getTarget() != null) {
 				this.currentTarget = path.getTarget();
-				this.field_20294 = distance;
+				this.currentDistance = distance;
 			}
 
 			return path;

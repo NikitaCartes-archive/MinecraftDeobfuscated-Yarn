@@ -12,12 +12,12 @@ import net.minecraft.util.math.Vec3d;
 
 public class GoToNearbyEntityTask extends Task<MobEntityWithAi> {
 	private final MemoryModuleType<? extends Entity> entityMemory;
-	private final float field_18381;
+	private final float speed;
 
-	public GoToNearbyEntityTask(MemoryModuleType<? extends Entity> memoryModuleType, float f) {
-		super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT, memoryModuleType, MemoryModuleState.VALUE_PRESENT));
-		this.entityMemory = memoryModuleType;
-		this.field_18381 = f;
+	public GoToNearbyEntityTask(MemoryModuleType<? extends Entity> entityMemory, float speed) {
+		super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT, entityMemory, MemoryModuleState.VALUE_PRESENT));
+		this.entityMemory = entityMemory;
+		this.speed = speed;
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
@@ -27,14 +27,14 @@ public class GoToNearbyEntityTask extends Task<MobEntityWithAi> {
 
 	protected void run(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
 		Entity entity = (Entity)mobEntityWithAi.getBrain().getOptionalMemory(this.entityMemory).get();
-		method_19596(mobEntityWithAi, entity, this.field_18381);
+		setWalkTarget(mobEntityWithAi, entity, this.speed);
 	}
 
-	public static void method_19596(MobEntityWithAi mobEntityWithAi, Entity entity, float f) {
+	public static void setWalkTarget(MobEntityWithAi entity, Entity target, float speed) {
 		for (int i = 0; i < 10; i++) {
-			Vec3d vec3d = TargetFinder.findGroundTargetAwayFrom(mobEntityWithAi, 16, 7, entity.getPos());
+			Vec3d vec3d = TargetFinder.findGroundTargetAwayFrom(entity, 16, 7, target.getPos());
 			if (vec3d != null) {
-				mobEntityWithAi.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3d, f, 0));
+				entity.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3d, speed, 0));
 				return;
 			}
 		}

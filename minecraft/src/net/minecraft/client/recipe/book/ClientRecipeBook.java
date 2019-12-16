@@ -113,19 +113,19 @@ public class ClientRecipeBook extends RecipeBook {
 		}
 	}
 
-	public static List<RecipeBookGroup> getGroupsForContainer(CraftingContainer<?> craftingContainer) {
-		if (craftingContainer instanceof CraftingTableContainer || craftingContainer instanceof PlayerContainer) {
+	public static List<RecipeBookGroup> getGroupsForContainer(CraftingContainer<?> container) {
+		if (container instanceof CraftingTableContainer || container instanceof PlayerContainer) {
 			return Lists.<RecipeBookGroup>newArrayList(
 				RecipeBookGroup.SEARCH, RecipeBookGroup.EQUIPMENT, RecipeBookGroup.BUILDING_BLOCKS, RecipeBookGroup.MISC, RecipeBookGroup.REDSTONE
 			);
-		} else if (craftingContainer instanceof FurnaceContainer) {
+		} else if (container instanceof FurnaceContainer) {
 			return Lists.<RecipeBookGroup>newArrayList(
 				RecipeBookGroup.FURNACE_SEARCH, RecipeBookGroup.FURNACE_FOOD, RecipeBookGroup.FURNACE_BLOCKS, RecipeBookGroup.FURNACE_MISC
 			);
-		} else if (craftingContainer instanceof BlastFurnaceContainer) {
+		} else if (container instanceof BlastFurnaceContainer) {
 			return Lists.<RecipeBookGroup>newArrayList(RecipeBookGroup.BLAST_FURNACE_SEARCH, RecipeBookGroup.BLAST_FURNACE_BLOCKS, RecipeBookGroup.BLAST_FURNACE_MISC);
 		} else {
-			return craftingContainer instanceof SmokerContainer
+			return container instanceof SmokerContainer
 				? Lists.<RecipeBookGroup>newArrayList(RecipeBookGroup.SMOKER_SEARCH, RecipeBookGroup.SMOKER_FOOD)
 				: Lists.<RecipeBookGroup>newArrayList();
 		}
@@ -135,7 +135,7 @@ public class ClientRecipeBook extends RecipeBook {
 		return this.orderedResults;
 	}
 
-	public List<RecipeResultCollection> getResultsForGroup(RecipeBookGroup recipeBookGroup) {
-		return (List<RecipeResultCollection>)this.resultsByGroup.getOrDefault(recipeBookGroup, Collections.emptyList());
+	public List<RecipeResultCollection> getResultsForGroup(RecipeBookGroup category) {
+		return (List<RecipeResultCollection>)this.resultsByGroup.getOrDefault(category, Collections.emptyList());
 	}
 }

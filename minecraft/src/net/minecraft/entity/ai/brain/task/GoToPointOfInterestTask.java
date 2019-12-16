@@ -10,7 +10,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.village.PointOfInterestStorage;
+import net.minecraft.world.poi.PointOfInterestStorage;
 
 public class GoToPointOfInterestTask extends Task<VillagerEntity> {
 	private final float speed;

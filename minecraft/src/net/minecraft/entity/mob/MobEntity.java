@@ -628,7 +628,7 @@ public abstract class MobEntity extends LivingEntity {
 		return 40;
 	}
 
-	public int method_5986() {
+	public int getBodyYawSpeed() {
 		return 75;
 	}
 
@@ -676,8 +676,8 @@ public abstract class MobEntity extends LivingEntity {
 		return true;
 	}
 
-	public boolean canSpawn(WorldView worldView) {
-		return !worldView.containsFluid(this.getBoundingBox()) && worldView.intersectsEntities(this);
+	public boolean canSpawn(WorldView world) {
+		return !world.containsFluid(this.getBoundingBox()) && world.intersectsEntities(this);
 	}
 
 	public int getLimitPerChunk() {

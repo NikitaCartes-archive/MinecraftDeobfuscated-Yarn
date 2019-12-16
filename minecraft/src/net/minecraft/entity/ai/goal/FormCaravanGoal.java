@@ -95,7 +95,7 @@ public class FormCaravanGoal extends Goal {
 
 	@Override
 	public void stop() {
-		this.llama.method_6797();
+		this.llama.stopFollowing();
 		this.speed = 2.1;
 	}
 
@@ -112,11 +112,11 @@ public class FormCaravanGoal extends Goal {
 		}
 	}
 
-	private boolean canFollow(LlamaEntity llamaEntity, int length) {
+	private boolean canFollow(LlamaEntity llama, int length) {
 		if (length > 8) {
 			return false;
-		} else if (llamaEntity.isFollowing()) {
-			return llamaEntity.getFollowing().isLeashed() ? true : this.canFollow(llamaEntity.getFollowing(), ++length);
+		} else if (llama.isFollowing()) {
+			return llama.getFollowing().isLeashed() ? true : this.canFollow(llama.getFollowing(), ++length);
 		} else {
 			return false;
 		}
