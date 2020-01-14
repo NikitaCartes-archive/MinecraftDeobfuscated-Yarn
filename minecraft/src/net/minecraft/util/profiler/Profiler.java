@@ -19,4 +19,8 @@ public interface Profiler {
 
 	@Environment(EnvType.CLIENT)
 	void swap(Supplier<String> supplier);
+
+	void method_24270(String string);
+
+	void method_24271(Supplier<String> supplier);
 }

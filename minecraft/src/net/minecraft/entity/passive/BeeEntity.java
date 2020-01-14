@@ -185,7 +185,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 		this.setAnger(tag.getInt("Anger"));
 		this.ticksSincePollination = tag.getInt("TicksSincePollination");
 		this.cannotEnterHiveTicks = tag.getInt("CannotEnterHiveTicks");
-		this.cropsGrownSincePollination = tag.getInt("NumCropsGrownSincePollination");
+		this.cropsGrownSincePollination = tag.getInt("CropsGrownSincePollination");
 		String string = tag.getString("HurtBy");
 		if (!string.isEmpty()) {
 			this.targetPlayer = UUID.fromString(string);

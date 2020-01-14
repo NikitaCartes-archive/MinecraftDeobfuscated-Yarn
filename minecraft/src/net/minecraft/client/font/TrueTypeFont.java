@@ -2,22 +2,20 @@ package net.minecraft.client.font;
 
 import it.unimi.dsi.fastutil.chars.CharArraySet;
 import it.unimi.dsi.fastutil.chars.CharSet;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.texture.NativeImage;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.lwjgl.stb.STBTTFontinfo;
 import org.lwjgl.stb.STBTruetype;
 import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.MemoryUtil;
 
 @Environment(EnvType.CLIENT)
 public class TrueTypeFont implements Font {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private final ByteBuffer field_21839;
 	private final STBTTFontinfo info;
 	private final float oversample;
 	private final CharSet excludedCharacters = new CharArraySet();
@@ -26,19 +24,20 @@ public class TrueTypeFont implements Font {
 	private final float scaleFactor;
 	private final float ascent;
 
-	public TrueTypeFont(STBTTFontinfo info, float size, float oversample, float shiftX, float shiftY, String excludedCharacters) {
-		this.info = info;
-		this.oversample = oversample;
-		excludedCharacters.chars().forEach(i -> this.excludedCharacters.add((char)(i & 65535)));
-		this.shiftX = shiftX * oversample;
-		this.shiftY = shiftY * oversample;
-		this.scaleFactor = STBTruetype.stbtt_ScaleForPixelHeight(info, size * oversample);
+	public TrueTypeFont(ByteBuffer byteBuffer, STBTTFontinfo sTBTTFontinfo, float f, float g, float h, float i, String string) {
+		this.field_21839 = byteBuffer;
+		this.info = sTBTTFontinfo;
+		this.oversample = g;
+		string.chars().forEach(ix -> this.excludedCharacters.add((char)(ix & 65535)));
+		this.shiftX = h * g;
+		this.shiftY = i * g;
+		this.scaleFactor = STBTruetype.stbtt_ScaleForPixelHeight(sTBTTFontinfo, f * g);
 
 		try (MemoryStack memoryStack = MemoryStack.stackPush()) {
 			IntBuffer intBuffer = memoryStack.mallocInt(1);
 			IntBuffer intBuffer2 = memoryStack.mallocInt(1);
 			IntBuffer intBuffer3 = memoryStack.mallocInt(1);
-			STBTruetype.stbtt_GetFontVMetrics(info, intBuffer, intBuffer2, intBuffer3);
+			STBTruetype.stbtt_GetFontVMetrics(sTBTTFontinfo, intBuffer, intBuffer2, intBuffer3);
 			this.ascent = (float)intBuffer.get(0) * this.scaleFactor;
 		}
 	}
@@ -86,13 +85,10 @@ public class TrueTypeFont implements Font {
 		}
 	}
 
-	public static STBTTFontinfo getSTBTTFontInfo(ByteBuffer font) throws IOException {
-		STBTTFontinfo sTBTTFontinfo = STBTTFontinfo.create();
-		if (!STBTruetype.stbtt_InitFont(sTBTTFontinfo, font)) {
-			throw new IOException("Invalid ttf");
-		} else {
-			return sTBTTFontinfo;
-		}
+	@Override
+	public void close() {
+		this.info.free();
+		MemoryUtil.memFree(this.field_21839);
 	}
 
 	@Environment(EnvType.CLIENT)

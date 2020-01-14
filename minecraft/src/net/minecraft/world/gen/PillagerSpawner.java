@@ -8,6 +8,7 @@ import net.minecraft.entity.mob.PatrolEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
@@ -18,6 +19,8 @@ public class PillagerSpawner {
 
 	public int spawn(ServerWorld serverWorld, boolean spawnMonsters, boolean spawnAnimals) {
 		if (!spawnMonsters) {
+			return 0;
+		} else if (!serverWorld.getGameRules().getBoolean(GameRules.DO_PATROL_SPAWNING)) {
 			return 0;
 		} else {
 			Random random = serverWorld.random;

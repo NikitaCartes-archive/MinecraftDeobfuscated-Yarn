@@ -107,6 +107,7 @@ import net.minecraft.client.resource.Format3ResourcePack;
 import net.minecraft.client.resource.Format4ResourcePack;
 import net.minecraft.client.resource.GrassColormapResourceSupplier;
 import net.minecraft.client.resource.SplashTextResourceSupplier;
+import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.resource.language.LanguageManager;
 import net.minecraft.client.search.IdentifierSearchableContainer;
 import net.minecraft.client.search.SearchManager;
@@ -375,7 +376,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 		Util.nanoTimeSupplier = RenderSystem.initBackendSystem();
 		this.windowProvider = new WindowProvider(this);
-		this.window = this.windowProvider.createWindow(windowSettings, this.options.fullscreenResolution, "Minecraft " + SharedConstants.getGameVersion().getName());
+		this.window = this.windowProvider.createWindow(windowSettings, this.options.fullscreenResolution, this.method_24287());
 		this.onWindowFocusChanged(true);
 
 		try {
@@ -482,6 +483,39 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				)
 			);
 		}
+	}
+
+	public void method_24288() {
+		this.window.method_24286(this.method_24287());
+	}
+
+	private String method_24287() {
+		StringBuilder stringBuilder = new StringBuilder("Minecraft");
+		if (this.method_24289()) {
+			stringBuilder.append("*");
+		}
+
+		stringBuilder.append(" ");
+		stringBuilder.append(SharedConstants.getGameVersion().getName());
+		ClientPlayNetworkHandler clientPlayNetworkHandler = this.getNetworkHandler();
+		if (clientPlayNetworkHandler != null) {
+			stringBuilder.append(" - ");
+			if (this.server != null && !this.server.isRemote()) {
+				stringBuilder.append(I18n.translate("title.singleplayer"));
+			} else if (this.isConnectedToRealms()) {
+				stringBuilder.append(I18n.translate("title.multiplayer.realms"));
+			} else if (this.server == null && (this.currentServerEntry == null || !this.currentServerEntry.isLocal())) {
+				stringBuilder.append(I18n.translate("title.multiplayer.other"));
+			} else {
+				stringBuilder.append(I18n.translate("title.multiplayer.lan"));
+			}
+		}
+
+		return stringBuilder.toString();
+	}
+
+	public boolean method_24289() {
+		return !"vanilla".equals(ClientBrandRetriever.getClientModName()) || MinecraftClient.class.getSigners() == null;
 	}
 
 	private void handleResourceReloadExecption(Throwable throwable) {
@@ -767,6 +801,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.soundManager.resumeAll();
 			this.mouse.lockCursor();
 		}
+
+		this.method_24288();
 	}
 
 	public void setOverlay(@Nullable Overlay overlay) {
@@ -776,7 +812,11 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public void stop() {
 		try {
 			LOGGER.info("Stopping!");
-			NarratorManager.INSTANCE.destroy();
+
+			try {
+				NarratorManager.INSTANCE.destroy();
+			} catch (Throwable var7) {
+			}
 
 			try {
 				if (this.world != null) {
@@ -784,7 +824,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				}
 
 				this.disconnect();
-			} catch (Throwable var5) {
+			} catch (Throwable var6) {
 			}
 
 			if (this.currentScreen != null) {
@@ -804,7 +844,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public void close() {
 		try {
 			this.bakedModelManager.close();
-			this.textRenderer.close();
 			this.fontManager.close();
 			this.gameRenderer.close();
 			this.worldRenderer.close();
@@ -813,7 +852,11 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.particleManager.clearAtlas();
 			this.statusEffectSpriteManager.close();
 			this.paintingManager.close();
+			this.textureManager.close();
 			Util.shutdownServerWorkerExecutor();
+		} catch (Throwable var5) {
+			LOGGER.error("Shutdown failure!", var5);
+			throw var5;
 		} finally {
 			this.windowProvider.close();
 			this.window.close();
@@ -1608,6 +1651,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.worldRenderer.setWorld(clientWorld);
 		this.particleManager.setWorld(clientWorld);
 		BlockEntityRenderDispatcher.INSTANCE.setWorld(clientWorld);
+		this.method_24288();
 	}
 
 	public final boolean isDemo() {

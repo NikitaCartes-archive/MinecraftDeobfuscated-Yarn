@@ -65,7 +65,7 @@ public class IllusionerEntityRenderer extends IllagerEntityRenderer<IllusionerEn
 		}
 	}
 
-	protected boolean method_4056(IllusionerEntity illusionerEntity, boolean bl) {
+	protected boolean method_4056(IllusionerEntity illusionerEntity) {
 		return true;
 	}
 }

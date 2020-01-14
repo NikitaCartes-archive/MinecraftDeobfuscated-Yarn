@@ -19,16 +19,21 @@ public class OutlineVertexConsumerProvider implements VertexConsumerProvider {
 
 	@Override
 	public net.minecraft.client.render.VertexConsumer getBuffer(RenderLayer renderLayer) {
-		net.minecraft.client.render.VertexConsumer vertexConsumer = this.parent.getBuffer(renderLayer);
-		Optional<RenderLayer> optional = renderLayer.getTexture();
-		if (optional.isPresent()) {
-			net.minecraft.client.render.VertexConsumer vertexConsumer2 = this.plainDrawer.getBuffer((RenderLayer)optional.get());
-			OutlineVertexConsumerProvider.VertexConsumer vertexConsumer3 = new OutlineVertexConsumerProvider.VertexConsumer(
-				vertexConsumer2, this.red, this.green, this.blue, this.alpha
-			);
-			return VertexConsumers.dual(vertexConsumer3, vertexConsumer);
+		if (renderLayer.method_24295()) {
+			net.minecraft.client.render.VertexConsumer vertexConsumer = this.plainDrawer.getBuffer(renderLayer);
+			return new OutlineVertexConsumerProvider.VertexConsumer(vertexConsumer, this.red, this.green, this.blue, this.alpha);
 		} else {
-			return vertexConsumer;
+			net.minecraft.client.render.VertexConsumer vertexConsumer = this.parent.getBuffer(renderLayer);
+			Optional<RenderLayer> optional = renderLayer.getTexture();
+			if (optional.isPresent()) {
+				net.minecraft.client.render.VertexConsumer vertexConsumer2 = this.plainDrawer.getBuffer((RenderLayer)optional.get());
+				OutlineVertexConsumerProvider.VertexConsumer vertexConsumer3 = new OutlineVertexConsumerProvider.VertexConsumer(
+					vertexConsumer2, this.red, this.green, this.blue, this.alpha
+				);
+				return VertexConsumers.dual(vertexConsumer3, vertexConsumer);
+			} else {
+				return vertexConsumer;
+			}
 		}
 	}
 

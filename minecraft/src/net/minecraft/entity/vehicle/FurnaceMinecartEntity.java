@@ -84,21 +84,17 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 
 	@Override
 	protected void moveOnRail(BlockPos pos, BlockState state) {
+		double d = 1.0E-4;
+		double e = 0.001;
 		super.moveOnRail(pos, state);
-		double d = this.pushX * this.pushX + this.pushZ * this.pushZ;
 		Vec3d vec3d = this.getVelocity();
-		if (d > 1.0E-4 && squaredHorizontalLength(vec3d) > 0.001) {
-			d = (double)MathHelper.sqrt(d);
-			this.pushX /= d;
-			this.pushZ /= d;
-			if (this.pushX * vec3d.x + this.pushZ * vec3d.z < 0.0) {
-				this.pushX = 0.0;
-				this.pushZ = 0.0;
-			} else {
-				double e = d / this.getMaxOffRailSpeed();
-				this.pushX *= e;
-				this.pushZ *= e;
-			}
+		double f = squaredHorizontalLength(vec3d);
+		double g = this.pushX * this.pushX + this.pushZ * this.pushZ;
+		if (g > 1.0E-4 && f > 0.001) {
+			double h = (double)MathHelper.sqrt(f);
+			double i = (double)MathHelper.sqrt(g);
+			this.pushX = vec3d.x / h * i;
+			this.pushZ = vec3d.z / h * i;
 		}
 	}
 

@@ -34,7 +34,9 @@ public class ItemModelGenerator {
 		}
 
 		map.put("particle", blockModel.textureExists("particle") ? Either.left(blockModel.resolveSprite("particle")) : (Either)map.get("layer0"));
-		JsonUnbakedModel jsonUnbakedModel = new JsonUnbakedModel(null, list, map, false, false, blockModel.getTransformations(), blockModel.getOverrides());
+		JsonUnbakedModel jsonUnbakedModel = new JsonUnbakedModel(
+			null, list, map, false, blockModel.method_24298(), blockModel.getTransformations(), blockModel.getOverrides()
+		);
 		jsonUnbakedModel.id = blockModel.id;
 		return jsonUnbakedModel;
 	}
