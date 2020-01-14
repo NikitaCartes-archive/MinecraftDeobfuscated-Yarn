@@ -435,6 +435,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> method_20619(ChunkPos chunkPos) {
         return CompletableFuture.supplyAsync(() -> {
             try {
+                this.world.getProfiler().method_24270("chunkLoad");
                 CompoundTag compoundTag = this.getUpdatedChunkTag(chunkPos);
                 if (compoundTag != null) {
                     boolean bl;
@@ -462,6 +463,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> method_20617(ChunkHolder chunkHolder, ChunkStatus chunkStatus) {
         ChunkPos chunkPos = chunkHolder.getPos();
         CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> completableFuture = this.createChunkRegionFuture(chunkPos, chunkStatus.getTaskMargin(), i -> this.getRequiredStatusForGeneration(chunkStatus, i));
+        this.world.getProfiler().method_24271(() -> "chunkGenerate " + chunkStatus.getId());
         return completableFuture.thenComposeAsync(either -> either.map(list -> {
             try {
                 CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = chunkStatus.runTask(this.world, this.chunkGenerator, this.structureManager, this.serverLightingProvider, chunk -> this.convertToFullChunk(chunkHolder), (List<Chunk>)list);
@@ -586,6 +588,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                     return false;
                 }
             }
+            this.world.getProfiler().method_24270("chunkSave");
             compoundTag = ChunkSerializer.serialize(this.world, chunk);
             this.setTagAt(chunkPos, compoundTag);
             return true;

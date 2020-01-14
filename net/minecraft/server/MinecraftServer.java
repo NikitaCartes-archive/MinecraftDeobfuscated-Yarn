@@ -364,6 +364,7 @@ Runnable {
             levelProperties.setLevelName(serverName);
             levelInfo = new LevelInfo(levelProperties);
         }
+        levelProperties.method_24285(this.getServerModName(), this.method_24307().isPresent());
         this.loadWorldDataPacks(worldSaveHandler.getWorldDir(), levelProperties);
         WorldGenerationProgressListener worldGenerationProgressListener = this.worldGenerationProgressListenerFactory.create(11);
         this.createWorlds(worldSaveHandler, levelProperties, levelInfo, worldGenerationProgressListener);
@@ -678,6 +679,12 @@ Runnable {
         return false;
     }
 
+    @Override
+    protected void executeTask(ServerTask serverTask) {
+        this.getProfiler().method_24270("runTask");
+        super.executeTask(serverTask);
+    }
+
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
@@ -845,6 +852,7 @@ Runnable {
                 LOGGER.info("You need to agree to the EULA in order to run the server. Go to eula.txt for more info.");
                 return;
             }
+            CrashReport.method_24305();
             Bootstrap.initialize();
             Bootstrap.logMissingTranslations();
             String string = optionSet.valueOf(optionSpec9);
@@ -976,6 +984,8 @@ Runnable {
         }
         return crashReport;
     }
+
+    public abstract Optional<String> method_24307();
 
     public boolean hasGameDir() {
         return this.gameDir != null;
@@ -1562,6 +1572,11 @@ Runnable {
 
     private void method_24154() {
         Block.STATE_IDS.forEach(BlockState::initShapeCache);
+    }
+
+    @Override
+    public /* synthetic */ void executeTask(Runnable task) {
+        this.executeTask((ServerTask)task);
     }
 
     @Override

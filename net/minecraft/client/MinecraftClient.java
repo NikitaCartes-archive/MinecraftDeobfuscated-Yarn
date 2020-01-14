@@ -114,6 +114,7 @@ import net.minecraft.client.resource.Format3ResourcePack;
 import net.minecraft.client.resource.Format4ResourcePack;
 import net.minecraft.client.resource.GrassColormapResourceSupplier;
 import net.minecraft.client.resource.SplashTextResourceSupplier;
+import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.resource.language.LanguageManager;
 import net.minecraft.client.search.IdentifierSearchableContainer;
 import net.minecraft.client.search.SearchManager;
@@ -370,7 +371,7 @@ WindowEventHandler {
         WindowSettings windowSettings = this.options.overrideHeight > 0 && this.options.overrideWidth > 0 ? new WindowSettings(this.options.overrideWidth, this.options.overrideHeight, args.windowSettings.fullscreenWidth, args.windowSettings.fullscreenHeight, args.windowSettings.fullscreen) : args.windowSettings;
         Util.nanoTimeSupplier = RenderSystem.initBackendSystem();
         this.windowProvider = new WindowProvider(this);
-        this.window = this.windowProvider.createWindow(windowSettings, this.options.fullscreenResolution, "Minecraft " + SharedConstants.getGameVersion().getName());
+        this.window = this.windowProvider.createWindow(windowSettings, this.options.fullscreenResolution, this.method_24287());
         this.onWindowFocusChanged(true);
         try {
             InputStream inputStream = this.getResourcePackDownloader().getPack().open(ResourceType.CLIENT_RESOURCES, new Identifier("icons/icon_16x16.png"));
@@ -461,6 +462,37 @@ WindowEventHandler {
                 this.checkGameData();
             }
         }), false));
+    }
+
+    public void method_24288() {
+        this.window.method_24286(this.method_24287());
+    }
+
+    private String method_24287() {
+        StringBuilder stringBuilder = new StringBuilder("Minecraft");
+        if (this.method_24289()) {
+            stringBuilder.append("*");
+        }
+        stringBuilder.append(" ");
+        stringBuilder.append(SharedConstants.getGameVersion().getName());
+        ClientPlayNetworkHandler clientPlayNetworkHandler = this.getNetworkHandler();
+        if (clientPlayNetworkHandler != null) {
+            stringBuilder.append(" - ");
+            if (this.server != null && !this.server.isRemote()) {
+                stringBuilder.append(I18n.translate("title.singleplayer", new Object[0]));
+            } else if (this.isConnectedToRealms()) {
+                stringBuilder.append(I18n.translate("title.multiplayer.realms", new Object[0]));
+            } else if (this.server != null || this.currentServerEntry != null && this.currentServerEntry.isLocal()) {
+                stringBuilder.append(I18n.translate("title.multiplayer.lan", new Object[0]));
+            } else {
+                stringBuilder.append(I18n.translate("title.multiplayer.other", new Object[0]));
+            }
+        }
+        return stringBuilder.toString();
+    }
+
+    public boolean method_24289() {
+        return !"vanilla".equals(ClientBrandRetriever.getClientModName()) || MinecraftClient.class.getSigners() == null;
     }
 
     private void handleResourceReloadExecption(Throwable throwable) {
@@ -688,6 +720,7 @@ WindowEventHandler {
             this.soundManager.resumeAll();
             this.mouse.lockCursor();
         }
+        this.method_24288();
     }
 
     public void setOverlay(@Nullable Overlay overlay) {
@@ -697,7 +730,11 @@ WindowEventHandler {
     public void stop() {
         try {
             LOGGER.info("Stopping!");
-            NarratorManager.INSTANCE.destroy();
+            try {
+                NarratorManager.INSTANCE.destroy();
+            } catch (Throwable throwable) {
+                // empty catch block
+            }
             try {
                 if (this.world != null) {
                     this.world.disconnect();
@@ -722,7 +759,6 @@ WindowEventHandler {
     public void close() {
         try {
             this.bakedModelManager.close();
-            this.textRenderer.close();
             this.fontManager.close();
             this.gameRenderer.close();
             this.worldRenderer.close();
@@ -731,7 +767,11 @@ WindowEventHandler {
             this.particleManager.clearAtlas();
             this.statusEffectSpriteManager.close();
             this.paintingManager.close();
+            this.textureManager.close();
             Util.shutdownServerWorkerExecutor();
+        } catch (Throwable throwable) {
+            LOGGER.error("Shutdown failure!", throwable);
+            throw throwable;
         } finally {
             this.windowProvider.close();
             this.window.close();
@@ -1443,6 +1483,7 @@ WindowEventHandler {
         this.worldRenderer.setWorld(clientWorld);
         this.particleManager.setWorld(clientWorld);
         BlockEntityRenderDispatcher.INSTANCE.setWorld(clientWorld);
+        this.method_24288();
     }
 
     public final boolean isDemo() {

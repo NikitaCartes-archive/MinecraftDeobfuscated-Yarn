@@ -4,8 +4,10 @@
 package net.minecraft.client.render.item;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.datafixers.util.Pair;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.AbstractBannerBlock;
@@ -15,6 +17,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.entity.BannerBlockEntity;
+import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.block.entity.BedBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
@@ -110,8 +113,8 @@ public class BuiltinModelItemRenderer {
             VertexConsumer vertexConsumer = spriteIdentifier.getSprite().getTextureSpecificVertexConsumer(ItemRenderer.getArmorVertexConsumer(vertexConsumerProvider, this.modelShield.getLayer(spriteIdentifier.getAtlasId()), false, stack.hasEnchantmentGlint()));
             this.modelShield.method_23775().render(matrix, vertexConsumer, light, overlay, 1.0f, 1.0f, 1.0f, 1.0f);
             if (bl) {
-                this.renderBanner.readFrom(stack, ShieldItem.getColor(stack));
-                BannerBlockEntityRenderer.method_23802(this.renderBanner, matrix, vertexConsumerProvider, light, overlay, this.modelShield.method_23774(), spriteIdentifier, false);
+                List<Pair<BannerPattern, DyeColor>> list = BannerBlockEntity.method_24280(ShieldItem.getColor(stack), BannerBlockEntity.method_24281(stack));
+                BannerBlockEntityRenderer.method_23802(matrix, vertexConsumerProvider, light, overlay, this.modelShield.method_23774(), spriteIdentifier, false, list);
             } else {
                 this.modelShield.method_23774().render(matrix, vertexConsumer, light, overlay, 1.0f, 1.0f, 1.0f, 1.0f);
             }

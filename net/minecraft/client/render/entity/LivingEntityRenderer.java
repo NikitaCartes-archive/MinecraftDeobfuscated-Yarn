@@ -33,6 +33,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class LivingEntityRenderer<T extends LivingEntity, M extends EntityModel<T>>
@@ -108,16 +109,14 @@ implements FeatureRendererContext<T, M> {
             }
         }
         ((EntityModel)this.model).animateModel(livingEntity, o, n, g);
-        boolean bl = ((Entity)livingEntity).isGlowing();
-        boolean bl2 = this.method_4056(livingEntity, false);
-        boolean bl3 = !bl2 && !((Entity)livingEntity).canSeePlayer(MinecraftClient.getInstance().player);
         ((EntityModel)this.model).setAngles(livingEntity, o, n, l, k, m);
-        Identifier identifier = this.getTexture(livingEntity);
-        RenderLayer renderLayer = bl3 ? RenderLayer.getEntityTranslucent(identifier) : (bl2 ? ((Model)this.model).getLayer(identifier) : RenderLayer.getOutline(identifier));
-        if (bl2 || bl3 || bl) {
+        boolean bl = this.method_4056(livingEntity);
+        boolean bl2 = !bl && !((Entity)livingEntity).canSeePlayer(MinecraftClient.getInstance().player);
+        RenderLayer renderLayer = this.method_24302(livingEntity, bl, bl2);
+        if (renderLayer != null) {
             VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(renderLayer);
             int p = LivingEntityRenderer.getOverlay(livingEntity, this.getWhiteOverlayProgress(livingEntity, g));
-            ((Model)this.model).render(matrixStack, vertexConsumer, i, p, 1.0f, 1.0f, 1.0f, bl3 ? 0.15f : 1.0f);
+            ((Model)this.model).render(matrixStack, vertexConsumer, i, p, 1.0f, 1.0f, 1.0f, bl2 ? 0.15f : 1.0f);
         }
         if (!((Entity)livingEntity).isSpectator()) {
             for (FeatureRenderer<T, M> featureRenderer : this.features) {
@@ -128,12 +127,27 @@ implements FeatureRendererContext<T, M> {
         super.render(livingEntity, f, g, matrixStack, vertexConsumerProvider, i);
     }
 
+    @Nullable
+    protected RenderLayer method_24302(T livingEntity, boolean bl, boolean bl2) {
+        Identifier identifier = this.getTexture(livingEntity);
+        if (bl2) {
+            return RenderLayer.getEntityTranslucent(identifier);
+        }
+        if (bl) {
+            return ((Model)this.model).getLayer(identifier);
+        }
+        if (((Entity)livingEntity).isGlowing()) {
+            return RenderLayer.getOutline(identifier);
+        }
+        return null;
+    }
+
     public static int getOverlay(LivingEntity entity, float whiteOverlayProgress) {
         return OverlayTexture.packUv(OverlayTexture.getU(whiteOverlayProgress), OverlayTexture.getV(entity.hurtTime > 0 || entity.deathTime > 0));
     }
 
-    protected boolean method_4056(T livingEntity, boolean bl) {
-        return !((Entity)livingEntity).isInvisible() || bl;
+    protected boolean method_4056(T livingEntity) {
+        return !((Entity)livingEntity).isInvisible();
     }
 
     private static float getYaw(Direction direction) {

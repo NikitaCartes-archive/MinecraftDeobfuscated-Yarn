@@ -138,10 +138,11 @@ extends Entity {
                 if (blockState.getBlock() != Blocks.MOVING_PISTON) {
                     this.remove();
                     if (!this.destroyedOnLanding) {
-                        boolean bl4;
+                        boolean bl5;
                         boolean bl3 = blockState.canReplace(new AutomaticItemPlacementContext(this.world, blockPos, Direction.DOWN, ItemStack.EMPTY, Direction.UP));
-                        boolean bl5 = bl4 = this.block.canPlaceAt(this.world, blockPos) && !FallingBlock.canFallThrough(this.world.getBlockState(blockPos.down()));
-                        if (bl3 && bl4) {
+                        boolean bl4 = FallingBlock.canFallThrough(this.world.getBlockState(blockPos.down())) && (!bl || !bl2);
+                        boolean bl6 = bl5 = this.block.canPlaceAt(this.world, blockPos) && !bl4;
+                        if (bl3 && bl5) {
                             if (this.block.contains(Properties.WATERLOGGED) && this.world.getFluidState(blockPos).getFluid() == Fluids.WATER) {
                                 this.block = (BlockState)this.block.with(Properties.WATERLOGGED, true);
                             }

@@ -114,6 +114,7 @@ implements Tickable {
         if (this.bees.size() >= 3) {
             return;
         }
+        entity.stopRiding();
         entity.removeAllPassengers();
         CompoundTag compoundTag = new CompoundTag();
         entity.saveToTag(compoundTag);
@@ -130,6 +131,7 @@ implements Tickable {
     }
 
     private boolean releaseBee(BlockState state, CompoundTag compoundTag, @Nullable List<Entity> list, BeeState beeState) {
+        boolean bl;
         BlockPos blockPos = this.getPos();
         if ((this.world.isNight() || this.world.isRaining()) && beeState != BeeState.EMERGENCY) {
             return false;
@@ -139,13 +141,14 @@ implements Tickable {
         compoundTag.removeUuid("UUID");
         Direction direction = state.get(BeehiveBlock.FACING);
         BlockPos blockPos2 = blockPos.offset(direction);
-        if (!this.world.getBlockState(blockPos2).getCollisionShape(this.world, blockPos2).isEmpty()) {
+        boolean bl2 = bl = !this.world.getBlockState(blockPos2).getCollisionShape(this.world, blockPos2).isEmpty();
+        if (bl && beeState != BeeState.EMERGENCY) {
             return false;
         }
         Entity entity2 = EntityType.loadEntityWithPassengers(compoundTag, this.world, entity -> entity);
         if (entity2 != null) {
             float f = entity2.getWidth();
-            double d = 0.55 + (double)(f / 2.0f);
+            double d = bl ? 0.0 : 0.55 + (double)(f / 2.0f);
             double e = (double)blockPos.getX() + 0.5 + d * (double)direction.getOffsetX();
             double g = (double)blockPos.getY() + 0.5 - (double)(entity2.getHeight() / 2.0f);
             double h = (double)blockPos.getZ() + 0.5 + d * (double)direction.getOffsetZ();

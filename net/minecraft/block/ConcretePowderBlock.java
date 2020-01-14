@@ -25,19 +25,24 @@ extends FallingBlock {
 
     @Override
     public void onLanding(World world, BlockPos pos, BlockState fallingBlockState, BlockState currentStateInPos) {
-        if (ConcretePowderBlock.hardensIn(currentStateInPos)) {
+        if (ConcretePowderBlock.method_24279(world, pos, currentStateInPos)) {
             world.setBlockState(pos, this.hardenedState, 3);
         }
     }
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
+        BlockState blockState;
         BlockPos blockPos;
         World blockView = ctx.getWorld();
-        if (ConcretePowderBlock.hardensIn(blockView.getBlockState(blockPos = ctx.getBlockPos())) || ConcretePowderBlock.hardensOnAnySide(blockView, blockPos)) {
+        if (ConcretePowderBlock.method_24279(blockView, blockPos = ctx.getBlockPos(), blockState = blockView.getBlockState(blockPos))) {
             return this.hardenedState;
         }
         return super.getPlacementState(ctx);
+    }
+
+    private static boolean method_24279(BlockView blockView, BlockPos blockPos, BlockState blockState) {
+        return ConcretePowderBlock.hardensIn(blockState) || ConcretePowderBlock.hardensOnAnySide(blockView, blockPos);
     }
 
     private static boolean hardensOnAnySide(BlockView view, BlockPos pos) {

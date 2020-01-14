@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.texture;
 
+import com.google.common.base.Charsets;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.File;
@@ -483,13 +484,12 @@ implements AutoCloseable {
     }
 
     public static NativeImage read(String dataUri) throws IOException {
+        byte[] bs = Base64.getDecoder().decode(dataUri.replaceAll("\n", "").getBytes(Charsets.UTF_8));
         try (MemoryStack memoryStack = MemoryStack.stackPush();){
-            ByteBuffer byteBuffer = memoryStack.UTF8(dataUri.replaceAll("\n", ""), false);
-            ByteBuffer byteBuffer2 = Base64.getDecoder().decode(byteBuffer);
-            ByteBuffer byteBuffer3 = memoryStack.malloc(byteBuffer2.remaining());
-            byteBuffer3.put(byteBuffer2);
-            byteBuffer3.rewind();
-            NativeImage nativeImage = NativeImage.read(byteBuffer3);
+            ByteBuffer byteBuffer = memoryStack.malloc(bs.length);
+            byteBuffer.put(bs);
+            byteBuffer.rewind();
+            NativeImage nativeImage = NativeImage.read(byteBuffer);
             return nativeImage;
         }
     }

@@ -28,6 +28,10 @@ implements VertexConsumerProvider {
 
     @Override
     public net.minecraft.client.render.VertexConsumer getBuffer(RenderLayer renderLayer) {
+        if (renderLayer.method_24295()) {
+            net.minecraft.client.render.VertexConsumer vertexConsumer = this.plainDrawer.getBuffer(renderLayer);
+            return new VertexConsumer(vertexConsumer, this.red, this.green, this.blue, this.alpha);
+        }
         net.minecraft.client.render.VertexConsumer vertexConsumer = this.parent.getBuffer(renderLayer);
         Optional<RenderLayer> optional = renderLayer.getTexture();
         if (optional.isPresent()) {

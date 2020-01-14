@@ -80,7 +80,7 @@ public abstract class LevelPropagator {
     }
 
     public void method_24206(LongPredicate longPredicate) {
-        LongArrayList longList = new LongArrayList(0);
+        LongArrayList longList = new LongArrayList();
         this.pendingUpdates.keySet().forEach(l -> {
             if (longPredicate.test(l)) {
                 longList.add(l);

@@ -23,11 +23,13 @@ implements BakedModel {
     private final ModelTransformation transformation;
     private final ModelItemPropertyOverrideList itemPropertyOverrides;
     private final Sprite sprite;
+    private final boolean field_21862;
 
-    public BuiltinBakedModel(ModelTransformation transformation, ModelItemPropertyOverrideList itemPropertyOverrides, Sprite sprite) {
+    public BuiltinBakedModel(ModelTransformation transformation, ModelItemPropertyOverrideList itemPropertyOverrides, Sprite sprite, boolean bl) {
         this.transformation = transformation;
         this.itemPropertyOverrides = itemPropertyOverrides;
         this.sprite = sprite;
+        this.field_21862 = bl;
     }
 
     @Override
@@ -43,6 +45,11 @@ implements BakedModel {
     @Override
     public boolean hasDepthInGui() {
         return true;
+    }
+
+    @Override
+    public boolean method_24304() {
+        return this.field_21862;
     }
 
     @Override

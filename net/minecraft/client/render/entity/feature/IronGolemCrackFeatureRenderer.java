@@ -26,6 +26,9 @@ extends FeatureRenderer<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> 
 
     @Override
     public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, IronGolemEntity ironGolemEntity, float f, float g, float h, float j, float k, float l) {
+        if (ironGolemEntity.isInvisible()) {
+            return;
+        }
         IronGolemEntity.Crack crack = ironGolemEntity.getCrack();
         if (crack == IronGolemEntity.Crack.NONE) {
             return;

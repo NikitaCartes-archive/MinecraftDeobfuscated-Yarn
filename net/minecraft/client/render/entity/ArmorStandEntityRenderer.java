@@ -5,6 +5,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.feature.ArmorBipedFeatureRenderer;
@@ -19,6 +20,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class ArmorStandEntityRenderer
@@ -59,8 +61,19 @@ extends LivingEntityRenderer<ArmorStandEntity, ArmorStandArmorEntityModel> {
     }
 
     @Override
-    protected boolean method_4056(ArmorStandEntity armorStandEntity, boolean bl) {
-        return !armorStandEntity.isInvisible();
+    @Nullable
+    protected RenderLayer method_24302(ArmorStandEntity armorStandEntity, boolean bl, boolean bl2) {
+        if (!armorStandEntity.isMarker()) {
+            return super.method_24302(armorStandEntity, bl, bl2);
+        }
+        Identifier identifier = this.getTexture(armorStandEntity);
+        if (bl2) {
+            return RenderLayer.method_24294(identifier, false);
+        }
+        if (bl) {
+            return RenderLayer.method_24293(identifier, false);
+        }
+        return null;
     }
 
     @Override

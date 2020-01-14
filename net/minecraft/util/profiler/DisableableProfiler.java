@@ -76,6 +76,18 @@ implements Profiler {
         this.field_16271.profiler.swap(supplier);
     }
 
+    @Override
+    public void method_24270(String string) {
+        this.controller.profiler.method_24270(string);
+        this.field_16271.profiler.method_24270(string);
+    }
+
+    @Override
+    public void method_24271(Supplier<String> supplier) {
+        this.controller.profiler.method_24271(supplier);
+        this.field_16271.profiler.method_24271(supplier);
+    }
+
     class ProfilerControllerImpl
     implements ProfilerController {
         protected ReadableProfiler profiler = DummyProfiler.INSTANCE;

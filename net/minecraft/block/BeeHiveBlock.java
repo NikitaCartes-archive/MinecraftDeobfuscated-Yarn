@@ -86,8 +86,8 @@ extends BlockWithEntity {
             if (EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, stack) == 0) {
                 beehiveBlockEntity.angerBees(player, state, BeehiveBlockEntity.BeeState.EMERGENCY);
                 world.updateHorizontalAdjacent(pos, this);
+                this.angerNearbyBees(world, pos);
             }
-            this.angerNearbyBees(world, pos);
             Criterions.BEE_NEST_DESTROYED.test((ServerPlayerEntity)player, state.getBlock(), stack, beehiveBlockEntity.getBeeCount());
         }
     }
@@ -105,9 +105,7 @@ extends BlockWithEntity {
     }
 
     public static void dropHoneycomb(World world, BlockPos pos) {
-        for (int i = 0; i < 3; ++i) {
-            BeehiveBlock.dropStack(world, pos, new ItemStack(Items.HONEYCOMB, 1));
-        }
+        BeehiveBlock.dropStack(world, pos, new ItemStack(Items.HONEYCOMB, 3));
     }
 
     @Override

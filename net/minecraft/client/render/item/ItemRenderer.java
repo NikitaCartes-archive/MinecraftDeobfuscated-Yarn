@@ -181,8 +181,7 @@ implements SynchronousResourceReloadListener {
         RenderSystem.scalef(16.0f, 16.0f, 16.0f);
         MatrixStack matrixStack = new MatrixStack();
         VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
-        Item item = stack.getItem();
-        boolean bl2 = bl = !model.hasDepthInGui() || item == Items.SHIELD || item == Items.TRIDENT;
+        boolean bl2 = bl = !model.method_24304();
         if (bl) {
             DiffuseLighting.disableGuiDepthLighting();
         }

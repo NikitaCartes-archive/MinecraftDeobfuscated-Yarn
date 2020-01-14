@@ -375,6 +375,10 @@ implements AutoCloseable {
         this.scaledHeight = (double)this.framebufferHeight / scaleFactor > (double)j ? j + 1 : j;
     }
 
+    public void method_24286(String string) {
+        GLFW.glfwSetWindowTitle(this.handle, string);
+    }
+
     public long getHandle() {
         return this.handle;
     }

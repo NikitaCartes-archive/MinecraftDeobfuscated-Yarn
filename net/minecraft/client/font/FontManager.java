@@ -5,7 +5,6 @@ package net.minecraft.client.font;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -21,7 +20,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.stream.Stream;
@@ -51,7 +49,6 @@ public class FontManager
 implements AutoCloseable {
     private static final Logger LOGGER = LogManager.getLogger();
     private final Map<Identifier, TextRenderer> textRenderers = Maps.newHashMap();
-    private final Set<Font> fonts = Sets.newHashSet();
     private final TextureManager textureManager;
     private boolean forceUnicodeFont;
     private final ResourceReloadListener resourceReloadListener = new SinglePreparationResourceReloadListener<Map<Identifier, List<Font>>>(){
@@ -121,7 +118,6 @@ implements AutoCloseable {
                 Collections.reverse(list);
                 FontManager.this.textRenderers.computeIfAbsent(identifier2, identifier -> new TextRenderer(FontManager.this.textureManager, new FontStorage(FontManager.this.textureManager, (Identifier)identifier))).setFonts(list);
             });
-            map.values().forEach(FontManager.this.fonts::addAll);
             profiler.pop();
             profiler.endTick();
         }
@@ -174,7 +170,6 @@ implements AutoCloseable {
     @Override
     public void close() {
         this.textRenderers.values().forEach(TextRenderer::close);
-        this.fonts.forEach(Font::close);
     }
 }
 

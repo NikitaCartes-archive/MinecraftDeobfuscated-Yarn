@@ -99,8 +99,8 @@ ModifiableTestableWorld {
     }
 
     @Override
-    default public BlockPos getTopPosition(Heightmap.Type type, BlockPos blockPos) {
-        return WorldView.super.getTopPosition(type, blockPos);
+    default public BlockPos getTopPosition(Heightmap.Type heightmap, BlockPos pos) {
+        return WorldView.super.getTopPosition(heightmap, pos);
     }
 }
 

@@ -45,6 +45,9 @@ public class WanderingTraderManager {
     }
 
     public void tick() {
+        if (!this.world.getGameRules().getBoolean(GameRules.DO_TRADER_SPAWNING)) {
+            return;
+        }
         if (--this.field_17728 > 0) {
             return;
         }

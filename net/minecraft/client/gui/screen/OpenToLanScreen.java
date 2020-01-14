@@ -33,6 +33,7 @@ extends Screen {
             int i = NetworkUtils.findLocalPort();
             TranslatableText text = this.minecraft.getServer().openToLan(GameMode.byName(this.gameMode), this.allowCommands, i) ? new TranslatableText("commands.publish.started", i) : new TranslatableText("commands.publish.failed", new Object[0]);
             this.minecraft.inGameHud.getChatHud().addMessage(text);
+            this.minecraft.method_24288();
         }));
         this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel", new Object[0]), buttonWidget -> this.minecraft.openScreen(this.parent)));
         this.buttonGameMode = this.addButton(new ButtonWidget(this.width / 2 - 155, 100, 150, 20, I18n.translate("selectWorld.gameMode", new Object[0]), buttonWidget -> {

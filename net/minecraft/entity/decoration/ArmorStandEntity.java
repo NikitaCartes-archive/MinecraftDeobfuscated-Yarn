@@ -83,11 +83,6 @@ extends LivingEntity {
     }
 
     @Override
-    public boolean isGlowing() {
-        return !this.isMarker() && super.isGlowing();
-    }
-
-    @Override
     public void calculateDimensions() {
         double d = this.getX();
         double e = this.getY();
@@ -727,6 +722,11 @@ extends LivingEntity {
     @Override
     public boolean collides() {
         return super.collides() && !this.isMarker();
+    }
+
+    @Override
+    public boolean handleAttack(Entity attacker) {
+        return attacker instanceof PlayerEntity && !this.world.canPlayerModifyAt((PlayerEntity)attacker, new BlockPos(this));
     }
 
     @Override

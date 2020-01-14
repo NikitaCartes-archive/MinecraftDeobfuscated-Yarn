@@ -124,7 +124,11 @@ extends Entity {
     @Override
     public boolean handleAttack(Entity attacker) {
         if (attacker instanceof PlayerEntity) {
-            return this.damage(DamageSource.player((PlayerEntity)attacker), 0.0f);
+            PlayerEntity playerEntity = (PlayerEntity)attacker;
+            if (!this.world.canPlayerModifyAt(playerEntity, this.blockPos)) {
+                return true;
+            }
+            return this.damage(DamageSource.player(playerEntity), 0.0f);
         }
         return false;
     }

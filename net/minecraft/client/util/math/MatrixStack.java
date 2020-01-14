@@ -32,7 +32,10 @@ public class MatrixStack {
         Entry entry = this.stack.getLast();
         entry.modelMatrix.multiply(Matrix4f.scale(x, y, z));
         if (x == y && y == z) {
-            return;
+            if (x > 0.0f) {
+                return;
+            }
+            entry.normalMatrix.multiply(-1.0f);
         }
         float f = 1.0f / x;
         float g = 1.0f / y;

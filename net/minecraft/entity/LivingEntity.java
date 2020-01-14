@@ -963,7 +963,7 @@ extends Entity {
     }
 
     public void onDeath(DamageSource source) {
-        if (this.dead) {
+        if (this.removed || this.dead) {
             return;
         }
         Entity entity = source.getAttacker();

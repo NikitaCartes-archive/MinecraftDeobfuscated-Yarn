@@ -244,5 +244,9 @@ public class CrashReport {
         CrashReport crashReport = cause instanceof CrashException ? ((CrashException)cause).getReport() : new CrashReport(title, cause);
         return crashReport;
     }
+
+    public static void method_24305() {
+        new CrashReport("Don't panic!", new Throwable()).asString();
+    }
 }
 

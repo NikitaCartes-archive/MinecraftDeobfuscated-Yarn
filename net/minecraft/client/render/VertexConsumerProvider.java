@@ -42,7 +42,7 @@ public interface VertexConsumerProvider {
 
         @Override
         public VertexConsumer getBuffer(RenderLayer renderLayer) {
-            Optional<RenderLayer> optional = Optional.of(renderLayer);
+            Optional<RenderLayer> optional = renderLayer.method_24296();
             BufferBuilder bufferBuilder = this.getBufferInternal(renderLayer);
             if (!Objects.equals(this.currentLayer, optional)) {
                 RenderLayer renderLayer2;
@@ -75,7 +75,7 @@ public interface VertexConsumerProvider {
 
         public void draw(RenderLayer layer) {
             BufferBuilder bufferBuilder = this.getBufferInternal(layer);
-            boolean bl = Objects.equals(this.currentLayer, Optional.of(layer));
+            boolean bl = Objects.equals(this.currentLayer, layer.method_24296());
             if (!bl && bufferBuilder == this.fallbackBuffer) {
                 return;
             }

@@ -12,6 +12,7 @@ import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.IllagerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.IllusionerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -58,8 +59,13 @@ extends IllagerEntityRenderer<IllusionerEntity> {
     }
 
     @Override
-    protected boolean method_4056(IllusionerEntity illusionerEntity, boolean bl) {
+    protected boolean method_4056(IllusionerEntity illusionerEntity) {
         return true;
+    }
+
+    @Override
+    protected /* synthetic */ boolean method_4056(LivingEntity livingEntity) {
+        return this.method_4056((IllusionerEntity)livingEntity);
     }
 }
 

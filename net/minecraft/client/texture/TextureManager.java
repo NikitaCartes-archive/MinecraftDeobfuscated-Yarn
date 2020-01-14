@@ -39,6 +39,7 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class TextureManager
 implements TextureTickListener,
+AutoCloseable,
 ResourceReloadListener {
     private static final Logger LOGGER = LogManager.getLogger();
     public static final Identifier MISSING_IDENTIFIER = new Identifier("");
@@ -68,30 +69,36 @@ ResourceReloadListener {
         abstractTexture.bindTexture();
     }
 
-    public boolean registerTexture(Identifier id, AbstractTexture texture) {
-        boolean bl = true;
-        try {
-            texture.load(this.resourceContainer);
-        } catch (IOException iOException) {
-            if (id != MISSING_IDENTIFIER) {
-                LOGGER.warn("Failed to load texture: {}", (Object)id, (Object)iOException);
+    public void registerTexture(Identifier identifier, AbstractTexture abstractTexture) {
+        AbstractTexture abstractTexture2 = this.textures.put(identifier, abstractTexture = this.method_24303(identifier, abstractTexture));
+        if (abstractTexture2 != abstractTexture) {
+            if (abstractTexture2 != null && abstractTexture2 != MissingSprite.getMissingSpriteTexture()) {
+                abstractTexture2.clearGlId();
+                this.tickListeners.remove(abstractTexture2);
             }
-            texture = MissingSprite.getMissingSpriteTexture();
-            this.textures.put(id, texture);
-            bl = false;
+            if (abstractTexture instanceof TextureTickListener) {
+                this.tickListeners.add((TextureTickListener)((Object)abstractTexture));
+            }
+        }
+    }
+
+    private AbstractTexture method_24303(Identifier identifier, AbstractTexture abstractTexture) {
+        try {
+            abstractTexture.load(this.resourceContainer);
+            return abstractTexture;
+        } catch (IOException iOException) {
+            if (identifier != MISSING_IDENTIFIER) {
+                LOGGER.warn("Failed to load texture: {}", (Object)identifier, (Object)iOException);
+            }
+            return MissingSprite.getMissingSpriteTexture();
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Registering texture");
             CrashReportSection crashReportSection = crashReport.addElement("Resource location being registered");
-            AbstractTexture abstractTexture = texture;
-            crashReportSection.add("Resource location", id);
-            crashReportSection.add("Texture object class", () -> abstractTexture.getClass().getName());
+            AbstractTexture abstractTexture2 = abstractTexture;
+            crashReportSection.add("Resource location", identifier);
+            crashReportSection.add("Texture object class", () -> abstractTexture2.getClass().getName());
             throw new CrashException(crashReport);
         }
-        this.textures.put(id, texture);
-        if (bl && texture instanceof TextureTickListener) {
-            this.tickListeners.add((TextureTickListener)((Object)texture));
-        }
-        return bl;
     }
 
     @Nullable
@@ -138,6 +145,14 @@ ResourceReloadListener {
         if (abstractTexture != null) {
             TextureUtil.releaseTextureId(abstractTexture.getGlId());
         }
+    }
+
+    @Override
+    public void close() {
+        this.textures.values().forEach(AbstractTexture::clearGlId);
+        this.textures.clear();
+        this.tickListeners.clear();
+        this.dynamicIdCounters.clear();
     }
 
     @Override

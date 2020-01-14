@@ -23,7 +23,6 @@ import java.nio.IntBuffer;
 import java.util.Map;
 import java.util.UUID;
 import javax.imageio.ImageIO;
-import javax.xml.bind.DatatypeConverter;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.texture.TextureUtil;
@@ -131,7 +130,7 @@ public class RealmsTextureManager {
                             }
                         }
                         ImageIO.write((RenderedImage)bufferedImage, "png", byteArrayOutputStream);
-                        fetchedSkins.put(uuid, DatatypeConverter.printBase64Binary((byte[])byteArrayOutputStream.toByteArray()));
+                        fetchedSkins.put(uuid, new Base64().encodeToString(byteArrayOutputStream.toByteArray()));
                         skinFetchStatus.put(uuid, true);
                         break block17;
                     }

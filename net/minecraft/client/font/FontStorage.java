@@ -53,26 +53,22 @@ implements AutoCloseable {
     }
 
     public void setFonts(List<Font> fonts) {
-        for (Font font : this.fonts) {
-            font.close();
-        }
-        this.fonts.clear();
+        this.method_24290();
         this.closeGlyphAtlases();
-        this.glyphAtlases.clear();
         this.glyphRendererCache.clear();
         this.glyphCache.clear();
         this.charactersByWidth.clear();
         this.blankGlyphRenderer = this.getGlyphRenderer(BlankGlyph.INSTANCE);
         this.whiteRectangleGlyphRenderer = this.getGlyphRenderer(WhiteRectangleGlyph.INSTANCE);
         HashSet<Font> set = Sets.newHashSet();
-        block1: for (char c = '\u0000'; c < '\uffff'; c = (char)((char)(c + 1))) {
-            for (Font font2 : fonts) {
-                Glyph glyph = c == ' ' ? SPACE : font2.getGlyph(c);
+        block0: for (char c = '\u0000'; c < '\uffff'; c = (char)((char)(c + 1))) {
+            for (Font font : fonts) {
+                Glyph glyph = c == ' ' ? SPACE : font.getGlyph(c);
                 if (glyph == null) continue;
-                set.add(font2);
-                if (glyph == BlankGlyph.INSTANCE) continue block1;
+                set.add(font);
+                if (glyph == BlankGlyph.INSTANCE) continue block0;
                 this.charactersByWidth.computeIfAbsent(MathHelper.ceil(glyph.getAdvance(false)), i -> new CharArrayList()).add(c);
-                continue block1;
+                continue block0;
             }
         }
         fonts.stream().filter(set::contains).forEach(this.fonts::add);
@@ -80,13 +76,22 @@ implements AutoCloseable {
 
     @Override
     public void close() {
+        this.method_24290();
         this.closeGlyphAtlases();
     }
 
-    public void closeGlyphAtlases() {
+    private void method_24290() {
+        for (Font font : this.fonts) {
+            font.close();
+        }
+        this.fonts.clear();
+    }
+
+    private void closeGlyphAtlases() {
         for (GlyphAtlasTexture glyphAtlasTexture : this.glyphAtlases) {
             glyphAtlasTexture.close();
         }
+        this.glyphAtlases.clear();
     }
 
     public Glyph getGlyph(char character) {
