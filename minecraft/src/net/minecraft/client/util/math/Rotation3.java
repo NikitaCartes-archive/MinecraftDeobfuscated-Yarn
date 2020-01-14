@@ -96,7 +96,7 @@ public final class Rotation3 {
 		if (translation != null) {
 			matrix4f.a03 = translation.getX();
 			matrix4f.a13 = translation.getY();
-			matrix4f.a32 = translation.getZ();
+			matrix4f.a23 = translation.getZ();
 		}
 
 		return matrix4f;

@@ -100,13 +100,6 @@ public class BlockEntityRenderDispatcher {
 		renderer.render(blockEntity, tickDelta, matrices, vertexConsumers, i, OverlayTexture.DEFAULT_UV);
 	}
 
-	@Deprecated
-	public <E extends BlockEntity> void renderEntity(E entity, MatrixStack matrix) {
-		VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(this.bufferBuilder);
-		this.renderEntity(entity, matrix, immediate, 15728880, OverlayTexture.DEFAULT_UV);
-		immediate.draw();
-	}
-
 	public <E extends BlockEntity> boolean renderEntity(E entity, MatrixStack matrix, VertexConsumerProvider vertexConsumerProvider, int light, int overlay) {
 		BlockEntityRenderer<E> blockEntityRenderer = this.get(entity);
 		if (blockEntityRenderer == null) {

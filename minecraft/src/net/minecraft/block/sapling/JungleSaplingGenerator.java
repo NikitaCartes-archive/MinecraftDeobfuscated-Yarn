@@ -12,7 +12,7 @@ import net.minecraft.world.gen.feature.OakTreeFeature;
 public class JungleSaplingGenerator extends LargeTreeSaplingGenerator {
 	@Nullable
 	@Override
-	protected ConfiguredFeature<BranchedTreeFeatureConfig, ?> createTreeFeature(Random random) {
+	protected ConfiguredFeature<BranchedTreeFeatureConfig, ?> createTreeFeature(Random random, boolean bl) {
 		return new OakTreeFeature(BranchedTreeFeatureConfig::deserialize).configure(DefaultBiomeFeatures.JUNGLE_SAPLING_TREE_CONFIG);
 	}
 

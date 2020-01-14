@@ -25,7 +25,6 @@ public interface ModifiableWorld {
 	 * <li>0b1000000 // 64 - MECHANICAL_UPDATE - Signals that this is a mechanical update, usually caused by pistons moving blocks.</li>
 	 * </ul>
 	 * 
-	 * 
 	 * @param pos the target position
 	 * @param state the block state to set
 	 * @param flags the bitwise flag combination, as described above

@@ -114,20 +114,21 @@ public class ChunkBuilder {
 				this.bufferCount = this.threadBuffers.size();
 				CompletableFuture.runAsync(() -> {
 				}, this.executor).thenCompose(void_ -> task.run(blockBufferBuilderStorage)).whenComplete((result, throwable) -> {
-					this.mailbox.send(() -> {
-						if (result == ChunkBuilder.Result.SUCCESSFUL) {
-							blockBufferBuilderStorage.clear();
-						} else {
-							blockBufferBuilderStorage.reset();
-						}
-
-						this.threadBuffers.add(blockBufferBuilderStorage);
-						this.bufferCount = this.threadBuffers.size();
-						this.scheduleRunTasks();
-					});
 					if (throwable != null) {
 						CrashReport crashReport = CrashReport.create(throwable, "Batching chunks");
 						MinecraftClient.getInstance().setCrashReport(MinecraftClient.getInstance().addDetailsToCrashReport(crashReport));
+					} else {
+						this.mailbox.send(() -> {
+							if (result == ChunkBuilder.Result.SUCCESSFUL) {
+								blockBufferBuilderStorage.clear();
+							} else {
+								blockBufferBuilderStorage.reset();
+							}
+
+							this.threadBuffers.add(blockBufferBuilderStorage);
+							this.bufferCount = this.threadBuffers.size();
+							this.scheduleRunTasks();
+						});
 					}
 				});
 			}

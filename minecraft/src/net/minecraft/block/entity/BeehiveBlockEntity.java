@@ -110,6 +110,7 @@ public class BeehiveBlockEntity extends BlockEntity implements Tickable {
 
 	public void tryEnterHive(Entity entity, boolean hasNectar, int ticksInHive) {
 		if (this.bees.size() < 3) {
+			entity.stopRiding();
 			entity.removeAllPassengers();
 			CompoundTag compoundTag = new CompoundTag();
 			entity.saveToTag(compoundTag);
@@ -143,13 +144,14 @@ public class BeehiveBlockEntity extends BlockEntity implements Tickable {
 			compoundTag.removeUuid("UUID");
 			Direction direction = state.get(BeehiveBlock.FACING);
 			BlockPos blockPos2 = blockPos.offset(direction);
-			if (!this.world.getBlockState(blockPos2).getCollisionShape(this.world, blockPos2).isEmpty()) {
+			boolean bl = !this.world.getBlockState(blockPos2).getCollisionShape(this.world, blockPos2).isEmpty();
+			if (bl && beeState != BeehiveBlockEntity.BeeState.EMERGENCY) {
 				return false;
 			} else {
 				Entity entity = EntityType.loadEntityWithPassengers(compoundTag, this.world, entityx -> entityx);
 				if (entity != null) {
 					float f = entity.getWidth();
-					double d = 0.55 + (double)(f / 2.0F);
+					double d = bl ? 0.0 : 0.55 + (double)(f / 2.0F);
 					double e = (double)blockPos.getX() + 0.5 + d * (double)direction.getOffsetX();
 					double g = (double)blockPos.getY() + 0.5 - (double)(entity.getHeight() / 2.0F);
 					double h = (double)blockPos.getZ() + 0.5 + d * (double)direction.getOffsetZ();

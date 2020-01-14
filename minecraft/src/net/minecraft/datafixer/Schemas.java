@@ -9,6 +9,8 @@ import com.mojang.datafixers.schemas.Schema;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_4744;
+import net.minecraft.class_4745;
 import net.minecraft.datafixer.fix.AddTrappedChestFix;
 import net.minecraft.datafixer.fix.AdvancementsFix;
 import net.minecraft.datafixer.fix.BedBlockEntityFix;
@@ -501,6 +503,15 @@ public class Schemas {
 		Schema schema96 = builder.addSchema(2100, Schema2100::new);
 		builder.addFixer(new ChoiceTypesFix(schema96, "Added Bee and Bee Stinger", TypeReferences.ENTITY));
 		builder.addFixer(new ChoiceTypesFix(schema96, "Add beehive", TypeReferences.BLOCK_ENTITY));
+		builder.addFixer(new class_4745(schema96, false, "Rename sugar recipe", string -> "minecraft:sugar".equals(string) ? "sugar_from_sugar_cane" : string));
+		builder.addFixer(
+			new class_4744(
+				schema96,
+				false,
+				"Rename sugar recipe advancement",
+				string -> "minecraft:recipes/misc/sugar".equals(string) ? "minecraft:recipes/misc/sugar_from_sugar_cane" : string
+			)
+		);
 		Schema schema97 = builder.addSchema(2202, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new BiomeFormatFix(schema97, false));
 		Schema schema98 = builder.addSchema(2209, EMPTY_IDENTIFIER_NORMALIZE);

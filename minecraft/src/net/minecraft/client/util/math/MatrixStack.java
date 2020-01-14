@@ -26,13 +26,19 @@ public class MatrixStack {
 	public void scale(float x, float y, float z) {
 		MatrixStack.Entry entry = (MatrixStack.Entry)this.stack.getLast();
 		entry.modelMatrix.multiply(Matrix4f.scale(x, y, z));
-		if (x != y || y != z) {
-			float f = 1.0F / x;
-			float g = 1.0F / y;
-			float h = 1.0F / z;
-			float i = MathHelper.fastInverseCbrt(f * g * h);
-			entry.normalMatrix.multiply(Matrix3f.scale(i * f, i * g, i * h));
+		if (x == y && y == z) {
+			if (x > 0.0F) {
+				return;
+			}
+
+			entry.normalMatrix.multiply(-1.0F);
 		}
+
+		float f = 1.0F / x;
+		float g = 1.0F / y;
+		float h = 1.0F / z;
+		float i = MathHelper.fastInverseCbrt(f * g * h);
+		entry.normalMatrix.multiply(Matrix3f.scale(i * f, i * g, i * h));
 	}
 
 	public void multiply(Quaternion quaternion) {

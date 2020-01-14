@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Random;
 import java.util.function.BooleanSupplier;
 import java.util.regex.Pattern;
@@ -316,12 +317,15 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	@Override
 	public CrashReport populateCrashReport(CrashReport crashReport) {
 		crashReport = super.populateCrashReport(crashReport);
-		crashReport.getSystemDetailsSection().add("Is Modded", (CrashCallable<String>)(() -> {
-			String string = this.getServerModName();
-			return !"vanilla".equals(string) ? "Definitely; Server brand changed to '" + string + "'" : "Unknown (can't tell)";
-		}));
+		crashReport.getSystemDetailsSection().add("Is Modded", (CrashCallable<String>)(() -> (String)this.method_24307().orElse("Unknown (can't tell)")));
 		crashReport.getSystemDetailsSection().add("Type", (CrashCallable<String>)(() -> "Dedicated Server (map_server.txt)"));
 		return crashReport;
+	}
+
+	@Override
+	public Optional<String> method_24307() {
+		String string = this.getServerModName();
+		return !"vanilla".equals(string) ? Optional.of("Definitely; Server brand changed to '" + string + "'") : Optional.empty();
 	}
 
 	@Override

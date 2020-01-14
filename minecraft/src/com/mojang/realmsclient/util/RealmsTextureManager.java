@@ -19,7 +19,6 @@ import java.nio.IntBuffer;
 import java.util.Map;
 import java.util.UUID;
 import javax.imageio.ImageIO;
-import javax.xml.bind.DatatypeConverter;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.texture.TextureUtil;
@@ -110,7 +109,7 @@ public class RealmsTextureManager {
 								bufferedImage = new SkinProcessor().process(bufferedImage);
 								ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 								ImageIO.write(bufferedImage, "png", byteArrayOutputStream);
-								RealmsTextureManager.fetchedSkins.put(uuid, DatatypeConverter.printBase64Binary(byteArrayOutputStream.toByteArray()));
+								RealmsTextureManager.fetchedSkins.put(uuid, new Base64().encodeToString(byteArrayOutputStream.toByteArray()));
 								RealmsTextureManager.skinFetchStatus.put(uuid, true);
 							} catch (Exception var19) {
 								RealmsTextureManager.LOGGER.error("Couldn't download http texture", (Throwable)var19);

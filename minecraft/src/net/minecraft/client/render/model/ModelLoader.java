@@ -524,7 +524,7 @@ public class ModelLoader {
 				JsonUnbakedModel jsonUnbakedModel = (JsonUnbakedModel)unbakedModel;
 				if (jsonUnbakedModel.getRootModel() == GENERATION_MARKER) {
 					return ITEM_MODEL_GENERATOR.create(this.spriteAtlasManager::getSprite, jsonUnbakedModel)
-						.bake(this, jsonUnbakedModel, this.spriteAtlasManager::getSprite, settings, identifier);
+						.bake(this, jsonUnbakedModel, this.spriteAtlasManager::getSprite, settings, identifier, false);
 				}
 			}
 

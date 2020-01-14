@@ -11,7 +11,7 @@ import net.minecraft.world.gen.feature.MegaTreeFeatureConfig;
 public class SpruceSaplingGenerator extends LargeTreeSaplingGenerator {
 	@Nullable
 	@Override
-	protected ConfiguredFeature<BranchedTreeFeatureConfig, ?> createTreeFeature(Random random) {
+	protected ConfiguredFeature<BranchedTreeFeatureConfig, ?> createTreeFeature(Random random, boolean bl) {
 		return Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.SPRUCE_TREE_CONFIG);
 	}
 

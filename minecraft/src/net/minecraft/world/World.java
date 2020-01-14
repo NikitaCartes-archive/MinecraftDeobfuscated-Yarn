@@ -774,6 +774,7 @@ public abstract class World implements IWorld, AutoCloseable {
 
 	@Override
 	public List<Entity> getEntities(@Nullable Entity except, Box box, @Nullable Predicate<? super Entity> predicate) {
+		this.getProfiler().method_24270("getEntities");
 		List<Entity> list = Lists.<Entity>newArrayList();
 		int i = MathHelper.floor((box.x1 - 2.0) / 16.0);
 		int j = MathHelper.floor((box.x2 + 2.0) / 16.0);
@@ -793,6 +794,7 @@ public abstract class World implements IWorld, AutoCloseable {
 	}
 
 	public <T extends Entity> List<T> getEntities(@Nullable EntityType<T> type, Box box, Predicate<? super T> predicate) {
+		this.getProfiler().method_24270("getEntities");
 		int i = MathHelper.floor((box.x1 - 2.0) / 16.0);
 		int j = MathHelper.ceil((box.x2 + 2.0) / 16.0);
 		int k = MathHelper.floor((box.z1 - 2.0) / 16.0);
@@ -813,6 +815,7 @@ public abstract class World implements IWorld, AutoCloseable {
 
 	@Override
 	public <T extends Entity> List<T> getEntities(Class<? extends T> entityClass, Box box, @Nullable Predicate<? super T> predicate) {
+		this.getProfiler().method_24270("getEntities");
 		int i = MathHelper.floor((box.x1 - 2.0) / 16.0);
 		int j = MathHelper.ceil((box.x2 + 2.0) / 16.0);
 		int k = MathHelper.floor((box.z1 - 2.0) / 16.0);
@@ -834,6 +837,7 @@ public abstract class World implements IWorld, AutoCloseable {
 
 	@Override
 	public <T extends Entity> List<T> getEntitiesIncludingUngeneratedChunks(Class<? extends T> entityClass, Box box, @Nullable Predicate<? super T> predicate) {
+		this.getProfiler().method_24270("getLoadedEntities");
 		int i = MathHelper.floor((box.x1 - 2.0) / 16.0);
 		int j = MathHelper.ceil((box.x2 + 2.0) / 16.0);
 		int k = MathHelper.floor((box.z1 - 2.0) / 16.0);

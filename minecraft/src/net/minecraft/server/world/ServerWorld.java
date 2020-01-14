@@ -588,9 +588,11 @@ public class ServerWorld extends World {
 			entity.prevPitch = entity.pitch;
 			if (entity.updateNeeded) {
 				entity.age++;
-				this.getProfiler().push((Supplier<String>)(() -> Registry.ENTITY_TYPE.getId(entity.getType()).toString()));
+				Profiler profiler = this.getProfiler();
+				profiler.push((Supplier<String>)(() -> Registry.ENTITY_TYPE.getId(entity.getType()).toString()));
+				profiler.method_24270("tickNonPassenger");
 				entity.tick();
-				this.getProfiler().pop();
+				profiler.pop();
 			}
 
 			this.checkChunk(entity);
@@ -611,7 +613,11 @@ public class ServerWorld extends World {
 			entity2.prevPitch = entity2.pitch;
 			if (entity2.updateNeeded) {
 				entity2.age++;
+				Profiler profiler = this.getProfiler();
+				profiler.push((Supplier<String>)(() -> Registry.ENTITY_TYPE.getId(entity2.getType()).toString()));
+				profiler.method_24270("tickPassenger");
 				entity2.tickRiding();
+				profiler.pop();
 			}
 
 			this.checkChunk(entity2);

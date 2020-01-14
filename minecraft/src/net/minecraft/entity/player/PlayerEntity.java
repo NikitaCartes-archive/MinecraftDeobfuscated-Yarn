@@ -1298,17 +1298,11 @@ public abstract class PlayerEntity extends LivingEntity {
 			if (!this.isCreative()) {
 				double d = 8.0;
 				double e = 5.0;
+				Vec3d vec3d = new Vec3d((double)pos.getX() + 0.5, (double)pos.getY(), (double)pos.getZ() + 0.5);
 				List<HostileEntity> list = this.world
 					.getEntities(
 						HostileEntity.class,
-						new Box(
-							(double)pos.getX() - 8.0,
-							(double)pos.getY() - 5.0,
-							(double)pos.getZ() - 8.0,
-							(double)pos.getX() + 8.0,
-							(double)pos.getY() + 5.0,
-							(double)pos.getZ() + 8.0
-						),
+						new Box(vec3d.getX() - 8.0, vec3d.getY() - 5.0, vec3d.getZ() - 8.0, vec3d.getX() + 8.0, vec3d.getY() + 5.0, vec3d.getZ() + 8.0),
 						hostileEntity -> hostileEntity.isAngryAt(this)
 					);
 				if (!list.isEmpty()) {
@@ -1334,16 +1328,12 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	private boolean isWithinSleepingRange(BlockPos sleepPos, Direction direction) {
-		if (Math.abs(this.getX() - (double)sleepPos.getX()) <= 3.0
-			&& Math.abs(this.getY() - (double)sleepPos.getY()) <= 2.0
-			&& Math.abs(this.getZ() - (double)sleepPos.getZ()) <= 3.0) {
-			return true;
-		} else {
-			BlockPos blockPos = sleepPos.offset(direction.getOpposite());
-			return Math.abs(this.getX() - (double)blockPos.getX()) <= 3.0
-				&& Math.abs(this.getY() - (double)blockPos.getY()) <= 2.0
-				&& Math.abs(this.getZ() - (double)blockPos.getZ()) <= 3.0;
-		}
+		return this.method_24278(sleepPos) || this.method_24278(sleepPos.offset(direction.getOpposite()));
+	}
+
+	private boolean method_24278(BlockPos blockPos) {
+		Vec3d vec3d = new Vec3d((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5);
+		return Math.abs(this.getX() - vec3d.getX()) <= 3.0 && Math.abs(this.getY() - vec3d.getY()) <= 2.0 && Math.abs(this.getZ() - vec3d.getZ()) <= 3.0;
 	}
 
 	private boolean isBedObstructed(BlockPos pos, Direction direction) {

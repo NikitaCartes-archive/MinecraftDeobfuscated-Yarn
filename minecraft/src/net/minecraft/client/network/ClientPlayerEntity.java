@@ -716,7 +716,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			}
 		}
 
-		if (this.input.jumping && !bl6 && !bl && !this.abilities.flying && !this.hasVehicle()) {
+		if (this.input.jumping && !bl6 && !bl && !this.abilities.flying && !this.hasVehicle() && !this.isClimbing()) {
 			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.CHEST);
 			if (itemStack.getItem() == Items.ELYTRA && ElytraItem.isUsable(itemStack) && this.method_23668()) {
 				this.networkHandler.sendPacket(new ClientCommandC2SPacket(this, ClientCommandC2SPacket.Mode.START_FALL_FLYING));

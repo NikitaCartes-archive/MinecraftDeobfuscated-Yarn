@@ -1,18 +1,24 @@
 package net.minecraft.util.profiler;
 
+import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import com.google.common.collect.Maps;
+import it.unimi.dsi.fastutil.objects.Object2LongMap;
+import it.unimi.dsi.fastutil.objects.Object2LongMaps;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
+import java.util.Map.Entry;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_4748;
 import net.minecraft.util.Util;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
@@ -20,17 +26,36 @@ import org.apache.logging.log4j.Logger;
 
 public class ProfileResultImpl implements ProfileResult {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final Map<String, Long> timings;
-	private final Map<String, Long> field_19382;
+	private static final class_4748 field_21823 = new class_4748() {
+		@Override
+		public long method_24272() {
+			return 0L;
+		}
+
+		@Override
+		public long method_24273() {
+			return 0L;
+		}
+
+		@Override
+		public Object2LongMap<String> method_24274() {
+			return Object2LongMaps.emptyMap();
+		}
+	};
+	private static final Splitter field_21824 = Splitter.on('\u001e');
+	private static final Comparator<Entry<String, ProfileResultImpl.class_4747>> field_21825 = Entry.comparingByValue(
+			Comparator.comparingLong(arg -> arg.field_21828)
+		)
+		.reversed();
+	private final Map<String, ? extends class_4748> field_21826;
 	private final long startTime;
 	private final int startTick;
 	private final long endTime;
 	private final int endTick;
 	private final int field_19383;
 
-	public ProfileResultImpl(Map<String, Long> timings, Map<String, Long> map, long l, int i, long m, int j) {
-		this.timings = timings;
-		this.field_19382 = map;
+	public ProfileResultImpl(Map<String, ? extends class_4748> timings, long l, int i, long m, int j) {
+		this.field_21826 = timings;
 		this.startTime = l;
 		this.startTick = i;
 		this.endTime = m;
@@ -38,12 +63,19 @@ public class ProfileResultImpl implements ProfileResult {
 		this.field_19383 = j - i;
 	}
 
+	private class_4748 method_24262(String string) {
+		class_4748 lv = (class_4748)this.field_21826.get(string);
+		return lv != null ? lv : field_21823;
+	}
+
 	@Override
 	public List<ProfilerTiming> getTimings(String parentTiming) {
 		String string = parentTiming;
-		long l = this.timings.containsKey("root") ? (Long)this.timings.get("root") : 0L;
-		long m = (Long)this.timings.getOrDefault(parentTiming, -1L);
-		long n = (Long)this.field_19382.getOrDefault(parentTiming, 0L);
+		class_4748 lv = this.method_24262("root");
+		long l = lv.method_24272();
+		class_4748 lv2 = this.method_24262(parentTiming);
+		long m = lv2.method_24272();
+		long n = lv2.method_24273();
 		List<ProfilerTiming> list = Lists.<ProfilerTiming>newArrayList();
 		if (!parentTiming.isEmpty()) {
 			parentTiming = parentTiming + '\u001e';
@@ -51,9 +83,9 @@ public class ProfileResultImpl implements ProfileResult {
 
 		long o = 0L;
 
-		for (String string2 : this.timings.keySet()) {
-			if (string2.length() > parentTiming.length() && string2.startsWith(parentTiming) && string2.indexOf(30, parentTiming.length() + 1) < 0) {
-				o += this.timings.get(string2);
+		for (String string2 : this.field_21826.keySet()) {
+			if (method_24255(parentTiming, string2)) {
+				o += this.method_24262(string2).method_24272();
 			}
 		}
 
@@ -66,22 +98,15 @@ public class ProfileResultImpl implements ProfileResult {
 			l = o;
 		}
 
-		Set<String> set = Sets.<String>newHashSet(this.timings.keySet());
-		set.addAll(this.field_19382.keySet());
-
-		for (String string3 : set) {
-			if (string3.length() > parentTiming.length() && string3.startsWith(parentTiming) && string3.indexOf(30, parentTiming.length() + 1) < 0) {
-				long p = (Long)this.timings.getOrDefault(string3, 0L);
+		for (String string3 : this.field_21826.keySet()) {
+			if (method_24255(parentTiming, string3)) {
+				class_4748 lv3 = this.method_24262(string3);
+				long p = lv3.method_24272();
 				double d = (double)p * 100.0 / (double)o;
 				double e = (double)p * 100.0 / (double)l;
 				String string4 = string3.substring(parentTiming.length());
-				long q = (Long)this.field_19382.getOrDefault(string3, 0L);
-				list.add(new ProfilerTiming(string4, d, e, q));
+				list.add(new ProfilerTiming(string4, d, e, lv3.method_24273()));
 			}
-		}
-
-		for (String string3x : this.timings.keySet()) {
-			this.timings.put(string3x, (Long)this.timings.get(string3x) * 999L / 1000L);
 		}
 
 		if ((float)o > f) {
@@ -91,6 +116,28 @@ public class ProfileResultImpl implements ProfileResult {
 		Collections.sort(list);
 		list.add(0, new ProfilerTiming(string, 100.0, (double)o * 100.0 / (double)l, n));
 		return list;
+	}
+
+	private static boolean method_24255(String string, String string2) {
+		return string2.length() > string.length() && string2.startsWith(string) && string2.indexOf(30, string.length() + 1) < 0;
+	}
+
+	private Map<String, ProfileResultImpl.class_4747> method_24264() {
+		Map<String, ProfileResultImpl.class_4747> map = Maps.newTreeMap();
+		this.field_21826
+			.forEach(
+				(string, arg) -> {
+					Object2LongMap<String> object2LongMap = arg.method_24274();
+					if (!object2LongMap.isEmpty()) {
+						List<String> list = field_21824.splitToList(string);
+						object2LongMap.forEach(
+							(stringx, long_) -> ((ProfileResultImpl.class_4747)map.computeIfAbsent(stringx, stringxx -> new ProfileResultImpl.class_4747()))
+									.method_24267(list.iterator(), long_)
+						);
+					}
+				}
+			);
+		return map;
 	}
 
 	@Override
@@ -150,21 +197,44 @@ public class ProfileResultImpl implements ProfileResult {
 		stringBuilder.append("--- BEGIN PROFILE DUMP ---\n\n");
 		this.appendTiming(0, "root", stringBuilder);
 		stringBuilder.append("--- END PROFILE DUMP ---\n\n");
+		Map<String, ProfileResultImpl.class_4747> map = this.method_24264();
+		if (!map.isEmpty()) {
+			stringBuilder.append("--- BEGIN COUNTER DUMP ---\n\n");
+			this.method_24260(map, stringBuilder, tickSpan);
+			stringBuilder.append("--- END COUNTER DUMP ---\n\n");
+		}
+
 		return stringBuilder.toString();
+	}
+
+	private static StringBuilder method_24256(StringBuilder stringBuilder, int i) {
+		stringBuilder.append(String.format("[%02d] ", i));
+
+		for (int j = 0; j < i; j++) {
+			stringBuilder.append("|   ");
+		}
+
+		return stringBuilder;
 	}
 
 	private void appendTiming(int level, String name, StringBuilder sb) {
 		List<ProfilerTiming> list = this.getTimings(name);
+		Object2LongMap<String> object2LongMap = ((class_4748)this.field_21826.get(name)).method_24274();
+		object2LongMap.forEach(
+			(string, long_) -> method_24256(sb, level)
+					.append('#')
+					.append(string)
+					.append(' ')
+					.append(long_)
+					.append('/')
+					.append(long_ / (long)this.field_19383)
+					.append('\n')
+		);
 		if (list.size() >= 3) {
 			for (int i = 1; i < list.size(); i++) {
 				ProfilerTiming profilerTiming = (ProfilerTiming)list.get(i);
-				sb.append(String.format("[%02d] ", level));
-
-				for (int j = 0; j < level; j++) {
-					sb.append("|   ");
-				}
-
-				sb.append(profilerTiming.name)
+				method_24256(sb, level)
+					.append(profilerTiming.name)
 					.append('(')
 					.append(profilerTiming.field_19384)
 					.append('/')
@@ -178,12 +248,39 @@ public class ProfileResultImpl implements ProfileResult {
 				if (!"unspecified".equals(profilerTiming.name)) {
 					try {
 						this.appendTiming(level + 1, name + '\u001e' + profilerTiming.name, sb);
-					} catch (Exception var8) {
-						sb.append("[[ EXCEPTION ").append(var8).append(" ]]");
+					} catch (Exception var9) {
+						sb.append("[[ EXCEPTION ").append(var9).append(" ]]");
 					}
 				}
 			}
 		}
+	}
+
+	private void method_24253(int i, String string, ProfileResultImpl.class_4747 arg, int j, StringBuilder stringBuilder) {
+		method_24256(stringBuilder, i)
+			.append(string)
+			.append(" total:")
+			.append(arg.field_21827)
+			.append('/')
+			.append(arg.field_21828)
+			.append(" average: ")
+			.append(arg.field_21827 / (long)j)
+			.append('/')
+			.append(arg.field_21828 / (long)j)
+			.append('\n');
+		arg.field_21829
+			.entrySet()
+			.stream()
+			.sorted(field_21825)
+			.forEach(entry -> this.method_24253(i + 1, (String)entry.getKey(), (ProfileResultImpl.class_4747)entry.getValue(), j, stringBuilder));
+	}
+
+	private void method_24260(Map<String, ProfileResultImpl.class_4747> map, StringBuilder stringBuilder, int i) {
+		map.forEach((string, arg) -> {
+			stringBuilder.append("-- Counter: ").append(string).append(" --\n");
+			this.method_24253(0, "root", (ProfileResultImpl.class_4747)arg.field_21829.get("root"), i, stringBuilder);
+			stringBuilder.append("\n\n");
+		});
 	}
 
 	private static String generateWittyComment() {
@@ -214,5 +311,23 @@ public class ProfileResultImpl implements ProfileResult {
 	@Override
 	public int getTickSpan() {
 		return this.field_19383;
+	}
+
+	static class class_4747 {
+		private long field_21827;
+		private long field_21828;
+		private final Map<String, ProfileResultImpl.class_4747> field_21829 = Maps.<String, ProfileResultImpl.class_4747>newHashMap();
+
+		private class_4747() {
+		}
+
+		public void method_24267(Iterator<String> iterator, long l) {
+			this.field_21828 += l;
+			if (!iterator.hasNext()) {
+				this.field_21827 += l;
+			} else {
+				((ProfileResultImpl.class_4747)this.field_21829.computeIfAbsent(iterator.next(), string -> new ProfileResultImpl.class_4747())).method_24267(iterator, l);
+			}
+		}
 	}
 }

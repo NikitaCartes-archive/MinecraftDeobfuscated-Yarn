@@ -1073,7 +1073,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	public void onDeath(DamageSource source) {
-		if (!this.dead) {
+		if (!this.removed && !this.dead) {
 			Entity entity = source.getAttacker();
 			LivingEntity livingEntity = this.getPrimeAdversary();
 			if (this.scoreAmount >= 0 && livingEntity != null) {
@@ -1104,7 +1104,6 @@ public abstract class LivingEntity extends Entity {
 	 * Performs secondary effects after this mob has been killed.
 	 * 
 	 * <p> The default behaviour spawns a wither rose if {@code adversary} is a {@code WitherEntity}.
-	 * 
 	 * 
 	 * @param adversary the main adversary responsible for this entity's death
 	 */

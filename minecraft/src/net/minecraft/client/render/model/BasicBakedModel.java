@@ -21,6 +21,7 @@ public class BasicBakedModel implements BakedModel {
 	protected final Map<Direction, List<BakedQuad>> faceQuads;
 	protected final boolean usesAo;
 	protected final boolean depthInGui;
+	protected final boolean field_21864;
 	protected final Sprite sprite;
 	protected final ModelTransformation transformation;
 	protected final ModelItemPropertyOverrideList itemPropertyOverrides;
@@ -29,18 +30,20 @@ public class BasicBakedModel implements BakedModel {
 		List<BakedQuad> quads,
 		Map<Direction, List<BakedQuad>> faceQuads,
 		boolean usesAo,
-		boolean is3dInGui,
+		boolean bl,
+		boolean bl2,
 		Sprite sprite,
-		ModelTransformation transformation,
-		ModelItemPropertyOverrideList itemPropertyOverrides
+		ModelTransformation modelTransformation,
+		ModelItemPropertyOverrideList modelItemPropertyOverrideList
 	) {
 		this.quads = quads;
 		this.faceQuads = faceQuads;
 		this.usesAo = usesAo;
-		this.depthInGui = is3dInGui;
+		this.depthInGui = bl2;
+		this.field_21864 = bl;
 		this.sprite = sprite;
-		this.transformation = transformation;
-		this.itemPropertyOverrides = itemPropertyOverrides;
+		this.transformation = modelTransformation;
+		this.itemPropertyOverrides = modelItemPropertyOverrideList;
 	}
 
 	@Override
@@ -56,6 +59,11 @@ public class BasicBakedModel implements BakedModel {
 	@Override
 	public boolean hasDepthInGui() {
 		return this.depthInGui;
+	}
+
+	@Override
+	public boolean method_24304() {
+		return this.field_21864;
 	}
 
 	@Override
@@ -86,21 +94,25 @@ public class BasicBakedModel implements BakedModel {
 		private final boolean usesAo;
 		private Sprite particleTexture;
 		private final boolean depthInGui;
+		private final boolean field_21865;
 		private final ModelTransformation transformation;
 
-		public Builder(JsonUnbakedModel unbakedModel, ModelItemPropertyOverrideList itemPropertyOverrides) {
-			this(unbakedModel.useAmbientOcclusion(), unbakedModel.hasDepthInGui(), unbakedModel.getTransformations(), itemPropertyOverrides);
+		public Builder(JsonUnbakedModel unbakedModel, ModelItemPropertyOverrideList itemPropertyOverrides, boolean bl) {
+			this(unbakedModel.useAmbientOcclusion(), unbakedModel.method_24298().method_24299(), bl, unbakedModel.getTransformations(), itemPropertyOverrides);
 		}
 
-		private Builder(boolean usesAo, boolean depthInGui, ModelTransformation transformation, ModelItemPropertyOverrideList itemPropertyOverrides) {
+		private Builder(
+			boolean usesAo, boolean depthInGui, boolean bl, ModelTransformation modelTransformation, ModelItemPropertyOverrideList modelItemPropertyOverrideList
+		) {
 			for (Direction direction : Direction.values()) {
 				this.faceQuads.put(direction, Lists.newArrayList());
 			}
 
-			this.itemPropertyOverrides = itemPropertyOverrides;
+			this.itemPropertyOverrides = modelItemPropertyOverrideList;
 			this.usesAo = usesAo;
 			this.depthInGui = depthInGui;
-			this.transformation = transformation;
+			this.field_21865 = bl;
+			this.transformation = modelTransformation;
 		}
 
 		public BasicBakedModel.Builder addQuad(Direction side, BakedQuad quad) {
@@ -122,7 +134,9 @@ public class BasicBakedModel implements BakedModel {
 			if (this.particleTexture == null) {
 				throw new RuntimeException("Missing particle!");
 			} else {
-				return new BasicBakedModel(this.quads, this.faceQuads, this.usesAo, this.depthInGui, this.particleTexture, this.transformation, this.itemPropertyOverrides);
+				return new BasicBakedModel(
+					this.quads, this.faceQuads, this.usesAo, this.depthInGui, this.field_21865, this.particleTexture, this.transformation, this.itemPropertyOverrides
+				);
 			}
 		}
 	}

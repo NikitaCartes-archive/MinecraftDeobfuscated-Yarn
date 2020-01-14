@@ -361,6 +361,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			levelInfo = new LevelInfo(levelProperties);
 		}
 
+		levelProperties.method_24285(this.getServerModName(), this.method_24307().isPresent());
 		this.loadWorldDataPacks(worldSaveHandler.getWorldDir(), levelProperties);
 		WorldGenerationProgressListener worldGenerationProgressListener = this.worldGenerationProgressListenerFactory.create(11);
 		this.createWorlds(worldSaveHandler, levelProperties, levelInfo, worldGenerationProgressListener);
@@ -719,6 +720,11 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		}
 	}
 
+	protected void executeTask(ServerTask serverTask) {
+		this.getProfiler().method_24270("runTask");
+		super.executeTask(serverTask);
+	}
+
 	public void setFavicon(ServerMetadata metadata) {
 		File file = this.getFile("server-icon.png");
 		if (!file.exists()) {
@@ -906,6 +912,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				return;
 			}
 
+			CrashReport.method_24305();
 			Bootstrap.initialize();
 			Bootstrap.logMissingTranslations();
 			String string = optionSet.valueOf(optionSpec9);
@@ -1060,6 +1067,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 		return crashReport;
 	}
+
+	public abstract Optional<String> method_24307();
 
 	public boolean hasGameDir() {
 		return this.gameDir != null;

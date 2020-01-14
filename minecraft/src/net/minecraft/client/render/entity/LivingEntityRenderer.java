@@ -2,6 +2,7 @@ package net.minecraft.client.render.entity;
 
 import com.google.common.collect.Lists;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -105,24 +106,14 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		}
 
 		this.model.animateModel(livingEntity, o, n, g);
-		boolean bl = livingEntity.isGlowing();
-		boolean bl2 = this.method_4056(livingEntity, false);
-		boolean bl3 = !bl2 && !livingEntity.canSeePlayer(MinecraftClient.getInstance().player);
 		this.model.setAngles(livingEntity, o, n, lx, k, m);
-		Identifier identifier = this.getTexture(livingEntity);
-		RenderLayer renderLayer;
-		if (bl3) {
-			renderLayer = RenderLayer.getEntityTranslucent(identifier);
-		} else if (bl2) {
-			renderLayer = this.model.getLayer(identifier);
-		} else {
-			renderLayer = RenderLayer.getOutline(identifier);
-		}
-
-		if (bl2 || bl3 || bl) {
+		boolean bl = this.method_4056(livingEntity);
+		boolean bl2 = !bl && !livingEntity.canSeePlayer(MinecraftClient.getInstance().player);
+		RenderLayer renderLayer = this.method_24302(livingEntity, bl, bl2);
+		if (renderLayer != null) {
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(renderLayer);
 			int p = getOverlay(livingEntity, this.getWhiteOverlayProgress(livingEntity, g));
-			this.model.render(matrixStack, vertexConsumer, i, p, 1.0F, 1.0F, 1.0F, bl3 ? 0.15F : 1.0F);
+			this.model.render(matrixStack, vertexConsumer, i, p, 1.0F, 1.0F, 1.0F, bl2 ? 0.15F : 1.0F);
 		}
 
 		if (!livingEntity.isSpectator()) {
@@ -135,12 +126,24 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		super.render(livingEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
+	@Nullable
+	protected RenderLayer method_24302(T livingEntity, boolean bl, boolean bl2) {
+		Identifier identifier = this.getTexture(livingEntity);
+		if (bl2) {
+			return RenderLayer.getEntityTranslucent(identifier);
+		} else if (bl) {
+			return this.model.getLayer(identifier);
+		} else {
+			return livingEntity.isGlowing() ? RenderLayer.getOutline(identifier) : null;
+		}
+	}
+
 	public static int getOverlay(LivingEntity entity, float whiteOverlayProgress) {
 		return OverlayTexture.packUv(OverlayTexture.getU(whiteOverlayProgress), OverlayTexture.getV(entity.hurtTime > 0 || entity.deathTime > 0));
 	}
 
-	protected boolean method_4056(T livingEntity, boolean bl) {
-		return !livingEntity.isInvisible() || bl;
+	protected boolean method_4056(T livingEntity) {
+		return !livingEntity.isInvisible();
 	}
 
 	private static float getYaw(Direction direction) {

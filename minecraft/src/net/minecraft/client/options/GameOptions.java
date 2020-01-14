@@ -115,6 +115,7 @@ public class GameOptions {
 	public boolean bobView = true;
 	public boolean sneakToggled;
 	public boolean sprintToggled;
+	public boolean field_21840;
 	public final KeyBinding keyForward = new KeyBinding("key.forward", 87, "key.categories.movement");
 	public final KeyBinding keyLeft = new KeyBinding("key.left", 65, "key.categories.movement");
 	public final KeyBinding keyBack = new KeyBinding("key.back", 83, "key.categories.movement");
@@ -526,6 +527,10 @@ public class GameOptions {
 						this.glDebugVerbosity = Integer.parseInt(string2);
 					}
 
+					if ("skipMultiplayerWarning".equals(string)) {
+						this.field_21840 = "true".equals(string2);
+					}
+
 					for (KeyBinding keyBinding : this.keysAll) {
 						if (string.equals("key_" + keyBinding.getId())) {
 							keyBinding.setKeyCode(InputUtil.fromName(string2));
@@ -652,6 +657,7 @@ public class GameOptions {
 				printWriter.println("mouseWheelSensitivity:" + this.mouseWheelSensitivity);
 				printWriter.println("rawMouseInput:" + Option.RAW_MOUSE_INPUT.get(this));
 				printWriter.println("glDebugVerbosity:" + this.glDebugVerbosity);
+				printWriter.println("skipMultiplayerWarning:" + this.field_21840);
 
 				for (KeyBinding keyBinding : this.keysAll) {
 					printWriter.println("key_" + keyBinding.getId() + ":" + keyBinding.getName());

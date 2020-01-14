@@ -474,6 +474,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> method_20619(ChunkPos chunkPos) {
 		return CompletableFuture.supplyAsync(() -> {
 			try {
+				this.world.getProfiler().method_24270("chunkLoad");
 				CompoundTag compoundTag = this.getUpdatedChunkTag(chunkPos);
 				if (compoundTag != null) {
 					boolean bl = compoundTag.contains("Level", 10) && compoundTag.getCompound("Level").contains("Status", 8);
@@ -505,6 +506,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> completableFuture = this.createChunkRegionFuture(
 			chunkPos, chunkStatus.getTaskMargin(), i -> this.getRequiredStatusForGeneration(chunkStatus, i)
 		);
+		this.world.getProfiler().method_24271(() -> "chunkGenerate " + chunkStatus.getId());
 		return completableFuture.thenComposeAsync(
 			either -> (CompletableFuture)either.map(
 					list -> {
@@ -656,6 +658,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 					}
 				}
 
+				this.world.getProfiler().method_24270("chunkSave");
 				CompoundTag compoundTagx = ChunkSerializer.serialize(this.world, chunk);
 				this.setTagAt(chunkPos, compoundTagx);
 				return true;

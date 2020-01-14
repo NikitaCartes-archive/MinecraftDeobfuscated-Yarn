@@ -148,36 +148,36 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 		Matrix3f matrix3f = entry.getNormal();
 
 		for (int t = 1; t <= 8; t++) {
-			float u = MathHelper.sin((float)(t % 8) * (float) (Math.PI * 2) / 8.0F) * 0.75F;
-			float v = MathHelper.cos((float)(t % 8) * (float) (Math.PI * 2) / 8.0F) * 0.75F;
-			float w = (float)(t % 8) / 8.0F;
+			float u = MathHelper.sin((float)t * (float) (Math.PI * 2) / 8.0F) * 0.75F;
+			float v = MathHelper.cos((float)t * (float) (Math.PI * 2) / 8.0F) * 0.75F;
+			float w = (float)t / 8.0F;
 			vertexConsumer.vertex(matrix4f, q * 0.2F, r * 0.2F, 0.0F)
 				.color(0, 0, 0, 255)
 				.texture(s, n)
 				.overlay(OverlayTexture.DEFAULT_UV)
 				.light(k)
-				.normal(matrix3f, 0.0F, 1.0F, 0.0F)
+				.normal(matrix3f, 0.0F, -1.0F, 0.0F)
 				.next();
 			vertexConsumer.vertex(matrix4f, q, r, m)
 				.color(255, 255, 255, 255)
 				.texture(s, o)
 				.overlay(OverlayTexture.DEFAULT_UV)
 				.light(k)
-				.normal(matrix3f, 0.0F, 1.0F, 0.0F)
+				.normal(matrix3f, 0.0F, -1.0F, 0.0F)
 				.next();
 			vertexConsumer.vertex(matrix4f, u, v, m)
 				.color(255, 255, 255, 255)
 				.texture(w, o)
 				.overlay(OverlayTexture.DEFAULT_UV)
 				.light(k)
-				.normal(matrix3f, 0.0F, 1.0F, 0.0F)
+				.normal(matrix3f, 0.0F, -1.0F, 0.0F)
 				.next();
 			vertexConsumer.vertex(matrix4f, u * 0.2F, v * 0.2F, 0.0F)
 				.color(0, 0, 0, 255)
 				.texture(w, n)
 				.overlay(OverlayTexture.DEFAULT_UV)
 				.light(k)
-				.normal(matrix3f, 0.0F, 1.0F, 0.0F)
+				.normal(matrix3f, 0.0F, -1.0F, 0.0F)
 				.next();
 			q = u;
 			r = v;
