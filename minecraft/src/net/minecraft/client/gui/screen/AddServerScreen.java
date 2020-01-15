@@ -21,7 +21,7 @@ public class AddServerScreen extends Screen {
 	private TextFieldWidget addressField;
 	private TextFieldWidget serverNameField;
 	private ButtonWidget resourcePackOptionButton;
-	private final Screen field_21791;
+	private final Screen parent;
 	private final Predicate<String> addressTextFilter = string -> {
 		if (ChatUtil.isEmpty(string)) {
 			return true;
@@ -40,11 +40,11 @@ public class AddServerScreen extends Screen {
 		}
 	};
 
-	public AddServerScreen(Screen screen, BooleanConsumer booleanConsumer, ServerInfo serverInfo) {
+	public AddServerScreen(Screen parent, BooleanConsumer callback, ServerInfo server) {
 		super(new TranslatableText("addServer.title"));
-		this.field_21791 = screen;
-		this.callback = booleanConsumer;
-		this.server = serverInfo;
+		this.parent = parent;
+		this.callback = callback;
+		this.server = server;
 	}
 
 	@Override
@@ -87,7 +87,7 @@ public class AddServerScreen extends Screen {
 		this.addButton(
 			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 18, 200, 20, I18n.translate("gui.cancel"), buttonWidget -> this.callback.accept(false))
 		);
-		this.method_24183();
+		this.updateButtonActiveState();
 	}
 
 	@Override
@@ -100,7 +100,7 @@ public class AddServerScreen extends Screen {
 	}
 
 	private void onClose(String text) {
-		this.method_24183();
+		this.updateButtonActiveState();
 	}
 
 	@Override
@@ -116,11 +116,11 @@ public class AddServerScreen extends Screen {
 
 	@Override
 	public void onClose() {
-		this.method_24183();
-		this.minecraft.openScreen(this.field_21791);
+		this.updateButtonActiveState();
+		this.minecraft.openScreen(this.parent);
 	}
 
-	private void method_24183() {
+	private void updateButtonActiveState() {
 		String string = this.addressField.getText();
 		boolean bl = !string.isEmpty() && string.split(":").length > 0 && string.indexOf(32) == -1;
 		this.buttonAdd.active = bl && !this.serverNameField.getText().isEmpty();

@@ -756,6 +756,10 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 							m = h - this.updatedX;
 							n = i - this.updatedY;
 							o = j - this.updatedZ;
+							if (n > 0.0) {
+								this.player.fallDistance = 0.0F;
+							}
+
 							if (this.player.onGround && !packet.isOnGround() && n > 0.0) {
 								this.player.jump();
 							}
@@ -799,7 +803,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 								&& !serverWorld.isAreaNotEmpty(this.player.getBoundingBox().expand(0.0625).stretch(0.0, -0.55, 0.0));
 							this.player.onGround = packet.isOnGround();
 							this.player.getServerWorld().getChunkManager().updateCameraPosition(this.player);
-							this.player.method_14207(this.player.getY() - g, packet.isOnGround());
+							this.player.handleFall(this.player.getY() - g, packet.isOnGround());
 							this.updatedX = this.player.getX();
 							this.updatedY = this.player.getY();
 							this.updatedZ = this.player.getZ();
@@ -1095,7 +1099,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		this.player.updateLastActionTime();
 		if (entity != null) {
 			boolean bl = this.player.canSee(entity);
-			float f = this.player.method_24222(1.0F) + 0.25F + entity.getWidth() * 0.5F;
+			float f = this.player.method_24319(1.0F) + 0.25F + entity.getWidth() * 0.5F;
 			double d = (double)(f * f);
 			if (!bl) {
 				d = 6.25;
@@ -1107,7 +1111,10 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 					this.player.interact(entity, hand);
 				} else if (rpacket.getType() == PlayerInteractEntityC2SPacket.InteractionType.INTERACT_AT) {
 					Hand hand = rpacket.getHand();
-					entity.interactAt(this.player, rpacket.getHitPosition(), hand);
+					ActionResult actionResult = entity.interactAt(this.player, rpacket.getHitPosition(), hand);
+					if (actionResult.shouldSwingHand()) {
+						this.player.swingHand(hand, true);
+					}
 				} else if (rpacket.getType() == PlayerInteractEntityC2SPacket.InteractionType.ATTACK) {
 					if (entity instanceof ItemEntity || entity instanceof ExperienceOrbEntity || entity instanceof ProjectileEntity || entity == this.player) {
 						this.disconnect(new TranslatableText("multiplayer.disconnect.invalid_entity_attacked"));
@@ -1116,10 +1123,12 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 					}
 
 					this.player.attack(entity);
+				} else if (rpacket.getType() == PlayerInteractEntityC2SPacket.InteractionType.AIR_SWING) {
+					this.player.resetLastAttackedTicks();
 				}
 			}
 		} else {
-			this.player.method_24219();
+			this.player.method_24316();
 		}
 	}
 

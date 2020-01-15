@@ -54,7 +54,7 @@ public class LlamaDecorFeatureRenderer extends FeatureRenderer<LlamaEntity, Llam
 			identifier = TRADER_LLAMA_DECOR;
 		}
 
-		this.getModel().copyStateTo(this.model);
+		this.getContextModel().copyStateTo(this.model);
 		this.model.setAngles(llamaEntity, f, g, j, k, l);
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(identifier));
 		this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);

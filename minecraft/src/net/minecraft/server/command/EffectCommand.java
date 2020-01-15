@@ -175,7 +175,7 @@ public class EffectCommand {
 		int i = 0;
 
 		for (Entity entity : targets) {
-			if (entity instanceof LivingEntity && ((LivingEntity)entity).tryRemoveStatusEffect(effect)) {
+			if (entity instanceof LivingEntity && ((LivingEntity)entity).removeStatusEffect(effect)) {
 				i++;
 			}
 		}

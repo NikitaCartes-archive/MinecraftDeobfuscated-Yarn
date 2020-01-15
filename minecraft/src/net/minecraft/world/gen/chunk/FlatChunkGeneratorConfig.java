@@ -27,10 +27,9 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.gen.GenerationStep;
+import net.minecraft.world.gen.decorator.ChanceDecoratorConfig;
 import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.decorator.DecoratorConfig;
-import net.minecraft.world.gen.decorator.LakeDecoratorConfig;
-import net.minecraft.world.gen.feature.BushFeatureConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
@@ -39,6 +38,7 @@ import net.minecraft.world.gen.feature.MineshaftFeatureConfig;
 import net.minecraft.world.gen.feature.OceanRuinFeature;
 import net.minecraft.world.gen.feature.OceanRuinFeatureConfig;
 import net.minecraft.world.gen.feature.ShipwreckFeatureConfig;
+import net.minecraft.world.gen.feature.SingleStateFeatureConfig;
 import net.minecraft.world.gen.feature.VillageFeatureConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -73,11 +73,11 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 		.configure(FeatureConfig.DEFAULT)
 		.createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT));
 	private static final ConfiguredFeature<?, ?> WATER_LAKE = Feature.LAKE
-		.configure(new BushFeatureConfig(Blocks.WATER.getDefaultState()))
-		.createDecoratedFeature(Decorator.WATER_LAKE.configure(new LakeDecoratorConfig(4)));
+		.configure(new SingleStateFeatureConfig(Blocks.WATER.getDefaultState()))
+		.createDecoratedFeature(Decorator.WATER_LAKE.configure(new ChanceDecoratorConfig(4)));
 	private static final ConfiguredFeature<?, ?> LAVA_LAKE = Feature.LAKE
-		.configure(new BushFeatureConfig(Blocks.LAVA.getDefaultState()))
-		.createDecoratedFeature(Decorator.LAVA_LAKE.configure(new LakeDecoratorConfig(80)));
+		.configure(new SingleStateFeatureConfig(Blocks.LAVA.getDefaultState()))
+		.createDecoratedFeature(Decorator.LAVA_LAKE.configure(new ChanceDecoratorConfig(80)));
 	private static final ConfiguredFeature<?, ?> END_CITY = Feature.END_CITY
 		.configure(FeatureConfig.DEFAULT)
 		.createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT));
@@ -93,7 +93,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 	private static final ConfiguredFeature<?, ?> PILLAGER_OUTPOST = Feature.PILLAGER_OUTPOST
 		.configure(FeatureConfig.DEFAULT)
 		.createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT));
-	public static final Map<ConfiguredFeature<?, ?>, GenerationStep.Feature> FEATURE_TO_GENERATION_STEP = Util.create(
+	public static final Map<ConfiguredFeature<?, ?>, GenerationStep.Feature> FEATURE_TO_GENERATION_STEP = Util.make(
 		Maps.<ConfiguredFeature<?, ?>, GenerationStep.Feature>newHashMap(), hashMap -> {
 			hashMap.put(MINESHAFT, GenerationStep.Feature.UNDERGROUND_STRUCTURES);
 			hashMap.put(VILLAGE, GenerationStep.Feature.SURFACE_STRUCTURES);
@@ -113,7 +113,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 			hashMap.put(PILLAGER_OUTPOST, GenerationStep.Feature.SURFACE_STRUCTURES);
 		}
 	);
-	public static final Map<String, ConfiguredFeature<?, ?>[]> STRUCTURE_TO_FEATURES = Util.create(
+	public static final Map<String, ConfiguredFeature<?, ?>[]> STRUCTURE_TO_FEATURES = Util.make(
 		Maps.<String, ConfiguredFeature<?, ?>[]>newHashMap(), hashMap -> {
 			hashMap.put("mineshaft", new ConfiguredFeature[]{MINESHAFT});
 			hashMap.put("village", new ConfiguredFeature[]{VILLAGE});
@@ -128,7 +128,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 			hashMap.put("pillager_outpost", new ConfiguredFeature[]{PILLAGER_OUTPOST});
 		}
 	);
-	public static final Map<ConfiguredFeature<?, ?>, FeatureConfig> FEATURE_TO_FEATURE_CONFIG = Util.create(
+	public static final Map<ConfiguredFeature<?, ?>, FeatureConfig> FEATURE_TO_FEATURE_CONFIG = Util.make(
 		Maps.<ConfiguredFeature<?, ?>, FeatureConfig>newHashMap(), hashMap -> {
 			hashMap.put(MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
 			hashMap.put(VILLAGE, new VillageFeatureConfig("village/plains/town_centers", 6));

@@ -25,9 +25,9 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	private AdvancementTab selectedTab;
 	private boolean movingTab;
 
-	public AdvancementsScreen(ClientAdvancementManager clientAdvancementManager) {
+	public AdvancementsScreen(ClientAdvancementManager advancementHandler) {
 		super(NarratorManager.EMPTY);
-		this.advancementHandler = clientAdvancementManager;
+		this.advancementHandler = advancementHandler;
 	}
 
 	@Override
@@ -105,17 +105,17 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 		}
 	}
 
-	private void drawAdvancementTree(int mouseX, int mouseY, int x, int i) {
+	private void drawAdvancementTree(int mouseX, int mouseY, int x, int y) {
 		AdvancementTab advancementTab = this.selectedTab;
 		if (advancementTab == null) {
-			fill(x + 9, i + 18, x + 9 + 234, i + 18 + 113, -16777216);
+			fill(x + 9, y + 18, x + 9 + 234, y + 18 + 113, -16777216);
 			String string = I18n.translate("advancements.empty");
-			int j = this.font.getStringWidth(string);
-			this.font.draw(string, (float)(x + 9 + 117 - j / 2), (float)(i + 18 + 56 - 9 / 2), -1);
-			this.font.draw(":(", (float)(x + 9 + 117 - this.font.getStringWidth(":(") / 2), (float)(i + 18 + 113 - 9), -1);
+			int i = this.font.getStringWidth(string);
+			this.font.draw(string, (float)(x + 9 + 117 - i / 2), (float)(y + 18 + 56 - 9 / 2), -1);
+			this.font.draw(":(", (float)(x + 9 + 117 - this.font.getStringWidth(":(") / 2), (float)(y + 18 + 113 - 9), -1);
 		} else {
 			RenderSystem.pushMatrix();
-			RenderSystem.translatef((float)(x + 9), (float)(i + 18), 0.0F);
+			RenderSystem.translatef((float)(x + 9), (float)(y + 18), 0.0F);
 			advancementTab.render();
 			RenderSystem.popMatrix();
 			RenderSystem.depthFunc(515);
@@ -123,29 +123,29 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 		}
 	}
 
-	public void drawWidgets(int x, int i) {
+	public void drawWidgets(int x, int y) {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.enableBlend();
 		this.minecraft.getTextureManager().bindTexture(WINDOW_TEXTURE);
-		this.blit(x, i, 0, 0, 252, 140);
+		this.blit(x, y, 0, 0, 252, 140);
 		if (this.tabs.size() > 1) {
 			this.minecraft.getTextureManager().bindTexture(TABS_TEXTURE);
 
 			for (AdvancementTab advancementTab : this.tabs.values()) {
-				advancementTab.drawBackground(x, i, advancementTab == this.selectedTab);
+				advancementTab.drawBackground(x, y, advancementTab == this.selectedTab);
 			}
 
 			RenderSystem.enableRescaleNormal();
 			RenderSystem.defaultBlendFunc();
 
 			for (AdvancementTab advancementTab : this.tabs.values()) {
-				advancementTab.drawIcon(x, i, this.itemRenderer);
+				advancementTab.drawIcon(x, y, this.itemRenderer);
 			}
 
 			RenderSystem.disableBlend();
 		}
 
-		this.font.draw(I18n.translate("gui.advancements"), (float)(x + 8), (float)(i + 6), 4210752);
+		this.font.draw(I18n.translate("gui.advancements"), (float)(x + 8), (float)(y + 6), 4210752);
 	}
 
 	private void drawWidgetTooltip(int mouseX, int mouseY, int x, int y) {
@@ -193,10 +193,10 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	}
 
 	@Override
-	public void setProgress(Advancement advancement, AdvancementProgress advancementProgress) {
+	public void setProgress(Advancement advancement, AdvancementProgress progress) {
 		AdvancementWidget advancementWidget = this.getAdvancementWidget(advancement);
 		if (advancementWidget != null) {
-			advancementWidget.setProgress(advancementProgress);
+			advancementWidget.setProgress(progress);
 		}
 	}
 

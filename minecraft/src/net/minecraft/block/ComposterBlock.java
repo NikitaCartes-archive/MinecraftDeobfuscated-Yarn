@@ -38,7 +38,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 	public static final IntProperty LEVEL = Properties.LEVEL_8;
 	public static final Object2FloatMap<ItemConvertible> ITEM_TO_LEVEL_INCREASE_CHANCE = new Object2FloatOpenHashMap<>();
 	public static final VoxelShape RAY_TRACE_SHAPE = VoxelShapes.fullCube();
-	private static final VoxelShape[] LEVEL_TO_COLLISION_SHAPE = Util.create(
+	private static final VoxelShape[] LEVEL_TO_COLLISION_SHAPE = Util.make(
 		new VoxelShape[9],
 		voxelShapes -> {
 			for (int i = 0; i < 8; i++) {

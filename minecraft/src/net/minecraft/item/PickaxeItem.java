@@ -2,7 +2,7 @@ package net.minecraft.item;
 
 import com.google.common.collect.ImmutableSet;
 import java.util.Set;
-import net.minecraft.class_4741;
+import net.minecraft.class_4752;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -125,7 +125,7 @@ public class PickaxeItem extends MiningToolItem {
 	}
 
 	@Override
-	protected class_4741 method_24225() {
-		return class_4741.field_21809;
+	protected class_4752 method_24322() {
+		return class_4752.field_21872;
 	}
 }

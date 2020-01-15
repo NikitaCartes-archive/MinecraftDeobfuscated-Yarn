@@ -51,7 +51,7 @@ public class DeathScreen extends Screen {
 				I18n.translate("deathScreen.titleScreen"),
 				buttonWidgetx -> {
 					if (this.isHardcore) {
-						this.method_22364();
+						this.quitLevel();
 					} else {
 						ConfirmScreen confirmScreen = new ConfirmScreen(
 							this::onConfirmQuit,
@@ -82,14 +82,14 @@ public class DeathScreen extends Screen {
 
 	private void onConfirmQuit(boolean quit) {
 		if (quit) {
-			this.method_22364();
+			this.quitLevel();
 		} else {
 			this.minecraft.player.requestRespawn();
 			this.minecraft.openScreen(null);
 		}
 	}
 
-	private void method_22364() {
+	private void quitLevel() {
 		if (this.minecraft.world != null) {
 			this.minecraft.world.disconnect();
 		}

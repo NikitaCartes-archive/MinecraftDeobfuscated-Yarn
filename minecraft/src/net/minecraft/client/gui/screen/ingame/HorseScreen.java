@@ -17,9 +17,9 @@ public class HorseScreen extends AbstractContainerScreen<HorseContainer> {
 	private float mouseX;
 	private float mouseY;
 
-	public HorseScreen(HorseContainer horseContainer, PlayerInventory playerInventory, HorseBaseEntity horseBaseEntity) {
-		super(horseContainer, playerInventory, horseBaseEntity.getDisplayName());
-		this.entity = horseBaseEntity;
+	public HorseScreen(HorseContainer container, PlayerInventory inventory, HorseBaseEntity entity) {
+		super(container, inventory, entity.getDisplayName());
+		this.entity = entity;
 		this.passEvents = false;
 	}
 

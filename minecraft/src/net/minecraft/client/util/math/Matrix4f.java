@@ -368,24 +368,24 @@ public final class Matrix4f {
 		return new Matrix4f(this);
 	}
 
-	public static Matrix4f method_24019(float f, float g, float h) {
+	public static Matrix4f scale(float x, float y, float z) {
 		Matrix4f matrix4f = new Matrix4f();
-		matrix4f.a00 = f;
-		matrix4f.a11 = g;
-		matrix4f.a22 = h;
+		matrix4f.a00 = x;
+		matrix4f.a11 = y;
+		matrix4f.a22 = z;
 		matrix4f.a33 = 1.0F;
 		return matrix4f;
 	}
 
-	public static Matrix4f method_24021(float f, float g, float h) {
+	public static Matrix4f translate(float x, float y, float z) {
 		Matrix4f matrix4f = new Matrix4f();
 		matrix4f.a00 = 1.0F;
 		matrix4f.a11 = 1.0F;
 		matrix4f.a22 = 1.0F;
 		matrix4f.a33 = 1.0F;
-		matrix4f.a03 = f;
-		matrix4f.a13 = g;
-		matrix4f.a23 = h;
+		matrix4f.a03 = x;
+		matrix4f.a13 = y;
+		matrix4f.a23 = z;
 		return matrix4f;
 	}
 }

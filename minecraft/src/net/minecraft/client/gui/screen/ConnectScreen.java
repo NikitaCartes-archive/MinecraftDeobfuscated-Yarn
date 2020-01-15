@@ -31,7 +31,7 @@ public class ConnectScreen extends Screen {
 	private boolean connectingCancelled;
 	private final Screen parent;
 	private Text status = new TranslatableText("connect.connecting");
-	private long field_19097 = -1L;
+	private long narratorTimer = -1L;
 
 	public ConnectScreen(Screen parent, MinecraftClient client, ServerInfo entry) {
 		super(NarratorManager.EMPTY);
@@ -138,8 +138,8 @@ public class ConnectScreen extends Screen {
 	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
 		long l = Util.getMeasuringTimeMs();
-		if (l - this.field_19097 > 2000L) {
-			this.field_19097 = l;
+		if (l - this.narratorTimer > 2000L) {
+			this.narratorTimer = l;
 			NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.joining").getString());
 		}
 

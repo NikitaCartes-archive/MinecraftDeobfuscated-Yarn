@@ -22,11 +22,11 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 	private final ItemRenderer itemRenderer;
 	private final Random random = new Random();
 
-	public ItemEntityRenderer(EntityRenderDispatcher renderManager, ItemRenderer itemRenderer) {
-		super(renderManager);
-		this.itemRenderer = itemRenderer;
-		this.field_4673 = 0.15F;
-		this.field_4672 = 0.75F;
+	public ItemEntityRenderer(EntityRenderDispatcher dispatcher, ItemRenderer renderer) {
+		super(dispatcher);
+		this.itemRenderer = renderer;
+		this.shadowSize = 0.15F;
+		this.shadowDarkness = 0.75F;
 	}
 
 	private int getRenderedAmount(ItemStack stack) {
@@ -54,7 +54,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 		int k = this.getRenderedAmount(itemStack);
 		float h = 0.25F;
 		float l = MathHelper.sin(((float)itemEntity.getAge() + g) / 10.0F + itemEntity.hoverHeight) * 0.1F + 0.1F;
-		float m = bakedModel.getTransformation().getTransformation(ModelTransformation.Type.GROUND).scale.getY();
+		float m = bakedModel.getTransformation().getTransformation(ModelTransformation.Mode.GROUND).scale.getY();
 		matrixStack.translate(0.0, (double)(l + 0.25F * m), 0.0);
 		float n = ((float)itemEntity.getAge() + g) / 20.0F + itemEntity.hoverHeight;
 		matrixStack.multiply(Vector3f.POSITIVE_Y.getRadialQuaternion(n));
@@ -84,7 +84,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 			}
 
 			this.itemRenderer
-				.method_23179(itemStack, ModelTransformation.Type.GROUND, false, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV, bakedModel);
+				.renderItem(itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV, bakedModel);
 			matrixStack.pop();
 			if (!bl) {
 				matrixStack.translate((double)(0.0F * o), (double)(0.0F * p), (double)(0.09375F * q));

@@ -17,7 +17,6 @@ import com.mojang.realmsclient.gui.RealmsDataFetcher;
 import com.mojang.realmsclient.gui.screens.RealmsClientOutdatedScreen;
 import com.mojang.realmsclient.gui.screens.RealmsConfigureWorldScreen;
 import com.mojang.realmsclient.gui.screens.RealmsCreateRealmScreen;
-import com.mojang.realmsclient.gui.screens.RealmsCreateTrialScreen;
 import com.mojang.realmsclient.gui.screens.RealmsGenericErrorScreen;
 import com.mojang.realmsclient.gui.screens.RealmsLongConfirmationScreen;
 import com.mojang.realmsclient.gui.screens.RealmsLongRunningMcoTaskScreen;
@@ -32,6 +31,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -423,10 +423,6 @@ public class RealmsMainScreen extends RealmsScreen {
 		this.stopRealmsFetcher();
 	}
 
-	public void setCreatedTrial(boolean createdTrial) {
-		this.createdTrial = createdTrial;
-	}
-
 	private void onPlay() {
 		RealmsServer realmsServer = this.findServer(this.selectedServerId);
 		if (realmsServer != null) {
@@ -449,7 +445,8 @@ public class RealmsMainScreen extends RealmsScreen {
 
 	private void createTrial() {
 		if (this.trialsAvailable && !this.createdTrial) {
-			Realms.setScreen(new RealmsCreateTrialScreen(this));
+			RealmsUtil.browseTo("https://aka.ms/startjavarealmstrial");
+			Realms.setScreen(this.lastScreen);
 		}
 	}
 
@@ -589,8 +586,8 @@ public class RealmsMainScreen extends RealmsScreen {
 		}
 	}
 
-	private void leaveClicked(RealmsServer selectedServer) {
-		if (!Realms.getUUID().equals(selectedServer.ownerUUID)) {
+	private void leaveClicked(@Nullable RealmsServer selectedServer) {
+		if (selectedServer != null && !Realms.getUUID().equals(selectedServer.ownerUUID)) {
 			this.saveListScrollPosition();
 			String string = getLocalizedString("mco.configure.world.leave.question.line1");
 			String string2 = getLocalizedString("mco.configure.world.leave.question.line2");
@@ -617,23 +614,32 @@ public class RealmsMainScreen extends RealmsScreen {
 		if (id == 4) {
 			if (result) {
 				(new Thread("Realms-leave-server") {
-					public void run() {
-						try {
-							RealmsServer realmsServer = RealmsMainScreen.this.findServer(RealmsMainScreen.this.selectedServerId);
-							if (realmsServer != null) {
-								RealmsClient realmsClient = RealmsClient.createRealmsClient();
-								realmsClient.uninviteMyselfFrom(realmsServer.id);
-								RealmsMainScreen.realmsDataFetcher.removeItem(realmsServer);
-								RealmsMainScreen.this.realmsServers.remove(realmsServer);
-								RealmsMainScreen.this.selectedServerId = -1L;
-								RealmsMainScreen.this.playButton.active(false);
+						public void run() {
+							try {
+								RealmsServer realmsServer = RealmsMainScreen.this.findServer(RealmsMainScreen.this.selectedServerId);
+								if (realmsServer != null) {
+									RealmsClient realmsClient = RealmsClient.createRealmsClient();
+									realmsClient.uninviteMyselfFrom(realmsServer.id);
+									RealmsMainScreen.realmsDataFetcher.removeItem(realmsServer);
+									RealmsMainScreen.this.realmsServers.remove(realmsServer);
+									RealmsMainScreen.this.realmSelectionList
+										.children()
+										.removeIf(
+											realmListEntry -> realmListEntry instanceof RealmsMainScreen.RealmSelectionListEntry
+													&& ((RealmsMainScreen.RealmSelectionListEntry)realmListEntry).mServerData.id == RealmsMainScreen.this.selectedServerId
+										);
+									RealmsMainScreen.this.realmSelectionList.setSelected(-1);
+									RealmsMainScreen.this.updateButtonStates(null);
+									RealmsMainScreen.this.selectedServerId = -1L;
+									RealmsMainScreen.this.playButton.active(false);
+								}
+							} catch (RealmsServiceException var3) {
+								RealmsMainScreen.LOGGER.error("Couldn't configure world");
+								Realms.setScreen(new RealmsGenericErrorScreen(var3, RealmsMainScreen.this));
 							}
-						} catch (RealmsServiceException var3) {
-							RealmsMainScreen.LOGGER.error("Couldn't configure world");
-							Realms.setScreen(new RealmsGenericErrorScreen(var3, RealmsMainScreen.this));
 						}
-					}
-				}).start();
+					})
+					.start();
 			}
 
 			Realms.setScreen(this);
@@ -1103,12 +1109,6 @@ public class RealmsMainScreen extends RealmsScreen {
 		return new RealmsMainScreen(this.lastScreen);
 	}
 
-	public void closePopup() {
-		if (this.shouldShowPopup() && this.popupOpenedByUser) {
-			this.popupOpenedByUser = false;
-		}
-	}
-
 	public static void method_23765(ResourceManager resourceManager) {
 		Collection<Identifier> collection = resourceManager.findResources("textures/gui/images", string -> string.endsWith(".png"));
 		field_21517 = (List<Identifier>)collection.stream().filter(identifier -> identifier.getNamespace().equals("realms")).collect(ImmutableList.toImmutableList());
@@ -1212,7 +1212,7 @@ public class RealmsMainScreen extends RealmsScreen {
 	}
 
 	@Environment(EnvType.CLIENT)
-	class RealmSelectionList extends RealmsObjectSelectionList {
+	class RealmSelectionList extends RealmsObjectSelectionList<RealmListEntry> {
 		public RealmSelectionList() {
 			super(RealmsMainScreen.this.width(), RealmsMainScreen.this.height(), 32, RealmsMainScreen.this.height() - 40, 36);
 		}
@@ -1261,9 +1261,19 @@ public class RealmsMainScreen extends RealmsScreen {
 						Realms.narrateNow(RealmsScreen.getLocalizedString("mco.trial.message.line1"), RealmsScreen.getLocalizedString("mco.trial.message.line2"));
 						realmsServer = null;
 					} else {
+						if (item - 1 >= RealmsMainScreen.this.realmsServers.size()) {
+							RealmsMainScreen.this.selectedServerId = -1L;
+							return;
+						}
+
 						realmsServer = (RealmsServer)RealmsMainScreen.this.realmsServers.get(item - 1);
 					}
 				} else {
+					if (item >= RealmsMainScreen.this.realmsServers.size()) {
+						RealmsMainScreen.this.selectedServerId = -1L;
+						return;
+					}
+
 					realmsServer = (RealmsServer)RealmsMainScreen.this.realmsServers.get(item);
 				}
 
@@ -1408,7 +1418,7 @@ public class RealmsMainScreen extends RealmsScreen {
 					RenderSystem.enableBlend();
 					RealmsScreen.bind("minecraft:textures/gui/widgets.png");
 					RenderSystem.pushMatrix();
-					RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+					RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
 					String string2 = RealmsScreen.getLocalizedString("mco.selectServer.expiredList");
 					String string3 = RealmsScreen.getLocalizedString("mco.selectServer.expiredRenew");
 					if (serverData.expiredTrial) {

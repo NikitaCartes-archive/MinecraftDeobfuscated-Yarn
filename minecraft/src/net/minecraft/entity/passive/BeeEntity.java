@@ -19,7 +19,7 @@ import net.minecraft.block.CropBlock;
 import net.minecraft.block.StemBlock;
 import net.minecraft.block.SweetBerryBushBlock;
 import net.minecraft.block.TallPlantBlock;
-import net.minecraft.block.entity.BeeHiveBlockEntity;
+import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.enums.DoubleBlockHalf;
@@ -73,12 +73,12 @@ import net.minecraft.tag.Tag;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.village.PointOfInterest;
-import net.minecraft.village.PointOfInterestStorage;
-import net.minecraft.village.PointOfInterestType;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.poi.PointOfInterest;
+import net.minecraft.world.poi.PointOfInterestStorage;
+import net.minecraft.world.poi.PointOfInterestType;
 
 public class BeeEntity extends AnimalEntity implements Flutterer {
 	private static final TrackedData<Byte> multipleByteTracker = DataTracker.registerData(BeeEntity.class, TrackedDataHandlerRegistry.BYTE);
@@ -185,7 +185,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 		this.setAnger(tag.getInt("Anger"));
 		this.ticksSincePollination = tag.getInt("TicksSincePollination");
 		this.cannotEnterHiveTicks = tag.getInt("CannotEnterHiveTicks");
-		this.cropsGrownSincePollination = tag.getInt("NumCropsGrownSincePollination");
+		this.cropsGrownSincePollination = tag.getInt("CropsGrownSincePollination");
 		String string = tag.getString("HurtBy");
 		if (!string.isEmpty()) {
 			this.targetPlayer = UUID.fromString(string);
@@ -364,7 +364,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 			return false;
 		} else {
 			BlockEntity blockEntity = this.world.getBlockEntity(this.hivePos);
-			return blockEntity instanceof BeeHiveBlockEntity && ((BeeHiveBlockEntity)blockEntity).isNearFire();
+			return blockEntity instanceof BeehiveBlockEntity && ((BeehiveBlockEntity)blockEntity).isNearFire();
 		}
 	}
 
@@ -382,7 +382,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 
 	private boolean doesHiveHaveSpace(BlockPos pos) {
 		BlockEntity blockEntity = this.world.getBlockEntity(pos);
-		return blockEntity instanceof BeeHiveBlockEntity ? !((BeeHiveBlockEntity)blockEntity).isFullOfBees() : false;
+		return blockEntity instanceof BeehiveBlockEntity ? !((BeehiveBlockEntity)blockEntity).isFullOfBees() : false;
 	}
 
 	public boolean hasHive() {
@@ -397,7 +397,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 	@Override
 	protected void sendAiDebugData() {
 		super.sendAiDebugData();
-		DebugRendererInfoManager.method_23855(this);
+		DebugRendererInfoManager.sendBeeDebugData(this);
 	}
 
 	private int getCropsGrownSincePollination() {
@@ -725,9 +725,9 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 		public boolean canBeeStart() {
 			if (BeeEntity.this.hasHive() && BeeEntity.this.canEnterHive() && BeeEntity.this.hivePos.isWithinDistance(BeeEntity.this.getPos(), 2.0)) {
 				BlockEntity blockEntity = BeeEntity.this.world.getBlockEntity(BeeEntity.this.hivePos);
-				if (blockEntity instanceof BeeHiveBlockEntity) {
-					BeeHiveBlockEntity beeHiveBlockEntity = (BeeHiveBlockEntity)blockEntity;
-					if (!beeHiveBlockEntity.isFullOfBees()) {
+				if (blockEntity instanceof BeehiveBlockEntity) {
+					BeehiveBlockEntity beehiveBlockEntity = (BeehiveBlockEntity)blockEntity;
+					if (!beehiveBlockEntity.isFullOfBees()) {
 						return true;
 					}
 
@@ -746,9 +746,9 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 		@Override
 		public void start() {
 			BlockEntity blockEntity = BeeEntity.this.world.getBlockEntity(BeeEntity.this.hivePos);
-			if (blockEntity instanceof BeeHiveBlockEntity) {
-				BeeHiveBlockEntity beeHiveBlockEntity = (BeeHiveBlockEntity)blockEntity;
-				beeHiveBlockEntity.tryEnterHive(BeeEntity.this, BeeEntity.this.hasNectar());
+			if (blockEntity instanceof BeehiveBlockEntity) {
+				BeehiveBlockEntity beehiveBlockEntity = (BeehiveBlockEntity)blockEntity;
+				beehiveBlockEntity.tryEnterHive(BeeEntity.this, BeeEntity.this.hasNectar());
 			}
 		}
 	}

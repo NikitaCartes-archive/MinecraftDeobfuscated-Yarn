@@ -179,7 +179,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean shouldRenderAtDistance(double distance) {
+	public boolean shouldRender(double distance) {
 		return true;
 	}
 

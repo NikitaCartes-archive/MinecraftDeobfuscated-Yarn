@@ -20,7 +20,7 @@ import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public class FeatureUpdater {
-	private static final Map<String, String> OLD_TO_NEW = Util.create(Maps.<String, String>newHashMap(), hashMap -> {
+	private static final Map<String, String> OLD_TO_NEW = Util.make(Maps.<String, String>newHashMap(), hashMap -> {
 		hashMap.put("Village", "Village");
 		hashMap.put("Mineshaft", "Mineshaft");
 		hashMap.put("Mansion", "Mansion");
@@ -33,7 +33,7 @@ public class FeatureUpdater {
 		hashMap.put("Fortress", "Fortress");
 		hashMap.put("EndCity", "EndCity");
 	});
-	private static final Map<String, String> ANCIENT_TO_OLD = Util.create(Maps.<String, String>newHashMap(), hashMap -> {
+	private static final Map<String, String> ANCIENT_TO_OLD = Util.make(Maps.<String, String>newHashMap(), hashMap -> {
 		hashMap.put("Iglu", "Igloo");
 		hashMap.put("TeDP", "Desert_Pyramid");
 		hashMap.put("TeJP", "Jungle_Pyramid");

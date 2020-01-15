@@ -23,7 +23,7 @@ public class FireworkEntityRenderer extends EntityRenderer<FireworkEntity> {
 
 	public void render(FireworkEntity fireworkEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
-		matrixStack.multiply(this.renderManager.method_24197());
+		matrixStack.multiply(this.renderManager.getRotation());
 		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
 		if (fireworkEntity.wasShotAtAngle()) {
 			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
@@ -31,7 +31,7 @@ public class FireworkEntityRenderer extends EntityRenderer<FireworkEntity> {
 			matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0F));
 		}
 
-		this.itemRenderer.method_23178(fireworkEntity.getStack(), ModelTransformation.Type.GROUND, i, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider);
+		this.itemRenderer.renderItem(fireworkEntity.getStack(), ModelTransformation.Mode.GROUND, i, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider);
 		matrixStack.pop();
 		super.render(fireworkEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}

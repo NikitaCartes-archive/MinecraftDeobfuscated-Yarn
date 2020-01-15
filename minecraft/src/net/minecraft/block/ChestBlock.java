@@ -8,7 +8,6 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4739;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ChestBlockEntity;
@@ -52,7 +51,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
-public class ChestBlock extends class_4739<ChestBlockEntity> implements Waterloggable {
+public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements Waterloggable {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final EnumProperty<ChestType> CHEST_TYPE = Properties.CHEST_TYPE;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
@@ -117,8 +116,8 @@ public class ChestBlock extends class_4739<ChestBlockEntity> implements Waterlog
 		);
 	}
 
-	public static DoubleBlockProperties.Type method_24169(BlockState blockState) {
-		ChestType chestType = blockState.get(CHEST_TYPE);
+	public static DoubleBlockProperties.Type getDoubleBlockType(BlockState state) {
+		ChestType chestType = state.get(CHEST_TYPE);
 		if (chestType == ChestType.SINGLE) {
 			return DoubleBlockProperties.Type.SINGLE;
 		} else {
@@ -256,27 +255,29 @@ public class ChestBlock extends class_4739<ChestBlockEntity> implements Waterlog
 	}
 
 	@Nullable
-	public static Inventory getInventory(ChestBlock chestBlock, BlockState blockState, World world, BlockPos blockPos, boolean bl) {
-		return (Inventory)chestBlock.method_24167(blockState, world, blockPos, bl).apply(INVENTORY_RETRIEVER).orElse(null);
+	public static Inventory getInventory(ChestBlock block, BlockState state, World world, BlockPos pos, boolean ignoreBlocked) {
+		return (Inventory)block.getBlockEntitySource(state, world, pos, ignoreBlocked).apply(INVENTORY_RETRIEVER).orElse(null);
 	}
 
 	@Override
-	public DoubleBlockProperties.PropertySource<? extends ChestBlockEntity> method_24167(BlockState blockState, World world, BlockPos blockPos, boolean bl) {
+	public DoubleBlockProperties.PropertySource<? extends ChestBlockEntity> getBlockEntitySource(
+		BlockState state, World world, BlockPos pos, boolean ignoreBlocked
+	) {
 		BiPredicate<IWorld, BlockPos> biPredicate;
-		if (bl) {
-			biPredicate = (iWorld, blockPosx) -> false;
+		if (ignoreBlocked) {
+			biPredicate = (iWorld, blockPos) -> false;
 		} else {
 			biPredicate = ChestBlock::isChestBlocked;
 		}
 
 		return DoubleBlockProperties.toPropertySource(
-			(BlockEntityType<? extends ChestBlockEntity>)this.field_21796.get(),
-			ChestBlock::method_24169,
+			(BlockEntityType<? extends ChestBlockEntity>)this.entityTypeRetriever.get(),
+			ChestBlock::getDoubleBlockType,
 			ChestBlock::getFacing,
 			FACING,
-			blockState,
+			state,
 			world,
-			blockPos,
+			pos,
 			biPredicate
 		);
 	}
@@ -284,11 +285,13 @@ public class ChestBlock extends class_4739<ChestBlockEntity> implements Waterlog
 	@Nullable
 	@Override
 	public NameableContainerProvider createContainerProvider(BlockState state, World world, BlockPos pos) {
-		return (NameableContainerProvider)this.method_24167(state, world, pos, false).apply(NAME_RETRIEVER).orElse(null);
+		return (NameableContainerProvider)this.getBlockEntitySource(state, world, pos, false).apply(NAME_RETRIEVER).orElse(null);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Float2FloatFunction> method_24166(ChestAnimationProgress chestAnimationProgress) {
+	public static DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Float2FloatFunction> getAnimationProgressRetriever(
+		ChestAnimationProgress chestAnimationProgress
+	) {
 		return new DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Float2FloatFunction>() {
 			public Float2FloatFunction getFromBoth(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
 				return f -> Math.max(chestBlockEntity.getAnimationProgress(f), chestBlockEntity2.getAnimationProgress(f));

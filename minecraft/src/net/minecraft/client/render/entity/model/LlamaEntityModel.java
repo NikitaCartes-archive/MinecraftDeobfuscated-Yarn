@@ -78,30 +78,30 @@ public class LlamaEntityModel<T extends AbstractDonkeyEntity> extends EntityMode
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float r, float g, float b, float f) {
-		if (this.isChild) {
-			float h = 2.0F;
-			matrixStack.push();
-			float k = 0.7F;
-			matrixStack.scale(0.71428573F, 0.64935064F, 0.7936508F);
-			matrixStack.translate(0.0, 1.3125, 0.22F);
-			this.head.render(matrixStack, vertexConsumer, i, j, r, g, b, f);
-			matrixStack.pop();
-			matrixStack.push();
-			float l = 1.1F;
-			matrixStack.scale(0.625F, 0.45454544F, 0.45454544F);
-			matrixStack.translate(0.0, 2.0625, 0.0);
-			this.torso.render(matrixStack, vertexConsumer, i, j, r, g, b, f);
-			matrixStack.pop();
-			matrixStack.push();
-			matrixStack.scale(0.45454544F, 0.41322312F, 0.45454544F);
-			matrixStack.translate(0.0, 2.0625, 0.0);
+	public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
+		if (this.child) {
+			float f = 2.0F;
+			matrices.push();
+			float g = 0.7F;
+			matrices.scale(0.71428573F, 0.64935064F, 0.7936508F);
+			matrices.translate(0.0, 1.3125, 0.22F);
+			this.head.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+			matrices.pop();
+			matrices.push();
+			float h = 1.1F;
+			matrices.scale(0.625F, 0.45454544F, 0.45454544F);
+			matrices.translate(0.0, 2.0625, 0.0);
+			this.torso.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+			matrices.pop();
+			matrices.push();
+			matrices.scale(0.45454544F, 0.41322312F, 0.45454544F);
+			matrices.translate(0.0, 2.0625, 0.0);
 			ImmutableList.of(this.rightBackLeg, this.leftBackLeg, this.rightFrontLeg, this.leftFrontLeg, this.rightChest, this.leftChest)
-				.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, r, g, b, f));
-			matrixStack.pop();
+				.forEach(modelPart -> modelPart.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha));
+			matrices.pop();
 		} else {
 			ImmutableList.of(this.head, this.torso, this.rightBackLeg, this.leftBackLeg, this.rightFrontLeg, this.leftFrontLeg, this.rightChest, this.leftChest)
-				.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, r, g, b, f));
+				.forEach(modelPart -> modelPart.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha));
 		}
 	}
 }

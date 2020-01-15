@@ -110,7 +110,7 @@ public class FindTreeTutorialStepHandler implements TutorialStepHandler {
 
 	public static boolean hasBrokenTreeBlocks(ClientPlayerEntity player) {
 		for (Block block : TREE_BLOCKS) {
-			if (player.getStats().getStat(Stats.MINED.getOrCreateStat(block)) > 0) {
+			if (player.getStatHandler().getStat(Stats.MINED.getOrCreateStat(block)) > 0) {
 				return true;
 			}
 		}

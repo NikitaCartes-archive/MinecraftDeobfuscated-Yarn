@@ -14,8 +14,8 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.datafixers.DataFixTypes;
-import net.minecraft.datafixers.NbtOps;
+import net.minecraft.datafixer.DataFixTypes;
+import net.minecraft.datafixer.NbtOps;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtHelper;
@@ -85,6 +85,8 @@ public class LevelProperties {
 	private int wanderingTraderSpawnDelay;
 	private int wanderingTraderSpawnChance;
 	private UUID wanderingTraderId;
+	private Set<String> field_21837 = Sets.<String>newLinkedHashSet();
+	private boolean field_21838;
 	private final GameRules gameRules = new GameRules();
 	private final Timer<MinecraftServer> scheduledEvents = new Timer<>(TimerCallbackSerializer.INSTANCE);
 
@@ -96,6 +98,13 @@ public class LevelProperties {
 
 	public LevelProperties(CompoundTag compoundTag, DataFixer dataFixer, int i, @Nullable CompoundTag compoundTag2) {
 		this.dataFixer = dataFixer;
+		ListTag listTag = compoundTag.getList("ServerBrands", 8);
+
+		for (int j = 0; j < listTag.size(); j++) {
+			this.field_21837.add(listTag.getString(j));
+		}
+
+		this.field_21838 = compoundTag.getBoolean("WasModded");
 		if (compoundTag.contains("Version", 10)) {
 			CompoundTag compoundTag3 = compoundTag.getCompound("Version");
 			this.versionName = compoundTag3.getString("Name");
@@ -112,12 +121,12 @@ public class LevelProperties {
 			} else if (this.generatorType == LevelGeneratorType.CUSTOMIZED) {
 				this.legacyCustomOptions = compoundTag.getString("generatorOptions");
 			} else if (this.generatorType.isVersioned()) {
-				int j = 0;
+				int k = 0;
 				if (compoundTag.contains("generatorVersion", 99)) {
-					j = compoundTag.getInt("generatorVersion");
+					k = compoundTag.getInt("generatorVersion");
 				}
 
-				this.generatorType = this.generatorType.getTypeForVersion(j);
+				this.generatorType = this.generatorType.getTypeForVersion(k);
 			}
 
 			this.setGeneratorOptions(compoundTag.getCompound("generatorOptions"));
@@ -229,16 +238,16 @@ public class LevelProperties {
 
 		if (compoundTag.contains("DataPacks", 10)) {
 			CompoundTag compoundTag3 = compoundTag.getCompound("DataPacks");
-			ListTag listTag = compoundTag3.getList("Disabled", 8);
-
-			for (int k = 0; k < listTag.size(); k++) {
-				this.disabledDataPacks.add(listTag.getString(k));
-			}
-
-			ListTag listTag2 = compoundTag3.getList("Enabled", 8);
+			ListTag listTag2 = compoundTag3.getList("Disabled", 8);
 
 			for (int l = 0; l < listTag2.size(); l++) {
-				this.enabledDataPacks.add(listTag2.getString(l));
+				this.disabledDataPacks.add(listTag2.getString(l));
+			}
+
+			ListTag listTag3 = compoundTag3.getList("Enabled", 8);
+
+			for (int m = 0; m < listTag3.size(); m++) {
+				this.enabledDataPacks.add(listTag3.getString(m));
 			}
 		}
 
@@ -294,6 +303,10 @@ public class LevelProperties {
 	}
 
 	private void updateProperties(CompoundTag levelTag, CompoundTag playerTag) {
+		ListTag listTag = new ListTag();
+		this.field_21837.stream().map(StringTag::of).forEach(listTag::add);
+		levelTag.put("ServerBrands", listTag);
+		levelTag.putBoolean("WasModded", this.field_21838);
 		CompoundTag compoundTag = new CompoundTag();
 		compoundTag.putString("Name", SharedConstants.getGameVersion().getName());
 		compoundTag.putInt("Id", SharedConstants.getGameVersion().getWorldVersion());
@@ -357,20 +370,20 @@ public class LevelProperties {
 		}
 
 		CompoundTag compoundTag3 = new CompoundTag();
-		ListTag listTag = new ListTag();
-
-		for (String string : this.enabledDataPacks) {
-			listTag.add(StringTag.of(string));
-		}
-
-		compoundTag3.put("Enabled", listTag);
 		ListTag listTag2 = new ListTag();
 
-		for (String string2 : this.disabledDataPacks) {
-			listTag2.add(StringTag.of(string2));
+		for (String string : this.enabledDataPacks) {
+			listTag2.add(StringTag.of(string));
 		}
 
-		compoundTag3.put("Disabled", listTag2);
+		compoundTag3.put("Enabled", listTag2);
+		ListTag listTag3 = new ListTag();
+
+		for (String string2 : this.disabledDataPacks) {
+			listTag3.add(StringTag.of(string2));
+		}
+
+		compoundTag3.put("Disabled", listTag3);
 		levelTag.put("DataPacks", compoundTag3);
 		if (this.customBossEvents != null) {
 			levelTag.put("CustomBossEvents", this.customBossEvents);
@@ -685,6 +698,8 @@ public class LevelProperties {
 		crashReportSection.add("Level generator options", (CrashCallable<String>)(() -> this.generatorOptions.toString()));
 		crashReportSection.add("Level spawn location", (CrashCallable<String>)(() -> CrashReportSection.createPositionString(this.spawnX, this.spawnY, this.spawnZ)));
 		crashReportSection.add("Level time", (CrashCallable<String>)(() -> String.format("%d game time, %d day time", this.time, this.timeOfDay)));
+		crashReportSection.add("Known server brands", (CrashCallable<String>)(() -> String.join(", ", this.field_21837)));
+		crashReportSection.add("Level was modded", (CrashCallable<String>)(() -> Boolean.toString(this.field_21838)));
 		crashReportSection.add("Level storage version", (CrashCallable<String>)(() -> {
 			String string = "Unknown?";
 
@@ -774,5 +789,10 @@ public class LevelProperties {
 
 	public void setWanderingTraderId(UUID wanderingTraderId) {
 		this.wanderingTraderId = wanderingTraderId;
+	}
+
+	public void method_24285(String string, boolean bl) {
+		this.field_21837.add(string);
+		this.field_21838 |= bl;
 	}
 }

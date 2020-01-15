@@ -16,7 +16,7 @@ import net.minecraft.command.arguments.ArgumentTypes;
 import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
-import net.minecraft.datafixers.Schemas;
+import net.minecraft.datafixer.Schemas;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.WorldGenerationProgressLogger;
 import net.minecraft.server.command.ServerCommandSource;
@@ -25,7 +25,7 @@ import net.minecraft.server.dedicated.ServerPropertiesLoader;
 import net.minecraft.util.UserCache;
 
 public class CommandSyntaxProvider implements DataProvider {
-	private static final Gson field_17169 = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 	private final DataGenerator root;
 
 	public CommandSyntaxProvider(DataGenerator dataGenerator) {
@@ -53,7 +53,7 @@ public class CommandSyntaxProvider implements DataProvider {
 		);
 		Path path = this.root.getOutput().resolve("reports/commands.json");
 		CommandDispatcher<ServerCommandSource> commandDispatcher = minecraftServer.getCommandManager().getDispatcher();
-		DataProvider.writeToPath(field_17169, dataCache, ArgumentTypes.toJson(commandDispatcher, commandDispatcher.getRoot()), path);
+		DataProvider.writeToPath(GSON, dataCache, ArgumentTypes.toJson(commandDispatcher, commandDispatcher.getRoot()), path);
 	}
 
 	@Override

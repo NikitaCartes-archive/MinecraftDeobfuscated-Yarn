@@ -185,7 +185,7 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 				SpellcastingIllagerEntity.this.getLookControl()
 					.lookAt(
 						SpellcastingIllagerEntity.this.getTarget(),
-						(float)SpellcastingIllagerEntity.this.method_5986(),
+						(float)SpellcastingIllagerEntity.this.getBodyYawSpeed(),
 						(float)SpellcastingIllagerEntity.this.getLookPitchSpeed()
 					);
 			}

@@ -30,7 +30,7 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	protected final DataGenerator root;
 	protected final Registry<T> registry;
-	protected final Map<Tag<T>, Tag.Builder<T>> field_11481 = Maps.<Tag<T>, Tag.Builder<T>>newLinkedHashMap();
+	protected final Map<Tag<T>, Tag.Builder<T>> tagBuilders = Maps.<Tag<T>, Tag.Builder<T>>newLinkedHashMap();
 
 	protected AbstractTagProvider(DataGenerator root, Registry<T> registry) {
 		this.root = root;
@@ -41,10 +41,10 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 
 	@Override
 	public void run(DataCache dataCache) {
-		this.field_11481.clear();
+		this.tagBuilders.clear();
 		this.configure();
 		TagContainer<T> tagContainer = new TagContainer<>(identifier -> Optional.empty(), "", false, "generated");
-		Map<Identifier, Tag.Builder<T>> map = (Map<Identifier, Tag.Builder<T>>)this.field_11481
+		Map<Identifier, Tag.Builder<T>> map = (Map<Identifier, Tag.Builder<T>>)this.tagBuilders
 			.entrySet()
 			.stream()
 			.collect(Collectors.toMap(entry -> ((Tag)entry.getKey()).getId(), Entry::getValue));
@@ -86,14 +86,14 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 				LOGGER.error("Couldn't save tags to {}", path, var21);
 			}
 		});
-		this.method_10511(tagContainer);
+		this.setContainer(tagContainer);
 	}
 
-	protected abstract void method_10511(TagContainer<T> tagContainer);
+	protected abstract void setContainer(TagContainer<T> tagContainer);
 
 	protected abstract Path getOutput(Identifier identifier);
 
-	protected Tag.Builder<T> method_10512(Tag<T> tag) {
-		return (Tag.Builder<T>)this.field_11481.computeIfAbsent(tag, tagx -> Tag.Builder.create());
+	protected Tag.Builder<T> getOrCreateTagBuilder(Tag<T> tag) {
+		return (Tag.Builder<T>)this.tagBuilders.computeIfAbsent(tag, tagx -> Tag.Builder.create());
 	}
 }

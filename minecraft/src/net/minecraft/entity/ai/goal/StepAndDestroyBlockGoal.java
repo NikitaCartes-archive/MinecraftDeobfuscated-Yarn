@@ -142,8 +142,8 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 	}
 
 	@Override
-	protected boolean isTargetPos(WorldView worldView, BlockPos pos) {
-		Chunk chunk = worldView.getChunk(pos.getX() >> 4, pos.getZ() >> 4, ChunkStatus.FULL, false);
+	protected boolean isTargetPos(WorldView world, BlockPos pos) {
+		Chunk chunk = world.getChunk(pos.getX() >> 4, pos.getZ() >> 4, ChunkStatus.FULL, false);
 		return chunk == null
 			? false
 			: chunk.getBlockState(pos).getBlock() == this.targetBlock && chunk.getBlockState(pos.up()).isAir() && chunk.getBlockState(pos.up(2)).isAir();

@@ -10,7 +10,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 
 public class MathHelper {
 	public static final float SQUARE_ROOT_OF_TWO = sqrt(2.0F);
-	private static final float[] SINE_TABLE = Util.create(new float[65536], fs -> {
+	private static final float[] SINE_TABLE = Util.make(new float[65536], fs -> {
 		for (int ix = 0; ix < fs.length; ix++) {
 			fs[ix] = (float)Math.sin((double)ix * Math.PI * 2.0 / 65536.0);
 		}
@@ -91,11 +91,11 @@ public class MathHelper {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static long method_24156(long l, long m, long n) {
-		if (l < m) {
-			return m;
+	public static long clamp(long value, long min, long max) {
+		if (value < min) {
+			return min;
 		} else {
-			return l > n ? n : l;
+			return value > max ? max : value;
 		}
 	}
 
@@ -232,7 +232,7 @@ public class MathHelper {
 		return abs(subtractAngles(first, second));
 	}
 
-	public static float method_20306(float start, float end, float speed) {
+	public static float capRotation(float start, float end, float speed) {
 		float f = subtractAngles(start, end);
 		float g = clamp(f, -speed, speed);
 		return end - g;
@@ -322,8 +322,8 @@ public class MathHelper {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static float method_22450(float f) {
-		return f - (float)floor(f);
+	public static float fractionalPart(float value) {
+		return value - (float)floor(value);
 	}
 
 	public static double fractionalPart(double value) {
@@ -429,7 +429,6 @@ public class MathHelper {
 		return 0.6666667F * f + 1.0F / (3.0F * f * f * x);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static int hsvToRgb(float hue, float saturation, float value) {
 		int i = (int)(hue * 6.0F) % 6;
 		float f = hue * 6.0F - (float)i;
@@ -539,18 +538,18 @@ public class MathHelper {
 	}
 
 	@Deprecated
-	public static float method_22859(float f, float g, float h) {
-		float i = g - f;
+	public static float lerpAngle(float start, float end, float delta) {
+		float f = end - start;
 
-		while (i < -180.0F) {
-			i += 360.0F;
+		while (f < -180.0F) {
+			f += 360.0F;
 		}
 
-		while (i >= 180.0F) {
-			i -= 360.0F;
+		while (f >= 180.0F) {
+			f -= 360.0F;
 		}
 
-		return f + h * i;
+		return start + delta * f;
 	}
 
 	@Deprecated

@@ -16,7 +16,7 @@ public class ClientSettingsC2SPacket implements Packet<ServerPlayPacketListener>
 	private boolean chatColors;
 	private int playerModelBitMask;
 	private Arm mainArm;
-	private boolean field_21834;
+	private boolean field_21899;
 
 	public ClientSettingsC2SPacket() {
 	}
@@ -29,7 +29,7 @@ public class ClientSettingsC2SPacket implements Packet<ServerPlayPacketListener>
 		this.chatColors = chatColors;
 		this.playerModelBitMask = modelBitMask;
 		this.mainArm = mainArm;
-		this.field_21834 = bl;
+		this.field_21899 = bl;
 	}
 
 	@Override
@@ -40,7 +40,7 @@ public class ClientSettingsC2SPacket implements Packet<ServerPlayPacketListener>
 		this.chatColors = buf.readBoolean();
 		this.playerModelBitMask = buf.readUnsignedByte();
 		this.mainArm = buf.readEnumConstant(Arm.class);
-		this.field_21834 = buf.readBoolean();
+		this.field_21899 = buf.readBoolean();
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class ClientSettingsC2SPacket implements Packet<ServerPlayPacketListener>
 		buf.writeBoolean(this.chatColors);
 		buf.writeByte(this.playerModelBitMask);
 		buf.writeEnumConstant(this.mainArm);
-		buf.writeBoolean(this.field_21834);
+		buf.writeBoolean(this.field_21899);
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
@@ -78,7 +78,7 @@ public class ClientSettingsC2SPacket implements Packet<ServerPlayPacketListener>
 		return this.mainArm;
 	}
 
-	public boolean method_24246() {
-		return this.field_21834;
+	public boolean method_24343() {
+		return this.field_21899;
 	}
 }

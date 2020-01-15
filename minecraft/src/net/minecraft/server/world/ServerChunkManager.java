@@ -31,7 +31,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.thread.ThreadExecutor;
-import net.minecraft.village.PointOfInterestStorage;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.LightType;
@@ -45,6 +44,7 @@ import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.level.LevelGeneratorType;
 import net.minecraft.world.level.LevelProperties;
+import net.minecraft.world.poi.PointOfInterestStorage;
 
 public class ServerChunkManager extends ChunkManager {
 	private static final int CHUNKS_ELIGIBLE_FOR_SPAWNING = (int)Math.pow(17.0, 2.0);
@@ -132,6 +132,8 @@ public class ServerChunkManager extends ChunkManager {
 		if (Thread.currentThread() != this.serverThread) {
 			return (Chunk)CompletableFuture.supplyAsync(() -> this.getChunk(x, z, leastStatus, create), this.mainThreadExecutor).join();
 		} else {
+			Profiler profiler = this.world.getProfiler();
+			profiler.method_24270("getChunk");
 			long l = ChunkPos.toLong(x, z);
 
 			for (int i = 0; i < 4; i++) {
@@ -143,6 +145,7 @@ public class ServerChunkManager extends ChunkManager {
 				}
 			}
 
+			profiler.method_24270("getChunkCacheMiss");
 			CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = this.getChunkFuture(x, z, leastStatus, create);
 			this.mainThreadExecutor.runTasks(completableFuture::isDone);
 			Chunk chunk = ((Either)completableFuture.join()).map(chunkx -> chunkx, unloaded -> {
@@ -163,6 +166,7 @@ public class ServerChunkManager extends ChunkManager {
 		if (Thread.currentThread() != this.serverThread) {
 			return null;
 		} else {
+			this.world.getProfiler().method_24270("getChunkNow");
 			long l = ChunkPos.toLong(chunkX, chunkZ);
 
 			for (int i = 0; i < 4; i++) {
@@ -338,14 +342,14 @@ public class ServerChunkManager extends ChunkManager {
 	}
 
 	@Override
-	public void tick(BooleanSupplier booleanSupplier) {
+	public void tick(BooleanSupplier shouldKeepTicking) {
 		this.world.getProfiler().push("purge");
 		this.ticketManager.purge();
 		this.tick();
 		this.world.getProfiler().swap("chunks");
 		this.tickChunks();
 		this.world.getProfiler().swap("unload");
-		this.threadedAnvilChunkStorage.tick(booleanSupplier);
+		this.threadedAnvilChunkStorage.tick(shouldKeepTicking);
 		this.world.getProfiler().pop();
 		this.initChunkCaches();
 	}
@@ -510,7 +514,7 @@ public class ServerChunkManager extends ChunkManager {
 
 	final class MainThreadExecutor extends ThreadExecutor<Runnable> {
 		private MainThreadExecutor(World world) {
-			super("Chunk source main thread executor for " + Registry.DIMENSION.getId(world.getDimension().getType()));
+			super("Chunk source main thread executor for " + Registry.DIMENSION_TYPE.getId(world.getDimension().getType()));
 		}
 
 		@Override
@@ -531,6 +535,12 @@ public class ServerChunkManager extends ChunkManager {
 		@Override
 		protected Thread getThread() {
 			return ServerChunkManager.this.serverThread;
+		}
+
+		@Override
+		protected void executeTask(Runnable task) {
+			ServerChunkManager.this.world.getProfiler().method_24270("runTask");
+			super.executeTask(task);
 		}
 
 		@Override

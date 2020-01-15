@@ -51,23 +51,23 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
-		if (compoundTag.contains("target_uuid")) {
-			this.targetUuid = NbtHelper.toUuid(compoundTag.getCompound("target_uuid"));
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
+		if (tag.contains("target_uuid")) {
+			this.targetUuid = NbtHelper.toUuid(tag.getCompound("target_uuid"));
 		} else {
 			this.targetUuid = null;
 		}
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag compoundTag) {
-		super.toTag(compoundTag);
+	public CompoundTag toTag(CompoundTag tag) {
+		super.toTag(tag);
 		if (this.targetEntity != null) {
-			compoundTag.put("target_uuid", NbtHelper.fromUuid(this.targetEntity.getUuid()));
+			tag.put("target_uuid", NbtHelper.fromUuid(this.targetEntity.getUuid()));
 		}
 
-		return compoundTag;
+		return tag;
 	}
 
 	@Nullable
@@ -233,27 +233,27 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 
 	private void spawnNautilusParticles() {
 		Random random = this.world.random;
-		float f = MathHelper.sin((float)(this.ticks + 35) * 0.1F) / 2.0F + 0.5F;
-		f = (f * f + f) * 0.3F;
-		Vec3d vec3d = new Vec3d((double)((float)this.pos.getX() + 0.5F), (double)((float)this.pos.getY() + 1.5F + f), (double)((float)this.pos.getZ() + 0.5F));
+		double d = (double)(MathHelper.sin((float)(this.ticks + 35) * 0.1F) / 2.0F + 0.5F);
+		d = (d * d + d) * 0.3F;
+		Vec3d vec3d = new Vec3d((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 1.5 + d, (double)this.pos.getZ() + 0.5);
 
 		for (BlockPos blockPos : this.activatingBlocks) {
 			if (random.nextInt(50) == 0) {
-				float g = -0.5F + random.nextFloat();
-				float h = -2.0F + random.nextFloat();
-				float i = -0.5F + random.nextFloat();
+				float f = -0.5F + random.nextFloat();
+				float g = -2.0F + random.nextFloat();
+				float h = -0.5F + random.nextFloat();
 				BlockPos blockPos2 = blockPos.subtract(this.pos);
-				Vec3d vec3d2 = new Vec3d((double)g, (double)h, (double)i).add((double)blockPos2.getX(), (double)blockPos2.getY(), (double)blockPos2.getZ());
+				Vec3d vec3d2 = new Vec3d((double)f, (double)g, (double)h).add((double)blockPos2.getX(), (double)blockPos2.getY(), (double)blockPos2.getZ());
 				this.world.addParticle(ParticleTypes.NAUTILUS, vec3d.x, vec3d.y, vec3d.z, vec3d2.x, vec3d2.y, vec3d2.z);
 			}
 		}
 
 		if (this.targetEntity != null) {
 			Vec3d vec3d3 = new Vec3d(this.targetEntity.getX(), this.targetEntity.getEyeY(), this.targetEntity.getZ());
-			float j = (-0.5F + random.nextFloat()) * (3.0F + this.targetEntity.getWidth());
-			float g = -1.0F + random.nextFloat() * this.targetEntity.getHeight();
-			float h = (-0.5F + random.nextFloat()) * (3.0F + this.targetEntity.getWidth());
-			Vec3d vec3d4 = new Vec3d((double)j, (double)g, (double)h);
+			float i = (-0.5F + random.nextFloat()) * (3.0F + this.targetEntity.getWidth());
+			float f = -1.0F + random.nextFloat() * this.targetEntity.getHeight();
+			float g = (-0.5F + random.nextFloat()) * (3.0F + this.targetEntity.getWidth());
+			Vec3d vec3d4 = new Vec3d((double)i, (double)f, (double)g);
 			this.world.addParticle(ParticleTypes.NAUTILUS, vec3d3.x, vec3d3.y, vec3d3.z, vec3d4.x, vec3d4.y, vec3d4.z);
 		}
 	}

@@ -119,8 +119,8 @@ public class BrewingStandContainer extends Container {
 	}
 
 	static class SlotFuel extends Slot {
-		public SlotFuel(Inventory invSlot, int xPosition, int i, int j) {
-			super(invSlot, xPosition, i, j);
+		public SlotFuel(Inventory invSlot, int xPosition, int yPosition, int i) {
+			super(invSlot, xPosition, yPosition, i);
 		}
 
 		@Override
@@ -139,8 +139,8 @@ public class BrewingStandContainer extends Container {
 	}
 
 	static class SlotIngredient extends Slot {
-		public SlotIngredient(Inventory invSlot, int xPosition, int i, int j) {
-			super(invSlot, xPosition, i, j);
+		public SlotIngredient(Inventory invSlot, int xPosition, int yPosition, int i) {
+			super(invSlot, xPosition, yPosition, i);
 		}
 
 		@Override
@@ -155,8 +155,8 @@ public class BrewingStandContainer extends Container {
 	}
 
 	static class SlotPotion extends Slot {
-		public SlotPotion(Inventory invSlot, int xPosition, int i, int j) {
-			super(invSlot, xPosition, i, j);
+		public SlotPotion(Inventory invSlot, int xPosition, int yPosition, int i) {
+			super(invSlot, xPosition, yPosition, i);
 		}
 
 		@Override

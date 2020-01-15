@@ -36,7 +36,7 @@ import org.apache.logging.log4j.Logger;
 public class SpriteAtlasTexture extends AbstractTexture implements TextureTickListener {
 	private static final Logger LOGGER = LogManager.getLogger();
 	@Deprecated
-	public static final Identifier BLOCK_ATLAS_TEX = PlayerContainer.field_21668;
+	public static final Identifier BLOCK_ATLAS_TEX = PlayerContainer.BLOCK_ATLAS_TEXTURE;
 	@Deprecated
 	public static final Identifier PARTICLE_ATLAS_TEX = new Identifier("textures/atlas/particles.png");
 	private final List<Sprite> animatedSprites = Lists.<Sprite>newArrayList();

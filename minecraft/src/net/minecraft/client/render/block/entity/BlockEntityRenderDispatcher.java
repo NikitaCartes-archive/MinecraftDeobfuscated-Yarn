@@ -87,7 +87,7 @@ public class BlockEntityRenderDispatcher {
 	}
 
 	private static <T extends BlockEntity> void render(
-		BlockEntityRenderer<T> renderer, T blockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider
+		BlockEntityRenderer<T> renderer, T blockEntity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers
 	) {
 		World world = blockEntity.getWorld();
 		int i;
@@ -97,14 +97,7 @@ public class BlockEntityRenderDispatcher {
 			i = 15728880;
 		}
 
-		renderer.render(blockEntity, f, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV);
-	}
-
-	@Deprecated
-	public <E extends BlockEntity> void renderEntity(E entity, MatrixStack matrix) {
-		VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(this.bufferBuilder);
-		this.renderEntity(entity, matrix, immediate, 15728880, OverlayTexture.DEFAULT_UV);
-		immediate.draw();
+		renderer.render(blockEntity, tickDelta, matrices, vertexConsumers, i, OverlayTexture.DEFAULT_UV);
 	}
 
 	public <E extends BlockEntity> boolean renderEntity(E entity, MatrixStack matrix, VertexConsumerProvider vertexConsumerProvider, int light, int overlay) {

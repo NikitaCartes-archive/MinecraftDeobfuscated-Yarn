@@ -48,8 +48,8 @@ import net.minecraft.world.WorldView;
 
 public class IronGolemEntity extends GolemEntity {
 	protected static final TrackedData<Byte> IRON_GOLEM_FLAGS = DataTracker.registerData(IronGolemEntity.class, TrackedDataHandlerRegistry.BYTE);
-	private int field_6762;
-	private int field_6759;
+	private int attackTicksLeft;
+	private int lookingAtVillagerTicksLeft;
 
 	public IronGolemEntity(EntityType<? extends IronGolemEntity> entityType, World world) {
 		super(entityType, world);
@@ -107,12 +107,12 @@ public class IronGolemEntity extends GolemEntity {
 	@Override
 	public void tickMovement() {
 		super.tickMovement();
-		if (this.field_6762 > 0) {
-			this.field_6762--;
+		if (this.attackTicksLeft > 0) {
+			this.attackTicksLeft--;
 		}
 
-		if (this.field_6759 > 0) {
-			this.field_6759--;
+		if (this.lookingAtVillagerTicksLeft > 0) {
+			this.lookingAtVillagerTicksLeft--;
 		}
 
 		if (squaredHorizontalLength(this.getVelocity()) > 2.5000003E-7F && this.random.nextInt(5) == 0) {
@@ -162,7 +162,7 @@ public class IronGolemEntity extends GolemEntity {
 
 	@Override
 	public boolean tryAttack(Entity target) {
-		this.field_6762 = 10;
+		this.attackTicksLeft = 10;
 		this.world.sendEntityStatus(this, (byte)4);
 		float f = this.getAttackDamage();
 		float g = f > 0.0F ? f / 2.0F + (float)this.random.nextInt((int)f) : 0.0F;
@@ -195,28 +195,28 @@ public class IronGolemEntity extends GolemEntity {
 	@Override
 	public void handleStatus(byte status) {
 		if (status == 4) {
-			this.field_6762 = 10;
+			this.attackTicksLeft = 10;
 			this.playSound(SoundEvents.ENTITY_IRON_GOLEM_ATTACK, 1.0F, 1.0F);
 		} else if (status == 11) {
-			this.field_6759 = 400;
+			this.lookingAtVillagerTicksLeft = 400;
 		} else if (status == 34) {
-			this.field_6759 = 0;
+			this.lookingAtVillagerTicksLeft = 0;
 		} else {
 			super.handleStatus(status);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int method_6501() {
-		return this.field_6762;
+	public int getAttackTicksLeft() {
+		return this.attackTicksLeft;
 	}
 
-	public void method_6497(boolean bl) {
-		if (bl) {
-			this.field_6759 = 400;
+	public void setLookingAtVillager(boolean lookingAtVillager) {
+		if (lookingAtVillager) {
+			this.lookingAtVillagerTicksLeft = 400;
 			this.world.sendEntityStatus(this, (byte)11);
 		} else {
-			this.field_6759 = 0;
+			this.lookingAtVillagerTicksLeft = 0;
 			this.world.sendEntityStatus(this, (byte)34);
 		}
 	}
@@ -260,17 +260,17 @@ public class IronGolemEntity extends GolemEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int method_6502() {
-		return this.field_6759;
+	public int getLookingAtVillagerTicks() {
+		return this.lookingAtVillagerTicksLeft;
 	}
 
 	public boolean isPlayerCreated() {
 		return (this.dataTracker.get(IRON_GOLEM_FLAGS) & 1) != 0;
 	}
 
-	public void setPlayerCreated(boolean bl) {
+	public void setPlayerCreated(boolean playerCrated) {
 		byte b = this.dataTracker.get(IRON_GOLEM_FLAGS);
-		if (bl) {
+		if (playerCrated) {
 			this.dataTracker.set(IRON_GOLEM_FLAGS, (byte)(b | 1));
 		} else {
 			this.dataTracker.set(IRON_GOLEM_FLAGS, (byte)(b & -2));
@@ -283,23 +283,22 @@ public class IronGolemEntity extends GolemEntity {
 	}
 
 	@Override
-	public boolean canSpawn(WorldView worldView) {
+	public boolean canSpawn(WorldView world) {
 		BlockPos blockPos = new BlockPos(this);
 		BlockPos blockPos2 = blockPos.down();
-		BlockState blockState = worldView.getBlockState(blockPos2);
-		if (!blockState.hasSolidTopSurface(worldView, blockPos2, this)) {
+		BlockState blockState = world.getBlockState(blockPos2);
+		if (!blockState.hasSolidTopSurface(world, blockPos2, this)) {
 			return false;
 		} else {
 			for (int i = 1; i < 3; i++) {
 				BlockPos blockPos3 = blockPos.up(i);
-				BlockState blockState2 = worldView.getBlockState(blockPos3);
-				if (!SpawnHelper.isClearForSpawn(worldView, blockPos3, blockState2, blockState2.getFluidState())) {
+				BlockState blockState2 = world.getBlockState(blockPos3);
+				if (!SpawnHelper.isClearForSpawn(world, blockPos3, blockState2, blockState2.getFluidState())) {
 					return false;
 				}
 			}
 
-			return SpawnHelper.isClearForSpawn(worldView, blockPos, worldView.getBlockState(blockPos), Fluids.EMPTY.getDefaultState())
-				&& worldView.intersectsEntities(this);
+			return SpawnHelper.isClearForSpawn(world, blockPos, world.getBlockState(blockPos), Fluids.EMPTY.getDefaultState()) && world.intersectsEntities(this);
 		}
 	}
 
@@ -314,8 +313,8 @@ public class IronGolemEntity extends GolemEntity {
 			.collect(ImmutableList.toImmutableList());
 		private final float maxHealthFraction;
 
-		private Crack(float f) {
-			this.maxHealthFraction = f;
+		private Crack(float maxHealthFraction) {
+			this.maxHealthFraction = maxHealthFraction;
 		}
 
 		public static IronGolemEntity.Crack from(float healthFraction) {

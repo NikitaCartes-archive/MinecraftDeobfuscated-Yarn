@@ -115,7 +115,7 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 
 	@Override
 	public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
-		if (ePos.isAbove(VoxelShapes.fullCube(), pos, true) && !ePos.isSneaking()) {
+		if (ePos.isAbove(VoxelShapes.fullCube(), pos, true) && !ePos.isDescending()) {
 			return NORMAL_OUTLINE_SHAPE;
 		} else {
 			return state.get(DISTANCE) != 0 && state.get(BOTTOM) && ePos.isAbove(OUTLINE_SHAPE, pos, true) ? COLLISION_SHAPE : VoxelShapes.empty();

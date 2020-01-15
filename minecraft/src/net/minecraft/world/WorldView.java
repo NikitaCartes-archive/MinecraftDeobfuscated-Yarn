@@ -29,8 +29,8 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 
 	BiomeAccess getBiomeAccess();
 
-	default Biome getBiome(BlockPos blockPos) {
-		return this.getBiomeAccess().getBiome(blockPos);
+	default Biome getBiome(BlockPos pos) {
+		return this.getBiomeAccess().getBiome(pos);
 	}
 
 	@Environment(EnvType.CLIENT)

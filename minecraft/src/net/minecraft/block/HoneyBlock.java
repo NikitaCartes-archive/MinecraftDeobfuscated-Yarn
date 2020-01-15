@@ -26,7 +26,7 @@ public class HoneyBlock extends TransparentBlock {
 		super(settings);
 	}
 
-	private static boolean method_24179(Entity entity) {
+	private static boolean hasHoneyBlockEffects(Entity entity) {
 		return entity instanceof LivingEntity || entity instanceof AbstractMinecartEntity || entity instanceof TntEntity || entity instanceof BoatEntity;
 	}
 
@@ -49,37 +49,37 @@ public class HoneyBlock extends TransparentBlock {
 
 	@Override
 	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-		if (this.method_23356(pos, entity)) {
-			this.method_24176(entity, pos);
-			this.method_24180(entity);
-			this.method_24177(world, entity);
+		if (this.isSliding(pos, entity)) {
+			this.triggerAdvancement(entity, pos);
+			this.updateSlidingVelocity(entity);
+			this.addCollisionEffects(world, entity);
 		}
 
 		super.onEntityCollision(state, world, pos, entity);
 	}
 
-	private boolean method_23356(BlockPos blockPos, Entity entity) {
+	private boolean isSliding(BlockPos pos, Entity entity) {
 		if (entity.onGround) {
 			return false;
-		} else if (entity.getY() > (double)blockPos.getY() + 0.9375 - 1.0E-7) {
+		} else if (entity.getY() > (double)pos.getY() + 0.9375 - 1.0E-7) {
 			return false;
 		} else if (entity.getVelocity().y >= -0.08) {
 			return false;
 		} else {
-			double d = Math.abs((double)blockPos.getX() + 0.5 - entity.getX());
-			double e = Math.abs((double)blockPos.getZ() + 0.5 - entity.getZ());
+			double d = Math.abs((double)pos.getX() + 0.5 - entity.getX());
+			double e = Math.abs((double)pos.getZ() + 0.5 - entity.getZ());
 			double f = 0.4375 + (double)(entity.getWidth() / 2.0F);
 			return d + 1.0E-7 > f || e + 1.0E-7 > f;
 		}
 	}
 
-	private void method_24176(Entity entity, BlockPos blockPos) {
+	private void triggerAdvancement(Entity entity, BlockPos pos) {
 		if (entity instanceof ServerPlayerEntity && entity.world.getTime() % 20L == 0L) {
-			Criterions.SLIDE_DOWN_BLOCK.test((ServerPlayerEntity)entity, entity.world.getBlockState(blockPos));
+			Criterions.SLIDE_DOWN_BLOCK.test((ServerPlayerEntity)entity, entity.world.getBlockState(pos));
 		}
 	}
 
-	private void method_24180(Entity entity) {
+	private void updateSlidingVelocity(Entity entity) {
 		Vec3d vec3d = entity.getVelocity();
 		if (vec3d.y < -0.13) {
 			double d = -0.05 / vec3d.y;
@@ -91,8 +91,8 @@ public class HoneyBlock extends TransparentBlock {
 		entity.fallDistance = 0.0F;
 	}
 
-	private void method_24177(World world, Entity entity) {
-		if (method_24179(entity)) {
+	private void addCollisionEffects(World world, Entity entity) {
+		if (hasHoneyBlockEffects(entity)) {
 			if (world.random.nextInt(5) == 0) {
 				entity.playSound(SoundEvents.BLOCK_HONEY_BLOCK_SLIDE, 1.0F, 1.0F);
 			}
@@ -104,21 +104,21 @@ public class HoneyBlock extends TransparentBlock {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static void method_24175(Entity entity) {
-		method_23355(entity, 5);
+	public static void addRegularParticles(Entity entity) {
+		addParticles(entity, 5);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static void method_24178(Entity entity) {
-		method_23355(entity, 10);
+	public static void addRichParticles(Entity entity) {
+		addParticles(entity, 10);
 	}
 
 	@Environment(EnvType.CLIENT)
-	private static void method_23355(Entity entity, int i) {
+	private static void addParticles(Entity entity, int count) {
 		if (entity.world.isClient) {
 			BlockState blockState = Blocks.HONEY_BLOCK.getDefaultState();
 
-			for (int j = 0; j < i; j++) {
+			for (int i = 0; i < count; i++) {
 				entity.world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState), entity.getX(), entity.getY(), entity.getZ(), 0.0, 0.0, 0.0);
 			}
 		}

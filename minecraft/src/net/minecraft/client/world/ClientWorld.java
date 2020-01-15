@@ -86,7 +86,7 @@ public class ClientWorld extends World {
 	private Scoreboard scoreboard = new Scoreboard();
 	private final Map<String, MapState> mapStates = Maps.<String, MapState>newHashMap();
 	private int lightningTicksLeft;
-	private final Object2ObjectArrayMap<ColorResolver, BiomeColorCache> colorCache = Util.create(new Object2ObjectArrayMap<>(3), object2ObjectArrayMap -> {
+	private final Object2ObjectArrayMap<ColorResolver, BiomeColorCache> colorCache = Util.make(new Object2ObjectArrayMap<>(3), object2ObjectArrayMap -> {
 		object2ObjectArrayMap.put(BiomeColors.GRASS_COLOR, new BiomeColorCache());
 		object2ObjectArrayMap.put(BiomeColors.FOLIAGE_COLOR, new BiomeColorCache());
 		object2ObjectArrayMap.put(BiomeColors.WATER_COLOR, new BiomeColorCache());
@@ -173,7 +173,7 @@ public class ClientWorld extends World {
 
 	public void tickEntity(Entity entity) {
 		if (entity instanceof PlayerEntity || this.getChunkManager().shouldTickEntity(entity)) {
-			entity.method_22862(entity.getX(), entity.getY(), entity.getZ());
+			entity.resetPosition(entity.getX(), entity.getY(), entity.getZ());
 			entity.prevYaw = entity.yaw;
 			entity.prevPitch = entity.pitch;
 			if (entity.updateNeeded || entity.isSpectator()) {
@@ -196,7 +196,7 @@ public class ClientWorld extends World {
 		if (passenger.removed || passenger.getVehicle() != entity) {
 			passenger.stopRiding();
 		} else if (passenger instanceof PlayerEntity || this.getChunkManager().shouldTickEntity(passenger)) {
-			passenger.method_22862(passenger.getX(), passenger.getY(), passenger.getZ());
+			passenger.resetPosition(passenger.getX(), passenger.getY(), passenger.getZ());
 			passenger.prevYaw = passenger.yaw;
 			passenger.prevPitch = passenger.pitch;
 			if (passenger.updateNeeded) {
@@ -385,7 +385,7 @@ public class ClientWorld extends World {
 		}
 
 		if (spawnBarrierParticles && blockState.getBlock() == Blocks.BARRIER) {
-			this.addParticle(ParticleTypes.BARRIER, (double)((float)i + 0.5F), (double)((float)j + 0.5F), (double)((float)k + 0.5F), 0.0, 0.0, 0.0);
+			this.addParticle(ParticleTypes.BARRIER, (double)i + 0.5, (double)j + 0.5, (double)k + 0.5, 0.0, 0.0, 0.0);
 		}
 	}
 
@@ -558,8 +558,8 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public void updateListeners(BlockPos blockPos, BlockState blockState, BlockState blockState2, int i) {
-		this.worldRenderer.updateBlock(this, blockPos, blockState, blockState2, i);
+	public void updateListeners(BlockPos pos, BlockState oldState, BlockState newState, int flags) {
+		this.worldRenderer.updateBlock(this, pos, oldState, newState, flags);
 	}
 
 	@Override

@@ -46,6 +46,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.thread.TaskExecutor;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -113,20 +114,21 @@ public class ChunkBuilder {
 				this.bufferCount = this.threadBuffers.size();
 				CompletableFuture.runAsync(() -> {
 				}, this.executor).thenCompose(void_ -> task.run(blockBufferBuilderStorage)).whenComplete((result, throwable) -> {
-					this.mailbox.send(() -> {
-						if (result == ChunkBuilder.Result.SUCCESSFUL) {
-							blockBufferBuilderStorage.clear();
-						} else {
-							blockBufferBuilderStorage.reset();
-						}
-
-						this.threadBuffers.add(blockBufferBuilderStorage);
-						this.bufferCount = this.threadBuffers.size();
-						this.scheduleRunTasks();
-					});
 					if (throwable != null) {
 						CrashReport crashReport = CrashReport.create(throwable, "Batching chunks");
 						MinecraftClient.getInstance().setCrashReport(MinecraftClient.getInstance().addDetailsToCrashReport(crashReport));
+					} else {
+						this.mailbox.send(() -> {
+							if (result == ChunkBuilder.Result.SUCCESSFUL) {
+								blockBufferBuilderStorage.clear();
+							} else {
+								blockBufferBuilderStorage.reset();
+							}
+
+							this.threadBuffers.add(blockBufferBuilderStorage);
+							this.bufferCount = this.threadBuffers.size();
+							this.scheduleRunTasks();
+						});
 					}
 				});
 			}
@@ -216,7 +218,7 @@ public class ChunkBuilder {
 		private int rebuildFrame = -1;
 		private boolean needsRebuild = true;
 		private final BlockPos.Mutable origin = new BlockPos.Mutable(-1, -1, -1);
-		private final BlockPos.Mutable[] neighborPositions = Util.create(new BlockPos.Mutable[6], mutables -> {
+		private final BlockPos.Mutable[] neighborPositions = Util.make(new BlockPos.Mutable[6], mutables -> {
 			for (int i = 0; i < mutables.length; i++) {
 				mutables[i] = new BlockPos.Mutable();
 			}
@@ -224,7 +226,7 @@ public class ChunkBuilder {
 		private boolean needsImportantRebuild;
 
 		private boolean isChunkNonEmpty(BlockPos pos) {
-			return !ChunkBuilder.this.world.getChunk(pos.getX() >> 4, pos.getZ() >> 4).isEmpty();
+			return ChunkBuilder.this.world.getChunk(pos.getX() >> 4, pos.getZ() >> 4, ChunkStatus.FULL, false) != null;
 		}
 
 		public boolean shouldBuild() {

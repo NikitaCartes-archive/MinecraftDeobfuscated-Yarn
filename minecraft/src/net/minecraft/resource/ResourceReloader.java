@@ -104,7 +104,7 @@ public class ResourceReloader<S> implements ResourceReloadMonitor {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean isLoadStageComplete() {
+	public boolean isPrepareStageComplete() {
 		return this.prepareStageFuture.isDone();
 	}
 

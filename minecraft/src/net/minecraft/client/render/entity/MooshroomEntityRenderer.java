@@ -12,7 +12,7 @@ import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class MooshroomEntityRenderer extends MobEntityRenderer<MooshroomEntity, CowEntityModel<MooshroomEntity>> {
-	private static final Map<MooshroomEntity.Type, Identifier> SKIN = Util.create(Maps.<MooshroomEntity.Type, Identifier>newHashMap(), hashMap -> {
+	private static final Map<MooshroomEntity.Type, Identifier> SKIN = Util.make(Maps.<MooshroomEntity.Type, Identifier>newHashMap(), hashMap -> {
 		hashMap.put(MooshroomEntity.Type.BROWN, new Identifier("textures/entity/cow/brown_mooshroom.png"));
 		hashMap.put(MooshroomEntity.Type.RED, new Identifier("textures/entity/cow/red_mooshroom.png"));
 	});

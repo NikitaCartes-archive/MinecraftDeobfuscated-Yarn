@@ -14,8 +14,8 @@ import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.village.PointOfInterestStorage;
-import net.minecraft.village.PointOfInterestType;
+import net.minecraft.world.poi.PointOfInterestStorage;
+import net.minecraft.world.poi.PointOfInterestType;
 
 public class MoveThroughVillageGoal extends Goal {
 	protected final MobEntityWithAi mob;
@@ -23,16 +23,16 @@ public class MoveThroughVillageGoal extends Goal {
 	private Path targetPath;
 	private BlockPos target;
 	private final boolean requiresNighttime;
-	private final List<BlockPos> field_18413 = Lists.<BlockPos>newArrayList();
-	private final int field_18414;
-	private final BooleanSupplier field_18415;
+	private final List<BlockPos> visitedTargets = Lists.<BlockPos>newArrayList();
+	private final int distance;
+	private final BooleanSupplier doorPassingThroughGetter;
 
-	public MoveThroughVillageGoal(MobEntityWithAi mob, double speed, boolean requiresNighttime, int i, BooleanSupplier booleanSupplier) {
+	public MoveThroughVillageGoal(MobEntityWithAi mob, double speed, boolean requiresNighttime, int distance, BooleanSupplier doorPassingThroughGetter) {
 		this.mob = mob;
 		this.speed = speed;
 		this.requiresNighttime = requiresNighttime;
-		this.field_18414 = i;
-		this.field_18415 = booleanSupplier;
+		this.distance = distance;
+		this.doorPassingThroughGetter = doorPassingThroughGetter;
 		this.setControls(EnumSet.of(Goal.Control.MOVE));
 		if (!(mob.getNavigation() instanceof MobNavigation)) {
 			throw new IllegalArgumentException("Unsupported mob for MoveThroughVillageGoal");
@@ -41,7 +41,7 @@ public class MoveThroughVillageGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		this.method_6297();
+		this.forgetOldTarget();
 		if (this.requiresNighttime && this.mob.world.isDay()) {
 			return false;
 		} else {
@@ -59,7 +59,7 @@ public class MoveThroughVillageGoal extends Goal {
 							return Double.NEGATIVE_INFINITY;
 						} else {
 							Optional<BlockPos> optionalx = serverWorld.getPointOfInterestStorage()
-								.getPosition(PointOfInterestType.ALWAYS_TRUE, this::method_19052, blockPos2x, 10, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED);
+								.getPosition(PointOfInterestType.ALWAYS_TRUE, this::shouldVisit, blockPos2x, 10, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED);
 							return !optionalx.isPresent() ? Double.NEGATIVE_INFINITY : -((BlockPos)optionalx.get()).getSquaredDistance(blockPos);
 						}
 					}
@@ -68,14 +68,14 @@ public class MoveThroughVillageGoal extends Goal {
 					return false;
 				} else {
 					Optional<BlockPos> optional = serverWorld.getPointOfInterestStorage()
-						.getPosition(PointOfInterestType.ALWAYS_TRUE, this::method_19052, new BlockPos(vec3d), 10, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED);
+						.getPosition(PointOfInterestType.ALWAYS_TRUE, this::shouldVisit, new BlockPos(vec3d), 10, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED);
 					if (!optional.isPresent()) {
 						return false;
 					} else {
 						this.target = ((BlockPos)optional.get()).toImmutable();
 						MobNavigation mobNavigation = (MobNavigation)this.mob.getNavigation();
 						boolean bl = mobNavigation.canEnterOpenDoors();
-						mobNavigation.setCanPathThroughDoors(this.field_18415.getAsBoolean());
+						mobNavigation.setCanPathThroughDoors(this.doorPassingThroughGetter.getAsBoolean());
 						this.targetPath = mobNavigation.findPathTo(this.target, 0);
 						mobNavigation.setCanPathThroughDoors(bl);
 						if (this.targetPath == null) {
@@ -84,7 +84,7 @@ public class MoveThroughVillageGoal extends Goal {
 								return false;
 							}
 
-							mobNavigation.setCanPathThroughDoors(this.field_18415.getAsBoolean());
+							mobNavigation.setCanPathThroughDoors(this.doorPassingThroughGetter.getAsBoolean());
 							this.targetPath = this.mob.getNavigation().findPathTo(vec3d2.x, vec3d2.y, vec3d2.z, 0);
 							mobNavigation.setCanPathThroughDoors(bl);
 							if (this.targetPath == null) {
@@ -95,7 +95,7 @@ public class MoveThroughVillageGoal extends Goal {
 						for (int i = 0; i < this.targetPath.getLength(); i++) {
 							PathNode pathNode = this.targetPath.getNode(i);
 							BlockPos blockPos2 = new BlockPos(pathNode.x, pathNode.y + 1, pathNode.z);
-							if (DoorInteractGoal.getDoor(this.mob.world, blockPos2)) {
+							if (DoorInteractGoal.isWoodenDoor(this.mob.world, blockPos2)) {
 								this.targetPath = this.mob.getNavigation().findPathTo((double)pathNode.x, (double)pathNode.y, (double)pathNode.z, 0);
 								break;
 							}
@@ -110,7 +110,7 @@ public class MoveThroughVillageGoal extends Goal {
 
 	@Override
 	public boolean shouldContinue() {
-		return this.mob.getNavigation().isIdle() ? false : !this.target.isWithinDistance(this.mob.getPos(), (double)(this.mob.getWidth() + (float)this.field_18414));
+		return this.mob.getNavigation().isIdle() ? false : !this.target.isWithinDistance(this.mob.getPos(), (double)(this.mob.getWidth() + (float)this.distance));
 	}
 
 	@Override
@@ -120,14 +120,14 @@ public class MoveThroughVillageGoal extends Goal {
 
 	@Override
 	public void stop() {
-		if (this.mob.getNavigation().isIdle() || this.target.isWithinDistance(this.mob.getPos(), (double)this.field_18414)) {
-			this.field_18413.add(this.target);
+		if (this.mob.getNavigation().isIdle() || this.target.isWithinDistance(this.mob.getPos(), (double)this.distance)) {
+			this.visitedTargets.add(this.target);
 		}
 	}
 
-	private boolean method_19052(BlockPos blockPos) {
-		for (BlockPos blockPos2 : this.field_18413) {
-			if (Objects.equals(blockPos, blockPos2)) {
+	private boolean shouldVisit(BlockPos pos) {
+		for (BlockPos blockPos : this.visitedTargets) {
+			if (Objects.equals(pos, blockPos)) {
 				return false;
 			}
 		}
@@ -135,9 +135,9 @@ public class MoveThroughVillageGoal extends Goal {
 		return true;
 	}
 
-	private void method_6297() {
-		if (this.field_18413.size() > 15) {
-			this.field_18413.remove(0);
+	private void forgetOldTarget() {
+		if (this.visitedTargets.size() > 15) {
+			this.visitedTargets.remove(0);
 		}
 	}
 }

@@ -78,7 +78,7 @@ public class SummonCommand {
 			ServerWorld serverWorld = source.getWorld();
 			Entity entity2 = EntityType.loadEntityWithPassengers(compoundTag, serverWorld, entityx -> {
 				entityx.setPositionAndAngles(pos.x, pos.y, pos.z, entityx.yaw, entityx.pitch);
-				return !serverWorld.method_18768(entityx) ? null : entityx;
+				return !serverWorld.tryLoadEntity(entityx) ? null : entityx;
 			});
 			if (entity2 == null) {
 				throw FAILED_EXCEPTION.create();

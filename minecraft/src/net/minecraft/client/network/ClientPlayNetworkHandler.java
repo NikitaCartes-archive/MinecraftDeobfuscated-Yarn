@@ -27,7 +27,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BedBlockEntity;
-import net.minecraft.block.entity.BeeHiveBlockEntity;
+import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CampfireBlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
@@ -113,7 +113,7 @@ import net.minecraft.client.network.packet.LightUpdateS2CPacket;
 import net.minecraft.client.network.packet.LookAtS2CPacket;
 import net.minecraft.client.network.packet.MapUpdateS2CPacket;
 import net.minecraft.client.network.packet.MobSpawnS2CPacket;
-import net.minecraft.client.network.packet.OpenContainerPacket;
+import net.minecraft.client.network.packet.OpenContainerS2CPacket;
 import net.minecraft.client.network.packet.OpenWrittenBookS2CPacket;
 import net.minecraft.client.network.packet.PaintingSpawnS2CPacket;
 import net.minecraft.client.network.packet.ParticleS2CPacket;
@@ -135,7 +135,7 @@ import net.minecraft.client.network.packet.ScoreboardObjectiveUpdateS2CPacket;
 import net.minecraft.client.network.packet.ScoreboardPlayerUpdateS2CPacket;
 import net.minecraft.client.network.packet.SelectAdvancementTabS2CPacket;
 import net.minecraft.client.network.packet.SetCameraEntityS2CPacket;
-import net.minecraft.client.network.packet.SetTradeOffersPacket;
+import net.minecraft.client.network.packet.SetTradeOffersS2CPacket;
 import net.minecraft.client.network.packet.SignEditorOpenS2CPacket;
 import net.minecraft.client.network.packet.StatisticsS2CPacket;
 import net.minecraft.client.network.packet.StopSoundS2CPacket;
@@ -558,7 +558,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		int i = packet.getId();
 		OtherClientPlayerEntity otherClientPlayerEntity = new OtherClientPlayerEntity(this.client.world, this.getPlayerListEntry(packet.getPlayerUuid()).getProfile());
 		otherClientPlayerEntity.setEntityId(i);
-		otherClientPlayerEntity.method_22862(d, e, f);
+		otherClientPlayerEntity.resetPosition(d, e, f);
 		otherClientPlayerEntity.updateTrackedPosition(d, e, f);
 		otherClientPlayerEntity.setPositionAnglesAndUpdate(d, e, f, g, h);
 		this.world.addPlayer(i, otherClientPlayerEntity);
@@ -577,7 +577,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				float g = (float)(packet.getYaw() * 360) / 256.0F;
 				float h = (float)(packet.getPitch() * 360) / 256.0F;
 				if (!(Math.abs(entity.getX() - d) >= 0.03125) && !(Math.abs(entity.getY() - e) >= 0.015625) && !(Math.abs(entity.getZ() - f) >= 0.03125)) {
-					entity.updateTrackedPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), g, h, 0, true);
+					entity.updateTrackedPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), g, h, 3, true);
 				} else {
 					entity.updateTrackedPositionAndAngles(d, e, f, g, h, 3, true);
 				}
@@ -653,11 +653,11 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		if (bl) {
 			d = vec3d.getX();
 			e = playerEntity.getX() + packet.getX();
-			playerEntity.prevRenderX = playerEntity.prevRenderX + packet.getX();
+			playerEntity.lastRenderX = playerEntity.lastRenderX + packet.getX();
 		} else {
 			d = 0.0;
 			e = packet.getX();
-			playerEntity.prevRenderX = e;
+			playerEntity.lastRenderX = e;
 		}
 
 		double f;
@@ -665,11 +665,11 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		if (bl2) {
 			f = vec3d.getY();
 			g = playerEntity.getY() + packet.getY();
-			playerEntity.prevRenderY = playerEntity.prevRenderY + packet.getY();
+			playerEntity.lastRenderY = playerEntity.lastRenderY + packet.getY();
 		} else {
 			f = 0.0;
 			g = packet.getY();
-			playerEntity.prevRenderY = g;
+			playerEntity.lastRenderY = g;
 		}
 
 		double h;
@@ -677,11 +677,11 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		if (bl3) {
 			h = vec3d.getZ();
 			i = playerEntity.getZ() + packet.getZ();
-			playerEntity.prevRenderZ = playerEntity.prevRenderZ + packet.getZ();
+			playerEntity.lastRenderZ = playerEntity.lastRenderZ + packet.getZ();
 		} else {
 			h = 0.0;
 			i = packet.getZ();
-			playerEntity.prevRenderZ = i;
+			playerEntity.lastRenderZ = i;
 		}
 
 		playerEntity.setPos(e, g, i);
@@ -880,7 +880,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			livingEntity.bodyYaw = (float)(packet.getHeadYaw() * 360) / 256.0F;
 			livingEntity.headYaw = (float)(packet.getHeadYaw() * 360) / 256.0F;
 			if (livingEntity instanceof EnderDragonEntity) {
-				EnderDragonPart[] enderDragonParts = ((EnderDragonEntity)livingEntity).method_5690();
+				EnderDragonPart[] enderDragonParts = ((EnderDragonEntity)livingEntity).getBodyParts();
 
 				for (int i = 0; i < enderDragonParts.length; i++) {
 					enderDragonParts[i].setEntityId(i + packet.getId());
@@ -1028,7 +1028,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		this.client.cameraEntity = null;
 		ClientPlayerEntity clientPlayerEntity2 = this.client
 			.interactionManager
-			.createPlayer(this.world, clientPlayerEntity.getStats(), clientPlayerEntity.getRecipeBook());
+			.createPlayer(this.world, clientPlayerEntity.getStatHandler(), clientPlayerEntity.getRecipeBook());
 		clientPlayerEntity2.setEntityId(i);
 		clientPlayerEntity2.dimension = dimensionType;
 		this.client.player = clientPlayerEntity2;
@@ -1077,7 +1077,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void onOpenContainer(OpenContainerPacket packet) {
+	public void onOpenContainer(OpenContainerS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		Screens.open(packet.getContainerType(), this.client, packet.getSyncId(), packet.getName());
 	}
@@ -1175,7 +1175,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				|| i == 5 && blockEntity instanceof ConduitBlockEntity
 				|| i == 12 && blockEntity instanceof JigsawBlockEntity
 				|| i == 13 && blockEntity instanceof CampfireBlockEntity
-				|| i == 14 && blockEntity instanceof BeeHiveBlockEntity) {
+				|| i == 14 && blockEntity instanceof BeehiveBlockEntity) {
 				blockEntity.fromTag(packet.getCompoundTag());
 			}
 
@@ -1403,7 +1403,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		for (Entry<Stat<?>, Integer> entry : packet.getStatMap().entrySet()) {
 			Stat<?> stat = (Stat<?>)entry.getKey();
 			int i = (Integer)entry.getValue();
-			this.client.player.getStats().setStat(this.client.player, stat, i);
+			this.client.player.getStatHandler().setStat(this.client.player, stat, i);
 		}
 
 		if (this.client.currentScreen instanceof StatsListener) {
@@ -1555,7 +1555,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		Entity entity = packet.getEntity(this.world);
 		if (entity instanceof LivingEntity) {
-			((LivingEntity)entity).removeStatusEffect(packet.getEffectType());
+			((LivingEntity)entity).removeStatusEffectInternal(packet.getEffectType());
 		}
 	}
 
@@ -1922,7 +1922,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 
 				for (int u = 0; u < t; u++) {
 					BlockPos blockPos3 = packetByteBuf.readBlockPos();
-					brain.field_18930.add(blockPos3);
+					brain.pointsOfInterest.add(blockPos3);
 				}
 
 				int u = packetByteBuf.readInt();
@@ -2158,7 +2158,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		if (container.syncId == packet.getSyncId() && container.isRestricted(this.client.player)) {
 			this.recipeManager.get(packet.getRecipeId()).ifPresent(recipe -> {
 				if (this.client.currentScreen instanceof RecipeBookProvider) {
-					RecipeBookWidget recipeBookWidget = ((RecipeBookProvider)this.client.currentScreen).getRecipeBookGui();
+					RecipeBookWidget recipeBookWidget = ((RecipeBookProvider)this.client.currentScreen).getRecipeBookWidget();
 					recipeBookWidget.showGhostRecipe(recipe, container.slotList);
 				}
 			});
@@ -2182,7 +2182,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void onSetTradeOffers(SetTradeOffersPacket packet) {
+	public void onSetTradeOffers(SetTradeOffersS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		Container container = this.client.player.container;
 		if (packet.getSyncId() == container.syncId && container instanceof MerchantContainer) {
@@ -2208,7 +2208,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void handlePlayerActionResponse(PlayerActionResponseS2CPacket packet) {
+	public void onPlayerActionResponse(PlayerActionResponseS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		this.client.interactionManager.processPlayerActionResponse(this.world, packet.getBlockPos(), packet.getBlockState(), packet.getAction(), packet.isApproved());
 	}

@@ -245,7 +245,7 @@ public class BakedQuadFactory {
 		vector3f5.subtract(vector3f2);
 		Vector3f vector3f6 = vector3f5.copy();
 		vector3f6.cross(vector3f4);
-		vector3f6.reciprocal();
+		vector3f6.normalize();
 		Direction direction = null;
 		float f = 0.0F;
 

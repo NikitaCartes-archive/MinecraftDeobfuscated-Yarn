@@ -111,6 +111,7 @@ public class Main {
 		String string7 = optionSet.has(optionSpec20) ? optionSpec20.value(optionSet) : null;
 		String string8 = getOption(optionSet, optionSpec);
 		Integer integer = getOption(optionSet, optionSpec2);
+		CrashReport.method_24305();
 		Session session = new Session(optionSpec10.value(optionSet), string6, optionSpec12.value(optionSet), optionSpec21.value(optionSet));
 		RunArgs runArgs = new RunArgs(
 			new RunArgs.Network(session, propertyMap, propertyMap2, proxy),

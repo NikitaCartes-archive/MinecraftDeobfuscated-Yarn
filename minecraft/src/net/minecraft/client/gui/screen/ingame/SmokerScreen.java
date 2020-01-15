@@ -12,7 +12,7 @@ import net.minecraft.util.Identifier;
 public class SmokerScreen extends AbstractFurnaceScreen<SmokerContainer> {
 	private static final Identifier BG_TEX = new Identifier("textures/gui/container/smoker.png");
 
-	public SmokerScreen(SmokerContainer smokerContainer, PlayerInventory playerInventory, Text text) {
-		super(smokerContainer, new SmokerRecipeBookScreen(), playerInventory, text, BG_TEX);
+	public SmokerScreen(SmokerContainer container, PlayerInventory inventory, Text title) {
+		super(container, new SmokerRecipeBookScreen(), inventory, title, BG_TEX);
 	}
 }

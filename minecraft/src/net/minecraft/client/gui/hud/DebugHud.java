@@ -25,6 +25,12 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.ShaderEffect;
 import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.Rotation3;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.network.ClientConnection;
@@ -53,7 +59,7 @@ import net.minecraft.world.dimension.DimensionType;
 
 @Environment(EnvType.CLIENT)
 public class DebugHud extends DrawableHelper {
-	private static final Map<Heightmap.Type, String> HEIGHT_MAP_TYPES = Util.create(new EnumMap(Heightmap.Type.class), enumMap -> {
+	private static final Map<Heightmap.Type, String> HEIGHT_MAP_TYPES = Util.make(new EnumMap(Heightmap.Type.class), enumMap -> {
 		enumMap.put(Heightmap.Type.WORLD_SURFACE_WG, "SW");
 		enumMap.put(Heightmap.Type.WORLD_SURFACE, "S");
 		enumMap.put(Heightmap.Type.OCEAN_FLOOR_WG, "OW");
@@ -262,6 +268,8 @@ public class DebugHud extends DrawableHelper {
 									+ lightingProvider.get(LightType.BLOCK).getLightLevel(blockPos)
 									+ " block)"
 							);
+						} else {
+							list.add("Server Light: (?? sky, ?? block)");
 						}
 
 						StringBuilder stringBuilder = new StringBuilder("CH");
@@ -276,22 +284,21 @@ public class DebugHud extends DrawableHelper {
 						}
 
 						list.add(stringBuilder.toString());
-						if (worldChunk2 != null) {
-							stringBuilder.setLength(0);
-							stringBuilder.append("SH");
+						stringBuilder.setLength(0);
+						stringBuilder.append("SH");
 
-							for (Heightmap.Type typex : Heightmap.Type.values()) {
-								if (typex.isStoredServerSide()) {
-									stringBuilder.append(" ")
-										.append((String)HEIGHT_MAP_TYPES.get(typex))
-										.append(": ")
-										.append(worldChunk2.sampleHeightmap(typex, blockPos.getX(), blockPos.getZ()));
+						for (Heightmap.Type typex : Heightmap.Type.values()) {
+							if (typex.isStoredServerSide()) {
+								stringBuilder.append(" ").append((String)HEIGHT_MAP_TYPES.get(typex)).append(": ");
+								if (worldChunk2 != null) {
+									stringBuilder.append(worldChunk2.sampleHeightmap(typex, blockPos.getX(), blockPos.getZ()));
+								} else {
+									stringBuilder.append("??");
 								}
 							}
-
-							list.add(stringBuilder.toString());
 						}
 
+						list.add(stringBuilder.toString());
 						if (blockPos.getY() >= 0 && blockPos.getY() < 256) {
 							list.add("Biome: " + Registry.BIOME.getId(this.client.world.getBiome(blockPos)));
 							long l = 0L;
@@ -468,64 +475,79 @@ public class DebugHud extends DrawableHelper {
 		return property.getName() + ": " + string;
 	}
 
-	private void drawMetricsData(MetricsData metricsData, int startY, int firstSample, boolean isClient) {
+	private void drawMetricsData(MetricsData metricsData, int i, int j, boolean bl) {
 		RenderSystem.disableDepthTest();
-		int i = metricsData.getStartIndex();
-		int j = metricsData.getCurrentIndex();
+		int k = metricsData.getStartIndex();
+		int l = metricsData.getCurrentIndex();
 		long[] ls = metricsData.getSamples();
-		int l = startY;
-		int m = Math.max(0, ls.length - firstSample);
-		int n = ls.length - m;
-		int k = metricsData.wrapIndex(i + m);
-		long o = 0L;
-		int p = Integer.MAX_VALUE;
-		int q = Integer.MIN_VALUE;
+		int n = i;
+		int o = Math.max(0, ls.length - j);
+		int p = ls.length - o;
+		int m = metricsData.wrapIndex(k + o);
+		long q = 0L;
+		int r = Integer.MAX_VALUE;
+		int s = Integer.MIN_VALUE;
 
-		for (int r = 0; r < n; r++) {
-			int s = (int)(ls[metricsData.wrapIndex(k + r)] / 1000000L);
-			p = Math.min(p, s);
-			q = Math.max(q, s);
-			o += (long)s;
+		for (int t = 0; t < p; t++) {
+			int u = (int)(ls[metricsData.wrapIndex(m + t)] / 1000000L);
+			r = Math.min(r, u);
+			s = Math.max(s, u);
+			q += (long)u;
 		}
 
-		int r = this.client.getWindow().getScaledHeight();
-		fill(startY, r - 60, startY + n, r, -1873784752);
+		int t = this.client.getWindow().getScaledHeight();
+		fill(i, t - 60, i + p, t, -1873784752);
+		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+		RenderSystem.enableBlend();
+		RenderSystem.disableTexture();
+		RenderSystem.defaultBlendFunc();
+		bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
 
-		while (k != j) {
-			int s = metricsData.method_15248(ls[k], isClient ? 30 : 60, isClient ? 60 : 20);
-			int t = isClient ? 100 : 60;
-			int u = this.getMetricsLineColor(MathHelper.clamp(s, 0, t), 0, t / 2, t);
-			this.vLine(l, r, r - s, u);
-			l++;
-			k = metricsData.wrapIndex(k + 1);
+		for (Matrix4f matrix4f = Rotation3.identity().getMatrix(); m != l; m = metricsData.wrapIndex(m + 1)) {
+			int v = metricsData.method_15248(ls[m], bl ? 30 : 60, bl ? 60 : 20);
+			int w = bl ? 100 : 60;
+			int x = this.getMetricsLineColor(MathHelper.clamp(v, 0, w), 0, w / 2, w);
+			int y = x >> 24 & 0xFF;
+			int z = x >> 16 & 0xFF;
+			int aa = x >> 8 & 0xFF;
+			int ab = x & 0xFF;
+			bufferBuilder.vertex(matrix4f, (float)(n + 1), (float)t, 0.0F).color(z, aa, ab, y).next();
+			bufferBuilder.vertex(matrix4f, (float)n, (float)t, 0.0F).color(z, aa, ab, y).next();
+			bufferBuilder.vertex(matrix4f, (float)n, (float)(t - v + 1), 0.0F).color(z, aa, ab, y).next();
+			bufferBuilder.vertex(matrix4f, (float)(n + 1), (float)(t - v + 1), 0.0F).color(z, aa, ab, y).next();
+			n++;
 		}
 
-		if (isClient) {
-			fill(startY + 1, r - 30 + 1, startY + 14, r - 30 + 10, -1873784752);
-			this.fontRenderer.draw("60 FPS", (float)(startY + 2), (float)(r - 30 + 2), 14737632);
-			this.hLine(startY, startY + n - 1, r - 30, -1);
-			fill(startY + 1, r - 60 + 1, startY + 14, r - 60 + 10, -1873784752);
-			this.fontRenderer.draw("30 FPS", (float)(startY + 2), (float)(r - 60 + 2), 14737632);
-			this.hLine(startY, startY + n - 1, r - 60, -1);
+		bufferBuilder.end();
+		BufferRenderer.draw(bufferBuilder);
+		RenderSystem.enableTexture();
+		RenderSystem.disableBlend();
+		if (bl) {
+			fill(i + 1, t - 30 + 1, i + 14, t - 30 + 10, -1873784752);
+			this.fontRenderer.draw("60 FPS", (float)(i + 2), (float)(t - 30 + 2), 14737632);
+			this.hLine(i, i + p - 1, t - 30, -1);
+			fill(i + 1, t - 60 + 1, i + 14, t - 60 + 10, -1873784752);
+			this.fontRenderer.draw("30 FPS", (float)(i + 2), (float)(t - 60 + 2), 14737632);
+			this.hLine(i, i + p - 1, t - 60, -1);
 		} else {
-			fill(startY + 1, r - 60 + 1, startY + 14, r - 60 + 10, -1873784752);
-			this.fontRenderer.draw("20 TPS", (float)(startY + 2), (float)(r - 60 + 2), 14737632);
-			this.hLine(startY, startY + n - 1, r - 60, -1);
+			fill(i + 1, t - 60 + 1, i + 14, t - 60 + 10, -1873784752);
+			this.fontRenderer.draw("20 TPS", (float)(i + 2), (float)(t - 60 + 2), 14737632);
+			this.hLine(i, i + p - 1, t - 60, -1);
 		}
 
-		this.hLine(startY, startY + n - 1, r - 1, -1);
-		this.vLine(startY, r - 60, r, -1);
-		this.vLine(startY + n - 1, r - 60, r, -1);
-		if (isClient && this.client.options.maxFps > 0 && this.client.options.maxFps <= 250) {
-			this.hLine(startY, startY + n - 1, r - 1 - (int)(1800.0 / (double)this.client.options.maxFps), -16711681);
+		this.hLine(i, i + p - 1, t - 1, -1);
+		this.vLine(i, t - 60, t, -1);
+		this.vLine(i + p - 1, t - 60, t, -1);
+		if (bl && this.client.options.maxFps > 0 && this.client.options.maxFps <= 250) {
+			this.hLine(i, i + p - 1, t - 1 - (int)(1800.0 / (double)this.client.options.maxFps), -16711681);
 		}
 
-		String string = p + " ms min";
-		String string2 = o / (long)n + " ms avg";
-		String string3 = q + " ms max";
-		this.fontRenderer.drawWithShadow(string, (float)(startY + 2), (float)(r - 60 - 9), 14737632);
-		this.fontRenderer.drawWithShadow(string2, (float)(startY + n / 2 - this.fontRenderer.getStringWidth(string2) / 2), (float)(r - 60 - 9), 14737632);
-		this.fontRenderer.drawWithShadow(string3, (float)(startY + n - this.fontRenderer.getStringWidth(string3)), (float)(r - 60 - 9), 14737632);
+		String string = r + " ms min";
+		String string2 = q / (long)p + " ms avg";
+		String string3 = s + " ms max";
+		this.fontRenderer.drawWithShadow(string, (float)(i + 2), (float)(t - 60 - 9), 14737632);
+		this.fontRenderer.drawWithShadow(string2, (float)(i + p / 2 - this.fontRenderer.getStringWidth(string2) / 2), (float)(t - 60 - 9), 14737632);
+		this.fontRenderer.drawWithShadow(string3, (float)(i + p - this.fontRenderer.getStringWidth(string3)), (float)(t - 60 - 9), 14737632);
 		RenderSystem.enableDepthTest();
 	}
 

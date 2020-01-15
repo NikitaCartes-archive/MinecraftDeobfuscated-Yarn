@@ -15,8 +15,8 @@ public class LookControl {
 	protected double lookY;
 	protected double lookZ;
 
-	public LookControl(MobEntity mobEntity) {
-		this.entity = mobEntity;
+	public LookControl(MobEntity entity) {
+		this.entity = entity;
 	}
 
 	public void lookAt(Vec3d direction) {
@@ -54,7 +54,7 @@ public class LookControl {
 		}
 
 		if (!this.entity.getNavigation().isIdle()) {
-			this.entity.headYaw = MathHelper.method_20306(this.entity.headYaw, this.entity.bodyYaw, (float)this.entity.method_5986());
+			this.entity.headYaw = MathHelper.capRotation(this.entity.headYaw, this.entity.bodyYaw, (float)this.entity.getBodyYawSpeed());
 		}
 	}
 

@@ -48,20 +48,20 @@ public class JigsawBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag compoundTag) {
-		super.toTag(compoundTag);
-		compoundTag.putString("attachement_type", this.attachmentType.toString());
-		compoundTag.putString("target_pool", this.targetPool.toString());
-		compoundTag.putString("final_state", this.finalState);
-		return compoundTag;
+	public CompoundTag toTag(CompoundTag tag) {
+		super.toTag(tag);
+		tag.putString("attachement_type", this.attachmentType.toString());
+		tag.putString("target_pool", this.targetPool.toString());
+		tag.putString("final_state", this.finalState);
+		return tag;
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
-		this.attachmentType = new Identifier(compoundTag.getString("attachement_type"));
-		this.targetPool = new Identifier(compoundTag.getString("target_pool"));
-		this.finalState = compoundTag.getString("final_state");
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
+		this.attachmentType = new Identifier(tag.getString("attachement_type"));
+		this.targetPool = new Identifier(tag.getString("target_pool"));
+		this.finalState = tag.getString("final_state");
 	}
 
 	@Nullable

@@ -194,7 +194,9 @@ public class EnderDragonFight {
 		} else {
 			LOGGER.info("Found that the dragon has not yet been killed in this world.");
 			this.previouslyKilled = false;
-			this.generateEndPortal(false);
+			if (this.findEndPortal() == null) {
+				this.generateEndPortal(false);
+			}
 		}
 
 		List<EnderDragonEntity> list = this.world.getAliveEnderDragons();

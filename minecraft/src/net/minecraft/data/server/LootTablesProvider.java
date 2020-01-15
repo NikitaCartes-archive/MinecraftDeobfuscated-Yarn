@@ -31,7 +31,7 @@ public class LootTablesProvider implements DataProvider {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 	private final DataGenerator root;
-	private final List<Pair<Supplier<Consumer<BiConsumer<Identifier, LootTable.Builder>>>, LootContextType>> field_11354 = ImmutableList.of(
+	private final List<Pair<Supplier<Consumer<BiConsumer<Identifier, LootTable.Builder>>>, LootContextType>> lootTypeGenerators = ImmutableList.of(
 		Pair.of(FishingLootTableGenerator::new, LootContextTypes.FISHING),
 		Pair.of(ChestLootTableGenerator::new, LootContextTypes.CHEST),
 		Pair.of(EntityLootTableGenerator::new, LootContextTypes.ENTITY),
@@ -47,7 +47,7 @@ public class LootTablesProvider implements DataProvider {
 	public void run(DataCache dataCache) {
 		Path path = this.root.getOutput();
 		Map<Identifier, LootTable> map = Maps.<Identifier, LootTable>newHashMap();
-		this.field_11354.forEach(pair -> ((Consumer)((Supplier)pair.getFirst()).get()).accept((BiConsumer)(identifierx, builder) -> {
+		this.lootTypeGenerators.forEach(pair -> ((Consumer)((Supplier)pair.getFirst()).get()).accept((BiConsumer)(identifierx, builder) -> {
 				if (map.put(identifierx, builder.withType((LootContextType)pair.getSecond()).create()) != null) {
 					throw new IllegalStateException("Duplicate loot table " + identifierx);
 				}

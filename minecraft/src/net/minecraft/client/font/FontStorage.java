@@ -41,13 +41,8 @@ public class FontStorage implements AutoCloseable {
 	}
 
 	public void setFonts(List<Font> fonts) {
-		for (Font font : this.fonts) {
-			font.close();
-		}
-
-		this.fonts.clear();
+		this.method_24290();
 		this.closeGlyphAtlases();
-		this.glyphAtlases.clear();
 		this.glyphRendererCache.clear();
 		this.glyphCache.clear();
 		this.charactersByWidth.clear();
@@ -56,10 +51,10 @@ public class FontStorage implements AutoCloseable {
 		Set<Font> set = Sets.<Font>newHashSet();
 
 		for (char c = 0; c < '\uffff'; c++) {
-			for (Font font2 : fonts) {
-				Glyph glyph = (Glyph)(c == ' ' ? SPACE : font2.getGlyph(c));
+			for (Font font : fonts) {
+				Glyph glyph = (Glyph)(c == ' ' ? SPACE : font.getGlyph(c));
 				if (glyph != null) {
-					set.add(font2);
+					set.add(font);
 					if (glyph != BlankGlyph.INSTANCE) {
 						this.charactersByWidth.computeIfAbsent(MathHelper.ceil(glyph.getAdvance(false)), i -> new CharArrayList()).add(c);
 					}
@@ -72,13 +67,24 @@ public class FontStorage implements AutoCloseable {
 	}
 
 	public void close() {
+		this.method_24290();
 		this.closeGlyphAtlases();
 	}
 
-	public void closeGlyphAtlases() {
+	private void method_24290() {
+		for (Font font : this.fonts) {
+			font.close();
+		}
+
+		this.fonts.clear();
+	}
+
+	private void closeGlyphAtlases() {
 		for (GlyphAtlasTexture glyphAtlasTexture : this.glyphAtlases) {
 			glyphAtlasTexture.close();
 		}
+
+		this.glyphAtlases.clear();
 	}
 
 	public Glyph getGlyph(char character) {

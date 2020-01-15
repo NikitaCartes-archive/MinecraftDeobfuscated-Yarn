@@ -33,16 +33,16 @@ public interface VertexConsumer {
 
 	void next();
 
-	default void elements(
+	default void vertex(
 		float x,
 		float y,
 		float z,
-		float r,
-		float g,
-		float b,
-		float a,
-		float textureU,
-		float textureV,
+		float red,
+		float green,
+		float blue,
+		float alpha,
+		float u,
+		float v,
 		int overlay,
 		int light,
 		float normalX,
@@ -50,8 +50,8 @@ public interface VertexConsumer {
 		float normalZ
 	) {
 		this.vertex((double)x, (double)y, (double)z);
-		this.color(r, g, b, a);
-		this.texture(textureU, textureV);
+		this.color(red, green, blue, alpha);
+		this.texture(u, v);
 		this.overlay(overlay);
 		this.light(light);
 		this.normal(normalX, normalY, normalZ);
@@ -116,7 +116,7 @@ public interface VertexConsumer {
 				float n = byteBuffer.getFloat(20);
 				Vector4f vector4f = new Vector4f(f, g, h, 1.0F);
 				vector4f.transform(matrix4f);
-				this.elements(vector4f.getX(), vector4f.getY(), vector4f.getZ(), o, p, q, 1.0F, m, n, overlay, r, vector3f.getX(), vector3f.getY(), vector3f.getZ());
+				this.vertex(vector4f.getX(), vector4f.getY(), vector4f.getZ(), o, p, q, 1.0F, m, n, overlay, r, vector3f.getX(), vector3f.getY(), vector3f.getZ());
 			}
 		}
 	}

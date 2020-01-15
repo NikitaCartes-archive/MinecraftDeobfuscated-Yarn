@@ -33,7 +33,7 @@ import net.minecraft.client.network.packet.GuiUpdateS2CPacket;
 import net.minecraft.client.network.packet.HealthUpdateS2CPacket;
 import net.minecraft.client.network.packet.InventoryS2CPacket;
 import net.minecraft.client.network.packet.LookAtS2CPacket;
-import net.minecraft.client.network.packet.OpenContainerPacket;
+import net.minecraft.client.network.packet.OpenContainerS2CPacket;
 import net.minecraft.client.network.packet.OpenWrittenBookS2CPacket;
 import net.minecraft.client.network.packet.PlaySoundS2CPacket;
 import net.minecraft.client.network.packet.PlayerAbilitiesS2CPacket;
@@ -42,7 +42,7 @@ import net.minecraft.client.network.packet.PlayerSpawnS2CPacket;
 import net.minecraft.client.network.packet.RemoveEntityEffectS2CPacket;
 import net.minecraft.client.network.packet.ResourcePackSendS2CPacket;
 import net.minecraft.client.network.packet.SetCameraEntityS2CPacket;
-import net.minecraft.client.network.packet.SetTradeOffersPacket;
+import net.minecraft.client.network.packet.SetTradeOffersS2CPacket;
 import net.minecraft.client.network.packet.SignEditorOpenS2CPacket;
 import net.minecraft.client.network.packet.UnloadChunkS2CPacket;
 import net.minecraft.client.network.packet.WorldEventS2CPacket;
@@ -476,7 +476,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		if (livingEntity != null) {
 			this.incrementStat(Stats.KILLED_BY.getOrCreateStat(livingEntity.getType()));
 			livingEntity.updateKilledAdvancementCriterion(this, this.scoreAmount, source);
-			this.method_23733(livingEntity);
+			this.onKilledBy(livingEntity);
 		}
 
 		this.world.sendEntityStatus(this, (byte)3);
@@ -650,7 +650,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 			serverWorld.getProfiler().pop();
 			this.setWorld(serverWorld2);
-			serverWorld2.method_18211(this);
+			serverWorld2.onPlayerChangeDimension(this);
 			this.dimensionChanged(serverWorld);
 			this.networkHandler.requestTeleport(this.getX(), this.getY(), this.getZ(), h, g);
 			this.interactionManager.setWorld(serverWorld2);
@@ -768,11 +768,11 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		}
 	}
 
-	public void method_14207(double d, boolean bl) {
-		BlockPos blockPos = this.method_23312();
+	public void handleFall(double heightDifference, boolean onGround) {
+		BlockPos blockPos = this.getLandingPos();
 		if (this.world.isChunkLoaded(blockPos)) {
 			BlockState blockState = this.world.getBlockState(blockPos);
-			super.fall(d, bl, blockState, blockPos);
+			super.fall(heightDifference, onGround, blockState, blockPos);
 		}
 	}
 
@@ -804,7 +804,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 				return OptionalInt.empty();
 			} else {
-				this.networkHandler.sendPacket(new OpenContainerPacket(container.syncId, container.getType(), nameableContainerProvider.getDisplayName()));
+				this.networkHandler.sendPacket(new OpenContainerS2CPacket(container.syncId, container.getType(), nameableContainerProvider.getDisplayName()));
 				container.addListener(this);
 				this.container = container;
 				return OptionalInt.of(this.containerSyncId);
@@ -814,7 +814,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	@Override
 	public void sendTradeOffers(int syncId, TraderOfferList offers, int levelProgress, int experience, boolean leveled, boolean refreshable) {
-		this.networkHandler.sendPacket(new SetTradeOffersPacket(syncId, offers, levelProgress, experience, leveled, refreshable));
+		this.networkHandler.sendPacket(new SetTradeOffersS2CPacket(syncId, offers, levelProgress, experience, leveled, refreshable));
 	}
 
 	@Override
@@ -996,9 +996,9 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			this.totalExperience = oldPlayer.totalExperience;
 			this.experienceProgress = oldPlayer.experienceProgress;
 			this.setScore(oldPlayer.getScore());
-			this.lastPortalPosition = oldPlayer.lastPortalPosition;
-			this.lastPortalDirectionVector = oldPlayer.lastPortalDirectionVector;
-			this.lastPortalDirection = oldPlayer.lastPortalDirection;
+			this.lastNetherPortalPosition = oldPlayer.lastNetherPortalPosition;
+			this.lastNetherPortalDirectionVector = oldPlayer.lastNetherPortalDirectionVector;
+			this.lastNetherPortalDirection = oldPlayer.lastNetherPortalDirection;
 		} else if (this.world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY) || oldPlayer.isSpectator()) {
 			this.inventory.clone(oldPlayer.inventory);
 			this.experienceLevel = oldPlayer.experienceLevel;
@@ -1009,7 +1009,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 		this.enchantmentTableSeed = oldPlayer.enchantmentTableSeed;
 		this.enderChestInventory = oldPlayer.enderChestInventory;
-		this.getDataTracker().set(PLAYER_MODEL_BIT_MASK, oldPlayer.getDataTracker().get(PLAYER_MODEL_BIT_MASK));
+		this.getDataTracker().set(PLAYER_MODEL_PARTS, oldPlayer.getDataTracker().get(PLAYER_MODEL_PARTS));
 		this.syncedExperience = -1;
 		this.syncedHealth = -1.0F;
 		this.syncedFoodLevel = -1;
@@ -1057,8 +1057,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void method_24203(double d, double e, double f) {
-		this.networkHandler.requestTeleport(d, e, f, this.yaw, this.pitch);
+	public void positAfterTeleport(double x, double y, double z) {
+		this.networkHandler.requestTeleport(x, y, z, this.yaw, this.pitch);
 		this.networkHandler.syncWithPlayerPosition();
 	}
 
@@ -1140,9 +1140,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		this.clientLanguage = clientSettingsC2SPacket.getLanguage();
 		this.clientChatVisibility = clientSettingsC2SPacket.getChatVisibility();
 		this.field_13971 = clientSettingsC2SPacket.hasChatColors();
-		this.field_21806 = clientSettingsC2SPacket.method_24246();
-		System.out.println(" asddsf s ServerboundClientInformationPacket");
-		this.getDataTracker().set(PLAYER_MODEL_BIT_MASK, (byte)clientSettingsC2SPacket.getPlayerModelBitMask());
+		this.field_21869 = clientSettingsC2SPacket.method_24343();
+		this.getDataTracker().set(PLAYER_MODEL_PARTS, (byte)clientSettingsC2SPacket.getPlayerModelBitMask());
 		this.getDataTracker().set(MAIN_ARM, (byte)(clientSettingsC2SPacket.getMainArm() == Arm.LEFT ? 0 : 1));
 	}
 
@@ -1207,9 +1206,9 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	protected void tickPortalCooldown() {
-		if (this.portalCooldown > 0 && !this.inTeleportationState) {
-			this.portalCooldown--;
+	protected void tickNetherPortalCooldown() {
+		if (this.netherPortalCooldown > 0 && !this.inTeleportationState) {
+			this.netherPortalCooldown--;
 		}
 	}
 
@@ -1269,7 +1268,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			this.removed = false;
 			this.setPositionAndAngles(x, y, z, yaw, pitch);
 			this.setWorld(targetWorld);
-			targetWorld.method_18207(this);
+			targetWorld.onPlayerTeleport(this);
 			this.dimensionChanged(serverWorld);
 			this.networkHandler.requestTeleport(x, y, z, yaw, pitch);
 			this.interactionManager.setWorld(targetWorld);

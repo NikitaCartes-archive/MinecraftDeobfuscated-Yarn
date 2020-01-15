@@ -124,6 +124,10 @@ public class ClientPlayerInteractionManager {
 		} else if (!this.client.world.getWorldBorder().contains(pos)) {
 			return false;
 		} else {
+			if (this.gameMode != GameMode.SPECTATOR) {
+				this.client.player.resetLastAttackedTicks();
+			}
+
 			if (this.gameMode.isCreative()) {
 				BlockState blockState = this.client.world.getBlockState(pos);
 				this.client.getTutorialManager().onBlockAttacked(this.client.world, pos, blockState, 1.0F);
@@ -175,60 +179,66 @@ public class ClientPlayerInteractionManager {
 		if (this.blockBreakingCooldown > 0) {
 			this.blockBreakingCooldown--;
 			return true;
-		} else if (this.gameMode.isCreative() && this.client.world.getWorldBorder().contains(blockPos)) {
-			this.blockBreakingCooldown = 5;
-			BlockState blockState = this.client.world.getBlockState(blockPos);
-			this.client.getTutorialManager().onBlockAttacked(this.client.world, blockPos, blockState, 1.0F);
-			this.sendPlayerAction(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, blockPos, direction);
-			breakBlockOrFire(this.client, this, blockPos, direction);
-			return true;
-		} else if (this.isCurrentlyBreaking(blockPos)) {
-			BlockState blockState = this.client.world.getBlockState(blockPos);
-			if (blockState.isAir()) {
-				this.breakingBlock = false;
-				return false;
-			} else {
-				this.currentBreakingProgress = this.currentBreakingProgress + blockState.calcBlockBreakingDelta(this.client.player, this.client.player.world, blockPos);
-				if (this.blockBreakingSoundCooldown % 4.0F == 0.0F) {
-					BlockSoundGroup blockSoundGroup = blockState.getSoundGroup();
-					this.client
-						.getSoundManager()
-						.play(
-							new PositionedSoundInstance(
-								blockSoundGroup.getHitSound(), SoundCategory.BLOCKS, (blockSoundGroup.getVolume() + 1.0F) / 8.0F, blockSoundGroup.getPitch() * 0.5F, blockPos
-							)
-						);
-				}
-
-				this.blockBreakingSoundCooldown++;
-				this.client.getTutorialManager().onBlockAttacked(this.client.world, blockPos, blockState, MathHelper.clamp(this.currentBreakingProgress, 0.0F, 1.0F));
-				if (this.currentBreakingProgress >= 1.0F) {
-					this.breakingBlock = false;
-					this.sendPlayerAction(PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, blockPos, direction);
-					this.breakBlock(blockPos);
-					this.currentBreakingProgress = 0.0F;
-					this.blockBreakingSoundCooldown = 0.0F;
-					this.blockBreakingCooldown = 5;
-				}
-
-				this.client.world.setBlockBreakingInfo(this.client.player.getEntityId(), this.currentBreakingPos, (int)(this.currentBreakingProgress * 10.0F) - 1);
-				return true;
-			}
 		} else {
-			return this.attackBlock(blockPos, direction);
+			if (this.gameMode != GameMode.SPECTATOR) {
+				this.client.player.resetLastAttackedTicks();
+			}
+
+			if (this.gameMode.isCreative() && this.client.world.getWorldBorder().contains(blockPos)) {
+				this.blockBreakingCooldown = 5;
+				BlockState blockState = this.client.world.getBlockState(blockPos);
+				this.client.getTutorialManager().onBlockAttacked(this.client.world, blockPos, blockState, 1.0F);
+				this.sendPlayerAction(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, blockPos, direction);
+				breakBlockOrFire(this.client, this, blockPos, direction);
+				return true;
+			} else if (this.isCurrentlyBreaking(blockPos)) {
+				BlockState blockState = this.client.world.getBlockState(blockPos);
+				if (blockState.isAir()) {
+					this.breakingBlock = false;
+					return false;
+				} else {
+					this.currentBreakingProgress = this.currentBreakingProgress + blockState.calcBlockBreakingDelta(this.client.player, this.client.player.world, blockPos);
+					if (this.blockBreakingSoundCooldown % 4.0F == 0.0F) {
+						BlockSoundGroup blockSoundGroup = blockState.getSoundGroup();
+						this.client
+							.getSoundManager()
+							.play(
+								new PositionedSoundInstance(
+									blockSoundGroup.getHitSound(), SoundCategory.BLOCKS, (blockSoundGroup.getVolume() + 1.0F) / 8.0F, blockSoundGroup.getPitch() * 0.5F, blockPos
+								)
+							);
+					}
+
+					this.blockBreakingSoundCooldown++;
+					this.client.getTutorialManager().onBlockAttacked(this.client.world, blockPos, blockState, MathHelper.clamp(this.currentBreakingProgress, 0.0F, 1.0F));
+					if (this.currentBreakingProgress >= 1.0F) {
+						this.breakingBlock = false;
+						this.sendPlayerAction(PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, blockPos, direction);
+						this.breakBlock(blockPos);
+						this.currentBreakingProgress = 0.0F;
+						this.blockBreakingSoundCooldown = 0.0F;
+						this.blockBreakingCooldown = 5;
+					}
+
+					this.client.world.setBlockBreakingInfo(this.client.player.getEntityId(), this.currentBreakingPos, (int)(this.currentBreakingProgress * 10.0F) - 1);
+					return true;
+				}
+			} else {
+				return this.attackBlock(blockPos, direction);
+			}
 		}
 	}
 
 	public float getReachDistance() {
-		return this.gameMode.method_24233();
+		return this.gameMode.method_24330();
 	}
 
-	public float method_24244() {
-		return this.gameMode.method_24231();
+	public float method_24341() {
+		return this.gameMode.method_24328();
 	}
 
-	public float method_24245() {
-		return this.gameMode.method_24232();
+	public float method_24342() {
+		return this.gameMode.method_24329();
 	}
 
 	public void tick() {
@@ -349,7 +359,7 @@ public class ClientPlayerInteractionManager {
 		return this.gameMode == GameMode.SPECTATOR ? ActionResult.PASS : entity.interactAt(player, vec3d, hand);
 	}
 
-	public void method_24243(PlayerEntity playerEntity) {
+	public void method_24340(PlayerEntity playerEntity) {
 		this.syncSelectedSlot();
 		this.networkHandler.sendPacket(new PlayerInteractEntityC2SPacket());
 		if (this.gameMode != GameMode.SPECTATOR) {

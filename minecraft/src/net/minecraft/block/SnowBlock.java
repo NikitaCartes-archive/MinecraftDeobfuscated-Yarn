@@ -69,9 +69,13 @@ public class SnowBlock extends Block {
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
 		BlockState blockState = world.getBlockState(pos.down());
 		Block block = blockState.getBlock();
-		return block != Blocks.ICE && block != Blocks.PACKED_ICE && block != Blocks.BARRIER && block != Blocks.WHEAT
-			? Block.isFaceFullSquare(blockState.getOutlineShape(world, pos.down()), Direction.UP) || block == this && (Integer)blockState.get(LAYERS) == 8
-			: false;
+		if (block == Blocks.ICE || block == Blocks.PACKED_ICE || block == Blocks.BARRIER) {
+			return false;
+		} else {
+			return block != Blocks.HONEY_BLOCK && block != Blocks.SOUL_SAND
+				? Block.isFaceFullSquare(blockState.getCollisionShape(world, pos.down()), Direction.UP) || block == this && (Integer)blockState.get(LAYERS) == 8
+				: true;
+		}
 	}
 
 	@Override

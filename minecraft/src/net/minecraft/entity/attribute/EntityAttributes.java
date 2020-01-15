@@ -28,7 +28,7 @@ public class EntityAttributes {
 	public static final EntityAttribute ARMOR = new ClampedEntityAttribute(null, "generic.armor", 0.0, 0.0, 30.0).setTracked(true);
 	public static final EntityAttribute ARMOR_TOUGHNESS = new ClampedEntityAttribute(null, "generic.armorToughness", 0.0, 0.0, 20.0).setTracked(true);
 	public static final EntityAttribute LUCK = new ClampedEntityAttribute(null, "generic.luck", 0.0, -1024.0, 1024.0).setTracked(true);
-	public static final EntityAttribute field_21805 = new ClampedEntityAttribute(null, "generic.attackReach", 2.5, 0.0, 6.0).setTracked(true);
+	public static final EntityAttribute field_21868 = new ClampedEntityAttribute(null, "generic.attackReach", 2.5, 0.0, 6.0).setTracked(true);
 
 	public static ListTag toTag(AbstractEntityAttributeContainer container) {
 		ListTag listTag = new ListTag();

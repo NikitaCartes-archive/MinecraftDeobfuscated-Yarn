@@ -52,7 +52,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 		this(type, world);
 		this.owner = owner;
 		this.setPositionAndAngles(owner.getX(), owner.getY(), owner.getZ(), owner.yaw, owner.pitch);
-		this.method_23311();
+		this.updatePosition();
 		this.setVelocity(Vec3d.ZERO);
 		directionX += this.random.nextGaussian() * 0.4;
 		directionY += this.random.nextGaussian() * 0.4;
@@ -69,7 +69,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean shouldRenderAtDistance(double distance) {
+	public boolean shouldRender(double distance) {
 		double d = this.getBoundingBox().getAverageSideLength() * 4.0;
 		if (Double.isNaN(d)) {
 			d = 4.0;

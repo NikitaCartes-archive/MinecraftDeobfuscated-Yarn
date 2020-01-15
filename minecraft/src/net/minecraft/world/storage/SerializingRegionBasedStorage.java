@@ -18,8 +18,8 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
-import net.minecraft.datafixers.DataFixTypes;
-import net.minecraft.datafixers.NbtOps;
+import net.minecraft.datafixer.DataFixTypes;
+import net.minecraft.datafixer.NbtOps;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.util.DynamicSerializable;
@@ -50,8 +50,8 @@ public class SerializingRegionBasedStorage<R extends DynamicSerializable> implem
 		this.worker = new StorageIoWorker(new RegionBasedStorage(directory), directory.getName());
 	}
 
-	protected void tick(BooleanSupplier booleanSupplier) {
-		while (!this.unsavedElements.isEmpty() && booleanSupplier.getAsBoolean()) {
+	protected void tick(BooleanSupplier shouldKeepTicking) {
+		while (!this.unsavedElements.isEmpty() && shouldKeepTicking.getAsBoolean()) {
 			ChunkPos chunkPos = ChunkSectionPos.from(this.unsavedElements.firstLong()).toChunkPos();
 			this.save(chunkPos);
 		}

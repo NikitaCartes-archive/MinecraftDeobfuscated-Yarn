@@ -51,7 +51,7 @@ public class ChatHud extends DrawableHelper {
 				double e = this.client.options.chatOpacity * 0.9F + 0.1F;
 				double f = this.client.options.textBackgroundOpacity;
 				int l = 0;
-				Matrix4f matrix4f = Matrix4f.method_24021(0.0F, 0.0F, -100.0F);
+				Matrix4f matrix4f = Matrix4f.translate(0.0F, 0.0F, -100.0F);
 
 				for (int m = 0; m + this.scrolledLines < this.visibleMessages.size() && m < i; m++) {
 					ChatHudLine chatHudLine = (ChatHudLine)this.visibleMessages.get(m + this.scrolledLines);

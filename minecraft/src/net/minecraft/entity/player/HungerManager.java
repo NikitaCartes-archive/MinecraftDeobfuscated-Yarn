@@ -23,7 +23,7 @@ public class HungerManager {
 
 	public void add(int food, float f) {
 		this.foodLevel = Math.min(food + this.foodLevel, 20);
-		this.foodSaturationLevel = Math.min(this.foodSaturationLevel + (float)food * f * 2.0F, (float)this.foodLevel);
+		this.foodSaturationLevel = Math.max(this.foodSaturationLevel, (float)food * f * 2.0F);
 	}
 
 	public void eat(Item item, ItemStack itemStack) {
@@ -46,24 +46,16 @@ public class HungerManager {
 		}
 
 		boolean bl = playerEntity.world.getGameRules().getBoolean(GameRules.NATURAL_REGENERATION);
-		if (bl && this.foodSaturationLevel > 0.0F && playerEntity.canFoodHeal() && this.foodLevel >= 20) {
+		if (bl && this.foodLevel > 6 && playerEntity.canFoodHeal()) {
 			this.foodStarvationTimer++;
-			if (this.foodStarvationTimer >= 10) {
-				float f = Math.min(this.foodSaturationLevel, 6.0F);
-				playerEntity.heal(f / 6.0F);
-				this.addExhaustion(f);
-				this.foodStarvationTimer = 0;
-			}
-		} else if (bl && this.foodLevel >= 18 && playerEntity.canFoodHeal()) {
-			this.foodStarvationTimer++;
-			if (this.foodStarvationTimer >= 80) {
+			if (this.foodStarvationTimer >= 60) {
 				playerEntity.heal(1.0F);
-				this.addExhaustion(6.0F);
+				this.foodLevel = Math.max(this.foodLevel - 1, 0);
 				this.foodStarvationTimer = 0;
 			}
 		} else if (this.foodLevel <= 0) {
 			this.foodStarvationTimer++;
-			if (this.foodStarvationTimer >= 80) {
+			if (this.foodStarvationTimer >= 60) {
 				if (playerEntity.getHealth() > 10.0F || difficulty == Difficulty.HARD || playerEntity.getHealth() > 1.0F && difficulty == Difficulty.NORMAL) {
 					playerEntity.damage(DamageSource.STARVE, 1.0F);
 				}

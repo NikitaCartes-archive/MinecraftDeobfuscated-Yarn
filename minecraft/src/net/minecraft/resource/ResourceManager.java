@@ -21,7 +21,4 @@ public interface ResourceManager {
 	List<Resource> getAllResources(Identifier id) throws IOException;
 
 	Collection<Identifier> findResources(String resourceType, Predicate<String> pathPredicate);
-
-	@Environment(EnvType.CLIENT)
-	void addPack(ResourcePack pack);
 }

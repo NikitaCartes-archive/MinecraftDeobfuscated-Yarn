@@ -19,6 +19,8 @@ public interface BakedModel {
 
 	boolean hasDepthInGui();
 
+	boolean method_24304();
+
 	boolean isBuiltin();
 
 	Sprite getSprite();

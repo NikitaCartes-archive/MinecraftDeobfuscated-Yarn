@@ -13,7 +13,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4743;
+import net.minecraft.class_4754;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -354,18 +354,15 @@ public class InGameHud extends DrawableHelper {
 					RenderSystem.popMatrix();
 				} else {
 					RenderSystem.blendFuncSeparate(
-						GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR,
-						GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR,
-						GlStateManager.SourceFactor.ONE,
-						GlStateManager.DestFactor.ZERO
+						GlStateManager.SrcFactor.ONE_MINUS_DST_COLOR, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO
 					);
 					int i = 15;
 					this.blit((this.scaledWidth - 15) / 2, (this.scaledHeight - 15) / 2, 0, 0, 15, 15);
 					int j = this.scaledHeight / 2 - 7 + 16;
 					int k = this.scaledWidth / 2 - 8;
 					ItemStack itemStack = this.client.player.getStackInHand(Hand.OFF_HAND);
-					boolean bl = this.client.options.field_21824 == class_4743.field_21827;
-					if (bl && itemStack.getItem() == Items.SHIELD && this.client.player.method_24218(itemStack)) {
+					boolean bl = this.client.options.field_21889 == class_4754.field_21892;
+					if (bl && itemStack.getItem() == Items.SHIELD && this.client.player.method_24315(itemStack)) {
 						this.blit(k, j, 52, 112, 16, 16);
 					} else if (bl && this.client.player.isBlocking()) {
 						this.blit(k, j, 36, 112, 16, 16);
@@ -373,7 +370,7 @@ public class InGameHud extends DrawableHelper {
 						float f = this.client.player.getAttackCooldownProgress(0.0F);
 						boolean bl2 = false;
 						if (this.client.targetedEntity != null && this.client.targetedEntity instanceof LivingEntity && f >= 2.0F) {
-							bl2 = ((EntityHitResult)this.client.crosshairTarget).method_24234() <= this.client.player.method_24222(0.0F);
+							bl2 = ((EntityHitResult)this.client.crosshairTarget).method_24331() <= this.client.player.method_24319(0.0F);
 							bl2 &= this.client.targetedEntity.isAlive();
 						}
 
@@ -425,7 +422,7 @@ public class InGameHud extends DrawableHelper {
 						l += 15;
 					}
 
-					if (statusEffect.method_5573()) {
+					if (statusEffect.isBeneficial()) {
 						i++;
 						k -= 25 * i;
 					} else {
@@ -510,8 +507,8 @@ public class InGameHud extends DrawableHelper {
 			int m = this.scaledHeight - 20;
 			int n = i + 91 + 6;
 			ItemStack itemStack2 = this.client.player.getStackInHand(Hand.OFF_HAND);
-			boolean bl = this.client.options.field_21824 == class_4743.field_21828;
-			if (bl && itemStack2.getItem() == Items.SHIELD && this.client.player.method_24218(itemStack2)) {
+			boolean bl = this.client.options.field_21889 == class_4754.field_21893;
+			if (bl && itemStack2.getItem() == Items.SHIELD && this.client.player.method_24315(itemStack2)) {
 				this.blit(n, m, 18, 112, 18, 18);
 			} else if (bl && this.client.player.isBlocking()) {
 				this.blit(n, m, 0, 112, 18, 18);
@@ -972,7 +969,7 @@ public class InGameHud extends DrawableHelper {
 		RenderSystem.disableDepthTest();
 		RenderSystem.depthMask(false);
 		RenderSystem.blendFuncSeparate(
-			GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
+			GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO
 		);
 		if (f > 0.0F) {
 			RenderSystem.color4f(0.0F, f, f, 1.0F);

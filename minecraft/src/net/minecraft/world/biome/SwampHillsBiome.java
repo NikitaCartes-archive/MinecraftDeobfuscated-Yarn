@@ -56,14 +56,14 @@ public final class SwampHillsBiome extends Biome {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public int getGrassColorAt(double d, double e) {
-		double f = FOLIAGE_NOISE.sample(d * 0.0225, e * 0.0225, false);
-		return f < -0.1 ? 5011004 : 6975545;
+	public int getGrassColorAt(double x, double z) {
+		double d = FOLIAGE_NOISE.sample(x * 0.0225, z * 0.0225, false);
+		return d < -0.1 ? 5011004 : 6975545;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public int getFoliageColorAt() {
+	public int getFoliageColor() {
 		return 6975545;
 	}
 }

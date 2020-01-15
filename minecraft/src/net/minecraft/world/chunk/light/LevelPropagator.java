@@ -2,7 +2,9 @@ package net.minecraft.world.chunk.light;
 
 import it.unimi.dsi.fastutil.longs.Long2ByteMap;
 import it.unimi.dsi.fastutil.longs.Long2ByteOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongLinkedOpenHashSet;
+import it.unimi.dsi.fastutil.longs.LongList;
 import java.util.function.LongPredicate;
 import net.minecraft.util.math.MathHelper;
 
@@ -80,11 +82,13 @@ public abstract class LevelPropagator {
 	}
 
 	public void method_24206(LongPredicate longPredicate) {
+		LongList longList = new LongArrayList();
 		this.pendingUpdates.keySet().forEach(l -> {
 			if (longPredicate.test(l)) {
-				this.removePendingUpdate(l);
+				longList.add(l);
 			}
 		});
+		longList.forEach(this::removePendingUpdate);
 	}
 
 	private void removePendingUpdate(long id, int level, int levelCount, boolean removeFully) {

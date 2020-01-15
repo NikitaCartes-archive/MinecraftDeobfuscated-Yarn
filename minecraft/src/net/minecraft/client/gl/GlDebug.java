@@ -111,30 +111,30 @@ public class GlDebug {
 		CONSTANTS.merge(constant, description, (string, string2) -> string + "/" + string2);
 	}
 
-	public static void enableDebug(int verbosity, boolean bl) {
+	public static void enableDebug(int verbosity, boolean sync) {
 		RenderSystem.assertThread(RenderSystem::isInInitPhase);
 		if (verbosity > 0) {
 			GLCapabilities gLCapabilities = GL.getCapabilities();
 			if (gLCapabilities.GL_KHR_debug) {
 				GL11.glEnable(37600);
-				if (bl) {
+				if (sync) {
 					GL11.glEnable(33346);
 				}
 
 				for (int i = 0; i < KHR_VERBOSITY_LEVELS.size(); i++) {
-					boolean bl2 = i < verbosity;
-					KHRDebug.glDebugMessageControl(4352, 4352, (Integer)KHR_VERBOSITY_LEVELS.get(i), (int[])null, bl2);
+					boolean bl = i < verbosity;
+					KHRDebug.glDebugMessageControl(4352, 4352, (Integer)KHR_VERBOSITY_LEVELS.get(i), (int[])null, bl);
 				}
 
 				KHRDebug.glDebugMessageCallback(GLX.make(GLDebugMessageCallback.create(GlDebug::info), Untracker::untrack), 0L);
 			} else if (gLCapabilities.GL_ARB_debug_output) {
-				if (bl) {
+				if (sync) {
 					GL11.glEnable(33346);
 				}
 
 				for (int i = 0; i < ARB_VERBOSITY_LEVELS.size(); i++) {
-					boolean bl2 = i < verbosity;
-					ARBDebugOutput.glDebugMessageControlARB(4352, 4352, (Integer)ARB_VERBOSITY_LEVELS.get(i), (int[])null, bl2);
+					boolean bl = i < verbosity;
+					ARBDebugOutput.glDebugMessageControlARB(4352, 4352, (Integer)ARB_VERBOSITY_LEVELS.get(i), (int[])null, bl);
 				}
 
 				ARBDebugOutput.glDebugMessageCallbackARB(GLX.make(GLDebugMessageARBCallback.create(GlDebug::info), Untracker::untrack), 0L);

@@ -310,7 +310,7 @@ public class TestCommand {
 		Path path = Paths.get(StructureTestUtil.testStructuresDirectoryName);
 		Identifier identifier = new Identifier("minecraft", structure);
 		Path path2 = source.getWorld().getStructureManager().getStructurePath(identifier, ".nbt");
-		Path path3 = NbtProvider.method_10493(path2, structure, path);
+		Path path3 = NbtProvider.convertNbtToSnbt(path2, structure, path);
 		if (path3 == null) {
 			sendMessage(source, "Failed to export " + path2);
 			return 1;

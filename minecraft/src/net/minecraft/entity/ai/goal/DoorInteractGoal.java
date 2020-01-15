@@ -13,10 +13,10 @@ import net.minecraft.world.World;
 public abstract class DoorInteractGoal extends Goal {
 	protected MobEntity mob;
 	protected BlockPos doorPos = BlockPos.ORIGIN;
-	protected boolean field_6412;
+	protected boolean doorValid;
 	private boolean shouldStop;
-	private float field_6410;
-	private float field_6409;
+	private float xOffset;
+	private float zOffset;
 
 	public DoorInteractGoal(MobEntity mob) {
 		this.mob = mob;
@@ -25,13 +25,13 @@ public abstract class DoorInteractGoal extends Goal {
 		}
 	}
 
-	protected boolean method_6256() {
-		if (!this.field_6412) {
+	protected boolean isDoorOpen() {
+		if (!this.doorValid) {
 			return false;
 		} else {
 			BlockState blockState = this.mob.world.getBlockState(this.doorPos);
 			if (!(blockState.getBlock() instanceof DoorBlock)) {
-				this.field_6412 = false;
+				this.doorValid = false;
 				return false;
 			} else {
 				return (Boolean)blockState.get(DoorBlock.OPEN);
@@ -40,7 +40,7 @@ public abstract class DoorInteractGoal extends Goal {
 	}
 
 	protected void setDoorOpen(boolean open) {
-		if (this.field_6412) {
+		if (this.doorValid) {
 			BlockState blockState = this.mob.world.getBlockState(this.doorPos);
 			if (blockState.getBlock() instanceof DoorBlock) {
 				((DoorBlock)blockState.getBlock()).setOpen(this.mob.world, this.doorPos, open);
@@ -60,16 +60,16 @@ public abstract class DoorInteractGoal extends Goal {
 					PathNode pathNode = path.getNode(i);
 					this.doorPos = new BlockPos(pathNode.x, pathNode.y + 1, pathNode.z);
 					if (!(this.mob.squaredDistanceTo((double)this.doorPos.getX(), this.mob.getY(), (double)this.doorPos.getZ()) > 2.25)) {
-						this.field_6412 = getDoor(this.mob.world, this.doorPos);
-						if (this.field_6412) {
+						this.doorValid = isWoodenDoor(this.mob.world, this.doorPos);
+						if (this.doorValid) {
 							return true;
 						}
 					}
 				}
 
 				this.doorPos = new BlockPos(this.mob).up();
-				this.field_6412 = getDoor(this.mob.world, this.doorPos);
-				return this.field_6412;
+				this.doorValid = isWoodenDoor(this.mob.world, this.doorPos);
+				return this.doorValid;
 			} else {
 				return false;
 			}
@@ -84,21 +84,21 @@ public abstract class DoorInteractGoal extends Goal {
 	@Override
 	public void start() {
 		this.shouldStop = false;
-		this.field_6410 = (float)((double)((float)this.doorPos.getX() + 0.5F) - this.mob.getX());
-		this.field_6409 = (float)((double)((float)this.doorPos.getZ() + 0.5F) - this.mob.getZ());
+		this.xOffset = (float)((double)((float)this.doorPos.getX() + 0.5F) - this.mob.getX());
+		this.zOffset = (float)((double)((float)this.doorPos.getZ() + 0.5F) - this.mob.getZ());
 	}
 
 	@Override
 	public void tick() {
 		float f = (float)((double)((float)this.doorPos.getX() + 0.5F) - this.mob.getX());
 		float g = (float)((double)((float)this.doorPos.getZ() + 0.5F) - this.mob.getZ());
-		float h = this.field_6410 * f + this.field_6409 * g;
+		float h = this.xOffset * f + this.zOffset * g;
 		if (h < 0.0F) {
 			this.shouldStop = true;
 		}
 	}
 
-	public static boolean getDoor(World world, BlockPos pos) {
+	public static boolean isWoodenDoor(World world, BlockPos pos) {
 		BlockState blockState = world.getBlockState(pos);
 		return blockState.getBlock() instanceof DoorBlock && blockState.getMaterial() == Material.WOOD;
 	}

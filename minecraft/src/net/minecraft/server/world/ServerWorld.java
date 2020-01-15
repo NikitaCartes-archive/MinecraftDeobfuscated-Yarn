@@ -105,8 +105,6 @@ import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.village.PointOfInterestStorage;
-import net.minecraft.village.PointOfInterestType;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.ForcedChunkState;
 import net.minecraft.world.GameRules;
@@ -136,6 +134,8 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.level.LevelGeneratorType;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
+import net.minecraft.world.poi.PointOfInterestStorage;
+import net.minecraft.world.poi.PointOfInterestType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -211,7 +211,7 @@ public class ServerWorld extends World {
 		return this.getChunkManager().getChunkGenerator().getBiomeSource().getBiomeForNoiseGen(biomeX, biomeY, biomeZ);
 	}
 
-	public void tick(BooleanSupplier booleanSupplier) {
+	public void tick(BooleanSupplier shouldKeepTicking) {
 		Profiler profiler = this.getProfiler();
 		this.insideTick = true;
 		profiler.push("world border");
@@ -318,7 +318,7 @@ public class ServerWorld extends World {
 		this.calculateAmbientDarkness();
 		this.tickTime();
 		profiler.swap("chunkSource");
-		this.getChunkManager().tick(booleanSupplier);
+		this.getChunkManager().tick(shouldKeepTicking);
 		profiler.swap("tickPending");
 		if (this.properties.getGeneratorType() != LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
 			this.blockTickScheduler.tick();
@@ -583,14 +583,16 @@ public class ServerWorld extends World {
 
 	public void tickEntity(Entity entity) {
 		if (entity instanceof PlayerEntity || this.getChunkManager().shouldTickEntity(entity)) {
-			entity.method_22862(entity.getX(), entity.getY(), entity.getZ());
+			entity.resetPosition(entity.getX(), entity.getY(), entity.getZ());
 			entity.prevYaw = entity.yaw;
 			entity.prevPitch = entity.pitch;
 			if (entity.updateNeeded) {
 				entity.age++;
-				this.getProfiler().push((Supplier<String>)(() -> Registry.ENTITY_TYPE.getId(entity.getType()).toString()));
+				Profiler profiler = this.getProfiler();
+				profiler.push((Supplier<String>)(() -> Registry.ENTITY_TYPE.getId(entity.getType()).toString()));
+				profiler.method_24270("tickNonPassenger");
 				entity.tick();
-				this.getProfiler().pop();
+				profiler.pop();
 			}
 
 			this.checkChunk(entity);
@@ -606,12 +608,16 @@ public class ServerWorld extends World {
 		if (entity2.removed || entity2.getVehicle() != entity) {
 			entity2.stopRiding();
 		} else if (entity2 instanceof PlayerEntity || this.getChunkManager().shouldTickEntity(entity2)) {
-			entity2.method_22862(entity2.getX(), entity2.getY(), entity2.getZ());
+			entity2.resetPosition(entity2.getX(), entity2.getY(), entity2.getZ());
 			entity2.prevYaw = entity2.yaw;
 			entity2.prevPitch = entity2.pitch;
 			if (entity2.updateNeeded) {
 				entity2.age++;
+				Profiler profiler = this.getProfiler();
+				profiler.push((Supplier<String>)(() -> Registry.ENTITY_TYPE.getId(entity2.getType()).toString()));
+				profiler.method_24270("tickPassenger");
 				entity2.tickRiding();
+				profiler.pop();
 			}
 
 			this.checkChunk(entity2);
@@ -811,34 +817,34 @@ public class ServerWorld extends World {
 		return this.addEntity(entity);
 	}
 
-	public boolean method_18768(Entity entity) {
+	public boolean tryLoadEntity(Entity entity) {
 		return this.addEntity(entity);
 	}
 
-	public void method_18769(Entity entity) {
+	public void onDimensionChanged(Entity entity) {
 		boolean bl = entity.teleporting;
 		entity.teleporting = true;
-		this.method_18768(entity);
+		this.tryLoadEntity(entity);
 		entity.teleporting = bl;
 		this.checkChunk(entity);
 	}
 
-	public void method_18207(ServerPlayerEntity serverPlayerEntity) {
-		this.addPlayer(serverPlayerEntity);
-		this.checkChunk(serverPlayerEntity);
+	public void onPlayerTeleport(ServerPlayerEntity player) {
+		this.addPlayer(player);
+		this.checkChunk(player);
 	}
 
-	public void method_18211(ServerPlayerEntity serverPlayerEntity) {
-		this.addPlayer(serverPlayerEntity);
-		this.checkChunk(serverPlayerEntity);
+	public void onPlayerChangeDimension(ServerPlayerEntity player) {
+		this.addPlayer(player);
+		this.checkChunk(player);
 	}
 
-	public void method_18213(ServerPlayerEntity serverPlayerEntity) {
-		this.addPlayer(serverPlayerEntity);
+	public void onPlayerConnected(ServerPlayerEntity player) {
+		this.addPlayer(player);
 	}
 
-	public void respawnPlayer(ServerPlayerEntity serverPlayerEntity) {
-		this.addPlayer(serverPlayerEntity);
+	public void onPlayerRespawned(ServerPlayerEntity player) {
+		this.addPlayer(player);
 	}
 
 	private void addPlayer(ServerPlayerEntity player) {
@@ -917,7 +923,7 @@ public class ServerWorld extends World {
 
 	public void unloadEntity(Entity entity) {
 		if (entity instanceof EnderDragonEntity) {
-			for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).method_5690()) {
+			for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).getBodyParts()) {
 				enderDragonPart.remove();
 			}
 		}
@@ -941,7 +947,7 @@ public class ServerWorld extends World {
 		} else {
 			this.entitiesById.put(entity.getEntityId(), entity);
 			if (entity instanceof EnderDragonEntity) {
-				for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).method_5690()) {
+				for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).getBodyParts()) {
 					this.entitiesById.put(enderDragonPart.getEntityId(), enderDragonPart);
 				}
 			}
@@ -1053,14 +1059,14 @@ public class ServerWorld extends World {
 	}
 
 	@Override
-	public void updateListeners(BlockPos blockPos, BlockState blockState, BlockState blockState2, int i) {
-		this.getChunkManager().markForUpdate(blockPos);
-		VoxelShape voxelShape = blockState.getCollisionShape(this, blockPos);
-		VoxelShape voxelShape2 = blockState2.getCollisionShape(this, blockPos);
+	public void updateListeners(BlockPos pos, BlockState oldState, BlockState newState, int flags) {
+		this.getChunkManager().markForUpdate(pos);
+		VoxelShape voxelShape = oldState.getCollisionShape(this, pos);
+		VoxelShape voxelShape2 = newState.getCollisionShape(this, pos);
 		if (VoxelShapes.matchesAnywhere(voxelShape, voxelShape2, BooleanBiFunction.NOT_SAME)) {
 			for (EntityNavigation entityNavigation : this.entityNavigations) {
 				if (!entityNavigation.shouldRecalculatePath()) {
-					entityNavigation.method_18053(blockPos);
+					entityNavigation.method_18053(pos);
 				}
 			}
 		}
@@ -1163,9 +1169,7 @@ public class ServerWorld extends World {
 	public <T extends ParticleEffect> int spawnParticles(
 		T particle, double x, double y, double z, int count, double deltaX, double deltaY, double deltaZ, double speed
 	) {
-		ParticleS2CPacket particleS2CPacket = new ParticleS2CPacket(
-			particle, false, (float)x, (float)y, (float)z, (float)deltaX, (float)deltaY, (float)deltaZ, (float)speed, count
-		);
+		ParticleS2CPacket particleS2CPacket = new ParticleS2CPacket(particle, false, x, y, z, (float)deltaX, (float)deltaY, (float)deltaZ, (float)speed, count);
 		int i = 0;
 
 		for (int j = 0; j < this.players.size(); j++) {
@@ -1181,7 +1185,7 @@ public class ServerWorld extends World {
 	public <T extends ParticleEffect> boolean spawnParticles(
 		ServerPlayerEntity viewer, T particle, boolean force, double x, double y, double z, int count, double deltaX, double deltaY, double deltaZ, double speed
 	) {
-		Packet<?> packet = new ParticleS2CPacket(particle, force, (float)x, (float)y, (float)z, (float)deltaX, (float)deltaY, (float)deltaZ, (float)speed, count);
+		Packet<?> packet = new ParticleS2CPacket(particle, force, x, y, z, (float)deltaX, (float)deltaY, (float)deltaZ, (float)speed, count);
 		return this.sendToPlayerIfNearby(viewer, force, x, y, z, packet);
 	}
 
@@ -1547,7 +1551,7 @@ public class ServerWorld extends World {
 
 		for (BlockEntity blockEntity : this.blockEntities) {
 			BlockPos blockPos = blockEntity.getPos();
-			csvWriter.printRow(blockPos.getX(), blockPos.getY(), blockPos.getZ(), Registry.BLOCK_ENTITY.getId(blockEntity.getType()));
+			csvWriter.printRow(blockPos.getX(), blockPos.getY(), blockPos.getZ(), Registry.BLOCK_ENTITY_TYPE.getId(blockEntity.getType()));
 		}
 	}
 

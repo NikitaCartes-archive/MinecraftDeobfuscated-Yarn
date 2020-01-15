@@ -204,27 +204,27 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, Nameab
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
-		if (compoundTag.contains("Book", 10)) {
-			this.book = this.resolveBook(ItemStack.fromTag(compoundTag.getCompound("Book")), null);
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
+		if (tag.contains("Book", 10)) {
+			this.book = this.resolveBook(ItemStack.fromTag(tag.getCompound("Book")), null);
 		} else {
 			this.book = ItemStack.EMPTY;
 		}
 
 		this.pageCount = WrittenBookItem.getPageCount(this.book);
-		this.currentPage = MathHelper.clamp(compoundTag.getInt("Page"), 0, this.pageCount - 1);
+		this.currentPage = MathHelper.clamp(tag.getInt("Page"), 0, this.pageCount - 1);
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag compoundTag) {
-		super.toTag(compoundTag);
+	public CompoundTag toTag(CompoundTag tag) {
+		super.toTag(tag);
 		if (!this.getBook().isEmpty()) {
-			compoundTag.put("Book", this.getBook().toTag(new CompoundTag()));
-			compoundTag.putInt("Page", this.currentPage);
+			tag.put("Book", this.getBook().toTag(new CompoundTag()));
+			tag.putInt("Page", this.currentPage);
 		}
 
-		return compoundTag;
+		return tag;
 	}
 
 	@Override

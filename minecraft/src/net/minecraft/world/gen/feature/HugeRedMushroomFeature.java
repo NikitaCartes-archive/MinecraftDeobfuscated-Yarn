@@ -13,12 +13,10 @@ public class HugeRedMushroomFeature extends HugeMushroomFeature {
 	}
 
 	@Override
-	protected void method_23375(
-		IWorld iWorld, Random random, BlockPos blockPos, int i, BlockPos.Mutable mutable, HugeMushroomFeatureConfig hugeMushroomFeatureConfig
-	) {
+	protected void generate(IWorld world, Random random, BlockPos blockPos, int i, BlockPos.Mutable pos, HugeMushroomFeatureConfig config) {
 		for (int j = i - 3; j <= i; j++) {
-			int k = j < i ? hugeMushroomFeatureConfig.field_21232 : hugeMushroomFeatureConfig.field_21232 - 1;
-			int l = hugeMushroomFeatureConfig.field_21232 - 2;
+			int k = j < i ? config.capSize : config.capSize - 1;
+			int l = config.capSize - 2;
 
 			for (int m = -k; m <= k; m++) {
 				for (int n = -k; n <= k; n++) {
@@ -29,12 +27,12 @@ public class HugeRedMushroomFeature extends HugeMushroomFeature {
 					boolean bl5 = bl || bl2;
 					boolean bl6 = bl3 || bl4;
 					if (j >= i || bl5 != bl6) {
-						mutable.set(blockPos).setOffset(m, j, n);
-						if (!iWorld.getBlockState(mutable).isFullOpaque(iWorld, mutable)) {
+						pos.set(blockPos).setOffset(m, j, n);
+						if (!world.getBlockState(pos).isFullOpaque(world, pos)) {
 							this.setBlockState(
-								iWorld,
-								mutable,
-								hugeMushroomFeatureConfig.capProvider
+								world,
+								pos,
+								config.capProvider
 									.getBlockState(random, blockPos)
 									.with(MushroomBlock.UP, Boolean.valueOf(j >= i - 1))
 									.with(MushroomBlock.WEST, Boolean.valueOf(m < -l))

@@ -29,7 +29,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class TextureManager implements TextureTickListener, ResourceReloadListener {
+public class TextureManager implements TextureTickListener, AutoCloseable, ResourceReloadListener {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final Identifier MISSING_IDENTIFIER = new Identifier("");
 	private final Map<Identifier, AbstractTexture> textures = Maps.<Identifier, AbstractTexture>newHashMap();
@@ -59,33 +59,38 @@ public class TextureManager implements TextureTickListener, ResourceReloadListen
 		abstractTexture.bindTexture();
 	}
 
-	public boolean registerTexture(Identifier id, AbstractTexture texture) {
-		boolean bl = true;
-
-		try {
-			texture.load(this.resourceContainer);
-		} catch (IOException var8) {
-			if (id != MISSING_IDENTIFIER) {
-				LOGGER.warn("Failed to load texture: {}", id, var8);
+	public void registerTexture(Identifier identifier, AbstractTexture abstractTexture) {
+		abstractTexture = this.method_24303(identifier, abstractTexture);
+		AbstractTexture abstractTexture2 = (AbstractTexture)this.textures.put(identifier, abstractTexture);
+		if (abstractTexture2 != abstractTexture) {
+			if (abstractTexture2 != null && abstractTexture2 != MissingSprite.getMissingSpriteTexture()) {
+				abstractTexture2.clearGlId();
+				this.tickListeners.remove(abstractTexture2);
 			}
 
-			texture = MissingSprite.getMissingSpriteTexture();
-			this.textures.put(id, texture);
-			bl = false;
-		} catch (Throwable var9) {
-			CrashReport crashReport = CrashReport.create(var9, "Registering texture");
+			if (abstractTexture instanceof TextureTickListener) {
+				this.tickListeners.add((TextureTickListener)abstractTexture);
+			}
+		}
+	}
+
+	private AbstractTexture method_24303(Identifier identifier, AbstractTexture abstractTexture) {
+		try {
+			abstractTexture.load(this.resourceContainer);
+			return abstractTexture;
+		} catch (IOException var7) {
+			if (identifier != MISSING_IDENTIFIER) {
+				LOGGER.warn("Failed to load texture: {}", identifier, var7);
+			}
+
+			return MissingSprite.getMissingSpriteTexture();
+		} catch (Throwable var8) {
+			CrashReport crashReport = CrashReport.create(var8, "Registering texture");
 			CrashReportSection crashReportSection = crashReport.addElement("Resource location being registered");
-			crashReportSection.add("Resource location", id);
-			crashReportSection.add("Texture object class", (CrashCallable<String>)(() -> texture.getClass().getName()));
+			crashReportSection.add("Resource location", identifier);
+			crashReportSection.add("Texture object class", (CrashCallable<String>)(() -> abstractTexture.getClass().getName()));
 			throw new CrashException(crashReport);
 		}
-
-		this.textures.put(id, texture);
-		if (bl && texture instanceof TextureTickListener) {
-			this.tickListeners.add((TextureTickListener)texture);
-		}
-
-		return bl;
 	}
 
 	@Nullable
@@ -133,6 +138,13 @@ public class TextureManager implements TextureTickListener, ResourceReloadListen
 		if (abstractTexture != null) {
 			TextureUtil.releaseTextureId(abstractTexture.getGlId());
 		}
+	}
+
+	public void close() {
+		this.textures.values().forEach(AbstractTexture::clearGlId);
+		this.textures.clear();
+		this.tickListeners.clear();
+		this.dynamicIdCounters.clear();
 	}
 
 	@Override

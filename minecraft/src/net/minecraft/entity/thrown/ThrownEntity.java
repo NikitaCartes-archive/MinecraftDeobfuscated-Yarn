@@ -52,7 +52,7 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean shouldRenderAtDistance(double distance) {
+	public boolean shouldRender(double distance) {
 		double d = this.getBoundingBox().getAverageSideLength() * 4.0;
 		if (Double.isNaN(d)) {
 			d = 4.0;
@@ -67,8 +67,6 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 		float j = -MathHelper.sin((pitch + f) * (float) (Math.PI / 180.0));
 		float k = MathHelper.cos(yaw * (float) (Math.PI / 180.0)) * MathHelper.cos(pitch * (float) (Math.PI / 180.0));
 		this.setVelocity((double)i, (double)j, (double)k, g, h);
-		Vec3d vec3d = user.getVelocity();
-		this.setVelocity(this.getVelocity().add(vec3d.x, user.onGround ? 0.0 : vec3d.y, vec3d.z));
 	}
 
 	@Override
@@ -117,22 +115,23 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 		}
 
 		Box box = this.getBoundingBox().stretch(this.getVelocity()).expand(1.0);
+		if (this.owner != null && (this.age < 2 || this.field_7637 != null)) {
+			for (Entity entity : this.world.getEntities(this, box, entityx -> !entityx.isSpectator() && entityx.collides())) {
+				if (entity == this.field_7637) {
+					this.field_7638++;
+					break;
+				}
 
-		for (Entity entity : this.world.getEntities(this, box, entityx -> !entityx.isSpectator() && entityx.collides())) {
-			if (entity == this.field_7637) {
-				this.field_7638++;
-				break;
-			}
-
-			if (this.owner != null && this.age < 2 && this.field_7637 == null) {
-				this.field_7637 = entity;
-				this.field_7638 = 3;
-				break;
+				if (entity == this.owner) {
+					this.field_7637 = this.owner;
+					this.field_7638 = 3;
+					break;
+				}
 			}
 		}
 
 		HitResult hitResult = ProjectileUtil.getCollision(
-			this, box, entity -> !entity.isSpectator() && entity.collides() && entity != this.field_7637, RayTraceContext.ShapeType.OUTLINE, true
+			this, box, entity -> !entity.isSpectator() && entity.collides() && entity != this.field_7637, RayTraceContext.ShapeType.COLLIDER, true
 		);
 		if (this.field_7637 != null && this.field_7638-- <= 0) {
 			this.field_7637 = null;
@@ -140,7 +139,7 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 
 		if (hitResult.getType() != HitResult.Type.MISS) {
 			if (hitResult.getType() == HitResult.Type.BLOCK && this.world.getBlockState(((BlockHitResult)hitResult).getBlockPos()).getBlock() == Blocks.NETHER_PORTAL) {
-				this.setInPortal(((BlockHitResult)hitResult).getBlockPos());
+				this.setInNetherPortal(((BlockHitResult)hitResult).getBlockPos());
 			} else {
 				this.onCollision(hitResult);
 			}

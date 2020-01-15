@@ -18,7 +18,7 @@ public class ConcretePowderBlock extends FallingBlock {
 
 	@Override
 	public void onLanding(World world, BlockPos pos, BlockState fallingBlockState, BlockState currentStateInPos) {
-		if (hardensIn(currentStateInPos)) {
+		if (method_24279(world, pos, currentStateInPos)) {
 			world.setBlockState(pos, this.hardenedState, 3);
 		}
 	}
@@ -27,7 +27,12 @@ public class ConcretePowderBlock extends FallingBlock {
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		BlockView blockView = ctx.getWorld();
 		BlockPos blockPos = ctx.getBlockPos();
-		return !hardensIn(blockView.getBlockState(blockPos)) && !hardensOnAnySide(blockView, blockPos) ? super.getPlacementState(ctx) : this.hardenedState;
+		BlockState blockState = blockView.getBlockState(blockPos);
+		return method_24279(blockView, blockPos, blockState) ? this.hardenedState : super.getPlacementState(ctx);
+	}
+
+	private static boolean method_24279(BlockView blockView, BlockPos blockPos, BlockState blockState) {
+		return hardensIn(blockState) || hardensOnAnySide(blockView, blockPos);
 	}
 
 	private static boolean hardensOnAnySide(BlockView view, BlockPos pos) {

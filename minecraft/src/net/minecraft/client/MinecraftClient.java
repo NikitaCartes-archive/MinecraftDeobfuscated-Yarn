@@ -85,7 +85,6 @@ import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferBuilderStorage;
-import net.minecraft.client.render.FirstPersonRenderer;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.render.Tessellator;
@@ -96,6 +95,7 @@ import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.render.item.HeldItemRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedModelManager;
@@ -106,6 +106,7 @@ import net.minecraft.client.resource.Format3ResourcePack;
 import net.minecraft.client.resource.Format4ResourcePack;
 import net.minecraft.client.resource.GrassColormapResourceSupplier;
 import net.minecraft.client.resource.SplashTextResourceSupplier;
+import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.resource.language.LanguageManager;
 import net.minecraft.client.search.IdentifierSearchableContainer;
 import net.minecraft.client.search.SearchManager;
@@ -118,6 +119,7 @@ import net.minecraft.client.texture.PlayerSkinProvider;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.StatusEffectSpriteManager;
 import net.minecraft.client.texture.TextureManager;
+import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.toast.ToastManager;
 import net.minecraft.client.tutorial.TutorialManager;
 import net.minecraft.client.util.NarratorManager;
@@ -125,7 +127,7 @@ import net.minecraft.client.util.Session;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.WindowProvider;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.datafixers.Schemas;
+import net.minecraft.datafixer.Schemas;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.decoration.EnderCrystalEntity;
@@ -163,6 +165,8 @@ import net.minecraft.server.network.packet.LoginHelloC2SPacket;
 import net.minecraft.server.network.packet.PlayerActionC2SPacket;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.text.KeybindText;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.DefaultedList;
@@ -223,14 +227,14 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public final WorldRenderer worldRenderer;
 	private final EntityRenderDispatcher entityRenderManager;
 	private final ItemRenderer itemRenderer;
-	private final FirstPersonRenderer firstPersonRenderer;
+	private final HeldItemRenderer heldItemRenderer;
 	public final ParticleManager particleManager;
 	private final SearchManager searchManager = new SearchManager();
 	private final Session session;
 	public final TextRenderer textRenderer;
 	public final GameRenderer gameRenderer;
 	public final DebugRenderer debugRenderer;
-	protected boolean field_21821;
+	protected boolean field_21884;
 	private final AtomicReference<WorldGenerationProgressTracker> worldGenProgressTracker = new AtomicReference();
 	public final InGameHud inGameHud;
 	public final GameOptions options;
@@ -286,6 +290,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public Entity targetedEntity;
 	@Nullable
 	public HitResult crosshairTarget;
+	@Nullable
+	public HitResult field_21885;
+	public int field_21886;
 	private int itemUseCooldown;
 	protected int attackCooldown;
 	private boolean paused;
@@ -305,8 +312,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private CrashReport crashReport;
 	private static int currentFps;
 	public String fpsDebugString = "";
-	public boolean field_20907;
-	public boolean field_20908;
+	public boolean debugChunkInfo;
+	public boolean debugChunkOcculsion;
 	public boolean chunkCullingEnabled = true;
 	private boolean windowFocused;
 	private final Queue<Runnable> renderTaskQueue = Queues.<Runnable>newConcurrentLinkedQueue();
@@ -371,15 +378,15 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 		Util.nanoTimeSupplier = RenderSystem.initBackendSystem();
 		this.windowProvider = new WindowProvider(this);
-		this.window = this.windowProvider.createWindow(windowSettings, this.options.fullscreenResolution, "Minecraft " + SharedConstants.getGameVersion().getName());
+		this.window = this.windowProvider.createWindow(windowSettings, this.options.fullscreenResolution, this.method_24287());
 		this.onWindowFocusChanged(true);
 
 		try {
 			InputStream inputStream = this.getResourcePackDownloader().getPack().open(ResourceType.CLIENT_RESOURCES, new Identifier("icons/icon_16x16.png"));
 			InputStream inputStream2 = this.getResourcePackDownloader().getPack().open(ResourceType.CLIENT_RESOURCES, new Identifier("icons/icon_32x32.png"));
 			this.window.setIcon(inputStream, inputStream2);
-		} catch (IOException var9) {
-			LOGGER.error("Couldn't set icon", (Throwable)var9);
+		} catch (IOException var8) {
+			LOGGER.error("Couldn't set icon", (Throwable)var8);
 		}
 
 		this.window.setFramerateLimit(this.options.maxFps);
@@ -393,19 +400,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.resourceManager = new ReloadableResourceManagerImpl(ResourceType.CLIENT_RESOURCES, this.thread);
 		this.options.addResourcePackProfilesToManager(this.resourcePackManager);
 		this.resourcePackManager.scanPacks();
-		List<ResourcePack> list = (List<ResourcePack>)this.resourcePackManager
-			.getEnabledProfiles()
-			.stream()
-			.map(ResourcePackProfile::createResourcePack)
-			.collect(Collectors.toList());
-
-		for (ResourcePack resourcePack : list) {
-			this.resourceManager.addPack(resourcePack);
-		}
-
 		this.languageManager = new LanguageManager(this.options.language);
 		this.resourceManager.registerListener(this.languageManager);
-		this.languageManager.reloadResources(list);
 		this.textureManager = new TextureManager(this.resourceManager);
 		this.resourceManager.registerListener(this.textureManager);
 		this.skinProvider = new PlayerSkinProvider(this.textureManager, new File(file, "skins"), this.sessionService);
@@ -434,7 +430,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.resourceManager.registerListener(this.bakedModelManager);
 			this.itemRenderer = new ItemRenderer(this.textureManager, this.bakedModelManager, this.itemColorMap);
 			this.entityRenderManager = new EntityRenderDispatcher(this.textureManager, this.itemRenderer, this.resourceManager, this.textRenderer, this.options);
-			this.firstPersonRenderer = new FirstPersonRenderer(this);
+			this.heldItemRenderer = new HeldItemRenderer(this);
 			this.resourceManager.registerListener(this.itemRenderer);
 			this.bufferBuilders = new BufferBuilderStorage();
 			this.gameRenderer = new GameRenderer(this, this.resourceManager, this.bufferBuilders);
@@ -470,22 +466,17 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			}
 
 			SplashScreen.init(this);
+			List<ResourcePack> list = (List<ResourcePack>)this.resourcePackManager
+				.getEnabledProfiles()
+				.stream()
+				.map(ResourcePackProfile::createResourcePack)
+				.collect(Collectors.toList());
 			this.setOverlay(
 				new SplashScreen(
 					this,
-					this.resourceManager.beginInitialMonitoredReload(Util.getServerWorkerExecutor(), this, COMPLETED_UNIT_FUTURE),
-					optional -> Util.ifPresentOrElse(optional, throwable -> {
-							if (this.resourcePackManager.getEnabledProfiles().size() > 1) {
-								LOGGER.info("Caught error loading resourcepacks, removing all assigned resourcepacks", throwable);
-								this.resourcePackManager.setEnabledProfiles(Collections.emptyList());
-								this.options.resourcePacks.clear();
-								this.options.incompatibleResourcePacks.clear();
-								this.options.write();
-								this.reloadResources();
-							} else {
-								Util.method_24155(throwable);
-							}
-						}, () -> {
+					this.resourceManager.beginMonitoredReload(Util.getServerWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list),
+					optional -> Util.ifPresentOrElse(optional, this::handleResourceReloadExecption, () -> {
+							this.languageManager.reloadResources(list);
 							if (SharedConstants.isDevelopment) {
 								this.checkGameData();
 							}
@@ -493,6 +484,62 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 					false
 				)
 			);
+		}
+	}
+
+	public void method_24288() {
+		this.window.method_24286(this.method_24287());
+	}
+
+	private String method_24287() {
+		StringBuilder stringBuilder = new StringBuilder("Minecraft");
+		if (this.method_24289()) {
+			stringBuilder.append("*");
+		}
+
+		stringBuilder.append(" ");
+		stringBuilder.append(SharedConstants.getGameVersion().getName());
+		ClientPlayNetworkHandler clientPlayNetworkHandler = this.getNetworkHandler();
+		if (clientPlayNetworkHandler != null) {
+			stringBuilder.append(" - ");
+			if (this.server != null && !this.server.isRemote()) {
+				stringBuilder.append(I18n.translate("title.singleplayer"));
+			} else if (this.isConnectedToRealms()) {
+				stringBuilder.append(I18n.translate("title.multiplayer.realms"));
+			} else if (this.server == null && (this.currentServerEntry == null || !this.currentServerEntry.isLocal())) {
+				stringBuilder.append(I18n.translate("title.multiplayer.other"));
+			} else {
+				stringBuilder.append(I18n.translate("title.multiplayer.lan"));
+			}
+		}
+
+		return stringBuilder.toString();
+	}
+
+	public boolean method_24289() {
+		return !"vanilla".equals(ClientBrandRetriever.getClientModName()) || MinecraftClient.class.getSigners() == null;
+	}
+
+	private void handleResourceReloadExecption(Throwable throwable) {
+		if (this.resourcePackManager.getEnabledProfiles().size() > 1) {
+			Text text;
+			if (throwable instanceof ReloadableResourceManagerImpl.PackAdditionFailedException) {
+				text = new LiteralText(((ReloadableResourceManagerImpl.PackAdditionFailedException)throwable).getPack().getName());
+			} else {
+				text = null;
+			}
+
+			LOGGER.info("Caught error loading resourcepacks, removing all selected resourcepacks", throwable);
+			this.resourcePackManager.setEnabledProfiles(Collections.emptyList());
+			this.options.resourcePacks.clear();
+			this.options.incompatibleResourcePacks.clear();
+			this.options.write();
+			this.reloadResources().thenRun(() -> {
+				ToastManager toastManager = this.getToastManager();
+				SystemToast.show(toastManager, SystemToast.Type.PACK_LOAD_FAILURE, new TranslatableText("resourcePack.load_fail"), text);
+			});
+		} else {
+			Util.throwUnchecked(throwable);
 		}
 	}
 
@@ -655,12 +702,16 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 					.map(ResourcePackProfile::createResourcePack)
 					.collect(Collectors.toList());
 				this.setOverlay(
-					new SplashScreen(this, this.resourceManager.beginMonitoredReload(Util.getServerWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list), optional -> {
-						optional.ifPresent(Util::method_24155);
-						this.languageManager.reloadResources(list);
-						this.worldRenderer.reload();
-						completableFuture.complete(null);
-					}, true)
+					new SplashScreen(
+						this,
+						this.resourceManager.beginMonitoredReload(Util.getServerWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list),
+						optional -> Util.ifPresentOrElse(optional, this::handleResourceReloadExecption, () -> {
+								this.languageManager.reloadResources(list);
+								this.worldRenderer.reload();
+								completableFuture.complete(null);
+							}),
+						true
+					)
 				);
 				return completableFuture;
 			}
@@ -752,6 +803,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.soundManager.resumeAll();
 			this.mouse.lockCursor();
 		}
+
+		this.method_24288();
 	}
 
 	public void setOverlay(@Nullable Overlay overlay) {
@@ -761,7 +814,11 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public void stop() {
 		try {
 			LOGGER.info("Stopping!");
-			NarratorManager.INSTANCE.destroy();
+
+			try {
+				NarratorManager.INSTANCE.destroy();
+			} catch (Throwable var7) {
+			}
 
 			try {
 				if (this.world != null) {
@@ -769,7 +826,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				}
 
 				this.disconnect();
-			} catch (Throwable var5) {
+			} catch (Throwable var6) {
 			}
 
 			if (this.currentScreen != null) {
@@ -789,7 +846,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public void close() {
 		try {
 			this.bakedModelManager.close();
-			this.textRenderer.close();
 			this.fontManager.close();
 			this.gameRenderer.close();
 			this.worldRenderer.close();
@@ -798,7 +854,11 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.particleManager.clearAtlas();
 			this.statusEffectSpriteManager.close();
 			this.paintingManager.close();
+			this.textureManager.close();
 			Util.shutdownServerWorkerExecutor();
+		} catch (Throwable var5) {
+			LOGGER.error("Shutdown failure!", var5);
+			throw var5;
 		} finally {
 			this.windowProvider.close();
 			this.window.close();
@@ -831,7 +891,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.profiler.pop();
 		}
 
-		long m = Util.getMeasuringTimeNano();
 		this.profiler.push("tick");
 		if (tick) {
 			for (int i = 0; i < Math.min(10, this.renderTickCounter.ticksThisFrame); i++) {
@@ -874,13 +933,16 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.framebuffer.draw(this.window.getFramebufferWidth(), this.window.getFramebufferHeight());
 		RenderSystem.popMatrix();
 		this.profiler.startTick();
-		this.window.setFullscreen();
+		this.profiler.push("updateDisplay");
+		this.window.swapBuffers();
 		int i = this.getFramerateLimit();
 		if ((double)i < Option.FRAMERATE_LIMIT.getMax()) {
 			RenderSystem.limitDisplayFPS(i);
 		}
 
+		this.profiler.swap("yield");
 		Thread.yield();
+		this.profiler.pop();
 		this.window.setPhase("Post render");
 		this.fpsCounter++;
 		boolean bl = this.isIntegratedServerRunning()
@@ -896,9 +958,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.paused = bl;
 		}
 
-		long n = Util.getMeasuringTimeNano();
-		this.metricsData.pushSample(n - this.lastMetricsSampleTime);
-		this.lastMetricsSampleTime = n;
+		long m = Util.getMeasuringTimeNano();
+		this.metricsData.pushSample(m - this.lastMetricsSampleTime);
+		this.lastMetricsSampleTime = m;
 
 		while (Util.getMeasuringTimeMs() >= this.nextDebugInfoUpdateTime + 1000L) {
 			currentFps = this.fpsCounter;
@@ -967,7 +1029,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			ProfilerTiming profilerTiming = (ProfilerTiming)list.remove(0);
 			if (digit == 0) {
 				if (!profilerTiming.name.isEmpty()) {
-					int i = this.openProfilerSection.lastIndexOf(46);
+					int i = this.openProfilerSection.lastIndexOf(30);
 					if (i >= 0) {
 						this.openProfilerSection = this.openProfilerSection.substring(0, i);
 					}
@@ -976,7 +1038,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				digit--;
 				if (digit < list.size() && !"unspecified".equals(((ProfilerTiming)list.get(digit)).name)) {
 					if (!this.openProfilerSection.isEmpty()) {
-						this.openProfilerSection = this.openProfilerSection + ".";
+						this.openProfilerSection = this.openProfilerSection + '\u001e';
 					}
 
 					this.openProfilerSection = this.openProfilerSection + ((ProfilerTiming)list.get(digit)).name;
@@ -1037,8 +1099,10 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 					float f = (float)((d + profilerTiming2.parentSectionUsagePercentage * (double)q / (double)l) * (float) (Math.PI * 2) / 100.0);
 					float g = MathHelper.sin(f) * 160.0F;
 					float h = MathHelper.cos(f) * 160.0F * 0.5F;
-					bufferBuilder.vertex((double)((float)j + g), (double)((float)k - h), 0.0).color(n >> 1, o >> 1, p >> 1, 255).next();
-					bufferBuilder.vertex((double)((float)j + g), (double)((float)k - h + 10.0F), 0.0).color(n >> 1, o >> 1, p >> 1, 255).next();
+					if (!(h > 0.0F)) {
+						bufferBuilder.vertex((double)((float)j + g), (double)((float)k - h), 0.0).color(n >> 1, o >> 1, p >> 1, 255).next();
+						bufferBuilder.vertex((double)((float)j + g), (double)((float)k - h + 10.0F), 0.0).color(n >> 1, o >> 1, p >> 1, 255).next();
+					}
 				}
 
 				tessellator.draw();
@@ -1048,21 +1112,22 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			DecimalFormat decimalFormat = new DecimalFormat("##0.00");
 			decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
 			RenderSystem.enableTexture();
-			String string = "";
-			if (!"unspecified".equals(profilerTiming.name)) {
-				string = string + "[0] ";
+			String string = ProfileResult.method_21721(profilerTiming.name);
+			String string2 = "";
+			if (!"unspecified".equals(string)) {
+				string2 = string2 + "[0] ";
 			}
 
-			if (profilerTiming.name.isEmpty()) {
-				string = string + "ROOT ";
+			if (string.isEmpty()) {
+				string2 = string2 + "ROOT ";
 			} else {
-				string = string + profilerTiming.name + ' ';
+				string2 = string2 + string + ' ';
 			}
 
-			int l = 16777215;
-			this.textRenderer.drawWithShadow(string, (float)(j - 160), (float)(k - 80 - 16), 16777215);
-			string = decimalFormat.format(profilerTiming.totalUsagePercentage) + "%";
-			this.textRenderer.drawWithShadow(string, (float)(j + 160 - this.textRenderer.getStringWidth(string)), (float)(k - 80 - 16), 16777215);
+			int m = 16777215;
+			this.textRenderer.drawWithShadow(string2, (float)(j - 160), (float)(k - 80 - 16), 16777215);
+			string2 = decimalFormat.format(profilerTiming.totalUsagePercentage) + "%";
+			this.textRenderer.drawWithShadow(string2, (float)(j + 160 - this.textRenderer.getStringWidth(string2)), (float)(k - 80 - 16), 16777215);
 
 			for (int r = 0; r < list.size(); r++) {
 				ProfilerTiming profilerTiming3 = (ProfilerTiming)list.get(r);
@@ -1073,14 +1138,14 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 					stringBuilder.append("[").append(r + 1).append("] ");
 				}
 
-				String string2 = stringBuilder.append(profilerTiming3.name).toString();
-				this.textRenderer.drawWithShadow(string2, (float)(j - 160), (float)(k + 80 + r * 8 + 20), profilerTiming3.getColor());
-				string2 = decimalFormat.format(profilerTiming3.parentSectionUsagePercentage) + "%";
+				String string3 = stringBuilder.append(profilerTiming3.name).toString();
+				this.textRenderer.drawWithShadow(string3, (float)(j - 160), (float)(k + 80 + r * 8 + 20), profilerTiming3.getColor());
+				string3 = decimalFormat.format(profilerTiming3.parentSectionUsagePercentage) + "%";
 				this.textRenderer
-					.drawWithShadow(string2, (float)(j + 160 - 50 - this.textRenderer.getStringWidth(string2)), (float)(k + 80 + r * 8 + 20), profilerTiming3.getColor());
-				string2 = decimalFormat.format(profilerTiming3.totalUsagePercentage) + "%";
+					.drawWithShadow(string3, (float)(j + 160 - 50 - this.textRenderer.getStringWidth(string3)), (float)(k + 80 + r * 8 + 20), profilerTiming3.getColor());
+				string3 = decimalFormat.format(profilerTiming3.totalUsagePercentage) + "%";
 				this.textRenderer
-					.drawWithShadow(string2, (float)(j + 160 - this.textRenderer.getStringWidth(string2)), (float)(k + 80 + r * 8 + 20), profilerTiming3.getColor());
+					.drawWithShadow(string3, (float)(j + 160 - this.textRenderer.getStringWidth(string3)), (float)(k + 80 + r * 8 + 20), profilerTiming3.getColor());
 			}
 		}
 	}
@@ -1111,7 +1176,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 
 		if (this.attackCooldown <= 0 && !this.player.isUsingItem()) {
-			if (bl && this.crosshairTarget != null && this.crosshairTarget.getType() == HitResult.Type.BLOCK) {
+			if (bl && this.crosshairTarget != null && this.crosshairTarget.getType() == HitResult.Type.BLOCK && this.field_21886 <= 0) {
 				BlockHitResult blockHitResult = (BlockHitResult)this.crosshairTarget;
 				BlockPos blockPos = blockHitResult.getBlockPos();
 				if (!this.world.getBlockState(blockPos).isAir()) {
@@ -1122,7 +1187,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 					}
 				}
 
-				this.field_21821 = false;
+				this.field_21884 = false;
 			} else if (bl && this.player.getAttackCooldownProgress(0.0F) >= 1.2F) {
 				this.doAttack();
 			} else {
@@ -1139,35 +1204,42 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 					this.attackCooldown = 10;
 				}
 			} else {
-				if (this.crosshairTarget.getType() != HitResult.Type.BLOCK) {
+				HitResult hitResult = this.crosshairTarget;
+				if (hitResult.getType() != HitResult.Type.ENTITY && this.field_21886 > 0) {
+					hitResult = this.field_21885;
+				}
+
+				if (hitResult.getType() != HitResult.Type.BLOCK) {
 					float f = this.player.getAttackCooldownProgress(0.0F);
 					if (f < 0.8F) {
 						return;
 					}
 
 					if (f < 1.0F) {
-						this.field_21821 = true;
+						this.field_21884 = true;
 						return;
 					}
 				}
 
-				this.field_21821 = false;
+				this.field_21884 = false;
 				if (!this.player.isRiding()) {
-					switch (this.crosshairTarget.getType()) {
+					switch (hitResult.getType()) {
 						case ENTITY:
-							if (((EntityHitResult)this.crosshairTarget).method_24234() <= this.player.method_24222(0.0F)) {
-								this.interactionManager.attackEntity(this.player, ((EntityHitResult)this.crosshairTarget).getEntity());
+							if (((EntityHitResult)hitResult).method_24331() <= this.player.method_24319(0.0F)) {
+								this.interactionManager.attackEntity(this.player, ((EntityHitResult)hitResult).getEntity());
+							} else {
+								this.interactionManager.method_24340(this.player);
 							}
 							break;
 						case BLOCK:
-							BlockHitResult blockHitResult = (BlockHitResult)this.crosshairTarget;
+							BlockHitResult blockHitResult = (BlockHitResult)hitResult;
 							BlockPos blockPos = blockHitResult.getBlockPos();
 							if (!this.world.getBlockState(blockPos).isAir()) {
 								this.interactionManager.attackBlock(blockPos, blockHitResult.getSide());
 								break;
 							}
 						case MISS:
-							this.interactionManager.method_24243(this.player);
+							this.interactionManager.method_24340(this.player);
 					}
 
 					this.player.swingHand(Hand.MAIN_HAND);
@@ -1191,7 +1263,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 							case ENTITY:
 								EntityHitResult entityHitResult = (EntityHitResult)this.crosshairTarget;
 								Entity entity = entityHitResult.getEntity();
-								if (!(entityHitResult.method_24234() > this.interactionManager.method_24244())) {
+								if (!(entityHitResult.method_24331() > this.interactionManager.method_24341())) {
 									ActionResult actionResult = this.interactionManager.interactEntityAtLocation(this.player, entity, entityHitResult, hand);
 									if (!actionResult.isAccepted()) {
 										actionResult = this.interactionManager.interactEntity(this.player, entity, hand);
@@ -1258,6 +1330,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 
 		this.profiler.pop();
+		this.field_21886--;
 		this.gameRenderer.updateTargetedEntity(1.0F);
 		this.tutorialManager.tick(this.world, this.crosshairTarget);
 		this.profiler.push("gameMode");
@@ -1468,7 +1541,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.doItemUse();
 		}
 
-		this.handleBlockBreaking(this.currentScreen == null && (this.options.keyAttack.isPressed() || this.field_21821) && this.mouse.isCursorLocked());
+		this.handleBlockBreaking(this.currentScreen == null && (this.options.keyAttack.isPressed() || this.field_21884) && this.mouse.isCursorLocked());
 	}
 
 	public void startIntegratedServer(String name, String displayName, @Nullable LevelInfo levelInfo) {
@@ -1535,7 +1608,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 
 		SocketAddress socketAddress = this.server.getNetworkIo().bindLocal();
-		ClientConnection clientConnection = ClientConnection.connect(socketAddress);
+		ClientConnection clientConnection = ClientConnection.connectLocal(socketAddress);
 		clientConnection.setPacketListener(new ClientLoginNetworkHandler(clientConnection, this, null, text -> {
 		}));
 		clientConnection.send(new HandshakeC2SPacket(socketAddress.toString(), 0, NetworkState.LOGIN));
@@ -1609,6 +1682,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.worldRenderer.setWorld(clientWorld);
 		this.particleManager.setWorld(clientWorld);
 		BlockEntityRenderDispatcher.INSTANCE.setWorld(clientWorld);
+		this.method_24288();
 	}
 
 	public final boolean isDemo() {
@@ -2012,8 +2086,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.itemRenderer;
 	}
 
-	public FirstPersonRenderer getFirstPersonRenderer() {
-		return this.firstPersonRenderer;
+	public HeldItemRenderer getHeldItemRenderer() {
+		return this.heldItemRenderer;
 	}
 
 	public <T> SearchableContainer<T> getSearchableContainer(SearchManager.Key<T> key) {

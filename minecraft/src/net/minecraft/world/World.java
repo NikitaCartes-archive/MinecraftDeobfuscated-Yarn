@@ -253,7 +253,7 @@ public abstract class World implements IWorld, AutoCloseable {
 		return this.setBlockState(pos, blockState, 3);
 	}
 
-	public abstract void updateListeners(BlockPos blockPos, BlockState blockState, BlockState blockState2, int i);
+	public abstract void updateListeners(BlockPos pos, BlockState oldState, BlockState newState, int flags);
 
 	@Override
 	public void updateNeighbors(BlockPos pos, Block block) {
@@ -410,7 +410,7 @@ public abstract class World implements IWorld, AutoCloseable {
 
 	public boolean addBlockEntity(BlockEntity blockEntity) {
 		if (this.iteratingTickingBlockEntities) {
-			LOGGER.error("Adding block entity while ticking: {} @ {}", () -> Registry.BLOCK_ENTITY.getId(blockEntity.getType()), blockEntity::getPos);
+			LOGGER.error("Adding block entity while ticking: {} @ {}", () -> Registry.BLOCK_ENTITY_TYPE.getId(blockEntity.getType()), blockEntity::getPos);
 		}
 
 		boolean bl = this.blockEntities.add(blockEntity);
@@ -774,6 +774,7 @@ public abstract class World implements IWorld, AutoCloseable {
 
 	@Override
 	public List<Entity> getEntities(@Nullable Entity except, Box box, @Nullable Predicate<? super Entity> predicate) {
+		this.getProfiler().method_24270("getEntities");
 		List<Entity> list = Lists.<Entity>newArrayList();
 		int i = MathHelper.floor((box.x1 - 2.0) / 16.0);
 		int j = MathHelper.floor((box.x2 + 2.0) / 16.0);
@@ -793,6 +794,7 @@ public abstract class World implements IWorld, AutoCloseable {
 	}
 
 	public <T extends Entity> List<T> getEntities(@Nullable EntityType<T> type, Box box, Predicate<? super T> predicate) {
+		this.getProfiler().method_24270("getEntities");
 		int i = MathHelper.floor((box.x1 - 2.0) / 16.0);
 		int j = MathHelper.ceil((box.x2 + 2.0) / 16.0);
 		int k = MathHelper.floor((box.z1 - 2.0) / 16.0);
@@ -813,6 +815,7 @@ public abstract class World implements IWorld, AutoCloseable {
 
 	@Override
 	public <T extends Entity> List<T> getEntities(Class<? extends T> entityClass, Box box, @Nullable Predicate<? super T> predicate) {
+		this.getProfiler().method_24270("getEntities");
 		int i = MathHelper.floor((box.x1 - 2.0) / 16.0);
 		int j = MathHelper.ceil((box.x2 + 2.0) / 16.0);
 		int k = MathHelper.floor((box.z1 - 2.0) / 16.0);
@@ -834,6 +837,7 @@ public abstract class World implements IWorld, AutoCloseable {
 
 	@Override
 	public <T extends Entity> List<T> getEntitiesIncludingUngeneratedChunks(Class<? extends T> entityClass, Box box, @Nullable Predicate<? super T> predicate) {
+		this.getProfiler().method_24270("getLoadedEntities");
 		int i = MathHelper.floor((box.x1 - 2.0) / 16.0);
 		int j = MathHelper.ceil((box.x2 + 2.0) / 16.0);
 		int k = MathHelper.floor((box.z1 - 2.0) / 16.0);

@@ -12,7 +12,7 @@ import net.minecraft.util.Identifier;
 public class FurnaceScreen extends AbstractFurnaceScreen<FurnaceContainer> {
 	private static final Identifier BG_TEX = new Identifier("textures/gui/container/furnace.png");
 
-	public FurnaceScreen(FurnaceContainer furnaceContainer, PlayerInventory playerInventory, Text text) {
-		super(furnaceContainer, new FurnaceRecipeBookScreen(), playerInventory, text, BG_TEX);
+	public FurnaceScreen(FurnaceContainer container, PlayerInventory inventory, Text title) {
+		super(container, new FurnaceRecipeBookScreen(), inventory, title, BG_TEX);
 	}
 }

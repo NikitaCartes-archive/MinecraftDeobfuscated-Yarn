@@ -18,12 +18,12 @@ public class DoubleBlockProperties {
 		BlockState state,
 		IWorld world,
 		BlockPos pos,
-		BiPredicate<IWorld, BlockPos> specialCaseTester
+		BiPredicate<IWorld, BlockPos> fallbackTester
 	) {
 		S blockEntity = blockEntityType.get(world, pos);
 		if (blockEntity == null) {
 			return DoubleBlockProperties.PropertyRetriever::getFallback;
-		} else if (specialCaseTester.test(world, pos)) {
+		} else if (fallbackTester.test(world, pos)) {
 			return DoubleBlockProperties.PropertyRetriever::getFallback;
 		} else {
 			DoubleBlockProperties.Type type = (DoubleBlockProperties.Type)typeMapper.apply(state);
@@ -37,7 +37,7 @@ public class DoubleBlockProperties {
 				if (blockState.getBlock() == state.getBlock()) {
 					DoubleBlockProperties.Type type2 = (DoubleBlockProperties.Type)typeMapper.apply(blockState);
 					if (type2 != DoubleBlockProperties.Type.SINGLE && type != type2 && blockState.get(directionProperty) == state.get(directionProperty)) {
-						if (specialCaseTester.test(world, blockPos)) {
+						if (fallbackTester.test(world, blockPos)) {
 							return DoubleBlockProperties.PropertyRetriever::getFallback;
 						}
 

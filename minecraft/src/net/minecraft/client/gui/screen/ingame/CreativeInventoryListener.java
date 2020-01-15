@@ -12,8 +12,8 @@ import net.minecraft.util.DefaultedList;
 public class CreativeInventoryListener implements ContainerListener {
 	private final MinecraftClient client;
 
-	public CreativeInventoryListener(MinecraftClient minecraftClient) {
-		this.client = minecraftClient;
+	public CreativeInventoryListener(MinecraftClient client) {
+		this.client = client;
 	}
 
 	@Override

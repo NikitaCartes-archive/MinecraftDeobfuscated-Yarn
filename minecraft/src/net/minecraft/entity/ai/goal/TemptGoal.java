@@ -105,7 +105,7 @@ public class TemptGoal extends Goal {
 
 	@Override
 	public void tick() {
-		this.mob.getLookControl().lookAt(this.closestPlayer, (float)(this.mob.method_5986() + 20), (float)this.mob.getLookPitchSpeed());
+		this.mob.getLookControl().lookAt(this.closestPlayer, (float)(this.mob.getBodyYawSpeed() + 20), (float)this.mob.getLookPitchSpeed());
 		if (this.mob.squaredDistanceTo(this.closestPlayer) < 6.25) {
 			this.mob.getNavigation().stop();
 		} else {

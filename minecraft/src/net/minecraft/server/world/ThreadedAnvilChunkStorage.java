@@ -70,7 +70,6 @@ import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.thread.MessageListener;
 import net.minecraft.util.thread.TaskExecutor;
 import net.minecraft.util.thread.ThreadExecutor;
-import net.minecraft.village.PointOfInterestStorage;
 import net.minecraft.world.ChunkSerializer;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.PersistentStateManager;
@@ -83,6 +82,7 @@ import net.minecraft.world.chunk.ReadOnlyChunk;
 import net.minecraft.world.chunk.UpgradeData;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.storage.VersionedChunkStorage;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.apache.logging.log4j.LogManager;
@@ -94,7 +94,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	private final Long2ObjectLinkedOpenHashMap<ChunkHolder> currentChunkHolders = new Long2ObjectLinkedOpenHashMap<>();
 	private volatile Long2ObjectLinkedOpenHashMap<ChunkHolder> chunkHolders = this.currentChunkHolders.clone();
 	private final Long2ObjectLinkedOpenHashMap<ChunkHolder> field_18807 = new Long2ObjectLinkedOpenHashMap<>();
-	private final LongSet field_18307 = new LongOpenHashSet();
+	private final LongSet loadedChunks = new LongOpenHashSet();
 	private final ServerWorld world;
 	private final ServerLightingProvider serverLightingProvider;
 	private final ThreadExecutor<Runnable> mainThreadExecutor;
@@ -315,9 +315,12 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 	@Override
 	public void close() throws IOException {
-		this.chunkTaskPrioritySystem.close();
-		this.pointOfInterestStorage.close();
-		super.close();
+		try {
+			this.chunkTaskPrioritySystem.close();
+			this.pointOfInterestStorage.close();
+		} finally {
+			super.close();
+		}
 	}
 
 	protected void save(boolean flush) {
@@ -357,13 +360,13 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		}
 	}
 
-	protected void tick(BooleanSupplier booleanSupplier) {
+	protected void tick(BooleanSupplier shouldKeepTicking) {
 		Profiler profiler = this.world.getProfiler();
 		profiler.push("poi");
-		this.pointOfInterestStorage.tick(booleanSupplier);
+		this.pointOfInterestStorage.tick(shouldKeepTicking);
 		profiler.swap("chunk_unload");
 		if (!this.world.isSavingDisabled()) {
-			this.method_20605(booleanSupplier);
+			this.method_20605(shouldKeepTicking);
 		}
 
 		profiler.pop();
@@ -402,7 +405,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 					}
 
 					this.save(chunk);
-					if (this.field_18307.remove(l) && chunk instanceof WorldChunk) {
+					if (this.loadedChunks.remove(l) && chunk instanceof WorldChunk) {
 						WorldChunk worldChunk = (WorldChunk)chunk;
 						this.world.unloadEntities(worldChunk);
 					}
@@ -471,6 +474,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> method_20619(ChunkPos chunkPos) {
 		return CompletableFuture.supplyAsync(() -> {
 			try {
+				this.world.getProfiler().method_24270("chunkLoad");
 				CompoundTag compoundTag = this.getUpdatedChunkTag(chunkPos);
 				if (compoundTag != null) {
 					boolean bl = compoundTag.contains("Level", 10) && compoundTag.getCompound("Level").contains("Status", 8);
@@ -502,6 +506,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> completableFuture = this.createChunkRegionFuture(
 			chunkPos, chunkStatus.getTaskMargin(), i -> this.getRequiredStatusForGeneration(chunkStatus, i)
 		);
+		this.world.getProfiler().method_24271(() -> "chunkGenerate " + chunkStatus.getId());
 		return completableFuture.thenComposeAsync(
 			either -> (CompletableFuture)either.map(
 					list -> {
@@ -566,7 +571,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 				worldChunk.setLevelTypeProvider(() -> ChunkHolder.getLevelType(chunkHolder.getLevel()));
 				worldChunk.loadToWorld();
-				if (this.field_18307.add(chunkPos.toLong())) {
+				if (this.loadedChunks.add(chunkPos.toLong())) {
 					worldChunk.setLoadedToWorld(true);
 					this.world.addBlockEntities(worldChunk.getBlockEntities().values());
 					List<Entity> list = null;
@@ -615,7 +620,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> createBorderFuture(ChunkHolder chunkHolder) {
 		return chunkHolder.createFuture(ChunkStatus.FULL, this).thenApplyAsync(either -> either.mapLeft(chunk -> {
 				WorldChunk worldChunk = (WorldChunk)chunk;
-				worldChunk.method_20530();
+				worldChunk.disableTickSchedulers();
 				return worldChunk;
 			}), runnable -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(chunkHolder, runnable)));
 	}
@@ -653,6 +658,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 					}
 				}
 
+				this.world.getProfiler().method_24270("chunkSave");
 				CompoundTag compoundTagx = ChunkSerializer.serialize(this.world, chunk);
 				this.setTagAt(chunkPos, compoundTagx);
 				return true;
@@ -965,7 +971,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				entityTracker.lastCameraPosition = chunkSectionPos2;
 			}
 
-			entityTracker.entry.method_18756();
+			entityTracker.entry.tick();
 		}
 
 		if (!list.isEmpty()) {
@@ -1032,7 +1038,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	}
 
 	public CompletableFuture<Void> method_20576(WorldChunk worldChunk) {
-		return this.mainThreadExecutor.submit((Runnable)(() -> worldChunk.method_20471(this.world)));
+		return this.mainThreadExecutor.submit((Runnable)(() -> worldChunk.enableTickSchedulers(this.world)));
 	}
 
 	class EntityTracker {
@@ -1084,31 +1090,31 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			}
 		}
 
-		public void updateCameraPosition(ServerPlayerEntity players) {
-			if (players != this.entity) {
-				Vec3d vec3d = players.getPos().subtract(this.entry.method_18759());
-				int i = Math.min(this.method_22844(), (ThreadedAnvilChunkStorage.this.watchDistance - 1) * 16);
-				boolean bl = vec3d.x >= (double)(-i) && vec3d.x <= (double)i && vec3d.z >= (double)(-i) && vec3d.z <= (double)i && this.entity.canBeSpectated(players);
+		public void updateCameraPosition(ServerPlayerEntity player) {
+			if (player != this.entity) {
+				Vec3d vec3d = player.getPos().subtract(this.entry.getLastPos());
+				int i = Math.min(this.getMaxTrackDistance(), (ThreadedAnvilChunkStorage.this.watchDistance - 1) * 16);
+				boolean bl = vec3d.x >= (double)(-i) && vec3d.x <= (double)i && vec3d.z >= (double)(-i) && vec3d.z <= (double)i && this.entity.canBeSpectated(player);
 				if (bl) {
 					boolean bl2 = this.entity.teleporting;
 					if (!bl2) {
 						ChunkPos chunkPos = new ChunkPos(this.entity.chunkX, this.entity.chunkZ);
 						ChunkHolder chunkHolder = ThreadedAnvilChunkStorage.this.getChunkHolder(chunkPos.toLong());
 						if (chunkHolder != null && chunkHolder.getWorldChunk() != null) {
-							bl2 = ThreadedAnvilChunkStorage.getChebyshevDistance(chunkPos, players, false) <= ThreadedAnvilChunkStorage.this.watchDistance;
+							bl2 = ThreadedAnvilChunkStorage.getChebyshevDistance(chunkPos, player, false) <= ThreadedAnvilChunkStorage.this.watchDistance;
 						}
 					}
 
-					if (bl2 && this.playersTracking.add(players)) {
-						this.entry.startTracking(players);
+					if (bl2 && this.playersTracking.add(player)) {
+						this.entry.startTracking(player);
 					}
-				} else if (this.playersTracking.remove(players)) {
-					this.entry.stopTracking(players);
+				} else if (this.playersTracking.remove(player)) {
+					this.entry.stopTracking(player);
 				}
 			}
 		}
 
-		private int method_22844() {
+		private int getMaxTrackDistance() {
 			Collection<Entity> collection = this.entity.getPassengersDeep();
 			int i = this.maxDistance;
 

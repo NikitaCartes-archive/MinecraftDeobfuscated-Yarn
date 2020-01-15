@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import java.util.Set;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
-import net.minecraft.world.biome.layer.util.BiomeLayers;
+import net.minecraft.world.biome.layer.BiomeLayers;
 
 public class VanillaLayeredBiomeSource extends BiomeSource {
 	private final BiomeLayerSampler biomeSampler;

@@ -18,7 +18,7 @@ import net.minecraft.util.Timestamp;
 import net.minecraft.util.math.BlockPos;
 
 public class SleepTask extends Task<LivingEntity> {
-	private long field_18848;
+	private long startTime;
 
 	public SleepTask() {
 		super(ImmutableMap.of(MemoryModuleType.HOME, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.LAST_WOKEN, MemoryModuleState.REGISTERED));
@@ -60,10 +60,10 @@ public class SleepTask extends Task<LivingEntity> {
 
 	@Override
 	protected void run(ServerWorld world, LivingEntity entity, long time) {
-		if (time > this.field_18848) {
+		if (time > this.startTime) {
 			entity.getBrain()
 				.getOptionalMemory(MemoryModuleType.OPENED_DOORS)
-				.ifPresent(set -> OpenDoorsTask.method_21697(world, ImmutableList.of(), 0, entity, entity.getBrain()));
+				.ifPresent(set -> OpenDoorsTask.closeOpenedDoors(world, ImmutableList.of(), 0, entity, entity.getBrain()));
 			entity.sleep(((GlobalPos)entity.getBrain().getOptionalMemory(MemoryModuleType.HOME).get()).getPos());
 		}
 	}
@@ -74,10 +74,10 @@ public class SleepTask extends Task<LivingEntity> {
 	}
 
 	@Override
-	protected void finishRunning(ServerWorld serverWorld, LivingEntity livingEntity, long time) {
-		if (livingEntity.isSleeping()) {
-			livingEntity.wakeUp();
-			this.field_18848 = time + 40L;
+	protected void finishRunning(ServerWorld world, LivingEntity entity, long time) {
+		if (entity.isSleeping()) {
+			entity.wakeUp();
+			this.startTime = time + 40L;
 		}
 	}
 }

@@ -127,11 +127,11 @@ public class SelectWorldScreen extends Screen {
 		this.tooltipText = value;
 	}
 
-	public void worldSelected(boolean bl) {
-		this.selectButton.active = bl;
-		this.deleteButton.active = bl;
-		this.editButton.active = bl;
-		this.recreateButton.active = bl;
+	public void worldSelected(boolean active) {
+		this.selectButton.active = active;
+		this.deleteButton.active = active;
+		this.editButton.active = active;
+		this.recreateButton.active = active;
 	}
 
 	@Override

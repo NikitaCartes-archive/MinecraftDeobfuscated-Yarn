@@ -90,7 +90,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean shouldRenderAtDistance(double distance) {
+	public boolean shouldRender(double distance) {
 		double d = this.getBoundingBox().getAverageSideLength() * 10.0;
 		if (Double.isNaN(d)) {
 			d = 1.0;
@@ -112,7 +112,6 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 		float g = -MathHelper.sin(pitch * (float) (Math.PI / 180.0));
 		float h = MathHelper.cos(yaw * (float) (Math.PI / 180.0)) * MathHelper.cos(pitch * (float) (Math.PI / 180.0));
 		this.setVelocity((double)f, (double)g, (double)h, modifierZ, modifierXYZ);
-		this.setVelocity(this.getVelocity().add(user.getVelocity().x, user.onGround ? 0.0 : user.getVelocity().y, user.getVelocity().z));
 	}
 
 	@Override

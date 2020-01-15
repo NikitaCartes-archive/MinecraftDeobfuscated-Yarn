@@ -191,21 +191,21 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
 		this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
-		Inventories.fromTag(compoundTag, this.inventory);
-		this.brewTime = compoundTag.getShort("BrewTime");
-		this.fuel = compoundTag.getByte("Fuel");
+		Inventories.fromTag(tag, this.inventory);
+		this.brewTime = tag.getShort("BrewTime");
+		this.fuel = tag.getByte("Fuel");
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag compoundTag) {
-		super.toTag(compoundTag);
-		compoundTag.putShort("BrewTime", (short)this.brewTime);
-		Inventories.toTag(compoundTag, this.inventory);
-		compoundTag.putByte("Fuel", (byte)this.fuel);
-		return compoundTag;
+	public CompoundTag toTag(CompoundTag tag) {
+		super.toTag(tag);
+		tag.putShort("BrewTime", (short)this.brewTime);
+		Inventories.toTag(tag, this.inventory);
+		tag.putByte("Fuel", (byte)this.fuel);
+		return tag;
 	}
 
 	@Override

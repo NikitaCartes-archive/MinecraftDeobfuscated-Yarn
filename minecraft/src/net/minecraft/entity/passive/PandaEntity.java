@@ -65,6 +65,7 @@ public class PandaEntity extends AnimalEntity {
 	private static final TrackedData<Byte> MAIN_GENE = DataTracker.registerData(PandaEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final TrackedData<Byte> HIDDEN_GENE = DataTracker.registerData(PandaEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final TrackedData<Byte> PANDA_FLAGS = DataTracker.registerData(PandaEntity.class, TrackedDataHandlerRegistry.BYTE);
+	private static final TargetPredicate field_21803 = new TargetPredicate().setBaseMaxDistance(8.0).includeTeammates().includeInvulnerable();
 	private boolean shouldGetRevenge;
 	private boolean shouldAttack;
 	public int playingTicks;
@@ -75,6 +76,7 @@ public class PandaEntity extends AnimalEntity {
 	private float lastLieOnBackAnimationProgress;
 	private float rollOverAnimationProgress;
 	private float lastRollOverAnimationProgress;
+	private PandaEntity.LookAtEntityGoal field_21804;
 	private static final Predicate<ItemEntity> IS_FOOD = itemEntity -> {
 		Item item = itemEntity.getStack().getItem();
 		return (item == Blocks.BAMBOO.asItem() || item == Blocks.CAKE.asItem()) && itemEntity.isAlive() && !itemEntity.cannotPickup();
@@ -247,7 +249,8 @@ public class PandaEntity extends AnimalEntity {
 		this.goalSelector.add(7, new PandaEntity.PickUpFoodGoal());
 		this.goalSelector.add(8, new PandaEntity.LieOnBackGoal(this));
 		this.goalSelector.add(8, new PandaEntity.SneezeGoal(this));
-		this.goalSelector.add(9, new PandaEntity.LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
+		this.field_21804 = new PandaEntity.LookAtEntityGoal(this, PlayerEntity.class, 6.0F);
+		this.goalSelector.add(9, this.field_21804);
 		this.goalSelector.add(10, new LookAroundGoal(this));
 		this.goalSelector.add(12, new PandaEntity.PlayGoal(this));
 		this.goalSelector.add(13, new FollowParentGoal(this, 1.25));
@@ -833,9 +836,47 @@ public class PandaEntity extends AnimalEntity {
 			this.panda = panda;
 		}
 
+		public void method_24217(LivingEntity livingEntity) {
+			this.target = livingEntity;
+		}
+
+		@Override
+		public boolean shouldContinue() {
+			return this.target != null && super.shouldContinue();
+		}
+
 		@Override
 		public boolean canStart() {
-			return this.panda.method_18442() && super.canStart();
+			if (this.mob.getRandom().nextFloat() >= this.chance) {
+				return false;
+			} else {
+				if (this.target == null) {
+					if (this.targetType == PlayerEntity.class) {
+						this.target = this.mob.world.getClosestPlayer(this.targetPredicate, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
+					} else {
+						this.target = this.mob
+							.world
+							.getClosestEntityIncludingUngeneratedChunks(
+								this.targetType,
+								this.targetPredicate,
+								this.mob,
+								this.mob.getX(),
+								this.mob.getEyeY(),
+								this.mob.getZ(),
+								this.mob.getBoundingBox().expand((double)this.range, 3.0, (double)this.range)
+							);
+					}
+				}
+
+				return this.panda.method_18442() && this.target != null;
+			}
+		}
+
+		@Override
+		public void tick() {
+			if (this.target != null) {
+				super.tick();
+			}
 		}
 	}
 
@@ -853,14 +894,13 @@ public class PandaEntity extends AnimalEntity {
 		}
 	}
 
-	static class PandaMateGoal extends AnimalMateGoal {
-		private static final TargetPredicate CLOSE_PLAYER_PREDICATE = new TargetPredicate().setBaseMaxDistance(8.0).includeTeammates().includeInvulnerable();
+	class PandaMateGoal extends AnimalMateGoal {
 		private final PandaEntity panda;
 		private int nextAskPlayerForBambooAge;
 
-		public PandaMateGoal(PandaEntity panda, double chance) {
-			super(panda, chance);
-			this.panda = panda;
+		public PandaMateGoal(PandaEntity pandaEntity2, double d) {
+			super(pandaEntity2, d);
+			this.panda = pandaEntity2;
 		}
 
 		@Override
@@ -872,8 +912,8 @@ public class PandaEntity extends AnimalEntity {
 					this.panda.setAskForBambooTicks(32);
 					this.nextAskPlayerForBambooAge = this.panda.age + 600;
 					if (this.panda.canMoveVoluntarily()) {
-						PlayerEntity playerEntity = this.world.getClosestPlayer(CLOSE_PLAYER_PREDICATE, this.panda);
-						this.panda.setTarget(playerEntity);
+						PlayerEntity playerEntity = this.world.getClosestPlayer(PandaEntity.field_21803, this.panda);
+						this.panda.field_21804.method_24217(playerEntity);
 					}
 				}
 

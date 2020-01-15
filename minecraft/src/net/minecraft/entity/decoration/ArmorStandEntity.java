@@ -80,11 +80,6 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public boolean isGlowing() {
-		return !this.isMarker() && super.isGlowing();
-	}
-
-	@Override
 	public void calculateDimensions() {
 		double d = this.getX();
 		double e = this.getY();
@@ -325,6 +320,8 @@ public class ArmorStandEntity extends LivingEntity {
 			return ActionResult.PASS;
 		} else if (player.isSpectator()) {
 			return ActionResult.SUCCESS;
+		} else if (player.world.isClient) {
+			return ActionResult.CONSUME;
 		} else {
 			EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
 			if (itemStack.isEmpty()) {
@@ -347,11 +344,11 @@ public class ArmorStandEntity extends LivingEntity {
 				}
 			}
 
-			return ActionResult.CONSUME;
+			return ActionResult.PASS;
 		}
 	}
 
-	protected EquipmentSlot method_6916(Vec3d vec3d) {
+	private EquipmentSlot method_6916(Vec3d vec3d) {
 		EquipmentSlot equipmentSlot = EquipmentSlot.MAINHAND;
 		boolean bl = this.isSmall();
 		double d = bl ? vec3d.y * 2.0 : vec3d.y;
@@ -371,7 +368,7 @@ public class ArmorStandEntity extends LivingEntity {
 		return equipmentSlot;
 	}
 
-	public boolean method_6915(EquipmentSlot equipmentSlot) {
+	private boolean method_6915(EquipmentSlot equipmentSlot) {
 		return (this.disabledSlots & 1 << equipmentSlot.getArmorStandSlotId()) != 0 || equipmentSlot.getType() == EquipmentSlot.Type.HAND && !this.shouldShowArms();
 	}
 
@@ -469,7 +466,7 @@ public class ArmorStandEntity extends LivingEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean shouldRenderAtDistance(double distance) {
+	public boolean shouldRender(double distance) {
 		double d = this.getBoundingBox().getAverageSideLength() * 4.0;
 		if (Double.isNaN(d) || d == 0.0) {
 			d = 4.0;
@@ -741,6 +738,11 @@ public class ArmorStandEntity extends LivingEntity {
 	@Override
 	public boolean collides() {
 		return super.collides() && !this.isMarker();
+	}
+
+	@Override
+	public boolean handleAttack(Entity attacker) {
+		return attacker instanceof PlayerEntity && !this.world.canPlayerModifyAt((PlayerEntity)attacker, new BlockPos(this));
 	}
 
 	@Override

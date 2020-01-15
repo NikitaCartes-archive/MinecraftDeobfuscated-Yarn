@@ -130,7 +130,12 @@ public abstract class AbstractDecorationEntity extends Entity {
 
 	@Override
 	public boolean handleAttack(Entity attacker) {
-		return attacker instanceof PlayerEntity ? this.damage(DamageSource.player((PlayerEntity)attacker), 0.0F) : false;
+		if (attacker instanceof PlayerEntity) {
+			PlayerEntity playerEntity = (PlayerEntity)attacker;
+			return !this.world.canPlayerModifyAt(playerEntity, this.blockPos) ? true : this.damage(DamageSource.player(playerEntity), 0.0F);
+		} else {
+			return false;
+		}
 	}
 
 	@Override

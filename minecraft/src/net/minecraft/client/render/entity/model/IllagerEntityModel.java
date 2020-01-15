@@ -72,7 +72,7 @@ public class IllagerEntityModel<T extends IllagerEntity> extends CompositeEntity
 		this.arms.pivotY = 3.0F;
 		this.arms.pivotZ = -1.0F;
 		this.arms.pitch = -0.75F;
-		if (this.isRiding) {
+		if (this.riding) {
 			this.rightAttackingArm.pitch = (float) (-Math.PI / 5);
 			this.rightAttackingArm.yaw = 0.0F;
 			this.rightAttackingArm.roll = 0.0F;

@@ -8,6 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
@@ -76,6 +77,7 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingTableCon
 
 	@Override
 	protected void drawBackground(float delta, int mouseX, int mouseY) {
+		DiffuseLighting.disableGuiDepthLighting();
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.minecraft.getTextureManager().bindTexture(TEXTURE);
 		int i = (this.width - this.containerWidth) / 2;
@@ -135,6 +137,7 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingTableCon
 		RenderSystem.viewport(0, 0, this.minecraft.getWindow().getFramebufferWidth(), this.minecraft.getWindow().getFramebufferHeight());
 		RenderSystem.popMatrix();
 		RenderSystem.matrixMode(5888);
+		DiffuseLighting.enableGuiDepthLighting();
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		EnchantingPhrases.getInstance().setSeed((long)this.container.getSeed());
 		int n = this.container.getLapisCount();

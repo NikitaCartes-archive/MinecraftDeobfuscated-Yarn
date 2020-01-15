@@ -30,9 +30,9 @@ public class VillagerEntityRenderer extends MobEntityRenderer<VillagerEntity, Vi
 		float g = 0.9375F;
 		if (villagerEntity.isBaby()) {
 			g = (float)((double)g * 0.5);
-			this.field_4673 = 0.25F;
+			this.shadowSize = 0.25F;
 		} else {
-			this.field_4673 = 0.5F;
+			this.shadowSize = 0.5F;
 		}
 
 		matrixStack.scale(g, g, g);

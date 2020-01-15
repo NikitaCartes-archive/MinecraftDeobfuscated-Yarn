@@ -80,7 +80,7 @@ import net.minecraft.world.dimension.DimensionType;
 @Environment(EnvType.CLIENT)
 public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	public final ClientPlayNetworkHandler networkHandler;
-	private final StatHandler stats;
+	private final StatHandler statHandler;
 	private final ClientRecipeBook recipeBook;
 	private final List<ClientPlayerTickable> tickables = Lists.<ClientPlayerTickable>newArrayList();
 	private int clientPermissionLevel = 0;
@@ -115,7 +115,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	private boolean field_3939;
 	private int field_3917;
 	private boolean showsDeathScreen = true;
-	private boolean field_21833;
+	private boolean field_21898;
 
 	public ClientPlayerEntity(
 		MinecraftClient client,
@@ -126,7 +126,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	) {
 		super(clientWorld, clientPlayNetworkHandler.getProfile());
 		this.networkHandler = clientPlayNetworkHandler;
-		this.stats = statHandler;
+		this.statHandler = statHandler;
 		this.recipeBook = clientRecipeBook;
 		this.client = client;
 		this.dimension = DimensionType.OVERWORLD;
@@ -203,8 +203,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			}
 
 			boolean bl = this.isBlocking();
-			if (bl != this.field_21833) {
-				this.field_21833 = bl;
+			if (bl != this.field_21898) {
+				this.field_21898 = bl;
 				this.client.gameRenderer.firstPersonRenderer.resetEquipProgress(Hand.OFF_HAND);
 			}
 		}
@@ -359,8 +359,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		return this.serverBrand;
 	}
 
-	public StatHandler getStats() {
-		return this.stats;
+	public StatHandler getStatHandler() {
+		return this.statHandler;
 	}
 
 	public ClientRecipeBook getRecipeBook() {
@@ -665,13 +665,11 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			this.pushOutOfBlocks(this.getX() + (double)this.getWidth() * 0.35, this.getY() + 0.5, this.getZ() + (double)this.getWidth() * 0.35);
 		}
 
-		boolean bl5 = (float)this.getHungerManager().getFoodLevel() > 6.0F || this.abilities.allowFlying;
 		if ((this.onGround || this.isInWater())
 			&& !bl2
 			&& !bl3
 			&& this.method_20623()
 			&& !this.isSprinting()
-			&& bl5
 			&& !this.isUsingItem()
 			&& !this.hasStatusEffect(StatusEffects.BLINDNESS)) {
 			if (this.field_3935 <= 0 && !this.client.options.keySprint.isPressed()) {
@@ -684,7 +682,6 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		if (!this.isSprinting()
 			&& (!this.isInsideWater() || this.isInWater())
 			&& this.method_20623()
-			&& bl5
 			&& !this.isUsingItem()
 			&& !this.hasStatusEffect(StatusEffects.BLINDNESS)
 			&& this.client.options.keySprint.isPressed()) {
@@ -692,23 +689,23 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 
 		if (this.isSprinting()) {
-			boolean bl6 = !this.input.hasForwardMovement() || !bl5;
-			boolean bl7 = bl6 || this.horizontalCollision || this.isInsideWater() && !this.isInWater();
+			boolean bl5 = !this.input.hasForwardMovement();
+			boolean bl6 = bl5 || this.horizontalCollision || this.isInsideWater() && !this.isInWater();
 			if (this.isSwimming()) {
-				if (!this.onGround && !this.input.sneaking && bl6 || !this.isInsideWater()) {
+				if (!this.onGround && !this.input.sneaking && bl5 || !this.isInsideWater()) {
 					this.setSprinting(false);
 				}
-			} else if (bl7) {
+			} else if (bl6) {
 				this.setSprinting(false);
 			}
 		}
 
-		boolean bl6 = false;
+		boolean bl5 = false;
 		if (this.abilities.allowFlying) {
 			if (this.client.interactionManager.isFlyingLocked()) {
 				if (!this.abilities.flying) {
 					this.abilities.flying = true;
-					bl6 = true;
+					bl5 = true;
 					this.sendAbilitiesUpdate();
 				}
 			} else if (!bl && this.input.jumping && !bl4) {
@@ -716,14 +713,14 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 					this.field_7489 = 7;
 				} else if (!this.isSwimming()) {
 					this.abilities.flying = !this.abilities.flying;
-					bl6 = true;
+					bl5 = true;
 					this.sendAbilitiesUpdate();
 					this.field_7489 = 0;
 				}
 			}
 		}
 
-		if (this.input.jumping && !bl6 && !bl && !this.abilities.flying && !this.hasVehicle()) {
+		if (this.input.jumping && !bl5 && !bl && !this.abilities.flying && !this.hasVehicle() && !this.isClimbing()) {
 			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.CHEST);
 			if (itemStack.getItem() == Items.ELYTRA && ElytraItem.isUsable(itemStack) && this.method_23668()) {
 				this.networkHandler.sendPacket(new ClientCommandC2SPacket(this, ClientCommandC2SPacket.Mode.START_FALL_FLYING));
@@ -795,7 +792,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	private void updateNausea() {
 		this.lastNauseaStrength = this.nextNauseaStrength;
-		if (this.inPortal) {
+		if (this.inNetherPortal) {
 			if (this.client.currentScreen != null && !this.client.currentScreen.isPauseScreen()) {
 				if (this.client.currentScreen instanceof AbstractContainerScreen) {
 					this.closeContainer();
@@ -813,7 +810,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 				this.nextNauseaStrength = 1.0F;
 			}
 
-			this.inPortal = false;
+			this.inNetherPortal = false;
 		} else if (this.hasStatusEffect(StatusEffects.NAUSEA) && this.getStatusEffect(StatusEffects.NAUSEA).getDuration() > 60) {
 			this.nextNauseaStrength += 0.006666667F;
 			if (this.nextNauseaStrength > 1.0F) {
@@ -829,7 +826,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			}
 		}
 
-		this.tickPortalCooldown();
+		this.tickNetherPortalCooldown();
 	}
 
 	@Override
@@ -849,13 +846,13 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	@Nullable
 	@Override
-	public StatusEffectInstance removeStatusEffect(@Nullable StatusEffect effect) {
-		if (effect == StatusEffects.NAUSEA) {
+	public StatusEffectInstance removeStatusEffectInternal(@Nullable StatusEffect type) {
+		if (type == StatusEffects.NAUSEA) {
 			this.lastNauseaStrength = 0.0F;
 			this.nextNauseaStrength = 0.0F;
 		}
 
-		return super.removeStatusEffect(effect);
+		return super.removeStatusEffectInternal(type);
 	}
 
 	@Override
@@ -973,13 +970,18 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		return this.getLastAutoJump()
 			&& this.field_3934 <= 0
 			&& this.onGround
-			&& !this.method_21825()
+			&& !this.clipAtLedge()
 			&& !this.hasVehicle()
-			&& this.method_22120()
-			&& (double)this.method_23313() >= 1.0;
+			&& this.hasMovementInput()
+			&& (double)this.getJumpVelocityMultiplier() >= 1.0;
 	}
 
-	private boolean method_22120() {
+	/**
+	 * Returns whether the player has movement input.
+	 * 
+	 * @return True if the player has movement input, else false.
+	 */
+	private boolean hasMovementInput() {
 		Vec2f vec2f = this.input.getMovementInput();
 		return vec2f.x != 0.0F || vec2f.y != 0.0F;
 	}
@@ -1031,7 +1033,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public boolean method_24217() {
-		return this.client.options.field_21825;
+	public boolean method_24314() {
+		return this.client.options.field_21890;
 	}
 }

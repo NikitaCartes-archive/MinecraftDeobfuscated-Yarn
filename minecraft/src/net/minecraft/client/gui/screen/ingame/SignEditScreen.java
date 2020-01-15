@@ -13,6 +13,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
@@ -38,9 +39,9 @@ public class SignEditScreen extends Screen {
 	private int currentRow;
 	private SelectionManager selectionManager;
 
-	public SignEditScreen(SignBlockEntity signBlockEntity) {
+	public SignEditScreen(SignBlockEntity sign) {
 		super(new TranslatableText("sign.edit"));
-		this.sign = signBlockEntity;
+		this.sign = sign;
 	}
 
 	@Override
@@ -107,6 +108,7 @@ public class SignEditScreen extends Screen {
 
 	@Override
 	public void render(int mouseX, int mouseY, float delta) {
+		DiffuseLighting.disableGuiDepthLighting();
 		this.renderBackground();
 		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 40, 16777215);
 		MatrixStack matrixStack = new MatrixStack();
@@ -205,6 +207,7 @@ public class SignEditScreen extends Screen {
 		}
 
 		matrixStack.pop();
+		DiffuseLighting.enableGuiDepthLighting();
 		super.render(mouseX, mouseY, delta);
 	}
 }

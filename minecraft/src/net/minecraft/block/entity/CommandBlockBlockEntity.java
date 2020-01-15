@@ -75,22 +75,22 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag compoundTag) {
-		super.toTag(compoundTag);
-		this.commandExecutor.serialize(compoundTag);
-		compoundTag.putBoolean("powered", this.isPowered());
-		compoundTag.putBoolean("conditionMet", this.isConditionMet());
-		compoundTag.putBoolean("auto", this.isAuto());
-		return compoundTag;
+	public CompoundTag toTag(CompoundTag tag) {
+		super.toTag(tag);
+		this.commandExecutor.serialize(tag);
+		tag.putBoolean("powered", this.isPowered());
+		tag.putBoolean("conditionMet", this.isConditionMet());
+		tag.putBoolean("auto", this.isAuto());
+		return tag;
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
-		this.commandExecutor.deserialize(compoundTag);
-		this.powered = compoundTag.getBoolean("powered");
-		this.conditionMet = compoundTag.getBoolean("conditionMet");
-		this.setAuto(compoundTag.getBoolean("auto"));
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
+		this.commandExecutor.deserialize(tag);
+		this.powered = tag.getBoolean("powered");
+		this.conditionMet = tag.getBoolean("conditionMet");
+		this.setAuto(tag.getBoolean("auto"));
 	}
 
 	@Nullable

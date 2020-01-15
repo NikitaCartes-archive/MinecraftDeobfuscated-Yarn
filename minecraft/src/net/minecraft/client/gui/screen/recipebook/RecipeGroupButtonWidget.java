@@ -18,18 +18,18 @@ public class RecipeGroupButtonWidget extends ToggleButtonWidget {
 	private final RecipeBookGroup category;
 	private float bounce;
 
-	public RecipeGroupButtonWidget(RecipeBookGroup recipeBookGroup) {
+	public RecipeGroupButtonWidget(RecipeBookGroup category) {
 		super(0, 0, 35, 27, false);
-		this.category = recipeBookGroup;
+		this.category = category;
 		this.setTextureUV(153, 2, 35, 0, RecipeBookWidget.TEXTURE);
 	}
 
-	public void checkForNewRecipes(MinecraftClient minecraftClient) {
-		ClientRecipeBook clientRecipeBook = minecraftClient.player.getRecipeBook();
+	public void checkForNewRecipes(MinecraftClient client) {
+		ClientRecipeBook clientRecipeBook = client.player.getRecipeBook();
 		List<RecipeResultCollection> list = clientRecipeBook.getResultsForGroup(this.category);
-		if (minecraftClient.player.container instanceof CraftingContainer) {
+		if (client.player.container instanceof CraftingContainer) {
 			for (RecipeResultCollection recipeResultCollection : list) {
-				for (Recipe<?> recipe : recipeResultCollection.getResults(clientRecipeBook.isFilteringCraftable((CraftingContainer<?>)minecraftClient.player.container))) {
+				for (Recipe<?> recipe : recipeResultCollection.getResults(clientRecipeBook.isFilteringCraftable((CraftingContainer<?>)client.player.container))) {
 					if (clientRecipeBook.shouldDisplay(recipe)) {
 						this.bounce = 15.0F;
 						return;
@@ -92,8 +92,8 @@ public class RecipeGroupButtonWidget extends ToggleButtonWidget {
 		return this.category;
 	}
 
-	public boolean hasKnownRecipes(ClientRecipeBook clientRecipeBook) {
-		List<RecipeResultCollection> list = clientRecipeBook.getResultsForGroup(this.category);
+	public boolean hasKnownRecipes(ClientRecipeBook recipeBook) {
+		List<RecipeResultCollection> list = recipeBook.getResultsForGroup(this.category);
 		this.visible = false;
 		if (list != null) {
 			for (RecipeResultCollection recipeResultCollection : list) {

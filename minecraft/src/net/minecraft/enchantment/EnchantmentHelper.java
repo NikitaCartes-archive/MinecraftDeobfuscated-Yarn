@@ -173,7 +173,7 @@ public class EnchantmentHelper {
 		return getEquipmentLevel(Enchantments.FIRE_ASPECT, entity);
 	}
 
-	public static int method_24230(LivingEntity livingEntity) {
+	public static int method_24327(LivingEntity livingEntity) {
 		return getEquipmentLevel(Enchantments.CHOPPING, livingEntity);
 	}
 

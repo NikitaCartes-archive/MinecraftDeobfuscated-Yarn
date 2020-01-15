@@ -196,7 +196,7 @@ public class CreditsScreen extends Screen {
 		RenderSystem.popMatrix();
 		this.minecraft.getTextureManager().bindTexture(VIGNETTE_TEXTURE);
 		RenderSystem.enableBlend();
-		RenderSystem.blendFunc(GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR);
+		RenderSystem.blendFunc(GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR);
 		int m = this.width;
 		int n = this.height;
 		Tessellator tessellator = Tessellator.getInstance();

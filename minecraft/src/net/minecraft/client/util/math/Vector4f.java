@@ -108,10 +108,10 @@ public class Vector4f {
 		this.w = matrix.a30 * f + matrix.a31 * g + matrix.a32 * h + matrix.a33 * i;
 	}
 
-	public void setQuarternion(Quaternion quarternion) {
-		Quaternion quaternion = new Quaternion(quarternion);
+	public void rotate(Quaternion rotation) {
+		Quaternion quaternion = new Quaternion(rotation);
 		quaternion.hamiltonProduct(new Quaternion(this.getX(), this.getY(), this.getZ(), 0.0F));
-		Quaternion quaternion2 = new Quaternion(quarternion);
+		Quaternion quaternion2 = new Quaternion(rotation);
 		quaternion2.conjugate();
 		quaternion.hamiltonProduct(quaternion2);
 		this.set(quaternion.getB(), quaternion.getC(), quaternion.getD(), this.getW());

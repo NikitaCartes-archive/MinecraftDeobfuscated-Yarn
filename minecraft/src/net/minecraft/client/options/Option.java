@@ -2,7 +2,7 @@ package net.minecraft.client.options;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4743;
+import net.minecraft.class_4754;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
@@ -178,13 +178,13 @@ public abstract class Option {
 		(gameOptions, integer) -> gameOptions.attackIndicator = AttackIndicator.byId(gameOptions.attackIndicator.getId() + integer),
 		(gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix() + I18n.translate(gameOptions.attackIndicator.getTranslationKey())
 	);
-	public static final CyclingOption field_21822 = new CyclingOption(
+	public static final CyclingOption field_21887 = new CyclingOption(
 		"options.shieldIndicator",
-		(gameOptions, integer) -> gameOptions.field_21824 = class_4743.method_24240(gameOptions.field_21824.method_24239() + integer),
-		(gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix() + I18n.translate(gameOptions.field_21824.method_24241())
+		(gameOptions, integer) -> gameOptions.field_21889 = class_4754.method_24337(gameOptions.field_21889.method_24336() + integer),
+		(gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix() + I18n.translate(gameOptions.field_21889.method_24338())
 	);
-	public static final BooleanOption field_21823 = new BooleanOption(
-		"options.useShieldOnCrouch", gameOptions -> gameOptions.field_21825, (gameOptions, boolean_) -> gameOptions.field_21825 = boolean_
+	public static final BooleanOption field_21888 = new BooleanOption(
+		"options.useShieldOnCrouch", gameOptions -> gameOptions.field_21890, (gameOptions, boolean_) -> gameOptions.field_21890 = boolean_
 	);
 	public static final CyclingOption VISIBILITY = new CyclingOption(
 		"options.chat.visibility",

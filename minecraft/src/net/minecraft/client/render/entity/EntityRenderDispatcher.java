@@ -49,7 +49,7 @@ import net.minecraft.world.WorldView;
 
 @Environment(EnvType.CLIENT)
 public class EntityRenderDispatcher {
-	private static final RenderLayer field_21009 = RenderLayer.getEntityNoOutline(new Identifier("textures/misc/shadow.png"));
+	private static final RenderLayer SHADOW_LAYER = RenderLayer.getEntityNoOutline(new Identifier("textures/misc/shadow.png"));
 	private final Map<EntityType<?>, EntityRenderer<?>> renderers = Maps.<EntityType<?>, EntityRenderer<?>>newHashMap();
 	private final Map<String, PlayerEntityRenderer> modelRenderers = Maps.<String, PlayerEntityRenderer>newHashMap();
 	private final PlayerEntityRenderer playerRenderer;
@@ -57,14 +57,14 @@ public class EntityRenderDispatcher {
 	public final TextureManager textureManager;
 	private World world;
 	public Camera camera;
-	private Quaternion field_21794;
+	private Quaternion rotation;
 	public Entity targetedEntity;
 	public final GameOptions gameOptions;
 	private boolean renderShadows = true;
 	private boolean renderHitboxes;
 
-	public <E extends Entity> int method_23839(E entity, float f) {
-		return this.getRenderer(entity).method_24088(entity, f);
+	public <E extends Entity> int getLight(E entity, float tickDelta) {
+		return this.getRenderer(entity).getLight(entity, tickDelta);
 	}
 
 	private <T extends Entity> void register(EntityType<T> entityType, EntityRenderer<? super T> entityRenderer) {
@@ -208,15 +208,15 @@ public class EntityRenderDispatcher {
 		}
 	}
 
-	public void configure(World world, Camera camera, Entity entity) {
+	public void configure(World world, Camera camera, Entity targetedEntity) {
 		this.world = world;
 		this.camera = camera;
-		this.field_21794 = camera.method_23767();
-		this.targetedEntity = entity;
+		this.rotation = camera.getRotation();
+		this.targetedEntity = targetedEntity;
 	}
 
-	public void method_24196(Quaternion quaternion) {
-		this.field_21794 = quaternion;
+	public void setRotation(Quaternion rotation) {
+		this.rotation = rotation;
 	}
 
 	public void setRenderShadows(boolean value) {
@@ -231,13 +231,13 @@ public class EntityRenderDispatcher {
 		return this.renderHitboxes;
 	}
 
-	public <E extends Entity> boolean shouldRender(E entity, Frustum frustum, double d, double e, double f) {
+	public <E extends Entity> boolean shouldRender(E entity, Frustum frustum, double cameraX, double cameraY, double cameraZ) {
 		EntityRenderer<? super E> entityRenderer = this.getRenderer(entity);
-		return entityRenderer.isVisible(entity, frustum, d, e, f);
+		return entityRenderer.shouldRender(entity, frustum, cameraX, cameraY, cameraZ);
 	}
 
 	public <E extends Entity> void render(
-		E entity, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumerProvider, int i
+		E entity, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light
 	) {
 		EntityRenderer<? super E> entityRenderer = this.getRenderer(entity);
 
@@ -248,22 +248,22 @@ public class EntityRenderDispatcher {
 			double f = z + vec3d.getZ();
 			matrices.push();
 			matrices.translate(d, e, f);
-			entityRenderer.render(entity, yaw, tickDelta, matrices, vertexConsumerProvider, i);
+			entityRenderer.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
 			if (entity.doesRenderOnFire()) {
-				this.renderFire(matrices, vertexConsumerProvider, entity);
+				this.renderFire(matrices, vertexConsumers, entity);
 			}
 
 			matrices.translate(-vec3d.getX(), -vec3d.getY(), -vec3d.getZ());
-			if (this.gameOptions.entityShadows && this.renderShadows && entityRenderer.field_4673 > 0.0F && !entity.isInvisible()) {
+			if (this.gameOptions.entityShadows && this.renderShadows && entityRenderer.shadowSize > 0.0F && !entity.isInvisible()) {
 				double g = this.getSquaredDistanceToCamera(entity.getX(), entity.getY(), entity.getZ());
-				float h = (float)((1.0 - g / 256.0) * (double)entityRenderer.field_4672);
+				float h = (float)((1.0 - g / 256.0) * (double)entityRenderer.shadowDarkness);
 				if (h > 0.0F) {
-					method_23166(matrices, vertexConsumerProvider, entity, h, tickDelta, this.world, entityRenderer.field_4673);
+					renderShadow(matrices, vertexConsumers, entity, h, tickDelta, this.world, entityRenderer.shadowSize);
 				}
 			}
 
 			if (this.renderHitboxes && !entity.isInvisible() && !MinecraftClient.getInstance().hasReducedDebugInfo()) {
-				this.renderHitbox(matrices, vertexConsumerProvider.getBuffer(RenderLayer.getLines()), entity, tickDelta);
+				this.renderHitbox(matrices, vertexConsumers.getBuffer(RenderLayer.getLines()), entity, tickDelta);
 			}
 
 			matrices.pop();
@@ -284,15 +284,15 @@ public class EntityRenderDispatcher {
 		float g = entity.getWidth() / 2.0F;
 		this.method_23164(matrixStack, vertexConsumer, entity, 1.0F, 1.0F, 1.0F);
 		if (entity instanceof EnderDragonEntity) {
-			double d = entity.getX() - MathHelper.lerp((double)f, entity.prevRenderX, entity.getX());
-			double e = entity.getY() - MathHelper.lerp((double)f, entity.prevRenderY, entity.getY());
-			double h = entity.getZ() - MathHelper.lerp((double)f, entity.prevRenderZ, entity.getZ());
+			double d = entity.getX() - MathHelper.lerp((double)f, entity.lastRenderX, entity.getX());
+			double e = entity.getY() - MathHelper.lerp((double)f, entity.lastRenderY, entity.getY());
+			double h = entity.getZ() - MathHelper.lerp((double)f, entity.lastRenderZ, entity.getZ());
 
-			for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).method_5690()) {
+			for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).getBodyParts()) {
 				matrixStack.push();
-				double i = d + MathHelper.lerp((double)f, enderDragonPart.prevRenderX, enderDragonPart.getX());
-				double j = e + MathHelper.lerp((double)f, enderDragonPart.prevRenderY, enderDragonPart.getY());
-				double k = h + MathHelper.lerp((double)f, enderDragonPart.prevRenderZ, enderDragonPart.getZ());
+				double i = d + MathHelper.lerp((double)f, enderDragonPart.lastRenderX, enderDragonPart.getX());
+				double j = e + MathHelper.lerp((double)f, enderDragonPart.lastRenderY, enderDragonPart.getY());
+				double k = h + MathHelper.lerp((double)f, enderDragonPart.lastRenderZ, enderDragonPart.getZ());
 				matrixStack.translate(i, j, k);
 				this.method_23164(matrixStack, vertexConsumer, enderDragonPart, 0.25F, 1.0F, 0.0F);
 				matrixStack.pop();
@@ -358,10 +358,10 @@ public class EntityRenderDispatcher {
 				m = q;
 			}
 
-			method_23161(entry, vertexConsumer, g - 0.0F, 0.0F - j, k, o, p);
-			method_23161(entry, vertexConsumer, -g - 0.0F, 0.0F - j, k, m, p);
-			method_23161(entry, vertexConsumer, -g - 0.0F, 1.4F - j, k, m, n);
-			method_23161(entry, vertexConsumer, g - 0.0F, 1.4F - j, k, o, n);
+			fireVertex(entry, vertexConsumer, g - 0.0F, 0.0F - j, k, o, p);
+			fireVertex(entry, vertexConsumer, -g - 0.0F, 0.0F - j, k, m, p);
+			fireVertex(entry, vertexConsumer, -g - 0.0F, 1.4F - j, k, m, n);
+			fireVertex(entry, vertexConsumer, g - 0.0F, 1.4F - j, k, o, n);
 			i -= 0.45F;
 			j -= 0.45F;
 			g *= 0.9F;
@@ -371,91 +371,91 @@ public class EntityRenderDispatcher {
 		matrix.pop();
 	}
 
-	private static void method_23161(MatrixStack.Entry entry, VertexConsumer vertexConsumer, float f, float g, float h, float i, float j) {
-		vertexConsumer.vertex(entry.getModel(), f, g, h)
+	private static void fireVertex(MatrixStack.Entry matrix, VertexConsumer vertexConsumer, float x, float y, float z, float u, float v) {
+		vertexConsumer.vertex(matrix.getModel(), x, y, z)
 			.color(255, 255, 255, 255)
-			.texture(i, j)
+			.texture(u, v)
 			.overlay(0, 10)
 			.light(240)
-			.normal(entry.getNormal(), 0.0F, 1.0F, 0.0F)
+			.normal(matrix.getNormal(), 0.0F, 1.0F, 0.0F)
 			.next();
 	}
 
-	private static void method_23166(
-		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, Entity entity, float f, float g, WorldView worldView, float h
+	private static void renderShadow(
+		MatrixStack matrices, VertexConsumerProvider vertexConsumers, Entity entity, float darkness, float tickDelta, WorldView world, float size
 	) {
-		float i = h;
+		float f = size;
 		if (entity instanceof MobEntity) {
 			MobEntity mobEntity = (MobEntity)entity;
 			if (mobEntity.isBaby()) {
-				i = h * 0.5F;
+				f = size * 0.5F;
 			}
 		}
 
-		double d = MathHelper.lerp((double)g, entity.prevRenderX, entity.getX());
-		double e = MathHelper.lerp((double)g, entity.prevRenderY, entity.getY());
-		double j = MathHelper.lerp((double)g, entity.prevRenderZ, entity.getZ());
-		int k = MathHelper.floor(d - (double)i);
-		int l = MathHelper.floor(d + (double)i);
-		int m = MathHelper.floor(e - (double)i);
-		int n = MathHelper.floor(e);
-		int o = MathHelper.floor(j - (double)i);
-		int p = MathHelper.floor(j + (double)i);
-		MatrixStack.Entry entry = matrixStack.peek();
-		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(field_21009);
+		double d = MathHelper.lerp((double)tickDelta, entity.lastRenderX, entity.getX());
+		double e = MathHelper.lerp((double)tickDelta, entity.lastRenderY, entity.getY());
+		double g = MathHelper.lerp((double)tickDelta, entity.lastRenderZ, entity.getZ());
+		int i = MathHelper.floor(d - (double)f);
+		int j = MathHelper.floor(d + (double)f);
+		int k = MathHelper.floor(e - (double)f);
+		int l = MathHelper.floor(e);
+		int m = MathHelper.floor(g - (double)f);
+		int n = MathHelper.floor(g + (double)f);
+		MatrixStack.Entry entry = matrices.peek();
+		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(SHADOW_LAYER);
 
-		for (BlockPos blockPos : BlockPos.iterate(new BlockPos(k, m, o), new BlockPos(l, n, p))) {
-			method_23163(entry, vertexConsumer, worldView, blockPos, d, e, j, i, f);
+		for (BlockPos blockPos : BlockPos.iterate(new BlockPos(i, k, m), new BlockPos(j, l, n))) {
+			renderShadowPart(entry, vertexConsumer, world, blockPos, d, e, g, f, darkness);
 		}
 	}
 
-	private static void method_23163(
-		MatrixStack.Entry entry, VertexConsumer vertexConsumer, WorldView worldView, BlockPos blockPos, double d, double e, double f, float g, float h
+	private static void renderShadowPart(
+		MatrixStack.Entry matrix, VertexConsumer vertexConsumer, WorldView world, BlockPos pos, double x, double y, double z, float size, float darkness
 	) {
-		BlockPos blockPos2 = blockPos.down();
-		BlockState blockState = worldView.getBlockState(blockPos2);
-		if (blockState.getRenderType() != BlockRenderType.INVISIBLE && worldView.getLightLevel(blockPos) > 3) {
-			if (blockState.isFullCube(worldView, blockPos2)) {
-				VoxelShape voxelShape = blockState.getOutlineShape(worldView, blockPos.down());
+		BlockPos blockPos = pos.down();
+		BlockState blockState = world.getBlockState(blockPos);
+		if (blockState.getRenderType() != BlockRenderType.INVISIBLE && world.getLightLevel(pos) > 3) {
+			if (blockState.isFullCube(world, blockPos)) {
+				VoxelShape voxelShape = blockState.getOutlineShape(world, pos.down());
 				if (!voxelShape.isEmpty()) {
-					float i = (float)(((double)h - (e - (double)blockPos.getY()) / 2.0) * 0.5 * (double)worldView.getBrightness(blockPos));
-					if (i >= 0.0F) {
-						if (i > 1.0F) {
-							i = 1.0F;
+					float f = (float)(((double)darkness - (y - (double)pos.getY()) / 2.0) * 0.5 * (double)world.getBrightness(pos));
+					if (f >= 0.0F) {
+						if (f > 1.0F) {
+							f = 1.0F;
 						}
 
 						Box box = voxelShape.getBoundingBox();
-						double j = (double)blockPos.getX() + box.x1;
-						double k = (double)blockPos.getX() + box.x2;
-						double l = (double)blockPos.getY() + box.y1;
-						double m = (double)blockPos.getZ() + box.z1;
-						double n = (double)blockPos.getZ() + box.z2;
-						float o = (float)(j - d);
-						float p = (float)(k - d);
-						float q = (float)(l - e + 0.015625);
-						float r = (float)(m - f);
-						float s = (float)(n - f);
-						float t = -o / 2.0F / g + 0.5F;
-						float u = -p / 2.0F / g + 0.5F;
-						float v = -r / 2.0F / g + 0.5F;
-						float w = -s / 2.0F / g + 0.5F;
-						method_23162(entry, vertexConsumer, i, o, q, r, t, v);
-						method_23162(entry, vertexConsumer, i, o, q, s, t, w);
-						method_23162(entry, vertexConsumer, i, p, q, s, u, w);
-						method_23162(entry, vertexConsumer, i, p, q, r, u, v);
+						double d = (double)pos.getX() + box.x1;
+						double e = (double)pos.getX() + box.x2;
+						double g = (double)pos.getY() + box.y1;
+						double h = (double)pos.getZ() + box.z1;
+						double i = (double)pos.getZ() + box.z2;
+						float j = (float)(d - x);
+						float k = (float)(e - x);
+						float l = (float)(g - y + 0.015625);
+						float m = (float)(h - z);
+						float n = (float)(i - z);
+						float o = -j / 2.0F / size + 0.5F;
+						float p = -k / 2.0F / size + 0.5F;
+						float q = -m / 2.0F / size + 0.5F;
+						float r = -n / 2.0F / size + 0.5F;
+						shadowVertex(matrix, vertexConsumer, f, j, l, m, o, q);
+						shadowVertex(matrix, vertexConsumer, f, j, l, n, o, r);
+						shadowVertex(matrix, vertexConsumer, f, k, l, n, p, r);
+						shadowVertex(matrix, vertexConsumer, f, k, l, m, p, q);
 					}
 				}
 			}
 		}
 	}
 
-	private static void method_23162(MatrixStack.Entry entry, VertexConsumer vertexConsumer, float f, float g, float h, float i, float j, float k) {
-		vertexConsumer.vertex(entry.getModel(), g, h, i)
-			.color(1.0F, 1.0F, 1.0F, f)
-			.texture(j, k)
+	private static void shadowVertex(MatrixStack.Entry matrix, VertexConsumer vertexConsumer, float alpha, float x, float y, float z, float u, float v) {
+		vertexConsumer.vertex(matrix.getModel(), x, y, z)
+			.color(1.0F, 1.0F, 1.0F, alpha)
+			.texture(u, v)
 			.overlay(OverlayTexture.DEFAULT_UV)
 			.light(15728880)
-			.normal(entry.getNormal(), 0.0F, 1.0F, 0.0F)
+			.normal(matrix.getNormal(), 0.0F, 1.0F, 0.0F)
 			.next();
 	}
 
@@ -474,8 +474,8 @@ public class EntityRenderDispatcher {
 		return this.camera.getPos().squaredDistanceTo(x, y, z);
 	}
 
-	public Quaternion method_24197() {
-		return this.field_21794;
+	public Quaternion getRotation() {
+		return this.rotation;
 	}
 
 	public TextRenderer getTextRenderer() {

@@ -1,13 +1,15 @@
 package net.minecraft.client.options;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.io.Files;
 import com.google.gson.Gson;
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -22,14 +24,14 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_4743;
+import net.minecraft.class_4754;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.resource.ClientResourcePackProfile;
 import net.minecraft.client.tutorial.TutorialStep;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.VideoMode;
-import net.minecraft.datafixers.DataFixTypes;
+import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.resource.ResourcePackManager;
@@ -38,7 +40,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Arm;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.world.Difficulty;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -60,7 +61,7 @@ public class GameOptions {
 			return null;
 		}
 	};
-	public static final Splitter COLON_SPLITTER = Splitter.on(':');
+	private static final Splitter COLON_SPLITTER = Splitter.on(':').limit(2);
 	public double mouseSensitivity = 0.5;
 	public int viewDistance = -1;
 	public int maxFps = 120;
@@ -90,8 +91,8 @@ public class GameOptions {
 	private final Map<SoundCategory, Float> soundVolumeLevels = Maps.newEnumMap(SoundCategory.class);
 	public boolean useNativeTransport = true;
 	public AttackIndicator attackIndicator = AttackIndicator.CROSSHAIR;
-	public class_4743 field_21824 = class_4743.field_21826;
-	public boolean field_21825 = true;
+	public class_4754 field_21889 = class_4754.field_21891;
+	public boolean field_21890 = true;
 	public TutorialStep tutorialStep = TutorialStep.MOVEMENT;
 	public int biomeBlendRadius = 2;
 	public double mouseWheelSensitivity = 1.0;
@@ -117,6 +118,7 @@ public class GameOptions {
 	public boolean bobView = true;
 	public boolean sneakToggled;
 	public boolean sprintToggled;
+	public boolean field_21840;
 	public final KeyBinding keyForward = new KeyBinding("key.forward", 87, "key.categories.movement");
 	public final KeyBinding keyLeft = new KeyBinding("key.left", 65, "key.categories.movement");
 	public final KeyBinding keyBack = new KeyBinding("key.back", 83, "key.categories.movement");
@@ -223,8 +225,8 @@ public class GameOptions {
 		return this.backgroundForChatOnly ? fallbackColor : (int)(this.textBackgroundOpacity * 255.0) << 24 & 0xFF000000;
 	}
 
-	public void setKeyCode(KeyBinding keyBinding, InputUtil.KeyCode keyCode) {
-		keyBinding.setKeyCode(keyCode);
+	public void setKeyCode(KeyBinding key, InputUtil.KeyCode code) {
+		key.setKeyCode(code);
 		this.write();
 	}
 
@@ -235,22 +237,40 @@ public class GameOptions {
 			}
 
 			this.soundVolumeLevels.clear();
-			List<String> list = IOUtils.readLines(new FileInputStream(this.optionsFile));
 			CompoundTag compoundTag = new CompoundTag();
+			BufferedReader bufferedReader = Files.newReader(this.optionsFile, Charsets.UTF_8);
+			Throwable var3 = null;
 
-			for (String string : list) {
-				try {
-					Iterator<String> iterator = COLON_SPLITTER.omitEmptyStrings().limit(2).split(string).iterator();
-					compoundTag.putString((String)iterator.next(), (String)iterator.next());
-				} catch (Exception var10) {
-					LOGGER.warn("Skipping bad option: {}", string);
+			try {
+				bufferedReader.lines().forEach(stringx -> {
+					try {
+						Iterator<String> iterator = COLON_SPLITTER.split(stringx).iterator();
+						compoundTag.putString((String)iterator.next(), (String)iterator.next());
+					} catch (Exception var3x) {
+						LOGGER.warn("Skipping bad option: {}", stringx);
+					}
+				});
+			} catch (Throwable var17) {
+				var3 = var17;
+				throw var17;
+			} finally {
+				if (bufferedReader != null) {
+					if (var3 != null) {
+						try {
+							bufferedReader.close();
+						} catch (Throwable var16) {
+							var3.addSuppressed(var16);
+						}
+					} else {
+						bufferedReader.close();
+					}
 				}
 			}
 
-			compoundTag = this.update(compoundTag);
+			CompoundTag compoundTag2 = this.update(compoundTag);
 
-			for (String string : compoundTag.getKeys()) {
-				String string2 = compoundTag.getString(string);
+			for (String string : compoundTag2.getKeys()) {
+				String string2 = compoundTag2.getString(string);
 
 				try {
 					if ("autoJump".equals(string)) {
@@ -397,11 +417,11 @@ public class GameOptions {
 					}
 
 					if ("shieldIndicator".equals(string)) {
-						this.field_21824 = class_4743.method_24240(Integer.parseInt(string2));
+						this.field_21889 = class_4754.method_24337(Integer.parseInt(string2));
 					}
 
 					if ("useShieldOnCrouch".equals(string)) {
-						Option.field_21823.set(this, string2);
+						Option.field_21888.set(this, string2);
 					}
 
 					if ("resourcePacks".equals(string)) {
@@ -518,6 +538,10 @@ public class GameOptions {
 						this.glDebugVerbosity = Integer.parseInt(string2);
 					}
 
+					if ("skipMultiplayerWarning".equals(string)) {
+						this.field_21840 = "true".equals(string2);
+					}
+
 					for (KeyBinding keyBinding : this.keysAll) {
 						if (string.equals("key_" + keyBinding.getId())) {
 							keyBinding.setKeyCode(InputUtil.fromName(string2));
@@ -535,14 +559,14 @@ public class GameOptions {
 							this.setPlayerModelPart(playerModelPart, "true".equals(string2));
 						}
 					}
-				} catch (Exception var11) {
+				} catch (Exception var19) {
 					LOGGER.warn("Skipping bad option: {}:{}", string, string2);
 				}
 			}
 
 			KeyBinding.updateKeysByCode();
-		} catch (Exception var12) {
-			LOGGER.error("Failed to load options", (Throwable)var12);
+		} catch (Exception var20) {
+			LOGGER.error("Failed to load options", (Throwable)var20);
 		}
 	}
 
@@ -639,13 +663,14 @@ public class GameOptions {
 				printWriter.println("useNativeTransport:" + this.useNativeTransport);
 				printWriter.println("mainHand:" + (this.mainArm == Arm.LEFT ? "left" : "right"));
 				printWriter.println("attackIndicator:" + this.attackIndicator.getId());
-				printWriter.println("shieldIndicator:" + this.field_21824.method_24239());
-				printWriter.println("useShieldOnCrouch:" + Option.field_21823.get(this));
+				printWriter.println("shieldIndicator:" + this.field_21889.method_24336());
+				printWriter.println("useShieldOnCrouch:" + Option.field_21888.get(this));
 				printWriter.println("narrator:" + this.narrator.getId());
 				printWriter.println("tutorialStep:" + this.tutorialStep.getName());
 				printWriter.println("mouseWheelSensitivity:" + this.mouseWheelSensitivity);
 				printWriter.println("rawMouseInput:" + Option.RAW_MOUSE_INPUT.get(this));
 				printWriter.println("glDebugVerbosity:" + this.glDebugVerbosity);
+				printWriter.println("skipMultiplayerWarning:" + this.field_21840);
 
 				for (KeyBinding keyBinding : this.keysAll) {
 					printWriter.println("key_" + keyBinding.getId() + ":" + keyBinding.getName());
@@ -681,13 +706,13 @@ public class GameOptions {
 		this.onPlayerModelPartChange();
 	}
 
-	public float getSoundVolume(SoundCategory soundCategory) {
-		return this.soundVolumeLevels.containsKey(soundCategory) ? (Float)this.soundVolumeLevels.get(soundCategory) : 1.0F;
+	public float getSoundVolume(SoundCategory category) {
+		return this.soundVolumeLevels.containsKey(category) ? (Float)this.soundVolumeLevels.get(category) : 1.0F;
 	}
 
-	public void setSoundVolume(SoundCategory category, float f) {
-		this.soundVolumeLevels.put(category, f);
-		this.client.getSoundManager().updateSoundVolume(category, f);
+	public void setSoundVolume(SoundCategory category, float volume) {
+		this.soundVolumeLevels.put(category, volume);
+		this.client.getSoundManager().updateSoundVolume(category, volume);
 	}
 
 	public void onPlayerModelPartChange() {
@@ -701,7 +726,7 @@ public class GameOptions {
 			this.client
 				.player
 				.networkHandler
-				.sendPacket(new ClientSettingsC2SPacket(this.language, this.viewDistance, this.chatVisibility, this.chatColors, i, this.mainArm, this.field_21825));
+				.sendPacket(new ClientSettingsC2SPacket(this.language, this.viewDistance, this.chatVisibility, this.chatColors, i, this.mainArm, this.field_21890));
 		}
 	}
 
@@ -709,8 +734,8 @@ public class GameOptions {
 		return ImmutableSet.copyOf(this.enabledPlayerModelParts);
 	}
 
-	public void setPlayerModelPart(PlayerModelPart part, boolean bl) {
-		if (bl) {
+	public void setPlayerModelPart(PlayerModelPart part, boolean enabled) {
+		if (enabled) {
 			this.enabledPlayerModelParts.add(part);
 		} else {
 			this.enabledPlayerModelParts.remove(part);
@@ -719,11 +744,11 @@ public class GameOptions {
 		this.onPlayerModelPartChange();
 	}
 
-	public void togglePlayerModelPart(PlayerModelPart playerModelPart) {
-		if (this.getEnabledPlayerModelParts().contains(playerModelPart)) {
-			this.enabledPlayerModelParts.remove(playerModelPart);
+	public void togglePlayerModelPart(PlayerModelPart part) {
+		if (this.getEnabledPlayerModelParts().contains(part)) {
+			this.enabledPlayerModelParts.remove(part);
 		} else {
-			this.enabledPlayerModelParts.add(playerModelPart);
+			this.enabledPlayerModelParts.add(part);
 		}
 
 		this.onPlayerModelPartChange();

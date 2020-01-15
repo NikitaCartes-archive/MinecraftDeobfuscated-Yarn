@@ -56,6 +56,10 @@ public class BakedModelManager extends SinglePreparationResourceReloadListener<M
 	protected void apply(ModelLoader modelLoader, ResourceManager resourceManager, Profiler profiler) {
 		profiler.startTick();
 		profiler.push("upload");
+		if (this.atlasManager != null) {
+			this.atlasManager.close();
+		}
+
 		this.atlasManager = modelLoader.upload(this.textureManager, profiler);
 		this.models = modelLoader.getBakedModelMap();
 		this.stateLookup = modelLoader.getStateLookup();

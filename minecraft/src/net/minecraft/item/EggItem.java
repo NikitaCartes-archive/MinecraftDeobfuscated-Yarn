@@ -32,6 +32,7 @@ public class EggItem extends Item {
 			itemStack.decrement(1);
 		}
 
+		user.getItemCooldownManager().set(this, 4);
 		return TypedActionResult.success(itemStack);
 	}
 }

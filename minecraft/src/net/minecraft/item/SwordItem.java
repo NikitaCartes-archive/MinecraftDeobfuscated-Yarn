@@ -1,7 +1,7 @@
 package net.minecraft.item;
 
 import com.google.common.collect.Multimap;
-import net.minecraft.class_4741;
+import net.minecraft.class_4752;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -20,7 +20,7 @@ public class SwordItem extends ToolItem {
 	}
 
 	public float getAttackDamage() {
-		return class_4741.field_21807.method_24226(this.getMaterial());
+		return class_4752.field_21870.method_24323(this.getMaterial());
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public class SwordItem extends ToolItem {
 	public Multimap<String, EntityAttributeModifier> getModifiers(EquipmentSlot slot) {
 		Multimap<String, EntityAttributeModifier> multimap = super.getModifiers(slot);
 		if (slot == EquipmentSlot.MAINHAND) {
-			class_4741.field_21807.method_24227(this.getMaterial(), multimap);
+			class_4752.field_21870.method_24324(this.getMaterial(), multimap);
 		}
 
 		return multimap;

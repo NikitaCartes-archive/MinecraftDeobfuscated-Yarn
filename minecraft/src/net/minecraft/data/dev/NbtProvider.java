@@ -27,7 +27,7 @@ public class NbtProvider implements DataProvider {
 		Path path = this.root.getOutput();
 
 		for (Path path2 : this.root.getInputs()) {
-			Files.walk(path2).filter(pathx -> pathx.toString().endsWith(".nbt")).forEach(path3 -> method_10493(path3, this.method_10496(path2, path3), path));
+			Files.walk(path2).filter(pathx -> pathx.toString().endsWith(".nbt")).forEach(path3 -> convertNbtToSnbt(path3, this.getLocation(path2, path3), path));
 		}
 	}
 
@@ -36,24 +36,24 @@ public class NbtProvider implements DataProvider {
 		return "NBT to SNBT";
 	}
 
-	private String method_10496(Path path, Path path2) {
-		String string = path.relativize(path2).toString().replaceAll("\\\\", "/");
+	private String getLocation(Path targetPath, Path rootPath) {
+		String string = targetPath.relativize(rootPath).toString().replaceAll("\\\\", "/");
 		return string.substring(0, string.length() - ".nbt".length());
 	}
 
 	@Nullable
-	public static Path method_10493(Path path, String string, Path path2) {
+	public static Path convertNbtToSnbt(Path inputPath, String location, Path outputPath) {
 		try {
-			CompoundTag compoundTag = NbtIo.readCompressed(Files.newInputStream(path));
+			CompoundTag compoundTag = NbtIo.readCompressed(Files.newInputStream(inputPath));
 			Text text = compoundTag.toText("    ", 0);
-			String string2 = text.getString() + "\n";
-			Path path3 = path2.resolve(string + ".snbt");
-			Files.createDirectories(path3.getParent());
-			BufferedWriter bufferedWriter = Files.newBufferedWriter(path3);
+			String string = text.getString() + "\n";
+			Path path = outputPath.resolve(location + ".snbt");
+			Files.createDirectories(path.getParent());
+			BufferedWriter bufferedWriter = Files.newBufferedWriter(path);
 			Throwable var8 = null;
 
 			try {
-				bufferedWriter.write(string2);
+				bufferedWriter.write(string);
 			} catch (Throwable var18) {
 				var8 = var18;
 				throw var18;
@@ -71,10 +71,10 @@ public class NbtProvider implements DataProvider {
 				}
 			}
 
-			LOGGER.info("Converted {} from NBT to SNBT", string);
-			return path3;
+			LOGGER.info("Converted {} from NBT to SNBT", location);
+			return path;
 		} catch (IOException var20) {
-			LOGGER.error("Couldn't convert {} from NBT to SNBT at {}", string, path, var20);
+			LOGGER.error("Couldn't convert {} from NBT to SNBT at {}", location, inputPath, var20);
 			return null;
 		}
 	}

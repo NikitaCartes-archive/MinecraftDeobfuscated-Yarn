@@ -277,8 +277,8 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 		}
 	}
 
-	public void drawGhostSlots(int left, int top, boolean bl, float lastFrameDuration) {
-		this.ghostSlots.draw(this.client, left, top, bl, lastFrameDuration);
+	public void drawGhostSlots(int left, int top, boolean isBig, float lastFrameDuration) {
+		this.ghostSlots.draw(this.client, left, top, isBig, lastFrameDuration);
 	}
 
 	@Override
@@ -429,8 +429,8 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 	}
 
 	@Override
-	public void onRecipesDisplayed(List<Recipe<?>> list) {
-		for (Recipe<?> recipe : list) {
+	public void onRecipesDisplayed(List<Recipe<?>> recipes) {
+		for (Recipe<?> recipe : recipes) {
 			this.client.player.onRecipeDisplayed(recipe);
 		}
 	}

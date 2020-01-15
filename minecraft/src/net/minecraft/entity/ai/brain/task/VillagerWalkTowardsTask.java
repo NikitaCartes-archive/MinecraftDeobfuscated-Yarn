@@ -17,10 +17,10 @@ public class VillagerWalkTowardsTask extends Task<VillagerEntity> {
 	private final MemoryModuleType<GlobalPos> destination;
 	private final float speed;
 	private final int completionRange;
-	private final int field_18385;
+	private final int maxRange;
 	private final int maxRunTime;
 
-	public VillagerWalkTowardsTask(MemoryModuleType<GlobalPos> destination, float speed, int completionRange, int i, int maxRunTime) {
+	public VillagerWalkTowardsTask(MemoryModuleType<GlobalPos> destination, float speed, int completionRange, int maxRange, int maxRunTime) {
 		super(
 			ImmutableMap.of(
 				MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE,
@@ -34,15 +34,15 @@ public class VillagerWalkTowardsTask extends Task<VillagerEntity> {
 		this.destination = destination;
 		this.speed = speed;
 		this.completionRange = completionRange;
-		this.field_18385 = i;
+		this.maxRange = maxRange;
 		this.maxRunTime = maxRunTime;
 	}
 
-	private void method_21722(VillagerEntity villagerEntity, long l) {
-		Brain<?> brain = villagerEntity.getBrain();
-		villagerEntity.releaseTicketFor(this.destination);
+	private void giveUp(VillagerEntity villager, long time) {
+		Brain<?> brain = villager.getBrain();
+		villager.releaseTicketFor(this.destination);
 		brain.forget(this.destination);
-		brain.putMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, l);
+		brain.putMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, time);
 	}
 
 	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
@@ -51,20 +51,20 @@ public class VillagerWalkTowardsTask extends Task<VillagerEntity> {
 			.ifPresent(
 				globalPos -> {
 					if (this.shouldGiveUp(serverWorld, villagerEntity)) {
-						this.method_21722(villagerEntity, l);
-					} else if (this.method_19597(serverWorld, villagerEntity, globalPos)) {
+						this.giveUp(villagerEntity, l);
+					} else if (this.exceedsMaxRange(serverWorld, villagerEntity, globalPos)) {
 						Vec3d vec3d = null;
 						int i = 0;
 
 						for (int j = 1000;
-							i < 1000 && (vec3d == null || this.method_19597(serverWorld, villagerEntity, GlobalPos.create(villagerEntity.dimension, new BlockPos(vec3d))));
+							i < 1000 && (vec3d == null || this.exceedsMaxRange(serverWorld, villagerEntity, GlobalPos.create(villagerEntity.dimension, new BlockPos(vec3d))));
 							i++
 						) {
 							vec3d = TargetFinder.findTargetTowards(villagerEntity, 15, 7, new Vec3d(globalPos.getPos()));
 						}
 
 						if (i == 1000) {
-							this.method_21722(villagerEntity, l);
+							this.giveUp(villagerEntity, l);
 							return;
 						}
 
@@ -81,9 +81,8 @@ public class VillagerWalkTowardsTask extends Task<VillagerEntity> {
 		return optional.isPresent() ? world.getTime() - (Long)optional.get() > (long)this.maxRunTime : false;
 	}
 
-	private boolean method_19597(ServerWorld serverWorld, VillagerEntity villagerEntity, GlobalPos globalPos) {
-		return globalPos.getDimension() != serverWorld.getDimension().getType()
-			|| globalPos.getPos().getManhattanDistance(new BlockPos(villagerEntity)) > this.field_18385;
+	private boolean exceedsMaxRange(ServerWorld world, VillagerEntity villager, GlobalPos pos) {
+		return pos.getDimension() != world.getDimension().getType() || pos.getPos().getManhattanDistance(new BlockPos(villager)) > this.maxRange;
 	}
 
 	private boolean reachedDestination(ServerWorld world, VillagerEntity villager, GlobalPos pos) {

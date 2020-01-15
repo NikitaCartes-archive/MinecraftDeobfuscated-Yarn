@@ -12,8 +12,8 @@ import net.minecraft.util.Identifier;
 public class ShulkerBoxScreen extends AbstractContainerScreen<ShulkerBoxContainer> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/shulker_box.png");
 
-	public ShulkerBoxScreen(ShulkerBoxContainer shulkerBoxContainer, PlayerInventory playerInventory, Text text) {
-		super(shulkerBoxContainer, playerInventory, text);
+	public ShulkerBoxScreen(ShulkerBoxContainer container, PlayerInventory inventory, Text title) {
+		super(container, inventory, title);
 		this.containerHeight++;
 	}
 

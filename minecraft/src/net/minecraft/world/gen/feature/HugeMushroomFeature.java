@@ -45,7 +45,7 @@ public abstract class HugeMushroomFeature extends Feature<HugeMushroomFeatureCon
 				return false;
 			} else {
 				for (int k = 0; k <= i; k++) {
-					int l = this.method_23372(-1, -1, hugeMushroomFeatureConfig.field_21232, k);
+					int l = this.method_23372(-1, -1, hugeMushroomFeatureConfig.capSize, k);
 
 					for (int m = -l; m <= l; m++) {
 						for (int n = -l; n <= l; n++) {
@@ -76,7 +76,7 @@ public abstract class HugeMushroomFeature extends Feature<HugeMushroomFeatureCon
 		if (!this.method_23374(iWorld, blockPos, i, mutable, hugeMushroomFeatureConfig)) {
 			return false;
 		} else {
-			this.method_23375(iWorld, random, blockPos, i, mutable, hugeMushroomFeatureConfig);
+			this.generate(iWorld, random, blockPos, i, mutable, hugeMushroomFeatureConfig);
 			this.method_23376(iWorld, random, blockPos, hugeMushroomFeatureConfig, i, mutable);
 			return true;
 		}
@@ -84,7 +84,5 @@ public abstract class HugeMushroomFeature extends Feature<HugeMushroomFeatureCon
 
 	protected abstract int method_23372(int i, int j, int k, int l);
 
-	protected abstract void method_23375(
-		IWorld iWorld, Random random, BlockPos blockPos, int i, BlockPos.Mutable mutable, HugeMushroomFeatureConfig hugeMushroomFeatureConfig
-	);
+	protected abstract void generate(IWorld world, Random random, BlockPos blockPos, int i, BlockPos.Mutable pos, HugeMushroomFeatureConfig config);
 }

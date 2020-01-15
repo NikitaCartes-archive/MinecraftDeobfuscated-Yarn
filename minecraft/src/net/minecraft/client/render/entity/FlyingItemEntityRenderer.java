@@ -31,20 +31,20 @@ public class FlyingItemEntityRenderer<T extends Entity & FlyingItemEntity> exten
 	}
 
 	@Override
-	protected int method_24087(T entity, float f) {
-		return this.field_21745 ? 15 : super.method_24087(entity, f);
+	protected int getBlockLight(T entity, float tickDelta) {
+		return this.field_21745 ? 15 : super.getBlockLight(entity, tickDelta);
 	}
 
 	@Override
-	public void render(T entity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	public void render(T entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
 		if (entity.age >= 2) {
-			matrixStack.push();
-			matrixStack.scale(this.scale, this.scale, this.scale);
-			matrixStack.multiply(this.renderManager.method_24197());
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
-			this.item.method_23178(entity.getStack(), ModelTransformation.Type.GROUND, i, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider);
-			matrixStack.pop();
-			super.render(entity, f, g, matrixStack, vertexConsumerProvider, i);
+			matrices.push();
+			matrices.scale(this.scale, this.scale, this.scale);
+			matrices.multiply(this.renderManager.getRotation());
+			matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
+			this.item.renderItem(entity.getStack(), ModelTransformation.Mode.GROUND, light, OverlayTexture.DEFAULT_UV, matrices, vertexConsumers);
+			matrices.pop();
+			super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
 		}
 	}
 

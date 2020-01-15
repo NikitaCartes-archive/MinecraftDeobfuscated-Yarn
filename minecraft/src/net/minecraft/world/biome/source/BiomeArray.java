@@ -6,8 +6,12 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.Biomes;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class BiomeArray implements BiomeAccess.Storage {
+	private static final Logger field_21813 = LogManager.getLogger();
 	private static final int HORIZONTAL_SECTION_COUNT = (int)Math.round(Math.log(16.0) / Math.log(2.0)) - 2;
 	private static final int VERTICAL_SECTION_COUNT = (int)Math.round(Math.log(256.0) / Math.log(2.0)) - 2;
 	public static final int DEFAULT_LENGTH = 1 << HORIZONTAL_SECTION_COUNT + HORIZONTAL_SECTION_COUNT + VERTICAL_SECTION_COUNT;
@@ -23,11 +27,18 @@ public class BiomeArray implements BiomeAccess.Storage {
 		this(new Biome[DEFAULT_LENGTH]);
 	}
 
-	public BiomeArray(PacketByteBuf buf) {
+	public BiomeArray(PacketByteBuf packetByteBuf) {
 		this();
 
 		for (int i = 0; i < this.data.length; i++) {
-			this.data[i] = Registry.BIOME.get(buf.readInt());
+			int j = packetByteBuf.readInt();
+			Biome biome = Registry.BIOME.get(j);
+			if (biome == null) {
+				field_21813.warn("Received invalid biome id: " + j);
+				this.data[i] = Biomes.PLAINS;
+			} else {
+				this.data[i] = biome;
+			}
 		}
 	}
 

@@ -50,23 +50,23 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 		}
 	}
 
-	public static void drawPath(Path path, float f, boolean bl, boolean bl2, double d, double e, double g) {
+	public static void drawPath(Path path, float nodeSize, boolean bl, boolean drawLabels, double cameraX, double cameraY, double cameraZ) {
 		RenderSystem.pushMatrix();
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.color4f(0.0F, 1.0F, 0.0F, 0.75F);
 		RenderSystem.disableTexture();
 		RenderSystem.lineWidth(6.0F);
-		drawPathInternal(path, f, bl, bl2, d, e, g);
+		drawPathInternal(path, nodeSize, bl, drawLabels, cameraX, cameraY, cameraZ);
 		RenderSystem.enableTexture();
 		RenderSystem.disableBlend();
 		RenderSystem.popMatrix();
 	}
 
-	private static void drawPathInternal(Path path, float f, boolean bl, boolean bl2, double d, double e, double g) {
-		drawPathLines(path, d, e, g);
+	private static void drawPathInternal(Path path, float nodeSize, boolean bl, boolean drawLabels, double cameraX, double cameraY, double cameraZ) {
+		drawPathLines(path, cameraX, cameraY, cameraZ);
 		BlockPos blockPos = path.getTarget();
-		if (getManhattanDistance(blockPos, d, e, g) <= 80.0F) {
+		if (getManhattanDistance(blockPos, cameraX, cameraY, cameraZ) <= 80.0F) {
 			DebugRenderer.drawBox(
 				new Box(
 						(double)((float)blockPos.getX() + 0.25F),
@@ -76,7 +76,7 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 						(double)((float)blockPos.getY() + 0.75F),
 						(double)((float)blockPos.getZ() + 0.75F)
 					)
-					.offset(-d, -e, -g),
+					.offset(-cameraX, -cameraY, -cameraZ),
 				0.0F,
 				1.0F,
 				0.0F,
@@ -85,22 +85,22 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 
 			for (int i = 0; i < path.getLength(); i++) {
 				PathNode pathNode = path.getNode(i);
-				if (getManhattanDistance(pathNode.getPos(), d, e, g) <= 80.0F) {
-					float h = i == path.getCurrentNodeIndex() ? 1.0F : 0.0F;
-					float j = i == path.getCurrentNodeIndex() ? 0.0F : 1.0F;
+				if (getManhattanDistance(pathNode.getPos(), cameraX, cameraY, cameraZ) <= 80.0F) {
+					float f = i == path.getCurrentNodeIndex() ? 1.0F : 0.0F;
+					float g = i == path.getCurrentNodeIndex() ? 0.0F : 1.0F;
 					DebugRenderer.drawBox(
 						new Box(
-								(double)((float)pathNode.x + 0.5F - f),
+								(double)((float)pathNode.x + 0.5F - nodeSize),
 								(double)((float)pathNode.y + 0.01F * (float)i),
-								(double)((float)pathNode.z + 0.5F - f),
-								(double)((float)pathNode.x + 0.5F + f),
+								(double)((float)pathNode.z + 0.5F - nodeSize),
+								(double)((float)pathNode.x + 0.5F + nodeSize),
 								(double)((float)pathNode.y + 0.25F + 0.01F * (float)i),
-								(double)((float)pathNode.z + 0.5F + f)
+								(double)((float)pathNode.z + 0.5F + nodeSize)
 							)
-							.offset(-d, -e, -g),
-						h,
+							.offset(-cameraX, -cameraY, -cameraZ),
+						f,
 						0.0F,
-						j,
+						g,
 						0.5F
 					);
 				}
@@ -109,17 +109,17 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 
 		if (bl) {
 			for (PathNode pathNode2 : path.method_22881()) {
-				if (getManhattanDistance(pathNode2.getPos(), d, e, g) <= 80.0F) {
+				if (getManhattanDistance(pathNode2.getPos(), cameraX, cameraY, cameraZ) <= 80.0F) {
 					DebugRenderer.drawBox(
 						new Box(
-								(double)((float)pathNode2.x + 0.5F - f / 2.0F),
+								(double)((float)pathNode2.x + 0.5F - nodeSize / 2.0F),
 								(double)((float)pathNode2.y + 0.01F),
-								(double)((float)pathNode2.z + 0.5F - f / 2.0F),
-								(double)((float)pathNode2.x + 0.5F + f / 2.0F),
+								(double)((float)pathNode2.z + 0.5F - nodeSize / 2.0F),
+								(double)((float)pathNode2.x + 0.5F + nodeSize / 2.0F),
 								(double)pathNode2.y + 0.1,
-								(double)((float)pathNode2.z + 0.5F + f / 2.0F)
+								(double)((float)pathNode2.z + 0.5F + nodeSize / 2.0F)
 							)
-							.offset(-d, -e, -g),
+							.offset(-cameraX, -cameraY, -cameraZ),
 						1.0F,
 						0.8F,
 						0.8F,
@@ -129,17 +129,17 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 			}
 
 			for (PathNode pathNode2x : path.method_22880()) {
-				if (getManhattanDistance(pathNode2x.getPos(), d, e, g) <= 80.0F) {
+				if (getManhattanDistance(pathNode2x.getPos(), cameraX, cameraY, cameraZ) <= 80.0F) {
 					DebugRenderer.drawBox(
 						new Box(
-								(double)((float)pathNode2x.x + 0.5F - f / 2.0F),
+								(double)((float)pathNode2x.x + 0.5F - nodeSize / 2.0F),
 								(double)((float)pathNode2x.y + 0.01F),
-								(double)((float)pathNode2x.z + 0.5F - f / 2.0F),
-								(double)((float)pathNode2x.x + 0.5F + f / 2.0F),
+								(double)((float)pathNode2x.z + 0.5F - nodeSize / 2.0F),
+								(double)((float)pathNode2x.x + 0.5F + nodeSize / 2.0F),
 								(double)pathNode2x.y + 0.1,
-								(double)((float)pathNode2x.z + 0.5F + f / 2.0F)
+								(double)((float)pathNode2x.z + 0.5F + nodeSize / 2.0F)
 							)
-							.offset(-d, -e, -g),
+							.offset(-cameraX, -cameraY, -cameraZ),
 						0.8F,
 						1.0F,
 						1.0F,
@@ -149,10 +149,10 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 			}
 		}
 
-		if (bl2) {
+		if (drawLabels) {
 			for (int ix = 0; ix < path.getLength(); ix++) {
 				PathNode pathNode = path.getNode(ix);
-				if (getManhattanDistance(pathNode.getPos(), d, e, g) <= 80.0F) {
+				if (getManhattanDistance(pathNode.getPos(), cameraX, cameraY, cameraZ) <= 80.0F) {
 					DebugRenderer.drawString(String.format("%s", pathNode.type), (double)pathNode.x + 0.5, (double)pathNode.y + 0.75, (double)pathNode.z + 0.5, -1);
 					DebugRenderer.drawString(
 						String.format(Locale.ROOT, "%.2f", pathNode.penalty), (double)pathNode.x + 0.5, (double)pathNode.y + 0.25, (double)pathNode.z + 0.5, -1
@@ -162,27 +162,27 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 		}
 	}
 
-	public static void drawPathLines(Path path, double d, double e, double f) {
+	public static void drawPathLines(Path path, double cameraX, double cameraY, double cameraZ) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
 
 		for (int i = 0; i < path.getLength(); i++) {
 			PathNode pathNode = path.getNode(i);
-			if (!(getManhattanDistance(pathNode.getPos(), d, e, f) > 80.0F)) {
-				float g = (float)i / (float)path.getLength() * 0.33F;
-				int j = i == 0 ? 0 : MathHelper.hsvToRgb(g, 0.9F, 0.9F);
+			if (!(getManhattanDistance(pathNode.getPos(), cameraX, cameraY, cameraZ) > 80.0F)) {
+				float f = (float)i / (float)path.getLength() * 0.33F;
+				int j = i == 0 ? 0 : MathHelper.hsvToRgb(f, 0.9F, 0.9F);
 				int k = j >> 16 & 0xFF;
 				int l = j >> 8 & 0xFF;
 				int m = j & 0xFF;
-				bufferBuilder.vertex((double)pathNode.x - d + 0.5, (double)pathNode.y - e + 0.5, (double)pathNode.z - f + 0.5).color(k, l, m, 255).next();
+				bufferBuilder.vertex((double)pathNode.x - cameraX + 0.5, (double)pathNode.y - cameraY + 0.5, (double)pathNode.z - cameraZ + 0.5).color(k, l, m, 255).next();
 			}
 		}
 
 		tessellator.draw();
 	}
 
-	private static float getManhattanDistance(BlockPos blockPos, double d, double e, double f) {
-		return (float)(Math.abs((double)blockPos.getX() - d) + Math.abs((double)blockPos.getY() - e) + Math.abs((double)blockPos.getZ() - f));
+	private static float getManhattanDistance(BlockPos pos, double x, double y, double z) {
+		return (float)(Math.abs((double)pos.getX() - x) + Math.abs((double)pos.getY() - y) + Math.abs((double)pos.getZ() - z));
 	}
 }

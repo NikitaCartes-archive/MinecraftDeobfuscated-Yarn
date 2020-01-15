@@ -178,7 +178,7 @@ public abstract class PlayerManager {
 			player.networkHandler.sendPacket(new PlayerListS2CPacket(PlayerListS2CPacket.Action.ADD_PLAYER, (ServerPlayerEntity)this.players.get(i)));
 		}
 
-		serverWorld.method_18213(player);
+		serverWorld.onPlayerConnected(player);
 		this.server.getBossBarManager().onPlayerConnect(player);
 		this.sendWorldInfo(player, serverWorld);
 		if (!this.server.getResourcePackUrl().isEmpty()) {
@@ -192,7 +192,7 @@ public abstract class PlayerManager {
 		if (compoundTag != null && compoundTag.contains("RootVehicle", 10)) {
 			CompoundTag compoundTag2 = compoundTag.getCompound("RootVehicle");
 			Entity entity = EntityType.loadEntityWithPassengers(
-				compoundTag2.getCompound("Entity"), serverWorld, entityx -> !serverWorld.method_18768(entityx) ? null : entityx
+				compoundTag2.getCompound("Entity"), serverWorld, entityx -> !serverWorld.tryLoadEntity(entityx) ? null : entityx
 			);
 			if (entity != null) {
 				UUID uUID = compoundTag2.getUuid("Attach");
@@ -457,7 +457,7 @@ public abstract class PlayerManager {
 			.sendPacket(new ExperienceBarUpdateS2CPacket(serverPlayerEntity.experienceProgress, serverPlayerEntity.totalExperience, serverPlayerEntity.experienceLevel));
 		this.sendWorldInfo(serverPlayerEntity, serverWorld);
 		this.sendCommandTree(serverPlayerEntity);
-		serverWorld.respawnPlayer(serverPlayerEntity);
+		serverWorld.onPlayerRespawned(serverPlayerEntity);
 		this.players.add(serverPlayerEntity);
 		this.playerMap.put(serverPlayerEntity.getUuid(), serverPlayerEntity);
 		serverPlayerEntity.method_14235();

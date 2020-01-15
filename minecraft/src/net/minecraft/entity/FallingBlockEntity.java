@@ -140,8 +140,9 @@ public class FallingBlockEntity extends Entity {
 						this.remove();
 						if (!this.destroyedOnLanding) {
 							boolean bl3 = blockState.canReplace(new AutomaticItemPlacementContext(this.world, blockPos, Direction.DOWN, ItemStack.EMPTY, Direction.UP));
-							boolean bl4 = this.block.canPlaceAt(this.world, blockPos) && !FallingBlock.canFallThrough(this.world.getBlockState(blockPos.down()));
-							if (bl3 && bl4) {
+							boolean bl4 = FallingBlock.canFallThrough(this.world.getBlockState(blockPos.down())) && (!bl || !bl2);
+							boolean bl5 = this.block.canPlaceAt(this.world, blockPos) && !bl4;
+							if (bl3 && bl5) {
 								if (this.block.contains(Properties.WATERLOGGED) && this.world.getFluidState(blockPos).getFluid() == Fluids.WATER) {
 									this.block = this.block.with(Properties.WATERLOGGED, Boolean.valueOf(true));
 								}

@@ -72,7 +72,7 @@ public final class Vector3f {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void piecewiseMultiply(float x, float y, float z) {
+	public void multiplyComponentwise(float x, float y, float z) {
 		this.x *= x;
 		this.y *= y;
 		this.z *= z;
@@ -118,7 +118,7 @@ public final class Vector3f {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean reciprocal() {
+	public boolean normalize() {
 		float f = this.x * this.x + this.y * this.y + this.z * this.z;
 		if ((double)f < 1.0E-5) {
 			return false;
@@ -154,21 +154,21 @@ public final class Vector3f {
 		this.z = matrix3f.a20 * f + matrix3f.a21 * g + matrix3f.a22 * h;
 	}
 
-	public void method_19262(Quaternion quaternion) {
-		Quaternion quaternion2 = new Quaternion(quaternion);
-		quaternion2.hamiltonProduct(new Quaternion(this.getX(), this.getY(), this.getZ(), 0.0F));
-		Quaternion quaternion3 = new Quaternion(quaternion);
-		quaternion3.conjugate();
-		quaternion2.hamiltonProduct(quaternion3);
-		this.set(quaternion2.getB(), quaternion2.getC(), quaternion2.getD());
+	public void rotate(Quaternion rotation) {
+		Quaternion quaternion = new Quaternion(rotation);
+		quaternion.hamiltonProduct(new Quaternion(this.getX(), this.getY(), this.getZ(), 0.0F));
+		Quaternion quaternion2 = new Quaternion(rotation);
+		quaternion2.conjugate();
+		quaternion.hamiltonProduct(quaternion2);
+		this.set(quaternion.getB(), quaternion.getC(), quaternion.getD());
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void method_23847(Vector3f vector3f, float f) {
-		float g = 1.0F - f;
-		this.x = this.x * g + vector3f.x * f;
-		this.y = this.y * g + vector3f.y * f;
-		this.z = this.z * g + vector3f.z * f;
+	public void lerp(Vector3f vector, float delta) {
+		float f = 1.0F - delta;
+		this.x = this.x * f + vector.x * delta;
+		this.y = this.y * f + vector.y * delta;
+		this.z = this.z * f + vector.z * delta;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -187,10 +187,10 @@ public final class Vector3f {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void method_23848(Float2FloatFunction float2FloatFunction) {
-		this.x = float2FloatFunction.get(this.x);
-		this.y = float2FloatFunction.get(this.y);
-		this.z = float2FloatFunction.get(this.z);
+	public void modify(Float2FloatFunction function) {
+		this.x = function.get(this.x);
+		this.y = function.get(this.y);
+		this.z = function.get(this.z);
 	}
 
 	public String toString() {

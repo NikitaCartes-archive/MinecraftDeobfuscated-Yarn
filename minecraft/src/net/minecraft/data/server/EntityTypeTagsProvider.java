@@ -15,11 +15,11 @@ public class EntityTypeTagsProvider extends AbstractTagProvider<EntityType<?>> {
 
 	@Override
 	protected void configure() {
-		this.method_10512(EntityTypeTags.SKELETONS).add(EntityType.SKELETON, EntityType.STRAY, EntityType.WITHER_SKELETON);
-		this.method_10512(EntityTypeTags.RAIDERS)
+		this.getOrCreateTagBuilder(EntityTypeTags.SKELETONS).add(EntityType.SKELETON, EntityType.STRAY, EntityType.WITHER_SKELETON);
+		this.getOrCreateTagBuilder(EntityTypeTags.RAIDERS)
 			.add(EntityType.EVOKER, EntityType.PILLAGER, EntityType.RAVAGER, EntityType.VINDICATOR, EntityType.ILLUSIONER, EntityType.WITCH);
-		this.method_10512(EntityTypeTags.BEEHIVE_INHABITORS).add(EntityType.BEE);
-		this.method_10512(EntityTypeTags.ARROWS).add(EntityType.ARROW, EntityType.SPECTRAL_ARROW);
+		this.getOrCreateTagBuilder(EntityTypeTags.BEEHIVE_INHABITORS).add(EntityType.BEE);
+		this.getOrCreateTagBuilder(EntityTypeTags.ARROWS).add(EntityType.ARROW, EntityType.SPECTRAL_ARROW);
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class EntityTypeTagsProvider extends AbstractTagProvider<EntityType<?>> {
 	}
 
 	@Override
-	protected void method_10511(TagContainer<EntityType<?>> tagContainer) {
+	protected void setContainer(TagContainer<EntityType<?>> tagContainer) {
 		EntityTypeTags.setContainer(tagContainer);
 	}
 }

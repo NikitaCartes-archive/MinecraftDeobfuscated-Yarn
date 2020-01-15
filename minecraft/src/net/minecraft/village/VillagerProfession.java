@@ -10,6 +10,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.poi.PointOfInterestType;
 
 public class VillagerProfession {
 	public static final VillagerProfession NONE = register("none", PointOfInterestType.UNEMPLOYED, null);

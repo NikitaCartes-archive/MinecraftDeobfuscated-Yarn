@@ -95,16 +95,16 @@ public class AnvilScreen extends AbstractContainerScreen<AnvilContainer> impleme
 		}
 	}
 
-	private void onRenamed(String string) {
-		if (!string.isEmpty()) {
-			String string2 = string;
+	private void onRenamed(String name) {
+		if (!name.isEmpty()) {
+			String string = name;
 			Slot slot = this.container.getSlot(0);
-			if (slot != null && slot.hasStack() && !slot.getStack().hasCustomName() && string.equals(slot.getStack().getName().getString())) {
-				string2 = "";
+			if (slot != null && slot.hasStack() && !slot.getStack().hasCustomName() && name.equals(slot.getStack().getName().getString())) {
+				string = "";
 			}
 
-			this.container.setNewItemName(string2);
-			this.minecraft.player.networkHandler.sendPacket(new RenameItemC2SPacket(string2));
+			this.container.setNewItemName(string);
+			this.minecraft.player.networkHandler.sendPacket(new RenameItemC2SPacket(string));
 		}
 	}
 

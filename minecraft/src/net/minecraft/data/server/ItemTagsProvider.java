@@ -59,7 +59,7 @@ public class ItemTagsProvider extends AbstractTagProvider<Item> {
 		this.copy(BlockTags.FENCES, ItemTags.FENCES);
 		this.copy(BlockTags.TALL_FLOWERS, ItemTags.TALL_FLOWERS);
 		this.copy(BlockTags.FLOWERS, ItemTags.FLOWERS);
-		this.method_10512(ItemTags.BANNERS)
+		this.getOrCreateTagBuilder(ItemTags.BANNERS)
 			.add(
 				Items.WHITE_BANNER,
 				Items.ORANGE_BANNER,
@@ -78,10 +78,11 @@ public class ItemTagsProvider extends AbstractTagProvider<Item> {
 				Items.RED_BANNER,
 				Items.BLACK_BANNER
 			);
-		this.method_10512(ItemTags.BOATS).add(Items.OAK_BOAT, Items.SPRUCE_BOAT, Items.BIRCH_BOAT, Items.JUNGLE_BOAT, Items.ACACIA_BOAT, Items.DARK_OAK_BOAT);
-		this.method_10512(ItemTags.FISHES).add(Items.COD, Items.COOKED_COD, Items.SALMON, Items.COOKED_SALMON, Items.PUFFERFISH, Items.TROPICAL_FISH);
+		this.getOrCreateTagBuilder(ItemTags.BOATS)
+			.add(Items.OAK_BOAT, Items.SPRUCE_BOAT, Items.BIRCH_BOAT, Items.JUNGLE_BOAT, Items.ACACIA_BOAT, Items.DARK_OAK_BOAT);
+		this.getOrCreateTagBuilder(ItemTags.FISHES).add(Items.COD, Items.COOKED_COD, Items.SALMON, Items.COOKED_SALMON, Items.PUFFERFISH, Items.TROPICAL_FISH);
 		this.copy(BlockTags.STANDING_SIGNS, ItemTags.SIGNS);
-		this.method_10512(ItemTags.MUSIC_DISCS)
+		this.getOrCreateTagBuilder(ItemTags.MUSIC_DISCS)
 			.add(
 				Items.MUSIC_DISC_13,
 				Items.MUSIC_DISC_CAT,
@@ -96,13 +97,13 @@ public class ItemTagsProvider extends AbstractTagProvider<Item> {
 				Items.MUSIC_DISC_11,
 				Items.MUSIC_DISC_WAIT
 			);
-		this.method_10512(ItemTags.COALS).add(Items.COAL, Items.CHARCOAL);
-		this.method_10512(ItemTags.ARROWS).add(Items.ARROW, Items.TIPPED_ARROW, Items.SPECTRAL_ARROW);
-		this.method_10512(ItemTags.LECTERN_BOOKS).add(Items.WRITTEN_BOOK, Items.WRITABLE_BOOK);
+		this.getOrCreateTagBuilder(ItemTags.COALS).add(Items.COAL, Items.CHARCOAL);
+		this.getOrCreateTagBuilder(ItemTags.ARROWS).add(Items.ARROW, Items.TIPPED_ARROW, Items.SPECTRAL_ARROW);
+		this.getOrCreateTagBuilder(ItemTags.LECTERN_BOOKS).add(Items.WRITTEN_BOOK, Items.WRITABLE_BOOK);
 	}
 
 	protected void copy(Tag<Block> tag, Tag<Item> tag2) {
-		Tag.Builder<Item> builder = this.method_10512(tag2);
+		Tag.Builder<Item> builder = this.getOrCreateTagBuilder(tag2);
 
 		for (Tag.Entry<Block> entry : tag.entries()) {
 			Tag.Entry<Item> entry2 = this.convert(entry);
@@ -142,7 +143,7 @@ public class ItemTagsProvider extends AbstractTagProvider<Item> {
 	}
 
 	@Override
-	protected void method_10511(TagContainer<Item> tagContainer) {
+	protected void setContainer(TagContainer<Item> tagContainer) {
 		ItemTags.setContainer(tagContainer);
 	}
 }

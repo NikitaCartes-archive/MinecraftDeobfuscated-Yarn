@@ -43,9 +43,9 @@ public final class DarkForestBiome extends Biome {
 				.configure(
 					new RandomFeatureConfig(
 						ImmutableList.of(
-							Feature.HUGE_BROWN_MUSHROOM.configure(DefaultBiomeFeatures.field_21143).withChance(0.025F),
-							Feature.HUGE_RED_MUSHROOM.configure(DefaultBiomeFeatures.field_21142).withChance(0.05F),
-							Feature.DARK_OAK_TREE.configure(DefaultBiomeFeatures.field_21197).withChance(0.6666667F),
+							Feature.HUGE_BROWN_MUSHROOM.configure(DefaultBiomeFeatures.HUGE_BROWN_MUSHROOM_CONFIG).withChance(0.025F),
+							Feature.HUGE_RED_MUSHROOM.configure(DefaultBiomeFeatures.HUGE_RED_MUSHROOM_CONFIG).withChance(0.05F),
+							Feature.DARK_OAK_TREE.configure(DefaultBiomeFeatures.DARK_OAK_TREE_CONFIG).withChance(0.6666667F),
 							Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.BIRCH_TREE_CONFIG).withChance(0.2F),
 							Feature.FANCY_TREE.configure(DefaultBiomeFeatures.FANCY_TREE_CONFIG).withChance(0.1F)
 						),
@@ -81,8 +81,8 @@ public final class DarkForestBiome extends Biome {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public int getGrassColorAt(double d, double e) {
-		int i = super.getGrassColorAt(d, e);
+	public int getGrassColorAt(double x, double z) {
+		int i = super.getGrassColorAt(x, z);
 		return (i & 16711422) + 2634762 >> 1;
 	}
 }

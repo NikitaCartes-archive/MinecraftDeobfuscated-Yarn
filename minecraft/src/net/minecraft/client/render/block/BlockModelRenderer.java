@@ -508,7 +508,7 @@ public class BlockModelRenderer {
 	@Environment(EnvType.CLIENT)
 	static class BrightnessCache {
 		private boolean enabled;
-		private final Long2IntLinkedOpenHashMap intCache = Util.create(() -> {
+		private final Long2IntLinkedOpenHashMap intCache = Util.make(() -> {
 			Long2IntLinkedOpenHashMap long2IntLinkedOpenHashMap = new Long2IntLinkedOpenHashMap(100, 0.25F) {
 				@Override
 				protected void rehash(int i) {
@@ -517,7 +517,7 @@ public class BlockModelRenderer {
 			long2IntLinkedOpenHashMap.defaultReturnValue(Integer.MAX_VALUE);
 			return long2IntLinkedOpenHashMap;
 		});
-		private final Long2FloatLinkedOpenHashMap floatCache = Util.create(() -> {
+		private final Long2FloatLinkedOpenHashMap floatCache = Util.make(() -> {
 			Long2FloatLinkedOpenHashMap long2FloatLinkedOpenHashMap = new Long2FloatLinkedOpenHashMap(100, 0.25F) {
 				@Override
 				protected void rehash(int i) {
@@ -862,7 +862,7 @@ public class BlockModelRenderer {
 		private final BlockModelRenderer.NeighborOrientation[] field_4185;
 		private final BlockModelRenderer.NeighborOrientation[] field_4180;
 		private final BlockModelRenderer.NeighborOrientation[] field_4188;
-		private static final BlockModelRenderer.NeighborData[] field_4190 = Util.create(new BlockModelRenderer.NeighborData[6], neighborDatas -> {
+		private static final BlockModelRenderer.NeighborData[] field_4190 = Util.make(new BlockModelRenderer.NeighborData[6], neighborDatas -> {
 			neighborDatas[Direction.DOWN.getId()] = DOWN;
 			neighborDatas[Direction.UP.getId()] = UP;
 			neighborDatas[Direction.NORTH.getId()] = NORTH;
@@ -928,7 +928,7 @@ public class BlockModelRenderer {
 		private final int secondCorner;
 		private final int thirdCorner;
 		private final int fourthCorner;
-		private static final BlockModelRenderer.Translation[] VALUES = Util.create(new BlockModelRenderer.Translation[6], translations -> {
+		private static final BlockModelRenderer.Translation[] VALUES = Util.make(new BlockModelRenderer.Translation[6], translations -> {
 			translations[Direction.DOWN.getId()] = DOWN;
 			translations[Direction.UP.getId()] = UP;
 			translations[Direction.NORTH.getId()] = NORTH;

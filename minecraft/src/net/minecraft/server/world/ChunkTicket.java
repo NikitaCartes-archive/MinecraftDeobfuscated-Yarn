@@ -6,7 +6,7 @@ public final class ChunkTicket<T> implements Comparable<ChunkTicket<?>> {
 	private final ChunkTicketType<T> type;
 	private final int level;
 	private final T argument;
-	private long location;
+	private long tickCreated;
 
 	protected ChunkTicket(ChunkTicketType<T> type, int level, T argument) {
 		this.type = type;
@@ -40,7 +40,7 @@ public final class ChunkTicket<T> implements Comparable<ChunkTicket<?>> {
 	}
 
 	public String toString() {
-		return "Ticket[" + this.type + " " + this.level + " (" + this.argument + ")] at " + this.location;
+		return "Ticket[" + this.type + " " + this.level + " (" + this.argument + ")] at " + this.tickCreated;
 	}
 
 	public ChunkTicketType<T> getType() {
@@ -51,12 +51,12 @@ public final class ChunkTicket<T> implements Comparable<ChunkTicket<?>> {
 		return this.level;
 	}
 
-	protected void method_23956(long l) {
-		this.location = l;
+	protected void setTickCreated(long tickCreated) {
+		this.tickCreated = tickCreated;
 	}
 
-	protected boolean method_20627(long l) {
-		long m = this.type.method_20629();
-		return m != 0L && l - this.location > m;
+	protected boolean isExpired(long currentTick) {
+		long l = this.type.getExpiryTicks();
+		return l != 0L && currentTick - this.tickCreated > l;
 	}
 }

@@ -57,7 +57,7 @@ public class BeaconBlockEntityRenderer extends BlockEntityRenderer<BeaconBlockEn
 		matrixStack.translate(0.5, 0.0, 0.5);
 		float n = (float)Math.floorMod(l, 40L) + f;
 		float o = j < 0 ? n : -n;
-		float p = MathHelper.method_22450(o * 0.2F - (float)MathHelper.floor(o * 0.1F));
+		float p = MathHelper.fractionalPart(o * 0.2F - (float)MathHelper.floor(o * 0.1F));
 		float q = fs[0];
 		float r = fs[1];
 		float s = fs[2];

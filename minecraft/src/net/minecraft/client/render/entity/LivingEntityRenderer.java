@@ -2,6 +2,7 @@ package net.minecraft.client.render.entity;
 
 import com.google.common.collect.Lists;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -35,7 +36,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 	public LivingEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, M entityModel, float f) {
 		super(entityRenderDispatcher);
 		this.model = entityModel;
-		this.field_4673 = f;
+		this.shadowSize = f;
 	}
 
 	protected final boolean addFeature(FeatureRenderer<T, M> featureRenderer) {
@@ -50,8 +51,8 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 	public void render(T livingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
 		this.model.handSwingProgress = this.getHandSwingProgress(livingEntity, g);
-		this.model.isRiding = livingEntity.hasVehicle();
-		this.model.isChild = livingEntity.isBaby();
+		this.model.riding = livingEntity.hasVehicle();
+		this.model.child = livingEntity.isBaby();
 		float h = MathHelper.lerpAngleDegrees(g, livingEntity.prevBodyYaw, livingEntity.bodyYaw);
 		float j = MathHelper.lerpAngleDegrees(g, livingEntity.prevHeadYaw, livingEntity.headYaw);
 		float k = j - h;
@@ -85,7 +86,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 			}
 		}
 
-		float lx = this.getAge(livingEntity, g);
+		float lx = this.getCustomAngle(livingEntity, g);
 		this.setupTransforms(livingEntity, matrixStack, lx, h, g);
 		matrixStack.scale(-1.0F, -1.0F, 1.0F);
 		this.scale(livingEntity, matrixStack, g);
@@ -105,24 +106,14 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		}
 
 		this.model.animateModel(livingEntity, o, n, g);
-		boolean bl = livingEntity.isGlowing();
-		boolean bl2 = this.method_4056(livingEntity, false);
-		boolean bl3 = !bl2 && !livingEntity.canSeePlayer(MinecraftClient.getInstance().player);
 		this.model.setAngles(livingEntity, o, n, lx, k, m);
-		Identifier identifier = this.getTexture(livingEntity);
-		RenderLayer renderLayer;
-		if (bl3) {
-			renderLayer = RenderLayer.getEntityTranslucent(identifier);
-		} else if (bl2) {
-			renderLayer = this.model.getLayer(identifier);
-		} else {
-			renderLayer = RenderLayer.getOutline(identifier);
-		}
-
-		if (bl2 || bl3 || bl) {
+		boolean bl = this.method_4056(livingEntity);
+		boolean bl2 = !bl && !livingEntity.canSeePlayer(MinecraftClient.getInstance().player);
+		RenderLayer renderLayer = this.method_24302(livingEntity, bl, bl2);
+		if (renderLayer != null) {
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(renderLayer);
-			int p = method_23622(livingEntity, this.method_23185(livingEntity, g));
-			this.model.render(matrixStack, vertexConsumer, i, p, 1.0F, 1.0F, 1.0F, bl3 ? 0.15F : 1.0F);
+			int p = getOverlay(livingEntity, this.getWhiteOverlayProgress(livingEntity, g));
+			this.model.render(matrixStack, vertexConsumer, i, p, 1.0F, 1.0F, 1.0F, bl2 ? 0.15F : 1.0F);
 		}
 
 		if (!livingEntity.isSpectator()) {
@@ -135,12 +126,24 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		super.render(livingEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
-	public static int method_23622(LivingEntity livingEntity, float f) {
-		return OverlayTexture.packUv(OverlayTexture.getU(f), OverlayTexture.getV(livingEntity.hurtTime > 0 || livingEntity.deathTime > 0));
+	@Nullable
+	protected RenderLayer method_24302(T livingEntity, boolean bl, boolean bl2) {
+		Identifier identifier = this.getTexture(livingEntity);
+		if (bl2) {
+			return RenderLayer.getEntityTranslucent(identifier);
+		} else if (bl) {
+			return this.model.getLayer(identifier);
+		} else {
+			return livingEntity.isGlowing() ? RenderLayer.getOutline(identifier) : null;
+		}
 	}
 
-	protected boolean method_4056(T livingEntity, boolean bl) {
-		return !livingEntity.isInvisible() || bl;
+	public static int getOverlay(LivingEntity entity, float whiteOverlayProgress) {
+		return OverlayTexture.packUv(OverlayTexture.getU(whiteOverlayProgress), OverlayTexture.getV(entity.hurtTime > 0 || entity.deathTime > 0));
+	}
+
+	protected boolean method_4056(T livingEntity) {
+		return !livingEntity.isInvisible();
 	}
 
 	private static float getYaw(Direction direction) {
@@ -184,7 +187,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		} else if (entity.hasCustomName() || entity instanceof PlayerEntity) {
 			String string = Formatting.strip(entity.getName().getString());
 			if (("Dinnerbone".equals(string) || "Grumm".equals(string))
-				&& (!(entity instanceof PlayerEntity) || ((PlayerEntity)entity).isSkinOverlayVisible(PlayerModelPart.CAPE))) {
+				&& (!(entity instanceof PlayerEntity) || ((PlayerEntity)entity).isPartVisible(PlayerModelPart.CAPE))) {
 				matrixStack.translate(0.0, (double)(entity.getHeight() + 0.1F), 0.0);
 				matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
 			}
@@ -195,7 +198,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		return entity.getHandSwingProgress(tickDelta);
 	}
 
-	protected float getAge(T entity, float tickDelta) {
+	protected float getCustomAngle(T entity, float tickDelta) {
 		return (float)entity.age + tickDelta;
 	}
 
@@ -203,7 +206,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		return 90.0F;
 	}
 
-	protected float method_23185(T livingEntity, float f) {
+	protected float getWhiteOverlayProgress(T entity, float tickDelta) {
 		return 0.0F;
 	}
 
@@ -212,7 +215,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 
 	protected boolean hasLabel(T livingEntity) {
 		double d = this.renderManager.getSquaredDistanceToCamera(livingEntity);
-		float f = livingEntity.method_21751() ? 32.0F : 64.0F;
+		float f = livingEntity.isSneaky() ? 32.0F : 64.0F;
 		if (d >= (double)(f * f)) {
 			return false;
 		} else {

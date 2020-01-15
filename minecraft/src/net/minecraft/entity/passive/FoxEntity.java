@@ -91,8 +91,7 @@ public class FoxEntity extends AnimalEntity {
 		}
 	};
 	private static final Predicate<Entity> CHICKEN_AND_RABBIT_FILTER = entity -> entity instanceof ChickenEntity || entity instanceof RabbitEntity;
-	private static final Predicate<Entity> NOTICEABLE_PLAYER_FILTER = entity -> !entity.method_21751()
-			&& EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test(entity);
+	private static final Predicate<Entity> NOTICEABLE_PLAYER_FILTER = entity -> !entity.isSneaky() && EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test(entity);
 	private Goal followChickenAndRabbitGoal;
 	private Goal followBabyTurtleGoal;
 	private Goal followFishGoal;
@@ -494,7 +493,7 @@ public class FoxEntity extends AnimalEntity {
 		if (this.canMoveVoluntarily()) {
 			boolean bl = this.isInsideWater();
 			if (bl || this.getTarget() != null || this.world.isThundering()) {
-				this.wakeUp();
+				this.stopSleeping();
 			}
 
 			if (bl || this.isSleeping()) {
@@ -585,11 +584,11 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected int method_23329(float f, float g) {
-		return MathHelper.ceil((f - 5.0F) * g);
+	protected int computeFallDamage(float fallDistance, float damageMultiplier) {
+		return MathHelper.ceil((fallDistance - 5.0F) * damageMultiplier);
 	}
 
-	private void wakeUp() {
+	private void stopSleeping() {
 		this.setSleeping(false);
 	}
 
@@ -729,7 +728,7 @@ public class FoxEntity extends AnimalEntity {
 				return FoxEntity.this.world.isDay()
 					&& FoxEntity.this.world.isSkyVisible(blockPos)
 					&& !((ServerWorld)FoxEntity.this.world).isNearOccupiedPointOfInterest(blockPos)
-					&& this.method_18250();
+					&& this.targetShadedPos();
 			}
 		}
 
@@ -805,7 +804,7 @@ public class FoxEntity extends AnimalEntity {
 
 			FoxEntity.this.playSound(SoundEvents.ENTITY_FOX_AGGRO, 1.0F, 1.0F);
 			FoxEntity.this.setAggressive(true);
-			FoxEntity.this.wakeUp();
+			FoxEntity.this.stopSleeping();
 			super.start();
 		}
 	}
@@ -874,8 +873,8 @@ public class FoxEntity extends AnimalEntity {
 		}
 
 		@Override
-		protected boolean isTargetPos(WorldView worldView, BlockPos pos) {
-			BlockState blockState = worldView.getBlockState(pos);
+		protected boolean isTargetPos(WorldView world, BlockPos pos) {
+			BlockState blockState = world.getBlockState(pos);
 			return blockState.getBlock() == Blocks.SWEET_BERRY_BUSH && (Integer)blockState.get(SweetBerryBushBlock.AGE) >= 2;
 		}
 
@@ -1125,7 +1124,7 @@ public class FoxEntity extends AnimalEntity {
 			if (!FoxEntity.this.isWalking()) {
 				Vec3d vec3d = FoxEntity.this.getVelocity();
 				if (vec3d.y * vec3d.y < 0.03F && FoxEntity.this.pitch != 0.0F) {
-					FoxEntity.this.pitch = MathHelper.method_22859(FoxEntity.this.pitch, 0.0F, 0.2F);
+					FoxEntity.this.pitch = MathHelper.lerpAngle(FoxEntity.this.pitch, 0.0F, 0.2F);
 				} else {
 					double d = Math.sqrt(Entity.squaredHorizontalLength(vec3d));
 					double e = Math.signum(-vec3d.y) * Math.acos(d / vec3d.length()) * 180.0F / (float)Math.PI;
@@ -1247,7 +1246,7 @@ public class FoxEntity extends AnimalEntity {
 				FoxEntity.this.setRollingHead(true);
 				FoxEntity.this.setCrouching(true);
 				FoxEntity.this.getNavigation().stop();
-				FoxEntity.this.getLookControl().lookAt(livingEntity, (float)FoxEntity.this.method_5986(), (float)FoxEntity.this.getLookPitchSpeed());
+				FoxEntity.this.getLookControl().lookAt(livingEntity, (float)FoxEntity.this.getBodyYawSpeed(), (float)FoxEntity.this.getLookPitchSpeed());
 			} else {
 				FoxEntity.this.setRollingHead(false);
 				FoxEntity.this.setCrouching(false);
@@ -1257,7 +1256,7 @@ public class FoxEntity extends AnimalEntity {
 		@Override
 		public void tick() {
 			LivingEntity livingEntity = FoxEntity.this.getTarget();
-			FoxEntity.this.getLookControl().lookAt(livingEntity, (float)FoxEntity.this.method_5986(), (float)FoxEntity.this.getLookPitchSpeed());
+			FoxEntity.this.getLookControl().lookAt(livingEntity, (float)FoxEntity.this.getBodyYawSpeed(), (float)FoxEntity.this.getLookPitchSpeed());
 			if (FoxEntity.this.squaredDistanceTo(livingEntity) <= 36.0) {
 				FoxEntity.this.setRollingHead(true);
 				FoxEntity.this.setCrouching(true);
@@ -1363,7 +1362,7 @@ public class FoxEntity extends AnimalEntity {
 					FoxEntity.this.getX() + this.lookX,
 					FoxEntity.this.getEyeY(),
 					FoxEntity.this.getZ() + this.lookZ,
-					(float)FoxEntity.this.method_5986(),
+					(float)FoxEntity.this.getBodyYawSpeed(),
 					(float)FoxEntity.this.getLookPitchSpeed()
 				);
 		}
@@ -1476,7 +1475,7 @@ public class FoxEntity extends AnimalEntity {
 			} else if (livingEntity instanceof TameableEntity) {
 				return !((TameableEntity)livingEntity).isTamed();
 			} else if (!(livingEntity instanceof PlayerEntity) || !livingEntity.isSpectator() && !((PlayerEntity)livingEntity).isCreative()) {
-				return FoxEntity.this.canTrust(livingEntity.getUuid()) ? false : !livingEntity.isSleeping() && !livingEntity.method_21751();
+				return FoxEntity.this.canTrust(livingEntity.getUuid()) ? false : !livingEntity.isSleeping() && !livingEntity.isSneaky();
 			} else {
 				return false;
 			}

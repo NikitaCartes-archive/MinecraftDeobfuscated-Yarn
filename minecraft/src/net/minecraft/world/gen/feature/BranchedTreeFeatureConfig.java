@@ -74,7 +74,7 @@ public class BranchedTreeFeatureConfig extends TreeFeatureConfig {
 		return dynamic.merge(super.serialize(ops));
 	}
 
-	public static <T> BranchedTreeFeatureConfig deserialize2(Dynamic<T> dynamic) {
+	public static <T> BranchedTreeFeatureConfig deserialize(Dynamic<T> dynamic) {
 		TreeFeatureConfig treeFeatureConfig = TreeFeatureConfig.deserialize(dynamic);
 		FoliagePlacerType<?> foliagePlacerType = Registry.FOLIAGE_PLACER_TYPE
 			.get(new Identifier((String)dynamic.get("foliage_placer").get("type").asString().orElseThrow(RuntimeException::new)));

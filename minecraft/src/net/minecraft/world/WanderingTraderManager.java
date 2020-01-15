@@ -12,10 +12,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.village.PointOfInterestStorage;
-import net.minecraft.village.PointOfInterestType;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.level.LevelProperties;
+import net.minecraft.world.poi.PointOfInterestStorage;
+import net.minecraft.world.poi.PointOfInterestType;
 
 public class WanderingTraderManager {
 	private final Random random = new Random();
@@ -39,20 +39,22 @@ public class WanderingTraderManager {
 	}
 
 	public void tick() {
-		if (--this.field_17728 <= 0) {
-			this.field_17728 = 1200;
-			LevelProperties levelProperties = this.world.getLevelProperties();
-			this.spawnDelay -= 1200;
-			levelProperties.setWanderingTraderSpawnDelay(this.spawnDelay);
-			if (this.spawnDelay <= 0) {
-				this.spawnDelay = 24000;
-				if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
-					int i = this.spawnChance;
-					this.spawnChance = MathHelper.clamp(this.spawnChance + 25, 25, 75);
-					levelProperties.setWanderingTraderSpawnChance(this.spawnChance);
-					if (this.random.nextInt(100) <= i) {
-						if (this.method_18018()) {
-							this.spawnChance = 25;
+		if (this.world.getGameRules().getBoolean(GameRules.DO_TRADER_SPAWNING)) {
+			if (--this.field_17728 <= 0) {
+				this.field_17728 = 1200;
+				LevelProperties levelProperties = this.world.getLevelProperties();
+				this.spawnDelay -= 1200;
+				levelProperties.setWanderingTraderSpawnDelay(this.spawnDelay);
+				if (this.spawnDelay <= 0) {
+					this.spawnDelay = 24000;
+					if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
+						int i = this.spawnChance;
+						this.spawnChance = MathHelper.clamp(this.spawnChance + 25, 25, 75);
+						levelProperties.setWanderingTraderSpawnChance(this.spawnChance);
+						if (this.random.nextInt(100) <= i) {
+							if (this.method_18018()) {
+								this.spawnChance = 25;
+							}
 						}
 					}
 				}

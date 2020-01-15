@@ -163,7 +163,7 @@ public class PotionUtil {
 						EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier)entry.getValue();
 						EntityAttributeModifier entityAttributeModifier2 = new EntityAttributeModifier(
 							entityAttributeModifier.getName(),
-							statusEffect.method_5563(statusEffectInstance.getAmplifier(), entityAttributeModifier),
+							statusEffect.adjustModifierAmount(statusEffectInstance.getAmplifier(), entityAttributeModifier),
 							entityAttributeModifier.getOperation()
 						);
 						list3.add(new Pair<>(((EntityAttribute)entry.getKey()).getId(), entityAttributeModifier2));

@@ -169,7 +169,7 @@ public class DebugRenderer {
 			RenderSystem.pushMatrix();
 			RenderSystem.translatef((float)(x - d), (float)(y - e) + 0.07F, (float)(z - f));
 			RenderSystem.normal3f(0.0F, 1.0F, 0.0F);
-			RenderSystem.multMatrix(new Matrix4f(camera.method_23767()));
+			RenderSystem.multMatrix(new Matrix4f(camera.getRotation()));
 			RenderSystem.scalef(size, -size, size);
 			RenderSystem.enableTexture();
 			if (visibleThroughObjects) {

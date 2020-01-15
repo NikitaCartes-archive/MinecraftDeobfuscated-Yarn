@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_4749;
 import net.minecraft.client.gui.CubeMapRenderer;
 import net.minecraft.client.gui.RotatingCubeMapRenderer;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
@@ -166,11 +167,13 @@ public class TitleScreen extends Screen {
 				this.width / 2 - 100, y, 200, 20, I18n.translate("menu.singleplayer"), buttonWidget -> this.minecraft.openScreen(new SelectWorldScreen(this))
 			)
 		);
-		this.addButton(
-			new ButtonWidget(
-				this.width / 2 - 100, y + spacingY * 1, 200, 20, I18n.translate("menu.multiplayer"), buttonWidget -> this.minecraft.openScreen(new MultiplayerScreen(this))
-			)
-		);
+		this.addButton(new ButtonWidget(this.width / 2 - 100, y + spacingY * 1, 200, 20, I18n.translate("menu.multiplayer"), buttonWidget -> {
+			if (this.minecraft.options.field_21840) {
+				this.minecraft.openScreen(new MultiplayerScreen(this));
+			} else {
+				this.minecraft.openScreen(new class_4749(this));
+			}
+		}));
 		this.addButton(new ButtonWidget(this.width / 2 - 100, y + spacingY * 2, 200, 20, I18n.translate("menu.online"), buttonWidget -> this.switchToRealms()));
 	}
 
@@ -236,7 +239,7 @@ public class TitleScreen extends Screen {
 		int k = 30;
 		this.minecraft.getTextureManager().bindTexture(PANORAMA_OVERLAY);
 		RenderSystem.enableBlend();
-		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+		RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.doBackgroundFade ? (float)MathHelper.ceil(MathHelper.clamp(f, 0.0F, 1.0F)) : 1.0F);
 		blit(0, 0, this.width, this.height, 0.0F, 0.0F, 16, 128, 16, 128);
 		float g = this.doBackgroundFade ? MathHelper.clamp(f - 1.0F, 0.0F, 1.0F) : 1.0F;
@@ -273,6 +276,10 @@ public class TitleScreen extends Screen {
 				string = string + " Demo";
 			} else {
 				string = string + ("release".equalsIgnoreCase(this.minecraft.getVersionType()) ? "" : "/" + this.minecraft.getVersionType());
+			}
+
+			if (this.minecraft.method_24289()) {
+				string = string + I18n.translate("menu.modded");
 			}
 
 			this.drawString(this.font, string, 2, this.height - 10, 16777215 | l);

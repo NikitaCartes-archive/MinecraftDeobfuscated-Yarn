@@ -11,6 +11,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.PageTurnWidget;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
@@ -514,12 +515,12 @@ public class BookEditScreen extends Screen {
 		super.render(mouseX, mouseY, delta);
 	}
 
-	private int getStringWidth(String string) {
-		return this.font.getStringWidth(this.font.isRightToLeft() ? this.font.mirror(string) : string);
+	private int getStringWidth(String text) {
+		return this.font.getStringWidth(this.font.isRightToLeft() ? this.font.mirror(text) : text);
 	}
 
-	private int getCharacterCountForWidth(String string, int width) {
-		return this.font.getCharacterCountForWidth(string, width);
+	private int getCharacterCountForWidth(String text, int width) {
+		return this.font.getCharacterCountForWidth(text, width);
 	}
 
 	private String getHighlightedText() {

@@ -46,11 +46,11 @@ public abstract class Task<E extends LivingEntity> {
 	protected void run(ServerWorld world, E entity, long time) {
 	}
 
-	public final void tick(ServerWorld serverWorld, E livingEntity, long time) {
-		if (!this.isTimeLimitExceeded(time) && this.shouldKeepRunning(serverWorld, livingEntity, time)) {
-			this.keepRunning(serverWorld, livingEntity, time);
+	public final void tick(ServerWorld world, E entity, long time) {
+		if (!this.isTimeLimitExceeded(time) && this.shouldKeepRunning(world, entity, time)) {
+			this.keepRunning(world, entity, time);
 		} else {
-			this.stop(serverWorld, livingEntity, time);
+			this.stop(world, entity, time);
 		}
 	}
 
@@ -62,7 +62,7 @@ public abstract class Task<E extends LivingEntity> {
 		this.finishRunning(world, entity, time);
 	}
 
-	protected void finishRunning(ServerWorld serverWorld, E livingEntity, long time) {
+	protected void finishRunning(ServerWorld world, E entity, long time) {
 	}
 
 	protected boolean shouldKeepRunning(ServerWorld world, E entity, long time) {

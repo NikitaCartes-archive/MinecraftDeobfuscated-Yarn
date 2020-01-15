@@ -242,14 +242,14 @@ public class OcelotEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean canSpawn(WorldView worldView) {
-		if (worldView.intersectsEntities(this) && !worldView.containsFluid(this.getBoundingBox())) {
+	public boolean canSpawn(WorldView world) {
+		if (world.intersectsEntities(this) && !world.containsFluid(this.getBoundingBox())) {
 			BlockPos blockPos = new BlockPos(this);
-			if (blockPos.getY() < worldView.getSeaLevel()) {
+			if (blockPos.getY() < world.getSeaLevel()) {
 				return false;
 			}
 
-			BlockState blockState = worldView.getBlockState(blockPos.down());
+			BlockState blockState = world.getBlockState(blockPos.down());
 			Block block = blockState.getBlock();
 			if (block == Blocks.GRASS_BLOCK || blockState.matches(BlockTags.LEAVES)) {
 				return true;
