@@ -58,7 +58,7 @@ public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends Bip
 			ArmorItem armorItem = (ArmorItem)itemStack.getItem();
 			if (armorItem.getSlotType() == equipmentSlot) {
 				A bipedEntityModel = this.getArmor(equipmentSlot);
-				this.getModel().setAttributes(bipedEntityModel);
+				this.getContextModel().setAttributes(bipedEntityModel);
 				bipedEntityModel.animateModel(livingEntity, f, g, h);
 				this.setVisible(bipedEntityModel, equipmentSlot);
 				bipedEntityModel.setAngles(livingEntity, f, g, i, j, k);

@@ -9,7 +9,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.util.Util;
 
 public interface StatFormatter {
-	DecimalFormat DECIMAL_FORMAT = Util.create(
+	DecimalFormat DECIMAL_FORMAT = Util.make(
 		new DecimalFormat("########0.00"), decimalFormat -> decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT))
 	);
 	StatFormatter DEFAULT = NumberFormat.getIntegerInstance(Locale.US)::format;

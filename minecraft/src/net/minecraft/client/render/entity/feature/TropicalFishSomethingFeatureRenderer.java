@@ -33,7 +33,7 @@ public class TropicalFishSomethingFeatureRenderer extends FeatureRenderer<Tropic
 		EntityModel<TropicalFishEntity> entityModel = (EntityModel<TropicalFishEntity>)(tropicalFishEntity.getShape() == 0 ? this.modelA : this.modelB);
 		float[] fs = tropicalFishEntity.getPatternColorComponents();
 		render(
-			this.getModel(),
+			this.getContextModel(),
 			entityModel,
 			tropicalFishEntity.getVarietyId(),
 			matrixStack,

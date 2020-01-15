@@ -17,7 +17,7 @@ import net.minecraft.world.updater.WorldUpdater;
 
 @Environment(EnvType.CLIENT)
 public class OptimizeWorldScreen extends Screen {
-	private static final Object2IntMap<DimensionType> DIMENSION_COLORS = Util.create(
+	private static final Object2IntMap<DimensionType> DIMENSION_COLORS = Util.make(
 		new Object2IntOpenCustomHashMap<>(Util.identityHashStrategy()), object2IntOpenCustomHashMap -> {
 			object2IntOpenCustomHashMap.put(DimensionType.OVERWORLD, -13408734);
 			object2IntOpenCustomHashMap.put(DimensionType.THE_NETHER, -10075085);
@@ -28,9 +28,9 @@ public class OptimizeWorldScreen extends Screen {
 	private final BooleanConsumer callback;
 	private final WorldUpdater updater;
 
-	public OptimizeWorldScreen(BooleanConsumer booleanConsumer, String string, LevelStorage levelStorage, boolean bl) {
+	public OptimizeWorldScreen(BooleanConsumer callback, String string, LevelStorage levelStorage, boolean bl) {
 		super(new TranslatableText("optimizeWorld.title", levelStorage.getLevelProperties(string).getLevelName()));
-		this.callback = booleanConsumer;
+		this.callback = callback;
 		this.updater = new WorldUpdater(string, levelStorage, levelStorage.getLevelProperties(string), bl);
 	}
 

@@ -49,7 +49,7 @@ public class EmptyFluid extends Fluid {
 	}
 
 	@Override
-	public float method_20784(FluidState fluidState) {
+	public float getHeight(FluidState fluidState) {
 		return 0.0F;
 	}
 

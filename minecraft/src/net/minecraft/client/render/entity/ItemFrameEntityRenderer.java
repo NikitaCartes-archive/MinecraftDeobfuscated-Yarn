@@ -3,7 +3,6 @@ package net.minecraft.client.render.entity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.MapRenderer;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -71,7 +70,6 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 			int j = bl ? itemFrameEntity.getRotation() % 4 * 2 : itemFrameEntity.getRotation();
 			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion((float)j * 360.0F / 8.0F));
 			if (bl) {
-				this.renderManager.textureManager.bindTexture(MapRenderer.field_21056);
 				matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
 				float h = 0.0078125F;
 				matrixStack.scale(0.0078125F, 0.0078125F, 0.0078125F);
@@ -83,7 +81,7 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 				}
 			} else {
 				matrixStack.scale(0.5F, 0.5F, 0.5F);
-				this.itemRenderer.method_23178(itemStack, ModelTransformation.Type.FIXED, i, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider);
+				this.itemRenderer.renderItem(itemStack, ModelTransformation.Mode.FIXED, i, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider);
 			}
 		}
 
@@ -108,7 +106,7 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 			&& itemFrameEntity.getHeldItemStack().hasCustomName()
 			&& this.renderManager.targetedEntity == itemFrameEntity) {
 			double d = this.renderManager.getSquaredDistanceToCamera(itemFrameEntity);
-			float f = itemFrameEntity.method_21751() ? 32.0F : 64.0F;
+			float f = itemFrameEntity.isSneaky() ? 32.0F : 64.0F;
 			return d < (double)(f * f);
 		} else {
 			return false;

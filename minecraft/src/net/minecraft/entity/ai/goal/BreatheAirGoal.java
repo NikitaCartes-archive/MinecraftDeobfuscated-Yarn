@@ -71,9 +71,9 @@ public class BreatheAirGoal extends Goal {
 		this.mob.move(MovementType.SELF, this.mob.getVelocity());
 	}
 
-	private boolean isAirPos(WorldView worldView, BlockPos pos) {
-		BlockState blockState = worldView.getBlockState(pos);
-		return (worldView.getFluidState(pos).isEmpty() || blockState.getBlock() == Blocks.BUBBLE_COLUMN)
-			&& blockState.canPlaceAtSide(worldView, pos, BlockPlacementEnvironment.LAND);
+	private boolean isAirPos(WorldView world, BlockPos pos) {
+		BlockState blockState = world.getBlockState(pos);
+		return (world.getFluidState(pos).isEmpty() || blockState.getBlock() == Blocks.BUBBLE_COLUMN)
+			&& blockState.canPlaceAtSide(world, pos, BlockPlacementEnvironment.LAND);
 	}
 }

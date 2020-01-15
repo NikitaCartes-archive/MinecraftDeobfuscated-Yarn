@@ -18,7 +18,7 @@ public class TurtleEntityRenderer extends MobEntityRenderer<TurtleEntity, Turtle
 
 	public void render(TurtleEntity turtleEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		if (turtleEntity.isBaby()) {
-			this.field_4673 *= 0.5F;
+			this.shadowSize *= 0.5F;
 		}
 
 		super.render(turtleEntity, f, g, matrixStack, vertexConsumerProvider, i);

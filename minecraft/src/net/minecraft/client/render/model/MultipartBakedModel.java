@@ -24,6 +24,7 @@ public class MultipartBakedModel implements BakedModel {
 	private final List<Pair<Predicate<BlockState>, BakedModel>> components;
 	protected final boolean ambientOcclusion;
 	protected final boolean depthGui;
+	protected final boolean field_21863;
 	protected final Sprite sprite;
 	protected final ModelTransformation transformations;
 	protected final ModelItemPropertyOverrideList itemPropertyOverrides;
@@ -34,6 +35,7 @@ public class MultipartBakedModel implements BakedModel {
 		BakedModel bakedModel = (BakedModel)((Pair)components.iterator().next()).getRight();
 		this.ambientOcclusion = bakedModel.useAmbientOcclusion();
 		this.depthGui = bakedModel.hasDepthInGui();
+		this.field_21863 = bakedModel.method_24304();
 		this.sprite = bakedModel.getSprite();
 		this.transformations = bakedModel.getTransformation();
 		this.itemPropertyOverrides = bakedModel.getItemPropertyOverrides();
@@ -79,6 +81,11 @@ public class MultipartBakedModel implements BakedModel {
 	@Override
 	public boolean hasDepthInGui() {
 		return this.depthGui;
+	}
+
+	@Override
+	public boolean method_24304() {
+		return this.field_21863;
 	}
 
 	@Override

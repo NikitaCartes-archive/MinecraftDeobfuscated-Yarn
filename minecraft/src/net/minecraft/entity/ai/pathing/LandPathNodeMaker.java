@@ -383,14 +383,14 @@ public class LandPathNodeMaker extends PathNodeMaker {
 
 	@Override
 	public PathNodeType getNodeType(BlockView world, int x, int y, int z) {
-		return method_23476(world, x, y, z);
+		return getPathNodeType(world, x, y, z);
 	}
 
-	public static PathNodeType method_23476(BlockView blockView, int i, int j, int k) {
-		PathNodeType pathNodeType = getBasicPathNodeType(blockView, i, j, k);
-		if (pathNodeType == PathNodeType.OPEN && j >= 1) {
-			Block block = blockView.getBlockState(new BlockPos(i, j - 1, k)).getBlock();
-			PathNodeType pathNodeType2 = getBasicPathNodeType(blockView, i, j - 1, k);
+	public static PathNodeType getPathNodeType(BlockView world, int x, int y, int z) {
+		PathNodeType pathNodeType = getBasicPathNodeType(world, x, y, z);
+		if (pathNodeType == PathNodeType.OPEN && y >= 1) {
+			Block block = world.getBlockState(new BlockPos(x, y - 1, z)).getBlock();
+			PathNodeType pathNodeType2 = getBasicPathNodeType(world, x, y - 1, z);
 			pathNodeType = pathNodeType2 != PathNodeType.WALKABLE
 					&& pathNodeType2 != PathNodeType.OPEN
 					&& pathNodeType2 != PathNodeType.WATER
@@ -415,7 +415,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 		}
 
 		if (pathNodeType == PathNodeType.WALKABLE) {
-			pathNodeType = method_59(blockView, i, j, k, pathNodeType);
+			pathNodeType = method_59(world, x, y, z, pathNodeType);
 		}
 
 		return pathNodeType;

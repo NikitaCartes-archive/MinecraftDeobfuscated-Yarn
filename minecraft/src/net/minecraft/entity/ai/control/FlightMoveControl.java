@@ -5,13 +5,13 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.MathHelper;
 
 public class FlightMoveControl extends MoveControl {
-	private final int field_20349;
-	private final boolean field_20350;
+	private final int maxPitchChange;
+	private final boolean noGravity;
 
-	public FlightMoveControl(MobEntity mobEntity, int i, boolean bl) {
-		super(mobEntity);
-		this.field_20349 = i;
-		this.field_20350 = bl;
+	public FlightMoveControl(MobEntity entity, int maxPitchChange, boolean noGravity) {
+		super(entity);
+		this.maxPitchChange = maxPitchChange;
+		this.noGravity = noGravity;
 	}
 
 	@Override
@@ -41,10 +41,10 @@ public class FlightMoveControl extends MoveControl {
 			this.entity.setMovementSpeed(i);
 			double j = (double)MathHelper.sqrt(d * d + f * f);
 			float k = (float)(-(MathHelper.atan2(e, j) * 180.0F / (float)Math.PI));
-			this.entity.pitch = this.changeAngle(this.entity.pitch, k, (float)this.field_20349);
+			this.entity.pitch = this.changeAngle(this.entity.pitch, k, (float)this.maxPitchChange);
 			this.entity.setUpwardSpeed(e > 0.0 ? i : -i);
 		} else {
-			if (!this.field_20350) {
+			if (!this.noGravity) {
 				this.entity.setNoGravity(false);
 			}
 

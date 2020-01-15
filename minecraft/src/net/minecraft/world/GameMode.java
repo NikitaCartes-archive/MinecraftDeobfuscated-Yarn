@@ -66,17 +66,17 @@ public enum GameMode {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float method_24231() {
+	public float method_24328() {
 		return 2.5F;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float method_24232() {
+	public float method_24329() {
 		return 6.0F;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float method_24233() {
+	public float method_24330() {
 		return this.isCreative() ? 5.0F : 4.5F;
 	}
 

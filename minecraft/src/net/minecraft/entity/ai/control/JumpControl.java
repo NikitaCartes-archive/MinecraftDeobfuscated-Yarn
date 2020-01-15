@@ -6,8 +6,8 @@ public class JumpControl {
 	private final MobEntity entity;
 	protected boolean active;
 
-	public JumpControl(MobEntity mobEntity) {
-		this.entity = mobEntity;
+	public JumpControl(MobEntity entity) {
+		this.entity = entity;
 	}
 
 	public void setActive() {

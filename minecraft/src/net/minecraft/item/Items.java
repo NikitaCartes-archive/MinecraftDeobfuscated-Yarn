@@ -152,20 +152,20 @@ public class Items {
 	public static final Item PRISMARINE_SLAB = register(Blocks.PRISMARINE_SLAB, ItemGroup.BUILDING_BLOCKS);
 	public static final Item PRISMARINE_BRICK_SLAB = register(Blocks.PRISMARINE_BRICK_SLAB, ItemGroup.BUILDING_BLOCKS);
 	public static final Item DARK_PRISMARINE_SLAB = register(Blocks.DARK_PRISMARINE_SLAB, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_20386 = register(Blocks.SMOOTH_QUARTZ, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_20387 = register(Blocks.SMOOTH_RED_SANDSTONE, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_20388 = register(Blocks.SMOOTH_SANDSTONE, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_20389 = register(Blocks.SMOOTH_STONE, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_20390 = register(Blocks.BRICKS, ItemGroup.BUILDING_BLOCKS);
+	public static final Item SMOOTH_QUARTZ = register(Blocks.SMOOTH_QUARTZ, ItemGroup.BUILDING_BLOCKS);
+	public static final Item SMOOTH_RED_SANDSTONE = register(Blocks.SMOOTH_RED_SANDSTONE, ItemGroup.BUILDING_BLOCKS);
+	public static final Item SMOOTH_SANDSTONE = register(Blocks.SMOOTH_SANDSTONE, ItemGroup.BUILDING_BLOCKS);
+	public static final Item SMOOTH_STONE = register(Blocks.SMOOTH_STONE, ItemGroup.BUILDING_BLOCKS);
+	public static final Item BRICKS = register(Blocks.BRICKS, ItemGroup.BUILDING_BLOCKS);
 	public static final Item TNT = register(Blocks.TNT, ItemGroup.REDSTONE);
 	public static final Item BOOKSHELF = register(Blocks.BOOKSHELF, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_20392 = register(Blocks.MOSSY_COBBLESTONE, ItemGroup.BUILDING_BLOCKS);
+	public static final Item MOSSY_COBBLESTONE = register(Blocks.MOSSY_COBBLESTONE, ItemGroup.BUILDING_BLOCKS);
 	public static final Item OBSIDIAN = register(Blocks.OBSIDIAN, ItemGroup.BUILDING_BLOCKS);
 	public static final Item TORCH = register(new WallStandingBlockItem(Blocks.TORCH, Blocks.WALL_TORCH, new Item.Settings().group(ItemGroup.DECORATIONS)));
 	public static final Item END_ROD = register(Blocks.END_ROD, ItemGroup.DECORATIONS);
 	public static final Item CHORUS_PLANT = register(Blocks.CHORUS_PLANT, ItemGroup.DECORATIONS);
 	public static final Item CHORUS_FLOWER = register(Blocks.CHORUS_FLOWER, ItemGroup.DECORATIONS);
-	public static final Item field_20393 = register(Blocks.PURPUR_BLOCK, ItemGroup.BUILDING_BLOCKS);
+	public static final Item PURPUR_BLOCK = register(Blocks.PURPUR_BLOCK, ItemGroup.BUILDING_BLOCKS);
 	public static final Item PURPUR_PILLAR = register(Blocks.PURPUR_PILLAR, ItemGroup.BUILDING_BLOCKS);
 	public static final Item PURPUR_STAIRS = register(Blocks.PURPUR_STAIRS, ItemGroup.BUILDING_BLOCKS);
 	public static final Item SPAWNER = register(Blocks.SPAWNER);
@@ -1252,12 +1252,12 @@ public class Items {
 	public static final Item CAMPFIRE = register(Blocks.CAMPFIRE, ItemGroup.DECORATIONS);
 	public static final Item HONEYCOMB = register("honeycomb", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
 	public static final Item BEE_NEST = register(Blocks.BEE_NEST, ItemGroup.DECORATIONS);
-	public static final Item BEE_HIVE = register(Blocks.BEEHIVE, ItemGroup.DECORATIONS);
+	public static final Item BEEHIVE = register(Blocks.BEEHIVE, ItemGroup.DECORATIONS);
 	public static final Item HONEY_BOTTLE = register(
 		"honey_bottle", new HoneyBottleItem(new Item.Settings().recipeRemainder(GLASS_BOTTLE).food(FoodComponents.HONEY_BOTTLE).group(ItemGroup.FOOD).maxCount(16))
 	);
-	public static final Item field_21086 = register(Blocks.HONEY_BLOCK, ItemGroup.DECORATIONS);
-	public static final Item field_21087 = register(Blocks.HONEYCOMB_BLOCK, ItemGroup.DECORATIONS);
+	public static final Item HONEY_BLOCK = register(Blocks.HONEY_BLOCK, ItemGroup.DECORATIONS);
+	public static final Item HONEYCOMB_BLOCK = register(Blocks.HONEYCOMB_BLOCK, ItemGroup.DECORATIONS);
 
 	private static Item register(Block block) {
 		return register(new BlockItem(block, new Item.Settings()));

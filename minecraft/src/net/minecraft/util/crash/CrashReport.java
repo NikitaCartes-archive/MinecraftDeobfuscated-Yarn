@@ -295,4 +295,8 @@ public class CrashReport {
 
 		return crashReport;
 	}
+
+	public static void method_24305() {
+		new CrashReport("Don't panic!", new Throwable()).asString();
+	}
 }

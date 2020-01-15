@@ -8,6 +8,7 @@ import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.util.Arm;
+import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class ArmorStandEntityModel extends ArmorStandArmorEntityModel {
@@ -58,6 +59,12 @@ public class ArmorStandEntityModel extends ArmorStandArmorEntityModel {
 		this.helmet.visible = false;
 	}
 
+	public void animateModel(ArmorStandEntity armorStandEntity, float f, float g, float h) {
+		this.plate.pitch = 0.0F;
+		this.plate.yaw = (float) (Math.PI / 180.0) * -MathHelper.lerpAngleDegrees(h, armorStandEntity.prevYaw, armorStandEntity.yaw);
+		this.plate.roll = 0.0F;
+	}
+
 	@Override
 	public void setAngles(ArmorStandEntity armorStandEntity, float f, float g, float h, float i, float j) {
 		super.setAngles(armorStandEntity, f, g, h, i, j);
@@ -75,9 +82,6 @@ public class ArmorStandEntityModel extends ArmorStandArmorEntityModel {
 		this.hip.pitch = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getPitch();
 		this.hip.yaw = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getYaw();
 		this.hip.roll = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getRoll();
-		this.plate.pitch = 0.0F;
-		this.plate.yaw = (float) (Math.PI / 180.0) * -armorStandEntity.yaw;
-		this.plate.roll = 0.0F;
 	}
 
 	@Override

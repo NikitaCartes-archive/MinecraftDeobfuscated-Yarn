@@ -226,15 +226,15 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
-		this.deserializeInventory(compoundTag);
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
+		this.deserializeInventory(tag);
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag compoundTag) {
-		super.toTag(compoundTag);
-		return this.serializeInventory(compoundTag);
+	public CompoundTag toTag(CompoundTag tag) {
+		super.toTag(tag);
+		return this.serializeInventory(tag);
 	}
 
 	public void deserializeInventory(CompoundTag tag) {

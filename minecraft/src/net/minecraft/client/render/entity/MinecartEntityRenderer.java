@@ -24,7 +24,7 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 
 	public MinecartEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
-		this.field_4673 = 0.7F;
+		this.shadowSize = 0.7F;
 	}
 
 	public void render(T abstractMinecartEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
@@ -36,9 +36,9 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 		float j = (((float)(l >> 20 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
 		float k = (((float)(l >> 24 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
 		matrixStack.translate((double)h, (double)j, (double)k);
-		double d = MathHelper.lerp((double)g, abstractMinecartEntity.prevRenderX, abstractMinecartEntity.getX());
-		double e = MathHelper.lerp((double)g, abstractMinecartEntity.prevRenderY, abstractMinecartEntity.getY());
-		double m = MathHelper.lerp((double)g, abstractMinecartEntity.prevRenderZ, abstractMinecartEntity.getZ());
+		double d = MathHelper.lerp((double)g, abstractMinecartEntity.lastRenderX, abstractMinecartEntity.getX());
+		double e = MathHelper.lerp((double)g, abstractMinecartEntity.lastRenderY, abstractMinecartEntity.getY());
+		double m = MathHelper.lerp((double)g, abstractMinecartEntity.lastRenderZ, abstractMinecartEntity.getZ());
 		double n = 0.3F;
 		Vec3d vec3d = abstractMinecartEntity.method_7508(d, e, m);
 		float o = MathHelper.lerp(g, abstractMinecartEntity.prevPitch, abstractMinecartEntity.pitch);

@@ -312,7 +312,11 @@ public class RegionFile implements AutoCloseable {
 			try {
 				this.writeHeader();
 			} finally {
-				this.channel.close();
+				try {
+					this.channel.force(true);
+				} finally {
+					this.channel.close();
+				}
 			}
 		}
 	}

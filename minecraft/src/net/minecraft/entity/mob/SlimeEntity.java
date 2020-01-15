@@ -78,7 +78,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 
 	protected void setSize(int size, boolean heal) {
 		this.dataTracker.set(SLIME_SIZE, size);
-		this.method_23311();
+		this.updatePosition();
 		this.calculateDimensions();
 		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue((double)(size * size));
 		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue((double)(0.2F + 0.1F * (float)size));

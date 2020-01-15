@@ -123,7 +123,7 @@ public class LightningEntity extends Entity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean shouldRenderAtDistance(double distance) {
+	public boolean shouldRender(double distance) {
 		double d = 64.0 * getRenderDistanceMultiplier();
 		return distance < d * d;
 	}

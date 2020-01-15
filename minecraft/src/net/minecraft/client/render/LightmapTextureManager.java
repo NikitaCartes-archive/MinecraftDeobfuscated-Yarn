@@ -98,7 +98,7 @@ public class LightmapTextureManager implements AutoCloseable {
 				}
 
 				Vector3f vector3f = new Vector3f(f, f, 1.0F);
-				vector3f.method_23847(new Vector3f(1.0F, 1.0F, 1.0F), 0.35F);
+				vector3f.lerp(new Vector3f(1.0F, 1.0F, 1.0F), 0.35F);
 				float j = this.field_21528 + 1.5F;
 				Vector3f vector3f2 = new Vector3f();
 
@@ -110,17 +110,17 @@ public class LightmapTextureManager implements AutoCloseable {
 						float q = n * (n * n * 0.6F + 0.4F);
 						vector3f2.set(n, p, q);
 						if (clientWorld.dimension.getType() == DimensionType.THE_END) {
-							vector3f2.method_23847(new Vector3f(0.99F, 1.12F, 1.0F), 0.25F);
+							vector3f2.lerp(new Vector3f(0.99F, 1.12F, 1.0F), 0.25F);
 						} else {
 							Vector3f vector3f3 = vector3f.copy();
 							vector3f3.scale(m);
 							vector3f2.add(vector3f3);
-							vector3f2.method_23847(new Vector3f(0.75F, 0.75F, 0.75F), 0.04F);
+							vector3f2.lerp(new Vector3f(0.75F, 0.75F, 0.75F), 0.04F);
 							if (this.worldRenderer.getSkyDarkness(delta) > 0.0F) {
 								float r = this.worldRenderer.getSkyDarkness(delta);
 								Vector3f vector3f4 = vector3f2.copy();
-								vector3f4.piecewiseMultiply(0.7F, 0.6F, 0.6F);
-								vector3f2.method_23847(vector3f4, r);
+								vector3f4.multiplyComponentwise(0.7F, 0.6F, 0.6F);
+								vector3f2.lerp(vector3f4, r);
 							}
 						}
 
@@ -131,15 +131,15 @@ public class LightmapTextureManager implements AutoCloseable {
 								float r = 1.0F / s;
 								Vector3f vector3f4 = vector3f2.copy();
 								vector3f4.scale(r);
-								vector3f2.method_23847(vector3f4, i);
+								vector3f2.lerp(vector3f4, i);
 							}
 						}
 
 						float s = (float)this.client.options.gamma;
 						Vector3f vector3f5 = vector3f2.copy();
-						vector3f5.method_23848(this::method_23795);
-						vector3f2.method_23847(vector3f5, s);
-						vector3f2.method_23847(new Vector3f(0.75F, 0.75F, 0.75F), 0.04F);
+						vector3f5.modify(this::method_23795);
+						vector3f2.lerp(vector3f5, s);
+						vector3f2.lerp(new Vector3f(0.75F, 0.75F, 0.75F), 0.04F);
 						vector3f2.clamp(0.0F, 1.0F);
 						vector3f2.scale(255.0F);
 						int t = 255;

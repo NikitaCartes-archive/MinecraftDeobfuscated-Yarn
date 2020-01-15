@@ -56,7 +56,7 @@ public class Texts {
 		} else {
 			List<T> list = Lists.newArrayList(elements);
 			list.sort(Comparable::compareTo);
-			return join(elements, transformer);
+			return join(list, transformer);
 		}
 	}
 

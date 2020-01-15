@@ -492,7 +492,7 @@ public class WorldChunk implements Chunk {
 						}
 
 						if (entity instanceof EnderDragonEntity) {
-							for(EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).method_5690()) {
+							for(EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).getBodyParts()) {
 								if (enderDragonPart != except && enderDragonPart.getBoundingBox().intersects(box) && (predicate == null || predicate.test(enderDragonPart))) {
 									entityList.add(enderDragonPart);
 								}
@@ -718,14 +718,14 @@ public class WorldChunk implements Chunk {
 			}
 		}
 
-		this.method_20530();
+		this.disableTickSchedulers();
 
 		for(BlockPos blockPos2 : Sets.newHashSet(this.pendingBlockEntityTags.keySet())) {
 			this.getBlockEntity(blockPos2);
 		}
 
 		this.pendingBlockEntityTags.clear();
-		this.upgradeData.method_12356(this);
+		this.upgradeData.upgrade(this);
 	}
 
 	@Nullable
@@ -763,7 +763,7 @@ public class WorldChunk implements Chunk {
 		return this.postProcessingLists;
 	}
 
-	public void method_20530() {
+	public void disableTickSchedulers() {
 		if (this.blockTickScheduler instanceof ChunkTickScheduler) {
 			((ChunkTickScheduler)this.blockTickScheduler).tick(this.world.getBlockTickScheduler(), blockPos -> this.getBlockState(blockPos).getBlock());
 			this.blockTickScheduler = DummyClientTickScheduler.get();
@@ -781,18 +781,14 @@ public class WorldChunk implements Chunk {
 		}
 	}
 
-	public void method_20471(ServerWorld serverWorld) {
+	public void enableTickSchedulers(ServerWorld world) {
 		if (this.blockTickScheduler == DummyClientTickScheduler.get()) {
-			this.blockTickScheduler = new SimpleTickScheduler<>(
-				Registry.BLOCK::getId, serverWorld.getBlockTickScheduler().getScheduledTicksInChunk(this.pos, true, false)
-			);
+			this.blockTickScheduler = new SimpleTickScheduler<>(Registry.BLOCK::getId, world.getBlockTickScheduler().getScheduledTicksInChunk(this.pos, true, false));
 			this.setShouldSave(true);
 		}
 
 		if (this.fluidTickScheduler == DummyClientTickScheduler.get()) {
-			this.fluidTickScheduler = new SimpleTickScheduler<>(
-				Registry.FLUID::getId, serverWorld.getFluidTickScheduler().getScheduledTicksInChunk(this.pos, true, false)
-			);
+			this.fluidTickScheduler = new SimpleTickScheduler<>(Registry.FLUID::getId, world.getFluidTickScheduler().getScheduledTicksInChunk(this.pos, true, false));
 			this.setShouldSave(true);
 		}
 	}

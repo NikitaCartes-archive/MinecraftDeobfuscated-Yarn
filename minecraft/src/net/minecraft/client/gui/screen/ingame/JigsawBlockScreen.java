@@ -64,22 +64,22 @@ public class JigsawBlockScreen extends Screen {
 		this.targetPoolField = new TextFieldWidget(this.font, this.width / 2 - 152, 40, 300, 20, I18n.translate("jigsaw_block.target_pool"));
 		this.targetPoolField.setMaxLength(128);
 		this.targetPoolField.setText(this.jigsaw.getTargetPool().toString());
-		this.targetPoolField.setChangedListener(string -> this.method_20118());
+		this.targetPoolField.setChangedListener(string -> this.updateDoneButtonState());
 		this.children.add(this.targetPoolField);
 		this.attachmentTypeField = new TextFieldWidget(this.font, this.width / 2 - 152, 80, 300, 20, I18n.translate("jigsaw_block.attachement_type"));
 		this.attachmentTypeField.setMaxLength(128);
 		this.attachmentTypeField.setText(this.jigsaw.getAttachmentType().toString());
-		this.attachmentTypeField.setChangedListener(string -> this.method_20118());
+		this.attachmentTypeField.setChangedListener(string -> this.updateDoneButtonState());
 		this.children.add(this.attachmentTypeField);
 		this.finalStateField = new TextFieldWidget(this.font, this.width / 2 - 152, 120, 300, 20, I18n.translate("jigsaw_block.final_state"));
 		this.finalStateField.setMaxLength(256);
 		this.finalStateField.setText(this.jigsaw.getFinalState());
 		this.children.add(this.finalStateField);
 		this.setInitialFocus(this.targetPoolField);
-		this.method_20118();
+		this.updateDoneButtonState();
 	}
 
-	protected void method_20118() {
+	protected void updateDoneButtonState() {
 		this.doneButton.active = Identifier.isValid(this.attachmentTypeField.getText()) & Identifier.isValid(this.targetPoolField.getText());
 	}
 

@@ -40,6 +40,14 @@ public class DummyProfiler implements ReadableProfiler {
 	}
 
 	@Override
+	public void method_24270(String string) {
+	}
+
+	@Override
+	public void method_24271(Supplier<String> supplier) {
+	}
+
+	@Override
 	public ProfileResult getResults() {
 		return EmptyProfileResult.INSTANCE;
 	}

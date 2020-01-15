@@ -42,7 +42,7 @@ public class PufferfishEntityRenderer extends MobEntityRenderer<PufferfishEntity
 		}
 
 		this.modelSize = j;
-		this.field_4673 = 0.1F + 0.1F * (float)j;
+		this.shadowSize = 0.1F + 0.1F * (float)j;
 		super.render(pufferfishEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 

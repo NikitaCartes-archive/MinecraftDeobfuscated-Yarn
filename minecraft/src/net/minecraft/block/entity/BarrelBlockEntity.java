@@ -32,21 +32,21 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag compoundTag) {
-		super.toTag(compoundTag);
-		if (!this.serializeLootTable(compoundTag)) {
-			Inventories.toTag(compoundTag, this.inventory);
+	public CompoundTag toTag(CompoundTag tag) {
+		super.toTag(tag);
+		if (!this.serializeLootTable(tag)) {
+			Inventories.toTag(tag, this.inventory);
 		}
 
-		return compoundTag;
+		return tag;
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
 		this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
-		if (!this.deserializeLootTable(compoundTag)) {
-			Inventories.fromTag(compoundTag, this.inventory);
+		if (!this.deserializeLootTable(tag)) {
+			Inventories.fromTag(tag, this.inventory);
 		}
 	}
 

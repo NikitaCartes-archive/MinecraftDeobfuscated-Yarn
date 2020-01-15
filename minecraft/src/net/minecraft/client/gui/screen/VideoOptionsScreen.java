@@ -23,7 +23,7 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 		Option.VIEW_BOBBING,
 		Option.GUI_SCALE,
 		Option.ATTACK_INDICATOR,
-		Option.field_21822,
+		Option.field_21887,
 		Option.GAMMA,
 		Option.CLOUDS,
 		Option.FULLSCREEN,
@@ -47,7 +47,7 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 		this.children.add(this.list);
 		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, I18n.translate("gui.done"), button -> {
 			this.minecraft.options.write();
-			this.minecraft.getWindow().method_4475();
+			this.minecraft.getWindow().applyVideoMode();
 			this.minecraft.openScreen(this.parent);
 		}));
 	}

@@ -23,7 +23,7 @@ public class BlockPileFeatureConfig implements FeatureConfig {
 		return new Dynamic<>(ops, ops.createMap(builder.build()));
 	}
 
-	public static <T> BlockPileFeatureConfig method_23406(Dynamic<T> dynamic) {
+	public static <T> BlockPileFeatureConfig deserialize(Dynamic<T> dynamic) {
 		StateProviderType<?> stateProviderType = Registry.BLOCK_STATE_PROVIDER_TYPE
 			.get(new Identifier((String)dynamic.get("state_provider").get("type").asString().orElseThrow(RuntimeException::new)));
 		return new BlockPileFeatureConfig(stateProviderType.deserialize(dynamic.get("state_provider").orElseEmptyMap()));

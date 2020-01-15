@@ -10,8 +10,8 @@ import net.minecraft.entity.Entity;
 @Environment(EnvType.CLIENT)
 public abstract class CompositeEntityModel<E extends Entity> extends EntityModel<E> {
 	@Override
-	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float r, float g, float b, float f) {
-		this.getParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, r, g, b, f));
+	public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
+		this.getParts().forEach(modelPart -> modelPart.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha));
 	}
 
 	public abstract Iterable<ModelPart> getParts();

@@ -2,7 +2,7 @@ package net.minecraft.item;
 
 import com.google.common.collect.Multimap;
 import java.util.Set;
-import net.minecraft.class_4741;
+import net.minecraft.class_4752;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EquipmentSlot;
@@ -41,13 +41,13 @@ public abstract class MiningToolItem extends ToolItem {
 		return true;
 	}
 
-	protected abstract class_4741 method_24225();
+	protected abstract class_4752 method_24322();
 
 	@Override
 	public Multimap<String, EntityAttributeModifier> getModifiers(EquipmentSlot slot) {
 		Multimap<String, EntityAttributeModifier> multimap = super.getModifiers(slot);
 		if (slot == EquipmentSlot.MAINHAND) {
-			this.method_24225().method_24227(this.getMaterial(), multimap);
+			this.method_24322().method_24324(this.getMaterial(), multimap);
 		}
 
 		return multimap;

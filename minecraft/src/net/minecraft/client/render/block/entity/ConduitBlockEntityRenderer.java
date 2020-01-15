@@ -59,7 +59,7 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 			matrixStack.push();
 			matrixStack.translate(0.5, (double)(0.3F + k * 0.2F), 0.5);
 			Vector3f vector3f = new Vector3f(0.5F, 1.0F, 0.5F);
-			vector3f.reciprocal();
+			vector3f.normalize();
 			matrixStack.multiply(new Quaternion(vector3f, h, true));
 			this.field_20826.render(matrixStack, CAGE_TEX.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityCutoutNoCull), i, j);
 			matrixStack.pop();
@@ -82,7 +82,7 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
 			this.field_20824.render(matrixStack, vertexConsumer2, i, j);
 			matrixStack.pop();
-			Camera camera = this.blockEntityRenderDispatcher.camera;
+			Camera camera = this.dispatcher.camera;
 			matrixStack.push();
 			matrixStack.translate(0.5, (double)(0.3F + k * 0.2F), 0.5);
 			matrixStack.scale(0.5F, 0.5F, 0.5F);

@@ -116,5 +116,5 @@ public abstract class MoveToTargetPosGoal extends Goal {
 		return false;
 	}
 
-	protected abstract boolean isTargetPos(WorldView worldView, BlockPos pos);
+	protected abstract boolean isTargetPos(WorldView world, BlockPos pos);
 }

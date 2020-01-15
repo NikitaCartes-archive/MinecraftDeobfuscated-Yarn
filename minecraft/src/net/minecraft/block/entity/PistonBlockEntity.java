@@ -315,25 +315,25 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
-		this.pushedBlock = NbtHelper.toBlockState(compoundTag.getCompound("blockState"));
-		this.facing = Direction.byId(compoundTag.getInt("facing"));
-		this.progress = compoundTag.getFloat("progress");
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
+		this.pushedBlock = NbtHelper.toBlockState(tag.getCompound("blockState"));
+		this.facing = Direction.byId(tag.getInt("facing"));
+		this.progress = tag.getFloat("progress");
 		this.lastProgress = this.progress;
-		this.extending = compoundTag.getBoolean("extending");
-		this.source = compoundTag.getBoolean("source");
+		this.extending = tag.getBoolean("extending");
+		this.source = tag.getBoolean("source");
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag compoundTag) {
-		super.toTag(compoundTag);
-		compoundTag.put("blockState", NbtHelper.fromBlockState(this.pushedBlock));
-		compoundTag.putInt("facing", this.facing.getId());
-		compoundTag.putFloat("progress", this.lastProgress);
-		compoundTag.putBoolean("extending", this.extending);
-		compoundTag.putBoolean("source", this.source);
-		return compoundTag;
+	public CompoundTag toTag(CompoundTag tag) {
+		super.toTag(tag);
+		tag.put("blockState", NbtHelper.fromBlockState(this.pushedBlock));
+		tag.putInt("facing", this.facing.getId());
+		tag.putFloat("progress", this.lastProgress);
+		tag.putBoolean("extending", this.extending);
+		tag.putBoolean("source", this.source);
+		return tag;
 	}
 
 	public VoxelShape getCollisionShape(BlockView blockView, BlockPos blockPos) {

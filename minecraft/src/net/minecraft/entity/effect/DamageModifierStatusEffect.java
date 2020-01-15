@@ -11,7 +11,7 @@ public class DamageModifierStatusEffect extends StatusEffect {
 	}
 
 	@Override
-	public double method_5563(int i, EntityAttributeModifier entityAttributeModifier) {
-		return this.modifier * (double)(i + 1);
+	public double adjustModifierAmount(int amplifier, EntityAttributeModifier modifier) {
+		return this.modifier * (double)(amplifier + 1);
 	}
 }

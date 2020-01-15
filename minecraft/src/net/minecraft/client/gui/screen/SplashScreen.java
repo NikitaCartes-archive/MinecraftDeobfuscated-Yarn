@@ -23,17 +23,17 @@ public class SplashScreen extends Overlay {
 	private static final Identifier LOGO = new Identifier("textures/gui/title/mojang.png");
 	private final MinecraftClient client;
 	private final ResourceReloadMonitor reloadMonitor;
-	private final Consumer<Optional<Throwable>> field_18218;
-	private final boolean field_18219;
-	private float field_17770;
-	private long field_17771 = -1L;
-	private long field_18220 = -1L;
+	private final Consumer<Optional<Throwable>> exceptionHandler;
+	private final boolean reloading;
+	private float progress;
+	private long applyCompleteTime = -1L;
+	private long prepareCompleteTime = -1L;
 
-	public SplashScreen(MinecraftClient minecraftClient, ResourceReloadMonitor resourceReloadMonitor, Consumer<Optional<Throwable>> consumer, boolean bl) {
-		this.client = minecraftClient;
-		this.reloadMonitor = resourceReloadMonitor;
-		this.field_18218 = consumer;
-		this.field_18219 = bl;
+	public SplashScreen(MinecraftClient client, ResourceReloadMonitor monitor, Consumer<Optional<Throwable>> exceptionHandler, boolean reloading) {
+		this.client = client;
+		this.reloadMonitor = monitor;
+		this.exceptionHandler = exceptionHandler;
+		this.reloading = reloading;
 	}
 
 	public static void init(MinecraftClient client) {
@@ -45,12 +45,12 @@ public class SplashScreen extends Overlay {
 		int i = this.client.getWindow().getScaledWidth();
 		int j = this.client.getWindow().getScaledHeight();
 		long l = Util.getMeasuringTimeMs();
-		if (this.field_18219 && (this.reloadMonitor.isLoadStageComplete() || this.client.currentScreen != null) && this.field_18220 == -1L) {
-			this.field_18220 = l;
+		if (this.reloading && (this.reloadMonitor.isPrepareStageComplete() || this.client.currentScreen != null) && this.prepareCompleteTime == -1L) {
+			this.prepareCompleteTime = l;
 		}
 
-		float f = this.field_17771 > -1L ? (float)(l - this.field_17771) / 1000.0F : -1.0F;
-		float g = this.field_18220 > -1L ? (float)(l - this.field_18220) / 500.0F : -1.0F;
+		float f = this.applyCompleteTime > -1L ? (float)(l - this.applyCompleteTime) / 1000.0F : -1.0F;
+		float g = this.prepareCompleteTime > -1L ? (float)(l - this.prepareCompleteTime) / 500.0F : -1.0F;
 		float h;
 		if (f >= 1.0F) {
 			if (this.client.currentScreen != null) {
@@ -60,7 +60,7 @@ public class SplashScreen extends Overlay {
 			int k = MathHelper.ceil((1.0F - MathHelper.clamp(f - 1.0F, 0.0F, 1.0F)) * 255.0F);
 			fill(0, 0, i, j, 16777215 | k << 24);
 			h = 1.0F - MathHelper.clamp(f - 1.0F, 0.0F, 1.0F);
-		} else if (this.field_18219) {
+		} else if (this.reloading) {
 			if (this.client.currentScreen != null && g < 1.0F) {
 				this.client.currentScreen.render(mouseX, mouseY, delta);
 			}
@@ -80,7 +80,7 @@ public class SplashScreen extends Overlay {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, h);
 		this.blit(k, m, 0, 0, 256, 256);
 		float n = this.reloadMonitor.getProgress();
-		this.field_17770 = MathHelper.clamp(this.field_17770 * 0.95F + n * 0.050000012F, 0.0F, 1.0F);
+		this.progress = MathHelper.clamp(this.progress * 0.95F + n * 0.050000012F, 0.0F, 1.0F);
 		if (f < 1.0F) {
 			this.renderProgressBar(i / 2 - 150, j / 4 * 3, i / 2 + 150, j / 4 * 3 + 10, 1.0F - MathHelper.clamp(f, 0.0F, 1.0F));
 		}
@@ -89,15 +89,15 @@ public class SplashScreen extends Overlay {
 			this.client.setOverlay(null);
 		}
 
-		if (this.field_17771 == -1L && this.reloadMonitor.isApplyStageComplete() && (!this.field_18219 || g >= 2.0F)) {
+		if (this.applyCompleteTime == -1L && this.reloadMonitor.isApplyStageComplete() && (!this.reloading || g >= 2.0F)) {
 			try {
 				this.reloadMonitor.throwExceptions();
-				this.field_18218.accept(Optional.empty());
+				this.exceptionHandler.accept(Optional.empty());
 			} catch (Throwable var15) {
-				this.field_18218.accept(Optional.of(var15));
+				this.exceptionHandler.accept(Optional.of(var15));
 			}
 
-			this.field_17771 = Util.getMeasuringTimeMs();
+			this.applyCompleteTime = Util.getMeasuringTimeMs();
 			if (this.client.currentScreen != null) {
 				this.client.currentScreen.init(this.client, this.client.getWindow().getScaledWidth(), this.client.getWindow().getScaledHeight());
 			}
@@ -105,7 +105,7 @@ public class SplashScreen extends Overlay {
 	}
 
 	private void renderProgressBar(int minX, int minY, int maxX, int maxY, float progress) {
-		int i = MathHelper.ceil((float)(maxX - minX - 1) * this.field_17770);
+		int i = MathHelper.ceil((float)(maxX - minX - 1) * this.progress);
 		fill(
 			minX - 1,
 			minY - 1,

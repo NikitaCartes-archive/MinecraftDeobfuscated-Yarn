@@ -157,7 +157,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean shouldRenderAtDistance(double distance) {
+	public boolean shouldRender(double distance) {
 		double d = 16.0;
 		d *= 64.0 * getRenderDistanceMultiplier();
 		return distance < d * d;

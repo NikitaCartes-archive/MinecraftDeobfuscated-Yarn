@@ -46,12 +46,12 @@ public abstract class BlockEntity {
 		return this.world != null;
 	}
 
-	public void fromTag(CompoundTag compoundTag) {
-		this.pos = new BlockPos(compoundTag.getInt("x"), compoundTag.getInt("y"), compoundTag.getInt("z"));
+	public void fromTag(CompoundTag tag) {
+		this.pos = new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z"));
 	}
 
-	public CompoundTag toTag(CompoundTag compoundTag) {
-		return this.writeIdentifyingData(compoundTag);
+	public CompoundTag toTag(CompoundTag tag) {
+		return this.writeIdentifyingData(tag);
 	}
 
 	private CompoundTag writeIdentifyingData(CompoundTag compoundTag) {
@@ -70,7 +70,7 @@ public abstract class BlockEntity {
 	@Nullable
 	public static BlockEntity createFromTag(CompoundTag compoundTag) {
 		String string = compoundTag.getString("id");
-		return (BlockEntity)Registry.BLOCK_ENTITY.getOrEmpty(new Identifier(string)).map(blockEntityType -> {
+		return (BlockEntity)Registry.BLOCK_ENTITY_TYPE.getOrEmpty(new Identifier(string)).map(blockEntityType -> {
 			try {
 				return blockEntityType.instantiate();
 			} catch (Throwable var3) {
@@ -156,7 +156,7 @@ public abstract class BlockEntity {
 	}
 
 	public void populateCrashReport(CrashReportSection crashReportSection) {
-		crashReportSection.add("Name", (CrashCallable<String>)(() -> Registry.BLOCK_ENTITY.getId(this.getType()) + " // " + this.getClass().getCanonicalName()));
+		crashReportSection.add("Name", (CrashCallable<String>)(() -> Registry.BLOCK_ENTITY_TYPE.getId(this.getType()) + " // " + this.getClass().getCanonicalName()));
 		if (this.world != null) {
 			CrashReportSection.addBlockInfo(crashReportSection, this.pos, this.getCachedState());
 			CrashReportSection.addBlockInfo(crashReportSection, this.pos, this.world.getBlockState(this.pos));
@@ -184,7 +184,7 @@ public abstract class BlockEntity {
 	public void markInvalid() {
 		if (!this.invalid) {
 			this.invalid = true;
-			LOGGER.warn("Block entity invalid: {} @ {}", () -> Registry.BLOCK_ENTITY.getId(this.getType()), this::getPos);
+			LOGGER.warn("Block entity invalid: {} @ {}", () -> Registry.BLOCK_ENTITY_TYPE.getId(this.getType()), this::getPos);
 		}
 	}
 }

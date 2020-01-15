@@ -4,7 +4,6 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.layer.type.MergingLayer;
-import net.minecraft.world.biome.layer.util.BiomeLayers;
 import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
 import net.minecraft.world.biome.layer.util.LayerSampler;
 import net.minecraft.world.biome.layer.util.NorthWestCoordinateTransformer;
@@ -54,7 +53,7 @@ public enum AddHillsLayer implements MergingLayer, NorthWestCoordinateTransforme
 		if (!BiomeLayers.isShallowOcean(i) && j >= 2 && k == 1) {
 			Biome biome = Registry.BIOME.get(i);
 			if (biome == null || !biome.hasParent()) {
-				Biome biome2 = Biome.getParentBiome(biome);
+				Biome biome2 = Biome.getModifiedBiome(biome);
 				return biome2 == null ? i : Registry.BIOME.getRawId(biome2);
 			}
 		}
@@ -105,7 +104,7 @@ public enum AddHillsLayer implements MergingLayer, NorthWestCoordinateTransforme
 			}
 
 			if (k == 0 && l != i) {
-				Biome biome2 = Biome.getParentBiome(Registry.BIOME.get(l));
+				Biome biome2 = Biome.getModifiedBiome(Registry.BIOME.get(l));
 				l = biome2 == null ? i : Registry.BIOME.getRawId(biome2);
 			}
 

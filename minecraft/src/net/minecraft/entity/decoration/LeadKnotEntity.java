@@ -70,7 +70,7 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean shouldRenderAtDistance(double distance) {
+	public boolean shouldRender(double distance) {
 		return distance < 1024.0;
 	}
 

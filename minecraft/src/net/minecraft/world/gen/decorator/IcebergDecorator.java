@@ -10,15 +10,15 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
-public class IcebergDecorator extends Decorator<LakeDecoratorConfig> {
-	public IcebergDecorator(Function<Dynamic<?>, ? extends LakeDecoratorConfig> function) {
+public class IcebergDecorator extends Decorator<ChanceDecoratorConfig> {
+	public IcebergDecorator(Function<Dynamic<?>, ? extends ChanceDecoratorConfig> function) {
 		super(function);
 	}
 
 	public Stream<BlockPos> getPositions(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, LakeDecoratorConfig lakeDecoratorConfig, BlockPos blockPos
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, ChanceDecoratorConfig chanceDecoratorConfig, BlockPos blockPos
 	) {
-		if (random.nextFloat() < 1.0F / (float)lakeDecoratorConfig.chance) {
+		if (random.nextFloat() < 1.0F / (float)chanceDecoratorConfig.chance) {
 			int i = random.nextInt(8) + 4 + blockPos.getX();
 			int j = random.nextInt(8) + 4 + blockPos.getZ();
 			int k = iWorld.getTopY(Heightmap.Type.MOTION_BLOCKING, i, j);

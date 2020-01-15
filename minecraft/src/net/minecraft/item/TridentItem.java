@@ -1,7 +1,7 @@
 package net.minecraft.item;
 
 import com.google.common.collect.Multimap;
-import net.minecraft.class_4741;
+import net.minecraft.class_4752;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EquipmentSlot;
@@ -85,7 +85,7 @@ public class TridentItem extends Item {
 						k *= n / m;
 						l *= n / m;
 						playerEntity.addVelocity((double)h, (double)k, (double)l);
-						playerEntity.method_6018(20);
+						playerEntity.setPushCooldown(20);
 						if (playerEntity.onGround) {
 							float o = 1.1999999F;
 							playerEntity.move(MovementType.SELF, new Vec3d(0.0, 1.1999999F, 0.0));
@@ -139,7 +139,7 @@ public class TridentItem extends Item {
 	public Multimap<String, EntityAttributeModifier> getModifiers(EquipmentSlot slot) {
 		Multimap<String, EntityAttributeModifier> multimap = super.getModifiers(slot);
 		if (slot == EquipmentSlot.MAINHAND) {
-			class_4741.field_21812.method_24227(ToolMaterials.IRON, multimap);
+			class_4752.field_21875.method_24324(ToolMaterials.IRON, multimap);
 		}
 
 		return multimap;

@@ -85,9 +85,9 @@ public class BrewingStandBlock extends BlockWithEntity {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
-		double d = (double)((float)pos.getX() + 0.4F + random.nextFloat() * 0.2F);
-		double e = (double)((float)pos.getY() + 0.7F + random.nextFloat() * 0.3F);
-		double f = (double)((float)pos.getZ() + 0.4F + random.nextFloat() * 0.2F);
+		double d = (double)pos.getX() + 0.4 + (double)random.nextFloat() * 0.2;
+		double e = (double)pos.getY() + 0.7 + (double)random.nextFloat() * 0.3;
+		double f = (double)pos.getZ() + 0.4 + (double)random.nextFloat() * 0.2;
 		world.addParticle(ParticleTypes.SMOKE, d, e, f, 0.0, 0.0, 0.0);
 	}
 

@@ -16,7 +16,7 @@ import net.minecraft.util.math.Quaternion;
 
 @Environment(EnvType.CLIENT)
 public class Transformation {
-	public static final Transformation NONE = new Transformation(new Vector3f(), new Vector3f(), new Vector3f(1.0F, 1.0F, 1.0F));
+	public static final Transformation IDENTITY = new Transformation(new Vector3f(), new Vector3f(), new Vector3f(1.0F, 1.0F, 1.0F));
 	public final Vector3f rotation;
 	public final Vector3f translation;
 	public final Vector3f scale;
@@ -27,20 +27,20 @@ public class Transformation {
 		this.scale = scale.copy();
 	}
 
-	public void method_23075(boolean bl, MatrixStack matrixStack) {
-		if (this != NONE) {
+	public void apply(boolean leftHanded, MatrixStack matrices) {
+		if (this != IDENTITY) {
 			float f = this.rotation.getX();
 			float g = this.rotation.getY();
 			float h = this.rotation.getZ();
-			if (bl) {
+			if (leftHanded) {
 				g = -g;
 				h = -h;
 			}
 
-			int i = bl ? -1 : 1;
-			matrixStack.translate((double)((float)i * this.translation.getX()), (double)this.translation.getY(), (double)this.translation.getZ());
-			matrixStack.multiply(new Quaternion(f, g, h, true));
-			matrixStack.scale(this.scale.getX(), this.scale.getY(), this.scale.getZ());
+			int i = leftHanded ? -1 : 1;
+			matrices.translate((double)((float)i * this.translation.getX()), (double)this.translation.getY(), (double)this.translation.getZ());
+			matrices.multiply(new Quaternion(f, g, h, true));
+			matrices.scale(this.scale.getX(), this.scale.getY(), this.scale.getZ());
 		}
 	}
 
@@ -81,9 +81,9 @@ public class Transformation {
 			return new Transformation(vector3f, vector3f2, vector3f3);
 		}
 
-		private Vector3f parseVector3f(JsonObject json, String key, Vector3f default_) {
+		private Vector3f parseVector3f(JsonObject json, String key, Vector3f fallback) {
 			if (!json.has(key)) {
-				return default_;
+				return fallback;
 			} else {
 				JsonArray jsonArray = JsonHelper.getArray(json, key);
 				if (jsonArray.size() != 3) {

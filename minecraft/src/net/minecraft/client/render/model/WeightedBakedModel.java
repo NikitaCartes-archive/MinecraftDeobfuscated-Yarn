@@ -41,6 +41,11 @@ public class WeightedBakedModel implements BakedModel {
 	}
 
 	@Override
+	public boolean method_24304() {
+		return this.defaultModel.method_24304();
+	}
+
+	@Override
 	public boolean isBuiltin() {
 		return this.defaultModel.isBuiltin();
 	}

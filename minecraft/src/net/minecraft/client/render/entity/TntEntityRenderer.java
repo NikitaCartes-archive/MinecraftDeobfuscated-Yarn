@@ -15,7 +15,7 @@ import net.minecraft.util.math.MathHelper;
 public class TntEntityRenderer extends EntityRenderer<TntEntity> {
 	public TntEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
-		this.field_4673 = 0.5F;
+		this.shadowSize = 0.5F;
 	}
 
 	public void render(TntEntity tntEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {

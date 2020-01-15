@@ -8,9 +8,9 @@ import net.minecraft.util.Lazy;
 
 public enum ToolMaterials implements ToolMaterial {
 	WOOD(0, 59, 2.0F, 0.0F, 15, () -> Ingredient.fromTag(ItemTags.PLANKS)),
-	STONE(1, 131, 4.0F, 1.0F, 5, () -> Ingredient.ofItems(Blocks.COBBLESTONE)),
-	IRON(2, 250, 6.0F, 2.0F, 14, () -> Ingredient.ofItems(Items.IRON_INGOT)),
-	DIAMOND(3, 1561, 8.0F, 3.0F, 10, () -> Ingredient.ofItems(Items.DIAMOND)),
+	STONE(1, 131, 4.0F, 0.0F, 5, () -> Ingredient.ofItems(Blocks.COBBLESTONE)),
+	IRON(2, 250, 6.0F, 1.0F, 14, () -> Ingredient.ofItems(Items.IRON_INGOT)),
+	DIAMOND(3, 1561, 8.0F, 2.0F, 10, () -> Ingredient.ofItems(Items.DIAMOND)),
 	GOLD(0, 32, 12.0F, 0.0F, 22, () -> Ingredient.ofItems(Items.GOLD_INGOT));
 
 	private final int miningLevel;

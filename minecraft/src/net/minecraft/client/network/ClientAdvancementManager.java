@@ -95,7 +95,7 @@ public class ClientAdvancementManager {
 
 	@Environment(EnvType.CLIENT)
 	public interface Listener extends AdvancementManager.Listener {
-		void setProgress(Advancement advancement, AdvancementProgress advancementProgress);
+		void setProgress(Advancement advancement, AdvancementProgress progress);
 
 		void selectTab(@Nullable Advancement advancement);
 	}

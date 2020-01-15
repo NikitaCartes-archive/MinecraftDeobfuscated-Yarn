@@ -235,7 +235,7 @@ public class Item implements ItemConvertible {
 
 	public int getMaxUseTime(ItemStack stack) {
 		if (stack.getItem().isFood()) {
-			return this.getFoodComponent().isSnack() ? 16 : 32;
+			return this.getFoodComponent().isSnack() ? 20 : 40;
 		} else {
 			return 0;
 		}

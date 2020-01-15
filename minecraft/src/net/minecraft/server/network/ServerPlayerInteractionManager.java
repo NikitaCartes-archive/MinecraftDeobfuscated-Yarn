@@ -119,6 +119,7 @@ public class ServerPlayerInteractionManager {
 		} else if (pos.getY() >= worldHeight) {
 			this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(pos, this.world.getBlockState(pos), action, false, "too high"));
 		} else {
+			this.player.resetLastAttackedTicks();
 			if (action == PlayerActionC2SPacket.Action.START_DESTROY_BLOCK) {
 				if (!this.world.canPlayerModifyAt(this.player, pos)) {
 					this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(pos, this.world.getBlockState(pos), action, false, "may not interact"));

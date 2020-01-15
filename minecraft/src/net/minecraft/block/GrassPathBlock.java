@@ -1,6 +1,8 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
@@ -58,5 +60,11 @@ public class GrassPathBlock extends Block {
 	@Override
 	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
 		return false;
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public boolean hasInWallOverlay(BlockState state, BlockView view, BlockPos pos) {
+		return true;
 	}
 }

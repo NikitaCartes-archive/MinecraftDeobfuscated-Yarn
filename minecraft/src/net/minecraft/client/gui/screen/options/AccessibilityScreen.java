@@ -22,7 +22,7 @@ public class AccessibilityScreen extends GameOptionsScreen {
 		Option.AUTO_JUMP,
 		Option.SNEAK_TOGGLED,
 		Option.SPRINT_TOGGLED,
-		Option.field_21823
+		Option.field_21888
 	};
 	private AbstractButtonWidget narratorButton;
 

@@ -18,7 +18,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 
 public class BlockListProvider implements DataProvider {
-	private static final Gson field_17168 = new GsonBuilder().setPrettyPrinting().create();
+	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	private final DataGenerator root;
 
 	public BlockListProvider(DataGenerator dataGenerator) {
@@ -76,7 +76,7 @@ public class BlockListProvider implements DataProvider {
 		}
 
 		Path path = this.root.getOutput().resolve("reports/blocks.json");
-		DataProvider.writeToPath(field_17168, dataCache, jsonObject, path);
+		DataProvider.writeToPath(GSON, dataCache, jsonObject, path);
 	}
 
 	@Override

@@ -1,7 +1,9 @@
 package net.minecraft.client.render.entity;
 
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.feature.ArmorBipedFeatureRenderer;
 import net.minecraft.client.render.entity.feature.ElytraFeatureRenderer;
 import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
@@ -44,7 +46,17 @@ public class ArmorStandEntityRenderer extends LivingEntityRenderer<ArmorStandEnt
 		return d >= (double)(f * f) ? false : armorStandEntity.isCustomNameVisible();
 	}
 
-	protected boolean method_4056(ArmorStandEntity armorStandEntity, boolean bl) {
-		return !armorStandEntity.isInvisible();
+	@Nullable
+	protected RenderLayer method_24302(ArmorStandEntity armorStandEntity, boolean bl, boolean bl2) {
+		if (!armorStandEntity.isMarker()) {
+			return super.method_24302(armorStandEntity, bl, bl2);
+		} else {
+			Identifier identifier = this.getTexture(armorStandEntity);
+			if (bl2) {
+				return RenderLayer.method_24294(identifier, false);
+			} else {
+				return bl ? RenderLayer.method_24293(identifier, false) : null;
+			}
+		}
 	}
 }

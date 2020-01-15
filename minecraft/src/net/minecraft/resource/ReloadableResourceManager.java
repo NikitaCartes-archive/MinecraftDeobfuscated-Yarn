@@ -11,9 +11,6 @@ public interface ReloadableResourceManager extends ResourceManager {
 	CompletableFuture<Unit> beginReload(Executor prepareExecutor, Executor applyExecutor, List<ResourcePack> packs, CompletableFuture<Unit> initialStage);
 
 	@Environment(EnvType.CLIENT)
-	ResourceReloadMonitor beginInitialMonitoredReload(Executor prepareExecutor, Executor applyExecutor, CompletableFuture<Unit> initialStage);
-
-	@Environment(EnvType.CLIENT)
 	ResourceReloadMonitor beginMonitoredReload(Executor prepareExecutor, Executor applyExecutor, CompletableFuture<Unit> initialStage, List<ResourcePack> packs);
 
 	void registerListener(ResourceReloadListener listener);

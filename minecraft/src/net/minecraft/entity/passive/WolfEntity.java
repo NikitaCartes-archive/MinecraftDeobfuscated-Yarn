@@ -478,23 +478,17 @@ public class WolfEntity extends TameableEntity {
 
 	@Override
 	public boolean canAttackWithOwner(LivingEntity target, LivingEntity owner) {
-		if (!(target instanceof CreeperEntity) && !(target instanceof GhastEntity)) {
-			if (target instanceof WolfEntity) {
-				WolfEntity wolfEntity = (WolfEntity)target;
-				if (wolfEntity.isTamed() && wolfEntity.getOwner() == owner) {
-					return false;
-				}
-			}
-
-			if (target instanceof PlayerEntity && owner instanceof PlayerEntity && !((PlayerEntity)owner).shouldDamagePlayer((PlayerEntity)target)) {
-				return false;
-			} else if (target instanceof HorseBaseEntity && ((HorseBaseEntity)target).isTame()) {
-				return false;
-			} else {
-				return !(target instanceof CatEntity) || !((CatEntity)target).isTamed();
-			}
-		} else {
+		if (target instanceof CreeperEntity || target instanceof GhastEntity) {
 			return false;
+		} else if (target instanceof WolfEntity) {
+			WolfEntity wolfEntity = (WolfEntity)target;
+			return !wolfEntity.isTamed() || wolfEntity.getOwner() != owner;
+		} else if (target instanceof PlayerEntity && owner instanceof PlayerEntity && !((PlayerEntity)owner).shouldDamagePlayer((PlayerEntity)target)) {
+			return false;
+		} else if (target instanceof HorseBaseEntity && ((HorseBaseEntity)target).isTame()) {
+			return false;
+		} else {
+			return !(target instanceof TameableEntity) || !((TameableEntity)target).isTamed();
 		}
 	}
 

@@ -26,8 +26,8 @@ public class VillagerHeldItemFeatureRenderer<T extends LivingEntity, M extends E
 		matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(180.0F));
 		ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.MAINHAND);
 		MinecraftClient.getInstance()
-			.getFirstPersonRenderer()
-			.renderItem(livingEntity, itemStack, ModelTransformation.Type.GROUND, false, matrixStack, vertexConsumerProvider, i);
+			.getHeldItemRenderer()
+			.renderItem(livingEntity, itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i);
 		matrixStack.pop();
 	}
 }

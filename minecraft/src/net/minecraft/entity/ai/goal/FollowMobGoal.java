@@ -16,9 +16,9 @@ public class FollowMobGoal extends Goal {
 	private MobEntity target;
 	private final double speed;
 	private final EntityNavigation navigation;
-	private int field_6431;
+	private int updateCountdownTicks;
 	private final float minDistance;
-	private float field_6437;
+	private float oldWaterPathFindingPenalty;
 	private final float maxDistance;
 
 	public FollowMobGoal(MobEntity mob, double speed, float minDistance, float maxDistance) {
@@ -56,8 +56,8 @@ public class FollowMobGoal extends Goal {
 
 	@Override
 	public void start() {
-		this.field_6431 = 0;
-		this.field_6437 = this.mob.getPathfindingPenalty(PathNodeType.WATER);
+		this.updateCountdownTicks = 0;
+		this.oldWaterPathFindingPenalty = this.mob.getPathfindingPenalty(PathNodeType.WATER);
 		this.mob.setPathfindingPenalty(PathNodeType.WATER, 0.0F);
 	}
 
@@ -65,15 +65,15 @@ public class FollowMobGoal extends Goal {
 	public void stop() {
 		this.target = null;
 		this.navigation.stop();
-		this.mob.setPathfindingPenalty(PathNodeType.WATER, this.field_6437);
+		this.mob.setPathfindingPenalty(PathNodeType.WATER, this.oldWaterPathFindingPenalty);
 	}
 
 	@Override
 	public void tick() {
 		if (this.target != null && !this.mob.isLeashed()) {
 			this.mob.getLookControl().lookAt(this.target, 10.0F, (float)this.mob.getLookPitchSpeed());
-			if (--this.field_6431 <= 0) {
-				this.field_6431 = 10;
+			if (--this.updateCountdownTicks <= 0) {
+				this.updateCountdownTicks = 10;
 				double d = this.mob.getX() - this.target.getX();
 				double e = this.mob.getY() - this.target.getY();
 				double f = this.mob.getZ() - this.target.getZ();

@@ -8,6 +8,7 @@ import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BooleanSupplier;
 import net.fabricmc.api.EnvType;
@@ -92,6 +93,7 @@ public class IntegratedServer extends MinecraftServer {
 			levelProperties.setLevelName(serverName);
 		}
 
+		levelProperties.method_24285(this.getServerModName(), this.method_24307().isPresent());
 		this.loadWorldDataPacks(worldSaveHandler.getWorldDir(), levelProperties);
 		WorldGenerationProgressListener worldGenerationProgressListener = this.worldGenerationProgressListenerFactory.create(11);
 		this.createWorlds(worldSaveHandler, levelProperties, this.levelInfo, worldGenerationProgressListener);
@@ -118,7 +120,7 @@ public class IntegratedServer extends MinecraftServer {
 	}
 
 	@Override
-	public void tick(BooleanSupplier booleanSupplier) {
+	public void tick(BooleanSupplier shouldKeepTicking) {
 		boolean bl = this.field_5524;
 		this.field_5524 = MinecraftClient.getInstance().getNetworkHandler() != null && MinecraftClient.getInstance().isPaused();
 		DisableableProfiler disableableProfiler = this.getProfiler();
@@ -131,7 +133,7 @@ public class IntegratedServer extends MinecraftServer {
 		}
 
 		if (!this.field_5524) {
-			super.tick(booleanSupplier);
+			super.tick(shouldKeepTicking);
 			int i = Math.max(2, this.client.options.viewDistance + -1);
 			if (i != this.getPlayerManager().getViewDistance()) {
 				LOGGER.info("Changing view distance to {}, from {}", i, this.getPlayerManager().getViewDistance());
@@ -197,23 +199,24 @@ public class IntegratedServer extends MinecraftServer {
 		crashReport.getSystemDetailsSection()
 			.add(
 				"Is Modded",
-				(CrashCallable<String>)(() -> {
-					String string = ClientBrandRetriever.getClientModName();
-					if (!string.equals("vanilla")) {
-						return "Definitely; Client brand changed to '" + string + "'";
-					} else {
-						string = this.getServerModName();
-						if (!"vanilla".equals(string)) {
-							return "Definitely; Server brand changed to '" + string + "'";
-						} else {
-							return MinecraftClient.class.getSigners() == null
-								? "Very likely; Jar signature invalidated"
-								: "Probably not. Jar signature remains and both client + server brands are untouched.";
-						}
-					}
-				})
+				(CrashCallable<String>)(() -> (String)this.method_24307().orElse("Probably not. Jar signature remains and both client + server brands are untouched."))
 			);
 		return crashReport;
+	}
+
+	@Override
+	public Optional<String> method_24307() {
+		String string = ClientBrandRetriever.getClientModName();
+		if (!string.equals("vanilla")) {
+			return Optional.of("Definitely; Client brand changed to '" + string + "'");
+		} else {
+			string = this.getServerModName();
+			if (!"vanilla".equals(string)) {
+				return Optional.of("Definitely; Server brand changed to '" + string + "'");
+			} else {
+				return MinecraftClient.class.getSigners() == null ? Optional.of("Very likely; Jar signature invalidated") : Optional.empty();
+			}
+		}
 	}
 
 	@Override

@@ -22,14 +22,14 @@ public class DragonFireballEntityRenderer extends EntityRenderer<DragonFireballE
 		super(entityRenderDispatcher);
 	}
 
-	protected int method_24087(DragonFireballEntity dragonFireballEntity, float f) {
+	protected int getBlockLight(DragonFireballEntity dragonFireballEntity, float f) {
 		return 15;
 	}
 
 	public void render(DragonFireballEntity dragonFireballEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
 		matrixStack.scale(2.0F, 2.0F, 2.0F);
-		matrixStack.multiply(this.renderManager.method_24197());
+		matrixStack.multiply(this.renderManager.getRotation());
 		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
 		MatrixStack.Entry entry = matrixStack.peek();
 		Matrix4f matrix4f = entry.getModel();

@@ -11,13 +11,13 @@ import net.minecraft.world.gen.feature.MegaTreeFeatureConfig;
 public class DarkOakSaplingGenerator extends LargeTreeSaplingGenerator {
 	@Nullable
 	@Override
-	protected ConfiguredFeature<BranchedTreeFeatureConfig, ?> createTreeFeature(Random random) {
+	protected ConfiguredFeature<BranchedTreeFeatureConfig, ?> createTreeFeature(Random random, boolean bl) {
 		return null;
 	}
 
 	@Nullable
 	@Override
 	protected ConfiguredFeature<MegaTreeFeatureConfig, ?> createLargeTreeFeature(Random random) {
-		return Feature.DARK_OAK_TREE.configure(DefaultBiomeFeatures.field_21197);
+		return Feature.DARK_OAK_TREE.configure(DefaultBiomeFeatures.DARK_OAK_TREE_CONFIG);
 	}
 }

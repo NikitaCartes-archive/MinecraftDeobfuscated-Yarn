@@ -139,7 +139,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 
 	@Override
 	public void onEntityLand(BlockView world, Entity entity) {
-		if (entity.method_21750()) {
+		if (entity.bypassesLandingEffects()) {
 			super.onEntityLand(world, entity);
 		} else {
 			this.method_21838(entity);

@@ -12,21 +12,21 @@ public class JukeboxBlockEntity extends BlockEntity implements Clearable {
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
-		if (compoundTag.contains("RecordItem", 10)) {
-			this.setRecord(ItemStack.fromTag(compoundTag.getCompound("RecordItem")));
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
+		if (tag.contains("RecordItem", 10)) {
+			this.setRecord(ItemStack.fromTag(tag.getCompound("RecordItem")));
 		}
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag compoundTag) {
-		super.toTag(compoundTag);
+	public CompoundTag toTag(CompoundTag tag) {
+		super.toTag(tag);
 		if (!this.getRecord().isEmpty()) {
-			compoundTag.put("RecordItem", this.getRecord().toTag(new CompoundTag()));
+			tag.put("RecordItem", this.getRecord().toTag(new CompoundTag()));
 		}
 
-		return compoundTag;
+		return tag;
 	}
 
 	public ItemStack getRecord() {

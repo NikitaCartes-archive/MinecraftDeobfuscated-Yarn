@@ -14,17 +14,21 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
-public class IcebergFeature extends Feature<BushFeatureConfig> {
-	public IcebergFeature(Function<Dynamic<?>, ? extends BushFeatureConfig> configFactory) {
+public class IcebergFeature extends Feature<SingleStateFeatureConfig> {
+	public IcebergFeature(Function<Dynamic<?>, ? extends SingleStateFeatureConfig> configFactory) {
 		super(configFactory);
 	}
 
 	public boolean generate(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, BushFeatureConfig bushFeatureConfig
+		IWorld iWorld,
+		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
+		Random random,
+		BlockPos blockPos,
+		SingleStateFeatureConfig singleStateFeatureConfig
 	) {
 		blockPos = new BlockPos(blockPos.getX(), iWorld.getSeaLevel(), blockPos.getZ());
 		boolean bl = random.nextDouble() > 0.7;
-		BlockState blockState = bushFeatureConfig.state;
+		BlockState blockState = singleStateFeatureConfig.state;
 		double d = random.nextDouble() * 2.0 * Math.PI;
 		int i = 11 - random.nextInt(5);
 		int j = 3 + random.nextInt(3);

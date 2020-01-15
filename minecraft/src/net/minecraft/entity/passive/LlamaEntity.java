@@ -66,8 +66,8 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 		return false;
 	}
 
-	private void setStrength(int i) {
-		this.dataTracker.set(ATTR_STRENGTH, Math.max(1, Math.min(5, i)));
+	private void setStrength(int strength) {
+		this.dataTracker.set(ATTR_STRENGTH, Math.max(1, Math.min(5, strength)));
 	}
 
 	private void initializeStrength() {
@@ -135,8 +135,8 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 		return MathHelper.clamp(this.dataTracker.get(ATTR_VARIANT), 0, 3);
 	}
 
-	public void setVariant(int i) {
-		this.dataTracker.set(ATTR_VARIANT, i);
+	public void setVariant(int variant) {
+		this.dataTracker.set(ATTR_VARIANT, variant);
 	}
 
 	@Override
@@ -391,13 +391,13 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 		this.spit = true;
 	}
 
-	private void setSpit(boolean bl) {
-		this.spit = bl;
+	private void setSpit(boolean spit) {
+		this.spit = spit;
 	}
 
 	@Override
 	public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
-		int i = this.method_23329(fallDistance, damageMultiplier);
+		int i = this.computeFallDamage(fallDistance, damageMultiplier);
 		if (i <= 0) {
 			return false;
 		} else {
@@ -410,12 +410,12 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 				}
 			}
 
-			this.method_23328();
+			this.playBlockFallSound();
 			return true;
 		}
 	}
 
-	public void method_6797() {
+	public void stopFollowing() {
 		if (this.following != null) {
 			this.following.follower = null;
 		}
@@ -477,8 +477,8 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	static class EntityData extends PassiveEntity.EntityData {
 		public final int variant;
 
-		private EntityData(int i) {
-			this.variant = i;
+		private EntityData(int variant) {
+			this.variant = variant;
 		}
 	}
 

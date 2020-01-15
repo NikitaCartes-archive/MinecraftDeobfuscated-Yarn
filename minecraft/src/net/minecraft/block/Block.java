@@ -97,8 +97,8 @@ public class Block implements ItemConvertible {
 	protected final Material material;
 	protected final MaterialColor materialColor;
 	private final float slipperiness;
-	private final float field_21207;
-	private final float field_21208;
+	private final float velocityMultiplier;
+	private final float jumpVelocityMultiplier;
 	protected final StateManager<Block, BlockState> stateManager;
 	private BlockState defaultState;
 	protected final boolean collidable;
@@ -111,7 +111,7 @@ public class Block implements ItemConvertible {
 	@Nullable
 	private Item cachedItem;
 	private static final ThreadLocal<Object2ByteLinkedOpenHashMap<Block.NeighborGroup>> FACE_CULL_MAP = ThreadLocal.withInitial(() -> {
-		Object2ByteLinkedOpenHashMap<Block.NeighborGroup> object2ByteLinkedOpenHashMap = new Object2ByteLinkedOpenHashMap<Block.NeighborGroup>(200) {
+		Object2ByteLinkedOpenHashMap<Block.NeighborGroup> object2ByteLinkedOpenHashMap = new Object2ByteLinkedOpenHashMap<Block.NeighborGroup>(2048, 0.25F) {
 			@Override
 			protected void rehash(int i) {
 			}
@@ -250,8 +250,8 @@ public class Block implements ItemConvertible {
 		this.hardness = settings.hardness;
 		this.randomTicks = settings.randomTicks;
 		this.slipperiness = settings.slipperiness;
-		this.field_21207 = settings.field_21209;
-		this.field_21208 = settings.field_21210;
+		this.velocityMultiplier = settings.slowDownMultiplier;
+		this.jumpVelocityMultiplier = settings.jumpVelocityMultiplier;
 		this.dynamicBounds = settings.dynamicBounds;
 		this.dropTableId = settings.dropTableId;
 		this.opaque = settings.opaque;
@@ -277,6 +277,12 @@ public class Block implements ItemConvertible {
 	@Deprecated
 	public boolean canSuffocate(BlockState state, BlockView view, BlockPos pos) {
 		return this.material.blocksMovement() && state.isFullCube(view, pos);
+	}
+
+	@Deprecated
+	@Environment(EnvType.CLIENT)
+	public boolean hasInWallOverlay(BlockState state, BlockView view, BlockPos pos) {
+		return state.canSuffocate(view, pos);
 	}
 
 	@Deprecated
@@ -328,7 +334,7 @@ public class Block implements ItemConvertible {
 
 	@Deprecated
 	@Environment(EnvType.CLIENT)
-	public boolean hasEmissiveLighting(BlockState blockState) {
+	public boolean hasEmissiveLighting(BlockState state) {
 		return false;
 	}
 
@@ -348,7 +354,7 @@ public class Block implements ItemConvertible {
 				VoxelShape voxelShape = state.getCullingFace(view, pos, facing);
 				VoxelShape voxelShape2 = blockState.getCullingFace(view, blockPos, facing.getOpposite());
 				boolean bl = VoxelShapes.matchesAnywhere(voxelShape, voxelShape2, BooleanBiFunction.ONLY_FIRST);
-				if (object2ByteLinkedOpenHashMap.size() == 200) {
+				if (object2ByteLinkedOpenHashMap.size() == 2048) {
 					object2ByteLinkedOpenHashMap.removeLastByte();
 				}
 
@@ -361,7 +367,7 @@ public class Block implements ItemConvertible {
 	}
 
 	@Deprecated
-	public final boolean isOpaque(BlockState blockState) {
+	public final boolean isOpaque(BlockState state) {
 		return this.opaque;
 	}
 
@@ -701,12 +707,12 @@ public class Block implements ItemConvertible {
 		return this.slipperiness;
 	}
 
-	public float method_23349() {
-		return this.field_21207;
+	public float getVelocityMultiplier() {
+		return this.velocityMultiplier;
 	}
 
-	public float method_23350() {
-		return this.field_21208;
+	public float getJumpVelocityMultiplier() {
+		return this.jumpVelocityMultiplier;
 	}
 
 	@Deprecated
@@ -843,8 +849,8 @@ public class Block implements ItemConvertible {
 		private float hardness;
 		private boolean randomTicks;
 		private float slipperiness = 0.6F;
-		private float field_21209 = 1.0F;
-		private float field_21210 = 1.0F;
+		private float slowDownMultiplier = 1.0F;
+		private float jumpVelocityMultiplier = 1.0F;
 		private Identifier dropTableId;
 		private boolean opaque = true;
 		private boolean dynamicBounds;
@@ -877,7 +883,7 @@ public class Block implements ItemConvertible {
 			settings.materialColor = source.materialColor;
 			settings.soundGroup = source.soundGroup;
 			settings.slipperiness = source.getSlipperiness();
-			settings.field_21209 = source.method_23349();
+			settings.slowDownMultiplier = source.getVelocityMultiplier();
 			settings.dynamicBounds = source.dynamicBounds;
 			settings.opaque = source.opaque;
 			return settings;
@@ -899,13 +905,13 @@ public class Block implements ItemConvertible {
 			return this;
 		}
 
-		public Block.Settings method_23351(float f) {
-			this.field_21209 = f;
+		public Block.Settings velocityMultiplier(float velocityMultiplier) {
+			this.slowDownMultiplier = velocityMultiplier;
 			return this;
 		}
 
-		public Block.Settings method_23352(float f) {
-			this.field_21210 = f;
+		public Block.Settings jumpVelocityMultiplier(float jumpVelocityMultiplier) {
+			this.jumpVelocityMultiplier = jumpVelocityMultiplier;
 			return this;
 		}
 

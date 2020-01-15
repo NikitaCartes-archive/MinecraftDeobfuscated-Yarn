@@ -454,11 +454,11 @@ public class RabbitEntity extends AnimalEntity {
 		}
 
 		@Override
-		protected boolean isTargetPos(WorldView worldView, BlockPos pos) {
-			Block block = worldView.getBlockState(pos).getBlock();
+		protected boolean isTargetPos(WorldView world, BlockPos pos) {
+			Block block = world.getBlockState(pos).getBlock();
 			if (block == Blocks.FARMLAND && this.wantsCarrots && !this.field_6861) {
 				pos = pos.up();
-				BlockState blockState = worldView.getBlockState(pos);
+				BlockState blockState = world.getBlockState(pos);
 				block = blockState.getBlock();
 				if (block instanceof CarrotsBlock && ((CarrotsBlock)block).isMature(blockState)) {
 					this.field_6861 = true;

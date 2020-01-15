@@ -73,7 +73,7 @@ public class TntBlock extends Block {
 
 	private static void primeTnt(World world, BlockPos pos, @Nullable LivingEntity igniter) {
 		if (!world.isClient) {
-			TntEntity tntEntity = new TntEntity(world, (double)((float)pos.getX() + 0.5F), (double)pos.getY(), (double)((float)pos.getZ() + 0.5F), igniter);
+			TntEntity tntEntity = new TntEntity(world, (double)pos.getX() + 0.5, (double)pos.getY(), (double)pos.getZ() + 0.5, igniter);
 			world.spawnEntity(tntEntity);
 			world.playSound(null, tntEntity.getX(), tntEntity.getY(), tntEntity.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
 		}

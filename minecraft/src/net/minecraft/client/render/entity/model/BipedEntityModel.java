@@ -124,7 +124,7 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 		this.leftLeg.yaw = 0.0F;
 		this.rightLeg.roll = 0.0F;
 		this.leftLeg.roll = 0.0F;
-		if (this.isRiding) {
+		if (this.riding) {
 			this.rightArm.pitch += (float) (-Math.PI / 5);
 			this.leftArm.pitch += (float) (-Math.PI / 5);
 			this.rightLeg.pitch = -1.4137167F;

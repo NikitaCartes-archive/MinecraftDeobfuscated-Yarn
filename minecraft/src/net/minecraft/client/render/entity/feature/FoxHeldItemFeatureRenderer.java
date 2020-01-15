@@ -31,7 +31,9 @@ public class FoxHeldItemFeatureRenderer extends FeatureRenderer<FoxEntity, FoxEn
 		}
 
 		matrixStack.translate(
-			(double)(this.getModel().head.pivotX / 16.0F), (double)(this.getModel().head.pivotY / 16.0F), (double)(this.getModel().head.pivotZ / 16.0F)
+			(double)(this.getContextModel().head.pivotX / 16.0F),
+			(double)(this.getContextModel().head.pivotY / 16.0F),
+			(double)(this.getContextModel().head.pivotZ / 16.0F)
 		);
 		float m = foxEntity.getHeadRoll(h);
 		matrixStack.multiply(Vector3f.POSITIVE_Z.getRadialQuaternion(m));
@@ -56,8 +58,8 @@ public class FoxHeldItemFeatureRenderer extends FeatureRenderer<FoxEntity, FoxEn
 
 		ItemStack itemStack = foxEntity.getEquippedStack(EquipmentSlot.MAINHAND);
 		MinecraftClient.getInstance()
-			.getFirstPersonRenderer()
-			.renderItem(foxEntity, itemStack, ModelTransformation.Type.GROUND, false, matrixStack, vertexConsumerProvider, i);
+			.getHeldItemRenderer()
+			.renderItem(foxEntity, itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i);
 		matrixStack.pop();
 	}
 }

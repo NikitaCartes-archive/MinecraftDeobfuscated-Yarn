@@ -47,7 +47,7 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 				matrixStack.translate(0.0, 1.0, 0.0);
 			}
 
-			this.getModel().getHead().rotate(matrixStack);
+			this.getContextModel().getHead().rotate(matrixStack);
 			if (item instanceof BlockItem && ((BlockItem)item).getBlock() instanceof AbstractSkullBlock) {
 				float m = 1.1875F;
 				matrixStack.scale(1.1875F, -1.1875F, -1.1875F);
@@ -83,8 +83,8 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 				}
 
 				MinecraftClient.getInstance()
-					.getFirstPersonRenderer()
-					.renderItem(livingEntity, itemStack, ModelTransformation.Type.HEAD, false, matrixStack, vertexConsumerProvider, i);
+					.getHeldItemRenderer()
+					.renderItem(livingEntity, itemStack, ModelTransformation.Mode.HEAD, false, matrixStack, vertexConsumerProvider, i);
 			}
 
 			matrixStack.pop();
