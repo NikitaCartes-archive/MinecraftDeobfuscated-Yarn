@@ -307,7 +307,7 @@ public class Structure {
             compoundTag.remove("UUIDLeast");
             Structure.method_17916(iWorld, compoundTag).ifPresent(entity -> {
                 float f = entity.applyMirror(blockMirror);
-                entity.setPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, f += entity.yaw - entity.applyRotation(blockRotation), entity.pitch);
+                entity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, f += entity.yaw - entity.applyRotation(blockRotation), entity.pitch);
                 iWorld.spawnEntity((Entity)entity);
             });
         }

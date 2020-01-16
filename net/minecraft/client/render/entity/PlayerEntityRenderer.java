@@ -207,7 +207,7 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
             }
         } else if (i > 0.0f) {
             super.setupTransforms(abstractClientPlayerEntity, matrixStack, f, g, h);
-            float j = abstractClientPlayerEntity.isInsideWater() ? -90.0f - abstractClientPlayerEntity.pitch : -90.0f;
+            float j = abstractClientPlayerEntity.isTouchingWater() ? -90.0f - abstractClientPlayerEntity.pitch : -90.0f;
             float k = MathHelper.lerp(i, 0.0f, j);
             matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(k));
             if (abstractClientPlayerEntity.isInSwimmingPose()) {

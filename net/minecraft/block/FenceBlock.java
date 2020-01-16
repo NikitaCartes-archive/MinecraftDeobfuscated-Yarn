@@ -52,7 +52,7 @@ extends HorizontalConnectedBlock {
         Block block = state.getBlock();
         boolean bl = block.matches(BlockTags.FENCES) && state.getMaterial() == this.material;
         boolean bl2 = block instanceof FenceGateBlock && FenceGateBlock.canWallConnect(state, dir);
-        return !FenceBlock.canConnect(block) && neighborIsFullSquare || bl || bl2;
+        return !FenceBlock.cannotConnect(block) && neighborIsFullSquare || bl || bl2;
     }
 
     @Override

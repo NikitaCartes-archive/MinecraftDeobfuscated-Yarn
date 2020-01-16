@@ -100,7 +100,7 @@ extends Goal {
         this.animal.resetLoveTicks();
         this.mate.resetLoveTicks();
         passiveEntity.setBreedingAge(-24000);
-        passiveEntity.setPositionAndAngles(this.animal.getX(), this.animal.getY(), this.animal.getZ(), 0.0f, 0.0f);
+        passiveEntity.refreshPositionAndAngles(this.animal.getX(), this.animal.getY(), this.animal.getZ(), 0.0f, 0.0f);
         this.world.spawnEntity(passiveEntity);
         this.world.sendEntityStatus(this.animal, (byte)18);
         if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {

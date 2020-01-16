@@ -22,7 +22,7 @@ extends Task<MobEntity> {
 
     @Override
     protected boolean shouldRun(ServerWorld serverWorld, MobEntity mobEntity) {
-        return mobEntity.isInsideWater() && mobEntity.getWaterHeight() > (double)this.minWaterHeight || mobEntity.isInLava();
+        return mobEntity.isTouchingWater() && mobEntity.getWaterHeight() > (double)this.minWaterHeight || mobEntity.isInLava();
     }
 
     @Override

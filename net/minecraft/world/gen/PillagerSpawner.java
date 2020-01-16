@@ -94,7 +94,7 @@ public class PillagerSpawner {
                 patrolEntity.setPatrolLeader(true);
                 patrolEntity.setRandomPatrolTarget();
             }
-            patrolEntity.setPosition(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+            patrolEntity.updatePosition(blockPos.getX(), blockPos.getY(), blockPos.getZ());
             patrolEntity.initialize(world, world.getLocalDifficulty(blockPos), SpawnType.PATROL, null, null);
             world.spawnEntity(patrolEntity);
             return true;

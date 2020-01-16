@@ -21,9 +21,16 @@ public interface BakedModel {
 
     public boolean useAmbientOcclusion();
 
-    public boolean hasDepthInGui();
+    public boolean hasDepth();
 
-    public boolean method_24304();
+    /**
+     * Allows control of the lighting when rendering a model in a GUI.
+     * <p>
+     * True, the model will be lit from the side, like a block.
+     * <p>
+     * False, the model will be lit from the front, like an item.
+     */
+    public boolean isSideLit();
 
     public boolean isBuiltin();
 

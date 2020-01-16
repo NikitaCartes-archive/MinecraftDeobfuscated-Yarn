@@ -978,7 +978,7 @@ public class WoodlandMansionGenerator {
                     }
                 }
                 illagerEntity.setPersistent();
-                illagerEntity.setPositionAndAngles(pos, 0.0f, 0.0f);
+                illagerEntity.refreshPositionAndAngles(pos, 0.0f, 0.0f);
                 illagerEntity.initialize(world, world.getLocalDifficulty(new BlockPos(illagerEntity)), SpawnType.STRUCTURE, null, null);
                 world.spawnEntity(illagerEntity);
                 world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);

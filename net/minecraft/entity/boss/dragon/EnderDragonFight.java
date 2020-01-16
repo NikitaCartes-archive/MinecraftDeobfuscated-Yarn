@@ -347,7 +347,7 @@ public class EnderDragonFight {
         this.world.getWorldChunk(new BlockPos(0, 128, 0));
         EnderDragonEntity enderDragonEntity = EntityType.ENDER_DRAGON.create(this.world);
         enderDragonEntity.getPhaseManager().setPhase(PhaseType.HOLDING_PATTERN);
-        enderDragonEntity.setPositionAndAngles(0.0, 128.0, 0.0, this.world.random.nextFloat() * 360.0f, 0.0f);
+        enderDragonEntity.refreshPositionAndAngles(0.0, 128.0, 0.0, this.world.random.nextFloat() * 360.0f, 0.0f);
         this.world.spawnEntity(enderDragonEntity);
         this.dragonUuid = enderDragonEntity.getUuid();
         return enderDragonEntity;

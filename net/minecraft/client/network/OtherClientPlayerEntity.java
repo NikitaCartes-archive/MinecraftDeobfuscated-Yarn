@@ -59,7 +59,7 @@ extends AbstractClientPlayerEntity {
             this.yaw = (float)((double)this.yaw + MathHelper.wrapDegrees(this.serverYaw - (double)this.yaw) / (double)this.bodyTrackingIncrements);
             this.pitch = (float)((double)this.pitch + (this.serverPitch - (double)this.pitch) / (double)this.bodyTrackingIncrements);
             --this.bodyTrackingIncrements;
-            this.setPosition(d, e, f);
+            this.updatePosition(d, e, f);
             this.setRotation(this.yaw, this.pitch);
         }
         if (this.headTrackingIncrements > 0) {

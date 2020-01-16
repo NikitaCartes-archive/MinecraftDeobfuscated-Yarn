@@ -616,7 +616,7 @@ AutoCloseable {
         }
         if (blockEntity != null && !blockEntity.isRemoved()) {
             if (this.iteratingTickingBlockEntities) {
-                blockEntity.setWorld(this, pos);
+                blockEntity.setLocation(this, pos);
                 Iterator<BlockEntity> iterator = this.pendingBlockEntities.iterator();
                 while (iterator.hasNext()) {
                     BlockEntity blockEntity2 = iterator.next();

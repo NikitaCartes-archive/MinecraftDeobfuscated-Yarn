@@ -316,7 +316,7 @@ extends AnimalEntity {
     public void tick() {
         super.tick();
         if (this.isWorried()) {
-            if (this.world.isThundering() && !this.isInsideWater()) {
+            if (this.world.isThundering() && !this.isTouchingWater()) {
                 this.setScared(true);
                 this.setEating(false);
             } else if (!this.isEating()) {
@@ -458,7 +458,7 @@ extends AnimalEntity {
         this.playSound(SoundEvents.ENTITY_PANDA_SNEEZE, 1.0f, 1.0f);
         List<PandaEntity> list = this.world.getNonSpectatingEntities(PandaEntity.class, this.getBoundingBox().expand(10.0));
         for (PandaEntity pandaEntity : list) {
-            if (pandaEntity.isBaby() || !pandaEntity.onGround || pandaEntity.isInsideWater() || !pandaEntity.method_18442()) continue;
+            if (pandaEntity.isBaby() || !pandaEntity.onGround || pandaEntity.isTouchingWater() || !pandaEntity.method_18442()) continue;
             pandaEntity.jump();
         }
         if (!this.world.isClient() && this.random.nextInt(700) == 0 && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
@@ -537,7 +537,7 @@ extends AnimalEntity {
     }
 
     private void stop() {
-        if (!this.isInsideWater()) {
+        if (!this.isTouchingWater()) {
             this.setForwardSpeed(0.0f);
             this.getNavigation().stop();
             this.setScared(true);
@@ -567,7 +567,7 @@ extends AnimalEntity {
             } else if (!this.world.isClient && this.getBreedingAge() == 0 && this.canEat()) {
                 this.eat(player, itemStack);
                 this.lovePlayer(player);
-            } else if (!(this.world.isClient || this.isScared() || this.isInsideWater())) {
+            } else if (!(this.world.isClient || this.isScared() || this.isTouchingWater())) {
                 this.stop();
                 this.setEating(true);
                 ItemStack itemStack2 = this.getEquippedStack(EquipmentSlot.MAINHAND);
@@ -703,7 +703,7 @@ extends AnimalEntity {
 
         @Override
         public boolean shouldContinue() {
-            if (this.panda.isInsideWater() || !this.panda.isLazy() && this.panda.random.nextInt(600) == 1) {
+            if (this.panda.isTouchingWater() || !this.panda.isLazy() && this.panda.random.nextInt(600) == 1) {
                 return false;
             }
             return this.panda.random.nextInt(2000) != 1;
@@ -732,7 +732,7 @@ extends AnimalEntity {
 
         @Override
         public boolean canStart() {
-            if (this.startAge > PandaEntity.this.age || PandaEntity.this.isBaby() || PandaEntity.this.isInsideWater() || !PandaEntity.this.method_18442() || PandaEntity.this.getAskForBambooTicks() > 0) {
+            if (this.startAge > PandaEntity.this.age || PandaEntity.this.isBaby() || PandaEntity.this.isTouchingWater() || !PandaEntity.this.method_18442() || PandaEntity.this.getAskForBambooTicks() > 0) {
                 return false;
             }
             List<ItemEntity> list = PandaEntity.this.world.getEntities(ItemEntity.class, PandaEntity.this.getBoundingBox().expand(6.0, 6.0, 6.0), IS_FOOD);
@@ -741,7 +741,7 @@ extends AnimalEntity {
 
         @Override
         public boolean shouldContinue() {
-            if (PandaEntity.this.isInsideWater() || !PandaEntity.this.isLazy() && PandaEntity.this.random.nextInt(600) == 1) {
+            if (PandaEntity.this.isTouchingWater() || !PandaEntity.this.isLazy() && PandaEntity.this.random.nextInt(600) == 1) {
                 return false;
             }
             return PandaEntity.this.random.nextInt(2000) != 1;

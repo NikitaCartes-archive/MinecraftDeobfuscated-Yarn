@@ -64,7 +64,7 @@ extends Entity {
         this((EntityType<? extends FallingBlockEntity>)EntityType.FALLING_BLOCK, world);
         this.block = block;
         this.inanimate = true;
-        this.setPosition(x, y + (double)((1.0f - this.getHeight()) / 2.0f), z);
+        this.updatePosition(x, y + (double)((1.0f - this.getHeight()) / 2.0f), z);
         this.setVelocity(Vec3d.ZERO);
         this.prevX = x;
         this.prevY = y;

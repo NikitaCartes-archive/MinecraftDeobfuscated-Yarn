@@ -33,14 +33,14 @@ extends MobEntityRenderer<SalmonEntity, SalmonEntityModel<SalmonEntity>> {
         super.setupTransforms(salmonEntity, matrixStack, f, g, h);
         float i = 1.0f;
         float j = 1.0f;
-        if (!salmonEntity.isInsideWater()) {
+        if (!salmonEntity.isTouchingWater()) {
             i = 1.3f;
             j = 1.7f;
         }
         float k = i * 4.3f * MathHelper.sin(j * 0.6f * f);
         matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(k));
         matrixStack.translate(0.0, 0.0, -0.4f);
-        if (!salmonEntity.isInsideWater()) {
+        if (!salmonEntity.isTouchingWater()) {
             matrixStack.translate(0.2f, 0.1f, 0.0);
             matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(90.0f));
         }

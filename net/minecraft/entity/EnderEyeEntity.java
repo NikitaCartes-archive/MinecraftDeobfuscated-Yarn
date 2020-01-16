@@ -45,7 +45,7 @@ implements FlyingItemEntity {
     public EnderEyeEntity(World world, double x, double y, double z) {
         this((EntityType<? extends EnderEyeEntity>)EntityType.EYE_OF_ENDER, world);
         this.useCount = 0;
-        this.setPosition(x, y, z);
+        this.updatePosition(x, y, z);
     }
 
     public void setItem(ItemStack stack2) {
@@ -152,7 +152,7 @@ implements FlyingItemEntity {
             this.setVelocity(vec3d);
         }
         float o = 0.25f;
-        if (this.isInsideWater()) {
+        if (this.isTouchingWater()) {
             for (int p = 0; p < 4; ++p) {
                 this.world.addParticle(ParticleTypes.BUBBLE, d - vec3d.x * 0.25, e - vec3d.y * 0.25, f - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
             }
@@ -160,7 +160,7 @@ implements FlyingItemEntity {
             this.world.addParticle(ParticleTypes.PORTAL, d - vec3d.x * 0.25 + this.random.nextDouble() * 0.6 - 0.3, e - vec3d.y * 0.25 - 0.5, f - vec3d.z * 0.25 + this.random.nextDouble() * 0.6 - 0.3, vec3d.x, vec3d.y, vec3d.z);
         }
         if (!this.world.isClient) {
-            this.setPosition(d, e, f);
+            this.updatePosition(d, e, f);
             ++this.useCount;
             if (this.useCount > 80 && !this.world.isClient) {
                 this.playSound(SoundEvents.ENTITY_ENDER_EYE_DEATH, 1.0f, 1.0f);

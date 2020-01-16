@@ -76,7 +76,7 @@ extends EntityNavigation {
     }
 
     private int method_6362() {
-        if (!this.entity.isInsideWater() || !this.canSwim()) {
+        if (!this.entity.isTouchingWater() || !this.canSwim()) {
             return MathHelper.floor(this.entity.getY() + 0.5);
         }
         int i = MathHelper.floor(this.entity.getY());

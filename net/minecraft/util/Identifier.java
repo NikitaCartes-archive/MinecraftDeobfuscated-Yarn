@@ -22,6 +22,9 @@ import net.minecraft.util.JsonHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * The namespace and path must contain only lowercase letters ([a-z]), digits ([0-9]), or the characters '_', '.', and '-'. The path can also contain the standard path separator '/'.
+ */
 public class Identifier
 implements Comparable<Identifier> {
     private static final SimpleCommandExceptionType COMMAND_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.id.invalid", new Object[0]));
@@ -39,12 +42,17 @@ implements Comparable<Identifier> {
         }
     }
 
-    public Identifier(String string) {
-        this(Identifier.split(string, ':'));
+    /**
+     * @param id A string of the form <namespace>:<path>, for example minecraft:iron_ingot.
+     * The string will be split (on the :) into an identifier with the specified path and namespace.
+     * Prefer using the constructor {@link net.minecraft.util.Identifier
+     */
+    public Identifier(String id) {
+        this(Identifier.split(id, ':'));
     }
 
-    public Identifier(String string, String string2) {
-        this(new String[]{string, string2});
+    public Identifier(String namespace, String path) {
+        this(new String[]{namespace, path});
     }
 
     public static Identifier splitOn(String id, char delimiter) {

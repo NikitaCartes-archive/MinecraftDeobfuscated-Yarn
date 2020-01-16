@@ -371,7 +371,7 @@ WindowEventHandler {
         WindowSettings windowSettings = this.options.overrideHeight > 0 && this.options.overrideWidth > 0 ? new WindowSettings(this.options.overrideWidth, this.options.overrideHeight, args.windowSettings.fullscreenWidth, args.windowSettings.fullscreenHeight, args.windowSettings.fullscreen) : args.windowSettings;
         Util.nanoTimeSupplier = RenderSystem.initBackendSystem();
         this.windowProvider = new WindowProvider(this);
-        this.window = this.windowProvider.createWindow(windowSettings, this.options.fullscreenResolution, this.method_24287());
+        this.window = this.windowProvider.createWindow(windowSettings, this.options.fullscreenResolution, this.getWindowTitle());
         this.onWindowFocusChanged(true);
         try {
             InputStream inputStream = this.getResourcePackDownloader().getPack().open(ResourceType.CLIENT_RESOURCES, new Identifier("icons/icon_16x16.png"));
@@ -464,19 +464,19 @@ WindowEventHandler {
         }), false));
     }
 
-    public void method_24288() {
-        this.window.method_24286(this.method_24287());
+    public void updateWindowTitle() {
+        this.window.setTitle(this.getWindowTitle());
     }
 
-    private String method_24287() {
+    private String getWindowTitle() {
         StringBuilder stringBuilder = new StringBuilder("Minecraft");
-        if (this.method_24289()) {
+        if (this.isModded()) {
             stringBuilder.append("*");
         }
         stringBuilder.append(" ");
         stringBuilder.append(SharedConstants.getGameVersion().getName());
         ClientPlayNetworkHandler clientPlayNetworkHandler = this.getNetworkHandler();
-        if (clientPlayNetworkHandler != null) {
+        if (clientPlayNetworkHandler != null && clientPlayNetworkHandler.getConnection().isOpen()) {
             stringBuilder.append(" - ");
             if (this.server != null && !this.server.isRemote()) {
                 stringBuilder.append(I18n.translate("title.singleplayer", new Object[0]));
@@ -491,7 +491,7 @@ WindowEventHandler {
         return stringBuilder.toString();
     }
 
-    public boolean method_24289() {
+    public boolean isModded() {
         return !"vanilla".equals(ClientBrandRetriever.getClientModName()) || MinecraftClient.class.getSigners() == null;
     }
 
@@ -720,7 +720,7 @@ WindowEventHandler {
             this.soundManager.resumeAll();
             this.mouse.lockCursor();
         }
-        this.method_24288();
+        this.updateWindowTitle();
     }
 
     public void setOverlay(@Nullable Overlay overlay) {
@@ -1483,7 +1483,7 @@ WindowEventHandler {
         this.worldRenderer.setWorld(clientWorld);
         this.particleManager.setWorld(clientWorld);
         BlockEntityRenderDispatcher.INSTANCE.setWorld(clientWorld);
-        this.method_24288();
+        this.updateWindowTitle();
     }
 
     public final boolean isDemo() {
@@ -1818,7 +1818,7 @@ WindowEventHandler {
                 return MusicTracker.MusicType.END;
             }
             Biome.Category category = this.player.world.getBiome(new BlockPos(this.player)).getCategory();
-            if (this.musicTracker.isPlayingType(MusicTracker.MusicType.UNDER_WATER) || this.player.isInWater() && !this.musicTracker.isPlayingType(MusicTracker.MusicType.GAME) && (category == Biome.Category.OCEAN || category == Biome.Category.RIVER)) {
+            if (this.musicTracker.isPlayingType(MusicTracker.MusicType.UNDER_WATER) || this.player.isSubmergedInWater() && !this.musicTracker.isPlayingType(MusicTracker.MusicType.GAME) && (category == Biome.Category.OCEAN || category == Biome.Category.RIVER)) {
                 return MusicTracker.MusicType.UNDER_WATER;
             }
             if (this.player.abilities.creativeMode && this.player.abilities.allowFlying) {

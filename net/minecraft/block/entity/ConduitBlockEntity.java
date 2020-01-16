@@ -156,7 +156,7 @@ implements Tickable {
             return;
         }
         for (PlayerEntity playerEntity : list) {
-            if (!this.pos.isWithinDistance(new BlockPos(playerEntity), (double)j) || !playerEntity.isInsideWaterOrRain()) continue;
+            if (!this.pos.isWithinDistance(new BlockPos(playerEntity), (double)j) || !playerEntity.isTouchingWaterOrRain()) continue;
             playerEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.CONDUIT_POWER, 260, 0, true, true));
         }
     }
@@ -170,7 +170,7 @@ implements Tickable {
             this.targetEntity = this.findTargetEntity();
             this.targetUuid = null;
         } else if (this.targetEntity == null) {
-            List<LivingEntity> list = this.world.getEntities(LivingEntity.class, this.getAttackZone(), livingEntity -> livingEntity instanceof Monster && livingEntity.isInsideWaterOrRain());
+            List<LivingEntity> list = this.world.getEntities(LivingEntity.class, this.getAttackZone(), livingEntity -> livingEntity instanceof Monster && livingEntity.isTouchingWaterOrRain());
             if (!list.isEmpty()) {
                 this.targetEntity = list.get(this.world.random.nextInt(list.size()));
             }

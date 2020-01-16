@@ -627,7 +627,7 @@ VillagerDataContainer {
     @Override
     public void onStruckByLightning(LightningEntity lightning) {
         WitchEntity witchEntity = EntityType.WITCH.create(this.world);
-        witchEntity.setPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
+        witchEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
         witchEntity.initialize(this.world, this.world.getLocalDifficulty(new BlockPos(witchEntity)), SpawnType.CONVERSION, null, null);
         witchEntity.setAiDisabled(this.isAiDisabled());
         if (this.hasCustomName()) {

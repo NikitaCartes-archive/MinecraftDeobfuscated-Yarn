@@ -306,12 +306,12 @@ public class EntityType<T extends Entity> {
             return null;
         }
         if (alignPosition) {
-            ((Entity)entity).setPosition((double)pos.getX() + 0.5, pos.getY() + 1, (double)pos.getZ() + 0.5);
+            ((Entity)entity).updatePosition((double)pos.getX() + 0.5, pos.getY() + 1, (double)pos.getZ() + 0.5);
             d = EntityType.getOriginY(world, pos, invertY, ((Entity)entity).getBoundingBox());
         } else {
             d = 0.0;
         }
-        ((Entity)entity).setPositionAndAngles((double)pos.getX() + 0.5, (double)pos.getY() + d, (double)pos.getZ() + 0.5, MathHelper.wrapDegrees(world.random.nextFloat() * 360.0f), 0.0f);
+        ((Entity)entity).refreshPositionAndAngles((double)pos.getX() + 0.5, (double)pos.getY() + d, (double)pos.getZ() + 0.5, MathHelper.wrapDegrees(world.random.nextFloat() * 360.0f), 0.0f);
         if (entity instanceof MobEntity) {
             MobEntity mobEntity = (MobEntity)entity;
             mobEntity.headYaw = mobEntity.yaw;

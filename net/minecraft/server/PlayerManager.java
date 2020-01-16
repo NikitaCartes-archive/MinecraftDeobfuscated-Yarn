@@ -371,17 +371,17 @@ public abstract class PlayerManager {
         ServerWorld serverWorld = this.server.getWorld(player.dimension);
         this.setGameMode(serverPlayerEntity, player, serverWorld);
         if (blockPos != null) {
-            Optional<Vec3d> optional = PlayerEntity.method_7288(this.server.getWorld(player.dimension), blockPos, bl);
+            Optional<Vec3d> optional = PlayerEntity.findRespawnPosition(this.server.getWorld(player.dimension), blockPos, bl);
             if (optional.isPresent()) {
                 Vec3d vec3d = optional.get();
-                serverPlayerEntity.setPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, 0.0f, 0.0f);
+                serverPlayerEntity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, 0.0f, 0.0f);
                 serverPlayerEntity.setPlayerSpawn(blockPos, bl, false);
             } else {
                 serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(0, 0.0f));
             }
         }
         while (!serverWorld.doesNotCollide(serverPlayerEntity) && serverPlayerEntity.getY() < 256.0) {
-            serverPlayerEntity.setPosition(serverPlayerEntity.getX(), serverPlayerEntity.getY() + 1.0, serverPlayerEntity.getZ());
+            serverPlayerEntity.updatePosition(serverPlayerEntity.getX(), serverPlayerEntity.getY() + 1.0, serverPlayerEntity.getZ());
         }
         LevelProperties levelProperties = serverPlayerEntity.world.getLevelProperties();
         serverPlayerEntity.networkHandler.sendPacket(new PlayerRespawnS2CPacket(serverPlayerEntity.dimension, LevelProperties.sha256Hash(levelProperties.getSeed()), levelProperties.getGeneratorType(), serverPlayerEntity.interactionManager.getGameMode()));

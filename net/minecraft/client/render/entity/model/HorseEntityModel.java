@@ -171,7 +171,7 @@ extends AnimalModel<T> {
         this.torso.pitch = 0.0f;
         this.head.pitch = 0.5235988f + m;
         this.head.yaw = l * ((float)Math.PI / 180);
-        float s = ((Entity)horseBaseEntity).isInsideWater() ? 0.2f : 1.0f;
+        float s = ((Entity)horseBaseEntity).isTouchingWater() ? 0.2f : 1.0f;
         float t = MathHelper.cos(s * f * 0.6662f + (float)Math.PI);
         float u = t * 0.8f * g;
         float v = (1.0f - Math.max(o, n)) * (0.5235988f + m + q * MathHelper.sin(r) * 0.05f);

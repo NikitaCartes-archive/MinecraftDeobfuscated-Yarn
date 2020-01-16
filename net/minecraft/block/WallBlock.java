@@ -60,7 +60,7 @@ extends HorizontalConnectedBlock {
     private boolean shouldConnectTo(BlockState state, boolean faceFullSquare, Direction side) {
         Block block = state.getBlock();
         boolean bl = block.matches(BlockTags.WALLS) || block instanceof FenceGateBlock && FenceGateBlock.canWallConnect(state, side);
-        return !WallBlock.canConnect(block) && faceFullSquare || bl;
+        return !WallBlock.cannotConnect(block) && faceFullSquare || bl;
     }
 
     @Override

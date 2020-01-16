@@ -513,7 +513,7 @@ implements ClientPlayPacketListener {
         otherClientPlayerEntity.setEntityId(i);
         otherClientPlayerEntity.resetPosition(d, e, f);
         otherClientPlayerEntity.updateTrackedPosition(d, e, f);
-        otherClientPlayerEntity.setPositionAnglesAndUpdate(d, e, f, g, h);
+        otherClientPlayerEntity.updatePositionAndAngles(d, e, f, g, h);
         this.world.addPlayer(i, otherClientPlayerEntity);
     }
 
@@ -644,7 +644,7 @@ implements ClientPlayPacketListener {
         if (packet.getFlags().contains((Object)PlayerPositionLookS2CPacket.Flag.Y_ROT)) {
             j += playerEntity.yaw;
         }
-        playerEntity.setPositionAnglesAndUpdate(e, g, i, j, k);
+        playerEntity.updatePositionAndAngles(e, g, i, j, k);
         this.connection.send(new TeleportConfirmC2SPacket(packet.getTeleportId()));
         this.connection.send(new PlayerMoveC2SPacket.Both(playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), playerEntity.yaw, playerEntity.pitch, false));
         if (!this.field_3698) {
@@ -799,7 +799,7 @@ implements ClientPlayPacketListener {
             }
             livingEntity.setEntityId(packet.getId());
             livingEntity.setUuid(packet.getUuid());
-            livingEntity.setPositionAnglesAndUpdate(d, e, f, g, h);
+            livingEntity.updatePositionAndAngles(d, e, f, g, h);
             livingEntity.setVelocity((float)packet.getVelocityX() / 8000.0f, (float)packet.getVelocityY() / 8000.0f, (float)packet.getVelocityZ() / 8000.0f);
             this.world.addEntity(packet.getId(), livingEntity);
             if (livingEntity instanceof BeeEntity) {
@@ -1027,7 +1027,7 @@ implements ClientPlayPacketListener {
         BlockEntity blockEntity = this.world.getBlockEntity(packet.getPos());
         if (!(blockEntity instanceof SignBlockEntity)) {
             blockEntity = new SignBlockEntity();
-            blockEntity.setWorld(this.world, packet.getPos());
+            blockEntity.setLocation(this.world, packet.getPos());
         }
         this.client.player.openEditSignScreen((SignBlockEntity)blockEntity);
     }
@@ -1572,7 +1572,7 @@ implements ClientPlayPacketListener {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         Entity entity = this.client.player.getRootVehicle();
         if (entity != this.client.player && entity.isLogicalSideForUpdatingMovement()) {
-            entity.setPositionAnglesAndUpdate(packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getPitch());
+            entity.updatePositionAndAngles(packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getPitch());
             this.connection.send(new VehicleMoveC2SPacket(entity));
         }
     }

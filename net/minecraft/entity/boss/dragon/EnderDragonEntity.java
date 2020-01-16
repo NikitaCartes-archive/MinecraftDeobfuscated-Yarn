@@ -198,7 +198,7 @@ implements Monster {
                 this.yaw = (float)((double)this.yaw + k / (double)this.bodyTrackingIncrements);
                 this.pitch = (float)((double)this.pitch + (this.serverPitch - (double)this.pitch) / (double)this.bodyTrackingIncrements);
                 --this.bodyTrackingIncrements;
-                this.setPosition(d, e, j);
+                this.updatePosition(d, e, j);
                 this.setRotation(this.yaw, this.pitch);
             }
             this.phaseManager.getCurrent().clientTick();
@@ -304,7 +304,7 @@ implements Monster {
     }
 
     private void method_22863(EnderDragonPart enderDragonPart, double d, double e, double f) {
-        enderDragonPart.setPosition(this.getX() + d, this.getY() + e, this.getZ() + f);
+        enderDragonPart.updatePosition(this.getX() + d, this.getY() + e, this.getZ() + f);
     }
 
     private float method_6820() {

@@ -1705,7 +1705,7 @@ public class OceanMonumentGenerator {
             if (blockBox.contains(new BlockPos(l, m = this.applyYTransform(j), n = this.applyZTransform(i, k)))) {
                 ElderGuardianEntity elderGuardianEntity = EntityType.ELDER_GUARDIAN.create(iWorld.getWorld());
                 elderGuardianEntity.heal(elderGuardianEntity.getMaximumHealth());
-                elderGuardianEntity.setPositionAndAngles((double)l + 0.5, m, (double)n + 0.5, 0.0f, 0.0f);
+                elderGuardianEntity.refreshPositionAndAngles((double)l + 0.5, m, (double)n + 0.5, 0.0f, 0.0f);
                 elderGuardianEntity.initialize(iWorld, iWorld.getLocalDifficulty(new BlockPos(elderGuardianEntity)), SpawnType.STRUCTURE, null, null);
                 iWorld.spawnEntity(elderGuardianEntity);
                 return true;

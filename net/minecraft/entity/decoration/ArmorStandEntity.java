@@ -79,7 +79,7 @@ extends LivingEntity {
 
     public ArmorStandEntity(World world, double d, double e, double f) {
         this((EntityType<? extends ArmorStandEntity>)EntityType.ARMOR_STAND, world);
-        this.setPosition(d, e, f);
+        this.updatePosition(d, e, f);
     }
 
     @Override
@@ -88,7 +88,7 @@ extends LivingEntity {
         double e = this.getY();
         double f = this.getZ();
         super.calculateDimensions();
-        this.setPosition(d, e, f);
+        this.updatePosition(d, e, f);
     }
 
     private boolean canClip() {

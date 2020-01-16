@@ -451,7 +451,7 @@ extends AnimalEntity {
     public void tick() {
         super.tick();
         if (this.canMoveVoluntarily()) {
-            boolean bl = this.isInsideWater();
+            boolean bl = this.isTouchingWater();
             if (bl || this.getTarget() != null || this.world.isThundering()) {
                 this.stopSleeping();
             }
@@ -787,7 +787,7 @@ extends AnimalEntity {
 
         @Override
         public boolean canStart() {
-            return FoxEntity.this.isInsideWater() && FoxEntity.this.getWaterHeight() > 0.25 || FoxEntity.this.isInLava();
+            return FoxEntity.this.isTouchingWater() && FoxEntity.this.getWaterHeight() > 0.25 || FoxEntity.this.isInLava();
         }
     }
 
@@ -1209,7 +1209,7 @@ extends AnimalEntity {
             this.animal.resetLoveTicks();
             this.mate.resetLoveTicks();
             foxEntity.setBreedingAge(-24000);
-            foxEntity.setPositionAndAngles(this.animal.getX(), this.animal.getY(), this.animal.getZ(), 0.0f, 0.0f);
+            foxEntity.refreshPositionAndAngles(this.animal.getX(), this.animal.getY(), this.animal.getZ(), 0.0f, 0.0f);
             this.world.spawnEntity(foxEntity);
             this.world.sendEntityStatus(this.animal, (byte)18);
             if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {

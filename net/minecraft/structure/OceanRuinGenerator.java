@@ -174,7 +174,7 @@ public class OceanRuinGenerator {
             } else if ("drowned".equals(metadata)) {
                 DrownedEntity drownedEntity = EntityType.DROWNED.create(world.getWorld());
                 drownedEntity.setPersistent();
-                drownedEntity.setPositionAndAngles(pos, 0.0f, 0.0f);
+                drownedEntity.refreshPositionAndAngles(pos, 0.0f, 0.0f);
                 drownedEntity.initialize(world, world.getLocalDifficulty(pos), SpawnType.STRUCTURE, null, null);
                 world.spawnEntity(drownedEntity);
                 if (pos.getY() > world.getSeaLevel()) {

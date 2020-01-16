@@ -73,7 +73,7 @@ extends TameableEntity {
     };
     private float begAnimationProgress;
     private float lastBegAnimationProgress;
-    private boolean wet;
+    private boolean furWet;
     private boolean canShakeWaterOff;
     private float shakeProgress;
     private float lastShakeProgress;
@@ -187,7 +187,7 @@ extends TameableEntity {
     @Override
     public void tickMovement() {
         super.tickMovement();
-        if (!this.world.isClient && this.wet && !this.canShakeWaterOff && !this.isNavigating() && this.onGround) {
+        if (!this.world.isClient && this.furWet && !this.canShakeWaterOff && !this.isNavigating() && this.onGround) {
             this.canShakeWaterOff = true;
             this.shakeProgress = 0.0f;
             this.lastShakeProgress = 0.0f;
@@ -206,19 +206,19 @@ extends TameableEntity {
         }
         this.lastBegAnimationProgress = this.begAnimationProgress;
         this.begAnimationProgress = this.isBegging() ? (this.begAnimationProgress += (1.0f - this.begAnimationProgress) * 0.4f) : (this.begAnimationProgress += (0.0f - this.begAnimationProgress) * 0.4f);
-        if (this.isTouchingWater()) {
-            this.wet = true;
+        if (this.isWet()) {
+            this.furWet = true;
             this.canShakeWaterOff = false;
             this.shakeProgress = 0.0f;
             this.lastShakeProgress = 0.0f;
-        } else if ((this.wet || this.canShakeWaterOff) && this.canShakeWaterOff) {
+        } else if ((this.furWet || this.canShakeWaterOff) && this.canShakeWaterOff) {
             if (this.shakeProgress == 0.0f) {
                 this.playSound(SoundEvents.ENTITY_WOLF_SHAKE, this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2f + 1.0f);
             }
             this.lastShakeProgress = this.shakeProgress;
             this.shakeProgress += 0.05f;
             if (this.lastShakeProgress >= 2.0f) {
-                this.wet = false;
+                this.furWet = false;
                 this.canShakeWaterOff = false;
                 this.lastShakeProgress = 0.0f;
                 this.shakeProgress = 0.0f;
@@ -238,20 +238,34 @@ extends TameableEntity {
 
     @Override
     public void onDeath(DamageSource source) {
-        this.wet = false;
+        this.furWet = false;
         this.canShakeWaterOff = false;
         this.lastShakeProgress = 0.0f;
         this.shakeProgress = 0.0f;
         super.onDeath(source);
     }
 
+    /**
+     * Returns whether this wolf's fur is wet.
+     * <p>
+     * The wolf's fur will remain wet until the wolf shakes.
+     */
     @Environment(value=EnvType.CLIENT)
-    public boolean isWet() {
-        return this.wet;
+    public boolean isFurWet() {
+        return this.furWet;
     }
 
+    /**
+     * Returns this wolf's brightness multiplier based on the fur wetness.
+     * <p>
+     * The brightness multiplier represents how much darker the wolf gets while its fur is wet. The multiplier changes (from 0.75 to 1.0 incrementally) when a wolf shakes.
+     * 
+     * @param tickDelta Progress for linearly interpolating between the previous and current game state.
+     * @return Brightness as a float value between 0.75 and 1.0.
+     * @see net.minecraft.client.render.entity.model.TintableAnimalModel
+     */
     @Environment(value=EnvType.CLIENT)
-    public float getWetBrightnessMultiplier(float tickDelta) {
+    public float getFurWetBrightnessMultiplier(float tickDelta) {
         return 0.75f + MathHelper.lerp(tickDelta, this.lastShakeProgress, this.shakeProgress) / 2.0f * 0.25f;
     }
 

@@ -124,7 +124,7 @@ extends Goal {
         if (!this.canTeleportTo(new BlockPos(x, y, z))) {
             return false;
         }
-        this.tameable.setPositionAndAngles((float)x + 0.5f, y, (float)z + 0.5f, this.tameable.yaw, this.tameable.pitch);
+        this.tameable.refreshPositionAndAngles((float)x + 0.5f, y, (float)z + 0.5f, this.tameable.yaw, this.tameable.pitch);
         this.navigation.stop();
         return true;
     }

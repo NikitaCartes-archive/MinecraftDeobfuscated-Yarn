@@ -118,7 +118,7 @@ extends WaterCreatureEntity {
 
     @Override
     public void travel(Vec3d movementInput) {
-        if (this.canMoveVoluntarily() && this.isInsideWater()) {
+        if (this.canMoveVoluntarily() && this.isTouchingWater()) {
             this.updateVelocity(0.01f, movementInput);
             this.move(MovementType.SELF, this.getVelocity());
             this.setVelocity(this.getVelocity().multiply(0.9));
@@ -132,7 +132,7 @@ extends WaterCreatureEntity {
 
     @Override
     public void tickMovement() {
-        if (!this.isInsideWater() && this.onGround && this.verticalCollision) {
+        if (!this.isTouchingWater() && this.onGround && this.verticalCollision) {
             this.setVelocity(this.getVelocity().add((this.random.nextFloat() * 2.0f - 1.0f) * 0.05f, 0.4f, (this.random.nextFloat() * 2.0f - 1.0f) * 0.05f));
             this.onGround = false;
             this.velocityDirty = true;

@@ -845,7 +845,7 @@ JumpingMount {
             float g = MathHelper.cos(this.bodyYaw * ((float)Math.PI / 180));
             float h = 0.7f * this.lastAngryAnimationProgress;
             float i = 0.15f * this.lastAngryAnimationProgress;
-            passenger.setPosition(this.getX() + (double)(h * f), this.getY() + this.getMountedHeightOffset() + passenger.getHeightOffset() + (double)i, this.getZ() - (double)(h * g));
+            passenger.updatePosition(this.getX() + (double)(h * f), this.getY() + this.getMountedHeightOffset() + passenger.getHeightOffset() + (double)i, this.getZ() - (double)(h * g));
             if (passenger instanceof LivingEntity) {
                 ((LivingEntity)passenger).bodyYaw = this.bodyYaw;
             }

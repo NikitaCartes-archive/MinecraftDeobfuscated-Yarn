@@ -152,7 +152,7 @@ implements Tickable {
             double e = (double)blockPos.getX() + 0.5 + d * (double)direction.getOffsetX();
             double g = (double)blockPos.getY() + 0.5 - (double)(entity2.getHeight() / 2.0f);
             double h = (double)blockPos.getZ() + 0.5 + d * (double)direction.getOffsetZ();
-            entity2.setPositionAndAngles(e, g, h, entity2.yaw, entity2.pitch);
+            entity2.refreshPositionAndAngles(e, g, h, entity2.yaw, entity2.pitch);
             if (!entity2.getType().isTaggedWith(EntityTypeTags.BEEHIVE_INHABITORS)) {
                 return false;
             }

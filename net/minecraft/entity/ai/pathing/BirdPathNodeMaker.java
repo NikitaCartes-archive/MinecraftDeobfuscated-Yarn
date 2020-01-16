@@ -38,7 +38,7 @@ extends LandPathNodeMaker {
         BlockPos blockPos;
         PathNodeType pathNodeType;
         int i;
-        if (this.canSwim() && this.entity.isInsideWater()) {
+        if (this.canSwim() && this.entity.isTouchingWater()) {
             i = MathHelper.floor(this.entity.getY());
             BlockPos.Mutable mutable = new BlockPos.Mutable(this.entity.getX(), (double)i, this.entity.getZ());
             Block block = this.field_20622.getBlockState(mutable).getBlock();

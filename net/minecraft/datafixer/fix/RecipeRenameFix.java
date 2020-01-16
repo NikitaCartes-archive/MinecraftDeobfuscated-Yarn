@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.datafixer.fix;
 
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFix;
@@ -13,15 +13,15 @@ import java.util.Objects;
 import java.util.function.Function;
 import net.minecraft.datafixer.TypeReferences;
 
-public class class_4745
+public class RecipeRenameFix
 extends DataFix {
-    private final String field_21816;
-    private final Function<String, String> field_21817;
+    private final String name;
+    private final Function<String, String> renamer;
 
-    public class_4745(Schema schema, boolean bl, String string, Function<String, String> function) {
+    public RecipeRenameFix(Schema schema, boolean bl, String name, Function<String, String> renamer) {
         super(schema, bl);
-        this.field_21816 = string;
-        this.field_21817 = function;
+        this.name = name;
+        this.renamer = renamer;
     }
 
     @Override
@@ -30,7 +30,7 @@ extends DataFix {
         if (!Objects.equals(type, this.getInputSchema().getType(TypeReferences.RECIPE))) {
             throw new IllegalStateException("Recipe type is not what was expected.");
         }
-        return this.fixTypeEverywhere(this.field_21816, type, dynamicOps -> pair -> pair.mapSecond(this.field_21817));
+        return this.fixTypeEverywhere(this.name, type, dynamicOps -> pair -> pair.mapSecond(this.renamer));
     }
 }
 

@@ -93,7 +93,7 @@ extends Feature<EndSpikeFeatureConfig> {
         EnderCrystalEntity enderCrystalEntity = EntityType.END_CRYSTAL.create(world.getWorld());
         enderCrystalEntity.setBeamTarget(config.getPos());
         enderCrystalEntity.setInvulnerable(config.isCrystalInvulerable());
-        enderCrystalEntity.setPositionAndAngles((float)spike.getCenterX() + 0.5f, spike.getHeight() + 1, (float)spike.getCenterZ() + 0.5f, random.nextFloat() * 360.0f, 0.0f);
+        enderCrystalEntity.refreshPositionAndAngles((float)spike.getCenterX() + 0.5f, spike.getHeight() + 1, (float)spike.getCenterZ() + 0.5f, random.nextFloat() * 360.0f, 0.0f);
         world.spawnEntity(enderCrystalEntity);
         this.setBlockState(world, new BlockPos(spike.getCenterX(), spike.getHeight(), spike.getCenterZ()), Blocks.BEDROCK.getDefaultState());
     }

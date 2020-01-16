@@ -118,7 +118,7 @@ implements RangedAttackMob {
 
     @Override
     protected SoundEvent getAmbientSound() {
-        if (this.isInsideWater()) {
+        if (this.isTouchingWater()) {
             return SoundEvents.ENTITY_DROWNED_AMBIENT_WATER;
         }
         return SoundEvents.ENTITY_DROWNED_AMBIENT;
@@ -126,7 +126,7 @@ implements RangedAttackMob {
 
     @Override
     protected SoundEvent getHurtSound(DamageSource source) {
-        if (this.isInsideWater()) {
+        if (this.isTouchingWater()) {
             return SoundEvents.ENTITY_DROWNED_HURT_WATER;
         }
         return SoundEvents.ENTITY_DROWNED_HURT;
@@ -134,7 +134,7 @@ implements RangedAttackMob {
 
     @Override
     protected SoundEvent getDeathSound() {
-        if (this.isInsideWater()) {
+        if (this.isTouchingWater()) {
             return SoundEvents.ENTITY_DROWNED_DEATH_WATER;
         }
         return SoundEvents.ENTITY_DROWNED_DEATH;
@@ -196,7 +196,7 @@ implements RangedAttackMob {
 
     public boolean method_7012(@Nullable LivingEntity livingEntity) {
         if (livingEntity != null) {
-            return !this.world.isDay() || livingEntity.isInsideWater();
+            return !this.world.isDay() || livingEntity.isTouchingWater();
         }
         return false;
     }
@@ -211,12 +211,12 @@ implements RangedAttackMob {
             return true;
         }
         LivingEntity livingEntity = this.getTarget();
-        return livingEntity != null && livingEntity.isInsideWater();
+        return livingEntity != null && livingEntity.isTouchingWater();
     }
 
     @Override
     public void travel(Vec3d movementInput) {
-        if (this.canMoveVoluntarily() && this.isInsideWater() && this.isTargetingUnderwater()) {
+        if (this.canMoveVoluntarily() && this.isTouchingWater() && this.isTargetingUnderwater()) {
             this.updateVelocity(0.01f, movementInput);
             this.move(MovementType.SELF, this.getVelocity());
             this.setVelocity(this.getVelocity().multiply(0.9));
@@ -228,7 +228,7 @@ implements RangedAttackMob {
     @Override
     public void updateSwimming() {
         if (!this.world.isClient) {
-            if (this.canMoveVoluntarily() && this.isInsideWater() && this.isTargetingUnderwater()) {
+            if (this.canMoveVoluntarily() && this.isTouchingWater() && this.isTargetingUnderwater()) {
                 this.navigation = this.waterNavigation;
                 this.setSwimming(true);
             } else {
@@ -273,7 +273,7 @@ implements RangedAttackMob {
         @Override
         public void tick() {
             LivingEntity livingEntity = this.drowned.getTarget();
-            if (this.drowned.isTargetingUnderwater() && this.drowned.isInsideWater()) {
+            if (this.drowned.isTargetingUnderwater() && this.drowned.isTouchingWater()) {
                 if (livingEntity != null && livingEntity.getY() > this.drowned.getY() || this.drowned.targetingUnderwater) {
                     this.drowned.setVelocity(this.drowned.getVelocity().add(0.0, 0.002, 0.0));
                 }
@@ -342,7 +342,7 @@ implements RangedAttackMob {
             if (!this.world.isDay()) {
                 return false;
             }
-            if (this.mob.isInsideWater()) {
+            if (this.mob.isTouchingWater()) {
                 return false;
             }
             Vec3d vec3d = this.getWanderTarget();
@@ -389,7 +389,7 @@ implements RangedAttackMob {
 
         @Override
         public boolean canStart() {
-            return super.canStart() && !this.drowned.world.isDay() && this.drowned.isInsideWater() && this.drowned.getY() >= (double)(this.drowned.world.getSeaLevel() - 3);
+            return super.canStart() && !this.drowned.world.isDay() && this.drowned.isTouchingWater() && this.drowned.getY() >= (double)(this.drowned.world.getSeaLevel() - 3);
         }
 
         @Override
@@ -434,7 +434,7 @@ implements RangedAttackMob {
 
         @Override
         public boolean canStart() {
-            return !this.drowned.world.isDay() && this.drowned.isInsideWater() && this.drowned.getY() < (double)(this.minY - 2);
+            return !this.drowned.world.isDay() && this.drowned.isTouchingWater() && this.drowned.getY() < (double)(this.minY - 2);
         }
 
         @Override

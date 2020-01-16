@@ -373,7 +373,7 @@ implements Chunk {
         if (!(this.getBlockState(pos).getBlock() instanceof BlockEntityProvider)) {
             return;
         }
-        blockEntity.setWorld(this.world, pos);
+        blockEntity.setLocation(this.world, pos);
         blockEntity.cancelRemoval();
         BlockEntity blockEntity2 = this.blockEntities.put(pos.toImmutable(), blockEntity);
         if (blockEntity2 != null && blockEntity2 != blockEntity) {
@@ -663,7 +663,7 @@ implements Chunk {
             blockEntity = BlockEntity.createFromTag(compoundTag);
         }
         if (blockEntity != null) {
-            blockEntity.setWorld(this.world, pos);
+            blockEntity.setLocation(this.world, pos);
             this.addBlockEntity(blockEntity);
         } else {
             LOGGER.warn("Tried to load a block entity for block {} but failed at location {}", (Object)this.getBlockState(pos), (Object)pos);

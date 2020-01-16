@@ -374,7 +374,7 @@ extends World {
                 SkeletonHorseEntity skeletonHorseEntity = EntityType.SKELETON_HORSE.create(this);
                 skeletonHorseEntity.setTrapped(true);
                 skeletonHorseEntity.setBreedingAge(0);
-                skeletonHorseEntity.setPosition(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+                skeletonHorseEntity.updatePosition(blockPos.getX(), blockPos.getY(), blockPos.getZ());
                 this.spawnEntity(skeletonHorseEntity);
             }
             this.addLightning(new LightningEntity(this, (double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5, bl2));

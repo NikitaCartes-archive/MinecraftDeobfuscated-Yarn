@@ -871,7 +871,7 @@ public class Blocks {
     public static final Block COMPOSTER = Blocks.register("composter", new ComposterBlock(Block.Settings.of(Material.WOOD).strength(0.6f).sounds(BlockSoundGroup.WOOD)));
     public static final Block BEE_NEST = Blocks.register("bee_nest", new BeehiveBlock(Block.Settings.of(Material.WOOD).strength(0.3f).sounds(BlockSoundGroup.WOOD)));
     public static final Block BEEHIVE = Blocks.register("beehive", new BeehiveBlock(Block.Settings.of(Material.WOOD).strength(0.6f).sounds(BlockSoundGroup.WOOD)));
-    public static final Block HONEY_BLOCK = Blocks.register("honey_block", new HoneyBlock(Block.Settings.of(Material.CLAY, MaterialColor.ORANGE).velocityMultiplier(0.4f).jumpVelocityMultiplier(0.5f).nonOpaque().sounds(BlockSoundGroup.field_21214)));
+    public static final Block HONEY_BLOCK = Blocks.register("honey_block", new HoneyBlock(Block.Settings.of(Material.CLAY, MaterialColor.ORANGE).velocityMultiplier(0.4f).jumpVelocityMultiplier(0.5f).nonOpaque().sounds(BlockSoundGroup.HONEY)));
     public static final Block HONEYCOMB_BLOCK = Blocks.register("honeycomb_block", new Block(Block.Settings.of(Material.CLAY, MaterialColor.ORANGE).strength(0.6f).sounds(BlockSoundGroup.CORAL)));
 
     private static Block register(String id, Block block) {

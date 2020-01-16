@@ -12,7 +12,6 @@ import java.util.concurrent.Executor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_4749;
 import net.minecraft.client.gui.CubeMapRenderer;
 import net.minecraft.client.gui.RotatingCubeMapRenderer;
 import net.minecraft.client.gui.screen.ConfirmScreen;
@@ -20,6 +19,7 @@ import net.minecraft.client.gui.screen.CreditsScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.SettingsScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
+import net.minecraft.client.gui.screen.multiplayer.MultiplayerWarningScreen;
 import net.minecraft.client.gui.screen.options.AccessibilityScreen;
 import net.minecraft.client.gui.screen.options.LanguageOptionsScreen;
 import net.minecraft.client.gui.screen.world.SelectWorldScreen;
@@ -125,10 +125,10 @@ extends Screen {
     private void initWidgetsNormal(int y, int spacingY) {
         this.addButton(new ButtonWidget(this.width / 2 - 100, y, 200, 20, I18n.translate("menu.singleplayer", new Object[0]), buttonWidget -> this.minecraft.openScreen(new SelectWorldScreen(this))));
         this.addButton(new ButtonWidget(this.width / 2 - 100, y + spacingY * 1, 200, 20, I18n.translate("menu.multiplayer", new Object[0]), buttonWidget -> {
-            if (this.minecraft.options.field_21840) {
+            if (this.minecraft.options.skipMultiplayerWarning) {
                 this.minecraft.openScreen(new MultiplayerScreen(this));
             } else {
-                this.minecraft.openScreen(new class_4749(this));
+                this.minecraft.openScreen(new MultiplayerWarningScreen(this));
             }
         }));
         this.addButton(new ButtonWidget(this.width / 2 - 100, y + spacingY * 2, 200, 20, I18n.translate("menu.online", new Object[0]), buttonWidget -> this.switchToRealms()));
@@ -202,7 +202,7 @@ extends Screen {
         }
         String string = "Minecraft " + SharedConstants.getGameVersion().getName();
         string = this.minecraft.isDemo() ? string + " Demo" : string + ("release".equalsIgnoreCase(this.minecraft.getVersionType()) ? "" : "/" + this.minecraft.getVersionType());
-        if (this.minecraft.method_24289()) {
+        if (this.minecraft.isModded()) {
             string = string + I18n.translate("menu.modded", new Object[0]);
         }
         this.drawString(this.font, string, 2, this.height - 10, 0xFFFFFF | l);

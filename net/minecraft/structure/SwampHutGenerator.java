@@ -95,7 +95,7 @@ extends StructurePieceWithDimensions {
             this.hasWitch = true;
             WitchEntity witchEntity = EntityType.WITCH.create(world.getWorld());
             witchEntity.setPersistent();
-            witchEntity.setPositionAndAngles((double)i + 0.5, j, (double)k + 0.5, 0.0f, 0.0f);
+            witchEntity.refreshPositionAndAngles((double)i + 0.5, j, (double)k + 0.5, 0.0f, 0.0f);
             witchEntity.initialize(world, world.getLocalDifficulty(new BlockPos(i, j, k)), SpawnType.STRUCTURE, null, null);
             world.spawnEntity(witchEntity);
         }
@@ -111,7 +111,7 @@ extends StructurePieceWithDimensions {
             this.hasCat = true;
             CatEntity catEntity = EntityType.CAT.create(iWorld.getWorld());
             catEntity.setPersistent();
-            catEntity.setPositionAndAngles((double)i + 0.5, j, (double)k + 0.5, 0.0f, 0.0f);
+            catEntity.refreshPositionAndAngles((double)i + 0.5, j, (double)k + 0.5, 0.0f, 0.0f);
             catEntity.initialize(iWorld, iWorld.getLocalDifficulty(new BlockPos(i, j, k)), SpawnType.STRUCTURE, null, null);
             iWorld.spawnEntity(catEntity);
         }

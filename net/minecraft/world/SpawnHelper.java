@@ -91,7 +91,7 @@ public final class SpawnHelper {
                     LOGGER.warn("Failed to create mob", (Throwable)exception);
                     return;
                 }
-                mobEntity.setPositionAndAngles(f, k, g, serverWorld.random.nextFloat() * 360.0f, 0.0f);
+                mobEntity.refreshPositionAndAngles(f, k, g, serverWorld.random.nextFloat() * 360.0f, 0.0f);
                 if (d > 16384.0 && mobEntity.canImmediatelyDespawn(d) || !mobEntity.canSpawn(serverWorld, SpawnType.NATURAL) || !mobEntity.canSpawn(serverWorld)) continue;
                 entityData = mobEntity.initialize(serverWorld, serverWorld.getLocalDifficulty(new BlockPos(mobEntity)), SpawnType.NATURAL, entityData, null);
                 ++r;
@@ -198,7 +198,7 @@ public final class SpawnHelper {
                             LOGGER.warn("Failed to create mob", (Throwable)exception);
                             continue;
                         }
-                        ((Entity)entity).setPositionAndAngles(d, blockPos.getY(), e, random.nextFloat() * 360.0f, 0.0f);
+                        ((Entity)entity).refreshPositionAndAngles(d, blockPos.getY(), e, random.nextFloat() * 360.0f, 0.0f);
                         if (entity instanceof MobEntity && (mobEntity = (MobEntity)entity).canSpawn(world, SpawnType.CHUNK_GENERATION) && mobEntity.canSpawn(world)) {
                             entityData = mobEntity.initialize(world, world.getLocalDifficulty(new BlockPos(mobEntity)), SpawnType.CHUNK_GENERATION, entityData, null);
                             world.spawnEntity(mobEntity);

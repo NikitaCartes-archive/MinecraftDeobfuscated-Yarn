@@ -48,7 +48,7 @@ extends MinecraftServer {
     private static final Logger LOGGER = LogManager.getLogger();
     private final MinecraftClient client;
     private final LevelInfo levelInfo;
-    private boolean field_5524;
+    private boolean paused;
     private int lanPort = -1;
     private LanServerPinger lanPinger;
     private UUID localPlayerUuid;
@@ -103,17 +103,17 @@ extends MinecraftServer {
 
     @Override
     public void tick(BooleanSupplier shouldKeepTicking) {
-        boolean bl = this.field_5524;
-        this.field_5524 = MinecraftClient.getInstance().getNetworkHandler() != null && MinecraftClient.getInstance().isPaused();
+        boolean bl = this.paused;
+        this.paused = MinecraftClient.getInstance().getNetworkHandler() != null && MinecraftClient.getInstance().isPaused();
         DisableableProfiler disableableProfiler = this.getProfiler();
-        if (!bl && this.field_5524) {
+        if (!bl && this.paused) {
             disableableProfiler.push("autoSave");
             LOGGER.info("Saving and pausing game...");
             this.getPlayerManager().saveAllPlayerData();
             this.save(false, false, false);
             disableableProfiler.pop();
         }
-        if (this.field_5524) {
+        if (this.paused) {
             return;
         }
         super.tick(shouldKeepTicking);

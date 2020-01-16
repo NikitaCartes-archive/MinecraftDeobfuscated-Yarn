@@ -38,7 +38,7 @@ extends Entity {
         this.warmup = warmup;
         this.setOwner(owner);
         this.yaw = f * 57.295776f;
-        this.setPosition(x, y, z);
+        this.updatePosition(x, y, z);
     }
 
     @Override

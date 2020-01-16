@@ -46,7 +46,7 @@ implements Projectile {
 
     protected ThrownEntity(EntityType<? extends ThrownEntity> type, double x, double y, double z, World world) {
         this(type, world);
-        this.setPosition(x, y, z);
+        this.updatePosition(x, y, z);
     }
 
     protected ThrownEntity(EntityType<? extends ThrownEntity> type, LivingEntity owner, World world) {
@@ -152,7 +152,7 @@ implements Projectile {
         }
         this.pitch = MathHelper.lerp(0.2f, this.prevPitch, this.pitch);
         this.yaw = MathHelper.lerp(0.2f, this.prevYaw, this.yaw);
-        if (this.isInsideWater()) {
+        if (this.isTouchingWater()) {
             for (int i = 0; i < 4; ++i) {
                 float h = 0.25f;
                 this.world.addParticle(ParticleTypes.BUBBLE, d - vec3d.x * 0.25, e - vec3d.y * 0.25, f - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
@@ -166,7 +166,7 @@ implements Projectile {
             Vec3d vec3d2 = this.getVelocity();
             this.setVelocity(vec3d2.x, vec3d2.y - (double)this.getGravity(), vec3d2.z);
         }
-        this.setPosition(d, e, f);
+        this.updatePosition(d, e, f);
     }
 
     protected float getGravity() {

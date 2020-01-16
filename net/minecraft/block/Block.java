@@ -272,7 +272,7 @@ implements ItemConvertible {
         this.setDefaultState(this.stateManager.getDefaultState());
     }
 
-    public static boolean canConnect(Block block) {
+    public static boolean cannotConnect(Block block) {
         return block instanceof LeavesBlock || block == Blocks.BARRIER || block == Blocks.CARVED_PUMPKIN || block == Blocks.JACK_O_LANTERN || block == Blocks.MELON || block == Blocks.PUMPKIN || block.matches(BlockTags.SHULKER_BOXES);
     }
 

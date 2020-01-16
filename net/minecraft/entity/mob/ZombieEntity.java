@@ -290,7 +290,7 @@ extends HostileEntity {
             ZombieEntity zombieEntity;
             if (!this.world.isClient && (zombieEntity = (ZombieEntity)this.getType().create(this.world)) != null) {
                 zombieEntity.setBaby(true);
-                zombieEntity.setPositionAndAngles(this.getX(), this.getY(), this.getZ(), 0.0f, 0.0f);
+                zombieEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), 0.0f, 0.0f);
                 this.world.spawnEntity(zombieEntity);
                 if (itemStack.hasCustomName()) {
                     zombieEntity.setCustomName(itemStack.getName());
@@ -326,7 +326,7 @@ extends HostileEntity {
                     int m = i + MathHelper.nextInt(this.random, 7, 40) * MathHelper.nextInt(this.random, -1, 1);
                     BlockPos blockPos = new BlockPos(m, (n = j + MathHelper.nextInt(this.random, 7, 40) * MathHelper.nextInt(this.random, -1, 1)) - 1, o = k + MathHelper.nextInt(this.random, 7, 40) * MathHelper.nextInt(this.random, -1, 1));
                     if (!this.world.getBlockState(blockPos).hasSolidTopSurface(this.world, blockPos, zombieEntity) || this.world.getLightLevel(new BlockPos(m, n, o)) >= 10) continue;
-                    zombieEntity.setPosition(m, n, o);
+                    zombieEntity.updatePosition(m, n, o);
                     if (this.world.isPlayerInRange(m, n, o, 7.0) || !this.world.intersectsEntities(zombieEntity) || !this.world.doesNotCollide(zombieEntity) || this.world.containsFluid(zombieEntity.getBoundingBox())) continue;
                     this.world.spawnEntity(zombieEntity);
                     zombieEntity.setTarget(livingEntity);
@@ -404,7 +404,7 @@ extends HostileEntity {
             tag.putBoolean("IsBaby", true);
         }
         tag.putBoolean("CanBreakDoors", this.canBreakDoors());
-        tag.putInt("InWaterTime", this.isInsideWater() ? this.inWaterTime : -1);
+        tag.putInt("InWaterTime", this.isTouchingWater() ? this.inWaterTime : -1);
         tag.putInt("DrownedConversionTime", this.isConvertingInWater() ? this.ticksUntilWaterConversion : -1);
     }
 
@@ -487,7 +487,7 @@ extends HostileEntity {
                     }
                 } else if ((double)world.getRandom().nextFloat() < 0.05) {
                     ChickenEntity chickenEntity2 = EntityType.CHICKEN.create(this.world);
-                    chickenEntity2.setPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0f);
+                    chickenEntity2.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0f);
                     chickenEntity2.initialize(world, difficulty, SpawnType.JOCKEY, null, null);
                     chickenEntity2.setHasJockey(true);
                     world.spawnEntity(chickenEntity2);

@@ -91,7 +91,7 @@ public class ZombieSiegeManager {
             exception.printStackTrace();
             return;
         }
-        zombieEntity.setPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, serverWorld.random.nextFloat() * 360.0f, 0.0f);
+        zombieEntity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, serverWorld.random.nextFloat() * 360.0f, 0.0f);
         serverWorld.spawnEntity(zombieEntity);
     }
 

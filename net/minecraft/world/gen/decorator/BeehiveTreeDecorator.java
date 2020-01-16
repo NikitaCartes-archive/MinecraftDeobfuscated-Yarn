@@ -47,6 +47,9 @@ extends TreeDecorator {
         Direction direction = BeehiveBlock.GENERATE_DIRECTIONS[random.nextInt(BeehiveBlock.GENERATE_DIRECTIONS.length)];
         int i = !list2.isEmpty() ? Math.max(list2.get(0).getY() - 1, list.get(0).getY()) : Math.min(list.get(0).getY() + 1 + random.nextInt(3), list.get(list.size() - 1).getY());
         List list3 = list.stream().filter(blockPos -> blockPos.getY() == i).collect(Collectors.toList());
+        if (list3.isEmpty()) {
+            return;
+        }
         BlockPos blockPos2 = (BlockPos)list3.get(random.nextInt(list3.size()));
         BlockPos blockPos22 = blockPos2.offset(direction);
         if (!AbstractTreeFeature.isAir(world, blockPos22) || !AbstractTreeFeature.isAir(world, blockPos22.offset(Direction.SOUTH))) {

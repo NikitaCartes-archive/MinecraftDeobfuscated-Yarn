@@ -209,7 +209,7 @@ extends HostileEntity {
             if (this.world.isClient) {
                 Vec3d vec3d;
                 this.prevSpikesExtension = this.spikesExtension;
-                if (!this.isInsideWater()) {
+                if (!this.isTouchingWater()) {
                     this.spikesExtensionRate = 2.0f;
                     vec3d = this.getVelocity();
                     if (vec3d.y > 0.0 && this.flopping && !this.isSilent()) {
@@ -222,7 +222,7 @@ extends HostileEntity {
                 this.spikesExtension += this.spikesExtensionRate;
                 this.prevTailAngle = this.tailAngle;
                 this.tailAngle = !this.isInsideWaterOrBubbleColumn() ? this.random.nextFloat() : (this.areSpikesRetracted() ? (this.tailAngle += (0.0f - this.tailAngle) * 0.25f) : (this.tailAngle += (1.0f - this.tailAngle) * 0.06f));
-                if (this.areSpikesRetracted() && this.isInsideWater()) {
+                if (this.areSpikesRetracted() && this.isTouchingWater()) {
                     vec3d = this.getRotationVec(0.0f);
                     for (int i = 0; i < 2; ++i) {
                         this.world.addParticle(ParticleTypes.BUBBLE, this.getParticleX(0.5) - vec3d.x * 1.5, this.getRandomBodyY() - vec3d.y * 1.5, this.getParticleZ(0.5) - vec3d.z * 1.5, 0.0, 0.0, 0.0);
@@ -314,7 +314,7 @@ extends HostileEntity {
 
     @Override
     public void travel(Vec3d movementInput) {
-        if (this.canMoveVoluntarily() && this.isInsideWater()) {
+        if (this.canMoveVoluntarily() && this.isTouchingWater()) {
             this.updateVelocity(0.1f, movementInput);
             this.move(MovementType.SELF, this.getVelocity());
             this.setVelocity(this.getVelocity().multiply(0.9));

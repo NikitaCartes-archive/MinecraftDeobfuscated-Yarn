@@ -54,7 +54,7 @@ extends ExplosiveProjectileEntity {
                 for (LivingEntity livingEntity : list) {
                     double d = this.squaredDistanceTo(livingEntity);
                     if (!(d < 16.0)) continue;
-                    areaEffectCloudEntity.setPosition(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ());
+                    areaEffectCloudEntity.updatePosition(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ());
                     break;
                 }
             }

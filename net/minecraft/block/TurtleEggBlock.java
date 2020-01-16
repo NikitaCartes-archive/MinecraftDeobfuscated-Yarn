@@ -92,7 +92,7 @@ extends Block {
                     TurtleEntity turtleEntity = EntityType.TURTLE.create(world);
                     turtleEntity.setBreedingAge(-24000);
                     turtleEntity.setHomePos(pos);
-                    turtleEntity.setPositionAndAngles((double)pos.getX() + 0.3 + (double)j * 0.2, pos.getY(), (double)pos.getZ() + 0.3, 0.0f, 0.0f);
+                    turtleEntity.refreshPositionAndAngles((double)pos.getX() + 0.3 + (double)j * 0.2, pos.getY(), (double)pos.getZ() + 0.3, 0.0f, 0.0f);
                     world.spawnEntity(turtleEntity);
                 }
             }

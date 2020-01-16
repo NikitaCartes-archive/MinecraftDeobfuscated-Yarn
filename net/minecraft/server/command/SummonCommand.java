@@ -44,7 +44,7 @@ public class SummonCommand {
         }
         ServerWorld serverWorld = source.getWorld();
         Entity entity22 = EntityType.loadEntityWithPassengers(compoundTag, serverWorld, entity -> {
-            entity.setPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, entity.yaw, entity.pitch);
+            entity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, entity.yaw, entity.pitch);
             if (!serverWorld.tryLoadEntity((Entity)entity)) {
                 return null;
             }

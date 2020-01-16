@@ -208,7 +208,7 @@ extends Entity {
         this.setHealth(this.getMaximumHealth());
         this.inanimate = true;
         this.randomSmallSeed = (float)((Math.random() + 1.0) * (double)0.01f);
-        this.updatePosition();
+        this.refreshPosition();
         this.randomLargeSeed = (float)Math.random() * 12398.0f;
         this.headYaw = this.yaw = (float)(Math.random() * 6.2831854820251465);
         this.stepHeight = 0.6f;
@@ -253,7 +253,7 @@ extends Entity {
 
     @Override
     protected void fall(double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition) {
-        if (!this.isInsideWater()) {
+        if (!this.isTouchingWater()) {
             this.checkWaterState();
         }
         if (!this.world.isClient && this.fallDistance > 3.0f && onGround) {
@@ -327,7 +327,7 @@ extends Entity {
                 this.applyFrostWalker(blockPos);
             }
         }
-        if (this.isAlive() && this.isTouchingWater()) {
+        if (this.isAlive() && this.isWet()) {
             this.extinguish();
         }
         if (this.hurtTime > 0) {
@@ -550,7 +550,7 @@ extends Entity {
             while (iterator.hasNext()) {
                 StatusEffect statusEffect = iterator.next();
                 StatusEffectInstance statusEffectInstance = this.activeStatusEffects.get(statusEffect);
-                if (!statusEffectInstance.update(this)) {
+                if (!statusEffectInstance.update(this, () -> this.onStatusEffectUpgraded(statusEffectInstance, true))) {
                     if (this.world.isClient) continue;
                     iterator.remove();
                     this.onStatusEffectRemoved(statusEffectInstance);
@@ -1516,7 +1516,7 @@ extends Entity {
 
     private void onDismounted(Entity vehicle) {
         if (this.world.getBlockState(new BlockPos(vehicle)).getBlock().matches(BlockTags.PORTALS)) {
-            this.setPosition(vehicle.getX(), vehicle.getBodyY(1.0) + 0.001, vehicle.getZ());
+            this.updatePosition(vehicle.getX(), vehicle.getBodyY(1.0) + 0.001, vehicle.getZ());
             return;
         }
         if (vehicle instanceof BoatEntity || vehicle instanceof HorseBaseEntity) {
@@ -1546,12 +1546,12 @@ extends Entity {
             for (int o = 0; o < i; ++o) {
                 double p = e + n;
                 if (this.world.doesNotCollide(this, box2.offset(l, p, m), immutableSet)) {
-                    this.setPosition(l, p, m);
+                    this.updatePosition(l, p, m);
                     return;
                 }
                 n += 1.0;
             }
-            this.setPosition(vehicle.getX(), vehicle.getBodyY(1.0) + 0.001, vehicle.getZ());
+            this.updatePosition(vehicle.getX(), vehicle.getBodyY(1.0) + 0.001, vehicle.getZ());
             return;
         }
         double q = vehicle.getX();
@@ -1645,7 +1645,7 @@ extends Entity {
                 d = 0.01;
                 this.fallDistance = 0.0f;
             }
-            if (!(!this.isInsideWater() || this instanceof PlayerEntity && ((PlayerEntity)this).abilities.flying)) {
+            if (!(!this.isTouchingWater() || this instanceof PlayerEntity && ((PlayerEntity)this).abilities.flying)) {
                 Vec3d vec3d2;
                 double e = this.getY();
                 float f = this.isSprinting() ? 0.9f : this.getBaseMovementSpeedMultiplier();
@@ -1967,7 +1967,7 @@ extends Entity {
             this.yaw = (float)((double)this.yaw + g / (double)this.bodyTrackingIncrements);
             this.pitch = (float)((double)this.pitch + (this.serverPitch - (double)this.pitch) / (double)this.bodyTrackingIncrements);
             --this.bodyTrackingIncrements;
-            this.setPosition(d, e, f);
+            this.updatePosition(d, e, f);
             this.setRotation(this.yaw, this.pitch);
         } else if (!this.canMoveVoluntarily()) {
             this.setVelocity(this.getVelocity().multiply(0.98));
@@ -2524,7 +2524,7 @@ extends Entity {
     }
 
     private void setPositionInBed(BlockPos pos) {
-        this.setPosition((double)pos.getX() + 0.5, (float)pos.getY() + 0.6875f, (double)pos.getZ() + 0.5);
+        this.updatePosition((double)pos.getX() + 0.5, (float)pos.getY() + 0.6875f, (double)pos.getZ() + 0.5);
     }
 
     private boolean isSleepingInBed() {
@@ -2540,7 +2540,7 @@ extends Entity {
                     BlockPos blockPos2 = blockPos.up();
                     return new Vec3d((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.1, (double)blockPos2.getZ() + 0.5);
                 });
-                this.setPosition(vec3d.x, vec3d.y, vec3d.z);
+                this.updatePosition(vec3d.x, vec3d.y, vec3d.z);
             }
         });
         this.setPose(EntityPose.STANDING);

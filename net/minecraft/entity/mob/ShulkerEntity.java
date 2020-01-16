@@ -284,8 +284,8 @@ implements Monster {
     }
 
     @Override
-    public void setPosition(double x, double y, double z) {
-        super.setPosition(x, y, z);
+    public void updatePosition(double x, double y, double z) {
+        super.updatePosition(x, y, z);
         if (this.dataTracker == null || this.age == 0) {
             return;
         }

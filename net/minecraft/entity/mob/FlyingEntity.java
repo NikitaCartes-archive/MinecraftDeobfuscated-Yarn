@@ -29,7 +29,7 @@ extends MobEntity {
 
     @Override
     public void travel(Vec3d movementInput) {
-        if (this.isInsideWater()) {
+        if (this.isTouchingWater()) {
             this.updateVelocity(0.02f, movementInput);
             this.move(MovementType.SELF, this.getVelocity());
             this.setVelocity(this.getVelocity().multiply(0.8f));

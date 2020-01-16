@@ -132,7 +132,7 @@ public class GameOptions {
     public boolean bobView = true;
     public boolean sneakToggled;
     public boolean sprintToggled;
-    public boolean field_21840;
+    public boolean skipMultiplayerWarning;
     public final KeyBinding keyForward = new KeyBinding("key.forward", 87, "key.categories.movement");
     public final KeyBinding keyLeft = new KeyBinding("key.left", 65, "key.categories.movement");
     public final KeyBinding keyBack = new KeyBinding("key.back", 83, "key.categories.movement");
@@ -436,7 +436,7 @@ public class GameOptions {
                         this.glDebugVerbosity = Integer.parseInt(string22);
                     }
                     if ("skipMultiplayerWarning".equals(string2)) {
-                        this.field_21840 = "true".equals(string22);
+                        this.skipMultiplayerWarning = "true".equals(string22);
                     }
                     for (KeyBinding keyBinding : this.keysAll) {
                         if (!string2.equals("key_" + keyBinding.getId())) continue;
@@ -556,7 +556,7 @@ public class GameOptions {
             printWriter.println("mouseWheelSensitivity:" + this.mouseWheelSensitivity);
             printWriter.println("rawMouseInput:" + Option.RAW_MOUSE_INPUT.get(this));
             printWriter.println("glDebugVerbosity:" + this.glDebugVerbosity);
-            printWriter.println("skipMultiplayerWarning:" + this.field_21840);
+            printWriter.println("skipMultiplayerWarning:" + this.skipMultiplayerWarning);
             for (KeyBinding keyBinding : this.keysAll) {
                 printWriter.println("key_" + keyBinding.getId() + ":" + keyBinding.getName());
             }

@@ -68,10 +68,10 @@ extends LivingEntityRenderer<ArmorStandEntity, ArmorStandArmorEntityModel> {
         }
         Identifier identifier = this.getTexture(armorStandEntity);
         if (bl2) {
-            return RenderLayer.method_24294(identifier, false);
+            return RenderLayer.getEntityTranslucent(identifier, false);
         }
         if (bl) {
-            return RenderLayer.method_24293(identifier, false);
+            return RenderLayer.getCutoutNoCull(identifier, false);
         }
         return null;
     }

@@ -25,7 +25,7 @@ extends WanderAroundFarGoal {
     @Nullable
     protected Vec3d getWanderTarget() {
         Vec3d vec3d = null;
-        if (this.mob.isInsideWater()) {
+        if (this.mob.isTouchingWater()) {
             vec3d = TargetFinder.findGroundTarget(this.mob, 15, 15);
         }
         if (this.mob.getRandom().nextFloat() >= this.probability) {

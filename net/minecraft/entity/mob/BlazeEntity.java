@@ -111,7 +111,7 @@ extends HostileEntity {
     @Override
     protected void mobTick() {
         LivingEntity livingEntity;
-        if (this.isTouchingWater()) {
+        if (this.isWet()) {
             this.damage(DamageSource.DROWN, 1.0f);
         }
         --this.field_7215;
@@ -216,7 +216,7 @@ extends HostileEntity {
                         this.blaze.world.playLevelEvent(null, 1018, new BlockPos(this.blaze), 0);
                         for (int i = 0; i < 1; ++i) {
                             SmallFireballEntity smallFireballEntity = new SmallFireballEntity(this.blaze.world, this.blaze, e + this.blaze.getRandom().nextGaussian() * (double)h, f, g + this.blaze.getRandom().nextGaussian() * (double)h);
-                            smallFireballEntity.setPosition(smallFireballEntity.getX(), this.blaze.getBodyY(0.5) + 0.5, smallFireballEntity.getZ());
+                            smallFireballEntity.updatePosition(smallFireballEntity.getX(), this.blaze.getBodyY(0.5) + 0.5, smallFireballEntity.getZ());
                             this.blaze.world.spawnEntity(smallFireballEntity);
                         }
                     }

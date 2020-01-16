@@ -68,7 +68,7 @@ extends HorizontalConnectedBlock {
 
     public final boolean connectsTo(BlockState state, boolean bl) {
         Block block = state.getBlock();
-        return !PaneBlock.canConnect(block) && bl || block instanceof PaneBlock;
+        return !PaneBlock.cannotConnect(block) && bl || block instanceof PaneBlock;
     }
 
     @Override

@@ -33,12 +33,12 @@ extends MobEntityRenderer<WolfEntity, WolfEntityModel<WolfEntity>> {
 
     @Override
     public void render(WolfEntity wolfEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
-        if (wolfEntity.isWet()) {
-            float h = wolfEntity.getBrightnessAtEyes() * wolfEntity.getWetBrightnessMultiplier(g);
+        if (wolfEntity.isFurWet()) {
+            float h = wolfEntity.getBrightnessAtEyes() * wolfEntity.getFurWetBrightnessMultiplier(g);
             ((WolfEntityModel)this.model).setColorMultiplier(h, h, h);
         }
         super.render(wolfEntity, f, g, matrixStack, vertexConsumerProvider, i);
-        if (wolfEntity.isWet()) {
+        if (wolfEntity.isFurWet()) {
             ((WolfEntityModel)this.model).setColorMultiplier(1.0f, 1.0f, 1.0f);
         }
     }

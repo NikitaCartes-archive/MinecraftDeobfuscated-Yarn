@@ -79,7 +79,7 @@ implements Projectile {
 
     protected ProjectileEntity(EntityType<? extends ProjectileEntity> type, double x, double y, double z, World world) {
         this(type, world);
-        this.setPosition(x, y, z);
+        this.updatePosition(x, y, z);
     }
 
     protected ProjectileEntity(EntityType<? extends ProjectileEntity> type, LivingEntity owner, World world) {
@@ -134,7 +134,7 @@ implements Projectile {
     @Override
     @Environment(value=EnvType.CLIENT)
     public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
-        this.setPosition(x, y, z);
+        this.updatePosition(x, y, z);
         this.setRotation(yaw, pitch);
     }
 
@@ -148,7 +148,7 @@ implements Projectile {
             this.yaw = (float)(MathHelper.atan2(x, z) * 57.2957763671875);
             this.prevPitch = this.pitch;
             this.prevYaw = this.yaw;
-            this.setPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
+            this.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
             this.life = 0;
         }
     }
@@ -180,7 +180,7 @@ implements Projectile {
         if (this.shake > 0) {
             --this.shake;
         }
-        if (this.isInsideWaterOrRain()) {
+        if (this.isTouchingWaterOrRain()) {
             this.extinguish();
         }
         if (this.inGround && !bl) {
@@ -253,7 +253,7 @@ implements Projectile {
         this.yaw = MathHelper.lerp(0.2f, this.prevYaw, this.yaw);
         float m = 0.99f;
         float n = 0.05f;
-        if (this.isInsideWater()) {
+        if (this.isTouchingWater()) {
             for (int o = 0; o < 4; ++o) {
                 float p = 0.25f;
                 this.world.addParticle(ParticleTypes.BUBBLE, h - d * 0.25, j - e * 0.25, k - g * 0.25, d, e, g);
@@ -265,7 +265,7 @@ implements Projectile {
             Vec3d vec3d4 = this.getVelocity();
             this.setVelocity(vec3d4.x, vec3d4.y - (double)0.05f, vec3d4.z);
         }
-        this.setPosition(h, j, k);
+        this.updatePosition(h, j, k);
         this.checkBlockCollision();
     }
 

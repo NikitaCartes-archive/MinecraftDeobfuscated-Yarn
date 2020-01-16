@@ -75,7 +75,7 @@ Projectile {
     public FireworkEntity(World world, double x, double y, double z, ItemStack item) {
         super(EntityType.FIREWORK_ROCKET, world);
         this.life = 0;
-        this.setPosition(x, y, z);
+        this.updatePosition(x, y, z);
         int i = 1;
         if (!item.isEmpty() && item.hasTag()) {
             this.dataTracker.set(ITEM, item.copy());
@@ -130,7 +130,7 @@ Projectile {
                     Vec3d vec3d2 = this.shooter.getVelocity();
                     this.shooter.setVelocity(vec3d2.add(vec3d.x * 0.1 + (vec3d.x * 1.5 - vec3d2.x) * 0.5, vec3d.y * 0.1 + (vec3d.y * 1.5 - vec3d2.y) * 0.5, vec3d.z * 0.1 + (vec3d.z * 1.5 - vec3d2.z) * 0.5));
                 }
-                this.setPosition(this.shooter.getX(), this.shooter.getY(), this.shooter.getZ());
+                this.updatePosition(this.shooter.getX(), this.shooter.getY(), this.shooter.getZ());
                 this.setVelocity(this.shooter.getVelocity());
             }
         } else {
