@@ -150,7 +150,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 			float f = MathHelper.cos(this.bodyYaw * (float) (Math.PI / 180.0));
 			float g = MathHelper.sin(this.bodyYaw * (float) (Math.PI / 180.0));
 			float h = 0.3F;
-			passenger.setPosition(
+			passenger.updatePosition(
 				this.getX() + (double)(0.3F * g), this.getY() + this.getMountedHeightOffset() + passenger.getHeightOffset(), this.getZ() - (double)(0.3F * f)
 			);
 		}

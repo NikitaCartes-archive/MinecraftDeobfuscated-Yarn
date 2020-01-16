@@ -365,7 +365,7 @@ public class Structure {
 				method_17916(iWorld, compoundTag).ifPresent(entity -> {
 					float f = entity.applyMirror(blockMirror);
 					f += entity.yaw - entity.applyRotation(blockRotation);
-					entity.setPositionAndAngles(vec3d2.x, vec3d2.y, vec3d2.z, f, entity.pitch);
+					entity.refreshPositionAndAngles(vec3d2.x, vec3d2.y, vec3d2.z, f, entity.pitch);
 					iWorld.spawnEntity(entity);
 				});
 			}

@@ -83,7 +83,7 @@ public class SnowGolemEntity extends GolemEntity implements RangedAttackMob {
 			int i = MathHelper.floor(this.getX());
 			int j = MathHelper.floor(this.getY());
 			int k = MathHelper.floor(this.getZ());
-			if (this.isTouchingWater()) {
+			if (this.isWet()) {
 				this.damage(DamageSource.DROWN, 1.0F);
 			}
 

@@ -59,7 +59,7 @@ public class SalmonEntityModel<T extends Entity> extends CompositeEntityModel<T>
 	public void setAngles(T entity, float limbAngle, float limbDistance, float customAngle, float headYaw, float headPitch) {
 		float f = 1.0F;
 		float g = 1.0F;
-		if (!entity.isInsideWater()) {
+		if (!entity.isTouchingWater()) {
 			f = 1.3F;
 			g = 1.7F;
 		}

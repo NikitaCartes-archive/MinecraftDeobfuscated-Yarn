@@ -53,9 +53,9 @@ public class ArmorStandEntityRenderer extends LivingEntityRenderer<ArmorStandEnt
 		} else {
 			Identifier identifier = this.getTexture(armorStandEntity);
 			if (bl2) {
-				return RenderLayer.method_24294(identifier, false);
+				return RenderLayer.getEntityTranslucent(identifier, false);
 			} else {
-				return bl ? RenderLayer.method_24293(identifier, false) : null;
+				return bl ? RenderLayer.getCutoutNoCull(identifier, false) : null;
 			}
 		}
 	}

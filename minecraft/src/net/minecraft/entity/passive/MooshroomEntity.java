@@ -104,7 +104,7 @@ public class MooshroomEntity extends CowEntity {
 			if (!this.world.isClient) {
 				this.remove();
 				CowEntity cowEntity = EntityType.COW.create(this.world);
-				cowEntity.setPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
+				cowEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
 				cowEntity.setHealth(this.getHealth());
 				cowEntity.bodyYaw = this.bodyYaw;
 				if (this.hasCustomName()) {

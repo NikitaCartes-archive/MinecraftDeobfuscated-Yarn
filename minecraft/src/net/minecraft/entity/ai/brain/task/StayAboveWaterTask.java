@@ -15,7 +15,7 @@ public class StayAboveWaterTask extends Task<MobEntity> {
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, MobEntity mobEntity) {
-		return mobEntity.isInsideWater() && mobEntity.getWaterHeight() > (double)this.minWaterHeight || mobEntity.isInLava();
+		return mobEntity.isTouchingWater() && mobEntity.getWaterHeight() > (double)this.minWaterHeight || mobEntity.isInLava();
 	}
 
 	protected boolean shouldKeepRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {

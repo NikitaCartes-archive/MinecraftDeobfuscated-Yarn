@@ -57,7 +57,7 @@ public class ShulkerBulletEntity extends Entity {
 	@Environment(EnvType.CLIENT)
 	public ShulkerBulletEntity(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
 		this(EntityType.SHULKER_BULLET, world);
-		this.setPositionAndAngles(x, y, z, this.yaw, this.pitch);
+		this.refreshPositionAndAngles(x, y, z, this.yaw, this.pitch);
 		this.setVelocity(velocityX, velocityY, velocityZ);
 	}
 
@@ -68,7 +68,7 @@ public class ShulkerBulletEntity extends Entity {
 		double d = (double)blockPos.getX() + 0.5;
 		double e = (double)blockPos.getY() + 0.5;
 		double f = (double)blockPos.getZ() + 0.5;
-		this.setPositionAndAngles(d, e, f, this.yaw, this.pitch);
+		this.refreshPositionAndAngles(d, e, f, this.yaw, this.pitch);
 		this.target = target;
 		this.direction = Direction.UP;
 		this.method_7486(axis);
@@ -268,7 +268,7 @@ public class ShulkerBulletEntity extends Entity {
 		}
 
 		Vec3d vec3d = this.getVelocity();
-		this.setPosition(this.getX() + vec3d.x, this.getY() + vec3d.y, this.getZ() + vec3d.z);
+		this.updatePosition(this.getX() + vec3d.x, this.getY() + vec3d.y, this.getZ() + vec3d.z);
 		ProjectileUtil.method_7484(this, 0.5F);
 		if (this.world.isClient) {
 			this.world.addParticle(ParticleTypes.END_ROD, this.getX() - vec3d.x, this.getY() - vec3d.y + 0.15, this.getZ() - vec3d.z, 0.0, 0.0, 0.0);

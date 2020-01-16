@@ -104,7 +104,7 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 		EnderCrystalEntity enderCrystalEntity = EntityType.END_CRYSTAL.create(world.getWorld());
 		enderCrystalEntity.setBeamTarget(config.getPos());
 		enderCrystalEntity.setInvulnerable(config.isCrystalInvulerable());
-		enderCrystalEntity.setPositionAndAngles(
+		enderCrystalEntity.refreshPositionAndAngles(
 			(double)((float)spike.getCenterX() + 0.5F), (double)(spike.getHeight() + 1), (double)((float)spike.getCenterZ() + 0.5F), random.nextFloat() * 360.0F, 0.0F
 		);
 		world.spawnEntity(enderCrystalEntity);

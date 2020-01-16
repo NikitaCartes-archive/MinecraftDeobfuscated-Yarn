@@ -112,15 +112,15 @@ public class PaintingEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	public void setPositionAndAngles(double x, double y, double z, float yaw, float pitch) {
-		this.setPosition(x, y, z);
+	public void refreshPositionAndAngles(double x, double y, double z, float yaw, float pitch) {
+		this.updatePosition(x, y, z);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
 		BlockPos blockPos = this.blockPos.add(x - this.getX(), y - this.getY(), z - this.getZ());
-		this.setPosition((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
+		this.updatePosition((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 	}
 
 	@Override

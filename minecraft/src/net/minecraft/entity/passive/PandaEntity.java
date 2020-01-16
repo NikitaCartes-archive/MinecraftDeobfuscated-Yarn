@@ -313,7 +313,7 @@ public class PandaEntity extends AnimalEntity {
 	public void tick() {
 		super.tick();
 		if (this.isWorried()) {
-			if (this.world.isThundering() && !this.isInsideWater()) {
+			if (this.world.isThundering() && !this.isTouchingWater()) {
 				this.setScared(true);
 				this.setEating(false);
 			} else if (!this.isEating()) {
@@ -498,7 +498,7 @@ public class PandaEntity extends AnimalEntity {
 		this.playSound(SoundEvents.ENTITY_PANDA_SNEEZE, 1.0F, 1.0F);
 
 		for(PandaEntity pandaEntity : this.world.getNonSpectatingEntities(PandaEntity.class, this.getBoundingBox().expand(10.0))) {
-			if (!pandaEntity.isBaby() && pandaEntity.onGround && !pandaEntity.isInsideWater() && pandaEntity.method_18442()) {
+			if (!pandaEntity.isBaby() && pandaEntity.onGround && !pandaEntity.isTouchingWater() && pandaEntity.method_18442()) {
 				pandaEntity.jump();
 			}
 		}
@@ -582,7 +582,7 @@ public class PandaEntity extends AnimalEntity {
 	}
 
 	private void stop() {
-		if (!this.isInsideWater()) {
+		if (!this.isTouchingWater()) {
 			this.setForwardSpeed(0.0F);
 			this.getNavigation().stop();
 			this.setScared(true);
@@ -611,7 +611,7 @@ public class PandaEntity extends AnimalEntity {
 				this.eat(player, itemStack);
 				this.lovePlayer(player);
 			} else {
-				if (this.world.isClient || this.isScared() || this.isInsideWater()) {
+				if (this.world.isClient || this.isScared() || this.isTouchingWater()) {
 					return false;
 				}
 
@@ -816,7 +816,7 @@ public class PandaEntity extends AnimalEntity {
 
 		@Override
 		public boolean shouldContinue() {
-			if (!this.panda.isInsideWater() && (this.panda.isLazy() || this.panda.random.nextInt(600) != 1)) {
+			if (!this.panda.isTouchingWater() && (this.panda.isLazy() || this.panda.random.nextInt(600) != 1)) {
 				return this.panda.random.nextInt(2000) != 1;
 			} else {
 				return false;
@@ -1005,7 +1005,7 @@ public class PandaEntity extends AnimalEntity {
 		public boolean canStart() {
 			if (this.startAge <= PandaEntity.this.age
 				&& !PandaEntity.this.isBaby()
-				&& !PandaEntity.this.isInsideWater()
+				&& !PandaEntity.this.isTouchingWater()
 				&& PandaEntity.this.method_18442()
 				&& PandaEntity.this.getAskForBambooTicks() <= 0) {
 				List<ItemEntity> list = PandaEntity.this.world.getEntities(ItemEntity.class, PandaEntity.this.getBoundingBox().expand(6.0, 6.0, 6.0), PandaEntity.IS_FOOD);
@@ -1017,7 +1017,7 @@ public class PandaEntity extends AnimalEntity {
 
 		@Override
 		public boolean shouldContinue() {
-			if (!PandaEntity.this.isInsideWater() && (PandaEntity.this.isLazy() || PandaEntity.this.random.nextInt(600) != 1)) {
+			if (!PandaEntity.this.isTouchingWater() && (PandaEntity.this.isLazy() || PandaEntity.this.random.nextInt(600) != 1)) {
 				return PandaEntity.this.random.nextInt(2000) != 1;
 			} else {
 				return false;

@@ -43,7 +43,7 @@ public class TropicalFishEntityRenderer extends MobEntityRenderer<TropicalFishEn
 		super.setupTransforms(tropicalFishEntity, matrixStack, f, g, h);
 		float i = 4.3F * MathHelper.sin(0.6F * f);
 		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(i));
-		if (!tropicalFishEntity.isInsideWater()) {
+		if (!tropicalFishEntity.isTouchingWater()) {
 			matrixStack.translate(0.2F, 0.1F, 0.0);
 			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
 		}

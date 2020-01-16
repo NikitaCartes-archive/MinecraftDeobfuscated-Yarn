@@ -114,7 +114,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 
 	@Override
 	public void travel(Vec3d movementInput) {
-		if (this.canMoveVoluntarily() && this.isInsideWater()) {
+		if (this.canMoveVoluntarily() && this.isTouchingWater()) {
 			this.updateVelocity(0.01F, movementInput);
 			this.move(MovementType.SELF, this.getVelocity());
 			this.setVelocity(this.getVelocity().multiply(0.9));
@@ -128,7 +128,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 
 	@Override
 	public void tickMovement() {
-		if (!this.isInsideWater() && this.onGround && this.verticalCollision) {
+		if (!this.isTouchingWater() && this.onGround && this.verticalCollision) {
 			this.setVelocity(
 				this.getVelocity().add((double)((this.random.nextFloat() * 2.0F - 1.0F) * 0.05F), 0.4F, (double)((this.random.nextFloat() * 2.0F - 1.0F) * 0.05F))
 			);

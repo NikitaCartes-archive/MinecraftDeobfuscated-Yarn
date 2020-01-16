@@ -207,7 +207,7 @@ public class EndermanEntity extends HostileEntity {
 
 	@Override
 	protected void mobTick() {
-		if (this.isTouchingWater()) {
+		if (this.isWet()) {
 			this.damage(DamageSource.DROWN, 1.0F);
 		}
 

@@ -258,7 +258,7 @@ public class TeleportCommand {
 			float g = MathHelper.wrapDegrees(pitch);
 			g = MathHelper.clamp(g, -90.0F, 90.0F);
 			if (world == target.world) {
-				target.setPositionAndAngles(x, y, z, f, g);
+				target.refreshPositionAndAngles(x, y, z, f, g);
 				target.setHeadYaw(f);
 			} else {
 				target.detach();
@@ -270,7 +270,7 @@ public class TeleportCommand {
 				}
 
 				target.copyFrom(entity);
-				target.setPositionAndAngles(x, y, z, f, g);
+				target.refreshPositionAndAngles(x, y, z, f, g);
 				target.setHeadYaw(f);
 				world.onDimensionChanged(target);
 				entity.removed = true;

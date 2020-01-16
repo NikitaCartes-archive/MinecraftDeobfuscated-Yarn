@@ -84,7 +84,7 @@ public class CatSpawner {
 			return 0;
 		} else {
 			catEntity.initialize(world, world.getLocalDifficulty(pos), SpawnType.NATURAL, null, null);
-			catEntity.setPositionAndAngles(pos, 0.0F, 0.0F);
+			catEntity.refreshPositionAndAngles(pos, 0.0F, 0.0F);
 			world.spawnEntity(catEntity);
 			return 1;
 		}

@@ -65,7 +65,7 @@ public class TurtleEntity extends AnimalEntity {
 	private static final TrackedData<Boolean> LAND_BOUND = DataTracker.registerData(TurtleEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> ACTIVELY_TRAVELLING = DataTracker.registerData(TurtleEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private int sandDiggingCounter;
-	public static final Predicate<LivingEntity> BABY_TURTLE_ON_LAND_FILTER = livingEntity -> livingEntity.isBaby() && !livingEntity.isInsideWater();
+	public static final Predicate<LivingEntity> BABY_TURTLE_ON_LAND_FILTER = livingEntity -> livingEntity.isBaby() && !livingEntity.isTouchingWater();
 
 	public TurtleEntity(EntityType<? extends TurtleEntity> entityType, World world) {
 		super(entityType, world);
@@ -217,7 +217,7 @@ public class TurtleEntity extends AnimalEntity {
 	@Nullable
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return !this.isInsideWater() && this.onGround && !this.isBaby() ? SoundEvents.ENTITY_TURTLE_AMBIENT_LAND : super.getAmbientSound();
+		return !this.isTouchingWater() && this.onGround && !this.isBaby() ? SoundEvents.ENTITY_TURTLE_AMBIENT_LAND : super.getAmbientSound();
 	}
 
 	@Override
@@ -309,7 +309,7 @@ public class TurtleEntity extends AnimalEntity {
 
 	@Override
 	public void travel(Vec3d movementInput) {
-		if (this.canMoveVoluntarily() && this.isInsideWater()) {
+		if (this.canMoveVoluntarily() && this.isTouchingWater()) {
 			this.updateVelocity(0.1F, movementInput);
 			this.move(MovementType.SELF, this.getVelocity());
 			this.setVelocity(this.getVelocity().multiply(0.9));
@@ -480,7 +480,7 @@ public class TurtleEntity extends AnimalEntity {
 		public void tick() {
 			super.tick();
 			BlockPos blockPos = new BlockPos(this.turtle);
-			if (!this.turtle.isInsideWater() && this.hasReached()) {
+			if (!this.turtle.isTouchingWater() && this.hasReached()) {
 				if (this.turtle.sandDiggingCounter < 1) {
 					this.turtle.setDiggingSand(true);
 				} else if (this.turtle.sandDiggingCounter > 200) {
@@ -558,7 +558,7 @@ public class TurtleEntity extends AnimalEntity {
 
 		@Override
 		public boolean canStart() {
-			return !this.turtle.isLandBound() && !this.turtle.hasEgg() && this.turtle.isInsideWater();
+			return !this.turtle.isLandBound() && !this.turtle.hasEgg() && this.turtle.isTouchingWater();
 		}
 
 		@Override
@@ -650,7 +650,7 @@ public class TurtleEntity extends AnimalEntity {
 		}
 
 		private void updateVelocity() {
-			if (this.turtle.isInsideWater()) {
+			if (this.turtle.isTouchingWater()) {
 				this.turtle.setVelocity(this.turtle.getVelocity().add(0.0, 0.005, 0.0));
 				if (!this.turtle.getHomePos().isWithinDistance(this.turtle.getPos(), 16.0)) {
 					this.turtle.setMovementSpeed(Math.max(this.turtle.getMovementSpeed() / 2.0F, 0.08F));
@@ -725,15 +725,15 @@ public class TurtleEntity extends AnimalEntity {
 
 		@Override
 		public boolean shouldContinue() {
-			return !this.turtle.isInsideWater() && this.tryingTime <= 1200 && this.isTargetPos(this.turtle.world, this.targetPos);
+			return !this.turtle.isTouchingWater() && this.tryingTime <= 1200 && this.isTargetPos(this.turtle.world, this.targetPos);
 		}
 
 		@Override
 		public boolean canStart() {
-			if (this.turtle.isBaby() && !this.turtle.isInsideWater()) {
+			if (this.turtle.isBaby() && !this.turtle.isTouchingWater()) {
 				return super.canStart();
 			} else {
-				return !this.turtle.isLandBound() && !this.turtle.isInsideWater() && !this.turtle.hasEgg() ? super.canStart() : false;
+				return !this.turtle.isLandBound() && !this.turtle.isTouchingWater() && !this.turtle.hasEgg() ? super.canStart() : false;
 			}
 		}
 
@@ -759,7 +759,7 @@ public class TurtleEntity extends AnimalEntity {
 
 		@Override
 		public boolean canStart() {
-			return !this.mob.isInsideWater() && !this.turtle.isLandBound() && !this.turtle.hasEgg() ? super.canStart() : false;
+			return !this.mob.isTouchingWater() && !this.turtle.isLandBound() && !this.turtle.hasEgg() ? super.canStart() : false;
 		}
 	}
 }

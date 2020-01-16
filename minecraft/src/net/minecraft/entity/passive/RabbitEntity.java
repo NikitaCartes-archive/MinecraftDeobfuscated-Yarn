@@ -571,7 +571,7 @@ public class RabbitEntity extends AnimalEntity {
 
 		@Override
 		public void moveTo(double x, double y, double z, double speed) {
-			if (this.rabbit.isInsideWater()) {
+			if (this.rabbit.isTouchingWater()) {
 				speed = 1.5;
 			}
 

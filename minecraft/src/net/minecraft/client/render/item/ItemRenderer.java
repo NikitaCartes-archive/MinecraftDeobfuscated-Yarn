@@ -210,7 +210,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 		RenderSystem.scalef(16.0F, 16.0F, 16.0F);
 		MatrixStack matrixStack = new MatrixStack();
 		VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
-		boolean bl = !model.method_24304();
+		boolean bl = !model.isSideLit();
 		if (bl) {
 			DiffuseLighting.disableGuiDepthLighting();
 		}

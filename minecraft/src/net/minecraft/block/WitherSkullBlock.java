@@ -57,7 +57,7 @@ public class WitherSkullBlock extends SkullBlock {
 
 					WitherEntity witherEntity = EntityType.WITHER.create(world);
 					BlockPos blockPos = result.translate(1, 2, 0).getBlockPos();
-					witherEntity.setPositionAndAngles(
+					witherEntity.refreshPositionAndAngles(
 						(double)blockPos.getX() + 0.5,
 						(double)blockPos.getY() + 0.55,
 						(double)blockPos.getZ() + 0.5,

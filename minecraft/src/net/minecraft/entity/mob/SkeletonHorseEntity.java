@@ -89,7 +89,7 @@ public class SkeletonHorseEntity extends HorseBaseEntity {
 
 	@Override
 	protected void playJumpSound() {
-		if (this.isInsideWater()) {
+		if (this.isTouchingWater()) {
 			this.playSound(SoundEvents.ENTITY_SKELETON_HORSE_JUMP_WATER, 0.4F, 1.0F);
 		} else {
 			super.playJumpSound();

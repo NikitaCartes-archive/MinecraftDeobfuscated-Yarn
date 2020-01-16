@@ -298,7 +298,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 					world.playLevelEvent(null, 1016, new BlockPos(this.ghast), 0);
 					FireballEntity fireballEntity = new FireballEntity(world, this.ghast, f, g, h);
 					fireballEntity.explosionPower = this.ghast.getFireballStrength();
-					fireballEntity.setPosition(this.ghast.getX() + vec3d.x * 4.0, this.ghast.getBodyY(0.5) + 0.5, fireballEntity.getZ() + vec3d.z * 4.0);
+					fireballEntity.updatePosition(this.ghast.getX() + vec3d.x * 4.0, this.ghast.getBodyY(0.5) + 0.5, fireballEntity.getZ() + vec3d.z * 4.0);
 					world.spawnEntity(fireballEntity);
 					this.cooldown = -40;
 				}

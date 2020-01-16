@@ -24,7 +24,7 @@ public class TntEntity extends Entity {
 
 	public TntEntity(World world, double x, double y, double z, @Nullable LivingEntity igniter) {
 		this(EntityType.TNT, world);
-		this.setPosition(x, y, z);
+		this.updatePosition(x, y, z);
 		double d = world.random.nextDouble() * (float) (Math.PI * 2);
 		this.setVelocity(-Math.sin(d) * 0.02, 0.2F, -Math.cos(d) * 0.02);
 		this.setFuse(80);

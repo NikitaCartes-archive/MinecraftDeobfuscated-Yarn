@@ -50,7 +50,7 @@ public class TropicalFishEntityModelB<T extends Entity> extends TintableComposit
 	@Override
 	public void setAngles(T entity, float limbAngle, float limbDistance, float customAngle, float headYaw, float headPitch) {
 		float f = 1.0F;
-		if (!entity.isInsideWater()) {
+		if (!entity.isTouchingWater()) {
 			f = 1.5F;
 		}
 

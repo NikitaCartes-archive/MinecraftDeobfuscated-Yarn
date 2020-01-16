@@ -54,7 +54,7 @@ public class WallBlock extends HorizontalConnectedBlock {
 	private boolean shouldConnectTo(BlockState state, boolean faceFullSquare, Direction side) {
 		Block block = state.getBlock();
 		boolean bl = block.matches(BlockTags.WALLS) || block instanceof FenceGateBlock && FenceGateBlock.canWallConnect(state, side);
-		return !canConnect(block) && faceFullSquare || bl;
+		return !cannotConnect(block) && faceFullSquare || bl;
 	}
 
 	@Override

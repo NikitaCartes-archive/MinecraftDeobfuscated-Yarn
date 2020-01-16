@@ -44,7 +44,7 @@ public class ArmorStandItem extends Item {
 						world.removeBlock(blockPos2, false);
 						ArmorStandEntity armorStandEntity = new ArmorStandEntity(world, d + 0.5, e, f + 0.5);
 						float g = (float)MathHelper.floor((MathHelper.wrapDegrees(context.getPlayerYaw() - 180.0F) + 22.5F) / 45.0F) * 45.0F;
-						armorStandEntity.setPositionAndAngles(d + 0.5, e, f + 0.5, g, 0.0F);
+						armorStandEntity.refreshPositionAndAngles(d + 0.5, e, f + 0.5, g, 0.0F);
 						this.setRotations(armorStandEntity, world.random);
 						EntityType.loadFromEntityTag(world, context.getPlayer(), armorStandEntity, itemStack.getTag());
 						world.spawnEntity(armorStandEntity);

@@ -59,7 +59,7 @@ public class AreaEffectCloudEntity extends Entity {
 
 	public AreaEffectCloudEntity(World world, double x, double y, double z) {
 		this(EntityType.AREA_EFFECT_CLOUD, world);
-		this.setPosition(x, y, z);
+		this.updatePosition(x, y, z);
 	}
 
 	@Override
@@ -82,7 +82,7 @@ public class AreaEffectCloudEntity extends Entity {
 		double e = this.getY();
 		double f = this.getZ();
 		super.calculateDimensions();
-		this.setPosition(d, e, f);
+		this.updatePosition(d, e, f);
 	}
 
 	public float getRadius() {

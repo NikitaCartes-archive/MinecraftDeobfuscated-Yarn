@@ -34,8 +34,8 @@ public class MultipartBakedModel implements BakedModel {
 		this.components = components;
 		BakedModel bakedModel = (BakedModel)((Pair)components.iterator().next()).getRight();
 		this.ambientOcclusion = bakedModel.useAmbientOcclusion();
-		this.depthGui = bakedModel.hasDepthInGui();
-		this.field_21863 = bakedModel.method_24304();
+		this.depthGui = bakedModel.hasDepth();
+		this.field_21863 = bakedModel.isSideLit();
 		this.sprite = bakedModel.getSprite();
 		this.transformations = bakedModel.getTransformation();
 		this.itemPropertyOverrides = bakedModel.getItemPropertyOverrides();
@@ -79,12 +79,12 @@ public class MultipartBakedModel implements BakedModel {
 	}
 
 	@Override
-	public boolean hasDepthInGui() {
+	public boolean hasDepth() {
 		return this.depthGui;
 	}
 
 	@Override
-	public boolean method_24304() {
+	public boolean isSideLit() {
 		return this.field_21863;
 	}
 

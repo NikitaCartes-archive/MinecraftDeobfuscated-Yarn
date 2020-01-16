@@ -36,13 +36,13 @@ public class WeightedBakedModel implements BakedModel {
 	}
 
 	@Override
-	public boolean hasDepthInGui() {
-		return this.defaultModel.hasDepthInGui();
+	public boolean hasDepth() {
+		return this.defaultModel.hasDepth();
 	}
 
 	@Override
-	public boolean method_24304() {
-		return this.defaultModel.method_24304();
+	public boolean isSideLit() {
+		return this.defaultModel.isSideLit();
 	}
 
 	@Override

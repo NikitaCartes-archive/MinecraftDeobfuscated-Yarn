@@ -44,7 +44,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 	@Override
 	public PathNode getStart() {
 		int i;
-		if (this.canSwim() && this.entity.isInsideWater()) {
+		if (this.canSwim() && this.entity.isTouchingWater()) {
 			i = MathHelper.floor(this.entity.getY());
 			BlockPos.Mutable mutable = new BlockPos.Mutable(this.entity.getX(), (double)i, this.entity.getZ());
 

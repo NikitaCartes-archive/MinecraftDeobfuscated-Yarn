@@ -50,7 +50,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 		int j = itemStack.isEmpty() ? 187 : Item.getRawId(itemStack.getItem()) + itemStack.getDamage();
 		this.random.setSeed((long)j);
 		BakedModel bakedModel = this.itemRenderer.getHeldItemModel(itemStack, itemEntity.world, null);
-		boolean bl = bakedModel.hasDepthInGui();
+		boolean bl = bakedModel.hasDepth();
 		int k = this.getRenderedAmount(itemStack);
 		float h = 0.25F;
 		float l = MathHelper.sin(((float)itemEntity.getAge() + g) / 10.0F + itemEntity.hoverHeight) * 0.1F + 0.1F;

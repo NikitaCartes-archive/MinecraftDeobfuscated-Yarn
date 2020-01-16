@@ -306,7 +306,7 @@ public class EndCityGenerator {
 				}
 			} else if (metadata.startsWith("Sentry")) {
 				ShulkerEntity shulkerEntity = EntityType.SHULKER.create(world.getWorld());
-				shulkerEntity.setPosition((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5);
+				shulkerEntity.updatePosition((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5);
 				shulkerEntity.setAttachedBlock(pos);
 				world.spawnEntity(shulkerEntity);
 			} else if (metadata.startsWith("Elytra")) {
