@@ -915,7 +915,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 			float g = MathHelper.cos(this.bodyYaw * (float) (Math.PI / 180.0));
 			float h = 0.7F * this.lastAngryAnimationProgress;
 			float i = 0.15F * this.lastAngryAnimationProgress;
-			passenger.setPosition(
+			passenger.updatePosition(
 				this.getX() + (double)(h * f), this.getY() + this.getMountedHeightOffset() + passenger.getHeightOffset() + (double)i, this.getZ() - (double)(h * g)
 			);
 			if (passenger instanceof LivingEntity) {

@@ -78,7 +78,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 
 	protected void setSize(int size, boolean heal) {
 		this.dataTracker.set(SLIME_SIZE, size);
-		this.updatePosition();
+		this.refreshPosition();
 		this.calculateDimensions();
 		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue((double)(size * size));
 		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue((double)(0.2F + 0.1F * (float)size));
@@ -166,7 +166,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 		double e = this.getY();
 		double f = this.getZ();
 		super.calculateDimensions();
-		this.setPosition(d, e, f);
+		this.updatePosition(d, e, f);
 	}
 
 	@Override
@@ -175,7 +175,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 			this.calculateDimensions();
 			this.yaw = this.headYaw;
 			this.bodyYaw = this.headYaw;
-			if (this.isInsideWater() && this.random.nextInt(20) == 0) {
+			if (this.isTouchingWater() && this.random.nextInt(20) == 0) {
 				this.onSwimmingStart();
 			}
 		}
@@ -208,7 +208,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 
 				slimeEntity.setInvulnerable(this.isInvulnerable());
 				slimeEntity.setSize(i / 2, true);
-				slimeEntity.setPositionAndAngles(this.getX() + (double)f, this.getY() + 0.5, this.getZ() + (double)g, this.random.nextFloat() * 360.0F, 0.0F);
+				slimeEntity.refreshPositionAndAngles(this.getX() + (double)f, this.getY() + 0.5, this.getZ() + (double)g, this.random.nextFloat() * 360.0F, 0.0F);
 				this.world.spawnEntity(slimeEntity);
 			}
 		}
@@ -424,7 +424,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 		@Override
 		public boolean canStart() {
 			return this.slime.getTarget() == null
-				&& (this.slime.onGround || this.slime.isInsideWater() || this.slime.isInLava() || this.slime.hasStatusEffect(StatusEffects.LEVITATION))
+				&& (this.slime.onGround || this.slime.isTouchingWater() || this.slime.isInLava() || this.slime.hasStatusEffect(StatusEffects.LEVITATION))
 				&& this.slime.getMoveControl() instanceof SlimeEntity.SlimeMoveControl;
 		}
 
@@ -510,7 +510,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 
 		@Override
 		public boolean canStart() {
-			return (this.slime.isInsideWater() || this.slime.isInLava()) && this.slime.getMoveControl() instanceof SlimeEntity.SlimeMoveControl;
+			return (this.slime.isTouchingWater() || this.slime.isInLava()) && this.slime.getMoveControl() instanceof SlimeEntity.SlimeMoveControl;
 		}
 
 		@Override

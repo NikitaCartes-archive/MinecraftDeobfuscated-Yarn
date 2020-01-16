@@ -73,7 +73,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 
 	protected ProjectileEntity(EntityType<? extends ProjectileEntity> type, double x, double y, double z, World world) {
 		this(type, world);
-		this.setPosition(x, y, z);
+		this.updatePosition(x, y, z);
 	}
 
 	protected ProjectileEntity(EntityType<? extends ProjectileEntity> type, LivingEntity owner, World world) {
@@ -137,7 +137,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
-		this.setPosition(x, y, z);
+		this.updatePosition(x, y, z);
 		this.setRotation(yaw, pitch);
 	}
 
@@ -151,7 +151,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 			this.yaw = (float)(MathHelper.atan2(x, z) * 180.0F / (float)Math.PI);
 			this.prevPitch = this.pitch;
 			this.prevYaw = this.yaw;
-			this.setPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
+			this.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
 			this.life = 0;
 		}
 	}
@@ -189,7 +189,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 			this.shake--;
 		}
 
-		if (this.isInsideWaterOrRain()) {
+		if (this.isTouchingWaterOrRain()) {
 			this.extinguish();
 		}
 
@@ -288,7 +288,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 			this.yaw = MathHelper.lerp(0.2F, this.prevYaw, this.yaw);
 			float m = 0.99F;
 			float n = 0.05F;
-			if (this.isInsideWater()) {
+			if (this.isTouchingWater()) {
 				for (int o = 0; o < 4; o++) {
 					float p = 0.25F;
 					this.world.addParticle(ParticleTypes.BUBBLE, h - d * 0.25, j - e * 0.25, k - g * 0.25, d, e, g);
@@ -303,7 +303,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 				this.setVelocity(vec3d4.x, vec3d4.y - 0.05F, vec3d4.z);
 			}
 
-			this.setPosition(h, j, k);
+			this.updatePosition(h, j, k);
 			this.checkBlockCollision();
 		}
 	}

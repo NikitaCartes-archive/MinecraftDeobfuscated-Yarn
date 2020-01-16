@@ -24,7 +24,7 @@ public class FollowCustomerTask extends Task<VillagerEntity> {
 		PlayerEntity playerEntity = villagerEntity.getCurrentCustomer();
 		return villagerEntity.isAlive()
 			&& playerEntity != null
-			&& !villagerEntity.isInsideWater()
+			&& !villagerEntity.isTouchingWater()
 			&& !villagerEntity.velocityModified
 			&& villagerEntity.squaredDistanceTo(playerEntity) <= 16.0
 			&& playerEntity.container != null;

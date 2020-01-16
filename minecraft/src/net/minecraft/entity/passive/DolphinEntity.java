@@ -72,7 +72,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 		.includeTeammates()
 		.includeInvulnerable()
 		.includeHidden();
-	public static final Predicate<ItemEntity> CAN_TAKE = itemEntity -> !itemEntity.cannotPickup() && itemEntity.isAlive() && itemEntity.isInsideWater();
+	public static final Predicate<ItemEntity> CAN_TAKE = itemEntity -> !itemEntity.cannotPickup() && itemEntity.isAlive() && itemEntity.isTouchingWater();
 
 	public DolphinEntity(EntityType<? extends DolphinEntity> entityType, World world) {
 		super(entityType, world);
@@ -246,7 +246,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 	public void tick() {
 		super.tick();
 		if (!this.isAiDisabled()) {
-			if (this.isTouchingWater()) {
+			if (this.isWet()) {
 				this.setMoistness(2400);
 			} else {
 				this.setMoistness(this.getMoistness() - 1);
@@ -264,7 +264,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 				}
 			}
 
-			if (this.world.isClient && this.isInsideWater() && this.getVelocity().lengthSquared() > 0.03) {
+			if (this.world.isClient && this.isTouchingWater() && this.getVelocity().lengthSquared() > 0.03) {
 				Vec3d vec3d = this.getRotationVec(0.0F);
 				float f = MathHelper.cos(this.yaw * (float) (Math.PI / 180.0)) * 0.3F;
 				float g = MathHelper.sin(this.yaw * (float) (Math.PI / 180.0)) * 0.3F;
@@ -356,7 +356,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 	@Nullable
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return this.isInsideWater() ? SoundEvents.ENTITY_DOLPHIN_AMBIENT_WATER : SoundEvents.ENTITY_DOLPHIN_AMBIENT;
+		return this.isTouchingWater() ? SoundEvents.ENTITY_DOLPHIN_AMBIENT_WATER : SoundEvents.ENTITY_DOLPHIN_AMBIENT;
 	}
 
 	@Override
@@ -376,7 +376,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 
 	@Override
 	public void travel(Vec3d movementInput) {
-		if (this.canMoveVoluntarily() && this.isInsideWater()) {
+		if (this.canMoveVoluntarily() && this.isTouchingWater()) {
 			this.updateVelocity(this.getMovementSpeed(), movementInput);
 			this.move(MovementType.SELF, this.getVelocity());
 			this.setVelocity(this.getVelocity().multiply(0.9));
@@ -403,7 +403,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 
 		@Override
 		public void tick() {
-			if (this.dolphin.isInsideWater()) {
+			if (this.dolphin.isTouchingWater()) {
 				this.dolphin.setVelocity(this.dolphin.getVelocity().add(0.0, 0.005, 0.0));
 			}
 
@@ -420,7 +420,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 					this.dolphin.bodyYaw = this.dolphin.yaw;
 					this.dolphin.headYaw = this.dolphin.yaw;
 					float i = (float)(this.speed * this.dolphin.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
-					if (this.dolphin.isInsideWater()) {
+					if (this.dolphin.isTouchingWater()) {
 						this.dolphin.setMovementSpeed(i * 0.02F);
 						float j = -((float)(MathHelper.atan2(e, (double)MathHelper.sqrt(d * d + f * f)) * 180.0F / (float)Math.PI));
 						j = MathHelper.clamp(MathHelper.wrapDegrees(j), -85.0F, 85.0F);

@@ -9,9 +9,8 @@ import com.mojang.datafixers.schemas.Schema;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_4744;
-import net.minecraft.class_4745;
 import net.minecraft.datafixer.fix.AddTrappedChestFix;
+import net.minecraft.datafixer.fix.AdvancementRenameFix;
 import net.minecraft.datafixer.fix.AdvancementsFix;
 import net.minecraft.datafixer.fix.BedBlockEntityFix;
 import net.minecraft.datafixer.fix.BedItemColorFix;
@@ -99,6 +98,7 @@ import net.minecraft.datafixer.fix.OptionsKeyTranslationFix;
 import net.minecraft.datafixer.fix.OptionsLowerCaseLanguageFix;
 import net.minecraft.datafixer.fix.PointOfInterestReorganizationFix;
 import net.minecraft.datafixer.fix.RecipeFix;
+import net.minecraft.datafixer.fix.RecipeRenameFix;
 import net.minecraft.datafixer.fix.RecipeRenamingFix;
 import net.minecraft.datafixer.fix.RemovePoiValidTagFix;
 import net.minecraft.datafixer.fix.SavedDataVillageCropFix;
@@ -503,9 +503,9 @@ public class Schemas {
 		Schema schema96 = builder.addSchema(2100, Schema2100::new);
 		builder.addFixer(new ChoiceTypesFix(schema96, "Added Bee and Bee Stinger", TypeReferences.ENTITY));
 		builder.addFixer(new ChoiceTypesFix(schema96, "Add beehive", TypeReferences.BLOCK_ENTITY));
-		builder.addFixer(new class_4745(schema96, false, "Rename sugar recipe", string -> "minecraft:sugar".equals(string) ? "sugar_from_sugar_cane" : string));
+		builder.addFixer(new RecipeRenameFix(schema96, false, "Rename sugar recipe", string -> "minecraft:sugar".equals(string) ? "sugar_from_sugar_cane" : string));
 		builder.addFixer(
-			new class_4744(
+			new AdvancementRenameFix(
 				schema96,
 				false,
 				"Rename sugar recipe advancement",

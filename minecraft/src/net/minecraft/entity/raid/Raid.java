@@ -477,7 +477,7 @@ public class Raid {
 					k++;
 					if (raiderEntity2 != null) {
 						this.addRaider(i, raiderEntity2, pos, false);
-						raiderEntity2.setPositionAndAngles(pos, 0.0F, 0.0F);
+						raiderEntity2.refreshPositionAndAngles(pos, 0.0F, 0.0F);
 						raiderEntity2.startRiding(raiderEntity);
 					}
 				}
@@ -498,7 +498,7 @@ public class Raid {
 			raider.setAbleToJoinRaid(true);
 			raider.setOutOfRaidCounter(0);
 			if (!existing && pos != null) {
-				raider.setPosition((double)pos.getX() + 0.5, (double)pos.getY() + 1.0, (double)pos.getZ() + 0.5);
+				raider.updatePosition((double)pos.getX() + 0.5, (double)pos.getY() + 1.0, (double)pos.getZ() + 0.5);
 				raider.initialize(this.world, this.world.getLocalDifficulty(pos), SpawnType.EVENT, null, null);
 				raider.addBonusForWave(wave, false);
 				raider.onGround = true;

@@ -88,7 +88,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 	protected AbstractMinecartEntity(EntityType<?> type, World world, double x, double y, double z) {
 		this(type, world);
-		this.setPosition(x, y, z);
+		this.updatePosition(x, y, z);
 		this.setVelocity(Vec3d.ZERO);
 		this.prevX = x;
 		this.prevY = y;
@@ -227,10 +227,10 @@ public abstract class AbstractMinecartEntity extends Entity {
 				this.yaw = (float)((double)this.yaw + g / (double)this.clientInterpolationSteps);
 				this.pitch = (float)((double)this.pitch + (this.clientPitch - (double)this.pitch) / (double)this.clientInterpolationSteps);
 				this.clientInterpolationSteps--;
-				this.setPosition(d, e, f);
+				this.updatePosition(d, e, f);
 				this.setRotation(this.yaw, this.pitch);
 			} else {
-				this.updatePosition();
+				this.refreshPosition();
 				this.setRotation(this.yaw, this.pitch);
 			}
 		} else {
@@ -414,15 +414,15 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 		d = o + h * s;
 		f = p + i * s;
-		this.setPosition(d, e, f);
+		this.updatePosition(d, e, f);
 		double t = this.hasPassengers() ? 0.75 : 1.0;
 		double u = this.getMaxOffRailSpeed();
 		vec3d2 = this.getVelocity();
 		this.move(MovementType.SELF, new Vec3d(MathHelper.clamp(t * vec3d2.x, -u, u), 0.0, MathHelper.clamp(t * vec3d2.z, -u, u)));
 		if (vec3i.getY() != 0 && MathHelper.floor(this.getX()) - pos.getX() == vec3i.getX() && MathHelper.floor(this.getZ()) - pos.getZ() == vec3i.getZ()) {
-			this.setPosition(this.getX(), this.getY() + (double)vec3i.getY(), this.getZ());
+			this.updatePosition(this.getX(), this.getY() + (double)vec3i.getY(), this.getZ());
 		} else if (vec3i2.getY() != 0 && MathHelper.floor(this.getX()) - pos.getX() == vec3i2.getX() && MathHelper.floor(this.getZ()) - pos.getZ() == vec3i2.getZ()) {
-			this.setPosition(this.getX(), this.getY() + (double)vec3i2.getY(), this.getZ());
+			this.updatePosition(this.getX(), this.getY() + (double)vec3i2.getY(), this.getZ());
 		}
 
 		this.applySlowdown();
@@ -435,7 +435,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 				this.setVelocity(vec3d5.multiply((w + v) / w, 1.0, (w + v) / w));
 			}
 
-			this.setPosition(this.getX(), vec3d4.y, this.getZ());
+			this.updatePosition(this.getX(), vec3d4.y, this.getZ());
 		}
 
 		int x = MathHelper.floor(this.getX());

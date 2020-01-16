@@ -423,7 +423,7 @@ public class ClientPlayerInteractionManager {
 			world.setBlockStateWithoutNeighborUpdates(pos, blockState);
 			if (posAndRot != null) {
 				Vec3d vec3d = posAndRot.getPos();
-				this.client.player.setPositionAnglesAndUpdate(vec3d.x, vec3d.y, vec3d.z, posAndRot.getYaw(), posAndRot.getPitch());
+				this.client.player.updatePositionAndAngles(vec3d.x, vec3d.y, vec3d.z, posAndRot.getYaw(), posAndRot.getPitch());
 			}
 		}
 

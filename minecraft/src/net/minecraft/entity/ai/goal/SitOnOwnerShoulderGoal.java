@@ -15,7 +15,7 @@ public class SitOnOwnerShoulderGoal extends Goal {
 	@Override
 	public boolean canStart() {
 		ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)this.tameable.getOwner();
-		boolean bl = serverPlayerEntity != null && !serverPlayerEntity.isSpectator() && !serverPlayerEntity.abilities.flying && !serverPlayerEntity.isInsideWater();
+		boolean bl = serverPlayerEntity != null && !serverPlayerEntity.isSpectator() && !serverPlayerEntity.abilities.flying && !serverPlayerEntity.isTouchingWater();
 		return !this.tameable.isSitting() && bl && this.tameable.isReadyToSitOnPlayer();
 	}
 

@@ -374,7 +374,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 		Util.nanoTimeSupplier = RenderSystem.initBackendSystem();
 		this.windowProvider = new WindowProvider(this);
-		this.window = this.windowProvider.createWindow(windowSettings, this.options.fullscreenResolution, this.method_24287());
+		this.window = this.windowProvider.createWindow(windowSettings, this.options.fullscreenResolution, this.getWindowTitle());
 		this.onWindowFocusChanged(true);
 
 		try {
@@ -483,20 +483,20 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 	}
 
-	public void method_24288() {
-		this.window.method_24286(this.method_24287());
+	public void updateWindowTitle() {
+		this.window.setTitle(this.getWindowTitle());
 	}
 
-	private String method_24287() {
+	private String getWindowTitle() {
 		StringBuilder stringBuilder = new StringBuilder("Minecraft");
-		if (this.method_24289()) {
+		if (this.isModded()) {
 			stringBuilder.append("*");
 		}
 
 		stringBuilder.append(" ");
 		stringBuilder.append(SharedConstants.getGameVersion().getName());
 		ClientPlayNetworkHandler clientPlayNetworkHandler = this.getNetworkHandler();
-		if (clientPlayNetworkHandler != null) {
+		if (clientPlayNetworkHandler != null && clientPlayNetworkHandler.getConnection().isOpen()) {
 			stringBuilder.append(" - ");
 			if (this.server != null && !this.server.isRemote()) {
 				stringBuilder.append(I18n.translate("title.singleplayer"));
@@ -512,7 +512,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return stringBuilder.toString();
 	}
 
-	public boolean method_24289() {
+	public boolean isModded() {
 		return !"vanilla".equals(ClientBrandRetriever.getClientModName()) || MinecraftClient.class.getSigners() == null;
 	}
 
@@ -800,7 +800,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.mouse.lockCursor();
 		}
 
-		this.method_24288();
+		this.updateWindowTitle();
 	}
 
 	public void setOverlay(@Nullable Overlay overlay) {
@@ -1651,7 +1651,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.worldRenderer.setWorld(clientWorld);
 		this.particleManager.setWorld(clientWorld);
 		BlockEntityRenderDispatcher.INSTANCE.setWorld(clientWorld);
-		this.method_24288();
+		this.updateWindowTitle();
 	}
 
 	public final boolean isDemo() {
@@ -1999,7 +1999,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			Biome.Category category = this.player.world.getBiome(new BlockPos(this.player)).getCategory();
 			if (!this.musicTracker.isPlayingType(MusicTracker.MusicType.UNDER_WATER)
 				&& (
-					!this.player.isInWater()
+					!this.player.isSubmergedInWater()
 						|| this.musicTracker.isPlayingType(MusicTracker.MusicType.GAME)
 						|| category != Biome.Category.OCEAN && category != Biome.Category.RIVER
 				)) {

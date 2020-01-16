@@ -84,7 +84,7 @@ public class BoatEntity extends Entity {
 
 	public BoatEntity(World world, double x, double y, double z) {
 		this(EntityType.BOAT, world);
-		this.setPosition(x, y, z);
+		this.updatePosition(x, y, z);
 		this.setVelocity(Vec3d.ZERO);
 		this.prevX = x;
 		this.prevY = y;
@@ -386,7 +386,7 @@ public class BoatEntity extends Entity {
 			this.yaw = (float)((double)this.yaw + g / (double)this.field_7708);
 			this.pitch = (float)((double)this.pitch + (this.field_7684 - (double)this.pitch) / (double)this.field_7708);
 			this.field_7708--;
-			this.setPosition(d, e, f);
+			this.updatePosition(d, e, f);
 			this.setRotation(this.yaw, this.pitch);
 		}
 	}
@@ -573,7 +573,7 @@ public class BoatEntity extends Entity {
 		this.velocityDecay = 0.05F;
 		if (this.lastLocation == BoatEntity.Location.IN_AIR && this.location != BoatEntity.Location.IN_AIR && this.location != BoatEntity.Location.ON_LAND) {
 			this.waterLevel = this.getBodyY(1.0);
-			this.setPosition(this.getX(), (double)(this.method_7544() - this.getHeight()) + 0.101, this.getZ());
+			this.updatePosition(this.getX(), (double)(this.method_7544() - this.getHeight()) + 0.101, this.getZ());
 			this.setVelocity(this.getVelocity().multiply(1.0, 0.0, 1.0));
 			this.fallVelocity = 0.0;
 			this.location = BoatEntity.Location.IN_WATER;
@@ -657,7 +657,7 @@ public class BoatEntity extends Entity {
 			}
 
 			Vec3d vec3d = new Vec3d((double)f, 0.0, 0.0).rotateY(-this.yaw * (float) (Math.PI / 180.0) - (float) (Math.PI / 2));
-			passenger.setPosition(this.getX() + vec3d.x, this.getY() + (double)g, this.getZ() + vec3d.z);
+			passenger.updatePosition(this.getX() + vec3d.x, this.getY() + (double)g, this.getZ() + vec3d.z);
 			passenger.yaw = passenger.yaw + this.yawVelocity;
 			passenger.setHeadYaw(passenger.getHeadYaw() + this.yawVelocity);
 			this.copyEntityData(passenger);

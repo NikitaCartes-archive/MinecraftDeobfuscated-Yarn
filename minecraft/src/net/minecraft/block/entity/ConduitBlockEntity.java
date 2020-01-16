@@ -161,7 +161,7 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 		List<PlayerEntity> list = this.world.getNonSpectatingEntities(PlayerEntity.class, box);
 		if (!list.isEmpty()) {
 			for (PlayerEntity playerEntity : list) {
-				if (this.pos.isWithinDistance(new BlockPos(playerEntity), (double)j) && playerEntity.isInsideWaterOrRain()) {
+				if (this.pos.isWithinDistance(new BlockPos(playerEntity), (double)j) && playerEntity.isTouchingWaterOrRain()) {
 					playerEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.CONDUIT_POWER, 260, 0, true, true));
 				}
 			}
@@ -178,7 +178,7 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 			this.targetUuid = null;
 		} else if (this.targetEntity == null) {
 			List<LivingEntity> list = this.world
-				.getEntities(LivingEntity.class, this.getAttackZone(), livingEntityx -> livingEntityx instanceof Monster && livingEntityx.isInsideWaterOrRain());
+				.getEntities(LivingEntity.class, this.getAttackZone(), livingEntityx -> livingEntityx instanceof Monster && livingEntityx.isTouchingWaterOrRain());
 			if (!list.isEmpty()) {
 				this.targetEntity = (LivingEntity)list.get(this.world.random.nextInt(list.size()));
 			}

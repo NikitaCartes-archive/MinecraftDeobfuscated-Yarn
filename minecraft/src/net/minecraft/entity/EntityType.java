@@ -524,13 +524,13 @@ public class EntityType<T extends Entity> {
 		} else {
 			double d;
 			if (alignPosition) {
-				entity.setPosition((double)pos.getX() + 0.5, (double)(pos.getY() + 1), (double)pos.getZ() + 0.5);
+				entity.updatePosition((double)pos.getX() + 0.5, (double)(pos.getY() + 1), (double)pos.getZ() + 0.5);
 				d = getOriginY(world, pos, invertY, entity.getBoundingBox());
 			} else {
 				d = 0.0;
 			}
 
-			entity.setPositionAndAngles(
+			entity.refreshPositionAndAngles(
 				(double)pos.getX() + 0.5, (double)pos.getY() + d, (double)pos.getZ() + 0.5, MathHelper.wrapDegrees(world.random.nextFloat() * 360.0F), 0.0F
 			);
 			if (entity instanceof MobEntity) {

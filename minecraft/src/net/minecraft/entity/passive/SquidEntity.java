@@ -223,7 +223,7 @@ public class SquidEntity extends WaterCreatureEntity {
 		@Override
 		public boolean canStart() {
 			LivingEntity livingEntity = SquidEntity.this.getAttacker();
-			return SquidEntity.this.isInsideWater() && livingEntity != null ? SquidEntity.this.squaredDistanceTo(livingEntity) < 100.0 : false;
+			return SquidEntity.this.isTouchingWater() && livingEntity != null ? SquidEntity.this.squaredDistanceTo(livingEntity) < 100.0 : false;
 		}
 
 		@Override
@@ -288,7 +288,7 @@ public class SquidEntity extends WaterCreatureEntity {
 			int i = this.squid.getDespawnCounter();
 			if (i > 100) {
 				this.squid.setConstantVelocity(0.0F, 0.0F, 0.0F);
-			} else if (this.squid.getRandom().nextInt(50) == 0 || !this.squid.insideWater || !this.squid.hasConstantVelocity()) {
+			} else if (this.squid.getRandom().nextInt(50) == 0 || !this.squid.touchingWater || !this.squid.hasConstantVelocity()) {
 				float f = this.squid.getRandom().nextFloat() * (float) (Math.PI * 2);
 				float g = MathHelper.cos(f) * 0.2F;
 				float h = -0.1F + this.squid.getRandom().nextFloat() * 0.2F;

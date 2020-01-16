@@ -54,7 +54,8 @@ public class DolphinJumpGoal extends DiveJumpingGoal {
 	@Override
 	public boolean shouldContinue() {
 		double d = this.dolphin.getVelocity().y;
-		return (!(d * d < 0.03F) || this.dolphin.pitch == 0.0F || !(Math.abs(this.dolphin.pitch) < 10.0F) || !this.dolphin.isInsideWater()) && !this.dolphin.onGround;
+		return (!(d * d < 0.03F) || this.dolphin.pitch == 0.0F || !(Math.abs(this.dolphin.pitch) < 10.0F) || !this.dolphin.isTouchingWater())
+			&& !this.dolphin.onGround;
 	}
 
 	@Override

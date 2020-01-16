@@ -20,7 +20,7 @@ public class AmbientSoundPlayer implements ClientPlayerTickable {
 	@Override
 	public void tick() {
 		this.ticksUntilPlay--;
-		if (this.ticksUntilPlay <= 0 && this.player.isInWater()) {
+		if (this.ticksUntilPlay <= 0 && this.player.isSubmergedInWater()) {
 			float f = this.player.world.random.nextFloat();
 			if (f < 1.0E-4F) {
 				this.ticksUntilPlay = 0;

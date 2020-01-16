@@ -131,10 +131,10 @@ public class ModelLoader {
 	private static final Splitter COMMA_SPLITTER = Splitter.on(',');
 	private static final Splitter KEY_VALUE_SPLITTER = Splitter.on('=').limit(2);
 	public static final JsonUnbakedModel GENERATION_MARKER = Util.make(
-		JsonUnbakedModel.deserialize("{}"), jsonUnbakedModel -> jsonUnbakedModel.id = "generation marker"
+		JsonUnbakedModel.deserialize("{\"gui_light\": \"front\"}"), jsonUnbakedModel -> jsonUnbakedModel.id = "generation marker"
 	);
 	public static final JsonUnbakedModel BLOCK_ENTITY_MARKER = Util.make(
-		JsonUnbakedModel.deserialize("{}"), jsonUnbakedModel -> jsonUnbakedModel.id = "block entity marker"
+		JsonUnbakedModel.deserialize("{\"gui_light\": \"side\"}"), jsonUnbakedModel -> jsonUnbakedModel.id = "block entity marker"
 	);
 	private static final StateManager<Block, BlockState> ITEM_FRAME_STATE_FACTORY = new StateManager.Builder<Block, BlockState>(Blocks.AIR)
 		.add(BooleanProperty.of("map"))

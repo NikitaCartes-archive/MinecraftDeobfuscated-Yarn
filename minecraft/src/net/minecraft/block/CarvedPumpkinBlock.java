@@ -61,7 +61,7 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 
 			SnowGolemEntity snowGolemEntity = EntityType.SNOW_GOLEM.create(world);
 			BlockPos blockPos = result.translate(0, 2, 0).getBlockPos();
-			snowGolemEntity.setPositionAndAngles((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.05, (double)blockPos.getZ() + 0.5, 0.0F, 0.0F);
+			snowGolemEntity.refreshPositionAndAngles((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.05, (double)blockPos.getZ() + 0.5, 0.0F, 0.0F);
 			world.spawnEntity(snowGolemEntity);
 
 			for (ServerPlayerEntity serverPlayerEntity : world.getNonSpectatingEntities(ServerPlayerEntity.class, snowGolemEntity.getBoundingBox().expand(5.0))) {
@@ -86,7 +86,7 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 				BlockPos blockPos2 = result.translate(1, 2, 0).getBlockPos();
 				IronGolemEntity ironGolemEntity = EntityType.IRON_GOLEM.create(world);
 				ironGolemEntity.setPlayerCreated(true);
-				ironGolemEntity.setPositionAndAngles((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.05, (double)blockPos2.getZ() + 0.5, 0.0F, 0.0F);
+				ironGolemEntity.refreshPositionAndAngles((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.05, (double)blockPos2.getZ() + 0.5, 0.0F, 0.0F);
 				world.spawnEntity(ironGolemEntity);
 
 				for (ServerPlayerEntity serverPlayerEntity : world.getNonSpectatingEntities(ServerPlayerEntity.class, ironGolemEntity.getBoundingBox().expand(5.0))) {

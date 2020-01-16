@@ -142,7 +142,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	public double field_7521;
 	public double field_7499;
 	private int sleepTimer;
-	protected boolean isInWater;
+	protected boolean isSubmergedInWater;
 	private BlockPos spawnPosition;
 	private boolean spawnForced;
 	public final PlayerAbilities abilities = new PlayerAbilities();
@@ -167,7 +167,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.playerContainer = new PlayerContainer(this.inventory, !world.isClient, this);
 		this.container = this.playerContainer;
 		BlockPos blockPos = world.getSpawnPos();
-		this.setPositionAndAngles((double)blockPos.getX() + 0.5, (double)(blockPos.getY() + 1), (double)blockPos.getZ() + 0.5, 0.0F, 0.0F);
+		this.refreshPositionAndAngles((double)blockPos.getX() + 0.5, (double)(blockPos.getY() + 1), (double)blockPos.getZ() + 0.5, 0.0F, 0.0F);
 		this.field_6215 = 180.0F;
 	}
 
@@ -231,7 +231,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			}
 		}
 
-		this.updateInWater();
+		this.updateWaterSubmersionState();
 		super.tick();
 		if (!this.world.isClient && this.container != null && !this.container.canUse(this)) {
 			this.closeContainer();
@@ -263,7 +263,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		double d = MathHelper.clamp(this.getX(), -2.9999999E7, 2.9999999E7);
 		double e = MathHelper.clamp(this.getZ(), -2.9999999E7, 2.9999999E7);
 		if (d != this.getX() || e != this.getZ()) {
-			this.setPosition(d, this.getY(), e);
+			this.updatePosition(d, this.getY(), e);
 		}
 
 		this.lastAttackedTicks++;
@@ -293,9 +293,9 @@ public abstract class PlayerEntity extends LivingEntity {
 		return this.isSneaking();
 	}
 
-	protected boolean updateInWater() {
-		this.isInWater = this.isSubmergedIn(FluidTags.WATER, true);
-		return this.isInWater;
+	protected boolean updateWaterSubmersionState() {
+		this.isSubmergedInWater = this.isSubmergedIn(FluidTags.WATER, true);
+		return this.isSubmergedInWater;
 	}
 
 	private void updateTurtleHelmet() {
@@ -552,7 +552,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 		this.updateShoulderEntity(this.getShoulderEntityLeft());
 		this.updateShoulderEntity(this.getShoulderEntityRight());
-		if (!this.world.isClient && (this.fallDistance > 0.5F || this.isInsideWater()) || this.abilities.flying || this.isSleeping()) {
+		if (!this.world.isClient && (this.fallDistance > 0.5F || this.isTouchingWater()) || this.abilities.flying || this.isSleeping()) {
 			this.dropShoulderEntities();
 		}
 	}
@@ -584,7 +584,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	@Override
 	public void onDeath(DamageSource source) {
 		super.onDeath(source);
-		this.updatePosition();
+		this.refreshPosition();
 		if (!this.isSpectator()) {
 			this.drop(source);
 		}
@@ -1080,7 +1080,7 @@ public abstract class PlayerEntity extends LivingEntity {
 						&& this.fallDistance > 0.0F
 						&& !this.onGround
 						&& !this.isClimbing()
-						&& !this.isInsideWater()
+						&& !this.isTouchingWater()
 						&& !this.hasStatusEffect(StatusEffects.BLINDNESS)
 						&& !this.hasVehicle()
 						&& target instanceof LivingEntity;
@@ -1355,18 +1355,18 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.wakeUp(true, true);
 	}
 
-	public static Optional<Vec3d> method_7288(WorldView worldView, BlockPos blockPos, boolean bl) {
-		Block block = worldView.getBlockState(blockPos).getBlock();
+	public static Optional<Vec3d> findRespawnPosition(WorldView world, BlockPos spawnPos, boolean allowNonBed) {
+		Block block = world.getBlockState(spawnPos).getBlock();
 		if (!(block instanceof BedBlock)) {
-			if (!bl) {
+			if (!allowNonBed) {
 				return Optional.empty();
 			} else {
-				boolean bl2 = block.canMobSpawnInside();
-				boolean bl3 = worldView.getBlockState(blockPos.up()).getBlock().canMobSpawnInside();
-				return bl2 && bl3 ? Optional.of(new Vec3d((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.1, (double)blockPos.getZ() + 0.5)) : Optional.empty();
+				boolean bl = block.canMobSpawnInside();
+				boolean bl2 = world.getBlockState(spawnPos.up()).getBlock().canMobSpawnInside();
+				return bl && bl2 ? Optional.of(new Vec3d((double)spawnPos.getX() + 0.5, (double)spawnPos.getY() + 0.1, (double)spawnPos.getZ() + 0.5)) : Optional.empty();
 			}
 		} else {
-			return BedBlock.findWakeUpPosition(EntityType.PLAYER, worldView, blockPos, 0);
+			return BedBlock.findWakeUpPosition(EntityType.PLAYER, world, spawnPos, 0);
 		}
 	}
 
@@ -1506,7 +1506,7 @@ public abstract class PlayerEntity extends LivingEntity {
 					this.increaseStat(Stats.WALK_UNDER_WATER_ONE_CM, i);
 					this.addExhaustion(0.01F * (float)i * 0.01F);
 				}
-			} else if (this.isInsideWater()) {
+			} else if (this.isTouchingWater()) {
 				int i = Math.round(MathHelper.sqrt(d * d + f * f) * 100.0F);
 				if (i > 0) {
 					this.increaseStat(Stats.WALK_ON_WATER_ONE_CM, i);
@@ -1573,7 +1573,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	public boolean method_23668() {
-		if (!this.onGround && !this.isFallFlying() && !this.isInsideWater()) {
+		if (!this.onGround && !this.isFallFlying() && !this.isTouchingWater()) {
 			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.CHEST);
 			if (itemStack.getItem() == Items.ELYTRA && ElytraItem.isUsable(itemStack)) {
 				this.method_23669();
@@ -1794,7 +1794,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	public boolean addShoulderEntity(CompoundTag tag) {
-		if (this.hasVehicle() || !this.onGround || this.isInsideWater()) {
+		if (this.hasVehicle() || !this.onGround || this.isTouchingWater()) {
 			return false;
 		} else if (this.getShoulderEntityLeft().isEmpty()) {
 			this.setShoulderEntityLeft(tag);
@@ -1825,7 +1825,7 @@ public abstract class PlayerEntity extends LivingEntity {
 					((TameableEntity)entity).setOwnerUuid(this.uuid);
 				}
 
-				entity.setPosition(this.getX(), this.getY() + 0.7F, this.getZ());
+				entity.updatePosition(this.getX(), this.getY() + 0.7F, this.getZ());
 				((ServerWorld)this.world).tryLoadEntity(entity);
 			});
 		}

@@ -217,7 +217,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 	}
 
 	@Override
-	public void setPosition(double x, double y, double z) {
+	public void updatePosition(double x, double y, double z) {
 		this.blockPos = new BlockPos(x, y, z);
 		this.method_6895();
 		this.velocityDirty = true;

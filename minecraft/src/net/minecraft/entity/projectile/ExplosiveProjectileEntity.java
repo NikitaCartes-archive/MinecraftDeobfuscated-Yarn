@@ -38,8 +38,8 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 		EntityType<? extends ExplosiveProjectileEntity> type, double x, double y, double z, double directionX, double directionY, double directionZ, World world
 	) {
 		this(type, world);
-		this.setPositionAndAngles(x, y, z, this.yaw, this.pitch);
-		this.setPosition(x, y, z);
+		this.refreshPositionAndAngles(x, y, z, this.yaw, this.pitch);
+		this.updatePosition(x, y, z);
 		double d = (double)MathHelper.sqrt(directionX * directionX + directionY * directionY + directionZ * directionZ);
 		this.posX = directionX / d * 0.1;
 		this.posY = directionY / d * 0.1;
@@ -51,8 +51,8 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 	) {
 		this(type, world);
 		this.owner = owner;
-		this.setPositionAndAngles(owner.getX(), owner.getY(), owner.getZ(), owner.yaw, owner.pitch);
-		this.updatePosition();
+		this.refreshPositionAndAngles(owner.getX(), owner.getY(), owner.getZ(), owner.yaw, owner.pitch);
+		this.refreshPosition();
 		this.setVelocity(Vec3d.ZERO);
 		directionX += this.random.nextGaussian() * 0.4;
 		directionY += this.random.nextGaussian() * 0.4;
@@ -99,7 +99,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 			double f = this.getZ() + vec3d.z;
 			ProjectileUtil.method_7484(this, 0.2F);
 			float g = this.getDrag();
-			if (this.isInsideWater()) {
+			if (this.isTouchingWater()) {
 				for (int i = 0; i < 4; i++) {
 					float h = 0.25F;
 					this.world.addParticle(ParticleTypes.BUBBLE, d - vec3d.x * 0.25, e - vec3d.y * 0.25, f - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
@@ -110,7 +110,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 
 			this.setVelocity(vec3d.add(this.posX, this.posY, this.posZ).multiply((double)g));
 			this.world.addParticle(this.getParticleType(), d, e + 0.5, f, 0.0, 0.0, 0.0);
-			this.setPosition(d, e, f);
+			this.updatePosition(d, e, f);
 		} else {
 			this.remove();
 		}

@@ -295,8 +295,8 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	}
 
 	@Override
-	public void setPosition(double x, double y, double z) {
-		super.setPosition(x, y, z);
+	public void updatePosition(double x, double y, double z) {
+		super.updatePosition(x, y, z);
 		if (this.dataTracker != null && this.age != 0) {
 			Optional<BlockPos> optional = this.dataTracker.get(ATTACHED_BLOCK);
 			Optional<BlockPos> optional2 = Optional.of(new BlockPos(x, y, z));

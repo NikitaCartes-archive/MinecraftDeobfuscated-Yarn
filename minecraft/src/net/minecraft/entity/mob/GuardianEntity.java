@@ -202,7 +202,7 @@ public class GuardianEntity extends HostileEntity {
 		if (this.isAlive()) {
 			if (this.world.isClient) {
 				this.prevSpikesExtension = this.spikesExtension;
-				if (!this.isInsideWater()) {
+				if (!this.isTouchingWater()) {
 					this.spikesExtensionRate = 2.0F;
 					Vec3d vec3d = this.getVelocity();
 					if (vec3d.y > 0.0 && this.flopping && !this.isSilent()) {
@@ -230,7 +230,7 @@ public class GuardianEntity extends HostileEntity {
 					this.tailAngle = this.tailAngle + (1.0F - this.tailAngle) * 0.06F;
 				}
 
-				if (this.areSpikesRetracted() && this.isInsideWater()) {
+				if (this.areSpikesRetracted() && this.isTouchingWater()) {
 					Vec3d vec3d = this.getRotationVec(0.0F);
 
 					for (int i = 0; i < 2; i++) {
@@ -345,7 +345,7 @@ public class GuardianEntity extends HostileEntity {
 
 	@Override
 	public void travel(Vec3d movementInput) {
-		if (this.canMoveVoluntarily() && this.isInsideWater()) {
+		if (this.canMoveVoluntarily() && this.isTouchingWater()) {
 			this.updateVelocity(0.1F, movementInput);
 			this.move(MovementType.SELF, this.getVelocity());
 			this.setVelocity(this.getVelocity().multiply(0.9));

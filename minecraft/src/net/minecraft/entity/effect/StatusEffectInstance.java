@@ -76,15 +76,23 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 		boolean bl = false;
 		if (that.amplifier > this.amplifier) {
 			if (that.duration < this.duration) {
+				StatusEffectInstance statusEffectInstance = this.field_21830;
 				this.field_21830 = new StatusEffectInstance(this);
+				this.field_21830.field_21830 = statusEffectInstance;
 			}
 
 			this.amplifier = that.amplifier;
 			this.duration = that.duration;
 			bl = true;
-		} else if (that.amplifier == this.amplifier && this.duration < that.duration) {
-			this.duration = that.duration;
-			bl = true;
+		} else if (that.duration > this.duration) {
+			if (that.amplifier == this.amplifier) {
+				this.duration = that.duration;
+				bl = true;
+			} else if (this.field_21830 == null) {
+				this.field_21830 = new StatusEffectInstance(that);
+			} else {
+				this.field_21830.upgrade(that);
+			}
 		}
 
 		if (!that.ambient && this.ambient || bl) {
@@ -129,7 +137,7 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 		return this.showIcon;
 	}
 
-	public boolean update(LivingEntity livingEntity) {
+	public boolean update(LivingEntity livingEntity, Runnable runnable) {
 		if (this.duration > 0) {
 			if (this.type.canApplyUpdateEffect(this.duration, this.amplifier)) {
 				this.applyUpdateEffect(livingEntity);
@@ -139,6 +147,7 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 			if (this.duration == 0 && this.field_21830 != null) {
 				this.method_24276(this.field_21830);
 				this.field_21830 = this.field_21830.field_21830;
+				runnable.run();
 			}
 		}
 

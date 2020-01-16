@@ -178,7 +178,7 @@ public class HorseEntityModel<T extends HorseBaseEntity> extends AnimalModel<T> 
 		this.torso.pitch = 0.0F;
 		this.head.pitch = (float) (Math.PI / 6) + m;
 		this.head.yaw = l * (float) (Math.PI / 180.0);
-		float s = horseBaseEntity.isInsideWater() ? 0.2F : 1.0F;
+		float s = horseBaseEntity.isTouchingWater() ? 0.2F : 1.0F;
 		float t = MathHelper.cos(s * f * 0.6662F + (float) Math.PI);
 		float u = t * 0.8F * g;
 		float v = (1.0F - Math.max(o, n)) * ((float) (Math.PI / 6) + m + q * MathHelper.sin(r) * 0.05F);

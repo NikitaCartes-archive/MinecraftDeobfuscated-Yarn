@@ -120,7 +120,7 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 	}
 
 	private double method_66(BlockPos blockPos) {
-		if (!this.entity.isInsideWater()) {
+		if (!this.entity.isTouchingWater()) {
 			BlockPos blockPos2 = blockPos.down();
 			VoxelShape voxelShape = this.field_20622.getBlockState(blockPos2).getCollisionShape(this.field_20622, blockPos2);
 			return (double)blockPos2.getY() + (voxelShape.isEmpty() ? 0.0 : voxelShape.getMaximum(Direction.Axis.Y));

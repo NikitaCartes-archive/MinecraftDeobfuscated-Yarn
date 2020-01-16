@@ -65,7 +65,7 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 	public FireworkEntity(World world, double x, double y, double z, ItemStack item) {
 		super(EntityType.FIREWORK_ROCKET, world);
 		this.life = 0;
-		this.setPosition(x, y, z);
+		this.updatePosition(x, y, z);
 		int i = 1;
 		if (!item.isEmpty() && item.hasTag()) {
 			this.dataTracker.set(ITEM, item.copy());
@@ -127,7 +127,7 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 						);
 				}
 
-				this.setPosition(this.shooter.getX(), this.shooter.getY(), this.shooter.getZ());
+				this.updatePosition(this.shooter.getX(), this.shooter.getY(), this.shooter.getZ());
 				this.setVelocity(this.shooter.getVelocity());
 			}
 		} else {

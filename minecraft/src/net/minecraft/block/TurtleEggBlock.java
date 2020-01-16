@@ -87,7 +87,7 @@ public class TurtleEggBlock extends Block {
 					TurtleEntity turtleEntity = EntityType.TURTLE.create(world);
 					turtleEntity.setBreedingAge(-24000);
 					turtleEntity.setHomePos(pos);
-					turtleEntity.setPositionAndAngles((double)pos.getX() + 0.3 + (double)j * 0.2, (double)pos.getY(), (double)pos.getZ() + 0.3, 0.0F, 0.0F);
+					turtleEntity.refreshPositionAndAngles((double)pos.getX() + 0.3 + (double)j * 0.2, (double)pos.getY(), (double)pos.getZ() + 0.3, 0.0F, 0.0F);
 					world.spawnEntity(turtleEntity);
 				}
 			}

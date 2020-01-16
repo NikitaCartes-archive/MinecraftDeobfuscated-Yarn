@@ -116,7 +116,7 @@ public abstract class MobSpawnerLogic {
 					if (world.doesNotCollide(((EntityType)optional.get()).createSimpleBoundingBox(g, h, k))
 						&& SpawnRestriction.canSpawn((EntityType)optional.get(), world.getWorld(), SpawnType.SPAWNER, new BlockPos(g, h, k), world.getRandom())) {
 						Entity entity = EntityType.loadEntityWithPassengers(compoundTag, world, entityx -> {
-							entityx.setPositionAndAngles(g, h, k, entityx.yaw, entityx.pitch);
+							entityx.refreshPositionAndAngles(g, h, k, entityx.yaw, entityx.pitch);
 							return entityx;
 						});
 						if (entity == null) {
@@ -142,7 +142,7 @@ public abstract class MobSpawnerLogic {
 							return;
 						}
 
-						entity.setPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), world.random.nextFloat() * 360.0F, 0.0F);
+						entity.refreshPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), world.random.nextFloat() * 360.0F, 0.0F);
 						if (entity instanceof MobEntity) {
 							MobEntity mobEntity = (MobEntity)entity;
 							if (!mobEntity.canSpawn(world, SpawnType.SPAWNER) || !mobEntity.canSpawn(world)) {

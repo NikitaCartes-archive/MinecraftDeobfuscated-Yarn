@@ -30,7 +30,7 @@ public class LightningEntity extends Entity {
 	public LightningEntity(World world, double x, double y, double z, boolean cosmetic) {
 		super(EntityType.LIGHTNING_BOLT, world);
 		this.ignoreCameraFrustum = true;
-		this.setPositionAndAngles(x, y, z, 0.0F, 0.0F);
+		this.refreshPositionAndAngles(x, y, z, 0.0F, 0.0F);
 		this.ambientTick = 2;
 		this.seed = this.random.nextLong();
 		this.remainingActions = this.random.nextInt(3) + 1;

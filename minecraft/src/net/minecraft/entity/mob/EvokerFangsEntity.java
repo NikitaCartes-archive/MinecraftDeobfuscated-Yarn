@@ -33,7 +33,7 @@ public class EvokerFangsEntity extends Entity {
 		this.warmup = warmup;
 		this.setOwner(owner);
 		this.yaw = f * (180.0F / (float)Math.PI);
-		this.setPosition(x, y, z);
+		this.updatePosition(x, y, z);
 	}
 
 	@Override

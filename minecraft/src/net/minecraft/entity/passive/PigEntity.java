@@ -177,7 +177,7 @@ public class PigEntity extends AnimalEntity {
 	public void onStruckByLightning(LightningEntity lightning) {
 		ZombiePigmanEntity zombiePigmanEntity = EntityType.ZOMBIE_PIGMAN.create(this.world);
 		zombiePigmanEntity.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
-		zombiePigmanEntity.setPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
+		zombiePigmanEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
 		zombiePigmanEntity.setAiDisabled(this.isAiDisabled());
 		if (this.hasCustomName()) {
 			zombiePigmanEntity.setCustomName(this.getCustomName());

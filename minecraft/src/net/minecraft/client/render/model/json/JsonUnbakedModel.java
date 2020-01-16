@@ -63,7 +63,7 @@ public class JsonUnbakedModel implements UnbakedModel {
 		.create();
 	private final List<ModelElement> elements;
 	@Nullable
-	private final JsonUnbakedModel.class_4751 field_21857;
+	private final JsonUnbakedModel.GuiLight guiLight;
 	private final boolean ambientOcclusion;
 	private final ModelTransformation transformations;
 	private final List<ModelItemOverride> overrides;
@@ -88,13 +88,13 @@ public class JsonUnbakedModel implements UnbakedModel {
 		List<ModelElement> elements,
 		Map<String, Either<SpriteIdentifier, String>> textureMap,
 		boolean ambientOcclusion,
-		@Nullable JsonUnbakedModel.class_4751 arg,
+		@Nullable JsonUnbakedModel.GuiLight guiLight,
 		ModelTransformation transformations,
 		List<ModelItemOverride> overrides
 	) {
 		this.elements = elements;
 		this.ambientOcclusion = ambientOcclusion;
-		this.field_21857 = arg;
+		this.guiLight = guiLight;
 		this.textureMap = textureMap;
 		this.parentId = parentId;
 		this.transformations = transformations;
@@ -109,11 +109,11 @@ public class JsonUnbakedModel implements UnbakedModel {
 		return this.parent != null ? this.parent.useAmbientOcclusion() : this.ambientOcclusion;
 	}
 
-	public JsonUnbakedModel.class_4751 method_24298() {
-		if (this.field_21857 != null) {
-			return this.field_21857;
+	public JsonUnbakedModel.GuiLight getGuiLight() {
+		if (this.guiLight != null) {
+			return this.guiLight;
 		} else {
-			return this.parent != null ? this.parent.method_24298() : JsonUnbakedModel.class_4751.field_21859;
+			return this.parent != null ? this.parent.getGuiLight() : JsonUnbakedModel.GuiLight.field_21859;
 		}
 	}
 
@@ -212,13 +212,13 @@ public class JsonUnbakedModel implements UnbakedModel {
 	}
 
 	public BakedModel bake(
-		ModelLoader loader, JsonUnbakedModel parent, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings settings, Identifier id, boolean bl
+		ModelLoader loader, JsonUnbakedModel parent, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings settings, Identifier id, boolean hasDepth
 	) {
 		Sprite sprite = (Sprite)textureGetter.apply(this.resolveSprite("particle"));
 		if (this.getRootModel() == ModelLoader.BLOCK_ENTITY_MARKER) {
-			return new BuiltinBakedModel(this.getTransformations(), this.compileOverrides(loader, parent), sprite, this.method_24298().method_24299());
+			return new BuiltinBakedModel(this.getTransformations(), this.compileOverrides(loader, parent), sprite, this.getGuiLight().isSide());
 		} else {
-			BasicBakedModel.Builder builder = new BasicBakedModel.Builder(this, this.compileOverrides(loader, parent), bl).setParticle(sprite);
+			BasicBakedModel.Builder builder = new BasicBakedModel.Builder(this, this.compileOverrides(loader, parent), hasDepth).setParticle(sprite);
 
 			for (ModelElement modelElement : this.getElements()) {
 				for (Direction direction : modelElement.faces.keySet()) {
@@ -331,13 +331,13 @@ public class JsonUnbakedModel implements UnbakedModel {
 			}
 
 			List<ModelItemOverride> list2 = this.deserializeOverrides(context, jsonObject);
-			JsonUnbakedModel.class_4751 lv = null;
+			JsonUnbakedModel.GuiLight guiLight = null;
 			if (jsonObject.has("gui_light")) {
-				lv = JsonUnbakedModel.class_4751.method_24300(JsonHelper.getString(jsonObject, "gui_light"));
+				guiLight = JsonUnbakedModel.GuiLight.deserialize(JsonHelper.getString(jsonObject, "gui_light"));
 			}
 
 			Identifier identifier = string.isEmpty() ? null : new Identifier(string);
-			return new JsonUnbakedModel(identifier, list, map, bl, lv, modelTransformation, list2);
+			return new JsonUnbakedModel(identifier, list, map, bl, guiLight, modelTransformation, list2);
 		}
 
 		protected List<ModelItemOverride> deserializeOverrides(JsonDeserializationContext context, JsonObject object) {
@@ -399,27 +399,33 @@ public class JsonUnbakedModel implements UnbakedModel {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static enum class_4751 {
+	public static enum GuiLight {
+		/**
+		 * The model will be shaded from the front, like a basic item
+		 */
 		field_21858("front"),
+		/**
+		 * The model will be shaded from the side, like a block.
+		 */
 		field_21859("side");
 
-		private final String field_21860;
+		private final String name;
 
-		private class_4751(String string2) {
-			this.field_21860 = string2;
+		private GuiLight(String name) {
+			this.name = name;
 		}
 
-		public static JsonUnbakedModel.class_4751 method_24300(String string) {
-			for (JsonUnbakedModel.class_4751 lv : values()) {
-				if (lv.field_21860.equals(string)) {
-					return lv;
+		public static JsonUnbakedModel.GuiLight deserialize(String value) {
+			for (JsonUnbakedModel.GuiLight guiLight : values()) {
+				if (guiLight.name.equals(value)) {
+					return guiLight;
 				}
 			}
 
-			throw new IllegalArgumentException("Invalid gui light: " + string);
+			throw new IllegalArgumentException("Invalid gui light: " + value);
 		}
 
-		public boolean method_24299() {
+		public boolean isSide() {
 			return this == field_21859;
 		}
 	}

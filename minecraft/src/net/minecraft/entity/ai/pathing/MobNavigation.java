@@ -73,7 +73,7 @@ public class MobNavigation extends EntityNavigation {
 	}
 
 	private int method_6362() {
-		if (this.entity.isInsideWater() && this.canSwim()) {
+		if (this.entity.isTouchingWater() && this.canSwim()) {
 			int i = MathHelper.floor(this.entity.getY());
 			Block block = this.world.getBlockState(new BlockPos(this.entity.getX(), (double)i, this.entity.getZ())).getBlock();
 			int j = 0;

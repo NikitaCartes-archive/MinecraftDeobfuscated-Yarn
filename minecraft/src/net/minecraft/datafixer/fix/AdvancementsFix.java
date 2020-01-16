@@ -3,9 +3,8 @@ package net.minecraft.datafixer.fix;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.schemas.Schema;
 import java.util.Map;
-import net.minecraft.class_4744;
 
-public class AdvancementsFix extends class_4744 {
+public class AdvancementsFix extends AdvancementRenameFix {
 	private static final Map<String, String> RENAMED_ADVANCEMENTS = ImmutableMap.<String, String>builder()
 		.put("minecraft:recipes/brewing/speckled_melon", "minecraft:recipes/brewing/glistering_melon_slice")
 		.put("minecraft:recipes/building_blocks/black_stained_hardened_clay", "minecraft:recipes/building_blocks/black_terracotta")

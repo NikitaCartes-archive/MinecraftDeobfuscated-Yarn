@@ -92,7 +92,7 @@ public class ThrownEnderpearlEntity extends ThrownItemEntity {
 					if (this.random.nextFloat() < 0.05F && this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
 						EndermiteEntity endermiteEntity = EntityType.ENDERMITE.create(this.world);
 						endermiteEntity.setPlayerSpawned(true);
-						endermiteEntity.setPositionAndAngles(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), livingEntity.yaw, livingEntity.pitch);
+						endermiteEntity.refreshPositionAndAngles(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), livingEntity.yaw, livingEntity.pitch);
 						this.world.spawnEntity(endermiteEntity);
 					}
 

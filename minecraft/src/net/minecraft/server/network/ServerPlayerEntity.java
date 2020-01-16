@@ -189,17 +189,17 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 				int s = q / (i * 2 + 1);
 				BlockPos blockPos2 = world.getDimension().getTopSpawningBlockPosition(blockPos.getX() + r - i, blockPos.getZ() + s - i, false);
 				if (blockPos2 != null) {
-					this.setPositionAndAngles(blockPos2, 0.0F, 0.0F);
+					this.refreshPositionAndAngles(blockPos2, 0.0F, 0.0F);
 					if (world.doesNotCollide(this)) {
 						break;
 					}
 				}
 			}
 		} else {
-			this.setPositionAndAngles(blockPos, 0.0F, 0.0F);
+			this.refreshPositionAndAngles(blockPos, 0.0F, 0.0F);
 
 			while (!world.doesNotCollide(this) && this.getY() < 255.0) {
-				this.setPosition(this.getX(), this.getY() + 1.0, this.getZ());
+				this.updatePosition(this.getX(), this.getY() + 1.0, this.getZ());
 			}
 		}
 	}
@@ -342,7 +342,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		Entity entity = this.getCameraEntity();
 		if (entity != this) {
 			if (entity.isAlive()) {
-				this.setPositionAnglesAndUpdate(entity.getX(), entity.getY(), entity.getZ(), entity.yaw, entity.pitch);
+				this.updatePositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), entity.yaw, entity.pitch);
 				this.getServerWorld().getChunkManager().updateCameraPosition(this);
 				if (this.shouldDismount()) {
 					this.setCameraEntity(this);
@@ -612,7 +612,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 				g = 0.0F;
 			}
 
-			this.setPositionAndAngles(d, e, f, h, g);
+			this.refreshPositionAndAngles(d, e, f, h, g);
 			serverWorld.getProfiler().pop();
 			serverWorld.getProfiler().push("placing");
 			double k = Math.min(-2.9999872E7, serverWorld2.getWorldBorder().getBoundWest() + 16.0);
@@ -621,7 +621,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			double n = Math.min(2.9999872E7, serverWorld2.getWorldBorder().getBoundSouth() - 16.0);
 			d = MathHelper.clamp(d, k, m);
 			f = MathHelper.clamp(f, l, n);
-			this.setPositionAndAngles(d, e, f, h, g);
+			this.refreshPositionAndAngles(d, e, f, h, g);
 			if (newDimension == DimensionType.THE_END) {
 				int o = MathHelper.floor(this.getX());
 				int p = MathHelper.floor(this.getY()) - 1;
@@ -641,7 +641,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 					}
 				}
 
-				this.setPositionAndAngles((double)o, (double)p, (double)q, h, 0.0F);
+				this.refreshPositionAndAngles((double)o, (double)p, (double)q, h, 0.0F);
 				this.setVelocity(Vec3d.ZERO);
 			} else if (!serverWorld2.getPortalForcer().usePortal(this, j)) {
 				serverWorld2.getPortalForcer().createPortal(this);
@@ -1266,7 +1266,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			this.server.getPlayerManager().sendCommandTree(this);
 			serverWorld.removePlayer(this);
 			this.removed = false;
-			this.setPositionAndAngles(x, y, z, yaw, pitch);
+			this.refreshPositionAndAngles(x, y, z, yaw, pitch);
 			this.setWorld(targetWorld);
 			targetWorld.onPlayerTeleport(this);
 			this.dimensionChanged(serverWorld);

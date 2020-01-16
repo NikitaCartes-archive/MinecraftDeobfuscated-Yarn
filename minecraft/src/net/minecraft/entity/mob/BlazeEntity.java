@@ -116,7 +116,7 @@ public class BlazeEntity extends HostileEntity {
 
 	@Override
 	protected void mobTick() {
-		if (this.isTouchingWater()) {
+		if (this.isWet()) {
 			this.damage(DamageSource.DROWN, 1.0F);
 		}
 
@@ -238,7 +238,7 @@ public class BlazeEntity extends HostileEntity {
 								SmallFireballEntity smallFireballEntity = new SmallFireballEntity(
 									this.blaze.world, this.blaze, e + this.blaze.getRandom().nextGaussian() * (double)h, f, g + this.blaze.getRandom().nextGaussian() * (double)h
 								);
-								smallFireballEntity.setPosition(smallFireballEntity.getX(), this.blaze.getBodyY(0.5) + 0.5, smallFireballEntity.getZ());
+								smallFireballEntity.updatePosition(smallFireballEntity.getX(), this.blaze.getBodyY(0.5) + 0.5, smallFireballEntity.getZ());
 								this.blaze.world.spawnEntity(smallFireballEntity);
 							}
 						}

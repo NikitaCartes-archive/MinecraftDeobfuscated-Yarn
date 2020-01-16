@@ -71,7 +71,7 @@ public class FishingBobberEntity extends Entity {
 	@Environment(EnvType.CLIENT)
 	public FishingBobberEntity(World world, PlayerEntity thrower, double x, double y, double z) {
 		this(world, thrower, 0, 0);
-		this.setPosition(x, y, z);
+		this.updatePosition(x, y, z);
 		this.prevX = this.getX();
 		this.prevY = this.getY();
 		this.prevZ = this.getZ();
@@ -88,7 +88,7 @@ public class FishingBobberEntity extends Entity {
 		double d = this.owner.getX() - (double)i * 0.3;
 		double e = this.owner.getEyeY();
 		double l = this.owner.getZ() - (double)h * 0.3;
-		this.setPositionAndAngles(d, e, l, g, f);
+		this.refreshPositionAndAngles(d, e, l, g, f);
 		Vec3d vec3d = new Vec3d((double)(-i), (double)MathHelper.clamp(-(k / j), -5.0F, 5.0F), (double)(-h));
 		double m = vec3d.length();
 		vec3d = vec3d.multiply(
@@ -181,7 +181,7 @@ public class FishingBobberEntity extends Entity {
 							this.hookedEntity = null;
 							this.state = FishingBobberEntity.State.FLYING;
 						} else {
-							this.setPosition(this.hookedEntity.getX(), this.hookedEntity.getBodyY(0.8), this.hookedEntity.getZ());
+							this.updatePosition(this.hookedEntity.getX(), this.hookedEntity.getBodyY(0.8), this.hookedEntity.getZ());
 						}
 					}
 
@@ -210,7 +210,7 @@ public class FishingBobberEntity extends Entity {
 			this.smoothenMovement();
 			double e = 0.92;
 			this.setVelocity(this.getVelocity().multiply(0.92));
-			this.updatePosition();
+			this.refreshPosition();
 		}
 	}
 

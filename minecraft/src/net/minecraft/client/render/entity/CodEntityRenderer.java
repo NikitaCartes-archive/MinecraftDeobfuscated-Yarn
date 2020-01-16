@@ -25,7 +25,7 @@ public class CodEntityRenderer extends MobEntityRenderer<CodEntity, CodEntityMod
 		super.setupTransforms(codEntity, matrixStack, f, g, h);
 		float i = 4.3F * MathHelper.sin(0.6F * f);
 		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(i));
-		if (!codEntity.isInsideWater()) {
+		if (!codEntity.isTouchingWater()) {
 			matrixStack.translate(0.1F, 0.1F, -0.1F);
 			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
 		}

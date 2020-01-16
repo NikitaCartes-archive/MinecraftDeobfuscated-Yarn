@@ -36,7 +36,7 @@ public class DamageTracker {
 			} else if (block == Blocks.VINE) {
 				this.fallDeathSuffix = "vines";
 			}
-		} else if (this.entity.isInsideWater()) {
+		} else if (this.entity.isTouchingWater()) {
 			this.fallDeathSuffix = "water";
 		}
 	}

@@ -16,7 +16,7 @@ public class StopFollowingCustomerGoal extends Goal {
 	public boolean canStart() {
 		if (!this.trader.isAlive()) {
 			return false;
-		} else if (this.trader.isInsideWater()) {
+		} else if (this.trader.isTouchingWater()) {
 			return false;
 		} else if (!this.trader.onGround) {
 			return false;

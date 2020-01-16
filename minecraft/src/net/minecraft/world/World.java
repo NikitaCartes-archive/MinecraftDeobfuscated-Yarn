@@ -693,7 +693,7 @@ public abstract class World implements IWorld, AutoCloseable {
 		if (!isHeightInvalid(pos)) {
 			if (blockEntity != null && !blockEntity.isRemoved()) {
 				if (this.iteratingTickingBlockEntities) {
-					blockEntity.setWorld(this, pos);
+					blockEntity.setLocation(this, pos);
 					Iterator<BlockEntity> iterator = this.pendingBlockEntities.iterator();
 
 					while (iterator.hasNext()) {

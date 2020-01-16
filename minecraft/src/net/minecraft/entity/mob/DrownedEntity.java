@@ -108,17 +108,17 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return this.isInsideWater() ? SoundEvents.ENTITY_DROWNED_AMBIENT_WATER : SoundEvents.ENTITY_DROWNED_AMBIENT;
+		return this.isTouchingWater() ? SoundEvents.ENTITY_DROWNED_AMBIENT_WATER : SoundEvents.ENTITY_DROWNED_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return this.isInsideWater() ? SoundEvents.ENTITY_DROWNED_HURT_WATER : SoundEvents.ENTITY_DROWNED_HURT;
+		return this.isTouchingWater() ? SoundEvents.ENTITY_DROWNED_HURT_WATER : SoundEvents.ENTITY_DROWNED_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return this.isInsideWater() ? SoundEvents.ENTITY_DROWNED_DEATH_WATER : SoundEvents.ENTITY_DROWNED_DEATH;
+		return this.isTouchingWater() ? SoundEvents.ENTITY_DROWNED_DEATH_WATER : SoundEvents.ENTITY_DROWNED_DEATH;
 	}
 
 	@Override
@@ -170,7 +170,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 	}
 
 	public boolean method_7012(@Nullable LivingEntity livingEntity) {
-		return livingEntity != null ? !this.world.isDay() || livingEntity.isInsideWater() : false;
+		return livingEntity != null ? !this.world.isDay() || livingEntity.isTouchingWater() : false;
 	}
 
 	@Override
@@ -183,13 +183,13 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 			return true;
 		} else {
 			LivingEntity livingEntity = this.getTarget();
-			return livingEntity != null && livingEntity.isInsideWater();
+			return livingEntity != null && livingEntity.isTouchingWater();
 		}
 	}
 
 	@Override
 	public void travel(Vec3d movementInput) {
-		if (this.canMoveVoluntarily() && this.isInsideWater() && this.isTargetingUnderwater()) {
+		if (this.canMoveVoluntarily() && this.isTouchingWater() && this.isTargetingUnderwater()) {
 			this.updateVelocity(0.01F, movementInput);
 			this.move(MovementType.SELF, this.getVelocity());
 			this.setVelocity(this.getVelocity().multiply(0.9));
@@ -201,7 +201,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 	@Override
 	public void updateSwimming() {
 		if (!this.world.isClient) {
-			if (this.canMoveVoluntarily() && this.isInsideWater() && this.isTargetingUnderwater()) {
+			if (this.canMoveVoluntarily() && this.isTouchingWater() && this.isTargetingUnderwater()) {
 				this.navigation = this.waterNavigation;
 				this.setSwimming(true);
 			} else {
@@ -272,7 +272,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 		@Override
 		public void tick() {
 			LivingEntity livingEntity = this.drowned.getTarget();
-			if (this.drowned.isTargetingUnderwater() && this.drowned.isInsideWater()) {
+			if (this.drowned.isTargetingUnderwater() && this.drowned.isTouchingWater()) {
 				if (livingEntity != null && livingEntity.getY() > this.drowned.getY() || this.drowned.targetingUnderwater) {
 					this.drowned.setVelocity(this.drowned.getVelocity().add(0.0, 0.002, 0.0));
 				}
@@ -316,7 +316,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 		public boolean canStart() {
 			return super.canStart()
 				&& !this.drowned.world.isDay()
-				&& this.drowned.isInsideWater()
+				&& this.drowned.isTouchingWater()
 				&& this.drowned.getY() >= (double)(this.drowned.world.getSeaLevel() - 3);
 		}
 
@@ -358,7 +358,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 
 		@Override
 		public boolean canStart() {
-			return !this.drowned.world.isDay() && this.drowned.isInsideWater() && this.drowned.getY() < (double)(this.minY - 2);
+			return !this.drowned.world.isDay() && this.drowned.isTouchingWater() && this.drowned.getY() < (double)(this.minY - 2);
 		}
 
 		@Override
@@ -438,7 +438,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 		public boolean canStart() {
 			if (!this.world.isDay()) {
 				return false;
-			} else if (this.mob.isInsideWater()) {
+			} else if (this.mob.isTouchingWater()) {
 				return false;
 			} else {
 				Vec3d vec3d = this.getWanderTarget();

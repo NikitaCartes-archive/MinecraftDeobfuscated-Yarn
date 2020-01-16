@@ -37,12 +37,12 @@ public class BuiltinBakedModel implements BakedModel {
 	}
 
 	@Override
-	public boolean hasDepthInGui() {
+	public boolean hasDepth() {
 		return true;
 	}
 
 	@Override
-	public boolean method_24304() {
+	public boolean isSideLit() {
 		return this.field_21862;
 	}
 

@@ -91,7 +91,7 @@ public class SwampHutGenerator extends StructurePieceWithDimensions {
 					this.hasWitch = true;
 					WitchEntity witchEntity = EntityType.WITCH.create(world.getWorld());
 					witchEntity.setPersistent();
-					witchEntity.setPositionAndAngles((double)i + 0.5, (double)j, (double)k + 0.5, 0.0F, 0.0F);
+					witchEntity.refreshPositionAndAngles((double)i + 0.5, (double)j, (double)k + 0.5, 0.0F, 0.0F);
 					witchEntity.initialize(world, world.getLocalDifficulty(new BlockPos(i, j, k)), SpawnType.STRUCTURE, null, null);
 					world.spawnEntity(witchEntity);
 				}
@@ -111,7 +111,7 @@ public class SwampHutGenerator extends StructurePieceWithDimensions {
 				this.hasCat = true;
 				CatEntity catEntity = EntityType.CAT.create(iWorld.getWorld());
 				catEntity.setPersistent();
-				catEntity.setPositionAndAngles((double)i + 0.5, (double)j, (double)k + 0.5, 0.0F, 0.0F);
+				catEntity.refreshPositionAndAngles((double)i + 0.5, (double)j, (double)k + 0.5, 0.0F, 0.0F);
 				catEntity.initialize(iWorld, iWorld.getLocalDifficulty(new BlockPos(i, j, k)), SpawnType.STRUCTURE, null, null);
 				iWorld.spawnEntity(catEntity);
 			}

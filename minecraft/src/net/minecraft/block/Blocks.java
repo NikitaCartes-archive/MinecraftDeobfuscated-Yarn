@@ -2004,7 +2004,7 @@ public class Blocks {
 	public static final Block HONEY_BLOCK = register(
 		"honey_block",
 		new HoneyBlock(
-			Block.Settings.of(Material.CLAY, MaterialColor.ORANGE).velocityMultiplier(0.4F).jumpVelocityMultiplier(0.5F).nonOpaque().sounds(BlockSoundGroup.field_21214)
+			Block.Settings.of(Material.CLAY, MaterialColor.ORANGE).velocityMultiplier(0.4F).jumpVelocityMultiplier(0.5F).nonOpaque().sounds(BlockSoundGroup.HONEY)
 		)
 	);
 	public static final Block HONEYCOMB_BLOCK = register(

@@ -184,7 +184,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		this.player.prevY = this.player.getY();
 		this.player.prevZ = this.player.getZ();
 		this.player.playerTick();
-		this.player.setPositionAnglesAndUpdate(this.lastTickX, this.lastTickY, this.lastTickZ, this.player.yaw, this.player.pitch);
+		this.player.updatePositionAndAngles(this.lastTickX, this.lastTickY, this.lastTickZ, this.player.yaw, this.player.pitch);
 		this.ticks++;
 		this.lastTickMovePacketsCount = this.movePacketsCount;
 		if (this.floating) {
@@ -346,10 +346,10 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 					LOGGER.warn("{} moved wrongly!", entity.getName().getString());
 				}
 
-				entity.setPositionAnglesAndUpdate(g, h, i, j, k);
+				entity.updatePositionAndAngles(g, h, i, j, k);
 				boolean bl3 = serverWorld.doesNotCollide(entity, entity.getBoundingBox().contract(0.0625));
 				if (bl && (bl2 || !bl3)) {
-					entity.setPositionAnglesAndUpdate(d, e, f, j, k);
+					entity.updatePositionAndAngles(d, e, f, j, k);
 					this.client.send(new VehicleMoveS2CPacket(entity));
 					return;
 				}
@@ -371,7 +371,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (packet.getTeleportId() == this.requestedTeleportId) {
 			this.player
-				.setPositionAnglesAndUpdate(this.requestedTeleportPos.x, this.requestedTeleportPos.y, this.requestedTeleportPos.z, this.player.yaw, this.player.pitch);
+				.updatePositionAndAngles(this.requestedTeleportPos.x, this.requestedTeleportPos.y, this.requestedTeleportPos.z, this.player.yaw, this.player.pitch);
 			this.updatedX = this.requestedTeleportPos.x;
 			this.updatedY = this.requestedTeleportPos.y;
 			this.updatedZ = this.requestedTeleportPos.z;
@@ -711,9 +711,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 					this.teleportRequestTick = this.ticks;
 					if (this.player.hasVehicle()) {
 						this.player
-							.setPositionAnglesAndUpdate(
-								this.player.getX(), this.player.getY(), this.player.getZ(), packet.getYaw(this.player.yaw), packet.getPitch(this.player.pitch)
-							);
+							.updatePositionAndAngles(this.player.getX(), this.player.getY(), this.player.getZ(), packet.getYaw(this.player.yaw), packet.getPitch(this.player.pitch));
 						this.player.getServerWorld().getChunkManager().updateCameraPosition(this.player);
 					} else {
 						double d = this.player.getX();
@@ -784,7 +782,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 								LOGGER.warn("{} moved wrongly!", this.player.getName().getString());
 							}
 
-							this.player.setPositionAnglesAndUpdate(h, i, j, k, l);
+							this.player.updatePositionAndAngles(h, i, j, k, l);
 							this.player.method_7282(this.player.getX() - d, this.player.getY() - e, this.player.getZ() - f);
 							if (!this.player.noClip && !this.player.isSleeping()) {
 								boolean bl3 = this.method_20630(serverWorld);
@@ -834,7 +832,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		}
 
 		this.teleportRequestTick = this.ticks;
-		this.player.setPositionAnglesAndUpdate(x, y, z, yaw, pitch);
+		this.player.updatePositionAndAngles(x, y, z, yaw, pitch);
 		this.player.networkHandler.sendPacket(new PlayerPositionLookS2CPacket(x - d, y - e, z - f, yaw - g, pitch - h, set, this.requestedTeleportId));
 	}
 

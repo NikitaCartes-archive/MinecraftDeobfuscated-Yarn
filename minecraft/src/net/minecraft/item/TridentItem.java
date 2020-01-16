@@ -54,7 +54,7 @@ public class TridentItem extends Item {
 			int i = this.getMaxUseTime(stack) - remainingUseTicks;
 			if (i >= 10) {
 				int j = EnchantmentHelper.getRiptide(stack);
-				if (j <= 0 || playerEntity.isInsideWaterOrRain()) {
+				if (j <= 0 || playerEntity.isTouchingWaterOrRain()) {
 					if (!world.isClient) {
 						stack.damage(1, playerEntity, p -> p.sendToolBreakStatus(user.getActiveHand()));
 						if (j == 0) {
@@ -112,7 +112,7 @@ public class TridentItem extends Item {
 		ItemStack itemStack = user.getStackInHand(hand);
 		if (itemStack.getDamage() >= itemStack.getMaxDamage() - 1) {
 			return TypedActionResult.fail(itemStack);
-		} else if (EnchantmentHelper.getRiptide(itemStack) > 0 && !user.isInsideWaterOrRain()) {
+		} else if (EnchantmentHelper.getRiptide(itemStack) > 0 && !user.isTouchingWaterOrRain()) {
 			return TypedActionResult.fail(itemStack);
 		} else {
 			user.setCurrentHand(hand);

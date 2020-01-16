@@ -659,7 +659,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 
 		boolean bl5 = (float)this.getHungerManager().getFoodLevel() > 6.0F || this.abilities.allowFlying;
-		if ((this.onGround || this.isInWater())
+		if ((this.onGround || this.isSubmergedInWater())
 			&& !bl2
 			&& !bl3
 			&& this.method_20623()
@@ -675,7 +675,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 
 		if (!this.isSprinting()
-			&& (!this.isInsideWater() || this.isInWater())
+			&& (!this.isTouchingWater() || this.isSubmergedInWater())
 			&& this.method_20623()
 			&& bl5
 			&& !this.isUsingItem()
@@ -686,9 +686,9 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 		if (this.isSprinting()) {
 			boolean bl6 = !this.input.hasForwardMovement() || !bl5;
-			boolean bl7 = bl6 || this.horizontalCollision || this.isInsideWater() && !this.isInWater();
+			boolean bl7 = bl6 || this.horizontalCollision || this.isTouchingWater() && !this.isSubmergedInWater();
 			if (this.isSwimming()) {
-				if (!this.onGround && !this.input.sneaking && bl6 || !this.isInsideWater()) {
+				if (!this.onGround && !this.input.sneaking && bl6 || !this.isTouchingWater()) {
 					this.setSprinting(false);
 				}
 			} else if (bl7) {
@@ -724,7 +724,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 
 		this.field_3939 = this.isFallFlying();
-		if (this.isInsideWater() && this.input.sneaking) {
+		if (this.isTouchingWater() && this.input.sneaking) {
 			this.knockDownwards();
 		}
 
@@ -984,7 +984,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	private boolean method_20623() {
 		double d = 0.8;
-		return this.isInWater() ? this.input.hasForwardMovement() : (double)this.input.movementForward >= 0.8;
+		return this.isSubmergedInWater() ? this.input.hasForwardMovement() : (double)this.input.movementForward >= 0.8;
 	}
 
 	public float method_3140() {
@@ -1004,16 +1004,16 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public boolean isInWater() {
-		return this.isInWater;
+	public boolean isSubmergedInWater() {
+		return this.isSubmergedInWater;
 	}
 
 	@Override
-	protected boolean updateInWater() {
-		boolean bl = this.isInWater;
-		boolean bl2 = super.updateInWater();
+	protected boolean updateWaterSubmersionState() {
+		boolean bl = this.isSubmergedInWater;
+		boolean bl2 = super.updateWaterSubmersionState();
 		if (this.isSpectator()) {
-			return this.isInWater;
+			return this.isSubmergedInWater;
 		} else {
 			if (!bl && bl2) {
 				this.world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.AMBIENT_UNDERWATER_ENTER, SoundCategory.AMBIENT, 1.0F, 1.0F, false);
@@ -1024,7 +1024,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 				this.world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.AMBIENT_UNDERWATER_EXIT, SoundCategory.AMBIENT, 1.0F, 1.0F, false);
 			}
 
-			return this.isInWater;
+			return this.isSubmergedInWater;
 		}
 	}
 }

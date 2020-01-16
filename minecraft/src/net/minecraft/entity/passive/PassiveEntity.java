@@ -60,7 +60,7 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 				PassiveEntity passiveEntity = this.createChild(this);
 				if (passiveEntity != null) {
 					passiveEntity.setBreedingAge(-24000);
-					passiveEntity.setPositionAndAngles(this.getX(), this.getY(), this.getZ(), 0.0F, 0.0F);
+					passiveEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), 0.0F, 0.0F);
 					this.world.spawnEntity(passiveEntity);
 					if (itemStack.hasCustomName()) {
 						passiveEntity.setCustomName(itemStack.getName());

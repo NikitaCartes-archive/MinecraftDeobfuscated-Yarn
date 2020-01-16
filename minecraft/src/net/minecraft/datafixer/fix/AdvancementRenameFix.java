@@ -1,4 +1,4 @@
-package net.minecraft;
+package net.minecraft.datafixer.fix;
 
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFix;
@@ -8,24 +8,24 @@ import com.mojang.datafixers.schemas.Schema;
 import java.util.function.Function;
 import net.minecraft.datafixer.TypeReferences;
 
-public class class_4744 extends DataFix {
-	private final String field_21814;
-	private final Function<String, String> field_21815;
+public class AdvancementRenameFix extends DataFix {
+	private final String name;
+	private final Function<String, String> renamer;
 
-	public class_4744(Schema schema, boolean bl, String string, Function<String, String> function) {
+	public AdvancementRenameFix(Schema schema, boolean bl, String name, Function<String, String> renamer) {
 		super(schema, bl);
-		this.field_21814 = string;
-		this.field_21815 = function;
+		this.name = name;
+		this.renamer = renamer;
 	}
 
 	@Override
 	protected TypeRewriteRule makeRule() {
 		return this.fixTypeEverywhereTyped(
-			this.field_21814,
+			this.name,
 			this.getInputSchema().getType(TypeReferences.ADVANCEMENTS),
 			typed -> typed.update(DSL.remainderFinder(), dynamic -> dynamic.updateMapValues(pair -> {
 						String string = ((Dynamic)pair.getFirst()).asString("");
-						return pair.mapFirst(dynamic2 -> dynamic.createString((String)this.field_21815.apply(string)));
+						return pair.mapFirst(dynamic2 -> dynamic.createString((String)this.renamer.apply(string)));
 					}))
 		);
 	}

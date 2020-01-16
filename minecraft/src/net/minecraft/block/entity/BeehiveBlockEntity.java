@@ -155,7 +155,7 @@ public class BeehiveBlockEntity extends BlockEntity implements Tickable {
 					double e = (double)blockPos.getX() + 0.5 + d * (double)direction.getOffsetX();
 					double g = (double)blockPos.getY() + 0.5 - (double)(entity.getHeight() / 2.0F);
 					double h = (double)blockPos.getZ() + 0.5 + d * (double)direction.getOffsetZ();
-					entity.setPositionAndAngles(e, g, h, entity.yaw, entity.pitch);
+					entity.refreshPositionAndAngles(e, g, h, entity.yaw, entity.pitch);
 					if (!entity.getType().isTaggedWith(EntityTypeTags.BEEHIVE_INHABITORS)) {
 						return false;
 					} else {

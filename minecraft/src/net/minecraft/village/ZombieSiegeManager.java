@@ -99,7 +99,7 @@ public class ZombieSiegeManager {
 				return;
 			}
 
-			zombieEntity.setPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, serverWorld.random.nextFloat() * 360.0F, 0.0F);
+			zombieEntity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, serverWorld.random.nextFloat() * 360.0F, 0.0F);
 			serverWorld.spawnEntity(zombieEntity);
 		}
 	}

@@ -150,9 +150,9 @@ public abstract class Entity implements Nameable, CommandOutput {
 	protected final Random random = new Random();
 	public int age;
 	private int fireTicks = -this.getBurningDuration();
-	protected boolean insideWater;
+	protected boolean touchingWater;
 	protected double waterHeight;
-	protected boolean inWater;
+	protected boolean submergedInWater;
 	protected boolean inLava;
 	public int timeUntilRegen;
 	protected boolean firstUpdate = true;
@@ -195,7 +195,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.type = type;
 		this.world = world;
 		this.dimensions = type.getDimensions();
-		this.setPosition(0.0, 0.0, 0.0);
+		this.updatePosition(0.0, 0.0, 0.0);
 		if (world != null) {
 			this.dimension = world.dimension.getType();
 		}
@@ -284,7 +284,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	protected void afterSpawn() {
 		if (this.world != null) {
 			for (double d = this.getY(); d > 0.0 && d < 256.0; d++) {
-				this.setPosition(this.getX(), d, this.getZ());
+				this.updatePosition(this.getX(), d, this.getZ());
 				if (this.world.doesNotCollide(this)) {
 					break;
 				}
@@ -312,15 +312,15 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.pitch = pitch % 360.0F;
 	}
 
-	public void setPosition(double x, double y, double z) {
+	public void updatePosition(double x, double y, double z) {
 		this.setPos(x, y, z);
 		float f = this.dimensions.width / 2.0F;
 		float g = this.dimensions.height;
 		this.setBoundingBox(new Box(x - (double)f, y, z - (double)f, x + (double)f, y + (double)g, z + (double)f));
 	}
 
-	protected void updatePosition() {
-		this.setPosition(this.x, this.y, this.z);
+	protected void refreshPosition() {
+		this.updatePosition(this.x, this.y, this.z);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -361,7 +361,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.prevYaw = this.yaw;
 		this.tickNetherPortal();
 		this.attemptSprintingParticles();
-		this.updateInWater();
+		this.updateWaterState();
 		if (this.world.isClient) {
 			this.extinguish();
 		} else if (this.fireTicks > 0) {
@@ -513,7 +513,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 				this.distanceTraveled = (float)((double)this.distanceTraveled + (double)MathHelper.sqrt(d * d + e * e + f * f) * 0.6);
 				if (this.distanceTraveled > this.nextStepSoundDistance && !blockState.isAir()) {
 					this.nextStepSoundDistance = this.calculateNextStepSoundDistance();
-					if (this.isInsideWater()) {
+					if (this.isTouchingWater()) {
 						Entity entity = this.hasPassengers() && this.getPrimaryPassenger() != null ? this.getPrimaryPassenger() : this;
 						float g = entity == this ? 0.35F : 0.4F;
 						Vec3d vec3d3 = entity.getVelocity();
@@ -542,7 +542,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 			}
 
 			this.setVelocity(this.getVelocity().multiply((double)this.getVelocityMultiplier(), 1.0, (double)this.getVelocityMultiplier()));
-			boolean bl = this.isTouchingWater();
+			boolean bl = this.isWet();
 			if (this.world.doesAreaContainFireSource(this.getBoundingBox().contract(0.001))) {
 				if (!bl) {
 					this.fireTicks++;
@@ -902,8 +902,11 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return false;
 	}
 
-	public boolean isInsideWater() {
-		return this.insideWater;
+	/**
+	 * Returns whether this entity's hitbox is touching water fluid.
+	 */
+	public boolean isTouchingWater() {
+		return this.touchingWater;
 	}
 
 	private boolean isBeingRainedOn() {
@@ -919,56 +922,66 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return this.world.getBlockState(new BlockPos(this)).getBlock() == Blocks.BUBBLE_COLUMN;
 	}
 
-	public boolean isInsideWaterOrRain() {
-		return this.isInsideWater() || this.isBeingRainedOn();
+	public boolean isTouchingWaterOrRain() {
+		return this.isTouchingWater() || this.isBeingRainedOn();
 	}
 
-	public boolean isTouchingWater() {
-		return this.isInsideWater() || this.isBeingRainedOn() || this.isInsideBubbleColumn();
+	/**
+	 * Returns whether this entity is touching water, or is being rained on, or is inside a bubble column...
+	 * 
+	 * @see net.minecraft.entity.Entity
+	 * @see net.minecraft.entity.Entity
+	 * @see net.minecraft.entity.Entity
+	 */
+	public boolean isWet() {
+		return this.isTouchingWater() || this.isBeingRainedOn() || this.isInsideBubbleColumn();
 	}
 
 	public boolean isInsideWaterOrBubbleColumn() {
-		return this.isInsideWater() || this.isInsideBubbleColumn();
+		return this.isTouchingWater() || this.isInsideBubbleColumn();
 	}
 
-	public boolean isInWater() {
-		return this.inWater && this.isInsideWater();
+	/**
+	 * Returns whether this entity's hitbox is fully submerged in water.
+	 */
+	public boolean isSubmergedInWater() {
+		return this.submergedInWater && this.isTouchingWater();
 	}
 
-	private void updateInWater() {
+	private void updateWaterState() {
 		this.checkWaterState();
-		this.updateWetState();
+		this.updateSubmergedInWaterState();
 		this.updateSwimming();
 	}
 
 	public void updateSwimming() {
 		if (this.isSwimming()) {
-			this.setSwimming(this.isSprinting() && this.isInsideWater() && !this.hasVehicle());
+			this.setSwimming(this.isSprinting() && this.isTouchingWater() && !this.hasVehicle());
 		} else {
-			this.setSwimming(this.isSprinting() && this.isInWater() && !this.hasVehicle());
+			this.setSwimming(this.isSprinting() && this.isSubmergedInWater() && !this.hasVehicle());
 		}
 	}
 
 	public boolean checkWaterState() {
 		if (this.getVehicle() instanceof BoatEntity) {
-			this.insideWater = false;
+			this.touchingWater = false;
 		} else if (this.updateMovementInFluid(FluidTags.WATER)) {
-			if (!this.insideWater && !this.firstUpdate) {
+			if (!this.touchingWater && !this.firstUpdate) {
 				this.onSwimmingStart();
 			}
 
 			this.fallDistance = 0.0F;
-			this.insideWater = true;
+			this.touchingWater = true;
 			this.extinguish();
 		} else {
-			this.insideWater = false;
+			this.touchingWater = false;
 		}
 
-		return this.insideWater;
+		return this.touchingWater;
 	}
 
-	private void updateWetState() {
-		this.inWater = this.isSubmergedIn(FluidTags.WATER, true);
+	private void updateSubmergedInWaterState() {
+		this.submergedInWater = this.isSubmergedIn(FluidTags.WATER, true);
 	}
 
 	protected void onSwimmingStart() {
@@ -1011,7 +1024,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public void attemptSprintingParticles() {
-		if (this.isSprinting() && !this.isInsideWater()) {
+		if (this.isSprinting() && !this.isTouchingWater()) {
 			this.spawnSprintingParticles();
 		}
 	}
@@ -1095,28 +1108,28 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.world = world;
 	}
 
-	public void setPositionAnglesAndUpdate(double x, double y, double z, float yaw, float pitch) {
+	public void updatePositionAndAngles(double x, double y, double z, float yaw, float pitch) {
 		double d = MathHelper.clamp(x, -3.0E7, 3.0E7);
 		double e = MathHelper.clamp(z, -3.0E7, 3.0E7);
 		this.prevX = d;
 		this.prevY = y;
 		this.prevZ = e;
-		this.setPosition(d, y, e);
+		this.updatePosition(d, y, e);
 		this.yaw = yaw % 360.0F;
 		this.pitch = MathHelper.clamp(pitch, -90.0F, 90.0F) % 360.0F;
 		this.prevYaw = this.yaw;
 		this.prevPitch = this.pitch;
 	}
 
-	public void setPositionAndAngles(BlockPos pos, float yaw, float pitch) {
-		this.setPositionAndAngles((double)pos.getX() + 0.5, (double)pos.getY(), (double)pos.getZ() + 0.5, yaw, pitch);
+	public void refreshPositionAndAngles(BlockPos pos, float yaw, float pitch) {
+		this.refreshPositionAndAngles((double)pos.getX() + 0.5, (double)pos.getY(), (double)pos.getZ() + 0.5, yaw, pitch);
 	}
 
-	public void setPositionAndAngles(double x, double y, double z, float yaw, float pitch) {
+	public void refreshPositionAndAngles(double x, double y, double z, float yaw, float pitch) {
 		this.resetPosition(x, y, z);
 		this.yaw = yaw;
 		this.pitch = pitch;
-		this.updatePosition();
+		this.refreshPosition();
 	}
 
 	public void resetPosition(double x, double y, double z) {
@@ -1414,7 +1427,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 			if (!Double.isFinite(this.getX()) || !Double.isFinite(this.getY()) || !Double.isFinite(this.getZ())) {
 				throw new IllegalStateException("Entity has invalid position");
 			} else if (Double.isFinite((double)this.yaw) && Double.isFinite((double)this.pitch)) {
-				this.updatePosition();
+				this.refreshPosition();
 				this.setRotation(this.yaw, this.pitch);
 				if (tag.contains("CustomName", 8)) {
 					this.setCustomName(Text.Serializer.fromJson(tag.getString("CustomName")));
@@ -1436,7 +1449,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 
 				this.readCustomDataFromTag(tag);
 				if (this.shouldSetPositionOnLoad()) {
-					this.updatePosition();
+					this.refreshPosition();
 				}
 			} else {
 				throw new IllegalStateException("Entity has invalid rotation");
@@ -1557,7 +1570,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public void updatePassengerPosition(Entity passenger) {
-		this.updatePassengerPosition(passenger, Entity::setPosition);
+		this.updatePassengerPosition(passenger, Entity::updatePosition);
 	}
 
 	public void updatePassengerPosition(Entity passenger, Entity.PositionUpdater positionUpdater) {
@@ -1656,7 +1669,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 
 	@Environment(EnvType.CLIENT)
 	public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
-		this.setPosition(x, y, z);
+		this.updatePosition(x, y, z);
 		this.setRotation(yaw, pitch);
 	}
 
@@ -1833,7 +1846,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 
 	@Environment(EnvType.CLIENT)
 	public boolean shouldLeaveSwimmingPose() {
-		return this.isInSwimmingPose() && !this.isInsideWater();
+		return this.isInSwimmingPose() && !this.isTouchingWater();
 	}
 
 	public void setSwimming(boolean swimming) {
@@ -2051,7 +2064,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public void copyPositionAndRotation(Entity entity) {
-		this.setPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), entity.yaw, entity.pitch);
+		this.refreshPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), entity.yaw, entity.pitch);
 	}
 
 	public void copyFrom(Entity original) {
@@ -2117,7 +2130,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 			Entity entity = this.getType().create(serverWorld2);
 			if (entity != null) {
 				entity.copyFrom(this);
-				entity.setPositionAndAngles(blockPos, entity.yaw + f, entity.pitch);
+				entity.refreshPositionAndAngles(blockPos, entity.yaw + f, entity.pitch);
 				entity.setVelocity(vec3d);
 				serverWorld2.onDimensionChanged(entity);
 			}
@@ -2253,7 +2266,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	public void requestTeleport(double destX, double destY, double destZ) {
 		if (this.world instanceof ServerWorld) {
 			ServerWorld serverWorld = (ServerWorld)this.world;
-			this.setPositionAndAngles(destX, destY, destZ, this.yaw, this.pitch);
+			this.refreshPositionAndAngles(destX, destY, destZ, this.yaw, this.pitch);
 			this.streamPassengersRecursively().forEach(entity -> {
 				serverWorld.checkChunk(entity);
 				entity.teleportRequested = true;
@@ -2748,7 +2761,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public void positAfterTeleport(double x, double y, double z) {
-		this.setPositionAndAngles(x, y, z, this.yaw, this.pitch);
+		this.refreshPositionAndAngles(x, y, z, this.yaw, this.pitch);
 	}
 
 	@FunctionalInterface

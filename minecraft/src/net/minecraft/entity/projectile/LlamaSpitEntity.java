@@ -31,7 +31,7 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 	public LlamaSpitEntity(World world, LlamaEntity owner) {
 		this(EntityType.LLAMA_SPIT, world);
 		this.owner = owner;
-		this.setPosition(
+		this.updatePosition(
 			owner.getX() - (double)(owner.getWidth() + 1.0F) * 0.5 * (double)MathHelper.sin(owner.bodyYaw * (float) (Math.PI / 180.0)),
 			owner.getEyeY() - 0.1F,
 			owner.getZ() + (double)(owner.getWidth() + 1.0F) * 0.5 * (double)MathHelper.cos(owner.bodyYaw * (float) (Math.PI / 180.0))
@@ -41,7 +41,7 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 	@Environment(EnvType.CLIENT)
 	public LlamaSpitEntity(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
 		this(EntityType.LLAMA_SPIT, world);
-		this.setPosition(x, y, z);
+		this.updatePosition(x, y, z);
 
 		for (int i = 0; i < 7; i++) {
 			double d = 0.4 + 0.1 * (double)i;
@@ -103,7 +103,7 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 				this.setVelocity(this.getVelocity().add(0.0, -0.06F, 0.0));
 			}
 
-			this.setPosition(d, e, f);
+			this.updatePosition(d, e, f);
 		}
 	}
 
@@ -117,7 +117,7 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 			this.yaw = (float)(MathHelper.atan2(x, z) * 180.0F / (float)Math.PI);
 			this.prevPitch = this.pitch;
 			this.prevYaw = this.yaw;
-			this.setPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
+			this.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
 		}
 	}
 

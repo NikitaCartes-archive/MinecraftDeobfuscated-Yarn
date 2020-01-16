@@ -423,7 +423,7 @@ public class WorldChunk implements Chunk {
 	@Override
 	public void setBlockEntity(BlockPos pos, BlockEntity blockEntity) {
 		if (this.getBlockState(pos).getBlock() instanceof BlockEntityProvider) {
-			blockEntity.setWorld(this.world, pos);
+			blockEntity.setLocation(this.world, pos);
 			blockEntity.cancelRemoval();
 			BlockEntity blockEntity2 = (BlockEntity)this.blockEntities.put(pos.toImmutable(), blockEntity);
 			if (blockEntity2 != null && blockEntity2 != blockEntity) {
@@ -742,7 +742,7 @@ public class WorldChunk implements Chunk {
 		}
 
 		if (blockEntity != null) {
-			blockEntity.setWorld(this.world, pos);
+			blockEntity.setLocation(this.world, pos);
 			this.addBlockEntity(blockEntity);
 		} else {
 			LOGGER.warn("Tried to load a block entity for block {} but failed at location {}", this.getBlockState(pos), pos);
