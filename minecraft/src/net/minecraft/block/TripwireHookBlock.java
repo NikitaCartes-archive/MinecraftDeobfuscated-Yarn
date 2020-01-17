@@ -41,7 +41,7 @@ public class TripwireHookBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
 		switch ((Direction)state.get(FACING)) {
 			case EAST:
 			default:

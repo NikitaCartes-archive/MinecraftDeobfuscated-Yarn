@@ -12,13 +12,13 @@ import net.minecraft.container.ContainerListener;
 import net.minecraft.container.Slot;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.packet.RenameItemC2SPacket;
+import net.minecraft.network.packet.c2s.play.RenameItemC2SPacket;
 import net.minecraft.text.Text;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class AnvilScreen extends AbstractContainerScreen<AnvilContainer> implements ContainerListener {
+public class AnvilScreen extends ContainerScreen<AnvilContainer> implements ContainerListener {
 	private static final Identifier BG_TEX = new Identifier("textures/gui/container/anvil.png");
 	private TextFieldWidget nameField;
 

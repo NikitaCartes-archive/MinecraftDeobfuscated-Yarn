@@ -11,7 +11,11 @@ public interface Packet<T extends PacketListener> {
 
 	void apply(T listener);
 
-	default boolean isErrorFatal() {
+	/**
+	 * Returns whether a throwable in writing of this packet allows the
+	 * connection to simply skip the packet's sending than disconnecting.
+	 */
+	default boolean isWritingErrorSkippable() {
 		return false;
 	}
 }

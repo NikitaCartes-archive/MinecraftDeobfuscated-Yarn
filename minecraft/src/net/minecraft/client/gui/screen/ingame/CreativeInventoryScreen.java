@@ -200,10 +200,10 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 					}
 				} else if (slot != null) {
 					ItemStack itemStack2x = this.container.getSlot(slot.id).getStack();
-					this.minecraft.interactionManager.clickCreativeStack(itemStack2x, slot.id - this.container.slotList.size() + 9 + 36);
+					this.minecraft.interactionManager.clickCreativeStack(itemStack2x, slot.id - this.container.slots.size() + 9 + 36);
 					int k = 45 + button;
 					if (slotActionType == SlotActionType.SWAP) {
-						this.minecraft.interactionManager.clickCreativeStack(itemStack, k - this.container.slotList.size() + 9 + 36);
+						this.minecraft.interactionManager.clickCreativeStack(itemStack, k - this.container.slots.size() + 9 + 36);
 					} else if (slotActionType == SlotActionType.THROW && !itemStack.isEmpty()) {
 						ItemStack itemStack4 = itemStack.copy();
 						itemStack4.setCount(button == 0 ? 1 : itemStack4.getMaxCount());
@@ -457,12 +457,12 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		if (group == ItemGroup.INVENTORY) {
 			Container container = this.minecraft.player.playerContainer;
 			if (this.slots == null) {
-				this.slots = ImmutableList.copyOf(this.container.slotList);
+				this.slots = ImmutableList.copyOf(this.container.slots);
 			}
 
-			this.container.slotList.clear();
+			this.container.slots.clear();
 
-			for (int jx = 0; jx < container.slotList.size(); jx++) {
+			for (int jx = 0; jx < container.slots.size(); jx++) {
 				int o;
 				int kx;
 				if (jx >= 5 && jx < 9) {
@@ -489,15 +489,15 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 					}
 				}
 
-				Slot slot = new CreativeInventoryScreen.CreativeSlot((Slot)container.slotList.get(jx), jx, o, kx);
-				this.container.slotList.add(slot);
+				Slot slot = new CreativeInventoryScreen.CreativeSlot((Slot)container.slots.get(jx), jx, o, kx);
+				this.container.slots.add(slot);
 			}
 
 			this.deleteItemSlot = new Slot(inventory, 0, 173, 112);
-			this.container.slotList.add(this.deleteItemSlot);
+			this.container.slots.add(this.deleteItemSlot);
 		} else if (i == ItemGroup.INVENTORY.getIndex()) {
-			this.container.slotList.clear();
-			this.container.slotList.addAll(this.slots);
+			this.container.slots.clear();
+			this.container.slots.addAll(this.slots);
 			this.slots = null;
 		}
 
@@ -833,8 +833,8 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 
 		@Override
 		public ItemStack transferSlot(PlayerEntity player, int invSlot) {
-			if (invSlot >= this.slotList.size() - 9 && invSlot < this.slotList.size()) {
-				Slot slot = (Slot)this.slotList.get(invSlot);
+			if (invSlot >= this.slots.size() - 9 && invSlot < this.slots.size()) {
+				Slot slot = (Slot)this.slots.get(invSlot);
 				if (slot != null && slot.hasStack()) {
 					slot.setStack(ItemStack.EMPTY);
 				}

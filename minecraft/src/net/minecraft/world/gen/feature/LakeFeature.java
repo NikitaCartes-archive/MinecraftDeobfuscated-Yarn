@@ -147,7 +147,7 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 						for (int s = 0; s < 16; s++) {
 							int txxxx = 4;
 							BlockPos blockPos2 = blockPos.add(j, 4, s);
-							if (iWorld.getBiome(blockPos2).canSetSnow(iWorld, blockPos2, false)) {
+							if (iWorld.getBiome(blockPos2).canSetIce(iWorld, blockPos2, false)) {
 								iWorld.setBlockState(blockPos2, Blocks.ICE.getDefaultState(), 2);
 							}
 						}

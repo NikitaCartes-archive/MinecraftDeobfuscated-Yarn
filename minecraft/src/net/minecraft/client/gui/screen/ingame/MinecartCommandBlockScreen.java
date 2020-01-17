@@ -3,7 +3,7 @@ package net.minecraft.client.gui.screen.ingame;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.vehicle.CommandBlockMinecartEntity;
-import net.minecraft.server.network.packet.UpdateCommandBlockMinecartC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateCommandBlockMinecartC2SPacket;
 import net.minecraft.world.CommandBlockExecutor;
 
 @Environment(EnvType.CLIENT)

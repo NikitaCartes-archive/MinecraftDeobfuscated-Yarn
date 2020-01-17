@@ -7,10 +7,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import net.minecraft.advancement.criterion.Criterions;
-import net.minecraft.client.network.packet.UnlockRecipesS2CPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.network.packet.s2c.play.UnlockRecipesS2CPacket;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.recipe.book.RecipeBook;
@@ -27,30 +27,30 @@ public class ServerRecipeBook extends RecipeBook {
 		this.manager = recipeManager;
 	}
 
-	public int unlockRecipes(Collection<Recipe<?>> collection, ServerPlayerEntity serverPlayerEntity) {
+	public int unlockRecipes(Collection<Recipe<?>> recipes, ServerPlayerEntity player) {
 		List<Identifier> list = Lists.<Identifier>newArrayList();
 		int i = 0;
 
-		for (Recipe<?> recipe : collection) {
+		for (Recipe<?> recipe : recipes) {
 			Identifier identifier = recipe.getId();
 			if (!this.recipes.contains(identifier) && !recipe.isIgnoredInRecipeBook()) {
 				this.add(identifier);
 				this.display(identifier);
 				list.add(identifier);
-				Criterions.RECIPE_UNLOCKED.trigger(serverPlayerEntity, recipe);
+				Criterions.RECIPE_UNLOCKED.trigger(player, recipe);
 				i++;
 			}
 		}
 
-		this.sendUnlockRecipesPacket(UnlockRecipesS2CPacket.Action.ADD, serverPlayerEntity, list);
+		this.sendUnlockRecipesPacket(UnlockRecipesS2CPacket.Action.ADD, player, list);
 		return i;
 	}
 
-	public int lockRecipes(Collection<Recipe<?>> collection, ServerPlayerEntity serverPlayerEntity) {
+	public int lockRecipes(Collection<Recipe<?>> recipes, ServerPlayerEntity player) {
 		List<Identifier> list = Lists.<Identifier>newArrayList();
 		int i = 0;
 
-		for (Recipe<?> recipe : collection) {
+		for (Recipe<?> recipe : recipes) {
 			Identifier identifier = recipe.getId();
 			if (this.recipes.contains(identifier)) {
 				this.remove(identifier);
@@ -59,15 +59,15 @@ public class ServerRecipeBook extends RecipeBook {
 			}
 		}
 
-		this.sendUnlockRecipesPacket(UnlockRecipesS2CPacket.Action.REMOVE, serverPlayerEntity, list);
+		this.sendUnlockRecipesPacket(UnlockRecipesS2CPacket.Action.REMOVE, player, list);
 		return i;
 	}
 
-	private void sendUnlockRecipesPacket(UnlockRecipesS2CPacket.Action action, ServerPlayerEntity serverPlayerEntity, List<Identifier> list) {
-		serverPlayerEntity.networkHandler
+	private void sendUnlockRecipesPacket(UnlockRecipesS2CPacket.Action action, ServerPlayerEntity player, List<Identifier> recipeIds) {
+		player.networkHandler
 			.sendPacket(
 				new UnlockRecipesS2CPacket(
-					action, list, Collections.emptyList(), this.guiOpen, this.filteringCraftable, this.furnaceGuiOpen, this.furnaceFilteringCraftable
+					action, recipeIds, Collections.emptyList(), this.guiOpen, this.filteringCraftable, this.furnaceGuiOpen, this.furnaceFilteringCraftable
 				)
 			);
 	}
@@ -95,20 +95,20 @@ public class ServerRecipeBook extends RecipeBook {
 		return compoundTag;
 	}
 
-	public void fromTag(CompoundTag compoundTag) {
-		this.guiOpen = compoundTag.getBoolean("isGuiOpen");
-		this.filteringCraftable = compoundTag.getBoolean("isFilteringCraftable");
-		this.furnaceGuiOpen = compoundTag.getBoolean("isFurnaceGuiOpen");
-		this.furnaceFilteringCraftable = compoundTag.getBoolean("isFurnaceFilteringCraftable");
-		ListTag listTag = compoundTag.getList("recipes", 8);
-		this.method_20732(listTag, this::add);
-		ListTag listTag2 = compoundTag.getList("toBeDisplayed", 8);
-		this.method_20732(listTag2, this::display);
+	public void fromTag(CompoundTag tag) {
+		this.guiOpen = tag.getBoolean("isGuiOpen");
+		this.filteringCraftable = tag.getBoolean("isFilteringCraftable");
+		this.furnaceGuiOpen = tag.getBoolean("isFurnaceGuiOpen");
+		this.furnaceFilteringCraftable = tag.getBoolean("isFurnaceFilteringCraftable");
+		ListTag listTag = tag.getList("recipes", 8);
+		this.handleList(listTag, this::add);
+		ListTag listTag2 = tag.getList("toBeDisplayed", 8);
+		this.handleList(listTag2, this::display);
 	}
 
-	private void method_20732(ListTag listTag, Consumer<Recipe<?>> consumer) {
-		for (int i = 0; i < listTag.size(); i++) {
-			String string = listTag.getString(i);
+	private void handleList(ListTag list, Consumer<Recipe<?>> handler) {
+		for (int i = 0; i < list.size(); i++) {
+			String string = list.getString(i);
 
 			try {
 				Identifier identifier = new Identifier(string);
@@ -116,7 +116,7 @@ public class ServerRecipeBook extends RecipeBook {
 				if (!optional.isPresent()) {
 					LOGGER.error("Tried to load unrecognized recipe: {} removed now.", identifier);
 				} else {
-					consumer.accept(optional.get());
+					handler.accept(optional.get());
 				}
 			} catch (InvalidIdentifierException var7) {
 				LOGGER.error("Tried to load improperly formatted recipe: {} removed now.", string);
@@ -124,8 +124,8 @@ public class ServerRecipeBook extends RecipeBook {
 		}
 	}
 
-	public void sendInitRecipesPacket(ServerPlayerEntity serverPlayerEntity) {
-		serverPlayerEntity.networkHandler
+	public void sendInitRecipesPacket(ServerPlayerEntity player) {
+		player.networkHandler
 			.sendPacket(
 				new UnlockRecipesS2CPacket(
 					UnlockRecipesS2CPacket.Action.INIT,

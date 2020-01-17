@@ -12,7 +12,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 
-public class PaneBlock extends HorizontalConnectedBlock {
+public class PaneBlock extends HorizontalConnectingBlock {
 	protected PaneBlock(Block.Settings settings) {
 		super(1.0F, 1.0F, 16.0F, 16.0F, 16.0F, settings);
 		this.setDefaultState(

@@ -21,17 +21,17 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
+import net.minecraft.network.packet.c2s.play.ButtonClickC2SPacket;
+import net.minecraft.network.packet.c2s.play.ClickWindowC2SPacket;
+import net.minecraft.network.packet.c2s.play.CraftRequestC2SPacket;
+import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
+import net.minecraft.network.packet.c2s.play.PickFromInventoryC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 import net.minecraft.recipe.Recipe;
-import net.minecraft.server.network.packet.ButtonClickC2SPacket;
-import net.minecraft.server.network.packet.ClickWindowC2SPacket;
-import net.minecraft.server.network.packet.CraftRequestC2SPacket;
-import net.minecraft.server.network.packet.CreativeInventoryActionC2SPacket;
-import net.minecraft.server.network.packet.PickFromInventoryC2SPacket;
-import net.minecraft.server.network.packet.PlayerActionC2SPacket;
-import net.minecraft.server.network.packet.PlayerInteractBlockC2SPacket;
-import net.minecraft.server.network.packet.PlayerInteractEntityC2SPacket;
-import net.minecraft.server.network.packet.PlayerInteractItemC2SPacket;
-import net.minecraft.server.network.packet.UpdateSelectedSlotC2SPacket;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.stat.StatHandler;
@@ -69,16 +69,14 @@ public class ClientPlayerInteractionManager {
 		this.networkHandler = clientPlayNetworkHandler;
 	}
 
-	public static void breakBlockOrFire(
-		MinecraftClient minecraftClient, ClientPlayerInteractionManager clientPlayerInteractionManager, BlockPos blockPos, Direction direction
-	) {
-		if (!minecraftClient.world.extinguishFire(minecraftClient.player, blockPos, direction)) {
-			clientPlayerInteractionManager.breakBlock(blockPos);
+	public static void breakBlockOrFire(MinecraftClient client, ClientPlayerInteractionManager interactionManager, BlockPos pos, Direction direction) {
+		if (!client.world.extinguishFire(client.player, pos, direction)) {
+			interactionManager.breakBlock(pos);
 		}
 	}
 
-	public void copyAbilities(PlayerEntity playerEntity) {
-		this.gameMode.setAbilitites(playerEntity.abilities);
+	public void copyAbilities(PlayerEntity player) {
+		this.gameMode.setAbilitites(player.abilities);
 	}
 
 	public void setGameMode(GameMode gameMode) {
@@ -90,13 +88,13 @@ public class ClientPlayerInteractionManager {
 		return this.gameMode.isSurvivalLike();
 	}
 
-	public boolean breakBlock(BlockPos blockPos) {
-		if (this.client.player.canMine(this.client.world, blockPos, this.gameMode)) {
+	public boolean breakBlock(BlockPos pos) {
+		if (this.client.player.canMine(this.client.world, pos, this.gameMode)) {
 			return false;
 		} else {
 			World world = this.client.world;
-			BlockState blockState = world.getBlockState(blockPos);
-			if (!this.client.player.getMainHandStack().getItem().canMine(blockState, world, blockPos, this.client.player)) {
+			BlockState blockState = world.getBlockState(pos);
+			if (!this.client.player.getMainHandStack().getItem().canMine(blockState, world, pos, this.client.player)) {
 				return false;
 			} else {
 				Block block = blockState.getBlock();
@@ -105,11 +103,11 @@ public class ClientPlayerInteractionManager {
 				} else if (blockState.isAir()) {
 					return false;
 				} else {
-					block.onBreak(world, blockPos, blockState, this.client.player);
-					FluidState fluidState = world.getFluidState(blockPos);
-					boolean bl = world.setBlockState(blockPos, fluidState.getBlockState(), 11);
+					block.onBreak(world, pos, blockState, this.client.player);
+					FluidState fluidState = world.getFluidState(pos);
+					boolean bl = world.setBlockState(pos, fluidState.getBlockState(), 11);
 					if (bl) {
-						block.onBroken(world, blockPos, blockState);
+						block.onBroken(world, pos, blockState);
 					}
 
 					return bl;
@@ -171,42 +169,42 @@ public class ClientPlayerInteractionManager {
 		}
 	}
 
-	public boolean updateBlockBreakingProgress(BlockPos blockPos, Direction direction) {
+	public boolean updateBlockBreakingProgress(BlockPos pos, Direction direction) {
 		this.syncSelectedSlot();
 		if (this.blockBreakingCooldown > 0) {
 			this.blockBreakingCooldown--;
 			return true;
-		} else if (this.gameMode.isCreative() && this.client.world.getWorldBorder().contains(blockPos)) {
+		} else if (this.gameMode.isCreative() && this.client.world.getWorldBorder().contains(pos)) {
 			this.blockBreakingCooldown = 5;
-			BlockState blockState = this.client.world.getBlockState(blockPos);
-			this.client.getTutorialManager().onBlockAttacked(this.client.world, blockPos, blockState, 1.0F);
-			this.sendPlayerAction(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, blockPos, direction);
-			breakBlockOrFire(this.client, this, blockPos, direction);
+			BlockState blockState = this.client.world.getBlockState(pos);
+			this.client.getTutorialManager().onBlockAttacked(this.client.world, pos, blockState, 1.0F);
+			this.sendPlayerAction(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, pos, direction);
+			breakBlockOrFire(this.client, this, pos, direction);
 			return true;
-		} else if (this.isCurrentlyBreaking(blockPos)) {
-			BlockState blockState = this.client.world.getBlockState(blockPos);
+		} else if (this.isCurrentlyBreaking(pos)) {
+			BlockState blockState = this.client.world.getBlockState(pos);
 			if (blockState.isAir()) {
 				this.breakingBlock = false;
 				return false;
 			} else {
-				this.currentBreakingProgress = this.currentBreakingProgress + blockState.calcBlockBreakingDelta(this.client.player, this.client.player.world, blockPos);
+				this.currentBreakingProgress = this.currentBreakingProgress + blockState.calcBlockBreakingDelta(this.client.player, this.client.player.world, pos);
 				if (this.blockBreakingSoundCooldown % 4.0F == 0.0F) {
 					BlockSoundGroup blockSoundGroup = blockState.getSoundGroup();
 					this.client
 						.getSoundManager()
 						.play(
 							new PositionedSoundInstance(
-								blockSoundGroup.getHitSound(), SoundCategory.BLOCKS, (blockSoundGroup.getVolume() + 1.0F) / 8.0F, blockSoundGroup.getPitch() * 0.5F, blockPos
+								blockSoundGroup.getHitSound(), SoundCategory.BLOCKS, (blockSoundGroup.getVolume() + 1.0F) / 8.0F, blockSoundGroup.getPitch() * 0.5F, pos
 							)
 						);
 				}
 
 				this.blockBreakingSoundCooldown++;
-				this.client.getTutorialManager().onBlockAttacked(this.client.world, blockPos, blockState, MathHelper.clamp(this.currentBreakingProgress, 0.0F, 1.0F));
+				this.client.getTutorialManager().onBlockAttacked(this.client.world, pos, blockState, MathHelper.clamp(this.currentBreakingProgress, 0.0F, 1.0F));
 				if (this.currentBreakingProgress >= 1.0F) {
 					this.breakingBlock = false;
-					this.sendPlayerAction(PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, blockPos, direction);
-					this.breakBlock(blockPos);
+					this.sendPlayerAction(PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, pos, direction);
+					this.breakBlock(pos);
 					this.currentBreakingProgress = 0.0F;
 					this.blockBreakingSoundCooldown = 0.0F;
 					this.blockBreakingCooldown = 5;
@@ -216,7 +214,7 @@ public class ClientPlayerInteractionManager {
 				return true;
 			}
 		} else {
-			return this.attackBlock(blockPos, direction);
+			return this.attackBlock(pos, direction);
 		}
 	}
 
@@ -294,21 +292,21 @@ public class ClientPlayerInteractionManager {
 		}
 	}
 
-	public ActionResult interactItem(PlayerEntity playerEntity, World world, Hand hand) {
+	public ActionResult interactItem(PlayerEntity player, World world, Hand hand) {
 		if (this.gameMode == GameMode.SPECTATOR) {
 			return ActionResult.PASS;
 		} else {
 			this.syncSelectedSlot();
 			this.networkHandler.sendPacket(new PlayerInteractItemC2SPacket(hand));
-			ItemStack itemStack = playerEntity.getStackInHand(hand);
-			if (playerEntity.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
+			ItemStack itemStack = player.getStackInHand(hand);
+			if (player.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
 				return ActionResult.PASS;
 			} else {
 				int i = itemStack.getCount();
-				TypedActionResult<ItemStack> typedActionResult = itemStack.use(world, playerEntity, hand);
+				TypedActionResult<ItemStack> typedActionResult = itemStack.use(world, player, hand);
 				ItemStack itemStack2 = typedActionResult.getValue();
 				if (itemStack2 != itemStack || itemStack2.getCount() != i) {
-					playerEntity.setStackInHand(hand, itemStack2);
+					player.setStackInHand(hand, itemStack2);
 				}
 
 				return typedActionResult.getResult();
@@ -411,16 +409,16 @@ public class ClientPlayerInteractionManager {
 		this.networkHandler.sendPacket(new PickFromInventoryC2SPacket(slot));
 	}
 
-	private void sendPlayerAction(PlayerActionC2SPacket.Action action, BlockPos blockPos, Direction direction) {
+	private void sendPlayerAction(PlayerActionC2SPacket.Action action, BlockPos pos, Direction direction) {
 		ClientPlayerEntity clientPlayerEntity = this.client.player;
-		this.unacknowledgedPlayerActions.put(Pair.of(blockPos, action), new PosAndRot(clientPlayerEntity.getPos(), clientPlayerEntity.pitch, clientPlayerEntity.yaw));
-		this.networkHandler.sendPacket(new PlayerActionC2SPacket(action, blockPos, direction));
+		this.unacknowledgedPlayerActions.put(Pair.of(pos, action), new PosAndRot(clientPlayerEntity.getPos(), clientPlayerEntity.pitch, clientPlayerEntity.yaw));
+		this.networkHandler.sendPacket(new PlayerActionC2SPacket(action, pos, direction));
 	}
 
-	public void processPlayerActionResponse(ClientWorld world, BlockPos pos, BlockState blockState, PlayerActionC2SPacket.Action action, boolean approved) {
+	public void processPlayerActionResponse(ClientWorld world, BlockPos pos, BlockState state, PlayerActionC2SPacket.Action action, boolean approved) {
 		PosAndRot posAndRot = this.unacknowledgedPlayerActions.remove(Pair.of(pos, action));
-		if (posAndRot == null || !approved || action != PlayerActionC2SPacket.Action.START_DESTROY_BLOCK && world.getBlockState(pos) != blockState) {
-			world.setBlockStateWithoutNeighborUpdates(pos, blockState);
+		if (posAndRot == null || !approved || action != PlayerActionC2SPacket.Action.START_DESTROY_BLOCK && world.getBlockState(pos) != state) {
+			world.setBlockStateWithoutNeighborUpdates(pos, state);
 			if (posAndRot != null) {
 				Vec3d vec3d = posAndRot.getPos();
 				this.client.player.updatePositionAndAngles(vec3d.x, vec3d.y, vec3d.z, posAndRot.getYaw(), posAndRot.getPitch());

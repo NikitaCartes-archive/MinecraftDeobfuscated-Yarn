@@ -6,8 +6,8 @@ import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
-import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.entity.EntityCategory;
+import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
@@ -120,7 +120,7 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
 
 	public abstract int getSpawnHeight();
 
-	public void spawnEntities(ServerWorld serverWorld, boolean spawnMonsters, boolean spawnAnimals) {
+	public void spawnEntities(ServerWorld world, boolean spawnMonsters, boolean spawnAnimals) {
 	}
 
 	public boolean hasStructure(Biome biome, StructureFeature<? extends FeatureConfig> structureFeature) {
@@ -152,7 +152,7 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
 		for (StructureFeature<?> structureFeature : Feature.STRUCTURES.values()) {
 			if (chunkGenerator.getBiomeSource().hasStructureFeature(structureFeature)) {
 				StructureStart structureStart = chunk.getStructureStart(structureFeature.getName());
-				int i = structureStart != null ? structureStart.method_23676() : 0;
+				int i = structureStart != null ? structureStart.getReferences() : 0;
 				ChunkRandom chunkRandom = new ChunkRandom();
 				ChunkPos chunkPos = chunk.getPos();
 				StructureStart structureStart2 = StructureStart.DEFAULT;
@@ -184,7 +184,7 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
 					StructureStart structureStart = (StructureStart)entry.getValue();
 					if (structureStart != StructureStart.DEFAULT && structureStart.getBoundingBox().intersectsXZ(l, m, l + 15, m + 15)) {
 						chunk.addStructureReference((String)entry.getKey(), p);
-						DebugRendererInfoManager.sendStructureStart(world, structureStart);
+						DebugInfoSender.sendStructureStart(world, structureStart);
 					}
 				}
 			}

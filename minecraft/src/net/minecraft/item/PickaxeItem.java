@@ -111,7 +111,7 @@ public class PickaxeItem extends MiningToolItem {
 			return i >= 2;
 		} else if (block != Blocks.IRON_BLOCK && block != Blocks.IRON_ORE && block != Blocks.LAPIS_BLOCK && block != Blocks.LAPIS_ORE) {
 			Material material = state.getMaterial();
-			return material == Material.STONE || material == Material.METAL || material == Material.ANVIL;
+			return material == Material.STONE || material == Material.METAL || material == Material.REPAIR_STATION;
 		} else {
 			return i >= 1;
 		}
@@ -120,6 +120,8 @@ public class PickaxeItem extends MiningToolItem {
 	@Override
 	public float getMiningSpeed(ItemStack stack, BlockState state) {
 		Material material = state.getMaterial();
-		return material != Material.METAL && material != Material.ANVIL && material != Material.STONE ? super.getMiningSpeed(stack, state) : this.miningSpeed;
+		return material != Material.METAL && material != Material.REPAIR_STATION && material != Material.STONE
+			? super.getMiningSpeed(stack, state)
+			: this.miningSpeed;
 	}
 }

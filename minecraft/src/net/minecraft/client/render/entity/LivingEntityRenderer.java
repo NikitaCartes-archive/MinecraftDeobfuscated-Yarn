@@ -33,14 +33,14 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 	protected M model;
 	protected final List<FeatureRenderer<T, M>> features = Lists.<FeatureRenderer<T, M>>newArrayList();
 
-	public LivingEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, M entityModel, float f) {
-		super(entityRenderDispatcher);
-		this.model = entityModel;
-		this.shadowSize = f;
+	public LivingEntityRenderer(EntityRenderDispatcher dispatcher, M model, float shadowSize) {
+		super(dispatcher);
+		this.model = model;
+		this.shadowSize = shadowSize;
 	}
 
-	protected final boolean addFeature(FeatureRenderer<T, M> featureRenderer) {
-		return this.features.add(featureRenderer);
+	protected final boolean addFeature(FeatureRenderer<T, M> feature) {
+		return this.features.add(feature);
 	}
 
 	@Override
@@ -86,7 +86,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 			}
 		}
 
-		float lx = this.getCustomAngle(livingEntity, g);
+		float lx = this.getAnimationProgress(livingEntity, g);
 		this.setupTransforms(livingEntity, matrixStack, lx, h, g);
 		matrixStack.scale(-1.0F, -1.0F, 1.0F);
 		this.scale(livingEntity, matrixStack, g);
@@ -107,9 +107,9 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 
 		this.model.animateModel(livingEntity, o, n, g);
 		this.model.setAngles(livingEntity, o, n, lx, k, m);
-		boolean bl = this.method_4056(livingEntity);
-		boolean bl2 = !bl && !livingEntity.canSeePlayer(MinecraftClient.getInstance().player);
-		RenderLayer renderLayer = this.method_24302(livingEntity, bl, bl2);
+		boolean bl = this.isFullyVisible(livingEntity);
+		boolean bl2 = !bl && !livingEntity.isInvisibleTo(MinecraftClient.getInstance().player);
+		RenderLayer renderLayer = this.getRenderLayer(livingEntity, bl, bl2);
 		if (renderLayer != null) {
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(renderLayer);
 			int p = getOverlay(livingEntity, this.getWhiteOverlayProgress(livingEntity, g));
@@ -126,24 +126,30 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		super.render(livingEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
+	/**
+	 * Gets the render layer appropriate for rendering the passed entity. Returns null if the entity should not be rendered.
+	 */
 	@Nullable
-	protected RenderLayer method_24302(T livingEntity, boolean bl, boolean bl2) {
-		Identifier identifier = this.getTexture(livingEntity);
-		if (bl2) {
+	protected RenderLayer getRenderLayer(T entity, boolean showBody, boolean translucent) {
+		Identifier identifier = this.getTexture(entity);
+		if (translucent) {
 			return RenderLayer.getEntityTranslucent(identifier);
-		} else if (bl) {
+		} else if (showBody) {
 			return this.model.getLayer(identifier);
 		} else {
-			return livingEntity.isGlowing() ? RenderLayer.getOutline(identifier) : null;
+			return entity.isGlowing() ? RenderLayer.getOutline(identifier) : null;
 		}
 	}
 
+	/**
+	 * Returns the packed overlay color for an entity, determined by its death progress and whether it is flashing.
+	 */
 	public static int getOverlay(LivingEntity entity, float whiteOverlayProgress) {
 		return OverlayTexture.packUv(OverlayTexture.getU(whiteOverlayProgress), OverlayTexture.getV(entity.hurtTime > 0 || entity.deathTime > 0));
 	}
 
-	protected boolean method_4056(T livingEntity) {
-		return !livingEntity.isInvisible();
+	protected boolean isFullyVisible(T entity) {
+		return !entity.isInvisible();
 	}
 
 	private static float getYaw(Direction direction) {
@@ -161,35 +167,35 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		}
 	}
 
-	protected void setupTransforms(T entity, MatrixStack matrixStack, float f, float g, float h) {
+	protected void setupTransforms(T entity, MatrixStack matrices, float animationProgress, float bodyYaw, float tickDelta) {
 		EntityPose entityPose = entity.getPose();
 		if (entityPose != EntityPose.SLEEPING) {
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F - g));
+			matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F - bodyYaw));
 		}
 
 		if (entity.deathTime > 0) {
-			float i = ((float)entity.deathTime + h - 1.0F) / 20.0F * 1.6F;
-			i = MathHelper.sqrt(i);
-			if (i > 1.0F) {
-				i = 1.0F;
+			float f = ((float)entity.deathTime + tickDelta - 1.0F) / 20.0F * 1.6F;
+			f = MathHelper.sqrt(f);
+			if (f > 1.0F) {
+				f = 1.0F;
 			}
 
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(i * this.getLyingAngle(entity)));
+			matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(f * this.getLyingAngle(entity)));
 		} else if (entity.isUsingRiptide()) {
-			matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0F - entity.pitch));
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(((float)entity.age + h) * -75.0F));
+			matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0F - entity.pitch));
+			matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(((float)entity.age + tickDelta) * -75.0F));
 		} else if (entityPose == EntityPose.SLEEPING) {
 			Direction direction = entity.getSleepingDirection();
-			float j = direction != null ? getYaw(direction) : g;
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(j));
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(this.getLyingAngle(entity)));
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(270.0F));
+			float g = direction != null ? getYaw(direction) : bodyYaw;
+			matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(g));
+			matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(this.getLyingAngle(entity)));
+			matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(270.0F));
 		} else if (entity.hasCustomName() || entity instanceof PlayerEntity) {
 			String string = Formatting.strip(entity.getName().getString());
 			if (("Dinnerbone".equals(string) || "Grumm".equals(string))
 				&& (!(entity instanceof PlayerEntity) || ((PlayerEntity)entity).isPartVisible(PlayerModelPart.CAPE))) {
-				matrixStack.translate(0.0, (double)(entity.getHeight() + 0.1F), 0.0);
-				matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
+				matrices.translate(0.0, (double)(entity.getHeight() + 0.1F), 0.0);
+				matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
 			}
 		}
 	}
@@ -198,11 +204,15 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		return entity.getHandSwingProgress(tickDelta);
 	}
 
-	protected float getCustomAngle(T entity, float tickDelta) {
+	/**
+	 * This value is passed to other methods when calculating angles for animation.
+	 * It's typically just the sum of the entity's age (in ticks) and the passed in tickDelta.
+	 */
+	protected float getAnimationProgress(T entity, float tickDelta) {
 		return (float)entity.age + tickDelta;
 	}
 
-	protected float getLyingAngle(T livingEntity) {
+	protected float getLyingAngle(T entity) {
 		return 90.0F;
 	}
 
@@ -210,7 +220,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		return 0.0F;
 	}
 
-	protected void scale(T entity, MatrixStack matrixStack, float f) {
+	protected void scale(T entity, MatrixStack matrices, float tickDelta) {
 	}
 
 	protected boolean hasLabel(T livingEntity) {
@@ -221,7 +231,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		} else {
 			MinecraftClient minecraftClient = MinecraftClient.getInstance();
 			ClientPlayerEntity clientPlayerEntity = minecraftClient.player;
-			boolean bl = !livingEntity.canSeePlayer(clientPlayerEntity);
+			boolean bl = !livingEntity.isInvisibleTo(clientPlayerEntity);
 			if (livingEntity != clientPlayerEntity) {
 				AbstractTeam abstractTeam = livingEntity.getScoreboardTeam();
 				AbstractTeam abstractTeam2 = clientPlayerEntity.getScoreboardTeam();

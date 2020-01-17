@@ -116,7 +116,7 @@ public class ShipwreckGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld world, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
+		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
 			int i = 256;
 			int j = 0;
 			BlockPos blockPos = this.structure.getSize();
@@ -138,7 +138,7 @@ public class ShipwreckGenerator {
 
 			int m = this.grounded ? i - blockPos.getY() / 2 - random.nextInt(3) : j;
 			this.pos = new BlockPos(this.pos.getX(), m, this.pos.getZ());
-			return super.generate(world, chunkGenerator, random, blockBox, chunkPos);
+			return super.generate(world, generator, random, box, pos);
 		}
 	}
 }

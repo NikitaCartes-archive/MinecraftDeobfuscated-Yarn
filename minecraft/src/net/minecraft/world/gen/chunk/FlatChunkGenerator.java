@@ -156,9 +156,9 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 	}
 
 	@Override
-	public void spawnEntities(ServerWorld serverWorld, boolean spawnMonsters, boolean spawnAnimals) {
-		this.phantomSpawner.spawn(serverWorld, spawnMonsters, spawnAnimals);
-		this.catSpawner.spawn(serverWorld, spawnMonsters, spawnAnimals);
+	public void spawnEntities(ServerWorld world, boolean spawnMonsters, boolean spawnAnimals) {
+		this.phantomSpawner.spawn(world, spawnMonsters, spawnAnimals);
+		this.catSpawner.spawn(world, spawnMonsters, spawnAnimals);
 	}
 
 	@Override

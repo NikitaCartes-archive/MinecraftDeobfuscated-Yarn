@@ -1,5 +1,8 @@
 package net.minecraft.container;
 
+/**
+ * A {@link PropertyDelegate} that is implemented using an int array.
+ */
 public class ArrayPropertyDelegate implements PropertyDelegate {
 	private final int[] data;
 
@@ -8,13 +11,13 @@ public class ArrayPropertyDelegate implements PropertyDelegate {
 	}
 
 	@Override
-	public int get(int key) {
-		return this.data[key];
+	public int get(int index) {
+		return this.data[index];
 	}
 
 	@Override
-	public void set(int key, int value) {
-		this.data[key] = value;
+	public void set(int index, int value) {
+		this.data[index] = value;
 	}
 
 	@Override

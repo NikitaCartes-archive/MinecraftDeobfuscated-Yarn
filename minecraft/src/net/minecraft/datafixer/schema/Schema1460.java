@@ -10,13 +10,13 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.datafixer.TypeReferences;
 
-public class Schema1460 extends SchemaIdentifierNormalize {
+public class Schema1460 extends IdentifierNormalizingSchema {
 	public Schema1460(int i, Schema schema) {
 		super(i, schema);
 	}
 
 	protected static void method_5232(Schema schema, Map<String, Supplier<TypeTemplate>> map, String string) {
-		schema.register(map, string, (Supplier<TypeTemplate>)(() -> Schema100.method_5196(schema)));
+		schema.register(map, string, (Supplier<TypeTemplate>)(() -> Schema100.targetItems(schema)));
 	}
 
 	protected static void method_5273(Schema schema, Map<String, Supplier<TypeTemplate>> map, String string) {
@@ -52,7 +52,7 @@ public class Schema1460 extends SchemaIdentifierNormalize {
 			map,
 			"minecraft:donkey",
 			(Function<String, TypeTemplate>)(string -> DSL.optionalFields(
-					"Items", DSL.list(TypeReferences.ITEM_STACK.in(schema)), "SaddleItem", TypeReferences.ITEM_STACK.in(schema), Schema100.method_5196(schema)
+					"Items", DSL.list(TypeReferences.ITEM_STACK.in(schema)), "SaddleItem", TypeReferences.ITEM_STACK.in(schema), Schema100.targetItems(schema)
 				))
 		);
 		schema.registerSimple(map, "minecraft:dragon_fireball");
@@ -63,7 +63,7 @@ public class Schema1460 extends SchemaIdentifierNormalize {
 		schema.register(
 			map,
 			"minecraft:enderman",
-			(Function<String, TypeTemplate>)(string -> DSL.optionalFields("carriedBlockState", TypeReferences.BLOCK_STATE.in(schema), Schema100.method_5196(schema)))
+			(Function<String, TypeTemplate>)(string -> DSL.optionalFields("carriedBlockState", TypeReferences.BLOCK_STATE.in(schema), Schema100.targetItems(schema)))
 		);
 		method_5232(schema, map, "minecraft:endermite");
 		schema.registerSimple(map, "minecraft:ender_pearl");
@@ -98,7 +98,7 @@ public class Schema1460 extends SchemaIdentifierNormalize {
 			map,
 			"minecraft:horse",
 			(Function<String, TypeTemplate>)(string -> DSL.optionalFields(
-					"ArmorItem", TypeReferences.ITEM_STACK.in(schema), "SaddleItem", TypeReferences.ITEM_STACK.in(schema), Schema100.method_5196(schema)
+					"ArmorItem", TypeReferences.ITEM_STACK.in(schema), "SaddleItem", TypeReferences.ITEM_STACK.in(schema), Schema100.targetItems(schema)
 				))
 		);
 		method_5232(schema, map, "minecraft:husk");
@@ -116,7 +116,7 @@ public class Schema1460 extends SchemaIdentifierNormalize {
 					TypeReferences.ITEM_STACK.in(schema),
 					"DecorItem",
 					TypeReferences.ITEM_STACK.in(schema),
-					Schema100.method_5196(schema)
+					Schema100.targetItems(schema)
 				))
 		);
 		schema.registerSimple(map, "minecraft:llama_spit");
@@ -129,7 +129,7 @@ public class Schema1460 extends SchemaIdentifierNormalize {
 			map,
 			"minecraft:mule",
 			(Function<String, TypeTemplate>)(string -> DSL.optionalFields(
-					"Items", DSL.list(TypeReferences.ITEM_STACK.in(schema)), "SaddleItem", TypeReferences.ITEM_STACK.in(schema), Schema100.method_5196(schema)
+					"Items", DSL.list(TypeReferences.ITEM_STACK.in(schema)), "SaddleItem", TypeReferences.ITEM_STACK.in(schema), Schema100.targetItems(schema)
 				))
 		);
 		method_5232(schema, map, "minecraft:ocelot");
@@ -147,7 +147,7 @@ public class Schema1460 extends SchemaIdentifierNormalize {
 		schema.register(
 			map,
 			"minecraft:skeleton_horse",
-			(Function<String, TypeTemplate>)(string -> DSL.optionalFields("SaddleItem", TypeReferences.ITEM_STACK.in(schema), Schema100.method_5196(schema)))
+			(Function<String, TypeTemplate>)(string -> DSL.optionalFields("SaddleItem", TypeReferences.ITEM_STACK.in(schema), Schema100.targetItems(schema)))
 		);
 		method_5232(schema, map, "minecraft:slime");
 		schema.registerSimple(map, "minecraft:small_fireball");
@@ -186,7 +186,7 @@ public class Schema1460 extends SchemaIdentifierNormalize {
 							)
 						)
 					),
-					Schema100.method_5196(schema)
+					Schema100.targetItems(schema)
 				))
 		);
 		method_5232(schema, map, "minecraft:villager_golem");
@@ -202,7 +202,7 @@ public class Schema1460 extends SchemaIdentifierNormalize {
 		schema.register(
 			map,
 			"minecraft:zombie_horse",
-			(Function<String, TypeTemplate>)(string -> DSL.optionalFields("SaddleItem", TypeReferences.ITEM_STACK.in(schema), Schema100.method_5196(schema)))
+			(Function<String, TypeTemplate>)(string -> DSL.optionalFields("SaddleItem", TypeReferences.ITEM_STACK.in(schema), Schema100.targetItems(schema)))
 		);
 		method_5232(schema, map, "minecraft:zombie_pigman");
 		method_5232(schema, map, "minecraft:zombie_villager");

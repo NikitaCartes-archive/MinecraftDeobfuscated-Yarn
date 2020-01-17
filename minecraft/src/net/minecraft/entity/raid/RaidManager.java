@@ -7,11 +7,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criterions;
-import net.minecraft.client.network.DebugRendererInfoManager;
-import net.minecraft.client.network.packet.EntityStatusS2CPacket;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
+import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
@@ -64,7 +64,7 @@ public class RaidManager extends PersistentState {
 			this.markDirty();
 		}
 
-		DebugRendererInfoManager.sendRaids(this.world, this.raids.values());
+		DebugInfoSender.sendRaids(this.world, this.raids.values());
 	}
 
 	public static boolean isValidRaiderFor(RaiderEntity raider, Raid raid) {

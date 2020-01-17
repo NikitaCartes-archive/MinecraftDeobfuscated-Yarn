@@ -18,13 +18,13 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
-import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.command.arguments.BlockStateArgument;
 import net.minecraft.command.arguments.TestClassArgumentType;
 import net.minecraft.command.arguments.TestFunctionArgumentType;
 import net.minecraft.data.dev.NbtProvider;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.StringNbtReader;
+import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.test.GameTest;
 import net.minecraft.test.StructureTestUtil;
@@ -159,7 +159,7 @@ public class TestCommand {
 		}
 	}
 
-	private static int executePos(ServerCommandSource source, String string) throws CommandSyntaxException {
+	private static int executePos(ServerCommandSource source, String variableName) throws CommandSyntaxException {
 		BlockHitResult blockHitResult = (BlockHitResult)source.getPlayer().rayTrace(10.0, 1.0F, false);
 		BlockPos blockPos = blockHitResult.getBlockPos();
 		ServerWorld serverWorld = source.getWorld();
@@ -174,18 +174,18 @@ public class TestCommand {
 		} else {
 			StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)serverWorld.getBlockEntity((BlockPos)optional.get());
 			BlockPos blockPos2 = blockPos.subtract((Vec3i)optional.get());
-			String string2 = blockPos2.getX() + ", " + blockPos2.getY() + ", " + blockPos2.getZ();
-			String string3 = structureBlockBlockEntity.getStructurePath();
-			Text text = new LiteralText(string2)
+			String string = blockPos2.getX() + ", " + blockPos2.getY() + ", " + blockPos2.getZ();
+			String string2 = structureBlockBlockEntity.getStructurePath();
+			Text text = new LiteralText(string)
 				.setStyle(
 					new Style()
 						.setBold(true)
 						.setColor(Formatting.GREEN)
 						.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Click to copy to clipboard")))
-						.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, "final BlockPos " + string + " = new BlockPos(" + string2 + ");"))
+						.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, "final BlockPos " + variableName + " = new BlockPos(" + string + ");"))
 				);
-			source.sendFeedback(new LiteralText("Position relative to " + string3 + ": ").append(text), false);
-			DebugRendererInfoManager.addGameTestMarker(serverWorld, new BlockPos(blockPos), string2, -2147418368, 10000);
+			source.sendFeedback(new LiteralText("Position relative to " + string2 + ": ").append(text), false);
+			DebugInfoSender.addGameTestMarker(serverWorld, new BlockPos(blockPos), string, -2147418368, 10000);
 			return 1;
 		}
 	}
@@ -272,10 +272,10 @@ public class TestCommand {
 		return 1;
 	}
 
-	private static void setWorld(TestFunction testFunction, ServerWorld serverWorld) {
+	private static void setWorld(TestFunction testFunction, ServerWorld world) {
 		Consumer<ServerWorld> consumer = TestFunctions.getWorldSetter(testFunction.getBatchId());
 		if (consumer != null) {
-			consumer.accept(serverWorld);
+			consumer.accept(world);
 		}
 	}
 

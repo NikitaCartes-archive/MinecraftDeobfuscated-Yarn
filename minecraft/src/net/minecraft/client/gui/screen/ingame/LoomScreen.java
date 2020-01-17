@@ -31,7 +31,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class LoomScreen extends AbstractContainerScreen<LoomContainer> {
+public class LoomScreen extends ContainerScreen<LoomContainer> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/loom.png");
 	private static final int PATTERN_BUTTON_ROW_COUNT = (BannerPattern.COUNT - 5 - 1 + 4 - 1) / 4;
 	private final ModelPart field_21694;

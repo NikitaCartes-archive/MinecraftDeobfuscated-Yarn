@@ -222,43 +222,50 @@ public class GlStateManager {
 		GL14.glBlendEquation(mode);
 	}
 
+	/**
+	 * Configures the frame buffer and populates {@link FrameBufferInfo} with the appropriate constants
+	 * for the current GLCapabilities.
+	 * 
+	 * @returns human-readable string representing the selected frame buffer technology.
+	 * @throws IllegalStateException if no known frame buffer technology is supported.
+	 */
 	public static String initFramebufferSupport(GLCapabilities capabilities) {
 		RenderSystem.assertThread(RenderSystem::isInInitPhase);
 		if (capabilities.OpenGL30) {
 			fboMode = GlStateManager.FBOMode.BASE;
-			FramebufferInfo.target = 36160;
-			FramebufferInfo.renderBufferTarget = 36161;
-			FramebufferInfo.field_20459 = 36064;
-			FramebufferInfo.attachment = 36096;
-			FramebufferInfo.field_20461 = 36053;
-			FramebufferInfo.field_20462 = 36054;
-			FramebufferInfo.field_20463 = 36055;
-			FramebufferInfo.field_20464 = 36059;
-			FramebufferInfo.field_20465 = 36060;
+			FramebufferInfo.FRAME_BUFFER = 36160;
+			FramebufferInfo.RENDER_BUFFER = 36161;
+			FramebufferInfo.COLOR_ATTACHMENT = 36064;
+			FramebufferInfo.DEPTH_ATTACHMENT = 36096;
+			FramebufferInfo.FRAME_BUFFER_COMPLETE = 36053;
+			FramebufferInfo.FRAME_BUFFER_INCOMPLETE_ATTACHMENT = 36054;
+			FramebufferInfo.FRAME_BUFFER_INCOMPLETE_MISSING_ATTACHMENT = 36055;
+			FramebufferInfo.FRAME_BUFFER_INCOMPLETE_DRAW_BUFFER = 36059;
+			FramebufferInfo.FRAME_BUFFER_INCOMPLETE_READ_BUFFER = 36060;
 			return "OpenGL 3.0";
 		} else if (capabilities.GL_ARB_framebuffer_object) {
 			fboMode = GlStateManager.FBOMode.ARB;
-			FramebufferInfo.target = 36160;
-			FramebufferInfo.renderBufferTarget = 36161;
-			FramebufferInfo.field_20459 = 36064;
-			FramebufferInfo.attachment = 36096;
-			FramebufferInfo.field_20461 = 36053;
-			FramebufferInfo.field_20463 = 36055;
-			FramebufferInfo.field_20462 = 36054;
-			FramebufferInfo.field_20464 = 36059;
-			FramebufferInfo.field_20465 = 36060;
+			FramebufferInfo.FRAME_BUFFER = 36160;
+			FramebufferInfo.RENDER_BUFFER = 36161;
+			FramebufferInfo.COLOR_ATTACHMENT = 36064;
+			FramebufferInfo.DEPTH_ATTACHMENT = 36096;
+			FramebufferInfo.FRAME_BUFFER_COMPLETE = 36053;
+			FramebufferInfo.FRAME_BUFFER_INCOMPLETE_MISSING_ATTACHMENT = 36055;
+			FramebufferInfo.FRAME_BUFFER_INCOMPLETE_ATTACHMENT = 36054;
+			FramebufferInfo.FRAME_BUFFER_INCOMPLETE_DRAW_BUFFER = 36059;
+			FramebufferInfo.FRAME_BUFFER_INCOMPLETE_READ_BUFFER = 36060;
 			return "ARB_framebuffer_object extension";
 		} else if (capabilities.GL_EXT_framebuffer_object) {
 			fboMode = GlStateManager.FBOMode.EXT;
-			FramebufferInfo.target = 36160;
-			FramebufferInfo.renderBufferTarget = 36161;
-			FramebufferInfo.field_20459 = 36064;
-			FramebufferInfo.attachment = 36096;
-			FramebufferInfo.field_20461 = 36053;
-			FramebufferInfo.field_20463 = 36055;
-			FramebufferInfo.field_20462 = 36054;
-			FramebufferInfo.field_20464 = 36059;
-			FramebufferInfo.field_20465 = 36060;
+			FramebufferInfo.FRAME_BUFFER = 36160;
+			FramebufferInfo.RENDER_BUFFER = 36161;
+			FramebufferInfo.COLOR_ATTACHMENT = 36064;
+			FramebufferInfo.DEPTH_ATTACHMENT = 36096;
+			FramebufferInfo.FRAME_BUFFER_COMPLETE = 36053;
+			FramebufferInfo.FRAME_BUFFER_INCOMPLETE_MISSING_ATTACHMENT = 36055;
+			FramebufferInfo.FRAME_BUFFER_INCOMPLETE_ATTACHMENT = 36054;
+			FramebufferInfo.FRAME_BUFFER_INCOMPLETE_DRAW_BUFFER = 36059;
+			FramebufferInfo.FRAME_BUFFER_INCOMPLETE_READ_BUFFER = 36060;
 			return "EXT_framebuffer_object extension";
 		} else {
 			throw new IllegalStateException("Could not initialize framebuffer support.");

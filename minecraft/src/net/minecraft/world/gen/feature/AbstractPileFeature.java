@@ -47,7 +47,7 @@ public class AbstractPileFeature extends Feature<BlockPileFeatureConfig> {
 
 	private void addPileBlock(IWorld world, BlockPos pos, Random random, BlockPileFeatureConfig blockPileFeatureConfig) {
 		if (world.isAir(pos) && this.canPlacePileBlock(world, pos, random)) {
-			world.setBlockState(pos, blockPileFeatureConfig.field_21229.getBlockState(random, pos), 4);
+			world.setBlockState(pos, blockPileFeatureConfig.stateProvider.getBlockState(random, pos), 4);
 		}
 	}
 }

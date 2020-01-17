@@ -9,7 +9,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class ShulkerBoxScreen extends AbstractContainerScreen<ShulkerBoxContainer> {
+public class ShulkerBoxScreen extends ContainerScreen<ShulkerBoxContainer> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/shulker_box.png");
 
 	public ShulkerBoxScreen(ShulkerBoxContainer container, PlayerInventory inventory, Text title) {

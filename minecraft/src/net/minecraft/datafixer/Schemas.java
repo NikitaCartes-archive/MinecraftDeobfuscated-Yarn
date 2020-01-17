@@ -103,6 +103,7 @@ import net.minecraft.datafixer.fix.RecipeRenamingFix;
 import net.minecraft.datafixer.fix.RemovePoiValidTagFix;
 import net.minecraft.datafixer.fix.SavedDataVillageCropFix;
 import net.minecraft.datafixer.fix.StatsCounterFix;
+import net.minecraft.datafixer.fix.StructureReferenceFix;
 import net.minecraft.datafixer.fix.SwimStatsRenameFix;
 import net.minecraft.datafixer.fix.TeamDisplayNameFix;
 import net.minecraft.datafixer.fix.VillagerProfessionFix;
@@ -113,6 +114,7 @@ import net.minecraft.datafixer.fix.ZombieVillagerXpRebuildFix;
 import net.minecraft.datafixer.mapping.LegacyCoralBlockMapping;
 import net.minecraft.datafixer.mapping.LegacyCoralFanBlockMapping;
 import net.minecraft.datafixer.mapping.LegacyDyeItemMapping;
+import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 import net.minecraft.datafixer.schema.Schema100;
 import net.minecraft.datafixer.schema.Schema102;
 import net.minecraft.datafixer.schema.Schema1022;
@@ -155,12 +157,11 @@ import net.minecraft.datafixer.schema.Schema704;
 import net.minecraft.datafixer.schema.Schema705;
 import net.minecraft.datafixer.schema.Schema808;
 import net.minecraft.datafixer.schema.Schema99;
-import net.minecraft.datafixer.schema.SchemaIdentifierNormalize;
 import net.minecraft.util.Util;
 
 public class Schemas {
 	private static final BiFunction<Integer, Schema, Schema> EMPTY = Schema::new;
-	private static final BiFunction<Integer, Schema, Schema> EMPTY_IDENTIFIER_NORMALIZE = SchemaIdentifierNormalize::new;
+	private static final BiFunction<Integer, Schema, Schema> EMPTY_IDENTIFIER_NORMALIZE = IdentifierNormalizingSchema::new;
 	private static final DataFixer fixer = create();
 
 	private static DataFixer create() {
@@ -213,7 +214,7 @@ public class Schemas {
 			ItemNameFix.create(
 				schema18,
 				"cooked_fished item renamer",
-				string -> Objects.equals(SchemaIdentifierNormalize.normalize(string), "minecraft:cooked_fished") ? "minecraft:cooked_fish" : string
+				string -> Objects.equals(IdentifierNormalizingSchema.normalize(string), "minecraft:cooked_fished") ? "minecraft:cooked_fish" : string
 			)
 		);
 		builder.addFixer(new EntityZombieVillagerTypeFix(schema18, false));
@@ -302,14 +303,14 @@ public class Schemas {
 			BlockNameFix.create(
 				schema52,
 				"Colorless shulker block fixer",
-				string -> Objects.equals(SchemaIdentifierNormalize.normalize(string), "minecraft:purple_shulker_box") ? "minecraft:shulker_box" : string
+				string -> Objects.equals(IdentifierNormalizingSchema.normalize(string), "minecraft:purple_shulker_box") ? "minecraft:shulker_box" : string
 			)
 		);
 		builder.addFixer(
 			ItemNameFix.create(
 				schema52,
 				"Colorless shulker item fixer",
-				string -> Objects.equals(SchemaIdentifierNormalize.normalize(string), "minecraft:purple_shulker_box") ? "minecraft:shulker_box" : string
+				string -> Objects.equals(IdentifierNormalizingSchema.normalize(string), "minecraft:purple_shulker_box") ? "minecraft:shulker_box" : string
 			)
 		);
 		Schema schema53 = builder.addSchema(1475, EMPTY_IDENTIFIER_NORMALIZE);
@@ -525,7 +526,7 @@ public class Schemas {
 			)
 		);
 		Schema schema99 = builder.addSchema(2211, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new StructureReferenceFixer(schema99, false));
+		builder.addFixer(new StructureReferenceFix(schema99, false));
 		Schema schema100 = builder.addSchema(2218, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new RemovePoiValidTagFix(schema100, false));
 	}

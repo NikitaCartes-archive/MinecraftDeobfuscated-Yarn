@@ -15,16 +15,16 @@ public class RegistryTagContainer<T> extends TagContainer<T> {
 		this.registry = registry;
 	}
 
-	public void toPacket(PacketByteBuf packetByteBuf) {
+	public void toPacket(PacketByteBuf buf) {
 		Map<Identifier, Tag<T>> map = this.getEntries();
-		packetByteBuf.writeVarInt(map.size());
+		buf.writeVarInt(map.size());
 
 		for (Entry<Identifier, Tag<T>> entry : map.entrySet()) {
-			packetByteBuf.writeIdentifier((Identifier)entry.getKey());
-			packetByteBuf.writeVarInt(((Tag)entry.getValue()).values().size());
+			buf.writeIdentifier((Identifier)entry.getKey());
+			buf.writeVarInt(((Tag)entry.getValue()).values().size());
 
 			for (T object : ((Tag)entry.getValue()).values()) {
-				packetByteBuf.writeVarInt(this.registry.getRawId(object));
+				buf.writeVarInt(this.registry.getRawId(object));
 			}
 		}
 	}

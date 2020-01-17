@@ -14,7 +14,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class CraftingTableScreen extends AbstractContainerScreen<CraftingTableContainer> implements RecipeBookProvider {
+public class CraftingTableScreen extends ContainerScreen<CraftingTableContainer> implements RecipeBookProvider {
 	private static final Identifier BG_TEX = new Identifier("textures/gui/container/crafting_table.png");
 	private static final Identifier RECIPE_BUTTON_TEX = new Identifier("textures/gui/recipe_button.png");
 	private final RecipeBookWidget recipeBookGui = new RecipeBookWidget();

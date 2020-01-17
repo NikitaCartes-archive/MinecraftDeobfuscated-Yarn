@@ -59,7 +59,7 @@ public class PotionUtil {
 
 			for (int i = 0; i < listTag.size(); i++) {
 				CompoundTag compoundTag = listTag.getCompound(i);
-				StatusEffectInstance statusEffectInstance = StatusEffectInstance.deserialize(compoundTag);
+				StatusEffectInstance statusEffectInstance = StatusEffectInstance.fromTag(compoundTag);
 				if (statusEffectInstance != null) {
 					list.add(statusEffectInstance);
 				}
@@ -139,7 +139,7 @@ public class PotionUtil {
 			ListTag listTag = compoundTag.getList("CustomPotionEffects", 9);
 
 			for (StatusEffectInstance statusEffectInstance : effects) {
-				listTag.add(statusEffectInstance.serialize(new CompoundTag()));
+				listTag.add(statusEffectInstance.toTag(new CompoundTag()));
 			}
 
 			compoundTag.put("CustomPotionEffects", listTag);

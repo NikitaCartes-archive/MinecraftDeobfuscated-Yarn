@@ -5,7 +5,7 @@ import com.mojang.datafixers.types.templates.TypeTemplate;
 import java.util.Map;
 import java.util.function.Supplier;
 
-public class Schema1451v5 extends SchemaIdentifierNormalize {
+public class Schema1451v5 extends IdentifierNormalizingSchema {
 	public Schema1451v5(int i, Schema schema) {
 		super(i, schema);
 	}

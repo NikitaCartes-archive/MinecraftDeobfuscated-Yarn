@@ -71,11 +71,11 @@ public abstract class AbstractEntityAttributeContainer {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void method_22324(AbstractEntityAttributeContainer abstractEntityAttributeContainer) {
+	public void copyFrom(AbstractEntityAttributeContainer attributeContainer) {
 		this.values().forEach(entityAttributeInstance -> {
-			EntityAttributeInstance entityAttributeInstance2 = abstractEntityAttributeContainer.get(entityAttributeInstance.getAttribute());
+			EntityAttributeInstance entityAttributeInstance2 = attributeContainer.get(entityAttributeInstance.getAttribute());
 			if (entityAttributeInstance2 != null) {
-				entityAttributeInstance.method_22323(entityAttributeInstance2);
+				entityAttributeInstance.copyFrom(entityAttributeInstance2);
 			}
 		});
 	}

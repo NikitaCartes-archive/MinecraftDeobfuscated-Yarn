@@ -5,7 +5,6 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -17,6 +16,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.FluidTags;
@@ -167,7 +167,7 @@ public class ItemEntity extends Entity {
 	private void tryMerge(ItemEntity other) {
 		ItemStack itemStack = this.getStack();
 		ItemStack itemStack2 = other.getStack();
-		if (Objects.equals(this.getOwner(), other.getOwner()) && method_24017(itemStack, itemStack2)) {
+		if (Objects.equals(this.getOwner(), other.getOwner()) && canMerge(itemStack, itemStack2)) {
 			if (itemStack2.getCount() < itemStack.getCount()) {
 				merge(this, itemStack, other, itemStack2);
 			} else {
@@ -176,31 +176,31 @@ public class ItemEntity extends Entity {
 		}
 	}
 
-	public static boolean method_24017(ItemStack itemStack, ItemStack itemStack2) {
-		if (itemStack2.getItem() != itemStack.getItem()) {
+	public static boolean canMerge(ItemStack stack1, ItemStack stack2) {
+		if (stack2.getItem() != stack1.getItem()) {
 			return false;
-		} else if (itemStack2.getCount() + itemStack.getCount() > itemStack2.getMaxCount()) {
+		} else if (stack2.getCount() + stack1.getCount() > stack2.getMaxCount()) {
 			return false;
 		} else {
-			return itemStack2.hasTag() ^ itemStack.hasTag() ? false : !itemStack2.hasTag() || itemStack2.getTag().equals(itemStack.getTag());
+			return stack2.hasTag() ^ stack1.hasTag() ? false : !stack2.hasTag() || stack2.getTag().equals(stack1.getTag());
 		}
 	}
 
-	public static ItemStack method_24018(ItemStack itemStack, ItemStack itemStack2, int i) {
-		int j = Math.min(Math.min(itemStack.getMaxCount(), i) - itemStack.getCount(), itemStack2.getCount());
-		ItemStack itemStack3 = itemStack.copy();
-		itemStack3.increment(j);
-		itemStack2.decrement(j);
-		return itemStack3;
+	public static ItemStack merge(ItemStack stack1, ItemStack stack2, int maxCount) {
+		int i = Math.min(Math.min(stack1.getMaxCount(), maxCount) - stack1.getCount(), stack2.getCount());
+		ItemStack itemStack = stack1.copy();
+		itemStack.increment(i);
+		stack2.decrement(i);
+		return itemStack;
 	}
 
-	private static void method_24016(ItemEntity itemEntity, ItemStack itemStack, ItemStack itemStack2) {
-		ItemStack itemStack3 = method_24018(itemStack, itemStack2, 64);
-		itemEntity.setStack(itemStack3);
+	private static void merge(ItemEntity targetEntity, ItemStack stack1, ItemStack stack2) {
+		ItemStack itemStack = merge(stack1, stack2, 64);
+		targetEntity.setStack(itemStack);
 	}
 
 	private static void merge(ItemEntity targetEntity, ItemStack targetStack, ItemEntity sourceEntity, ItemStack sourceStack) {
-		method_24016(targetEntity, targetStack, sourceStack);
+		merge(targetEntity, targetStack, sourceStack);
 		targetEntity.pickupDelay = Math.max(targetEntity.pickupDelay, sourceEntity.pickupDelay);
 		targetEntity.age = Math.min(targetEntity.age, sourceEntity.age);
 		if (sourceStack.isEmpty()) {

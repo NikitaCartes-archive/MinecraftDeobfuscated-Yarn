@@ -17,11 +17,11 @@ public class PaintingManager extends SpriteAtlasHolder {
 
 	@Override
 	protected Stream<Identifier> getSprites() {
-		return Stream.concat(Registry.MOTIVE.getIds().stream(), Stream.of(PAINTING_BACK_ID));
+		return Stream.concat(Registry.PAINTING_MOTIVE.getIds().stream(), Stream.of(PAINTING_BACK_ID));
 	}
 
 	public Sprite getPaintingSprite(PaintingMotive motive) {
-		return this.getSprite(Registry.MOTIVE.getId(motive));
+		return this.getSprite(Registry.PAINTING_MOTIVE.getId(motive));
 	}
 
 	public Sprite getBackSprite() {

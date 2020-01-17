@@ -39,17 +39,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.network.DebugRendererInfoManager;
-import net.minecraft.client.network.packet.BlockActionS2CPacket;
-import net.minecraft.client.network.packet.BlockBreakingProgressS2CPacket;
-import net.minecraft.client.network.packet.EntitySpawnGlobalS2CPacket;
-import net.minecraft.client.network.packet.EntityStatusS2CPacket;
-import net.minecraft.client.network.packet.ExplosionS2CPacket;
-import net.minecraft.client.network.packet.GameStateChangeS2CPacket;
-import net.minecraft.client.network.packet.ParticleS2CPacket;
-import net.minecraft.client.network.packet.PlaySoundFromEntityS2CPacket;
-import net.minecraft.client.network.packet.PlaySoundS2CPacket;
-import net.minecraft.client.network.packet.WorldEventS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityInteraction;
@@ -74,11 +63,22 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.map.MapState;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.BlockActionS2CPacket;
+import net.minecraft.network.packet.s2c.play.BlockBreakingProgressS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntitySpawnGlobalS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
+import net.minecraft.network.packet.s2c.play.ExplosionS2CPacket;
+import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
+import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlaySoundFromEntityS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
+import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.WorldGenerationProgressListener;
+import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -449,11 +449,11 @@ public class ServerWorld extends World {
 			BlockPos blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, this.getRandomPosInChunk(i, 0, j, 15));
 			BlockPos blockPos2 = blockPos.down();
 			Biome biome = this.getBiome(blockPos);
-			if (biome.canSetSnow(this, blockPos2)) {
+			if (biome.canSetIce(this, blockPos2)) {
 				this.setBlockState(blockPos2, Blocks.ICE.getDefaultState());
 			}
 
-			if (bl && biome.canSetIce(this, blockPos)) {
+			if (bl && biome.canSetSnow(this, blockPos)) {
 				this.setBlockState(blockPos, Blocks.SNOW.getDefaultState());
 			}
 
@@ -590,7 +590,7 @@ public class ServerWorld extends World {
 				entity.age++;
 				Profiler profiler = this.getProfiler();
 				profiler.push((Supplier<String>)(() -> Registry.ENTITY_TYPE.getId(entity.getType()).toString()));
-				profiler.method_24270("tickNonPassenger");
+				profiler.visit("tickNonPassenger");
 				entity.tick();
 				profiler.pop();
 			}
@@ -615,7 +615,7 @@ public class ServerWorld extends World {
 				entity2.age++;
 				Profiler profiler = this.getProfiler();
 				profiler.push((Supplier<String>)(() -> Registry.ENTITY_TYPE.getId(entity2.getType()).toString()));
-				profiler.method_24270("tickPassenger");
+				profiler.visit("tickPassenger");
 				entity2.tickRiding();
 				profiler.pop();
 			}
@@ -1320,11 +1320,11 @@ public class ServerWorld extends World {
 			BlockPos blockPos = pos.toImmutable();
 			optional.ifPresent(pointOfInterestType -> this.getServer().execute(() -> {
 					this.getPointOfInterestStorage().remove(blockPos);
-					DebugRendererInfoManager.method_19777(this, blockPos);
+					DebugInfoSender.sendPoiRemoval(this, blockPos);
 				}));
 			optional2.ifPresent(pointOfInterestType -> this.getServer().execute(() -> {
 					this.getPointOfInterestStorage().add(blockPos, pointOfInterestType);
-					DebugRendererInfoManager.method_19776(this, blockPos);
+					DebugInfoSender.sendPoiAddition(this, blockPos);
 				}));
 		}
 	}

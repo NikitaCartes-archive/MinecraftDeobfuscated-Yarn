@@ -22,8 +22,8 @@ public abstract class EntityRenderer<T extends Entity> {
 	protected float shadowSize;
 	protected float shadowDarkness = 1.0F;
 
-	protected EntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		this.renderManager = entityRenderDispatcher;
+	protected EntityRenderer(EntityRenderDispatcher dispatcher) {
+		this.renderManager = dispatcher;
 	}
 
 	public final int getLight(T entity, float tickDelta) {
@@ -61,6 +61,11 @@ public abstract class EntityRenderer<T extends Entity> {
 		}
 	}
 
+	/**
+	 * Determines whether the passed entity should render with a nameplate above its head.
+	 * 
+	 * <p>Checks for a custom nametag on living entities, and for teams/team visibilities for players.</p>
+	 */
 	protected boolean hasLabel(T entity) {
 		return entity.shouldRenderName() && entity.hasCustomName();
 	}
@@ -71,17 +76,17 @@ public abstract class EntityRenderer<T extends Entity> {
 		return this.renderManager.getTextRenderer();
 	}
 
-	protected void renderLabelIfPresent(T entity, String string, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	protected void renderLabelIfPresent(T entity, String string, MatrixStack matrices, VertexConsumerProvider vertexConsumerProvider, int i) {
 		double d = this.renderManager.getSquaredDistanceToCamera(entity);
 		if (!(d > 4096.0)) {
 			boolean bl = !entity.isSneaky();
 			float f = entity.getHeight() + 0.5F;
 			int j = "deadmau5".equals(string) ? -10 : 0;
-			matrixStack.push();
-			matrixStack.translate(0.0, (double)f, 0.0);
-			matrixStack.multiply(this.renderManager.getRotation());
-			matrixStack.scale(-0.025F, -0.025F, 0.025F);
-			Matrix4f matrix4f = matrixStack.peek().getModel();
+			matrices.push();
+			matrices.translate(0.0, (double)f, 0.0);
+			matrices.multiply(this.renderManager.getRotation());
+			matrices.scale(-0.025F, -0.025F, 0.025F);
+			Matrix4f matrix4f = matrices.peek().getModel();
 			float g = MinecraftClient.getInstance().options.getTextBackgroundOpacity(0.25F);
 			int k = (int)(g * 255.0F) << 24;
 			TextRenderer textRenderer = this.getFontRenderer();
@@ -91,7 +96,7 @@ public abstract class EntityRenderer<T extends Entity> {
 				textRenderer.draw(string, h, (float)j, -1, false, matrix4f, vertexConsumerProvider, false, 0, i);
 			}
 
-			matrixStack.pop();
+			matrices.pop();
 		}
 	}
 

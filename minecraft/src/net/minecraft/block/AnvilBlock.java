@@ -1,10 +1,10 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
-import net.minecraft.client.network.ClientDummyContainerProvider;
 import net.minecraft.container.AnvilContainer;
 import net.minecraft.container.BlockContext;
-import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.container.NameableContainerFactory;
+import net.minecraft.container.SimpleNamedContainerFactory;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -52,7 +52,7 @@ public class AnvilBlock extends FallingBlock {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
-			player.openContainer(state.createContainerProvider(world, pos));
+			player.openContainer(state.createContainerFactory(world, pos));
 			player.incrementStat(Stats.INTERACT_WITH_ANVIL);
 			return ActionResult.SUCCESS;
 		}
@@ -60,14 +60,14 @@ public class AnvilBlock extends FallingBlock {
 
 	@Nullable
 	@Override
-	public NameableContainerProvider createContainerProvider(BlockState state, World world, BlockPos pos) {
-		return new ClientDummyContainerProvider(
+	public NameableContainerFactory createContainerFactory(BlockState state, World world, BlockPos pos) {
+		return new SimpleNamedContainerFactory(
 			(i, playerInventory, playerEntity) -> new AnvilContainer(i, playerInventory, BlockContext.create(world, pos)), CONTAINER_NAME
 		);
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
 		Direction direction = state.get(FACING);
 		return direction.getAxis() == Direction.Axis.X ? X_AXIS_SHAPE : Z_AXIS_SHAPE;
 	}

@@ -46,7 +46,7 @@ public class DecorationItem extends Item {
 				EntityType.loadFromEntityTag(world, playerEntity, abstractDecorationEntity, compoundTag);
 			}
 
-			if (abstractDecorationEntity.method_6888()) {
+			if (abstractDecorationEntity.canStayAttached()) {
 				if (!world.isClient) {
 					abstractDecorationEntity.onPlace();
 					world.spawnEntity(abstractDecorationEntity);

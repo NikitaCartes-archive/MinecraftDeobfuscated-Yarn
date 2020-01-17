@@ -6,7 +6,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.packet.PaintingSpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
@@ -14,6 +13,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.PaintingSpawnS2CPacket;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -34,10 +34,10 @@ public class PaintingEntity extends AbstractDecorationEntity {
 		List<PaintingMotive> list = Lists.<PaintingMotive>newArrayList();
 		int i = 0;
 
-		for (PaintingMotive paintingMotive : Registry.MOTIVE) {
+		for (PaintingMotive paintingMotive : Registry.PAINTING_MOTIVE) {
 			this.motive = paintingMotive;
 			this.setFacing(direction);
-			if (this.method_6888()) {
+			if (this.canStayAttached()) {
 				list.add(paintingMotive);
 				int j = paintingMotive.getWidth() * paintingMotive.getHeight();
 				if (j > i) {
@@ -71,13 +71,13 @@ public class PaintingEntity extends AbstractDecorationEntity {
 
 	@Override
 	public void writeCustomDataToTag(CompoundTag tag) {
-		tag.putString("Motive", Registry.MOTIVE.getId(this.motive).toString());
+		tag.putString("Motive", Registry.PAINTING_MOTIVE.getId(this.motive).toString());
 		super.writeCustomDataToTag(tag);
 	}
 
 	@Override
 	public void readCustomDataFromTag(CompoundTag tag) {
-		this.motive = Registry.MOTIVE.get(Identifier.tryParse(tag.getString("Motive")));
+		this.motive = Registry.PAINTING_MOTIVE.get(Identifier.tryParse(tag.getString("Motive")));
 		super.readCustomDataFromTag(tag);
 	}
 
@@ -119,7 +119,7 @@ public class PaintingEntity extends AbstractDecorationEntity {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
-		BlockPos blockPos = this.blockPos.add(x - this.getX(), y - this.getY(), z - this.getZ());
+		BlockPos blockPos = this.attachmentPos.add(x - this.getX(), y - this.getY(), z - this.getZ());
 		this.updatePosition((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 	}
 

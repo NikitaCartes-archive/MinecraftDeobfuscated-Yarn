@@ -43,8 +43,8 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	private int cookTimeTotal;
 	protected final PropertyDelegate propertyDelegate = new PropertyDelegate() {
 		@Override
-		public int get(int key) {
-			switch (key) {
+		public int get(int index) {
+			switch (index) {
 				case 0:
 					return AbstractFurnaceBlockEntity.this.burnTime;
 				case 1:
@@ -59,8 +59,8 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		}
 
 		@Override
-		public void set(int key, int value) {
-			switch (key) {
+		public void set(int index, int value) {
+			switch (index) {
 				case 0:
 					AbstractFurnaceBlockEntity.this.burnTime = value;
 					break;

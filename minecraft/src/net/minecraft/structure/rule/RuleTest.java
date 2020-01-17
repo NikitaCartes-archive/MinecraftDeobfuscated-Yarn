@@ -1,17 +1,25 @@
 package net.minecraft.structure.rule;
 
-import net.minecraft.util.DynamicDeserializer;
+import com.mojang.datafixers.Dynamic;
+import com.mojang.datafixers.types.DynamicOps;
+import java.util.Random;
+import net.minecraft.block.BlockState;
 import net.minecraft.util.registry.Registry;
 
-public interface RuleTest extends DynamicDeserializer<AbstractRuleTest> {
-	RuleTest ALWAYS_TRUE = register("always_true", dynamic -> AlwaysTrueRuleTest.INSTANCE);
-	RuleTest BLOCK_MATCH = register("block_match", BlockMatchRuleTest::new);
-	RuleTest BLOCKSTATE_MATCH = register("blockstate_match", BlockStateMatchRuleTest::new);
-	RuleTest TAG_MATCH = register("tag_match", TagMatchRuleTest::new);
-	RuleTest RANDOM_BLOCK_MATCH = register("random_block_match", RandomBlockMatchRuleTest::new);
-	RuleTest RANDOM_BLOCKSTATE_MATCH = register("random_blockstate_match", RandomBlockStateMatchRuleTest::new);
+/**
+ * Rule tests are used in structure generation to check if a block state matches some condition.
+ */
+public abstract class RuleTest {
+	public abstract boolean test(BlockState state, Random random);
 
-	static RuleTest register(String id, RuleTest test) {
-		return Registry.register(Registry.RULE_TEST, id, test);
+	public <T> Dynamic<T> serializeWithId(DynamicOps<T> ops) {
+		return new Dynamic<>(
+			ops,
+			ops.mergeInto(this.serialize(ops).getValue(), ops.createString("predicate_type"), ops.createString(Registry.RULE_TEST.getId(this.getType()).toString()))
+		);
 	}
+
+	protected abstract RuleTestType getType();
+
+	protected abstract <T> Dynamic<T> serialize(DynamicOps<T> ops);
 }

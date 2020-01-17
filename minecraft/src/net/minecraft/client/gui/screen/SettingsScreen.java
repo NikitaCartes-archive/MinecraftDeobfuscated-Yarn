@@ -15,8 +15,8 @@ import net.minecraft.client.gui.widget.OptionButtonWidget;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.Option;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.server.network.packet.UpdateDifficultyC2SPacket;
-import net.minecraft.server.network.packet.UpdateDifficultyLockC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateDifficultyC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateDifficultyLockC2SPacket;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.world.Difficulty;
 

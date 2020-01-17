@@ -7,19 +7,19 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class NetworkThreadUtils {
-	private static final Logger field_20318 = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 
-	public static <T extends PacketListener> void forceMainThread(Packet<T> packet, T packetListener, ServerWorld serverWorld) throws OffThreadException {
-		forceMainThread(packet, packetListener, serverWorld.getServer());
+	public static <T extends PacketListener> void forceMainThread(Packet<T> packet, T listener, ServerWorld world) throws OffThreadException {
+		forceMainThread(packet, listener, world.getServer());
 	}
 
-	public static <T extends PacketListener> void forceMainThread(Packet<T> packet, T packetListener, ThreadExecutor<?> thread) throws OffThreadException {
-		if (!thread.isOnThread()) {
-			thread.execute(() -> {
-				if (packetListener.getConnection().isOpen()) {
-					packet.apply(packetListener);
+	public static <T extends PacketListener> void forceMainThread(Packet<T> packet, T listener, ThreadExecutor<?> engine) throws OffThreadException {
+		if (!engine.isOnThread()) {
+			engine.execute(() -> {
+				if (listener.getConnection().isOpen()) {
+					packet.apply(listener);
 				} else {
-					field_20318.debug("Ignoring packet due to disconnection: " + packet);
+					LOGGER.debug("Ignoring packet due to disconnection: " + packet);
 				}
 			});
 			throw OffThreadException.INSTANCE;

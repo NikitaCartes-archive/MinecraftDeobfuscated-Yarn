@@ -148,6 +148,9 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
+import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
+import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.resource.FileResourcePackProvider;
 import net.minecraft.resource.ReloadableResourceManager;
 import net.minecraft.resource.ReloadableResourceManagerImpl;
@@ -160,9 +163,6 @@ import net.minecraft.resource.metadata.PackResourceMetadata;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.QueueingWorldGenerationProgressListener;
 import net.minecraft.server.integrated.IntegratedServer;
-import net.minecraft.server.network.packet.HandshakeC2SPacket;
-import net.minecraft.server.network.packet.LoginHelloC2SPacket;
-import net.minecraft.server.network.packet.PlayerActionC2SPacket;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.text.KeybindText;
 import net.minecraft.text.LiteralText;
@@ -281,7 +281,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	@Nullable
 	private ServerInfo currentServerEntry;
 	@Nullable
-	private ClientConnection clientConnection;
+	private ClientConnection connection;
 	private boolean isIntegratedServerRunning;
 	@Nullable
 	public Entity cameraEntity;
@@ -1108,7 +1108,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			DecimalFormat decimalFormat = new DecimalFormat("##0.00");
 			decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
 			RenderSystem.enableTexture();
-			String string = ProfileResult.method_21721(profilerTiming.name);
+			String string = ProfileResult.getHumanReadableName(profilerTiming.name);
 			String string2 = "";
 			if (!"unspecified".equals(string)) {
 				string2 = string2 + "[0] ";
@@ -1399,9 +1399,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			if (!this.paused) {
 				this.particleManager.tick();
 			}
-		} else if (this.clientConnection != null) {
+		} else if (this.connection != null) {
 			this.profiler.swap("pendingConnection");
-			this.clientConnection.tick();
+			this.connection.tick();
 		}
 
 		this.profiler.swap("keyboard");
@@ -1582,7 +1582,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}));
 		clientConnection.send(new HandshakeC2SPacket(socketAddress.toString(), 0, NetworkState.LOGIN));
 		clientConnection.send(new LoginHelloC2SPacket(this.getSession().getProfile()));
-		this.clientConnection = clientConnection;
+		this.connection = clientConnection;
 	}
 
 	public void joinWorld(ClientWorld clientWorld) {
@@ -1642,7 +1642,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.musicTracker.stop();
 		this.soundManager.stopAll();
 		this.cameraEntity = null;
-		this.clientConnection = null;
+		this.connection = null;
 		this.openScreen(screen);
 		this.render(false);
 	}

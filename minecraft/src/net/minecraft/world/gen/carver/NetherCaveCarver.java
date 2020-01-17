@@ -15,8 +15,8 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ProbabilityConfig;
 
 public class NetherCaveCarver extends CaveCarver {
-	public NetherCaveCarver(Function<Dynamic<?>, ? extends ProbabilityConfig> function) {
-		super(function, 128);
+	public NetherCaveCarver(Function<Dynamic<?>, ? extends ProbabilityConfig> configDeserializer) {
+		super(configDeserializer, 128);
 		this.alwaysCarvableBlocks = ImmutableSet.of(
 			Blocks.STONE, Blocks.GRANITE, Blocks.DIORITE, Blocks.ANDESITE, Blocks.DIRT, Blocks.COARSE_DIRT, Blocks.PODZOL, Blocks.GRASS_BLOCK, Blocks.NETHERRACK
 		);
@@ -46,31 +46,31 @@ public class NetherCaveCarver extends CaveCarver {
 	@Override
 	protected boolean carveAtPoint(
 		Chunk chunk,
-		Function<BlockPos, Biome> function,
-		BitSet bitSet,
+		Function<BlockPos, Biome> posToBiome,
+		BitSet carvingMask,
 		Random random,
 		BlockPos.Mutable mutable,
 		BlockPos.Mutable mutable2,
 		BlockPos.Mutable mutable3,
+		int seaLevel,
 		int mainChunkX,
 		int mainChunkZ,
-		int i,
-		int j,
-		int k,
-		int l,
-		int m,
-		int n,
-		AtomicBoolean atomicBoolean
+		int x,
+		int z,
+		int relativeX,
+		int y,
+		int relativeZ,
+		AtomicBoolean foundSurface
 	) {
-		int o = l | n << 4 | m << 8;
-		if (bitSet.get(o)) {
+		int i = relativeX | relativeZ << 4 | y << 8;
+		if (carvingMask.get(i)) {
 			return false;
 		} else {
-			bitSet.set(o);
-			mutable.set(j, m, k);
+			carvingMask.set(i);
+			mutable.set(x, y, z);
 			if (this.canAlwaysCarveBlock(chunk.getBlockState(mutable))) {
 				BlockState blockState;
-				if (m <= 31) {
+				if (y <= 31) {
 					blockState = LAVA.getBlockState();
 				} else {
 					blockState = CAVE_AIR;

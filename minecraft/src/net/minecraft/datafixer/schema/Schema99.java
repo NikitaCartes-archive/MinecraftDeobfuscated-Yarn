@@ -338,7 +338,7 @@ public class Schema99 extends Schema {
 				"tag",
 				dynamic2 -> dynamic2.update("BlockEntityTag", dynamic2x -> {
 							String stringxx = dynamic.get("id").asString("");
-							String string2 = (String)map.get(SchemaIdentifierNormalize.normalize(stringxx));
+							String string2 = (String)map.get(IdentifierNormalizingSchema.normalize(stringxx));
 							if (string2 == null) {
 								field_5749.warn("Unable to resolve BlockEntity for ItemStack: {}", stringxx);
 								return dynamic2x;
@@ -350,7 +350,7 @@ public class Schema99 extends Schema {
 							"EntityTag",
 							dynamic2x -> {
 								String string2 = dynamic.get("id").asString("");
-								return Objects.equals(SchemaIdentifierNormalize.normalize(string2), "minecraft:armor_stand")
+								return Objects.equals(IdentifierNormalizingSchema.normalize(string2), "minecraft:armor_stand")
 									? dynamic2x.set("id", dynamic.createString(string))
 									: dynamic2x;
 							}

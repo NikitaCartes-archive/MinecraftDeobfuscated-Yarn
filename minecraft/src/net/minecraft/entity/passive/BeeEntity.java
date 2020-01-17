@@ -23,7 +23,6 @@ import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.enums.DoubleBlockHalf;
-import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
@@ -63,6 +62,7 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -397,7 +397,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 	@Override
 	protected void sendAiDebugData() {
 		super.sendAiDebugData();
-		DebugRendererInfoManager.sendBeeDebugData(this);
+		DebugInfoSender.sendBeeDebugData(this);
 	}
 
 	private int getCropsGrownSincePollination() {

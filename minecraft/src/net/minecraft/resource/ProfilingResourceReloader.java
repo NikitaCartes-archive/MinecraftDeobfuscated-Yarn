@@ -43,7 +43,7 @@ public class ProfilingResourceReloader extends ResourceReloader<ProfilingResourc
 				);
 				return completableFuturex.thenApplyAsync(
 					void_ -> new ProfilingResourceReloader.Summary(
-							resourceReloadListener.getName(), profilerSystem.getResults(), profilerSystem2.getResults(), atomicLong, atomicLong2
+							resourceReloadListener.getName(), profilerSystem.getResult(), profilerSystem2.getResult(), atomicLong, atomicLong2
 						),
 					applyExecutor
 				);

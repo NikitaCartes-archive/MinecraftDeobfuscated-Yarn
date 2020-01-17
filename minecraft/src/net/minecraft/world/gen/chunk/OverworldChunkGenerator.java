@@ -160,11 +160,11 @@ public class OverworldChunkGenerator extends SurfaceChunkGenerator<OverworldChun
 	}
 
 	@Override
-	public void spawnEntities(ServerWorld serverWorld, boolean spawnMonsters, boolean spawnAnimals) {
-		this.phantomSpawner.spawn(serverWorld, spawnMonsters, spawnAnimals);
-		this.pillagerSpawner.spawn(serverWorld, spawnMonsters, spawnAnimals);
-		this.catSpawner.spawn(serverWorld, spawnMonsters, spawnAnimals);
-		this.zombieSiegeManager.tick(serverWorld, spawnMonsters, spawnAnimals);
+	public void spawnEntities(ServerWorld world, boolean spawnMonsters, boolean spawnAnimals) {
+		this.phantomSpawner.spawn(world, spawnMonsters, spawnAnimals);
+		this.pillagerSpawner.spawn(world, spawnMonsters, spawnAnimals);
+		this.catSpawner.spawn(world, spawnMonsters, spawnAnimals);
+		this.zombieSiegeManager.spawn(world, spawnMonsters, spawnAnimals);
 	}
 
 	@Override

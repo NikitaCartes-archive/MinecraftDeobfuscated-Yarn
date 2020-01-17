@@ -71,15 +71,15 @@ public class BeaconContainer extends Container {
 	}
 
 	@Override
-	public void setProperties(int pos, int propertyId) {
-		super.setProperties(pos, propertyId);
+	public void setProperty(int id, int value) {
+		super.setProperty(id, value);
 		this.sendContentUpdates();
 	}
 
 	@Override
 	public ItemStack transferSlot(PlayerEntity player, int invSlot) {
 		ItemStack itemStack = ItemStack.EMPTY;
-		Slot slot = (Slot)this.slotList.get(invSlot);
+		Slot slot = (Slot)this.slots.get(invSlot);
 		if (slot != null && slot.hasStack()) {
 			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();

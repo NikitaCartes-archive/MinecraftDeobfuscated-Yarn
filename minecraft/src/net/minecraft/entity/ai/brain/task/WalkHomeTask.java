@@ -6,13 +6,13 @@ import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.poi.PointOfInterestStorage;
@@ -69,7 +69,7 @@ public class WalkHomeTask extends Task<LivingEntity> {
 			Optional<PointOfInterestType> optional = pointOfInterestStorage.getType(blockPos);
 			if (optional.isPresent()) {
 				entity.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(blockPos, this.speed, 1));
-				DebugRendererInfoManager.sendPointOfInterest(world, blockPos);
+				DebugInfoSender.sendPointOfInterest(world, blockPos);
 			}
 		} else if (this.tries < 5) {
 			this.positionToExpiry.long2LongEntrySet().removeIf(entry -> entry.getLongValue() < this.expiryTimeLimit);

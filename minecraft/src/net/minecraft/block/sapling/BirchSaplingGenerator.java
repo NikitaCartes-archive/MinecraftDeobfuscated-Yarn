@@ -11,6 +11,6 @@ public class BirchSaplingGenerator extends SaplingGenerator {
 	@Nullable
 	@Override
 	protected ConfiguredFeature<BranchedTreeFeatureConfig, ?> createTreeFeature(Random random, boolean bl) {
-		return Feature.NORMAL_TREE.configure(bl ? DefaultBiomeFeatures.field_21836 : DefaultBiomeFeatures.BIRCH_TREE_CONFIG);
+		return Feature.NORMAL_TREE.configure(bl ? DefaultBiomeFeatures.BIRCH_TREE_WITH_MORE_BEEHIVES_CONFIG : DefaultBiomeFeatures.BIRCH_TREE_CONFIG);
 	}
 }

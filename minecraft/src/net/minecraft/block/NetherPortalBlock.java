@@ -39,7 +39,7 @@ public class NetherPortalBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
 		switch ((Direction.Axis)state.get(AXIS)) {
 			case Z:
 				return Z_SHAPE;

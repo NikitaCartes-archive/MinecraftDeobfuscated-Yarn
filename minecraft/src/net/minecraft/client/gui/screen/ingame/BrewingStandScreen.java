@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class BrewingStandScreen extends AbstractContainerScreen<BrewingStandContainer> {
+public class BrewingStandScreen extends ContainerScreen<BrewingStandContainer> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/brewing_stand.png");
 	private static final int[] BUBBLE_PROGRESS = new int[]{29, 24, 20, 16, 11, 6, 0};
 

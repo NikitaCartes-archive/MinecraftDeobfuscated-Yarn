@@ -17,14 +17,14 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.server.network.packet.GuiCloseC2SPacket;
-import net.minecraft.server.network.packet.UpdateBeaconC2SPacket;
+import net.minecraft.network.packet.c2s.play.GuiCloseC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateBeaconC2SPacket;
 import net.minecraft.text.Text;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class BeaconScreen extends AbstractContainerScreen<BeaconContainer> {
+public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 	private static final Identifier BG_TEX = new Identifier("textures/gui/container/beacon.png");
 	private BeaconScreen.DoneButtonWidget doneButton;
 	private boolean consumeGem;

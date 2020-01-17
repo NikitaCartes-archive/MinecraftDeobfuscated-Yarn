@@ -1,8 +1,8 @@
 package net.minecraft.server.command;
 
 import com.mojang.brigadier.CommandDispatcher;
-import net.minecraft.client.network.packet.PlayerSpawnPositionS2CPacket;
 import net.minecraft.command.arguments.BlockPosArgumentType;
+import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 

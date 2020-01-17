@@ -66,7 +66,7 @@ public class DebugCommand {
 		} else {
 			ProfileResult profileResult = disableableProfiler.getController().disable();
 			File file = new File(minecraftServer.getFile("debug"), "profile-results-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + ".txt");
-			profileResult.saveToFile(file);
+			profileResult.save(file);
 			float f = (float)profileResult.getTimeSpan() / 1.0E9F;
 			float g = (float)profileResult.getTickSpan() / f;
 			source.sendFeedback(

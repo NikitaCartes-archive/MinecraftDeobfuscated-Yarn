@@ -5,11 +5,11 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.GlobalPos;
@@ -43,7 +43,7 @@ public class ForgetCompletedPointOfInterestTask extends Task<LivingEntity> {
 		} else if (this.isBedOccupiedByOthers(serverWorld, blockPos, entity)) {
 			brain.forget(this.memoryModule);
 			world.getPointOfInterestStorage().releaseTicket(blockPos);
-			DebugRendererInfoManager.sendPointOfInterest(world, blockPos);
+			DebugInfoSender.sendPointOfInterest(world, blockPos);
 		}
 	}
 

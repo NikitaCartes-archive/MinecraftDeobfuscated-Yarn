@@ -53,7 +53,7 @@ public class HopperBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
 		switch ((Direction)state.get(FACING)) {
 			case DOWN:
 				return DOWN_SHAPE;

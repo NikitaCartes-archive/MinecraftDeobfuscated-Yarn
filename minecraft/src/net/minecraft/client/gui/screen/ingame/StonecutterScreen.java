@@ -15,7 +15,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class StonecutterScreen extends AbstractContainerScreen<StonecutterContainer> {
+public class StonecutterScreen extends ContainerScreen<StonecutterContainer> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/stonecutter.png");
 	private float scrollAmount;
 	private boolean mouseClicked;

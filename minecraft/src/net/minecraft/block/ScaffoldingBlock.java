@@ -42,8 +42,8 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
-		if (!ePos.isHolding(state.getBlock().asItem())) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+		if (!context.isHolding(state.getBlock().asItem())) {
 			return state.get(BOTTOM) ? BOTTOM_OUTLINE_SHAPE : NORMAL_OUTLINE_SHAPE;
 		} else {
 			return VoxelShapes.fullCube();
@@ -114,11 +114,11 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
-		if (ePos.isAbove(VoxelShapes.fullCube(), pos, true) && !ePos.isDescending()) {
+	public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+		if (context.isAbove(VoxelShapes.fullCube(), pos, true) && !context.isDescending()) {
 			return NORMAL_OUTLINE_SHAPE;
 		} else {
-			return state.get(DISTANCE) != 0 && state.get(BOTTOM) && ePos.isAbove(OUTLINE_SHAPE, pos, true) ? COLLISION_SHAPE : VoxelShapes.empty();
+			return state.get(DISTANCE) != 0 && state.get(BOTTOM) && context.isAbove(OUTLINE_SHAPE, pos, true) ? COLLISION_SHAPE : VoxelShapes.empty();
 		}
 	}
 

@@ -13,14 +13,14 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.gen.feature.AbstractTreeFeature;
-import net.minecraft.world.gen.stateprovider.StateProvider;
+import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 
 public class AlterGroundTreeDecorator extends TreeDecorator {
-	private final StateProvider field_21316;
+	private final BlockStateProvider field_21316;
 
-	public AlterGroundTreeDecorator(StateProvider stateProvider) {
+	public AlterGroundTreeDecorator(BlockStateProvider blockStateProvider) {
 		super(TreeDecoratorType.ALTER_GROUND);
-		this.field_21316 = stateProvider;
+		this.field_21316 = blockStateProvider;
 	}
 
 	public <T> AlterGroundTreeDecorator(Dynamic<T> dynamic) {
@@ -32,9 +32,9 @@ public class AlterGroundTreeDecorator extends TreeDecorator {
 	}
 
 	@Override
-	public void generate(IWorld world, Random random, List<BlockPos> list, List<BlockPos> list2, Set<BlockPos> set, BlockBox box) {
-		int i = ((BlockPos)list.get(0)).getY();
-		list.stream().filter(blockPos -> blockPos.getY() == i).forEach(blockPos -> {
+	public void generate(IWorld world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box) {
+		int i = ((BlockPos)logPositions.get(0)).getY();
+		logPositions.stream().filter(blockPos -> blockPos.getY() == i).forEach(blockPos -> {
 			this.method_23462(world, random, blockPos.west().north());
 			this.method_23462(world, random, blockPos.east(2).north());
 			this.method_23462(world, random, blockPos.west().south(2));
@@ -82,7 +82,7 @@ public class AlterGroundTreeDecorator extends TreeDecorator {
 				ops.createMap(
 					ImmutableMap.of(
 						ops.createString("type"),
-						ops.createString(Registry.TREE_DECORATOR_TYPE.getId(this.field_21319).toString()),
+						ops.createString(Registry.TREE_DECORATOR_TYPE.getId(this.type).toString()),
 						ops.createString("provider"),
 						this.field_21316.serialize(ops)
 					)

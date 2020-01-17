@@ -29,7 +29,7 @@ public class NetherWartBlock extends PlantBlock {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
 		return AGE_TO_SHAPE[state.get(AGE)];
 	}
 

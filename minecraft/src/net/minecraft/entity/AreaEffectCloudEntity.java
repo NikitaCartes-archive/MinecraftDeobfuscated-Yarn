@@ -11,7 +11,6 @@ import java.util.UUID;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.command.arguments.ParticleArgumentType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -20,6 +19,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.potion.Potion;
@@ -373,7 +373,7 @@ public class AreaEffectCloudEntity extends Entity {
 			this.effects.clear();
 
 			for (int i = 0; i < listTag.size(); i++) {
-				StatusEffectInstance statusEffectInstance = StatusEffectInstance.deserialize(listTag.getCompound(i));
+				StatusEffectInstance statusEffectInstance = StatusEffectInstance.fromTag(listTag.getCompound(i));
 				if (statusEffectInstance != null) {
 					this.addEffect(statusEffectInstance);
 				}
@@ -408,7 +408,7 @@ public class AreaEffectCloudEntity extends Entity {
 			ListTag listTag = new ListTag();
 
 			for (StatusEffectInstance statusEffectInstance : this.effects) {
-				listTag.add(statusEffectInstance.serialize(new CompoundTag()));
+				listTag.add(statusEffectInstance.toTag(new CompoundTag()));
 			}
 
 			tag.put("Effects", listTag);

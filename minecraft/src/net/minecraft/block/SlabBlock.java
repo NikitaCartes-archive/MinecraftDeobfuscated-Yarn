@@ -42,7 +42,7 @@ public class SlabBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
 		SlabType slabType = state.get(TYPE);
 		switch (slabType) {
 			case DOUBLE:

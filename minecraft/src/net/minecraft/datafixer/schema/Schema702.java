@@ -11,7 +11,7 @@ public class Schema702 extends Schema {
 	}
 
 	protected static void method_5292(Schema schema, Map<String, Supplier<TypeTemplate>> map, String string) {
-		schema.register(map, string, (Supplier<TypeTemplate>)(() -> Schema100.method_5196(schema)));
+		schema.register(map, string, (Supplier<TypeTemplate>)(() -> Schema100.targetItems(schema)));
 	}
 
 	@Override

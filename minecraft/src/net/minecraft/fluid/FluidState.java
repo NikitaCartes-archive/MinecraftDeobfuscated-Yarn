@@ -37,8 +37,8 @@ public interface FluidState extends State<FluidState> {
 		return this.getFluid().isEmpty();
 	}
 
-	default float getHeight(BlockView blockView, BlockPos blockPos) {
-		return this.getFluid().getHeight(this, blockView, blockPos);
+	default float getHeight(BlockView world, BlockPos pos) {
+		return this.getFluid().getHeight(this, world, pos);
 	}
 
 	default float getHeight() {
@@ -50,12 +50,12 @@ public interface FluidState extends State<FluidState> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	default boolean method_15756(BlockView view, BlockPos pos) {
+	default boolean method_15756(BlockView world, BlockPos pos) {
 		for (int i = -1; i <= 1; i++) {
 			for (int j = -1; j <= 1; j++) {
 				BlockPos blockPos = pos.add(i, 0, j);
-				FluidState fluidState = view.getFluidState(blockPos);
-				if (!fluidState.getFluid().matchesType(this.getFluid()) && !view.getBlockState(blockPos).isFullOpaque(view, blockPos)) {
+				FluidState fluidState = world.getFluidState(blockPos);
+				if (!fluidState.getFluid().matchesType(this.getFluid()) && !world.getBlockState(blockPos).isFullOpaque(world, blockPos)) {
 					return true;
 				}
 			}
@@ -104,7 +104,7 @@ public interface FluidState extends State<FluidState> {
 	}
 
 	default boolean method_15764(BlockView blockView, BlockPos blockPos, Fluid fluid, Direction direction) {
-		return this.getFluid().method_15777(this, blockView, blockPos, fluid, direction);
+		return this.getFluid().canBeReplacedWith(this, blockView, blockPos, fluid, direction);
 	}
 
 	static <T> Dynamic<T> serialize(DynamicOps<T> ops, FluidState state) {
@@ -153,7 +153,7 @@ public interface FluidState extends State<FluidState> {
 		return fluidState;
 	}
 
-	default VoxelShape getShape(BlockView blockView, BlockPos blockPos) {
-		return this.getFluid().getShape(this, blockView, blockPos);
+	default VoxelShape getShape(BlockView world, BlockPos pos) {
+		return this.getFluid().getShape(this, world, pos);
 	}
 }

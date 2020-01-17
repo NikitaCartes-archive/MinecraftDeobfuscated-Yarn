@@ -1,10 +1,10 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
-import net.minecraft.client.network.ClientDummyContainerProvider;
 import net.minecraft.container.BlockContext;
 import net.minecraft.container.CartographyTableContainer;
-import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.container.NameableContainerFactory;
+import net.minecraft.container.SimpleNamedContainerFactory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.TranslatableText;
@@ -26,7 +26,7 @@ public class CartographyTableBlock extends Block {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
-			player.openContainer(state.createContainerProvider(world, pos));
+			player.openContainer(state.createContainerFactory(world, pos));
 			player.incrementStat(Stats.INTERACT_WITH_CARTOGRAPHY_TABLE);
 			return ActionResult.SUCCESS;
 		}
@@ -34,8 +34,8 @@ public class CartographyTableBlock extends Block {
 
 	@Nullable
 	@Override
-	public NameableContainerProvider createContainerProvider(BlockState state, World world, BlockPos pos) {
-		return new ClientDummyContainerProvider(
+	public NameableContainerFactory createContainerFactory(BlockState state, World world, BlockPos pos) {
+		return new SimpleNamedContainerFactory(
 			(i, playerInventory, playerEntity) -> new CartographyTableContainer(i, playerInventory, BlockContext.create(world, pos)), CONTAINER_NAME
 		);
 	}

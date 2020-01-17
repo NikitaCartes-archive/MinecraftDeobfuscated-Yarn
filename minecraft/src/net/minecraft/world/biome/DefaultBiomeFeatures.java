@@ -61,11 +61,11 @@ import net.minecraft.world.gen.foliage.SpruceFoliagePlacer;
 import net.minecraft.world.gen.placer.ColumnPlacer;
 import net.minecraft.world.gen.placer.DoublePlantPlacer;
 import net.minecraft.world.gen.placer.SimpleBlockPlacer;
-import net.minecraft.world.gen.stateprovider.BlockStateProvider;
-import net.minecraft.world.gen.stateprovider.ForestFlowerStateProvider;
-import net.minecraft.world.gen.stateprovider.PlainsFlowerStateProvider;
-import net.minecraft.world.gen.stateprovider.SimpleStateProvider;
-import net.minecraft.world.gen.stateprovider.WeightedStateProvider;
+import net.minecraft.world.gen.stateprovider.ForestFlowerBlockStateProvider;
+import net.minecraft.world.gen.stateprovider.PillarBlockStateProvider;
+import net.minecraft.world.gen.stateprovider.PlainsFlowerBlockStateProvider;
+import net.minecraft.world.gen.stateprovider.SimpleBlockStateProvider;
+import net.minecraft.world.gen.stateprovider.WeightedBlockStateProvider;
 
 public class DefaultBiomeFeatures {
 	private static final BlockState GRASS = Blocks.GRASS.getDefaultState();
@@ -139,7 +139,7 @@ public class DefaultBiomeFeatures {
 		.with(MushroomBlock.UP, Boolean.valueOf(false))
 		.with(MushroomBlock.DOWN, Boolean.valueOf(false));
 	public static final BranchedTreeFeatureConfig OAK_TREE_CONFIG = new BranchedTreeFeatureConfig.Builder(
-			new SimpleStateProvider(OAK_LOG), new SimpleStateProvider(OAK_LEAVES), new BlobFoliagePlacer(2, 0)
+			new SimpleBlockStateProvider(OAK_LOG), new SimpleBlockStateProvider(OAK_LEAVES), new BlobFoliagePlacer(2, 0)
 		)
 		.baseHeight(4)
 		.heightRandA(2)
@@ -147,7 +147,7 @@ public class DefaultBiomeFeatures {
 		.noVines()
 		.build();
 	public static final BranchedTreeFeatureConfig JUNGLE_TREE_CONFIG = new BranchedTreeFeatureConfig.Builder(
-			new SimpleStateProvider(JUNGLE_LOG), new SimpleStateProvider(JUNGLE_LEAVES), new BlobFoliagePlacer(2, 0)
+			new SimpleBlockStateProvider(JUNGLE_LOG), new SimpleBlockStateProvider(JUNGLE_LEAVES), new BlobFoliagePlacer(2, 0)
 		)
 		.baseHeight(4)
 		.heightRandA(8)
@@ -156,7 +156,7 @@ public class DefaultBiomeFeatures {
 		.noVines()
 		.build();
 	public static final BranchedTreeFeatureConfig JUNGLE_SAPLING_TREE_CONFIG = new BranchedTreeFeatureConfig.Builder(
-			new SimpleStateProvider(JUNGLE_LOG), new SimpleStateProvider(JUNGLE_LEAVES), new BlobFoliagePlacer(2, 0)
+			new SimpleBlockStateProvider(JUNGLE_LOG), new SimpleBlockStateProvider(JUNGLE_LEAVES), new BlobFoliagePlacer(2, 0)
 		)
 		.baseHeight(4)
 		.heightRandA(8)
@@ -164,7 +164,7 @@ public class DefaultBiomeFeatures {
 		.noVines()
 		.build();
 	public static final BranchedTreeFeatureConfig PINE_TREE_CONFIG = new BranchedTreeFeatureConfig.Builder(
-			new SimpleStateProvider(SPRUCE_LOG), new SimpleStateProvider(SPRUCE_LEAVES), new PineFoliagePlacer(1, 0)
+			new SimpleBlockStateProvider(SPRUCE_LOG), new SimpleBlockStateProvider(SPRUCE_LEAVES), new PineFoliagePlacer(1, 0)
 		)
 		.baseHeight(7)
 		.heightRandA(4)
@@ -174,7 +174,7 @@ public class DefaultBiomeFeatures {
 		.noVines()
 		.build();
 	public static final BranchedTreeFeatureConfig SPRUCE_TREE_CONFIG = new BranchedTreeFeatureConfig.Builder(
-			new SimpleStateProvider(SPRUCE_LOG), new SimpleStateProvider(SPRUCE_LEAVES), new SpruceFoliagePlacer(2, 1)
+			new SimpleBlockStateProvider(SPRUCE_LOG), new SimpleBlockStateProvider(SPRUCE_LEAVES), new SpruceFoliagePlacer(2, 1)
 		)
 		.baseHeight(6)
 		.heightRandA(3)
@@ -184,7 +184,7 @@ public class DefaultBiomeFeatures {
 		.noVines()
 		.build();
 	public static final BranchedTreeFeatureConfig ACACIA_TREE_CONFIG = new BranchedTreeFeatureConfig.Builder(
-			new SimpleStateProvider(ACACIA_LOG), new SimpleStateProvider(ACACIA_LEAVES), new AcaciaFoliagePlacer(2, 0)
+			new SimpleBlockStateProvider(ACACIA_LOG), new SimpleBlockStateProvider(ACACIA_LEAVES), new AcaciaFoliagePlacer(2, 0)
 		)
 		.baseHeight(5)
 		.heightRandA(2)
@@ -193,15 +193,15 @@ public class DefaultBiomeFeatures {
 		.noVines()
 		.build();
 	public static final BranchedTreeFeatureConfig BIRCH_TREE_CONFIG = new BranchedTreeFeatureConfig.Builder(
-			new SimpleStateProvider(BIRCH_LOG), new SimpleStateProvider(BIRCH_LEAVES), new BlobFoliagePlacer(2, 0)
+			new SimpleBlockStateProvider(BIRCH_LOG), new SimpleBlockStateProvider(BIRCH_LEAVES), new BlobFoliagePlacer(2, 0)
 		)
 		.baseHeight(5)
 		.heightRandA(2)
 		.foliageHeight(3)
 		.noVines()
 		.build();
-	public static final BranchedTreeFeatureConfig field_21833 = new BranchedTreeFeatureConfig.Builder(
-			new SimpleStateProvider(BIRCH_LOG), new SimpleStateProvider(BIRCH_LEAVES), new BlobFoliagePlacer(2, 0)
+	public static final BranchedTreeFeatureConfig BIRCH_TREE_WITH_RARE_BEEHIVES_CONFIG = new BranchedTreeFeatureConfig.Builder(
+			new SimpleBlockStateProvider(BIRCH_LOG), new SimpleBlockStateProvider(BIRCH_LEAVES), new BlobFoliagePlacer(2, 0)
 		)
 		.baseHeight(5)
 		.heightRandA(2)
@@ -210,7 +210,7 @@ public class DefaultBiomeFeatures {
 		.treeDecorators(ImmutableList.of(new BeehiveTreeDecorator(0.002F)))
 		.build();
 	public static final BranchedTreeFeatureConfig LARGE_BIRCH_TREE_CONFIG = new BranchedTreeFeatureConfig.Builder(
-			new SimpleStateProvider(BIRCH_LOG), new SimpleStateProvider(BIRCH_LEAVES), new BlobFoliagePlacer(2, 0)
+			new SimpleBlockStateProvider(BIRCH_LOG), new SimpleBlockStateProvider(BIRCH_LEAVES), new BlobFoliagePlacer(2, 0)
 		)
 		.baseHeight(5)
 		.heightRandA(2)
@@ -220,7 +220,7 @@ public class DefaultBiomeFeatures {
 		.treeDecorators(ImmutableList.of(new BeehiveTreeDecorator(0.002F)))
 		.build();
 	public static final BranchedTreeFeatureConfig SWAMP_TREE_CONFIG = new BranchedTreeFeatureConfig.Builder(
-			new SimpleStateProvider(OAK_LOG), new SimpleStateProvider(OAK_LEAVES), new BlobFoliagePlacer(3, 0)
+			new SimpleBlockStateProvider(OAK_LOG), new SimpleBlockStateProvider(OAK_LEAVES), new BlobFoliagePlacer(3, 0)
 		)
 		.baseHeight(5)
 		.heightRandA(3)
@@ -229,11 +229,11 @@ public class DefaultBiomeFeatures {
 		.treeDecorators(ImmutableList.of(new LeaveVineTreeDecorator()))
 		.build();
 	public static final BranchedTreeFeatureConfig FANCY_TREE_CONFIG = new BranchedTreeFeatureConfig.Builder(
-			new SimpleStateProvider(OAK_LOG), new SimpleStateProvider(OAK_LEAVES), new BlobFoliagePlacer(0, 0)
+			new SimpleBlockStateProvider(OAK_LOG), new SimpleBlockStateProvider(OAK_LEAVES), new BlobFoliagePlacer(0, 0)
 		)
 		.build();
 	public static final BranchedTreeFeatureConfig OAK_TREE_WITH_MORE_BEEHIVES_CONFIG = new BranchedTreeFeatureConfig.Builder(
-			new SimpleStateProvider(OAK_LOG), new SimpleStateProvider(OAK_LEAVES), new BlobFoliagePlacer(2, 0)
+			new SimpleBlockStateProvider(OAK_LOG), new SimpleBlockStateProvider(OAK_LEAVES), new BlobFoliagePlacer(2, 0)
 		)
 		.baseHeight(4)
 		.heightRandA(2)
@@ -241,18 +241,18 @@ public class DefaultBiomeFeatures {
 		.noVines()
 		.treeDecorators(ImmutableList.of(new BeehiveTreeDecorator(0.05F)))
 		.build();
-	public static final BranchedTreeFeatureConfig field_21834 = new BranchedTreeFeatureConfig.Builder(
-			new SimpleStateProvider(OAK_LOG), new SimpleStateProvider(OAK_LEAVES), new BlobFoliagePlacer(0, 0)
+	public static final BranchedTreeFeatureConfig FANCY_TREE_WITH_RARE_BEEHIVES_CONFIG = new BranchedTreeFeatureConfig.Builder(
+			new SimpleBlockStateProvider(OAK_LOG), new SimpleBlockStateProvider(OAK_LEAVES), new BlobFoliagePlacer(0, 0)
 		)
 		.treeDecorators(ImmutableList.of(new BeehiveTreeDecorator(0.002F)))
 		.build();
 	public static final BranchedTreeFeatureConfig FANCY_TREE_WITH_MORE_BEEHIVES_CONFIG = new BranchedTreeFeatureConfig.Builder(
-			new SimpleStateProvider(OAK_LOG), new SimpleStateProvider(OAK_LEAVES), new BlobFoliagePlacer(0, 0)
+			new SimpleBlockStateProvider(OAK_LOG), new SimpleBlockStateProvider(OAK_LEAVES), new BlobFoliagePlacer(0, 0)
 		)
 		.treeDecorators(ImmutableList.of(new BeehiveTreeDecorator(0.05F)))
 		.build();
-	public static final BranchedTreeFeatureConfig field_21835 = new BranchedTreeFeatureConfig.Builder(
-			new SimpleStateProvider(OAK_LOG), new SimpleStateProvider(OAK_LEAVES), new BlobFoliagePlacer(2, 0)
+	public static final BranchedTreeFeatureConfig OAK_TREE_WITH_RARE_BEEHIVES_CONFIG = new BranchedTreeFeatureConfig.Builder(
+			new SimpleBlockStateProvider(OAK_LOG), new SimpleBlockStateProvider(OAK_LEAVES), new BlobFoliagePlacer(2, 0)
 		)
 		.baseHeight(4)
 		.heightRandA(2)
@@ -261,7 +261,7 @@ public class DefaultBiomeFeatures {
 		.treeDecorators(ImmutableList.of(new BeehiveTreeDecorator(0.002F)))
 		.build();
 	public static final BranchedTreeFeatureConfig OAK_TREE_WITH_BEEHIVES_CONFIG = new BranchedTreeFeatureConfig.Builder(
-			new SimpleStateProvider(OAK_LOG), new SimpleStateProvider(OAK_LEAVES), new BlobFoliagePlacer(2, 0)
+			new SimpleBlockStateProvider(OAK_LOG), new SimpleBlockStateProvider(OAK_LEAVES), new BlobFoliagePlacer(2, 0)
 		)
 		.baseHeight(4)
 		.heightRandA(2)
@@ -270,12 +270,12 @@ public class DefaultBiomeFeatures {
 		.treeDecorators(ImmutableList.of(new BeehiveTreeDecorator(0.02F)))
 		.build();
 	public static final BranchedTreeFeatureConfig FANCY_TREE_WITH_BEEHIVES_CONFIG = new BranchedTreeFeatureConfig.Builder(
-			new SimpleStateProvider(OAK_LOG), new SimpleStateProvider(OAK_LEAVES), new BlobFoliagePlacer(0, 0)
+			new SimpleBlockStateProvider(OAK_LOG), new SimpleBlockStateProvider(OAK_LEAVES), new BlobFoliagePlacer(0, 0)
 		)
 		.treeDecorators(ImmutableList.of(new BeehiveTreeDecorator(0.02F)))
 		.build();
 	public static final BranchedTreeFeatureConfig BIRCH_TREE_WITH_BEEHIVES_CONFIG = new BranchedTreeFeatureConfig.Builder(
-			new SimpleStateProvider(BIRCH_LOG), new SimpleStateProvider(BIRCH_LEAVES), new BlobFoliagePlacer(2, 0)
+			new SimpleBlockStateProvider(BIRCH_LOG), new SimpleBlockStateProvider(BIRCH_LEAVES), new BlobFoliagePlacer(2, 0)
 		)
 		.baseHeight(5)
 		.heightRandA(2)
@@ -283,8 +283,8 @@ public class DefaultBiomeFeatures {
 		.noVines()
 		.treeDecorators(ImmutableList.of(new BeehiveTreeDecorator(0.02F)))
 		.build();
-	public static final BranchedTreeFeatureConfig field_21836 = new BranchedTreeFeatureConfig.Builder(
-			new SimpleStateProvider(BIRCH_LOG), new SimpleStateProvider(BIRCH_LEAVES), new BlobFoliagePlacer(2, 0)
+	public static final BranchedTreeFeatureConfig BIRCH_TREE_WITH_MORE_BEEHIVES_CONFIG = new BranchedTreeFeatureConfig.Builder(
+			new SimpleBlockStateProvider(BIRCH_LOG), new SimpleBlockStateProvider(BIRCH_LEAVES), new BlobFoliagePlacer(2, 0)
 		)
 		.baseHeight(5)
 		.heightRandA(2)
@@ -293,160 +293,166 @@ public class DefaultBiomeFeatures {
 		.treeDecorators(ImmutableList.of(new BeehiveTreeDecorator(0.05F)))
 		.build();
 	public static final TreeFeatureConfig JUNGLE_GROUND_BUSH_CONFIG = new TreeFeatureConfig.Builder(
-			new SimpleStateProvider(JUNGLE_LOG), new SimpleStateProvider(OAK_LEAVES)
+			new SimpleBlockStateProvider(JUNGLE_LOG), new SimpleBlockStateProvider(OAK_LEAVES)
 		)
 		.baseHeight(4)
 		.build();
 	public static final MegaTreeFeatureConfig DARK_OAK_TREE_CONFIG = new MegaTreeFeatureConfig.Builder(
-			new SimpleStateProvider(DARK_OAK_LOG), new SimpleStateProvider(DARK_OAK_LEAVES)
+			new SimpleBlockStateProvider(DARK_OAK_LOG), new SimpleBlockStateProvider(DARK_OAK_LEAVES)
 		)
 		.baseHeight(6)
 		.build();
 	public static final MegaTreeFeatureConfig MEGA_SPRUCE_TREE_CONFIG = new MegaTreeFeatureConfig.Builder(
-			new SimpleStateProvider(SPRUCE_LOG), new SimpleStateProvider(SPRUCE_LEAVES)
+			new SimpleBlockStateProvider(SPRUCE_LOG), new SimpleBlockStateProvider(SPRUCE_LEAVES)
 		)
 		.baseHeight(13)
 		.heightInterval(15)
 		.crownHeight(13)
-		.treeDecorators(ImmutableList.of(new AlterGroundTreeDecorator(new SimpleStateProvider(PODZOL))))
+		.treeDecorators(ImmutableList.of(new AlterGroundTreeDecorator(new SimpleBlockStateProvider(PODZOL))))
 		.build();
 	public static final MegaTreeFeatureConfig MEGA_PINE_TREE_CONFIG = new MegaTreeFeatureConfig.Builder(
-			new SimpleStateProvider(SPRUCE_LOG), new SimpleStateProvider(SPRUCE_LEAVES)
+			new SimpleBlockStateProvider(SPRUCE_LOG), new SimpleBlockStateProvider(SPRUCE_LEAVES)
 		)
 		.baseHeight(13)
 		.heightInterval(15)
 		.crownHeight(3)
-		.treeDecorators(ImmutableList.of(new AlterGroundTreeDecorator(new SimpleStateProvider(PODZOL))))
+		.treeDecorators(ImmutableList.of(new AlterGroundTreeDecorator(new SimpleBlockStateProvider(PODZOL))))
 		.build();
 	public static final MegaTreeFeatureConfig MEGA_JUNGLE_TREE_CONFIG = new MegaTreeFeatureConfig.Builder(
-			new SimpleStateProvider(JUNGLE_LOG), new SimpleStateProvider(JUNGLE_LEAVES)
+			new SimpleBlockStateProvider(JUNGLE_LOG), new SimpleBlockStateProvider(JUNGLE_LEAVES)
 		)
 		.baseHeight(10)
 		.heightInterval(20)
 		.treeDecorators(ImmutableList.of(new TrunkVineTreeDecorator(), new LeaveVineTreeDecorator()))
 		.build();
-	public static final RandomPatchFeatureConfig GRASS_CONFIG = new RandomPatchFeatureConfig.Builder(new SimpleStateProvider(GRASS), new SimpleBlockPlacer())
+	public static final RandomPatchFeatureConfig GRASS_CONFIG = new RandomPatchFeatureConfig.Builder(new SimpleBlockStateProvider(GRASS), new SimpleBlockPlacer())
 		.tries(32)
 		.build();
 	public static final RandomPatchFeatureConfig TAIGA_GRASS_CONFIG = new RandomPatchFeatureConfig.Builder(
-			new WeightedStateProvider().addState(GRASS, 1).addState(FERN, 4), new SimpleBlockPlacer()
+			new WeightedBlockStateProvider().addState(GRASS, 1).addState(FERN, 4), new SimpleBlockPlacer()
 		)
 		.tries(32)
 		.build();
 	public static final RandomPatchFeatureConfig LUSH_GRASS_CONFIG = new RandomPatchFeatureConfig.Builder(
-			new WeightedStateProvider().addState(GRASS, 3).addState(FERN, 1), new SimpleBlockPlacer()
+			new WeightedBlockStateProvider().addState(GRASS, 3).addState(FERN, 1), new SimpleBlockPlacer()
 		)
 		.blacklist(ImmutableSet.of(PODZOL))
 		.tries(32)
 		.build();
 	public static final RandomPatchFeatureConfig LILY_OF_THE_VALLEY_CONFIG = new RandomPatchFeatureConfig.Builder(
-			new SimpleStateProvider(LILY_OF_THE_VALLEY), new SimpleBlockPlacer()
+			new SimpleBlockStateProvider(LILY_OF_THE_VALLEY), new SimpleBlockPlacer()
 		)
 		.tries(64)
 		.build();
 	public static final RandomPatchFeatureConfig BLUE_ORCHID_CONFIG = new RandomPatchFeatureConfig.Builder(
-			new SimpleStateProvider(BLUE_ORCHID), new SimpleBlockPlacer()
+			new SimpleBlockStateProvider(BLUE_ORCHID), new SimpleBlockPlacer()
 		)
 		.tries(64)
 		.build();
 	public static final RandomPatchFeatureConfig DEFAULT_FLOWER_CONFIG = new RandomPatchFeatureConfig.Builder(
-			new WeightedStateProvider().addState(POPPY, 2).addState(DANDELION, 1), new SimpleBlockPlacer()
+			new WeightedBlockStateProvider().addState(POPPY, 2).addState(DANDELION, 1), new SimpleBlockPlacer()
 		)
 		.tries(64)
 		.build();
 	public static final RandomPatchFeatureConfig PLAINS_FLOWER_CONFIG = new RandomPatchFeatureConfig.Builder(
-			new PlainsFlowerStateProvider(), new SimpleBlockPlacer()
+			new PlainsFlowerBlockStateProvider(), new SimpleBlockPlacer()
 		)
 		.tries(64)
 		.build();
 	public static final RandomPatchFeatureConfig FOREST_FLOWER_CONFIG = new RandomPatchFeatureConfig.Builder(
-			new ForestFlowerStateProvider(), new SimpleBlockPlacer()
+			new ForestFlowerBlockStateProvider(), new SimpleBlockPlacer()
 		)
 		.tries(64)
 		.build();
 	public static final RandomPatchFeatureConfig DEAD_BUSH_CONFIG = new RandomPatchFeatureConfig.Builder(
-			new SimpleStateProvider(DEAD_BUSH), new SimpleBlockPlacer()
+			new SimpleBlockStateProvider(DEAD_BUSH), new SimpleBlockPlacer()
 		)
 		.tries(4)
 		.build();
-	public static final RandomPatchFeatureConfig MELON_PATCH_CONFIG = new RandomPatchFeatureConfig.Builder(new SimpleStateProvider(MELON), new SimpleBlockPlacer())
+	public static final RandomPatchFeatureConfig MELON_PATCH_CONFIG = new RandomPatchFeatureConfig.Builder(
+			new SimpleBlockStateProvider(MELON), new SimpleBlockPlacer()
+		)
 		.tries(64)
 		.whitelist(ImmutableSet.of(GRASS_BLOCK.getBlock()))
 		.canReplace()
 		.cannotProject()
 		.build();
 	public static final RandomPatchFeatureConfig PUMPKIN_PATCH_CONFIG = new RandomPatchFeatureConfig.Builder(
-			new SimpleStateProvider(PUMPKIN), new SimpleBlockPlacer()
+			new SimpleBlockStateProvider(PUMPKIN), new SimpleBlockPlacer()
 		)
 		.tries(64)
 		.whitelist(ImmutableSet.of(GRASS_BLOCK.getBlock()))
 		.cannotProject()
 		.build();
 	public static final RandomPatchFeatureConfig SWEET_BERRY_BUSH_CONFIG = new RandomPatchFeatureConfig.Builder(
-			new SimpleStateProvider(SWEET_BERRY_BUSH), new SimpleBlockPlacer()
+			new SimpleBlockStateProvider(SWEET_BERRY_BUSH), new SimpleBlockPlacer()
 		)
 		.tries(64)
 		.whitelist(ImmutableSet.of(GRASS_BLOCK.getBlock()))
 		.cannotProject()
 		.build();
-	public static final RandomPatchFeatureConfig NETHER_FIRE_CONFIG = new RandomPatchFeatureConfig.Builder(new SimpleStateProvider(FIRE), new SimpleBlockPlacer())
+	public static final RandomPatchFeatureConfig NETHER_FIRE_CONFIG = new RandomPatchFeatureConfig.Builder(
+			new SimpleBlockStateProvider(FIRE), new SimpleBlockPlacer()
+		)
 		.tries(64)
 		.whitelist(ImmutableSet.of(NETHERRACK.getBlock()))
 		.cannotProject()
 		.build();
-	public static final RandomPatchFeatureConfig LILY_PAD_CONFIG = new RandomPatchFeatureConfig.Builder(new SimpleStateProvider(LILY_PAD), new SimpleBlockPlacer())
+	public static final RandomPatchFeatureConfig LILY_PAD_CONFIG = new RandomPatchFeatureConfig.Builder(
+			new SimpleBlockStateProvider(LILY_PAD), new SimpleBlockPlacer()
+		)
 		.tries(10)
 		.build();
 	public static final RandomPatchFeatureConfig RED_MUSHROOM_CONFIG = new RandomPatchFeatureConfig.Builder(
-			new SimpleStateProvider(RED_MUSHROOM), new SimpleBlockPlacer()
+			new SimpleBlockStateProvider(RED_MUSHROOM), new SimpleBlockPlacer()
 		)
 		.tries(64)
 		.cannotProject()
 		.build();
 	public static final RandomPatchFeatureConfig BROWN_MUSHROOM_CONFIG = new RandomPatchFeatureConfig.Builder(
-			new SimpleStateProvider(BROWN_MUSHROOM), new SimpleBlockPlacer()
+			new SimpleBlockStateProvider(BROWN_MUSHROOM), new SimpleBlockPlacer()
 		)
 		.tries(64)
 		.cannotProject()
 		.build();
-	public static final RandomPatchFeatureConfig LILAC_CONFIG = new RandomPatchFeatureConfig.Builder(new SimpleStateProvider(LILAC), new DoublePlantPlacer())
+	public static final RandomPatchFeatureConfig LILAC_CONFIG = new RandomPatchFeatureConfig.Builder(new SimpleBlockStateProvider(LILAC), new DoublePlantPlacer())
 		.tries(64)
 		.cannotProject()
 		.build();
 	public static final RandomPatchFeatureConfig ROSE_BUSH_CONFIG = new RandomPatchFeatureConfig.Builder(
-			new SimpleStateProvider(ROSE_BUSH), new DoublePlantPlacer()
+			new SimpleBlockStateProvider(ROSE_BUSH), new DoublePlantPlacer()
 		)
 		.tries(64)
 		.cannotProject()
 		.build();
-	public static final RandomPatchFeatureConfig PEONY_CONFIG = new RandomPatchFeatureConfig.Builder(new SimpleStateProvider(PEONY), new DoublePlantPlacer())
+	public static final RandomPatchFeatureConfig PEONY_CONFIG = new RandomPatchFeatureConfig.Builder(new SimpleBlockStateProvider(PEONY), new DoublePlantPlacer())
 		.tries(64)
 		.cannotProject()
 		.build();
 	public static final RandomPatchFeatureConfig SUNFLOWER_CONFIG = new RandomPatchFeatureConfig.Builder(
-			new SimpleStateProvider(SUNFLOWER), new DoublePlantPlacer()
+			new SimpleBlockStateProvider(SUNFLOWER), new DoublePlantPlacer()
 		)
 		.tries(64)
 		.cannotProject()
 		.build();
 	public static final RandomPatchFeatureConfig TALL_GRASS_CONFIG = new RandomPatchFeatureConfig.Builder(
-			new SimpleStateProvider(TALL_GRASS), new DoublePlantPlacer()
+			new SimpleBlockStateProvider(TALL_GRASS), new DoublePlantPlacer()
 		)
 		.tries(64)
 		.cannotProject()
 		.build();
 	public static final RandomPatchFeatureConfig LARGE_FERN_CONFIG = new RandomPatchFeatureConfig.Builder(
-			new SimpleStateProvider(LARGE_FERN), new DoublePlantPlacer()
+			new SimpleBlockStateProvider(LARGE_FERN), new DoublePlantPlacer()
 		)
 		.tries(64)
 		.cannotProject()
 		.build();
-	public static final RandomPatchFeatureConfig CACTUS_CONFIG = new RandomPatchFeatureConfig.Builder(new SimpleStateProvider(CACTUS), new ColumnPlacer(1, 2))
+	public static final RandomPatchFeatureConfig CACTUS_CONFIG = new RandomPatchFeatureConfig.Builder(new SimpleBlockStateProvider(CACTUS), new ColumnPlacer(1, 2))
 		.tries(10)
 		.cannotProject()
 		.build();
 	public static final RandomPatchFeatureConfig SUGAR_CANE_CONFIG = new RandomPatchFeatureConfig.Builder(
-			new SimpleStateProvider(SUGAR_CANE), new ColumnPlacer(2, 2)
+			new SimpleBlockStateProvider(SUGAR_CANE), new ColumnPlacer(2, 2)
 		)
 		.tries(20)
 		.spreadX(4)
@@ -455,14 +461,14 @@ public class DefaultBiomeFeatures {
 		.cannotProject()
 		.needsWater()
 		.build();
-	public static final BlockPileFeatureConfig HAY_PILE_CONFIG = new BlockPileFeatureConfig(new BlockStateProvider(Blocks.HAY_BLOCK));
-	public static final BlockPileFeatureConfig SNOW_PILE_CONFIG = new BlockPileFeatureConfig(new SimpleStateProvider(SNOW));
-	public static final BlockPileFeatureConfig MELON_PILE_CONFIG = new BlockPileFeatureConfig(new SimpleStateProvider(MELON));
+	public static final BlockPileFeatureConfig HAY_PILE_CONFIG = new BlockPileFeatureConfig(new PillarBlockStateProvider(Blocks.HAY_BLOCK));
+	public static final BlockPileFeatureConfig SNOW_PILE_CONFIG = new BlockPileFeatureConfig(new SimpleBlockStateProvider(SNOW));
+	public static final BlockPileFeatureConfig MELON_PILE_CONFIG = new BlockPileFeatureConfig(new SimpleBlockStateProvider(MELON));
 	public static final BlockPileFeatureConfig PUMPKIN_PILE_CONFIG = new BlockPileFeatureConfig(
-		new WeightedStateProvider().addState(PUMPKIN, 19).addState(JACK_O_LANTERN, 1)
+		new WeightedBlockStateProvider().addState(PUMPKIN, 19).addState(JACK_O_LANTERN, 1)
 	);
 	public static final BlockPileFeatureConfig BLUE_ICE_PILE_CONFIG = new BlockPileFeatureConfig(
-		new WeightedStateProvider().addState(BLUE_ICE, 1).addState(PACKED_ICE, 5)
+		new WeightedBlockStateProvider().addState(BLUE_ICE, 1).addState(PACKED_ICE, 5)
 	);
 	public static final SpringFeatureConfig WATER_SPRING_CONFIG = new SpringFeatureConfig(
 		Fluids.WATER.getDefaultState(), true, 4, 1, ImmutableSet.of(Blocks.STONE, Blocks.GRANITE, Blocks.DIORITE, Blocks.ANDESITE)
@@ -477,10 +483,10 @@ public class DefaultBiomeFeatures {
 		Fluids.LAVA.getDefaultState(), false, 5, 0, ImmutableSet.of(Blocks.NETHERRACK)
 	);
 	public static final HugeMushroomFeatureConfig HUGE_RED_MUSHROOM_CONFIG = new HugeMushroomFeatureConfig(
-		new SimpleStateProvider(RED_MUSHROOM_BLOCK), new SimpleStateProvider(MUSHROOM_BLOCK), 2
+		new SimpleBlockStateProvider(RED_MUSHROOM_BLOCK), new SimpleBlockStateProvider(MUSHROOM_BLOCK), 2
 	);
 	public static final HugeMushroomFeatureConfig HUGE_BROWN_MUSHROOM_CONFIG = new HugeMushroomFeatureConfig(
-		new SimpleStateProvider(BROWN_MUSHROOM_BLOCK), new SimpleStateProvider(MUSHROOM_BLOCK), 3
+		new SimpleBlockStateProvider(BROWN_MUSHROOM_BLOCK), new SimpleBlockStateProvider(MUSHROOM_BLOCK), 3
 	);
 
 	public static void addLandCarvers(Biome biome) {
@@ -801,7 +807,7 @@ public class DefaultBiomeFeatures {
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
 			Feature.NORMAL_TREE
-				.configure(field_21833)
+				.configure(BIRCH_TREE_WITH_RARE_BEEHIVES_CONFIG)
 				.createDecoratedFeature(Decorator.COUNT_EXTRA_HEIGHTMAP.configure(new CountExtraChanceDecoratorConfig(10, 0.1F, 1)))
 		);
 	}
@@ -812,8 +818,11 @@ public class DefaultBiomeFeatures {
 			Feature.RANDOM_SELECTOR
 				.configure(
 					new RandomFeatureConfig(
-						ImmutableList.of(Feature.NORMAL_TREE.configure(field_21833).withChance(0.2F), Feature.FANCY_TREE.configure(field_21834).withChance(0.1F)),
-						Feature.NORMAL_TREE.configure(field_21835)
+						ImmutableList.of(
+							Feature.NORMAL_TREE.configure(BIRCH_TREE_WITH_RARE_BEEHIVES_CONFIG).withChance(0.2F),
+							Feature.FANCY_TREE.configure(FANCY_TREE_WITH_RARE_BEEHIVES_CONFIG).withChance(0.1F)
+						),
+						Feature.NORMAL_TREE.configure(OAK_TREE_WITH_RARE_BEEHIVES_CONFIG)
 					)
 				)
 				.createDecoratedFeature(Decorator.COUNT_EXTRA_HEIGHTMAP.configure(new CountExtraChanceDecoratorConfig(10, 0.1F, 1)))
@@ -826,7 +835,8 @@ public class DefaultBiomeFeatures {
 			Feature.RANDOM_SELECTOR
 				.configure(
 					new RandomFeatureConfig(
-						ImmutableList.of(Feature.NORMAL_TREE.configure(LARGE_BIRCH_TREE_CONFIG).withChance(0.5F)), Feature.NORMAL_TREE.configure(field_21833)
+						ImmutableList.of(Feature.NORMAL_TREE.configure(LARGE_BIRCH_TREE_CONFIG).withChance(0.5F)),
+						Feature.NORMAL_TREE.configure(BIRCH_TREE_WITH_RARE_BEEHIVES_CONFIG)
 					)
 				)
 				.createDecoratedFeature(Decorator.COUNT_EXTRA_HEIGHTMAP.configure(new CountExtraChanceDecoratorConfig(10, 0.1F, 1)))

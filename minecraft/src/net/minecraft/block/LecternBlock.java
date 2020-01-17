@@ -4,7 +4,7 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LecternBlockEntity;
-import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -93,12 +93,12 @@ public class LecternBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+	public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
 		return COLLISION_SHAPE;
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
 		switch ((Direction)state.get(FACING)) {
 			case NORTH:
 				return NORTH_SHAPE;
@@ -261,8 +261,8 @@ public class LecternBlock extends BlockWithEntity {
 
 	@Nullable
 	@Override
-	public NameableContainerProvider createContainerProvider(BlockState state, World world, BlockPos pos) {
-		return !state.get(HAS_BOOK) ? null : super.createContainerProvider(state, world, pos);
+	public NameableContainerFactory createContainerFactory(BlockState state, World world, BlockPos pos) {
+		return !state.get(HAS_BOOK) ? null : super.createContainerFactory(state, world, pos);
 	}
 
 	private void openContainer(World world, BlockPos pos, PlayerEntity player) {

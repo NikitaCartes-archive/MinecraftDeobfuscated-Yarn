@@ -20,12 +20,12 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.WorldView;
 
 public class VineBlock extends Block {
-	public static final BooleanProperty UP = ConnectedPlantBlock.UP;
-	public static final BooleanProperty NORTH = ConnectedPlantBlock.NORTH;
-	public static final BooleanProperty EAST = ConnectedPlantBlock.EAST;
-	public static final BooleanProperty SOUTH = ConnectedPlantBlock.SOUTH;
-	public static final BooleanProperty WEST = ConnectedPlantBlock.WEST;
-	public static final Map<Direction, BooleanProperty> FACING_PROPERTIES = (Map<Direction, BooleanProperty>)ConnectedPlantBlock.FACING_PROPERTIES
+	public static final BooleanProperty UP = ConnectingBlock.UP;
+	public static final BooleanProperty NORTH = ConnectingBlock.NORTH;
+	public static final BooleanProperty EAST = ConnectingBlock.EAST;
+	public static final BooleanProperty SOUTH = ConnectingBlock.SOUTH;
+	public static final BooleanProperty WEST = ConnectingBlock.WEST;
+	public static final Map<Direction, BooleanProperty> FACING_PROPERTIES = (Map<Direction, BooleanProperty>)ConnectingBlock.FACING_PROPERTIES
 		.entrySet()
 		.stream()
 		.filter(entry -> entry.getKey() != Direction.DOWN)
@@ -50,7 +50,7 @@ public class VineBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
 		VoxelShape voxelShape = VoxelShapes.empty();
 		if ((Boolean)state.get(UP)) {
 			voxelShape = VoxelShapes.union(voxelShape, UP_SHAPE);

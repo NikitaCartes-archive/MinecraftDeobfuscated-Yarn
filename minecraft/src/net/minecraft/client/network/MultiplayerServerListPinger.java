@@ -23,17 +23,17 @@ import java.util.Iterator;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.packet.QueryPongS2CPacket;
-import net.minecraft.client.network.packet.QueryResponseS2CPacket;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.ServerAddress;
 import net.minecraft.network.listener.ClientQueryPacketListener;
+import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
+import net.minecraft.network.packet.c2s.query.QueryPingC2SPacket;
+import net.minecraft.network.packet.c2s.query.QueryRequestC2SPacket;
+import net.minecraft.network.packet.s2c.query.QueryPongS2CPacket;
+import net.minecraft.network.packet.s2c.query.QueryResponseS2CPacket;
 import net.minecraft.server.ServerMetadata;
-import net.minecraft.server.network.packet.HandshakeC2SPacket;
-import net.minecraft.server.network.packet.QueryPingC2SPacket;
-import net.minecraft.server.network.packet.QueryRequestC2SPacket;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -63,12 +63,12 @@ public class MultiplayerServerListPinger {
 				private long startTime;
 
 				@Override
-				public void onResponse(QueryResponseS2CPacket queryResponseS2CPacket) {
+				public void onResponse(QueryResponseS2CPacket packet) {
 					if (this.received) {
 						clientConnection.disconnect(new TranslatableText("multiplayer.status.unrequested"));
 					} else {
 						this.received = true;
-						ServerMetadata serverMetadata = queryResponseS2CPacket.getServerMetadata();
+						ServerMetadata serverMetadata = packet.getServerMetadata();
 						if (serverMetadata.getDescription() != null) {
 							entry.label = serverMetadata.getDescription().asFormattedString();
 						} else {
@@ -137,7 +137,7 @@ public class MultiplayerServerListPinger {
 				}
 
 				@Override
-				public void onPong(QueryPongS2CPacket queryPongS2CPacket) {
+				public void onPong(QueryPongS2CPacket packet) {
 					long l = this.startTime;
 					long m = Util.getMeasuringTimeMs();
 					entry.ping = m - l;

@@ -23,33 +23,33 @@ public class TrunkVineTreeDecorator extends TreeDecorator {
 	}
 
 	@Override
-	public void generate(IWorld world, Random random, List<BlockPos> list, List<BlockPos> list2, Set<BlockPos> set, BlockBox box) {
-		list.forEach(blockPos -> {
+	public void generate(IWorld world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box) {
+		logPositions.forEach(blockPos -> {
 			if (random.nextInt(3) > 0) {
 				BlockPos blockPos2 = blockPos.west();
 				if (AbstractTreeFeature.isAir(world, blockPos2)) {
-					this.method_23471(world, blockPos2, VineBlock.EAST, set, box);
+					this.placeVine(world, blockPos2, VineBlock.EAST, set, box);
 				}
 			}
 
 			if (random.nextInt(3) > 0) {
 				BlockPos blockPos2 = blockPos.east();
 				if (AbstractTreeFeature.isAir(world, blockPos2)) {
-					this.method_23471(world, blockPos2, VineBlock.WEST, set, box);
+					this.placeVine(world, blockPos2, VineBlock.WEST, set, box);
 				}
 			}
 
 			if (random.nextInt(3) > 0) {
 				BlockPos blockPos2 = blockPos.north();
 				if (AbstractTreeFeature.isAir(world, blockPos2)) {
-					this.method_23471(world, blockPos2, VineBlock.SOUTH, set, box);
+					this.placeVine(world, blockPos2, VineBlock.SOUTH, set, box);
 				}
 			}
 
 			if (random.nextInt(3) > 0) {
 				BlockPos blockPos2 = blockPos.south();
 				if (AbstractTreeFeature.isAir(world, blockPos2)) {
-					this.method_23471(world, blockPos2, VineBlock.NORTH, set, box);
+					this.placeVine(world, blockPos2, VineBlock.NORTH, set, box);
 				}
 			}
 		});
@@ -58,7 +58,7 @@ public class TrunkVineTreeDecorator extends TreeDecorator {
 	@Override
 	public <T> T serialize(DynamicOps<T> ops) {
 		return new Dynamic<>(
-				ops, ops.createMap(ImmutableMap.of(ops.createString("type"), ops.createString(Registry.TREE_DECORATOR_TYPE.getId(this.field_21319).toString())))
+				ops, ops.createMap(ImmutableMap.of(ops.createString("type"), ops.createString(Registry.TREE_DECORATOR_TYPE.getId(this.type).toString())))
 			)
 			.getValue();
 	}

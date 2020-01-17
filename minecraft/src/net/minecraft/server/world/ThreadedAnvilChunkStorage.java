@@ -37,12 +37,6 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.DebugRendererInfoManager;
-import net.minecraft.client.network.packet.ChunkDataS2CPacket;
-import net.minecraft.client.network.packet.ChunkRenderDistanceCenterS2CPacket;
-import net.minecraft.client.network.packet.EntityAttachS2CPacket;
-import net.minecraft.client.network.packet.EntityPassengersSetS2CPacket;
-import net.minecraft.client.network.packet.LightUpdateS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
@@ -51,7 +45,13 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChunkRenderDistanceCenterS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityAttachS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
+import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
 import net.minecraft.server.WorldGenerationProgressListener;
+import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.network.EntityTrackerEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.structure.StructureManager;
@@ -474,7 +474,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> method_20619(ChunkPos chunkPos) {
 		return CompletableFuture.supplyAsync(() -> {
 			try {
-				this.world.getProfiler().method_24270("chunkLoad");
+				this.world.getProfiler().visit("chunkLoad");
 				CompoundTag compoundTag = this.getUpdatedChunkTag(chunkPos);
 				if (compoundTag != null) {
 					boolean bl = compoundTag.contains("Level", 10) && compoundTag.getCompound("Level").contains("Status", 8);
@@ -506,7 +506,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> completableFuture = this.createChunkRegionFuture(
 			chunkPos, chunkStatus.getTaskMargin(), i -> this.getRequiredStatusForGeneration(chunkStatus, i)
 		);
-		this.world.getProfiler().method_24271(() -> "chunkGenerate " + chunkStatus.getId());
+		this.world.getProfiler().visit((Supplier<String>)(() -> "chunkGenerate " + chunkStatus.getId()));
 		return completableFuture.thenComposeAsync(
 			either -> (CompletableFuture)either.map(
 					list -> {
@@ -658,7 +658,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 					}
 				}
 
-				this.world.getProfiler().method_24270("chunkSave");
+				this.world.getProfiler().visit("chunkSave");
 				CompoundTag compoundTagx = ChunkSerializer.serialize(this.world, chunk);
 				this.setTagAt(chunkPos, compoundTagx);
 				return true;
@@ -699,7 +699,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 						this.sendChunkDataPackets(player, packets, worldChunk);
 					}
 
-					DebugRendererInfoManager.method_19775(this.world, pos);
+					DebugInfoSender.sendChunkWatchingChange(this.world, pos);
 				}
 			}
 
@@ -1002,7 +1002,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		}
 
 		player.sendInitialChunkPackets(chunk.getPos(), packets[0], packets[1]);
-		DebugRendererInfoManager.method_19775(this.world, chunk.getPos());
+		DebugInfoSender.sendChunkWatchingChange(this.world, chunk.getPos());
 		List<Entity> list = Lists.<Entity>newArrayList();
 		List<Entity> list2 = Lists.<Entity>newArrayList();
 

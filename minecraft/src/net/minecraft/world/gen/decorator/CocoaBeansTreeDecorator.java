@@ -29,17 +29,17 @@ public class CocoaBeansTreeDecorator extends TreeDecorator {
 	}
 
 	@Override
-	public void generate(IWorld world, Random random, List<BlockPos> list, List<BlockPos> list2, Set<BlockPos> set, BlockBox box) {
+	public void generate(IWorld world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box) {
 		if (!(random.nextFloat() >= this.field_21318)) {
-			int i = ((BlockPos)list.get(0)).getY();
-			list.stream().filter(blockPos -> blockPos.getY() - i <= 2).forEach(blockPos -> {
+			int i = ((BlockPos)logPositions.get(0)).getY();
+			logPositions.stream().filter(blockPos -> blockPos.getY() - i <= 2).forEach(blockPos -> {
 				for (Direction direction : Direction.Type.HORIZONTAL) {
 					if (random.nextFloat() <= 0.25F) {
 						Direction direction2 = direction.getOpposite();
 						BlockPos blockPos2 = blockPos.add(direction2.getOffsetX(), 0, direction2.getOffsetZ());
 						if (AbstractTreeFeature.isAir(world, blockPos2)) {
 							BlockState blockState = Blocks.COCOA.getDefaultState().with(CocoaBlock.AGE, Integer.valueOf(random.nextInt(3))).with(CocoaBlock.FACING, direction);
-							this.method_23470(world, blockPos2, blockState, set, box);
+							this.setBlockStateAndEncompassPosition(world, blockPos2, blockState, set, box);
 						}
 					}
 				}
@@ -54,7 +54,7 @@ public class CocoaBeansTreeDecorator extends TreeDecorator {
 				ops.createMap(
 					ImmutableMap.of(
 						ops.createString("type"),
-						ops.createString(Registry.TREE_DECORATOR_TYPE.getId(this.field_21319).toString()),
+						ops.createString(Registry.TREE_DECORATOR_TYPE.getId(this.type).toString()),
 						ops.createString("probability"),
 						ops.createFloat(this.field_21318)
 					)

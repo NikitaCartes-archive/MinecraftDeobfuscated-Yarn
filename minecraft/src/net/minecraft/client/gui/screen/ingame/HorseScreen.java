@@ -11,7 +11,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class HorseScreen extends AbstractContainerScreen<HorseContainer> {
+public class HorseScreen extends ContainerScreen<HorseContainer> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/horse.png");
 	private final HorseBaseEntity entity;
 	private float mouseX;

@@ -195,11 +195,11 @@ public abstract class Biome {
 		}
 	}
 
-	public boolean canSetSnow(WorldView world, BlockPos blockPos) {
-		return this.canSetSnow(world, blockPos, true);
+	public boolean canSetIce(WorldView world, BlockPos blockPos) {
+		return this.canSetIce(world, blockPos, true);
 	}
 
-	public boolean canSetSnow(WorldView world, BlockPos pos, boolean doWaterCheck) {
+	public boolean canSetIce(WorldView world, BlockPos pos, boolean doWaterCheck) {
 		if (this.getTemperature(pos) >= 0.15F) {
 			return false;
 		} else {
@@ -222,7 +222,7 @@ public abstract class Biome {
 		}
 	}
 
-	public boolean canSetIce(WorldView worldView, BlockPos blockPos) {
+	public boolean canSetSnow(WorldView worldView, BlockPos blockPos) {
 		if (this.getTemperature(blockPos) >= 0.15F) {
 			return false;
 		} else {

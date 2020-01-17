@@ -260,7 +260,7 @@ public class OceanRuinGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld world, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
+		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
 			this.placementData
 				.clearProcessors()
 				.addProcessor(new BlockRotStructureProcessor(this.integrity))
@@ -272,7 +272,7 @@ public class OceanRuinGenerator {
 				)
 				.add(this.pos);
 			this.pos = new BlockPos(this.pos.getX(), this.method_14829(this.pos, world, blockPos), this.pos.getZ());
-			return super.generate(world, chunkGenerator, random, blockBox, chunkPos);
+			return super.generate(world, generator, random, box, pos);
 		}
 
 		private int method_14829(BlockPos blockPos, BlockView blockView, BlockPos blockPos2) {

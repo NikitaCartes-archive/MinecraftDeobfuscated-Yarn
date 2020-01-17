@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 import net.minecraft.datafixer.TypeReferences;
 
-public class Schema1920 extends SchemaIdentifierNormalize {
+public class Schema1920 extends IdentifierNormalizingSchema {
 	public Schema1920(int i, Schema schema) {
 		super(i, schema);
 	}

@@ -13,12 +13,11 @@ import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.block.ColoredBlock;
-import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
+import net.minecraft.block.Stainable;
 import net.minecraft.container.BeaconContainer;
 import net.minecraft.container.BlockContext;
 import net.minecraft.container.Container;
-import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.container.PropertyDelegate;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -27,6 +26,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.ContainerLock;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -38,7 +38,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.Heightmap;
 
-public class BeaconBlockEntity extends BlockEntity implements NameableContainerProvider, Tickable {
+public class BeaconBlockEntity extends BlockEntity implements NameableContainerFactory, Tickable {
 	public static final StatusEffect[][] EFFECTS_BY_LEVEL = new StatusEffect[][]{
 		{StatusEffects.SPEED, StatusEffects.HASTE}, {StatusEffects.RESISTANCE, StatusEffects.JUMP_BOOST}, {StatusEffects.STRENGTH}, {StatusEffects.REGENERATION}
 	};
@@ -56,8 +56,8 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 	private ContainerLock lock = ContainerLock.EMPTY;
 	private final PropertyDelegate propertyDelegate = new PropertyDelegate() {
 		@Override
-		public int get(int key) {
-			switch (key) {
+		public int get(int index) {
+			switch (index) {
 				case 0:
 					return BeaconBlockEntity.this.level;
 				case 1:
@@ -70,8 +70,8 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 		}
 
 		@Override
-		public void set(int key, int value) {
-			switch (key) {
+		public void set(int index, int value) {
+			switch (index) {
 				case 0:
 					BeaconBlockEntity.this.level = value;
 					break;
@@ -119,8 +119,8 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 		for (int m = 0; m < 10 && blockPos.getY() <= l; m++) {
 			BlockState blockState = this.world.getBlockState(blockPos);
 			Block block = blockState.getBlock();
-			if (block instanceof ColoredBlock) {
-				float[] fs = ((ColoredBlock)block).getColor().getColorComponents();
+			if (block instanceof Stainable) {
+				float[] fs = ((Stainable)block).getColor().getColorComponents();
 				if (this.field_19178.size() <= 1) {
 					beamSegment = new BeaconBlockEntity.BeamSegment(fs);
 					this.field_19178.add(beamSegment);

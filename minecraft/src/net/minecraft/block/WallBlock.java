@@ -15,7 +15,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.WorldView;
 
-public class WallBlock extends HorizontalConnectedBlock {
+public class WallBlock extends HorizontalConnectingBlock {
 	public static final BooleanProperty UP = Properties.UP;
 	private final VoxelShape[] UP_OUTLINE_SHAPES;
 	private final VoxelShape[] UP_COLLISION_SHAPES;
@@ -37,13 +37,13 @@ public class WallBlock extends HorizontalConnectedBlock {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
-		return state.get(UP) ? this.UP_OUTLINE_SHAPES[this.getShapeIndex(state)] : super.getOutlineShape(state, view, pos, ePos);
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+		return state.get(UP) ? this.UP_OUTLINE_SHAPES[this.getShapeIndex(state)] : super.getOutlineShape(state, view, pos, context);
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
-		return state.get(UP) ? this.UP_COLLISION_SHAPES[this.getShapeIndex(state)] : super.getCollisionShape(state, view, pos, ePos);
+	public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+		return state.get(UP) ? this.UP_COLLISION_SHAPES[this.getShapeIndex(state)] : super.getCollisionShape(state, view, pos, context);
 	}
 
 	@Override

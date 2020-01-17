@@ -32,12 +32,12 @@ import net.minecraft.world.dimension.TheEndDimension;
 
 public class FireBlock extends Block {
 	public static final IntProperty AGE = Properties.AGE_15;
-	public static final BooleanProperty NORTH = ConnectedPlantBlock.NORTH;
-	public static final BooleanProperty EAST = ConnectedPlantBlock.EAST;
-	public static final BooleanProperty SOUTH = ConnectedPlantBlock.SOUTH;
-	public static final BooleanProperty WEST = ConnectedPlantBlock.WEST;
-	public static final BooleanProperty UP = ConnectedPlantBlock.UP;
-	private static final Map<Direction, BooleanProperty> DIRECTION_PROPERTIES = (Map<Direction, BooleanProperty>)ConnectedPlantBlock.FACING_PROPERTIES
+	public static final BooleanProperty NORTH = ConnectingBlock.NORTH;
+	public static final BooleanProperty EAST = ConnectingBlock.EAST;
+	public static final BooleanProperty SOUTH = ConnectingBlock.SOUTH;
+	public static final BooleanProperty WEST = ConnectingBlock.WEST;
+	public static final BooleanProperty UP = ConnectingBlock.UP;
+	private static final Map<Direction, BooleanProperty> DIRECTION_PROPERTIES = (Map<Direction, BooleanProperty>)ConnectingBlock.FACING_PROPERTIES
 		.entrySet()
 		.stream()
 		.filter(entry -> entry.getKey() != Direction.DOWN)
@@ -60,7 +60,7 @@ public class FireBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
 		return VoxelShapes.empty();
 	}
 

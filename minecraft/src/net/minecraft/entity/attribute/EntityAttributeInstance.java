@@ -36,9 +36,9 @@ public interface EntityAttributeInstance {
 	double getValue();
 
 	@Environment(EnvType.CLIENT)
-	default void method_22323(EntityAttributeInstance entityAttributeInstance) {
-		this.setBaseValue(entityAttributeInstance.getBaseValue());
-		Set<EntityAttributeModifier> set = entityAttributeInstance.getModifiers();
+	default void copyFrom(EntityAttributeInstance other) {
+		this.setBaseValue(other.getBaseValue());
+		Set<EntityAttributeModifier> set = other.getModifiers();
 		Set<EntityAttributeModifier> set2 = this.getModifiers();
 		ImmutableSet<EntityAttributeModifier> immutableSet = ImmutableSet.copyOf(Sets.difference(set, set2));
 		ImmutableSet<EntityAttributeModifier> immutableSet2 = ImmutableSet.copyOf(Sets.difference(set2, set));

@@ -47,9 +47,9 @@ public class ArmorStandEntityRenderer extends LivingEntityRenderer<ArmorStandEnt
 	}
 
 	@Nullable
-	protected RenderLayer method_24302(ArmorStandEntity armorStandEntity, boolean bl, boolean bl2) {
+	protected RenderLayer getRenderLayer(ArmorStandEntity armorStandEntity, boolean bl, boolean bl2) {
 		if (!armorStandEntity.isMarker()) {
-			return super.method_24302(armorStandEntity, bl, bl2);
+			return super.getRenderLayer(armorStandEntity, bl, bl2);
 		} else {
 			Identifier identifier = this.getTexture(armorStandEntity);
 			if (bl2) {

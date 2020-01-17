@@ -31,14 +31,14 @@ public abstract class StructureStart {
 	private int references;
 	protected final ChunkRandom random;
 
-	public StructureStart(StructureFeature<?> structureFeature, int chunkX, int chunkZ, BlockBox blockBox, int i, long l) {
-		this.feature = structureFeature;
+	public StructureStart(StructureFeature<?> feature, int chunkX, int chunkZ, BlockBox box, int references, long l) {
+		this.feature = feature;
 		this.chunkX = chunkX;
 		this.chunkZ = chunkZ;
-		this.references = i;
+		this.references = references;
 		this.random = new ChunkRandom();
 		this.random.setStructureSeed(l, chunkX, chunkZ);
-		this.boundingBox = blockBox;
+		this.boundingBox = box;
 	}
 
 	public abstract void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome);
@@ -153,7 +153,7 @@ public abstract class StructureStart {
 		this.references++;
 	}
 
-	public int method_23676() {
+	public int getReferences() {
 		return this.references;
 	}
 

@@ -15,7 +15,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import net.minecraft.datafixer.TypeReferences;
-import net.minecraft.datafixer.schema.SchemaIdentifierNormalize;
+import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 
 public class NewVillageFix extends DataFix {
 	public NewVillageFix(Schema outputSchema, boolean changesType) {
@@ -75,7 +75,7 @@ public class NewVillageFix extends DataFix {
 						DSL.remainderFinder(),
 						dynamic -> dynamic.update(
 								"id",
-								dynamicx -> Objects.equals(SchemaIdentifierNormalize.normalize(dynamicx.asString("")), "minecraft:new_village")
+								dynamicx -> Objects.equals(IdentifierNormalizingSchema.normalize(dynamicx.asString("")), "minecraft:new_village")
 										? dynamicx.createString("minecraft:village")
 										: dynamicx
 							)

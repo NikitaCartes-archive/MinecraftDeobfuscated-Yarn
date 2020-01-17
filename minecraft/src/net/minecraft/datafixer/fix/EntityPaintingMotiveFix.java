@@ -23,7 +23,7 @@ public class EntityPaintingMotiveFix extends ChoiceFix {
 		super(outputSchema, changesType, "EntityPaintingMotiveFix", TypeReferences.ENTITY, "minecraft:painting");
 	}
 
-	public Dynamic<?> method_15723(Dynamic<?> dynamic) {
+	public Dynamic<?> renameMotive(Dynamic<?> dynamic) {
 		Optional<String> optional = dynamic.get("Motive").asString();
 		if (optional.isPresent()) {
 			String string = ((String)optional.get()).toLowerCase(Locale.ROOT);
@@ -35,6 +35,6 @@ public class EntityPaintingMotiveFix extends ChoiceFix {
 
 	@Override
 	protected Typed<?> transform(Typed<?> typed) {
-		return typed.update(DSL.remainderFinder(), this::method_15723);
+		return typed.update(DSL.remainderFinder(), this::renameMotive);
 	}
 }

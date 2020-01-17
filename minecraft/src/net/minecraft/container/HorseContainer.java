@@ -77,13 +77,13 @@ public class HorseContainer extends Container {
 	@Override
 	public ItemStack transferSlot(PlayerEntity player, int invSlot) {
 		ItemStack itemStack = ItemStack.EMPTY;
-		Slot slot = (Slot)this.slotList.get(invSlot);
+		Slot slot = (Slot)this.slots.get(invSlot);
 		if (slot != null && slot.hasStack()) {
 			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
 			int i = this.playerInv.getInvSize();
 			if (invSlot < i) {
-				if (!this.insertItem(itemStack2, i, this.slotList.size(), true)) {
+				if (!this.insertItem(itemStack2, i, this.slots.size(), true)) {
 					return ItemStack.EMPTY;
 				}
 			} else if (this.getSlot(1).canInsert(itemStack2) && !this.getSlot(1).hasStack()) {

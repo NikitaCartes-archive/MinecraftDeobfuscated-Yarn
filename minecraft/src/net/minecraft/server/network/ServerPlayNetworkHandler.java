@@ -22,17 +22,6 @@ import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
-import net.minecraft.client.network.packet.BlockUpdateS2CPacket;
-import net.minecraft.client.network.packet.ChatMessageS2CPacket;
-import net.minecraft.client.network.packet.CommandSuggestionsS2CPacket;
-import net.minecraft.client.network.packet.ConfirmGuiActionS2CPacket;
-import net.minecraft.client.network.packet.DisconnectS2CPacket;
-import net.minecraft.client.network.packet.GuiSlotUpdateS2CPacket;
-import net.minecraft.client.network.packet.HeldItemChangeS2CPacket;
-import net.minecraft.client.network.packet.KeepAliveS2CPacket;
-import net.minecraft.client.network.packet.PlayerPositionLookS2CPacket;
-import net.minecraft.client.network.packet.TagQueryResponseS2CPacket;
-import net.minecraft.client.network.packet.VehicleMoveS2CPacket;
 import net.minecraft.client.options.ChatVisibility;
 import net.minecraft.container.AnvilContainer;
 import net.minecraft.container.BeaconContainer;
@@ -62,51 +51,62 @@ import net.minecraft.network.MessageType;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ServerPlayPacketListener;
+import net.minecraft.network.packet.c2s.play.AdvancementTabC2SPacket;
+import net.minecraft.network.packet.c2s.play.BoatPaddleStateC2SPacket;
+import net.minecraft.network.packet.c2s.play.BookUpdateC2SPacket;
+import net.minecraft.network.packet.c2s.play.ButtonClickC2SPacket;
+import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
+import net.minecraft.network.packet.c2s.play.ClickWindowC2SPacket;
+import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
+import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
+import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
+import net.minecraft.network.packet.c2s.play.ConfirmGuiActionC2SPacket;
+import net.minecraft.network.packet.c2s.play.CraftRequestC2SPacket;
+import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
+import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
+import net.minecraft.network.packet.c2s.play.GuiCloseC2SPacket;
+import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
+import net.minecraft.network.packet.c2s.play.KeepAliveC2SPacket;
+import net.minecraft.network.packet.c2s.play.PickFromInventoryC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerInputC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
+import net.minecraft.network.packet.c2s.play.QueryBlockNbtC2SPacket;
+import net.minecraft.network.packet.c2s.play.QueryEntityNbtC2SPacket;
+import net.minecraft.network.packet.c2s.play.RecipeBookDataC2SPacket;
+import net.minecraft.network.packet.c2s.play.RenameItemC2SPacket;
+import net.minecraft.network.packet.c2s.play.RequestCommandCompletionsC2SPacket;
+import net.minecraft.network.packet.c2s.play.ResourcePackStatusC2SPacket;
+import net.minecraft.network.packet.c2s.play.SelectVillagerTradeC2SPacket;
+import net.minecraft.network.packet.c2s.play.SpectatorTeleportC2SPacket;
+import net.minecraft.network.packet.c2s.play.TeleportConfirmC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateBeaconC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateCommandBlockC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateCommandBlockMinecartC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateDifficultyC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateDifficultyLockC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateJigsawC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdatePlayerAbilitiesC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateStructureBlockC2SPacket;
+import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
+import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
+import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
+import net.minecraft.network.packet.s2c.play.ConfirmGuiActionS2CPacket;
+import net.minecraft.network.packet.s2c.play.ContainerSlotUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
+import net.minecraft.network.packet.s2c.play.HeldItemChangeS2CPacket;
+import net.minecraft.network.packet.s2c.play.KeepAliveS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
+import net.minecraft.network.packet.s2c.play.TagQueryResponseS2CPacket;
+import net.minecraft.network.packet.s2c.play.VehicleMoveS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.packet.AdvancementTabC2SPacket;
-import net.minecraft.server.network.packet.BoatPaddleStateC2SPacket;
-import net.minecraft.server.network.packet.BookUpdateC2SPacket;
-import net.minecraft.server.network.packet.ButtonClickC2SPacket;
-import net.minecraft.server.network.packet.ChatMessageC2SPacket;
-import net.minecraft.server.network.packet.ClickWindowC2SPacket;
-import net.minecraft.server.network.packet.ClientCommandC2SPacket;
-import net.minecraft.server.network.packet.ClientSettingsC2SPacket;
-import net.minecraft.server.network.packet.ClientStatusC2SPacket;
-import net.minecraft.server.network.packet.CraftRequestC2SPacket;
-import net.minecraft.server.network.packet.CreativeInventoryActionC2SPacket;
-import net.minecraft.server.network.packet.CustomPayloadC2SPacket;
-import net.minecraft.server.network.packet.GuiActionConfirmC2SPacket;
-import net.minecraft.server.network.packet.GuiCloseC2SPacket;
-import net.minecraft.server.network.packet.HandSwingC2SPacket;
-import net.minecraft.server.network.packet.KeepAliveC2SPacket;
-import net.minecraft.server.network.packet.PickFromInventoryC2SPacket;
-import net.minecraft.server.network.packet.PlayerActionC2SPacket;
-import net.minecraft.server.network.packet.PlayerInputC2SPacket;
-import net.minecraft.server.network.packet.PlayerInteractBlockC2SPacket;
-import net.minecraft.server.network.packet.PlayerInteractEntityC2SPacket;
-import net.minecraft.server.network.packet.PlayerInteractItemC2SPacket;
-import net.minecraft.server.network.packet.PlayerMoveC2SPacket;
-import net.minecraft.server.network.packet.QueryBlockNbtC2SPacket;
-import net.minecraft.server.network.packet.QueryEntityNbtC2SPacket;
-import net.minecraft.server.network.packet.RecipeBookDataC2SPacket;
-import net.minecraft.server.network.packet.RenameItemC2SPacket;
-import net.minecraft.server.network.packet.RequestCommandCompletionsC2SPacket;
-import net.minecraft.server.network.packet.ResourcePackStatusC2SPacket;
-import net.minecraft.server.network.packet.SelectVillagerTradeC2SPacket;
-import net.minecraft.server.network.packet.SpectatorTeleportC2SPacket;
-import net.minecraft.server.network.packet.TeleportConfirmC2SPacket;
-import net.minecraft.server.network.packet.UpdateBeaconC2SPacket;
-import net.minecraft.server.network.packet.UpdateCommandBlockC2SPacket;
-import net.minecraft.server.network.packet.UpdateCommandBlockMinecartC2SPacket;
-import net.minecraft.server.network.packet.UpdateDifficultyC2SPacket;
-import net.minecraft.server.network.packet.UpdateDifficultyLockC2SPacket;
-import net.minecraft.server.network.packet.UpdateJigsawC2SPacket;
-import net.minecraft.server.network.packet.UpdatePlayerAbilitiesC2SPacket;
-import net.minecraft.server.network.packet.UpdateSelectedSlotC2SPacket;
-import net.minecraft.server.network.packet.UpdateSignC2SPacket;
-import net.minecraft.server.network.packet.UpdateStructureBlockC2SPacket;
-import net.minecraft.server.network.packet.VehicleMoveC2SPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -137,7 +137,7 @@ import org.apache.logging.log4j.Logger;
 
 public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	private static final Logger LOGGER = LogManager.getLogger();
-	public final ClientConnection client;
+	public final ClientConnection connection;
 	private final MinecraftServer server;
 	public ServerPlayerEntity player;
 	private int ticks;
@@ -172,7 +172,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 
 	public ServerPlayNetworkHandler(MinecraftServer minecraftServer, ClientConnection clientConnection, ServerPlayerEntity serverPlayerEntity) {
 		this.server = minecraftServer;
-		this.client = clientConnection;
+		this.connection = clientConnection;
 		clientConnection.setPacketListener(this);
 		this.player = serverPlayerEntity;
 		serverPlayerEntity.networkHandler = this;
@@ -262,17 +262,17 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 
 	@Override
 	public ClientConnection getConnection() {
-		return this.client;
+		return this.connection;
 	}
 
 	private boolean isServerOwner() {
 		return this.server.isOwner(this.player.getGameProfile());
 	}
 
-	public void disconnect(Text text) {
-		this.client.send(new DisconnectS2CPacket(text), future -> this.client.disconnect(text));
-		this.client.disableAutoRead();
-		this.server.submitAndJoin(this.client::handleDisconnection);
+	public void disconnect(Text reason) {
+		this.connection.send(new DisconnectS2CPacket(reason), future -> this.connection.disconnect(reason));
+		this.connection.disableAutoRead();
+		this.server.submitAndJoin(this.connection::handleDisconnection);
 	}
 
 	@Override
@@ -323,7 +323,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				double p = l * l + m * m + n * n;
 				if (p - o > 100.0 && !this.isServerOwner()) {
 					LOGGER.warn("{} (vehicle of {}) moved too quickly! {},{},{}", entity.getName().getString(), this.player.getName().getString(), l, m, n);
-					this.client.send(new VehicleMoveS2CPacket(entity));
+					this.connection.send(new VehicleMoveS2CPacket(entity));
 					return;
 				}
 
@@ -350,7 +350,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				boolean bl3 = serverWorld.doesNotCollide(entity, entity.getBoundingBox().contract(0.0625));
 				if (bl && (bl2 || !bl3)) {
 					entity.updatePositionAndAngles(d, e, f, j, k);
-					this.client.send(new VehicleMoveS2CPacket(entity));
+					this.connection.send(new VehicleMoveS2CPacket(entity));
 					return;
 				}
 
@@ -425,7 +425,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 			.getCommandManager()
 			.getDispatcher()
 			.getCompletionSuggestions(parseResults)
-			.thenAccept(suggestions -> this.client.send(new CommandSuggestionsS2CPacket(packet.getCompletionId(), suggestions)));
+			.thenAccept(suggestions -> this.connection.send(new CommandSuggestionsS2CPacket(packet.getCompletionId(), suggestions)));
 	}
 
 	@Override
@@ -523,8 +523,8 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		this.player.inventory.swapSlotWithHotbar(packet.getSlot());
 		this.player
 			.networkHandler
-			.sendPacket(new GuiSlotUpdateS2CPacket(-2, this.player.inventory.selectedSlot, this.player.inventory.getInvStack(this.player.inventory.selectedSlot)));
-		this.player.networkHandler.sendPacket(new GuiSlotUpdateS2CPacket(-2, packet.getSlot(), this.player.inventory.getInvStack(packet.getSlot())));
+			.sendPacket(new ContainerSlotUpdateS2CPacket(-2, this.player.inventory.selectedSlot, this.player.inventory.getInvStack(this.player.inventory.selectedSlot)));
+		this.player.networkHandler.sendPacket(new ContainerSlotUpdateS2CPacket(-2, packet.getSlot(), this.player.inventory.getInvStack(packet.getSlot())));
 		this.player.networkHandler.sendPacket(new HeldItemChangeS2CPacket(this.player.inventory.selectedSlot));
 	}
 
@@ -974,7 +974,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		}
 
 		try {
-			this.client.send(packet, genericFutureListener);
+			this.connection.send(packet, genericFutureListener);
 		} catch (Throwable var6) {
 			CrashReport crashReport = CrashReport.create(var6, "Sending packet");
 			CrashReportSection crashReportSection = crashReport.addElement("Packet being sent");
@@ -1156,19 +1156,19 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	@Override
 	public void onGuiClose(GuiCloseC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
-		this.player.method_14247();
+		this.player.closeCurrentScreen();
 	}
 
 	@Override
 	public void onClickWindow(ClickWindowC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.player.updateLastActionTime();
-		if (this.player.container.syncId == packet.getSyncId() && this.player.container.isRestricted(this.player)) {
+		if (this.player.container.syncId == packet.getSyncId() && this.player.container.isNotRestricted(this.player)) {
 			if (this.player.isSpectator()) {
 				DefaultedList<ItemStack> defaultedList = DefaultedList.of();
 
-				for (int i = 0; i < this.player.container.slotList.size(); i++) {
-					defaultedList.add(((Slot)this.player.container.slotList.get(i)).getStack());
+				for (int i = 0; i < this.player.container.slots.size(); i++) {
+					defaultedList.add(((Slot)this.player.container.slots.get(i)).getStack());
 				}
 
 				this.player.onContainerRegistered(this.player.container, defaultedList);
@@ -1186,8 +1186,8 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 					this.player.container.setPlayerRestriction(this.player, false);
 					DefaultedList<ItemStack> defaultedList2 = DefaultedList.of();
 
-					for (int j = 0; j < this.player.container.slotList.size(); j++) {
-						ItemStack itemStack2 = ((Slot)this.player.container.slotList.get(j)).getStack();
+					for (int j = 0; j < this.player.container.slots.size(); j++) {
+						ItemStack itemStack2 = ((Slot)this.player.container.slots.get(j)).getStack();
 						defaultedList2.add(itemStack2.isEmpty() ? ItemStack.EMPTY : itemStack2);
 					}
 
@@ -1203,7 +1203,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		this.player.updateLastActionTime();
 		if (!this.player.isSpectator()
 			&& this.player.container.syncId == packet.getSyncId()
-			&& this.player.container.isRestricted(this.player)
+			&& this.player.container.isNotRestricted(this.player)
 			&& this.player.container instanceof CraftingContainer) {
 			this.server
 				.getRecipeManager()
@@ -1216,7 +1216,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	public void onButtonClick(ButtonClickC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.player.updateLastActionTime();
-		if (this.player.container.syncId == packet.getSyncId() && this.player.container.isRestricted(this.player) && !this.player.isSpectator()) {
+		if (this.player.container.syncId == packet.getSyncId() && this.player.container.isNotRestricted(this.player) && !this.player.isSpectator()) {
 			this.player.container.onButtonClick(this.player, packet.getButtonId());
 			this.player.container.sendContentUpdates();
 		}
@@ -1260,12 +1260,12 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	}
 
 	@Override
-	public void onConfirmTransaction(GuiActionConfirmC2SPacket packet) {
+	public void onConfirmTransaction(ConfirmGuiActionC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		int i = this.player.container.syncId;
 		if (i == packet.getWindowId()
 			&& this.transactions.getOrDefault(i, (short)(packet.getSyncId() + 1)) == packet.getSyncId()
-			&& !this.player.container.isRestricted(this.player)
+			&& !this.player.container.isNotRestricted(this.player)
 			&& !this.player.isSpectator()) {
 			this.player.container.setPlayerRestriction(this.player, true);
 		}
@@ -1329,18 +1329,18 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	}
 
 	@Override
-	public void onUpdateDifficulty(UpdateDifficultyC2SPacket updateDifficultyC2SPacket) {
-		NetworkThreadUtils.forceMainThread(updateDifficultyC2SPacket, this, this.player.getServerWorld());
+	public void onUpdateDifficulty(UpdateDifficultyC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (this.player.allowsPermissionLevel(2) || this.isServerOwner()) {
-			this.server.setDifficulty(updateDifficultyC2SPacket.getDifficulty(), false);
+			this.server.setDifficulty(packet.getDifficulty(), false);
 		}
 	}
 
 	@Override
-	public void onUpdateDifficultyLock(UpdateDifficultyLockC2SPacket updateDifficultyLockC2SPacket) {
-		NetworkThreadUtils.forceMainThread(updateDifficultyLockC2SPacket, this, this.player.getServerWorld());
+	public void onUpdateDifficultyLock(UpdateDifficultyLockC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (this.player.allowsPermissionLevel(2) || this.isServerOwner()) {
-			this.server.setDifficultyLocked(updateDifficultyLockC2SPacket.isDifficultyLocked());
+			this.server.setDifficultyLocked(packet.isDifficultyLocked());
 		}
 	}
 }

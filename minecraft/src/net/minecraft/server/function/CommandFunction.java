@@ -71,16 +71,13 @@ public class CommandFunction {
 	public static class CommandElement implements CommandFunction.Element {
 		private final ParseResults<ServerCommandSource> parsed;
 
-		public CommandElement(ParseResults<ServerCommandSource> parseResults) {
-			this.parsed = parseResults;
+		public CommandElement(ParseResults<ServerCommandSource> parsed) {
+			this.parsed = parsed;
 		}
 
 		@Override
-		public void execute(
-			CommandFunctionManager commandFunctionManager, ServerCommandSource serverCommandSource, ArrayDeque<CommandFunctionManager.Entry> arrayDeque, int i
-		) throws CommandSyntaxException {
-			commandFunctionManager.getDispatcher()
-				.execute(new ParseResults<>(this.parsed.getContext().withSource(serverCommandSource), this.parsed.getReader(), this.parsed.getExceptions()));
+		public void execute(CommandFunctionManager manager, ServerCommandSource source, ArrayDeque<CommandFunctionManager.Entry> stack, int maxChainLength) throws CommandSyntaxException {
+			manager.getDispatcher().execute(new ParseResults<>(this.parsed.getContext().withSource(source), this.parsed.getReader(), this.parsed.getExceptions()));
 		}
 
 		public String toString() {
@@ -89,9 +86,7 @@ public class CommandFunction {
 	}
 
 	public interface Element {
-		void execute(
-			CommandFunctionManager commandFunctionManager, ServerCommandSource serverCommandSource, ArrayDeque<CommandFunctionManager.Entry> arrayDeque, int i
-		) throws CommandSyntaxException;
+		void execute(CommandFunctionManager manager, ServerCommandSource source, ArrayDeque<CommandFunctionManager.Entry> stack, int maxChainLength) throws CommandSyntaxException;
 	}
 
 	public static class FunctionElement implements CommandFunction.Element {
@@ -102,16 +97,14 @@ public class CommandFunction {
 		}
 
 		@Override
-		public void execute(
-			CommandFunctionManager commandFunctionManager, ServerCommandSource serverCommandSource, ArrayDeque<CommandFunctionManager.Entry> arrayDeque, int i
-		) {
-			this.function.get(commandFunctionManager).ifPresent(commandFunction -> {
+		public void execute(CommandFunctionManager manager, ServerCommandSource source, ArrayDeque<CommandFunctionManager.Entry> stack, int maxChainLength) {
+			this.function.get(manager).ifPresent(commandFunction -> {
 				CommandFunction.Element[] elements = commandFunction.getElements();
-				int j = i - arrayDeque.size();
+				int j = maxChainLength - stack.size();
 				int k = Math.min(elements.length, j);
 
 				for (int l = k - 1; l >= 0; l--) {
-					arrayDeque.addFirst(new CommandFunctionManager.Entry(commandFunctionManager, serverCommandSource, elements[l]));
+					stack.addFirst(new CommandFunctionManager.Entry(manager, source, elements[l]));
 				}
 			});
 		}
@@ -132,16 +125,16 @@ public class CommandFunction {
 			this.id = id;
 		}
 
-		public LazyContainer(CommandFunction commandFunction) {
+		public LazyContainer(CommandFunction function) {
 			this.initialized = true;
 			this.id = null;
-			this.function = Optional.of(commandFunction);
+			this.function = Optional.of(function);
 		}
 
-		public Optional<CommandFunction> get(CommandFunctionManager commandFunctionManager) {
+		public Optional<CommandFunction> get(CommandFunctionManager manager) {
 			if (!this.initialized) {
 				if (this.id != null) {
-					this.function = commandFunctionManager.getFunction(this.id);
+					this.function = manager.getFunction(this.id);
 				}
 
 				this.initialized = true;

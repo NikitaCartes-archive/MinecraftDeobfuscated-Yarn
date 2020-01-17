@@ -77,8 +77,8 @@ public abstract class PoolStructurePiece extends StructurePiece {
 	}
 
 	@Override
-	public boolean generate(IWorld world, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
-		return this.poolElement.generate(this.structureManager, world, chunkGenerator, this.pos, this.rotation, blockBox, random);
+	public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+		return this.poolElement.generate(this.structureManager, world, generator, this.pos, this.rotation, box, random);
 	}
 
 	@Override

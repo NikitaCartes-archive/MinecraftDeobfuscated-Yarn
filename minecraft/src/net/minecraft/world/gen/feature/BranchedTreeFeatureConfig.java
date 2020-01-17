@@ -10,7 +10,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.decorator.TreeDecorator;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
 import net.minecraft.world.gen.foliage.FoliagePlacerType;
-import net.minecraft.world.gen.stateprovider.StateProvider;
+import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 
 public class BranchedTreeFeatureConfig extends TreeFeatureConfig {
 	public final FoliagePlacer foliagePlacer;
@@ -26,8 +26,8 @@ public class BranchedTreeFeatureConfig extends TreeFeatureConfig {
 	public final boolean noVines;
 
 	protected BranchedTreeFeatureConfig(
-		StateProvider trunkProvider,
-		StateProvider leavesProvider,
+		BlockStateProvider trunkProvider,
+		BlockStateProvider leavesProvider,
 		FoliagePlacer foliagePlacer,
 		List<TreeDecorator> treeDecorators,
 		int baseHeight,
@@ -112,7 +112,7 @@ public class BranchedTreeFeatureConfig extends TreeFeatureConfig {
 		private int maxWaterDepth;
 		private boolean noVines;
 
-		public Builder(StateProvider trunkProvider, StateProvider leavesProvider, FoliagePlacer foliagePlacer) {
+		public Builder(BlockStateProvider trunkProvider, BlockStateProvider leavesProvider, FoliagePlacer foliagePlacer) {
 			super(trunkProvider, leavesProvider);
 			this.foliagePlacer = foliagePlacer;
 		}

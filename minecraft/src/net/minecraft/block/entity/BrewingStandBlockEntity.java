@@ -35,8 +35,8 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 	private int fuel;
 	protected final PropertyDelegate propertyDelegate = new PropertyDelegate() {
 		@Override
-		public int get(int key) {
-			switch (key) {
+		public int get(int index) {
+			switch (index) {
 				case 0:
 					return BrewingStandBlockEntity.this.brewTime;
 				case 1:
@@ -47,8 +47,8 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 		}
 
 		@Override
-		public void set(int key, int value) {
-			switch (key) {
+		public void set(int index, int value) {
+			switch (index) {
 				case 0:
 					BrewingStandBlockEntity.this.brewTime = value;
 					break;

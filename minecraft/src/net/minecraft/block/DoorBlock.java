@@ -57,7 +57,7 @@ public class DoorBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
 		Direction direction = state.get(FACING);
 		boolean bl = !(Boolean)state.get(OPEN);
 		boolean bl2 = state.get(HINGE) == DoorHinge.RIGHT;

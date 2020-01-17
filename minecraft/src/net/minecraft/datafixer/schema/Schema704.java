@@ -108,7 +108,7 @@ public class Schema704 extends Schema {
 	@Override
 	public Type<?> getChoiceType(TypeReference typeReference, String string) {
 		return Objects.equals(typeReference.typeName(), TypeReferences.BLOCK_ENTITY.typeName())
-			? super.getChoiceType(typeReference, SchemaIdentifierNormalize.normalize(string))
+			? super.getChoiceType(typeReference, IdentifierNormalizingSchema.normalize(string))
 			: super.getChoiceType(typeReference, string);
 	}
 

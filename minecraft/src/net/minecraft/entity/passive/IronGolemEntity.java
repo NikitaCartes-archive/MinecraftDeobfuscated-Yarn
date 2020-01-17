@@ -268,9 +268,9 @@ public class IronGolemEntity extends GolemEntity {
 		return (this.dataTracker.get(IRON_GOLEM_FLAGS) & 1) != 0;
 	}
 
-	public void setPlayerCreated(boolean playerCrated) {
+	public void setPlayerCreated(boolean playerCreated) {
 		byte b = this.dataTracker.get(IRON_GOLEM_FLAGS);
-		if (playerCrated) {
+		if (playerCreated) {
 			this.dataTracker.set(IRON_GOLEM_FLAGS, (byte)(b | 1));
 		} else {
 			this.dataTracker.set(IRON_GOLEM_FLAGS, (byte)(b & -2));

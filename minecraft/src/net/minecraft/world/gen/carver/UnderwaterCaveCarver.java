@@ -15,8 +15,8 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ProbabilityConfig;
 
 public class UnderwaterCaveCarver extends CaveCarver {
-	public UnderwaterCaveCarver(Function<Dynamic<?>, ? extends ProbabilityConfig> function) {
-		super(function, 256);
+	public UnderwaterCaveCarver(Function<Dynamic<?>, ? extends ProbabilityConfig> configDeserializer) {
+		super(configDeserializer, 256);
 		this.alwaysCarvableBlocks = ImmutableSet.of(
 			Blocks.STONE,
 			Blocks.GRANITE,
@@ -66,23 +66,23 @@ public class UnderwaterCaveCarver extends CaveCarver {
 	@Override
 	protected boolean carveAtPoint(
 		Chunk chunk,
-		Function<BlockPos, Biome> function,
-		BitSet bitSet,
+		Function<BlockPos, Biome> posToBiome,
+		BitSet carvingMask,
 		Random random,
 		BlockPos.Mutable mutable,
 		BlockPos.Mutable mutable2,
 		BlockPos.Mutable mutable3,
+		int seaLevel,
 		int mainChunkX,
 		int mainChunkZ,
-		int i,
-		int j,
-		int k,
-		int l,
-		int m,
-		int n,
-		AtomicBoolean atomicBoolean
+		int x,
+		int z,
+		int relativeX,
+		int y,
+		int relativeZ,
+		AtomicBoolean foundSurface
 	) {
-		return carveAtPoint(this, chunk, bitSet, random, mutable, mainChunkX, mainChunkZ, i, j, k, l, m, n);
+		return carveAtPoint(this, chunk, carvingMask, random, mutable, seaLevel, mainChunkX, mainChunkZ, x, z, relativeX, y, relativeZ);
 	}
 
 	protected static boolean carveAtPoint(

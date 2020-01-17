@@ -366,20 +366,20 @@ public class ClientWorld extends World {
 		}
 	}
 
-	public void randomBlockDisplayTick(int xCenter, int yCenter, int zCenter, int radius, Random random, boolean spawnBarrierParticles, BlockPos.Mutable mutable) {
+	public void randomBlockDisplayTick(int xCenter, int yCenter, int zCenter, int radius, Random random, boolean spawnBarrierParticles, BlockPos.Mutable pos) {
 		int i = xCenter + this.random.nextInt(radius) - this.random.nextInt(radius);
 		int j = yCenter + this.random.nextInt(radius) - this.random.nextInt(radius);
 		int k = zCenter + this.random.nextInt(radius) - this.random.nextInt(radius);
-		mutable.set(i, j, k);
-		BlockState blockState = this.getBlockState(mutable);
-		blockState.getBlock().randomDisplayTick(blockState, this, mutable, random);
-		FluidState fluidState = this.getFluidState(mutable);
+		pos.set(i, j, k);
+		BlockState blockState = this.getBlockState(pos);
+		blockState.getBlock().randomDisplayTick(blockState, this, pos, random);
+		FluidState fluidState = this.getFluidState(pos);
 		if (!fluidState.isEmpty()) {
-			fluidState.randomDisplayTick(this, mutable, random);
+			fluidState.randomDisplayTick(this, pos, random);
 			ParticleEffect particleEffect = fluidState.getParticle();
 			if (particleEffect != null && this.random.nextInt(10) == 0) {
-				boolean bl = blockState.isSideSolidFullSquare(this, mutable, Direction.DOWN);
-				BlockPos blockPos = mutable.down();
+				boolean bl = blockState.isSideSolidFullSquare(this, pos, Direction.DOWN);
+				BlockPos blockPos = pos.down();
 				this.addParticle(blockPos, this.getBlockState(blockPos), particleEffect, bl);
 			}
 		}

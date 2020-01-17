@@ -60,96 +60,6 @@ import net.minecraft.client.gui.screen.recipebook.RecipeBookProvider;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.client.input.KeyboardInput;
-import net.minecraft.client.network.packet.AdvancementUpdateS2CPacket;
-import net.minecraft.client.network.packet.BlockActionS2CPacket;
-import net.minecraft.client.network.packet.BlockBreakingProgressS2CPacket;
-import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
-import net.minecraft.client.network.packet.BlockUpdateS2CPacket;
-import net.minecraft.client.network.packet.BossBarS2CPacket;
-import net.minecraft.client.network.packet.ChatMessageS2CPacket;
-import net.minecraft.client.network.packet.ChunkDataS2CPacket;
-import net.minecraft.client.network.packet.ChunkDeltaUpdateS2CPacket;
-import net.minecraft.client.network.packet.ChunkLoadDistanceS2CPacket;
-import net.minecraft.client.network.packet.ChunkRenderDistanceCenterS2CPacket;
-import net.minecraft.client.network.packet.CombatEventS2CPacket;
-import net.minecraft.client.network.packet.CommandSuggestionsS2CPacket;
-import net.minecraft.client.network.packet.CommandTreeS2CPacket;
-import net.minecraft.client.network.packet.ConfirmGuiActionS2CPacket;
-import net.minecraft.client.network.packet.CooldownUpdateS2CPacket;
-import net.minecraft.client.network.packet.CraftFailedResponseS2CPacket;
-import net.minecraft.client.network.packet.CustomPayloadS2CPacket;
-import net.minecraft.client.network.packet.DifficultyS2CPacket;
-import net.minecraft.client.network.packet.DisconnectS2CPacket;
-import net.minecraft.client.network.packet.EntitiesDestroyS2CPacket;
-import net.minecraft.client.network.packet.EntityAnimationS2CPacket;
-import net.minecraft.client.network.packet.EntityAttachS2CPacket;
-import net.minecraft.client.network.packet.EntityAttributesS2CPacket;
-import net.minecraft.client.network.packet.EntityEquipmentUpdateS2CPacket;
-import net.minecraft.client.network.packet.EntityPassengersSetS2CPacket;
-import net.minecraft.client.network.packet.EntityPositionS2CPacket;
-import net.minecraft.client.network.packet.EntityPotionEffectS2CPacket;
-import net.minecraft.client.network.packet.EntityS2CPacket;
-import net.minecraft.client.network.packet.EntitySetHeadYawS2CPacket;
-import net.minecraft.client.network.packet.EntitySpawnGlobalS2CPacket;
-import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
-import net.minecraft.client.network.packet.EntityStatusS2CPacket;
-import net.minecraft.client.network.packet.EntityTrackerUpdateS2CPacket;
-import net.minecraft.client.network.packet.EntityVelocityUpdateS2CPacket;
-import net.minecraft.client.network.packet.ExperienceBarUpdateS2CPacket;
-import net.minecraft.client.network.packet.ExperienceOrbSpawnS2CPacket;
-import net.minecraft.client.network.packet.ExplosionS2CPacket;
-import net.minecraft.client.network.packet.GameJoinS2CPacket;
-import net.minecraft.client.network.packet.GameStateChangeS2CPacket;
-import net.minecraft.client.network.packet.GuiCloseS2CPacket;
-import net.minecraft.client.network.packet.GuiOpenS2CPacket;
-import net.minecraft.client.network.packet.GuiSlotUpdateS2CPacket;
-import net.minecraft.client.network.packet.GuiUpdateS2CPacket;
-import net.minecraft.client.network.packet.HealthUpdateS2CPacket;
-import net.minecraft.client.network.packet.HeldItemChangeS2CPacket;
-import net.minecraft.client.network.packet.InventoryS2CPacket;
-import net.minecraft.client.network.packet.ItemPickupAnimationS2CPacket;
-import net.minecraft.client.network.packet.KeepAliveS2CPacket;
-import net.minecraft.client.network.packet.LightUpdateS2CPacket;
-import net.minecraft.client.network.packet.LookAtS2CPacket;
-import net.minecraft.client.network.packet.MapUpdateS2CPacket;
-import net.minecraft.client.network.packet.MobSpawnS2CPacket;
-import net.minecraft.client.network.packet.OpenContainerS2CPacket;
-import net.minecraft.client.network.packet.OpenWrittenBookS2CPacket;
-import net.minecraft.client.network.packet.PaintingSpawnS2CPacket;
-import net.minecraft.client.network.packet.ParticleS2CPacket;
-import net.minecraft.client.network.packet.PlaySoundFromEntityS2CPacket;
-import net.minecraft.client.network.packet.PlaySoundIdS2CPacket;
-import net.minecraft.client.network.packet.PlaySoundS2CPacket;
-import net.minecraft.client.network.packet.PlayerAbilitiesS2CPacket;
-import net.minecraft.client.network.packet.PlayerActionResponseS2CPacket;
-import net.minecraft.client.network.packet.PlayerListHeaderS2CPacket;
-import net.minecraft.client.network.packet.PlayerListS2CPacket;
-import net.minecraft.client.network.packet.PlayerPositionLookS2CPacket;
-import net.minecraft.client.network.packet.PlayerRespawnS2CPacket;
-import net.minecraft.client.network.packet.PlayerSpawnPositionS2CPacket;
-import net.minecraft.client.network.packet.PlayerSpawnS2CPacket;
-import net.minecraft.client.network.packet.RemoveEntityEffectS2CPacket;
-import net.minecraft.client.network.packet.ResourcePackSendS2CPacket;
-import net.minecraft.client.network.packet.ScoreboardDisplayS2CPacket;
-import net.minecraft.client.network.packet.ScoreboardObjectiveUpdateS2CPacket;
-import net.minecraft.client.network.packet.ScoreboardPlayerUpdateS2CPacket;
-import net.minecraft.client.network.packet.SelectAdvancementTabS2CPacket;
-import net.minecraft.client.network.packet.SetCameraEntityS2CPacket;
-import net.minecraft.client.network.packet.SetTradeOffersS2CPacket;
-import net.minecraft.client.network.packet.SignEditorOpenS2CPacket;
-import net.minecraft.client.network.packet.StatisticsS2CPacket;
-import net.minecraft.client.network.packet.StopSoundS2CPacket;
-import net.minecraft.client.network.packet.SynchronizeRecipesS2CPacket;
-import net.minecraft.client.network.packet.SynchronizeTagsS2CPacket;
-import net.minecraft.client.network.packet.TagQueryResponseS2CPacket;
-import net.minecraft.client.network.packet.TeamS2CPacket;
-import net.minecraft.client.network.packet.TitleS2CPacket;
-import net.minecraft.client.network.packet.UnloadChunkS2CPacket;
-import net.minecraft.client.network.packet.UnlockRecipesS2CPacket;
-import net.minecraft.client.network.packet.VehicleMoveS2CPacket;
-import net.minecraft.client.network.packet.WorldBorderS2CPacket;
-import net.minecraft.client.network.packet.WorldEventS2CPacket;
-import net.minecraft.client.network.packet.WorldTimeUpdateS2CPacket;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.ServerList;
 import net.minecraft.client.particle.ItemPickupParticle;
@@ -243,6 +153,104 @@ import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
+import net.minecraft.network.packet.c2s.play.ConfirmGuiActionC2SPacket;
+import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
+import net.minecraft.network.packet.c2s.play.KeepAliveC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
+import net.minecraft.network.packet.c2s.play.ResourcePackStatusC2SPacket;
+import net.minecraft.network.packet.c2s.play.TeleportConfirmC2SPacket;
+import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
+import net.minecraft.network.packet.s2c.play.AdvancementUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.BlockActionS2CPacket;
+import net.minecraft.network.packet.s2c.play.BlockBreakingProgressS2CPacket;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChunkDeltaUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChunkLoadDistanceS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChunkRenderDistanceCenterS2CPacket;
+import net.minecraft.network.packet.s2c.play.CloseContainerS2CPacket;
+import net.minecraft.network.packet.s2c.play.CombatEventS2CPacket;
+import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
+import net.minecraft.network.packet.s2c.play.CommandTreeS2CPacket;
+import net.minecraft.network.packet.s2c.play.ConfirmGuiActionS2CPacket;
+import net.minecraft.network.packet.s2c.play.ContainerPropertyUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ContainerSlotUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.CooldownUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.CraftFailedResponseS2CPacket;
+import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
+import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
+import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityAttachS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityAttributesS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityEquipmentUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntitySetHeadYawS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntitySpawnGlobalS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ExperienceBarUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ExperienceOrbSpawnS2CPacket;
+import net.minecraft.network.packet.s2c.play.ExplosionS2CPacket;
+import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
+import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
+import net.minecraft.network.packet.s2c.play.HealthUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.HeldItemChangeS2CPacket;
+import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
+import net.minecraft.network.packet.s2c.play.ItemPickupAnimationS2CPacket;
+import net.minecraft.network.packet.s2c.play.KeepAliveS2CPacket;
+import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.LookAtS2CPacket;
+import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.MobSpawnS2CPacket;
+import net.minecraft.network.packet.s2c.play.OpenContainerS2CPacket;
+import net.minecraft.network.packet.s2c.play.OpenHorseContainerS2CPacket;
+import net.minecraft.network.packet.s2c.play.OpenWrittenBookS2CPacket;
+import net.minecraft.network.packet.s2c.play.PaintingSpawnS2CPacket;
+import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlaySoundFromEntityS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlaySoundIdS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerAbilitiesS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerActionResponseS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerListHeaderS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerRespawnS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerSpawnS2CPacket;
+import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
+import net.minecraft.network.packet.s2c.play.ResourcePackSendS2CPacket;
+import net.minecraft.network.packet.s2c.play.ScoreboardDisplayS2CPacket;
+import net.minecraft.network.packet.s2c.play.ScoreboardObjectiveUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ScoreboardPlayerUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.SelectAdvancementTabS2CPacket;
+import net.minecraft.network.packet.s2c.play.SetCameraEntityS2CPacket;
+import net.minecraft.network.packet.s2c.play.SetTradeOffersS2CPacket;
+import net.minecraft.network.packet.s2c.play.SignEditorOpenS2CPacket;
+import net.minecraft.network.packet.s2c.play.StatisticsS2CPacket;
+import net.minecraft.network.packet.s2c.play.StopSoundS2CPacket;
+import net.minecraft.network.packet.s2c.play.SynchronizeRecipesS2CPacket;
+import net.minecraft.network.packet.s2c.play.SynchronizeTagsS2CPacket;
+import net.minecraft.network.packet.s2c.play.TagQueryResponseS2CPacket;
+import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
+import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
+import net.minecraft.network.packet.s2c.play.UnloadChunkS2CPacket;
+import net.minecraft.network.packet.s2c.play.UnlockRecipesS2CPacket;
+import net.minecraft.network.packet.s2c.play.VehicleMoveS2CPacket;
+import net.minecraft.network.packet.s2c.play.WorldBorderS2CPacket;
+import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
+import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.realms.DisconnectedRealmsScreen;
 import net.minecraft.realms.RealmsScreenProxy;
@@ -254,14 +262,6 @@ import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.command.CommandSource;
-import net.minecraft.server.network.packet.ClientStatusC2SPacket;
-import net.minecraft.server.network.packet.CustomPayloadC2SPacket;
-import net.minecraft.server.network.packet.GuiActionConfirmC2SPacket;
-import net.minecraft.server.network.packet.KeepAliveC2SPacket;
-import net.minecraft.server.network.packet.PlayerMoveC2SPacket;
-import net.minecraft.server.network.packet.ResourcePackStatusC2SPacket;
-import net.minecraft.server.network.packet.TeleportConfirmC2SPacket;
-import net.minecraft.server.network.packet.VehicleMoveC2SPacket;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stat;
@@ -305,7 +305,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	private final Screen loginScreen;
 	private MinecraftClient client;
 	private ClientWorld world;
-	private boolean field_3698;
+	private boolean positionLookSetup;
 	private final Map<UUID, PlayerListEntry> playerListEntries = Maps.<UUID, PlayerListEntry>newHashMap();
 	private final ClientAdvancementManager advancementHandler;
 	private final ClientCommandSource commandSource;
@@ -317,11 +317,11 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	private final RecipeManager recipeManager = new RecipeManager();
 	private final UUID sessionId = UUID.randomUUID();
 
-	public ClientPlayNetworkHandler(MinecraftClient client, Screen screen, ClientConnection clientConnection, GameProfile gameProfile) {
+	public ClientPlayNetworkHandler(MinecraftClient client, Screen screen, ClientConnection connection, GameProfile profile) {
 		this.client = client;
 		this.loginScreen = screen;
-		this.connection = clientConnection;
-		this.profile = gameProfile;
+		this.connection = connection;
+		this.profile = profile;
 		this.advancementHandler = new ClientAdvancementManager(client);
 		this.commandSource = new ClientCommandSource(this, client);
 	}
@@ -703,8 +703,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		this.connection.send(new TeleportConfirmC2SPacket(packet.getTeleportId()));
 		this.connection
 			.send(new PlayerMoveC2SPacket.Both(playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), playerEntity.yaw, playerEntity.pitch, false));
-		if (!this.field_3698) {
-			this.field_3698 = true;
+		if (!this.positionLookSetup) {
+			this.positionLookSetup = true;
 			this.client.openScreen(null);
 		}
 	}
@@ -955,9 +955,9 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		}
 	}
 
-	private static ItemStack method_19691(PlayerEntity playerEntity) {
+	private static ItemStack getActiveTotemOfUndying(PlayerEntity player) {
 		for (Hand hand : Hand.values()) {
-			ItemStack itemStack = playerEntity.getStackInHand(hand);
+			ItemStack itemStack = player.getStackInHand(hand);
 			if (itemStack.getItem() == Items.TOTEM_OF_UNDYING) {
 				return itemStack;
 			}
@@ -978,7 +978,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				this.client.particleManager.addEmitter(entity, ParticleTypes.TOTEM_OF_UNDYING, 30);
 				this.world.playSound(entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ITEM_TOTEM_USE, entity.getSoundCategory(), 1.0F, 1.0F, false);
 				if (entity == this.client.player) {
-					this.client.gameRenderer.showFloatingItem(method_19691(this.client.player));
+					this.client.gameRenderer.showFloatingItem(getActiveTotemOfUndying(this.client.player));
 				}
 			} else {
 				entity.handleStatus(packet.getStatus());
@@ -1007,11 +1007,11 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		ClientPlayerEntity clientPlayerEntity = this.client.player;
 		int i = clientPlayerEntity.getEntityId();
 		if (dimensionType != clientPlayerEntity.dimension) {
-			this.field_3698 = false;
+			this.positionLookSetup = false;
 			Scoreboard scoreboard = this.world.getScoreboard();
 			this.world = new ClientWorld(
 				this,
-				new LevelInfo(packet.method_22425(), packet.getGameMode(), false, this.client.world.getLevelProperties().isHardcore(), packet.getGeneratorType()),
+				new LevelInfo(packet.getSha256Seed(), packet.getGameMode(), false, this.client.world.getLevelProperties().isHardcore(), packet.getGeneratorType()),
 				packet.getDimension(),
 				this.chunkLoadDistance,
 				this.client.getProfiler(),
@@ -1034,7 +1034,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		this.client.player = clientPlayerEntity2;
 		this.client.cameraEntity = clientPlayerEntity2;
 		clientPlayerEntity2.getDataTracker().writeUpdatedEntries(clientPlayerEntity.getDataTracker().getAllEntries());
-		clientPlayerEntity2.getAttributes().method_22324(clientPlayerEntity.getAttributes());
+		clientPlayerEntity2.getAttributes().copyFrom(clientPlayerEntity.getAttributes());
 		clientPlayerEntity2.afterSpawn();
 		clientPlayerEntity2.setServerBrand(string);
 		this.world.addPlayer(i, clientPlayerEntity2);
@@ -1063,14 +1063,14 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void onGuiOpen(GuiOpenS2CPacket packet) {
+	public void onOpenHorseContainer(OpenHorseContainerS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		Entity entity = this.world.getEntityById(packet.getHorseId());
 		if (entity instanceof HorseBaseEntity) {
 			ClientPlayerEntity clientPlayerEntity = this.client.player;
 			HorseBaseEntity horseBaseEntity = (HorseBaseEntity)entity;
 			BasicInventory basicInventory = new BasicInventory(packet.getSlotCount());
-			HorseContainer horseContainer = new HorseContainer(packet.getId(), clientPlayerEntity.inventory, basicInventory, horseBaseEntity);
+			HorseContainer horseContainer = new HorseContainer(packet.getSyncId(), clientPlayerEntity.inventory, basicInventory, horseBaseEntity);
 			clientPlayerEntity.container = horseContainer;
 			this.client.openScreen(new HorseScreen(horseContainer, clientPlayerEntity.inventory, horseBaseEntity));
 		}
@@ -1083,17 +1083,17 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void onGuiSlotUpdate(GuiSlotUpdateS2CPacket packet) {
+	public void onContainerSlotUpdate(ContainerSlotUpdateS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		PlayerEntity playerEntity = this.client.player;
 		ItemStack itemStack = packet.getItemStack();
 		int i = packet.getSlot();
 		this.client.getTutorialManager().onSlotUpdate(itemStack);
-		if (packet.getId() == -1) {
+		if (packet.getSyncId() == -1) {
 			if (!(this.client.currentScreen instanceof CreativeInventoryScreen)) {
 				playerEntity.inventory.setCursorStack(itemStack);
 			}
-		} else if (packet.getId() == -2) {
+		} else if (packet.getSyncId() == -2) {
 			playerEntity.inventory.setInvStack(i, itemStack);
 		} else {
 			boolean bl = false;
@@ -1102,7 +1102,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				bl = creativeInventoryScreen.getSelectedTab() != ItemGroup.INVENTORY.getIndex();
 			}
 
-			if (packet.getId() == 0 && packet.getSlot() >= 36 && i < 45) {
+			if (packet.getSyncId() == 0 && packet.getSlot() >= 36 && i < 45) {
 				if (!itemStack.isEmpty()) {
 					ItemStack itemStack2 = playerEntity.playerContainer.getSlot(i).getStack();
 					if (itemStack2.isEmpty() || itemStack2.getCount() < itemStack.getCount()) {
@@ -1111,7 +1111,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				}
 
 				playerEntity.playerContainer.setStackInSlot(i, itemStack);
-			} else if (packet.getId() == playerEntity.container.syncId && (packet.getId() != 0 || !bl)) {
+			} else if (packet.getSyncId() == playerEntity.container.syncId && (packet.getSyncId() != 0 || !bl)) {
 				playerEntity.container.setStackInSlot(i, itemStack);
 			}
 		}
@@ -1129,7 +1129,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		}
 
 		if (container != null && !packet.wasAccepted()) {
-			this.sendPacket(new GuiActionConfirmC2SPacket(packet.getId(), packet.getActionId(), true));
+			this.sendPacket(new ConfirmGuiActionC2SPacket(packet.getId(), packet.getActionId(), true));
 		}
 	}
 
@@ -1186,11 +1186,11 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void onGuiUpdate(GuiUpdateS2CPacket packet) {
+	public void onContainerPropertyUpdate(ContainerPropertyUpdateS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		PlayerEntity playerEntity = this.client.player;
-		if (playerEntity.container != null && playerEntity.container.syncId == packet.getId()) {
-			playerEntity.container.setProperties(packet.getPropertyId(), packet.getValue());
+		if (playerEntity.container != null && playerEntity.container.syncId == packet.getSyncId()) {
+			playerEntity.container.setProperty(packet.getPropertyId(), packet.getValue());
 		}
 	}
 
@@ -1204,7 +1204,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void onGuiClose(GuiCloseS2CPacket packet) {
+	public void onCloseContainer(CloseContainerS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		this.client.player.closeScreen();
 	}
@@ -1452,7 +1452,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void onEntityPotionEffect(EntityPotionEffectS2CPacket packet) {
+	public void onEntityPotionEffect(EntityStatusEffectS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		Entity entity = this.world.getEntityById(packet.getEntityId());
 		if (entity instanceof LivingEntity) {
@@ -1551,7 +1551,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void onRemoveEntityEffect(RemoveEntityEffectS2CPacket packet) {
+	public void onRemoveEntityEffect(RemoveEntityStatusEffectS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		Entity entity = packet.getEntity(this.world);
 		if (entity instanceof LivingEntity) {
@@ -1663,7 +1663,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 					if (file2.isFile()) {
 						this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.ACCEPTED);
 						CompletableFuture<?> completableFuture = this.client.getResourcePackDownloader().loadServerPack(file2);
-						this.method_2885(completableFuture);
+						this.feedbackAfterDownload(completableFuture);
 						return;
 					}
 				} catch (UnsupportedEncodingException var8) {
@@ -1674,7 +1674,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				ServerInfo serverInfo = this.client.getCurrentServerEntry();
 				if (serverInfo != null && serverInfo.getResourcePack() == ServerInfo.ResourcePackState.ENABLED) {
 					this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.ACCEPTED);
-					this.method_2885(this.client.getResourcePackDownloader().download(string, string2));
+					this.feedbackAfterDownload(this.client.getResourcePackDownloader().download(string, string2));
 				} else if (serverInfo != null && serverInfo.getResourcePack() != ServerInfo.ResourcePackState.PROMPT) {
 					this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.DECLINED);
 				} else {
@@ -1687,7 +1687,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 								}
 
 								this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.ACCEPTED);
-								this.method_2885(this.client.getResourcePackDownloader().download(string, string2));
+								this.feedbackAfterDownload(this.client.getResourcePackDownloader().download(string, string2));
 							} else {
 								if (serverInfox != null) {
 									serverInfox.setResourcePackState(ServerInfo.ResourcePackState.DISABLED);
@@ -1704,17 +1704,17 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		}
 	}
 
-	private boolean validateResourcePackUrl(String string) {
+	private boolean validateResourcePackUrl(String url) {
 		try {
-			URI uRI = new URI(string);
-			String string2 = uRI.getScheme();
-			boolean bl = "level".equals(string2);
-			if (!"http".equals(string2) && !"https".equals(string2) && !bl) {
-				throw new URISyntaxException(string, "Wrong protocol");
-			} else if (!bl || !string.contains("..") && string.endsWith("/resources.zip")) {
+			URI uRI = new URI(url);
+			String string = uRI.getScheme();
+			boolean bl = "level".equals(string);
+			if (!"http".equals(string) && !"https".equals(string) && !bl) {
+				throw new URISyntaxException(url, "Wrong protocol");
+			} else if (!bl || !url.contains("..") && url.endsWith("/resources.zip")) {
 				return true;
 			} else {
-				throw new URISyntaxException(string, "Invalid levelstorage resourcepack path");
+				throw new URISyntaxException(url, "Invalid levelstorage resourcepack path");
 			}
 		} catch (URISyntaxException var5) {
 			this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.FAILED_DOWNLOAD);
@@ -1722,15 +1722,15 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		}
 	}
 
-	private void method_2885(CompletableFuture<?> completableFuture) {
-		completableFuture.thenRun(() -> this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.SUCCESSFULLY_LOADED)).exceptionally(throwable -> {
+	private void feedbackAfterDownload(CompletableFuture<?> downloadFuture) {
+		downloadFuture.thenRun(() -> this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.SUCCESSFULLY_LOADED)).exceptionally(throwable -> {
 			this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.FAILED_DOWNLOAD);
 			return null;
 		});
 	}
 
-	private void sendResourcePackStatus(ResourcePackStatusC2SPacket.Status status) {
-		this.connection.send(new ResourcePackStatusC2SPacket(status));
+	private void sendResourcePackStatus(ResourcePackStatusC2SPacket.Status packStatus) {
+		this.connection.send(new ResourcePackStatusC2SPacket(packStatus));
 	}
 
 	@Override
@@ -2155,11 +2155,11 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	public void onCraftFailedResponse(CraftFailedResponseS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		Container container = this.client.player.container;
-		if (container.syncId == packet.getSyncId() && container.isRestricted(this.client.player)) {
+		if (container.syncId == packet.getSyncId() && container.isNotRestricted(this.client.player)) {
 			this.recipeManager.get(packet.getRecipeId()).ifPresent(recipe -> {
 				if (this.client.currentScreen instanceof RecipeBookProvider) {
 					RecipeBookWidget recipeBookWidget = ((RecipeBookProvider)this.client.currentScreen).getRecipeBookWidget();
-					recipeBookWidget.showGhostRecipe(recipe, container.slotList);
+					recipeBookWidget.showGhostRecipe(recipe, container.slots);
 				}
 			});
 		}
@@ -2174,11 +2174,11 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		int k = packet.getSkyLightMask();
 		int l = packet.getFilledSkyLightMask();
 		Iterator<byte[]> iterator = packet.getSkyLightUpdates().iterator();
-		this.method_2870(i, j, lightingProvider, LightType.SKY, k, l, iterator);
+		this.updateLighting(i, j, lightingProvider, LightType.SKY, k, l, iterator);
 		int m = packet.getBlockLightMask();
 		int n = packet.getFilledBlockLightMask();
 		Iterator<byte[]> iterator2 = packet.getBlockLightUpdates().iterator();
-		this.method_2870(i, j, lightingProvider, LightType.BLOCK, m, n, iterator2);
+		this.updateLighting(i, j, lightingProvider, LightType.BLOCK, m, n, iterator2);
 	}
 
 	@Override
@@ -2190,7 +2190,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			((MerchantContainer)container).setExperienceFromServer(packet.getExperience());
 			((MerchantContainer)container).setLevelProgress(packet.getLevelProgress());
 			((MerchantContainer)container).setCanLevel(packet.isLeveled());
-			((MerchantContainer)container).setRefreshTrades(packet.method_20722());
+			((MerchantContainer)container).setRefreshTrades(packet.isRefreshable());
 		}
 	}
 
@@ -2213,16 +2213,16 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		this.client.interactionManager.processPlayerActionResponse(this.world, packet.getBlockPos(), packet.getBlockState(), packet.getAction(), packet.isApproved());
 	}
 
-	private void method_2870(int i, int j, LightingProvider lightingProvider, LightType lightType, int k, int l, Iterator<byte[]> iterator) {
-		for (int m = 0; m < 18; m++) {
-			int n = -1 + m;
-			boolean bl = (k & 1 << m) != 0;
-			boolean bl2 = (l & 1 << m) != 0;
+	private void updateLighting(int chunkX, int chunkZ, LightingProvider provider, LightType type, int mask, int filledMask, Iterator<byte[]> updates) {
+		for (int i = 0; i < 18; i++) {
+			int j = -1 + i;
+			boolean bl = (mask & 1 << i) != 0;
+			boolean bl2 = (filledMask & 1 << i) != 0;
 			if (bl || bl2) {
-				lightingProvider.queueData(
-					lightType, ChunkSectionPos.from(i, n, j), bl ? new ChunkNibbleArray((byte[])((byte[])iterator.next()).clone()) : new ChunkNibbleArray()
+				provider.queueData(
+					type, ChunkSectionPos.from(chunkX, j, chunkZ), bl ? new ChunkNibbleArray((byte[])((byte[])updates.next()).clone()) : new ChunkNibbleArray()
 				);
-				this.world.scheduleBlockRenders(i, n, j);
+				this.world.scheduleBlockRenders(chunkX, j, chunkZ);
 			}
 		}
 	}

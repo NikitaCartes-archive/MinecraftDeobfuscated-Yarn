@@ -51,7 +51,7 @@ public class PistonBlock extends FacingBlock {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
 		if ((Boolean)state.get(EXTENDED)) {
 			switch ((Direction)state.get(FACING)) {
 				case DOWN:

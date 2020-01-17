@@ -8,7 +8,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.datafixer.TypeReferences;
 
-public class Schema1451v2 extends SchemaIdentifierNormalize {
+public class Schema1451v2 extends IdentifierNormalizingSchema {
 	public Schema1451v2(int i, Schema schema) {
 		super(i, schema);
 	}

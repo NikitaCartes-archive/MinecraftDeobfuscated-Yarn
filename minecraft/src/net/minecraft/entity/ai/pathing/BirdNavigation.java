@@ -1,8 +1,8 @@
 package net.minecraft.entity.ai.pathing;
 
-import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -54,7 +54,7 @@ public class BirdNavigation extends EntityNavigation {
 				}
 			}
 
-			DebugRendererInfoManager.sendPathfindingData(this.world, this.entity, this.currentPath, this.field_6683);
+			DebugInfoSender.sendPathfindingData(this.world, this.entity, this.currentPath, this.nodeReachProximity);
 			if (!this.isIdle()) {
 				Vec3d vec3d = this.currentPath.getNodePosition(this.entity);
 				this.entity.getMoveControl().moveTo(vec3d.x, vec3d.y, vec3d.z, this.speed);

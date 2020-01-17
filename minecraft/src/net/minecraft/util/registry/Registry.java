@@ -45,7 +45,7 @@ import net.minecraft.structure.StructureFeatures;
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.structure.pool.StructurePoolElementType;
 import net.minecraft.structure.processor.StructureProcessorType;
-import net.minecraft.structure.rule.RuleTest;
+import net.minecraft.structure.rule.RuleTestType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.IndexedIterable;
 import net.minecraft.village.VillagerProfession;
@@ -63,7 +63,7 @@ import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.foliage.FoliagePlacerType;
 import net.minecraft.world.gen.placer.BlockPlacerType;
-import net.minecraft.world.gen.stateprovider.StateProviderType;
+import net.minecraft.world.gen.stateprovider.BlockStateProviderType;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 import net.minecraft.world.poi.PointOfInterestType;
 import org.apache.commons.lang3.Validate;
@@ -87,8 +87,8 @@ public abstract class Registry<T> implements IndexedIterable<T> {
 	public static final Registry<Feature<?>> FEATURE = create("feature", () -> Feature.ORE);
 	public static final Registry<Decorator<?>> DECORATOR = create("decorator", () -> Decorator.NOPE);
 	public static final Registry<Biome> BIOME = create("biome", () -> Biomes.DEFAULT);
-	public static final Registry<StateProviderType<?>> BLOCK_STATE_PROVIDER_TYPE = create(
-		"block_state_provider_type", () -> StateProviderType.SIMPLE_STATE_PROVIDER
+	public static final Registry<BlockStateProviderType<?>> BLOCK_STATE_PROVIDER_TYPE = create(
+		"block_state_provider_type", () -> BlockStateProviderType.SIMPLE_STATE_PROVIDER
 	);
 	public static final Registry<BlockPlacerType<?>> BLOCK_PLACER_TYPE = create("block_placer_type", () -> BlockPlacerType.SIMPLE_BLOCK_PLACER);
 	public static final Registry<FoliagePlacerType<?>> FOLIAGE_PLACER_TYPE = create("foliage_placer_type", () -> FoliagePlacerType.BLOB_FOLIAGE_PLACER);
@@ -98,12 +98,15 @@ public abstract class Registry<T> implements IndexedIterable<T> {
 	public static final Registry<BlockEntityType<?>> BLOCK_ENTITY_TYPE = create("block_entity_type", () -> BlockEntityType.FURNACE);
 	public static final Registry<ChunkGeneratorType<?, ?>> CHUNK_GENERATOR_TYPE = create("chunk_generator_type", () -> ChunkGeneratorType.FLAT);
 	public static final Registry<DimensionType> DIMENSION_TYPE = create("dimension_type", () -> DimensionType.OVERWORLD);
-	public static final DefaultedRegistry<PaintingMotive> MOTIVE = create("motive", "kebab", () -> PaintingMotive.KEBAB);
+	/**
+	 * The painting motive (theme, motif) registry
+	 */
+	public static final DefaultedRegistry<PaintingMotive> PAINTING_MOTIVE = create("motive", "kebab", () -> PaintingMotive.KEBAB);
 	public static final Registry<Identifier> CUSTOM_STAT = create("custom_stat", () -> Stats.JUMP);
 	public static final DefaultedRegistry<ChunkStatus> CHUNK_STATUS = create("chunk_status", "empty", () -> ChunkStatus.EMPTY);
 	public static final Registry<StructureFeature<?>> STRUCTURE_FEATURE = create("structure_feature", () -> StructureFeatures.MINESHAFT);
 	public static final Registry<StructurePieceType> STRUCTURE_PIECE = create("structure_piece", () -> StructurePieceType.MINESHAFT_ROOM);
-	public static final Registry<RuleTest> RULE_TEST = create("rule_test", () -> RuleTest.ALWAYS_TRUE);
+	public static final Registry<RuleTestType> RULE_TEST = create("rule_test", () -> RuleTestType.ALWAYS_TRUE);
 	public static final Registry<StructureProcessorType> STRUCTURE_PROCESSOR = create("structure_processor", () -> StructureProcessorType.BLOCK_IGNORE);
 	public static final Registry<StructurePoolElementType> STRUCTURE_POOL_ELEMENT = create(
 		"structure_pool_element", () -> StructurePoolElementType.EMPTY_POOL_ELEMENT

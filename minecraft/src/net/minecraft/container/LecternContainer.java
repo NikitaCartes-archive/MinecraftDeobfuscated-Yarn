@@ -35,18 +35,18 @@ public class LecternContainer extends Container {
 	public boolean onButtonClick(PlayerEntity player, int id) {
 		if (id >= 100) {
 			int i = id - 100;
-			this.setProperties(0, i);
+			this.setProperty(0, i);
 			return true;
 		} else {
 			switch (id) {
 				case 1: {
 					int i = this.propertyDelegate.get(0);
-					this.setProperties(0, i - 1);
+					this.setProperty(0, i - 1);
 					return true;
 				}
 				case 2: {
 					int i = this.propertyDelegate.get(0);
-					this.setProperties(0, i + 1);
+					this.setProperty(0, i + 1);
 					return true;
 				}
 				case 3:
@@ -68,8 +68,8 @@ public class LecternContainer extends Container {
 	}
 
 	@Override
-	public void setProperties(int pos, int propertyId) {
-		super.setProperties(pos, propertyId);
+	public void setProperty(int id, int value) {
+		super.setProperty(id, value);
 		this.sendContentUpdates();
 	}
 

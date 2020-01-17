@@ -50,8 +50,8 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 		this.server = server;
 	}
 
-	public Optional<CommandFunction> getFunction(Identifier identifier) {
-		return Optional.ofNullable(this.idMap.get(identifier));
+	public Optional<CommandFunction> getFunction(Identifier id) {
+		return Optional.ofNullable(this.idMap.get(id));
 	}
 
 	public MinecraftServer getServer() {
@@ -167,9 +167,9 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 	}
 
 	@Nullable
-	private CommandFunction load(CommandFunction function, @Nullable Throwable exception, Identifier identifier) {
+	private CommandFunction load(CommandFunction function, @Nullable Throwable exception, Identifier id) {
 		if (exception != null) {
-			LOGGER.error("Couldn't load function at {}", identifier, exception);
+			LOGGER.error("Couldn't load function at {}", id, exception);
 			return null;
 		} else {
 			synchronized (this.idMap) {
@@ -179,9 +179,9 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 		}
 	}
 
-	private static List<String> readLines(ResourceManager resourceManager, Identifier identifier) {
+	private static List<String> readLines(ResourceManager resourceManager, Identifier id) {
 		try {
-			Resource resource = resourceManager.getResource(identifier);
+			Resource resource = resourceManager.getResource(id);
 			Throwable var3 = null;
 
 			List var4;
@@ -235,9 +235,9 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 			this.element = element;
 		}
 
-		public void execute(ArrayDeque<CommandFunctionManager.Entry> arrayDeque, int i) {
+		public void execute(ArrayDeque<CommandFunctionManager.Entry> stack, int maxChainLength) {
 			try {
-				this.element.execute(this.manager, this.source, arrayDeque, i);
+				this.element.execute(this.manager, this.source, stack, maxChainLength);
 			} catch (Throwable var4) {
 			}
 		}

@@ -1,9 +1,9 @@
 package net.minecraft.block;
 
-import net.minecraft.client.network.ClientDummyContainerProvider;
 import net.minecraft.container.BlockContext;
 import net.minecraft.container.LoomContainer;
-import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.container.NameableContainerFactory;
+import net.minecraft.container.SimpleNamedContainerFactory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.stat.Stats;
@@ -27,15 +27,15 @@ public class LoomBlock extends HorizontalFacingBlock {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
-			player.openContainer(state.createContainerProvider(world, pos));
+			player.openContainer(state.createContainerFactory(world, pos));
 			player.incrementStat(Stats.INTERACT_WITH_LOOM);
 			return ActionResult.SUCCESS;
 		}
 	}
 
 	@Override
-	public NameableContainerProvider createContainerProvider(BlockState state, World world, BlockPos pos) {
-		return new ClientDummyContainerProvider(
+	public NameableContainerFactory createContainerFactory(BlockState state, World world, BlockPos pos) {
+		return new SimpleNamedContainerFactory(
 			(i, playerInventory, playerEntity) -> new LoomContainer(i, playerInventory, BlockContext.create(world, pos)), CONTAINER_NAME
 		);
 	}
