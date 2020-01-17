@@ -46,12 +46,12 @@ public class ShulkerBoxContainer extends Container {
 	@Override
 	public ItemStack transferSlot(PlayerEntity player, int invSlot) {
 		ItemStack itemStack = ItemStack.EMPTY;
-		Slot slot = (Slot)this.slotList.get(invSlot);
+		Slot slot = (Slot)this.slots.get(invSlot);
 		if (slot != null && slot.hasStack()) {
 			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
 			if (invSlot < this.inventory.getInvSize()) {
-				if (!this.insertItem(itemStack2, this.inventory.getInvSize(), this.slotList.size(), true)) {
+				if (!this.insertItem(itemStack2, this.inventory.getInvSize(), this.slots.size(), true)) {
 					return ItemStack.EMPTY;
 				}
 			} else if (!this.insertItem(itemStack2, 0, this.inventory.getInvSize(), false)) {

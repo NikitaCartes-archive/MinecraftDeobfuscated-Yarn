@@ -13,13 +13,13 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 
 public class MushroomBlock extends Block {
-	public static final BooleanProperty NORTH = ConnectedPlantBlock.NORTH;
-	public static final BooleanProperty EAST = ConnectedPlantBlock.EAST;
-	public static final BooleanProperty SOUTH = ConnectedPlantBlock.SOUTH;
-	public static final BooleanProperty WEST = ConnectedPlantBlock.WEST;
-	public static final BooleanProperty UP = ConnectedPlantBlock.UP;
-	public static final BooleanProperty DOWN = ConnectedPlantBlock.DOWN;
-	private static final Map<Direction, BooleanProperty> FACING_PROPERTIES = ConnectedPlantBlock.FACING_PROPERTIES;
+	public static final BooleanProperty NORTH = ConnectingBlock.NORTH;
+	public static final BooleanProperty EAST = ConnectingBlock.EAST;
+	public static final BooleanProperty SOUTH = ConnectingBlock.SOUTH;
+	public static final BooleanProperty WEST = ConnectingBlock.WEST;
+	public static final BooleanProperty UP = ConnectingBlock.UP;
+	public static final BooleanProperty DOWN = ConnectingBlock.DOWN;
+	private static final Map<Direction, BooleanProperty> FACING_PROPERTIES = ConnectingBlock.FACING_PROPERTIES;
 
 	public MushroomBlock(Block.Settings settings) {
 		super(settings);

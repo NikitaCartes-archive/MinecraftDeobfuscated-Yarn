@@ -26,11 +26,11 @@ import net.minecraft.client.search.SearchManager;
 import net.minecraft.container.CraftingContainer;
 import net.minecraft.container.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.c2s.play.RecipeBookDataC2SPacket;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeGridAligner;
-import net.minecraft.server.network.packet.RecipeBookDataC2SPacket;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -453,7 +453,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 	public void acceptAlignedInput(Iterator<Ingredient> inputs, int slot, int amount, int gridX, int gridY) {
 		Ingredient ingredient = (Ingredient)inputs.next();
 		if (!ingredient.isEmpty()) {
-			Slot slot2 = (Slot)this.craftingContainer.slotList.get(slot);
+			Slot slot2 = (Slot)this.craftingContainer.slots.get(slot);
 			this.ghostSlots.addSlot(ingredient, slot2.xPosition, slot2.yPosition);
 		}
 	}

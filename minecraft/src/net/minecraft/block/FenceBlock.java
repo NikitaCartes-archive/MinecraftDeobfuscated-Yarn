@@ -20,7 +20,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
-public class FenceBlock extends HorizontalConnectedBlock {
+public class FenceBlock extends HorizontalConnectingBlock {
 	private final VoxelShape[] cullingShapes;
 
 	public FenceBlock(Block.Settings settings) {

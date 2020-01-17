@@ -9,7 +9,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class GrindstoneScreen extends AbstractContainerScreen<GrindstoneContainer> {
+public class GrindstoneScreen extends ContainerScreen<GrindstoneContainer> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/grindstone.png");
 
 	public GrindstoneScreen(GrindstoneContainer container, PlayerInventory inventory, Text title) {

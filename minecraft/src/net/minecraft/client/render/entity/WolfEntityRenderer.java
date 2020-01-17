@@ -20,7 +20,7 @@ public class WolfEntityRenderer extends MobEntityRenderer<WolfEntity, WolfEntity
 		this.addFeature(new WolfCollarFeatureRenderer(this));
 	}
 
-	protected float getCustomAngle(WolfEntity wolfEntity, float f) {
+	protected float getAnimationProgress(WolfEntity wolfEntity, float f) {
 		return wolfEntity.method_6714();
 	}
 

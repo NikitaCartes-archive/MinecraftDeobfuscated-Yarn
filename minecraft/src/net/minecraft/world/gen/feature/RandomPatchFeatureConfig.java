@@ -13,11 +13,11 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.placer.BlockPlacer;
 import net.minecraft.world.gen.placer.BlockPlacerType;
-import net.minecraft.world.gen.stateprovider.StateProvider;
-import net.minecraft.world.gen.stateprovider.StateProviderType;
+import net.minecraft.world.gen.stateprovider.BlockStateProvider;
+import net.minecraft.world.gen.stateprovider.BlockStateProviderType;
 
 public class RandomPatchFeatureConfig implements FeatureConfig {
-	public final StateProvider stateProvider;
+	public final BlockStateProvider stateProvider;
 	public final BlockPlacer blockPlacer;
 	public final Set<Block> whitelist;
 	public final Set<BlockState> blacklist;
@@ -30,7 +30,7 @@ public class RandomPatchFeatureConfig implements FeatureConfig {
 	public final boolean needsWater;
 
 	private RandomPatchFeatureConfig(
-		StateProvider stateProvider,
+		BlockStateProvider stateProvider,
 		BlockPlacer blockPlacer,
 		Set<Block> whitelist,
 		Set<BlockState> blacklist,
@@ -73,12 +73,12 @@ public class RandomPatchFeatureConfig implements FeatureConfig {
 	}
 
 	public static <T> RandomPatchFeatureConfig deserialize(Dynamic<T> dynamic) {
-		StateProviderType<?> stateProviderType = Registry.BLOCK_STATE_PROVIDER_TYPE
+		BlockStateProviderType<?> blockStateProviderType = Registry.BLOCK_STATE_PROVIDER_TYPE
 			.get(new Identifier((String)dynamic.get("state_provider").get("type").asString().orElseThrow(RuntimeException::new)));
 		BlockPlacerType<?> blockPlacerType = Registry.BLOCK_PLACER_TYPE
 			.get(new Identifier((String)dynamic.get("block_placer").get("type").asString().orElseThrow(RuntimeException::new)));
 		return new RandomPatchFeatureConfig(
-			stateProviderType.deserialize(dynamic.get("state_provider").orElseEmptyMap()),
+			blockStateProviderType.deserialize(dynamic.get("state_provider").orElseEmptyMap()),
 			blockPlacerType.deserialize(dynamic.get("block_placer").orElseEmptyMap()),
 			(Set<Block>)dynamic.get("whitelist").asList(BlockState::deserialize).stream().map(BlockState::getBlock).collect(Collectors.toSet()),
 			Sets.<BlockState>newHashSet(dynamic.get("blacklist").asList(BlockState::deserialize)),
@@ -93,7 +93,7 @@ public class RandomPatchFeatureConfig implements FeatureConfig {
 	}
 
 	public static class Builder {
-		private final StateProvider stateProvider;
+		private final BlockStateProvider stateProvider;
 		private final BlockPlacer blockPlacer;
 		private Set<Block> whitelist = ImmutableSet.of();
 		private Set<BlockState> blacklist = ImmutableSet.of();
@@ -105,7 +105,7 @@ public class RandomPatchFeatureConfig implements FeatureConfig {
 		private boolean project = true;
 		private boolean needsWater = false;
 
-		public Builder(StateProvider stateProvider, BlockPlacer blockPlacer) {
+		public Builder(BlockStateProvider stateProvider, BlockPlacer blockPlacer) {
 			this.stateProvider = stateProvider;
 			this.blockPlacer = blockPlacer;
 		}

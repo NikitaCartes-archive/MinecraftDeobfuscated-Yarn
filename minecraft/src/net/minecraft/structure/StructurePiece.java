@@ -83,7 +83,7 @@ public abstract class StructurePiece {
 	public void method_14918(StructurePiece structurePiece, List<StructurePiece> list, Random random) {
 	}
 
-	public abstract boolean generate(IWorld world, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos);
+	public abstract boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos);
 
 	public BlockBox getBoundingBox() {
 		return this.boundingBox;

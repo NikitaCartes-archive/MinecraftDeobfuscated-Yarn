@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.EntityType;
@@ -196,8 +196,8 @@ public class BlockState extends AbstractState<Block, BlockState> implements Stat
 		return this.shapeCache != null ? this.shapeCache.collisionShape : this.getCollisionShape(view, pos, EntityContext.absent());
 	}
 
-	public VoxelShape getCollisionShape(BlockView view, BlockPos pos, EntityContext ePos) {
-		return this.getBlock().getCollisionShape(this, view, pos, ePos);
+	public VoxelShape getCollisionShape(BlockView view, BlockPos pos, EntityContext context) {
+		return this.getBlock().getCollisionShape(this, view, pos, context);
 	}
 
 	public VoxelShape getCullingShape(BlockView view, BlockPos pos) {
@@ -302,8 +302,8 @@ public class BlockState extends AbstractState<Block, BlockState> implements Stat
 	}
 
 	@Nullable
-	public NameableContainerProvider createContainerProvider(World world, BlockPos pos) {
-		return this.getBlock().createContainerProvider(this, world, pos);
+	public NameableContainerFactory createContainerFactory(World world, BlockPos pos) {
+		return this.getBlock().createContainerFactory(this, world, pos);
 	}
 
 	public boolean matches(Tag<Block> tag) {

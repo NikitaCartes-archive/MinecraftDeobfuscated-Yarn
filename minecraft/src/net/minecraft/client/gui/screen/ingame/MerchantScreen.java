@@ -8,7 +8,7 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.container.MerchantContainer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.packet.SelectVillagerTradeC2SPacket;
+import net.minecraft.network.packet.c2s.play.SelectVillagerTradeC2SPacket;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -17,7 +17,7 @@ import net.minecraft.village.TraderOfferList;
 import net.minecraft.village.VillagerData;
 
 @Environment(EnvType.CLIENT)
-public class MerchantScreen extends AbstractContainerScreen<MerchantContainer> {
+public class MerchantScreen extends ContainerScreen<MerchantContainer> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/villager2.png");
 	private int selectedIndex;
 	private final MerchantScreen.WidgetButtonPage[] offers = new MerchantScreen.WidgetButtonPage[7];

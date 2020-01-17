@@ -7,13 +7,13 @@ import net.minecraft.block.CommandBlock;
 import net.minecraft.block.JigsawBlock;
 import net.minecraft.block.StructureBlock;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.network.packet.PlayerActionResponseS2CPacket;
-import net.minecraft.client.network.packet.PlayerListS2CPacket;
-import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
-import net.minecraft.server.network.packet.PlayerActionC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
+import net.minecraft.network.packet.s2c.play.PlayerActionResponseS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -256,35 +256,35 @@ public class ServerPlayerInteractionManager {
 		}
 	}
 
-	public ActionResult interactItem(PlayerEntity playerEntity, World world, ItemStack itemStack, Hand hand) {
+	public ActionResult interactItem(PlayerEntity player, World world, ItemStack stack, Hand hand) {
 		if (this.gameMode == GameMode.SPECTATOR) {
 			return ActionResult.PASS;
-		} else if (playerEntity.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
+		} else if (player.getItemCooldownManager().isCoolingDown(stack.getItem())) {
 			return ActionResult.PASS;
 		} else {
-			int i = itemStack.getCount();
-			int j = itemStack.getDamage();
-			TypedActionResult<ItemStack> typedActionResult = itemStack.use(world, playerEntity, hand);
-			ItemStack itemStack2 = typedActionResult.getValue();
-			if (itemStack2 == itemStack && itemStack2.getCount() == i && itemStack2.getMaxUseTime() <= 0 && itemStack2.getDamage() == j) {
+			int i = stack.getCount();
+			int j = stack.getDamage();
+			TypedActionResult<ItemStack> typedActionResult = stack.use(world, player, hand);
+			ItemStack itemStack = typedActionResult.getValue();
+			if (itemStack == stack && itemStack.getCount() == i && itemStack.getMaxUseTime() <= 0 && itemStack.getDamage() == j) {
 				return typedActionResult.getResult();
-			} else if (typedActionResult.getResult() == ActionResult.FAIL && itemStack2.getMaxUseTime() > 0 && !playerEntity.isUsingItem()) {
+			} else if (typedActionResult.getResult() == ActionResult.FAIL && itemStack.getMaxUseTime() > 0 && !player.isUsingItem()) {
 				return typedActionResult.getResult();
 			} else {
-				playerEntity.setStackInHand(hand, itemStack2);
+				player.setStackInHand(hand, itemStack);
 				if (this.isCreative()) {
-					itemStack2.setCount(i);
-					if (itemStack2.isDamageable() && itemStack2.getDamage() != j) {
-						itemStack2.setDamage(j);
+					itemStack.setCount(i);
+					if (itemStack.isDamageable() && itemStack.getDamage() != j) {
+						itemStack.setDamage(j);
 					}
 				}
 
-				if (itemStack2.isEmpty()) {
-					playerEntity.setStackInHand(hand, ItemStack.EMPTY);
+				if (itemStack.isEmpty()) {
+					player.setStackInHand(hand, ItemStack.EMPTY);
 				}
 
-				if (!playerEntity.isUsingItem()) {
-					((ServerPlayerEntity)playerEntity).openContainer(playerEntity.playerContainer);
+				if (!player.isUsingItem()) {
+					((ServerPlayerEntity)player).openContainer(player.playerContainer);
 				}
 
 				return typedActionResult.getResult();
@@ -296,9 +296,9 @@ public class ServerPlayerInteractionManager {
 		BlockPos blockPos = hitResult.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
 		if (this.gameMode == GameMode.SPECTATOR) {
-			NameableContainerProvider nameableContainerProvider = blockState.createContainerProvider(world, blockPos);
-			if (nameableContainerProvider != null) {
-				player.openContainer(nameableContainerProvider);
+			NameableContainerFactory nameableContainerFactory = blockState.createContainerFactory(world, blockPos);
+			if (nameableContainerFactory != null) {
+				player.openContainer(nameableContainerFactory);
 				return ActionResult.SUCCESS;
 			} else {
 				return ActionResult.PASS;

@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.block.ColoredBlock;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -15,7 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class BeaconBlock extends BlockWithEntity implements ColoredBlock {
+public class BeaconBlock extends BlockWithEntity implements Stainable {
 	public BeaconBlock(Block.Settings settings) {
 		super(settings);
 	}

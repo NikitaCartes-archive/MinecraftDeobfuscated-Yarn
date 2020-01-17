@@ -94,12 +94,12 @@ public class PistonExtensionBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
 		return VoxelShapes.empty();
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+	public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
 		PistonBlockEntity pistonBlockEntity = this.getPistonBlockEntity(view, pos);
 		return pistonBlockEntity != null ? pistonBlockEntity.getCollisionShape(view, pos) : VoxelShapes.empty();
 	}

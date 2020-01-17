@@ -10,7 +10,7 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 
-public class TagMatchRuleTest extends AbstractRuleTest {
+public class TagMatchRuleTest extends RuleTest {
 	private final Tag<Block> tag;
 
 	public TagMatchRuleTest(Tag<Block> tag) {
@@ -22,17 +22,17 @@ public class TagMatchRuleTest extends AbstractRuleTest {
 	}
 
 	@Override
-	public boolean test(BlockState blockState, Random random) {
-		return blockState.matches(this.tag);
+	public boolean test(BlockState state, Random random) {
+		return state.matches(this.tag);
 	}
 
 	@Override
-	protected RuleTest getRuleTest() {
-		return RuleTest.TAG_MATCH;
+	protected RuleTestType getType() {
+		return RuleTestType.TAG_MATCH;
 	}
 
 	@Override
-	protected <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-		return new Dynamic<>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("tag"), dynamicOps.createString(this.tag.getId().toString()))));
+	protected <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+		return new Dynamic<>(ops, ops.createMap(ImmutableMap.of(ops.createString("tag"), ops.createString(this.tag.getId().toString()))));
 	}
 }

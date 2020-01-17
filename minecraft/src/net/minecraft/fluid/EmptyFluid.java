@@ -19,7 +19,7 @@ public class EmptyFluid extends Fluid {
 	}
 
 	@Override
-	public boolean method_15777(FluidState fluidState, BlockView blockView, BlockPos blockPos, Fluid fluid, Direction direction) {
+	public boolean canBeReplacedWith(FluidState state, BlockView world, BlockPos pos, Fluid fluid, Direction direction) {
 		return true;
 	}
 
@@ -29,7 +29,7 @@ public class EmptyFluid extends Fluid {
 	}
 
 	@Override
-	public int getTickRate(WorldView worldView) {
+	public int getTickRate(WorldView world) {
 		return 0;
 	}
 
@@ -44,32 +44,32 @@ public class EmptyFluid extends Fluid {
 	}
 
 	@Override
-	public float getHeight(FluidState fluidState, BlockView blockView, BlockPos blockPos) {
+	public float getHeight(FluidState state, BlockView world, BlockPos pos) {
 		return 0.0F;
 	}
 
 	@Override
-	public float getHeight(FluidState fluidState) {
+	public float getHeight(FluidState state) {
 		return 0.0F;
 	}
 
 	@Override
-	protected BlockState toBlockState(FluidState fluidState) {
+	protected BlockState toBlockState(FluidState state) {
 		return Blocks.AIR.getDefaultState();
 	}
 
 	@Override
-	public boolean isStill(FluidState fluidState) {
+	public boolean isStill(FluidState state) {
 		return false;
 	}
 
 	@Override
-	public int getLevel(FluidState fluidState) {
+	public int getLevel(FluidState state) {
 		return 0;
 	}
 
 	@Override
-	public VoxelShape getShape(FluidState fluidState, BlockView blockView, BlockPos blockPos) {
+	public VoxelShape getShape(FluidState state, BlockView world, BlockPos pos) {
 		return VoxelShapes.empty();
 	}
 }

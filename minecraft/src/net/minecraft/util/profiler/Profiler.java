@@ -9,18 +9,37 @@ public interface Profiler {
 
 	void endTick();
 
-	void push(String string);
+	void push(String location);
 
-	void push(Supplier<String> supplier);
+	void push(Supplier<String> locationGetter);
 
 	void pop();
 
-	void swap(String string);
+	void swap(String location);
 
 	@Environment(EnvType.CLIENT)
-	void swap(Supplier<String> supplier);
+	void swap(Supplier<String> locationGetter);
 
-	void method_24270(String string);
+	/**
+	 * Increment the visit count for a marker.
+	 * 
+	 * <p>This is useful to keep track of number of calls made to performance-
+	 * wise expensive methods.
+	 * 
+	 * @param marker a unique marker
+	 */
+	void visit(String marker);
 
-	void method_24271(Supplier<String> supplier);
+	/**
+	 * Increment the visit count for a marker.
+	 * 
+	 * <p>This is useful to keep track of number of calls made to performance-
+	 * wise expensive methods.
+	 * 
+	 * <p>This method is preferred if getting the marker is costly; the
+	 * supplier won't be called if the profiler is disabled.
+	 * 
+	 * @param markerGetter the getter for a unique marker
+	 */
+	void visit(Supplier<String> markerGetter);
 }

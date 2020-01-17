@@ -8,11 +8,11 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -34,7 +34,11 @@ public abstract class EntityNavigation {
 	protected long field_6670;
 	protected long field_6669;
 	protected double field_6682;
-	protected float field_6683 = 0.5F;
+	/**
+	 * If the Chebyshev distance from the entity to the next node is less than
+	 * or equal to this value, the entity is considered "reached" the node.
+	 */
+	protected float nodeReachProximity = 0.5F;
 	protected boolean shouldRecalculate;
 	protected long lastRecalculateTime;
 	protected PathNodeMaker nodeMaker;
@@ -193,7 +197,7 @@ public abstract class EntityNavigation {
 				}
 			}
 
-			DebugRendererInfoManager.sendPathfindingData(this.world, this.entity, this.currentPath, this.field_6683);
+			DebugInfoSender.sendPathfindingData(this.world, this.entity, this.currentPath, this.nodeReachProximity);
 			if (!this.isIdle()) {
 				Vec3d vec3d = this.currentPath.getNodePosition(this.entity);
 				BlockPos blockPos = new BlockPos(vec3d);
@@ -206,10 +210,10 @@ public abstract class EntityNavigation {
 
 	protected void method_6339() {
 		Vec3d vec3d = this.getPos();
-		this.field_6683 = this.entity.getWidth() > 0.75F ? this.entity.getWidth() / 2.0F : 0.75F - this.entity.getWidth() / 2.0F;
+		this.nodeReachProximity = this.entity.getWidth() > 0.75F ? this.entity.getWidth() / 2.0F : 0.75F - this.entity.getWidth() / 2.0F;
 		Vec3d vec3d2 = this.currentPath.getCurrentPosition();
-		if (Math.abs(this.entity.getX() - (vec3d2.x + 0.5)) < (double)this.field_6683
-			&& Math.abs(this.entity.getZ() - (vec3d2.z + 0.5)) < (double)this.field_6683
+		if (Math.abs(this.entity.getX() - (vec3d2.x + 0.5)) < (double)this.nodeReachProximity
+			&& Math.abs(this.entity.getZ() - (vec3d2.z + 0.5)) < (double)this.nodeReachProximity
 			&& Math.abs(this.entity.getY() - vec3d2.y) < 1.0) {
 			this.currentPath.setCurrentNodeIndex(this.currentPath.getCurrentNodeIndex() + 1);
 		}

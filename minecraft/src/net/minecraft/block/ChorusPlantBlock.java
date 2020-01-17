@@ -11,7 +11,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.WorldView;
 
-public class ChorusPlantBlock extends ConnectedPlantBlock {
+public class ChorusPlantBlock extends ConnectingBlock {
 	protected ChorusPlantBlock(Block.Settings settings) {
 		super(0.3125F, settings);
 		this.setDefaultState(

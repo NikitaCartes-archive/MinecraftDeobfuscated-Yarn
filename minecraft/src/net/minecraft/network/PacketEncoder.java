@@ -41,7 +41,7 @@ public class PacketEncoder extends MessageToByteEncoder<Packet<?>> {
 					packet.write(packetByteBuf);
 				} catch (Throwable var8) {
 					LOGGER.error(var8);
-					if (packet.isErrorFatal()) {
+					if (packet.isWritingErrorSkippable()) {
 						throw new PacketEncoderException(var8);
 					} else {
 						throw var8;

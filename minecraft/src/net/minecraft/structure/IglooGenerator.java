@@ -97,7 +97,7 @@ public class IglooGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld world, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
+		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
 			StructurePlacementData structurePlacementData = new StructurePlacementData()
 				.setRotation(this.rotation)
 				.setMirrored(BlockMirror.NONE)
@@ -108,7 +108,7 @@ public class IglooGenerator {
 			int i = world.getTopY(Heightmap.Type.WORLD_SURFACE_WG, blockPos2.getX(), blockPos2.getZ());
 			BlockPos blockPos3 = this.pos;
 			this.pos = this.pos.add(0, i - 90 - 1, 0);
-			boolean bl = super.generate(world, chunkGenerator, random, blockBox, chunkPos);
+			boolean bl = super.generate(world, generator, random, box, pos);
 			if (this.template.equals(IglooGenerator.TOP_TEMPLATE)) {
 				BlockPos blockPos4 = this.pos.add(Structure.method_15171(structurePlacementData, new BlockPos(3, 0, 5)));
 				BlockState blockState = world.getBlockState(blockPos4.down());

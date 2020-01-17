@@ -2,13 +2,13 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
-import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.GlobalPos;
 import net.minecraft.util.math.BlockPos;
@@ -66,7 +66,7 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 				this.setChildHome(world, (VillagerEntity)optional2.get(), (BlockPos)optional.get());
 			} else {
 				world.getPointOfInterestStorage().releaseTicket((BlockPos)optional.get());
-				DebugRendererInfoManager.sendPointOfInterest(world, (BlockPos)optional.get());
+				DebugInfoSender.sendPointOfInterest(world, (BlockPos)optional.get());
 			}
 		}
 	}

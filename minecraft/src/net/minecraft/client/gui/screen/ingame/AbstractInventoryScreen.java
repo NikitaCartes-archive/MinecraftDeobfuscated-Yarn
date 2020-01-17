@@ -16,7 +16,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
-public abstract class AbstractInventoryScreen<T extends Container> extends AbstractContainerScreen<T> {
+public abstract class AbstractInventoryScreen<T extends Container> extends ContainerScreen<T> {
 	protected boolean offsetGuiForEffects;
 
 	public AbstractInventoryScreen(T container, PlayerInventory playerInventory, Text text) {

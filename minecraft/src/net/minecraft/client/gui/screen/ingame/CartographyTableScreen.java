@@ -18,7 +18,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class CartographyTableScreen extends AbstractContainerScreen<CartographyTableContainer> {
+public class CartographyTableScreen extends ContainerScreen<CartographyTableContainer> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/cartography_table.png");
 
 	public CartographyTableScreen(CartographyTableContainer container, PlayerInventory inventory, Text title) {

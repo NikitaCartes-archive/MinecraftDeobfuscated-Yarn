@@ -57,14 +57,14 @@ import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.network.packet.DifficultyS2CPacket;
-import net.minecraft.client.network.packet.WorldTimeUpdateS2CPacket;
 import net.minecraft.command.DataCommandStorage;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.entity.boss.BossBarManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.loot.LootManager;
 import net.minecraft.loot.condition.LootConditionManager;
+import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
+import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.resource.FileResourcePackProvider;
 import net.minecraft.resource.ReloadableResourceManager;
@@ -721,7 +721,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	protected void executeTask(ServerTask serverTask) {
-		this.getProfiler().method_24270("runTask");
+		this.getProfiler().visit("runTask");
 		super.executeTask(serverTask);
 	}
 

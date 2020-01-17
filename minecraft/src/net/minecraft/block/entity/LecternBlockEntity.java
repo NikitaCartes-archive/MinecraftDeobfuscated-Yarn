@@ -4,7 +4,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.LecternBlock;
 import net.minecraft.container.Container;
 import net.minecraft.container.LecternContainer;
-import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.container.PropertyDelegate;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -25,7 +25,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 
-public class LecternBlockEntity extends BlockEntity implements Clearable, NameableContainerProvider {
+public class LecternBlockEntity extends BlockEntity implements Clearable, NameableContainerFactory {
 	private final Inventory inventory = new Inventory() {
 		@Override
 		public int getInvSize() {
@@ -107,13 +107,13 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, Nameab
 	};
 	private final PropertyDelegate propertyDelegate = new PropertyDelegate() {
 		@Override
-		public int get(int key) {
-			return key == 0 ? LecternBlockEntity.this.currentPage : 0;
+		public int get(int index) {
+			return index == 0 ? LecternBlockEntity.this.currentPage : 0;
 		}
 
 		@Override
-		public void set(int key, int value) {
-			if (key == 0) {
+		public void set(int index, int value) {
+			if (index == 0) {
 				LecternBlockEntity.this.setCurrentPage(value);
 			}
 		}

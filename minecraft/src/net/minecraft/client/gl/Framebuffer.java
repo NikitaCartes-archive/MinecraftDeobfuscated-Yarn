@@ -53,7 +53,7 @@ public class Framebuffer {
 		}
 
 		this.initFbo(width, height, getError);
-		GlStateManager.bindFramebuffer(FramebufferInfo.target, 0);
+		GlStateManager.bindFramebuffer(FramebufferInfo.FRAME_BUFFER, 0);
 	}
 
 	public void delete() {
@@ -71,7 +71,7 @@ public class Framebuffer {
 		}
 
 		if (this.fbo > -1) {
-			GlStateManager.bindFramebuffer(FramebufferInfo.target, 0);
+			GlStateManager.bindFramebuffer(FramebufferInfo.FRAME_BUFFER, 0);
 			GlStateManager.deleteFramebuffers(this.fbo);
 			this.fbo = -1;
 		}
@@ -92,12 +92,12 @@ public class Framebuffer {
 		this.setTexFilter(9728);
 		GlStateManager.bindTexture(this.colorAttachment);
 		GlStateManager.texImage2D(3553, 0, 32856, this.textureWidth, this.textureHeight, 0, 6408, 5121, null);
-		GlStateManager.bindFramebuffer(FramebufferInfo.target, this.fbo);
-		GlStateManager.framebufferTexture2D(FramebufferInfo.target, FramebufferInfo.field_20459, 3553, this.colorAttachment, 0);
+		GlStateManager.bindFramebuffer(FramebufferInfo.FRAME_BUFFER, this.fbo);
+		GlStateManager.framebufferTexture2D(FramebufferInfo.FRAME_BUFFER, FramebufferInfo.COLOR_ATTACHMENT, 3553, this.colorAttachment, 0);
 		if (this.useDepthAttachment) {
-			GlStateManager.bindRenderbuffer(FramebufferInfo.renderBufferTarget, this.depthAttachment);
-			GlStateManager.renderbufferStorage(FramebufferInfo.renderBufferTarget, 33190, this.textureWidth, this.textureHeight);
-			GlStateManager.framebufferRenderbuffer(FramebufferInfo.target, FramebufferInfo.attachment, FramebufferInfo.renderBufferTarget, this.depthAttachment);
+			GlStateManager.bindRenderbuffer(FramebufferInfo.RENDER_BUFFER, this.depthAttachment);
+			GlStateManager.renderbufferStorage(FramebufferInfo.RENDER_BUFFER, 33190, this.textureWidth, this.textureHeight);
+			GlStateManager.framebufferRenderbuffer(FramebufferInfo.FRAME_BUFFER, FramebufferInfo.DEPTH_ATTACHMENT, FramebufferInfo.RENDER_BUFFER, this.depthAttachment);
 		}
 
 		this.checkFramebufferStatus();
@@ -118,15 +118,15 @@ public class Framebuffer {
 
 	public void checkFramebufferStatus() {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-		int i = GlStateManager.checkFramebufferStatus(FramebufferInfo.target);
-		if (i != FramebufferInfo.field_20461) {
-			if (i == FramebufferInfo.field_20462) {
+		int i = GlStateManager.checkFramebufferStatus(FramebufferInfo.FRAME_BUFFER);
+		if (i != FramebufferInfo.FRAME_BUFFER_COMPLETE) {
+			if (i == FramebufferInfo.FRAME_BUFFER_INCOMPLETE_ATTACHMENT) {
 				throw new RuntimeException("GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT");
-			} else if (i == FramebufferInfo.field_20463) {
+			} else if (i == FramebufferInfo.FRAME_BUFFER_INCOMPLETE_MISSING_ATTACHMENT) {
 				throw new RuntimeException("GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT");
-			} else if (i == FramebufferInfo.field_20464) {
+			} else if (i == FramebufferInfo.FRAME_BUFFER_INCOMPLETE_DRAW_BUFFER) {
 				throw new RuntimeException("GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER");
-			} else if (i == FramebufferInfo.field_20465) {
+			} else if (i == FramebufferInfo.FRAME_BUFFER_INCOMPLETE_READ_BUFFER) {
 				throw new RuntimeException("GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER");
 			} else {
 				throw new RuntimeException("glCheckFramebufferStatus returned unknown status:" + i);
@@ -154,7 +154,7 @@ public class Framebuffer {
 
 	private void bind(boolean updateViewport) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-		GlStateManager.bindFramebuffer(FramebufferInfo.target, this.fbo);
+		GlStateManager.bindFramebuffer(FramebufferInfo.FRAME_BUFFER, this.fbo);
 		if (updateViewport) {
 			GlStateManager.viewport(0, 0, this.viewportWidth, this.viewportHeight);
 		}
@@ -162,9 +162,9 @@ public class Framebuffer {
 
 	public void endWrite() {
 		if (!RenderSystem.isOnRenderThread()) {
-			RenderSystem.recordRenderCall(() -> GlStateManager.bindFramebuffer(FramebufferInfo.target, 0));
+			RenderSystem.recordRenderCall(() -> GlStateManager.bindFramebuffer(FramebufferInfo.FRAME_BUFFER, 0));
 		} else {
-			GlStateManager.bindFramebuffer(FramebufferInfo.target, 0);
+			GlStateManager.bindFramebuffer(FramebufferInfo.FRAME_BUFFER, 0);
 		}
 	}
 

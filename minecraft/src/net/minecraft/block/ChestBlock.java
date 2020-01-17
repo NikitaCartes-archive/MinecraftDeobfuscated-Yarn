@@ -15,7 +15,7 @@ import net.minecraft.block.enums.ChestType;
 import net.minecraft.client.block.ChestAnimationProgress;
 import net.minecraft.container.Container;
 import net.minecraft.container.GenericContainer;
-import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.CatEntity;
@@ -75,12 +75,12 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 			return Optional.empty();
 		}
 	};
-	private static final DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Optional<NameableContainerProvider>> NAME_RETRIEVER = new DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Optional<NameableContainerProvider>>(
+	private static final DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Optional<NameableContainerFactory>> NAME_RETRIEVER = new DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Optional<NameableContainerFactory>>(
 		
 	) {
-		public Optional<NameableContainerProvider> getFromBoth(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
+		public Optional<NameableContainerFactory> getFromBoth(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
 			final Inventory inventory = new DoubleInventory(chestBlockEntity, chestBlockEntity2);
-			return Optional.of(new NameableContainerProvider() {
+			return Optional.of(new NameableContainerFactory() {
 				@Nullable
 				@Override
 				public Container createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
@@ -104,11 +104,11 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 			});
 		}
 
-		public Optional<NameableContainerProvider> getFrom(ChestBlockEntity chestBlockEntity) {
+		public Optional<NameableContainerFactory> getFrom(ChestBlockEntity chestBlockEntity) {
 			return Optional.of(chestBlockEntity);
 		}
 
-		public Optional<NameableContainerProvider> getFallback() {
+		public Optional<NameableContainerFactory> getFallback() {
 			return Optional.empty();
 		}
 	};
@@ -156,7 +156,7 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
 		if (state.get(CHEST_TYPE) == ChestType.SINGLE) {
 			return SINGLE_SHAPE;
 		} else {
@@ -244,9 +244,9 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
-			NameableContainerProvider nameableContainerProvider = this.createContainerProvider(state, world, pos);
-			if (nameableContainerProvider != null) {
-				player.openContainer(nameableContainerProvider);
+			NameableContainerFactory nameableContainerFactory = this.createContainerFactory(state, world, pos);
+			if (nameableContainerFactory != null) {
+				player.openContainer(nameableContainerFactory);
 				player.incrementStat(this.getOpenStat());
 			}
 
@@ -288,8 +288,8 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 
 	@Nullable
 	@Override
-	public NameableContainerProvider createContainerProvider(BlockState state, World world, BlockPos pos) {
-		return (NameableContainerProvider)((Optional)this.getBlockEntitySource(state, world, pos, false).apply(NAME_RETRIEVER)).orElse(null);
+	public NameableContainerFactory createContainerFactory(BlockState state, World world, BlockPos pos) {
+		return (NameableContainerFactory)((Optional)this.getBlockEntitySource(state, world, pos, false).apply(NAME_RETRIEVER)).orElse(null);
 	}
 
 	@Environment(EnvType.CLIENT)

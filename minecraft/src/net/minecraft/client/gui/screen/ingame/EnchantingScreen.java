@@ -28,7 +28,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class EnchantingScreen extends AbstractContainerScreen<EnchantingTableContainer> {
+public class EnchantingScreen extends ContainerScreen<EnchantingTableContainer> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/enchanting_table.png");
 	private static final Identifier BOOK_TEXURE = new Identifier("textures/entity/enchanting_table_book.png");
 	private static final BookModel bookModel = new BookModel();

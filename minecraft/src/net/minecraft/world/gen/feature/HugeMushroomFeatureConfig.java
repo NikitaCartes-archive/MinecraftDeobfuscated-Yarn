@@ -6,15 +6,15 @@ import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.gen.stateprovider.StateProvider;
-import net.minecraft.world.gen.stateprovider.StateProviderType;
+import net.minecraft.world.gen.stateprovider.BlockStateProvider;
+import net.minecraft.world.gen.stateprovider.BlockStateProviderType;
 
 public class HugeMushroomFeatureConfig implements FeatureConfig {
-	public final StateProvider capProvider;
-	public final StateProvider stemProvider;
+	public final BlockStateProvider capProvider;
+	public final BlockStateProvider stemProvider;
 	public final int capSize;
 
-	public HugeMushroomFeatureConfig(StateProvider capProvider, StateProvider stemProvider, int capSize) {
+	public HugeMushroomFeatureConfig(BlockStateProvider capProvider, BlockStateProvider stemProvider, int capSize) {
 		this.capProvider = capProvider;
 		this.stemProvider = stemProvider;
 		this.capSize = capSize;
@@ -30,13 +30,13 @@ public class HugeMushroomFeatureConfig implements FeatureConfig {
 	}
 
 	public static <T> HugeMushroomFeatureConfig deserialize(Dynamic<T> dynamic) {
-		StateProviderType<?> stateProviderType = Registry.BLOCK_STATE_PROVIDER_TYPE
+		BlockStateProviderType<?> blockStateProviderType = Registry.BLOCK_STATE_PROVIDER_TYPE
 			.get(new Identifier((String)dynamic.get("cap_provider").get("type").asString().orElseThrow(RuntimeException::new)));
-		StateProviderType<?> stateProviderType2 = Registry.BLOCK_STATE_PROVIDER_TYPE
+		BlockStateProviderType<?> blockStateProviderType2 = Registry.BLOCK_STATE_PROVIDER_TYPE
 			.get(new Identifier((String)dynamic.get("stem_provider").get("type").asString().orElseThrow(RuntimeException::new)));
 		return new HugeMushroomFeatureConfig(
-			stateProviderType.deserialize(dynamic.get("cap_provider").orElseEmptyMap()),
-			stateProviderType2.deserialize(dynamic.get("stem_provider").orElseEmptyMap()),
+			blockStateProviderType.deserialize(dynamic.get("cap_provider").orElseEmptyMap()),
+			blockStateProviderType2.deserialize(dynamic.get("stem_provider").orElseEmptyMap()),
 			dynamic.get("foliage_radius").asInt(2)
 		);
 	}

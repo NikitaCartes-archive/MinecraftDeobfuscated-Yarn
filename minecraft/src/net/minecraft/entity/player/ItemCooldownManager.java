@@ -53,7 +53,7 @@ public class ItemCooldownManager {
 		this.onCooldownUpdate(item);
 	}
 
-	protected void onCooldownUpdate(Item item, int i) {
+	protected void onCooldownUpdate(Item item, int duration) {
 	}
 
 	protected void onCooldownUpdate(Item item) {

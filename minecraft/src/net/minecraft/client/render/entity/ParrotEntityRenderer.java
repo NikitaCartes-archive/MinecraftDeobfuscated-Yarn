@@ -25,7 +25,7 @@ public class ParrotEntityRenderer extends MobEntityRenderer<ParrotEntity, Parrot
 		return SKINS[parrotEntity.getVariant()];
 	}
 
-	public float getCustomAngle(ParrotEntity parrotEntity, float f) {
+	public float getAnimationProgress(ParrotEntity parrotEntity, float f) {
 		float g = MathHelper.lerp(f, parrotEntity.field_6829, parrotEntity.field_6818);
 		float h = MathHelper.lerp(f, parrotEntity.field_6827, parrotEntity.field_6819);
 		return (MathHelper.sin(g) + 1.0F) * h;

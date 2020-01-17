@@ -591,7 +591,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 					BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
 					BlockState blockState = this.client.world.getBlockState(blockPos);
 					if (this.client.interactionManager.getCurrentGameMode() == GameMode.SPECTATOR) {
-						bl = blockState.createContainerProvider(this.client.world, blockPos) != null;
+						bl = blockState.createContainerFactory(this.client.world, blockPos) != null;
 					} else {
 						CachedBlockPosition cachedBlockPosition = new CachedBlockPosition(this.client.world, blockPos, false);
 						bl = !itemStack.isEmpty()

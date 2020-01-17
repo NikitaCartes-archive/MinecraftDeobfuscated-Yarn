@@ -10,7 +10,7 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import java.util.Objects;
 import net.minecraft.datafixer.TypeReferences;
-import net.minecraft.datafixer.schema.SchemaIdentifierNormalize;
+import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 
 public class BlockNameFlatteningFix extends DataFix {
 	public BlockNameFlatteningFix(Schema outputSchema, boolean changesType) {
@@ -29,7 +29,7 @@ public class BlockNameFlatteningFix extends DataFix {
 				type3,
 				type4,
 				dynamicOps -> pair -> pair.mapSecond(
-							either -> either.map(BlockStateFlattening::lookupStateBlock, string -> BlockStateFlattening.lookupBlock(SchemaIdentifierNormalize.normalize(string)))
+							either -> either.map(BlockStateFlattening::lookupStateBlock, string -> BlockStateFlattening.lookupBlock(IdentifierNormalizingSchema.normalize(string)))
 						)
 			);
 		} else {

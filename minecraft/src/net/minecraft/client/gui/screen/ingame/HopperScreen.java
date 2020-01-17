@@ -9,7 +9,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class HopperScreen extends AbstractContainerScreen<HopperContainer> {
+public class HopperScreen extends ContainerScreen<HopperContainer> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/hopper.png");
 
 	public HopperScreen(HopperContainer container, PlayerInventory inventory, Text title) {

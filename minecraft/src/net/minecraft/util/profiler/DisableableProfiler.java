@@ -10,17 +10,17 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class DisableableProfiler implements Profiler {
-	private static final Logger field_19286 = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	private static final long field_16268 = Duration.ofMillis(300L).toNanos();
 	private final IntSupplier tickSupplier;
-	private final DisableableProfiler.ProfilerControllerImpl controller = new DisableableProfiler.ProfilerControllerImpl();
-	private final DisableableProfiler.ProfilerControllerImpl field_16271 = new DisableableProfiler.ProfilerControllerImpl();
+	private final DisableableProfiler.ControllerImpl controller = new DisableableProfiler.ControllerImpl();
+	private final DisableableProfiler.ControllerImpl field_16271 = new DisableableProfiler.ControllerImpl();
 
 	public DisableableProfiler(IntSupplier tickSupplier) {
 		this.tickSupplier = tickSupplier;
 	}
 
-	public DisableableProfiler.ProfilerController getController() {
+	public DisableableProfiler.Controller getController() {
 		return this.controller;
 	}
 
@@ -37,15 +37,15 @@ public class DisableableProfiler implements Profiler {
 	}
 
 	@Override
-	public void push(String string) {
-		this.controller.profiler.push(string);
-		this.field_16271.profiler.push(string);
+	public void push(String location) {
+		this.controller.profiler.push(location);
+		this.field_16271.profiler.push(location);
 	}
 
 	@Override
-	public void push(Supplier<String> supplier) {
-		this.controller.profiler.push(supplier);
-		this.field_16271.profiler.push(supplier);
+	public void push(Supplier<String> locationGetter) {
+		this.controller.profiler.push(locationGetter);
+		this.field_16271.profiler.push(locationGetter);
 	}
 
 	@Override
@@ -55,31 +55,31 @@ public class DisableableProfiler implements Profiler {
 	}
 
 	@Override
-	public void swap(String string) {
-		this.controller.profiler.swap(string);
-		this.field_16271.profiler.swap(string);
+	public void swap(String location) {
+		this.controller.profiler.swap(location);
+		this.field_16271.profiler.swap(location);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void swap(Supplier<String> supplier) {
-		this.controller.profiler.swap(supplier);
-		this.field_16271.profiler.swap(supplier);
+	public void swap(Supplier<String> locationGetter) {
+		this.controller.profiler.swap(locationGetter);
+		this.field_16271.profiler.swap(locationGetter);
 	}
 
 	@Override
-	public void method_24270(String string) {
-		this.controller.profiler.method_24270(string);
-		this.field_16271.profiler.method_24270(string);
+	public void visit(String marker) {
+		this.controller.profiler.visit(marker);
+		this.field_16271.profiler.visit(marker);
 	}
 
 	@Override
-	public void method_24271(Supplier<String> supplier) {
-		this.controller.profiler.method_24271(supplier);
-		this.field_16271.profiler.method_24271(supplier);
+	public void visit(Supplier<String> markerGetter) {
+		this.controller.profiler.visit(markerGetter);
+		this.field_16271.profiler.visit(markerGetter);
 	}
 
-	public interface ProfilerController {
+	public interface Controller {
 		boolean isEnabled();
 
 		ProfileResult disable();
@@ -90,10 +90,10 @@ public class DisableableProfiler implements Profiler {
 		void enable();
 	}
 
-	class ProfilerControllerImpl implements DisableableProfiler.ProfilerController {
+	class ControllerImpl implements DisableableProfiler.Controller {
 		protected ReadableProfiler profiler = DummyProfiler.INSTANCE;
 
-		private ProfilerControllerImpl() {
+		private ControllerImpl() {
 		}
 
 		@Override
@@ -103,7 +103,7 @@ public class DisableableProfiler implements Profiler {
 
 		@Override
 		public ProfileResult disable() {
-			ProfileResult profileResult = this.profiler.getResults();
+			ProfileResult profileResult = this.profiler.getResult();
 			this.profiler = DummyProfiler.INSTANCE;
 			return profileResult;
 		}
@@ -111,7 +111,7 @@ public class DisableableProfiler implements Profiler {
 		@Environment(EnvType.CLIENT)
 		@Override
 		public ProfileResult getResults() {
-			return this.profiler.getResults();
+			return this.profiler.getResult();
 		}
 
 		@Override

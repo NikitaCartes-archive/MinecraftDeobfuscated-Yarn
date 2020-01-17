@@ -5,13 +5,13 @@ import java.util.function.BiConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.network.packet.GuiSlotUpdateS2CPacket;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.s2c.play.ContainerSlotUpdateS2CPacket;
 import net.minecraft.recipe.CraftingRecipe;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeFinder;
@@ -66,7 +66,7 @@ public class CraftingTableContainer extends CraftingContainer<CraftingInventory>
 			}
 
 			resultInventory.setInvStack(0, itemStack);
-			serverPlayerEntity.networkHandler.sendPacket(new GuiSlotUpdateS2CPacket(syncId, 0, itemStack));
+			serverPlayerEntity.networkHandler.sendPacket(new ContainerSlotUpdateS2CPacket(syncId, 0, itemStack));
 		}
 	}
 
@@ -105,7 +105,7 @@ public class CraftingTableContainer extends CraftingContainer<CraftingInventory>
 	@Override
 	public ItemStack transferSlot(PlayerEntity player, int invSlot) {
 		ItemStack itemStack = ItemStack.EMPTY;
-		Slot slot = (Slot)this.slotList.get(invSlot);
+		Slot slot = (Slot)this.slots.get(invSlot);
 		if (slot != null && slot.hasStack()) {
 			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
