@@ -7,7 +7,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockPlacementEnvironment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FenceGateBlock;
-import net.minecraft.block.HorizontalConnectedBlock;
+import net.minecraft.block.HorizontalConnectingBlock;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -24,7 +24,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class WallBlock
-extends HorizontalConnectedBlock {
+extends HorizontalConnectingBlock {
     public static final BooleanProperty UP = Properties.UP;
     private final VoxelShape[] UP_OUTLINE_SHAPES;
     private final VoxelShape[] UP_COLLISION_SHAPES;
@@ -37,19 +37,19 @@ extends HorizontalConnectedBlock {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
         if (state.get(UP).booleanValue()) {
             return this.UP_OUTLINE_SHAPES[this.getShapeIndex(state)];
         }
-        return super.getOutlineShape(state, view, pos, ePos);
+        return super.getOutlineShape(state, view, pos, context);
     }
 
     @Override
-    public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+    public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
         if (state.get(UP).booleanValue()) {
             return this.UP_COLLISION_SHAPES[this.getShapeIndex(state)];
         }
-        return super.getCollisionShape(state, view, pos, ePos);
+        return super.getCollisionShape(state, view, pos, context);
     }
 
     @Override

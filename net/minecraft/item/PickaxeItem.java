@@ -36,13 +36,13 @@ extends MiningToolItem {
             return i >= 1;
         }
         Material material = state.getMaterial();
-        return material == Material.STONE || material == Material.METAL || material == Material.ANVIL;
+        return material == Material.STONE || material == Material.METAL || material == Material.REPAIR_STATION;
     }
 
     @Override
     public float getMiningSpeed(ItemStack stack, BlockState state) {
         Material material = state.getMaterial();
-        if (material == Material.METAL || material == Material.ANVIL || material == Material.STONE) {
+        if (material == Material.METAL || material == Material.REPAIR_STATION || material == Material.STONE) {
             return this.miningSpeed;
         }
         return super.getMiningSpeed(stack, state);

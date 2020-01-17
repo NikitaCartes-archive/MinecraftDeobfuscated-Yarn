@@ -39,7 +39,7 @@ extends ResourceReloader<Summary> {
                 runnable.run();
                 atomicLong2.addAndGet(Util.getMeasuringTimeNano() - l);
             }));
-            return completableFuture.thenApplyAsync(void_ -> new Summary(resourceReloadListener.getName(), profilerSystem.getResults(), profilerSystem2.getResults(), atomicLong, atomicLong2), applyExecutor2);
+            return completableFuture.thenApplyAsync(void_ -> new Summary(resourceReloadListener.getName(), profilerSystem.getResult(), profilerSystem2.getResult(), atomicLong, atomicLong2), applyExecutor2);
         }, completableFuture);
         this.reloadTimer.start();
         this.applyStageFuture.thenAcceptAsync(this::finish, applyExecutor2);

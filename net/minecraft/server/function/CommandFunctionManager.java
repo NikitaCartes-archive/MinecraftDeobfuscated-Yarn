@@ -56,8 +56,8 @@ implements SynchronousResourceReloadListener {
         this.server = server;
     }
 
-    public Optional<CommandFunction> getFunction(Identifier identifier) {
-        return Optional.ofNullable(this.idMap.get(identifier));
+    public Optional<CommandFunction> getFunction(Identifier id) {
+        return Optional.ofNullable(this.idMap.get(id));
     }
 
     public MinecraftServer getServer() {
@@ -160,9 +160,9 @@ implements SynchronousResourceReloadListener {
      * WARNING - Removed try catching itself - possible behaviour change.
      */
     @Nullable
-    private CommandFunction load(CommandFunction function, @Nullable Throwable exception, Identifier identifier) {
+    private CommandFunction load(CommandFunction function, @Nullable Throwable exception, Identifier id) {
         if (exception != null) {
-            LOGGER.error("Couldn't load function at {}", (Object)identifier, (Object)exception);
+            LOGGER.error("Couldn't load function at {}", (Object)id, (Object)exception);
             return null;
         }
         Map<Identifier, CommandFunction> map = this.idMap;
@@ -177,8 +177,8 @@ implements SynchronousResourceReloadListener {
      * Enabled unnecessary exception pruning
      * Enabled aggressive exception aggregation
      */
-    private static List<String> readLines(ResourceManager resourceManager, Identifier identifier) {
-        try (Resource resource = resourceManager.getResource(identifier);){
+    private static List<String> readLines(ResourceManager resourceManager, Identifier id) {
+        try (Resource resource = resourceManager.getResource(id);){
             List<String> list = IOUtils.readLines(resource.getInputStream(), StandardCharsets.UTF_8);
             return list;
         } catch (IOException iOException) {
@@ -209,9 +209,9 @@ implements SynchronousResourceReloadListener {
             this.element = element;
         }
 
-        public void execute(ArrayDeque<Entry> arrayDeque, int i) {
+        public void execute(ArrayDeque<Entry> stack, int maxChainLength) {
             try {
-                this.element.execute(this.manager, this.source, arrayDeque, i);
+                this.element.execute(this.manager, this.source, stack, maxChainLength);
             } catch (Throwable throwable) {
                 // empty catch block
             }

@@ -40,7 +40,7 @@ extends MobEntityRenderer<SquidEntity, SquidEntityModel<SquidEntity>> {
     }
 
     @Override
-    protected float getCustomAngle(SquidEntity squidEntity, float f) {
+    protected float getAnimationProgress(SquidEntity squidEntity, float f) {
         return MathHelper.lerp(f, squidEntity.field_6900, squidEntity.field_6904);
     }
 }

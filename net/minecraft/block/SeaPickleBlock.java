@@ -98,7 +98,7 @@ Waterloggable {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
         switch (state.get(PICKLES)) {
             default: {
                 return ONE_PICKLE_SHAPE;

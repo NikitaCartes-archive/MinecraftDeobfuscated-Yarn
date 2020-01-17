@@ -50,13 +50,13 @@ extends BaseFluid {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void randomDisplayTick(World world, BlockPos blockPos, FluidState fluidState, Random random) {
-        if (!fluidState.isStill() && !fluidState.get(FALLING).booleanValue()) {
+    public void randomDisplayTick(World world, BlockPos pos, FluidState state, Random random) {
+        if (!state.isStill() && !state.get(FALLING).booleanValue()) {
             if (random.nextInt(64) == 0) {
-                world.playSound((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, SoundEvents.BLOCK_WATER_AMBIENT, SoundCategory.BLOCKS, random.nextFloat() * 0.25f + 0.75f, random.nextFloat() + 0.5f, false);
+                world.playSound((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, SoundEvents.BLOCK_WATER_AMBIENT, SoundCategory.BLOCKS, random.nextFloat() * 0.25f + 0.75f, random.nextFloat() + 0.5f, false);
             }
         } else if (random.nextInt(10) == 0) {
-            world.addParticle(ParticleTypes.UNDERWATER, (double)blockPos.getX() + (double)random.nextFloat(), (double)blockPos.getY() + (double)random.nextFloat(), (double)blockPos.getZ() + (double)random.nextFloat(), 0.0, 0.0, 0.0);
+            world.addParticle(ParticleTypes.UNDERWATER, (double)pos.getX() + (double)random.nextFloat(), (double)pos.getY() + (double)random.nextFloat(), (double)pos.getZ() + (double)random.nextFloat(), 0.0, 0.0, 0.0);
         }
     }
 
@@ -84,8 +84,8 @@ extends BaseFluid {
     }
 
     @Override
-    public BlockState toBlockState(FluidState fluidState) {
-        return (BlockState)Blocks.WATER.getDefaultState().with(FluidBlock.LEVEL, WaterFluid.method_15741(fluidState));
+    public BlockState toBlockState(FluidState state) {
+        return (BlockState)Blocks.WATER.getDefaultState().with(FluidBlock.LEVEL, WaterFluid.method_15741(state));
     }
 
     @Override
@@ -94,17 +94,17 @@ extends BaseFluid {
     }
 
     @Override
-    public int getLevelDecreasePerBlock(WorldView view) {
+    public int getLevelDecreasePerBlock(WorldView world) {
         return 1;
     }
 
     @Override
-    public int getTickRate(WorldView worldView) {
+    public int getTickRate(WorldView world) {
         return 5;
     }
 
     @Override
-    public boolean method_15777(FluidState fluidState, BlockView blockView, BlockPos blockPos, Fluid fluid, Direction direction) {
+    public boolean canBeReplacedWith(FluidState state, BlockView world, BlockPos pos, Fluid fluid, Direction direction) {
         return direction == Direction.DOWN && !fluid.matches(FluidTags.WATER);
     }
 
@@ -122,12 +122,12 @@ extends BaseFluid {
         }
 
         @Override
-        public int getLevel(FluidState fluidState) {
-            return fluidState.get(LEVEL);
+        public int getLevel(FluidState state) {
+            return state.get(LEVEL);
         }
 
         @Override
-        public boolean isStill(FluidState fluidState) {
+        public boolean isStill(FluidState state) {
             return false;
         }
     }
@@ -135,12 +135,12 @@ extends BaseFluid {
     public static class Still
     extends WaterFluid {
         @Override
-        public int getLevel(FluidState fluidState) {
+        public int getLevel(FluidState state) {
             return 8;
         }
 
         @Override
-        public boolean isStill(FluidState fluidState) {
+        public boolean isStill(FluidState state) {
             return true;
         }
     }

@@ -9,10 +9,10 @@ import com.mojang.datafixers.types.templates.TypeTemplate;
 import java.util.Map;
 import java.util.function.Supplier;
 import net.minecraft.datafixer.TypeReferences;
-import net.minecraft.datafixer.schema.SchemaIdentifierNormalize;
+import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 
 public class Schema1451v6
-extends SchemaIdentifierNormalize {
+extends IdentifierNormalizingSchema {
     public Schema1451v6(int i, Schema schema) {
         super(i, schema);
     }

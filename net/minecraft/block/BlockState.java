@@ -20,7 +20,7 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.Material;
 import net.minecraft.block.MaterialColor;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.EntityType;
@@ -221,8 +221,8 @@ implements State<BlockState> {
         return this.getCollisionShape(view, pos, EntityContext.absent());
     }
 
-    public VoxelShape getCollisionShape(BlockView view, BlockPos pos, EntityContext ePos) {
-        return this.getBlock().getCollisionShape(this, view, pos, ePos);
+    public VoxelShape getCollisionShape(BlockView view, BlockPos pos, EntityContext context) {
+        return this.getBlock().getCollisionShape(this, view, pos, context);
     }
 
     public VoxelShape getCullingShape(BlockView view, BlockPos pos) {
@@ -327,8 +327,8 @@ implements State<BlockState> {
     }
 
     @Nullable
-    public NameableContainerProvider createContainerProvider(World world, BlockPos pos) {
-        return this.getBlock().createContainerProvider(this, world, pos);
+    public NameableContainerFactory createContainerFactory(World world, BlockPos pos) {
+        return this.getBlock().createContainerFactory(this, world, pos);
     }
 
     public boolean matches(Tag<Block> tag) {

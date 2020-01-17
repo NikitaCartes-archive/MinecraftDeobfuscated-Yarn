@@ -6,7 +6,7 @@ package net.minecraft.client.gui.screen.ingame;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
+import net.minecraft.client.gui.screen.ingame.ContainerScreen;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
@@ -23,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class CartographyTableScreen
-extends AbstractContainerScreen<CartographyTableContainer> {
+extends ContainerScreen<CartographyTableContainer> {
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/cartography_table.png");
 
     public CartographyTableScreen(CartographyTableContainer container, PlayerInventory inventory, Text title) {

@@ -42,8 +42,8 @@ public abstract class Fluid {
         return this.stateManager;
     }
 
-    protected final void setDefaultState(FluidState fluidState) {
-        this.defaultState = fluidState;
+    protected final void setDefaultState(FluidState state) {
+        this.defaultState = state;
     }
 
     public final FluidState getDefaultState() {
@@ -53,13 +53,13 @@ public abstract class Fluid {
     public abstract Item getBucketItem();
 
     @Environment(value=EnvType.CLIENT)
-    protected void randomDisplayTick(World world, BlockPos blockPos, FluidState fluidState, Random random) {
+    protected void randomDisplayTick(World world, BlockPos pos, FluidState state, Random random) {
     }
 
     protected void onScheduledTick(World world, BlockPos pos, FluidState state) {
     }
 
-    protected void onRandomTick(World world, BlockPos blockPos, FluidState fluidState, Random random) {
+    protected void onRandomTick(World world, BlockPos pos, FluidState state, Random random) {
     }
 
     @Nullable
@@ -68,7 +68,7 @@ public abstract class Fluid {
         return null;
     }
 
-    protected abstract boolean method_15777(FluidState var1, BlockView var2, BlockPos var3, Fluid var4, Direction var5);
+    protected abstract boolean canBeReplacedWith(FluidState var1, BlockView var2, BlockPos var3, Fluid var4, Direction var5);
 
     protected abstract Vec3d getVelocity(BlockView var1, BlockPos var2, FluidState var3);
 

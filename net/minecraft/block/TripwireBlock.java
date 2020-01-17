@@ -8,8 +8,8 @@ import java.util.Map;
 import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.ConnectedPlantBlock;
-import net.minecraft.block.HorizontalConnectedBlock;
+import net.minecraft.block.ConnectingBlock;
+import net.minecraft.block.HorizontalConnectingBlock;
 import net.minecraft.block.TripwireHookBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
@@ -34,11 +34,11 @@ extends Block {
     public static final BooleanProperty POWERED = Properties.POWERED;
     public static final BooleanProperty ATTACHED = Properties.ATTACHED;
     public static final BooleanProperty DISARMED = Properties.DISARMED;
-    public static final BooleanProperty NORTH = ConnectedPlantBlock.NORTH;
-    public static final BooleanProperty EAST = ConnectedPlantBlock.EAST;
-    public static final BooleanProperty SOUTH = ConnectedPlantBlock.SOUTH;
-    public static final BooleanProperty WEST = ConnectedPlantBlock.WEST;
-    private static final Map<Direction, BooleanProperty> FACING_PROPERTIES = HorizontalConnectedBlock.FACING_PROPERTIES;
+    public static final BooleanProperty NORTH = ConnectingBlock.NORTH;
+    public static final BooleanProperty EAST = ConnectingBlock.EAST;
+    public static final BooleanProperty SOUTH = ConnectingBlock.SOUTH;
+    public static final BooleanProperty WEST = ConnectingBlock.WEST;
+    private static final Map<Direction, BooleanProperty> FACING_PROPERTIES = HorizontalConnectingBlock.FACING_PROPERTIES;
     protected static final VoxelShape ATTACHED_SHAPE = Block.createCuboidShape(0.0, 1.0, 0.0, 16.0, 2.5, 16.0);
     protected static final VoxelShape DETACHED_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
     private final TripwireHookBlock hookBlock;
@@ -50,7 +50,7 @@ extends Block {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
         return state.get(ATTACHED) != false ? ATTACHED_SHAPE : DETACHED_SHAPE;
     }
 

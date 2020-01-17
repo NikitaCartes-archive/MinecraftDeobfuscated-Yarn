@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
+import net.minecraft.client.gui.screen.ingame.ContainerScreen;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.StatusEffectSpriteManager;
@@ -22,7 +22,7 @@ import net.minecraft.text.Text;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class AbstractInventoryScreen<T extends Container>
-extends AbstractContainerScreen<T> {
+extends ContainerScreen<T> {
     protected boolean offsetGuiForEffects;
 
     public AbstractInventoryScreen(T container, PlayerInventory playerInventory, Text text) {

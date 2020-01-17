@@ -4,7 +4,7 @@
 package net.minecraft.entity.vehicle;
 
 import net.minecraft.container.Container;
-import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
@@ -33,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class StorageMinecartEntity
 extends AbstractMinecartEntity
 implements Inventory,
-NameableContainerProvider {
+NameableContainerFactory {
     private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(36, ItemStack.EMPTY);
     private boolean field_7733 = true;
     @Nullable

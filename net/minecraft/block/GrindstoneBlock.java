@@ -9,10 +9,10 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.WallMountedBlock;
 import net.minecraft.block.enums.WallMountLocation;
-import net.minecraft.client.network.ClientDummyContainerProvider;
 import net.minecraft.container.BlockContext;
 import net.minecraft.container.GrindstoneContainer;
-import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.container.NameableContainerFactory;
+import net.minecraft.container.SimpleNamedContainerFactory;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.stat.Stats;
@@ -141,12 +141,12 @@ extends WallMountedBlock {
     }
 
     @Override
-    public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+    public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
         return this.getShape(state);
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
         return this.getShape(state);
     }
 
@@ -160,14 +160,14 @@ extends WallMountedBlock {
         if (world.isClient) {
             return ActionResult.SUCCESS;
         }
-        player.openContainer(state.createContainerProvider(world, pos));
+        player.openContainer(state.createContainerFactory(world, pos));
         player.incrementStat(Stats.INTERACT_WITH_GRINDSTONE);
         return ActionResult.SUCCESS;
     }
 
     @Override
-    public NameableContainerProvider createContainerProvider(BlockState state, World world, BlockPos pos) {
-        return new ClientDummyContainerProvider((i, playerInventory, playerEntity) -> new GrindstoneContainer(i, playerInventory, BlockContext.create(world, pos)), CONTAINER_NAME);
+    public NameableContainerFactory createContainerFactory(BlockState state, World world, BlockPos pos) {
+        return new SimpleNamedContainerFactory((i, playerInventory, playerEntity) -> new GrindstoneContainer(i, playerInventory, BlockContext.create(world, pos)), CONTAINER_NAME);
     }
 
     @Override

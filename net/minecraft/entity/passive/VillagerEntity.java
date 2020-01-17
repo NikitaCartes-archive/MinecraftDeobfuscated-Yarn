@@ -17,7 +17,6 @@ import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.datafixer.NbtOps;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
@@ -60,6 +59,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -442,7 +442,7 @@ VillagerDataContainer {
     }
 
     public void playWorkSound() {
-        SoundEvent soundEvent = this.getVillagerData().getProfession().method_22384();
+        SoundEvent soundEvent = this.getVillagerData().getProfession().getWorkSound();
         if (soundEvent != null) {
             this.playSound(soundEvent, this.getSoundVolume(), this.getSoundPitch());
         }
@@ -524,7 +524,7 @@ VillagerDataContainer {
             BiPredicate<VillagerEntity, PointOfInterestType> biPredicate = POINTS_OF_INTEREST.get(memoryModuleType);
             if (optional.isPresent() && biPredicate.test(this, optional.get())) {
                 pointOfInterestStorage.releaseTicket(globalPos.getPos());
-                DebugRendererInfoManager.sendPointOfInterest(serverWorld, globalPos.getPos());
+                DebugInfoSender.sendPointOfInterest(serverWorld, globalPos.getPos());
             }
         });
     }
@@ -854,7 +854,7 @@ VillagerDataContainer {
     @Override
     protected void sendAiDebugData() {
         super.sendAiDebugData();
-        DebugRendererInfoManager.sendVillagerAiDebugData(this);
+        DebugInfoSender.sendVillagerAiDebugData(this);
     }
 
     @Override

@@ -7,7 +7,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockPlacementEnvironment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FenceGateBlock;
-import net.minecraft.block.HorizontalConnectedBlock;
+import net.minecraft.block.HorizontalConnectingBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -29,7 +29,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class FenceBlock
-extends HorizontalConnectedBlock {
+extends HorizontalConnectingBlock {
     private final VoxelShape[] cullingShapes;
 
     public FenceBlock(Block.Settings settings) {

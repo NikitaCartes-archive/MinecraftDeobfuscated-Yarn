@@ -10,15 +10,15 @@ import com.mojang.datafixers.types.DynamicOps;
 import java.util.List;
 import net.minecraft.world.gen.decorator.TreeDecorator;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
-import net.minecraft.world.gen.stateprovider.StateProvider;
+import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 
 public class MegaTreeFeatureConfig
 extends TreeFeatureConfig {
     public final int heightInterval;
     public final int crownHeight;
 
-    protected MegaTreeFeatureConfig(StateProvider stateProvider, StateProvider stateProvider2, List<TreeDecorator> list, int i, int heightInterval, int crownHeight) {
-        super(stateProvider, stateProvider2, list, i);
+    protected MegaTreeFeatureConfig(BlockStateProvider blockStateProvider, BlockStateProvider blockStateProvider2, List<TreeDecorator> list, int i, int heightInterval, int crownHeight) {
+        super(blockStateProvider, blockStateProvider2, list, i);
         this.heightInterval = heightInterval;
         this.crownHeight = crownHeight;
     }
@@ -41,8 +41,8 @@ extends TreeFeatureConfig {
         private int heightInterval;
         private int crownHeight;
 
-        public Builder(StateProvider stateProvider, StateProvider stateProvider2) {
-            super(stateProvider, stateProvider2);
+        public Builder(BlockStateProvider blockStateProvider, BlockStateProvider blockStateProvider2) {
+            super(blockStateProvider, blockStateProvider2);
         }
 
         public Builder treeDecorators(List<TreeDecorator> list) {

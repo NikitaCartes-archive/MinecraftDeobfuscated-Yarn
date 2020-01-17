@@ -49,8 +49,8 @@ implements Waterloggable {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
-        if (!ePos.isHolding(state.getBlock().asItem())) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+        if (!context.isHolding(state.getBlock().asItem())) {
             return state.get(BOTTOM) != false ? BOTTOM_OUTLINE_SHAPE : NORMAL_OUTLINE_SHAPE;
         }
         return VoxelShapes.fullCube();
@@ -113,9 +113,9 @@ implements Waterloggable {
     }
 
     @Override
-    public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
-        if (!ePos.isAbove(VoxelShapes.fullCube(), pos, true) || ePos.isDescending()) {
-            if (state.get(DISTANCE) != 0 && state.get(BOTTOM).booleanValue() && ePos.isAbove(OUTLINE_SHAPE, pos, true)) {
+    public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+        if (!context.isAbove(VoxelShapes.fullCube(), pos, true) || context.isDescending()) {
+            if (state.get(DISTANCE) != 0 && state.get(BOTTOM).booleanValue() && context.isAbove(OUTLINE_SHAPE, pos, true)) {
                 return COLLISION_SHAPE;
             }
             return VoxelShapes.empty();

@@ -24,8 +24,7 @@ import net.minecraft.block.MaterialColor;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.client.network.DebugRendererInfoManager;
-import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.EntityType;
@@ -47,6 +46,7 @@ import net.minecraft.loot.LootTables;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.stat.Stats;
@@ -385,12 +385,12 @@ implements ItemConvertible {
     }
 
     @Deprecated
-    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
         return VoxelShapes.fullCube();
     }
 
     @Deprecated
-    public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+    public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
         return this.collidable ? state.getOutlineShape(view, pos) : VoxelShapes.empty();
     }
 
@@ -470,7 +470,7 @@ implements ItemConvertible {
 
     @Deprecated
     public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos neighborPos, boolean moved) {
-        DebugRendererInfoManager.sendNeighborUpdate(world, pos);
+        DebugInfoSender.sendNeighborUpdate(world, pos);
     }
 
     public int getTickRate(WorldView worldView) {
@@ -479,7 +479,7 @@ implements ItemConvertible {
 
     @Nullable
     @Deprecated
-    public NameableContainerProvider createContainerProvider(BlockState state, World world, BlockPos pos) {
+    public NameableContainerFactory createContainerFactory(BlockState state, World world, BlockPos pos) {
         return null;
     }
 

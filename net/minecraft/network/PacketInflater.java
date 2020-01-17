@@ -15,10 +15,10 @@ import net.minecraft.util.PacketByteBuf;
 public class PacketInflater
 extends ByteToMessageDecoder {
     private final Inflater inflater;
-    private int minCompressedSize;
+    private int compressionThreshold;
 
     public PacketInflater(int i) {
-        this.minCompressedSize = i;
+        this.compressionThreshold = i;
         this.inflater = new Inflater();
     }
 
@@ -32,8 +32,8 @@ extends ByteToMessageDecoder {
         if (i == 0) {
             list.add(packetByteBuf.readBytes(packetByteBuf.readableBytes()));
         } else {
-            if (i < this.minCompressedSize) {
-                throw new DecoderException("Badly compressed packet - size of " + i + " is below server threshold of " + this.minCompressedSize);
+            if (i < this.compressionThreshold) {
+                throw new DecoderException("Badly compressed packet - size of " + i + " is below server threshold of " + this.compressionThreshold);
             }
             if (i > 0x200000) {
                 throw new DecoderException("Badly compressed packet - size of " + i + " is larger than protocol maximum of " + 0x200000);
@@ -48,8 +48,8 @@ extends ByteToMessageDecoder {
         }
     }
 
-    public void setCompressionThreshold(int i) {
-        this.minCompressedSize = i;
+    public void setCompressionThreshold(int compressionThreshold) {
+        this.compressionThreshold = compressionThreshold;
     }
 }
 

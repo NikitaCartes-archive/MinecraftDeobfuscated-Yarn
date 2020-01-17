@@ -124,13 +124,13 @@ extends ChunkManager {
             return CompletableFuture.supplyAsync(() -> this.getChunk(x, z, leastStatus, create), this.mainThreadExecutor).join();
         }
         Profiler profiler = this.world.getProfiler();
-        profiler.method_24270("getChunk");
+        profiler.visit("getChunk");
         long l = ChunkPos.toLong(x, z);
         for (int i = 0; i < 4; ++i) {
             if (l != this.chunkPosCache[i] || leastStatus != this.chunkStatusCache[i] || (chunk2 = this.chunkCache[i]) == null && create) continue;
             return chunk2;
         }
-        profiler.method_24270("getChunkCacheMiss");
+        profiler.visit("getChunkCacheMiss");
         CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = this.getChunkFuture(x, z, leastStatus, create);
         this.mainThreadExecutor.runTasks(completableFuture::isDone);
         chunk2 = completableFuture.join().map(chunk -> chunk, unloaded -> {
@@ -149,7 +149,7 @@ extends ChunkManager {
         if (Thread.currentThread() != this.serverThread) {
             return null;
         }
-        this.world.getProfiler().method_24270("getChunkNow");
+        this.world.getProfiler().visit("getChunkNow");
         long l = ChunkPos.toLong(chunkX, chunkZ);
         for (int i = 0; i < 4; ++i) {
             if (l != this.chunkPosCache[i] || this.chunkStatusCache[i] != ChunkStatus.FULL) continue;
@@ -508,7 +508,7 @@ extends ChunkManager {
 
         @Override
         protected void executeTask(Runnable task) {
-            ServerChunkManager.this.world.getProfiler().method_24270("runTask");
+            ServerChunkManager.this.world.getProfiler().visit("runTask");
             super.executeTask(task);
         }
 

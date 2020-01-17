@@ -148,7 +148,7 @@ extends ProjectileEntity {
         if (!this.effects.isEmpty()) {
             ListTag listTag = new ListTag();
             for (StatusEffectInstance statusEffectInstance : this.effects) {
-                listTag.add(statusEffectInstance.serialize(new CompoundTag()));
+                listTag.add(statusEffectInstance.toTag(new CompoundTag()));
             }
             tag.put("CustomPotionEffects", listTag);
         }

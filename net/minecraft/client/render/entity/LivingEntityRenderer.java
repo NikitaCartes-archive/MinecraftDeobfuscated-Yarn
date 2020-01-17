@@ -43,14 +43,14 @@ implements FeatureRendererContext<T, M> {
     protected M model;
     protected final List<FeatureRenderer<T, M>> features = Lists.newArrayList();
 
-    public LivingEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, M entityModel, float f) {
-        super(entityRenderDispatcher);
-        this.model = entityModel;
-        this.shadowSize = f;
+    public LivingEntityRenderer(EntityRenderDispatcher dispatcher, M model, float shadowSize) {
+        super(dispatcher);
+        this.model = model;
+        this.shadowSize = shadowSize;
     }
 
-    protected final boolean addFeature(FeatureRenderer<T, M> featureRenderer) {
-        return this.features.add(featureRenderer);
+    protected final boolean addFeature(FeatureRenderer<T, M> feature) {
+        return this.features.add(feature);
     }
 
     @Override
@@ -91,7 +91,7 @@ implements FeatureRendererContext<T, M> {
             n = ((Entity)livingEntity).getEyeHeight(EntityPose.STANDING) - 0.1f;
             matrixStack.translate((float)(-direction.getOffsetX()) * n, 0.0, (float)(-direction.getOffsetZ()) * n);
         }
-        float l = this.getCustomAngle(livingEntity, g);
+        float l = this.getAnimationProgress(livingEntity, g);
         this.setupTransforms(livingEntity, matrixStack, l, h, g);
         matrixStack.scale(-1.0f, -1.0f, 1.0f);
         this.scale(livingEntity, matrixStack, g);
@@ -110,9 +110,9 @@ implements FeatureRendererContext<T, M> {
         }
         ((EntityModel)this.model).animateModel(livingEntity, o, n, g);
         ((EntityModel)this.model).setAngles(livingEntity, o, n, l, k, m);
-        boolean bl = this.method_4056(livingEntity);
-        boolean bl2 = !bl && !((Entity)livingEntity).canSeePlayer(MinecraftClient.getInstance().player);
-        RenderLayer renderLayer = this.method_24302(livingEntity, bl, bl2);
+        boolean bl = this.isFullyVisible(livingEntity);
+        boolean bl2 = !bl && !((Entity)livingEntity).isInvisibleTo(MinecraftClient.getInstance().player);
+        RenderLayer renderLayer = this.getRenderLayer(livingEntity, bl, bl2);
         if (renderLayer != null) {
             VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(renderLayer);
             int p = LivingEntityRenderer.getOverlay(livingEntity, this.getWhiteOverlayProgress(livingEntity, g));
@@ -127,27 +127,33 @@ implements FeatureRendererContext<T, M> {
         super.render(livingEntity, f, g, matrixStack, vertexConsumerProvider, i);
     }
 
+    /**
+     * Gets the render layer appropriate for rendering the passed entity. Returns null if the entity should not be rendered.
+     */
     @Nullable
-    protected RenderLayer method_24302(T livingEntity, boolean bl, boolean bl2) {
-        Identifier identifier = this.getTexture(livingEntity);
-        if (bl2) {
+    protected RenderLayer getRenderLayer(T entity, boolean showBody, boolean translucent) {
+        Identifier identifier = this.getTexture(entity);
+        if (translucent) {
             return RenderLayer.getEntityTranslucent(identifier);
         }
-        if (bl) {
+        if (showBody) {
             return ((Model)this.model).getLayer(identifier);
         }
-        if (((Entity)livingEntity).isGlowing()) {
+        if (((Entity)entity).isGlowing()) {
             return RenderLayer.getOutline(identifier);
         }
         return null;
     }
 
+    /**
+     * Returns the packed overlay color for an entity, determined by its death progress and whether it is flashing.
+     */
     public static int getOverlay(LivingEntity entity, float whiteOverlayProgress) {
         return OverlayTexture.packUv(OverlayTexture.getU(whiteOverlayProgress), OverlayTexture.getV(entity.hurtTime > 0 || entity.deathTime > 0));
     }
 
-    protected boolean method_4056(T livingEntity) {
-        return !((Entity)livingEntity).isInvisible();
+    protected boolean isFullyVisible(T entity) {
+        return !((Entity)entity).isInvisible();
     }
 
     private static float getYaw(Direction direction) {
@@ -168,30 +174,30 @@ implements FeatureRendererContext<T, M> {
         return 0.0f;
     }
 
-    protected void setupTransforms(T entity, MatrixStack matrixStack, float f, float g, float h) {
+    protected void setupTransforms(T entity, MatrixStack matrices, float animationProgress, float bodyYaw, float tickDelta) {
         String string;
         EntityPose entityPose = ((Entity)entity).getPose();
         if (entityPose != EntityPose.SLEEPING) {
-            matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f - g));
+            matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f - bodyYaw));
         }
         if (((LivingEntity)entity).deathTime > 0) {
-            float i = ((float)((LivingEntity)entity).deathTime + h - 1.0f) / 20.0f * 1.6f;
-            if ((i = MathHelper.sqrt(i)) > 1.0f) {
-                i = 1.0f;
+            float f = ((float)((LivingEntity)entity).deathTime + tickDelta - 1.0f) / 20.0f * 1.6f;
+            if ((f = MathHelper.sqrt(f)) > 1.0f) {
+                f = 1.0f;
             }
-            matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(i * this.getLyingAngle(entity)));
+            matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(f * this.getLyingAngle(entity)));
         } else if (((LivingEntity)entity).isUsingRiptide()) {
-            matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0f - ((LivingEntity)entity).pitch));
-            matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(((float)((LivingEntity)entity).age + h) * -75.0f));
+            matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0f - ((LivingEntity)entity).pitch));
+            matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(((float)((LivingEntity)entity).age + tickDelta) * -75.0f));
         } else if (entityPose == EntityPose.SLEEPING) {
             Direction direction = ((LivingEntity)entity).getSleepingDirection();
-            float j = direction != null ? LivingEntityRenderer.getYaw(direction) : g;
-            matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(j));
-            matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(this.getLyingAngle(entity)));
-            matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(270.0f));
+            float g = direction != null ? LivingEntityRenderer.getYaw(direction) : bodyYaw;
+            matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(g));
+            matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(this.getLyingAngle(entity)));
+            matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(270.0f));
         } else if ((((Entity)entity).hasCustomName() || entity instanceof PlayerEntity) && ("Dinnerbone".equals(string = Formatting.strip(((Entity)entity).getName().getString())) || "Grumm".equals(string)) && (!(entity instanceof PlayerEntity) || ((PlayerEntity)entity).isPartVisible(PlayerModelPart.CAPE))) {
-            matrixStack.translate(0.0, ((Entity)entity).getHeight() + 0.1f, 0.0);
-            matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0f));
+            matrices.translate(0.0, ((Entity)entity).getHeight() + 0.1f, 0.0);
+            matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0f));
         }
     }
 
@@ -199,11 +205,15 @@ implements FeatureRendererContext<T, M> {
         return ((LivingEntity)entity).getHandSwingProgress(tickDelta);
     }
 
-    protected float getCustomAngle(T entity, float tickDelta) {
+    /**
+     * This value is passed to other methods when calculating angles for animation.
+     * It's typically just the sum of the entity's age (in ticks) and the passed in tickDelta.
+     */
+    protected float getAnimationProgress(T entity, float tickDelta) {
         return (float)((LivingEntity)entity).age + tickDelta;
     }
 
-    protected float getLyingAngle(T livingEntity) {
+    protected float getLyingAngle(T entity) {
         return 90.0f;
     }
 
@@ -211,7 +221,7 @@ implements FeatureRendererContext<T, M> {
         return 0.0f;
     }
 
-    protected void scale(T entity, MatrixStack matrixStack, float f) {
+    protected void scale(T entity, MatrixStack matrices, float tickDelta) {
     }
 
     @Override
@@ -225,7 +235,7 @@ implements FeatureRendererContext<T, M> {
         }
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
         ClientPlayerEntity clientPlayerEntity = minecraftClient.player;
-        boolean bl2 = bl = !((Entity)livingEntity).canSeePlayer(clientPlayerEntity);
+        boolean bl2 = bl = !((Entity)livingEntity).isInvisibleTo(clientPlayerEntity);
         if (livingEntity != clientPlayerEntity) {
             AbstractTeam abstractTeam = ((Entity)livingEntity).getScoreboardTeam();
             AbstractTeam abstractTeam2 = clientPlayerEntity.getScoreboardTeam();

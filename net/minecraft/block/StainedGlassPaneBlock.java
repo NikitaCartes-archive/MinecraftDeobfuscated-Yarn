@@ -6,12 +6,12 @@ package net.minecraft.block;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.PaneBlock;
-import net.minecraft.client.block.ColoredBlock;
+import net.minecraft.block.Stainable;
 import net.minecraft.util.DyeColor;
 
 public class StainedGlassPaneBlock
 extends PaneBlock
-implements ColoredBlock {
+implements Stainable {
     private final DyeColor color;
 
     public StainedGlassPaneBlock(DyeColor color, Block.Settings settings) {

@@ -9,14 +9,14 @@ import com.mojang.datafixers.types.DynamicOps;
 import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.structure.rule.AbstractRuleTest;
 import net.minecraft.structure.rule.RuleTest;
+import net.minecraft.structure.rule.RuleTestType;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 
 public class TagMatchRuleTest
-extends AbstractRuleTest {
+extends RuleTest {
     private final Tag<Block> tag;
 
     public TagMatchRuleTest(Tag<Block> tag) {
@@ -28,18 +28,18 @@ extends AbstractRuleTest {
     }
 
     @Override
-    public boolean test(BlockState blockState, Random random) {
-        return blockState.matches(this.tag);
+    public boolean test(BlockState state, Random random) {
+        return state.matches(this.tag);
     }
 
     @Override
-    protected RuleTest getRuleTest() {
-        return RuleTest.TAG_MATCH;
+    protected RuleTestType getType() {
+        return RuleTestType.TAG_MATCH;
     }
 
     @Override
-    protected <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-        return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("tag"), dynamicOps.createString(this.tag.getId().toString()))));
+    protected <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("tag"), ops.createString(this.tag.getId().toString()))));
     }
 }
 

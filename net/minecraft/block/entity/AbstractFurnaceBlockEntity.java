@@ -55,8 +55,8 @@ Tickable {
     protected final PropertyDelegate propertyDelegate = new PropertyDelegate(){
 
         @Override
-        public int get(int key) {
-            switch (key) {
+        public int get(int index) {
+            switch (index) {
                 case 0: {
                     return AbstractFurnaceBlockEntity.this.burnTime;
                 }
@@ -74,8 +74,8 @@ Tickable {
         }
 
         @Override
-        public void set(int key, int value) {
-            switch (key) {
+        public void set(int index, int value) {
+            switch (index) {
                 case 0: {
                     AbstractFurnaceBlockEntity.this.burnTime = value;
                     break;

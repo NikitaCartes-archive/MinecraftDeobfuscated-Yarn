@@ -52,12 +52,12 @@ public class StatusEffects {
     public static final StatusEffect BAD_OMEN = StatusEffects.register(31, "bad_omen", new StatusEffect(StatusEffectType.NEUTRAL, 745784){
 
         @Override
-        public boolean canApplyUpdateEffect(int duration, int i) {
+        public boolean canApplyUpdateEffect(int duration, int amplifier) {
             return true;
         }
 
         @Override
-        public void applyUpdateEffect(LivingEntity entity, int i) {
+        public void applyUpdateEffect(LivingEntity entity, int amplifier) {
             if (entity instanceof ServerPlayerEntity && !entity.isSpectator()) {
                 ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
                 ServerWorld serverWorld = serverPlayerEntity.getServerWorld();
@@ -72,8 +72,8 @@ public class StatusEffects {
     });
     public static final StatusEffect HERO_OF_THE_VILLAGE = StatusEffects.register(32, "hero_of_the_village", new StatusEffect(StatusEffectType.BENEFICIAL, 0x44FF44));
 
-    private static StatusEffect register(int i, String string, StatusEffect statusEffect) {
-        return Registry.register(Registry.STATUS_EFFECT, i, string, statusEffect);
+    private static StatusEffect register(int rawId, String id, StatusEffect entry) {
+        return Registry.register(Registry.STATUS_EFFECT, rawId, id, entry);
     }
 }
 

@@ -46,7 +46,7 @@ extends WallMountedBlock {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
         switch ((WallMountLocation)state.get(FACE)) {
             case FLOOR: {
                 switch (state.get(FACING).getAxis()) {

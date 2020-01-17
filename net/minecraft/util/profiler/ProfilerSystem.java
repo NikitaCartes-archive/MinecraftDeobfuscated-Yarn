@@ -17,8 +17,8 @@ import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4748;
 import net.minecraft.util.Util;
+import net.minecraft.util.profiler.ProfileLocationInfo;
 import net.minecraft.util.profiler.ProfileResult;
 import net.minecraft.util.profiler.ProfileResultImpl;
 import net.minecraft.util.profiler.ReadableProfiler;
@@ -30,23 +30,23 @@ public class ProfilerSystem
 implements ReadableProfiler {
     private static final long TIMEOUT_NANOSECONDS = Duration.ofMillis(100L).toNanos();
     private static final Logger LOGGER = LogManager.getLogger();
-    private final List<String> nameList = Lists.newArrayList();
+    private final List<String> path = Lists.newArrayList();
     private final LongList timeList = new LongArrayList();
-    private final Map<String, class_4746> field_21818 = Maps.newHashMap();
-    private final IntSupplier field_16266;
-    private final long field_15732;
-    private final int field_15729;
+    private final Map<String, LocatedInfo> locationInfos = Maps.newHashMap();
+    private final IntSupplier endTickGetter;
+    private final long startTime;
+    private final int startTick;
     private String location = "";
     private boolean tickStarted;
     @Nullable
-    private class_4746 field_21819;
-    private final boolean field_20345;
+    private LocatedInfo currentInfo;
+    private final boolean checkTimeout;
 
-    public ProfilerSystem(long l, IntSupplier intSupplier, boolean bl) {
-        this.field_15732 = l;
-        this.field_15729 = intSupplier.getAsInt();
-        this.field_16266 = intSupplier;
-        this.field_20345 = bl;
+    public ProfilerSystem(long startTime, IntSupplier tickGetter, boolean checkTimeout) {
+        this.startTime = startTime;
+        this.startTick = tickGetter.getAsInt();
+        this.endTickGetter = tickGetter;
+        this.checkTimeout = checkTimeout;
     }
 
     @Override
@@ -57,7 +57,7 @@ implements ReadableProfiler {
         }
         this.tickStarted = true;
         this.location = "";
-        this.nameList.clear();
+        this.path.clear();
         this.push("root");
     }
 
@@ -70,28 +70,28 @@ implements ReadableProfiler {
         this.pop();
         this.tickStarted = false;
         if (!this.location.isEmpty()) {
-            LOGGER.error("Profiler tick ended before path was fully popped (remainder: '{}'). Mismatched push/pop?", () -> ProfileResult.method_21721(this.location));
+            LOGGER.error("Profiler tick ended before path was fully popped (remainder: '{}'). Mismatched push/pop?", () -> ProfileResult.getHumanReadableName(this.location));
         }
     }
 
     @Override
-    public void push(String string) {
+    public void push(String location) {
         if (!this.tickStarted) {
-            LOGGER.error("Cannot push '{}' to profiler if profiler tick hasn't started - missing startTick()?", (Object)string);
+            LOGGER.error("Cannot push '{}' to profiler if profiler tick hasn't started - missing startTick()?", (Object)location);
             return;
         }
         if (!this.location.isEmpty()) {
             this.location = this.location + '\u001e';
         }
-        this.location = this.location + string;
-        this.nameList.add(this.location);
+        this.location = this.location + location;
+        this.path.add(this.location);
         this.timeList.add(Util.getMeasuringTimeNano());
-        this.field_21819 = null;
+        this.currentInfo = null;
     }
 
     @Override
-    public void push(Supplier<String> supplier) {
-        this.push(supplier.get());
+    public void push(Supplier<String> locationGetter) {
+        this.push(locationGetter.get());
     }
 
     @Override
@@ -106,75 +106,75 @@ implements ReadableProfiler {
         }
         long l = Util.getMeasuringTimeNano();
         long m = this.timeList.removeLong(this.timeList.size() - 1);
-        this.nameList.remove(this.nameList.size() - 1);
+        this.path.remove(this.path.size() - 1);
         long n = l - m;
-        class_4746 lv = this.method_24246();
-        lv.field_21820 = lv.field_21820 + n;
-        lv.field_21821 = lv.field_21821 + 1L;
-        if (this.field_20345 && n > TIMEOUT_NANOSECONDS) {
-            LOGGER.warn("Something's taking too long! '{}' took aprox {} ms", () -> ProfileResult.method_21721(this.location), () -> (double)n / 1000000.0);
+        LocatedInfo locatedInfo = this.getCurrentInfo();
+        locatedInfo.time = locatedInfo.time + n;
+        locatedInfo.visits = locatedInfo.visits + 1L;
+        if (this.checkTimeout && n > TIMEOUT_NANOSECONDS) {
+            LOGGER.warn("Something's taking too long! '{}' took aprox {} ms", () -> ProfileResult.getHumanReadableName(this.location), () -> (double)n / 1000000.0);
         }
-        this.location = this.nameList.isEmpty() ? "" : this.nameList.get(this.nameList.size() - 1);
-        this.field_21819 = null;
+        this.location = this.path.isEmpty() ? "" : this.path.get(this.path.size() - 1);
+        this.currentInfo = null;
     }
 
     @Override
-    public void swap(String string) {
+    public void swap(String location) {
         this.pop();
-        this.push(string);
+        this.push(location);
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void swap(Supplier<String> supplier) {
+    public void swap(Supplier<String> locationGetter) {
         this.pop();
-        this.push(supplier);
+        this.push(locationGetter);
     }
 
-    private class_4746 method_24246() {
-        if (this.field_21819 == null) {
-            this.field_21819 = this.field_21818.computeIfAbsent(this.location, string -> new class_4746());
+    private LocatedInfo getCurrentInfo() {
+        if (this.currentInfo == null) {
+            this.currentInfo = this.locationInfos.computeIfAbsent(this.location, string -> new LocatedInfo());
         }
-        return this.field_21819;
+        return this.currentInfo;
     }
 
     @Override
-    public void method_24270(String string) {
-        this.method_24246().field_21822.addTo(string, 1L);
+    public void visit(String marker) {
+        this.getCurrentInfo().counts.addTo(marker, 1L);
     }
 
     @Override
-    public void method_24271(Supplier<String> supplier) {
-        this.method_24246().field_21822.addTo(supplier.get(), 1L);
+    public void visit(Supplier<String> markerGetter) {
+        this.getCurrentInfo().counts.addTo(markerGetter.get(), 1L);
     }
 
     @Override
-    public ProfileResult getResults() {
-        return new ProfileResultImpl(this.field_21818, this.field_15732, this.field_15729, Util.getMeasuringTimeNano(), this.field_16266.getAsInt());
+    public ProfileResult getResult() {
+        return new ProfileResultImpl(this.locationInfos, this.startTime, this.startTick, Util.getMeasuringTimeNano(), this.endTickGetter.getAsInt());
     }
 
-    static class class_4746
-    implements class_4748 {
-        private long field_21820;
-        private long field_21821;
-        private Object2LongOpenHashMap<String> field_21822 = new Object2LongOpenHashMap();
+    static class LocatedInfo
+    implements ProfileLocationInfo {
+        private long time;
+        private long visits;
+        private Object2LongOpenHashMap<String> counts = new Object2LongOpenHashMap();
 
-        private class_4746() {
+        private LocatedInfo() {
         }
 
         @Override
-        public long method_24272() {
-            return this.field_21820;
+        public long getTotalTime() {
+            return this.time;
         }
 
         @Override
-        public long method_24273() {
-            return this.field_21821;
+        public long getVisitCount() {
+            return this.visits;
         }
 
         @Override
-        public Object2LongMap<String> method_24274() {
-            return Object2LongMaps.unmodifiable(this.field_21822);
+        public Object2LongMap<String> getCounts() {
+            return Object2LongMaps.unmodifiable(this.counts);
         }
     }
 }

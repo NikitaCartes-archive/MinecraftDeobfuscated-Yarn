@@ -18,20 +18,20 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.network.packet.LoginCompressionS2CPacket;
-import net.minecraft.client.network.packet.LoginDisconnectS2CPacket;
-import net.minecraft.client.network.packet.LoginHelloS2CPacket;
-import net.minecraft.client.network.packet.LoginQueryRequestS2CPacket;
-import net.minecraft.client.network.packet.LoginSuccessS2CPacket;
 import net.minecraft.client.util.NetworkUtils;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkEncryptionUtils;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.listener.ClientLoginPacketListener;
+import net.minecraft.network.packet.c2s.login.LoginKeyC2SPacket;
+import net.minecraft.network.packet.c2s.login.LoginQueryResponseC2SPacket;
+import net.minecraft.network.packet.s2c.login.LoginCompressionS2CPacket;
+import net.minecraft.network.packet.s2c.login.LoginDisconnectS2CPacket;
+import net.minecraft.network.packet.s2c.login.LoginHelloS2CPacket;
+import net.minecraft.network.packet.s2c.login.LoginQueryRequestS2CPacket;
+import net.minecraft.network.packet.s2c.login.LoginSuccessS2CPacket;
 import net.minecraft.realms.DisconnectedRealmsScreen;
 import net.minecraft.realms.RealmsScreenProxy;
-import net.minecraft.server.network.packet.LoginKeyC2SPacket;
-import net.minecraft.server.network.packet.LoginQueryResponseC2SPacket;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import org.apache.logging.log4j.LogManager;
@@ -97,9 +97,9 @@ implements ClientLoginPacketListener {
     }
 
     @Override
-    public void onLoginSuccess(LoginSuccessS2CPacket loginSuccessS2CPacket) {
+    public void onLoginSuccess(LoginSuccessS2CPacket packet) {
         this.statusConsumer.accept(new TranslatableText("connect.joining", new Object[0]));
-        this.profile = loginSuccessS2CPacket.getProfile();
+        this.profile = packet.getProfile();
         this.connection.setState(NetworkState.PLAY);
         this.connection.setPacketListener(new ClientPlayNetworkHandler(this.client, this.parentGui, this.connection, this.profile));
     }
@@ -126,7 +126,7 @@ implements ClientLoginPacketListener {
     @Override
     public void onCompression(LoginCompressionS2CPacket packet) {
         if (!this.connection.isLocal()) {
-            this.connection.setMinCompressedSize(packet.getCompressionThreshold());
+            this.connection.setCompressionThreshold(packet.getCompressionThreshold());
         }
     }
 

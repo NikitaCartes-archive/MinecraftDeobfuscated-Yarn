@@ -63,7 +63,7 @@ extends FacingBlock {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
         if (state.get(EXTENDED).booleanValue()) {
             switch (state.get(FACING)) {
                 case DOWN: {

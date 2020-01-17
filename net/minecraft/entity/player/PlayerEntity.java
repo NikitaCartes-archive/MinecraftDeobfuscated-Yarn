@@ -28,10 +28,9 @@ import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
-import net.minecraft.client.network.packet.EntityVelocityUpdateS2CPacket;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.container.Container;
-import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.container.PlayerContainer;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -78,6 +77,7 @@ import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.item.SwordItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Recipe;
@@ -850,7 +850,7 @@ extends LivingEntity {
     public void openHorseInventory(HorseBaseEntity horseBaseEntity, Inventory inventory) {
     }
 
-    public OptionalInt openContainer(@Nullable NameableContainerProvider nameableContainerProvider) {
+    public OptionalInt openContainer(@Nullable NameableContainerFactory nameableContainerFactory) {
         return OptionalInt.empty();
     }
 
@@ -862,8 +862,8 @@ extends LivingEntity {
 
     public ActionResult interact(Entity entity, Hand hand) {
         if (this.isSpectator()) {
-            if (entity instanceof NameableContainerProvider) {
-                this.openContainer((NameableContainerProvider)((Object)entity));
+            if (entity instanceof NameableContainerFactory) {
+                this.openContainer((NameableContainerFactory)((Object)entity));
             }
             return ActionResult.PASS;
         }

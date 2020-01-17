@@ -6,7 +6,7 @@ package net.minecraft.client.gui.screen.ingame;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
+import net.minecraft.client.gui.screen.ingame.ContainerScreen;
 import net.minecraft.container.GrindstoneContainer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
@@ -14,7 +14,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(value=EnvType.CLIENT)
 public class GrindstoneScreen
-extends AbstractContainerScreen<GrindstoneContainer> {
+extends ContainerScreen<GrindstoneContainer> {
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/grindstone.png");
 
     public GrindstoneScreen(GrindstoneContainer container, PlayerInventory inventory, Text title) {

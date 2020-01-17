@@ -3,6 +3,12 @@
  */
 package net.minecraft.container;
 
+/**
+ * A property delegate represents an indexed list of integer properties.
+ * 
+ * <p>Property delegates are used for displaying integer values in screens,
+ * such as the progress bars in furnaces.
+ */
 public interface PropertyDelegate {
     public int get(int var1);
 

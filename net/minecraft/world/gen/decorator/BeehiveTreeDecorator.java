@@ -40,23 +40,23 @@ extends TreeDecorator {
     }
 
     @Override
-    public void generate(IWorld world, Random random, List<BlockPos> list, List<BlockPos> list2, Set<BlockPos> set, BlockBox box) {
+    public void generate(IWorld world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box) {
         if (random.nextFloat() >= this.chance) {
             return;
         }
         Direction direction = BeehiveBlock.GENERATE_DIRECTIONS[random.nextInt(BeehiveBlock.GENERATE_DIRECTIONS.length)];
-        int i = !list2.isEmpty() ? Math.max(list2.get(0).getY() - 1, list.get(0).getY()) : Math.min(list.get(0).getY() + 1 + random.nextInt(3), list.get(list.size() - 1).getY());
-        List list3 = list.stream().filter(blockPos -> blockPos.getY() == i).collect(Collectors.toList());
-        if (list3.isEmpty()) {
+        int i = !leavesPositions.isEmpty() ? Math.max(leavesPositions.get(0).getY() - 1, logPositions.get(0).getY()) : Math.min(logPositions.get(0).getY() + 1 + random.nextInt(3), logPositions.get(logPositions.size() - 1).getY());
+        List list = logPositions.stream().filter(blockPos -> blockPos.getY() == i).collect(Collectors.toList());
+        if (list.isEmpty()) {
             return;
         }
-        BlockPos blockPos2 = (BlockPos)list3.get(random.nextInt(list3.size()));
+        BlockPos blockPos2 = (BlockPos)list.get(random.nextInt(list.size()));
         BlockPos blockPos22 = blockPos2.offset(direction);
         if (!AbstractTreeFeature.isAir(world, blockPos22) || !AbstractTreeFeature.isAir(world, blockPos22.offset(Direction.SOUTH))) {
             return;
         }
         BlockState blockState = (BlockState)Blocks.BEE_NEST.getDefaultState().with(BeehiveBlock.FACING, Direction.SOUTH);
-        this.method_23470(world, blockPos22, blockState, set, box);
+        this.setBlockStateAndEncompassPosition(world, blockPos22, blockState, set, box);
         BlockEntity blockEntity = world.getBlockEntity(blockPos22);
         if (blockEntity instanceof BeehiveBlockEntity) {
             BeehiveBlockEntity beehiveBlockEntity = (BeehiveBlockEntity)blockEntity;
@@ -70,7 +70,7 @@ extends TreeDecorator {
 
     @Override
     public <T> T serialize(DynamicOps<T> ops) {
-        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("type"), ops.createString(Registry.TREE_DECORATOR_TYPE.getId(this.field_21319).toString()), ops.createString("probability"), ops.createFloat(this.chance)))).getValue();
+        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("type"), ops.createString(Registry.TREE_DECORATOR_TYPE.getId(this.type).toString()), ops.createString("probability"), ops.createFloat(this.chance)))).getValue();
     }
 }
 

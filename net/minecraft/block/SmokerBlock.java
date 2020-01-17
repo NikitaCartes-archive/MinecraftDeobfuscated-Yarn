@@ -11,7 +11,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SmokerBlockEntity;
-import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
@@ -36,7 +36,7 @@ extends AbstractFurnaceBlock {
     protected void openContainer(World world, BlockPos pos, PlayerEntity player) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof SmokerBlockEntity) {
-            player.openContainer((NameableContainerProvider)((Object)blockEntity));
+            player.openContainer((NameableContainerFactory)((Object)blockEntity));
             player.incrementStat(Stats.INTERACT_WITH_SMOKER);
         }
     }

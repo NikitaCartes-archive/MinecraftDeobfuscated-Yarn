@@ -8,11 +8,11 @@ import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import java.util.Random;
 import net.minecraft.block.BlockState;
-import net.minecraft.structure.rule.AbstractRuleTest;
 import net.minecraft.structure.rule.RuleTest;
+import net.minecraft.structure.rule.RuleTestType;
 
 public class RandomBlockStateMatchRuleTest
-extends AbstractRuleTest {
+extends RuleTest {
     private final BlockState blockState;
     private final float probability;
 
@@ -26,18 +26,18 @@ extends AbstractRuleTest {
     }
 
     @Override
-    public boolean test(BlockState blockState, Random random) {
-        return blockState == this.blockState && random.nextFloat() < this.probability;
+    public boolean test(BlockState state, Random random) {
+        return state == this.blockState && random.nextFloat() < this.probability;
     }
 
     @Override
-    protected RuleTest getRuleTest() {
-        return RuleTest.RANDOM_BLOCKSTATE_MATCH;
+    protected RuleTestType getType() {
+        return RuleTestType.RANDOM_BLOCKSTATE_MATCH;
     }
 
     @Override
-    protected <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-        return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("blockstate"), BlockState.serialize(dynamicOps, this.blockState).getValue(), dynamicOps.createString("probability"), dynamicOps.createFloat(this.probability))));
+    protected <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("blockstate"), BlockState.serialize(ops, this.blockState).getValue(), ops.createString("probability"), ops.createFloat(this.probability))));
     }
 }
 

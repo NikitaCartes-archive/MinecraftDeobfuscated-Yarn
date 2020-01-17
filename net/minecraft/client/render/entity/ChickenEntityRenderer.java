@@ -27,7 +27,7 @@ extends MobEntityRenderer<ChickenEntity, ChickenEntityModel<ChickenEntity>> {
     }
 
     @Override
-    protected float getCustomAngle(ChickenEntity chickenEntity, float f) {
+    protected float getAnimationProgress(ChickenEntity chickenEntity, float f) {
         float g = MathHelper.lerp(f, chickenEntity.field_6736, chickenEntity.field_6741);
         float h = MathHelper.lerp(f, chickenEntity.field_6738, chickenEntity.field_6743);
         return (MathHelper.sin(g) + 1.0f) * h;

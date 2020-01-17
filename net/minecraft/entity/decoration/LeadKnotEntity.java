@@ -6,7 +6,6 @@ package net.minecraft.entity.decoration;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
@@ -16,6 +15,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Hand;
@@ -48,12 +48,12 @@ extends AbstractDecorationEntity {
     }
 
     @Override
-    protected void method_6895() {
-        this.setPos((double)this.blockPos.getX() + 0.5, (double)this.blockPos.getY() + 0.5, (double)this.blockPos.getZ() + 0.5);
+    protected void updateAttachmentPosition() {
+        this.setPos((double)this.attachmentPos.getX() + 0.5, (double)this.attachmentPos.getY() + 0.5, (double)this.attachmentPos.getZ() + 0.5);
     }
 
     @Override
-    public void setFacing(Direction direction) {
+    public void setFacing(Direction facing) {
     }
 
     @Override
@@ -116,8 +116,8 @@ extends AbstractDecorationEntity {
     }
 
     @Override
-    public boolean method_6888() {
-        return this.world.getBlockState(this.blockPos).getBlock().matches(BlockTags.FENCES);
+    public boolean canStayAttached() {
+        return this.world.getBlockState(this.attachmentPos).getBlock().matches(BlockTags.FENCES);
     }
 
     public static LeadKnotEntity getOrCreate(World world, BlockPos pos) {

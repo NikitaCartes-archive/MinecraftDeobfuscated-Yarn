@@ -8,6 +8,6 @@ import net.minecraft.util.profiler.Profiler;
 
 public interface ReadableProfiler
 extends Profiler {
-    public ProfileResult getResults();
+    public ProfileResult getResult();
 }
 

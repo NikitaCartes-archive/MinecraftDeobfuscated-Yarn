@@ -9,6 +9,9 @@ import java.util.function.BiFunction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+/**
+ * Block contexts allow to get a value using an optionally present {@link World} and {@link BlockPos}.
+ */
 public interface BlockContext {
     public static final BlockContext EMPTY = new BlockContext(){
 
@@ -18,12 +21,12 @@ public interface BlockContext {
         }
     };
 
-    public static BlockContext create(final World world2, final BlockPos world) {
+    public static BlockContext create(final World world, final BlockPos pos) {
         return new BlockContext(){
 
             @Override
             public <T> Optional<T> run(BiFunction<World, BlockPos, T> function) {
-                return Optional.of(function.apply(world2, world));
+                return Optional.of(function.apply(world, pos));
             }
         };
     }

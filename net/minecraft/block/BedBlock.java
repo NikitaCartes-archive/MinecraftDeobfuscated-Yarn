@@ -204,7 +204,7 @@ implements BlockEntityProvider {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
         Direction direction = BedBlock.method_24163(state).getOpposite();
         switch (direction) {
             case NORTH: {

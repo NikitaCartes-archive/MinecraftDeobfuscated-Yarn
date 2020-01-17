@@ -12,18 +12,18 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.decorator.TreeDecorator;
 import net.minecraft.world.gen.feature.FeatureConfig;
-import net.minecraft.world.gen.stateprovider.StateProvider;
-import net.minecraft.world.gen.stateprovider.StateProviderType;
+import net.minecraft.world.gen.stateprovider.BlockStateProvider;
+import net.minecraft.world.gen.stateprovider.BlockStateProviderType;
 
 public class TreeFeatureConfig
 implements FeatureConfig {
-    public final StateProvider trunkProvider;
-    public final StateProvider leavesProvider;
+    public final BlockStateProvider trunkProvider;
+    public final BlockStateProvider leavesProvider;
     public final List<TreeDecorator> decorators;
     public final int baseHeight;
     public transient boolean field_21593;
 
-    protected TreeFeatureConfig(StateProvider trunkProvider, StateProvider leavesProvider, List<TreeDecorator> decorators, int baseHeight) {
+    protected TreeFeatureConfig(BlockStateProvider trunkProvider, BlockStateProvider leavesProvider, List<TreeDecorator> decorators, int baseHeight) {
         this.trunkProvider = trunkProvider;
         this.leavesProvider = leavesProvider;
         this.decorators = decorators;
@@ -42,18 +42,18 @@ implements FeatureConfig {
     }
 
     public static <T> TreeFeatureConfig deserialize(Dynamic<T> configDeserializer) {
-        StateProviderType<T> stateProviderType = Registry.BLOCK_STATE_PROVIDER_TYPE.get(new Identifier(configDeserializer.get("trunk_provider").get("type").asString().orElseThrow(RuntimeException::new)));
-        StateProviderType<T> stateProviderType2 = Registry.BLOCK_STATE_PROVIDER_TYPE.get(new Identifier(configDeserializer.get("leaves_provider").get("type").asString().orElseThrow(RuntimeException::new)));
-        return new TreeFeatureConfig((StateProvider)stateProviderType.deserialize(configDeserializer.get("trunk_provider").orElseEmptyMap()), (StateProvider)stateProviderType2.deserialize(configDeserializer.get("leaves_provider").orElseEmptyMap()), configDeserializer.get("decorators").asList(dynamic -> Registry.TREE_DECORATOR_TYPE.get(new Identifier(dynamic.get("type").asString().orElseThrow(RuntimeException::new))).method_23472((Dynamic<?>)dynamic)), configDeserializer.get("base_height").asInt(0));
+        BlockStateProviderType<T> blockStateProviderType = Registry.BLOCK_STATE_PROVIDER_TYPE.get(new Identifier(configDeserializer.get("trunk_provider").get("type").asString().orElseThrow(RuntimeException::new)));
+        BlockStateProviderType<T> blockStateProviderType2 = Registry.BLOCK_STATE_PROVIDER_TYPE.get(new Identifier(configDeserializer.get("leaves_provider").get("type").asString().orElseThrow(RuntimeException::new)));
+        return new TreeFeatureConfig((BlockStateProvider)blockStateProviderType.deserialize(configDeserializer.get("trunk_provider").orElseEmptyMap()), (BlockStateProvider)blockStateProviderType2.deserialize(configDeserializer.get("leaves_provider").orElseEmptyMap()), configDeserializer.get("decorators").asList(dynamic -> Registry.TREE_DECORATOR_TYPE.get(new Identifier(dynamic.get("type").asString().orElseThrow(RuntimeException::new))).method_23472((Dynamic<?>)dynamic)), configDeserializer.get("base_height").asInt(0));
     }
 
     public static class Builder {
-        public final StateProvider trunkProvider;
-        public final StateProvider leavesProvider;
+        public final BlockStateProvider trunkProvider;
+        public final BlockStateProvider leavesProvider;
         private List<TreeDecorator> decorators = Lists.newArrayList();
         private int baseHeight = 0;
 
-        public Builder(StateProvider trunkProvider, StateProvider leavesProvider) {
+        public Builder(BlockStateProvider trunkProvider, BlockStateProvider leavesProvider) {
             this.trunkProvider = trunkProvider;
             this.leavesProvider = leavesProvider;
         }

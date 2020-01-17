@@ -21,8 +21,8 @@ import net.minecraft.world.gen.carver.CaveCarver;
 
 public class NetherCaveCarver
 extends CaveCarver {
-    public NetherCaveCarver(Function<Dynamic<?>, ? extends ProbabilityConfig> function) {
-        super(function, 128);
+    public NetherCaveCarver(Function<Dynamic<?>, ? extends ProbabilityConfig> configDeserializer) {
+        super(configDeserializer, 128);
         this.alwaysCarvableBlocks = ImmutableSet.of(Blocks.STONE, Blocks.GRANITE, Blocks.DIORITE, Blocks.ANDESITE, Blocks.DIRT, Blocks.COARSE_DIRT, new Block[]{Blocks.PODZOL, Blocks.GRASS_BLOCK, Blocks.NETHERRACK});
         this.carvableFluids = ImmutableSet.of(Fluids.LAVA, Fluids.WATER);
     }
@@ -48,15 +48,15 @@ extends CaveCarver {
     }
 
     @Override
-    protected boolean carveAtPoint(Chunk chunk, Function<BlockPos, Biome> function, BitSet bitSet, Random random, BlockPos.Mutable mutable, BlockPos.Mutable mutable2, BlockPos.Mutable mutable3, int mainChunkX, int mainChunkZ, int i, int j, int k, int l, int m, int n, AtomicBoolean atomicBoolean) {
-        int o = l | n << 4 | m << 8;
-        if (bitSet.get(o)) {
+    protected boolean carveAtPoint(Chunk chunk, Function<BlockPos, Biome> posToBiome, BitSet carvingMask, Random random, BlockPos.Mutable mutable, BlockPos.Mutable mutable2, BlockPos.Mutable mutable3, int seaLevel, int mainChunkX, int mainChunkZ, int x, int z, int relativeX, int y, int relativeZ, AtomicBoolean foundSurface) {
+        int i = relativeX | relativeZ << 4 | y << 8;
+        if (carvingMask.get(i)) {
             return false;
         }
-        bitSet.set(o);
-        mutable.set(j, m, k);
+        carvingMask.set(i);
+        mutable.set(x, y, z);
         if (this.canAlwaysCarveBlock(chunk.getBlockState(mutable))) {
-            BlockState blockState = m <= 31 ? LAVA.getBlockState() : CAVE_AIR;
+            BlockState blockState = y <= 31 ? LAVA.getBlockState() : CAVE_AIR;
             chunk.setBlockState(mutable, blockState, false);
             return true;
         }

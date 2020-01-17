@@ -6,7 +6,7 @@ package net.minecraft.block.entity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.container.Container;
-import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.ContainerLock;
@@ -22,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class LockableContainerBlockEntity
 extends BlockEntity
 implements Inventory,
-NameableContainerProvider,
+NameableContainerFactory,
 Nameable {
     private ContainerLock lock = ContainerLock.EMPTY;
     private Text customName;

@@ -43,7 +43,7 @@ extends Block {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
         RailShape railShape;
         RailShape railShape2 = railShape = state.getBlock() == this ? state.get(this.getShapeProperty()) : null;
         if (railShape != null && railShape.isAscending()) {

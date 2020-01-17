@@ -8,45 +8,108 @@ import net.minecraft.block.piston.PistonBehavior;
 
 public final class Material {
     public static final Material AIR = Builder.method_15808(new Builder(MaterialColor.AIR).allowsMovement()).notSolid().replaceable().build();
+    /**
+     * Material for structure void block.
+     */
     public static final Material STRUCTURE_VOID = Builder.method_15808(new Builder(MaterialColor.AIR).allowsMovement()).notSolid().replaceable().build();
+    /**
+     * Material for the various portal blocks.
+     */
     public static final Material PORTAL = Builder.method_15808(new Builder(MaterialColor.AIR).allowsMovement()).notSolid().blocksPistons().build();
     public static final Material CARPET = Builder.method_15808(new Builder(MaterialColor.WEB).allowsMovement()).notSolid().burnable().build();
+    /**
+     * Material for plants such as flowers and crops
+     */
     public static final Material PLANT = Builder.method_15808(new Builder(MaterialColor.FOLIAGE).allowsMovement()).notSolid().destroyedByPiston().build();
+    /**
+     * Material for underwater plants without the replaceable property.
+     */
     public static final Material UNDERWATER_PLANT = Builder.method_15808(new Builder(MaterialColor.WATER).allowsMovement()).notSolid().destroyedByPiston().build();
     public static final Material REPLACEABLE_PLANT = Builder.method_15808(new Builder(MaterialColor.FOLIAGE).allowsMovement()).notSolid().destroyedByPiston().replaceable().burnable().build();
-    public static final Material SEAGRASS = Builder.method_15808(new Builder(MaterialColor.WATER).allowsMovement()).notSolid().destroyedByPiston().replaceable().build();
+    public static final Material REPLACEABLE_UNDERWATER_PLANT = Builder.method_15808(new Builder(MaterialColor.WATER).allowsMovement()).notSolid().destroyedByPiston().replaceable().build();
     public static final Material WATER = Builder.method_15808(new Builder(MaterialColor.WATER).allowsMovement()).notSolid().destroyedByPiston().replaceable().liquid().build();
     public static final Material BUBBLE_COLUMN = Builder.method_15808(new Builder(MaterialColor.WATER).allowsMovement()).notSolid().destroyedByPiston().replaceable().liquid().build();
     public static final Material LAVA = Builder.method_15808(new Builder(MaterialColor.LAVA).allowsMovement()).notSolid().destroyedByPiston().replaceable().liquid().build();
-    public static final Material SNOW = Builder.method_15808(new Builder(MaterialColor.WHITE).allowsMovement()).notSolid().destroyedByPiston().replaceable().requiresTool().build();
+    /**
+     * Material for non-full blocks of snow. Has the replaceable property.
+     */
+    public static final Material SNOW_LAYER = Builder.method_15808(new Builder(MaterialColor.WHITE).allowsMovement()).notSolid().destroyedByPiston().replaceable().requiresTool().build();
     public static final Material FIRE = Builder.method_15808(new Builder(MaterialColor.AIR).allowsMovement()).notSolid().destroyedByPiston().replaceable().build();
-    public static final Material PART = Builder.method_15808(new Builder(MaterialColor.AIR).allowsMovement()).notSolid().destroyedByPiston().build();
+    /**
+     * Material for blocks that require a supporting block such as redstone components, torches, flower pots, and skulls.
+     */
+    public static final Material SUPPORTED = Builder.method_15808(new Builder(MaterialColor.AIR).allowsMovement()).notSolid().destroyedByPiston().build();
     public static final Material COBWEB = Builder.method_15808(new Builder(MaterialColor.WEB).allowsMovement()).destroyedByPiston().requiresTool().build();
     public static final Material REDSTONE_LAMP = new Builder(MaterialColor.AIR).build();
-    public static final Material CLAY = new Builder(MaterialColor.CLAY).build();
-    public static final Material EARTH = new Builder(MaterialColor.DIRT).build();
-    public static final Material ORGANIC = new Builder(MaterialColor.GRASS).build();
-    public static final Material PACKED_ICE = new Builder(MaterialColor.ICE).build();
-    public static final Material SAND = new Builder(MaterialColor.SAND).build();
+    /**
+     * Material for blocks that come from mobs such as honey, slime, or infested blocks. Includes clay but not bone blocks.
+     */
+    public static final Material ORGANIC_PRODUCT = new Builder(MaterialColor.CLAY).build();
+    /**
+     * Material for the top layer of soil. Path, dirt, podzol, soul soil, farmland and similar.
+     */
+    public static final Material SOIL = new Builder(MaterialColor.DIRT).build();
+    /**
+     * Organic blocks that are solid, including hay, and grass blocks.
+     */
+    public static final Material SOLID_ORGANIC = new Builder(MaterialColor.GRASS).build();
+    /**
+     * Material for ice blocks that do not melt. See {@link
+     */
+    public static final Material DENSE_ICE = new Builder(MaterialColor.ICE).build();
+    /**
+     * A material or structure formed from a loosely compacted mass of fragments or particles.
+     */
+    public static final Material AGGREGATE = new Builder(MaterialColor.SAND).build();
     public static final Material SPONGE = new Builder(MaterialColor.YELLOW).build();
     public static final Material SHULKER_BOX = new Builder(MaterialColor.PURPLE).build();
+    /**
+     * Material for wood logs, and things crafted from them.
+     */
     public static final Material WOOD = new Builder(MaterialColor.WOOD).burnable().build();
     public static final Material BAMBOO_SAPLING = new Builder(MaterialColor.WOOD).burnable().destroyedByPiston().allowsMovement().build();
     public static final Material BAMBOO = new Builder(MaterialColor.WOOD).burnable().destroyedByPiston().build();
+    /**
+     * Material for wool and bed blocks.
+     */
     public static final Material WOOL = new Builder(MaterialColor.WEB).burnable().build();
     public static final Material TNT = Builder.method_15808(new Builder(MaterialColor.LAVA).burnable()).build();
     public static final Material LEAVES = Builder.method_15808(new Builder(MaterialColor.FOLIAGE).burnable()).destroyedByPiston().build();
+    /**
+     * Material for glass and glass-like blocks (includes sea lanterns and conduits).
+     */
     public static final Material GLASS = Builder.method_15808(new Builder(MaterialColor.AIR)).build();
+    /**
+     * Material for ice that can melt. See {@link
+     */
     public static final Material ICE = Builder.method_15808(new Builder(MaterialColor.ICE)).build();
     public static final Material CACTUS = Builder.method_15808(new Builder(MaterialColor.FOLIAGE)).destroyedByPiston().build();
+    /**
+     * Material for blocks that are stone or made from it, and generally prefer to be broken by a pickaxe.
+     */
     public static final Material STONE = new Builder(MaterialColor.STONE).requiresTool().build();
     public static final Material METAL = new Builder(MaterialColor.IRON).requiresTool().build();
+    /**
+     * Material for full sized snow blocks.
+     */
     public static final Material SNOW_BLOCK = new Builder(MaterialColor.WHITE).requiresTool().build();
-    public static final Material ANVIL = new Builder(MaterialColor.IRON).requiresTool().blocksPistons().build();
+    /**
+     * Material for blocks that can repair tools, including grindstone and anvils.
+     */
+    public static final Material REPAIR_STATION = new Builder(MaterialColor.IRON).requiresTool().blocksPistons().build();
     public static final Material BARRIER = new Builder(MaterialColor.AIR).requiresTool().blocksPistons().build();
     public static final Material PISTON = new Builder(MaterialColor.STONE).blocksPistons().build();
+    /**
+     * Not in use, but has foliage color.
+     */
     public static final Material UNUSED_PLANT = new Builder(MaterialColor.FOLIAGE).destroyedByPiston().build();
-    public static final Material PUMPKIN = new Builder(MaterialColor.FOLIAGE).destroyedByPiston().build();
+    /**
+     * Material for gourds. Includes the carved pumpkin and jack o' lantern.
+     */
+    public static final Material GOURD = new Builder(MaterialColor.FOLIAGE).destroyedByPiston().build();
+    /**
+     * Material for egg blocks, such as dragon and turtle eggs.
+     */
     public static final Material EGG = new Builder(MaterialColor.FOLIAGE).destroyedByPiston().build();
     public static final Material CAKE = new Builder(MaterialColor.AIR).destroyedByPiston().build();
     private final MaterialColor color;

@@ -3,12 +3,12 @@
  */
 package net.minecraft.entity.ai.pathing;
 
-import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeNavigator;
 import net.minecraft.entity.ai.pathing.WaterPathNodeMaker;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.DolphinEntity;
+import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -60,7 +60,7 @@ extends EntityNavigation {
                 this.currentPath.setCurrentNodeIndex(this.currentPath.getCurrentNodeIndex() + 1);
             }
         }
-        DebugRendererInfoManager.sendPathfindingData(this.world, this.entity, this.currentPath, this.field_6683);
+        DebugInfoSender.sendPathfindingData(this.world, this.entity, this.currentPath, this.nodeReachProximity);
         if (this.isIdle()) {
             return;
         }

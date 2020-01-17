@@ -31,8 +31,8 @@ extends TreeDecorator {
     }
 
     @Override
-    public void generate(IWorld world, Random random, List<BlockPos> list, List<BlockPos> list2, Set<BlockPos> set, BlockBox box) {
-        list2.forEach(blockPos -> {
+    public void generate(IWorld world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box) {
+        leavesPositions.forEach(blockPos -> {
             BlockPos blockPos2;
             if (random.nextInt(4) == 0 && AbstractTreeFeature.isAir(world, blockPos2 = blockPos.west())) {
                 this.method_23467(world, blockPos2, VineBlock.EAST, set, box);
@@ -50,17 +50,17 @@ extends TreeDecorator {
     }
 
     private void method_23467(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, BooleanProperty booleanProperty, Set<BlockPos> set, BlockBox blockBox) {
-        this.method_23471(modifiableTestableWorld, blockPos, booleanProperty, set, blockBox);
+        this.placeVine(modifiableTestableWorld, blockPos, booleanProperty, set, blockBox);
         blockPos = blockPos.down();
         for (int i = 4; AbstractTreeFeature.isAir(modifiableTestableWorld, blockPos) && i > 0; --i) {
-            this.method_23471(modifiableTestableWorld, blockPos, booleanProperty, set, blockBox);
+            this.placeVine(modifiableTestableWorld, blockPos, booleanProperty, set, blockBox);
             blockPos = blockPos.down();
         }
     }
 
     @Override
     public <T> T serialize(DynamicOps<T> ops) {
-        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("type"), ops.createString(Registry.TREE_DECORATOR_TYPE.getId(this.field_21319).toString())))).getValue();
+        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("type"), ops.createString(Registry.TREE_DECORATOR_TYPE.getId(this.type).toString())))).getValue();
     }
 }
 

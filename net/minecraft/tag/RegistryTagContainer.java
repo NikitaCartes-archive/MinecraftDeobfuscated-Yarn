@@ -21,14 +21,14 @@ extends TagContainer<T> {
         this.registry = registry;
     }
 
-    public void toPacket(PacketByteBuf packetByteBuf) {
+    public void toPacket(PacketByteBuf buf) {
         Map map = this.getEntries();
-        packetByteBuf.writeVarInt(map.size());
+        buf.writeVarInt(map.size());
         for (Map.Entry entry : map.entrySet()) {
-            packetByteBuf.writeIdentifier(entry.getKey());
-            packetByteBuf.writeVarInt(entry.getValue().values().size());
+            buf.writeIdentifier(entry.getKey());
+            buf.writeVarInt(entry.getValue().values().size());
             for (Object object : entry.getValue().values()) {
-                packetByteBuf.writeVarInt(this.registry.getRawId(object));
+                buf.writeVarInt(this.registry.getRawId(object));
             }
         }
     }

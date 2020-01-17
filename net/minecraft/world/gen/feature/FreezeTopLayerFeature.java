@@ -37,10 +37,10 @@ extends Feature<DefaultFeatureConfig> {
                 mutable.set(k, m, l);
                 mutable2.set(mutable).setOffset(Direction.DOWN, 1);
                 Biome biome = iWorld.getBiome(mutable);
-                if (biome.canSetSnow(iWorld, mutable2, false)) {
+                if (biome.canSetIce(iWorld, mutable2, false)) {
                     iWorld.setBlockState(mutable2, Blocks.ICE.getDefaultState(), 2);
                 }
-                if (!biome.canSetIce(iWorld, mutable)) continue;
+                if (!biome.canSetSnow(iWorld, mutable)) continue;
                 iWorld.setBlockState(mutable, Blocks.SNOW.getDefaultState(), 2);
                 BlockState blockState = iWorld.getBlockState(mutable2);
                 if (!blockState.contains(SnowyBlock.SNOWY)) continue;

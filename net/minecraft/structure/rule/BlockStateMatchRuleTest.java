@@ -8,11 +8,11 @@ import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import java.util.Random;
 import net.minecraft.block.BlockState;
-import net.minecraft.structure.rule.AbstractRuleTest;
 import net.minecraft.structure.rule.RuleTest;
+import net.minecraft.structure.rule.RuleTestType;
 
 public class BlockStateMatchRuleTest
-extends AbstractRuleTest {
+extends RuleTest {
     private final BlockState blockState;
 
     public BlockStateMatchRuleTest(BlockState blockState) {
@@ -24,18 +24,18 @@ extends AbstractRuleTest {
     }
 
     @Override
-    public boolean test(BlockState blockState, Random random) {
-        return blockState == this.blockState;
+    public boolean test(BlockState state, Random random) {
+        return state == this.blockState;
     }
 
     @Override
-    protected RuleTest getRuleTest() {
-        return RuleTest.BLOCKSTATE_MATCH;
+    protected RuleTestType getType() {
+        return RuleTestType.BLOCKSTATE_MATCH;
     }
 
     @Override
-    protected <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-        return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("blockstate"), BlockState.serialize(dynamicOps, this.blockState).getValue())));
+    protected <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("blockstate"), BlockState.serialize(ops, this.blockState).getValue())));
     }
 }
 

@@ -47,7 +47,7 @@ extends MessageToByteEncoder<Packet<?>> {
             packet.write(packetByteBuf);
         } catch (Throwable throwable) {
             LOGGER.error(throwable);
-            if (packet.isErrorFatal()) {
+            if (packet.isWritingErrorSkippable()) {
                 throw new PacketEncoderException(throwable);
             }
             throw throwable;

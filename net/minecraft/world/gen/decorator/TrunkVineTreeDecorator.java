@@ -29,27 +29,27 @@ extends TreeDecorator {
     }
 
     @Override
-    public void generate(IWorld world, Random random, List<BlockPos> list, List<BlockPos> list2, Set<BlockPos> set, BlockBox box) {
-        list.forEach(blockPos -> {
+    public void generate(IWorld world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box) {
+        logPositions.forEach(blockPos -> {
             BlockPos blockPos2;
             if (random.nextInt(3) > 0 && AbstractTreeFeature.isAir(world, blockPos2 = blockPos.west())) {
-                this.method_23471(world, blockPos2, VineBlock.EAST, set, box);
+                this.placeVine(world, blockPos2, VineBlock.EAST, set, box);
             }
             if (random.nextInt(3) > 0 && AbstractTreeFeature.isAir(world, blockPos2 = blockPos.east())) {
-                this.method_23471(world, blockPos2, VineBlock.WEST, set, box);
+                this.placeVine(world, blockPos2, VineBlock.WEST, set, box);
             }
             if (random.nextInt(3) > 0 && AbstractTreeFeature.isAir(world, blockPos2 = blockPos.north())) {
-                this.method_23471(world, blockPos2, VineBlock.SOUTH, set, box);
+                this.placeVine(world, blockPos2, VineBlock.SOUTH, set, box);
             }
             if (random.nextInt(3) > 0 && AbstractTreeFeature.isAir(world, blockPos2 = blockPos.south())) {
-                this.method_23471(world, blockPos2, VineBlock.NORTH, set, box);
+                this.placeVine(world, blockPos2, VineBlock.NORTH, set, box);
             }
         });
     }
 
     @Override
     public <T> T serialize(DynamicOps<T> ops) {
-        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("type"), ops.createString(Registry.TREE_DECORATOR_TYPE.getId(this.field_21319).toString())))).getValue();
+        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("type"), ops.createString(Registry.TREE_DECORATOR_TYPE.getId(this.type).toString())))).getValue();
     }
 }
 

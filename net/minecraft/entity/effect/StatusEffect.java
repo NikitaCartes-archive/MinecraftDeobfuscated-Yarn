@@ -45,7 +45,7 @@ public class StatusEffect {
         this.color = color;
     }
 
-    public void applyUpdateEffect(LivingEntity entity, int i) {
+    public void applyUpdateEffect(LivingEntity entity, int amplifier) {
         if (this == StatusEffects.REGENERATION) {
             if (entity.getHealth() < entity.getMaximumHealth()) {
                 entity.heal(1.0f);
@@ -57,24 +57,24 @@ public class StatusEffect {
         } else if (this == StatusEffects.WITHER) {
             entity.damage(DamageSource.WITHER, 1.0f);
         } else if (this == StatusEffects.HUNGER && entity instanceof PlayerEntity) {
-            ((PlayerEntity)entity).addExhaustion(0.005f * (float)(i + 1));
+            ((PlayerEntity)entity).addExhaustion(0.005f * (float)(amplifier + 1));
         } else if (this == StatusEffects.SATURATION && entity instanceof PlayerEntity) {
             if (!entity.world.isClient) {
-                ((PlayerEntity)entity).getHungerManager().add(i + 1, 1.0f);
+                ((PlayerEntity)entity).getHungerManager().add(amplifier + 1, 1.0f);
             }
         } else if (this == StatusEffects.INSTANT_HEALTH && !entity.isUndead() || this == StatusEffects.INSTANT_DAMAGE && entity.isUndead()) {
-            entity.heal(Math.max(4 << i, 0));
+            entity.heal(Math.max(4 << amplifier, 0));
         } else if (this == StatusEffects.INSTANT_DAMAGE && !entity.isUndead() || this == StatusEffects.INSTANT_HEALTH && entity.isUndead()) {
-            entity.damage(DamageSource.MAGIC, 6 << i);
+            entity.damage(DamageSource.MAGIC, 6 << amplifier);
         }
     }
 
-    public void applyInstantEffect(@Nullable Entity source, @Nullable Entity attacker, LivingEntity target, int amplifier, double d) {
+    public void applyInstantEffect(@Nullable Entity source, @Nullable Entity attacker, LivingEntity target, int amplifier, double proximity) {
         if (this == StatusEffects.INSTANT_HEALTH && !target.isUndead() || this == StatusEffects.INSTANT_DAMAGE && target.isUndead()) {
-            int i = (int)(d * (double)(4 << amplifier) + 0.5);
+            int i = (int)(proximity * (double)(4 << amplifier) + 0.5);
             target.heal(i);
         } else if (this == StatusEffects.INSTANT_DAMAGE && !target.isUndead() || this == StatusEffects.INSTANT_HEALTH && target.isUndead()) {
-            int i = (int)(d * (double)(6 << amplifier) + 0.5);
+            int i = (int)(proximity * (double)(6 << amplifier) + 0.5);
             if (source == null) {
                 target.damage(DamageSource.MAGIC, i);
             } else {
@@ -85,25 +85,25 @@ public class StatusEffect {
         }
     }
 
-    public boolean canApplyUpdateEffect(int duration, int i) {
+    public boolean canApplyUpdateEffect(int duration, int amplifier) {
         if (this == StatusEffects.REGENERATION) {
-            int j = 50 >> i;
-            if (j > 0) {
-                return duration % j == 0;
+            int i = 50 >> amplifier;
+            if (i > 0) {
+                return duration % i == 0;
             }
             return true;
         }
         if (this == StatusEffects.POISON) {
-            int j = 25 >> i;
-            if (j > 0) {
-                return duration % j == 0;
+            int i = 25 >> amplifier;
+            if (i > 0) {
+                return duration % i == 0;
             }
             return true;
         }
         if (this == StatusEffects.WITHER) {
-            int j = 40 >> i;
-            if (j > 0) {
-                return duration % j == 0;
+            int i = 40 >> amplifier;
+            if (i > 0) {
+                return duration % i == 0;
             }
             return true;
         }

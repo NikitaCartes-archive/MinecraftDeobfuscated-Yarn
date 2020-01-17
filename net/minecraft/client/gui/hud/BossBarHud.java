@@ -12,8 +12,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.ClientBossBar;
-import net.minecraft.client.network.packet.BossBarS2CPacket;
 import net.minecraft.entity.boss.BossBar;
+import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
 import net.minecraft.util.Identifier;
 
 @Environment(value=EnvType.CLIENT)

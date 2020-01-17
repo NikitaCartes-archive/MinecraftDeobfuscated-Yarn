@@ -11,7 +11,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.MinecraftVersion;
 import net.minecraft.command.TranslatableBuiltInExceptions;
-import net.minecraft.datafixer.schema.SchemaIdentifierNormalize;
+import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 
 public class SharedConstants {
     public static final ResourceLeakDetector.Level RESOURCE_LEAK_DETECTOR_DISABLED = ResourceLeakDetector.Level.DISABLED;
@@ -60,7 +60,7 @@ public class SharedConstants {
         ResourceLeakDetector.setLevel(RESOURCE_LEAK_DETECTOR_DISABLED);
         CommandSyntaxException.ENABLE_COMMAND_STACK_TRACES = false;
         CommandSyntaxException.BUILT_IN_EXCEPTIONS = new TranslatableBuiltInExceptions();
-        NamespacedStringType.ENSURE_NAMESPACE = SchemaIdentifierNormalize::normalize;
+        NamespacedStringType.ENSURE_NAMESPACE = IdentifierNormalizingSchema::normalize;
     }
 }
 

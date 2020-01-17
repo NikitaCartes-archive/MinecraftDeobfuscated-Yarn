@@ -17,8 +17,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
 import net.minecraft.datafixer.TypeReferences;
+import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 import net.minecraft.datafixer.schema.Schema99;
-import net.minecraft.datafixer.schema.SchemaIdentifierNormalize;
 
 public class Schema704
 extends Schema {
@@ -114,7 +114,7 @@ extends Schema {
     @Override
     public Type<?> getChoiceType(DSL.TypeReference typeReference, String string) {
         if (Objects.equals(typeReference.typeName(), TypeReferences.BLOCK_ENTITY.typeName())) {
-            return super.getChoiceType(typeReference, SchemaIdentifierNormalize.normalize(string));
+            return super.getChoiceType(typeReference, IdentifierNormalizingSchema.normalize(string));
         }
         return super.getChoiceType(typeReference, string);
     }

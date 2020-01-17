@@ -6,13 +6,13 @@ package net.minecraft.client.gui.screen.ingame;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
+import net.minecraft.client.gui.screen.ingame.ContainerScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.container.MerchantContainer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.packet.SelectVillagerTradeC2SPacket;
+import net.minecraft.network.packet.c2s.play.SelectVillagerTradeC2SPacket;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -22,7 +22,7 @@ import net.minecraft.village.VillagerData;
 
 @Environment(value=EnvType.CLIENT)
 public class MerchantScreen
-extends AbstractContainerScreen<MerchantContainer> {
+extends ContainerScreen<MerchantContainer> {
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/villager2.png");
     private int selectedIndex;
     private final WidgetButtonPage[] offers = new WidgetButtonPage[7];

@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
 import net.minecraft.datafixer.TypeReferences;
-import net.minecraft.datafixer.schema.SchemaIdentifierNormalize;
+import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -217,7 +217,7 @@ extends Schema {
     protected static <T> T method_5359(Dynamic<T> dynamic, Map<String, String> map, String string) {
         return dynamic.update("tag", dynamic22 -> dynamic22.update("BlockEntityTag", dynamic2 -> {
             String string = dynamic.get("id").asString("");
-            String string2 = (String)map.get(SchemaIdentifierNormalize.normalize(string));
+            String string2 = (String)map.get(IdentifierNormalizingSchema.normalize(string));
             if (string2 != null) {
                 return dynamic2.set("id", dynamic.createString(string2));
             }
@@ -225,7 +225,7 @@ extends Schema {
             return dynamic2;
         }).update("EntityTag", dynamic2 -> {
             String string2 = dynamic.get("id").asString("");
-            if (Objects.equals(SchemaIdentifierNormalize.normalize(string2), "minecraft:armor_stand")) {
+            if (Objects.equals(IdentifierNormalizingSchema.normalize(string2), "minecraft:armor_stand")) {
                 return dynamic2.set("id", dynamic.createString(string));
             }
             return dynamic2;

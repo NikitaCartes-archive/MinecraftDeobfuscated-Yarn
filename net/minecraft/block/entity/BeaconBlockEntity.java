@@ -15,15 +15,14 @@ import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.Stainable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.LockableContainerBlockEntity;
-import net.minecraft.client.block.ColoredBlock;
-import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.container.BeaconContainer;
 import net.minecraft.container.BlockContext;
 import net.minecraft.container.Container;
-import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.container.PropertyDelegate;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -32,6 +31,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.ContainerLock;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -46,7 +46,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class BeaconBlockEntity
 extends BlockEntity
-implements NameableContainerProvider,
+implements NameableContainerFactory,
 Tickable {
     public static final StatusEffect[][] EFFECTS_BY_LEVEL = new StatusEffect[][]{{StatusEffects.SPEED, StatusEffects.HASTE}, {StatusEffects.RESISTANCE, StatusEffects.JUMP_BOOST}, {StatusEffects.STRENGTH}, {StatusEffects.REGENERATION}};
     private static final Set<StatusEffect> EFFECTS = Arrays.stream(EFFECTS_BY_LEVEL).flatMap(Arrays::stream).collect(Collectors.toSet());
@@ -64,8 +64,8 @@ Tickable {
     private final PropertyDelegate propertyDelegate = new PropertyDelegate(){
 
         @Override
-        public int get(int key) {
-            switch (key) {
+        public int get(int index) {
+            switch (index) {
                 case 0: {
                     return BeaconBlockEntity.this.level;
                 }
@@ -80,8 +80,8 @@ Tickable {
         }
 
         @Override
-        public void set(int key, int value) {
-            switch (key) {
+        public void set(int index, int value) {
+            switch (index) {
                 case 0: {
                     BeaconBlockEntity.this.level = value;
                     break;
@@ -134,8 +134,8 @@ Tickable {
                     block17: {
                         blockState = this.world.getBlockState(blockPos);
                         block = blockState.getBlock();
-                        if (!(block instanceof ColoredBlock)) break block16;
-                        fs = ((ColoredBlock)((Object)block)).getColor().getColorComponents();
+                        if (!(block instanceof Stainable)) break block16;
+                        fs = ((Stainable)((Object)block)).getColor().getColorComponents();
                         if (this.field_19178.size() > 1) break block17;
                         beamSegment = new BeamSegment(fs);
                         this.field_19178.add(beamSegment);

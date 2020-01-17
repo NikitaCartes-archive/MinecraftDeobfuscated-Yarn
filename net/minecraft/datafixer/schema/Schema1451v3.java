@@ -9,11 +9,11 @@ import com.mojang.datafixers.types.templates.TypeTemplate;
 import java.util.Map;
 import java.util.function.Supplier;
 import net.minecraft.datafixer.TypeReferences;
+import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 import net.minecraft.datafixer.schema.Schema100;
-import net.minecraft.datafixer.schema.SchemaIdentifierNormalize;
 
 public class Schema1451v3
-extends SchemaIdentifierNormalize {
+extends IdentifierNormalizingSchema {
     public Schema1451v3(int i, Schema schema) {
         super(i, schema);
     }
@@ -30,7 +30,7 @@ extends SchemaIdentifierNormalize {
         schema.registerSimple(map, "minecraft:wither_skull");
         schema.registerSimple(map, "minecraft:xp_bottle");
         schema.register(map, "minecraft:arrow", () -> DSL.optionalFields("inBlockState", TypeReferences.BLOCK_STATE.in(schema)));
-        schema.register(map, "minecraft:enderman", () -> DSL.optionalFields("carriedBlockState", TypeReferences.BLOCK_STATE.in(schema), Schema100.method_5196(schema)));
+        schema.register(map, "minecraft:enderman", () -> DSL.optionalFields("carriedBlockState", TypeReferences.BLOCK_STATE.in(schema), Schema100.targetItems(schema)));
         schema.register(map, "minecraft:falling_block", () -> DSL.optionalFields("BlockState", TypeReferences.BLOCK_STATE.in(schema), "TileEntityData", TypeReferences.BLOCK_ENTITY.in(schema)));
         schema.register(map, "minecraft:spectral_arrow", () -> DSL.optionalFields("inBlockState", TypeReferences.BLOCK_STATE.in(schema)));
         schema.register(map, "minecraft:chest_minecart", () -> DSL.optionalFields("DisplayState", TypeReferences.BLOCK_STATE.in(schema), "Items", DSL.list(TypeReferences.ITEM_STACK.in(schema))));

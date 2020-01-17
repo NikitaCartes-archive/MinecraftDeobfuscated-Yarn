@@ -13,7 +13,6 @@ import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.FireBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.BeeEntity;
@@ -21,6 +20,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
@@ -107,7 +107,7 @@ implements Tickable {
     }
 
     protected void sendDebugData() {
-        DebugRendererInfoManager.sendBeehiveDebugData(this);
+        DebugInfoSender.sendBeehiveDebugData(this);
     }
 
     public void tryEnterHive(Entity entity, boolean hasNectar, int ticksInHive) {

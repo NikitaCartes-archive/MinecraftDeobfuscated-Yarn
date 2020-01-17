@@ -25,7 +25,7 @@ import net.minecraft.block.enums.ChestType;
 import net.minecraft.client.block.ChestAnimationProgress;
 import net.minecraft.container.Container;
 import net.minecraft.container.GenericContainer;
-import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.CatEntity;
@@ -95,12 +95,12 @@ implements Waterloggable {
             return this.getFallback();
         }
     };
-    private static final DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Optional<NameableContainerProvider>> NAME_RETRIEVER = new DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Optional<NameableContainerProvider>>(){
+    private static final DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Optional<NameableContainerFactory>> NAME_RETRIEVER = new DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Optional<NameableContainerFactory>>(){
 
         @Override
-        public Optional<NameableContainerProvider> getFromBoth(final ChestBlockEntity chestBlockEntity, final ChestBlockEntity chestBlockEntity2) {
+        public Optional<NameableContainerFactory> getFromBoth(final ChestBlockEntity chestBlockEntity, final ChestBlockEntity chestBlockEntity2) {
             final DoubleInventory inventory = new DoubleInventory(chestBlockEntity, chestBlockEntity2);
-            return Optional.of(new NameableContainerProvider(){
+            return Optional.of(new NameableContainerFactory(){
 
                 @Override
                 @Nullable
@@ -127,12 +127,12 @@ implements Waterloggable {
         }
 
         @Override
-        public Optional<NameableContainerProvider> getFrom(ChestBlockEntity chestBlockEntity) {
+        public Optional<NameableContainerFactory> getFrom(ChestBlockEntity chestBlockEntity) {
             return Optional.of(chestBlockEntity);
         }
 
         @Override
-        public Optional<NameableContainerProvider> getFallback() {
+        public Optional<NameableContainerFactory> getFallback() {
             return Optional.empty();
         }
 
@@ -180,7 +180,7 @@ implements Waterloggable {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
         if (state.get(CHEST_TYPE) == ChestType.SINGLE) {
             return SINGLE_SHAPE;
         }
@@ -266,9 +266,9 @@ implements Waterloggable {
         if (world.isClient) {
             return ActionResult.SUCCESS;
         }
-        NameableContainerProvider nameableContainerProvider = this.createContainerProvider(state, world, pos);
-        if (nameableContainerProvider != null) {
-            player.openContainer(nameableContainerProvider);
+        NameableContainerFactory nameableContainerFactory = this.createContainerFactory(state, world, pos);
+        if (nameableContainerFactory != null) {
+            player.openContainer(nameableContainerFactory);
             player.incrementStat(this.getOpenStat());
         }
         return ActionResult.SUCCESS;
@@ -291,7 +291,7 @@ implements Waterloggable {
 
     @Override
     @Nullable
-    public NameableContainerProvider createContainerProvider(BlockState state, World world, BlockPos pos) {
+    public NameableContainerFactory createContainerFactory(BlockState state, World world, BlockPos pos) {
         return this.getBlockEntitySource(state, world, pos, false).apply(NAME_RETRIEVER).orElse(null);
     }
 

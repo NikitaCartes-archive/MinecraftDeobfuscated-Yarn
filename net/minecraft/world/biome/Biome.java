@@ -184,11 +184,11 @@ public abstract class Biome {
         return g;
     }
 
-    public boolean canSetSnow(WorldView world, BlockPos blockPos) {
-        return this.canSetSnow(world, blockPos, true);
+    public boolean canSetIce(WorldView world, BlockPos blockPos) {
+        return this.canSetIce(world, blockPos, true);
     }
 
-    public boolean canSetSnow(WorldView world, BlockPos pos, boolean doWaterCheck) {
+    public boolean canSetIce(WorldView world, BlockPos pos, boolean doWaterCheck) {
         if (this.getTemperature(pos) >= 0.15f) {
             return false;
         }
@@ -209,7 +209,7 @@ public abstract class Biome {
         return false;
     }
 
-    public boolean canSetIce(WorldView worldView, BlockPos blockPos) {
+    public boolean canSetSnow(WorldView worldView, BlockPos blockPos) {
         BlockState blockState;
         if (this.getTemperature(blockPos) >= 0.15f) {
             return false;

@@ -18,7 +18,7 @@ extends StatusEffect {
     }
 
     @Override
-    public boolean canApplyUpdateEffect(int duration, int i) {
+    public boolean canApplyUpdateEffect(int duration, int amplifier) {
         return duration >= 1;
     }
 }

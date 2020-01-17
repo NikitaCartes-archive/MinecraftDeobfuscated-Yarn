@@ -204,13 +204,13 @@ extends BlockWithEntity {
     }
 
     @Environment(value=EnvType.CLIENT)
-    private void addHoneyParticle(World world, BlockPos pos, VoxelShape voxelShape, double d) {
-        this.addHoneyParticle(world, (double)pos.getX() + voxelShape.getMinimum(Direction.Axis.X), (double)pos.getX() + voxelShape.getMaximum(Direction.Axis.X), (double)pos.getZ() + voxelShape.getMinimum(Direction.Axis.Z), (double)pos.getZ() + voxelShape.getMaximum(Direction.Axis.Z), d);
+    private void addHoneyParticle(World world, BlockPos pos, VoxelShape shape, double height) {
+        this.addHoneyParticle(world, (double)pos.getX() + shape.getMinimum(Direction.Axis.X), (double)pos.getX() + shape.getMaximum(Direction.Axis.X), (double)pos.getZ() + shape.getMinimum(Direction.Axis.Z), (double)pos.getZ() + shape.getMaximum(Direction.Axis.Z), height);
     }
 
     @Environment(value=EnvType.CLIENT)
-    private void addHoneyParticle(World world, double d, double e, double f, double g, double h) {
-        world.addParticle(ParticleTypes.DRIPPING_HONEY, MathHelper.lerp(world.random.nextDouble(), d, e), h, MathHelper.lerp(world.random.nextDouble(), f, g), 0.0, 0.0, 0.0);
+    private void addHoneyParticle(World world, double minX, double maxX, double minZ, double maxZ, double height) {
+        world.addParticle(ParticleTypes.DRIPPING_HONEY, MathHelper.lerp(world.random.nextDouble(), minX, maxX), height, MathHelper.lerp(world.random.nextDouble(), minZ, maxZ), 0.0, 0.0, 0.0);
     }
 
     @Override

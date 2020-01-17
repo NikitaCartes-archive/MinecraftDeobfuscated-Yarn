@@ -9,10 +9,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FallingBlock;
 import net.minecraft.block.HorizontalFacingBlock;
-import net.minecraft.client.network.ClientDummyContainerProvider;
 import net.minecraft.container.AnvilContainer;
 import net.minecraft.container.BlockContext;
-import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.container.NameableContainerFactory;
+import net.minecraft.container.SimpleNamedContainerFactory;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -62,19 +62,19 @@ extends FallingBlock {
         if (world.isClient) {
             return ActionResult.SUCCESS;
         }
-        player.openContainer(state.createContainerProvider(world, pos));
+        player.openContainer(state.createContainerFactory(world, pos));
         player.incrementStat(Stats.INTERACT_WITH_ANVIL);
         return ActionResult.SUCCESS;
     }
 
     @Override
     @Nullable
-    public NameableContainerProvider createContainerProvider(BlockState state, World world, BlockPos pos) {
-        return new ClientDummyContainerProvider((i, playerInventory, playerEntity) -> new AnvilContainer(i, playerInventory, BlockContext.create(world, pos)), CONTAINER_NAME);
+    public NameableContainerFactory createContainerFactory(BlockState state, World world, BlockPos pos) {
+        return new SimpleNamedContainerFactory((i, playerInventory, playerEntity) -> new AnvilContainer(i, playerInventory, BlockContext.create(world, pos)), CONTAINER_NAME);
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
         Direction direction = state.get(FACING);
         if (direction.getAxis() == Direction.Axis.X) {
             return X_AXIS_SHAPE;

@@ -16,24 +16,27 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.ModifiableWorld;
 import net.minecraft.world.gen.decorator.TreeDecoratorType;
 
+/**
+ * Tree decorators can add additional blocks to trees, such as vines or beehives.
+ */
 public abstract class TreeDecorator
 implements DynamicSerializable {
-    protected final TreeDecoratorType<?> field_21319;
+    protected final TreeDecoratorType<?> type;
 
     protected TreeDecorator(TreeDecoratorType<?> treeDecoratorType) {
-        this.field_21319 = treeDecoratorType;
+        this.type = treeDecoratorType;
     }
 
     public abstract void generate(IWorld var1, Random var2, List<BlockPos> var3, List<BlockPos> var4, Set<BlockPos> var5, BlockBox var6);
 
-    protected void method_23471(ModifiableWorld modifiableWorld, BlockPos blockPos, BooleanProperty booleanProperty, Set<BlockPos> set, BlockBox blockBox) {
-        this.method_23470(modifiableWorld, blockPos, (BlockState)Blocks.VINE.getDefaultState().with(booleanProperty, true), set, blockBox);
+    protected void placeVine(ModifiableWorld world, BlockPos pos, BooleanProperty directionProperty, Set<BlockPos> set, BlockBox box) {
+        this.setBlockStateAndEncompassPosition(world, pos, (BlockState)Blocks.VINE.getDefaultState().with(directionProperty, true), set, box);
     }
 
-    protected void method_23470(ModifiableWorld modifiableWorld, BlockPos blockPos, BlockState blockState, Set<BlockPos> set, BlockBox blockBox) {
-        modifiableWorld.setBlockState(blockPos, blockState, 19);
-        set.add(blockPos);
-        blockBox.encompass(new BlockBox(blockPos, blockPos));
+    protected void setBlockStateAndEncompassPosition(ModifiableWorld world, BlockPos pos, BlockState state, Set<BlockPos> set, BlockBox box) {
+        world.setBlockState(pos, state, 19);
+        set.add(pos);
+        box.encompass(new BlockBox(pos, pos));
     }
 }
 

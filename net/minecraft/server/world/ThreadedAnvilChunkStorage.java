@@ -41,12 +41,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.DebugRendererInfoManager;
-import net.minecraft.client.network.packet.ChunkDataS2CPacket;
-import net.minecraft.client.network.packet.ChunkRenderDistanceCenterS2CPacket;
-import net.minecraft.client.network.packet.EntityAttachS2CPacket;
-import net.minecraft.client.network.packet.EntityPassengersSetS2CPacket;
-import net.minecraft.client.network.packet.LightUpdateS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
@@ -55,7 +49,13 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChunkRenderDistanceCenterS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityAttachS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
+import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
 import net.minecraft.server.WorldGenerationProgressListener;
+import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.network.EntityTrackerEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ChunkHolder;
@@ -435,7 +435,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> method_20619(ChunkPos chunkPos) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                this.world.getProfiler().method_24270("chunkLoad");
+                this.world.getProfiler().visit("chunkLoad");
                 CompoundTag compoundTag = this.getUpdatedChunkTag(chunkPos);
                 if (compoundTag != null) {
                     boolean bl;
@@ -463,7 +463,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> method_20617(ChunkHolder chunkHolder, ChunkStatus chunkStatus) {
         ChunkPos chunkPos = chunkHolder.getPos();
         CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> completableFuture = this.createChunkRegionFuture(chunkPos, chunkStatus.getTaskMargin(), i -> this.getRequiredStatusForGeneration(chunkStatus, i));
-        this.world.getProfiler().method_24271(() -> "chunkGenerate " + chunkStatus.getId());
+        this.world.getProfiler().visit(() -> "chunkGenerate " + chunkStatus.getId());
         return completableFuture.thenComposeAsync(either -> either.map(list -> {
             try {
                 CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = chunkStatus.runTask(this.world, this.chunkGenerator, this.structureManager, this.serverLightingProvider, chunk -> this.convertToFullChunk(chunkHolder), (List<Chunk>)list);
@@ -588,7 +588,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                     return false;
                 }
             }
-            this.world.getProfiler().method_24270("chunkSave");
+            this.world.getProfiler().visit("chunkSave");
             compoundTag = ChunkSerializer.serialize(this.world, chunk);
             this.setTagAt(chunkPos, compoundTag);
             return true;
@@ -627,7 +627,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             if (worldChunk != null) {
                 this.sendChunkDataPackets(player, packets, worldChunk);
             }
-            DebugRendererInfoManager.method_19775(this.world, pos);
+            DebugInfoSender.sendChunkWatchingChange(this.world, pos);
         }
         if (!withinViewDistance && withinMaxWatchDistance) {
             player.sendUnloadChunkPacket(pos);
@@ -895,7 +895,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             packets[1] = new LightUpdateS2CPacket(chunk.getPos(), this.serverLightingProvider);
         }
         player.sendInitialChunkPackets(chunk.getPos(), packets[0], packets[1]);
-        DebugRendererInfoManager.method_19775(this.world, chunk.getPos());
+        DebugInfoSender.sendChunkWatchingChange(this.world, chunk.getPos());
         ArrayList<Entity> list = Lists.newArrayList();
         ArrayList<Entity> list2 = Lists.newArrayList();
         for (EntityTracker entityTracker : this.entityTrackers.values()) {

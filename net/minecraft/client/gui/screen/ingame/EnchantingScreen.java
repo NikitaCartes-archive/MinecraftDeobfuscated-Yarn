@@ -11,7 +11,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
+import net.minecraft.client.gui.screen.ingame.ContainerScreen;
 import net.minecraft.client.gui.screen.ingame.EnchantingPhrases;
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.OverlayTexture;
@@ -34,7 +34,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class EnchantingScreen
-extends AbstractContainerScreen<EnchantingTableContainer> {
+extends ContainerScreen<EnchantingTableContainer> {
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/enchanting_table.png");
     private static final Identifier BOOK_TEXURE = new Identifier("textures/entity/enchanting_table_book.png");
     private static final BookModel bookModel = new BookModel();

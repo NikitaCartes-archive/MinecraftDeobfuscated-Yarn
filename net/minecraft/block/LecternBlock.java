@@ -12,7 +12,7 @@ import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LecternBlockEntity;
-import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -81,12 +81,12 @@ extends BlockWithEntity {
     }
 
     @Override
-    public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+    public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
         return COLLISION_SHAPE;
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
         switch (state.get(FACING)) {
             case NORTH: {
                 return NORTH_SHAPE;
@@ -245,11 +245,11 @@ extends BlockWithEntity {
 
     @Override
     @Nullable
-    public NameableContainerProvider createContainerProvider(BlockState state, World world, BlockPos pos) {
+    public NameableContainerFactory createContainerFactory(BlockState state, World world, BlockPos pos) {
         if (!state.get(HAS_BOOK).booleanValue()) {
             return null;
         }
-        return super.createContainerProvider(state, world, pos);
+        return super.createContainerFactory(state, world, pos);
     }
 
     private void openContainer(World world, BlockPos pos, PlayerEntity player) {

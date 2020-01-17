@@ -8,12 +8,12 @@ import it.unimi.dsi.fastutil.longs.Long2LongMap;
 import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.GlobalPos;
 import net.minecraft.util.math.BlockPos;
@@ -67,7 +67,7 @@ extends Task<MobEntityWithAi> {
             pointOfInterestStorage.getType(blockPos2).ifPresent(pointOfInterestType -> {
                 pointOfInterestStorage.getPosition(this.poiType.getCompletionCondition(), blockPos2 -> blockPos2.equals(blockPos2), blockPos2, 1);
                 mobEntityWithAi.getBrain().putMemory(this.targetMemoryModuleType, GlobalPos.create(serverWorld.getDimension().getType(), blockPos2));
-                DebugRendererInfoManager.sendPointOfInterest(serverWorld, blockPos2);
+                DebugInfoSender.sendPointOfInterest(serverWorld, blockPos2);
             });
         } else if (this.tries < 5) {
             this.foundPositionsToExpiry.long2LongEntrySet().removeIf(entry -> entry.getLongValue() < this.positionExpireTimeLimit);

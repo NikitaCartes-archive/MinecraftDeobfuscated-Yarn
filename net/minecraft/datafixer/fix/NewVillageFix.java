@@ -16,7 +16,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import net.minecraft.datafixer.TypeReferences;
-import net.minecraft.datafixer.schema.SchemaIdentifierNormalize;
+import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 
 public class NewVillageFix
 extends DataFix {
@@ -41,7 +41,7 @@ extends DataFix {
         return TypeRewriteRule.seq(this.fixTypeEverywhereTyped("NewVillageFix", type, typed2 -> typed2.updateTyped(opticFinder, typed -> typed.updateTyped(opticFinder2, typed2 -> typed2.updateTyped(opticFinder3, typed -> typed.update(opticFinder4, list -> list.stream().filter(pair -> !Objects.equals(pair.getFirst(), "Village")).map(pair -> pair.mapFirst(string -> string.equals("New_Village") ? "Village" : string)).collect(Collectors.toList()))).update(DSL.remainderFinder(), dynamic2 -> dynamic2.update("References", dynamic -> {
             Optional<Dynamic<Dynamic>> optional = dynamic.get("New_Village").get();
             return DataFixUtils.orElse(optional.map(dynamic2 -> dynamic.remove("New_Village").merge(dynamic.createString("Village"), (Dynamic<?>)dynamic2)), dynamic).remove("Village");
-        }))))), this.fixTypeEverywhereTyped("NewVillageStartFix", type2, typed -> typed.update(DSL.remainderFinder(), dynamic2 -> dynamic2.update("id", dynamic -> Objects.equals(SchemaIdentifierNormalize.normalize(dynamic.asString("")), "minecraft:new_village") ? dynamic.createString("minecraft:village") : dynamic))));
+        }))))), this.fixTypeEverywhereTyped("NewVillageStartFix", type2, typed -> typed.update(DSL.remainderFinder(), dynamic2 -> dynamic2.update("id", dynamic -> Objects.equals(IdentifierNormalizingSchema.normalize(dynamic.asString("")), "minecraft:new_village") ? dynamic.createString("minecraft:village") : dynamic))));
     }
 }
 

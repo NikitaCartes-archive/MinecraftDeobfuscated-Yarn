@@ -5,7 +5,6 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
-import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
@@ -15,6 +14,7 @@ import net.minecraft.entity.ai.brain.task.LookTargetUtil;
 import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.GlobalPos;
 import net.minecraft.util.math.BlockPos;
@@ -76,7 +76,7 @@ extends Task<VillagerEntity> {
                 this.setChildHome(world, optional2.get(), optional.get());
             } else {
                 world.getPointOfInterestStorage().releaseTicket(optional.get());
-                DebugRendererInfoManager.sendPointOfInterest(world, optional.get());
+                DebugInfoSender.sendPointOfInterest(world, optional.get());
             }
         }
     }

@@ -185,10 +185,10 @@ extends AbstractInventoryScreen<CreativeContainer> {
                     }
                 } else if (slot != null) {
                     ItemStack itemStack2 = ((CreativeContainer)this.container).getSlot(slot.id).getStack();
-                    this.minecraft.interactionManager.clickCreativeStack(itemStack2, slot.id - ((CreativeContainer)this.container).slotList.size() + 9 + 36);
+                    this.minecraft.interactionManager.clickCreativeStack(itemStack2, slot.id - ((CreativeContainer)this.container).slots.size() + 9 + 36);
                     int k = 45 + button;
                     if (slotActionType == SlotActionType.SWAP) {
-                        this.minecraft.interactionManager.clickCreativeStack(itemStack, k - ((CreativeContainer)this.container).slotList.size() + 9 + 36);
+                        this.minecraft.interactionManager.clickCreativeStack(itemStack, k - ((CreativeContainer)this.container).slots.size() + 9 + 36);
                     } else if (slotActionType == SlotActionType.THROW && !itemStack.isEmpty()) {
                         ItemStack itemStack4 = itemStack.copy();
                         itemStack4.setCount(button == 0 ? 1 : itemStack4.getMaxCount());
@@ -439,10 +439,10 @@ extends AbstractInventoryScreen<CreativeContainer> {
         if (group == ItemGroup.INVENTORY) {
             PlayerContainer container = this.minecraft.player.playerContainer;
             if (this.slots == null) {
-                this.slots = ImmutableList.copyOf(((CreativeContainer)this.container).slotList);
+                this.slots = ImmutableList.copyOf(((CreativeContainer)this.container).slots);
             }
-            ((CreativeContainer)this.container).slotList.clear();
-            for (j = 0; j < container.slotList.size(); ++j) {
+            ((CreativeContainer)this.container).slots.clear();
+            for (j = 0; j < container.slots.size(); ++j) {
                 int o;
                 int n;
                 int m;
@@ -465,14 +465,14 @@ extends AbstractInventoryScreen<CreativeContainer> {
                     o = 9 + m * 18;
                     k = j >= 36 ? 112 : 54 + n * 18;
                 }
-                CreativeSlot slot = new CreativeSlot(container.slotList.get(j), j, o, k);
-                ((CreativeContainer)this.container).slotList.add(slot);
+                CreativeSlot slot = new CreativeSlot(container.slots.get(j), j, o, k);
+                ((CreativeContainer)this.container).slots.add(slot);
             }
             this.deleteItemSlot = new Slot(inventory, 0, 173, 112);
-            ((CreativeContainer)this.container).slotList.add(this.deleteItemSlot);
+            ((CreativeContainer)this.container).slots.add(this.deleteItemSlot);
         } else if (i == ItemGroup.INVENTORY.getIndex()) {
-            ((CreativeContainer)this.container).slotList.clear();
-            ((CreativeContainer)this.container).slotList.addAll(this.slots);
+            ((CreativeContainer)this.container).slots.clear();
+            ((CreativeContainer)this.container).slots.addAll(this.slots);
             this.slots = null;
         }
         if (this.searchBox != null) {
@@ -846,7 +846,7 @@ extends AbstractInventoryScreen<CreativeContainer> {
         @Override
         public ItemStack transferSlot(PlayerEntity player, int invSlot) {
             Slot slot;
-            if (invSlot >= this.slotList.size() - 9 && invSlot < this.slotList.size() && (slot = (Slot)this.slotList.get(invSlot)) != null && slot.hasStack()) {
+            if (invSlot >= this.slots.size() - 9 && invSlot < this.slots.size() && (slot = (Slot)this.slots.get(invSlot)) != null && slot.hasStack()) {
                 slot.setStack(ItemStack.EMPTY);
             }
             return ItemStack.EMPTY;

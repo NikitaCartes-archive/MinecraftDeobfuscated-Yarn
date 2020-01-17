@@ -20,12 +20,12 @@ implements ProfileResult {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public List<ProfilerTiming> getTimings(String parentTiming) {
+    public List<ProfilerTiming> getTimings(String parentPath) {
         return Collections.emptyList();
     }
 
     @Override
-    public boolean saveToFile(File file) {
+    public boolean save(File file) {
         return false;
     }
 

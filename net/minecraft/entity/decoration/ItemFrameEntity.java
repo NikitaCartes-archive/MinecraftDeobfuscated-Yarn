@@ -8,7 +8,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.AbstractRedstoneGateBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
@@ -25,6 +24,7 @@ import net.minecraft.item.Items;
 import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -65,30 +65,30 @@ extends AbstractDecorationEntity {
     }
 
     @Override
-    protected void setFacing(Direction direction) {
-        Validate.notNull(direction);
-        this.facing = direction;
-        if (direction.getAxis().isHorizontal()) {
+    protected void setFacing(Direction facing) {
+        Validate.notNull(facing);
+        this.facing = facing;
+        if (facing.getAxis().isHorizontal()) {
             this.pitch = 0.0f;
             this.yaw = this.facing.getHorizontal() * 90;
         } else {
-            this.pitch = -90 * direction.getDirection().offset();
+            this.pitch = -90 * facing.getDirection().offset();
             this.yaw = 0.0f;
         }
         this.prevPitch = this.pitch;
         this.prevYaw = this.yaw;
-        this.method_6895();
+        this.updateAttachmentPosition();
     }
 
     @Override
-    protected void method_6895() {
+    protected void updateAttachmentPosition() {
         if (this.facing == null) {
             return;
         }
         double d = 0.46875;
-        double e = (double)this.blockPos.getX() + 0.5 - (double)this.facing.getOffsetX() * 0.46875;
-        double f = (double)this.blockPos.getY() + 0.5 - (double)this.facing.getOffsetY() * 0.46875;
-        double g = (double)this.blockPos.getZ() + 0.5 - (double)this.facing.getOffsetZ() * 0.46875;
+        double e = (double)this.attachmentPos.getX() + 0.5 - (double)this.facing.getOffsetX() * 0.46875;
+        double f = (double)this.attachmentPos.getY() + 0.5 - (double)this.facing.getOffsetY() * 0.46875;
+        double g = (double)this.attachmentPos.getZ() + 0.5 - (double)this.facing.getOffsetZ() * 0.46875;
         this.setPos(e, f, g);
         double h = this.getWidthPixels();
         double i = this.getHeightPixels();
@@ -111,11 +111,11 @@ extends AbstractDecorationEntity {
     }
 
     @Override
-    public boolean method_6888() {
+    public boolean canStayAttached() {
         if (!this.world.doesNotCollide(this)) {
             return false;
         }
-        BlockState blockState = this.world.getBlockState(this.blockPos.offset(this.facing.getOpposite()));
+        BlockState blockState = this.world.getBlockState(this.attachmentPos.offset(this.facing.getOpposite()));
         if (!(blockState.getMaterial().isSolid() || this.facing.getAxis().isHorizontal() && AbstractRedstoneGateBlock.isRedstoneGate(blockState))) {
             return false;
         }
@@ -207,7 +207,7 @@ extends AbstractDecorationEntity {
     private void removeFromFrame(ItemStack map) {
         if (map.getItem() == Items.FILLED_MAP) {
             MapState mapState = FilledMapItem.getOrCreateMapState(map, this.world);
-            mapState.removeFrame(this.blockPos, this.getEntityId());
+            mapState.removeFrame(this.attachmentPos, this.getEntityId());
             mapState.setDirty(true);
         }
         map.setFrame(null);
@@ -231,8 +231,8 @@ extends AbstractDecorationEntity {
         if (!value.isEmpty()) {
             this.playSound(SoundEvents.ENTITY_ITEM_FRAME_ADD_ITEM, 1.0f, 1.0f);
         }
-        if (bl && this.blockPos != null) {
-            this.world.updateHorizontalAdjacent(this.blockPos, Blocks.AIR);
+        if (bl && this.attachmentPos != null) {
+            this.world.updateHorizontalAdjacent(this.attachmentPos, Blocks.AIR);
         }
     }
 
@@ -263,8 +263,8 @@ extends AbstractDecorationEntity {
 
     private void setRotation(int value, boolean bl) {
         this.getDataTracker().set(ROTATION, value % 8);
-        if (bl && this.blockPos != null) {
-            this.world.updateHorizontalAdjacent(this.blockPos, Blocks.AIR);
+        if (bl && this.attachmentPos != null) {
+            this.world.updateHorizontalAdjacent(this.attachmentPos, Blocks.AIR);
         }
     }
 

@@ -30,7 +30,7 @@ import net.minecraft.client.gui.hud.DebugHud;
 import net.minecraft.client.gui.hud.PlayerListHud;
 import net.minecraft.client.gui.hud.SpectatorHud;
 import net.minecraft.client.gui.hud.SubtitlesHud;
-import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
+import net.minecraft.client.gui.screen.ingame.ContainerScreen;
 import net.minecraft.client.options.AttackIndicator;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.render.BufferBuilder;
@@ -44,7 +44,7 @@ import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.StatusEffectSpriteManager;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -365,12 +365,12 @@ extends DrawableHelper {
             return false;
         }
         if (hitResult.getType() == HitResult.Type.ENTITY) {
-            return ((EntityHitResult)hitResult).getEntity() instanceof NameableContainerProvider;
+            return ((EntityHitResult)hitResult).getEntity() instanceof NameableContainerFactory;
         }
         if (hitResult.getType() == HitResult.Type.BLOCK) {
             ClientWorld world = this.client.world;
             BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
-            return world.getBlockState(blockPos).createContainerProvider(world, blockPos) != null;
+            return world.getBlockState(blockPos).createContainerFactory(world, blockPos) != null;
         }
         return false;
     }
@@ -385,7 +385,7 @@ extends DrawableHelper {
         int j = 0;
         StatusEffectSpriteManager statusEffectSpriteManager = this.client.getStatusEffectSpriteManager();
         ArrayList<Runnable> list = Lists.newArrayListWithExpectedSize(collection.size());
-        this.client.getTextureManager().bindTexture(AbstractContainerScreen.BACKGROUND_TEXTURE);
+        this.client.getTextureManager().bindTexture(ContainerScreen.BACKGROUND_TEXTURE);
         for (StatusEffectInstance statusEffectInstance : Ordering.natural().reverse().sortedCopy(collection)) {
             StatusEffect statusEffect = statusEffectInstance.getEffectType();
             if (!statusEffectInstance.shouldShowIcon()) continue;

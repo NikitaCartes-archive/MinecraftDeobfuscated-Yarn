@@ -5,12 +5,12 @@ package net.minecraft.block;
 
 import net.minecraft.block.AbstractGlassBlock;
 import net.minecraft.block.Block;
-import net.minecraft.client.block.ColoredBlock;
+import net.minecraft.block.Stainable;
 import net.minecraft.util.DyeColor;
 
 public class StainedGlassBlock
 extends AbstractGlassBlock
-implements ColoredBlock {
+implements Stainable {
     private final DyeColor color;
 
     public StainedGlassBlock(DyeColor color, Block.Settings settings) {

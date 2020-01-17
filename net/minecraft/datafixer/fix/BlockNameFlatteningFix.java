@@ -13,7 +13,7 @@ import com.mojang.datafixers.util.Pair;
 import java.util.Objects;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.fix.BlockStateFlattening;
-import net.minecraft.datafixer.schema.SchemaIdentifierNormalize;
+import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 
 public class BlockNameFlatteningFix
 extends DataFix {
@@ -30,7 +30,7 @@ extends DataFix {
         if (!Objects.equals(type, type3) || !Objects.equals(type2, type4)) {
             throw new IllegalStateException("Expected and actual types don't match.");
         }
-        return this.fixTypeEverywhere("BlockNameFlatteningFix", type3, type4, dynamicOps -> pair -> pair.mapSecond(either -> either.map(BlockStateFlattening::lookupStateBlock, string -> BlockStateFlattening.lookupBlock(SchemaIdentifierNormalize.normalize(string)))));
+        return this.fixTypeEverywhere("BlockNameFlatteningFix", type3, type4, dynamicOps -> pair -> pair.mapSecond(either -> either.map(BlockStateFlattening::lookupStateBlock, string -> BlockStateFlattening.lookupBlock(IdentifierNormalizingSchema.normalize(string)))));
     }
 }
 

@@ -33,8 +33,8 @@ extends MobEntityRenderer<SilverfishEntity, SilverfishEntityModel<SilverfishEnti
     }
 
     @Override
-    protected /* synthetic */ float getLyingAngle(LivingEntity livingEntity) {
-        return this.getLyingAngle((SilverfishEntity)livingEntity);
+    protected /* synthetic */ float getLyingAngle(LivingEntity entity) {
+        return this.getLyingAngle((SilverfishEntity)entity);
     }
 
     @Override

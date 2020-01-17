@@ -18,11 +18,11 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LecternBlock;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
-import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.test.FailureLoggingTestCompletionListener;
 import net.minecraft.test.GameTest;
@@ -144,11 +144,11 @@ public class TestUtil {
     }
 
     public static void clearDebugMarkers(ServerWorld world) {
-        DebugRendererInfoManager.clearGameTestMarkers(world);
+        DebugInfoSender.clearGameTestMarkers(world);
     }
 
     private static void addDebugMarker(ServerWorld world, BlockPos pos, String message) {
-        DebugRendererInfoManager.addGameTestMarker(world, pos, message, -2130771968, Integer.MAX_VALUE);
+        DebugInfoSender.addGameTestMarker(world, pos, message, -2130771968, Integer.MAX_VALUE);
     }
 
     public static void clearTests(ServerWorld world, BlockPos pos, TestManager testManager, int radius) {

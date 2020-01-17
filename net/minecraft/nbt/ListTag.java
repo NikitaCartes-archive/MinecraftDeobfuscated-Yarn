@@ -68,7 +68,7 @@ extends AbstractListTag<Tag> {
             return this.read(input, depth, tracker);
         }
     };
-    private static final ByteSet field_21461 = new ByteOpenHashSet(Arrays.asList((byte)1, (byte)2, (byte)3, (byte)4, (byte)5, (byte)6));
+    private static final ByteSet NBT_NUMBER_TYPES = new ByteOpenHashSet(Arrays.asList((byte)1, (byte)2, (byte)3, (byte)4, (byte)5, (byte)6));
     private final List<Tag> value;
     private byte type;
 
@@ -277,7 +277,7 @@ extends AbstractListTag<Tag> {
         if (this.isEmpty()) {
             return new LiteralText("[]");
         }
-        if (field_21461.contains(this.type) && this.size() <= 8) {
+        if (NBT_NUMBER_TYPES.contains(this.type) && this.size() <= 8) {
             String string = ", ";
             LiteralText text = new LiteralText("[");
             for (int i = 0; i < this.value.size(); ++i) {
