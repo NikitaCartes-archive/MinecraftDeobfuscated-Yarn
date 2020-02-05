@@ -3,11 +3,13 @@
  */
 package net.minecraft.world.biome;
 
+import com.google.common.collect.ImmutableList;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.noise.OctaveSimplexNoiseSampler;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeEffects;
 import net.minecraft.world.biome.DefaultBiomeFeatures;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.feature.Feature;
@@ -21,10 +23,10 @@ import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 
 public class DeepFrozenOceanBiome
 extends Biome {
-    protected static final OctaveSimplexNoiseSampler noiseSampler = new OctaveSimplexNoiseSampler(new ChunkRandom(3456L), 2, 0);
+    protected static final OctaveSimplexNoiseSampler noiseSampler = new OctaveSimplexNoiseSampler(new ChunkRandom(3456L), ImmutableList.of(Integer.valueOf(-2), Integer.valueOf(-1), Integer.valueOf(0)));
 
     public DeepFrozenOceanBiome() {
-        super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.FROZEN_OCEAN, SurfaceBuilder.GRASS_CONFIG).precipitation(Biome.Precipitation.RAIN).category(Biome.Category.OCEAN).depth(-1.8f).scale(0.1f).temperature(0.5f).downfall(0.5f).waterColor(3750089).waterFogColor(329011).parent(null));
+        super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.FROZEN_OCEAN, SurfaceBuilder.GRASS_CONFIG).precipitation(Biome.Precipitation.RAIN).category(Biome.Category.OCEAN).depth(-1.8f).scale(0.1f).temperature(0.5f).downfall(0.5f).effects(new BiomeEffects.Builder().waterColor(3750089).waterFogColor(329011).fogColor(12638463).build()).parent(null));
         this.addStructureFeature(Feature.OCEAN_RUIN.configure(new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.COLD, 0.3f, 0.9f)));
         this.addStructureFeature(Feature.OCEAN_MONUMENT.configure(FeatureConfig.DEFAULT));
         this.addStructureFeature(Feature.MINESHAFT.configure(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)));

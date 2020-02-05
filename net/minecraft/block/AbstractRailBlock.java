@@ -62,10 +62,15 @@ extends Block {
         if (oldState.getBlock() == state.getBlock()) {
             return;
         }
-        state = this.updateBlockState(world, pos, state, true);
+        this.method_24417(state, world, pos, moved);
+    }
+
+    protected BlockState method_24417(BlockState blockState, World world, BlockPos blockPos, boolean bl) {
+        blockState = this.updateBlockState(world, blockPos, blockState, true);
         if (this.allowCurves) {
-            state.neighborUpdate(world, pos, this, pos, moved);
+            blockState.neighborUpdate(world, blockPos, this, blockPos, bl);
         }
+        return blockState;
     }
 
     @Override

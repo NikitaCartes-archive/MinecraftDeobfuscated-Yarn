@@ -11,8 +11,6 @@ import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.particle.DefaultParticleType;
-import net.minecraft.tag.FluidTags;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 @Environment(value=EnvType.CLIENT)
@@ -25,6 +23,13 @@ extends SpriteBillboardParticle {
         this.colorBlue = 0.7f;
         this.setBoundingBoxSpacing(0.01f, 0.01f);
         this.scale *= this.random.nextFloat() * 0.6f + 0.2f;
+        this.maxAge = (int)(16.0 / (Math.random() * 0.8 + 0.2));
+    }
+
+    private WaterSuspendParticle(World world, double d, double e, double f, double g, double h, double i) {
+        super(world, d, e - 0.125, f, g, h, i);
+        this.setBoundingBoxSpacing(0.01f, 0.01f);
+        this.scale *= this.random.nextFloat() * 0.6f + 0.6f;
         this.maxAge = (int)(16.0 / (Math.random() * 0.8 + 0.2));
     }
 
@@ -43,8 +48,42 @@ extends SpriteBillboardParticle {
             return;
         }
         this.move(this.velocityX, this.velocityY, this.velocityZ);
-        if (!this.world.getFluidState(new BlockPos(this.x, this.y, this.z)).matches(FluidTags.WATER)) {
-            this.markDead();
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public static class WarpedSporeFactory
+    implements ParticleFactory<DefaultParticleType> {
+        private final SpriteProvider spriteProvider;
+
+        public WarpedSporeFactory(SpriteProvider spriteProvider) {
+            this.spriteProvider = spriteProvider;
+        }
+
+        @Override
+        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+            WaterSuspendParticle waterSuspendParticle = new WaterSuspendParticle(world, d, e, f, g, h, i);
+            waterSuspendParticle.setSprite(this.spriteProvider);
+            waterSuspendParticle.setColor(0.1f, 0.1f, 0.3f);
+            waterSuspendParticle.setBoundingBoxSpacing(0.001f, 0.001f);
+            return waterSuspendParticle;
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public static class CrimsonSporeFactory
+    implements ParticleFactory<DefaultParticleType> {
+        private final SpriteProvider spriteProvider;
+
+        public CrimsonSporeFactory(SpriteProvider spriteProvider) {
+            this.spriteProvider = spriteProvider;
+        }
+
+        @Override
+        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+            WaterSuspendParticle waterSuspendParticle = new WaterSuspendParticle(world, d, e, f, g, h, i);
+            waterSuspendParticle.setSprite(this.spriteProvider);
+            waterSuspendParticle.setColor(0.9f, 0.4f, 0.5f);
+            return waterSuspendParticle;
         }
     }
 

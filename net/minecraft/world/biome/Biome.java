@@ -3,6 +3,7 @@
  */
 package net.minecraft.world.biome;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -10,6 +11,7 @@ import it.unimi.dsi.fastutil.longs.Long2FloatLinkedOpenHashMap;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -38,6 +40,8 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LightType;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.biome.BiomeEffects;
+import net.minecraft.world.biome.BiomeParticleConfig;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.GenerationStep;
@@ -61,22 +65,21 @@ public abstract class Biome {
     public static final Logger LOGGER = LogManager.getLogger();
     public static final Set<Biome> BIOMES = Sets.newHashSet();
     public static final IdList<Biome> PARENT_BIOME_ID_MAP = new IdList();
-    protected static final OctaveSimplexNoiseSampler TEMPERATURE_NOISE = new OctaveSimplexNoiseSampler(new ChunkRandom(1234L), 0, 0);
-    public static final OctaveSimplexNoiseSampler FOLIAGE_NOISE = new OctaveSimplexNoiseSampler(new ChunkRandom(2345L), 0, 0);
+    protected static final OctaveSimplexNoiseSampler TEMPERATURE_NOISE = new OctaveSimplexNoiseSampler(new ChunkRandom(1234L), ImmutableList.of(Integer.valueOf(0)));
+    public static final OctaveSimplexNoiseSampler FOLIAGE_NOISE = new OctaveSimplexNoiseSampler(new ChunkRandom(2345L), ImmutableList.of(Integer.valueOf(0)));
     @Nullable
     protected String translationKey;
     protected final float depth;
     protected final float scale;
     protected final float temperature;
     protected final float downfall;
-    protected final int waterColor;
-    protected final int waterFogColor;
     private final int skyColor;
     @Nullable
     protected final String parent;
     protected final ConfiguredSurfaceBuilder<?> surfaceBuilder;
     protected final Category category;
     protected final Precipitation precipitation;
+    protected final BiomeEffects effects;
     protected final Map<GenerationStep.Carver, List<ConfiguredCarver<?>>> carvers = Maps.newHashMap();
     protected final Map<GenerationStep.Feature, List<ConfiguredFeature<?, ?>>> features = Maps.newHashMap();
     protected final List<ConfiguredFeature<?, ?>> flowerFeatures = Lists.newArrayList();
@@ -92,6 +95,7 @@ public abstract class Biome {
         long2FloatLinkedOpenHashMap.defaultReturnValue(Float.NaN);
         return long2FloatLinkedOpenHashMap;
     }));
+    private final List<MixedNoisePoint> noisePoints;
 
     @Nullable
     public static Biome getModifiedBiome(Biome biome) {
@@ -103,7 +107,7 @@ public abstract class Biome {
     }
 
     protected Biome(Settings settings) {
-        if (settings.surfaceBuilder == null || settings.precipitation == null || settings.category == null || settings.depth == null || settings.scale == null || settings.temperature == null || settings.downfall == null || settings.waterColor == null || settings.waterFogColor == null) {
+        if (settings.surfaceBuilder == null || settings.precipitation == null || settings.category == null || settings.depth == null || settings.scale == null || settings.temperature == null || settings.downfall == null || settings.specialEffects == null) {
             throw new IllegalStateException("You are missing parameters to build a proper biome for " + this.getClass().getSimpleName() + "\n" + settings);
         }
         this.surfaceBuilder = settings.surfaceBuilder;
@@ -113,10 +117,10 @@ public abstract class Biome {
         this.scale = settings.scale.floatValue();
         this.temperature = settings.temperature.floatValue();
         this.downfall = settings.downfall.floatValue();
-        this.waterColor = settings.waterColor;
-        this.waterFogColor = settings.waterFogColor;
         this.skyColor = this.calculateSkyColor();
         this.parent = settings.parent;
+        this.noisePoints = settings.noises != null ? settings.noises : ImmutableList.of();
+        this.effects = settings.specialEffects;
         for (GenerationStep.Feature feature : GenerationStep.Feature.values()) {
             this.features.put(feature, Lists.newArrayList());
         }
@@ -269,6 +273,11 @@ public abstract class Biome {
     }
 
     @Environment(value=EnvType.CLIENT)
+    public int getFogColor() {
+        return this.effects.getFogColor();
+    }
+
+    @Environment(value=EnvType.CLIENT)
     public int getGrassColorAt(double x, double z) {
         double d = MathHelper.clamp(this.getTemperature(), 0.0f, 1.0f);
         double e = MathHelper.clamp(this.getRainfall(), 0.0f, 1.0f);
@@ -308,7 +317,6 @@ public abstract class Biome {
         return this.downfall;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Text getName() {
         return new TranslatableText(this.getTranslationKey(), new Object[0]);
     }
@@ -328,12 +336,23 @@ public abstract class Biome {
         return this.temperature;
     }
 
-    public final int getWaterColor() {
-        return this.waterColor;
+    public BiomeEffects getEffects() {
+        return this.effects;
     }
 
+    @Environment(value=EnvType.CLIENT)
+    public final int getWaterColor() {
+        return this.effects.getWaterColor();
+    }
+
+    @Environment(value=EnvType.CLIENT)
     public final int getWaterFogColor() {
-        return this.waterFogColor;
+        return this.effects.getWaterFogColor();
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public Optional<BiomeParticleConfig> getParticleConfig() {
+        return this.effects.getParticleConfig();
     }
 
     public final Category getCategory() {
@@ -348,9 +367,61 @@ public abstract class Biome {
         return this.surfaceBuilder.getConfig();
     }
 
+    public float getNoiseDistance(MixedNoisePoint from) {
+        return this.noisePoints.stream().map(mixedNoisePoint2 -> Float.valueOf(mixedNoisePoint2.calculateDistanceTo(from))).min(Float::compare).orElse(Float.valueOf(Float.POSITIVE_INFINITY)).floatValue();
+    }
+
     @Nullable
     public String getParent() {
         return this.parent;
+    }
+
+    public static class MixedNoisePoint {
+        private final float temperature;
+        private final float humidity;
+        private final float hilliness;
+        private final float style;
+        private final float rarityPotential;
+
+        public MixedNoisePoint(float heat, float humidity, float hilliness, float style, float rarityPotential) {
+            this.temperature = heat;
+            this.humidity = humidity;
+            this.hilliness = hilliness;
+            this.style = style;
+            this.rarityPotential = rarityPotential;
+        }
+
+        public boolean equals(Object object) {
+            if (this == object) {
+                return true;
+            }
+            if (object == null || this.getClass() != object.getClass()) {
+                return false;
+            }
+            MixedNoisePoint mixedNoisePoint = (MixedNoisePoint)object;
+            if (Float.compare(mixedNoisePoint.temperature, this.temperature) != 0) {
+                return false;
+            }
+            if (Float.compare(mixedNoisePoint.humidity, this.humidity) != 0) {
+                return false;
+            }
+            if (Float.compare(mixedNoisePoint.hilliness, this.hilliness) != 0) {
+                return false;
+            }
+            return Float.compare(mixedNoisePoint.style, this.style) == 0;
+        }
+
+        public int hashCode() {
+            int i = this.temperature != 0.0f ? Float.floatToIntBits(this.temperature) : 0;
+            i = 31 * i + (this.humidity != 0.0f ? Float.floatToIntBits(this.humidity) : 0);
+            i = 31 * i + (this.hilliness != 0.0f ? Float.floatToIntBits(this.hilliness) : 0);
+            i = 31 * i + (this.style != 0.0f ? Float.floatToIntBits(this.style) : 0);
+            return i;
+        }
+
+        public float calculateDistanceTo(MixedNoisePoint other) {
+            return (this.temperature - other.temperature) * (this.temperature - other.temperature) + (this.humidity - other.humidity) * (this.humidity - other.humidity) + (this.hilliness - other.hilliness) * (this.hilliness - other.hilliness) + (this.style - other.style) * (this.style - other.style) - (this.rarityPotential - other.rarityPotential) * (this.rarityPotential - other.rarityPotential);
+        }
     }
 
     public static class Settings {
@@ -369,14 +440,14 @@ public abstract class Biome {
         @Nullable
         private Float downfall;
         @Nullable
-        private Integer waterColor;
-        @Nullable
-        private Integer waterFogColor;
-        @Nullable
         private String parent;
+        @Nullable
+        private List<MixedNoisePoint> noises;
+        @Nullable
+        private BiomeEffects specialEffects;
 
-        public <SC extends SurfaceConfig> Settings configureSurfaceBuilder(SurfaceBuilder<SC> surfaceBuilder, SC surfaceConfig) {
-            this.surfaceBuilder = new ConfiguredSurfaceBuilder<SC>(surfaceBuilder, surfaceConfig);
+        public <SC extends SurfaceConfig> Settings configureSurfaceBuilder(SurfaceBuilder<SC> surfaceBuilder, SC config) {
+            this.surfaceBuilder = new ConfiguredSurfaceBuilder<SC>(surfaceBuilder, config);
             return this;
         }
 
@@ -415,23 +486,23 @@ public abstract class Biome {
             return this;
         }
 
-        public Settings waterColor(int waterColor) {
-            this.waterColor = waterColor;
-            return this;
-        }
-
-        public Settings waterFogColor(int waterFogColor) {
-            this.waterFogColor = waterFogColor;
-            return this;
-        }
-
         public Settings parent(@Nullable String parent) {
             this.parent = parent;
             return this;
         }
 
+        public Settings noises(List<MixedNoisePoint> noises) {
+            this.noises = noises;
+            return this;
+        }
+
+        public Settings effects(BiomeEffects effects) {
+            this.specialEffects = effects;
+            return this;
+        }
+
         public String toString() {
-            return "BiomeBuilder{\nsurfaceBuilder=" + this.surfaceBuilder + ",\nprecipitation=" + (Object)((Object)this.precipitation) + ",\nbiomeCategory=" + (Object)((Object)this.category) + ",\ndepth=" + this.depth + ",\nscale=" + this.scale + ",\ntemperature=" + this.temperature + ",\ndownfall=" + this.downfall + ",\nwaterColor=" + this.waterColor + ",\nwaterFogColor=" + this.waterFogColor + ",\nparent='" + this.parent + '\'' + "\n" + '}';
+            return "BiomeBuilder{\nsurfaceBuilder=" + this.surfaceBuilder + ",\nprecipitation=" + (Object)((Object)this.precipitation) + ",\nbiomeCategory=" + (Object)((Object)this.category) + ",\ndepth=" + this.depth + ",\nscale=" + this.scale + ",\ntemperature=" + this.temperature + ",\ndownfall=" + this.downfall + ",\nspecialEffects=" + this.specialEffects + ",\nparent='" + this.parent + '\'' + "\n" + '}';
         }
     }
 

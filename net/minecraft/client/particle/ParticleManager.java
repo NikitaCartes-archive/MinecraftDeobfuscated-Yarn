@@ -29,6 +29,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.particle.AshParticle;
 import net.minecraft.client.particle.BarrierParticle;
 import net.minecraft.client.particle.BlockDustParticle;
 import net.minecraft.client.particle.BlockFallingDustParticle;
@@ -161,6 +162,7 @@ implements ResourceReloadListener {
         this.registerFactory(ParticleTypes.FIREWORK, FireworksSparkParticle.ExplosionFactory::new);
         this.registerFactory(ParticleTypes.FISHING, FishingParticle.Factory::new);
         this.registerFactory(ParticleTypes.FLAME, FlameParticle.Factory::new);
+        this.registerFactory(ParticleTypes.SOUL_FIRE_FLAME, FlameParticle.Factory::new);
         this.registerFactory(ParticleTypes.FLASH, FireworksSparkParticle.FlashFactory::new);
         this.registerFactory(ParticleTypes.HAPPY_VILLAGER, SuspendParticle.HappyVillagerFactory::new);
         this.registerFactory(ParticleTypes.HEART, EmotionParticle.HeartFactory::new);
@@ -189,6 +191,9 @@ implements ResourceReloadListener {
         this.registerFactory(ParticleTypes.FALLING_HONEY, BlockLeakParticle.FallingHoneyFactory::new);
         this.registerFactory(ParticleTypes.LANDING_HONEY, BlockLeakParticle.LandingHoneyFactory::new);
         this.registerFactory(ParticleTypes.FALLING_NECTAR, BlockLeakParticle.FallingNectarFactory::new);
+        this.registerFactory(ParticleTypes.ASH, AshParticle.Factory::new);
+        this.registerFactory(ParticleTypes.CRIMSON_SPORE, WaterSuspendParticle.CrimsonSporeFactory::new);
+        this.registerFactory(ParticleTypes.WARPED_SPORE, WaterSuspendParticle.WarpedSporeFactory::new);
     }
 
     private <T extends ParticleEffect> void registerFactory(ParticleType<T> type, ParticleFactory<T> factory) {

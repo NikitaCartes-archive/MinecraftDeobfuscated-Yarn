@@ -53,7 +53,7 @@ extends Goal {
         if (livingEntity.isSpectator()) {
             return false;
         }
-        if (this.tameable.isSitting()) {
+        if (this.tameable.method_24345()) {
             return false;
         }
         if (this.tameable.squaredDistanceTo(livingEntity) < (double)(this.minDistance * this.minDistance)) {
@@ -68,7 +68,7 @@ extends Goal {
         if (this.navigation.isIdle()) {
             return false;
         }
-        if (this.tameable.isSitting()) {
+        if (this.tameable.method_24345()) {
             return false;
         }
         return !(this.tameable.squaredDistanceTo(this.owner) <= (double)(this.maxDistance * this.maxDistance));

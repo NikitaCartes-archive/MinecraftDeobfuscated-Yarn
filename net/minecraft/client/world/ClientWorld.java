@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
@@ -98,8 +99,8 @@ extends World {
         object2ObjectArrayMap.put(BiomeColors.WATER_COLOR, new BiomeColorCache());
     });
 
-    public ClientWorld(ClientPlayNetworkHandler clientPlayNetworkHandler, LevelInfo levelInfo, DimensionType dimensionType, int chunkLoadDistance, Profiler profiler, WorldRenderer worldRenderer) {
-        super(new LevelProperties(levelInfo, "MpServer"), dimensionType, (world, dimension) -> new ClientChunkManager((ClientWorld)world, chunkLoadDistance), profiler, true);
+    public ClientWorld(ClientPlayNetworkHandler clientPlayNetworkHandler, LevelInfo levelInfo, DimensionType dimensionType, int chunkLoadDistance, Supplier<Profiler> supplier, WorldRenderer worldRenderer) {
+        super(new LevelProperties(levelInfo, "MpServer"), dimensionType, (world, dimension) -> new ClientChunkManager((ClientWorld)world, chunkLoadDistance), supplier, true);
         this.netHandler = clientPlayNetworkHandler;
         this.worldRenderer = worldRenderer;
         this.setSpawnPos(new BlockPos(8, 64, 8));
@@ -355,6 +356,13 @@ extends World {
         }
         if (spawnBarrierParticles && blockState.getBlock() == Blocks.BARRIER) {
             this.addParticle(ParticleTypes.BARRIER, (double)i + 0.5, (double)j + 0.5, (double)k + 0.5, 0.0, 0.0, 0.0);
+        }
+        if (!blockState.isFullCube(this, pos)) {
+            this.getBiome(pos).getParticleConfig().ifPresent(biomeParticleConfig -> {
+                if (biomeParticleConfig.shouldAddParticle(this.random)) {
+                    this.addParticle(biomeParticleConfig.getParticleType(), (float)pos.getX() + this.random.nextFloat(), (float)pos.getY() + this.random.nextFloat(), (float)pos.getZ() + this.random.nextFloat(), biomeParticleConfig.generateVelocityX(this.random), biomeParticleConfig.generateVelocityY(this.random), biomeParticleConfig.generateVelocityZ(this.random));
+                }
+            });
         }
     }
 
@@ -660,11 +668,6 @@ extends World {
             j = j * n + m * (1.0f - n);
         }
         return new Vec3d(h, i, j);
-    }
-
-    public Vec3d getFogColor(float tickDelta) {
-        float f = this.getSkyAngle(tickDelta);
-        return this.dimension.getFogColor(f, tickDelta);
     }
 
     public float method_23787(float f) {

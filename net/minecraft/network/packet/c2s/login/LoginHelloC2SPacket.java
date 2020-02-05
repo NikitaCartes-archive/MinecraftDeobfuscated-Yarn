@@ -16,8 +16,8 @@ implements Packet<ServerLoginPacketListener> {
     public LoginHelloC2SPacket() {
     }
 
-    public LoginHelloC2SPacket(GameProfile gameProfile) {
-        this.profile = gameProfile;
+    public LoginHelloC2SPacket(GameProfile profile) {
+        this.profile = profile;
     }
 
     @Override

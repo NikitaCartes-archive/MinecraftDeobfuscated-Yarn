@@ -3,8 +3,10 @@
  */
 package net.minecraft.util.math.noise;
 
+import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.ints.IntRBTreeSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
+import java.util.List;
 import java.util.stream.IntStream;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.NoiseSampler;
@@ -18,42 +20,46 @@ implements NoiseSampler {
     private final double field_20659;
     private final double field_20660;
 
-    public OctavePerlinNoiseSampler(ChunkRandom chunkRandom, int i, int j) {
-        this(chunkRandom, new IntRBTreeSet(IntStream.rangeClosed(-i, j).toArray()));
+    public OctavePerlinNoiseSampler(ChunkRandom random, IntStream octaves) {
+        this(random, octaves.boxed().collect(ImmutableList.toImmutableList()));
     }
 
-    public OctavePerlinNoiseSampler(ChunkRandom chunkRandom, IntSortedSet intSortedSet) {
+    public OctavePerlinNoiseSampler(ChunkRandom random, List<Integer> octaves) {
+        this(random, new IntRBTreeSet(octaves));
+    }
+
+    private OctavePerlinNoiseSampler(ChunkRandom random, IntSortedSet octaves) {
         int j;
-        if (intSortedSet.isEmpty()) {
+        if (octaves.isEmpty()) {
             throw new IllegalArgumentException("Need some octaves!");
         }
-        int i = -intSortedSet.firstInt();
-        int k = i + (j = intSortedSet.lastInt()) + 1;
+        int i = -octaves.firstInt();
+        int k = i + (j = octaves.lastInt()) + 1;
         if (k < 1) {
             throw new IllegalArgumentException("Total number of octaves needs to be >= 1");
         }
-        PerlinNoiseSampler perlinNoiseSampler = new PerlinNoiseSampler(chunkRandom);
+        PerlinNoiseSampler perlinNoiseSampler = new PerlinNoiseSampler(random);
         int l = j;
         this.octaveSamplers = new PerlinNoiseSampler[k];
-        if (l >= 0 && l < k && intSortedSet.contains(0)) {
+        if (l >= 0 && l < k && octaves.contains(0)) {
             this.octaveSamplers[l] = perlinNoiseSampler;
         }
         for (int m = l + 1; m < k; ++m) {
-            if (m >= 0 && intSortedSet.contains(l - m)) {
-                this.octaveSamplers[m] = new PerlinNoiseSampler(chunkRandom);
+            if (m >= 0 && octaves.contains(l - m)) {
+                this.octaveSamplers[m] = new PerlinNoiseSampler(random);
                 continue;
             }
-            chunkRandom.consume(262);
+            random.consume(262);
         }
         if (j > 0) {
             long n = (long)(perlinNoiseSampler.sample(0.0, 0.0, 0.0, 0.0, 0.0) * 9.223372036854776E18);
-            ChunkRandom chunkRandom2 = new ChunkRandom(n);
+            ChunkRandom chunkRandom = new ChunkRandom(n);
             for (int o = l - 1; o >= 0; --o) {
-                if (o < k && intSortedSet.contains(l - o)) {
-                    this.octaveSamplers[o] = new PerlinNoiseSampler(chunkRandom2);
+                if (o < k && octaves.contains(l - o)) {
+                    this.octaveSamplers[o] = new PerlinNoiseSampler(chunkRandom);
                     continue;
                 }
-                chunkRandom2.consume(262);
+                chunkRandom.consume(262);
             }
         }
         this.field_20660 = Math.pow(2.0, j);

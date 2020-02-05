@@ -24,8 +24,8 @@ extends MessageToByteEncoder<Packet<?>> {
     private static final Marker MARKER = MarkerManager.getMarker("PACKET_SENT", ClientConnection.MARKER_NETWORK_PACKETS);
     private final NetworkSide side;
 
-    public PacketEncoder(NetworkSide networkSide) {
-        this.side = networkSide;
+    public PacketEncoder(NetworkSide side) {
+        this.side = side;
     }
 
     @Override
@@ -55,8 +55,8 @@ extends MessageToByteEncoder<Packet<?>> {
     }
 
     @Override
-    protected /* synthetic */ void encode(ChannelHandlerContext channelHandlerContext, Object object, ByteBuf byteBuf) throws Exception {
-        this.encode(channelHandlerContext, (Packet)object, byteBuf);
+    protected /* synthetic */ void encode(ChannelHandlerContext ctx, Object packet, ByteBuf out) throws Exception {
+        this.encode(ctx, (Packet)packet, out);
     }
 }
 

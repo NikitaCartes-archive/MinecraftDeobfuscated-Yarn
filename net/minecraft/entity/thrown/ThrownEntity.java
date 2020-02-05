@@ -4,6 +4,7 @@
 package net.minecraft.entity.thrown;
 
 import java.util.UUID;
+import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
@@ -37,8 +38,7 @@ implements Projectile {
     public int shake;
     protected LivingEntity owner;
     private UUID ownerUuid;
-    private Entity field_7637;
-    private int field_7638;
+    private boolean field_21975;
 
     protected ThrownEntity(EntityType<? extends ThrownEntity> type, World world) {
         super(type, world);
@@ -110,20 +110,21 @@ implements Projectile {
             this.setVelocity(this.getVelocity().multiply(this.random.nextFloat() * 0.2f, this.random.nextFloat() * 0.2f, this.random.nextFloat() * 0.2f));
         }
         Box box = this.getBoundingBox().stretch(this.getVelocity()).expand(1.0);
-        for (Entity entity2 : this.world.getEntities(this, box, entity -> !entity.isSpectator() && entity.collides())) {
-            if (entity2 == this.field_7637) {
-                ++this.field_7638;
+        if (this.owner == null) {
+            this.field_21975 = true;
+        } else if (!this.field_21975) {
+            boolean bl = false;
+            for (Entity entity2 : this.world.getEntities(this, box, entity -> !entity.isSpectator() && entity.collides())) {
+                if (!this.method_24354(entity2, this.owner)) continue;
+                bl = true;
                 break;
             }
-            if (this.owner == null || this.age >= 2 || this.field_7637 != null) continue;
-            this.field_7637 = entity2;
-            this.field_7638 = 3;
-            break;
+            if (!bl) {
+                this.field_21975 = true;
+            }
         }
-        HitResult hitResult = ProjectileUtil.getCollision((Entity)this, box, entity -> !entity.isSpectator() && entity.collides() && entity != this.field_7637, RayTraceContext.ShapeType.OUTLINE, true);
-        if (this.field_7637 != null && this.field_7638-- <= 0) {
-            this.field_7637 = null;
-        }
+        Predicate<Entity> predicate = entity -> !entity.isSpectator() && entity.collides() && (this.field_21975 || !this.method_24354((Entity)entity, this.owner));
+        HitResult hitResult = ProjectileUtil.getCollision((Entity)this, box, predicate, RayTraceContext.ShapeType.OUTLINE, true);
         if (hitResult.getType() != HitResult.Type.MISS) {
             if (hitResult.getType() == HitResult.Type.BLOCK && this.world.getBlockState(((BlockHitResult)hitResult).getBlockPos()).getBlock() == Blocks.NETHER_PORTAL) {
                 this.setInNetherPortal(((BlockHitResult)hitResult).getBlockPos());
@@ -167,6 +168,10 @@ implements Projectile {
             this.setVelocity(vec3d2.x, vec3d2.y - (double)this.getGravity(), vec3d2.z);
         }
         this.updatePosition(d, e, f);
+    }
+
+    private boolean method_24354(Entity entity, Entity entity2) {
+        return entity == entity2 || entity.getPassengerList().contains(entity2);
     }
 
     protected float getGravity() {

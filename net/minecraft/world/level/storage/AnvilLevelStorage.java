@@ -61,7 +61,7 @@ public class AnvilLevelStorage {
         BiomeSourceType<VanillaLayeredBiomeSourceConfig, VanillaLayeredBiomeSource> biomeSourceType2 = BiomeSourceType.VANILLA_LAYERED;
         BiomeSource biomeSource = levelProperties != null && levelProperties.getGeneratorType() == LevelGeneratorType.FLAT ? biomeSourceType.applyConfig(biomeSourceType.getConfig(levelProperties).setBiome(Biomes.PLAINS)) : biomeSourceType2.applyConfig(biomeSourceType2.getConfig(levelProperties));
         AnvilLevelStorage.convertRegions(new File(file, "region"), list, biomeSource, 0, i, progressListener);
-        AnvilLevelStorage.convertRegions(new File(file2, "region"), list2, biomeSourceType.applyConfig(biomeSourceType.getConfig(levelProperties).setBiome(Biomes.NETHER)), list.size(), i, progressListener);
+        AnvilLevelStorage.convertRegions(new File(file2, "region"), list2, biomeSourceType.applyConfig(biomeSourceType.getConfig(levelProperties).setBiome(Biomes.NETHER_WASTES)), list.size(), i, progressListener);
         AnvilLevelStorage.convertRegions(new File(file3, "region"), list3, biomeSourceType.applyConfig(biomeSourceType.getConfig(levelProperties).setBiome(Biomes.THE_END)), list.size() + list2.size(), i, progressListener);
         levelProperties.setVersion(19133);
         if (levelProperties.getGeneratorType() == LevelGeneratorType.DEFAULT_1_1) {

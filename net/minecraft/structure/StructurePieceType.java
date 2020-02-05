@@ -12,6 +12,7 @@ import net.minecraft.structure.IglooGenerator;
 import net.minecraft.structure.JungleTempleGenerator;
 import net.minecraft.structure.MineshaftGenerator;
 import net.minecraft.structure.NetherFortressGenerator;
+import net.minecraft.structure.NetherFossilGenerator;
 import net.minecraft.structure.OceanMonumentGenerator;
 import net.minecraft.structure.OceanRuinGenerator;
 import net.minecraft.structure.PillagerOutpostGenerator;
@@ -80,6 +81,7 @@ public interface StructurePieceType {
     public static final StructurePieceType WOODLAND_MANSION = StructurePieceType.register(WoodlandMansionGenerator.Piece::new, "WMP");
     public static final StructurePieceType BURIED_TREASURE = StructurePieceType.register(BuriedTreasureGenerator.Piece::new, "BTP");
     public static final StructurePieceType SHIPWRECK = StructurePieceType.register(ShipwreckGenerator.Piece::new, "Shipwreck");
+    public static final StructurePieceType NE_FOS = StructurePieceType.register(NetherFossilGenerator.Piece::new, "NeFos");
 
     public StructurePiece load(StructureManager var1, CompoundTag var2);
 

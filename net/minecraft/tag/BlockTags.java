@@ -34,6 +34,8 @@ public class BlockTags {
     public static final Tag<Block> ACACIA_LOGS;
     public static final Tag<Block> JUNGLE_LOGS;
     public static final Tag<Block> SPRUCE_LOGS;
+    public static final Tag<Block> CRIMSON_STEMS;
+    public static final Tag<Block> WARPED_STEMS;
     public static final Tag<Block> BANNERS;
     public static final Tag<Block> SAND;
     public static final Tag<Block> STAIRS;
@@ -69,6 +71,9 @@ public class BlockTags {
     public static final Tag<Block> CROPS;
     public static final Tag<Block> BEE_GROWABLES;
     public static final Tag<Block> PORTALS;
+    public static final Tag<Block> FIRE;
+    public static final Tag<Block> NYLIUM;
+    public static final Tag<Block> WART_BLOCKS;
 
     public static void setContainer(TagContainer<Block> container) {
         BlockTags.container = container;
@@ -105,6 +110,8 @@ public class BlockTags {
         ACACIA_LOGS = BlockTags.register("acacia_logs");
         JUNGLE_LOGS = BlockTags.register("jungle_logs");
         SPRUCE_LOGS = BlockTags.register("spruce_logs");
+        CRIMSON_STEMS = BlockTags.register("crimson_stems");
+        WARPED_STEMS = BlockTags.register("warped_stems");
         BANNERS = BlockTags.register("banners");
         SAND = BlockTags.register("sand");
         STAIRS = BlockTags.register("stairs");
@@ -140,6 +147,9 @@ public class BlockTags {
         CROPS = BlockTags.register("crops");
         BEE_GROWABLES = BlockTags.register("bee_growables");
         PORTALS = BlockTags.register("portals");
+        FIRE = BlockTags.register("fire");
+        NYLIUM = BlockTags.register("nylium");
+        WART_BLOCKS = BlockTags.register("wart_blocks");
     }
 
     static class CachingTag

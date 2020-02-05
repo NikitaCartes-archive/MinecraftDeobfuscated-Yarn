@@ -118,11 +118,6 @@ extends Entity {
     }
 
     @Override
-    protected void burn(int time) {
-        this.damage(DamageSource.IN_FIRE, time);
-    }
-
-    @Override
     public boolean damage(DamageSource source, float amount) {
         if (this.isInvulnerableTo(source)) {
             return false;
@@ -158,7 +153,7 @@ extends Entity {
             ItemStack itemStack;
             player.experiencePickUpDelay = 2;
             player.sendPickup(this, 1);
-            Map.Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.getRandomEnchantedEquipment(Enchantments.MENDING, player);
+            Map.Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.method_24365(Enchantments.MENDING, player, ItemStack::isDamaged);
             if (entry != null && !(itemStack = entry.getValue()).isEmpty() && itemStack.isDamaged()) {
                 int i = Math.min(this.getMendingRepairAmount(this.amount), itemStack.getDamage());
                 this.amount -= this.getMendingRepairCost(i);

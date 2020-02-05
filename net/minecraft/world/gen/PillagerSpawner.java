@@ -49,7 +49,7 @@ public class PillagerSpawner {
         if (playerEntity.isSpectator()) {
             return 0;
         }
-        if (serverWorld.isNearOccupiedPointOfInterest(playerEntity.getBlockPos())) {
+        if (serverWorld.isNearOccupiedPointOfInterest(playerEntity.getBlockPos(), 2)) {
             return 0;
         }
         int j = (24 + random.nextInt(24)) * (random.nextBoolean() ? -1 : 1);

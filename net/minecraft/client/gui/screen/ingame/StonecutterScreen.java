@@ -61,6 +61,24 @@ extends ContainerScreen<StonecutterContainer> {
         this.renderRecipeIcons(l, m, n);
     }
 
+    @Override
+    protected void drawMouseoverTooltip(int mouseX, int mouseY) {
+        super.drawMouseoverTooltip(mouseX, mouseY);
+        if (this.canCraft) {
+            int i = this.x + 52;
+            int j = this.y + 14;
+            int k = this.scrollOffset + 12;
+            List<StonecuttingRecipe> list = ((StonecutterContainer)this.container).getAvailableRecipes();
+            for (int l = this.scrollOffset; l < k && l < ((StonecutterContainer)this.container).getAvailableRecipeCount(); ++l) {
+                int m = l - this.scrollOffset;
+                int n = i + m % 4 * 16;
+                int o = j + m / 4 * 18 + 2;
+                if (mouseX < n || mouseX >= n + 16 || mouseY < o || mouseY >= o + 18) continue;
+                this.renderTooltip(list.get(l).getOutput(), mouseX, mouseY);
+            }
+        }
+    }
+
     private void renderRecipeBackground(int mouseX, int mouseY, int x, int y, int scrollOffset) {
         for (int i = this.scrollOffset; i < scrollOffset && i < ((StonecutterContainer)this.container).getAvailableRecipeCount(); ++i) {
             int j = i - this.scrollOffset;

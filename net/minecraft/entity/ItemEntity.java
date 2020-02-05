@@ -89,6 +89,8 @@ extends Entity {
         Vec3d vec3d = this.getVelocity();
         if (this.isInFluid(FluidTags.WATER)) {
             this.applyBuoyancy();
+        } else if (this.isInFluid(FluidTags.LAVA)) {
+            this.method_24348();
         } else if (!this.hasNoGravity()) {
             this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
         }
@@ -115,7 +117,6 @@ extends Entity {
         int n = i = bl ? 2 : 40;
         if (this.age % i == 0) {
             if (this.world.getFluidState(new BlockPos(this)).matches(FluidTags.LAVA)) {
-                this.setVelocity((this.random.nextFloat() - this.random.nextFloat()) * 0.2f, 0.2f, (this.random.nextFloat() - this.random.nextFloat()) * 0.2f);
                 this.playSound(SoundEvents.ENTITY_GENERIC_BURN, 0.4f, 2.0f + this.random.nextFloat() * 0.4f);
             }
             if (!this.world.isClient && this.canMerge()) {
@@ -137,6 +138,11 @@ extends Entity {
     private void applyBuoyancy() {
         Vec3d vec3d = this.getVelocity();
         this.setVelocity(vec3d.x * (double)0.99f, vec3d.y + (double)(vec3d.y < (double)0.06f ? 5.0E-4f : 0.0f), vec3d.z * (double)0.99f);
+    }
+
+    private void method_24348() {
+        Vec3d vec3d = this.getVelocity();
+        this.setVelocity(vec3d.x * (double)0.95f, vec3d.y + (double)(vec3d.y < (double)0.06f ? 5.0E-4f : 0.0f), vec3d.z * (double)0.95f);
     }
 
     private void tryMerge() {
@@ -206,16 +212,14 @@ extends Entity {
     }
 
     @Override
-    protected void burn(int time) {
-        this.damage(DamageSource.IN_FIRE, time);
-    }
-
-    @Override
     public boolean damage(DamageSource source, float amount) {
         if (this.isInvulnerableTo(source)) {
             return false;
         }
         if (!this.getStack().isEmpty() && this.getStack().getItem() == Items.NETHER_STAR && source.isExplosive()) {
+            return false;
+        }
+        if (!this.getStack().getItem().damage(source)) {
             return false;
         }
         this.scheduleVelocityUpdate();

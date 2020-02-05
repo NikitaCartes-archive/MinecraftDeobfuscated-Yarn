@@ -31,9 +31,13 @@ public class LocateCommand {
         if (blockPos2 == null) {
             throw FAILED_EXCEPTION.create();
         }
+        return LocateCommand.sendCoordinates(source, structure, blockPos, blockPos2, "commands.locate.success");
+    }
+
+    public static int sendCoordinates(ServerCommandSource serverCommandSource, String string, BlockPos blockPos, BlockPos blockPos2, String successMessage) {
         int i = MathHelper.floor(LocateCommand.getDistance(blockPos.getX(), blockPos.getZ(), blockPos2.getX(), blockPos2.getZ()));
         Text text = Texts.bracketed(new TranslatableText("chat.coordinates", blockPos2.getX(), "~", blockPos2.getZ())).styled(style -> style.setColor(Formatting.GREEN).setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp @s " + blockPos2.getX() + " ~ " + blockPos2.getZ())).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableText("chat.coordinates.tooltip", new Object[0]))));
-        source.sendFeedback(new TranslatableText("commands.locate.success", structure, text, i), false);
+        serverCommandSource.sendFeedback(new TranslatableText(successMessage, string, text, i), false);
         return i;
     }
 

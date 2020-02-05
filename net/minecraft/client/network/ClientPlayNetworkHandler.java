@@ -354,7 +354,7 @@ implements ClientPlayPacketListener {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         this.client.interactionManager = new ClientPlayerInteractionManager(this.client, this);
         this.chunkLoadDistance = packet.getChunkLoadDistance();
-        this.world = new ClientWorld(this, new LevelInfo(packet.getSeed(), packet.getGameMode(), false, packet.isHardcore(), packet.getGeneratorType()), packet.getDimension(), this.chunkLoadDistance, this.client.getProfiler(), this.client.worldRenderer);
+        this.world = new ClientWorld(this, new LevelInfo(packet.getSeed(), packet.getGameMode(), false, packet.isHardcore(), packet.getGeneratorType()), packet.getDimension(), this.chunkLoadDistance, this.client::getProfiler, this.client.worldRenderer);
         this.client.joinWorld(this.world);
         if (this.client.player == null) {
             this.client.player = this.client.interactionManager.createPlayer(this.world, new StatHandler(), new ClientRecipeBook(this.world.getRecipeManager()));
@@ -906,7 +906,7 @@ implements ClientPlayPacketListener {
         if (dimensionType != clientPlayerEntity.dimension) {
             this.positionLookSetup = false;
             Scoreboard scoreboard = this.world.getScoreboard();
-            this.world = new ClientWorld(this, new LevelInfo(packet.getSha256Seed(), packet.getGameMode(), false, this.client.world.getLevelProperties().isHardcore(), packet.getGeneratorType()), packet.getDimension(), this.chunkLoadDistance, this.client.getProfiler(), this.client.worldRenderer);
+            this.world = new ClientWorld(this, new LevelInfo(packet.getSha256Seed(), packet.getGameMode(), false, this.client.world.getLevelProperties().isHardcore(), packet.getGeneratorType()), packet.getDimension(), this.chunkLoadDistance, this.client::getProfiler, this.client.worldRenderer);
             this.world.setScoreboard(scoreboard);
             this.client.joinWorld(this.world);
             this.client.openScreen(new DownloadingTerrainScreen());

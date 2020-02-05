@@ -19,6 +19,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemConvertible;
@@ -67,6 +68,7 @@ implements ItemConvertible {
     private final Rarity rarity;
     private final int maxCount;
     private final int maxDamage;
+    private final boolean fireproof;
     private final Item recipeRemainder;
     @Nullable
     private String translationKey;
@@ -96,6 +98,7 @@ implements ItemConvertible {
         this.maxDamage = settings.maxDamage;
         this.maxCount = settings.maxCount;
         this.foodComponent = settings.foodComponent;
+        this.fireproof = settings.fireproof;
         if (this.maxDamage > 0) {
             this.addPropertyGetter(new Identifier("damaged"), DAMAGED_PROPERTY_GETTER);
             this.addPropertyGetter(new Identifier("damage"), DAMAGE_PROPERTY_GETTER);
@@ -355,6 +358,14 @@ implements ItemConvertible {
         return SoundEvents.ENTITY_GENERIC_EAT;
     }
 
+    public boolean isFireproof() {
+        return this.fireproof;
+    }
+
+    public boolean damage(DamageSource source) {
+        return !this.fireproof || !source.isFire();
+    }
+
     public static class Settings {
         private int maxCount = 64;
         private int maxDamage;
@@ -362,6 +373,7 @@ implements ItemConvertible {
         private ItemGroup group;
         private Rarity rarity = Rarity.COMMON;
         private FoodComponent foodComponent;
+        private boolean fireproof;
 
         public Settings food(FoodComponent foodComponent) {
             this.foodComponent = foodComponent;
@@ -398,6 +410,11 @@ implements ItemConvertible {
 
         public Settings rarity(Rarity rarity) {
             this.rarity = rarity;
+            return this;
+        }
+
+        public Settings fireproof() {
+            this.fireproof = true;
             return this;
         }
     }

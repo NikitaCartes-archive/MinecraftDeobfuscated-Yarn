@@ -10,8 +10,8 @@ import net.minecraft.util.Identifier;
 
 public class IdentifierNormalizingSchema
 extends Schema {
-    public IdentifierNormalizingSchema(int i, Schema schema) {
-        super(i, schema);
+    public IdentifierNormalizingSchema(int versionKey, Schema parent) {
+        super(versionKey, parent);
     }
 
     public static String normalize(String id) {

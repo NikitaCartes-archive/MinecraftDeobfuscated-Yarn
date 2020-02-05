@@ -99,7 +99,7 @@ implements BlockEntityProvider {
         if (state.get(PART) != BedPart.HEAD && (state = world.getBlockState(pos = pos.offset(state.get(FACING)))).getBlock() != this) {
             return ActionResult.CONSUME;
         }
-        if (!world.dimension.canPlayersSleep() || world.getBiome(pos) == Biomes.NETHER) {
+        if (!world.dimension.canPlayersSleep() || world.getBiome(pos) == Biomes.NETHER_WASTES) {
             world.removeBlock(pos, false);
             BlockPos blockPos = pos.offset(state.get(FACING).getOpposite());
             if (world.getBlockState(blockPos).getBlock() == this) {

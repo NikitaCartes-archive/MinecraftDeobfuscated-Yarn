@@ -539,19 +539,10 @@ CommandOutput {
             throw new CrashException(crashReport);
         }
         this.setVelocity(this.getVelocity().multiply(this.getVelocityMultiplier(), 1.0, this.getVelocityMultiplier()));
-        boolean bl = this.isWet();
-        if (this.world.doesAreaContainFireSource(this.getBoundingBox().contract(0.001))) {
-            if (!bl) {
-                ++this.fireTicks;
-                if (this.fireTicks == 0) {
-                    this.setOnFireFor(8);
-                }
-            }
-            this.burn(1);
-        } else if (this.fireTicks <= 0) {
+        if (!this.world.doesAreaContainFireSource(this.getBoundingBox().contract(0.001)) && this.fireTicks <= 0) {
             this.fireTicks = -this.getBurningDuration();
         }
-        if (bl && this.isOnFire()) {
+        if (this.isWet() && this.isOnFire()) {
             this.playSound(SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.7f, 1.6f + (this.random.nextFloat() - this.random.nextFloat()) * 0.4f);
             this.fireTicks = -this.getBurningDuration();
         }
@@ -831,12 +822,6 @@ CommandOutput {
     @Nullable
     public Box getCollisionBox() {
         return null;
-    }
-
-    protected void burn(int time) {
-        if (!this.isFireImmune()) {
-            this.damage(DamageSource.IN_FIRE, time);
-        }
     }
 
     public final boolean isFireImmune() {

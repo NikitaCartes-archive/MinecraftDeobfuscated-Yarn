@@ -319,10 +319,6 @@ implements IWorld {
     }
 
     @Override
-    public void updateNeighbors(BlockPos pos, Block block) {
-    }
-
-    @Override
     public int getTopY(Heightmap.Type heightmap, int x, int z) {
         return this.getChunk(x >> 4, z >> 4).sampleHeightmap(heightmap, x & 0xF, z & 0xF) + 1;
     }

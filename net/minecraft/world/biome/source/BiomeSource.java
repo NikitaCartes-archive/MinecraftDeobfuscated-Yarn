@@ -58,26 +58,39 @@ implements BiomeAccess.Storage {
         return set;
     }
 
-    @Nullable
     public BlockPos locateBiome(int x, int y, int z, int radius, List<Biome> list, Random random) {
-        int i = x - radius >> 2;
-        int j = z - radius >> 2;
-        int k = x + radius >> 2;
-        int l = z + radius >> 2;
-        int m = k - i + 1;
-        int n = l - j + 1;
-        int o = y >> 2;
+        return this.method_24385(x, y, z, radius, 1, list, random, false);
+    }
+
+    @Nullable
+    public BlockPos method_24385(int i, int j, int k, int l, int m, List<Biome> list, Random random, boolean bl) {
+        int s;
+        int n = i >> 2;
+        int o = k >> 2;
+        int p = l >> 2;
+        int q = j >> 2;
         BlockPos blockPos = null;
-        int p = 0;
-        for (int q = 0; q < n; ++q) {
-            for (int r = 0; r < m; ++r) {
-                int s = i + r;
-                int t = j + q;
-                if (!list.contains(this.getBiomeForNoiseGen(s, o, t))) continue;
-                if (blockPos == null || random.nextInt(p + 1) == 0) {
-                    blockPos = new BlockPos(s << 2, y, t << 2);
+        int r = 0;
+        for (int t = s = bl ? 0 : p; t <= p; t += m) {
+            for (int u = -t; u <= t; u += m) {
+                boolean bl2 = Math.abs(u) == t;
+                for (int v = -t; v <= t; v += m) {
+                    int x;
+                    int w;
+                    if (bl) {
+                        boolean bl3;
+                        boolean bl4 = bl3 = Math.abs(v) == t;
+                        if (!bl3 && !bl2) continue;
+                    }
+                    if (!list.contains(this.getBiomeForNoiseGen(w = n + v, q, x = o + u))) continue;
+                    if (blockPos == null || random.nextInt(r + 1) == 0) {
+                        blockPos = new BlockPos(w << 2, j, x << 2);
+                        if (bl) {
+                            return blockPos;
+                        }
+                    }
+                    ++r;
                 }
-                ++p;
             }
         }
         return blockPos;

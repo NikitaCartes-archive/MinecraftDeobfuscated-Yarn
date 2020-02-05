@@ -74,7 +74,7 @@ extends Block {
                     queue.add(new Pair<BlockPos, Integer>(blockPos2, j + 1));
                     continue;
                 }
-                if (material != Material.UNDERWATER_PLANT && material != Material.REPLACEABLE_UNDERWATER_PLANT) continue;
+                if (material != Material.UNDERWATER_PLANT && material != Material.SEAGRASS) continue;
                 BlockEntity blockEntity = blockState.getBlock().hasBlockEntity() ? world.getBlockEntity(blockPos2) : null;
                 SpongeBlock.dropStacks(blockState, world, blockPos2, blockEntity);
                 world.setBlockState(blockPos2, Blocks.AIR.getDefaultState(), 3);

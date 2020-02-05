@@ -12,8 +12,8 @@ public class ServerItemCooldownManager
 extends ItemCooldownManager {
     private final ServerPlayerEntity player;
 
-    public ServerItemCooldownManager(ServerPlayerEntity serverPlayerEntity) {
-        this.player = serverPlayerEntity;
+    public ServerItemCooldownManager(ServerPlayerEntity player) {
+        this.player = player;
     }
 
     @Override

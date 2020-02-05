@@ -143,7 +143,7 @@ implements VillagerDataContainer {
 
     @Override
     public boolean canImmediatelyDespawn(double distanceSquared) {
-        return !this.isConverting();
+        return !this.isConverting() && this.xp == 0;
     }
 
     public boolean isConverting() {

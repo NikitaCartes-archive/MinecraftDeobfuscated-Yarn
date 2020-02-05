@@ -146,11 +146,10 @@ implements Flutterer {
 
     @Override
     protected void initGoals() {
-        this.sitGoal = new SitGoal(this);
         this.goalSelector.add(0, new EscapeDangerGoal(this, 1.25));
         this.goalSelector.add(0, new SwimGoal(this));
         this.goalSelector.add(1, new LookAtEntityGoal(this, PlayerEntity.class, 8.0f));
-        this.goalSelector.add(2, this.sitGoal);
+        this.goalSelector.add(2, new SitGoal(this));
         this.goalSelector.add(2, new FollowOwnerGoal(this, 1.0, 5.0f, 1.0f, true));
         this.goalSelector.add(2, new FlyOntoTreeGoal(this, 1.0));
         this.goalSelector.add(3, new SitOnOwnerShoulderGoal(this));
@@ -268,7 +267,7 @@ implements Flutterer {
         }
         if (!this.isInAir() && this.isTamed() && this.isOwner(player)) {
             if (!this.world.isClient) {
-                this.sitGoal.setEnabledWithOwner(!this.isSitting());
+                this.method_24346(!this.method_24345());
             }
             return true;
         }
@@ -392,9 +391,7 @@ implements Flutterer {
         if (this.isInvulnerableTo(source)) {
             return false;
         }
-        if (this.sitGoal != null) {
-            this.sitGoal.setEnabledWithOwner(false);
-        }
+        this.method_24346(false);
         return super.damage(source, amount);
     }
 

@@ -42,34 +42,18 @@ implements FluidFillable {
         return SHAPE;
     }
 
-    @Override
-    @Nullable
-    public BlockState getPlacementState(ItemPlacementContext ctx) {
-        FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
-        if (fluidState.matches(FluidTags.WATER) && fluidState.getLevel() == 8) {
-            return this.getPlacementState(ctx.getWorld());
-        }
-        return null;
-    }
-
     public BlockState getPlacementState(IWorld world) {
         return (BlockState)this.getDefaultState().with(AGE, world.getRandom().nextInt(25));
     }
 
     @Override
-    public FluidState getFluidState(BlockState state) {
-        return Fluids.WATER.getStill(false);
-    }
-
-    @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        BlockPos blockPos;
         if (!state.canPlaceAt(world, pos)) {
             world.breakBlock(pos, true);
             return;
         }
-        BlockPos blockPos = pos.up();
-        BlockState blockState = world.getBlockState(blockPos);
-        if (blockState.getBlock() == Blocks.WATER && state.get(AGE) < 25 && random.nextDouble() < 0.14) {
+        if (state.get(AGE) < 25 && random.nextDouble() < 0.14 && world.getBlockState(blockPos = pos.up()).getBlock() == Blocks.WATER) {
             world.setBlockState(blockPos, (BlockState)state.cycle(AGE));
         }
     }
@@ -87,10 +71,7 @@ implements FluidFillable {
 
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-        if (!state.canPlaceAt(world, pos)) {
-            if (facing == Direction.DOWN) {
-                return Blocks.AIR.getDefaultState();
-            }
+        if (facing == Direction.DOWN && !state.canPlaceAt(world, pos)) {
             world.getBlockTickScheduler().schedule(pos, this, 1);
         }
         if (facing == Direction.UP && neighborState.getBlock() == this) {
@@ -113,6 +94,21 @@ implements FluidFillable {
     @Override
     public boolean tryFillWithFluid(IWorld world, BlockPos pos, BlockState state, FluidState fluidState) {
         return false;
+    }
+
+    @Override
+    @Nullable
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
+        if (fluidState.matches(FluidTags.WATER) && fluidState.getLevel() == 8) {
+            return this.getPlacementState(ctx.getWorld());
+        }
+        return null;
+    }
+
+    @Override
+    public FluidState getFluidState(BlockState state) {
+        return Fluids.WATER.getStill(false);
     }
 }
 

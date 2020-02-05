@@ -798,7 +798,7 @@ implements ContainerListener {
             return;
         }
         if (container == this.playerContainer) {
-            Criterions.INVENTORY_CHANGED.trigger(this, this.inventory);
+            Criterions.INVENTORY_CHANGED.trigger(this, this.inventory, itemStack);
         }
         if (this.field_13991) {
             return;

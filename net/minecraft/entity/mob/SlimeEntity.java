@@ -31,6 +31,7 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -191,20 +192,23 @@ implements Monster {
     public void remove() {
         int i = this.getSize();
         if (!this.world.isClient && i > 1 && this.getHealth() <= 0.0f) {
-            int j = 2 + this.random.nextInt(3);
-            for (int k = 0; k < j; ++k) {
-                float f = ((float)(k % 2) - 0.5f) * (float)i / 4.0f;
-                float g = ((float)(k / 2) - 0.5f) * (float)i / 4.0f;
+            Text text = this.getCustomName();
+            boolean bl = this.isAiDisabled();
+            float f = (float)i / 4.0f;
+            int j = i / 2;
+            int k = 2 + this.random.nextInt(3);
+            for (int l = 0; l < k; ++l) {
+                float g = ((float)(l % 2) - 0.5f) * f;
+                float h = ((float)(l / 2) - 0.5f) * f;
                 SlimeEntity slimeEntity = this.getType().create(this.world);
-                if (this.hasCustomName()) {
-                    slimeEntity.setCustomName(this.getCustomName());
-                }
                 if (this.isPersistent()) {
                     slimeEntity.setPersistent();
                 }
+                slimeEntity.setCustomName(text);
+                slimeEntity.setAiDisabled(bl);
                 slimeEntity.setInvulnerable(this.isInvulnerable());
-                slimeEntity.setSize(i / 2, true);
-                slimeEntity.refreshPositionAndAngles(this.getX() + (double)f, this.getY() + 0.5, this.getZ() + (double)g, this.random.nextFloat() * 360.0f, 0.0f);
+                slimeEntity.setSize(j, true);
+                slimeEntity.refreshPositionAndAngles(this.getX() + (double)g, this.getY() + 0.5, this.getZ() + (double)h, this.random.nextFloat() * 360.0f, 0.0f);
                 this.world.spawnEntity(slimeEntity);
             }
         }
@@ -327,6 +331,11 @@ implements Monster {
         int j = 1 << i;
         this.setSize(j, true);
         return super.initialize(world, difficulty, spawnType, entityData, entityTag);
+    }
+
+    private float method_24353() {
+        float f = this.isSmall() ? 1.4f : 0.8f;
+        return ((this.random.nextFloat() - this.random.nextFloat()) * 0.2f + 1.0f) * f;
     }
 
     protected SoundEvent getJumpSound() {
@@ -502,7 +511,7 @@ implements Monster {
                     }
                     this.slime.getJumpControl().setActive();
                     if (this.slime.makesJumpSound()) {
-                        this.slime.playSound(this.slime.getJumpSound(), this.slime.getSoundVolume(), ((this.slime.getRandom().nextFloat() - this.slime.getRandom().nextFloat()) * 0.2f + 1.0f) * 0.8f);
+                        this.slime.playSound(this.slime.getJumpSound(), this.slime.getSoundVolume(), this.slime.method_24353());
                     }
                 } else {
                     this.slime.sidewaysSpeed = 0.0f;

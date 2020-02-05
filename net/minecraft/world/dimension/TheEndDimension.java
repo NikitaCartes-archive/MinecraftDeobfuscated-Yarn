@@ -12,7 +12,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.source.BiomeSourceType;
@@ -57,14 +56,8 @@ extends Dimension {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public Vec3d getFogColor(float skyAngle, float tickDelta) {
-        int i = 0xA080A0;
-        float f = MathHelper.cos(skyAngle * ((float)Math.PI * 2)) * 2.0f + 0.5f;
-        f = MathHelper.clamp(f, 0.0f, 1.0f);
-        float g = 0.627451f;
-        float h = 0.5019608f;
-        float j = 0.627451f;
-        return new Vec3d(g *= f * 0.0f + 0.15f, h *= f * 0.0f + 0.15f, j *= f * 0.0f + 0.15f);
+    public Vec3d modifyFogColor(int fogColor, float tickDelta) {
+        return Vec3d.unpackRgb(fogColor).multiply(0.15f);
     }
 
     @Override

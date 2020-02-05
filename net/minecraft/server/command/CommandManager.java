@@ -45,6 +45,7 @@ import net.minecraft.server.command.HelpCommand;
 import net.minecraft.server.command.KickCommand;
 import net.minecraft.server.command.KillCommand;
 import net.minecraft.server.command.ListCommand;
+import net.minecraft.server.command.LocateBiomeCommand;
 import net.minecraft.server.command.LocateCommand;
 import net.minecraft.server.command.LootCommand;
 import net.minecraft.server.command.MeCommand;
@@ -134,6 +135,7 @@ public class CommandManager {
         KillCommand.register(this.dispatcher);
         ListCommand.register(this.dispatcher);
         LocateCommand.register(this.dispatcher);
+        LocateBiomeCommand.register(this.dispatcher);
         LootCommand.register(this.dispatcher);
         MessageCommand.register(this.dispatcher);
         ParticleCommand.register(this.dispatcher);

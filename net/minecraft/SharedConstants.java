@@ -7,6 +7,7 @@ import com.mojang.bridge.game.GameVersion;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.types.constant.NamespacedStringType;
 import io.netty.util.ResourceLeakDetector;
+import java.time.Duration;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.MinecraftVersion;
@@ -15,6 +16,7 @@ import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 
 public class SharedConstants {
     public static final ResourceLeakDetector.Level RESOURCE_LEAK_DETECTOR_DISABLED = ResourceLeakDetector.Level.DISABLED;
+    public static final long field_22251 = Duration.ofMillis(300L).toNanos();
     public static boolean isDevelopment;
     public static final char[] INVALID_CHARS_LEVEL_NAME;
     private static GameVersion gameVersion;

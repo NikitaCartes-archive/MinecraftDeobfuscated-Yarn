@@ -15,6 +15,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeEffects;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.biome.source.BiomeSource;
@@ -53,7 +54,7 @@ extends ChunkGenerator<FlatChunkGeneratorConfig> {
         void var6_11;
         boolean bl;
         Biome biome = ((FlatChunkGeneratorConfig)this.config).getBiome();
-        FlatChunkGeneratorBiome flatChunkGeneratorBiome = new FlatChunkGeneratorBiome(biome.getSurfaceBuilder(), biome.getPrecipitation(), biome.getCategory(), biome.getDepth(), biome.getScale(), biome.getTemperature(), biome.getRainfall(), biome.getWaterColor(), biome.getWaterFogColor(), biome.getParent());
+        FlatChunkGeneratorBiome flatChunkGeneratorBiome = new FlatChunkGeneratorBiome(biome.getSurfaceBuilder(), biome.getPrecipitation(), biome.getCategory(), biome.getDepth(), biome.getScale(), biome.getTemperature(), biome.getRainfall(), biome.getEffects(), biome.getParent());
         Map<String, Map<String, String>> map = ((FlatChunkGeneratorConfig)this.config).getStructures();
         for (String string : map.keySet()) {
             ConfiguredFeature<?, ?>[] configuredFeatureArray = FlatChunkGeneratorConfig.STRUCTURE_TO_FEATURES.get(string);
@@ -169,8 +170,8 @@ extends ChunkGenerator<FlatChunkGeneratorConfig> {
 
     class FlatChunkGeneratorBiome
     extends Biome {
-        protected FlatChunkGeneratorBiome(ConfiguredSurfaceBuilder<?> configuredSurfaceBuilder, Biome.Precipitation precipitation, Biome.Category category, float f, float g, float h, float i, int j, @Nullable int k, String string) {
-            super(new Biome.Settings().surfaceBuilder(configuredSurfaceBuilder).precipitation(precipitation).category(category).depth(f).scale(g).temperature(h).downfall(i).waterColor(j).waterFogColor(k).parent(string));
+        protected FlatChunkGeneratorBiome(ConfiguredSurfaceBuilder<?> configuredSurfaceBuilder, Biome.Precipitation precipitation, Biome.Category category, float f, float g, float h, float i, @Nullable BiomeEffects biomeEffects, String string) {
+            super(new Biome.Settings().surfaceBuilder(configuredSurfaceBuilder).precipitation(precipitation).category(category).depth(f).scale(g).temperature(h).downfall(i).effects(biomeEffects).parent(string));
         }
     }
 }

@@ -33,7 +33,7 @@ import net.minecraft.world.gen.carver.UnderwaterRavineCarver;
 
 public abstract class Carver<C extends CarverConfig> {
     public static final Carver<ProbabilityConfig> CAVE = Carver.register("cave", new CaveCarver((Function<Dynamic<?>, ? extends ProbabilityConfig>)((Function<Dynamic<?>, ProbabilityConfig>)ProbabilityConfig::deserialize), 256));
-    public static final Carver<ProbabilityConfig> HELL_CAVE = Carver.register("hell_cave", new NetherCaveCarver(ProbabilityConfig::deserialize));
+    public static final Carver<ProbabilityConfig> NETHER_CAVE = Carver.register("nether_cave", new NetherCaveCarver(ProbabilityConfig::deserialize));
     public static final Carver<ProbabilityConfig> CANYON = Carver.register("canyon", new RavineCarver(ProbabilityConfig::deserialize));
     public static final Carver<ProbabilityConfig> UNDERWATER_CANYON = Carver.register("underwater_canyon", new UnderwaterRavineCarver(ProbabilityConfig::deserialize));
     public static final Carver<ProbabilityConfig> UNDERWATER_CAVE = Carver.register("underwater_cave", new UnderwaterCaveCarver(ProbabilityConfig::deserialize));

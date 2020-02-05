@@ -141,10 +141,10 @@ public abstract class Container {
             ItemStack itemStack = this.slots.get(i).getStack();
             ItemStack itemStack2 = this.trackedStacks.get(i);
             if (ItemStack.areEqualIgnoreDamage(itemStack2, itemStack)) continue;
-            itemStack2 = itemStack.copy();
-            this.trackedStacks.set(i, itemStack2);
+            ItemStack itemStack3 = itemStack.copy();
+            this.trackedStacks.set(i, itemStack3);
             for (ContainerListener containerListener : this.listeners) {
-                containerListener.onContainerSlotUpdate(this, i, itemStack2);
+                containerListener.onContainerSlotUpdate(this, i, itemStack3);
             }
         }
         for (i = 0; i < this.properties.size(); ++i) {

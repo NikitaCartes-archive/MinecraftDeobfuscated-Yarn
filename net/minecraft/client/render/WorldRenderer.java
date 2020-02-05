@@ -116,6 +116,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
@@ -338,66 +339,40 @@ SynchronousResourceReloadListener {
     }
 
     public void method_22713(Camera camera) {
-        float f = this.client.world.getRainGradient(1.0f);
-        if (!this.client.options.fancyGraphics) {
-            f /= 2.0f;
-        }
-        if (f == 0.0f) {
+        float f = this.client.world.getRainGradient(1.0f) / (this.client.options.fancyGraphics ? 1.0f : 2.0f);
+        if (f <= 0.0f) {
             return;
         }
         Random random = new Random((long)this.ticks * 312987231L);
         ClientWorld worldView = this.client.world;
         BlockPos blockPos = new BlockPos(camera.getPos());
-        int i = 10;
-        double d = 0.0;
-        double e = 0.0;
-        double g = 0.0;
-        int j = 0;
-        int k = (int)(100.0f * f * f);
-        if (this.client.options.particles == ParticlesOption.DECREASED) {
-            k >>= 1;
-        } else if (this.client.options.particles == ParticlesOption.MINIMAL) {
-            k = 0;
+        Vec3i blockPos2 = null;
+        int i = (int)(100.0f * f * f) / (this.client.options.particles == ParticlesOption.DECREASED ? 2 : 1);
+        for (int j = 0; j < i; ++j) {
+            int k = random.nextInt(21) - 10;
+            int l = random.nextInt(21) - 10;
+            BlockPos blockPos3 = worldView.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(k, 0, l)).down();
+            Biome biome = worldView.getBiome(blockPos3);
+            if (blockPos3.getY() <= 0 || blockPos3.getY() > blockPos.getY() + 10 || blockPos3.getY() < blockPos.getY() - 10 || biome.getPrecipitation() != Biome.Precipitation.RAIN || !(biome.getTemperature(blockPos3) >= 0.15f)) continue;
+            blockPos2 = blockPos3;
+            if (this.client.options.particles == ParticlesOption.MINIMAL) break;
+            float g = random.nextFloat();
+            float h = random.nextFloat();
+            BlockState blockState = worldView.getBlockState((BlockPos)blockPos2);
+            FluidState fluidState = worldView.getFluidState((BlockPos)blockPos2);
+            VoxelShape voxelShape = blockState.getCollisionShape(worldView, (BlockPos)blockPos2);
+            float m = (float)voxelShape.getEndingCoord(Direction.Axis.Y, g, h);
+            float n = fluidState.getHeight(worldView, (BlockPos)blockPos2);
+            float o = Math.max(m, n);
+            DefaultParticleType particleEffect = fluidState.matches(FluidTags.LAVA) || blockState.getBlock() == Blocks.MAGMA_BLOCK || blockState.getBlock() == Blocks.CAMPFIRE && blockState.get(CampfireBlock.LIT) != false ? ParticleTypes.SMOKE : ParticleTypes.RAIN;
+            this.client.world.addParticle(particleEffect, (float)blockPos2.getX() + g, (float)blockPos2.getY() + o, (float)blockPos2.getZ() + h, 0.0, 0.0, 0.0);
         }
-        for (int l = 0; l < k; ++l) {
-            double q;
-            double p;
-            double o;
-            BlockPos blockPos2 = worldView.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(random.nextInt(10) - random.nextInt(10), 0, random.nextInt(10) - random.nextInt(10)));
-            Biome biome = worldView.getBiome(blockPos2);
-            BlockPos blockPos3 = blockPos2.down();
-            if (blockPos2.getY() > blockPos.getY() + 10 || blockPos2.getY() < blockPos.getY() - 10 || biome.getPrecipitation() != Biome.Precipitation.RAIN || !(biome.getTemperature(blockPos2) >= 0.15f)) continue;
-            double h = random.nextDouble();
-            double m = random.nextDouble();
-            BlockState blockState = worldView.getBlockState(blockPos3);
-            FluidState fluidState = worldView.getFluidState(blockPos2);
-            VoxelShape voxelShape = blockState.getCollisionShape(worldView, blockPos3);
-            double n = voxelShape.getEndingCoord(Direction.Axis.Y, h, m);
-            if (n >= (o = (double)fluidState.getHeight(worldView, blockPos2))) {
-                p = n;
-                q = voxelShape.getBeginningCoord(Direction.Axis.Y, h, m);
-            } else {
-                p = 0.0;
-                q = 0.0;
-            }
-            if (!(p > -1.7976931348623157E308)) continue;
-            if (fluidState.matches(FluidTags.LAVA) || blockState.getBlock() == Blocks.MAGMA_BLOCK || blockState.getBlock() == Blocks.CAMPFIRE && blockState.get(CampfireBlock.LIT).booleanValue()) {
-                this.client.world.addParticle(ParticleTypes.SMOKE, (double)blockPos2.getX() + h, (double)((float)blockPos2.getY() + 0.1f) - q, (double)blockPos2.getZ() + m, 0.0, 0.0, 0.0);
-                continue;
-            }
-            if (random.nextInt(++j) == 0) {
-                d = (double)blockPos3.getX() + h;
-                e = (double)((float)blockPos3.getY() + 0.1f) + p - 1.0;
-                g = (double)blockPos3.getZ() + m;
-            }
-            this.client.world.addParticle(ParticleTypes.RAIN, (double)blockPos3.getX() + h, (double)((float)blockPos3.getY() + 0.1f) + p, (double)blockPos3.getZ() + m, 0.0, 0.0, 0.0);
-        }
-        if (j > 0 && random.nextInt(3) < this.field_20793++) {
+        if (blockPos2 != null && random.nextInt(3) < this.field_20793++) {
             this.field_20793 = 0;
-            if (e > (double)(blockPos.getY() + 1) && worldView.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos).getY() > MathHelper.floor(blockPos.getY())) {
-                this.client.world.playSound(d, e, g, SoundEvents.WEATHER_RAIN_ABOVE, SoundCategory.WEATHER, 0.1f, 0.5f, false);
+            if (blockPos2.getY() > blockPos.getY() + 1 && worldView.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos).getY() > MathHelper.floor(blockPos.getY())) {
+                this.client.world.playSound((BlockPos)blockPos2, SoundEvents.WEATHER_RAIN_ABOVE, SoundCategory.WEATHER, 0.1f, 0.5f, false);
             } else {
-                this.client.world.playSound(d, e, g, SoundEvents.WEATHER_RAIN, SoundCategory.WEATHER, 0.2f, 1.0f, false);
+                this.client.world.playSound((BlockPos)blockPos2, SoundEvents.WEATHER_RAIN, SoundCategory.WEATHER, 0.2f, 1.0f, false);
             }
         }
     }
@@ -981,7 +956,7 @@ SynchronousResourceReloadListener {
         this.client.debugRenderer.render(matrices, immediate, d, e, f);
         this.renderWorldBorder(camera);
         RenderSystem.popMatrix();
-        immediate.draw(TexturedRenderLayers.getEntityTranslucent());
+        immediate.draw(TexturedRenderLayers.getEntityTranslucentCull());
         immediate.draw(TexturedRenderLayers.getBannerPatterns());
         immediate.draw(TexturedRenderLayers.getShieldPatterns());
         immediate.draw(RenderLayer.getGlint());

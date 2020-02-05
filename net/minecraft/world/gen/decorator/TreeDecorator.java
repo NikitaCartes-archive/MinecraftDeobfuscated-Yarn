@@ -23,8 +23,8 @@ public abstract class TreeDecorator
 implements DynamicSerializable {
     protected final TreeDecoratorType<?> type;
 
-    protected TreeDecorator(TreeDecoratorType<?> treeDecoratorType) {
-        this.type = treeDecoratorType;
+    protected TreeDecorator(TreeDecoratorType<?> type) {
+        this.type = type;
     }
 
     public abstract void generate(IWorld var1, Random var2, List<BlockPos> var3, List<BlockPos> var4, Set<BlockPos> var5, BlockBox var6);

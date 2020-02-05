@@ -3,6 +3,8 @@
  */
 package net.minecraft.block;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FallingBlock;
@@ -70,6 +72,12 @@ extends FallingBlock {
             return this.hardenedState;
         }
         return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+    }
+
+    @Override
+    @Environment(value=EnvType.CLIENT)
+    public int getColor(BlockState state) {
+        return this.materialColor.color;
     }
 }
 

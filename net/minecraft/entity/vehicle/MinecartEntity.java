@@ -25,7 +25,7 @@ extends AbstractMinecartEntity {
             return false;
         }
         if (this.hasPassengers()) {
-            return true;
+            return false;
         }
         if (!this.world.isClient) {
             player.startRiding(this);

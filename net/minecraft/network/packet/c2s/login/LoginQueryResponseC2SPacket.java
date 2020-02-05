@@ -20,9 +20,9 @@ implements Packet<ServerLoginPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public LoginQueryResponseC2SPacket(int i, @Nullable PacketByteBuf packetByteBuf) {
-        this.queryId = i;
-        this.response = packetByteBuf;
+    public LoginQueryResponseC2SPacket(int queryId, @Nullable PacketByteBuf response) {
+        this.queryId = queryId;
+        this.response = response;
     }
 
     @Override

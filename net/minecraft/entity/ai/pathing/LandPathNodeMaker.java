@@ -349,7 +349,7 @@ extends PathNodeMaker {
                             pathNodeType = PathNodeType.DANGER_CACTUS;
                             continue;
                         }
-                        if (block == Blocks.FIRE || block == Blocks.LAVA) {
+                        if (block.matches(BlockTags.FIRE) || block == Blocks.LAVA) {
                             pathNodeType = PathNodeType.DANGER_FIRE;
                             continue;
                         }
@@ -373,7 +373,7 @@ extends PathNodeMaker {
         if (block.matches(BlockTags.TRAPDOORS) || block == Blocks.LILY_PAD) {
             return PathNodeType.TRAPDOOR;
         }
-        if (block == Blocks.FIRE) {
+        if (blockState.matches(BlockTags.FIRE)) {
             return PathNodeType.DAMAGE_FIRE;
         }
         if (block == Blocks.CACTUS) {

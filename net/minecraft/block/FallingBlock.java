@@ -8,12 +8,12 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
@@ -56,9 +56,8 @@ extends Block {
     }
 
     public static boolean canFallThrough(BlockState state) {
-        Block block = state.getBlock();
         Material material = state.getMaterial();
-        return state.isAir() || block == Blocks.FIRE || material.isLiquid() || material.isReplaceable();
+        return state.isAir() || state.matches(BlockTags.FIRE) || material.isLiquid() || material.isReplaceable();
     }
 
     public void onLanding(World world, BlockPos pos, BlockState fallingBlockState, BlockState currentStateInPos) {

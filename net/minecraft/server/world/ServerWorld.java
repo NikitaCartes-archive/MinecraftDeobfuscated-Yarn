@@ -4,6 +4,7 @@
 package net.minecraft.server.world;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
@@ -174,8 +175,8 @@ extends World {
     @Nullable
     private final WanderingTraderManager wanderingTraderManager;
 
-    public ServerWorld(MinecraftServer server, Executor workerExecutor, WorldSaveHandler worldSaveHandler, LevelProperties properties, DimensionType dimensionType, Profiler profiler, WorldGenerationProgressListener worldGenerationProgressListener) {
-        super(properties, dimensionType, (world, dimension) -> new ServerChunkManager((ServerWorld)world, worldSaveHandler.getWorldDir(), worldSaveHandler.getDataFixer(), worldSaveHandler.getStructureManager(), workerExecutor, dimension.createChunkGenerator(), server.getPlayerManager().getViewDistance(), worldGenerationProgressListener, () -> server.getWorld(DimensionType.OVERWORLD).getPersistentStateManager()), profiler, false);
+    public ServerWorld(MinecraftServer server, Executor workerExecutor, WorldSaveHandler worldSaveHandler, LevelProperties properties, DimensionType dimensionType, WorldGenerationProgressListener worldGenerationProgressListener) {
+        super(properties, dimensionType, (world, dimension) -> new ServerChunkManager((ServerWorld)world, worldSaveHandler.getWorldDir(), worldSaveHandler.getDataFixer(), worldSaveHandler.getStructureManager(), workerExecutor, dimension.createChunkGenerator(), server.getPlayerManager().getViewDistance(), worldGenerationProgressListener, () -> server.getWorld(DimensionType.OVERWORLD).getPersistentStateManager()), server::getProfiler, false);
         this.worldSaveHandler = worldSaveHandler;
         this.server = server;
         this.portalForcer = new PortalForcer(this);
@@ -1022,6 +1023,11 @@ extends World {
         return this.getChunkManager().getChunkGenerator().locateStructure(this, string, blockPos, i, bl);
     }
 
+    @Nullable
+    public BlockPos locateBiome(Biome biome, BlockPos blockPos, int i, int j) {
+        return this.getChunkManager().getChunkGenerator().getBiomeSource().method_24385(blockPos.getX(), blockPos.getY(), blockPos.getZ(), i, j, ImmutableList.of(biome), this.random, true);
+    }
+
     @Override
     public RecipeManager getRecipeManager() {
         return this.server.getRecipeManager();
@@ -1244,6 +1250,13 @@ extends World {
     @VisibleForTesting
     public void method_23658(BlockBox blockBox) {
         this.pendingBlockActions.removeIf(blockAction -> blockBox.contains(blockAction.getPos()));
+    }
+
+    @Override
+    public void updateNeighbors(BlockPos pos, Block block) {
+        if (this.properties.getGeneratorType() != LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
+            this.updateNeighborsAlways(pos, block);
+        }
     }
 
     @Override

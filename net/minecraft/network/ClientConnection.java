@@ -73,7 +73,7 @@ extends SimpleChannelInboundHandler<Packet<?>> {
     public static final Lazy<EpollEventLoopGroup> CLIENT_IO_GROUP_EPOLL = new Lazy<EpollEventLoopGroup>(() -> new EpollEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat("Netty Epoll Client IO #%d").setDaemon(true).build()));
     public static final Lazy<DefaultEventLoopGroup> CLIENT_IO_GROUP_LOCAL = new Lazy<DefaultEventLoopGroup>(() -> new DefaultEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat("Netty Local Client IO #%d").setDaemon(true).build()));
     private final NetworkSide side;
-    private final Queue<PacketWrapper> packetQueue = Queues.newConcurrentLinkedQueue();
+    private final Queue<QueuedPacket> packetQueue = Queues.newConcurrentLinkedQueue();
     private Channel channel;
     private SocketAddress address;
     private PacketListener packetListener;
@@ -87,8 +87,8 @@ extends SimpleChannelInboundHandler<Packet<?>> {
     private int ticks;
     private boolean errored;
 
-    public ClientConnection(NetworkSide networkSide) {
-        this.side = networkSide;
+    public ClientConnection(NetworkSide side) {
+        this.side = side;
     }
 
     @Override
@@ -172,7 +172,7 @@ extends SimpleChannelInboundHandler<Packet<?>> {
             this.sendQueuedPackets();
             this.sendImmediately(packet, callback);
         } else {
-            this.packetQueue.add(new PacketWrapper(packet, callback));
+            this.packetQueue.add(new QueuedPacket(packet, callback));
         }
     }
 
@@ -214,11 +214,11 @@ extends SimpleChannelInboundHandler<Packet<?>> {
         if (this.channel == null || !this.channel.isOpen()) {
             return;
         }
-        Queue<PacketWrapper> queue = this.packetQueue;
+        Queue<QueuedPacket> queue = this.packetQueue;
         synchronized (queue) {
-            PacketWrapper packetWrapper;
-            while ((packetWrapper = this.packetQueue.poll()) != null) {
-                this.sendImmediately(packetWrapper.packet, packetWrapper.listener);
+            QueuedPacket queuedPacket;
+            while ((queuedPacket = this.packetQueue.poll()) != null) {
+                this.sendImmediately(queuedPacket.packet, queuedPacket.callback);
             }
         }
     }
@@ -382,14 +382,14 @@ extends SimpleChannelInboundHandler<Packet<?>> {
         this.channelRead0(channelHandlerContext, (Packet)object);
     }
 
-    static class PacketWrapper {
+    static class QueuedPacket {
         private final Packet<?> packet;
         @Nullable
-        private final GenericFutureListener<? extends Future<? super Void>> listener;
+        private final GenericFutureListener<? extends Future<? super Void>> callback;
 
-        public PacketWrapper(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> genericFutureListener) {
+        public QueuedPacket(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> callback) {
             this.packet = packet;
-            this.listener = genericFutureListener;
+            this.callback = callback;
         }
     }
 }

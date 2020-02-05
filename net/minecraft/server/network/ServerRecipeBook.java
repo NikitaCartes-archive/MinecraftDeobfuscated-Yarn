@@ -29,8 +29,8 @@ extends RecipeBook {
     private static final Logger LOGGER = LogManager.getLogger();
     private final RecipeManager manager;
 
-    public ServerRecipeBook(RecipeManager recipeManager) {
-        this.manager = recipeManager;
+    public ServerRecipeBook(RecipeManager manager) {
+        this.manager = manager;
     }
 
     public int unlockRecipes(Collection<Recipe<?>> recipes, ServerPlayerEntity player) {

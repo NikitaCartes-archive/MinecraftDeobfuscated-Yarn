@@ -1064,7 +1064,7 @@ extends Entity {
     }
 
     public void takeKnockback(Entity attacker, float speed, double xMovement, double zMovement) {
-        if (this.random.nextDouble() < this.getAttributeInstance(EntityAttributes.KNOCKBACK_RESISTANCE).getValue()) {
+        if ((speed = (float)((double)speed * (1.0 - this.getAttributeInstance(EntityAttributes.KNOCKBACK_RESISTANCE).getValue()))) <= 0.0f) {
             return;
         }
         this.velocityDirty = true;
@@ -1169,7 +1169,7 @@ extends Entity {
         return MathHelper.floor(entityAttributeInstance.getValue());
     }
 
-    protected void damageArmor(float amount) {
+    protected void damageArmor(DamageSource damageSource, float f) {
     }
 
     protected void damageShield(float amount) {
@@ -1177,7 +1177,7 @@ extends Entity {
 
     protected float applyArmorToDamage(DamageSource source, float amount) {
         if (!source.bypassesArmor()) {
-            this.damageArmor(amount);
+            this.damageArmor(source, amount);
             amount = DamageUtil.getDamageLeft(amount, this.getArmor(), (float)this.getAttributeInstance(EntityAttributes.ARMOR_TOUGHNESS).getValue());
         }
         return amount;

@@ -179,8 +179,8 @@ public enum NetworkState {
         return new PacketHandlerInitializer();
     }
 
-    private NetworkState(int j, PacketHandlerInitializer packetHandlerInitializer) {
-        this.stateId = j;
+    private NetworkState(int id, PacketHandlerInitializer packetHandlerInitializer) {
+        this.stateId = id;
         this.packetHandlers = packetHandlerInitializer.packetHandlers;
     }
 

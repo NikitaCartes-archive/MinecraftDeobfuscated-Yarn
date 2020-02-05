@@ -28,8 +28,8 @@ extends ResourceReloader<Summary> {
         super(prepareExecutor2, applyExecutor2, manager, listeners, (synchronizer, resourceManager, resourceReloadListener, prepareExecutor, applyExecutor) -> {
             AtomicLong atomicLong = new AtomicLong();
             AtomicLong atomicLong2 = new AtomicLong();
-            ProfilerSystem profilerSystem = new ProfilerSystem(Util.getMeasuringTimeNano(), () -> 0, false);
-            ProfilerSystem profilerSystem2 = new ProfilerSystem(Util.getMeasuringTimeNano(), () -> 0, false);
+            ProfilerSystem profilerSystem = new ProfilerSystem(Util.nanoTimeSupplier, () -> 0, false);
+            ProfilerSystem profilerSystem2 = new ProfilerSystem(Util.nanoTimeSupplier, () -> 0, false);
             CompletableFuture<Void> completableFuture = resourceReloadListener.reload(synchronizer, resourceManager, profilerSystem, profilerSystem2, runnable -> prepareExecutor.execute(() -> {
                 long l = Util.getMeasuringTimeNano();
                 runnable.run();

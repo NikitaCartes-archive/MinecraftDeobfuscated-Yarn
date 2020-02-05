@@ -87,7 +87,7 @@ public enum Instrument implements StringIdentifiable
         if (material == Material.STONE) {
             return BASEDRUM;
         }
-        if (material == Material.AGGREGATE) {
+        if (material == Material.SAND) {
             return SNARE;
         }
         if (material == Material.GLASS) {

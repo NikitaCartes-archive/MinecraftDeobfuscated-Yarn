@@ -129,8 +129,7 @@ extends AbstractRailBlock {
         if (oldState.getBlock() == state.getBlock()) {
             return;
         }
-        super.onBlockAdded(state, world, pos, oldState, moved);
-        this.updatePoweredStatus(world, pos, state);
+        this.updatePoweredStatus(world, pos, this.method_24417(state, world, pos, moved));
     }
 
     @Override

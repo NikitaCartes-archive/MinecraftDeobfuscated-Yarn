@@ -3,10 +3,10 @@
  */
 package net.minecraft.item;
 
+import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CampfireBlock;
-import net.minecraft.block.FireBlock;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.sound.SoundCategory;
@@ -35,7 +35,7 @@ extends Item {
             }
         } else if (world.getBlockState(blockPos = blockPos.offset(context.getSide())).isAir()) {
             this.playUseSound(world, blockPos);
-            world.setBlockState(blockPos, ((FireBlock)Blocks.FIRE).getStateForPosition(world, blockPos));
+            world.setBlockState(blockPos, AbstractFireBlock.getState(world, blockPos));
             bl = true;
         }
         if (bl) {

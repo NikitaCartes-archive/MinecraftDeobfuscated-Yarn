@@ -121,7 +121,7 @@ implements Monster {
 
     @Override
     protected float getSoundVolume() {
-        return 10.0f;
+        return 5.0f;
     }
 
     public static boolean canSpawn(EntityType<GhastEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {

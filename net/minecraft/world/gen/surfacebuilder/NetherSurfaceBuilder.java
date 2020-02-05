@@ -6,6 +6,7 @@ package net.minecraft.world.gen.surfacebuilder;
 import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
+import java.util.stream.IntStream;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -19,7 +20,6 @@ import net.minecraft.world.gen.surfacebuilder.TernarySurfaceConfig;
 public class NetherSurfaceBuilder
 extends SurfaceBuilder<TernarySurfaceConfig> {
     private static final BlockState CAVE_AIR = Blocks.CAVE_AIR.getDefaultState();
-    private static final BlockState NETHERRACK = Blocks.NETHERRACK.getDefaultState();
     private static final BlockState GRAVEL = Blocks.GRAVEL.getDefaultState();
     private static final BlockState GLOWSTONE = Blocks.SOUL_SAND.getDefaultState();
     protected long seed;
@@ -40,12 +40,12 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
         int q = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         int r = -1;
-        BlockState blockState3 = NETHERRACK;
-        BlockState blockState4 = NETHERRACK;
+        BlockState blockState3 = ternarySurfaceConfig.getTopMaterial();
+        BlockState blockState4 = ternarySurfaceConfig.getUnderMaterial();
         for (int s = 127; s >= 0; --s) {
             mutable.set(o, s, p);
             BlockState blockState5 = chunk.getBlockState(mutable);
-            if (blockState5.getBlock() == null || blockState5.isAir()) {
+            if (blockState5.isAir()) {
                 r = -1;
                 continue;
             }
@@ -53,20 +53,20 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
             if (r == -1) {
                 if (q <= 0) {
                     blockState3 = CAVE_AIR;
-                    blockState4 = NETHERRACK;
+                    blockState4 = ternarySurfaceConfig.getUnderMaterial();
                 } else if (s >= n - 4 && s <= n + 1) {
-                    blockState3 = NETHERRACK;
-                    blockState4 = NETHERRACK;
+                    blockState3 = ternarySurfaceConfig.getTopMaterial();
+                    blockState4 = ternarySurfaceConfig.getUnderMaterial();
                     if (bl2) {
                         blockState3 = GRAVEL;
-                        blockState4 = NETHERRACK;
+                        blockState4 = ternarySurfaceConfig.getUnderMaterial();
                     }
                     if (bl) {
                         blockState3 = GLOWSTONE;
                         blockState4 = GLOWSTONE;
                     }
                 }
-                if (s < n && (blockState3 == null || blockState3.isAir())) {
+                if (s < n && blockState3.isAir()) {
                     blockState3 = blockState2;
                 }
                 r = q;
@@ -86,7 +86,7 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
     @Override
     public void initSeed(long seed) {
         if (this.seed != seed || this.noise == null) {
-            this.noise = new OctavePerlinNoiseSampler(new ChunkRandom(seed), 3, 0);
+            this.noise = new OctavePerlinNoiseSampler(new ChunkRandom(seed), IntStream.rangeClosed(-3, 0));
         }
         this.seed = seed;
     }

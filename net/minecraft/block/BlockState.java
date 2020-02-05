@@ -234,7 +234,11 @@ implements State<BlockState> {
     }
 
     public final boolean hasSolidTopSurface(BlockView view, BlockPos pos, Entity entity) {
-        return Block.isFaceFullSquare(this.getCollisionShape(view, pos, EntityContext.of(entity)), Direction.UP);
+        return this.method_24432(view, pos, entity, Direction.UP);
+    }
+
+    public final boolean method_24432(BlockView blockView, BlockPos blockPos, Entity entity, Direction direction) {
+        return Block.isFaceFullSquare(this.getCollisionShape(blockView, blockPos, EntityContext.of(entity)), direction);
     }
 
     public Vec3d getOffsetPos(BlockView view, BlockPos pos) {

@@ -102,19 +102,6 @@ public abstract class VoxelShape {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public double getBeginningCoord(Direction.Axis axis, double from, double to) {
-        int j;
-        Direction.Axis axis2 = AxisCycleDirection.FORWARD.cycle(axis);
-        Direction.Axis axis3 = AxisCycleDirection.BACKWARD.cycle(axis);
-        int i = this.getCoordIndex(axis2, from);
-        int k = this.voxels.getBeginningAxisCoord(axis, i, j = this.getCoordIndex(axis3, to));
-        if (k >= this.voxels.getSize(axis)) {
-            return Double.POSITIVE_INFINITY;
-        }
-        return this.getPointPosition(axis, k);
-    }
-
-    @Environment(value=EnvType.CLIENT)
     public double getEndingCoord(Direction.Axis axis, double from, double to) {
         int j;
         Direction.Axis axis2 = AxisCycleDirection.FORWARD.cycle(axis);

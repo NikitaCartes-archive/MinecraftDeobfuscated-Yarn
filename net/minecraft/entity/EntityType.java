@@ -46,6 +46,7 @@ import net.minecraft.entity.mob.EvokerFangsEntity;
 import net.minecraft.entity.mob.GhastEntity;
 import net.minecraft.entity.mob.GiantEntity;
 import net.minecraft.entity.mob.GuardianEntity;
+import net.minecraft.entity.mob.HoglinEntity;
 import net.minecraft.entity.mob.HuskEntity;
 import net.minecraft.entity.mob.IllusionerEntity;
 import net.minecraft.entity.mob.MagmaCubeEntity;
@@ -247,6 +248,7 @@ public class EntityType<T extends Entity> {
     public static final EntityType<ZombieVillagerEntity> ZOMBIE_VILLAGER = EntityType.register("zombie_villager", Builder.create(ZombieVillagerEntity::new, EntityCategory.MONSTER).setDimensions(0.6f, 1.95f));
     public static final EntityType<PhantomEntity> PHANTOM = EntityType.register("phantom", Builder.create(PhantomEntity::new, EntityCategory.MONSTER).setDimensions(0.9f, 0.5f));
     public static final EntityType<RavagerEntity> RAVAGER = EntityType.register("ravager", Builder.create(RavagerEntity::new, EntityCategory.MONSTER).setDimensions(1.95f, 2.2f));
+    public static final EntityType<HoglinEntity> HOGLIN = EntityType.register("hoglin", Builder.create(HoglinEntity::new, EntityCategory.MONSTER).setDimensions(0.9f, 0.9f));
     public static final EntityType<LightningEntity> LIGHTNING_BOLT = EntityType.register("lightning_bolt", Builder.create(EntityCategory.MISC).disableSaving().setDimensions(0.0f, 0.0f));
     public static final EntityType<PlayerEntity> PLAYER = EntityType.register("player", Builder.create(EntityCategory.MISC).disableSaving().disableSummon().setDimensions(0.6f, 1.8f));
     public static final EntityType<FishingBobberEntity> FISHING_BOBBER = EntityType.register("fishing_bobber", Builder.create(EntityCategory.MISC).disableSaving().disableSummon().setDimensions(0.25f, 0.25f));
@@ -563,9 +565,9 @@ public class EntityType<T extends Entity> {
             if (this.saveable) {
                 try {
                     Schemas.getFixer().getSchema(DataFixUtils.makeKey(SharedConstants.getGameVersion().getWorldVersion())).getChoiceType(TypeReferences.ENTITY_TREE, id);
-                } catch (IllegalStateException illegalStateException) {
+                } catch (IllegalArgumentException illegalArgumentException) {
                     if (SharedConstants.isDevelopment) {
-                        throw illegalStateException;
+                        throw illegalArgumentException;
                     }
                     LOGGER.warn("No data fixer registered for entity {}", (Object)id);
                 }

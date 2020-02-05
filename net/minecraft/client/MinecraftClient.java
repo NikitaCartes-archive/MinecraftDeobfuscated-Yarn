@@ -181,6 +181,8 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
+import net.minecraft.util.TickDurationMonitor;
+import net.minecraft.util.TickTimeTracker;
 import net.minecraft.util.UncaughtExceptionLogger;
 import net.minecraft.util.Unit;
 import net.minecraft.util.UserCache;
@@ -194,7 +196,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.profiler.DisableableProfiler;
+import net.minecraft.util.profiler.DummyProfiler;
 import net.minecraft.util.profiler.ProfileResult;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.profiler.ProfilerTiming;
@@ -258,7 +260,6 @@ WindowEventHandler {
     public final MetricsData metricsData = new MetricsData();
     private final boolean is64Bit;
     private final boolean isDemo;
-    private final DisableableProfiler profiler = new DisableableProfiler(() -> this.renderTickCounter.ticksThisFrame);
     private final ReloadableResourceManager resourceManager;
     private final ClientBuiltinResourcePackProvider builtinPackProvider;
     private final ResourcePackManager<ClientResourcePackProfile> resourcePackManager;
@@ -325,6 +326,11 @@ WindowEventHandler {
     private final Queue<Runnable> renderTaskQueue = Queues.newConcurrentLinkedQueue();
     @Nullable
     private CompletableFuture<Void> resourceReloadFuture;
+    private Profiler profiler = DummyProfiler.INSTANCE;
+    private int trackingTick;
+    private final TickTimeTracker tickTimeTracker = new TickTimeTracker(Util.nanoTimeSupplier, () -> this.trackingTick);
+    @Nullable
+    private ProfileResult tickProfilerResult;
     private String openProfilerSection = "root";
 
     public MinecraftClient(RunArgs args) {
@@ -522,7 +528,13 @@ WindowEventHandler {
                     return;
                 }
                 try {
+                    TickDurationMonitor tickDurationMonitor = TickDurationMonitor.create("Renderer");
+                    boolean bl2 = this.shouldMonitorTickDuration();
+                    this.startMonitor(bl2, tickDurationMonitor);
+                    this.profiler.startTick();
                     this.render(!bl);
+                    this.profiler.endTick();
+                    this.endMonitor(bl2, tickDurationMonitor);
                 } catch (OutOfMemoryError outOfMemoryError) {
                     if (bl) {
                         throw outOfMemoryError;
@@ -784,7 +796,6 @@ WindowEventHandler {
         Runnable runnable;
         this.window.setPhase("Pre render");
         long l = Util.getMeasuringTimeNano();
-        this.profiler.startTick();
         if (this.window.shouldClose()) {
             this.scheduleStop();
         }
@@ -797,20 +808,20 @@ WindowEventHandler {
             runnable.run();
         }
         if (tick) {
-            this.renderTickCounter.beginRenderTick(Util.getMeasuringTimeMs());
+            i = this.renderTickCounter.beginRenderTick(Util.getMeasuringTimeMs());
             this.profiler.push("scheduledExecutables");
             this.runTasks();
             this.profiler.pop();
-        }
-        this.profiler.push("tick");
-        if (tick) {
-            for (i = 0; i < Math.min(10, this.renderTickCounter.ticksThisFrame); ++i) {
+            this.profiler.push("tick");
+            for (int j = 0; j < Math.min(10, i); ++j) {
+                this.profiler.visit("clientTick");
                 this.tick();
             }
+            this.profiler.pop();
         }
         this.mouse.updateMouse();
         this.window.setPhase("Render");
-        this.profiler.swap("sound");
+        this.profiler.push("sound");
         this.soundManager.updateListenerPosition(this.gameRenderer.getCamera());
         this.profiler.pop();
         this.profiler.push("render");
@@ -820,6 +831,7 @@ WindowEventHandler {
         BackgroundRenderer.method_23792();
         this.profiler.push("display");
         RenderSystem.enableTexture();
+        RenderSystem.enableCull();
         this.profiler.pop();
         if (!this.skipGameRender) {
             this.profiler.swap("gameRenderer");
@@ -828,20 +840,18 @@ WindowEventHandler {
             this.toastManager.draw();
             this.profiler.pop();
         }
-        this.profiler.endTick();
-        if (this.options.debugEnabled && this.options.debugProfilerEnabled && !this.options.hudHidden) {
-            this.profiler.getController().enable();
-            this.drawProfilerResults();
-        } else {
-            this.profiler.getController().disable();
+        if (this.tickProfilerResult != null) {
+            this.profiler.push("fpsPie");
+            this.drawProfilerResults(this.tickProfilerResult);
+            this.profiler.pop();
         }
+        this.profiler.push("blit");
         this.framebuffer.endWrite();
         RenderSystem.popMatrix();
         RenderSystem.pushMatrix();
         this.framebuffer.draw(this.window.getFramebufferWidth(), this.window.getFramebufferHeight());
         RenderSystem.popMatrix();
-        this.profiler.startTick();
-        this.profiler.push("updateDisplay");
+        this.profiler.swap("updateDisplay");
         this.window.swapBuffers();
         i = this.getFramerateLimit();
         if ((double)i < Option.FRAMERATE_LIMIT.getMax()) {
@@ -864,6 +874,7 @@ WindowEventHandler {
         long m = Util.getMeasuringTimeNano();
         this.metricsData.pushSample(m - this.lastMetricsSampleTime);
         this.lastMetricsSampleTime = m;
+        this.profiler.push("fpsUpdate");
         while (Util.getMeasuringTimeMs() >= this.nextDebugInfoUpdateTime + 1000L) {
             currentFps = this.fpsCounter;
             Object[] objectArray = new Object[6];
@@ -880,7 +891,34 @@ WindowEventHandler {
             if (this.snooper.isActive()) continue;
             this.snooper.method_5482();
         }
-        this.profiler.endTick();
+        this.profiler.pop();
+    }
+
+    private boolean shouldMonitorTickDuration() {
+        return this.options.debugEnabled && this.options.debugProfilerEnabled && !this.options.hudHidden;
+    }
+
+    private void startMonitor(boolean active, @Nullable TickDurationMonitor monitor) {
+        if (active) {
+            if (!this.tickTimeTracker.isActive()) {
+                this.trackingTick = 0;
+                this.tickTimeTracker.enable();
+            }
+            ++this.trackingTick;
+        } else {
+            this.tickTimeTracker.disable();
+        }
+        this.profiler = TickDurationMonitor.tickProfiler(this.tickTimeTracker.getProfiler(), monitor);
+    }
+
+    private void endMonitor(boolean active, @Nullable TickDurationMonitor monitor) {
+        if (monitor != null) {
+            monitor.endTick();
+        }
+        if (active) {
+            this.tickProfilerResult = this.tickTimeTracker.getResult();
+        }
+        this.profiler = this.tickTimeTracker.getProfiler();
     }
 
     @Override
@@ -923,8 +961,10 @@ WindowEventHandler {
     }
 
     void handleProfilerKeyPress(int digit) {
-        ProfileResult profileResult = this.profiler.getController().getResults();
-        List<ProfilerTiming> list = profileResult.getTimings(this.openProfilerSection);
+        if (this.tickProfilerResult == null) {
+            return;
+        }
+        List<ProfilerTiming> list = this.tickProfilerResult.getTimings(this.openProfilerSection);
         if (list.isEmpty()) {
             return;
         }
@@ -942,12 +982,8 @@ WindowEventHandler {
         }
     }
 
-    private void drawProfilerResults() {
+    private void drawProfilerResults(ProfileResult profileResult) {
         int m;
-        if (!this.profiler.getController().isEnabled()) {
-            return;
-        }
-        ProfileResult profileResult = this.profiler.getController().getResults();
         List<ProfilerTiming> list = profileResult.getTimings(this.openProfilerSection);
         ProfilerTiming profilerTiming = list.remove(0);
         RenderSystem.clear(256, IS_SYSTEM_MAC);
@@ -1400,6 +1436,7 @@ WindowEventHandler {
         }
         LevelLoadingScreen levelLoadingScreen = new LevelLoadingScreen(this.worldGenProgressTracker.get());
         this.openScreen(levelLoadingScreen);
+        this.profiler.push("waitForServer");
         while (!this.server.isLoading()) {
             levelLoadingScreen.tick();
             this.render(false);
@@ -1412,6 +1449,7 @@ WindowEventHandler {
             MinecraftClient.printCrashReport(this.crashReport);
             return;
         }
+        this.profiler.pop();
         SocketAddress socketAddress = this.server.getNetworkIo().bindLocal();
         ClientConnection clientConnection = ClientConnection.connectLocal(socketAddress);
         clientConnection.setPacketListener(new ClientLoginNetworkHandler(clientConnection, this, null, text -> {}));
@@ -1455,9 +1493,11 @@ WindowEventHandler {
         this.reset(screen);
         if (this.world != null) {
             if (integratedServer != null) {
+                this.profiler.push("waitForServer");
                 while (!integratedServer.isStopping()) {
                     this.render(false);
                 }
+                this.profiler.pop();
             }
             this.builtinPackProvider.clear();
             this.inGameHud.clear();
@@ -1471,12 +1511,14 @@ WindowEventHandler {
     }
 
     private void reset(Screen screen) {
+        this.profiler.push("forcedTick");
         this.musicTracker.stop();
         this.soundManager.stopAll();
         this.cameraEntity = null;
         this.connection = null;
         this.openScreen(screen);
         this.render(false);
+        this.profiler.pop();
     }
 
     private void setWorld(@Nullable ClientWorld clientWorld) {

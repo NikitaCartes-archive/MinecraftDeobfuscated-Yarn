@@ -84,13 +84,12 @@ implements BlockEntityProvider {
         if (blockState.hasComparatorOutput()) {
             i = blockState.getComparatorOutput(world, blockPos);
         } else if (i < 15 && blockState.isSimpleFullBlock(world, blockPos)) {
-            ItemFrameEntity itemFrameEntity;
-            blockState = world.getBlockState(blockPos = blockPos.offset(direction));
-            if (blockState.hasComparatorOutput()) {
-                i = blockState.getComparatorOutput(world, blockPos);
-            } else if (blockState.isAir() && (itemFrameEntity = this.getAttachedItemFrame(world, direction, blockPos)) != null) {
-                i = itemFrameEntity.getComparatorPower();
-            }
+            blockPos = blockPos.offset(direction);
+            blockState = world.getBlockState(blockPos);
+            ItemFrameEntity itemFrameEntity = this.getAttachedItemFrame(world, direction, blockPos);
+            int j = itemFrameEntity == null ? 0 : itemFrameEntity.getComparatorPower();
+            int k = blockState.hasComparatorOutput() ? blockState.getComparatorOutput(world, blockPos) : 0;
+            i = Math.max(Math.max(j, k), i);
         }
         return i;
     }

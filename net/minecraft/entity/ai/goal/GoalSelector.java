@@ -8,6 +8,7 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.WeightedGoal;
@@ -32,12 +33,12 @@ public class GoalSelector {
     };
     private final Map<Goal.Control, WeightedGoal> goalsByControl = new EnumMap<Goal.Control, WeightedGoal>(Goal.Control.class);
     private final Set<WeightedGoal> goals = Sets.newLinkedHashSet();
-    private final Profiler profiler;
+    private final Supplier<Profiler> profiler;
     private final EnumSet<Goal.Control> disabledControls = EnumSet.noneOf(Goal.Control.class);
     private int timeInterval = 3;
 
-    public GoalSelector(Profiler profiler) {
-        this.profiler = profiler;
+    public GoalSelector(Supplier<Profiler> supplier) {
+        this.profiler = supplier;
     }
 
     public void add(int weight, Goal goal) {
@@ -50,7 +51,8 @@ public class GoalSelector {
     }
 
     public void tick() {
-        this.profiler.push("goalCleanup");
+        Profiler profiler = this.profiler.get();
+        profiler.push("goalCleanup");
         this.getRunningGoals().filter(weightedGoal -> {
             if (!weightedGoal.isRunning()) return true;
             if (weightedGoal.getControls().stream().anyMatch(this.disabledControls::contains)) return true;
@@ -62,8 +64,8 @@ public class GoalSelector {
                 this.goalsByControl.remove(control);
             }
         });
-        this.profiler.pop();
-        this.profiler.push("goalUpdate");
+        profiler.pop();
+        profiler.push("goalUpdate");
         this.goals.stream().filter(weightedGoal -> !weightedGoal.isRunning()).filter(weightedGoal -> weightedGoal.getControls().stream().noneMatch(this.disabledControls::contains)).filter(weightedGoal -> weightedGoal.getControls().stream().allMatch(control -> this.goalsByControl.getOrDefault(control, activeGoal).canBeReplacedBy((WeightedGoal)weightedGoal))).filter(WeightedGoal::canStart).forEach(weightedGoal -> {
             weightedGoal.getControls().forEach(control -> {
                 WeightedGoal weightedGoal2 = this.goalsByControl.getOrDefault(control, activeGoal);
@@ -72,10 +74,10 @@ public class GoalSelector {
             });
             weightedGoal.start();
         });
-        this.profiler.pop();
-        this.profiler.push("goalTick");
+        profiler.pop();
+        profiler.push("goalTick");
         this.getRunningGoals().forEach(WeightedGoal::tick);
-        this.profiler.pop();
+        profiler.pop();
     }
 
     public Stream<WeightedGoal> getRunningGoals() {

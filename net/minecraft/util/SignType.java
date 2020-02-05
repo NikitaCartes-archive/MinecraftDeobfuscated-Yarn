@@ -17,6 +17,8 @@ public class SignType {
     public static final SignType ACACIA = SignType.register(new SignType("acacia"));
     public static final SignType JUNGLE = SignType.register(new SignType("jungle"));
     public static final SignType DARK_OAK = SignType.register(new SignType("dark_oak"));
+    public static final SignType CRIMSON = SignType.register(new SignType("crimson"));
+    public static final SignType WARPED = SignType.register(new SignType("warped"));
     private final String name;
 
     protected SignType(String name) {

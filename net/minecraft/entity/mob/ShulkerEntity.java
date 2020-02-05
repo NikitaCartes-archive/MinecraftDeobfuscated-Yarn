@@ -35,6 +35,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.Monster;
+import net.minecraft.entity.mob.ShulkerLidCollisions;
 import net.minecraft.entity.passive.GolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
@@ -201,11 +202,9 @@ implements Monster {
             this.prevBodyYaw = f;
             this.field_7340 = 0;
         } else if (!this.world.isClient) {
-            BlockPos blockPos3;
-            BlockPos blockPos2;
+            Direction direction;
             BlockState blockState = this.world.getBlockState(blockPos);
             if (!blockState.isAir()) {
-                Direction direction;
                 if (blockState.getBlock() == Blocks.MOVING_PISTON) {
                     direction = blockState.get(PistonBlock.FACING);
                     if (this.world.isAir(blockPos.offset(direction))) {
@@ -226,21 +225,13 @@ implements Monster {
                     this.method_7127();
                 }
             }
-            if (!this.world.isTopSolid(blockPos2 = blockPos.offset(this.getAttachedFace()), this)) {
-                boolean bl = false;
-                for (Direction direction2 : Direction.values()) {
-                    blockPos2 = blockPos.offset(direction2);
-                    if (!this.world.isTopSolid(blockPos2, this)) continue;
+            if (!this.method_24350(blockPos, direction = this.getAttachedFace())) {
+                Direction direction2 = this.method_24351(blockPos);
+                if (direction2 != null) {
                     this.dataTracker.set(ATTACHED_FACE, direction2);
-                    bl = true;
-                    break;
-                }
-                if (!bl) {
+                } else {
                     this.method_7127();
                 }
-            }
-            if (this.world.isTopSolid(blockPos3 = blockPos.offset(this.getAttachedFace().getOpposite()), this)) {
-                this.method_7127();
             }
         }
         f = (float)this.getPeekAmount() * 0.01f;
@@ -298,22 +289,29 @@ implements Monster {
         }
     }
 
+    @Nullable
+    protected Direction method_24351(BlockPos blockPos) {
+        for (Direction direction : Direction.values()) {
+            if (!this.method_24350(blockPos, direction)) continue;
+            return direction;
+        }
+        return null;
+    }
+
+    private boolean method_24350(BlockPos blockPos, Direction direction) {
+        return this.world.method_24368(blockPos.offset(direction), this, direction.getOpposite()) && this.world.doesNotCollide(this, ShulkerLidCollisions.getLidCollisionBox(blockPos, direction.getOpposite()));
+    }
+
     protected boolean method_7127() {
         if (this.isAiDisabled() || !this.isAlive()) {
             return true;
         }
         BlockPos blockPos = new BlockPos(this);
         for (int i = 0; i < 5; ++i) {
+            Direction direction;
             BlockPos blockPos2 = blockPos.add(8 - this.random.nextInt(17), 8 - this.random.nextInt(17), 8 - this.random.nextInt(17));
-            if (blockPos2.getY() <= 0 || !this.world.isAir(blockPos2) || !this.world.getWorldBorder().contains(blockPos2) || !this.world.doesNotCollide(this, new Box(blockPos2))) continue;
-            boolean bl = false;
-            for (Direction direction : Direction.values()) {
-                if (!this.world.isTopSolid(blockPos2.offset(direction), this)) continue;
-                this.dataTracker.set(ATTACHED_FACE, direction);
-                bl = true;
-                break;
-            }
-            if (!bl) continue;
+            if (blockPos2.getY() <= 0 || !this.world.isAir(blockPos2) || !this.world.getWorldBorder().contains(blockPos2) || !this.world.doesNotCollide(this, new Box(blockPos2)) || (direction = this.method_24351(blockPos2)) == null) continue;
+            this.dataTracker.set(ATTACHED_FACE, direction);
             this.playSound(SoundEvents.ENTITY_SHULKER_TELEPORT, 1.0f, 1.0f);
             this.dataTracker.set(ATTACHED_BLOCK, Optional.of(blockPos2));
             this.dataTracker.set(PEEK_AMOUNT, (byte)0);

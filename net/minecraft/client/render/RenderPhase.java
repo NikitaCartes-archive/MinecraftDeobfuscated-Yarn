@@ -84,9 +84,9 @@ public abstract class RenderPhase {
     protected static final DiffuseLighting DISABLE_DIFFUSE_LIGHTING = new DiffuseLighting(false);
     protected static final Cull ENABLE_CULLING = new Cull(true);
     protected static final Cull DISABLE_CULLING = new Cull(false);
-    protected static final DepthTest ALWAYS_DEPTH_TEST = new DepthTest(519);
-    protected static final DepthTest EQUAL_DEPTH_TEST = new DepthTest(514);
-    protected static final DepthTest LEQUAL_DEPTH_TEST = new DepthTest(515);
+    protected static final DepthTest ALWAYS_DEPTH_TEST = new DepthTest("always", 519);
+    protected static final DepthTest EQUAL_DEPTH_TEST = new DepthTest("==", 514);
+    protected static final DepthTest LEQUAL_DEPTH_TEST = new DepthTest("<=", 515);
     protected static final WriteMaskState ALL_MASK = new WriteMaskState(true, true);
     protected static final WriteMaskState COLOR_MASK = new WriteMaskState(true, false);
     protected static final WriteMaskState DEPTH_MASK = new WriteMaskState(false, true);
@@ -98,6 +98,10 @@ public abstract class RenderPhase {
         RenderSystem.polygonOffset(0.0f, 0.0f);
         RenderSystem.disablePolygonOffset();
     });
+    protected static final Layering field_22241 = new Layering("shadow_layering", () -> {
+        RenderSystem.pushMatrix();
+        RenderSystem.scalef(0.99975586f, 0.99975586f, 0.99975586f);
+    }, RenderSystem::popMatrix);
     protected static final Layering PROJECTION_LAYERING = new Layering("projection_layering", () -> {
         RenderSystem.matrixMode(5889);
         RenderSystem.pushMatrix();
@@ -153,6 +157,10 @@ public abstract class RenderPhase {
         return this.name.hashCode();
     }
 
+    public String toString() {
+        return this.name;
+    }
+
     private static void setupGlintTexturing(float scale) {
         RenderSystem.matrixMode(5890);
         RenderSystem.pushMatrix();
@@ -172,7 +180,7 @@ public abstract class RenderPhase {
         private final OptionalDouble width;
 
         public LineWidth(OptionalDouble optionalDouble) {
-            super("alpha", () -> {
+            super("line_width", () -> {
                 if (!Objects.equals(optionalDouble, OptionalDouble.of(1.0))) {
                     if (optionalDouble.isPresent()) {
                         RenderSystem.lineWidth((float)optionalDouble.getAsDouble());
@@ -205,6 +213,11 @@ public abstract class RenderPhase {
         @Override
         public int hashCode() {
             return Objects.hash(super.hashCode(), this.width);
+        }
+
+        @Override
+        public String toString() {
+            return this.name + '[' + (this.width.isPresent() ? Double.valueOf(this.width.getAsDouble()) : "window_scale") + ']';
         }
     }
 
@@ -274,26 +287,33 @@ public abstract class RenderPhase {
         public int hashCode() {
             return Objects.hash(this.color, this.depth);
         }
+
+        @Override
+        public String toString() {
+            return this.name + "[writeColor=" + this.color + ", writeDepth=" + this.depth + ']';
+        }
     }
 
     @Environment(value=EnvType.CLIENT)
     public static class DepthTest
     extends RenderPhase {
+        private final String field_22242;
         private final int func;
 
-        public DepthTest(int func) {
+        public DepthTest(String string, int i) {
             super("depth_test", () -> {
-                if (func != 519) {
+                if (i != 519) {
                     RenderSystem.enableDepthTest();
-                    RenderSystem.depthFunc(func);
+                    RenderSystem.depthFunc(i);
                 }
             }, () -> {
-                if (func != 519) {
+                if (i != 519) {
                     RenderSystem.disableDepthTest();
                     RenderSystem.depthFunc(515);
                 }
             });
-            this.func = func;
+            this.field_22242 = string;
+            this.func = i;
         }
 
         @Override
@@ -312,6 +332,11 @@ public abstract class RenderPhase {
         public int hashCode() {
             return Integer.hashCode(this.func);
         }
+
+        @Override
+        public String toString() {
+            return this.name + '[' + this.field_22242 + ']';
+        }
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -319,12 +344,12 @@ public abstract class RenderPhase {
     extends Toggleable {
         public Cull(boolean culling) {
             super("cull", () -> {
-                if (culling) {
-                    RenderSystem.enableCull();
+                if (!culling) {
+                    RenderSystem.disableCull();
                 }
             }, () -> {
-                if (culling) {
-                    RenderSystem.disableCull();
+                if (!culling) {
+                    RenderSystem.enableCull();
                 }
             }, culling);
         }
@@ -403,6 +428,11 @@ public abstract class RenderPhase {
         @Override
         public int hashCode() {
             return Boolean.hashCode(this.enabled);
+        }
+
+        @Override
+        public String toString() {
+            return this.name + '[' + this.enabled + ']';
         }
     }
 
@@ -542,6 +572,11 @@ public abstract class RenderPhase {
             return this.id.hashCode();
         }
 
+        @Override
+        public String toString() {
+            return this.name + '[' + this.id + "(blur=" + this.bilinear + ", mipmap=" + this.mipmap + ")]";
+        }
+
         protected Optional<Identifier> getId() {
             return this.id;
         }
@@ -572,6 +607,11 @@ public abstract class RenderPhase {
         @Override
         public int hashCode() {
             return Boolean.hashCode(this.smooth);
+        }
+
+        @Override
+        public String toString() {
+            return this.name + '[' + (this.smooth ? "smooth" : "flat") + ']';
         }
     }
 
@@ -612,6 +652,11 @@ public abstract class RenderPhase {
         @Override
         public int hashCode() {
             return Objects.hash(super.hashCode(), Float.valueOf(this.alpha));
+        }
+
+        @Override
+        public String toString() {
+            return this.name + '[' + this.alpha + ']';
         }
     }
 

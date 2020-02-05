@@ -5,6 +5,8 @@ package net.minecraft.block.entity;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -100,7 +102,7 @@ Tickable {
             return 4;
         }
     };
-    private final Map<Identifier, Integer> recipesUsed = Maps.newHashMap();
+    private final Object2IntOpenHashMap<Identifier> recipesUsed = new Object2IntOpenHashMap();
     protected final RecipeType<? extends AbstractCookingRecipe> recipeType;
 
     protected AbstractFurnaceBlockEntity(BlockEntityType<?> blockEntityType, RecipeType<? extends AbstractCookingRecipe> recipeType) {
@@ -196,11 +198,9 @@ Tickable {
         this.cookTime = tag.getShort("CookTime");
         this.cookTimeTotal = tag.getShort("CookTimeTotal");
         this.fuelTime = this.getFuelTime(this.inventory.get(1));
-        int i = tag.getShort("RecipesUsedSize");
-        for (int j = 0; j < i; ++j) {
-            Identifier identifier = new Identifier(tag.getString("RecipeLocation" + j));
-            int k = tag.getInt("RecipeAmount" + j);
-            this.recipesUsed.put(identifier, k);
+        CompoundTag compoundTag = tag.getCompound("RecipesUsed");
+        for (String string : compoundTag.getKeys()) {
+            this.recipesUsed.put(new Identifier(string), compoundTag.getInt(string));
         }
     }
 
@@ -211,13 +211,9 @@ Tickable {
         tag.putShort("CookTime", (short)this.cookTime);
         tag.putShort("CookTimeTotal", (short)this.cookTimeTotal);
         Inventories.toTag(tag, this.inventory);
-        tag.putShort("RecipesUsedSize", (short)this.recipesUsed.size());
-        int i = 0;
-        for (Map.Entry<Identifier, Integer> entry : this.recipesUsed.entrySet()) {
-            tag.putString("RecipeLocation" + i, entry.getKey().toString());
-            tag.putInt("RecipeAmount" + i, entry.getValue());
-            ++i;
-        }
+        CompoundTag compoundTag = new CompoundTag();
+        this.recipesUsed.forEach((identifier, integer) -> compoundTag.putInt(identifier.toString(), (int)integer));
+        tag.put("RecipesUsed", compoundTag);
         return tag;
     }
 
@@ -422,7 +418,8 @@ Tickable {
     @Override
     public void setLastRecipe(@Nullable Recipe<?> recipe) {
         if (recipe != null) {
-            this.recipesUsed.compute(recipe.getId(), (identifier, integer) -> 1 + (integer == null ? 0 : integer));
+            Identifier identifier = recipe.getId();
+            this.recipesUsed.addTo(identifier, 1);
         }
     }
 
@@ -438,10 +435,10 @@ Tickable {
 
     public void dropExperience(PlayerEntity player) {
         ArrayList<Recipe<?>> list = Lists.newArrayList();
-        for (Map.Entry<Identifier, Integer> entry : this.recipesUsed.entrySet()) {
-            player.world.getRecipeManager().get(entry.getKey()).ifPresent(recipe -> {
+        for (Object2IntMap.Entry entry : this.recipesUsed.object2IntEntrySet()) {
+            player.world.getRecipeManager().get((Identifier)entry.getKey()).ifPresent(recipe -> {
                 list.add((Recipe<?>)recipe);
-                AbstractFurnaceBlockEntity.dropExperience(player, (Integer)entry.getValue(), ((AbstractCookingRecipe)recipe).getExperience());
+                AbstractFurnaceBlockEntity.dropExperience(player, entry.getIntValue(), ((AbstractCookingRecipe)recipe).getExperience());
             });
         }
         player.unlockRecipes(list);

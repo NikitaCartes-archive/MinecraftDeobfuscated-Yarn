@@ -60,7 +60,7 @@ extends HostileEntity {
 
     @Override
     protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-        return 0.1f;
+        return 0.13f;
     }
 
     @Override

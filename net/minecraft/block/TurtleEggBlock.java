@@ -159,10 +159,10 @@ extends Block {
         if (entity instanceof TurtleEntity) {
             return false;
         }
-        if (entity instanceof LivingEntity && !(entity instanceof PlayerEntity)) {
-            return world.getGameRules().getBoolean(GameRules.MOB_GRIEFING);
+        if (entity instanceof LivingEntity) {
+            return entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.MOB_GRIEFING);
         }
-        return true;
+        return false;
     }
 }
 

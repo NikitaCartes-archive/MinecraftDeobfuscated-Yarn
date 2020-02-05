@@ -5,6 +5,7 @@ package net.minecraft.block.dispenser;
 
 import java.util.List;
 import java.util.Random;
+import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.BeehiveBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -319,7 +320,7 @@ public interface DispenserBehavior {
                 BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
                 BlockState blockState = world.getBlockState(blockPos);
                 if (FlintAndSteelItem.canIgnite(blockState, world, blockPos)) {
-                    world.setBlockState(blockPos, Blocks.FIRE.getDefaultState());
+                    world.setBlockState(blockPos, AbstractFireBlock.getState(world, blockPos));
                 } else if (FlintAndSteelItem.isIgnitable(blockState)) {
                     world.setBlockState(blockPos, (BlockState)blockState.with(Properties.LIT, true));
                 } else if (blockState.getBlock() instanceof TntBlock) {

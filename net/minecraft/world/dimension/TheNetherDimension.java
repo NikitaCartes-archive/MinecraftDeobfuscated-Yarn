@@ -3,6 +3,7 @@
  */
 package net.minecraft.world.dimension;
 
+import com.google.common.collect.ImmutableSet;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
@@ -12,6 +13,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.source.BiomeSourceType;
+import net.minecraft.world.biome.source.MultiNoiseBiomeSourceConfig;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.dimension.DimensionType;
@@ -22,8 +24,6 @@ import org.jetbrains.annotations.Nullable;
 
 public class TheNetherDimension
 extends Dimension {
-    private static final Vec3d field_21216 = new Vec3d(0.2f, 0.03f, 0.03f);
-
     public TheNetherDimension(World world, DimensionType type) {
         super(world, type, 0.1f);
         this.waterVaporizes = true;
@@ -32,8 +32,8 @@ extends Dimension {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public Vec3d getFogColor(float skyAngle, float tickDelta) {
-        return field_21216;
+    public Vec3d modifyFogColor(int fogColor, float tickDelta) {
+        return Vec3d.unpackRgb(fogColor);
     }
 
     @Override
@@ -41,7 +41,8 @@ extends Dimension {
         CavesChunkGeneratorConfig cavesChunkGeneratorConfig = ChunkGeneratorType.CAVES.createSettings();
         cavesChunkGeneratorConfig.setDefaultBlock(Blocks.NETHERRACK.getDefaultState());
         cavesChunkGeneratorConfig.setDefaultFluid(Blocks.LAVA.getDefaultState());
-        return ChunkGeneratorType.CAVES.create(this.world, BiomeSourceType.FIXED.applyConfig(BiomeSourceType.FIXED.getConfig(this.world.getLevelProperties()).setBiome(Biomes.NETHER)), cavesChunkGeneratorConfig);
+        MultiNoiseBiomeSourceConfig multiNoiseBiomeSourceConfig = BiomeSourceType.MULTI_NOISE.getConfig(this.world.getLevelProperties()).withBiomes(ImmutableSet.of(Biomes.NETHER_WASTES, Biomes.SOUL_SAND_VALLEY, Biomes.CRIMSON_FOREST, Biomes.WARPED_FOREST));
+        return ChunkGeneratorType.CAVES.create(this.world, BiomeSourceType.MULTI_NOISE.applyConfig(multiNoiseBiomeSourceConfig), cavesChunkGeneratorConfig);
     }
 
     @Override

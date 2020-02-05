@@ -10,6 +10,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.MushroomBlock;
 import net.minecraft.block.SweetBerryBushBlock;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
@@ -40,6 +41,7 @@ import net.minecraft.world.gen.feature.DiskFeatureConfig;
 import net.minecraft.world.gen.feature.EmeraldOreFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
+import net.minecraft.world.gen.feature.HugeFungiFeatureConfig;
 import net.minecraft.world.gen.feature.HugeMushroomFeatureConfig;
 import net.minecraft.world.gen.feature.MegaTreeFeatureConfig;
 import net.minecraft.world.gen.feature.MineshaftFeature;
@@ -126,7 +128,10 @@ public class DefaultBiomeFeatures {
     private static final BlockState PUMPKIN = Blocks.PUMPKIN.getDefaultState();
     private static final BlockState SWEET_BERRY_BUSH = (BlockState)Blocks.SWEET_BERRY_BUSH.getDefaultState().with(SweetBerryBushBlock.AGE, 3);
     private static final BlockState FIRE = Blocks.FIRE.getDefaultState();
+    private static final BlockState SOUL_FIRE = Blocks.SOUL_FIRE.getDefaultState();
     private static final BlockState NETHERRACK = Blocks.NETHERRACK.getDefaultState();
+    private static final BlockState SOUL_SOIL = Blocks.SOUL_SOIL.getDefaultState();
+    private static final BlockState CRIMSON_ROOTS = Blocks.CRIMSON_ROOTS.getDefaultState();
     private static final BlockState LILY_PAD = Blocks.LILY_PAD.getDefaultState();
     private static final BlockState SNOW = Blocks.SNOW.getDefaultState();
     private static final BlockState JACK_O_LANTERN = Blocks.JACK_O_LANTERN.getDefaultState();
@@ -136,6 +141,12 @@ public class DefaultBiomeFeatures {
     private static final BlockState RED_MUSHROOM_BLOCK = (BlockState)Blocks.RED_MUSHROOM_BLOCK.getDefaultState().with(MushroomBlock.DOWN, false);
     private static final BlockState BROWN_MUSHROOM_BLOCK = (BlockState)((BlockState)Blocks.BROWN_MUSHROOM_BLOCK.getDefaultState().with(MushroomBlock.UP, true)).with(MushroomBlock.DOWN, false);
     private static final BlockState MUSHROOM_BLOCK = (BlockState)((BlockState)Blocks.MUSHROOM_STEM.getDefaultState().with(MushroomBlock.UP, false)).with(MushroomBlock.DOWN, false);
+    private static final BlockState NETHER_QUARTZ_ORE = Blocks.NETHER_QUARTZ_ORE.getDefaultState();
+    private static final BlockState WARPED_STEM = Blocks.WARPED_STEM.getDefaultState();
+    private static final BlockState WARPED_WART_BLOCK = Blocks.WARPED_WART_BLOCK.getDefaultState();
+    private static final BlockState NETHER_WART_BLOCK = Blocks.NETHER_WART_BLOCK.getDefaultState();
+    private static final BlockState CRIMSON_STEM = Blocks.CRIMSON_STEM.getDefaultState();
+    private static final BlockState SHROOMLIGHT = Blocks.SHROOMLIGHT.getDefaultState();
     public static final BranchedTreeFeatureConfig OAK_TREE_CONFIG = new BranchedTreeFeatureConfig.Builder(new SimpleBlockStateProvider(OAK_LOG), new SimpleBlockStateProvider(OAK_LEAVES), new BlobFoliagePlacer(2, 0)).baseHeight(4).heightRandA(2).foliageHeight(3).noVines().build();
     public static final BranchedTreeFeatureConfig JUNGLE_TREE_CONFIG = new BranchedTreeFeatureConfig.Builder(new SimpleBlockStateProvider(JUNGLE_LOG), new SimpleBlockStateProvider(JUNGLE_LEAVES), new BlobFoliagePlacer(2, 0)).baseHeight(4).heightRandA(8).foliageHeight(3).treeDecorators(ImmutableList.of(new CocoaBeansTreeDecorator(0.2f), new TrunkVineTreeDecorator(), new LeaveVineTreeDecorator())).noVines().build();
     public static final BranchedTreeFeatureConfig JUNGLE_SAPLING_TREE_CONFIG = new BranchedTreeFeatureConfig.Builder(new SimpleBlockStateProvider(JUNGLE_LOG), new SimpleBlockStateProvider(JUNGLE_LEAVES), new BlobFoliagePlacer(2, 0)).baseHeight(4).heightRandA(8).foliageHeight(3).noVines().build();
@@ -173,9 +184,11 @@ public class DefaultBiomeFeatures {
     public static final RandomPatchFeatureConfig PUMPKIN_PATCH_CONFIG = new RandomPatchFeatureConfig.Builder(new SimpleBlockStateProvider(PUMPKIN), new SimpleBlockPlacer()).tries(64).whitelist(ImmutableSet.of(GRASS_BLOCK.getBlock())).cannotProject().build();
     public static final RandomPatchFeatureConfig SWEET_BERRY_BUSH_CONFIG = new RandomPatchFeatureConfig.Builder(new SimpleBlockStateProvider(SWEET_BERRY_BUSH), new SimpleBlockPlacer()).tries(64).whitelist(ImmutableSet.of(GRASS_BLOCK.getBlock())).cannotProject().build();
     public static final RandomPatchFeatureConfig NETHER_FIRE_CONFIG = new RandomPatchFeatureConfig.Builder(new SimpleBlockStateProvider(FIRE), new SimpleBlockPlacer()).tries(64).whitelist(ImmutableSet.of(NETHERRACK.getBlock())).cannotProject().build();
+    public static final RandomPatchFeatureConfig SOUL_FIRE_CONFIG = new RandomPatchFeatureConfig.Builder(new SimpleBlockStateProvider(SOUL_FIRE), new SimpleBlockPlacer()).tries(64).whitelist(ImmutableSet.of(SOUL_SOIL.getBlock())).cannotProject().build();
     public static final RandomPatchFeatureConfig LILY_PAD_CONFIG = new RandomPatchFeatureConfig.Builder(new SimpleBlockStateProvider(LILY_PAD), new SimpleBlockPlacer()).tries(10).build();
     public static final RandomPatchFeatureConfig RED_MUSHROOM_CONFIG = new RandomPatchFeatureConfig.Builder(new SimpleBlockStateProvider(RED_MUSHROOM), new SimpleBlockPlacer()).tries(64).cannotProject().build();
     public static final RandomPatchFeatureConfig BROWN_MUSHROOM_CONFIG = new RandomPatchFeatureConfig.Builder(new SimpleBlockStateProvider(BROWN_MUSHROOM), new SimpleBlockPlacer()).tries(64).cannotProject().build();
+    public static final RandomPatchFeatureConfig SOUL_SAND_CRIMSON_ROOTS_CONFIG = new RandomPatchFeatureConfig.Builder(new SimpleBlockStateProvider(CRIMSON_ROOTS), new SimpleBlockPlacer()).tries(64).cannotProject().build();
     public static final RandomPatchFeatureConfig LILAC_CONFIG = new RandomPatchFeatureConfig.Builder(new SimpleBlockStateProvider(LILAC), new DoublePlantPlacer()).tries(64).cannotProject().build();
     public static final RandomPatchFeatureConfig ROSE_BUSH_CONFIG = new RandomPatchFeatureConfig.Builder(new SimpleBlockStateProvider(ROSE_BUSH), new DoublePlantPlacer()).tries(64).cannotProject().build();
     public static final RandomPatchFeatureConfig PEONY_CONFIG = new RandomPatchFeatureConfig.Builder(new SimpleBlockStateProvider(PEONY), new DoublePlantPlacer()).tries(64).cannotProject().build();
@@ -189,12 +202,19 @@ public class DefaultBiomeFeatures {
     public static final BlockPileFeatureConfig MELON_PILE_CONFIG = new BlockPileFeatureConfig(new SimpleBlockStateProvider(MELON));
     public static final BlockPileFeatureConfig PUMPKIN_PILE_CONFIG = new BlockPileFeatureConfig(new WeightedBlockStateProvider().addState(PUMPKIN, 19).addState(JACK_O_LANTERN, 1));
     public static final BlockPileFeatureConfig BLUE_ICE_PILE_CONFIG = new BlockPileFeatureConfig(new WeightedBlockStateProvider().addState(BLUE_ICE, 1).addState(PACKED_ICE, 5));
-    public static final SpringFeatureConfig WATER_SPRING_CONFIG = new SpringFeatureConfig(Fluids.WATER.getDefaultState(), true, 4, 1, ImmutableSet.of(Blocks.STONE, Blocks.GRANITE, Blocks.DIORITE, Blocks.ANDESITE));
-    public static final SpringFeatureConfig LAVA_SPRING_CONFIG = new SpringFeatureConfig(Fluids.LAVA.getDefaultState(), true, 4, 1, ImmutableSet.of(Blocks.STONE, Blocks.GRANITE, Blocks.DIORITE, Blocks.ANDESITE));
-    public static final SpringFeatureConfig NETHER_SPRING_CONFIG = new SpringFeatureConfig(Fluids.LAVA.getDefaultState(), false, 4, 1, ImmutableSet.of(Blocks.NETHERRACK));
-    public static final SpringFeatureConfig ENCLOSED_NETHER_SPRING_CONFIG = new SpringFeatureConfig(Fluids.LAVA.getDefaultState(), false, 5, 0, ImmutableSet.of(Blocks.NETHERRACK));
+    public static final FluidState WATER_FLUID = Fluids.WATER.getDefaultState();
+    public static final FluidState LAVA_FLUID = Fluids.LAVA.getDefaultState();
+    public static final SpringFeatureConfig WATER_SPRING_CONFIG = new SpringFeatureConfig(WATER_FLUID, true, 4, 1, ImmutableSet.of(Blocks.STONE, Blocks.GRANITE, Blocks.DIORITE, Blocks.ANDESITE));
+    public static final SpringFeatureConfig LAVA_SPRING_CONFIG = new SpringFeatureConfig(LAVA_FLUID, true, 4, 1, ImmutableSet.of(Blocks.STONE, Blocks.GRANITE, Blocks.DIORITE, Blocks.ANDESITE));
+    public static final SpringFeatureConfig NETHER_SPRING_CONFIG = new SpringFeatureConfig(LAVA_FLUID, false, 4, 1, ImmutableSet.of(Blocks.NETHERRACK));
+    public static final SpringFeatureConfig ENCLOSED_NETHER_SPRING_CONFIG = new SpringFeatureConfig(LAVA_FLUID, false, 5, 0, ImmutableSet.of(Blocks.NETHERRACK));
     public static final HugeMushroomFeatureConfig HUGE_RED_MUSHROOM_CONFIG = new HugeMushroomFeatureConfig(new SimpleBlockStateProvider(RED_MUSHROOM_BLOCK), new SimpleBlockStateProvider(MUSHROOM_BLOCK), 2);
     public static final HugeMushroomFeatureConfig HUGE_BROWN_MUSHROOM_CONFIG = new HugeMushroomFeatureConfig(new SimpleBlockStateProvider(BROWN_MUSHROOM_BLOCK), new SimpleBlockStateProvider(MUSHROOM_BLOCK), 3);
+    public static final HugeFungiFeatureConfig CRIMSON_FUNGI_CONFIG = new HugeFungiFeatureConfig(CRIMSON_STEM, NETHER_WART_BLOCK, SHROOMLIGHT, false);
+    public static final HugeFungiFeatureConfig WARPED_FUNGI_CONFIG = new HugeFungiFeatureConfig(WARPED_STEM, WARPED_WART_BLOCK, SHROOMLIGHT, false);
+    public static final BlockPileFeatureConfig CRIMSON_ROOTS_CONFIG = new BlockPileFeatureConfig(new WeightedBlockStateProvider().addState(Blocks.CRIMSON_ROOTS.getDefaultState(), 87).addState(Blocks.CRIMSON_FUNGI.getDefaultState(), 11).addState(Blocks.WARPED_FUNGI.getDefaultState(), 2));
+    public static final BlockPileFeatureConfig WARPED_ROOTS_CONFIG = new BlockPileFeatureConfig(new WeightedBlockStateProvider().addState(Blocks.WARPED_ROOTS.getDefaultState(), 85).addState(Blocks.CRIMSON_ROOTS.getDefaultState(), 1).addState(Blocks.WARPED_FUNGI.getDefaultState(), 13).addState(Blocks.CRIMSON_FUNGI.getDefaultState(), 1));
+    public static final BlockPileFeatureConfig NETHER_SPROUTS_CONFIG = new BlockPileFeatureConfig(new SimpleBlockStateProvider(Blocks.NETHER_SPROUTS.getDefaultState()));
 
     public static void addLandCarvers(Biome biome) {
         biome.addCarver(GenerationStep.Carver.AIR, Biome.configureCarver(Carver.CAVE, new ProbabilityConfig(0.14285715f)));
@@ -526,6 +546,23 @@ public class DefaultBiomeFeatures {
 
     public static void addEndCities(Biome biome) {
         biome.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, Feature.END_CITY.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT)));
+    }
+
+    public static void addNetherOres(Biome biome) {
+        biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, Feature.ORE.configure(new OreFeatureConfig(OreFeatureConfig.Target.NETHERRACK, NETHER_QUARTZ_ORE, 14)).createDecoratedFeature(Decorator.COUNT_RANGE.configure(new RangeDecoratorConfig(16, 10, 20, 128))));
+        biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, Feature.NO_SURFACE_ORE.configure(new OreFeatureConfig(OreFeatureConfig.Target.NETHERRACK, Blocks.ANCIENT_DEBRIS.getDefaultState(), 3)).createDecoratedFeature(Decorator.COUNT_DEPTH_AVERAGE.configure(new CountDepthDecoratorConfig(1, 16, 8))));
+        biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, Feature.NO_SURFACE_ORE.configure(new OreFeatureConfig(OreFeatureConfig.Target.NETHERRACK, Blocks.ANCIENT_DEBRIS.getDefaultState(), 2)).createDecoratedFeature(Decorator.COUNT_RANGE.configure(new RangeDecoratorConfig(1, 8, 16, 128))));
+    }
+
+    public static void addCrimsonForestVegetation(Biome biome) {
+        biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, Feature.HUGE_FUNGI.configure(CRIMSON_FUNGI_CONFIG).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP.configure(new CountDecoratorConfig(8))));
+        biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, Feature.NETHER_FOREST_VEGETATION.configure(CRIMSON_ROOTS_CONFIG).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP.configure(new CountDecoratorConfig(6))));
+    }
+
+    public static void addWarpedForestVegetation(Biome biome) {
+        biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, Feature.HUGE_FUNGI.configure(WARPED_FUNGI_CONFIG).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP.configure(new CountDecoratorConfig(8))));
+        biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, Feature.NETHER_FOREST_VEGETATION.configure(WARPED_ROOTS_CONFIG).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP.configure(new CountDecoratorConfig(5))));
+        biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, Feature.NETHER_FOREST_VEGETATION.configure(NETHER_SPROUTS_CONFIG).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP.configure(new CountDecoratorConfig(4))));
     }
 }
 

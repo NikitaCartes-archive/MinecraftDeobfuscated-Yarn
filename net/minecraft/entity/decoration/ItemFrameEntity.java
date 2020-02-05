@@ -311,7 +311,7 @@ extends AbstractDecorationEntity {
             return bl || bl2;
         }
         if (!bl) {
-            if (bl2) {
+            if (bl2 && !this.removed) {
                 this.setHeldItemStack(itemStack);
                 if (!player.abilities.creativeMode) {
                     itemStack.decrement(1);

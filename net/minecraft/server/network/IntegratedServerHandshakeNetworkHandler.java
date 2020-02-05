@@ -18,9 +18,9 @@ implements ServerHandshakePacketListener {
     private final MinecraftServer server;
     private final ClientConnection connection;
 
-    public IntegratedServerHandshakeNetworkHandler(MinecraftServer minecraftServer, ClientConnection clientConnection) {
-        this.server = minecraftServer;
-        this.connection = clientConnection;
+    public IntegratedServerHandshakeNetworkHandler(MinecraftServer server, ClientConnection connection) {
+        this.server = server;
+        this.connection = connection;
     }
 
     @Override

@@ -4,9 +4,9 @@
 package net.minecraft.item;
 
 import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.FireBlock;
 import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -45,7 +45,7 @@ extends Item {
         BlockPos blockPos2 = blockPos.offset(context.getSide());
         if (FlintAndSteelItem.canIgnite(iWorld.getBlockState(blockPos2), iWorld, blockPos2)) {
             iWorld.playSound(playerEntity, blockPos2, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0f, RANDOM.nextFloat() * 0.4f + 0.8f);
-            BlockState blockState2 = ((FireBlock)Blocks.FIRE).getStateForPosition(iWorld, blockPos2);
+            BlockState blockState2 = AbstractFireBlock.getState(iWorld, blockPos2);
             iWorld.setBlockState(blockPos2, blockState2, 11);
             ItemStack itemStack = context.getStack();
             if (playerEntity instanceof ServerPlayerEntity) {
@@ -62,7 +62,7 @@ extends Item {
     }
 
     public static boolean canIgnite(BlockState block, IWorld world, BlockPos pos) {
-        BlockState blockState = ((FireBlock)Blocks.FIRE).getStateForPosition(world, pos);
+        BlockState blockState = AbstractFireBlock.getState(world, pos);
         boolean bl = false;
         for (Direction direction : Direction.Type.HORIZONTAL) {
             if (world.getBlockState(pos.offset(direction)).getBlock() != Blocks.OBSIDIAN || ((NetherPortalBlock)Blocks.NETHER_PORTAL).createAreaHelper(world, pos) == null) continue;

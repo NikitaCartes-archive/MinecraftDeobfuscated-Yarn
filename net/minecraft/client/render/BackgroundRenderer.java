@@ -69,49 +69,51 @@ public class BackgroundRenderer {
             blue = 0.0f;
             lastWaterFogColorUpdateTime = -1L;
         } else {
-            float aa;
+            float h;
+            float r;
             float z;
-            float y;
             float u = 0.25f + 0.75f * (float)i / 32.0f;
             u = 1.0f - (float)Math.pow(u, 0.25);
             Vec3d vec3d = clientWorld.method_23777(camera.getBlockPos(), f);
             float v = (float)vec3d.x;
             float w = (float)vec3d.y;
             float x = (float)vec3d.z;
-            Vec3d vec3d2 = clientWorld.getFogColor(f);
+            int n = clientWorld.getBiome(camera.getBlockPos()).getFogColor();
+            float y = MathHelper.cos(clientWorld.getSkyAngle(f) * ((float)Math.PI * 2)) * 2.0f + 0.5f;
+            Vec3d vec3d2 = clientWorld.getDimension().modifyFogColor(n, MathHelper.clamp(y, 0.0f, 1.0f));
             red = (float)vec3d2.x;
             green = (float)vec3d2.y;
             blue = (float)vec3d2.z;
             if (i >= 4) {
                 float[] fs;
-                y = MathHelper.sin(clientWorld.getSkyAngleRadians(f)) > 0.0f ? -1.0f : 1.0f;
-                Vector3f vector3f = new Vector3f(y, 0.0f, 0.0f);
-                z = camera.getHorizontalPlane().dot(vector3f);
-                if (z < 0.0f) {
-                    z = 0.0f;
+                z = MathHelper.sin(clientWorld.getSkyAngleRadians(f)) > 0.0f ? -1.0f : 1.0f;
+                Vector3f vector3f = new Vector3f(z, 0.0f, 0.0f);
+                r = camera.getHorizontalPlane().dot(vector3f);
+                if (r < 0.0f) {
+                    r = 0.0f;
                 }
-                if (z > 0.0f && (fs = clientWorld.dimension.getBackgroundColor(clientWorld.getSkyAngle(f), f)) != null) {
-                    red = red * (1.0f - (z *= fs[3])) + fs[0] * z;
-                    green = green * (1.0f - z) + fs[1] * z;
-                    blue = blue * (1.0f - z) + fs[2] * z;
+                if (r > 0.0f && (fs = clientWorld.dimension.getBackgroundColor(clientWorld.getSkyAngle(f), f)) != null) {
+                    red = red * (1.0f - (r *= fs[3])) + fs[0] * r;
+                    green = green * (1.0f - r) + fs[1] * r;
+                    blue = blue * (1.0f - r) + fs[2] * r;
                 }
             }
             red += (v - red) * u;
             green += (w - green) * u;
             blue += (x - blue) * u;
-            y = clientWorld.getRainGradient(f);
-            if (y > 0.0f) {
-                float aa2 = 1.0f - y * 0.5f;
-                z = 1.0f - y * 0.4f;
-                red *= aa2;
-                green *= aa2;
-                blue *= z;
+            z = clientWorld.getRainGradient(f);
+            if (z > 0.0f) {
+                float h2 = 1.0f - z * 0.5f;
+                r = 1.0f - z * 0.4f;
+                red *= h2;
+                green *= h2;
+                blue *= r;
             }
-            if ((aa = clientWorld.getThunderGradient(f)) > 0.0f) {
-                z = 1.0f - aa * 0.5f;
-                red *= z;
-                green *= z;
-                blue *= z;
+            if ((h = clientWorld.getThunderGradient(f)) > 0.0f) {
+                r = 1.0f - h * 0.5f;
+                red *= r;
+                green *= r;
+                blue *= r;
             }
             lastWaterFogColorUpdateTime = -1L;
         }

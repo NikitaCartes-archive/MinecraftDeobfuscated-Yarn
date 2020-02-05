@@ -586,6 +586,9 @@ extends LivingEntity {
         if (stack.isEmpty()) {
             return null;
         }
+        if (this.world.isClient) {
+            this.swingHand(Hand.MAIN_HAND);
+        }
         double d = this.getEyeY() - (double)0.3f;
         ItemEntity itemEntity = new ItemEntity(this.world, this.getX(), d, this.getZ(), stack);
         itemEntity.setPickupDelay(40);
@@ -785,8 +788,8 @@ extends LivingEntity {
     }
 
     @Override
-    protected void damageArmor(float amount) {
-        this.inventory.damageArmor(amount);
+    protected void damageArmor(DamageSource damageSource, float f) {
+        this.inventory.damageArmor(damageSource, f);
     }
 
     @Override
@@ -1134,15 +1137,15 @@ extends LivingEntity {
             if (!this.world.dimension.hasVisibleSky()) {
                 return Either.left(SleepFailureReason.NOT_POSSIBLE_HERE);
             }
-            if (this.world.isDay()) {
-                this.setPlayerSpawn(pos, false, true);
-                return Either.left(SleepFailureReason.NOT_POSSIBLE_NOW);
-            }
             if (!this.isWithinSleepingRange(pos, direction)) {
                 return Either.left(SleepFailureReason.TOO_FAR_AWAY);
             }
             if (this.isBedObstructed(pos, direction)) {
                 return Either.left(SleepFailureReason.OBSTRUCTED);
+            }
+            this.setPlayerSpawn(pos, false, true);
+            if (this.world.isDay()) {
+                return Either.left(SleepFailureReason.NOT_POSSIBLE_NOW);
             }
             if (!this.isCreative()) {
                 double d = 8.0;

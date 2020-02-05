@@ -4,7 +4,6 @@
 package net.minecraft.client.render.item;
 
 import com.google.common.base.MoreObjects;
-import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -400,8 +399,8 @@ public class HeldItemRenderer {
             this.equipProgressOffHand = MathHelper.clamp(this.equipProgressOffHand - 0.4f, 0.0f, 1.0f);
         } else {
             float f = clientPlayerEntity.getAttackCooldownProgress(1.0f);
-            this.equipProgressMainHand += MathHelper.clamp((Objects.equals(this.mainHand, itemStack) ? f * f * f : 0.0f) - this.equipProgressMainHand, -0.4f, 0.4f);
-            this.equipProgressOffHand += MathHelper.clamp((float)(Objects.equals(this.offHand, itemStack2) ? 1 : 0) - this.equipProgressOffHand, -0.4f, 0.4f);
+            this.equipProgressMainHand += MathHelper.clamp((ItemStack.areEqualIgnoreDamage(this.mainHand, itemStack) ? f * f * f : 0.0f) - this.equipProgressMainHand, -0.4f, 0.4f);
+            this.equipProgressOffHand += MathHelper.clamp((float)(ItemStack.areEqualIgnoreDamage(this.offHand, itemStack2) ? 1 : 0) - this.equipProgressOffHand, -0.4f, 0.4f);
         }
         if (this.equipProgressMainHand < 0.1f) {
             this.mainHand = itemStack;

@@ -56,25 +56,6 @@ public abstract class VoxelSet {
     public abstract int getMax(Direction.Axis var1);
 
     @Environment(value=EnvType.CLIENT)
-    public int getBeginningAxisCoord(Direction.Axis axis, int begin, int end) {
-        int i = this.getSize(axis);
-        if (begin < 0 || end < 0) {
-            return i;
-        }
-        Direction.Axis axis2 = AxisCycleDirection.FORWARD.cycle(axis);
-        Direction.Axis axis3 = AxisCycleDirection.BACKWARD.cycle(axis);
-        if (begin >= this.getSize(axis2) || end >= this.getSize(axis3)) {
-            return i;
-        }
-        AxisCycleDirection axisCycleDirection = AxisCycleDirection.between(Direction.Axis.X, axis);
-        for (int j = 0; j < i; ++j) {
-            if (!this.contains(axisCycleDirection, j, begin, end)) continue;
-            return j;
-        }
-        return i;
-    }
-
-    @Environment(value=EnvType.CLIENT)
     public int getEndingAxisCoord(Direction.Axis axis, int from, int to) {
         if (from < 0 || to < 0) {
             return 0;

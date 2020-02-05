@@ -30,7 +30,7 @@ import net.minecraft.server.integrated.IntegratedPlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.profiler.DisableableProfiler;
+import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.snooper.Snooper;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
@@ -105,13 +105,13 @@ extends MinecraftServer {
     public void tick(BooleanSupplier shouldKeepTicking) {
         boolean bl = this.paused;
         this.paused = MinecraftClient.getInstance().getNetworkHandler() != null && MinecraftClient.getInstance().isPaused();
-        DisableableProfiler disableableProfiler = this.getProfiler();
+        Profiler profiler = this.getProfiler();
         if (!bl && this.paused) {
-            disableableProfiler.push("autoSave");
+            profiler.push("autoSave");
             LOGGER.info("Saving and pausing game...");
             this.getPlayerManager().saveAllPlayerData();
             this.save(false, false, false);
-            disableableProfiler.pop();
+            profiler.pop();
         }
         if (this.paused) {
             return;

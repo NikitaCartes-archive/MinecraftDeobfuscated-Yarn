@@ -6,6 +6,7 @@ package net.minecraft.fluid;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
@@ -93,7 +94,7 @@ extends BaseFluid {
                     return;
                 }
                 if (!world.isAir(blockPos2.up()) || !this.hasBurnableBlock(world, blockPos2)) continue;
-                world.setBlockState(blockPos2.up(), Blocks.FIRE.getDefaultState());
+                world.setBlockState(blockPos2.up(), AbstractFireBlock.getState(world, blockPos2));
             }
         }
     }
@@ -126,8 +127,8 @@ extends BaseFluid {
     }
 
     @Override
-    public int method_15733(WorldView worldView) {
-        return worldView.getDimension().doesWaterVaporize() ? 4 : 2;
+    public int method_15733(WorldView world) {
+        return world.getDimension().doesWaterVaporize() ? 4 : 2;
     }
 
     @Override

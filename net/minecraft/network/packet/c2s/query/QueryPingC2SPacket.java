@@ -18,8 +18,8 @@ implements Packet<ServerQueryPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public QueryPingC2SPacket(long l) {
-        this.startTime = l;
+    public QueryPingC2SPacket(long startTime) {
+        this.startTime = startTime;
     }
 
     @Override

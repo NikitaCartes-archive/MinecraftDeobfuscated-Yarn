@@ -13,6 +13,7 @@ import java.util.Random;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
@@ -38,6 +39,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.RegistryTagManager;
 import net.minecraft.util.MaterialPredicate;
 import net.minecraft.util.Tickable;
@@ -70,7 +72,6 @@ import net.minecraft.world.level.LevelGeneratorType;
 import net.minecraft.world.level.LevelProperties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.util.Supplier;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class World
@@ -94,14 +95,14 @@ AutoCloseable {
     public final Dimension dimension;
     protected final ChunkManager chunkManager;
     protected final LevelProperties properties;
-    private final Profiler profiler;
+    private final Supplier<Profiler> profiler;
     public final boolean isClient;
     protected boolean iteratingTickingBlockEntities;
     private final WorldBorder border;
     private final BiomeAccess biomeAccess;
 
-    protected World(LevelProperties levelProperties, DimensionType dimensionType, BiFunction<World, Dimension, ChunkManager> chunkManagerProvider, Profiler profiler, boolean isClient) {
-        this.profiler = profiler;
+    protected World(LevelProperties levelProperties, DimensionType dimensionType, BiFunction<World, Dimension, ChunkManager> chunkManagerProvider, Supplier<Profiler> supplier, boolean isClient) {
+        this.profiler = supplier;
         this.properties = levelProperties;
         this.dimension = dimensionType.create(this);
         this.chunkManager = chunkManagerProvider.apply(this, this.dimension);
@@ -178,9 +179,9 @@ AutoCloseable {
         if (blockState != null) {
             BlockState blockState2 = this.getBlockState(pos);
             if (blockState2 != blockState && (blockState2.getOpacity(this, pos) != blockState.getOpacity(this, pos) || blockState2.getLuminance() != blockState.getLuminance() || blockState2.hasSidedTransparency() || blockState.hasSidedTransparency())) {
-                this.profiler.push("queueCheckLight");
+                this.getProfiler().push("queueCheckLight");
                 this.getChunkManager().getLightingProvider().checkBlock(pos);
-                this.profiler.pop();
+                this.getProfiler().pop();
             }
             if (blockState2 == state) {
                 if (blockState != blockState2) {
@@ -189,9 +190,9 @@ AutoCloseable {
                 if ((flags & 2) != 0 && (!this.isClient || (flags & 4) == 0) && (this.isClient || worldChunk.getLevelType() != null && worldChunk.getLevelType().isAfter(ChunkHolder.LevelType.TICKING))) {
                     this.updateListeners(pos, blockState, state, flags);
                 }
-                if (!this.isClient && (flags & 1) != 0) {
+                if ((flags & 1) != 0) {
                     this.updateNeighbors(pos, blockState.getBlock());
-                    if (state.hasComparatorOutput()) {
+                    if (!this.isClient && state.hasComparatorOutput()) {
                         this.updateHorizontalAdjacent(pos, block);
                     }
                 }
@@ -237,13 +238,6 @@ AutoCloseable {
     }
 
     public abstract void updateListeners(BlockPos var1, BlockState var2, BlockState var3, int var4);
-
-    @Override
-    public void updateNeighbors(BlockPos pos, Block block) {
-        if (this.properties.getGeneratorType() != LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
-            this.updateNeighborsAlways(pos, block);
-        }
-    }
 
     public void checkBlockRerender(BlockPos pos, BlockState old, BlockState updated) {
     }
@@ -371,7 +365,7 @@ AutoCloseable {
     public boolean addBlockEntity(BlockEntity blockEntity) {
         boolean bl;
         if (this.iteratingTickingBlockEntities) {
-            Supplier[] supplierArray = new Supplier[2];
+            org.apache.logging.log4j.util.Supplier[] supplierArray = new org.apache.logging.log4j.util.Supplier[2];
             supplierArray[0] = () -> Registry.BLOCK_ENTITY_TYPE.getId(blockEntity.getType());
             supplierArray[1] = blockEntity::getPos;
             LOGGER.error("Adding block entity while ticking: {} @ {}", supplierArray);
@@ -497,8 +491,8 @@ AutoCloseable {
                 for (int o = i; o < j; ++o) {
                     for (int p = k; p < l; ++p) {
                         for (int q = m; q < n; ++q) {
-                            Block block = this.getBlockState(pooledMutable.set(o, p, q)).getBlock();
-                            if (block != Blocks.FIRE && block != Blocks.LAVA) continue;
+                            BlockState blockState = this.getBlockState(pooledMutable.set(o, p, q));
+                            if (!blockState.matches(BlockTags.FIRE) && blockState.getBlock() != Blocks.LAVA) continue;
                             boolean bl = true;
                             return bl;
                         }
@@ -565,7 +559,7 @@ AutoCloseable {
     }
 
     public boolean extinguishFire(@Nullable PlayerEntity playerEntity, BlockPos blockPos, Direction direction) {
-        if (this.getBlockState(blockPos = blockPos.offset(direction)).getBlock() == Blocks.FIRE) {
+        if (this.getBlockState(blockPos = blockPos.offset(direction)).matches(BlockTags.FIRE)) {
             this.playLevelEvent(playerEntity, 1009, blockPos, 0);
             this.removeBlock(blockPos, false);
             return true;
@@ -654,15 +648,19 @@ AutoCloseable {
         return this.chunkManager.isChunkLoaded(pos.getX() >> 4, pos.getZ() >> 4);
     }
 
-    public boolean isTopSolid(BlockPos pos, Entity entity) {
-        if (World.isHeightInvalid(pos)) {
+    public boolean method_24368(BlockPos blockPos, Entity entity, Direction direction) {
+        if (World.isHeightInvalid(blockPos)) {
             return false;
         }
-        Chunk chunk = this.getChunk(pos.getX() >> 4, pos.getZ() >> 4, ChunkStatus.FULL, false);
+        Chunk chunk = this.getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4, ChunkStatus.FULL, false);
         if (chunk == null) {
             return false;
         }
-        return chunk.getBlockState(pos).hasSolidTopSurface(this, pos, entity);
+        return chunk.getBlockState(blockPos).method_24432(this, blockPos, entity, direction);
+    }
+
+    public boolean isTopSolid(BlockPos pos, Entity entity) {
+        return this.method_24368(pos, entity, Direction.UP);
     }
 
     public void calculateAmbientDarkness() {
@@ -1085,6 +1083,10 @@ AutoCloseable {
     }
 
     public Profiler getProfiler() {
+        return this.profiler.get();
+    }
+
+    public Supplier<Profiler> method_24367() {
         return this.profiler;
     }
 

@@ -20,9 +20,9 @@ implements ServerQueryPacketListener {
     private final ClientConnection connection;
     private boolean responseSent;
 
-    public ServerQueryNetworkHandler(MinecraftServer minecraftServer, ClientConnection clientConnection) {
-        this.server = minecraftServer;
-        this.connection = clientConnection;
+    public ServerQueryNetworkHandler(MinecraftServer server, ClientConnection connection) {
+        this.server = server;
+        this.connection = connection;
     }
 
     @Override

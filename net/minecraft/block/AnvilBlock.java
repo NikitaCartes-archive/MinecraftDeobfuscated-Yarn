@@ -3,6 +3,8 @@
  */
 package net.minecraft.block;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockPlacementEnvironment;
 import net.minecraft.block.BlockState;
@@ -122,6 +124,12 @@ extends FallingBlock {
     @Override
     public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
         return false;
+    }
+
+    @Override
+    @Environment(value=EnvType.CLIENT)
+    public int getColor(BlockState state) {
+        return this.materialColor.color;
     }
 }
 

@@ -73,7 +73,8 @@ ModifiableTestableWorld {
 
     public Random getRandom();
 
-    public void updateNeighbors(BlockPos var1, Block var2);
+    default public void updateNeighbors(BlockPos pos, Block block) {
+    }
 
     @Environment(value=EnvType.CLIENT)
     public BlockPos getSpawnPos();

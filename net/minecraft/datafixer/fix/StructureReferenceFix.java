@@ -13,8 +13,8 @@ import net.minecraft.datafixer.TypeReferences;
 
 public class StructureReferenceFix
 extends DataFix {
-    public StructureReferenceFix(Schema schema, boolean bl) {
-        super(schema, bl);
+    public StructureReferenceFix(Schema outputSchema, boolean changesType) {
+        super(outputSchema, changesType);
     }
 
     @Override

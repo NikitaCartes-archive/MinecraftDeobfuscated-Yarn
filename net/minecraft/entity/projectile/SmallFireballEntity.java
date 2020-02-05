@@ -3,7 +3,7 @@
  */
 package net.minecraft.entity.projectile;
 
-import net.minecraft.block.Blocks;
+import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -50,7 +50,7 @@ extends AbstractFireballEntity {
                     }
                 }
             } else if ((this.owner == null || !(this.owner instanceof MobEntity) || this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) && this.world.isAir(blockPos = (blockHitResult = (BlockHitResult)hitResult).getBlockPos().offset(blockHitResult.getSide()))) {
-                this.world.setBlockState(blockPos, Blocks.FIRE.getDefaultState());
+                this.world.setBlockState(blockPos, AbstractFireBlock.getState(this.world, blockPos));
             }
             this.remove();
         }

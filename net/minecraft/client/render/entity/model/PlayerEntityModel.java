@@ -102,7 +102,13 @@ extends BipedEntityModel<T> {
         this.leftSleeve.copyPositionAndRotation(this.leftArm);
         this.rightSleeve.copyPositionAndRotation(this.rightArm);
         this.jacket.copyPositionAndRotation(this.torso);
-        this.cape.pivotY = ((Entity)livingEntity).isInSneakingPose() ? 2.0f : 0.0f;
+        if (((Entity)livingEntity).isInSneakingPose()) {
+            this.cape.pivotZ = 1.6f;
+            this.cape.pivotY = 1.8f;
+        } else {
+            this.cape.pivotZ = 0.0f;
+            this.cape.pivotY = 0.0f;
+        }
     }
 
     @Override

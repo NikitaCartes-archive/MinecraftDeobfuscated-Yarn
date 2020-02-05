@@ -58,6 +58,7 @@ import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.entity.passive.FishEntity;
 import net.minecraft.entity.passive.PassiveEntity;
+import net.minecraft.entity.passive.PolarBearEntity;
 import net.minecraft.entity.passive.RabbitEntity;
 import net.minecraft.entity.passive.SchoolingFishEntity;
 import net.minecraft.entity.passive.TameableEntity;
@@ -144,6 +145,7 @@ extends AnimalEntity {
         this.goalSelector.add(3, new MateGoal(1.0));
         this.goalSelector.add(4, new FleeEntityGoal<PlayerEntity>(this, PlayerEntity.class, 16.0f, 1.6, 1.4, livingEntity -> NOTICEABLE_PLAYER_FILTER.test((Entity)livingEntity) && !this.canTrust(livingEntity.getUuid()) && !this.isAggressive()));
         this.goalSelector.add(4, new FleeEntityGoal<WolfEntity>(this, WolfEntity.class, 8.0f, 1.6, 1.4, livingEntity -> !((WolfEntity)livingEntity).isTamed() && !this.isAggressive()));
+        this.goalSelector.add(4, new FleeEntityGoal<PolarBearEntity>(this, PolarBearEntity.class, 8.0f, 1.6, 1.4, livingEntity -> !this.isAggressive()));
         this.goalSelector.add(5, new MoveToHuntGoal());
         this.goalSelector.add(6, new JumpChasingGoal());
         this.goalSelector.add(6, new AvoidDaylightGoal(1.25));
@@ -1057,7 +1059,7 @@ extends AnimalEntity {
         }
 
         protected boolean isAtFavoredLocation() {
-            BlockPos blockPos = new BlockPos(FoxEntity.this);
+            BlockPos blockPos = new BlockPos(FoxEntity.this.getX(), FoxEntity.this.getBoundingBox().y2, FoxEntity.this.getZ());
             return !FoxEntity.this.world.isSkyVisible(blockPos) && FoxEntity.this.getPathfindingFavor(blockPos) >= 0.0f;
         }
 

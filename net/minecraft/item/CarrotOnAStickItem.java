@@ -21,21 +21,20 @@ extends Item {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+        PigEntity pigEntity;
         ItemStack itemStack = user.getStackInHand(hand);
         if (world.isClient) {
             return TypedActionResult.pass(itemStack);
         }
-        if (user.hasVehicle() && user.getVehicle() instanceof PigEntity) {
-            PigEntity pigEntity = (PigEntity)user.getVehicle();
-            if (itemStack.getMaxDamage() - itemStack.getDamage() >= 7 && pigEntity.method_6577()) {
-                itemStack.damage(7, user, p -> p.sendToolBreakStatus(hand));
-                if (itemStack.isEmpty()) {
-                    ItemStack itemStack2 = new ItemStack(Items.FISHING_ROD);
-                    itemStack2.setTag(itemStack.getTag());
-                    return TypedActionResult.success(itemStack2);
-                }
-                return TypedActionResult.success(itemStack);
+        if (user.hasVehicle() && user.getVehicle() instanceof PigEntity && (pigEntity = (PigEntity)user.getVehicle()).method_6577()) {
+            itemStack.damage(7, user, p -> p.sendToolBreakStatus(hand));
+            user.swingHand(hand, true);
+            if (itemStack.isEmpty()) {
+                ItemStack itemStack2 = new ItemStack(Items.FISHING_ROD);
+                itemStack2.setTag(itemStack.getTag());
+                return TypedActionResult.consume(itemStack2);
             }
+            return TypedActionResult.consume(itemStack);
         }
         user.incrementStat(Stats.USED.getOrCreateStat(this));
         return TypedActionResult.pass(itemStack);

@@ -15,6 +15,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BirchForestBiome;
 import net.minecraft.world.biome.BirchForestHillsBiome;
 import net.minecraft.world.biome.ColdOceanBiome;
+import net.minecraft.world.biome.CrimsonForestBiome;
 import net.minecraft.world.biome.DarkForestBiome;
 import net.minecraft.world.biome.DarkForestHillsBiome;
 import net.minecraft.world.biome.DeepColdOceanBiome;
@@ -54,7 +55,7 @@ import net.minecraft.world.biome.MountainEdgeBiome;
 import net.minecraft.world.biome.MountainsBiome;
 import net.minecraft.world.biome.MushroomFieldShoreBiome;
 import net.minecraft.world.biome.MushroomFieldsBiome;
-import net.minecraft.world.biome.NetherBiome;
+import net.minecraft.world.biome.NetherWastesBiome;
 import net.minecraft.world.biome.OceanBiome;
 import net.minecraft.world.biome.PlainsBiome;
 import net.minecraft.world.biome.RiverBiome;
@@ -68,6 +69,7 @@ import net.minecraft.world.biome.SnowyTaigaBiome;
 import net.minecraft.world.biome.SnowyTaigaHillsBiome;
 import net.minecraft.world.biome.SnowyTaigaMountainsBiome;
 import net.minecraft.world.biome.SnowyTundraBiome;
+import net.minecraft.world.biome.SoulSandValleyBiome;
 import net.minecraft.world.biome.StoneShoreBiome;
 import net.minecraft.world.biome.SunflowerPlainsBiome;
 import net.minecraft.world.biome.SwampBiome;
@@ -79,6 +81,7 @@ import net.minecraft.world.biome.TallBirchForestBiome;
 import net.minecraft.world.biome.TallBirchHillsBiome;
 import net.minecraft.world.biome.VoidBiome;
 import net.minecraft.world.biome.WarmOceanBiome;
+import net.minecraft.world.biome.WarpedForestBiome;
 import net.minecraft.world.biome.WoodedBadlandsPlateauBiome;
 import net.minecraft.world.biome.WoodedHillsBiome;
 import net.minecraft.world.biome.WoodedMountainsBiome;
@@ -93,7 +96,7 @@ public abstract class Biomes {
     public static final Biome TAIGA;
     public static final Biome SWAMP;
     public static final Biome RIVER;
-    public static final Biome NETHER;
+    public static final Biome NETHER_WASTES;
     public static final Biome THE_END;
     public static final Biome FROZEN_OCEAN;
     public static final Biome FROZEN_RIVER;
@@ -160,6 +163,9 @@ public abstract class Biomes {
     public static final Biome MODIFIED_BADLANDS_PLATEAU;
     public static final Biome BAMBOO_JUNGLE;
     public static final Biome BAMBOO_JUNGLE_HILLS;
+    public static final Biome SOUL_SAND_VALLEY;
+    public static final Biome CRIMSON_FOREST;
+    public static final Biome WARPED_FOREST;
 
     private static Biome register(int rawId, String id, Biome biome) {
         Registry.register(Registry.BIOME, rawId, id, biome);
@@ -178,7 +184,7 @@ public abstract class Biomes {
         TAIGA = Biomes.register(5, "taiga", new TaigaBiome());
         SWAMP = Biomes.register(6, "swamp", new SwampBiome());
         RIVER = Biomes.register(7, "river", new RiverBiome());
-        NETHER = Biomes.register(8, "nether", new NetherBiome());
+        NETHER_WASTES = Biomes.register(8, "nether_wastes", new NetherWastesBiome());
         THE_END = Biomes.register(9, "the_end", new EndBiome());
         FROZEN_OCEAN = Biomes.register(10, "frozen_ocean", new FrozenOceanBiome());
         FROZEN_RIVER = Biomes.register(11, "frozen_river", new FrozenRiverBiome());
@@ -245,6 +251,9 @@ public abstract class Biomes {
         MODIFIED_BADLANDS_PLATEAU = Biomes.register(167, "modified_badlands_plateau", new ModifiedBadlandsPlateauBiome());
         BAMBOO_JUNGLE = Biomes.register(168, "bamboo_jungle", new BambooJungleBiome());
         BAMBOO_JUNGLE_HILLS = Biomes.register(169, "bamboo_jungle_hills", new BambooJungleHillsBiome());
+        SOUL_SAND_VALLEY = Biomes.register(170, "soul_sand_valley", new SoulSandValleyBiome());
+        CRIMSON_FOREST = Biomes.register(171, "crimson_forest", new CrimsonForestBiome());
+        WARPED_FOREST = Biomes.register(172, "warped_forest", new WarpedForestBiome());
         Collections.addAll(Biome.BIOMES, OCEAN, PLAINS, DESERT, MOUNTAINS, FOREST, TAIGA, SWAMP, RIVER, FROZEN_RIVER, SNOWY_TUNDRA, SNOWY_MOUNTAINS, MUSHROOM_FIELDS, MUSHROOM_FIELD_SHORE, BEACH, DESERT_HILLS, WOODED_HILLS, TAIGA_HILLS, JUNGLE, JUNGLE_HILLS, JUNGLE_EDGE, DEEP_OCEAN, STONE_SHORE, SNOWY_BEACH, BIRCH_FOREST, BIRCH_FOREST_HILLS, DARK_FOREST, SNOWY_TAIGA, SNOWY_TAIGA_HILLS, GIANT_TREE_TAIGA, GIANT_TREE_TAIGA_HILLS, WOODED_MOUNTAINS, SAVANNA, SAVANNA_PLATEAU, BADLANDS, WOODED_BADLANDS_PLATEAU, BADLANDS_PLATEAU);
     }
 }

@@ -3,8 +3,10 @@
  */
 package net.minecraft.util.math.noise;
 
+import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.ints.IntRBTreeSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
+import java.util.List;
 import java.util.stream.IntStream;
 import net.minecraft.util.math.noise.NoiseSampler;
 import net.minecraft.util.math.noise.SimplexNoiseSampler;
@@ -16,11 +18,15 @@ implements NoiseSampler {
     private final double field_20661;
     private final double field_20662;
 
-    public OctaveSimplexNoiseSampler(ChunkRandom chunkRandom, int i, int j) {
-        this(chunkRandom, new IntRBTreeSet(IntStream.rangeClosed(-i, j).toArray()));
+    public OctaveSimplexNoiseSampler(ChunkRandom chunkRandom, IntStream intStream) {
+        this(chunkRandom, intStream.boxed().collect(ImmutableList.toImmutableList()));
     }
 
-    public OctaveSimplexNoiseSampler(ChunkRandom chunkRandom, IntSortedSet intSortedSet) {
+    public OctaveSimplexNoiseSampler(ChunkRandom chunkRandom, List<Integer> list) {
+        this(chunkRandom, new IntRBTreeSet(list));
+    }
+
+    private OctaveSimplexNoiseSampler(ChunkRandom chunkRandom, IntSortedSet intSortedSet) {
         int j;
         if (intSortedSet.isEmpty()) {
             throw new IllegalArgumentException("Need some octaves!");
