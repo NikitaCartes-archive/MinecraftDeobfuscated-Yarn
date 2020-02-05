@@ -430,7 +430,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 							Block block = blockView.getBlockState(pooledMutable.set(l + i, m + j, n + k)).getBlock();
 							if (block == Blocks.CACTUS) {
 								pathNodeType = PathNodeType.DANGER_CACTUS;
-							} else if (block == Blocks.FIRE || block == Blocks.LAVA) {
+							} else if (block.matches(BlockTags.FIRE) || block == Blocks.LAVA) {
 								pathNodeType = PathNodeType.DANGER_FIRE;
 							} else if (block == Blocks.SWEET_BERRY_BUSH) {
 								pathNodeType = PathNodeType.DANGER_OTHER;
@@ -453,7 +453,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 			return PathNodeType.OPEN;
 		} else if (block.matches(BlockTags.TRAPDOORS) || block == Blocks.LILY_PAD) {
 			return PathNodeType.TRAPDOOR;
-		} else if (block == Blocks.FIRE) {
+		} else if (blockState.matches(BlockTags.FIRE)) {
 			return PathNodeType.DAMAGE_FIRE;
 		} else if (block == Blocks.CACTUS) {
 			return PathNodeType.DAMAGE_CACTUS;

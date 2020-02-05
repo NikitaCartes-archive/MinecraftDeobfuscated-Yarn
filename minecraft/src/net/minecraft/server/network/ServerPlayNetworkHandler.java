@@ -170,12 +170,12 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	private int movePacketsCount;
 	private int lastTickMovePacketsCount;
 
-	public ServerPlayNetworkHandler(MinecraftServer minecraftServer, ClientConnection clientConnection, ServerPlayerEntity serverPlayerEntity) {
-		this.server = minecraftServer;
-		this.connection = clientConnection;
-		clientConnection.setPacketListener(this);
-		this.player = serverPlayerEntity;
-		serverPlayerEntity.networkHandler = this;
+	public ServerPlayNetworkHandler(MinecraftServer server, ClientConnection connection, ServerPlayerEntity player) {
+		this.server = server;
+		this.connection = connection;
+		connection.setPacketListener(this);
+		this.player = player;
+		player.networkHandler = this;
 	}
 
 	public void tick() {

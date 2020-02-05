@@ -79,6 +79,8 @@ public class ItemEntity extends Entity {
 			Vec3d vec3d = this.getVelocity();
 			if (this.isInFluid(FluidTags.WATER)) {
 				this.applyBuoyancy();
+			} else if (this.isInFluid(FluidTags.LAVA)) {
+				this.method_24348();
 			} else if (!this.hasNoGravity()) {
 				this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
 			}
@@ -111,9 +113,6 @@ public class ItemEntity extends Entity {
 			int i = bl ? 2 : 40;
 			if (this.age % i == 0) {
 				if (this.world.getFluidState(new BlockPos(this)).matches(FluidTags.LAVA)) {
-					this.setVelocity(
-						(double)((this.random.nextFloat() - this.random.nextFloat()) * 0.2F), 0.2F, (double)((this.random.nextFloat() - this.random.nextFloat()) * 0.2F)
-					);
 					this.playSound(SoundEvents.ENTITY_GENERIC_BURN, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
 				}
 
@@ -143,6 +142,11 @@ public class ItemEntity extends Entity {
 	private void applyBuoyancy() {
 		Vec3d vec3d = this.getVelocity();
 		this.setVelocity(vec3d.x * 0.99F, vec3d.y + (double)(vec3d.y < 0.06F ? 5.0E-4F : 0.0F), vec3d.z * 0.99F);
+	}
+
+	private void method_24348() {
+		Vec3d vec3d = this.getVelocity();
+		this.setVelocity(vec3d.x * 0.95F, vec3d.y + (double)(vec3d.y < 0.06F ? 5.0E-4F : 0.0F), vec3d.z * 0.95F);
 	}
 
 	private void tryMerge() {
@@ -209,15 +213,12 @@ public class ItemEntity extends Entity {
 	}
 
 	@Override
-	protected void burn(int time) {
-		this.damage(DamageSource.IN_FIRE, (float)time);
-	}
-
-	@Override
 	public boolean damage(DamageSource source, float amount) {
 		if (this.isInvulnerableTo(source)) {
 			return false;
 		} else if (!this.getStack().isEmpty() && this.getStack().getItem() == Items.NETHER_STAR && source.isExplosive()) {
+			return false;
+		} else if (!this.getStack().getItem().damage(source)) {
 			return false;
 		} else {
 			this.scheduleVelocityUpdate();

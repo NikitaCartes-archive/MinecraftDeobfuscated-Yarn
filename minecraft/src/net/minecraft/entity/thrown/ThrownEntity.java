@@ -1,6 +1,7 @@
 package net.minecraft.entity.thrown;
 
 import java.util.UUID;
+import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -32,8 +33,7 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 	public int shake;
 	protected LivingEntity owner;
 	private UUID ownerUuid;
-	private Entity field_7637;
-	private int field_7638;
+	private boolean field_21975;
 
 	protected ThrownEntity(EntityType<? extends ThrownEntity> type, World world) {
 		super(type, world);
@@ -117,27 +117,25 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 		}
 
 		Box box = this.getBoundingBox().stretch(this.getVelocity()).expand(1.0);
+		if (this.owner == null) {
+			this.field_21975 = true;
+		} else if (!this.field_21975) {
+			boolean bl = false;
 
-		for (Entity entity : this.world.getEntities(this, box, entityx -> !entityx.isSpectator() && entityx.collides())) {
-			if (entity == this.field_7637) {
-				this.field_7638++;
-				break;
+			for (Entity entity : this.world.getEntities(this, box, entityx -> !entityx.isSpectator() && entityx.collides())) {
+				if (this.method_24354(entity, this.owner)) {
+					bl = true;
+					break;
+				}
 			}
 
-			if (this.owner != null && this.age < 2 && this.field_7637 == null) {
-				this.field_7637 = entity;
-				this.field_7638 = 3;
-				break;
+			if (!bl) {
+				this.field_21975 = true;
 			}
 		}
 
-		HitResult hitResult = ProjectileUtil.getCollision(
-			this, box, entity -> !entity.isSpectator() && entity.collides() && entity != this.field_7637, RayTraceContext.ShapeType.OUTLINE, true
-		);
-		if (this.field_7637 != null && this.field_7638-- <= 0) {
-			this.field_7637 = null;
-		}
-
+		Predicate<Entity> predicate = entityx -> !entityx.isSpectator() && entityx.collides() && (this.field_21975 || !this.method_24354(entityx, this.owner));
+		HitResult hitResult = ProjectileUtil.getCollision(this, box, predicate, RayTraceContext.ShapeType.OUTLINE, true);
 		if (hitResult.getType() != HitResult.Type.MISS) {
 			if (hitResult.getType() == HitResult.Type.BLOCK && this.world.getBlockState(((BlockHitResult)hitResult).getBlockPos()).getBlock() == Blocks.NETHER_PORTAL) {
 				this.setInNetherPortal(((BlockHitResult)hitResult).getBlockPos());
@@ -191,6 +189,10 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 		}
 
 		this.updatePosition(d, e, f);
+	}
+
+	private boolean method_24354(Entity entity, Entity entity2) {
+		return entity == entity2 || entity.getPassengerList().contains(entity2);
 	}
 
 	protected float getGravity() {

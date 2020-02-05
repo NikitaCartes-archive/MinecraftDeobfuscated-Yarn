@@ -70,25 +70,27 @@ public class BackgroundRenderer {
 			float v = (float)vec3d.x;
 			float w = (float)vec3d.y;
 			float x = (float)vec3d.z;
-			Vec3d vec3d2 = clientWorld.getFogColor(f);
+			int n = clientWorld.getBiome(camera.getBlockPos()).getFogColor();
+			float y = MathHelper.cos(clientWorld.getSkyAngle(f) * (float) (Math.PI * 2)) * 2.0F + 0.5F;
+			Vec3d vec3d2 = clientWorld.getDimension().modifyFogColor(n, MathHelper.clamp(y, 0.0F, 1.0F));
 			red = (float)vec3d2.x;
 			green = (float)vec3d2.y;
 			blue = (float)vec3d2.z;
 			if (i >= 4) {
-				float y = MathHelper.sin(clientWorld.getSkyAngleRadians(f)) > 0.0F ? -1.0F : 1.0F;
-				Vector3f vector3f = new Vector3f(y, 0.0F, 0.0F);
-				float z = camera.getHorizontalPlane().dot(vector3f);
-				if (z < 0.0F) {
-					z = 0.0F;
+				float z = MathHelper.sin(clientWorld.getSkyAngleRadians(f)) > 0.0F ? -1.0F : 1.0F;
+				Vector3f vector3f = new Vector3f(z, 0.0F, 0.0F);
+				float r = camera.getHorizontalPlane().dot(vector3f);
+				if (r < 0.0F) {
+					r = 0.0F;
 				}
 
-				if (z > 0.0F) {
+				if (r > 0.0F) {
 					float[] fs = clientWorld.dimension.getBackgroundColor(clientWorld.getSkyAngle(f), f);
 					if (fs != null) {
-						z *= fs[3];
-						red = red * (1.0F - z) + fs[0] * z;
-						green = green * (1.0F - z) + fs[1] * z;
-						blue = blue * (1.0F - z) + fs[2] * z;
+						r *= fs[3];
+						red = red * (1.0F - r) + fs[0] * r;
+						green = green * (1.0F - r) + fs[1] * r;
+						blue = blue * (1.0F - r) + fs[2] * r;
 					}
 				}
 			}
@@ -96,21 +98,21 @@ public class BackgroundRenderer {
 			red = red + (v - red) * u;
 			green = green + (w - green) * u;
 			blue = blue + (x - blue) * u;
-			float yx = clientWorld.getRainGradient(f);
-			if (yx > 0.0F) {
-				float aa = 1.0F - yx * 0.5F;
-				float zx = 1.0F - yx * 0.4F;
-				red *= aa;
-				green *= aa;
-				blue *= zx;
+			float zx = clientWorld.getRainGradient(f);
+			if (zx > 0.0F) {
+				float h = 1.0F - zx * 0.5F;
+				float rx = 1.0F - zx * 0.4F;
+				red *= h;
+				green *= h;
+				blue *= rx;
 			}
 
-			float aa = clientWorld.getThunderGradient(f);
-			if (aa > 0.0F) {
-				float zx = 1.0F - aa * 0.5F;
-				red *= zx;
-				green *= zx;
-				blue *= zx;
+			float h = clientWorld.getThunderGradient(f);
+			if (h > 0.0F) {
+				float rx = 1.0F - h * 0.5F;
+				red *= rx;
+				green *= rx;
+				blue *= rx;
 			}
 
 			lastWaterFogColorUpdateTime = -1L;

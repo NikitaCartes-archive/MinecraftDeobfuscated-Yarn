@@ -22,8 +22,7 @@ public final class RiverBiome extends Biome {
 				.scale(0.0F)
 				.temperature(0.5F)
 				.downfall(0.5F)
-				.waterColor(4159204)
-				.waterFogColor(329011)
+				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).build())
 				.parent(null)
 		);
 		this.addStructureFeature(Feature.MINESHAFT.configure(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)));

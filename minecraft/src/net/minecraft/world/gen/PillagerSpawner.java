@@ -42,7 +42,7 @@ public class PillagerSpawner {
 						PlayerEntity playerEntity = (PlayerEntity)serverWorld.getPlayers().get(random.nextInt(i));
 						if (playerEntity.isSpectator()) {
 							return 0;
-						} else if (serverWorld.isNearOccupiedPointOfInterest(playerEntity.getBlockPos())) {
+						} else if (serverWorld.isNearOccupiedPointOfInterest(playerEntity.getBlockPos(), 2)) {
 							return 0;
 						} else {
 							int j = (24 + random.nextInt(24)) * (random.nextBoolean() ? -1 : 1);

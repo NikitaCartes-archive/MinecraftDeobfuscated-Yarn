@@ -4,15 +4,8 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.Map;
 import java.util.Random;
-import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
@@ -20,8 +13,6 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
@@ -30,7 +21,7 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.dimension.TheEndDimension;
 
-public class FireBlock extends Block {
+public class FireBlock extends AbstractFireBlock {
 	public static final IntProperty AGE = Properties.AGE_15;
 	public static final BooleanProperty NORTH = ConnectingBlock.NORTH;
 	public static final BooleanProperty EAST = ConnectingBlock.EAST;
@@ -45,8 +36,8 @@ public class FireBlock extends Block {
 	private final Object2IntMap<Block> burnChances = new Object2IntOpenHashMap<>();
 	private final Object2IntMap<Block> spreadChances = new Object2IntOpenHashMap<>();
 
-	protected FireBlock(Block.Settings settings) {
-		super(settings);
+	public FireBlock(Block.Settings settings) {
+		super(settings, 1.0F);
 		this.setDefaultState(
 			this.stateManager
 				.getDefaultState()
@@ -60,16 +51,10 @@ public class FireBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
-		return VoxelShapes.empty();
-	}
-
-	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
 		return this.canPlaceAt(state, world, pos) ? this.getStateForPosition(world, pos).with(AGE, state.get(AGE)) : Blocks.AIR.getDefaultState();
 	}
 
-	@Nullable
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		return this.getStateForPosition(ctx.getWorld(), ctx.getBlockPos());
@@ -236,8 +221,9 @@ public class FireBlock extends Block {
 		}
 	}
 
-	public boolean isFlammable(BlockState blockState) {
-		return this.getBurnChance(blockState) > 0;
+	@Override
+	protected boolean isFlammable(BlockState state) {
+		return this.getBurnChance(state) > 0;
 	}
 
 	@Override
@@ -254,85 +240,12 @@ public class FireBlock extends Block {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
-	@Override
-	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
-		if (random.nextInt(24) == 0) {
-			world.playSound(
-				(double)((float)pos.getX() + 0.5F),
-				(double)((float)pos.getY() + 0.5F),
-				(double)((float)pos.getZ() + 0.5F),
-				SoundEvents.BLOCK_FIRE_AMBIENT,
-				SoundCategory.BLOCKS,
-				1.0F + random.nextFloat(),
-				random.nextFloat() * 0.7F + 0.3F,
-				false
-			);
-		}
-
-		BlockPos blockPos = pos.down();
-		BlockState blockState = world.getBlockState(blockPos);
-		if (!this.isFlammable(blockState) && !blockState.isSideSolidFullSquare(world, blockPos, Direction.UP)) {
-			if (this.isFlammable(world.getBlockState(pos.west()))) {
-				for (int i = 0; i < 2; i++) {
-					double d = (double)pos.getX() + random.nextDouble() * 0.1F;
-					double e = (double)pos.getY() + random.nextDouble();
-					double f = (double)pos.getZ() + random.nextDouble();
-					world.addParticle(ParticleTypes.LARGE_SMOKE, d, e, f, 0.0, 0.0, 0.0);
-				}
-			}
-
-			if (this.isFlammable(world.getBlockState(pos.east()))) {
-				for (int i = 0; i < 2; i++) {
-					double d = (double)(pos.getX() + 1) - random.nextDouble() * 0.1F;
-					double e = (double)pos.getY() + random.nextDouble();
-					double f = (double)pos.getZ() + random.nextDouble();
-					world.addParticle(ParticleTypes.LARGE_SMOKE, d, e, f, 0.0, 0.0, 0.0);
-				}
-			}
-
-			if (this.isFlammable(world.getBlockState(pos.north()))) {
-				for (int i = 0; i < 2; i++) {
-					double d = (double)pos.getX() + random.nextDouble();
-					double e = (double)pos.getY() + random.nextDouble();
-					double f = (double)pos.getZ() + random.nextDouble() * 0.1F;
-					world.addParticle(ParticleTypes.LARGE_SMOKE, d, e, f, 0.0, 0.0, 0.0);
-				}
-			}
-
-			if (this.isFlammable(world.getBlockState(pos.south()))) {
-				for (int i = 0; i < 2; i++) {
-					double d = (double)pos.getX() + random.nextDouble();
-					double e = (double)pos.getY() + random.nextDouble();
-					double f = (double)(pos.getZ() + 1) - random.nextDouble() * 0.1F;
-					world.addParticle(ParticleTypes.LARGE_SMOKE, d, e, f, 0.0, 0.0, 0.0);
-				}
-			}
-
-			if (this.isFlammable(world.getBlockState(pos.up()))) {
-				for (int i = 0; i < 2; i++) {
-					double d = (double)pos.getX() + random.nextDouble();
-					double e = (double)(pos.getY() + 1) - random.nextDouble() * 0.1F;
-					double f = (double)pos.getZ() + random.nextDouble();
-					world.addParticle(ParticleTypes.LARGE_SMOKE, d, e, f, 0.0, 0.0, 0.0);
-				}
-			}
-		} else {
-			for (int i = 0; i < 3; i++) {
-				double d = (double)pos.getX() + random.nextDouble();
-				double e = (double)pos.getY() + random.nextDouble() * 0.5 + 0.5;
-				double f = (double)pos.getZ() + random.nextDouble();
-				world.addParticle(ParticleTypes.LARGE_SMOKE, d, e, f, 0.0, 0.0, 0.0);
-			}
-		}
-	}
-
 	@Override
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
 		builder.add(AGE, NORTH, EAST, SOUTH, WEST, UP);
 	}
 
-	public void registerFlammableBlock(Block block, int burnChance, int spreadChance) {
+	private void registerFlammableBlock(Block block, int burnChance, int spreadChance) {
 		this.burnChances.put(block, burnChance);
 		this.spreadChances.put(block, spreadChance);
 	}

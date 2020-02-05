@@ -102,11 +102,10 @@ public class CatEntity extends TameableEntity {
 
 	@Override
 	protected void initGoals() {
-		this.sitGoal = new SitGoal(this);
 		this.temptGoal = new CatEntity.TemptGoal(this, 0.6, TAMING_INGREDIENT, true);
 		this.goalSelector.add(1, new SwimGoal(this));
-		this.goalSelector.add(1, new CatEntity.SleepWithOwnerGoal(this));
-		this.goalSelector.add(2, this.sitGoal);
+		this.goalSelector.add(1, new SitGoal(this));
+		this.goalSelector.add(2, new CatEntity.SleepWithOwnerGoal(this));
 		this.goalSelector.add(3, this.temptGoal);
 		this.goalSelector.add(5, new GoToOwnerAndPurrGoal(this, 1.1, 8));
 		this.goalSelector.add(6, new FollowOwnerGoal(this, 1.0, 10.0F, 5.0F, false));
@@ -395,7 +394,7 @@ public class CatEntity extends TameableEntity {
 
 						boolean bl = super.interactMob(player, hand);
 						if (!bl || this.isBaby()) {
-							this.sitGoal.setEnabledWithOwner(!this.isSitting());
+							this.method_24346(!this.method_24345());
 						}
 
 						return bl;
@@ -416,7 +415,7 @@ public class CatEntity extends TameableEntity {
 				this.eat(player, itemStack);
 				if (this.random.nextInt(3) == 0) {
 					this.setOwner(player);
-					this.sitGoal.setEnabledWithOwner(true);
+					this.method_24346(true);
 					this.world.sendEntityStatus(this, (byte)7);
 				} else {
 					this.world.sendEntityStatus(this, (byte)6);
@@ -495,7 +494,7 @@ public class CatEntity extends TameableEntity {
 		public boolean canStart() {
 			if (!this.cat.isTamed()) {
 				return false;
-			} else if (this.cat.isSitting()) {
+			} else if (this.cat.method_24345()) {
 				return false;
 			} else {
 				LivingEntity livingEntity = this.cat.getOwner();
@@ -534,13 +533,13 @@ public class CatEntity extends TameableEntity {
 
 		@Override
 		public boolean shouldContinue() {
-			return this.cat.isTamed() && !this.cat.isSitting() && this.owner != null && this.owner.isSleeping() && this.bedPos != null && !this.method_16098();
+			return this.cat.isTamed() && !this.cat.method_24345() && this.owner != null && this.owner.isSleeping() && this.bedPos != null && !this.method_16098();
 		}
 
 		@Override
 		public void start() {
 			if (this.bedPos != null) {
-				this.cat.getSitGoal().setEnabledWithOwner(false);
+				this.cat.setSitting(false);
 				this.cat.getNavigation().startMovingTo((double)this.bedPos.getX(), (double)this.bedPos.getY(), (double)this.bedPos.getZ(), 1.1F);
 			}
 		}
@@ -594,7 +593,7 @@ public class CatEntity extends TameableEntity {
 		@Override
 		public void tick() {
 			if (this.owner != null && this.bedPos != null) {
-				this.cat.getSitGoal().setEnabledWithOwner(false);
+				this.cat.setSitting(false);
 				this.cat.getNavigation().startMovingTo((double)this.bedPos.getX(), (double)this.bedPos.getY(), (double)this.bedPos.getZ(), 1.1F);
 				if (this.cat.squaredDistanceTo(this.owner) < 2.5) {
 					this.ticksOnBed++;

@@ -54,7 +54,7 @@ public class SilverfishEntity extends HostileEntity {
 
 	@Override
 	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return 0.1F;
+		return 0.13F;
 	}
 
 	@Override

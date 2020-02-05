@@ -16,8 +16,8 @@ public class DataQueryHandler {
 	@Nullable
 	private Consumer<CompoundTag> callback;
 
-	public DataQueryHandler(ClientPlayNetworkHandler clientPlayNetworkHandler) {
-		this.networkHandler = clientPlayNetworkHandler;
+	public DataQueryHandler(ClientPlayNetworkHandler networkHandler) {
+		this.networkHandler = networkHandler;
 	}
 
 	public boolean handleQueryResponse(int transactionId, @Nullable CompoundTag tag) {

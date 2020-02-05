@@ -114,8 +114,14 @@ public abstract class Dimension {
 
 	public abstract boolean hasVisibleSky();
 
+	/**
+	 * Modify the fog color offered (usually by the biome).
+	 * 
+	 * <p>The overworld slightly whiteshifts and blueshifts this color; the
+	 * nether doesn't touch it; the end significantly blackshifts this color.
+	 */
 	@Environment(EnvType.CLIENT)
-	public abstract Vec3d getFogColor(float skyAngle, float tickDelta);
+	public abstract Vec3d modifyFogColor(int fogColor, float tickDelta);
 
 	public abstract boolean canPlayersSleep();
 

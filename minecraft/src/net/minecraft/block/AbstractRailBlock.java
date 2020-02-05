@@ -49,11 +49,17 @@ public abstract class AbstractRailBlock extends Block {
 	@Override
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
 		if (oldState.getBlock() != state.getBlock()) {
-			state = this.updateBlockState(world, pos, state, true);
-			if (this.allowCurves) {
-				state.neighborUpdate(world, pos, this, pos, moved);
-			}
+			this.method_24417(state, world, pos, moved);
 		}
+	}
+
+	protected BlockState method_24417(BlockState blockState, World world, BlockPos blockPos, boolean bl) {
+		blockState = this.updateBlockState(world, blockPos, blockState, true);
+		if (this.allowCurves) {
+			blockState.neighborUpdate(world, blockPos, this, blockPos, bl);
+		}
+
+		return blockState;
 	}
 
 	@Override

@@ -38,7 +38,6 @@ public class TexturedRenderLayers {
 	private static final RenderLayer CHEST_RENDER_LAYER = RenderLayer.getEntityCutout(CHEST_ATLAS_TEXTURE);
 	private static final RenderLayer ENTITY_SOLID = RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 	private static final RenderLayer ENTITY_CUTOUT = RenderLayer.getEntityCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-	private static final RenderLayer ENTITY_TRANSLUCENT = RenderLayer.getEntityTranslucent(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 	private static final RenderLayer ENTITY_TRANSLUCENT_CULL = RenderLayer.getEntityTranslucentCull(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 	public static final SpriteIdentifier SHULKER_TEXTURE_ID = new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, new Identifier("entity/shulker/shulker"));
 	public static final List<SpriteIdentifier> COLORED_SHULKER_BOXES_TEXTURES = (List<SpriteIdentifier>)Stream.of(
@@ -93,10 +92,6 @@ public class TexturedRenderLayers {
 
 	public static RenderLayer getEntityCutout() {
 		return ENTITY_CUTOUT;
-	}
-
-	public static RenderLayer getEntityTranslucent() {
-		return ENTITY_TRANSLUCENT;
 	}
 
 	public static RenderLayer getEntityTranslucentCull() {

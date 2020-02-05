@@ -73,14 +73,10 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 		} else if (i < 15 && blockState.isSimpleFullBlock(world, blockPos)) {
 			blockPos = blockPos.offset(direction);
 			blockState = world.getBlockState(blockPos);
-			if (blockState.hasComparatorOutput()) {
-				i = blockState.getComparatorOutput(world, blockPos);
-			} else if (blockState.isAir()) {
-				ItemFrameEntity itemFrameEntity = this.getAttachedItemFrame(world, direction, blockPos);
-				if (itemFrameEntity != null) {
-					i = itemFrameEntity.getComparatorPower();
-				}
-			}
+			ItemFrameEntity itemFrameEntity = this.getAttachedItemFrame(world, direction, blockPos);
+			int j = itemFrameEntity == null ? 0 : itemFrameEntity.getComparatorPower();
+			int k = blockState.hasComparatorOutput() ? blockState.getComparatorOutput(world, blockPos) : 0;
+			i = Math.max(Math.max(j, k), i);
 		}
 
 		return i;

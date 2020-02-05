@@ -572,6 +572,9 @@ public final class ItemStack {
 						} else if (entityAttributeModifier.getId() == Item.ATTACK_SPEED_MODIFIER_UUID) {
 							d += player.getAttributeInstance(EntityAttributes.ATTACK_SPEED).getBaseValue();
 							bl = true;
+						} else if (((String)entry.getKey()).equals(EntityAttributes.KNOCKBACK_RESISTANCE.getId())) {
+							d += player.getAttributeInstance(EntityAttributes.KNOCKBACK_RESISTANCE).getBaseValue();
+							d *= 10.0;
 						}
 					}
 

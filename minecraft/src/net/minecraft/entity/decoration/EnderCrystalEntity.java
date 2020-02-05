@@ -4,7 +4,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.Blocks;
+import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
@@ -57,7 +57,7 @@ public class EnderCrystalEntity extends Entity {
 		if (!this.world.isClient) {
 			BlockPos blockPos = new BlockPos(this);
 			if (this.world.dimension instanceof TheEndDimension && this.world.getBlockState(blockPos).isAir()) {
-				this.world.setBlockState(blockPos, Blocks.FIRE.getDefaultState());
+				this.world.setBlockState(blockPos, AbstractFireBlock.getState(this.world, blockPos));
 			}
 		}
 	}

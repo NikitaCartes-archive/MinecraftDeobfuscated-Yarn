@@ -19,8 +19,7 @@ public final class ForestBiome extends Biome {
 				.scale(0.2F)
 				.temperature(0.7F)
 				.downfall(0.8F)
-				.waterColor(4159204)
-				.waterFogColor(329011)
+				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).build())
 				.parent(null)
 		);
 		this.addStructureFeature(Feature.MINESHAFT.configure(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)));

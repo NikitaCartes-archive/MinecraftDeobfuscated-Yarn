@@ -38,7 +38,6 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 	private final Map<String, GlUniform> uniformByName = Maps.<String, GlUniform>newHashMap();
 	private final int programRef;
 	private final String name;
-	private final boolean useCullFace;
 	private boolean uniformStateDirty;
 	private final GlBlendState blendState;
 	private final List<Integer> attribLocs;
@@ -113,7 +112,6 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 			}
 
 			this.blendState = deserializeBlendState(JsonHelper.getObject(jsonObject, "blend", null));
-			this.useCullFace = JsonHelper.getBoolean(jsonObject, "cull", true);
 			this.vertexShader = getShader(resource, GlShader.Type.VERTEX, string);
 			this.fragmentShader = getShader(resource, GlShader.Type.FRAGMENT, string2);
 			this.programRef = GlProgramManager.createProgram();
@@ -240,12 +238,6 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 		if (this.programRef != activeProgramRef) {
 			GlProgramManager.useProgram(this.programRef);
 			activeProgramRef = this.programRef;
-		}
-
-		if (this.useCullFace) {
-			RenderSystem.enableCull();
-		} else {
-			RenderSystem.disableCull();
 		}
 
 		for (int i = 0; i < this.samplerShaderLocs.size(); i++) {

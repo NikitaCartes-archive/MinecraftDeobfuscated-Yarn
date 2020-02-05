@@ -4,7 +4,6 @@ import com.google.common.collect.Sets;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -20,7 +19,6 @@ import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexConsumers;
@@ -110,14 +108,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 			matrices.translate(-0.5, -0.5, -0.5);
 			if (!model.isBuiltin() && (stack.getItem() != Items.TRIDENT || bl2)) {
 				RenderLayer renderLayer = RenderLayers.getItemLayer(stack);
-				RenderLayer renderLayer2;
-				if (bl && Objects.equals(renderLayer, TexturedRenderLayers.getEntityTranslucent())) {
-					renderLayer2 = TexturedRenderLayers.getEntityTranslucentCull();
-				} else {
-					renderLayer2 = renderLayer;
-				}
-
-				VertexConsumer vertexConsumer = getArmorVertexConsumer(vertexConsumers, renderLayer2, true, stack.hasEnchantmentGlint());
+				VertexConsumer vertexConsumer = getArmorVertexConsumer(vertexConsumers, renderLayer, true, stack.hasEnchantmentGlint());
 				this.renderBakedItemModel(model, stack, light, overlay, matrices, vertexConsumer);
 			} else {
 				BuiltinModelItemRenderer.INSTANCE.render(stack, matrices, vertexConsumers, light, overlay);

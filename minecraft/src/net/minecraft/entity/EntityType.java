@@ -31,6 +31,7 @@ import net.minecraft.entity.mob.EvokerFangsEntity;
 import net.minecraft.entity.mob.GhastEntity;
 import net.minecraft.entity.mob.GiantEntity;
 import net.minecraft.entity.mob.GuardianEntity;
+import net.minecraft.entity.mob.HoglinEntity;
 import net.minecraft.entity.mob.HuskEntity;
 import net.minecraft.entity.mob.IllusionerEntity;
 import net.minecraft.entity.mob.MagmaCubeEntity;
@@ -421,6 +422,9 @@ public class EntityType<T extends Entity> {
 	);
 	public static final EntityType<RavagerEntity> RAVAGER = register(
 		"ravager", EntityType.Builder.create(RavagerEntity::new, EntityCategory.MONSTER).setDimensions(1.95F, 2.2F)
+	);
+	public static final EntityType<HoglinEntity> HOGLIN = register(
+		"hoglin", EntityType.Builder.create(HoglinEntity::new, EntityCategory.MONSTER).setDimensions(0.9F, 0.9F)
 	);
 	public static final EntityType<LightningEntity> LIGHTNING_BOLT = register(
 		"lightning_bolt", EntityType.Builder.<LightningEntity>create(EntityCategory.MISC).disableSaving().setDimensions(0.0F, 0.0F)
@@ -827,7 +831,7 @@ public class EntityType<T extends Entity> {
 			if (this.saveable) {
 				try {
 					Schemas.getFixer().getSchema(DataFixUtils.makeKey(SharedConstants.getGameVersion().getWorldVersion())).getChoiceType(TypeReferences.ENTITY_TREE, id);
-				} catch (IllegalStateException var3) {
+				} catch (IllegalArgumentException var3) {
 					if (SharedConstants.isDevelopment) {
 						throw var3;
 					}

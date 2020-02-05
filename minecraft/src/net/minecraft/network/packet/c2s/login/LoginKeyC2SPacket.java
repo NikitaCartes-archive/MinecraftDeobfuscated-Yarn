@@ -19,9 +19,9 @@ public class LoginKeyC2SPacket implements Packet<ServerLoginPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public LoginKeyC2SPacket(SecretKey secretKey, PublicKey publicKey, byte[] bs) {
+	public LoginKeyC2SPacket(SecretKey secretKey, PublicKey publicKey, byte[] nonce) {
 		this.encryptedSecretKey = NetworkEncryptionUtils.encrypt(publicKey, secretKey.getEncoded());
-		this.encryptedNonce = NetworkEncryptionUtils.encrypt(publicKey, bs);
+		this.encryptedNonce = NetworkEncryptionUtils.encrypt(publicKey, nonce);
 	}
 
 	@Override

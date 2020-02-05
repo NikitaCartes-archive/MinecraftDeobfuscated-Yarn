@@ -15,8 +15,8 @@ public class PacketEncoder extends MessageToByteEncoder<Packet<?>> {
 	private static final Marker MARKER = MarkerManager.getMarker("PACKET_SENT", ClientConnection.MARKER_NETWORK_PACKETS);
 	private final NetworkSide side;
 
-	public PacketEncoder(NetworkSide networkSide) {
-		this.side = networkSide;
+	public PacketEncoder(NetworkSide side) {
+		this.side = side;
 	}
 
 	protected void encode(ChannelHandlerContext channelHandlerContext, Packet<?> packet, ByteBuf byteBuf) throws Exception {

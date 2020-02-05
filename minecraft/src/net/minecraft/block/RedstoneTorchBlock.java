@@ -23,7 +23,7 @@ public class RedstoneTorchBlock extends TorchBlock {
 	private static final Map<BlockView, List<RedstoneTorchBlock.BurnoutEntry>> BURNOUT_MAP = new WeakHashMap();
 
 	protected RedstoneTorchBlock(Block.Settings settings) {
-		super(settings);
+		super(settings, DustParticleEffect.RED);
 		this.setDefaultState(this.stateManager.getDefaultState().with(LIT, Boolean.valueOf(true)));
 	}
 
@@ -106,7 +106,7 @@ public class RedstoneTorchBlock extends TorchBlock {
 			double d = (double)pos.getX() + 0.5 + (random.nextDouble() - 0.5) * 0.2;
 			double e = (double)pos.getY() + 0.7 + (random.nextDouble() - 0.5) * 0.2;
 			double f = (double)pos.getZ() + 0.5 + (random.nextDouble() - 0.5) * 0.2;
-			world.addParticle(DustParticleEffect.RED, d, e, f, 0.0, 0.0, 0.0);
+			world.addParticle(this.field_22155, d, e, f, 0.0, 0.0, 0.0);
 		}
 	}
 

@@ -28,8 +28,8 @@ public class ClientAdvancementManager {
 	@Nullable
 	private Advancement selectedTab;
 
-	public ClientAdvancementManager(MinecraftClient minecraftClient) {
-		this.client = minecraftClient;
+	public ClientAdvancementManager(MinecraftClient client) {
+		this.client = client;
 	}
 
 	public void onAdvancements(AdvancementUpdateS2CPacket packet) {

@@ -18,7 +18,6 @@ import net.minecraft.SharedConstants;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.profiler.DisableableProfiler;
 import net.minecraft.util.profiler.ProfileResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -48,8 +47,7 @@ public class DebugCommand {
 
 	private static int executeStart(ServerCommandSource source) throws CommandSyntaxException {
 		MinecraftServer minecraftServer = source.getMinecraftServer();
-		DisableableProfiler disableableProfiler = minecraftServer.getProfiler();
-		if (disableableProfiler.getController().isEnabled()) {
+		if (minecraftServer.isDebugRunning()) {
 			throw ALREADYRUNNING_EXCEPTION.create();
 		} else {
 			minecraftServer.enableProfiler();
@@ -60,11 +58,10 @@ public class DebugCommand {
 
 	private static int executeStop(ServerCommandSource source) throws CommandSyntaxException {
 		MinecraftServer minecraftServer = source.getMinecraftServer();
-		DisableableProfiler disableableProfiler = minecraftServer.getProfiler();
-		if (!disableableProfiler.getController().isEnabled()) {
+		if (!minecraftServer.isDebugRunning()) {
 			throw NORUNNING_EXCPETION.create();
 		} else {
-			ProfileResult profileResult = disableableProfiler.getController().disable();
+			ProfileResult profileResult = minecraftServer.stopDebug();
 			File file = new File(minecraftServer.getFile("debug"), "profile-results-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + ".txt");
 			profileResult.save(file);
 			float f = (float)profileResult.getTimeSpan() / 1.0E9F;

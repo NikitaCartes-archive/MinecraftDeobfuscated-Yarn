@@ -13,6 +13,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -281,7 +282,7 @@ public class Explosion {
 				if (this.random.nextInt(3) == 0
 					&& this.world.getBlockState(blockPos3).isAir()
 					&& this.world.getBlockState(blockPos3.down()).isFullOpaque(this.world, blockPos3.down())) {
-					this.world.setBlockState(blockPos3, Blocks.FIRE.getDefaultState());
+					this.world.setBlockState(blockPos3, AbstractFireBlock.getState(this.world, blockPos3));
 				}
 			}
 		}

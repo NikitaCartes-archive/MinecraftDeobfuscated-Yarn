@@ -24,8 +24,12 @@ public class FixedBiomeSource extends BiomeSource {
 
 	@Nullable
 	@Override
-	public BlockPos locateBiome(int x, int y, int z, int radius, List<Biome> list, Random random) {
-		return list.contains(this.biome) ? new BlockPos(x - radius + random.nextInt(radius * 2 + 1), y, z - radius + random.nextInt(radius * 2 + 1)) : null;
+	public BlockPos method_24385(int i, int j, int k, int l, int m, List<Biome> list, Random random, boolean bl) {
+		if (list.contains(this.biome)) {
+			return bl ? new BlockPos(i, j, k) : new BlockPos(i - l + random.nextInt(l * 2 + 1), j, k - l + random.nextInt(l * 2 + 1));
+		} else {
+			return null;
+		}
 	}
 
 	@Override

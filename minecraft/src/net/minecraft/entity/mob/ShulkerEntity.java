@@ -220,27 +220,14 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 				}
 			}
 
-			BlockPos blockPos2 = blockPos.offset(this.getAttachedFace());
-			if (!this.world.isTopSolid(blockPos2, this)) {
-				boolean bl = false;
-
-				for (Direction direction2 : Direction.values()) {
-					blockPos2 = blockPos.offset(direction2);
-					if (this.world.isTopSolid(blockPos2, this)) {
-						this.dataTracker.set(ATTACHED_FACE, direction2);
-						bl = true;
-						break;
-					}
-				}
-
-				if (!bl) {
+			Direction direction = this.getAttachedFace();
+			if (!this.method_24350(blockPos, direction)) {
+				Direction direction2 = this.method_24351(blockPos);
+				if (direction2 != null) {
+					this.dataTracker.set(ATTACHED_FACE, direction2);
+				} else {
 					this.method_7127();
 				}
-			}
-
-			BlockPos blockPos3 = blockPos.offset(this.getAttachedFace().getOpposite());
-			if (this.world.isTopSolid(blockPos3, this)) {
-				this.method_7127();
 			}
 		}
 
@@ -308,6 +295,22 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		}
 	}
 
+	@Nullable
+	protected Direction method_24351(BlockPos blockPos) {
+		for (Direction direction : Direction.values()) {
+			if (this.method_24350(blockPos, direction)) {
+				return direction;
+			}
+		}
+
+		return null;
+	}
+
+	private boolean method_24350(BlockPos blockPos, Direction direction) {
+		return this.world.method_24368(blockPos.offset(direction), this, direction.getOpposite())
+			&& this.world.doesNotCollide(this, ShulkerLidCollisions.getLidCollisionBox(blockPos, direction.getOpposite()));
+	}
+
 	protected boolean method_7127() {
 		if (!this.isAiDisabled() && this.isAlive()) {
 			BlockPos blockPos = new BlockPos(this);
@@ -318,17 +321,9 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 					&& this.world.isAir(blockPos2)
 					&& this.world.getWorldBorder().contains(blockPos2)
 					&& this.world.doesNotCollide(this, new Box(blockPos2))) {
-					boolean bl = false;
-
-					for (Direction direction : Direction.values()) {
-						if (this.world.isTopSolid(blockPos2.offset(direction), this)) {
-							this.dataTracker.set(ATTACHED_FACE, direction);
-							bl = true;
-							break;
-						}
-					}
-
-					if (bl) {
+					Direction direction = this.method_24351(blockPos2);
+					if (direction != null) {
+						this.dataTracker.set(ATTACHED_FACE, direction);
 						this.playSound(SoundEvents.ENTITY_SHULKER_TELEPORT, 1.0F, 1.0F);
 						this.dataTracker.set(ATTACHED_BLOCK, Optional.of(blockPos2));
 						this.dataTracker.set(PEEK_AMOUNT, (byte)0);

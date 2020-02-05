@@ -11,8 +11,8 @@ import net.minecraft.util.registry.Registry;
 public class PaintingManager extends SpriteAtlasHolder {
 	private static final Identifier PAINTING_BACK_ID = new Identifier("back");
 
-	public PaintingManager(TextureManager textureManager) {
-		super(textureManager, new Identifier("textures/atlas/paintings.png"), "painting");
+	public PaintingManager(TextureManager manager) {
+		super(manager, new Identifier("textures/atlas/paintings.png"), "painting");
 	}
 
 	@Override

@@ -11,6 +11,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.function.IntSupplier;
+import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -26,6 +27,7 @@ public class ProfilerSystem implements ReadableProfiler {
 	private final LongList timeList = new LongArrayList();
 	private final Map<String, ProfilerSystem.LocatedInfo> locationInfos = Maps.<String, ProfilerSystem.LocatedInfo>newHashMap();
 	private final IntSupplier endTickGetter;
+	private final LongSupplier timeGetter;
 	private final long startTime;
 	private final int startTick;
 	private String location = "";
@@ -34,8 +36,9 @@ public class ProfilerSystem implements ReadableProfiler {
 	private ProfilerSystem.LocatedInfo currentInfo;
 	private final boolean checkTimeout;
 
-	public ProfilerSystem(long startTime, IntSupplier tickGetter, boolean checkTimeout) {
-		this.startTime = startTime;
+	public ProfilerSystem(LongSupplier timeGetter, IntSupplier tickGetter, boolean checkTimeout) {
+		this.startTime = timeGetter.getAsLong();
+		this.timeGetter = timeGetter;
 		this.startTick = tickGetter.getAsInt();
 		this.endTickGetter = tickGetter;
 		this.checkTimeout = checkTimeout;
@@ -145,7 +148,7 @@ public class ProfilerSystem implements ReadableProfiler {
 
 	@Override
 	public ProfileResult getResult() {
-		return new ProfileResultImpl(this.locationInfos, this.startTime, this.startTick, Util.getMeasuringTimeNano(), this.endTickGetter.getAsInt());
+		return new ProfileResultImpl(this.locationInfos, this.startTime, this.startTick, this.timeGetter.getAsLong(), this.endTickGetter.getAsInt());
 	}
 
 	static class LocatedInfo implements ProfileLocationInfo {

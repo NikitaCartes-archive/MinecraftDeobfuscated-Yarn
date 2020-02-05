@@ -1,17 +1,10 @@
 package net.minecraft.datafixer.fix;
 
 import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.DSL;
-import com.mojang.datafixers.DataFix;
-import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.schemas.Schema;
-import com.mojang.datafixers.types.Type;
-import com.mojang.datafixers.util.Pair;
 import java.util.Map;
-import java.util.Objects;
-import net.minecraft.datafixer.TypeReferences;
 
-public class BiomesFix extends DataFix {
+public class BiomesFix extends BiomeRenameFix {
 	public static final Map<String, String> RENAMED_BIOMES = ImmutableMap.<String, String>builder()
 		.put("minecraft:extreme_hills", "minecraft:mountains")
 		.put("minecraft:swampland", "minecraft:swamp")
@@ -69,16 +62,6 @@ public class BiomesFix extends DataFix {
 		.build();
 
 	public BiomesFix(Schema outputSchema, boolean changesType) {
-		super(outputSchema, changesType);
-	}
-
-	@Override
-	protected TypeRewriteRule makeRule() {
-		Type<Pair<String, String>> type = DSL.named(TypeReferences.BIOME.typeName(), DSL.namespacedString());
-		if (!Objects.equals(type, this.getInputSchema().getType(TypeReferences.BIOME))) {
-			throw new IllegalStateException("Biome type is not what was expected.");
-		} else {
-			return this.fixTypeEverywhere("Biomes fix", type, dynamicOps -> pair -> pair.mapSecond(string -> (String)RENAMED_BIOMES.getOrDefault(string, string)));
-		}
+		super(outputSchema, changesType, RENAMED_BIOMES);
 	}
 }

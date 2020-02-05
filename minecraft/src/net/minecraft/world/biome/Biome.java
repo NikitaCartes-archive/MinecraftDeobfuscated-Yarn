@@ -1,5 +1,6 @@
 package net.minecraft.world.biome;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -7,6 +8,7 @@ import it.unimi.dsi.fastutil.longs.Long2FloatLinkedOpenHashMap;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -59,22 +61,21 @@ public abstract class Biome {
 	public static final Logger LOGGER = LogManager.getLogger();
 	public static final Set<Biome> BIOMES = Sets.<Biome>newHashSet();
 	public static final IdList<Biome> PARENT_BIOME_ID_MAP = new IdList<>();
-	protected static final OctaveSimplexNoiseSampler TEMPERATURE_NOISE = new OctaveSimplexNoiseSampler(new ChunkRandom(1234L), 0, 0);
-	public static final OctaveSimplexNoiseSampler FOLIAGE_NOISE = new OctaveSimplexNoiseSampler(new ChunkRandom(2345L), 0, 0);
+	protected static final OctaveSimplexNoiseSampler TEMPERATURE_NOISE = new OctaveSimplexNoiseSampler(new ChunkRandom(1234L), ImmutableList.of(0));
+	public static final OctaveSimplexNoiseSampler FOLIAGE_NOISE = new OctaveSimplexNoiseSampler(new ChunkRandom(2345L), ImmutableList.of(0));
 	@Nullable
 	protected String translationKey;
 	protected final float depth;
 	protected final float scale;
 	protected final float temperature;
 	protected final float downfall;
-	protected final int waterColor;
-	protected final int waterFogColor;
 	private final int skyColor;
 	@Nullable
 	protected final String parent;
 	protected final ConfiguredSurfaceBuilder<?> surfaceBuilder;
 	protected final Biome.Category category;
 	protected final Biome.Precipitation precipitation;
+	protected final BiomeEffects effects;
 	protected final Map<GenerationStep.Carver, List<ConfiguredCarver<?>>> carvers = Maps.<GenerationStep.Carver, List<ConfiguredCarver<?>>>newHashMap();
 	protected final Map<GenerationStep.Feature, List<ConfiguredFeature<?, ?>>> features = Maps.<GenerationStep.Feature, List<ConfiguredFeature<?, ?>>>newHashMap();
 	protected final List<ConfiguredFeature<?, ?>> flowerFeatures = Lists.<ConfiguredFeature<?, ?>>newArrayList();
@@ -89,6 +90,7 @@ public abstract class Biome {
 			long2FloatLinkedOpenHashMap.defaultReturnValue(Float.NaN);
 			return long2FloatLinkedOpenHashMap;
 		}));
+	private final List<Biome.MixedNoisePoint> noisePoints;
 
 	@Nullable
 	public static Biome getModifiedBiome(Biome biome) {
@@ -107,8 +109,7 @@ public abstract class Biome {
 			&& settings.scale != null
 			&& settings.temperature != null
 			&& settings.downfall != null
-			&& settings.waterColor != null
-			&& settings.waterFogColor != null) {
+			&& settings.specialEffects != null) {
 			this.surfaceBuilder = settings.surfaceBuilder;
 			this.precipitation = settings.precipitation;
 			this.category = settings.category;
@@ -116,10 +117,10 @@ public abstract class Biome {
 			this.scale = settings.scale;
 			this.temperature = settings.temperature;
 			this.downfall = settings.downfall;
-			this.waterColor = settings.waterColor;
-			this.waterFogColor = settings.waterFogColor;
 			this.skyColor = this.calculateSkyColor();
 			this.parent = settings.parent;
+			this.noisePoints = (List<Biome.MixedNoisePoint>)(settings.noises != null ? settings.noises : ImmutableList.of());
+			this.effects = settings.specialEffects;
 
 			for (GenerationStep.Feature feature : GenerationStep.Feature.values()) {
 				this.features.put(feature, Lists.newArrayList());
@@ -297,6 +298,11 @@ public abstract class Biome {
 	}
 
 	@Environment(EnvType.CLIENT)
+	public int getFogColor() {
+		return this.effects.getFogColor();
+	}
+
+	@Environment(EnvType.CLIENT)
 	public int getGrassColorAt(double x, double z) {
 		double d = (double)MathHelper.clamp(this.getTemperature(), 0.0F, 1.0F);
 		double e = (double)MathHelper.clamp(this.getRainfall(), 0.0F, 1.0F);
@@ -335,7 +341,6 @@ public abstract class Biome {
 		return this.downfall;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Text getName() {
 		return new TranslatableText(this.getTranslationKey());
 	}
@@ -356,12 +361,23 @@ public abstract class Biome {
 		return this.temperature;
 	}
 
-	public final int getWaterColor() {
-		return this.waterColor;
+	public BiomeEffects getEffects() {
+		return this.effects;
 	}
 
+	@Environment(EnvType.CLIENT)
+	public final int getWaterColor() {
+		return this.effects.getWaterColor();
+	}
+
+	@Environment(EnvType.CLIENT)
 	public final int getWaterFogColor() {
-		return this.waterFogColor;
+		return this.effects.getWaterFogColor();
+	}
+
+	@Environment(EnvType.CLIENT)
+	public Optional<BiomeParticleConfig> getParticleConfig() {
+		return this.effects.getParticleConfig();
 	}
 
 	public final Biome.Category getCategory() {
@@ -374,6 +390,14 @@ public abstract class Biome {
 
 	public SurfaceConfig getSurfaceConfig() {
 		return this.surfaceBuilder.getConfig();
+	}
+
+	public float getNoiseDistance(Biome.MixedNoisePoint from) {
+		return (Float)this.noisePoints
+			.stream()
+			.map(mixedNoisePoint2 -> mixedNoisePoint2.calculateDistanceTo(from))
+			.min(Float::compare)
+			.orElse(Float.POSITIVE_INFINITY);
 	}
 
 	@Nullable
@@ -413,6 +437,84 @@ public abstract class Biome {
 		}
 	}
 
+	/**
+	 * Represents a point in a multi-dimensional cartesian plane. Mixed-noise
+	 * biome generator picks the closest noise point from its selected point
+	 * and choose the biome associated to that closest point. Another factor,
+	 * rarity potential, favors larger differences in values instead, contrary
+	 * to other point values.
+	 */
+	public static class MixedNoisePoint {
+		private final float temperature;
+		private final float humidity;
+		private final float hilliness;
+		private final float style;
+		/**
+		 * This value awards another point with value farthest from this one; i.e.
+		 * unlike other points where closer distance is better, for this value the
+		 * farther the better. The result of the different values can be
+		 * approximately modeled by a hyperbola weight=cosh(peak-1) as used by the
+		 * mixed-noise generator.
+		 */
+		private final float rarityPotential;
+
+		public MixedNoisePoint(float heat, float humidity, float hilliness, float style, float rarityPotential) {
+			this.temperature = heat;
+			this.humidity = humidity;
+			this.hilliness = hilliness;
+			this.style = style;
+			this.rarityPotential = rarityPotential;
+		}
+
+		public boolean equals(Object object) {
+			if (this == object) {
+				return true;
+			} else if (object != null && this.getClass() == object.getClass()) {
+				Biome.MixedNoisePoint mixedNoisePoint = (Biome.MixedNoisePoint)object;
+				if (Float.compare(mixedNoisePoint.temperature, this.temperature) != 0) {
+					return false;
+				} else if (Float.compare(mixedNoisePoint.humidity, this.humidity) != 0) {
+					return false;
+				} else {
+					return Float.compare(mixedNoisePoint.hilliness, this.hilliness) != 0 ? false : Float.compare(mixedNoisePoint.style, this.style) == 0;
+				}
+			} else {
+				return false;
+			}
+		}
+
+		public int hashCode() {
+			int i = this.temperature != 0.0F ? Float.floatToIntBits(this.temperature) : 0;
+			i = 31 * i + (this.humidity != 0.0F ? Float.floatToIntBits(this.humidity) : 0);
+			i = 31 * i + (this.hilliness != 0.0F ? Float.floatToIntBits(this.hilliness) : 0);
+			return 31 * i + (this.style != 0.0F ? Float.floatToIntBits(this.style) : 0);
+		}
+
+		/**
+		 * Calculates the distance from this noise point to another one. The
+		 * distance is a squared distance in a multi-dimensional cartesian plane
+		 * from a mathematical point of view, with a special parameter that
+		 * reduces the calculated distance.
+		 * 
+		 * <p>For most fields except rarity potential, smaller difference between
+		 * two points' fields will lead to smaller distance. For rarity potential,
+		 * larger differences lead to smaller distance.
+		 * 
+		 * <p>This distance is used by the mixed-noise biome layer source. The
+		 * layer source calculates an arbitrary noise point, and selects the
+		 * biome that offers a closest point to its arbitrary point.
+		 * 
+		 * @param other the other noise point
+		 */
+		public float calculateDistanceTo(Biome.MixedNoisePoint other) {
+			return (this.temperature - other.temperature) * (this.temperature - other.temperature)
+				+ (this.humidity - other.humidity) * (this.humidity - other.humidity)
+				+ (this.hilliness - other.hilliness) * (this.hilliness - other.hilliness)
+				+ (this.style - other.style) * (this.style - other.style)
+				- (this.rarityPotential - other.rarityPotential) * (this.rarityPotential - other.rarityPotential);
+		}
+	}
+
 	public static enum Precipitation {
 		NONE("none"),
 		RAIN("rain"),
@@ -447,14 +549,14 @@ public abstract class Biome {
 		@Nullable
 		private Float downfall;
 		@Nullable
-		private Integer waterColor;
-		@Nullable
-		private Integer waterFogColor;
-		@Nullable
 		private String parent;
+		@Nullable
+		private List<Biome.MixedNoisePoint> noises;
+		@Nullable
+		private BiomeEffects specialEffects;
 
-		public <SC extends SurfaceConfig> Biome.Settings configureSurfaceBuilder(SurfaceBuilder<SC> surfaceBuilder, SC surfaceConfig) {
-			this.surfaceBuilder = new ConfiguredSurfaceBuilder<>(surfaceBuilder, surfaceConfig);
+		public <SC extends SurfaceConfig> Biome.Settings configureSurfaceBuilder(SurfaceBuilder<SC> surfaceBuilder, SC config) {
+			this.surfaceBuilder = new ConfiguredSurfaceBuilder<>(surfaceBuilder, config);
 			return this;
 		}
 
@@ -493,16 +595,6 @@ public abstract class Biome {
 			return this;
 		}
 
-		public Biome.Settings waterColor(int waterColor) {
-			this.waterColor = waterColor;
-			return this;
-		}
-
-		public Biome.Settings waterFogColor(int waterFogColor) {
-			this.waterFogColor = waterFogColor;
-			return this;
-		}
-
 		/**
 		 * Sets the biome that this will replace as a modified version of the biome.
 		 * 
@@ -510,6 +602,16 @@ public abstract class Biome {
 		 */
 		public Biome.Settings parent(@Nullable String parent) {
 			this.parent = parent;
+			return this;
+		}
+
+		public Biome.Settings noises(List<Biome.MixedNoisePoint> noises) {
+			this.noises = noises;
+			return this;
+		}
+
+		public Biome.Settings effects(BiomeEffects effects) {
+			this.specialEffects = effects;
 			return this;
 		}
 
@@ -528,10 +630,8 @@ public abstract class Biome {
 				+ this.temperature
 				+ ",\ndownfall="
 				+ this.downfall
-				+ ",\nwaterColor="
-				+ this.waterColor
-				+ ",\nwaterFogColor="
-				+ this.waterFogColor
+				+ ",\nspecialEffects="
+				+ this.specialEffects
 				+ ",\nparent='"
 				+ this.parent
 				+ '\''

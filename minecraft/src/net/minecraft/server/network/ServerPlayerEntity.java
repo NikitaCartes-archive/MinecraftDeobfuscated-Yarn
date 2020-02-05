@@ -851,7 +851,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	public void onContainerSlotUpdate(Container container, int slotId, ItemStack itemStack) {
 		if (!(container.getSlot(slotId) instanceof CraftingResultSlot)) {
 			if (container == this.playerContainer) {
-				Criterions.INVENTORY_CHANGED.trigger(this, this.inventory);
+				Criterions.INVENTORY_CHANGED.trigger(this, this.inventory, itemStack);
 			}
 
 			if (!this.field_13991) {

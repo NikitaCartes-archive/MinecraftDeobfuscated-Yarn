@@ -87,7 +87,7 @@ public class SetBlockCommand {
 			boolean bl;
 			if (mode == SetBlockCommand.Mode.DESTROY) {
 				serverWorld.breakBlock(pos, true);
-				bl = !block.getBlockState().isAir();
+				bl = !block.getBlockState().isAir() || !serverWorld.getBlockState(pos).isAir();
 			} else {
 				BlockEntity blockEntity = serverWorld.getBlockEntity(pos);
 				Clearable.clear(blockEntity);

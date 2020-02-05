@@ -1193,7 +1193,8 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	public void takeKnockback(Entity attacker, float speed, double xMovement, double zMovement) {
-		if (!(this.random.nextDouble() < this.getAttributeInstance(EntityAttributes.KNOCKBACK_RESISTANCE).getValue())) {
+		speed = (float)((double)speed * (1.0 - this.getAttributeInstance(EntityAttributes.KNOCKBACK_RESISTANCE).getValue()));
+		if (!(speed <= 0.0F)) {
 			this.velocityDirty = true;
 			Vec3d vec3d = this.getVelocity();
 			Vec3d vec3d2 = new Vec3d(xMovement, 0.0, zMovement).normalize().multiply((double)speed);
@@ -1301,7 +1302,7 @@ public abstract class LivingEntity extends Entity {
 		return MathHelper.floor(entityAttributeInstance.getValue());
 	}
 
-	protected void damageArmor(float amount) {
+	protected void damageArmor(DamageSource damageSource, float f) {
 	}
 
 	protected void damageShield(float amount) {
@@ -1309,7 +1310,7 @@ public abstract class LivingEntity extends Entity {
 
 	protected float applyArmorToDamage(DamageSource source, float amount) {
 		if (!source.bypassesArmor()) {
-			this.damageArmor(amount);
+			this.damageArmor(source, amount);
 			amount = DamageUtil.getDamageLeft(amount, (float)this.getArmor(), (float)this.getAttributeInstance(EntityAttributes.ARMOR_TOUGHNESS).getValue());
 		}
 

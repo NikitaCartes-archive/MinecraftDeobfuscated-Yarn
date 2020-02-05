@@ -1,8 +1,10 @@
 package net.minecraft.world.gen.surfacebuilder;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
+import java.util.stream.IntStream;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
@@ -134,8 +136,8 @@ public class FrozenOceanSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConf
 	public void initSeed(long seed) {
 		if (this.seed != seed || this.field_15644 == null || this.field_15642 == null) {
 			ChunkRandom chunkRandom = new ChunkRandom(seed);
-			this.field_15644 = new OctaveSimplexNoiseSampler(chunkRandom, 3, 0);
-			this.field_15642 = new OctaveSimplexNoiseSampler(chunkRandom, 0, 0);
+			this.field_15644 = new OctaveSimplexNoiseSampler(chunkRandom, IntStream.rangeClosed(-3, 0));
+			this.field_15642 = new OctaveSimplexNoiseSampler(chunkRandom, ImmutableList.of(0));
 		}
 
 		this.seed = seed;

@@ -96,6 +96,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 		return !this.isExtending() && this.isSource() && this.pushedBlock.getBlock() instanceof PistonBlock
 			? Blocks.PISTON_HEAD
 				.getDefaultState()
+				.with(PistonHeadBlock.SHORT, Boolean.valueOf(this.progress > 0.25F))
 				.with(PistonHeadBlock.TYPE, this.pushedBlock.getBlock() == Blocks.STICKY_PISTON ? PistonType.STICKY : PistonType.DEFAULT)
 				.with(PistonHeadBlock.FACING, this.pushedBlock.get(PistonBlock.FACING))
 			: this.pushedBlock;
@@ -106,13 +107,13 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 		double d = (double)(nextProgress - this.progress);
 		VoxelShape voxelShape = this.getHeadBlockState().getCollisionShape(this.world, this.getPos());
 		if (!voxelShape.isEmpty()) {
-			List<Box> list = voxelShape.getBoundingBoxes();
-			Box box = this.offsetHeadBox(this.getApproximateHeadBox(list));
-			List<Entity> list2 = this.world.getEntities(null, Boxes.stretch(box, direction, d).union(box));
-			if (!list2.isEmpty()) {
+			Box box = this.offsetHeadBox(voxelShape.getBoundingBox());
+			List<Entity> list = this.world.getEntities(null, Boxes.stretch(box, direction, d).union(box));
+			if (!list.isEmpty()) {
+				List<Box> list2 = voxelShape.getBoundingBoxes();
 				boolean bl = this.pushedBlock.getBlock() == Blocks.SLIME_BLOCK;
 
-				for (Entity entity : list2) {
+				for (Entity entity : list) {
 					if (entity.getPistonBehavior() != PistonBehavior.IGNORE) {
 						if (bl) {
 							Vec3d vec3d = entity.getVelocity();
@@ -135,7 +136,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 
 						double h = 0.0;
 
-						for (Box box2 : list) {
+						for (Box box2 : list2) {
 							Box box3 = Boxes.stretch(this.offsetHeadBox(box2), direction, d);
 							Box box4 = entity.getBoundingBox();
 							if (box3.intersects(box4)) {
@@ -195,26 +196,6 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 
 	public Direction getMovementDirection() {
 		return this.extending ? this.facing : this.facing.getOpposite();
-	}
-
-	private Box getApproximateHeadBox(List<Box> boxes) {
-		double d = 0.0;
-		double e = 0.0;
-		double f = 0.0;
-		double g = 1.0;
-		double h = 1.0;
-		double i = 1.0;
-
-		for (Box box : boxes) {
-			d = Math.min(box.x1, d);
-			e = Math.min(box.y1, e);
-			f = Math.min(box.z1, f);
-			g = Math.max(box.x2, g);
-			h = Math.max(box.y2, h);
-			i = Math.max(box.z2, i);
-		}
-
-		return new Box(d, e, f, g, h, i);
 	}
 
 	private static double getIntersectionSize(Box box, Direction direction, Box box2) {
@@ -353,7 +334,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 				blockState = Blocks.PISTON_HEAD
 					.getDefaultState()
 					.with(PistonHeadBlock.FACING, this.facing)
-					.with(PistonHeadBlock.SHORT, Boolean.valueOf(this.extending != 1.0F - this.progress < 4.0F));
+					.with(PistonHeadBlock.SHORT, Boolean.valueOf(this.extending != 1.0F - this.progress < 0.25F));
 			} else {
 				blockState = this.pushedBlock;
 			}

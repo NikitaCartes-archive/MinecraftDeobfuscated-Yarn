@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Map.Entry;
+import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
@@ -228,6 +229,11 @@ public class EnchantmentHelper {
 
 	@Nullable
 	public static Entry<EquipmentSlot, ItemStack> getRandomEnchantedEquipment(Enchantment enchantment, LivingEntity livingEntity) {
+		return method_24365(enchantment, livingEntity, itemStack -> true);
+	}
+
+	@Nullable
+	public static Entry<EquipmentSlot, ItemStack> method_24365(Enchantment enchantment, LivingEntity livingEntity, Predicate<ItemStack> predicate) {
 		Map<EquipmentSlot, ItemStack> map = enchantment.getEquipment(livingEntity);
 		if (map.isEmpty()) {
 			return null;
@@ -236,7 +242,7 @@ public class EnchantmentHelper {
 
 			for (Entry<EquipmentSlot, ItemStack> entry : map.entrySet()) {
 				ItemStack itemStack = (ItemStack)entry.getValue();
-				if (!itemStack.isEmpty() && getLevel(enchantment, itemStack) > 0) {
+				if (!itemStack.isEmpty() && getLevel(enchantment, itemStack) > 0 && predicate.test(itemStack)) {
 					list.add(entry);
 				}
 			}

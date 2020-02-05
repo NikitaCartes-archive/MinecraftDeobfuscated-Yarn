@@ -5,8 +5,8 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnGlobalS2CPacket;
@@ -106,14 +106,15 @@ public class LightningEntity extends Entity {
 
 	private void spawnFire(int spreadAttempts) {
 		if (!this.cosmetic && !this.world.isClient && this.world.getGameRules().getBoolean(GameRules.DO_FIRE_TICK)) {
-			BlockState blockState = Blocks.FIRE.getDefaultState();
 			BlockPos blockPos = new BlockPos(this);
+			BlockState blockState = AbstractFireBlock.getState(this.world, blockPos);
 			if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {
 				this.world.setBlockState(blockPos, blockState);
 			}
 
 			for (int i = 0; i < spreadAttempts; i++) {
 				BlockPos blockPos2 = blockPos.add(this.random.nextInt(3) - 1, this.random.nextInt(3) - 1, this.random.nextInt(3) - 1);
+				blockState = AbstractFireBlock.getState(this.world, blockPos2);
 				if (this.world.getBlockState(blockPos2).isAir() && blockState.canPlaceAt(this.world, blockPos2)) {
 					this.world.setBlockState(blockPos2, blockState);
 				}

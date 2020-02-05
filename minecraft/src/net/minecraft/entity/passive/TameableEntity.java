@@ -9,7 +9,6 @@ import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.SitGoal;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -27,7 +26,7 @@ import net.minecraft.world.World;
 public abstract class TameableEntity extends AnimalEntity {
 	protected static final TrackedData<Byte> TAMEABLE_FLAGS = DataTracker.registerData(TameableEntity.class, TrackedDataHandlerRegistry.BYTE);
 	protected static final TrackedData<Optional<UUID>> OWNER_UUID = DataTracker.registerData(TameableEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
-	protected SitGoal sitGoal;
+	private boolean field_21974;
 
 	protected TameableEntity(EntityType<? extends TameableEntity> type, World world) {
 		super(type, world);
@@ -50,7 +49,7 @@ public abstract class TameableEntity extends AnimalEntity {
 			tag.putString("OwnerUUID", this.getOwnerUuid().toString());
 		}
 
-		tag.putBoolean("Sitting", this.isSitting());
+		tag.putBoolean("Sitting", this.field_21974);
 	}
 
 	@Override
@@ -73,11 +72,8 @@ public abstract class TameableEntity extends AnimalEntity {
 			}
 		}
 
-		if (this.sitGoal != null) {
-			this.sitGoal.setEnabledWithOwner(tag.getBoolean("Sitting"));
-		}
-
-		this.setSitting(tag.getBoolean("Sitting"));
+		this.field_21974 = tag.getBoolean("Sitting");
+		this.setSitting(this.field_21974);
 	}
 
 	@Override
@@ -179,10 +175,6 @@ public abstract class TameableEntity extends AnimalEntity {
 		return entity == this.getOwner();
 	}
 
-	public SitGoal getSitGoal() {
-		return this.sitGoal;
-	}
-
 	public boolean canAttackWithOwner(LivingEntity target, LivingEntity owner) {
 		return true;
 	}
@@ -222,5 +214,13 @@ public abstract class TameableEntity extends AnimalEntity {
 		}
 
 		super.onDeath(source);
+	}
+
+	public boolean method_24345() {
+		return this.field_21974;
+	}
+
+	public void method_24346(boolean bl) {
+		this.field_21974 = bl;
 	}
 }

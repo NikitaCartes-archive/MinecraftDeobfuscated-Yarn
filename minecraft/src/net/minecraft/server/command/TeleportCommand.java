@@ -2,6 +2,7 @@ package net.minecraft.server.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,8 +27,11 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 
 public class TeleportCommand {
+	private static final SimpleCommandExceptionType field_22255 = new SimpleCommandExceptionType(new TranslatableText("commands.teleport.invalidPosition"));
+
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		LiteralCommandNode<ServerCommandSource> literalCommandNode = dispatcher.register(
 			CommandManager.literal("teleport")
@@ -143,7 +147,7 @@ public class TeleportCommand {
 		dispatcher.register(CommandManager.literal("tp").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2)).redirect(literalCommandNode));
 	}
 
-	private static int execute(ServerCommandSource source, Collection<? extends Entity> targets, Entity destination) {
+	private static int execute(ServerCommandSource source, Collection<? extends Entity> targets, Entity destination) throws CommandSyntaxException {
 		for (Entity entity : targets) {
 			teleport(
 				source,
@@ -236,53 +240,58 @@ public class TeleportCommand {
 		float yaw,
 		float pitch,
 		@Nullable TeleportCommand.LookTarget facingLocation
-	) {
-		if (target instanceof ServerPlayerEntity) {
-			ChunkPos chunkPos = new ChunkPos(new BlockPos(x, y, z));
-			world.getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos, 1, target.getEntityId());
-			target.stopRiding();
-			if (((ServerPlayerEntity)target).isSleeping()) {
-				((ServerPlayerEntity)target).wakeUp(true, true);
-			}
-
-			if (world == target.world) {
-				((ServerPlayerEntity)target).networkHandler.teleportRequest(x, y, z, yaw, pitch, movementFlags);
-			} else {
-				((ServerPlayerEntity)target).teleport(world, x, y, z, yaw, pitch);
-			}
-
-			target.setHeadYaw(yaw);
+	) throws CommandSyntaxException {
+		BlockPos blockPos = new BlockPos(x, y, z);
+		if (!World.isValid(blockPos)) {
+			throw field_22255.create();
 		} else {
-			float f = MathHelper.wrapDegrees(yaw);
-			float g = MathHelper.wrapDegrees(pitch);
-			g = MathHelper.clamp(g, -90.0F, 90.0F);
-			if (world == target.world) {
-				target.refreshPositionAndAngles(x, y, z, f, g);
-				target.setHeadYaw(f);
-			} else {
-				target.detach();
-				target.dimension = world.dimension.getType();
-				Entity entity = target;
-				target = target.getType().create(world);
-				if (target == null) {
-					return;
+			if (target instanceof ServerPlayerEntity) {
+				ChunkPos chunkPos = new ChunkPos(new BlockPos(x, y, z));
+				world.getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos, 1, target.getEntityId());
+				target.stopRiding();
+				if (((ServerPlayerEntity)target).isSleeping()) {
+					((ServerPlayerEntity)target).wakeUp(true, true);
 				}
 
-				target.copyFrom(entity);
-				target.refreshPositionAndAngles(x, y, z, f, g);
-				target.setHeadYaw(f);
-				world.onDimensionChanged(target);
-				entity.removed = true;
+				if (world == target.world) {
+					((ServerPlayerEntity)target).networkHandler.teleportRequest(x, y, z, yaw, pitch, movementFlags);
+				} else {
+					((ServerPlayerEntity)target).teleport(world, x, y, z, yaw, pitch);
+				}
+
+				target.setHeadYaw(yaw);
+			} else {
+				float f = MathHelper.wrapDegrees(yaw);
+				float g = MathHelper.wrapDegrees(pitch);
+				g = MathHelper.clamp(g, -90.0F, 90.0F);
+				if (world == target.world) {
+					target.refreshPositionAndAngles(x, y, z, f, g);
+					target.setHeadYaw(f);
+				} else {
+					target.detach();
+					target.dimension = world.dimension.getType();
+					Entity entity = target;
+					target = target.getType().create(world);
+					if (target == null) {
+						return;
+					}
+
+					target.copyFrom(entity);
+					target.refreshPositionAndAngles(x, y, z, f, g);
+					target.setHeadYaw(f);
+					world.onDimensionChanged(target);
+					entity.removed = true;
+				}
 			}
-		}
 
-		if (facingLocation != null) {
-			facingLocation.look(source, target);
-		}
+			if (facingLocation != null) {
+				facingLocation.look(source, target);
+			}
 
-		if (!(target instanceof LivingEntity) || !((LivingEntity)target).isFallFlying()) {
-			target.setVelocity(target.getVelocity().multiply(1.0, 0.0, 1.0));
-			target.onGround = true;
+			if (!(target instanceof LivingEntity) || !((LivingEntity)target).isFallFlying()) {
+				target.setVelocity(target.getVelocity().multiply(1.0, 0.0, 1.0));
+				target.onGround = true;
+			}
 		}
 	}
 

@@ -318,7 +318,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 		boolean bl2 = !itemStack.isEmpty();
 		if (!this.world.isClient) {
 			if (!bl) {
-				if (bl2) {
+				if (bl2 && !this.removed) {
 					this.setHeldItemStack(itemStack);
 					if (!player.abilities.creativeMode) {
 						itemStack.decrement(1);

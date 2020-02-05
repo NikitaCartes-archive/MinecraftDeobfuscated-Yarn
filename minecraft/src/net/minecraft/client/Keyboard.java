@@ -376,16 +376,8 @@ public class Keyboard {
 						KeyBinding.onKeyPressed(keyCode);
 					}
 
-					if (this.client.options.debugProfilerEnabled) {
-						if (key == 48) {
-							this.client.handleProfilerKeyPress(0);
-						}
-
-						for (int k = 0; k < 9; k++) {
-							if (key == 49 + k) {
-								this.client.handleProfilerKeyPress(k + 1);
-							}
-						}
+					if (this.client.options.debugProfilerEnabled && key >= 48 && key <= 57) {
+						this.client.handleProfilerKeyPress(key - 48);
 					}
 				}
 			}

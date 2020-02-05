@@ -29,6 +29,8 @@ public class ItemTags {
 	public static final Tag<Item> ACACIA_LOGS = register("acacia_logs");
 	public static final Tag<Item> JUNGLE_LOGS = register("jungle_logs");
 	public static final Tag<Item> SPRUCE_LOGS = register("spruce_logs");
+	public static final Tag<Item> CRIMSON_STEMS = register("crimson_stems");
+	public static final Tag<Item> WARPED_STEMS = register("warped_stems");
 	public static final Tag<Item> BANNERS = register("banners");
 	public static final Tag<Item> SAND = register("sand");
 	public static final Tag<Item> STAIRS = register("stairs");

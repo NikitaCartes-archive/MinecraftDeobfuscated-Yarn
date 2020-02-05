@@ -144,6 +144,7 @@ public class FoxEntity extends AnimalEntity {
 			);
 		this.goalSelector
 			.add(4, new FleeEntityGoal(this, WolfEntity.class, 8.0F, 1.6, 1.4, livingEntity -> !((WolfEntity)livingEntity).isTamed() && !this.isAggressive()));
+		this.goalSelector.add(4, new FleeEntityGoal(this, PolarBearEntity.class, 8.0F, 1.6, 1.4, livingEntity -> !this.isAggressive()));
 		this.goalSelector.add(5, new FoxEntity.MoveToHuntGoal());
 		this.goalSelector.add(6, new FoxEntity.JumpChasingGoal());
 		this.goalSelector.add(6, new FoxEntity.AvoidDaylightGoal(1.25));
@@ -749,7 +750,7 @@ public class FoxEntity extends AnimalEntity {
 		}
 
 		protected boolean isAtFavoredLocation() {
-			BlockPos blockPos = new BlockPos(FoxEntity.this);
+			BlockPos blockPos = new BlockPos(FoxEntity.this.getX(), FoxEntity.this.getBoundingBox().y2, FoxEntity.this.getZ());
 			return !FoxEntity.this.world.isSkyVisible(blockPos) && FoxEntity.this.getPathfindingFavor(blockPos) >= 0.0F;
 		}
 

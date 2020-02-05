@@ -15,7 +15,7 @@ public class BufferBuilderStorage {
 		object2ObjectLinkedOpenHashMap.put(TexturedRenderLayers.getEntitySolid(), this.blockBuilders.get(RenderLayer.getSolid()));
 		object2ObjectLinkedOpenHashMap.put(TexturedRenderLayers.getEntityCutout(), this.blockBuilders.get(RenderLayer.getCutout()));
 		object2ObjectLinkedOpenHashMap.put(TexturedRenderLayers.getBannerPatterns(), this.blockBuilders.get(RenderLayer.getCutoutMipped()));
-		object2ObjectLinkedOpenHashMap.put(TexturedRenderLayers.getEntityTranslucent(), this.blockBuilders.get(RenderLayer.getTranslucent()));
+		object2ObjectLinkedOpenHashMap.put(TexturedRenderLayers.getEntityTranslucentCull(), this.blockBuilders.get(RenderLayer.getTranslucent()));
 		assignBufferBuilder(object2ObjectLinkedOpenHashMap, TexturedRenderLayers.getShieldPatterns());
 		assignBufferBuilder(object2ObjectLinkedOpenHashMap, TexturedRenderLayers.getBeds());
 		assignBufferBuilder(object2ObjectLinkedOpenHashMap, TexturedRenderLayers.getShulkerBoxes());

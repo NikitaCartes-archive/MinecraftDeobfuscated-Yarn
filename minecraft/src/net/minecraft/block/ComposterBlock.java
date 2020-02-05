@@ -324,7 +324,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 			ItemStack itemStack = this.getInvStack(0);
 			if (!itemStack.isEmpty()) {
 				this.dirty = true;
-				ComposterBlock.addToComposter(this.state, this.world, this.pos, itemStack);
+				this.world.playLevelEvent(1500, this.pos, ComposterBlock.addToComposter(this.state, this.world, this.pos, itemStack) ? 1 : 0);
 				this.removeInvStack(0);
 			}
 		}

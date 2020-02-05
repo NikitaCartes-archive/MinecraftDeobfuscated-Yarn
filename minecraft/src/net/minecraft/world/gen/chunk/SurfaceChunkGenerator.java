@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 import java.util.Random;
+import java.util.stream.IntStream;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.structure.JigsawJunction;
@@ -68,10 +69,12 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 		this.noiseSizeY = worldHeight / this.verticalNoiseResolution;
 		this.noiseSizeZ = 16 / this.horizontalNoiseResolution;
 		this.random = new ChunkRandom(this.seed);
-		this.field_16574 = new OctavePerlinNoiseSampler(this.random, 15, 0);
-		this.field_16581 = new OctavePerlinNoiseSampler(this.random, 15, 0);
-		this.field_16575 = new OctavePerlinNoiseSampler(this.random, 7, 0);
-		this.surfaceDepthNoise = (NoiseSampler)(useSimplexNoise ? new OctaveSimplexNoiseSampler(this.random, 3, 0) : new OctavePerlinNoiseSampler(this.random, 3, 0));
+		this.field_16574 = new OctavePerlinNoiseSampler(this.random, IntStream.rangeClosed(-15, 0));
+		this.field_16581 = new OctavePerlinNoiseSampler(this.random, IntStream.rangeClosed(-15, 0));
+		this.field_16575 = new OctavePerlinNoiseSampler(this.random, IntStream.rangeClosed(-7, 0));
+		this.surfaceDepthNoise = (NoiseSampler)(useSimplexNoise
+			? new OctaveSimplexNoiseSampler(this.random, IntStream.rangeClosed(-3, 0))
+			: new OctavePerlinNoiseSampler(this.random, IntStream.rangeClosed(-3, 0)));
 	}
 
 	private double sampleNoise(int x, int y, int z, double d, double e, double f, double g) {

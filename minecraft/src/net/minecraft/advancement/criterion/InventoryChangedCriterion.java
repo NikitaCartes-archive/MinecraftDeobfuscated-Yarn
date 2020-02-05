@@ -1,11 +1,10 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import java.util.Iterator;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.List;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemConvertible;
@@ -35,8 +34,28 @@ public class InventoryChangedCriterion extends AbstractCriterion<InventoryChange
 		return new InventoryChangedCriterion.Conditions(intRange, intRange2, intRange3, itemPredicates);
 	}
 
-	public void trigger(ServerPlayerEntity player, PlayerInventory inventory) {
-		this.test(player.getAdvancementTracker(), conditions -> conditions.matches(inventory));
+	public void trigger(ServerPlayerEntity serverPlayerEntity, PlayerInventory playerInventory, ItemStack itemStack) {
+		int i = 0;
+		int j = 0;
+		int k = 0;
+
+		for (int l = 0; l < playerInventory.getInvSize(); l++) {
+			ItemStack itemStack2 = playerInventory.getInvStack(l);
+			if (itemStack2.isEmpty()) {
+				j++;
+			} else {
+				k++;
+				if (itemStack2.getCount() >= itemStack2.getMaxCount()) {
+					i++;
+				}
+			}
+		}
+
+		this.method_24362(serverPlayerEntity, playerInventory, itemStack, i, j, k);
+	}
+
+	private void method_24362(ServerPlayerEntity serverPlayerEntity, PlayerInventory playerInventory, ItemStack itemStack, int i, int j, int k) {
+		this.test(serverPlayerEntity.getAdvancementTracker(), conditions -> conditions.matches(playerInventory, itemStack, i, j, k));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
@@ -100,39 +119,36 @@ public class InventoryChangedCriterion extends AbstractCriterion<InventoryChange
 			return jsonObject;
 		}
 
-		public boolean matches(PlayerInventory inventory) {
-			int i = 0;
-			int j = 0;
-			int k = 0;
-			List<ItemPredicate> list = Lists.<ItemPredicate>newArrayList(this.items);
-
-			for (int l = 0; l < inventory.getInvSize(); l++) {
-				ItemStack itemStack = inventory.getInvStack(l);
-				if (itemStack.isEmpty()) {
-					j++;
-				} else {
-					k++;
-					if (itemStack.getCount() >= itemStack.getMaxCount()) {
-						i++;
-					}
-
-					Iterator<ItemPredicate> iterator = list.iterator();
-
-					while (iterator.hasNext()) {
-						ItemPredicate itemPredicate = (ItemPredicate)iterator.next();
-						if (itemPredicate.test(itemStack)) {
-							iterator.remove();
-						}
-					}
-				}
-			}
-
+		public boolean matches(PlayerInventory playerInventory, ItemStack itemStack, int i, int j, int k) {
 			if (!this.full.test(i)) {
 				return false;
 			} else if (!this.empty.test(j)) {
 				return false;
+			} else if (!this.occupied.test(k)) {
+				return false;
 			} else {
-				return !this.occupied.test(k) ? false : list.isEmpty();
+				int l = this.items.length;
+				if (l == 0) {
+					return true;
+				} else if (l != 1) {
+					List<ItemPredicate> list = new ObjectArrayList<>(this.items);
+					int m = playerInventory.getInvSize();
+
+					for (int n = 0; n < m; n++) {
+						if (list.isEmpty()) {
+							return true;
+						}
+
+						ItemStack itemStack2 = playerInventory.getInvStack(n);
+						if (!itemStack2.isEmpty()) {
+							list.removeIf(itemPredicate -> itemPredicate.test(itemStack2));
+						}
+					}
+
+					return list.isEmpty();
+				} else {
+					return !itemStack.isEmpty() && this.items[0].test(itemStack);
+				}
 			}
 		}
 	}

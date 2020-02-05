@@ -1,9 +1,9 @@
 package net.minecraft.item;
 
 import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.FireBlock;
 import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -38,7 +38,7 @@ public class FlintAndSteelItem extends Item {
 			BlockPos blockPos2 = blockPos.offset(context.getSide());
 			if (canIgnite(iWorld.getBlockState(blockPos2), iWorld, blockPos2)) {
 				iWorld.playSound(playerEntity, blockPos2, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, RANDOM.nextFloat() * 0.4F + 0.8F);
-				BlockState blockState2 = ((FireBlock)Blocks.FIRE).getStateForPosition(iWorld, blockPos2);
+				BlockState blockState2 = AbstractFireBlock.getState(iWorld, blockPos2);
 				iWorld.setBlockState(blockPos2, blockState2, 11);
 				ItemStack itemStack = context.getStack();
 				if (playerEntity instanceof ServerPlayerEntity) {
@@ -58,7 +58,7 @@ public class FlintAndSteelItem extends Item {
 	}
 
 	public static boolean canIgnite(BlockState block, IWorld world, BlockPos pos) {
-		BlockState blockState = ((FireBlock)Blocks.FIRE).getStateForPosition(world, pos);
+		BlockState blockState = AbstractFireBlock.getState(world, pos);
 		boolean bl = false;
 
 		for (Direction direction : Direction.Type.HORIZONTAL) {

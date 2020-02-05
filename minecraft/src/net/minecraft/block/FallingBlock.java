@@ -7,6 +7,7 @@ import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
@@ -49,9 +50,8 @@ public class FallingBlock extends Block {
 	}
 
 	public static boolean canFallThrough(BlockState state) {
-		Block block = state.getBlock();
 		Material material = state.getMaterial();
-		return state.isAir() || block == Blocks.FIRE || material.isLiquid() || material.isReplaceable();
+		return state.isAir() || state.matches(BlockTags.FIRE) || material.isLiquid() || material.isReplaceable();
 	}
 
 	public void onLanding(World world, BlockPos pos, BlockState fallingBlockState, BlockState currentStateInPos) {

@@ -225,16 +225,8 @@ public class OverworldDimension extends Dimension {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public Vec3d getFogColor(float skyAngle, float tickDelta) {
-		float f = MathHelper.cos(skyAngle * (float) (Math.PI * 2)) * 2.0F + 0.5F;
-		f = MathHelper.clamp(f, 0.0F, 1.0F);
-		float g = 0.7529412F;
-		float h = 0.84705883F;
-		float i = 1.0F;
-		g *= f * 0.94F + 0.06F;
-		h *= f * 0.94F + 0.06F;
-		i *= f * 0.91F + 0.09F;
-		return new Vec3d((double)g, (double)h, (double)i);
+	public Vec3d modifyFogColor(int fogColor, float tickDelta) {
+		return Vec3d.unpackRgb(fogColor).multiply((double)(tickDelta * 0.94F + 0.06F), (double)(tickDelta * 0.94F + 0.06F), (double)(tickDelta * 0.91F + 0.09F));
 	}
 
 	@Override

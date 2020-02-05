@@ -16,6 +16,7 @@ import net.minecraft.block.enums.SlabType;
 import net.minecraft.block.enums.StairShape;
 import net.minecraft.block.enums.StructureBlockMode;
 import net.minecraft.block.enums.WallMountLocation;
+import net.minecraft.block.enums.WallShape;
 import net.minecraft.block.enums.WireConnection;
 import net.minecraft.util.math.Direction;
 
@@ -64,6 +65,10 @@ public class Properties {
 	public static final DirectionProperty HORIZONTAL_FACING = DirectionProperty.of("facing", Direction.Type.HORIZONTAL);
 	public static final EnumProperty<WallMountLocation> WALL_MOUNT_LOCATION = EnumProperty.of("face", WallMountLocation.class);
 	public static final EnumProperty<Attachment> ATTACHMENT = EnumProperty.of("attachment", Attachment.class);
+	public static final EnumProperty<WallShape> EAST_WALL_SHAPE = EnumProperty.of("east", WallShape.class);
+	public static final EnumProperty<WallShape> NORTH_WALL_SHAPE = EnumProperty.of("north", WallShape.class);
+	public static final EnumProperty<WallShape> SOUTH_WALL_SHAPE = EnumProperty.of("south", WallShape.class);
+	public static final EnumProperty<WallShape> WEST_WALL_SHAPE = EnumProperty.of("west", WallShape.class);
 	public static final EnumProperty<WireConnection> EAST_WIRE_CONNECTION = EnumProperty.of("east", WireConnection.class);
 	public static final EnumProperty<WireConnection> NORTH_WIRE_CONNECTION = EnumProperty.of("north", WireConnection.class);
 	public static final EnumProperty<WireConnection> SOUTH_WIRE_CONNECTION = EnumProperty.of("south", WireConnection.class);

@@ -542,21 +542,11 @@ public abstract class Entity implements Nameable, CommandOutput {
 			}
 
 			this.setVelocity(this.getVelocity().multiply((double)this.getVelocityMultiplier(), 1.0, (double)this.getVelocityMultiplier()));
-			boolean bl = this.isWet();
-			if (this.world.doesAreaContainFireSource(this.getBoundingBox().contract(0.001))) {
-				if (!bl) {
-					this.fireTicks++;
-					if (this.fireTicks == 0) {
-						this.setOnFireFor(8);
-					}
-				}
-
-				this.burn(1);
-			} else if (this.fireTicks <= 0) {
+			if (!this.world.doesAreaContainFireSource(this.getBoundingBox().contract(0.001)) && this.fireTicks <= 0) {
 				this.fireTicks = -this.getBurningDuration();
 			}
 
-			if (bl && this.isOnFire()) {
+			if (this.isWet() && this.isOnFire()) {
 				this.playSound(SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.7F, 1.6F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
 				this.fireTicks = -this.getBurningDuration();
 			}
@@ -880,12 +870,6 @@ public abstract class Entity implements Nameable, CommandOutput {
 	@Nullable
 	public Box getCollisionBox() {
 		return null;
-	}
-
-	protected void burn(int time) {
-		if (!this.isFireImmune()) {
-			this.damage(DamageSource.IN_FIRE, (float)time);
-		}
 	}
 
 	public final boolean isFireImmune() {

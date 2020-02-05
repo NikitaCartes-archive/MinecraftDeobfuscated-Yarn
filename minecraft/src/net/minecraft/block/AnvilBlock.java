@@ -1,6 +1,8 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.container.AnvilContainer;
 import net.minecraft.container.BlockContext;
 import net.minecraft.container.NameableContainerFactory;
@@ -110,5 +112,11 @@ public class AnvilBlock extends FallingBlock {
 	@Override
 	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
 		return false;
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public int getColor(BlockState state) {
+		return this.materialColor.color;
 	}
 }

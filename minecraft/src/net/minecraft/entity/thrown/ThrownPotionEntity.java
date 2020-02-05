@@ -29,6 +29,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -198,7 +199,7 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 	private void extinguishFire(BlockPos blockPos, Direction direction) {
 		BlockState blockState = this.world.getBlockState(blockPos);
 		Block block = blockState.getBlock();
-		if (block == Blocks.FIRE) {
+		if (blockState.matches(BlockTags.FIRE)) {
 			this.world.extinguishFire(null, blockPos.offset(direction), direction.getOpposite());
 		} else if (block == Blocks.CAMPFIRE && (Boolean)blockState.get(CampfireBlock.LIT)) {
 			this.world.playLevelEvent(null, 1009, blockPos, 0);

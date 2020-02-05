@@ -74,9 +74,8 @@ public class WolfEntity extends TameableEntity {
 
 	@Override
 	protected void initGoals() {
-		this.sitGoal = new SitGoal(this);
 		this.goalSelector.add(1, new SwimGoal(this));
-		this.goalSelector.add(2, this.sitGoal);
+		this.goalSelector.add(2, new SitGoal(this));
 		this.goalSelector.add(3, new WolfEntity.AvoidLlamaGoal(this, LlamaEntity.class, 24.0F, 1.5, 1.5));
 		this.goalSelector.add(4, new PounceAtTargetGoal(this, 0.4F));
 		this.goalSelector.add(5, new MeleeAttackGoal(this, 1.0, true));
@@ -297,10 +296,7 @@ public class WolfEntity extends TameableEntity {
 			return false;
 		} else {
 			Entity entity = source.getAttacker();
-			if (this.sitGoal != null) {
-				this.sitGoal.setEnabledWithOwner(false);
-			}
-
+			this.method_24346(false);
 			if (entity != null && !(entity instanceof PlayerEntity) && !(entity instanceof ProjectileEntity)) {
 				amount = (amount + 1.0F) / 2.0F;
 			}
@@ -354,7 +350,7 @@ public class WolfEntity extends TameableEntity {
 				if (!(item instanceof DyeItem)) {
 					boolean bl = super.interactMob(player, hand);
 					if (!bl || this.isBaby()) {
-						this.sitGoal.setEnabledWithOwner(!this.isSitting());
+						this.method_24346(!this.method_24345());
 					}
 
 					return bl;
@@ -371,7 +367,7 @@ public class WolfEntity extends TameableEntity {
 				}
 
 				if (this.isOwner(player) && !this.isBreedingItem(itemStack)) {
-					this.sitGoal.setEnabledWithOwner(!this.isSitting());
+					this.method_24346(!this.method_24345());
 					this.jumping = false;
 					this.navigation.stop();
 					this.setTarget(null);
@@ -385,7 +381,7 @@ public class WolfEntity extends TameableEntity {
 					this.setOwner(player);
 					this.navigation.stop();
 					this.setTarget(null);
-					this.sitGoal.setEnabledWithOwner(true);
+					this.method_24346(true);
 					this.world.sendEntityStatus(this, (byte)7);
 				} else {
 					this.world.sendEntityStatus(this, (byte)6);

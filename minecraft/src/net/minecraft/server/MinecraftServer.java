@@ -97,6 +97,8 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
 import net.minecraft.util.ProgressListener;
+import net.minecraft.util.TickDurationMonitor;
+import net.minecraft.util.TickTimeTracker;
 import net.minecraft.util.UncaughtExceptionLogger;
 import net.minecraft.util.Unit;
 import net.minecraft.util.UserCache;
@@ -109,7 +111,9 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.profiler.DisableableProfiler;
+import net.minecraft.util.profiler.DummyProfiler;
+import net.minecraft.util.profiler.ProfileResult;
+import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.snooper.Snooper;
 import net.minecraft.util.snooper.SnooperListener;
@@ -142,7 +146,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private final Snooper snooper = new Snooper("server", this, Util.getMeasuringTimeMs());
 	private final File gameDir;
 	private final List<Runnable> serverGuiTickables = Lists.<Runnable>newArrayList();
-	private final DisableableProfiler profiler = new DisableableProfiler(this::getTicks);
+	private TickTimeTracker tickTimeTracker = new TickTimeTracker(Util.nanoTimeSupplier, this::getTicks);
+	private Profiler profiler = DummyProfiler.INSTANCE;
 	private final ServerNetworkIo networkIo;
 	protected final WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory;
 	private final ServerMetadata metadata = new ServerMetadata();
@@ -376,9 +381,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			properties.loadLevelInfo(DEMO_LEVEL_INFO);
 		}
 
-		ServerWorld serverWorld = new ServerWorld(
-			this, this.workerExecutor, worldSaveHandler, properties, DimensionType.OVERWORLD, this.profiler, worldGenerationProgressListener
-		);
+		ServerWorld serverWorld = new ServerWorld(this, this.workerExecutor, worldSaveHandler, properties, DimensionType.OVERWORLD, worldGenerationProgressListener);
 		this.worlds.put(DimensionType.OVERWORLD, serverWorld);
 		PersistentStateManager persistentStateManager = serverWorld.getPersistentStateManager();
 		this.initScoreboard(persistentStateManager);
@@ -415,10 +418,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		for (DimensionType dimensionType : DimensionType.getAll()) {
 			if (dimensionType != DimensionType.OVERWORLD) {
 				this.worlds
-					.put(
-						dimensionType,
-						new SecondaryServerWorld(serverWorld2, this, this.workerExecutor, worldSaveHandler, dimensionType, this.profiler, worldGenerationProgressListener)
-					);
+					.put(dimensionType, new SecondaryServerWorld(serverWorld2, this, this.workerExecutor, worldSaveHandler, dimensionType, worldGenerationProgressListener));
 			}
 		}
 	}
@@ -630,11 +630,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 					}
 
 					this.timeReference += 50L;
-					if (this.profilerStartQueued) {
-						this.profilerStartQueued = false;
-						this.profiler.getController().enable();
-					}
-
+					TickDurationMonitor tickDurationMonitor = TickDurationMonitor.create("Server");
+					this.startMonitor(tickDurationMonitor);
 					this.profiler.startTick();
 					this.profiler.push("tick");
 					this.tick(this::shouldKeepTicking);
@@ -644,6 +641,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 					this.method_16208();
 					this.profiler.pop();
 					this.profiler.endTick();
+					this.endMonitor(tickDurationMonitor);
 					this.loading = true;
 				}
 			} else {
@@ -1332,10 +1330,6 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return this.ticks;
 	}
 
-	public void enableProfiler() {
-		this.profilerStartQueued = true;
-	}
-
 	@Environment(EnvType.CLIENT)
 	public Snooper getSnooper() {
 		return this.snooper;
@@ -1587,7 +1581,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return this.metricsData;
 	}
 
-	public DisableableProfiler getProfiler() {
+	public Profiler getProfiler() {
 		return this.profiler;
 	}
 
@@ -1764,5 +1758,36 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	private void method_24154() {
 		Block.STATE_IDS.forEach(BlockState::initShapeCache);
+	}
+
+	private void startMonitor(@Nullable TickDurationMonitor monitor) {
+		if (this.profilerStartQueued) {
+			this.profilerStartQueued = false;
+			this.tickTimeTracker.enable();
+		}
+
+		this.profiler = TickDurationMonitor.tickProfiler(this.tickTimeTracker.getProfiler(), monitor);
+	}
+
+	private void endMonitor(@Nullable TickDurationMonitor monitor) {
+		if (monitor != null) {
+			monitor.endTick();
+		}
+
+		this.profiler = this.tickTimeTracker.getProfiler();
+	}
+
+	public boolean isDebugRunning() {
+		return this.tickTimeTracker.isActive();
+	}
+
+	public void enableProfiler() {
+		this.profilerStartQueued = true;
+	}
+
+	public ProfileResult stopDebug() {
+		ProfileResult profileResult = this.tickTimeTracker.getResult();
+		this.tickTimeTracker.disable();
+		return profileResult;
 	}
 }

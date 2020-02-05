@@ -20,8 +20,7 @@ public final class SavannaBiome extends Biome {
 				.scale(0.05F)
 				.temperature(1.2F)
 				.downfall(0.0F)
-				.waterColor(4159204)
-				.waterFogColor(329011)
+				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).build())
 				.parent(null)
 		);
 		this.addStructureFeature(Feature.VILLAGE.configure(new VillageFeatureConfig("village/savanna/town_centers", 6)));

@@ -7,6 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ArmorItem;
@@ -532,18 +533,18 @@ public class PlayerInventory implements Inventory, Nameable {
 		return this.armor.get(slot);
 	}
 
-	public void damageArmor(float armor) {
-		if (!(armor <= 0.0F)) {
-			armor /= 4.0F;
-			if (armor < 1.0F) {
-				armor = 1.0F;
+	public void damageArmor(DamageSource damageSource, float f) {
+		if (!(f <= 0.0F)) {
+			f /= 4.0F;
+			if (f < 1.0F) {
+				f = 1.0F;
 			}
 
 			for (int i = 0; i < this.armor.size(); i++) {
 				ItemStack itemStack = this.armor.get(i);
-				if (itemStack.getItem() instanceof ArmorItem) {
+				if ((!damageSource.isFire() || !itemStack.getItem().isFireproof()) && itemStack.getItem() instanceof ArmorItem) {
 					int j = i;
-					itemStack.damage((int)armor, this.player, playerEntity -> playerEntity.sendEquipmentBreakStatus(EquipmentSlot.fromTypeIndex(EquipmentSlot.Type.ARMOR, j)));
+					itemStack.damage((int)f, this.player, playerEntity -> playerEntity.sendEquipmentBreakStatus(EquipmentSlot.fromTypeIndex(EquipmentSlot.Type.ARMOR, j)));
 				}
 			}
 		}

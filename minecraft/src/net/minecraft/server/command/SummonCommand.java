@@ -18,9 +18,11 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 
 public class SummonCommand {
 	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.summon.failed"));
+	private static final SimpleCommandExceptionType field_22254 = new SimpleCommandExceptionType(new TranslatableText("commands.summon.invalidPosition"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
@@ -67,28 +69,33 @@ public class SummonCommand {
 	}
 
 	private static int execute(ServerCommandSource source, Identifier entity, Vec3d pos, CompoundTag nbt, boolean initialize) throws CommandSyntaxException {
-		CompoundTag compoundTag = nbt.copy();
-		compoundTag.putString("id", entity.toString());
-		if (EntityType.getId(EntityType.LIGHTNING_BOLT).equals(entity)) {
-			LightningEntity lightningEntity = new LightningEntity(source.getWorld(), pos.x, pos.y, pos.z, false);
-			source.getWorld().addLightning(lightningEntity);
-			source.sendFeedback(new TranslatableText("commands.summon.success", lightningEntity.getDisplayName()), true);
-			return 1;
+		BlockPos blockPos = new BlockPos(pos);
+		if (!World.isValid(blockPos)) {
+			throw field_22254.create();
 		} else {
-			ServerWorld serverWorld = source.getWorld();
-			Entity entity2 = EntityType.loadEntityWithPassengers(compoundTag, serverWorld, entityx -> {
-				entityx.refreshPositionAndAngles(pos.x, pos.y, pos.z, entityx.yaw, entityx.pitch);
-				return !serverWorld.tryLoadEntity(entityx) ? null : entityx;
-			});
-			if (entity2 == null) {
-				throw FAILED_EXCEPTION.create();
-			} else {
-				if (initialize && entity2 instanceof MobEntity) {
-					((MobEntity)entity2).initialize(source.getWorld(), source.getWorld().getLocalDifficulty(new BlockPos(entity2)), SpawnType.COMMAND, null, null);
-				}
-
-				source.sendFeedback(new TranslatableText("commands.summon.success", entity2.getDisplayName()), true);
+			CompoundTag compoundTag = nbt.copy();
+			compoundTag.putString("id", entity.toString());
+			if (EntityType.getId(EntityType.LIGHTNING_BOLT).equals(entity)) {
+				LightningEntity lightningEntity = new LightningEntity(source.getWorld(), pos.x, pos.y, pos.z, false);
+				source.getWorld().addLightning(lightningEntity);
+				source.sendFeedback(new TranslatableText("commands.summon.success", lightningEntity.getDisplayName()), true);
 				return 1;
+			} else {
+				ServerWorld serverWorld = source.getWorld();
+				Entity entity2 = EntityType.loadEntityWithPassengers(compoundTag, serverWorld, entityx -> {
+					entityx.refreshPositionAndAngles(pos.x, pos.y, pos.z, entityx.yaw, entityx.pitch);
+					return !serverWorld.tryLoadEntity(entityx) ? null : entityx;
+				});
+				if (entity2 == null) {
+					throw FAILED_EXCEPTION.create();
+				} else {
+					if (initialize && entity2 instanceof MobEntity) {
+						((MobEntity)entity2).initialize(source.getWorld(), source.getWorld().getLocalDifficulty(new BlockPos(entity2)), SpawnType.COMMAND, null, null);
+					}
+
+					source.sendFeedback(new TranslatableText("commands.summon.success", entity2.getDisplayName()), true);
+					return 1;
+				}
 			}
 		}
 	}

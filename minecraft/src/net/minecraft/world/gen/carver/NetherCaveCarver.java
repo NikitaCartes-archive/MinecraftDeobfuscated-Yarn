@@ -18,7 +18,17 @@ public class NetherCaveCarver extends CaveCarver {
 	public NetherCaveCarver(Function<Dynamic<?>, ? extends ProbabilityConfig> configDeserializer) {
 		super(configDeserializer, 128);
 		this.alwaysCarvableBlocks = ImmutableSet.of(
-			Blocks.STONE, Blocks.GRANITE, Blocks.DIORITE, Blocks.ANDESITE, Blocks.DIRT, Blocks.COARSE_DIRT, Blocks.PODZOL, Blocks.GRASS_BLOCK, Blocks.NETHERRACK
+			Blocks.STONE,
+			Blocks.GRANITE,
+			Blocks.DIORITE,
+			Blocks.ANDESITE,
+			Blocks.DIRT,
+			Blocks.COARSE_DIRT,
+			Blocks.PODZOL,
+			Blocks.GRASS_BLOCK,
+			Blocks.NETHERRACK,
+			Blocks.SOUL_SAND,
+			Blocks.SOUL_SOIL
 		);
 		this.carvableFluids = ImmutableSet.of(Fluids.LAVA, Fluids.WATER);
 	}

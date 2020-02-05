@@ -3,7 +3,6 @@ package net.minecraft.server.world;
 import java.util.concurrent.Executor;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.WorldGenerationProgressListener;
-import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.border.WorldBorderListener;
 import net.minecraft.world.dimension.DimensionType;
@@ -16,18 +15,9 @@ public class SecondaryServerWorld extends ServerWorld {
 		Executor workerExecutor,
 		WorldSaveHandler worldSaveHandler,
 		DimensionType dimensionType,
-		Profiler profiler,
 		WorldGenerationProgressListener worldGenerationProgressListener
 	) {
-		super(
-			server,
-			workerExecutor,
-			worldSaveHandler,
-			new UnmodifiableLevelProperties(world.getLevelProperties()),
-			dimensionType,
-			profiler,
-			worldGenerationProgressListener
-		);
+		super(server, workerExecutor, worldSaveHandler, new UnmodifiableLevelProperties(world.getLevelProperties()), dimensionType, worldGenerationProgressListener);
 		world.getWorldBorder().addListener(new WorldBorderListener.WorldBorderSyncer(this.getWorldBorder()));
 	}
 

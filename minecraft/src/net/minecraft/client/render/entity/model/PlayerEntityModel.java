@@ -98,8 +98,10 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 		this.rightSleeve.copyPositionAndRotation(this.rightArm);
 		this.jacket.copyPositionAndRotation(this.torso);
 		if (livingEntity.isInSneakingPose()) {
-			this.cape.pivotY = 2.0F;
+			this.cape.pivotZ = 1.6F;
+			this.cape.pivotY = 1.8F;
 		} else {
+			this.cape.pivotZ = 0.0F;
 			this.cape.pivotY = 0.0F;
 		}
 	}

@@ -131,11 +131,11 @@ public abstract class Container {
 			ItemStack itemStack = ((Slot)this.slots.get(i)).getStack();
 			ItemStack itemStack2 = this.trackedStacks.get(i);
 			if (!ItemStack.areEqualIgnoreDamage(itemStack2, itemStack)) {
-				itemStack2 = itemStack.copy();
-				this.trackedStacks.set(i, itemStack2);
+				ItemStack itemStack3 = itemStack.copy();
+				this.trackedStacks.set(i, itemStack3);
 
 				for (ContainerListener containerListener : this.listeners) {
-					containerListener.onContainerSlotUpdate(this, i, itemStack2);
+					containerListener.onContainerSlotUpdate(this, i, itemStack3);
 				}
 			}
 		}

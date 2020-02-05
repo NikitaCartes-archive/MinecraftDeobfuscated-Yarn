@@ -52,6 +52,9 @@ public abstract class Feature<FC extends FeatureConfig> {
 		"buried_treasure", new BuriedTreasureFeature(BuriedTreasureFeatureConfig::deserialize)
 	);
 	public static final StructureFeature<VillageFeatureConfig> VILLAGE = register("village", new VillageFeature(VillageFeatureConfig::deserialize));
+	public static final StructureFeature<DefaultFeatureConfig> NETHER_FOSSIL = register(
+		"nether_fossil", new NetherFossilFeature(DefaultFeatureConfig::deserialize)
+	);
 	public static final Feature<DefaultFeatureConfig> NO_OP = register("no_op", new NoOpFeature(DefaultFeatureConfig::deserialize));
 	public static final Feature<BranchedTreeFeatureConfig> NORMAL_TREE = register("normal_tree", new OakTreeFeature(BranchedTreeFeatureConfig::deserialize));
 	public static final Feature<BranchedTreeFeatureConfig> ACACIA_TREE = register("acacia_tree", new AcaciaTreeFeature(BranchedTreeFeatureConfig::deserialize));
@@ -102,8 +105,15 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<SeaPickleFeatureConfig> SEA_PICKLE = register("sea_pickle", new SeaPickleFeature(SeaPickleFeatureConfig::deserialize));
 	public static final Feature<SimpleBlockFeatureConfig> SIMPLE_BLOCK = register("simple_block", new SimpleBlockFeature(SimpleBlockFeatureConfig::deserialize));
 	public static final Feature<ProbabilityConfig> BAMBOO = register("bamboo", new BambooFeature(ProbabilityConfig::deserialize));
+	public static final Feature<HugeFungiFeatureConfig> HUGE_FUNGI = register("huge_fungi", new HugeFungiFeature(HugeFungiFeatureConfig::deserialize));
+	public static final Feature<BlockPileFeatureConfig> NETHER_FOREST_VEGETATION = register(
+		"nether_forest_vegetation", new NetherForestVegetationFeature(BlockPileFeatureConfig::deserialize)
+	);
+	public static final Feature<DefaultFeatureConfig> WEEPING_VINES = register("weeping_vines", new WeepingVinesFeature(DefaultFeatureConfig::deserialize));
 	public static final Feature<FillLayerFeatureConfig> FILL_LAYER = register("fill_layer", new FillLayerFeature(FillLayerFeatureConfig::deserialize));
 	public static final BonusChestFeature BONUS_CHEST = register("bonus_chest", new BonusChestFeature(DefaultFeatureConfig::deserialize));
+	public static final Feature<DefaultFeatureConfig> BASALT_PILLAR = register("basalt_pillar", new BasaltPillarFeature(DefaultFeatureConfig::deserialize));
+	public static final Feature<OreFeatureConfig> NO_SURFACE_ORE = register("no_surface_ore", new NoSurfaceOreFeature(OreFeatureConfig::deserialize));
 	public static final Feature<RandomRandomFeatureConfig> RANDOM_RANDOM_SELECTOR = register(
 		"random_random_selector", new RandomRandomFeature(RandomRandomFeatureConfig::deserialize)
 	);
@@ -134,6 +144,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 		hashBiMap.put("EndCity".toLowerCase(Locale.ROOT), END_CITY);
 		hashBiMap.put("Buried_Treasure".toLowerCase(Locale.ROOT), BURIED_TREASURE);
 		hashBiMap.put("Village".toLowerCase(Locale.ROOT), VILLAGE);
+		hashBiMap.put("Nether_Fossil".toLowerCase(Locale.ROOT), NETHER_FOSSIL);
 	});
 	public static final List<StructureFeature<?>> JIGSAW_STRUCTURES = ImmutableList.of(PILLAGER_OUTPOST, VILLAGE);
 	private final Function<Dynamic<?>, ? extends FC> configDeserializer;

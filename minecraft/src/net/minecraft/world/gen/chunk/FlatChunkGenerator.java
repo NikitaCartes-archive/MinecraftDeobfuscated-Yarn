@@ -13,6 +13,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeEffects;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.biome.source.BiomeSource;
@@ -50,8 +51,7 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 			biome.getScale(),
 			biome.getTemperature(),
 			biome.getRainfall(),
-			biome.getWaterColor(),
-			biome.getWaterFogColor(),
+			biome.getEffects(),
 			biome.getParent()
 		);
 		Map<String, Map<String, String>> map = this.config.getStructures();
@@ -189,8 +189,7 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 			float g,
 			float h,
 			float i,
-			int j,
-			int k,
+			BiomeEffects biomeEffects,
 			@Nullable String string
 		) {
 			super(
@@ -202,8 +201,7 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 					.scale(g)
 					.temperature(h)
 					.downfall(i)
-					.waterColor(j)
-					.waterFogColor(k)
+					.effects(biomeEffects)
 					.parent(string)
 			);
 		}

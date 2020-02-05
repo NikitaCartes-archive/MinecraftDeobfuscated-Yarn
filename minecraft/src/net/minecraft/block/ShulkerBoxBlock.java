@@ -12,6 +12,7 @@ import net.minecraft.container.Container;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.ShulkerLidCollisions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
@@ -37,7 +38,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -82,18 +82,8 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 			if (blockEntity instanceof ShulkerBoxBlockEntity) {
 				Direction direction = state.get(FACING);
 				ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)blockEntity;
-				boolean bl;
-				if (shulkerBoxBlockEntity.getAnimationStage() == ShulkerBoxBlockEntity.AnimationStage.CLOSED) {
-					Box box = VoxelShapes.fullCube()
-						.getBoundingBox()
-						.stretch((double)(0.5F * (float)direction.getOffsetX()), (double)(0.5F * (float)direction.getOffsetY()), (double)(0.5F * (float)direction.getOffsetZ()))
-						.shrink((double)direction.getOffsetX(), (double)direction.getOffsetY(), (double)direction.getOffsetZ());
-					bl = world.doesNotCollide(box.offset(pos.offset(direction)));
-				} else {
-					bl = true;
-				}
-
-				if (bl) {
+				if (shulkerBoxBlockEntity.getAnimationStage() == ShulkerBoxBlockEntity.AnimationStage.CLOSED
+					&& world.doesNotCollide(ShulkerLidCollisions.getLidCollisionBox(pos, direction))) {
 					player.openContainer(shulkerBoxBlockEntity);
 					player.incrementStat(Stats.OPEN_SHULKER_BOX);
 				}
@@ -131,7 +121,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 					itemStack.setCustomName(shulkerBoxBlockEntity.getCustomName());
 				}
 
-				ItemEntity itemEntity = new ItemEntity(world, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), itemStack);
+				ItemEntity itemEntity = new ItemEntity(world, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, itemStack);
 				itemEntity.setToDefaultPickupDelay();
 				world.spawnEntity(itemEntity);
 			} else {

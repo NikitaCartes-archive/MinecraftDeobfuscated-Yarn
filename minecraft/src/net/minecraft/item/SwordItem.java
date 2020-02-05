@@ -44,7 +44,7 @@ public class SwordItem extends ToolItem {
 					&& material != Material.REPLACEABLE_PLANT
 					&& material != Material.UNUSED_PLANT
 					&& !state.matches(BlockTags.LEAVES)
-					&& material != Material.GOURD
+					&& material != Material.PUMPKIN
 				? 1.0F
 				: 1.5F;
 		}

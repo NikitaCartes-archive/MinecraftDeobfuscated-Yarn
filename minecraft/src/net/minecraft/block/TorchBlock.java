@@ -4,6 +4,7 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityContext;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -15,9 +16,11 @@ import net.minecraft.world.WorldView;
 
 public class TorchBlock extends Block {
 	protected static final VoxelShape BOUNDING_SHAPE = Block.createCuboidShape(6.0, 0.0, 6.0, 10.0, 10.0, 10.0);
+	protected final ParticleEffect field_22155;
 
-	protected TorchBlock(Block.Settings settings) {
+	protected TorchBlock(Block.Settings settings, ParticleEffect particleEffect) {
 		super(settings);
+		this.field_22155 = particleEffect;
 	}
 
 	@Override
@@ -44,6 +47,6 @@ public class TorchBlock extends Block {
 		double e = (double)pos.getY() + 0.7;
 		double f = (double)pos.getZ() + 0.5;
 		world.addParticle(ParticleTypes.SMOKE, d, e, f, 0.0, 0.0, 0.0);
-		world.addParticle(ParticleTypes.FLAME, d, e, f, 0.0, 0.0, 0.0);
+		world.addParticle(this.field_22155, d, e, f, 0.0, 0.0, 0.0);
 	}
 }

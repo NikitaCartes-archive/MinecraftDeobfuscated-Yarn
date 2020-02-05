@@ -63,7 +63,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		() -> new DefaultEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat("Netty Local Client IO #%d").setDaemon(true).build())
 	);
 	private final NetworkSide side;
-	private final Queue<ClientConnection.PacketWrapper> packetQueue = Queues.<ClientConnection.PacketWrapper>newConcurrentLinkedQueue();
+	private final Queue<ClientConnection.QueuedPacket> packetQueue = Queues.<ClientConnection.QueuedPacket>newConcurrentLinkedQueue();
 	private Channel channel;
 	private SocketAddress address;
 	private PacketListener packetListener;
@@ -77,8 +77,8 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	private int ticks;
 	private boolean errored;
 
-	public ClientConnection(NetworkSide networkSide) {
-		this.side = networkSide;
+	public ClientConnection(NetworkSide side) {
+		this.side = side;
 	}
 
 	@Override
@@ -161,7 +161,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 			this.sendQueuedPackets();
 			this.sendImmediately(packet, callback);
 		} else {
-			this.packetQueue.add(new ClientConnection.PacketWrapper(packet, callback));
+			this.packetQueue.add(new ClientConnection.QueuedPacket(packet, callback));
 		}
 	}
 
@@ -204,9 +204,9 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	private void sendQueuedPackets() {
 		if (this.channel != null && this.channel.isOpen()) {
 			synchronized (this.packetQueue) {
-				ClientConnection.PacketWrapper packetWrapper;
-				while ((packetWrapper = (ClientConnection.PacketWrapper)this.packetQueue.poll()) != null) {
-					this.sendImmediately(packetWrapper.packet, packetWrapper.listener);
+				ClientConnection.QueuedPacket queuedPacket;
+				while ((queuedPacket = (ClientConnection.QueuedPacket)this.packetQueue.poll()) != null) {
+					this.sendImmediately(queuedPacket.packet, queuedPacket.callback);
 				}
 			}
 		}
@@ -382,14 +382,14 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		return this.avgPacketsSent;
 	}
 
-	static class PacketWrapper {
+	static class QueuedPacket {
 		private final Packet<?> packet;
 		@Nullable
-		private final GenericFutureListener<? extends Future<? super Void>> listener;
+		private final GenericFutureListener<? extends Future<? super Void>> callback;
 
-		public PacketWrapper(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> genericFutureListener) {
+		public QueuedPacket(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> callback) {
 			this.packet = packet;
-			this.listener = genericFutureListener;
+			this.callback = callback;
 		}
 	}
 }

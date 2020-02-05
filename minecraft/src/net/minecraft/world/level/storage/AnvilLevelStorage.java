@@ -66,7 +66,7 @@ public class AnvilLevelStorage {
 		convertRegions(
 			new File(file2, "region"),
 			list2,
-			biomeSourceType.applyConfig(biomeSourceType.getConfig(levelProperties).setBiome(Biomes.NETHER)),
+			biomeSourceType.applyConfig(biomeSourceType.getConfig(levelProperties).setBiome(Biomes.NETHER_WASTES)),
 			list.size(),
 			i,
 			progressListener

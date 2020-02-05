@@ -19,6 +19,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -337,7 +338,7 @@ public class NetherPortalBlock extends Block {
 
 		protected boolean validStateInsidePortal(BlockState state) {
 			Block block = state.getBlock();
-			return state.isAir() || block == Blocks.FIRE || block == Blocks.NETHER_PORTAL;
+			return state.isAir() || state.matches(BlockTags.FIRE) || block == Blocks.NETHER_PORTAL;
 		}
 
 		public boolean isValid() {

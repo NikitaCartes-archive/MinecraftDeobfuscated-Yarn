@@ -49,7 +49,7 @@ import net.minecraft.world.WorldView;
 
 @Environment(EnvType.CLIENT)
 public class EntityRenderDispatcher {
-	private static final RenderLayer SHADOW_LAYER = RenderLayer.getEntityNoOutline(new Identifier("textures/misc/shadow.png"));
+	private static final RenderLayer SHADOW_LAYER = RenderLayer.method_24469(new Identifier("textures/misc/shadow.png"));
 	private final Map<EntityType<?>, EntityRenderer<?>> renderers = Maps.<EntityType<?>, EntityRenderer<?>>newHashMap();
 	private final Map<String, PlayerEntityRenderer> modelRenderers = Maps.<String, PlayerEntityRenderer>newHashMap();
 	private final PlayerEntityRenderer playerRenderer;
@@ -112,13 +112,14 @@ public class EntityRenderDispatcher {
 		this.register(EntityType.GHAST, new GhastEntityRenderer(this));
 		this.register(EntityType.GIANT, new GiantEntityRenderer(this, 6.0F));
 		this.register(EntityType.GUARDIAN, new GuardianEntityRenderer(this));
+		this.register(EntityType.HOGLIN, new HoglinEntityRenderer(this));
 		this.register(EntityType.HOPPER_MINECART, new MinecartEntityRenderer<>(this));
 		this.register(EntityType.HORSE, new HorseEntityRenderer(this));
 		this.register(EntityType.HUSK, new HuskEntityRenderer(this));
 		this.register(EntityType.ILLUSIONER, new IllusionerEntityRenderer(this));
 		this.register(EntityType.IRON_GOLEM, new IronGolemEntityRenderer(this));
-		this.register(EntityType.ITEM_FRAME, new ItemFrameEntityRenderer(this, itemRenderer));
 		this.register(EntityType.ITEM, new ItemEntityRenderer(this, itemRenderer));
+		this.register(EntityType.ITEM_FRAME, new ItemFrameEntityRenderer(this, itemRenderer));
 		this.register(EntityType.LEASH_KNOT, new LeashKnotEntityRenderer(this));
 		this.register(EntityType.LIGHTNING_BOLT, new LightningEntityRenderer(this));
 		this.register(EntityType.LLAMA, new LlamaEntityRenderer(this));
@@ -432,7 +433,7 @@ public class EntityRenderDispatcher {
 						double i = (double)pos.getZ() + box.z2;
 						float j = (float)(d - x);
 						float k = (float)(e - x);
-						float l = (float)(g - y + 0.015625);
+						float l = (float)(g - y);
 						float m = (float)(h - z);
 						float n = (float)(i - z);
 						float o = -j / 2.0F / size + 0.5F;

@@ -63,9 +63,9 @@ public class PaintingEntity extends AbstractDecorationEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public PaintingEntity(World world, BlockPos blockPos, Direction direction, PaintingMotive paintingMotive) {
-		this(world, blockPos, direction);
-		this.motive = paintingMotive;
+	public PaintingEntity(World world, BlockPos pos, Direction direction, PaintingMotive motive) {
+		this(world, pos, direction);
+		this.motive = motive;
 		this.setFacing(direction);
 	}
 

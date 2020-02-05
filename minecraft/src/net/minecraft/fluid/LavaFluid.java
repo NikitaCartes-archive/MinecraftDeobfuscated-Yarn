@@ -4,6 +4,7 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
@@ -98,7 +99,7 @@ public abstract class LavaFluid extends BaseFluid {
 					}
 
 					if (world.isAir(blockPos2.up()) && this.hasBurnableBlock(world, blockPos2)) {
-						world.setBlockState(blockPos2.up(), Blocks.FIRE.getDefaultState());
+						world.setBlockState(blockPos2.up(), AbstractFireBlock.getState(world, blockPos2));
 					}
 				}
 			}
@@ -132,8 +133,8 @@ public abstract class LavaFluid extends BaseFluid {
 	}
 
 	@Override
-	public int method_15733(WorldView worldView) {
-		return worldView.getDimension().doesWaterVaporize() ? 4 : 2;
+	public int method_15733(WorldView world) {
+		return world.getDimension().doesWaterVaporize() ? 4 : 2;
 	}
 
 	@Override

@@ -33,20 +33,8 @@ public class KelpBlock extends Block implements FluidFillable {
 		return SHAPE;
 	}
 
-	@Nullable
-	@Override
-	public BlockState getPlacementState(ItemPlacementContext ctx) {
-		FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
-		return fluidState.matches(FluidTags.WATER) && fluidState.getLevel() == 8 ? this.getPlacementState(ctx.getWorld()) : null;
-	}
-
 	public BlockState getPlacementState(IWorld world) {
 		return this.getDefaultState().with(AGE, Integer.valueOf(world.getRandom().nextInt(25)));
-	}
-
-	@Override
-	public FluidState getFluidState(BlockState state) {
-		return Fluids.WATER.getStill(false);
 	}
 
 	@Override
@@ -54,10 +42,11 @@ public class KelpBlock extends Block implements FluidFillable {
 		if (!state.canPlaceAt(world, pos)) {
 			world.breakBlock(pos, true);
 		} else {
-			BlockPos blockPos = pos.up();
-			BlockState blockState = world.getBlockState(blockPos);
-			if (blockState.getBlock() == Blocks.WATER && (Integer)state.get(AGE) < 25 && random.nextDouble() < 0.14) {
-				world.setBlockState(blockPos, state.cycle(AGE));
+			if ((Integer)state.get(AGE) < 25 && random.nextDouble() < 0.14) {
+				BlockPos blockPos = pos.up();
+				if (world.getBlockState(blockPos).getBlock() == Blocks.WATER) {
+					world.setBlockState(blockPos, state.cycle(AGE));
+				}
 			}
 		}
 	}
@@ -72,11 +61,7 @@ public class KelpBlock extends Block implements FluidFillable {
 
 	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		if (!state.canPlaceAt(world, pos)) {
-			if (facing == Direction.DOWN) {
-				return Blocks.AIR.getDefaultState();
-			}
-
+		if (facing == Direction.DOWN && !state.canPlaceAt(world, pos)) {
 			world.getBlockTickScheduler().schedule(pos, this, 1);
 		}
 
@@ -101,5 +86,17 @@ public class KelpBlock extends Block implements FluidFillable {
 	@Override
 	public boolean tryFillWithFluid(IWorld world, BlockPos pos, BlockState state, FluidState fluidState) {
 		return false;
+	}
+
+	@Nullable
+	@Override
+	public BlockState getPlacementState(ItemPlacementContext ctx) {
+		FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
+		return fluidState.matches(FluidTags.WATER) && fluidState.getLevel() == 8 ? this.getPlacementState(ctx.getWorld()) : null;
+	}
+
+	@Override
+	public FluidState getFluidState(BlockState state) {
+		return Fluids.WATER.getStill(false);
 	}
 }

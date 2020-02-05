@@ -174,6 +174,8 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
+import net.minecraft.util.TickDurationMonitor;
+import net.minecraft.util.TickTimeTracker;
 import net.minecraft.util.UncaughtExceptionLogger;
 import net.minecraft.util.Unit;
 import net.minecraft.util.UserCache;
@@ -188,7 +190,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.profiler.DisableableProfiler;
+import net.minecraft.util.profiler.DummyProfiler;
 import net.minecraft.util.profiler.ProfileResult;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.profiler.ProfilerTiming;
@@ -248,7 +250,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public final MetricsData metricsData = new MetricsData();
 	private final boolean is64Bit;
 	private final boolean isDemo;
-	private final DisableableProfiler profiler = new DisableableProfiler(() -> this.renderTickCounter.ticksThisFrame);
 	private final ReloadableResourceManager resourceManager;
 	private final ClientBuiltinResourcePackProvider builtinPackProvider;
 	private final ResourcePackManager<ClientResourcePackProfile> resourcePackManager;
@@ -315,6 +316,11 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private final Queue<Runnable> renderTaskQueue = Queues.<Runnable>newConcurrentLinkedQueue();
 	@Nullable
 	private CompletableFuture<Void> resourceReloadFuture;
+	private Profiler profiler = DummyProfiler.INSTANCE;
+	private int trackingTick;
+	private final TickTimeTracker tickTimeTracker = new TickTimeTracker(Util.nanoTimeSupplier, () -> this.trackingTick);
+	@Nullable
+	private ProfileResult tickProfilerResult;
 	private String openProfilerSection = "root";
 
 	public MinecraftClient(RunArgs args) {
@@ -552,27 +558,33 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				}
 
 				try {
+					TickDurationMonitor tickDurationMonitor = TickDurationMonitor.create("Renderer");
+					boolean bl2 = this.shouldMonitorTickDuration();
+					this.startMonitor(bl2, tickDurationMonitor);
+					this.profiler.startTick();
 					this.render(!bl);
-				} catch (OutOfMemoryError var3) {
+					this.profiler.endTick();
+					this.endMonitor(bl2, tickDurationMonitor);
+				} catch (OutOfMemoryError var4) {
 					if (bl) {
-						throw var3;
+						throw var4;
 					}
 
 					this.cleanUpAfterCrash();
 					this.openScreen(new OutOfMemoryScreen());
 					System.gc();
-					LOGGER.fatal("Out of memory", (Throwable)var3);
+					LOGGER.fatal("Out of memory", (Throwable)var4);
 					bl = true;
 				}
 			}
-		} catch (CrashException var4) {
-			this.addDetailsToCrashReport(var4.getReport());
+		} catch (CrashException var5) {
+			this.addDetailsToCrashReport(var5.getReport());
 			this.cleanUpAfterCrash();
-			LOGGER.fatal("Reported exception thrown!", (Throwable)var4);
-			printCrashReport(var4.getReport());
-		} catch (Throwable var5) {
-			CrashReport crashReport = this.addDetailsToCrashReport(new CrashReport("Unexpected error", var5));
-			LOGGER.fatal("Unreported exception thrown!", var5);
+			LOGGER.fatal("Reported exception thrown!", (Throwable)var5);
+			printCrashReport(var5.getReport());
+		} catch (Throwable var6) {
+			CrashReport crashReport = this.addDetailsToCrashReport(new CrashReport("Unexpected error", var6));
+			LOGGER.fatal("Unreported exception thrown!", var6);
 			this.cleanUpAfterCrash();
 			printCrashReport(crashReport);
 		}
@@ -864,7 +876,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private void render(boolean tick) {
 		this.window.setPhase("Pre render");
 		long l = Util.getMeasuringTimeNano();
-		this.profiler.startTick();
 		if (this.window.shouldClose()) {
 			this.scheduleStop();
 		}
@@ -881,22 +892,23 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 
 		if (tick) {
-			this.renderTickCounter.beginRenderTick(Util.getMeasuringTimeMs());
+			int i = this.renderTickCounter.beginRenderTick(Util.getMeasuringTimeMs());
 			this.profiler.push("scheduledExecutables");
 			this.runTasks();
 			this.profiler.pop();
-		}
+			this.profiler.push("tick");
 
-		this.profiler.push("tick");
-		if (tick) {
-			for (int i = 0; i < Math.min(10, this.renderTickCounter.ticksThisFrame); i++) {
+			for (int j = 0; j < Math.min(10, i); j++) {
+				this.profiler.visit("clientTick");
 				this.tick();
 			}
+
+			this.profiler.pop();
 		}
 
 		this.mouse.updateMouse();
 		this.window.setPhase("Render");
-		this.profiler.swap("sound");
+		this.profiler.push("sound");
 		this.soundManager.updateListenerPosition(this.gameRenderer.getCamera());
 		this.profiler.pop();
 		this.profiler.push("render");
@@ -906,6 +918,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		BackgroundRenderer.method_23792();
 		this.profiler.push("display");
 		RenderSystem.enableTexture();
+		RenderSystem.enableCull();
 		this.profiler.pop();
 		if (!this.skipGameRender) {
 			this.profiler.swap("gameRenderer");
@@ -915,21 +928,19 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.profiler.pop();
 		}
 
-		this.profiler.endTick();
-		if (this.options.debugEnabled && this.options.debugProfilerEnabled && !this.options.hudHidden) {
-			this.profiler.getController().enable();
-			this.drawProfilerResults();
-		} else {
-			this.profiler.getController().disable();
+		if (this.tickProfilerResult != null) {
+			this.profiler.push("fpsPie");
+			this.drawProfilerResults(this.tickProfilerResult);
+			this.profiler.pop();
 		}
 
+		this.profiler.push("blit");
 		this.framebuffer.endWrite();
 		RenderSystem.popMatrix();
 		RenderSystem.pushMatrix();
 		this.framebuffer.draw(this.window.getFramebufferWidth(), this.window.getFramebufferHeight());
 		RenderSystem.popMatrix();
-		this.profiler.startTick();
-		this.profiler.push("updateDisplay");
+		this.profiler.swap("updateDisplay");
 		this.window.swapBuffers();
 		int i = this.getFramerateLimit();
 		if ((double)i < Option.FRAMERATE_LIMIT.getMax()) {
@@ -957,6 +968,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		long m = Util.getMeasuringTimeNano();
 		this.metricsData.pushSample(m - this.lastMetricsSampleTime);
 		this.lastMetricsSampleTime = m;
+		this.profiler.push("fpsUpdate");
 
 		while (Util.getMeasuringTimeMs() >= this.nextDebugInfoUpdateTime + 1000L) {
 			currentFps = this.fpsCounter;
@@ -977,7 +989,38 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			}
 		}
 
-		this.profiler.endTick();
+		this.profiler.pop();
+	}
+
+	private boolean shouldMonitorTickDuration() {
+		return this.options.debugEnabled && this.options.debugProfilerEnabled && !this.options.hudHidden;
+	}
+
+	private void startMonitor(boolean active, @Nullable TickDurationMonitor monitor) {
+		if (active) {
+			if (!this.tickTimeTracker.isActive()) {
+				this.trackingTick = 0;
+				this.tickTimeTracker.enable();
+			}
+
+			this.trackingTick++;
+		} else {
+			this.tickTimeTracker.disable();
+		}
+
+		this.profiler = TickDurationMonitor.tickProfiler(this.tickTimeTracker.getProfiler(), monitor);
+	}
+
+	private void endMonitor(boolean active, @Nullable TickDurationMonitor monitor) {
+		if (monitor != null) {
+			monitor.endTick();
+		}
+
+		if (active) {
+			this.tickProfilerResult = this.tickTimeTracker.getResult();
+		}
+
+		this.profiler = this.tickTimeTracker.getProfiler();
 	}
 
 	@Override
@@ -1019,130 +1062,128 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	void handleProfilerKeyPress(int digit) {
-		ProfileResult profileResult = this.profiler.getController().getResults();
-		List<ProfilerTiming> list = profileResult.getTimings(this.openProfilerSection);
-		if (!list.isEmpty()) {
-			ProfilerTiming profilerTiming = (ProfilerTiming)list.remove(0);
-			if (digit == 0) {
-				if (!profilerTiming.name.isEmpty()) {
-					int i = this.openProfilerSection.lastIndexOf(30);
-					if (i >= 0) {
-						this.openProfilerSection = this.openProfilerSection.substring(0, i);
+		if (this.tickProfilerResult != null) {
+			List<ProfilerTiming> list = this.tickProfilerResult.getTimings(this.openProfilerSection);
+			if (!list.isEmpty()) {
+				ProfilerTiming profilerTiming = (ProfilerTiming)list.remove(0);
+				if (digit == 0) {
+					if (!profilerTiming.name.isEmpty()) {
+						int i = this.openProfilerSection.lastIndexOf(30);
+						if (i >= 0) {
+							this.openProfilerSection = this.openProfilerSection.substring(0, i);
+						}
 					}
-				}
-			} else {
-				digit--;
-				if (digit < list.size() && !"unspecified".equals(((ProfilerTiming)list.get(digit)).name)) {
-					if (!this.openProfilerSection.isEmpty()) {
-						this.openProfilerSection = this.openProfilerSection + '\u001e';
-					}
+				} else {
+					digit--;
+					if (digit < list.size() && !"unspecified".equals(((ProfilerTiming)list.get(digit)).name)) {
+						if (!this.openProfilerSection.isEmpty()) {
+							this.openProfilerSection = this.openProfilerSection + '\u001e';
+						}
 
-					this.openProfilerSection = this.openProfilerSection + ((ProfilerTiming)list.get(digit)).name;
+						this.openProfilerSection = this.openProfilerSection + ((ProfilerTiming)list.get(digit)).name;
+					}
 				}
 			}
 		}
 	}
 
-	private void drawProfilerResults() {
-		if (this.profiler.getController().isEnabled()) {
-			ProfileResult profileResult = this.profiler.getController().getResults();
-			List<ProfilerTiming> list = profileResult.getTimings(this.openProfilerSection);
-			ProfilerTiming profilerTiming = (ProfilerTiming)list.remove(0);
-			RenderSystem.clear(256, IS_SYSTEM_MAC);
-			RenderSystem.matrixMode(5889);
-			RenderSystem.loadIdentity();
-			RenderSystem.ortho(0.0, (double)this.window.getFramebufferWidth(), (double)this.window.getFramebufferHeight(), 0.0, 1000.0, 3000.0);
-			RenderSystem.matrixMode(5888);
-			RenderSystem.loadIdentity();
-			RenderSystem.translatef(0.0F, 0.0F, -2000.0F);
-			RenderSystem.lineWidth(1.0F);
-			RenderSystem.disableTexture();
-			Tessellator tessellator = Tessellator.getInstance();
-			BufferBuilder bufferBuilder = tessellator.getBuffer();
-			int i = 160;
-			int j = this.window.getFramebufferWidth() - 160 - 10;
-			int k = this.window.getFramebufferHeight() - 320;
-			RenderSystem.enableBlend();
-			bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
-			bufferBuilder.vertex((double)((float)j - 176.0F), (double)((float)k - 96.0F - 16.0F), 0.0).color(200, 0, 0, 0).next();
-			bufferBuilder.vertex((double)((float)j - 176.0F), (double)(k + 320), 0.0).color(200, 0, 0, 0).next();
-			bufferBuilder.vertex((double)((float)j + 176.0F), (double)(k + 320), 0.0).color(200, 0, 0, 0).next();
-			bufferBuilder.vertex((double)((float)j + 176.0F), (double)((float)k - 96.0F - 16.0F), 0.0).color(200, 0, 0, 0).next();
+	private void drawProfilerResults(ProfileResult profileResult) {
+		List<ProfilerTiming> list = profileResult.getTimings(this.openProfilerSection);
+		ProfilerTiming profilerTiming = (ProfilerTiming)list.remove(0);
+		RenderSystem.clear(256, IS_SYSTEM_MAC);
+		RenderSystem.matrixMode(5889);
+		RenderSystem.loadIdentity();
+		RenderSystem.ortho(0.0, (double)this.window.getFramebufferWidth(), (double)this.window.getFramebufferHeight(), 0.0, 1000.0, 3000.0);
+		RenderSystem.matrixMode(5888);
+		RenderSystem.loadIdentity();
+		RenderSystem.translatef(0.0F, 0.0F, -2000.0F);
+		RenderSystem.lineWidth(1.0F);
+		RenderSystem.disableTexture();
+		Tessellator tessellator = Tessellator.getInstance();
+		BufferBuilder bufferBuilder = tessellator.getBuffer();
+		int i = 160;
+		int j = this.window.getFramebufferWidth() - 160 - 10;
+		int k = this.window.getFramebufferHeight() - 320;
+		RenderSystem.enableBlend();
+		bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
+		bufferBuilder.vertex((double)((float)j - 176.0F), (double)((float)k - 96.0F - 16.0F), 0.0).color(200, 0, 0, 0).next();
+		bufferBuilder.vertex((double)((float)j - 176.0F), (double)(k + 320), 0.0).color(200, 0, 0, 0).next();
+		bufferBuilder.vertex((double)((float)j + 176.0F), (double)(k + 320), 0.0).color(200, 0, 0, 0).next();
+		bufferBuilder.vertex((double)((float)j + 176.0F), (double)((float)k - 96.0F - 16.0F), 0.0).color(200, 0, 0, 0).next();
+		tessellator.draw();
+		RenderSystem.disableBlend();
+		double d = 0.0;
+
+		for (ProfilerTiming profilerTiming2 : list) {
+			int l = MathHelper.floor(profilerTiming2.parentSectionUsagePercentage / 4.0) + 1;
+			bufferBuilder.begin(6, VertexFormats.POSITION_COLOR);
+			int m = profilerTiming2.getColor();
+			int n = m >> 16 & 0xFF;
+			int o = m >> 8 & 0xFF;
+			int p = m & 0xFF;
+			bufferBuilder.vertex((double)j, (double)k, 0.0).color(n, o, p, 255).next();
+
+			for (int q = l; q >= 0; q--) {
+				float f = (float)((d + profilerTiming2.parentSectionUsagePercentage * (double)q / (double)l) * (float) (Math.PI * 2) / 100.0);
+				float g = MathHelper.sin(f) * 160.0F;
+				float h = MathHelper.cos(f) * 160.0F * 0.5F;
+				bufferBuilder.vertex((double)((float)j + g), (double)((float)k - h), 0.0).color(n, o, p, 255).next();
+			}
+
 			tessellator.draw();
-			RenderSystem.disableBlend();
-			double d = 0.0;
+			bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
 
-			for (ProfilerTiming profilerTiming2 : list) {
-				int l = MathHelper.floor(profilerTiming2.parentSectionUsagePercentage / 4.0) + 1;
-				bufferBuilder.begin(6, VertexFormats.POSITION_COLOR);
-				int m = profilerTiming2.getColor();
-				int n = m >> 16 & 0xFF;
-				int o = m >> 8 & 0xFF;
-				int p = m & 0xFF;
-				bufferBuilder.vertex((double)j, (double)k, 0.0).color(n, o, p, 255).next();
-
-				for (int q = l; q >= 0; q--) {
-					float f = (float)((d + profilerTiming2.parentSectionUsagePercentage * (double)q / (double)l) * (float) (Math.PI * 2) / 100.0);
-					float g = MathHelper.sin(f) * 160.0F;
-					float h = MathHelper.cos(f) * 160.0F * 0.5F;
-					bufferBuilder.vertex((double)((float)j + g), (double)((float)k - h), 0.0).color(n, o, p, 255).next();
+			for (int q = l; q >= 0; q--) {
+				float f = (float)((d + profilerTiming2.parentSectionUsagePercentage * (double)q / (double)l) * (float) (Math.PI * 2) / 100.0);
+				float g = MathHelper.sin(f) * 160.0F;
+				float h = MathHelper.cos(f) * 160.0F * 0.5F;
+				if (!(h > 0.0F)) {
+					bufferBuilder.vertex((double)((float)j + g), (double)((float)k - h), 0.0).color(n >> 1, o >> 1, p >> 1, 255).next();
+					bufferBuilder.vertex((double)((float)j + g), (double)((float)k - h + 10.0F), 0.0).color(n >> 1, o >> 1, p >> 1, 255).next();
 				}
-
-				tessellator.draw();
-				bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
-
-				for (int q = l; q >= 0; q--) {
-					float f = (float)((d + profilerTiming2.parentSectionUsagePercentage * (double)q / (double)l) * (float) (Math.PI * 2) / 100.0);
-					float g = MathHelper.sin(f) * 160.0F;
-					float h = MathHelper.cos(f) * 160.0F * 0.5F;
-					if (!(h > 0.0F)) {
-						bufferBuilder.vertex((double)((float)j + g), (double)((float)k - h), 0.0).color(n >> 1, o >> 1, p >> 1, 255).next();
-						bufferBuilder.vertex((double)((float)j + g), (double)((float)k - h + 10.0F), 0.0).color(n >> 1, o >> 1, p >> 1, 255).next();
-					}
-				}
-
-				tessellator.draw();
-				d += profilerTiming2.parentSectionUsagePercentage;
 			}
 
-			DecimalFormat decimalFormat = new DecimalFormat("##0.00");
-			decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
-			RenderSystem.enableTexture();
-			String string = ProfileResult.getHumanReadableName(profilerTiming.name);
-			String string2 = "";
-			if (!"unspecified".equals(string)) {
-				string2 = string2 + "[0] ";
-			}
+			tessellator.draw();
+			d += profilerTiming2.parentSectionUsagePercentage;
+		}
 
-			if (string.isEmpty()) {
-				string2 = string2 + "ROOT ";
+		DecimalFormat decimalFormat = new DecimalFormat("##0.00");
+		decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
+		RenderSystem.enableTexture();
+		String string = ProfileResult.getHumanReadableName(profilerTiming.name);
+		String string2 = "";
+		if (!"unspecified".equals(string)) {
+			string2 = string2 + "[0] ";
+		}
+
+		if (string.isEmpty()) {
+			string2 = string2 + "ROOT ";
+		} else {
+			string2 = string2 + string + ' ';
+		}
+
+		int m = 16777215;
+		this.textRenderer.drawWithShadow(string2, (float)(j - 160), (float)(k - 80 - 16), 16777215);
+		string2 = decimalFormat.format(profilerTiming.totalUsagePercentage) + "%";
+		this.textRenderer.drawWithShadow(string2, (float)(j + 160 - this.textRenderer.getStringWidth(string2)), (float)(k - 80 - 16), 16777215);
+
+		for (int r = 0; r < list.size(); r++) {
+			ProfilerTiming profilerTiming3 = (ProfilerTiming)list.get(r);
+			StringBuilder stringBuilder = new StringBuilder();
+			if ("unspecified".equals(profilerTiming3.name)) {
+				stringBuilder.append("[?] ");
 			} else {
-				string2 = string2 + string + ' ';
+				stringBuilder.append("[").append(r + 1).append("] ");
 			}
 
-			int m = 16777215;
-			this.textRenderer.drawWithShadow(string2, (float)(j - 160), (float)(k - 80 - 16), 16777215);
-			string2 = decimalFormat.format(profilerTiming.totalUsagePercentage) + "%";
-			this.textRenderer.drawWithShadow(string2, (float)(j + 160 - this.textRenderer.getStringWidth(string2)), (float)(k - 80 - 16), 16777215);
-
-			for (int r = 0; r < list.size(); r++) {
-				ProfilerTiming profilerTiming3 = (ProfilerTiming)list.get(r);
-				StringBuilder stringBuilder = new StringBuilder();
-				if ("unspecified".equals(profilerTiming3.name)) {
-					stringBuilder.append("[?] ");
-				} else {
-					stringBuilder.append("[").append(r + 1).append("] ");
-				}
-
-				String string3 = stringBuilder.append(profilerTiming3.name).toString();
-				this.textRenderer.drawWithShadow(string3, (float)(j - 160), (float)(k + 80 + r * 8 + 20), profilerTiming3.getColor());
-				string3 = decimalFormat.format(profilerTiming3.parentSectionUsagePercentage) + "%";
-				this.textRenderer
-					.drawWithShadow(string3, (float)(j + 160 - 50 - this.textRenderer.getStringWidth(string3)), (float)(k + 80 + r * 8 + 20), profilerTiming3.getColor());
-				string3 = decimalFormat.format(profilerTiming3.totalUsagePercentage) + "%";
-				this.textRenderer
-					.drawWithShadow(string3, (float)(j + 160 - this.textRenderer.getStringWidth(string3)), (float)(k + 80 + r * 8 + 20), profilerTiming3.getColor());
-			}
+			String string3 = stringBuilder.append(profilerTiming3.name).toString();
+			this.textRenderer.drawWithShadow(string3, (float)(j - 160), (float)(k + 80 + r * 8 + 20), profilerTiming3.getColor());
+			string3 = decimalFormat.format(profilerTiming3.parentSectionUsagePercentage) + "%";
+			this.textRenderer
+				.drawWithShadow(string3, (float)(j + 160 - 50 - this.textRenderer.getStringWidth(string3)), (float)(k + 80 + r * 8 + 20), profilerTiming3.getColor());
+			string3 = decimalFormat.format(profilerTiming3.totalUsagePercentage) + "%";
+			this.textRenderer
+				.drawWithShadow(string3, (float)(j + 160 - this.textRenderer.getStringWidth(string3)), (float)(k + 80 + r * 8 + 20), profilerTiming3.getColor());
 		}
 	}
 
@@ -1560,6 +1601,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 		LevelLoadingScreen levelLoadingScreen = new LevelLoadingScreen((WorldGenerationProgressTracker)this.worldGenProgressTracker.get());
 		this.openScreen(levelLoadingScreen);
+		this.profiler.push("waitForServer");
 
 		while (!this.server.isLoading()) {
 			levelLoadingScreen.tick();
@@ -1576,6 +1618,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			}
 		}
 
+		this.profiler.pop();
 		SocketAddress socketAddress = this.server.getNetworkIo().bindLocal();
 		ClientConnection clientConnection = ClientConnection.connectLocal(socketAddress);
 		clientConnection.setPacketListener(new ClientLoginNetworkHandler(clientConnection, this, null, text -> {
@@ -1621,9 +1664,13 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.reset(screen);
 		if (this.world != null) {
 			if (integratedServer != null) {
+				this.profiler.push("waitForServer");
+
 				while (!integratedServer.isStopping()) {
 					this.render(false);
 				}
+
+				this.profiler.pop();
 			}
 
 			this.builtinPackProvider.clear();
@@ -1639,12 +1686,14 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	private void reset(Screen screen) {
+		this.profiler.push("forcedTick");
 		this.musicTracker.stop();
 		this.soundManager.stopAll();
 		this.cameraEntity = null;
 		this.connection = null;
 		this.openScreen(screen);
 		this.render(false);
+		this.profiler.pop();
 	}
 
 	private void setWorld(@Nullable ClientWorld clientWorld) {

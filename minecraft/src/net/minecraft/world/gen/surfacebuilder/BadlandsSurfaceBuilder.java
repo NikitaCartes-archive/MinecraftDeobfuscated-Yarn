@@ -1,9 +1,11 @@
 package net.minecraft.world.gen.surfacebuilder;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.Dynamic;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.function.Function;
+import java.util.stream.IntStream;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -139,8 +141,8 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 
 		if (this.seed != seed || this.heightCutoffNoise == null || this.heightNoise == null) {
 			ChunkRandom chunkRandom = new ChunkRandom(seed);
-			this.heightCutoffNoise = new OctaveSimplexNoiseSampler(chunkRandom, 3, 0);
-			this.heightNoise = new OctaveSimplexNoiseSampler(chunkRandom, 0, 0);
+			this.heightCutoffNoise = new OctaveSimplexNoiseSampler(chunkRandom, IntStream.rangeClosed(-3, 0));
+			this.heightNoise = new OctaveSimplexNoiseSampler(chunkRandom, ImmutableList.of(0));
 		}
 
 		this.seed = seed;
@@ -150,7 +152,7 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 		this.layerBlocks = new BlockState[64];
 		Arrays.fill(this.layerBlocks, TERACOTTA);
 		ChunkRandom chunkRandom = new ChunkRandom(seed);
-		this.layerNoise = new OctaveSimplexNoiseSampler(chunkRandom, 0, 0);
+		this.layerNoise = new OctaveSimplexNoiseSampler(chunkRandom, ImmutableList.of(0));
 
 		for (int i = 0; i < 64; i++) {
 			i += chunkRandom.nextInt(5) + 1;

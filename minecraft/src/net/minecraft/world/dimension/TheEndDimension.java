@@ -10,7 +10,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.source.BiomeSourceType;
@@ -54,17 +53,8 @@ public class TheEndDimension extends Dimension {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public Vec3d getFogColor(float skyAngle, float tickDelta) {
-		int i = 10518688;
-		float f = MathHelper.cos(skyAngle * (float) (Math.PI * 2)) * 2.0F + 0.5F;
-		f = MathHelper.clamp(f, 0.0F, 1.0F);
-		float g = 0.627451F;
-		float h = 0.5019608F;
-		float j = 0.627451F;
-		g *= f * 0.0F + 0.15F;
-		h *= f * 0.0F + 0.15F;
-		j *= f * 0.0F + 0.15F;
-		return new Vec3d((double)g, (double)h, (double)j);
+	public Vec3d modifyFogColor(int fogColor, float tickDelta) {
+		return Vec3d.unpackRgb(fogColor).multiply(0.15F);
 	}
 
 	@Environment(EnvType.CLIENT)

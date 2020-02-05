@@ -36,6 +36,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.RegistryTagManager;
 import net.minecraft.util.MaterialPredicate;
 import net.minecraft.util.Tickable;
@@ -84,7 +85,7 @@ public abstract class World implements IWorld, AutoCloseable {
 	public final Dimension dimension;
 	protected final ChunkManager chunkManager;
 	protected final LevelProperties properties;
-	private final Profiler profiler;
+	private final Supplier<Profiler> profiler;
 	public final boolean isClient;
 	protected boolean iteratingTickingBlockEntities;
 	private final WorldBorder border;
@@ -94,10 +95,10 @@ public abstract class World implements IWorld, AutoCloseable {
 		LevelProperties levelProperties,
 		DimensionType dimensionType,
 		BiFunction<World, Dimension, ChunkManager> chunkManagerProvider,
-		Profiler profiler,
+		Supplier<Profiler> supplier,
 		boolean isClient
 	) {
-		this.profiler = profiler;
+		this.profiler = supplier;
 		this.properties = levelProperties;
 		this.dimension = dimensionType.create(this);
 		this.chunkManager = (ChunkManager)chunkManagerProvider.apply(this, this.dimension);
@@ -185,9 +186,9 @@ public abstract class World implements IWorld, AutoCloseable {
 							|| blockState2.hasSidedTransparency()
 							|| blockState.hasSidedTransparency()
 					)) {
-					this.profiler.push("queueCheckLight");
+					this.getProfiler().push("queueCheckLight");
 					this.getChunkManager().getLightingProvider().checkBlock(pos);
-					this.profiler.pop();
+					this.getProfiler().pop();
 				}
 
 				if (blockState2 == state) {
@@ -201,9 +202,9 @@ public abstract class World implements IWorld, AutoCloseable {
 						this.updateListeners(pos, blockState, state, flags);
 					}
 
-					if (!this.isClient && (flags & 1) != 0) {
+					if ((flags & 1) != 0) {
 						this.updateNeighbors(pos, blockState.getBlock());
-						if (state.hasComparatorOutput()) {
+						if (!this.isClient && state.hasComparatorOutput()) {
 							this.updateHorizontalAdjacent(pos, block);
 						}
 					}
@@ -254,13 +255,6 @@ public abstract class World implements IWorld, AutoCloseable {
 	}
 
 	public abstract void updateListeners(BlockPos pos, BlockState oldState, BlockState newState, int flags);
-
-	@Override
-	public void updateNeighbors(BlockPos pos, Block block) {
-		if (this.properties.getGeneratorType() != LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
-			this.updateNeighborsAlways(pos, block);
-		}
-	}
 
 	public void checkBlockRerender(BlockPos pos, BlockState old, BlockState updated) {
 	}
@@ -553,8 +547,8 @@ public abstract class World implements IWorld, AutoCloseable {
 				for (int o = i; o < j; o++) {
 					for (int p = k; p < l; p++) {
 						for (int q = m; q < n; q++) {
-							Block block = this.getBlockState(pooledMutable.set(o, p, q)).getBlock();
-							if (block == Blocks.FIRE || block == Blocks.LAVA) {
+							BlockState blockState = this.getBlockState(pooledMutable.set(o, p, q));
+							if (blockState.matches(BlockTags.FIRE) || blockState.getBlock() == Blocks.LAVA) {
 								return true;
 							}
 						}
@@ -638,7 +632,7 @@ public abstract class World implements IWorld, AutoCloseable {
 
 	public boolean extinguishFire(@Nullable PlayerEntity playerEntity, BlockPos blockPos, Direction direction) {
 		blockPos = blockPos.offset(direction);
-		if (this.getBlockState(blockPos).getBlock() == Blocks.FIRE) {
+		if (this.getBlockState(blockPos).matches(BlockTags.FIRE)) {
 			this.playLevelEvent(playerEntity, 1009, blockPos, 0);
 			this.removeBlock(blockPos, false);
 			return true;
@@ -733,13 +727,17 @@ public abstract class World implements IWorld, AutoCloseable {
 		return isHeightInvalid(pos) ? false : this.chunkManager.isChunkLoaded(pos.getX() >> 4, pos.getZ() >> 4);
 	}
 
-	public boolean isTopSolid(BlockPos pos, Entity entity) {
-		if (isHeightInvalid(pos)) {
+	public boolean method_24368(BlockPos blockPos, Entity entity, Direction direction) {
+		if (isHeightInvalid(blockPos)) {
 			return false;
 		} else {
-			Chunk chunk = this.getChunk(pos.getX() >> 4, pos.getZ() >> 4, ChunkStatus.FULL, false);
-			return chunk == null ? false : chunk.getBlockState(pos).hasSolidTopSurface(this, pos, entity);
+			Chunk chunk = this.getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4, ChunkStatus.FULL, false);
+			return chunk == null ? false : chunk.getBlockState(blockPos).method_24432(this, blockPos, entity, direction);
 		}
+	}
+
+	public boolean isTopSolid(BlockPos pos, Entity entity) {
+		return this.method_24368(pos, entity, Direction.UP);
 	}
 
 	public void calculateAmbientDarkness() {
@@ -1181,6 +1179,10 @@ public abstract class World implements IWorld, AutoCloseable {
 	}
 
 	public Profiler getProfiler() {
+		return (Profiler)this.profiler.get();
+	}
+
+	public Supplier<Profiler> method_24367() {
 		return this.profiler;
 	}
 

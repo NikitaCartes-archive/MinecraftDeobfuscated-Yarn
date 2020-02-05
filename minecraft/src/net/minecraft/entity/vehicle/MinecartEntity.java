@@ -19,7 +19,7 @@ public class MinecartEntity extends AbstractMinecartEntity {
 		if (player.shouldCancelInteraction()) {
 			return false;
 		} else if (this.hasPassengers()) {
-			return true;
+			return false;
 		} else {
 			if (!this.world.isClient) {
 				player.startRiding(this);

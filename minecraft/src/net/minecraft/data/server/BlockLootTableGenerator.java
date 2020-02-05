@@ -494,6 +494,8 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.registerForSelfDrop(Blocks.STRIPPED_ACACIA_LOG);
 		this.registerForSelfDrop(Blocks.STRIPPED_DARK_OAK_LOG);
 		this.registerForSelfDrop(Blocks.STRIPPED_OAK_LOG);
+		this.registerForSelfDrop(Blocks.STRIPPED_WARPED_STEM);
+		this.registerForSelfDrop(Blocks.STRIPPED_CRIMSON_STEM);
 		this.registerForSelfDrop(Blocks.OAK_WOOD);
 		this.registerForSelfDrop(Blocks.SPRUCE_WOOD);
 		this.registerForSelfDrop(Blocks.BIRCH_WOOD);
@@ -584,6 +586,9 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.registerForSelfDrop(Blocks.PUMPKIN);
 		this.registerForSelfDrop(Blocks.NETHERRACK);
 		this.registerForSelfDrop(Blocks.SOUL_SAND);
+		this.registerForSelfDrop(Blocks.SOUL_SOIL);
+		this.registerForSelfDrop(Blocks.BASALT);
+		this.registerForSelfDrop(Blocks.SOUL_FIRE_TORCH);
 		this.registerForSelfDrop(Blocks.CARVED_PUMPKIN);
 		this.registerForSelfDrop(Blocks.JACK_O_LANTERN);
 		this.registerForSelfDrop(Blocks.REPEATER);
@@ -802,11 +807,43 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.registerForSelfDrop(Blocks.SCAFFOLDING);
 		this.registerForSelfDrop(Blocks.HONEY_BLOCK);
 		this.registerForSelfDrop(Blocks.HONEYCOMB_BLOCK);
+		this.registerForSelfDrop(Blocks.WARPED_STEM);
+		this.registerForSelfDrop(Blocks.WARPED_NYLIUM);
+		this.registerForSelfDrop(Blocks.WARPED_FUNGI);
+		this.registerForSelfDrop(Blocks.WARPED_WART_BLOCK);
+		this.registerForSelfDrop(Blocks.WARPED_ROOTS);
+		this.registerForSelfDrop(Blocks.CRIMSON_STEM);
+		this.registerForSelfDrop(Blocks.CRIMSON_NYLIUM);
+		this.registerForSelfDrop(Blocks.CRIMSON_FUNGI);
+		this.registerForSelfDrop(Blocks.SHROOMLIGHT);
+		this.registerForSelfDrop(Blocks.CRIMSON_ROOTS);
+		this.registerForSelfDrop(Blocks.WEEPING_VINES);
+		this.registerForSelfDrop(Blocks.CRIMSON_PLANKS);
+		this.registerForSelfDrop(Blocks.WARPED_PLANKS);
+		this.registerForSelfDrop(Blocks.WARPED_PRESSURE_PLATE);
+		this.registerForSelfDrop(Blocks.WARPED_FENCE);
+		this.registerForSelfDrop(Blocks.WARPED_TRAPDOOR);
+		this.registerForSelfDrop(Blocks.WARPED_FENCE_GATE);
+		this.registerForSelfDrop(Blocks.WARPED_STAIRS);
+		this.registerForSelfDrop(Blocks.WARPED_BUTTON);
+		this.registerForSelfDrop(Blocks.WARPED_DOOR);
+		this.registerForSelfDrop(Blocks.WARPED_SIGN);
+		this.registerForSelfDrop(Blocks.CRIMSON_PRESSURE_PLATE);
+		this.registerForSelfDrop(Blocks.CRIMSON_FENCE);
+		this.registerForSelfDrop(Blocks.CRIMSON_TRAPDOOR);
+		this.registerForSelfDrop(Blocks.CRIMSON_FENCE_GATE);
+		this.registerForSelfDrop(Blocks.CRIMSON_STAIRS);
+		this.registerForSelfDrop(Blocks.CRIMSON_BUTTON);
+		this.registerForSelfDrop(Blocks.CRIMSON_DOOR);
+		this.registerForSelfDrop(Blocks.CRIMSON_SIGN);
+		this.registerForSelfDrop(Blocks.NETHERITE_BLOCK);
+		this.registerForSelfDrop(Blocks.ANCIENT_DEBRIS);
 		this.register(Blocks.FARMLAND, Blocks.DIRT);
 		this.register(Blocks.TRIPWIRE, Items.STRING);
 		this.register(Blocks.GRASS_PATH, Blocks.DIRT);
 		this.register(Blocks.KELP_PLANT, Blocks.KELP);
 		this.register(Blocks.BAMBOO_SAPLING, Blocks.BAMBOO);
+		this.register(Blocks.WEEPING_VINES_PLANT, Blocks.WEEPING_VINES);
 		this.registerWithFunction(Blocks.STONE, blockx -> createForBlockWithItemDrops(blockx, Blocks.COBBLESTONE));
 		this.registerWithFunction(Blocks.GRASS_BLOCK, blockx -> createForBlockWithItemDrops(blockx, Blocks.DIRT));
 		this.registerWithFunction(Blocks.PODZOL, blockx -> createForBlockWithItemDrops(blockx, Blocks.DIRT));
@@ -881,6 +918,8 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.registerWithFunction(Blocks.RED_NETHER_BRICK_SLAB, BlockLootTableGenerator::createForSlabs);
 		this.registerWithFunction(Blocks.POLISHED_ANDESITE_SLAB, BlockLootTableGenerator::createForSlabs);
 		this.registerWithFunction(Blocks.DIORITE_SLAB, BlockLootTableGenerator::createForSlabs);
+		this.registerWithFunction(Blocks.CRIMSON_SLAB, BlockLootTableGenerator::createForSlabs);
+		this.registerWithFunction(Blocks.WARPED_SLAB, BlockLootTableGenerator::createForSlabs);
 		this.registerWithFunction(Blocks.ACACIA_DOOR, blockx -> createForMultiblock(blockx, DoorBlock.HALF, DoubleBlockHalf.LOWER));
 		this.registerWithFunction(Blocks.BIRCH_DOOR, blockx -> createForMultiblock(blockx, DoorBlock.HALF, DoubleBlockHalf.LOWER));
 		this.registerWithFunction(Blocks.DARK_OAK_DOOR, blockx -> createForMultiblock(blockx, DoorBlock.HALF, DoubleBlockHalf.LOWER));
@@ -997,6 +1036,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.registerWithFunction(Blocks.STONECUTTER, BlockLootTableGenerator::createForNameableContainer);
 		this.registerWithFunction(Blocks.BELL, BlockLootTableGenerator::create);
 		this.registerWithFunction(Blocks.LANTERN, BlockLootTableGenerator::create);
+		this.registerWithFunction(Blocks.SOUL_FIRE_LANTERN, BlockLootTableGenerator::create);
 		this.registerWithFunction(Blocks.SHULKER_BOX, BlockLootTableGenerator::createForShulkerBox);
 		this.registerWithFunction(Blocks.BLACK_SHULKER_BOX, BlockLootTableGenerator::createForShulkerBox);
 		this.registerWithFunction(Blocks.BLUE_SHULKER_BOX, BlockLootTableGenerator::createForShulkerBox);
@@ -1146,6 +1186,10 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						blockx, ItemEntry.builder(Items.STICK).withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
 					)
 				)
+		);
+		this.registerWithFunction(
+			Blocks.NETHER_SPROUTS,
+			blockx -> createForNeedingSilkTouchShears(blockx, (LootEntry.Builder<?>)addSurvivesExplosionLootCondition(blockx, ItemEntry.builder(Blocks.NETHER_SPROUTS)))
 		);
 		this.registerWithFunction(Blocks.SEAGRASS, BlockLootTableGenerator::createForBlockNeedingShears);
 		this.registerWithFunction(Blocks.VINE, BlockLootTableGenerator::createForBlockNeedingShears);

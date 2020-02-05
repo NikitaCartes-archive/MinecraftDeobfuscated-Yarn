@@ -182,21 +182,19 @@ public class PistonBlock extends FacingBlock {
 				((PistonBlockEntity)blockEntity).finish();
 			}
 
-			world.setBlockState(
-				pos,
-				Blocks.MOVING_PISTON
-					.getDefaultState()
-					.with(PistonExtensionBlock.FACING, direction)
-					.with(PistonExtensionBlock.TYPE, this.isSticky ? PistonType.STICKY : PistonType.DEFAULT),
-				3
-			);
+			BlockState blockState = Blocks.MOVING_PISTON
+				.getDefaultState()
+				.with(PistonExtensionBlock.FACING, direction)
+				.with(PistonExtensionBlock.TYPE, this.isSticky ? PistonType.STICKY : PistonType.DEFAULT);
+			world.setBlockState(pos, blockState, 20);
 			world.setBlockEntity(
 				pos, PistonExtensionBlock.createBlockEntityPiston(this.getDefaultState().with(FACING, Direction.byId(data & 7)), direction, false, true)
 			);
+			world.updateNeighbors(pos, blockState.getBlock());
 			if (this.isSticky) {
 				BlockPos blockPos = pos.add(direction.getOffsetX() * 2, direction.getOffsetY() * 2, direction.getOffsetZ() * 2);
-				BlockState blockState = world.getBlockState(blockPos);
-				Block block = blockState.getBlock();
+				BlockState blockState2 = world.getBlockState(blockPos);
+				Block block = blockState2.getBlock();
 				boolean bl2 = false;
 				if (block == Blocks.MOVING_PISTON) {
 					BlockEntity blockEntity2 = world.getBlockEntity(blockPos);
@@ -211,9 +209,9 @@ public class PistonBlock extends FacingBlock {
 
 				if (!bl2) {
 					if (type != 1
-						|| blockState.isAir()
-						|| !isMovable(blockState, world, blockPos, direction.getOpposite(), false, direction)
-						|| blockState.getPistonBehavior() != PistonBehavior.NORMAL && block != Blocks.PISTON && block != Blocks.STICKY_PISTON) {
+						|| blockState2.isAir()
+						|| !isMovable(blockState2, world, blockPos, direction.getOpposite(), false, direction)
+						|| blockState2.getPistonBehavior() != PistonBehavior.NORMAL && block != Blocks.PISTON && block != Blocks.STICKY_PISTON) {
 						world.removeBlock(pos.offset(direction), false);
 					} else {
 						this.move(world, pos, direction, false);

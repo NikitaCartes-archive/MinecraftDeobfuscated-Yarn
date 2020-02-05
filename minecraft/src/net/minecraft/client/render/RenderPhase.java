@@ -93,9 +93,9 @@ public abstract class RenderPhase {
 	protected static final RenderPhase.DiffuseLighting DISABLE_DIFFUSE_LIGHTING = new RenderPhase.DiffuseLighting(false);
 	protected static final RenderPhase.Cull ENABLE_CULLING = new RenderPhase.Cull(true);
 	protected static final RenderPhase.Cull DISABLE_CULLING = new RenderPhase.Cull(false);
-	protected static final RenderPhase.DepthTest ALWAYS_DEPTH_TEST = new RenderPhase.DepthTest(519);
-	protected static final RenderPhase.DepthTest EQUAL_DEPTH_TEST = new RenderPhase.DepthTest(514);
-	protected static final RenderPhase.DepthTest LEQUAL_DEPTH_TEST = new RenderPhase.DepthTest(515);
+	protected static final RenderPhase.DepthTest ALWAYS_DEPTH_TEST = new RenderPhase.DepthTest("always", 519);
+	protected static final RenderPhase.DepthTest EQUAL_DEPTH_TEST = new RenderPhase.DepthTest("==", 514);
+	protected static final RenderPhase.DepthTest LEQUAL_DEPTH_TEST = new RenderPhase.DepthTest("<=", 515);
 	protected static final RenderPhase.WriteMaskState ALL_MASK = new RenderPhase.WriteMaskState(true, true);
 	protected static final RenderPhase.WriteMaskState COLOR_MASK = new RenderPhase.WriteMaskState(true, false);
 	protected static final RenderPhase.WriteMaskState DEPTH_MASK = new RenderPhase.WriteMaskState(false, true);
@@ -109,6 +109,10 @@ public abstract class RenderPhase {
 		RenderSystem.polygonOffset(0.0F, 0.0F);
 		RenderSystem.disablePolygonOffset();
 	});
+	protected static final RenderPhase.Layering field_22241 = new RenderPhase.Layering("shadow_layering", () -> {
+		RenderSystem.pushMatrix();
+		RenderSystem.scalef(0.99975586F, 0.99975586F, 0.99975586F);
+	}, RenderSystem::popMatrix);
 	protected static final RenderPhase.Layering PROJECTION_LAYERING = new RenderPhase.Layering("projection_layering", () -> {
 		RenderSystem.matrixMode(5889);
 		RenderSystem.pushMatrix();
@@ -172,6 +176,10 @@ public abstract class RenderPhase {
 		return this.name.hashCode();
 	}
 
+	public String toString() {
+		return this.name;
+	}
+
 	private static void setupGlintTexturing(float scale) {
 		RenderSystem.matrixMode(5890);
 		RenderSystem.pushMatrix();
@@ -219,18 +227,23 @@ public abstract class RenderPhase {
 		public int hashCode() {
 			return Objects.hash(new Object[]{super.hashCode(), this.alpha});
 		}
+
+		@Override
+		public String toString() {
+			return this.name + '[' + this.alpha + ']';
+		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static class Cull extends RenderPhase.Toggleable {
 		public Cull(boolean culling) {
 			super("cull", () -> {
-				if (culling) {
-					RenderSystem.enableCull();
+				if (!culling) {
+					RenderSystem.disableCull();
 				}
 			}, () -> {
-				if (culling) {
-					RenderSystem.disableCull();
+				if (!culling) {
+					RenderSystem.enableCull();
 				}
 			}, culling);
 		}
@@ -238,21 +251,23 @@ public abstract class RenderPhase {
 
 	@Environment(EnvType.CLIENT)
 	public static class DepthTest extends RenderPhase {
+		private final String field_22242;
 		private final int func;
 
-		public DepthTest(int func) {
+		public DepthTest(String string, int i) {
 			super("depth_test", () -> {
-				if (func != 519) {
+				if (i != 519) {
 					RenderSystem.enableDepthTest();
-					RenderSystem.depthFunc(func);
+					RenderSystem.depthFunc(i);
 				}
 			}, () -> {
-				if (func != 519) {
+				if (i != 519) {
 					RenderSystem.disableDepthTest();
 					RenderSystem.depthFunc(515);
 				}
 			});
-			this.func = func;
+			this.field_22242 = string;
+			this.func = i;
 		}
 
 		@Override
@@ -270,6 +285,11 @@ public abstract class RenderPhase {
 		@Override
 		public int hashCode() {
 			return Integer.hashCode(this.func);
+		}
+
+		@Override
+		public String toString() {
+			return this.name + '[' + this.field_22242 + ']';
 		}
 	}
 
@@ -322,7 +342,7 @@ public abstract class RenderPhase {
 		private final OptionalDouble width;
 
 		public LineWidth(OptionalDouble optionalDouble) {
-			super("alpha", () -> {
+			super("line_width", () -> {
 				if (!Objects.equals(optionalDouble, OptionalDouble.of(1.0))) {
 					if (optionalDouble.isPresent()) {
 						RenderSystem.lineWidth((float)optionalDouble.getAsDouble());
@@ -352,6 +372,11 @@ public abstract class RenderPhase {
 		@Override
 		public int hashCode() {
 			return Objects.hash(new Object[]{super.hashCode(), this.width});
+		}
+
+		@Override
+		public String toString() {
+			return this.name + '[' + (this.width.isPresent() ? this.width.getAsDouble() : "window_scale") + ']';
 		}
 	}
 
@@ -478,6 +503,11 @@ public abstract class RenderPhase {
 		public int hashCode() {
 			return Boolean.hashCode(this.smooth);
 		}
+
+		@Override
+		public String toString() {
+			return this.name + '[' + (this.smooth ? "smooth" : "flat") + ']';
+		}
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -530,6 +560,11 @@ public abstract class RenderPhase {
 			return this.id.hashCode();
 		}
 
+		@Override
+		public String toString() {
+			return this.name + '[' + this.id + "(blur=" + this.bilinear + ", mipmap=" + this.mipmap + ")]";
+		}
+
 		protected Optional<Identifier> getId() {
 			return this.id;
 		}
@@ -566,6 +601,11 @@ public abstract class RenderPhase {
 		@Override
 		public int hashCode() {
 			return Boolean.hashCode(this.enabled);
+		}
+
+		@Override
+		public String toString() {
+			return this.name + '[' + this.enabled + ']';
 		}
 	}
 
@@ -618,6 +658,11 @@ public abstract class RenderPhase {
 		@Override
 		public int hashCode() {
 			return Objects.hash(new Object[]{this.color, this.depth});
+		}
+
+		@Override
+		public String toString() {
+			return this.name + "[writeColor=" + this.color + ", writeDepth=" + this.depth + ']';
 		}
 	}
 }

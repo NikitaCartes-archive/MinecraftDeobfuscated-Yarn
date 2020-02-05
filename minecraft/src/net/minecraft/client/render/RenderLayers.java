@@ -80,7 +80,10 @@ public class RenderLayers {
 		hashMap.put(Blocks.RED_MUSHROOM, renderLayer2);
 		hashMap.put(Blocks.TORCH, renderLayer2);
 		hashMap.put(Blocks.WALL_TORCH, renderLayer2);
+		hashMap.put(Blocks.SOUL_FIRE_TORCH, renderLayer2);
+		hashMap.put(Blocks.SOUL_FIRE_WALL_TORCH, renderLayer2);
 		hashMap.put(Blocks.FIRE, renderLayer2);
+		hashMap.put(Blocks.SOUL_FIRE, renderLayer2);
 		hashMap.put(Blocks.SPAWNER, renderLayer2);
 		hashMap.put(Blocks.REDSTONE_WIRE, renderLayer2);
 		hashMap.put(Blocks.WHEAT, renderLayer2);
@@ -99,6 +102,8 @@ public class RenderLayers {
 		hashMap.put(Blocks.JUNGLE_TRAPDOOR, renderLayer2);
 		hashMap.put(Blocks.ACACIA_TRAPDOOR, renderLayer2);
 		hashMap.put(Blocks.DARK_OAK_TRAPDOOR, renderLayer2);
+		hashMap.put(Blocks.CRIMSON_TRAPDOOR, renderLayer2);
+		hashMap.put(Blocks.WARPED_TRAPDOOR, renderLayer2);
 		hashMap.put(Blocks.ATTACHED_PUMPKIN_STEM, renderLayer2);
 		hashMap.put(Blocks.ATTACHED_MELON_STEM, renderLayer2);
 		hashMap.put(Blocks.PUMPKIN_STEM, renderLayer2);
@@ -195,8 +200,16 @@ public class RenderLayers {
 		hashMap.put(Blocks.SCAFFOLDING, renderLayer2);
 		hashMap.put(Blocks.STONECUTTER, renderLayer2);
 		hashMap.put(Blocks.LANTERN, renderLayer2);
+		hashMap.put(Blocks.SOUL_FIRE_LANTERN, renderLayer2);
 		hashMap.put(Blocks.CAMPFIRE, renderLayer2);
 		hashMap.put(Blocks.SWEET_BERRY_BUSH, renderLayer2);
+		hashMap.put(Blocks.WEEPING_VINES_PLANT, renderLayer2);
+		hashMap.put(Blocks.WEEPING_VINES, renderLayer2);
+		hashMap.put(Blocks.NETHER_SPROUTS, renderLayer2);
+		hashMap.put(Blocks.CRIMSON_FUNGI, renderLayer2);
+		hashMap.put(Blocks.WARPED_FUNGI, renderLayer2);
+		hashMap.put(Blocks.CRIMSON_ROOTS, renderLayer2);
+		hashMap.put(Blocks.WARPED_ROOTS, renderLayer2);
 		RenderLayer renderLayer3 = RenderLayer.getTranslucent();
 		hashMap.put(Blocks.ICE, renderLayer3);
 		hashMap.put(Blocks.NETHER_PORTAL, renderLayer3);
@@ -257,7 +270,7 @@ public class RenderLayers {
 
 	public static RenderLayer getEntityBlockLayer(BlockState state) {
 		RenderLayer renderLayer = getBlockLayer(state);
-		return renderLayer == RenderLayer.getTranslucent() ? TexturedRenderLayers.getEntityTranslucent() : TexturedRenderLayers.getEntityCutout();
+		return renderLayer == RenderLayer.getTranslucent() ? TexturedRenderLayers.getEntityTranslucentCull() : TexturedRenderLayers.getEntityCutout();
 	}
 
 	public static RenderLayer getItemLayer(ItemStack stack) {
@@ -266,7 +279,7 @@ public class RenderLayers {
 			Block block = ((BlockItem)item).getBlock();
 			return getEntityBlockLayer(block.getDefaultState());
 		} else {
-			return TexturedRenderLayers.getEntityTranslucent();
+			return TexturedRenderLayers.getEntityTranslucentCull();
 		}
 	}
 
