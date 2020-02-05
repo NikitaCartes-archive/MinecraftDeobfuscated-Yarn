@@ -663,6 +663,10 @@ public abstract class PlayerEntity extends LivingEntity {
 		if (stack.isEmpty()) {
 			return null;
 		} else {
+			if (this.world.isClient) {
+				this.swingHand(Hand.MAIN_HAND);
+			}
+
 			double d = this.getEyeY() - 0.3F;
 			ItemEntity itemEntity = new ItemEntity(this.world, this.getX(), d, this.getZ(), stack);
 			itemEntity.setPickupDelay(40);
@@ -875,8 +879,8 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	protected void damageArmor(float amount) {
-		this.inventory.damageArmor(amount);
+	protected void damageArmor(DamageSource damageSource, float f) {
+		this.inventory.damageArmor(damageSource, f);
 	}
 
 	@Override
@@ -1285,17 +1289,17 @@ public abstract class PlayerEntity extends LivingEntity {
 				return Either.left(PlayerEntity.SleepFailureReason.NOT_POSSIBLE_HERE);
 			}
 
-			if (this.world.isDay()) {
-				this.setPlayerSpawn(pos, false, true);
-				return Either.left(PlayerEntity.SleepFailureReason.NOT_POSSIBLE_NOW);
-			}
-
 			if (!this.isWithinSleepingRange(pos, direction)) {
 				return Either.left(PlayerEntity.SleepFailureReason.TOO_FAR_AWAY);
 			}
 
 			if (this.isBedObstructed(pos, direction)) {
 				return Either.left(PlayerEntity.SleepFailureReason.OBSTRUCTED);
+			}
+
+			this.setPlayerSpawn(pos, false, true);
+			if (this.world.isDay()) {
+				return Either.left(PlayerEntity.SleepFailureReason.NOT_POSSIBLE_NOW);
 			}
 
 			if (!this.isCreative()) {

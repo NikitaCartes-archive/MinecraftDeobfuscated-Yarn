@@ -13,8 +13,8 @@ public class PacketInflater extends ByteToMessageDecoder {
 	private final Inflater inflater;
 	private int compressionThreshold;
 
-	public PacketInflater(int i) {
-		this.compressionThreshold = i;
+	public PacketInflater(int compressionThreshold) {
+		this.compressionThreshold = compressionThreshold;
 		this.inflater = new Inflater();
 	}
 

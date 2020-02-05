@@ -20,15 +20,16 @@ public class CarrotOnAStickItem extends Item {
 		} else {
 			if (user.hasVehicle() && user.getVehicle() instanceof PigEntity) {
 				PigEntity pigEntity = (PigEntity)user.getVehicle();
-				if (itemStack.getMaxDamage() - itemStack.getDamage() >= 7 && pigEntity.method_6577()) {
+				if (pigEntity.method_6577()) {
 					itemStack.damage(7, user, p -> p.sendToolBreakStatus(hand));
+					user.swingHand(hand, true);
 					if (itemStack.isEmpty()) {
 						ItemStack itemStack2 = new ItemStack(Items.FISHING_ROD);
 						itemStack2.setTag(itemStack.getTag());
-						return TypedActionResult.success(itemStack2);
+						return TypedActionResult.consume(itemStack2);
 					}
 
-					return TypedActionResult.success(itemStack);
+					return TypedActionResult.consume(itemStack);
 				}
 			}
 

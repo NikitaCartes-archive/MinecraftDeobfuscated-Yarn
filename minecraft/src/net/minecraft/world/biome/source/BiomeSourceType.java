@@ -15,6 +15,9 @@ public class BiomeSourceType<C extends BiomeSourceConfig, T extends BiomeSource>
 	public static final BiomeSourceType<TheEndBiomeSourceConfig, TheEndBiomeSource> THE_END = register(
 		"the_end", TheEndBiomeSource::new, TheEndBiomeSourceConfig::new
 	);
+	public static final BiomeSourceType<MultiNoiseBiomeSourceConfig, MultiNoiseBiomeSource> MULTI_NOISE = register(
+		"multi_noise", MultiNoiseBiomeSource::new, levelProperties -> new MultiNoiseBiomeSourceConfig(levelProperties.getSeed())
+	);
 	private final Function<C, T> biomeSource;
 	private final Function<LevelProperties, C> config;
 

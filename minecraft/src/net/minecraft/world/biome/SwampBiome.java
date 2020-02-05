@@ -25,8 +25,7 @@ public final class SwampBiome extends Biome {
 				.scale(0.1F)
 				.temperature(0.8F)
 				.downfall(0.9F)
-				.waterColor(6388580)
-				.waterFogColor(2302743)
+				.effects(new BiomeEffects.Builder().waterColor(6388580).waterFogColor(2302743).fogColor(12638463).build())
 				.parent(null)
 		);
 		this.addStructureFeature(Feature.SWAMP_HUT.configure(FeatureConfig.DEFAULT));

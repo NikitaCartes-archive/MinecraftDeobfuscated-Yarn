@@ -19,8 +19,7 @@ public final class DesertLakesBiome extends Biome {
 				.scale(0.25F)
 				.temperature(2.0F)
 				.downfall(0.0F)
-				.waterColor(4159204)
-				.waterFogColor(329011)
+				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).build())
 				.parent("desert")
 		);
 		this.addStructureFeature(Feature.MINESHAFT.configure(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)));

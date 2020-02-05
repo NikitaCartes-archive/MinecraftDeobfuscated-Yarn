@@ -115,7 +115,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 
 	@Override
 	protected float getSoundVolume() {
-		return 10.0F;
+		return 5.0F;
 	}
 
 	public static boolean canSpawn(EntityType<GhastEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {

@@ -26,8 +26,7 @@ public final class FlowerForestBiome extends Biome {
 				.scale(0.4F)
 				.temperature(0.7F)
 				.downfall(0.8F)
-				.waterColor(4159204)
-				.waterFogColor(329011)
+				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).build())
 				.parent("forest")
 		);
 		this.addStructureFeature(Feature.MINESHAFT.configure(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)));

@@ -16,8 +16,8 @@ public class DecoderHandler extends ByteToMessageDecoder {
 	private static final Marker MARKER = MarkerManager.getMarker("PACKET_RECEIVED", ClientConnection.MARKER_NETWORK_PACKETS);
 	private final NetworkSide side;
 
-	public DecoderHandler(NetworkSide networkSide) {
-		this.side = networkSide;
+	public DecoderHandler(NetworkSide side) {
+		this.side = side;
 	}
 
 	@Override

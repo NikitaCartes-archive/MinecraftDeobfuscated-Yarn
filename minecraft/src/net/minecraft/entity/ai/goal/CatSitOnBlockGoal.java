@@ -22,13 +22,13 @@ public class CatSitOnBlockGoal extends MoveToTargetPosGoal {
 
 	@Override
 	public boolean canStart() {
-		return this.cat.isTamed() && !this.cat.isSitting() && super.canStart();
+		return this.cat.isTamed() && !this.cat.method_24345() && super.canStart();
 	}
 
 	@Override
 	public void start() {
 		super.start();
-		this.cat.getSitGoal().setEnabledWithOwner(false);
+		this.cat.setSitting(false);
 	}
 
 	@Override
@@ -40,12 +40,7 @@ public class CatSitOnBlockGoal extends MoveToTargetPosGoal {
 	@Override
 	public void tick() {
 		super.tick();
-		this.cat.getSitGoal().setEnabledWithOwner(false);
-		if (!this.hasReached()) {
-			this.cat.setSitting(false);
-		} else if (!this.cat.isSitting()) {
-			this.cat.setSitting(true);
-		}
+		this.cat.setSitting(this.hasReached());
 	}
 
 	@Override

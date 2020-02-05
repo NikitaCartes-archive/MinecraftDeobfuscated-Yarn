@@ -47,9 +47,9 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 	private SecretKey secretKey;
 	private ServerPlayerEntity clientEntity;
 
-	public ServerLoginNetworkHandler(MinecraftServer minecraftServer, ClientConnection clientConnection) {
-		this.server = minecraftServer;
-		this.connection = clientConnection;
+	public ServerLoginNetworkHandler(MinecraftServer server, ClientConnection connection) {
+		this.server = server;
+		this.connection = connection;
 		RANDOM.nextBytes(this.nonce);
 	}
 
@@ -156,7 +156,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 							.toString(16);
 						ServerLoginNetworkHandler.this.profile = ServerLoginNetworkHandler.this.server
 							.getSessionService()
-							.hasJoinedServer(new GameProfile(null, gameProfile.getName()), string, this.method_14386());
+							.hasJoinedServer(new GameProfile(null, gameProfile.getName()), string, this.getClientAddress());
 						if (ServerLoginNetworkHandler.this.profile != null) {
 							ServerLoginNetworkHandler.LOGGER
 								.info("UUID of player {} is {}", ServerLoginNetworkHandler.this.profile.getName(), ServerLoginNetworkHandler.this.profile.getId());
@@ -182,7 +182,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 				}
 
 				@Nullable
-				private InetAddress method_14386() {
+				private InetAddress getClientAddress() {
 					SocketAddress socketAddress = ServerLoginNetworkHandler.this.connection.getAddress();
 					return ServerLoginNetworkHandler.this.server.shouldPreventProxyConnections() && socketAddress instanceof InetSocketAddress
 						? ((InetSocketAddress)socketAddress).getAddress()

@@ -97,7 +97,7 @@ public class TntEntity extends Entity {
 
 	@Override
 	protected float getEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return 0.0F;
+		return 0.15F;
 	}
 
 	public void setFuse(int fuse) {

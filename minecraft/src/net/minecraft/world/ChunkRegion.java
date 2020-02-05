@@ -325,10 +325,6 @@ public class ChunkRegion implements IWorld {
 	}
 
 	@Override
-	public void updateNeighbors(BlockPos pos, Block block) {
-	}
-
-	@Override
 	public int getTopY(Heightmap.Type heightmap, int x, int z) {
 		return this.getChunk(x >> 4, z >> 4).sampleHeightmap(heightmap, x & 15, z & 15) + 1;
 	}

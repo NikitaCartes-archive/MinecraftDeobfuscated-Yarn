@@ -591,7 +591,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 
 	@Override
 	protected float getEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return 0.0F;
+		return 0.13F;
 	}
 
 	public void setCritical(boolean critical) {

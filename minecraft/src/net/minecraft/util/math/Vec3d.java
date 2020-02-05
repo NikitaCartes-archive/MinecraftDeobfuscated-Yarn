@@ -11,6 +11,14 @@ public class Vec3d implements Position {
 	public final double y;
 	public final double z;
 
+	@Environment(EnvType.CLIENT)
+	public static Vec3d unpackRgb(int rgb) {
+		double d = (double)(rgb >> 16 & 0xFF) / 255.0;
+		double e = (double)(rgb >> 8 & 0xFF) / 255.0;
+		double f = (double)(rgb & 0xFF) / 255.0;
+		return new Vec3d(d, e, f);
+	}
+
 	public Vec3d(double x, double y, double z) {
 		this.x = x;
 		this.y = y;

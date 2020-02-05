@@ -181,6 +181,153 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_LANTERN_HIT,
 		SoundEvents.BLOCK_LANTERN_FALL
 	);
+	public static final BlockSoundGroup NETHER_STEM = new BlockSoundGroup(
+		1.0F, 1.0F, SoundEvents.BLOCK_STEM_BREAK, SoundEvents.BLOCK_STEM_STEP, SoundEvents.BLOCK_STEM_PLACE, SoundEvents.BLOCK_STEM_HIT, SoundEvents.BLOCK_STEM_FALL
+	);
+	public static final BlockSoundGroup NYLIUM = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_NYLIUM_BREAK,
+		SoundEvents.BLOCK_NYLIUM_STEP,
+		SoundEvents.BLOCK_NYLIUM_PLACE,
+		SoundEvents.BLOCK_NYLIUM_HIT,
+		SoundEvents.BLOCK_NYLIUM_FALL
+	);
+	public static final BlockSoundGroup FUNGI = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_FUNGI_BREAK,
+		SoundEvents.BLOCK_FUNGI_STEP,
+		SoundEvents.BLOCK_FUNGI_PLACE,
+		SoundEvents.BLOCK_FUNGI_HIT,
+		SoundEvents.BLOCK_FUNGI_FALL
+	);
+	public static final BlockSoundGroup ROOTS = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_ROOTS_BREAK,
+		SoundEvents.BLOCK_ROOTS_STEP,
+		SoundEvents.BLOCK_ROOTS_PLACE,
+		SoundEvents.BLOCK_ROOTS_HIT,
+		SoundEvents.BLOCK_ROOTS_FALL
+	);
+	public static final BlockSoundGroup SHROOMLIGHT = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_SHROOMLIGHT_BREAK,
+		SoundEvents.BLOCK_SHROOMLIGHT_STEP,
+		SoundEvents.BLOCK_SHROOMLIGHT_PLACE,
+		SoundEvents.BLOCK_SHROOMLIGHT_HIT,
+		SoundEvents.BLOCK_SHROOMLIGHT_FALL
+	);
+	public static final BlockSoundGroup WEEPING_VINES = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_WEEPING_VINES_BREAK,
+		SoundEvents.BLOCK_WEEPING_VINES_STEP,
+		SoundEvents.BLOCK_WEEPING_VINES_PLACE,
+		SoundEvents.BLOCK_WEEPING_VINES_HIT,
+		SoundEvents.BLOCK_WEEPING_VINES_FALL
+	);
+	public static final BlockSoundGroup SOUL_SAND = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_SOUL_SAND_BREAK,
+		SoundEvents.BLOCK_SOUL_SAND_STEP,
+		SoundEvents.BLOCK_SOUL_SAND_PLACE,
+		SoundEvents.BLOCK_SOUL_SAND_HIT,
+		SoundEvents.BLOCK_SOUL_SAND_FALL
+	);
+	public static final BlockSoundGroup SOUL_SOIL = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_SOUL_SOIL_BREAK,
+		SoundEvents.BLOCK_SOUL_SOIL_STEP,
+		SoundEvents.BLOCK_SOUL_SOIL_PLACE,
+		SoundEvents.BLOCK_SOUL_SOIL_HIT,
+		SoundEvents.BLOCK_SOUL_SOIL_FALL
+	);
+	public static final BlockSoundGroup BASALT = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_BASALT_BREAK,
+		SoundEvents.BLOCK_BASALT_STEP,
+		SoundEvents.BLOCK_BASALT_PLACE,
+		SoundEvents.BLOCK_BASALT_HIT,
+		SoundEvents.BLOCK_BASALT_FALL
+	);
+	public static final BlockSoundGroup WART_BLOCK = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_WART_BLOCK_BREAK,
+		SoundEvents.BLOCK_WART_BLOCK_STEP,
+		SoundEvents.BLOCK_WART_BLOCK_PLACE,
+		SoundEvents.BLOCK_WART_BLOCK_HIT,
+		SoundEvents.BLOCK_WART_BLOCK_FALL
+	);
+	public static final BlockSoundGroup NETHERRACK = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_NETHERRACK_BREAK,
+		SoundEvents.BLOCK_NETHERRACK_STEP,
+		SoundEvents.BLOCK_NETHERRACK_PLACE,
+		SoundEvents.BLOCK_NETHERRACK_HIT,
+		SoundEvents.BLOCK_NETHERRACK_FALL
+	);
+	public static final BlockSoundGroup NETHER_BRICK = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_NETHER_BRICKS_BREAK,
+		SoundEvents.BLOCK_NETHER_BRICKS_STEP,
+		SoundEvents.BLOCK_NETHER_BRICKS_PLACE,
+		SoundEvents.BLOCK_NETHER_BRICKS_HIT,
+		SoundEvents.BLOCK_NETHER_BRICKS_FALL
+	);
+	public static final BlockSoundGroup NETHER_SPROUTS = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_NETHER_SPROUTS_BREAK,
+		SoundEvents.BLOCK_NETHER_SPROUTS_STEP,
+		SoundEvents.BLOCK_NETHER_SPROUTS_PLACE,
+		SoundEvents.BLOCK_NETHER_SPROUTS_HIT,
+		SoundEvents.BLOCK_NETHER_SPROUTS_FALL
+	);
+	public static final BlockSoundGroup NETHER_ORE = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_NETHER_ORE_BREAK,
+		SoundEvents.BLOCK_NETHER_ORE_STEP,
+		SoundEvents.BLOCK_NETHER_ORE_PLACE,
+		SoundEvents.BLOCK_NETHER_ORE_HIT,
+		SoundEvents.BLOCK_NETHER_ORE_FALL
+	);
+	public static final BlockSoundGroup BONE = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_BONE_BLOCK_BREAK,
+		SoundEvents.BLOCK_BONE_BLOCK_STEP,
+		SoundEvents.BLOCK_BONE_BLOCK_PLACE,
+		SoundEvents.BLOCK_BONE_BLOCK_HIT,
+		SoundEvents.BLOCK_BONE_BLOCK_FALL
+	);
+	public static final BlockSoundGroup NETHERITE = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_NETHERITE_BLOCK_BREAK,
+		SoundEvents.BLOCK_NETHERITE_BLOCK_STEP,
+		SoundEvents.BLOCK_NETHERITE_BLOCK_PLACE,
+		SoundEvents.BLOCK_NETHERITE_BLOCK_HIT,
+		SoundEvents.BLOCK_NETHERITE_BLOCK_FALL
+	);
+	public static final BlockSoundGroup ANCIENT_DEBRIS = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_ANCIENT_DEBRIS_BREAK,
+		SoundEvents.BLOCK_ANCIENT_DEBRIS_STEP,
+		SoundEvents.BLOCK_ANCIENT_DEBRIS_PLACE,
+		SoundEvents.BLOCK_ANCIENT_DEBRIS_HIT,
+		SoundEvents.BLOCK_ANCIENT_DEBRIS_FALL
+	);
 	public final float volume;
 	public final float pitch;
 	private final SoundEvent breakSound;

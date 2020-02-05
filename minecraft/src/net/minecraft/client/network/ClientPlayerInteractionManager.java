@@ -66,9 +66,9 @@ public class ClientPlayerInteractionManager {
 	);
 	private int lastSelectedSlot;
 
-	public ClientPlayerInteractionManager(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler) {
-		this.client = minecraftClient;
-		this.networkHandler = clientPlayNetworkHandler;
+	public ClientPlayerInteractionManager(MinecraftClient client, ClientPlayNetworkHandler networkHandler) {
+		this.client = client;
+		this.networkHandler = networkHandler;
 	}
 
 	public static void breakBlockOrFire(MinecraftClient client, ClientPlayerInteractionManager interactionManager, BlockPos pos, Direction direction) {

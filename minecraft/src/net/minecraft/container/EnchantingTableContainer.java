@@ -270,13 +270,10 @@ public class EnchantingTableContainer extends Container {
 					return ItemStack.EMPTY;
 				}
 
-				if (itemStack2.hasTag() && itemStack2.getCount() == 1) {
-					((Slot)this.slots.get(0)).setStack(itemStack2.copy());
-					itemStack2.setCount(0);
-				} else if (!itemStack2.isEmpty()) {
-					((Slot)this.slots.get(0)).setStack(new ItemStack(itemStack2.getItem()));
-					itemStack2.decrement(1);
-				}
+				ItemStack itemStack3 = itemStack2.copy();
+				itemStack3.setCount(1);
+				itemStack2.decrement(1);
+				((Slot)this.slots.get(0)).setStack(itemStack3);
 			}
 
 			if (itemStack2.isEmpty()) {

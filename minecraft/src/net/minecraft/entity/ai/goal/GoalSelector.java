@@ -5,6 +5,7 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 import net.minecraft.util.profiler.Profiler;
 import org.apache.logging.log4j.LogManager;
@@ -25,12 +26,12 @@ public class GoalSelector {
 	};
 	private final Map<Goal.Control, WeightedGoal> goalsByControl = new EnumMap(Goal.Control.class);
 	private final Set<WeightedGoal> goals = Sets.<WeightedGoal>newLinkedHashSet();
-	private final Profiler profiler;
+	private final Supplier<Profiler> profiler;
 	private final EnumSet<Goal.Control> disabledControls = EnumSet.noneOf(Goal.Control.class);
 	private int timeInterval = 3;
 
-	public GoalSelector(Profiler profiler) {
-		this.profiler = profiler;
+	public GoalSelector(Supplier<Profiler> supplier) {
+		this.profiler = supplier;
 	}
 
 	public void add(int weight, Goal goal) {
@@ -43,7 +44,8 @@ public class GoalSelector {
 	}
 
 	public void tick() {
-		this.profiler.push("goalCleanup");
+		Profiler profiler = (Profiler)this.profiler.get();
+		profiler.push("goalCleanup");
 		this.getRunningGoals()
 			.filter(
 				weightedGoal -> !weightedGoal.isRunning()
@@ -56,8 +58,8 @@ public class GoalSelector {
 				this.goalsByControl.remove(control);
 			}
 		});
-		this.profiler.pop();
-		this.profiler.push("goalUpdate");
+		profiler.pop();
+		profiler.push("goalUpdate");
 		this.goals
 			.stream()
 			.filter(weightedGoal -> !weightedGoal.isRunning())
@@ -76,10 +78,10 @@ public class GoalSelector {
 				});
 				weightedGoal.start();
 			});
-		this.profiler.pop();
-		this.profiler.push("goalTick");
+		profiler.pop();
+		profiler.push("goalTick");
 		this.getRunningGoals().forEach(WeightedGoal::tick);
-		this.profiler.pop();
+		profiler.pop();
 	}
 
 	public Stream<WeightedGoal> getRunningGoals() {

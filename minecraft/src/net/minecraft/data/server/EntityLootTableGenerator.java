@@ -1011,6 +1011,10 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 				)
 		);
 		this.register(
+			EntityType.HOGLIN,
+			LootTable.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Items.ROTTEN_FLESH)))
+		);
+		this.register(
 			EntityType.ZOMBIE_VILLAGER,
 			LootTable.builder()
 				.withPool(

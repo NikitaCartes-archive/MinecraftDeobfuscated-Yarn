@@ -29,6 +29,8 @@ public class BlockTags {
 	public static final Tag<Block> ACACIA_LOGS = register("acacia_logs");
 	public static final Tag<Block> JUNGLE_LOGS = register("jungle_logs");
 	public static final Tag<Block> SPRUCE_LOGS = register("spruce_logs");
+	public static final Tag<Block> CRIMSON_STEMS = register("crimson_stems");
+	public static final Tag<Block> WARPED_STEMS = register("warped_stems");
 	public static final Tag<Block> BANNERS = register("banners");
 	public static final Tag<Block> SAND = register("sand");
 	public static final Tag<Block> STAIRS = register("stairs");
@@ -64,6 +66,9 @@ public class BlockTags {
 	public static final Tag<Block> CROPS = register("crops");
 	public static final Tag<Block> BEE_GROWABLES = register("bee_growables");
 	public static final Tag<Block> PORTALS = register("portals");
+	public static final Tag<Block> FIRE = register("fire");
+	public static final Tag<Block> NYLIUM = register("nylium");
+	public static final Tag<Block> WART_BLOCKS = register("wart_blocks");
 
 	public static void setContainer(TagContainer<Block> container) {
 		BlockTags.container = container;

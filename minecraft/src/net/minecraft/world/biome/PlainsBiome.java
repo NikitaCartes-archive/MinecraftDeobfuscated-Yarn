@@ -1,5 +1,6 @@
 package net.minecraft.world.biome;
 
+import com.google.common.collect.ImmutableList;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
 import net.minecraft.world.gen.feature.Feature;
@@ -20,9 +21,9 @@ public final class PlainsBiome extends Biome {
 				.scale(0.05F)
 				.temperature(0.8F)
 				.downfall(0.4F)
-				.waterColor(4159204)
-				.waterFogColor(329011)
+				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).build())
 				.parent(null)
+				.noises(ImmutableList.of(new Biome.MixedNoisePoint(0.0F, 0.0F, 0.0F, 0.0F, 1.0F)))
 		);
 		this.addStructureFeature(Feature.VILLAGE.configure(new VillageFeatureConfig("village/plains/town_centers", 6)));
 		this.addStructureFeature(Feature.PILLAGER_OUTPOST.configure(FeatureConfig.DEFAULT));

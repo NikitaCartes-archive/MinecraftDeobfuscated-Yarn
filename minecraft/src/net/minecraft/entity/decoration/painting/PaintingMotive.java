@@ -32,13 +32,13 @@ public class PaintingMotive {
 	private final int width;
 	private final int height;
 
-	private static PaintingMotive register(String id, int width, int height) {
-		return Registry.register(Registry.PAINTING_MOTIVE, id, new PaintingMotive(width, height));
+	private static PaintingMotive register(String string, int i, int j) {
+		return Registry.register(Registry.PAINTING_MOTIVE, string, new PaintingMotive(i, j));
 	}
 
-	public PaintingMotive(int width, int height) {
-		this.width = width;
-		this.height = height;
+	public PaintingMotive(int i, int j) {
+		this.width = i;
+		this.height = j;
 	}
 
 	public int getWidth() {

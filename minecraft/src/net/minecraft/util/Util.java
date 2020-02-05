@@ -98,7 +98,7 @@ public class Util {
 						super.onTermination(throwable);
 					}
 				};
-				forkJoinWorkerThread.setName("Server-Worker-" + NEXT_SERVER_WORKER_ID.getAndIncrement());
+				forkJoinWorkerThread.setName("Worker-" + NEXT_SERVER_WORKER_ID.getAndIncrement());
 				return forkJoinWorkerThread;
 			}, (thread, throwable) -> {
 				throwOrPause(throwable);

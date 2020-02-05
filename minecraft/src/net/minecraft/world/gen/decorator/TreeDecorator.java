@@ -18,8 +18,8 @@ import net.minecraft.world.ModifiableWorld;
 public abstract class TreeDecorator implements DynamicSerializable {
 	protected final TreeDecoratorType<?> type;
 
-	protected TreeDecorator(TreeDecoratorType<?> treeDecoratorType) {
-		this.type = treeDecoratorType;
+	protected TreeDecorator(TreeDecoratorType<?> type) {
+		this.type = type;
 	}
 
 	public abstract void generate(IWorld world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box);

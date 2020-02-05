@@ -87,7 +87,7 @@ public abstract class Decorator<DC extends DecoratorConfig> {
 		"carving_mask", new CarvingMaskDecorator(CarvingMaskDecoratorConfig::deserialize)
 	);
 	public static final Decorator<CountDecoratorConfig> FOREST_ROCK = register("forest_rock", new ForestRockDecorator(CountDecoratorConfig::deserialize));
-	public static final Decorator<CountDecoratorConfig> HELL_FIRE = register("hell_fire", new HellFireDecorator(CountDecoratorConfig::deserialize));
+	public static final Decorator<CountDecoratorConfig> FIRE = register("fire", new HellFireDecorator(CountDecoratorConfig::deserialize));
 	public static final Decorator<CountDecoratorConfig> MAGMA = register("magma", new MagmaDecorator(CountDecoratorConfig::deserialize));
 	public static final Decorator<NopeDecoratorConfig> EMERALD_ORE = register("emerald_ore", new EmeraldOreDecorator(NopeDecoratorConfig::deserialize));
 	public static final Decorator<ChanceDecoratorConfig> LAVA_LAKE = register("lava_lake", new LavaLakeDecorator(ChanceDecoratorConfig::deserialize));

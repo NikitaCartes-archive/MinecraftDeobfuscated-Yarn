@@ -14,9 +14,9 @@ public class ServerHandshakeNetworkHandler implements ServerHandshakePacketListe
 	private final MinecraftServer server;
 	private final ClientConnection connection;
 
-	public ServerHandshakeNetworkHandler(MinecraftServer minecraftServer, ClientConnection clientConnection) {
-		this.server = minecraftServer;
-		this.connection = clientConnection;
+	public ServerHandshakeNetworkHandler(MinecraftServer server, ClientConnection connection) {
+		this.server = server;
+		this.connection = connection;
 	}
 
 	@Override

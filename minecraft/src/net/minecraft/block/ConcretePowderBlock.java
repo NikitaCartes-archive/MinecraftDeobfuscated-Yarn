@@ -1,5 +1,7 @@
 package net.minecraft.block;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
@@ -61,5 +63,11 @@ public class ConcretePowderBlock extends FallingBlock {
 	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
 		return hardensOnAnySide(world, pos) ? this.hardenedState : super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public int getColor(BlockState state) {
+		return this.materialColor.color;
 	}
 }

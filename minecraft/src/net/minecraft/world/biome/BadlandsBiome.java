@@ -1,5 +1,6 @@
 package net.minecraft.world.biome;
 
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityCategory;
@@ -21,9 +22,9 @@ public final class BadlandsBiome extends Biome {
 				.scale(0.2F)
 				.temperature(2.0F)
 				.downfall(0.0F)
-				.waterColor(4159204)
-				.waterFogColor(329011)
+				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).build())
 				.parent(null)
+				.noises(ImmutableList.of(new Biome.MixedNoisePoint(-0.25F, -0.5F, 0.5F, 0.2F, 1.0F)))
 		);
 		this.addStructureFeature(Feature.MINESHAFT.configure(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.MESA)));
 		this.addStructureFeature(Feature.STRONGHOLD.configure(FeatureConfig.DEFAULT));

@@ -1,6 +1,7 @@
 package net.minecraft.world.gen.chunk;
 
 import java.util.List;
+import java.util.stream.IntStream;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Util;
@@ -40,7 +41,7 @@ public class OverworldChunkGenerator extends SurfaceChunkGenerator<OverworldChun
 	public OverworldChunkGenerator(IWorld world, BiomeSource biomeSource, OverworldChunkGeneratorConfig config) {
 		super(world, biomeSource, 4, 8, 256, config, true);
 		this.random.consume(2620);
-		this.noiseSampler = new OctavePerlinNoiseSampler(this.random, 15, 0);
+		this.noiseSampler = new OctavePerlinNoiseSampler(this.random, IntStream.rangeClosed(-15, 0));
 		this.amplified = world.getLevelProperties().getGeneratorType() == LevelGeneratorType.AMPLIFIED;
 	}
 

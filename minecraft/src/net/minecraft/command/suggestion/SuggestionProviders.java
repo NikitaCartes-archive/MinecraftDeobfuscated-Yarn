@@ -30,6 +30,9 @@ public class SuggestionProviders {
 		new Identifier("available_sounds"),
 		(commandContext, suggestionsBuilder) -> CommandSource.suggestIdentifiers(commandContext.getSource().getSoundIds(), suggestionsBuilder)
 	);
+	public static final SuggestionProvider<ServerCommandSource> field_22245 = register(
+		new Identifier("available_biomes"), (commandContext, suggestionsBuilder) -> CommandSource.suggestIdentifiers(Registry.BIOME.getIds(), suggestionsBuilder)
+	);
 	public static final SuggestionProvider<ServerCommandSource> SUMMONABLE_ENTITIES = register(
 		new Identifier("summonable_entities"),
 		(commandContext, suggestionsBuilder) -> CommandSource.suggestFromIdentifier(

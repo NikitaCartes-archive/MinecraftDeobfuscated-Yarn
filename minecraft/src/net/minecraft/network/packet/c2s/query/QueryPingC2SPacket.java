@@ -14,8 +14,8 @@ public class QueryPingC2SPacket implements Packet<ServerQueryPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public QueryPingC2SPacket(long l) {
-		this.startTime = l;
+	public QueryPingC2SPacket(long startTime) {
+		this.startTime = startTime;
 	}
 
 	@Override

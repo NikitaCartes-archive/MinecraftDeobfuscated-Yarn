@@ -46,7 +46,7 @@ public class FollowOwnerGoal extends Goal {
 			return false;
 		} else if (livingEntity.isSpectator()) {
 			return false;
-		} else if (this.tameable.isSitting()) {
+		} else if (this.tameable.method_24345()) {
 			return false;
 		} else if (this.tameable.squaredDistanceTo(livingEntity) < (double)(this.minDistance * this.minDistance)) {
 			return false;
@@ -60,7 +60,7 @@ public class FollowOwnerGoal extends Goal {
 	public boolean shouldContinue() {
 		if (this.navigation.isIdle()) {
 			return false;
-		} else if (this.tameable.isSitting()) {
+		} else if (this.tameable.method_24345()) {
 			return false;
 		} else {
 			return !(this.tameable.squaredDistanceTo(this.owner) <= (double)(this.maxDistance * this.maxDistance));

@@ -23,8 +23,7 @@ public final class EndBiome extends Biome {
 				.scale(0.2F)
 				.temperature(0.5F)
 				.downfall(0.5F)
-				.waterColor(4159204)
-				.waterFogColor(329011)
+				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(10518688).build())
 				.parent(null)
 		);
 		this.addFeature(

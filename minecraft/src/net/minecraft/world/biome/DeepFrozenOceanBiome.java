@@ -1,5 +1,6 @@
 package net.minecraft.world.biome;
 
+import com.google.common.collect.ImmutableList;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.math.BlockPos;
@@ -15,7 +16,7 @@ import net.minecraft.world.gen.feature.ShipwreckFeatureConfig;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 
 public class DeepFrozenOceanBiome extends Biome {
-	protected static final OctaveSimplexNoiseSampler noiseSampler = new OctaveSimplexNoiseSampler(new ChunkRandom(3456L), 2, 0);
+	protected static final OctaveSimplexNoiseSampler noiseSampler = new OctaveSimplexNoiseSampler(new ChunkRandom(3456L), ImmutableList.of(-2, -1, 0));
 
 	public DeepFrozenOceanBiome() {
 		super(
@@ -27,8 +28,7 @@ public class DeepFrozenOceanBiome extends Biome {
 				.scale(0.1F)
 				.temperature(0.5F)
 				.downfall(0.5F)
-				.waterColor(3750089)
-				.waterFogColor(329011)
+				.effects(new BiomeEffects.Builder().waterColor(3750089).waterFogColor(329011).fogColor(12638463).build())
 				.parent(null)
 		);
 		this.addStructureFeature(Feature.OCEAN_RUIN.configure(new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.COLD, 0.3F, 0.9F)));

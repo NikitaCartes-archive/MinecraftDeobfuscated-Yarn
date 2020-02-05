@@ -349,7 +349,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			new LevelInfo(packet.getSeed(), packet.getGameMode(), false, packet.isHardcore(), packet.getGeneratorType()),
 			packet.getDimension(),
 			this.chunkLoadDistance,
-			this.client.getProfiler(),
+			this.client::getProfiler,
 			this.client.worldRenderer
 		);
 		this.client.joinWorld(this.world);
@@ -1017,7 +1017,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				new LevelInfo(packet.getSha256Seed(), packet.getGameMode(), false, this.client.world.getLevelProperties().isHardcore(), packet.getGeneratorType()),
 				packet.getDimension(),
 				this.chunkLoadDistance,
-				this.client.getProfiler(),
+				this.client::getProfiler,
 				this.client.worldRenderer
 			);
 			this.world.setScoreboard(scoreboard);

@@ -59,7 +59,8 @@ public interface IWorld extends EntityView, WorldView, ModifiableTestableWorld {
 
 	Random getRandom();
 
-	void updateNeighbors(BlockPos pos, Block block);
+	default void updateNeighbors(BlockPos pos, Block block) {
+	}
 
 	@Environment(EnvType.CLIENT)
 	BlockPos getSpawnPos();

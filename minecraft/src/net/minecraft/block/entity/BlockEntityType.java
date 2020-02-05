@@ -48,7 +48,11 @@ public class BlockEntityType<T extends BlockEntity> {
 			Blocks.BIRCH_WALL_SIGN,
 			Blocks.ACACIA_WALL_SIGN,
 			Blocks.JUNGLE_WALL_SIGN,
-			Blocks.DARK_OAK_WALL_SIGN
+			Blocks.DARK_OAK_WALL_SIGN,
+			Blocks.CRIMSON_SIGN,
+			Blocks.CRIMSON_WALL_SIGN,
+			Blocks.WARPED_SIGN,
+			Blocks.WARPED_WALL_SIGN
 		)
 	);
 	public static final BlockEntityType<MobSpawnerBlockEntity> MOB_SPAWNER = create(

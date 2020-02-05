@@ -65,6 +65,7 @@ import net.minecraft.world.LightType;
 import net.minecraft.world.TickScheduler;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeParticleConfig;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
@@ -98,14 +99,14 @@ public class ClientWorld extends World {
 		LevelInfo levelInfo,
 		DimensionType dimensionType,
 		int chunkLoadDistance,
-		Profiler profiler,
+		Supplier<Profiler> supplier,
 		WorldRenderer worldRenderer
 	) {
 		super(
 			new LevelProperties(levelInfo, "MpServer"),
 			dimensionType,
 			(world, dimension) -> new ClientChunkManager((ClientWorld)world, chunkLoadDistance),
-			profiler,
+			supplier,
 			true
 		);
 		this.netHandler = clientPlayNetworkHandler;
@@ -387,6 +388,26 @@ public class ClientWorld extends World {
 
 		if (spawnBarrierParticles && blockState.getBlock() == Blocks.BARRIER) {
 			this.addParticle(ParticleTypes.BARRIER, (double)i + 0.5, (double)j + 0.5, (double)k + 0.5, 0.0, 0.0, 0.0);
+		}
+
+		if (!blockState.isFullCube(this, pos)) {
+			this.getBiome(pos)
+				.getParticleConfig()
+				.ifPresent(
+					biomeParticleConfig -> {
+						if (biomeParticleConfig.shouldAddParticle(this.random)) {
+							this.addParticle(
+								biomeParticleConfig.getParticleType(),
+								(double)((float)pos.getX() + this.random.nextFloat()),
+								(double)((float)pos.getY() + this.random.nextFloat()),
+								(double)((float)pos.getZ() + this.random.nextFloat()),
+								biomeParticleConfig.generateVelocityX(this.random),
+								biomeParticleConfig.generateVelocityY(this.random),
+								biomeParticleConfig.generateVelocityZ(this.random)
+							);
+						}
+					}
+				);
 		}
 	}
 
@@ -713,11 +734,6 @@ public class ClientWorld extends World {
 		}
 
 		return new Vec3d((double)h, (double)i, (double)j);
-	}
-
-	public Vec3d getFogColor(float tickDelta) {
-		float f = this.getSkyAngle(tickDelta);
-		return this.dimension.getFogColor(f, tickDelta);
 	}
 
 	public float method_23787(float f) {

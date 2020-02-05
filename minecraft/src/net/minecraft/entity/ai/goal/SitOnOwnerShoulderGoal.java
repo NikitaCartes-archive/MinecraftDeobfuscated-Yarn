@@ -19,7 +19,7 @@ public class SitOnOwnerShoulderGoal extends Goal {
 			&& !serverPlayerEntity.isSpectator()
 			&& !serverPlayerEntity.abilities.flying
 			&& !serverPlayerEntity.isTouchingWater();
-		return !this.tameable.isSitting() && bl && this.tameable.isReadyToSitOnPlayer();
+		return !this.tameable.method_24345() && bl && this.tameable.isReadyToSitOnPlayer();
 	}
 
 	@Override

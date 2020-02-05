@@ -24,7 +24,7 @@ import net.minecraft.world.gen.ProbabilityConfig;
 
 public abstract class Carver<C extends CarverConfig> {
 	public static final Carver<ProbabilityConfig> CAVE = register("cave", new CaveCarver(ProbabilityConfig::deserialize, 256));
-	public static final Carver<ProbabilityConfig> HELL_CAVE = register("hell_cave", new NetherCaveCarver(ProbabilityConfig::deserialize));
+	public static final Carver<ProbabilityConfig> NETHER_CAVE = register("nether_cave", new NetherCaveCarver(ProbabilityConfig::deserialize));
 	public static final Carver<ProbabilityConfig> CANYON = register("canyon", new RavineCarver(ProbabilityConfig::deserialize));
 	public static final Carver<ProbabilityConfig> UNDERWATER_CANYON = register("underwater_canyon", new UnderwaterRavineCarver(ProbabilityConfig::deserialize));
 	public static final Carver<ProbabilityConfig> UNDERWATER_CAVE = register("underwater_cave", new UnderwaterCaveCarver(ProbabilityConfig::deserialize));

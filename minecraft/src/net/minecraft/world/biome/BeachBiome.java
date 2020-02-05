@@ -1,5 +1,6 @@
 package net.minecraft.world.biome;
 
+import com.google.common.collect.ImmutableList;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
 import net.minecraft.world.gen.feature.BuriedTreasureFeatureConfig;
@@ -20,9 +21,9 @@ public final class BeachBiome extends Biome {
 				.scale(0.025F)
 				.temperature(0.8F)
 				.downfall(0.4F)
-				.waterColor(4159204)
-				.waterFogColor(329011)
+				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).build())
 				.parent(null)
+				.noises(ImmutableList.of(new Biome.MixedNoisePoint(0.0F, 0.0F, -0.1F, 0.0F, 0.9935F)))
 		);
 		this.addStructureFeature(Feature.MINESHAFT.configure(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)));
 		this.addStructureFeature(Feature.BURIED_TREASURE.configure(new BuriedTreasureFeatureConfig(0.01F)));

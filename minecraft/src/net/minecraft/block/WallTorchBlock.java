@@ -9,6 +9,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
@@ -37,8 +38,8 @@ public class WallTorchBlock extends TorchBlock {
 		)
 	);
 
-	protected WallTorchBlock(Block.Settings settings) {
-		super(settings);
+	protected WallTorchBlock(Block.Settings settings, ParticleEffect particleEffect) {
+		super(settings, particleEffect);
 		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH));
 	}
 
@@ -101,7 +102,7 @@ public class WallTorchBlock extends TorchBlock {
 		double h = 0.27;
 		Direction direction2 = direction.getOpposite();
 		world.addParticle(ParticleTypes.SMOKE, d + 0.27 * (double)direction2.getOffsetX(), e + 0.22, f + 0.27 * (double)direction2.getOffsetZ(), 0.0, 0.0, 0.0);
-		world.addParticle(ParticleTypes.FLAME, d + 0.27 * (double)direction2.getOffsetX(), e + 0.22, f + 0.27 * (double)direction2.getOffsetZ(), 0.0, 0.0, 0.0);
+		world.addParticle(this.field_22155, d + 0.27 * (double)direction2.getOffsetX(), e + 0.22, f + 0.27 * (double)direction2.getOffsetZ(), 0.0, 0.0, 0.0);
 	}
 
 	@Override

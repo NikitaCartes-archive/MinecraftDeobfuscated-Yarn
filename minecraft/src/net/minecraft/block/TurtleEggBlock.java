@@ -145,8 +145,10 @@ public class TurtleEggBlock extends Block {
 	private boolean breaksEgg(World world, Entity entity) {
 		if (entity instanceof TurtleEntity) {
 			return false;
+		} else if (!(entity instanceof LivingEntity)) {
+			return false;
 		} else {
-			return entity instanceof LivingEntity && !(entity instanceof PlayerEntity) ? world.getGameRules().getBoolean(GameRules.MOB_GRIEFING) : true;
+			return entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.MOB_GRIEFING);
 		}
 	}
 }

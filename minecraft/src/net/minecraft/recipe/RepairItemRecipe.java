@@ -1,13 +1,18 @@
 package net.minecraft.recipe;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import java.util.List;
+import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public class RepairItemRecipe extends SpecialCraftingRecipe {
@@ -65,6 +70,19 @@ public class RepairItemRecipe extends SpecialCraftingRecipe {
 
 				ItemStack itemStack4 = new ItemStack(itemStack3.getItem());
 				itemStack4.setDamage(m);
+				Map<Enchantment, Integer> map = Maps.newHashMap();
+				Map<Enchantment, Integer> map2 = EnchantmentHelper.getEnchantments(itemStack3);
+				Map<Enchantment, Integer> map3 = EnchantmentHelper.getEnchantments(itemStack);
+				Registry.ENCHANTMENT.stream().filter(Enchantment::isCursed).forEach(enchantment -> {
+					int i = Math.max(map2.getOrDefault(enchantment, 0), map3.getOrDefault(enchantment, 0));
+					if (i > 0) {
+						map.put(enchantment, i);
+					}
+				});
+				if (!map.isEmpty()) {
+					EnchantmentHelper.set(map, itemStack4);
+				}
+
 				return itemStack4;
 			}
 		}

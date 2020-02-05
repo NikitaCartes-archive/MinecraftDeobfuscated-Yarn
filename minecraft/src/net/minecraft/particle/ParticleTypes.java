@@ -30,6 +30,7 @@ public class ParticleTypes {
 	public static final DefaultParticleType FIREWORK = register("firework", false);
 	public static final DefaultParticleType FISHING = register("fishing", false);
 	public static final DefaultParticleType FLAME = register("flame", false);
+	public static final DefaultParticleType SOUL_FIRE_FLAME = register("soul_fire_flame", false);
 	public static final DefaultParticleType FLASH = register("flash", false);
 	public static final DefaultParticleType HAPPY_VILLAGER = register("happy_villager", false);
 	public static final DefaultParticleType COMPOSTER = register("composter", false);
@@ -65,6 +66,9 @@ public class ParticleTypes {
 	public static final DefaultParticleType FALLING_HONEY = register("falling_honey", false);
 	public static final DefaultParticleType LANDING_HONEY = register("landing_honey", false);
 	public static final DefaultParticleType FALLING_NECTAR = register("falling_nectar", false);
+	public static final DefaultParticleType ASH = register("ash", false);
+	public static final DefaultParticleType CRIMSON_SPORE = register("crimson_spore", false);
+	public static final DefaultParticleType WARPED_SPORE = register("warped_spore", false);
 
 	private static DefaultParticleType register(String name, boolean alwaysShow) {
 		return Registry.register(Registry.PARTICLE_TYPE, name, new DefaultParticleType(alwaysShow));

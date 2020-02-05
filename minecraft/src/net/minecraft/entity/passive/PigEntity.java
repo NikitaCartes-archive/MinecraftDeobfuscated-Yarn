@@ -179,6 +179,7 @@ public class PigEntity extends AnimalEntity {
 		zombiePigmanEntity.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
 		zombiePigmanEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
 		zombiePigmanEntity.setAiDisabled(this.isAiDisabled());
+		zombiePigmanEntity.setBaby(this.isBaby());
 		if (this.hasCustomName()) {
 			zombiePigmanEntity.setCustomName(this.getCustomName());
 			zombiePigmanEntity.setCustomNameVisible(this.isCustomNameVisible());

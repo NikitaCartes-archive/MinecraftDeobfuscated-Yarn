@@ -60,6 +60,7 @@ public interface StructurePieceType {
 	StructurePieceType WOODLAND_MANSION = register(WoodlandMansionGenerator.Piece::new, "WMP");
 	StructurePieceType BURIED_TREASURE = register(BuriedTreasureGenerator.Piece::new, "BTP");
 	StructurePieceType SHIPWRECK = register(ShipwreckGenerator.Piece::new, "Shipwreck");
+	StructurePieceType NE_FOS = register(NetherFossilGenerator.Piece::new, "NeFos");
 
 	StructurePiece load(StructureManager structureManager, CompoundTag tag);
 

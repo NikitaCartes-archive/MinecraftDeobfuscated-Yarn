@@ -1,6 +1,6 @@
 package net.minecraft.entity.projectile;
 
-import net.minecraft.block.Blocks;
+import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -46,7 +46,7 @@ public class SmallFireballEntity extends AbstractFireballEntity {
 				BlockHitResult blockHitResult = (BlockHitResult)hitResult;
 				BlockPos blockPos = blockHitResult.getBlockPos().offset(blockHitResult.getSide());
 				if (this.world.isAir(blockPos)) {
-					this.world.setBlockState(blockPos, Blocks.FIRE.getDefaultState());
+					this.world.setBlockState(blockPos, AbstractFireBlock.getState(this.world, blockPos));
 				}
 			}
 
