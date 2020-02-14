@@ -587,7 +587,6 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.registerForSelfDrop(Blocks.WARPED_FENCE_GATE);
         this.registerForSelfDrop(Blocks.WARPED_STAIRS);
         this.registerForSelfDrop(Blocks.WARPED_BUTTON);
-        this.registerForSelfDrop(Blocks.WARPED_DOOR);
         this.registerForSelfDrop(Blocks.WARPED_SIGN);
         this.registerForSelfDrop(Blocks.CRIMSON_PRESSURE_PLATE);
         this.registerForSelfDrop(Blocks.CRIMSON_FENCE);
@@ -595,7 +594,6 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.registerForSelfDrop(Blocks.CRIMSON_FENCE_GATE);
         this.registerForSelfDrop(Blocks.CRIMSON_STAIRS);
         this.registerForSelfDrop(Blocks.CRIMSON_BUTTON);
-        this.registerForSelfDrop(Blocks.CRIMSON_DOOR);
         this.registerForSelfDrop(Blocks.CRIMSON_SIGN);
         this.registerForSelfDrop(Blocks.NETHERITE_BLOCK);
         this.registerForSelfDrop(Blocks.ANCIENT_DEBRIS);
@@ -681,13 +679,15 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.registerWithFunction(Blocks.DIORITE_SLAB, BlockLootTableGenerator::createForSlabs);
         this.registerWithFunction(Blocks.CRIMSON_SLAB, BlockLootTableGenerator::createForSlabs);
         this.registerWithFunction(Blocks.WARPED_SLAB, BlockLootTableGenerator::createForSlabs);
-        this.registerWithFunction(Blocks.ACACIA_DOOR, block -> BlockLootTableGenerator.createForMultiblock(block, DoorBlock.HALF, DoubleBlockHalf.LOWER));
-        this.registerWithFunction(Blocks.BIRCH_DOOR, block -> BlockLootTableGenerator.createForMultiblock(block, DoorBlock.HALF, DoubleBlockHalf.LOWER));
-        this.registerWithFunction(Blocks.DARK_OAK_DOOR, block -> BlockLootTableGenerator.createForMultiblock(block, DoorBlock.HALF, DoubleBlockHalf.LOWER));
-        this.registerWithFunction(Blocks.IRON_DOOR, block -> BlockLootTableGenerator.createForMultiblock(block, DoorBlock.HALF, DoubleBlockHalf.LOWER));
-        this.registerWithFunction(Blocks.JUNGLE_DOOR, block -> BlockLootTableGenerator.createForMultiblock(block, DoorBlock.HALF, DoubleBlockHalf.LOWER));
-        this.registerWithFunction(Blocks.OAK_DOOR, block -> BlockLootTableGenerator.createForMultiblock(block, DoorBlock.HALF, DoubleBlockHalf.LOWER));
-        this.registerWithFunction(Blocks.SPRUCE_DOOR, block -> BlockLootTableGenerator.createForMultiblock(block, DoorBlock.HALF, DoubleBlockHalf.LOWER));
+        this.registerWithFunction(Blocks.ACACIA_DOOR, BlockLootTableGenerator::method_24817);
+        this.registerWithFunction(Blocks.BIRCH_DOOR, BlockLootTableGenerator::method_24817);
+        this.registerWithFunction(Blocks.DARK_OAK_DOOR, BlockLootTableGenerator::method_24817);
+        this.registerWithFunction(Blocks.IRON_DOOR, BlockLootTableGenerator::method_24817);
+        this.registerWithFunction(Blocks.JUNGLE_DOOR, BlockLootTableGenerator::method_24817);
+        this.registerWithFunction(Blocks.OAK_DOOR, BlockLootTableGenerator::method_24817);
+        this.registerWithFunction(Blocks.SPRUCE_DOOR, BlockLootTableGenerator::method_24817);
+        this.registerWithFunction(Blocks.WARPED_DOOR, BlockLootTableGenerator::method_24817);
+        this.registerWithFunction(Blocks.CRIMSON_DOOR, BlockLootTableGenerator::method_24817);
         this.registerWithFunction(Blocks.BLACK_BED, block -> BlockLootTableGenerator.createForMultiblock(block, BedBlock.PART, BedPart.HEAD));
         this.registerWithFunction(Blocks.BLUE_BED, block -> BlockLootTableGenerator.createForMultiblock(block, BedBlock.PART, BedPart.HEAD));
         this.registerWithFunction(Blocks.BROWN_BED, block -> BlockLootTableGenerator.createForMultiblock(block, BedBlock.PART, BedPart.HEAD));
@@ -895,6 +895,10 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         if (!this.lootTables.isEmpty()) {
             throw new IllegalStateException("Created block loot tables for non-blocks: " + this.lootTables.keySet());
         }
+    }
+
+    public static LootTable.Builder method_24817(Block block) {
+        return BlockLootTableGenerator.createForMultiblock(block, DoorBlock.HALF, DoubleBlockHalf.LOWER);
     }
 
     public void registerForPottedPlant(Block block2) {

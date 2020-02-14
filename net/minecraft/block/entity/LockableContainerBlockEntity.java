@@ -83,7 +83,7 @@ Nameable {
         if (player.isSpectator() || lock.canOpen(player.getMainHandStack())) {
             return true;
         }
-        player.addChatMessage(new TranslatableText("container.isLocked", containerName), true);
+        player.addMessage(new TranslatableText("container.isLocked", containerName), true);
         player.playSound(SoundEvents.BLOCK_CHEST_LOCKED, SoundCategory.BLOCKS, 1.0f, 1.0f);
         return false;
     }

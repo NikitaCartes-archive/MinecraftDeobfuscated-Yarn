@@ -349,7 +349,7 @@ extends PathNodeMaker {
                             pathNodeType = PathNodeType.DANGER_CACTUS;
                             continue;
                         }
-                        if (block.matches(BlockTags.FIRE) || block == Blocks.LAVA) {
+                        if (block.isIn(BlockTags.FIRE) || block == Blocks.LAVA) {
                             pathNodeType = PathNodeType.DANGER_FIRE;
                             continue;
                         }
@@ -370,7 +370,7 @@ extends PathNodeMaker {
         if (blockState.isAir()) {
             return PathNodeType.OPEN;
         }
-        if (block.matches(BlockTags.TRAPDOORS) || block == Blocks.LILY_PAD) {
+        if (block.isIn(BlockTags.TRAPDOORS) || block == Blocks.LILY_PAD) {
             return PathNodeType.TRAPDOOR;
         }
         if (blockState.matches(BlockTags.FIRE)) {
@@ -388,7 +388,7 @@ extends PathNodeMaker {
         if (block == Blocks.COCOA) {
             return PathNodeType.COCOA;
         }
-        if (block instanceof DoorBlock && material == Material.WOOD && !blockState.get(DoorBlock.OPEN).booleanValue()) {
+        if (DoorBlock.method_24796(blockState) && !blockState.get(DoorBlock.OPEN).booleanValue()) {
             return PathNodeType.DOOR_WOOD_CLOSED;
         }
         if (block instanceof DoorBlock && material == Material.METAL && !blockState.get(DoorBlock.OPEN).booleanValue()) {
@@ -403,7 +403,7 @@ extends PathNodeMaker {
         if (block instanceof LeavesBlock) {
             return PathNodeType.LEAVES;
         }
-        if (block.matches(BlockTags.FENCES) || block.matches(BlockTags.WALLS) || block instanceof FenceGateBlock && !blockState.get(FenceGateBlock.OPEN).booleanValue()) {
+        if (block.isIn(BlockTags.FENCES) || block.isIn(BlockTags.WALLS) || block instanceof FenceGateBlock && !blockState.get(FenceGateBlock.OPEN).booleanValue()) {
             return PathNodeType.FENCE;
         }
         FluidState fluidState = blockView.getFluidState(blockPos);

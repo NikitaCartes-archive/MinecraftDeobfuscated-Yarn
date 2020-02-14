@@ -153,7 +153,7 @@ implements Tickable {
             double g = (double)blockPos.getY() + 0.5 - (double)(entity2.getHeight() / 2.0f);
             double h = (double)blockPos.getZ() + 0.5 + d * (double)direction.getOffsetZ();
             entity2.refreshPositionAndAngles(e, g, h, entity2.yaw, entity2.pitch);
-            if (!entity2.getType().isTaggedWith(EntityTypeTags.BEEHIVE_INHABITORS)) {
+            if (!entity2.getType().isIn(EntityTypeTags.BEEHIVE_INHABITORS)) {
                 return false;
             }
             if (entity2 instanceof BeeEntity) {
@@ -164,7 +164,7 @@ implements Tickable {
                 if (beeState == BeeState.HONEY_DELIVERED) {
                     int i;
                     beeEntity.onHoneyDelivered();
-                    if (state.getBlock().matches(BlockTags.BEEHIVES) && (i = BeehiveBlockEntity.getHoneyLevel(state)) < 5) {
+                    if (state.getBlock().isIn(BlockTags.BEEHIVES) && (i = BeehiveBlockEntity.getHoneyLevel(state)) < 5) {
                         int j;
                         int n = j = this.world.random.nextInt(100) == 0 ? 2 : 1;
                         if (i + j > 5) {

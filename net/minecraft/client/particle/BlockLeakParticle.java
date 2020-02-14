@@ -41,7 +41,7 @@ extends SpriteBillboardParticle {
 
     @Override
     public int getColorMultiplier(float tint) {
-        if (this.fluid.matches(FluidTags.LAVA)) {
+        if (this.fluid.isIn(FluidTags.LAVA)) {
             return 240;
         }
         return super.getColorMultiplier(tint);

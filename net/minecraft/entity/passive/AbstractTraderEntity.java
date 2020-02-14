@@ -57,8 +57,8 @@ Trader {
     @Override
     public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         if (entityData == null) {
-            entityData = new PassiveEntity.EntityData();
-            ((PassiveEntity.EntityData)entityData).setBabyAllowed(false);
+            entityData = new PassiveEntity.PassiveData();
+            ((PassiveEntity.PassiveData)entityData).setBabyAllowed(false);
         }
         return super.initialize(world, difficulty, spawnType, entityData, entityTag);
     }

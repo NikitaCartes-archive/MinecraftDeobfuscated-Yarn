@@ -98,20 +98,10 @@ public abstract class RenderPhase {
         RenderSystem.polygonOffset(0.0f, 0.0f);
         RenderSystem.disablePolygonOffset();
     });
-    protected static final Layering field_22241 = new Layering("shadow_layering", () -> {
+    protected static final Layering field_22241 = new Layering("view_offset_z_layering", () -> {
         RenderSystem.pushMatrix();
         RenderSystem.scalef(0.99975586f, 0.99975586f, 0.99975586f);
     }, RenderSystem::popMatrix);
-    protected static final Layering PROJECTION_LAYERING = new Layering("projection_layering", () -> {
-        RenderSystem.matrixMode(5889);
-        RenderSystem.pushMatrix();
-        RenderSystem.scalef(1.0f, 1.0f, 0.999f);
-        RenderSystem.matrixMode(5888);
-    }, () -> {
-        RenderSystem.matrixMode(5889);
-        RenderSystem.popMatrix();
-        RenderSystem.matrixMode(5888);
-    });
     protected static final Fog NO_FOG = new Fog("no_fog", () -> {}, () -> {});
     protected static final Fog FOG = new Fog("fog", () -> {
         BackgroundRenderer.setFogBlack();

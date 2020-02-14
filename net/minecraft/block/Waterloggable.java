@@ -18,7 +18,7 @@ public interface Waterloggable
 extends FluidDrainable,
 FluidFillable {
     @Override
-    default public boolean canFillWithFluid(BlockView view, BlockPos pos, BlockState state, Fluid fluid) {
+    default public boolean canFillWithFluid(BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
         return state.get(Properties.WATERLOGGED) == false && fluid == Fluids.WATER;
     }
 

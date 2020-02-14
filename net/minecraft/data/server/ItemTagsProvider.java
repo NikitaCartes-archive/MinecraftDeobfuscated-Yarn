@@ -74,6 +74,7 @@ extends AbstractTagProvider<Item> {
         this.getOrCreateTagBuilder(ItemTags.COALS).add((Item[])new Item[]{Items.COAL, Items.CHARCOAL});
         this.getOrCreateTagBuilder(ItemTags.ARROWS).add((Item[])new Item[]{Items.ARROW, Items.TIPPED_ARROW, Items.SPECTRAL_ARROW});
         this.getOrCreateTagBuilder(ItemTags.LECTERN_BOOKS).add((Item[])new Item[]{Items.WRITTEN_BOOK, Items.WRITABLE_BOOK});
+        this.getOrCreateTagBuilder(ItemTags.BEACON_PAYMENT_ITEMS).add((Item[])new Item[]{Items.NETHERITE_INGOT, Items.EMERALD, Items.DIAMOND, Items.GOLD_INGOT, Items.IRON_INGOT});
     }
 
     protected void copy(Tag<Block> tag, Tag<Item> tag2) {

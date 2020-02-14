@@ -39,18 +39,18 @@ extends HorizontalConnectingBlock {
     }
 
     @Override
-    public VoxelShape getCullingShape(BlockState state, BlockView view, BlockPos pos) {
+    public VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
         return this.cullingShapes[this.getShapeIndex(state)];
     }
 
     @Override
-    public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+    public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
         return false;
     }
 
     public boolean canConnect(BlockState state, boolean neighborIsFullSquare, Direction dir) {
         Block block = state.getBlock();
-        boolean bl = block.matches(BlockTags.FENCES) && state.getMaterial() == this.material;
+        boolean bl = block.isIn(BlockTags.FENCES) && state.getMaterial() == this.material;
         boolean bl2 = block instanceof FenceGateBlock && FenceGateBlock.canWallConnect(state, dir);
         return !FenceBlock.cannotConnect(block) && neighborIsFullSquare || bl || bl2;
     }

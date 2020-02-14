@@ -52,6 +52,12 @@ RecipeInputProvider {
         return this.stackList.get(slot);
     }
 
+    public List<ItemStack> method_24514() {
+        List<ItemStack> list = this.stackList.stream().filter(itemStack -> !itemStack.isEmpty()).collect(Collectors.toList());
+        this.clear();
+        return list;
+    }
+
     @Override
     public ItemStack takeInvStack(int slot, int amount) {
         ItemStack itemStack = Inventories.splitStack(this.stackList, slot, amount);

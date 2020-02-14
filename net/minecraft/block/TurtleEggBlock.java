@@ -143,7 +143,7 @@ extends Block {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
         if (state.get(EGGS) > 1) {
             return LARGE_SHAPE;
         }

@@ -38,7 +38,7 @@ extends Goal {
     }
 
     private boolean isEntityHoldingCrossbow() {
-        return ((MobEntity)this.actor).isHolding(Items.CROSSBOW);
+        return ((LivingEntity)this.actor).method_24518(Items.CROSSBOW);
     }
 
     @Override

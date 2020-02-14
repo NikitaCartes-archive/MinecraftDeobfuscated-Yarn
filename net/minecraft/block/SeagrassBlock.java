@@ -38,13 +38,13 @@ FluidFillable {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
         return SHAPE;
     }
 
     @Override
-    protected boolean canPlantOnTop(BlockState floor, BlockView view, BlockPos pos) {
-        return floor.isSideSolidFullSquare(view, pos, Direction.UP) && floor.getBlock() != Blocks.MAGMA_BLOCK;
+    protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
+        return floor.isSideSolidFullSquare(world, pos, Direction.UP) && floor.getBlock() != Blocks.MAGMA_BLOCK;
     }
 
     @Override
@@ -93,7 +93,7 @@ FluidFillable {
     }
 
     @Override
-    public boolean canFillWithFluid(BlockView view, BlockPos pos, BlockState state, Fluid fluid) {
+    public boolean canFillWithFluid(BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
         return false;
     }
 

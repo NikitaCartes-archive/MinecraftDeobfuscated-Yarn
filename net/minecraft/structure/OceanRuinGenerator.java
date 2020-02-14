@@ -207,7 +207,7 @@ public class OceanRuinGenerator {
                 BlockPos.Mutable mutable = new BlockPos.Mutable(m, o, n);
                 BlockState blockState = blockView.getBlockState(mutable);
                 FluidState fluidState = blockView.getFluidState(mutable);
-                while ((blockState.isAir() || fluidState.matches(FluidTags.WATER) || blockState.getBlock().matches(BlockTags.ICE)) && o > 1) {
+                while ((blockState.isAir() || fluidState.matches(FluidTags.WATER) || blockState.getBlock().isIn(BlockTags.ICE)) && o > 1) {
                     mutable.set(m, --o, n);
                     blockState = blockView.getBlockState(mutable);
                     fluidState = blockView.getFluidState(mutable);

@@ -852,6 +852,7 @@ public class Items {
     public static final Item FOX_SPAWN_EGG = Items.register("fox_spawn_egg", (Item)new SpawnEggItem(EntityType.FOX, 14005919, 13396256, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item GHAST_SPAWN_EGG = Items.register("ghast_spawn_egg", (Item)new SpawnEggItem(EntityType.GHAST, 0xF9F9F9, 0xBCBCBC, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item GUARDIAN_SPAWN_EGG = Items.register("guardian_spawn_egg", (Item)new SpawnEggItem(EntityType.GUARDIAN, 5931634, 15826224, new Item.Settings().group(ItemGroup.MISC)));
+    public static final Item HOGLIN_SPAWN_EGG = Items.register("hoglin_spawn_egg", (Item)new SpawnEggItem(EntityType.HOGLIN, 13004373, 6251620, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item HORSE_SPAWN_EGG = Items.register("horse_spawn_egg", (Item)new SpawnEggItem(EntityType.HORSE, 12623485, 0xEEE500, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item HUSK_SPAWN_EGG = Items.register("husk_spawn_egg", (Item)new SpawnEggItem(EntityType.HUSK, 7958625, 15125652, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item LLAMA_SPAWN_EGG = Items.register("llama_spawn_egg", (Item)new SpawnEggItem(EntityType.LLAMA, 12623485, 10051392, new Item.Settings().group(ItemGroup.MISC)));
@@ -863,7 +864,7 @@ public class Items {
     public static final Item PARROT_SPAWN_EGG = Items.register("parrot_spawn_egg", (Item)new SpawnEggItem(EntityType.PARROT, 894731, 0xFF0000, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item PHANTOM_SPAWN_EGG = Items.register("phantom_spawn_egg", (Item)new SpawnEggItem(EntityType.PHANTOM, 4411786, 0x88FF00, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item PIG_SPAWN_EGG = Items.register("pig_spawn_egg", (Item)new SpawnEggItem(EntityType.PIG, 15771042, 14377823, new Item.Settings().group(ItemGroup.MISC)));
-    public static final Item HOGLIN_SPAWN_EGG = Items.register("hoglin_spawn_egg", (Item)new SpawnEggItem(EntityType.HOGLIN, 15373203, 5009705, new Item.Settings().group(ItemGroup.MISC)));
+    public static final Item PIGLIN_SPAWN_EGG = Items.register("piglin_spawn_egg", (Item)new SpawnEggItem(EntityType.PIGLIN, 10051392, 16380836, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item PILLAGER_SPAWN_EGG = Items.register("pillager_spawn_egg", (Item)new SpawnEggItem(EntityType.PILLAGER, 5451574, 0x959B9B, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item POLAR_BEAR_SPAWN_EGG = Items.register("polar_bear_spawn_egg", (Item)new SpawnEggItem(EntityType.POLAR_BEAR, 0xF2F2F2, 0x959590, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item PUFFERFISH_SPAWN_EGG = Items.register("pufferfish_spawn_egg", (Item)new SpawnEggItem(EntityType.PUFFERFISH, 16167425, 3654642, new Item.Settings().group(ItemGroup.MISC)));

@@ -120,13 +120,13 @@ extends MoveToTargetPosGoal {
     }
 
     @Nullable
-    private BlockPos tweakToProperPos(BlockPos pos, BlockView view) {
+    private BlockPos tweakToProperPos(BlockPos pos, BlockView world) {
         BlockPos[] blockPoss;
-        if (view.getBlockState(pos).getBlock() == this.targetBlock) {
+        if (world.getBlockState(pos).getBlock() == this.targetBlock) {
             return pos;
         }
         for (BlockPos blockPos : blockPoss = new BlockPos[]{pos.down(), pos.west(), pos.east(), pos.north(), pos.south(), pos.down().down()}) {
-            if (view.getBlockState(blockPos).getBlock() != this.targetBlock) continue;
+            if (world.getBlockState(blockPos).getBlock() != this.targetBlock) continue;
             return blockPos;
         }
         return null;

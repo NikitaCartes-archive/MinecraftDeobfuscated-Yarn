@@ -51,7 +51,7 @@ extends AbstractTreeFeature<T> {
                 for (int n = -l; n <= l; ++n) {
                     if (k + blockPos.getY() >= 0 && k + blockPos.getY() < 256) {
                         mutable.set(m + blockPos.getX(), k + blockPos.getY(), n + blockPos.getZ());
-                        if (BranchedTreeFeature.canTreeReplace(world, mutable) && (config.noVines || !BranchedTreeFeature.isLeaves(world, mutable))) continue;
+                        if (BranchedTreeFeature.canTreeReplace(world, mutable) && (config.noVines || !BranchedTreeFeature.isVine(world, mutable))) continue;
                         return Optional.empty();
                     }
                     return Optional.empty();

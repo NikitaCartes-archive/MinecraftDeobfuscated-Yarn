@@ -128,5 +128,10 @@ extends RangedWeaponItem {
     public Predicate<ItemStack> getProjectiles() {
         return BOW_PROJECTILES;
     }
+
+    @Override
+    public int method_24792() {
+        return 15;
+    }
 }
 

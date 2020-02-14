@@ -91,7 +91,7 @@ extends Task<VillagerEntity> {
             break;
         }
         if (!itemStack.isEmpty()) {
-            LookTargetUtil.give(villager, itemStack, target);
+            LookTargetUtil.give(villager, itemStack, target.getPos());
         }
     }
 

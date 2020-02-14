@@ -77,7 +77,7 @@ implements BlockEntityProvider {
     }
 
     @Override
-    public MaterialColor getMapColor(BlockState state, BlockView view, BlockPos pos) {
+    public MaterialColor getMapColor(BlockState state, BlockView world, BlockPos pos) {
         if (state.get(PART) == BedPart.FOOT) {
             return this.color.getMaterialColor();
         }
@@ -110,13 +110,13 @@ implements BlockEntityProvider {
         }
         if (state.get(OCCUPIED).booleanValue()) {
             if (!this.method_22357(world, pos)) {
-                player.addChatMessage(new TranslatableText("block.minecraft.bed.occupied", new Object[0]), true);
+                player.addMessage(new TranslatableText("block.minecraft.bed.occupied", new Object[0]), true);
             }
             return ActionResult.SUCCESS;
         }
         player.trySleep(pos).ifLeft(sleepFailureReason -> {
             if (sleepFailureReason != null) {
-                player.addChatMessage(sleepFailureReason.toText(), true);
+                player.addMessage(sleepFailureReason.toText(), true);
             }
         });
         return ActionResult.SUCCESS;
@@ -204,7 +204,7 @@ implements BlockEntityProvider {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
         Direction direction = BedBlock.method_24163(state).getOpposite();
         switch (direction) {
             case NORTH: {
@@ -301,7 +301,7 @@ implements BlockEntityProvider {
     }
 
     @Override
-    public BlockEntity createBlockEntity(BlockView view) {
+    public BlockEntity createBlockEntity(BlockView world) {
         return new BedBlockEntity(this.color);
     }
 
@@ -329,7 +329,7 @@ implements BlockEntityProvider {
     }
 
     @Override
-    public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+    public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
         return false;
     }
 }

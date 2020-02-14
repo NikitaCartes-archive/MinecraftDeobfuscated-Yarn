@@ -25,7 +25,7 @@ extends Feature<BlockPileFeatureConfig> {
     @Override
     public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, BlockPileFeatureConfig blockPileFeatureConfig) {
         Block block = iWorld.getBlockState(blockPos.down()).getBlock();
-        while (!block.matches(BlockTags.NYLIUM) && blockPos.getY() > 0) {
+        while (!block.isIn(BlockTags.NYLIUM) && blockPos.getY() > 0) {
             blockPos = blockPos.down();
             block = iWorld.getBlockState(blockPos).getBlock();
         }

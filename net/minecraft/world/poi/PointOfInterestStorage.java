@@ -59,7 +59,8 @@ extends SerializingRegionBasedStorage<PointOfInterestSet> {
     }
 
     public Stream<PointOfInterest> method_22383(Predicate<PointOfInterestType> predicate, BlockPos blockPos, int i, OccupationStatus occupationStatus) {
-        return ChunkPos.stream(new ChunkPos(blockPos), Math.floorDiv(i, 16)).flatMap(chunkPos -> this.get(predicate, (ChunkPos)chunkPos, occupationStatus));
+        int j = Math.floorDiv(i, 16) + 1;
+        return ChunkPos.stream(new ChunkPos(blockPos), j).flatMap(chunkPos -> this.get(predicate, (ChunkPos)chunkPos, occupationStatus));
     }
 
     public Stream<PointOfInterest> get(Predicate<PointOfInterestType> typePredicate, BlockPos pos, int radius, OccupationStatus occupationStatus) {
@@ -83,8 +84,8 @@ extends SerializingRegionBasedStorage<PointOfInterestSet> {
         return this.getPositions(typePredicate, posPredicate, pos, radius, occupationStatus).findFirst();
     }
 
-    public Optional<BlockPos> getNearestPosition(Predicate<PointOfInterestType> typePredicate, Predicate<BlockPos> blockPosPredicate, BlockPos pos, int radius, OccupationStatus occupationStatus) {
-        return this.get(typePredicate, pos, radius, occupationStatus).map(PointOfInterest::getPos).sorted(Comparator.comparingDouble(blockPos2 -> blockPos2.getSquaredDistance(pos))).filter(blockPosPredicate).findFirst();
+    public Optional<BlockPos> getNearestPosition(Predicate<PointOfInterestType> typePredicate, BlockPos blockPos, int i, OccupationStatus occupationStatus) {
+        return this.get(typePredicate, blockPos, i, occupationStatus).map(PointOfInterest::getPos).sorted(Comparator.comparingDouble(blockPos2 -> blockPos2.getSquaredDistance(blockPos))).findFirst();
     }
 
     public Optional<BlockPos> getPosition(Predicate<PointOfInterestType> typePredicate, Predicate<BlockPos> positionPredicate, BlockPos pos, int radius) {

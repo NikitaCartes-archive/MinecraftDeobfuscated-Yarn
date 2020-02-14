@@ -7,13 +7,13 @@ import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.entity.model.CompositeEntityModel;
+import net.minecraft.client.render.entity.model.AnimalModel;
 import net.minecraft.entity.mob.HoglinEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class HoglinEntityModel
-extends CompositeEntityModel<HoglinEntity> {
+extends AnimalModel<HoglinEntity> {
     private final ModelPart field_22227;
     private final ModelPart field_22228;
     private final ModelPart field_22229;
@@ -24,6 +24,7 @@ extends CompositeEntityModel<HoglinEntity> {
     private final ModelPart field_22234;
 
     public HoglinEntityModel() {
+        super(true, 8.0f, 6.0f, 1.9f, 2.0f, 24.0f);
         this.textureWidth = 128;
         this.textureHeight = 128;
         this.field_22230 = new ModelPart(this);
@@ -72,19 +73,34 @@ extends CompositeEntityModel<HoglinEntity> {
     }
 
     @Override
-    public Iterable<ModelPart> getParts() {
-        return ImmutableList.of(this.field_22230, this.field_22227, this.field_22231, this.field_22232, this.field_22233, this.field_22234);
+    protected Iterable<ModelPart> getHeadParts() {
+        return ImmutableList.of(this.field_22227);
+    }
+
+    @Override
+    protected Iterable<ModelPart> getBodyParts() {
+        return ImmutableList.of(this.field_22230, this.field_22231, this.field_22232, this.field_22233, this.field_22234);
     }
 
     @Override
     public void setAngles(HoglinEntity hoglinEntity, float f, float g, float h, float i, float j) {
-        this.field_22228.roll = -0.6981317f - g * 2.5f * MathHelper.sin(f * 3.0f);
-        this.field_22229.roll = 0.6981317f + g * 2.5f * MathHelper.sin(f * 3.0f);
+        this.field_22228.roll = -0.6981317f - g * MathHelper.sin(f);
+        this.field_22229.roll = 0.6981317f + g * MathHelper.sin(f);
         this.field_22227.yaw = i * ((float)Math.PI / 180);
-        this.field_22231.pitch = MathHelper.cos(f * 1.5f) * 4.4f * g;
-        this.field_22232.pitch = MathHelper.cos(f * 1.5f + (float)Math.PI) * 4.4f * g;
-        this.field_22233.pitch = MathHelper.cos(f * 1.5f + (float)Math.PI) * 4.4f * g;
-        this.field_22234.pitch = MathHelper.cos(f * 1.5f) * 4.4f * g;
+        int k = hoglinEntity.method_24657();
+        if (k > 0) {
+            int l = 10 - k;
+            float m = MathHelper.method_24504(l, 10.0f);
+            float n = (-m + 1.0f) / 2.0f;
+            float o = -1.2217305f * n;
+            this.field_22227.pitch = 0.87266463f + o;
+        } else {
+            this.field_22227.pitch = 0.87266463f;
+        }
+        float p = 1.2f;
+        this.field_22231.pitch = MathHelper.cos(f) * 1.2f * g;
+        this.field_22233.pitch = this.field_22232.pitch = MathHelper.cos(f + (float)Math.PI) * 1.2f * g;
+        this.field_22234.pitch = this.field_22231.pitch;
     }
 }
 

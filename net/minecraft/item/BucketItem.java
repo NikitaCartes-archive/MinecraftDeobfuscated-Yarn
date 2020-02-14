@@ -63,7 +63,7 @@ extends Item {
                 BlockState blockState = world.getBlockState(blockPos);
                 if (blockState.getBlock() instanceof FluidDrainable && (fluid = ((FluidDrainable)((Object)blockState.getBlock())).tryDrainFluid(world, blockPos, blockState)) != Fluids.EMPTY) {
                     user.incrementStat(Stats.USED.getOrCreateStat(this));
-                    user.playSound(fluid.matches(FluidTags.LAVA) ? SoundEvents.ITEM_BUCKET_FILL_LAVA : SoundEvents.ITEM_BUCKET_FILL, 1.0f, 1.0f);
+                    user.playSound(fluid.isIn(FluidTags.LAVA) ? SoundEvents.ITEM_BUCKET_FILL_LAVA : SoundEvents.ITEM_BUCKET_FILL, 1.0f, 1.0f);
                     ItemStack itemStack2 = this.getFilledStack(itemStack, user, fluid.getBucketItem());
                     if (!world.isClient) {
                         Criterions.FILLED_BUCKET.trigger((ServerPlayerEntity)user, new ItemStack(fluid.getBucketItem()));
@@ -119,7 +119,7 @@ extends Item {
         Material material = blockState.getMaterial();
         boolean bl = blockState.canBucketPlace(this.fluid);
         if (blockState.isAir() || bl || blockState.getBlock() instanceof FluidFillable && ((FluidFillable)((Object)blockState.getBlock())).canFillWithFluid(world, pos, blockState, this.fluid)) {
-            if (world.dimension.doesWaterVaporize() && this.fluid.matches(FluidTags.WATER)) {
+            if (world.dimension.doesWaterVaporize() && this.fluid.isIn(FluidTags.WATER)) {
                 int i = pos.getX();
                 int j = pos.getY();
                 int k = pos.getZ();
@@ -147,7 +147,7 @@ extends Item {
     }
 
     protected void playEmptyingSound(@Nullable PlayerEntity player, IWorld world, BlockPos pos) {
-        SoundEvent soundEvent = this.fluid.matches(FluidTags.LAVA) ? SoundEvents.ITEM_BUCKET_EMPTY_LAVA : SoundEvents.ITEM_BUCKET_EMPTY;
+        SoundEvent soundEvent = this.fluid.isIn(FluidTags.LAVA) ? SoundEvents.ITEM_BUCKET_EMPTY_LAVA : SoundEvents.ITEM_BUCKET_EMPTY;
         world.playSound(player, pos, soundEvent, SoundCategory.BLOCKS, 1.0f, 1.0f);
     }
 }

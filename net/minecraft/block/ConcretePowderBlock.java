@@ -47,15 +47,15 @@ extends FallingBlock {
         return ConcretePowderBlock.hardensIn(blockState) || ConcretePowderBlock.hardensOnAnySide(blockView, blockPos);
     }
 
-    private static boolean hardensOnAnySide(BlockView view, BlockPos pos) {
+    private static boolean hardensOnAnySide(BlockView world, BlockPos pos) {
         boolean bl = false;
         BlockPos.Mutable mutable = new BlockPos.Mutable(pos);
         for (Direction direction : Direction.values()) {
-            BlockState blockState = view.getBlockState(mutable);
+            BlockState blockState = world.getBlockState(mutable);
             if (direction == Direction.DOWN && !ConcretePowderBlock.hardensIn(blockState)) continue;
             mutable.set(pos).setOffset(direction);
-            blockState = view.getBlockState(mutable);
-            if (!ConcretePowderBlock.hardensIn(blockState) || blockState.isSideSolidFullSquare(view, pos, direction.getOpposite())) continue;
+            blockState = world.getBlockState(mutable);
+            if (!ConcretePowderBlock.hardensIn(blockState) || blockState.isSideSolidFullSquare(world, pos, direction.getOpposite())) continue;
             bl = true;
             break;
         }

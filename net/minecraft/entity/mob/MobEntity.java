@@ -7,6 +7,7 @@ import com.google.common.collect.Maps;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 import net.fabricmc.api.EnvType;
@@ -50,6 +51,7 @@ import net.minecraft.item.BowItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.SpawnEggItem;
 import net.minecraft.item.SwordItem;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.nbt.CompoundTag;
@@ -454,7 +456,7 @@ extends LivingEntity {
         if (!this.world.isClient && this.canPickUpLoot() && this.isAlive() && !this.dead && this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
             List<ItemEntity> list = this.world.getNonSpectatingEntities(ItemEntity.class, this.getBoundingBox().expand(1.0, 0.0, 1.0));
             for (ItemEntity itemEntity : list) {
-                if (itemEntity.removed || itemEntity.getStack().isEmpty() || itemEntity.cannotPickup()) continue;
+                if (itemEntity.removed || itemEntity.getStack().isEmpty() || itemEntity.cannotPickup() || !this.canGather(itemEntity.getStack())) continue;
                 this.loot(itemEntity);
             }
         }
@@ -462,10 +464,17 @@ extends LivingEntity {
     }
 
     protected void loot(ItemEntity item) {
-        EquipmentSlot equipmentSlot;
-        ItemStack itemStack2;
         ItemStack itemStack = item.getStack();
-        boolean bl = this.isBetterItemFor(itemStack, itemStack2 = this.getEquippedStack(equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack)), equipmentSlot);
+        if (this.method_24523(itemStack)) {
+            this.sendPickup(item, itemStack.getCount());
+            item.remove();
+        }
+    }
+
+    public boolean method_24523(ItemStack itemStack) {
+        EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
+        ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
+        boolean bl = this.isBetterItemFor(itemStack, itemStack2, equipmentSlot);
         if (bl && this.canPickupItem(itemStack)) {
             double d = this.getDropChance(equipmentSlot);
             if (!itemStack2.isEmpty() && (double)Math.max(this.random.nextFloat() - 0.1f, 0.0f) < d) {
@@ -482,9 +491,9 @@ extends LivingEntity {
                 }
             }
             this.persistent = true;
-            this.sendPickup(item, itemStack.getCount());
-            item.remove();
+            return true;
         }
+        return false;
     }
 
     protected boolean isBetterItemFor(ItemStack current, ItemStack previous, EquipmentSlot slot) {
@@ -513,8 +522,12 @@ extends LivingEntity {
         return bl;
     }
 
-    protected boolean canPickupItem(ItemStack stack) {
+    public boolean canPickupItem(ItemStack stack) {
         return true;
+    }
+
+    public boolean canGather(ItemStack itemStack) {
+        return this.canPickupItem(itemStack);
     }
 
     public boolean canImmediatelyDespawn(double distanceSquared) {
@@ -933,7 +946,17 @@ extends LivingEntity {
         return super.interact(player, hand);
     }
 
+    protected void onPlayerSpawnedChild(PlayerEntity playerEntity, MobEntity mobEntity) {
+    }
+
     protected boolean interactMob(PlayerEntity player, Hand hand) {
+        ItemStack itemStack = player.getStackInHand(hand);
+        Item item = itemStack.getItem();
+        if (!this.world.isClient && item instanceof SpawnEggItem) {
+            SpawnEggItem spawnEggItem = (SpawnEggItem)item;
+            Optional<MobEntity> optional = spawnEggItem.method_24793(player, this.getType(), this.world, this.getPos(), itemStack);
+            optional.ifPresent(mobEntity -> this.onPlayerSpawnedChild(player, (MobEntity)mobEntity));
+        }
         return false;
     }
 
@@ -1123,6 +1146,9 @@ extends LivingEntity {
         return (this.dataTracker.get(MOB_FLAGS) & 4) != 0;
     }
 
+    public void setBaby(boolean bl) {
+    }
+
     @Override
     public Arm getMainArm() {
         return this.isLeftHanded() ? Arm.LEFT : Arm.RIGHT;
@@ -1151,26 +1177,27 @@ extends LivingEntity {
         }
         if (bl = target.damage(DamageSource.mob(this), f)) {
             if (g > 0.0f && target instanceof LivingEntity) {
-                ((LivingEntity)target).takeKnockback(this, g * 0.5f, MathHelper.sin(this.yaw * ((float)Math.PI / 180)), -MathHelper.cos(this.yaw * ((float)Math.PI / 180)));
+                ((LivingEntity)target).takeKnockback(g * 0.5f, MathHelper.sin(this.yaw * ((float)Math.PI / 180)), -MathHelper.cos(this.yaw * ((float)Math.PI / 180)));
                 this.setVelocity(this.getVelocity().multiply(0.6, 1.0, 0.6));
             }
             if (target instanceof PlayerEntity) {
-                ItemStack itemStack2;
                 PlayerEntity playerEntity = (PlayerEntity)target;
-                ItemStack itemStack = this.getMainHandStack();
-                ItemStack itemStack3 = itemStack2 = playerEntity.isUsingItem() ? playerEntity.getActiveItem() : ItemStack.EMPTY;
-                if (!itemStack.isEmpty() && !itemStack2.isEmpty() && itemStack.getItem() instanceof AxeItem && itemStack2.getItem() == Items.SHIELD) {
-                    float h = 0.25f + (float)EnchantmentHelper.getEfficiency(this) * 0.05f;
-                    if (this.random.nextFloat() < h) {
-                        playerEntity.getItemCooldownManager().set(Items.SHIELD, 100);
-                        this.world.sendEntityStatus(playerEntity, (byte)30);
-                    }
-                }
+                this.method_24521(playerEntity, this.getMainHandStack(), playerEntity.isUsingItem() ? playerEntity.getActiveItem() : ItemStack.EMPTY);
             }
             this.dealDamage(this, target);
             this.onAttacking(target);
         }
         return bl;
+    }
+
+    private void method_24521(PlayerEntity playerEntity, ItemStack itemStack, ItemStack itemStack2) {
+        if (!itemStack.isEmpty() && !itemStack2.isEmpty() && itemStack.getItem() instanceof AxeItem && itemStack2.getItem() == Items.SHIELD) {
+            float f = 0.25f + (float)EnchantmentHelper.getEfficiency(this) * 0.05f;
+            if (this.random.nextFloat() < f) {
+                playerEntity.getItemCooldownManager().set(Items.SHIELD, 100);
+                this.world.sendEntityStatus(playerEntity, (byte)30);
+            }
+        }
     }
 
     protected boolean isInDaylight() {
@@ -1192,10 +1219,6 @@ extends LivingEntity {
         } else {
             this.setVelocity(this.getVelocity().add(0.0, 0.3, 0.0));
         }
-    }
-
-    public boolean isHolding(Item item) {
-        return this.getMainHandStack().getItem() == item || this.getOffHandStack().getItem() == item;
     }
 }
 

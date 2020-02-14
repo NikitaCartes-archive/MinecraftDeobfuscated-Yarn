@@ -1,0 +1,43 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft;
+
+import com.google.common.collect.ImmutableMap;
+import java.util.function.Predicate;
+import net.minecraft.class_4801;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.brain.Brain;
+import net.minecraft.entity.ai.brain.MemoryModuleState;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.server.world.ServerWorld;
+
+public class class_4809<E extends MobEntity, T>
+extends Task<E> {
+    private final Predicate<E> field_22288;
+    private final MemoryModuleType<? extends T> field_22289;
+    private final MemoryModuleType<T> field_22290;
+    private final class_4801 field_22291;
+
+    public class_4809(Predicate<E> predicate, MemoryModuleType<? extends T> memoryModuleType, MemoryModuleType<T> memoryModuleType2, class_4801 arg) {
+        super(ImmutableMap.of(memoryModuleType2, MemoryModuleState.VALUE_PRESENT, memoryModuleType, MemoryModuleState.VALUE_ABSENT));
+        this.field_22288 = predicate;
+        this.field_22289 = memoryModuleType;
+        this.field_22290 = memoryModuleType2;
+        this.field_22291 = arg;
+    }
+
+    @Override
+    protected boolean shouldRun(ServerWorld serverWorld, E mobEntity) {
+        return this.field_22288.test(mobEntity);
+    }
+
+    @Override
+    protected void run(ServerWorld serverWorld, E mobEntity, long l) {
+        Brain<?> brain = ((LivingEntity)mobEntity).getBrain();
+        brain.method_24525(this.field_22290, brain.getOptionalMemory(this.field_22289).get(), l, this.field_22291.method_24503(serverWorld.random));
+    }
+}
+

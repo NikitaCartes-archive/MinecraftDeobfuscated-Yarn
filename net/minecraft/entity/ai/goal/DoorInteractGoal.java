@@ -5,14 +5,12 @@ package net.minecraft.entity.ai.goal;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DoorBlock;
-import net.minecraft.block.Material;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
 public abstract class DoorInteractGoal
 extends Goal {
@@ -63,12 +61,12 @@ extends Goal {
             PathNode pathNode = path.getNode(i);
             this.doorPos = new BlockPos(pathNode.x, pathNode.y + 1, pathNode.z);
             if (this.mob.squaredDistanceTo(this.doorPos.getX(), this.mob.getY(), this.doorPos.getZ()) > 2.25) continue;
-            this.doorValid = DoorInteractGoal.isWoodenDoor(this.mob.world, this.doorPos);
+            this.doorValid = DoorBlock.method_24795(this.mob.world, this.doorPos);
             if (!this.doorValid) continue;
             return true;
         }
         this.doorPos = new BlockPos(this.mob).up();
-        this.doorValid = DoorInteractGoal.isWoodenDoor(this.mob.world, this.doorPos);
+        this.doorValid = DoorBlock.method_24795(this.mob.world, this.doorPos);
         return this.doorValid;
     }
 
@@ -92,11 +90,6 @@ extends Goal {
         if (h < 0.0f) {
             this.shouldStop = true;
         }
-    }
-
-    public static boolean isWoodenDoor(World world, BlockPos pos) {
-        BlockState blockState = world.getBlockState(pos);
-        return blockState.getBlock() instanceof DoorBlock && blockState.getMaterial() == Material.WOOD;
     }
 }
 

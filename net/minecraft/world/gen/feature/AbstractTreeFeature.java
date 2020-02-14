@@ -43,7 +43,7 @@ extends Feature<T> {
     protected static boolean canTreeReplace(TestableWorld world, BlockPos pos) {
         return world.testBlockState(pos, blockState -> {
             Block block = blockState.getBlock();
-            return blockState.isAir() || blockState.matches(BlockTags.LEAVES) || AbstractTreeFeature.isDirt(block) || block.matches(BlockTags.LOGS) || block.matches(BlockTags.SAPLINGS) || block == Blocks.VINE;
+            return blockState.isAir() || blockState.matches(BlockTags.LEAVES) || AbstractTreeFeature.isDirt(block) || block.isIn(BlockTags.LOGS) || block.isIn(BlockTags.SAPLINGS) || block == Blocks.VINE;
         });
     }
 
@@ -58,7 +58,7 @@ extends Feature<T> {
         });
     }
 
-    protected static boolean isLeaves(TestableWorld world, BlockPos pos) {
+    protected static boolean isVine(TestableWorld world, BlockPos pos) {
         return world.testBlockState(pos, blockState -> blockState.getBlock() == Blocks.VINE);
     }
 

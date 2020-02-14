@@ -41,7 +41,7 @@ extends Task<LivingEntity> {
         }
         MobEntityWithAi mobEntityWithAi = (MobEntityWithAi)entity;
         PointOfInterestStorage pointOfInterestStorage = world.getPointOfInterestStorage();
-        Optional<BlockPos> optional = pointOfInterestStorage.getNearestPosition(PointOfInterestType.HOME.getCompletionCondition(), blockPos -> true, new BlockPos(entity), 48, PointOfInterestStorage.OccupationStatus.ANY);
+        Optional<BlockPos> optional = pointOfInterestStorage.getNearestPosition(PointOfInterestType.HOME.getCompletionCondition(), new BlockPos(entity), 48, PointOfInterestStorage.OccupationStatus.ANY);
         return optional.isPresent() && !(optional.get().getSquaredDistance(new BlockPos(mobEntityWithAi)) <= 4.0);
     }
 

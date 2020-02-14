@@ -242,8 +242,8 @@ implements DynamicSerializable {
         return BlockPos.stream(Math.min(pos1.getX(), pos2.getX()), Math.min(pos1.getY(), pos2.getY()), Math.min(pos1.getZ(), pos2.getZ()), Math.max(pos1.getX(), pos2.getX()), Math.max(pos1.getY(), pos2.getY()), Math.max(pos1.getZ(), pos2.getZ()));
     }
 
-    public static Stream<BlockPos> method_23627(BlockBox blockBox) {
-        return BlockPos.stream(Math.min(blockBox.minX, blockBox.maxX), Math.min(blockBox.minY, blockBox.maxY), Math.min(blockBox.minZ, blockBox.maxZ), Math.max(blockBox.minX, blockBox.maxX), Math.max(blockBox.minY, blockBox.maxY), Math.max(blockBox.minZ, blockBox.maxZ));
+    public static Stream<BlockPos> stream(BlockBox box) {
+        return BlockPos.stream(Math.min(box.minX, box.maxX), Math.min(box.minY, box.maxY), Math.min(box.minZ, box.maxZ), Math.max(box.minX, box.maxX), Math.max(box.minY, box.maxY), Math.max(box.minZ, box.maxZ));
     }
 
     public static Stream<BlockPos> stream(final int minX, final int minY, final int minZ, final int maxX, final int maxY, final int maxZ) {

@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -24,11 +25,10 @@ import net.minecraft.world.chunk.ChunkCache;
 import org.jetbrains.annotations.Nullable;
 
 public class PathNodeNavigator {
-    private final PathMinHeap minHeap = new PathMinHeap();
-    private final Set<PathNode> field_59 = Sets.newHashSet();
     private final PathNode[] successors = new PathNode[32];
     private final int range;
     private final PathNodeMaker pathNodeMaker;
+    private final PathMinHeap minHeap = new PathMinHeap();
 
     public PathNodeNavigator(PathNodeMaker pathNodeMaker, int range) {
         this.pathNodeMaker = pathNodeMaker;
@@ -54,8 +54,8 @@ public class PathNodeNavigator {
         startNode.penalizedPathLength = 0.0f;
         startNode.heapWeight = startNode.distanceToNearestTarget = this.calculateDistances(startNode, set);
         this.minHeap.clear();
-        this.field_59.clear();
         this.minHeap.push(startNode);
+        HashSet set2 = Sets.newHashSet();
         int i = 0;
         int j = (int)((float)this.range * rangeMultiplier);
         while (!this.minHeap.isEmpty() && ++i < j) {

@@ -36,6 +36,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Tickable;
@@ -198,8 +199,7 @@ Tickable {
             boolean bl = true;
             block1: for (int k = x - i; k <= x + i && bl; ++k) {
                 for (int l = z - i; l <= z + i; ++l) {
-                    Block block = this.world.getBlockState(new BlockPos(k, j, l)).getBlock();
-                    if (block == Blocks.EMERALD_BLOCK || block == Blocks.GOLD_BLOCK || block == Blocks.DIAMOND_BLOCK || block == Blocks.IRON_BLOCK) continue;
+                    if (this.world.getBlockState(new BlockPos(k, j, l)).matches(BlockTags.BEACON_BASE_BLOCKS)) continue;
                     bl = false;
                     continue block1;
                 }

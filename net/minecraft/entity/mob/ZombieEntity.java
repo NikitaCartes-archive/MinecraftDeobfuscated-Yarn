@@ -51,17 +51,14 @@ import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.TurtleEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
-import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Difficulty;
@@ -172,12 +169,13 @@ extends HostileEntity {
         return super.getCurrentExperience(player);
     }
 
-    public void setBaby(boolean baby) {
-        this.getDataTracker().set(BABY, baby);
+    @Override
+    public void setBaby(boolean bl) {
+        this.getDataTracker().set(BABY, bl);
         if (this.world != null && !this.world.isClient) {
             EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
             entityAttributeInstance.removeModifier(BABY_SPEED_BONUS);
-            if (baby) {
+            if (bl) {
                 entityAttributeInstance.addModifier(BABY_SPEED_BONUS);
             }
         }
@@ -280,28 +278,6 @@ extends HostileEntity {
         zombieEntity.setInvulnerable(this.isInvulnerable());
         this.world.spawnEntity(zombieEntity);
         this.remove();
-    }
-
-    @Override
-    public boolean interactMob(PlayerEntity player, Hand hand) {
-        ItemStack itemStack = player.getStackInHand(hand);
-        Item item = itemStack.getItem();
-        if (item instanceof SpawnEggItem && ((SpawnEggItem)item).isOfSameEntityType(itemStack.getTag(), this.getType())) {
-            ZombieEntity zombieEntity;
-            if (!this.world.isClient && (zombieEntity = (ZombieEntity)this.getType().create(this.world)) != null) {
-                zombieEntity.setBaby(true);
-                zombieEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), 0.0f, 0.0f);
-                this.world.spawnEntity(zombieEntity);
-                if (itemStack.hasCustomName()) {
-                    zombieEntity.setCustomName(itemStack.getName());
-                }
-                if (!player.abilities.creativeMode) {
-                    itemStack.decrement(1);
-                }
-            }
-            return true;
-        }
-        return super.interactMob(player, hand);
     }
 
     protected boolean burnsInDaylight() {
@@ -432,7 +408,7 @@ extends HostileEntity {
             ZombieVillagerEntity zombieVillagerEntity = EntityType.ZOMBIE_VILLAGER.create(this.world);
             zombieVillagerEntity.copyPositionAndRotation(villagerEntity);
             villagerEntity.remove();
-            zombieVillagerEntity.initialize(this.world, this.world.getLocalDifficulty(new BlockPos(zombieVillagerEntity)), SpawnType.CONVERSION, new Data(false), null);
+            zombieVillagerEntity.initialize(this.world, this.world.getLocalDifficulty(new BlockPos(zombieVillagerEntity)), SpawnType.CONVERSION, new ZombieData(false), null);
             zombieVillagerEntity.setVillagerData(villagerEntity.getVillagerData());
             zombieVillagerEntity.method_21649(villagerEntity.method_21651().serialize(NbtOps.INSTANCE).getValue());
             zombieVillagerEntity.setOfferData(villagerEntity.getOffers().toTag());
@@ -458,7 +434,7 @@ extends HostileEntity {
     }
 
     @Override
-    protected boolean canPickupItem(ItemStack stack) {
+    public boolean canPickupItem(ItemStack stack) {
         if (stack.getItem() == Items.EGG && this.isBaby() && this.hasVehicle()) {
             return false;
         }
@@ -472,11 +448,11 @@ extends HostileEntity {
         float f = difficulty.getClampedLocalDifficulty();
         this.setCanPickUpLoot(this.random.nextFloat() < 0.55f * f);
         if (entityData == null) {
-            entityData = new Data(world.getRandom().nextFloat() < 0.05f);
+            entityData = new ZombieData(world.getRandom().nextFloat() < 0.05f);
         }
-        if (entityData instanceof Data) {
-            Data data = (Data)entityData;
-            if (data.baby) {
+        if (entityData instanceof ZombieData) {
+            ZombieData zombieData = (ZombieData)entityData;
+            if (zombieData.baby) {
                 this.setBaby(true);
                 if ((double)world.getRandom().nextFloat() < 0.05) {
                     List<Entity> list = world.getEntities(ChickenEntity.class, this.getBoundingBox().expand(5.0, 3.0, 5.0), EntityPredicates.NOT_MOUNTED);
@@ -569,11 +545,11 @@ extends HostileEntity {
         }
     }
 
-    public class Data
+    public class ZombieData
     implements EntityData {
         public final boolean baby;
 
-        private Data(boolean baby) {
+        private ZombieData(boolean baby) {
             this.baby = baby;
         }
     }

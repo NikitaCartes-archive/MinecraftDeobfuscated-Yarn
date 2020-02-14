@@ -138,8 +138,8 @@ implements Flutterer {
     public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         this.setVariant(this.random.nextInt(5));
         if (entityData == null) {
-            entityData = new PassiveEntity.EntityData();
-            ((PassiveEntity.EntityData)entityData).setBabyAllowed(false);
+            entityData = new PassiveEntity.PassiveData();
+            ((PassiveEntity.PassiveData)entityData).setBabyAllowed(false);
         }
         return super.initialize(world, difficulty, spawnType, entityData, entityTag);
     }
@@ -281,7 +281,7 @@ implements Flutterer {
 
     public static boolean canSpawn(EntityType<ParrotEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
         Block block = world.getBlockState(pos.down()).getBlock();
-        return (block.matches(BlockTags.LEAVES) || block == Blocks.GRASS_BLOCK || block instanceof LogBlock || block == Blocks.AIR) && world.getBaseLightLevel(pos, 0) > 8;
+        return (block.isIn(BlockTags.LEAVES) || block == Blocks.GRASS_BLOCK || block instanceof LogBlock || block == Blocks.AIR) && world.getBaseLightLevel(pos, 0) > 8;
     }
 
     @Override

@@ -368,5 +368,10 @@ extends RangedWeaponItem {
         }
         return 3.15f;
     }
+
+    @Override
+    public int method_24792() {
+        return 8;
+    }
 }
 

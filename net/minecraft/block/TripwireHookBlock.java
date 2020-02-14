@@ -48,7 +48,7 @@ extends Block {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
         switch (state.get(FACING)) {
             default: {
                 return WEST_SHAPE;
@@ -199,12 +199,12 @@ extends Block {
     }
 
     @Override
-    public int getWeakRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
+    public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
         return state.get(POWERED) != false ? 15 : 0;
     }
 
     @Override
-    public int getStrongRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
+    public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
         if (!state.get(POWERED).booleanValue()) {
             return 0;
         }

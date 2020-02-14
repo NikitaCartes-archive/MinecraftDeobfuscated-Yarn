@@ -1002,7 +1002,7 @@ extends LivingEntity {
             if (bl6) {
                 if (i > 0) {
                     if (target instanceof LivingEntity) {
-                        ((LivingEntity)target).takeKnockback(this, (float)i * 0.5f, MathHelper.sin(this.yaw * ((float)Math.PI / 180)), -MathHelper.cos(this.yaw * ((float)Math.PI / 180)));
+                        ((LivingEntity)target).takeKnockback((float)i * 0.5f, MathHelper.sin(this.yaw * ((float)Math.PI / 180)), -MathHelper.cos(this.yaw * ((float)Math.PI / 180)));
                     } else {
                         target.addVelocity(-MathHelper.sin(this.yaw * ((float)Math.PI / 180)) * (float)i * 0.5f, 0.1, MathHelper.cos(this.yaw * ((float)Math.PI / 180)) * (float)i * 0.5f);
                     }
@@ -1014,7 +1014,7 @@ extends LivingEntity {
                     List<LivingEntity> list = this.world.getNonSpectatingEntities(LivingEntity.class, target.getBoundingBox().expand(1.0, 0.25, 1.0));
                     for (LivingEntity livingEntity : list) {
                         if (livingEntity == this || livingEntity == target || this.isTeammate(livingEntity) || livingEntity instanceof ArmorStandEntity && ((ArmorStandEntity)livingEntity).isMarker() || !(this.squaredDistanceTo(livingEntity) < 9.0)) continue;
-                        livingEntity.takeKnockback(this, 0.4f, MathHelper.sin(this.yaw * ((float)Math.PI / 180)), -MathHelper.cos(this.yaw * ((float)Math.PI / 180)));
+                        livingEntity.takeKnockback(0.4f, MathHelper.sin(this.yaw * ((float)Math.PI / 180)), -MathHelper.cos(this.yaw * ((float)Math.PI / 180)));
                         livingEntity.damage(DamageSource.player(this), l);
                     }
                     this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, this.getSoundCategory(), 1.0f, 1.0f);
@@ -1223,7 +1223,7 @@ extends LivingEntity {
         return this.sleepTimer;
     }
 
-    public void addChatMessage(Text message, boolean bl) {
+    public void addMessage(Text message, boolean actionBar) {
     }
 
     public BlockPos getSpawnPosition() {

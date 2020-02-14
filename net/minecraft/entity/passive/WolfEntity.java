@@ -261,7 +261,7 @@ extends TameableEntity {
      * 
      * @param tickDelta Progress for linearly interpolating between the previous and current game state.
      * @return Brightness as a float value between 0.75 and 1.0.
-     * @see net.minecraft.client.render.entity.model.TintableAnimalModel
+     * @see net.minecraft.client.render.entity.model.TintableAnimalModel#setColorMultiplier(float, float, float)
      */
     @Environment(value=EnvType.CLIENT)
     public float getFurWetBrightnessMultiplier(float tickDelta) {
@@ -331,6 +331,10 @@ extends TameableEntity {
         this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(4.0);
     }
 
+    /*
+     * Enabled force condition propagation
+     * Lifted jumps to return sites
+     */
     @Override
     public boolean interactMob(PlayerEntity player, Hand hand) {
         ItemStack itemStack = player.getStackInHand(hand);
@@ -339,10 +343,14 @@ extends TameableEntity {
             return super.interactMob(player, hand);
         }
         if (this.world.isClient) {
-            return this.isOwner(player) || item == Items.BONE && !this.isAngry();
+            if (this.isOwner(player)) return true;
+            if (item != Items.BONE) return false;
+            if (this.isTamed()) return false;
+            if (this.isAngry()) return false;
+            return true;
         }
         if (this.isTamed()) {
-            if (item.isFood() && item.getFoodComponent().isMeat() && this.getHealth() < this.getMaximumHealth()) {
+            if (this.isBreedingItem(itemStack) && this.getHealth() < this.getMaximumHealth()) {
                 if (!player.abilities.creativeMode) {
                     itemStack.decrement(1);
                 }
@@ -351,42 +359,40 @@ extends TameableEntity {
             }
             if (item instanceof DyeItem) {
                 DyeColor dyeColor = ((DyeItem)item).getColor();
-                if (dyeColor != this.getCollarColor()) {
-                    this.setCollarColor(dyeColor);
-                    if (!player.abilities.creativeMode) {
-                        itemStack.decrement(1);
-                    }
-                    return true;
-                }
-            } else {
-                boolean bl = super.interactMob(player, hand);
-                if (!bl || this.isBaby()) {
-                    this.method_24346(!this.method_24345());
-                }
-                return bl;
-            }
-            if (this.isOwner(player) && !this.isBreedingItem(itemStack)) {
-                this.method_24346(!this.method_24345());
-                this.jumping = false;
-                this.navigation.stop();
-                this.setTarget(null);
-            }
-        } else if (item == Items.BONE && !this.isAngry()) {
-            if (!player.abilities.creativeMode) {
+                if (dyeColor == this.getCollarColor()) return super.interactMob(player, hand);
+                this.setCollarColor(dyeColor);
+                if (player.abilities.creativeMode) return true;
                 itemStack.decrement(1);
+                return true;
             }
-            if (this.random.nextInt(3) == 0) {
-                this.setOwner(player);
-                this.navigation.stop();
-                this.setTarget(null);
-                this.method_24346(true);
-                this.world.sendEntityStatus(this, (byte)7);
-            } else {
-                this.world.sendEntityStatus(this, (byte)6);
+            boolean bl = super.interactMob(player, hand);
+            if (bl) {
+                if (!this.isBaby()) return bl;
             }
-            return true;
+            if (!this.isOwner(player)) return bl;
+            if (this.isBreedingItem(itemStack)) return bl;
+            this.method_24346(!this.method_24345());
+            this.jumping = false;
+            this.navigation.stop();
+            this.setTarget(null);
+            return bl;
         }
-        return super.interactMob(player, hand);
+        if (item != Items.BONE) return super.interactMob(player, hand);
+        if (this.isAngry()) return super.interactMob(player, hand);
+        if (!player.abilities.creativeMode) {
+            itemStack.decrement(1);
+        }
+        if (this.random.nextInt(3) == 0) {
+            this.setOwner(player);
+            this.navigation.stop();
+            this.setTarget(null);
+            this.method_24346(true);
+            this.world.sendEntityStatus(this, (byte)7);
+            return true;
+        } else {
+            this.world.sendEntityStatus(this, (byte)6);
+        }
+        return true;
     }
 
     @Override
@@ -402,7 +408,7 @@ extends TameableEntity {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public float method_6714() {
+    public float getTailAngle() {
         if (this.isAngry()) {
             return 1.5393804f;
         }

@@ -36,7 +36,7 @@ extends HorizontalFacingBlock {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
         return SHAPE;
     }
 
@@ -63,17 +63,17 @@ extends HorizontalFacingBlock {
     }
 
     @Override
-    public int getStrongRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
-        return state.getWeakRedstonePower(view, pos, facing);
+    public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
+        return state.getWeakRedstonePower(world, pos, facing);
     }
 
     @Override
-    public int getWeakRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
+    public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
         if (!state.get(POWERED).booleanValue()) {
             return 0;
         }
         if (state.get(FACING) == facing) {
-            return this.getOutputLevel(view, pos, state);
+            return this.getOutputLevel(world, pos, state);
         }
         return 0;
     }
@@ -192,7 +192,7 @@ extends HorizontalFacingBlock {
         return state.emitsRedstonePower();
     }
 
-    protected int getOutputLevel(BlockView view, BlockPos pos, BlockState state) {
+    protected int getOutputLevel(BlockView world, BlockPos pos, BlockState state) {
         return 15;
     }
 

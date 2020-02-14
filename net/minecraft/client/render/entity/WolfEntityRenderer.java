@@ -28,7 +28,7 @@ extends MobEntityRenderer<WolfEntity, WolfEntityModel<WolfEntity>> {
 
     @Override
     protected float getAnimationProgress(WolfEntity wolfEntity, float f) {
-        return wolfEntity.method_6714();
+        return wolfEntity.getTailAngle();
     }
 
     @Override

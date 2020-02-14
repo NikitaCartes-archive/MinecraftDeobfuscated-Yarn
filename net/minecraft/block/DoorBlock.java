@@ -59,7 +59,7 @@ extends Block {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
         Direction direction = state.get(FACING);
         boolean bl = state.get(OPEN) == false;
         boolean bl2 = state.get(HINGE) == DoorHinge.RIGHT;
@@ -116,16 +116,16 @@ extends Block {
     }
 
     @Override
-    public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+    public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
         switch (env) {
             case LAND: {
-                return world.get(OPEN);
+                return state.get(OPEN);
             }
             case WATER: {
                 return false;
             }
             case AIR: {
-                return world.get(OPEN);
+                return state.get(OPEN);
             }
         }
         return false;
@@ -262,6 +262,14 @@ extends Block {
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(HALF, FACING, OPEN, HINGE, POWERED);
+    }
+
+    public static boolean method_24795(World world, BlockPos blockPos) {
+        return DoorBlock.method_24796(world.getBlockState(blockPos));
+    }
+
+    public static boolean method_24796(BlockState blockState) {
+        return blockState.getBlock() instanceof DoorBlock && (blockState.getMaterial() == Material.WOOD || blockState.getMaterial() == Material.NETHER_WOOD);
     }
 }
 

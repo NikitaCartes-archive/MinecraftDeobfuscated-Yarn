@@ -52,7 +52,7 @@ public interface ServerPlayPacketListener
 extends PacketListener {
     public void onHandSwing(HandSwingC2SPacket var1);
 
-    public void onChatMessage(ChatMessageC2SPacket var1);
+    public void onGameMessage(ChatMessageC2SPacket var1);
 
     public void onClientStatus(ClientStatusC2SPacket var1);
 

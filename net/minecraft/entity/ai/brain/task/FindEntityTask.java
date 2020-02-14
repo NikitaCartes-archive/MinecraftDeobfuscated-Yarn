@@ -4,6 +4,7 @@
 package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
+import java.util.List;
 import java.util.function.Predicate;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -27,7 +28,7 @@ extends Task<E> {
     private final MemoryModuleType<T> targetModule;
 
     public FindEntityTask(EntityType<? extends T> entityType, int maxDistance, Predicate<E> shouldRunPredicate, Predicate<T> predicate, MemoryModuleType<T> targetModule, float speed, int completionRange) {
-        super(ImmutableMap.of(MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT, targetModule, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.VISIBLE_MOBS, MemoryModuleState.VALUE_PRESENT));
+        super(ImmutableMap.of(MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.VISIBLE_MOBS, MemoryModuleState.VALUE_PRESENT));
         this.entityType = entityType;
         this.speed = speed;
         this.maxSquaredDistance = maxDistance * maxDistance;
@@ -43,7 +44,16 @@ extends Task<E> {
 
     @Override
     protected boolean shouldRun(ServerWorld world, E entity) {
-        return this.shouldRunPredicate.test(entity) && ((LivingEntity)entity).getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get().stream().anyMatch(livingEntity -> this.entityType.equals(livingEntity.getType()) && this.predicate.test((LivingEntity)livingEntity));
+        return this.shouldRunPredicate.test(entity) && this.method_24582(entity);
+    }
+
+    private boolean method_24582(E livingEntity) {
+        List<LivingEntity> list = ((LivingEntity)livingEntity).getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get();
+        return list.stream().anyMatch(this::method_24583);
+    }
+
+    private boolean method_24583(LivingEntity livingEntity) {
+        return this.entityType.equals(livingEntity.getType()) && this.predicate.test(livingEntity);
     }
 
     @Override

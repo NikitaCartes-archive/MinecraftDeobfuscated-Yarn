@@ -16,9 +16,8 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.tag.ItemTags;
 import org.jetbrains.annotations.Nullable;
 
 public class BeaconContainer
@@ -27,7 +26,7 @@ extends Container {
 
         @Override
         public boolean isValidInvStack(int slot, ItemStack stack) {
-            return stack.getItem() == Items.EMERALD || stack.getItem() == Items.DIAMOND || stack.getItem() == Items.GOLD_INGOT || stack.getItem() == Items.IRON_INGOT;
+            return stack.getItem().isIn(ItemTags.BEACON_PAYMENT_ITEMS);
         }
 
         @Override
@@ -153,8 +152,7 @@ extends Container {
 
         @Override
         public boolean canInsert(ItemStack stack) {
-            Item item = stack.getItem();
-            return item == Items.EMERALD || item == Items.DIAMOND || item == Items.GOLD_INGOT || item == Items.IRON_INGOT;
+            return stack.getItem().isIn(ItemTags.BEACON_PAYMENT_ITEMS);
         }
 
         @Override

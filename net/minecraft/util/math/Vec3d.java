@@ -78,6 +78,10 @@ implements Position {
         return new Vec3d(this.x + x, this.y + y, this.z + z);
     }
 
+    public boolean method_24802(Position position, double d) {
+        return this.squaredDistanceTo(position.getX(), position.getY(), position.getZ()) < d * d;
+    }
+
     public double distanceTo(Vec3d vec3d) {
         double d = vec3d.x - this.x;
         double e = vec3d.y - this.y;

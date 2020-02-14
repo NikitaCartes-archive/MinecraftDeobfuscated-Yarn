@@ -35,7 +35,7 @@ implements Stainable {
     }
 
     @Override
-    public BlockEntity createBlockEntity(BlockView view) {
+    public BlockEntity createBlockEntity(BlockView world) {
         return new BeaconBlockEntity();
     }
 
@@ -53,7 +53,7 @@ implements Stainable {
     }
 
     @Override
-    public boolean isSimpleFullBlock(BlockState state, BlockView view, BlockPos pos) {
+    public boolean isSimpleFullBlock(BlockState state, BlockView world, BlockPos pos) {
         return false;
     }
 

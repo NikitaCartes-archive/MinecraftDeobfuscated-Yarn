@@ -31,7 +31,7 @@ public abstract class TameableEntity
 extends AnimalEntity {
     protected static final TrackedData<Byte> TAMEABLE_FLAGS = DataTracker.registerData(TameableEntity.class, TrackedDataHandlerRegistry.BYTE);
     protected static final TrackedData<Optional<UUID>> OWNER_UUID = DataTracker.registerData(TameableEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
-    private boolean field_21974;
+    private boolean sitting;
 
     protected TameableEntity(EntityType<? extends TameableEntity> type, World world) {
         super((EntityType<? extends AnimalEntity>)type, world);
@@ -53,7 +53,7 @@ extends AnimalEntity {
         } else {
             tag.putString("OwnerUUID", this.getOwnerUuid().toString());
         }
-        tag.putBoolean("Sitting", this.field_21974);
+        tag.putBoolean("Sitting", this.sitting);
     }
 
     @Override
@@ -74,8 +74,8 @@ extends AnimalEntity {
                 this.setTamed(false);
             }
         }
-        this.field_21974 = tag.getBoolean("Sitting");
-        this.setSitting(this.field_21974);
+        this.sitting = tag.getBoolean("Sitting");
+        this.setSitting(this.sitting);
     }
 
     @Override
@@ -217,11 +217,11 @@ extends AnimalEntity {
     }
 
     public boolean method_24345() {
-        return this.field_21974;
+        return this.sitting;
     }
 
     public void method_24346(boolean bl) {
-        this.field_21974 = bl;
+        this.sitting = bl;
     }
 }
 

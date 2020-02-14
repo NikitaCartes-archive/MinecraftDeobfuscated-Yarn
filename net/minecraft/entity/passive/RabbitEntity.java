@@ -339,10 +339,10 @@ extends AnimalEntity {
     @Nullable
     public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         int i = this.chooseType(world);
-        if (entityData instanceof RabbitEntityData) {
-            i = ((RabbitEntityData)entityData).type;
+        if (entityData instanceof RabbitData) {
+            i = ((RabbitData)entityData).type;
         } else {
-            entityData = new RabbitEntityData(i);
+            entityData = new RabbitData(i);
         }
         this.setRabbitType(i);
         return super.initialize(world, difficulty, spawnType, entityData, entityTag);
@@ -558,11 +558,11 @@ extends AnimalEntity {
         }
     }
 
-    public static class RabbitEntityData
-    extends PassiveEntity.EntityData {
+    public static class RabbitData
+    extends PassiveEntity.PassiveData {
         public final int type;
 
-        public RabbitEntityData(int type) {
+        public RabbitData(int type) {
             this.type = type;
             this.setBabyChance(1.0f);
         }

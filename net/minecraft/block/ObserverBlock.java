@@ -82,12 +82,12 @@ extends FacingBlock {
     }
 
     @Override
-    public int getStrongRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
-        return state.getWeakRedstonePower(view, pos, facing);
+    public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
+        return state.getWeakRedstonePower(world, pos, facing);
     }
 
     @Override
-    public int getWeakRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
+    public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
         if (state.get(POWERED).booleanValue() && state.get(FACING) == facing) {
             return 15;
         }

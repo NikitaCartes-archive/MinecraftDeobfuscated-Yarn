@@ -67,6 +67,7 @@ public class BlockTags {
     public static final Tag<Block> SIGNS;
     public static final Tag<Block> DRAGON_IMMUNE;
     public static final Tag<Block> WITHER_IMMUNE;
+    public static final Tag<Block> WITHER_SUMMON_BASE_BLOCKS;
     public static final Tag<Block> BEEHIVES;
     public static final Tag<Block> CROPS;
     public static final Tag<Block> BEE_GROWABLES;
@@ -74,6 +75,8 @@ public class BlockTags {
     public static final Tag<Block> FIRE;
     public static final Tag<Block> NYLIUM;
     public static final Tag<Block> WART_BLOCKS;
+    public static final Tag<Block> BEACON_BASE_BLOCKS;
+    public static final Tag<Block> WALL_POST_OVERRIDE;
 
     public static void setContainer(TagContainer<Block> container) {
         BlockTags.container = container;
@@ -143,6 +146,7 @@ public class BlockTags {
         SIGNS = BlockTags.register("signs");
         DRAGON_IMMUNE = BlockTags.register("dragon_immune");
         WITHER_IMMUNE = BlockTags.register("wither_immune");
+        WITHER_SUMMON_BASE_BLOCKS = BlockTags.register("wither_summon_base_blocks");
         BEEHIVES = BlockTags.register("beehives");
         CROPS = BlockTags.register("crops");
         BEE_GROWABLES = BlockTags.register("bee_growables");
@@ -150,6 +154,8 @@ public class BlockTags {
         FIRE = BlockTags.register("fire");
         NYLIUM = BlockTags.register("nylium");
         WART_BLOCKS = BlockTags.register("wart_blocks");
+        BEACON_BASE_BLOCKS = BlockTags.register("beacon_base_blocks");
+        WALL_POST_OVERRIDE = BlockTags.register("wall_post_override");
     }
 
     static class CachingTag

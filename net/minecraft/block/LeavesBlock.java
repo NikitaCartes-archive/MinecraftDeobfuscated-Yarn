@@ -52,7 +52,7 @@ extends Block {
     }
 
     @Override
-    public int getOpacity(BlockState state, BlockView view, BlockPos pos) {
+    public int getOpacity(BlockState state, BlockView world, BlockPos pos) {
         return 1;
     }
 
@@ -109,12 +109,12 @@ extends Block {
     }
 
     @Override
-    public boolean canSuffocate(BlockState state, BlockView view, BlockPos pos) {
+    public boolean canSuffocate(BlockState state, BlockView world, BlockPos pos) {
         return false;
     }
 
     @Override
-    public boolean allowsSpawning(BlockState state, BlockView view, BlockPos pos, EntityType<?> type) {
+    public boolean allowsSpawning(BlockState state, BlockView world, BlockPos pos, EntityType<?> type) {
         return type == EntityType.OCELOT || type == EntityType.PARROT;
     }
 

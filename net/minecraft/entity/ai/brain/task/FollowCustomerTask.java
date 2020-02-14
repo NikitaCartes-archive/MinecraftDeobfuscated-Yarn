@@ -70,11 +70,6 @@ extends Task<VillagerEntity> {
     }
 
     @Override
-    protected /* synthetic */ void finishRunning(ServerWorld world, LivingEntity entity, long time) {
-        this.finishRunning(world, (VillagerEntity)entity, time);
-    }
-
-    @Override
     protected /* synthetic */ void run(ServerWorld world, LivingEntity entity, long time) {
         this.run(world, (VillagerEntity)entity, time);
     }

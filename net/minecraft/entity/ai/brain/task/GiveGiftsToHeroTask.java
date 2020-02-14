@@ -91,7 +91,7 @@ extends Task<VillagerEntity> {
                 this.done = true;
             }
         } else {
-            LookTargetUtil.walkTowards(villagerEntity, playerEntity, 5);
+            LookTargetUtil.method_24557(villagerEntity, playerEntity, 5);
         }
     }
 
@@ -106,7 +106,7 @@ extends Task<VillagerEntity> {
     private void giveGifts(VillagerEntity villager, LivingEntity recipient) {
         List<ItemStack> list = this.getGifts(villager);
         for (ItemStack itemStack : list) {
-            LookTargetUtil.give(villager, itemStack, recipient);
+            LookTargetUtil.give(villager, itemStack, recipient.getPos());
         }
     }
 
@@ -116,7 +116,7 @@ extends Task<VillagerEntity> {
         }
         VillagerProfession villagerProfession = villager.getVillagerData().getProfession();
         if (GIFTS.containsKey(villagerProfession)) {
-            LootTable lootTable = villager.world.getServer().getLootManager().getSupplier(GIFTS.get(villagerProfession));
+            LootTable lootTable = villager.world.getServer().getLootManager().getTable(GIFTS.get(villagerProfession));
             LootContext.Builder builder = new LootContext.Builder((ServerWorld)villager.world).put(LootContextParameters.POSITION, new BlockPos(villager)).put(LootContextParameters.THIS_ENTITY, villager).setRandom(villager.getRandom());
             return lootTable.getDrops(builder.build(LootContextTypes.GIFT));
         }
@@ -143,11 +143,6 @@ extends Task<VillagerEntity> {
 
     private static int getNextGiftDelay(ServerWorld world) {
         return 600 + world.random.nextInt(6001);
-    }
-
-    @Override
-    protected /* synthetic */ boolean shouldKeepRunning(ServerWorld world, LivingEntity entity, long time) {
-        return this.shouldKeepRunning(world, (VillagerEntity)entity, time);
     }
 
     @Override

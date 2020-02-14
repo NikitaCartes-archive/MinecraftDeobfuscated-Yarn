@@ -141,7 +141,7 @@ extends Feature<HugeFungiFeatureConfig> {
         for (int i = pos.getY(); i >= 1; --i) {
             mutable.setY(i);
             Block block = world.getBlockState((BlockPos)mutable.down()).getBlock();
-            if (!block.matches(BlockTags.NYLIUM)) continue;
+            if (!block.isIn(BlockTags.NYLIUM)) continue;
             return mutable;
         }
         return null;

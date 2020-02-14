@@ -35,10 +35,10 @@ extends Block {
     }
 
     @Override
-    public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+    public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
         switch (env) {
             case LAND: {
-                return world.get(LAYERS) < 5;
+                return state.get(LAYERS) < 5;
             }
             case WATER: {
                 return false;
@@ -51,12 +51,12 @@ extends Block {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
         return LAYERS_TO_SHAPE[state.get(LAYERS)];
     }
 
     @Override
-    public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+    public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
         return LAYERS_TO_SHAPE[state.get(LAYERS) - 1];
     }
 

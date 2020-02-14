@@ -47,8 +47,8 @@ implements BlockEntityProvider {
     }
 
     @Override
-    protected int getOutputLevel(BlockView view, BlockPos pos, BlockState state) {
-        BlockEntity blockEntity = view.getBlockEntity(pos);
+    protected int getOutputLevel(BlockView world, BlockPos pos, BlockState state) {
+        BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof ComparatorBlockEntity) {
             return ((ComparatorBlockEntity)blockEntity).getOutputSignal();
         }
@@ -164,7 +164,7 @@ implements BlockEntityProvider {
     }
 
     @Override
-    public BlockEntity createBlockEntity(BlockView view) {
+    public BlockEntity createBlockEntity(BlockView world) {
         return new ComparatorBlockEntity();
     }
 

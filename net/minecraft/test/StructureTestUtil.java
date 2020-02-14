@@ -89,7 +89,7 @@ public class StructureTestUtil {
     }
 
     public static void clearArea(BlockBox blockBox, int i, ServerWorld serverWorld) {
-        BlockPos.method_23627(blockBox).forEach(blockPos -> StructureTestUtil.method_22368(i, blockPos, serverWorld));
+        BlockPos.stream(blockBox).forEach(blockPos -> StructureTestUtil.method_22368(i, blockPos, serverWorld));
         ((ServerTickScheduler)serverWorld.getBlockTickScheduler()).getScheduledTicks(blockBox, true, false);
         serverWorld.method_23658(blockBox);
         Box box = new Box(blockBox.minX, blockBox.minY, blockBox.minZ, blockBox.maxX, blockBox.maxY, blockBox.maxZ);

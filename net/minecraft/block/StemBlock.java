@@ -44,12 +44,12 @@ implements Fertilizable {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
         return AGE_TO_SHAPE[state.get(AGE)];
     }
 
     @Override
-    protected boolean canPlantOnTop(BlockState floor, BlockView view, BlockPos pos) {
+    protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
         return floor.getBlock() == Blocks.FARMLAND;
     }
 

@@ -32,7 +32,9 @@ public class ClearCommand {
         int i = 0;
         for (ServerPlayerEntity serverPlayerEntity : targets) {
             i += serverPlayerEntity.inventory.method_7369(item, maxCount);
+            serverPlayerEntity.playerContainer.clearCraftingSlots();
             serverPlayerEntity.container.sendContentUpdates();
+            serverPlayerEntity.playerContainer.onContentChanged(serverPlayerEntity.inventory);
             serverPlayerEntity.method_14241();
         }
         if (i == 0) {

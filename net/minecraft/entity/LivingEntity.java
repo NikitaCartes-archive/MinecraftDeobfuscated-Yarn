@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
+import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criterions;
@@ -701,7 +702,7 @@ extends Entity {
      * Removes a status effect from this entity without calling any listener.
      * 
      * <p> This method does not perform any cleanup or synchronization operation.
-     * Under most circumstances, calling {@link net.minecraft.entity.LivingEntity
+     * Under most circumstances, calling {@link net.minecraft.entity.LivingEntity#removeStatusEffect(net.minecraft.entity.effect.StatusEffect)} is highly preferable.
      */
     @Nullable
     public StatusEffectInstance removeStatusEffectInternal(@Nullable StatusEffect type) {
@@ -850,7 +851,7 @@ extends Entity {
                     e = (Math.random() - Math.random()) * 0.01;
                 }
                 this.knockbackVelocity = (float)(MathHelper.atan2(e, d) * 57.2957763671875 - (double)this.yaw);
-                this.takeKnockback(entity2, 0.4f, d, e);
+                this.takeKnockback(0.4f, d, e);
             } else {
                 this.knockbackVelocity = (int)(Math.random() * 2.0) * 180;
             }
@@ -888,7 +889,7 @@ extends Entity {
     }
 
     protected void knockback(LivingEntity target) {
-        target.takeKnockback(this, 0.5f, target.getX() - this.getX(), target.getZ() - this.getZ());
+        target.takeKnockback(0.5f, target.getX() - this.getX(), target.getZ() - this.getZ());
     }
 
     private boolean tryUseTotem(DamageSource source) {
@@ -1050,7 +1051,7 @@ extends Entity {
 
     protected void dropLoot(DamageSource source, boolean causedByPlayer) {
         Identifier identifier = this.getLootTable();
-        LootTable lootTable = this.world.getServer().getLootManager().getSupplier(identifier);
+        LootTable lootTable = this.world.getServer().getLootManager().getTable(identifier);
         LootContext.Builder builder = this.getLootContextBuilder(causedByPlayer, source);
         lootTable.dropLimited(builder.build(LootContextTypes.ENTITY), this::dropStack);
     }
@@ -1063,14 +1064,14 @@ extends Entity {
         return builder;
     }
 
-    public void takeKnockback(Entity attacker, float speed, double xMovement, double zMovement) {
-        if ((speed = (float)((double)speed * (1.0 - this.getAttributeInstance(EntityAttributes.KNOCKBACK_RESISTANCE).getValue()))) <= 0.0f) {
+    public void takeKnockback(float f, double d, double e) {
+        if ((f = (float)((double)f * (1.0 - this.getAttributeInstance(EntityAttributes.KNOCKBACK_RESISTANCE).getValue()))) <= 0.0f) {
             return;
         }
         this.velocityDirty = true;
         Vec3d vec3d = this.getVelocity();
-        Vec3d vec3d2 = new Vec3d(xMovement, 0.0, zMovement).normalize().multiply(speed);
-        this.setVelocity(vec3d.x / 2.0 - vec3d2.x, this.onGround ? Math.min(0.4, vec3d.y / 2.0 + (double)speed) : vec3d.y, vec3d.z / 2.0 - vec3d2.z);
+        Vec3d vec3d2 = new Vec3d(d, 0.0, e).normalize().multiply(f);
+        this.setVelocity(vec3d.x / 2.0 - vec3d2.x, this.onGround ? Math.min(0.4, vec3d.y / 2.0 + (double)f) : vec3d.y, vec3d.z / 2.0 - vec3d2.z);
     }
 
     @Nullable
@@ -1435,6 +1436,14 @@ extends Entity {
         return this.getEquippedStack(EquipmentSlot.OFFHAND);
     }
 
+    public boolean method_24518(Item item) {
+        return this.method_24520(item2 -> item2 == item);
+    }
+
+    public boolean method_24520(Predicate<Item> predicate) {
+        return predicate.test(this.getMainHandStack().getItem()) || predicate.test(this.getOffHandStack().getItem());
+    }
+
     public ItemStack getStackInHand(Hand hand) {
         if (hand == Hand.MAIN_HAND) {
             return this.getEquippedStack(EquipmentSlot.MAINHAND);
@@ -1515,7 +1524,7 @@ extends Entity {
     }
 
     private void onDismounted(Entity vehicle) {
-        if (this.world.getBlockState(new BlockPos(vehicle)).getBlock().matches(BlockTags.PORTALS)) {
+        if (this.world.getBlockState(new BlockPos(vehicle)).getBlock().isIn(BlockTags.PORTALS)) {
             this.updatePosition(vehicle.getX(), vehicle.getBodyY(1.0) + 0.001, vehicle.getZ());
             return;
         }

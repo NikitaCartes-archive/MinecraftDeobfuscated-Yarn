@@ -915,9 +915,7 @@ WindowEventHandler {
         if (monitor != null) {
             monitor.endTick();
         }
-        if (active) {
-            this.tickProfilerResult = this.tickTimeTracker.getResult();
-        }
+        this.tickProfilerResult = active ? this.tickTimeTracker.getResult() : null;
         this.profiler = this.tickTimeTracker.getProfiler();
     }
 

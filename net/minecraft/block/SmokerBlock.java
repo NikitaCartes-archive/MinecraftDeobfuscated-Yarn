@@ -28,7 +28,7 @@ extends AbstractFurnaceBlock {
     }
 
     @Override
-    public BlockEntity createBlockEntity(BlockView view) {
+    public BlockEntity createBlockEntity(BlockView world) {
         return new SmokerBlockEntity();
     }
 

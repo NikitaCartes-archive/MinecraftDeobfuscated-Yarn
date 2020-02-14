@@ -44,7 +44,7 @@ extends FacingBlock {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
         switch (state.get(FACING).getAxis()) {
             default: {
                 return X_SHAPE;

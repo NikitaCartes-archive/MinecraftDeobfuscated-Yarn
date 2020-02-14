@@ -44,7 +44,7 @@ extends AbstractRailBlock {
     }
 
     @Override
-    public int getTickRate(WorldView worldView) {
+    public int getTickRate(WorldView world) {
         return 20;
     }
 
@@ -73,12 +73,12 @@ extends AbstractRailBlock {
     }
 
     @Override
-    public int getWeakRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
+    public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
         return state.get(POWERED) != false ? 15 : 0;
     }
 
     @Override
-    public int getStrongRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
+    public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
         if (!state.get(POWERED).booleanValue()) {
             return 0;
         }

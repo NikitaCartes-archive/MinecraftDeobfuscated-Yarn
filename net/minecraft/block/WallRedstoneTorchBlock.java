@@ -44,7 +44,7 @@ extends RedstoneTorchBlock {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
         return WallTorchBlock.getBoundingShape(state);
     }
 
@@ -86,7 +86,7 @@ extends RedstoneTorchBlock {
     }
 
     @Override
-    public int getWeakRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
+    public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
         if (state.get(LIT_2).booleanValue() && state.get(FACING) != facing) {
             return 15;
         }

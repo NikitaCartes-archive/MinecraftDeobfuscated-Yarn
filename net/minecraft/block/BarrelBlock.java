@@ -10,6 +10,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.entity.BarrelBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.class_4838;
 import net.minecraft.container.Container;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -53,6 +54,7 @@ extends BlockWithEntity {
         if (blockEntity instanceof BarrelBlockEntity) {
             player.openContainer((BarrelBlockEntity)blockEntity);
             player.incrementStat(Stats.OPEN_BARREL);
+            class_4838.method_24733(player);
         }
         return ActionResult.SUCCESS;
     }
@@ -80,7 +82,7 @@ extends BlockWithEntity {
 
     @Override
     @Nullable
-    public BlockEntity createBlockEntity(BlockView view) {
+    public BlockEntity createBlockEntity(BlockView world) {
         return new BarrelBlockEntity();
     }
 
@@ -125,6 +127,12 @@ extends BlockWithEntity {
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         return (BlockState)this.getDefaultState().with(FACING, ctx.getPlayerLookDirection().getOpposite());
+    }
+
+    @Override
+    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+        super.onBreak(world, pos, state, player);
+        class_4838.method_24733(player);
     }
 }
 

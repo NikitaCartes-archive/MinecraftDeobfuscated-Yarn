@@ -52,14 +52,14 @@ implements Fertilizable {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
         if (state.get(AGE) == 0) {
             return SMALL_SHAPE;
         }
         if (state.get(AGE) < 3) {
             return LARGE_SHAPE;
         }
-        return super.getOutlineShape(state, view, pos, context);
+        return super.getOutlineShape(state, world, pos, context);
     }
 
     @Override

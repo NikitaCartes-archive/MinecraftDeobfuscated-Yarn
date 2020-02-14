@@ -9,6 +9,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.CompositeEntityModel;
 import net.minecraft.entity.passive.IronGolemEntity;
+import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class IronGolemEntityModel<T extends IronGolemEntity>
@@ -55,8 +56,8 @@ extends CompositeEntityModel<T> {
     public void setAngles(T ironGolemEntity, float f, float g, float h, float i, float j) {
         this.head.yaw = i * ((float)Math.PI / 180);
         this.head.pitch = j * ((float)Math.PI / 180);
-        this.rightLeg.pitch = -1.5f * this.method_2810(f, 13.0f) * g;
-        this.leftLeg.pitch = 1.5f * this.method_2810(f, 13.0f) * g;
+        this.rightLeg.pitch = -1.5f * MathHelper.method_24504(f, 13.0f) * g;
+        this.leftLeg.pitch = 1.5f * MathHelper.method_24504(f, 13.0f) * g;
         this.rightLeg.yaw = 0.0f;
         this.leftLeg.yaw = 0.0f;
     }
@@ -65,22 +66,18 @@ extends CompositeEntityModel<T> {
     public void animateModel(T ironGolemEntity, float f, float g, float h) {
         int i = ((IronGolemEntity)ironGolemEntity).getAttackTicksLeft();
         if (i > 0) {
-            this.rightArm.pitch = -2.0f + 1.5f * this.method_2810((float)i - h, 10.0f);
-            this.leftArm.pitch = -2.0f + 1.5f * this.method_2810((float)i - h, 10.0f);
+            this.rightArm.pitch = -2.0f + 1.5f * MathHelper.method_24504((float)i - h, 10.0f);
+            this.leftArm.pitch = -2.0f + 1.5f * MathHelper.method_24504((float)i - h, 10.0f);
         } else {
             int j = ((IronGolemEntity)ironGolemEntity).getLookingAtVillagerTicks();
             if (j > 0) {
-                this.rightArm.pitch = -0.8f + 0.025f * this.method_2810(j, 70.0f);
+                this.rightArm.pitch = -0.8f + 0.025f * MathHelper.method_24504(j, 70.0f);
                 this.leftArm.pitch = 0.0f;
             } else {
-                this.rightArm.pitch = (-0.2f + 1.5f * this.method_2810(f, 13.0f)) * g;
-                this.leftArm.pitch = (-0.2f - 1.5f * this.method_2810(f, 13.0f)) * g;
+                this.rightArm.pitch = (-0.2f + 1.5f * MathHelper.method_24504(f, 13.0f)) * g;
+                this.leftArm.pitch = (-0.2f - 1.5f * MathHelper.method_24504(f, 13.0f)) * g;
             }
         }
-    }
-
-    private float method_2810(float f, float g) {
-        return (Math.abs(f % g - g * 0.5f) - g * 0.25f) / (g * 0.25f);
     }
 
     public ModelPart getRightArm() {

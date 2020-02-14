@@ -23,6 +23,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -170,6 +171,10 @@ extends Container {
                     boolean bl2 = bl = itemStack3.getItem() == Items.BOOK;
                     if (bl) {
                         itemStack3 = new ItemStack(Items.ENCHANTED_BOOK);
+                        CompoundTag compoundTag = itemStack.getTag();
+                        if (compoundTag != null) {
+                            itemStack3.setTag(compoundTag.copy());
+                        }
                         this.inventory.setInvStack(0, itemStack3);
                     }
                     for (int k = 0; k < list.size(); ++k) {

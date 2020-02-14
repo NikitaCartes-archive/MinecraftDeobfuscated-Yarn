@@ -27,7 +27,7 @@ extends Item {
         BlockPos blockPos;
         World world = context.getWorld();
         Block block = world.getBlockState(blockPos = context.getBlockPos()).getBlock();
-        if (block.matches(BlockTags.FENCES)) {
+        if (block.isIn(BlockTags.FENCES)) {
             PlayerEntity playerEntity = context.getPlayer();
             if (!world.isClient && playerEntity != null) {
                 LeadItem.attachHeldMobsToBlock(playerEntity, world, blockPos);

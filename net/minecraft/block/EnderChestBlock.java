@@ -18,6 +18,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.entity.EnderChestBlockEntity;
+import net.minecraft.class_4838;
 import net.minecraft.container.GenericContainer;
 import net.minecraft.container.SimpleNamedContainerFactory;
 import net.minecraft.entity.EntityContext;
@@ -65,7 +66,7 @@ implements Waterloggable {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
         return SHAPE;
     }
 
@@ -98,11 +99,12 @@ implements Waterloggable {
         enderChestInventory.setCurrentBlockEntity(enderChestBlockEntity);
         player.openContainer(new SimpleNamedContainerFactory((i, playerInventory, playerEntity) -> GenericContainer.createGeneric9x3(i, playerInventory, enderChestInventory), CONTAINER_NAME));
         player.incrementStat(Stats.OPEN_ENDERCHEST);
+        class_4838.method_24733(player);
         return ActionResult.SUCCESS;
     }
 
     @Override
-    public BlockEntity createBlockEntity(BlockView view) {
+    public BlockEntity createBlockEntity(BlockView world) {
         return new EnderChestBlockEntity();
     }
 
@@ -154,8 +156,14 @@ implements Waterloggable {
     }
 
     @Override
-    public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+    public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
         return false;
+    }
+
+    @Override
+    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+        super.onBreak(world, pos, state, player);
+        class_4838.method_24733(player);
     }
 }
 

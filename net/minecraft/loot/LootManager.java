@@ -39,7 +39,7 @@ public class LootManager
 extends JsonDataLoader {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Gson GSON = new GsonBuilder().registerTypeAdapter((Type)((Object)UniformLootTableRange.class), new UniformLootTableRange.Serializer()).registerTypeAdapter((Type)((Object)BinomialLootTableRange.class), new BinomialLootTableRange.Serializer()).registerTypeAdapter((Type)((Object)ConstantLootTableRange.class), new ConstantLootTableRange.Serializer()).registerTypeAdapter((Type)((Object)BoundedIntUnaryOperator.class), new BoundedIntUnaryOperator.Serializer()).registerTypeAdapter((Type)((Object)LootPool.class), new LootPool.Serializer()).registerTypeAdapter((Type)((Object)LootTable.class), new LootTable.Serializer()).registerTypeHierarchyAdapter(LootEntry.class, new LootEntries.Serializer()).registerTypeHierarchyAdapter(LootFunction.class, new LootFunctions.Factory()).registerTypeHierarchyAdapter(LootCondition.class, new LootConditions.Factory()).registerTypeHierarchyAdapter(LootContext.EntityTarget.class, new LootContext.EntityTarget.Serializer()).create();
-    private Map<Identifier, LootTable> suppliers = ImmutableMap.of();
+    private Map<Identifier, LootTable> tables = ImmutableMap.of();
     private final LootConditionManager conditionManager;
 
     public LootManager(LootConditionManager conditionManager) {
@@ -47,8 +47,8 @@ extends JsonDataLoader {
         this.conditionManager = conditionManager;
     }
 
-    public LootTable getSupplier(Identifier id) {
-        return this.suppliers.getOrDefault(id, LootTable.EMPTY);
+    public LootTable getTable(Identifier id) {
+        return this.tables.getOrDefault(id, LootTable.EMPTY);
     }
 
     @Override
@@ -71,19 +71,19 @@ extends JsonDataLoader {
         LootTableReporter lootTableReporter = new LootTableReporter(LootContextTypes.GENERIC, this.conditionManager::get, immutableMap::get);
         immutableMap.forEach((identifier, lootTable) -> LootManager.check(lootTableReporter, identifier, lootTable));
         lootTableReporter.getMessages().forEach((key, value) -> LOGGER.warn("Found validation problem in " + key + ": " + value));
-        this.suppliers = immutableMap;
+        this.tables = immutableMap;
     }
 
     public static void check(LootTableReporter reporter, Identifier id, LootTable table) {
         table.check(reporter.withContextType(table.getType()).withSupplier("{" + id + "}", id));
     }
 
-    public static JsonElement toJson(LootTable supplier) {
-        return GSON.toJsonTree(supplier);
+    public static JsonElement toJson(LootTable table) {
+        return GSON.toJsonTree(table);
     }
 
-    public Set<Identifier> getSupplierNames() {
-        return this.suppliers.keySet();
+    public Set<Identifier> getTableIds() {
+        return this.tables.keySet();
     }
 }
 

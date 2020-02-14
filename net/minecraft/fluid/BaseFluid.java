@@ -339,7 +339,7 @@ extends Fluid {
         if (block instanceof FluidFillable) {
             return ((FluidFillable)((Object)block)).canFillWithFluid(world, pos, state, fluid);
         }
-        if (block instanceof DoorBlock || block.matches(BlockTags.SIGNS) || block == Blocks.LADDER || block == Blocks.SUGAR_CANE || block == Blocks.BUBBLE_COLUMN) {
+        if (block instanceof DoorBlock || block.isIn(BlockTags.SIGNS) || block == Blocks.LADDER || block == Blocks.SUGAR_CANE || block == Blocks.BUBBLE_COLUMN) {
             return false;
         }
         Material material = state.getMaterial();

@@ -20,27 +20,27 @@ extends TransparentBlock {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public float getAmbientOcclusionLightLevel(BlockState state, BlockView view, BlockPos pos) {
+    public float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
         return 1.0f;
     }
 
     @Override
-    public boolean isTranslucent(BlockState state, BlockView view, BlockPos pos) {
+    public boolean isTranslucent(BlockState state, BlockView world, BlockPos pos) {
         return true;
     }
 
     @Override
-    public boolean canSuffocate(BlockState state, BlockView view, BlockPos pos) {
+    public boolean canSuffocate(BlockState state, BlockView world, BlockPos pos) {
         return false;
     }
 
     @Override
-    public boolean isSimpleFullBlock(BlockState state, BlockView view, BlockPos pos) {
+    public boolean isSimpleFullBlock(BlockState state, BlockView world, BlockPos pos) {
         return false;
     }
 
     @Override
-    public boolean allowsSpawning(BlockState state, BlockView view, BlockPos pos, EntityType<?> type) {
+    public boolean allowsSpawning(BlockState state, BlockView world, BlockPos pos, EntityType<?> type) {
         return false;
     }
 }

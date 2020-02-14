@@ -512,7 +512,7 @@ implements Flutterer {
     }
 
     private boolean isFlowers(BlockPos pos) {
-        return this.world.canSetBlock(pos) && this.world.getBlockState(pos).getBlock().matches(BlockTags.FLOWERS);
+        return this.world.canSetBlock(pos) && this.world.getBlockState(pos).getBlock().isIn(BlockTags.FLOWERS);
     }
 
     @Override
@@ -695,7 +695,7 @@ implements Flutterer {
                 Block block = blockState.getBlock();
                 boolean bl = false;
                 IntProperty intProperty = null;
-                if (!block.matches(BlockTags.BEE_GROWABLES)) continue;
+                if (!block.isIn(BlockTags.BEE_GROWABLES)) continue;
                 if (block instanceof CropBlock) {
                     CropBlock cropBlock = (CropBlock)block;
                     if (!cropBlock.isMature(blockState)) {

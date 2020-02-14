@@ -51,7 +51,7 @@ implements Waterloggable {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
         SlabType slabType = state.get(TYPE);
         switch (slabType) {
             case DOUBLE: {
@@ -116,9 +116,9 @@ implements Waterloggable {
     }
 
     @Override
-    public boolean canFillWithFluid(BlockView view, BlockPos pos, BlockState state, Fluid fluid) {
+    public boolean canFillWithFluid(BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
         if (state.get(TYPE) != SlabType.DOUBLE) {
-            return Waterloggable.super.canFillWithFluid(view, pos, state, fluid);
+            return Waterloggable.super.canFillWithFluid(world, pos, state, fluid);
         }
         return false;
     }
@@ -132,13 +132,13 @@ implements Waterloggable {
     }
 
     @Override
-    public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+    public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
         switch (env) {
             case LAND: {
                 return false;
             }
             case WATER: {
-                return view.getFluidState(pos).matches(FluidTags.WATER);
+                return world.getFluidState(pos).matches(FluidTags.WATER);
             }
             case AIR: {
                 return false;

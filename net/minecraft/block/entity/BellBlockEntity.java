@@ -107,7 +107,7 @@ implements Tickable {
     private boolean method_20523() {
         BlockPos blockPos = this.getPos();
         for (LivingEntity livingEntity : this.field_19156) {
-            if (!livingEntity.isAlive() || livingEntity.removed || !blockPos.isWithinDistance(livingEntity.getPos(), 32.0) || !livingEntity.getType().isTaggedWith(EntityTypeTags.RAIDERS)) continue;
+            if (!livingEntity.isAlive() || livingEntity.removed || !blockPos.isWithinDistance(livingEntity.getPos(), 32.0) || !livingEntity.getType().isIn(EntityTypeTags.RAIDERS)) continue;
             return true;
         }
         return false;
@@ -144,7 +144,7 @@ implements Tickable {
     }
 
     private boolean method_20518(LivingEntity livingEntity) {
-        return livingEntity.isAlive() && !livingEntity.removed && this.getPos().isWithinDistance(livingEntity.getPos(), 48.0) && livingEntity.getType().isTaggedWith(EntityTypeTags.RAIDERS);
+        return livingEntity.isAlive() && !livingEntity.removed && this.getPos().isWithinDistance(livingEntity.getPos(), 48.0) && livingEntity.getType().isIn(EntityTypeTags.RAIDERS);
     }
 
     private void method_20520(LivingEntity livingEntity) {

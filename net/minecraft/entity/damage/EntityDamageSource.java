@@ -59,5 +59,10 @@ extends DamageSource {
     public Vec3d getPosition() {
         return this.source != null ? this.source.getPos() : null;
     }
+
+    @Override
+    public String toString() {
+        return "EntityDamageSource (" + this.source + ")";
+    }
 }
 

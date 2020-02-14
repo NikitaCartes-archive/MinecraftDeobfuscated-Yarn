@@ -341,7 +341,7 @@ extends HostileEntity {
             Vec3d vec3d2 = new Vec3d((double)i + 0.5, (double)j + 0.5, (double)k + 0.5);
             BlockHitResult blockHitResult = world.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.OUTLINE, RayTraceContext.FluidHandling.NONE, this.enderman));
             boolean bl = blockHitResult.getBlockPos().equals(blockPos);
-            if (block.matches(BlockTags.ENDERMAN_HOLDABLE) && bl) {
+            if (block.isIn(BlockTags.ENDERMAN_HOLDABLE) && bl) {
                 this.enderman.setCarriedBlock(blockState);
                 world.removeBlock(blockPos, false);
             }
@@ -475,6 +475,9 @@ extends HostileEntity {
 
         @Override
         public void tick() {
+            if (this.enderman.getTarget() == null) {
+                super.method_24632(null);
+            }
             if (this.targetPlayer != null) {
                 if (--this.lookAtPlayerWarmup <= 0) {
                     this.targetEntity = this.targetPlayer;

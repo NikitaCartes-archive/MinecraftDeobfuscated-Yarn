@@ -56,7 +56,7 @@ public enum Instrument implements StringIdentifiable
         if (block == Blocks.GOLD_BLOCK) {
             return BELL;
         }
-        if (block.matches(BlockTags.WOOL)) {
+        if (block.isIn(BlockTags.WOOL)) {
             return GUITAR;
         }
         if (block == Blocks.PACKED_ICE) {

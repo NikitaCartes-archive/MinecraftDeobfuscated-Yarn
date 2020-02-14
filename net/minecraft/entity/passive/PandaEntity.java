@@ -490,8 +490,8 @@ extends AnimalEntity {
         this.setHiddenGene(Gene.createRandom(this.random));
         this.resetAttributes();
         if (entityData == null) {
-            entityData = new PassiveEntity.EntityData();
-            ((PassiveEntity.EntityData)entityData).setBabyChance(0.2f);
+            entityData = new PassiveEntity.PassiveData();
+            ((PassiveEntity.PassiveData)entityData).setBabyChance(0.2f);
         }
         return super.initialize(world, difficulty, spawnType, entityData, entityTag);
     }

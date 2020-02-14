@@ -34,7 +34,7 @@ extends Task<VillagerEntity> {
                 brain.forget(MemoryModuleType.BREED_TARGET);
                 brain.forget(MemoryModuleType.INTERACTION_TARGET);
             }
-            brain.resetPossibleActivities(Activity.PANIC);
+            brain.method_24526(Activity.PANIC);
         }
     }
 

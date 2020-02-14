@@ -135,8 +135,12 @@ AutoCloseable {
         return this.getBlockState(blockPos2);
     }
 
+    public static boolean method_24794(BlockPos blockPos) {
+        return !World.isHeightInvalid(blockPos) && World.isValid(blockPos);
+    }
+
     public static boolean isValid(BlockPos pos) {
-        return !World.isHeightInvalid(pos) && pos.getX() >= -30000000 && pos.getZ() >= -30000000 && pos.getX() < 30000000 && pos.getZ() < 30000000;
+        return pos.getX() >= -30000000 && pos.getZ() >= -30000000 && pos.getX() < 30000000 && pos.getZ() < 30000000;
     }
 
     public static boolean isHeightInvalid(BlockPos pos) {
@@ -656,7 +660,7 @@ AutoCloseable {
         if (chunk == null) {
             return false;
         }
-        return chunk.getBlockState(blockPos).method_24432(this, blockPos, entity, direction);
+        return chunk.getBlockState(blockPos).hasSolidSurface(this, blockPos, entity, direction);
     }
 
     public boolean isTopSolid(BlockPos pos, Entity entity) {
@@ -968,7 +972,8 @@ AutoCloseable {
         if (this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, pos).getY() > pos.getY()) {
             return false;
         }
-        return this.getBiome(pos).getPrecipitation() == Biome.Precipitation.RAIN;
+        Biome biome = this.getBiome(pos);
+        return biome.getPrecipitation() == Biome.Precipitation.RAIN && biome.getTemperature(pos) >= 0.15f;
     }
 
     public boolean hasHighHumidity(BlockPos blockPos) {

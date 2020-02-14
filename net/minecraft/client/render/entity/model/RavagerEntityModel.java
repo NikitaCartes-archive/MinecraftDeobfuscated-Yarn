@@ -97,7 +97,7 @@ extends CompositeEntityModel<RavagerEntity> {
         int l = ravagerEntity.getAttackTick();
         int m = 10;
         if (l > 0) {
-            float n = this.method_2801((float)l - h, 10.0f);
+            float n = MathHelper.method_24504((float)l - h, 10.0f);
             float o = (1.0f + n) * 0.5f;
             float p = o * o * o * 12.0f;
             float q = p * MathHelper.sin(this.field_3384.pitch);
@@ -123,10 +123,6 @@ extends CompositeEntityModel<RavagerEntity> {
                 this.jaw.pitch = 1.5707964f * q;
             }
         }
-    }
-
-    private float method_2801(float f, float g) {
-        return (Math.abs(f % g - g * 0.5f) - g * 0.25f) / (g * 0.25f);
     }
 }
 

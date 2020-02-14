@@ -104,18 +104,18 @@ extends FishEntity {
     public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         super.initialize(world, difficulty, spawnType, entityData, entityTag);
         if (entityData == null) {
-            entityData = new Data(this);
+            entityData = new FishData(this);
         } else {
-            this.joinGroupOf(((Data)entityData).leader);
+            this.joinGroupOf(((FishData)entityData).leader);
         }
         return entityData;
     }
 
-    public static class Data
+    public static class FishData
     implements EntityData {
         public final SchoolingFishEntity leader;
 
-        public Data(SchoolingFishEntity leader) {
+        public FishData(SchoolingFishEntity leader) {
             this.leader = leader;
         }
     }

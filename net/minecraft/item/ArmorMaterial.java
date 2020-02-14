@@ -25,6 +25,6 @@ public interface ArmorMaterial {
 
     public float getToughness();
 
-    public float method_24355();
+    public float getKnockbackResistance();
 }
 

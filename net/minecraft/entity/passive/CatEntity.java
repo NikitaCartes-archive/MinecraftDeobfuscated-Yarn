@@ -496,7 +496,7 @@ extends TameableEntity {
                 }
                 BlockPos blockPos = new BlockPos(this.owner);
                 BlockState blockState = this.cat.world.getBlockState(blockPos);
-                if (blockState.getBlock().matches(BlockTags.BEDS)) {
+                if (blockState.getBlock().isIn(BlockTags.BEDS)) {
                     Direction direction = blockState.get(BedBlock.FACING);
                     this.bedPos = new BlockPos(blockPos.getX() - direction.getOffsetX(), blockPos.getY(), blockPos.getZ() - direction.getOffsetZ());
                     return !this.method_16098();
@@ -545,7 +545,7 @@ extends TameableEntity {
             mutable.set(this.cat);
             this.cat.teleport(mutable.getX() + random.nextInt(11) - 5, mutable.getY() + random.nextInt(5) - 2, mutable.getZ() + random.nextInt(11) - 5, false);
             mutable.set(this.cat);
-            LootTable lootTable = this.cat.world.getServer().getLootManager().getSupplier(LootTables.CAT_MORNING_GIFT_GAMEPLAY);
+            LootTable lootTable = this.cat.world.getServer().getLootManager().getTable(LootTables.CAT_MORNING_GIFT_GAMEPLAY);
             LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.cat.world).put(LootContextParameters.POSITION, mutable).put(LootContextParameters.THIS_ENTITY, this.cat).setRandom(random);
             List<ItemStack> list = lootTable.getDrops(builder.build(LootContextTypes.GIFT));
             for (ItemStack itemStack : list) {

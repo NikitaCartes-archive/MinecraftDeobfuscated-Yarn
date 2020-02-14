@@ -26,7 +26,7 @@ extends Item {
             stack.damage(1, miner, e -> e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
         }
         Block block = state.getBlock();
-        if (state.matches(BlockTags.LEAVES) || block == Blocks.COBWEB || block == Blocks.GRASS || block == Blocks.FERN || block == Blocks.DEAD_BUSH || block == Blocks.VINE || block == Blocks.TRIPWIRE || block.matches(BlockTags.WOOL)) {
+        if (state.matches(BlockTags.LEAVES) || block == Blocks.COBWEB || block == Blocks.GRASS || block == Blocks.FERN || block == Blocks.DEAD_BUSH || block == Blocks.VINE || block == Blocks.TRIPWIRE || block.isIn(BlockTags.WOOL)) {
             return true;
         }
         return super.postMine(stack, world, state, pos, miner);
@@ -44,7 +44,7 @@ extends Item {
         if (block == Blocks.COBWEB || state.matches(BlockTags.LEAVES)) {
             return 15.0f;
         }
-        if (block.matches(BlockTags.WOOL)) {
+        if (block.isIn(BlockTags.WOOL)) {
             return 5.0f;
         }
         return super.getMiningSpeed(stack, state);

@@ -63,7 +63,7 @@ extends LockableContainerBlockEntity {
 
     public void checkLootInteraction(@Nullable PlayerEntity playerEntity) {
         if (this.lootTableId != null && this.world.getServer() != null) {
-            LootTable lootTable = this.world.getServer().getLootManager().getSupplier(this.lootTableId);
+            LootTable lootTable = this.world.getServer().getLootManager().getTable(this.lootTableId);
             this.lootTableId = null;
             LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world).put(LootContextParameters.POSITION, new BlockPos(this.pos)).setRandom(this.lootTableSeed);
             if (playerEntity != null) {

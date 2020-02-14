@@ -31,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class Container {
     /**
-     * A list of item stacks that is used for tracking changes in {@link
+     * A list of item stacks that is used for tracking changes in {@link #sendContentUpdates()}.
      */
     private final DefaultedList<ItemStack> trackedStacks = DefaultedList.of();
     public final List<Slot> slots = Lists.newArrayList();

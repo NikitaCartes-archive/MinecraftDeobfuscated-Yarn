@@ -443,7 +443,7 @@ public interface DispenserBehavior {
                 World iWorld = pointer.getWorld();
                 BlockState blockState = iWorld.getBlockState(blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING)));
                 Block block = blockState.getBlock();
-                if (block.matches(BlockTags.BEEHIVES) && blockState.get(BeehiveBlock.HONEY_LEVEL) >= 5) {
+                if (block.isIn(BlockTags.BEEHIVES) && blockState.get(BeehiveBlock.HONEY_LEVEL) >= 5) {
                     ((BeehiveBlock)blockState.getBlock()).takeHoney(iWorld.getWorld(), blockState, blockPos, null, BeehiveBlockEntity.BeeState.BEE_RELEASED);
                     this.success = true;
                     return this.method_22141(pointer, stack, new ItemStack(Items.HONEY_BOTTLE));

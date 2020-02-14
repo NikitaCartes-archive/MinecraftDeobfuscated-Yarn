@@ -394,9 +394,9 @@ extends DrawableHelper {
             int aa = x >> 8 & 0xFF;
             int ab = x & 0xFF;
             bufferBuilder.vertex(matrix4f, n + 1, t, 0.0f).color(z, aa, ab, y).next();
-            bufferBuilder.vertex(matrix4f, n, t, 0.0f).color(z, aa, ab, y).next();
-            bufferBuilder.vertex(matrix4f, n, t - v + 1, 0.0f).color(z, aa, ab, y).next();
             bufferBuilder.vertex(matrix4f, n + 1, t - v + 1, 0.0f).color(z, aa, ab, y).next();
+            bufferBuilder.vertex(matrix4f, n, t - v + 1, 0.0f).color(z, aa, ab, y).next();
+            bufferBuilder.vertex(matrix4f, n, t, 0.0f).color(z, aa, ab, y).next();
             ++n;
             m = metricsData.wrapIndex(m + 1);
         }

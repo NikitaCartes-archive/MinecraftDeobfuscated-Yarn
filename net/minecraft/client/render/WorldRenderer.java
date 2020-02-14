@@ -1795,7 +1795,7 @@ SynchronousResourceReloadListener {
         buffer.vertex(x2, y2, z2).color(red, green, blue, alpha).next();
     }
 
-    public void updateBlock(BlockView view, BlockPos pos, BlockState oldState, BlockState newState, int flags) {
+    public void updateBlock(BlockView world, BlockPos pos, BlockState oldState, BlockState newState, int flags) {
         this.scheduleSectionRender(pos, (flags & 8) != 0);
     }
 
@@ -2323,17 +2323,17 @@ SynchronousResourceReloadListener {
         }
     }
 
-    public static int getLightmapCoordinates(BlockRenderView view, BlockPos pos) {
-        return WorldRenderer.getLightmapCoordinates(view, view.getBlockState(pos), pos);
+    public static int getLightmapCoordinates(BlockRenderView world, BlockPos pos) {
+        return WorldRenderer.getLightmapCoordinates(world, world.getBlockState(pos), pos);
     }
 
-    public static int getLightmapCoordinates(BlockRenderView view, BlockState state, BlockPos pos) {
+    public static int getLightmapCoordinates(BlockRenderView world, BlockState state, BlockPos pos) {
         int k;
         if (state.hasEmissiveLighting()) {
             return 0xF000F0;
         }
-        int i = view.getLightLevel(LightType.SKY, pos);
-        int j = view.getLightLevel(LightType.BLOCK, pos);
+        int i = world.getLightLevel(LightType.SKY, pos);
+        int j = world.getLightLevel(LightType.BLOCK, pos);
         if (j < (k = state.getLuminance())) {
             j = k;
         }

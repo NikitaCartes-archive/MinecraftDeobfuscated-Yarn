@@ -12,19 +12,19 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.text.Text;
 import net.minecraft.util.PacketByteBuf;
 
-public class ChatMessageS2CPacket
+public class GameMessageS2CPacket
 implements Packet<ClientPlayPacketListener> {
     private Text message;
     private MessageType location;
 
-    public ChatMessageS2CPacket() {
+    public GameMessageS2CPacket() {
     }
 
-    public ChatMessageS2CPacket(Text message) {
+    public GameMessageS2CPacket(Text message) {
         this(message, MessageType.SYSTEM);
     }
 
-    public ChatMessageS2CPacket(Text message, MessageType location) {
+    public GameMessageS2CPacket(Text message, MessageType location) {
         this.message = message;
         this.location = location;
     }
@@ -43,7 +43,7 @@ implements Packet<ClientPlayPacketListener> {
 
     @Override
     public void apply(ClientPlayPacketListener clientPlayPacketListener) {
-        clientPlayPacketListener.onChatMessage(this);
+        clientPlayPacketListener.onGameMessage(this);
     }
 
     @Environment(value=EnvType.CLIENT)

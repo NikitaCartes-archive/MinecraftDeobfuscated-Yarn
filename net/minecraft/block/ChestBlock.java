@@ -22,6 +22,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
+import net.minecraft.class_4838;
 import net.minecraft.client.block.ChestAnimationProgress;
 import net.minecraft.container.Container;
 import net.minecraft.container.GenericContainer;
@@ -180,7 +181,7 @@ implements Waterloggable {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
         if (state.get(CHEST_TYPE) == ChestType.SINGLE) {
             return SINGLE_SHAPE;
         }
@@ -270,6 +271,7 @@ implements Waterloggable {
         if (nameableContainerFactory != null) {
             player.openContainer(nameableContainerFactory);
             player.incrementStat(this.getOpenStat());
+            class_4838.method_24733(player);
         }
         return ActionResult.SUCCESS;
     }
@@ -322,7 +324,7 @@ implements Waterloggable {
     }
 
     @Override
-    public BlockEntity createBlockEntity(BlockView view) {
+    public BlockEntity createBlockEntity(BlockView world) {
         return new ChestBlockEntity();
     }
 
@@ -330,9 +332,9 @@ implements Waterloggable {
         return ChestBlock.hasBlockOnTop(world, pos) || ChestBlock.hasOcelotOnTop(world, pos);
     }
 
-    private static boolean hasBlockOnTop(BlockView view, BlockPos pos) {
+    private static boolean hasBlockOnTop(BlockView world, BlockPos pos) {
         BlockPos blockPos = pos.up();
-        return view.getBlockState(blockPos).isSimpleFullBlock(view, blockPos);
+        return world.getBlockState(blockPos).isSimpleFullBlock(world, blockPos);
     }
 
     private static boolean hasOcelotOnTop(IWorld world, BlockPos pos) {
@@ -372,8 +374,14 @@ implements Waterloggable {
     }
 
     @Override
-    public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+    public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
         return false;
+    }
+
+    @Override
+    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+        super.onBreak(world, pos, state, player);
+        class_4838.method_24733(player);
     }
 }
 

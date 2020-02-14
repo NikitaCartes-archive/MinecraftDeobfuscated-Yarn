@@ -20,6 +20,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
@@ -144,6 +146,9 @@ implements Tickable {
                     }
                 }
                 entity.setVelocity(e, f, g);
+                if (entity instanceof ServerPlayerEntity) {
+                    ((ServerPlayerEntity)entity).networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(entity));
+                }
             }
             double h = 0.0;
             Iterator<Box> iterator = list2.iterator();

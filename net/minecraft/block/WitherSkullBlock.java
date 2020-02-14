@@ -21,6 +21,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.predicate.block.BlockStatePredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.MaterialPredicate;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -95,14 +96,14 @@ extends SkullBlock {
 
     private static BlockPattern getWitherBossPattern() {
         if (witherBossPattern == null) {
-            witherBossPattern = BlockPatternBuilder.start().aisle("^^^", "###", "~#~").where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.SOUL_SAND))).where('^', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.WITHER_SKELETON_SKULL).or(BlockStatePredicate.forBlock(Blocks.WITHER_SKELETON_WALL_SKULL)))).where('~', CachedBlockPosition.matchesBlockState(MaterialPredicate.create(Material.AIR))).build();
+            witherBossPattern = BlockPatternBuilder.start().aisle("^^^", "###", "~#~").where('#', cachedBlockPosition -> cachedBlockPosition.getBlockState().matches(BlockTags.WITHER_SUMMON_BASE_BLOCKS)).where('^', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.WITHER_SKELETON_SKULL).or(BlockStatePredicate.forBlock(Blocks.WITHER_SKELETON_WALL_SKULL)))).where('~', CachedBlockPosition.matchesBlockState(MaterialPredicate.create(Material.AIR))).build();
         }
         return witherBossPattern;
     }
 
     private static BlockPattern getWitherDispenserPattern() {
         if (witherDispenserPattern == null) {
-            witherDispenserPattern = BlockPatternBuilder.start().aisle("   ", "###", "~#~").where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.SOUL_SAND))).where('~', CachedBlockPosition.matchesBlockState(MaterialPredicate.create(Material.AIR))).build();
+            witherDispenserPattern = BlockPatternBuilder.start().aisle("   ", "###", "~#~").where('#', cachedBlockPosition -> cachedBlockPosition.getBlockState().matches(BlockTags.WITHER_SUMMON_BASE_BLOCKS)).where('~', CachedBlockPosition.matchesBlockState(MaterialPredicate.create(Material.AIR))).build();
         }
         return witherDispenserPattern;
     }

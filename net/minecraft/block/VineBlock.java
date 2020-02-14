@@ -46,7 +46,7 @@ extends Block {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
         VoxelShape voxelShape = VoxelShapes.empty();
         if (state.get(UP).booleanValue()) {
             voxelShape = VoxelShapes.union(voxelShape, UP_SHAPE);

@@ -76,7 +76,7 @@ extends FallingBlock {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
         Direction direction = state.get(FACING);
         if (direction.getAxis() == Direction.Axis.X) {
             return X_AXIS_SHAPE;
@@ -122,7 +122,7 @@ extends FallingBlock {
     }
 
     @Override
-    public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+    public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
         return false;
     }
 

@@ -78,7 +78,7 @@ extends RaiderEntity {
 
     @Override
     protected void method_20417() {
-        boolean bl = !(this.getPrimaryPassenger() instanceof MobEntity) || this.getPrimaryPassenger().getType().isTaggedWith(EntityTypeTags.RAIDERS);
+        boolean bl = !(this.getPrimaryPassenger() instanceof MobEntity) || this.getPrimaryPassenger().getType().isIn(EntityTypeTags.RAIDERS);
         boolean bl2 = !(this.getVehicle() instanceof BoatEntity);
         this.goalSelector.setControlEnabled(Goal.Control.MOVE, bl);
         this.goalSelector.setControlEnabled(Goal.Control.JUMP, bl && bl2);

@@ -35,7 +35,7 @@ extends TorchBlock {
     }
 
     @Override
-    public int getTickRate(WorldView worldView) {
+    public int getTickRate(WorldView world) {
         return 2;
     }
 
@@ -57,7 +57,7 @@ extends TorchBlock {
     }
 
     @Override
-    public int getWeakRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
+    public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
         if (state.get(LIT).booleanValue() && Direction.UP != facing) {
             return 15;
         }
@@ -99,9 +99,9 @@ extends TorchBlock {
     }
 
     @Override
-    public int getStrongRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
+    public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
         if (facing == Direction.DOWN) {
-            return state.getWeakRedstonePower(view, pos, facing);
+            return state.getWeakRedstonePower(world, pos, facing);
         }
         return 0;
     }

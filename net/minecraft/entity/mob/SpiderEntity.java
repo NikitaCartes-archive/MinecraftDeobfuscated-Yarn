@@ -166,12 +166,12 @@ extends HostileEntity {
             skeletonEntity.startRiding(this);
         }
         if (entityData == null) {
-            entityData = new SpawnEffectData();
+            entityData = new SpiderData();
             if (world.getDifficulty() == Difficulty.HARD && world.getRandom().nextFloat() < 0.1f * difficulty.getClampedLocalDifficulty()) {
-                ((SpawnEffectData)entityData).setEffect(world.getRandom());
+                ((SpiderData)entityData).setEffect(world.getRandom());
             }
         }
-        if (entityData instanceof SpawnEffectData && (statusEffect = ((SpawnEffectData)entityData).effect) != null) {
+        if (entityData instanceof SpiderData && (statusEffect = ((SpiderData)entityData).effect) != null) {
             this.addStatusEffect(new StatusEffectInstance(statusEffect, Integer.MAX_VALUE));
         }
         return entityData;
@@ -225,7 +225,7 @@ extends HostileEntity {
         }
     }
 
-    public static class SpawnEffectData
+    public static class SpiderData
     implements EntityData {
         public StatusEffect effect;
 

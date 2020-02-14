@@ -47,7 +47,7 @@ extends HorizontalFacingBlock {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
         if (state.get(IN_WALL).booleanValue()) {
             return state.get(FACING).getAxis() == Direction.Axis.X ? IN_WALL_X_AXIS_SHAPE : IN_WALL_Z_AXIS_SHAPE;
         }
@@ -65,7 +65,7 @@ extends HorizontalFacingBlock {
     }
 
     @Override
-    public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+    public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
         if (state.get(OPEN).booleanValue()) {
             return VoxelShapes.empty();
         }
@@ -73,7 +73,7 @@ extends HorizontalFacingBlock {
     }
 
     @Override
-    public VoxelShape getCullingShape(BlockState state, BlockView view, BlockPos pos) {
+    public VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
         if (state.get(IN_WALL).booleanValue()) {
             return state.get(FACING).getAxis() == Direction.Axis.X ? IN_WALL_X_AXIS_CULL_SHAPE : IN_WALL_Z_AXIS_CULL_SHAPE;
         }
@@ -81,16 +81,16 @@ extends HorizontalFacingBlock {
     }
 
     @Override
-    public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+    public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
         switch (env) {
             case LAND: {
-                return world.get(OPEN);
+                return state.get(OPEN);
             }
             case WATER: {
                 return false;
             }
             case AIR: {
-                return world.get(OPEN);
+                return state.get(OPEN);
             }
         }
         return false;
@@ -108,7 +108,7 @@ extends HorizontalFacingBlock {
     }
 
     private boolean isWall(BlockState state) {
-        return state.getBlock().matches(BlockTags.WALLS);
+        return state.getBlock().isIn(BlockTags.WALLS);
     }
 
     @Override

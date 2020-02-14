@@ -82,6 +82,7 @@ public class LootTables {
     public static final Identifier HERO_OF_THE_VILLAGE_SHEPHERD_GIFT_GAMEPLAY = LootTables.register("gameplay/hero_of_the_village/shepherd_gift");
     public static final Identifier HERO_OF_THE_VILLAGE_TOOLSMITH_GIFT_GAMEPLAY = LootTables.register("gameplay/hero_of_the_village/toolsmith_gift");
     public static final Identifier HERO_OF_THE_VILLAGE_WEAPONSMITH_GIFT_GAMEPLAY = LootTables.register("gameplay/hero_of_the_village/weaponsmith_gift");
+    public static final Identifier PIGLIN_BARTERING_GAMEPLAY = LootTables.register("gameplay/piglin_bartering");
 
     private static Identifier register(String id) {
         return LootTables.registerLootTable(new Identifier(id));

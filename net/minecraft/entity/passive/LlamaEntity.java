@@ -10,6 +10,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CarpetBlock;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
@@ -226,14 +227,14 @@ implements RangedAttackMob {
 
     @Override
     @Nullable
-    public net.minecraft.entity.EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable net.minecraft.entity.EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         int i;
         this.initializeStrength();
-        if (entityData instanceof EntityData) {
-            i = ((EntityData)entityData).variant;
+        if (entityData instanceof LlamaData) {
+            i = ((LlamaData)entityData).variant;
         } else {
             i = this.random.nextInt(4);
-            entityData = new EntityData(i);
+            entityData = new LlamaData(i);
         }
         this.setVariant(i);
         return super.initialize(world, difficulty, spawnType, entityData, entityTag);
@@ -479,11 +480,11 @@ implements RangedAttackMob {
         }
     }
 
-    static class EntityData
-    extends PassiveEntity.EntityData {
+    static class LlamaData
+    extends PassiveEntity.PassiveData {
         public final int variant;
 
-        private EntityData(int variant) {
+        private LlamaData(int variant) {
             this.variant = variant;
         }
     }

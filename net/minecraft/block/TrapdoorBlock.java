@@ -51,7 +51,7 @@ implements Waterloggable {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
         if (!state.get(OPEN).booleanValue()) {
             return state.get(HALF) == BlockHalf.TOP ? OPEN_TOP_SHAPE : OPEN_BOTTOM_SHAPE;
         }
@@ -71,16 +71,16 @@ implements Waterloggable {
     }
 
     @Override
-    public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+    public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
         switch (env) {
             case LAND: {
-                return world.get(OPEN);
+                return state.get(OPEN);
             }
             case WATER: {
-                return world.get(WATERLOGGED);
+                return state.get(WATERLOGGED);
             }
             case AIR: {
-                return world.get(OPEN);
+                return state.get(OPEN);
             }
         }
         return false;
@@ -162,7 +162,7 @@ implements Waterloggable {
     }
 
     @Override
-    public boolean allowsSpawning(BlockState state, BlockView view, BlockPos pos, EntityType<?> type) {
+    public boolean allowsSpawning(BlockState state, BlockView world, BlockPos pos, EntityType<?> type) {
         return false;
     }
 }

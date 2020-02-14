@@ -107,9 +107,9 @@ VillagerDataContainer {
     private int experience;
     private long lastRestockTime;
     private int restocksToday;
-    private long field_20332;
-    private static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES = ImmutableList.of(MemoryModuleType.HOME, MemoryModuleType.JOB_SITE, MemoryModuleType.MEETING_POINT, MemoryModuleType.MOBS, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.VISIBLE_VILLAGER_BABIES, MemoryModuleType.NEAREST_PLAYERS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.WALK_TARGET, MemoryModuleType.LOOK_TARGET, MemoryModuleType.INTERACTION_TARGET, MemoryModuleType.BREED_TARGET, new MemoryModuleType[]{MemoryModuleType.PATH, MemoryModuleType.INTERACTABLE_DOORS, MemoryModuleType.OPENED_DOORS, MemoryModuleType.NEAREST_BED, MemoryModuleType.HURT_BY, MemoryModuleType.HURT_BY_ENTITY, MemoryModuleType.NEAREST_HOSTILE, MemoryModuleType.SECONDARY_JOB_SITE, MemoryModuleType.HIDING_PLACE, MemoryModuleType.HEARD_BELL_TIME, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.LAST_SLEPT, MemoryModuleType.LAST_WOKEN, MemoryModuleType.LAST_WORKED_AT_POI, MemoryModuleType.GOLEM_LAST_SEEN_TIME});
-    private static final ImmutableList<SensorType<? extends Sensor<? super VillagerEntity>>> SENSORS = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.INTERACTABLE_DOORS, SensorType.NEAREST_BED, SensorType.HURT_BY, SensorType.VILLAGER_HOSTILES, SensorType.VILLAGER_BABIES, SensorType.SECONDARY_POIS, SensorType.GOLEM_LAST_SEEN);
+    private long lastRestockCheckTime;
+    private static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES = ImmutableList.of(MemoryModuleType.HOME, MemoryModuleType.JOB_SITE, MemoryModuleType.MEETING_POINT, MemoryModuleType.MOBS, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.VISIBLE_VILLAGER_BABIES, MemoryModuleType.NEAREST_PLAYERS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM, MemoryModuleType.WALK_TARGET, MemoryModuleType.LOOK_TARGET, new MemoryModuleType[]{MemoryModuleType.INTERACTION_TARGET, MemoryModuleType.BREED_TARGET, MemoryModuleType.PATH, MemoryModuleType.INTERACTABLE_DOORS, MemoryModuleType.OPENED_DOORS, MemoryModuleType.NEAREST_BED, MemoryModuleType.HURT_BY, MemoryModuleType.HURT_BY_ENTITY, MemoryModuleType.NEAREST_HOSTILE, MemoryModuleType.SECONDARY_JOB_SITE, MemoryModuleType.HIDING_PLACE, MemoryModuleType.HEARD_BELL_TIME, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.LAST_SLEPT, MemoryModuleType.LAST_WOKEN, MemoryModuleType.LAST_WORKED_AT_POI, MemoryModuleType.GOLEM_LAST_SEEN_TIME});
+    private static final ImmutableList<SensorType<? extends Sensor<? super VillagerEntity>>> SENSORS = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.NEAREST_ITEMS, SensorType.INTERACTABLE_DOORS, SensorType.NEAREST_BED, SensorType.HURT_BY, SensorType.VILLAGER_HOSTILES, SensorType.VILLAGER_BABIES, SensorType.SECONDARY_POIS, SensorType.GOLEM_LAST_SEEN);
     public static final Map<MemoryModuleType<GlobalPos>, BiPredicate<VillagerEntity, PointOfInterestType>> POINTS_OF_INTEREST = ImmutableMap.of(MemoryModuleType.HOME, (villagerEntity, pointOfInterestType) -> pointOfInterestType == PointOfInterestType.HOME, MemoryModuleType.JOB_SITE, (villagerEntity, pointOfInterestType) -> villagerEntity.getVillagerData().getProfession().getWorkStation() == pointOfInterestType, MemoryModuleType.MEETING_POINT, (villagerEntity, pointOfInterestType) -> pointOfInterestType == PointOfInterestType.MEETING);
 
     public VillagerEntity(EntityType<? extends VillagerEntity> entityType, World world) {
@@ -151,10 +151,10 @@ VillagerDataContainer {
             brain.setTaskList(Activity.PLAY, VillagerTaskListProvider.createPlayTasks(f));
         } else {
             brain.setSchedule(Schedule.VILLAGER_DEFAULT);
-            brain.setTaskList(Activity.WORK, VillagerTaskListProvider.createWorkTasks(villagerProfession, f), ImmutableSet.of(Pair.of(MemoryModuleType.JOB_SITE, MemoryModuleState.VALUE_PRESENT)));
+            brain.method_24529(Activity.WORK, VillagerTaskListProvider.createWorkTasks(villagerProfession, f), ImmutableSet.of(Pair.of(MemoryModuleType.JOB_SITE, MemoryModuleState.VALUE_PRESENT)));
         }
         brain.setTaskList(Activity.CORE, VillagerTaskListProvider.createCoreTasks(villagerProfession, f));
-        brain.setTaskList(Activity.MEET, VillagerTaskListProvider.createMeetTasks(villagerProfession, f), ImmutableSet.of(Pair.of(MemoryModuleType.MEETING_POINT, MemoryModuleState.VALUE_PRESENT)));
+        brain.method_24529(Activity.MEET, VillagerTaskListProvider.createMeetTasks(villagerProfession, f), ImmutableSet.of(Pair.of(MemoryModuleType.MEETING_POINT, MemoryModuleState.VALUE_PRESENT)));
         brain.setTaskList(Activity.REST, VillagerTaskListProvider.createRestTasks(villagerProfession, f));
         brain.setTaskList(Activity.IDLE, VillagerTaskListProvider.createIdleTasks(villagerProfession, f));
         brain.setTaskList(Activity.PANIC, VillagerTaskListProvider.createPanicTasks(villagerProfession, f));
@@ -163,7 +163,7 @@ VillagerDataContainer {
         brain.setTaskList(Activity.HIDE, VillagerTaskListProvider.createHideTasks(villagerProfession, f));
         brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
         brain.setDefaultActivity(Activity.IDLE);
-        brain.resetPossibleActivities(Activity.IDLE);
+        brain.method_24526(Activity.IDLE);
         brain.refreshActivities(this.world.getTimeOfDay(), this.world.getTime());
     }
 
@@ -185,7 +185,7 @@ VillagerDataContainer {
     @Override
     protected void mobTick() {
         Raid raid;
-        this.world.getProfiler().push("brain");
+        this.world.getProfiler().push("villagerBrain");
         this.getBrain().tick((ServerWorld)this.world, this);
         this.world.getProfiler().pop();
         if (!this.hasCustomer() && this.levelUpTimer > 0) {
@@ -293,7 +293,7 @@ VillagerDataContainer {
     }
 
     public void restock() {
-        this.method_21724();
+        this.updatePricesOnDemand();
         for (TradeOffer tradeOffer : this.getOffers()) {
             tradeOffer.resetUses();
         }
@@ -321,12 +321,12 @@ VillagerDataContainer {
         long m = this.world.getTime();
         boolean bl = m > l;
         long n = this.world.getTimeOfDay();
-        if (this.field_20332 > 0L) {
+        if (this.lastRestockCheckTime > 0L) {
             long p = n / 24000L;
-            long o = this.field_20332 / 24000L;
+            long o = this.lastRestockCheckTime / 24000L;
             bl |= p > o;
         }
-        this.field_20332 = n;
+        this.lastRestockCheckTime = n;
         if (bl) {
             this.lastRestockTime = m;
             this.clearDailyRestockCount();
@@ -342,11 +342,11 @@ VillagerDataContainer {
             }
         }
         for (int j = 0; j < i; ++j) {
-            this.method_21724();
+            this.updatePricesOnDemand();
         }
     }
 
-    private void method_21724() {
+    private void updatePricesOnDemand() {
         for (TradeOffer tradeOffer : this.getOffers()) {
             tradeOffer.updatePriceOnDemand();
         }
@@ -529,6 +529,7 @@ VillagerDataContainer {
         });
     }
 
+    @Override
     public boolean isReadyToBreed() {
         return this.foodLevel + this.getAvailableFood() >= 12 && this.getBreedingAge() == 0;
     }
@@ -641,10 +642,10 @@ VillagerDataContainer {
     @Override
     protected void loot(ItemEntity item) {
         ItemStack itemStack = item.getStack();
-        Item item2 = itemStack.getItem();
-        if (this.canGather(item2)) {
+        if (this.canGather(itemStack)) {
             ItemStack itemStack2;
             int i;
+            Item item2 = itemStack.getItem();
             BasicInventory basicInventory = this.getInventory();
             boolean bl = false;
             for (i = 0; i < basicInventory.getInvSize(); ++i) {
@@ -674,8 +675,9 @@ VillagerDataContainer {
         }
     }
 
-    public boolean canGather(Item item) {
-        return GATHERABLE_ITEMS.contains(item) || this.getVillagerData().getProfession().getGatherableItems().contains(item);
+    @Override
+    public boolean canGather(ItemStack itemStack) {
+        return GATHERABLE_ITEMS.contains(itemStack.getItem()) || this.getVillagerData().getProfession().getGatherableItems().contains(itemStack.getItem());
     }
 
     public boolean wantsToStartBreeding() {

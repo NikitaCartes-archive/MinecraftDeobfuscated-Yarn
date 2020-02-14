@@ -40,5 +40,7 @@ extends Item {
     public int getEnchantability() {
         return 1;
     }
+
+    public abstract int method_24792();
 }
 
