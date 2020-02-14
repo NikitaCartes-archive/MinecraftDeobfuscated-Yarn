@@ -256,7 +256,7 @@ public class WolfEntity extends TameableEntity {
 	 * 
 	 * @param tickDelta Progress for linearly interpolating between the previous and current game state.
 	 * @return Brightness as a float value between 0.75 and 1.0.
-	 * @see net.minecraft.client.render.entity.model.TintableAnimalModel
+	 * @see net.minecraft.client.render.entity.model.TintableAnimalModel#setColorMultiplier(float, float, float)
 	 */
 	@Environment(EnvType.CLIENT)
 	public float getFurWetBrightnessMultiplier(float tickDelta) {
@@ -335,10 +335,10 @@ public class WolfEntity extends TameableEntity {
 		if (itemStack.getItem() instanceof SpawnEggItem) {
 			return super.interactMob(player, hand);
 		} else if (this.world.isClient) {
-			return this.isOwner(player) || item == Items.BONE && !this.isAngry();
+			return this.isOwner(player) || item == Items.BONE && !this.isTamed() && !this.isAngry();
 		} else {
 			if (this.isTamed()) {
-				if (item.isFood() && item.getFoodComponent().isMeat() && this.getHealth() < this.getMaximumHealth()) {
+				if (this.isBreedingItem(itemStack) && this.getHealth() < this.getMaximumHealth()) {
 					if (!player.abilities.creativeMode) {
 						itemStack.decrement(1);
 					}
@@ -349,8 +349,11 @@ public class WolfEntity extends TameableEntity {
 
 				if (!(item instanceof DyeItem)) {
 					boolean bl = super.interactMob(player, hand);
-					if (!bl || this.isBaby()) {
+					if ((!bl || this.isBaby()) && this.isOwner(player) && !this.isBreedingItem(itemStack)) {
 						this.method_24346(!this.method_24345());
+						this.jumping = false;
+						this.navigation.stop();
+						this.setTarget(null);
 					}
 
 					return bl;
@@ -364,13 +367,6 @@ public class WolfEntity extends TameableEntity {
 					}
 
 					return true;
-				}
-
-				if (this.isOwner(player) && !this.isBreedingItem(itemStack)) {
-					this.method_24346(!this.method_24345());
-					this.jumping = false;
-					this.navigation.stop();
-					this.setTarget(null);
 				}
 			} else if (item == Items.BONE && !this.isAngry()) {
 				if (!player.abilities.creativeMode) {
@@ -407,7 +403,7 @@ public class WolfEntity extends TameableEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float method_6714() {
+	public float getTailAngle() {
 		if (this.isAngry()) {
 			return 1.5393804F;
 		} else {

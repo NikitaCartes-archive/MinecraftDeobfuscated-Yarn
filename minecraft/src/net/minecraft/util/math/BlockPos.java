@@ -232,14 +232,14 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 		);
 	}
 
-	public static Stream<BlockPos> method_23627(BlockBox blockBox) {
+	public static Stream<BlockPos> stream(BlockBox box) {
 		return stream(
-			Math.min(blockBox.minX, blockBox.maxX),
-			Math.min(blockBox.minY, blockBox.maxY),
-			Math.min(blockBox.minZ, blockBox.maxZ),
-			Math.max(blockBox.minX, blockBox.maxX),
-			Math.max(blockBox.minY, blockBox.maxY),
-			Math.max(blockBox.minZ, blockBox.maxZ)
+			Math.min(box.minX, box.maxX),
+			Math.min(box.minY, box.maxY),
+			Math.min(box.minZ, box.maxZ),
+			Math.max(box.minX, box.maxX),
+			Math.max(box.minY, box.maxY),
+			Math.max(box.minZ, box.maxZ)
 		);
 	}
 

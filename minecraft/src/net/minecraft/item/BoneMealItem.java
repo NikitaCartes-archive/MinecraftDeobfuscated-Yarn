@@ -96,7 +96,7 @@ public class BoneMealItem extends Item {
 						}
 					}
 
-					if (blockState.getBlock().matches(BlockTags.WALL_CORALS)) {
+					if (blockState.getBlock().isIn(BlockTags.WALL_CORALS)) {
 						for(int j = 0; !blockState.canPlaceAt(world, blockPos2) && j < 4; ++j) {
 							blockState = blockState.with(DeadCoralWallFanBlock.FACING, Direction.Type.HORIZONTAL.random(RANDOM));
 						}

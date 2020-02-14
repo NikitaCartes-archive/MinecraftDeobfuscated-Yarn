@@ -47,7 +47,7 @@ import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
 public interface ServerPlayPacketListener extends PacketListener {
 	void onHandSwing(HandSwingC2SPacket packet);
 
-	void onChatMessage(ChatMessageC2SPacket packet);
+	void onGameMessage(ChatMessageC2SPacket packet);
 
 	void onClientStatus(ClientStatusC2SPacket packet);
 

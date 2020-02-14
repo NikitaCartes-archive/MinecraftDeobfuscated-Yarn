@@ -120,7 +120,7 @@ public class SnowGolemEntity extends GolemEntity implements RangedAttackMob {
 		double h = target.getZ() - this.getZ();
 		float i = MathHelper.sqrt(e * e + h * h) * 0.2F;
 		snowballEntity.setVelocity(e, g + (double)i, h, 1.6F, 12.0F);
-		this.playSound(SoundEvents.ENTITY_SNOW_GOLEM_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
+		this.playSound(SoundEvents.ENTITY_SNOW_GOLEM_SHOOT, 1.0F, 0.4F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
 		this.world.spawnEntity(snowballEntity);
 	}
 
@@ -136,6 +136,8 @@ public class SnowGolemEntity extends GolemEntity implements RangedAttackMob {
 			if (!this.world.isClient) {
 				this.setHasPumpkin(false);
 				itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
+				this.dropStack(new ItemStack(Items.CARVED_PUMPKIN), 1.7F);
+				this.playSound(SoundEvents.ENTITY_SNOW_GOLEM_SHEAR, 1.0F, 1.0F);
 			}
 
 			return true;

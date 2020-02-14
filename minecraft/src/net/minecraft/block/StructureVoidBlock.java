@@ -21,13 +21,13 @@ public class StructureVoidBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		return SHAPE;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public float getAmbientOcclusionLightLevel(BlockState state, BlockView view, BlockPos pos) {
+	public float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
 		return 1.0F;
 	}
 

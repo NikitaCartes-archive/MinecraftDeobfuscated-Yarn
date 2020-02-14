@@ -22,7 +22,7 @@ public interface ModifiableWorld {
 	 * <li>0b0001000 // 8 - REDRAW_ON_MAIN_THREAD - Forces a synchronous redraw on clients.</li>
 	 * <li>0b0010000 // 16 - FORCE_STATE - Bypass virtual blockstate changes and forces the passed state to be stored as-is.</li>
 	 * <li>0b0100000 // 32 - SKIP_DROPS - Prevents the previous block (container) from dropping items when destroyed.</li>
-	 * <li>0b1000000 // 64 - MECHANICAL_UPDATE - Signals that this is a mechanical update, usually caused by pistons moving blocks.</li>
+	 * <li>0b1000000 // 64 - MOVED - Signals that the current block is being moved to a different location, usually because of a piston.</li>
 	 * </ul>
 	 * 
 	 * @param pos the target position

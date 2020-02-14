@@ -182,7 +182,7 @@ public class OverworldDimension extends Dimension {
 		BlockPos.Mutable mutable = new BlockPos.Mutable(x, 0, z);
 		Biome biome = this.world.getBiome(mutable);
 		BlockState blockState = biome.getSurfaceConfig().getTopMaterial();
-		if (checkMobSpawnValidity && !blockState.getBlock().matches(BlockTags.VALID_SPAWN)) {
+		if (checkMobSpawnValidity && !blockState.getBlock().isIn(BlockTags.VALID_SPAWN)) {
 			return null;
 		} else {
 			WorldChunk worldChunk = this.world.getChunk(x >> 4, z >> 4);

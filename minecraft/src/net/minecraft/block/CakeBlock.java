@@ -36,7 +36,7 @@ public class CakeBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		return BITES_TO_SHAPE[state.get(BITES)];
 	}
 
@@ -101,7 +101,7 @@ public class CakeBlock extends Block {
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
 		return false;
 	}
 }

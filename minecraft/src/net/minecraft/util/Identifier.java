@@ -38,7 +38,7 @@ public class Identifier implements Comparable<Identifier> {
 	/**
 	 * @param id A string of the form <namespace>:<path>, for example minecraft:iron_ingot.
 	 * The string will be split (on the :) into an identifier with the specified path and namespace.
-	 * Prefer using the constructor {@link net.minecraft.util.Identifier
+	 * Prefer using the constructor {@link net.minecraft.util.Identifier#Identifier(java.lang.String, java.lang.String)} that takes the namespace and path as individual parameters to avoid mistakes.
 	 */
 	public Identifier(String id) {
 		this(split(id, ':'));

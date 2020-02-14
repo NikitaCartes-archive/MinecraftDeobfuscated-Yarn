@@ -8,6 +8,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CarpetBlock;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
@@ -232,16 +233,14 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 
 	@Nullable
 	@Override
-	public net.minecraft.entity.EntityData initialize(
-		IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable net.minecraft.entity.EntityData entityData, @Nullable CompoundTag entityTag
-	) {
+	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
 		this.initializeStrength();
 		int i;
-		if (entityData instanceof LlamaEntity.EntityData) {
-			i = ((LlamaEntity.EntityData)entityData).variant;
+		if (entityData instanceof LlamaEntity.LlamaData) {
+			i = ((LlamaEntity.LlamaData)entityData).variant;
 		} else {
 			i = this.random.nextInt(4);
-			entityData = new LlamaEntity.EntityData(i);
+			entityData = new LlamaEntity.LlamaData(i);
 		}
 
 		this.setVariant(i);
@@ -474,10 +473,10 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 		}
 	}
 
-	static class EntityData extends PassiveEntity.EntityData {
+	static class LlamaData extends PassiveEntity.PassiveData {
 		public final int variant;
 
-		private EntityData(int variant) {
+		private LlamaData(int variant) {
 			this.variant = variant;
 		}
 	}

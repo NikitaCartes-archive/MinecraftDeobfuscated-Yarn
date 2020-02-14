@@ -14,8 +14,9 @@ public class StatHandler {
 		this.statMap.defaultReturnValue(0);
 	}
 
-	public void increaseStat(PlayerEntity player, Stat<?> stat, int value) {
-		this.setStat(player, stat, this.getStat(stat) + value);
+	public void increaseStat(PlayerEntity playerEntity, Stat<?> stat, int value) {
+		int i = (int)Math.min((long)this.getStat(stat) + (long)value, 2147483647L);
+		this.setStat(playerEntity, stat, i);
 	}
 
 	public void setStat(PlayerEntity player, Stat<?> stat, int value) {

@@ -162,7 +162,7 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public boolean allowsSpawning(BlockState state, BlockView view, BlockPos pos, EntityType<?> type) {
+	public boolean allowsSpawning(BlockState state, BlockView world, BlockPos pos, EntityType<?> type) {
 		return true;
 	}
 }

@@ -7,6 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
@@ -47,12 +48,10 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 	}
 
 	@Override
-	public net.minecraft.entity.EntityData initialize(
-		IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable net.minecraft.entity.EntityData entityData, @Nullable CompoundTag entityTag
-	) {
+	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
 		if (entityData == null) {
-			entityData = new PassiveEntity.EntityData();
-			((PassiveEntity.EntityData)entityData).setBabyAllowed(false);
+			entityData = new PassiveEntity.PassiveData();
+			((PassiveEntity.PassiveData)entityData).setBabyAllowed(false);
 		}
 
 		return super.initialize(world, difficulty, spawnType, entityData, entityTag);

@@ -146,8 +146,11 @@ public class BlockBox {
 		return this.maxZ - this.minZ + 1;
 	}
 
+	/**
+	 * @implNote Biased toward the minimum bound corner of the box.
+	 */
 	@Environment(EnvType.CLIENT)
-	public Vec3i method_22874() {
+	public Vec3i getCenter() {
 		return new BlockPos(this.minX + (this.maxX - this.minX + 1) / 2, this.minY + (this.maxY - this.minY + 1) / 2, this.minZ + (this.maxZ - this.minZ + 1) / 2);
 	}
 

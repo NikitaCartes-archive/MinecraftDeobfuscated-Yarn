@@ -47,7 +47,7 @@ public class FlyOntoTreeGoal extends WanderAroundFarGoal {
 		)) {
 			if (!blockPos.equals(blockPos2)) {
 				Block block = this.mob.world.getBlockState(mutable2.set(blockPos2).setOffset(Direction.DOWN)).getBlock();
-				boolean bl = block instanceof LeavesBlock || block.matches(BlockTags.LOGS);
+				boolean bl = block instanceof LeavesBlock || block.isIn(BlockTags.LOGS);
 				if (bl && this.mob.world.isAir(blockPos2) && this.mob.world.isAir(mutable.set(blockPos2).setOffset(Direction.UP))) {
 					return new Vec3d(blockPos2);
 				}

@@ -14,13 +14,13 @@ public class RootsBlock extends PlantBlock {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		return SHAPE;
 	}
 
 	@Override
-	protected boolean canPlantOnTop(BlockState floor, BlockView view, BlockPos pos) {
+	protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
 		Block block = floor.getBlock();
-		return floor.matches(BlockTags.NYLIUM) || block == Blocks.SOUL_SOIL || super.canPlantOnTop(floor, view, pos);
+		return floor.matches(BlockTags.NYLIUM) || block == Blocks.SOUL_SOIL || super.canPlantOnTop(floor, world, pos);
 	}
 }

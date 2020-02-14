@@ -47,25 +47,25 @@ public class BambooBlock extends Block implements Fertilizable {
 	}
 
 	@Override
-	public boolean isTranslucent(BlockState state, BlockView view, BlockPos pos) {
+	public boolean isTranslucent(BlockState state, BlockView world, BlockPos pos) {
 		return true;
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		VoxelShape voxelShape = state.get(LEAVES) == BambooLeaves.LARGE ? LARGE_LEAVES_SHAPE : SMALL_LEAVES_SHAPE;
-		Vec3d vec3d = state.getOffsetPos(view, pos);
+		Vec3d vec3d = state.getOffsetPos(world, pos);
 		return voxelShape.offset(vec3d.x, vec3d.y, vec3d.z);
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
 		return false;
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
-		Vec3d vec3d = state.getOffsetPos(view, pos);
+	public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+		Vec3d vec3d = state.getOffsetPos(world, pos);
 		return NO_LEAVES_SHAPE.offset(vec3d.x, vec3d.y, vec3d.z);
 	}
 

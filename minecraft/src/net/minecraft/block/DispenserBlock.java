@@ -55,7 +55,7 @@ public class DispenserBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public int getTickRate(WorldView worldView) {
+	public int getTickRate(WorldView world) {
 		return 4;
 	}
 
@@ -115,7 +115,7 @@ public class DispenserBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView view) {
+	public BlockEntity createBlockEntity(BlockView world) {
 		return new DispenserBlockEntity();
 	}
 

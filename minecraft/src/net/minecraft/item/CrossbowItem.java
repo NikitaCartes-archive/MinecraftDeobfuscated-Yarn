@@ -391,4 +391,9 @@ public class CrossbowItem extends RangedWeaponItem {
 	private static float getSpeed(ItemStack stack) {
 		return stack.getItem() == Items.CROSSBOW && hasProjectile(stack, Items.FIREWORK_ROCKET) ? 1.6F : 3.15F;
 	}
+
+	@Override
+	public int method_24792() {
+		return 8;
+	}
 }

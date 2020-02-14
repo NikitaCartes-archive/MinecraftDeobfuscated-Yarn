@@ -15,19 +15,19 @@ public class SproutsBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		return SHAPE;
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
 		return true;
 	}
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
 		Block block = world.getBlockState(pos.down()).getBlock();
-		return block.matches(BlockTags.NYLIUM)
+		return block.isIn(BlockTags.NYLIUM)
 			|| block == Blocks.SOUL_SOIL
 			|| block == Blocks.GRASS_BLOCK
 			|| block == Blocks.DIRT

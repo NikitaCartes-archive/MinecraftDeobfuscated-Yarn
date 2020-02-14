@@ -8,7 +8,7 @@ import net.minecraft.world.World;
 @Environment(EnvType.CLIENT)
 public class AshParticle extends AscendingParticle {
 	protected AshParticle(World world, double d, double e, double f, double g, double h, double i, float j, SpriteProvider spriteProvider) {
-		super(world, d, e, f, 0.1F, -0.1F, 0.1F, g, h, i, j, spriteProvider, 0.5F, 20, -0.004);
+		super(world, d, e, f, 0.1F, -0.1F, 0.1F, g, h, i, j, spriteProvider, 0.5F, 20, -0.004, false);
 	}
 
 	@Environment(EnvType.CLIENT)

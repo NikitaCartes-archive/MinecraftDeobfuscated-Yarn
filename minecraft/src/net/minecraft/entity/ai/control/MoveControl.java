@@ -112,8 +112,8 @@ public class MoveControl {
 			if (o > (double)this.entity.stepHeight && d * d + e * e < (double)Math.max(1.0F, this.entity.getWidth())
 				|| !voxelShape.isEmpty()
 					&& this.entity.getY() < voxelShape.getMaximum(Direction.Axis.Y) + (double)blockPos.getY()
-					&& !block.matches(BlockTags.DOORS)
-					&& !block.matches(BlockTags.FENCES)) {
+					&& !block.isIn(BlockTags.DOORS)
+					&& !block.isIn(BlockTags.FENCES)) {
 				this.entity.getJumpControl().setActive();
 				this.state = MoveControl.State.JUMPING;
 			}

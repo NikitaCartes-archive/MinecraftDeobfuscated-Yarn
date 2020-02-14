@@ -7,7 +7,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -19,9 +18,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.entity.SpawnType;
-import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.ai.goal.CrossbowAttackGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
@@ -41,7 +38,6 @@ import net.minecraft.entity.raid.Raid;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.inventory.BasicInventory;
 import net.minecraft.item.BannerItem;
-import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -49,18 +45,14 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Quaternion;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
-public class PillagerEntity extends IllagerEntity implements CrossbowUser, RangedAttackMob {
+public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 	private static final TrackedData<Boolean> CHARGING = DataTracker.registerData(PillagerEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private final BasicInventory inventory = new BasicInventory(5);
 
@@ -109,6 +101,11 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 	}
 
 	@Override
+	public void method_24651() {
+		this.despawnCounter = 0;
+	}
+
+	@Override
 	public void writeCustomDataToTag(CompoundTag tag) {
 		super.writeCustomDataToTag(tag);
 		ListTag listTag = new ListTag();
@@ -128,7 +125,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 	public IllagerEntity.State getState() {
 		if (this.isCharging()) {
 			return IllagerEntity.State.CROSSBOW_CHARGE;
-		} else if (this.isHolding(Items.CROSSBOW)) {
+		} else if (this.method_24518(Items.CROSSBOW)) {
 			return IllagerEntity.State.CROSSBOW_HOLD;
 		} else {
 			return this.isAttacking() ? IllagerEntity.State.ATTACKING : IllagerEntity.State.NEUTRAL;
@@ -209,41 +206,12 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 
 	@Override
 	public void attack(LivingEntity target, float f) {
-		Hand hand = ProjectileUtil.getHandPossiblyHolding(this, Items.CROSSBOW);
-		ItemStack itemStack = this.getStackInHand(hand);
-		if (this.isHolding(Items.CROSSBOW)) {
-			CrossbowItem.shootAll(this.world, this, hand, itemStack, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
-		}
-
-		this.despawnCounter = 0;
+		this.method_24654(this, 1.6F);
 	}
 
 	@Override
 	public void shoot(LivingEntity target, ItemStack crossbow, Projectile projectile, float multiShotSpray) {
-		Entity entity = (Entity)projectile;
-		double d = target.getX() - this.getX();
-		double e = target.getZ() - this.getZ();
-		double f = (double)MathHelper.sqrt(d * d + e * e);
-		double g = target.getBodyY(0.3333333333333333) - entity.getY() + f * 0.2F;
-		Vector3f vector3f = this.getProjectileVelocity(new Vec3d(d, g, e), multiShotSpray);
-		projectile.setVelocity((double)vector3f.getX(), (double)vector3f.getY(), (double)vector3f.getZ(), 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
-		this.playSound(SoundEvents.ITEM_CROSSBOW_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
-	}
-
-	private Vector3f getProjectileVelocity(Vec3d vec3d, float f) {
-		Vec3d vec3d2 = vec3d.normalize();
-		Vec3d vec3d3 = vec3d2.crossProduct(new Vec3d(0.0, 1.0, 0.0));
-		if (vec3d3.lengthSquared() <= 1.0E-7) {
-			vec3d3 = vec3d2.crossProduct(this.getOppositeRotationVector(1.0F));
-		}
-
-		Quaternion quaternion = new Quaternion(new Vector3f(vec3d3), 90.0F, true);
-		Vector3f vector3f = new Vector3f(vec3d2);
-		vector3f.rotate(quaternion);
-		Quaternion quaternion2 = new Quaternion(vector3f, f, true);
-		Vector3f vector3f2 = new Vector3f(vec3d2);
-		vector3f2.rotate(quaternion2);
-		return vector3f2;
+		this.method_24652(this, target, projectile, multiShotSpray, 1.6F);
 	}
 
 	@Override

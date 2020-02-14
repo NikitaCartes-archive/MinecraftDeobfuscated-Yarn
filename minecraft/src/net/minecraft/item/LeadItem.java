@@ -20,7 +20,7 @@ public class LeadItem extends Item {
 		World world = context.getWorld();
 		BlockPos blockPos = context.getBlockPos();
 		Block block = world.getBlockState(blockPos).getBlock();
-		if (block.matches(BlockTags.FENCES)) {
+		if (block.isIn(BlockTags.FENCES)) {
 			PlayerEntity playerEntity = context.getPlayer();
 			if (!world.isClient && playerEntity != null) {
 				attachHeldMobsToBlock(playerEntity, world, blockPos);

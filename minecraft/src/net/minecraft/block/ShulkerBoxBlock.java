@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4838;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.block.piston.PistonBehavior;
@@ -58,12 +59,12 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView view) {
+	public BlockEntity createBlockEntity(BlockView world) {
 		return new ShulkerBoxBlockEntity(this.color);
 	}
 
 	@Override
-	public boolean canSuffocate(BlockState state, BlockView view, BlockPos pos) {
+	public boolean canSuffocate(BlockState state, BlockView world, BlockPos pos) {
 		return true;
 	}
 
@@ -87,6 +88,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 					&& world.doesNotCollide(ShulkerLidCollisions.getLidCollisionBox(pos, direction))) {
 					player.openContainer(shulkerBoxBlockEntity);
 					player.incrementStat(Stats.OPEN_SHULKER_BOX);
+					class_4838.method_24733(player);
 				}
 
 				return ActionResult.SUCCESS;
@@ -130,6 +132,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 			}
 		}
 
+		class_4838.method_24733(player);
 		super.onBreak(world, pos, state, player);
 	}
 
@@ -172,8 +175,8 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack stack, @Nullable BlockView view, List<Text> tooltip, TooltipContext options) {
-		super.buildTooltip(stack, view, tooltip, options);
+	public void buildTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
+		super.buildTooltip(stack, world, tooltip, options);
 		CompoundTag compoundTag = stack.getSubTag("BlockEntityTag");
 		if (compoundTag != null) {
 			if (compoundTag.contains("LootTable", 8)) {
@@ -211,8 +214,8 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
-		BlockEntity blockEntity = view.getBlockEntity(pos);
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+		BlockEntity blockEntity = world.getBlockEntity(pos);
 		return blockEntity instanceof ShulkerBoxBlockEntity
 			? VoxelShapes.cuboid(((ShulkerBoxBlockEntity)blockEntity).getBoundingBox(state))
 			: VoxelShapes.fullCube();

@@ -11,6 +11,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.TurtleEggBlock;
+import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
@@ -162,9 +163,7 @@ public class TurtleEntity extends AnimalEntity {
 
 	@Nullable
 	@Override
-	public net.minecraft.entity.EntityData initialize(
-		IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable net.minecraft.entity.EntityData entityData, @Nullable CompoundTag entityTag
-	) {
+	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
 		this.setHomePos(new BlockPos(this));
 		this.setTravelPos(BlockPos.ORIGIN);
 		return super.initialize(world, difficulty, spawnType, entityData, entityTag);

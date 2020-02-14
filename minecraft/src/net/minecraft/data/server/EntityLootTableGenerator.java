@@ -1012,8 +1012,30 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.register(
 			EntityType.HOGLIN,
-			LootTable.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Items.ROTTEN_FLESH)))
+			LootTable.builder()
+				.withPool(
+					LootPool.builder()
+						.withRolls(ConstantLootTableRange.create(1))
+						.withEntry(
+							ItemEntry.builder(Items.PORKCHOP)
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(2.0F, 4.0F)))
+								.withFunction(
+									FurnaceSmeltLootFunction.builder().withCondition(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, NEEDS_ENTITY_ON_FIRE))
+								)
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+						)
+				)
+				.withPool(
+					LootPool.builder()
+						.withRolls(ConstantLootTableRange.create(1))
+						.withEntry(
+							ItemEntry.builder(Items.LEATHER)
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+						)
+				)
 		);
+		this.register(EntityType.PIGLIN, LootTable.builder());
 		this.register(
 			EntityType.ZOMBIE_VILLAGER,
 			LootTable.builder()

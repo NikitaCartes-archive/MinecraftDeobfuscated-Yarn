@@ -87,7 +87,7 @@ public class FireBlock extends AbstractFireBlock {
 	}
 
 	@Override
-	public int getTickRate(WorldView worldView) {
+	public int getTickRate(WorldView world) {
 		return 30;
 	}
 

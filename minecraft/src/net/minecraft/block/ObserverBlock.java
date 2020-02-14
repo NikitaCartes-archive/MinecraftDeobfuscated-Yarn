@@ -77,12 +77,12 @@ public class ObserverBlock extends FacingBlock {
 	}
 
 	@Override
-	public int getStrongRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
-		return state.getWeakRedstonePower(view, pos, facing);
+	public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
+		return state.getWeakRedstonePower(world, pos, facing);
 	}
 
 	@Override
-	public int getWeakRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
+	public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
 		return state.get(POWERED) && state.get(FACING) == facing ? 15 : 0;
 	}
 

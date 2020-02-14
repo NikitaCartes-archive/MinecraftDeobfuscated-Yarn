@@ -40,7 +40,7 @@ public class PistonExtensionBlock extends BlockWithEntity {
 
 	@Nullable
 	@Override
-	public BlockEntity createBlockEntity(BlockView view) {
+	public BlockEntity createBlockEntity(BlockView world) {
 		return null;
 	}
 
@@ -68,12 +68,12 @@ public class PistonExtensionBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean isSimpleFullBlock(BlockState state, BlockView view, BlockPos pos) {
+	public boolean isSimpleFullBlock(BlockState state, BlockView world, BlockPos pos) {
 		return false;
 	}
 
 	@Override
-	public boolean canSuffocate(BlockState state, BlockView view, BlockPos pos) {
+	public boolean canSuffocate(BlockState state, BlockView world, BlockPos pos) {
 		return false;
 	}
 
@@ -94,14 +94,14 @@ public class PistonExtensionBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		return VoxelShapes.empty();
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
-		PistonBlockEntity pistonBlockEntity = this.getPistonBlockEntity(view, pos);
-		return pistonBlockEntity != null ? pistonBlockEntity.getCollisionShape(view, pos) : VoxelShapes.empty();
+	public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+		PistonBlockEntity pistonBlockEntity = this.getPistonBlockEntity(world, pos);
+		return pistonBlockEntity != null ? pistonBlockEntity.getCollisionShape(world, pos) : VoxelShapes.empty();
 	}
 
 	@Nullable
@@ -132,7 +132,7 @@ public class PistonExtensionBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
 		return false;
 	}
 }

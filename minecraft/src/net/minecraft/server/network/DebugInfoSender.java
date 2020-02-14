@@ -45,12 +45,18 @@ public class DebugInfoSender {
 	}
 
 	public static void sendPoiAddition(ServerWorld world, BlockPos pos) {
+		method_24819(world, pos);
 	}
 
 	public static void sendPoiRemoval(ServerWorld world, BlockPos pos) {
+		method_24819(world, pos);
 	}
 
 	public static void sendPointOfInterest(ServerWorld world, BlockPos pos) {
+		method_24819(world, pos);
+	}
+
+	private static void method_24819(ServerWorld serverWorld, BlockPos blockPos) {
 	}
 
 	public static void sendPathfindingData(World world, MobEntity mob, @Nullable Path path, float nodeReachProximity) {

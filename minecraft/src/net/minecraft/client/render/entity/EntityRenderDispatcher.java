@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4842;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
@@ -134,6 +135,7 @@ public class EntityRenderDispatcher {
 		this.register(EntityType.PARROT, new ParrotEntityRenderer(this));
 		this.register(EntityType.PHANTOM, new PhantomEntityRenderer(this));
 		this.register(EntityType.PIG, new PigEntityRenderer(this));
+		this.register(EntityType.PIGLIN, new class_4842(this));
 		this.register(EntityType.PILLAGER, new PillagerEntityRenderer(this));
 		this.register(EntityType.POLAR_BEAR, new PolarBearEntityRenderer(this));
 		this.register(EntityType.POTION, new FlyingItemEntityRenderer<>(this, itemRenderer));

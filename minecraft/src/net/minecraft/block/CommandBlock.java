@@ -39,7 +39,7 @@ public class CommandBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView view) {
+	public BlockEntity createBlockEntity(BlockView world) {
 		CommandBlockBlockEntity commandBlockBlockEntity = new CommandBlockBlockEntity();
 		commandBlockBlockEntity.setAuto(this == Blocks.CHAIN_COMMAND_BLOCK);
 		return commandBlockBlockEntity;
@@ -107,7 +107,7 @@ public class CommandBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public int getTickRate(WorldView worldView) {
+	public int getTickRate(WorldView world) {
 		return 1;
 	}
 

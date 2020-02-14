@@ -154,7 +154,7 @@ public abstract class LavaFluid extends BaseFluid {
 
 	@Override
 	public boolean canBeReplacedWith(FluidState state, BlockView world, BlockPos pos, Fluid fluid, Direction direction) {
-		return state.getHeight(world, pos) >= 0.44444445F && fluid.matches(FluidTags.WATER);
+		return state.getHeight(world, pos) >= 0.44444445F && fluid.isIn(FluidTags.WATER);
 	}
 
 	@Override
@@ -190,7 +190,7 @@ public abstract class LavaFluid extends BaseFluid {
 	protected void flow(IWorld world, BlockPos pos, BlockState state, Direction direction, FluidState fluidState) {
 		if (direction == Direction.DOWN) {
 			FluidState fluidState2 = world.getFluidState(pos);
-			if (this.matches(FluidTags.LAVA) && fluidState2.matches(FluidTags.WATER)) {
+			if (this.isIn(FluidTags.LAVA) && fluidState2.matches(FluidTags.WATER)) {
 				if (state.getBlock() instanceof FluidBlock) {
 					world.setBlockState(pos, Blocks.STONE.getDefaultState(), 3);
 				}

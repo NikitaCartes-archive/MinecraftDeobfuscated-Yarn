@@ -34,6 +34,7 @@ public class LootContextTypes {
 	public static final LootContextType GIFT = register(
 		"gift", builder -> builder.require(LootContextParameters.POSITION).require(LootContextParameters.THIS_ENTITY)
 	);
+	public static final LootContextType BARTER = register("barter", builder -> builder.require(LootContextParameters.THIS_ENTITY));
 	public static final LootContextType ADVANCEMENT_REWARD = register(
 		"advancement_reward", builder -> builder.require(LootContextParameters.THIS_ENTITY).require(LootContextParameters.POSITION)
 	);

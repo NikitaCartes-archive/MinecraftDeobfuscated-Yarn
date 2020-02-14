@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
@@ -97,16 +98,14 @@ public class TraderLlamaEntity extends LlamaEntity {
 
 	@Nullable
 	@Override
-	public net.minecraft.entity.EntityData initialize(
-		IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable net.minecraft.entity.EntityData entityData, @Nullable CompoundTag entityTag
-	) {
+	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
 		if (spawnType == SpawnType.EVENT) {
 			this.setBreedingAge(0);
 		}
 
 		if (entityData == null) {
-			entityData = new PassiveEntity.EntityData();
-			((PassiveEntity.EntityData)entityData).setBabyAllowed(false);
+			entityData = new PassiveEntity.PassiveData();
+			((PassiveEntity.PassiveData)entityData).setBabyAllowed(false);
 		}
 
 		return super.initialize(world, difficulty, spawnType, entityData, entityTag);

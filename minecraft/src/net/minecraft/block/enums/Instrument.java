@@ -50,7 +50,7 @@ public enum Instrument implements StringIdentifiable {
 			return FLUTE;
 		} else if (block == Blocks.GOLD_BLOCK) {
 			return BELL;
-		} else if (block.matches(BlockTags.WOOL)) {
+		} else if (block.isIn(BlockTags.WOOL)) {
 			return GUITAR;
 		} else if (block == Blocks.PACKED_ICE) {
 			return CHIME;

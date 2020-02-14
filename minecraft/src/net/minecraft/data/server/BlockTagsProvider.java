@@ -178,7 +178,12 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 				Blocks.CARVED_PUMPKIN,
 				Blocks.MELON,
 				Blocks.MYCELIUM,
-				Blocks.NETHERRACK
+				Blocks.CRIMSON_FUNGI,
+				Blocks.CRIMSON_NYLIUM,
+				Blocks.CRIMSON_ROOTS,
+				Blocks.WARPED_FUNGI,
+				Blocks.WARPED_NYLIUM,
+				Blocks.WARPED_ROOTS
 			);
 		this.getOrCreateTagBuilder(BlockTags.FLOWER_POTS)
 			.add(
@@ -470,6 +475,7 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 				Blocks.JIGSAW,
 				Blocks.MOVING_PISTON
 			);
+		this.getOrCreateTagBuilder(BlockTags.WITHER_SUMMON_BASE_BLOCKS).add(Blocks.SOUL_SAND).add(Blocks.SOUL_SOIL);
 		this.getOrCreateTagBuilder(BlockTags.TALL_FLOWERS).add(Blocks.SUNFLOWER, Blocks.LILAC, Blocks.PEONY, Blocks.ROSE_BUSH);
 		this.getOrCreateTagBuilder(BlockTags.FLOWERS).add(BlockTags.SMALL_FLOWERS).add(BlockTags.TALL_FLOWERS);
 		this.getOrCreateTagBuilder(BlockTags.BEEHIVES).add(Blocks.BEE_NEST, Blocks.BEEHIVE);
@@ -499,6 +505,15 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 		this.getOrCreateTagBuilder(BlockTags.FIRE).add(Blocks.FIRE, Blocks.SOUL_FIRE);
 		this.getOrCreateTagBuilder(BlockTags.NYLIUM).add(Blocks.CRIMSON_NYLIUM, Blocks.WARPED_NYLIUM);
 		this.getOrCreateTagBuilder(BlockTags.WART_BLOCKS).add(Blocks.NETHER_WART_BLOCK, Blocks.WARPED_WART_BLOCK);
+		this.getOrCreateTagBuilder(BlockTags.BEACON_BASE_BLOCKS)
+			.add(Blocks.NETHERITE_BLOCK, Blocks.EMERALD_BLOCK, Blocks.DIAMOND_BLOCK, Blocks.GOLD_BLOCK, Blocks.IRON_BLOCK);
+		this.getOrCreateTagBuilder(BlockTags.WALL_POST_OVERRIDE)
+			.add(Blocks.LANTERN)
+			.add(Blocks.SOUL_FIRE_LANTERN)
+			.add(Blocks.TORCH)
+			.add(Blocks.SOUL_FIRE_TORCH)
+			.add(Blocks.REDSTONE_TORCH)
+			.add(Blocks.TRIPWIRE);
 	}
 
 	@Override

@@ -27,13 +27,13 @@ public class LilyPadBlock extends PlantBlock {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		return SHAPE;
 	}
 
 	@Override
-	protected boolean canPlantOnTop(BlockState floor, BlockView view, BlockPos pos) {
-		FluidState fluidState = view.getFluidState(pos);
+	protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
+		FluidState fluidState = world.getFluidState(pos);
 		return fluidState.getFluid() == Fluids.WATER || floor.getMaterial() == Material.ICE;
 	}
 }

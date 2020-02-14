@@ -8,7 +8,7 @@ import net.minecraft.entity.mob.HoglinEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class HoglinEntityModel extends CompositeEntityModel<HoglinEntity> {
+public class HoglinEntityModel extends AnimalModel<HoglinEntity> {
 	private final ModelPart field_22227;
 	private final ModelPart field_22228;
 	private final ModelPart field_22229;
@@ -19,6 +19,7 @@ public class HoglinEntityModel extends CompositeEntityModel<HoglinEntity> {
 	private final ModelPart field_22234;
 
 	public HoglinEntityModel() {
+		super(true, 8.0F, 6.0F, 1.9F, 2.0F, 24.0F);
 		this.textureWidth = 128;
 		this.textureHeight = 128;
 		this.field_22230 = new ModelPart(this);
@@ -67,17 +68,34 @@ public class HoglinEntityModel extends CompositeEntityModel<HoglinEntity> {
 	}
 
 	@Override
-	public Iterable<ModelPart> getParts() {
-		return ImmutableList.<ModelPart>of(this.field_22230, this.field_22227, this.field_22231, this.field_22232, this.field_22233, this.field_22234);
+	protected Iterable<ModelPart> getHeadParts() {
+		return ImmutableList.<ModelPart>of(this.field_22227);
+	}
+
+	@Override
+	protected Iterable<ModelPart> getBodyParts() {
+		return ImmutableList.<ModelPart>of(this.field_22230, this.field_22231, this.field_22232, this.field_22233, this.field_22234);
 	}
 
 	public void setAngles(HoglinEntity hoglinEntity, float f, float g, float h, float i, float j) {
-		this.field_22228.roll = (float) (-Math.PI * 2.0 / 9.0) - g * 2.5F * MathHelper.sin(f * 3.0F);
-		this.field_22229.roll = (float) (Math.PI * 2.0 / 9.0) + g * 2.5F * MathHelper.sin(f * 3.0F);
+		this.field_22228.roll = (float) (-Math.PI * 2.0 / 9.0) - g * MathHelper.sin(f);
+		this.field_22229.roll = (float) (Math.PI * 2.0 / 9.0) + g * MathHelper.sin(f);
 		this.field_22227.yaw = i * (float) (Math.PI / 180.0);
-		this.field_22231.pitch = MathHelper.cos(f * 1.5F) * 4.4F * g;
-		this.field_22232.pitch = MathHelper.cos(f * 1.5F + (float) Math.PI) * 4.4F * g;
-		this.field_22233.pitch = MathHelper.cos(f * 1.5F + (float) Math.PI) * 4.4F * g;
-		this.field_22234.pitch = MathHelper.cos(f * 1.5F) * 4.4F * g;
+		int k = hoglinEntity.method_24657();
+		if (k > 0) {
+			int l = 10 - k;
+			float m = MathHelper.method_24504((float)l, 10.0F);
+			float n = (-m + 1.0F) / 2.0F;
+			float o = -1.2217305F * n;
+			this.field_22227.pitch = 0.87266463F + o;
+		} else {
+			this.field_22227.pitch = 0.87266463F;
+		}
+
+		float p = 1.2F;
+		this.field_22231.pitch = MathHelper.cos(f) * 1.2F * g;
+		this.field_22232.pitch = MathHelper.cos(f + (float) Math.PI) * 1.2F * g;
+		this.field_22233.pitch = this.field_22232.pitch;
+		this.field_22234.pitch = this.field_22231.pitch;
 	}
 }

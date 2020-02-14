@@ -32,7 +32,7 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 
 	@Override
 	public int getColorMultiplier(float tint) {
-		return this.fluid.matches(FluidTags.LAVA) ? 240 : super.getColorMultiplier(tint);
+		return this.fluid.isIn(FluidTags.LAVA) ? 240 : super.getColorMultiplier(tint);
 	}
 
 	@Override

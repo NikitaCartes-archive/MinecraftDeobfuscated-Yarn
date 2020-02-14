@@ -25,7 +25,8 @@ public class AscendingParticle extends SpriteBillboardParticle {
 		SpriteProvider spriteProvider,
 		float colorMultiplier,
 		int baseMaxAge,
-		double ascendingAcceleration
+		double ascendingAcceleration,
+		boolean bl
 	) {
 		super(world, x, y, z, 0.0, 0.0, 0.0);
 		this.ascendingAcceleration = ascendingAcceleration;
@@ -45,6 +46,7 @@ public class AscendingParticle extends SpriteBillboardParticle {
 		this.maxAge = (int)((float)this.maxAge * scaleMultiplier);
 		this.maxAge = Math.max(this.maxAge, 1);
 		this.setSpriteForAge(spriteProvider);
+		this.collidesWithWorld = bl;
 	}
 
 	@Override

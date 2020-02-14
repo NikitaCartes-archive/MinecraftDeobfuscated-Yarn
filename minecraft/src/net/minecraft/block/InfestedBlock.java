@@ -10,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.explosion.Explosion;
 
 public class InfestedBlock extends Block {
 	private final Block regularBlock;
@@ -29,14 +30,25 @@ public class InfestedBlock extends Block {
 		return REGULAR_TO_INFESTED.containsKey(block.getBlock());
 	}
 
+	private void method_24797(World world, BlockPos blockPos) {
+		SilverfishEntity silverfishEntity = EntityType.SILVERFISH.create(world);
+		silverfishEntity.refreshPositionAndAngles((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, 0.0F, 0.0F);
+		world.spawnEntity(silverfishEntity);
+		silverfishEntity.playSpawnEffects();
+	}
+
 	@Override
 	public void onStacksDropped(BlockState state, World world, BlockPos pos, ItemStack stack) {
 		super.onStacksDropped(state, world, pos, stack);
 		if (!world.isClient && world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS) && EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, stack) == 0) {
-			SilverfishEntity silverfishEntity = EntityType.SILVERFISH.create(world);
-			silverfishEntity.refreshPositionAndAngles((double)pos.getX() + 0.5, (double)pos.getY(), (double)pos.getZ() + 0.5, 0.0F, 0.0F);
-			world.spawnEntity(silverfishEntity);
-			silverfishEntity.playSpawnEffects();
+			this.method_24797(world, pos);
+		}
+	}
+
+	@Override
+	public void onDestroyedByExplosion(World world, BlockPos pos, Explosion explosion) {
+		if (!world.isClient) {
+			this.method_24797(world, pos);
 		}
 	}
 

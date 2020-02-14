@@ -42,8 +42,8 @@ public abstract class AbstractTreeFeature<T extends TreeFeatureConfig> extends F
 				return blockState.isAir()
 					|| blockState.matches(BlockTags.LEAVES)
 					|| isDirt(block)
-					|| block.matches(BlockTags.LOGS)
-					|| block.matches(BlockTags.SAPLINGS)
+					|| block.isIn(BlockTags.LOGS)
+					|| block.isIn(BlockTags.SAPLINGS)
 					|| block == Blocks.VINE;
 			}
 		);
@@ -60,7 +60,7 @@ public abstract class AbstractTreeFeature<T extends TreeFeatureConfig> extends F
 		});
 	}
 
-	protected static boolean isLeaves(TestableWorld world, BlockPos pos) {
+	protected static boolean isVine(TestableWorld world, BlockPos pos) {
 		return world.testBlockState(pos, blockState -> blockState.getBlock() == Blocks.VINE);
 	}
 

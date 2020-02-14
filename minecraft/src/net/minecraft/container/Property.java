@@ -6,7 +6,7 @@ package net.minecraft.container;
  * <p>{@code Property} instances are used for tracking integer properties in property delegates
  * and other sources of integer properties, and sending needed content updates to listeners.
  * 
- * @see Container
+ * @see Container#addProperty
  */
 public abstract class Property {
 	private int oldValue;

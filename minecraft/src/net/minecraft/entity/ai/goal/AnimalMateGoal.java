@@ -3,14 +3,8 @@ package net.minecraft.entity.ai.goal;
 import java.util.EnumSet;
 import java.util.List;
 import javax.annotation.Nullable;
-import net.minecraft.advancement.criterion.Criterions;
-import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.passive.PassiveEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.stat.Stats;
-import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 public class AnimalMateGoal extends Goal {
@@ -86,30 +80,6 @@ public class AnimalMateGoal extends Goal {
 	}
 
 	protected void breed() {
-		PassiveEntity passiveEntity = this.animal.createChild(this.mate);
-		if (passiveEntity != null) {
-			ServerPlayerEntity serverPlayerEntity = this.animal.getLovingPlayer();
-			if (serverPlayerEntity == null && this.mate.getLovingPlayer() != null) {
-				serverPlayerEntity = this.mate.getLovingPlayer();
-			}
-
-			if (serverPlayerEntity != null) {
-				serverPlayerEntity.incrementStat(Stats.ANIMALS_BRED);
-				Criterions.BRED_ANIMALS.trigger(serverPlayerEntity, this.animal, this.mate, passiveEntity);
-			}
-
-			this.animal.setBreedingAge(6000);
-			this.mate.setBreedingAge(6000);
-			this.animal.resetLoveTicks();
-			this.mate.resetLoveTicks();
-			passiveEntity.setBreedingAge(-24000);
-			passiveEntity.refreshPositionAndAngles(this.animal.getX(), this.animal.getY(), this.animal.getZ(), 0.0F, 0.0F);
-			this.world.spawnEntity(passiveEntity);
-			this.world.sendEntityStatus(this.animal, (byte)18);
-			if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
-				this.world
-					.spawnEntity(new ExperienceOrbEntity(this.world, this.animal.getX(), this.animal.getY(), this.animal.getZ(), this.animal.getRandom().nextInt(7) + 1));
-			}
-		}
+		this.animal.method_24650(this.world, this.mate);
 	}
 }

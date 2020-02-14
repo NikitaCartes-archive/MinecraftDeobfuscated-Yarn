@@ -15,7 +15,7 @@ public class RedstoneBlock extends Block {
 	}
 
 	@Override
-	public int getWeakRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
+	public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
 		return 15;
 	}
 }

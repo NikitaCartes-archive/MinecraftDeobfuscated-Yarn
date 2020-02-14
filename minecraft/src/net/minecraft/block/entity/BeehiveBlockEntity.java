@@ -156,7 +156,7 @@ public class BeehiveBlockEntity extends BlockEntity implements Tickable {
 					double g = (double)blockPos.getY() + 0.5 - (double)(entity.getHeight() / 2.0F);
 					double h = (double)blockPos.getZ() + 0.5 + d * (double)direction.getOffsetZ();
 					entity.refreshPositionAndAngles(e, g, h, entity.yaw, entity.pitch);
-					if (!entity.getType().isTaggedWith(EntityTypeTags.BEEHIVE_INHABITORS)) {
+					if (!entity.getType().isIn(EntityTypeTags.BEEHIVE_INHABITORS)) {
 						return false;
 					} else {
 						if (entity instanceof BeeEntity) {
@@ -167,7 +167,7 @@ public class BeehiveBlockEntity extends BlockEntity implements Tickable {
 
 							if (beeState == BeehiveBlockEntity.BeeState.HONEY_DELIVERED) {
 								beeEntity.onHoneyDelivered();
-								if (state.getBlock().matches(BlockTags.BEEHIVES)) {
+								if (state.getBlock().isIn(BlockTags.BEEHIVES)) {
 									int i = getHoneyLevel(state);
 									if (i < 5) {
 										int j = this.world.random.nextInt(100) == 0 ? 2 : 1;

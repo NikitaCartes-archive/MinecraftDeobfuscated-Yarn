@@ -24,12 +24,12 @@ public abstract class AbstractPressurePlateBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		return this.getRedstoneOutput(state) > 0 ? PRESSED_SHAPE : DEFAULT_SHAPE;
 	}
 
 	@Override
-	public int getTickRate(WorldView worldView) {
+	public int getTickRate(WorldView world) {
 		return 20;
 	}
 
@@ -112,12 +112,12 @@ public abstract class AbstractPressurePlateBlock extends Block {
 	}
 
 	@Override
-	public int getWeakRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
+	public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
 		return this.getRedstoneOutput(state);
 	}
 
 	@Override
-	public int getStrongRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
+	public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
 		return facing == Direction.UP ? this.getRedstoneOutput(state) : 0;
 	}
 

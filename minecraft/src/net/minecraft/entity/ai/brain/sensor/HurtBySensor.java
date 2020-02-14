@@ -11,21 +11,28 @@ import net.minecraft.server.world.ServerWorld;
 
 public class HurtBySensor extends Sensor<LivingEntity> {
 	@Override
+	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
+		return ImmutableSet.of(MemoryModuleType.HURT_BY, MemoryModuleType.HURT_BY_ENTITY);
+	}
+
+	@Override
 	protected void sense(ServerWorld world, LivingEntity entity) {
 		Brain<?> brain = entity.getBrain();
-		if (entity.getRecentDamageSource() != null) {
+		DamageSource damageSource = entity.getRecentDamageSource();
+		if (damageSource != null) {
 			brain.putMemory(MemoryModuleType.HURT_BY, entity.getRecentDamageSource());
-			Entity entity2 = ((DamageSource)brain.getOptionalMemory(MemoryModuleType.HURT_BY).get()).getAttacker();
+			Entity entity2 = damageSource.getAttacker();
 			if (entity2 instanceof LivingEntity) {
 				brain.putMemory(MemoryModuleType.HURT_BY_ENTITY, (LivingEntity)entity2);
 			}
 		} else {
 			brain.forget(MemoryModuleType.HURT_BY);
 		}
-	}
 
-	@Override
-	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
-		return ImmutableSet.of(MemoryModuleType.HURT_BY, MemoryModuleType.HURT_BY_ENTITY);
+		brain.getOptionalMemory(MemoryModuleType.HURT_BY_ENTITY).ifPresent(livingEntity -> {
+			if (!livingEntity.isAlive() || livingEntity.world != world) {
+				brain.forget(MemoryModuleType.HURT_BY_ENTITY);
+			}
+		});
 	}
 }

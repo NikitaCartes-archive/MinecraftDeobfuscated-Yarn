@@ -36,7 +36,7 @@ public abstract class AbstractRailBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		RailShape railShape = state.getBlock() == this ? state.get(this.getShapeProperty()) : null;
 		return railShape != null && railShape.isAscending() ? ASCENDING_SHAPE : STRAIGHT_SHAPE;
 	}

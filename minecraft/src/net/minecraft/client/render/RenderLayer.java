@@ -113,7 +113,7 @@ public abstract class RenderLayer extends RenderPhase {
 		256,
 		RenderLayer.MultiPhaseParameters.builder()
 			.lineWidth(new RenderPhase.LineWidth(OptionalDouble.empty()))
-			.layering(PROJECTION_LAYERING)
+			.layering(field_22241)
 			.transparency(TRANSLUCENT_TRANSPARENCY)
 			.writeMaskState(COLOR_MASK)
 			.build(false)

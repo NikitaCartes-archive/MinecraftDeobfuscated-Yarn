@@ -14,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.predicate.block.BlockStatePredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.MaterialPredicate;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -95,7 +96,7 @@ public class WitherSkullBlock extends SkullBlock {
 		if (witherBossPattern == null) {
 			witherBossPattern = BlockPatternBuilder.start()
 				.aisle("^^^", "###", "~#~")
-				.where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.SOUL_SAND)))
+				.where('#', cachedBlockPosition -> cachedBlockPosition.getBlockState().matches(BlockTags.WITHER_SUMMON_BASE_BLOCKS))
 				.where(
 					'^',
 					CachedBlockPosition.matchesBlockState(
@@ -113,7 +114,7 @@ public class WitherSkullBlock extends SkullBlock {
 		if (witherDispenserPattern == null) {
 			witherDispenserPattern = BlockPatternBuilder.start()
 				.aisle("   ", "###", "~#~")
-				.where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.SOUL_SAND)))
+				.where('#', cachedBlockPosition -> cachedBlockPosition.getBlockState().matches(BlockTags.WITHER_SUMMON_BASE_BLOCKS))
 				.where('~', CachedBlockPosition.matchesBlockState(MaterialPredicate.create(Material.AIR)))
 				.build();
 		}

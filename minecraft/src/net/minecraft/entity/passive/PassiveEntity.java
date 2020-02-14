@@ -1,19 +1,15 @@
 package net.minecraft.entity.passive;
 
 import javax.annotation.Nullable;
+import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntityWithAi;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.util.Hand;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
@@ -29,60 +25,31 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 	}
 
 	@Override
-	public net.minecraft.entity.EntityData initialize(
-		IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable net.minecraft.entity.EntityData entityData, @Nullable CompoundTag entityTag
-	) {
+	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
 		if (entityData == null) {
-			entityData = new PassiveEntity.EntityData();
+			entityData = new PassiveEntity.PassiveData();
 		}
 
-		PassiveEntity.EntityData entityData2 = (PassiveEntity.EntityData)entityData;
-		if (entityData2.canSpawnBaby() && entityData2.getSpawnedCount() > 0 && this.random.nextFloat() <= entityData2.getBabyChance()) {
+		PassiveEntity.PassiveData passiveData = (PassiveEntity.PassiveData)entityData;
+		if (passiveData.canSpawnBaby() && passiveData.getSpawnedCount() > 0 && this.random.nextFloat() <= passiveData.getBabyChance()) {
 			this.setBreedingAge(-24000);
 		}
 
-		entityData2.countSpawned();
+		passiveData.countSpawned();
 		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
 	}
 
 	@Nullable
 	public abstract PassiveEntity createChild(PassiveEntity mate);
 
-	protected void onPlayerSpawnedChild(PlayerEntity player, PassiveEntity child) {
-	}
-
-	@Override
-	public boolean interactMob(PlayerEntity player, Hand hand) {
-		ItemStack itemStack = player.getStackInHand(hand);
-		Item item = itemStack.getItem();
-		if (item instanceof SpawnEggItem && ((SpawnEggItem)item).isOfSameEntityType(itemStack.getTag(), this.getType())) {
-			if (!this.world.isClient) {
-				PassiveEntity passiveEntity = this.createChild(this);
-				if (passiveEntity != null) {
-					passiveEntity.setBreedingAge(-24000);
-					passiveEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), 0.0F, 0.0F);
-					this.world.spawnEntity(passiveEntity);
-					if (itemStack.hasCustomName()) {
-						passiveEntity.setCustomName(itemStack.getName());
-					}
-
-					this.onPlayerSpawnedChild(player, passiveEntity);
-					if (!player.abilities.creativeMode) {
-						itemStack.decrement(1);
-					}
-				}
-			}
-
-			return true;
-		} else {
-			return false;
-		}
-	}
-
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
 		this.dataTracker.startTracking(CHILD, false);
+	}
+
+	public boolean isReadyToBreed() {
+		return false;
 	}
 
 	public int getBreedingAge() {
@@ -179,7 +146,12 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 		return this.getBreedingAge() < 0;
 	}
 
-	public static class EntityData implements net.minecraft.entity.EntityData {
+	@Override
+	public void setBaby(boolean bl) {
+		this.setBreedingAge(bl ? -24000 : 0);
+	}
+
+	public static class PassiveData implements EntityData {
 		private int spawnCount;
 		private boolean babyAllowed = true;
 		private float babyChance = 0.05F;

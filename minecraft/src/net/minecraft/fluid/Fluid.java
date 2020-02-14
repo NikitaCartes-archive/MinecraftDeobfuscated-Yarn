@@ -93,7 +93,7 @@ public abstract class Fluid {
 		return fluid == this;
 	}
 
-	public boolean matches(Tag<Fluid> tag) {
+	public boolean isIn(Tag<Fluid> tag) {
 		return tag.contains(this);
 	}
 

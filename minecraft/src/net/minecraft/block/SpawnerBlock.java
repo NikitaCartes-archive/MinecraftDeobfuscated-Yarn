@@ -15,7 +15,7 @@ public class SpawnerBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView view) {
+	public BlockEntity createBlockEntity(BlockView world) {
 		return new MobSpawnerBlockEntity();
 	}
 

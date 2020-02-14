@@ -25,7 +25,17 @@ public class WanderAroundTask extends Task<MobEntity> {
 	private int pathUpdateCountdownTicks;
 
 	public WanderAroundTask(int runTime) {
-		super(ImmutableMap.of(MemoryModuleType.PATH, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_PRESENT), runTime);
+		super(
+			ImmutableMap.of(
+				MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE,
+				MemoryModuleState.REGISTERED,
+				MemoryModuleType.PATH,
+				MemoryModuleState.VALUE_ABSENT,
+				MemoryModuleType.WALK_TARGET,
+				MemoryModuleState.VALUE_PRESENT
+			),
+			runTime
+		);
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, MobEntity mobEntity) {
@@ -84,15 +94,17 @@ public class WanderAroundTask extends Task<MobEntity> {
 		}
 	}
 
-	private boolean hasFinishedPath(MobEntity entity, WalkTarget walkTarget, long time) {
+	private boolean hasFinishedPath(MobEntity mobEntity, WalkTarget walkTarget, long time) {
 		BlockPos blockPos = walkTarget.getLookTarget().getBlockPos();
-		this.path = entity.getNavigation().findPathTo(blockPos, 0);
+		this.path = mobEntity.getNavigation().findPathTo(blockPos, 0);
 		this.speed = walkTarget.getSpeed();
-		if (!this.hasReached(entity, walkTarget)) {
-			Brain<?> brain = entity.getBrain();
+		Brain<?> brain = mobEntity.getBrain();
+		if (this.hasReached(mobEntity, walkTarget)) {
+			brain.forget(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
+		} else {
 			boolean bl = this.path != null && this.path.reachesTarget();
 			if (bl) {
-				brain.setMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, Optional.empty());
+				brain.forget(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
 			} else if (!brain.hasMemoryModule(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE)) {
 				brain.putMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, time);
 			}
@@ -101,9 +113,9 @@ public class WanderAroundTask extends Task<MobEntity> {
 				return true;
 			}
 
-			Vec3d vec3d = TargetFinder.findTargetTowards((MobEntityWithAi)entity, 10, 7, new Vec3d(blockPos));
+			Vec3d vec3d = TargetFinder.findTargetTowards((MobEntityWithAi)mobEntity, 10, 7, new Vec3d(blockPos));
 			if (vec3d != null) {
-				this.path = entity.getNavigation().findPathTo(vec3d.x, vec3d.y, vec3d.z, 0);
+				this.path = mobEntity.getNavigation().findPathTo(vec3d.x, vec3d.y, vec3d.z, 0);
 				return this.path != null;
 			}
 		}

@@ -62,6 +62,7 @@ public class BlockTags {
 	public static final Tag<Block> SIGNS = register("signs");
 	public static final Tag<Block> DRAGON_IMMUNE = register("dragon_immune");
 	public static final Tag<Block> WITHER_IMMUNE = register("wither_immune");
+	public static final Tag<Block> WITHER_SUMMON_BASE_BLOCKS = register("wither_summon_base_blocks");
 	public static final Tag<Block> BEEHIVES = register("beehives");
 	public static final Tag<Block> CROPS = register("crops");
 	public static final Tag<Block> BEE_GROWABLES = register("bee_growables");
@@ -69,6 +70,8 @@ public class BlockTags {
 	public static final Tag<Block> FIRE = register("fire");
 	public static final Tag<Block> NYLIUM = register("nylium");
 	public static final Tag<Block> WART_BLOCKS = register("wart_blocks");
+	public static final Tag<Block> BEACON_BASE_BLOCKS = register("beacon_base_blocks");
+	public static final Tag<Block> WALL_POST_OVERRIDE = register("wall_post_override");
 
 	public static void setContainer(TagContainer<Block> container) {
 		BlockTags.container = container;
