@@ -32,7 +32,7 @@ public class LadderBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		switch ((Direction)state.get(FACING)) {
 			case NORTH:
 				return NORTH_SHAPE;

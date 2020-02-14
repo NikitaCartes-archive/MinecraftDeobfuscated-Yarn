@@ -2146,7 +2146,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		buffer.vertex(x2, y2, z2).color(red, green, blue, alpha).next();
 	}
 
-	public void updateBlock(BlockView view, BlockPos pos, BlockState oldState, BlockState newState, int flags) {
+	public void updateBlock(BlockView world, BlockPos pos, BlockState oldState, BlockState newState, int flags) {
 		this.scheduleSectionRender(pos, (flags & 8) != 0);
 	}
 
@@ -2699,16 +2699,16 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		}
 	}
 
-	public static int getLightmapCoordinates(BlockRenderView view, BlockPos pos) {
-		return getLightmapCoordinates(view, view.getBlockState(pos), pos);
+	public static int getLightmapCoordinates(BlockRenderView world, BlockPos pos) {
+		return getLightmapCoordinates(world, world.getBlockState(pos), pos);
 	}
 
-	public static int getLightmapCoordinates(BlockRenderView view, BlockState state, BlockPos pos) {
+	public static int getLightmapCoordinates(BlockRenderView world, BlockState state, BlockPos pos) {
 		if (state.hasEmissiveLighting()) {
 			return 15728880;
 		} else {
-			int i = view.getLightLevel(LightType.SKY, pos);
-			int j = view.getLightLevel(LightType.BLOCK, pos);
+			int i = world.getLightLevel(LightType.SKY, pos);
+			int j = world.getLightLevel(LightType.BLOCK, pos);
 			int k = state.getLuminance();
 			if (j < k) {
 				j = k;

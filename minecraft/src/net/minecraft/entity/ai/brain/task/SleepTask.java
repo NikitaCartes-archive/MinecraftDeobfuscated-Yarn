@@ -40,7 +40,7 @@ public class SleepTask extends Task<LivingEntity> {
 				} else {
 					BlockState blockState = world.getBlockState(globalPos.getPos());
 					return globalPos.getPos().isWithinDistance(entity.getPos(), 2.0)
-						&& blockState.getBlock().matches(BlockTags.BEDS)
+						&& blockState.getBlock().isIn(BlockTags.BEDS)
 						&& !(Boolean)blockState.get(BedBlock.OCCUPIED);
 				}
 			}

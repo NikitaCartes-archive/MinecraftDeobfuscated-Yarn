@@ -9,6 +9,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
@@ -356,9 +357,7 @@ public class CatEntity extends TameableEntity {
 
 	@Nullable
 	@Override
-	public net.minecraft.entity.EntityData initialize(
-		IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable net.minecraft.entity.EntityData entityData, @Nullable CompoundTag entityTag
-	) {
+	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
 		entityData = super.initialize(world, difficulty, spawnType, entityData, entityTag);
 		if (world.getMoonSize() > 0.9F) {
 			this.setCatType(this.random.nextInt(11));
@@ -510,7 +509,7 @@ public class CatEntity extends TameableEntity {
 
 					BlockPos blockPos = new BlockPos(this.owner);
 					BlockState blockState = this.cat.world.getBlockState(blockPos);
-					if (blockState.getBlock().matches(BlockTags.BEDS)) {
+					if (blockState.getBlock().isIn(BlockTags.BEDS)) {
 						Direction direction = blockState.get(BedBlock.FACING);
 						this.bedPos = new BlockPos(blockPos.getX() - direction.getOffsetX(), blockPos.getY(), blockPos.getZ() - direction.getOffsetZ());
 						return !this.method_16098();
@@ -569,7 +568,7 @@ public class CatEntity extends TameableEntity {
 					false
 				);
 			mutable.set(this.cat);
-			LootTable lootTable = this.cat.world.getServer().getLootManager().getSupplier(LootTables.CAT_MORNING_GIFT_GAMEPLAY);
+			LootTable lootTable = this.cat.world.getServer().getLootManager().getTable(LootTables.CAT_MORNING_GIFT_GAMEPLAY);
 			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.cat.world)
 				.put(LootContextParameters.POSITION, mutable)
 				.put(LootContextParameters.THIS_ENTITY, this.cat)

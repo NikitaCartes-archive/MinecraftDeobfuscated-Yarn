@@ -125,14 +125,14 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 	}
 
 	@Nullable
-	private BlockPos tweakToProperPos(BlockPos pos, BlockView view) {
-		if (view.getBlockState(pos).getBlock() == this.targetBlock) {
+	private BlockPos tweakToProperPos(BlockPos pos, BlockView world) {
+		if (world.getBlockState(pos).getBlock() == this.targetBlock) {
 			return pos;
 		} else {
 			BlockPos[] blockPoss = new BlockPos[]{pos.down(), pos.west(), pos.east(), pos.north(), pos.south(), pos.down().down()};
 
 			for (BlockPos blockPos : blockPoss) {
-				if (view.getBlockState(blockPos).getBlock() == this.targetBlock) {
+				if (world.getBlockState(blockPos).getBlock() == this.targetBlock) {
 					return blockPos;
 				}
 			}

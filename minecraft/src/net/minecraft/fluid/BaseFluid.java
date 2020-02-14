@@ -387,7 +387,7 @@ public abstract class BaseFluid extends Fluid {
 		if (block instanceof FluidFillable) {
 			return ((FluidFillable)block).canFillWithFluid(world, pos, state, fluid);
 		} else if (!(block instanceof DoorBlock)
-			&& !block.matches(BlockTags.SIGNS)
+			&& !block.isIn(BlockTags.SIGNS)
 			&& block != Blocks.LADDER
 			&& block != Blocks.SUGAR_CANE
 			&& block != Blocks.BUBBLE_COLUMN) {

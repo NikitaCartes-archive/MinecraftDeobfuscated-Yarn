@@ -8,7 +8,7 @@ import net.minecraft.world.World;
 @Environment(EnvType.CLIENT)
 public class FireSmokeParticle extends AscendingParticle {
 	protected FireSmokeParticle(World world, double x, double y, double z, double d, double e, double f, float g, SpriteProvider spriteProvider) {
-		super(world, x, y, z, 0.1F, 0.1F, 0.1F, d, e, f, g, spriteProvider, 0.3F, 8, 0.004);
+		super(world, x, y, z, 0.1F, 0.1F, 0.1F, d, e, f, g, spriteProvider, 0.3F, 8, 0.004, true);
 	}
 
 	@Environment(EnvType.CLIENT)

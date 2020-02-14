@@ -3,6 +3,7 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4838;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ChestBlockEntity;
@@ -54,7 +55,7 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		return SHAPE;
 	}
 
@@ -88,6 +89,7 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
 					)
 				);
 				player.incrementStat(Stats.OPEN_ENDERCHEST);
+				class_4838.method_24733(player);
 				return ActionResult.SUCCESS;
 			}
 		} else {
@@ -96,7 +98,7 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView view) {
+	public BlockEntity createBlockEntity(BlockView world) {
 		return new EnderChestBlockEntity();
 	}
 
@@ -146,7 +148,13 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
 		return false;
+	}
+
+	@Override
+	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+		super.onBreak(world, pos, state, player);
+		class_4838.method_24733(player);
 	}
 }

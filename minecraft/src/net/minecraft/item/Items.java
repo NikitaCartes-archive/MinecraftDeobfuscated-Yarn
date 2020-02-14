@@ -925,6 +925,9 @@ public class Items {
 	public static final Item GUARDIAN_SPAWN_EGG = register(
 		"guardian_spawn_egg", new SpawnEggItem(EntityType.GUARDIAN, 5931634, 15826224, new Item.Settings().group(ItemGroup.MISC))
 	);
+	public static final Item HOGLIN_SPAWN_EGG = register(
+		"hoglin_spawn_egg", new SpawnEggItem(EntityType.HOGLIN, 13004373, 6251620, new Item.Settings().group(ItemGroup.MISC))
+	);
 	public static final Item HORSE_SPAWN_EGG = register(
 		"horse_spawn_egg", new SpawnEggItem(EntityType.HORSE, 12623485, 15656192, new Item.Settings().group(ItemGroup.MISC))
 	);
@@ -958,8 +961,8 @@ public class Items {
 	public static final Item PIG_SPAWN_EGG = register(
 		"pig_spawn_egg", new SpawnEggItem(EntityType.PIG, 15771042, 14377823, new Item.Settings().group(ItemGroup.MISC))
 	);
-	public static final Item HOGLIN_SPAWN_EGG = register(
-		"hoglin_spawn_egg", new SpawnEggItem(EntityType.HOGLIN, 15373203, 5009705, new Item.Settings().group(ItemGroup.MISC))
+	public static final Item PIGLIN_SPAWN_EGG = register(
+		"piglin_spawn_egg", new SpawnEggItem(EntityType.PIGLIN, 10051392, 16380836, new Item.Settings().group(ItemGroup.MISC))
 	);
 	public static final Item PILLAGER_SPAWN_EGG = register(
 		"pillager_spawn_egg", new SpawnEggItem(EntityType.PILLAGER, 5451574, 9804699, new Item.Settings().group(ItemGroup.MISC))

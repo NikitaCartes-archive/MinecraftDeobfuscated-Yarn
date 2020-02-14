@@ -43,11 +43,11 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		if ((Integer)state.get(AGE) == 0) {
 			return SMALL_SHAPE;
 		} else {
-			return state.get(AGE) < 3 ? LARGE_SHAPE : super.getOutlineShape(state, view, pos, context);
+			return state.get(AGE) < 3 ? LARGE_SHAPE : super.getOutlineShape(state, world, pos, context);
 		}
 	}
 

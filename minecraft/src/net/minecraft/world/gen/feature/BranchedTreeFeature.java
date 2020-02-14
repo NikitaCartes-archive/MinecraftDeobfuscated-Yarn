@@ -54,7 +54,7 @@ public abstract class BranchedTreeFeature<T extends BranchedTreeFeatureConfig> e
 					while (n <= l) {
 						if (k + blockPos.getY() >= 0 && k + blockPos.getY() < 256) {
 							mutable.set(m + blockPos.getX(), k + blockPos.getY(), n + blockPos.getZ());
-							if (canTreeReplace(world, mutable) && (config.noVines || !isLeaves(world, mutable))) {
+							if (canTreeReplace(world, mutable) && (config.noVines || !isVine(world, mutable))) {
 								n++;
 								continue;
 							}

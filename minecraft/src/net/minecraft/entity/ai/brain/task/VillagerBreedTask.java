@@ -7,6 +7,7 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.pathing.Path;
+import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
@@ -32,16 +33,16 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 	}
 
 	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		VillagerEntity villagerEntity2 = this.getBreedTarget(villagerEntity);
-		LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, villagerEntity2);
-		serverWorld.sendEntityStatus(villagerEntity2, (byte)18);
+		PassiveEntity passiveEntity = (PassiveEntity)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.BREED_TARGET).get();
+		LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, passiveEntity);
+		serverWorld.sendEntityStatus(passiveEntity, (byte)18);
 		serverWorld.sendEntityStatus(villagerEntity, (byte)18);
 		int i = 275 + villagerEntity.getRandom().nextInt(50);
 		this.breedEndTime = l + (long)i;
 	}
 
 	protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		VillagerEntity villagerEntity2 = this.getBreedTarget(villagerEntity);
+		VillagerEntity villagerEntity2 = (VillagerEntity)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.BREED_TARGET).get();
 		if (!(villagerEntity.squaredDistanceTo(villagerEntity2) > 5.0)) {
 			LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, villagerEntity2);
 			if (l >= this.breedEndTime) {
@@ -75,18 +76,15 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 		villagerEntity.getBrain().forget(MemoryModuleType.BREED_TARGET);
 	}
 
-	private VillagerEntity getBreedTarget(VillagerEntity villager) {
-		return (VillagerEntity)villager.getBrain().getOptionalMemory(MemoryModuleType.BREED_TARGET).get();
-	}
-
 	private boolean isReadyToBreed(VillagerEntity villager) {
 		Brain<VillagerEntity> brain = villager.getBrain();
-		if (!brain.getOptionalMemory(MemoryModuleType.BREED_TARGET).isPresent()) {
-			return false;
-		} else {
-			VillagerEntity villagerEntity = this.getBreedTarget(villager);
-			return LookTargetUtil.canSee(brain, MemoryModuleType.BREED_TARGET, EntityType.VILLAGER) && villager.isReadyToBreed() && villagerEntity.isReadyToBreed();
-		}
+		Optional<PassiveEntity> optional = brain.getOptionalMemory(MemoryModuleType.BREED_TARGET)
+			.filter(passiveEntity -> passiveEntity.getType() == EntityType.VILLAGER);
+		return !optional.isPresent()
+			? false
+			: LookTargetUtil.canSee(brain, MemoryModuleType.BREED_TARGET, EntityType.VILLAGER)
+				&& villager.isReadyToBreed()
+				&& ((PassiveEntity)optional.get()).isReadyToBreed();
 	}
 
 	private Optional<BlockPos> getReachableHome(ServerWorld world, VillagerEntity villager) {

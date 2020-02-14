@@ -46,7 +46,6 @@ import net.minecraft.world.World;
 
 public class FishingBobberEntity extends Entity {
 	private static final TrackedData<Integer> HOOK_ENTITY_ID = DataTracker.registerData(FishingBobberEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private boolean stuckOnBlock;
 	private int removalTimer;
 	private final PlayerEntity owner;
 	private int selfHitTimer;
@@ -136,7 +135,7 @@ public class FishingBobberEntity extends Entity {
 		if (this.owner == null) {
 			this.remove();
 		} else if (this.world.isClient || !this.removeIfInvalid()) {
-			if (this.stuckOnBlock) {
+			if (this.onGround) {
 				this.removalTimer++;
 				if (this.removalTimer >= 1200) {
 					this.remove();
@@ -164,16 +163,7 @@ public class FishingBobberEntity extends Entity {
 					return;
 				}
 
-				if (!this.world.isClient) {
-					this.checkForCollision();
-				}
-
-				if (!this.stuckOnBlock && !this.onGround && !this.horizontalCollision) {
-					this.selfHitTimer++;
-				} else {
-					this.selfHitTimer = 0;
-					this.setVelocity(Vec3d.ZERO);
-				}
+				this.checkForCollision();
 			} else {
 				if (this.state == FishingBobberEntity.State.HOOKED_IN_ENTITY) {
 					if (this.hookedEntity != null) {
@@ -208,6 +198,15 @@ public class FishingBobberEntity extends Entity {
 
 			this.move(MovementType.SELF, this.getVelocity());
 			this.smoothenMovement();
+			if (this.state == FishingBobberEntity.State.FLYING) {
+				if (!this.onGround && !this.horizontalCollision) {
+					this.selfHitTimer++;
+				} else {
+					this.selfHitTimer = 0;
+					this.setVelocity(Vec3d.ZERO);
+				}
+			}
+
 			double e = 0.92;
 			this.setVelocity(this.getVelocity().multiply(0.92));
 			this.refreshPosition();
@@ -263,10 +262,12 @@ public class FishingBobberEntity extends Entity {
 		);
 		if (hitResult.getType() != HitResult.Type.MISS) {
 			if (hitResult.getType() == HitResult.Type.ENTITY) {
-				this.hookedEntity = ((EntityHitResult)hitResult).getEntity();
-				this.updateHookedEntityId();
+				if (!this.world.isClient) {
+					this.hookedEntity = ((EntityHitResult)hitResult).getEntity();
+					this.updateHookedEntityId();
+				}
 			} else {
-				this.stuckOnBlock = true;
+				this.setVelocity(this.getVelocity().normalize().multiply(hitResult.method_24801(this)));
 			}
 		}
 	}
@@ -384,7 +385,7 @@ public class FishingBobberEntity extends Entity {
 					.put(LootContextParameters.TOOL, usedItem)
 					.setRandom(this.random)
 					.setLuck((float)this.luckOfTheSeaLevel + this.owner.getLuck());
-				LootTable lootTable = this.world.getServer().getLootManager().getSupplier(LootTables.FISHING_GAMEPLAY);
+				LootTable lootTable = this.world.getServer().getLootManager().getTable(LootTables.FISHING_GAMEPLAY);
 				List<ItemStack> list = lootTable.getDrops(builder.build(LootContextTypes.FISHING));
 				Criterions.FISHING_ROD_HOOKED.trigger((ServerPlayerEntity)this.owner, usedItem, this, list);
 
@@ -407,7 +408,7 @@ public class FishingBobberEntity extends Entity {
 				i = 1;
 			}
 
-			if (this.stuckOnBlock) {
+			if (this.onGround) {
 				i = 2;
 			}
 

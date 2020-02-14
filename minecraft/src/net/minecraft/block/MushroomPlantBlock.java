@@ -23,7 +23,7 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		return SHAPE;
 	}
 
@@ -58,8 +58,8 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	protected boolean canPlantOnTop(BlockState floor, BlockView view, BlockPos pos) {
-		return floor.isFullOpaque(view, pos);
+	protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
+		return floor.isFullOpaque(world, pos);
 	}
 
 	@Override
@@ -108,7 +108,7 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public boolean shouldPostProcess(BlockState state, BlockView view, BlockPos pos) {
+	public boolean shouldPostProcess(BlockState state, BlockView world, BlockPos pos) {
 		return true;
 	}
 }

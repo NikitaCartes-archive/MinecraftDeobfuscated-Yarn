@@ -17,6 +17,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.datafixer.NbtOps;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityInteraction;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
@@ -99,7 +100,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	private int experience;
 	private long lastRestockTime;
 	private int restocksToday;
-	private long field_20332;
+	private long lastRestockCheckTime;
 	private static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES = ImmutableList.of(
 		MemoryModuleType.HOME,
 		MemoryModuleType.JOB_SITE,
@@ -109,6 +110,8 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		MemoryModuleType.VISIBLE_VILLAGER_BABIES,
 		MemoryModuleType.NEAREST_PLAYERS,
 		MemoryModuleType.NEAREST_VISIBLE_PLAYER,
+		MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER,
+		MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM,
 		MemoryModuleType.WALK_TARGET,
 		MemoryModuleType.LOOK_TARGET,
 		MemoryModuleType.INTERACTION_TARGET,
@@ -132,6 +135,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	private static final ImmutableList<SensorType<? extends Sensor<? super VillagerEntity>>> SENSORS = ImmutableList.of(
 		SensorType.NEAREST_LIVING_ENTITIES,
 		SensorType.NEAREST_PLAYERS,
+		SensorType.NEAREST_ITEMS,
 		SensorType.INTERACTABLE_DOORS,
 		SensorType.NEAREST_BED,
 		SensorType.HURT_BY,
@@ -189,7 +193,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 			brain.setTaskList(Activity.PLAY, VillagerTaskListProvider.createPlayTasks(f));
 		} else {
 			brain.setSchedule(Schedule.VILLAGER_DEFAULT);
-			brain.setTaskList(
+			brain.method_24529(
 				Activity.WORK,
 				VillagerTaskListProvider.createWorkTasks(villagerProfession, f),
 				ImmutableSet.of(Pair.of(MemoryModuleType.JOB_SITE, MemoryModuleState.VALUE_PRESENT))
@@ -197,7 +201,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		}
 
 		brain.setTaskList(Activity.CORE, VillagerTaskListProvider.createCoreTasks(villagerProfession, f));
-		brain.setTaskList(
+		brain.method_24529(
 			Activity.MEET,
 			VillagerTaskListProvider.createMeetTasks(villagerProfession, f),
 			ImmutableSet.of(Pair.of(MemoryModuleType.MEETING_POINT, MemoryModuleState.VALUE_PRESENT))
@@ -210,7 +214,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		brain.setTaskList(Activity.HIDE, VillagerTaskListProvider.createHideTasks(villagerProfession, f));
 		brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
 		brain.setDefaultActivity(Activity.IDLE);
-		brain.resetPossibleActivities(Activity.IDLE);
+		brain.method_24526(Activity.IDLE);
 		brain.refreshActivities(this.world.getTimeOfDay(), this.world.getTime());
 	}
 
@@ -231,7 +235,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 
 	@Override
 	protected void mobTick() {
-		this.world.getProfiler().push("brain");
+		this.world.getProfiler().push("villagerBrain");
 		this.getBrain().tick((ServerWorld)this.world, this);
 		this.world.getProfiler().pop();
 		if (!this.hasCustomer() && this.levelUpTimer > 0) {
@@ -350,7 +354,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	}
 
 	public void restock() {
-		this.method_21724();
+		this.updatePricesOnDemand();
 
 		for (TradeOffer tradeOffer : this.getOffers()) {
 			tradeOffer.resetUses();
@@ -383,13 +387,13 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		long m = this.world.getTime();
 		boolean bl = m > l;
 		long n = this.world.getTimeOfDay();
-		if (this.field_20332 > 0L) {
-			long o = this.field_20332 / 24000L;
+		if (this.lastRestockCheckTime > 0L) {
+			long o = this.lastRestockCheckTime / 24000L;
 			long p = n / 24000L;
 			bl |= p > o;
 		}
 
-		this.field_20332 = n;
+		this.lastRestockCheckTime = n;
 		if (bl) {
 			this.lastRestockTime = m;
 			this.clearDailyRestockCount();
@@ -407,11 +411,11 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		}
 
 		for (int j = 0; j < i; j++) {
-			this.method_21724();
+			this.updatePricesOnDemand();
 		}
 	}
 
-	private void method_21724() {
+	private void updatePricesOnDemand() {
 		for (TradeOffer tradeOffer : this.getOffers()) {
 			tradeOffer.updatePriceOnDemand();
 		}
@@ -603,6 +607,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		}
 	}
 
+	@Override
 	public boolean isReadyToBreed() {
 		return this.foodLevel + this.getAvailableFood() >= 12 && this.getBreedingAge() == 0;
 	}
@@ -683,9 +688,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 
 	@Nullable
 	@Override
-	public net.minecraft.entity.EntityData initialize(
-		IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable net.minecraft.entity.EntityData entityData, @Nullable CompoundTag entityTag
-	) {
+	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
 		if (spawnType == SpawnType.BREEDING) {
 			this.setVillagerData(this.getVillagerData().withProfession(VillagerProfession.NONE));
 		}
@@ -731,8 +734,8 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	@Override
 	protected void loot(ItemEntity item) {
 		ItemStack itemStack = item.getStack();
-		Item item2 = itemStack.getItem();
-		if (this.canGather(item2)) {
+		if (this.canGather(itemStack)) {
+			Item item2 = itemStack.getItem();
 			BasicInventory basicInventory = this.getInventory();
 			boolean bl = false;
 
@@ -768,8 +771,9 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		}
 	}
 
-	public boolean canGather(Item item) {
-		return GATHERABLE_ITEMS.contains(item) || this.getVillagerData().getProfession().getGatherableItems().contains(item);
+	@Override
+	public boolean canGather(ItemStack itemStack) {
+		return GATHERABLE_ITEMS.contains(itemStack.getItem()) || this.getVillagerData().getProfession().getGatherableItems().contains(itemStack.getItem());
 	}
 
 	public boolean wantsToStartBreeding() {

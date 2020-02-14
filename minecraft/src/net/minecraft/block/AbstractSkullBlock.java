@@ -15,7 +15,7 @@ public abstract class AbstractSkullBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView view) {
+	public BlockEntity createBlockEntity(BlockView world) {
 		return new SkullBlockEntity();
 	}
 

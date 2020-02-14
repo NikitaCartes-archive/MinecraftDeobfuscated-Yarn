@@ -25,7 +25,7 @@ public enum ArmorMaterials implements ArmorMaterial {
 	private final int enchantability;
 	private final SoundEvent equipSound;
 	private final float toughness;
-	private final float field_21978;
+	private final float knockbackResistance;
 	private final Lazy<Ingredient> repairIngredientSupplier;
 
 	private ArmorMaterials(
@@ -35,7 +35,7 @@ public enum ArmorMaterials implements ArmorMaterial {
 		int enchantability,
 		SoundEvent equipSound,
 		float toughness,
-		float f,
+		float knockbackResistance,
 		Supplier<Ingredient> supplier
 	) {
 		this.name = name;
@@ -44,7 +44,7 @@ public enum ArmorMaterials implements ArmorMaterial {
 		this.enchantability = enchantability;
 		this.equipSound = equipSound;
 		this.toughness = toughness;
-		this.field_21978 = f;
+		this.knockbackResistance = knockbackResistance;
 		this.repairIngredientSupplier = new Lazy<>(supplier);
 	}
 
@@ -85,7 +85,7 @@ public enum ArmorMaterials implements ArmorMaterial {
 	}
 
 	@Override
-	public float method_24355() {
-		return this.field_21978;
+	public float getKnockbackResistance() {
+		return this.knockbackResistance;
 	}
 }

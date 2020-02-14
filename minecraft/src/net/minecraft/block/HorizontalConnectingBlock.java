@@ -77,17 +77,17 @@ public class HorizontalConnectingBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public boolean isTranslucent(BlockState state, BlockView view, BlockPos pos) {
+	public boolean isTranslucent(BlockState state, BlockView world, BlockPos pos) {
 		return !(Boolean)state.get(WATERLOGGED);
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		return this.boundingShapes[this.getShapeIndex(state)];
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		return this.collisionShapes[this.getShapeIndex(state)];
 	}
 
@@ -124,7 +124,7 @@ public class HorizontalConnectingBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
 		return false;
 	}
 

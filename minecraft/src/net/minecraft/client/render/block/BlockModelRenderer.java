@@ -37,7 +37,7 @@ public class BlockModelRenderer {
 	}
 
 	public boolean render(
-		BlockRenderView view,
+		BlockRenderView world,
 		BakedModel model,
 		BlockState state,
 		BlockPos pos,
@@ -49,13 +49,13 @@ public class BlockModelRenderer {
 		int overlay
 	) {
 		boolean bl = MinecraftClient.isAmbientOcclusionEnabled() && state.getLuminance() == 0 && model.useAmbientOcclusion();
-		Vec3d vec3d = state.getOffsetPos(view, pos);
+		Vec3d vec3d = state.getOffsetPos(world, pos);
 		matrix.translate(vec3d.x, vec3d.y, vec3d.z);
 
 		try {
 			return bl
-				? this.renderSmooth(view, model, state, pos, matrix, vertexConsumer, cull, random, seed, overlay)
-				: this.renderFlat(view, model, state, pos, matrix, vertexConsumer, cull, random, seed, overlay);
+				? this.renderSmooth(world, model, state, pos, matrix, vertexConsumer, cull, random, seed, overlay)
+				: this.renderFlat(world, model, state, pos, matrix, vertexConsumer, cull, random, seed, overlay);
 		} catch (Throwable var17) {
 			CrashReport crashReport = CrashReport.create(var17, "Tesselating block model");
 			CrashReportSection crashReportSection = crashReport.addElement("Block model being tesselated");
@@ -102,7 +102,7 @@ public class BlockModelRenderer {
 	}
 
 	public boolean renderFlat(
-		BlockRenderView view,
+		BlockRenderView world,
 		BakedModel model,
 		BlockState state,
 		BlockPos pos,
@@ -119,9 +119,9 @@ public class BlockModelRenderer {
 		for (Direction direction : Direction.values()) {
 			random.setSeed(l);
 			List<BakedQuad> list = model.getQuads(state, direction, random);
-			if (!list.isEmpty() && (!cull || Block.shouldDrawSide(state, view, pos, direction))) {
-				int j = WorldRenderer.getLightmapCoordinates(view, state, pos.offset(direction));
-				this.renderQuadsFlat(view, state, pos, j, i, false, buffer, vertexConsumer, list, bitSet);
+			if (!list.isEmpty() && (!cull || Block.shouldDrawSide(state, world, pos, direction))) {
+				int j = WorldRenderer.getLightmapCoordinates(world, state, pos.offset(direction));
+				this.renderQuadsFlat(world, state, pos, j, i, false, buffer, vertexConsumer, list, bitSet);
 				bl = true;
 			}
 		}
@@ -129,7 +129,7 @@ public class BlockModelRenderer {
 		random.setSeed(l);
 		List<BakedQuad> list2 = model.getQuads(state, null, random);
 		if (!list2.isEmpty()) {
-			this.renderQuadsFlat(view, state, pos, -1, i, true, buffer, vertexConsumer, list2, bitSet);
+			this.renderQuadsFlat(world, state, pos, -1, i, true, buffer, vertexConsumer, list2, bitSet);
 			bl = true;
 		}
 

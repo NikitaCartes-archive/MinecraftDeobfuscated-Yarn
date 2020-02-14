@@ -28,7 +28,7 @@ public class ShearsItem extends Item {
 				&& block != Blocks.DEAD_BUSH
 				&& block != Blocks.VINE
 				&& block != Blocks.TRIPWIRE
-				&& !block.matches(BlockTags.WOOL)
+				&& !block.isIn(BlockTags.WOOL)
 			? super.postMine(stack, world, state, pos, miner)
 			: true;
 	}
@@ -45,7 +45,7 @@ public class ShearsItem extends Item {
 		if (block == Blocks.COBWEB || state.matches(BlockTags.LEAVES)) {
 			return 15.0F;
 		} else {
-			return block.matches(BlockTags.WOOL) ? 5.0F : super.getMiningSpeed(stack, state);
+			return block.isIn(BlockTags.WOOL) ? 5.0F : super.getMiningSpeed(stack, state);
 		}
 	}
 }

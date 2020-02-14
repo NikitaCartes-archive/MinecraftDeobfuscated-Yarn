@@ -40,8 +40,8 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 	}
 
 	@Override
-	protected int getOutputLevel(BlockView view, BlockPos pos, BlockState state) {
-		BlockEntity blockEntity = view.getBlockEntity(pos);
+	protected int getOutputLevel(BlockView world, BlockPos pos, BlockState state) {
+		BlockEntity blockEntity = world.getBlockEntity(pos);
 		return blockEntity instanceof ComparatorBlockEntity ? ((ComparatorBlockEntity)blockEntity).getOutputSignal() : 0;
 	}
 
@@ -155,7 +155,7 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView view) {
+	public BlockEntity createBlockEntity(BlockView world) {
 		return new ComparatorBlockEntity();
 	}
 

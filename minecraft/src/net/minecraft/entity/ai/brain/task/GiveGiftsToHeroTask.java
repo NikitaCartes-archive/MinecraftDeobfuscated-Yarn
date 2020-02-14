@@ -93,7 +93,7 @@ public class GiveGiftsToHeroTask extends Task<VillagerEntity> {
 				this.done = true;
 			}
 		} else {
-			LookTargetUtil.walkTowards(villagerEntity, playerEntity, 5);
+			LookTargetUtil.method_24557(villagerEntity, playerEntity, 5);
 		}
 	}
 
@@ -106,7 +106,7 @@ public class GiveGiftsToHeroTask extends Task<VillagerEntity> {
 
 	private void giveGifts(VillagerEntity villager, LivingEntity recipient) {
 		for (ItemStack itemStack : this.getGifts(villager)) {
-			LookTargetUtil.give(villager, itemStack, recipient);
+			LookTargetUtil.give(villager, itemStack, recipient.getPos());
 		}
 	}
 
@@ -116,7 +116,7 @@ public class GiveGiftsToHeroTask extends Task<VillagerEntity> {
 		} else {
 			VillagerProfession villagerProfession = villager.getVillagerData().getProfession();
 			if (GIFTS.containsKey(villagerProfession)) {
-				LootTable lootTable = villager.world.getServer().getLootManager().getSupplier((Identifier)GIFTS.get(villagerProfession));
+				LootTable lootTable = villager.world.getServer().getLootManager().getTable((Identifier)GIFTS.get(villagerProfession));
 				LootContext.Builder builder = new LootContext.Builder((ServerWorld)villager.world)
 					.put(LootContextParameters.POSITION, new BlockPos(villager))
 					.put(LootContextParameters.THIS_ENTITY, villager)

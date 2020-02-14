@@ -135,8 +135,12 @@ public abstract class World implements IWorld, AutoCloseable {
 		return this.getBlockState(blockPos2);
 	}
 
+	public static boolean method_24794(BlockPos blockPos) {
+		return !isHeightInvalid(blockPos) && isValid(blockPos);
+	}
+
 	public static boolean isValid(BlockPos pos) {
-		return !isHeightInvalid(pos) && pos.getX() >= -30000000 && pos.getZ() >= -30000000 && pos.getX() < 30000000 && pos.getZ() < 30000000;
+		return pos.getX() >= -30000000 && pos.getZ() >= -30000000 && pos.getX() < 30000000 && pos.getZ() < 30000000;
 	}
 
 	public static boolean isHeightInvalid(BlockPos pos) {
@@ -732,7 +736,7 @@ public abstract class World implements IWorld, AutoCloseable {
 			return false;
 		} else {
 			Chunk chunk = this.getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4, ChunkStatus.FULL, false);
-			return chunk == null ? false : chunk.getBlockState(blockPos).method_24432(this, blockPos, entity, direction);
+			return chunk == null ? false : chunk.getBlockState(blockPos).hasSolidSurface(this, blockPos, entity, direction);
 		}
 	}
 
@@ -1053,10 +1057,11 @@ public abstract class World implements IWorld, AutoCloseable {
 			return false;
 		} else if (!this.isSkyVisible(pos)) {
 			return false;
+		} else if (this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, pos).getY() > pos.getY()) {
+			return false;
 		} else {
-			return this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, pos).getY() > pos.getY()
-				? false
-				: this.getBiome(pos).getPrecipitation() == Biome.Precipitation.RAIN;
+			Biome biome = this.getBiome(pos);
+			return biome.getPrecipitation() == Biome.Precipitation.RAIN && biome.getTemperature(pos) >= 0.15F;
 		}
 	}
 

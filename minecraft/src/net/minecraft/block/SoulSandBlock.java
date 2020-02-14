@@ -20,7 +20,7 @@ public class SoulSandBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		return COLLISION_SHAPE;
 	}
 
@@ -35,12 +35,12 @@ public class SoulSandBlock extends Block {
 	}
 
 	@Override
-	public boolean isSimpleFullBlock(BlockState state, BlockView view, BlockPos pos) {
+	public boolean isSimpleFullBlock(BlockState state, BlockView world, BlockPos pos) {
 		return true;
 	}
 
 	@Override
-	public int getTickRate(WorldView worldView) {
+	public int getTickRate(WorldView world) {
 		return 20;
 	}
 
@@ -50,18 +50,18 @@ public class SoulSandBlock extends Block {
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
 		return false;
 	}
 
 	@Override
-	public boolean allowsSpawning(BlockState state, BlockView view, BlockPos pos, EntityType<?> type) {
+	public boolean allowsSpawning(BlockState state, BlockView world, BlockPos pos, EntityType<?> type) {
 		return true;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean hasInWallOverlay(BlockState state, BlockView view, BlockPos pos) {
+	public boolean hasInWallOverlay(BlockState state, BlockView world, BlockPos pos) {
 		return true;
 	}
 }

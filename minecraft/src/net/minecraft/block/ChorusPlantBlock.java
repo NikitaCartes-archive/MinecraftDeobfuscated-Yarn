@@ -31,13 +31,13 @@ public class ChorusPlantBlock extends ConnectingBlock {
 		return this.withConnectionProperties(ctx.getWorld(), ctx.getBlockPos());
 	}
 
-	public BlockState withConnectionProperties(BlockView view, BlockPos pos) {
-		Block block = view.getBlockState(pos.down()).getBlock();
-		Block block2 = view.getBlockState(pos.up()).getBlock();
-		Block block3 = view.getBlockState(pos.north()).getBlock();
-		Block block4 = view.getBlockState(pos.east()).getBlock();
-		Block block5 = view.getBlockState(pos.south()).getBlock();
-		Block block6 = view.getBlockState(pos.west()).getBlock();
+	public BlockState withConnectionProperties(BlockView world, BlockPos pos) {
+		Block block = world.getBlockState(pos.down()).getBlock();
+		Block block2 = world.getBlockState(pos.up()).getBlock();
+		Block block3 = world.getBlockState(pos.north()).getBlock();
+		Block block4 = world.getBlockState(pos.east()).getBlock();
+		Block block5 = world.getBlockState(pos.south()).getBlock();
+		Block block6 = world.getBlockState(pos.west()).getBlock();
 		return this.getDefaultState()
 			.with(DOWN, Boolean.valueOf(block == this || block == Blocks.CHORUS_FLOWER || block == Blocks.END_STONE))
 			.with(UP, Boolean.valueOf(block2 == this || block2 == Blocks.CHORUS_FLOWER))
@@ -96,7 +96,7 @@ public class ChorusPlantBlock extends ConnectingBlock {
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
 		return false;
 	}
 }

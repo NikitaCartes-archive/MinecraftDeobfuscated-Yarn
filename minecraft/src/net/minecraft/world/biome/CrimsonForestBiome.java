@@ -95,7 +95,8 @@ public class CrimsonForestBiome extends Biome {
 		);
 		DefaultBiomeFeatures.addCrimsonForestVegetation(this);
 		DefaultBiomeFeatures.addNetherOres(this);
-		this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.ZOMBIE_PIGMAN, 100, 4, 4));
-		this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.HOGLIN, 100, 4, 4));
+		this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.ZOMBIE_PIGMAN, 1, 2, 4));
+		this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.HOGLIN, 5, 3, 4));
+		this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.PIGLIN, 5, 3, 4));
 	}
 }

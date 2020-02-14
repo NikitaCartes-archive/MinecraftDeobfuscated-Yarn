@@ -9,6 +9,8 @@ import com.mojang.datafixers.schemas.Schema;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_4803;
+import net.minecraft.class_4804;
 import net.minecraft.datafixer.fix.AddTrappedChestFix;
 import net.minecraft.datafixer.fix.AdvancementRenameFix;
 import net.minecraft.datafixer.fix.AdvancementsFix;
@@ -541,5 +543,9 @@ public class Schemas {
 		builder.addFixer(new BiomeRenameFix(schema102, false, ImmutableMap.of("minecraft:nether", "minecraft:nether_wastes")));
 		Schema schema103 = builder.addSchema(2503, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new WallPropertyFix(schema103, false));
+		Schema schema104 = builder.addSchema(2504, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new class_4803(schema104, "minecraft:villager"));
+		Schema schema105 = builder.addSchema(2505, class_4804::new);
+		builder.addFixer(new ChoiceTypesFix(schema105, "Added Piglin", TypeReferences.ENTITY));
 	}
 }

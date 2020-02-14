@@ -54,12 +54,12 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 	}
 
 	@Override
-	public int getTickRate(WorldView worldView) {
+	public int getTickRate(WorldView world) {
 		return this.wooden ? 30 : 20;
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		Direction direction = state.get(FACING);
 		boolean bl = (Boolean)state.get(POWERED);
 		switch ((WallMountLocation)state.get(FACE)) {
@@ -96,16 +96,16 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 		if ((Boolean)state.get(POWERED)) {
 			return ActionResult.CONSUME;
 		} else {
-			this.method_21845(state, world, pos);
+			this.powerOn(state, world, pos);
 			this.playClickSound(player, world, pos, true);
 			return ActionResult.SUCCESS;
 		}
 	}
 
-	public void method_21845(BlockState blockState, World world, BlockPos blockPos) {
-		world.setBlockState(blockPos, blockState.with(POWERED, Boolean.valueOf(true)), 3);
-		this.updateNeighbors(blockState, world, blockPos);
-		world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world));
+	public void powerOn(BlockState state, World world, BlockPos pos) {
+		world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(true)), 3);
+		this.updateNeighbors(state, world, pos);
+		world.getBlockTickScheduler().schedule(pos, this, this.getTickRate(world));
 	}
 
 	protected void playClickSound(@Nullable PlayerEntity player, IWorld world, BlockPos pos, boolean powered) {
@@ -126,12 +126,12 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 	}
 
 	@Override
-	public int getWeakRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
+	public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
 		return state.get(POWERED) ? 15 : 0;
 	}
 
 	@Override
-	public int getStrongRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
+	public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
 		return state.get(POWERED) && getDirection(state) == facing ? 15 : 0;
 	}
 

@@ -139,8 +139,9 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 		int j = (this.height - this.containerHeight) / 2;
 		this.blit(i, j, 0, 0, this.containerWidth, this.containerHeight);
 		this.itemRenderer.zOffset = 100.0F;
-		this.itemRenderer.renderGuiItem(new ItemStack(Items.EMERALD), i + 42, j + 109);
-		this.itemRenderer.renderGuiItem(new ItemStack(Items.DIAMOND), i + 42 + 22, j + 109);
+		this.itemRenderer.renderGuiItem(new ItemStack(Items.NETHERITE_INGOT), i + 20, j + 109);
+		this.itemRenderer.renderGuiItem(new ItemStack(Items.EMERALD), i + 41, j + 109);
+		this.itemRenderer.renderGuiItem(new ItemStack(Items.DIAMOND), i + 41 + 22, j + 109);
 		this.itemRenderer.renderGuiItem(new ItemStack(Items.GOLD_INGOT), i + 42 + 44, j + 109);
 		this.itemRenderer.renderGuiItem(new ItemStack(Items.IRON_INGOT), i + 42 + 66, j + 109);
 		this.itemRenderer.zOffset = 0.0F;

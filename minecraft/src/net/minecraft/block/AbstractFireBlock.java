@@ -26,14 +26,14 @@ public abstract class AbstractFireBlock extends Block {
 		this.damage = damage;
 	}
 
-	public static BlockState getState(BlockView view, BlockPos pos) {
+	public static BlockState getState(BlockView world, BlockPos pos) {
 		BlockPos blockPos = pos.down();
-		BlockState blockState = view.getBlockState(blockPos);
-		return blockState.getBlock() == Blocks.SOUL_SOIL ? Blocks.SOUL_FIRE.getDefaultState() : ((FireBlock)Blocks.FIRE).getStateForPosition(view, pos);
+		BlockState blockState = world.getBlockState(blockPos);
+		return blockState.getBlock() == Blocks.SOUL_SOIL ? Blocks.SOUL_FIRE.getDefaultState() : ((FireBlock)Blocks.FIRE).getStateForPosition(world, pos);
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		return VoxelShapes.empty();
 	}
 
@@ -114,7 +114,9 @@ public abstract class AbstractFireBlock extends Block {
 
 	@Override
 	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-		if (!entity.isFireImmune() && entity instanceof LivingEntity && !EnchantmentHelper.hasFrostWalker((LivingEntity)entity) && !entity.isTouchingWaterOrRain()) {
+		if (!entity.isFireImmune()
+			&& (!(entity instanceof LivingEntity) || !EnchantmentHelper.hasFrostWalker((LivingEntity)entity))
+			&& !entity.isTouchingWaterOrRain()) {
 			entity.setFireTicks(entity.getFireTicks() + 1);
 			if (entity.getFireTicks() == 0) {
 				entity.setOnFireFor(8);

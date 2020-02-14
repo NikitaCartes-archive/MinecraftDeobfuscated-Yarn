@@ -57,8 +57,8 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 	}
 
 	@Override
-	protected boolean canPlantOnTop(BlockState floor, BlockView view, BlockPos pos) {
-		return !floor.getCollisionShape(view, pos).getFace(Direction.UP).isEmpty();
+	protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
+		return !floor.getCollisionShape(world, pos).getFace(Direction.UP).isEmpty();
 	}
 
 	@Override
@@ -86,7 +86,7 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		switch (state.get(PICKLES)) {
 			case 1:
 			default:

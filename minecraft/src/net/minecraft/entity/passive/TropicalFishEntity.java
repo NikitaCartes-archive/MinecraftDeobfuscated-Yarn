@@ -219,19 +219,19 @@ public class TropicalFishEntity extends SchoolingFishEntity {
 			int j;
 			int k;
 			int l;
-			if (entityData instanceof TropicalFishEntity.Data) {
-				TropicalFishEntity.Data data = (TropicalFishEntity.Data)entityData;
-				i = data.shape;
-				j = data.pattern;
-				k = data.baseColor;
-				l = data.patternColor;
+			if (entityData instanceof TropicalFishEntity.TropicalFishData) {
+				TropicalFishEntity.TropicalFishData tropicalFishData = (TropicalFishEntity.TropicalFishData)entityData;
+				i = tropicalFishData.shape;
+				j = tropicalFishData.pattern;
+				k = tropicalFishData.baseColor;
+				l = tropicalFishData.patternColor;
 			} else if ((double)this.random.nextFloat() < 0.9) {
 				int m = COMMON_VARIANTS[this.random.nextInt(COMMON_VARIANTS.length)];
 				i = m & 0xFF;
 				j = (m & 0xFF00) >> 8;
 				k = (m & 0xFF0000) >> 16;
 				l = (m & 0xFF000000) >> 24;
-				entityData = new TropicalFishEntity.Data(this, i, j, k, l);
+				entityData = new TropicalFishEntity.TropicalFishData(this, i, j, k, l);
 			} else {
 				this.commonSpawn = false;
 				i = this.random.nextInt(2);
@@ -245,13 +245,13 @@ public class TropicalFishEntity extends SchoolingFishEntity {
 		}
 	}
 
-	static class Data extends SchoolingFishEntity.Data {
+	static class TropicalFishData extends SchoolingFishEntity.FishData {
 		private final int shape;
 		private final int pattern;
 		private final int baseColor;
 		private final int patternColor;
 
-		private Data(TropicalFishEntity leader, int shape, int pattern, int baseColor, int patternColor) {
+		private TropicalFishData(TropicalFishEntity leader, int shape, int pattern, int baseColor, int patternColor) {
 			super(leader);
 			this.shape = shape;
 			this.pattern = pattern;

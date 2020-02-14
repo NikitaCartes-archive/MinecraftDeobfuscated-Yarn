@@ -9,5 +9,5 @@ import net.minecraft.world.BlockRenderView;
 
 @Environment(EnvType.CLIENT)
 public interface BlockColorProvider {
-	int getColor(BlockState state, @Nullable BlockRenderView view, @Nullable BlockPos pos, int tintIndex);
+	int getColor(BlockState state, @Nullable BlockRenderView world, @Nullable BlockPos pos, int tintIndex);
 }

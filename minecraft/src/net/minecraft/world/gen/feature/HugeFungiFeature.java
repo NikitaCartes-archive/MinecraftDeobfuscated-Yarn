@@ -143,7 +143,7 @@ public class HugeFungiFeature extends Feature<HugeFungiFeatureConfig> {
 		for (int i = pos.getY(); i >= 1; i--) {
 			mutable.setY(i);
 			Block block = world.getBlockState(mutable.down()).getBlock();
-			if (block.matches(BlockTags.NYLIUM)) {
+			if (block.isIn(BlockTags.NYLIUM)) {
 				return mutable;
 			}
 		}

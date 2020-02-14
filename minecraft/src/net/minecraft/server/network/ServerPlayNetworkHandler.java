@@ -95,11 +95,11 @@ import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateStructureBlockC2SPacket;
 import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
 import net.minecraft.network.packet.s2c.play.ConfirmGuiActionS2CPacket;
 import net.minecraft.network.packet.s2c.play.ContainerSlotUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
+import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.HeldItemChangeS2CPacket;
 import net.minecraft.network.packet.s2c.play.KeepAliveS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
@@ -573,27 +573,27 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 					String string = structureBlockBlockEntity.getStructureName();
 					if (packet.getAction() == StructureBlockBlockEntity.Action.SAVE_AREA) {
 						if (structureBlockBlockEntity.saveStructure()) {
-							this.player.addChatMessage(new TranslatableText("structure_block.save_success", string), false);
+							this.player.addMessage(new TranslatableText("structure_block.save_success", string), false);
 						} else {
-							this.player.addChatMessage(new TranslatableText("structure_block.save_failure", string), false);
+							this.player.addMessage(new TranslatableText("structure_block.save_failure", string), false);
 						}
 					} else if (packet.getAction() == StructureBlockBlockEntity.Action.LOAD_AREA) {
 						if (!structureBlockBlockEntity.isStructureAvailable()) {
-							this.player.addChatMessage(new TranslatableText("structure_block.load_not_found", string), false);
+							this.player.addMessage(new TranslatableText("structure_block.load_not_found", string), false);
 						} else if (structureBlockBlockEntity.loadStructure()) {
-							this.player.addChatMessage(new TranslatableText("structure_block.load_success", string), false);
+							this.player.addMessage(new TranslatableText("structure_block.load_success", string), false);
 						} else {
-							this.player.addChatMessage(new TranslatableText("structure_block.load_prepare", string), false);
+							this.player.addMessage(new TranslatableText("structure_block.load_prepare", string), false);
 						}
 					} else if (packet.getAction() == StructureBlockBlockEntity.Action.SCAN_AREA) {
 						if (structureBlockBlockEntity.detectStructureSize()) {
-							this.player.addChatMessage(new TranslatableText("structure_block.size_success", string), false);
+							this.player.addMessage(new TranslatableText("structure_block.size_success", string), false);
 						} else {
-							this.player.addChatMessage(new TranslatableText("structure_block.size_failure"), false);
+							this.player.addMessage(new TranslatableText("structure_block.size_failure"), false);
 						}
 					}
 				} else {
-					this.player.addChatMessage(new TranslatableText("structure_block.invalid_structure_name", packet.getStructureName()), false);
+					this.player.addMessage(new TranslatableText("structure_block.invalid_structure_name", packet.getStructureName()), false);
 				}
 
 				structureBlockBlockEntity.markDirty();
@@ -897,7 +897,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 			}
 		} else {
 			Text text = new TranslatableText("build.tooHigh", this.server.getWorldHeight()).formatted(Formatting.RED);
-			this.player.networkHandler.sendPacket(new ChatMessageS2CPacket(text, MessageType.GAME_INFO));
+			this.player.networkHandler.sendPacket(new GameMessageS2CPacket(text, MessageType.GAME_INFO));
 		}
 
 		this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(serverWorld, blockPos));
@@ -961,14 +961,14 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	}
 
 	public void sendPacket(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> genericFutureListener) {
-		if (packet instanceof ChatMessageS2CPacket) {
-			ChatMessageS2CPacket chatMessageS2CPacket = (ChatMessageS2CPacket)packet;
+		if (packet instanceof GameMessageS2CPacket) {
+			GameMessageS2CPacket gameMessageS2CPacket = (GameMessageS2CPacket)packet;
 			ChatVisibility chatVisibility = this.player.getClientChatVisibility();
-			if (chatVisibility == ChatVisibility.HIDDEN && chatMessageS2CPacket.getLocation() != MessageType.GAME_INFO) {
+			if (chatVisibility == ChatVisibility.HIDDEN && gameMessageS2CPacket.getLocation() != MessageType.GAME_INFO) {
 				return;
 			}
 
-			if (chatVisibility == ChatVisibility.SYSTEM && !chatMessageS2CPacket.isNonChat()) {
+			if (chatVisibility == ChatVisibility.SYSTEM && !gameMessageS2CPacket.isNonChat()) {
 				return;
 			}
 		}
@@ -995,10 +995,10 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	}
 
 	@Override
-	public void onChatMessage(ChatMessageC2SPacket packet) {
+	public void onGameMessage(ChatMessageC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (this.player.getClientChatVisibility() == ChatVisibility.HIDDEN) {
-			this.sendPacket(new ChatMessageS2CPacket(new TranslatableText("chat.cannotSend").formatted(Formatting.RED)));
+			this.sendPacket(new GameMessageS2CPacket(new TranslatableText("chat.cannotSend").formatted(Formatting.RED)));
 		} else {
 			this.player.updateLastActionTime();
 			String string = packet.getChatMessage();

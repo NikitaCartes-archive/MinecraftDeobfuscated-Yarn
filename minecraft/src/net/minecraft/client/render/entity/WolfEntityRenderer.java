@@ -21,7 +21,7 @@ public class WolfEntityRenderer extends MobEntityRenderer<WolfEntity, WolfEntity
 	}
 
 	protected float getAnimationProgress(WolfEntity wolfEntity, float f) {
-		return wolfEntity.method_6714();
+		return wolfEntity.getTailAngle();
 	}
 
 	public void render(WolfEntity wolfEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {

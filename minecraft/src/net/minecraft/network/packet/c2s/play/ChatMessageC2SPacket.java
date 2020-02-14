@@ -30,7 +30,7 @@ public class ChatMessageC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.onChatMessage(this);
+		serverPlayPacketListener.onGameMessage(this);
 	}
 
 	public String getChatMessage() {

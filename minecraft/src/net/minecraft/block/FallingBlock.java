@@ -45,7 +45,7 @@ public class FallingBlock extends Block {
 	}
 
 	@Override
-	public int getTickRate(WorldView worldView) {
+	public int getTickRate(WorldView world) {
 		return 2;
 	}
 

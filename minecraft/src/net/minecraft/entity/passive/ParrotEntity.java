@@ -16,6 +16,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LogBlock;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
@@ -118,13 +119,11 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 
 	@Nullable
 	@Override
-	public net.minecraft.entity.EntityData initialize(
-		IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable net.minecraft.entity.EntityData entityData, @Nullable CompoundTag entityTag
-	) {
+	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
 		this.setVariant(this.random.nextInt(5));
 		if (entityData == null) {
-			entityData = new PassiveEntity.EntityData();
-			((PassiveEntity.EntityData)entityData).setBabyAllowed(false);
+			entityData = new PassiveEntity.PassiveData();
+			((PassiveEntity.PassiveData)entityData).setBabyAllowed(false);
 		}
 
 		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
@@ -290,7 +289,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 
 	public static boolean canSpawn(EntityType<ParrotEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
 		Block block = world.getBlockState(pos.down()).getBlock();
-		return (block.matches(BlockTags.LEAVES) || block == Blocks.GRASS_BLOCK || block instanceof LogBlock || block == Blocks.AIR)
+		return (block.isIn(BlockTags.LEAVES) || block == Blocks.GRASS_BLOCK || block instanceof LogBlock || block == Blocks.AIR)
 			&& world.getBaseLightLevel(pos, 0) > 8;
 	}
 

@@ -50,7 +50,7 @@ public class VineBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		VoxelShape voxelShape = VoxelShapes.empty();
 		if ((Boolean)state.get(UP)) {
 			voxelShape = VoxelShapes.union(voxelShape, UP_SHAPE);

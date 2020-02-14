@@ -12,6 +12,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
@@ -523,15 +524,13 @@ public class PandaEntity extends AnimalEntity {
 
 	@Nullable
 	@Override
-	public net.minecraft.entity.EntityData initialize(
-		IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable net.minecraft.entity.EntityData entityData, @Nullable CompoundTag entityTag
-	) {
+	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
 		this.setMainGene(PandaEntity.Gene.createRandom(this.random));
 		this.setHiddenGene(PandaEntity.Gene.createRandom(this.random));
 		this.resetAttributes();
 		if (entityData == null) {
-			entityData = new PassiveEntity.EntityData();
-			((PassiveEntity.EntityData)entityData).setBabyChance(0.2F);
+			entityData = new PassiveEntity.PassiveData();
+			((PassiveEntity.PassiveData)entityData).setBabyChance(0.2F);
 		}
 
 		return super.initialize(world, difficulty, spawnType, entityData, entityTag);

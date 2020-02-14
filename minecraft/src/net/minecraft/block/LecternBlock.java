@@ -78,7 +78,7 @@ public class LecternBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public VoxelShape getCullingShape(BlockState state, BlockView view, BlockPos pos) {
+	public VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
 		return BASE_SHAPE;
 	}
 
@@ -93,12 +93,12 @@ public class LecternBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		return COLLISION_SHAPE;
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		switch ((Direction)state.get(FACING)) {
 			case NORTH:
 				return NORTH_SHAPE;
@@ -130,7 +130,7 @@ public class LecternBlock extends BlockWithEntity {
 
 	@Nullable
 	@Override
-	public BlockEntity createBlockEntity(BlockView view) {
+	public BlockEntity createBlockEntity(BlockView world) {
 		return new LecternBlockEntity();
 	}
 
@@ -219,12 +219,12 @@ public class LecternBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public int getWeakRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
+	public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
 		return state.get(POWERED) ? 15 : 0;
 	}
 
 	@Override
-	public int getStrongRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
+	public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
 		return facing == Direction.UP && state.get(POWERED) ? 15 : 0;
 	}
 
@@ -274,7 +274,7 @@ public class LecternBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
 		return false;
 	}
 }

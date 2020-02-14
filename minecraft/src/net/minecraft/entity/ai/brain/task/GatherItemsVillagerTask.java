@@ -97,7 +97,7 @@ public class GatherItemsVillagerTask extends Task<VillagerEntity> {
 		}
 
 		if (!itemStack.isEmpty()) {
-			LookTargetUtil.give(villager, itemStack, target);
+			LookTargetUtil.give(villager, itemStack, target.getPos());
 		}
 	}
 }

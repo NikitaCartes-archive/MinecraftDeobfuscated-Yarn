@@ -7,7 +7,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.server.world.ServerWorld;
 
 public abstract class Task<E extends LivingEntity> {
-	private final Map<MemoryModuleType<?>, MemoryModuleState> requiredMemoryState;
+	protected final Map<MemoryModuleType<?>, MemoryModuleState> requiredMemoryState;
 	private Task.Status status = Task.Status.STOPPED;
 	private long endTime;
 	private final int minRunTime;

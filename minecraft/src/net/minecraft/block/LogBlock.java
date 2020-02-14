@@ -13,7 +13,7 @@ public class LogBlock extends PillarBlock {
 	}
 
 	@Override
-	public MaterialColor getMapColor(BlockState state, BlockView view, BlockPos pos) {
+	public MaterialColor getMapColor(BlockState state, BlockView world, BlockPos pos) {
 		return state.get(AXIS) == Direction.Axis.Y ? this.endMaterialColor : this.materialColor;
 	}
 }

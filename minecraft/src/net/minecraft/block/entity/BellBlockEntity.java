@@ -111,7 +111,7 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 			if (livingEntity.isAlive()
 				&& !livingEntity.removed
 				&& blockPos.isWithinDistance(livingEntity.getPos(), 32.0)
-				&& livingEntity.getType().isTaggedWith(EntityTypeTags.RAIDERS)) {
+				&& livingEntity.getType().isIn(EntityTypeTags.RAIDERS)) {
 				return true;
 			}
 		}
@@ -160,7 +160,7 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 		return livingEntity.isAlive()
 			&& !livingEntity.removed
 			&& this.getPos().isWithinDistance(livingEntity.getPos(), 48.0)
-			&& livingEntity.getType().isTaggedWith(EntityTypeTags.RAIDERS);
+			&& livingEntity.getType().isIn(EntityTypeTags.RAIDERS);
 	}
 
 	private void method_20520(LivingEntity livingEntity) {

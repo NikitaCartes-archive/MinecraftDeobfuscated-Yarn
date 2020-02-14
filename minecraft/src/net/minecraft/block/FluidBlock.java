@@ -53,13 +53,13 @@ public class FluidBlock extends Block implements FluidDrainable {
 	}
 
 	@Override
-	public boolean isTranslucent(BlockState state, BlockView view, BlockPos pos) {
+	public boolean isTranslucent(BlockState state, BlockView world, BlockPos pos) {
 		return false;
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
-		return !this.fluid.matches(FluidTags.LAVA);
+	public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
+		return !this.fluid.isIn(FluidTags.LAVA);
 	}
 
 	@Override
@@ -85,13 +85,13 @@ public class FluidBlock extends Block implements FluidDrainable {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		return VoxelShapes.empty();
 	}
 
 	@Override
-	public int getTickRate(WorldView worldView) {
-		return this.fluid.getTickRate(worldView);
+	public int getTickRate(WorldView world) {
+		return this.fluid.getTickRate(world);
 	}
 
 	@Override
@@ -118,7 +118,7 @@ public class FluidBlock extends Block implements FluidDrainable {
 	}
 
 	public boolean receiveNeighborFluids(World world, BlockPos pos, BlockState state) {
-		if (this.fluid.matches(FluidTags.LAVA)) {
+		if (this.fluid.isIn(FluidTags.LAVA)) {
 			boolean bl = false;
 
 			for (Direction direction : Direction.values()) {
@@ -168,7 +168,7 @@ public class FluidBlock extends Block implements FluidDrainable {
 
 	@Override
 	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-		if (this.fluid.matches(FluidTags.LAVA)) {
+		if (this.fluid.isIn(FluidTags.LAVA)) {
 			entity.setInLava();
 		}
 	}

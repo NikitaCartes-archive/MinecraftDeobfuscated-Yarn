@@ -34,7 +34,7 @@ public class WallRedstoneTorchBlock extends RedstoneTorchBlock {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		return WallTorchBlock.getBoundingShape(state);
 	}
 
@@ -75,7 +75,7 @@ public class WallRedstoneTorchBlock extends RedstoneTorchBlock {
 	}
 
 	@Override
-	public int getWeakRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
+	public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
 		return state.get(LIT_2) && state.get(FACING) != facing ? 15 : 0;
 	}
 

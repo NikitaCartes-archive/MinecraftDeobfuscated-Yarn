@@ -33,7 +33,7 @@ public class BlockPosArgumentType implements ArgumentType<PosArgument> {
 			throw UNLOADED_EXCEPTION.create();
 		} else {
 			context.getSource().getWorld();
-			if (!ServerWorld.isValid(blockPos)) {
+			if (!ServerWorld.method_24794(blockPos)) {
 				throw OUT_OF_WORLD_EXCEPTION.create();
 			} else {
 				return blockPos;

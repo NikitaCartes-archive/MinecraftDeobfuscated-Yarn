@@ -377,8 +377,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void addChatMessage(Text message, boolean bl) {
-		if (bl) {
+	public void addMessage(Text message, boolean actionBar) {
+		if (actionBar) {
 			this.client.inGameHud.setOverlayMessage(message, false);
 		} else {
 			this.client.inGameHud.getChatHud().addMessage(message);

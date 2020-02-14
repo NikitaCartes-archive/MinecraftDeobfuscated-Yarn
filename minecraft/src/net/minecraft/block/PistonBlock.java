@@ -46,12 +46,12 @@ public class PistonBlock extends FacingBlock {
 	}
 
 	@Override
-	public boolean canSuffocate(BlockState state, BlockView view, BlockPos pos) {
+	public boolean canSuffocate(BlockState state, BlockView world, BlockPos pos) {
 		return !(Boolean)state.get(EXTENDED);
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		if ((Boolean)state.get(EXTENDED)) {
 			switch ((Direction)state.get(FACING)) {
 				case DOWN:
@@ -74,7 +74,7 @@ public class PistonBlock extends FacingBlock {
 	}
 
 	@Override
-	public boolean isSimpleFullBlock(BlockState state, BlockView view, BlockPos pos) {
+	public boolean isSimpleFullBlock(BlockState state, BlockView world, BlockPos pos) {
 		return false;
 	}
 
@@ -191,6 +191,7 @@ public class PistonBlock extends FacingBlock {
 				pos, PistonExtensionBlock.createBlockEntityPiston(this.getDefaultState().with(FACING, Direction.byId(data & 7)), direction, false, true)
 			);
 			world.updateNeighbors(pos, blockState.getBlock());
+			blockState.updateNeighborStates(world, pos, 2);
 			if (this.isSticky) {
 				BlockPos blockPos = pos.add(direction.getOffsetX() * 2, direction.getOffsetY() * 2, direction.getOffsetZ() * 2);
 				BlockState blockState2 = world.getBlockState(blockPos);
@@ -374,7 +375,7 @@ public class PistonBlock extends FacingBlock {
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
 		return false;
 	}
 }

@@ -199,7 +199,7 @@ public class LootContext {
 
 					MinecraftServer minecraftServer = this.world.getServer();
 					return new LootContext(
-						random, this.luck, this.world, minecraftServer.getLootManager()::getSupplier, minecraftServer.getPredicateManager()::get, this.parameters, this.drops
+						random, this.luck, this.world, minecraftServer.getLootManager()::getTable, minecraftServer.getPredicateManager()::get, this.parameters, this.drops
 					);
 				}
 			}

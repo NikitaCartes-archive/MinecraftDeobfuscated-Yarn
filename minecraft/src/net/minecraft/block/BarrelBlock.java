@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.minecraft.class_4838;
 import net.minecraft.block.entity.BarrelBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.container.Container;
@@ -45,6 +46,7 @@ public class BarrelBlock extends BlockWithEntity {
 			if (blockEntity instanceof BarrelBlockEntity) {
 				player.openContainer((BarrelBlockEntity)blockEntity);
 				player.incrementStat(Stats.OPEN_BARREL);
+				class_4838.method_24733(player);
 			}
 
 			return ActionResult.SUCCESS;
@@ -74,7 +76,7 @@ public class BarrelBlock extends BlockWithEntity {
 
 	@Nullable
 	@Override
-	public BlockEntity createBlockEntity(BlockView view) {
+	public BlockEntity createBlockEntity(BlockView world) {
 		return new BarrelBlockEntity();
 	}
 
@@ -121,5 +123,11 @@ public class BarrelBlock extends BlockWithEntity {
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		return this.getDefaultState().with(FACING, ctx.getPlayerLookDirection().getOpposite());
+	}
+
+	@Override
+	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+		super.onBreak(world, pos, state, player);
+		class_4838.method_24733(player);
 	}
 }

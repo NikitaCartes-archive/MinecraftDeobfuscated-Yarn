@@ -1121,7 +1121,7 @@ public abstract class PlayerEntity extends LivingEntity {
 							if (target instanceof LivingEntity) {
 								((LivingEntity)target)
 									.takeKnockback(
-										this, (float)i * 0.5F, (double)MathHelper.sin(this.yaw * (float) (Math.PI / 180.0)), (double)(-MathHelper.cos(this.yaw * (float) (Math.PI / 180.0)))
+										(float)i * 0.5F, (double)MathHelper.sin(this.yaw * (float) (Math.PI / 180.0)), (double)(-MathHelper.cos(this.yaw * (float) (Math.PI / 180.0)))
 									);
 							} else {
 								target.addVelocity(
@@ -1145,7 +1145,7 @@ public abstract class PlayerEntity extends LivingEntity {
 									&& (!(livingEntity instanceof ArmorStandEntity) || !((ArmorStandEntity)livingEntity).isMarker())
 									&& this.squaredDistanceTo(livingEntity) < 9.0) {
 									livingEntity.takeKnockback(
-										this, 0.4F, (double)MathHelper.sin(this.yaw * (float) (Math.PI / 180.0)), (double)(-MathHelper.cos(this.yaw * (float) (Math.PI / 180.0)))
+										0.4F, (double)MathHelper.sin(this.yaw * (float) (Math.PI / 180.0)), (double)(-MathHelper.cos(this.yaw * (float) (Math.PI / 180.0)))
 									);
 									livingEntity.damage(DamageSource.player(this), l);
 								}
@@ -1382,7 +1382,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		return this.sleepTimer;
 	}
 
-	public void addChatMessage(Text message, boolean bl) {
+	public void addMessage(Text message, boolean actionBar) {
 	}
 
 	public BlockPos getSpawnPosition() {

@@ -826,7 +826,6 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.registerForSelfDrop(Blocks.WARPED_FENCE_GATE);
 		this.registerForSelfDrop(Blocks.WARPED_STAIRS);
 		this.registerForSelfDrop(Blocks.WARPED_BUTTON);
-		this.registerForSelfDrop(Blocks.WARPED_DOOR);
 		this.registerForSelfDrop(Blocks.WARPED_SIGN);
 		this.registerForSelfDrop(Blocks.CRIMSON_PRESSURE_PLATE);
 		this.registerForSelfDrop(Blocks.CRIMSON_FENCE);
@@ -834,7 +833,6 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.registerForSelfDrop(Blocks.CRIMSON_FENCE_GATE);
 		this.registerForSelfDrop(Blocks.CRIMSON_STAIRS);
 		this.registerForSelfDrop(Blocks.CRIMSON_BUTTON);
-		this.registerForSelfDrop(Blocks.CRIMSON_DOOR);
 		this.registerForSelfDrop(Blocks.CRIMSON_SIGN);
 		this.registerForSelfDrop(Blocks.NETHERITE_BLOCK);
 		this.registerForSelfDrop(Blocks.ANCIENT_DEBRIS);
@@ -920,13 +918,15 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.registerWithFunction(Blocks.DIORITE_SLAB, BlockLootTableGenerator::createForSlabs);
 		this.registerWithFunction(Blocks.CRIMSON_SLAB, BlockLootTableGenerator::createForSlabs);
 		this.registerWithFunction(Blocks.WARPED_SLAB, BlockLootTableGenerator::createForSlabs);
-		this.registerWithFunction(Blocks.ACACIA_DOOR, blockx -> createForMultiblock(blockx, DoorBlock.HALF, DoubleBlockHalf.LOWER));
-		this.registerWithFunction(Blocks.BIRCH_DOOR, blockx -> createForMultiblock(blockx, DoorBlock.HALF, DoubleBlockHalf.LOWER));
-		this.registerWithFunction(Blocks.DARK_OAK_DOOR, blockx -> createForMultiblock(blockx, DoorBlock.HALF, DoubleBlockHalf.LOWER));
-		this.registerWithFunction(Blocks.IRON_DOOR, blockx -> createForMultiblock(blockx, DoorBlock.HALF, DoubleBlockHalf.LOWER));
-		this.registerWithFunction(Blocks.JUNGLE_DOOR, blockx -> createForMultiblock(blockx, DoorBlock.HALF, DoubleBlockHalf.LOWER));
-		this.registerWithFunction(Blocks.OAK_DOOR, blockx -> createForMultiblock(blockx, DoorBlock.HALF, DoubleBlockHalf.LOWER));
-		this.registerWithFunction(Blocks.SPRUCE_DOOR, blockx -> createForMultiblock(blockx, DoorBlock.HALF, DoubleBlockHalf.LOWER));
+		this.registerWithFunction(Blocks.ACACIA_DOOR, BlockLootTableGenerator::method_24817);
+		this.registerWithFunction(Blocks.BIRCH_DOOR, BlockLootTableGenerator::method_24817);
+		this.registerWithFunction(Blocks.DARK_OAK_DOOR, BlockLootTableGenerator::method_24817);
+		this.registerWithFunction(Blocks.IRON_DOOR, BlockLootTableGenerator::method_24817);
+		this.registerWithFunction(Blocks.JUNGLE_DOOR, BlockLootTableGenerator::method_24817);
+		this.registerWithFunction(Blocks.OAK_DOOR, BlockLootTableGenerator::method_24817);
+		this.registerWithFunction(Blocks.SPRUCE_DOOR, BlockLootTableGenerator::method_24817);
+		this.registerWithFunction(Blocks.WARPED_DOOR, BlockLootTableGenerator::method_24817);
+		this.registerWithFunction(Blocks.CRIMSON_DOOR, BlockLootTableGenerator::method_24817);
 		this.registerWithFunction(Blocks.BLACK_BED, blockx -> createForMultiblock(blockx, BedBlock.PART, BedPart.HEAD));
 		this.registerWithFunction(Blocks.BLUE_BED, blockx -> createForMultiblock(blockx, BedBlock.PART, BedPart.HEAD));
 		this.registerWithFunction(Blocks.BROWN_BED, blockx -> createForMultiblock(blockx, BedBlock.PART, BedPart.HEAD));
@@ -1473,6 +1473,10 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		if (!this.lootTables.isEmpty()) {
 			throw new IllegalStateException("Created block loot tables for non-blocks: " + this.lootTables.keySet());
 		}
+	}
+
+	public static LootTable.Builder method_24817(Block block) {
+		return createForMultiblock(block, DoorBlock.HALF, DoubleBlockHalf.LOWER);
 	}
 
 	public void registerForPottedPlant(Block block) {

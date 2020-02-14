@@ -112,28 +112,24 @@ public class WallBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		return (VoxelShape)this.shapeMap.get(state);
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		return (VoxelShape)this.collisionShapeMap.get(state);
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
 		return false;
 	}
 
 	private boolean shouldConnectTo(BlockState state, boolean faceFullSquare, Direction side) {
 		Block block = state.getBlock();
-		boolean bl = block.matches(BlockTags.WALLS) || block instanceof FenceGateBlock && FenceGateBlock.canWallConnect(state, side);
+		boolean bl = block.isIn(BlockTags.WALLS) || block instanceof FenceGateBlock && FenceGateBlock.canWallConnect(state, side);
 		return !cannotConnect(block) && faceFullSquare || bl;
-	}
-
-	private static boolean forcePillar(Block block) {
-		return block == Blocks.LANTERN || block == Blocks.TORCH || block == Blocks.REDSTONE_TORCH;
 	}
 
 	@Override
@@ -150,7 +146,7 @@ public class WallBlock extends Block implements Waterloggable {
 		BlockState blockState2 = worldView.getBlockState(blockPos3);
 		BlockState blockState3 = worldView.getBlockState(blockPos4);
 		BlockState blockState4 = worldView.getBlockState(blockPos5);
-		BlockState blockState5 = worldView.getBlockState(blockPos5);
+		BlockState blockState5 = worldView.getBlockState(blockPos6);
 		boolean bl = this.shouldConnectTo(blockState, blockState.isSideSolidFullSquare(worldView, blockPos2, Direction.SOUTH), Direction.SOUTH);
 		boolean bl2 = this.shouldConnectTo(blockState2, blockState2.isSideSolidFullSquare(worldView, blockPos3, Direction.WEST), Direction.WEST);
 		boolean bl3 = this.shouldConnectTo(blockState3, blockState3.isSideSolidFullSquare(worldView, blockPos4, Direction.NORTH), Direction.NORTH);
@@ -214,7 +210,7 @@ public class WallBlock extends Block implements Waterloggable {
 	) {
 		VoxelShape voxelShape = blockState2.getCollisionShape(worldView, blockPos).getFace(Direction.DOWN);
 		boolean bl5 = (!bl || bl2 || !bl3 || bl4) && (bl || !bl2 || bl3 || !bl4);
-		boolean bl6 = bl5 || forcePillar(blockState2.getBlock()) || method_24427(voxelShape, field_22163);
+		boolean bl6 = bl5 || blockState2.getBlock().isIn(BlockTags.WALL_POST_OVERRIDE) || method_24427(voxelShape, field_22163);
 		return this.method_24425(blockState.with(UP, Boolean.valueOf(bl6)), bl, bl2, bl3, bl4, voxelShape);
 	}
 
@@ -239,7 +235,7 @@ public class WallBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public boolean isTranslucent(BlockState state, BlockView view, BlockPos pos) {
+	public boolean isTranslucent(BlockState state, BlockView world, BlockPos pos) {
 		return !(Boolean)state.get(WATERLOGGED);
 	}
 

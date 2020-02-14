@@ -172,17 +172,17 @@ public class ComposterBlock extends Block implements InventoryProvider {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		return LEVEL_TO_COLLISION_SHAPE[state.get(LEVEL)];
 	}
 
 	@Override
-	public VoxelShape getRayTraceShape(BlockState state, BlockView view, BlockPos pos) {
+	public VoxelShape getRayTraceShape(BlockState state, BlockView world, BlockPos pos) {
 		return RAY_TRACE_SHAPE;
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		return LEVEL_TO_COLLISION_SHAPE[0];
 	}
 
@@ -272,7 +272,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
 		return false;
 	}
 

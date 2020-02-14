@@ -5,8 +5,10 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
@@ -15,8 +17,10 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
@@ -182,6 +186,33 @@ public abstract class AnimalEntity extends PassiveEntity {
 			return false;
 		} else {
 			return other.getClass() != this.getClass() ? false : this.isInLove() && other.isInLove();
+		}
+	}
+
+	public void method_24650(World world, AnimalEntity animalEntity) {
+		PassiveEntity passiveEntity = this.createChild(animalEntity);
+		if (passiveEntity != null) {
+			ServerPlayerEntity serverPlayerEntity = this.getLovingPlayer();
+			if (serverPlayerEntity == null && animalEntity.getLovingPlayer() != null) {
+				serverPlayerEntity = animalEntity.getLovingPlayer();
+			}
+
+			if (serverPlayerEntity != null) {
+				serverPlayerEntity.incrementStat(Stats.ANIMALS_BRED);
+				Criterions.BRED_ANIMALS.trigger(serverPlayerEntity, this, animalEntity, passiveEntity);
+			}
+
+			this.setBreedingAge(6000);
+			animalEntity.setBreedingAge(6000);
+			this.resetLoveTicks();
+			animalEntity.resetLoveTicks();
+			passiveEntity.setBreedingAge(-24000);
+			passiveEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), 0.0F, 0.0F);
+			world.spawnEntity(passiveEntity);
+			world.sendEntityStatus(this, (byte)18);
+			if (world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
+				world.spawnEntity(new ExperienceOrbEntity(world, this.getX(), this.getY(), this.getZ(), this.getRandom().nextInt(7) + 1));
+			}
 		}
 	}
 

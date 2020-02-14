@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
+import net.minecraft.block.DoorBlock;
 import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.Path;
@@ -95,7 +96,7 @@ public class MoveThroughVillageGoal extends Goal {
 						for (int i = 0; i < this.targetPath.getLength(); i++) {
 							PathNode pathNode = this.targetPath.getNode(i);
 							BlockPos blockPos2 = new BlockPos(pathNode.x, pathNode.y + 1, pathNode.z);
-							if (DoorInteractGoal.isWoodenDoor(this.mob.world, blockPos2)) {
+							if (DoorBlock.method_24795(this.mob.world, blockPos2)) {
 								this.targetPath = this.mob.getNavigation().findPathTo((double)pathNode.x, (double)pathNode.y, (double)pathNode.z, 0);
 								break;
 							}

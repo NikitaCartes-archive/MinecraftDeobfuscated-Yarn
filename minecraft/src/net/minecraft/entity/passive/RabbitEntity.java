@@ -9,6 +9,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CarrotsBlock;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
@@ -341,14 +342,12 @@ public class RabbitEntity extends AnimalEntity {
 
 	@Nullable
 	@Override
-	public net.minecraft.entity.EntityData initialize(
-		IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable net.minecraft.entity.EntityData entityData, @Nullable CompoundTag entityTag
-	) {
+	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
 		int i = this.chooseType(world);
-		if (entityData instanceof RabbitEntity.RabbitEntityData) {
-			i = ((RabbitEntity.RabbitEntityData)entityData).type;
+		if (entityData instanceof RabbitEntity.RabbitData) {
+			i = ((RabbitEntity.RabbitData)entityData).type;
 		} else {
-			entityData = new RabbitEntity.RabbitEntityData(i);
+			entityData = new RabbitEntity.RabbitData(i);
 		}
 
 		this.setRabbitType(i);
@@ -510,10 +509,10 @@ public class RabbitEntity extends AnimalEntity {
 		}
 	}
 
-	public static class RabbitEntityData extends PassiveEntity.EntityData {
+	public static class RabbitData extends PassiveEntity.PassiveData {
 		public final int type;
 
-		public RabbitEntityData(int type) {
+		public RabbitData(int type) {
 			this.type = type;
 			this.setBabyChance(1.0F);
 		}

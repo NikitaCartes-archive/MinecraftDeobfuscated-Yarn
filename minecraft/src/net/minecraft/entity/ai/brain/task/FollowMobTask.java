@@ -24,6 +24,10 @@ public class FollowMobTask extends Task<LivingEntity> {
 		this(livingEntity -> entityType.equals(livingEntity.getType()), maxDistance);
 	}
 
+	public FollowMobTask(float f) {
+		this(livingEntity -> true, f);
+	}
+
 	public FollowMobTask(Predicate<LivingEntity> mobType, float maxDistance) {
 		super(ImmutableMap.of(MemoryModuleType.LOOK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.VISIBLE_MOBS, MemoryModuleState.VALUE_PRESENT));
 		this.mobType = mobType;

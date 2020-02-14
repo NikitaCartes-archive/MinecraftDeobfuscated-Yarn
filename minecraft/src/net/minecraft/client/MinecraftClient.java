@@ -1018,6 +1018,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 		if (active) {
 			this.tickProfilerResult = this.tickTimeTracker.getResult();
+		} else {
+			this.tickProfilerResult = null;
 		}
 
 		this.profiler = this.tickTimeTracker.getProfiler();

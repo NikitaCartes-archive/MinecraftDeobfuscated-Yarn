@@ -7,6 +7,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
@@ -186,12 +187,10 @@ public class PolarBearEntity extends AnimalEntity {
 	}
 
 	@Override
-	public net.minecraft.entity.EntityData initialize(
-		IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable net.minecraft.entity.EntityData entityData, @Nullable CompoundTag entityTag
-	) {
+	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
 		if (entityData == null) {
-			entityData = new PassiveEntity.EntityData();
-			((PassiveEntity.EntityData)entityData).setBabyChance(1.0F);
+			entityData = new PassiveEntity.PassiveData();
+			((PassiveEntity.PassiveData)entityData).setBabyChance(1.0F);
 		}
 
 		return super.initialize(world, difficulty, spawnType, entityData, entityTag);

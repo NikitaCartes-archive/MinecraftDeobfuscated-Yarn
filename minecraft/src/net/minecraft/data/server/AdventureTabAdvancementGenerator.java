@@ -103,7 +103,9 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 		EntityType.PHANTOM,
 		EntityType.DROWNED,
 		EntityType.PILLAGER,
-		EntityType.RAVAGER
+		EntityType.RAVAGER,
+		EntityType.HOGLIN,
+		EntityType.PIGLIN
 	};
 
 	public void accept(Consumer<Advancement> consumer) {

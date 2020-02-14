@@ -74,12 +74,12 @@ public class ConnectingBlock extends Block {
 	}
 
 	@Override
-	public boolean isTranslucent(BlockState state, BlockView view, BlockPos pos) {
+	public boolean isTranslucent(BlockState state, BlockView world, BlockPos pos) {
 		return false;
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		return this.CONNECTIONS_TO_SHAPE[this.getConnectionMask(state)];
 	}
 

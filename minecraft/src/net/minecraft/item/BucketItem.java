@@ -56,7 +56,7 @@ public class BucketItem extends Item {
 					Fluid fluid = ((FluidDrainable)blockState.getBlock()).tryDrainFluid(world, blockPos, blockState);
 					if (fluid != Fluids.EMPTY) {
 						user.incrementStat(Stats.USED.getOrCreateStat(this));
-						user.playSound(fluid.matches(FluidTags.LAVA) ? SoundEvents.ITEM_BUCKET_FILL_LAVA : SoundEvents.ITEM_BUCKET_FILL, 1.0F, 1.0F);
+						user.playSound(fluid.isIn(FluidTags.LAVA) ? SoundEvents.ITEM_BUCKET_FILL_LAVA : SoundEvents.ITEM_BUCKET_FILL, 1.0F, 1.0F);
 						ItemStack itemStack2 = this.getFilledStack(itemStack, user, fluid.getBucketItem());
 						if (!world.isClient) {
 							Criterions.FILLED_BUCKET.trigger((ServerPlayerEntity)user, new ItemStack(fluid.getBucketItem()));
@@ -119,7 +119,7 @@ public class BucketItem extends Item {
 			if (blockState.isAir()
 				|| bl
 				|| blockState.getBlock() instanceof FluidFillable && ((FluidFillable)blockState.getBlock()).canFillWithFluid(world, pos, blockState, this.fluid)) {
-				if (world.dimension.doesWaterVaporize() && this.fluid.matches(FluidTags.WATER)) {
+				if (world.dimension.doesWaterVaporize() && this.fluid.isIn(FluidTags.WATER)) {
 					int i = pos.getX();
 					int j = pos.getY();
 					int k = pos.getZ();
@@ -151,7 +151,7 @@ public class BucketItem extends Item {
 	}
 
 	protected void playEmptyingSound(@Nullable PlayerEntity player, IWorld world, BlockPos pos) {
-		SoundEvent soundEvent = this.fluid.matches(FluidTags.LAVA) ? SoundEvents.ITEM_BUCKET_EMPTY_LAVA : SoundEvents.ITEM_BUCKET_EMPTY;
+		SoundEvent soundEvent = this.fluid.isIn(FluidTags.LAVA) ? SoundEvents.ITEM_BUCKET_EMPTY_LAVA : SoundEvents.ITEM_BUCKET_EMPTY;
 		world.playSound(player, pos, soundEvent, SoundCategory.BLOCKS, 1.0F, 1.0F);
 	}
 }

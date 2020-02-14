@@ -68,7 +68,7 @@ public class KelpPlantBlock extends Block implements FluidFillable {
 	}
 
 	@Override
-	public boolean canFillWithFluid(BlockView view, BlockPos pos, BlockState state, Fluid fluid) {
+	public boolean canFillWithFluid(BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
 		return false;
 	}
 

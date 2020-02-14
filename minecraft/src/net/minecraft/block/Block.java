@@ -155,8 +155,8 @@ public class Block implements ItemConvertible {
 	}
 
 	@Deprecated
-	public boolean allowsSpawning(BlockState state, BlockView view, BlockPos pos, EntityType<?> type) {
-		return state.isSideSolidFullSquare(view, pos, Direction.UP) && this.lightLevel < 14;
+	public boolean allowsSpawning(BlockState state, BlockView world, BlockPos pos, EntityType<?> type) {
+		return state.isSideSolidFullSquare(world, pos, Direction.UP) && this.lightLevel < 14;
 	}
 
 	@Deprecated
@@ -175,7 +175,7 @@ public class Block implements ItemConvertible {
 	}
 
 	@Deprecated
-	public MaterialColor getMapColor(BlockState state, BlockView view, BlockPos pos) {
+	public MaterialColor getMapColor(BlockState state, BlockView world, BlockPos pos) {
 		return this.materialColor;
 	}
 
@@ -191,7 +191,7 @@ public class Block implements ItemConvertible {
 		}
 	}
 
-	public boolean matches(Tag<Block> tag) {
+	public boolean isIn(Tag<Block> tag) {
 		return tag.contains(this);
 	}
 
@@ -266,34 +266,34 @@ public class Block implements ItemConvertible {
 			|| block == Blocks.JACK_O_LANTERN
 			|| block == Blocks.MELON
 			|| block == Blocks.PUMPKIN
-			|| block.matches(BlockTags.SHULKER_BOXES);
+			|| block.isIn(BlockTags.SHULKER_BOXES);
 	}
 
 	@Deprecated
-	public boolean isSimpleFullBlock(BlockState state, BlockView view, BlockPos pos) {
-		return state.getMaterial().blocksLight() && state.isFullCube(view, pos) && !state.emitsRedstonePower();
+	public boolean isSimpleFullBlock(BlockState state, BlockView world, BlockPos pos) {
+		return state.getMaterial().blocksLight() && state.isFullCube(world, pos) && !state.emitsRedstonePower();
 	}
 
 	@Deprecated
-	public boolean canSuffocate(BlockState state, BlockView view, BlockPos pos) {
-		return this.material.blocksMovement() && state.isFullCube(view, pos);
+	public boolean canSuffocate(BlockState state, BlockView world, BlockPos pos) {
+		return this.material.blocksMovement() && state.isFullCube(world, pos);
 	}
 
 	@Deprecated
 	@Environment(EnvType.CLIENT)
-	public boolean hasInWallOverlay(BlockState state, BlockView view, BlockPos pos) {
-		return state.canSuffocate(view, pos);
+	public boolean hasInWallOverlay(BlockState state, BlockView world, BlockPos pos) {
+		return state.canSuffocate(world, pos);
 	}
 
 	@Deprecated
-	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
 		switch (env) {
 			case LAND:
-				return !world.isFullCube(view, pos);
+				return !state.isFullCube(world, pos);
 			case WATER:
-				return view.getFluidState(pos).matches(FluidTags.WATER);
+				return world.getFluidState(pos).matches(FluidTags.WATER);
 			case AIR:
-				return !world.isFullCube(view, pos);
+				return !state.isFullCube(world, pos);
 			default:
 				return false;
 		}
@@ -328,7 +328,7 @@ public class Block implements ItemConvertible {
 	}
 
 	@Deprecated
-	public boolean shouldPostProcess(BlockState state, BlockView view, BlockPos pos) {
+	public boolean shouldPostProcess(BlockState state, BlockView world, BlockPos pos) {
 		return false;
 	}
 
@@ -339,9 +339,9 @@ public class Block implements ItemConvertible {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static boolean shouldDrawSide(BlockState state, BlockView view, BlockPos pos, Direction facing) {
+	public static boolean shouldDrawSide(BlockState state, BlockView world, BlockPos pos, Direction facing) {
 		BlockPos blockPos = pos.offset(facing);
-		BlockState blockState = view.getBlockState(blockPos);
+		BlockState blockState = world.getBlockState(blockPos);
 		if (state.isSideInvisible(blockState, facing)) {
 			return false;
 		} else if (blockState.isOpaque()) {
@@ -351,8 +351,8 @@ public class Block implements ItemConvertible {
 			if (b != 127) {
 				return b != 0;
 			} else {
-				VoxelShape voxelShape = state.getCullingFace(view, pos, facing);
-				VoxelShape voxelShape2 = blockState.getCullingFace(view, blockPos, facing.getOpposite());
+				VoxelShape voxelShape = state.getCullingFace(world, pos, facing);
+				VoxelShape voxelShape2 = blockState.getCullingFace(world, blockPos, facing.getOpposite());
 				boolean bl = VoxelShapes.matchesAnywhere(voxelShape, voxelShape2, BooleanBiFunction.ONLY_FIRST);
 				if (object2ByteLinkedOpenHashMap.size() == 2048) {
 					object2ByteLinkedOpenHashMap.removeLastByte();
@@ -378,22 +378,22 @@ public class Block implements ItemConvertible {
 	}
 
 	@Deprecated
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		return VoxelShapes.fullCube();
 	}
 
 	@Deprecated
-	public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
-		return this.collidable ? state.getOutlineShape(view, pos) : VoxelShapes.empty();
+	public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+		return this.collidable ? state.getOutlineShape(world, pos) : VoxelShapes.empty();
 	}
 
 	@Deprecated
-	public VoxelShape getCullingShape(BlockState state, BlockView view, BlockPos pos) {
-		return state.getOutlineShape(view, pos);
+	public VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
+		return state.getOutlineShape(world, pos);
 	}
 
 	@Deprecated
-	public VoxelShape getRayTraceShape(BlockState state, BlockView view, BlockPos pos) {
+	public VoxelShape getRayTraceShape(BlockState state, BlockView world, BlockPos pos) {
 		return VoxelShapes.empty();
 	}
 
@@ -423,20 +423,20 @@ public class Block implements ItemConvertible {
 	}
 
 	@Deprecated
-	public final boolean isFullOpaque(BlockState state, BlockView view, BlockPos pos) {
-		return state.isOpaque() ? isShapeFullCube(state.getCullingShape(view, pos)) : false;
+	public final boolean isFullOpaque(BlockState state, BlockView world, BlockPos pos) {
+		return state.isOpaque() ? isShapeFullCube(state.getCullingShape(world, pos)) : false;
 	}
 
-	public boolean isTranslucent(BlockState state, BlockView view, BlockPos pos) {
-		return !isShapeFullCube(state.getOutlineShape(view, pos)) && state.getFluidState().isEmpty();
+	public boolean isTranslucent(BlockState state, BlockView world, BlockPos pos) {
+		return !isShapeFullCube(state.getOutlineShape(world, pos)) && state.getFluidState().isEmpty();
 	}
 
 	@Deprecated
-	public int getOpacity(BlockState state, BlockView view, BlockPos pos) {
-		if (state.isFullOpaque(view, pos)) {
-			return view.getMaxLightLevel();
+	public int getOpacity(BlockState state, BlockView world, BlockPos pos) {
+		if (state.isFullOpaque(world, pos)) {
+			return world.getMaxLightLevel();
 		} else {
-			return state.isTranslucent(view, pos) ? 0 : 1;
+			return state.isTranslucent(world, pos) ? 0 : 1;
 		}
 	}
 
@@ -466,7 +466,7 @@ public class Block implements ItemConvertible {
 		DebugInfoSender.sendNeighborUpdate(world, pos);
 	}
 
-	public int getTickRate(WorldView worldView) {
+	public int getTickRate(WorldView world) {
 		return 10;
 	}
 
@@ -519,7 +519,7 @@ public class Block implements ItemConvertible {
 		} else {
 			LootContext lootContext = builder.put(LootContextParameters.BLOCK_STATE, state).build(LootContextTypes.BLOCK);
 			ServerWorld serverWorld = lootContext.getWorld();
-			LootTable lootTable = serverWorld.getServer().getLootManager().getSupplier(identifier);
+			LootTable lootTable = serverWorld.getServer().getLootManager().getTable(identifier);
 			return lootTable.getDrops(lootContext);
 		}
 	}
@@ -547,7 +547,7 @@ public class Block implements ItemConvertible {
 
 	public static void dropStacks(BlockState state, World world, BlockPos pos) {
 		if (world instanceof ServerWorld) {
-			getDroppedStacks(state, (ServerWorld)world, pos, null).forEach(itemStack -> dropStack(world, pos, itemStack));
+			getDroppedStacks(state, (ServerWorld)world, pos, null).forEach(stack -> dropStack(world, pos, stack));
 		}
 
 		state.onStacksDropped(world, pos, ItemStack.EMPTY);
@@ -555,7 +555,7 @@ public class Block implements ItemConvertible {
 
 	public static void dropStacks(BlockState state, World world, BlockPos pos, @Nullable BlockEntity blockEntity) {
 		if (world instanceof ServerWorld) {
-			getDroppedStacks(state, (ServerWorld)world, pos, blockEntity).forEach(itemStack -> dropStack(world, pos, itemStack));
+			getDroppedStacks(state, (ServerWorld)world, pos, blockEntity).forEach(stack -> dropStack(world, pos, stack));
 		}
 
 		state.onStacksDropped(world, pos, ItemStack.EMPTY);
@@ -621,7 +621,7 @@ public class Block implements ItemConvertible {
 	}
 
 	@Deprecated
-	public int getWeakRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
+	public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
 		return 0;
 	}
 
@@ -635,7 +635,7 @@ public class Block implements ItemConvertible {
 	}
 
 	@Deprecated
-	public int getStrongRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
+	public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
 		return 0;
 	}
 
@@ -677,8 +677,8 @@ public class Block implements ItemConvertible {
 
 	@Deprecated
 	@Environment(EnvType.CLIENT)
-	public float getAmbientOcclusionLightLevel(BlockState state, BlockView view, BlockPos pos) {
-		return state.isFullCube(view, pos) ? 0.2F : 1.0F;
+	public float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
+		return state.isFullCube(world, pos) ? 0.2F : 1.0F;
 	}
 
 	public void onLandedUpon(World world, BlockPos pos, Entity entity, float distance) {
@@ -765,7 +765,7 @@ public class Block implements ItemConvertible {
 	}
 
 	@Deprecated
-	public Vec3d getOffsetPos(BlockState state, BlockView view, BlockPos blockPos) {
+	public Vec3d getOffsetPos(BlockState state, BlockView world, BlockPos blockPos) {
 		Block.OffsetType offsetType = this.getOffsetType();
 		if (offsetType == Block.OffsetType.NONE) {
 			return Vec3d.ZERO;
@@ -801,7 +801,7 @@ public class Block implements ItemConvertible {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void buildTooltip(ItemStack stack, @Nullable BlockView view, List<Text> tooltip, TooltipContext options) {
+	public void buildTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
 	}
 
 	public static final class NeighborGroup {

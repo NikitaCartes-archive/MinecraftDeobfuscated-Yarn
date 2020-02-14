@@ -57,7 +57,7 @@ public class FarmlandBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		return SHAPE;
 	}
 
@@ -117,13 +117,13 @@ public class FarmlandBlock extends Block {
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
 		return false;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean hasInWallOverlay(BlockState state, BlockView view, BlockPos pos) {
+	public boolean hasInWallOverlay(BlockState state, BlockView world, BlockPos pos) {
 		return true;
 	}
 }

@@ -48,7 +48,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		if (!(Boolean)state.get(OPEN)) {
 			return state.get(HALF) == BlockHalf.TOP ? OPEN_TOP_SHAPE : OPEN_BOTTOM_SHAPE;
 		} else {
@@ -67,14 +67,14 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
 		switch (env) {
 			case LAND:
-				return (Boolean)world.get(OPEN);
+				return (Boolean)state.get(OPEN);
 			case WATER:
-				return (Boolean)world.get(WATERLOGGED);
+				return (Boolean)state.get(WATERLOGGED);
 			case AIR:
-				return (Boolean)world.get(OPEN);
+				return (Boolean)state.get(OPEN);
 			default:
 				return false;
 		}
@@ -162,7 +162,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 	}
 
 	@Override
-	public boolean allowsSpawning(BlockState state, BlockView view, BlockPos pos, EntityType<?> type) {
+	public boolean allowsSpawning(BlockState state, BlockView world, BlockPos pos, EntityType<?> type) {
 		return false;
 	}
 }

@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
+import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -759,7 +760,7 @@ public abstract class LivingEntity extends Entity {
 	 * Removes a status effect from this entity without calling any listener.
 	 * 
 	 * <p> This method does not perform any cleanup or synchronization operation.
-	 * Under most circumstances, calling {@link net.minecraft.entity.LivingEntity
+	 * Under most circumstances, calling {@link net.minecraft.entity.LivingEntity#removeStatusEffect(net.minecraft.entity.effect.StatusEffect)} is highly preferable.
 	 */
 	@Nullable
 	public StatusEffectInstance removeStatusEffectInternal(@Nullable StatusEffect type) {
@@ -936,7 +937,7 @@ public abstract class LivingEntity extends Entity {
 					}
 
 					this.knockbackVelocity = (float)(MathHelper.atan2(e, d) * 180.0F / (float)Math.PI - (double)this.yaw);
-					this.takeKnockback(entity2, 0.4F, d, e);
+					this.takeKnockback(0.4F, d, e);
 				} else {
 					this.knockbackVelocity = (float)((int)(Math.random() * 2.0) * 180);
 				}
@@ -981,7 +982,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	protected void knockback(LivingEntity target) {
-		target.takeKnockback(this, 0.5F, target.getX() - this.getX(), target.getZ() - this.getZ());
+		target.takeKnockback(0.5F, target.getX() - this.getX(), target.getZ() - this.getZ());
 	}
 
 	private boolean tryUseTotem(DamageSource source) {
@@ -1172,7 +1173,7 @@ public abstract class LivingEntity extends Entity {
 
 	protected void dropLoot(DamageSource source, boolean causedByPlayer) {
 		Identifier identifier = this.getLootTable();
-		LootTable lootTable = this.world.getServer().getLootManager().getSupplier(identifier);
+		LootTable lootTable = this.world.getServer().getLootManager().getTable(identifier);
 		LootContext.Builder builder = this.getLootContextBuilder(causedByPlayer, source);
 		lootTable.dropLimited(builder.build(LootContextTypes.ENTITY), this::dropStack);
 	}
@@ -1192,13 +1193,13 @@ public abstract class LivingEntity extends Entity {
 		return builder;
 	}
 
-	public void takeKnockback(Entity attacker, float speed, double xMovement, double zMovement) {
-		speed = (float)((double)speed * (1.0 - this.getAttributeInstance(EntityAttributes.KNOCKBACK_RESISTANCE).getValue()));
-		if (!(speed <= 0.0F)) {
+	public void takeKnockback(float f, double d, double e) {
+		f = (float)((double)f * (1.0 - this.getAttributeInstance(EntityAttributes.KNOCKBACK_RESISTANCE).getValue()));
+		if (!(f <= 0.0F)) {
 			this.velocityDirty = true;
 			Vec3d vec3d = this.getVelocity();
-			Vec3d vec3d2 = new Vec3d(xMovement, 0.0, zMovement).normalize().multiply((double)speed);
-			this.setVelocity(vec3d.x / 2.0 - vec3d2.x, this.onGround ? Math.min(0.4, vec3d.y / 2.0 + (double)speed) : vec3d.y, vec3d.z / 2.0 - vec3d2.z);
+			Vec3d vec3d2 = new Vec3d(d, 0.0, e).normalize().multiply((double)f);
+			this.setVelocity(vec3d.x / 2.0 - vec3d2.x, this.onGround ? Math.min(0.4, vec3d.y / 2.0 + (double)f) : vec3d.y, vec3d.z / 2.0 - vec3d2.z);
 		}
 	}
 
@@ -1612,6 +1613,14 @@ public abstract class LivingEntity extends Entity {
 		return this.getEquippedStack(EquipmentSlot.OFFHAND);
 	}
 
+	public boolean method_24518(Item item) {
+		return this.method_24520(item2 -> item2 == item);
+	}
+
+	public boolean method_24520(Predicate<Item> predicate) {
+		return predicate.test(this.getMainHandStack().getItem()) || predicate.test(this.getOffHandStack().getItem());
+	}
+
 	public ItemStack getStackInHand(Hand hand) {
 		if (hand == Hand.MAIN_HAND) {
 			return this.getEquippedStack(EquipmentSlot.MAINHAND);
@@ -1695,7 +1704,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	private void onDismounted(Entity vehicle) {
-		if (this.world.getBlockState(new BlockPos(vehicle)).getBlock().matches(BlockTags.PORTALS)) {
+		if (this.world.getBlockState(new BlockPos(vehicle)).getBlock().isIn(BlockTags.PORTALS)) {
 			this.updatePosition(vehicle.getX(), vehicle.getBodyY(1.0) + 0.001, vehicle.getZ());
 		} else if (!(vehicle instanceof BoatEntity) && !(vehicle instanceof HorseBaseEntity)) {
 			double q = vehicle.getX();

@@ -24,9 +24,9 @@ public class WitherRoseBlock extends FlowerBlock {
 	}
 
 	@Override
-	protected boolean canPlantOnTop(BlockState floor, BlockView view, BlockPos pos) {
+	protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
 		Block block = floor.getBlock();
-		return super.canPlantOnTop(floor, view, pos) || block == Blocks.NETHERRACK || block == Blocks.SOUL_SAND || block == Blocks.SOUL_SOIL;
+		return super.canPlantOnTop(floor, world, pos) || block == Blocks.NETHERRACK || block == Blocks.SOUL_SAND || block == Blocks.SOUL_SOIL;
 	}
 
 	@Environment(EnvType.CLIENT)

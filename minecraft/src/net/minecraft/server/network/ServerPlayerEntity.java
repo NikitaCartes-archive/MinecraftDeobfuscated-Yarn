@@ -45,7 +45,6 @@ import net.minecraft.network.MessageType;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.CloseContainerS2CPacket;
 import net.minecraft.network.packet.s2c.play.CombatEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.ContainerPropertyUpdateS2CPacket;
@@ -56,6 +55,7 @@ import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
 import net.minecraft.network.packet.s2c.play.ExperienceBarUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.network.packet.s2c.play.HealthUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
@@ -799,7 +799,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			Container container = nameableContainerFactory.createMenu(this.containerSyncId, this.inventory, this);
 			if (container == null) {
 				if (this.isSpectator()) {
-					this.addChatMessage(new TranslatableText("container.spectatorCantOpen").formatted(Formatting.RED), true);
+					this.addMessage(new TranslatableText("container.spectatorCantOpen").formatted(Formatting.RED), true);
 				}
 
 				return OptionalInt.empty();
@@ -963,8 +963,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void addChatMessage(Text message, boolean bl) {
-		this.networkHandler.sendPacket(new ChatMessageS2CPacket(message, bl ? MessageType.GAME_INFO : MessageType.CHAT));
+	public void addMessage(Text message, boolean actionBar) {
+		this.networkHandler.sendPacket(new GameMessageS2CPacket(message, actionBar ? MessageType.GAME_INFO : MessageType.CHAT));
 	}
 
 	@Override
@@ -1117,14 +1117,14 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	public void sendChatMessage(Text text, MessageType messageType) {
 		this.networkHandler
 			.sendPacket(
-				new ChatMessageS2CPacket(text, messageType),
+				new GameMessageS2CPacket(text, messageType),
 				future -> {
 					if (!future.isSuccess() && (messageType == MessageType.GAME_INFO || messageType == MessageType.SYSTEM)) {
 						int i = 256;
 						String string = text.asTruncatedString(256);
 						Text text2 = new LiteralText(string).formatted(Formatting.YELLOW);
 						this.networkHandler
-							.sendPacket(new ChatMessageS2CPacket(new TranslatableText("multiplayer.message_not_delivered", text2).formatted(Formatting.RED), MessageType.SYSTEM));
+							.sendPacket(new GameMessageS2CPacket(new TranslatableText("multiplayer.message_not_delivered", text2).formatted(Formatting.RED), MessageType.SYSTEM));
 					}
 				}
 			);

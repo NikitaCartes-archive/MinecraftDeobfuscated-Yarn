@@ -96,7 +96,7 @@ public interface FluidState extends State<FluidState> {
 	}
 
 	default boolean matches(Tag<Fluid> tag) {
-		return this.getFluid().matches(tag);
+		return this.getFluid().isIn(tag);
 	}
 
 	default float getBlastResistance() {

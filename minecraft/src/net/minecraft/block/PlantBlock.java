@@ -11,7 +11,7 @@ public class PlantBlock extends Block {
 		super(settings);
 	}
 
-	protected boolean canPlantOnTop(BlockState floor, BlockView view, BlockPos pos) {
+	protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
 		Block block = floor.getBlock();
 		return block == Blocks.GRASS_BLOCK || block == Blocks.DIRT || block == Blocks.COARSE_DIRT || block == Blocks.PODZOL || block == Blocks.FARMLAND;
 	}
@@ -28,12 +28,12 @@ public class PlantBlock extends Block {
 	}
 
 	@Override
-	public boolean isTranslucent(BlockState state, BlockView view, BlockPos pos) {
+	public boolean isTranslucent(BlockState state, BlockView world, BlockPos pos) {
 		return true;
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
-		return env == BlockPlacementEnvironment.AIR && !this.collidable ? true : super.canPlaceAtSide(world, view, pos, env);
+	public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
+		return env == BlockPlacementEnvironment.AIR && !this.collidable ? true : super.canPlaceAtSide(state, world, pos, env);
 	}
 }

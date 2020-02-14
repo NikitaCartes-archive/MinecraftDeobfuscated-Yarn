@@ -26,7 +26,7 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		return SHAPE;
 	}
 
@@ -52,16 +52,16 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public int getStrongRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
-		return state.getWeakRedstonePower(view, pos, facing);
+	public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
+		return state.getWeakRedstonePower(world, pos, facing);
 	}
 
 	@Override
-	public int getWeakRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
+	public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
 		if (!(Boolean)state.get(POWERED)) {
 			return 0;
 		} else {
-			return state.get(FACING) == facing ? this.getOutputLevel(view, pos, state) : 0;
+			return state.get(FACING) == facing ? this.getOutputLevel(world, pos, state) : 0;
 		}
 	}
 
@@ -179,7 +179,7 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 		return state.emitsRedstonePower();
 	}
 
-	protected int getOutputLevel(BlockView view, BlockPos pos, BlockState state) {
+	protected int getOutputLevel(BlockView world, BlockPos pos, BlockState state) {
 		return 15;
 	}
 

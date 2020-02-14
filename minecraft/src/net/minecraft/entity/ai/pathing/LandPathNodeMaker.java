@@ -430,7 +430,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 							Block block = blockView.getBlockState(pooledMutable.set(l + i, m + j, n + k)).getBlock();
 							if (block == Blocks.CACTUS) {
 								pathNodeType = PathNodeType.DANGER_CACTUS;
-							} else if (block.matches(BlockTags.FIRE) || block == Blocks.LAVA) {
+							} else if (block.isIn(BlockTags.FIRE) || block == Blocks.LAVA) {
 								pathNodeType = PathNodeType.DANGER_FIRE;
 							} else if (block == Blocks.SWEET_BERRY_BUSH) {
 								pathNodeType = PathNodeType.DANGER_OTHER;
@@ -451,7 +451,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 		Material material = blockState.getMaterial();
 		if (blockState.isAir()) {
 			return PathNodeType.OPEN;
-		} else if (block.matches(BlockTags.TRAPDOORS) || block == Blocks.LILY_PAD) {
+		} else if (block.isIn(BlockTags.TRAPDOORS) || block == Blocks.LILY_PAD) {
 			return PathNodeType.TRAPDOOR;
 		} else if (blockState.matches(BlockTags.FIRE)) {
 			return PathNodeType.DAMAGE_FIRE;
@@ -463,7 +463,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 			return PathNodeType.STICKY_HONEY;
 		} else if (block == Blocks.COCOA) {
 			return PathNodeType.COCOA;
-		} else if (block instanceof DoorBlock && material == Material.WOOD && !(Boolean)blockState.get(DoorBlock.OPEN)) {
+		} else if (DoorBlock.method_24796(blockState) && !(Boolean)blockState.get(DoorBlock.OPEN)) {
 			return PathNodeType.DOOR_WOOD_CLOSED;
 		} else if (block instanceof DoorBlock && material == Material.METAL && !(Boolean)blockState.get(DoorBlock.OPEN)) {
 			return PathNodeType.DOOR_IRON_CLOSED;
@@ -473,8 +473,8 @@ public class LandPathNodeMaker extends PathNodeMaker {
 			return PathNodeType.RAIL;
 		} else if (block instanceof LeavesBlock) {
 			return PathNodeType.LEAVES;
-		} else if (!block.matches(BlockTags.FENCES)
-			&& !block.matches(BlockTags.WALLS)
+		} else if (!block.isIn(BlockTags.FENCES)
+			&& !block.isIn(BlockTags.WALLS)
 			&& (!(block instanceof FenceGateBlock) || (Boolean)blockState.get(FenceGateBlock.OPEN))) {
 			FluidState fluidState = blockView.getFluidState(blockPos);
 			if (fluidState.matches(FluidTags.WATER)) {

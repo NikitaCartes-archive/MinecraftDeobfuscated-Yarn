@@ -307,6 +307,17 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return this.dataTracker.get(POSE);
 	}
 
+	public boolean method_24516(Entity entity, double d) {
+		double e = entity.x - this.x;
+		double f = entity.y - this.y;
+		double g = entity.z - this.z;
+		return e * e + f * f + g * g < d * d;
+	}
+
+	public BlockPos method_24515() {
+		return new BlockPos(this);
+	}
+
 	protected void setRotation(float yaw, float pitch) {
 		this.yaw = yaw % 360.0F;
 		this.pitch = pitch % 360.0F;
@@ -564,7 +575,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 			BlockPos blockPos2 = blockPos.down();
 			BlockState blockState = this.world.getBlockState(blockPos2);
 			Block block = blockState.getBlock();
-			if (block.matches(BlockTags.FENCES) || block.matches(BlockTags.WALLS) || block instanceof FenceGateBlock) {
+			if (block.isIn(BlockTags.FENCES) || block.isIn(BlockTags.WALLS) || block instanceof FenceGateBlock) {
 				return blockPos2;
 			}
 		}
@@ -913,9 +924,9 @@ public abstract class Entity implements Nameable, CommandOutput {
 	/**
 	 * Returns whether this entity is touching water, or is being rained on, or is inside a bubble column...
 	 * 
-	 * @see net.minecraft.entity.Entity
-	 * @see net.minecraft.entity.Entity
-	 * @see net.minecraft.entity.Entity
+	 * @see net.minecraft.entity.Entity#isTouchingWater()
+	 * @see net.minecraft.entity.Entity#isBeingRainedOn()
+	 * @see net.minecraft.entity.Entity#isInsideBubbleColumn()
 	 */
 	public boolean isWet() {
 		return this.isTouchingWater() || this.isBeingRainedOn() || this.isInsideBubbleColumn();

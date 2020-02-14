@@ -49,7 +49,7 @@ public class ForgetCompletedPointOfInterestTask extends Task<LivingEntity> {
 
 	private boolean isBedOccupiedByOthers(ServerWorld world, BlockPos pos, LivingEntity entity) {
 		BlockState blockState = world.getBlockState(pos);
-		return blockState.getBlock().matches(BlockTags.BEDS) && (Boolean)blockState.get(BedBlock.OCCUPIED) && !entity.isSleeping();
+		return blockState.getBlock().isIn(BlockTags.BEDS) && (Boolean)blockState.get(BedBlock.OCCUPIED) && !entity.isSleeping();
 	}
 
 	private boolean hasCompletedPointOfInterest(ServerWorld world, BlockPos pos) {

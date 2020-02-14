@@ -16,11 +16,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.ChunkCache;
 
 public class PathNodeNavigator {
-	private final PathMinHeap minHeap = new PathMinHeap();
-	private final Set<PathNode> field_59 = Sets.<PathNode>newHashSet();
 	private final PathNode[] successors = new PathNode[32];
 	private final int range;
 	private final PathNodeMaker pathNodeMaker;
+	private final PathMinHeap minHeap = new PathMinHeap();
 
 	public PathNodeNavigator(PathNodeMaker pathNodeMaker, int range) {
 		this.pathNodeMaker = pathNodeMaker;
@@ -48,8 +47,8 @@ public class PathNodeNavigator {
 		startNode.distanceToNearestTarget = this.calculateDistances(startNode, set);
 		startNode.heapWeight = startNode.distanceToNearestTarget;
 		this.minHeap.clear();
-		this.field_59.clear();
 		this.minHeap.push(startNode);
+		Set<PathNode> set2 = Sets.<PathNode>newHashSet();
 		int i = 0;
 		int j = (int)((float)this.range * rangeMultiplier);
 

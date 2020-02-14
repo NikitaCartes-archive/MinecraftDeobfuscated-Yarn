@@ -53,7 +53,7 @@ public class CatSitOnBlockGoal extends MoveToTargetPosGoal {
 			if (block == Blocks.CHEST) {
 				return ChestBlockEntity.getPlayersLookingInChestCount(world, pos) < 1;
 			} else {
-				return block == Blocks.FURNACE && blockState.get(FurnaceBlock.LIT) ? true : block.matches(BlockTags.BEDS) && blockState.get(BedBlock.PART) != BedPart.HEAD;
+				return block == Blocks.FURNACE && blockState.get(FurnaceBlock.LIT) ? true : block.isIn(BlockTags.BEDS) && blockState.get(BedBlock.PART) != BedPart.HEAD;
 			}
 		}
 	}

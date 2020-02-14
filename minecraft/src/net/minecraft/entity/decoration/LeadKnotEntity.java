@@ -123,7 +123,7 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 
 	@Override
 	public boolean canStayAttached() {
-		return this.world.getBlockState(this.attachmentPos).getBlock().matches(BlockTags.FENCES);
+		return this.world.getBlockState(this.attachmentPos).getBlock().isIn(BlockTags.FENCES);
 	}
 
 	public static LeadKnotEntity getOrCreate(World world, BlockPos pos) {

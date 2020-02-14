@@ -4,11 +4,13 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.class_4815;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.village.VillagerProfession;
 import net.minecraft.world.poi.PointOfInterestType;
@@ -25,7 +27,7 @@ public class VillagerTaskListProvider {
 			Pair.of(0, new StartRaidTask()),
 			Pair.of(1, new WanderAroundTask(200)),
 			Pair.of(2, new FollowCustomerTask(f)),
-			Pair.of(5, new PickUpItemTask()),
+			Pair.of(5, new class_4815<>(4, false)),
 			Pair.of(10, new FindPointOfInterestTask(profession.getWorkStation(), MemoryModuleType.JOB_SITE, true)),
 			Pair.of(10, new FindPointOfInterestTask(PointOfInterestType.HOME, MemoryModuleType.HOME, false)),
 			Pair.of(10, new FindPointOfInterestTask(PointOfInterestType.MEETING, MemoryModuleType.MEETING_POINT, true)),
@@ -131,7 +133,7 @@ public class VillagerTaskListProvider {
 					ImmutableList.of(
 						Pair.of(FindEntityTask.create(EntityType.VILLAGER, 8, MemoryModuleType.INTERACTION_TARGET, f, 2), 2),
 						Pair.of(
-							new FindEntityTask<>(EntityType.VILLAGER, 8, VillagerEntity::isReadyToBreed, VillagerEntity::isReadyToBreed, MemoryModuleType.BREED_TARGET, f, 2), 1
+							new FindEntityTask<>(EntityType.VILLAGER, 8, PassiveEntity::isReadyToBreed, PassiveEntity::isReadyToBreed, MemoryModuleType.BREED_TARGET, f, 2), 1
 						),
 						Pair.of(FindEntityTask.create(EntityType.CAT, 8, MemoryModuleType.INTERACTION_TARGET, f, 2), 1),
 						Pair.of(new FindWalkTargetTask(f), 1),
@@ -173,8 +175,8 @@ public class VillagerTaskListProvider {
 		float g = f * 1.5F;
 		return ImmutableList.of(
 			Pair.of(0, new StopPanickingTask()),
-			Pair.of(1, new GoToNearbyEntityTask(MemoryModuleType.NEAREST_HOSTILE, g)),
-			Pair.of(1, new GoToNearbyEntityTask(MemoryModuleType.HURT_BY_ENTITY, g)),
+			Pair.of(1, GoToNearbyEntityTask.method_24603(MemoryModuleType.NEAREST_HOSTILE, g, 6, false)),
+			Pair.of(1, GoToNearbyEntityTask.method_24603(MemoryModuleType.HURT_BY_ENTITY, g, 6, false)),
 			Pair.of(3, new FindWalkTargetTask(g, 2, 2)),
 			createBusyFollowTask()
 		);
@@ -208,7 +210,7 @@ public class VillagerTaskListProvider {
 
 	public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> createHideTasks(VillagerProfession villagerProfession, float f) {
 		int i = 2;
-		return ImmutableList.of(Pair.of(0, new ForgetBellRingTask(15, 2)), Pair.of(1, new HideInHomeTask(32, f * 1.25F, 2)), createBusyFollowTask());
+		return ImmutableList.of(Pair.of(0, new ForgetBellRingTask(15, 3)), Pair.of(1, new HideInHomeTask(32, f * 1.25F, 2)), createBusyFollowTask());
 	}
 
 	private static Pair<Integer, Task<LivingEntity>> createFreeFollowTask() {

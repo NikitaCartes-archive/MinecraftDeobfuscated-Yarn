@@ -68,7 +68,7 @@ public class MagmaBlock extends Block {
 	}
 
 	@Override
-	public int getTickRate(WorldView worldView) {
+	public int getTickRate(WorldView world) {
 		return 20;
 	}
 
@@ -78,12 +78,12 @@ public class MagmaBlock extends Block {
 	}
 
 	@Override
-	public boolean allowsSpawning(BlockState state, BlockView view, BlockPos pos, EntityType<?> type) {
+	public boolean allowsSpawning(BlockState state, BlockView world, BlockPos pos, EntityType<?> type) {
 		return type.isFireImmune();
 	}
 
 	@Override
-	public boolean shouldPostProcess(BlockState state, BlockView view, BlockPos pos) {
+	public boolean shouldPostProcess(BlockState state, BlockView world, BlockPos pos) {
 		return true;
 	}
 }

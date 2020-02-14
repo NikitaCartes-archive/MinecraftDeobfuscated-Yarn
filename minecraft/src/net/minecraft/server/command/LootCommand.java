@@ -42,7 +42,7 @@ import net.minecraft.util.math.Vec3d;
 public class LootCommand {
 	public static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (commandContext, suggestionsBuilder) -> {
 		LootManager lootManager = commandContext.getSource().getMinecraftServer().getLootManager();
-		return CommandSource.suggestIdentifiers(lootManager.getSupplierNames(), suggestionsBuilder);
+		return CommandSource.suggestIdentifiers(lootManager.getTableIds(), suggestionsBuilder);
 	};
 	private static final DynamicCommandExceptionType NO_HELD_ITEMS_EXCEPTION = new DynamicCommandExceptionType(
 		object -> new TranslatableText("commands.drop.no_held_items", object)
@@ -462,7 +462,7 @@ public class LootCommand {
 			builder.putNullable(LootContextParameters.KILLER_ENTITY, entity2);
 			builder.put(LootContextParameters.THIS_ENTITY, entity);
 			builder.put(LootContextParameters.POSITION, new BlockPos(serverCommandSource.getPosition()));
-			LootTable lootTable = serverCommandSource.getMinecraftServer().getLootManager().getSupplier(identifier);
+			LootTable lootTable = serverCommandSource.getMinecraftServer().getLootManager().getTable(identifier);
 			List<ItemStack> list = lootTable.getDrops(builder.build(LootContextTypes.ENTITY));
 			return constructor.accept(context, list, listx -> sendDroppedFeedback(serverCommandSource, listx, identifier));
 		}
@@ -491,7 +491,7 @@ public class LootCommand {
 		CommandContext<ServerCommandSource> context, Identifier lootTable, LootContext lootContext, LootCommand.Target constructor
 	) throws CommandSyntaxException {
 		ServerCommandSource serverCommandSource = context.getSource();
-		LootTable lootTable2 = serverCommandSource.getMinecraftServer().getLootManager().getSupplier(lootTable);
+		LootTable lootTable2 = serverCommandSource.getMinecraftServer().getLootManager().getTable(lootTable);
 		List<ItemStack> list = lootTable2.getDrops(lootContext);
 		return constructor.accept(context, list, listx -> sendDroppedFeedback(serverCommandSource, listx));
 	}

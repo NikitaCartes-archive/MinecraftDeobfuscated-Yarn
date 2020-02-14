@@ -566,6 +566,11 @@ public class MathHelper {
 		return (float)d;
 	}
 
+	@Environment(EnvType.CLIENT)
+	public static float method_24504(float f, float g) {
+		return (Math.abs(f % g - g * 0.5F) - g * 0.25F) / (g * 0.25F);
+	}
+
 	static {
 		for (int i = 0; i < 257; i++) {
 			double d = (double)i / 256.0;

@@ -3,6 +3,7 @@ package net.minecraft.entity.ai.brain.sensor;
 import com.google.common.collect.ImmutableSet;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import net.minecraft.entity.LivingEntity;
@@ -14,6 +15,11 @@ import net.minecraft.server.world.ServerWorld;
 
 public class NearestPlayersSensor extends Sensor<LivingEntity> {
 	@Override
+	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
+		return ImmutableSet.of(MemoryModuleType.NEAREST_PLAYERS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER);
+	}
+
+	@Override
 	protected void sense(ServerWorld world, LivingEntity entity) {
 		List<PlayerEntity> list = (List<PlayerEntity>)world.getPlayers()
 			.stream()
@@ -23,11 +29,9 @@ public class NearestPlayersSensor extends Sensor<LivingEntity> {
 			.collect(Collectors.toList());
 		Brain<?> brain = entity.getBrain();
 		brain.putMemory(MemoryModuleType.NEAREST_PLAYERS, list);
-		brain.setMemory(MemoryModuleType.NEAREST_VISIBLE_PLAYER, list.stream().filter(entity::canSee).findFirst());
-	}
-
-	@Override
-	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
-		return ImmutableSet.of(MemoryModuleType.NEAREST_PLAYERS, MemoryModuleType.NEAREST_VISIBLE_PLAYER);
+		List<PlayerEntity> list2 = (List<PlayerEntity>)list.stream().filter(entity::canSee).collect(Collectors.toList());
+		brain.putMemory(MemoryModuleType.NEAREST_VISIBLE_PLAYER, list2.isEmpty() ? null : (PlayerEntity)list2.get(0));
+		Optional<PlayerEntity> optional = list2.stream().filter(EntityPredicates.field_22280).findFirst();
+		brain.setMemory(MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER, optional);
 	}
 }

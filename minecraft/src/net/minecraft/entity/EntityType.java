@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_4836;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.entity.boss.WitherEntity;
@@ -424,7 +425,10 @@ public class EntityType<T extends Entity> {
 		"ravager", EntityType.Builder.create(RavagerEntity::new, EntityCategory.MONSTER).setDimensions(1.95F, 2.2F)
 	);
 	public static final EntityType<HoglinEntity> HOGLIN = register(
-		"hoglin", EntityType.Builder.create(HoglinEntity::new, EntityCategory.MONSTER).setDimensions(0.9F, 0.9F)
+		"hoglin", EntityType.Builder.create(HoglinEntity::new, EntityCategory.MONSTER).setDimensions(1.3964844F, 1.4F)
+	);
+	public static final EntityType<class_4836> PIGLIN = register(
+		"piglin", EntityType.Builder.create(class_4836::new, EntityCategory.MONSTER).setDimensions(0.6F, 1.95F)
 	);
 	public static final EntityType<LightningEntity> LIGHTNING_BOLT = register(
 		"lightning_bolt", EntityType.Builder.<LightningEntity>create(EntityCategory.MISC).disableSaving().setDimensions(0.0F, 0.0F)
@@ -775,7 +779,7 @@ public class EntityType<T extends Entity> {
 			&& this != EVOKER_FANGS;
 	}
 
-	public boolean isTaggedWith(Tag<EntityType<?>> tag) {
+	public boolean isIn(Tag<EntityType<?>> tag) {
 		return tag.contains(this);
 	}
 

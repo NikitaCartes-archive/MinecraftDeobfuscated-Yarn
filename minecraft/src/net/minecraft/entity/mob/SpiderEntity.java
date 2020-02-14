@@ -161,14 +161,14 @@ public class SpiderEntity extends HostileEntity {
 		}
 
 		if (entityData == null) {
-			entityData = new SpiderEntity.SpawnEffectData();
+			entityData = new SpiderEntity.SpiderData();
 			if (world.getDifficulty() == Difficulty.HARD && world.getRandom().nextFloat() < 0.1F * difficulty.getClampedLocalDifficulty()) {
-				((SpiderEntity.SpawnEffectData)entityData).setEffect(world.getRandom());
+				((SpiderEntity.SpiderData)entityData).setEffect(world.getRandom());
 			}
 		}
 
-		if (entityData instanceof SpiderEntity.SpawnEffectData) {
-			StatusEffect statusEffect = ((SpiderEntity.SpawnEffectData)entityData).effect;
+		if (entityData instanceof SpiderEntity.SpiderData) {
+			StatusEffect statusEffect = ((SpiderEntity.SpiderData)entityData).effect;
 			if (statusEffect != null) {
 				this.addStatusEffect(new StatusEffectInstance(statusEffect, Integer.MAX_VALUE));
 			}
@@ -221,7 +221,7 @@ public class SpiderEntity extends HostileEntity {
 		}
 	}
 
-	public static class SpawnEffectData implements EntityData {
+	public static class SpiderData implements EntityData {
 		public StatusEffect effect;
 
 		public void setEffect(Random random) {

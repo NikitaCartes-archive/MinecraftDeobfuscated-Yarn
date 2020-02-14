@@ -58,11 +58,11 @@ public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
 		Block block = world.getBlockState(pos.offset(state.get(FACING))).getBlock();
-		return block.matches(BlockTags.JUNGLE_LOGS);
+		return block.isIn(BlockTags.JUNGLE_LOGS);
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		int i = (Integer)state.get(AGE);
 		switch ((Direction)state.get(FACING)) {
 			case SOUTH:

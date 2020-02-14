@@ -42,6 +42,12 @@ public class BasicInventory implements Inventory, RecipeInputProvider {
 		return slot >= 0 && slot < this.stackList.size() ? this.stackList.get(slot) : ItemStack.EMPTY;
 	}
 
+	public List<ItemStack> method_24514() {
+		List<ItemStack> list = (List<ItemStack>)this.stackList.stream().filter(itemStack -> !itemStack.isEmpty()).collect(Collectors.toList());
+		this.clear();
+		return list;
+	}
+
 	@Override
 	public ItemStack takeInvStack(int slot, int amount) {
 		ItemStack itemStack = Inventories.splitStack(this.stackList, slot, amount);

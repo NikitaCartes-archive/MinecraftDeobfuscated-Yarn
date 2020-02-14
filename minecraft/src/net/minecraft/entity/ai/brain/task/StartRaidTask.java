@@ -25,10 +25,10 @@ public class StartRaidTask extends Task<LivingEntity> {
 		if (raid != null) {
 			if (raid.hasSpawned() && !raid.isPreRaid()) {
 				brain.setDefaultActivity(Activity.RAID);
-				brain.resetPossibleActivities(Activity.RAID);
+				brain.method_24526(Activity.RAID);
 			} else {
 				brain.setDefaultActivity(Activity.PRE_RAID);
-				brain.resetPossibleActivities(Activity.PRE_RAID);
+				brain.method_24526(Activity.PRE_RAID);
 			}
 		}
 	}

@@ -54,7 +54,8 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	public Stream<PointOfInterest> method_22383(
 		Predicate<PointOfInterestType> predicate, BlockPos blockPos, int i, PointOfInterestStorage.OccupationStatus occupationStatus
 	) {
-		return ChunkPos.stream(new ChunkPos(blockPos), Math.floorDiv(i, 16)).flatMap(chunkPos -> this.get(predicate, chunkPos, occupationStatus));
+		int j = Math.floorDiv(i, 16) + 1;
+		return ChunkPos.stream(new ChunkPos(blockPos), j).flatMap(chunkPos -> this.get(predicate, chunkPos, occupationStatus));
 	}
 
 	public Stream<PointOfInterest> get(
@@ -94,16 +95,11 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	}
 
 	public Optional<BlockPos> getNearestPosition(
-		Predicate<PointOfInterestType> typePredicate,
-		Predicate<BlockPos> blockPosPredicate,
-		BlockPos pos,
-		int radius,
-		PointOfInterestStorage.OccupationStatus occupationStatus
+		Predicate<PointOfInterestType> typePredicate, BlockPos blockPos, int i, PointOfInterestStorage.OccupationStatus occupationStatus
 	) {
-		return this.get(typePredicate, pos, radius, occupationStatus)
+		return this.get(typePredicate, blockPos, i, occupationStatus)
 			.map(PointOfInterest::getPos)
-			.sorted(Comparator.comparingDouble(blockPos2 -> blockPos2.getSquaredDistance(pos)))
-			.filter(blockPosPredicate)
+			.sorted(Comparator.comparingDouble(blockPos2 -> blockPos2.getSquaredDistance(blockPos)))
 			.findFirst();
 	}
 

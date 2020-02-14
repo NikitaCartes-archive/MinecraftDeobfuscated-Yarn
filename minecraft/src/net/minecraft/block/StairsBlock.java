@@ -103,7 +103,7 @@ public class StairsBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		return (state.get(HALF) == BlockHalf.TOP ? TOP_SHAPES : BOTTOM_SHAPES)[SHAPE_INDICES[this.getShapeIndexIndex(state)]];
 	}
 
@@ -133,8 +133,8 @@ public class StairsBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public int getTickRate(WorldView worldView) {
-		return this.baseBlock.getTickRate(worldView);
+	public int getTickRate(WorldView world) {
+		return this.baseBlock.getTickRate(world);
 	}
 
 	@Override
@@ -197,12 +197,12 @@ public class StairsBlock extends Block implements Waterloggable {
 			: super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
 	}
 
-	private static StairShape method_10675(BlockState state, BlockView view, BlockPos pos) {
+	private static StairShape method_10675(BlockState state, BlockView world, BlockPos pos) {
 		Direction direction = state.get(FACING);
-		BlockState blockState = view.getBlockState(pos.offset(direction));
+		BlockState blockState = world.getBlockState(pos.offset(direction));
 		if (isStairs(blockState) && state.get(HALF) == blockState.get(HALF)) {
 			Direction direction2 = blockState.get(FACING);
-			if (direction2.getAxis() != ((Direction)state.get(FACING)).getAxis() && method_10678(state, view, pos, direction2.getOpposite())) {
+			if (direction2.getAxis() != ((Direction)state.get(FACING)).getAxis() && method_10678(state, world, pos, direction2.getOpposite())) {
 				if (direction2 == direction.rotateYCounterclockwise()) {
 					return StairShape.OUTER_LEFT;
 				}
@@ -211,10 +211,10 @@ public class StairsBlock extends Block implements Waterloggable {
 			}
 		}
 
-		BlockState blockState2 = view.getBlockState(pos.offset(direction.getOpposite()));
+		BlockState blockState2 = world.getBlockState(pos.offset(direction.getOpposite()));
 		if (isStairs(blockState2) && state.get(HALF) == blockState2.get(HALF)) {
 			Direction direction3 = blockState2.get(FACING);
-			if (direction3.getAxis() != ((Direction)state.get(FACING)).getAxis() && method_10678(state, view, pos, direction3)) {
+			if (direction3.getAxis() != ((Direction)state.get(FACING)).getAxis() && method_10678(state, world, pos, direction3)) {
 				if (direction3 == direction.rotateYCounterclockwise()) {
 					return StairShape.INNER_LEFT;
 				}
@@ -226,8 +226,8 @@ public class StairsBlock extends Block implements Waterloggable {
 		return StairShape.STRAIGHT;
 	}
 
-	private static boolean method_10678(BlockState state, BlockView view, BlockPos pos, Direction dir) {
-		BlockState blockState = view.getBlockState(pos.offset(dir));
+	private static boolean method_10678(BlockState state, BlockView world, BlockPos pos, Direction dir) {
+		BlockState blockState = world.getBlockState(pos.offset(dir));
 		return !isStairs(blockState) || blockState.get(FACING) != state.get(FACING) || blockState.get(HALF) != state.get(HALF);
 	}
 
@@ -292,7 +292,7 @@ public class StairsBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
 		return false;
 	}
 }

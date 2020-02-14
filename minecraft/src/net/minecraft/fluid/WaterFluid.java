@@ -114,7 +114,7 @@ public abstract class WaterFluid extends BaseFluid {
 
 	@Override
 	public boolean canBeReplacedWith(FluidState state, BlockView world, BlockPos pos, Fluid fluid, Direction direction) {
-		return direction == Direction.DOWN && !fluid.matches(FluidTags.WATER);
+		return direction == Direction.DOWN && !fluid.isIn(FluidTags.WATER);
 	}
 
 	@Override

@@ -53,7 +53,7 @@ public class HopperBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		switch ((Direction)state.get(FACING)) {
 			case DOWN:
 				return DOWN_SHAPE;
@@ -71,7 +71,7 @@ public class HopperBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public VoxelShape getRayTraceShape(BlockState state, BlockView view, BlockPos pos) {
+	public VoxelShape getRayTraceShape(BlockState state, BlockView world, BlockPos pos) {
 		switch ((Direction)state.get(FACING)) {
 			case DOWN:
 				return DOWN_RAY_TRACE_SHAPE;
@@ -95,7 +95,7 @@ public class HopperBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView view) {
+	public BlockEntity createBlockEntity(BlockView world) {
 		return new HopperBlockEntity();
 	}
 
@@ -195,7 +195,7 @@ public class HopperBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
 		return false;
 	}
 }

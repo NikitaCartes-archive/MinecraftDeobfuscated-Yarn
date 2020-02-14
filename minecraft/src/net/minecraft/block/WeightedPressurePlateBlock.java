@@ -54,7 +54,7 @@ public class WeightedPressurePlateBlock extends AbstractPressurePlateBlock {
 	}
 
 	@Override
-	public int getTickRate(WorldView worldView) {
+	public int getTickRate(WorldView world) {
 		return 10;
 	}
 

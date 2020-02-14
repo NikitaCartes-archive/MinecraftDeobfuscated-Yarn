@@ -33,8 +33,8 @@ public class BambooSaplingBlock extends Block implements Fertilizable {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
-		Vec3d vec3d = state.getOffsetPos(view, pos);
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+		Vec3d vec3d = state.getOffsetPos(world, pos);
 		return SHAPE.offset(vec3d.x, vec3d.y, vec3d.z);
 	}
 

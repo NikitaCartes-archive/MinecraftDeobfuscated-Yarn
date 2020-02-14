@@ -20,7 +20,7 @@ public class NetherForestVegetationFeature extends Feature<BlockPileFeatureConfi
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, BlockPileFeatureConfig blockPileFeatureConfig
 	) {
 		for (Block block = iWorld.getBlockState(blockPos.down()).getBlock();
-			!block.matches(BlockTags.NYLIUM) && blockPos.getY() > 0;
+			!block.isIn(BlockTags.NYLIUM) && blockPos.getY() > 0;
 			block = iWorld.getBlockState(blockPos).getBlock()
 		) {
 			blockPos = blockPos.down();

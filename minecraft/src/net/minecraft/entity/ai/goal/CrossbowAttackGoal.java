@@ -31,7 +31,7 @@ public class CrossbowAttackGoal<T extends HostileEntity & RangedAttackMob & Cros
 	}
 
 	private boolean isEntityHoldingCrossbow() {
-		return this.actor.isHolding(Items.CROSSBOW);
+		return this.actor.method_24518(Items.CROSSBOW);
 	}
 
 	@Override

@@ -42,7 +42,7 @@ public class AttachedStemBlock extends PlantBlock {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		return (VoxelShape)FACING_TO_SHAPE.get(state.get(FACING));
 	}
 
@@ -54,7 +54,7 @@ public class AttachedStemBlock extends PlantBlock {
 	}
 
 	@Override
-	protected boolean canPlantOnTop(BlockState floor, BlockView view, BlockPos pos) {
+	protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
 		return floor.getBlock() == Blocks.FARMLAND;
 	}
 
