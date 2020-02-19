@@ -193,8 +193,8 @@ public class GuardianEntity extends HostileEntity {
 	}
 
 	@Override
-	public float getPathfindingFavor(BlockPos pos, WorldView worldView) {
-		return worldView.getFluidState(pos).matches(FluidTags.WATER) ? 10.0F + worldView.getBrightness(pos) - 0.5F : super.getPathfindingFavor(pos, worldView);
+	public float getPathfindingFavor(BlockPos pos, WorldView world) {
+		return world.getFluidState(pos).matches(FluidTags.WATER) ? 10.0F + world.getBrightness(pos) - 0.5F : super.getPathfindingFavor(pos, world);
 	}
 
 	@Override

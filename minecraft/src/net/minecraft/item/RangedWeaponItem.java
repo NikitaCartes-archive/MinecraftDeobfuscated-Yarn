@@ -32,5 +32,5 @@ public abstract class RangedWeaponItem extends Item {
 		return 1;
 	}
 
-	public abstract int method_24792();
+	public abstract int getRange();
 }

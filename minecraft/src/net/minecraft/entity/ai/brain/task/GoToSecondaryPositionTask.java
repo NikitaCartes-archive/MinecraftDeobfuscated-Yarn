@@ -64,7 +64,7 @@ public class GoToSecondaryPositionTask extends Task<VillagerEntity> {
 
 	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		if (l > this.nextRunTime && this.chosenPosition != null) {
-			villagerEntity.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(this.chosenPosition.getPos(), this.speed, this.completionRange));
+			villagerEntity.getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget(this.chosenPosition.getPos(), this.speed, this.completionRange));
 			this.nextRunTime = l + 100L;
 		}
 	}

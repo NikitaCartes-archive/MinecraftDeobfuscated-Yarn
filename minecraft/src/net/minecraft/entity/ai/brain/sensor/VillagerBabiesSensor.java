@@ -18,7 +18,7 @@ public class VillagerBabiesSensor extends Sensor<LivingEntity> {
 
 	@Override
 	protected void sense(ServerWorld world, LivingEntity entity) {
-		entity.getBrain().putMemory(MemoryModuleType.VISIBLE_VILLAGER_BABIES, this.getVisibleVillagerBabies(entity));
+		entity.getBrain().remember(MemoryModuleType.VISIBLE_VILLAGER_BABIES, this.getVisibleVillagerBabies(entity));
 	}
 
 	private List<LivingEntity> getVisibleVillagerBabies(LivingEntity entities) {

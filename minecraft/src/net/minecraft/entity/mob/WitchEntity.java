@@ -217,13 +217,13 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 	}
 
 	@Override
-	public void attack(LivingEntity target, float f) {
+	public void attack(LivingEntity target, float pullProgress) {
 		if (!this.isDrinking()) {
 			Vec3d vec3d = target.getVelocity();
 			double d = target.getX() + vec3d.x - this.getX();
 			double e = target.getEyeY() - 1.1F - this.getY();
-			double g = target.getZ() + vec3d.z - this.getZ();
-			float h = MathHelper.sqrt(d * d + g * g);
+			double f = target.getZ() + vec3d.z - this.getZ();
+			float g = MathHelper.sqrt(d * d + f * f);
 			Potion potion = Potions.HARMING;
 			if (target instanceof RaiderEntity) {
 				if (target.getHealth() <= 4.0F) {
@@ -233,18 +233,18 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 				}
 
 				this.setTarget(null);
-			} else if (h >= 8.0F && !target.hasStatusEffect(StatusEffects.SLOWNESS)) {
+			} else if (g >= 8.0F && !target.hasStatusEffect(StatusEffects.SLOWNESS)) {
 				potion = Potions.SLOWNESS;
 			} else if (target.getHealth() >= 8.0F && !target.hasStatusEffect(StatusEffects.POISON)) {
 				potion = Potions.POISON;
-			} else if (h <= 3.0F && !target.hasStatusEffect(StatusEffects.WEAKNESS) && this.random.nextFloat() < 0.25F) {
+			} else if (g <= 3.0F && !target.hasStatusEffect(StatusEffects.WEAKNESS) && this.random.nextFloat() < 0.25F) {
 				potion = Potions.WEAKNESS;
 			}
 
 			ThrownPotionEntity thrownPotionEntity = new ThrownPotionEntity(this.world, this);
 			thrownPotionEntity.setItemStack(PotionUtil.setPotion(new ItemStack(Items.SPLASH_POTION), potion));
 			thrownPotionEntity.pitch -= -20.0F;
-			thrownPotionEntity.setVelocity(d, e + (double)(h * 0.2F), g, 0.75F, 8.0F);
+			thrownPotionEntity.setVelocity(d, e + (double)(g * 0.2F), f, 0.75F, 8.0F);
 			this.world
 				.playSound(
 					null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_WITCH_THROW, this.getSoundCategory(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F

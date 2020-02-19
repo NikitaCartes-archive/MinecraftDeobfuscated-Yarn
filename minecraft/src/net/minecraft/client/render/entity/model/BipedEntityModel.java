@@ -33,37 +33,37 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 		this(RenderLayer::getEntityCutoutNoCull, scale, 0.0F, 64, 32);
 	}
 
-	protected BipedEntityModel(float f, float g, int i, int j) {
-		this(RenderLayer::getEntityCutoutNoCull, f, g, i, j);
+	protected BipedEntityModel(float scale, float f, int textureWidth, int textureHeight) {
+		this(RenderLayer::getEntityCutoutNoCull, scale, f, textureWidth, textureHeight);
 	}
 
-	public BipedEntityModel(Function<Identifier, RenderLayer> function, float f, float g, int i, int j) {
-		super(function, true, 16.0F, 0.0F, 2.0F, 2.0F, 24.0F);
-		this.textureWidth = i;
-		this.textureHeight = j;
+	public BipedEntityModel(Function<Identifier, RenderLayer> texturedLayerFactory, float scale, float f, int textureWidth, int textureHeight) {
+		super(texturedLayerFactory, true, 16.0F, 0.0F, 2.0F, 2.0F, 24.0F);
+		this.textureWidth = textureWidth;
+		this.textureHeight = textureHeight;
 		this.head = new ModelPart(this, 0, 0);
-		this.head.addCuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, f);
-		this.head.setPivot(0.0F, 0.0F + g, 0.0F);
+		this.head.addCuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, scale);
+		this.head.setPivot(0.0F, 0.0F + f, 0.0F);
 		this.helmet = new ModelPart(this, 32, 0);
-		this.helmet.addCuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, f + 0.5F);
-		this.helmet.setPivot(0.0F, 0.0F + g, 0.0F);
+		this.helmet.addCuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, scale + 0.5F);
+		this.helmet.setPivot(0.0F, 0.0F + f, 0.0F);
 		this.torso = new ModelPart(this, 16, 16);
-		this.torso.addCuboid(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, f);
-		this.torso.setPivot(0.0F, 0.0F + g, 0.0F);
+		this.torso.addCuboid(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, scale);
+		this.torso.setPivot(0.0F, 0.0F + f, 0.0F);
 		this.rightArm = new ModelPart(this, 40, 16);
-		this.rightArm.addCuboid(-3.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, f);
-		this.rightArm.setPivot(-5.0F, 2.0F + g, 0.0F);
+		this.rightArm.addCuboid(-3.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, scale);
+		this.rightArm.setPivot(-5.0F, 2.0F + f, 0.0F);
 		this.leftArm = new ModelPart(this, 40, 16);
 		this.leftArm.mirror = true;
-		this.leftArm.addCuboid(-1.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, f);
-		this.leftArm.setPivot(5.0F, 2.0F + g, 0.0F);
+		this.leftArm.addCuboid(-1.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, scale);
+		this.leftArm.setPivot(5.0F, 2.0F + f, 0.0F);
 		this.rightLeg = new ModelPart(this, 0, 16);
-		this.rightLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, f);
-		this.rightLeg.setPivot(-1.9F, 12.0F + g, 0.0F);
+		this.rightLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, scale);
+		this.rightLeg.setPivot(-1.9F, 12.0F + f, 0.0F);
 		this.leftLeg = new ModelPart(this, 0, 16);
 		this.leftLeg.mirror = true;
-		this.leftLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, f);
-		this.leftLeg.setPivot(1.9F, 12.0F + g, 0.0F);
+		this.leftLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, scale);
+		this.leftLeg.setPivot(1.9F, 12.0F + f, 0.0F);
 	}
 
 	@Override

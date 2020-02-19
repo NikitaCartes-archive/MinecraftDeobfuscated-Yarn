@@ -32,9 +32,9 @@ public class VillagerWorkTask extends Task<VillagerEntity> {
 
 	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		Brain<VillagerEntity> brain = villagerEntity.getBrain();
-		brain.putMemory(MemoryModuleType.LAST_WORKED_AT_POI, Timestamp.of(l));
+		brain.remember(MemoryModuleType.LAST_WORKED_AT_POI, Timestamp.of(l));
 		brain.getOptionalMemory(MemoryModuleType.JOB_SITE)
-			.ifPresent(globalPos -> brain.putMemory(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(globalPos.getPos())));
+			.ifPresent(globalPos -> brain.remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(globalPos.getPos())));
 		villagerEntity.playWorkSound();
 		if (villagerEntity.shouldRestock()) {
 			villagerEntity.restock();

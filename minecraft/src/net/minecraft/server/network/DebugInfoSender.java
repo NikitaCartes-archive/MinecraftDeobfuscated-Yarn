@@ -74,7 +74,7 @@ public class DebugInfoSender {
 	public static void sendRaids(ServerWorld server, Collection<Raid> raids) {
 	}
 
-	public static void sendVillagerAiDebugData(LivingEntity living) {
+	public static void sendBrainDebugData(LivingEntity living) {
 	}
 
 	public static void sendBeeDebugData(BeeEntity bee) {

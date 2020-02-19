@@ -46,7 +46,7 @@ public abstract class HostileEntity extends MobEntityWithAi implements Monster {
 	}
 
 	@Override
-	protected boolean method_23734() {
+	protected boolean isDisallowedInPeaceful() {
 		return true;
 	}
 
@@ -81,8 +81,8 @@ public abstract class HostileEntity extends MobEntityWithAi implements Monster {
 	}
 
 	@Override
-	public float getPathfindingFavor(BlockPos pos, WorldView worldView) {
-		return 0.5F - worldView.getBrightness(pos);
+	public float getPathfindingFavor(BlockPos pos, WorldView world) {
+		return 0.5F - world.getBrightness(pos);
 	}
 
 	public static boolean isSpawnDark(IWorld world, BlockPos pos, Random random) {

@@ -33,7 +33,7 @@ public class InteractableDoorsSensor extends Sensor<LivingEntity> {
 
 		Brain<?> brain = entity.getBrain();
 		if (!list.isEmpty()) {
-			brain.putMemory(MemoryModuleType.INTERACTABLE_DOORS, list);
+			brain.remember(MemoryModuleType.INTERACTABLE_DOORS, list);
 		} else {
 			brain.forget(MemoryModuleType.INTERACTABLE_DOORS);
 		}

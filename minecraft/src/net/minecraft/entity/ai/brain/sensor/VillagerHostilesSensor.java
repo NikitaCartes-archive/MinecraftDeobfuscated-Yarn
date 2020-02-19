@@ -32,7 +32,7 @@ public class VillagerHostilesSensor extends Sensor<LivingEntity> {
 
 	@Override
 	protected void sense(ServerWorld world, LivingEntity entity) {
-		entity.getBrain().setMemory(MemoryModuleType.NEAREST_HOSTILE, this.getNearestHostile(entity));
+		entity.getBrain().remember(MemoryModuleType.NEAREST_HOSTILE, this.getNearestHostile(entity));
 	}
 
 	private Optional<LivingEntity> getNearestHostile(LivingEntity entity) {

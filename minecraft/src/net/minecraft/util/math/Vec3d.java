@@ -66,8 +66,8 @@ public class Vec3d implements Position {
 		return new Vec3d(this.x + x, this.y + y, this.z + z);
 	}
 
-	public boolean method_24802(Position position, double d) {
-		return this.squaredDistanceTo(position.getX(), position.getY(), position.getZ()) < d * d;
+	public boolean isInRange(Position pos, double radius) {
+		return this.squaredDistanceTo(pos.getX(), pos.getY(), pos.getZ()) < radius * radius;
 	}
 
 	public double distanceTo(Vec3d vec3d) {

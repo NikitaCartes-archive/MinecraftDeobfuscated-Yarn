@@ -60,7 +60,7 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 				0, this.random, (x << 4) + 2, (z << 4) + 2, mineshaftFeatureConfig.type
 			);
 			this.children.add(mineshaftRoom);
-			mineshaftRoom.method_14918(mineshaftRoom, this.children, this.random);
+			mineshaftRoom.placeJigsaw(mineshaftRoom, this.children, this.random);
 			this.setBoundingBoxFromChildren();
 			if (mineshaftFeatureConfig.type == MineshaftFeature.Type.MESA) {
 				int i = -5;

@@ -8,7 +8,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
-import net.minecraft.entity.ai.brain.EntityPosWrapper;
+import net.minecraft.entity.ai.brain.EntityLookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.passive.VillagerEntity;
@@ -114,7 +114,7 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 	private LivingEntity findPotentialCuatomer(VillagerEntity villager) {
 		Brain<?> brain = villager.getBrain();
 		LivingEntity livingEntity = (LivingEntity)brain.getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).get();
-		brain.putMemory(MemoryModuleType.LOOK_TARGET, new EntityPosWrapper(livingEntity));
+		brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(livingEntity));
 		return livingEntity;
 	}
 

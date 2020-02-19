@@ -393,7 +393,7 @@ public class CrossbowItem extends RangedWeaponItem {
 	}
 
 	@Override
-	public int method_24792() {
+	public int getRange() {
 		return 8;
 	}
 }

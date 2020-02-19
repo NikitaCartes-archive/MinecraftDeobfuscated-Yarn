@@ -279,11 +279,11 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	@Override
-	public float getPathfindingFavor(BlockPos pos, WorldView worldView) {
-		if (!this.isLandBound() && worldView.getFluidState(pos).matches(FluidTags.WATER)) {
+	public float getPathfindingFavor(BlockPos pos, WorldView world) {
+		if (!this.isLandBound() && world.getFluidState(pos).matches(FluidTags.WATER)) {
 			return 10.0F;
 		} else {
-			return worldView.getBlockState(pos.down()).getBlock() == Blocks.SAND ? 10.0F : worldView.getBrightness(pos) - 0.5F;
+			return world.getBlockState(pos.down()).getBlock() == Blocks.SAND ? 10.0F : world.getBrightness(pos) - 0.5F;
 		}
 	}
 

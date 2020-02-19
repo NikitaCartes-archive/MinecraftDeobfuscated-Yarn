@@ -123,7 +123,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 	}
 
 	@Override
-	protected boolean method_23734() {
+	protected boolean isDisallowedInPeaceful() {
 		return this.getSize() > 0;
 	}
 

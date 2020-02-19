@@ -35,7 +35,7 @@ public class GoToNearbyPositionTask extends Task<MobEntityWithAi> {
 		if (l > this.nextRunTime) {
 			Brain<?> brain = mobEntityWithAi.getBrain();
 			Optional<GlobalPos> optional = brain.getOptionalMemory(this.memoryModuleType);
-			optional.ifPresent(globalPos -> brain.putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(globalPos.getPos(), 0.4F, this.completionRange)));
+			optional.ifPresent(globalPos -> brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(globalPos.getPos(), 0.4F, this.completionRange)));
 			this.nextRunTime = l + 80L;
 		}
 	}

@@ -36,7 +36,7 @@ public class SecondaryPointsOfInterestSensor extends Sensor<VillagerEntity> {
 
 		Brain<?> brain = villagerEntity.getBrain();
 		if (!list.isEmpty()) {
-			brain.putMemory(MemoryModuleType.SECONDARY_JOB_SITE, list);
+			brain.remember(MemoryModuleType.SECONDARY_JOB_SITE, list);
 		} else {
 			brain.forget(MemoryModuleType.SECONDARY_JOB_SITE);
 		}

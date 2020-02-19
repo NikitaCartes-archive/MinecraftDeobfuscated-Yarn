@@ -259,9 +259,9 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 		}, false);
 	}
 
-	public static Iterable<BlockPos> iterate(int minX, int maxX, int minY, int maxY, int minZ, int maxZ) {
+	public static Iterable<BlockPos> iterate(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
 		return () -> new AbstractIterator<BlockPos>() {
-				final CuboidBlockIterator iterator = new CuboidBlockIterator(minX, maxX, minY, maxY, minZ, maxZ);
+				final CuboidBlockIterator iterator = new CuboidBlockIterator(minX, minY, minZ, maxX, maxY, maxZ);
 				final BlockPos.Mutable pos = new BlockPos.Mutable();
 
 				protected BlockPos computeNext() {

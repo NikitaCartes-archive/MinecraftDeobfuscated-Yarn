@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.class_4815;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -27,7 +26,7 @@ public class VillagerTaskListProvider {
 			Pair.of(0, new StartRaidTask()),
 			Pair.of(1, new WanderAroundTask(200)),
 			Pair.of(2, new FollowCustomerTask(f)),
-			Pair.of(5, new class_4815<>(4, false)),
+			Pair.of(5, new WalkToNearestVisibleWantedItemTask<>(4, false)),
 			Pair.of(10, new FindPointOfInterestTask(profession.getWorkStation(), MemoryModuleType.JOB_SITE, true)),
 			Pair.of(10, new FindPointOfInterestTask(PointOfInterestType.HOME, MemoryModuleType.HOME, false)),
 			Pair.of(10, new FindPointOfInterestTask(PointOfInterestType.MEETING, MemoryModuleType.MEETING_POINT, true)),
@@ -175,8 +174,8 @@ public class VillagerTaskListProvider {
 		float g = f * 1.5F;
 		return ImmutableList.of(
 			Pair.of(0, new StopPanickingTask()),
-			Pair.of(1, GoToNearbyEntityTask.method_24603(MemoryModuleType.NEAREST_HOSTILE, g, 6, false)),
-			Pair.of(1, GoToNearbyEntityTask.method_24603(MemoryModuleType.HURT_BY_ENTITY, g, 6, false)),
+			Pair.of(1, GoToRememberedPositionTask.toEntity(MemoryModuleType.NEAREST_HOSTILE, g, 6, false)),
+			Pair.of(1, GoToRememberedPositionTask.toEntity(MemoryModuleType.HURT_BY_ENTITY, g, 6, false)),
 			Pair.of(3, new FindWalkTargetTask(g, 2, 2)),
 			createBusyFollowTask()
 		);

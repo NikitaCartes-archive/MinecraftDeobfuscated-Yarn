@@ -7,7 +7,7 @@ import java.util.Optional;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
-import net.minecraft.entity.ai.brain.EntityPosWrapper;
+import net.minecraft.entity.ai.brain.EntityLookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
@@ -55,9 +55,9 @@ public class MeetVillagerTask extends Task<LivingEntity> {
 						.filter(livingEntity2 -> livingEntity2.squaredDistanceTo(entity) <= 32.0)
 						.findFirst()
 						.ifPresent(livingEntity -> {
-							brain.putMemory(MemoryModuleType.INTERACTION_TARGET, livingEntity);
-							brain.putMemory(MemoryModuleType.LOOK_TARGET, new EntityPosWrapper(livingEntity));
-							brain.putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityPosWrapper(livingEntity), 0.3F, 1));
+							brain.remember(MemoryModuleType.INTERACTION_TARGET, livingEntity);
+							brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(livingEntity));
+							brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityLookTarget(livingEntity), 0.3F, 1));
 						})
 			);
 	}
