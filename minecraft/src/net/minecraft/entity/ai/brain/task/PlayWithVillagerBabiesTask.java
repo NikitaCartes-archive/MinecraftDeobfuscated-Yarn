@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.brain.Brain;
-import net.minecraft.entity.ai.brain.EntityPosWrapper;
+import net.minecraft.entity.ai.brain.EntityLookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
@@ -58,7 +58,7 @@ public class PlayWithVillagerBabiesTask extends Task<MobEntityWithAi> {
 		for (int i = 0; i < 10; i++) {
 			Vec3d vec3d = TargetFinder.findGroundTarget(entity, 20, 8);
 			if (vec3d != null && world.isNearOccupiedPointOfInterest(new BlockPos(vec3d))) {
-				entity.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3d, 0.6F, 0));
+				entity.getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3d, 0.6F, 0));
 				return;
 			}
 		}
@@ -66,9 +66,9 @@ public class PlayWithVillagerBabiesTask extends Task<MobEntityWithAi> {
 
 	private static void setPlayTarget(MobEntityWithAi entity, LivingEntity target) {
 		Brain<?> brain = entity.getBrain();
-		brain.putMemory(MemoryModuleType.INTERACTION_TARGET, target);
-		brain.putMemory(MemoryModuleType.LOOK_TARGET, new EntityPosWrapper(target));
-		brain.putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityPosWrapper(target), 0.6F, 1));
+		brain.remember(MemoryModuleType.INTERACTION_TARGET, target);
+		brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(target));
+		brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityLookTarget(target), 0.6F, 1));
 	}
 
 	private Optional<LivingEntity> getVisibleMob(MobEntityWithAi entity) {

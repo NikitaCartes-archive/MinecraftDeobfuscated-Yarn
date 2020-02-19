@@ -8,7 +8,6 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4838;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ChestBlockEntity;
@@ -19,6 +18,7 @@ import net.minecraft.container.GenericContainer;
 import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -245,7 +245,7 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 			if (nameableContainerFactory != null) {
 				player.openContainer(nameableContainerFactory);
 				player.incrementStat(this.getOpenStat());
-				class_4838.method_24733(player);
+				PiglinBrain.onGoldBlockBroken(player);
 			}
 
 			return ActionResult.SUCCESS;
@@ -372,6 +372,6 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 	@Override
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		super.onBreak(world, pos, state, player);
-		class_4838.method_24733(player);
+		PiglinBrain.onGoldBlockBroken(player);
 	}
 }

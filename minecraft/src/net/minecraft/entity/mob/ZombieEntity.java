@@ -164,12 +164,12 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@Override
-	public void setBaby(boolean bl) {
-		this.getDataTracker().set(BABY, bl);
+	public void setBaby(boolean baby) {
+		this.getDataTracker().set(BABY, baby);
 		if (this.world != null && !this.world.isClient) {
 			EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
 			entityAttributeInstance.removeModifier(BABY_SPEED_BONUS);
-			if (bl) {
+			if (baby) {
 				entityAttributeInstance.addModifier(BABY_SPEED_BONUS);
 			}
 		}

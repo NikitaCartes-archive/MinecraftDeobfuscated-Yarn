@@ -212,8 +212,8 @@ public abstract class LivingEntity extends Entity {
 		return this.brain;
 	}
 
-	protected Brain<?> deserializeBrain(Dynamic<?> dynamic) {
-		return new Brain<>(ImmutableList.<MemoryModuleType<?>>of(), ImmutableList.of(), dynamic);
+	protected Brain<?> deserializeBrain(Dynamic<?> data) {
+		return new Brain<>(ImmutableList.<MemoryModuleType<?>>of(), ImmutableList.of(), data);
 	}
 
 	@Override
@@ -1613,11 +1613,11 @@ public abstract class LivingEntity extends Entity {
 		return this.getEquippedStack(EquipmentSlot.OFFHAND);
 	}
 
-	public boolean method_24518(Item item) {
-		return this.method_24520(item2 -> item2 == item);
+	public boolean isHolding(Item item) {
+		return this.isHolding(item2 -> item2 == item);
 	}
 
-	public boolean method_24520(Predicate<Item> predicate) {
+	public boolean isHolding(Predicate<Item> predicate) {
 		return predicate.test(this.getMainHandStack().getItem()) || predicate.test(this.getOffHandStack().getItem());
 	}
 

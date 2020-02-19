@@ -42,7 +42,7 @@ public class VillagerWalkTowardsTask extends Task<VillagerEntity> {
 		Brain<?> brain = villager.getBrain();
 		villager.releaseTicketFor(this.destination);
 		brain.forget(this.destination);
-		brain.putMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, time);
+		brain.remember(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, time);
 	}
 
 	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
@@ -68,9 +68,9 @@ public class VillagerWalkTowardsTask extends Task<VillagerEntity> {
 							return;
 						}
 
-						brain.putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3d, this.speed, this.completionRange));
+						brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3d, this.speed, this.completionRange));
 					} else if (!this.reachedDestination(serverWorld, villagerEntity, globalPos)) {
-						brain.putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(globalPos.getPos(), this.speed, this.completionRange));
+						brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(globalPos.getPos(), this.speed, this.completionRange));
 					}
 				}
 			);

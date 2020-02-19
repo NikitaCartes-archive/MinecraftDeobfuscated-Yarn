@@ -1,6 +1,5 @@
 package net.minecraft.block;
 
-import net.minecraft.class_4839;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.sapling.AcaciaSaplingGenerator;
 import net.minecraft.block.sapling.BirchSaplingGenerator;
@@ -387,7 +386,7 @@ public class Blocks {
 		new MushroomPlantBlock(Block.Settings.of(Material.PLANT, MaterialColor.RED).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.GRASS))
 	);
 	public static final Block GOLD_BLOCK = register(
-		"gold_block", new class_4839(Block.Settings.of(Material.METAL, MaterialColor.GOLD).strength(3.0F, 6.0F).sounds(BlockSoundGroup.METAL))
+		"gold_block", new GoldBlock(Block.Settings.of(Material.METAL, MaterialColor.GOLD).strength(3.0F, 6.0F).sounds(BlockSoundGroup.METAL))
 	);
 	public static final Block IRON_BLOCK = register(
 		"iron_block", new Block(Block.Settings.of(Material.METAL, MaterialColor.IRON).strength(5.0F, 6.0F).sounds(BlockSoundGroup.METAL))

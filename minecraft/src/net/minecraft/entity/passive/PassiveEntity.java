@@ -147,8 +147,8 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 	}
 
 	@Override
-	public void setBaby(boolean bl) {
-		this.setBreedingAge(bl ? -24000 : 0);
+	public void setBaby(boolean baby) {
+		this.setBreedingAge(baby ? -24000 : 0);
 	}
 
 	public static class PassiveData implements EntityData {

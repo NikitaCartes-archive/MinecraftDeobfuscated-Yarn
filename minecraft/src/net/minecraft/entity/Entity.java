@@ -307,14 +307,14 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return this.dataTracker.get(POSE);
 	}
 
-	public boolean method_24516(Entity entity, double d) {
-		double e = entity.x - this.x;
-		double f = entity.y - this.y;
-		double g = entity.z - this.z;
-		return e * e + f * f + g * g < d * d;
+	public boolean isInRange(Entity other, double radius) {
+		double d = other.x - this.x;
+		double e = other.y - this.y;
+		double f = other.z - this.z;
+		return d * d + e * e + f * f < radius * radius;
 	}
 
-	public BlockPos method_24515() {
+	public BlockPos getSenseCenterPos() {
 		return new BlockPos(this);
 	}
 

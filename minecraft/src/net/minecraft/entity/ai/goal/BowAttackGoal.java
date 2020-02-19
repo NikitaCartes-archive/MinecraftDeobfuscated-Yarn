@@ -37,7 +37,7 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttackMob> extends Go
 	}
 
 	protected boolean isHoldingBow() {
-		return this.actor.method_24518(Items.BOW);
+		return this.actor.isHolding(Items.BOW);
 	}
 
 	@Override

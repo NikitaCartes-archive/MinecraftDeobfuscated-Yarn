@@ -172,8 +172,8 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	}
 
 	@Override
-	protected Brain<?> deserializeBrain(Dynamic<?> dynamic) {
-		Brain<VillagerEntity> brain = new Brain<>(MEMORY_MODULES, SENSORS, dynamic);
+	protected Brain<?> deserializeBrain(Dynamic<?> data) {
+		Brain<VillagerEntity> brain = new Brain<>(MEMORY_MODULES, SENSORS, data);
 		this.initBrain(brain);
 		return brain;
 	}
@@ -193,7 +193,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 			brain.setTaskList(Activity.PLAY, VillagerTaskListProvider.createPlayTasks(f));
 		} else {
 			brain.setSchedule(Schedule.VILLAGER_DEFAULT);
-			brain.method_24529(
+			brain.setTaskList(
 				Activity.WORK,
 				VillagerTaskListProvider.createWorkTasks(villagerProfession, f),
 				ImmutableSet.of(Pair.of(MemoryModuleType.JOB_SITE, MemoryModuleState.VALUE_PRESENT))
@@ -201,7 +201,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		}
 
 		brain.setTaskList(Activity.CORE, VillagerTaskListProvider.createCoreTasks(villagerProfession, f));
-		brain.method_24529(
+		brain.setTaskList(
 			Activity.MEET,
 			VillagerTaskListProvider.createMeetTasks(villagerProfession, f),
 			ImmutableSet.of(Pair.of(MemoryModuleType.MEETING_POINT, MemoryModuleState.VALUE_PRESENT))
@@ -772,8 +772,8 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	}
 
 	@Override
-	public boolean canGather(ItemStack itemStack) {
-		return GATHERABLE_ITEMS.contains(itemStack.getItem()) || this.getVillagerData().getProfession().getGatherableItems().contains(itemStack.getItem());
+	public boolean canGather(ItemStack stack) {
+		return GATHERABLE_ITEMS.contains(stack.getItem()) || this.getVillagerData().getProfession().getGatherableItems().contains(stack.getItem());
 	}
 
 	public boolean wantsToStartBreeding() {
@@ -860,7 +860,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	}
 
 	private void setGolemLastSeenTime(long time) {
-		this.brain.putMemory(MemoryModuleType.GOLEM_LAST_SEEN_TIME, time);
+		this.brain.remember(MemoryModuleType.GOLEM_LAST_SEEN_TIME, time);
 	}
 
 	private boolean hasSeenGolemRecently(long currentTime) {
@@ -954,19 +954,19 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	@Override
 	protected void sendAiDebugData() {
 		super.sendAiDebugData();
-		DebugInfoSender.sendVillagerAiDebugData(this);
+		DebugInfoSender.sendBrainDebugData(this);
 	}
 
 	@Override
 	public void sleep(BlockPos pos) {
 		super.sleep(pos);
-		this.brain.putMemory(MemoryModuleType.LAST_SLEPT, Timestamp.of(this.world.getTime()));
+		this.brain.remember(MemoryModuleType.LAST_SLEPT, Timestamp.of(this.world.getTime()));
 	}
 
 	@Override
 	public void wakeUp() {
 		super.wakeUp();
-		this.brain.putMemory(MemoryModuleType.LAST_WOKEN, Timestamp.of(this.world.getTime()));
+		this.brain.remember(MemoryModuleType.LAST_WOKEN, Timestamp.of(this.world.getTime()));
 	}
 
 	private boolean hasRecentlyWorkedAndSlept(long worldTime) {

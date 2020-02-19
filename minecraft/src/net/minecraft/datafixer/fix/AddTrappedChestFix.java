@@ -58,9 +58,9 @@ public class AddTrappedChestFix extends DataFix {
 
 								for (Typed<?> typed2 : list) {
 									AddTrappedChestFix.ListFixer listFixer = new AddTrappedChestFix.ListFixer(typed2, this.getInputSchema());
-									if (!listFixer.method_5079()) {
+									if (!listFixer.isFixed()) {
 										for (int i = 0; i < 4096; i++) {
-											int j = listFixer.method_5075(i);
+											int j = listFixer.needsFix(i);
 											if (listFixer.isTarget(j)) {
 												intSet.add(listFixer.method_5077() << 12 | i);
 											}
@@ -104,8 +104,8 @@ public class AddTrappedChestFix extends DataFix {
 		protected boolean needsFix() {
 			this.targets = new IntOpenHashSet();
 
-			for (int i = 0; i < this.data.size(); i++) {
-				Dynamic<?> dynamic = (Dynamic<?>)this.data.get(i);
+			for (int i = 0; i < this.properties.size(); i++) {
+				Dynamic<?> dynamic = (Dynamic<?>)this.properties.get(i);
 				String string = dynamic.get("Name").asString("");
 				if (Objects.equals(string, "minecraft:trapped_chest")) {
 					this.targets.add(i);

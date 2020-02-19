@@ -7,7 +7,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.server.world.ServerWorld;
 
 public abstract class Task<E extends LivingEntity> {
-	protected final Map<MemoryModuleType<?>, MemoryModuleState> requiredMemoryState;
+	protected final Map<MemoryModuleType<?>, MemoryModuleState> requiredMemoryStates;
 	private Task.Status status = Task.Status.STOPPED;
 	private long endTime;
 	private final int minRunTime;
@@ -24,7 +24,7 @@ public abstract class Task<E extends LivingEntity> {
 	public Task(Map<MemoryModuleType<?>, MemoryModuleState> requiredMemoryState, int minRunTime, int maxRunTime) {
 		this.minRunTime = minRunTime;
 		this.maxRunTime = maxRunTime;
-		this.requiredMemoryState = requiredMemoryState;
+		this.requiredMemoryStates = requiredMemoryState;
 	}
 
 	public Task.Status getStatus() {
@@ -82,7 +82,7 @@ public abstract class Task<E extends LivingEntity> {
 	}
 
 	private boolean hasRequiredMemoryState(E entity) {
-		return this.requiredMemoryState.entrySet().stream().allMatch(entry -> {
+		return this.requiredMemoryStates.entrySet().stream().allMatch(entry -> {
 			MemoryModuleType<?> memoryModuleType = (MemoryModuleType<?>)entry.getKey();
 			MemoryModuleState memoryModuleState = (MemoryModuleState)entry.getValue();
 			return entity.getBrain().isMemoryInState(memoryModuleType, memoryModuleState);

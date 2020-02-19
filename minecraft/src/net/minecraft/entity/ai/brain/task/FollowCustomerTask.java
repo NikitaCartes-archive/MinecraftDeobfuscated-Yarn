@@ -2,7 +2,7 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.entity.ai.brain.Brain;
-import net.minecraft.entity.ai.brain.EntityPosWrapper;
+import net.minecraft.entity.ai.brain.EntityLookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
@@ -54,9 +54,9 @@ public class FollowCustomerTask extends Task<VillagerEntity> {
 	}
 
 	private void update(VillagerEntity villager) {
-		EntityPosWrapper entityPosWrapper = new EntityPosWrapper(villager.getCurrentCustomer());
+		EntityLookTarget entityLookTarget = new EntityLookTarget(villager.getCurrentCustomer());
 		Brain<?> brain = villager.getBrain();
-		brain.putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(entityPosWrapper, this.speed, 2));
-		brain.putMemory(MemoryModuleType.LOOK_TARGET, entityPosWrapper);
+		brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(entityLookTarget, this.speed, 2));
+		brain.remember(MemoryModuleType.LOOK_TARGET, entityLookTarget);
 	}
 }

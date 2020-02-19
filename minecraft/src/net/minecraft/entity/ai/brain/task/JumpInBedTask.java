@@ -75,7 +75,7 @@ public class JumpInBedTask extends Task<MobEntity> {
 	}
 
 	private void setWalkTarget(MobEntity mob, BlockPos pos) {
-		mob.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(pos, this.walkSpeed, 0));
+		mob.getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget(pos, this.walkSpeed, 0));
 	}
 
 	private boolean shouldStartJumping(ServerWorld world, MobEntity mob) {

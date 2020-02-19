@@ -20,7 +20,7 @@ public class RailBlock extends AbstractRailBlock {
 
 	@Override
 	protected void updateBlockState(BlockState state, World world, BlockPos pos, Block neighbor) {
-		if (neighbor.getDefaultState().emitsRedstonePower() && new RailPlacementHelper(world, pos, state).method_10460() == 3) {
+		if (neighbor.getDefaultState().emitsRedstonePower() && new RailPlacementHelper(world, pos, state).getNeighborCount() == 3) {
 			this.updateBlockState(world, pos, state, false);
 		}
 	}

@@ -369,7 +369,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 
 	private void renderHand(MatrixStack matrices, Camera camera, float tickDelta) {
 		if (!this.renderingPanorama) {
-			this.method_22709(this.method_22973(camera, tickDelta, false));
+			this.loadProjectionMatrix(this.getBasicProjectionMatrix(camera, tickDelta, false));
 			MatrixStack.Entry entry = matrices.peek();
 			entry.getModel().loadIdentity();
 			entry.getNormal().loadIdentity();
@@ -408,14 +408,14 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		}
 	}
 
-	public void method_22709(Matrix4f matrix4f) {
+	public void loadProjectionMatrix(Matrix4f matrix4f) {
 		RenderSystem.matrixMode(5889);
 		RenderSystem.loadIdentity();
 		RenderSystem.multMatrix(matrix4f);
 		RenderSystem.matrixMode(5888);
 	}
 
-	public Matrix4f method_22973(Camera camera, float f, boolean bl) {
+	public Matrix4f getBasicProjectionMatrix(Camera camera, float f, boolean bl) {
 		MatrixStack matrixStack = new MatrixStack();
 		matrixStack.peek().getModel().loadIdentity();
 		if (this.zoom != 1.0F) {
@@ -616,7 +616,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		Camera camera = this.camera;
 		this.viewDistance = (float)(this.client.options.viewDistance * 16);
 		MatrixStack matrixStack = new MatrixStack();
-		matrixStack.peek().getModel().multiply(this.method_22973(camera, tickDelta, true));
+		matrixStack.peek().getModel().multiply(this.getBasicProjectionMatrix(camera, tickDelta, true));
 		this.bobViewWhenHurt(matrixStack, tickDelta);
 		if (this.client.options.bobView) {
 			this.bobView(matrixStack, tickDelta);
@@ -639,7 +639,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		}
 
 		Matrix4f matrix4f = matrixStack.peek().getModel();
-		this.method_22709(matrix4f);
+		this.loadProjectionMatrix(matrix4f);
 		camera.update(
 			this.client.world,
 			(Entity)(this.client.getCameraEntity() == null ? this.client.player : this.client.getCameraEntity()),

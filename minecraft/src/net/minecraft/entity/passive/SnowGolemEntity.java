@@ -112,14 +112,14 @@ public class SnowGolemEntity extends GolemEntity implements RangedAttackMob {
 	}
 
 	@Override
-	public void attack(LivingEntity target, float f) {
+	public void attack(LivingEntity target, float pullProgress) {
 		SnowballEntity snowballEntity = new SnowballEntity(this.world, this);
 		double d = target.getEyeY() - 1.1F;
 		double e = target.getX() - this.getX();
-		double g = d - snowballEntity.getY();
-		double h = target.getZ() - this.getZ();
-		float i = MathHelper.sqrt(e * e + h * h) * 0.2F;
-		snowballEntity.setVelocity(e, g + (double)i, h, 1.6F, 12.0F);
+		double f = d - snowballEntity.getY();
+		double g = target.getZ() - this.getZ();
+		float h = MathHelper.sqrt(e * e + g * g) * 0.2F;
+		snowballEntity.setVelocity(e, f + (double)h, g, 1.6F, 12.0F);
 		this.playSound(SoundEvents.ENTITY_SNOW_GOLEM_SHOOT, 1.0F, 0.4F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
 		this.world.spawnEntity(snowballEntity);
 	}

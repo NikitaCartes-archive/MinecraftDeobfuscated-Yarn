@@ -19,7 +19,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.class_4831;
 import net.minecraft.datafixer.NbtOps;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
@@ -33,19 +32,23 @@ import net.minecraft.util.registry.Registry;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 public class Brain<E extends LivingEntity> implements DynamicSerializable {
-	private final Map<MemoryModuleType<?>, Optional<? extends class_4831<?>>> memories = Maps.<MemoryModuleType<?>, Optional<? extends class_4831<?>>>newHashMap();
+	private final Map<MemoryModuleType<?>, Optional<? extends Memory<?>>> memories = Maps.<MemoryModuleType<?>, Optional<? extends Memory<?>>>newHashMap();
 	private final Map<SensorType<? extends Sensor<? super E>>, Sensor<? super E>> sensors = Maps.<SensorType<? extends Sensor<? super E>>, Sensor<? super E>>newLinkedHashMap();
 	private final Map<Integer, Map<Activity, Set<Task<? super E>>>> tasks = Maps.newTreeMap();
 	private Schedule schedule = Schedule.EMPTY;
 	private final Map<Activity, Set<Pair<MemoryModuleType<?>, MemoryModuleState>>> requiredActivityMemories = Maps.<Activity, Set<Pair<MemoryModuleType<?>, MemoryModuleState>>>newHashMap();
-	private final Map<Activity, Set<MemoryModuleType<?>>> field_22282 = Maps.<Activity, Set<MemoryModuleType<?>>>newHashMap();
+	/**
+	 * The map from activities to the memories to forget after the activity is
+	 * completed.
+	 */
+	private final Map<Activity, Set<MemoryModuleType<?>>> forgettingActivityMemories = Maps.<Activity, Set<MemoryModuleType<?>>>newHashMap();
 	private Set<Activity> coreActivities = Sets.<Activity>newHashSet();
 	private final Set<Activity> possibleActivities = Sets.<Activity>newHashSet();
 	private Activity defaultActivity = Activity.IDLE;
 	private long activityStartTime = -9999L;
 
-	public <T> Brain(Collection<MemoryModuleType<?>> collection, Collection<SensorType<? extends Sensor<? super E>>> sensors, Dynamic<T> dynamic) {
-		collection.forEach(memoryModuleType -> {
+	public <T> Brain(Collection<MemoryModuleType<?>> memoryTypes, Collection<SensorType<? extends Sensor<? super E>>> sensors, Dynamic<T> data) {
+		memoryTypes.forEach(memoryModuleType -> {
 			Optional var10000 = (Optional)this.memories.put(memoryModuleType, Optional.empty());
 		});
 		sensors.forEach(sensorType -> {
@@ -57,53 +60,53 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 			}
 		});
 
-		for (Entry<Dynamic<T>, Dynamic<T>> entry : dynamic.get("memories").asMap(Function.identity(), Function.identity()).entrySet()) {
+		for (Entry<Dynamic<T>, Dynamic<T>> entry : data.get("memories").asMap(Function.identity(), Function.identity()).entrySet()) {
 			this.readMemory(Registry.MEMORY_MODULE_TYPE.get(new Identifier(((Dynamic)entry.getKey()).asString(""))), (Dynamic<T>)entry.getValue());
 		}
 	}
 
-	public boolean hasMemoryModule(MemoryModuleType<?> memoryModuleType) {
-		return this.isMemoryInState(memoryModuleType, MemoryModuleState.VALUE_PRESENT);
+	public boolean hasMemoryModule(MemoryModuleType<?> type) {
+		return this.isMemoryInState(type, MemoryModuleState.VALUE_PRESENT);
 	}
 
-	private <T, U> void readMemory(MemoryModuleType<U> memoryModuleType, Dynamic<T> dynamic) {
-		class_4831<U> lv = new class_4831((Function<Dynamic<?>, T>)memoryModuleType.getFactory().orElseThrow(RuntimeException::new), dynamic);
-		this.method_24535(memoryModuleType, Optional.of(lv));
+	private <T, U> void readMemory(MemoryModuleType<U> type, Dynamic<T> data) {
+		Memory<U> memory = new Memory((Function<Dynamic<?>, T>)type.getFactory().orElseThrow(RuntimeException::new), data);
+		this.setMemory(type, Optional.of(memory));
 	}
 
-	public <U> void forget(MemoryModuleType<U> memoryModuleType) {
-		this.setMemory(memoryModuleType, Optional.empty());
+	public <U> void forget(MemoryModuleType<U> type) {
+		this.remember(type, Optional.empty());
 	}
 
-	public <U> void putMemory(MemoryModuleType<U> memoryModuleType, @Nullable U value) {
-		this.setMemory(memoryModuleType, Optional.ofNullable(value));
+	public <U> void remember(MemoryModuleType<U> type, @Nullable U value) {
+		this.remember(type, Optional.ofNullable(value));
 	}
 
-	public <U> void method_24525(MemoryModuleType<U> memoryModuleType, U object, long l, long m) {
-		long n = l + m;
-		this.method_24535(memoryModuleType, Optional.of(class_4831.method_24636(object, n)));
+	public <U> void remember(MemoryModuleType<U> type, U value, long startTime, long duration) {
+		long l = startTime + duration;
+		this.setMemory(type, Optional.of(Memory.timed(value, l)));
 	}
 
-	public <U> void setMemory(MemoryModuleType<U> memoryModuleType, Optional<U> value) {
-		this.method_24535(memoryModuleType, value.map(class_4831::method_24635));
+	public <U> void remember(MemoryModuleType<U> type, Optional<U> value) {
+		this.setMemory(type, value.map(Memory::permanent));
 	}
 
-	private <U> void method_24535(MemoryModuleType<U> memoryModuleType, Optional<? extends class_4831<?>> optional) {
-		if (this.memories.containsKey(memoryModuleType)) {
-			if (optional.isPresent() && this.isEmptyCollection(((class_4831)optional.get()).method_24637())) {
-				this.forget(memoryModuleType);
+	private <U> void setMemory(MemoryModuleType<U> type, Optional<? extends Memory<?>> memory) {
+		if (this.memories.containsKey(type)) {
+			if (memory.isPresent() && this.isEmptyCollection(((Memory)memory.get()).getValue())) {
+				this.forget(type);
 			} else {
-				this.memories.put(memoryModuleType, optional);
+				this.memories.put(type, memory);
 			}
 		}
 	}
 
-	public <U> Optional<U> getOptionalMemory(MemoryModuleType<U> memoryModuleType) {
-		return ((Optional)this.memories.get(memoryModuleType)).map(class_4831::method_24637);
+	public <U> Optional<U> getOptionalMemory(MemoryModuleType<U> type) {
+		return ((Optional)this.memories.get(type)).map(Memory::getValue);
 	}
 
-	public boolean isMemoryInState(MemoryModuleType<?> memoryModuleType, MemoryModuleState state) {
-		Optional<? extends class_4831<?>> optional = (Optional<? extends class_4831<?>>)this.memories.get(memoryModuleType);
+	public boolean isMemoryInState(MemoryModuleType<?> type, MemoryModuleState state) {
+		Optional<? extends Memory<?>> optional = (Optional<? extends Memory<?>>)this.memories.get(type);
 		return optional == null
 			? false
 			: state == MemoryModuleState.REGISTERED
@@ -119,8 +122,8 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 		this.schedule = schedule;
 	}
 
-	public void setCoreActivities(Set<Activity> set) {
-		this.coreActivities = set;
+	public void setCoreActivities(Set<Activity> coreActivities) {
+		this.coreActivities = coreActivities;
 	}
 
 	@Deprecated
@@ -128,11 +131,11 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 		return this.tasks.values().stream().flatMap(map -> map.values().stream()).flatMap(Collection::stream).filter(task -> task.getStatus() == Task.Status.RUNNING);
 	}
 
-	public void method_24536() {
+	public void resetPossibleActivities() {
 		this.resetPossibleActivities(this.defaultActivity);
 	}
 
-	public Optional<Activity> method_24538() {
+	public Optional<Activity> getFirstPossibleNonCoreActivity() {
 		return this.possibleActivities.stream().filter(activity -> !this.coreActivities.contains(activity)).findFirst();
 	}
 
@@ -140,7 +143,7 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 		if (this.canDoActivity(activity)) {
 			this.resetPossibleActivities(activity);
 		} else {
-			this.method_24536();
+			this.resetPossibleActivities();
 		}
 	}
 
@@ -157,7 +160,7 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 		this.possibleActivities
 			.stream()
 			.filter(activity2 -> activity2 != activity)
-			.map(this.field_22282::get)
+			.map(this.forgettingActivityMemories::get)
 			.filter(Objects::nonNull)
 			.flatMap(Collection::stream)
 			.forEach(this::forget);
@@ -173,7 +176,7 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 		}
 	}
 
-	public void method_24531(List<Activity> list) {
+	public void resetPossibleActivities(List<Activity> list) {
 		list.stream().filter(this::canDoActivity).findFirst().ifPresent(this::resetPossibleActivities);
 	}
 
@@ -182,37 +185,39 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 	}
 
 	public void setTaskList(Activity activity, int i, ImmutableList<? extends Task<? super E>> immutableList) {
-		this.setTaskList(activity, this.method_24524(i, immutableList));
+		this.setTaskList(activity, this.indexTaskList(i, immutableList));
 	}
 
-	public void method_24527(Activity activity, int i, ImmutableList<? extends Task<? super E>> immutableList, MemoryModuleType<?> memoryModuleType) {
+	public void setTaskList(Activity activity, int i, ImmutableList<? extends Task<? super E>> tasks, MemoryModuleType<?> memoryModuleType) {
 		Set<Pair<MemoryModuleType<?>, MemoryModuleState>> set = ImmutableSet.of(Pair.of(memoryModuleType, MemoryModuleState.VALUE_PRESENT));
 		Set<MemoryModuleType<?>> set2 = ImmutableSet.of(memoryModuleType);
-		this.method_24530(activity, this.method_24524(i, immutableList), set, set2);
+		this.setTaskList(activity, this.indexTaskList(i, tasks), set, set2);
 	}
 
-	public void setTaskList(Activity activity, ImmutableList<? extends Pair<Integer, ? extends Task<? super E>>> immutableList) {
-		this.method_24530(activity, immutableList, ImmutableSet.of(), Sets.<MemoryModuleType<?>>newHashSet());
+	public void setTaskList(Activity activity, ImmutableList<? extends Pair<Integer, ? extends Task<? super E>>> indexedTasks) {
+		this.setTaskList(activity, indexedTasks, ImmutableSet.of(), Sets.<MemoryModuleType<?>>newHashSet());
 	}
 
-	public void method_24529(
-		Activity activity, ImmutableList<? extends Pair<Integer, ? extends Task<? super E>>> immutableList, Set<Pair<MemoryModuleType<?>, MemoryModuleState>> set
-	) {
-		this.method_24530(activity, immutableList, set, Sets.<MemoryModuleType<?>>newHashSet());
-	}
-
-	private void method_24530(
+	public void setTaskList(
 		Activity activity,
-		ImmutableList<? extends Pair<Integer, ? extends Task<? super E>>> immutableList,
-		Set<Pair<MemoryModuleType<?>, MemoryModuleState>> set,
-		Set<MemoryModuleType<?>> set2
+		ImmutableList<? extends Pair<Integer, ? extends Task<? super E>>> indexedTasks,
+		Set<Pair<MemoryModuleType<?>, MemoryModuleState>> requiredMemories
 	) {
-		this.requiredActivityMemories.put(activity, set);
-		if (!set2.isEmpty()) {
-			this.field_22282.put(activity, set2);
+		this.setTaskList(activity, indexedTasks, requiredMemories, Sets.<MemoryModuleType<?>>newHashSet());
+	}
+
+	private void setTaskList(
+		Activity activity,
+		ImmutableList<? extends Pair<Integer, ? extends Task<? super E>>> indexedTasks,
+		Set<Pair<MemoryModuleType<?>, MemoryModuleState>> requiredMemories,
+		Set<MemoryModuleType<?>> forgettingMemories
+	) {
+		this.requiredActivityMemories.put(activity, requiredMemories);
+		if (!forgettingMemories.isEmpty()) {
+			this.forgettingActivityMemories.put(activity, forgettingMemories);
 		}
 
-		immutableList.forEach(
+		indexedTasks.forEach(
 			pair -> ((Set)((Map)this.tasks.computeIfAbsent(pair.getFirst(), integer -> Maps.newHashMap()))
 						.computeIfAbsent(activity, activityxx -> Sets.newLinkedHashSet()))
 					.add(pair.getSecond())
@@ -225,17 +230,17 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 
 	public Brain<E> copy() {
 		Brain<E> brain = new Brain<>(this.memories.keySet(), this.sensors.keySet(), new Dynamic<>(NbtOps.INSTANCE, new CompoundTag()));
-		this.memories.forEach((memoryModuleType, optional) -> optional.ifPresent(arg -> {
-				Optional var10000 = (Optional)brain.memories.put(memoryModuleType, Optional.of(arg));
+		this.memories.forEach((memoryModuleType, optional) -> optional.ifPresent(memory -> {
+				Optional var10000 = (Optional)brain.memories.put(memoryModuleType, Optional.of(memory));
 			}));
 		return brain;
 	}
 
-	public void tick(ServerWorld serverWorld, E livingEntity) {
-		this.method_24533(serverWorld);
-		this.updateSensors(serverWorld, livingEntity);
-		this.startTasks(serverWorld, livingEntity);
-		this.updateTasks(serverWorld, livingEntity);
+	public void tick(ServerWorld world, E entity) {
+		this.expireOutdatedMemories(world);
+		this.updateSensors(world, entity);
+		this.startTasks(world, entity);
+		this.updateTasks(world, entity);
 	}
 
 	public void stopAllTasks(ServerWorld serverWorld, E livingEntity) {
@@ -253,7 +258,7 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 				.map(
 					entry -> Pair.of(
 							ops.createString(Registry.MEMORY_MODULE_TYPE.getId((MemoryModuleType<?>)entry.getKey()).toString()),
-							((class_4831)((Optional)entry.getValue()).get()).serialize(ops)
+							((Memory)((Optional)entry.getValue()).get()).serialize(ops)
 						)
 				)
 				.collect(Collectors.toMap(Pair::getFirst, Pair::getSecond))
@@ -283,9 +288,9 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 		this.streamRunningTasks().forEach(task -> task.tick(serverWorld, livingEntity, l));
 	}
 
-	private void method_24533(ServerWorld serverWorld) {
+	private void expireOutdatedMemories(ServerWorld serverWorld) {
 		this.memories.forEach((memoryModuleType, optional) -> {
-			if (optional.isPresent() && ((class_4831)optional.get()).method_24634(serverWorld.getTime())) {
+			if (optional.isPresent() && ((Memory)optional.get()).isExpired(serverWorld.getTime())) {
 				this.forget(memoryModuleType);
 			}
 		});
@@ -303,8 +308,11 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 		return value instanceof Collection && ((Collection)value).isEmpty();
 	}
 
-	private ImmutableList<? extends Pair<Integer, ? extends Task<? super E>>> method_24524(int i, ImmutableList<? extends Task<? super E>> immutableList) {
-		MutableInt mutableInt = new MutableInt(i);
+	/**
+	 * @param begin The beginning of the index of tasks, exclusive
+	 */
+	private ImmutableList<? extends Pair<Integer, ? extends Task<? super E>>> indexTaskList(int begin, ImmutableList<? extends Task<? super E>> immutableList) {
+		MutableInt mutableInt = new MutableInt(begin);
 		return (ImmutableList<? extends Pair<Integer, ? extends Task<? super E>>>)immutableList.stream()
 			.map(task -> Pair.of(mutableInt.incrementAndGet(), task))
 			.collect(ImmutableList.toImmutableList());

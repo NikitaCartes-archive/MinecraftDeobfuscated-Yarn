@@ -68,7 +68,7 @@ public class WanderAroundTask extends Task<MobEntity> {
 	}
 
 	protected void run(ServerWorld serverWorld, MobEntity mobEntity, long l) {
-		mobEntity.getBrain().putMemory(MemoryModuleType.PATH, this.path);
+		mobEntity.getBrain().remember(MemoryModuleType.PATH, this.path);
 		mobEntity.getNavigation().startMovingAlong(this.path, (double)this.speed);
 		this.pathUpdateCountdownTicks = serverWorld.getRandom().nextInt(10);
 	}
@@ -80,7 +80,7 @@ public class WanderAroundTask extends Task<MobEntity> {
 			Brain<?> brain = mobEntity.getBrain();
 			if (this.path != path) {
 				this.path = path;
-				brain.putMemory(MemoryModuleType.PATH, path);
+				brain.remember(MemoryModuleType.PATH, path);
 			}
 
 			if (path != null && this.lookTargetPos != null) {
@@ -106,7 +106,7 @@ public class WanderAroundTask extends Task<MobEntity> {
 			if (bl) {
 				brain.forget(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
 			} else if (!brain.hasMemoryModule(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE)) {
-				brain.putMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, time);
+				brain.remember(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, time);
 			}
 
 			if (this.path != null) {

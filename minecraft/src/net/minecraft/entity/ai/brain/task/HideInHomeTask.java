@@ -81,9 +81,9 @@ public class HideInHomeTask extends Task<LivingEntity> {
 			brain.forget(MemoryModuleType.LOOK_TARGET);
 			brain.forget(MemoryModuleType.BREED_TARGET);
 			brain.forget(MemoryModuleType.INTERACTION_TARGET);
-			brain.putMemory(MemoryModuleType.HIDING_PLACE, GlobalPos.create(world.getDimension().getType(), (BlockPos)optional.get()));
+			brain.remember(MemoryModuleType.HIDING_PLACE, GlobalPos.create(world.getDimension().getType(), (BlockPos)optional.get()));
 			if (!((BlockPos)optional.get()).isWithinDistance(entity.getPos(), (double)this.preferredDistance)) {
-				brain.putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget((BlockPos)optional.get(), this.walkSpeed, this.preferredDistance));
+				brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget((BlockPos)optional.get(), this.walkSpeed, this.preferredDistance));
 			}
 		}
 	}

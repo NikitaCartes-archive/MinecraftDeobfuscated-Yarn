@@ -101,7 +101,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 	}
 
 	@Override
-	public void method_24651() {
+	public void postShoot() {
 		this.despawnCounter = 0;
 	}
 
@@ -125,7 +125,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 	public IllagerEntity.State getState() {
 		if (this.isCharging()) {
 			return IllagerEntity.State.CROSSBOW_CHARGE;
-		} else if (this.method_24518(Items.CROSSBOW)) {
+		} else if (this.isHolding(Items.CROSSBOW)) {
 			return IllagerEntity.State.CROSSBOW_HOLD;
 		} else {
 			return this.isAttacking() ? IllagerEntity.State.ATTACKING : IllagerEntity.State.NEUTRAL;
@@ -148,9 +148,9 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 	}
 
 	@Override
-	public float getPathfindingFavor(BlockPos pos, WorldView worldView) {
-		Block block = worldView.getBlockState(pos.down()).getBlock();
-		return block != Blocks.GRASS_BLOCK && block != Blocks.SAND ? 0.5F - worldView.getBrightness(pos) : 10.0F;
+	public float getPathfindingFavor(BlockPos pos, WorldView world) {
+		Block block = world.getBlockState(pos.down()).getBlock();
+		return block != Blocks.GRASS_BLOCK && block != Blocks.SAND ? 0.5F - world.getBrightness(pos) : 10.0F;
 	}
 
 	@Override
@@ -205,13 +205,13 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 	}
 
 	@Override
-	public void attack(LivingEntity target, float f) {
-		this.method_24654(this, 1.6F);
+	public void attack(LivingEntity target, float pullProgress) {
+		this.shoot(this, 1.6F);
 	}
 
 	@Override
 	public void shoot(LivingEntity target, ItemStack crossbow, Projectile projectile, float multiShotSpray) {
-		this.method_24652(this, target, projectile, multiShotSpray, 1.6F);
+		this.shoot(this, target, projectile, multiShotSpray, 1.6F);
 	}
 
 	@Override

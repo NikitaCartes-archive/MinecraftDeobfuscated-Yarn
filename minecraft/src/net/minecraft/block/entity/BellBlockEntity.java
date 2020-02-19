@@ -98,7 +98,7 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 		if (!this.world.isClient) {
 			for (LivingEntity livingEntity : this.field_19156) {
 				if (livingEntity.isAlive() && !livingEntity.removed && blockPos.isWithinDistance(livingEntity.getPos(), 32.0)) {
-					livingEntity.getBrain().putMemory(MemoryModuleType.HEARD_BELL_TIME, this.world.getTime());
+					livingEntity.getBrain().remember(MemoryModuleType.HEARD_BELL_TIME, this.world.getTime());
 				}
 			}
 		}

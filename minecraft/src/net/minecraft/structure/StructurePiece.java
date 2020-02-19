@@ -36,7 +36,7 @@ public abstract class StructurePiece {
 	private Direction facing;
 	private BlockMirror mirror;
 	private BlockRotation rotation;
-	protected int field_15316;
+	protected int length;
 	private final StructurePieceType type;
 	private static final Set<Block> BLOCKS_NEEDING_POST_PROCESSING = ImmutableSet.<Block>builder()
 		.add(Blocks.NETHER_BRICK_FENCE)
@@ -54,7 +54,7 @@ public abstract class StructurePiece {
 
 	protected StructurePiece(StructurePieceType type, int i) {
 		this.type = type;
-		this.field_15316 = i;
+		this.length = i;
 	}
 
 	public StructurePiece(StructurePieceType type, CompoundTag tag) {
@@ -73,14 +73,14 @@ public abstract class StructurePiece {
 		compoundTag.put("BB", this.boundingBox.toNbt());
 		Direction direction = this.getFacing();
 		compoundTag.putInt("O", direction == null ? -1 : direction.getHorizontal());
-		compoundTag.putInt("GD", this.field_15316);
+		compoundTag.putInt("GD", this.length);
 		this.toNbt(compoundTag);
 		return compoundTag;
 	}
 
 	protected abstract void toNbt(CompoundTag tag);
 
-	public void method_14918(StructurePiece structurePiece, List<StructurePiece> list, Random random) {
+	public void placeJigsaw(StructurePiece structurePiece, List<StructurePiece> list, Random random) {
 	}
 
 	public abstract boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos);
@@ -89,8 +89,8 @@ public abstract class StructurePiece {
 		return this.boundingBox;
 	}
 
-	public int method_14923() {
-		return this.field_15316;
+	public int getLength() {
+		return this.length;
 	}
 
 	public boolean method_16654(ChunkPos chunkPos, int i) {
@@ -99,7 +99,7 @@ public abstract class StructurePiece {
 		return this.boundingBox.intersectsXZ(j - i, k - i, j + 15 + i, k + 15 + i);
 	}
 
-	public static StructurePiece method_14932(List<StructurePiece> list, BlockBox blockBox) {
+	public static StructurePiece getOverlappingPiece(List<StructurePiece> list, BlockBox blockBox) {
 		for (StructurePiece structurePiece : list) {
 			if (structurePiece.getBoundingBox() != null && structurePiece.getBoundingBox().intersects(blockBox)) {
 				return structurePiece;

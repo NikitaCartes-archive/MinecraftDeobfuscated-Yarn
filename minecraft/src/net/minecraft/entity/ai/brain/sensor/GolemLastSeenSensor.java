@@ -35,7 +35,7 @@ public class GolemLastSeenSensor extends Sensor<LivingEntity> {
 		if (optional.isPresent()) {
 			boolean bl = ((List)optional.get()).stream().anyMatch(livingEntity -> livingEntity.getType().equals(EntityType.IRON_GOLEM));
 			if (bl) {
-				brain.putMemory(MemoryModuleType.GOLEM_LAST_SEEN_TIME, time);
+				brain.remember(MemoryModuleType.GOLEM_LAST_SEEN_TIME, time);
 			}
 		}
 	}

@@ -10,7 +10,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_4836;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.entity.boss.WitherEntity;
@@ -38,6 +37,7 @@ import net.minecraft.entity.mob.IllusionerEntity;
 import net.minecraft.entity.mob.MagmaCubeEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PhantomEntity;
+import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.entity.mob.PillagerEntity;
 import net.minecraft.entity.mob.RavagerEntity;
 import net.minecraft.entity.mob.ShulkerEntity;
@@ -427,8 +427,8 @@ public class EntityType<T extends Entity> {
 	public static final EntityType<HoglinEntity> HOGLIN = register(
 		"hoglin", EntityType.Builder.create(HoglinEntity::new, EntityCategory.MONSTER).setDimensions(1.3964844F, 1.4F)
 	);
-	public static final EntityType<class_4836> PIGLIN = register(
-		"piglin", EntityType.Builder.create(class_4836::new, EntityCategory.MONSTER).setDimensions(0.6F, 1.95F)
+	public static final EntityType<PiglinEntity> PIGLIN = register(
+		"piglin", EntityType.Builder.create(PiglinEntity::new, EntityCategory.MONSTER).setDimensions(0.6F, 1.95F)
 	);
 	public static final EntityType<LightningEntity> LIGHTNING_BOLT = register(
 		"lightning_bolt", EntityType.Builder.<LightningEntity>create(EntityCategory.MISC).disableSaving().setDimensions(0.0F, 0.0F)

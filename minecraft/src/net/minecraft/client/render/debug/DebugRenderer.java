@@ -6,7 +6,6 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4841;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.BufferBuilder;
@@ -40,7 +39,7 @@ public class DebugRenderer {
 	public final DebugRenderer.Renderer blockOutlineDebugRenderer;
 	public final DebugRenderer.Renderer chunkLoadingDebugRenderer;
 	public final VillageDebugRenderer villageDebugRenderer;
-	public final class_4841 field_22408;
+	public final VillageSectionsDebugRenderer villageSectionsDebugRenderer;
 	public final BeeDebugRenderer beeDebugRenderer;
 	public final RaidCenterDebugRenderer raidCenterDebugRenderer;
 	public final GoalSelectorDebugRenderer goalSelectorDebugRenderer;
@@ -60,7 +59,7 @@ public class DebugRenderer {
 		this.blockOutlineDebugRenderer = new BlockOutlineDebugRenderer(client);
 		this.chunkLoadingDebugRenderer = new ChunkLoadingDebugRenderer(client);
 		this.villageDebugRenderer = new VillageDebugRenderer(client);
-		this.field_22408 = new class_4841();
+		this.villageSectionsDebugRenderer = new VillageSectionsDebugRenderer();
 		this.beeDebugRenderer = new BeeDebugRenderer(client);
 		this.raidCenterDebugRenderer = new RaidCenterDebugRenderer(client);
 		this.goalSelectorDebugRenderer = new GoalSelectorDebugRenderer(client);
@@ -81,7 +80,7 @@ public class DebugRenderer {
 		this.blockOutlineDebugRenderer.clear();
 		this.chunkLoadingDebugRenderer.clear();
 		this.villageDebugRenderer.clear();
-		this.field_22408.clear();
+		this.villageSectionsDebugRenderer.clear();
 		this.beeDebugRenderer.clear();
 		this.raidCenterDebugRenderer.clear();
 		this.goalSelectorDebugRenderer.clear();

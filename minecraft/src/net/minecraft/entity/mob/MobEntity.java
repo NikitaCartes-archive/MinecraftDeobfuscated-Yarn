@@ -489,23 +489,23 @@ public abstract class MobEntity extends LivingEntity {
 
 	protected void loot(ItemEntity item) {
 		ItemStack itemStack = item.getStack();
-		if (this.method_24523(itemStack)) {
+		if (this.tryEquip(itemStack)) {
 			this.sendPickup(item, itemStack.getCount());
 			item.remove();
 		}
 	}
 
-	public boolean method_24523(ItemStack itemStack) {
-		EquipmentSlot equipmentSlot = getPreferredEquipmentSlot(itemStack);
-		ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
-		boolean bl = this.isBetterItemFor(itemStack, itemStack2, equipmentSlot);
-		if (bl && this.canPickupItem(itemStack)) {
+	public boolean tryEquip(ItemStack equipment) {
+		EquipmentSlot equipmentSlot = getPreferredEquipmentSlot(equipment);
+		ItemStack itemStack = this.getEquippedStack(equipmentSlot);
+		boolean bl = this.isBetterItemFor(equipment, itemStack, equipmentSlot);
+		if (bl && this.canPickupItem(equipment)) {
 			double d = (double)this.getDropChance(equipmentSlot);
-			if (!itemStack2.isEmpty() && (double)Math.max(this.random.nextFloat() - 0.1F, 0.0F) < d) {
-				this.dropStack(itemStack2);
+			if (!itemStack.isEmpty() && (double)Math.max(this.random.nextFloat() - 0.1F, 0.0F) < d) {
+				this.dropStack(itemStack);
 			}
 
-			this.equipStack(equipmentSlot, itemStack);
+			this.equipStack(equipmentSlot, equipment);
 			switch (equipmentSlot.getType()) {
 				case HAND:
 					this.handDropChances[equipmentSlot.getEntitySlotId()] = 2.0F;
@@ -562,8 +562,8 @@ public abstract class MobEntity extends LivingEntity {
 		return true;
 	}
 
-	public boolean canGather(ItemStack itemStack) {
-		return this.canPickupItem(itemStack);
+	public boolean canGather(ItemStack stack) {
+		return this.canPickupItem(stack);
 	}
 
 	public boolean canImmediatelyDespawn(double distanceSquared) {
@@ -574,13 +574,13 @@ public abstract class MobEntity extends LivingEntity {
 		return false;
 	}
 
-	protected boolean method_23734() {
+	protected boolean isDisallowedInPeaceful() {
 		return false;
 	}
 
 	@Override
 	public void checkDespawn() {
-		if (this.world.getDifficulty() == Difficulty.PEACEFUL && this.method_23734()) {
+		if (this.world.getDifficulty() == Difficulty.PEACEFUL && this.isDisallowedInPeaceful()) {
 			this.remove();
 		} else if (!this.isPersistent() && !this.cannotDespawn()) {
 			Entity entity = this.world.getClosestPlayer(this, -1.0);
@@ -1192,7 +1192,7 @@ public abstract class MobEntity extends LivingEntity {
 		return (this.dataTracker.get(MOB_FLAGS) & 4) != 0;
 	}
 
-	public void setBaby(boolean bl) {
+	public void setBaby(boolean baby) {
 	}
 
 	@Override

@@ -20,7 +20,7 @@ public abstract class MobEntityWithAi extends MobEntity {
 		return this.getPathfindingFavor(pos, this.world);
 	}
 
-	public float getPathfindingFavor(BlockPos pos, WorldView worldView) {
+	public float getPathfindingFavor(BlockPos pos, WorldView world) {
 		return 0.0F;
 	}
 

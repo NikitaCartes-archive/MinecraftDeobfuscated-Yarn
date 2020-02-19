@@ -68,7 +68,7 @@ public class WalkHomeTask extends Task<LivingEntity> {
 			BlockPos blockPos = path.getTarget();
 			Optional<PointOfInterestType> optional = pointOfInterestStorage.getType(blockPos);
 			if (optional.isPresent()) {
-				entity.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(blockPos, this.speed, 1));
+				entity.getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget(blockPos, this.speed, 1));
 				DebugInfoSender.sendPointOfInterest(world, blockPos);
 			}
 		} else if (this.tries < 5) {

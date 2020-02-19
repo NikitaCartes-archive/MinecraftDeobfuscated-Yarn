@@ -53,7 +53,7 @@ public class NearestBedSensor extends Sensor<MobEntity> {
 				BlockPos blockPos = path.getTarget();
 				Optional<PointOfInterestType> optional = pointOfInterestStorage.getType(blockPos);
 				if (optional.isPresent()) {
-					mobEntity.getBrain().putMemory(MemoryModuleType.NEAREST_BED, blockPos);
+					mobEntity.getBrain().remember(MemoryModuleType.NEAREST_BED, blockPos);
 				}
 			} else if (this.tries < 5) {
 				this.positionToExpiryTime.long2LongEntrySet().removeIf(entry -> entry.getLongValue() < this.expiryTime);

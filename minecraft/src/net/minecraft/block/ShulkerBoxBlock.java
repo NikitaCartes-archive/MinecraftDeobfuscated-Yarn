@@ -4,7 +4,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4838;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.block.piston.PistonBehavior;
@@ -13,6 +12,7 @@ import net.minecraft.container.Container;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.mob.ShulkerLidCollisions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
@@ -87,7 +87,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 					&& world.doesNotCollide(ShulkerLidCollisions.getLidCollisionBox(pos, direction))) {
 					player.openContainer(shulkerBoxBlockEntity);
 					player.incrementStat(Stats.OPEN_SHULKER_BOX);
-					class_4838.method_24733(player);
+					PiglinBrain.onGoldBlockBroken(player);
 				}
 
 				return ActionResult.SUCCESS;
@@ -131,7 +131,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 			}
 		}
 
-		class_4838.method_24733(player);
+		PiglinBrain.onGoldBlockBroken(player);
 		super.onBreak(world, pos, state, player);
 	}
 

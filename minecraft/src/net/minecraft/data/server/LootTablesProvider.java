@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import net.minecraft.class_4845;
 import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
@@ -37,7 +36,7 @@ public class LootTablesProvider implements DataProvider {
 		Pair.of(ChestLootTableGenerator::new, LootContextTypes.CHEST),
 		Pair.of(EntityLootTableGenerator::new, LootContextTypes.ENTITY),
 		Pair.of(BlockLootTableGenerator::new, LootContextTypes.BLOCK),
-		Pair.of(class_4845::new, LootContextTypes.BARTER),
+		Pair.of(BarterLootTableGenerator::new, LootContextTypes.BARTER),
 		Pair.of(GiftLootTableGenerator::new, LootContextTypes.GIFT)
 	);
 

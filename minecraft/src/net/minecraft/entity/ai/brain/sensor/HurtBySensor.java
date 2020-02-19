@@ -20,10 +20,10 @@ public class HurtBySensor extends Sensor<LivingEntity> {
 		Brain<?> brain = entity.getBrain();
 		DamageSource damageSource = entity.getRecentDamageSource();
 		if (damageSource != null) {
-			brain.putMemory(MemoryModuleType.HURT_BY, entity.getRecentDamageSource());
+			brain.remember(MemoryModuleType.HURT_BY, entity.getRecentDamageSource());
 			Entity entity2 = damageSource.getAttacker();
 			if (entity2 instanceof LivingEntity) {
-				brain.putMemory(MemoryModuleType.HURT_BY_ENTITY, (LivingEntity)entity2);
+				brain.remember(MemoryModuleType.HURT_BY_ENTITY, (LivingEntity)entity2);
 			}
 		} else {
 			brain.forget(MemoryModuleType.HURT_BY);

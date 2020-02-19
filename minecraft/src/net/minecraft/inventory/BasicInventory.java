@@ -25,16 +25,16 @@ public class BasicInventory implements Inventory, RecipeInputProvider {
 		this.stackList = DefaultedList.copyOf(ItemStack.EMPTY, items);
 	}
 
-	public void addListener(InventoryListener inventoryListener) {
+	public void addListener(InventoryListener listener) {
 		if (this.listeners == null) {
 			this.listeners = Lists.<InventoryListener>newArrayList();
 		}
 
-		this.listeners.add(inventoryListener);
+		this.listeners.add(listener);
 	}
 
-	public void removeListener(InventoryListener inventoryListener) {
-		this.listeners.remove(inventoryListener);
+	public void removeListener(InventoryListener listener) {
+		this.listeners.remove(listener);
 	}
 
 	@Override
@@ -42,7 +42,10 @@ public class BasicInventory implements Inventory, RecipeInputProvider {
 		return slot >= 0 && slot < this.stackList.size() ? this.stackList.get(slot) : ItemStack.EMPTY;
 	}
 
-	public List<ItemStack> method_24514() {
+	/**
+	 * Clears this inventory and return all the non-empty stacks in a list.
+	 */
+	public List<ItemStack> clearToList() {
 		List<ItemStack> list = (List<ItemStack>)this.stackList.stream().filter(itemStack -> !itemStack.isEmpty()).collect(Collectors.toList());
 		this.clear();
 		return list;
@@ -80,14 +83,14 @@ public class BasicInventory implements Inventory, RecipeInputProvider {
 		return itemStack;
 	}
 
-	public ItemStack add(ItemStack itemStack) {
-		ItemStack itemStack2 = itemStack.copy();
-		this.addToExistingSlot(itemStack2);
-		if (itemStack2.isEmpty()) {
+	public ItemStack add(ItemStack stack) {
+		ItemStack itemStack = stack.copy();
+		this.addToExistingSlot(itemStack);
+		if (itemStack.isEmpty()) {
 			return ItemStack.EMPTY;
 		} else {
-			this.addToNewSlot(itemStack2);
-			return itemStack2.isEmpty() ? ItemStack.EMPTY : itemStack2;
+			this.addToNewSlot(itemStack);
+			return itemStack.isEmpty() ? ItemStack.EMPTY : itemStack;
 		}
 	}
 
@@ -149,9 +152,9 @@ public class BasicInventory implements Inventory, RecipeInputProvider {
 	}
 
 	@Override
-	public void provideRecipeInputs(RecipeFinder recipeFinder) {
+	public void provideRecipeInputs(RecipeFinder finder) {
 		for (ItemStack itemStack : this.stackList) {
-			recipeFinder.addItem(itemStack);
+			finder.addItem(itemStack);
 		}
 	}
 

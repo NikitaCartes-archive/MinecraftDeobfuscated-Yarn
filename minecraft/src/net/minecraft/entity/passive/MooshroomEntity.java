@@ -43,8 +43,8 @@ public class MooshroomEntity extends CowEntity {
 	}
 
 	@Override
-	public float getPathfindingFavor(BlockPos pos, WorldView worldView) {
-		return worldView.getBlockState(pos.down()).getBlock() == Blocks.MYCELIUM ? 10.0F : worldView.getBrightness(pos) - 0.5F;
+	public float getPathfindingFavor(BlockPos pos, WorldView world) {
+		return world.getBlockState(pos.down()).getBlock() == Blocks.MYCELIUM ? 10.0F : world.getBrightness(pos) - 0.5F;
 	}
 
 	public static boolean canSpawn(EntityType<MooshroomEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {

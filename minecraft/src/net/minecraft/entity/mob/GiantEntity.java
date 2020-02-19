@@ -27,7 +27,7 @@ public class GiantEntity extends HostileEntity {
 	}
 
 	@Override
-	public float getPathfindingFavor(BlockPos pos, WorldView worldView) {
-		return worldView.getBrightness(pos) - 0.5F;
+	public float getPathfindingFavor(BlockPos pos, WorldView world) {
+		return world.getBrightness(pos) - 0.5F;
 	}
 }

@@ -72,13 +72,13 @@ public class NetherFortressFeature extends StructureFeature<DefaultFeatureConfig
 		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
 			NetherFortressGenerator.Start start = new NetherFortressGenerator.Start(this.random, (x << 4) + 2, (z << 4) + 2);
 			this.children.add(start);
-			start.method_14918(start, this.children, this.random);
+			start.placeJigsaw(start, this.children, this.random);
 			List<StructurePiece> list = start.field_14505;
 
 			while (!list.isEmpty()) {
 				int i = this.random.nextInt(list.size());
 				StructurePiece structurePiece = (StructurePiece)list.remove(i);
-				structurePiece.method_14918(start, this.children, this.random);
+				structurePiece.placeJigsaw(start, this.children, this.random);
 			}
 
 			this.setBoundingBoxFromChildren();

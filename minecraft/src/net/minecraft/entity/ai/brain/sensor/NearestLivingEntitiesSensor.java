@@ -25,8 +25,8 @@ public class NearestLivingEntitiesSensor extends Sensor<LivingEntity> {
 		);
 		list.sort(Comparator.comparingDouble(entity::squaredDistanceTo));
 		Brain<?> brain = entity.getBrain();
-		brain.putMemory(MemoryModuleType.MOBS, list);
-		brain.putMemory(
+		brain.remember(MemoryModuleType.MOBS, list);
+		brain.remember(
 			MemoryModuleType.VISIBLE_MOBS,
 			(List<LivingEntity>)list.stream()
 				.filter(livingEntity2 -> CLOSE_ENTITY_PREDICATE.test(entity, livingEntity2))

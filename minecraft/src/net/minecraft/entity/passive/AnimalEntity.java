@@ -71,8 +71,8 @@ public abstract class AnimalEntity extends PassiveEntity {
 	}
 
 	@Override
-	public float getPathfindingFavor(BlockPos pos, WorldView worldView) {
-		return worldView.getBlockState(pos.down()).getBlock() == Blocks.GRASS_BLOCK ? 10.0F : worldView.getBrightness(pos) - 0.5F;
+	public float getPathfindingFavor(BlockPos pos, WorldView world) {
+		return world.getBlockState(pos.down()).getBlock() == Blocks.GRASS_BLOCK ? 10.0F : world.getBrightness(pos) - 0.5F;
 	}
 
 	@Override
@@ -189,7 +189,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 		}
 	}
 
-	public void method_24650(World world, AnimalEntity animalEntity) {
+	public void breed(World world, AnimalEntity animalEntity) {
 		PassiveEntity passiveEntity = this.createChild(animalEntity);
 		if (passiveEntity != null) {
 			ServerPlayerEntity serverPlayerEntity = this.getLovingPlayer();

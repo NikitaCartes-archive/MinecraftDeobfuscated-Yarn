@@ -462,9 +462,9 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	}
 
 	@Override
-	public void provideRecipeInputs(RecipeFinder recipeFinder) {
+	public void provideRecipeInputs(RecipeFinder finder) {
 		for (ItemStack itemStack : this.inventory) {
-			recipeFinder.addItem(itemStack);
+			finder.addItem(itemStack);
 		}
 	}
 }

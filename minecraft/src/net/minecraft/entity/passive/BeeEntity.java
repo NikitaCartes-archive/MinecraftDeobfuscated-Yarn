@@ -118,8 +118,8 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 	}
 
 	@Override
-	public float getPathfindingFavor(BlockPos pos, WorldView worldView) {
-		return worldView.getBlockState(pos).isAir() ? 10.0F : 0.0F;
+	public float getPathfindingFavor(BlockPos pos, WorldView world) {
+		return world.getBlockState(pos).isAir() ? 10.0F : 0.0F;
 	}
 
 	@Override

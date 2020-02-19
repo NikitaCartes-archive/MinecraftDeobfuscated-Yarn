@@ -35,6 +35,6 @@ public class WanderIndoorsTask extends Task<MobEntityWithAi> {
 			.filter(blockPosx -> serverWorld.isTopSolid(blockPosx, mobEntityWithAi))
 			.filter(blockPosx -> serverWorld.doesNotCollide(mobEntityWithAi))
 			.findFirst();
-		optional.ifPresent(blockPosx -> mobEntityWithAi.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(blockPosx, this.speed, 0)));
+		optional.ifPresent(blockPosx -> mobEntityWithAi.getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget(blockPosx, this.speed, 0)));
 	}
 }

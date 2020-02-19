@@ -6,7 +6,7 @@ import java.util.function.Predicate;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
-import net.minecraft.entity.ai.brain.EntityPosWrapper;
+import net.minecraft.entity.ai.brain.EntityLookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.server.world.ServerWorld;
@@ -54,8 +54,8 @@ public class FindInteractionTargetTask extends Task<LivingEntity> {
 						.filter(this::test)
 						.findFirst()
 						.ifPresent(livingEntityx -> {
-							brain.putMemory(MemoryModuleType.INTERACTION_TARGET, livingEntityx);
-							brain.putMemory(MemoryModuleType.LOOK_TARGET, new EntityPosWrapper(livingEntityx));
+							brain.remember(MemoryModuleType.INTERACTION_TARGET, livingEntityx);
+							brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(livingEntityx));
 						})
 			);
 	}

@@ -3,7 +3,6 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4838;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ChestBlockEntity;
@@ -11,6 +10,7 @@ import net.minecraft.block.entity.EnderChestBlockEntity;
 import net.minecraft.container.GenericContainer;
 import net.minecraft.container.SimpleNamedContainerFactory;
 import net.minecraft.entity.EntityContext;
+import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -89,7 +89,7 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
 					)
 				);
 				player.incrementStat(Stats.OPEN_ENDERCHEST);
-				class_4838.method_24733(player);
+				PiglinBrain.onGoldBlockBroken(player);
 				return ActionResult.SUCCESS;
 			}
 		} else {
@@ -155,6 +155,6 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
 	@Override
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		super.onBreak(world, pos, state, player);
-		class_4838.method_24733(player);
+		PiglinBrain.onGoldBlockBroken(player);
 	}
 }

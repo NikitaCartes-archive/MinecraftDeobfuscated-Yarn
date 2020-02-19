@@ -1837,13 +1837,13 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				int i = packetByteBuf.readInt();
 
 				for (int j = 0; j < i; j++) {
-					this.client.debugRenderer.field_22408.method_24808(packetByteBuf.readChunkSectionPos());
+					this.client.debugRenderer.villageSectionsDebugRenderer.addSection(packetByteBuf.readChunkSectionPos());
 				}
 
 				int j = packetByteBuf.readInt();
 
 				for (int m = 0; m < j; m++) {
-					this.client.debugRenderer.field_22408.method_24809(packetByteBuf.readChunkSectionPos());
+					this.client.debugRenderer.villageSectionsDebugRenderer.removeSection(packetByteBuf.readChunkSectionPos());
 				}
 			} else if (CustomPayloadS2CPacket.DEBUG_POI_ADDED.equals(identifier)) {
 				BlockPos blockPos2 = packetByteBuf.readBlockPos();

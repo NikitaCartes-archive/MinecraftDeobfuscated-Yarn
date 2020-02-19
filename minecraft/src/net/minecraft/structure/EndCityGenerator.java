@@ -122,7 +122,7 @@ public class EndCityGenerator {
 			EndCityGenerator.Piece piece = EndCityGenerator.addPiece(
 				pieces, EndCityGenerator.createPiece(manager, root, new BlockPos(0, 0, -4), "bridge_piece", blockRotation, true)
 			);
-			piece.field_15316 = -1;
+			piece.length = -1;
 			int j = 0;
 
 			for (int k = 0; k < i; k++) {
@@ -156,7 +156,7 @@ public class EndCityGenerator {
 			piece = EndCityGenerator.addPiece(
 				pieces, EndCityGenerator.createPiece(manager, piece, new BlockPos(4, j, 0), "bridge_end", blockRotation.rotate(BlockRotation.CLOCKWISE_180), true)
 			);
-			piece.field_15316 = -1;
+			piece.length = -1;
 			return true;
 		}
 	};
@@ -235,9 +235,9 @@ public class EndCityGenerator {
 				int i = random.nextInt();
 
 				for (StructurePiece structurePiece : list) {
-					structurePiece.field_15316 = i;
-					StructurePiece structurePiece2 = StructurePiece.method_14932(pieces, structurePiece.getBoundingBox());
-					if (structurePiece2 != null && structurePiece2.field_15316 != parent.field_15316) {
+					structurePiece.length = i;
+					StructurePiece structurePiece2 = StructurePiece.getOverlappingPiece(pieces, structurePiece.getBoundingBox());
+					if (structurePiece2 != null && structurePiece2.length != parent.length) {
 						bl = true;
 						break;
 					}
