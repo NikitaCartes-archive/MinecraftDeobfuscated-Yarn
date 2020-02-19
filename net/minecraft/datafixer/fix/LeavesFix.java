@@ -39,7 +39,7 @@ import org.jetbrains.annotations.Nullable;
 public class LeavesFix
 extends DataFix {
     private static final int[][] field_5687 = new int[][]{{-1, 0, 0}, {1, 0, 0}, {0, -1, 0}, {0, 1, 0}, {0, 0, -1}, {0, 0, 1}};
-    private static final Object2IntMap<String> field_5688 = DataFixUtils.make(new Object2IntOpenHashMap(), object2IntOpenHashMap -> {
+    private static final Object2IntMap<String> LEAVES_MAP = DataFixUtils.make(new Object2IntOpenHashMap(), object2IntOpenHashMap -> {
         object2IntOpenHashMap.put("minecraft:acacia_leaves", 0);
         object2IntOpenHashMap.put("minecraft:birch_leaves", 1);
         object2IntOpenHashMap.put("minecraft:dark_oak_leaves", 2);
@@ -47,7 +47,7 @@ extends DataFix {
         object2IntOpenHashMap.put("minecraft:oak_leaves", 4);
         object2IntOpenHashMap.put("minecraft:spruce_leaves", 5);
     });
-    private static final Set<String> field_5686 = ImmutableSet.of("minecraft:acacia_bark", "minecraft:birch_bark", "minecraft:dark_oak_bark", "minecraft:jungle_bark", "minecraft:oak_bark", "minecraft:spruce_bark", new String[]{"minecraft:acacia_log", "minecraft:birch_log", "minecraft:dark_oak_log", "minecraft:jungle_log", "minecraft:oak_log", "minecraft:spruce_log", "minecraft:stripped_acacia_log", "minecraft:stripped_birch_log", "minecraft:stripped_dark_oak_log", "minecraft:stripped_jungle_log", "minecraft:stripped_oak_log", "minecraft:stripped_spruce_log"});
+    private static final Set<String> LOGS_MAP = ImmutableSet.of("minecraft:acacia_bark", "minecraft:birch_bark", "minecraft:dark_oak_bark", "minecraft:jungle_bark", "minecraft:oak_bark", "minecraft:spruce_bark", new String[]{"minecraft:acacia_log", "minecraft:birch_log", "minecraft:dark_oak_log", "minecraft:jungle_log", "minecraft:oak_log", "minecraft:spruce_log", "minecraft:stripped_acacia_log", "minecraft:stripped_birch_log", "minecraft:stripped_dark_oak_log", "minecraft:stripped_jungle_log", "minecraft:stripped_oak_log", "minecraft:stripped_spruce_log"});
 
     public LeavesFix(Schema schema, boolean bl) {
         super(schema, bl);
@@ -69,23 +69,23 @@ extends DataFix {
             Typed<?> typed22 = typed.updateTyped(opticFinder2, typed2 -> {
                 int m;
                 int l;
-                Int2ObjectOpenHashMap<class_1192> int2ObjectMap = new Int2ObjectOpenHashMap<class_1192>(typed2.getAllTyped(opticFinder3).stream().map(typed -> new class_1192((Typed<?>)typed, this.getInputSchema())).collect(Collectors.toMap(ListFixer::method_5077, arg -> arg)));
-                if (int2ObjectMap.values().stream().allMatch(ListFixer::method_5079)) {
+                Int2ObjectOpenHashMap<LeavesLogFixer> int2ObjectMap = new Int2ObjectOpenHashMap<LeavesLogFixer>(typed2.getAllTyped(opticFinder3).stream().map(typed -> new LeavesLogFixer((Typed<?>)typed, this.getInputSchema())).collect(Collectors.toMap(ListFixer::method_5077, leavesLogFixer -> leavesLogFixer)));
+                if (int2ObjectMap.values().stream().allMatch(ListFixer::isFixed)) {
                     return typed2;
                 }
                 ArrayList<IntOpenHashSet> list = Lists.newArrayList();
                 for (int i = 0; i < 7; ++i) {
                     list.add(new IntOpenHashSet());
                 }
-                for (class_1192 lv : int2ObjectMap.values()) {
-                    if (lv.method_5079()) continue;
+                for (LeavesLogFixer leavesLogFixer2 : int2ObjectMap.values()) {
+                    if (leavesLogFixer2.isFixed()) continue;
                     for (int j = 0; j < 4096; ++j) {
-                        int k = lv.method_5075(j);
-                        if (lv.method_5068(k)) {
-                            ((IntSet)list.get(0)).add(lv.method_5077() << 12 | j);
+                        int k = leavesLogFixer2.needsFix(j);
+                        if (leavesLogFixer2.isLog(k)) {
+                            ((IntSet)list.get(0)).add(leavesLogFixer2.method_5077() << 12 | j);
                             continue;
                         }
-                        if (!lv.method_5071(k)) continue;
+                        if (!leavesLogFixer2.isLeaf(k)) continue;
                         l = this.method_5052(j);
                         m = this.method_5050(j);
                         is[0] = is[0] | LeavesFix.method_5061(l == 0, l == 15, m == 0, m == 15);
@@ -104,17 +104,17 @@ extends DataFix {
                             int u;
                             int s;
                             int t;
-                            class_1192 lv2;
+                            LeavesLogFixer leavesLogFixer2;
                             int p = m + js[0];
                             int q = n + js[1];
                             int r = o + js[2];
-                            if (p < 0 || p > 15 || r < 0 || r > 15 || q < 0 || q > 255 || (lv2 = (class_1192)int2ObjectMap.get(q >> 4)) == null || lv2.method_5079() || !lv2.method_5071(t = lv2.method_5075(s = LeavesFix.method_5051(p, q & 0xF, r))) || (u = lv2.method_5065(t)) <= i) continue;
-                            lv2.method_5070(s, t, i);
+                            if (p < 0 || p > 15 || r < 0 || r > 15 || q < 0 || q > 255 || (leavesLogFixer2 = (LeavesLogFixer)int2ObjectMap.get(q >> 4)) == null || leavesLogFixer2.isFixed() || !leavesLogFixer2.isLeaf(t = leavesLogFixer2.needsFix(s = LeavesFix.method_5051(p, q & 0xF, r))) || (u = leavesLogFixer2.getDistanceToLog(t)) <= i) continue;
+                            leavesLogFixer2.computeLeafStates(s, t, i);
                             intSet2.add(LeavesFix.method_5051(p, q, r));
                         }
                     }
                 }
-                return typed2.updateTyped(opticFinder3, typed -> ((class_1192)int2ObjectMap.get(typed.get(DSL.remainderFinder()).get("Y").asInt(0))).method_5083((Typed<?>)typed));
+                return typed2.updateTyped(opticFinder3, typed -> ((LeavesLogFixer)int2ObjectMap.get(typed.get(DSL.remainderFinder()).get("Y").asInt(0))).method_5083((Typed<?>)typed));
             });
             if (is[0] != 0) {
                 typed22 = typed22.update(DSL.remainderFinder(), dynamic -> {
@@ -156,40 +156,40 @@ extends DataFix {
         return i;
     }
 
-    public static final class class_1192
+    public static final class LeavesLogFixer
     extends ListFixer {
         @Nullable
-        private IntSet field_5689;
+        private IntSet leafIndices;
         @Nullable
-        private IntSet field_5691;
+        private IntSet logIndices;
         @Nullable
-        private Int2IntMap field_5690;
+        private Int2IntMap leafStates;
 
-        public class_1192(Typed<?> typed, Schema schema) {
+        public LeavesLogFixer(Typed<?> typed, Schema schema) {
             super(typed, schema);
         }
 
         @Override
         protected boolean needsFix() {
-            this.field_5689 = new IntOpenHashSet();
-            this.field_5691 = new IntOpenHashSet();
-            this.field_5690 = new Int2IntOpenHashMap();
-            for (int i = 0; i < this.data.size(); ++i) {
-                Dynamic dynamic = (Dynamic)this.data.get(i);
+            this.leafIndices = new IntOpenHashSet();
+            this.logIndices = new IntOpenHashSet();
+            this.leafStates = new Int2IntOpenHashMap();
+            for (int i = 0; i < this.properties.size(); ++i) {
+                Dynamic dynamic = (Dynamic)this.properties.get(i);
                 String string = dynamic.get("Name").asString("");
-                if (field_5688.containsKey(string)) {
+                if (LEAVES_MAP.containsKey(string)) {
                     boolean bl = Objects.equals(dynamic.get("Properties").get("decayable").asString(""), "false");
-                    this.field_5689.add(i);
-                    this.field_5690.put(this.method_5082(string, bl, 7), i);
-                    this.data.set(i, this.method_5072(dynamic, string, bl, 7));
+                    this.leafIndices.add(i);
+                    this.leafStates.put(this.computeFlags(string, bl, 7), i);
+                    this.properties.set(i, this.createLeafProperties(dynamic, string, bl, 7));
                 }
-                if (!field_5686.contains(string)) continue;
-                this.field_5691.add(i);
+                if (!LOGS_MAP.contains(string)) continue;
+                this.logIndices.add(i);
             }
-            return this.field_5689.isEmpty() && this.field_5691.isEmpty();
+            return this.leafIndices.isEmpty() && this.logIndices.isEmpty();
         }
 
-        private Dynamic<?> method_5072(Dynamic<?> dynamic, String string, boolean bl, int i) {
+        private Dynamic<?> createLeafProperties(Dynamic<?> dynamic, String string, boolean bl, int i) {
             Dynamic dynamic2 = dynamic.emptyMap();
             dynamic2 = dynamic2.set("persistent", dynamic2.createString(bl ? "true" : "false"));
             dynamic2 = dynamic2.set("distance", dynamic2.createString(Integer.toString(i)));
@@ -199,91 +199,91 @@ extends DataFix {
             return dynamic3;
         }
 
-        public boolean method_5068(int i) {
-            return this.field_5691.contains(i);
+        public boolean isLog(int i) {
+            return this.logIndices.contains(i);
         }
 
-        public boolean method_5071(int i) {
-            return this.field_5689.contains(i);
+        public boolean isLeaf(int i) {
+            return this.leafIndices.contains(i);
         }
 
-        private int method_5065(int i) {
-            if (this.method_5068(i)) {
+        private int getDistanceToLog(int i) {
+            if (this.isLog(i)) {
                 return 0;
             }
-            return Integer.parseInt(((Dynamic)this.data.get(i)).get("Properties").get("distance").asString(""));
+            return Integer.parseInt(((Dynamic)this.properties.get(i)).get("Properties").get("distance").asString(""));
         }
 
-        private void method_5070(int i, int j, int k) {
+        private void computeLeafStates(int i, int j, int k) {
             int m;
             boolean bl;
-            Dynamic dynamic = (Dynamic)this.data.get(j);
+            Dynamic dynamic = (Dynamic)this.properties.get(j);
             String string = dynamic.get("Name").asString("");
-            int l = this.method_5082(string, bl = Objects.equals(dynamic.get("Properties").get("persistent").asString(""), "true"), k);
-            if (!this.field_5690.containsKey(l)) {
-                m = this.data.size();
-                this.field_5689.add(m);
-                this.field_5690.put(l, m);
-                this.data.add(this.method_5072(dynamic, string, bl, k));
+            int l = this.computeFlags(string, bl = Objects.equals(dynamic.get("Properties").get("persistent").asString(""), "true"), k);
+            if (!this.leafStates.containsKey(l)) {
+                m = this.properties.size();
+                this.leafIndices.add(m);
+                this.leafStates.put(l, m);
+                this.properties.add(this.createLeafProperties(dynamic, string, bl, k));
             }
-            m = this.field_5690.get(l);
-            if (1 << this.field_5696.getElementBits() <= m) {
-                PackedIntegerArray packedIntegerArray = new PackedIntegerArray(this.field_5696.getElementBits() + 1, 4096);
+            m = this.leafStates.get(l);
+            if (1 << this.blockStateMap.getElementBits() <= m) {
+                PackedIntegerArray packedIntegerArray = new PackedIntegerArray(this.blockStateMap.getElementBits() + 1, 4096);
                 for (int n = 0; n < 4096; ++n) {
-                    packedIntegerArray.set(n, this.field_5696.get(n));
+                    packedIntegerArray.set(n, this.blockStateMap.get(n));
                 }
-                this.field_5696 = packedIntegerArray;
+                this.blockStateMap = packedIntegerArray;
             }
-            this.field_5696.set(i, m);
+            this.blockStateMap.set(i, m);
         }
     }
 
     public static abstract class ListFixer {
         private final Type<Pair<String, Dynamic<?>>> field_5695 = DSL.named(TypeReferences.BLOCK_STATE.typeName(), DSL.remainderType());
         protected final OpticFinder<List<Pair<String, Dynamic<?>>>> field_5693 = DSL.fieldFinder("Palette", DSL.list(this.field_5695));
-        protected final List<Dynamic<?>> data;
+        protected final List<Dynamic<?>> properties;
         protected final int field_5694;
         @Nullable
-        protected PackedIntegerArray field_5696;
+        protected PackedIntegerArray blockStateMap;
 
         public ListFixer(Typed<?> typed, Schema schema) {
             if (!Objects.equals(schema.getType(TypeReferences.BLOCK_STATE), this.field_5695)) {
                 throw new IllegalStateException("Block state type is not what was expected.");
             }
             Optional<List<Pair<String, Dynamic<?>>>> optional = typed.getOptional(this.field_5693);
-            this.data = optional.map(list -> list.stream().map(Pair::getSecond).collect(Collectors.toList())).orElse(ImmutableList.of());
+            this.properties = optional.map(list -> list.stream().map(Pair::getSecond).collect(Collectors.toList())).orElse(ImmutableList.of());
             Dynamic<?> dynamic = typed.get(DSL.remainderFinder());
             this.field_5694 = dynamic.get("Y").asInt(0);
-            this.method_5074(dynamic);
+            this.computeFixableBlockStates(dynamic);
         }
 
-        protected void method_5074(Dynamic<?> dynamic) {
+        protected void computeFixableBlockStates(Dynamic<?> dynamic) {
             if (this.needsFix()) {
-                this.field_5696 = null;
+                this.blockStateMap = null;
             } else {
                 long[] ls = dynamic.get("BlockStates").asLongStreamOpt().get().toArray();
-                int i = Math.max(4, DataFixUtils.ceillog2(this.data.size()));
-                this.field_5696 = new PackedIntegerArray(i, 4096, ls);
+                int i = Math.max(4, DataFixUtils.ceillog2(this.properties.size()));
+                this.blockStateMap = new PackedIntegerArray(i, 4096, ls);
             }
         }
 
         public Typed<?> method_5083(Typed<?> typed) {
-            if (this.method_5079()) {
+            if (this.isFixed()) {
                 return typed;
             }
-            return typed.update(DSL.remainderFinder(), dynamic -> dynamic.set("BlockStates", dynamic.createLongList(Arrays.stream(this.field_5696.getStorage())))).set(this.field_5693, this.data.stream().map(dynamic -> Pair.of(TypeReferences.BLOCK_STATE.typeName(), dynamic)).collect(Collectors.toList()));
+            return typed.update(DSL.remainderFinder(), dynamic -> dynamic.set("BlockStates", dynamic.createLongList(Arrays.stream(this.blockStateMap.getStorage())))).set(this.field_5693, this.properties.stream().map(dynamic -> Pair.of(TypeReferences.BLOCK_STATE.typeName(), dynamic)).collect(Collectors.toList()));
         }
 
-        public boolean method_5079() {
-            return this.field_5696 == null;
+        public boolean isFixed() {
+            return this.blockStateMap == null;
         }
 
-        public int method_5075(int i) {
-            return this.field_5696.get(i);
+        public int needsFix(int i) {
+            return this.blockStateMap.get(i);
         }
 
-        protected int method_5082(String string, boolean bl, int i) {
-            return field_5688.get(string) << 5 | (bl ? 16 : 0) | i;
+        protected int computeFlags(String leafBlockName, boolean persistent, int i) {
+            return LEAVES_MAP.get(leafBlockName) << 5 | (persistent ? 16 : 0) | i;
         }
 
         int method_5077() {

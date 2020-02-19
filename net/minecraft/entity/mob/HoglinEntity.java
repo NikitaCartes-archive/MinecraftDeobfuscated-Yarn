@@ -10,7 +10,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_4835;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -22,6 +21,7 @@ import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.mob.HoglinBrain;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.PassiveEntity;
@@ -46,14 +46,14 @@ import org.jetbrains.annotations.Nullable;
 public class HoglinEntity
 extends AnimalEntity
 implements Monster {
-    private static final Logger field_22367 = LogManager.getLogger();
-    private int field_22368;
+    private static final Logger LOGGER = LogManager.getLogger();
+    private int movementCooldownTicks;
     private static int field_22361 = 0;
     private static int field_22362 = 0;
     private static int field_22363 = 0;
     private static int field_22364 = 0;
-    protected static final ImmutableList<? extends SensorType<? extends Sensor<? super HoglinEntity>>> field_22365 = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.HOGLIN_SPECIFIC_SENSOR);
-    protected static final ImmutableList<? extends MemoryModuleType<?>> field_22366 = ImmutableList.of(MemoryModuleType.BREED_TARGET, MemoryModuleType.MOBS, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER, MemoryModuleType.LOOK_TARGET, MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.PATH, MemoryModuleType.ATTACK_TARGET, MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLIN, MemoryModuleType.AVOID_TARGET, new MemoryModuleType[]{MemoryModuleType.VISIBLE_ADULT_PIGLIN_COUNT, MemoryModuleType.VISIBLE_ADULT_HOGLIN_COUNT, MemoryModuleType.NEAREST_VISIBLE_ADULT_HOGLINS, MemoryModuleType.NEAREST_VISIBLE_WARPED_FUNGI, MemoryModuleType.PACIFIED});
+    protected static final ImmutableList<? extends SensorType<? extends Sensor<? super HoglinEntity>>> SENSOR_TYPES = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.HOGLIN_SPECIFIC_SENSOR);
+    protected static final ImmutableList<? extends MemoryModuleType<?>> MEMORY_MODULE_TYPES = ImmutableList.of(MemoryModuleType.BREED_TARGET, MemoryModuleType.MOBS, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER, MemoryModuleType.LOOK_TARGET, MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.PATH, MemoryModuleType.ATTACK_TARGET, MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLIN, MemoryModuleType.AVOID_TARGET, new MemoryModuleType[]{MemoryModuleType.VISIBLE_ADULT_PIGLIN_COUNT, MemoryModuleType.VISIBLE_ADULT_HOGLIN_COUNT, MemoryModuleType.NEAREST_VISIBLE_ADULT_HOGLINS, MemoryModuleType.NEAREST_VISIBLE_WARPED_FUNGI, MemoryModuleType.PACIFIED});
 
     public HoglinEntity(EntityType<? extends HoglinEntity> entityType, World world) {
         super((EntityType<? extends AnimalEntity>)entityType, world);
@@ -79,31 +79,31 @@ implements Monster {
         this.getAttributes().register(EntityAttributes.ATTACK_DAMAGE).setBaseValue(6.0);
     }
 
-    private float method_24656() {
+    private float getAttackDamage() {
         return (float)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue();
     }
 
     @Override
     public boolean tryAttack(Entity target) {
-        this.field_22368 = 10;
+        this.movementCooldownTicks = 10;
         this.world.sendEntityStatus(this, (byte)4);
-        float f = this.isBaby() ? 0.5f : this.method_24656() / 2.0f + (float)this.random.nextInt((int)this.method_24656());
+        float f = this.isBaby() ? 0.5f : this.getAttackDamage() / 2.0f + (float)this.random.nextInt((int)this.getAttackDamage());
         boolean bl = target.damage(DamageSource.mob(this), f);
         if (bl) {
             this.dealDamage(this, target);
-            if (this.method_24658()) {
-                this.method_24655(target);
+            if (this.isAdult()) {
+                this.stunVelocity(target);
             }
         }
         this.playSound(SoundEvents.ENTITY_HOGLIN_ATTACK, 1.0f, this.getSoundPitch());
         if (target instanceof LivingEntity) {
-            class_4835.method_24665(this, (LivingEntity)target);
+            HoglinBrain.onAttacking(this, (LivingEntity)target);
         }
         return bl;
     }
 
-    private void method_24655(Entity entity) {
-        entity.setVelocity(entity.getVelocity().add((this.random.nextFloat() - 0.5f) * 0.5f, this.random.nextFloat() * 0.5f, this.random.nextFloat() * -0.5f));
+    private void stunVelocity(Entity target) {
+        target.setVelocity(target.getVelocity().add((this.random.nextFloat() - 0.5f) * 0.5f, this.random.nextFloat() * 0.5f, this.random.nextFloat() * -0.5f));
     }
 
     @Override
@@ -113,14 +113,14 @@ implements Monster {
             return false;
         }
         if (bl && source.getAttacker() instanceof LivingEntity) {
-            class_4835.method_24672(this, (LivingEntity)source.getAttacker());
+            HoglinBrain.onAttacked(this, (LivingEntity)source.getAttacker());
         }
         return bl;
     }
 
     @Override
-    protected Brain<?> deserializeBrain(Dynamic<?> dynamic) {
-        return class_4835.method_24668(this, dynamic);
+    protected Brain<?> deserializeBrain(Dynamic<?> data) {
+        return HoglinBrain.create(this, data);
     }
 
     public Brain<HoglinEntity> getBrain() {
@@ -132,22 +132,22 @@ implements Monster {
         this.world.getProfiler().push("hoglinBrain");
         this.getBrain().tick((ServerWorld)this.world, this);
         this.world.getProfiler().pop();
-        class_4835.method_24664(this);
-        class_4835.method_24671(this);
-        if (class_4835.method_24677(this)) {
+        HoglinBrain.refreshActivities(this);
+        HoglinBrain.playSoundAtChance(this);
+        if (HoglinBrain.isNearPlayer(this)) {
             this.setPersistent();
         }
     }
 
     @Override
     public void tickMovement() {
-        if (this.field_22368 > 0) {
-            --this.field_22368;
+        if (this.movementCooldownTicks > 0) {
+            --this.movementCooldownTicks;
         }
         super.tickMovement();
     }
 
-    public static boolean method_24349(EntityType<HoglinEntity> entityType, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
+    public static boolean canSpawn(EntityType<HoglinEntity> entityType, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
         return world.getBlockState(pos.down()).getBlock() != Blocks.NETHER_WART_BLOCK;
     }
 
@@ -166,11 +166,11 @@ implements Monster {
     }
 
     @Override
-    public float getPathfindingFavor(BlockPos pos, WorldView worldView) {
-        if (class_4835.method_24669(this, pos)) {
+    public float getPathfindingFavor(BlockPos pos, WorldView world) {
+        if (HoglinBrain.isWarpedFungiAround(this, pos)) {
             return -1.0f;
         }
-        if (worldView.getBlockState(pos.down()).getBlock() == Blocks.CRIMSON_NYLIUM) {
+        if (world.getBlockState(pos.down()).getBlock() == Blocks.CRIMSON_NYLIUM) {
             return 10.0f;
         }
         return 0.0f;
@@ -180,7 +180,7 @@ implements Monster {
     @Environment(value=EnvType.CLIENT)
     public void handleStatus(byte status) {
         if (status == 4) {
-            this.field_22368 = 10;
+            this.movementCooldownTicks = 10;
             this.playSound(SoundEvents.ENTITY_HOGLIN_ATTACK, 1.0f, this.getSoundPitch());
         } else {
             super.handleStatus(status);
@@ -188,8 +188,8 @@ implements Monster {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public int method_24657() {
-        return this.field_22368;
+    public int getMovementCooldownTicks() {
+        return this.movementCooldownTicks;
     }
 
     @Override
@@ -202,7 +202,7 @@ implements Monster {
         return stack.getItem() == Items.CRIMSON_FUNGI;
     }
 
-    public boolean method_24658() {
+    public boolean isAdult() {
         return !this.isBaby();
     }
 
@@ -214,7 +214,7 @@ implements Monster {
 
     @Override
     public boolean canEat() {
-        return !class_4835.method_24680(this) && super.canEat();
+        return !HoglinBrain.isPacified(this) && super.canEat();
     }
 
     @Override
@@ -249,7 +249,7 @@ implements Monster {
 
     @Override
     public void playAmbientSound() {
-        if (class_4835.method_24682(this)) {
+        if (HoglinBrain.hasIdleActivity(this)) {
             super.playAmbientSound();
         }
     }
@@ -259,22 +259,22 @@ implements Monster {
         this.playSound(SoundEvents.ENTITY_HOGLIN_STEP, 0.15f, 1.0f);
     }
 
-    protected void method_24659() {
+    protected void playFightSound() {
         this.playSound(SoundEvents.ENTITY_HOGLIN_ANGRY, 1.0f, this.getSoundPitch());
     }
 
-    protected void method_24660() {
-        this.method_24661();
+    protected void playAttackedSound() {
+        this.playRetreatSound();
     }
 
-    protected void method_24661() {
+    protected void playRetreatSound() {
         this.playSound(SoundEvents.ENTITY_HOGLIN_RETREAT, 1.0f, this.getSoundPitch());
     }
 
     @Override
     protected void sendAiDebugData() {
         super.sendAiDebugData();
-        DebugInfoSender.sendVillagerAiDebugData(this);
+        DebugInfoSender.sendBrainDebugData(this);
     }
 }
 

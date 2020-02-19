@@ -77,7 +77,7 @@ public class NetherFortressGenerator {
         }
 
         @Override
-        public void method_14918(StructurePiece structurePiece, List<StructurePiece> list, Random random) {
+        public void placeJigsaw(StructurePiece structurePiece, List<StructurePiece> list, Random random) {
             int i = 1;
             Direction direction = this.getFacing();
             if (direction == Direction.WEST || direction == Direction.NORTH) {
@@ -89,7 +89,7 @@ public class NetherFortressGenerator {
 
         public static CorridorBalcony method_14800(List<StructurePiece> list, int i, int j, int k, Direction direction, int l) {
             BlockBox blockBox = BlockBox.rotated(i, j, k, -3, 0, 0, 9, 7, 9, direction);
-            if (!CorridorBalcony.method_14809(blockBox) || StructurePiece.method_14932(list, blockBox) != null) {
+            if (!CorridorBalcony.method_14809(blockBox) || StructurePiece.getOverlappingPiece(list, blockBox) != null) {
                 return null;
             }
             return new CorridorBalcony(l, blockBox, direction);
@@ -142,13 +142,13 @@ public class NetherFortressGenerator {
         }
 
         @Override
-        public void method_14918(StructurePiece structurePiece, List<StructurePiece> list, Random random) {
+        public void placeJigsaw(StructurePiece structurePiece, List<StructurePiece> list, Random random) {
             this.method_14814((Start)structurePiece, list, random, 1, 0, true);
         }
 
         public static CorridorStairs method_14799(List<StructurePiece> list, int i, int j, int k, Direction direction, int l) {
             BlockBox blockBox = BlockBox.rotated(i, j, k, -1, -7, 0, 5, 14, 10, direction);
-            if (!CorridorStairs.method_14809(blockBox) || StructurePiece.method_14932(list, blockBox) != null) {
+            if (!CorridorStairs.method_14809(blockBox) || StructurePiece.getOverlappingPiece(list, blockBox) != null) {
                 return null;
             }
             return new CorridorStairs(l, blockBox, direction);
@@ -207,13 +207,13 @@ public class NetherFortressGenerator {
         }
 
         @Override
-        public void method_14918(StructurePiece structurePiece, List<StructurePiece> list, Random random) {
+        public void placeJigsaw(StructurePiece structurePiece, List<StructurePiece> list, Random random) {
             this.method_14812((Start)structurePiece, list, random, 0, 1, true);
         }
 
         public static CorridorLeftTurn method_14803(List<StructurePiece> list, Random random, int i, int j, int k, Direction direction, int l) {
             BlockBox blockBox = BlockBox.rotated(i, j, k, -1, 0, 0, 5, 7, 5, direction);
-            if (!CorridorLeftTurn.method_14809(blockBox) || StructurePiece.method_14932(list, blockBox) != null) {
+            if (!CorridorLeftTurn.method_14809(blockBox) || StructurePiece.getOverlappingPiece(list, blockBox) != null) {
                 return null;
             }
             return new CorridorLeftTurn(l, random, blockBox, direction);
@@ -269,13 +269,13 @@ public class NetherFortressGenerator {
         }
 
         @Override
-        public void method_14918(StructurePiece structurePiece, List<StructurePiece> list, Random random) {
+        public void placeJigsaw(StructurePiece structurePiece, List<StructurePiece> list, Random random) {
             this.method_14808((Start)structurePiece, list, random, 0, 1, true);
         }
 
         public static CorridorRightTurn method_14805(List<StructurePiece> list, Random random, int i, int j, int k, Direction direction, int l) {
             BlockBox blockBox = BlockBox.rotated(i, j, k, -1, 0, 0, 5, 7, 5, direction);
-            if (!CorridorRightTurn.method_14809(blockBox) || StructurePiece.method_14932(list, blockBox) != null) {
+            if (!CorridorRightTurn.method_14809(blockBox) || StructurePiece.getOverlappingPiece(list, blockBox) != null) {
                 return null;
             }
             return new CorridorRightTurn(l, random, blockBox, direction);
@@ -321,7 +321,7 @@ public class NetherFortressGenerator {
         }
 
         @Override
-        public void method_14918(StructurePiece structurePiece, List<StructurePiece> list, Random random) {
+        public void placeJigsaw(StructurePiece structurePiece, List<StructurePiece> list, Random random) {
             this.method_14814((Start)structurePiece, list, random, 1, 0, true);
             this.method_14812((Start)structurePiece, list, random, 0, 1, true);
             this.method_14808((Start)structurePiece, list, random, 0, 1, true);
@@ -329,7 +329,7 @@ public class NetherFortressGenerator {
 
         public static CorridorCrossing method_14802(List<StructurePiece> list, int i, int j, int k, Direction direction, int l) {
             BlockBox blockBox = BlockBox.rotated(i, j, k, -1, 0, 0, 5, 7, 5, direction);
-            if (!CorridorCrossing.method_14809(blockBox) || StructurePiece.method_14932(list, blockBox) != null) {
+            if (!CorridorCrossing.method_14809(blockBox) || StructurePiece.getOverlappingPiece(list, blockBox) != null) {
                 return null;
             }
             return new CorridorCrossing(l, blockBox, direction);
@@ -366,13 +366,13 @@ public class NetherFortressGenerator {
         }
 
         @Override
-        public void method_14918(StructurePiece structurePiece, List<StructurePiece> list, Random random) {
+        public void placeJigsaw(StructurePiece structurePiece, List<StructurePiece> list, Random random) {
             this.method_14814((Start)structurePiece, list, random, 1, 0, true);
         }
 
         public static SmallCorridor method_14804(List<StructurePiece> list, int i, int j, int k, Direction direction, int l) {
             BlockBox blockBox = BlockBox.rotated(i, j, k, -1, 0, 0, 5, 7, 5, direction);
-            if (!SmallCorridor.method_14809(blockBox) || StructurePiece.method_14932(list, blockBox) != null) {
+            if (!SmallCorridor.method_14809(blockBox) || StructurePiece.getOverlappingPiece(list, blockBox) != null) {
                 return null;
             }
             return new SmallCorridor(l, blockBox, direction);
@@ -412,14 +412,14 @@ public class NetherFortressGenerator {
         }
 
         @Override
-        public void method_14918(StructurePiece structurePiece, List<StructurePiece> list, Random random) {
+        public void placeJigsaw(StructurePiece structurePiece, List<StructurePiece> list, Random random) {
             this.method_14814((Start)structurePiece, list, random, 5, 3, true);
             this.method_14814((Start)structurePiece, list, random, 5, 11, true);
         }
 
         public static CorridorNetherWartsRoom method_14806(List<StructurePiece> list, int i, int j, int k, Direction direction, int l) {
             BlockBox blockBox = BlockBox.rotated(i, j, k, -5, -3, 0, 13, 14, 13, direction);
-            if (!CorridorNetherWartsRoom.method_14809(blockBox) || StructurePiece.method_14932(list, blockBox) != null) {
+            if (!CorridorNetherWartsRoom.method_14809(blockBox) || StructurePiece.getOverlappingPiece(list, blockBox) != null) {
                 return null;
             }
             return new CorridorNetherWartsRoom(l, blockBox, direction);
@@ -544,13 +544,13 @@ public class NetherFortressGenerator {
         }
 
         @Override
-        public void method_14918(StructurePiece structurePiece, List<StructurePiece> list, Random random) {
+        public void placeJigsaw(StructurePiece structurePiece, List<StructurePiece> list, Random random) {
             this.method_14814((Start)structurePiece, list, random, 5, 3, true);
         }
 
         public static CorridorExit method_14801(List<StructurePiece> list, Random random, int i, int j, int k, Direction direction, int l) {
             BlockBox blockBox = BlockBox.rotated(i, j, k, -5, -3, 0, 13, 14, 13, direction);
-            if (!CorridorExit.method_14809(blockBox) || StructurePiece.method_14932(list, blockBox) != null) {
+            if (!CorridorExit.method_14809(blockBox) || StructurePiece.getOverlappingPiece(list, blockBox) != null) {
                 return null;
             }
             return new CorridorExit(l, random, blockBox, direction);
@@ -650,7 +650,7 @@ public class NetherFortressGenerator {
 
         public static BridgePlatform method_14807(List<StructurePiece> list, int i, int j, int k, int l, Direction direction) {
             BlockBox blockBox = BlockBox.rotated(i, j, k, -2, 0, 0, 7, 8, 9, direction);
-            if (!BridgePlatform.method_14809(blockBox) || StructurePiece.method_14932(list, blockBox) != null) {
+            if (!BridgePlatform.method_14809(blockBox) || StructurePiece.getOverlappingPiece(list, blockBox) != null) {
                 return null;
             }
             return new BridgePlatform(l, blockBox, direction);
@@ -718,13 +718,13 @@ public class NetherFortressGenerator {
         }
 
         @Override
-        public void method_14918(StructurePiece structurePiece, List<StructurePiece> list, Random random) {
+        public void placeJigsaw(StructurePiece structurePiece, List<StructurePiece> list, Random random) {
             this.method_14808((Start)structurePiece, list, random, 6, 2, false);
         }
 
         public static BridgeStairs method_14818(List<StructurePiece> list, int i, int j, int k, int l, Direction direction) {
             BlockBox blockBox = BlockBox.rotated(i, j, k, -2, 0, 0, 7, 11, 7, direction);
-            if (!BridgeStairs.method_14809(blockBox) || StructurePiece.method_14932(list, blockBox) != null) {
+            if (!BridgeStairs.method_14809(blockBox) || StructurePiece.getOverlappingPiece(list, blockBox) != null) {
                 return null;
             }
             return new BridgeStairs(l, blockBox, direction);
@@ -775,7 +775,7 @@ public class NetherFortressGenerator {
         }
 
         @Override
-        public void method_14918(StructurePiece structurePiece, List<StructurePiece> list, Random random) {
+        public void placeJigsaw(StructurePiece structurePiece, List<StructurePiece> list, Random random) {
             this.method_14814((Start)structurePiece, list, random, 2, 0, false);
             this.method_14812((Start)structurePiece, list, random, 0, 2, false);
             this.method_14808((Start)structurePiece, list, random, 0, 2, false);
@@ -783,7 +783,7 @@ public class NetherFortressGenerator {
 
         public static BridgeSmallCrossing method_14817(List<StructurePiece> list, int i, int j, int k, Direction direction, int l) {
             BlockBox blockBox = BlockBox.rotated(i, j, k, -2, 0, 0, 7, 9, 7, direction);
-            if (!BridgeSmallCrossing.method_14809(blockBox) || StructurePiece.method_14932(list, blockBox) != null) {
+            if (!BridgeSmallCrossing.method_14809(blockBox) || StructurePiece.getOverlappingPiece(list, blockBox) != null) {
                 return null;
             }
             return new BridgeSmallCrossing(l, blockBox, direction);
@@ -843,7 +843,7 @@ public class NetherFortressGenerator {
         }
 
         @Override
-        public void method_14918(StructurePiece structurePiece, List<StructurePiece> list, Random random) {
+        public void placeJigsaw(StructurePiece structurePiece, List<StructurePiece> list, Random random) {
             this.method_14814((Start)structurePiece, list, random, 8, 3, false);
             this.method_14812((Start)structurePiece, list, random, 3, 8, false);
             this.method_14808((Start)structurePiece, list, random, 3, 8, false);
@@ -851,7 +851,7 @@ public class NetherFortressGenerator {
 
         public static BridgeCrossing method_14796(List<StructurePiece> list, int i, int j, int k, Direction direction, int l) {
             BlockBox blockBox = BlockBox.rotated(i, j, k, -8, -3, 0, 19, 10, 19, direction);
-            if (!BridgeCrossing.method_14809(blockBox) || StructurePiece.method_14932(list, blockBox) != null) {
+            if (!BridgeCrossing.method_14809(blockBox) || StructurePiece.getOverlappingPiece(list, blockBox) != null) {
                 return null;
             }
             return new BridgeCrossing(l, blockBox, direction);
@@ -915,7 +915,7 @@ public class NetherFortressGenerator {
 
         public static BridgeEnd method_14797(List<StructurePiece> list, Random random, int i, int j, int k, Direction direction, int l) {
             BlockBox blockBox = BlockBox.rotated(i, j, k, -1, -3, 0, 5, 10, 8, direction);
-            if (!BridgeEnd.method_14809(blockBox) || StructurePiece.method_14932(list, blockBox) != null) {
+            if (!BridgeEnd.method_14809(blockBox) || StructurePiece.getOverlappingPiece(list, blockBox) != null) {
                 return null;
             }
             return new BridgeEnd(l, random, blockBox, direction);
@@ -970,13 +970,13 @@ public class NetherFortressGenerator {
         }
 
         @Override
-        public void method_14918(StructurePiece structurePiece, List<StructurePiece> list, Random random) {
+        public void placeJigsaw(StructurePiece structurePiece, List<StructurePiece> list, Random random) {
             this.method_14814((Start)structurePiece, list, random, 1, 3, false);
         }
 
         public static Bridge method_14798(List<StructurePiece> list, Random random, int i, int j, int k, Direction direction, int l) {
             BlockBox blockBox = BlockBox.rotated(i, j, k, -1, -3, 0, 5, 10, 19, direction);
-            if (!Bridge.method_14809(blockBox) || StructurePiece.method_14932(list, blockBox) != null) {
+            if (!Bridge.method_14809(blockBox) || StructurePiece.getOverlappingPiece(list, blockBox) != null) {
                 return null;
             }
             return new Bridge(l, random, blockBox, direction);
@@ -1110,16 +1110,16 @@ public class NetherFortressGenerator {
             if (direction != null) {
                 switch (direction) {
                     case NORTH: {
-                        return this.method_14813(start, list, random, this.boundingBox.minX + i, this.boundingBox.minY + j, this.boundingBox.minZ - 1, direction, this.method_14923(), bl);
+                        return this.method_14813(start, list, random, this.boundingBox.minX + i, this.boundingBox.minY + j, this.boundingBox.minZ - 1, direction, this.getLength(), bl);
                     }
                     case SOUTH: {
-                        return this.method_14813(start, list, random, this.boundingBox.minX + i, this.boundingBox.minY + j, this.boundingBox.maxZ + 1, direction, this.method_14923(), bl);
+                        return this.method_14813(start, list, random, this.boundingBox.minX + i, this.boundingBox.minY + j, this.boundingBox.maxZ + 1, direction, this.getLength(), bl);
                     }
                     case WEST: {
-                        return this.method_14813(start, list, random, this.boundingBox.minX - 1, this.boundingBox.minY + j, this.boundingBox.minZ + i, direction, this.method_14923(), bl);
+                        return this.method_14813(start, list, random, this.boundingBox.minX - 1, this.boundingBox.minY + j, this.boundingBox.minZ + i, direction, this.getLength(), bl);
                     }
                     case EAST: {
-                        return this.method_14813(start, list, random, this.boundingBox.maxX + 1, this.boundingBox.minY + j, this.boundingBox.minZ + i, direction, this.method_14923(), bl);
+                        return this.method_14813(start, list, random, this.boundingBox.maxX + 1, this.boundingBox.minY + j, this.boundingBox.minZ + i, direction, this.getLength(), bl);
                     }
                 }
             }
@@ -1132,16 +1132,16 @@ public class NetherFortressGenerator {
             if (direction != null) {
                 switch (direction) {
                     case NORTH: {
-                        return this.method_14813(start, list, random, this.boundingBox.minX - 1, this.boundingBox.minY + i, this.boundingBox.minZ + j, Direction.WEST, this.method_14923(), bl);
+                        return this.method_14813(start, list, random, this.boundingBox.minX - 1, this.boundingBox.minY + i, this.boundingBox.minZ + j, Direction.WEST, this.getLength(), bl);
                     }
                     case SOUTH: {
-                        return this.method_14813(start, list, random, this.boundingBox.minX - 1, this.boundingBox.minY + i, this.boundingBox.minZ + j, Direction.WEST, this.method_14923(), bl);
+                        return this.method_14813(start, list, random, this.boundingBox.minX - 1, this.boundingBox.minY + i, this.boundingBox.minZ + j, Direction.WEST, this.getLength(), bl);
                     }
                     case WEST: {
-                        return this.method_14813(start, list, random, this.boundingBox.minX + j, this.boundingBox.minY + i, this.boundingBox.minZ - 1, Direction.NORTH, this.method_14923(), bl);
+                        return this.method_14813(start, list, random, this.boundingBox.minX + j, this.boundingBox.minY + i, this.boundingBox.minZ - 1, Direction.NORTH, this.getLength(), bl);
                     }
                     case EAST: {
-                        return this.method_14813(start, list, random, this.boundingBox.minX + j, this.boundingBox.minY + i, this.boundingBox.minZ - 1, Direction.NORTH, this.method_14923(), bl);
+                        return this.method_14813(start, list, random, this.boundingBox.minX + j, this.boundingBox.minY + i, this.boundingBox.minZ - 1, Direction.NORTH, this.getLength(), bl);
                     }
                 }
             }
@@ -1154,16 +1154,16 @@ public class NetherFortressGenerator {
             if (direction != null) {
                 switch (direction) {
                     case NORTH: {
-                        return this.method_14813(start, list, random, this.boundingBox.maxX + 1, this.boundingBox.minY + i, this.boundingBox.minZ + j, Direction.EAST, this.method_14923(), bl);
+                        return this.method_14813(start, list, random, this.boundingBox.maxX + 1, this.boundingBox.minY + i, this.boundingBox.minZ + j, Direction.EAST, this.getLength(), bl);
                     }
                     case SOUTH: {
-                        return this.method_14813(start, list, random, this.boundingBox.maxX + 1, this.boundingBox.minY + i, this.boundingBox.minZ + j, Direction.EAST, this.method_14923(), bl);
+                        return this.method_14813(start, list, random, this.boundingBox.maxX + 1, this.boundingBox.minY + i, this.boundingBox.minZ + j, Direction.EAST, this.getLength(), bl);
                     }
                     case WEST: {
-                        return this.method_14813(start, list, random, this.boundingBox.minX + j, this.boundingBox.minY + i, this.boundingBox.maxZ + 1, Direction.SOUTH, this.method_14923(), bl);
+                        return this.method_14813(start, list, random, this.boundingBox.minX + j, this.boundingBox.minY + i, this.boundingBox.maxZ + 1, Direction.SOUTH, this.getLength(), bl);
                     }
                     case EAST: {
-                        return this.method_14813(start, list, random, this.boundingBox.minX + j, this.boundingBox.minY + i, this.boundingBox.maxZ + 1, Direction.SOUTH, this.method_14923(), bl);
+                        return this.method_14813(start, list, random, this.boundingBox.minX + j, this.boundingBox.minY + i, this.boundingBox.maxZ + 1, Direction.SOUTH, this.getLength(), bl);
                     }
                 }
             }

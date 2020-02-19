@@ -15,12 +15,12 @@ import net.minecraft.block.FacingBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.class_4838;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.container.Container;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.mob.ShulkerLidCollisions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
@@ -97,7 +97,7 @@ extends BlockWithEntity {
             if (shulkerBoxBlockEntity.getAnimationStage() == ShulkerBoxBlockEntity.AnimationStage.CLOSED && world.doesNotCollide(ShulkerLidCollisions.getLidCollisionBox(pos, direction))) {
                 player.openContainer(shulkerBoxBlockEntity);
                 player.incrementStat(Stats.OPEN_SHULKER_BOX);
-                class_4838.method_24733(player);
+                PiglinBrain.onGoldBlockBroken(player);
             }
             return ActionResult.SUCCESS;
         }
@@ -135,7 +135,7 @@ extends BlockWithEntity {
                 shulkerBoxBlockEntity.checkLootInteraction(player);
             }
         }
-        class_4838.method_24733(player);
+        PiglinBrain.onGoldBlockBroken(player);
         super.onBreak(world, pos, state, player);
     }
 

@@ -10,7 +10,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
-import net.minecraft.entity.ai.brain.EntityPosWrapper;
+import net.minecraft.entity.ai.brain.EntityLookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.Task;
@@ -45,8 +45,8 @@ extends Task<LivingEntity> {
         super.run(world, entity, time);
         Brain<?> brain = entity.getBrain();
         brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).ifPresent(list -> list.stream().filter(livingEntity2 -> livingEntity2.squaredDistanceTo(entity) <= (double)this.maxSquaredDistance).filter(this::test).findFirst().ifPresent(livingEntity -> {
-            brain.putMemory(MemoryModuleType.INTERACTION_TARGET, livingEntity);
-            brain.putMemory(MemoryModuleType.LOOK_TARGET, new EntityPosWrapper((Entity)livingEntity));
+            brain.remember(MemoryModuleType.INTERACTION_TARGET, livingEntity);
+            brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget((Entity)livingEntity));
         }));
     }
 

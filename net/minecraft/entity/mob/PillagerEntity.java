@@ -108,7 +108,7 @@ implements CrossbowUser {
     }
 
     @Override
-    public void method_24651() {
+    public void postShoot() {
         this.despawnCounter = 0;
     }
 
@@ -130,7 +130,7 @@ implements CrossbowUser {
         if (this.isCharging()) {
             return IllagerEntity.State.CROSSBOW_CHARGE;
         }
-        if (this.method_24518(Items.CROSSBOW)) {
+        if (this.isHolding(Items.CROSSBOW)) {
             return IllagerEntity.State.CROSSBOW_HOLD;
         }
         if (this.isAttacking()) {
@@ -152,12 +152,12 @@ implements CrossbowUser {
     }
 
     @Override
-    public float getPathfindingFavor(BlockPos pos, WorldView worldView) {
-        Block block = worldView.getBlockState(pos.down()).getBlock();
+    public float getPathfindingFavor(BlockPos pos, WorldView world) {
+        Block block = world.getBlockState(pos.down()).getBlock();
         if (block == Blocks.GRASS_BLOCK || block == Blocks.SAND) {
             return 10.0f;
         }
-        return 0.5f - worldView.getBrightness(pos);
+        return 0.5f - world.getBrightness(pos);
     }
 
     @Override
@@ -211,13 +211,13 @@ implements CrossbowUser {
     }
 
     @Override
-    public void attack(LivingEntity target, float f) {
-        this.method_24654(this, 1.6f);
+    public void attack(LivingEntity target, float pullProgress) {
+        this.shoot(this, 1.6f);
     }
 
     @Override
     public void shoot(LivingEntity target, ItemStack crossbow, Projectile projectile, float multiShotSpray) {
-        this.method_24652(this, target, projectile, multiShotSpray, 1.6f);
+        this.shoot(this, target, projectile, multiShotSpray, 1.6f);
     }
 
     @Override

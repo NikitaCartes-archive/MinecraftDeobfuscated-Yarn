@@ -10,7 +10,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
-import net.minecraft.entity.ai.brain.EntityPosWrapper;
+import net.minecraft.entity.ai.brain.EntityLookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
@@ -35,9 +35,9 @@ extends Task<LivingEntity> {
     protected void run(ServerWorld world, LivingEntity entity, long time) {
         Brain<?> brain = entity.getBrain();
         brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).ifPresent(list -> list.stream().filter(livingEntity -> EntityType.VILLAGER.equals(livingEntity.getType())).filter(livingEntity2 -> livingEntity2.squaredDistanceTo(entity) <= 32.0).findFirst().ifPresent(livingEntity -> {
-            brain.putMemory(MemoryModuleType.INTERACTION_TARGET, livingEntity);
-            brain.putMemory(MemoryModuleType.LOOK_TARGET, new EntityPosWrapper((Entity)livingEntity));
-            brain.putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityPosWrapper((Entity)livingEntity), 0.3f, 1));
+            brain.remember(MemoryModuleType.INTERACTION_TARGET, livingEntity);
+            brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget((Entity)livingEntity));
+            brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityLookTarget((Entity)livingEntity), 0.3f, 1));
         }));
     }
 }

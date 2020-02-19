@@ -59,7 +59,7 @@ extends Sensor<MobEntity> {
             BlockPos blockPos2 = path.getTarget();
             Optional<PointOfInterestType> optional = pointOfInterestStorage.getType(blockPos2);
             if (optional.isPresent()) {
-                mobEntity.getBrain().putMemory(MemoryModuleType.NEAREST_BED, blockPos2);
+                mobEntity.getBrain().remember(MemoryModuleType.NEAREST_BED, blockPos2);
             }
         } else if (this.tries < 5) {
             this.positionToExpiryTime.long2LongEntrySet().removeIf(entry -> entry.getLongValue() < this.expiryTime);

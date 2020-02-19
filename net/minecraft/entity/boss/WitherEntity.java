@@ -391,7 +391,7 @@ RangedAttackMob {
     }
 
     @Override
-    public void attack(LivingEntity target, float f) {
+    public void attack(LivingEntity target, float pullProgress) {
         this.method_6878(0, target);
     }
 
@@ -436,7 +436,7 @@ RangedAttackMob {
 
     @Override
     public void checkDespawn() {
-        if (this.world.getDifficulty() == Difficulty.PEACEFUL && this.method_23734()) {
+        if (this.world.getDifficulty() == Difficulty.PEACEFUL && this.isDisallowedInPeaceful()) {
             this.remove();
             return;
         }

@@ -92,9 +92,9 @@ RecipeInputProvider {
     }
 
     @Override
-    public void provideRecipeInputs(RecipeFinder recipeFinder) {
+    public void provideRecipeInputs(RecipeFinder finder) {
         for (ItemStack itemStack : this.stacks) {
-            recipeFinder.addNormalItem(itemStack);
+            finder.addNormalItem(itemStack);
         }
     }
 }

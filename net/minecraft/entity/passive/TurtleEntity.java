@@ -294,14 +294,14 @@ extends AnimalEntity {
     }
 
     @Override
-    public float getPathfindingFavor(BlockPos pos, WorldView worldView) {
-        if (!this.isLandBound() && worldView.getFluidState(pos).matches(FluidTags.WATER)) {
+    public float getPathfindingFavor(BlockPos pos, WorldView world) {
+        if (!this.isLandBound() && world.getFluidState(pos).matches(FluidTags.WATER)) {
             return 10.0f;
         }
-        if (worldView.getBlockState(pos.down()).getBlock() == Blocks.SAND) {
+        if (world.getBlockState(pos.down()).getBlock() == Blocks.SAND) {
             return 10.0f;
         }
-        return worldView.getBrightness(pos) - 0.5f;
+        return world.getBrightness(pos) - 0.5f;
     }
 
     @Override

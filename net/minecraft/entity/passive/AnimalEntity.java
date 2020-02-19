@@ -73,11 +73,11 @@ extends PassiveEntity {
     }
 
     @Override
-    public float getPathfindingFavor(BlockPos pos, WorldView worldView) {
-        if (worldView.getBlockState(pos.down()).getBlock() == Blocks.GRASS_BLOCK) {
+    public float getPathfindingFavor(BlockPos pos, WorldView world) {
+        if (world.getBlockState(pos.down()).getBlock() == Blocks.GRASS_BLOCK) {
             return 10.0f;
         }
-        return worldView.getBrightness(pos) - 0.5f;
+        return world.getBrightness(pos) - 0.5f;
     }
 
     @Override
@@ -195,7 +195,7 @@ extends PassiveEntity {
         return this.isInLove() && other.isInLove();
     }
 
-    public void method_24650(World world, AnimalEntity animalEntity) {
+    public void breed(World world, AnimalEntity animalEntity) {
         PassiveEntity passiveEntity = this.createChild(animalEntity);
         if (passiveEntity == null) {
             return;

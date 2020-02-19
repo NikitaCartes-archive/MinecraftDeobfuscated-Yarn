@@ -267,12 +267,12 @@ implements DynamicSerializable {
         }, false);
     }
 
-    public static Iterable<BlockPos> iterate(final int minX, final int maxX, final int minY, final int maxY, final int minZ, final int maxZ) {
+    public static Iterable<BlockPos> iterate(final int minX, final int minY, final int minZ, final int maxX, final int maxY, final int maxZ) {
         return () -> new AbstractIterator<BlockPos>(){
             final CuboidBlockIterator iterator;
             final Mutable pos;
             {
-                this.iterator = new CuboidBlockIterator(minX, maxX, minY, maxY, minZ, maxZ);
+                this.iterator = new CuboidBlockIterator(minX, minY, minZ, maxX, maxY, maxZ);
                 this.pos = new Mutable();
             }
 

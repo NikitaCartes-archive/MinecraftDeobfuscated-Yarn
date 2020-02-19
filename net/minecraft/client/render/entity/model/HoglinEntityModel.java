@@ -14,10 +14,10 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class HoglinEntityModel
 extends AnimalModel<HoglinEntity> {
-    private final ModelPart field_22227;
-    private final ModelPart field_22228;
-    private final ModelPart field_22229;
-    private final ModelPart field_22230;
+    private final ModelPart head;
+    private final ModelPart rightEar;
+    private final ModelPart leftEar;
+    private final ModelPart torso;
     private final ModelPart field_22231;
     private final ModelPart field_22232;
     private final ModelPart field_22233;
@@ -27,35 +27,35 @@ extends AnimalModel<HoglinEntity> {
         super(true, 8.0f, 6.0f, 1.9f, 2.0f, 24.0f);
         this.textureWidth = 128;
         this.textureHeight = 128;
-        this.field_22230 = new ModelPart(this);
-        this.field_22230.setPivot(0.0f, 7.0f, 0.0f);
-        this.field_22230.setTextureOffset(1, 1).addCuboid(-8.0f, -7.0f, -13.0f, 16.0f, 14.0f, 26.0f);
+        this.torso = new ModelPart(this);
+        this.torso.setPivot(0.0f, 7.0f, 0.0f);
+        this.torso.setTextureOffset(1, 1).addCuboid(-8.0f, -7.0f, -13.0f, 16.0f, 14.0f, 26.0f);
         ModelPart modelPart = new ModelPart(this);
         modelPart.setPivot(0.0f, -14.0f, -7.0f);
         modelPart.setTextureOffset(5, 67).addCuboid(0.0f, 0.0f, -9.0f, 0.0f, 10.0f, 19.0f, 0.001f);
-        this.field_22230.addChild(modelPart);
-        this.field_22227 = new ModelPart(this);
-        this.field_22227.setPivot(0.0f, 2.0f, -12.0f);
-        this.field_22227.setTextureOffset(1, 42).addCuboid(-7.0f, -3.0f, -19.0f, 14.0f, 6.0f, 19.0f);
-        this.field_22228 = new ModelPart(this);
-        this.field_22228.setPivot(-6.0f, -2.0f, -3.0f);
-        this.field_22228.setTextureOffset(4, 16).addCuboid(-6.0f, -1.0f, -2.0f, 6.0f, 1.0f, 4.0f);
-        this.field_22228.roll = -0.6981317f;
-        this.field_22227.addChild(this.field_22228);
-        this.field_22229 = new ModelPart(this);
-        this.field_22229.setPivot(6.0f, -2.0f, -3.0f);
-        this.field_22229.setTextureOffset(4, 21).addCuboid(0.0f, -1.0f, -2.0f, 6.0f, 1.0f, 4.0f);
-        this.field_22229.roll = 0.6981317f;
-        this.field_22227.addChild(this.field_22229);
+        this.torso.addChild(modelPart);
+        this.head = new ModelPart(this);
+        this.head.setPivot(0.0f, 2.0f, -12.0f);
+        this.head.setTextureOffset(1, 42).addCuboid(-7.0f, -3.0f, -19.0f, 14.0f, 6.0f, 19.0f);
+        this.rightEar = new ModelPart(this);
+        this.rightEar.setPivot(-6.0f, -2.0f, -3.0f);
+        this.rightEar.setTextureOffset(4, 16).addCuboid(-6.0f, -1.0f, -2.0f, 6.0f, 1.0f, 4.0f);
+        this.rightEar.roll = -0.6981317f;
+        this.head.addChild(this.rightEar);
+        this.leftEar = new ModelPart(this);
+        this.leftEar.setPivot(6.0f, -2.0f, -3.0f);
+        this.leftEar.setTextureOffset(4, 21).addCuboid(0.0f, -1.0f, -2.0f, 6.0f, 1.0f, 4.0f);
+        this.leftEar.roll = 0.6981317f;
+        this.head.addChild(this.leftEar);
         ModelPart modelPart2 = new ModelPart(this);
         modelPart2.setPivot(-7.0f, 2.0f, -12.0f);
         modelPart2.setTextureOffset(6, 45).addCuboid(-1.0f, -11.0f, -1.0f, 2.0f, 11.0f, 2.0f);
-        this.field_22227.addChild(modelPart2);
+        this.head.addChild(modelPart2);
         ModelPart modelPart3 = new ModelPart(this);
         modelPart3.setPivot(7.0f, 2.0f, -12.0f);
         modelPart3.setTextureOffset(6, 45).addCuboid(-1.0f, -11.0f, -1.0f, 2.0f, 11.0f, 2.0f);
-        this.field_22227.addChild(modelPart3);
-        this.field_22227.pitch = 0.87266463f;
+        this.head.addChild(modelPart3);
+        this.head.pitch = 0.87266463f;
         int i = 14;
         int j = 11;
         this.field_22231 = new ModelPart(this);
@@ -74,28 +74,28 @@ extends AnimalModel<HoglinEntity> {
 
     @Override
     protected Iterable<ModelPart> getHeadParts() {
-        return ImmutableList.of(this.field_22227);
+        return ImmutableList.of(this.head);
     }
 
     @Override
     protected Iterable<ModelPart> getBodyParts() {
-        return ImmutableList.of(this.field_22230, this.field_22231, this.field_22232, this.field_22233, this.field_22234);
+        return ImmutableList.of(this.torso, this.field_22231, this.field_22232, this.field_22233, this.field_22234);
     }
 
     @Override
     public void setAngles(HoglinEntity hoglinEntity, float f, float g, float h, float i, float j) {
-        this.field_22228.roll = -0.6981317f - g * MathHelper.sin(f);
-        this.field_22229.roll = 0.6981317f + g * MathHelper.sin(f);
-        this.field_22227.yaw = i * ((float)Math.PI / 180);
-        int k = hoglinEntity.method_24657();
+        this.rightEar.roll = -0.6981317f - g * MathHelper.sin(f);
+        this.leftEar.roll = 0.6981317f + g * MathHelper.sin(f);
+        this.head.yaw = i * ((float)Math.PI / 180);
+        int k = hoglinEntity.getMovementCooldownTicks();
         if (k > 0) {
             int l = 10 - k;
             float m = MathHelper.method_24504(l, 10.0f);
             float n = (-m + 1.0f) / 2.0f;
             float o = -1.2217305f * n;
-            this.field_22227.pitch = 0.87266463f + o;
+            this.head.pitch = 0.87266463f + o;
         } else {
-            this.field_22227.pitch = 0.87266463f;
+            this.head.pitch = 0.87266463f;
         }
         float p = 1.2f;
         this.field_22231.pitch = MathHelper.cos(f) * 1.2f * g;

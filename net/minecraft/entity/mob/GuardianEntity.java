@@ -196,11 +196,11 @@ extends HostileEntity {
     }
 
     @Override
-    public float getPathfindingFavor(BlockPos pos, WorldView worldView) {
-        if (worldView.getFluidState(pos).matches(FluidTags.WATER)) {
-            return 10.0f + worldView.getBrightness(pos) - 0.5f;
+    public float getPathfindingFavor(BlockPos pos, WorldView world) {
+        if (world.getFluidState(pos).matches(FluidTags.WATER)) {
+            return 10.0f + world.getBrightness(pos) - 0.5f;
         }
-        return super.getPathfindingFavor(pos, worldView);
+        return super.getPathfindingFavor(pos, world);
     }
 
     @Override

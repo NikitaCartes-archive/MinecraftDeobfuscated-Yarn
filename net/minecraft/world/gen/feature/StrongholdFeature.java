@@ -168,12 +168,12 @@ extends StructureFeature<DefaultFeatureConfig> {
                 StrongholdGenerator.method_14855();
                 start = new StrongholdGenerator.Start(this.random, (x << 4) + 2, (z << 4) + 2);
                 this.children.add(start);
-                start.method_14918(start, this.children, this.random);
+                start.placeJigsaw(start, this.children, this.random);
                 List<StructurePiece> list = start.field_15282;
                 while (!list.isEmpty()) {
                     int j = this.random.nextInt(list.size());
                     StructurePiece structurePiece = list.remove(j);
-                    structurePiece.method_14918(start, this.children, this.random);
+                    structurePiece.placeJigsaw(start, this.children, this.random);
                 }
                 this.setBoundingBoxFromChildren();
                 this.method_14978(chunkGenerator.getSeaLevel(), this.random, 10);

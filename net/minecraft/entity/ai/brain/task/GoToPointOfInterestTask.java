@@ -49,7 +49,7 @@ extends Task<VillagerEntity> {
             vec3d = vec3d2;
         }
         if (vec3d != null) {
-            villagerEntity.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3d, this.speed, this.completionRange));
+            villagerEntity.getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3d, this.speed, this.completionRange));
         }
     }
 }

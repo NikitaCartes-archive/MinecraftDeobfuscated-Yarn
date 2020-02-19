@@ -125,8 +125,8 @@ implements Flutterer {
     }
 
     @Override
-    public float getPathfindingFavor(BlockPos pos, WorldView worldView) {
-        if (worldView.getBlockState(pos).isAir()) {
+    public float getPathfindingFavor(BlockPos pos, WorldView world) {
+        if (world.getBlockState(pos).isAir()) {
             return 10.0f;
         }
         return 0.0f;

@@ -120,11 +120,11 @@ extends HostileEntity {
     }
 
     @Override
-    public float getPathfindingFavor(BlockPos pos, WorldView worldView) {
-        if (InfestedBlock.isInfestable(worldView.getBlockState(pos.down()))) {
+    public float getPathfindingFavor(BlockPos pos, WorldView world) {
+        if (InfestedBlock.isInfestable(world.getBlockState(pos.down()))) {
             return 10.0f;
         }
-        return super.getPathfindingFavor(pos, worldView);
+        return super.getPathfindingFavor(pos, world);
     }
 
     public static boolean canSpawn(EntityType<SilverfishEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {

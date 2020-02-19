@@ -246,13 +246,13 @@ implements RangedAttackMob {
     }
 
     @Override
-    public void attack(LivingEntity target, float f) {
+    public void attack(LivingEntity target, float pullProgress) {
         TridentEntity tridentEntity = new TridentEntity(this.world, (LivingEntity)this, new ItemStack(Items.TRIDENT));
         double d = target.getX() - this.getX();
         double e = target.getBodyY(0.3333333333333333) - tridentEntity.getY();
-        double g = target.getZ() - this.getZ();
-        double h = MathHelper.sqrt(d * d + g * g);
-        tridentEntity.setVelocity(d, e + h * (double)0.2f, g, 1.6f, 14 - this.world.getDifficulty().getId() * 4);
+        double f = target.getZ() - this.getZ();
+        double g = MathHelper.sqrt(d * d + f * f);
+        tridentEntity.setVelocity(d, e + g * (double)0.2f, f, 1.6f, 14 - this.world.getDifficulty().getId() * 4);
         this.playSound(SoundEvents.ENTITY_DROWNED_SHOOT, 1.0f, 1.0f / (this.getRandom().nextFloat() * 0.4f + 0.8f));
         this.world.spawnEntity(tridentEntity);
     }

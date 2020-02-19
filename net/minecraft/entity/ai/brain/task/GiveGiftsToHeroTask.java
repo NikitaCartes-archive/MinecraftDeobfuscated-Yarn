@@ -72,7 +72,7 @@ extends Task<VillagerEntity> {
         this.done = false;
         this.startTime = l;
         PlayerEntity playerEntity = this.getNearestPlayerIfHero(villagerEntity).get();
-        villagerEntity.getBrain().putMemory(MemoryModuleType.INTERACTION_TARGET, playerEntity);
+        villagerEntity.getBrain().remember(MemoryModuleType.INTERACTION_TARGET, playerEntity);
         LookTargetUtil.lookAt(villagerEntity, playerEntity);
     }
 
@@ -91,7 +91,7 @@ extends Task<VillagerEntity> {
                 this.done = true;
             }
         } else {
-            LookTargetUtil.method_24557(villagerEntity, playerEntity, 5);
+            LookTargetUtil.walkTowards((LivingEntity)villagerEntity, playerEntity, 5);
         }
     }
 

@@ -22,13 +22,13 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
-import net.minecraft.class_4838;
 import net.minecraft.client.block.ChestAnimationProgress;
 import net.minecraft.container.Container;
 import net.minecraft.container.GenericContainer;
 import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -271,7 +271,7 @@ implements Waterloggable {
         if (nameableContainerFactory != null) {
             player.openContainer(nameableContainerFactory);
             player.incrementStat(this.getOpenStat());
-            class_4838.method_24733(player);
+            PiglinBrain.onGoldBlockBroken(player);
         }
         return ActionResult.SUCCESS;
     }
@@ -381,7 +381,7 @@ implements Waterloggable {
     @Override
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         super.onBreak(world, pos, state, player);
-        class_4838.method_24733(player);
+        PiglinBrain.onGoldBlockBroken(player);
     }
 }
 

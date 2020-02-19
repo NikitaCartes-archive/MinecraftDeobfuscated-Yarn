@@ -39,7 +39,7 @@ extends Sensor<VillagerEntity> {
         }
         Brain<VillagerEntity> brain = villagerEntity.getBrain();
         if (!list.isEmpty()) {
-            brain.putMemory(MemoryModuleType.SECONDARY_JOB_SITE, list);
+            brain.remember(MemoryModuleType.SECONDARY_JOB_SITE, list);
         } else {
             brain.forget(MemoryModuleType.SECONDARY_JOB_SITE);
         }

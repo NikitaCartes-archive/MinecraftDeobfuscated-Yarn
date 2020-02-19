@@ -38,7 +38,7 @@ extends Task<MobEntityWithAi> {
     protected void run(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
         if (l > this.nextUpdateTime) {
             Optional<Vec3d> optional = Optional.ofNullable(TargetFinder.findGroundTarget(mobEntityWithAi, 8, 6));
-            mobEntityWithAi.getBrain().setMemory(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget((Vec3d)vec3d, 0.4f, 1)));
+            mobEntityWithAi.getBrain().remember(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget((Vec3d)vec3d, 0.4f, 1)));
             this.nextUpdateTime = l + 180L;
         }
     }

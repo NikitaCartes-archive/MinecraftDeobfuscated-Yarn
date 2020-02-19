@@ -722,7 +722,7 @@ implements ServerPlayPacketListener {
                 return;
             }
         }
-        boolean bl = this.method_20630(serverWorld);
+        boolean bl = this.isPlayerNotCollidingWithBlocks(serverWorld);
         m = h - this.updatedX;
         n = i - this.updatedY;
         o = j - this.updatedZ;
@@ -750,7 +750,7 @@ implements ServerPlayPacketListener {
         this.player.updatePositionAndAngles(h, i, j, k, l);
         this.player.method_7282(this.player.getX() - d, this.player.getY() - e, this.player.getZ() - f);
         if (!this.player.noClip && !this.player.isSleeping()) {
-            boolean bl3 = this.method_20630(serverWorld);
+            boolean bl3 = this.isPlayerNotCollidingWithBlocks(serverWorld);
             if (bl && (bl2 || !bl3)) {
                 this.requestTeleport(d, e, f, k, l);
                 return;
@@ -765,7 +765,7 @@ implements ServerPlayPacketListener {
         this.updatedZ = this.player.getZ();
     }
 
-    private boolean method_20630(WorldView worldView) {
+    private boolean isPlayerNotCollidingWithBlocks(WorldView worldView) {
         return worldView.doesNotCollide(this.player, this.player.getBoundingBox().contract(1.0E-5f));
     }
 

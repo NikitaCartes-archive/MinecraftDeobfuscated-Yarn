@@ -78,16 +78,16 @@ extends FeatureRenderer<T, M> {
         ((AnimalModel)bipedEntityModel).render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, f, g, h, 1.0f);
     }
 
-    public A getArmor(EquipmentSlot equipmentSlot) {
-        return this.isLegs(equipmentSlot) ? this.modelLeggings : this.modelBody;
+    public A getArmor(EquipmentSlot slot) {
+        return this.isLegs(slot) ? this.modelLeggings : this.modelBody;
     }
 
     private boolean isLegs(EquipmentSlot equipmentSlot) {
         return equipmentSlot == EquipmentSlot.LEGS;
     }
 
-    protected Identifier getArmorTexture(EquipmentSlot equipmentSlot, ArmorItem armorItem, boolean bl, @Nullable String string) {
-        String string2 = "textures/models/armor/" + armorItem.getMaterial().getName() + "_layer_" + (bl ? 2 : 1) + (string == null ? "" : "_" + string) + ".png";
+    protected Identifier getArmorTexture(EquipmentSlot slot, ArmorItem item, boolean bl, @Nullable String string) {
+        String string2 = "textures/models/armor/" + item.getMaterial().getName() + "_layer_" + (bl ? 2 : 1) + (string == null ? "" : "_" + string) + ".png";
         return ARMOR_TEXTURE_CACHE.computeIfAbsent(string2, Identifier::new);
     }
 

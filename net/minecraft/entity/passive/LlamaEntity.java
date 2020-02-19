@@ -442,7 +442,7 @@ implements RangedAttackMob {
     }
 
     @Override
-    public void attack(LivingEntity target, float f) {
+    public void attack(LivingEntity target, float pullProgress) {
         this.spitAt(target);
     }
 

@@ -30,7 +30,7 @@ extends Task<LivingEntity> {
     protected void run(ServerWorld world, LivingEntity entity, long time) {
         Optional<Vec3d> optional = Optional.ofNullable(this.findNearbySky(world, entity));
         if (optional.isPresent()) {
-            entity.getBrain().setMemory(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget((Vec3d)vec3d, this.speed, 0)));
+            entity.getBrain().remember(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget((Vec3d)vec3d, this.speed, 0)));
         }
     }
 

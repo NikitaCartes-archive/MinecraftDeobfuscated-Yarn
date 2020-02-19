@@ -121,7 +121,7 @@ extends Task<VillagerEntity> {
 
     private void setChildHome(ServerWorld world, VillagerEntity child, BlockPos pos) {
         GlobalPos globalPos = GlobalPos.create(world.getDimension().getType(), pos);
-        child.getBrain().putMemory(MemoryModuleType.HOME, globalPos);
+        child.getBrain().remember(MemoryModuleType.HOME, globalPos);
     }
 
     @Override

@@ -95,8 +95,8 @@ extends Task<VillagerEntity> {
     @Override
     protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         if (l > this.nextResponseTime && this.currentTarget != null) {
-            villagerEntity.getBrain().putMemory(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(this.currentTarget));
-            villagerEntity.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(new BlockPosLookTarget(this.currentTarget), 0.5f, 1));
+            villagerEntity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(this.currentTarget));
+            villagerEntity.getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget(new BlockPosLookTarget(this.currentTarget), 0.5f, 1));
         }
     }
 
@@ -150,8 +150,8 @@ extends Task<VillagerEntity> {
                 this.currentTarget = this.chooseRandomTarget(serverWorld);
                 if (this.currentTarget != null) {
                     this.nextResponseTime = l + 20L;
-                    villagerEntity.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(new BlockPosLookTarget(this.currentTarget), 0.5f, 1));
-                    villagerEntity.getBrain().putMemory(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(this.currentTarget));
+                    villagerEntity.getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget(new BlockPosLookTarget(this.currentTarget), 0.5f, 1));
+                    villagerEntity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(this.currentTarget));
                 }
             }
         }

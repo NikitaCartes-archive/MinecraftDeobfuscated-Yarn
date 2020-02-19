@@ -54,7 +54,7 @@ extends Task<LivingEntity> {
                 ((DoorBlock)block).setOpen(world, (BlockPos)blockPos, bl);
                 GlobalPos globalPos = GlobalPos.create(world.getDimension().getType(), blockPos);
                 if (!brain.getOptionalMemory(MemoryModuleType.OPENED_DOORS).isPresent() && bl) {
-                    brain.putMemory(MemoryModuleType.OPENED_DOORS, Sets.newHashSet(globalPos));
+                    brain.remember(MemoryModuleType.OPENED_DOORS, Sets.newHashSet(globalPos));
                 } else {
                     brain.getOptionalMemory(MemoryModuleType.OPENED_DOORS).ifPresent(set -> {
                         if (bl) {

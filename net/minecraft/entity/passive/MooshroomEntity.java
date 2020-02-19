@@ -49,11 +49,11 @@ extends CowEntity {
     }
 
     @Override
-    public float getPathfindingFavor(BlockPos pos, WorldView worldView) {
-        if (worldView.getBlockState(pos.down()).getBlock() == Blocks.MYCELIUM) {
+    public float getPathfindingFavor(BlockPos pos, WorldView world) {
+        if (world.getBlockState(pos.down()).getBlock() == Blocks.MYCELIUM) {
             return 10.0f;
         }
-        return worldView.getBrightness(pos) - 0.5f;
+        return world.getBrightness(pos) - 0.5f;
     }
 
     public static boolean canSpawn(EntityType<MooshroomEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {

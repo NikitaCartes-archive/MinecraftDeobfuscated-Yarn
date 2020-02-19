@@ -32,8 +32,8 @@ extends HostileEntity {
     }
 
     @Override
-    public float getPathfindingFavor(BlockPos pos, WorldView worldView) {
-        return worldView.getBrightness(pos) - 0.5f;
+    public float getPathfindingFavor(BlockPos pos, WorldView world) {
+        return world.getBrightness(pos) - 0.5f;
     }
 }
 

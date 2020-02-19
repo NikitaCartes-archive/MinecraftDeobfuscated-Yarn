@@ -77,7 +77,7 @@ extends Goal {
     }
 
     protected void breed() {
-        this.animal.method_24650(this.world, this.mate);
+        this.animal.breed(this.world, this.mate);
     }
 }
 

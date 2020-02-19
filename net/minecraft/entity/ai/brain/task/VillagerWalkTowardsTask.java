@@ -38,7 +38,7 @@ extends Task<VillagerEntity> {
         Brain<VillagerEntity> brain = villager.getBrain();
         villager.releaseTicketFor(this.destination);
         brain.forget(this.destination);
-        brain.putMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, time);
+        brain.remember(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, time);
     }
 
     @Override
@@ -58,9 +58,9 @@ extends Task<VillagerEntity> {
                     this.giveUp(villagerEntity, l);
                     return;
                 }
-                brain.putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3d, this.speed, this.completionRange));
+                brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3d, this.speed, this.completionRange));
             } else if (!this.reachedDestination(serverWorld, villagerEntity, (GlobalPos)globalPos)) {
-                brain.putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(globalPos.getPos(), this.speed, this.completionRange));
+                brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(globalPos.getPos(), this.speed, this.completionRange));
             }
         });
     }

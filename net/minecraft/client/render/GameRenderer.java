@@ -342,7 +342,7 @@ SynchronousResourceReloadListener {
         if (this.renderingPanorama) {
             return;
         }
-        this.method_22709(this.method_22973(camera, tickDelta, false));
+        this.loadProjectionMatrix(this.getBasicProjectionMatrix(camera, tickDelta, false));
         MatrixStack.Entry entry = matrices.peek();
         entry.getModel().loadIdentity();
         entry.getNormal().loadIdentity();
@@ -367,14 +367,14 @@ SynchronousResourceReloadListener {
         }
     }
 
-    public void method_22709(Matrix4f matrix4f) {
+    public void loadProjectionMatrix(Matrix4f matrix4f) {
         RenderSystem.matrixMode(5889);
         RenderSystem.loadIdentity();
         RenderSystem.multMatrix(matrix4f);
         RenderSystem.matrixMode(5888);
     }
 
-    public Matrix4f method_22973(Camera camera, float f, boolean bl) {
+    public Matrix4f getBasicProjectionMatrix(Camera camera, float f, boolean bl) {
         MatrixStack matrixStack = new MatrixStack();
         matrixStack.peek().getModel().loadIdentity();
         if (this.zoom != 1.0f) {
@@ -536,7 +536,7 @@ SynchronousResourceReloadListener {
         Camera camera = this.camera;
         this.viewDistance = this.client.options.viewDistance * 16;
         MatrixStack matrixStack = new MatrixStack();
-        matrixStack.peek().getModel().multiply(this.method_22973(camera, tickDelta, true));
+        matrixStack.peek().getModel().multiply(this.getBasicProjectionMatrix(camera, tickDelta, true));
         this.bobViewWhenHurt(matrixStack, tickDelta);
         if (this.client.options.bobView) {
             this.bobView(matrixStack, tickDelta);
@@ -555,7 +555,7 @@ SynchronousResourceReloadListener {
             matrixStack.multiply(vector3f.getDegreesQuaternion(h));
         }
         Matrix4f matrix4f = matrixStack.peek().getModel();
-        this.method_22709(matrix4f);
+        this.loadProjectionMatrix(matrix4f);
         camera.update(this.client.world, this.client.getCameraEntity() == null ? this.client.player : this.client.getCameraEntity(), this.client.options.perspective > 0, this.client.options.perspective == 2, tickDelta);
         matrix.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(camera.getPitch()));
         matrix.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(camera.getYaw() + 180.0f));

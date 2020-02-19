@@ -68,7 +68,7 @@ extends Task<LivingEntity> {
             BlockPos blockPos2 = path.getTarget();
             Optional<PointOfInterestType> optional = pointOfInterestStorage.getType(blockPos2);
             if (optional.isPresent()) {
-                entity.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(blockPos2, this.speed, 1));
+                entity.getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget(blockPos2, this.speed, 1));
                 DebugInfoSender.sendPointOfInterest(world, blockPos2);
             }
         } else if (this.tries < 5) {
