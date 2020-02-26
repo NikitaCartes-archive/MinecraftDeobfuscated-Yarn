@@ -6,16 +6,27 @@ import net.minecraft.client.render.entity.feature.PiglinBipedArmorFeatureRendere
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.PiglinEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class PiglinEntityRenderer extends BipedEntityRenderer<PiglinEntity, PiglinEntityModel<PiglinEntity>> {
+public class PiglinEntityRenderer extends BipedEntityRenderer<MobEntity, PiglinEntityModel<MobEntity>> {
 	private static final Identifier TEXTURE = new Identifier("textures/entity/piglin/piglin.png");
+	private static final Identifier field_22442 = new Identifier("textures/entity/piglin/zombified_piglin.png");
 
-	public PiglinEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher, new PiglinEntityModel<>(0.0F, 128, 64), 0.5F);
+	public PiglinEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, boolean bl) {
+		super(entityRenderDispatcher, method_24875(bl), 0.5F);
 		this.addFeature(new PiglinBipedArmorFeatureRenderer<>(this, new BipedEntityModel(0.5F), new BipedEntityModel(1.0F), createEarlessPiglinModel()));
+	}
+
+	private static PiglinEntityModel<MobEntity> method_24875(boolean bl) {
+		PiglinEntityModel<MobEntity> piglinEntityModel = new PiglinEntityModel<>(0.0F, 128, 64);
+		if (bl) {
+			piglinEntityModel.leftEar.visible = false;
+		}
+
+		return piglinEntityModel;
 	}
 
 	private static <T extends PiglinEntity> PiglinEntityModel<T> createEarlessPiglinModel() {
@@ -25,15 +36,16 @@ public class PiglinEntityRenderer extends BipedEntityRenderer<PiglinEntity, Pigl
 		return piglinEntityModel;
 	}
 
-	public Identifier getTexture(PiglinEntity piglinEntity) {
-		return TEXTURE;
+	@Override
+	public Identifier getTexture(MobEntity mobEntity) {
+		return mobEntity instanceof PiglinEntity ? TEXTURE : field_22442;
 	}
 
-	protected void setupTransforms(PiglinEntity piglinEntity, MatrixStack matrixStack, float f, float g, float h) {
-		if (piglinEntity.canConvert()) {
-			g += (float)(Math.cos((double)piglinEntity.age * 3.25) * Math.PI * 0.5);
+	protected void setupTransforms(MobEntity mobEntity, MatrixStack matrixStack, float f, float g, float h) {
+		if (mobEntity instanceof PiglinEntity && ((PiglinEntity)mobEntity).canConvert()) {
+			g += (float)(Math.cos((double)mobEntity.age * 3.25) * Math.PI * 0.5);
 		}
 
-		super.setupTransforms(piglinEntity, matrixStack, f, g, h);
+		super.setupTransforms(mobEntity, matrixStack, f, g, h);
 	}
 }

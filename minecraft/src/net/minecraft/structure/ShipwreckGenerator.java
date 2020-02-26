@@ -98,7 +98,7 @@ public class ShipwreckGenerator {
 			Structure structure = manager.getStructureOrBlank(this.template);
 			StructurePlacementData structurePlacementData = new StructurePlacementData()
 				.setRotation(this.rotation)
-				.setMirrored(BlockMirror.NONE)
+				.setMirror(BlockMirror.NONE)
 				.setPosition(ShipwreckGenerator.field_14536)
 				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
 			this.setStructureData(structure, this.pos, structurePlacementData);

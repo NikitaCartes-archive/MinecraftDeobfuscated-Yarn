@@ -29,7 +29,7 @@ public class StructurePlacementData {
 	@Nullable
 	private int field_15575;
 	private final List<StructureProcessor> processors = Lists.<StructureProcessor>newArrayList();
-	private boolean field_16587;
+	private boolean updateNeighbors;
 
 	public StructurePlacementData copy() {
 		StructurePlacementData structurePlacementData = new StructurePlacementData();
@@ -43,17 +43,17 @@ public class StructurePlacementData {
 		structurePlacementData.random = this.random;
 		structurePlacementData.field_15575 = this.field_15575;
 		structurePlacementData.processors.addAll(this.processors);
-		structurePlacementData.field_16587 = this.field_16587;
+		structurePlacementData.updateNeighbors = this.updateNeighbors;
 		return structurePlacementData;
 	}
 
-	public StructurePlacementData setMirrored(BlockMirror blockMirror) {
-		this.mirror = blockMirror;
+	public StructurePlacementData setMirror(BlockMirror mirror) {
+		this.mirror = mirror;
 		return this;
 	}
 
-	public StructurePlacementData setRotation(BlockRotation blockRotation) {
-		this.rotation = blockRotation;
+	public StructurePlacementData setRotation(BlockRotation rotation) {
+		this.rotation = rotation;
 		return this;
 	}
 
@@ -62,8 +62,8 @@ public class StructurePlacementData {
 		return this;
 	}
 
-	public StructurePlacementData setIgnoreEntities(boolean bl) {
-		this.ignoreEntities = bl;
+	public StructurePlacementData setIgnoreEntities(boolean ignoreEntities) {
+		this.ignoreEntities = ignoreEntities;
 		return this;
 	}
 
@@ -82,8 +82,8 @@ public class StructurePlacementData {
 		return this;
 	}
 
-	public StructurePlacementData method_15131(boolean bl) {
-		this.field_16587 = bl;
+	public StructurePlacementData setUpdateNeighbors(boolean updateNeighbors) {
+		this.updateNeighbors = updateNeighbors;
 		return this;
 	}
 
@@ -127,25 +127,25 @@ public class StructurePlacementData {
 	}
 
 	@Nullable
-	public BlockBox method_15124() {
+	public BlockBox getBoundingBox() {
 		if (this.boundingBox == null && this.chunkPosition != null) {
-			this.method_15132();
+			this.calculateBoundingBox();
 		}
 
 		return this.boundingBox;
 	}
 
-	public boolean method_16444() {
-		return this.field_16587;
+	public boolean shouldUpdateNeighbors() {
+		return this.updateNeighbors;
 	}
 
 	public List<StructureProcessor> getProcessors() {
 		return this.processors;
 	}
 
-	void method_15132() {
+	void calculateBoundingBox() {
 		if (this.chunkPosition != null) {
-			this.boundingBox = this.method_15117(this.chunkPosition);
+			this.boundingBox = this.getChunkBlockBox(this.chunkPosition);
 		}
 	}
 
@@ -153,18 +153,18 @@ public class StructurePlacementData {
 		return this.placeFluids;
 	}
 
-	public List<Structure.StructureBlockInfo> method_15121(List<List<Structure.StructureBlockInfo>> list, @Nullable BlockPos blockPos) {
+	public List<Structure.StructureBlockInfo> getRandomBlockInfos(List<List<Structure.StructureBlockInfo>> list, @Nullable BlockPos blockPos) {
 		int i = list.size();
 		return i > 0 ? (List)list.get(this.getRandom(blockPos).nextInt(i)) : Collections.emptyList();
 	}
 
 	@Nullable
-	private BlockBox method_15117(@Nullable ChunkPos chunkPos) {
-		if (chunkPos == null) {
+	private BlockBox getChunkBlockBox(@Nullable ChunkPos pos) {
+		if (pos == null) {
 			return this.boundingBox;
 		} else {
-			int i = chunkPos.x * 16;
-			int j = chunkPos.z * 16;
+			int i = pos.x * 16;
+			int j = pos.z * 16;
 			return new BlockBox(i, 0, j, i + 16 - 1, 255, j + 16 - 1);
 		}
 	}

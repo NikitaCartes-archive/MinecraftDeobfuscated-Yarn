@@ -68,7 +68,7 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 		float k = MathHelper.cos(yaw * (float) (Math.PI / 180.0)) * MathHelper.cos(pitch * (float) (Math.PI / 180.0));
 		this.setVelocity((double)i, (double)j, (double)k, g, h);
 		Vec3d vec3d = user.getVelocity();
-		this.setVelocity(this.getVelocity().add(vec3d.x, user.onGround ? 0.0 : vec3d.y, vec3d.z));
+		this.setVelocity(this.getVelocity().add(vec3d.x, user.method_24828() ? 0.0 : vec3d.y, vec3d.z));
 	}
 
 	@Override

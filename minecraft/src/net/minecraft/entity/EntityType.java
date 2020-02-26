@@ -306,8 +306,9 @@ public class EntityType<T extends Entity> {
 	public static final EntityType<PufferfishEntity> PUFFERFISH = register(
 		"pufferfish", EntityType.Builder.<PufferfishEntity>create(PufferfishEntity::new, EntityCategory.WATER_CREATURE).setDimensions(0.7F, 0.7F)
 	);
-	public static final EntityType<ZombiePigmanEntity> ZOMBIE_PIGMAN = register(
-		"zombie_pigman", EntityType.Builder.<ZombiePigmanEntity>create(ZombiePigmanEntity::new, EntityCategory.MONSTER).makeFireImmune().setDimensions(0.6F, 1.95F)
+	public static final EntityType<ZombiePigmanEntity> ZOMBIFIED_PIGLIN = register(
+		"zombified_piglin",
+		EntityType.Builder.<ZombiePigmanEntity>create(ZombiePigmanEntity::new, EntityCategory.MONSTER).makeFireImmune().setDimensions(0.6F, 1.95F)
 	);
 	public static final EntityType<PolarBearEntity> POLAR_BEAR = register(
 		"polar_bear", EntityType.Builder.<PolarBearEntity>create(PolarBearEntity::new, EntityCategory.CREATURE).setDimensions(1.4F, 1.4F)

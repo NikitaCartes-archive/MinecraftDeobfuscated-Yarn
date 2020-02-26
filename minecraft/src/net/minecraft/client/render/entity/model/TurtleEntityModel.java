@@ -61,7 +61,7 @@ public class TurtleEntityModel<T extends TurtleEntity> extends QuadrupedEntityMo
 		this.backRightLeg.yaw = 0.0F;
 		this.backLeftLeg.yaw = 0.0F;
 		this.field_3594.pitch = (float) (Math.PI / 2);
-		if (!turtleEntity.isTouchingWater() && turtleEntity.onGround) {
+		if (!turtleEntity.isTouchingWater() && turtleEntity.method_24828()) {
 			float k = turtleEntity.isDiggingSand() ? 4.0F : 1.0F;
 			float l = turtleEntity.isDiggingSand() ? 2.0F : 1.0F;
 			float m = 5.0F;

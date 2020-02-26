@@ -1,5 +1,6 @@
 package net.minecraft.entity.player;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
@@ -458,7 +459,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	public void tickRiding() {
-		if (!this.world.isClient && this.shouldDismount() && this.hasVehicle()) {
+		if (this.shouldDismount() && this.hasVehicle()) {
 			this.stopRiding();
 			this.setSneaking(false);
 		} else {
@@ -2050,6 +2051,11 @@ public abstract class PlayerEntity extends LivingEntity {
 	@Override
 	public EntityDimensions getDimensions(EntityPose pose) {
 		return (EntityDimensions)POSE_DIMENSIONS.getOrDefault(pose, STANDING_DIMENSIONS);
+	}
+
+	@Override
+	public ImmutableList<EntityPose> method_24831() {
+		return ImmutableList.of(EntityPose.STANDING, EntityPose.CROUCHING, EntityPose.SWIMMING);
 	}
 
 	@Override

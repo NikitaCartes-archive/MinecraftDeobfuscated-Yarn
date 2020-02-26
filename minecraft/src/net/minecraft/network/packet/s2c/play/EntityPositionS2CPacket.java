@@ -27,7 +27,7 @@ public class EntityPositionS2CPacket implements Packet<ClientPlayPacketListener>
 		this.z = entity.getZ();
 		this.yaw = (byte)((int)(entity.yaw * 256.0F / 360.0F));
 		this.pitch = (byte)((int)(entity.pitch * 256.0F / 360.0F));
-		this.onGround = entity.onGround;
+		this.onGround = entity.method_24828();
 	}
 
 	@Override

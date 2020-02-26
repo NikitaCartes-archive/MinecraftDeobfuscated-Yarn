@@ -76,7 +76,7 @@ public class MemoryModuleType<U> {
 	public static final MemoryModuleType<Integer> VISIBLE_ADULT_HOGLIN_COUNT = register("visible_adult_hoglin_count");
 	public static final MemoryModuleType<PlayerEntity> NEAREST_PLAYER_HOLDING_WANTED_ITEM = register("nearest_player_holding_wanted_item");
 	public static final MemoryModuleType<Boolean> ATE_RECENTLY = register("ate_recently");
-	public static final MemoryModuleType<BlockPos> NEAREST_VISIBLE_WARPED_FUNGI = register("nearest_visible_warped_fungi");
+	public static final MemoryModuleType<BlockPos> NEAREST_VISIBLE_WARPED_FUNGUS = register("nearest_visible_warped_fungus");
 	public static final MemoryModuleType<BlockPos> NEAREST_VISIBLE_SOUL_FIRE_ITEM = register("nearest_visible_soul_fire_item");
 	public static final MemoryModuleType<Boolean> PACIFIED = register("pacified");
 	private final Optional<Function<Dynamic<?>, U>> factory;

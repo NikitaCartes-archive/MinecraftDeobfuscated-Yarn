@@ -71,6 +71,10 @@ public interface IWorld extends EntityView, WorldView, ModifiableTestableWorld {
 
 	void playLevelEvent(@Nullable PlayerEntity player, int eventId, BlockPos blockPos, int data);
 
+	default int method_24853() {
+		return this.getDimension().isNether() ? 128 : 256;
+	}
+
 	default void playLevelEvent(int eventId, BlockPos blockPos, int data) {
 		this.playLevelEvent(null, eventId, blockPos, data);
 	}

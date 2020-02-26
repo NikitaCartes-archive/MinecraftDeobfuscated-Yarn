@@ -3,11 +3,12 @@ package net.minecraft.client.render.entity.model;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class PiglinEntityModel<T extends PiglinEntity> extends BipedEntityModel<T> {
+public class PiglinEntityModel<T extends MobEntity> extends BipedEntityModel<T> {
 	/**
 	 * Maybe the ears are swapped
 	 */
@@ -47,32 +48,35 @@ public class PiglinEntityModel<T extends PiglinEntity> extends BipedEntityModel<
 		this.leftLeg.setTextureOffset(0, 16).addCuboid(-1.9F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, scale);
 	}
 
-	public void setAngles(T piglinEntity, float f, float g, float h, float i, float j) {
-		super.setAngles(piglinEntity, f, g, h, i, j);
+	public void setAngles(T mobEntity, float f, float g, float h, float i, float j) {
+		super.setAngles(mobEntity, f, g, h, i, j);
 		float k = (float) (Math.PI / 6);
 		float l = h * 0.1F + f * 0.5F;
 		float m = 0.08F + g * 0.4F;
 		this.rightEar.roll = (float) (-Math.PI / 6) - MathHelper.cos(l * 1.2F) * m;
 		this.leftEar.roll = (float) (Math.PI / 6) + MathHelper.cos(l) * m;
-		PiglinEntity.Activity activity = piglinEntity.getActivity();
-		if (activity == PiglinEntity.Activity.CROSSBOW_HOLD) {
-			this.rightArm.yaw = -0.3F + this.head.yaw;
-			this.leftArm.yaw = 0.6F + this.head.yaw;
-			this.rightArm.pitch = (float) (-Math.PI / 2) + this.head.pitch + 0.1F;
-			this.leftArm.pitch = -1.5F + this.head.pitch;
-		} else if (activity == PiglinEntity.Activity.CROSSBOW_CHARGE) {
-			this.rightArm.yaw = -0.8F;
-			this.rightArm.pitch = -0.97079635F;
-			this.leftArm.pitch = -0.97079635F;
-			float n = (float)MathHelper.clamp(piglinEntity.getItemUseTime(), 0, 25);
-			float o = n / 25.0F;
-			this.leftArm.yaw = MathHelper.lerp(o, 0.4F, 0.85F);
-			this.leftArm.pitch = MathHelper.lerp(o, this.leftArm.pitch, (float) (-Math.PI / 2));
-		} else if (activity == PiglinEntity.Activity.ADMIRING_ITEM) {
-			this.leftArm.yaw = 0.5F;
-			this.leftArm.pitch = -0.9F;
-			this.head.pitch = 0.5F;
-			this.head.yaw = 0.0F;
+		if (mobEntity instanceof PiglinEntity) {
+			PiglinEntity piglinEntity = (PiglinEntity)mobEntity;
+			PiglinEntity.Activity activity = piglinEntity.getActivity();
+			if (activity == PiglinEntity.Activity.CROSSBOW_HOLD) {
+				this.rightArm.yaw = -0.3F + this.head.yaw;
+				this.leftArm.yaw = 0.6F + this.head.yaw;
+				this.rightArm.pitch = (float) (-Math.PI / 2) + this.head.pitch + 0.1F;
+				this.leftArm.pitch = -1.5F + this.head.pitch;
+			} else if (activity == PiglinEntity.Activity.CROSSBOW_CHARGE) {
+				this.rightArm.yaw = -0.8F;
+				this.rightArm.pitch = -0.97079635F;
+				this.leftArm.pitch = -0.97079635F;
+				float n = (float)MathHelper.clamp(piglinEntity.getItemUseTime(), 0, 25);
+				float o = n / 25.0F;
+				this.leftArm.yaw = MathHelper.lerp(o, 0.4F, 0.85F);
+				this.leftArm.pitch = MathHelper.lerp(o, this.leftArm.pitch, (float) (-Math.PI / 2));
+			} else if (activity == PiglinEntity.Activity.ADMIRING_ITEM) {
+				this.leftArm.yaw = 0.5F;
+				this.leftArm.pitch = -0.9F;
+				this.head.pitch = 0.5F;
+				this.head.yaw = 0.0F;
+			}
 		}
 	}
 }

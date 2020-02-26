@@ -37,7 +37,7 @@ public class FrostWalkerEnchantment extends Enchantment {
 	}
 
 	public static void freezeWater(LivingEntity entity, World world, BlockPos blockPos, int level) {
-		if (entity.onGround) {
+		if (entity.method_24828()) {
 			BlockState blockState = Blocks.FROSTED_ICE.getDefaultState();
 			float f = (float)Math.min(16, 2 + level);
 			BlockPos.Mutable mutable = new BlockPos.Mutable();

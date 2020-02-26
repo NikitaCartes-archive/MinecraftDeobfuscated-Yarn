@@ -29,6 +29,10 @@ public class PositionedSoundInstance extends AbstractSoundInstance {
 		return new PositionedSoundInstance(sound, SoundCategory.RECORDS, 4.0F, 1.0F, false, 0, SoundInstance.AttenuationType.LINEAR, x, y, z);
 	}
 
+	public static PositionedSoundInstance method_24877(SoundEvent soundEvent, float f, float g) {
+		return new PositionedSoundInstance(soundEvent.getId(), SoundCategory.AMBIENT, g, f, false, 0, SoundInstance.AttenuationType.NONE, 0.0F, 0.0F, 0.0F, true);
+	}
+
 	public PositionedSoundInstance(SoundEvent sound, SoundCategory category, float volume, float pitch, float x, float y, float z) {
 		this(sound, category, volume, pitch, false, 0, SoundInstance.AttenuationType.LINEAR, x, y, z);
 	}

@@ -982,7 +982,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 				)
 		);
 		this.register(
-			EntityType.ZOMBIE_PIGMAN,
+			EntityType.ZOMBIFIED_PIGLIN,
 			LootTable.builder()
 				.withPool(
 					LootPool.builder()

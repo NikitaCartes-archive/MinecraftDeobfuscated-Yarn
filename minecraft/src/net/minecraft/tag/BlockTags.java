@@ -72,6 +72,7 @@ public class BlockTags {
 	public static final Tag<Block> WART_BLOCKS = register("wart_blocks");
 	public static final Tag<Block> BEACON_BASE_BLOCKS = register("beacon_base_blocks");
 	public static final Tag<Block> WALL_POST_OVERRIDE = register("wall_post_override");
+	public static final Tag<Block> CLIMBABLE = register("climbable");
 
 	public static void setContainer(TagContainer<Block> container) {
 		BlockTags.container = container;

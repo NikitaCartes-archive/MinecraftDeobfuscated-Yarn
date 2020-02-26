@@ -3,6 +3,7 @@ package net.minecraft.entity.projectile;
 import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -13,6 +14,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.MathHelper;
@@ -143,8 +145,13 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 		HitResult.Type type = hitResult.getType();
 		if (type == HitResult.Type.ENTITY && this.owner != null) {
 			((EntityHitResult)hitResult).getEntity().damage(DamageSource.mobProjectile(this, this.owner).setProjectile(), 1.0F);
-		} else if (type == HitResult.Type.BLOCK && !this.world.isClient) {
-			this.remove();
+		} else if (type == HitResult.Type.BLOCK) {
+			BlockHitResult blockHitResult = (BlockHitResult)hitResult;
+			BlockState blockState = this.world.getBlockState(blockHitResult.getBlockPos());
+			blockState.onProjectileHit(this.world, blockState, blockHitResult, this);
+			if (!this.world.isClient) {
+				this.remove();
+			}
 		}
 	}
 

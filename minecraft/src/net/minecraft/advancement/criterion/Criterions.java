@@ -45,6 +45,7 @@ public class Criterions {
 	public static final BlockUsedCriterion SAFELY_HARVEST_HONEY = register(new BlockUsedCriterion(new Identifier("safely_harvest_honey")));
 	public static final SlideDownBlockCriterion SLIDE_DOWN_BLOCK = register(new SlideDownBlockCriterion());
 	public static final BeeNestDestroyedCriterion BEE_NEST_DESTROYED = register(new BeeNestDestroyedCriterion());
+	public static final TargetHitCriterion TARGET_HIT = register(new TargetHitCriterion());
 
 	private static <T extends Criterion<?>> T register(T object) {
 		if (VALUES.containsKey(object.getId())) {

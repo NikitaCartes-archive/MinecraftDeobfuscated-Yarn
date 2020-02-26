@@ -12,7 +12,11 @@ public class RemoveOffHandItemTask<E extends PiglinEntity> extends Task<E> {
 		super(ImmutableMap.of(MemoryModuleType.ADMIRING_ITEM, MemoryModuleState.VALUE_ABSENT));
 	}
 
+	protected boolean shouldRun(ServerWorld serverWorld, E piglinEntity) {
+		return !piglinEntity.getOffHandStack().isEmpty();
+	}
+
 	protected void run(ServerWorld serverWorld, E piglinEntity, long l) {
-		PiglinBrain.consumeOffHandItem(piglinEntity);
+		PiglinBrain.consumeOffHandItem(piglinEntity, true);
 	}
 }

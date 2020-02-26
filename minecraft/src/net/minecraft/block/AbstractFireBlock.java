@@ -8,6 +8,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -17,6 +18,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 
 public abstract class AbstractFireBlock extends Block {
 	private final float damage;
@@ -24,6 +26,11 @@ public abstract class AbstractFireBlock extends Block {
 	public AbstractFireBlock(Block.Settings settings, float damage) {
 		super(settings);
 		this.damage = damage;
+	}
+
+	@Override
+	public BlockState getPlacementState(ItemPlacementContext ctx) {
+		return getState(ctx.getWorld(), ctx.getBlockPos());
 	}
 
 	public static BlockState getState(BlockView world, BlockPos pos) {
@@ -126,5 +133,17 @@ public abstract class AbstractFireBlock extends Block {
 		}
 
 		super.onEntityCollision(state, world, pos, entity);
+	}
+
+	@Override
+	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
+		if (oldState.getBlock() != state.getBlock()) {
+			if (world.dimension.getType() != DimensionType.OVERWORLD && world.dimension.getType() != DimensionType.THE_NETHER
+				|| !((NetherPortalBlock)Blocks.NETHER_PORTAL).createPortalAt(world, pos)) {
+				if (!state.canPlaceAt(world, pos)) {
+					world.removeBlock(pos, false);
+				}
+			}
+		}
 	}
 }

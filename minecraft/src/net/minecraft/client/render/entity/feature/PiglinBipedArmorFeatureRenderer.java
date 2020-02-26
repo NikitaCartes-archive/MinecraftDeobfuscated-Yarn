@@ -5,12 +5,12 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.mob.PiglinEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class PiglinBipedArmorFeatureRenderer<T extends PiglinEntity, M extends BipedEntityModel<T>, A extends BipedEntityModel<T>>
+public class PiglinBipedArmorFeatureRenderer<T extends LivingEntity, M extends BipedEntityModel<T>, A extends BipedEntityModel<T>>
 	extends ArmorBipedFeatureRenderer<T, M, A> {
 	private final A helmetModel;
 

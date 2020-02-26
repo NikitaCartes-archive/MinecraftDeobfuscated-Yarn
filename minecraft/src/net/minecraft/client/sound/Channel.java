@@ -4,9 +4,11 @@ import com.google.common.collect.Sets;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
@@ -21,16 +23,19 @@ public class Channel {
 		this.executor = executor;
 	}
 
-	public Channel.SourceManager createSource(SoundEngine.RunMode mode) {
-		Channel.SourceManager sourceManager = new Channel.SourceManager();
+	public CompletableFuture<Channel.SourceManager> createSource(SoundEngine.RunMode mode) {
+		CompletableFuture<Channel.SourceManager> completableFuture = new CompletableFuture();
 		this.executor.execute(() -> {
 			Source source = this.soundEngine.createSource(mode);
 			if (source != null) {
-				sourceManager.source = source;
+				Channel.SourceManager sourceManager = new Channel.SourceManager(source);
 				this.sources.add(sourceManager);
+				completableFuture.complete(sourceManager);
+			} else {
+				completableFuture.complete(null);
 			}
 		});
-		return sourceManager;
+		return completableFuture;
 	}
 
 	public void execute(Consumer<Stream<Source>> consumer) {
@@ -59,11 +64,16 @@ public class Channel {
 
 	@Environment(EnvType.CLIENT)
 	public class SourceManager {
+		@Nullable
 		private Source source;
 		private boolean stopped;
 
 		public boolean isStopped() {
 			return this.stopped;
+		}
+
+		public SourceManager(Source source) {
+			this.source = source;
 		}
 
 		public void run(Consumer<Source> action) {

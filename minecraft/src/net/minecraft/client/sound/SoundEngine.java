@@ -199,6 +199,7 @@ public class SoundEngine {
 		@Override
 		public Source createSource() {
 			if (this.sources.size() >= this.maxSourceCount) {
+				SoundEngine.LOGGER.warn("Maximum sound pool size {} reached", this.maxSourceCount);
 				return null;
 			} else {
 				Source source = Source.create();

@@ -5,7 +5,6 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.Map.Entry;
-import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -19,7 +18,6 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.dimension.TheEndDimension;
 
 public class FireBlock extends AbstractFireBlock {
@@ -53,15 +51,10 @@ public class FireBlock extends AbstractFireBlock {
 
 	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		return this.canPlaceAt(state, world, pos) ? this.getStateForPosition(world, pos).with(AGE, state.get(AGE)) : Blocks.AIR.getDefaultState();
+		return this.canPlaceAt(state, world, pos) ? this.method_24855(world, pos, state.get(AGE)) : Blocks.AIR.getDefaultState();
 	}
 
-	@Override
-	public BlockState getPlacementState(ItemPlacementContext ctx) {
-		return this.getStateForPosition(ctx.getWorld(), ctx.getBlockPos());
-	}
-
-	public BlockState getStateForPosition(BlockView world, BlockPos pos) {
+	protected BlockState getStateForPosition(BlockView world, BlockPos pos) {
 		BlockPos blockPos = pos.down();
 		BlockState blockState = world.getBlockState(blockPos);
 		if (!this.isFlammable(blockState) && !blockState.isSideSolidFullSquare(world, blockPos, Direction.UP)) {
@@ -156,7 +149,7 @@ public class FireBlock extends AbstractFireBlock {
 
 									if (q > 0 && random.nextInt(o) <= q && (!world.isRaining() || !this.isRainingAround(world, mutable))) {
 										int r = Math.min(15, i + random.nextInt(5) / 4);
-										world.setBlockState(mutable, this.getStateForPosition(world, mutable).with(AGE, Integer.valueOf(r)), 3);
+										world.setBlockState(mutable, this.method_24855(world, mutable, r), 3);
 									}
 								}
 							}
@@ -185,7 +178,7 @@ public class FireBlock extends AbstractFireBlock {
 			BlockState blockState = world.getBlockState(pos);
 			if (rand.nextInt(currentAge + 10) < 5 && !world.hasRain(pos)) {
 				int j = Math.min(currentAge + rand.nextInt(5) / 4, 15);
-				world.setBlockState(pos, this.getStateForPosition(world, pos).with(AGE, Integer.valueOf(j)), 3);
+				world.setBlockState(pos, this.method_24855(world, pos, j), 3);
 			} else {
 				world.removeBlock(pos, false);
 			}
@@ -195,6 +188,11 @@ public class FireBlock extends AbstractFireBlock {
 				TntBlock.primeTnt(world, pos);
 			}
 		}
+	}
+
+	private BlockState method_24855(IWorld iWorld, BlockPos blockPos, int i) {
+		BlockState blockState = getState(iWorld, blockPos);
+		return blockState.getBlock() == Blocks.FIRE ? blockState.with(AGE, Integer.valueOf(i)) : blockState;
 	}
 
 	private boolean areBlocksAroundFlammable(BlockView world, BlockPos pos) {
@@ -229,16 +227,8 @@ public class FireBlock extends AbstractFireBlock {
 
 	@Override
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
-		if (oldState.getBlock() != state.getBlock()) {
-			if (world.dimension.getType() != DimensionType.OVERWORLD && world.dimension.getType() != DimensionType.THE_NETHER
-				|| !((NetherPortalBlock)Blocks.NETHER_PORTAL).createPortalAt(world, pos)) {
-				if (!state.canPlaceAt(world, pos)) {
-					world.removeBlock(pos, false);
-				} else {
-					world.getBlockTickScheduler().schedule(pos, this, this.getTickRate(world) + world.random.nextInt(10));
-				}
-			}
-		}
+		super.onBlockAdded(state, world, pos, oldState, moved);
+		world.getBlockTickScheduler().schedule(pos, this, this.getTickRate(world) + world.random.nextInt(10));
 	}
 
 	@Override

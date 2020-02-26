@@ -53,8 +53,8 @@ public class PortalForcer {
 	@Nullable
 	public BlockPattern.TeleportTarget getPortal(BlockPos blockPos, Vec3d vec3d, Direction direction, double x, double y, boolean canActivate) {
 		PointOfInterestStorage pointOfInterestStorage = this.world.getPointOfInterestStorage();
-		pointOfInterestStorage.method_22439(this.world, blockPos, 128);
-		List<PointOfInterest> list = (List)pointOfInterestStorage.method_22383(
+		pointOfInterestStorage.preloadChunks(this.world, blockPos, 128);
+		List<PointOfInterest> list = (List)pointOfInterestStorage.getInSquare(
 				pointOfInterestType -> pointOfInterestType == PointOfInterestType.NETHER_PORTAL, blockPos, 128, PointOfInterestStorage.OccupationStatus.ANY
 			)
 			.collect(Collectors.toList());
@@ -91,7 +91,7 @@ public class PortalForcer {
 				double f = (double)s + 0.5 - entity.getZ();
 
 				label279:
-				for(int t = this.world.getEffectiveHeight() - 1; t >= 0; --t) {
+				for(int t = this.world.method_24853() - 1; t >= 0; --t) {
 					if (this.world.isAir(mutable.set(r, t, s))) {
 						while(t > 0 && this.world.isAir(mutable.set(r, t - 1, s))) {
 							--t;
@@ -142,7 +142,7 @@ public class PortalForcer {
 					double f = (double)s + 0.5 - entity.getZ();
 
 					label216:
-					for(int t = this.world.getEffectiveHeight() - 1; t >= 0; --t) {
+					for(int t = this.world.method_24853() - 1; t >= 0; --t) {
 						if (this.world.isAir(mutable.set(r, t, s))) {
 							while(t > 0 && this.world.isAir(mutable.set(r, t - 1, s))) {
 								--t;
@@ -191,7 +191,7 @@ public class PortalForcer {
 		}
 
 		if (d < 0.0) {
-			n = MathHelper.clamp(n, 70, this.world.getEffectiveHeight() - 10);
+			n = MathHelper.clamp(n, 70, this.world.method_24853() - 10);
 			ae = n;
 
 			for(int t = -1; t <= 1; ++t) {

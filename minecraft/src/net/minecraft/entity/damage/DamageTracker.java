@@ -2,6 +2,7 @@ package net.minecraft.entity.damage;
 
 import com.google.common.collect.Lists;
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -29,12 +30,17 @@ public class DamageTracker {
 
 	public void setFallDeathSuffix() {
 		this.clearFallDeathSuffix();
-		if (this.entity.isClimbing()) {
-			Block block = this.entity.world.getBlockState(new BlockPos(this.entity)).getBlock();
+		Optional<BlockPos> optional = this.entity.method_24832();
+		if (optional.isPresent()) {
+			Block block = this.entity.world.getBlockState((BlockPos)optional.get()).getBlock();
 			if (block == Blocks.LADDER) {
 				this.fallDeathSuffix = "ladder";
 			} else if (block == Blocks.VINE) {
 				this.fallDeathSuffix = "vines";
+			} else if (block != Blocks.WEEPING_VINES_PLANT && block != Blocks.WEEPING_VINES) {
+				this.fallDeathSuffix = "other_climbable";
+			} else {
+				this.fallDeathSuffix = "weeping_vines";
 			}
 		} else if (this.entity.isTouchingWater()) {
 			this.fallDeathSuffix = "water";

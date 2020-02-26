@@ -54,9 +54,8 @@ public class NetherFossilFeature extends AbstractTempleFeature<DefaultFeatureCon
 		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
 			int i = x * 16;
 			int j = z * 16;
-			NetherFossilGenerator.addPieces(
-				structureManager, this.children, this.random, new BlockPos(i + this.random.nextInt(16), chunkGenerator.getSeaLevel(), j + this.random.nextInt(16))
-			);
+			int k = chunkGenerator.getSeaLevel() + this.random.nextInt(126 - chunkGenerator.getSeaLevel());
+			NetherFossilGenerator.addPieces(structureManager, this.children, this.random, new BlockPos(i + this.random.nextInt(16), k, j + this.random.nextInt(16)));
 			this.setBoundingBoxFromChildren();
 		}
 	}

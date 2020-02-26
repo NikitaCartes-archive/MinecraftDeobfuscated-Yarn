@@ -44,6 +44,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.recipe.CraftingRecipe;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeType;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.DyeColor;
@@ -222,6 +223,7 @@ public class SheepEntity extends AnimalEntity {
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (itemStack.getItem() == Items.SHEARS && !this.isSheared() && !this.isBaby()) {
 			this.dropItems();
+			this.world.playSoundFromEntity(null, this, SoundEvents.ENTITY_SHEEP_SHEAR, SoundCategory.PLAYERS, 1.0F, 1.0F);
 			if (!this.world.isClient) {
 				itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
 			}
@@ -251,8 +253,6 @@ public class SheepEntity extends AnimalEntity {
 				}
 			}
 		}
-
-		this.playSound(SoundEvents.ENTITY_SHEEP_SHEAR, 1.0F, 1.0F);
 	}
 
 	@Override

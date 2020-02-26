@@ -47,7 +47,7 @@ public class ElytraSoundInstance extends MovingSoundInstance {
 				this.pitch = 1.0F;
 			}
 		} else {
-			this.done = true;
+			this.method_24876();
 		}
 	}
 }

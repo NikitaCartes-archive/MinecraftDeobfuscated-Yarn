@@ -8,7 +8,6 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.ProfileLookupCallback;
 import com.mojang.authlib.yggdrasil.ProfileNotFoundException;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
@@ -64,7 +63,7 @@ public class ServerConfigHandler {
 			if (bannedPlayerList.getFile().exists()) {
 				try {
 					bannedPlayerList.load();
-				} catch (FileNotFoundException var6) {
+				} catch (IOException var6) {
 					LOGGER.warn("Could not load existing file {}", bannedPlayerList.getFile().getName(), var6);
 				}
 			}
@@ -119,7 +118,7 @@ public class ServerConfigHandler {
 			if (bannedIpList.getFile().exists()) {
 				try {
 					bannedIpList.load();
-				} catch (FileNotFoundException var11) {
+				} catch (IOException var11) {
 					LOGGER.warn("Could not load existing file {}", bannedIpList.getFile().getName(), var11);
 				}
 			}
@@ -155,7 +154,7 @@ public class ServerConfigHandler {
 			if (operatorList.getFile().exists()) {
 				try {
 					operatorList.load();
-				} catch (FileNotFoundException var6) {
+				} catch (IOException var6) {
 					LOGGER.warn("Could not load existing file {}", operatorList.getFile().getName(), var6);
 				}
 			}
@@ -199,7 +198,7 @@ public class ServerConfigHandler {
 			if (whitelist.getFile().exists()) {
 				try {
 					whitelist.load();
-				} catch (FileNotFoundException var6) {
+				} catch (IOException var6) {
 					LOGGER.warn("Could not load existing file {}", whitelist.getFile().getName(), var6);
 				}
 			}

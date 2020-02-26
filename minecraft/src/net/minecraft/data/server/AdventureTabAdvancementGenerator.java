@@ -13,6 +13,7 @@ import net.minecraft.advancement.criterion.PlayerHurtEntityCriterion;
 import net.minecraft.advancement.criterion.ShotCrossbowCriterion;
 import net.minecraft.advancement.criterion.SlideDownBlockCriterion;
 import net.minecraft.advancement.criterion.SummonedEntityCriterion;
+import net.minecraft.advancement.criterion.TargetHitCriterion;
 import net.minecraft.advancement.criterion.UsedTotemCriterion;
 import net.minecraft.advancement.criterion.VillagerTradeCriterion;
 import net.minecraft.block.Blocks;
@@ -81,7 +82,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 	private static final EntityType<?>[] MONSTERS = new EntityType[]{
 		EntityType.CAVE_SPIDER,
 		EntityType.SPIDER,
-		EntityType.ZOMBIE_PIGMAN,
+		EntityType.ZOMBIFIED_PIGLIN,
 		EntityType.ENDERMAN,
 		EntityType.BLAZE,
 		EntityType.CREEPER,
@@ -408,6 +409,20 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.criterion("honey_block_slide", SlideDownBlockCriterion.Conditions.create(Blocks.HONEY_BLOCK))
 			.build(consumer, "adventure/honey_block_slide");
+		Advancement advancement20 = Advancement.Task.create()
+			.parent(advancement7)
+			.display(
+				Blocks.TARGET.asItem(),
+				new TranslatableText("advancements.adventure.bullseye.title"),
+				new TranslatableText("advancements.adventure.bullseye.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.criterion("bullseye", TargetHitCriterion.Conditions.create(NumberRange.IntRange.exactly(15)))
+			.build(consumer, "adventure/bullseye");
 	}
 
 	private Advancement.Task requireListedMobsKilled(Advancement.Task task) {
