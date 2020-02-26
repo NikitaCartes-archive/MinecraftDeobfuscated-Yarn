@@ -99,7 +99,7 @@ public class ZombiePigmanEntity extends ZombieEntity {
 
 		if (this.angrySoundDelay > 0 && --this.angrySoundDelay == 0) {
 			this.playSound(
-				SoundEvents.ENTITY_ZOMBIE_PIGMAN_ANGRY, this.getSoundVolume() * 2.0F, ((this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F) * 1.8F
+				SoundEvents.ENTITY_ZOMBIFIED_PIGLIN_ANGRY, this.getSoundVolume() * 2.0F, ((this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F) * 1.8F
 			);
 		}
 
@@ -180,17 +180,17 @@ public class ZombiePigmanEntity extends ZombieEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.ENTITY_ZOMBIE_PIGMAN_AMBIENT;
+		return SoundEvents.ENTITY_ZOMBIFIED_PIGLIN_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.ENTITY_ZOMBIE_PIGMAN_HURT;
+		return SoundEvents.ENTITY_ZOMBIFIED_PIGLIN_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.ENTITY_ZOMBIE_PIGMAN_DEATH;
+		return SoundEvents.ENTITY_ZOMBIFIED_PIGLIN_DEATH;
 	}
 
 	@Override

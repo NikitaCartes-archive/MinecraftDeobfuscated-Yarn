@@ -26,7 +26,7 @@ public class AmbientSoundLoops {
 		@Override
 		public void tick() {
 			if (this.player.removed || !this.player.isSubmergedInWater()) {
-				this.done = true;
+				this.method_24876();
 			}
 		}
 	}
@@ -58,7 +58,7 @@ public class AmbientSoundLoops {
 				this.transitionTimer = Math.min(this.transitionTimer, 40);
 				this.volume = Math.max(0.0F, Math.min((float)this.transitionTimer / 40.0F, 1.0F));
 			} else {
-				this.done = true;
+				this.method_24876();
 			}
 		}
 	}

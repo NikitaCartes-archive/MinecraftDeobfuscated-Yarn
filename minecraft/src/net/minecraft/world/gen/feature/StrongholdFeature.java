@@ -179,7 +179,7 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 				this.children.clear();
 				this.boundingBox = BlockBox.empty();
 				this.random.setStructureSeed(l + (long)(i++), x, z);
-				StrongholdGenerator.method_14855();
+				StrongholdGenerator.init();
 				start = new StrongholdGenerator.Start(this.random, (x << 4) + 2, (z << 4) + 2);
 				this.children.add(start);
 				start.placeJigsaw(start, this.children, this.random);

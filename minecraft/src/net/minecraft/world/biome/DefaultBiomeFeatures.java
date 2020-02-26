@@ -37,7 +37,7 @@ import net.minecraft.world.gen.feature.DiskFeatureConfig;
 import net.minecraft.world.gen.feature.EmeraldOreFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
-import net.minecraft.world.gen.feature.HugeFungiFeatureConfig;
+import net.minecraft.world.gen.feature.HugeFungusFeatureConfig;
 import net.minecraft.world.gen.feature.HugeMushroomFeatureConfig;
 import net.minecraft.world.gen.feature.MegaTreeFeatureConfig;
 import net.minecraft.world.gen.feature.MineshaftFeature;
@@ -510,20 +510,18 @@ public class DefaultBiomeFeatures {
 	public static final HugeMushroomFeatureConfig HUGE_BROWN_MUSHROOM_CONFIG = new HugeMushroomFeatureConfig(
 		new SimpleBlockStateProvider(BROWN_MUSHROOM_BLOCK), new SimpleBlockStateProvider(MUSHROOM_BLOCK), 3
 	);
-	public static final HugeFungiFeatureConfig CRIMSON_FUNGI_CONFIG = new HugeFungiFeatureConfig(CRIMSON_STEM, NETHER_WART_BLOCK, SHROOMLIGHT, false);
-	public static final HugeFungiFeatureConfig WARPED_FUNGI_CONFIG = new HugeFungiFeatureConfig(WARPED_STEM, WARPED_WART_BLOCK, SHROOMLIGHT, false);
 	public static final BlockPileFeatureConfig CRIMSON_ROOTS_CONFIG = new BlockPileFeatureConfig(
 		new WeightedBlockStateProvider()
 			.addState(Blocks.CRIMSON_ROOTS.getDefaultState(), 87)
-			.addState(Blocks.CRIMSON_FUNGI.getDefaultState(), 11)
-			.addState(Blocks.WARPED_FUNGI.getDefaultState(), 2)
+			.addState(Blocks.CRIMSON_FUNGUS.getDefaultState(), 11)
+			.addState(Blocks.WARPED_FUNGUS.getDefaultState(), 2)
 	);
 	public static final BlockPileFeatureConfig WARPED_ROOTS_CONFIG = new BlockPileFeatureConfig(
 		new WeightedBlockStateProvider()
 			.addState(Blocks.WARPED_ROOTS.getDefaultState(), 85)
 			.addState(Blocks.CRIMSON_ROOTS.getDefaultState(), 1)
-			.addState(Blocks.WARPED_FUNGI.getDefaultState(), 13)
-			.addState(Blocks.CRIMSON_FUNGI.getDefaultState(), 1)
+			.addState(Blocks.WARPED_FUNGUS.getDefaultState(), 13)
+			.addState(Blocks.CRIMSON_FUNGUS.getDefaultState(), 1)
 	);
 	public static final BlockPileFeatureConfig NETHER_SPROUTS_CONFIG = new BlockPileFeatureConfig(
 		new SimpleBlockStateProvider(Blocks.NETHER_SPROUTS.getDefaultState())
@@ -1464,7 +1462,7 @@ public class DefaultBiomeFeatures {
 	public static void addCrimsonForestVegetation(Biome biome) {
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.HUGE_FUNGI.configure(CRIMSON_FUNGI_CONFIG).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP.configure(new CountDecoratorConfig(8)))
+			Feature.HUGE_FUNGUS.configure(HugeFungusFeatureConfig.field_22432).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP.configure(new CountDecoratorConfig(8)))
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
@@ -1475,7 +1473,7 @@ public class DefaultBiomeFeatures {
 	public static void addWarpedForestVegetation(Biome biome) {
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.HUGE_FUNGI.configure(WARPED_FUNGI_CONFIG).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP.configure(new CountDecoratorConfig(8)))
+			Feature.HUGE_FUNGUS.configure(HugeFungusFeatureConfig.field_22434).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP.configure(new CountDecoratorConfig(8)))
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,

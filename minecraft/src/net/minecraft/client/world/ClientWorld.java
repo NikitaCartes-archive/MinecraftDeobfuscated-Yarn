@@ -755,6 +755,29 @@ public class ClientWorld extends World {
 	}
 
 	@Override
+	public float method_24852(Direction direction, boolean bl) {
+		boolean bl2 = this.dimension.getType() == DimensionType.THE_NETHER;
+		if (!bl) {
+			return bl2 ? 0.9F : 1.0F;
+		} else {
+			switch (direction) {
+				case DOWN:
+					return bl2 ? 0.9F : 0.5F;
+				case UP:
+					return bl2 ? 0.9F : 1.0F;
+				case NORTH:
+				case SOUTH:
+					return 0.8F;
+				case WEST:
+				case EAST:
+					return 0.6F;
+				default:
+					return 1.0F;
+			}
+		}
+	}
+
+	@Override
 	public int getColor(BlockPos pos, ColorResolver colorResolver) {
 		BiomeColorCache biomeColorCache = this.colorCache.get(colorResolver);
 		return biomeColorCache.getBiomeColor(pos, () -> this.calculateColor(pos, colorResolver));

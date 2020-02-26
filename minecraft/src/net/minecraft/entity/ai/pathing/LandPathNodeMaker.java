@@ -56,7 +56,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 			}
 
 			i--;
-		} else if (this.entity.onGround) {
+		} else if (this.entity.method_24828()) {
 			i = MathHelper.floor(this.entity.getY() + 0.5);
 		} else {
 			BlockPos blockPos = new BlockPos(this.entity);

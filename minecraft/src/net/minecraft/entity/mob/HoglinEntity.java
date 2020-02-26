@@ -30,6 +30,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
@@ -64,7 +65,7 @@ public class HoglinEntity extends AnimalEntity implements Monster {
 		MemoryModuleType.VISIBLE_ADULT_PIGLIN_COUNT,
 		MemoryModuleType.VISIBLE_ADULT_HOGLIN_COUNT,
 		MemoryModuleType.NEAREST_VISIBLE_ADULT_HOGLINS,
-		MemoryModuleType.NEAREST_VISIBLE_WARPED_FUNGI,
+		MemoryModuleType.NEAREST_VISIBLE_WARPED_FUNGUS,
 		MemoryModuleType.PACIFIED
 	);
 
@@ -155,9 +156,6 @@ public class HoglinEntity extends AnimalEntity implements Monster {
 		this.world.getProfiler().pop();
 		HoglinBrain.refreshActivities(this);
 		HoglinBrain.playSoundAtChance(this);
-		if (HoglinBrain.isNearPlayer(this)) {
-			this.setPersistent();
-		}
 	}
 
 	@Override
@@ -190,11 +188,21 @@ public class HoglinEntity extends AnimalEntity implements Monster {
 
 	@Override
 	public float getPathfindingFavor(BlockPos pos, WorldView world) {
-		if (HoglinBrain.isWarpedFungiAround(this, pos)) {
+		if (HoglinBrain.isWarpedFungusAround(this, pos)) {
 			return -1.0F;
 		} else {
 			return world.getBlockState(pos.down()).getBlock() == Blocks.CRIMSON_NYLIUM ? 10.0F : 0.0F;
 		}
+	}
+
+	@Override
+	public boolean interactMob(PlayerEntity player, Hand hand) {
+		boolean bl = super.interactMob(player, hand);
+		if (bl) {
+			this.setPersistent();
+		}
+
+		return bl;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -220,7 +228,7 @@ public class HoglinEntity extends AnimalEntity implements Monster {
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return stack.getItem() == Items.CRIMSON_FUNGI;
+		return stack.getItem() == Items.CRIMSON_FUNGUS;
 	}
 
 	public boolean isAdult() {
@@ -230,12 +238,17 @@ public class HoglinEntity extends AnimalEntity implements Monster {
 	@Nullable
 	@Override
 	public PassiveEntity createChild(PassiveEntity mate) {
-		return EntityType.HOGLIN.create(this.world);
+		HoglinEntity hoglinEntity = EntityType.HOGLIN.create(this.world);
+		if (hoglinEntity != null) {
+			hoglinEntity.setPersistent();
+		}
+
+		return hoglinEntity;
 	}
 
 	@Override
 	public boolean canEat() {
-		return !HoglinBrain.isPacified(this) && super.canEat();
+		return !HoglinBrain.isNearPlayer(this) && super.canEat();
 	}
 
 	@Override
@@ -282,10 +295,6 @@ public class HoglinEntity extends AnimalEntity implements Monster {
 
 	protected void playFightSound() {
 		this.playSound(SoundEvents.ENTITY_HOGLIN_ANGRY, 1.0F, this.getSoundPitch());
-	}
-
-	protected void playAttackedSound() {
-		this.playRetreatSound();
 	}
 
 	protected void playRetreatSound() {

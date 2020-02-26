@@ -22,8 +22,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class OceanMonumentGenerator {
 	public static class Base extends OceanMonumentGenerator.Piece {
-		private OceanMonumentGenerator.class_3388 field_14464;
-		private OceanMonumentGenerator.class_3388 field_14466;
+		private OceanMonumentGenerator.PieceSetting field_14464;
+		private OceanMonumentGenerator.PieceSetting field_14466;
 		private final List<OceanMonumentGenerator.Piece> field_14465 = Lists.<OceanMonumentGenerator.Piece>newArrayList();
 
 		public Base(Random random, int i, int j, Direction direction) {
@@ -36,24 +36,24 @@ public class OceanMonumentGenerator {
 				this.boundingBox = new BlockBox(i, 39, j, i + 58 - 1, 61, j + 58 - 1);
 			}
 
-			List<OceanMonumentGenerator.class_3388> list = this.method_14760(random);
-			this.field_14464.field_14485 = true;
+			List<OceanMonumentGenerator.PieceSetting> list = this.method_14760(random);
+			this.field_14464.used = true;
 			this.field_14465.add(new OceanMonumentGenerator.Entry(direction2, this.field_14464));
 			this.field_14465.add(new OceanMonumentGenerator.CoreRoom(direction2, this.field_14466));
-			List<OceanMonumentGenerator.class_3375> list2 = Lists.<OceanMonumentGenerator.class_3375>newArrayList();
-			list2.add(new OceanMonumentGenerator.class_3368());
-			list2.add(new OceanMonumentGenerator.class_3370());
-			list2.add(new OceanMonumentGenerator.class_3371());
-			list2.add(new OceanMonumentGenerator.class_3367());
-			list2.add(new OceanMonumentGenerator.class_3369());
-			list2.add(new OceanMonumentGenerator.class_3373());
-			list2.add(new OceanMonumentGenerator.class_3372());
+			List<OceanMonumentGenerator.PieceFactory> list2 = Lists.<OceanMonumentGenerator.PieceFactory>newArrayList();
+			list2.add(new OceanMonumentGenerator.DoubleXYRoomFactory());
+			list2.add(new OceanMonumentGenerator.DoubleYZRoomFactory());
+			list2.add(new OceanMonumentGenerator.DoubleZRoomFactory());
+			list2.add(new OceanMonumentGenerator.DoubleXRoomFactory());
+			list2.add(new OceanMonumentGenerator.DoubleYRoomFactory());
+			list2.add(new OceanMonumentGenerator.SimpleRoomTopFactory());
+			list2.add(new OceanMonumentGenerator.SimpleRoomFactory());
 
-			for (OceanMonumentGenerator.class_3388 lv : list) {
-				if (!lv.field_14485 && !lv.method_14785()) {
-					for (OceanMonumentGenerator.class_3375 lv2 : list2) {
-						if (lv2.method_14769(lv)) {
-							this.field_14465.add(lv2.method_14768(direction2, lv, random));
+			for (OceanMonumentGenerator.PieceSetting pieceSetting : list) {
+				if (!pieceSetting.used && !pieceSetting.isAboveLevelThree()) {
+					for (OceanMonumentGenerator.PieceFactory pieceFactory : list2) {
+						if (pieceFactory.canGenerate(pieceSetting)) {
+							this.field_14465.add(pieceFactory.generate(direction2, pieceSetting, random));
 							break;
 						}
 					}
@@ -102,51 +102,51 @@ public class OceanMonumentGenerator {
 			super(StructurePieceType.OCEAN_MONUMENT_BASE, compoundTag);
 		}
 
-		private List<OceanMonumentGenerator.class_3388> method_14760(Random random) {
-			OceanMonumentGenerator.class_3388[] lvs = new OceanMonumentGenerator.class_3388[75];
+		private List<OceanMonumentGenerator.PieceSetting> method_14760(Random random) {
+			OceanMonumentGenerator.PieceSetting[] pieceSettings = new OceanMonumentGenerator.PieceSetting[75];
 
 			for (int i = 0; i < 5; i++) {
 				for (int j = 0; j < 4; j++) {
 					int k = 0;
-					int l = method_14770(i, 0, j);
-					lvs[l] = new OceanMonumentGenerator.class_3388(l);
+					int l = getIndex(i, 0, j);
+					pieceSettings[l] = new OceanMonumentGenerator.PieceSetting(l);
 				}
 			}
 
 			for (int i = 0; i < 5; i++) {
 				for (int j = 0; j < 4; j++) {
 					int k = 1;
-					int l = method_14770(i, 1, j);
-					lvs[l] = new OceanMonumentGenerator.class_3388(l);
+					int l = getIndex(i, 1, j);
+					pieceSettings[l] = new OceanMonumentGenerator.PieceSetting(l);
 				}
 			}
 
 			for (int i = 1; i < 4; i++) {
 				for (int j = 0; j < 2; j++) {
 					int k = 2;
-					int l = method_14770(i, 2, j);
-					lvs[l] = new OceanMonumentGenerator.class_3388(l);
+					int l = getIndex(i, 2, j);
+					pieceSettings[l] = new OceanMonumentGenerator.PieceSetting(l);
 				}
 			}
 
-			this.field_14464 = lvs[field_14469];
+			this.field_14464 = pieceSettings[TWO_ZERO_ZERO_INDEX];
 
 			for (int i = 0; i < 5; i++) {
 				for (int j = 0; j < 5; j++) {
 					for (int k = 0; k < 3; k++) {
-						int l = method_14770(i, k, j);
-						if (lvs[l] != null) {
+						int l = getIndex(i, k, j);
+						if (pieceSettings[l] != null) {
 							for (Direction direction : Direction.values()) {
 								int m = i + direction.getOffsetX();
 								int n = k + direction.getOffsetY();
 								int o = j + direction.getOffsetZ();
 								if (m >= 0 && m < 5 && o >= 0 && o < 5 && n >= 0 && n < 3) {
-									int p = method_14770(m, n, o);
-									if (lvs[p] != null) {
+									int p = getIndex(m, n, o);
+									if (pieceSettings[p] != null) {
 										if (o == j) {
-											lvs[l].method_14786(direction, lvs[p]);
+											pieceSettings[l].setNeighbor(direction, pieceSettings[p]);
 										} else {
-											lvs[l].method_14786(direction.getOpposite(), lvs[p]);
+											pieceSettings[l].setNeighbor(direction.getOpposite(), pieceSettings[p]);
 										}
 									}
 								}
@@ -156,62 +156,62 @@ public class OceanMonumentGenerator {
 				}
 			}
 
-			OceanMonumentGenerator.class_3388 lv = new OceanMonumentGenerator.class_3388(1003);
-			OceanMonumentGenerator.class_3388 lv2 = new OceanMonumentGenerator.class_3388(1001);
-			OceanMonumentGenerator.class_3388 lv3 = new OceanMonumentGenerator.class_3388(1002);
-			lvs[field_14468].method_14786(Direction.UP, lv);
-			lvs[field_14478].method_14786(Direction.SOUTH, lv2);
-			lvs[field_14477].method_14786(Direction.SOUTH, lv3);
-			lv.field_14485 = true;
-			lv2.field_14485 = true;
-			lv3.field_14485 = true;
+			OceanMonumentGenerator.PieceSetting pieceSetting = new OceanMonumentGenerator.PieceSetting(1003);
+			OceanMonumentGenerator.PieceSetting pieceSetting2 = new OceanMonumentGenerator.PieceSetting(1001);
+			OceanMonumentGenerator.PieceSetting pieceSetting3 = new OceanMonumentGenerator.PieceSetting(1002);
+			pieceSettings[TWO_TWO_ZERO_INDEX].setNeighbor(Direction.UP, pieceSetting);
+			pieceSettings[ZERO_ONE_ZERO_INDEX].setNeighbor(Direction.SOUTH, pieceSetting2);
+			pieceSettings[FOUR_ONE_ZERO_INDEX].setNeighbor(Direction.SOUTH, pieceSetting3);
+			pieceSetting.used = true;
+			pieceSetting2.used = true;
+			pieceSetting3.used = true;
 			this.field_14464.field_14484 = true;
-			this.field_14466 = lvs[method_14770(random.nextInt(4), 0, 2)];
-			this.field_14466.field_14485 = true;
-			this.field_14466.field_14487[Direction.EAST.getId()].field_14485 = true;
-			this.field_14466.field_14487[Direction.NORTH.getId()].field_14485 = true;
-			this.field_14466.field_14487[Direction.EAST.getId()].field_14487[Direction.NORTH.getId()].field_14485 = true;
-			this.field_14466.field_14487[Direction.UP.getId()].field_14485 = true;
-			this.field_14466.field_14487[Direction.EAST.getId()].field_14487[Direction.UP.getId()].field_14485 = true;
-			this.field_14466.field_14487[Direction.NORTH.getId()].field_14487[Direction.UP.getId()].field_14485 = true;
-			this.field_14466.field_14487[Direction.EAST.getId()].field_14487[Direction.NORTH.getId()].field_14487[Direction.UP.getId()].field_14485 = true;
-			List<OceanMonumentGenerator.class_3388> list = Lists.<OceanMonumentGenerator.class_3388>newArrayList();
+			this.field_14466 = pieceSettings[getIndex(random.nextInt(4), 0, 2)];
+			this.field_14466.used = true;
+			this.field_14466.neighbors[Direction.EAST.getId()].used = true;
+			this.field_14466.neighbors[Direction.NORTH.getId()].used = true;
+			this.field_14466.neighbors[Direction.EAST.getId()].neighbors[Direction.NORTH.getId()].used = true;
+			this.field_14466.neighbors[Direction.UP.getId()].used = true;
+			this.field_14466.neighbors[Direction.EAST.getId()].neighbors[Direction.UP.getId()].used = true;
+			this.field_14466.neighbors[Direction.NORTH.getId()].neighbors[Direction.UP.getId()].used = true;
+			this.field_14466.neighbors[Direction.EAST.getId()].neighbors[Direction.NORTH.getId()].neighbors[Direction.UP.getId()].used = true;
+			List<OceanMonumentGenerator.PieceSetting> list = Lists.<OceanMonumentGenerator.PieceSetting>newArrayList();
 
-			for (OceanMonumentGenerator.class_3388 lv4 : lvs) {
-				if (lv4 != null) {
-					lv4.method_14780();
-					list.add(lv4);
+			for (OceanMonumentGenerator.PieceSetting pieceSetting4 : pieceSettings) {
+				if (pieceSetting4 != null) {
+					pieceSetting4.checkNeighborStates();
+					list.add(pieceSetting4);
 				}
 			}
 
-			lv.method_14780();
+			pieceSetting.checkNeighborStates();
 			Collections.shuffle(list, random);
 			int q = 1;
 
-			for (OceanMonumentGenerator.class_3388 lv5 : list) {
+			for (OceanMonumentGenerator.PieceSetting pieceSetting5 : list) {
 				int r = 0;
 				int m = 0;
 
 				while (r < 2 && m < 5) {
 					m++;
 					int n = random.nextInt(6);
-					if (lv5.field_14482[n]) {
+					if (pieceSetting5.neighborPresences[n]) {
 						int o = Direction.byId(n).getOpposite().getId();
-						lv5.field_14482[n] = false;
-						lv5.field_14487[n].field_14482[o] = false;
-						if (lv5.method_14783(q++) && lv5.field_14487[n].method_14783(q++)) {
+						pieceSetting5.neighborPresences[n] = false;
+						pieceSetting5.neighbors[n].neighborPresences[o] = false;
+						if (pieceSetting5.method_14783(q++) && pieceSetting5.neighbors[n].method_14783(q++)) {
 							r++;
 						} else {
-							lv5.field_14482[n] = true;
-							lv5.field_14487[n].field_14482[o] = true;
+							pieceSetting5.neighborPresences[n] = true;
+							pieceSetting5.neighbors[n].neighborPresences[o] = true;
 						}
 					}
 				}
 			}
 
-			list.add(lv);
-			list.add(lv2);
-			list.add(lv3);
+			list.add(pieceSetting);
+			list.add(pieceSetting2);
+			list.add(pieceSetting3);
 			return list;
 		}
 
@@ -588,8 +588,8 @@ public class OceanMonumentGenerator {
 	}
 
 	public static class CoreRoom extends OceanMonumentGenerator.Piece {
-		public CoreRoom(Direction direction, OceanMonumentGenerator.class_3388 arg) {
-			super(StructurePieceType.OCEAN_MONUMENT_CORE_ROOM, 1, direction, arg, 2, 2, 2);
+		public CoreRoom(Direction direction, OceanMonumentGenerator.PieceSetting pieceSetting) {
+			super(StructurePieceType.OCEAN_MONUMENT_CORE_ROOM, 1, direction, pieceSetting, 2, 2, 2);
 		}
 
 		public CoreRoom(StructureManager structureManager, CompoundTag compoundTag) {
@@ -667,8 +667,8 @@ public class OceanMonumentGenerator {
 	}
 
 	public static class DoubleXRoom extends OceanMonumentGenerator.Piece {
-		public DoubleXRoom(Direction direction, OceanMonumentGenerator.class_3388 arg) {
-			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_X_ROOM, 1, direction, arg, 2, 1, 1);
+		public DoubleXRoom(Direction direction, OceanMonumentGenerator.PieceSetting pieceSetting) {
+			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_X_ROOM, 1, direction, pieceSetting, 2, 1, 1);
 		}
 
 		public DoubleXRoom(StructureManager structureManager, CompoundTag compoundTag) {
@@ -677,18 +677,18 @@ public class OceanMonumentGenerator {
 
 		@Override
 		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
-			OceanMonumentGenerator.class_3388 lv = this.field_14479.field_14487[Direction.EAST.getId()];
-			OceanMonumentGenerator.class_3388 lv2 = this.field_14479;
-			if (this.field_14479.field_14486 / 25 > 0) {
-				this.method_14774(world, box, 8, 0, lv.field_14482[Direction.DOWN.getId()]);
-				this.method_14774(world, box, 0, 0, lv2.field_14482[Direction.DOWN.getId()]);
+			OceanMonumentGenerator.PieceSetting pieceSetting = this.setting.neighbors[Direction.EAST.getId()];
+			OceanMonumentGenerator.PieceSetting pieceSetting2 = this.setting;
+			if (this.setting.roomIndex / 25 > 0) {
+				this.method_14774(world, box, 8, 0, pieceSetting.neighborPresences[Direction.DOWN.getId()]);
+				this.method_14774(world, box, 0, 0, pieceSetting2.neighborPresences[Direction.DOWN.getId()]);
 			}
 
-			if (lv2.field_14487[Direction.UP.getId()] == null) {
+			if (pieceSetting2.neighbors[Direction.UP.getId()] == null) {
 				this.method_14771(world, box, 1, 4, 1, 7, 4, 6, PRISMARINE);
 			}
 
-			if (lv.field_14487[Direction.UP.getId()] == null) {
+			if (pieceSetting.neighbors[Direction.UP.getId()] == null) {
 				this.method_14771(world, box, 8, 4, 1, 14, 4, 6, PRISMARINE);
 			}
 
@@ -709,27 +709,27 @@ public class OceanMonumentGenerator {
 			this.fillWithOutline(world, box, 5, 3, 0, 10, 3, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 			this.addBlock(world, SEA_LANTERN, 6, 2, 3, box);
 			this.addBlock(world, SEA_LANTERN, 9, 2, 3, box);
-			if (lv2.field_14482[Direction.SOUTH.getId()]) {
+			if (pieceSetting2.neighborPresences[Direction.SOUTH.getId()]) {
 				this.setAirAndWater(world, box, 3, 1, 0, 4, 2, 0);
 			}
 
-			if (lv2.field_14482[Direction.NORTH.getId()]) {
+			if (pieceSetting2.neighborPresences[Direction.NORTH.getId()]) {
 				this.setAirAndWater(world, box, 3, 1, 7, 4, 2, 7);
 			}
 
-			if (lv2.field_14482[Direction.WEST.getId()]) {
+			if (pieceSetting2.neighborPresences[Direction.WEST.getId()]) {
 				this.setAirAndWater(world, box, 0, 1, 3, 0, 2, 4);
 			}
 
-			if (lv.field_14482[Direction.SOUTH.getId()]) {
+			if (pieceSetting.neighborPresences[Direction.SOUTH.getId()]) {
 				this.setAirAndWater(world, box, 11, 1, 0, 12, 2, 0);
 			}
 
-			if (lv.field_14482[Direction.NORTH.getId()]) {
+			if (pieceSetting.neighborPresences[Direction.NORTH.getId()]) {
 				this.setAirAndWater(world, box, 11, 1, 7, 12, 2, 7);
 			}
 
-			if (lv.field_14482[Direction.EAST.getId()]) {
+			if (pieceSetting.neighborPresences[Direction.EAST.getId()]) {
 				this.setAirAndWater(world, box, 15, 1, 3, 15, 2, 4);
 			}
 
@@ -737,9 +737,26 @@ public class OceanMonumentGenerator {
 		}
 	}
 
+	static class DoubleXRoomFactory implements OceanMonumentGenerator.PieceFactory {
+		private DoubleXRoomFactory() {
+		}
+
+		@Override
+		public boolean canGenerate(OceanMonumentGenerator.PieceSetting setting) {
+			return setting.neighborPresences[Direction.EAST.getId()] && !setting.neighbors[Direction.EAST.getId()].used;
+		}
+
+		@Override
+		public OceanMonumentGenerator.Piece generate(Direction direction, OceanMonumentGenerator.PieceSetting setting, Random random) {
+			setting.used = true;
+			setting.neighbors[Direction.EAST.getId()].used = true;
+			return new OceanMonumentGenerator.DoubleXRoom(direction, setting);
+		}
+	}
+
 	public static class DoubleXYRoom extends OceanMonumentGenerator.Piece {
-		public DoubleXYRoom(Direction direction, OceanMonumentGenerator.class_3388 arg) {
-			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_X_Y_ROOM, 1, direction, arg, 2, 2, 1);
+		public DoubleXYRoom(Direction direction, OceanMonumentGenerator.PieceSetting pieceSetting) {
+			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_X_Y_ROOM, 1, direction, pieceSetting, 2, 2, 1);
 		}
 
 		public DoubleXYRoom(StructureManager structureManager, CompoundTag compoundTag) {
@@ -748,20 +765,20 @@ public class OceanMonumentGenerator {
 
 		@Override
 		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
-			OceanMonumentGenerator.class_3388 lv = this.field_14479.field_14487[Direction.EAST.getId()];
-			OceanMonumentGenerator.class_3388 lv2 = this.field_14479;
-			OceanMonumentGenerator.class_3388 lv3 = lv2.field_14487[Direction.UP.getId()];
-			OceanMonumentGenerator.class_3388 lv4 = lv.field_14487[Direction.UP.getId()];
-			if (this.field_14479.field_14486 / 25 > 0) {
-				this.method_14774(world, box, 8, 0, lv.field_14482[Direction.DOWN.getId()]);
-				this.method_14774(world, box, 0, 0, lv2.field_14482[Direction.DOWN.getId()]);
+			OceanMonumentGenerator.PieceSetting pieceSetting = this.setting.neighbors[Direction.EAST.getId()];
+			OceanMonumentGenerator.PieceSetting pieceSetting2 = this.setting;
+			OceanMonumentGenerator.PieceSetting pieceSetting3 = pieceSetting2.neighbors[Direction.UP.getId()];
+			OceanMonumentGenerator.PieceSetting pieceSetting4 = pieceSetting.neighbors[Direction.UP.getId()];
+			if (this.setting.roomIndex / 25 > 0) {
+				this.method_14774(world, box, 8, 0, pieceSetting.neighborPresences[Direction.DOWN.getId()]);
+				this.method_14774(world, box, 0, 0, pieceSetting2.neighborPresences[Direction.DOWN.getId()]);
 			}
 
-			if (lv3.field_14487[Direction.UP.getId()] == null) {
+			if (pieceSetting3.neighbors[Direction.UP.getId()] == null) {
 				this.method_14771(world, box, 1, 8, 1, 7, 8, 6, PRISMARINE);
 			}
 
-			if (lv4.field_14487[Direction.UP.getId()] == null) {
+			if (pieceSetting4.neighbors[Direction.UP.getId()] == null) {
 				this.method_14771(world, box, 8, 8, 1, 14, 8, 6, PRISMARINE);
 			}
 
@@ -800,51 +817,51 @@ public class OceanMonumentGenerator {
 			this.addBlock(world, SEA_LANTERN, 5, 4, 5, box);
 			this.addBlock(world, SEA_LANTERN, 10, 4, 2, box);
 			this.addBlock(world, SEA_LANTERN, 10, 4, 5, box);
-			if (lv2.field_14482[Direction.SOUTH.getId()]) {
+			if (pieceSetting2.neighborPresences[Direction.SOUTH.getId()]) {
 				this.setAirAndWater(world, box, 3, 1, 0, 4, 2, 0);
 			}
 
-			if (lv2.field_14482[Direction.NORTH.getId()]) {
+			if (pieceSetting2.neighborPresences[Direction.NORTH.getId()]) {
 				this.setAirAndWater(world, box, 3, 1, 7, 4, 2, 7);
 			}
 
-			if (lv2.field_14482[Direction.WEST.getId()]) {
+			if (pieceSetting2.neighborPresences[Direction.WEST.getId()]) {
 				this.setAirAndWater(world, box, 0, 1, 3, 0, 2, 4);
 			}
 
-			if (lv.field_14482[Direction.SOUTH.getId()]) {
+			if (pieceSetting.neighborPresences[Direction.SOUTH.getId()]) {
 				this.setAirAndWater(world, box, 11, 1, 0, 12, 2, 0);
 			}
 
-			if (lv.field_14482[Direction.NORTH.getId()]) {
+			if (pieceSetting.neighborPresences[Direction.NORTH.getId()]) {
 				this.setAirAndWater(world, box, 11, 1, 7, 12, 2, 7);
 			}
 
-			if (lv.field_14482[Direction.EAST.getId()]) {
+			if (pieceSetting.neighborPresences[Direction.EAST.getId()]) {
 				this.setAirAndWater(world, box, 15, 1, 3, 15, 2, 4);
 			}
 
-			if (lv3.field_14482[Direction.SOUTH.getId()]) {
+			if (pieceSetting3.neighborPresences[Direction.SOUTH.getId()]) {
 				this.setAirAndWater(world, box, 3, 5, 0, 4, 6, 0);
 			}
 
-			if (lv3.field_14482[Direction.NORTH.getId()]) {
+			if (pieceSetting3.neighborPresences[Direction.NORTH.getId()]) {
 				this.setAirAndWater(world, box, 3, 5, 7, 4, 6, 7);
 			}
 
-			if (lv3.field_14482[Direction.WEST.getId()]) {
+			if (pieceSetting3.neighborPresences[Direction.WEST.getId()]) {
 				this.setAirAndWater(world, box, 0, 5, 3, 0, 6, 4);
 			}
 
-			if (lv4.field_14482[Direction.SOUTH.getId()]) {
+			if (pieceSetting4.neighborPresences[Direction.SOUTH.getId()]) {
 				this.setAirAndWater(world, box, 11, 5, 0, 12, 6, 0);
 			}
 
-			if (lv4.field_14482[Direction.NORTH.getId()]) {
+			if (pieceSetting4.neighborPresences[Direction.NORTH.getId()]) {
 				this.setAirAndWater(world, box, 11, 5, 7, 12, 6, 7);
 			}
 
-			if (lv4.field_14482[Direction.EAST.getId()]) {
+			if (pieceSetting4.neighborPresences[Direction.EAST.getId()]) {
 				this.setAirAndWater(world, box, 15, 5, 3, 15, 6, 4);
 			}
 
@@ -852,9 +869,36 @@ public class OceanMonumentGenerator {
 		}
 	}
 
+	static class DoubleXYRoomFactory implements OceanMonumentGenerator.PieceFactory {
+		private DoubleXYRoomFactory() {
+		}
+
+		@Override
+		public boolean canGenerate(OceanMonumentGenerator.PieceSetting setting) {
+			if (setting.neighborPresences[Direction.EAST.getId()]
+				&& !setting.neighbors[Direction.EAST.getId()].used
+				&& setting.neighborPresences[Direction.UP.getId()]
+				&& !setting.neighbors[Direction.UP.getId()].used) {
+				OceanMonumentGenerator.PieceSetting pieceSetting = setting.neighbors[Direction.EAST.getId()];
+				return pieceSetting.neighborPresences[Direction.UP.getId()] && !pieceSetting.neighbors[Direction.UP.getId()].used;
+			} else {
+				return false;
+			}
+		}
+
+		@Override
+		public OceanMonumentGenerator.Piece generate(Direction direction, OceanMonumentGenerator.PieceSetting setting, Random random) {
+			setting.used = true;
+			setting.neighbors[Direction.EAST.getId()].used = true;
+			setting.neighbors[Direction.UP.getId()].used = true;
+			setting.neighbors[Direction.EAST.getId()].neighbors[Direction.UP.getId()].used = true;
+			return new OceanMonumentGenerator.DoubleXYRoom(direction, setting);
+		}
+	}
+
 	public static class DoubleYRoom extends OceanMonumentGenerator.Piece {
-		public DoubleYRoom(Direction direction, OceanMonumentGenerator.class_3388 arg) {
-			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Y_ROOM, 1, direction, arg, 1, 2, 1);
+		public DoubleYRoom(Direction direction, OceanMonumentGenerator.PieceSetting pieceSetting) {
+			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Y_ROOM, 1, direction, pieceSetting, 1, 2, 1);
 		}
 
 		public DoubleYRoom(StructureManager structureManager, CompoundTag compoundTag) {
@@ -863,12 +907,12 @@ public class OceanMonumentGenerator {
 
 		@Override
 		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
-			if (this.field_14479.field_14486 / 25 > 0) {
-				this.method_14774(world, box, 0, 0, this.field_14479.field_14482[Direction.DOWN.getId()]);
+			if (this.setting.roomIndex / 25 > 0) {
+				this.method_14774(world, box, 0, 0, this.setting.neighborPresences[Direction.DOWN.getId()]);
 			}
 
-			OceanMonumentGenerator.class_3388 lv = this.field_14479.field_14487[Direction.UP.getId()];
-			if (lv.field_14487[Direction.UP.getId()] == null) {
+			OceanMonumentGenerator.PieceSetting pieceSetting = this.setting.neighbors[Direction.UP.getId()];
+			if (pieceSetting.neighbors[Direction.UP.getId()] == null) {
 				this.method_14771(world, box, 1, 8, 1, 6, 8, 6, PRISMARINE);
 			}
 
@@ -884,11 +928,11 @@ public class OceanMonumentGenerator {
 			this.fillWithOutline(world, box, 1, 4, 5, 1, 4, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 			this.fillWithOutline(world, box, 5, 4, 5, 5, 4, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 			this.fillWithOutline(world, box, 6, 4, 5, 6, 4, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			OceanMonumentGenerator.class_3388 lv2 = this.field_14479;
+			OceanMonumentGenerator.PieceSetting pieceSetting2 = this.setting;
 
 			for (int i = 1; i <= 5; i += 4) {
 				int j = 0;
-				if (lv2.field_14482[Direction.SOUTH.getId()]) {
+				if (pieceSetting2.neighborPresences[Direction.SOUTH.getId()]) {
 					this.fillWithOutline(world, box, 2, i, j, 2, i + 2, j, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 					this.fillWithOutline(world, box, 5, i, j, 5, i + 2, j, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 					this.fillWithOutline(world, box, 3, i + 2, j, 4, i + 2, j, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
@@ -898,7 +942,7 @@ public class OceanMonumentGenerator {
 				}
 
 				int var11 = 7;
-				if (lv2.field_14482[Direction.NORTH.getId()]) {
+				if (pieceSetting2.neighborPresences[Direction.NORTH.getId()]) {
 					this.fillWithOutline(world, box, 2, i, var11, 2, i + 2, var11, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 					this.fillWithOutline(world, box, 5, i, var11, 5, i + 2, var11, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 					this.fillWithOutline(world, box, 3, i + 2, var11, 4, i + 2, var11, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
@@ -908,7 +952,7 @@ public class OceanMonumentGenerator {
 				}
 
 				int k = 0;
-				if (lv2.field_14482[Direction.WEST.getId()]) {
+				if (pieceSetting2.neighborPresences[Direction.WEST.getId()]) {
 					this.fillWithOutline(world, box, k, i, 2, k, i + 2, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 					this.fillWithOutline(world, box, k, i, 5, k, i + 2, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 					this.fillWithOutline(world, box, k, i + 2, 3, k, i + 2, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
@@ -918,7 +962,7 @@ public class OceanMonumentGenerator {
 				}
 
 				int var12 = 7;
-				if (lv2.field_14482[Direction.EAST.getId()]) {
+				if (pieceSetting2.neighborPresences[Direction.EAST.getId()]) {
 					this.fillWithOutline(world, box, var12, i, 2, var12, i + 2, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 					this.fillWithOutline(world, box, var12, i, 5, var12, i + 2, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 					this.fillWithOutline(world, box, var12, i + 2, 3, var12, i + 2, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
@@ -927,16 +971,33 @@ public class OceanMonumentGenerator {
 					this.fillWithOutline(world, box, var12, i + 1, 0, var12, i + 1, 7, PRISMARINE, PRISMARINE, false);
 				}
 
-				lv2 = lv;
+				pieceSetting2 = pieceSetting;
 			}
 
 			return true;
 		}
 	}
 
+	static class DoubleYRoomFactory implements OceanMonumentGenerator.PieceFactory {
+		private DoubleYRoomFactory() {
+		}
+
+		@Override
+		public boolean canGenerate(OceanMonumentGenerator.PieceSetting setting) {
+			return setting.neighborPresences[Direction.UP.getId()] && !setting.neighbors[Direction.UP.getId()].used;
+		}
+
+		@Override
+		public OceanMonumentGenerator.Piece generate(Direction direction, OceanMonumentGenerator.PieceSetting setting, Random random) {
+			setting.used = true;
+			setting.neighbors[Direction.UP.getId()].used = true;
+			return new OceanMonumentGenerator.DoubleYRoom(direction, setting);
+		}
+	}
+
 	public static class DoubleYZRoom extends OceanMonumentGenerator.Piece {
-		public DoubleYZRoom(Direction direction, OceanMonumentGenerator.class_3388 arg) {
-			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Y_Z_ROOM, 1, direction, arg, 1, 2, 2);
+		public DoubleYZRoom(Direction direction, OceanMonumentGenerator.PieceSetting pieceSetting) {
+			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Y_Z_ROOM, 1, direction, pieceSetting, 1, 2, 2);
 		}
 
 		public DoubleYZRoom(StructureManager structureManager, CompoundTag compoundTag) {
@@ -945,20 +1006,20 @@ public class OceanMonumentGenerator {
 
 		@Override
 		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
-			OceanMonumentGenerator.class_3388 lv = this.field_14479.field_14487[Direction.NORTH.getId()];
-			OceanMonumentGenerator.class_3388 lv2 = this.field_14479;
-			OceanMonumentGenerator.class_3388 lv3 = lv.field_14487[Direction.UP.getId()];
-			OceanMonumentGenerator.class_3388 lv4 = lv2.field_14487[Direction.UP.getId()];
-			if (this.field_14479.field_14486 / 25 > 0) {
-				this.method_14774(world, box, 0, 8, lv.field_14482[Direction.DOWN.getId()]);
-				this.method_14774(world, box, 0, 0, lv2.field_14482[Direction.DOWN.getId()]);
+			OceanMonumentGenerator.PieceSetting pieceSetting = this.setting.neighbors[Direction.NORTH.getId()];
+			OceanMonumentGenerator.PieceSetting pieceSetting2 = this.setting;
+			OceanMonumentGenerator.PieceSetting pieceSetting3 = pieceSetting.neighbors[Direction.UP.getId()];
+			OceanMonumentGenerator.PieceSetting pieceSetting4 = pieceSetting2.neighbors[Direction.UP.getId()];
+			if (this.setting.roomIndex / 25 > 0) {
+				this.method_14774(world, box, 0, 8, pieceSetting.neighborPresences[Direction.DOWN.getId()]);
+				this.method_14774(world, box, 0, 0, pieceSetting2.neighborPresences[Direction.DOWN.getId()]);
 			}
 
-			if (lv4.field_14487[Direction.UP.getId()] == null) {
+			if (pieceSetting4.neighbors[Direction.UP.getId()] == null) {
 				this.method_14771(world, box, 1, 8, 1, 6, 8, 7, PRISMARINE);
 			}
 
-			if (lv3.field_14487[Direction.UP.getId()] == null) {
+			if (pieceSetting3.neighbors[Direction.UP.getId()] == null) {
 				this.method_14771(world, box, 1, 8, 8, 6, 8, 14, PRISMARINE);
 			}
 
@@ -983,60 +1044,60 @@ public class OceanMonumentGenerator {
 				this.fillWithOutline(world, box, 3, i, 7, 4, i, 8, blockState, blockState, false);
 			}
 
-			if (lv2.field_14482[Direction.SOUTH.getId()]) {
+			if (pieceSetting2.neighborPresences[Direction.SOUTH.getId()]) {
 				this.setAirAndWater(world, box, 3, 1, 0, 4, 2, 0);
 			}
 
-			if (lv2.field_14482[Direction.EAST.getId()]) {
+			if (pieceSetting2.neighborPresences[Direction.EAST.getId()]) {
 				this.setAirAndWater(world, box, 7, 1, 3, 7, 2, 4);
 			}
 
-			if (lv2.field_14482[Direction.WEST.getId()]) {
+			if (pieceSetting2.neighborPresences[Direction.WEST.getId()]) {
 				this.setAirAndWater(world, box, 0, 1, 3, 0, 2, 4);
 			}
 
-			if (lv.field_14482[Direction.NORTH.getId()]) {
+			if (pieceSetting.neighborPresences[Direction.NORTH.getId()]) {
 				this.setAirAndWater(world, box, 3, 1, 15, 4, 2, 15);
 			}
 
-			if (lv.field_14482[Direction.WEST.getId()]) {
+			if (pieceSetting.neighborPresences[Direction.WEST.getId()]) {
 				this.setAirAndWater(world, box, 0, 1, 11, 0, 2, 12);
 			}
 
-			if (lv.field_14482[Direction.EAST.getId()]) {
+			if (pieceSetting.neighborPresences[Direction.EAST.getId()]) {
 				this.setAirAndWater(world, box, 7, 1, 11, 7, 2, 12);
 			}
 
-			if (lv4.field_14482[Direction.SOUTH.getId()]) {
+			if (pieceSetting4.neighborPresences[Direction.SOUTH.getId()]) {
 				this.setAirAndWater(world, box, 3, 5, 0, 4, 6, 0);
 			}
 
-			if (lv4.field_14482[Direction.EAST.getId()]) {
+			if (pieceSetting4.neighborPresences[Direction.EAST.getId()]) {
 				this.setAirAndWater(world, box, 7, 5, 3, 7, 6, 4);
 				this.fillWithOutline(world, box, 5, 4, 2, 6, 4, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				this.fillWithOutline(world, box, 6, 1, 2, 6, 3, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				this.fillWithOutline(world, box, 6, 1, 5, 6, 3, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 			}
 
-			if (lv4.field_14482[Direction.WEST.getId()]) {
+			if (pieceSetting4.neighborPresences[Direction.WEST.getId()]) {
 				this.setAirAndWater(world, box, 0, 5, 3, 0, 6, 4);
 				this.fillWithOutline(world, box, 1, 4, 2, 2, 4, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				this.fillWithOutline(world, box, 1, 1, 2, 1, 3, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				this.fillWithOutline(world, box, 1, 1, 5, 1, 3, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 			}
 
-			if (lv3.field_14482[Direction.NORTH.getId()]) {
+			if (pieceSetting3.neighborPresences[Direction.NORTH.getId()]) {
 				this.setAirAndWater(world, box, 3, 5, 15, 4, 6, 15);
 			}
 
-			if (lv3.field_14482[Direction.WEST.getId()]) {
+			if (pieceSetting3.neighborPresences[Direction.WEST.getId()]) {
 				this.setAirAndWater(world, box, 0, 5, 11, 0, 6, 12);
 				this.fillWithOutline(world, box, 1, 4, 10, 2, 4, 13, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				this.fillWithOutline(world, box, 1, 1, 10, 1, 3, 10, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				this.fillWithOutline(world, box, 1, 1, 13, 1, 3, 13, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 			}
 
-			if (lv3.field_14482[Direction.EAST.getId()]) {
+			if (pieceSetting3.neighborPresences[Direction.EAST.getId()]) {
 				this.setAirAndWater(world, box, 7, 5, 11, 7, 6, 12);
 				this.fillWithOutline(world, box, 5, 4, 10, 6, 4, 13, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				this.fillWithOutline(world, box, 6, 1, 10, 6, 3, 10, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
@@ -1047,9 +1108,36 @@ public class OceanMonumentGenerator {
 		}
 	}
 
+	static class DoubleYZRoomFactory implements OceanMonumentGenerator.PieceFactory {
+		private DoubleYZRoomFactory() {
+		}
+
+		@Override
+		public boolean canGenerate(OceanMonumentGenerator.PieceSetting setting) {
+			if (setting.neighborPresences[Direction.NORTH.getId()]
+				&& !setting.neighbors[Direction.NORTH.getId()].used
+				&& setting.neighborPresences[Direction.UP.getId()]
+				&& !setting.neighbors[Direction.UP.getId()].used) {
+				OceanMonumentGenerator.PieceSetting pieceSetting = setting.neighbors[Direction.NORTH.getId()];
+				return pieceSetting.neighborPresences[Direction.UP.getId()] && !pieceSetting.neighbors[Direction.UP.getId()].used;
+			} else {
+				return false;
+			}
+		}
+
+		@Override
+		public OceanMonumentGenerator.Piece generate(Direction direction, OceanMonumentGenerator.PieceSetting setting, Random random) {
+			setting.used = true;
+			setting.neighbors[Direction.NORTH.getId()].used = true;
+			setting.neighbors[Direction.UP.getId()].used = true;
+			setting.neighbors[Direction.NORTH.getId()].neighbors[Direction.UP.getId()].used = true;
+			return new OceanMonumentGenerator.DoubleYZRoom(direction, setting);
+		}
+	}
+
 	public static class DoubleZRoom extends OceanMonumentGenerator.Piece {
-		public DoubleZRoom(Direction direction, OceanMonumentGenerator.class_3388 arg) {
-			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Z_ROOM, 1, direction, arg, 1, 1, 2);
+		public DoubleZRoom(Direction direction, OceanMonumentGenerator.PieceSetting pieceSetting) {
+			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Z_ROOM, 1, direction, pieceSetting, 1, 1, 2);
 		}
 
 		public DoubleZRoom(StructureManager structureManager, CompoundTag compoundTag) {
@@ -1058,18 +1146,18 @@ public class OceanMonumentGenerator {
 
 		@Override
 		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
-			OceanMonumentGenerator.class_3388 lv = this.field_14479.field_14487[Direction.NORTH.getId()];
-			OceanMonumentGenerator.class_3388 lv2 = this.field_14479;
-			if (this.field_14479.field_14486 / 25 > 0) {
-				this.method_14774(world, box, 0, 8, lv.field_14482[Direction.DOWN.getId()]);
-				this.method_14774(world, box, 0, 0, lv2.field_14482[Direction.DOWN.getId()]);
+			OceanMonumentGenerator.PieceSetting pieceSetting = this.setting.neighbors[Direction.NORTH.getId()];
+			OceanMonumentGenerator.PieceSetting pieceSetting2 = this.setting;
+			if (this.setting.roomIndex / 25 > 0) {
+				this.method_14774(world, box, 0, 8, pieceSetting.neighborPresences[Direction.DOWN.getId()]);
+				this.method_14774(world, box, 0, 0, pieceSetting2.neighborPresences[Direction.DOWN.getId()]);
 			}
 
-			if (lv2.field_14487[Direction.UP.getId()] == null) {
+			if (pieceSetting2.neighbors[Direction.UP.getId()] == null) {
 				this.method_14771(world, box, 1, 4, 1, 6, 4, 7, PRISMARINE);
 			}
 
-			if (lv.field_14487[Direction.UP.getId()] == null) {
+			if (pieceSetting.neighbors[Direction.UP.getId()] == null) {
 				this.method_14771(world, box, 1, 4, 8, 6, 4, 14, PRISMARINE);
 			}
 
@@ -1109,27 +1197,27 @@ public class OceanMonumentGenerator {
 			this.addBlock(world, PRISMARINE_BRICKS, 5, 3, 5, box);
 			this.addBlock(world, PRISMARINE_BRICKS, 2, 3, 10, box);
 			this.addBlock(world, PRISMARINE_BRICKS, 5, 3, 10, box);
-			if (lv2.field_14482[Direction.SOUTH.getId()]) {
+			if (pieceSetting2.neighborPresences[Direction.SOUTH.getId()]) {
 				this.setAirAndWater(world, box, 3, 1, 0, 4, 2, 0);
 			}
 
-			if (lv2.field_14482[Direction.EAST.getId()]) {
+			if (pieceSetting2.neighborPresences[Direction.EAST.getId()]) {
 				this.setAirAndWater(world, box, 7, 1, 3, 7, 2, 4);
 			}
 
-			if (lv2.field_14482[Direction.WEST.getId()]) {
+			if (pieceSetting2.neighborPresences[Direction.WEST.getId()]) {
 				this.setAirAndWater(world, box, 0, 1, 3, 0, 2, 4);
 			}
 
-			if (lv.field_14482[Direction.NORTH.getId()]) {
+			if (pieceSetting.neighborPresences[Direction.NORTH.getId()]) {
 				this.setAirAndWater(world, box, 3, 1, 15, 4, 2, 15);
 			}
 
-			if (lv.field_14482[Direction.WEST.getId()]) {
+			if (pieceSetting.neighborPresences[Direction.WEST.getId()]) {
 				this.setAirAndWater(world, box, 0, 1, 11, 0, 2, 12);
 			}
 
-			if (lv.field_14482[Direction.EAST.getId()]) {
+			if (pieceSetting.neighborPresences[Direction.EAST.getId()]) {
 				this.setAirAndWater(world, box, 7, 1, 11, 7, 2, 12);
 			}
 
@@ -1137,9 +1225,31 @@ public class OceanMonumentGenerator {
 		}
 	}
 
+	static class DoubleZRoomFactory implements OceanMonumentGenerator.PieceFactory {
+		private DoubleZRoomFactory() {
+		}
+
+		@Override
+		public boolean canGenerate(OceanMonumentGenerator.PieceSetting setting) {
+			return setting.neighborPresences[Direction.NORTH.getId()] && !setting.neighbors[Direction.NORTH.getId()].used;
+		}
+
+		@Override
+		public OceanMonumentGenerator.Piece generate(Direction direction, OceanMonumentGenerator.PieceSetting setting, Random random) {
+			OceanMonumentGenerator.PieceSetting pieceSetting = setting;
+			if (!setting.neighborPresences[Direction.NORTH.getId()] || setting.neighbors[Direction.NORTH.getId()].used) {
+				pieceSetting = setting.neighbors[Direction.SOUTH.getId()];
+			}
+
+			pieceSetting.used = true;
+			pieceSetting.neighbors[Direction.NORTH.getId()].used = true;
+			return new OceanMonumentGenerator.DoubleZRoom(direction, pieceSetting);
+		}
+	}
+
 	public static class Entry extends OceanMonumentGenerator.Piece {
-		public Entry(Direction direction, OceanMonumentGenerator.class_3388 arg) {
-			super(StructurePieceType.OCEAN_MONUMENT_ENTRY_ROOM, 1, direction, arg, 1, 1, 1);
+		public Entry(Direction direction, OceanMonumentGenerator.PieceSetting pieceSetting) {
+			super(StructurePieceType.OCEAN_MONUMENT_ENTRY_ROOM, 1, direction, pieceSetting, 1, 1, 1);
 		}
 
 		public Entry(StructureManager structureManager, CompoundTag compoundTag) {
@@ -1157,15 +1267,15 @@ public class OceanMonumentGenerator {
 			this.fillWithOutline(world, box, 0, 1, 7, 7, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 			this.fillWithOutline(world, box, 1, 1, 0, 2, 3, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 			this.fillWithOutline(world, box, 5, 1, 0, 6, 3, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			if (this.field_14479.field_14482[Direction.NORTH.getId()]) {
+			if (this.setting.neighborPresences[Direction.NORTH.getId()]) {
 				this.setAirAndWater(world, box, 3, 1, 7, 4, 2, 7);
 			}
 
-			if (this.field_14479.field_14482[Direction.WEST.getId()]) {
+			if (this.setting.neighborPresences[Direction.WEST.getId()]) {
 				this.setAirAndWater(world, box, 0, 1, 3, 1, 2, 4);
 			}
 
-			if (this.field_14479.field_14482[Direction.EAST.getId()]) {
+			if (this.setting.neighborPresences[Direction.EAST.getId()]) {
 				this.setAirAndWater(world, box, 6, 1, 3, 7, 2, 4);
 			}
 
@@ -1242,14 +1352,14 @@ public class OceanMonumentGenerator {
 			.add(Blocks.BLUE_ICE)
 			.add(WATER.getBlock())
 			.build();
-		protected static final int field_14469 = method_14770(2, 0, 0);
-		protected static final int field_14468 = method_14770(2, 2, 0);
-		protected static final int field_14478 = method_14770(0, 1, 0);
-		protected static final int field_14477 = method_14770(4, 1, 0);
-		protected OceanMonumentGenerator.class_3388 field_14479;
+		protected static final int TWO_ZERO_ZERO_INDEX = getIndex(2, 0, 0);
+		protected static final int TWO_TWO_ZERO_INDEX = getIndex(2, 2, 0);
+		protected static final int ZERO_ONE_ZERO_INDEX = getIndex(0, 1, 0);
+		protected static final int FOUR_ONE_ZERO_INDEX = getIndex(4, 1, 0);
+		protected OceanMonumentGenerator.PieceSetting setting;
 
-		protected static final int method_14770(int i, int j, int k) {
-			return j * 25 + k * 5 + i;
+		protected static final int getIndex(int x, int y, int z) {
+			return y * 25 + z * 5 + x;
 		}
 
 		public Piece(StructurePieceType structurePieceType, int i) {
@@ -1262,11 +1372,11 @@ public class OceanMonumentGenerator {
 			this.boundingBox = blockBox;
 		}
 
-		protected Piece(StructurePieceType structurePieceType, int i, Direction direction, OceanMonumentGenerator.class_3388 arg, int j, int k, int l) {
+		protected Piece(StructurePieceType structurePieceType, int i, Direction direction, OceanMonumentGenerator.PieceSetting pieceSetting, int j, int k, int l) {
 			super(structurePieceType, i);
 			this.setOrientation(direction);
-			this.field_14479 = arg;
-			int m = arg.field_14486;
+			this.setting = pieceSetting;
+			int m = pieceSetting.roomIndex;
 			int n = m % 5;
 			int o = m / 5 % 5;
 			int p = m / 25;
@@ -1368,11 +1478,73 @@ public class OceanMonumentGenerator {
 		}
 	}
 
+	interface PieceFactory {
+		boolean canGenerate(OceanMonumentGenerator.PieceSetting setting);
+
+		OceanMonumentGenerator.Piece generate(Direction direction, OceanMonumentGenerator.PieceSetting setting, Random random);
+	}
+
+	static class PieceSetting {
+		private final int roomIndex;
+		private final OceanMonumentGenerator.PieceSetting[] neighbors = new OceanMonumentGenerator.PieceSetting[6];
+		private final boolean[] neighborPresences = new boolean[6];
+		private boolean used;
+		private boolean field_14484;
+		private int field_14483;
+
+		public PieceSetting(int index) {
+			this.roomIndex = index;
+		}
+
+		public void setNeighbor(Direction direction, OceanMonumentGenerator.PieceSetting pieceSetting) {
+			this.neighbors[direction.getId()] = pieceSetting;
+			pieceSetting.neighbors[direction.getOpposite().getId()] = this;
+		}
+
+		public void checkNeighborStates() {
+			for (int i = 0; i < 6; i++) {
+				this.neighborPresences[i] = this.neighbors[i] != null;
+			}
+		}
+
+		public boolean method_14783(int i) {
+			if (this.field_14484) {
+				return true;
+			} else {
+				this.field_14483 = i;
+
+				for (int j = 0; j < 6; j++) {
+					if (this.neighbors[j] != null && this.neighborPresences[j] && this.neighbors[j].field_14483 != i && this.neighbors[j].method_14783(i)) {
+						return true;
+					}
+				}
+
+				return false;
+			}
+		}
+
+		public boolean isAboveLevelThree() {
+			return this.roomIndex >= 75;
+		}
+
+		public int countNeighbors() {
+			int i = 0;
+
+			for (int j = 0; j < 6; j++) {
+				if (this.neighborPresences[j]) {
+					i++;
+				}
+			}
+
+			return i;
+		}
+	}
+
 	public static class SimpleRoom extends OceanMonumentGenerator.Piece {
 		private int field_14480;
 
-		public SimpleRoom(Direction direction, OceanMonumentGenerator.class_3388 arg, Random random) {
-			super(StructurePieceType.OCEAN_MONUMENT_SIMPLE_ROOM, 1, direction, arg, 1, 1, 1);
+		public SimpleRoom(Direction direction, OceanMonumentGenerator.PieceSetting pieceSetting, Random random) {
+			super(StructurePieceType.OCEAN_MONUMENT_SIMPLE_ROOM, 1, direction, pieceSetting, 1, 1, 1);
 			this.field_14480 = random.nextInt(3);
 		}
 
@@ -1382,19 +1554,19 @@ public class OceanMonumentGenerator {
 
 		@Override
 		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
-			if (this.field_14479.field_14486 / 25 > 0) {
-				this.method_14774(world, box, 0, 0, this.field_14479.field_14482[Direction.DOWN.getId()]);
+			if (this.setting.roomIndex / 25 > 0) {
+				this.method_14774(world, box, 0, 0, this.setting.neighborPresences[Direction.DOWN.getId()]);
 			}
 
-			if (this.field_14479.field_14487[Direction.UP.getId()] == null) {
+			if (this.setting.neighbors[Direction.UP.getId()] == null) {
 				this.method_14771(world, box, 1, 4, 1, 6, 4, 6, PRISMARINE);
 			}
 
 			boolean bl = this.field_14480 != 0
 				&& random.nextBoolean()
-				&& !this.field_14479.field_14482[Direction.DOWN.getId()]
-				&& !this.field_14479.field_14482[Direction.UP.getId()]
-				&& this.field_14479.method_14781() > 1;
+				&& !this.setting.neighborPresences[Direction.DOWN.getId()]
+				&& !this.setting.neighborPresences[Direction.UP.getId()]
+				&& this.setting.countNeighbors() > 1;
 			if (this.field_14480 == 0) {
 				this.fillWithOutline(world, box, 0, 1, 0, 2, 1, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				this.fillWithOutline(world, box, 0, 3, 0, 2, 3, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
@@ -1416,7 +1588,7 @@ public class OceanMonumentGenerator {
 				this.fillWithOutline(world, box, 7, 2, 5, 7, 2, 7, PRISMARINE, PRISMARINE, false);
 				this.fillWithOutline(world, box, 5, 2, 7, 6, 2, 7, PRISMARINE, PRISMARINE, false);
 				this.addBlock(world, SEA_LANTERN, 6, 2, 6, box);
-				if (this.field_14479.field_14482[Direction.SOUTH.getId()]) {
+				if (this.setting.neighborPresences[Direction.SOUTH.getId()]) {
 					this.fillWithOutline(world, box, 3, 3, 0, 4, 3, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				} else {
 					this.fillWithOutline(world, box, 3, 3, 0, 4, 3, 1, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
@@ -1424,7 +1596,7 @@ public class OceanMonumentGenerator {
 					this.fillWithOutline(world, box, 3, 1, 0, 4, 1, 1, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				}
 
-				if (this.field_14479.field_14482[Direction.NORTH.getId()]) {
+				if (this.setting.neighborPresences[Direction.NORTH.getId()]) {
 					this.fillWithOutline(world, box, 3, 3, 7, 4, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				} else {
 					this.fillWithOutline(world, box, 3, 3, 6, 4, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
@@ -1432,7 +1604,7 @@ public class OceanMonumentGenerator {
 					this.fillWithOutline(world, box, 3, 1, 6, 4, 1, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				}
 
-				if (this.field_14479.field_14482[Direction.WEST.getId()]) {
+				if (this.setting.neighborPresences[Direction.WEST.getId()]) {
 					this.fillWithOutline(world, box, 0, 3, 3, 0, 3, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				} else {
 					this.fillWithOutline(world, box, 0, 3, 3, 1, 3, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
@@ -1440,7 +1612,7 @@ public class OceanMonumentGenerator {
 					this.fillWithOutline(world, box, 0, 1, 3, 1, 1, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				}
 
-				if (this.field_14479.field_14482[Direction.EAST.getId()]) {
+				if (this.setting.neighborPresences[Direction.EAST.getId()]) {
 					this.fillWithOutline(world, box, 7, 3, 3, 7, 3, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				} else {
 					this.fillWithOutline(world, box, 6, 3, 3, 7, 3, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
@@ -1472,25 +1644,25 @@ public class OceanMonumentGenerator {
 				this.addBlock(world, PRISMARINE, 7, 2, 6, box);
 				this.addBlock(world, PRISMARINE, 6, 2, 0, box);
 				this.addBlock(world, PRISMARINE, 7, 2, 1, box);
-				if (!this.field_14479.field_14482[Direction.SOUTH.getId()]) {
+				if (!this.setting.neighborPresences[Direction.SOUTH.getId()]) {
 					this.fillWithOutline(world, box, 1, 3, 0, 6, 3, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 					this.fillWithOutline(world, box, 1, 2, 0, 6, 2, 0, PRISMARINE, PRISMARINE, false);
 					this.fillWithOutline(world, box, 1, 1, 0, 6, 1, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				}
 
-				if (!this.field_14479.field_14482[Direction.NORTH.getId()]) {
+				if (!this.setting.neighborPresences[Direction.NORTH.getId()]) {
 					this.fillWithOutline(world, box, 1, 3, 7, 6, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 					this.fillWithOutline(world, box, 1, 2, 7, 6, 2, 7, PRISMARINE, PRISMARINE, false);
 					this.fillWithOutline(world, box, 1, 1, 7, 6, 1, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				}
 
-				if (!this.field_14479.field_14482[Direction.WEST.getId()]) {
+				if (!this.setting.neighborPresences[Direction.WEST.getId()]) {
 					this.fillWithOutline(world, box, 0, 3, 1, 0, 3, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 					this.fillWithOutline(world, box, 0, 2, 1, 0, 2, 6, PRISMARINE, PRISMARINE, false);
 					this.fillWithOutline(world, box, 0, 1, 1, 0, 1, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				}
 
-				if (!this.field_14479.field_14482[Direction.EAST.getId()]) {
+				if (!this.setting.neighborPresences[Direction.EAST.getId()]) {
 					this.fillWithOutline(world, box, 7, 3, 1, 7, 3, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 					this.fillWithOutline(world, box, 7, 2, 1, 7, 2, 6, PRISMARINE, PRISMARINE, false);
 					this.fillWithOutline(world, box, 7, 1, 1, 7, 1, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
@@ -1512,19 +1684,19 @@ public class OceanMonumentGenerator {
 				this.fillWithOutline(world, box, 7, 1, 3, 7, 2, 4, DARK_PRISMARINE, DARK_PRISMARINE, false);
 				this.fillWithOutline(world, box, 3, 1, 0, 4, 2, 0, DARK_PRISMARINE, DARK_PRISMARINE, false);
 				this.fillWithOutline(world, box, 3, 1, 7, 4, 2, 7, DARK_PRISMARINE, DARK_PRISMARINE, false);
-				if (this.field_14479.field_14482[Direction.SOUTH.getId()]) {
+				if (this.setting.neighborPresences[Direction.SOUTH.getId()]) {
 					this.setAirAndWater(world, box, 3, 1, 0, 4, 2, 0);
 				}
 
-				if (this.field_14479.field_14482[Direction.NORTH.getId()]) {
+				if (this.setting.neighborPresences[Direction.NORTH.getId()]) {
 					this.setAirAndWater(world, box, 3, 1, 7, 4, 2, 7);
 				}
 
-				if (this.field_14479.field_14482[Direction.WEST.getId()]) {
+				if (this.setting.neighborPresences[Direction.WEST.getId()]) {
 					this.setAirAndWater(world, box, 0, 1, 3, 0, 2, 4);
 				}
 
-				if (this.field_14479.field_14482[Direction.EAST.getId()]) {
+				if (this.setting.neighborPresences[Direction.EAST.getId()]) {
 					this.setAirAndWater(world, box, 7, 1, 3, 7, 2, 4);
 				}
 			}
@@ -1539,9 +1711,25 @@ public class OceanMonumentGenerator {
 		}
 	}
 
+	static class SimpleRoomFactory implements OceanMonumentGenerator.PieceFactory {
+		private SimpleRoomFactory() {
+		}
+
+		@Override
+		public boolean canGenerate(OceanMonumentGenerator.PieceSetting setting) {
+			return true;
+		}
+
+		@Override
+		public OceanMonumentGenerator.Piece generate(Direction direction, OceanMonumentGenerator.PieceSetting setting, Random random) {
+			setting.used = true;
+			return new OceanMonumentGenerator.SimpleRoom(direction, setting, random);
+		}
+	}
+
 	public static class SimpleRoomTop extends OceanMonumentGenerator.Piece {
-		public SimpleRoomTop(Direction direction, OceanMonumentGenerator.class_3388 arg) {
-			super(StructurePieceType.OCEAN_MONUMENT_SIMPLE_TOP_ROOM, 1, direction, arg, 1, 1, 1);
+		public SimpleRoomTop(Direction direction, OceanMonumentGenerator.PieceSetting pieceSetting) {
+			super(StructurePieceType.OCEAN_MONUMENT_SIMPLE_TOP_ROOM, 1, direction, pieceSetting, 1, 1, 1);
 		}
 
 		public SimpleRoomTop(StructureManager structureManager, CompoundTag compoundTag) {
@@ -1550,11 +1738,11 @@ public class OceanMonumentGenerator {
 
 		@Override
 		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
-			if (this.field_14479.field_14486 / 25 > 0) {
-				this.method_14774(world, box, 0, 0, this.field_14479.field_14482[Direction.DOWN.getId()]);
+			if (this.setting.roomIndex / 25 > 0) {
+				this.method_14774(world, box, 0, 0, this.setting.neighborPresences[Direction.DOWN.getId()]);
 			}
 
-			if (this.field_14479.field_14487[Direction.UP.getId()] == null) {
+			if (this.setting.neighbors[Direction.UP.getId()] == null) {
 				this.method_14771(world, box, 1, 4, 1, 6, 4, 6, PRISMARINE);
 			}
 
@@ -1584,11 +1772,31 @@ public class OceanMonumentGenerator {
 			this.fillWithOutline(world, box, 7, 1, 3, 7, 2, 4, DARK_PRISMARINE, DARK_PRISMARINE, false);
 			this.fillWithOutline(world, box, 3, 1, 0, 4, 2, 0, DARK_PRISMARINE, DARK_PRISMARINE, false);
 			this.fillWithOutline(world, box, 3, 1, 7, 4, 2, 7, DARK_PRISMARINE, DARK_PRISMARINE, false);
-			if (this.field_14479.field_14482[Direction.SOUTH.getId()]) {
+			if (this.setting.neighborPresences[Direction.SOUTH.getId()]) {
 				this.setAirAndWater(world, box, 3, 1, 0, 4, 2, 0);
 			}
 
 			return true;
+		}
+	}
+
+	static class SimpleRoomTopFactory implements OceanMonumentGenerator.PieceFactory {
+		private SimpleRoomTopFactory() {
+		}
+
+		@Override
+		public boolean canGenerate(OceanMonumentGenerator.PieceSetting setting) {
+			return !setting.neighborPresences[Direction.WEST.getId()]
+				&& !setting.neighborPresences[Direction.EAST.getId()]
+				&& !setting.neighborPresences[Direction.NORTH.getId()]
+				&& !setting.neighborPresences[Direction.SOUTH.getId()]
+				&& !setting.neighborPresences[Direction.UP.getId()];
+		}
+
+		@Override
+		public OceanMonumentGenerator.Piece generate(Direction direction, OceanMonumentGenerator.PieceSetting setting, Random random) {
+			setting.used = true;
+			return new OceanMonumentGenerator.SimpleRoomTop(direction, setting);
 		}
 	}
 
@@ -1695,214 +1903,6 @@ public class OceanMonumentGenerator {
 			}
 
 			return true;
-		}
-	}
-
-	static class class_3367 implements OceanMonumentGenerator.class_3375 {
-		private class_3367() {
-		}
-
-		@Override
-		public boolean method_14769(OceanMonumentGenerator.class_3388 arg) {
-			return arg.field_14482[Direction.EAST.getId()] && !arg.field_14487[Direction.EAST.getId()].field_14485;
-		}
-
-		@Override
-		public OceanMonumentGenerator.Piece method_14768(Direction direction, OceanMonumentGenerator.class_3388 arg, Random random) {
-			arg.field_14485 = true;
-			arg.field_14487[Direction.EAST.getId()].field_14485 = true;
-			return new OceanMonumentGenerator.DoubleXRoom(direction, arg);
-		}
-	}
-
-	static class class_3368 implements OceanMonumentGenerator.class_3375 {
-		private class_3368() {
-		}
-
-		@Override
-		public boolean method_14769(OceanMonumentGenerator.class_3388 arg) {
-			if (arg.field_14482[Direction.EAST.getId()]
-				&& !arg.field_14487[Direction.EAST.getId()].field_14485
-				&& arg.field_14482[Direction.UP.getId()]
-				&& !arg.field_14487[Direction.UP.getId()].field_14485) {
-				OceanMonumentGenerator.class_3388 lv = arg.field_14487[Direction.EAST.getId()];
-				return lv.field_14482[Direction.UP.getId()] && !lv.field_14487[Direction.UP.getId()].field_14485;
-			} else {
-				return false;
-			}
-		}
-
-		@Override
-		public OceanMonumentGenerator.Piece method_14768(Direction direction, OceanMonumentGenerator.class_3388 arg, Random random) {
-			arg.field_14485 = true;
-			arg.field_14487[Direction.EAST.getId()].field_14485 = true;
-			arg.field_14487[Direction.UP.getId()].field_14485 = true;
-			arg.field_14487[Direction.EAST.getId()].field_14487[Direction.UP.getId()].field_14485 = true;
-			return new OceanMonumentGenerator.DoubleXYRoom(direction, arg);
-		}
-	}
-
-	static class class_3369 implements OceanMonumentGenerator.class_3375 {
-		private class_3369() {
-		}
-
-		@Override
-		public boolean method_14769(OceanMonumentGenerator.class_3388 arg) {
-			return arg.field_14482[Direction.UP.getId()] && !arg.field_14487[Direction.UP.getId()].field_14485;
-		}
-
-		@Override
-		public OceanMonumentGenerator.Piece method_14768(Direction direction, OceanMonumentGenerator.class_3388 arg, Random random) {
-			arg.field_14485 = true;
-			arg.field_14487[Direction.UP.getId()].field_14485 = true;
-			return new OceanMonumentGenerator.DoubleYRoom(direction, arg);
-		}
-	}
-
-	static class class_3370 implements OceanMonumentGenerator.class_3375 {
-		private class_3370() {
-		}
-
-		@Override
-		public boolean method_14769(OceanMonumentGenerator.class_3388 arg) {
-			if (arg.field_14482[Direction.NORTH.getId()]
-				&& !arg.field_14487[Direction.NORTH.getId()].field_14485
-				&& arg.field_14482[Direction.UP.getId()]
-				&& !arg.field_14487[Direction.UP.getId()].field_14485) {
-				OceanMonumentGenerator.class_3388 lv = arg.field_14487[Direction.NORTH.getId()];
-				return lv.field_14482[Direction.UP.getId()] && !lv.field_14487[Direction.UP.getId()].field_14485;
-			} else {
-				return false;
-			}
-		}
-
-		@Override
-		public OceanMonumentGenerator.Piece method_14768(Direction direction, OceanMonumentGenerator.class_3388 arg, Random random) {
-			arg.field_14485 = true;
-			arg.field_14487[Direction.NORTH.getId()].field_14485 = true;
-			arg.field_14487[Direction.UP.getId()].field_14485 = true;
-			arg.field_14487[Direction.NORTH.getId()].field_14487[Direction.UP.getId()].field_14485 = true;
-			return new OceanMonumentGenerator.DoubleYZRoom(direction, arg);
-		}
-	}
-
-	static class class_3371 implements OceanMonumentGenerator.class_3375 {
-		private class_3371() {
-		}
-
-		@Override
-		public boolean method_14769(OceanMonumentGenerator.class_3388 arg) {
-			return arg.field_14482[Direction.NORTH.getId()] && !arg.field_14487[Direction.NORTH.getId()].field_14485;
-		}
-
-		@Override
-		public OceanMonumentGenerator.Piece method_14768(Direction direction, OceanMonumentGenerator.class_3388 arg, Random random) {
-			OceanMonumentGenerator.class_3388 lv = arg;
-			if (!arg.field_14482[Direction.NORTH.getId()] || arg.field_14487[Direction.NORTH.getId()].field_14485) {
-				lv = arg.field_14487[Direction.SOUTH.getId()];
-			}
-
-			lv.field_14485 = true;
-			lv.field_14487[Direction.NORTH.getId()].field_14485 = true;
-			return new OceanMonumentGenerator.DoubleZRoom(direction, lv);
-		}
-	}
-
-	static class class_3372 implements OceanMonumentGenerator.class_3375 {
-		private class_3372() {
-		}
-
-		@Override
-		public boolean method_14769(OceanMonumentGenerator.class_3388 arg) {
-			return true;
-		}
-
-		@Override
-		public OceanMonumentGenerator.Piece method_14768(Direction direction, OceanMonumentGenerator.class_3388 arg, Random random) {
-			arg.field_14485 = true;
-			return new OceanMonumentGenerator.SimpleRoom(direction, arg, random);
-		}
-	}
-
-	static class class_3373 implements OceanMonumentGenerator.class_3375 {
-		private class_3373() {
-		}
-
-		@Override
-		public boolean method_14769(OceanMonumentGenerator.class_3388 arg) {
-			return !arg.field_14482[Direction.WEST.getId()]
-				&& !arg.field_14482[Direction.EAST.getId()]
-				&& !arg.field_14482[Direction.NORTH.getId()]
-				&& !arg.field_14482[Direction.SOUTH.getId()]
-				&& !arg.field_14482[Direction.UP.getId()];
-		}
-
-		@Override
-		public OceanMonumentGenerator.Piece method_14768(Direction direction, OceanMonumentGenerator.class_3388 arg, Random random) {
-			arg.field_14485 = true;
-			return new OceanMonumentGenerator.SimpleRoomTop(direction, arg);
-		}
-	}
-
-	interface class_3375 {
-		boolean method_14769(OceanMonumentGenerator.class_3388 arg);
-
-		OceanMonumentGenerator.Piece method_14768(Direction direction, OceanMonumentGenerator.class_3388 arg, Random random);
-	}
-
-	static class class_3388 {
-		private final int field_14486;
-		private final OceanMonumentGenerator.class_3388[] field_14487 = new OceanMonumentGenerator.class_3388[6];
-		private final boolean[] field_14482 = new boolean[6];
-		private boolean field_14485;
-		private boolean field_14484;
-		private int field_14483;
-
-		public class_3388(int i) {
-			this.field_14486 = i;
-		}
-
-		public void method_14786(Direction direction, OceanMonumentGenerator.class_3388 arg) {
-			this.field_14487[direction.getId()] = arg;
-			arg.field_14487[direction.getOpposite().getId()] = this;
-		}
-
-		public void method_14780() {
-			for (int i = 0; i < 6; i++) {
-				this.field_14482[i] = this.field_14487[i] != null;
-			}
-		}
-
-		public boolean method_14783(int i) {
-			if (this.field_14484) {
-				return true;
-			} else {
-				this.field_14483 = i;
-
-				for (int j = 0; j < 6; j++) {
-					if (this.field_14487[j] != null && this.field_14482[j] && this.field_14487[j].field_14483 != i && this.field_14487[j].method_14783(i)) {
-						return true;
-					}
-				}
-
-				return false;
-			}
-		}
-
-		public boolean method_14785() {
-			return this.field_14486 >= 75;
-		}
-
-		public int method_14781() {
-			int i = 0;
-
-			for (int j = 0; j < 6; j++) {
-				if (this.field_14482[j]) {
-					i++;
-				}
-			}
-
-			return i;
 		}
 	}
 }

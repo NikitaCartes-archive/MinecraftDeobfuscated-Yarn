@@ -13,12 +13,15 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.tag.FluidTags;
+import net.minecraft.util.CubicSampler;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.biome.source.BiomeAccess;
+import net.minecraft.world.dimension.Dimension;
 
 @Environment(EnvType.CLIENT)
 public class BackgroundRenderer {
@@ -70,27 +73,31 @@ public class BackgroundRenderer {
 			float v = (float)vec3d.x;
 			float w = (float)vec3d.y;
 			float x = (float)vec3d.z;
-			int n = clientWorld.getBiome(camera.getBlockPos()).getFogColor();
-			float y = MathHelper.cos(clientWorld.getSkyAngle(f) * (float) (Math.PI * 2)) * 2.0F + 0.5F;
-			Vec3d vec3d2 = clientWorld.getDimension().modifyFogColor(n, MathHelper.clamp(y, 0.0F, 1.0F));
-			red = (float)vec3d2.x;
-			green = (float)vec3d2.y;
-			blue = (float)vec3d2.z;
+			float y = MathHelper.clamp(MathHelper.cos(clientWorld.getSkyAngle(f) * (float) (Math.PI * 2)) * 2.0F + 0.5F, 0.0F, 1.0F);
+			BiomeAccess biomeAccess = clientWorld.getBiomeAccess();
+			Dimension dimension = clientWorld.getDimension();
+			Vec3d vec3d2 = camera.getPos().subtract(2.0, 2.0, 2.0).multiply(0.25);
+			Vec3d vec3d3 = CubicSampler.sampleColor(
+				vec3d2, (ix, jx, k) -> dimension.modifyFogColor(Vec3d.unpackRgb(biomeAccess.getBiomeForNoiseGen(ix, jx, k).getFogColor()), y)
+			);
+			red = (float)vec3d3.getX();
+			green = (float)vec3d3.getY();
+			blue = (float)vec3d3.getZ();
 			if (i >= 4) {
-				float z = MathHelper.sin(clientWorld.getSkyAngleRadians(f)) > 0.0F ? -1.0F : 1.0F;
-				Vector3f vector3f = new Vector3f(z, 0.0F, 0.0F);
-				float r = camera.getHorizontalPlane().dot(vector3f);
-				if (r < 0.0F) {
-					r = 0.0F;
+				float r = MathHelper.sin(clientWorld.getSkyAngleRadians(f)) > 0.0F ? -1.0F : 1.0F;
+				Vector3f vector3f = new Vector3f(r, 0.0F, 0.0F);
+				float t = camera.getHorizontalPlane().dot(vector3f);
+				if (t < 0.0F) {
+					t = 0.0F;
 				}
 
-				if (r > 0.0F) {
+				if (t > 0.0F) {
 					float[] fs = clientWorld.dimension.getBackgroundColor(clientWorld.getSkyAngle(f), f);
 					if (fs != null) {
-						r *= fs[3];
-						red = red * (1.0F - r) + fs[0] * r;
-						green = green * (1.0F - r) + fs[1] * r;
-						blue = blue * (1.0F - r) + fs[2] * r;
+						t *= fs[3];
+						red = red * (1.0F - t) + fs[0] * t;
+						green = green * (1.0F - t) + fs[1] * t;
+						blue = blue * (1.0F - t) + fs[2] * t;
 					}
 				}
 			}
@@ -98,21 +105,21 @@ public class BackgroundRenderer {
 			red = red + (v - red) * u;
 			green = green + (w - green) * u;
 			blue = blue + (x - blue) * u;
-			float zx = clientWorld.getRainGradient(f);
-			if (zx > 0.0F) {
-				float h = 1.0F - zx * 0.5F;
-				float rx = 1.0F - zx * 0.4F;
-				red *= h;
-				green *= h;
-				blue *= rx;
+			float rx = clientWorld.getRainGradient(f);
+			if (rx > 0.0F) {
+				float s = 1.0F - rx * 0.5F;
+				float tx = 1.0F - rx * 0.4F;
+				red *= s;
+				green *= s;
+				blue *= tx;
 			}
 
-			float h = clientWorld.getThunderGradient(f);
-			if (h > 0.0F) {
-				float rx = 1.0F - h * 0.5F;
-				red *= rx;
-				green *= rx;
-				blue *= rx;
+			float s = clientWorld.getThunderGradient(f);
+			if (s > 0.0F) {
+				float tx = 1.0F - s * 0.5F;
+				red *= tx;
+				green *= tx;
+				blue *= tx;
 			}
 
 			lastWaterFogColorUpdateTime = -1L;

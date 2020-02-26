@@ -52,9 +52,9 @@ public abstract class StructurePiece {
 		.add(Blocks.IRON_BARS)
 		.build();
 
-	protected StructurePiece(StructurePieceType type, int i) {
+	protected StructurePiece(StructurePieceType type, int length) {
 		this.type = type;
-		this.length = i;
+		this.length = length;
 	}
 
 	public StructurePiece(StructurePieceType type, CompoundTag tag) {

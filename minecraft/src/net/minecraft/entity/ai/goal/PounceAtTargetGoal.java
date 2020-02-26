@@ -29,7 +29,7 @@ public class PounceAtTargetGoal extends Goal {
 				if (d < 4.0 || d > 16.0) {
 					return false;
 				} else {
-					return !this.mob.onGround ? false : this.mob.getRandom().nextInt(5) == 0;
+					return !this.mob.method_24828() ? false : this.mob.getRandom().nextInt(5) == 0;
 				}
 			}
 		}
@@ -37,7 +37,7 @@ public class PounceAtTargetGoal extends Goal {
 
 	@Override
 	public boolean shouldContinue() {
-		return !this.mob.onGround;
+		return !this.mob.method_24828();
 	}
 
 	@Override

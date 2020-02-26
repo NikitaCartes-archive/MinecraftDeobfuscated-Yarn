@@ -787,7 +787,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 		private List<BlockPos> getNearbyFreeHives() {
 			BlockPos blockPos = new BlockPos(BeeEntity.this);
 			PointOfInterestStorage pointOfInterestStorage = ((ServerWorld)BeeEntity.this.world).getPointOfInterestStorage();
-			Stream<PointOfInterest> stream = pointOfInterestStorage.get(
+			Stream<PointOfInterest> stream = pointOfInterestStorage.getInCircle(
 				pointOfInterestType -> pointOfInterestType == PointOfInterestType.BEEHIVE || pointOfInterestType == PointOfInterestType.BEE_NEST,
 				blockPos,
 				20,

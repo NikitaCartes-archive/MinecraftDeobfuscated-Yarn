@@ -369,7 +369,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 		return SoundEvents.ENTITY_DOLPHIN_SWIM;
 	}
 
-	protected boolean isCloseToTarget() {
+	protected boolean isNearTarget() {
 		BlockPos blockPos = this.getNavigation().getTargetPos();
 		return blockPos != null ? blockPos.isWithinDistance(this.getPos(), 12.0) : false;
 	}
@@ -505,7 +505,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 		@Override
 		public void tick() {
 			World world = this.dolphin.world;
-			if (this.dolphin.isCloseToTarget() || this.dolphin.getNavigation().isIdle()) {
+			if (this.dolphin.isNearTarget() || this.dolphin.getNavigation().isIdle()) {
 				Vec3d vec3d = new Vec3d(this.dolphin.getTreasurePos());
 				Vec3d vec3d2 = TargetFinder.findTargetTowards(this.dolphin, 16, 1, vec3d, (float) (Math.PI / 8));
 				if (vec3d2 == null) {

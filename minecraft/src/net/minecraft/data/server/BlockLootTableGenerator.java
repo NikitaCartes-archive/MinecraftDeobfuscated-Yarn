@@ -555,6 +555,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.registerForSelfDrop(Blocks.BRICKS);
 		this.registerForSelfDrop(Blocks.MOSSY_COBBLESTONE);
 		this.registerForSelfDrop(Blocks.OBSIDIAN);
+		this.registerForSelfDrop(Blocks.CRYING_OBSIDIAN);
 		this.registerForSelfDrop(Blocks.TORCH);
 		this.registerForSelfDrop(Blocks.OAK_STAIRS);
 		this.registerForSelfDrop(Blocks.REDSTONE_WIRE);
@@ -719,6 +720,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.registerForSelfDrop(Blocks.RED_NETHER_BRICKS);
 		this.registerForSelfDrop(Blocks.BONE_BLOCK);
 		this.registerForSelfDrop(Blocks.OBSERVER);
+		this.registerForSelfDrop(Blocks.TARGET);
 		this.registerForSelfDrop(Blocks.WHITE_GLAZED_TERRACOTTA);
 		this.registerForSelfDrop(Blocks.ORANGE_GLAZED_TERRACOTTA);
 		this.registerForSelfDrop(Blocks.MAGENTA_GLAZED_TERRACOTTA);
@@ -809,12 +811,12 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.registerForSelfDrop(Blocks.HONEYCOMB_BLOCK);
 		this.registerForSelfDrop(Blocks.WARPED_STEM);
 		this.registerForSelfDrop(Blocks.WARPED_NYLIUM);
-		this.registerForSelfDrop(Blocks.WARPED_FUNGI);
+		this.registerForSelfDrop(Blocks.WARPED_FUNGUS);
 		this.registerForSelfDrop(Blocks.WARPED_WART_BLOCK);
 		this.registerForSelfDrop(Blocks.WARPED_ROOTS);
 		this.registerForSelfDrop(Blocks.CRIMSON_STEM);
 		this.registerForSelfDrop(Blocks.CRIMSON_NYLIUM);
-		this.registerForSelfDrop(Blocks.CRIMSON_FUNGI);
+		this.registerForSelfDrop(Blocks.CRIMSON_FUNGUS);
 		this.registerForSelfDrop(Blocks.SHROOMLIGHT);
 		this.registerForSelfDrop(Blocks.CRIMSON_ROOTS);
 		this.registerForSelfDrop(Blocks.WEEPING_VINES);
@@ -881,6 +883,10 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.registerForPottedPlant(Blocks.POTTED_DEAD_BUSH);
 		this.registerForPottedPlant(Blocks.POTTED_CACTUS);
 		this.registerForPottedPlant(Blocks.POTTED_BAMBOO);
+		this.registerForPottedPlant(Blocks.POTTED_CRIMSON_FUNGUS);
+		this.registerForPottedPlant(Blocks.POTTED_WARPED_FUNGUS);
+		this.registerForPottedPlant(Blocks.POTTED_CRIMSON_ROOTS);
+		this.registerForPottedPlant(Blocks.POTTED_WARPED_ROOTS);
 		this.registerWithFunction(Blocks.ACACIA_SLAB, BlockLootTableGenerator::createForSlabs);
 		this.registerWithFunction(Blocks.BIRCH_SLAB, BlockLootTableGenerator::createForSlabs);
 		this.registerWithFunction(Blocks.BRICK_SLAB, BlockLootTableGenerator::createForSlabs);

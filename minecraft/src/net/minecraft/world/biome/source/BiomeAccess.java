@@ -1,5 +1,7 @@
 package net.minecraft.world.biome.source;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
 
@@ -20,6 +22,11 @@ public class BiomeAccess {
 
 	public Biome getBiome(BlockPos pos) {
 		return this.type.getBiome(this.seed, pos.getX(), pos.getY(), pos.getZ(), this.storage);
+	}
+
+	@Environment(EnvType.CLIENT)
+	public Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
+		return this.storage.getBiomeForNoiseGen(biomeX, biomeY, biomeZ);
 	}
 
 	public interface Storage {

@@ -501,7 +501,7 @@ public class Raid {
 				raider.updatePosition((double)pos.getX() + 0.5, (double)pos.getY() + 1.0, (double)pos.getZ() + 0.5);
 				raider.initialize(this.world, this.world.getLocalDifficulty(pos), SpawnType.EVENT, null, null);
 				raider.addBonusForWave(wave, false);
-				raider.onGround = true;
+				raider.method_24830(true);
 				this.world.spawnEntity(raider);
 			}
 		}

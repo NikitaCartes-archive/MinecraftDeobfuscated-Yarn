@@ -26,7 +26,7 @@ public class MobNavigation extends EntityNavigation {
 
 	@Override
 	protected boolean isAtValidPosition() {
-		return this.entity.onGround || this.isInLiquid() || this.entity.hasVehicle();
+		return this.entity.method_24828() || this.isInLiquid() || this.entity.hasVehicle();
 	}
 
 	@Override

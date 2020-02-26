@@ -39,7 +39,7 @@ public class MinecartSoundInstance extends MovingSoundInstance {
 				this.volume = 0.0F;
 			}
 		} else {
-			this.done = true;
+			this.method_24876();
 		}
 	}
 }

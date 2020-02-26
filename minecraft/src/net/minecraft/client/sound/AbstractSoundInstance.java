@@ -1,6 +1,5 @@
 package net.minecraft.client.sound;
 
-import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.sound.SoundCategory;
@@ -10,8 +9,6 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public abstract class AbstractSoundInstance implements SoundInstance {
 	protected Sound sound;
-	@Nullable
-	private WeightedSoundSet soundSet;
 	protected final SoundCategory category;
 	protected final Identifier id;
 	protected float volume = 1.0F;
@@ -41,14 +38,14 @@ public abstract class AbstractSoundInstance implements SoundInstance {
 
 	@Override
 	public WeightedSoundSet getSoundSet(SoundManager soundManager) {
-		this.soundSet = soundManager.get(this.id);
-		if (this.soundSet == null) {
+		WeightedSoundSet weightedSoundSet = soundManager.get(this.id);
+		if (weightedSoundSet == null) {
 			this.sound = SoundManager.MISSING_SOUND;
 		} else {
-			this.sound = this.soundSet.getSound();
+			this.sound = weightedSoundSet.getSound();
 		}
 
-		return this.soundSet;
+		return weightedSoundSet;
 	}
 
 	@Override

@@ -1,5 +1,7 @@
 package net.minecraft.entity;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -105,6 +107,9 @@ public abstract class Entity implements Nameable, CommandOutput {
 	protected static final Logger LOGGER = LogManager.getLogger();
 	private static final AtomicInteger MAX_ENTITY_ID = new AtomicInteger();
 	private static final List<ItemStack> EMPTY_STACK_LIST = Collections.emptyList();
+	private static final ImmutableMap<EntityPose, ImmutableList<Integer>> field_22417 = ImmutableMap.of(
+		EntityPose.STANDING, ImmutableList.of(0, 1, -1), EntityPose.CROUCHING, ImmutableList.of(0, 1, -1), EntityPose.SWIMMING, ImmutableList.of(0, 1)
+	);
 	private static final Box NULL_BOX = new Box(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 	private static double renderDistanceMultiplier = 1.0;
 	private final EntityType<?> type;
@@ -128,7 +133,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	public float prevYaw;
 	public float prevPitch;
 	private Box entityBounds = NULL_BOX;
-	public boolean onGround;
+	protected boolean onGround;
 	public boolean horizontalCollision;
 	public boolean verticalCollision;
 	public boolean collided;
@@ -373,6 +378,8 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.tickNetherPortal();
 		this.attemptSprintingParticles();
 		this.updateWaterState();
+		this.updateSubmergedInWaterState();
+		this.updateSwimming();
 		if (this.world.isClient) {
 			this.extinguish();
 		} else if (this.fireTicks > 0) {
@@ -457,6 +464,14 @@ public abstract class Entity implements Nameable, CommandOutput {
 
 	private boolean doesNotCollide(Box box) {
 		return this.world.doesNotCollide(this, box) && !this.world.containsFluid(box);
+	}
+
+	public void method_24830(boolean bl) {
+		this.onGround = bl;
+	}
+
+	public boolean method_24828() {
+		return this.onGround;
 	}
 
 	public void move(MovementType type, Vec3d movement) {
@@ -943,12 +958,6 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return this.submergedInWater && this.isTouchingWater();
 	}
 
-	private void updateWaterState() {
-		this.checkWaterState();
-		this.updateSubmergedInWaterState();
-		this.updateSwimming();
-	}
-
 	public void updateSwimming() {
 		if (this.isSwimming()) {
 			this.setSwimming(this.isSprinting() && this.isTouchingWater() && !this.hasVehicle());
@@ -957,10 +966,20 @@ public abstract class Entity implements Nameable, CommandOutput {
 		}
 	}
 
-	public boolean checkWaterState() {
+	protected boolean updateWaterState() {
+		this.checkWaterState();
+		if (this.isTouchingWater()) {
+			return true;
+		} else {
+			double d = this.world.getDimension().isNether() ? 0.007 : 0.0023333333333333335;
+			return this.updateMovementInFluid(FluidTags.LAVA, d);
+		}
+	}
+
+	void checkWaterState() {
 		if (this.getVehicle() instanceof BoatEntity) {
 			this.touchingWater = false;
-		} else if (this.updateMovementInFluid(FluidTags.WATER)) {
+		} else if (this.updateMovementInFluid(FluidTags.WATER, 0.014)) {
 			if (!this.touchingWater && !this.firstUpdate) {
 				this.onSwimmingStart();
 			}
@@ -971,8 +990,6 @@ public abstract class Entity implements Nameable, CommandOutput {
 		} else {
 			this.touchingWater = false;
 		}
-
-		return this.touchingWater;
 	}
 
 	private void updateSubmergedInWaterState() {
@@ -1699,14 +1716,16 @@ public abstract class Entity implements Nameable, CommandOutput {
 				BlockPattern.Result result = NetherPortalBlock.findPortal(this.world, this.lastNetherPortalPosition);
 				double d = result.getForwards().getAxis() == Direction.Axis.X ? (double)result.getFrontTopLeft().getZ() : (double)result.getFrontTopLeft().getX();
 				double e = Math.abs(
-					MathHelper.minusDiv(
+					MathHelper.getLerpProgress(
 						(result.getForwards().getAxis() == Direction.Axis.X ? this.getZ() : this.getX())
 							- (double)(result.getForwards().rotateYClockwise().getDirection() == Direction.AxisDirection.NEGATIVE ? 1 : 0),
 						d,
 						d - (double)result.getWidth()
 					)
 				);
-				double f = MathHelper.minusDiv(this.getY() - 1.0, (double)result.getFrontTopLeft().getY(), (double)(result.getFrontTopLeft().getY() - result.getHeight()));
+				double f = MathHelper.getLerpProgress(
+					this.getY() - 1.0, (double)result.getFrontTopLeft().getY(), (double)(result.getFrontTopLeft().getY() - result.getHeight())
+				);
 				this.lastNetherPortalDirectionVector = new Vec3d(e, f, 0.0);
 				this.lastNetherPortalDirection = result.getForwards();
 			}
@@ -2544,6 +2563,72 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return entity instanceof PlayerEntity ? ((PlayerEntity)entity).isMainPlayer() : !this.world.isClient;
 	}
 
+	protected static Vec3d method_24826(double d, double e, float f) {
+		double g = (d + e + 1.0E-5F) / 2.0;
+		float h = -MathHelper.sin(f * (float) (Math.PI / 180.0));
+		float i = MathHelper.cos(f * (float) (Math.PI / 180.0));
+		float j = Math.max(Math.abs(h), Math.abs(i));
+		return new Vec3d((double)h * g / (double)j, 0.0, (double)i * g / (double)j);
+	}
+
+	protected static double method_24827(World world, BlockPos blockPos, EntityContext entityContext) {
+		VoxelShape voxelShape = world.getBlockState(blockPos).getCollisionShape(world, blockPos, entityContext);
+		if (voxelShape.isEmpty()) {
+			BlockPos blockPos2 = blockPos.down();
+			VoxelShape voxelShape2 = world.getBlockState(blockPos2).getCollisionShape(world, blockPos2, entityContext);
+			double d = voxelShape2.getMaximum(Direction.Axis.Y);
+			return d >= 1.0 ? d - 1.0 : Double.NEGATIVE_INFINITY;
+		} else {
+			return voxelShape.getMaximum(Direction.Axis.Y);
+		}
+	}
+
+	public Vec3d method_24829(LivingEntity livingEntity) {
+		Direction direction = this.getMovementDirection();
+		if (direction.getAxis() == Direction.Axis.Y) {
+			return new Vec3d(this.getX(), this.getBoundingBox().y2, this.getZ());
+		} else {
+			Direction direction2 = direction.rotateYClockwise();
+			int[][] is = new int[][]{
+				{direction2.getOffsetX(), direction2.getOffsetZ()},
+				{-direction2.getOffsetX(), -direction2.getOffsetZ()},
+				{-direction.getOffsetX() + direction2.getOffsetX(), -direction.getOffsetZ() + direction2.getOffsetZ()},
+				{-direction.getOffsetX() - direction2.getOffsetX(), -direction.getOffsetZ() - direction2.getOffsetZ()},
+				{direction.getOffsetX() + direction2.getOffsetX(), direction.getOffsetZ() + direction2.getOffsetZ()},
+				{direction.getOffsetX() - direction2.getOffsetX(), direction.getOffsetZ() - direction2.getOffsetZ()},
+				{-direction.getOffsetX(), -direction.getOffsetZ()},
+				{direction.getOffsetX(), direction.getOffsetZ()}
+			};
+			BlockPos blockPos = new BlockPos(this.getX(), this.getY(), this.getZ());
+			EntityContext entityContext = EntityContext.of(livingEntity);
+
+			for (EntityPose entityPose : livingEntity.method_24831()) {
+				for (int i : field_22417.get(entityPose)) {
+					for (int[] js : is) {
+						BlockPos blockPos2 = blockPos.add(js[0], i, js[1]);
+						double d = method_24827(this.world, blockPos2, entityContext);
+						if (!Double.isInfinite(d) && !(d >= 1.0)) {
+							double e = (double)blockPos2.getY() + d;
+							Box box = new Box(
+								(double)blockPos2.getX(),
+								e,
+								(double)blockPos2.getZ(),
+								(double)blockPos2.getX() + 1.0,
+								e + (double)livingEntity.getDimensions(entityPose).height,
+								(double)blockPos2.getZ() + 1.0
+							);
+							if (this.world.getBlockCollisions(livingEntity, box).allMatch(VoxelShape::isEmpty)) {
+								return new Vec3d((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + d, (double)blockPos2.getZ() + 0.5);
+							}
+						}
+					}
+				}
+			}
+
+			return new Vec3d(this.getX(), this.getBoundingBox().y2, this.getZ());
+		}
+	}
+
 	@Nullable
 	public Entity getVehicle() {
 		return this.vehicle;
@@ -2611,7 +2696,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.prevYaw = this.yaw;
 	}
 
-	public boolean updateMovementInFluid(Tag<Fluid> tag) {
+	public boolean updateMovementInFluid(Tag<Fluid> tag, double d) {
 		Box box = this.getBoundingBox().contract(0.001);
 		int i = MathHelper.floor(box.x1);
 		int j = MathHelper.ceil(box.x2);
@@ -2622,7 +2707,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		if (!this.world.isRegionLoaded(i, k, m, j, l, n)) {
 			return false;
 		} else {
-			double d = 0.0;
+			double e = 0.0;
 			boolean bl = this.canFly();
 			boolean bl2 = false;
 			Vec3d vec3d = Vec3d.ZERO;
@@ -2635,14 +2720,14 @@ public abstract class Entity implements Nameable, CommandOutput {
 							pooledMutable.set(p, q, r);
 							FluidState fluidState = this.world.getFluidState(pooledMutable);
 							if (fluidState.matches(tag)) {
-								double e = (double)((float)q + fluidState.getHeight(this.world, pooledMutable));
-								if (e >= box.y1) {
+								double f = (double)((float)q + fluidState.getHeight(this.world, pooledMutable));
+								if (f >= box.y1) {
 									bl2 = true;
-									d = Math.max(e - box.y1, d);
+									e = Math.max(f - box.y1, e);
 									if (bl) {
 										Vec3d vec3d2 = fluidState.getVelocity(this.world, pooledMutable);
-										if (d < 0.4) {
-											vec3d2 = vec3d2.multiply(d);
+										if (e < 0.4) {
+											vec3d2 = vec3d2.multiply(e);
 										}
 
 										vec3d = vec3d.add(vec3d2);
@@ -2664,10 +2749,10 @@ public abstract class Entity implements Nameable, CommandOutput {
 					vec3d = vec3d.normalize();
 				}
 
-				this.setVelocity(this.getVelocity().add(vec3d.multiply(0.014)));
+				this.setVelocity(this.getVelocity().add(vec3d.multiply(d)));
 			}
 
-			this.waterHeight = d;
+			this.waterHeight = e;
 			return bl2;
 		}
 	}

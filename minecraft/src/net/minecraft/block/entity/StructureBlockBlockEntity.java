@@ -379,7 +379,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 				return false;
 			}
 
-			structure.method_15174(this.world, blockPos, this.size, !this.ignoreEntities, Blocks.STRUCTURE_VOID);
+			structure.saveFromWorld(this.world, blockPos, this.size, !this.ignoreEntities, Blocks.STRUCTURE_VOID);
 			structure.setAuthor(this.author);
 			if (bl) {
 				try {
@@ -440,7 +440,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 			return false;
 		} else {
 			StructurePlacementData structurePlacementData = new StructurePlacementData()
-				.setMirrored(this.mirror)
+				.setMirror(this.mirror)
 				.setRotation(this.rotation)
 				.setIgnoreEntities(this.ignoreEntities)
 				.setChunkPosition(null);

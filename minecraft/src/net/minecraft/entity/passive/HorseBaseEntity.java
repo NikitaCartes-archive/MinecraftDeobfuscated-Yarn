@@ -11,9 +11,9 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.JumpingMount;
@@ -53,9 +53,13 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Arm;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
@@ -158,11 +162,6 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 
 	public void setInAir(boolean inAir) {
 		this.inAir = inAir;
-	}
-
-	@Override
-	public boolean canBeLeashedBy(PlayerEntity player) {
-		return super.canBeLeashedBy(player) && this.getGroup() != EntityGroup.UNDEAD;
 	}
 
 	@Override
@@ -983,6 +982,36 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 	@Override
 	public Entity getPrimaryPassenger() {
 		return this.getPassengerList().isEmpty() ? null : (Entity)this.getPassengerList().get(0);
+	}
+
+	@Override
+	public Vec3d method_24829(LivingEntity livingEntity) {
+		Vec3d vec3d = method_24826((double)this.getWidth(), (double)livingEntity.getWidth(), this.yaw + (livingEntity.getMainArm() == Arm.RIGHT ? 90.0F : -90.0F));
+		double d = this.getX() + vec3d.x;
+		double e = this.getBoundingBox().y1;
+		double f = this.getZ() + vec3d.z;
+		EntityContext entityContext = EntityContext.of(livingEntity);
+		Box box = livingEntity.method_24833(EntityPose.SWIMMING).offset(d, e, f);
+		BlockPos.Mutable mutable = new BlockPos.Mutable(d, e, f);
+		double g = this.getBoundingBox().y2 + 0.75;
+
+		do {
+			double h = method_24827(this.world, mutable, entityContext);
+			if ((double)mutable.getY() + h > g) {
+				break;
+			}
+
+			if (!Double.isInfinite(h) && h < 1.0) {
+				Box box2 = box.offset(d, (double)mutable.getY() + h, f);
+				if (this.world.getBlockCollisions(livingEntity, box2).allMatch(VoxelShape::isEmpty)) {
+					return new Vec3d(d, (double)mutable.getY() + h, f);
+				}
+			}
+
+			mutable.setOffset(Direction.UP);
+		} while ((double)mutable.getY() < g);
+
+		return new Vec3d(this.getX(), this.getY(), this.getZ());
 	}
 
 	@Nullable

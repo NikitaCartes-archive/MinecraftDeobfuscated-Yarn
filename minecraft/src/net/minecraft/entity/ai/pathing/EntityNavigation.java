@@ -190,7 +190,7 @@ public abstract class EntityNavigation {
 				Vec3d vec3d = this.getPos();
 				Vec3d vec3d2 = this.currentPath.getNodePosition(this.entity, this.currentPath.getCurrentNodeIndex());
 				if (vec3d.y > vec3d2.y
-					&& !this.entity.onGround
+					&& !this.entity.method_24828()
 					&& MathHelper.floor(vec3d.x) == MathHelper.floor(vec3d2.x)
 					&& MathHelper.floor(vec3d.z) == MathHelper.floor(vec3d2.z)) {
 					this.currentPath.setCurrentNodeIndex(this.currentPath.getCurrentNodeIndex() + 1);

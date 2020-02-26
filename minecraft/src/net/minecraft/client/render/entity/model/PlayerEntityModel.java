@@ -11,6 +11,7 @@ import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Arm;
 
@@ -97,12 +98,20 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 		this.leftSleeve.copyPositionAndRotation(this.leftArm);
 		this.rightSleeve.copyPositionAndRotation(this.rightArm);
 		this.jacket.copyPositionAndRotation(this.torso);
-		if (livingEntity.isInSneakingPose()) {
-			this.cape.pivotZ = 1.6F;
-			this.cape.pivotY = 1.8F;
+		if (livingEntity.getEquippedStack(EquipmentSlot.CHEST).isEmpty()) {
+			if (livingEntity.isInSneakingPose()) {
+				this.cape.pivotZ = 1.4F;
+				this.cape.pivotY = 1.85F;
+			} else {
+				this.cape.pivotZ = 0.0F;
+				this.cape.pivotY = 0.0F;
+			}
+		} else if (livingEntity.isInSneakingPose()) {
+			this.cape.pivotZ = 0.3F;
+			this.cape.pivotY = 0.8F;
 		} else {
-			this.cape.pivotZ = 0.0F;
-			this.cape.pivotY = 0.0F;
+			this.cape.pivotZ = -1.1F;
+			this.cape.pivotY = -0.85F;
 		}
 	}
 

@@ -225,8 +225,8 @@ public class OverworldDimension extends Dimension {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public Vec3d modifyFogColor(int fogColor, float tickDelta) {
-		return Vec3d.unpackRgb(fogColor).multiply((double)(tickDelta * 0.94F + 0.06F), (double)(tickDelta * 0.94F + 0.06F), (double)(tickDelta * 0.91F + 0.09F));
+	public Vec3d modifyFogColor(Vec3d vec3d, float tickDelta) {
+		return vec3d.multiply((double)(tickDelta * 0.94F + 0.06F), (double)(tickDelta * 0.94F + 0.06F), (double)(tickDelta * 0.91F + 0.09F));
 	}
 
 	@Override

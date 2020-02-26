@@ -22,28 +22,28 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class NetherFortressGenerator {
-	private static final NetherFortressGenerator.class_3404[] field_14494 = new NetherFortressGenerator.class_3404[]{
-		new NetherFortressGenerator.class_3404(NetherFortressGenerator.Bridge.class, 30, 0, true),
-		new NetherFortressGenerator.class_3404(NetherFortressGenerator.BridgeCrossing.class, 10, 4),
-		new NetherFortressGenerator.class_3404(NetherFortressGenerator.BridgeSmallCrossing.class, 10, 4),
-		new NetherFortressGenerator.class_3404(NetherFortressGenerator.BridgeStairs.class, 10, 3),
-		new NetherFortressGenerator.class_3404(NetherFortressGenerator.BridgePlatform.class, 5, 2),
-		new NetherFortressGenerator.class_3404(NetherFortressGenerator.CorridorExit.class, 5, 1)
+	private static final NetherFortressGenerator.PieceData[] field_14494 = new NetherFortressGenerator.PieceData[]{
+		new NetherFortressGenerator.PieceData(NetherFortressGenerator.Bridge.class, 30, 0, true),
+		new NetherFortressGenerator.PieceData(NetherFortressGenerator.BridgeCrossing.class, 10, 4),
+		new NetherFortressGenerator.PieceData(NetherFortressGenerator.BridgeSmallCrossing.class, 10, 4),
+		new NetherFortressGenerator.PieceData(NetherFortressGenerator.BridgeStairs.class, 10, 3),
+		new NetherFortressGenerator.PieceData(NetherFortressGenerator.BridgePlatform.class, 5, 2),
+		new NetherFortressGenerator.PieceData(NetherFortressGenerator.CorridorExit.class, 5, 1)
 	};
-	private static final NetherFortressGenerator.class_3404[] field_14493 = new NetherFortressGenerator.class_3404[]{
-		new NetherFortressGenerator.class_3404(NetherFortressGenerator.SmallCorridor.class, 25, 0, true),
-		new NetherFortressGenerator.class_3404(NetherFortressGenerator.CorridorCrossing.class, 15, 5),
-		new NetherFortressGenerator.class_3404(NetherFortressGenerator.CorridorRightTurn.class, 5, 10),
-		new NetherFortressGenerator.class_3404(NetherFortressGenerator.CorridorLeftTurn.class, 5, 10),
-		new NetherFortressGenerator.class_3404(NetherFortressGenerator.CorridorStairs.class, 10, 3, true),
-		new NetherFortressGenerator.class_3404(NetherFortressGenerator.CorridorBalcony.class, 7, 2),
-		new NetherFortressGenerator.class_3404(NetherFortressGenerator.CorridorNetherWartsRoom.class, 5, 2)
+	private static final NetherFortressGenerator.PieceData[] field_14493 = new NetherFortressGenerator.PieceData[]{
+		new NetherFortressGenerator.PieceData(NetherFortressGenerator.SmallCorridor.class, 25, 0, true),
+		new NetherFortressGenerator.PieceData(NetherFortressGenerator.CorridorCrossing.class, 15, 5),
+		new NetherFortressGenerator.PieceData(NetherFortressGenerator.CorridorRightTurn.class, 5, 10),
+		new NetherFortressGenerator.PieceData(NetherFortressGenerator.CorridorLeftTurn.class, 5, 10),
+		new NetherFortressGenerator.PieceData(NetherFortressGenerator.CorridorStairs.class, 10, 3, true),
+		new NetherFortressGenerator.PieceData(NetherFortressGenerator.CorridorBalcony.class, 7, 2),
+		new NetherFortressGenerator.PieceData(NetherFortressGenerator.CorridorNetherWartsRoom.class, 5, 2)
 	};
 
 	private static NetherFortressGenerator.Piece generatePiece(
-		NetherFortressGenerator.class_3404 arg, List<StructurePiece> list, Random random, int i, int j, int k, Direction direction, int l
+		NetherFortressGenerator.PieceData pieceData, List<StructurePiece> list, Random random, int i, int j, int k, Direction direction, int l
 	) {
-		Class<? extends NetherFortressGenerator.Piece> class_ = arg.field_14501;
+		Class<? extends NetherFortressGenerator.Piece> class_ = pieceData.pieceType;
 		NetherFortressGenerator.Piece piece = null;
 		if (class_ == NetherFortressGenerator.Bridge.class) {
 			piece = NetherFortressGenerator.Bridge.method_14798(list, random, i, j, k, direction, l);
@@ -1155,16 +1155,16 @@ public class NetherFortressGenerator {
 		protected void toNbt(CompoundTag tag) {
 		}
 
-		private int method_14810(List<NetherFortressGenerator.class_3404> list) {
+		private int method_14810(List<NetherFortressGenerator.PieceData> list) {
 			boolean bl = false;
 			int i = 0;
 
-			for (NetherFortressGenerator.class_3404 lv : list) {
-				if (lv.field_14499 > 0 && lv.field_14502 < lv.field_14499) {
+			for (NetherFortressGenerator.PieceData pieceData : list) {
+				if (pieceData.field_14499 > 0 && pieceData.field_14502 < pieceData.field_14499) {
 					bl = true;
 				}
 
-				i += lv.field_14503;
+				i += pieceData.field_14503;
 			}
 
 			return bl ? i : -1;
@@ -1172,7 +1172,7 @@ public class NetherFortressGenerator {
 
 		private NetherFortressGenerator.Piece method_14811(
 			NetherFortressGenerator.Start start,
-			List<NetherFortressGenerator.class_3404> list,
+			List<NetherFortressGenerator.PieceData> list,
 			List<StructurePiece> list2,
 			Random random,
 			int i,
@@ -1189,19 +1189,19 @@ public class NetherFortressGenerator {
 				n++;
 				int o = random.nextInt(m);
 
-				for (NetherFortressGenerator.class_3404 lv : list) {
-					o -= lv.field_14503;
+				for (NetherFortressGenerator.PieceData pieceData : list) {
+					o -= pieceData.field_14503;
 					if (o < 0) {
-						if (!lv.method_14816(l) || lv == start.field_14506 && !lv.field_14500) {
+						if (!pieceData.method_14816(l) || pieceData == start.field_14506 && !pieceData.field_14500) {
 							break;
 						}
 
-						NetherFortressGenerator.Piece piece = NetherFortressGenerator.generatePiece(lv, list2, random, i, j, k, direction, l);
+						NetherFortressGenerator.Piece piece = NetherFortressGenerator.generatePiece(pieceData, list2, random, i, j, k, direction, l);
 						if (piece != null) {
-							lv.field_14502++;
-							start.field_14506 = lv;
-							if (!lv.method_14815()) {
-								list.remove(lv);
+							pieceData.field_14502++;
+							start.field_14506 = pieceData;
+							if (!pieceData.method_14815()) {
+								list.remove(pieceData);
 							}
 
 							return piece;
@@ -1217,7 +1217,7 @@ public class NetherFortressGenerator {
 			NetherFortressGenerator.Start start, List<StructurePiece> list, Random random, int i, int j, int k, @Nullable Direction direction, int l, boolean bl
 		) {
 			if (Math.abs(i - start.getBoundingBox().minX) <= 112 && Math.abs(k - start.getBoundingBox().minZ) <= 112) {
-				List<NetherFortressGenerator.class_3404> list2 = start.bridgePieces;
+				List<NetherFortressGenerator.PieceData> list2 = start.bridgePieces;
 				if (bl) {
 					list2 = start.corridorPieces;
 				}
@@ -1320,6 +1320,33 @@ public class NetherFortressGenerator {
 		}
 	}
 
+	static class PieceData {
+		public final Class<? extends NetherFortressGenerator.Piece> pieceType;
+		public final int field_14503;
+		public int field_14502;
+		public final int field_14499;
+		public final boolean field_14500;
+
+		public PieceData(Class<? extends NetherFortressGenerator.Piece> class_, int i, int j, boolean bl) {
+			this.pieceType = class_;
+			this.field_14503 = i;
+			this.field_14499 = j;
+			this.field_14500 = bl;
+		}
+
+		public PieceData(Class<? extends NetherFortressGenerator.Piece> class_, int i, int j) {
+			this(class_, i, j, false);
+		}
+
+		public boolean method_14816(int i) {
+			return this.field_14499 == 0 || this.field_14502 < this.field_14499;
+		}
+
+		public boolean method_14815() {
+			return this.field_14499 == 0 || this.field_14502 < this.field_14499;
+		}
+	}
+
 	public static class SmallCorridor extends NetherFortressGenerator.Piece {
 		public SmallCorridor(int i, BlockBox blockBox, Direction direction) {
 			super(StructurePieceType.NETHER_FORTRESS_SMALL_CORRIDOR, i);
@@ -1370,57 +1397,30 @@ public class NetherFortressGenerator {
 	}
 
 	public static class Start extends NetherFortressGenerator.BridgeCrossing {
-		public NetherFortressGenerator.class_3404 field_14506;
-		public List<NetherFortressGenerator.class_3404> bridgePieces;
-		public List<NetherFortressGenerator.class_3404> corridorPieces;
+		public NetherFortressGenerator.PieceData field_14506;
+		public List<NetherFortressGenerator.PieceData> bridgePieces;
+		public List<NetherFortressGenerator.PieceData> corridorPieces;
 		public final List<StructurePiece> field_14505 = Lists.<StructurePiece>newArrayList();
 
 		public Start(Random random, int i, int j) {
 			super(random, i, j);
-			this.bridgePieces = Lists.<NetherFortressGenerator.class_3404>newArrayList();
+			this.bridgePieces = Lists.<NetherFortressGenerator.PieceData>newArrayList();
 
-			for (NetherFortressGenerator.class_3404 lv : NetherFortressGenerator.field_14494) {
-				lv.field_14502 = 0;
-				this.bridgePieces.add(lv);
+			for (NetherFortressGenerator.PieceData pieceData : NetherFortressGenerator.field_14494) {
+				pieceData.field_14502 = 0;
+				this.bridgePieces.add(pieceData);
 			}
 
-			this.corridorPieces = Lists.<NetherFortressGenerator.class_3404>newArrayList();
+			this.corridorPieces = Lists.<NetherFortressGenerator.PieceData>newArrayList();
 
-			for (NetherFortressGenerator.class_3404 lv : NetherFortressGenerator.field_14493) {
-				lv.field_14502 = 0;
-				this.corridorPieces.add(lv);
+			for (NetherFortressGenerator.PieceData pieceData : NetherFortressGenerator.field_14493) {
+				pieceData.field_14502 = 0;
+				this.corridorPieces.add(pieceData);
 			}
 		}
 
 		public Start(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePieceType.NETHER_FORTRESS_START, compoundTag);
-		}
-	}
-
-	static class class_3404 {
-		public final Class<? extends NetherFortressGenerator.Piece> field_14501;
-		public final int field_14503;
-		public int field_14502;
-		public final int field_14499;
-		public final boolean field_14500;
-
-		public class_3404(Class<? extends NetherFortressGenerator.Piece> class_, int i, int j, boolean bl) {
-			this.field_14501 = class_;
-			this.field_14503 = i;
-			this.field_14499 = j;
-			this.field_14500 = bl;
-		}
-
-		public class_3404(Class<? extends NetherFortressGenerator.Piece> class_, int i, int j) {
-			this(class_, i, j, false);
-		}
-
-		public boolean method_14816(int i) {
-			return this.field_14499 == 0 || this.field_14502 < this.field_14499;
-		}
-
-		public boolean method_14815() {
-			return this.field_14499 == 0 || this.field_14502 < this.field_14499;
 		}
 	}
 }

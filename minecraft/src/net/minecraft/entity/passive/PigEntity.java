@@ -175,7 +175,7 @@ public class PigEntity extends AnimalEntity {
 
 	@Override
 	public void onStruckByLightning(LightningEntity lightning) {
-		ZombiePigmanEntity zombiePigmanEntity = EntityType.ZOMBIE_PIGMAN.create(this.world);
+		ZombiePigmanEntity zombiePigmanEntity = EntityType.ZOMBIFIED_PIGLIN.create(this.world);
 		zombiePigmanEntity.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
 		zombiePigmanEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
 		zombiePigmanEntity.setAiDisabled(this.isAiDisabled());

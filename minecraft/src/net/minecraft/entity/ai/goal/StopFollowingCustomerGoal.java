@@ -18,7 +18,7 @@ public class StopFollowingCustomerGoal extends Goal {
 			return false;
 		} else if (this.trader.isTouchingWater()) {
 			return false;
-		} else if (!this.trader.onGround) {
+		} else if (!this.trader.method_24828()) {
 			return false;
 		} else if (this.trader.velocityModified) {
 			return false;

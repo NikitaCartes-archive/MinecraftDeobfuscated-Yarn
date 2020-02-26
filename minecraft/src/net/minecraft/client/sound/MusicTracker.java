@@ -1,6 +1,7 @@
 package net.minecraft.client.sound;
 
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -12,6 +13,7 @@ import net.minecraft.util.math.MathHelper;
 public class MusicTracker {
 	private final Random random = new Random();
 	private final MinecraftClient client;
+	@Nullable
 	private SoundInstance current;
 	private int timeUntilNextSong = 100;
 

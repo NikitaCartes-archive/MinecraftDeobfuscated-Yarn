@@ -53,8 +53,8 @@ public class TheEndDimension extends Dimension {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public Vec3d modifyFogColor(int fogColor, float tickDelta) {
-		return Vec3d.unpackRgb(fogColor).multiply(0.15F);
+	public Vec3d modifyFogColor(Vec3d vec3d, float tickDelta) {
+		return vec3d.multiply(0.15F);
 	}
 
 	@Environment(EnvType.CLIENT)

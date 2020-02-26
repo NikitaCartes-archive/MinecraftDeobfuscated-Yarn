@@ -8,13 +8,12 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.List;
@@ -47,18 +46,7 @@ import org.apache.logging.log4j.Logger;
 public class GameOptions {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Gson GSON = new Gson();
-	private static final Type STRING_LIST_TYPE = new ParameterizedType() {
-		public Type[] getActualTypeArguments() {
-			return new Type[]{String.class};
-		}
-
-		public Type getRawType() {
-			return List.class;
-		}
-
-		public Type getOwnerType() {
-			return null;
-		}
+	private static final TypeToken<List<String>> STRING_LIST_TYPE = new TypeToken<List<String>>() {
 	};
 	private static final Splitter COLON_SPLITTER = Splitter.on(':').limit(2);
 	public double mouseSensitivity = 0.5;

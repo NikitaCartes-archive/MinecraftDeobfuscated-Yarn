@@ -2,7 +2,6 @@ package net.minecraft.entity;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.Dynamic;
 import java.util.Collection;
@@ -51,11 +50,9 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntityWithAi;
-import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ElytraItem;
@@ -187,6 +184,7 @@ public abstract class LivingEntity extends Entity {
 	protected int itemUseTimeLeft;
 	protected int roll;
 	private BlockPos lastBlockPos;
+	private Optional<BlockPos> field_22418 = Optional.empty();
 	private DamageSource lastDamageSource;
 	private long lastDamageTime;
 	protected int pushCooldown;
@@ -1225,15 +1223,34 @@ public abstract class LivingEntity extends Entity {
 		return stack.getEatSound();
 	}
 
+	@Override
+	public void method_24830(boolean bl) {
+		super.method_24830(bl);
+		if (bl) {
+			this.field_22418 = Optional.empty();
+		}
+	}
+
+	public Optional<BlockPos> method_24832() {
+		return this.field_22418;
+	}
+
 	public boolean isClimbing() {
 		if (this.isSpectator()) {
 			return false;
 		} else {
+			BlockPos blockPos = this.getSenseCenterPos();
 			BlockState blockState = this.getBlockState();
 			Block block = blockState.getBlock();
-			return block != Blocks.LADDER && block != Blocks.VINE && block != Blocks.SCAFFOLDING
-				? block instanceof TrapdoorBlock && this.canEnterTrapdoor(new BlockPos(this), blockState)
-				: true;
+			if (block.isIn(BlockTags.CLIMBABLE)) {
+				this.field_22418 = Optional.of(blockPos);
+				return true;
+			} else if (block instanceof TrapdoorBlock && this.canEnterTrapdoor(blockPos, blockState)) {
+				this.field_22418 = Optional.of(blockPos);
+				return true;
+			} else {
+				return false;
+			}
 		}
 	}
 
@@ -1704,93 +1721,14 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	private void onDismounted(Entity vehicle) {
+		Vec3d vec3d;
 		if (this.world.getBlockState(new BlockPos(vehicle)).getBlock().isIn(BlockTags.PORTALS)) {
-			this.updatePosition(vehicle.getX(), vehicle.getBodyY(1.0) + 0.001, vehicle.getZ());
-		} else if (!(vehicle instanceof BoatEntity) && !(vehicle instanceof HorseBaseEntity)) {
-			double q = vehicle.getX();
-			double r = vehicle.getBodyY(1.0);
-			double s = vehicle.getZ();
-			Direction direction = vehicle.getMovementDirection();
-			if (direction != null && direction.getAxis() != Direction.Axis.Y) {
-				Direction direction2 = direction.rotateYClockwise();
-				int[][] is = new int[][]{{0, 1}, {0, -1}, {-1, 1}, {-1, -1}, {1, 1}, {1, -1}, {-1, 0}, {1, 0}, {0, 1}};
-				double k = Math.floor(this.getX()) + 0.5;
-				double t = Math.floor(this.getZ()) + 0.5;
-				double l = this.getBoundingBox().x2 - this.getBoundingBox().x1;
-				double m = this.getBoundingBox().z2 - this.getBoundingBox().z1;
-				Box box3 = new Box(
-					k - l / 2.0, vehicle.getBoundingBox().y1, t - m / 2.0, k + l / 2.0, Math.floor(vehicle.getBoundingBox().y1) + (double)this.getHeight(), t + m / 2.0
-				);
-
-				for (int[] js : is) {
-					double u = (double)(direction.getOffsetX() * js[0] + direction2.getOffsetX() * js[1]);
-					double v = (double)(direction.getOffsetZ() * js[0] + direction2.getOffsetZ() * js[1]);
-					double w = k + u;
-					double x = t + v;
-					Box box4 = box3.offset(u, 0.0, v);
-					if (this.world.doesNotCollide(this, box4)) {
-						BlockPos blockPos = new BlockPos(w, this.getY(), x);
-						if (this.world.getBlockState(blockPos).hasSolidTopSurface(this.world, blockPos, this)) {
-							this.requestTeleport(w, this.getY() + 1.0, x);
-							return;
-						}
-
-						BlockPos blockPos2 = new BlockPos(w, this.getY() - 1.0, x);
-						if (this.world.getBlockState(blockPos2).hasSolidTopSurface(this.world, blockPos2, this) || this.world.getFluidState(blockPos2).matches(FluidTags.WATER)) {
-							q = w;
-							r = this.getY() + 1.0;
-							s = x;
-						}
-					} else {
-						BlockPos blockPosx = new BlockPos(w, this.getY() + 1.0, x);
-						if (this.world.doesNotCollide(this, box4.offset(0.0, 1.0, 0.0)) && this.world.getBlockState(blockPosx).hasSolidTopSurface(this.world, blockPosx, this)) {
-							q = w;
-							r = this.getY() + 2.0;
-							s = x;
-						}
-					}
-				}
-			}
-
-			this.requestTeleport(q, r, s);
+			vec3d = new Vec3d(vehicle.getX(), vehicle.getY() + (double)vehicle.getHeight(), vehicle.getZ());
 		} else {
-			double d = (double)(this.getWidth() / 2.0F + vehicle.getWidth() / 2.0F) + 0.4;
-			Box box = vehicle.getBoundingBox();
-			float f;
-			double e;
-			int i;
-			if (vehicle instanceof BoatEntity) {
-				e = box.y2;
-				i = 2;
-				f = 0.0F;
-			} else {
-				e = box.y1;
-				i = 3;
-				f = (float) (Math.PI / 2) * (float)(this.getMainArm() == Arm.RIGHT ? -1 : 1);
-			}
-
-			float g = -this.yaw * (float) (Math.PI / 180.0) - (float) Math.PI + f;
-			float h = -MathHelper.sin(g);
-			float j = -MathHelper.cos(g);
-			double k = Math.abs(h) > Math.abs(j) ? d / (double)Math.abs(h) : d / (double)Math.abs(j);
-			Box box2 = this.getBoundingBox().offset(-this.getX(), -this.getY(), -this.getZ());
-			ImmutableSet<Entity> immutableSet = ImmutableSet.of(this, vehicle);
-			double l = this.getX() + (double)h * k;
-			double m = this.getZ() + (double)j * k;
-			double n = 0.001;
-
-			for (int o = 0; o < i; o++) {
-				double p = e + n;
-				if (this.world.doesNotCollide(this, box2.offset(l, p, m), immutableSet)) {
-					this.updatePosition(l, p, m);
-					return;
-				}
-
-				n++;
-			}
-
-			this.updatePosition(vehicle.getX(), vehicle.getBodyY(1.0) + 0.001, vehicle.getZ());
+			vec3d = vehicle.method_24829(this);
 		}
+
+		this.updatePosition(vec3d.x, vec3d.y, vec3d.z);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -2270,10 +2208,11 @@ public abstract class LivingEntity extends Entity {
 		this.world.getProfiler().pop();
 		this.world.getProfiler().push("jump");
 		if (this.jumping) {
-			if (!(this.waterHeight > 0.0) || this.onGround && !(this.waterHeight > 0.4)) {
+			boolean bl = this.isTouchingWater() && this.waterHeight > 0.0;
+			if (!bl || this.onGround && !(this.waterHeight > 0.4)) {
 				if (this.isInLava()) {
 					this.swimUpward(FluidTags.LAVA);
-				} else if ((this.onGround || this.waterHeight > 0.0 && this.waterHeight <= 0.4) && this.jumpingCooldown == 0) {
+				} else if ((this.onGround || bl && this.waterHeight <= 0.4) && this.jumpingCooldown == 0) {
 					this.jump();
 					this.jumpingCooldown = 10;
 				}
@@ -2781,6 +2720,22 @@ public abstract class LivingEntity extends Entity {
 	@Override
 	public EntityDimensions getDimensions(EntityPose pose) {
 		return pose == EntityPose.SLEEPING ? SLEEPING_DIMENSIONS : super.getDimensions(pose).scaled(this.getScaleFactor());
+	}
+
+	public ImmutableList<EntityPose> method_24831() {
+		return ImmutableList.of(EntityPose.STANDING);
+	}
+
+	public Box method_24833(EntityPose entityPose) {
+		EntityDimensions entityDimensions = this.getDimensions(entityPose);
+		return new Box(
+			(double)(-entityDimensions.width / 2.0F),
+			0.0,
+			(double)(-entityDimensions.width / 2.0F),
+			(double)(entityDimensions.width / 2.0F),
+			(double)entityDimensions.height,
+			(double)(entityDimensions.width / 2.0F)
+		);
 	}
 
 	public Optional<BlockPos> getSleepingPosition() {

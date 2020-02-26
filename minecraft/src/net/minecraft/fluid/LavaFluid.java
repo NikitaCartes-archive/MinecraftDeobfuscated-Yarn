@@ -84,7 +84,7 @@ public abstract class LavaFluid extends BaseFluid {
 					BlockState blockState = world.getBlockState(blockPos);
 					if (blockState.isAir()) {
 						if (this.canLightFire(world, blockPos)) {
-							world.setBlockState(blockPos, Blocks.FIRE.getDefaultState());
+							world.setBlockState(blockPos, AbstractFireBlock.getState(world, blockPos));
 							return;
 						}
 					} else if (blockState.getMaterial().blocksMovement()) {

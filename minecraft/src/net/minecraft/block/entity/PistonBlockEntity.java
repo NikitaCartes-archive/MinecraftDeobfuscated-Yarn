@@ -188,7 +188,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 
 	private static boolean method_23671(Box box, Entity entity) {
 		return entity.getPistonBehavior() == PistonBehavior.NORMAL
-			&& entity.onGround
+			&& entity.method_24828()
 			&& entity.getX() >= box.x1
 			&& entity.getX() <= box.x2
 			&& entity.getZ() >= box.z1

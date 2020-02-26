@@ -582,7 +582,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 					entity.updateTrackedPositionAndAngles(d, e, f, g, h, 3, true);
 				}
 
-				entity.onGround = packet.isOnGround();
+				entity.method_24830(packet.isOnGround());
 			}
 		}
 	}
@@ -615,7 +615,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 					entity.updateTrackedPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), h, f, 3, false);
 				}
 
-				entity.onGround = packet.isOnGround();
+				entity.method_24830(packet.isOnGround());
 			}
 		}
 	}

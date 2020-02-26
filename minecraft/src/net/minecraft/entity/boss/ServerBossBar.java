@@ -17,7 +17,7 @@ public class ServerBossBar extends BossBar {
 	private boolean visible = true;
 
 	public ServerBossBar(Text displayName, BossBar.Color color, BossBar.Style style) {
-		super(MathHelper.randomUUID(), displayName, color, style);
+		super(MathHelper.randomUuid(), displayName, color, style);
 	}
 
 	@Override

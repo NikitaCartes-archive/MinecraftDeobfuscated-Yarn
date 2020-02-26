@@ -65,6 +65,7 @@ import net.minecraft.datafixer.fix.EntityTippedArrowFix;
 import net.minecraft.datafixer.fix.EntityWolfColorFix;
 import net.minecraft.datafixer.fix.EntityZombieSplitFix;
 import net.minecraft.datafixer.fix.EntityZombieVillagerTypeFix;
+import net.minecraft.datafixer.fix.EntityZombifiedPiglinRenameFix;
 import net.minecraft.datafixer.fix.FurnaceRecipesFix;
 import net.minecraft.datafixer.fix.HangingEntityFix;
 import net.minecraft.datafixer.fix.HeightmapRenamingFix;
@@ -155,6 +156,7 @@ import net.minecraft.datafixer.schema.Schema2100;
 import net.minecraft.datafixer.schema.Schema2501;
 import net.minecraft.datafixer.schema.Schema2502;
 import net.minecraft.datafixer.schema.Schema2505;
+import net.minecraft.datafixer.schema.Schema2509;
 import net.minecraft.datafixer.schema.Schema501;
 import net.minecraft.datafixer.schema.Schema700;
 import net.minecraft.datafixer.schema.Schema701;
@@ -546,5 +548,27 @@ public class Schemas {
 		Schema schema104 = builder.addSchema(2505, Schema2505::new);
 		builder.addFixer(new ChoiceTypesFix(schema104, "Added Piglin", TypeReferences.ENTITY));
 		builder.addFixer(new MemoryExpiryDataFix(schema104, "minecraft:villager"));
+		Schema schema105 = builder.addSchema(2508, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(
+			ItemNameFix.create(
+				schema105,
+				"Renamed fungi items to fungus",
+				string -> ImmutableMap.of("minecraft:warped_fungi", "minecraft:warped_fungus", "minecraft:crimson_fungi", "minecraft:crimson_fungus")
+						.getOrDefault(string, string)
+			)
+		);
+		builder.addFixer(
+			BlockNameFix.create(
+				schema105,
+				"Renamed fungi blocks to fungus",
+				string -> ImmutableMap.of("minecraft:warped_fungi", "minecraft:warped_fungus", "minecraft:crimson_fungi", "minecraft:crimson_fungus")
+						.getOrDefault(string, string)
+			)
+		);
+		Schema schema106 = builder.addSchema(2509, Schema2509::new);
+		builder.addFixer(new EntityZombifiedPiglinRenameFix(schema106));
+		builder.addFixer(
+			ItemNameFix.create(schema106, "Rename zombie pigman egg item", string -> (String)EntityZombifiedPiglinRenameFix.RENAMES.getOrDefault(string, string))
+		);
 	}
 }

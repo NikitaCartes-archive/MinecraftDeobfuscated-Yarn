@@ -2,7 +2,6 @@ package net.minecraft.structure;
 
 import java.util.List;
 import java.util.Random;
-import net.minecraft.block.BedrockBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.CompoundTag;
@@ -63,7 +62,7 @@ public class NetherFossilGenerator {
 			Structure structure = manager.getStructureOrBlank(this.template);
 			StructurePlacementData structurePlacementData = new StructurePlacementData()
 				.setRotation(this.structureRotation)
-				.setMirrored(BlockMirror.NONE)
+				.setMirror(BlockMirror.NONE)
 				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
 			this.setStructureData(structure, this.pos, structurePlacementData);
 		}
@@ -81,19 +80,19 @@ public class NetherFossilGenerator {
 
 		@Override
 		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
-			while (world.getBlockState(this.pos.up()).getBlock() != Blocks.BEDROCK && this.pos.getY() < 128) {
+			while (this.pos.getY() > generator.getSeaLevel()) {
 				BlockPos blockPos = this.pos.down();
 				BlockState blockState = world.getBlockState(blockPos);
 				if (!world.getBlockState(this.pos).isAir() || blockState.getBlock() != Blocks.SOUL_SAND && !blockState.isSideSolidFullSquare(world, blockPos, Direction.UP)
 					)
 				 {
-					this.pos = this.pos.up();
+					this.pos = this.pos.down();
 					continue;
 				}
 				break;
 			}
 
-			if (world.getBlockState(this.pos.up()).getBlock() instanceof BedrockBlock) {
+			if (this.pos.getY() <= generator.getSeaLevel()) {
 				return false;
 			} else {
 				box.encompass(this.structure.calculateBoundingBox(this.placementData, this.pos));

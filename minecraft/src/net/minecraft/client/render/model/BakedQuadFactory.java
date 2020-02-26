@@ -55,7 +55,7 @@ public class BakedQuadFactory {
 			this.encodeDirection(is, direction);
 		}
 
-		return new BakedQuad(is, face.tintIndex, direction, texture);
+		return new BakedQuad(is, face.tintIndex, direction, texture, shade);
 	}
 
 	public static ModelElementTexture uvLock(ModelElementTexture texture, Direction orientation, Rotation3 rotation, Identifier modelId) {
@@ -118,29 +118,6 @@ public class BakedQuadFactory {
 		return is;
 	}
 
-	private int getLightmapCoordinate(Direction direction) {
-		float f = this.getRelativeDirectionalBrightness(direction);
-		int i = MathHelper.clamp((int)(f * 255.0F), 0, 255);
-		return 0xFF000000 | i << 16 | i << 8 | i;
-	}
-
-	private float getRelativeDirectionalBrightness(Direction direction) {
-		switch (direction) {
-			case DOWN:
-				return 0.5F;
-			case UP:
-				return 1.0F;
-			case NORTH:
-			case SOUTH:
-				return 0.8F;
-			case WEST:
-			case EAST:
-				return 0.6F;
-			default:
-				return 1.0F;
-		}
-	}
-
 	private float[] getPositionMatrix(Vector3f from, Vector3f to) {
 		float[] fs = new float[Direction.values().length];
 		fs[CubeFace.DirectionIds.WEST] = from.getX() / 16.0F;
@@ -163,23 +140,21 @@ public class BakedQuadFactory {
 		@Nullable net.minecraft.client.render.model.json.ModelRotation rotation,
 		boolean shaded
 	) {
-		Direction direction2 = Direction.transform(orientation.getMatrix(), direction);
-		int i = shaded ? this.getLightmapCoordinate(direction2) : -1;
 		CubeFace.Corner corner = CubeFace.getFace(direction).getCorner(cornerIndex);
 		Vector3f vector3f = new Vector3f(positionMatrix[corner.xSide], positionMatrix[corner.ySide], positionMatrix[corner.zSide]);
 		this.rotateVertex(vector3f, rotation);
 		this.transformVertex(vector3f, orientation);
-		this.packVertexData(vertices, cornerIndex, vector3f, i, sprite, texture);
+		this.packVertexData(vertices, cornerIndex, vector3f, sprite, texture);
 	}
 
-	private void packVertexData(int[] vertices, int cornerIndex, Vector3f position, int brightness, Sprite sprite, ModelElementTexture texture) {
+	private void packVertexData(int[] vertices, int cornerIndex, Vector3f position, Sprite sprite, ModelElementTexture modelElementTexture) {
 		int i = cornerIndex * 8;
 		vertices[i] = Float.floatToRawIntBits(position.getX());
 		vertices[i + 1] = Float.floatToRawIntBits(position.getY());
 		vertices[i + 2] = Float.floatToRawIntBits(position.getZ());
-		vertices[i + 3] = brightness;
-		vertices[i + 4] = Float.floatToRawIntBits(sprite.getFrameU((double)texture.getU(cornerIndex)));
-		vertices[i + 4 + 1] = Float.floatToRawIntBits(sprite.getFrameV((double)texture.getV(cornerIndex)));
+		vertices[i + 3] = -1;
+		vertices[i + 4] = Float.floatToRawIntBits(sprite.getFrameU((double)modelElementTexture.getU(cornerIndex)));
+		vertices[i + 4 + 1] = Float.floatToRawIntBits(sprite.getFrameV((double)modelElementTexture.getV(cornerIndex)));
 	}
 
 	private void rotateVertex(Vector3f vector, @Nullable net.minecraft.client.render.model.json.ModelRotation rotation) {

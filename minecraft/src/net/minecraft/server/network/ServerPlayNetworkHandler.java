@@ -758,12 +758,11 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 								this.player.fallDistance = 0.0F;
 							}
 
-							if (this.player.onGround && !packet.isOnGround() && n > 0.0) {
+							if (this.player.method_24828() && !packet.isOnGround() && n > 0.0) {
 								this.player.jump();
 							}
 
 							this.player.move(MovementType.PLAYER, new Vec3d(m, n, o));
-							this.player.onGround = packet.isOnGround();
 							m = h - this.player.getX();
 							n = i - this.player.getY();
 							if (n > -0.5 || n < 0.5) {
@@ -799,9 +798,9 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 								&& !this.player.hasStatusEffect(StatusEffects.LEVITATION)
 								&& !this.player.isFallFlying()
 								&& !serverWorld.isAreaNotEmpty(this.player.getBoundingBox().expand(0.0625).stretch(0.0, -0.55, 0.0));
-							this.player.onGround = packet.isOnGround();
 							this.player.getServerWorld().getChunkManager().updateCameraPosition(this.player);
 							this.player.handleFall(this.player.getY() - g, packet.isOnGround());
+							this.player.method_24830(packet.isOnGround());
 							this.updatedX = this.player.getX();
 							this.updatedY = this.player.getY();
 							this.updatedZ = this.player.getZ();

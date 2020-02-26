@@ -96,15 +96,20 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 			Potion potion = PotionUtil.getPotion(itemStack);
 			List<StatusEffectInstance> list = PotionUtil.getPotionEffects(itemStack);
 			boolean bl = potion == Potions.WATER && list.isEmpty();
-			if (hitResult.getType() == HitResult.Type.BLOCK && bl) {
+			if (hitResult.getType() == HitResult.Type.BLOCK) {
 				BlockHitResult blockHitResult = (BlockHitResult)hitResult;
 				Direction direction = blockHitResult.getSide();
-				BlockPos blockPos = blockHitResult.getBlockPos().offset(direction);
-				this.extinguishFire(blockPos, direction);
-				this.extinguishFire(blockPos.offset(direction.getOpposite()), direction);
+				BlockPos blockPos = blockHitResult.getBlockPos();
+				BlockPos blockPos2 = blockPos.offset(direction);
+				BlockState blockState = this.world.getBlockState(blockPos);
+				blockState.onProjectileHit(this.world, blockState, blockHitResult, this);
+				if (bl) {
+					this.extinguishFire(blockPos2, direction);
+					this.extinguishFire(blockPos2.offset(direction.getOpposite()), direction);
 
-				for (Direction direction2 : Direction.Type.HORIZONTAL) {
-					this.extinguishFire(blockPos.offset(direction2), direction2);
+					for (Direction direction2 : Direction.Type.HORIZONTAL) {
+						this.extinguishFire(blockPos2.offset(direction2), direction2);
+					}
 				}
 			}
 

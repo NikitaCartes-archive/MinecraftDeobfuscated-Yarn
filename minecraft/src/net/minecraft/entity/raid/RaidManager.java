@@ -90,7 +90,7 @@ public class RaidManager extends PersistentState {
 				BlockPos blockPos = new BlockPos(player);
 				List<PointOfInterest> list = (List<PointOfInterest>)this.world
 					.getPointOfInterestStorage()
-					.get(PointOfInterestType.ALWAYS_TRUE, blockPos, 64, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED)
+					.getInCircle(PointOfInterestType.ALWAYS_TRUE, blockPos, 64, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED)
 					.collect(Collectors.toList());
 				int i = 0;
 				Vec3d vec3d = Vec3d.ZERO;

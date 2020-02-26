@@ -14,8 +14,8 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.SignType;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.biome.DefaultBiomeFeatures;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.HugeFungusFeatureConfig;
 
 public class Blocks {
 	public static final Block AIR = register("air", new AirBlock(Block.Settings.of(Material.AIR).noCollision().dropsNothing()));
@@ -2048,24 +2048,25 @@ public class Blocks {
 		new LogBlock(MaterialColor.CYAN, Block.Settings.of(Material.WOOD, MaterialColor.CYAN).strength(1.0F).sounds(BlockSoundGroup.NETHER_STEM))
 	);
 	public static final Block WARPED_NYLIUM = register(
-		"warped_nylium", new Block(Block.Settings.of(Material.STONE, MaterialColor.CYAN).strength(1.0F).sounds(BlockSoundGroup.NYLIUM))
+		"warped_nylium", new NyliumBlock(Block.Settings.of(Material.STONE, MaterialColor.CYAN).strength(1.0F).sounds(BlockSoundGroup.NYLIUM).ticksRandomly())
 	);
-	public static final Block WARPED_FUNGI = register(
-		"warped_fungi",
-		new FungiBlock(
-			Block.Settings.of(Material.PLANT).breakInstantly().noCollision().sounds(BlockSoundGroup.FUNGI),
-			() -> Feature.HUGE_FUNGI.configure(DefaultBiomeFeatures.WARPED_FUNGI_CONFIG)
+	public static final Block WARPED_FUNGUS = register(
+		"warped_fungus",
+		new FungusBlock(
+			Block.Settings.of(Material.PLANT).breakInstantly().noCollision().sounds(BlockSoundGroup.FUNGUS),
+			() -> Feature.HUGE_FUNGUS.configure(HugeFungusFeatureConfig.field_22433)
 		)
 	);
 	public static final Block WARPED_WART_BLOCK = register(
 		"warped_wart_block", new Block(Block.Settings.of(Material.ORGANIC, MaterialColor.CYAN).strength(1.0F).sounds(BlockSoundGroup.WART_BLOCK))
 	);
 	public static final Block WARPED_ROOTS = register(
-		"warped_roots", new RootsBlock(Block.Settings.of(Material.PLANT, MaterialColor.CYAN).noCollision().breakInstantly().sounds(BlockSoundGroup.ROOTS))
+		"warped_roots",
+		new RootsBlock(Block.Settings.of(Material.REPLACEABLE_PLANT, MaterialColor.CYAN).noCollision().breakInstantly().sounds(BlockSoundGroup.ROOTS))
 	);
 	public static final Block NETHER_SPROUTS = register(
 		"nether_sprouts",
-		new SproutsBlock(Block.Settings.of(Material.PLANT, MaterialColor.CYAN).noCollision().breakInstantly().sounds(BlockSoundGroup.NETHER_SPROUTS))
+		new SproutsBlock(Block.Settings.of(Material.REPLACEABLE_PLANT, MaterialColor.CYAN).noCollision().breakInstantly().sounds(BlockSoundGroup.NETHER_SPROUTS))
 	);
 	public static final Block CRIMSON_STEM = register(
 		"crimson_stem", new LogBlock(MaterialColor.RED, Block.Settings.of(Material.WOOD, MaterialColor.RED).strength(1.0F).sounds(BlockSoundGroup.NETHER_STEM))
@@ -2075,13 +2076,13 @@ public class Blocks {
 		new LogBlock(MaterialColor.RED, Block.Settings.of(Material.WOOD, MaterialColor.RED).strength(1.0F).sounds(BlockSoundGroup.NETHER_STEM))
 	);
 	public static final Block CRIMSON_NYLIUM = register(
-		"crimson_nylium", new Block(Block.Settings.of(Material.STONE, MaterialColor.RED).strength(1.0F).sounds(BlockSoundGroup.NYLIUM))
+		"crimson_nylium", new NyliumBlock(Block.Settings.of(Material.STONE, MaterialColor.RED).strength(1.0F).sounds(BlockSoundGroup.NYLIUM).ticksRandomly())
 	);
-	public static final Block CRIMSON_FUNGI = register(
-		"crimson_fungi",
-		new FungiBlock(
-			Block.Settings.of(Material.PLANT).breakInstantly().noCollision().sounds(BlockSoundGroup.FUNGI),
-			() -> Feature.HUGE_FUNGI.configure(DefaultBiomeFeatures.CRIMSON_FUNGI_CONFIG)
+	public static final Block CRIMSON_FUNGUS = register(
+		"crimson_fungus",
+		new FungusBlock(
+			Block.Settings.of(Material.PLANT).breakInstantly().noCollision().sounds(BlockSoundGroup.FUNGUS),
+			() -> Feature.HUGE_FUNGUS.configure(HugeFungusFeatureConfig.field_22431)
 		)
 	);
 	public static final Block SHROOMLIGHT = register(
@@ -2089,12 +2090,12 @@ public class Blocks {
 	);
 	public static final Block WEEPING_VINES = register(
 		"weeping_vines",
-		new WeepingVinesBlock(Block.Settings.of(Material.PLANT).ticksRandomly().noCollision().breakInstantly().sounds(BlockSoundGroup.WEEPING_VINES))
+		new WeepingVinesBlock(Block.Settings.of(Material.REPLACEABLE_PLANT).ticksRandomly().noCollision().breakInstantly().sounds(BlockSoundGroup.WEEPING_VINES))
 	);
 	public static final Block WEEPING_VINES_PLANT = register(
 		"weeping_vines_plant",
 		new WeepingVinesPlantBlock(
-			(WeepingVinesBlock)WEEPING_VINES, Block.Settings.of(Material.PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.WEEPING_VINES)
+			(WeepingVinesBlock)WEEPING_VINES, Block.Settings.of(Material.REPLACEABLE_PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.WEEPING_VINES)
 		)
 	);
 	public static final Block CRIMSON_ROOTS = register(
@@ -2182,6 +2183,9 @@ public class Blocks {
 		"jigsaw", new JigsawBlock(Block.Settings.of(Material.METAL, MaterialColor.LIGHT_GRAY).strength(-1.0F, 3600000.0F).dropsNothing())
 	);
 	public static final Block COMPOSTER = register("composter", new ComposterBlock(Block.Settings.of(Material.WOOD).strength(0.6F).sounds(BlockSoundGroup.WOOD)));
+	public static final Block TARGET = register(
+		"target", new TargetBlock(Block.Settings.of(Material.ORGANIC, MaterialColor.QUARTZ).strength(0.5F).sounds(BlockSoundGroup.GRASS))
+	);
 	public static final Block BEE_NEST = register("bee_nest", new BeehiveBlock(Block.Settings.of(Material.WOOD).strength(0.3F).sounds(BlockSoundGroup.WOOD)));
 	public static final Block BEEHIVE = register("beehive", new BeehiveBlock(Block.Settings.of(Material.WOOD).strength(0.6F).sounds(BlockSoundGroup.WOOD)));
 	public static final Block HONEY_BLOCK = register(
@@ -2198,6 +2202,21 @@ public class Blocks {
 	);
 	public static final Block ANCIENT_DEBRIS = register(
 		"ancient_debris", new Block(Block.Settings.of(Material.METAL, MaterialColor.BLACK).strength(30.0F, 1200.0F).sounds(BlockSoundGroup.ANCIENT_DEBRIS))
+	);
+	public static final Block CRYING_OBSIDIAN = register(
+		"crying_obsidian", new CryingObsidianBlock(Block.Settings.of(Material.STONE, MaterialColor.BLACK).strength(50.0F, 1200.0F).lightLevel(10))
+	);
+	public static final Block POTTED_CRIMSON_FUNGUS = register(
+		"potted_crimson_fungus", new FlowerPotBlock(CRIMSON_FUNGUS, Block.Settings.of(Material.PART).breakInstantly().nonOpaque())
+	);
+	public static final Block POTTED_WARPED_FUNGUS = register(
+		"potted_warped_fungus", new FlowerPotBlock(WARPED_FUNGUS, Block.Settings.of(Material.PART).breakInstantly().nonOpaque())
+	);
+	public static final Block POTTED_CRIMSON_ROOTS = register(
+		"potted_crimson_roots", new FlowerPotBlock(CRIMSON_ROOTS, Block.Settings.of(Material.PART).breakInstantly().nonOpaque())
+	);
+	public static final Block POTTED_WARPED_ROOTS = register(
+		"potted_warped_roots", new FlowerPotBlock(WARPED_ROOTS, Block.Settings.of(Material.PART).breakInstantly().nonOpaque())
 	);
 
 	private static Block register(String id, Block block) {

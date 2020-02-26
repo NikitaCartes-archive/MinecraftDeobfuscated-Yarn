@@ -125,7 +125,7 @@ public class ItemEntity extends Entity {
 				this.age++;
 			}
 
-			this.velocityDirty = this.velocityDirty | this.checkWaterState();
+			this.velocityDirty = this.velocityDirty | this.updateWaterState();
 			if (!this.world.isClient) {
 				double d = this.getVelocity().subtract(vec3d).lengthSquared();
 				if (d > 0.01) {

@@ -121,7 +121,7 @@ public abstract class Dimension {
 	 * nether doesn't touch it; the end significantly blackshifts this color.
 	 */
 	@Environment(EnvType.CLIENT)
-	public abstract Vec3d modifyFogColor(int fogColor, float tickDelta);
+	public abstract Vec3d modifyFogColor(Vec3d vec3d, float tickDelta);
 
 	public abstract boolean canPlayersSleep();
 

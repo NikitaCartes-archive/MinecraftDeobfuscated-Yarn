@@ -481,6 +481,7 @@ public interface DispenserBehavior {
 					for (SheepEntity sheepEntity : world.getNonSpectatingEntities(SheepEntity.class, new Box(blockPos))) {
 						if (sheepEntity.isAlive() && !sheepEntity.isSheared() && !sheepEntity.isBaby()) {
 							sheepEntity.dropItems();
+							world.playSound(null, blockPos, SoundEvents.ENTITY_SHEEP_SHEAR, SoundCategory.BLOCKS, 1.0F, 1.0F);
 							if (stack.damage(1, world.random, null)) {
 								stack.setCount(0);
 							}

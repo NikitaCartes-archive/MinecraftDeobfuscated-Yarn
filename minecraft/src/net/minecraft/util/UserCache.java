@@ -13,6 +13,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.google.gson.reflect.TypeToken;
 import com.mojang.authlib.Agent;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
@@ -22,7 +23,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
@@ -47,18 +47,7 @@ public class UserCache {
 	private final GameProfileRepository profileRepository;
 	protected final Gson gson;
 	private final File cacheFile;
-	private static final ParameterizedType ENTRY_LIST_TYPE = new ParameterizedType() {
-		public Type[] getActualTypeArguments() {
-			return new Type[]{UserCache.Entry.class};
-		}
-
-		public Type getRawType() {
-			return List.class;
-		}
-
-		public Type getOwnerType() {
-			return null;
-		}
+	private static final TypeToken<List<UserCache.Entry>> ENTRY_LIST_TYPE = new TypeToken<List<UserCache.Entry>>() {
 	};
 
 	public UserCache(GameProfileRepository profileRepository, File file) {

@@ -56,6 +56,7 @@ import org.apache.logging.log4j.Logger;
 public class PiglinEntity extends HostileEntity implements CrossbowUser {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final TrackedData<Boolean> BABY = DataTracker.registerData(PiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+	private static final TrackedData<Boolean> field_22419 = DataTracker.registerData(PiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> CHARGING = DataTracker.registerData(PiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final UUID BABY_SPEED_BOOST_MODIFIER_ID = UUID.fromString("766bfa64-11f3-11ea-8d71-362b9e155667");
 	private static final EntityAttributeModifier BABY_SPEED_BOOST_MODIFIER = new EntityAttributeModifier(
@@ -134,6 +135,10 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 			tag.putBoolean("IsBaby", true);
 		}
 
+		if (this.method_24843()) {
+			tag.putBoolean("IsImmuneToZombification", true);
+		}
+
 		tag.put("Inventory", inventoryToTag(this.inventory));
 	}
 
@@ -141,6 +146,7 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 	public void readCustomDataFromTag(CompoundTag tag) {
 		super.readCustomDataFromTag(tag);
 		this.setBaby(tag.getBoolean("IsBaby"));
+		this.method_24847(tag.getBoolean("IsImmuneToZombification"));
 		inventoryFromTag(this.inventory, tag.getList("Inventory", 10));
 	}
 
@@ -170,11 +176,6 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 	protected void dropEquipment(DamageSource source, int lootingMultiplier, boolean allowDrops) {
 		super.dropEquipment(source, lootingMultiplier, allowDrops);
 		this.inventory.clearToList().forEach(this::dropStack);
-		ItemStack itemStack = this.getStackInHand(Hand.OFF_HAND);
-		if (!itemStack.isEmpty()) {
-			this.setStackInHand(Hand.OFF_HAND, ItemStack.EMPTY);
-			this.dropStack(itemStack);
-		}
 	}
 
 	protected ItemStack addItem(ItemStack stack) {
@@ -186,6 +187,7 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 		super.initDataTracker();
 		this.dataTracker.startTracking(BABY, false);
 		this.dataTracker.startTracking(CHARGING, false);
+		this.dataTracker.startTracking(field_22419, false);
 	}
 
 	@Override
@@ -216,7 +218,7 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 		}
 
 		this.initEquipment(difficulty);
-		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
+		return entityData;
 	}
 
 	@Override
@@ -291,8 +293,16 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 		return !this.isBaby();
 	}
 
+	private void method_24847(boolean bl) {
+		this.getDataTracker().set(field_22419, bl);
+	}
+
+	private boolean method_24843() {
+		return this.getDataTracker().get(field_22419);
+	}
+
 	public boolean canConvert() {
-		return this.world.getDimension().getType() == DimensionType.OVERWORLD;
+		return this.world.getDimension().getType() == DimensionType.OVERWORLD && !this.method_24843();
 	}
 
 	@Override
@@ -302,11 +312,7 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 		this.world.getProfiler().pop();
 		PiglinBrain.tickActivities(this);
 		PiglinBrain.playSoundAtChance(this);
-		if (PiglinBrain.hasPlayersNearby(this)) {
-			this.setPersistent();
-		}
-
-		if (this.world.dimension.getType() == DimensionType.OVERWORLD) {
+		if (this.canConvert()) {
 			this.conversionTicks++;
 		} else {
 			this.conversionTicks = 0;
@@ -324,7 +330,7 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 	}
 
 	private void zombify(ServerWorld world) {
-		ZombiePigmanEntity zombiePigmanEntity = EntityType.ZOMBIE_PIGMAN.create(world);
+		ZombiePigmanEntity zombiePigmanEntity = EntityType.ZOMBIFIED_PIGLIN.create(world);
 		zombiePigmanEntity.copyPositionAndRotation(this);
 		zombiePigmanEntity.initialize(world, world.getLocalDifficulty(new BlockPos(zombiePigmanEntity)), SpawnType.CONVERSION, null, null);
 		zombiePigmanEntity.setBaby(this.isBaby());
@@ -401,27 +407,43 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 		this.shoot(this, target, projectile, multiShotSpray, 1.6F);
 	}
 
+	protected void method_24844(ItemStack itemStack) {
+		this.method_24834(EquipmentSlot.MAINHAND, itemStack);
+	}
+
+	protected void method_24845(ItemStack itemStack) {
+		if (itemStack.getItem() == Items.GOLD_INGOT) {
+			this.equipStack(EquipmentSlot.OFFHAND, itemStack);
+		} else {
+			this.method_24834(EquipmentSlot.OFFHAND, itemStack);
+		}
+	}
+
 	@Override
 	public boolean canGather(ItemStack stack) {
 		return PiglinBrain.canGather(this, stack);
 	}
 
+	protected boolean method_24846(ItemStack itemStack) {
+		EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
+		ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
+		return this.isBetterItemFor(itemStack, itemStack2, equipmentSlot);
+	}
+
 	@Override
 	protected boolean isBetterItemFor(ItemStack current, ItemStack previous, EquipmentSlot slot) {
-		if (PiglinBrain.isGoldenItem(current.getItem()) && !PiglinBrain.isGoldenItem(previous.getItem())) {
-			return true;
+		if (PiglinBrain.isGoldenItem(previous.getItem())) {
+			return false;
+		} else if (this.isAdult() && previous.getItem() == Items.CROSSBOW) {
+			return false;
 		} else {
-			return !PiglinBrain.isGoldenItem(current.getItem()) && PiglinBrain.isGoldenItem(previous.getItem()) ? false : super.isBetterItemFor(current, previous, slot);
+			return PiglinBrain.isGoldenItem(current.getItem()) ? true : super.isBetterItemFor(current, previous, slot);
 		}
 	}
 
 	@Override
 	protected void loot(ItemEntity item) {
 		PiglinBrain.loot(this, item);
-	}
-
-	protected boolean isOffHandEmpty() {
-		return this.getOffHandStack().isEmpty();
 	}
 
 	public boolean isRiding() {
@@ -471,10 +493,6 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 		this.playSound(SoundEvents.ENTITY_PIGLIN_CELEBRATE, 1.0F, this.getSoundPitch());
 	}
 
-	void playAttackedSound() {
-		this.playRetreatSound();
-	}
-
 	void playRetreatSound() {
 		this.playSound(SoundEvents.ENTITY_PIGLIN_RETREAT, 1.0F, this.getSoundPitch());
 	}
@@ -484,7 +502,7 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 	}
 
 	void playZombifySound() {
-		this.playSound(SoundEvents.ENTITY_PIGLIN_CONVERTED_TO_ZOMBIFIED, 1.0F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_PIGLIN_CONVERTED_TO_ZOMBIFIED, 1.0F, this.getSoundPitch());
 	}
 
 	@Override

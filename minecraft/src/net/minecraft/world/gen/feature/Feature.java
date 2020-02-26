@@ -105,7 +105,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<SeaPickleFeatureConfig> SEA_PICKLE = register("sea_pickle", new SeaPickleFeature(SeaPickleFeatureConfig::deserialize));
 	public static final Feature<SimpleBlockFeatureConfig> SIMPLE_BLOCK = register("simple_block", new SimpleBlockFeature(SimpleBlockFeatureConfig::deserialize));
 	public static final Feature<ProbabilityConfig> BAMBOO = register("bamboo", new BambooFeature(ProbabilityConfig::deserialize));
-	public static final Feature<HugeFungiFeatureConfig> HUGE_FUNGI = register("huge_fungi", new HugeFungiFeature(HugeFungiFeatureConfig::deserialize));
+	public static final Feature<HugeFungusFeatureConfig> HUGE_FUNGUS = register("huge_fungus", new HugeFungusFeature(HugeFungusFeatureConfig::deserialize));
 	public static final Feature<BlockPileFeatureConfig> NETHER_FOREST_VEGETATION = register(
 		"nether_forest_vegetation", new NetherForestVegetationFeature(BlockPileFeatureConfig::deserialize)
 	);
@@ -146,7 +146,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 		hashBiMap.put("Village".toLowerCase(Locale.ROOT), VILLAGE);
 		hashBiMap.put("Nether_Fossil".toLowerCase(Locale.ROOT), NETHER_FOSSIL);
 	});
-	public static final List<StructureFeature<?>> JIGSAW_STRUCTURES = ImmutableList.of(PILLAGER_OUTPOST, VILLAGE);
+	public static final List<StructureFeature<?>> JIGSAW_STRUCTURES = ImmutableList.of(PILLAGER_OUTPOST, VILLAGE, NETHER_FOSSIL);
 	private final Function<Dynamic<?>, ? extends FC> configDeserializer;
 
 	private static <C extends FeatureConfig, F extends Feature<C>> F register(String name, F feature) {

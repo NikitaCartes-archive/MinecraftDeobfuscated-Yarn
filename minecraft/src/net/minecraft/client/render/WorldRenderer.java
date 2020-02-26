@@ -1011,7 +1011,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 							);
 							vertexConsumerProvider2 = renderLayer -> {
 								VertexConsumer vertexConsumer2x = immediate.getBuffer(renderLayer);
-								return renderLayer.method_23037() ? VertexConsumers.dual(vertexConsumer, vertexConsumer2x) : vertexConsumer2x;
+								return renderLayer.hasCrumbling() ? VertexConsumers.dual(vertexConsumer, vertexConsumer2x) : vertexConsumer2x;
 							};
 						}
 					}
@@ -2423,7 +2423,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				this.world.playSound(pos, SoundEvents.BLOCK_ANVIL_LAND, SoundCategory.BLOCKS, 0.3F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 1032:
-				this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.BLOCK_PORTAL_TRAVEL, random.nextFloat() * 0.4F + 0.8F));
+				this.client.getSoundManager().play(PositionedSoundInstance.method_24877(SoundEvents.BLOCK_PORTAL_TRAVEL, random.nextFloat() * 0.4F + 0.8F, 0.25F));
 				break;
 			case 1033:
 				this.world.playSound(pos, SoundEvents.BLOCK_CHORUS_FLOWER_GROW, SoundCategory.BLOCKS, 1.0F, 1.0F, false);

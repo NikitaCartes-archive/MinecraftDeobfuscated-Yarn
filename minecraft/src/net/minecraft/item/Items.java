@@ -136,8 +136,8 @@ public class Items {
 	public static final Item WITHER_ROSE = register(Blocks.WITHER_ROSE, ItemGroup.DECORATIONS);
 	public static final Item BROWN_MUSHROOM = register(Blocks.BROWN_MUSHROOM, ItemGroup.DECORATIONS);
 	public static final Item RED_MUSHROOM = register(Blocks.RED_MUSHROOM, ItemGroup.DECORATIONS);
-	public static final Item CRIMSON_FUNGI = register(Blocks.CRIMSON_FUNGI, ItemGroup.DECORATIONS);
-	public static final Item WARPED_FUNGI = register(Blocks.WARPED_FUNGI, ItemGroup.DECORATIONS);
+	public static final Item CRIMSON_FUNGUS = register(Blocks.CRIMSON_FUNGUS, ItemGroup.DECORATIONS);
+	public static final Item WARPED_FUNGUS = register(Blocks.WARPED_FUNGUS, ItemGroup.DECORATIONS);
 	public static final Item CRIMSON_ROOTS = register(Blocks.CRIMSON_ROOTS, ItemGroup.DECORATIONS);
 	public static final Item WARPED_ROOTS = register(Blocks.WARPED_ROOTS, ItemGroup.DECORATIONS);
 	public static final Item NETHER_SPROUTS = register(Blocks.NETHER_SPROUTS, ItemGroup.DECORATIONS);
@@ -1045,8 +1045,8 @@ public class Items {
 	public static final Item ZOMBIE_HORSE_SPAWN_EGG = register(
 		"zombie_horse_spawn_egg", new SpawnEggItem(EntityType.ZOMBIE_HORSE, 3232308, 9945732, new Item.Settings().group(ItemGroup.MISC))
 	);
-	public static final Item ZOMBIE_PIGMAN_SPAWN_EGG = register(
-		"zombie_pigman_spawn_egg", new SpawnEggItem(EntityType.ZOMBIE_PIGMAN, 15373203, 5009705, new Item.Settings().group(ItemGroup.MISC))
+	public static final Item ZOMBIFIED_PIGLIN_SPAWN_EGG = register(
+		"zombified_piglin_spawn_egg", new SpawnEggItem(EntityType.ZOMBIFIED_PIGLIN, 15373203, 5009705, new Item.Settings().group(ItemGroup.MISC))
 	);
 	public static final Item ZOMBIE_VILLAGER_SPAWN_EGG = register(
 		"zombie_villager_spawn_egg", new SpawnEggItem(EntityType.ZOMBIE_VILLAGER, 5651507, 7969893, new Item.Settings().group(ItemGroup.MISC))
@@ -1343,6 +1343,8 @@ public class Items {
 	public static final Item NETHERITE_BOOTS = register(
 		"netherite_boots", new ArmorItem(ArmorMaterials.NETHERITE, EquipmentSlot.FEET, new Item.Settings().group(ItemGroup.COMBAT).fireproof())
 	);
+	public static final Item TARGET = register(Blocks.TARGET, ItemGroup.REDSTONE);
+	public static final Item CRYING_OBSIDIAN = register(Blocks.CRYING_OBSIDIAN, ItemGroup.BUILDING_BLOCKS);
 
 	private static Item register(Block block) {
 		return register(new BlockItem(block, new Item.Settings()));

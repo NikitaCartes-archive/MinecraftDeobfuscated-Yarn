@@ -66,7 +66,7 @@ public class EntityTrackerEntry {
 		this.lastYaw = MathHelper.floor(entity.yaw * 256.0F / 360.0F);
 		this.lastPitch = MathHelper.floor(entity.pitch * 256.0F / 360.0F);
 		this.lastHeadPitch = MathHelper.floor(entity.getHeadYaw() * 256.0F / 360.0F);
-		this.lastOnGround = entity.onGround;
+		this.lastOnGround = entity.method_24828();
 	}
 
 	public void tick() {
@@ -100,7 +100,7 @@ public class EntityTrackerEntry {
 				int j = MathHelper.floor(this.entity.pitch * 256.0F / 360.0F);
 				boolean bl = Math.abs(i - this.lastYaw) >= 1 || Math.abs(j - this.lastPitch) >= 1;
 				if (bl) {
-					this.receiver.accept(new EntityS2CPacket.Rotate(this.entity.getEntityId(), (byte)i, (byte)j, this.entity.onGround));
+					this.receiver.accept(new EntityS2CPacket.Rotate(this.entity.getEntityId(), (byte)i, (byte)j, this.entity.method_24828()));
 					this.lastYaw = i;
 					this.lastPitch = j;
 				}
@@ -122,22 +122,20 @@ public class EntityTrackerEntry {
 					long m = EntityS2CPacket.encodePacketCoordinate(vec3d.y);
 					long n = EntityS2CPacket.encodePacketCoordinate(vec3d.z);
 					boolean bl5 = l < -32768L || l > 32767L || m < -32768L || m > 32767L || n < -32768L || n > 32767L;
-					if (!bl5 && this.updatesWithoutVehicle <= 400 && !this.hadVehicle && this.lastOnGround == this.entity.onGround) {
-						if ((!bl3 || !bl4) && !(this.entity instanceof ProjectileEntity)) {
-							if (bl3) {
-								packet2 = new EntityS2CPacket.MoveRelative(this.entity.getEntityId(), (short)((int)l), (short)((int)m), (short)((int)n), this.entity.onGround);
-							} else if (bl4) {
-								packet2 = new EntityS2CPacket.Rotate(this.entity.getEntityId(), (byte)i, (byte)j, this.entity.onGround);
-							}
-						} else {
-							packet2 = new EntityS2CPacket.RotateAndMoveRelative(
-								this.entity.getEntityId(), (short)((int)l), (short)((int)m), (short)((int)n), (byte)i, (byte)j, this.entity.onGround
-							);
-						}
-					} else {
-						this.lastOnGround = this.entity.onGround;
+					if (bl5 || this.updatesWithoutVehicle > 400 || this.hadVehicle || this.lastOnGround != this.entity.method_24828()) {
+						this.lastOnGround = this.entity.method_24828();
 						this.updatesWithoutVehicle = 0;
 						packet2 = new EntityPositionS2CPacket(this.entity);
+					} else if ((!bl3 || !bl4) && !(this.entity instanceof ProjectileEntity)) {
+						if (bl3) {
+							packet2 = new EntityS2CPacket.MoveRelative(this.entity.getEntityId(), (short)((int)l), (short)((int)m), (short)((int)n), this.entity.method_24828());
+						} else if (bl4) {
+							packet2 = new EntityS2CPacket.Rotate(this.entity.getEntityId(), (byte)i, (byte)j, this.entity.method_24828());
+						}
+					} else {
+						packet2 = new EntityS2CPacket.RotateAndMoveRelative(
+							this.entity.getEntityId(), (short)((int)l), (short)((int)m), (short)((int)n), (byte)i, (byte)j, this.entity.method_24828()
+						);
 					}
 				}
 

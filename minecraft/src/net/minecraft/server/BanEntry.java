@@ -23,7 +23,7 @@ public abstract class BanEntry<T> extends ServerConfigEntry<T> {
 	}
 
 	protected BanEntry(T object, JsonObject jsonObject) {
-		super(object, jsonObject);
+		super(object);
 
 		Date date;
 		try {
@@ -63,13 +63,5 @@ public abstract class BanEntry<T> extends ServerConfigEntry<T> {
 	@Override
 	boolean isInvalid() {
 		return this.expiryDate == null ? false : this.expiryDate.before(new Date());
-	}
-
-	@Override
-	protected void serialize(JsonObject jsonObject) {
-		jsonObject.addProperty("created", DATE_FORMAT.format(this.creationDate));
-		jsonObject.addProperty("source", this.source);
-		jsonObject.addProperty("expires", this.expiryDate == null ? "forever" : DATE_FORMAT.format(this.expiryDate));
-		jsonObject.addProperty("reason", this.reason);
 	}
 }

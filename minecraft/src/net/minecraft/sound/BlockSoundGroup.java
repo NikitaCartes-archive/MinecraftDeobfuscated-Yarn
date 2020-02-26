@@ -193,14 +193,14 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_NYLIUM_HIT,
 		SoundEvents.BLOCK_NYLIUM_FALL
 	);
-	public static final BlockSoundGroup FUNGI = new BlockSoundGroup(
+	public static final BlockSoundGroup FUNGUS = new BlockSoundGroup(
 		1.0F,
 		1.0F,
-		SoundEvents.BLOCK_FUNGI_BREAK,
-		SoundEvents.BLOCK_FUNGI_STEP,
-		SoundEvents.BLOCK_FUNGI_PLACE,
-		SoundEvents.BLOCK_FUNGI_HIT,
-		SoundEvents.BLOCK_FUNGI_FALL
+		SoundEvents.BLOCK_FUNGUS_BREAK,
+		SoundEvents.BLOCK_FUNGUS_STEP,
+		SoundEvents.BLOCK_FUNGUS_PLACE,
+		SoundEvents.BLOCK_FUNGUS_HIT,
+		SoundEvents.BLOCK_FUNGUS_FALL
 	);
 	public static final BlockSoundGroup ROOTS = new BlockSoundGroup(
 		1.0F,

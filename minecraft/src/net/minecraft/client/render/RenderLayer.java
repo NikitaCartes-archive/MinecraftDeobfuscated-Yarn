@@ -113,7 +113,7 @@ public abstract class RenderLayer extends RenderPhase {
 		256,
 		RenderLayer.MultiPhaseParameters.builder()
 			.lineWidth(new RenderPhase.LineWidth(OptionalDouble.empty()))
-			.layering(field_22241)
+			.layering(VIEW_OFFSET_Z_LAYERING)
 			.transparency(TRANSLUCENT_TRANSPARENCY)
 			.writeMaskState(COLOR_MASK)
 			.build(false)
@@ -283,7 +283,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.overlay(ENABLE_OVERLAY_COLOR)
 			.writeMaskState(COLOR_MASK)
 			.depthTest(LEQUAL_DEPTH_TEST)
-			.layering(field_22241)
+			.layering(VIEW_OFFSET_Z_LAYERING)
 			.build(false);
 		return of("entity_shadow", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, 7, 256, false, false, multiPhaseParameters);
 	}
@@ -539,7 +539,7 @@ public abstract class RenderLayer extends RenderPhase {
 		return false;
 	}
 
-	public boolean method_23037() {
+	public boolean hasCrumbling() {
 		return this.hasCrumbling;
 	}
 
@@ -862,14 +862,14 @@ public abstract class RenderLayer extends RenderPhase {
 		IS_OUTLINE("is_outline"),
 		AFFECTS_OUTLINE("affects_outline");
 
-		private final String field_22243;
+		private final String name;
 
-		private OutlineMode(String string2) {
-			this.field_22243 = string2;
+		private OutlineMode(String name) {
+			this.name = name;
 		}
 
 		public String toString() {
-			return this.field_22243;
+			return this.name;
 		}
 	}
 }

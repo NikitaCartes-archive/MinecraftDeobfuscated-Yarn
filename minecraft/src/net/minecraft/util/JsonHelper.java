@@ -14,7 +14,6 @@ import com.google.gson.stream.JsonReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.lang.reflect.Type;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -285,11 +284,11 @@ public class JsonHelper {
 	}
 
 	@Nullable
-	public static <T> T deserialize(Gson gson, Reader reader, Type type, boolean lenient) {
+	public static <T> T deserialize(Gson gson, Reader reader, TypeToken<T> typeToken, boolean lenient) {
 		try {
 			JsonReader jsonReader = new JsonReader(reader);
 			jsonReader.setLenient(lenient);
-			return (T)gson.getAdapter(TypeToken.get(type)).read(jsonReader);
+			return gson.getAdapter(typeToken).read(jsonReader);
 		} catch (IOException var5) {
 			throw new JsonParseException(var5);
 		}
@@ -297,8 +296,8 @@ public class JsonHelper {
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	public static <T> T deserialize(Gson gson, String content, Type type, boolean lenient) {
-		return deserialize(gson, new StringReader(content), type, lenient);
+	public static <T> T deserialize(Gson gson, String content, TypeToken<T> typeToken, boolean lenient) {
+		return deserialize(gson, new StringReader(content), typeToken, lenient);
 	}
 
 	@Nullable
@@ -307,14 +306,14 @@ public class JsonHelper {
 	}
 
 	@Nullable
-	public static <T> T deserialize(Gson gson, Reader reader, Type type) {
-		return deserialize(gson, reader, type, false);
+	public static <T> T deserialize(Gson gson, Reader reader, TypeToken<T> typeToken) {
+		return deserialize(gson, reader, typeToken, false);
 	}
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	public static <T> T deserialize(Gson gson, String content, Type type) {
-		return deserialize(gson, content, type, false);
+	public static <T> T deserialize(Gson gson, String content, TypeToken<T> typeToken) {
+		return deserialize(gson, content, typeToken, false);
 	}
 
 	@Nullable

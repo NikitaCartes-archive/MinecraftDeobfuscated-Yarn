@@ -206,10 +206,14 @@ public class RenderLayers {
 		hashMap.put(Blocks.WEEPING_VINES_PLANT, renderLayer2);
 		hashMap.put(Blocks.WEEPING_VINES, renderLayer2);
 		hashMap.put(Blocks.NETHER_SPROUTS, renderLayer2);
-		hashMap.put(Blocks.CRIMSON_FUNGI, renderLayer2);
-		hashMap.put(Blocks.WARPED_FUNGI, renderLayer2);
+		hashMap.put(Blocks.CRIMSON_FUNGUS, renderLayer2);
+		hashMap.put(Blocks.WARPED_FUNGUS, renderLayer2);
 		hashMap.put(Blocks.CRIMSON_ROOTS, renderLayer2);
 		hashMap.put(Blocks.WARPED_ROOTS, renderLayer2);
+		hashMap.put(Blocks.POTTED_CRIMSON_FUNGUS, renderLayer2);
+		hashMap.put(Blocks.POTTED_WARPED_FUNGUS, renderLayer2);
+		hashMap.put(Blocks.POTTED_CRIMSON_ROOTS, renderLayer2);
+		hashMap.put(Blocks.POTTED_WARPED_ROOTS, renderLayer2);
 		RenderLayer renderLayer3 = RenderLayer.getTranslucent();
 		hashMap.put(Blocks.ICE, renderLayer3);
 		hashMap.put(Blocks.NETHER_PORTAL, renderLayer3);

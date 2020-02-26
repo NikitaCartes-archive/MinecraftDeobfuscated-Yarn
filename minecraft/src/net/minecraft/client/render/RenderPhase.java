@@ -109,7 +109,7 @@ public abstract class RenderPhase {
 		RenderSystem.polygonOffset(0.0F, 0.0F);
 		RenderSystem.disablePolygonOffset();
 	});
-	protected static final RenderPhase.Layering field_22241 = new RenderPhase.Layering("view_offset_z_layering", () -> {
+	protected static final RenderPhase.Layering VIEW_OFFSET_Z_LAYERING = new RenderPhase.Layering("view_offset_z_layering", () -> {
 		RenderSystem.pushMatrix();
 		RenderSystem.scalef(0.99975586F, 0.99975586F, 0.99975586F);
 	}, RenderSystem::popMatrix);

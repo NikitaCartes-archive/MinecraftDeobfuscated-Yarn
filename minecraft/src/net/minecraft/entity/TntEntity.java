@@ -68,7 +68,7 @@ public class TntEntity extends Entity {
 				this.explode();
 			}
 		} else {
-			this.checkWaterState();
+			this.updateWaterState();
 			if (this.world.isClient) {
 				this.world.addParticle(ParticleTypes.SMOKE, this.getX(), this.getY() + 0.5, this.getZ(), 0.0, 0.0, 0.0);
 			}
